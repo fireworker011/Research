@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -22,6 +23,8 @@ class ThreadsPoster:
         """テキスト投稿を行う。content は generate_threads_post() の戻り値。"""
         text = content["text"]
         container_id = self.client.create_text_container(text)
+        # Threads API はコンテナ作成直後に publish すると 500 になることがある
+        time.sleep(3)
         post_id = self.client.publish(container_id)
         result = self._log_result(content, post_id, "text")
         print(f"[Threads] 投稿完了 post_id={post_id}")

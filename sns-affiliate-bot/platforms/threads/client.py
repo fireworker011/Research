@@ -98,7 +98,15 @@ class ThreadsClient:
             params=self._params({"creation_id": container_id}),
             timeout=30,
         )
-        resp.raise_for_status()
+        if not resp.ok:
+            try:
+                detail = resp.json()
+            except Exception:
+                detail = resp.text
+            raise RuntimeError(
+                f"Threads publish 失敗 ({resp.status_code}): {detail}\n"
+                f"container_id={container_id}"
+            )
         return resp.json()["id"]
 
     def get_user_info(self) -> dict:
