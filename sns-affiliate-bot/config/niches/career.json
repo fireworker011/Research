@@ -1,0 +1,128 @@
+{
+  "id": "career",
+  "name": "転職・就職・スキルアップ",
+  "language": "ja",
+  "accounts": {
+    "threads": {
+      "user_id_env": "THREADS_CAREER_USER_ID",
+      "access_token_env": "THREADS_CAREER_ACCESS_TOKEN"
+    },
+    "youtube": {
+      "channel_id_env": "YOUTUBE_CAREER_CHANNEL_ID",
+      "credentials_file": "config/credentials/youtube_career.json"
+    },
+    "instagram": null
+  },
+  "affiliate": {
+    "platform": "a8net",
+    "id_env": "A8_AFFILIATE_ID",
+    "products": [
+      {
+        "id": "programming_school",
+        "name": "プログラミングスクール",
+        "description": "未経験からエンジニア転職を目指せるスクール",
+        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "keywords": ["プログラミング", "エンジニア", "転職", "未経験"],
+        "cta": "無料カウンセリングはプロフのリンクから"
+      },
+      {
+        "id": "ai_skill_course",
+        "name": "AIスキル講座",
+        "description": "ChatGPT・AI活用を学べるオンライン講座",
+        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "keywords": ["AI", "ChatGPT", "スキルアップ", "副業"],
+        "cta": "詳細・無料体験はプロフのリンクから"
+      },
+      {
+        "id": "job_change_agent",
+        "name": "転職エージェント",
+        "description": "年収UPを目指す転職支援サービス",
+        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "keywords": ["転職", "年収UP", "キャリアアップ", "30代"],
+        "cta": "無料登録はプロフのリンクから"
+      }
+    ]
+  },
+  "hashtags": {
+    "base": ["#転職", "#スキルアップ", "#キャリア", "#副業"],
+    "skill_list": ["#プログラミング", "#AI活用", "#エンジニア", "#DX人材"],
+    "career_tip": ["#転職活動", "#就職活動", "#20代", "#30代"],
+    "tool_recommendation": ["#仕事効率化", "#AIツール", "#生産性向上"],
+    "market_insight": ["#2026年", "#IT転職", "#DX", "#求人"]
+  },
+  "content_types": {
+    "threads": ["skill_list", "career_tip", "tool_recommendation", "market_insight"],
+    "youtube": ["skill_ranking", "career_advice", "tool_introduction"]
+  },
+  "templates": {
+    "threads": {
+      "skill_list": {
+        "hooks": [
+          "2026年に絶対必要な{category}スキル{n}選",
+          "知らないと損する！{category}で稼げるスキル{n}選",
+          "{category}未経験でも3ヶ月で習得できるスキル{n}選",
+          "採用担当者が「即戦力」と判断する{category}スキル{n}選"
+        ],
+        "list_intro": "結論からいいます👇",
+        "separator": "▼",
+        "cta": "→ 詳細・無料相談はプロフのリンクへ！"
+      },
+      "career_tip": {
+        "hooks": [
+          "転職で失敗する人がやりがちなこと{n}選",
+          "年収100万UP した人が共通してやっていたこと",
+          "{age}代で転職を成功させる人の特徴{n}選"
+        ],
+        "cta": "→ 無料でキャリア相談はプロフのリンクへ！"
+      },
+      "tool_recommendation": {
+        "hooks": [
+          "仕事が{multiplier}倍速くなる{category}ツール{n}選",
+          "エンジニアが毎日使っているAIツール{n}選",
+          "これ知らないの損！無料で使える仕事効率化ツール{n}選"
+        ],
+        "cta": "→ 詳細はプロフのリンクへ！"
+      },
+      "market_insight": {
+        "hooks": [
+          "2026年の{industry}業界、転職市場の現実",
+          "{skill}の需要が{period}で{multiplier}倍になった理由",
+          "採用担当者に聞いた「今すぐ採用したい人材」の特徴"
+        ],
+        "cta": "→ あなたの市場価値を無料で診断！プロフのリンクへ"
+      }
+    },
+    "youtube": {
+      "skill_ranking": {
+        "title_template": "【{year}年版】{category}スキルランキングTOP{n}｜転職・副業で稼ぐなら絶対見て",
+        "hook_script": "これ知らないと本当に損します。{year}年、{category}で稼ぐために絶対必要なスキルTOP{n}を紹介します。",
+        "structure": ["hook", "intro", "ranking_items", "summary", "cta"],
+        "cta_script": "詳しくはチャンネル概要欄のリンクをチェックしてください！",
+        "target_duration_sec": 55
+      },
+      "career_advice": {
+        "title_template": "【実録】{result}した人がやっていたこと{n}選｜{target}必見",
+        "hook_script": "{result}した人には、共通点があります。今日はその{n}つを紹介します。",
+        "structure": ["hook", "points", "cta"],
+        "cta_script": "概要欄に無料相談リンクを貼っています！",
+        "target_duration_sec": 50
+      },
+      "tool_introduction": {
+        "title_template": "【無料あり】{job}が使うべきAIツール{n}選｜{benefit}",
+        "hook_script": "今日紹介する{n}つのツールを使えば、{benefit}ができます。",
+        "structure": ["hook", "tools", "summary", "cta"],
+        "cta_script": "各ツールのリンクは概要欄にまとめています！",
+        "target_duration_sec": 55
+      }
+    }
+  },
+  "image_keywords": {
+    "skill_list": ["office work", "laptop coding", "business meeting", "career success"],
+    "career_tip": ["job interview", "resume", "handshake business", "office professional"],
+    "tool_recommendation": ["technology workspace", "coding setup", "digital tools", "ai technology"],
+    "market_insight": ["business graph", "job market", "hiring", "corporate"],
+    "skill_ranking": ["ranking podium", "skills training", "laptop programming", "success career"],
+    "career_advice": ["mentor coaching", "career ladder", "business success", "professional growth"],
+    "tool_introduction": ["software tools", "computer screen code", "developer workspace", "ai robot"]
+  }
+}
