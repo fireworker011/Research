@@ -3,17 +3,18 @@
 Windows タスクスケジューラ 登録スクリプト
 
 使い方（sns-affiliate-bot フォルダで実行）:
-  python scheduler/windows_task.py install-weekly   # 1週間トライアル（08:00/12:00/19:00 x3投稿）
+  python scheduler/windows_task.py install-weekly   # 1週間トライアル登録（08:00/12:00/19:00）
+  python scheduler/windows_task.py setup-wake       # スリープ自動起床設定（install-weekly の後に実行）
   python scheduler/windows_task.py uninstall-weekly # 1週間トライアル解除
   python scheduler/windows_task.py status           # 登録状態を確認
   python scheduler/windows_task.py install          # 常時稼働スケジューラを登録（旧方式）
   python scheduler/windows_task.py uninstall        # 常時稼働スケジューラを削除（旧方式）
 
-1週間トライアルで登録されるタスク（各タスクが1投稿して終了する軽量設計）:
-  - SNS-Threads-Career-Morning   : 毎日 08:00
-  - SNS-Threads-Career-Noon      : 毎日 12:00
-  - SNS-Threads-Career-Evening   : 毎日 19:00
-  - SNS-AffiliateBot-TokenCheck  : 毎週月曜 09:00（トークン残日数チェック）
+setup-wake でできること（スリープモード限定）:
+  - 投稿時間の少し前に PC をスリープから自動起床
+  - スリープ復帰後のパスワード要求を無効化
+  ※ セッションは維持されるので自動ログイン設定は不要
+  ※ 完全シャットダウンからの自動起動は BIOS 設定が必要（機種依存）
 """
 
 import os
@@ -161,6 +162,99 @@ def cmd_install_weekly(days: int = 7):
 """)
 
 
+def cmd_setup_wake():
+    """
+    スリープ（S3）からの自動起床を設定する。
+    install-weekly でタスク登録済みであること。
+    管理者権限で実行すること。
+    """
+    print("=== スリープ自動起床セットアップ ===\n")
+    print("前提: PC を完全シャットダウンではなくスリープにして使用してください。")
+    print("      スリープ中はセッションが保持されるため自動ログイン設定は不要です。\n")
+
+    # 1. 各タスクに WakeToRun フラグを設定（PowerShell 経由）
+    task_list = ", ".join(f'"{t}"' for t in WEEKLY_TASKS)
+    ps_wake = f"""
+$names = @({task_list})
+foreach ($name in $names) {{
+    $task = Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
+    if ($task) {{
+        $task.Settings.WakeToRun = $true
+        Set-ScheduledTask -InputObject $task | Out-Null
+        Write-Output "  [OK] $name: WakeToRun 有効化"
+    }} else {{
+        Write-Output "  [SKIP] $name: 未登録 (install-weekly を先に実行してください)"
+    }}
+}}
+"""
+    r1 = subprocess.run(
+        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_wake],
+        capture_output=True, text=True, encoding="utf-8",
+    )
+    print(r1.stdout or "（出力なし）")
+    if r1.returncode != 0:
+        print(f"❌ エラー: {r1.stderr.strip()}")
+        print("管理者として実行し直してください。")
+        return
+
+    # 2. スリープ復帰時のパスワード要求を無効化
+    #    GUID: スリープサブグループ / コンソールロック設定
+    ps_pw = (
+        "powercfg /setacvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
+        "0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0 ; "
+        "powercfg /setdcvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
+        "0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0 ; "
+        "powercfg /setactive SCHEME_CURRENT"
+    )
+    r2 = subprocess.run(
+        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_pw],
+        capture_output=True, text=True,
+    )
+    if r2.returncode == 0:
+        print("  [OK] スリープ復帰時のパスワード要求: 無効化")
+    else:
+        print(f"  [WARNING] パスワード設定変更に失敗しました: {r2.stderr.strip()}")
+        print("           「設定 → アカウント → サインインオプション → スリープ解除時に必要」を手動でオフにしてください。")
+
+    # 3. Windowsの「スリープ解除タイマーを許可」を有効化
+    ps_timer = (
+        "powercfg /setacvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
+        "BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1 ; "
+        "powercfg /setdcvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
+        "BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1 ; "
+        "powercfg /setactive SCHEME_CURRENT"
+    )
+    r3 = subprocess.run(
+        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_timer],
+        capture_output=True, text=True,
+    )
+    if r3.returncode == 0:
+        print("  [OK] スリープ解除タイマー: 許可")
+    else:
+        print(f"  [WARNING] タイマー設定失敗: {r3.stderr.strip()}")
+
+    print("""
+✅ セットアップ完了！
+
+動作の流れ（例: 08:00 投稿）:
+  夜：PC をスリープ
+  07:59 頃：Windows がスリープから自動起床
+  08:00：タスクスケジューラが python main.py autopost threads career を実行
+  08:01：投稿完了、PC はそのまま or 次のタスクまで待機
+  12:00 / 19:00 も同様に自動実行
+
+注意:
+  - スリープ（電源ランプ点滅中）は OK
+  - 完全シャットダウン（電源オフ）は NG
+    → シャットダウンから起動したい場合は BIOS/UEFI の
+      「Wake on RTC アラーム」設定が必要（機種マニュアル参照）
+""")
+
+
 def cmd_uninstall_weekly():
     """1週間トライアルのタスクをすべて削除する。"""
     tasks = list(WEEKLY_TASKS.keys()) + ["SNS-AffiliateBot-TokenCheck"]
@@ -277,6 +371,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "status"
     if cmd == "install-weekly":
         cmd_install_weekly()
+    elif cmd == "setup-wake":
+        cmd_setup_wake()
     elif cmd == "uninstall-weekly":
         cmd_uninstall_weekly()
     elif cmd == "install":
