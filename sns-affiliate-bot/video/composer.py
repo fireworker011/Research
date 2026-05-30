@@ -139,23 +139,50 @@ class VideoComposer:
             raise RuntimeError(f"FFmpeg エラー:\n{result.stderr[-2000:]}")
 
     def _build_drawtext(self, text: str, font: str) -> str:
-        lines = text.split("\\n") if "\\n" in text else text.split("\n")
-        font_escaped = _ffmpeg_font_path(font)
-        filters = []
-        y_start = HEIGHT // 2 + 200 - (len(lines) * 70) // 2
+        raw_lines = text.split("\\n") if "\\n" in text else text.split("\n")
+        # 長い行を自動折り返し（日本語 ~15文字/行 = fontsize52 で 1080px に収まる）
+        lines = []
+        for raw in raw_lines:
+            lines.extend(self._wrap_line(raw, max_chars=15))
 
+        if not lines:
+            return ""
+
+        font_escaped = _ffmpeg_font_path(font)
+        fontsize = 50 if len(lines) <= 3 else 42
+        line_height = int(fontsize * 1.65)
+        total_h = len(lines) * line_height
+        # テキストブロックを画面下部 2/3 付近に配置
+        y_start = max(HEIGHT // 2, HEIGHT * 2 // 3 - total_h // 2)
+
+        filters = []
         for i, line in enumerate(lines):
-            y = y_start + i * 80
+            y = y_start + i * line_height
             filters.append(
                 f"drawtext=fontfile='{font_escaped}':"
                 f"text='{line}':"
                 f"fontcolor=white:"
-                f"fontsize=52:"
-                f"box=1:boxcolor=black@0.65:boxborderw=14:"
+                f"fontsize={fontsize}:"
+                f"box=1:boxcolor=black@0.65:boxborderw=12:"
                 f"x=(w-text_w)/2:y={y}:"
+                f"fix_bounds=1:"
                 f"enable='between(t,0.2,999)'"
             )
         return ",".join(filters)
+
+    @staticmethod
+    def _wrap_line(line: str, max_chars: int = 15) -> list:
+        """1行のテキストを max_chars 文字で折り返す（日本語対応）。"""
+        line = line.strip()
+        if not line:
+            return []
+        result = []
+        while len(line) > max_chars:
+            result.append(line[:max_chars])
+            line = line[max_chars:]
+        if line:
+            result.append(line)
+        return result
 
     def _concat_scenes(self, scene_files: List[str], output: str):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8") as f:
