@@ -3,19 +3,30 @@
 Windows タスクスケジューラ 登録スクリプト
 
 使い方（sns-affiliate-bot フォルダで実行）:
-  python scheduler/windows_task.py install    # タスクを登録
-  python scheduler/windows_task.py uninstall  # タスクを削除
-  python scheduler/windows_task.py status     # 登録状態を確認
+  python scheduler/windows_task.py install-weekly   # 1週間トライアル（08:00/12:00/19:00 x3投稿）
+  python scheduler/windows_task.py uninstall-weekly # 1週間トライアル解除
+  python scheduler/windows_task.py status           # 登録状態を確認
+  python scheduler/windows_task.py install          # 常時稼働スケジューラを登録（旧方式）
+  python scheduler/windows_task.py uninstall        # 常時稼働スケジューラを削除（旧方式）
 
-登録されるタスク:
-  - SNS-AffiliateBot-Career: メインスケジューラ（毎日8:00起動、常時実行）
-  - SNS-AffiliateBot-TokenCheck: Threadsトークン残日数チェック（毎週月曜）
+1週間トライアルで登録されるタスク（各タスクが1投稿して終了する軽量設計）:
+  - SNS-Threads-Career-Morning   : 毎日 08:00
+  - SNS-Threads-Career-Noon      : 毎日 12:00
+  - SNS-Threads-Career-Evening   : 毎日 19:00
+  - SNS-AffiliateBot-TokenCheck  : 毎週月曜 09:00（トークン残日数チェック）
 """
 
 import os
 import subprocess
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
+
+WEEKLY_TASKS = {
+    "SNS-Threads-Career-Morning": "08:00",
+    "SNS-Threads-Career-Noon":    "12:00",
+    "SNS-Threads-Career-Evening": "19:00",
+}
 
 
 def get_python_path() -> str:
@@ -73,6 +84,97 @@ def schtasks_create(task_name: str, command: str, schedule_type: str, start_time
         return True
     print(f"  schtasks エラー: {result.stderr.strip()}")
     return False
+
+
+def cmd_install_weekly(days: int = 7):
+    """1週間トライアル: 3時間帯それぞれに独立タスクを登録する（1投稿=1プロセス方式）。"""
+    root = get_project_root()
+    python_path = get_python_path()
+    logs_dir = root / "logs"
+    logs_dir.mkdir(exist_ok=True)
+
+    end_date = (datetime.now() + timedelta(days=days)).strftime("%Y/%m/%d")
+
+    # autopost 用 bat / vbs を生成（3タスクが共用）
+    bat_path = root / "scheduler" / "autopost.bat"
+    bat_content = (
+        f"@echo off\r\n"
+        f"cd /d \"{root}\"\r\n"
+        f"\"{python_path}\" main.py autopost threads career >> logs\\autopost.log 2>&1\r\n"
+    )
+    bat_path.write_text(bat_content, encoding="utf-8")
+    vbs_path = create_vbs_wrapper(bat_path)
+    print(f"✅ 投稿スクリプト作成: {bat_path.name}")
+
+    # トークン確認 bat / vbs
+    token_bat = create_token_check_bat(root, python_path)
+    token_vbs = create_vbs_wrapper(token_bat)
+
+    print(f"\n期間: 今日 〜 {end_date}（{days}日間）")
+    print("Windowsタスクスケジューラに登録中...\n")
+
+    all_ok = True
+    for task_name, time_str in WEEKLY_TASKS.items():
+        args = [
+            "schtasks", "/create",
+            "/tn", task_name,
+            "/tr", f'wscript.exe "{vbs_path}"',
+            "/sc", "DAILY",
+            "/st", time_str,
+            "/ed", end_date,
+            "/f",
+        ]
+        result = subprocess.run(args, capture_output=True, text=True, encoding="cp932")
+        if result.returncode == 0:
+            print(f"  ✅ {task_name}: 毎日 {time_str}")
+        else:
+            print(f"  ❌ {task_name}: 失敗 - {result.stderr.strip()}")
+            all_ok = False
+
+    ok_token = schtasks_create(
+        task_name="SNS-AffiliateBot-TokenCheck",
+        command=f'wscript.exe "{token_vbs}"',
+        schedule_type="WEEKLY",
+        start_time="09:00",
+        day="MON",
+    )
+    if ok_token:
+        print(f"  ✅ SNS-AffiliateBot-TokenCheck: 毎週月曜 09:00")
+    else:
+        print(f"  ❌ TokenCheck: 登録失敗")
+
+    print(f"""
+{'✅ 登録完了！' if all_ok else '⚠️  一部タスクの登録に失敗しました（管理者として実行し直してください）。'}
+
+スケジュール:
+  08:00 / 12:00 / 19:00 に Threads へ自動投稿（{end_date} まで）
+
+ログ確認:
+  logs/autopost.log      ← 投稿ログ（成功・失敗）
+  logs/autopost_errors.log ← エラー詳細
+
+1週間後は自動で停止します（タスクが終了日を過ぎると実行されません）。
+手動で止めたい場合:
+  python scheduler/windows_task.py uninstall-weekly
+
+注意: PC がスリープ中はタスクが実行されません。
+""")
+
+
+def cmd_uninstall_weekly():
+    """1週間トライアルのタスクをすべて削除する。"""
+    tasks = list(WEEKLY_TASKS.keys()) + ["SNS-AffiliateBot-TokenCheck"]
+    print("タスクを削除中...")
+    for task in tasks:
+        result = subprocess.run(
+            ["schtasks", "/delete", "/tn", task, "/f"],
+            capture_output=True, text=True, encoding="cp932",
+        )
+        if result.returncode == 0:
+            print(f"  ✅ {task} 削除")
+        else:
+            print(f"  ⚠️  {task}: {result.stderr.strip()}")
+    print("完了。")
 
 
 def cmd_install():
@@ -149,25 +251,35 @@ def cmd_uninstall():
 
 
 def cmd_status():
-    tasks = ["SNS-AffiliateBot-Career", "SNS-AffiliateBot-TokenCheck"]
+    all_tasks = (
+        list(WEEKLY_TASKS.keys())
+        + ["SNS-AffiliateBot-TokenCheck", "SNS-AffiliateBot-Career"]
+    )
     print("=== タスクスケジューラ登録状態 ===\n")
-    for task in tasks:
+    for task in all_tasks:
         result = subprocess.run(
             ["schtasks", "/query", "/tn", task, "/fo", "LIST"],
             capture_output=True, text=True, encoding="cp932",
         )
         if result.returncode == 0:
             for line in result.stdout.splitlines():
-                if any(k in line for k in ["タスク名", "状態", "次の実行時刻", "TaskName", "Status", "Next Run"]):
+                if any(k in line for k in [
+                    "タスク名", "状態", "次の実行時刻", "最終実行時刻", "最終の結果",
+                    "TaskName", "Status", "Next Run", "Last Run", "Last Result",
+                ]):
                     print(f"  {line.strip()}")
             print()
         else:
-            print(f"  ❌ {task}: 未登録\n")
+            print(f"  - {task}: 未登録\n")
 
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "status"
-    if cmd == "install":
+    if cmd == "install-weekly":
+        cmd_install_weekly()
+    elif cmd == "uninstall-weekly":
+        cmd_uninstall_weekly()
+    elif cmd == "install":
         cmd_install()
     elif cmd == "uninstall":
         cmd_uninstall()

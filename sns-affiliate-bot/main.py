@@ -2,9 +2,10 @@
 """
 SNS Affiliate Bot - メインエントリーポイント
 使い方:
-  python main.py post threads career           # Threads にテキスト投稿
+  python main.py post threads career           # Threads にテキスト投稿（確認あり）
   python main.py post video threads career     # Threads に動画投稿（VOICEVOX + Pexels + Cloudinary）
   python main.py post youtube career           # YouTube Shorts を1本作成・アップロード
+  python main.py autopost threads career       # Threads に自動投稿（確認なし／タスクスケジューラ用）
   python main.py generate threads career       # Threads 投稿コンテンツを生成してキューに保存
   python main.py generate youtube career       # YouTube 台本を生成してキューに保存
   python main.py run career                    # スケジューラ起動（常時実行）
@@ -79,6 +80,39 @@ def cmd_post(platform: str, niche_id: str):
             print(f"✅ アップロード完了: {result['video_url']}")
         else:
             print("アップロードをキャンセルしました。")
+
+
+def cmd_autopost(platform: str, niche_id: str):
+    """確認なしで自動投稿する（Windows タスクスケジューラから呼ばれる）。"""
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{ts}] 自動投稿開始: {platform}/{niche_id}")
+
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+
+    try:
+        niche = load_niche(niche_id)
+
+        from ai.provider import AIProvider
+        from content.generator import ContentGenerator
+        gen = ContentGenerator(niche, AIProvider())
+
+        if platform == "threads":
+            content = gen.generate_threads_post()
+            from platforms.threads.poster import ThreadsPoster
+            poster = ThreadsPoster(niche_id)
+            result = poster.post_text(content)
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ 投稿完了 post_id={result['post_id']}")
+            print(f"  本文（先頭60字）: {content['text'][:60]}")
+        else:
+            print(f"❌ 未対応のプラットフォーム: {platform}")
+
+    except Exception as e:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ エラー: {e}")
+        err_log = log_dir / "autopost_errors.log"
+        with open(err_log, "a", encoding="utf-8") as f:
+            f.write(f"{datetime.now().isoformat()} [{platform}/{niche_id}] {e}\n")
+        raise
 
 
 def cmd_post_video(platform: str, niche_id: str):
@@ -214,6 +248,8 @@ def main():
         cmd_post_video(args[2], args[3])
     elif cmd == "post" and len(args) >= 3:
         cmd_post(args[1], args[2])
+    elif cmd == "autopost" and len(args) >= 3:
+        cmd_autopost(args[1], args[2])
     elif cmd == "generate" and len(args) >= 3:
         count = int(args[3]) if len(args) >= 4 else 7
         cmd_generate(args[1], args[2], count)
