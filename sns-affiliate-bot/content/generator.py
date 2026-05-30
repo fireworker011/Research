@@ -71,10 +71,14 @@ class ContentGenerator:
 
         body = self._build_threads_body(content_type, hook)
         hashtags = self._pick_hashtags(content_type)
-        cta = tmpl.get("cta", "→ 詳細はプロフのリンクへ！")
+        cta = tmpl.get("cta", "→ フォローして最新情報をGET！")
         affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
 
-        text = f"{hook}\n\n{body}\n\n{cta}\n{affiliate_url}\n\n{hashtags}"
+        # アフィリエイトURLが未設定の場合はリンクなしで投稿
+        if affiliate_url and "{" not in affiliate_url:
+            text = f"{hook}\n\n{body}\n\n{cta}\n{affiliate_url}\n\n{hashtags}"
+        else:
+            text = f"{hook}\n\n{body}\n\n{cta}\n\n{hashtags}"
 
         return {
             "content_type": content_type,
@@ -121,6 +125,26 @@ class ContentGenerator:
                 "Perplexity ─ リサーチを10倍速にするAI検索",
             ], min(n, 5))
             return "\n".join(f"🔧 {t}" for t in tools)
+        elif content_type == "market_insight":
+            insights = random.sample([
+                "AIエンジニアの求人数が前年比200%超え",
+                "40代転職者の年収UPケースが3年前の2倍に",
+                "未経験からDX人材への転職成功率が上昇中",
+                "リモート可の求人、依然として高水準を維持",
+                "副業・複業OKの企業が大手でも急増",
+                "AIスキルあり・なしで年収差が拡大している",
+            ], min(n, 4))
+            return "\n".join(f"📊 {item}" for item in insights)
+        elif content_type == "personal_story":
+            stories = random.sample([
+                "1年前：残業続きで副業なんて考える余裕ゼロ",
+                "半年前：Claude Codeに出会って仕組み化を開始",
+                "3ヶ月前：定時で上がれる日が増え始めた",
+                "1ヶ月前：初めて副業で収益が発生",
+                "今：朝活でAI学習・仕事は効率化・夜は家族時間",
+            ], min(n, 4))
+            return "\n".join(f"{'⬛' if i == 0 else '🔶' if i < len(stories)-1 else '✅'} {s}"
+                           for i, s in enumerate(stories))
         else:
             return "詳しくはプロフのリンクからご確認ください。"
 

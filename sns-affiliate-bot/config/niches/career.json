@@ -2,6 +2,11 @@
   "id": "career",
   "name": "転職・就職・スキルアップ",
   "language": "ja",
+  "persona": {
+    "name": "カズト",
+    "description": "40代会社員。AI活用と仕組み化で労働集約から脱却中。年収UP・市場価値向上を発信。",
+    "tone": "口語体・実体験ベース・共感重視・数字を使う"
+  },
   "accounts": {
     "threads": {
       "user_id_env": "THREADS_CAREER_USER_ID",
@@ -21,7 +26,7 @@
         "id": "programming_school",
         "name": "プログラミングスクール",
         "description": "未経験からエンジニア転職を目指せるスクール",
-        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "url_template": "",
         "keywords": ["プログラミング", "エンジニア", "転職", "未経験"],
         "cta": "無料カウンセリングはプロフのリンクから"
       },
@@ -29,7 +34,7 @@
         "id": "ai_skill_course",
         "name": "AIスキル講座",
         "description": "ChatGPT・AI活用を学べるオンライン講座",
-        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "url_template": "",
         "keywords": ["AI", "ChatGPT", "スキルアップ", "副業"],
         "cta": "詳細・無料体験はプロフのリンクから"
       },
@@ -37,92 +42,111 @@
         "id": "job_change_agent",
         "name": "転職エージェント",
         "description": "年収UPを目指す転職支援サービス",
-        "url_template": "https://px.a8.net/svt/ejp?a8mat={A8_ID}&a8affiliate_id={affiliate_id}",
+        "url_template": "",
         "keywords": ["転職", "年収UP", "キャリアアップ", "30代"],
         "cta": "無料登録はプロフのリンクから"
       }
     ]
   },
   "hashtags": {
-    "base": ["#転職", "#スキルアップ", "#キャリア", "#副業"],
-    "skill_list": ["#プログラミング", "#AI活用", "#エンジニア", "#DX人材"],
-    "career_tip": ["#転職活動", "#就職活動", "#20代", "#30代"],
-    "tool_recommendation": ["#仕事効率化", "#AIツール", "#生産性向上"],
-    "market_insight": ["#2026年", "#IT転職", "#DX", "#求人"]
+    "base": ["#転職", "#スキルアップ", "#キャリアアップ", "#AI活用"],
+    "skill_list": ["#AIスキル", "#DX人材", "#市場価値", "#副業"],
+    "career_tip": ["#転職活動", "#40代転職", "#年収UP", "#キャリア"],
+    "tool_recommendation": ["#仕事効率化", "#ChatGPT", "#生産性向上", "#働き方"],
+    "market_insight": ["#2026年転職", "#IT転職", "#DX", "#エンジニア転職"],
+    "personal_story": ["#40代", "#副業", "#会社員", "#仕組み化"]
   },
   "content_types": {
-    "threads": ["skill_list", "career_tip", "tool_recommendation", "market_insight"],
+    "threads": ["skill_list", "career_tip", "tool_recommendation", "market_insight", "personal_story"],
     "youtube": ["skill_ranking", "career_advice", "tool_introduction"]
   },
   "templates": {
     "threads": {
       "skill_list": {
         "hooks": [
-          "2026年に絶対必要な{category}スキル{n}選",
-          "知らないと損する！{category}で稼げるスキル{n}選",
-          "{category}未経験でも3ヶ月で習得できるスキル{n}選",
-          "採用担当者が「即戦力」と判断する{category}スキル{n}選"
+          "40代の僕が「これ先に知りたかった」と思ったAIスキル{n}選",
+          "採用担当者が「即戦力」と判断する{category}スキル{n}選（2026年版）",
+          "知らないと本当に損します。{category}で年収が変わるスキル{n}選",
+          "{category}未経験でも3ヶ月で習得できた実践スキル{n}選",
+          "転職エージェントに「この人は採れる」と言わせるスキル{n}選"
         ],
         "list_intro": "結論からいいます👇",
         "separator": "▼",
-        "cta": "→ 詳細・無料相談はプロフのリンクへ！"
+        "cta": "→ 参考になったら保存＆フォローお願いします！"
       },
       "career_tip": {
         "hooks": [
-          "転職で失敗する人がやりがちなこと{n}選",
-          "年収100万UP した人が共通してやっていたこと",
-          "{age}代で転職を成功させる人の特徴{n}選"
+          "40代で転職に成功した人が共通してやっていたこと",
+          "転職で失敗する人がやりがちなこと{n}選（実体験）",
+          "年収100万UPした人が転職前に必ずやっていること",
+          "僕が転職活動を始める前に知っておきたかったこと{n}選",
+          "30〜40代で「市場価値を上げた人」と「上げられなかった人」の違い"
         ],
-        "cta": "→ 無料でキャリア相談はプロフのリンクへ！"
+        "cta": "→ フォローして転職・キャリアの最新情報をGET！"
       },
       "tool_recommendation": {
         "hooks": [
-          "仕事が{multiplier}倍速くなる{category}ツール{n}選",
-          "エンジニアが毎日使っているAIツール{n}選",
-          "これ知らないの損！無料で使える仕事効率化ツール{n}選"
+          "40代会社員の僕が毎日使っているAIツール{n}選",
+          "これ使ったら仕事が{multiplier}倍速くなった神ツール{n}選",
+          "無料なのにヤバい。仕事効率化ツール{n}選（2026年最新）",
+          "ChatGPTだけじゃない。知らないと損するAIツール{n}選",
+          "エンジニアじゃなくても使えるAI仕事術{n}選"
         ],
-        "cta": "→ 詳細はプロフのリンクへ！"
+        "cta": "→ 他にも役立つ情報を毎日発信中！フォローはこちら👆"
       },
       "market_insight": {
         "hooks": [
-          "2026年の{industry}業界、転職市場の現実",
-          "{skill}の需要が{period}で{multiplier}倍になった理由",
-          "採用担当者に聞いた「今すぐ採用したい人材」の特徴"
+          "正直に言います。2026年の転職市場、やばいことになってます",
+          "採用担当者に直接聞いた「今すぐ採りたい人材」の特徴",
+          "{skill}の需要が{period}で急増している理由を解説します",
+          "40代でも「引く手あまた」になれる人の共通点",
+          "AIに仕事を奪われる人と、逆に稼ぐ人の決定的な違い"
         ],
-        "cta": "→ あなたの市場価値を無料で診断！プロフのリンクへ"
+        "cta": "→ 保存して後でじっくり読んでみてください！"
+      },
+      "personal_story": {
+        "hooks": [
+          "正直に話します。40代会社員が副業で月◯万稼ぐまでの話",
+          "1年前の僕に教えてあげたいこと{n}選",
+          "AI活用を始めて変わったこと、正直に書きます",
+          "転職エージェントに「難しい」と言われた40代が内定とるまで",
+          "会社員しながら仕組み化で収入を増やした具体的な方法"
+        ],
+        "cta": "→ フォローすると続きの話を定期的に配信します！"
       }
     },
     "youtube": {
       "skill_ranking": {
-        "title_template": "【{year}年版】{category}スキルランキングTOP{n}｜転職・副業で稼ぐなら絶対見て",
-        "hook_script": "これ知らないと本当に損します。{year}年、{category}で稼ぐために絶対必要なスキルTOP{n}を紹介します。",
+        "title_template": "【{year}年版】40代でも稼げる{category}スキルランキングTOP{n}",
+        "hook_script": "40代の会社員が実際にやってみて、これは本当に使えると思ったスキルTOP{n}を正直に紹介します。",
         "structure": ["hook", "intro", "ranking_items", "summary", "cta"],
-        "cta_script": "詳しくはチャンネル概要欄のリンクをチェックしてください！",
+        "cta_script": "チャンネル登録して最新情報を見逃さないようにしてください！",
         "target_duration_sec": 55
       },
       "career_advice": {
-        "title_template": "【実録】{result}した人がやっていたこと{n}選｜{target}必見",
-        "hook_script": "{result}した人には、共通点があります。今日はその{n}つを紹介します。",
+        "title_template": "【実体験】{result}した40代がやっていたこと{n}選",
+        "hook_script": "今日は僕自身の実体験から、{result}するために本当に大事だったこと{n}つを話します。",
         "structure": ["hook", "points", "cta"],
-        "cta_script": "概要欄に無料相談リンクを貼っています！",
+        "cta_script": "概要欄に関連リンクをまとめています！",
         "target_duration_sec": 50
       },
       "tool_introduction": {
-        "title_template": "【無料あり】{job}が使うべきAIツール{n}選｜{benefit}",
-        "hook_script": "今日紹介する{n}つのツールを使えば、{benefit}ができます。",
+        "title_template": "【40代会社員が使う】仕事が{multiplier}倍速くなるAIツール{n}選",
+        "hook_script": "プログラミング未経験の40代会社員が実際に使って、仕事が変わったAIツール{n}つを紹介します。",
         "structure": ["hook", "tools", "summary", "cta"],
-        "cta_script": "各ツールのリンクは概要欄にまとめています！",
+        "cta_script": "チャンネル登録お願いします！毎日役立つ情報を発信しています！",
         "target_duration_sec": 55
       }
     }
   },
   "image_keywords": {
-    "skill_list": ["office work", "laptop coding", "business meeting", "career success"],
-    "career_tip": ["job interview", "resume", "handshake business", "office professional"],
-    "tool_recommendation": ["technology workspace", "coding setup", "digital tools", "ai technology"],
-    "market_insight": ["business graph", "job market", "hiring", "corporate"],
-    "skill_ranking": ["ranking podium", "skills training", "laptop programming", "success career"],
-    "career_advice": ["mentor coaching", "career ladder", "business success", "professional growth"],
-    "tool_introduction": ["software tools", "computer screen code", "developer workspace", "ai robot"]
+    "skill_list": ["office work laptop", "business skill training", "career success", "professional growth"],
+    "career_tip": ["job interview preparation", "resume writing", "career planning", "business meeting"],
+    "tool_recommendation": ["ai technology workspace", "laptop productivity", "digital tools", "coding setup"],
+    "market_insight": ["business graph chart", "job market hiring", "corporate strategy", "future work"],
+    "personal_story": ["business person thinking", "work life balance", "entrepreneur journey", "success story"],
+    "skill_ranking": ["ranking podium skills", "training learning", "laptop programming", "career success"],
+    "career_advice": ["mentor coaching business", "career ladder", "professional achievement", "growth mindset"],
+    "tool_introduction": ["ai software tools", "computer screen productivity", "developer workspace", "technology"]
   }
 }
