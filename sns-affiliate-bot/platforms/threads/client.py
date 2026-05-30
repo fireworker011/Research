@@ -30,56 +30,44 @@ class ThreadsClient:
             )
         return cls(user_id, token)
 
-    def _params(self, extra: dict = None) -> dict:
-        p = {"access_token": self.access_token}
-        if extra:
-            p.update(extra)
-        return p
+    def _auth_params(self) -> dict:
+        return {"access_token": self.access_token}
+
+    def _post_container(self, data: dict) -> str:
+        """コンテナ作成の共通処理。textはbodyに、その他はparamsに分離してURLを短縮。"""
+        text = data.pop("text", "")
+        resp = requests.post(
+            f"{self.BASE_URL}/{self.user_id}/threads",
+            params={**self._auth_params(), **data},
+            data={"text": text},
+            timeout=30,
+        )
+        if not resp.ok:
+            try:
+                detail = resp.json()
+            except Exception:
+                detail = resp.text
+            raise RuntimeError(f"コンテナ作成失敗 ({resp.status_code}): {detail}")
+        return resp.json()["id"]
 
     def create_text_container(self, text: str) -> str:
         """テキスト投稿のコンテナを作成して container_id を返す。"""
-        resp = requests.post(
-            f"{self.BASE_URL}/{self.user_id}/threads",
-            params=self._params({"media_type": "TEXT", "text": text}),
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return resp.json()["id"]
+        return self._post_container({"media_type": "TEXT", "text": text})
 
     def create_image_container(self, text: str, image_url: str) -> str:
         """画像付き投稿のコンテナを作成して container_id を返す。"""
-        resp = requests.post(
-            f"{self.BASE_URL}/{self.user_id}/threads",
-            params=self._params({
-                "media_type": "IMAGE",
-                "image_url": image_url,
-                "text": text,
-            }),
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return resp.json()["id"]
+        return self._post_container({"media_type": "IMAGE", "image_url": image_url, "text": text})
 
     def create_video_container(self, text: str, video_url: str) -> str:
         """動画付き投稿のコンテナを作成して container_id を返す。"""
-        resp = requests.post(
-            f"{self.BASE_URL}/{self.user_id}/threads",
-            params=self._params({
-                "media_type": "VIDEO",
-                "video_url": video_url,
-                "text": text,
-            }),
-            timeout=30,
-        )
-        resp.raise_for_status()
-        return resp.json()["id"]
+        return self._post_container({"media_type": "VIDEO", "video_url": video_url, "text": text})
 
     def wait_for_container(self, container_id: str, max_wait_sec: int = 60) -> bool:
         """コンテナの処理完了を待つ（動画・画像の場合）。"""
         for _ in range(max_wait_sec // 5):
             resp = requests.get(
                 f"{self.BASE_URL}/{container_id}",
-                params=self._params({"fields": "status,error_message"}),
+                params=self._auth_params() | {"fields": "status,error_message"},
                 timeout=15,
             )
             data = resp.json()
@@ -95,7 +83,7 @@ class ThreadsClient:
         """コンテナを公開して post_id を返す。"""
         resp = requests.post(
             f"{self.BASE_URL}/{self.user_id}/threads_publish",
-            params=self._params({"creation_id": container_id}),
+            params=self._auth_params() | {"creation_id": container_id},
             timeout=30,
         )
         if not resp.ok:
@@ -112,7 +100,7 @@ class ThreadsClient:
     def get_user_info(self) -> dict:
         resp = requests.get(
             f"{self.BASE_URL}/{self.user_id}",
-            params=self._params({"fields": "id,username,name,threads_profile_picture_url"}),
+            params=self._auth_params() | {"fields": "id,username,name,threads_profile_picture_url"},
             timeout=15,
         )
         resp.raise_for_status()
