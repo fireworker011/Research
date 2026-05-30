@@ -63,7 +63,10 @@ def cmd_setup(niche_id: str):
         print("  pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib")
         return
 
-    SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+    SCOPES = [
+        "https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube.readonly",
+    ]
     token_file = Path(f"config/credentials/youtube_{niche_id}_token.pickle")
 
     creds = None
