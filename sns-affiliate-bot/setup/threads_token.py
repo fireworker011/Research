@@ -39,7 +39,7 @@ def exchange_for_long_lived_token(short_lived_token: str) -> dict:
             "Meta for Developers のアプリ設定 → 基本設定 でアプリIDとシークレットを確認してください。"
         )
     resp = requests.get(
-        f"{GRAPH_FB_URL}/oauth/access_token",
+        "https://graph.threads.net/access_token",
         params={
             "grant_type": "th_exchange_token",
             "client_id": app_id,
@@ -58,11 +58,9 @@ def refresh_long_lived_token(long_lived_token: str) -> dict:
     app_id = os.getenv("META_APP_ID", "")
     app_secret = os.getenv("META_APP_SECRET", "")
     resp = requests.get(
-        f"{GRAPH_FB_URL}/refresh_access_token",
+        "https://graph.threads.net/refresh_access_token",
         params={
             "grant_type": "th_refresh_token",
-            "client_id": app_id,
-            "client_secret": app_secret,
             "access_token": long_lived_token,
         },
         timeout=30,
