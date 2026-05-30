@@ -2,19 +2,23 @@
 """
 Windows タスクスケジューラ 登録スクリプト
 
-使い方（sns-affiliate-bot フォルダで実行）:
-  python scheduler/windows_task.py install-weekly   # 1週間トライアル登録（08:00/12:00/19:00）
-  python scheduler/windows_task.py setup-wake       # スリープ自動起床設定（install-weekly の後に実行）
-  python scheduler/windows_task.py uninstall-weekly # 1週間トライアル解除
+セットアップ手順（この順番で実行）:
+  1. python scheduler/windows_task.py install-weekly   # 投稿タスク登録（08:00/12:00/19:00）
+  2. python scheduler/windows_task.py setup-wake       # 起床タスク登録＋電源設定（管理者で実行）
+
+その他コマンド:
   python scheduler/windows_task.py status           # 登録状態を確認
+  python scheduler/windows_task.py uninstall-weekly # 全タスク削除（投稿＋起床）
   python scheduler/windows_task.py install          # 常時稼働スケジューラを登録（旧方式）
   python scheduler/windows_task.py uninstall        # 常時稼働スケジューラを削除（旧方式）
 
 setup-wake でできること（スリープモード限定）:
-  - 投稿時間の少し前に PC をスリープから自動起床
+  - 投稿の5分前（07:55/11:55/18:55）に PC をスリープから自動起床
+  - 起床タスクは何もせず終了（ログだけ残す）→ PC が完全に起動した状態で投稿が走る
   - スリープ復帰後のパスワード要求を無効化
+  - スリープ解除タイマーを許可
   ※ セッションは維持されるので自動ログイン設定は不要
-  ※ 完全シャットダウンからの自動起動は BIOS 設定が必要（機種依存）
+  ※ 完全シャットダウンからの自動起動は BIOS/UEFI の Wake on RTC 設定が必要（機種依存）
 """
 
 import os
@@ -27,6 +31,13 @@ WEEKLY_TASKS = {
     "SNS-Threads-Career-Morning": "08:00",
     "SNS-Threads-Career-Noon":    "12:00",
     "SNS-Threads-Career-Evening": "19:00",
+}
+
+# 投稿の5分前に起床するための専用タスク（WakeToRun付き、何もせず終了）
+WAKE_TASKS = {
+    "SNS-Threads-Wake-Morning": "07:55",
+    "SNS-Threads-Wake-Noon":    "11:55",
+    "SNS-Threads-Wake-Evening": "18:55",
 }
 
 
@@ -162,50 +173,76 @@ def cmd_install_weekly(days: int = 7):
 """)
 
 
-def cmd_setup_wake():
+def cmd_setup_wake(days: int = 7):
     """
-    スリープ（S3）からの自動起床を設定する。
-    install-weekly でタスク登録済みであること。
+    起床専用タスク（07:55/11:55/18:55）を WakeToRun 付きで登録し、
+    スリープ復帰パスワードと解除タイマーも設定する。
     管理者権限で実行すること。
     """
-    print("=== スリープ自動起床セットアップ ===\n")
-    print("前提: PC を完全シャットダウンではなくスリープにして使用してください。")
-    print("      スリープ中はセッションが保持されるため自動ログイン設定は不要です。\n")
+    print("=== スリープ自動起床セットアップ（5分前起床）===\n")
+    print("前提: PC をシャットダウンではなくスリープで運用してください。")
+    print("      スリープ中はセッションが維持されるため自動ログイン不要です。\n")
 
-    # 1. 各タスクに WakeToRun フラグを設定（PowerShell 経由）
-    task_list = ", ".join(f'"{t}"' for t in WEEKLY_TASKS)
-    ps_wake = f"""
-$names = @({task_list})
-foreach ($name in $names) {{
-    $task = Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
-    if ($task) {{
-        $task.Settings.WakeToRun = $true
-        Set-ScheduledTask -InputObject $task | Out-Null
-        Write-Output "  [OK] $name: WakeToRun 有効化"
-    }} else {{
-        Write-Output "  [SKIP] $name: 未登録 (install-weekly を先に実行してください)"
-    }}
+    root = get_project_root()
+    logs_dir = root / "logs"
+    logs_dir.mkdir(exist_ok=True)
+
+    # 起床ログ専用 bat（何もせずログだけ記録）
+    wake_bat = root / "scheduler" / "wake_only.bat"
+    wake_bat.write_text(
+        f"@echo off\r\necho %date% %time% [WAKE] スリープ解除 >> \"{logs_dir}\\wake.log\" 2>&1\r\n",
+        encoding="utf-8",
+    )
+    wake_vbs = create_vbs_wrapper(wake_bat)
+    print(f"  ✅ 起床ログスクリプト作成: {wake_bat.name}")
+
+    # 終了日（投稿タスクと同じ7日間）
+    end_date_iso = (datetime.now() + timedelta(days=days)).strftime("%Y-%m-%dT23:59:59")
+    wake_vbs_str = str(wake_vbs).replace("\\", "\\\\")
+
+    # PowerShell で起床専用タスクを WakeToRun 付きで登録
+    wake_entries = "\n    ".join(
+        f'@{{Name="{name}"; Time="{time}"}}'
+        for name, time in WAKE_TASKS.items()
+    )
+    ps_register = f"""
+$endBoundary = "{end_date_iso}"
+$wakeVbs = "{wake_vbs_str}"
+$wakes = @(
+    {wake_entries}
+)
+foreach ($w in $wakes) {{
+    $action   = New-ScheduledTaskAction -Execute 'wscript.exe' -Argument "`"$wakeVbs`""
+    $trigger  = New-ScheduledTaskTrigger -Daily -At $w.Time
+    $trigger.EndBoundary = $endBoundary
+    $settings = New-ScheduledTaskSettingsSet -WakeToRun
+    Register-ScheduledTask -TaskName $w.Name -Action $action -Trigger $trigger -Settings $settings -Force | Out-Null
+    Write-Output "  [OK] $($w.Name): 毎日 $($w.Time) WakeToRun 有効"
 }}
 """
+    print("\n起床タスクを登録中...")
     r1 = subprocess.run(
-        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_wake],
+        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_register],
         capture_output=True, text=True, encoding="utf-8",
     )
-    print(r1.stdout or "（出力なし）")
+    print(r1.stdout or "  （出力なし）")
     if r1.returncode != 0:
-        print(f"❌ エラー: {r1.stderr.strip()}")
-        print("管理者として実行し直してください。")
+        print(f"  ❌ エラー: {r1.stderr.strip()}")
+        print("  → 管理者として実行し直してください（右クリック→管理者として実行）")
         return
 
-    # 2. スリープ復帰時のパスワード要求を無効化
-    #    GUID: スリープサブグループ / コンソールロック設定
+    # スリープ復帰時のパスワード要求を無効化
+    # GUID: スリープサブグループ(238C...) / コンソールロック(0E79...)
     ps_pw = (
         "powercfg /setacvalueindex SCHEME_CURRENT "
-        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
-        "0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0 ; "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0; "
         "powercfg /setdcvalueindex SCHEME_CURRENT "
-        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
-        "0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0 ; "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 0E796BDB-100D-47D6-A2D5-F7D2DAA51F51 0; "
+        # スリープ解除タイマーを許可 GUID: BD3B...
+        "powercfg /setacvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1; "
+        "powercfg /setdcvalueindex SCHEME_CURRENT "
+        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1; "
         "powercfg /setactive SCHEME_CURRENT"
     )
     r2 = subprocess.run(
@@ -213,51 +250,39 @@ foreach ($name in $names) {{
         capture_output=True, text=True,
     )
     if r2.returncode == 0:
-        print("  [OK] スリープ復帰時のパスワード要求: 無効化")
+        print("  ✅ スリープ復帰時パスワード要求: 無効")
+        print("  ✅ スリープ解除タイマー: 許可")
     else:
-        print(f"  [WARNING] パスワード設定変更に失敗しました: {r2.stderr.strip()}")
-        print("           「設定 → アカウント → サインインオプション → スリープ解除時に必要」を手動でオフにしてください。")
+        print(f"  ⚠️  電源設定の変更に失敗: {r2.stderr.strip()}")
+        print("     手動対応: 設定→アカウント→サインインオプション→スリープ解除時にサインインを要求→オフ")
 
-    # 3. Windowsの「スリープ解除タイマーを許可」を有効化
-    ps_timer = (
-        "powercfg /setacvalueindex SCHEME_CURRENT "
-        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
-        "BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1 ; "
-        "powercfg /setdcvalueindex SCHEME_CURRENT "
-        "238C9FA8-0AAD-41ED-83F4-97BE242C8F20 "
-        "BD3B718A-0680-4D9D-8AB2-E1D2B4AC806D 1 ; "
-        "powercfg /setactive SCHEME_CURRENT"
-    )
-    r3 = subprocess.run(
-        ["powershell", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", ps_timer],
-        capture_output=True, text=True,
-    )
-    if r3.returncode == 0:
-        print("  [OK] スリープ解除タイマー: 許可")
-    else:
-        print(f"  [WARNING] タイマー設定失敗: {r3.stderr.strip()}")
-
-    print("""
+    print(f"""
 ✅ セットアップ完了！
 
-動作の流れ（例: 08:00 投稿）:
-  夜：PC をスリープ
-  07:59 頃：Windows がスリープから自動起床
-  08:00：タスクスケジューラが python main.py autopost threads career を実行
-  08:01：投稿完了、PC はそのまま or 次のタスクまで待機
-  12:00 / 19:00 も同様に自動実行
+タイムライン（例: 朝の投稿）:
+  夜　　: PC をスリープ
+  07:55 : Windows がスリープから自動起床（ログに "WAKE" 記録）
+  08:00 : 投稿タスクが実行 → Threads に投稿
+  08:01 : 完了。次は 11:55 まで待機
+
+3回分のタイムライン:
+  07:55 起床 → 08:00 投稿
+  11:55 起床 → 12:00 投稿
+  18:55 起床 → 19:00 投稿
+
+ログ:
+  logs/wake.log      ← 起床ログ（スリープ解除の記録）
+  logs/autopost.log  ← 投稿ログ
 
 注意:
-  - スリープ（電源ランプ点滅中）は OK
-  - 完全シャットダウン（電源オフ）は NG
-    → シャットダウンから起動したい場合は BIOS/UEFI の
-      「Wake on RTC アラーム」設定が必要（機種マニュアル参照）
+  スリープ（電源ランプ点滅）→ OK
+  完全シャットダウン（電源オフ）→ NG（BIOSのWake on RTC設定が別途必要）
 """)
 
 
 def cmd_uninstall_weekly():
-    """1週間トライアルのタスクをすべて削除する。"""
-    tasks = list(WEEKLY_TASKS.keys()) + ["SNS-AffiliateBot-TokenCheck"]
+    """投稿タスク・起床タスクをすべて削除する。"""
+    tasks = list(WEEKLY_TASKS.keys()) + list(WAKE_TASKS.keys()) + ["SNS-AffiliateBot-TokenCheck"]
     print("タスクを削除中...")
     for task in tasks:
         result = subprocess.run(
@@ -267,7 +292,7 @@ def cmd_uninstall_weekly():
         if result.returncode == 0:
             print(f"  ✅ {task} 削除")
         else:
-            print(f"  ⚠️  {task}: {result.stderr.strip()}")
+            print(f"  - {task}: 未登録（スキップ）")
     print("完了。")
 
 
@@ -346,7 +371,8 @@ def cmd_uninstall():
 
 def cmd_status():
     all_tasks = (
-        list(WEEKLY_TASKS.keys())
+        list(WAKE_TASKS.keys())
+        + list(WEEKLY_TASKS.keys())
         + ["SNS-AffiliateBot-TokenCheck", "SNS-AffiliateBot-Career"]
     )
     print("=== タスクスケジューラ登録状態 ===\n")
