@@ -48,6 +48,15 @@ class ContentGenerator:
             return self._threads_via_api(content_type)
         return self._threads_from_template(content_type)
 
+    def generate_threads_video_script(self, content_type: Optional[str] = None) -> dict:
+        """Threads動画（縦型ショート、30〜40秒）用の台本を生成する。"""
+        available = self.niche["content_types"]["threads"]
+        content_type = content_type or random.choice(available)
+
+        if self.ai.is_api_enabled():
+            return self._threads_video_via_api(content_type)
+        return self._threads_video_from_template(content_type)
+
     def generate_youtube_script(self, content_type: Optional[str] = None) -> dict:
         """YouTube Shorts の台本・メタデータを生成する。"""
         available = self.niche["content_types"]["youtube"]
@@ -60,6 +69,127 @@ class ContentGenerator:
     # ------------------------------------------------------------------ #
     #  テンプレートベース生成（追加コストゼロ）
     # ------------------------------------------------------------------ #
+
+    def _threads_video_via_api(self, content_type: str) -> dict:
+        product = random.choice(self.affiliate.get("products", [{}]))
+        persona = self.niche.get("persona", {})
+        prompt = (
+            f"Threads縦型ショート動画（30〜40秒）の台本を日本語で作成してください。\n"
+            f"ペルソナ: {persona.get('name', 'カズト')} - {persona.get('description', '')}\n"
+            f"口調: {persona.get('tone', '口語体・実体験ベース・共感重視')}\n"
+            f"投稿タイプ: {content_type}\n\n"
+            f"以下のJSON形式だけを返してください（余分な説明は不要）:\n"
+            f'{{\n'
+            f'  "caption": "Threads投稿キャプション（フック+まとめ+CTA、200字以内）",\n'
+            f'  "scenes": [\n'
+            f'    {{"text": "冒頭フック（2〜3行、視聴者を引きつける問いかけ）", "duration_sec": 6}},\n'
+            f'    {{"text": "ポイント1（具体的・数字を使う）", "duration_sec": 8}},\n'
+            f'    {{"text": "ポイント2（実体験ベース）", "duration_sec": 8}},\n'
+            f'    {{"text": "まとめ＆CTA（フォロー誘導）", "duration_sec": 7}}\n'
+            f'  ]\n'
+            f'}}\n'
+        )
+        raw = self.ai.generate(prompt)
+        try:
+            json_match = re.search(r'\{.*\}', raw, re.DOTALL)
+            data = json.loads(json_match.group()) if json_match else {}
+        except Exception:
+            data = {}
+
+        hashtags = self._pick_hashtags(content_type)
+        affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
+        caption_base = data.get("caption", "")
+        if affiliate_url and "{" not in affiliate_url:
+            caption = f"{caption_base}\n\n{affiliate_url}\n\n{hashtags}"
+        else:
+            caption = f"{caption_base}\n\n{hashtags}"
+
+        default_scenes = [
+            {"text": "転職で失敗する人がやりがちなこと\n知らないと損します", "duration_sec": 6},
+            {"text": "❌ 退職してから転職活動を始める\n→ 焦りで条件が下がりやすい", "duration_sec": 8},
+            {"text": "✅ 在職中に転職エージェントに登録\n→ 比較して選べる余裕が生まれる", "duration_sec": 8},
+            {"text": "フォローすると毎日転職ノウハウを配信！", "duration_sec": 7},
+        ]
+        return {
+            "content_type": content_type,
+            "caption": caption,
+            "scenes": data.get("scenes", default_scenes),
+            "image_keywords": self.niche["image_keywords"].get(content_type, ["business"]),
+            "hashtags": hashtags,
+            "affiliate_product_id": product.get("id", ""),
+            "affiliate_url": affiliate_url,
+            "niche": self.niche["id"],
+            "generated_at": datetime.now().isoformat(),
+        }
+
+    def _threads_video_from_template(self, content_type: str) -> dict:
+        tmpl = self.templates.get("threads", {}).get(content_type, {})
+        if not tmpl:
+            content_type = "skill_list"
+            tmpl = self.templates["threads"]["skill_list"]
+
+        hook = self._fill(random.choice(tmpl.get("hooks", ["転職スキルを解説します"])))
+        cta = tmpl.get("cta", "→ フォローして最新情報をGET！")
+        product = random.choice(self.affiliate.get("products", [{}]))
+        hashtags = self._pick_hashtags(content_type)
+        affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
+
+        body_items = self._get_video_body_items(content_type)
+        scenes = [
+            {"text": hook, "duration_sec": 6},
+            *[{"text": item, "duration_sec": 8} for item in body_items],
+            {"text": cta, "duration_sec": 6},
+        ]
+
+        if affiliate_url and "{" not in affiliate_url:
+            caption = f"{hook}\n\n{cta}\n{affiliate_url}\n\n{hashtags}"
+        else:
+            caption = f"{hook}\n\n{cta}\n\n{hashtags}"
+
+        return {
+            "content_type": content_type,
+            "caption": caption,
+            "scenes": scenes,
+            "image_keywords": self.niche["image_keywords"].get(content_type, ["business"]),
+            "hashtags": hashtags,
+            "affiliate_product_id": product.get("id", ""),
+            "affiliate_url": affiliate_url,
+            "niche": self.niche["id"],
+            "generated_at": datetime.now().isoformat(),
+        }
+
+    def _get_video_body_items(self, content_type: str, count: int = 2) -> list:
+        if content_type == "skill_list":
+            items = random.sample([
+                "✅ ChatGPT・Claude の使いこなし",
+                "✅ Python 基礎（データ分析に直結）",
+                "✅ クラウド（AWS/GCP）の基礎知識",
+                "✅ プロンプトエンジニアリング",
+            ], min(count, 4))
+        elif content_type == "career_tip":
+            items = random.sample([
+                "💡 転職エージェントは2〜3社使い比べる",
+                "💡 在職中に動き始める（退職後は焦りで失敗しやすい）",
+                "💡 給与交渉は内定後が鉄則",
+            ], min(count, 3))
+        elif content_type == "tool_recommendation":
+            items = random.sample([
+                "🔧 Claude Code ─ コードなしで自動化",
+                "🔧 Notion AI ─ 議事録を瞬時に作成",
+                "🔧 Perplexity ─ リサーチが10倍速に",
+            ], min(count, 3))
+        elif content_type == "market_insight":
+            items = random.sample([
+                "📊 AIエンジニア求人が前年比200%超え",
+                "📊 AIスキルあり・なしで年収差が拡大",
+                "📊 リモート可求人は依然として高水準",
+            ], min(count, 3))
+        else:
+            items = [
+                "⬛ 1年前：残業続きで余裕ゼロ",
+                "✅ 今：AI活用で定時帰宅＋副収入",
+            ][:count]
+        return items
 
     def _threads_from_template(self, content_type: str) -> dict:
         tmpl = self.templates.get("threads", {}).get(content_type, {})

@@ -2,12 +2,13 @@
 """
 SNS Affiliate Bot - メインエントリーポイント
 使い方:
-  python main.py post threads career     # Threads に1投稿
-  python main.py post youtube career     # YouTube Shorts を1本作成・アップロード
-  python main.py generate threads career # Threads 投稿コンテンツを生成してキューに保存
-  python main.py generate youtube career # YouTube 台本を生成してキューに保存
-  python main.py run career              # スケジューラ起動（常時実行）
-  python main.py check                   # 環境チェック（API接続確認）
+  python main.py post threads career           # Threads にテキスト投稿
+  python main.py post video threads career     # Threads に動画投稿（VOICEVOX + Pexels + Cloudinary）
+  python main.py post youtube career           # YouTube Shorts を1本作成・アップロード
+  python main.py generate threads career       # Threads 投稿コンテンツを生成してキューに保存
+  python main.py generate youtube career       # YouTube 台本を生成してキューに保存
+  python main.py run career                    # スケジューラ起動（常時実行）
+  python main.py check                         # 環境チェック（API接続確認）
 """
 
 import json
@@ -80,6 +81,53 @@ def cmd_post(platform: str, niche_id: str):
             print("アップロードをキャンセルしました。")
 
 
+def cmd_post_video(platform: str, niche_id: str):
+    """動画を生成して Threads に投稿する（VOICEVOX + Pexels + Ken Burns + Cloudinary）。"""
+    if platform != "threads":
+        print(f"❌ video 投稿は現在 threads のみ対応しています。")
+        return
+
+    niche = load_niche(niche_id)
+
+    from ai.provider import AIProvider
+    from content.generator import ContentGenerator
+    gen = ContentGenerator(niche, AIProvider())
+
+    print("台本を生成中...")
+    script = gen.generate_threads_video_script()
+
+    print(f"\n--- 生成された台本 ---")
+    print(f"キャプション（先頭100字）: {script['caption'][:100]}...")
+    for i, scene in enumerate(script["scenes"]):
+        text_preview = scene["text"][:40].replace("\n", " / ")
+        print(f"  シーン{i+1}: {text_preview}... ({scene.get('duration_sec', '?')}秒)")
+
+    confirm = input("\n動画を生成・Cloudinaryアップロード・Threads投稿しますか？ [y/N]: ").strip().lower()
+    if confirm != "y":
+        print("キャンセルしました。")
+        return
+
+    from video.composer import VideoComposer
+    from video.cloudinary_uploader import CloudinaryUploader
+    from platforms.threads.poster import ThreadsPoster
+
+    print("\n動画を生成中... (VOICEVOX + Pexels + FFmpeg Ken Burns)")
+    composer = VideoComposer()
+    filename = f"threads_video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+    video_path = composer.compose(script, filename)
+    print(f"動画生成完了: {video_path}")
+
+    print("Cloudinary にアップロード中...")
+    uploader = CloudinaryUploader()
+    video_url = uploader.upload_video(video_path)
+
+    print("Threads に投稿中...")
+    content = {"text": script["caption"]}
+    poster = ThreadsPoster(niche_id)
+    result = poster.post_video(content, video_url)
+    print(f"✅ 動画投稿完了: post_id={result['post_id']}")
+
+
 def cmd_generate(platform: str, niche_id: str, count: int = 7):
     niche = load_niche(niche_id)
     queue_dir = Path(f"queue/{platform}/{niche_id}")
@@ -123,6 +171,9 @@ def cmd_check():
         ("YOUTUBE_CAREER_CHANNEL_ID", "YouTube (career) Channel ID"),
         ("A8_AFFILIATE_ID", "A8.net Affiliate ID"),
         ("VOICEVOX_URL", "VOICEVOX URL"),
+        ("CLOUDINARY_CLOUD_NAME", "Cloudinary Cloud Name"),
+        ("CLOUDINARY_API_KEY", "Cloudinary API Key"),
+        ("CLOUDINARY_API_SECRET", "Cloudinary API Secret"),
     ]
     all_ok = True
     for env_key, label in checks:
@@ -159,7 +210,9 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "post" and len(args) >= 3:
+    if cmd == "post" and len(args) >= 4 and args[1] == "video":
+        cmd_post_video(args[2], args[3])
+    elif cmd == "post" and len(args) >= 3:
         cmd_post(args[1], args[2])
     elif cmd == "generate" and len(args) >= 3:
         count = int(args[3]) if len(args) >= 4 else 7
