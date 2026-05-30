@@ -42,6 +42,7 @@ def exchange_for_long_lived_token(short_lived_token: str) -> dict:
         f"{GRAPH_FB_URL}/oauth/access_token",
         params={
             "grant_type": "th_exchange_token",
+            "client_id": app_id,
             "client_secret": app_secret,
             "access_token": short_lived_token,
         },
@@ -54,10 +55,14 @@ def exchange_for_long_lived_token(short_lived_token: str) -> dict:
 
 def refresh_long_lived_token(long_lived_token: str) -> dict:
     """長期トークンを更新する（24時間以上残っていれば実行可能）。"""
+    app_id = os.getenv("META_APP_ID", "")
+    app_secret = os.getenv("META_APP_SECRET", "")
     resp = requests.get(
         f"{GRAPH_FB_URL}/refresh_access_token",
         params={
             "grant_type": "th_refresh_token",
+            "client_id": app_id,
+            "client_secret": app_secret,
             "access_token": long_lived_token,
         },
         timeout=30,
