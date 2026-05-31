@@ -198,23 +198,36 @@ def cmd_run(niche_id: str):
 
 def cmd_check():
     print("=== 環境チェック ===\n")
-    required_checks = [
-        ("PEXELS_API_KEY", "Pexels API"),
-        ("THREADS_CAREER_USER_ID", "Threads (career) User ID"),
-        ("THREADS_CAREER_ACCESS_TOKEN", "Threads (career) Access Token"),
-        ("YOUTUBE_CAREER_CHANNEL_ID", "YouTube (career) Channel ID"),
-        ("A8_AFFILIATE_ID", "A8.net Affiliate ID"),
-        ("VOICEVOX_URL", "VOICEVOX URL"),
+
+    # 共通・インフラ系
+    common_checks = [
+        ("PEXELS_API_KEY",        "Pexels API（画像取得）"),
+        ("A8_AFFILIATE_ID",       "A8.net Affiliate ID"),
+        ("VOICEVOX_URL",          "VOICEVOX URL（動画音声）"),
         ("CLOUDINARY_CLOUD_NAME", "Cloudinary Cloud Name"),
-        ("CLOUDINARY_API_KEY", "Cloudinary API Key"),
+        ("CLOUDINARY_API_KEY",    "Cloudinary API Key"),
         ("CLOUDINARY_API_SECRET", "Cloudinary API Secret"),
     ]
+    # ニッチ別アカウント
+    niche_checks = {
+        "career（転職×AI）": [
+            ("THREADS_CAREER_USER_ID",     "Threads User ID"),
+            ("THREADS_CAREER_ACCESS_TOKEN","Threads Access Token"),
+            ("YOUTUBE_CAREER_CHANNEL_ID",  "YouTube Channel ID"),
+        ],
+        "marriage（婚活×マッチング）": [
+            ("THREADS_MARRIAGE_USER_ID",      "Threads User ID"),
+            ("THREADS_MARRIAGE_ACCESS_TOKEN", "Threads Access Token"),
+            ("YOUTUBE_MARRIAGE_CHANNEL_ID",   "YouTube Channel ID"),
+        ],
+    }
     optional_checks = [
-        ("SEEDANCE_API_KEY", "Seedance 2.0 API Key (fal.ai) [任意・動画品質向上]"),
+        ("SEEDANCE_API_KEY", "Seedance 2.0 API Key (fal.ai)  ← 動画品質向上"),
     ]
 
     all_ok = True
-    for env_key, label in required_checks:
+    print("  ─── 共通 ───")
+    for env_key, label in common_checks:
         val = os.getenv(env_key, "")
         status = "✅" if val else "❌"
         display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定")
@@ -222,12 +235,19 @@ def cmd_check():
         if not val:
             all_ok = False
 
-    print()
-    print("  --- オプション ---")
+    for niche_label, checks in niche_checks.items():
+        print(f"\n  ─── {niche_label} ───")
+        for env_key, label in checks:
+            val = os.getenv(env_key, "")
+            status = "✅" if val else "⚪"
+            display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定")
+            print(f"  {status} {label} ({env_key}): {display}")
+
+    print("\n  ─── オプション ───")
     for env_key, label in optional_checks:
         val = os.getenv(env_key, "")
         status = "✅" if val else "⚪"
-        display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定（Ken Burns モードで動作）")
+        display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定（Ken Burnsで動作）")
         print(f"  {status} {label}: {display}")
 
     print()
@@ -236,20 +256,22 @@ def cmd_check():
     vvx_ok = vvx.is_available()
     print(f"  {'✅' if vvx_ok else '⚠️ '} VOICEVOX サーバー: {'起動中' if vvx_ok else '未起動（動画生成時に必要）'}")
 
-    creds_career = Path("config/credentials/youtube_career.json")
-    creds_ok = creds_career.exists()
-    print(f"  {'✅' if creds_ok else '❌'} YouTube 認証ファイル (career): "
-          f"{'あり' if creds_ok else 'なし → skills/SKILL.md 参照'}")
+    for niche_id in ("career", "marriage"):
+        creds = Path(f"config/credentials/youtube_{niche_id}.json")
+        print(f"  {'✅' if creds.exists() else '⚪ '} YouTube 認証ファイル ({niche_id}): "
+              f"{'あり' if creds.exists() else 'なし'}")
 
     seedance_key = os.getenv("SEEDANCE_API_KEY", "")
     print(f"  {'✅' if seedance_key else '⚪ '} Seedance 動画モード: "
           f"{'有効（AI動画生成）' if seedance_key else '無効（Ken Burns フォールバック）'}")
 
     print()
-    if all_ok and vvx_ok and creds_ok:
-        print("🚀 全チェック通過！python main.py post threads career で投稿できます。")
+    if all_ok:
+        print("🚀 共通設定OK！")
+        print("   career: python main.py post threads career")
+        print("   marriage: python main.py post threads marriage")
     else:
-        print("⚠️  未設定の項目があります。skills/SKILL.md のセットアップ手順を確認してください。")
+        print("⚠️  共通設定に未設定の項目があります。")
 
 
 def main():

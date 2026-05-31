@@ -1,0 +1,181 @@
+{
+  "id": "marriage",
+  "name": "婚活・マッチング・恋愛",
+  "language": "ja",
+  "persona": {
+    "name": "ミキ",
+    "age": 34,
+    "situation": "元婚活難民・現在は既婚・育児中",
+    "description": "34歳・元婚活難民。28歳から6年間アプリ20社・出会い100人超で全滅。戦略を変えて8ヶ月で出会い、1年後に入籍。同じ悩みを持つ30代女性に向けてリアルな体験を発信。",
+    "tone": "告白・弱さから入る・具体的な数字必須・「正直に言います」「恥ずかしい話をします」「6年間言えなかった」系の書き出し",
+    "backstory": {
+      "before": {
+        "age_start": "28歳",
+        "apps_tried": "アプリ20社",
+        "dates": "出会い100人超",
+        "result": "全滅（交際に至らず）",
+        "mistake": "プロフ写真・メッセージ・サービス選びがすべて間違っていた",
+        "stress": "このまま一生独身かもと本気で思っていた。友人の結婚式に呼ばれるたびに泣いていた"
+      },
+      "after": {
+        "timeline": "戦略変更から8ヶ月後",
+        "method": "婚活エージェント＋プロフ改善＋メッセージ術の見直し",
+        "result": "運命の人と出会い1年後に入籍",
+        "current": "34歳・既婚・第一子育児中"
+      },
+      "key_moment": "6年間やり方が間違っていただけだった。アプリの問題でも、自分の問題でもなかった"
+    }
+  },
+  "accounts": {
+    "threads": {
+      "user_id_env": "THREADS_MARRIAGE_USER_ID",
+      "access_token_env": "THREADS_MARRIAGE_ACCESS_TOKEN"
+    },
+    "youtube": {
+      "channel_id_env": "YOUTUBE_MARRIAGE_CHANNEL_ID",
+      "credentials_file": "config/credentials/youtube_marriage.json"
+    },
+    "instagram": null
+  },
+  "affiliate": {
+    "platform": "a8net",
+    "id_env": "A8_AFFILIATE_ID",
+    "products": [
+      {
+        "id": "matching_app",
+        "name": "マッチングアプリ",
+        "description": "真剣な出会いを探す30代に人気のマッチングアプリ。無料登録で今すぐ始められる。",
+        "url_template": "",
+        "keywords": ["マッチングアプリ", "婚活", "出会い", "30代"],
+        "cta": "無料登録の詳細はプロフのリンクから"
+      },
+      {
+        "id": "marriage_agent",
+        "name": "婚活エージェント",
+        "description": "プロのカウンセラーがサポートする婚活サービス。無料相談から始められる。",
+        "url_template": "",
+        "keywords": ["婚活エージェント", "結婚相談所", "真剣交際", "サポート"],
+        "cta": "無料相談の詳細はプロフのリンクから"
+      },
+      {
+        "id": "serious_dating",
+        "name": "真剣交際アプリ",
+        "description": "結婚を前提とした真剣な出会いに特化したアプリ。審査制で安心。",
+        "url_template": "",
+        "keywords": ["真剣交際", "結婚", "婚活", "審査制"],
+        "cta": "登録・詳細はプロフのリンクから"
+      }
+    ]
+  },
+  "hashtags": {
+    "base": ["#婚活", "#マッチングアプリ", "#30代婚活", "#恋愛"],
+    "confession": ["#婚活の本音", "#婚活失敗", "#30代独身", "#リアル婚活"],
+    "personal_story": ["#婚活成功", "#出会い", "#入籍", "#婚活体験談"],
+    "app_comparison": ["#マッチングアプリ比較", "#Pairs", "#with", "#婚活アプリ"],
+    "advice": ["#婚活アドバイス", "#モテる方法", "#プロフ術", "#メッセージ術"],
+    "fomo": ["#婚活は早いほど有利", "#30代の現実", "#年齢と婚活", "#先送り禁止"],
+    "paradox": ["#婚活の真実", "#勘違い婚活", "#やってはいけない婚活", "#婚活の罠"]
+  },
+  "content_types": {
+    "threads": ["confession", "personal_story", "app_comparison", "advice", "fomo", "paradox"],
+    "youtube": ["success_story", "app_review", "advice_ranking"]
+  },
+  "templates": {
+    "threads": {
+      "confession": {
+        "hooks": [
+          "正直に言います。28歳から6年間、婚活アプリで100人以上と出会って全員と続きませんでした。",
+          "恥ずかしい話をします。友人の結婚式のたびに笑顔で祝福しながら、帰り道は泣いていました。",
+          "ずっと言えなかったことがあります。34歳で結婚できたのは、6年間やり方が全部間違っていたから。",
+          "信じてもらえないかもしれませんが、アプリ20社試して全滅した私が、8ヶ月で入籍しました。",
+          "6年前の私に教えてあげたい。婚活がうまくいかない理由、外見でも年齢でもなかったよ、と。"
+        ],
+        "cta": "→ 同じ状況の人、プロフのリンクに詳細まとめています"
+      },
+      "personal_story": {
+        "hooks": [
+          "28歳から34歳まで、私の婚活史をすべて話します。",
+          "アプリ20社・出会い100人超で全滅した私が、何を変えて入籍できたか。",
+          "「このまま一生独身かも」と本気で思っていた私の話。",
+          "1年前の私、誰かに「やり方が違うだけだよ」って言ってほしかった。",
+          "婚活6年間の失敗を全部書きます。誰かの参考になれば。"
+        ],
+        "cta": "→ 詳しい経緯はプロフのリンクにまとめています"
+      },
+      "app_comparison": {
+        "hooks": [
+          "マッチングアプリ20社使った私が正直に比較します。目的別に全然違います。",
+          "アプリ選びを間違えると、いくら頑張っても出会えません。実体験から話します。",
+          "「とりあえずPairs」は間違いでした。30代が選ぶべきアプリは別にあります。",
+          "アプリごとに集まる層が全然違う。これを知らないと5年以上無駄にします（私がそうでした）。",
+          "月課金5,000円以上払い続けて気づいた、マッチングアプリの本当の使い方。"
+        ],
+        "cta": "→ 詳細な比較はプロフのリンクから確認できます"
+      },
+      "advice": {
+        "hooks": [
+          "婚活で100人以上と出会って学んだ、最初のメッセージで差がつく話。",
+          "プロフ写真を変えただけでいいね数が10倍になりました。正直に言います。",
+          "婚活エージェントに言われた一言で、6年間の失敗理由がわかりました。",
+          "「何で続かないんだろう」と悩んでいた私が気づいた、デートで絶対やってはいけないこと。",
+          "婚活を成功させた人と失敗した人、実際に話してわかった1つの違い。"
+        ],
+        "cta": "→ 詳細な方法はプロフのリンクにまとめています"
+      },
+      "fomo": {
+        "hooks": [
+          "婚活、「もう少し若い頃にやればよかった」と後悔する前に読んでください。",
+          "30代の婚活市場の現実、誰も正直に言ってくれないので書きます。",
+          "「まだ大丈夫」と思って先送りしていた私が、35歳手前でどれだけ焦ったか。",
+          "婚活を1年先送りするコスト、試しに計算してみたら怖くなりました。",
+          "今すぐ動いた人と、来年動こうと思っている人。1年後に結果がどう違うか。"
+        ],
+        "cta": "→ 今すぐできることをプロフのリンクに書いています"
+      },
+      "paradox": {
+        "hooks": [
+          "婚活がうまくいかない本当の理由、外見でも年齢でもありませんでした。",
+          "マッチングアプリで出会えない人の共通点、「いい人がいない」じゃなかった。",
+          "婚活を頑張れば頑張るほどうまくいかなくなる理由、正直に話します。",
+          "「条件を下げれば見つかる」は半分嘘です。本当の問題は別にありました。",
+          "アプリを続けても出会えない人とすぐ出会える人、やることは同じでも結果が全然違う理由。"
+        ],
+        "cta": "→ 詳しい仕組みはプロフのリンクにまとめています"
+      }
+    },
+    "youtube": {
+      "success_story": {
+        "title_template": "【実録】アプリ20社・出会い100人で全滅した私が{n}ヶ月で入籍できた理由",
+        "hook_script": "正直に言います。28歳から6年間、マッチングアプリ20社使って全員と続きませんでした。それが今、34歳で結婚して子育て中です。何を変えたか全部話します。",
+        "structure": ["confession", "mistakes", "turning_point", "methods", "result", "cta"],
+        "cta_script": "詳しい方法はチャンネル概要欄のリンクからどうぞ！",
+        "target_duration_sec": 55
+      },
+      "app_review": {
+        "title_template": "【正直レビュー】マッチングアプリ{n}社使った私が本音で比較",
+        "hook_script": "マッチングアプリ、何社使っても出会えないと思っていませんか？正直に言います。問題はアプリじゃなくて選び方でした。実際に20社使った私が本音で比較します。",
+        "structure": ["confession", "apps_tried", "comparison", "recommendation", "cta"],
+        "cta_script": "詳しい比較は概要欄のリンクにまとめています！",
+        "target_duration_sec": 55
+      },
+      "advice_ranking": {
+        "title_template": "【婚活で失敗する人がやりがちなこと{n}選】元全滅経験者が正直に解説",
+        "hook_script": "婚活で失敗し続けていた頃の私がやっていたこと、全部教えます。これを知っていれば4年は短縮できました。",
+        "structure": ["confession", "mistakes_ranking", "correct_approach", "cta"],
+        "cta_script": "正しい婚活の始め方は概要欄のリンクから！",
+        "target_duration_sec": 50
+      }
+    }
+  },
+  "image_keywords": {
+    "confession": ["sad woman looking at phone", "lonely person dating app", "single woman thinking", "heartbreak"],
+    "personal_story": ["happy couple smiling", "wedding celebration", "love story journey", "woman success"],
+    "app_comparison": ["smartphone dating app screen", "multiple apps comparison", "mobile phone heart", "swipe right"],
+    "advice": ["woman planning strategy notebook", "confident woman smiling", "relationship advice", "success tips"],
+    "fomo": ["clock time pressure woman", "calendar deadline", "woman worried future", "biological clock concept"],
+    "paradox": ["unexpected truth discovery", "lightbulb moment woman", "counterintuitive love", "mindset shift"],
+    "success_story": ["couple wedding photo", "happy marriage", "love success journey", "woman achieved goal"],
+    "app_review": ["smartphone apps comparison", "review rating stars", "mobile dating interface", "user experience"],
+    "advice_ranking": ["ranking list notebook", "top tips advice", "woman coaching", "checklist success"]
+  }
+}

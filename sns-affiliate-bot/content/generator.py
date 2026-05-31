@@ -236,14 +236,24 @@ class ContentGenerator:
         before = bs.get("before", {})
         after = bs.get("after", {})
 
+        niche_id = self.niche.get("id", "career")
+
         if content_type in ("personal_story", "confession"):
-            timeline = [
-                f"⬛ ビフォー: {before.get('monthly_income','月収28万')}・{before.get('overtime','残業80時間')}",
-                f"⬛ 転換点: {before.get('turning_point','スクール月20万→断念→独学×AI')}",
-                f"🔶 3ヶ月後: 業務自動化が軌道に乗り始めた",
-                f"✅ 今: {after.get('overtime','残業18時間')}・副業{after.get('side_income','月3.8万円')}",
-                f"🎯 目標: {after.get('goal','副業月10万円')}",
-            ]
+            if niche_id == "marriage":
+                timeline = [
+                    f"⬛ ビフォー: {before.get('age_start','28歳')}〜 {before.get('apps_tried','アプリ20社')}・{before.get('dates','出会い100人超')}で{before.get('result','全滅')}",
+                    f"⬛ 原因: {before.get('mistake','プロフ・メッセージ・サービス選びが全部間違い')}",
+                    f"🔶 転換点: {after.get('method','婚活エージェント＋プロフ改善＋メッセージ術')}を試した",
+                    f"✅ 今: {after.get('result','運命の人と出会い1年後に入籍')}",
+                ]
+            else:
+                timeline = [
+                    f"⬛ ビフォー: {before.get('monthly_income','月収28万')}・{before.get('overtime','残業80時間')}",
+                    f"⬛ 転換点: {before.get('turning_point','スクール月20万→断念→独学×AI')}",
+                    f"🔶 3ヶ月後: 業務自動化が軌道に乗り始めた",
+                    f"✅ 今: {after.get('overtime','残業18時間')}・副業{after.get('side_income','月3.8万円')}",
+                    f"🎯 目標: {after.get('goal','副業月10万円')}",
+                ]
             return "\n".join(timeline[:min(n, 4)])
         elif content_type == "skill_list":
             items = random.sample([
@@ -294,24 +304,60 @@ class ContentGenerator:
             ], min(n, 4))
             return "\n".join(f"{'⬛' if i == 0 else '🔶' if i < len(stories)-1 else '✅'} {s}"
                            for i, s in enumerate(stories))
-        elif content_type == "paradox":
-            truths = random.sample([
-                "❌ よくある誤解：副業が続かないのは稼げないから\n✅ 本当の理由：仕組みがないから続かない",
-                "❌ よくある誤解：転職失敗＝スキル不足\n✅ 本当の理由：動くタイミングと見せ方の問題",
-                "❌ よくある誤解：残業が減らないのは仕事量の問題\n✅ 本当の理由：自動化できていない業務がある",
-                "❌ よくある誤解：40代転職は「スペック勝負」\n✅ 本当の理由：経験の言語化と証明の問題",
-                "❌ よくある誤解：AIで副業するには知識が必要\n✅ 本当の理由：知識より先に始めた人が勝つ",
+        elif content_type == "app_comparison":
+            items = random.sample([
+                "📱 Pairs ─ 20〜30代に多い。カジュアル層も混在",
+                "📱 with ─ 性格診断で相性重視。真剣度高め",
+                "📱 Omiai ─ 結婚前提が明確。年齢層やや高め",
+                "📱 Marrish ─ 審査制・真剣交際特化。マッチ率高い",
+                "📱 婚活エージェント ─ プロサポート付き。コスパ最高",
             ], min(n, 3))
+            return "\n".join(items)
+        elif content_type == "advice":
+            tips = random.sample([
+                "💡 プロフ写真は必ずプロに撮ってもらう（自撮りとで5倍差が出る）",
+                "💡 最初のメッセージは相手のプロフから1つ質問を拾う",
+                "💡 3回デートしてもピンとこない相手とは会い続けない",
+                "💡 複数のアプリを同時進行して比較する",
+                "💡 婚活エージェントは無料相談だけでも受けてみる価値あり",
+                "💡 断られてもダメだった理由を分析してから次に進む",
+            ], min(n, 3))
+            return "\n".join(tips)
+        elif content_type == "paradox":
+            if niche_id == "marriage":
+                truths = random.sample([
+                    "❌ よくある誤解：婚活がうまくいかないのは外見のせい\n✅ 本当の理由：プロフとメッセージの戦略の問題",
+                    "❌ よくある誤解：いい人がいないからマッチしない\n✅ 本当の理由：アプリの選び方が間違っている",
+                    "❌ よくある誤解：条件を下げれば出会える\n✅ 本当の理由：条件より「見せ方」の問題だった",
+                    "❌ よくある誤解：たくさんの人に会えば誰かと続く\n✅ 本当の理由：質を上げないと数をこなしても変わらない",
+                ], min(n, 3))
+            else:
+                truths = random.sample([
+                    "❌ よくある誤解：副業が続かないのは稼げないから\n✅ 本当の理由：仕組みがないから続かない",
+                    "❌ よくある誤解：転職失敗＝スキル不足\n✅ 本当の理由：動くタイミングと見せ方の問題",
+                    "❌ よくある誤解：残業が減らないのは仕事量の問題\n✅ 本当の理由：自動化できていない業務がある",
+                    "❌ よくある誤解：40代転職は「スペック勝負」\n✅ 本当の理由：経験の言語化と証明の問題",
+                    "❌ よくある誤解：AIで副業するには知識が必要\n✅ 本当の理由：知識より先に始めた人が勝つ",
+                ], min(n, 3))
             return "\n\n".join(truths)
         elif content_type == "fomo":
-            costs = random.sample([
-                f"⏰ 1ヶ月先送り → 副業収入を約{before.get('side_income','ゼロ')}のまま維持",
-                f"⏰ 半年先送り → {after.get('side_income','月3.8万円')}×6ヶ月＝約23万円を逃す",
-                "⏰ 動いた人：3ヶ月後に副業収入が発生",
-                "⏰ 待った人：3ヶ月後も「準備中」のまま",
-                "💡 今すぐできること：転職エージェントに1社だけ無料登録する",
-                "💡 今すぐできること：Claude Freeで業務の1つを試しに自動化してみる",
-            ], min(n, 3))
+            if niche_id == "marriage":
+                costs = random.sample([
+                    "⏰ 1年先送り → 婚活市場での年齢ハンドルが上がる",
+                    "⏰ 動いた人：半年後にパートナーと交際中",
+                    "⏰ 待った人：半年後も「まだ準備中」のまま",
+                    "💡 今すぐできること：マッチングアプリに1つだけ無料登録する",
+                    "💡 今すぐできること：婚活エージェントの無料相談を予約する（30分）",
+                ], min(n, 3))
+            else:
+                costs = random.sample([
+                    f"⏰ 1ヶ月先送り → 副業収入を約{before.get('side_income','ゼロ')}のまま維持",
+                    f"⏰ 半年先送り → {after.get('side_income','月3.8万円')}×6ヶ月＝約23万円を逃す",
+                    "⏰ 動いた人：3ヶ月後に副業収入が発生",
+                    "⏰ 待った人：3ヶ月後も「準備中」のまま",
+                    "💡 今すぐできること：転職エージェントに1社だけ無料登録する",
+                    "💡 今すぐできること：Claude Freeで業務の1つを試しに自動化してみる",
+                ], min(n, 3))
             return "\n".join(costs)
         else:
             return "詳しくはプロフのリンクからご確認ください。"
@@ -418,24 +464,25 @@ class ContentGenerator:
     # ------------------------------------------------------------------ #
 
     def _persona_context(self) -> str:
-        """ペルソナのバックストーリーをプロンプト用テキストに変換する。"""
+        """ペルソナのバックストーリーをプロンプト用テキストに変換する。ニッチ非依存。"""
         p = self.niche.get("persona", {})
         bs = p.get("backstory", {})
         before = bs.get("before", {})
         after = bs.get("after", {})
-        name = p.get("name", "カズト")
-        age = p.get("age", 43)
-        situation = p.get("situation", "中堅メーカー勤務17年")
+        name = p.get("name", "")
+        age = p.get("age", "")
+        situation = p.get("situation", "")
+
+        before_lines = "、".join(f"{v}" for v in before.values() if v) if before else "（未設定）"
+        after_lines = "、".join(f"{v}" for v in after.values() if v) if after else "（未設定）"
+
         return (
             f"【あなたは「{name}」として一人称で投稿します】\n"
             f"・{age}歳・{situation}\n"
-            f"・ビフォー: {before.get('monthly_income','月収28万')}、"
-            f"{before.get('overtime','残業月80時間')}、{before.get('side_income','副業収入ゼロ')}\n"
-            f"・転換点: {before.get('turning_point','プログラミングスクールを検討したが費用で断念')}\n"
-            f"・アフター（6ヶ月後）: {after.get('overtime','残業月18時間')}、"
-            f"副業収入{after.get('side_income','月3.8万円')}\n"
-            f"・方法: {after.get('method','独学×Claude Code×Notion AIで業務自動化')}\n"
-            f"・核心メッセージ: {bs.get('key_moment','プログラミングスクールに払えなかった自分がAIで同じスキルを習得した')}\n"
+            f"・ビフォー: {before_lines}\n"
+            f"・アフター: {after_lines}\n"
+            f"・核心メッセージ: {bs.get('key_moment', '')}\n"
+            f"・口調: {p.get('tone', '口語体・実体験ベース・共感重視')}\n"
         )
 
     _TYPE_PROMPT: dict = {
