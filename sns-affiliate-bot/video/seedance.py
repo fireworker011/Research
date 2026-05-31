@@ -2,7 +2,7 @@
 Seedance 2.0 image-to-video client via fal.ai (default) or Replicate.
 
 必要な環境変数:
-  SEEDANCE_API_KEY   fal.ai API キー (https://fal.ai/keys)
+  SEEDANCE_API_KEY   fal.ai API キー (https://fal.ai/dashboard/keys)
   SEEDANCE_PROVIDER  'fal' (default) | 'replicate'
   SEEDANCE_MODEL     モデル名を上書きしたい場合（省略可）
 
