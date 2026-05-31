@@ -8,6 +8,7 @@ from typing import List
 
 from .voicevox import VoiceVox
 from .pexels import PexelsClient
+from .seedance import SeedanceClient
 
 
 WIDTH = 1080
@@ -63,6 +64,7 @@ class VideoComposer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.voicevox = VoiceVox()
         self.pexels = PexelsClient()
+        self.seedance = SeedanceClient()
 
     def compose(self, script: dict, output_filename: str) -> str:
         """
@@ -95,15 +97,59 @@ class VideoComposer:
         duration = scene.get("duration_sec", 5)
 
         image_path = str(tmp / f"img_{idx}.jpg")
-        self.pexels.fetch_and_save(image_keywords, image_path)
-
         audio_path = str(tmp / f"audio_{idx}.wav")
+        scene_path = str(tmp / f"scene_{idx}.mp4")
+
         self.voicevox.synthesize(text.replace("\n", "。"), audio_path)
 
-        scene_path = str(tmp / f"scene_{idx}.mp4")
-        self._ffmpeg_scene(image_path, audio_path, text, duration, scene_path, font)
+        if self.seedance.is_available():
+            # Seedance I2V: 画像 → アニメーション動画 → テキストオーバーレイ
+            local_path, image_url = self.pexels.fetch_and_save_with_url(image_keywords, image_path)
+            if image_url:
+                print(f"    [Seedance] シーン{idx+1} 生成中... (約15〜30秒)")
+                bg_video = str(tmp / f"bg_{idx}.mp4")
+                try:
+                    self.seedance.generate_from_image(image_url, text, duration, bg_video)
+                    self._ffmpeg_scene_with_video(bg_video, audio_path, text, duration, scene_path, font)
+                    return scene_path
+                except Exception as e:
+                    print(f"    [Seedance] エラー、Ken Burnsにフォールバック: {e}")
+            # URL取得失敗 or Seedanceエラー → Ken Burns
+            self._ffmpeg_scene(local_path, audio_path, text, duration, scene_path, font)
+        else:
+            # Ken Burns (Seedance APIキー未設定)
+            self.pexels.fetch_and_save(image_keywords, image_path)
+            self._ffmpeg_scene(image_path, audio_path, text, duration, scene_path, font)
 
         return scene_path
+
+    def _ffmpeg_scene_with_video(
+        self, bg_video: str, audio: str, text: str, duration: int, output: str, font: str
+    ):
+        """Seedance生成動画を背景にテキストオーバーレイ + VOICEVOX音声を合成する。"""
+        safe_text = self._escape_ffmpeg_text(text)
+
+        # リサイズ・クロップして 1080x1920 に正規化
+        vf_parts = [f"scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,crop={WIDTH}:{HEIGHT}"]
+
+        if font and safe_text:
+            vf_parts.append(self._build_drawtext(safe_text, font))
+
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", bg_video,
+            "-i", audio,
+            "-vf", ",".join(vf_parts),
+            "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+            "-c:a", "aac", "-b:a", "128k",
+            "-shortest",
+            "-t", str(duration + 1),
+            "-pix_fmt", "yuv420p",
+            output,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"FFmpeg (Seedance overlay) エラー:\n{result.stderr[-2000:]}")
 
     def _ffmpeg_scene(
         self, image: str, audio: str, text: str, duration: int, output: str, font: str

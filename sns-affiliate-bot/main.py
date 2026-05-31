@@ -198,7 +198,7 @@ def cmd_run(niche_id: str):
 
 def cmd_check():
     print("=== 環境チェック ===\n")
-    checks = [
+    required_checks = [
         ("PEXELS_API_KEY", "Pexels API"),
         ("THREADS_CAREER_USER_ID", "Threads (career) User ID"),
         ("THREADS_CAREER_ACCESS_TOKEN", "Threads (career) Access Token"),
@@ -209,14 +209,26 @@ def cmd_check():
         ("CLOUDINARY_API_KEY", "Cloudinary API Key"),
         ("CLOUDINARY_API_SECRET", "Cloudinary API Secret"),
     ]
+    optional_checks = [
+        ("SEEDANCE_API_KEY", "Seedance 2.0 API Key (fal.ai) [任意・動画品質向上]"),
+    ]
+
     all_ok = True
-    for env_key, label in checks:
+    for env_key, label in required_checks:
         val = os.getenv(env_key, "")
         status = "✅" if val else "❌"
         display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定")
         print(f"  {status} {label}: {display}")
         if not val:
             all_ok = False
+
+    print()
+    print("  --- オプション ---")
+    for env_key, label in optional_checks:
+        val = os.getenv(env_key, "")
+        status = "✅" if val else "⚪"
+        display = val[:20] + "..." if val and len(val) > 20 else (val or "未設定（Ken Burns モードで動作）")
+        print(f"  {status} {label}: {display}")
 
     print()
     from video.voicevox import VoiceVox
@@ -228,6 +240,10 @@ def cmd_check():
     creds_ok = creds_career.exists()
     print(f"  {'✅' if creds_ok else '❌'} YouTube 認証ファイル (career): "
           f"{'あり' if creds_ok else 'なし → skills/SKILL.md 参照'}")
+
+    seedance_key = os.getenv("SEEDANCE_API_KEY", "")
+    print(f"  {'✅' if seedance_key else '⚪ '} Seedance 動画モード: "
+          f"{'有効（AI動画生成）' if seedance_key else '無効（Ken Burns フォールバック）'}")
 
     print()
     if all_ok and vvx_ok and creds_ok:

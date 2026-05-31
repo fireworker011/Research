@@ -71,3 +71,12 @@ class PexelsClient:
         query = random.choice(keywords)
         photo = self.search_photo(query, orientation="portrait")
         return self.download_photo(photo, output_path)
+
+    def fetch_and_save_with_url(self, keywords: list, output_path: str) -> tuple[str, str]:
+        """画像を取得・保存し (ローカルパス, 元のPexels URL) を返す。Seedance I2V 用。"""
+        query = random.choice(keywords)
+        photo = self.search_photo(query, orientation="portrait")
+        src = photo.get("src", {})
+        original_url = src.get("large2x") or src.get("large") or ""
+        local_path = self.download_photo(photo, output_path)
+        return local_path, original_url
