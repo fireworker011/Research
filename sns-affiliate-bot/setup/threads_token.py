@@ -3,13 +3,15 @@
 Threads API アクセストークン取得・更新ヘルパー
 
 使い方:
-  python setup/threads_token.py setup   # 初回セットアップ（対話式）
-  python setup/threads_token.py refresh # トークンを更新（有効期限延長）
-  python setup/threads_token.py check   # 残り有効期限を確認
+  python setup/threads_token.py setup career    # career ニッチの初回セットアップ
+  python setup/threads_token.py setup marriage  # marriage ニッチの初回セットアップ
+  python setup/threads_token.py refresh career  # career トークン更新
+  python setup/threads_token.py refresh marriage
+  python setup/threads_token.py check           # 全ニッチの有効期限確認
 
 前提:
   - sns-affiliate-bot アプリを Meta for Developers で作成済み
-  - Instagram プロアカウントあり
+  - ニッチごとに Instagram プロアカウント + Threads アカウントあり
   - META_APP_ID と META_APP_SECRET を .env に設定済み
 """
 
@@ -25,18 +27,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GRAPH_URL = "https://graph.threads.net/v1.0"
-GRAPH_FB_URL = "https://graph.facebook.com/v21.0"
 ENV_FILE = Path(".env")
+
+NICHE_ENV_KEYS = {
+    "career":   ("THREADS_CAREER_USER_ID",   "THREADS_CAREER_ACCESS_TOKEN"),
+    "marriage": ("THREADS_MARRIAGE_USER_ID",  "THREADS_MARRIAGE_ACCESS_TOKEN"),
+}
+
+NICHE_LABELS = {
+    "career":   "転職×AI（カズト）",
+    "marriage": "婚活×マッチング（ミキ）",
+}
 
 
 def exchange_for_long_lived_token(short_lived_token: str) -> dict:
-    """短期トークン → 長期トークン（60日）に交換する。"""
     app_id = os.getenv("META_APP_ID", "")
     app_secret = os.getenv("META_APP_SECRET", "")
     if not app_id or not app_secret:
         raise EnvironmentError(
-            "META_APP_ID または META_APP_SECRET が .env に設定されていません。\n"
-            "Meta for Developers のアプリ設定 → 基本設定 でアプリIDとシークレットを確認してください。"
+            "META_APP_ID または META_APP_SECRET が .env に設定されていません。"
         )
     resp = requests.get(
         "https://graph.threads.net/access_token",
@@ -54,9 +63,6 @@ def exchange_for_long_lived_token(short_lived_token: str) -> dict:
 
 
 def refresh_long_lived_token(long_lived_token: str) -> dict:
-    """長期トークンを更新する（24時間以上残っていれば実行可能）。"""
-    app_id = os.getenv("META_APP_ID", "")
-    app_secret = os.getenv("META_APP_SECRET", "")
     resp = requests.get(
         "https://graph.threads.net/refresh_access_token",
         params={
@@ -71,7 +77,6 @@ def refresh_long_lived_token(long_lived_token: str) -> dict:
 
 
 def get_threads_user_id(access_token: str) -> str:
-    """アクセストークンからThreadsのユーザーIDを取得する。"""
     resp = requests.get(
         f"{GRAPH_URL}/me",
         params={"fields": "id,username", "access_token": access_token},
@@ -85,7 +90,6 @@ def get_threads_user_id(access_token: str) -> str:
 
 
 def update_env(key: str, value: str):
-    """既存の .env ファイルのキーを更新する（なければ末尾に追記）。"""
     if not ENV_FILE.exists():
         ENV_FILE.write_text(f"{key}={value}\n", encoding="utf-8")
         return
@@ -101,32 +105,33 @@ def update_env(key: str, value: str):
     ENV_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def cmd_setup():
-    """初回セットアップ: Graph API エクスプローラーで取得したトークンを長期トークンに変換して保存。"""
+def cmd_setup(niche: str):
+    if niche not in NICHE_ENV_KEYS:
+        print(f"❌ 未対応のニッチ: {niche}  (使えるのは: {list(NICHE_ENV_KEYS.keys())})")
+        return
+
+    uid_key, token_key = NICHE_ENV_KEYS[niche]
+
     print("=" * 60)
-    print("Threads API 初回セットアップ")
+    print(f"Threads API 初回セットアップ — {NICHE_LABELS.get(niche, niche)}")
     print("=" * 60)
-    print("""
+    print(f"""
 【事前準備】Meta for Developers での作業:
 
 1. https://developers.facebook.com にアクセス
 2. 「sns-affiliate-bot」アプリを開く
-3. 左メニュー「アプリの役割」→「役割」→「テスター」に
-   自分のInstagramアカウントを追加する
+3. 左メニュー「アプリの役割」→「テスター」に
+   {niche} 用の Instagram アカウントを追加
 
-4. 「Threadsへのアクセス」ユースケースを設定:
-   ダッシュボード → 「ユースケースを追加」→「Threads APIへのアクセス」→「設定」
-   → permissions: threads_basic, threads_content_publish を追加
-
-5. 「ツール」→「Graph APIエクスプローラー」を開く
-6. 右上のアプリ選択で「sns-affiliate-bot」を選択
-7. 「ユーザーまたはページ」ドロップダウンで自分のアカウントを選択
-8. permissions に以下を追加:
+4. 「ツール」→「Graph APIエクスプローラー」
+5. 右上で「sns-affiliate-bot」アプリを選択
+6. 「ユーザーまたはページ」で {niche} 用アカウントを選択
+7. permissions に以下を追加:
    ✅ threads_basic
    ✅ threads_content_publish
-9. 「アクセストークンを生成」ボタンをクリック
-10. 表示されたトークンをコピー
+8. 「アクセストークンを生成」をクリック → コピー
 """)
+
     short_token = input("コピーしたアクセストークンをここに貼り付けてください:\n> ").strip()
     if not short_token:
         print("❌ トークンが入力されていません。")
@@ -135,19 +140,17 @@ def cmd_setup():
     print("\n長期トークン（60日間）に変換中...")
     try:
         result = exchange_for_long_lived_token(short_token)
+        long_token = result.get("access_token", "")
+        expires_in_sec = result.get("expires_in", 5184000)
     except RuntimeError as e:
-        print(f"❌ {e}")
-        print("\n代替手順: .env に以下の値をそのまま設定してください:")
-        print(f"  THREADS_CAREER_ACCESS_TOKEN={short_token}")
-        print("  ※短期トークン（1〜2時間）なので早めに次のステップへ進んでください")
-        return
+        print(f"⚠️  長期変換失敗: {e}")
+        print("短期トークンのまま保存します（2時間で期限切れ）")
+        long_token = short_token
+        expires_in_sec = 7200
 
-    long_token = result.get("access_token", "")
-    expires_in_sec = result.get("expires_in", 5184000)
-    expires_days = expires_in_sec // 86400
     expires_date = datetime.now() + timedelta(seconds=expires_in_sec)
-
-    print(f"\n✅ 長期トークン取得成功！（有効期限: {expires_days}日 / {expires_date.strftime('%Y-%m-%d')}まで）")
+    expires_days = expires_in_sec // 86400
+    print(f"✅ トークン取得成功！（有効: {max(1, expires_days)}日 / {expires_date.strftime('%Y-%m-%d')}まで）")
 
     print("\nThreadsユーザーIDを取得中...")
     try:
@@ -156,8 +159,8 @@ def cmd_setup():
         print(f"❌ ユーザーID取得失敗: {e}")
         user_id = input("Threads User ID を手動で入力してください:\n> ").strip()
 
-    update_env("THREADS_CAREER_ACCESS_TOKEN", long_token)
-    update_env("THREADS_CAREER_USER_ID", user_id)
+    update_env(token_key, long_token)
+    update_env(uid_key, user_id)
 
     expiry_json = Path("config/token_expiry.json")
     expiry_json.parent.mkdir(exist_ok=True)
@@ -167,37 +170,42 @@ def cmd_setup():
             expiry_data = json.loads(expiry_json.read_text())
         except Exception:
             pass
-    expiry_data["threads_career"] = expires_date.isoformat()
+    expiry_data[f"threads_{niche}"] = expires_date.isoformat()
     expiry_json.write_text(json.dumps(expiry_data, indent=2, ensure_ascii=False))
 
     print(f"\n✅ .env に保存しました:")
-    print(f"  THREADS_CAREER_USER_ID={user_id}")
-    print(f"  THREADS_CAREER_ACCESS_TOKEN={long_token[:20]}...（60日間有効）")
-    print(f"\n次のステップ: python main.py check で動作確認してください。")
+    print(f"  {uid_key}={user_id}")
+    print(f"  {token_key}={long_token[:20]}...")
+    print(f"\n次のステップ:")
+    print(f"  python main.py check")
+    print(f"  python main.py post threads {niche}")
 
 
-def cmd_refresh():
-    """長期トークンを更新する（期限を60日延長）。"""
-    load_dotenv()
-    token = os.getenv("THREADS_CAREER_ACCESS_TOKEN", "")
-    if not token:
-        print("❌ .env に THREADS_CAREER_ACCESS_TOKEN が設定されていません。")
-        print("先に: python setup/threads_token.py setup")
+def cmd_refresh(niche: str):
+    if niche not in NICHE_ENV_KEYS:
+        print(f"❌ 未対応のニッチ: {niche}")
         return
 
-    print("トークンを更新中...")
+    uid_key, token_key = NICHE_ENV_KEYS[niche]
+    load_dotenv()
+    token = os.getenv(token_key, "")
+    if not token:
+        print(f"❌ .env に {token_key} が設定されていません。")
+        print(f"先に: python setup/threads_token.py setup {niche}")
+        return
+
+    print(f"[{niche}] トークンを更新中...")
     try:
         result = refresh_long_lived_token(token)
     except RuntimeError as e:
         print(f"❌ {e}")
-        print("トークンが完全に期限切れの場合は setup コマンドで再取得してください。")
         return
 
     new_token = result.get("access_token", token)
     expires_in_sec = result.get("expires_in", 5184000)
     expires_date = datetime.now() + timedelta(seconds=expires_in_sec)
 
-    update_env("THREADS_CAREER_ACCESS_TOKEN", new_token)
+    update_env(token_key, new_token)
 
     expiry_json = Path("config/token_expiry.json")
     expiry_data = {}
@@ -206,14 +214,13 @@ def cmd_refresh():
             expiry_data = json.loads(expiry_json.read_text())
         except Exception:
             pass
-    expiry_data["threads_career"] = expires_date.isoformat()
+    expiry_data[f"threads_{niche}"] = expires_date.isoformat()
     expiry_json.write_text(json.dumps(expiry_data, indent=2, ensure_ascii=False))
 
-    print(f"✅ トークン更新完了（{expires_date.strftime('%Y-%m-%d')} まで有効）")
+    print(f"✅ [{niche}] トークン更新完了（{expires_date.strftime('%Y-%m-%d')} まで有効）")
 
 
 def cmd_check():
-    """トークンの残り有効期限を確認する。"""
     expiry_json = Path("config/token_expiry.json")
     if not expiry_json.exists():
         print("⚠️  有効期限情報なし。setup コマンドでセットアップしてください。")
@@ -230,18 +237,22 @@ def cmd_check():
         else:
             status = "❌"
         print(f"{status} {key}: {expiry.strftime('%Y-%m-%d')} まで（残り {max(0, days)} 日）")
-        if days <= 14 and days > 0:
-            print(f"   → 更新推奨: python setup/threads_token.py refresh")
+        niche = key.replace("threads_", "")
+        if 0 < days <= 14:
+            print(f"   → 更新推奨: python setup/threads_token.py refresh {niche}")
         elif days <= 0:
-            print(f"   → 期限切れ: python setup/threads_token.py setup で再取得してください")
+            print(f"   → 期限切れ: python setup/threads_token.py setup {niche}")
 
 
 if __name__ == "__main__":
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "check"
+    args = sys.argv[1:]
+    cmd = args[0] if args else "check"
+    niche_arg = args[1] if len(args) > 1 else "career"
+
     if cmd == "setup":
-        cmd_setup()
+        cmd_setup(niche_arg)
     elif cmd == "refresh":
-        cmd_refresh()
+        cmd_refresh(niche_arg)
     elif cmd == "check":
         cmd_check()
     else:
