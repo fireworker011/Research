@@ -74,10 +74,12 @@
     "career_tip": ["#転職活動", "#40代転職", "#年収UP", "#キャリア"],
     "tool_recommendation": ["#仕事効率化", "#Claude", "#ChatGPT", "#生産性向上"],
     "market_insight": ["#転職市場2026", "#IT転職", "#DX", "#エンジニア転職"],
-    "personal_story": ["#40代副業", "#仕組み化", "#AI活用", "#会社員"]
+    "personal_story": ["#40代副業", "#仕組み化", "#AI活用", "#会社員"],
+    "paradox": ["#会社員の本音", "#40代の現実", "#副業の真実", "#AI活用"],
+    "fomo": ["#先送り禁止", "#40代会社員", "#副業始め方", "#AI副業"]
   },
   "content_types": {
-    "threads": ["personal_story", "confession", "career_tip", "tool_recommendation", "market_insight"],
+    "threads": ["personal_story", "confession", "career_tip", "tool_recommendation", "market_insight", "paradox", "fomo"],
     "youtube": ["skill_ranking", "career_advice", "tool_introduction"]
   },
   "templates": {
@@ -131,6 +133,26 @@
           "3年後、AIスキルがない会社員はどうなるか。エージェントから聞いた話を正直に書きます"
         ],
         "cta": "→ 対策の詳細はプロフのリンクから"
+      },
+      "paradox": {
+        "hooks": [
+          "副業で一番ヤバいのは、稼げないことじゃなくて続かないことです。正直に言います。",
+          "転職で失敗する本当の理由、スキルがないことじゃありませんでした。",
+          "AIで残業が減らない本当の原因、ツールの問題じゃないです。仕組みの問題でした。",
+          "「40代は転職が難しい」、半分本当で半分嘘です。本当の問題は別にありました。",
+          "副業収入が増えない人と増える人、やってることは似てました。違いは1つだけ。"
+        ],
+        "cta": "→ 詳しい仕組みはプロフのリンクにまとめています"
+      },
+      "fomo": {
+        "hooks": [
+          "副業を始めようと思って調べるだけで、1年経ってませんか？",
+          "AIスキルを学ぼうと思ってる間に、同僚が先に動いていました。正直に言います。",
+          "転職しようと思って「もう少し準備してから」と言い続けて、何年経ちましたか？",
+          "これを知らないまま残業を続けていたら、本当にもったいなかった。",
+          "今のまま3年経ったとき、何が変わっているか。半年前の僕は想像すらしていませんでした。"
+        ],
+        "cta": "→ 今すぐできることをプロフのリンクに書いています"
       }
     },
     "youtube": {
@@ -166,6 +188,8 @@
     "market_insight": ["job market 2026", "business trend graph", "corporate hiring", "future work ai"],
     "skill_ranking": ["ranking career success", "business achievement", "laptop programming", "growth chart"],
     "career_advice": ["mentor coaching", "career ladder success", "professional milestone", "business guidance"],
-    "tool_introduction": ["ai software tools", "free learning online", "developer workspace", "tech productivity"]
+    "tool_introduction": ["ai software tools", "free learning online", "developer workspace", "tech productivity"],
+    "paradox": ["business insight thinking", "counterintuitive success", "mindset shift professional", "honest reality"],
+    "fomo": ["clock time pressure", "missed opportunity career", "action vs waiting", "starting now motivation"]
   }
 }
