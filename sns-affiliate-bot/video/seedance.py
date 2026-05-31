@@ -5,16 +5,17 @@ Seedance 2.0 image-to-video client via fal.ai (default) or Replicate.
   SEEDANCE_API_KEY   fal.ai API キー (https://fal.ai/dashboard/keys)
   SEEDANCE_PROVIDER  'fal' (default) | 'replicate'
   SEEDANCE_MODEL     モデル名を上書きしたい場合（省略可）
+                     fast版: bytedance/seedance-2.0/fast/image-to-video (低コスト・低レイテンシ)
 
 fal.ai 料金の目安: ~$0.03/秒 → 5秒クリップ ≈ $0.15、30秒動画 ≈ $0.90
 """
 
 import os
-import time
 import requests
 
 
-_DEFAULT_MODEL_FAL = "fal-ai/seedance/v1/image-to-video"
+# fal.ai 正式モデルID (2026年5月時点)
+_DEFAULT_MODEL_FAL = "bytedance/seedance-2.0/image-to-video"
 _DEFAULT_MODEL_REPLICATE = "bytedance/seedance-2.0"
 
 # シーンキーワード → Seedance 英語プロンプト変換テーブル
@@ -69,7 +70,8 @@ class SeedanceClient:
         戻り値: save_path
         """
         prompt = _scene_to_prompt(scene_text)
-        clip_duration = max(5, min(duration + 1, 10))  # Seedance: 5〜10秒
+        # Seedance 2.0 は 4〜15秒対応。シーン尺+1秒でリクエスト
+        clip_duration = max(4, min(duration + 1, 15))
 
         if self.provider == "fal":
             video_url = self._run_fal(image_url, prompt, clip_duration)
@@ -96,17 +98,14 @@ class SeedanceClient:
             arguments={
                 "image_url": image_url,
                 "prompt": prompt,
-                "duration": str(duration),
+                "duration": duration,        # int (4〜15)
                 "aspect_ratio": "9:16",
-                "resolution": "1080p",
+                "resolution": "720p",        # Seedance 2.0: 480p or 720p
+                "generate_audio": False,     # VOICEVOX音声を使うためOFF
             },
         )
-        # fal.ai の一般的なレスポンス形式
-        url = (
-            result.get("video", {}).get("url")
-            or result.get("url")
-            or (result.get("videos") or [{}])[0].get("url", "")
-        )
+        # fal.ai レスポンス: {"video": {"url": "...", ...}, "seed": ...}
+        url = result.get("video", {}).get("url", "")
         if not url:
             raise RuntimeError(f"Seedance (fal): 動画URLが取得できません: {result}")
         return url
@@ -129,6 +128,7 @@ class SeedanceClient:
                 "prompt": prompt,
                 "duration": duration,
                 "aspect_ratio": "9:16",
+                "generate_audio": False,
             },
         )
         return str(output)
@@ -138,7 +138,7 @@ class SeedanceClient:
     # ------------------------------------------------------------------
 
     def _download(self, url: str, save_path: str) -> str:
-        resp = requests.get(url, timeout=180, stream=True)
+        resp = requests.get(url, timeout=300, stream=True)
         resp.raise_for_status()
         with open(save_path, "wb") as f:
             for chunk in resp.iter_content(chunk_size=8192):
