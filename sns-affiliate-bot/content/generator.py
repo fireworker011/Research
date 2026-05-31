@@ -159,35 +159,41 @@ class ContentGenerator:
         }
 
     def _get_video_body_items(self, content_type: str, count: int = 2) -> list:
-        if content_type == "skill_list":
+        if content_type in ("personal_story", "confession"):
+            items = [
+                "⬛ 半年前: 残業80h・副業収入ゼロ\nスクール月20万払えず断念",
+                "🔶 転換点: Claude Code×Notion AIを使い始めた\n業務の40%が自動化",
+                "✅ 今: 残業18h・副業月3.8万円\n同じ会社員でもここまで変われた",
+            ][:count]
+        elif content_type == "skill_list":
             items = random.sample([
-                "✅ ChatGPT・Claude の使いこなし",
-                "✅ Python 基礎（データ分析に直結）",
-                "✅ クラウド（AWS/GCP）の基礎知識",
-                "✅ プロンプトエンジニアリング",
+                "✅ プロンプトエンジニアリング\n→ 業務報告書が30分→3分に",
+                "✅ Notion AI\n→ 会議メモが自動で議事録に",
+                "✅ Claude Code\n→ Excelマクロを自然言語で作成",
+                "✅ Make（旧Integromat）\n→ 定型メール送信を完全自動化",
             ], min(count, 4))
         elif content_type == "career_tip":
             items = random.sample([
-                "💡 転職エージェントは2〜3社使い比べる",
-                "💡 在職中に動き始める（退職後は焦りで失敗しやすい）",
-                "💡 給与交渉は内定後が鉄則",
+                "💡 在職中に動く\n→ 退職後は焦りで年収が下がりやすい",
+                "💡 エージェント3社同時登録\n→ 比較できると交渉力が上がる",
+                "💡 スキルの言語化を先に\n→ 面接で「何が強みか」即答できるか？",
             ], min(count, 3))
         elif content_type == "tool_recommendation":
             items = random.sample([
-                "🔧 Claude Code ─ コードなしで自動化",
-                "🔧 Notion AI ─ 議事録を瞬時に作成",
-                "🔧 Perplexity ─ リサーチが10倍速に",
+                "🔧 Claude Code\n→ コーディング不要で業務自動化",
+                "🔧 Notion AI\n→ 議事録・報告書を瞬時に生成",
+                "🔧 Perplexity\n→ 調査時間が10分の1に短縮",
             ], min(count, 3))
         elif content_type == "market_insight":
             items = random.sample([
-                "📊 AIエンジニア求人が前年比200%超え",
-                "📊 AIスキルあり・なしで年収差が拡大",
-                "📊 リモート可求人は依然として高水準",
+                "📊 AIスキルあり・なしで年収差が拡大中\n同職種でも年収差100万超えの事例",
+                "📊 プログラミング未経験→IT転職\n成功事例が3年前の2倍以上に",
+                "📊 リモート可求人は高水準維持\nAIスキルがあれば全国どこからでも応募可",
             ], min(count, 3))
         else:
             items = [
-                "⬛ 1年前：残業続きで余裕ゼロ",
-                "✅ 今：AI活用で定時帰宅＋副収入",
+                "⬛ ビフォー: 残業80h・副業収入ゼロ",
+                "✅ アフター: 残業18h・副業月3.8万円",
             ][:count]
         return items
 
@@ -226,7 +232,20 @@ class ContentGenerator:
 
     def _build_threads_body(self, content_type: str, hook: str) -> str:
         n = int(self._extract_number(hook) or 3)
-        if content_type == "skill_list":
+        bs = self.niche.get("persona", {}).get("backstory", {})
+        before = bs.get("before", {})
+        after = bs.get("after", {})
+
+        if content_type in ("personal_story", "confession"):
+            timeline = [
+                f"⬛ ビフォー: {before.get('monthly_income','月収28万')}・{before.get('overtime','残業80時間')}",
+                f"⬛ 転換点: {before.get('turning_point','スクール月20万→断念→独学×AI')}",
+                f"🔶 3ヶ月後: 業務自動化が軌道に乗り始めた",
+                f"✅ 今: {after.get('overtime','残業18時間')}・副業{after.get('side_income','月3.8万円')}",
+                f"🎯 目標: {after.get('goal','副業月10万円')}",
+            ]
+            return "\n".join(timeline[:min(n, 4)])
+        elif content_type == "skill_list":
             items = random.sample([
                 "Python / データ分析",
                 "ChatGPT・Claudeを使いこなす力",
@@ -376,32 +395,68 @@ class ContentGenerator:
         return scenes
 
     # ------------------------------------------------------------------ #
-    #  APIベース生成（将来: Grok / OpenAI Codex / Claude API）
+    #  APIベース生成（Claude API）
     # ------------------------------------------------------------------ #
+
+    def _persona_context(self) -> str:
+        """ペルソナのバックストーリーをプロンプト用テキストに変換する。"""
+        p = self.niche.get("persona", {})
+        bs = p.get("backstory", {})
+        before = bs.get("before", {})
+        after = bs.get("after", {})
+        name = p.get("name", "カズト")
+        age = p.get("age", 43)
+        situation = p.get("situation", "中堅メーカー勤務17年")
+        return (
+            f"【あなたは「{name}」として一人称で投稿します】\n"
+            f"・{age}歳・{situation}\n"
+            f"・ビフォー: {before.get('monthly_income','月収28万')}、"
+            f"{before.get('overtime','残業月80時間')}、{before.get('side_income','副業収入ゼロ')}\n"
+            f"・転換点: {before.get('turning_point','プログラミングスクールを検討したが費用で断念')}\n"
+            f"・アフター（6ヶ月後）: {after.get('overtime','残業月18時間')}、"
+            f"副業収入{after.get('side_income','月3.8万円')}\n"
+            f"・方法: {after.get('method','独学×Claude Code×Notion AIで業務自動化')}\n"
+            f"・核心メッセージ: {bs.get('key_moment','プログラミングスクールに払えなかった自分がAIで同じスキルを習得した')}\n"
+        )
 
     def _threads_via_api(self, content_type: str) -> dict:
         tmpl = self.templates.get("threads", {}).get(content_type, {})
         product = random.choice(self.affiliate.get("products", [{}]))
+        cta_line = product.get("cta", "詳細はプロフのリンクへ！")
+
         prompt = (
-            f"SNS投稿を日本語で作成してください。\n"
-            f"ジャンル: {self.niche['name']}\n"
+            f"{self._persona_context()}\n"
             f"投稿タイプ: {content_type}\n"
-            f"関連商品: {product.get('name', '')}\n"
-            f"CTAメッセージ: {tmpl.get('cta', '詳細はプロフのリンクへ！')}\n\n"
-            f"要件:\n"
-            f"- 冒頭1行に強いフックを入れる\n"
-            f"- 箇条書きリストを含める（3〜5項目）\n"
-            f"- 最後にCTAを入れる\n"
-            f"- 合計300文字以内\n"
-            f"- Threadsらしい口語体で\n"
+            f"紹介商品: {product.get('name','')}（{product.get('description','')}）\n\n"
+            f"【必須の投稿構造・この順番で書く】\n"
+            f"① 告白・弱さの暴露で始める\n"
+            f"   「正直に言います」「恥ずかしい話をします」「信じてもらえないかもしれませんが」\n"
+            f"   「ずっと言えなかった」「1年前の僕は誰にも言えなかったんですが」等を必ず使う\n"
+            f"② ビフォー→アフターを具体的数字で\n"
+            f"   例：月収28万→副業+3.8万、残業80h→18h、スクール月20万→無料AIで代替\n"
+            f"③ 再現可能な解決策を2〜3ステップで簡潔に\n"
+            f"④ 「あなたも同じ状況ですか？」「同じ悩みの人に届けたい」等の問いかけ\n"
+            f"⑤ CTA: 「{cta_line}」\n\n"
+            f"【絶対禁止】\n"
+            f"・「○選」「○つ」で始まるリスト型タイトル\n"
+            f"・「年収UP」「市場価値向上」「スキルアップ」等の抽象ワード単独使用\n"
+            f"・情報メディアのような文体・箇条書きのみの構成\n"
+            f"・嘘の数字や過大な主張\n\n"
+            f"文字数: 250〜380字。口語体で、読んだ人が「自分のことだ」と感じる文章に。\n"
+            f"本文のみを返してください（ハッシュタグ・説明文は不要）。"
         )
         text = self.ai.generate(prompt)
         hashtags = self._pick_hashtags(content_type)
         affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
 
+        if affiliate_url and "{" not in affiliate_url:
+            full_text = f"{text}\n\n{affiliate_url}\n\n{hashtags}"
+        else:
+            full_text = f"{text}\n\n{hashtags}"
+
         return {
             "content_type": content_type,
-            "text": f"{text}\n\n{affiliate_url}\n\n{hashtags}",
+            "text": full_text,
             "hashtags": hashtags,
             "affiliate_product_id": product.get("id", ""),
             "affiliate_url": affiliate_url,
@@ -412,33 +467,101 @@ class ContentGenerator:
 
     def _youtube_via_api(self, content_type: str) -> dict:
         product = random.choice(self.affiliate.get("products", [{}]))
+        tmpl = self.templates.get("youtube", {}).get(content_type, {})
+
         prompt = (
-            f"YouTube Shorts用の台本を日本語で作成してください。\n"
-            f"ジャンル: {self.niche['name']}\n"
+            f"{self._persona_context()}\n"
+            f"YouTube Shorts（55秒）の台本を作成してください。\n"
             f"動画タイプ: {content_type}\n"
-            f"尺: 約55秒\n\n"
-            f"JSON形式で返してください:\n"
-            f'{{"title": "動画タイトル", "scenes": [{{"text": "台本テキスト", "duration_sec": 秒数}}]}}\n'
+            f"関連商品: {product.get('name', '')}\n\n"
+            f"【構成】告白（弱さ+数字）→ 転換点 → 解決策 → CTA\n"
+            f"1シーン目は「正直に言います」系で始めること。\n\n"
+            f"以下のJSON形式だけを返してください（余分な説明不要）:\n"
+            f'{{"title": "実体験・数字を含むタイトル", '
+            f'"scenes": [{{"text": "シーンテキスト", "duration_sec": 秒数}}]}}\n'
         )
         raw = self.ai.generate(prompt)
         try:
-            import re
             json_match = re.search(r'\{.*\}', raw, re.DOTALL)
             data = json.loads(json_match.group()) if json_match else {}
         except Exception:
             data = {}
 
         affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
+        default_title = tmpl.get("title_template", "【実録】40代会社員がAIで残業80h→18hになった話")
+        default_scenes = [
+            {"text": "正直に言います\n半年前の僕は残業80時間\n副業収入ゼロでした", "duration_sec": 8},
+            {"text": "転換点はプログラミングスクール断念\n月20万払えなかった日", "duration_sec": 10},
+            {"text": "Claude Code×Notion AIで\n業務を自動化→副業月3.8万円\n残業も18時間に", "duration_sec": 12},
+            {"text": "同じ状況の人に届けたい\n詳しい方法は概要欄から", "duration_sec": 8},
+        ]
+
         return {
             "content_type": content_type,
-            "title": data.get("title", f"【{datetime.now().year}年版】転職スキルガイド"),
-            "description": f"詳細はこちら → {affiliate_url}\n#転職 #スキルアップ",
-            "tags": ["転職", "スキルアップ", "AI活用", "副業"],
-            "scenes": data.get("scenes", [{"text": "コンテンツを生成中...", "duration_sec": 55}]),
+            "title": data.get("title", default_title),
+            "description": f"詳細はプロフのリンクから\n#AI副業 #40代副業 #副業",
+            "tags": ["AI副業", "40代副業", "副業", "転職", "AI活用"],
+            "scenes": data.get("scenes", default_scenes),
             "duration_sec": 55,
             "affiliate_product_id": product.get("id", ""),
             "affiliate_url": affiliate_url,
             "image_keywords": self.niche["image_keywords"].get(content_type, ["career"]),
+            "niche": self.niche["id"],
+            "generated_at": datetime.now().isoformat(),
+        }
+
+    def _threads_video_via_api(self, content_type: str) -> dict:
+        product = random.choice(self.affiliate.get("products", [{}]))
+
+        prompt = (
+            f"{self._persona_context()}\n"
+            f"Threads縦型ショート動画（30〜40秒）の台本を作成してください。\n"
+            f"投稿タイプ: {content_type}\n\n"
+            f"【シーン構成（必須）】\n"
+            f"シーン1（6秒）: 「正直に言います」系で始まる告白＋具体的数字\n"
+            f"シーン2（8秒）: ビフォーの状況（数字で）\n"
+            f"シーン3（8秒）: アフターの数字＋方法\n"
+            f"シーン4（7秒）: 「あなたも？」の問いかけ＋「プロフのリンクへ」CTA\n\n"
+            f"以下のJSON形式だけを返してください:\n"
+            f'{{\n'
+            f'  "caption": "200字以内の告白スタイルキャプション",\n'
+            f'  "scenes": [\n'
+            f'    {{"text": "シーン1（2〜3行）", "duration_sec": 6}},\n'
+            f'    {{"text": "シーン2（2〜3行）", "duration_sec": 8}},\n'
+            f'    {{"text": "シーン3（2〜3行）", "duration_sec": 8}},\n'
+            f'    {{"text": "シーン4（2〜3行）", "duration_sec": 7}}\n'
+            f'  ]\n'
+            f'}}\n'
+        )
+        raw = self.ai.generate(prompt)
+        try:
+            json_match = re.search(r'\{.*\}', raw, re.DOTALL)
+            data = json.loads(json_match.group()) if json_match else {}
+        except Exception:
+            data = {}
+
+        hashtags = self._pick_hashtags(content_type)
+        affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
+        caption_base = data.get("caption", "")
+        if affiliate_url and "{" not in affiliate_url:
+            caption = f"{caption_base}\n\n{affiliate_url}\n\n{hashtags}"
+        else:
+            caption = f"{caption_base}\n\n{hashtags}"
+
+        default_scenes = [
+            {"text": "正直に言います\n残業80h→18hになりました\nAIだけが理由です", "duration_sec": 6},
+            {"text": "半年前\n月収28万・副業ゼロ\nスクール月20万払えず断念", "duration_sec": 8},
+            {"text": "今\n副業月3.8万円\nClaude Code×Notion AIで実現", "duration_sec": 8},
+            {"text": "同じ状況の人に届け\nプロフのリンクに方法まとめています", "duration_sec": 7},
+        ]
+        return {
+            "content_type": content_type,
+            "caption": caption,
+            "scenes": data.get("scenes", default_scenes),
+            "image_keywords": self.niche["image_keywords"].get(content_type, ["business"]),
+            "hashtags": hashtags,
+            "affiliate_product_id": product.get("id", ""),
+            "affiliate_url": affiliate_url,
             "niche": self.niche["id"],
             "generated_at": datetime.now().isoformat(),
         }
