@@ -215,7 +215,8 @@ class ContentGenerator:
         if affiliate_url and "{" not in affiliate_url:
             text = f"{hook}\n\n{body}\n\n{cta}\n{affiliate_url}\n\n{save_cta}\n\n{hashtags}"
         else:
-            text = f"{hook}\n\n{body}\n\n{cta}\n\n{save_cta}\n\n{hashtags}"
+            no_link_cta = random.choice(self._NO_LINK_CTA)
+            text = f"{hook}\n\n{body}\n\n{no_link_cta}\n\n{save_cta}\n\n{hashtags}"
 
         return {
             "content_type": content_type,
@@ -505,6 +506,14 @@ class ContentGenerator:
         "迷ってる人、これ保存しておいて📌",
     ]
 
+    # アフィリリンク未設定時のCTA（プロフリンク言及なし）
+    _NO_LINK_CTA = [
+        "同じ気持ちの人、いいねして教えてください",
+        "フォローすると毎日婚活の本音を発信してます",
+        "同じ状況の人、コメントで教えてください👇",
+        "共感したらリポストしてもらえると嬉しいです",
+    ]
+
     _TYPE_PROMPT: dict = {
         "paradox": (
             "【逆説フック型の構成】\n"
@@ -565,10 +574,12 @@ class ContentGenerator:
         hashtags = self._pick_hashtags(content_type)
         affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
 
+        save_cta = random.choice(self._SAVE_CTA)
         if affiliate_url and "{" not in affiliate_url:
-            full_text = f"{text}\n\n{affiliate_url}\n\n{hashtags}"
+            full_text = f"{text}\n\n{affiliate_url}\n\n{save_cta}\n\n{hashtags}"
         else:
-            full_text = f"{text}\n\n{hashtags}"
+            no_link_cta = random.choice(self._NO_LINK_CTA)
+            full_text = f"{text}\n\n{no_link_cta}\n\n{save_cta}\n\n{hashtags}"
 
         return {
             "content_type": content_type,
