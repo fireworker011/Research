@@ -211,10 +211,11 @@ class ContentGenerator:
         affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
 
         # アフィリエイトURLが未設定の場合はリンクなしで投稿
+        save_cta = random.choice(self._SAVE_CTA)
         if affiliate_url and "{" not in affiliate_url:
-            text = f"{hook}\n\n{body}\n\n{cta}\n{affiliate_url}\n\n{hashtags}"
+            text = f"{hook}\n\n{body}\n\n{cta}\n{affiliate_url}\n\n{save_cta}\n\n{hashtags}"
         else:
-            text = f"{hook}\n\n{body}\n\n{cta}\n\n{hashtags}"
+            text = f"{hook}\n\n{body}\n\n{cta}\n\n{save_cta}\n\n{hashtags}"
 
         return {
             "content_type": content_type,
@@ -340,6 +341,18 @@ class ContentGenerator:
                     "❌ よくある誤解：AIで副業するには知識が必要\n✅ 本当の理由：知識より先に始めた人が勝つ",
                 ], min(n, 3))
             return "\n\n".join(truths)
+        elif content_type == "comment_hook":
+            # コメント欄リンク型: 本文にリンクなし→コメント欄へ誘導（Threadsリーチ最大化）
+            if niche_id == "marriage":
+                options = random.sample([
+                    "今どのアプリを使っているか、コメントで教えてください👇\nアプリ20社試した私の体験談をお伝えします。",
+                    "婚活中の30代女性に聞きたいことがあります。\n「出会えない原因」だと思っていること、コメントで教えてください。",
+                    "マッチングアプリで「続かない」と思っている方へ。\n原因は3パターンに絞られます。コメント欄に詳細を貼っておきます👇",
+                    "婚活エージェントと普通のアプリ、どちらか迷っている方へ。\n20社使った私の比較をコメント欄にまとめました👇",
+                ], 1)
+                return options[0]
+            else:
+                return "コメント欄に詳細をまとめました👇\n気になる方は「見た」とコメントしてください。"
         elif content_type == "fomo":
             if niche_id == "marriage":
                 costs = random.sample([
@@ -484,6 +497,13 @@ class ContentGenerator:
             f"・核心メッセージ: {bs.get('key_moment', '')}\n"
             f"・口調: {p.get('tone', '口語体・実体験ベース・共感重視')}\n"
         )
+
+    # 保存促進CTA（Threadsアルゴリズム対策: 保存率向上でリーチ増加）
+    _SAVE_CTA = [
+        "保存してあとで読んでね📌",
+        "同じ状況の人に届けてほしい🔁",
+        "迷ってる人、これ保存しておいて📌",
+    ]
 
     _TYPE_PROMPT: dict = {
         "paradox": (
@@ -684,4 +704,5 @@ class ContentGenerator:
         extra = self.hashtags.get(content_type, [])
         tags = list(set(base + extra))
         random.shuffle(tags)
-        return " ".join(tags[:8])
+        # Threadsはハッシュタグ3〜5個がアルゴリズム最適
+        return " ".join(tags[:4])
