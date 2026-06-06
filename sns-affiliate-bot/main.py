@@ -2,6 +2,8 @@
 """
 SNS Affiliate Bot - メインエントリーポイント
 使い方:
+  python main.py reel instagram marriage       # Instagram 読むリール（テキストスライドMP4）を生成
+  python main.py reel instagram marriage confession dark  # テーマ・タイプ指定
   python main.py post threads career           # Threads にテキスト投稿（確認あり）
   python main.py post video threads career     # Threads に動画投稿（VOICEVOX + Pexels + Cloudinary）
   python main.py post youtube career           # YouTube Shorts を1本作成・アップロード
@@ -186,6 +188,39 @@ def cmd_generate(platform: str, niche_id: str, count: int = 7):
     print(f"✅ {count} 件のコンテンツを queue/{platform}/{niche_id}/ に保存しました。")
 
 
+def cmd_reel_instagram(niche_id: str, content_type: str = None, theme: str = "dark"):
+    """Instagram 読むリール（テキストスライド型MP4）を生成する。"""
+    niche = load_niche(niche_id)
+
+    from ai.provider import AIProvider
+    from content.generator import ContentGenerator
+    from video.instagram_reel import InstagramReelGenerator
+
+    gen = ContentGenerator(niche, AIProvider())
+    print(f"スライド台本を生成中... (theme={theme})")
+    script = gen.generate_instagram_reel_script(content_type)
+
+    print(f"\n--- スライド構成 ({script['content_type']}) ---")
+    for i, s in enumerate(script["slides"], 1):
+        preview = s["text"].replace("\n", " / ")[:60]
+        print(f"  [{i}] {preview}  ({s['duration']}秒)")
+    print(f"\nキャプション（先頭80字）: {script['caption'][:80]}...")
+
+    confirm = input("\nこの構成でMP4を生成しますか？ [y/N]: ").strip().lower()
+    if confirm != "y":
+        print("キャンセルしました。")
+        return
+
+    reel_gen = InstagramReelGenerator()
+    filename = f"instagram_reel_{niche_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+    video_path = reel_gen.generate(script["slides"], filename, theme=theme)
+
+    print(f"\n✅ MP4生成完了: {video_path}")
+    print(f"\n--- Instagramキャプション（コピペ用）---")
+    print(script["caption"])
+    print("---")
+
+
 def cmd_run(niche_id: str):
     niche = load_niche(niche_id)
     schedule_cfg = load_schedule()
@@ -282,7 +317,11 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "post" and len(args) >= 4 and args[1] == "video":
+    if cmd == "reel" and len(args) >= 3 and args[1] == "instagram":
+        content_type = args[3] if len(args) >= 4 else None
+        theme = args[4] if len(args) >= 5 else "dark"
+        cmd_reel_instagram(args[2], content_type, theme)
+    elif cmd == "post" and len(args) >= 4 and args[1] == "video":
         cmd_post_video(args[2], args[3])
     elif cmd == "post" and len(args) >= 3:
         cmd_post(args[1], args[2])

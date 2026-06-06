@@ -48,6 +48,125 @@ class ContentGenerator:
             return self._threads_via_api(content_type)
         return self._threads_from_template(content_type)
 
+    def generate_instagram_reel_script(self, content_type: Optional[str] = None) -> dict:
+        """Instagram 読むリール（テキストスライド型）のスライド構成を生成する。"""
+        available = self.niche["content_types"]["threads"]
+        content_type = content_type or random.choice(available)
+
+        niche_id = self.niche.get("id", "")
+        persona = self.niche.get("persona", {})
+        bs = persona.get("backstory", {})
+        before = bs.get("before", {})
+        after = bs.get("after", {})
+
+        slides = self._build_instagram_slides(content_type, niche_id, before, after)
+
+        hashtags = self._pick_instagram_hashtags(content_type)
+        product = random.choice(self.affiliate.get("products", [{}]))
+        affiliate_url = product.get("url_template", "").replace("{A8_ID}", os.getenv("A8_AFFILIATE_ID", ""))
+
+        caption_lines = [slides[0]["text"].replace("\n", "　")]
+        if affiliate_url and "{" not in affiliate_url:
+            caption = f"{caption_lines[0]}\n\n詳細はプロフのリンクから📌\n{affiliate_url}\n\n{hashtags}"
+        else:
+            caption = f"{caption_lines[0]}\n\nフォローすると毎日婚活の本音を発信してます\n\n{hashtags}"
+
+        return {
+            "content_type": content_type,
+            "slides": slides,
+            "caption": caption,
+            "hashtags": hashtags,
+            "affiliate_product_id": product.get("id", ""),
+            "affiliate_url": affiliate_url,
+            "niche": niche_id,
+            "generated_at": datetime.now().isoformat(),
+        }
+
+    def _build_instagram_slides(self, content_type: str, niche_id: str, before: dict, after: dict) -> list:
+        """コンテンツタイプ別のスライドリストを返す。"""
+        if niche_id == "marriage":
+            return self._marriage_slides(content_type, before, after)
+        return self._generic_slides(content_type)
+
+    def _marriage_slides(self, content_type: str, before: dict, after: dict) -> list:
+        apps = before.get("apps_tried", "アプリ20社")
+        dates = before.get("dates", "出会い100人超")
+        result = before.get("result", "全滅")
+        age_start = before.get("age_start", "28歳")
+        method = after.get("method", "婚活エージェント＋プロフ改善")
+        timeline = after.get("timeline", "8ヶ月")
+
+        templates = {
+            "confession": [
+                {"text": f"{apps}\n{dates}\n{result}した話", "duration": 3},
+                {"text": f"{age_start}から33歳まで\n毎年誰かが結婚した\n帰り道で泣いていた", "duration": 3},
+                {"text": f"頑張った\n毎週5人と会った\nプロフも毎週更新した\nそれでも続かなかった", "duration": 3},
+                {"text": f"34歳で\n婚活エージェントに言われた\n「やり方が\n全部間違ってます」", "duration": 4},
+                {"text": f"6年間の失敗は\n努力不足じゃなかった\n正しい場所で\n探していなかっただけ", "duration": 3},
+                {"text": "同じ状況の人へ\nフォローすると\n毎日婚活の本音を発信してます", "duration": 3},
+            ],
+            "personal_story": [
+                {"text": f"{apps}・{dates}で{result}\n私の婚活史を全部話す", "duration": 3},
+                {"text": f"⬛ {age_start}\n初めてアプリ登録\n「すぐ出会える」と思っていた", "duration": 3},
+                {"text": f"⬛ 29〜32歳\n20社を乗り換え\n{dates}と会った", "duration": 3},
+                {"text": f"⬛ 33歳\n友人の結婚式で\n帰り道に泣いた", "duration": 3},
+                {"text": f"🔶 転換点\n{method}\nを試した", "duration": 3},
+                {"text": f"✅ {timeline}後\n入籍\n今は第一子育児中", "duration": 3},
+                {"text": "6年かかったのは\nやり方が間違って\nいただけだった", "duration": 3},
+                {"text": "保存して\nあとで読んでね📌\nフォローで続きを見る", "duration": 3},
+            ],
+            "advice": [
+                {"text": "婚活で変えるべき\n3つのこと\n※アプリ20社使った私の結論", "duration": 3},
+                {"text": "① プロフ写真\n自撮りをやめて\nプロに撮ってもらう\nいいね数が10倍になった", "duration": 4},
+                {"text": "② サービス選び\n「結婚したい」なら\nマッチングアプリより\n婚活エージェント一択", "duration": 4},
+                {"text": "③ メッセージ\n頑張りすぎない\n必死さが伝わると\n相手は引いていく", "duration": 4},
+                {"text": "6年全滅した私が\nこの3つを変えて\n8ヶ月で入籍できた", "duration": 3},
+                {"text": "保存して\nあとで読んでね📌\nフォローで続きを見る", "duration": 3},
+            ],
+            "paradox": [
+                {"text": "婚活を頑張れば\n頑張るほど\nうまくいかない理由", "duration": 3},
+                {"text": "❌ よくある勘違い\n出会えないのは\n外見・年齢のせい", "duration": 3},
+                {"text": "✅ 本当の理由\n「必死さ」が\n相手に伝わっている", "duration": 3},
+                {"text": "婚活を成功させた人は\n全員\n「選ぶ側」の目線を持っていた", "duration": 4},
+                {"text": "6年全滅した私が\n8ヶ月で入籍できた\n理由はここだった", "duration": 3},
+                {"text": "保存して\nあとで読んでね📌\nフォローで続きを見る", "duration": 3},
+            ],
+            "app_comparison": [
+                {"text": "マッチングアプリ20社\n使った私が\n正直に比較する", "duration": 3},
+                {"text": "📱 Pairs\n20〜30代に多い\nカジュアル層も混在\n結婚目的には△", "duration": 4},
+                {"text": "📱 Omiai\n結婚前提が明確\n真剣度高め\n30代には○", "duration": 4},
+                {"text": "🏆 婚活エージェント\nプロがサポート\n真剣な人しかいない\n最短で結果が出る", "duration": 4},
+                {"text": "アプリ選びを\n間違えると\n何年やっても\n出会えない", "duration": 3},
+                {"text": "保存して\nあとで読んでね📌\nフォローで続きを見る", "duration": 3},
+            ],
+            "fomo": [
+                {"text": "「まだ大丈夫」\nと思って\n先送りしてませんか？", "duration": 3},
+                {"text": "私が言う。\n33歳で本気で後悔した。\n「もっと早く動けば」と", "duration": 3},
+                {"text": "婚活市場は\n年齢で変わる\n同じ努力でも\n30代前半と後半では違う", "duration": 4},
+                {"text": "今すぐできること\n① 婚活エージェントの\n　 無料相談を予約する（30分）", "duration": 4},
+                {"text": "動いた人と\n待った人\n1年後の差は\n想像以上に大きい", "duration": 3},
+                {"text": "保存して\nあとで読んでね📌\nフォローで続きを見る", "duration": 3},
+            ],
+        }
+        slides = templates.get(content_type, templates["confession"])
+        return [{"text": s["text"], "duration": s["duration"]} for s in slides]
+
+    def _generic_slides(self, content_type: str) -> list:
+        return [
+            {"text": "知らないと損する\n3つのこと", "duration": 3},
+            {"text": "① ポイント1\n詳細はここ", "duration": 3},
+            {"text": "② ポイント2\n詳細はここ", "duration": 3},
+            {"text": "③ ポイント3\n詳細はここ", "duration": 3},
+            {"text": "フォローして\n続きを見てね", "duration": 3},
+        ]
+
+    def _pick_instagram_hashtags(self, content_type: str) -> str:
+        """Instagram用ハッシュタグ（5個以内）"""
+        base = self.hashtags.get("base", [])[:2]
+        extra = self.hashtags.get(content_type, [])[:3]
+        tags = list(dict.fromkeys(base + extra))
+        return " ".join(tags[:5])
+
     def generate_threads_video_script(self, content_type: Optional[str] = None) -> dict:
         """Threads動画（縦型ショート、30〜40秒）用の台本を生成する。"""
         available = self.niche["content_types"]["threads"]
