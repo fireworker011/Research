@@ -114,6 +114,33 @@ def _wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[
     return lines
 
 
+def _generate_gradient_image(output_path: str, genre: str = ""):
+    """
+    DALL-E 3 が利用できない場合のフォールバック。
+    ジャンルに合わせた色のグラデーション背景を生成する。
+    """
+    _GENRE_COLORS = {
+        "beauty":     ((255, 182, 193), (255, 105, 180)),   # ピンク系
+        "gadget":     ((30, 30, 60),   (0, 120, 200)),       # ダーク青
+        "lifehack":   ((255, 200, 100), (255, 120, 30)),      # オレンジ
+        "marriage":   ((200, 160, 220), (150, 80, 180)),      # 紫・ロマンス
+        "sidehustle": ((30, 50, 30),   (50, 160, 80)),        # ダーク緑
+        "diet":       ((180, 230, 160), (60, 180, 80)),       # グリーン
+    }
+    col_top, col_bot = _GENRE_COLORS.get(genre, ((40, 40, 60), (100, 60, 120)))
+
+    _img = Image.new("RGB", (WIDTH, HEIGHT))
+    _pixels = []
+    for _row in range(HEIGHT):
+        _t = _row / (HEIGHT - 1)
+        _r = int(col_top[0] * (1 - _t) + col_bot[0] * _t)
+        _g = int(col_top[1] * (1 - _t) + col_bot[1] * _t)
+        _b = int(col_top[2] * (1 - _t) + col_bot[2] * _t)
+        _pixels.extend([(_r, _g, _b)] * WIDTH)
+    _img.putdata(_pixels)
+    _img.save(output_path, "JPEG", quality=92)
+
+
 def _make_gradient(width: int, height: int, max_alpha: int = 190) -> Image.Image:
     """下方向に濃くなる黒グラデーション画像 (RGBA) を生成する。"""
     grad = Image.new("RGBA", (width, height))
@@ -170,13 +197,15 @@ class VideoGenerator:
 
         print(f"\n🎬 動画生成開始: {project_id}  ({len(scenes)} シーン)")
 
+        genre = script.get("genre", "")
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             scene_paths = []
 
             for i, scene in enumerate(scenes):
                 print(f"\n  ▶ シーン {i+1}/{len(scenes)}")
-                sp = self._process_scene(scene, i, tmp)
+                sp = self._process_scene(scene, i, tmp, genre)
                 scene_paths.append(sp)
 
             output_path = str(self.output_dir / output_filename)
@@ -187,14 +216,14 @@ class VideoGenerator:
         return output_path
 
     # ── シーン処理 ──────────────────────────────────────────────────────────
-    def _process_scene(self, scene: dict, idx: int, tmp: Path) -> str:
+    def _process_scene(self, scene: dict, idx: int, tmp: Path, genre: str = "") -> str:
         prompt = scene.get("image_prompt", "")
         speech = scene.get("speech_text", "")
 
-        # 1. 画像生成 (DALL-E 3)
+        # 1. 画像生成 (DALL-E 3 or フォールバック)
         raw_img = str(tmp / f"img_{idx:02d}_raw.jpg")
         print(f"    [1/3] 画像生成中... (DALL-E 3)")
-        self._generate_image(_sanitize_prompt(prompt), raw_img)
+        self._generate_image(_sanitize_prompt(prompt), raw_img, genre)
 
         # 2. テロップ焼き付け (Pillow)
         print(f"    [2/3] テロップ合成中...")
@@ -213,21 +242,27 @@ class VideoGenerator:
         return scene_path
 
     # ── 画像生成 ─────────────────────────────────────────────────────────────
-    def _generate_image(self, prompt: str, output_path: str):
-        """DALL-E 3 で縦型画像を生成し、1080×1920 にリサイズして保存する。"""
-        response = self.client.images.generate(
-            model=DALL_E_MODEL,
-            prompt=prompt,
-            size=DALL_E_SIZE,
-            quality="standard",
-            n=1,
-        )
-        url = response.data[0].url
-        r = requests.get(url, timeout=60)
-        r.raise_for_status()
-
-        img = Image.open(BytesIO(r.content)).resize((WIDTH, HEIGHT), Image.LANCZOS)
-        img.save(output_path, "JPEG", quality=92)
+    def _generate_image(self, prompt: str, output_path: str, genre: str = ""):
+        """
+        DALL-E 3 で縦型画像を生成して保存する。
+        API が利用不可の場合はグラデーション背景にフォールバックする。
+        """
+        try:
+            response = self.client.images.generate(
+                model=DALL_E_MODEL,
+                prompt=prompt,
+                size=DALL_E_SIZE,
+                quality="standard",
+                n=1,
+            )
+            url = response.data[0].url
+            r = requests.get(url, timeout=60)
+            r.raise_for_status()
+            img = Image.open(BytesIO(r.content)).resize((WIDTH, HEIGHT), Image.LANCZOS)
+            img.save(output_path, "JPEG", quality=92)
+        except Exception as e:
+            print(f"    ⚠️  DALL-E 3 unavailable ({type(e).__name__}), グラデーション背景を使用")
+            _generate_gradient_image(output_path, genre)
 
     # ── テロップ焼き付け ────────────────────────────────────────────────────
     def _burn_caption(self, img_path: str, text: str, output_path: str):
@@ -284,23 +319,46 @@ class VideoGenerator:
 
     # ── TTS 音声生成 ────────────────────────────────────────────────────────
     def _generate_tts(self, text: str, output_path: str) -> float:
-        """Edge TTS で MP3 を生成し、音声長（秒）を返す。"""
+        """
+        Edge TTS で MP3 を生成し、音声長（秒）を返す。
+        ネットワーク不可の場合は FFmpeg 無音プレースホルダーにフォールバック。
+        """
+        duration_estimate = max(2.5, len(text) / 7.0)   # 日本語 7文字/秒 目安
+
         async def _run():
             import edge_tts
+            import edge_tts.communicate as _ec
+            _ec._SSL_CTX = False   # プロキシ環境の SSL 検証を無効化
             comm = edge_tts.Communicate(text, TTS_VOICE)
             await comm.save(output_path)
 
         try:
-            asyncio.run(_run())
-        except RuntimeError:
-            # すでにイベントループが起動している場合（Jupyter 等）
-            loop = asyncio.new_event_loop()
             try:
-                loop.run_until_complete(_run())
-            finally:
-                loop.close()
+                asyncio.run(_run())
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                try:
+                    loop.run_until_complete(_run())
+                finally:
+                    loop.close()
+            return _audio_duration(self.ffmpeg, output_path)
+        except Exception as e:
+            print(f"    ⚠️  TTS unavailable ({type(e).__name__}), 無音プレースホルダーを使用")
+            return self._generate_silent_audio(output_path, duration_estimate)
 
-        return _audio_duration(self.ffmpeg, output_path)
+    def _generate_silent_audio(self, output_path: str, duration: float) -> float:
+        """ネットワーク不可時の音声フォールバック: FFmpeg で無音 MP3 を生成する。"""
+        cmd = [
+            self.ffmpeg, "-y",
+            "-f", "lavfi", "-i", f"anullsrc=r=24000:cl=mono",
+            "-t", str(duration),
+            "-c:a", "mp3", "-b:a", "64k",
+            output_path,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"FFmpeg silent audio エラー:\n{result.stderr[-500:]}")
+        return duration
 
     # ── シーン動画生成 ──────────────────────────────────────────────────────
     def _make_scene(
