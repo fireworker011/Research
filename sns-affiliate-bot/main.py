@@ -2,16 +2,18 @@
 """
 SNS Affiliate Bot - メインエントリーポイント
 使い方:
-  python main.py reel instagram marriage       # Instagram 読むリール（テキストスライドMP4）を生成
+  python main.py generate video --demo              # デモ動画を生成（DALL-E 3 + Edge TTS）
+  python main.py generate video script.json         # JSON ファイルから縦型動画を生成
+  python main.py reel instagram marriage            # Instagram 読むリール（テキストスライドMP4）を生成
   python main.py reel instagram marriage confession dark  # テーマ・タイプ指定
-  python main.py post threads career           # Threads にテキスト投稿（確認あり）
-  python main.py post video threads career     # Threads に動画投稿（VOICEVOX + Pexels + Cloudinary）
-  python main.py post youtube career           # YouTube Shorts を1本作成・アップロード
-  python main.py autopost threads career       # Threads に自動投稿（確認なし／タスクスケジューラ用）
-  python main.py generate threads career       # Threads 投稿コンテンツを生成してキューに保存
-  python main.py generate youtube career       # YouTube 台本を生成してキューに保存
-  python main.py run career                    # スケジューラ起動（常時実行）
-  python main.py check                         # 環境チェック（API接続確認）
+  python main.py post threads career                # Threads にテキスト投稿（確認あり）
+  python main.py post video threads career          # Threads に動画投稿（VOICEVOX + Pexels + Cloudinary）
+  python main.py post youtube career                # YouTube Shorts を1本作成・アップロード
+  python main.py autopost threads career            # Threads に自動投稿（確認なし／タスクスケジューラ用）
+  python main.py generate threads career            # Threads 投稿コンテンツを生成してキューに保存
+  python main.py generate youtube career            # YouTube 台本を生成してキューに保存
+  python main.py run career                         # スケジューラ起動（常時実行）
+  python main.py check                              # 環境チェック（API接続確認）
 """
 
 import json
@@ -162,6 +164,37 @@ def cmd_post_video(platform: str, niche_id: str):
     poster = ThreadsPoster(niche_id)
     result = poster.post_video(content, video_url)
     print(f"✅ 動画投稿完了: post_id={result['post_id']}")
+
+
+def cmd_generate_video(source: str):
+    """JSON ファイルまたは --demo フラグから縦型動画を生成する。"""
+    from modules.media.video_generator import VideoGenerator
+
+    if source == "--demo":
+        script = {
+            "project_id": "demo",
+            "scenes": [
+                {
+                    "image_prompt": "cyberpunk city at night, neon lights, rain, cinematic, highly detailed",
+                    "speech_text": "たった3ヶ月で人生を変える方法があります",
+                },
+                {
+                    "image_prompt": "beautiful minimalist workspace, multiple monitors, glowing keyboard, clean desk",
+                    "speech_text": "まずはこのシステムを構築するところから始めましょう",
+                },
+            ],
+        }
+    else:
+        script_path = Path(source)
+        if not script_path.exists():
+            print(f"❌ ファイルが見つかりません: {source}")
+            return
+        with open(script_path, encoding="utf-8") as f:
+            script = json.load(f)
+
+    gen = VideoGenerator()
+    video_path = gen.generate(script)
+    print(f"📁 保存先: {video_path}")
 
 
 def cmd_generate(platform: str, niche_id: str, count: int = 7):
@@ -317,7 +350,9 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "reel" and len(args) >= 3 and args[1] == "instagram":
+    if cmd == "generate" and len(args) >= 3 and args[1] == "video":
+        cmd_generate_video(args[2])
+    elif cmd == "reel" and len(args) >= 3 and args[1] == "instagram":
         content_type = args[3] if len(args) >= 4 else None
         theme = args[4] if len(args) >= 5 else "dark"
         cmd_reel_instagram(args[2], content_type, theme)
