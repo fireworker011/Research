@@ -2,6 +2,9 @@
 """
 SNS Affiliate Bot - メインエントリーポイント
 使い方:
+  python main.py script beauty tiktok               # 美容ジャンル台本を1本生成
+  python main.py script gadget shorts 7             # ガジェット台本を7本一括生成
+  python main.py script marriage reels 1 high       # 高品質モードで婚活台本を生成
   python main.py generate video --demo              # デモ動画を生成（DALL-E 3 + Edge TTS）
   python main.py generate video script.json         # JSON ファイルから縦型動画を生成
   python main.py reel instagram marriage            # Instagram 読むリール（テキストスライドMP4）を生成
@@ -164,6 +167,70 @@ def cmd_post_video(platform: str, niche_id: str):
     poster = ThreadsPoster(niche_id)
     result = poster.post_video(content, video_url)
     print(f"✅ 動画投稿完了: post_id={result['post_id']}")
+
+
+def cmd_script(genre: str, platform: str = "tiktok", count: int = 1, quality: str = "fast"):
+    """
+    台本を生成して output/scripts/ に保存する。
+    count > 1 の場合は一括生成（バッチモード）。
+    """
+    from modules.content.script_generator import ScriptGenerator
+    from modules.content.templates import GENRE_TEMPLATES, PLATFORM_PARAMS
+
+    if genre not in GENRE_TEMPLATES:
+        print(f"❌ 未対応ジャンル: {genre}")
+        print(f"   選択肢: {list(GENRE_TEMPLATES.keys())}")
+        return
+    if platform not in PLATFORM_PARAMS:
+        print(f"❌ 未対応プラットフォーム: {platform}")
+        print(f"   選択肢: {list(PLATFORM_PARAMS.keys())}")
+        return
+
+    gen = ScriptGenerator(quality=quality)
+    out_dir = Path("output/scripts") / genre / platform
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if count == 1:
+        print(f"\n📝 台本生成中... (genre={genre}, platform={platform}, model={gen.model})")
+        script = gen.generate(genre=genre, platform=platform)
+        _print_script_preview(script)
+
+        filename = f"{script['project_id']}.json"
+        filepath = out_dir / filename
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(script, f, ensure_ascii=False, indent=2)
+        print(f"\n💾 保存: {filepath}")
+
+        confirm = input("\nそのまま動画を生成しますか？ [y/N]: ").strip().lower()
+        if confirm == "y":
+            from modules.media.video_generator import VideoGenerator
+            vgen = VideoGenerator()
+            vgen.generate(script)
+    else:
+        print(f"\n📝 {count}本一括生成中... (genre={genre}, platform={platform})")
+        scripts = gen.batch_generate(genre=genre, platform=platform, count=count)
+        for script in scripts:
+            filename = f"{script['project_id']}.json"
+            filepath = out_dir / filename
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(script, f, ensure_ascii=False, indent=2)
+        print(f"\n✅ {count}本の台本を {out_dir} に保存しました。")
+
+
+def _print_script_preview(script: dict):
+    print(f"\n── スクリプトプレビュー ──────────────────")
+    print(f"ジャンル  : {script['genre']}  プラットフォーム: {script['platform']}")
+    print(f"フック型  : {script['hook_type']}  構成: {script['content_format']}")
+    print(f"シーン数  : {len(script['scenes'])}  シーン")
+    print()
+    for i, s in enumerate(script["scenes"], 1):
+        speech = s["speech_text"][:50]
+        img = s["image_prompt"][:55]
+        print(f"  [{i:02d}] 🔊 {speech}")
+        print(f"       🖼  {img}")
+    print(f"\nキャプション: {script['caption'][:80]}...")
+    print(f"タグ        : {' '.join(script['hashtags'][:5])}")
+    print("────────────────────────────────────────────")
 
 
 def cmd_generate_video(source: str):
@@ -350,7 +417,13 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "generate" and len(args) >= 3 and args[1] == "video":
+    if cmd == "script" and len(args) >= 2:
+        genre = args[1]
+        platform = args[2] if len(args) >= 3 else "tiktok"
+        count = int(args[3]) if len(args) >= 4 else 1
+        quality = args[4] if len(args) >= 5 else "fast"
+        cmd_script(genre, platform, count, quality)
+    elif cmd == "generate" and len(args) >= 3 and args[1] == "video":
         cmd_generate_video(args[2])
     elif cmd == "reel" and len(args) >= 3 and args[1] == "instagram":
         content_type = args[3] if len(args) >= 4 else None
