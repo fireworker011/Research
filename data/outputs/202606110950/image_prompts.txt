@@ -1,0 +1,64 @@
+# 画像生成プロンプト集 - 40代元清掃員がAIで月8万稼いだ3ステップ
+
+## Scene 1 (直道)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, janitor uniform, sweating, self-deprecating smile, messy break room background, warm indoor lighting, vertical composition
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** 愛嬌あるアニメ風・汗のコミカル表現あり
+
+## Scene 2 (紀子)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, professional setting, whiteboard with japanese text, pointer in hand, confident smile, clean modern office background
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** 清潔感のあるビジネスシーン・論理的な表情
+
+## Scene 3 (直道)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, casual shirt, three fingers raised, excited expression, bright eyes, home office background with laptop, motivational atmosphere
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** エネルギッシュな表情・明るい在宅環境
+
+## Scene 4 (紀子)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, holding smartphone showing screen, pointing at phone display, informative expression, soft gradient background, clean composition
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** スマホ画面が見えるUI紹介シーン
+
+## Scene 5 (直道)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, thumbs up gesture, big warm smile, direct eye contact with camera, bright background, encouraging atmosphere, close-up portrait
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** 視聴者への語りかけ・フレンドリーな表情
+
+## Scene 6 (ナレーション)
+### Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression and japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, side by side, both smiling warmly, team portrait, office background, professional yet friendly atmosphere, duo shot
+
+### Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+**Aspect Ratio:** 9:16
+**Style Note:** エンディングカット・二人のキャラクターが並ぶ
+
+## サムネイル
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, shocked happy expression, money flying around, before-after composition, bold red japanese text overlay space, dramatic lighting, eye-catching thumbnail style

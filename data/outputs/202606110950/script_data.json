@@ -1,0 +1,136 @@
+{
+  "content_id": "202606110950",
+  "title": "40代元清掃員がAIで月8万稼いだ3ステップ",
+  "hook_text": "資格ゼロでも副業できた理由",
+  "target_audience": "30〜50代の会社員・副業に興味があるが何から始めるか分からない人",
+  "total_duration_seconds": 52,
+  "scenes": [
+    {
+      "scene_number": 1,
+      "duration_seconds": 5,
+      "speaker": "直道",
+      "emotion": "焦り・自己嫌悪",
+      "dialogue": "正直なあ…清掃の仕事しながら副業しようとして、3回失敗したんよ。",
+      "action": "汗をぬぐいながら苦笑いする。作業着姿。",
+      "screen_text": "副業3回失敗した男の話",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, janitor uniform, sweating, self-deprecating smile, messy break room background, warm indoor lighting, vertical composition",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "愛嬌あるアニメ風・汗のコミカル表現あり"
+      }
+    },
+    {
+      "scene_number": 2,
+      "duration_seconds": 8,
+      "speaker": "紀子",
+      "emotion": "冷静・分析的",
+      "dialogue": "直道さん、失敗した理由はシンプルです。『型』を知らずに動いていたから。",
+      "action": "ホワイトボードに「型」と大きく書きながら振り返る。",
+      "screen_text": "失敗の本当の原因",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, professional setting, whiteboard with japanese text, pointer in hand, confident smile, clean modern office background",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "清潔感のあるビジネスシーン・論理的な表情"
+      }
+    },
+    {
+      "scene_number": 3,
+      "duration_seconds": 12,
+      "speaker": "直道",
+      "emotion": "熱量・共感",
+      "dialogue": "そう！リサーチ→型→自動化、この3ステップだけ。俺でも3ヶ月でできたんやから。",
+      "action": "指を3本立てながら熱く語る。目がキラキラしている。",
+      "screen_text": "3ステップだけ",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, casual shirt, three fingers raised, excited expression, bright eyes, home office background with laptop, motivational atmosphere",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "エネルギッシュな表情・明るい在宅環境"
+      }
+    },
+    {
+      "scene_number": 4,
+      "duration_seconds": 10,
+      "speaker": "紀子",
+      "emotion": "解説・真剣",
+      "dialogue": "特にAIツールと組み合わせると、作業時間が10分の1になります。具体的には概要欄のリンクで解説しています。",
+      "action": "スマートフォンを見せながら、画面を指差す。",
+      "screen_text": "作業時間→90%削減",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, holding smartphone showing screen, pointing at phone display, informative expression, soft gradient background, clean composition",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "スマホ画面が見えるUI紹介シーン"
+      }
+    },
+    {
+      "scene_number": 5,
+      "duration_seconds": 7,
+      "speaker": "直道",
+      "emotion": "感謝・喜び",
+      "dialogue": "概要欄に無料チェックリストも入れてるから、まず自分のスキルを棚卸ししてみて！",
+      "action": "カメラに向かって親指を立てて笑顔。",
+      "screen_text": "👇概要欄を今すぐチェック",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, thumbs up gesture, big warm smile, direct eye contact with camera, bright background, encouraging atmosphere, close-up portrait",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "視聴者への語りかけ・フレンドリーな表情"
+      }
+    },
+    {
+      "scene_number": 6,
+      "duration_seconds": 10,
+      "speaker": "ナレーション",
+      "emotion": "締め・信頼感",
+      "dialogue": "直道と紀子が実践した副業の型は、概要欄の【無料診断】でチェックできます。",
+      "action": "二人が並んで微笑んでいるエンディングカット。",
+      "screen_text": "フォロー＆概要欄チェック！",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression and japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, side by side, both smiling warmly, team portrait, office background, professional yet friendly atmosphere, duo shot",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "エンディングカット・二人のキャラクターが並ぶ"
+      }
+    }
+  ],
+  "affiliate_section": {
+    "placement": "シーン4の後",
+    "product_category": "転職・AIスクール・副業ツール（A8.net案件）",
+    "natural_transition": "「紀子さんが実際に使ったAIスクール、概要欄にリンク貼っておきました」",
+    "cta_text": "👇【無料】今すぐ副業適性チェック（A8案件リンク）\n📚 直道が使ったAIツール一覧はこちら\n🎁 登録特典：副業ロードマップPDF無料プレゼント",
+    "hashtags": [
+      "#AI副業",
+      "#転職",
+      "#副業初心者",
+      "#在宅ワーク",
+      "#SNSアフィリエイト",
+      "#YouTubeショート",
+      "#スキルアップ",
+      "#仕組み収入"
+    ]
+  },
+  "thumbnail_concept": {
+    "text_overlay": "元清掃員が3ヶ月で月＋8万",
+    "image_prompt": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, shocked happy expression, money flying around, before-after composition, bold red japanese text overlay space, dramatic lighting, eye-catching thumbnail style",
+    "color_scheme": "赤×黄×白のコントラスト強め。直道の表情を大きく"
+  },
+  "seo_metadata": {
+    "youtube_title": "【副業】40代元清掃員がAIで月8万稼いだ3ステップを全公開",
+    "description_template": "▼ 無料副業適性チェックはこちら\n[A8_LINK]\n\n直道が実践したAI副業の3ステップを解説。\n資格なし・スキルゼロから始められる方法です。\n\n▼ 関連動画\n• AIツール使い方入門\n• SNSマネタイズの始め方\n\n#AI副業 #転職 #副業初心者",
+    "tags": [
+      "AI副業",
+      "副業初心者",
+      "在宅ワーク",
+      "転職",
+      "SNSアフィリエイト",
+      "ChatGPT副業",
+      "スキルアップ",
+      "仕組み収入",
+      "YouTubeショート",
+      "40代副業"
+    ]
+  }
+}
