@@ -1,0 +1,94 @@
+# 画像生成プロンプト集 - AIスクール40万払って気づいた衝撃の事実
+# コピペしてそのまま Stable Diffusion / Midjourney に使えます
+# アスペクト比: 9:16（縦型）
+
+================================================================
+## Scene 1 ｜ 直道（後悔・苦笑い）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, scratching head, embarrassed smile, holding empty wallet, home background, warm lighting, expressive face
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: コミカルな後悔表情・空の財布が小道具
+
+================================================================
+## Scene 2 ｜ 紀子（鋭い分析・共感）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, whiteboard with diagram, two circles comparison chart, pointing gesture, serious focused expression, bright office setting
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: 論理的な図解シーン・2つの概念の対比
+
+================================================================
+## Scene 3 ｜ 直道（悔しさ→気づき）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, frustrated expression transitioning to eureka moment, hands spread wide then clapping, dynamic two-frame pose, bright background
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: 感情の変化が見えるダイナミックな表情
+
+================================================================
+## Scene 4 ｜ 紀子（解決策提示・3ステップ）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, three fingers raised, holding smartphone showing income dashboard, confident smile, gradient background, clean modern aesthetic
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: 解決策を明快に提示する信頼感のあるシーン
+
+================================================================
+## Scene 5 ｜ 直道（実績公開・スマホ画面）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, proud smile, showing smartphone screen with income numbers, triumphant pose, warm home office background, success atmosphere
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: 実績を見せる誇らしいシーン・スマホ画面が主役
+
+================================================================
+## Scene 6 ｜ 紀子（CTA・概要欄誘導）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, warm smile, pointing downward gesture, direct eye contact, clean gradient background, call to action pose, friendly professional
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 9:16
+Style Note: 視聴者への語りかけ・行動喚起の締めシーン
+
+================================================================
+## サムネイル（16:9 or 1:1）
+================================================================
+
+### ✅ Positive Prompt
+masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, shocked dramatic expression, money bills flying away, sad face on left vs happy face with laptop on right, bold red and yellow text overlay space, high contrast thumbnail style, eye-catching composition
+
+### 🚫 Negative Prompt
+lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated
+
+Aspect Ratio: 16:9
+Style Note: 左（失敗・暗い青）vs 右（成功・明るいオレンジ）の二分割構成

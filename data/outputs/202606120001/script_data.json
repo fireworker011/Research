@@ -1,0 +1,136 @@
+{
+  "content_id": "202606120001",
+  "title": "AIスクール40万払って気づいた衝撃の事実",
+  "hook_text": "40万使って気づいた、本当に稼げる副業の正体",
+  "target_audience": "副業に興味があるが「お金と時間が無駄になるかも」と踏み出せない30〜50代会社員",
+  "total_duration_seconds": 55,
+  "scenes": [
+    {
+      "scene_number": 1,
+      "duration_seconds": 5,
+      "speaker": "直道",
+      "emotion": "後悔・苦笑い",
+      "dialogue": "俺な、AIスクールに40万払ったんよ。で、3ヶ月後に気づいてん…全然違うことが大事やったって。",
+      "action": "頭をかきながら苦笑い。財布を見せるジェスチャー。",
+      "screen_text": "AIスクール40万→3ヶ月後の現実",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, scratching head, embarrassed smile, holding empty wallet, home background, warm lighting, expressive face",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "コミカルな後悔表情・空の財布が小道具"
+      }
+    },
+    {
+      "scene_number": 2,
+      "duration_seconds": 8,
+      "speaker": "紀子",
+      "emotion": "鋭い分析・共感",
+      "dialogue": "直道さんのケースは典型的な失敗パターンです。スキルを買ったのに、『売る仕組み』を作らなかった。スクールで教わるのは技術だけ。稼ぐのは別の話です。",
+      "action": "2つの図を指差しながら解説。「技術」と「仕組み」を分けて板書。",
+      "screen_text": "技術 ≠ 仕組み",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, whiteboard with diagram, two circles comparison chart, pointing gesture, serious focused expression, bright office setting",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "論理的な図解シーン・2つの概念の対比"
+      }
+    },
+    {
+      "scene_number": 3,
+      "duration_seconds": 10,
+      "speaker": "直道",
+      "emotion": "悔しさ→気づき",
+      "dialogue": "そうやねん！俺、ChatGPTの使い方めっちゃ上手くなったのに、全然稼げへんかった。紀子に言われて初めてわかったわ。"販路"が全くなかったんやって。",
+      "action": "両手を広げて「なんで！」という表情から、ポンと手を打つ気づきの瞬間へ。",
+      "screen_text": "技術○ 販路✗ → 収入ゼロ",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, frustrated expression transitioning to eureka moment, hands spread wide then clapping, dynamic two-frame pose, bright background",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "感情の変化が見えるダイナミックな表情"
+      }
+    },
+    {
+      "scene_number": 4,
+      "duration_seconds": 12,
+      "speaker": "紀子",
+      "emotion": "解決策提示・前向き",
+      "dialogue": "販路を最速で作る方法が3つあります。一つ目はSNSの縦型動画でファンを作ること。二つ目はA8.netなどのアフィリエイトで商品を紹介すること。三つ目はその2つをAIで自動化すること。直道さんが今やってることです。",
+      "action": "指を3本立てながら、それぞれの方法をテンポよく説明。スマホ画面に実際の数字を映す。",
+      "screen_text": "販路3選：SNS→A8→AI自動化",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, three fingers raised, holding smartphone showing income dashboard, confident smile, gradient background, clean modern aesthetic",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "解決策を明快に提示する信頼感のあるシーン"
+      }
+    },
+    {
+      "scene_number": 5,
+      "duration_seconds": 10,
+      "speaker": "直道",
+      "emotion": "熱量・リアル",
+      "dialogue": "今月はな、このやり方で副業だけで月11万いったわ。スクールより、紀子に教わった『型』の方が100倍大事やった。詳細は概要欄に全部書いといたで。",
+      "action": "スマートフォンの収益画面をカメラに向ける。誇らしげな笑顔。",
+      "screen_text": "今月副業 ＋¥110,000",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, slightly tired eyes but warm smile, work clothes or casual shirt, stocky build, kind expression, proud smile, showing smartphone screen with income numbers, triumphant pose, warm home office background, success atmosphere",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "実績を見せる誇らしいシーン・スマホ画面が主役"
+      }
+    },
+    {
+      "scene_number": 6,
+      "duration_seconds": 10,
+      "speaker": "紀子",
+      "emotion": "締め・行動喚起",
+      "dialogue": "スクールより先にやること、それは『売る場所を作る』です。概要欄に直道が使った無料ツールリストと、実際に成果が出たA8案件のリンクを貼っています。まず見てみてください。",
+      "action": "カメラに向かって微笑み、下を指差す（概要欄を指示）。",
+      "screen_text": "👇概要欄に全部あります",
+      "image_prompt": {
+        "positive": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, japanese woman, 30s, professional suit or smart casual, glasses optional, confident posture, analytical expression, warm smile, pointing downward gesture, direct eye contact, clean gradient background, call to action pose, friendly professional",
+        "negative": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, bad proportions, deformed, ugly, duplicate, morbid, mutilated",
+        "aspect_ratio": "9:16",
+        "style_note": "視聴者への語りかけ・行動喚起の締めシーン"
+      }
+    }
+  ],
+  "affiliate_section": {
+    "placement": "シーン5とシーン6の間",
+    "product_category": "転職・AIスクール・副業支援ツール（A8.net案件）",
+    "natural_transition": "「直道が実際に月11万達成した時に使ったツールとA8案件、全部概要欄にまとめました」",
+    "cta_text": "👇【完全無料】副業スタートチェックリスト\n📊 直道の収益レポート（概要欄参照）\n🎓 AIスクール比較・最安値リンク → [A8_LINK_SCHOOL]\n💼 転職エージェント無料登録 → [A8_LINK_CAREER]\n🎁 LINE登録で副業ロードマップPDF無料プレゼント",
+    "hashtags": [
+      "#AI副業",
+      "#副業初心者",
+      "#在宅ワーク",
+      "#アフィリエイト",
+      "#AIスクール",
+      "#YouTubeショート",
+      "#SNSマネタイズ",
+      "#仕組み収入"
+    ]
+  },
+  "thumbnail_concept": {
+    "text_overlay": "40万使って気づいた副業の正体",
+    "image_prompt": "masterpiece, best quality, ultra-detailed, 8k wallpaper, anime style, cute characters, vibrant colors, clean lineart, professional illustration, dynamic composition, middle-aged japanese man, 40s, shocked dramatic expression, money bills flying away, sad face on left vs happy face with laptop on right, bold red and yellow text overlay space, high contrast thumbnail style, eye-catching composition",
+    "color_scheme": "左半分：暗い青＋お金が飛ぶ演出（失敗）→ 右半分：明るいオレンジ＋笑顔（成功）。テキストは赤×白"
+  },
+  "seo_metadata": {
+    "youtube_title": "【副業の真実】AIスクール40万払って3ヶ月後に気づいた衝撃の事実",
+    "description_template": "▼ 直道が使った無料ツールリスト＆A8案件まとめ\n[A8_LINK_SCHOOL]\n[A8_LINK_CAREER]\n\n✅ 副業で稼ぐ前に絶対知っておくべきこと\n・技術を買うより「販路」を先に作れ\n・SNS縦型動画×アフィリエイト×AI自動化が最速\n・直道は3ヶ月でこの型を実践し月収+11万を達成\n\n▼ シリーズ再生リスト\n• 直道と紀子の副業実録チャンネル\n\n▼ 無料LINE登録（副業ロードマップPDF）\n[LINE_LINK]\n\n#AI副業 #副業初心者 #アフィリエイト",
+    "tags": [
+      "AI副業",
+      "副業初心者",
+      "アフィリエイト",
+      "AIスクール 評判",
+      "在宅ワーク",
+      "SNSマネタイズ",
+      "ChatGPT副業",
+      "仕組み収入",
+      "YouTubeショート",
+      "A8ネット"
+    ]
+  }
+}
