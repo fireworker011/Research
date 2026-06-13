@@ -204,9 +204,13 @@ def _cmd_auth(client_secrets_path: str):
 
 
 def _cmd_test():
-    pub = YouTubePublisher()
-    info = pub.get_channel_info()
-    print(f"✅ 接続OK: {info.get('title')} (ch={info.get('channel_id')}, 登録者={info.get('subscriber_count')})")
+    creds = _get_credentials()
+    expiry = creds.expiry.strftime("%Y-%m-%d %H:%M") if creds.expiry else "不明"
+    scopes = ", ".join(creds.scopes or [])
+    print(f"✅ 認証OK: トークン有効")
+    print(f"   有効期限 : {expiry} UTC")
+    print(f"   スコープ : {scopes}")
+    print(f"   次のステップ: python main.py youtube post beauty shorts private")
 
 
 def _cmd_post(video_path: str, title: str, description: str = "", privacy: str = "private"):
