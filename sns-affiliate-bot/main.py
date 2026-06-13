@@ -7,6 +7,10 @@ SNS Affiliate Bot - メインエントリーポイント
   python main.py script marriage reels 1 high       # 高品質モードで婚活台本を生成
   python main.py generate video --demo              # デモ動画を生成（DALL-E 3 + Edge TTS）
   python main.py generate video script.json         # JSON ファイルから縦型動画を生成
+  python main.py tiktok auth                        # TikTok OAuth 認証（初回のみ）
+  python main.py tiktok test                        # TikTok 接続確認
+  python main.py tiktok post beauty tiktok          # 台本生成→動画生成→TikTok投稿
+  python main.py tiktok post output/videos/xxx.mp4 "キャプション"  # 動画ファイルを直接投稿
   python main.py reel instagram marriage            # Instagram 読むリール（テキストスライドMP4）を生成
   python main.py reel instagram marriage confession dark  # テーマ・タイプ指定
   python main.py post threads career                # Threads にテキスト投稿（確認あり）
@@ -233,6 +237,85 @@ def _print_script_preview(script: dict):
     print("────────────────────────────────────────────")
 
 
+def cmd_tiktok(sub: str, args: list[str]):
+    """TikTok 関連コマンド"""
+    if sub == "auth":
+        from modules.publishing.tiktok_publisher import _cmd_auth
+        _cmd_auth()
+
+    elif sub == "test":
+        from modules.publishing.tiktok_publisher import _cmd_test
+        _cmd_test()
+
+    elif sub == "post":
+        if not args:
+            print("❌ 使い方: python main.py tiktok post <genre> <platform>")
+            print("           python main.py tiktok post <video.mp4> <caption>")
+            return
+
+        first = args[0]
+        # 動画ファイルを直接指定した場合
+        if first.endswith(".mp4") or Path(first).exists():
+            caption = args[1] if len(args) >= 2 else ""
+            from modules.publishing.tiktok_publisher import _cmd_post
+            _cmd_post(first, caption)
+            return
+
+        # ジャンル × プラットフォームで台本→動画→投稿
+        genre = first
+        platform = args[1] if len(args) >= 2 else "tiktok"
+        quality = args[2] if len(args) >= 3 else "fast"
+
+        from modules.content.script_generator import ScriptGenerator
+        from modules.content.templates import GENRE_TEMPLATES, PLATFORM_PARAMS
+        from modules.media.video_generator import VideoGenerator
+
+        if genre not in GENRE_TEMPLATES:
+            print(f"❌ 未対応ジャンル: {genre}  選択肢: {list(GENRE_TEMPLATES.keys())}")
+            return
+
+        print(f"\n📝 台本生成中... ({genre} × {platform})")
+        gen = ScriptGenerator(quality=quality)
+        script = gen.generate(genre=genre, platform=platform)
+        _print_script_preview(script)
+
+        out_dir = Path("output/scripts") / genre / platform
+        out_dir.mkdir(parents=True, exist_ok=True)
+        script_path = out_dir / f"{script['project_id']}.json"
+        with open(script_path, "w", encoding="utf-8") as f:
+            json.dump(script, f, ensure_ascii=False, indent=2)
+        print(f"💾 台本保存: {script_path}")
+
+        confirm = input("\n動画を生成して TikTok に投稿しますか？ [y/N]: ").strip().lower()
+        if confirm != "y":
+            print("キャンセルしました。")
+            return
+
+        print("\n🎬 動画生成中...")
+        vgen = VideoGenerator()
+        video_path = vgen.generate(script)
+        print(f"✅ 動画完成: {video_path}")
+
+        caption = script.get("caption", "")
+        hashtags = script.get("hashtags", [])
+
+        print("\n📤 TikTok に投稿中...")
+        from modules.publishing.tiktok_publisher import TikTokPublisher
+        pub = TikTokPublisher()
+        publish_id = pub.publish_video(video_path, caption, hashtags=hashtags, privacy="SELF_ONLY")
+        print(f"\n✅ TikTok 投稿完了!")
+        print(f"   publish_id: {publish_id}")
+        print(f"   ※ 審査前は SELF_ONLY（自分のみ）で投稿されます")
+        print(f"   TikTok アプリで確認してください")
+
+    else:
+        print("使い方:")
+        print("  python main.py tiktok auth")
+        print("  python main.py tiktok test")
+        print("  python main.py tiktok post beauty tiktok")
+        print('  python main.py tiktok post output/videos/xxx.mp4 "キャプション"')
+
+
 def cmd_generate_video(source: str):
     """JSON ファイルまたは --demo フラグから縦型動画を生成する。"""
     from modules.media.video_generator import VideoGenerator
@@ -417,7 +500,9 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "script" and len(args) >= 2:
+    if cmd == "tiktok" and len(args) >= 2:
+        cmd_tiktok(args[1], args[2:])
+    elif cmd == "script" and len(args) >= 2:
         genre = args[1]
         platform = args[2] if len(args) >= 3 else "tiktok"
         count = int(args[3]) if len(args) >= 4 else 1
