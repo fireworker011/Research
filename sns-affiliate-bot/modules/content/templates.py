@@ -196,7 +196,7 @@ GENRE_TEMPLATES = {
             "毛穴レスな肌になりたい",
         ],
         "best_hooks": ["shock_fact", "before_after", "unexpected"],
-        "best_formats": ["save_tutorial", "before_after", "comparison"],
+        "best_formats": ["save_tutorial", "story_arc", "comparison"],
         "best_platforms": ["reels", "tiktok"],
         "image_style": "clean beauty aesthetic, soft studio lighting, feminine, minimalist pastel",
         "hashtags_tiktok": ["#美容", "#スキンケア", "#コスメ", "#美肌", "#美容垢"],
