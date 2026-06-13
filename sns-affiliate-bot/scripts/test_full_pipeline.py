@@ -161,38 +161,42 @@ except Exception as e:
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 2 : OpenAI API — DALL-E 3 画像生成テスト
 # ─────────────────────────────────────────────────────────────────────────────
-step(2, "DALL-E 3 画像生成テスト (OpenAI)")
+step(2, "gpt-image-1 画像生成テスト (OpenAI)")
 divider()
 
 dalle_ok = False
 try:
+    import base64
     from openai import OpenAI
-    import requests as req_lib
     from io import BytesIO
     from PIL import Image
 
     client = OpenAI()
-    print("  テスト画像を生成中 (1024×1024, standard)...")
+    print("  テスト画像を生成中 (1024×1536, gpt-image-1)...")
     t0 = time.time()
     resp = client.images.generate(
-        model="dall-e-3",
+        model="gpt-image-1",
         prompt="beautiful Japanese skincare products arranged on white marble, soft lighting, no text, no letters, no watermark",
-        size="1024x1024",
-        quality="standard",
+        size="1024x1536",
         n=1,
     )
-    url = resp.data[0].url
-    r = req_lib.get(url, timeout=60)
-    r.raise_for_status()
+    item = resp.data[0]
+    if getattr(item, "b64_json", None):
+        img_bytes = base64.b64decode(item.b64_json)
+    else:
+        import requests as req_lib
+        r = req_lib.get(item.url, timeout=60)
+        r.raise_for_status()
+        img_bytes = r.content
 
-    img = Image.open(BytesIO(r.content))
+    img = Image.open(BytesIO(img_bytes))
     elapsed = time.time() - t0
-    ok(f"DALL-E 3 成功 ({elapsed:.1f}秒) — {img.size[0]}×{img.size[1]}px")
+    ok(f"gpt-image-1 成功 ({elapsed:.1f}秒) — {img.size[0]}×{img.size[1]}px")
     dalle_ok = True
 
 except Exception as e:
-    fail(f"DALL-E 3 エラー: {type(e).__name__}: {e}")
-    warn("→ ローカルPCで実行するか、OpenAI Platform でキーの制限設定を確認してください")
+    fail(f"gpt-image-1 エラー: {type(e).__name__}: {e}")
+    warn("→ OpenAI Platform でキーの制限設定を確認してください")
     warn("  https://platform.openai.com/api-keys → キー選択 → Restrictions")
 
 
@@ -392,7 +396,7 @@ print(f"{'=' * 60}")
 components = [
     ("環境チェック",            True),
     ("台本生成 (Claude Haiku)", True),
-    ("DALL-E 3 画像生成",       dalle_ok),
+    ("gpt-image-1 画像生成",     dalle_ok),
     ("Edge TTS 音声合成",       tts_ok),
     ("Pillow テロップ",         True),
     ("FFmpeg Ken Burns",        True),
@@ -405,7 +409,7 @@ for name, passed in components:
 
 print()
 if not dalle_ok:
-    print(f"{YELLOW}  DALL-E 3 が未通過の場合: platform.openai.com で以下を確認{RESET}")
+    print(f"{YELLOW}  gpt-image-1 が未通過の場合: platform.openai.com で以下を確認{RESET}")
     print(f"{YELLOW}  → Settings → API keys → (該当キー) → Restrictions → IP restrictions{RESET}")
     print(f"{YELLOW}  → 制限がある場合は「No restriction」に変更{RESET}")
 if not tts_ok:
