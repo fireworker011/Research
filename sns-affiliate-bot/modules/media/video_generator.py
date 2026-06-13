@@ -40,8 +40,8 @@ WIDTH = 1080
 HEIGHT = 1920
 FPS = 25
 TTS_VOICE = "ja-JP-NanamiNeural"          # Edge TTS 日本語女性音声（高品質）
-DALL_E_MODEL = "dall-e-3"
-DALL_E_SIZE = "1024x1792"                 # 縦型 9:16 に最も近い DALL-E 3 サイズ
+DALL_E_MODEL = "gpt-image-1"          # 2025年以降の標準モデル（dall-e-3 廃止）
+DALL_E_SIZE = "1024x1536"             # gpt-image-1 縦型サポートサイズ（9:16近似）
 
 _FONT_CANDIDATES = [
     str(Path(__file__).parent.parent.parent / "assets/fonts/NotoSansJP-Bold.otf"),
@@ -244,7 +244,7 @@ class VideoGenerator:
     # ── 画像生成 ─────────────────────────────────────────────────────────────
     def _generate_image(self, prompt: str, output_path: str, genre: str = ""):
         """
-        DALL-E 3 で縦型画像を生成して保存する。
+        gpt-image-1 で縦型画像を生成して保存する。
         API が利用不可の場合はグラデーション背景にフォールバックする。
         """
         try:
@@ -252,16 +252,21 @@ class VideoGenerator:
                 model=DALL_E_MODEL,
                 prompt=prompt,
                 size=DALL_E_SIZE,
-                quality="standard",
                 n=1,
             )
-            url = response.data[0].url
-            r = requests.get(url, timeout=60)
-            r.raise_for_status()
-            img = Image.open(BytesIO(r.content)).resize((WIDTH, HEIGHT), Image.LANCZOS)
+            item = response.data[0]
+            # gpt-image-1 は b64_json 形式で返す
+            if getattr(item, "b64_json", None):
+                import base64
+                img_bytes = base64.b64decode(item.b64_json)
+            else:
+                r = requests.get(item.url, timeout=60)
+                r.raise_for_status()
+                img_bytes = r.content
+            img = Image.open(BytesIO(img_bytes)).resize((WIDTH, HEIGHT), Image.LANCZOS)
             img.save(output_path, "JPEG", quality=92)
         except Exception as e:
-            print(f"    ⚠️  DALL-E 3 unavailable ({type(e).__name__}), グラデーション背景を使用")
+            print(f"    ⚠️  Image API unavailable ({type(e).__name__}), グラデーション背景を使用")
             _generate_gradient_image(output_path, genre)
 
     # ── テロップ焼き付け ────────────────────────────────────────────────────

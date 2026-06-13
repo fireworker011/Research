@@ -203,7 +203,7 @@ step(3, "Edge TTS 音声合成テスト (ja-JP-NanamiNeural)")
 divider()
 
 tts_ok = False
-TTS_TEST_PATH = "/tmp/tts_pipeline_test.mp3"
+TTS_TEST_PATH = str(Path(tempfile.gettempdir()) / "tts_pipeline_test.mp3")
 try:
     import edge_tts
 
@@ -267,7 +267,7 @@ try:
                anchor="mm", align="center")
     final = Image.alpha_composite(test_img_rgba, overlay).convert("RGB")
 
-    test_img_path = "/tmp/telop_test.jpg"
+    test_img_path = str(Path(tempfile.gettempdir()) / "telop_test.jpg")
     final.save(test_img_path, "JPEG", quality=92)
     ok(f"テロップ焼き付け成功 → {test_img_path}")
 
@@ -291,16 +291,16 @@ try:
 
     if audio_for_test is None:
         # 無音プレースホルダーを生成
-        audio_for_test = "/tmp/silent_test.mp3"
+        audio_for_test = str(Path(tempfile.gettempdir()) / "silent_test.mp3")
         subprocess.run(
             [ffmpeg_bin, "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
              "-t", "5", "-c:a", "mp3", audio_for_test],
             capture_output=True, check=True,
         )
 
-    scene_test_path = "/tmp/scene_test.mp4"
+    scene_test_path = str(Path(tempfile.gettempdir()) / "scene_test.mp4")
     t0 = time.time()
-    vgen._make_scene("/tmp/telop_test.jpg", audio_for_test, 5.0, scene_test_path)
+    vgen._make_scene(test_img_path, audio_for_test, 5.0, scene_test_path)
     elapsed = time.time() - t0
     size = Path(scene_test_path).stat().st_size
     ok(f"Ken Burns シーン生成成功 ({elapsed:.1f}秒) — {size:,} bytes")
