@@ -237,6 +237,91 @@ def _print_script_preview(script: dict):
     print("────────────────────────────────────────────")
 
 
+def cmd_youtube(sub: str, args: list[str]):
+    """YouTube Shorts 関連コマンド"""
+    if sub == "auth":
+        if not args:
+            print("❌ 使い方: python main.py youtube auth <client_secrets.json のパス>")
+            return
+        from modules.publishing.youtube_publisher import _cmd_auth
+        _cmd_auth(args[0])
+
+    elif sub == "test":
+        from modules.publishing.youtube_publisher import _cmd_test
+        _cmd_test()
+
+    elif sub == "post":
+        if not args:
+            print("❌ 使い方: python main.py youtube post <genre> <platform>")
+            print("           python main.py youtube post <video.mp4> <title>")
+            return
+
+        first = args[0]
+        # 動画ファイルを直接指定
+        if first.endswith(".mp4") or (Path(first).exists() and Path(first).is_file()):
+            title = args[1] if len(args) >= 2 else Path(first).stem
+            privacy = args[2] if len(args) >= 3 else "private"
+            from modules.publishing.youtube_publisher import _cmd_post
+            _cmd_post(first, title, privacy=privacy)
+            return
+
+        # ジャンル × プラットフォームで台本→動画→投稿
+        genre = first
+        platform = args[1] if len(args) >= 2 else "shorts"
+        quality = args[2] if len(args) >= 3 else "fast"
+        privacy = args[3] if len(args) >= 4 else "private"
+
+        from modules.content.script_generator import ScriptGenerator
+        from modules.content.templates import GENRE_TEMPLATES
+        from modules.media.video_generator import VideoGenerator
+
+        if genre not in GENRE_TEMPLATES:
+            print(f"❌ 未対応ジャンル: {genre}  選択肢: {list(GENRE_TEMPLATES.keys())}")
+            return
+
+        print(f"\n📝 台本生成中... ({genre} × {platform})")
+        gen = ScriptGenerator(quality=quality)
+        script = gen.generate(genre=genre, platform=platform)
+        _print_script_preview(script)
+
+        out_dir = Path("output/scripts") / genre / platform
+        out_dir.mkdir(parents=True, exist_ok=True)
+        script_path = out_dir / f"{script['project_id']}.json"
+        with open(script_path, "w", encoding="utf-8") as f:
+            json.dump(script, f, ensure_ascii=False, indent=2)
+        print(f"💾 台本保存: {script_path}")
+
+        confirm = input("\n動画を生成して YouTube Shorts にアップロードしますか？ [y/N]: ").strip().lower()
+        if confirm != "y":
+            print("キャンセルしました。")
+            return
+
+        print("\n🎬 動画生成中...")
+        vgen = VideoGenerator()
+        video_path = vgen.generate(script)
+        print(f"✅ 動画完成: {video_path}")
+
+        title = script.get("caption", script["project_id"])[:100]
+        caption = script.get("caption", "")
+        hashtags = script.get("hashtags", [])
+
+        print(f"\n📤 YouTube Shorts にアップロード中... (privacy={privacy})")
+        from modules.publishing.youtube_publisher import YouTubePublisher
+        pub = YouTubePublisher()
+        result = pub.upload_short(video_path, title, description=caption, hashtags=hashtags, privacy=privacy)
+        print(f"\n✅ YouTube Shorts アップロード完了!")
+        print(f"   タイトル : {result['title']}")
+        print(f"   URL      : {result['video_url']}")
+        print(f"   ※ privacy={privacy} で投稿されました")
+
+    else:
+        print("使い方:")
+        print("  python main.py youtube auth <client_secrets.json のパス>")
+        print("  python main.py youtube test")
+        print("  python main.py youtube post beauty shorts")
+        print('  python main.py youtube post output/videos/xxx.mp4 "タイトル" private')
+
+
 def cmd_tiktok(sub: str, args: list[str]):
     """TikTok 関連コマンド"""
     if sub == "auth":
@@ -502,6 +587,8 @@ def main():
 
     if cmd == "tiktok" and len(args) >= 2:
         cmd_tiktok(args[1], args[2:])
+    elif cmd == "youtube" and len(args) >= 2:
+        cmd_youtube(args[1], args[2:])
     elif cmd == "script" and len(args) >= 2:
         genre = args[1]
         platform = args[2] if len(args) >= 3 else "tiktok"
