@@ -102,20 +102,11 @@ def trim_resize(src: Path, dst: Path):
 
 
 def make_text_card(dst: Path):
-    """scene7: 黒背景に商品テキストを描画（5秒・映像のみ）"""
-    line1 = "留守番中の子に、声が届くカメラ。"
-    line2 = "リンクはプロフィールへ 【PR】"
-    vf = (
-        f"drawtext=fontfile='{FONT}':text='{line1}':"
-        f"fontcolor=white:fontsize=52:x=(w-text_w)/2:y=(h/2)-60,"
-        f"drawtext=fontfile='{FONT}':text='{line2}':"
-        f"fontcolor=#cccccc:fontsize=40:x=(w-text_w)/2:y=(h/2)+20"
-    )
+    """scene7: 黒背景のみ生成（テキストはASS字幕で描画）"""
     run([
         "ffmpeg", "-y",
         "-f", "lavfi",
         "-i", "color=c=#0a0a1a:size=1080x1920:duration=5:rate=30",
-        "-vf", vf,
         "-c:v", "libx264", "-preset", "fast", "-crf", "23",
         "-an",
         str(dst),
