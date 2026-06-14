@@ -411,7 +411,7 @@ GENRE_TEMPLATES = {
             "安心して外出できるようになりたい",
             "ペットとの絆を深めたい",
         ],
-        "best_hooks": ["story_arc", "unexpected", "shock_fact"],
+        "best_hooks": ["empathy", "unexpected", "shock_fact"],
         "best_formats": ["story_arc", "save_tutorial"],
         "best_platforms": ["shorts", "reels", "tiktok"],
         "image_style": "warm cinematic, Japanese apartment interior, cat or dog, emotional, vertical 9:16",
