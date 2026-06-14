@@ -38,9 +38,9 @@ ASS_TEXTS = SUBTITLES[:6] + [
 ]
 
 
-def run(cmd, label=""):
+def run(cmd, label="", cwd=None):
     print(f"  [{label}] 実行中..." if label else "  実行中...")
-    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", cwd=cwd)
     if result.returncode != 0:
         raise RuntimeError(f"FFmpegエラー ({label}):\n{result.stderr[-1500:]}")
 
@@ -169,14 +169,15 @@ def create_ass(dst: Path):
 
 
 def burn_subtitles(src: Path, ass: Path, dst: Path):
-    ass_escaped = ass.as_posix().replace("C:/", "C\\:/").replace("'", "\\'")
+    # ASSフィルタはパス内のコロンをオプション区切りと誤認するため、
+    # ass の親ディレクトリを cwd にしてファイル名のみで参照する（コロン排除）。
     run([
         "ffmpeg", "-y", "-i", str(src),
-        "-vf", f"ass={ass_escaped}",
+        "-vf", f"ass={ass.name}",
         "-c:v", "libx264", "-preset", "fast", "-crf", "20",
         "-c:a", "copy",
         str(dst),
-    ], "テロップ焼き込み")
+    ], "テロップ焼き込み", cwd=str(ass.parent))
 
 
 def main():
