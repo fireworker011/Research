@@ -46,7 +46,7 @@ class ImageGenerator:
 
         paths = []
         for i, scene in enumerate(scenes, 1):
-            visual = scene.get("visual", "")
+            visual = scene.get("image_prompt", scene.get("visual", ""))
             if not visual:
                 print(f"  scene{i:02d}: visual がないためスキップ")
                 paths.append(None)

@@ -395,6 +395,43 @@ GENRE_TEMPLATES = {
             "他にもダイエット情報を発信中なのでフォローして",
         ],
     },
+
+    "pet": {
+        "display_name": "ペット・見守り家電",
+        "target": "20〜40代ペット飼育者、外出中のペットの様子が気になる人",
+        "pain_points": [
+            "留守番中のペットが心配",
+            "ペットが寂しそうにしていないか不安",
+            "緊急時に気づけない",
+            "ペットが高齢で目が離せない",
+        ],
+        "desires": [
+            "外出先からペットの様子を確認したい",
+            "声をかけてあげたい",
+            "安心して外出できるようになりたい",
+            "ペットとの絆を深めたい",
+        ],
+        "best_hooks": ["story_arc", "unexpected", "shock_fact"],
+        "best_formats": ["story_arc", "save_tutorial"],
+        "best_platforms": ["shorts", "reels", "tiktok"],
+        "image_style": "warm cinematic, Japanese apartment interior, cat or dog, emotional, vertical 9:16",
+        "hashtags_tiktok": ["#保護猫", "#猫のいる暮らし", "#ペットカメラ", "#ショートドラマ", "#猫"],
+        "hashtags_reels": ["#保護猫", "#猫のいる暮らし", "#ペットカメラ", "#猫好き", "#猫動画"],
+        "hashtags_shorts": ["#保護猫", "#猫のいる暮らし", "#ペットカメラ", "#ショートドラマ", "#Shorts"],
+        "typical_hooks": [
+            "僕がいないと、ご飯を食べない保護猫がいた",
+            "通知を見て言葉を失った",
+            "帰れない夜だった",
+            "仕事中に涙が止まらなくなった理由",
+            "留守番カメラを初めてつけた日の話",
+        ],
+        "cta_patterns": [
+            "留守番中の子に、声が届くカメラ。リンクはプロフィールへ【PR】",
+            "詳しい商品情報はプロフィールのリンクから【PR】",
+            "愛猫のためにできること、まとめてます【PR】",
+        ],
+    },
+
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -407,4 +444,5 @@ AFFILIATE_CONFIG = {
     "marriage":  {"platform": "A8.net",      "category": "婚活・結婚相談所"},
     "sidehustle":{"platform": "A8.net",      "category": "副業・投資スクール"},
     "diet":      {"platform": "楽天/Amazon", "category": "サプリ・ダイエット食品"},
+    "pet":       {"platform": "楽天/Amazon", "category": "ペット用品・見守りカメラ"},
 }

@@ -131,7 +131,7 @@ class VideoAssembler:
     def _burn_subtitles(self, src: Path, scenes: list[dict], dst: Path):
         filters = []
         for i, scene in enumerate(scenes):
-            text = scene.get("subtitle", scene.get("テロップ", ""))
+            text = scene.get("subtitle", scene.get("speech_text", scene.get("テロップ", "")))
             if not text:
                 continue
             start = i * 5

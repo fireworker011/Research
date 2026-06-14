@@ -249,7 +249,7 @@ def cmd_pet(sub: str, args: list[str]):
         from modules.content.script_generator import ScriptGenerator
         print(f"\n📝 台本生成中... hook='{hook}'")
         gen = ScriptGenerator(quality=quality)
-        script = gen.generate(genre="pet", platform="shorts", hook_override=hook)
+        script = gen.generate(genre="pet", platform="shorts")
         _print_script_preview(script)
 
         # 台本保存
