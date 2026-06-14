@@ -169,10 +169,10 @@ def create_ass(dst: Path):
 
 
 def burn_subtitles(src: Path, ass: Path, dst: Path):
-    ass_posix = ass.as_posix().replace("C:/", "C\\\\:/")
+    ass_escaped = ass.as_posix().replace("C:/", "C\\:/").replace("'", "\\'")
     run([
         "ffmpeg", "-y", "-i", str(src),
-        "-vf", f"ass='{ass_posix}'",
+        "-vf", f"ass={ass_escaped}",
         "-c:v", "libx264", "-preset", "fast", "-crf", "20",
         "-c:a", "copy",
         str(dst),
