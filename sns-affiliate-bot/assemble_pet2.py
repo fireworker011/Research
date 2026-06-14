@@ -1,13 +1,14 @@
 """
 ペット動画②「通知を見て言葉を失った」 アセンブラ
 
-scene1.mp4〜scene6.mp4 を結合し、テロップを焼き込んで完成動画を出力する。
+scene1.mp4〜scene6.mp4 を結合し、edge-tts ナレーション＋テロップを合成して完成動画を出力。
 scene7（商品テキストカード）はFFmpegで自動生成。
 
 使い方:
   python assemble_pet2.py
 """
 
+import asyncio
 import subprocess
 import tempfile
 import shutil
@@ -17,8 +18,9 @@ from pathlib import Path
 SCENES_DIR = Path(r"C:\Users\ys734\Desktop\新しいフォルダー")
 OUTPUT     = Path(r"C:\Users\ys734\Desktop\pet_short_02.mp4")
 FONT       = r"C:/Windows/Fonts/meiryo.ttc"
+TTS_VOICE  = "ja-JP-NanamiNeural"   # 落ち着いた女性の声
 
-# テロップ（7シーン分）
+# テロップ＝ナレーション（7シーン分）
 SUBTITLES = [
     "通知を見て、言葉を失った",
     "昼休み、会社で確認した",
@@ -26,9 +28,14 @@ SUBTITLES = [
     "私の靴下だった",
     "においを嗅いで、安心してた",
     "仕事中に、泣きそうになった",
-    "留守番中の子に、声が届くカメラ。\\Nリンクはプロフィールへ【PR】",
+    "留守番中の子に、声が届くカメラ",   # scene7 ナレーションはシンプルに
 ]
 # ─────────────────────────────────────────────────────────────────────────────
+
+# ASS字幕用テキスト（scene7 だけ2行表示）
+ASS_TEXTS = SUBTITLES[:6] + [
+    "留守番中の子に、声が届くカメラ。\\Nリンクはプロフィールへ【PR】"
+]
 
 
 def run(cmd, label=""):
@@ -38,14 +45,55 @@ def run(cmd, label=""):
         raise RuntimeError(f"FFmpegエラー ({label}):\n{result.stderr[-1500:]}")
 
 
+async def generate_tts(texts: list[str], out_dir: Path) -> list[Path]:
+    """edge-tts で各シーンのナレーションを生成"""
+    try:
+        import edge_tts
+    except ImportError:
+        raise ImportError("pip install edge-tts が必要です")
+
+    paths = []
+    for i, text in enumerate(texts, 1):
+        out = out_dir / f"tts_{i:02d}.mp3"
+        print(f"  [TTS] scene{i}: {text[:20]}...")
+        tts = edge_tts.Communicate(text, TTS_VOICE)
+        await tts.save(str(out))
+        paths.append(out)
+    return paths
+
+
+def pad_audio_to_5s(src: Path, dst: Path):
+    """音声を5秒に合わせる（短ければ無音でパディング、長ければカット）"""
+    run([
+        "ffmpeg", "-y", "-i", str(src),
+        "-t", "5",
+        "-af", "apad=pad_dur=5,atrim=duration=5",
+        "-c:a", "aac", "-ar", "44100", "-ac", "2",
+        str(dst),
+    ], f"pad {src.name}")
+
+
+def concat_audio(paths: list[Path], dst: Path, tmp: Path):
+    list_file = tmp / "audio_list.txt"
+    list_file.write_text(
+        "\n".join(f"file '{p.as_posix()}'" for p in paths), encoding="utf-8"
+    )
+    run([
+        "ffmpeg", "-y",
+        "-f", "concat", "-safe", "0",
+        "-i", str(list_file),
+        "-c:a", "aac",
+        str(dst),
+    ], "音声concat")
+
+
 def trim_resize(src: Path, dst: Path):
-    """5秒にトリム・縦型1080×1920にリサイズ（音声なし）"""
+    """5秒にトリム・縦型1080×1920にリサイズ（映像のみ）"""
     run([
         "ffmpeg", "-y", "-i", str(src),
         "-t", "5",
         "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,"
-               "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,"
-               "setsar=1",
+               "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1",
         "-r", "30",
         "-c:v", "libx264", "-preset", "fast", "-crf", "23",
         "-an",
@@ -54,7 +102,7 @@ def trim_resize(src: Path, dst: Path):
 
 
 def make_text_card(dst: Path):
-    """scene7: 黒背景に商品テキストを描画（5秒）"""
+    """scene7: 黒背景に商品テキストを描画（5秒・映像のみ）"""
     line1 = "留守番中の子に、声が届くカメラ。"
     line2 = "リンクはプロフィールへ 【PR】"
     vf = (
@@ -74,8 +122,8 @@ def make_text_card(dst: Path):
     ], "scene7テキストカード")
 
 
-def concat(paths: list[Path], dst: Path, tmp: Path):
-    list_file = tmp / "concat_list.txt"
+def concat_video(paths: list[Path], dst: Path, tmp: Path):
+    list_file = tmp / "video_list.txt"
     list_file.write_text(
         "\n".join(f"file '{p.as_posix()}'" for p in paths), encoding="utf-8"
     )
@@ -85,7 +133,19 @@ def concat(paths: list[Path], dst: Path, tmp: Path):
         "-i", str(list_file),
         "-c", "copy",
         str(dst),
-    ], "concat")
+    ], "映像concat")
+
+
+def merge_av(video: Path, audio: Path, dst: Path):
+    """映像と音声を合成"""
+    run([
+        "ffmpeg", "-y",
+        "-i", str(video),
+        "-i", str(audio),
+        "-c:v", "copy", "-c:a", "aac",
+        "-shortest",
+        str(dst),
+    ], "映像+音声合成")
 
 
 def create_ass(dst: Path):
@@ -107,18 +167,12 @@ def create_ass(dst: Path):
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     events = []
-    for i, text in enumerate(SUBTITLES):
+    for i, text in enumerate(ASS_TEXTS):
         s = i * 5
         e = (i + 1) * 5
-        sh = s // 3600
-        sm = (s % 3600) // 60
-        ss = s % 60
-        eh = e // 3600
-        em = (e % 3600) // 60
-        es = e % 60
         events.append(
-            f"Dialogue: 0,{sh}:{sm:02d}:{ss:02d}.00,"
-            f"{eh}:{em:02d}:{es:02d}.00,Default,,0,0,0,,{text}"
+            f"Dialogue: 0,0:{s//60:02d}:{s%60:02d}.00,"
+            f"0:{e//60:02d}:{e%60:02d}.00,Default,,0,0,0,,{text}"
         )
     dst.write_text(header + "\n".join(events), encoding="utf-8-sig")
 
@@ -151,34 +205,58 @@ def main():
     with tempfile.TemporaryDirectory() as tmp_str:
         tmp = Path(tmp_str)
 
-        # Step1: 各シーンをトリム・リサイズ
-        print("\n[Step1] トリム・リサイズ")
-        trimmed = []
+        # Step1: TTS ナレーション生成
+        print("\n[Step1] ナレーション生成 (edge-tts)")
+        tts_dir = tmp / "tts"
+        tts_dir.mkdir()
+        raw_tts = asyncio.run(generate_tts(SUBTITLES, tts_dir))
+
+        # Step2: 各ナレーションを5秒にパディング
+        print("\n[Step2] 音声を5秒に調整")
+        padded_audio = []
+        for p in raw_tts:
+            out = tmp / f"pad_{p.name.replace('.mp3', '.aac')}"
+            pad_audio_to_5s(p, out)
+            padded_audio.append(out)
+
+        # Step3: 音声を結合
+        print("\n[Step3] 音声結合")
+        full_audio = tmp / "full_audio.aac"
+        concat_audio(padded_audio, full_audio, tmp)
+
+        # Step4: 映像トリム・リサイズ
+        print("\n[Step4] 映像トリム・リサイズ")
+        trimmed_video = []
         for sf in scene_files:
             out = tmp / f"t_{sf.name}"
             trim_resize(sf, out)
-            trimmed.append(out)
+            trimmed_video.append(out)
 
-        # Step2: scene7 テキストカード生成
-        print("\n[Step2] scene7 テキストカード生成")
+        # Step5: scene7 テキストカード生成
+        print("\n[Step5] scene7 テキストカード生成")
         scene7 = tmp / "t_scene7.mp4"
         make_text_card(scene7)
-        trimmed.append(scene7)
+        trimmed_video.append(scene7)
 
-        # Step3: concat
-        print("\n[Step3] 結合")
-        concat_out = tmp / "concat.mp4"
-        concat(trimmed, concat_out, tmp)
+        # Step6: 映像結合
+        print("\n[Step6] 映像結合")
+        concat_v = tmp / "concat_video.mp4"
+        concat_video(trimmed_video, concat_v, tmp)
 
-        # Step4: ASS字幕生成
-        print("\n[Step4] テロップ生成")
+        # Step7: 映像＋音声合成
+        print("\n[Step7] 映像＋音声合成")
+        av_merged = tmp / "av_merged.mp4"
+        merge_av(concat_v, full_audio, av_merged)
+
+        # Step8: ASS字幕生成
+        print("\n[Step8] テロップ生成")
         ass_path = tmp / "subtitles.ass"
         create_ass(ass_path)
 
-        # Step5: テロップ焼き込み
-        print("\n[Step5] テロップ焼き込み")
+        # Step9: テロップ焼き込み
+        print("\n[Step9] テロップ焼き込み")
         final_tmp = tmp / "final.mp4"
-        burn_subtitles(concat_out, ass_path, final_tmp)
+        burn_subtitles(av_merged, ass_path, final_tmp)
 
         # 出力
         OUTPUT.parent.mkdir(parents=True, exist_ok=True)
