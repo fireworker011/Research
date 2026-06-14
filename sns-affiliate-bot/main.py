@@ -237,6 +237,92 @@ def _print_script_preview(script: dict):
     print("────────────────────────────────────────────")
 
 
+def cmd_pet(sub: str, args: list[str]):
+    """ペット動画 半自動パイプライン"""
+    import json as _json
+
+    if sub == "generate":
+        # 台本生成 + DALL-E 画像生成
+        hook = args[0] if args else "通知を見て言葉を失った"
+        quality = args[1] if len(args) >= 2 else "fast"
+
+        from modules.content.script_generator import ScriptGenerator
+        print(f"\n📝 台本生成中... hook='{hook}'")
+        gen = ScriptGenerator(quality=quality)
+        script = gen.generate(genre="pet", platform="shorts", hook_override=hook)
+        _print_script_preview(script)
+
+        # 台本保存
+        out_dir = Path("output/scripts/pet/shorts")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        script_path = out_dir / f"{script['project_id']}.json"
+        with open(script_path, "w", encoding="utf-8") as f:
+            _json.dump(script, f, ensure_ascii=False, indent=2)
+        print(f"💾 台本保存: {script_path}")
+
+        # DALL-E 画像生成
+        confirm = input("\nDALL-E で画像を生成しますか？ [y/N]: ").strip().lower()
+        if confirm == "y":
+            from modules.media.image_generator import ImageGenerator
+            print("\n🎨 画像生成中（最大7枚）...")
+            img_gen = ImageGenerator()
+            img_paths = img_gen.generate_scene_images(script)
+            valid = [p for p in img_paths if p]
+            print(f"\n✅ 画像生成完了: {len(valid)}枚")
+            print(f"   保存先: output/images/{script['project_id']}/")
+            print(f"\n📱 次のステップ:")
+            print(f"   1. 上記画像をGrokに1枚ずつアップロードして5秒動画を生成")
+            print(f"   2. 動画を以下に保存:")
+            scenes_dir = Path("output/videos/scenes") / script["project_id"]
+            scenes_dir.mkdir(parents=True, exist_ok=True)
+            print(f"      {scenes_dir}/scene01.mp4〜scene07.mp4")
+            print(f"   3. python main.py pet assemble {script['project_id']}")
+
+    elif sub == "assemble":
+        # scene動画を結合してテロップ焼き込み → YouTube投稿
+        if not args:
+            print("❌ 使い方: python main.py pet assemble <project_id> [bgm.mp3] [private|public]")
+            return
+
+        project_id = args[0]
+        bgm = args[1] if len(args) >= 2 and Path(args[1]).exists() else None
+        privacy = args[2] if len(args) >= 3 else "private"
+
+        # 台本を読み込む
+        script_path = Path("output/scripts/pet/shorts") / f"{project_id}.json"
+        if not script_path.exists():
+            print(f"❌ 台本が見つかりません: {script_path}")
+            return
+        with open(script_path, encoding="utf-8") as f:
+            script = _json.load(f)
+
+        scenes_dir = Path("output/videos/scenes") / project_id
+        print(f"\n🎬 動画結合 + テロップ合成中...")
+        from modules.media.video_assembler import VideoAssembler
+        assembler = VideoAssembler()
+        final_video = assembler.assemble(script, str(scenes_dir), bgm_path=bgm)
+
+        confirm = input(f"\n📤 YouTube Shorts に投稿しますか？ (privacy={privacy}) [y/N]: ").strip().lower()
+        if confirm == "y":
+            from modules.publishing.youtube_publisher import YouTubePublisher
+            pub = YouTubePublisher()
+            title = script.get("caption", project_id)[:100]
+            caption = script.get("caption", "")
+            hashtags = script.get("hashtags", [])
+            result = pub.upload_short(
+                str(final_video), title,
+                description=caption, hashtags=hashtags, privacy=privacy
+            )
+            print(f"\n✅ 投稿完了!")
+            print(f"   URL: {result['video_url']}")
+
+    else:
+        print("使い方:")
+        print("  python main.py pet generate              # 台本+画像生成")
+        print('  python main.py pet generate "通知を見て言葉を失った"')
+        print("  python main.py pet assemble <project_id> # 動画結合+投稿")
+
+
 def cmd_youtube(sub: str, args: list[str]):
     """YouTube Shorts 関連コマンド"""
     if sub == "auth":
@@ -585,7 +671,9 @@ def main():
 
     cmd = args[0]
 
-    if cmd == "tiktok" and len(args) >= 2:
+    if cmd == "pet" and len(args) >= 2:
+        cmd_pet(args[1], args[2:])
+    elif cmd == "tiktok" and len(args) >= 2:
         cmd_tiktok(args[1], args[2:])
     elif cmd == "youtube" and len(args) >= 2:
         cmd_youtube(args[1], args[2:])
