@@ -1,38 +1,45 @@
 """
 ペット動画②「通知を見て言葉を失った」 アセンブラ
 
-scene1.mp4〜scene6.mp4 を結合し、edge-tts ナレーション＋テロップを合成して完成動画を出力。
+scene1.mp4〜scene6.mp4 を結合し、Voicevoxナレーション＋テロップを合成して完成動画を出力。
 scene7（商品テキストカード）はFFmpegで自動生成。
+
+事前準備: Voicevox を起動しておく（http://localhost:50021）
 
 使い方:
   python assemble_pet2.py
 """
 
-import asyncio
+import json
 import subprocess
 import tempfile
 import shutil
+import time
+import urllib.request
+import urllib.parse
 from pathlib import Path
 
 # ── 設定 ──────────────────────────────────────────────────────────────────────
-SCENES_DIR = Path(r"C:\Users\ys734\Desktop\新しいフォルダー")
-OUTPUT     = Path(r"C:\Users\ys734\Desktop\pet_short_02.mp4")
-FONT       = r"C:/Windows/Fonts/meiryo.ttc"
-TTS_VOICE  = "ja-JP-NanamiNeural"   # 落ち着いた女性の声
+SCENES_DIR  = Path(r"C:\Users\ys734\Desktop\新しいフォルダー")
+OUTPUT      = Path(r"C:\Users\ys734\Desktop\pet_short_02.mp4")
+VOICEVOX    = "http://localhost:50021"
+SPEAKER_ID  = 9      # 波音リツ (ノーマル)
+SPEED       = 0.88
+PITCH       = -0.03
+INTONATION  = 1.4
 
 # テロップ＝ナレーション（7シーン分）
 SUBTITLES = [
     "通知を見て、言葉を失った",
     "昼休み、会社で確認した",
-    "何かをくわえて…うろうろしてる",
-    "私の靴下だった",
+    "何かをくわえて……うろうろしてる",
+    "私の、靴下だった",
     "においを嗅いで、安心してた",
     "仕事中に、泣きそうになった",
-    "留守番中の子に、声が届くカメラ",   # scene7 ナレーションはシンプルに
+    "留守番中の子に、声が届くカメラ",
 ]
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ASS字幕用テキスト（scene7 だけ2行表示）
 ASS_TEXTS = SUBTITLES[:6] + [
     "留守番中の子に、声が届くカメラ。\\Nリンクはプロフィールへ【PR】"
 ]
@@ -45,20 +52,36 @@ def run(cmd, label="", cwd=None):
         raise RuntimeError(f"FFmpegエラー ({label}):\n{result.stderr[-1500:]}")
 
 
-async def generate_tts(texts: list[str], out_dir: Path) -> list[Path]:
-    """edge-tts で各シーンのナレーションを生成"""
-    try:
-        import edge_tts
-    except ImportError:
-        raise ImportError("pip install edge-tts が必要です")
+def voicevox_generate(text: str, out_path: Path):
+    """Voicevox API で音声生成"""
+    url = f"{VOICEVOX}/audio_query?text={urllib.parse.quote(text)}&speaker={SPEAKER_ID}"
+    req = urllib.request.Request(url, method="POST")
+    with urllib.request.urlopen(req) as res:
+        query = json.loads(res.read())
 
+    query["speedScale"]        = SPEED
+    query["pitchScale"]        = PITCH
+    query["intonationScale"]   = INTONATION
+    query["prePhonemeLength"]  = 0.1
+    query["postPhonemeLength"] = 0.15
+
+    url2 = f"{VOICEVOX}/synthesis?speaker={SPEAKER_ID}"
+    body = json.dumps(query).encode("utf-8")
+    req2 = urllib.request.Request(url2, data=body, method="POST",
+                                  headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req2) as res:
+        out_path.write_bytes(res.read())
+
+
+def generate_narration(texts: list[str], out_dir: Path) -> list[Path]:
+    """Voicevox で各シーンのナレーションを生成"""
     paths = []
     for i, text in enumerate(texts, 1):
-        out = out_dir / f"tts_{i:02d}.mp3"
-        print(f"  [TTS] scene{i}: {text[:20]}...")
-        tts = edge_tts.Communicate(text, TTS_VOICE)
-        await tts.save(str(out))
+        out = out_dir / f"tts_{i:02d}.wav"
+        print(f"  [TTS] scene{i}: {text}")
+        voicevox_generate(text, out)
         paths.append(out)
+        time.sleep(0.3)
     return paths
 
 
@@ -198,10 +221,10 @@ def main():
         tmp = Path(tmp_str)
 
         # Step1: TTS ナレーション生成
-        print("\n[Step1] ナレーション生成 (edge-tts)")
+        print("\n[Step1] ナレーション生成 (Voicevox / 波音リツ)")
         tts_dir = tmp / "tts"
         tts_dir.mkdir()
-        raw_tts = asyncio.run(generate_tts(SUBTITLES, tts_dir))
+        raw_tts = generate_narration(SUBTITLES, tts_dir)
 
         # Step2: 各ナレーションを5秒にパディング
         print("\n[Step2] 音声を5秒に調整")
