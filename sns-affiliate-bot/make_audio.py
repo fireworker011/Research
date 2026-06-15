@@ -1,5 +1,5 @@
 """
-台本に沿ってナレーション音声を生成する
+台本に沿ってナレーション音声を生成する（SSML感情付き）
 
 出力先: C:\\Users\\ys734\\Desktop\\audio\\
   - scene01.mp3 〜 scene07.mp3  （各シーン個別）
@@ -11,15 +11,51 @@
 
 import asyncio
 import subprocess
-import shutil
 from pathlib import Path
 
 # ── 設定 ──────────────────────────────────────────────────────────────────────
 OUTPUT_DIR = Path(r"C:\Users\ys734\Desktop\audio")
-VOICE      = "ja-JP-NanamiNeural"   # 落ち着いた女性の声
+VOICE      = "ja-JP-NanamiNeural"
 
-# 台本ナレーション（7シーン）
-NARRATION = [
+# SSML付きナレーション（間・テンポ・ピッチで感情を表現）
+NARRATION_SSML = [
+    # scene1: 衝撃・固まる
+    "<speak><prosody rate='slow' pitch='-3st'>"
+    "通知を見て、<break time='700ms'/>言葉を失った"
+    "</prosody></speak>",
+
+    # scene2: 不安・緊張
+    "<speak><prosody rate='medium' pitch='-1st'>"
+    "昼休み、<break time='400ms'/>会社で確認した"
+    "</prosody></speak>",
+
+    # scene3: 首をかしげる・不思議
+    "<speak><prosody rate='slow' pitch='0st'>"
+    "何かをくわえて…<break time='600ms'/>うろうろしてる"
+    "</prosody></speak>",
+
+    # scene4: 静かな驚き
+    "<speak><prosody rate='slow' pitch='-2st'>"
+    "<break time='300ms'/>私の…靴下だった"
+    "</prosody></speak>",
+
+    # scene5: じんわり感動
+    "<speak><prosody rate='slow' pitch='-2st'>"
+    "においを嗅いで、<break time='600ms'/>安心してた"
+    "</prosody></speak>",
+
+    # scene6: 涙をこらえる
+    "<speak><prosody rate='slow' pitch='-3st'>"
+    "仕事中に、<break time='500ms'/>泣きそうになった"
+    "</prosody></speak>",
+
+    # scene7: 温かく締める
+    "<speak><prosody rate='medium' pitch='-1st'>"
+    "留守番中の子に、<break time='400ms'/>声が届くカメラ"
+    "</prosody></speak>",
+]
+
+SCENE_LABELS = [
     "通知を見て、言葉を失った",
     "昼休み、会社で確認した",
     "何かをくわえて…うろうろしてる",
@@ -31,9 +67,9 @@ NARRATION = [
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-async def generate(text: str, out_path: Path, voice: str = VOICE):
+async def generate(ssml: str, out_path: Path, voice: str = VOICE):
     import edge_tts
-    tts = edge_tts.Communicate(text, voice)
+    tts = edge_tts.Communicate(ssml, voice)
     await tts.save(str(out_path))
 
 
@@ -57,10 +93,10 @@ async def main():
     print(f"出力先: {OUTPUT_DIR}\n")
 
     scene_files = []
-    for i, text in enumerate(NARRATION, 1):
+    for i, (ssml, label) in enumerate(zip(NARRATION_SSML, SCENE_LABELS), 1):
         out = OUTPUT_DIR / f"scene{i:02d}.mp3"
-        print(f"  scene{i:02d}: {text}")
-        await generate(text, out)
+        print(f"  scene{i:02d}: {label}")
+        await generate(ssml, out)
         scene_files.append(out)
         print(f"           → {out.name} ✅")
 
@@ -70,7 +106,6 @@ async def main():
     print(f"  → {full.name} ✅")
 
     print(f"\n完成! {OUTPUT_DIR} を確認してください。")
-    print("問題なければ assemble_pet2.py で動画に合成します。")
 
 
 if __name__ == "__main__":
