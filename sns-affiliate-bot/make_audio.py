@@ -20,7 +20,7 @@ import urllib.error
 # ── 設定 ──────────────────────────────────────────────────────────────────────
 OUTPUT_DIR  = Path(r"C:\Users\ys734\Desktop\audio")
 VOICEVOX    = "http://localhost:50021"
-SPEAKER_ID  = 46   # 小夜/SAYO (ノーマル)
+SPEAKER_ID  = 9    # 波音リツ (ノーマル)
 
 # 感情パラメータ（1.0 が標準）
 SPEED        = 0.88    # ゆっくり目
@@ -113,7 +113,7 @@ def main():
         print("   Voicevox を起動してから再実行してください。")
         return
 
-    print(f"✅ Voicevox 接続OK (小夜/SAYO, speaker={SPEAKER_ID})\n")
+    print(f"✅ Voicevox 接続OK (波音リツ, speaker={SPEAKER_ID})\n")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     scene_files = []
