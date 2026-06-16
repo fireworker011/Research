@@ -19,27 +19,37 @@
 新規会話を開いたら、対象系統の「起動コマンド」1行を貼るだけ。
 各起動コマンドは下の索引、または各 `SYSTEM.md` の冒頭に書いてある。
 
+## 5ニッチ(全SNS共通)
+
+| No | ニッチ | 種別 | 訴求の核 |
+|----|--------|------|----------|
+| 01 | 転職・キャリア・リスキリング | 📱スマホ(テキスト) | 「今の会社にいて大丈夫?」不安フック→スクール/エージェント。高単価・承認安定 |
+| 02 | 金融・投資(資産形成) | 📱スマホ(テキスト) | 「やらないと◯万損」数字解説。新NISA/仮想通貨/固定費削減。最高単価帯 |
+| 03 | 美容・ダイエット・コンプレックス | 💻PC(映像) | Before/After。垢抜け/メンズ美容/パーソナルジム。最もバズる |
+| 04 | VOD・サブスク・通信 | 💻PC(映像) | 無料体験でCV発生・最高CVR。トレンド便乗。最速で初報酬 |
+| 05 | 子育て・オンライン教育(知育) | 💻PC(映像) | 「子供への投資」不況に強い。プログラミング/英会話/知育玩具 |
+
+> スマホ系2(転職・金融=テキスト解説向き) / PC系3(美容・VOD・子育て=映像訴求向き)。
+
 ## 15系統 索引
 
 ### Threads
-- `threads/phone/01_投稿文/SYSTEM.md` … スマホ / 投稿文・スレッド構成
-- `threads/phone/02_ネタ収集/SYSTEM.md` … スマホ / ネタ収集・リプ戦略
-- `threads/pc/03_画像生成/SYSTEM.md` … PC / 添付画像生成
-- `threads/pc/04_LoRA素材/SYSTEM.md` … PC / LoRA素材作成
-- `threads/pc/05_バッチ整形/SYSTEM.md` … PC / 画像バッチ整形
+- `threads/phone/01_転職/SYSTEM.md` … スマホ / 転職・キャリア
+- `threads/phone/02_金融/SYSTEM.md` … スマホ / 金融・投資
+- `threads/pc/03_美容/SYSTEM.md` … PC / 美容・ダイエット
+- `threads/pc/04_VOD/SYSTEM.md` … PC / VOD・サブスク
+- `threads/pc/05_子育て/SYSTEM.md` … PC / 子育て・知育
 
 ### YouTube Shorts
-- `shorts/phone/01_台本/SYSTEM.md` … スマホ / 台本・キャプション
-- `shorts/phone/02_フック/SYSTEM.md` … スマホ / フック・サムネ文言
-- `shorts/pc/03_動画生成/SYSTEM.md` … PC / 動画生成(WAN i2v)
-- `shorts/pc/04_LoRA学習/SYSTEM.md` … PC / LoRA学習・差し替え
-- `shorts/pc/05_書き出し/SYSTEM.md` … PC / バッチ書き出し
+- `shorts/phone/01_転職/SYSTEM.md` … スマホ / 転職・キャリア
+- `shorts/phone/02_金融/SYSTEM.md` … スマホ / 金融・投資
+- `shorts/pc/03_美容/SYSTEM.md` … PC / 美容・ダイエット
+- `shorts/pc/04_VOD/SYSTEM.md` … PC / VOD・サブスク
+- `shorts/pc/05_子育て/SYSTEM.md` … PC / 子育て・知育
 
 ### TikTok
-- `tiktok/phone/01_台本/SYSTEM.md` … スマホ / 台本・キャプション
-- `tiktok/phone/02_トレンド/SYSTEM.md` … スマホ / フック・トレンド合わせ
-- `tiktok/pc/03_動画生成/SYSTEM.md` … PC / 動画生成(WAN i2v)
-- `tiktok/pc/04_編集素材/SYSTEM.md` … PC / 編集用素材バッチ
-- `tiktok/pc/05_書き出し/SYSTEM.md` … PC / バッチ書き出し
-
-> ジャンル名・フォルダ名は仮。実ジャンルに合わせて自由にリネームしてよい。
+- `tiktok/phone/01_転職/SYSTEM.md` … スマホ / 転職・キャリア
+- `tiktok/phone/02_金融/SYSTEM.md` … スマホ / 金融・投資
+- `tiktok/pc/03_美容/SYSTEM.md` … PC / 美容・ダイエット
+- `tiktok/pc/04_VOD/SYSTEM.md` … PC / VOD・サブスク
+- `tiktok/pc/05_子育て/SYSTEM.md` … PC / 子育て・知育
