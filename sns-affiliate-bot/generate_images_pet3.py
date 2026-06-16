@@ -67,7 +67,7 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("=" * 50)
-    print("DALL-E 3 画像生成 — 動画③「帰れない夜だった」")
+    print("gpt-image-1 画像生成 — 動画③「帰れない夜だった」")
     print("=" * 50)
 
     for i, prompt in enumerate(PROMPTS, 1):
@@ -77,14 +77,14 @@ def main():
 
         try:
             resp = client.images.generate(
-                model="dall-e-3",
+                model="gpt-image-1",
                 prompt=f"{prompt} {STYLE}",
-                size="1024x1792",   # 縦型（9:16 近似）
-                quality="standard",
+                size="1024x1536",   # 縦型（2:3）
+                quality="high",
                 n=1,
             )
-            url = resp.data[0].url
-            img_data = requests.get(url, timeout=30).content
+            import base64
+            img_data = base64.b64decode(resp.data[0].b64_json)
             out.write_bytes(img_data)
             print(f"  ✅ 保存: {out.name}")
 
