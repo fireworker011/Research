@@ -22,30 +22,33 @@ load_dotenv()
 OUTPUT_DIR = Path(r"C:\Users\ys734\Desktop\pet3_images")
 
 PROMPTS = [
-    # scene1: 夜の会社・残業
-    "Japanese office at night, late overtime, single desk lamp lit, "
-    "exhausted woman in her 30s staring blankly at her desk. "
-    "Dark cinematic atmosphere, moody lighting. Vertical 9:16 portrait.",
+    # scene1: 夜の会社・残業（顔をランプで照らす）
+    "Japanese office at night, late overtime. Japanese woman in her 30s "
+    "sitting at a desk, face clearly lit by warm desk lamp light, "
+    "exhausted and blank expression. Dark background, dramatic low-key lighting "
+    "with lamp illuminating her face. Cinematic. Vertical 9:16 portrait.",
 
     # scene2: スマホの時刻「23:14」
     "Close-up of a smartphone screen showing 23:14 at night, "
     "held by a woman's hands. Blurred dark office background. "
     "Cinematic, emotional, soft screen glow. Vertical 9:16 portrait.",
 
-    # scene3: カメラアプリを開く
-    "Japanese woman at office desk at night, opening a pet camera app "
-    "on her phone with a worried expression, soft screen glow "
-    "illuminating her face. Dark background, intimate lighting. Vertical 9:16 portrait.",
+    # scene3: カメラアプリを開く（猫・正しい視点）
+    "Japanese woman at office desk at night, holding smartphone showing "
+    "a pet camera app on screen. On the phone screen: a tabby cat, NOT a dog. "
+    "Woman has a worried expression, warm lamp light on her face. "
+    "Phone screen clearly visible showing the cat. Vertical 9:16 portrait.",
 
     # scene4: 猫がドアの前で待っている
     "Pet camera footage style, slightly grainy security camera look. "
     "Tabby cat curled up sleeping directly in front of an apartment "
     "entrance door, waiting alone. Warm dim indoor light. Vertical 9:16 portrait.",
 
-    # scene5: マイクボタンを押す
-    "Close-up of a smartphone screen showing a pet camera app, "
-    "a woman's finger gently pressing a microphone button. "
-    "Soft blue screen glow, shallow depth of field. Vertical 9:16 portrait.",
+    # scene5: マイクボタンを押す（猫・スマホ正面）
+    "Close-up of smartphone screen from the front, screen facing camera. "
+    "On screen: a pet camera app showing a tabby cat, NOT a dog. "
+    "A woman's finger pressing a microphone button at the bottom of the screen. "
+    "Soft blue screen glow, phone screen fully visible. Vertical 9:16 portrait.",
 
     # scene6: 猫がカメラに近づいてくる
     "Tabby cat perking up its ears and slowly walking toward "
@@ -58,6 +61,10 @@ STYLE = "Photorealistic, cinematic, Japanese setting, no text or watermarks."
 
 
 def main():
+    import sys
+    # python generate_images_pet3.py 1 3 5  → 指定シーンのみ再生成
+    targets = [int(x) for x in sys.argv[1:]] if len(sys.argv) > 1 else list(range(1, 7))
+
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         print("❌ OPENAI_API_KEY が .env に設定されていません")
@@ -67,10 +74,12 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("=" * 50)
-    print("gpt-image-1 画像生成 — 動画③「帰れない夜だった」")
+    print(f"gpt-image-1 画像生成 — scene{targets}")
     print("=" * 50)
 
     for i, prompt in enumerate(PROMPTS, 1):
+        if i not in targets:
+            continue
         out = OUTPUT_DIR / f"scene{i}.png"
         print(f"\n[scene{i}/6] 生成中...")
         print(f"  {prompt[:60]}...")
