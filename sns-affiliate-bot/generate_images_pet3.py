@@ -33,11 +33,12 @@ PROMPTS = [
     "held by a woman's hands. Blurred dark office background. "
     "Cinematic, emotional, soft screen glow. Vertical 9:16 portrait.",
 
-    # scene3: カメラアプリを開く（猫・正しい視点）
-    "Japanese woman at office desk at night, holding smartphone showing "
-    "a pet camera app on screen. On the phone screen: a tabby cat, NOT a dog. "
-    "Woman has a worried expression, warm lamp light on her face. "
-    "Phone screen clearly visible showing the cat. Vertical 9:16 portrait.",
+    # scene3: カメラアプリを開く（スマホ背面・女性の表情重視）
+    "Japanese woman at office desk at night, opening a pet camera app "
+    "on her phone with a worried expression, soft screen glow "
+    "illuminating her face. The phone is held facing away from camera, "
+    "showing the back of the phone. Only the woman's worried face is visible, "
+    "not the phone screen content. Night, dark background. Vertical 9:16.",
 
     # scene4: 猫がドアの前で待っている
     "Pet camera footage style, slightly grainy security camera look. "
