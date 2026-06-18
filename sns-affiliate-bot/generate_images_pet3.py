@@ -55,6 +55,12 @@ PROMPTS = [
     "Tabby cat perking up its ears and slowly walking toward "
     "the camera, curious and alert. Warm indoor lighting, "
     "cozy Japanese apartment. Eye-level shot. Vertical 9:16 portrait.",
+
+    # scene7: CTAカード（帰宅・再会・温かい締め）
+    "Japanese woman arriving home late at night, kneeling down as "
+    "a tabby cat runs toward her, warm hallway light. "
+    "Emotional reunion, soft warm golden lighting, cinematic. "
+    "No text. Vertical 9:16 portrait.",
 ]
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -64,7 +70,7 @@ STYLE = "Photorealistic, cinematic, Japanese setting, no text or watermarks."
 def main():
     import sys
     # python generate_images_pet3.py 1 3 5  → 指定シーンのみ再生成
-    targets = [int(x) for x in sys.argv[1:]] if len(sys.argv) > 1 else list(range(1, 7))
+    targets = [int(x) for x in sys.argv[1:]] if len(sys.argv) > 1 else list(range(1, 8))
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
