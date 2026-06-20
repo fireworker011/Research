@@ -1,0 +1,44 @@
+name: Threads 婚活 自動投稿
+
+on:
+  schedule:
+    - cron: '0 3 * * *'    # 12:00 JST (UTC+9)
+    - cron: '0 12 * * *'   # 21:00 JST (UTC+9)
+  workflow_dispatch:         # 手動実行も可能
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: sns-affiliate-bot ブランチを取得
+        uses: actions/checkout@v4
+        with:
+          ref: claude/vibrant-noether-9xbb8a
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 依存関係インストール
+        run: pip install requests python-dotenv
+
+      - name: Threads に投稿
+        env:
+          THREADS_KONKATSU_USER_ID: ${{ secrets.THREADS_KONKATSU_USER_ID }}
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+        run: |
+          cd sns-affiliate-bot
+          python scripts/post_konkatsu_gha.py
+
+      - name: 投稿状態を保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sns-affiliate-bot/konkatsu_state.json
+          git diff --staged --quiet || git commit -m "chore: 婚活投稿状態を更新"
+          git push origin claude/vibrant-noether-9xbb8a
