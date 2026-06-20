@@ -1,0 +1,51 @@
+name: Threads 婚活 メトリクス収集
+
+on:
+  schedule:
+    - cron: '0 5 * * *'    # 14:00 JST (毎日) - メトリクス収集
+    - cron: '0 1 * * 0'    # 10:00 JST (日曜) - 週次分析
+  workflow_dispatch:
+    inputs:
+      weekly:
+        description: '週次分析も実行する'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: claude/vibrant-noether-9xbb8a
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
+        with:
+          python-version: '3.11'
+
+      - run: pip install requests python-dotenv anthropic
+
+      - name: メトリクス収集
+        env:
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd sns-affiliate-bot
+          if [ "${{ github.event.inputs.weekly }}" = "true" ] || [ "$(date +%u)" = "7" ]; then
+            python scripts/metrics_konkatsu.py --weekly
+          else
+            python scripts/metrics_konkatsu.py
+          fi
+
+      - name: メトリクスを保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sns-affiliate-bot/konkatsu_metrics.json sns-affiliate-bot/konkatsu_report_*.md || true
+          git diff --staged --quiet || git commit -m "chore: 婚活メトリクス更新"
+          git push origin claude/vibrant-noether-9xbb8a
