@@ -28,10 +28,12 @@ PROMPTS = [
     "crying quietly, face slightly wet with tears, soft dim lamp light, "
     "dark background, emotional and cinematic. Vertical 9:16 portrait.",
 
-    # scene2: 手元・ティッシュ（理由は言えない）
-    "Close-up of Japanese woman's hands resting on her lap in a dark room, "
-    "tissues nearby on the floor, quiet and emotional atmosphere, "
-    "soft warm light from a lamp. No face visible. Cinematic. Vertical 9:16 portrait.",
+    # scene2: 上半身全体・ティッシュ（理由は言えない）
+    "Japanese woman in her 30s sitting alone on the floor in a dark room, "
+    "upper body fully visible from head to waist, head slightly bowed down, "
+    "used tissues beside her, soft warm lamp light from the side, "
+    "dark and quiet atmosphere, emotional. Full upper body in frame, "
+    "no cropping. Cinematic. Vertical 9:16 portrait.",
 
     # scene3: スマホを開く（涙の顔にスクリーンの光）
     "Japanese woman holding smartphone in dark room at night, "
