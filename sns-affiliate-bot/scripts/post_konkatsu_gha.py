@@ -2,15 +2,15 @@
 """
 GitHub Actions 用 婚活 Threads 自動投稿スクリプト
 konkatsu_posts.json から順番に投稿し、konkatsu_state.json で進捗を管理する。
-キューが空の場合はニッチ設定のテンプレートから生成。
-
 使い方:
   python scripts/post_konkatsu_gha.py        # 通常実行
   python scripts/post_konkatsu_gha.py test   # 投稿せずに内容確認
 """
+import importlib.util
 import json
 import random
 import sys
+import types
 from pathlib import Path
 from datetime import datetime
 
@@ -33,8 +33,36 @@ def save_json(path, data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+def load_threads_poster():
+    """
+    platforms/__init__.py のYouTube自動インポートを回避して
+    ThreadsPosterだけを直接読み込む。
+    """
+    # platforms パッケージを最小構成で登録（__init__.pyを実行しない）
+    for pkg_name, pkg_path in [
+        ("platforms", BASE_DIR / "platforms"),
+        ("platforms.threads", BASE_DIR / "platforms" / "threads"),
+    ]:
+        if pkg_name not in sys.modules:
+            pkg = types.ModuleType(pkg_name)
+            pkg.__path__ = [str(pkg_path)]
+            pkg.__package__ = pkg_name
+            sys.modules[pkg_name] = pkg
+
+    def _load(name, path):
+        spec = importlib.util.spec_from_file_location(name, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[name] = mod
+        spec.loader.exec_module(mod)
+        return mod
+
+    _load("platforms.threads.client", BASE_DIR / "platforms" / "threads" / "client.py")
+    poster_mod = _load("platforms.threads.poster", BASE_DIR / "platforms" / "threads" / "poster.py")
+    return poster_mod.ThreadsPoster
+
+
 def pick_from_template(niche_config):
-    """ニッチ設定のテンプレートからランダムにコンテンツを作成する（AI不要）。"""
+    """AI不要でテンプレートからコンテンツを作成する。"""
     templates = niche_config.get("templates", {}).get("threads", {})
     content_types = [
         ct for ct in niche_config.get("content_types", {}).get("threads", [])
@@ -49,9 +77,9 @@ def pick_from_template(niche_config):
     cta = template.get("cta", "")
 
     hashtags = niche_config.get("hashtags", {})
-    base_tags = hashtags.get("base", [])
-    type_tags = hashtags.get(content_type, [])
-    tags = list(dict.fromkeys(base_tags + type_tags))[:5]
+    tags = list(dict.fromkeys(
+        hashtags.get("base", []) + hashtags.get(content_type, [])
+    ))[:5]
 
     text = hook
     if cta:
@@ -87,7 +115,7 @@ def main():
         print("[テストモード] 投稿はスキップされました")
         return
 
-    from platforms.threads.poster import ThreadsPoster
+    ThreadsPoster = load_threads_poster()
     poster = ThreadsPoster(NICHE_ID)
     poster.post_text(content)
 
