@@ -29,6 +29,12 @@ PENDING_DIR = BASE_DIR / f"queue/threads/{NICHE_ID}/pending"
 DONE_DIR = BASE_DIR / f"queue/threads/{NICHE_ID}/done"
 
 
+def read_json(path):
+    """BOM付きUTF-8にも対応してJSONを読む。"""
+    with open(path, encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
 def get_next_pending():
     """pendingフォルダから最も古い投稿ファイルを返す。"""
     PENDING_DIR.mkdir(parents=True, exist_ok=True)
@@ -52,8 +58,7 @@ def post_from_queue(dry_run=False):
         print("[Queue] キューが空です。テンプレートから生成します。")
         return False
 
-    with open(post_path, encoding="utf-8") as f:
-        content = json.load(f)
+    content = read_json(post_path)
 
     print(f"[Queue] 投稿: {post_path.name}")
     print(f"[内容]\n{content['text']}\n")
@@ -75,8 +80,7 @@ def post_from_template(dry_run=False):
     from ai.provider import AIProvider
 
     config_path = BASE_DIR / f"config/niches/{NICHE_ID}.json"
-    with open(config_path, encoding="utf-8") as f:
-        niche_config = json.load(f)
+    niche_config = read_json(config_path)
 
     generator = ContentGenerator(niche_config, AIProvider())
     content = generator.generate_threads_post()
