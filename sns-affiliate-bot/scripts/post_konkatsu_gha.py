@@ -10,6 +10,7 @@ import importlib.util
 import json
 import random
 import sys
+import time
 import types
 from pathlib import Path
 from datetime import datetime
@@ -21,11 +22,14 @@ POSTS_FILE = BASE_DIR / "konkatsu_posts.json"
 STATE_FILE = BASE_DIR / "konkatsu_state.json"
 NICHE_CONFIG_FILE = BASE_DIR / "config/niches/konkatsu.json"
 NICHE_ID = "konkatsu"
+MAX_RECENT_POSTS = 30
 
 
-def load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
+def load_json(path, default=None):
+    if path.exists():
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    return default if default is not None else {}
 
 
 def save_json(path, data):
@@ -38,7 +42,6 @@ def load_threads_poster():
     platforms/__init__.py のYouTube自動インポートを回避して
     ThreadsPosterだけを直接読み込む。
     """
-    # platforms パッケージを最小構成で登録（__init__.pyを実行しない）
     for pkg_name, pkg_path in [
         ("platforms", BASE_DIR / "platforms"),
         ("platforms.threads", BASE_DIR / "platforms" / "threads"),
@@ -90,13 +93,33 @@ def pick_from_template(niche_config):
     return {"text": text, "type": content_type, "generated": True}
 
 
+def save_post_to_state(state, post_id, content, posted_at):
+    """post_id を state の recent_posts に追加する。"""
+    recent = state.setdefault("recent_posts", [])
+    recent.append({
+        "post_id": post_id,
+        "posted_at": posted_at,
+        "title": content.get("title", ""),
+        "type": content.get("type", ""),
+    })
+    # 直近30件のみ保持
+    state["recent_posts"] = recent[-MAX_RECENT_POSTS:]
+
+
 def main():
     dry_run = len(sys.argv) > 1 and sys.argv[1] == "test"
+
+    # BOT判定回避: 1～5分のランダム遅延
+    if not dry_run:
+        delay = random.randint(60, 300)
+        print(f"[遅延] {delay}秒待機中...")
+        time.sleep(delay)
+
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{ts}] 婚活 Threads 投稿開始")
 
-    posts = load_json(POSTS_FILE)
-    state = load_json(STATE_FILE) if STATE_FILE.exists() else {"next_index": 0, "total_posted": 0}
+    posts = load_json(POSTS_FILE, [])
+    state = load_json(STATE_FILE, {"next_index": 0, "total_posted": 0})
     niche_config = load_json(NICHE_CONFIG_FILE)
 
     idx = state.get("next_index", 0)
@@ -117,11 +140,15 @@ def main():
 
     ThreadsPoster = load_threads_poster()
     poster = ThreadsPoster(NICHE_ID)
-    poster.post_text(content)
+    result = poster.post_text(content)
+
+    post_id = result.get("post_id", "")
+    posted_at = datetime.now().isoformat()
+    save_post_to_state(state, post_id, content, posted_at)
 
     state["total_posted"] = state.get("total_posted", 0) + 1
     save_json(STATE_FILE, state)
-    print(f"[完了] 累計投稿数: {state['total_posted']}")
+    print(f"[完了] post_id={post_id} / 累計: {state['total_posted']}")
 
 
 if __name__ == "__main__":
