@@ -4,6 +4,11 @@
       "times": ["08:00", "12:00", "19:00"],
       "days": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
       "posts_per_day": 3
+    },
+    "konkatsu": {
+      "times": ["12:00", "21:00"],
+      "days": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "posts_per_day": 2
     }
   },
   "youtube": {
