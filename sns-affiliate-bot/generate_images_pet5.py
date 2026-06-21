@@ -22,41 +22,51 @@ load_dotenv()
 
 OUTPUT_DIR = Path(r"C:\Users\ys734\Desktop\pet5_images")
 
+# 女性キャラクター固定設定（全シーン共通）
+WOMAN = (
+    "Japanese woman in her early 30s, black shoulder-length straight hair "
+    "slightly tucked behind one ear, oval face, natural makeup, "
+    "wearing a light beige turtleneck sweater and dark navy trousers"
+)
+
 PROMPTS = [
-    # scene1: 猫の上目遣い（フック）
+    # scene1: 猫の上目遣い（フック・女性なし）
     "Close-up of tabby cat face looking up with big pleading round eyes, "
     "soft morning light, Japanese apartment entrance, heartwarming and emotional. "
     "Vertical 9:16 portrait.",
 
     # scene2: 朝の準備中の女性
-    "Japanese woman in her 30s in bright morning light, getting ready for work, "
-    "putting on jacket near the entrance, warm sunlight through window, "
-    "cozy Japanese apartment. Full upper body in frame. Vertical 9:16 portrait.",
+    f"{WOMAN}, putting on a dark navy blazer over her turtleneck near the entrance, "
+    "bright morning sunlight through window, cozy Japanese apartment interior. "
+    "Full upper body clearly in frame, face and hair visible. Vertical 9:16 portrait.",
 
     # scene3: 玄関で靴を履く・猫が横に
-    "Japanese apartment entrance, woman putting on shoes, tabby cat sitting "
-    "right beside her feet looking up with pleading eyes, warm morning indoor light. "
-    "Low angle shot, both woman's feet and cat fully visible. Vertical 9:16 portrait.",
+    f"Japanese apartment entrance, {WOMAN} bending slightly to put on shoes, "
+    "tabby cat sitting right beside her feet looking up with pleading eyes, "
+    "warm morning indoor light. Both woman upper body and cat fully visible. "
+    "Vertical 9:16 portrait.",
 
-    # scene4: 猫がドア前でじっと見ている
+    # scene4: 猫がドア前でじっと見ている（女性なし）
     "Tabby cat sitting directly in front of apartment entrance door, "
     "staring up with big round eyes, gentle pleading expression, "
     "soft morning light. Full cat body in frame. Vertical 9:16 portrait.",
 
     # scene5: 会社の昼休みにスマホを開く
-    "Japanese woman at office desk during lunch break, looking at smartphone "
-    "with a warm and slightly worried expression, soft office lighting, "
-    "pet camera app visible on screen. Upper body in frame. Vertical 9:16 portrait.",
+    f"{WOMAN} with dark navy blazer, sitting at office desk during lunch break, "
+    "looking at smartphone with warm and slightly worried expression, "
+    "soft office lighting. Face and hair clearly visible. Upper body in frame. "
+    "Vertical 9:16 portrait.",
 
-    # scene6: カメラに映る猫（待っている）
+    # scene6: カメラに映る猫（待っている・女性なし）
     "Pet camera footage style, slightly grainy security camera look. "
     "Tabby cat curled up sleeping directly in front of apartment entrance door, "
     "waiting alone. Warm dim indoor light. Vertical 9:16 portrait.",
 
     # scene7: CTA（帰宅・再会）
-    "Japanese woman arriving home in the evening, kneeling at apartment entrance, "
-    "tabby cat running toward her with tail up, warm golden indoor light, "
-    "emotional and heartwarming reunion. Cinematic. No text. Vertical 9:16 portrait.",
+    f"{WOMAN} with dark navy blazer, arriving home in the evening, "
+    "kneeling at apartment entrance, tabby cat running toward her with tail up, "
+    "warm golden indoor light, emotional and heartwarming reunion. "
+    "Face and hair clearly visible. Cinematic. No text. Vertical 9:16 portrait.",
 ]
 
 STYLE = "Photorealistic, cinematic, Japanese setting, no text or watermarks."
