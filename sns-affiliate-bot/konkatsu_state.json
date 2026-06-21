@@ -1,11 +1,17 @@
 {
-  "next_index": 2,
-  "total_posted": 2,
+  "next_index": 3,
+  "total_posted": 3,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
       "posted_at": "2026-06-21T08:03:30.745128",
       "title": "投稿③パラダイムシフト",
+      "type": "trust_building"
+    },
+    {
+      "post_id": "17968073672918871",
+      "posted_at": "2026-06-21T14:18:01.443390",
+      "title": "投稿④アプリ比較",
       "type": "trust_building"
     }
   ]
