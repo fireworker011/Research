@@ -1,6 +1,6 @@
 {
-  "next_index": 4,
-  "total_posted": 4,
+  "next_index": 5,
+  "total_posted": 5,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -19,6 +19,12 @@
       "posted_at": "2026-06-22T09:01:34.773441",
       "title": "投稿⑤プロフアドバイス",
       "type": "trust_building"
+    },
+    {
+      "post_id": "18128960419627369",
+      "posted_at": "2026-06-22T17:04:28.081668",
+      "title": "投稿⑥アフィリエイト",
+      "type": "affiliate"
     }
   ]
 }
