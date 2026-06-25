@@ -1,6 +1,6 @@
 {
   "next_index": 5,
-  "total_posted": 10,
+  "total_posted": 11,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -55,6 +55,12 @@
       "posted_at": "2026-06-25T06:52:20.607052",
       "title": "",
       "type": "personal_story"
+    },
+    {
+      "post_id": "17987917616828517",
+      "posted_at": "2026-06-25T14:38:18.659946",
+      "title": "",
+      "type": "confession"
     }
   ]
 }
