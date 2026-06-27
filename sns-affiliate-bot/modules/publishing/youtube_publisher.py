@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import pickle
+from datetime import date
 from pathlib import Path
 from typing import Optional
 
@@ -22,6 +23,33 @@ load_dotenv()
 
 _TOKEN_PATH = Path(__file__).parent.parent.parent / ".youtube_token.pickle"
 _SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+
+# 投稿記録ファイル（daily_check.py が翌日リサーチを起動するために使用）
+_POST_LOG = Path(__file__).parent.parent.parent / "posted_log.json"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 投稿記録
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _save_post_log(result: dict):
+    """投稿記録を posted_log.json に追記する"""
+    log = []
+    if _POST_LOG.exists():
+        try:
+            log = json.loads(_POST_LOG.read_text(encoding="utf-8"))
+        except Exception:
+            log = []
+
+    log.append({
+        "posted_date": str(date.today()),
+        "video_id":    result["video_id"],
+        "title":       result["title"],
+        "url":         result["video_url"],
+    })
+
+    _POST_LOG.write_text(json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  📝 投稿記録保存: {_POST_LOG.name}（翌日リサーチ予約済み）")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -172,11 +200,16 @@ class YouTubePublisher:
         print()
         video_id = response["id"]
         video_url = f"https://www.youtube.com/shorts/{video_id}"
-        return {
+        result = {
             "video_id": video_id,
             "video_url": video_url,
             "title": response["snippet"]["title"],
         }
+
+        # 翌日リサーチ用に投稿記録を保存
+        _save_post_log(result)
+
+        return result
 
     def get_channel_info(self) -> dict:
         """チャンネル情報を取得（疎通確認用）"""

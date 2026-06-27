@@ -15,7 +15,7 @@
 
 import pickle
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -142,6 +142,114 @@ def search_competitors(yt, keyword: str, max_results=8) -> list[dict]:
     return sorted(results, key=lambda x: x["views"], reverse=True)
 
 
+# ── 改善分析 ───────────────────────────────────────────────────────────────────
+
+def analyze_and_suggest(own_videos: list) -> list[str]:
+    """自チャンネル動画の統計から具体的な改善提案を生成する"""
+    if not own_videos:
+        return ["⚠️ 動画データなし。投稿後に再実行してください。"]
+
+    suggestions = []
+    sorted_by_date = sorted(own_videos, key=lambda x: x["date"])
+
+    # ── 投稿頻度チェック ──
+    if len(sorted_by_date) >= 2:
+        dates = [datetime.strptime(v["date"], "%Y-%m-%d") for v in sorted_by_date]
+        gaps = [(dates[i+1] - dates[i]).days for i in range(len(dates)-1)]
+        avg_gap = sum(gaps) / len(gaps)
+        if avg_gap < 2:
+            suggestions.append(
+                f"⚠️ **投稿間隔が短すぎます**（平均 {avg_gap:.1f}日）\n"
+                "   → 2〜3日間隔が最適。毎日投稿はアルゴリズムに不利。"
+            )
+        elif avg_gap > 5:
+            suggestions.append(
+                f"⚠️ **投稿間隔が空きすぎています**（平均 {avg_gap:.1f}日）\n"
+                "   → 理想は2〜3日。週2本ペースを維持してください。"
+            )
+        else:
+            suggestions.append(f"✅ 投稿間隔は良好です（平均 {avg_gap:.1f}日）")
+
+    # ── 再生数トレンド ──
+    views_list = [v["views"] for v in sorted_by_date]
+    avg_views = sum(views_list) / len(views_list) if views_list else 0
+    recent = views_list[-1] if views_list else 0
+    best_video = max(own_videos, key=lambda x: x["views"])
+    worst_video = min(own_videos, key=lambda x: x["views"])
+
+    suggestions.append(f"\n📊 **再生数サマリー**")
+    suggestions.append(f"   平均再生数: {avg_views:,.0f}  /  最高: {best_video['views']:,}（{best_video['title'][:20]}）  /  最低: {worst_video['views']:,}（{worst_video['title'][:20]}）")
+
+    if len(views_list) >= 2 and recent < avg_views * 0.7:
+        suggestions.append(
+            f"⚠️ **直近動画の再生数が平均比 {recent/avg_views*100:.0f}%**\n"
+            "   → フック（タイトル・1秒目）を見直してください。\n"
+            "   → 競合TOP動画のフックを参考にオマージュを検討。"
+        )
+    elif len(views_list) >= 2 and recent > avg_views * 1.3:
+        suggestions.append(
+            f"✅ **直近動画が好調**（平均比 {recent/avg_views*100:.0f}%）\n"
+            "   → このフックパターンを次の動画でも踏襲してください。"
+        )
+
+    # ── いいね率（エンゲージメント） ──
+    for v in own_videos:
+        if v["views"] > 0:
+            v["like_rate"] = v["likes"] / v["views"] * 100
+        else:
+            v["like_rate"] = 0.0
+
+    avg_like_rate = sum(v["like_rate"] for v in own_videos) / len(own_videos)
+
+    suggestions.append(f"\n❤️ **エンゲージメント分析**")
+    suggestions.append(f"   平均いいね率: {avg_like_rate:.2f}%")
+
+    if avg_like_rate < 1.0:
+        suggestions.append(
+            "⚠️ **いいね率が低い（目標: 1.5%以上）**\n"
+            "   → CTA（「いいねお願いします」）を動画内に入れる\n"
+            "   → 感情的な山場（scene6）を強化する\n"
+            "   → フックが弱い可能性。タイトルを謎・感情・問いかけに変える"
+        )
+    elif avg_like_rate >= 2.0:
+        suggestions.append("✅ いいね率は優秀です（2.0%以上）")
+    else:
+        suggestions.append("📌 いいね率は標準的です。CTAの言い方を試行錯誤してみてください。")
+
+    # ── 個別動画の詳細分析 ──
+    low_performers = [v for v in own_videos if v["views"] < avg_views * 0.6 and v["views"] > 0]
+    if low_performers:
+        suggestions.append(f"\n🔻 **低パフォーマンス動画（要分析）**")
+        for v in low_performers:
+            suggestions.append(
+                f"   - 「{v['title'][:25]}」 {v['views']:,}再生 / いいね率{v['like_rate']:.2f}%\n"
+                "     → タイトルを短く・謎・感情的に変える、サムネ改善を検討"
+            )
+
+    # ── 総合アクションプラン ──
+    suggestions.append("\n🎯 **次の動画への推奨アクション**")
+    if avg_views < 1000:
+        suggestions.append(
+            "   1. 競合TOP動画（下記リスト）のフックをオマージュ\n"
+            "   2. タイトルは10文字以内・問いかけか感情直球型\n"
+            "   3. scene1（最初の1秒）を静止画ではなく動きある映像にする"
+        )
+    elif avg_views < 3000:
+        suggestions.append(
+            "   1. 再生数1000〜3000は伸び始めのサイン。投稿頻度を維持\n"
+            "   2. ピン固定コメントのA8リンクを毎回確認\n"
+            "   3. 高パフォーマンス動画のフックパターンを繰り返す"
+        )
+    else:
+        suggestions.append(
+            "   1. バズ動画あり！同じフックパターンでシリーズ化を検討\n"
+            "   2. コメントへの返信でエンゲージメントを高める\n"
+            "   3. 競合リサーチ頻度を上げて先手を打つ"
+        )
+
+    return suggestions
+
+
 # ── レポート生成 ───────────────────────────────────────────────────────────────
 
 def generate_report(own_videos: list, competitor_data: dict) -> str:
@@ -194,6 +302,18 @@ def generate_report(own_videos: list, competitor_data: dict) -> str:
             "",
         ]
 
+    # 改善分析セクション
+    suggestions = analyze_and_suggest(own_videos)
+    lines += [
+        "---",
+        "",
+        "## 改善分析・アクションプラン",
+        "",
+    ]
+    for s in suggestions:
+        lines.append(s)
+    lines.append("")
+
     return "\n".join(lines)
 
 
@@ -228,6 +348,11 @@ def main():
     print(f"\n{'='*55}")
     print(f"✅ レポート保存: {filename}")
     print(f"{'='*55}")
+
+    # 改善分析をコンソールに表示
+    print("\n--- 改善分析・アクションプラン ---")
+    for s in analyze_and_suggest(own_videos):
+        print(s)
 
     # オマージュ候補をコンソールに表示
     all_vids = [v for vlist in competitor_data.values() for v in vlist]
