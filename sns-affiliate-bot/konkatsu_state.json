@@ -1,6 +1,6 @@
 {
   "next_index": 5,
-  "total_posted": 13,
+  "total_posted": 14,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -73,6 +73,12 @@
       "posted_at": "2026-06-26T14:29:15.123263",
       "title": "",
       "type": "advice"
+    },
+    {
+      "post_id": "18595106272058274",
+      "posted_at": "2026-06-27T06:33:29.099359",
+      "title": "",
+      "type": "fomo"
     }
   ]
 }
