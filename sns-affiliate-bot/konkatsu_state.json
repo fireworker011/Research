@@ -1,6 +1,6 @@
 {
-  "next_index": 5,
-  "total_posted": 15,
+  "next_index": 6,
+  "total_posted": 16,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -85,6 +85,12 @@
       "posted_at": "2026-06-27T13:48:37.170011",
       "title": "",
       "type": "advice"
+    },
+    {
+      "post_id": "17991498053996836",
+      "posted_at": "2026-06-28T07:05:36.543966",
+      "title": "自分を偽って疲れた",
+      "type": "trust_building"
     }
   ]
 }
