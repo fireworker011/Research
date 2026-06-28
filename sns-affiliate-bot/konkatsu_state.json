@@ -1,6 +1,6 @@
 {
-  "next_index": 6,
-  "total_posted": 16,
+  "next_index": 7,
+  "total_posted": 17,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -90,6 +90,12 @@
       "post_id": "17991498053996836",
       "posted_at": "2026-06-28T07:05:36.543966",
       "title": "自分を偽って疲れた",
+      "type": "trust_building"
+    },
+    {
+      "post_id": "17982715904851700",
+      "posted_at": "2026-06-28T13:51:06.518750",
+      "title": "100人会ってわかったこと",
       "type": "trust_building"
     }
   ]
