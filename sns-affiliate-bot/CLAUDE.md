@@ -27,7 +27,7 @@ C:\Users\ys734\Desktop\Research\sns-affiliate-bot
 
 ## 共通技術スタック
 - 画像生成: gpt-image-1（size=1024x1536, quality=high, b64_json）
-- 動画生成: Grok Agent（5秒, 縦型9:16）
+- 動画生成: Grok Agent（デフォルト6秒, 縦型9:16）※尺指定不要、assemble_grok.pyが自動フィット
 - 音声: Voicevox 波音リツ（SPEAKER_ID=9, SPEED=0.88, PITCH=-0.03, INTONATION=1.4）
 - 動画編集: FFmpeg（trim/resize/concat/ASS字幕焼き込み）
 - 投稿: YouTube Data API v3（OAuth2.0, token.pickle）
@@ -35,7 +35,7 @@ C:\Users\ys734\Desktop\Research\sns-affiliate-bot
 
 ## 共通制作パイプライン
 1. `python generate_images_[genre][num].py` → 画像7枚生成
-2. Grok Agentで動画化（5秒×7本）
+2. Grok Agentで動画化（デフォルト6秒×7本、尺指定不要）
 3. Voicevox起動 → `python make_audio_[genre][num].py`
 4. `assemble_[genre][num].py` → 動画完成
 5. YouTube Shortsアップロード
