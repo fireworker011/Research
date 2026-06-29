@@ -1,6 +1,6 @@
 {
-  "next_index": 8,
-  "total_posted": 18,
+  "next_index": 9,
+  "total_posted": 19,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -102,6 +102,12 @@
       "post_id": "18066999149443159",
       "posted_at": "2026-06-29T08:16:09.296668",
       "title": "6年間で失ったもの",
+      "type": "trust_building"
+    },
+    {
+      "post_id": "18126458041634853",
+      "posted_at": "2026-06-29T15:53:33.317759",
+      "title": "婚活やめたいと思った日",
       "type": "trust_building"
     }
   ]
