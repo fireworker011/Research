@@ -1,6 +1,6 @@
 {
-  "next_index": 10,
-  "total_posted": 20,
+  "next_index": 11,
+  "total_posted": 21,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -114,6 +114,12 @@
       "post_id": "17897567250526706",
       "posted_at": "2026-06-30T06:59:04.827989",
       "title": "夜中に泣いた話",
+      "type": "trust_building"
+    },
+    {
+      "post_id": "18116706673659588",
+      "posted_at": "2026-06-30T14:24:08.229474",
+      "title": "年齢のせいじゃなかった",
       "type": "trust_building"
     }
   ]
