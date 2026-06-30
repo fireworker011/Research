@@ -7,14 +7,14 @@
       "type": "trust_building",
       "post_time": "08:03",
       "metrics": {
-        "views": 179,
+        "views": 180,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:56.075896"
+      "metrics_collected_at": "2026-06-30T08:23:43.716225"
     },
     {
       "post_id": "17968073672918871",
@@ -23,14 +23,14 @@
       "type": "trust_building",
       "post_time": "14:18",
       "metrics": {
-        "views": 27,
+        "views": 28,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:56.332252"
+      "metrics_collected_at": "2026-06-30T08:23:44.050192"
     },
     {
       "post_id": "18068870510418113",
@@ -39,14 +39,14 @@
       "type": "trust_building",
       "post_time": "09:01",
       "metrics": {
-        "views": 63,
+        "views": 64,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:56.623042"
+      "metrics_collected_at": "2026-06-30T08:23:44.409128"
     },
     {
       "post_id": "18128960419627369",
@@ -55,14 +55,14 @@
       "type": "affiliate",
       "post_time": "17:04",
       "metrics": {
-        "views": 5,
+        "views": 6,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:56.906508"
+      "metrics_collected_at": "2026-06-30T08:23:44.689420"
     },
     {
       "post_id": "18009386516734409",
@@ -71,14 +71,14 @@
       "type": "advice",
       "post_time": "06:52",
       "metrics": {
-        "views": 10,
+        "views": 11,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:57.173309"
+      "metrics_collected_at": "2026-06-30T08:23:44.940399"
     },
     {
       "post_id": "18107638648945282",
@@ -87,14 +87,14 @@
       "type": "personal_story",
       "post_time": "14:54",
       "metrics": {
-        "views": 12,
+        "views": 13,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:57.441753"
+      "metrics_collected_at": "2026-06-30T08:23:45.231144"
     },
     {
       "post_id": "18156327322467353",
@@ -103,14 +103,14 @@
       "type": "advice",
       "post_time": "06:52",
       "metrics": {
-        "views": 17,
+        "views": 18,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:57.665175"
+      "metrics_collected_at": "2026-06-30T08:23:45.605546"
     },
     {
       "post_id": "17923850316365653",
@@ -119,14 +119,14 @@
       "type": "paradox",
       "post_time": "14:35",
       "metrics": {
-        "views": 22,
+        "views": 23,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:57.954879"
+      "metrics_collected_at": "2026-06-30T08:23:45.935164"
     },
     {
       "post_id": "18118474381829611",
@@ -135,14 +135,14 @@
       "type": "personal_story",
       "post_time": "06:52",
       "metrics": {
-        "views": 16,
-        "likes": 0,
+        "views": 17,
+        "likes": 1,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
-      "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:58.241877"
+      "engagement_rate": 5.88,
+      "metrics_collected_at": "2026-06-30T08:23:46.237774"
     },
     {
       "post_id": "17987917616828517",
@@ -151,14 +151,14 @@
       "type": "confession",
       "post_time": "14:38",
       "metrics": {
-        "views": 27,
+        "views": 28,
         "likes": 1,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
-      "engagement_rate": 3.7,
-      "metrics_collected_at": "2026-06-29T09:20:58.511895"
+      "engagement_rate": 3.57,
+      "metrics_collected_at": "2026-06-30T08:23:46.586803"
     },
     {
       "post_id": "18104085911326563",
@@ -167,14 +167,14 @@
       "type": "confession",
       "post_time": "06:58",
       "metrics": {
-        "views": 6,
+        "views": 7,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:58.752703"
+      "metrics_collected_at": "2026-06-30T08:23:46.934989"
     },
     {
       "post_id": "18596803666009175",
@@ -183,14 +183,14 @@
       "type": "advice",
       "post_time": "14:29",
       "metrics": {
-        "views": 12,
+        "views": 13,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:59.036761"
+      "metrics_collected_at": "2026-06-30T08:23:47.277270"
     },
     {
       "post_id": "18595106272058274",
@@ -199,14 +199,14 @@
       "type": "fomo",
       "post_time": "06:33",
       "metrics": {
-        "views": 5,
+        "views": 8,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:59.357134"
+      "metrics_collected_at": "2026-06-30T08:23:47.630677"
     },
     {
       "post_id": "18166879600440186",
@@ -215,14 +215,14 @@
       "type": "advice",
       "post_time": "13:48",
       "metrics": {
-        "views": 12,
+        "views": 15,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:59.648715"
+      "metrics_collected_at": "2026-06-30T08:23:47.980080"
     },
     {
       "post_id": "17991498053996836",
@@ -231,14 +231,14 @@
       "type": "trust_building",
       "post_time": "07:05",
       "metrics": {
-        "views": 7,
+        "views": 10,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:20:59.924365"
+      "metrics_collected_at": "2026-06-30T08:23:48.321105"
     },
     {
       "post_id": "17982715904851700",
@@ -247,14 +247,14 @@
       "type": "trust_building",
       "post_time": "13:51",
       "metrics": {
-        "views": 76,
+        "views": 80,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:21:00.200638"
+      "metrics_collected_at": "2026-06-30T08:23:48.672836"
     },
     {
       "post_id": "18066999149443159",
@@ -263,14 +263,46 @@
       "type": "trust_building",
       "post_time": "08:16",
       "metrics": {
-        "views": 3,
+        "views": 10,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-29T09:21:00.497474"
+      "metrics_collected_at": "2026-06-30T08:23:48.980647"
+    },
+    {
+      "post_id": "18126458041634853",
+      "posted_at": "2026-06-29T15:53:33.317759",
+      "title": "婚活やめたいと思った日",
+      "type": "trust_building",
+      "post_time": "15:53",
+      "metrics": {
+        "views": 322,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0
+      },
+      "engagement_rate": 0.0,
+      "metrics_collected_at": "2026-06-30T08:23:49.275412"
+    },
+    {
+      "post_id": "17897567250526706",
+      "posted_at": "2026-06-30T06:59:04.827989",
+      "title": "夜中に泣いた話",
+      "type": "trust_building",
+      "post_time": "06:59",
+      "metrics": {
+        "views": 78,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0
+      },
+      "engagement_rate": 0.0,
+      "metrics_collected_at": "2026-06-30T08:23:49.642739"
     }
   ],
   "weekly_reports": [
