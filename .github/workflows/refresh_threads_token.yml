@@ -1,0 +1,32 @@
+name: Threads トークン 月次リフレッシュ
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'    # 毎月 1日 00:00 UTC (09:00 JST)
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: claude/vibrant-noether-9xbb8a
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
+        with:
+          python-version: '3.11'
+
+      - run: pip install requests
+
+      - name: トークンリフレッシュ
+        env:
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd sns-affiliate-bot
+          python scripts/refresh_threads_token.py

@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 3 * * *'    # 12:00 JST (UTC+9)
     - cron: '0 12 * * *'   # 21:00 JST (UTC+9)
-  workflow_dispatch:         # 手動実行も可能
+  workflow_dispatch:
 
 jobs:
   post:
@@ -14,13 +14,13 @@ jobs:
 
     steps:
       - name: sns-affiliate-bot ブランチを取得
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           ref: claude/vibrant-noether-9xbb8a
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Python セットアップ
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
         with:
           python-version: '3.11'
 
