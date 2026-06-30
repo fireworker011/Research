@@ -20,26 +20,17 @@ OUTPUT_DIR = Path("chatgpt_prompts")
 
 STYLE = "Photorealistic, cinematic, Japanese setting, no text or watermarks. Vertical 9:16 portrait."
 
-HEADER_TEMPLATE = """\
-以下のキャラクター設定を守りながら、7枚の画像を「scene1」から順番に生成してください。
-
-【重要・絶対に守ること】
-- 7枚を1枚のコラージュ/グリッド画像にまとめないでください。
-- 1回の生成につき、scene1枚だけを単独の画像として出力してください。
-- scene1の画像を出力したら、それで一旦止めてください。
-- 私が「次」と返信したら、続けてscene2を単独画像として生成してください。
-- 以降、scene7まで同様に1枚ずつ・私の「次」の合図を待ってから生成してください。
-
-【画像サイズ】
-縦型 9:16（ポートレート）の単独画像。複数シーンを並べた構成は禁止。
-
-【キャラクター固定設定（女性が登場するシーンに必ず適用）】
+CHAR_TEMPLATE = """\
+【キャラクター設定】（以降の画像生成にすべて適用してください）
 {woman}
 {style}
-
+縦型 9:16（ポートレート）の単独画像で生成してください。
 """
 
-SCENE_TEMPLATE = "【scene{n}】\n{prompt}\n\n"
+SCENE_TEMPLATE = """\
+{prompt} {style}
+縦型 9:16（ポートレート）。テキスト・ウォーターマークなし。
+"""
 
 
 def load_module(path: Path):
@@ -59,20 +50,21 @@ def export(num: int):
     prompts = mod.PROMPTS
     woman   = getattr(mod, "WOMAN", "Japanese woman in her early 30s")
 
-    # ヘッダー
-    body = HEADER_TEMPLATE.format(woman=woman, style=STYLE)
+    out_dir = OUTPUT_DIR / f"pet{num}"
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-    # 各シーン
+    # メッセージ0: キャラクター設定（最初に1回送る）
+    char_msg = CHAR_TEMPLATE.format(woman=woman, style=STYLE)
+    (out_dir / "00_キャラクター設定.txt").write_text(char_msg, encoding="utf-8")
+
+    # メッセージ1〜7: シーンごとに個別ファイル
     for i, prompt in enumerate(prompts, 1):
-        # WOMANプロンプトはヘッダーに書いたので個別プロンプトから除去
         clean = prompt.replace(f"{woman}, ", "").replace(woman, "上記の女性")
-        body += SCENE_TEMPLATE.format(n=i, prompt=clean.strip())
+        msg = SCENE_TEMPLATE.format(prompt=clean.strip(), style=STYLE)
+        (out_dir / f"scene{i:02d}.txt").write_text(msg, encoding="utf-8")
 
-    # 出力
-    OUTPUT_DIR.mkdir(exist_ok=True)
-    out = OUTPUT_DIR / f"pet{num}_chatgpt_prompts.txt"
-    out.write_text(body, encoding="utf-8")
-    print(f"  ✅ 保存: {out}  ({len(prompts)}シーン)")
+    print(f"  ✅ 保存: {out_dir}/  ({len(prompts)}シーン)")
+    print(f"     送り方: 00_キャラクター設定.txt → scene01.txt → scene02.txt ... の順に1つずつ送信")
 
 
 def main():
@@ -94,7 +86,7 @@ def main():
         export(n)
 
     print(f"\n✅ 完了: {OUTPUT_DIR}/")
-    print("ChatGPTに貼り付けてscene1を生成 → 「次」と送るごとにscene2〜7が続きます。")
+    print("送り方: 00_キャラクター設定.txt を最初に送信 → scene01〜07を1つずつ別メッセージで送信")
 
 
 if __name__ == "__main__":
