@@ -14,7 +14,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:43.716225"
+      "metrics_collected_at": "2026-07-01T08:43:22.317968"
     },
     {
       "post_id": "17968073672918871",
@@ -30,7 +30,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:44.050192"
+      "metrics_collected_at": "2026-07-01T08:43:22.612414"
     },
     {
       "post_id": "18068870510418113",
@@ -46,7 +46,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:44.409128"
+      "metrics_collected_at": "2026-07-01T08:43:22.939643"
     },
     {
       "post_id": "18128960419627369",
@@ -55,14 +55,14 @@
       "type": "affiliate",
       "post_time": "17:04",
       "metrics": {
-        "views": 6,
+        "views": 7,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:44.689420"
+      "metrics_collected_at": "2026-07-01T08:43:23.215631"
     },
     {
       "post_id": "18009386516734409",
@@ -78,7 +78,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:44.940399"
+      "metrics_collected_at": "2026-07-01T08:43:23.521410"
     },
     {
       "post_id": "18107638648945282",
@@ -94,7 +94,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:45.231144"
+      "metrics_collected_at": "2026-07-01T08:43:23.786520"
     },
     {
       "post_id": "18156327322467353",
@@ -110,7 +110,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:45.605546"
+      "metrics_collected_at": "2026-07-01T08:43:24.098848"
     },
     {
       "post_id": "17923850316365653",
@@ -126,7 +126,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:45.935164"
+      "metrics_collected_at": "2026-07-01T08:43:24.403809"
     },
     {
       "post_id": "18118474381829611",
@@ -142,7 +142,7 @@
         "quotes": 0
       },
       "engagement_rate": 5.88,
-      "metrics_collected_at": "2026-06-30T08:23:46.237774"
+      "metrics_collected_at": "2026-07-01T08:43:24.642437"
     },
     {
       "post_id": "17987917616828517",
@@ -158,7 +158,7 @@
         "quotes": 0
       },
       "engagement_rate": 3.57,
-      "metrics_collected_at": "2026-06-30T08:23:46.586803"
+      "metrics_collected_at": "2026-07-01T08:43:24.938170"
     },
     {
       "post_id": "18104085911326563",
@@ -174,7 +174,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:46.934989"
+      "metrics_collected_at": "2026-07-01T08:43:25.130283"
     },
     {
       "post_id": "18596803666009175",
@@ -190,7 +190,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:47.277270"
+      "metrics_collected_at": "2026-07-01T08:43:25.413851"
     },
     {
       "post_id": "18595106272058274",
@@ -206,7 +206,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:47.630677"
+      "metrics_collected_at": "2026-07-01T08:43:25.690454"
     },
     {
       "post_id": "18166879600440186",
@@ -222,7 +222,7 @@
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:47.980080"
+      "metrics_collected_at": "2026-07-01T08:43:25.940033"
     },
     {
       "post_id": "17991498053996836",
@@ -231,14 +231,14 @@
       "type": "trust_building",
       "post_time": "07:05",
       "metrics": {
-        "views": 10,
+        "views": 11,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:48.321105"
+      "metrics_collected_at": "2026-07-01T08:43:26.203893"
     },
     {
       "post_id": "17982715904851700",
@@ -247,14 +247,14 @@
       "type": "trust_building",
       "post_time": "13:51",
       "metrics": {
-        "views": 80,
+        "views": 82,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:48.672836"
+      "metrics_collected_at": "2026-07-01T08:43:26.470621"
     },
     {
       "post_id": "18066999149443159",
@@ -263,14 +263,14 @@
       "type": "trust_building",
       "post_time": "08:16",
       "metrics": {
-        "views": 10,
+        "views": 12,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:48.980647"
+      "metrics_collected_at": "2026-07-01T08:43:26.709105"
     },
     {
       "post_id": "18126458041634853",
@@ -279,14 +279,14 @@
       "type": "trust_building",
       "post_time": "15:53",
       "metrics": {
-        "views": 322,
+        "views": 331,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
       "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:49.275412"
+      "metrics_collected_at": "2026-07-01T08:43:26.930863"
     },
     {
       "post_id": "17897567250526706",
@@ -295,14 +295,46 @@
       "type": "trust_building",
       "post_time": "06:59",
       "metrics": {
-        "views": 78,
-        "likes": 0,
+        "views": 88,
+        "likes": 1,
         "replies": 0,
         "reposts": 0,
         "quotes": 0
       },
-      "engagement_rate": 0.0,
-      "metrics_collected_at": "2026-06-30T08:23:49.642739"
+      "engagement_rate": 1.14,
+      "metrics_collected_at": "2026-07-01T08:43:27.188719"
+    },
+    {
+      "post_id": "18116706673659588",
+      "posted_at": "2026-06-30T14:24:08.229474",
+      "title": "年齢のせいじゃなかった",
+      "type": "trust_building",
+      "post_time": "14:24",
+      "metrics": {
+        "views": 361,
+        "likes": 3,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0
+      },
+      "engagement_rate": 0.83,
+      "metrics_collected_at": "2026-07-01T08:43:27.487511"
+    },
+    {
+      "post_id": "18093531434199227",
+      "posted_at": "2026-07-01T07:15:24.083738",
+      "title": "友達に打ち明けた日",
+      "type": "trust_building",
+      "post_time": "07:15",
+      "metrics": {
+        "views": 60,
+        "likes": 1,
+        "replies": 0,
+        "reposts": 0,
+        "quotes": 0
+      },
+      "engagement_rate": 1.67,
+      "metrics_collected_at": "2026-07-01T08:43:27.749494"
     }
   ],
   "weekly_reports": [
