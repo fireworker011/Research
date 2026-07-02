@@ -34,7 +34,7 @@ const { askClaude, extractJSON, sleep } = require('./claude-client');
 const { checkContent } = require('./compliance');
 const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
 
-const GENRES = (process.env.GENRES || '婚活,転職,美容,VOD,複合').split(',').map((g) => g.trim());
+const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育').split(',').map((g) => g.trim());
 const TEMPLATES_PER_GENRE = parseInt(process.env.TEMPLATES_PER_GENRE || '32', 10);
 const CAMPAIGN_DAYS = parseInt(process.env.CAMPAIGN_DAYS || '60', 10);
 const POSTS_PER_DAY = parseInt(process.env.POSTS_PER_DAY || '3', 10);
@@ -94,8 +94,9 @@ ${fewShot}
 【投稿の要件】
 - 250字以内。1行目で興味を掴む（質問・意外な事実・具体的な数字など）
 - 体験談・気づき・具体的なノウハウ形式。宣伝臭を出さない
-- 約半数のテンプレに {{AFFILIATE_LINK}} プレースホルダーを自然な文脈で含める
-  （例:「詳しくはここにまとめた → {{AFFILIATE_LINK}}」）
+- 4本に1本程度のテンプレに {{AFFILIATE_LINK}} プレースホルダーを自然な文脈で含める
+  （例:「詳しくはここにまとめた → {{AFFILIATE_LINK}}」）。残りは信頼構築用の価値提供
+- 可能なら投稿の最後を「読者が答えたくなる質問」で締める（会話がアルゴリズム評価の中心）
 - リンクを含むテンプレは末尾に「#PR」を必ず含める（景表法ステマ規制対応）
 - リンクなしのテンプレは信頼構築用。CTAなしで価値提供に徹する
 - 誇大表現・断定的な効果効能は禁止
@@ -131,7 +132,7 @@ JSON 配列のみで出力:
 /** アカウント×日付×時刻でスケジュール CSV を組み立てる */
 function buildScheduleCSV(templatesByGenre, accounts) {
   const rows = [
-    ['date', 'time', 'account', 'platform', 'genre', 'content', 'emoji', 'engagement_prediction', 'cta_type'].join(',')
+    ['date', 'time', 'account', 'platform', 'genre', 'content', 'emoji', 'engagement_prediction', 'cta_type', 'link_key'].join(',')
   ];
   const cursor = {};
   const times = SCHEDULE_TIMES.slice(0, POSTS_PER_DAY);
@@ -162,7 +163,8 @@ function buildScheduleCSV(templatesByGenre, accounts) {
             escapeCSV(t.content),
             t.emoji || '',
             t.engagement_prediction || 'medium',
-            t.cta_type || 'none'
+            t.cta_type || 'none',
+            t.link_key || ''
           ].join(',')
         );
       }
