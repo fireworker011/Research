@@ -1,6 +1,6 @@
 {
-  "next_index": 13,
-  "total_posted": 23,
+  "next_index": 14,
+  "total_posted": 24,
   "recent_posts": [
     {
       "post_id": "18127882699723247",
@@ -132,6 +132,12 @@
       "post_id": "17922094404164166",
       "posted_at": "2026-07-01T14:42:25.733510",
       "title": "プロフ修正しても変わらなかった",
+      "type": "trust_building"
+    },
+    {
+      "post_id": "18097683314190842",
+      "posted_at": "2026-07-02T06:42:36.708450",
+      "title": "メッセージで消耗した2年間",
       "type": "trust_building"
     }
   ]
