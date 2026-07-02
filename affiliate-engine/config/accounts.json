@@ -1,5 +1,5 @@
 {
-  "_comment": "このファイルを accounts.json にコピーして編集。user_id_env / token_env は環境変数名（GitHub Actions の Secrets 名と一致させる）。enabled: false のアカウントは無視される。まず1アカウントで検証してから増やすこと（Threads は同一人物の大量アカウント運用を制限している。増やす場合も各アカウントは独立したテーマ・プロフィールを持つ正規運用に限る）",
+  "_comment": "戦略ドキュメント docs/account-strategy.md に基づく構成。立ち上げ順序の推奨: konkatsu(稼働中) → education → sidejob → bodymake/beauty。アカウント開設・トークン取得後に enabled: true にし、Secrets へ user_id_env / token_env と同名の値を登録すること",
   "accounts": [
     {
       "key": "konkatsu",
@@ -9,10 +9,10 @@
       "enabled": true
     },
     {
-      "key": "career",
-      "genre": "転職",
-      "user_id_env": "THREADS_CAREER_USER_ID",
-      "token_env": "THREADS_CAREER_ACCESS_TOKEN",
+      "key": "sidejob",
+      "genre": "副業",
+      "user_id_env": "THREADS_SIDEJOB_USER_ID",
+      "token_env": "THREADS_SIDEJOB_ACCESS_TOKEN",
       "enabled": false
     },
     {
@@ -23,17 +23,17 @@
       "enabled": false
     },
     {
-      "key": "vod",
-      "genre": "VOD",
-      "user_id_env": "THREADS_VOD_USER_ID",
-      "token_env": "THREADS_VOD_ACCESS_TOKEN",
+      "key": "bodymake",
+      "genre": "筋トレ",
+      "user_id_env": "THREADS_BODYMAKE_USER_ID",
+      "token_env": "THREADS_BODYMAKE_ACCESS_TOKEN",
       "enabled": false
     },
     {
-      "key": "fukugou",
-      "genre": "複合",
-      "user_id_env": "THREADS_FUKUGOU_USER_ID",
-      "token_env": "THREADS_FUKUGOU_ACCESS_TOKEN",
+      "key": "education",
+      "genre": "教育",
+      "user_id_env": "THREADS_EDUCATION_USER_ID",
+      "token_env": "THREADS_EDUCATION_ACCESS_TOKEN",
       "enabled": false
     }
   ]

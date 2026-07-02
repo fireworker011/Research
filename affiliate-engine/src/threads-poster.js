@@ -80,7 +80,8 @@ function rowKey(row) {
 /** 投稿本文を組み立てる。リンク必須なのに未設定なら null（=スキップ） */
 function buildPostText(row, links) {
   let text = row.content || '';
-  const link = links[row.genre];
+  // 案件別キー（link_key）優先、なければジャンル共通リンク
+  const link = links[row.link_key] || links[row.genre];
 
   if (text.includes('{{AFFILIATE_LINK}}')) {
     if (!link) {
