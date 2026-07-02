@@ -17,6 +17,10 @@
  * 使用方法:
  *   ANTHROPIC_API_KEY=sk-ant-... node src/strategy-engine.js
  *
+ *   API キーなしで手持ちのテンプレ JSON からスケジュールだけ組む場合:
+ *   node src/strategy-engine.js --from-file data/seed_templates.json
+ *   （フォーマット: { "market_analysis": [...], "posting_templates": [...] }）
+ *
  * 環境変数:
  *   GENRES               対象ジャンル（デフォルト: 婚活,転職,美容,VOD,複合）
  *   TEMPLATES_PER_GENRE  ジャンルあたりのテンプレ数（デフォルト: 32）
@@ -170,7 +174,6 @@ function buildScheduleCSV(templatesByGenre, accounts) {
 async function main() {
   console.log('🚀 Strategy Engine 開始\n');
   console.log(`  ジャンル: ${GENRES.join(', ')}`);
-  console.log(`  テンプレ数: ${TEMPLATES_PER_GENRE}本/ジャンル × ${GENRES.length}ジャンル`);
   console.log(`  期間: ${CAMPAIGN_DAYS}日 × ${POSTS_PER_DAY}投稿/日/アカウント\n`);
 
   const accountsConfig = loadConfig('accounts', { accounts: [] });
@@ -180,20 +183,50 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('📊 ステップ1: 市場スコアリング（Claude 推定値）...');
-  const market = await analyzeMarket();
-  for (const m of market) {
-    console.log(`  ${m.genre}: 需要${m.demand_score}/10, 単価目安 ¥${m.typical_commission_jpy}`);
-  }
+  const fromFileIdx = process.argv.indexOf('--from-file');
+  const seedPath = fromFileIdx !== -1 ? path.resolve(process.argv[fromFileIdx + 1] || '') : null;
 
-  console.log('\n📝 ステップ2: テンプレ生成（ジャンル別）...');
+  let market = [];
   const templatesByGenre = {};
-  for (const genre of GENRES) {
-    process.stdout.write(`  ${genre} ... `);
-    const marketInfo = market.find((m) => m.genre === genre);
-    templatesByGenre[genre] = await generateTemplates(genre, marketInfo);
-    console.log(`${templatesByGenre[genre].length}本`);
-    await sleep(1000);
+
+  if (seedPath) {
+    console.log(`📂 テンプレをファイルから読み込み（API 呼び出しなし）: ${seedPath}\n`);
+    const seed = readJSON(seedPath);
+    if (!seed || !Array.isArray(seed.posting_templates)) {
+      console.error('❌ シードファイルが読めないか posting_templates 配列がありません');
+      process.exit(1);
+    }
+    market = seed.market_analysis || [];
+    for (const t of seed.posting_templates) {
+      const result = checkContent(t.content || '');
+      if (!result.ok) {
+        console.warn(`  ⚠️ テンプレ破棄（${t.genre}）: ${result.reasons.join(', ')}`);
+        continue;
+      }
+      (templatesByGenre[t.genre] = templatesByGenre[t.genre] || []).push({
+        ...t,
+        content: result.text
+      });
+    }
+    for (const [genre, list] of Object.entries(templatesByGenre)) {
+      console.log(`  ${genre}: ${list.length}本`);
+    }
+  } else {
+    console.log(`  テンプレ数: ${TEMPLATES_PER_GENRE}本/ジャンル × ${GENRES.length}ジャンル\n`);
+    console.log('📊 ステップ1: 市場スコアリング（Claude 推定値）...');
+    market = await analyzeMarket();
+    for (const m of market) {
+      console.log(`  ${m.genre}: 需要${m.demand_score}/10, 単価目安 ¥${m.typical_commission_jpy}`);
+    }
+
+    console.log('\n📝 ステップ2: テンプレ生成（ジャンル別）...');
+    for (const genre of GENRES) {
+      process.stdout.write(`  ${genre} ... `);
+      const marketInfo = market.find((m) => m.genre === genre);
+      templatesByGenre[genre] = await generateTemplates(genre, marketInfo);
+      console.log(`${templatesByGenre[genre].length}本`);
+      await sleep(1000);
+    }
   }
 
   console.log('\n📋 ステップ3: スケジュール CSV 生成...');

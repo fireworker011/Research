@@ -67,6 +67,9 @@ cp config/funnel.example.json config/funnel.json
 export ANTHROPIC_API_KEY="sk-ant-..."
 node src/strategy-engine.js
 
+#    API キーなしの場合はシードテンプレからスケジュールだけ生成できる
+node src/strategy-engine.js --from-file data/seed_templates.json
+
 # 3. ドライランで投稿内容を確認（必ずやる）
 export THREADS_KONKATSU_USER_ID="..."
 export THREADS_KONKATSU_ACCESS_TOKEN="..."
