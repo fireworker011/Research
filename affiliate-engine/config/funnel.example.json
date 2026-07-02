@@ -1,0 +1,7 @@
+{
+  "_comment": "funnel.json にコピーして使用。初期値は業界の一般的な想定。短縮URLの実測クリック数・ASPの実測CVRが取れ次第、実測値に更新すること。ここが正確になるほど report.js の着地予測が信頼できる",
+  "avg_commission_jpy": 5000,
+  "approval_rate": 0.8,
+  "cvr_click_to_conversion": 0.015,
+  "ctr_view_to_click": 0.008
+}

@@ -1,0 +1,40 @@
+{
+  "_comment": "このファイルを accounts.json にコピーして編集。user_id_env / token_env は環境変数名（GitHub Actions の Secrets 名と一致させる）。enabled: false のアカウントは無視される。まず1アカウントで検証してから増やすこと（Threads は同一人物の大量アカウント運用を制限している。増やす場合も各アカウントは独立したテーマ・プロフィールを持つ正規運用に限る）",
+  "accounts": [
+    {
+      "key": "konkatsu",
+      "genre": "婚活",
+      "user_id_env": "THREADS_KONKATSU_USER_ID",
+      "token_env": "THREADS_KONKATSU_ACCESS_TOKEN",
+      "enabled": true
+    },
+    {
+      "key": "career",
+      "genre": "転職",
+      "user_id_env": "THREADS_CAREER_USER_ID",
+      "token_env": "THREADS_CAREER_ACCESS_TOKEN",
+      "enabled": false
+    },
+    {
+      "key": "beauty",
+      "genre": "美容",
+      "user_id_env": "THREADS_BEAUTY_USER_ID",
+      "token_env": "THREADS_BEAUTY_ACCESS_TOKEN",
+      "enabled": false
+    },
+    {
+      "key": "vod",
+      "genre": "VOD",
+      "user_id_env": "THREADS_VOD_USER_ID",
+      "token_env": "THREADS_VOD_ACCESS_TOKEN",
+      "enabled": false
+    },
+    {
+      "key": "fukugou",
+      "genre": "複合",
+      "user_id_env": "THREADS_FUKUGOU_USER_ID",
+      "token_env": "THREADS_FUKUGOU_ACCESS_TOKEN",
+      "enabled": false
+    }
+  ]
+}

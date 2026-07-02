@@ -1,0 +1,61 @@
+name: Affiliate Engine 自動投稿
+
+on:
+  schedule:
+    # JST 07:00 / 12:00 / 19:00 / 21:00（UTC+9）
+    - cron: '0 22 * * *'
+    - cron: '0 3 * * *'
+    - cron: '0 10 * * *'
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'ドライラン（投稿せずプレビューのみ）'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/monthly-revenue-system-gvi02u
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Threads に投稿（期日到来分のみ）
+        env:
+          THREADS_KONKATSU_USER_ID: ${{ secrets.THREADS_KONKATSU_USER_ID }}
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+          THREADS_CAREER_USER_ID: ${{ secrets.THREADS_CAREER_USER_ID }}
+          THREADS_CAREER_ACCESS_TOKEN: ${{ secrets.THREADS_CAREER_ACCESS_TOKEN }}
+          THREADS_BEAUTY_USER_ID: ${{ secrets.THREADS_BEAUTY_USER_ID }}
+          THREADS_BEAUTY_ACCESS_TOKEN: ${{ secrets.THREADS_BEAUTY_ACCESS_TOKEN }}
+          THREADS_VOD_USER_ID: ${{ secrets.THREADS_VOD_USER_ID }}
+          THREADS_VOD_ACCESS_TOKEN: ${{ secrets.THREADS_VOD_ACCESS_TOKEN }}
+          THREADS_FUKUGOU_USER_ID: ${{ secrets.THREADS_FUKUGOU_USER_ID }}
+          THREADS_FUKUGOU_ACCESS_TOKEN: ${{ secrets.THREADS_FUKUGOU_ACCESS_TOKEN }}
+        run: |
+          cd affiliate-engine
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            node src/threads-poster.js --dry-run
+          else
+            node src/threads-poster.js
+          fi
+
+      - name: 投稿状態を保存
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add affiliate-engine/output/state affiliate-engine/output/posting_logs || true
+          git diff --staged --quiet || {
+            git commit -m "chore: 投稿状態を更新"
+            git pull --rebase origin claude/monthly-revenue-system-gvi02u
+            git push origin claude/monthly-revenue-system-gvi02u
+          }

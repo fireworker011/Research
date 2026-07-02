@@ -1,0 +1,17 @@
+{
+  "name": "affiliate-engine",
+  "version": "1.0.0",
+  "description": "Threads アフィリエイト運用エンジン（戦略生成 → 自動投稿 → KPI計測 → 改善ループ）",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "strategy": "node src/strategy-engine.js",
+    "post": "node src/threads-poster.js",
+    "post:dry": "node src/threads-poster.js --dry-run",
+    "report": "node src/report.js",
+    "video": "node src/video-semi-auto.js",
+    "plan": "node src/funnel-calc.js"
+  }
+}

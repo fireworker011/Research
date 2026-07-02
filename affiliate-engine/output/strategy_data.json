@@ -1,0 +1,508 @@
+{
+  "generated_at": "2026-07-02T13:18:35.197Z",
+  "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
+  "genres": [
+    "婚活",
+    "転職",
+    "美容",
+    "VOD",
+    "複合"
+  ],
+  "market_analysis": [
+    {
+      "genre": "婚活",
+      "demand_score": 8,
+      "typical_commission_jpy": 4000,
+      "typical_approval_rate": 70,
+      "target_demographic": "28-45歳の結婚を意識した男女",
+      "content_angle": "実践的な立ち回り・アプリ選びの失敗回避",
+      "caution": "出会い系的な性的訴求はMetaポリシー違反。真剣婚活の文脈のみ"
+    },
+    {
+      "genre": "転職",
+      "demand_score": 9,
+      "typical_commission_jpy": 12000,
+      "typical_approval_rate": 60,
+      "target_demographic": "25-40歳の年収・キャリアに不満のある会社員",
+      "content_angle": "年収交渉・書類/面接の具体テクニック",
+      "caution": "「必ず年収が上がる」等の断定は景表法リスク"
+    },
+    {
+      "genre": "美容",
+      "demand_score": 7,
+      "typical_commission_jpy": 3000,
+      "typical_approval_rate": 65,
+      "target_demographic": "25-50歳の女性中心",
+      "content_angle": "習慣・選び方の整理。効果は個人差前提で語る",
+      "caution": "薬機法: 効果効能の断定（治る・消える）は不可"
+    },
+    {
+      "genre": "VOD",
+      "demand_score": 6,
+      "typical_commission_jpy": 1500,
+      "typical_approval_rate": 85,
+      "target_demographic": "20-50歳の全層",
+      "content_angle": "作品の楽しみ方・サービスの使い分け",
+      "caution": "無料期間の条件は変わりやすいので断定しない"
+    },
+    {
+      "genre": "複合",
+      "demand_score": 7,
+      "typical_commission_jpy": 3000,
+      "typical_approval_rate": 75,
+      "target_demographic": "25-45歳の生活改善に関心のある層",
+      "content_angle": "固定費・習慣・自己投資の優先順位",
+      "caution": "投資・副業の利益断定は不可"
+    }
+  ],
+  "posting_templates": [
+    {
+      "id": "konkatsu_001",
+      "genre": "婚活",
+      "content": "いいね数より返信率。婚活アプリで消耗しない人は、送る相手を週5人に絞って1通目を全部変えている。数を打つより、プロフィールを読んで一文引用するほうが返ってくる。",
+      "emoji": "💬",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_002",
+      "genre": "婚活",
+      "content": "初デートのお店選びで迷ったら「駅近・静か・90分で出られる」の3条件。盛り上がらなかった時に長居しない設計にしておくと、お互い楽。",
+      "emoji": "☕",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_003",
+      "genre": "婚活",
+      "content": "プロフィール写真は自撮りより「誰かに撮ってもらった自然な一枚」。清潔感は服より髪と靴に出る、と結婚相談所のカウンセラーが言っていた。",
+      "emoji": "📸",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_004",
+      "genre": "婚活",
+      "content": "メッセージが続かない相手を追わない。3往復して質問が返ってこないなら、縁がなかっただけ。婚活は選ばれる場じゃなくて、選び合う場。",
+      "emoji": "🌱",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_005",
+      "genre": "婚活",
+      "content": "「会うまでが長い人」とは会ってからも長い。2週間メッセージが続いたら一度お茶に誘っていい。オンラインで完璧を目指すより、会って15分の情報量。",
+      "emoji": "🍵",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_006",
+      "genre": "婚活",
+      "content": "婚活疲れの正体は「不採用通知を毎日受け取ってる感覚」。週末だけアプリを開く運用に変えたら続くようになった、という声は多い。毎日開く必要はない。",
+      "emoji": "🛋️",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_007",
+      "genre": "婚活",
+      "content": "年収や身長で絞り込む前に「休日の過ごし方」欄を読む。結婚生活は週末の連続。ここが合う人とは会話も続きやすい。",
+      "emoji": "📅",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_008",
+      "genre": "婚活",
+      "content": "お断りの返事こそ丁寧に。婚活界隈は意外と狭い。感じのいい断り方ができる人は、次の縁も拾いやすい。",
+      "emoji": "🤝",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_009",
+      "genre": "婚活",
+      "content": "初回デートの話題は「最近ハマってるもの」が鉄板。過去（元恋人）と未来（結婚の条件）は2回目以降。まず現在を楽しめる相手かどうか。",
+      "emoji": "🎯",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_010",
+      "genre": "婚活",
+      "content": "希望条件を10個書き出して、上位3つ以外は「あれば嬉しい」に降格させる。全部満たす人を探すと、誰にも会えないまま1年経つ。",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_011",
+      "genre": "婚活",
+      "content": "マッチングして3日以内に会話が始まらないと、その後つながる確率はかなり下がる。挨拶＋プロフィールの一点への質問、これだけでいい。",
+      "emoji": "⏳",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_012",
+      "genre": "婚活",
+      "content": "婚活で効いた小さいルールは「金曜夜にアプリを見ない」。疲れてる時に選ぶ相手は、だいたいうまくいかない。判断は元気な時にする。",
+      "emoji": "🌙",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "konkatsu_101",
+      "genre": "婚活",
+      "content": "婚活アプリは2つ併用が基本。アプリごとに母集団の年齢層と真剣度が全然違うから、1つで消耗するより相性のいい場所を探すほうが早い。主要アプリの比較はここにまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📱",
+      "engagement_prediction": "high",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_102",
+      "genre": "婚活",
+      "content": "「真剣度の高い人が多いアプリはどれ？」と聞かれたら、料金体系と本人確認の仕組みを見てと答えてる。理由と比較はこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🔍",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_103",
+      "genre": "婚活",
+      "content": "結婚相談所とアプリの一番の違いは「伴走者がいるかどうか」。自走できる人はアプリで十分。迷ってる人向けに違いを整理した → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🧭",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_104",
+      "genre": "婚活",
+      "content": "プロフィール文の添削だけで反応が変わるのは本当。自分でできる改善チェックリストと、添削サポート付きのサービスをまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "✍️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_105",
+      "genre": "婚活",
+      "content": "30代からの婚活は「始める時期」が一番の変数。悩んでいる期間が一番もったいない。まず無料でできる一歩をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🚪",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "konkatsu_106",
+      "genre": "婚活",
+      "content": "アプリ選びで失敗する典型は「友達が使ってたから」。自分の目的（恋活か婚活か）と年齢層で選ぶのが先。目的別の選び方はここ → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🗺️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_107",
+      "genre": "婚活",
+      "content": "「いいねが来ない」の多くはプロフィール写真で説明がつく。プロ撮影を使う人が増えている理由と選択肢をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📷",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_108",
+      "genre": "婚活",
+      "content": "婚活の初期費用、アプリなら月数千円から始められる。お金をかけるべきところと削れるところの整理はこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💰",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "konkatsu_109",
+      "genre": "婚活",
+      "content": "「同時進行って不誠実？」→ 交際前なら普通、が今の婚活の標準。効率よく、でも誠実に進める運用をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "⚖️",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "konkatsu_110",
+      "genre": "婚活",
+      "content": "地方の婚活はオンライン活用で選択肢が大きく変わる。オンライン面談・ビデオ通話に対応したサービスの比較はここに → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🏡",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_111",
+      "genre": "婚活",
+      "content": "再婚活は専用の場を選ぶと話が早い。事情に理解のある相手と出会いやすい場所をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🌸",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "konkatsu_112",
+      "genre": "婚活",
+      "content": "忙しくて婚活の時間が取れない人ほど、条件検索型より紹介型が向いている。タイプ別の使い分けはこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "⏰",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "career_001",
+      "genre": "転職",
+      "content": "転職で年収を上げやすいのは「同職種×別業界」。スキルはそのまま、業界の給与水準だけ変える発想。同業他社への横移動より伸び幅が出やすい。",
+      "emoji": "📈",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "career_002",
+      "genre": "転職",
+      "content": "職務経歴書は「やったこと」より「数字で何が変わったか」。売上、工数、率。数字が1つあるだけで書類の通過しやすさは変わる。",
+      "emoji": "🔢",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "career_003",
+      "genre": "転職",
+      "content": "面接の逆質問は「御社の課題は？」より「この職種で成果を出している人の共通点は？」。入社後の活躍イメージで会話になる。",
+      "emoji": "🎤",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "career_004",
+      "genre": "転職",
+      "content": "退職理由はネガティブでも、志望動機がポジティブなら通る。「逃げ」と「向かう先」はセットで語る。隠すより設計する。",
+      "emoji": "🧭",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "career_101",
+      "genre": "転職",
+      "content": "転職エージェントは2〜3社併用が前提。持っている求人も、推してくる案件も社ごとに全然違う。タイプ別の使い分けをまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🤝",
+      "engagement_prediction": "high",
+      "cta_type": "direct"
+    },
+    {
+      "id": "career_102",
+      "genre": "転職",
+      "content": "「今すぐ転職する気はない」段階でエージェント面談を受けるのはアリ。自分の市場価値の定点観測になる。登録から面談までの流れはこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🩺",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "career_103",
+      "genre": "転職",
+      "content": "年収交渉は自分でやるよりエージェント経由が圧倒的にやりやすい。言いにくいことを代わりに言ってもらえる仕組みの使い方 → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💬",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "career_104",
+      "genre": "転職",
+      "content": "20代と30代では使うべき転職サービスが別物。強い求人層が年代で分かれているから。年代別の選び方を整理した → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🗂️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "beauty_001",
+      "genre": "美容",
+      "content": "スキンケアで一番コスパがいいのは「落とすものの見直し」と言われる。高い美容液を足す前に、クレンジングを肌に合わせるほうが先。",
+      "emoji": "🧴",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "beauty_002",
+      "genre": "美容",
+      "content": "日焼け止めは「塗る量」が足りていない人が大半らしい。顔でパール2個分。量を守るだけで使用感の印象は結構変わる。",
+      "emoji": "☀️",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "beauty_003",
+      "genre": "美容",
+      "content": "新しいコスメは「1つずつ試す」。同時に2つ変えると、肌に合わなかった時にどちらが原因か分からなくなる。検証は1変数ずつ。",
+      "emoji": "🧪",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "beauty_004",
+      "genre": "美容",
+      "content": "肌の調子は睡眠と紫外線でだいたい説明がつく、と皮膚科で言われた。ケアを増やす前に、削れている睡眠を戻すほうが先かもしれない。",
+      "emoji": "😴",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "beauty_101",
+      "genre": "美容",
+      "content": "デパコスとプチプラの差は成分より「テクスチャと続けやすさ」という意見も多い。続けられる価格帯で選ぶのが結局正解。比較メモはこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💄",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "beauty_102",
+      "genre": "美容",
+      "content": "脱毛はサロンと医療で仕組みも料金の考え方も別物。料金だけで選ぶと後悔しやすい。違いを1枚で整理した → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "✨",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "beauty_103",
+      "genre": "美容",
+      "content": "スキンケアの定期便は「初回価格」より「解約条件」を先に見る。契約前のチェックポイントをまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📦",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "beauty_104",
+      "genre": "美容",
+      "content": "肌悩みの相談は今はオンラインでもできる。皮膚科に行くか迷っている段階で使える選択肢をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💻",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "vod_001",
+      "genre": "VOD",
+      "content": "映画1本を「ながら見」で消費するより、週1本を集中して観るほうが満足度が高い。積んでいる作品リストは幸福度を下げる。",
+      "emoji": "🎬",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "vod_002",
+      "genre": "VOD",
+      "content": "ドラマは1話で判断しない。3話ルール。制作側も3話に山場を置くことが多い。1話切りで名作を逃すのはもったいない。",
+      "emoji": "📺",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "vod_003",
+      "genre": "VOD",
+      "content": "休日の「何も観たいものがない」は、選択肢が多すぎるだけ。観たいものリストを5本までに絞ると迷いが消える。",
+      "emoji": "🍿",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "vod_004",
+      "genre": "VOD",
+      "content": "字幕と吹替は作品で使い分ける人が一番楽しんでいる説。コメディは吹替、サスペンスは字幕、みたいな自分ルールを持つと楽。",
+      "emoji": "🎧",
+      "engagement_prediction": "low",
+      "cta_type": "none"
+    },
+    {
+      "id": "vod_101",
+      "genre": "VOD",
+      "content": "VODは「観たい作品がどこにあるか」で選ぶのが正解。独占配信の分布で選ぶべきサービスは変わる。ジャンル別の整理はこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🗺️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "vod_102",
+      "genre": "VOD",
+      "content": "サブスクの見直しは固定費削減で一番痛みがない。使っていないサービスの棚卸しと無料期間の賢い使い方はこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💸",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "vod_103",
+      "genre": "VOD",
+      "content": "アニメ中心・映画中心・韓ドラ中心で最適なVODは全部違う。ジャンル別の相性表を作った → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🎌",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "vod_104",
+      "genre": "VOD",
+      "content": "家族で使うなら画質より先に「同時視聴数」と「プロフィール分け」を確認。ファミリー向けの比較はここ → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "👨‍👩‍👧",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "fukugou_001",
+      "genre": "複合",
+      "content": "固定費の見直しは「順番」が9割。効果が大きい順に、住居→通信→保険→サブスク。小さい節約から始めると挫折する。",
+      "emoji": "🏠",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "fukugou_002",
+      "genre": "複合",
+      "content": "新しい習慣は「既にある習慣の直後」に置くと続きやすい。朝のコーヒーの後に5分だけ、みたいな設計。意志力より仕組み。",
+      "emoji": "☕",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "fukugou_003",
+      "genre": "複合",
+      "content": "情報収集は「発信者が自分でやっているか」で選別する。やっていない人の解説は、どこかで細部が抜ける。",
+      "emoji": "🔍",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "fukugou_004",
+      "genre": "複合",
+      "content": "自己投資の優先順位で迷ったら「回収期間が短い順」。資格より先に、睡眠と運動が一番利回りがいい。",
+      "emoji": "🏃",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "fukugou_101",
+      "genre": "複合",
+      "content": "スマホ代、まだ月5千円以上払っているなら見直し余地が大きい。乗り換えの手順を全部書いた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📱",
+      "engagement_prediction": "high",
+      "cta_type": "direct"
+    },
+    {
+      "id": "fukugou_102",
+      "genre": "複合",
+      "content": "ふるさと納税、やらない理由が「面倒そう」ならもったいない。最短の始め方をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🎁",
+      "engagement_prediction": "medium",
+      "cta_type": "direct"
+    },
+    {
+      "id": "fukugou_103",
+      "genre": "複合",
+      "content": "電子書籍の読み放題は「月2冊以上読むなら元が取れる」が目安。対象ジャンルの傾向と選び方はこちら → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "fukugou_104",
+      "genre": "複合",
+      "content": "ポイ活は広く浅くやると時給が最低になる。絞るべき2〜3個の選び方だけ知っておけばいい → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🪙",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    }
+  ]
+}
