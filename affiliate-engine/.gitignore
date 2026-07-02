@@ -1,0 +1,5 @@
+# トークン類は一切ファイルに置かない設計（環境変数 / GitHub Secrets のみ）。
+# accounts.json / links.json / funnel.json / data/conversions.csv は
+# GitHub Actions が参照するためコミットする（リポジトリは Private 前提）。
+node_modules/
+output/videos/
