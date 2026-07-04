@@ -15,7 +15,7 @@ function sleep(ms) {
  * Claude にプロンプトを送信してテキストを返す。
  * 429 / 5xx は指数バックオフで最大3回リトライ。
  */
-async function askClaude(prompt, { maxTokens = 8192, system = null, model = DEFAULT_MODEL } = {}) {
+async function askClaude(prompt, { maxTokens = 8192, system = null, model = DEFAULT_MODEL, tools = null } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY（または CLAUDE_API_KEY）が設定されていません');
@@ -27,6 +27,7 @@ async function askClaude(prompt, { maxTokens = 8192, system = null, model = DEFA
     messages: [{ role: 'user', content: prompt }]
   };
   if (system) body.system = system;
+  if (tools) body.tools = tools; // サーバーツール（web_search 等）対応
 
   let lastError = null;
   for (let attempt = 1; attempt <= 3; attempt++) {

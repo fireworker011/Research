@@ -90,7 +90,9 @@ GitHub Secrets には各アカウントの `THREADS_*_USER_ID` / `THREADS_*_ACCE
 | 頻度 | 作業 | 所要時間 |
 |---|---|---|
 | 自動 | 投稿（4回/日）・KPIレポート（毎日） | 0分 |
+| 自動（3日ごと） | インサイト生成: 実測アナリティクス × Web検索での市場バズリサーチ → 改善案とテンプレ草案（`output/insights/`） | 0分 |
 | 毎日 | `output/reports/report_*.md` を一読 | 3分 |
+| 3日ごと | インサイトレポートを確認 → 草案が良ければ `node src/apply-proposals.js` で反映（`--prune 5` で実測ワースト5本を引退） | 15分 |
 | 週1 | ASP 管理画面から成果を `data/conversions.csv` にエクスポート | 10分 |
 | 週1 | レポートの判断ルールに従いジャンル取捨 → `strategy-engine.js` 再実行（top_posts が few-shot に入り型が進化） | 30分 |
 | 週2-3 | 反応上位の投稿を `video-semi-auto.js` で動画化 → Shorts/Reels 予約投稿 | 30分 |
