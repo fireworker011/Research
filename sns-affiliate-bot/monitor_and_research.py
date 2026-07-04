@@ -15,6 +15,7 @@
 
 import pickle
 import json
+import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -250,6 +251,83 @@ def analyze_and_suggest(own_videos: list) -> list[str]:
     return suggestions
 
 
+# ── CLAUDE.md 自動更新 ────────────────────────────────────────────────────────
+
+def update_claude_md(own_videos: list) -> bool:
+    """genres/pet/CLAUDE.md の動画テーブルを最新データで自動更新"""
+    claude_md = Path("genres/pet/CLAUDE.md")
+    if not claude_md.exists():
+        print("  ⚠️ genres/pet/CLAUDE.md が見つかりません（スキップ）")
+        return False
+
+    content = claude_md.read_text(encoding="utf-8")
+    lines = content.split("\n")
+    update_count = 0
+
+    for v in own_videos:
+        title    = v["title"]
+        views    = f"{v['views']:,}"
+        pub_date = datetime.strptime(v["date"], "%Y-%m-%d").strftime("%Y/%m/%d")
+        key      = title[:8]  # タイトル先頭8文字で行を特定
+
+        for idx, line in enumerate(lines):
+            if "|" not in line or line.startswith("|---"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) < 5 or key not in parts[2]:
+                continue
+
+            old_date  = parts[3]
+            old_views = parts[4]
+            new_date  = pub_date if old_date in ("制作中", "-", "投稿済") else old_date
+            new_views = views
+
+            if old_date != new_date or old_views != new_views:
+                lines[idx] = (
+                    f"| {parts[1]} | {parts[2]} | {new_date} | {new_views} |"
+                )
+                update_count += 1
+            break
+
+    if update_count > 0:
+        claude_md.write_text("\n".join(lines), encoding="utf-8")
+        print(f"  ✅ genres/pet/CLAUDE.md を更新しました（{update_count}件）")
+        return True
+
+    print("  ℹ️ genres/pet/CLAUDE.md に変更なし")
+    return False
+
+
+def git_commit_push():
+    """genres/pet/CLAUDE.md の更新を git commit & push"""
+    try:
+        subprocess.run(
+            ["git", "add", "genres/pet/CLAUDE.md"],
+            check=True, capture_output=True
+        )
+        # ステージングに差分があるか確認
+        diff = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            capture_output=True
+        )
+        if diff.returncode == 0:
+            print("  ℹ️ git: 変更なし（コミットスキップ）")
+            return
+
+        now = datetime.now().strftime("%Y/%m/%d %H:%M")
+        subprocess.run(
+            ["git", "commit", "-m", f"auto: チャンネル動画データ自動更新 {now}"],
+            check=True, capture_output=True
+        )
+        subprocess.run(
+            ["git", "push", "-u", "origin", "claude/wizardly-mendel-nCgBE"],
+            check=True, capture_output=True
+        )
+        print("  ✅ git commit & push 完了")
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️ git操作でエラー: {e.stderr.decode('utf-8', errors='ignore')[-300:]}")
+
+
 # ── レポート生成 ───────────────────────────────────────────────────────────────
 
 def generate_report(own_videos: list, competitor_data: dict) -> str:
@@ -327,14 +405,14 @@ def main():
     yt = get_youtube()
 
     # 自チャンネル
-    print("\n[1/2] 自チャンネル動画を取得中...")
+    print("\n[1/3] 自チャンネル動画を取得中...")
     own_videos = get_own_videos(yt)
     print(f"  → {len(own_videos)}本")
     for v in own_videos:
         print(f"  {v['date']}  {v['views']:>5,}再生  ❤{v['likes']}  💬{v['comments']}  {v['title'][:30]}")
 
     # 競合リサーチ
-    print("\n[2/2] 競合リサーチ中...")
+    print("\n[2/3] 競合リサーチ中...")
     competitor_data = {}
     for kw in COMPETITOR_KEYWORDS:
         print(f"  「{kw}」を検索中...")
@@ -348,6 +426,12 @@ def main():
     print(f"\n{'='*55}")
     print(f"✅ レポート保存: {filename}")
     print(f"{'='*55}")
+
+    # CLAUDE.md 自動更新 & git push
+    print("\n[3/3] CLAUDE.md 自動更新中...")
+    changed = update_claude_md(own_videos)
+    if changed:
+        git_commit_push()
 
     # 改善分析をコンソールに表示
     print("\n--- 改善分析・アクションプラン ---")
