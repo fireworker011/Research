@@ -9,6 +9,10 @@
  * 使用方法:
  *   node src/apply-proposals.js            # 統合 + スケジュール再生成
  *   node src/apply-proposals.js --prune 5  # ついでに views 実測ワースト5テンプレを引退させる
+ *   node src/apply-proposals.js --auto --prune 3 --cap 36
+ *     --auto: 草案ゼロでもエラー終了しない（毎日の自動実行用）
+ *     --cap N: ジャンルごとのテンプレ総数を N 本に抑える（超過分は古い価値提供テンプレから引退。
+ *              リンク付きテンプレは対象外。テンプレの肥大化と型の陳腐化を防ぐ）
  */
 
 const fs = require('fs');
@@ -21,15 +25,21 @@ const PROPOSED_PATH = path.join(ROOT, 'data', 'proposed_templates.json');
 
 function main() {
   const seed = readJSON(SEED_PATH);
-  const proposed = readJSON(PROPOSED_PATH);
+  const proposed = readJSON(PROPOSED_PATH) || {};
+  if (!Array.isArray(proposed.posting_templates)) proposed.posting_templates = [];
 
   if (!seed) {
     console.error('❌ data/seed_templates.json が読めません');
     process.exit(1);
   }
-  if (!proposed || !Array.isArray(proposed.posting_templates) || proposed.posting_templates.length === 0) {
-    console.error('❌ data/proposed_templates.json に草案がありません（先に node src/insight.js を実行）');
-    process.exit(1);
+  const isAuto = process.argv.includes('--auto');
+  if (proposed.posting_templates.length === 0) {
+    if (isAuto) {
+      console.log('（草案なし: 統合はスキップしスケジュール再生成のみ実行）');
+    } else {
+      console.error('❌ data/proposed_templates.json に草案がありません（先に node src/insight.js を実行）');
+      process.exit(1);
+    }
   }
 
   const existingIds = new Set(seed.posting_templates.map((t) => t.id));
@@ -62,6 +72,36 @@ function main() {
       console.log(`✓ 実測ワースト ${retireIds.size} 本を引退: ${[...retireIds].join(', ')}`);
     } else {
       console.log('  （--prune: 実測データ不足のためスキップ）');
+    }
+  }
+
+  // --cap N: ジャンルごとにテンプレ総数を制限（古い価値提供テンプレから引退。リンク付きは温存）
+  const capIdx = process.argv.indexOf('--cap');
+  if (capIdx !== -1) {
+    const cap = parseInt(process.argv[capIdx + 1] || '0', 10);
+    if (cap > 0) {
+      const countByGenre = {};
+      for (const t of seed.posting_templates) {
+        countByGenre[t.genre] = (countByGenre[t.genre] || 0) + 1;
+      }
+      const retired = [];
+      for (const [genre, count] of Object.entries(countByGenre)) {
+        let excess = count - cap;
+        if (excess <= 0) continue;
+        // 配列先頭 = 古いテンプレから順に引退候補にする
+        for (const t of seed.posting_templates) {
+          if (excess <= 0) break;
+          if (t.genre !== genre) continue;
+          if (String(t.content).includes('{{AFFILIATE_LINK}}')) continue;
+          retired.push(t.id);
+          excess--;
+        }
+      }
+      if (retired.length > 0) {
+        const retiredSet = new Set(retired);
+        seed.posting_templates = seed.posting_templates.filter((t) => !retiredSet.has(t.id));
+        console.log(`✓ ジャンル上限 ${cap} 本超過分 ${retired.length} 本を引退: ${retired.join(', ')}`);
+      }
     }
   }
 

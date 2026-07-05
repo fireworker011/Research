@@ -1,0 +1,88 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景: 明るいクリームイエロー -->
+  <rect width="1080" height="1080" fill="#FDF1C8"/>
+  <!-- 奥行き用の淡い円 -->
+  <circle cx="540" cy="560" r="415" fill="#FAE7AC"/>
+
+  <!-- ショートボブ（ヘルメット状・顔より先に描画） -->
+  <path d="M 540 246
+           C 400 246 330 350 330 470
+           L 330 630
+           C 330 664 352 684 384 684
+           L 696 684
+           C 728 684 750 664 750 630
+           L 750 470
+           C 750 350 680 246 540 246 Z"
+        fill="#6E4A3A"/>
+
+  <!-- 肩・上半身（やわらかいコーラルのトップス） -->
+  <path d="M 540 690
+           C 410 690 320 765 300 880
+           C 290 940 288 1010 292 1080
+           L 788 1080
+           C 792 1010 790 940 780 880
+           C 760 765 670 690 540 690 Z"
+        fill="#F2A08C"/>
+  <!-- 襟元 -->
+  <path d="M 470 700 C 500 740 580 740 610 700 C 590 692 490 692 470 700 Z" fill="#FFF6EA"/>
+
+  <!-- 首 -->
+  <path d="M 495 610 L 495 720 C 495 748 585 748 585 720 L 585 610 Z" fill="#F5CBAE"/>
+  <path d="M 495 640 C 510 668 570 668 585 640 L 585 610 L 495 610 Z" fill="#E9B99C"/>
+
+  <!-- 顔（丸顔） -->
+  <ellipse cx="540" cy="490" rx="184" ry="184" fill="#F9D5B8"/>
+
+  <!-- 前髪（丸いボブの前髪・目に被らない高さ） -->
+  <path d="M 540 268
+           C 436 268 372 344 366 442
+           C 364 456 367 464 372 472
+           C 384 444 404 420 436 406
+           C 476 388 520 386 540 386
+           C 560 386 604 388 644 406
+           C 676 420 696 444 708 472
+           C 713 464 716 456 714 442
+           C 708 344 644 268 540 268 Z"
+        fill="#7A543F"/>
+  <path d="M 540 296 C 474 296 428 344 418 402 C 452 380 506 372 540 372 C 574 372 628 380 662 402 C 652 344 606 296 540 296 Z" fill="#8A6049" opacity="0.35"/>
+
+  <!-- 眉（やわらか） -->
+  <path d="M 442 456 C 458 448 480 448 494 454" stroke="#6E4A3A" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M 586 454 C 600 448 622 448 638 456" stroke="#6E4A3A" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- 目（にっこり笑った目・上向きアーチ） -->
+  <path d="M 440 520 C 456 504 482 504 498 520" stroke="#5C3E30" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M 582 520 C 598 504 624 504 640 520" stroke="#5C3E30" stroke-width="11" stroke-linecap="round" fill="none"/>
+
+  <!-- チーク -->
+  <ellipse cx="448" cy="570" rx="34" ry="20" fill="#F5B49C" opacity="0.9"/>
+  <ellipse cx="632" cy="570" rx="34" ry="20" fill="#F5B49C" opacity="0.9"/>
+
+  <!-- 鼻・口（明るい微笑み） -->
+  <path d="M 536 560 C 540 566 544 566 548 560" stroke="#D99E80" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M 508 600 C 524 622 556 622 572 600" stroke="#B96F5C" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+  <!-- ノート（右下） -->
+  <g transform="rotate(-8 810 900)">
+    <rect x="700" y="800" width="220" height="196" rx="16" fill="#FFFFFF" stroke="#E3C98F" stroke-width="6"/>
+    <rect x="700" y="800" width="46" height="196" rx="16" fill="#F2A08C"/>
+    <rect x="724" y="800" width="22" height="196" fill="#F2A08C"/>
+    <line x1="778" y1="848" x2="892" y2="848" stroke="#D9C08C" stroke-width="8" stroke-linecap="round"/>
+    <line x1="778" y1="892" x2="892" y2="892" stroke="#D9C08C" stroke-width="8" stroke-linecap="round"/>
+    <line x1="778" y1="936" x2="866" y2="936" stroke="#D9C08C" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- えんぴつ（ノートに添える） -->
+  <g transform="rotate(34 300 900)">
+    <rect x="200" y="878" width="188" height="44" rx="8" fill="#F6C34C"/>
+    <rect x="200" y="878" width="34" height="44" rx="8" fill="#E88AA0"/>
+    <path d="M 388 878 L 442 900 L 388 922 Z" fill="#F3DCB8"/>
+    <path d="M 424 893 L 442 900 L 424 907 Z" fill="#5C4636"/>
+  </g>
+
+  <!-- 小さな星のモチーフ -->
+  <path d="M 236 320 l 13 27 30 4 -22 21 6 30 -27 -14 -27 14 6 -30 -22 -21 30 -4 Z" fill="#F6C34C"/>
+  <path d="M 836 258 l 10 21 23 3 -17 16 4 23 -20 -11 -21 11 4 -23 -16 -16 23 -3 Z" fill="#F2A08C"/>
+  <path d="M 872 560 l 8 17 19 2 -14 13 4 19 -17 -9 -17 9 3 -19 -13 -13 19 -2 Z" fill="#F6C34C" opacity="0.85"/>
+  <circle cx="204" cy="560" r="10" fill="#F2A08C" opacity="0.7"/>
+</svg>

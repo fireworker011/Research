@@ -1,0 +1,99 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景: 淡いピンクベージュ -->
+  <rect width="1080" height="1080" fill="#F3E4DC"/>
+  <!-- 奥行き用のさらに淡い円 -->
+  <circle cx="540" cy="560" r="415" fill="#EFD9CE"/>
+
+  <!-- 肩・上半身（クリーム色のトップス） -->
+  <path d="M 540 690
+           C 410 690 320 765 300 880
+           C 290 940 288 1010 292 1080
+           L 788 1080
+           C 792 1010 790 940 780 880
+           C 760 765 670 690 540 690 Z"
+        fill="#FBF1E6"/>
+
+  <!-- 首 -->
+  <path d="M 495 610 L 495 720 C 495 748 585 748 585 720 L 585 610 Z" fill="#F5CBAE"/>
+  <path d="M 495 640 C 510 668 570 668 585 640 L 585 610 L 495 610 Z" fill="#E9B99C"/>
+
+  <!-- 後ろ髪（ゆるいまとめ髪＋サイドの後れ毛） -->
+  <path d="M 540 250
+           C 400 250 330 350 330 470
+           C 330 560 350 620 335 668
+           C 328 690 322 700 318 712
+           C 350 726 386 720 405 705
+           C 420 693 428 676 430 660
+           L 650 660
+           C 652 676 660 693 675 705
+           C 694 720 730 726 762 712
+           C 758 700 752 690 745 668
+           C 730 620 750 560 750 470
+           C 750 350 680 250 540 250 Z"
+        fill="#8C685A"/>
+  <!-- ゆるいお団子 -->
+  <circle cx="723" cy="330" r="62" fill="#8C685A"/>
+  <circle cx="748" cy="368" r="40" fill="#7C5A4E"/>
+
+  <!-- 顔 -->
+  <ellipse cx="540" cy="480" rx="178" ry="188" fill="#F9D5B8"/>
+
+  <!-- 前髪 -->
+  <path d="M 540 272
+           C 430 272 372 350 366 440
+           C 364 470 366 490 370 510
+           C 380 460 400 430 430 412
+           C 470 388 520 384 540 384
+           C 560 384 610 388 650 412
+           C 680 430 700 460 710 510
+           C 714 490 716 470 714 440
+           C 708 350 650 272 540 272 Z"
+        fill="#96705F"/>
+  <path d="M 540 300 C 470 300 424 350 414 410 C 450 386 505 378 540 378 C 575 378 630 386 666 410 C 656 350 610 300 540 300 Z" fill="#A47C69" opacity="0.3"/>
+
+  <!-- 眉（リラックス） -->
+  <path d="M 438 452 C 456 442 480 442 496 450" stroke="#8C685A" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M 584 450 C 600 442 624 442 642 452" stroke="#8C685A" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- 目（穏やかに閉じた目） -->
+  <path d="M 440 508 C 456 522 482 522 498 508" stroke="#6B4A3E" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M 582 508 C 598 522 624 522 640 508" stroke="#6B4A3E" stroke-width="11" stroke-linecap="round" fill="none"/>
+
+  <!-- チーク -->
+  <ellipse cx="452" cy="562" rx="32" ry="19" fill="#F3B9A6" opacity="0.85"/>
+  <ellipse cx="628" cy="562" rx="32" ry="19" fill="#F3B9A6" opacity="0.85"/>
+
+  <!-- 鼻・口（小さな微笑み） -->
+  <path d="M 536 556 C 540 562 544 562 548 556" stroke="#D99E80" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M 516 600 C 532 614 550 614 566 600" stroke="#B96F5C" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- 腕（袖）: 顔にかからない位置で頬の下まで -->
+  <path d="M 400 1080
+           C 372 970 358 860 366 780
+           C 371 726 382 690 398 664"
+        stroke="#F7EBDD" stroke-width="86" stroke-linecap="round" fill="none"/>
+
+  <!-- 手（頬にそっと添える・袖の上に描画） -->
+  <g transform="rotate(-16 436 612)">
+    <ellipse cx="436" cy="612" rx="54" ry="64" fill="#F9D5B8" stroke="#EBBC9E" stroke-width="5"/>
+    <!-- 指のニュアンス（手の上端） -->
+    <path d="M 398 566 C 406 558 418 555 428 558" stroke="#E9B99C" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M 420 558 C 430 551 442 550 452 555" stroke="#E9B99C" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M 446 560 C 456 555 466 556 474 562" stroke="#E9B99C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- スキンケアボトル（1本だけ・右下） -->
+  <g>
+    <rect x="762" y="806" width="120" height="200" rx="26" fill="#D9A092"/>
+    <rect x="778" y="856" width="88" height="96" rx="12" fill="#F7EBE2"/>
+    <rect x="800" y="768" width="44" height="46" rx="8" fill="#C08A7C"/>
+    <rect x="800" y="736" width="60" height="34" rx="10" fill="#A9746A"/>
+    <rect x="852" y="746" width="24" height="13" rx="6" fill="#A9746A"/>
+    <rect x="776" y="820" width="12" height="150" rx="6" fill="#FFFFFF" opacity="0.35"/>
+  </g>
+
+  <!-- ささやかな装飾 -->
+  <circle cx="250" cy="330" r="12" fill="#E5C2B2" opacity="0.7"/>
+  <circle cx="836" cy="272" r="9" fill="#E5C2B2" opacity="0.7"/>
+  <circle cx="216" cy="770" r="9" fill="#E5C2B2" opacity="0.6"/>
+</svg>

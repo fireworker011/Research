@@ -1,0 +1,94 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景: チャコールグレー -->
+  <rect width="1080" height="1080" fill="#34373C"/>
+  <!-- 奥行き用のやや明るい円 -->
+  <circle cx="540" cy="540" r="420" fill="#3C4046"/>
+
+  <!-- ダンベルラック（シルエット・グレー） -->
+  <g fill="#4B5058">
+    <rect x="150" y="270" width="26" height="520" rx="8"/>
+    <rect x="904" y="270" width="26" height="520" rx="8"/>
+    <rect x="140" y="410" width="800" height="22" rx="8"/>
+    <rect x="140" y="630" width="800" height="22" rx="8"/>
+  </g>
+  <!-- ダンベル 上段 -->
+  <g fill="#5B616B">
+    <g>
+      <rect x="196" y="356" width="30" height="54" rx="8"/>
+      <rect x="262" y="356" width="30" height="54" rx="8"/>
+      <rect x="220" y="374" width="48" height="18" rx="8"/>
+    </g>
+    <g>
+      <rect x="796" y="356" width="30" height="54" rx="8"/>
+      <rect x="862" y="356" width="30" height="54" rx="8"/>
+      <rect x="820" y="374" width="48" height="18" rx="8"/>
+    </g>
+  </g>
+  <!-- ダンベル 下段 -->
+  <g fill="#5B616B">
+    <g>
+      <rect x="184" y="562" width="38" height="68" rx="10"/>
+      <rect x="266" y="562" width="38" height="68" rx="10"/>
+      <rect x="216" y="586" width="56" height="22" rx="10"/>
+    </g>
+    <g>
+      <rect x="776" y="562" width="38" height="68" rx="10"/>
+      <rect x="858" y="562" width="38" height="68" rx="10"/>
+      <rect x="808" y="586" width="56" height="22" rx="10"/>
+    </g>
+  </g>
+
+  <!-- 差し色: オレンジのライン（床・体の背後） -->
+  <rect x="90" y="928" width="900" height="16" rx="8" fill="#F0813A"/>
+
+  <!-- 後頭部（髪・単色でシンプルに） -->
+  <circle cx="540" cy="252" r="92" fill="#3A2F26"/>
+
+  <!-- 首（肌） -->
+  <path d="M 502 316 L 502 412 C 502 436 578 436 578 412 L 578 316 Z" fill="#C7997A"/>
+
+  <!-- 三角筋（肌・胴体の下に敷く） -->
+  <circle cx="396" cy="486" r="32" fill="#C7997A"/>
+  <circle cx="684" cy="486" r="32" fill="#C7997A"/>
+
+  <!-- 腕（肌・自然に下ろす） -->
+  <path d="M 380 470
+           C 344 494 322 540 314 600
+           C 306 664 302 726 306 776
+           C 308 804 350 804 354 776
+           C 360 718 366 660 376 608
+           C 384 560 396 520 412 494 Z"
+        fill="#C7997A"/>
+  <path d="M 700 470
+           C 736 494 758 540 766 600
+           C 774 664 778 726 774 776
+           C 772 804 730 804 726 776
+           C 720 718 714 660 704 608
+           C 696 560 684 520 668 494 Z"
+        fill="#C7997A"/>
+
+  <!-- 胴体（タンクトップ・程よい逆三角） -->
+  <path d="M 540 398
+           C 468 398 410 418 384 452
+           C 366 476 358 508 360 540
+           C 366 620 408 690 424 764
+           C 434 840 424 920 418 980
+           C 414 1020 412 1050 412 1080
+           L 668 1080
+           C 668 1050 666 1020 662 980
+           C 656 920 646 840 656 764
+           C 672 690 714 620 720 540
+           C 722 508 714 476 696 452
+           C 670 418 612 398 540 398 Z"
+        fill="#22252A"/>
+  <!-- 背中の質感（さりげなく） -->
+  <path d="M 540 440 L 540 690" stroke="#2C3037" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M 466 470 C 480 545 484 625 480 705" stroke="#2C3037" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M 614 470 C 600 545 596 625 600 705" stroke="#2C3037" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- 差し色: 肩にかけたオレンジのタオル（肩の上から背中へ） -->
+  <g transform="rotate(-4 652 512)">
+    <rect x="608" y="404" width="88" height="222" rx="28" fill="#F0813A"/>
+    <line x1="652" y1="438" x2="652" y2="592" stroke="#D96D2C" stroke-width="9" stroke-linecap="round"/>
+  </g>
+</svg>

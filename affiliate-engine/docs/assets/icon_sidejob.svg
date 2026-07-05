@@ -1,0 +1,88 @@
+<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景: 濃紺（ネイビー） -->
+  <rect width="1080" height="1080" fill="#1E2A47"/>
+  <!-- 奥行き用のやや明るい円 -->
+  <circle cx="540" cy="560" r="415" fill="#27365A"/>
+
+  <!-- 肩・上半身（無地のシャツ） -->
+  <path d="M 540 660
+           C 406 660 316 738 296 856
+           C 286 918 284 1000 288 1080
+           L 792 1080
+           C 796 1000 794 918 784 856
+           C 764 738 674 660 540 660 Z"
+        fill="#DDE4EC"/>
+  <!-- シャツの襟 -->
+  <path d="M 480 668 L 540 738 L 600 668 C 580 660 500 660 480 668 Z" fill="#C6D0DC"/>
+  <path d="M 505 664 L 540 738 L 512 700 Z" fill="#EEF2F6"/>
+  <path d="M 575 664 L 540 738 L 568 700 Z" fill="#EEF2F6"/>
+
+  <!-- 首 -->
+  <path d="M 497 590 L 497 690 C 497 716 583 716 583 690 L 583 590 Z" fill="#EFBF9B"/>
+  <path d="M 497 618 C 512 645 568 645 583 618 L 583 590 L 497 590 Z" fill="#DFAC88"/>
+
+  <!-- 顔 -->
+  <ellipse cx="540" cy="460" rx="172" ry="182" fill="#F3CBA5"/>
+
+  <!-- 耳 -->
+  <ellipse cx="372" cy="480" rx="26" ry="38" fill="#F3CBA5"/>
+  <ellipse cx="708" cy="480" rx="26" ry="38" fill="#F3CBA5"/>
+
+  <!-- 髪（短髪・落ち着いた） -->
+  <path d="M 540 252
+           C 420 252 356 330 352 428
+           C 351 456 354 478 360 496
+           C 370 442 388 410 418 392
+           C 458 368 516 364 540 364
+           C 564 364 622 368 662 392
+           C 692 410 710 442 720 496
+           C 726 478 729 456 728 428
+           C 724 330 660 252 540 252 Z"
+        fill="#3B3129"/>
+  <path d="M 540 278 C 462 278 414 326 402 386 C 442 360 502 352 540 352 C 578 352 638 360 678 386 C 666 326 618 278 540 278 Z" fill="#4A3E33" opacity="0.5"/>
+
+  <!-- 眉 -->
+  <path d="M 434 428 C 452 420 478 420 496 426" stroke="#3B3129" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M 584 426 C 602 420 628 420 646 428" stroke="#3B3129" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+  <!-- シンプルな眼鏡 -->
+  <g stroke="#2E3A4E" stroke-width="10" fill="none">
+    <rect x="418" y="452" width="112" height="86" rx="26"/>
+    <rect x="550" y="452" width="112" height="86" rx="26"/>
+    <path d="M 530 486 C 534 480 546 480 550 486"/>
+    <path d="M 418 486 L 380 476"/>
+    <path d="M 662 486 L 700 476"/>
+  </g>
+  <!-- レンズの反射 -->
+  <path d="M 442 472 L 470 528" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.25"/>
+  <path d="M 574 472 L 602 528" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.25"/>
+
+  <!-- 目（穏やか・眼鏡の中） -->
+  <circle cx="474" cy="498" r="13" fill="#33302C"/>
+  <circle cx="606" cy="498" r="13" fill="#33302C"/>
+
+  <!-- 鼻・口（落ち着いた微笑） -->
+  <path d="M 536 546 C 540 552 544 552 548 546" stroke="#D6A177" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M 512 588 C 528 600 552 600 568 588" stroke="#B57A5C" stroke-width="9" stroke-linecap="round" fill="none"/>
+
+  <!-- ノートPC（手前・下部） -->
+  <g>
+    <!-- 画面（背面が見えている） -->
+    <path d="M 330 892 L 750 892 C 762 892 770 900 770 912 L 770 1010 L 310 1010 L 310 912 C 310 900 318 892 330 892 Z" fill="#46536B"/>
+    <rect x="330" y="908" width="420" height="86" rx="8" fill="#54627C"/>
+    <!-- キーボード面 -->
+    <path d="M 268 1010 L 812 1010 L 840 1062 C 843 1070 838 1078 828 1078 L 252 1078 C 242 1078 237 1070 240 1062 Z" fill="#5B6980"/>
+    <path d="M 268 1010 L 812 1010 L 820 1026 L 260 1026 Z" fill="#4E5C74"/>
+  </g>
+
+  <!-- コーヒーカップ（右） -->
+  <g>
+    <ellipse cx="884" cy="1006" rx="64" ry="14" fill="#141E33" opacity="0.5"/>
+    <path d="M 830 902 L 842 1000 C 843 1010 925 1010 926 1000 L 938 902 Z" fill="#EDE6DA"/>
+    <path d="M 836 950 L 842 1000 C 843 1010 925 1010 926 1000 L 932 950 Z" fill="#DDD2C0"/>
+    <path d="M 938 916 C 972 916 978 968 936 972" stroke="#EDE6DA" stroke-width="14" fill="none"/>
+    <!-- 湯気 -->
+    <path d="M 866 866 C 858 850 872 842 864 826" stroke="#8FA0B8" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.7"/>
+    <path d="M 902 870 C 894 854 908 846 900 830" stroke="#8FA0B8" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+  </g>
+</svg>

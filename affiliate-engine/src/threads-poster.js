@@ -150,6 +150,23 @@ async function main() {
 
   console.log(`📋 スケジュール ${schedule.length} 件中、投稿対象 ${due.length} 件\n`);
 
+  // 認知フェーズ: awareness_until までリンク付き投稿は行わない（スケジュール生成側の除外に加えた二重ガード）
+  const awarenessUntil = accountsConfig.awareness_until || null;
+  const inAwareness = awarenessUntil && todayJST() < awarenessUntil;
+
+  // 全アカウントが cron の同一秒に一斉投稿するとスパムシグナルになるため、
+  // 実行ごとに順序をシャッフルし、投稿間に間隔を置く（JITTER=0 で無効化）
+  const useJitter = !isDryRun && process.env.JITTER !== '0';
+  if (useJitter && due.length > 0) {
+    for (let i = due.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [due[i], due[j]] = [due[j], due[i]];
+    }
+    const initialDelay = Math.floor(15000 + Math.random() * 240000);
+    console.log(`⏲  開始ディレイ ${Math.round(initialDelay / 1000)} 秒\n`);
+    await sleep(initialDelay);
+  }
+
   let success = 0;
   let failed = 0;
   let skipped = 0;
@@ -166,6 +183,15 @@ async function main() {
     }
     if ((postedToday[row.account] || 0) >= DAILY_CAP) {
       console.log(`⏭  ${label}: デイリー上限 ${DAILY_CAP} 件に到達`);
+      skipped++;
+      continue;
+    }
+
+    if (inAwareness && String(row.content || '').includes('{{AFFILIATE_LINK}}')) {
+      console.log(`⏭  ${label}: 認知フェーズ（〜${awarenessUntil}）のためリンク投稿をスキップ`);
+      if (!isDryRun) {
+        state.posted[key] = { status: 'skipped_awareness', at: new Date().toISOString() };
+      }
       skipped++;
       continue;
     }
@@ -212,7 +238,8 @@ async function main() {
       logPosting({ key, status: 'success', post_id: postId, genre: row.genre, account: row.account });
       postedToday[row.account] = (postedToday[row.account] || 0) + 1;
       success++;
-      await sleep(3000); // レート制限マージン
+      // レート制限マージン + 投稿間隔の分散
+      await sleep(useJitter ? Math.floor(30000 + Math.random() * 90000) : 3000);
     } catch (err) {
       console.log(`❌ ${label}: ${err.message}`);
       state.posted[key] = { status: 'failed', error: err.message, at: new Date().toISOString() };
