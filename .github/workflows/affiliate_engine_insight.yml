@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
@@ -48,6 +49,7 @@ jobs:
       - name: エンゲージメント・キット生成（返信/コメント下書き）
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           THREADS_KONKATSU_USER_ID: ${{ secrets.THREADS_KONKATSU_USER_ID }}
           THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
           THREADS_SIDEJOB_USER_ID: ${{ secrets.THREADS_SIDEJOB_USER_ID }}

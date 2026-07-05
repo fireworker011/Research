@@ -30,6 +30,62 @@ const { OUTPUT_DIR, loadConfig, todayJST } = require('./util');
 const THREADS_API = 'https://graph.threads.net/v1.0';
 const REPLY_LOOKBACK_HOURS = parseFloat(process.env.REPLY_LOOKBACK_HOURS || '72');
 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || '';
+const TRACKING_ISSUE_TITLE = '📋 デイリー・エンゲージメントキット';
+
+/** スマホでも読めるよう、GitHub Issueへコメントとして毎日投稿する（新規Issue量産を避けるため1本のIssueに追記していく） */
+async function postToTrackingIssue(body) {
+  if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) {
+    console.log('  （GITHUB_TOKEN/GITHUB_REPOSITORY 未設定のためIssue投稿はスキップ）');
+    return;
+  }
+  const headers = {
+    Authorization: `token ${GITHUB_TOKEN}`,
+    Accept: 'application/vnd.github.v3+json',
+    'content-type': 'application/json'
+  };
+  const base = `https://api.github.com/repos/${GITHUB_REPOSITORY}`;
+
+  const searchRes = await fetch(
+    `${base}/issues?state=open&labels=daily-engage&per_page=1`,
+    { headers }
+  );
+  const existing = await searchRes.json().catch(() => []);
+  let issueNumber = Array.isArray(existing) && existing.length ? existing[0].number : null;
+
+  if (!issueNumber) {
+    const createRes = await fetch(`${base}/issues`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: TRACKING_ISSUE_TITLE,
+        labels: ['daily-engage'],
+        body: 'このIssueに、毎日06:00JSTのエンゲージメントキット（返信・コメント下書き）がコメントとして追加されます。スマホのGitHub通知から確認してください。'
+      })
+    });
+    const created = await createRes.json().catch(() => ({}));
+    if (!createRes.ok) {
+      console.warn(`  ⚠️ 追跡Issueの作成に失敗: ${createRes.status}`);
+      return;
+    }
+    issueNumber = created.number;
+    console.log(`  📌 追跡Issueを新規作成: #${issueNumber}`);
+  }
+
+  const commentRes = await fetch(`${base}/issues/${issueNumber}/comments`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ body })
+  });
+  if (!commentRes.ok) {
+    console.warn(`  ⚠️ Issueコメント投稿に失敗: ${commentRes.status}`);
+    return;
+  }
+  const comment = await commentRes.json().catch(() => ({}));
+  console.log(`  ✅ Issueにコメント投稿: ${comment.html_url || `#${issueNumber}`}`);
+}
+
 /** アカウントごとの返信・コメントのトーン（ペルソナ） */
 const PERSONAS = {
   konkatsu: '婚活情報を整理して発信する30代女性。共感ファースト、押し付けない、絵文字は控えめ',
@@ -286,13 +342,17 @@ async function main() {
     notes.push('未対応リプ・コメント回り候補ともに0件でした（開設初期は正常です）');
   }
 
+  const markdown = renderMarkdown(date, drafts, allReplies, marketFlat, notes);
+
   const engageDir = path.join(OUTPUT_DIR, 'engage');
   fs.mkdirSync(engageDir, { recursive: true });
   const outPath = path.join(engageDir, `engage_${date}.md`);
-  fs.writeFileSync(outPath, renderMarkdown(date, drafts, allReplies, marketFlat, notes), 'utf-8');
+  fs.writeFileSync(outPath, markdown, 'utf-8');
 
   console.log(`\n✅ ${outPath}`);
   console.log(`   返信下書き ${(drafts.reply_drafts || []).length} 本 / コメント下書き ${(drafts.comment_drafts || []).length} 本`);
+
+  await postToTrackingIssue(markdown);
 }
 
 main().catch((err) => {
