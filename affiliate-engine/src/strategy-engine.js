@@ -129,34 +129,56 @@ JSON 配列のみで出力:
   return passed;
 }
 
-/** アカウント×日付×時刻でスケジュール CSV を組み立てる */
-function buildScheduleCSV(templatesByGenre, accounts) {
+/** 開設日からの経過日数（created 未設定 = 十分に古い扱い） */
+function accountAgeDays(created, date) {
+  if (!created) return Infinity;
+  return Math.floor((new Date(`${date}T00:00:00+09:00`) - new Date(`${created}T00:00:00+09:00`)) / 86400000);
+}
+
+/**
+ * アカウント×日付×時刻でスケジュール CSV を組み立てる
+ * - ランプアップ: 開設1週目は1本/日（19時）、2週目は2本/日（7時・19時）、以降フル
+ *   （新規アカウントの急激な投稿開始はスパム判定・リーチ抑制の要因になるため）
+ * - 認知フェーズ: awareness_until より前の日付にはリンク付きテンプレを割り当てない
+ *   （最初の1ヶ月はフォロワー獲得・信頼構築に専念する運用方針）
+ */
+function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } = {}) {
   const rows = [
     ['date', 'time', 'account', 'platform', 'genre', 'content', 'emoji', 'engagement_prediction', 'cta_type', 'link_key'].join(',')
   ];
   const cursor = {};
   const times = SCHEDULE_TIMES.slice(0, POSTS_PER_DAY);
 
-  for (let day = 1; day <= CAMPAIGN_DAYS; day++) {
+  for (let day = 0; day < CAMPAIGN_DAYS; day++) {
     const date = todayJST(day);
+    const inAwareness = awarenessUntil && date < awarenessUntil;
+
     for (const account of accounts) {
+      const age = accountAgeDays(account.created, date);
+      const slotTimes =
+        age < 7 ? times.slice(-1) : age < 14 ? [times[0], times[times.length - 1]] : times;
+
       // 「複合」アカウントは全ジャンルをローテーション
       const genrePool =
         account.genre === '複合' ? GENRES.filter((g) => g !== '複合') : [account.genre];
 
-      for (let slot = 0; slot < times.length; slot++) {
+      for (let slot = 0; slot < slotTimes.length; slot++) {
         const genre = genrePool[(day + slot) % genrePool.length];
-        const templates = templatesByGenre[genre] || templatesByGenre[account.genre] || [];
+        let templates = templatesByGenre[genre] || templatesByGenre[account.genre] || [];
+        if (inAwareness) {
+          templates = templates.filter((t) => !String(t.content).includes('{{AFFILIATE_LINK}}'));
+        }
         if (templates.length === 0) continue;
 
-        cursor[genre] = (cursor[genre] || 0) % templates.length;
-        const t = templates[cursor[genre]];
-        cursor[genre]++;
+        const cursorKey = `${genre}_${inAwareness ? 'value' : 'all'}`;
+        cursor[cursorKey] = (cursor[cursorKey] || 0) % templates.length;
+        const t = templates[cursor[cursorKey]];
+        cursor[cursorKey]++;
 
         rows.push(
           [
             date,
-            times[slot],
+            slotTimes[slot],
             account.key,
             'threads',
             t.genre,
@@ -232,7 +254,12 @@ async function main() {
   }
 
   console.log('\n📋 ステップ3: スケジュール CSV 生成...');
-  const csv = buildScheduleCSV(templatesByGenre, accounts);
+  if (accountsConfig.awareness_until && todayJST() < accountsConfig.awareness_until) {
+    console.log(`  🌱 認知フェーズ（〜${accountsConfig.awareness_until}）: リンク付き投稿は組み込みません`);
+  }
+  const csv = buildScheduleCSV(templatesByGenre, accounts, {
+    awarenessUntil: accountsConfig.awareness_until || null
+  });
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const strategyPath = path.join(OUTPUT_DIR, 'strategy_data.json');

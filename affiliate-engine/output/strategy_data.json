@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T15:39:44.213Z",
+  "generated_at": "2026-07-05T09:05:20.593Z",
   "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
   "genres": [
     "婚活",
@@ -56,30 +56,6 @@
     }
   ],
   "posting_templates": [
-    {
-      "id": "konkatsu_001",
-      "genre": "婚活",
-      "content": "いいね数より返信率。婚活アプリで消耗しない人は、送る相手を週5人に絞って1通目を全部変えている。数を打つより、プロフィールを読んで一文引用するほうが返ってくる。",
-      "emoji": "💬",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_002",
-      "genre": "婚活",
-      "content": "初デートのお店選びで迷ったら「駅近・静か・90分で出られる」の3条件。盛り上がらなかった時に長居しない設計にしておくと、お互い楽。",
-      "emoji": "☕",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_003",
-      "genre": "婚活",
-      "content": "プロフィール写真は自撮りより「誰かに撮ってもらった自然な一枚」。清潔感は服より髪と靴に出る、と結婚相談所のカウンセラーが言っていた。",
-      "emoji": "📸",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
     {
       "id": "konkatsu_004",
       "genre": "婚活",
@@ -253,6 +229,51 @@
       "engagement_prediction": "medium",
       "cta_type": "implicit",
       "link_key": "婚活_相談所"
+    },
+    {
+      "id": "konkatsu_20260705_01",
+      "genre": "婚活",
+      "content": "婚活を始めた頃と、続けた後で変わることがある。\n\n最初は「どんな人だろう」というワクワクが先に来る。\n\n慣れてくると、条件チェックが先に来るようになる人が多いらしい。\n\nチェックリストが先に立つようになったら、一度立ち止まって「何を大事にしたかったか」を思い出すタイミングかもしれない。\n\nみなさんは最近、婚活で何を優先していますか？",
+      "emoji": "💭",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260705_02",
+      "genre": "婚活",
+      "content": "初対面の場所選びで迷う人は多い。\n\n・駅から近い\n・会話がしやすい静かさ\n・1時間半で自然に切り上げられる\n\nこの3つを満たしておくと、盛り上がらなかった時もお互いに負担が少ない。\n\n次の初対面、どんな場所を候補にしていますか？",
+      "emoji": "☕",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260705_03",
+      "genre": "婚活",
+      "content": "電車で偶然、婚活中らしき2人の会話が耳に入ったことがある。\n\n敬語のまま、距離感がずっと変わらない様子。\n\n仮交際の段階でこの空気感が続く場合、お互いのペースが噛み合っていないサインかもしれないと感じた。\n\nもし自分だったら、その空気にいつ気づけるだろうか。",
+      "emoji": "🚃",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260705_04",
+      "genre": "婚活",
+      "content": "婚活で一度距離を置いた経験がある人は、意外と多いと聞く。\n\nアプリを消して1ヶ月休んでみたら、気持ちが軽くなったという話もよくある。\n\n休むこと自体を「失敗」と捉えず、ペース調整の一つとして考える人も増えているようだ。\n\n一人で抱え込まず、婚活の進め方そのものを相談できる場を活用するのも選択肢のひとつ。\n\n気になる方はこちらもチェックしてみてください→{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "🌱",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "婚活_相談所"
+    },
+    {
+      "id": "konkatsu_20260705_05",
+      "genre": "婚活",
+      "content": "婚活を長く続けていると、失うものと得るものが両方あると感じる人が多いらしい。\n\n失うのは「まだ余裕がある」という安心感や、自分を好きだという感覚。\n\n得るのは、人を見る目や、折れない心。\n\nどちらもゼロにはならない気がする。\n\n今、あなたが婚活を通じて得たと感じるものは何ですか？",
+      "emoji": "⚖️",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
     },
     {
       "id": "sidejob_001",

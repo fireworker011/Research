@@ -1,5 +1,6 @@
 {
-  "_comment": "戦略ドキュメント docs/account-strategy.md に基づく構成。立ち上げ順序の推奨: konkatsu(稼働中) → education → sidejob → bodymake/beauty。アカウント開設・トークン取得後に enabled: true にし、Secrets へ user_id_env / token_env と同名の値を登録すること",
+  "_comment": "戦略ドキュメント docs/account-strategy.md に基づく構成。アカウント開設・トークン取得後に enabled: true にし、Secrets へ user_id_env / token_env と同名の値を登録すること。created（開設日 YYYY-MM-DD）を設定すると開設1週目1本/日→2週目2本/日のランプアップが効く。awareness_until までは認知フェーズとしてリンク付き投稿を自動スキップ",
+  "awareness_until": "2026-08-05",
   "accounts": [
     {
       "key": "konkatsu",

@@ -62,10 +62,16 @@ function buildOwnAnalytics(activeGenres) {
   return { byGenre, followers_history: history.map((h) => ({ date: h.date, followers: h.followers })) };
 }
 
-function buildPrompt(activeGenres, ownAnalytics) {
+function buildPrompt(activeGenres, ownAnalytics, awarenessUntil) {
+  const phaseNote =
+    awarenessUntil && todayJST() < awarenessUntil
+      ? `\n【現在のフェーズ】認知拡大フェーズ（〜${awarenessUntil}）。リンク誘導よりフォロワー獲得を最優先。
+草案は「保存したくなる価値提供」「返信したくなる質問」「共感を呼ぶ観察」を中心にし、リンク入りは各ジャンル最大1本まで。\n`
+      : '';
   return `Threads で運用中のアフィリエイトアカウント群の改善分析を行ってください。
 
 【稼働中ジャンル】${activeGenres.join('、')}
+${phaseNote}
 
 【自アカウントの実測データ（直近）】
 ${JSON.stringify(ownAnalytics, null, 1)}
@@ -74,8 +80,8 @@ ${JSON.stringify(ownAnalytics, null, 1)}
 1. Web検索を使い、各ジャンルについて「直近2〜4週間で日本のThreads/SNSでバズっている投稿の傾向・切り口・話題」をリサーチする
    （検索例: 「Threads ${activeGenres[0]} バズ 投稿」「${activeGenres[0]} SNS 話題 今週」など。各ジャンル1〜2回検索）
 2. 市場トレンドと自アカウントの実測（伸びた投稿/伸びなかった投稿）を突き合わせ、ジャンルごとに改善方針を出す
-3. 各ジャンル3〜5本の新テンプレ草案を作る（学ぶのは構造・切り口のみ。文面の模倣は禁止。
-   4本に1本だけ {{AFFILIATE_LINK}} + #PR 入り、残りは価値提供。可能なら質問で締める）
+3. 各ジャンル2〜3本の新テンプレ草案を作る（学ぶのは構造・切り口のみ。文面の模倣は禁止。
+   {{AFFILIATE_LINK}} + #PR 入りは各ジャンル最大1本、残りは価値提供。可能なら質問で締める）
 
 【出力形式】以下の JSON のみ:
 {
@@ -154,7 +160,7 @@ async function main() {
   const ownAnalytics = buildOwnAnalytics(activeGenres);
   console.log('  実測データ読み込み完了。Claude（Web検索付き）で市場リサーチ中...\n');
 
-  const response = await askClaude(buildPrompt(activeGenres, ownAnalytics), {
+  const response = await askClaude(buildPrompt(activeGenres, ownAnalytics, accountsConfig.awareness_until), {
     system: SYSTEM_PROMPT,
     maxTokens: 16000,
     tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }]

@@ -85,18 +85,27 @@ GitHub Secrets には各アカウントの `THREADS_*_USER_ID` / `THREADS_*_ACCE
 （既存の `THREADS_KONKATSU_*` はそのまま使える）。トークンの月次更新は既存の
 `refresh_threads_token.yml` を参照。
 
-## 運用ルーチン
+## 運用ルーチン（完全自動化後）
 
 | 頻度 | 作業 | 所要時間 |
 |---|---|---|
-| 自動 | 投稿（4回/日）・KPIレポート（毎日） | 0分 |
-| 自動（3日ごと） | インサイト生成: 実測アナリティクス × Web検索での市場バズリサーチ → 改善案とテンプレ草案（`output/insights/`） | 0分 |
-| 毎日 | `output/reports/report_*.md` を一読 | 3分 |
-| 3日ごと | インサイトレポートを確認 → 草案が良ければ `node src/apply-proposals.js` で反映（`--prune 5` で実測ワースト5本を引退） | 15分 |
-| 週1 | ASP 管理画面から成果を `data/conversions.csv` にエクスポート | 10分 |
-| 週1 | レポートの判断ルールに従いジャンル取捨 → `strategy-engine.js` 再実行（top_posts が few-shot に入り型が進化） | 30分 |
-| 週2-3 | 反応上位の投稿を `video-semi-auto.js` で動画化 → Shorts/Reels 予約投稿 | 30分 |
-| 随時 | 来た DM・リプに自分で返信（ここが成約率を最も左右する） | 15分/日 |
+| 自動 | 投稿（4回/日・実行ごとに順序と間隔を分散）・KPIレポート（毎日14時） | 0分 |
+| 自動（毎日06:00） | デイリー自動改善: 実測分析 × Web検索市場リサーチ → テンプレ草案を自動反映（実測ワースト3本引退・ジャンル36本上限）→ スケジュール再生成 → エンゲージ素材生成 | 0分 |
+| **毎日（唯一の人間の仕事）** | `output/engage/engage_*.md` を開き、用意された返信・コメント下書きをアプリからコピペ送信。ついでに周辺投稿へいいね10〜20件 | **10分** |
+| 週1 | ASP 管理画面から成果を `data/conversions.csv` にエクスポート（リンク解禁後） | 10分 |
+| 週2-3（任意） | 反応上位の投稿を `video-semi-auto.js` で動画化 → Shorts/Reels 予約投稿 | 30分 |
+
+### フェーズ設計
+
+- **認知フェーズ（`config/accounts.json` の `awareness_until` まで）**: 全投稿が価値提供のみ。リンク付きテンプレはスケジュール生成と投稿時の両方で自動除外。フォロワー獲得に専念
+- **収益フェーズ（awareness_until 以降）**: `config/links.json` にリンクを入れておけば、解禁日から自動でリンク付き投稿が混ざり始める（追加作業なし）
+- 新規アカウントは `created` から 1週目1本/日 → 2週目2本/日 → 3週目〜3本/日 に自動ランプアップ（急稼働はスパム判定・リーチ抑制の要因）
+
+### いいね・フォロー・リプの自動化をしない理由（重要）
+
+- いいね・フォローの API は公式に存在しない。自動化するには非公式ツール（画面操作の自動化等）しかなく、これは Meta が最も積極的に検知・凍結している行為。「ランダム間隔で人間らしく」を謳うツールでも、検知は挙動パターンだけでなく端末・ネットワーク指紋でも行われており、新規アカウントほど閾値が低い。5アカウント全凍結＝事業終了のリスクに見合わない
+- 返信の自動送信は技術的には可能だが、人間のふりをする欺瞞になるため行わない。代わりに**下書きを毎朝全部 AI が用意する**（`src/engage.js` → `output/engage/`）。送信だけ人間がやる設計が、凍結リスクゼロで得られる実質的な自動化の上限
+- 投稿の分散（実行ごとの順序シャッフル・間隔ランダム化）は行う。これは検知回避ではなく、複数アカウント同時刻一斉投稿というスパム的挙動そのものを避けるための設計
 
 ## 2ヶ月ロードマップ（現実的な数字で）
 
@@ -140,6 +149,9 @@ affiliate-engine/
 │   ├── strategy-engine.js   # テンプレ・スケジュール生成（Claude）
 │   ├── threads-poster.js    # 自動投稿（ステートレス）
 │   ├── report.js            # KPI収集・日次レポート・top_posts 抽出
+│   ├── insight.js           # 実測×Web検索リサーチ → 改善レポート+テンプレ草案
+│   ├── apply-proposals.js   # 草案の統合・引退・スケジュール再生成（--auto で無人運転）
+│   ├── engage.js            # 返信・コメント下書きの自動生成（毎朝のコピペ10分用）
 │   ├── funnel-calc.js       # 目標→必要数値の逆算
 │   ├── video-semi-auto.js   # Shorts/Reels 動画生成（要 ffmpeg + Noto CJK）
 │   ├── compliance.js        # #PR付与・NG表現ブロック
@@ -147,11 +159,12 @@ affiliate-engine/
 │   └── util.js              # CSV/JSON/日付ユーティリティ
 ├── config/                  # accounts / links / funnel（example をコピー）
 ├── data/conversions.csv     # ASP成果の手動エクスポート（週1更新）
-└── output/                  # スケジュールCSV・状態・ログ・レポート
+└── output/                  # スケジュールCSV・状態・ログ・レポート・engage素材
 
 .github/workflows/
-├── affiliate_engine_post.yml    # 自動投稿（JST 7/12/19/21時）
-└── affiliate_engine_report.yml  # 日次レポート（JST 14時）
+├── affiliate_engine_post.yml     # 自動投稿（JST 7/12/19/21時・分散付き）
+├── affiliate_engine_report.yml   # 日次レポート（JST 14時）
+└── affiliate_engine_insight.yml  # デイリー自動改善+エンゲージ素材（JST 6時）
 ```
 
 依存パッケージなし（Node.js 20+ のみ）。`npm install` 不要。
