@@ -1,4 +1,4 @@
-name: Threads トークン 月次リフレッシュ
+name: Threads トークン 月次リフレッシュ（5アカウント）
 
 on:
   schedule:
@@ -12,21 +12,19 @@ jobs:
       contents: read
       issues: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          ref: claude/vibrant-noether-9xbb8a
+          ref: claude/monthly-revenue-system-gvi02u
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
-        with:
-          python-version: '3.11'
-
-      - run: pip install requests
-
-      - name: トークンリフレッシュ
+      - name: トークンリフレッシュ（5アカウント）
         env:
-          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+          THREADS_SIDEJOB_ACCESS_TOKEN: ${{ secrets.THREADS_SIDEJOB_ACCESS_TOKEN }}
+          THREADS_BEAUTY_ACCESS_TOKEN: ${{ secrets.THREADS_BEAUTY_ACCESS_TOKEN }}
+          THREADS_BODYMAKE_ACCESS_TOKEN: ${{ secrets.THREADS_BODYMAKE_ACCESS_TOKEN }}
+          THREADS_EDUCATION_ACCESS_TOKEN: ${{ secrets.THREADS_EDUCATION_ACCESS_TOKEN }}
         run: |
-          cd sns-affiliate-bot
-          python scripts/refresh_threads_token.py
+          cd affiliate-engine
+          node src/refresh-tokens.js
