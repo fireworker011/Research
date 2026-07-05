@@ -82,8 +82,12 @@ git commit -m "feat: 投稿スケジュール更新" && git push
 ```
 
 GitHub Secrets には各アカウントの `THREADS_*_USER_ID` / `THREADS_*_ACCESS_TOKEN` を登録
-（既存の `THREADS_KONKATSU_*` はそのまま使える）。トークンの月次更新は既存の
-`refresh_threads_token.yml` を参照。
+（既存の `THREADS_KONKATSU_*` はそのまま使える）。
+
+長期トークンは60日で失効するため、`refresh_threads_token.yml`（毎月1日 09:00 JST）が
+5アカウント分を自動リフレッシュする。ただし GitHub の仕様上 Actions の既定トークンには
+Secrets 書き換え権限がなく自動反映はできないため、新トークンは実行ログの Summary に出力
+＋更新依頼の Issue が自動作成される。Issue の手順に従い Secrets を手動で貼り直すこと。
 
 ## 運用ルーチン（完全自動化後）
 
