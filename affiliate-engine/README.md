@@ -84,10 +84,19 @@ git commit -m "feat: 投稿スケジュール更新" && git push
 GitHub Secrets には各アカウントの `THREADS_*_USER_ID` / `THREADS_*_ACCESS_TOKEN` を登録
 （既存の `THREADS_KONKATSU_*` はそのまま使える）。
 
-長期トークンは60日で失効するため、`refresh_threads_token.yml`（毎月1日 09:00 JST）が
-5アカウント分を自動リフレッシュする。ただし GitHub の仕様上 Actions の既定トークンには
-Secrets 書き換え権限がなく自動反映はできないため、新トークンは実行ログの Summary に出力
-＋更新依頼の Issue が自動作成される。Issue の手順に従い Secrets を手動で貼り直すこと。
+長期トークンは60日で失効するため、`refresh_threads_token.yml`（毎週月曜 09:07 JST）が
+5アカウント分を自動リフレッシュする。**Secrets への書き戻しまで完全自動化するには、
+Secrets 書き換え権限を持つ Fine-grained PAT を `GH_SECRETS_PAT` として登録する**
+（GitHub の仕様上、Actions の既定トークンでは Secrets を書き換えられないため）:
+
+1. GitHub → 右上アイコン → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token
+2. Repository access: Only select repositories → このリポジトリを選択
+3. Permissions → Repository permissions → **Secrets: Read and write**（他は不要）
+4. 有効期限は最長（1年）にし、生成されたトークンをリポジトリの Secrets に `GH_SECRETS_PAT` として登録
+5. PAT 自体の期限が切れたら同じ手順で再発行（切れている間は Issue 通知のフォールバックに自動で戻るだけで、投稿は止まらない）
+
+`GH_SECRETS_PAT` 未設定の間は、新トークンが実行ログの Summary に出力され
+更新依頼の Issue が自動作成されるので、手動で Secrets に貼り直す。
 
 ## 運用ルーチン（完全自動化後）
 

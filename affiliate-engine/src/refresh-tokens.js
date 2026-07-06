@@ -5,19 +5,26 @@
  * Threads アクセストークン 月次リフレッシュ（5アカウント対応）
  *
  * 長期トークン（60日）は自然には更新されないため、期限切れ前に
- * th_refresh_token でリフレッシュする。GitHub Actions の既定トークン
- * （GITHUB_TOKEN）には Secrets 書き換え権限がなく、これは GitHub の仕様上
- * 回避不可能なため、新トークンは Step Summary に出力 + Issue を1件作成し、
- * 人間が Secrets へ貼り直す運用にする（旧: konkatsu 単体版と同じ設計を5アカウントに拡張）。
+ * th_refresh_token でリフレッシュする。
+ *
+ * Secrets への書き戻し:
+ * - GH_SECRETS_PAT（Secrets 書き換え権限を持つ Fine-grained PAT）が設定されて
+ *   いれば、gh CLI 経由で THREADS_*_ACCESS_TOKEN を自動更新する（完全自動）。
+ * - 未設定または書き戻し失敗時は、従来どおり Step Summary に新トークンを出力し
+ *   Issue を作成して人間に手動更新を依頼する（フォールバック）。
+ *   （GitHub Actions の既定トークンには Secrets 書き換え権限がなく、これは
+ *     GitHub の仕様上 PAT なしでは回避不可能）
  *
  * 使用方法:
  *   node src/refresh-tokens.js
  *
  * 環境変数: 各アカウントの THREADS_<KEY>_ACCESS_TOKEN、GITHUB_TOKEN、
- *          GITHUB_REPOSITORY、GITHUB_STEP_SUMMARY（Actions が自動設定）
+ *          GITHUB_REPOSITORY、GITHUB_STEP_SUMMARY（Actions が自動設定）、
+ *          GH_SECRETS_PAT（任意・自動書き戻し用）
  */
 
 const fs = require('fs');
+const { spawnSync } = require('child_process');
 const { loadConfig } = require('./util');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
@@ -40,6 +47,20 @@ async function refreshToken(token) {
   return { newToken: data.access_token, expireDate };
 }
 
+/** gh CLI で Secrets を書き戻す（トークンは stdin 経由で渡し、引数に露出させない） */
+function updateSecret(name, value) {
+  const pat = process.env.GH_SECRETS_PAT;
+  if (!pat) return { ok: false, reason: 'GH_SECRETS_PAT 未設定' };
+  const res = spawnSync('gh', ['secret', 'set', name, '--repo', GITHUB_REPOSITORY], {
+    input: value,
+    env: { ...process.env, GH_TOKEN: pat },
+    encoding: 'utf-8',
+    timeout: 30000
+  });
+  if (res.status === 0) return { ok: true };
+  return { ok: false, reason: (res.stderr || res.error?.message || `exit ${res.status}`).trim() };
+}
+
 function writeSummary(results) {
   if (!STEP_SUMMARY) return;
   const lines = ['## Threads トークン リフレッシュ結果', ''];
@@ -50,7 +71,13 @@ function writeSummary(results) {
       lines.push('');
       continue;
     }
-    lines.push(`### ✅ ${r.key}（${r.token_env}）`);
+    if (r.secretUpdated) {
+      // 自動書き戻し成功時はトークンをログに出さない
+      lines.push(`### ✅ ${r.key}（${r.token_env}）: Secrets 自動更新済み・次回期限 ${r.expireDate}`);
+      lines.push('');
+      continue;
+    }
+    lines.push(`### ⚠️ ${r.key}（${r.token_env}）: 手動更新が必要（自動書き戻し不可: ${r.secretUpdateError || '-'}）`);
     lines.push(`次回期限: ${r.expireDate}`);
     lines.push('');
     lines.push('```');
@@ -63,9 +90,13 @@ function writeSummary(results) {
 
 async function createIssue(results) {
   if (!GITHUB_TOKEN || !GITHUB_REPOSITORY) return;
-  const succeeded = results.filter((r) => !r.error);
+  // 自動書き戻しが全件成功していれば人間の作業はゼロ → Issue は立てない
+  const succeeded = results.filter((r) => !r.error && !r.secretUpdated);
   const failed = results.filter((r) => r.error);
-  if (succeeded.length === 0 && failed.length === 0) return;
+  if (succeeded.length === 0 && failed.length === 0) {
+    console.log('（全件自動更新済みのため Issue は作成しません）');
+    return;
+  }
 
   const runUrl = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`;
   const secretsUrl = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/settings/secrets/actions`;
@@ -120,8 +151,16 @@ async function main() {
     }
     try {
       const { newToken, expireDate } = await refreshToken(token);
-      console.log(`✅ ${account.key}: リフレッシュ成功（次回期限 ${expireDate}）`);
-      results.push({ key: account.key, token_env: account.token_env, newToken, expireDate });
+      const result = { key: account.key, token_env: account.token_env, newToken, expireDate };
+      const update = updateSecret(account.token_env, newToken);
+      if (update.ok) {
+        result.secretUpdated = true;
+        console.log(`✅ ${account.key}: リフレッシュ + Secrets 自動更新 完了（次回期限 ${expireDate}）`);
+      } else {
+        result.secretUpdateError = update.reason;
+        console.log(`⚠️ ${account.key}: リフレッシュ成功・Secrets 自動更新は不可（${update.reason}）→ Issue で手動更新を依頼`);
+      }
+      results.push(result);
     } catch (err) {
       console.log(`❌ ${account.key}: リフレッシュ失敗（${err.message}）`);
       results.push({ key: account.key, token_env: account.token_env, error: err.message });
@@ -131,7 +170,8 @@ async function main() {
   writeSummary(results);
   await createIssue(results);
 
-  console.log(`\n完了: 成功 ${results.filter((r) => !r.error).length} / 失敗 ${results.filter((r) => r.error).length}`);
+  const auto = results.filter((r) => r.secretUpdated).length;
+  console.log(`\n完了: リフレッシュ成功 ${results.filter((r) => !r.error).length}（うち自動書き戻し ${auto}）/ 失敗 ${results.filter((r) => r.error).length}`);
 }
 
 main().catch((err) => {
