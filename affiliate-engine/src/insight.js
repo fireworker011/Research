@@ -62,42 +62,38 @@ function buildOwnAnalytics(activeGenres) {
   return { byGenre, followers_history: history.map((h) => ({ date: h.date, followers: h.followers })) };
 }
 
-function buildPrompt(activeGenres, ownAnalytics, awarenessUntil) {
+/**
+ * 1ジャンル分のプロンプト。
+ * 以前は5ジャンルを1回の呼び出しに詰めていたが、Web検索の引用も含めた応答が
+ * max_tokens を超えて JSON が途中で切れ、パース失敗で日次パイプライン全体が
+ * 止まる事故が起きた（2026-07-06）。ジャンル別に分割して呼び出す。
+ */
+function buildGenrePrompt(genre, genreAnalytics, awarenessUntil) {
   const phaseNote =
     awarenessUntil && todayJST() < awarenessUntil
       ? `\n【現在のフェーズ】認知拡大フェーズ（〜${awarenessUntil}）。リンク誘導よりフォロワー獲得を最優先。
-草案は「保存したくなる価値提供」「返信したくなる質問」「共感を呼ぶ観察」を中心にし、リンク入りは各ジャンル最大1本まで。\n`
+草案は「保存したくなる価値提供」「返信したくなる質問」「共感を呼ぶ観察」を中心にし、リンク入りは最大1本まで。\n`
       : '';
-  return `Threads で運用中のアフィリエイトアカウント群の改善分析を行ってください。
-
-【稼働中ジャンル】${activeGenres.join('、')}
+  return `Threads で運用中の「${genre}」ジャンルのアカウントの改善分析を行ってください。
 ${phaseNote}
-
 【自アカウントの実測データ（直近）】
-${JSON.stringify(ownAnalytics, null, 1)}
+${JSON.stringify(genreAnalytics || {}, null, 1)}
 
 【タスク】
-1. Web検索を使い、各ジャンルについて「直近2〜4週間で日本のThreads/SNSでバズっている投稿の傾向・切り口・話題」をリサーチする
-   （検索例: 「Threads ${activeGenres[0]} バズ 投稿」「${activeGenres[0]} SNS 話題 今週」など。各ジャンル1〜2回検索）
-2. 市場トレンドと自アカウントの実測（伸びた投稿/伸びなかった投稿）を突き合わせ、ジャンルごとに改善方針を出す
-3. 各ジャンル2〜3本の新テンプレ草案を作る（学ぶのは構造・切り口のみ。文面の模倣は禁止。
-   {{AFFILIATE_LINK}} + #PR 入りは各ジャンル最大1本、残りは価値提供。可能なら質問で締める）
+1. Web検索（1〜2回）で「直近2〜4週間で日本のThreads/SNSの${genre}ジャンルでバズっている投稿の傾向・切り口・話題」をリサーチする
+2. 市場トレンドと自アカウントの実測（伸びた投稿/伸びなかった投稿）を突き合わせ、改善方針を出す
+3. 新テンプレ草案を2〜3本作る（学ぶのは構造・切り口のみ。文面の模倣は禁止。
+   {{AFFILIATE_LINK}} + #PR 入りは最大1本、残りは価値提供。可能なら質問で締める）
 
-【出力形式】以下の JSON のみ:
+【出力形式】以下の JSON のみ（前置き・後置きテキストなし）:
 {
-  "generated_for": "${todayJST()}",
-  "genre_insights": [
-    {
-      "genre": "ジャンル名",
-      "market_trends": ["市場で今バズっている切り口・話題を3〜5個、具体的に"],
-      "own_performance_review": "実測データから読み取れること（1〜3文）",
-      "actions": ["具体的な改善アクション2〜4個"],
-      "new_templates": [
-        { "id": "ジャンル英語名_${todayJST().replaceAll('-', '')}_連番", "genre": "ジャンル名", "content": "投稿本文", "emoji": "絵文字1〜3個", "engagement_prediction": "high/medium/low", "cta_type": "direct/implicit/none", "link_key": "リンク入りの場合のみ config/links.json のキー名" }
-      ]
-    }
+  "genre": "${genre}",
+  "market_trends": ["市場で今バズっている切り口・話題を3〜5個、具体的に"],
+  "own_performance_review": "実測データから読み取れること（1〜3文）",
+  "actions": ["具体的な改善アクション2〜4個"],
+  "new_templates": [
+    { "id": "ジャンル英語名_${todayJST().replaceAll('-', '')}_連番", "genre": "${genre}", "content": "投稿本文", "emoji": "絵文字1〜3個", "engagement_prediction": "high/medium/low", "cta_type": "direct/implicit/none", "link_key": "リンク入りの場合のみ config/links.json のキー名" }
   ],
-  "overall_actions": ["アカウント横断の改善アクション"],
   "sources": ["参照したURL"]
 }
 
@@ -158,17 +154,47 @@ async function main() {
   console.log(`  対象ジャンル: ${activeGenres.join(', ')}`);
 
   const ownAnalytics = buildOwnAnalytics(activeGenres);
-  console.log('  実測データ読み込み完了。Claude（Web検索付き）で市場リサーチ中...\n');
+  console.log('  実測データ読み込み完了。Claude（Web検索付き）でジャンル別に市場リサーチ中...\n');
 
-  const response = await askClaude(buildPrompt(activeGenres, ownAnalytics, accountsConfig.awareness_until), {
-    system: SYSTEM_PROMPT,
-    maxTokens: 16000,
-    tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }]
-  });
-  const data = extractJSON(response);
+  // ジャンル別に分割生成（1ジャンルの失敗が他を巻き込まないよう個別に try/catch）
+  const genreInsights = [];
+  const sources = [];
+  const failedGenres = [];
+  for (const genre of activeGenres) {
+    process.stdout.write(`  ${genre} ... `);
+    try {
+      const response = await askClaude(
+        buildGenrePrompt(genre, ownAnalytics.byGenre[genre], accountsConfig.awareness_until),
+        {
+          system: SYSTEM_PROMPT,
+          maxTokens: 8000,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }]
+        }
+      );
+      const gi = extractJSON(response);
+      genreInsights.push(gi);
+      for (const s of gi.sources || []) sources.push(s);
+      console.log(`OK（草案 ${(gi.new_templates || []).length} 本）`);
+    } catch (err) {
+      console.log(`失敗（${err.message}）`);
+      failedGenres.push(`${genre}: ${err.message}`);
+    }
+  }
+  if (genreInsights.length === 0) {
+    console.error('❌ 全ジャンルの生成に失敗しました');
+    process.exit(1);
+  }
+
+  const data = {
+    generated_for: todayJST(),
+    genre_insights: genreInsights,
+    overall_actions: [],
+    sources: [...new Set(sources)]
+  };
 
   // 草案のコンプライアンスフィルタ
   const complianceNotes = [];
+  for (const f of failedGenres) complianceNotes.push(`生成失敗（次回リトライ）: ${f}`);
   const proposals = [];
   for (const gi of data.genre_insights || []) {
     for (const t of gi.new_templates || []) {

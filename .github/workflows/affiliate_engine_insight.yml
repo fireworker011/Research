@@ -35,6 +35,7 @@ jobs:
           node src/report.js
 
       - name: インサイト生成（Web検索リサーチ）
+        continue-on-error: true   # 失敗しても後続のエンゲージ素材生成は実行する
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -42,6 +43,7 @@ jobs:
           node src/insight.js
 
       - name: 草案の自動反映とスケジュール再生成
+        continue-on-error: true
         run: |
           cd affiliate-engine
           node src/apply-proposals.js --auto --prune 3 --cap 36
