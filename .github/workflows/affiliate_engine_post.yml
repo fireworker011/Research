@@ -2,11 +2,12 @@ name: Affiliate Engine 自動投稿
 
 on:
   schedule:
-    # JST 07:00 / 12:00 / 19:00 / 21:00（UTC+9）
-    - cron: '0 22 * * *'
-    - cron: '0 3 * * *'
-    - cron: '0 10 * * *'
-    - cron: '0 12 * * *'
+    # 毎時23分に起動（ポスターはステートレスで「期日到来分だけ」投稿するため、
+    # 高頻度に起動しても二重投稿・過剰投稿にはならない。
+    # GitHub の schedule は共有環境の混雑で1〜4時間平気で遅延するため、
+    # 特定時刻のみの起動だと投稿時刻が大きくずれる。毎時起動なら遅延しても
+    # 次のティックが拾う。:00 は最も混雑するため :23 を使う）
+    - cron: '23 * * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -15,6 +16,11 @@ on:
         default: 'false'
         type: choice
         options: ['true', 'false']
+
+# 遅延したティックが重なって同時実行→二重投稿になるのを防ぐ
+concurrency:
+  group: affiliate-post
+  cancel-in-progress: false
 
 jobs:
   post:
