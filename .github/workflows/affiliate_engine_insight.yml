@@ -2,8 +2,16 @@ name: Affiliate Engine デイリー自動改善（分析→リサーチ→反映
 
 on:
   schedule:
-    - cron: '0 21 * * *'   # 06:00 JST、毎日
+    # GitHub の schedule は混雑で1〜4時間遅延・稀にスキップされるため、
+    # 1日2ティック（05:37 / 08:07 JST）用意し、各ステップの冪等ガードで
+    # 「その日すでに生成済みなら何もしない」ようにして二重実行を防ぐ
+    - cron: '37 20 * * *'
+    - cron: '7 23 * * *'
   workflow_dispatch:
+
+concurrency:
+  group: affiliate-daily-improve
+  cancel-in-progress: false
 
 jobs:
   daily-improve:
@@ -18,7 +26,20 @@ jobs:
           ref: claude/monthly-revenue-system-gvi02u
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 実行済みチェック（冪等ガード）
+        id: guard
+        run: |
+          TODAY=$(TZ=Asia/Tokyo date +%F)
+          echo "today=${TODAY}" >> "$GITHUB_OUTPUT"
+          if [ -f "affiliate-engine/output/insights/insight_${TODAY}.md" ] && [ -f "affiliate-engine/output/engage/engage_${TODAY}.md" ]; then
+            echo "done=true" >> "$GITHUB_OUTPUT"
+            echo "本日分（${TODAY}）は生成済み。以降のステップをスキップします"
+          else
+            echo "done=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 最新メトリクス収集
+        if: steps.guard.outputs.done != 'true'
         env:
           THREADS_KONKATSU_USER_ID: ${{ secrets.THREADS_KONKATSU_USER_ID }}
           THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
@@ -35,20 +56,31 @@ jobs:
           node src/report.js
 
       - name: インサイト生成（Web検索リサーチ）
+        if: steps.guard.outputs.done != 'true'
         continue-on-error: true   # 失敗しても後続のエンゲージ素材生成は実行する
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           cd affiliate-engine
-          node src/insight.js
+          if [ -f "output/insights/insight_${{ steps.guard.outputs.today }}.md" ]; then
+            echo "本日分のインサイトは生成済み（スキップ）"
+          else
+            node src/insight.js
+          fi
 
       - name: 草案の自動反映とスケジュール再生成
+        if: steps.guard.outputs.done != 'true'
         continue-on-error: true
         run: |
           cd affiliate-engine
-          node src/apply-proposals.js --auto --prune 3 --cap 36
+          if node -e "const p=require('./data/proposed_templates.json'); process.exit((p.posting_templates||[]).length ? 0 : 1)" 2>/dev/null; then
+            node src/apply-proposals.js --auto --prune 3 --cap 36
+          else
+            echo "反映すべき草案なし（スキップ）"
+          fi
 
       - name: エンゲージメント・キット生成（返信/コメント下書き）
+        if: steps.guard.outputs.done != 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,9 +96,14 @@ jobs:
           THREADS_EDUCATION_ACCESS_TOKEN: ${{ secrets.THREADS_EDUCATION_ACCESS_TOKEN }}
         run: |
           cd affiliate-engine
-          node src/engage.js
+          if [ -f "output/engage/engage_${{ steps.guard.outputs.today }}.md" ]; then
+            echo "本日分のエンゲージキットは生成済み（スキップ）"
+          else
+            node src/engage.js
+          fi
 
       - name: 成果物をコミット
+        if: steps.guard.outputs.done != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

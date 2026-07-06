@@ -47,12 +47,12 @@ async function postToTrackingIssue(body) {
   };
   const base = `https://api.github.com/repos/${GITHUB_REPOSITORY}`;
 
-  const searchRes = await fetch(
-    `${base}/issues?state=open&labels=daily-engage&per_page=1`,
-    { headers }
-  );
+  // タイトル一致で既存Issueを探す（ラベルは環境により付与されないことがあるため頼らない）
+  const searchRes = await fetch(`${base}/issues?state=open&per_page=100`, { headers });
   const existing = await searchRes.json().catch(() => []);
-  let issueNumber = Array.isArray(existing) && existing.length ? existing[0].number : null;
+  let issueNumber = Array.isArray(existing)
+    ? (existing.find((i) => i.title === TRACKING_ISSUE_TITLE) || {}).number || null
+    : null;
 
   if (!issueNumber) {
     const createRes = await fetch(`${base}/issues`, {
