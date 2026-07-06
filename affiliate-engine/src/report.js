@@ -232,20 +232,28 @@ async function main() {
   allPosts.sort((a, b) => b.views - a.views);
   writeJSON(path.join(OUTPUT_DIR, 'top_posts.json'), allPosts.slice(0, 15));
 
-  // 時系列に追記
+  // 時系列に追記（1日1エントリ。同日再実行時は上書きし、重複行を作らない）
   const historyPath = path.join(OUTPUT_DIR, 'metrics_history.jsonl');
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  fs.appendFileSync(
-    historyPath,
-    JSON.stringify({
-      date: todayJST(),
-      followers: Object.fromEntries(accountMetrics.map((a) => [a.key, a.followers])),
-      total_views_recent: totalViews,
-      approved_jpy: conversions?.approvedTotal ?? null,
-      pending_jpy: conversions?.pendingTotal ?? null
-    }) + '\n',
-    'utf-8'
-  );
+  const todayEntry = JSON.stringify({
+    date: todayJST(),
+    followers: Object.fromEntries(accountMetrics.map((a) => [a.key, a.followers])),
+    total_views_recent: totalViews,
+    approved_jpy: conversions?.approvedTotal ?? null,
+    pending_jpy: conversions?.pendingTotal ?? null
+  });
+  const historyLines = fs.existsSync(historyPath)
+    ? fs.readFileSync(historyPath, 'utf-8').split('\n').filter(Boolean)
+    : [];
+  const kept = historyLines.filter((line) => {
+    try {
+      return JSON.parse(line).date !== todayJST();
+    } catch (_) {
+      return true;
+    }
+  });
+  kept.push(todayEntry);
+  fs.writeFileSync(historyPath, kept.join('\n') + '\n', 'utf-8');
 
   // レポート出力
   const date = todayJST();
