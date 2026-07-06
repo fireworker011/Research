@@ -1,9 +1,15 @@
-name: Threads トークン 月次リフレッシュ（5アカウント）
+name: Threads トークン 自動リフレッシュ（5アカウント）
 
 on:
   schedule:
-    - cron: '0 0 1 * *'    # 毎月 1日 00:00 UTC (09:00 JST)
+    # 毎週月曜 09:07 JST。トークンは60日有効なので週次リフレッシュなら
+    # 数回失敗しても期限までの余裕が大きい（自己回復設計）
+    - cron: '7 0 * * 1'
   workflow_dispatch:
+
+concurrency:
+  group: affiliate-token-refresh
+  cancel-in-progress: false
 
 jobs:
   refresh:
@@ -17,9 +23,12 @@ jobs:
           ref: claude/monthly-revenue-system-gvi02u
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: トークンリフレッシュ（5アカウント）
+      - name: トークンリフレッシュ + Secrets 自動書き戻し
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Secrets 書き換え権限付き Fine-grained PAT（設定すると完全自動化。
+          # 未設定の場合は Step Summary + Issue で手動更新を依頼するフォールバック動作）
+          GH_SECRETS_PAT: ${{ secrets.GH_SECRETS_PAT }}
           THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
           THREADS_SIDEJOB_ACCESS_TOKEN: ${{ secrets.THREADS_SIDEJOB_ACCESS_TOKEN }}
           THREADS_BEAUTY_ACCESS_TOKEN: ${{ secrets.THREADS_BEAUTY_ACCESS_TOKEN }}
