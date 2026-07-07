@@ -34,7 +34,7 @@ const { askClaude, extractJSON, sleep } = require('./claude-client');
 const { checkContent } = require('./compliance');
 const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
 
-const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育').split(',').map((g) => g.trim());
+const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育,節約,転職,ペット,睡眠').split(',').map((g) => g.trim());
 const TEMPLATES_PER_GENRE = parseInt(process.env.TEMPLATES_PER_GENRE || '32', 10);
 const CAMPAIGN_DAYS = parseInt(process.env.CAMPAIGN_DAYS || '60', 10);
 const POSTS_PER_DAY = parseInt(process.env.POSTS_PER_DAY || '3', 10);

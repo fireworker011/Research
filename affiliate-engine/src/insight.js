@@ -97,7 +97,7 @@ ${JSON.stringify(genreAnalytics || {}, null, 1)}
   "sources": ["参照したURL"]
 }
 
-利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン`;
+利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン, 節約_格安SIM, 節約_ふるさと納税, 転職_エージェント, 転職_スカウト, ペット_Furbo, ペット_保険, ペット_フード, 睡眠_マットレス, 睡眠_リカバリー`;
 }
 
 function renderMarkdown(data, complianceNotes) {
