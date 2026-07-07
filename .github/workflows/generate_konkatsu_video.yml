@@ -36,9 +36,8 @@ jobs:
       - name: 依存関係インストール
         run: pip install -q -r "shorts/pc/06_婚活/pipeline/requirements.txt"
 
-      - name: 動画生成 → YouTube投稿
+      - name: 合成 → YouTube投稿(シーン動画はリポジトリのinput/に事前配置)
         env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
