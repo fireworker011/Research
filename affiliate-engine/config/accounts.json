@@ -44,6 +44,42 @@
       "user_id_env": "THREADS_EDUCATION_USER_ID",
       "token_env": "THREADS_EDUCATION_ACCESS_TOKEN",
       "enabled": true
+    },
+    {
+      "key": "setsuyaku",
+      "genre": "節約",
+      "handle": "(開設後に記入)",
+      "created": "2026-07-08",
+      "user_id_env": "THREADS_SETSUYAKU_USER_ID",
+      "token_env": "THREADS_SETSUYAKU_ACCESS_TOKEN",
+      "enabled": true
+    },
+    {
+      "key": "tenshoku",
+      "genre": "転職",
+      "handle": "(開設後に記入)",
+      "created": "2026-07-08",
+      "user_id_env": "THREADS_TENSHOKU_USER_ID",
+      "token_env": "THREADS_TENSHOKU_ACCESS_TOKEN",
+      "enabled": true
+    },
+    {
+      "key": "pet",
+      "genre": "ペット",
+      "handle": "(開設後に記入)",
+      "created": "2026-07-08",
+      "user_id_env": "THREADS_PET_USER_ID",
+      "token_env": "THREADS_PET_ACCESS_TOKEN",
+      "enabled": true
+    },
+    {
+      "key": "sleep",
+      "genre": "睡眠",
+      "handle": "(開設後に記入)",
+      "created": "2026-07-08",
+      "user_id_env": "THREADS_SLEEP_USER_ID",
+      "token_env": "THREADS_SLEEP_ACCESS_TOKEN",
+      "enabled": true
     }
   ]
 }

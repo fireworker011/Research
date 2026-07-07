@@ -45,6 +45,42 @@
       "target_demographic": "小学生の子を持つ30-45歳の親",
       "content_angle": "プログラミング教育必修化・情報Ⅰに焦る親への情報整理。費用リアル型は会話誘発力が最強",
       "caution": "教育効果の断定は避ける。子どもの個人差前提"
+    },
+    {
+      "genre": "節約",
+      "demand_score": 9,
+      "typical_commission_jpy": 5000,
+      "typical_approval_rate": 75,
+      "target_demographic": "25-45歳の会社員・主婦/主夫",
+      "content_angle": "我慢しない固定費最適化。『やめた節約』の逆張り誠実系",
+      "caution": "投資勧誘に踏み込まない。クレカ・金融は表現規制が厳しい"
+    },
+    {
+      "genre": "転職",
+      "demand_score": 9,
+      "typical_commission_jpy": 12000,
+      "typical_approval_rate": 60,
+      "target_demographic": "28-40歳の会社員",
+      "content_angle": "転職を煽らない整理型。『残る選択肢』も含めて市場データで考える",
+      "caution": "内定保証・年収アップ断定は不可。体験談の捏造をしない"
+    },
+    {
+      "genre": "ペット",
+      "demand_score": 8,
+      "typical_commission_jpy": 4000,
+      "typical_approval_rate": 70,
+      "target_demographic": "犬と暮らす25-50歳(初心者中心)",
+      "content_angle": "はじめて犬と暮らす人の困りごと整理。健康・お金・しつけ",
+      "caution": "獣医療の診断的断定をしない。『すぐ病院へ』の安全側に倒す"
+    },
+    {
+      "genre": "睡眠",
+      "demand_score": 8,
+      "typical_commission_jpy": 6000,
+      "typical_approval_rate": 70,
+      "target_demographic": "眠りに悩む30-45歳",
+      "content_angle": "科学ベースの『がんばらない睡眠改善』。夜の時間帯と相性が良い",
+      "caution": "薬機法: 不眠が治る等の断定不可。『個人差があります』を徹底"
     }
   ],
   "posting_templates": [
@@ -73,35 +109,11 @@
       "cta_type": "none"
     },
     {
-      "id": "konkatsu_007",
-      "genre": "婚活",
-      "content": "年収や身長で絞り込む前に「休日の過ごし方」欄を読む。結婚生活は週末の連続。ここが合う人とは会話も続きやすい。",
-      "emoji": "📅",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
       "id": "konkatsu_008",
       "genre": "婚活",
       "content": "お断りの返事こそ丁寧に。婚活界隈は意外と狭い。感じのいい断り方ができる人は、次の縁も拾いやすい。",
       "emoji": "🤝",
       "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_009",
-      "genre": "婚活",
-      "content": "初回デートの話題は「最近ハマってるもの」が鉄板。過去（元恋人）と未来（結婚の条件）は2回目以降。まず現在を楽しめる相手かどうか。",
-      "emoji": "🎯",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_010",
-      "genre": "婚活",
-      "content": "希望条件を10個書き出して、上位3つ以外は「あれば嬉しい」に降格させる。全部満たす人を探すと、誰にも会えないまま1年経つ。",
-      "emoji": "📝",
-      "engagement_prediction": "high",
       "cta_type": "none"
     },
     {
@@ -743,6 +755,574 @@
       "engagement_prediction": "medium",
       "cta_type": "implicit",
       "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260707_01",
+      "genre": "婚活",
+      "content": "婚活を始めて数ヶ月経つと、プロフィール確認がだんだん「面接」みたいになっていく、という声をよく聞く。年収・身長・学歴…チェック項目が増えるほど、なぜか「この人のこと気になるかも」と思う瞬間が減っていく気がする。審査を忘れた瞬間にしか、気持ちは動かないのかもしれない。\nいまのあなたは、審査モードと恋愛モード、どっちで会ってる？",
+      "emoji": "📋💭",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260707_02",
+      "genre": "婚活",
+      "content": "電車で隣に座った二人、指輪のケースらしき紙袋を片手に、ずっと敬語で話していた。結婚相談所で知り合って仮交際中、という空気が伝わってくることがある。丁寧な言葉遣いの奥に、お互いへの緊張と気遣いが見える。\n婚活の初期って、恋愛感情より先に「礼儀」がくるものなのかもしれない。あなたが婚活で一番気を遣った瞬間はいつだった？",
+      "emoji": "🚃💍",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260707_03",
+      "genre": "婚活",
+      "content": "アプリで何十人と話しても進展しない、という相談をよく見かける。条件を絞り込む前に、「どの場で動くか」の設計自体を見直すと結果が変わりやすい、という声もある。自分に合いそうなサービスを比較するところから始めてみるのも一つの手。\n気になる人はチェックしてみて。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🔍💍",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "婚活_相談所"
+    },
+    {
+      "id": "sidejob_20260707_01",
+      "genre": "副業",
+      "content": "副業を始める人によくある順番、実は逆かもしれません。\n\n多くの人は「何をやるか」から決めますが、続いている人を見ていると「週に何時間使えるか」を先に決めてから内容を選んでいる印象があります。\n\n時間の枠が先にあると、選べる副業が自然と絞られて迷いが減るように感じます。\n\nみなさんは副業を選ぶとき、時間と内容どちらを先に決めましたか？",
+      "emoji": "⏳📝",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "sidejob_20260707_02",
+      "genre": "副業",
+      "content": "副業を3ヶ月続けて「向いてないかも」と感じるタイミングって、だいたい同じ時期に来る気がします。\n\n・最初の熱量が落ちる\n・成果が数字で見えにくい\n・比較対象のSNSが目に入る\n\nこの3つが重なると心が折れやすいという観察を、いろんな人の投稿を見ていてよく感じます。\n\n保存して、自分がその時期に来たら見返せるようにしておくのもアリかもしれません。",
+      "emoji": "📌💭",
+      "engagement_prediction": "high",
+      "cta_type": "none",
+      "link_key": null
+    },
+    {
+      "id": "sidejob_20260707_03",
+      "genre": "副業",
+      "content": "副業を「まず登録だけしてみる」という始め方は、意外とハードルが低いなと感じています。\n\nいきなり本格的に取り組もうとすると腰が重くなりますが、登録だけなら数分で終わるので、後から考える余地を残せます。\n\n興味のある方はこちらから見てみるのもひとつの選択肢です。\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "📝✅",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "副業_ココナラ"
+    },
+    {
+      "id": "beauty_20260707_1",
+      "genre": "美容",
+      "content": "スキンケアの「塗る順番」、意外と逆にしてる人が多いらしい。\n基本は「テクスチャが軽いものから重いものへ」。\n化粧水→美容液→乳液・クリームの順を守るだけで、浸透の感じ方が変わるという声も。\n地味だけど見直す価値あり。",
+      "emoji": "💧✨",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260707_2",
+      "genre": "美容",
+      "content": "「これだけは譲れない」というスキンケア・メイクアイテム、ひとつ挙げるなら何ですか？\n理由も気になるので、よければ教えてください👇\n人によって全然違いそうで気になってます。",
+      "emoji": "🧴🤔",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260707_3",
+      "genre": "美容",
+      "content": "季節の変わり目、肌がゆらいで化粧のノリが変わったと感じたことありませんか？\n同じスキンケアでも「今の自分の肌状態」に合わせて選び直すのが大事らしい。\n自分に合う基礎化粧品を見直したい人はこちらもチェックしてみてください。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍃🌤️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "美容_オルビスユー"
+    },
+    {
+      "id": "education_20260707_1",
+      "genre": "教育",
+      "content": "「地頭がいい」と「勉強ができる」は別物、という言い方をよく見かける。\nテストの点数が高くても初見の課題で固まってしまう子もいれば、点数はそこそこでも工夫して考えられる子もいる。\n現場でよく紹介される関わり方の工夫：\n・答えより「どう考えたか」を聞く\n・間違いを直す前に「どこまで合っていたか」を確認する\n・声に出して考えを整理させる\nみなさんの周りでは、どんな工夫が効果的だと感じますか？",
+      "emoji": "📝🧠",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260707_2",
+      "genre": "教育",
+      "content": "学校行事や実習の様子をSNSに載せるかどうか、家庭や現場ごとに感覚がかなり違うことに最近気づく。\n「思い出として残したい」気持ちと「知らない人にも見られるリスク」、どちらも自然な感覚で、正解が一つに決まらないテーマなのだと思う。\nみなさんは、子どもや生徒の写真をどこまでSNSに載せるか、自分なりの線引きがありますか？",
+      "emoji": "📱👀",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260707_3",
+      "genre": "教育",
+      "content": "「パソコンが使える」と「順序立てて考えられる」は別スキル、という話に反応をいただいたので少し深掘り。\n学校の授業だけでこの力を伸ばすのは簡単ではなく、家庭や教材で補っている家庭も増えている印象。\n興味がある方向けに、順序立てて考える力を育てる講座の情報をまとめました。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "💻🧩",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
+    },
+    {
+      "id": "setsuyaku_001",
+      "genre": "節約",
+      "content": "節約は順番がすべて。①スマホ代 ②サブスク ③保険 ④電気ガス ⑤食費。多くの人が⑤から始めて疲れて挫折する。固定費は1回見直せば毎月効く。あなたはどこから手を付けましたか？",
+      "emoji": "💡",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_002",
+      "genre": "節約",
+      "content": "「1円安い卵のために隣のスーパーへ」をやめたら、逆にお金が貯まり始めた。がんばる節約は疲れて反動買いを生む。削るのは意志力じゃなくて固定費。",
+      "emoji": "🥚",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_003",
+      "genre": "節約",
+      "content": "サブスクの棚卸しは3ヶ月に1回。判定基準は1つだけ、「先月使ったか」。迷ったら解約。本当に必要なら戻せばいい。今いくつ契約してるか、即答できますか？",
+      "emoji": "📱",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_004",
+      "genre": "節約",
+      "content": "コンビニに寄らない一番の方法は「我慢」じゃなくて「帰り道を変える」。意志力に頼る節約は必ず負ける。仕組みで勝つ。",
+      "emoji": "🏪",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_005",
+      "genre": "節約",
+      "content": "家計簿が続かない人へ。項目は「固定費・食費・その他」の3つで十分。細かく分類するから続かない。ざっくり3ヶ月続いた家計簿は、完璧な3日間の家計簿に勝つ。",
+      "emoji": "📒",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_006",
+      "genre": "節約",
+      "content": "ふるさと納税、「難しそう」で止まってる人が一番損してる。実質2千円で返礼品がもらえる仕組みで、上限額はシミュレーターに年収を入れるだけ。5分で終わる。やってますか？",
+      "emoji": "🎁",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_007",
+      "genre": "節約",
+      "content": "貯金は「残ったらする」ではなく「先に抜いて残りで暮らす」。給料日に自動振替を設定するだけ。順番を変えるだけで、意志力ゼロで貯まる構造になる。",
+      "emoji": "🏦",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_008",
+      "genre": "節約",
+      "content": "ポイ活は時給換算してみる。300ポイントのために30分の作業なら時給600円。その30分で固定費を1つ見直したほうが、毎月効く。ポイントは「ついで」までが正解だと思う。",
+      "emoji": "⏱",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_009",
+      "genre": "節約",
+      "content": "電気代、プラン見直しの前に「契約アンペア」を確認した？一人暮らしで40A契約のままの人、結構いる。下げるだけで基本料金が変わる。明細の見方から調べる価値あり。",
+      "emoji": "💡",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_010",
+      "genre": "節約",
+      "content": "「安いから買う」は、買う理由じゃない。半額シールの惣菜も、使わないなら0円じゃなくてマイナス。買う前の質問は1つ、「定価でも買った？」",
+      "emoji": "🏷",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_011",
+      "genre": "節約",
+      "content": "節約で一番大事なのはたぶん「何のために貯めるか」。目的のない我慢は続かない。旅行でも、辞める自由でも、額の目標より先に理由を決める。あなたの貯める理由、何ですか？",
+      "emoji": "🧭",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "setsuyaku_101",
+      "genre": "節約",
+      "content": "スマホ代の平均は月4千円台、格安SIMなら千円台。差額を年で計算すると3〜4万円。「乗り換えが面倒」の壁は最初の1時間だけで、その1時間の時給は数万円になる。比較はここに整理した → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📲",
+      "engagement_prediction": "high",
+      "cta_type": "direct",
+      "link_key": "節約_格安SIM"
+    },
+    {
+      "id": "setsuyaku_102",
+      "genre": "節約",
+      "content": "ふるさと納税をまだやってない人向けに、上限額の調べ方から返礼品選びまでの流れをまとめた。実質2千円の負担で米や日用品が届く仕組み、使わない理由がなかった → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🎁",
+      "engagement_prediction": "high",
+      "cta_type": "direct",
+      "link_key": "節約_ふるさと納税"
+    },
+    {
+      "id": "setsuyaku_103",
+      "genre": "節約",
+      "content": "固定費の見直し、どこから手を付けるか迷う人向けに順番とやり方を1つにまとめた。仕組み化すれば「がんばる節約」は不要になる → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📒",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約"
+    },
+    {
+      "id": "tenshoku_001",
+      "genre": "転職",
+      "content": "「辞めたい」と「転職したい」は別物。原因が人間関係なら転職で解決することが多い。原因が業界の構造なら、会社を変えても繰り返す。まず原因の切り分けから。あなたはどっちでしたか？",
+      "emoji": "🧭",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_002",
+      "genre": "転職",
+      "content": "社内評価と市場価値は別物。社内で優秀でも市場で通用するとは限らないし、逆もある。一番簡単な測り方は、自分の職種の求人票を10件読むこと。求められるスキルと給与レンジが見えてくる。",
+      "emoji": "📊",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_003",
+      "genre": "転職",
+      "content": "職務経歴書は「やったこと」の羅列じゃなく「何を変えたか」を書く。「営業を担当」ではなく「引き継いだ顧客の解約率を下げた」。数字がなければ、before→afterだけでも伝わり方が変わる。",
+      "emoji": "📝",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_004",
+      "genre": "転職",
+      "content": "面接の逆質問で一番情報が取れるのは「入社後3ヶ月で期待される成果は何ですか？」。答えが具体的なら受け入れ体制がある。曖昧なら、入ってから苦労する可能性を織り込む。",
+      "emoji": "🎤",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_005",
+      "genre": "転職",
+      "content": "「転職しない」も転職活動の立派な成果。市場を見た上で今の会社に残るのと、見ずに残るのは全然違う。前者は選んだ結果、後者はただの現状維持。",
+      "emoji": "🌱",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_006",
+      "genre": "転職",
+      "content": "求人票は形容詞じゃなく数字を見る。「アットホーム」より残業時間の実数、「成長できる環境」より給与レンジと評価制度。書いてなければ面接で聞いていい。聞いて嫌がる会社は、それが答え。",
+      "emoji": "🔍",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_007",
+      "genre": "転職",
+      "content": "在職中の転職活動、平均像は「3ヶ月・応募20社前後」。1社目で決まらなくて普通、10社落ちても普通。ここを知らないと2〜3社で心が折れる。長期戦の前提で設計する。",
+      "emoji": "📅",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_008",
+      "genre": "転職",
+      "content": "年収交渉は失礼じゃない。現年収を正直に伝えた上で希望額を言うのは、ただの条件確認。直接言いにくいなら、間に入ってもらえる仕組みを使う手もある。交渉しなかった分は、入社後に取り返すのが難しい。",
+      "emoji": "💬",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_009",
+      "genre": "転職",
+      "content": "30代の未経験転職は「隣接職種」なら現実的。営業→カスタマーサクセス、事務→労務など、今のスキルの半分が使える職種を狙う。ゼロからの職種チェンジより通る確率が全然違う。",
+      "emoji": "🪜",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_010",
+      "genre": "転職",
+      "content": "退職を切り出すときは「相談」ではなく「報告」にする。「辞めようか迷っていて…」は引き止めの入り口になる。決めてから、決定事項として伝える。引き止めは想定内の儀式だと思っておく。",
+      "emoji": "🚪",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_011",
+      "genre": "転職",
+      "content": "転職活動してること、周りに言えましたか？私は「言わない」が正解だと思ってる派。決まってから報告で十分。ただ、一人で抱えると判断が偏るのも事実。みんなは誰かに相談しました？",
+      "emoji": "🤫",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "tenshoku_101",
+      "genre": "転職",
+      "content": "一人で「辞めるべきか」を延々考えるより、市場のデータを見たほうが早い。エージェントの無料面談は、転職を決めてなくても「自分の市場価値の確認」に使える。使い方をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🧭",
+      "engagement_prediction": "high",
+      "cta_type": "direct",
+      "link_key": "転職_エージェント"
+    },
+    {
+      "id": "tenshoku_102",
+      "genre": "転職",
+      "content": "職務経歴書を登録しておくと、企業やエージェントからスカウトが届く仕組みがある。届くスカウトの質と量が、いまの自分の市場価値の目安になる。転職する気がなくても測定器として使える → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📡",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_スカウト"
+    },
+    {
+      "id": "tenshoku_103",
+      "genre": "転職",
+      "content": "「辞めるか残るか」を感情じゃなく整理するためのステップをまとめた。原因の切り分け→市場価値の確認→比較、の順番でやると後悔が減る → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📝",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職"
+    },
+    {
+      "id": "pet_001",
+      "genre": "ペット",
+      "content": "犬を迎える前に決めておくこと3つ。①平日の留守番は何時間になるか ②夜間対応できる動物病院はどこか ③生涯費用(一般に200〜300万円といわれる)を払えるか。かわいいは、この3つの後。",
+      "emoji": "🐕",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_002",
+      "genre": "ペット",
+      "content": "留守番後に「ドアの前で吠え続けた形跡」「物の破壊」「粗相」が続くなら、分離不安のサインかもしれない。叱っても悪化しやすい。出かける前の儀式をなくして、出入りを「特別なこと」にしないのが第一歩。",
+      "emoji": "🚪",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_003",
+      "genre": "ペット",
+      "content": "犬の手術、1回20〜30万円は普通にある。ペット保険に入るか、その分を毎月積み立てるか。正解は家庭によって違うけど、「どちらも準備してない」だけは避けたい。あなたはどっち派ですか？",
+      "emoji": "💰",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_004",
+      "genre": "ペット",
+      "content": "ドッグフード選びで最初に見るのは、原材料表示の最初の3つ。表示は含有量の多い順なので、最初に肉や魚が来ているかで大枠が判断できる。値段より先に、裏面。",
+      "emoji": "🍖",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_005",
+      "genre": "ペット",
+      "content": "夏のアスファルトは60度近くになることがある。散歩前に手の甲を地面に5秒つけて、熱ければ延期。肉球のやけどは飼い主にしか防げない。散歩は早朝か日没後に。",
+      "emoji": "☀️",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_006",
+      "genre": "ペット",
+      "content": "犬が吐いたとき、様子見していいかの目安を調べて整理した。「1回吐いてケロッとしている」なら様子見でいいことが多い。「繰り返す・ぐったり・血が混じる・異物の可能性」は迷わず病院へ。判断に迷ったら電話だけでもする。",
+      "emoji": "🏥",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_007",
+      "genre": "ペット",
+      "content": "しつけは「失敗を叱る」より「成功する状況を作って褒める」ほうが早い。トイレなら、成功しやすいタイミング(起床後・食後)に先回りして誘導→成功→褒める。失敗の後始末は無言で。",
+      "emoji": "🎾",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_008",
+      "genre": "ペット",
+      "content": "3歳以上の犬の約8割に歯周病の兆候があるといわれる。歯磨きは「いきなり歯ブラシ」だと拒否される。口に触る→歯に触る→ガーゼで拭く→歯ブラシ、と数週間かけて段階を踏むのがコツ。",
+      "emoji": "🦷",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_009",
+      "genre": "ペット",
+      "content": "災害時、避難所にペットと入れるかは自治体によって違う。「同行避難」と「同伴避難」は別物。うちの地域はどっちか、ケージ・フード5日分・薬の備えはあるか。台風シーズン前に一度確認を。",
+      "emoji": "🎒",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_010",
+      "genre": "ペット",
+      "content": "子犬の甘噛みは「噛んだら遊びが終わる」を徹底すると減っていく。噛まれた瞬間に声を上げて遊びを中断、別室へ。叩く・マズルを掴むは信頼を削るだけ。時間はかかるけど、これが一番遠回りに見えて近道。",
+      "emoji": "🐾",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_011",
+      "genre": "ペット",
+      "content": "うちの犬、本名で呼ばれることがほぼない。「おまめ」「まめすけ」「まめざえもん」…。みんなの家の子の「本名以外の呼び名」、良かったら教えてください。",
+      "emoji": "😆",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "pet_101",
+      "genre": "ペット",
+      "content": "留守番中の犬が何をしてるか見えるだけで、仕事中の心配が全然違う。見守りカメラは吠え通知やおやつ機能付きのものもある。選び方を比較してまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📷",
+      "engagement_prediction": "high",
+      "cta_type": "direct",
+      "link_key": "ペット_Furbo"
+    },
+    {
+      "id": "pet_102",
+      "genre": "ペット",
+      "content": "ペット保険、「入る・入らない」の前に補償割合と対象外項目の比較だけはしておくと後悔がない。資料請求は無料なので、迎える前の比較がおすすめ → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📋",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "ペット_保険"
+    },
+    {
+      "id": "pet_103",
+      "genre": "ペット",
+      "content": "フード選びで迷ったら、原材料と成分値の見方から。うちで比較したときの基準をまとめた。愛犬の体質に合うかは個体差があるので、切り替えは1週間かけて少しずつ → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍖",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "ペット_フード"
+    },
+    {
+      "id": "sleep_001",
+      "genre": "睡眠",
+      "content": "寝る前のスマホ、問題は「光」だけじゃなくて「情報」。SNSの5分は脳を仕事モードに戻す。画面の明るさを下げても、心拍数は下がらない。寝る30分前だけ、脳に新しい情報を入れない。",
+      "emoji": "📵",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_002",
+      "genre": "睡眠",
+      "content": "眠れない夜、一番やってはいけないのは時計を見ること。「あと4時間しか寝られない」の計算が、脳を一番覚醒させる。時計は伏せる。スマホは手の届かない場所へ。",
+      "emoji": "⏰",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_003",
+      "genre": "睡眠",
+      "content": "カフェインの半減期は約5時間といわれる。15時のコーヒーは、22時の体にまだ半分残ってる計算。「夜眠れない」の犯人が午後のコーヒーだった、はよくある話。何時までに切り上げてますか？",
+      "emoji": "☕",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_004",
+      "genre": "睡眠",
+      "content": "休日の寝だめは「いつもの起床+2時間まで」が目安。昼まで寝ると体内時計が後ろにズレて、月曜の朝が時差ボケ状態になりやすい。眠気は昼寝20分で返済するほうが楽。",
+      "emoji": "🛌",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_005",
+      "genre": "睡眠",
+      "content": "夏の夜、エアコンは朝までつけっぱなしでいい。「電気代がもったいない」で失う睡眠のほうが高くつく。暑さで夜中に目が覚めるのは、体が休めてないサイン。",
+      "emoji": "❄️",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_006",
+      "genre": "睡眠",
+      "content": "「眠くないのに布団に入る」を続けると、脳が「布団=眠れない場所」と学習してしまうらしい。眠くなってから布団へ。15分寝付けなければ一度出る。布団は寝る専用の場所に戻す。",
+      "emoji": "🛏",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_007",
+      "genre": "睡眠",
+      "content": "夜の睡眠は朝に作られる。起きてすぐカーテンを開けて光を浴びると、体内時計がリセットされて夜に眠気が来るリズムができる。夜に頑張るより、朝の1分。",
+      "emoji": "🌅",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_008",
+      "genre": "睡眠",
+      "content": "昼寝は「20分まで・15時前」。30分を超えると深い眠りに入って、起きた後がだるくなりやすいし、夜の眠気も削る。座ったまま・机に伏せてくらいが、ちょうどいい深さ。",
+      "emoji": "😴",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_009",
+      "genre": "睡眠",
+      "content": "寝酒は寝つきを良くするけど、睡眠の後半を浅くしやすい。「寝られるけど、夜中に目が覚める・朝疲れてる」の原因が晩酌だった、というパターンは結構ある。やめろとは言わないけど、量と時間は見直す価値あり。",
+      "emoji": "🍺",
+      "engagement_prediction": "medium",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_010",
+      "genre": "睡眠",
+      "content": "考え事が止まらない夜は、紙に全部書き出す。「明日やること」「不安なこと」を頭の外に出すと、脳が「もう覚えておかなくていい」と判断してくれる。スマホのメモじゃなくて紙、がポイント。",
+      "emoji": "✍️",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_011",
+      "genre": "睡眠",
+      "content": "理想は7時間睡眠って知ってるけど、現実は…という人がほとんどだと思う。みんな、平日は実際何時間眠れてますか？私はまず「0時までに布団」から始めました。",
+      "emoji": "🌙",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "sleep_101",
+      "genre": "睡眠",
+      "content": "人生の3分の1は布団の中と考えると、マットレスは一番使用時間の長い家具。数万円の差で毎日の回復が変わるなら、投資対効果は悪くない。選び方の基準(硬さ・体圧分散・お試し期間)をまとめた → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🛏",
+      "engagement_prediction": "high",
+      "cta_type": "direct",
+      "link_key": "睡眠_マットレス"
+    },
+    {
+      "id": "sleep_102",
+      "genre": "睡眠",
+      "content": "リカバリーウェア、半信半疑で調べたら選び方に基準があった。一般医療機器の届出があるか、洗濯で機能が落ちないか。感じ方には個人差がある前提で、比較を整理した → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "👕",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "睡眠_リカバリー"
+    },
+    {
+      "id": "sleep_103",
+      "genre": "睡眠",
+      "content": "「眠れない」の原因はカフェイン・光・温度・リズムのどれかであることが多い。自分がどれに当てはまるかのチェックリストと対策をまとめた。個人差はあるので、合うものから1つずつ → {{AFFILIATE_LINK}}\n#PR",
+      "emoji": "✅",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "睡眠"
     }
   ]
 }
