@@ -20,6 +20,21 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 def _get_credentials(client_secrets: str | None = None):
     from google.auth.transport.requests import Request
 
+    # GitHub Actions / サーバー実行: 環境変数のリフレッシュトークンで認証
+    import os
+    if os.getenv("YT_REFRESH_TOKEN"):
+        from google.oauth2.credentials import Credentials
+        creds = Credentials(
+            token=None,
+            refresh_token=os.environ["YT_REFRESH_TOKEN"],
+            client_id=os.environ["YT_CLIENT_ID"],
+            client_secret=os.environ["YT_CLIENT_SECRET"],
+            token_uri="https://oauth2.googleapis.com/token",
+            scopes=SCOPES,
+        )
+        creds.refresh(Request())
+        return creds
+
     creds = None
     if TOKEN_PATH.exists():
         creds = pickle.loads(TOKEN_PATH.read_bytes())

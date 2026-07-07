@@ -28,7 +28,8 @@ BASE = Path(__file__).parent
 OUT = BASE / "output"
 
 
-def build(script_path: Path, do_upload: bool = False, upload_only: bool = False) -> Path:
+def build(script_path: Path, do_upload: bool = False, upload_only: bool = False,
+          privacy: str = "private") -> Path:
     script = json.loads(script_path.read_text(encoding="utf-8"))
     pid = script["project_id"]
     scenes = script["scenes"]
@@ -75,6 +76,7 @@ def build(script_path: Path, do_upload: bool = False, upload_only: bool = False)
             title=script["title"],
             description=script["description"],
             tags=script.get("tags", []),
+            privacy=privacy,
         )
     else:
         print(f"\n動画を確認してください: {final}")
@@ -88,8 +90,10 @@ if __name__ == "__main__":
     if not args:
         print(__doc__)
         sys.exit(1)
+    privacy = "public" if "--public" in args else "private"
     build(
         Path(args[0]),
         do_upload="--upload" in args,
         upload_only="--upload-only" in args,
+        privacy=privacy,
     )
