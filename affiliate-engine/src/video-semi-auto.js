@@ -4,7 +4,7 @@
 /**
  * YouTube Shorts / Instagram Reels 用 セミオート動画生成
  *
- * スケジュール CSV の投稿テキストを 1080x1920 の動画に変換し、
+ * Threads スケジュール CSV の投稿テキストを 1080x1920 の動画に変換し、
  * ユーザー確認を経て投稿キューに積む。
  *
  * 元設計からの変更点:
@@ -14,11 +14,12 @@
  * - 実アップロードは YouTube/Instagram とも OAuth 設定が必要なため、
  *   キュー（jsonl）に積むまでを自動化。アップロードは各公式ツールで行う
  *
+ * Shorts チャンネル（config/youtube.json）のネタ出しは別フロー:
+ * shorts-research.js → shorts-production-kit.js（Grok 画像生成→動画化→
+ * Grok Companion ナレーション→CapCut編集）を参照。本スクリプトは扱わない。
+ *
  * 使用方法:
  *   node src/video-semi-auto.js [--date YYYY-MM-DD] [--limit N]
- *   node src/video-semi-auto.js --ideas [--limit N]
- *     → shorts-research.js が出した採用待ちネタ（data/shorts_proposed_ideas.json）を
- *       1本ずつ確認しながら動画化してキューに積む
  */
 
 const fs = require('fs');
@@ -26,14 +27,12 @@ const path = require('path');
 const readline = require('readline');
 const { execFile } = require('child_process');
 const { promisify } = require('util');
-const { ROOT, OUTPUT_DIR, parseCSV, readJSON, todayJST } = require('./util');
-const { generateIdeaVideo } = require('./shorts-video');
+const { OUTPUT_DIR, parseCSV, todayJST } = require('./util');
 
 const execFileAsync = promisify(execFile);
 
 const VIDEO_DIR = path.join(OUTPUT_DIR, 'videos');
 const CSV_PATH = process.env.SCHEDULE_CSV || path.join(OUTPUT_DIR, 'threads_posting_schedule.csv');
-const IDEAS_PATH = path.join(ROOT, 'data', 'shorts_proposed_ideas.json');
 const FONT_CANDIDATES = [
   '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
   '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
@@ -109,37 +108,16 @@ async function main() {
     process.exit(1);
   }
 
-  const ideasMode = process.argv.includes('--ideas');
-  let posts;
-  if (ideasMode) {
-    // shorts-research.js のネタ出しキットから動画化する
-    const proposed = readJSON(IDEAS_PATH, null);
-    if (!proposed || (proposed.ideas || []).length === 0) {
-      console.error(`❌ 採用待ちネタがありません: ${IDEAS_PATH}（先に node src/shorts-research.js を実行）`);
-      process.exit(1);
-    }
-    console.log(`📋 ネタ出しキット ${proposed.date} 分（${proposed.ideas.length}本）から動画化します`);
-    posts = proposed.ideas.slice(0, limit).map((idea) => ({
-      date: proposed.date || targetDate,
-      time: '--:--',
-      genre: idea.genre,
-      account: idea.channel,
-      content: [idea.hook, idea.script, idea.cta].filter(Boolean).join('\n\n'),
-      emoji: '',
-      idea
-    }));
-  } else {
-    if (!fs.existsSync(CSV_PATH)) {
-      console.error(`❌ スケジュール CSV がありません: ${CSV_PATH}`);
-      process.exit(1);
-    }
-    const schedule = parseCSV(fs.readFileSync(CSV_PATH, 'utf-8'));
-    posts = schedule.filter((r) => r.date === targetDate).slice(0, limit);
+  if (!fs.existsSync(CSV_PATH)) {
+    console.error(`❌ スケジュール CSV がありません: ${CSV_PATH}`);
+    process.exit(1);
+  }
+  const schedule = parseCSV(fs.readFileSync(CSV_PATH, 'utf-8'));
+  const posts = schedule.filter((r) => r.date === targetDate).slice(0, limit);
 
-    if (posts.length === 0) {
-      console.log(`${targetDate} の投稿はスケジュールにありません`);
-      return;
-    }
+  if (posts.length === 0) {
+    console.log(`${targetDate} の投稿はスケジュールにありません`);
+    return;
   }
 
   fs.mkdirSync(VIDEO_DIR, { recursive: true });
@@ -151,19 +129,12 @@ async function main() {
     console.log(`${'='.repeat(50)}`);
     console.log(post.content);
 
-    const fileName = post.idea
-      ? `${post.date}_${post.idea.id}.mp4`
-      : `${post.date}_${post.time.replace(':', '-')}_${post.account}.mp4`;
+    const fileName = `${post.date}_${post.time.replace(':', '-')}_${post.account}.mp4`;
     const videoPath = path.join(VIDEO_DIR, fileName);
 
     console.log('\n🎬 動画生成中...');
     try {
-      if (post.idea) {
-        // ネタはフック→台本カード→CTA のテロップ型フル動画（shorts-video.js）
-        await generateIdeaVideo(post.idea, videoPath, font);
-      } else {
-        await generateVideo(`${post.content}\n${post.emoji || ''}`, videoPath, font);
-      }
+      await generateVideo(`${post.content}\n${post.emoji || ''}`, videoPath, font);
       console.log(`  ✓ ${videoPath}`);
     } catch (err) {
       console.error(`  ❌ 生成失敗: ${err.message}`);
@@ -176,33 +147,21 @@ async function main() {
 
     let content = post.content;
     if (answer === 'e') {
-      content = (await ask(rl, post.idea ? '新しい台本: ' : '新しい本文: ')) || content;
-      if (!post.idea) await generateVideo(`${content}\n${post.emoji || ''}`, videoPath, font);
+      content = (await ask(rl, '新しい本文: ')) || content;
+      await generateVideo(`${content}\n${post.emoji || ''}`, videoPath, font);
     }
     if (answer === 'y' || answer === 'e') {
-      const meta = post.idea
-        ? {
-            timestamp: new Date().toISOString(),
-            videoPath,
-            genre: post.genre,
-            channel: post.account,
-            title: post.idea.title,
-            // 広告表記はアフィリエイトリンクを貼るネタのみ（景表法のステマ規制対応）
-            description: `${content}\n${(post.idea.hashtags || []).join(' ')}${post.idea.link_key ? '\n#PR' : ''}`,
-            link_key: post.idea.link_key || null,
-            status: 'queued'
-          }
-        : {
-            timestamp: new Date().toISOString(),
-            videoPath,
-            genre: post.genre,
-            title: `【${post.genre}】${content.split('\n')[0].slice(0, 40)}`,
-            description: `${content}\n#PR`,
-            status: 'queued'
-          };
+      const meta = {
+        timestamp: new Date().toISOString(),
+        videoPath,
+        genre: post.genre,
+        title: `【${post.genre}】${content.split('\n')[0].slice(0, 40)}`,
+        description: `${content}\n#PR`,
+        status: 'queued'
+      };
       enqueue('youtube_uploads.jsonl', meta);
-      enqueue('instagram_uploads.jsonl', { ...meta, caption: `${meta.description}\n\n#${post.genre}` });
-      console.log(`  ✓ YouTube / Instagram キューに追加${meta.link_key ? `（概要欄に ${meta.link_key} のリンクを貼る）` : ''}`);
+      enqueue('instagram_uploads.jsonl', { ...meta, caption: `${content}\n\n#${post.genre} #PR` });
+      console.log('  ✓ YouTube / Instagram キューに追加');
     }
   }
 

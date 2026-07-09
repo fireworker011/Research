@@ -109,12 +109,19 @@ ${JSON.stringify(threadsSignal || '（データなし）', null, 1)}
 【過去に出したネタのタイトル（重複・類似回避）】
 ${JSON.stringify(recentTitles, null, 1)}
 
+【制作フロー（前提）】
+このチャンネルの動画は「Grok に画像を複数枚生成させる → Grok で画像から動画化（アニメーション化）
+→ Grok Companion にナレーションを読み上げさせる → CapCut で映像+音声+字幕を編集して投稿」という
+半自動フローで作る。あなたが出すネタは、このフローにそのまま渡せる粒度にすること。
+
 【タスク】
 1. Web検索（1〜2回）で「直近2〜4週間で日本の YouTube Shorts の${channel.genre}ジャンルで伸びている動画の傾向・フック・フォーマット・話題」をリサーチする
 2. 市場トレンドと補助シグナルを突き合わせ、伸びている「構成の型」を特定する
 3. 顔出しなしで制作できる Shorts のネタを${ideasPerChannel}本作る。各ネタは:
    - 冒頭2秒で離脱させないフック（画面テキスト or ナレーション第一声）
-   - 30〜45秒のナレーション台本（そのまま読み上げられる完成文）
+   - 30〜45秒のナレーション台本（そのまま Grok Companion に読ませられる完成文。ふりがな・記号なしの自然な話し言葉）
+   - Grok で画像生成させるためのプロンプトを4〜6枚分（英語 or 日本語、9:16縦構図・チャンネルの世界観で統一したスタイル指定を含む）
+   - 各画像を Grok で動画化する際のアニメーション指示（カメラワーク・動きの説明を1文で）
    - アフィリエイト誘導するネタは最大2本まで。残りは登録・保存を狙う価値提供型
    - 誘導する場合は下記の link_key から選ぶ（概要欄リンク前提の自然な CTA にする）
 
@@ -131,8 +138,10 @@ ${JSON.stringify(recentTitles, null, 1)}
       "id": "shorts_${channel.key}_${date.replaceAll('-', '')}_連番",
       "title": "YouTubeタイトル（検索とフィードの両方を意識、32字以内）",
       "hook": "冒頭2秒のフック（画面テキスト/第一声）",
-      "script": "30〜45秒のナレーション全文",
-      "scenes": ["映像の指定を時系列で3〜6個（顔出しなしで撮れる/素材で賄える指定）"],
+      "script": "30〜45秒のナレーション全文（Grok Companion にそのまま読ませる想定）",
+      "image_prompts": [
+        { "order": 1, "prompt": "Grok の画像生成にそのまま貼れるプロンプト（9:16縦構図・スタイル指定込み）", "motion": "この画像をGrokで動画化する際のアニメーション指示（カメラワーク等）を1文で" }
+      ],
       "hashtags": ["#ハッシュタグ3〜5個"],
       "cta": "締めの一言（誘導ネタなら概要欄リンクへ、価値提供ネタなら登録・保存へ）",
       "link_key": "リンク誘導する場合のみ上記キーから。しない場合は null",
@@ -204,10 +213,13 @@ function renderIdeasMarkdown(date, results, complianceNotes) {
       lines.push(`### ${i + 1}. ${idea.title} ${idea.link_key ? `🔗(${idea.link_key})` : '📌価値提供'}`);
       lines.push('');
       lines.push(`- **フック（冒頭2秒）**: ${idea.hook}`);
-      lines.push(`- **台本**: ${idea.script}`);
-      if ((idea.scenes || []).length) {
-        lines.push(`- **映像**:`);
-        for (const s of idea.scenes) lines.push(`  - ${s}`);
+      lines.push(`- **ナレーション台本**: ${idea.script}`);
+      if ((idea.image_prompts || []).length) {
+        lines.push(`- **Grok 画像プロンプト**（${idea.image_prompts.length}枚）:`);
+        for (const p of idea.image_prompts) {
+          lines.push(`  ${p.order}. ${p.prompt}`);
+          if (p.motion) lines.push(`     → 動画化: ${p.motion}`);
+        }
       }
       lines.push(`- **CTA**: ${idea.cta}`);
       lines.push(`- **タグ**: ${(idea.hashtags || []).join(' ')}`);

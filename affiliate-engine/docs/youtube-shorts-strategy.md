@@ -11,12 +11,21 @@
   shorts-research.js
     ├ チャンネル別に Web検索で市場リサーチ（伸びている傾向・フック・型）
     ├ 同ジャンル Threads アカウントの実測を補助シグナルとして突き合わせ
-    ├ 台本レベルのネタを生成（タイトル/フック/ナレーション/タグ/CTA/リンク）
+    ├ 台本+Grok画像プロンプトのネタを生成（タイトル/フック/ナレーション/
+    │  画像プロンプト4〜6枚+動画化指示/タグ/CTA/リンク）
     ├ compliance.js で誇大表現・薬機法リスクをブロック
     └ Issue「🎬 YouTube Shorts ネタ出しキット」に配信 ＋ 採用待ちJSONを保存
         ↓
-人間（10〜30分・週2〜3回でも可）
-  キットからネタを採用 → node src/video-semi-auto.js --ideas で確認・動画化
+人間（採用ネタを選ぶ）
+  node src/shorts-production-kit.js --idea <ID>
+    → output/shorts/production/<ID>/ に kit.md（手順+画像プロンプト+
+      チェックリスト）と narration.txt（読み上げ用台本）を生成
+        ↓
+人間（制作・30〜60分）
+  1. kit.md の画像プロンプトを Grok に貼って9:16画像を生成
+  2. 各画像を Grok の動画化機能でアニメーション化（motion 指示を利用）
+  3. narration.txt を Grok Companion に読ませて音声化
+  4. CapCut で画像動画+ナレーション+BGM+字幕を編集（チェックリスト参照）
         ↓
   YouTube Studio で予約投稿（概要欄に link_key のアフィリエイトリンク+#PR）
 ```
