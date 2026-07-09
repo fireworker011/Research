@@ -135,6 +135,11 @@ function accountAgeDays(created, date) {
   return Math.floor((new Date(`${date}T00:00:00+09:00`) - new Date(`${created}T00:00:00+09:00`)) / 86400000);
 }
 
+/** 日付 → 通算日数（テンプレ選択を日付から決定論的に行うため） */
+function epochDay(date) {
+  return Math.floor(new Date(`${date}T00:00:00+09:00`).getTime() / 86400000);
+}
+
 /**
  * アカウント×日付×時刻でスケジュール CSV を組み立てる
  * - ランプアップ: 開設1週目は1本/日（19時）、2週目は2本/日（7時・19時）、以降フル
@@ -146,7 +151,6 @@ function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } 
   const rows = [
     ['date', 'time', 'account', 'platform', 'genre', 'content', 'emoji', 'engagement_prediction', 'cta_type', 'link_key'].join(',')
   ];
-  const cursor = {};
   const times = SCHEDULE_TIMES.slice(0, POSTS_PER_DAY);
 
   for (let day = 0; day < CAMPAIGN_DAYS; day++) {
@@ -170,10 +174,13 @@ function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } 
         }
         if (templates.length === 0) continue;
 
-        const cursorKey = `${genre}_${inAwareness ? 'value' : 'all'}`;
-        cursor[cursorKey] = (cursor[cursorKey] || 0) % templates.length;
-        const t = templates[cursor[cursorKey]];
-        cursor[cursorKey]++;
+        // テンプレは「日付」から決定論的に選ぶ。
+        // 以前は生成ごとに0リセットされるカーソル方式で、スケジュールを毎日
+        // 再生成する運用に変えた際に毎日が「初日」となり、全アカウントが
+        // 毎日同じテンプレを投稿する事故が起きた（2026-07-07〜09）。
+        // 日付基準なら何度再生成しても同じ日には同じ選択になり、日ごとに進む。
+        const idx = (epochDay(date) * slotTimes.length + slot) % templates.length;
+        const t = templates[idx];
 
         rows.push(
           [
