@@ -23,6 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { checkContent } = require('./compliance');
 const {
   OUTPUT_DIR,
@@ -75,6 +76,10 @@ async function publishToThreads(userId, accessToken, text) {
 
 function rowKey(row) {
   return `${row.date}_${row.time}_${row.account}`;
+}
+
+function contentHash(text) {
+  return crypto.createHash('sha1').update(String(text || '')).digest('hex').slice(0, 16);
 }
 
 /** 投稿本文を組み立てる。リンク必須なのに未設定なら null（=スキップ） */
@@ -206,6 +211,25 @@ async function main() {
       continue;
     }
 
+    // 重複ガード: 同一アカウントが直近7日以内に投稿した内容は投稿しない。
+    // スケジュール生成側に不具合があっても、同じ投稿が世に出るのをここで止める
+    // （2026-07-07〜09 に同一投稿が3日連続した事故の再発防止）
+    const hash = contentHash(row.content);
+    const recentCutoff = todayJST(-7);
+    const recent = (state.recent = state.recent || {});
+    const accountRecent = (recent[row.account] = recent[row.account] || {});
+    for (const [h, d] of Object.entries(accountRecent)) {
+      if (d < recentCutoff) delete accountRecent[h];
+    }
+    if (accountRecent[hash]) {
+      console.log(`⏭  ${label}: 直近7日以内に同一内容を投稿済みのためスキップ`);
+      if (!isDryRun) {
+        state.posted[key] = { status: 'skipped_duplicate', at: new Date().toISOString() };
+      }
+      skipped++;
+      continue;
+    }
+
     const compliance = checkContent(text);
     if (!compliance.ok) {
       console.log(`🚫 ${label}: コンプライアンスブロック（${compliance.reasons.join(', ')}）`);
@@ -234,6 +258,7 @@ async function main() {
     try {
       const postId = await publishToThreads(account.userId, account.token, text);
       console.log(`✅ ${label}: 投稿成功 (${postId})`);
+      accountRecent[hash] = row.date;
       state.posted[key] = { status: 'success', post_id: postId, at: new Date().toISOString() };
       logPosting({ key, status: 'success', post_id: postId, genre: row.genre, account: row.account });
       postedToday[row.account] = (postedToday[row.account] || 0) + 1;
