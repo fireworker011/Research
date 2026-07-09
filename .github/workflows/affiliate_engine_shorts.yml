@@ -1,0 +1,73 @@
+name: Affiliate Engine Shorts ネタ出し（市場リサーチ→台本→Issue配信）
+
+on:
+  schedule:
+    # insight ワークフロー（20:37/23:07 UTC）と時間をずらした2ティック構成。
+    # GitHub の schedule は遅延・スキップがあるため、冪等ガードで
+    # 「その日すでに生成済みなら何もしない」ようにして二重実行を防ぐ
+    - cron: '52 20 * * *'
+    - cron: '22 23 * * *'
+  workflow_dispatch:
+    inputs:
+      select_genre:
+        description: '第三弾ジャンル選定リサーチを実行する（true で --select-genre モード）'
+        required: false
+        default: 'false'
+
+concurrency:
+  group: affiliate-shorts-ideas
+  cancel-in-progress: false
+
+jobs:
+  shorts-ideas:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/youtube-shorts-affiliate-auto-2vz9sp
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 実行済みチェック（冪等ガード）
+        id: guard
+        run: |
+          TODAY=$(TZ=Asia/Tokyo date +%F)
+          echo "today=${TODAY}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event.inputs.select_genre }}" = "true" ]; then
+            echo "done=false" >> "$GITHUB_OUTPUT"
+            echo "mode=select-genre" >> "$GITHUB_OUTPUT"
+          elif [ -f "affiliate-engine/output/shorts/ideas_${TODAY}.md" ]; then
+            echo "done=true" >> "$GITHUB_OUTPUT"
+            echo "本日分（${TODAY}）は生成済み。以降のステップをスキップします"
+          else
+            echo "done=false" >> "$GITHUB_OUTPUT"
+            echo "mode=ideas" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Shorts リサーチ&ネタ出し（Web検索付き）
+        if: steps.guard.outputs.done != 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd affiliate-engine
+          if [ "${{ steps.guard.outputs.mode }}" = "select-genre" ]; then
+            node src/shorts-research.js --select-genre
+          else
+            node src/shorts-research.js
+          fi
+
+      - name: 成果物をコミット
+        if: steps.guard.outputs.done != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add affiliate-engine/output/shorts affiliate-engine/data || true
+          git diff --staged --quiet || {
+            git commit -m "chore: Shorts デイリーネタ出し（市場リサーチ・台本生成）"
+            git pull --rebase origin claude/youtube-shorts-affiliate-auto-2vz9sp
+            git push origin claude/youtube-shorts-affiliate-auto-2vz9sp
+          }

@@ -1,0 +1,30 @@
+{
+  "_comment": "YouTube Shorts チャンネル設定。status: active=運用中（毎朝ネタ出し対象） / candidate=開設検討中（ネタ出しは行うがレポートに検討中と明示） / disabled=対象外。threads_genre は同ジャンルの Threads アカウント実測データ（top_posts.json）を参照するためのマッピング。ideas_per_channel は1チャンネルあたりの1日のネタ出し本数",
+  "ideas_per_channel": 5,
+  "channels": [
+    {
+      "key": "pet",
+      "genre": "ペット",
+      "threads_genre": "ペット",
+      "handle": "(記入)",
+      "status": "active",
+      "notes": "第1弾。癒し×お役立ちの雑学系"
+    },
+    {
+      "key": "konkatsu",
+      "genre": "婚活",
+      "threads_genre": "婚活",
+      "handle": "(記入)",
+      "status": "active",
+      "notes": "第2弾。あるある共感×アプリ/相談所の知識系"
+    },
+    {
+      "key": "money",
+      "genre": "節約・お金",
+      "threads_genre": "節約",
+      "handle": "(開設後に記入)",
+      "status": "candidate",
+      "notes": "第3弾候補。docs/youtube-shorts-strategy.md 参照。開設したら status を active に変更。別ジャンルにする場合は genre / threads_genre を書き換えて node src/shorts-research.js --select-genre で再選定"
+    }
+  ]
+}
