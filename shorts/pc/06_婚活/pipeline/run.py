@@ -48,11 +48,14 @@ def build(script_path: Path, do_upload: bool = False, upload_only: bool = False,
 
     if not upload_only:
         # ① シーン動画は Grokアプリで手動生成済みのものを読み込む(課金なし)
+        #    scene に "video" があればそのファイルを使う(同じクリップの使い回し可
+        #    → 6本の素材から12カットの高テンポ動画が作れる)
         print("── ① 手動生成済みシーン動画を確認 ──")
         scene_dir = IN / pid
         videos = []
-        for i in range(1, len(scenes) + 1):
-            p = scene_dir / f"scene_{i:02d}.mp4"
+        for i, sc in enumerate(scenes, 1):
+            name = sc.get("video", f"scene_{i:02d}.mp4")
+            p = scene_dir / name
             if not p.exists():
                 raise FileNotFoundError(
                     f"シーン動画が見つかりません: {p}\n"
@@ -66,10 +69,14 @@ def build(script_path: Path, do_upload: bool = False, upload_only: bool = False,
         print("── ② TTS 音声生成 ──")
         narrations = generate_scene_narrations(scenes, workdir / "audio")
 
-        # ③ FFmpeg 合成(無料)
+        # ③ FFmpeg 合成(無料) — テロップは既定でON(ミュート視聴対応)
         print("── ③ FFmpeg 合成 ──")
         bgm = BASE / "assets" / script.get("bgm", "")
-        assemble(videos, narrations, final, bgm if script.get("bgm") else None)
+        telops = None
+        if script.get("telop", True):
+            telops = [sc.get("telop_text", sc["narration"]) for sc in scenes]
+        assemble(videos, narrations, final, bgm if script.get("bgm") else None,
+                 telops=telops)
 
     # ④ YouTube 投稿
     if do_upload or upload_only:

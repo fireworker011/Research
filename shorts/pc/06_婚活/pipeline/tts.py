@@ -11,7 +11,7 @@ import asyncio
 from pathlib import Path
 
 VOICE = "ja-JP-NanamiNeural"
-RATE = "-12%"   # ゆっくりめ(告白トーン)
+RATE = "+4%"    # ややテンポよく(2026-07改修: ゆっくり読みが離脱要因だったため)
 PITCH = "-2Hz"  # 少し落ち着いたトーン
 
 
