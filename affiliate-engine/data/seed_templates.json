@@ -101,14 +101,6 @@
       "cta_type": "none"
     },
     {
-      "id": "konkatsu_012",
-      "genre": "婚活",
-      "content": "婚活で効いた小さいルールは「金曜夜にアプリを見ない」。疲れてる時に選ぶ相手は、だいたいうまくいかない。判断は元気な時にする。",
-      "emoji": "🌙",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
       "id": "konkatsu_013",
       "genre": "婚活",
       "content": "アプリを2年やって気づくのは、婚活で詰まるのは「出会いの数」より「その後の進め方」だということ。写真も文面も相手選びも、全部ひとりで判断してると消耗する。",
@@ -343,14 +335,6 @@
       "link_key": "副業_FX"
     },
     {
-      "id": "beauty_001",
-      "genre": "美容",
-      "content": "スキンケアで一番コスパがいいのは「落とすものの見直し」と言われる。高い美容液を足す前に、クレンジングを肌に合わせるほうが先。",
-      "emoji": "🧴",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
       "id": "beauty_003",
       "genre": "美容",
       "content": "新しいコスメは「1つずつ試す」。同時に2つ変えると、肌に合わなかった時にどちらが原因か分からなくなる。検証は1変数ずつ。",
@@ -448,14 +432,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "美容_オルビスユー"
-    },
-    {
-      "id": "bodymake_001",
-      "genre": "筋トレ",
-      "content": "体を変えるのは「ジムの90分」より「それ以外の23時間」。食事と睡眠が土台で、トレーニングはスイッチにすぎない。",
-      "emoji": "🔄",
-      "engagement_prediction": "high",
-      "cta_type": "none"
     },
     {
       "id": "bodymake_003",
@@ -1699,6 +1675,58 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "睡眠_マットレス"
+    },
+    {
+      "id": "konkatsu_20260710_01",
+      "genre": "婚活",
+      "content": "婚活で消耗しやすい人ほど「比較」に全力を使っている気がする。同時進行の人数が増えるほど、会話が品定めになって、目の前の相手そのものが見えにくくなる。\n同時進行、今何人までにしてますか？",
+      "emoji": "🔍",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260710_02",
+      "genre": "婚活",
+      "content": "自己紹介文は長さより「一言でどんな人か」が伝わるかどうか。プロフィールを全部読ませるより、最初の一文で人柄が想像できる方が、返信につながりやすいという声をよく聞く。\nあなたの「一言」、今どんな文にしてますか？",
+      "emoji": "✍️",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260710_03",
+      "genre": "婚活",
+      "content": "一人で全部の判断をする婚活は、想像以上に体力を使う。日程調整や相性の整理を第三者に任せられると、そのぶんのエネルギーを「会ってからの会話」に回せるようになる、という話も。\n気になる方はサポートの仕組みを覗いてみてください→{{AFFILIATE_LINK}} #PR",
+      "emoji": "🕊️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "婚活_相談所"
+    },
+    {
+      "id": "fukugyou_20260710_01",
+      "genre": "副業",
+      "content": "副業で最初につまずくのは「稼ぐ方法」より「続ける仕組み」だという意見をよく見かけます。\n・作業時間をあらかじめ固定する\n・完璧を目指さない\n・小さな成果でも記録しておく\nこのあたりを先に整えておくと挫折しにくくなるようです。\nあなたは副業を始めるとき、まず何から整えますか？",
+      "emoji": "📝💡",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "fukugyou_20260710_02",
+      "genre": "副業",
+      "content": "「本業終わりにスマホを開いたら、副業のやる気が一瞬で消えた」\nという声、意外とよく見かけます。\nやる気に頼る仕組みより、「疲れてる日でも5分だけできること」を先に決めておく方が続きやすい、という考え方もあるようです。\nみなさんは疲れてる日の副業、どうしていますか？",
+      "emoji": "😌📱",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "fukugyou_20260710_03",
+      "genre": "副業",
+      "content": "副業でよく聞かれるのが「何から始めればいいか分からない」という悩みです。\nスキルを売る、記事を書く、広告収益を得るなど選択肢は色々ありますが、まずは自分の得意なことを小さく試せる場所を知っておくと選びやすくなります。\n気になる方はチェックしてみてください。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🔍💼",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "副業_ココナラ"
     }
   ]
 }
