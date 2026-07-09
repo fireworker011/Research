@@ -27,6 +27,7 @@ const readline = require('readline');
 const { execFile } = require('child_process');
 const { promisify } = require('util');
 const { ROOT, OUTPUT_DIR, parseCSV, readJSON, todayJST } = require('./util');
+const { generateIdeaVideo } = require('./shorts-video');
 
 const execFileAsync = promisify(execFile);
 
@@ -155,15 +156,14 @@ async function main() {
       : `${post.date}_${post.time.replace(':', '-')}_${post.account}.mp4`;
     const videoPath = path.join(VIDEO_DIR, fileName);
 
-    // ネタ台本は長文になるため、動画にはタイトル+フックのみを載せる
-    // （本編の撮影・編集は人間。生成動画は仮素材・構成確認用）
-    const videoText = post.idea
-      ? `${post.idea.title}\n\n${post.idea.hook}`
-      : `${post.content}\n${post.emoji || ''}`;
-
     console.log('\n🎬 動画生成中...');
     try {
-      await generateVideo(videoText, videoPath, font);
+      if (post.idea) {
+        // ネタはフック→台本カード→CTA のテロップ型フル動画（shorts-video.js）
+        await generateIdeaVideo(post.idea, videoPath, font);
+      } else {
+        await generateVideo(`${post.content}\n${post.emoji || ''}`, videoPath, font);
+      }
       console.log(`  ✓ ${videoPath}`);
     } catch (err) {
       console.error(`  ❌ 生成失敗: ${err.message}`);
