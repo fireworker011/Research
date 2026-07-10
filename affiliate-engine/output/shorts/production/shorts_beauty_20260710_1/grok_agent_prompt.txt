@@ -1,0 +1,25 @@
+あなたに YouTube Shorts 用の素材生成を一括で依頼します。以下を順番にすべて実行してください。
+
+【全体の条件】
+- すべて縦 9:16（1080x1920 相当）で生成する
+- 全カットでスタイル・色調・世界観を統一する（同じ動画のカットとして違和感がないこと）
+- 文字入れはしない（テロップは後工程の CapCut で入れるため、画像・動画に文字を焼き込まない）
+- カットは全部で4枚。まず4枚の画像を生成し、次に各画像を指定のアニメーション指示で約5秒の動画クリップにする
+
+【カット1】
+画像: vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, steaming hot water pouring into a white washbasin in a dim bathroom at night, moody warm light
+動画化: 湯気がゆらめき、カメラがゆっくり寄る
+
+【カット2】
+画像: vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a single glass bottle of skin lotion with a cotton pad on a clean beige vanity table, minimalist night routine scene
+動画化: 化粧水のボトルに光が回り込むスローパン
+
+【カット3】
+画像: vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a smartphone glowing on a pillow in a dark cozy bedroom, blue light contrast with warm room
+動画化: スマホの光が明滅し、カメラがゆっくり引く
+
+【カット4】
+画像: vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a tidy skincare shelf with unlabeled white bottles and a small plant, fresh relaxed morning mood
+動画化: 朝の光が差し込むゆっくりしたチルト
+
+すべてのクリップを生成し終えたら、カット番号順に並べてダウンロードできる状態にしてください。

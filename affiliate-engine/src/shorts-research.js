@@ -104,8 +104,9 @@ function buildChannelPrompt(channel, ideasPerChannel, threadsSignal, recentTitle
     channel.status === 'candidate'
       ? '\n【注意】このチャンネルは開設検討中。ネタは「初投稿〜最初の2週間」を想定し、チャンネルの世界観が立ち上がる自己完結型を優先する。\n'
       : '';
+  const cautionNote = channel.caution ? `\n【このジャンル固有の法規制・表現ルール（最優先で遵守）】\n${channel.caution}\n` : '';
   return `YouTube Shorts で運用する「${channel.genre}」ジャンルのチャンネル向けに、市場リサーチと投稿ネタ出しを行ってください。
-${candidateNote}
+${candidateNote}${cautionNote}
 【同ジャンルの Threads 実測データ（補助シグナル）】
 ${JSON.stringify(threadsSignal || '（データなし）', null, 1)}
 

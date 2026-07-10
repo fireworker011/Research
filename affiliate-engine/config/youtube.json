@@ -28,16 +28,15 @@
       ]
     },
     {
-      "key": "money",
-      "genre": "節約・お金",
-      "threads_genre": "節約",
+      "key": "beauty",
+      "genre": "美容",
+      "threads_genre": "美容",
       "handle": "(開設後に記入)",
       "status": "candidate",
-      "notes": "第3弾候補。docs/youtube-shorts-strategy.md 参照。開設したら status を active に変更。別ジャンルにする場合は genre / threads_genre を書き換えて node src/shorts-research.js --select-genre で再選定",
+      "notes": "第3弾（ジャンル確定: 美容）。主力案件はオルビスユー ドット（links.json の 第三弾_主力案件、新規購入1800円）。ターゲットは30〜45歳女性、ズボラ×時短エイジングケアの雑学・習慣系。開設したら handle を記入し status を active に変更",
+      "caution": "薬機法: 化粧品の効能を断定しない。「シミが消える」「若返る」「肌質が変わる」はNG。「うるおい」「ハリ感のある印象」「年齢に応じたケア」「キメを整える」等の表現範囲内で書く。ビフォーアフターの効果保証もNG",
       "link_keys": [
-        "第三弾_主力案件",
-        "節約_格安SIM",
-        "節約_ふるさと納税"
+        "第三弾_主力案件"
       ]
     }
   ],

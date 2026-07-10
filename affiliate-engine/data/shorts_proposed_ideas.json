@@ -1,8 +1,81 @@
 {
-  "generated_at": "2026-07-09T14:40:00.000Z",
-  "date": "2026-07-09",
-  "note": "デモ用ネタ2本（機能検証で作成）。次回 shorts-research.js の実行で上書きされる",
+  "generated_at": "2026-07-10T12:49:33.154Z",
+  "date": "2026-07-10",
+  "note": "デモ用ネタ（美容チャンネル確定時に作成）。次回 shorts-research.js の実行で上書きされる",
   "ideas": [
+    {
+      "id": "shorts_beauty_20260710_1",
+      "title": "30代の肌、夜やめた方がいい習慣3つ",
+      "hook": "その夜習慣、乾燥が進むかも",
+      "script": "30代になって肌の調子が変わったと感じたら、まず夜の習慣を見直してみてください。ひとつめ、熱いお湯での洗顔。必要なうるおいまで流れやすくなります。ふたつめ、化粧水だけで終わらせること。水分は蓋をしないと逃げていきます。みっつめ、寝る直前のスマホ。睡眠の質は肌のコンディションに直結します。全部やめるのは大変なので、まずは今夜ひとつだけ。ケアの見直しに使えるものは概要欄にまとめています。",
+      "image_prompts": [
+        {
+          "order": 1,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, steaming hot water pouring into a white washbasin in a dim bathroom at night, moody warm light",
+          "motion": "湯気がゆらめき、カメラがゆっくり寄る"
+        },
+        {
+          "order": 2,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a single glass bottle of skin lotion with a cotton pad on a clean beige vanity table, minimalist night routine scene",
+          "motion": "化粧水のボトルに光が回り込むスローパン"
+        },
+        {
+          "order": 3,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a smartphone glowing on a pillow in a dark cozy bedroom, blue light contrast with warm room",
+          "motion": "スマホの光が明滅し、カメラがゆっくり引く"
+        },
+        {
+          "order": 4,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a tidy skincare shelf with unlabeled white bottles and a small plant, fresh relaxed morning mood",
+          "motion": "朝の光が差し込むゆっくりしたチルト"
+        }
+      ],
+      "hashtags": [
+        "#スキンケア",
+        "#エイジングケア",
+        "#夜のルーティン",
+        "#30代美容"
+      ],
+      "cta": "ケアの見直しに使えるものは概要欄にまとめています",
+      "link_key": "第三弾_主力案件",
+      "engagement_prediction": "high",
+      "channel": "beauty",
+      "genre": "美容"
+    },
+    {
+      "id": "shorts_beauty_20260710_2",
+      "title": "化粧水、手とコットンどっちが正解？",
+      "hook": "その塗り方、もったいないかも",
+      "script": "化粧水は手とコットン、どっちがいいか迷ったことありませんか。実はどちらにも良さがあります。手のひらは温度でなじみやすく、量の調整がしやすい。コットンはムラなく均一に広げやすい。でも一番大事なのは、どちらを選ぶかより、こすらないことです。肌は摩擦が苦手です。手のひらで包むように、やさしくなじませてみてください。今日から変えられる小さな習慣です。",
+      "image_prompts": [
+        {
+          "order": 1,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, two hands cupped together holding clear lotion water, droplets catching light, beige background",
+          "motion": "手のひらの水面が揺れるクローズアップ"
+        },
+        {
+          "order": 2,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, a white cotton pad soaked with lotion on a marble tray next to a glass bottle",
+          "motion": "コットンに液が染みる様子にゆっくり寄る"
+        },
+        {
+          "order": 3,
+          "prompt": "vertical 9:16, soft beige and warm white palette, minimal Japanese aesthetic, photorealistic, soft natural window light, no people faces, no text, gentle hands pressing palms softly against cheeks, only lower half of a face visible, spa-like serenity",
+          "motion": "手のひらで包み込む動きをスローで"
+        }
+      ],
+      "hashtags": [
+        "#スキンケア",
+        "#化粧水",
+        "#美容の基本",
+        "#スキンケア初心者"
+      ],
+      "cta": "明日から使える美容の小ネタを毎日投稿しています",
+      "link_key": null,
+      "engagement_prediction": "medium",
+      "channel": "beauty",
+      "genre": "美容"
+    },
     {
       "id": "shorts_pet_20260709_1",
       "title": "犬が寝る前にくるくる回る本当の理由",
@@ -35,39 +108,6 @@
       "engagement_prediction": "high",
       "channel": "pet",
       "genre": "ペット"
-    },
-    {
-      "id": "shorts_money_20260709_1",
-      "title": "そのATM手数料、年間いくら払ってる？",
-      "hook": "月2回のATM利用で年間5000円超え",
-      "script": "コンビニATMの手数料、1回220円。たかが220円でも月2回なら年間5280円です。ネット銀行の無料回数を使えばこれがゼロになります。さらに格安SIMへの乗り換えと合わせて固定費を見直すと、年間数万円変わることもあります。放置している固定費、今日ひとつだけ見直してみませんか。",
-      "image_prompts": [
-        {
-          "order": 1,
-          "prompt": "vertical 9:16, minimalist flat illustration, a hand withdrawing cash from a convenience store ATM, warning red accent on a small fee tag, clean navy and white palette",
-          "motion": "手数料タグがズームインして強調される"
-        },
-        {
-          "order": 2,
-          "prompt": "vertical 9:16, flat illustration, a calculator screen showing a growing yearly total, coins stacking animation style, navy and gold palette",
-          "motion": "数字がカウントアップするようなアニメーション"
-        },
-        {
-          "order": 3,
-          "prompt": "vertical 9:16, flat illustration, a smartphone showing a mobile carrier comparison screen next to a piggy bank, clean minimal navy palette",
-          "motion": "画面を軽くスワイプするような動き"
-        }
-      ],
-      "hashtags": [
-        "#節約",
-        "#固定費見直し",
-        "#お金の勉強"
-      ],
-      "cta": "見直しに使ったサービスは概要欄に置いています",
-      "link_key": "第三弾_主力案件",
-      "engagement_prediction": "medium",
-      "channel": "money",
-      "genre": "節約・お金"
     }
   ]
 }
