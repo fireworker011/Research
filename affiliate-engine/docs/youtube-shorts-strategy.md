@@ -18,17 +18,35 @@
         ↓
 人間（採用ネタを選ぶ）
   node src/shorts-production-kit.js --idea <ID>
-    → output/shorts/production/<ID>/ に kit.md（手順+画像プロンプト+
-      チェックリスト）と narration.txt（読み上げ用台本）を生成
+    → output/shorts/production/<ID>/ に以下を生成
+      kit.md                手順+CapCutチェックリスト+概要欄メタ（リンクURL入り）
+      grok_agent_prompt.txt Grok Agent Mode 用の一括生成プロンプト
+      narration.txt         Grok Companion 読み上げ用の台本
         ↓
 人間（制作・30〜60分）
-  1. kit.md の画像プロンプトを Grok に貼って9:16画像を生成
-  2. 各画像を Grok の動画化機能でアニメーション化（motion 指示を利用）
-  3. narration.txt を Grok Companion に読ませて音声化
-  4. CapCut で画像動画+ナレーション+BGM+字幕を編集（チェックリスト参照）
+  1. grok_agent_prompt.txt を Grok Agent Mode に貼る → 画像生成〜動画化まで一括実行
+  2. narration.txt を Grok Companion に読ませて音声を抽出
+  3. CapCut でクリップ+ナレーション+BGM+字幕を編集（チェックリスト参照）
         ↓
   YouTube Studio で予約投稿（概要欄に link_key のアフィリエイトリンク+#PR）
 ```
+
+## 案件差し替え運用（商品非依存の原則）
+
+「良い案件が見つかったら差し替える」を前提に、**商品とコンテンツを分離**してある。
+商品特化の紹介動画は案件終了と同時に資産価値を失うが、悩み解決型のジャンル動画は
+リンクを貼り替えるだけで生き続ける（YouTube 攻略の定石としても、単なる商品紹介より
+How To・比較などの悩み解決型が推奨されている）。
+
+- **仕組み**: `config/links.json` の各キーは「案件スロット」。ネタ・台本・CTA は
+  商品名/ブランド名/価格を含まない設計（shorts-research.js のプロンプトで強制）で、
+  CTA は「概要欄にまとめてあります」型の汎用誘導のみ
+- **第三弾の主力案件**: `第三弾_主力案件` キーに現在の A8 案件 URL を登録済み。
+  差し替え時はこの URL を書き換えるだけ。動画・台本・スケジュールは触らない
+- **過去動画**: 案件差し替え後、概要欄のリンクを新 URL に貼り替える（YouTube は
+  投稿後も概要欄を編集できるため、過去動画も新案件の導線として再稼働する）
+- **投稿前チェック**: kit.md に「リンクが生きているか投稿前に開いて確認」を組み込み済み
+  （案件終了・在庫切れは収益ゼロに直結する定番事故）
 
 ## 第三弾ジャンルの推薦: 節約・お金
 

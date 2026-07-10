@@ -8,7 +8,12 @@
       "threads_genre": "ペット",
       "handle": "(記入)",
       "status": "active",
-      "notes": "第1弾。癒し×お役立ちの雑学系"
+      "notes": "第1弾。癒し×お役立ちの雑学系",
+      "link_keys": [
+        "ペット_Furbo",
+        "ペット_保険",
+        "ペット_フード"
+      ]
     },
     {
       "key": "konkatsu",
@@ -16,7 +21,11 @@
       "threads_genre": "婚活",
       "handle": "(記入)",
       "status": "active",
-      "notes": "第2弾。あるある共感×アプリ/相談所の知識系"
+      "notes": "第2弾。あるある共感×アプリ/相談所の知識系",
+      "link_keys": [
+        "婚活_相談所",
+        "婚活"
+      ]
     },
     {
       "key": "money",
@@ -24,7 +33,13 @@
       "threads_genre": "節約",
       "handle": "(開設後に記入)",
       "status": "candidate",
-      "notes": "第3弾候補。docs/youtube-shorts-strategy.md 参照。開設したら status を active に変更。別ジャンルにする場合は genre / threads_genre を書き換えて node src/shorts-research.js --select-genre で再選定"
+      "notes": "第3弾候補。docs/youtube-shorts-strategy.md 参照。開設したら status を active に変更。別ジャンルにする場合は genre / threads_genre を書き換えて node src/shorts-research.js --select-genre で再選定",
+      "link_keys": [
+        "第三弾_主力案件",
+        "節約_格安SIM",
+        "節約_ふるさと納税"
+      ]
     }
-  ]
+  ],
+  "_comment_link_keys": "link_keys はそのチャンネルのネタ出しで CTA 誘導に使ってよいリンクスロット（config/links.json のキー）。案件を差し替えるときは links.json の URL を変えるだけで、キー名とコンテンツはそのまま使い回す"
 }

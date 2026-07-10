@@ -1,0 +1,21 @@
+あなたに YouTube Shorts 用の素材生成を一括で依頼します。以下を順番にすべて実行してください。
+
+【全体の条件】
+- すべて縦 9:16（1080x1920 相当）で生成する
+- 全カットでスタイル・色調・世界観を統一する（同じ動画のカットとして違和感がないこと）
+- 文字入れはしない（テロップは後工程の CapCut で入れるため、画像・動画に文字を焼き込まない）
+- カットは全部で3枚。まず3枚の画像を生成し、次に各画像を指定のアニメーション指示で約5秒の動画クリップにする
+
+【カット1】
+画像: vertical 9:16, warm golden-hour lighting, a fluffy shiba inu circling on a soft blanket in a cozy living room, photorealistic, shallow depth of field
+動画化: 犬がゆっくり回転する動きをループさせる
+
+【カット2】
+画像: vertical 9:16, illustrated flat style, wild ancestor wolf pressing down tall grass to make a den, dusk forest background, warm color palette
+動画化: 草がなびくカメラゆっくりパン
+
+【カット3】
+画像: vertical 9:16, cute dog curled up sleeping peacefully on cushion, soft bokeh lights, cozy home atmosphere
+動画化: ゆっくり息をする程度の微細な動き、静かなズームイン
+
+すべてのクリップを生成し終えたら、カット番号順に並べてダウンロードできる状態にしてください。
