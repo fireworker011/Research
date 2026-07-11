@@ -120,10 +120,84 @@ def make_prompts(script_path: Path) -> tuple[Path, Path]:
     agent_path = out_dir / f"{pid}_agent_prompt.md"
     agent_path.write_text("\n".join(agent_lines), encoding="utf-8")
 
+    # ── ③ フルAgent Mode 完結版(Grok側で完成動画まで作る・最推奨) ──
+    full_path = out_dir / f"{pid}_full_agent_prompt.md"
+    full_path.write_text(_build_full_agent(script, sources), encoding="utf-8")
+
     print(f"✅ 作成しました: {step_path.name}(ステップ実行版)")
-    print(f"✅ 作成しました: {agent_path.name}(Agent Mode 一括版・推奨)")
-    print("   Agent Mode版をGrok Imagineに貼ると画像→動画を自動連続生成できます。")
+    print(f"✅ 作成しました: {agent_path.name}(素材のみAgent版)")
+    print(f"✅ 作成しました: {full_path.name}(フル完結版・最推奨)")
+    print("   フル完結版をGrokのフルAgent Modeに貼ると完成動画1本まで自動生成されます。")
     return step_path, agent_path
+
+
+def _build_full_agent(script: dict, sources: list[dict]) -> str:
+    """Grok フルAgent Mode用: 画像→動画→音声→同期編集→キャプションまで
+    一括で完成動画を作らせるプロンプトを台本JSONから組み立てる"""
+    pid = script["project_id"]
+    char = script.get("character", "")
+    scenes = script["scenes"]
+    final_name = script.get("final_filename", f"{pid}_完成ショート.mp4")
+
+    # ナレーション: 同じ素材(video)を使うシーンを1段落にまとめ、段落間に（間）
+    paragraphs: list[str] = []
+    cur_video, cur_texts = None, []
+    for sc in scenes:
+        v = sc.get("video")
+        if v != cur_video and cur_texts:
+            paragraphs.append("".join(cur_texts))
+            cur_texts = []
+        cur_video = v
+        cur_texts.append(sc["narration"])
+    if cur_texts:
+        paragraphs.append("".join(cur_texts))
+    narration = "\n\n（間）\n\n".join(paragraphs)
+
+    scene_lines = []
+    for i, sc in enumerate(sources, 1):
+        name = sc.get("video", f"scene_{i:02d}.mp4")
+        stem = name.rsplit(".", 1)[0]
+        scene_lines.append(
+            f"シーン{i}（{stem}）：{sc['image_prompt']}"
+            f"動画化：{sc['motion_prompt']}"
+        )
+
+    return f"""あなたはGrokのフルAgent Modeで、婚活ジャンルのYouTube Shortsをプロクオリティで1本完結まで自動生成する専門クリエイターです。
+以下の全指示を厳密に守り、**画像生成 → 動画生成 → ナレーション音声作成 → 音声長に完全同期した動画編集（ミュート＋長さ調整） → スマホ最適自然キャプション焼き込み**まで、**一切ユーザーの追加指示なしで最後まで実行**してください。
+
+【必須仕様】
+・縦型9:16（スマホ画面想定）
+・YouTube Shorts最適化：上部10%（通知バー）と下部15%（再生バー・タイトルエリア）を完全に避けた安全ゾーンにキャプション配置
+・キャプションは文の途中で不自然に改行せず、自然な文単位でタイミングよく表示（途切れ感ゼロ、読みやすく）
+・最終出力は**1本の完成動画ファイル**（またはダウンロード可能な形式）として提供。ファイル名は「{final_name}」
+
+【キャラクター統一ルール（全シーン厳守）】
+{char}
+自然なメイク。リアル写真風・高詳細・自然な肌質。全シーンで同一人物として完全に一致させる。
+
+【重要ルール】
+・全シーンで**口は一切動かさない**（リップシンク禁止）。表情変化・まばたき・うなずき・視線移動のみで演技。
+・音声・BGM・テロップは動画生成時には一切入れない（最終合成で追加）。
+
+【{len(sources)}シーン生成（各約10秒）】
+{chr(10).join(scene_lines)}
+
+【ナレーション音声】
+以下の全文を「落ち着いた、少し感情がこもった告白するようなトーン」で、テンポよく自然な女性声（コンパニオン風）で読み上げてください。（間）では短く一呼吸置く。
+
+「{narration}」
+
+【最終合成】
+・各シーンの無音動画をナレーション音声の対応部分の長さに完全に同期（必要に応じて速度微調整・トリム）。
+・動画はミュート状態で音声を重ねる。
+・自然キャプションを焼き込み（文単位で自然に区切り、スマホUI被りゼロ、読みやすいフォント・位置、白字+黒縁）。
+・全体を高テンポで魅力的な婚活ショート動画に仕上げる。
+
+完成したら、**「完成動画はこちらです！」**と明記してダウンロード可能な形式で提示してください。
+途中経過（各シーン画像・動画・音声単体）も必要に応じて提供可。
+
+今すぐ全パイプラインを自動実行して、最高品質の完成動画を1本作ってください！
+"""
 
 
 if __name__ == "__main__":
