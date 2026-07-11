@@ -32,6 +32,7 @@ def make_prompts(script_path: Path) -> tuple[Path, Path]:
     script = json.loads(script_path.read_text(encoding="utf-8"))
     pid = script["project_id"]
     char = script.get("character", "")
+    genre = script.get("genre", "婚活")  # 台本JSONのgenreフィールドで他ジャンルにも流用可
     sources = _get_source_scenes(script)
     n = len(sources)
 
@@ -87,7 +88,7 @@ def make_prompts(script_path: Path) -> tuple[Path, Path]:
         "",
         "---",
         "",
-        "あなたは婚活ジャンルのショート動画クリエイターです。",
+        f"あなたは{genre}ジャンルのショート動画クリエイターです。",
         f"以下の{n}シーンについて、①画像生成 → ②その画像を動画化、を順番に自動で行ってください。",
         "音声・BGM・テキスト(テロップ)は一切不要です。各シーンの動画だけ作ってください。",
         "",
@@ -136,6 +137,7 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
     一括で完成動画を作らせるプロンプトを台本JSONから組み立てる"""
     pid = script["project_id"]
     char = script.get("character", "")
+    genre = script.get("genre", "婚活")
     scenes = script["scenes"]
     final_name = script.get("final_filename", f"{pid}_完成ショート.mp4")
 
@@ -162,7 +164,7 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
             f"動画化：{sc['motion_prompt']}"
         )
 
-    return f"""あなたはGrokのフルAgent Modeで、婚活ジャンルのYouTube Shortsをプロクオリティで1本完結まで自動生成する専門クリエイターです。
+    return f"""あなたはGrokのフルAgent Modeで、{genre}ジャンルのYouTube Shortsをプロクオリティで1本完結まで自動生成する専門クリエイターです。
 以下の全指示を厳密に守り、**画像生成 → 動画生成 → ナレーション音声作成 → 音声長に完全同期した動画編集（ミュート＋長さ調整） → スマホ最適自然キャプション焼き込み**まで、**一切ユーザーの追加指示なしで最後まで実行**してください。
 
 【必須仕様】
@@ -191,7 +193,7 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
 ・各シーンの無音動画をナレーション音声の対応部分の長さに完全に同期（必要に応じて速度微調整・トリム）。
 ・動画はミュート状態で音声を重ねる。
 ・自然キャプションを焼き込み（文単位で自然に区切り、スマホUI被りゼロ、読みやすいフォント・位置、白字+黒縁）。
-・全体を高テンポで魅力的な婚活ショート動画に仕上げる。
+・全体を高テンポで魅力的な{genre}ショート動画に仕上げる。
 
 完成したら、**「完成動画はこちらです！」**と明記してダウンロード可能な形式で提示してください。
 途中経過（各シーン画像・動画・音声単体）も必要に応じて提供可。
