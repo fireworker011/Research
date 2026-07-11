@@ -1,0 +1,64 @@
+{
+  "_comment": "これはテンプレート。[ ]の項目をジャンルに合わせて埋めてから使う。genre/character/telop_text/narrationは口パク禁止・15字以内テロップ・冒頭数字フックなどのAGENT_TEMPLATE.md鉄則に従うこと。",
+  "project_id": "[genre]_001_[テーマ名]",
+  "genre": "[ジャンル名(例: 転職・美容・資産形成)]",
+  "title": "[数字フック付きタイトル] #Shorts",
+  "description": "[本文の要約1〜2文]\n\n[行動喚起の一文]👇\n[アフィリエイトリンク]\n#PR\n\n#[メインタグ] #[属性タグ] #[切り口タグ] #Shorts",
+  "tags": ["[メインタグ]", "[属性タグ]", "[切り口タグ1]", "[切り口タグ2]"],
+  "bgm": "",
+  "telop": true,
+  "final_filename": "[genre]_完成ショート.mp4",
+  "character": "[外見の固定描写。年齢・髪型・体型・服装・画風など。全シーンで統一]",
+  "source_scenes": [
+    {
+      "video": "scene_01.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン1の静止画描写。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    },
+    {
+      "video": "scene_02.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン2の静止画描写。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    },
+    {
+      "video": "scene_03.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン3の静止画描写。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    },
+    {
+      "video": "scene_04.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン4の静止画描写。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    },
+    {
+      "video": "scene_05.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン5の静止画描写。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    },
+    {
+      "video": "scene_06.mp4",
+      "duration": 10,
+      "image_prompt": "[シーン6の静止画描写(CTA/微笑み等)。口は閉じたまま、話していない、を必ず含める]",
+      "motion_prompt": "口を閉じたまま、話さない。[カメラワーク・表情変化の指示]"
+    }
+  ],
+  "scenes": [
+    {"video": "scene_01.mp4", "narration": "[冒頭数字フック文1]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_01.mp4", "narration": "[冒頭数字フック文2]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_02.mp4", "narration": "[本編文1]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_02.mp4", "narration": "[本編文2]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_03.mp4", "narration": "[本編文3]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_03.mp4", "narration": "[本編文4]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_04.mp4", "narration": "[本編文5]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_04.mp4", "narration": "[本編文6]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_05.mp4", "narration": "[転機の文1]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_05.mp4", "narration": "[転機の文2]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_06.mp4", "narration": "[CTA文1]", "telop_text": "[15字以内の要約]"},
+    {"video": "scene_06.mp4", "narration": "[CTA文2(保存を促す一言を含める)]", "telop_text": "[15字以内の要約]"}
+  ]
+}
