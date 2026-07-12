@@ -28,22 +28,22 @@ WOMAN = (
 )
 
 PROMPTS = [
-    # scene1: フック（会議中、スマホが机の上で震える）
-    f"{WOMAN}, sitting at a conference table during a meeting, smartphone "
-    "vibrating on the table beside her notebook, subtle awareness in her "
-    "expression, office meeting room lighting. Full upper body in frame. "
+    # scene1: フック（会議室、テーブルの上でスマホが震える。人物は背景でぼかす）
+    "Close-up shot of a smartphone vibrating on a conference table, "
+    "screen lighting up with a notification, blurred silhouettes of "
+    "meeting attendees in the background, office meeting room lighting. "
     "Vertical 9:16 portrait.",
 
-    # scene2: 横目でスマホをちらっと見る、平静を装う
-    f"{WOMAN}, sitting at a conference table, glancing sideways at her "
-    "smartphone while trying to maintain a composed expression, subtle "
-    "tension, office meeting room lighting. Full upper body in frame. "
-    "Vertical 9:16 portrait.",
+    # scene2: 女性が横目でスマホをちらっと見る、平静を装う（顔中心のミディアムショット）
+    f"{WOMAN}, medium close-up shot focused on her face, glancing "
+    "sideways toward her smartphone on the table, trying to maintain "
+    "a composed expression, subtle tension, office meeting room "
+    "lighting. Vertical 9:16 portrait.",
 
-    # scene3: 表情が徐々に不安げに変わる
-    f"{WOMAN}, sitting at a conference table, expression shifting to "
-    "quiet worry, eyes flicking toward her phone, office meeting room "
-    "lighting. Full upper body in frame. Vertical 9:16 portrait.",
+    # scene3: 表情が徐々に不安げに変わる（バストアップ、正面から）
+    f"{WOMAN}, front-facing bust shot, expression shifting to quiet "
+    "worry, brows slightly furrowed, sitting upright at a conference "
+    "table, office meeting room lighting. Vertical 9:16 portrait.",
 
     # scene4: 会議室を出てすぐスマホを開く緊張の表情
     f"{WOMAN}, walking out of a meeting room hallway, quickly opening "
