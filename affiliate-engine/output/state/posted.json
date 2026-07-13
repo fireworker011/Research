@@ -308,6 +308,10 @@
       "status": "success",
       "post_id": "18082224488226197",
       "at": "2026-07-12T22:20:11.874Z"
+    },
+    "2026-07-13_12:00_konkatsu": {
+      "status": "skipped_duplicate",
+      "at": "2026-07-13T04:06:18.393Z"
     }
   },
   "recent": {
