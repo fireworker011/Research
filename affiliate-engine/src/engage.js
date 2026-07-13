@@ -341,9 +341,15 @@ async function main() {
     const personas = Object.fromEntries(
       withCreds.map((a) => [a.key, `${a.genre} / ${PERSONAS[a.key] || '自然で丁寧'}`])
     );
+    // 返信・コメントの下書きは軽量モデルで十分（コスト: config/budget.json で変更可）
+    const budget = loadConfig('budget', {});
     const response = await askClaude(
       buildPrompt({ personas, replies: allReplies, market: marketFlat }),
-      { system: SYSTEM_PROMPT, maxTokens: 8192 }
+      {
+        system: SYSTEM_PROMPT,
+        maxTokens: 8192,
+        model: budget.engage_model || 'claude-haiku-4-5-20251001'
+      }
     );
     drafts = extractJSON(response);
   } else if (withCreds.length > 0) {
