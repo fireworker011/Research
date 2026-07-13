@@ -153,6 +153,23 @@ async function main() {
   }
   console.log(`  対象ジャンル: ${activeGenres.join(', ')}`);
 
+  // コスト管理: config/budget.json に基づき、1日あたりのリサーチ対象ジャンルを
+  // 日替わりローテーションに制限する（全ジャンルを数日おきに巡回。
+  // 毎日全ジャンルをWeb検索付きでリサーチすると月$30規模になるため）
+  const budget = loadConfig('budget', {});
+  const perDay = Math.max(1, budget.insight_genres_per_day ?? 3);
+  const webSearches = Math.max(1, budget.web_search_per_genre ?? 2);
+  const maxTokens = budget.insight_max_tokens ?? 5000;
+  const model = budget.insight_model || undefined;
+
+  const epochDayNow = Math.floor((Date.now() + 9 * 3600 * 1000) / 86400000);
+  const start = (epochDayNow * perDay) % activeGenres.length;
+  const todaysGenres = Array.from(
+    { length: Math.min(perDay, activeGenres.length) },
+    (_, i) => activeGenres[(start + i) % activeGenres.length]
+  );
+  console.log(`  本日のリサーチ対象（予算設定 ${perDay}ジャンル/日）: ${todaysGenres.join(', ')}`);
+
   const ownAnalytics = buildOwnAnalytics(activeGenres);
   console.log('  実測データ読み込み完了。Claude（Web検索付き）でジャンル別に市場リサーチ中...\n');
 
@@ -160,15 +177,16 @@ async function main() {
   const genreInsights = [];
   const sources = [];
   const failedGenres = [];
-  for (const genre of activeGenres) {
+  for (const genre of todaysGenres) {
     process.stdout.write(`  ${genre} ... `);
     try {
       const response = await askClaude(
         buildGenrePrompt(genre, ownAnalytics.byGenre[genre], accountsConfig.awareness_until),
         {
           system: SYSTEM_PROMPT,
-          maxTokens: 8000,
-          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }]
+          maxTokens,
+          model,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: webSearches }]
         }
       );
       const gi = extractJSON(response);

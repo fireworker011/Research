@@ -1,0 +1,8 @@
+{
+  "_comment": "APIコスト管理（スマホのGitHubから直接編集可: このファイルを開く→鉛筆アイコン→編集→Commit changes）。目安: insight_genres_per_day=3, web_search_per_genre=2 で月$8前後。ジャンルは日替わりローテーションで全ジャンルを genres_per_day 日おきに巡回する。増やすほどリサーチ頻度と請求が上がる",
+  "insight_genres_per_day": 3,
+  "web_search_per_genre": 2,
+  "insight_max_tokens": 5000,
+  "insight_model": "claude-sonnet-5",
+  "engage_model": "claude-haiku-4-5-20251001"
+}
