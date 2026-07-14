@@ -85,30 +85,6 @@
   ],
   "posting_templates": [
     {
-      "id": "konkatsu_004",
-      "genre": "婚活",
-      "content": "メッセージが続かない相手を追わない。3往復して質問が返ってこないなら、縁がなかっただけ。婚活は選ばれる場じゃなくて、選び合う場。",
-      "emoji": "🌱",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_011",
-      "genre": "婚活",
-      "content": "マッチングして3日以内に会話が始まらないと、その後つながる確率はかなり下がる。挨拶＋プロフィールの一点への質問、これだけでいい。",
-      "emoji": "⏳",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_013",
-      "genre": "婚活",
-      "content": "アプリを2年やって気づくのは、婚活で詰まるのは「出会いの数」より「その後の進め方」だということ。写真も文面も相手選びも、全部ひとりで判断してると消耗する。",
-      "emoji": "🧭",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
       "id": "konkatsu_014",
       "genre": "婚活",
       "content": "結婚相談所=最終手段、というイメージは古くなってきた。今はオンライン完結で月1万円台の相談所もあって、アプリと併用する人も増えている印象。選択肢として知っておくだけでも違う。",
@@ -193,22 +169,6 @@
       "engagement_prediction": "medium",
       "cta_type": "implicit",
       "link_key": "婚活_相談所"
-    },
-    {
-      "id": "sidejob_001",
-      "genre": "副業",
-      "content": "副業の最初の壁は「稼げない」じゃなくて「始めない」。完璧な準備を待つ人より、下手でも始めた人が先に月1万円に着く。",
-      "emoji": "🚀",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "sidejob_002",
-      "genre": "副業",
-      "content": "副業選びの基準は「スキルが残るか」。ポイ活は残らない、ライティングやデザインは残る。時給じゃなくて資産で考える。",
-      "emoji": "🧱",
-      "engagement_prediction": "high",
-      "cta_type": "none"
     },
     {
       "id": "sidejob_003",
@@ -371,14 +331,6 @@
       "genre": "美容",
       "content": "美容の優先順位、迷ったら「睡眠 > 紫外線対策 > 保湿 > その他」。上の3つが土台で、美容液は応用編。土台を飛ばして応用に課金しがち。",
       "emoji": "🏗️",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "beauty_011",
-      "genre": "美容",
-      "content": "夜のスキンケア、みんな何分かけてる？10分を超えた時期は続かなかったから、今は5分で終わる形に落ち着いた。現実的な所要時間が知りたい。",
-      "emoji": "💭",
       "engagement_prediction": "high",
       "cta_type": "none"
     },
@@ -1682,15 +1634,6 @@
       "link_key": "婚活_相談所"
     },
     {
-      "id": "sidejob_20260711_1",
-      "genre": "副業",
-      "content": "副業が続く人と続かない人を見ていると、稼ぐ額よりも先に『いつやるか』を決めているかどうかで差が出ている気がする。あなたは作業時間を固定するタイプ？それとも気分が乗ったときにやるタイプ？",
-      "emoji": "🤔💭",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
-    },
-    {
       "id": "sidejob_20260711_2",
       "genre": "副業",
       "content": "副業の案件を選ぶ前に確認しておきたいポイントを3つメモ。①作業時間の目安が明記されているか②報酬の発生条件が具体的か③途中でやめても違約金が発生しないか。保存しておくと案件選びのときに見返しやすいはず。他に確認しているポイントがあれば教えてください。",
@@ -1994,15 +1937,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "筋トレ_HMB"
-    },
-    {
-      "id": "education_20260712_02",
-      "genre": "教育",
-      "content": "宿題、「一緒にやる家庭」と「本人に任せる家庭」。\nどちらが自走力につながると感じますか？\n正解が決まっていないテーマだからこそ、家庭ごとの工夫が知りたい。",
-      "emoji": "✏️",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
     },
     {
       "id": "education_20260712_03",
@@ -2441,6 +2375,85 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "睡眠_マットレス"
+    },
+    {
+      "id": "konkatsu_20260715_01",
+      "genre": "婚活",
+      "content": "婚活してると初回デートなのに2時間ずっと敬語のまま、みたいな回が地味に多い気がする。緊張なのか、まだ距離を測ってる途中なのか。\nみんなは初対面の距離感、だいたい何回目くらいでちょっと崩れる派？",
+      "emoji": "👀",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "konkatsu_20260715_02",
+      "genre": "婚活",
+      "content": "婚活疲れを減らすために続けてる『小さいルール』を3つメモしておく。\n①既読後すぐ返さず30分だけ間を置く\n②初回の奢り/割り勘だけで相手を判断しない\n③会う前に『今日会う理由』を一言メモしておく\nどれも地味だけど、判断がぶれにくくなる気はしてる。",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "none",
+      "link_key": null
+    },
+    {
+      "id": "konkatsu_20260715_03",
+      "genre": "婚活",
+      "content": "婚活で一番消耗するのは相手選びより『マッチング作業そのもの』という声、意外とよく聞く。プロフィール選定や日程調整まで伴走してくれるサービスも増えてきてるみたいなので、自分に合う進め方を比較検討してみるのも一つの選択肢かも。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🕊",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "婚活_相談所"
+    },
+    {
+      "id": "fukugyou_20260715_01",
+      "genre": "副業",
+      "content": "副業の経費、見落とされがちなのが自宅作業分の家賃や通信費の按分。使った時間や面積の割合を月初にメモしておくだけで、確定申告のときに『なんとなく』ではなく数字で説明できるようになる。地味だけど後で一番効いてくる準備。",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "fukugyou_20260715_02",
+      "genre": "副業",
+      "content": "副業が続く人を見ていると、『稼ぐ目標』より先に『やめない理由』を先に決めている印象がある。生活費の足しにしたいのか、スキルを試したいのか、それとも単純に楽しいからか。あなたが副業を続けている理由、ひとことで言うと何ですか？リプで教えてください。",
+      "emoji": "🤔",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "fukugyou_20260715_03",
+      "genre": "副業",
+      "content": "手に職がなくても、得意なことを『相談形式』で提供している人が増えている。写真の撮り方、話し方の練習相手、家計簿の見直しなど、意外なジャンルにも需要があるらしい。自分の当たり前を必要としている人がいるか、一度覗いてみるのもアリかもしれない。\n{{AFFILIATE_LINK}} #PR",
+      "emoji": "💡",
+      "engagement_prediction": "low",
+      "cta_type": "direct",
+      "link_key": "副業_ココナラ"
+    },
+    {
+      "id": "beauty_20260715_01",
+      "genre": "美容",
+      "content": "肌診断って、実は自己申告と実際のタイプがズレてることが多いと言われている。\nチェックの目安（一般論）\n・洗顔後10分でつっぱる→乾燥寄り\n・昼過ぎにテカる→皮脂寄り\n・季節で毎回変わる→混合タイプ\n自分はどれに近い実感ですか？保存して後で見返す用にどうぞ。",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260715_02",
+      "genre": "美容",
+      "content": "洗顔、水派？ぬるま湯派？\n温度で肌の乾燥具合が変わると言われていて、意外とここで迷ってる人多い気がする。\n両方試した結果、季節で使い分けてるという声もちらほら。\nコメントで一言だけでも教えてください🙋",
+      "emoji": "🙋",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260715_03",
+      "genre": "美容",
+      "content": "季節の変わり目、いつものスキンケアが急に合わなくなる感覚ない？\n温度と湿度が変わると肌のバリア機能も揺らぐと言われていて、「変えてないのに調子が悪い」はこの時期あるある。\n見直すなら基礎の保湿ラインから、という考え方もあるみたい。気になる人はこちらもチェックしてみて👇\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍂",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "美容_オルビスユー"
     }
   ]
 }
