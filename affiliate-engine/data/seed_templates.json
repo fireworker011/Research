@@ -410,14 +410,6 @@
       "link_key": "美容_オルビスユー"
     },
     {
-      "id": "bodymake_003",
-      "genre": "筋トレ",
-      "content": "週2×30分でも、半年続けば体は応えてくれる。頻度を上げる計画より、やめない設計を先に作るのが30代の筋トレ。",
-      "emoji": "📆",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
       "id": "bodymake_004",
       "genre": "筋トレ",
       "content": "筋トレが続かない原因の筆頭は「メニューが多すぎる」。最初はスクワット・プッシュアップ・ローイングの3つで十分。増やすのは3ヶ月後。",
@@ -541,27 +533,11 @@
       "cta_type": "none"
     },
     {
-      "id": "education_008",
-      "genre": "教育",
-      "content": "体験教室で見るべきは、子どもの表情より「先生が子どもの質問にどう返すか」。教材はあとから変えられるけど、先生の姿勢は変わらない。",
-      "emoji": "👀",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
       "id": "education_010",
       "genre": "教育",
       "content": "ロボット教室とプログラミング教室は、似ているようで別物。手を動かすのが好きな子は前者、ゲームを作りたい子は後者が入り口として合いやすい。",
       "emoji": "🤖",
       "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "education_011",
-      "genre": "教育",
-      "content": "「うちの子は文系だから」でプログラミングを外すのは早い。必要なのは数学力より、順序立てて説明する力。読書好きの子が意外と伸びる分野。",
-      "emoji": "📚",
-      "engagement_prediction": "high",
       "cta_type": "none"
     },
     {
@@ -2382,6 +2358,86 @@
       "genre": "睡眠",
       "content": "暑い夜、エアコンつけるかどうかで毎回悩む。\nつけたら電気代が気になるし、消したら寝苦しさで途中で起きてしまう。\n最近は「寝具そのものの通気性」を見直したことで、この悩む回数自体が減ったという声も見かけるようになった。\n自分の寝具、最後に見直したのはいつだろう。\n{{AFFILIATE_LINK}}\n#PR",
       "emoji": "🌡️🛏️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "睡眠_マットレス"
+    },
+    {
+      "id": "job_change_20260714_01",
+      "genre": "転職",
+      "content": "面接で「弊社を選んだ理由は？」と聞かれて、本音を言えなかったことある人？\n\n建前と本音のギャップ、みんなどう埋めてる？\n\nコメントで教えてください🙏",
+      "emoji": "🙏",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "job_change_20260714_02",
+      "genre": "転職",
+      "content": "転職活動中に「あ、この会社ちゃんとしてるな」と感じた瞬間、地味に信頼度が上がる。\n\n・求人票と面接内容にズレがない\n・面接官が時間ぴったりに来る\n・残業や有給の質問に数字で答えてくれる\n\n逆に「ここは危ないかも」と感じたサインもあれば教えてください。",
+      "emoji": "📝",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "job_change_20260714_03",
+      "genre": "転職",
+      "content": "転職活動、一人でやってると「これで合ってるのかな」と不安になる瞬間、結構多くないですか？\n\n書類の添削や面接対策を客観的に見てもらえるだけで、気持ちが軽くなることもあります。\n\n気になる方はチェックしてみてください👇\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "👇",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_エージェント"
+    },
+    {
+      "id": "pet_20260714_01",
+      "content": "うちの子だけかと思ったら、猫を飼っている人あるあるらしい。\n\n・ドア閉めた瞬間ノックみたいに叩く\n・見てないと爆走するのに見てると急に真顔になる\n・ご飯の催促だけは絶対に無視できない声を出す\n\nこれ、あなたの子はどれが一番当てはまりますか？他にもあれば教えてください🐾",
+      "genre": "ペット",
+      "emoji": "🐾😼",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "pet_20260714_02",
+      "content": "夏場のペットの体調管理、意外と見落としがちなポイントをまとめました。\n\n・水を飲む量が急に減っていないか\n・散歩の時間を朝夕にずらせているか\n・留守中の室温、実際に測ったことがあるか\n・爪や肉球の乾燥、チェックしているか\n\n保険や見守りグッズで備えている方も増えているようです。気になる方はチェックしてみてください→ {{AFFILIATE_LINK}}\n\nみなさんは夏の対策、何か工夫していますか？\n#PR",
+      "emoji": "☀️🐶",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "ペット_保険"
+    },
+    {
+      "id": "pet_20260714_03",
+      "content": "留守番中のペット、実はカメラ越しに見ると『え、そんな顔するの？』ってなること多いらしい。\n\n寝てるだけだと思ってたら、玄関の方をずっと見てたり、飼い主の匂いがする服の上にだけ座ってたり。\n\n見てないところでの姿、気になったことありますか？もしエピソードあれば聞かせてください🐕",
+      "genre": "ペット",
+      "emoji": "🐕📷",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "sleep_20260714_01",
+      "genre": "睡眠",
+      "content": "布団に入ってから寝つくまでの時間、平均どのくらいですか？\n\n0〜5分／5〜15分／15〜30分／30分以上\n\n自分は最近、寝る前にスマホを見る時間を減らしただけで体感が変わった気がしています。\nコメントで教えてください🌙",
+      "emoji": "🌙",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "sleep_20260714_02",
+      "genre": "睡眠",
+      "content": "「疲れてるのに眠れない夜」って、なぜか一番孤独に感じませんか。\n\n頭は休みたいのに、思考だけがずっと動いてる感覚。\n同じような経験がある人、地味に多い気がしています。\n\nそんな夜、皆さんはどう乗り切っていますか？",
+      "emoji": "😴",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "sleep_20260714_03",
+      "genre": "睡眠",
+      "content": "寝室の環境を少し見直すだけで、寝つきの感覚が変わったという声をよく見かけます。\n\n・室温を下げる\n・寝具の硬さを見直す\n・寝る1時間前は照明を落とす\n\n特に「寝具が合っているか」は見落とされがちなポイントだと感じます。気になる人はこちらもチェックしてみてください。\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "🛏️",
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "睡眠_マットレス"
