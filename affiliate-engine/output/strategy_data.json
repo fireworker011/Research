@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T21:34:54.469Z",
+  "generated_at": "2026-07-15T21:34:17.270Z",
   "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
   "genres": [
     "婚活",
@@ -436,14 +436,6 @@
       "content": "「誰でも簡単に稼げる」と書いてある案件を全部避けるだけで、副業の失敗はほぼ回避できる。うまい話は向こうから歩いてこない。",
       "emoji": "🚧",
       "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "sidejob_006",
-      "genre": "副業",
-      "content": "副業の確定申告、所得20万円以下でも住民税の申告は別で必要。始める前にここだけ調べておくと、あとで慌てない。",
-      "emoji": "📋",
-      "engagement_prediction": "medium",
       "cta_type": "none"
     },
     {
@@ -1206,19 +1198,38 @@
       "link_key": "筋トレ_マッスルデリ"
     },
     {
+      "id": "kintore_20260716_01",
+      "genre": "筋トレ",
+      "content": "「筋トレは回数を増やすほど伸びる」と思われがちですが、続いている人ほど“逃げ道”を先に作っている、という観察があります。\n🗒️挫折しにくい人に共通しやすいこと\n・休む日を先に決めておく\n・「痛い日はゼロでもOK」というルールを持つ\n・記録するのは回数より“やった事実”\n完璧を目指さない設計のほうが、結果的に長く続く近道かもしれません。",
+      "emoji": "🗒️",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260716_02",
+      "genre": "筋トレ",
+      "content": "「今日やるつもりだったのに、気づいたら明日になっていた」——筋トレを続けている人なら、一度は経験がある感覚だと思います。\nサボった日があること自体は自然なことで、気になるのはむしろ「どうやってまた戻ってきたか」。\nあなたが“サボった翌日”にやっていること、よければ教えてください👇",
+      "emoji": "👇",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260716_03",
+      "genre": "筋トレ",
+      "content": "筋トレを続けていると、途中で「何を食べるか」で体の反応が変わってくる感覚が出てくる時期があります。\n特に忙しい日ほど食事の準備に時間が取れず、栄養が偏りがちという声もよく聞きます。\n続けやすくする工夫の一つとして、こうした選択肢を知っておくと気が楽になる人もいるかもしれません。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍱",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
       "id": "education_003",
       "genre": "教育",
       "content": "子どもの「飽きた」は才能がないサインじゃなくて、難易度が合っていないサインのことが多い。やめる前に、レベルを疑ってみる。",
       "emoji": "🧩",
       "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "education_004",
-      "genre": "教育",
-      "content": "習い事の効果は3ヶ月では見えない。判断するなら「楽しんで通っているか」を先に、「上達しているか」は半年後に見る。順番を逆にすると大体こじれる。",
-      "emoji": "🌱",
-      "engagement_prediction": "medium",
       "cta_type": "none"
     },
     {
@@ -1417,6 +1428,33 @@
       "id": "education_20260713_03",
       "genre": "教育",
       "content": "「今日は宿題どのくらい進んだ？」と毎日聞くのが地味に負担、という声をよく見かける。\n進捗を仕組みで見える化できると、親子の会話が「詰問」から「確認」に変わりやすい。\n家庭学習の伴走を仕組み化したい方はこちらもチェックしてみてください。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
+    },
+    {
+      "id": "education_20260716_01",
+      "genre": "教育",
+      "content": "「頑張れば伸びる」と思われがちだが、伸びている子ほど「休み方」が上手いことが多い。\n毎日フルパワーより、疲れた日に『今日はやらない』を選べる子の方が長続きする印象。\nみなさんのご家庭では、子どもの『疲れたサイン』をどう見分けていますか？",
+      "emoji": "🌙",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260716_02",
+      "genre": "教育",
+      "content": "テスト前に「範囲を全部やる子」と「苦手だけ絞る子」。\n点数が伸びやすいのは後者だと感じることが多いが、性格によって向き不向きがある気もする。\n全部やる派・絞る派、どちらのタイプのお子さんですか？",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260716_03",
+      "genre": "教育",
+      "content": "家庭学習が続かない原因は「やる気」より「仕組み」であることが多いと感じる。\n決まった時間・決まった場所・決まった量の3点が揃うと、声かけの負担がぐっと減る。\n仕組み化のヒントを探している方はこちらも参考になりました。\n{{AFFILIATE_LINK}}\n#PR",
       "emoji": "📚",
       "engagement_prediction": "medium",
       "cta_type": "direct",
@@ -1643,6 +1681,33 @@
       "emoji": "📱",
       "engagement_prediction": "medium",
       "cta_type": "implicit",
+      "link_key": "節約_格安SIM"
+    },
+    {
+      "id": "setsuyaku_20260716_01",
+      "genre": "節約",
+      "content": "毎月の固定費、正直いちばん見直しにくいのが「なんとなく続けてるサブスク」な気がする。\n\n・使ってないのに解約が面倒\n・元々セットで契約したもの\n・「いつか使うかも」で放置\n\nこの中に当てはまるものある人、地味に多いんじゃないかな。\n\n次の給料日、通知が来たやつだけでも一度見直してみるのはアリかも。",
+      "emoji": "💡📱",
+      "engagement_prediction": "high",
+      "cta_type": "none",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260716_02",
+      "genre": "節約",
+      "content": "節約って「我慢する系」と「仕組みを変える系」の2種類があると思ってて、個人的には後者のほうが続けやすい気がしてる。\n\n我慢系：外食を我慢する、欲しいものを我慢する\n仕組み系：固定費を下げる、自動で貯まる設定にする\n\nみんなはどっち派？続けやすかった方、コメントで教えてほしい。",
+      "emoji": "🤔💭",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260716_03",
+      "genre": "節約",
+      "content": "スマホ代、毎月なんとなく払ってるけど改めて明細見ると「これ何のオプションだっけ」ってなること、地味にある気がする。\n\n固定費は一度見直すだけで効果が長く続きやすいと言われるジャンルなので、比較だけでも覗いてみる価値はあるかもしれない。\n\n{{AFFILIATE_LINK}}\n\n実際に見直したことある人、変えて良かった点あれば教えてほしい。\n\n#PR",
+      "emoji": "📶💰",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
       "link_key": "節約_格安SIM"
     },
     {
