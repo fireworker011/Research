@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T21:38:24.343Z",
+  "generated_at": "2026-07-17T21:27:36.063Z",
   "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
   "genres": [
     "婚活",
@@ -96,30 +96,6 @@
     }
   ],
   "posting_templates": [
-    {
-      "id": "konkatsu_014",
-      "genre": "婚活",
-      "content": "結婚相談所=最終手段、というイメージは古くなってきた。今はオンライン完結で月1万円台の相談所もあって、アプリと併用する人も増えている印象。選択肢として知っておくだけでも違う。",
-      "emoji": "💡",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_015",
-      "genre": "婚活",
-      "content": "「いい人がいない」と「いい人を見極められていない」は別の問題。自分の選び方の癖を第三者に指摘してもらった人から決まっていく、というのが婚活の実感。",
-      "emoji": "🔍",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "konkatsu_016",
-      "genre": "婚活",
-      "content": "アプリ疲れの原因は「全部自分で判断していること」だと思う。正解がわからないまま試行錯誤するのは消耗する。婚活は、誰かに頼っていい部分がある活動。",
-      "emoji": "🫂",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
     {
       "id": "konkatsu_018",
       "genre": "婚活",
@@ -415,20 +391,31 @@
       "link_key": "婚活_相談所"
     },
     {
-      "id": "sidejob_003",
-      "genre": "副業",
-      "content": "会社員の副業、夜1時間より朝30分のほうが続くという声が多い。意志力が残っている時間に置くのがコツ。夜は消化試合にする。",
-      "emoji": "🌅",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
+      "id": "konkatsu_20260718_01",
+      "genre": "婚活",
+      "content": "婚活を始めた頃は「気が合うか」を見てたのに、慣れてくるといつの間にか「条件」ばかり数えるようになる。\n年収、職業、休日の合う合わない…気づいたらプロフィール診断みたいになってる。\nときめきより先に、電卓を弾いてない？\nあなたは今、どっちのモードで人を見てますか？",
+      "emoji": "🔍💭",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
     },
     {
-      "id": "sidejob_004",
-      "genre": "副業",
-      "content": "「何の副業がいいですか」への答えは、本業の延長が一番早い。経理なら記帳代行、営業なら資料作成。ゼロから学ぶのは遠回り。",
-      "emoji": "🎯",
-      "engagement_prediction": "high",
-      "cta_type": "none"
+      "id": "konkatsu_20260718_02",
+      "genre": "婚活",
+      "content": "婚活っぽいデートをしてる2人を見ていると、ある共通点に気づく。\n手元のスマホを見る回数が少ないペアほど、会話がよく弾んでいる。\n逆に、緊張してる時ほど無意識にスマホを触ってしまう気がする。\nあなたは初対面の時、緊張のサインってどこに出るタイプ？",
+      "emoji": "👀✨",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "konkatsu_20260718_03",
+      "genre": "婚活",
+      "content": "婚活で一番疲れるのは「選ばれなきゃ」と思う瞬間かもしれない。\n頑張って良く見せようとするほど、素の自分と会話がずれていく気がする。\n一人で振り返るより、第三者に客観的に見てもらうと力の抜きどころが分かることもある。\nプロの視点、頼ったことある？\n{{AFFILIATE_LINK}} #PR",
+      "emoji": "💍🕊",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "婚活_相談所"
     },
     {
       "id": "sidejob_005",
@@ -718,6 +705,33 @@
       "link_key": "副業_ココナラ"
     },
     {
+      "id": "sidejob_20260718_01",
+      "genre": "副業",
+      "content": "副業の経費、レシートを漠然と保管してるだけの人が多い印象。家事按分できる通信費・電気代の一部や、開業届を出すと使える青色申告特別控除など、知っているかどうかで手間も結果も変わってくる分野かもしれない。\nまず何から調べたか、よければ教えてください。",
+      "emoji": "📝💡",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "sidejob_20260718_02",
+      "genre": "副業",
+      "content": "副業を始めたきっかけ、意外と人によって違う気がする。\n①生活費の足しにしたい\n②将来への備え\n③会社に依存しない安心感が欲しい\n④単純に自分の力を試したい\nコメントで番号だけでも教えてください。共感した理由も気になります。",
+      "emoji": "🙋‍♂️💬",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "sidejob_20260718_03",
+      "genre": "副業",
+      "content": "職場では話しにくい得意分野でも、言語化してみると想像以上に需要がある場合があるらしい。まずは自分の経験や知識を棚卸ししてみると、副業の入口が見えてくることも。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🔍✨",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "副業_ココナラ"
+    },
+    {
       "id": "beauty_003",
       "genre": "美容",
       "content": "新しいコスメは「1つずつ試す」。同時に2つ変えると、肌に合わなかった時にどちらが原因か分からなくなる。検証は1変数ずつ。",
@@ -980,6 +994,33 @@
       "link_key": "美容_オルビスユー"
     },
     {
+      "id": "beauty_20260718_01",
+      "genre": "美容",
+      "content": "「保湿を増やす」と「保湿を変える」は、実は効果の出方が違うと言われている。同じ成分量でも、テクスチャーが重いか軽いかで肌への乗り方が変わるからだとか。\n最近の自分は、量を増やすタイプ？それとも種類を変えるタイプ？\n🧴✨",
+      "emoji": "🧴✨",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260718_02",
+      "genre": "美容",
+      "content": "クレンジング選びで見落とされがちな基準、まとめてみる。\n①メイクの濃さでオイル・ミルク・ジェルを使い分ける\n②洗浄力と摩擦のバランスを見る\n③洗い上がりのつっぱり感で相性を確認する\nこの3つを押さえるだけで、肌トラブルの原因を減らせると言われている。\n今使っているタイプ、教えてください🧼",
+      "emoji": "🧼",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "beauty_20260718_03",
+      "genre": "美容",
+      "content": "「うるおいを足す」より「うるおいを逃がさない」設計に切り替えると、乾燥からくる毛穴の目立ちが落ち着きやすいと言われている。\n化粧水だけでなく、保湿ラインごと肌質に合わせて見直すのも一つの方法。\n気になる人はチェックしてみて👇\n{{AFFILIATE_LINK}}\n#PR\n💧",
+      "emoji": "💧",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "美容_オルビスユー"
+    },
+    {
       "id": "bodymake_004",
       "genre": "筋トレ",
       "content": "筋トレが続かない原因の筆頭は「メニューが多すぎる」。最初はスクワット・プッシュアップ・ローイングの3つで十分。増やすのは3ヶ月後。",
@@ -1142,15 +1183,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "筋トレ_マッスルデリ"
-    },
-    {
-      "id": "kintore_20260712_01",
-      "genre": "筋トレ",
-      "content": "「筋トレ後30分以内にプロテインを飲まないと意味がない」という話、最近は見直されてきているらしい。\nタイミングよりも、1日トータルでどれだけタンパク質を摂れているかの方が大きいという見方も。\nあなたは普段、1日のタンパク質量を意識してる？それともタイミング派？",
-      "emoji": "⏱️🥤",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
     },
     {
       "id": "kintore_20260712_02",
@@ -1317,15 +1349,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "教育_ヒューマン"
-    },
-    {
-      "id": "education_20260708_01",
-      "genre": "教育",
-      "content": "2026年度から公立小学校の給食費が無償化されると聞いて、家計簿を見直した親も多いはず。浮いた分を「貯蓄」に回すか「習い事の選択肢」を広げるか、意外と迷うポイントだったりする。\nあなたの家庭ではどっちに使う予定？",
-      "emoji": "🍚",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
     },
     {
       "id": "education_20260708_02",
