@@ -2621,6 +2621,87 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "美容_オルビスユー"
+    },
+    {
+      "id": "kintore_20260719_01",
+      "genre": "筋トレ",
+      "content": "「休む日は何もしなくていい」は半分正解で半分誤解。筋肉が修復されるのは主に睡眠中だから、トレ日より休養日の睡眠の質のほうが実は問われている、という見方もある。\nあなたは休養日、何を一番意識してる？",
+      "emoji": "😴",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260719_02",
+      "genre": "筋トレ",
+      "content": "筋トレを3年続けた人と3ヶ月でやめた人。差を分けたのは才能ではなく「予定に組み込んでいたかどうか」という話をよく見かける。\nカレンダーやアプリに筋トレ予定を先に入れてる人、地味に多そう。あなたはどう管理してる？",
+      "emoji": "📅🙋",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260719_03",
+      "genre": "筋トレ",
+      "content": "1日の目安タンパク質量は体重×1.6g前後とも言われるけど、毎食を自炊で完璧に管理できる人は正直少ない。忙しい日だけ頼れる選択肢を知っておくと、続けるハードルがぐっと下がる気がする。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍳",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
+      "id": "education_20260719_01",
+      "genre": "教育",
+      "content": "子どもの「テストの点数」を見せてもらう家庭と、見せなくていい家庭。\n結果より過程を大事にしたい気持ちはどちらも同じでも、対応の仕方は真逆になりがち。\nあなたの家庭は見せてもらう派？見せなくてもいい派？\n📝",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260719_02",
+      "genre": "教育",
+      "content": "習い事の「発表会」、実は親の負担が地味に大きい。\n衣装準備・当日の付き添い・写真撮影…子どもの成長を見られる嬉しさと、労力のバランスは家庭ごとに違う。\n発表会がある習い事、続けやすいと感じますか？それとも負担に感じますか？\n🎽",
+      "emoji": "🎽",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260719_03",
+      "genre": "教育",
+      "content": "子どもの学習でつまずきやすいのは、実は「わからない場所」より「わからないと言えない空気」。\n家庭学習だけで完結させようとすると、この空気が生まれやすい。\n外部の学習サポートを組み合わせて「聞ける環境」を作る家庭も増えているみたい。\n気になる方はこちらもチェックしてみて👇\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📖",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
+    },
+    {
+      "id": "setsuyaku_20260719_01",
+      "genre": "節約",
+      "content": "家計を見直すとき、まずチェックしたい3つの視点。\n①固定費（通信・サブスク）\n②なんとなく買ってしまう習慣buy\n③特売のタイミングとの付き合い方\n\nどれか一つ見直すだけでも、来月の家計簿の印象は変わるかもしれません。\nあなたなら最初にどこから手をつけますか？",
+      "emoji": "🧾💡",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260719_02",
+      "genre": "節約",
+      "content": "スーパーで「あと少しだけ」と買い足したものが、気づけば冷蔵庫の奥で眠っている——そんな経験、ありませんか？\n節約は我慢というより「見える化」なのかもしれません。\n最近、買ったのに使い切れなかったもの、ありますか？",
+      "emoji": "🛒😅",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260719_03",
+      "genre": "節約",
+      "content": "固定費の中でも見直しの余地が大きいと言われるのが通信費。使っていないデータ容量や、契約したまま忘れているオプションがないか、一度確認してみるのもひとつの方法です。\n気になる方はこちらから比較してみてください→{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📱🔍",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約_格安SIM"
     }
   ]
 }
