@@ -64,7 +64,12 @@ YouTubeにそのままアップできる形の納品物一式を提供する。
   (source_scenes 6本 + scenes 12カット + telop_text + title + description + tags)
 - `make_prompts.py`でGrok Agent Mode一括プロンプトを自動生成
 
-### フェーズ3: 納品(チャットに全部貼る・ユーザーがコピペだけで完結する形)
+### フェーズ3: 納品(スマホ運用前提・Google Driveに保存)
+**納品先**: Google Driveフォルダ「婚活Shorts運用」(folder id: 1I2G4u2xaR60ulrKtRAdK4ksXFvzBjs9V)
+- 動画1本につき「0XX_テーマ_投稿セット」というGoogleドキュメントを1つ作成
+  (中身: 使い方→タイトル→概要欄→固定コメント→GrokフルAgentプロンプト、の順)
+- 「00_運用ガイド(スマホ用)」も分析のたびに最新サマリーへ更新する
+- チャットにも同じ内容を貼る(すぐ使う場合のコピペ用)
 1. **GrokフルAgent Mode 完結プロンプト**(最推奨。画像→動画→ナレーション音声→
    音声同期編集→安全ゾーンキャプション焼込→完成動画1本まで、Grok側で全自動。
    `make_prompts.py`が`_full_agent_prompt.md`として自動生成)
