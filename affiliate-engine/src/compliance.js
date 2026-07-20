@@ -54,4 +54,61 @@ function checkContent(text) {
   return { ok: true, text, reasons };
 }
 
-module.exports = { checkContent, DISCLOSURE_PATTERN };
+/**
+ * テンプレの構造検品（モデル非依存の品質ゲート）。
+ * 生成モデルの賢さに品質を依存させないため、AI が生成したテンプレは
+ * 必ずここを通す。軽微な不備は自動修正し、直せないものは reject する。
+ *
+ * @param {object} t テンプレ（{id, genre, content, link_key, ...}）
+ * @param {{genres?: Set<string>|string[], linkKeys?: Set<string>|string[]}} known
+ * @returns {{ ok: boolean, template: object, reasons: string[] }}
+ */
+function validateTemplate(t, known = {}) {
+  const reasons = [];
+  const genres = new Set(known.genres || []);
+  const linkKeys = new Set(known.linkKeys || []);
+  const out = { ...t };
+  const content = String(out.content || '');
+
+  // ジャンル必須（欠落テンプレはスケジュールに載らず死蔵される）
+  if (!out.genre || (genres.size && !genres.has(out.genre))) {
+    return { ok: false, template: out, reasons: [`ジャンル不正: ${JSON.stringify(out.genre)}`] };
+  }
+
+  // 長さ: Threads 上限500字。絵文字・#PR自動付与の余白を残して480字まで
+  if (content.length > 480) {
+    return { ok: false, template: out, reasons: [`本文が長すぎ（${content.length}字 > 480）`] };
+  }
+  if (content.length < 30) {
+    return { ok: false, template: out, reasons: [`本文が短すぎ（${content.length}字）`] };
+  }
+
+  // プレースホルダー整合性
+  const placeholders = [...content.matchAll(/\{\{(.+?)\}\}/g)].map((m) => m[1]);
+  const unknownPh = placeholders.filter((p) => p !== 'AFFILIATE_LINK');
+  if (unknownPh.length) {
+    return { ok: false, template: out, reasons: [`未知のプレースホルダー: ${unknownPh.join(', ')}`] };
+  }
+  const hasLink = placeholders.includes('AFFILIATE_LINK');
+
+  if (hasLink) {
+    if (!out.link_key) {
+      return { ok: false, template: out, reasons: ['{{AFFILIATE_LINK}} があるのに link_key 未指定'] };
+    }
+    if (linkKeys.size && !linkKeys.has(out.link_key)) {
+      return { ok: false, template: out, reasons: [`未知の link_key: ${out.link_key}`] };
+    }
+    if (!DISCLOSURE_PATTERN.test(content)) {
+      out.content = `${content}\n#PR`;
+      reasons.push('#PR を自動付与');
+    }
+  } else if (out.link_key) {
+    // リンクなしなのに link_key が付いていると分析を汚すため落とす
+    delete out.link_key;
+    reasons.push('リンクなしのため link_key を除去');
+  }
+
+  return { ok: true, template: out, reasons };
+}
+
+module.exports = { checkContent, validateTemplate, DISCLOSURE_PATTERN };

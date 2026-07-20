@@ -242,6 +242,24 @@ async function main() {
     }
     text = compliance.text;
 
+    // 最終関門: 未解決プレースホルダー・文字数超過は絶対に世に出さない
+    if (/\{\{.+?\}\}/.test(text)) {
+      console.log(`🚫 ${label}: 未解決プレースホルダーが残っているためブロック`);
+      if (!isDryRun) {
+        state.posted[key] = { status: 'blocked', reasons: ['unresolved placeholder'], at: new Date().toISOString() };
+      }
+      skipped++;
+      continue;
+    }
+    if (text.length > 500) {
+      console.log(`🚫 ${label}: 本文${text.length}字（Threads上限500字超）のためブロック`);
+      if (!isDryRun) {
+        state.posted[key] = { status: 'blocked', reasons: [`too long: ${text.length}`], at: new Date().toISOString() };
+      }
+      skipped++;
+      continue;
+    }
+
     if (isDryRun) {
       console.log(`📝 ${label}`);
       console.log(text.split('\n').map((l) => `   │ ${l}`).join('\n'));
