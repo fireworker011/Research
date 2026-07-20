@@ -1145,7 +1145,7 @@
     {
       "id": "education_20260708_03",
       "genre": "教育",
-      "content": "「学校の勉強にはついていけてるけど、家庭学習の習慣がなかなか定着しない」というのは、多くの家庭で共通する悩みかもしれない。家庭教師や通信教材など、家庭の状況に合わせて選べる選択肢を比較しておくと、いざという時に動きやすい。\n気になる方はこちらもチェックしてみてください→{{AFFILIATE_LINK}}\n家庭学習、みなさんはどう工夫していますか？",
+      "content": "「学校の勉強にはついていけてるけど、家庭学習の習慣がなかなか定着しない」というのは、多くの家庭で共通する悩みかもしれない。家庭教師や通信教材など、家庭の状況に合わせて選べる選択肢を比較しておくと、いざという時に動きやすい。\n気になる方はこちらもチェックしてみてください→{{AFFILIATE_LINK}}\n家庭学習、みなさんはどう工夫していますか？\n#PR",
       "emoji": "📚",
       "engagement_prediction": "medium",
       "cta_type": "direct",
@@ -1157,7 +1157,8 @@
       "emoji": "💬🧠",
       "engagement_prediction": "high",
       "cta_type": "implicit",
-      "link_key": ""
+      "link_key": "",
+      "genre": "転職"
     },
     {
       "id": "job_change_20260708_02",
@@ -1165,7 +1166,8 @@
       "emoji": "📝✨",
       "engagement_prediction": "high",
       "cta_type": "implicit",
-      "link_key": ""
+      "link_key": "",
+      "genre": "転職"
     },
     {
       "id": "job_change_20260708_03",
@@ -1173,7 +1175,8 @@
       "emoji": "🔍📊",
       "engagement_prediction": "medium",
       "cta_type": "direct",
-      "link_key": "転職_エージェント"
+      "link_key": "転職_エージェント",
+      "genre": "転職"
     },
     {
       "id": "pet_20260708_01",
@@ -1396,14 +1399,16 @@
       "content": "転職活動でよく見る「防げたはずの失敗」を並べてみる。\n\n・求人票の年収レンジだけ見て入社を決める\n・面接で残業時間を数字で確認しない\n・内定後に条件交渉をしないまま承諾する\n・退職前に直属の上司以外にしか状況を話さない\n\nどれも「入社前」に防げることばかり。\nみなさんは入社前、何を一番確認していますか？",
       "emoji": "📝🔍",
       "engagement_prediction": "high",
-      "cta_type": "implicit"
+      "cta_type": "implicit",
+      "genre": "転職"
     },
     {
       "id": "career_20260709_2",
       "content": "退職代行を使う人が増えている一方で、「使うとキャリアに響く」という声と「メンタルを守るための正当な手段」という声、両方をよく見かける。\n\n年収面では調査によって『上がった』『変わらない』の回答が多数を占め、『下がった』は少数派という結果も出ている一方、残業時間は改善しないケースも一定数あるらしい。\n\n数字だけ見ると前向きな面もあるけど、実際の職場適応や人間関係まで含めるとどう感じる？あなたはどちら派？",
       "emoji": "🤔📊",
       "engagement_prediction": "high",
-      "cta_type": "implicit"
+      "cta_type": "implicit",
+      "genre": "転職"
     },
     {
       "id": "career_20260709_3",
@@ -1411,7 +1416,8 @@
       "emoji": "💼👇",
       "engagement_prediction": "medium",
       "cta_type": "direct",
-      "link_key": "転職_エージェント"
+      "link_key": "転職_エージェント",
+      "genre": "転職"
     },
     {
       "id": "pet_20260709_01",
@@ -2240,7 +2246,8 @@
       "emoji": "☀️🐶",
       "engagement_prediction": "medium",
       "cta_type": "direct",
-      "link_key": "ペット_保険"
+      "link_key": "ペット_保険",
+      "genre": "ペット"
     },
     {
       "id": "pet_20260714_03",

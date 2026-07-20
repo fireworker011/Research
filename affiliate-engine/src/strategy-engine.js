@@ -31,7 +31,7 @@
 const fs = require('fs');
 const path = require('path');
 const { askClaude, extractJSON, sleep } = require('./claude-client');
-const { checkContent } = require('./compliance');
+const { checkContent, validateTemplate } = require('./compliance');
 const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
 
 const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育,節約,転職,ペット,睡眠').split(',').map((g) => g.trim());
@@ -116,12 +116,19 @@ JSON 配列のみで出力:
   const response = await askClaude(prompt, { system: SYSTEM_PROMPT, maxTokens: 16000 });
   const templates = extractJSON(response);
 
-  // コンプライアンスフィルタ
+  // 構造検品 → コンプライアンスフィルタ
+  const links = loadConfig('links', {});
+  const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   const passed = [];
   for (const t of templates) {
-    const result = checkContent(t.content || '');
+    const structural = validateTemplate({ ...t, genre }, { genres: GENRES, linkKeys: knownLinkKeys });
+    if (!structural.ok) {
+      console.warn(`  ⚠️ テンプレ破棄（構造不備 ${genre}）: ${structural.reasons.join(', ')}`);
+      continue;
+    }
+    const result = checkContent(structural.template.content || '');
     if (result.ok) {
-      passed.push({ ...t, content: result.text, genre });
+      passed.push({ ...structural.template, content: result.text, genre });
     } else {
       console.warn(`  ⚠️ テンプレ破棄（${genre}）: ${result.reasons.join(', ')}`);
     }
@@ -228,14 +235,22 @@ async function main() {
       process.exit(1);
     }
     market = seed.market_analysis || [];
+    const links = loadConfig('links', {});
+    const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
     for (const t of seed.posting_templates) {
-      const result = checkContent(t.content || '');
+      // 構造検品（モデル非依存の品質ゲート）→ コンプライアンス
+      const structural = validateTemplate(t, { genres: GENRES, linkKeys: knownLinkKeys });
+      if (!structural.ok) {
+        console.warn(`  ⚠️ テンプレ破棄（構造不備 ${t.id}）: ${structural.reasons.join(', ')}`);
+        continue;
+      }
+      const result = checkContent(structural.template.content || '');
       if (!result.ok) {
         console.warn(`  ⚠️ テンプレ破棄（${t.genre}）: ${result.reasons.join(', ')}`);
         continue;
       }
       (templatesByGenre[t.genre] = templatesByGenre[t.genre] || []).push({
-        ...t,
+        ...structural.template,
         content: result.text
       });
     }

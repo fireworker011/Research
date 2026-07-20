@@ -22,7 +22,7 @@
 const fs = require('fs');
 const path = require('path');
 const { askClaude, extractJSON } = require('./claude-client');
-const { checkContent } = require('./compliance');
+const { checkContent, validateTemplate } = require('./compliance');
 const { ROOT, OUTPUT_DIR, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
 
 const SYSTEM_PROMPT = `あなたは日本のSNSアフィリエイト運用のグロースアナリストです。
@@ -190,6 +190,10 @@ async function main() {
         }
       );
       const gi = extractJSON(response);
+      // モデル出力の genre 欄は信用せず、リクエストしたジャンルで強制上書き
+      // （genre 欠落テンプレがスケジュールに載らず死蔵される事故の再発防止）
+      gi.genre = genre;
+      for (const t of gi.new_templates || []) t.genre = genre;
       genreInsights.push(gi);
       for (const s of gi.sources || []) sources.push(s);
       console.log(`OK（草案 ${(gi.new_templates || []).length} 本）`);
@@ -210,15 +214,22 @@ async function main() {
     sources: [...new Set(sources)]
   };
 
-  // 草案のコンプライアンスフィルタ
+  // 草案の検品: 構造チェック（モデル非依存の品質ゲート）→ コンプライアンスチェック
+  const links = loadConfig('links', {});
+  const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   const complianceNotes = [];
   for (const f of failedGenres) complianceNotes.push(`生成失敗（次回リトライ）: ${f}`);
   const proposals = [];
   for (const gi of data.genre_insights || []) {
     for (const t of gi.new_templates || []) {
-      const result = checkContent(t.content || '');
+      const structural = validateTemplate(t, { genres: activeGenres, linkKeys: knownLinkKeys });
+      if (!structural.ok) {
+        complianceNotes.push(`構造不備で破棄（${t.genre}）${structural.reasons.join(', ')}: ${String(t.content).slice(0, 60)}...`);
+        continue;
+      }
+      const result = checkContent(structural.template.content || '');
       if (result.ok) {
-        proposals.push({ ...t, content: result.text });
+        proposals.push({ ...structural.template, content: result.text });
       } else {
         complianceNotes.push(`（${t.genre}）${result.reasons.join(', ')}: ${String(t.content).slice(0, 60)}...`);
       }
