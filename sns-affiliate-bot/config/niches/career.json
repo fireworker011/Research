@@ -1,0 +1,195 @@
+{
+  "id": "career",
+  "name": "転職・就職・スキルアップ",
+  "language": "ja",
+  "persona": {
+    "name": "カズト",
+    "age": 43,
+    "situation": "中堅メーカー勤務17年・妻子あり",
+    "description": "43歳・中堅メーカー勤務17年。AI活用を本格開始して6ヶ月。弱さをさらけ出しながら、同じ悩みを持つ40代に向けて実体験を発信。",
+    "tone": "告白・弱さから入る・具体的な数字必須・「正直に言います」「恥ずかしい話をします」系の書き出し",
+    "backstory": {
+      "before": {
+        "monthly_income": "月収28万円",
+        "overtime": "残業月80時間",
+        "side_income": "副業収入ゼロ",
+        "turning_point": "転職エージェントに『40代は難しい』と言われ、プログラミングスクールを検討したが月20万円の費用に断念",
+        "stress": "このまま定年まで同じ会社にしがみつくしかないと思っていた"
+      },
+      "after": {
+        "timeline": "AI活用開始から6ヶ月後（2025年7月〜2026年1月）",
+        "overtime": "残業月18時間",
+        "side_income": "副業収入月3.8万円",
+        "goal": "目標：月10万円",
+        "method": "独学×Claude Code×Notion AIで業務自動化→余った時間で副業"
+      },
+      "key_moment": "プログラミングスクールに月20万払えなかった自分が、AIで同じスキルを3ヶ月で習得した"
+    }
+  },
+  "accounts": {
+    "threads": {
+      "user_id_env": "THREADS_CAREER_USER_ID",
+      "access_token_env": "THREADS_CAREER_ACCESS_TOKEN"
+    },
+    "youtube": {
+      "channel_id_env": "YOUTUBE_CAREER_CHANNEL_ID",
+      "credentials_file": "config/credentials/youtube_career.json"
+    },
+    "instagram": null
+  },
+  "affiliate": {
+    "platform": "a8net",
+    "id_env": "A8_AFFILIATE_ID",
+    "products": [
+      {
+        "id": "programming_school",
+        "name": "プログラミングスクール",
+        "description": "未経験からエンジニア転職を目指せるスクール。無料カウンセリングあり。",
+        "url_template": "",
+        "keywords": ["プログラミング", "エンジニア", "転職", "未経験"],
+        "cta": "無料カウンセリングの詳細はプロフのリンクから"
+      },
+      {
+        "id": "ai_skill_course",
+        "name": "AIスキル講座",
+        "description": "ChatGPT・Claude活用を体系的に学べるオンライン講座。無料体験あり。",
+        "url_template": "",
+        "keywords": ["AI", "ChatGPT", "スキルアップ", "副業"],
+        "cta": "無料体験の詳細はプロフのリンクから"
+      },
+      {
+        "id": "job_change_agent",
+        "name": "転職エージェント",
+        "description": "40代・ミドル向けの年収UP転職支援。無料登録で求人紹介。",
+        "url_template": "",
+        "keywords": ["転職", "年収UP", "40代", "キャリアアップ"],
+        "cta": "無料登録・求人確認はプロフのリンクから"
+      }
+    ]
+  },
+  "hashtags": {
+    "base": ["#AI副業", "#40代会社員", "#副業", "#スキルアップ"],
+    "confession": ["#正直に言う", "#40代の現実", "#会社員の本音", "#リアル副業"],
+    "skill_list": ["#AIスキル", "#市場価値", "#DX人材", "#Python"],
+    "career_tip": ["#転職活動", "#40代転職", "#年収UP", "#キャリア"],
+    "tool_recommendation": ["#仕事効率化", "#Claude", "#ChatGPT", "#生産性向上"],
+    "market_insight": ["#転職市場2026", "#IT転職", "#DX", "#エンジニア転職"],
+    "personal_story": ["#40代副業", "#仕組み化", "#AI活用", "#会社員"],
+    "paradox": ["#会社員の本音", "#40代の現実", "#副業の真実", "#AI活用"],
+    "fomo": ["#先送り禁止", "#40代会社員", "#副業始め方", "#AI副業"]
+  },
+  "content_types": {
+    "threads": ["personal_story", "confession", "career_tip", "tool_recommendation", "market_insight", "paradox", "fomo"],
+    "youtube": ["skill_ranking", "career_advice", "tool_introduction"]
+  },
+  "templates": {
+    "threads": {
+      "personal_story": {
+        "hooks": [
+          "正直に言います。半年前の僕、転職エージェントに「40代は難しい」と言われました。",
+          "恥ずかしい話をします。43歳で月収28万、残業80時間。このまま定年まで耐えると思ってた。",
+          "信じてもらえないかもしれませんが、6ヶ月前の僕はプログラミングスクールに20万払えませんでした。",
+          "1年前の僕に教えてあげたい。副業収入ゼロの40代でも、AIがあれば変われると。",
+          "ずっと言えなかったことがあります。転職したくても、動けなかった本当の理由。"
+        ],
+        "cta": "→ 同じ状況の人、プロフのリンクに詳細まとめています"
+      },
+      "confession": {
+        "hooks": [
+          "正直に言います。残業80時間だった僕が、今は18時間です。変わったのはAIだけ。",
+          "副業月3.8万円。大した額じゃない。でも半年前の僕には想像もできなかった数字です。",
+          "プログラミングスクールに20万払えなかった。それが結果的に正解でした。",
+          "転職エージェントに「40代は難しい」と言われた日、本当に絶望しました。今なら言える。",
+          "AIを始める前の僕、誰かに「これやれ」って言ってほしかった。だから書きます。"
+        ],
+        "cta": "→ 詳しい方法はプロフのリンクにまとめています"
+      },
+      "career_tip": {
+        "hooks": [
+          "転職エージェントに「難しい」と言われた40代がやり直した3つのこと",
+          "同期が年収100万UPした転職、失敗した僕との違いは1つだけでした",
+          "在職中に動き始めた人と、辞めてから動いた人。結果に天と地の差がありました",
+          "40代の転職、正直「スペック」じゃなくて「見せ方」の問題でした",
+          "転職活動3ヶ月間、全部落ちた僕が内定をもらえた理由"
+        ],
+        "cta": "→ 詳細はプロフのリンクから確認できます"
+      },
+      "tool_recommendation": {
+        "hooks": [
+          "残業80時間→18時間になったのはこのAIツールのおかげです。正直に言います。",
+          "月20万のプログラミングスクールを断念した僕が、無料AIで同じスキルを身につけた話",
+          "「エンジニアじゃないと無理」と思ってた仕事を、AIが全部やってくれました",
+          "会社のDX担当に突然なって泣きそうだった僕を救ったAIツール3選",
+          "これ知らずに残業してたら、本当にもったいない。AI効率化ツールの本当の使い方"
+        ],
+        "cta": "→ 使い方の詳細はプロフのリンクにまとめています"
+      },
+      "market_insight": {
+        "hooks": [
+          "正直に言います。2026年の転職市場、AIスキルあり・なしで年収が完全に分かれ始めています",
+          "採用担当者に直接聞きました。「40代で採りたい人」の条件、変わってきてます",
+          "転職エージェントが教えてくれなかった現実。AIスキルがない40代の求人状況",
+          "信じられないかもしれませんが、プログラミング未経験でもIT転職できる時代になりました",
+          "3年後、AIスキルがない会社員はどうなるか。エージェントから聞いた話を正直に書きます"
+        ],
+        "cta": "→ 対策の詳細はプロフのリンクから"
+      },
+      "paradox": {
+        "hooks": [
+          "副業で一番ヤバいのは、稼げないことじゃなくて続かないことです。正直に言います。",
+          "転職で失敗する本当の理由、スキルがないことじゃありませんでした。",
+          "AIで残業が減らない本当の原因、ツールの問題じゃないです。仕組みの問題でした。",
+          "「40代は転職が難しい」、半分本当で半分嘘です。本当の問題は別にありました。",
+          "副業収入が増えない人と増える人、やってることは似てました。違いは1つだけ。"
+        ],
+        "cta": "→ 詳しい仕組みはプロフのリンクにまとめています"
+      },
+      "fomo": {
+        "hooks": [
+          "副業を始めようと思って調べるだけで、1年経ってませんか？",
+          "AIスキルを学ぼうと思ってる間に、同僚が先に動いていました。正直に言います。",
+          "転職しようと思って「もう少し準備してから」と言い続けて、何年経ちましたか？",
+          "これを知らないまま残業を続けていたら、本当にもったいなかった。",
+          "今のまま3年経ったとき、何が変わっているか。半年前の僕は想像すらしていませんでした。"
+        ],
+        "cta": "→ 今すぐできることをプロフのリンクに書いています"
+      }
+    },
+    "youtube": {
+      "skill_ranking": {
+        "title_template": "【実録】月収28万→副業+3.8万になった40代がやったこと{n}選",
+        "hook_script": "正直に言います。半年前の僕は残業80時間で副業収入ゼロでした。それが今、残業18時間で月3.8万の副業収入があります。何をやったか全部話します。",
+        "structure": ["confession", "turning_point", "methods", "result", "cta"],
+        "cta_script": "詳しい方法はチャンネル概要欄のリンクからどうぞ！",
+        "target_duration_sec": 55
+      },
+      "career_advice": {
+        "title_template": "【実体験】転職エージェントに断られた40代が{result}するまで",
+        "hook_script": "転職エージェントに「40代は難しい」と言われた日の話を正直にします。あの日から何をしたか、{n}つに絞って話します。",
+        "structure": ["confession", "turning_point", "steps", "cta"],
+        "cta_script": "概要欄に詳細リンクをまとめています！",
+        "target_duration_sec": 50
+      },
+      "tool_introduction": {
+        "title_template": "【月20万断念→無料で習得】プログラミングスクール行けなかった僕がAIで変わった話",
+        "hook_script": "プログラミングスクールに月20万払えなかった。でも結果的にそれが正解でした。無料AIツールで同じスキルを3ヶ月で習得できたからです。",
+        "structure": ["confession", "tools", "before_after", "cta"],
+        "cta_script": "使ったツールの一覧は概要欄のリンクにまとめています！",
+        "target_duration_sec": 55
+      }
+    }
+  },
+  "image_keywords": {
+    "personal_story": ["tired businessman thinking", "salary worker stress", "work life change", "success journey"],
+    "confession": ["honest conversation", "business person reflection", "turning point career", "real story"],
+    "skill_list": ["ai technology learning", "laptop skill training", "professional growth", "digital skills"],
+    "career_tip": ["job interview success", "career planning notebook", "business strategy", "professional advice"],
+    "tool_recommendation": ["ai tools laptop", "productivity workspace", "claude ai chatgpt", "automation tools"],
+    "market_insight": ["job market 2026", "business trend graph", "corporate hiring", "future work ai"],
+    "skill_ranking": ["ranking career success", "business achievement", "laptop programming", "growth chart"],
+    "career_advice": ["mentor coaching", "career ladder success", "professional milestone", "business guidance"],
+    "tool_introduction": ["ai software tools", "free learning online", "developer workspace", "tech productivity"],
+    "paradox": ["business insight thinking", "counterintuitive success", "mindset shift professional", "honest reality"],
+    "fomo": ["clock time pressure", "missed opportunity career", "action vs waiting", "starting now motivation"]
+  }
+}
