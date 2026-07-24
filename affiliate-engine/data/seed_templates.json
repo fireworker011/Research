@@ -484,22 +484,6 @@
       "link_key": "教育_ヒューマン"
     },
     {
-      "id": "setsuyaku_001",
-      "genre": "節約",
-      "content": "節約は順番がすべて。①スマホ代 ②サブスク ③保険 ④電気ガス ⑤食費。多くの人が⑤から始めて疲れて挫折する。固定費は1回見直せば毎月効く。あなたはどこから手を付けましたか？",
-      "emoji": "💡",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "setsuyaku_002",
-      "genre": "節約",
-      "content": "「1円安い卵のために隣のスーパーへ」をやめたら、逆にお金が貯まり始めた。がんばる節約は疲れて反動買いを生む。削るのは意志力じゃなくて固定費。",
-      "emoji": "🥚",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
       "id": "setsuyaku_003",
       "genre": "節約",
       "content": "サブスクの棚卸しは3ヶ月に1回。判定基準は1つだけ、「先月使ったか」。迷ったら解約。本当に必要なら戻せばいい。今いくつ契約してるか、即答できますか？",
@@ -2812,6 +2796,87 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "美容_オルビスユー"
+    },
+    {
+      "id": "kintore_20260725_01",
+      "genre": "筋トレ",
+      "content": "「頑張ってるのに変わらない」と感じる時、多くの場合は頻度でなく回復日の使い方に原因がある。\n\n観察してみると、伸び悩む人ほど休みの日にも罪悪感を抱いて動きすぎている。\n\n休む勇気も、トレーニング設計の一部。\n\nあなたは休養日、何して過ごしてる？",
+      "emoji": "💪🛌",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "kintore_20260725_02",
+      "genre": "筋トレ",
+      "content": "30代からの筋トレで挫折しやすいポイント3つ\n\n① 最初から毎日やろうとする\n② 効果が出る前に種目を変える\n③ 食事を後回しにする\n\n共通するのは「頑張りすぎ」が原因になっていること。\n\n続ける人ほど、実はハードルを低く設定している印象がある。\n\nこの中で自分に当てはまるのはどれ？",
+      "emoji": "📋🔥",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "kintore_20260725_03",
+      "genre": "筋トレ",
+      "content": "トレーニング後の食事、何をどれくらい摂るか迷う人は多い。\n\n個人的に気になっているのが、忙しい日でもタンパク質量を確保できる宅配サービス。準備の手間を減らせるだけで継続のハードルが下がるという声も見かける。\n\n気になる方はチェックしてみて👇\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "🍱✅",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
+      "id": "education_20260725_01",
+      "genre": "教育",
+      "content": "朝の支度、「本人に任せて見守る家庭」と「時間がないから先回りして手伝う家庭」。\nどちらも『子どものため』という気持ちは同じなのに、日々の行動は正反対になりやすい。\nあなたの家庭はどちら派ですか？",
+      "emoji": "⏰",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260725_02",
+      "genre": "教育",
+      "content": "忘れ物をしたとき、「学校に届ける家庭」と「あえて届けずに本人に経験させる家庭」。\nどちらも子どもの成長を願っている点は同じでも、選ぶ対応は真逆になりがち。\n正解が決まっていないテーマだからこそ、みんなの考えが知りたい。",
+      "emoji": "🎒",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260725_03",
+      "genre": "教育",
+      "content": "家庭学習の教材、「市販の問題集で自分で選ぶ家庭」と「通信教育に任せる家庭」。\nどちらにもメリットがあって、続けやすさは家庭のスタイル次第だと感じる。\n通信教育を検討中の方向けにまとめてみた記事はこちら→ {{AFFILIATE_LINK}}\nあなたの家庭は自分で選ぶ派？お任せ派？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
+    },
+    {
+      "id": "setsuyaku_20260725_01",
+      "genre": "節約",
+      "content": "今月、うっかり払いすぎてないか確認したいチェックリスト📝\n□ 使っていないサブスク\n□ ポイントの失効間近\n□ 固定費の見直し漏れ\n□ コンビニ利用が増えた\n当てはまるものある？他に見落としがちな項目があれば教えて👇",
+      "emoji": "📝💡",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260725_02",
+      "genre": "節約",
+      "content": "スーパーで見切り品コーナーに自然と足が向くようになったら、家計管理のフェーズが一段変わった気がする。\n最近、自分の中で「これ始めてから節約が楽になったな」という小さな習慣ってある？",
+      "emoji": "🛒✨",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "setsuyaku_20260725_03",
+      "genre": "節約",
+      "content": "ふるさと納税、「仕組みが難しそう」で後回しにしてた人向けの簡単メモ📮\n・まず自分の控除上限だけ先に確認\n・返礼品選びより先に「普段使う日用品枠」から見ると失敗しにくい\n・迷ったら少額から試すのもアリ\n仕組みをもう少し詳しく知りたい人はこちら→{{AFFILIATE_LINK}} #PR\n今年もう申し込んだ人いる？きっかけがあれば教えて",
+      "emoji": "📮🏠",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約_ふるさと納税"
     }
   ]
 }
