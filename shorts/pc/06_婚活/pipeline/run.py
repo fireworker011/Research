@@ -75,8 +75,10 @@ def build(script_path: Path, do_upload: bool = False, upload_only: bool = False,
         telops = None
         if script.get("telop", True):
             telops = [sc.get("telop_text", sc["narration"]) for sc in scenes]
+        # hook: true のシーン(通常は先頭)だけ巨大テロップにする(スワイプ対策)
+        hook_indices = {i for i, sc in enumerate(scenes, 1) if sc.get("hook")}
         assemble(videos, narrations, final, bgm if script.get("bgm") else None,
-                 telops=telops)
+                 telops=telops, hook_indices=hook_indices)
 
     # ④ YouTube 投稿
     if do_upload or upload_only:
