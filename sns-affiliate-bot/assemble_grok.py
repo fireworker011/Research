@@ -8,7 +8,7 @@ Grok完全自動アセンブラ（CapCut不要）
 
 処理:
   1. Grok Companion動画から音声を自動抽出
-  2. 無音区間を検出してナレーションを7分割
+  2. 無音区間を検出してナレーションをシーン数ぶんに分割（SUBTITLESの件数で自動決定）
   3. 各シーン動画を対応ナレーションの長さに自動調整
   4. キャプション（テロップ）を自動焼き込み
   5. BGMを自動ミックス（音量バランス）
@@ -28,22 +28,24 @@ import tempfile
 from pathlib import Path
 
 # ── 設定 ──────────────────────────────────────────────────────────────────────
-SCENES_DIR  = Path(r"C:\Users\ys734\Desktop\pet8_scenes")      # scene1〜7.mp4
+SCENES_DIR  = Path(r"C:\Users\ys734\Desktop\pet34_scenes")     # scene1.mp4 〜（本数は可変）
 VOICE_VIDEO = Path(r"C:\Users\ys734\Desktop\grok_voice.mp4")   # Companion音声入り動画
 BGM         = Path(r"C:\Users\ys734\Desktop\bgm.mp3")          # 任意（なければ無視）
-OUTPUT      = Path(r"C:\Users\ys734\Desktop\pet_short_08.mp4")
+OUTPUT      = Path(r"C:\Users\ys734\Desktop\pet_short_34.mp4")
 
-# テロップ＝ナレーション（CTAだけリンク誘導を追記）
+# テロップ＝ナレーション。シーン数はこのリストの長さで自動決定される（7本固定ではない）
 SUBTITLES = [
-    "真顔で待ち伏せされてた",
-    "仕事の合間に、見てみたら",
-    "廊下の角に、いた",
-    "微動だに、しない",
-    "誰を待ってるの",
-    "何もない廊下を、ずっと",
-    "留守番中の子の、全部が見えるカメラ",
+    "今日の寝相、こうだった",
+    "昨日は、こう",
+    "一昨日は、これ",
+    "毎日、記録を更新してくる",
+    "今日も、平和です",
 ]
-CTA_EXTRA = "\\Nプロフィールのリンクへ【PR】"
+
+# 最終シーンに追記するCTA。CTAなしの動画では空文字 "" にする
+CTA_EXTRA = ""   # 例: "\\Nプロフィールのリンクへ【PR】"
+
+N_SCENES = len(SUBTITLES)
 
 # 無音判定パラメータ
 SILENCE_DB   = "-30dB"   # これより静かなら無音とみなす
@@ -162,8 +164,8 @@ def mix_bgm(video_with_voice: Path, bgm: Path, dst: Path):
 
 
 def create_ass(dst: Path, durations: list[float]):
-    """各シーンの実尺に合わせてキャプションを生成"""
-    texts = SUBTITLES[:6] + [SUBTITLES[6] + CTA_EXTRA]
+    """各シーンの実尺に合わせてキャプションを生成（シーン数は可変）"""
+    texts = SUBTITLES[:-1] + [SUBTITLES[-1] + CTA_EXTRA]
     header = (
         "[Script Info]\n"
         "ScriptType: v4.00+\n"
@@ -216,14 +218,14 @@ def main():
     print("Grok完全自動アセンブラ（CapCut不要）")
     print("=" * 55)
 
-    # シーン動画確認
+    # シーン動画確認（本数は SUBTITLES の長さ＝N_SCENES に従う）
     scene_files = []
-    for i in range(1, 8):
+    for i in range(1, N_SCENES + 1):
         p = SCENES_DIR / f"scene{i}.mp4"
         if not p.exists():
             raise FileNotFoundError(f"見つかりません: {p}")
         scene_files.append(p)
-    print(f"✅ シーン動画: {len(scene_files)}本")
+    print(f"✅ シーン動画: {len(scene_files)}本（テロップ{N_SCENES}件と対応）")
 
     if not VOICE_VIDEO.exists():
         raise FileNotFoundError(f"音声入り動画が見つかりません: {VOICE_VIDEO}")
@@ -239,21 +241,21 @@ def main():
         print(f"  → 音声尺: {total:.1f}秒")
 
         # Step2: 区切り決定
-        print("\n[Step2] ナレーションを7分割")
+        print(f"\n[Step2] ナレーションを{N_SCENES}分割")
         if args.no_split:
-            bounds = [total * i / 7 for i in range(8)]
+            bounds = [total * i / N_SCENES for i in range(N_SCENES + 1)]
         else:
             silences = detect_silences(full_audio)
             print(f"  無音区間: {len(silences)}個検出")
-            bounds = split_points_from_silences(silences, total, 7)
-        seg_durs = [bounds[i + 1] - bounds[i] for i in range(7)]
+            bounds = split_points_from_silences(silences, total, N_SCENES)
+        seg_durs = [bounds[i + 1] - bounds[i] for i in range(N_SCENES)]
         for i, d in enumerate(seg_durs, 1):
             print(f"  scene{i}: {d:.1f}秒")
 
         # Step3: 各シーンの音声スライス
         print("\n[Step3] 音声スライス")
         audio_parts = []
-        for i in range(7):
+        for i in range(N_SCENES):
             a = tmp / f"a_{i+1}.aac"
             slice_audio(full_audio, bounds[i], bounds[i + 1], a)
             audio_parts.append(a)
