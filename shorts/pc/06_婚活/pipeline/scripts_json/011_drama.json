@@ -1,0 +1,63 @@
+{
+  "project_id": "konkatsu_011_drama",
+  "genre": "婚活",
+  "title": "「このプロフィール、選ばれません」プロに言われた一言 #Shorts",
+  "description": "「正直に言います。このプロフィール、選ばれません」\nカウンセラーに言われた一言から始まる、6年間全滅していた私の話です。\n\nあなたのプロフィール、プロに見てもらったことありますか?👇\nhttps://px.a8.net/svt/ejp?a8mat=4B5MC7+FCIA5U+17R0+626XU\n#PR\n\n#婚活 #30代婚活 #婚活の本音 #結婚相談所 #マッチングアプリ #Shorts",
+  "tags": ["婚活", "30代婚活", "婚活の本音", "結婚相談所", "マッチングアプリ"],
+  "bgm": "bgm/piano_ambient.mp3",
+  "telop": true,
+  "final_filename": "婚活ドラマ_完成ショート.mp4",
+  "character": "以下の2人の日本人女性が登場する婚活ドラマ。各シーンで指定した人物を、全シーンを通じて同一人物として完全に一致させること。縦長9:16のリアルな写真風、高詳細。\nクライアント役「ミキ」: 30代前半、茶色がかった黒髪ミディアム、細面、清楚感のある顔立ち、ベージュのニット。\nカウンセラー役: 40代、黒髪の上品なショートボブ、知的で少し厳しさのある顔立ち、紺色のジャケット。",
+  "source_scenes": [
+    {
+      "video": "scene_01.mp4",
+      "duration": 10,
+      "image_prompt": "カウンセラー役が正面から見据え、毅然とした真剣な表情でクライアントに何かを告げる瞬間。口は閉じたまま、話していない。明るいカウンセリングルーム、机の上に書類。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラが素早くズームイン(通常よりやや速く)。眉を寄せる、厳しい表情の変化。まばたきを大きめに。"
+    },
+    {
+      "video": "scene_02.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」がカウンセラーの言葉に固まったような、ショックを受けた表情を見せる。口は閉じたまま、話していない。同じカウンセリングルーム。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラ固定。目を見開き、少し口元が動きそうになるが閉じたまま止める(発話なし)。"
+    },
+    {
+      "video": "scene_03.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」が夜、スマートフォンのマッチングアプリ画面を見て疲れ果てた表情を見せる回想シーン。口は閉じたまま、話していない。暗めの室内、スマホの光。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラ固定。女性が小さく肩を落とす動き。"
+    },
+    {
+      "video": "scene_04.mp4",
+      "duration": 10,
+      "image_prompt": "カウンセラー役が書類を指差しながら、落ち着いた表情でクライアントに説明している。口は閉じたまま、話していない。明るいカウンセリングルーム。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。書類を指す手の動き、頷きながら説明する表情。"
+    },
+    {
+      "video": "scene_05.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」がカウンセラーの説明を聞いて、驚きから納得へと表情が変わっていく。口は閉じたまま、話していない。同じ部屋、温かい照明に変化。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。表情が驚きから柔らかい納得の表情へ変化。うなずきのみ(発話なし)。"
+    },
+    {
+      "video": "scene_06.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」が白のワンピースを着て、屋外で30代の男性と自然に笑い合っている幸せそうな場面。口は閉じたまま、話していない。公園、柔らかい自然光。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。2人の穏やかな笑顔にフォーカス。"
+    }
+  ],
+  "scenes": [
+    {"video": "scene_01.mp4", "speaker": "counselor", "narration": "正直に言います。このプロフィール、選ばれません。", "telop_text": "「選ばれません」", "hook": true},
+    {"video": "scene_02.mp4", "speaker": "client", "narration": "え…私、何がダメなんですか?", "telop_text": "え、何がダメ…?"},
+    {"video": "scene_03.mp4", "speaker": "client", "narration": "6年間、100人以上と会いました。", "telop_text": "6年間・100人超と対面"},
+    {"video": "scene_03.mp4", "speaker": "client", "narration": "でも、誰とも続きませんでした。", "telop_text": "でも誰とも続かなかった"},
+    {"video": "scene_04.mp4", "speaker": "counselor", "narration": "原因は3つあります。", "telop_text": "「原因は3つあります」"},
+    {"video": "scene_04.mp4", "speaker": "counselor", "narration": "写真、メッセージ、そして選び方です。", "telop_text": "写真・メッセージ・選び方"},
+    {"video": "scene_04.mp4", "speaker": "counselor", "narration": "これを直すだけで、結果は変わります。", "telop_text": "直すだけで結果は変わる"},
+    {"video": "scene_05.mp4", "speaker": "client", "narration": "そんなことで、変わるんですか?", "telop_text": "そんなことで変わるの?"},
+    {"video": "scene_05.mp4", "speaker": "counselor", "narration": "8割の人が、ここでつまずいています。", "telop_text": "8割の人がここで失敗"},
+    {"video": "scene_06.mp4", "speaker": "client", "narration": "8ヶ月後、私は入籍していました。", "telop_text": "8ヶ月後、入籍しました"},
+    {"video": "scene_02.mp4", "speaker": "client", "narration": "あなたのプロフィール、プロに見てもらったことありますか?", "telop_text": "プロに見てもらったこと、ある?"},
+    {"video": "scene_02.mp4", "speaker": "client", "narration": "無料相談は今日からできます。詳細は概要欄から。保存してね。", "telop_text": "詳細は概要欄📌保存してね"}
+  ]
+}

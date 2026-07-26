@@ -142,18 +142,41 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
     final_name = script.get("final_filename", f"{pid}_完成ショート.mp4")
 
     # ナレーション: 同じ素材(video)を使うシーンを1段落にまとめ、段落間に（間）
+    # speakerが混在する場合はセリフごとに話者名を付ける(2人芝居のドラマ形式対応)
+    speaker_labels = {"client": "ミキ", "counselor": "カウンセラー"}
+    has_speakers = any("speaker" in sc for sc in scenes)
+
     paragraphs: list[str] = []
-    cur_video, cur_texts = None, []
+    cur_video, cur_texts, cur_speakers = None, [], []
     for sc in scenes:
         v = sc.get("video")
         if v != cur_video and cur_texts:
-            paragraphs.append("".join(cur_texts))
-            cur_texts = []
+            paragraphs.append((cur_texts, cur_speakers))
+            cur_texts, cur_speakers = [], []
         cur_video = v
         cur_texts.append(sc["narration"])
+        cur_speakers.append(sc.get("speaker"))
     if cur_texts:
-        paragraphs.append("".join(cur_texts))
-    narration = "\n\n（間）\n\n".join(paragraphs)
+        paragraphs.append((cur_texts, cur_speakers))
+
+    def _format_paragraph(texts: list[str], speakers: list[str | None]) -> str:
+        if not has_speakers:
+            return "".join(texts)
+        # 同一話者が連続するテキストはまとめ、話者が変わったらラベルを付け直す
+        parts = []
+        cur_sp, buf = None, ""
+        for t, sp in zip(texts, speakers):
+            if sp != cur_sp:
+                if buf:
+                    parts.append(f"{speaker_labels.get(cur_sp, '')}「{buf}」" if cur_sp else buf)
+                cur_sp, buf = sp, t
+            else:
+                buf += t
+        if buf:
+            parts.append(f"{speaker_labels.get(cur_sp, '')}「{buf}」" if cur_sp else buf)
+        return "\n".join(parts)
+
+    narration = "\n\n（間）\n\n".join(_format_paragraph(t, s) for t, s in paragraphs)
 
     scene_lines = []
     for i, sc in enumerate(sources, 1):
@@ -179,12 +202,13 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
 
 【重要ルール】
 ・全シーンで**口は一切動かさない**（リップシンク禁止）。表情変化・まばたき・うなずき・視線移動のみで演技。
-・音声・BGM・テロップは動画生成時には一切入れない（最終合成で追加）。
+・シーン単体の動画生成時には音声・BGM・テロップを一切入れない(無音の映像素材のみ作る)。
+　ナレーション音声・BGM・テロップは、全シーンの映像が揃った後の【最終合成】の工程でまとめて追加する。
 
 【{len(sources)}シーン生成（各約10秒）】
 {chr(10).join(scene_lines)}
 
-【ナレーション音声】
+【ナレーション音声】{"（2人芝居: 「ミキ」と「カウンセラー」で別々の女性声を使い分けてください。ミキ=落ち着いた告白トーン、カウンセラー=毅然として少し低めのプロトーン）" if has_speakers else ""}
 以下の全文を「落ち着いた、少し感情がこもった告白するようなトーン」で、テンポよく自然な女性声（コンパニオン風）で読み上げてください。（間）では短く一呼吸置く。
 
 「{narration}」
@@ -192,6 +216,7 @@ def _build_full_agent(script: dict, sources: list[dict]) -> str:
 【最終合成】
 ・各シーンの無音動画をナレーション音声の対応部分の長さに完全に同期（必要に応じて速度微調整・トリム）。
 ・動画はミュート状態で音声を重ねる。
+・BGM（静かなピアノのアンビエント音）を小さめの音量で全編に途切れさせずに敷いてください。
 ・自然キャプションを焼き込み（文単位で自然に区切り、スマホUI被りゼロ、読みやすいフォント・位置、白字+黒縁）。
 ・全体を高テンポで魅力的な{genre}ショート動画に仕上げる。
 
