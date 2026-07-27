@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T21:31:55.321Z",
+  "generated_at": "2026-07-27T21:45:09.772Z",
   "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
   "genres": [
     "婚活",
@@ -1059,22 +1059,6 @@
       "genre": "美容"
     },
     {
-      "id": "bodymake_004",
-      "genre": "筋トレ",
-      "content": "筋トレが続かない原因の筆頭は「メニューが多すぎる」。最初はスクワット・プッシュアップ・ローイングの3つで十分。増やすのは3ヶ月後。",
-      "emoji": "3️⃣",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "bodymake_005",
-      "genre": "筋トレ",
-      "content": "30代の体づくりは回復も込みで計画する。追い込んだ翌日に眠れていないなら、それはやりすぎのサイン。",
-      "emoji": "🛌",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
       "id": "bodymake_006",
       "genre": "筋トレ",
       "content": "コンビニで体づくりの昼を選ぶなら、サラダチキン・ゆで卵・ギリシャヨーグルト。完璧じゃなくていい、「選び方」を持っているかどうか。",
@@ -1368,6 +1352,33 @@
       "link_key": "筋トレ_マッスルデリ"
     },
     {
+      "id": "kintore_20260728_01",
+      "genre": "筋トレ",
+      "content": "筋トレを「続けられる人」と「途中でやめる人」の差は、モチベーションよりも“予定への組み込み方”にある気がしている。曜日固定派？その日の気分派？どっちが自分に合ってる？",
+      "emoji": "🗓️💪",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260728_02",
+      "genre": "筋トレ",
+      "content": "「筋肉痛がないと効いてない」という考え方、最近は見直されてきているらしい。筋肉痛の有無よりも、フォームの安定感や扱う重量の推移を記録する方が成長の目安になる、という見方もある。あなたは何を基準に成長を測ってる？",
+      "emoji": "📝🔍",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260728_03",
+      "genre": "筋トレ",
+      "content": "筋トレを頑張るほど、食事管理の方が地味に大変になるという声をよく見かける。特に平日は自炊の時間が取れず、タンパク質量が足りているか不安になる人も多いらしい。時短しながら栄養を整える工夫、みんなはどうしてる？{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "🍱",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
       "id": "education_003",
       "genre": "教育",
       "content": "子どもの「飽きた」は才能がないサインじゃなくて、難易度が合っていないサインのことが多い。やめる前に、レベルを疑ってみる。",
@@ -1534,14 +1545,6 @@
       "cta_type": "implicit"
     },
     {
-      "id": "education_20260713_02",
-      "genre": "教育",
-      "content": "勉強のご褒美、「テストの点数」で決める家庭と「机に向かった時間」で決める家庭。\nどちらにも一長一短があると思うけれど、実際にやってみてどう感じていますか？\n結果主義かプロセス主義か、家庭ごとの工夫を聞いてみたい。",
-      "emoji": "🎯",
-      "engagement_prediction": "high",
-      "cta_type": "implicit"
-    },
-    {
       "id": "education_20260713_03",
       "genre": "教育",
       "content": "「今日は宿題どのくらい進んだ？」と毎日聞くのが地味に負担、という声をよく見かける。\n進捗を仕組みで見える化できると、親子の会話が「詰問」から「確認」に変わりやすい。\n家庭学習の伴走を仕組み化したい方はこちらもチェックしてみてください。\n{{AFFILIATE_LINK}}\n#PR",
@@ -1614,28 +1617,31 @@
       "link_key": "教育_ヒューマン"
     },
     {
-      "id": "setsuyaku_003",
-      "genre": "節約",
-      "content": "サブスクの棚卸しは3ヶ月に1回。判定基準は1つだけ、「先月使ったか」。迷ったら解約。本当に必要なら戻せばいい。今いくつ契約してるか、即答できますか？",
-      "emoji": "📱",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "setsuyaku_004",
-      "genre": "節約",
-      "content": "コンビニに寄らない一番の方法は「我慢」じゃなくて「帰り道を変える」。意志力に頼る節約は必ず負ける。仕組みで勝つ。",
-      "emoji": "🏪",
+      "id": "kyouiku_20260728_01",
+      "genre": "教育",
+      "content": "朝の支度、「声をかけながら一緒に進める家庭」と「本人のペースに任せる家庭」。\nどちらも子どもの自立を願う気持ちは同じでも、やり方は真逆になりがち。\nあなたの家庭はどちら派ですか？",
+      "emoji": "⏰",
       "engagement_prediction": "high",
-      "cta_type": "none"
+      "cta_type": "implicit",
+      "link_key": ""
     },
     {
-      "id": "setsuyaku_005",
-      "genre": "節約",
-      "content": "家計簿が続かない人へ。項目は「固定費・食費・その他」の3つで十分。細かく分類するから続かない。ざっくり3ヶ月続いた家計簿は、完璧な3日間の家計簿に勝つ。",
-      "emoji": "📒",
+      "id": "kyouiku_20260728_02",
+      "genre": "教育",
+      "content": "子どもが「できない」と言ったときの声かけ、言い換えてみると反応が変わることがあるらしい。\n・「まだできてないだけ」\n・「ここまではできてるね」\n・「一緒に考えてみようか」\n保存して使いたい言い換え、他にもあれば教えてください。",
+      "emoji": "📌",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kyouiku_20260728_03",
+      "genre": "教育",
+      "content": "家庭学習をどこまで親が見るか、悩む家庭は多いはず。\n自分たちだけで抱え込まず、プロの手を借りるという選択肢を知っておくのも一つの安心材料になるかもしれません。\n気になる方はこちらもチェックしてみてください。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📚",
       "engagement_prediction": "medium",
-      "cta_type": "none"
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
     },
     {
       "id": "setsuyaku_006",
@@ -1927,6 +1933,33 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "節約_ふるさと納税"
+    },
+    {
+      "id": "setsuyaku_20260728_01",
+      "genre": "節約",
+      "content": "毎月なんとなく払ってる固定費、一度棚卸しした人だけが得してる気がします。\n\nチェックしたいのはこの3つ👇\n・使ってないサブスク\n・格安プランに変えられる通信費\n・年払いにすれば安くなる保険/会費\n\n『これ地味に見落としてた』という固定費、ある人いますか？",
+      "emoji": "💡📱💳",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "setsuyaku_20260728_02",
+      "genre": "節約",
+      "content": "最近スーパーで『あれ、これ前もっと安くなかった？』って心の中で呟く回数が明らかに増えた気がします。\n\n特に卵・パン・調味料あたりの値上がりを実感してる人、多いんじゃないでしょうか。\n\n逆に『これは意外と値段変わってない』と感じるものってありますか？教えてほしいです。",
+      "emoji": "🥚🛒",
+      "engagement_prediction": "medium",
+      "cta_type": "none",
+      "link_key": null
+    },
+    {
+      "id": "setsuyaku_20260728_03",
+      "genre": "節約",
+      "content": "毎月の通信費、実は見直すだけで年間数万円変わることがあります。\n\n大手キャリアのままなんとなく払い続けている人は、一度プランを比較してみるのがおすすめです。\n\n気になる方はこちらから料金シミュレーションだけでも見てみてください👇\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "📱✅",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約_格安SIM"
     },
     {
       "id": "tenshoku_009",
