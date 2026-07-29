@@ -1,0 +1,32 @@
+{
+  "name": "short-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "日本語ショート動画（1080x1920 / 30fps / 顔出しなし）自動制作パイプライン",
+  "scripts": {
+    "validate": "node scripts/validate-script.mjs",
+    "voice": "node scripts/gen-voice.mjs",
+    "media": "node scripts/fetch-media.mjs",
+    "bgm": "node scripts/make-bgm.mjs",
+    "timeline": "node scripts/build-timeline.mjs",
+    "prepare:all": "npm run font && npm run validate && npm run voice && npm run media && npm run bgm && npm run timeline",
+    "studio": "remotion studio",
+    "render": "remotion render Short out/short.mp4",
+    "check": "node scripts/preflight.mjs",
+    "font": "node scripts/setup-font.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.409",
+    "@remotion/cli": "4.0.409",
+    "@remotion/media-utils": "4.0.409",
+    "@remotion/renderer": "4.0.409",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.409"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}

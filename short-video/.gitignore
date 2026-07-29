@@ -1,0 +1,15 @@
+node_modules/
+out/
+
+# 生成物（コマンド一発で再生成できるのでコミットしない）
+public/audio/*.wav
+public/audio/*.mp3
+public/bgm/*.wav
+public/media/*.mp4
+public/fonts/*.ttf
+public/fonts/*.otf
+
+# マニフェストは残す（何をどう作ったかの記録 + 再現用）
+!public/audio/voice-manifest.json
+!public/media/media-manifest.json
+!public/bgm/bgm-manifest.json

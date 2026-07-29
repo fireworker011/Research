@@ -1,0 +1,260 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 1767,
+  "durationSeconds": 58.9,
+  "handle": "@your_account",
+  "ctaUrl": "https://x.com/comback_nao6?s=11",
+  "ctaLabel": "やり方はXで",
+  "caption": "限界リーマンが通勤中にAIでショート量産するストーリー（モチベーション系）について、初心者向けに短くまとめました。やり方はXで #AI活用 #ショート #副業 #初心者 #暮らし #限界リーマンが通",
+  "mockAudio": true,
+  "bgm": {
+    "src": "bgm/bgm.wav",
+    "volume": 0.13,
+    "duckedVolume": 0.07,
+    "seconds": 60
+  },
+  "scenes": [
+    {
+      "index": 0,
+      "role": "title",
+      "telop": "限界リーマンが通勤中",
+      "telopStyle": "title",
+      "narration": "限界リーマンが通勤中にAIでショート量産するストーリー（モチベーション系）で損す。",
+      "audioSrc": "audio/voice-00.wav",
+      "audioSeconds": 6.591,
+      "audioStartFrame": 4,
+      "durationInFrames": 206,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#12233f",
+          "#2b4a7d",
+          "#0d1626"
+        ],
+        "motion": "zoom-in"
+      }
+    },
+    {
+      "index": 1,
+      "role": "body",
+      "telop": "家計を見直した共働き",
+      "telopStyle": "paren",
+      "narration": "話し手は家計を見直した共働き夫婦の妻。現場目線で整理する。",
+      "audioSrc": "audio/voice-01.wav",
+      "audioSeconds": 5.823,
+      "audioStartFrame": 4,
+      "durationInFrames": 183,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#1d2b3a",
+          "#3c5a73",
+          "#101a24"
+        ],
+        "motion": "zoom-out"
+      }
+    },
+    {
+      "index": 2,
+      "role": "body",
+      "telop": "完璧は不要",
+      "telopStyle": "normal",
+      "narration": "ここで大事なのは、完璧を目指さないことだ。",
+      "audioSrc": "audio/voice-02.wav",
+      "audioSeconds": 3.723,
+      "audioStartFrame": 4,
+      "durationInFrames": 120,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#2a2140",
+          "#4b3a6e",
+          "#150f22"
+        ],
+        "motion": "pan-left"
+      }
+    },
+    {
+      "index": 3,
+      "role": "body",
+      "telop": "数字で具体化",
+      "telopStyle": "normal",
+      "narration": "数字や期限があると、あいまいさが減る。",
+      "audioSrc": "audio/voice-03.wav",
+      "audioSeconds": 3.39,
+      "audioStartFrame": 4,
+      "durationInFrames": 110,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#123331",
+          "#2d5f57",
+          "#08201e"
+        ],
+        "motion": "pan-right"
+      }
+    },
+    {
+      "index": 4,
+      "role": "body",
+      "telop": "続く設計が勝つ",
+      "telopStyle": "normal",
+      "narration": "続けられる設計の方が、一时の気合いより強い。",
+      "audioSrc": "audio/voice-04.wav",
+      "audioSeconds": 4.176,
+      "audioStartFrame": 4,
+      "durationInFrames": 134,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#31241c",
+          "#6b4a33",
+          "#170f0a"
+        ],
+        "motion": "zoom-in"
+      }
+    },
+    {
+      "index": 5,
+      "role": "body",
+      "telop": "③丸コピー",
+      "telopStyle": "paren",
+      "narration": "三つ目。誰かの成功談を、自分の条件に合わせずそのまま真似る。",
+      "audioSrc": "audio/voice-05.wav",
+      "audioSeconds": 5.591,
+      "audioStartFrame": 4,
+      "durationInFrames": 176,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#1b2430",
+          "#425466",
+          "#0e141b"
+        ],
+        "motion": "zoom-out"
+      }
+    },
+    {
+      "index": 6,
+      "role": "body",
+      "telop": "最小の一手",
+      "telopStyle": "normal",
+      "narration": "次に、今日できる最小の一手だけ決める。",
+      "audioSrc": "audio/voice-06.wav",
+      "audioSeconds": 3.604,
+      "audioStartFrame": 4,
+      "durationInFrames": 117,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#232043",
+          "#463f79",
+          "#12101f"
+        ],
+        "motion": "pan-left"
+      }
+    },
+    {
+      "index": 7,
+      "role": "body",
+      "telop": "基準は2つまで",
+      "telopStyle": "normal",
+      "narration": "逆に、比較しすぎると動けなくなる。基準を二つに絞ろう。",
+      "audioSrc": "audio/voice-07.wav",
+      "audioSeconds": 4.853,
+      "audioStartFrame": 4,
+      "durationInFrames": 154,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#2c1c2b",
+          "#5c3a56",
+          "#150d14"
+        ],
+        "motion": "pan-right"
+      }
+    },
+    {
+      "index": 8,
+      "role": "body",
+      "telop": "②順番が逆",
+      "telopStyle": "normal",
+      "narration": "二つ目。情報は集めているのに、行動の順番が逆になっている。",
+      "audioSrc": "audio/voice-08.wav",
+      "audioSeconds": 5.186,
+      "audioStartFrame": 4,
+      "durationInFrames": 164,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#14293a",
+          "#2f5771",
+          "#0a1620"
+        ],
+        "motion": "zoom-in"
+      }
+    },
+    {
+      "index": 9,
+      "role": "body",
+      "telop": "一文で整理",
+      "telopStyle": "paren",
+      "narration": "まずは、自分の状況を一文で書き出す。それだけで視界が変わる。",
+      "audioSrc": "audio/voice-09.wav",
+      "audioSeconds": 5.52,
+      "audioStartFrame": 4,
+      "durationInFrames": 174,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#1f2a1e",
+          "#41603c",
+          "#0f1710"
+        ],
+        "motion": "zoom-out"
+      }
+    },
+    {
+      "index": 10,
+      "role": "cta",
+      "telop": "概要欄へ",
+      "telopStyle": "normal",
+      "narration": "やり方はXで。",
+      "audioSrc": "audio/voice-10.wav",
+      "audioSeconds": 1.837,
+      "audioStartFrame": 4,
+      "durationInFrames": 64,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#101a2e",
+          "#27406b",
+          "#070c17"
+        ],
+        "motion": "pan-left"
+      }
+    },
+    {
+      "index": 11,
+      "role": "cta",
+      "telop": "今すぐチェック",
+      "telopStyle": "normal",
+      "narration": "リンクは概要欄。@comback_nao6もチェックを。",
+      "audioSrc": "audio/voice-11.wav",
+      "audioSeconds": 4.014,
+      "audioStartFrame": 4,
+      "durationInFrames": 129,
+      "background": {
+        "type": "gradient",
+        "palette": [
+          "#33261a",
+          "#7a5330",
+          "#1a120a"
+        ],
+        "motion": "pan-right"
+      }
+    }
+  ]
+}

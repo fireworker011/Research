@@ -1,0 +1,151 @@
+{
+  "source": "generated",
+  "license": "このリポジトリで生成（権利処理不要）",
+  "generatedAt": "2026-07-29T21:34:52.508Z",
+  "entries": [
+    {
+      "index": 0,
+      "type": "gradient",
+      "palette": [
+        "#12233f",
+        "#2b4a7d",
+        "#0d1626"
+      ],
+      "motion": "zoom-in",
+      "query": "tokyo train commute morning",
+      "telop": "限界リーマンが通勤中"
+    },
+    {
+      "index": 1,
+      "type": "gradient",
+      "palette": [
+        "#1d2b3a",
+        "#3c5a73",
+        "#101a24"
+      ],
+      "motion": "zoom-out",
+      "query": "woman writing notebook kitchen",
+      "telop": "家計を見直した共働き"
+    },
+    {
+      "index": 2,
+      "type": "gradient",
+      "palette": [
+        "#2a2140",
+        "#4b3a6e",
+        "#150f22"
+      ],
+      "motion": "pan-left",
+      "query": "sunrise city window",
+      "telop": "完璧は不要"
+    },
+    {
+      "index": 3,
+      "type": "gradient",
+      "palette": [
+        "#123331",
+        "#2d5f57",
+        "#08201e"
+      ],
+      "motion": "pan-right",
+      "query": "calendar planner desk",
+      "telop": "数字で具体化"
+    },
+    {
+      "index": 4,
+      "type": "gradient",
+      "palette": [
+        "#31241c",
+        "#6b4a33",
+        "#170f0a"
+      ],
+      "motion": "zoom-in",
+      "query": "walking stairs morning light",
+      "telop": "続く設計が勝つ"
+    },
+    {
+      "index": 5,
+      "type": "gradient",
+      "palette": [
+        "#1b2430",
+        "#425466",
+        "#0e141b"
+      ],
+      "motion": "zoom-out",
+      "query": "crowd city street blur",
+      "telop": "③丸コピー"
+    },
+    {
+      "index": 6,
+      "type": "gradient",
+      "palette": [
+        "#232043",
+        "#463f79",
+        "#12101f"
+      ],
+      "motion": "pan-left",
+      "query": "hands typing smartphone",
+      "telop": "最小の一手"
+    },
+    {
+      "index": 7,
+      "type": "gradient",
+      "palette": [
+        "#2c1c2b",
+        "#5c3a56",
+        "#150d14"
+      ],
+      "motion": "pan-right",
+      "query": "coffee cup steam desk",
+      "telop": "基準は2つまで"
+    },
+    {
+      "index": 8,
+      "type": "gradient",
+      "palette": [
+        "#14293a",
+        "#2f5771",
+        "#0a1620"
+      ],
+      "motion": "zoom-in",
+      "query": "bookshelf reading light",
+      "telop": "②順番が逆"
+    },
+    {
+      "index": 9,
+      "type": "gradient",
+      "palette": [
+        "#1f2a1e",
+        "#41603c",
+        "#0f1710"
+      ],
+      "motion": "zoom-out",
+      "query": "notebook pen writing closeup",
+      "telop": "一文で整理"
+    },
+    {
+      "index": 10,
+      "type": "gradient",
+      "palette": [
+        "#101a2e",
+        "#27406b",
+        "#070c17"
+      ],
+      "motion": "pan-left",
+      "query": "city night lights vertical",
+      "telop": "概要欄へ"
+    },
+    {
+      "index": 11,
+      "type": "gradient",
+      "palette": [
+        "#33261a",
+        "#7a5330",
+        "#1a120a"
+      ],
+      "motion": "pan-right",
+      "query": "sunrise skyline hope",
+      "telop": "今すぐチェック"
+    }
+  ]
+}

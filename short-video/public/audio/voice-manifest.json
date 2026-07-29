@@ -1,0 +1,118 @@
+{
+  "engine": "mock",
+  "voice": null,
+  "sampleRate": 24000,
+  "mock": true,
+  "generatedAt": "2026-07-29T21:36:25.446Z",
+  "totalSeconds": 54.308,
+  "entries": [
+    {
+      "index": 0,
+      "role": "title",
+      "src": "audio/voice-00.wav",
+      "seconds": 6.591,
+      "text": "限界リーマンが通勤中にエーアイでショート量産するストーリー、モチベーション系。で損す。",
+      "original": "限界リーマンが通勤中にAIでショート量産するストーリー（モチベーション系）で損す。",
+      "overLimit": true
+    },
+    {
+      "index": 1,
+      "role": "body",
+      "src": "audio/voice-01.wav",
+      "seconds": 5.823,
+      "text": "話し手は家計を見直した共働き夫婦の妻。現場目線で整理する。",
+      "original": "話し手は家計を見直した共働き夫婦の妻。現場目線で整理する。",
+      "overLimit": true
+    },
+    {
+      "index": 2,
+      "role": "body",
+      "src": "audio/voice-02.wav",
+      "seconds": 3.723,
+      "text": "ここで大事なのは、完璧を目指さないことだ。",
+      "original": "ここで大事なのは、完璧を目指さないことだ。",
+      "overLimit": false
+    },
+    {
+      "index": 3,
+      "role": "body",
+      "src": "audio/voice-03.wav",
+      "seconds": 3.39,
+      "text": "数字や期限があると、あいまいさが減る。",
+      "original": "数字や期限があると、あいまいさが減る。",
+      "overLimit": false
+    },
+    {
+      "index": 4,
+      "role": "body",
+      "src": "audio/voice-04.wav",
+      "seconds": 4.176,
+      "text": "続けられる設計の方が、いっときの気合いより強い。",
+      "original": "続けられる設計の方が、一时の気合いより強い。",
+      "overLimit": false
+    },
+    {
+      "index": 5,
+      "role": "body",
+      "src": "audio/voice-05.wav",
+      "seconds": 5.591,
+      "text": "みっつめ。誰かの成功談を、自分の条件に合わせずそのまま真似る。",
+      "original": "三つ目。誰かの成功談を、自分の条件に合わせずそのまま真似る。",
+      "overLimit": true
+    },
+    {
+      "index": 6,
+      "role": "body",
+      "src": "audio/voice-06.wav",
+      "seconds": 3.604,
+      "text": "次に、今日できる最小のいってだけ決める。",
+      "original": "次に、今日できる最小の一手だけ決める。",
+      "overLimit": false
+    },
+    {
+      "index": 7,
+      "role": "body",
+      "src": "audio/voice-07.wav",
+      "seconds": 4.853,
+      "text": "逆に、比較しすぎると動けなくなる。基準をふたつに絞ろう。",
+      "original": "逆に、比較しすぎると動けなくなる。基準を二つに絞ろう。",
+      "overLimit": false
+    },
+    {
+      "index": 8,
+      "role": "body",
+      "src": "audio/voice-08.wav",
+      "seconds": 5.186,
+      "text": "ふたつめ。情報は集めているのに、行動の順番が逆になっている。",
+      "original": "二つ目。情報は集めているのに、行動の順番が逆になっている。",
+      "overLimit": true
+    },
+    {
+      "index": 9,
+      "role": "body",
+      "src": "audio/voice-09.wav",
+      "seconds": 5.52,
+      "text": "まずは、自分の状況をいちぶんで書き出す。それだけで視界が変わる。",
+      "original": "まずは、自分の状況を一文で書き出す。それだけで視界が変わる。",
+      "overLimit": true
+    },
+    {
+      "index": 10,
+      "role": "cta",
+      "src": "audio/voice-10.wav",
+      "seconds": 1.837,
+      "text": "やり方はエックスで。",
+      "original": "やり方はXで。",
+      "overLimit": false
+    },
+    {
+      "index": 11,
+      "role": "cta",
+      "src": "audio/voice-11.wav",
+      "seconds": 4.014,
+      "text": "リンクは概要欄。コムバック ナオ ロクもチェックを。",
+      "original": "リンクは概要欄。@comback_nao6もチェックを。",
+      "overLimit": false
+    }
+  ]
+}
