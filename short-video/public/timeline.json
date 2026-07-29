@@ -2,8 +2,8 @@
   "fps": 30,
   "width": 1080,
   "height": 1920,
-  "durationInFrames": 1767,
-  "durationSeconds": 58.9,
+  "durationInFrames": 1770,
+  "durationSeconds": 59,
   "handle": "@your_account",
   "ctaUrl": "https://x.com/comback_nao6?s=11",
   "ctaLabel": "やり方はXで",
@@ -21,11 +21,11 @@
       "role": "title",
       "telop": "限界リーマンが通勤中",
       "telopStyle": "title",
-      "narration": "限界リーマンが通勤中にAIでショート量産するストーリー（モチベーション系）で損す。",
+      "narration": "限界リーマンが通勤中にAIでショート量産するストーリー。ここ、損する人が多いんです。",
       "audioSrc": "audio/voice-00.wav",
-      "audioSeconds": 6.591,
+      "audioSeconds": 6.924,
       "audioStartFrame": 4,
-      "durationInFrames": 206,
+      "durationInFrames": 216,
       "background": {
         "type": "gradient",
         "palette": [
@@ -105,7 +105,7 @@
       "audioSrc": "audio/voice-04.wav",
       "audioSeconds": 4.176,
       "audioStartFrame": 4,
-      "durationInFrames": 134,
+      "durationInFrames": 133,
       "background": {
         "type": "gradient",
         "palette": [
@@ -145,7 +145,7 @@
       "audioSrc": "audio/voice-06.wav",
       "audioSeconds": 3.604,
       "audioStartFrame": 4,
-      "durationInFrames": 117,
+      "durationInFrames": 116,
       "background": {
         "type": "gradient",
         "palette": [
@@ -165,7 +165,7 @@
       "audioSrc": "audio/voice-07.wav",
       "audioSeconds": 4.853,
       "audioStartFrame": 4,
-      "durationInFrames": 154,
+      "durationInFrames": 153,
       "background": {
         "type": "gradient",
         "palette": [
@@ -185,7 +185,7 @@
       "audioSrc": "audio/voice-08.wav",
       "audioSeconds": 5.186,
       "audioStartFrame": 4,
-      "durationInFrames": 164,
+      "durationInFrames": 163,
       "background": {
         "type": "gradient",
         "palette": [
@@ -205,7 +205,7 @@
       "audioSrc": "audio/voice-09.wav",
       "audioSeconds": 5.52,
       "audioStartFrame": 4,
-      "durationInFrames": 174,
+      "durationInFrames": 173,
       "background": {
         "type": "gradient",
         "palette": [
@@ -225,7 +225,7 @@
       "audioSrc": "audio/voice-10.wav",
       "audioSeconds": 1.837,
       "audioStartFrame": 4,
-      "durationInFrames": 64,
+      "durationInFrames": 63,
       "background": {
         "type": "gradient",
         "palette": [
@@ -245,7 +245,7 @@
       "audioSrc": "audio/voice-11.wav",
       "audioSeconds": 4.014,
       "audioStartFrame": 4,
-      "durationInFrames": 129,
+      "durationInFrames": 128,
       "background": {
         "type": "gradient",
         "palette": [

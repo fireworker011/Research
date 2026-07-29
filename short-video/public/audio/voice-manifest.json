@@ -3,16 +3,16 @@
   "voice": null,
   "sampleRate": 24000,
   "mock": true,
-  "generatedAt": "2026-07-29T21:36:25.446Z",
-  "totalSeconds": 54.308,
+  "generatedAt": "2026-07-29T21:58:51.660Z",
+  "totalSeconds": 54.641,
   "entries": [
     {
       "index": 0,
       "role": "title",
       "src": "audio/voice-00.wav",
-      "seconds": 6.591,
-      "text": "限界リーマンが通勤中にエーアイでショート量産するストーリー、モチベーション系。で損す。",
-      "original": "限界リーマンが通勤中にAIでショート量産するストーリー（モチベーション系）で損す。",
+      "seconds": 6.924,
+      "text": "限界リーマンが通勤中にエーアイでショート量産するストーリー。ここ、損する人が多いんです。",
+      "original": "限界リーマンが通勤中にAIでショート量産するストーリー。ここ、損する人が多いんです。",
       "overLimit": true
     },
     {
