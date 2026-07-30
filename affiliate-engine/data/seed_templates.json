@@ -202,14 +202,6 @@
       "link_key": "美容_オルビスユー"
     },
     {
-      "id": "bodymake_006",
-      "genre": "筋トレ",
-      "content": "コンビニで体づくりの昼を選ぶなら、サラダチキン・ゆで卵・ギリシャヨーグルト。完璧じゃなくていい、「選び方」を持っているかどうか。",
-      "emoji": "🏪",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
       "id": "bodymake_008",
       "genre": "筋トレ",
       "content": "ジムに行けない週は「やらない」じゃなくて「家で10分」に落とす。ゼロの日を作らないことが、モチベより大事な継続のコツ。",
@@ -357,30 +349,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "教育_ヒューマン"
-    },
-    {
-      "id": "setsuyaku_006",
-      "genre": "節約",
-      "content": "ふるさと納税、「難しそう」で止まってる人が一番損してる。実質2千円で返礼品がもらえる仕組みで、上限額はシミュレーターに年収を入れるだけ。5分で終わる。やってますか？",
-      "emoji": "🎁",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "setsuyaku_007",
-      "genre": "節約",
-      "content": "貯金は「残ったらする」ではなく「先に抜いて残りで暮らす」。給料日に自動振替を設定するだけ。順番を変えるだけで、意志力ゼロで貯まる構造になる。",
-      "emoji": "🏦",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
-    },
-    {
-      "id": "setsuyaku_008",
-      "genre": "節約",
-      "content": "ポイ活は時給換算してみる。300ポイントのために30分の作業なら時給600円。その30分で固定費を1つ見直したほうが、毎月効く。ポイントは「ついで」までが正解だと思う。",
-      "emoji": "⏱",
-      "engagement_prediction": "medium",
-      "cta_type": "none"
     },
     {
       "id": "setsuyaku_009",
@@ -2675,15 +2643,6 @@
       "genre": "美容"
     },
     {
-      "id": "kintore_20260728_01",
-      "genre": "筋トレ",
-      "content": "筋トレを「続けられる人」と「途中でやめる人」の差は、モチベーションよりも“予定への組み込み方”にある気がしている。曜日固定派？その日の気分派？どっちが自分に合ってる？",
-      "emoji": "🗓️💪",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
-    },
-    {
       "id": "kintore_20260728_02",
       "genre": "筋トレ",
       "content": "「筋肉痛がないと効いてない」という考え方、最近は見直されてきているらしい。筋肉痛の有無よりも、フォームの安定感や扱う重量の推移を記録する方が成長の目安になる、という見方もある。あなたは何を基準に成長を測ってる？",
@@ -2889,6 +2848,87 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "美容_オルビスユー"
+    },
+    {
+      "id": "kintore_20260731_01",
+      "genre": "筋トレ",
+      "content": "筋トレの休養日、みんな何してる派？\n完全オフでダラダラ派、軽く歩くだけの“動く休養”派、ストレッチだけはする派…地味に人によって違う気がしている。\nあなたはどのタイプ？\n🛌",
+      "emoji": "🛌",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260731_02",
+      "genre": "筋トレ",
+      "content": "停滞期に入ったとき、種目を増やす前に見直されがちなポイントをメモ。\n① 睡眠時間が最近削れていないか\n② 同じ重量・回数が何週も続いていないか\n③ 体重の変化に対して食事量が合っているか\nこの3つから確認する、という考え方があるらしい。\nみんなは停滞期、まず何から見直す？\n📝",
+      "emoji": "📝",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "kintore_20260731_03",
+      "genre": "筋トレ",
+      "content": "筋トレを続けてると、地味に大変なのが『タンパク質を確保する食事作り』。\n毎食で意識するのが面倒に感じる日、正直ある。\n最近は宅配の高タンパクメニューを選択肢に入れる人も増えているらしい。\n{{AFFILIATE_LINK}}\n自炊派？宅配派？\n🍱\n#PR",
+      "emoji": "🍱",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
+      "id": "education_20260731_01",
+      "genre": "教育",
+      "content": "夏休みの自由研究、テーマ決めから仕上げまで親がかなり伴走する家庭と、子どもにほぼ任せて見守るだけの家庭がある。完成度を重視するか、試行錯誤の過程を重視するかで自然と分かれるポイント。\nあなたの家庭は伴走派？見守り派？",
+      "emoji": "☀️",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "education_20260731_02",
+      "genre": "教育",
+      "content": "通知表を見せてもらったとき、点数や順位に注目する家庭と、コメント欄や取り組み姿勢に注目する家庭がある。どちらも子どもの成長を願う気持ちは同じでも、声のかけ方が変わってくる。\nあなたの家庭は点数派？コメント派？",
+      "emoji": "📊",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": null
+    },
+    {
+      "id": "education_20260731_03",
+      "genre": "教育",
+      "content": "夏休み明けに学習リズムが崩れがちなのはよくある話。「毎日決まった時間に机に向かう」よりも「短時間でも毎日続ける」ことの方が習慣化しやすいという見方もある。家庭学習のサポート方法を見直すきっかけに、こんな選択肢も。\n{{AFFILIATE_LINK}}\nあなたの家庭では夏休み明け、どう学習リズムを整えていますか？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
+    },
+    {
+      "id": "saving_20260731_01",
+      "genre": "節約",
+      "content": "毎月の明細、じっくり見返したことある？\n基本料金・維持費だけで払い続けてるものって、意外とそのままにしがちだよね。\nプランや契約内容を一度見直すだけで、負担が軽くなるケースもあるみたい。\n今月、見直すとしたらどの支出から手をつける？",
+      "emoji": "💡",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "saving_20260731_02",
+      "genre": "節約",
+      "content": "保存版｜固定費を見直すときにチェックしたい項目まとめ\n・通信費（プラン内容と使用量が合っているか）\n・サブスク（使ってないもの残ってないか）\n・保険（今のライフスタイルに合っているか）\n・電気/ガス（契約プランの見直し余地）\nひとつずつ見るだけでも気づきがあるはず。他に見直すべき項目あれば教えて！",
+      "emoji": "📝✅",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "saving_20260731_03",
+      "genre": "節約",
+      "content": "通信費を見直すとき、プランの中身までちゃんと比較してる？\n使ってる容量と契約プランがズレてると、払わなくていい分まで払ってることがあるらしい。\n気になる人は条件だけでも一度チェックしてみるといいかも。\n{{AFFILIATE_LINK}}\n#PR",
+      "emoji": "📱",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約_格安SIM"
     }
   ]
 }
