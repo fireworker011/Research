@@ -28,11 +28,14 @@ load_dotenv()
 OUTPUT_DIR = Path(r"C:\Users\ys734\Desktop\pet40_images")
 
 # 顔・髪型は継続性のため維持。服装は休日カジュアルに変更（従来のオフィス系タートルネックではない）
+# ※白系×白系で貧相に見えたため、暖色の落ち着いたトーン+厚手ニットの質感に変更
 WOMAN = (
     "Japanese woman in her early 30s, black shoulder-length straight hair "
     "slightly tucked behind one ear, oval face, natural makeup, "
-    "wearing a soft cream knit cardigan over a white t-shirt and "
-    "relaxed loungewear pants, casual weekend look"
+    "wearing a chunky-knit rust/terracotta colored oversized cardigan over "
+    "a heather-gray long-sleeve top, paired with warm camel-colored "
+    "relaxed pants, cozy well-put-together casual weekend look, soft "
+    "visible knit texture"
 )
 
 PROMPTS = [
