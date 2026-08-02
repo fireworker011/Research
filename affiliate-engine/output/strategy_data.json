@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T21:29:37.055Z",
+  "generated_at": "2026-08-02T21:29:54.698Z",
   "note": "market_analysis は Claude の一般知識による推定値。実測は report.js のメトリクスを正とする",
   "genres": [
     "婚活",
@@ -1063,14 +1063,6 @@
       "link_key": "美容_オルビスユー"
     },
     {
-      "id": "bodymake_009",
-      "genre": "筋トレ",
-      "content": "体重より写真。数字は水分で1kg平気で動くけど、月1回・同じ場所・同じ時間のセルフィーは嘘をつかない。",
-      "emoji": "📷",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
       "id": "bodymake_101",
       "genre": "筋トレ",
       "content": "平日の自炊が無理な週は、高タンパクの宅配弁当に頼っていい。栄養計算を外注する発想。体づくり向けの宅食はこちら → {{AFFILIATE_LINK}}\n#PR",
@@ -1177,15 +1169,6 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "筋トレ_マッスルデリ"
-    },
-    {
-      "id": "kintore_20260712_02",
-      "genre": "筋トレ",
-      "content": "筋トレを頑張っても、寝不足の日が続くと体はなかなか変わらない。\n回復のカギは筋トレそのものより、睡眠の質にあるとも言われる。\n筋トレの日、あなたは何時間くらい眠れてる？",
-      "emoji": "😴💪",
-      "engagement_prediction": "high",
-      "cta_type": "implicit",
-      "link_key": ""
     },
     {
       "id": "kintore_20260712_03",
@@ -1374,6 +1357,31 @@
       "emoji": "🍱",
       "engagement_prediction": "medium",
       "cta_type": "direct",
+      "link_key": "筋トレ_マッスルデリ"
+    },
+    {
+      "id": "muscle_20260803_01",
+      "genre": "筋トレ",
+      "content": "「筋トレ後30分以内にタンパク質」とよく言われるけど、実は“その日の合計量が足りてるか”の方が大事という考え方もあるらしい。厳密なタイミングより、朝・昼・夜でコツコツ摂る方が続けやすい気がしている。みんなはタイミング派？合計量派？",
+      "emoji": "🍳⏱️",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "muscle_20260803_02",
+      "genre": "筋トレ",
+      "content": "筋トレを始めて3日で心が折れがちなパターン、共通点がある気がしている。①初日から重量を上げすぎる②毎日同じ部位をやる③休んだ日を「失敗」と捉える。逆に続いている人は、この3つを最初から外している印象がある。当てはまるものある？",
+      "emoji": "📝💪",
+      "engagement_prediction": "high",
+      "cta_type": "none"
+    },
+    {
+      "id": "muscle_20260803_03",
+      "genre": "筋トレ",
+      "content": "筋トレの成果を左右するのは種目よりも食事管理という話をよく聞く。とはいえ、毎食の栄養計算を自分で続けるのは正直しんどい。最近は栄養バランスが整った宅配ミールを取り入れる人も増えているらしい。\n{{AFFILIATE_LINK}}\n自炊派？宅配派？\n#PR",
+      "emoji": "🍱🥗",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
       "link_key": "筋トレ_マッスルデリ"
     },
     {
@@ -1635,28 +1643,31 @@
       "link_key": "教育_ヒューマン"
     },
     {
-      "id": "setsuyaku_009",
-      "genre": "節約",
-      "content": "電気代、プラン見直しの前に「契約アンペア」を確認した？一人暮らしで40A契約のままの人、結構いる。下げるだけで基本料金が変わる。明細の見方から調べる価値あり。",
-      "emoji": "💡",
+      "id": "education_20260803_01",
+      "genre": "教育",
+      "content": "子どもの「朝の準備」、声かけする派としない派で家庭の空気がだいぶ変わる。\n毎朝リマインドして一緒に進める家庭もあれば、失敗も経験のうちと見守る家庭も。\nどちらも『自分でできるようになってほしい』という気持ちは同じだけど、やり方は真逆になりがち。\nあなたの家はどちら派ですか？",
+      "emoji": "🕗",
+      "engagement_prediction": "high",
+      "cta_type": "implicit",
+      "link_key": ""
+    },
+    {
+      "id": "education_20260803_02",
+      "genre": "教育",
+      "content": "小学生の「音読カード」、地味だけど見落としがちなポイント3つ。\n①同じページを繰り返す日があっても問題なし、むしろ定着のサイン\n②サインする欄は『聞いた時間帯』も一言添えると先生に伝わりやすい\n③声の大きさより『区切って読めているか』の方がチェックポイントとして有効\n保存しておくと役立つかもしれません。",
+      "emoji": "📖",
       "engagement_prediction": "medium",
-      "cta_type": "none"
+      "cta_type": "implicit",
+      "link_key": ""
     },
     {
-      "id": "setsuyaku_010",
-      "genre": "節約",
-      "content": "「安いから買う」は、買う理由じゃない。半額シールの惣菜も、使わないなら0円じゃなくてマイナス。買う前の質問は1つ、「定価でも買った？」",
-      "emoji": "🏷",
-      "engagement_prediction": "high",
-      "cta_type": "none"
-    },
-    {
-      "id": "setsuyaku_011",
-      "genre": "節約",
-      "content": "節約で一番大事なのはたぶん「何のために貯めるか」。目的のない我慢は続かない。旅行でも、辞める自由でも、額の目標より先に理由を決める。あなたの貯める理由、何ですか？",
-      "emoji": "🧭",
-      "engagement_prediction": "high",
-      "cta_type": "none"
+      "id": "education_20260803_03",
+      "genre": "教育",
+      "content": "通信教育、「教材の量」で選ぶ家庭と「続けやすさ」で選ぶ家庭に分かれる印象がある。\n量が多いと安心する反面、続かなければ意味がないという声も。\n我が家が比較検討した基準をまとめてみたので、選び方に迷っている方はチェックしてみてください。\n{{AFFILIATE_LINK}}\nみなさんは何を基準に選びましたか？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_ヒューマン"
     },
     {
       "id": "setsuyaku_101",
@@ -1954,6 +1965,31 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "節約_格安SIM"
+    },
+    {
+      "id": "setsuyaku_20260803_01",
+      "content": "スーパーで「安いから」で選んでいたものを見直すと、実は月2,000円くらい浮くことがあります。\n\n見直しやすいポイント3つ👇\n・特売品より定番品のまとめ買い\n・レシート未確認の日用品ストック\n・冷凍庫の“忘れ物”食材\n\nみなさんが最近「見直してよかった」ものは何ですか？",
+      "genre": "節約",
+      "emoji": "🧊🛒",
+      "engagement_prediction": "high",
+      "cta_type": "implicit"
+    },
+    {
+      "id": "setsuyaku_20260803_02",
+      "content": "電気・ガス・水道の明細、先月分と見比べたことありますか？\n\n同じ生活スタイルでも季節や使い方のクセで数百円〜千円単位の差が出ていることがあります。\n\n私は「先月比」を見る習慣をつけてから、無駄遣いに気づきやすくなりました。\n\nみなさんは光熱費、どのタイミングでチェックしていますか？",
+      "emoji": "💡📊",
+      "engagement_prediction": "medium",
+      "cta_type": "implicit",
+      "genre": "節約"
+    },
+    {
+      "id": "setsuyaku_20260803_03",
+      "content": "スマホ代を見直すだけで、年間で数万円変わることがあると言われています。\n\n特に大手キャリアのままプランを据え置いている人は、一度シミュレーションしてみる価値があるかもしれません。\n\n気になる方はこちらから料金比較できます👇\n{{AFFILIATE_LINK}}\n\n#PR",
+      "emoji": "📱💰",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "節約_格安SIM",
+      "genre": "節約"
     },
     {
       "id": "tenshoku_101",
