@@ -27,15 +27,16 @@ load_dotenv()
 
 OUTPUT_DIR = Path(r"C:\Users\ys734\Desktop\pet40_images")
 
-# 顔・髪型は継続性のため維持。服装は休日カジュアルに変更（従来のオフィス系タートルネックではない）
-# ※白系×白系で貧相に見えたため、暖色の落ち着いたトーン+厚手ニットの質感に変更
+# 顔・髪型は継続性のため維持（変更なし）。服装は休日カジュアルに変更。
+# ※「oversized/chunky-knit/relaxed pants」の組み合わせが実年齢より上に見える
+#   原因だったため、フィット感のあるシルエットに修正（色味はテラコッタのまま維持）
 WOMAN = (
-    "Japanese woman in her early 30s, black shoulder-length straight hair "
-    "slightly tucked behind one ear, oval face, natural makeup, "
-    "wearing a chunky-knit rust/terracotta colored oversized cardigan over "
-    "a heather-gray long-sleeve top, paired with warm camel-colored "
-    "relaxed pants, cozy well-put-together casual weekend look, soft "
-    "visible knit texture"
+    "Japanese woman in her early 30s, youthful and stylish appearance, "
+    "black shoulder-length straight hair slightly tucked behind one ear, "
+    "oval face, natural makeup, wearing a fitted soft rust/terracotta "
+    "colored knit cardigan over a simple heather-gray top, paired with "
+    "slim-fit camel-colored trousers, cozy but put-together casual "
+    "weekend look"
 )
 
 PROMPTS = [
