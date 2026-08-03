@@ -20,7 +20,7 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 
 | 場所 | 役割 |
 |---|---|
-| `.github/workflows/affiliate_engine_post.yml` | 投稿。毎時23分起動、期日到来分のみ投稿（ステートレス）。concurrencyで二重実行防止 |
+| `.github/workflows/affiliate_engine_post.yml` | 投稿。毎時23分起動、期日到来分のみ投稿（ステートレス）。concurrencyで二重実行防止。投稿後に amplify.js（500ビュー超の投稿へ自動リンクリプライ・1アカ2回/日）も実行 |
 | `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。1日2ティック+冪等ガード。分析→ジャンル別リサーチ→テンプレ自動反映→エンゲージキット→Issue #13へ投稿 |
 | `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート（14時JST） |
 | `.github/workflows/refresh_threads_token.yml` | 週次トークン更新。`GH_SECRETS_PAT` があればSecrets自動書き戻し |
