@@ -62,6 +62,32 @@ jobs:
             node src/threads-poster.js
           fi
 
+      - name: バズ投稿へのリンク増幅（自動セルフリプライ）
+        if: github.event.inputs.dry_run != 'true'
+        continue-on-error: true
+        env:
+          THREADS_KONKATSU_USER_ID: ${{ secrets.THREADS_KONKATSU_USER_ID }}
+          THREADS_KONKATSU_ACCESS_TOKEN: ${{ secrets.THREADS_KONKATSU_ACCESS_TOKEN }}
+          THREADS_SIDEJOB_USER_ID: ${{ secrets.THREADS_SIDEJOB_USER_ID }}
+          THREADS_SIDEJOB_ACCESS_TOKEN: ${{ secrets.THREADS_SIDEJOB_ACCESS_TOKEN }}
+          THREADS_BEAUTY_USER_ID: ${{ secrets.THREADS_BEAUTY_USER_ID }}
+          THREADS_BEAUTY_ACCESS_TOKEN: ${{ secrets.THREADS_BEAUTY_ACCESS_TOKEN }}
+          THREADS_BODYMAKE_USER_ID: ${{ secrets.THREADS_BODYMAKE_USER_ID }}
+          THREADS_BODYMAKE_ACCESS_TOKEN: ${{ secrets.THREADS_BODYMAKE_ACCESS_TOKEN }}
+          THREADS_EDUCATION_USER_ID: ${{ secrets.THREADS_EDUCATION_USER_ID }}
+          THREADS_EDUCATION_ACCESS_TOKEN: ${{ secrets.THREADS_EDUCATION_ACCESS_TOKEN }}
+          THREADS_SETSUYAKU_USER_ID: ${{ secrets.THREADS_SETSUYAKU_USER_ID }}
+          THREADS_SETSUYAKU_ACCESS_TOKEN: ${{ secrets.THREADS_SETSUYAKU_ACCESS_TOKEN }}
+          THREADS_TENSHOKU_USER_ID: ${{ secrets.THREADS_TENSHOKU_USER_ID }}
+          THREADS_TENSHOKU_ACCESS_TOKEN: ${{ secrets.THREADS_TENSHOKU_ACCESS_TOKEN }}
+          THREADS_PET_USER_ID: ${{ secrets.THREADS_PET_USER_ID }}
+          THREADS_PET_ACCESS_TOKEN: ${{ secrets.THREADS_PET_ACCESS_TOKEN }}
+          THREADS_SLEEP_USER_ID: ${{ secrets.THREADS_SLEEP_USER_ID }}
+          THREADS_SLEEP_ACCESS_TOKEN: ${{ secrets.THREADS_SLEEP_ACCESS_TOKEN }}
+        run: |
+          cd affiliate-engine
+          node src/amplify.js
+
       - name: 投稿状態を保存
         if: github.event.inputs.dry_run != 'true'
         run: |

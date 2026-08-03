@@ -37,7 +37,7 @@ const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, todayJST } = req
 const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育,節約,転職,ペット,睡眠').split(',').map((g) => g.trim());
 const TEMPLATES_PER_GENRE = parseInt(process.env.TEMPLATES_PER_GENRE || '32', 10);
 const CAMPAIGN_DAYS = parseInt(process.env.CAMPAIGN_DAYS || '60', 10);
-const POSTS_PER_DAY = parseInt(process.env.POSTS_PER_DAY || '3', 10);
+const POSTS_PER_DAY = parseInt(process.env.POSTS_PER_DAY || '4', 10);
 const SCHEDULE_TIMES = ['07:00', '12:00', '19:00', '21:00'];
 
 const SYSTEM_PROMPT = `あなたは日本のSNSアフィリエイトに精通したコンテンツストラテジストです。
@@ -167,7 +167,13 @@ function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } 
     for (const account of accounts) {
       const age = accountAgeDays(account.created, date);
       const slotTimes =
-        age < 7 ? times.slice(-1) : age < 14 ? [times[0], times[times.length - 1]] : times;
+        age < 7
+          ? times.slice(-1)
+          : age < 14
+            ? [times[0], times[times.length - 1]]
+            : age < 21
+              ? times.slice(0, 3)
+              : times;
 
       // 「複合」アカウントは全ジャンルをローテーション
       const genrePool =
