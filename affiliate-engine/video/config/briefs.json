@@ -1,0 +1,45 @@
+{
+  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『imagine agent 丸投げプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。",
+  "persona": {
+    "id": "mio",
+    "name": "澪（みお）",
+    "note": "全案件で使い回す固定キャラ。ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
+    "age_look": "26-29歳に見える",
+    "features": "黒髪セミロング、やや目尻の下がった一重寄りの二重、ナチュラルメイク、日本人、清潔感、生活感のある部屋",
+    "wardrobe": "オフホワイトのリブトップス／グレーのルームウェア",
+    "location": "自然光の入る洗面台、白いタイル、木のトレー",
+    "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変"
+  },
+  "briefs": [
+    {
+      "id": "2026-08-serum-a",
+      "product": "◯◯セラム（ブランド名は案件規約に従う）",
+      "category": "美容液",
+      "link_key": "skincare_serum_a",
+      "concern": "毛穴",
+      "pattern_id": "p6_implied_narrative",
+      "usp": "とろみが強いのに、のばすと水みたいに軽くなる",
+      "fill": {
+        "hook_line": "この状態、キープするためにやってること全部話す",
+        "stopped": "朝の洗顔でゴシゴシすること",
+        "kept": "夜だけこれを2プッシュ"
+      },
+      "platform": "instagram_reels",
+      "ai_disclosure": true,
+      "notes": "8/5リンク解禁分。links.json の skincare_serum_a にURLが入るまではリンクなしで運用"
+    },
+    {
+      "id": "2026-08-cleansing-b",
+      "product": "△△クレンジングバーム",
+      "category": "クレンジング",
+      "link_key": "skincare_cleansing_b",
+      "concern": "メイク崩れ",
+      "pattern_id": "p1_texture_asmr",
+      "usp": "体温で溶けるのが早い",
+      "fill": {},
+      "platform": "tiktok",
+      "ai_disclosure": true,
+      "notes": "テクスチャが主役の案件。ASMR型で3本まで横展開できる"
+    }
+  ]
+}
