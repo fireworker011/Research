@@ -1,49 +1,102 @@
 {
-  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『Grok Imagine Agent Mode まるなげプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。tone/variant は任意。variant は data/agent-variants.json のキー。",
+  "_comment": "実案件。既存エンジンの美容アカウント（accounts.json: beauty / miho_yurucare）とオルビスユー案件（links.json: 美容_オルビスユー）に紐づく。プレースホルダ版は briefs.example.json。tone/variant は任意、variant は data/agent-variants.json のキー。",
   "persona": {
-    "id": "mio",
-    "name": "澪（みお）",
-    "note": "全案件で使い回す固定キャラ。ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
-    "age_look": "26-29歳に見える",
-    "features": "黒髪セミロング、やや目尻の下がった一重寄りの二重、ナチュラルメイク、日本人、清潔感、生活感のある部屋",
-    "wardrobe": "オフホワイトのリブトップス／グレーのルームウェア",
-    "location": "自然光の入る洗面台、白いタイル、木のトレー",
-    "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変"
+    "id": "miho",
+    "name": "みほ",
+    "note": "Threads @miho_yurucare と同一人格。『ゆるケア』路線＝工程が少ない・気負わないトーン。全案件で使い回す固定キャラで、ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
+    "age_look": "30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）",
+    "features": "黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気",
+    "wardrobe": "グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる",
+    "location": "自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明",
+    "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工"
   },
   "briefs": [
     {
-      "id": "2026-08-serum-a",
-      "product": "◯◯セラム（ブランド名は案件規約に従う）",
-      "category": "美容液",
-      "link_key": "skincare_serum_a",
-      "concern": "毛穴",
+      "id": "orbis-u-01",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "スキンケアライン",
+      "link_key": "美容_オルビスユー",
+      "concern": "乾燥",
       "pattern_id": "p6_implied_narrative",
-      "usp": "とろみが強いのに、のばすと水みたいに軽くなる",
+      "usp": "化粧水と保湿液の2ステップで終わる",
       "fill": {
         "hook_line": "この状態、キープするためにやってること全部話す",
-        "stopped": "朝の洗顔でゴシゴシすること",
-        "kept": "夜だけこれを2プッシュ"
+        "stopped": "夜に3種類も重ねること",
+        "kept": "2ステップだけを毎日"
       },
+      "tone": "自然なUGC風。広告然としない、生活の中で撮られた感じ",
+      "variant": "problem_solution",
       "platform": "instagram_reels",
       "ai_disclosure": true,
-      "notes": "8/5リンク解禁分。links.json の skincare_serum_a にURLが入るまではリンクなしで運用",
-      "tone": "自然なUGC風。広告然としない、生活の中で撮られた感じ",
-      "variant": "problem_solution"
+      "notes": "バッチの1本目。既存テンプレ beauty_102『何もしたくない夜でも続けられるか』の訴求を映像化したもの"
     },
     {
-      "id": "2026-08-cleansing-b",
-      "product": "△△クレンジングバーム",
-      "category": "クレンジング",
-      "link_key": "skincare_cleansing_b",
-      "concern": "メイク崩れ",
+      "id": "orbis-u-02",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "化粧水",
+      "link_key": "美容_オルビスユー",
+      "concern": "乾燥",
       "pattern_id": "p1_texture_asmr",
-      "usp": "体温で溶けるのが早い",
+      "usp": "とろみがあるのに、肌の上ではスッと消える",
       "fill": {},
+      "tone": "シネマティックで高級感のあるトーン",
+      "variant": "cinematic",
       "platform": "tiktok",
       "ai_disclosure": true,
-      "notes": "テクスチャが主役の案件。ASMR型で3本まで横展開できる",
-      "tone": "シネマティックで高級感のあるトーン",
-      "variant": "cinematic"
+      "notes": "テクスチャ主役。言語非依存なので最初に回すならこれ。concern を変えて3本まで横展開できる"
+    },
+    {
+      "id": "orbis-u-03",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "スキンケアライン",
+      "link_key": "美容_オルビスユー",
+      "concern": "メイク崩れ",
+      "pattern_id": "p2_mirror_grwm",
+      "usp": "朝の工程が減るぶん、下地までの時間に余裕が出る",
+      "minutes": "3",
+      "fill": {
+        "hook_line": "朝がしんどい日ほど、工程を減らしたほうがうまくいく",
+        "step1": "化粧水は手のひらで温めてから",
+        "step2": "保湿液は小豆1粒ぶんだけ"
+      },
+      "tone": "自然なUGC風。気負わない、ゆるいトーン",
+      "platform": "threads",
+      "ai_disclosure": true,
+      "notes": "フォロワー獲得用。Threads本体アカウントの世界観づくりに寄せる"
+    },
+    {
+      "id": "orbis-u-04",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "スキンケアライン",
+      "link_key": "美容_オルビスユー",
+      "concern": "肌のごわつき",
+      "pattern_id": "p5_three_mistakes",
+      "usp": "工程が少ないぶん、続けやすい",
+      "fill": {
+        "mistake1": "アイテムを足して解決しようとする",
+        "mistake2": "合うか判断する前に本品を買う",
+        "mistake3": "疲れた日にスキップして、翌日にまとめて頑張る"
+      },
+      "tone": "テンポ速め。テロップ主導で読ませる",
+      "variant": "fast_buzz",
+      "platform": "youtube_shorts",
+      "ai_disclosure": true,
+      "notes": "コメント誘発用。③を『トライアルで先に試す』導線に繋げる"
+    },
+    {
+      "id": "orbis-u-05",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "保湿液",
+      "link_key": "美容_オルビスユー",
+      "concern": "ベタつき",
+      "pattern_id": "p1_texture_asmr",
+      "usp": "厚みがあるのに、べたつきが残らない",
+      "fill": {},
+      "tone": "自然なUGC風",
+      "variant": "problem_solution",
+      "platform": "threads",
+      "ai_disclosure": true,
+      "notes": "02の横展開2本目。同じ人物・同じ場所で撮り、テクスチャと悩みだけ差し替える。悩みは使用感（ベタつき）に寄せてある——くすみ等の肌状態を悩みに置くと、商品と並べた時点で効能を示唆しやすい"
     }
   ]
 }
