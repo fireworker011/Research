@@ -1,5 +1,5 @@
 {
-  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『imagine agent 丸投げプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。",
+  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『Grok Imagine Agent Mode まるなげプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。tone/variant は任意。variant は data/agent-variants.json のキー。",
   "persona": {
     "id": "mio",
     "name": "澪（みお）",
@@ -26,7 +26,9 @@
       },
       "platform": "instagram_reels",
       "ai_disclosure": true,
-      "notes": "8/5リンク解禁分。links.json の skincare_serum_a にURLが入るまではリンクなしで運用"
+      "notes": "8/5リンク解禁分。links.json の skincare_serum_a にURLが入るまではリンクなしで運用",
+      "tone": "自然なUGC風。広告然としない、生活の中で撮られた感じ",
+      "variant": "problem_solution"
     },
     {
       "id": "2026-08-cleansing-b",
@@ -39,7 +41,9 @@
       "fill": {},
       "platform": "tiktok",
       "ai_disclosure": true,
-      "notes": "テクスチャが主役の案件。ASMR型で3本まで横展開できる"
+      "notes": "テクスチャが主役の案件。ASMR型で3本まで横展開できる",
+      "tone": "シネマティックで高級感のあるトーン",
+      "variant": "cinematic"
     }
   ]
 }

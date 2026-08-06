@@ -91,15 +91,21 @@
 - 既知の弱点：**クリップ間で顔が変わる**。→ プロンプトに「変えてはいけないもの」を明示するのが対策（`build-brief.js` の `Must stay stable:` 節）
 - 実在人物・キャラクター・商標を含むプロンプトは避ける。権利リスクは生成者側に来る
 
-### Gemini による編集（ユーザー提供の7プロンプトについて）
-7つのプロンプトはそのまま使えるが、**期待値の調整が必要**：
+### Grok Imagine Agent Mode（計画→生成→スティッチ→仕上げを自律実行）
+2026年5月にベータ公開。**編集工程はここに一本化する。**
 
-- **Gemini 単体はタイムラインを描き出して動画ファイルを吐かない。** Gemini は「短く速いプロジェクト」向けのチャット側コンソールで、実際の**タイムライン編集と長尺化は Google Flow 側**の役割
-- Veo の1生成は**最大8秒**。長尺は Flow のタイムラインでクリップを連結して作る
-- したがって7プロンプトの正しい位置づけは **「編集ディレクション生成器」**。EDL（編集指示表）を出させて、実レンダリングは Flow / CapCut / ffmpeg のいずれかで行う
-- 「CapCut不要」は**成立する**が、それは Gemini が描き出すからではなく、**Gemini が出した EDL を Flow か ffmpeg に流し込めるから**
+- アクセス: grok.com（デスクトップ）→ Imagine → 入力欄で Agent Mode を ON。**SuperGrok（$30/月）以上**が必要で、Lite（$10/月）では使えない
+- プリセットは4種（Create Worlds / Short Film / **UGC Product Stories** / Brand Identity）。アフィリエイト動画は **UGC Product Stories** が該当。写真＋生活文脈＋アニメーションデモ＋ボイスオーバー用カットまで含む構成を計画する
+- 無限キャンバス上で「構成の計画 → アセット生成 → インライン編集 → スティッチ」を自律実行する。プリセットは**6〜12パネルのストーリーボード**を計画し、**6秒クリップ**を自動トランジションで連結する
+- ユーザー報告では1分前後のショートフィルムまで確認されている。公式の最大尺・解像度・fps は未公開
+- キャンバス上のツール: Quick Animate（画像→短尺動画）、Group Images（複数ショットを1セットとして扱う）、Crop / Trim / Fade、Stitch、Extend
+- コストは従量。**$4.20/分** という試算があり、ヒーロークリップを10バリエーション出してA/Bする使い方でも採算が合うとされる
+- **既知の弱点1：日本語テキスト。** Grok は文字をシステムフォントではなく**ピクセルとして描画する**ため、日本語は崩れる。動画内テロップは焼き込ませず、後乗せする前提で組むのが安全
+- **既知の弱点2：ループ。** クリップの終端が始端に戻ってループに見える。終端の状態を始端と変えるよう指示する
+- **既知の弱点3：シーンをまたいだ顔の不一致**（Imagine 単体と同じ）
 
-この前提で `prompts/gemini-edit.md` に7プロンプトをスキンケア向けに調整して収録した。
+この前提で `prompts/grok-agent-mode.md` に「まるなげ」マスタープロンプトと、Agent Mode 固有のクセへの対処をまとめた。
+案件別の自動生成版は `node src/build-brief.js --id <ID>` の出力①に入る。
 
 ---
 
@@ -126,8 +132,12 @@
 - [Grok Imagine Video: A Guide to AI Motion Creation - Scenario](https://help.scenario.com/articles/5410526625-grok-imagine-video-a-guide-to-ai-motion-creation)
 - [Grok Imagineで画像から動画を作る完全手順！モード選びとモーション指示のコツ - romptn Magazine](https://romptn.com/article/105423)
 - [Grok Imagine 1.0とは｜AI動画・画像生成の完全ガイド【2026年最新】 - AI革命](https://ai-revolution.co.jp/media/what-is-grok-imagine/)
-- [Bringing new Veo 3.1 updates into Flow to edit AI video - Google Blog](https://blog.google/technology/ai/veo-updates-flow/)
-- [Google Flow + Veo 3 Guide 2026 - veo3ai.io](https://www.veo3ai.io/blog/google-flow-veo-3-guide-2026)
+- [Grok Imagine Agent Mode: xAI's Infinite-Canvas Creative Agent (May 2026) - Codersera](https://codersera.com/blog/grok-imagine-agent-mode-launch-2026/)
+- [Grok Imagine Agent Mode Explained - Beginners in AI](https://beginnersinai.org/grok-imagine-agent-mode-explained/)
+- [Grok Imagine エージェントモードで1分動画・マンガを自動生成 - tech-noisy](https://tech-noisy.com/2026/05/02/grok-imagine-agent-mode-2026/)
+- [Grok Imagineとは？特徴・使い方・料金・API・他ツール比較まで徹底解説【2026年最新】 - AIsmiley](https://aismiley.co.jp/ai_news/grok-imagine/)
+- [Grokで動画生成｜Grok Imagineの使い方と料金【2026年7月】 - Uravation](https://uravation.com/media/grok-imagine-complete-guide-2026/)
+- [Grokの動画生成プロンプトおすすめ例｜日本語版の入門 - Development through AI](https://developmentthroughai.com/grok_prompt_osusume/)
 - [薬機法にまつわる表現ルール【化粧品編】 - A8.net](https://www.a8.net/compliance/pmd-rules-cosmetics.php)
 - [化粧品・医薬部外品で「美白」「ホワイトニング」は表現できる？ - マクロジ](https://maclogi.co.jp/column/3029/?type=lecture)
 - [【薬機法】化粧品・コスメ広告で標ぼうOK/NGな表現について解説 - 薬事法ドットコム](https://www.yakujihou.com/knowledge/cosme-advertisement/)

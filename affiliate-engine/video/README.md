@@ -1,18 +1,21 @@
 # スキンケア動画アフィリエイト パイプライン
 
-ChatGPTで作った美女画像 → Grok Imagineで動画化 → 編集 → 投稿。
+ChatGPTで作った美女画像 → **Grok Imagine Agent Mode にまるなげ** → 投稿。
 1本あたりの作業を「JSONに5行足して `node` を1回叩く」まで縮めるための仕組み。
 
 ```
-config/briefs.json  ──┐
-data/viral-patterns.json ├─► node src/build-brief.js ─► output/<ID>.md
-data/hooks.json     ──┘                                  ├─ ① ChatGPT画像プロンプト
-                                                         ├─ ② Grok i2vプロンプト
-                                                         ├─ ③ imagine agent 丸投げプロンプト（①②＋編集）
-                                                         ├─ ④ テロップ全文
-                                                         ├─ ⑤ 投稿キャプション
-                                                         └─ ⑥ 検品結果
+config/briefs.json       ──┐
+data/viral-patterns.json   │
+data/hooks.json            ├─► node src/build-brief.js ─► output/<ID>.md
+data/agent-variants.json ──┘                              ├─ ① Agent Mode まるなげプロンプト ←本命
+                                                          ├─ ② ChatGPT画像プロンプト（渡す素材）
+                                                          ├─ ③ Grok単体プロンプト（フォールバック）
+                                                          ├─ ④ テロップ全文
+                                                          ├─ ⑤ 投稿キャプション
+                                                          └─ ⑥ 検品結果
 ```
+
+編集は Grok Imagine Agent Mode に一本化してある。CapCut も Gemini も使わない。
 
 ---
 
@@ -46,9 +49,14 @@ node src/build-brief.js --all
   "usp": "べたつかないのに夕方まで持つ",
   "fill": { "stopped": "コットンでバシャバシャ叩くこと", "kept": "手のひらで30秒温めてから入れる" },
   "platform": "instagram_reels",
-  "ai_disclosure": true
+  "ai_disclosure": true,
+  "tone": "自然なUGC風",
+  "variant": "problem_solution"
 }
 ```
+
+`variant` は `data/agent-variants.json` のキー（`problem_solution` / `cinematic` / `fast_buzz` /
+`self_deprecating` / `from_existing_video`）。まるなげプロンプトの末尾に用途別の追加指示が入る。
 
 `fill` の記入漏れは `【要記入:キー名】` として出力に残り、コンソールにも警告が出る。
 
@@ -61,13 +69,26 @@ node src/build-brief.js --all
 | 0 | 案件と型を決めて `briefs.json` に追記 | エディタ | 2分 |
 | 1 | `node src/build-brief.js --id <ID>` | Node | 5秒 |
 | 2 | ベース画像を用意（初回のみ） | ChatGPT + `prompts/character-sheet.md` | 初回20分 / 2回目以降0分 |
-| 3 | カットごとの画像を生成 | ChatGPT（ベース画像を毎回添付）＋ 出力の① | 5分 |
-| 4 | 各画像を動画化 | Grok Imagine ＋ 出力の② | 5分 |
-| 5 | 編集 | 出力の③を丸投げ、または `prompts/gemini-edit.md` の1・3 | 5分 |
+| 3 | 人物カットの画像を生成 | ChatGPT（ベース画像を毎回添付）＋ 出力の② | 5分 |
+| 4 | **まるなげ**（生成〜スティッチ〜仕上げ） | Grok Imagine Agent Mode ＋ 出力の① | 5〜10分 |
+| 5 | テロップを乗せる | 任意のツール（Agent Modeが出したテロップ台本を使う） | 3分 |
 | 6 | 検品 | `docs/compliance-checklist.md` | 1分 |
 | 7 | 投稿（AIラベルON、`#PR`） | 各アプリ | 2分 |
 
-**工程3〜5をまとめてエージェントに投げるなら、出力の「③ imagine agent 丸投げプロンプト」だけを画像と一緒に渡す。** これが画像→動画プロンプトと編集プロンプトを1本に結合したもの。
+### 工程4のやり方
+
+1. grok.com/imagine をデスクトップで開く（**SuperGrok $30/月以上**が必要。Lite では Agent Mode が出ない）
+2. 入力欄で **Agent Mode を ON**、プリセット **UGC Product Stories** を選ぶ
+3. 工程3で作った人物画像と、商品写真（正面・斜め・使用シーン・パッケージ・テクスチャの5枚が目安）をアップロード
+4. 出力の「① Agent Mode まるなげプロンプト」を貼って送信
+5. ストーリーボードが出たら承認 → 以降は止まらずに完成まで走る
+
+**まず15秒で試し、当たったら同じストーリーボードで30秒に伸ばす。** 最初から長尺を狙うと破綻シーンの引き当てで作り直しコストが跳ねる。
+
+### テロップを焼き込ませない理由
+
+Grok は文字をシステムフォントではなく**ピクセルとして描画する**ため、日本語は崩れる。
+まるなげプロンプトには「日本語を焼き込むな／上15%・下25%をセーフエリアとして空けろ／テロップ台本をタイムコード付きテキストで出せ」を入れてある。出てきた台本を工程5で乗せる。
 
 ---
 
@@ -116,7 +137,8 @@ node src/build-brief.js --all
 | `config/briefs.json` | 案件定義とペルソナ（`briefs.example.json` が雛形） |
 | `src/build-brief.js` | プロンプト一式のビルダー |
 | `prompts/character-sheet.md` | ChatGPTで同一人物を安定させる手順 |
-| `prompts/gemini-edit.md` | 編集用7プロンプト（スキンケア向けに調整済み） |
+| `prompts/grok-agent-mode.md` | Agent Mode の実仕様、汎用マスタープロンプト、詰まった時の対処 |
+| `data/agent-variants.json` | まるなげプロンプトの用途別アドオン5種 |
 | `output/` | 生成物 |
 
 ## 既存エンジンとの関係
@@ -124,6 +146,7 @@ node src/build-brief.js --all
 - `link_key` は `affiliate-engine/config/links.json` のキーと揃える。URL未設定の間はリンクなしで運用する（既存の投稿側と同じ挙動）
 - 検品は `affiliate-engine/src/compliance.js` を直接呼んでいる。禁止表現の追加はそちらに入れれば動画側にも効く
 - 動画そのものの自動投稿はしない。Threads/Instagram/TikTok とも動画投稿は手動または各公式ツール経由（`src/video-semi-auto.js` と同じ方針）
+- Agent Mode は API ではなくWeb UIなので、この工程だけは自動化しない（手で貼る）
 
 ## 検証
 

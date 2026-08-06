@@ -6,11 +6,10 @@
  *
  * config/briefs.json の1案件から、動画1本を作るのに必要なプロンプト一式を組み立てる。
  *
- *   ① ChatGPT 画像生成プロンプト（キャラ固定＋カットごとの差分）
- *   ② Grok Imagine 画像→動画プロンプト（カットごと）
- *   ③ imagine agent 丸投げプロンプト（①②＋編集指示の「がっちゃんこ」）
- *   ④ Gemini 編集プロンプト（案件で穴埋め済み）
- *   ⑤ キャプション・テロップ＋コンプライアンス検査結果
+ *   ① Grok Imagine Agent Mode まるなげプロンプト（本命。計画→生成→スティッチ→仕上げまで一括）
+ *   ② ChatGPT 画像生成プロンプト（Agent Mode に渡す人物素材）
+ *   ③ Grok Imagine 単体プロンプト（Agent Mode を使わない／特定シーンだけ作り直す時）
+ *   ④ テロップ全文 ⑤ 投稿キャプション ⑥ コンプライアンス検査結果
  *
  * 設計方針:
  * - 型（バズの型）は data/viral-patterns.json に外出しし、コードは組み立てに徹する。
@@ -33,6 +32,7 @@ const { checkContent } = require('../../src/compliance');
 const ROOT = path.join(__dirname, '..');
 const PATTERNS_PATH = path.join(ROOT, 'data', 'viral-patterns.json');
 const HOOKS_PATH = path.join(ROOT, 'data', 'hooks.json');
+const VARIANTS_PATH = path.join(ROOT, 'data', 'agent-variants.json');
 const BRIEFS_PATH = process.env.BRIEFS_JSON || path.join(ROOT, 'config', 'briefs.json');
 const OUT_DIR = path.join(ROOT, 'output');
 
@@ -169,68 +169,109 @@ function skincareLint(texts, banned) {
   return hits;
 }
 
-/** ③ imagine agent への丸投げプロンプト（画像→動画 ＋ 編集 の「がっちゃんこ」） */
-function imagineAgentPrompt(brief, pattern, persona, values, vids, caps, exportSpec) {
-  const cutTable = pattern.cuts.map((cut, i) =>
-    `| ${i + 1} | ${cut.t} | ${cut.role} | ${fill(cut.shot, values)} | ${fill(cut.motion, values)} | ${fill(cut.caption, values)} |`
-  ).join('\n');
+/**
+ * ③ Grok Imagine Agent Mode への「まるなげ」プロンプト
+ *
+ * Agent Mode の実仕様に合わせた最適化ポイント（docs/market-research.md §5 参照）:
+ * - 素材クリップの基本単位は6秒。シーン数は「尺 ÷ 6」ではなく、6秒素材を各シーンの
+ *   目標尺にトリムして繋ぐ前提で書く。そうしないとエージェントが尺合わせに失敗する
+ * - 日本語テロップはピクセルレベルで描画されるため文字化けする。焼き込ませず、
+ *   セーフエリアを空けさせてテロップ台本をテキストで出させる
+ * - ループ癖があるので「終端の状態を始端と変える」ことを明示する
+ * - ストーリーボード承認を挟むかどうかを毎回明示する（黙っていると止まる）
+ */
+function agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant) {
+  const sceneTable = pattern.cuts.map((cut, i) => {
+    const [s, e] = cut.t.split('-').map(Number);
+    return `| ${i + 1} | ${(e - s).toFixed(1)}秒 | ${cut.role} | ${fill(cut.shot, values)} | ${fill(cut.motion, values)} |`;
+  }).join('\n');
 
-  return `あなたは、静止画から縦型ショート動画を1本完成させる映像ディレクター兼エディターです。
-YouTube・ドキュメンタリー編集で15年以上の経験を持つシニアエディターとして振る舞ってください。
-入力として、同一人物・同一世界観のAI生成静止画を ${pattern.cuts.length} 枚渡します。
-これらを「画像→動画化」し、続けて「1本の動画への編集」まで、途中で私に確認を取らず最後まで実行してください。
+  const capTable = caps.map((c) => `| ${c.n} | ${c.t} | ${c.text} |`).join('\n');
 
-## 案件
-- 商品: ${brief.product}（${brief.category}）
+  return `あなたはプロのアフィリエイト動画ディレクター兼UGCクリエイターです。
+Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持率が高くクリックしたくなる縦型アフィリエイト動画を、まるなげで最後まで完成させてください。
+
+【やること】
+1. 下の構成表をもとに ${pattern.cuts.length} シーンのストーリーボードを確定する
+2. 同一人物・同一商品を保ったまま各シーンを生成する（素材は6秒で作り、目標尺にトリムする）
+3. スティッチして1本に繋ぐ
+4. 効果音・BGM・CTAを配置する
+5. 完成動画と、後述の納品物一式を出力する
+
+【動画の条件】
+- 形式: 9:16 縦型（${brief.platform}）
+- 尺: ${pattern.duration_sec}秒
+- トーン: ${brief.tone || '自然なUGC風。広告然としない、生活の中で撮られた感じ'}
+- ターゲット: ${values.concern}が気になっている20代後半〜30代前半
+- 採用する型: ${pattern.name}
+  （${pattern.why}）
+
+【商品情報】
+- 商品名: ${brief.product}（${brief.category}）
 - 狙う悩み: ${values.concern}
-- 訴求: ${values.usp || '【要記入:usp】'}
-- 尺: ${pattern.duration_sec}秒 / 9:16 / 配信先: ${brief.platform}
-- 採用する型: ${pattern.name}（${pattern.why}）
+- 主な特徴・訴求: ${values.usp || '【要記入:usp】'}
+- CTA文言: ${caps[caps.length - 1].text}
 
-## 登場人物（全カットで固定）
+【登場人物 — 全シーンで固定】
 ${persona.age_look}、${persona.features}。衣装: ${persona.wardrobe}。場所: ${persona.location}。
-カットをまたいで顔・髪型・肌の色・衣装が変化してはいけません。変化したカットは破棄して作り直してください。
+アップロードした人物画像を厳密に参照し、シーンをまたいで顔・髪型・肌の色・衣装が変化しないようにしてください。
+変化したシーンは採用せず、生成し直してください。
 
-## 第1工程：画像→動画（各カットを個別に生成）
-各カットについて、以下の要件を満たす動画クリップを作ってください。
-- 動きは1カットにつき1種類だけ。複数の動きを重ねると破綻します
-- カメラは元画像のフレーミングを保持。クリップ内でカットを割らない
-- 顔の構造・髪型・肌の色・衣装・商品ラベルは一切変形させない
-- 音声は環境音のみ。人物にセリフを喋らせない
+【シーン構成 — この順序と尺を守る】
+| # | 目標尺 | 役割 | 画（何が映るか） | 動き |
+|---|---|---|---|---|
+${sceneTable}
 
-| # | タイムコード | 役割 | 画（何が映るか） | 動き | テロップ |
-|---|---|---|---|---|---|
-${cutTable}
+【生成時のルール】
+- 1シーンにつき動きは1種類だけ。複数の動きを重ねると破綻します
+- カメラは1シーン内でフレーミングを保持。シーンの内側でカットを割らないでください
+- **ループ回避**: 各シーンは終端の状態を始端と変えてください（同じ位置に戻すとループに見えます）
+- 顔の構造・髪型・肌の色・衣装・商品ラベルは一切変形させないでください
+- 商品の見た目・色・ロゴは、アップロードした商品画像どおりに正確に保ってください
+- 人物にセリフを喋らせないでください。音声は環境音とBGMのみ
+- 0〜2秒に商品名・ロゴを出さないでください（広告と判定されて離脱します）
 
-各カットの生成プロンプト（そのまま使用可）:
-${vids.map((v) => `- カット${v.n}（${v.sec}秒）: ${v.prompt}`).join('\n')}
+【テロップの扱い — 重要】
+動画内に日本語の文字を焼き込まないでください。文字が崩れます。
+代わりに、以下2点を守ってください。
+1. 全シーンで、画面**上15%と下25%を無地に近い状態**に保つ（後からテロップを乗せるセーフエリア）
+2. テロップ文言は焼き込まず、納品物④としてタイムコード付きのテキストで出力する
+英数字の短い表記（商品名の英字ロゴなど）だけは、商品画像に写っているものをそのまま保つ形で可とします。
 
-## 第2工程：編集（1本に組み上げる）
-第1工程のクリップを、上の表のタイムコード順に接続し、次を適用してください。
-1. **冒頭0-2秒**: 視覚フックとテロップを同時に立てる。商品名・ロゴはこの区間に出さない
-2. **カット尺**: 平均1.2〜2.5秒。3秒を超えるカットは中で寄り／引きを作って変化を入れる
-3. **テロップ**: 太字・高コントラスト・画面中央60%以内（上下のUIに隠れるため）。1カット1メッセージ
-4. **音**: ${pattern.audio}
-5. **トランジション**: 基本はストレートカット。使う場合もホイップパン/フラッシュを全体で1回まで
-6. **パターンインタラプト**: 5秒に1回、SFX・ズーム・テロップ切替のいずれかで変化を作る
-7. **CTA**: 最終カットに「${caps[caps.length - 1].text}」を出す
-8. **書き出し**: ${exportSpec.res} / ${exportSpec.fps}fps / ${exportSpec.codec} / ${exportSpec.bitrate} / 音声 ${exportSpec.audio} / ${exportSpec.color}。${exportSpec.note}
+想定しているテロップ（この文言をタイムコードに割り当てて④として出力してください）:
+| # | タイムコード | テロップ |
+|---|---|---|
+${capTable}
 
-## 守ること（違反したら作り直し）
-- 効果・効能を断定しない。化粧品の効能効果の範囲を超える表現（「シミが消える」「ニキビが治る」「美白になる」等）を映像・音声・テロップのいずれにも入れない
-- 使用前後の変化を見せない／示唆する画作りをしない。この人物の肌は「成果」ではなく「世界観」です
-- 架空の人物に体験談を語らせない。一人称の使用感を音声・テロップで語らせない
-- 実在の人物・ブランドに似せない
-${brief.ai_disclosure ? '- 最終カットに「AI生成」の旨を表示する（映像内表示＋投稿時のAIラベル両方）' : ''}
-- 広告表記 #PR をキャプションに必ず含める
+【音】
+${pattern.audio}
+シーンの切り替わりに合わせてSFXを置き、5秒に1回は音か画に変化を作ってください（パターンインタラプト）。
 
-## 出力
-1. 完成動画（${pattern.duration_sec}秒、9:16）
-2. 使用した編集判断の一覧（タイムコード / 編集アクション / B-roll・ビジュアル / 音声・SFX / 編集メモ の5列の表）
-3. 上の「守ること」への自己チェック結果（各項目 OK/NG と根拠）`;
+【書き出し】
+${exportSpec.res} / ${exportSpec.fps}fps / ${exportSpec.codec} / ${exportSpec.bitrate} / 音声 ${exportSpec.audio} / ${exportSpec.color}
+${exportSpec.note}
+
+【守ること — 違反したシーンは採用しない】
+- 効果・効能を断定しないでください。化粧品の効能効果の範囲を超える表現（「シミが消える」「ニキビが治る」「美白になる」等）を、映像・音声・テロップ案のいずれにも入れないでください
+- 使用前後の変化を見せる画、示唆する画を作らないでください。この人物の肌は「成果」ではなく「世界観」です
+- 架空の人物に一人称の体験談・使用感を語らせないでください
+- 実在の人物・ブランド・キャラクターに似せないでください
+- 露出の高い服装、扇情的なポーズにしないでください
+${brief.ai_disclosure ? '- 最終シーンに「AI生成」の旨を表示できる無地の余白を残してください' : ''}
+- 「絶対」「必ず」「100%」などの断定強調を使わないでください
+
+【進め方】
+まずストーリーボードを提示してください。私が承認したら、生成・スティッチ・仕上げまで止まらずに実行してください。
+
+【納品物】
+1. 完成動画（${pattern.duration_sec}秒 / 9:16）
+2. 使用したシーンごとの生成プロンプト
+3. 編集判断の一覧（タイムコード / 編集アクション / ビジュアル / 音声・SFX / メモ の5列の表）
+4. テロップ台本（タイムコード付きテキスト。動画には焼き込まない）
+5. 上の「守ること」への自己チェック結果（各項目 OK/NG と根拠）${variant ? `\n\n【追加指示（${variant.name}）】\n${variant.add}` : ''}`;
 }
 
-function render(brief, patterns, hooks, personaDefault) {
+function render(brief, patterns, hooks, variants, personaDefault) {
   const pattern = patterns.patterns.find((p) => p.id === brief.pattern_id);
   if (!pattern) throw new Error(`型が見つかりません: ${brief.pattern_id}`);
   const persona = brief.persona || personaDefault;
@@ -241,7 +282,9 @@ function render(brief, patterns, hooks, personaDefault) {
   const vids = videoPrompts(pattern, values);
   const caps = captions(pattern, values);
   const caption = postCaption(brief, pattern, values);
-  const agentPrompt = imagineAgentPrompt(brief, pattern, persona, values, vids, caps, exportSpec);
+  const variant = brief.variant ? (variants.variants || {})[brief.variant] : null;
+  if (brief.variant && !variant) throw new Error(`variant が見つかりません: ${brief.variant}`);
+  const agentPrompt = agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant);
 
   // 検品
   const captionCheck = checkContent(caption);
@@ -263,32 +306,36 @@ function render(brief, patterns, hooks, personaDefault) {
 
 ---
 
-## ① ChatGPT 画像生成プロンプト
+## ① Grok Imagine Agent Mode まるなげプロンプト ← 本命
+
+**手順**: grok.com/imagine（デスクトップ）→ Agent Mode を ON → プリセット **UGC Product Stories** を選択
+→ 人物画像（②で作ったもの）と商品写真をアップロード → 以下を貼って送信 → ストーリーボードを承認。
+
+${variant ? `適用バリアント: **${variant.name}**（\`${brief.variant}\`）\n` : ''}
+\`\`\`
+${agentPrompt}
+\`\`\`
+
+---
+
+## ② ChatGPT 画像生成プロンプト（Agent Modeに渡す素材）
 
 先に \`prompts/character-sheet.md\` でベース画像を1枚作り、**そのベース画像を毎回添付した上で**以下を投げる。
 テキストだけで同一人物を出そうとすると必ず顔が変わる。
+Agent Mode に渡すのは人物カットだけでよい（商品カットは実物の商品写真を使う方が正確）。
 
 ${imgs.map((p) => `### カット${p.n}（${p.t} ${p.role}）\n\`\`\`\n${p.prompt}\n\`\`\``).join('\n\n')}
 
 ---
 
-## ② Grok Imagine 画像→動画プロンプト
+## ③ Grok Imagine 単体プロンプト（フォールバック）
 
-各カットの画像をアップロードし、以下を貼る。1クリップ最大10秒（Imagine 1.0）。
+Agent Mode を使わない場合、またはAgent Modeの出力が破綻した特定シーンだけ作り直す場合に使う。
+各カットの画像をアップロードして以下を貼る。1クリップ最大10秒（Imagine 1.0、基本単位は6秒）。
 被写体と動きの記述は編集しやすいよう日本語のまま残してある。指示追従が弱い時は英訳する。
 動きが出ない場合は「Motion:」の動詞を強い語（drifts / unfurls / surges）に差し替える。
 
 ${vids.map((p) => `### カット${p.n}（${p.t} / ${p.sec}秒）\n\`\`\`\n${p.prompt}\n\`\`\``).join('\n\n')}
-
----
-
-## ③ imagine agent 丸投げプロンプト（画像→動画 ＋ 編集）
-
-画像 ${pattern.cuts.length} 枚と一緒に、これ1つを投げる。
-
-\`\`\`
-${agentPrompt}
-\`\`\`
 
 ---
 
@@ -312,12 +359,12 @@ ${captionCheck.text}
 - 型の固有リスク: ${pattern.risk_notes}
 - AIラベル: ${brief.ai_disclosure ? '**必要**（投稿時にプラットフォームのAI表示をONにする）' : '不要'}
 
-## ⑦ Gemini 編集プロンプト
+## ⑦ 仕上げ
 
-\`prompts/gemini-edit.md\` を参照。この案件の穴埋め値:
-- ターゲット視聴者: ${values.concern}が気になっている20代後半〜30代前半
-- プラットフォーム: ${brief.platform}
-- コンテンツの傾向: ${pattern.name}
+Agent Mode は日本語テロップを焼き込めないので、①の納品物④として出てくるテロップ台本を
+自分で乗せる。上下のセーフエリア（上15% / 下25%）を空けさせてあるのでそこに置く。
+出しきれない時の追い込み方は \`prompts/grok-agent-mode.md\` の「詰まった時」を参照。
+投稿前に \`docs/compliance-checklist.md\` を1回通すこと。
 `;
 
   return { md, ok: captionCheck.ok && lintHits.length === 0, missing, lintHits };
@@ -327,6 +374,7 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const patterns = readJSON(PATTERNS_PATH);
   const hooks = readJSON(HOOKS_PATH);
+  const variants = readJSON(VARIANTS_PATH);
   const cfg = readJSON(BRIEFS_PATH);
 
   if (args.list) {
@@ -346,7 +394,7 @@ function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   let failed = 0;
   for (const brief of targets) {
-    const { md, ok, missing, lintHits } = render(brief, patterns, hooks, cfg.persona);
+    const { md, ok, missing, lintHits } = render(brief, patterns, hooks, variants, cfg.persona);
     const out = path.join(OUT_DIR, `${brief.id}.md`);
     fs.writeFileSync(out, md);
     const status = ok ? 'OK' : 'REQUIRES FIX';
@@ -360,4 +408,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { render, fill, videoPrompts, imagePrompts, skincareLint, PLATFORM_EXPORT };
+module.exports = { render, fill, videoPrompts, imagePrompts, agentModePrompt, skincareLint, PLATFORM_EXPORT };
