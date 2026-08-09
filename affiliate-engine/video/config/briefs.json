@@ -199,6 +199,75 @@
       "platform": "threads",
       "ai_disclosure": true,
       "notes": "既存テンプレ pet_103『原材料と成分値の見方』の映像化。犬の全身生成が不要でAI生成の破綻リスクが最も低い"
+    },
+    {
+      "id": "orbis-u-06",
+      "domain": "skincare",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "スキンケアライン",
+      "link_key": "美容_オルビスユー",
+      "concern": "毛穴",
+      "pattern_id": "p3_ingredient_reply",
+      "usp": "全成分表示の順番だけ見れば選びやすい",
+      "fill": {
+        "question": "成分とか気にしてる？",
+        "ingredient": "全成分表示の上のほう",
+        "reason": "化粧品は配合量が多い順に表示するルールなので、上位に何があるかで方向性が分かる"
+      },
+      "tone": "自然なUGC風。気負わない、実用寄り",
+      "platform": "instagram_reels",
+      "ai_disclosure": true,
+      "notes": "未使用パターンの消化。成分名を断定せず『全成分表示は配合量順』という一般的な表示ルールに基づく安全な切り口にしてある。特定成分の効能を訴求したい場合は、公式の成分表示を確認してから fill.ingredient/reason を差し替えること（未確認のまま具体的な成分名を書かない）"
+    },
+    {
+      "id": "furbo-03",
+      "domain": "pet",
+      "product": "Furbo ペットカメラ（見守りカメラ）",
+      "category": "見守りカメラ",
+      "link_key": "ペット_Furbo",
+      "concern": "夏の室温管理",
+      "pattern_id": "pet_p1_furbo_curiosity",
+      "usp": "室温もスマホで確認できる",
+      "fill": {},
+      "tone": "自然なUGC風。恐怖訴求ではなく実用的な安心感で引く",
+      "platform": "threads",
+      "ai_disclosure": true,
+      "notes": "01/02とは異なる悩み軸（夏場の熱中症リスク）での横展開。温湿度確認は一般に知られたFurboの製品特徴だが、具体的な対応レンジ等は商品ページで要確認"
+    },
+    {
+      "id": "hoken-03",
+      "domain": "pet",
+      "product": "ペット保険（資料請求）",
+      "category": "ペット保険",
+      "link_key": "ペット_保険",
+      "concern": "老後の医療費",
+      "pattern_id": "pet_p3_vet_reply",
+      "usp": "年齢が上がる前に加入条件を確認しておける",
+      "fill": {
+        "question": "保険って何歳から入れるの？",
+        "fact": "多くのペット保険は加入できる年齢に上限がある",
+        "decision": "うちは早めに資料請求だけしておくことにした"
+      },
+      "tone": "落ち着いた、誠実なトーン。契約を煽らない",
+      "platform": "tiktok",
+      "ai_disclosure": true,
+      "notes": "01/02とは異なる悩み軸（加入年齢の上限という一般的な保険の仕組み）。具体的な年齢基準は商品ごとに異なるため『多くの場合』に留め、断定しない"
+    },
+    {
+      "id": "food-02",
+      "domain": "pet",
+      "product": "プレミアムフード",
+      "category": "ペットフード",
+      "link_key": "ペット_フード",
+      "concern": "切り替えのタイミング",
+      "pattern_id": "pet_p5_food_texture",
+      "usp": "1週間かけて少しずつ切り替えるのが基本",
+      "fill": {},
+      "tone": "シネマティックで高級感のあるトーン",
+      "variant": "cinematic",
+      "platform": "tiktok",
+      "ai_disclosure": true,
+      "notes": "01の横展開。フード切り替え時に消化器へ負担をかけないための段階切り替えという一般的な注意点を軸にした、成分の断定を避ける切り口"
     }
   ]
 }
