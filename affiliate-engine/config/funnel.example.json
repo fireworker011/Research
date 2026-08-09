@@ -3,5 +3,17 @@
   "avg_commission_jpy": 5000,
   "approval_rate": 0.8,
   "cvr_click_to_conversion": 0.015,
-  "ctr_view_to_click": 0.008
+  "ctr_view_to_click": 0.008,
+  "_commission_by_genre_comment": "ジャンルごとの成果報酬単価の目安。avg_commission_jpy 一律ではジャンル間の単価差（婚活相談所の約40,000円 〜 HMBの2,000円台）を無視してしまうため、判断材料として分離した。confidence: sourced=Web検索で相場情報が取れたもの／estimate=未確認の推定値（必ず実際のASPプログラム詳細で確認すること）。実額はA8.net等のプログラムごとに異なり、キャンペーンで変動する",
+  "commission_by_genre": {
+    "婚活": { "jpy": 40000, "confidence": "sourced", "link_key": "婚活_相談所", "note": "結婚相談所の新規入会型。単体の恋愛・婚活ジャンルは高単価案件が多いとされる" },
+    "副業": { "jpy": 12000, "confidence": "sourced", "link_key": "副業_FX", "note": "FX口座開設。セルフバックで2万円以上の情報あり、アフィリエイト単価はやや控えめに見て試算。副業_ココナラ／副業_mixhostは別途低単価想定" },
+    "節約": { "jpy": 6000, "confidence": "sourced", "link_key": "節約_格安SIM", "note": "格安SIM新規契約1件あたり。数千円〜1万円台という情報の中央値。節約_ふるさと納税は率型で別途低め想定" },
+    "教育": { "jpy": 5000, "confidence": "estimate", "link_key": "教育_ヒューマン", "note": "講座紹介型。具体的な相場は未確認、A8.netで要確認" },
+    "転職": { "jpy": 5000, "confidence": "estimate", "link_key": "転職_エージェント", "note": "登録のみで成果になるプログラムが多く参入障壁は低いが、単価は未確認。1件あたりの相場が判明次第更新する" },
+    "睡眠": { "jpy": 4000, "confidence": "estimate", "link_key": "睡眠_マットレス", "note": "マットレス購入型。相場未確認" },
+    "筋トレ": { "jpy": 3000, "confidence": "sourced", "link_key": "筋トレ_HMB", "note": "HMBサプリ購入。1件2,000〜5,000円という情報の中央値" },
+    "ペット": { "jpy": 1500, "confidence": "estimate", "link_key": "ペット_保険", "note": "資料請求型が中心のため低単価想定。Furbo（物販）は別途" },
+    "美容": { "jpy": 1000, "confidence": "estimate", "link_key": "美容_オルビスユー", "note": "トライアルセット中心のため低単価想定。現行9ジャンルの中で最も単価が低い部類" }
+  }
 }

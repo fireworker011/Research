@@ -176,6 +176,25 @@ function renderReport(date, accountMetrics, conversions, gap) {
   lines.push('');
   lines.push('※ CTR/CVR は config/funnel.json の想定値。短縮URL の実測クリック数が取れたら更新すること');
   lines.push('');
+  const byGenre = gap.funnel.commission_by_genre || {};
+  if (Object.keys(byGenre).length) {
+    lines.push('## ジャンル別 想定単価（高単価案件に寄せる判断材料）');
+    lines.push('');
+    lines.push('| ジャンル | 想定単価 | 根拠 | このジャンルの必要views/日（基準シナリオ） |');
+    lines.push('|---|---|---|---|');
+    const ranked = Object.entries(byGenre).sort((a, b) => b[1].jpy - a[1].jpy);
+    for (const [genre, v] of ranked) {
+      const requiredViews = Math.ceil(
+        TARGET_MONTHLY_JPY / gap.funnel.approval_rate / v.jpy / gap.funnel.cvr_click_to_conversion / gap.funnel.ctr_view_to_click / 30
+      );
+      const confidence = v.confidence === 'sourced' ? '確認済み' : '未確認・要ASP確認';
+      lines.push(`| ${genre} | ¥${v.jpy.toLocaleString()} | ${confidence} | ${requiredViews.toLocaleString()} |`);
+    }
+    lines.push('');
+    lines.push('※ `node src/funnel-calc.js --genre <ジャンル名>` で悲観/楽観シナリオ込みの詳細を見る。');
+    lines.push('   単価は `config/funnel.json` の `commission_by_genre`。実額は必ずASPプログラム詳細で確認すること。');
+    lines.push('');
+  }
   lines.push('## アカウント別メトリクス');
   lines.push('');
   lines.push('| アカウント | ジャンル | フォロワー | 直近25投稿の合計views | 平均views/投稿 |');
