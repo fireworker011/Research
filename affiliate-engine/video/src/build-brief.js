@@ -146,7 +146,9 @@ function captions(pattern, values) {
 /** 投稿キャプション（本文）。compliance を通す前提の素案 */
 function postCaption(brief, pattern, values) {
   const lines = [
-    fill(pattern.cuts[0].caption, values).replace(/^\(.*\)$/, ''),
+    // 丸括弧だけのキャプションは「テロップなし」等の制作メモなので投稿本文には出さない。
+    // 全角括弧も対象にする（型のJSONは日本語で書かれるため、半角だけだと素通りする）
+    fill(pattern.cuts[0].caption, values).replace(/^[(（].*[)）]$/, ''),
     '',
     `${brief.product}｜${values.concern}が気になる日に。`,
     values.usp ? `・${values.usp}` : null,

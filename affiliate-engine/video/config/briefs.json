@@ -115,6 +115,21 @@
       "platform": "instagram_reels",
       "ai_disclosure": true,
       "notes": "未使用パターンの消化。成分名を断定せず『全成分表示は配合量順』という一般的な表示ルールに基づく安全な切り口にしてある。特定成分の効能を訴求したい場合は、公式の成分表示を確認してから fill.ingredient/reason を差し替えること（未確認のまま具体的な成分名を書かない）"
+    },
+    {
+      "id": "orbis-u-07",
+      "product": "オルビスユー（エイジングケアライン／トライアルセット）",
+      "category": "化粧水",
+      "link_key": "美容_オルビスユー",
+      "concern": "乾燥",
+      "pattern_id": "p8_handsonly_shorts",
+      "usp": "とろみがあるのに、肌の上ではスッと消える",
+      "fill": {},
+      "tone": "無人称・静物寄り。生活音とテクスチャだけで見せる、語らないトーン",
+      "variant": "cinematic",
+      "platform": "youtube_shorts",
+      "ai_disclosure": true,
+      "notes": "YouTube Shorts のインプ/登録者比を狙う型の1本目。顔を1カットも出さないためAI生成の最大事故（シーンをまたいだ顔の変化）が構造的に起きない。02（テクスチャASMR）と素材を共用できるので、同じ撮影セットで続けて作るのが効率的"
     }
   ]
 }
