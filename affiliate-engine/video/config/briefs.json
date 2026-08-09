@@ -1,31 +1,18 @@
 {
-  "_comment": "実案件。ジャンル別に personas.<domain> を参照する（domain のデフォルトは 'skincare'）。スキンケアは既存エンジンの美容アカウント（accounts.json: beauty / miho_yurucare）とオルビスユー案件（links.json: 美容_オルビスユー）、ペットは pet アカウント（docs/account-setup-kit.md §7『ふく｜いぬと暮らしの手帖』）と Furbo／ペット保険／ペットフード案件（links.json: ペット_Furbo, ペット_保険, ペット_フード）に紐づく。プレースホルダ版は briefs.example.json。tone/variant は任意、variant は data/agent-variants.json のキー。",
-  "personas": {
-    "skincare": {
-      "id": "miho",
-      "name": "みほ",
-      "note": "Threads @miho_yurucare と同一人格。『ゆるケア』路線＝工程が少ない・気負わないトーン。全案件で使い回す固定キャラで、ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
-      "age_look": "30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）",
-      "features": "黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気",
-      "wardrobe": "グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる",
-      "location": "自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明",
-      "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工"
-    },
-    "pet": {
-      "id": "fuku",
-      "name": "ふく",
-      "note": "Threads @pet アカウント『ふく｜いぬと暮らしの手帖』（docs/account-setup-kit.md §7）と同一世界観。かわいい写真の消費だけで終わらせず、健康・お金・しつけの実用情報路線で差別化する",
-      "age_look": "2歳前後の成犬に見える（子犬にしないのは、はじめて犬と暮らす人向けの実用アカウントという設定に合わせるため。子犬は動物福祉の観点でも演出のハードルが上がる）",
-      "features": "柴犬、赤褐色の被毛に白いソックス状の足先、立ち耳、巻き尾、人懐っこい表情。一般的な賃貸のリビングで暮らす生活感",
-      "wardrobe": "首輪なし、または生成り色の布首輪のみ。ブランドロゴの入った首輪・服は使わない",
-      "location": "一般的な賃貸のリビング（フローリング）と玄関（モルタル調）。自然光。夜のカットは電球色の間接照明",
-      "forbidden": "実在の有名犬アカウントに似せる、苦しんでいる・怯えているように見える表情、危険物のそばに置く、暗すぎる／不穏な画づくり"
-    }
+  "_comment": "実案件。既存エンジンの美容アカウント（accounts.json: beauty / miho_yurucare）とオルビスユー案件（links.json: 美容_オルビスユー）に紐づく。プレースホルダ版は briefs.example.json。tone/variant は任意、variant は data/agent-variants.json のキー。",
+  "persona": {
+    "id": "miho",
+    "name": "みほ",
+    "note": "Threads @miho_yurucare と同一人格。『ゆるケア』路線＝工程が少ない・気負わないトーン。全案件で使い回す固定キャラで、ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
+    "age_look": "30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）",
+    "features": "黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気",
+    "wardrobe": "グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる",
+    "location": "自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明",
+    "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工"
   },
   "briefs": [
     {
       "id": "orbis-u-01",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "スキンケアライン",
       "link_key": "美容_オルビスユー",
@@ -45,7 +32,6 @@
     },
     {
       "id": "orbis-u-02",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "化粧水",
       "link_key": "美容_オルビスユー",
@@ -61,7 +47,6 @@
     },
     {
       "id": "orbis-u-03",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "スキンケアライン",
       "link_key": "美容_オルビスユー",
@@ -81,7 +66,6 @@
     },
     {
       "id": "orbis-u-04",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "スキンケアライン",
       "link_key": "美容_オルビスユー",
@@ -101,7 +85,6 @@
     },
     {
       "id": "orbis-u-05",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "保湿液",
       "link_key": "美容_オルビスユー",
@@ -116,93 +99,7 @@
       "notes": "02の横展開2本目。同じ人物・同じ場所で撮り、テクスチャと悩みだけ差し替える。悩みは使用感（ベタつき）に寄せてある——くすみ等の肌状態を悩みに置くと、商品と並べた時点で効能を示唆しやすい"
     },
     {
-      "id": "furbo-01",
-      "domain": "pet",
-      "product": "Furbo ペットカメラ（見守りカメラ）",
-      "category": "見守りカメラ",
-      "link_key": "ペット_Furbo",
-      "concern": "留守番中の様子",
-      "pattern_id": "pet_p1_furbo_curiosity",
-      "usp": "スマホから室温と様子をいつでも確認できる",
-      "fill": {},
-      "tone": "自然なUGC風。恐怖訴求ではなく好奇心と安心感で引く",
-      "variant": "problem_solution",
-      "platform": "instagram_reels",
-      "ai_disclosure": true,
-      "notes": "バッチの1本目。既存テンプレ pet_101/pet_20260708_03『留守番中の様子が気になる』の訴求を映像化したもの"
-    },
-    {
-      "id": "furbo-02",
-      "domain": "pet",
-      "product": "Furbo ペットカメラ（見守りカメラ）",
-      "category": "見守りカメラ",
-      "link_key": "ペット_Furbo",
-      "concern": "誤飲・イタズラ",
-      "pattern_id": "pet_p2_doorstep_wait",
-      "usp": "吠え通知でイタズラの気配にすぐ気づける",
-      "fill": {
-        "hook_line": "鍵を開ける音だけで分かることがある"
-      },
-      "tone": "シネマティックで高級感のあるトーン",
-      "variant": "cinematic",
-      "platform": "tiktok",
-      "ai_disclosure": true,
-      "notes": "01の横展開。出迎え行動を軸にした生活導入型。フォロワー獲得・世界観づくり用"
-    },
-    {
-      "id": "hoken-01",
-      "domain": "pet",
-      "product": "ペット保険（資料請求）",
-      "category": "ペット保険",
-      "link_key": "ペット_保険",
-      "concern": "通院費の負担",
-      "pattern_id": "pet_p3_vet_reply",
-      "usp": "無料で複数社の補償内容を比較できる",
-      "fill": {
-        "question": "保険って入るべき？",
-        "fact": "通院費、実は風邪程度でも数千〜数万円かかることがある",
-        "decision": "補償割合と対象外項目を比較してから決めることにした"
-      },
-      "tone": "落ち着いた、誠実なトーン。契約を煽らない",
-      "platform": "threads",
-      "ai_disclosure": true,
-      "notes": "既存テンプレ pet_102『補償割合と対象外項目の比較』の映像化。保険業法上のガードレールは domain.json と型の risk_notes を必ず守る"
-    },
-    {
-      "id": "hoken-02",
-      "domain": "pet",
-      "product": "ペット保険（資料請求）",
-      "category": "ペット保険",
-      "link_key": "ペット_保険",
-      "concern": "通院費の負担",
-      "pattern_id": "pet_p4_cost_reality",
-      "usp": "迎える前に比較しておくと後悔がない",
-      "fill": {},
-      "tone": "テンポ速め。テロップ主導で読ませる",
-      "variant": "fast_buzz",
-      "platform": "youtube_shorts",
-      "ai_disclosure": true,
-      "notes": "01の横展開2本目。固定投稿の『生涯200〜300万円』という数字をそのまま映像化。犬のフル生成が少なく作りやすい"
-    },
-    {
-      "id": "food-01",
-      "domain": "pet",
-      "product": "プレミアムフード",
-      "category": "ペットフード",
-      "link_key": "ペット_フード",
-      "concern": "食いつきの悪さ",
-      "pattern_id": "pet_p5_food_texture",
-      "usp": "原材料の並び順が分かりやすい",
-      "fill": {},
-      "tone": "自然なUGC風",
-      "variant": "problem_solution",
-      "platform": "threads",
-      "ai_disclosure": true,
-      "notes": "既存テンプレ pet_103『原材料と成分値の見方』の映像化。犬の全身生成が不要でAI生成の破綻リスクが最も低い"
-    },
-    {
       "id": "orbis-u-06",
-      "domain": "skincare",
       "product": "オルビスユー（エイジングケアライン／トライアルセット）",
       "category": "スキンケアライン",
       "link_key": "美容_オルビスユー",
@@ -218,56 +115,6 @@
       "platform": "instagram_reels",
       "ai_disclosure": true,
       "notes": "未使用パターンの消化。成分名を断定せず『全成分表示は配合量順』という一般的な表示ルールに基づく安全な切り口にしてある。特定成分の効能を訴求したい場合は、公式の成分表示を確認してから fill.ingredient/reason を差し替えること（未確認のまま具体的な成分名を書かない）"
-    },
-    {
-      "id": "furbo-03",
-      "domain": "pet",
-      "product": "Furbo ペットカメラ（見守りカメラ）",
-      "category": "見守りカメラ",
-      "link_key": "ペット_Furbo",
-      "concern": "夏の室温管理",
-      "pattern_id": "pet_p1_furbo_curiosity",
-      "usp": "室温もスマホで確認できる",
-      "fill": {},
-      "tone": "自然なUGC風。恐怖訴求ではなく実用的な安心感で引く",
-      "platform": "threads",
-      "ai_disclosure": true,
-      "notes": "01/02とは異なる悩み軸（夏場の熱中症リスク）での横展開。温湿度確認は一般に知られたFurboの製品特徴だが、具体的な対応レンジ等は商品ページで要確認"
-    },
-    {
-      "id": "hoken-03",
-      "domain": "pet",
-      "product": "ペット保険（資料請求）",
-      "category": "ペット保険",
-      "link_key": "ペット_保険",
-      "concern": "老後の医療費",
-      "pattern_id": "pet_p3_vet_reply",
-      "usp": "年齢が上がる前に加入条件を確認しておける",
-      "fill": {
-        "question": "保険って何歳から入れるの？",
-        "fact": "多くのペット保険は加入できる年齢に上限がある",
-        "decision": "うちは早めに資料請求だけしておくことにした"
-      },
-      "tone": "落ち着いた、誠実なトーン。契約を煽らない",
-      "platform": "tiktok",
-      "ai_disclosure": true,
-      "notes": "01/02とは異なる悩み軸（加入年齢の上限という一般的な保険の仕組み）。具体的な年齢基準は商品ごとに異なるため『多くの場合』に留め、断定しない"
-    },
-    {
-      "id": "food-02",
-      "domain": "pet",
-      "product": "プレミアムフード",
-      "category": "ペットフード",
-      "link_key": "ペット_フード",
-      "concern": "切り替えのタイミング",
-      "pattern_id": "pet_p5_food_texture",
-      "usp": "1週間かけて少しずつ切り替えるのが基本",
-      "fill": {},
-      "tone": "シネマティックで高級感のあるトーン",
-      "variant": "cinematic",
-      "platform": "tiktok",
-      "ai_disclosure": true,
-      "notes": "01の横展開。フード切り替え時に消化器へ負担をかけないための段階切り替えという一般的な注意点を軸にした、成分の断定を避ける切り口"
     }
   ]
 }
