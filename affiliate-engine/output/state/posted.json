@@ -2261,6 +2261,42 @@
     "2026-08-09_07:00_sidejob": {
       "status": "skipped_no_link",
       "at": "2026-08-08T22:53:11.094Z"
+    },
+    "2026-08-09_12:00_sleep": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_beauty": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_sidejob": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_setsuyaku": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_konkatsu": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_pet": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.061Z"
+    },
+    "2026-08-09_12:00_tenshoku": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.062Z"
+    },
+    "2026-08-09_12:00_bodymake": {
+      "status": "skipped_no_link",
+      "at": "2026-08-09T04:43:43.062Z"
+    },
+    "2026-08-09_12:00_education": {
+      "status": "skipped_duplicate",
+      "at": "2026-08-09T04:43:43.063Z"
     }
   },
   "recent": {
