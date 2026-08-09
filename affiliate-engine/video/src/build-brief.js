@@ -2,25 +2,28 @@
 'use strict';
 
 /**
- * スキンケア動画ブリーフビルダー
+ * 動画ブリーフビルダー（マルチジャンル対応）
  *
  * config/briefs.json の1案件から、動画1本を作るのに必要なプロンプト一式を組み立てる。
+ * ジャンル（スキンケア／ペット等）はブリーフの `domain` フィールドで切り替わり、
+ * data/domains/<domain>/ 配下の viral-patterns.json・hooks.json・domain.json を読む。
  *
  *   ① Grok Imagine Agent Mode まるなげプロンプト（本命。計画→生成→スティッチ→仕上げまで一括）
- *   ② ChatGPT 画像生成プロンプト（Agent Mode に渡す人物素材）
+ *   ② ChatGPT 画像生成プロンプト（Agent Mode に渡す被写体素材）
  *   ③ Grok Imagine 単体プロンプト（Agent Mode を使わない／特定シーンだけ作り直す時）
  *   ④ テロップ全文 ⑤ 投稿キャプション ⑥ コンプライアンス検査結果
  *
  * 設計方針:
- * - 型（バズの型）は data/viral-patterns.json に外出しし、コードは組み立てに徹する。
- *   型を増やす＝JSONを足すだけ。コード変更を伴わない。
+ * - 型（バズの型）とジャンル固有コピー（domain.json）は data/domains/<domain>/ に外出しし、
+ *   コードは組み立てに徹する。ジャンルを増やす＝ディレクトリを1つ足すだけ。コード変更は不要
  * - 生成物は必ず compliance.checkContent() を通す。モデルの賢さに品質を依存させない
- *   （CLAUDE.md 不変条件4と同じ思想）。
- * - AI美女画像は「世界観の担保」用途に限定し、肌の変化の証拠には使わない。
- *   これは倫理の話であると同時に、景表法（優良誤認）・薬機法の直撃を避けるための構造的な線引き。
+ *   （CLAUDE.md 不変条件4と同じ思想）
+ * - AI生成の被写体（人物／動物）は「世界観の担保」用途に限定し、状態変化の証拠には使わない。
+ *   これは倫理の話であると同時に、景表法（優良誤認）・各ジャンルの表示規制の直撃を避けるための
+ *   構造的な線引き。domain.json の forbidden_visuals / banned_claims_note がこの線を言語化する
  *
  * 使用方法:
- *   node src/build-brief.js --id 2026-08-serum-a
+ *   node src/build-brief.js --id orbis-u-01
  *   node src/build-brief.js --all
  *   node src/build-brief.js --list
  */
@@ -30,11 +33,28 @@ const path = require('path');
 const { checkContent } = require('../../src/compliance');
 
 const ROOT = path.join(__dirname, '..');
-const PATTERNS_PATH = path.join(ROOT, 'data', 'viral-patterns.json');
-const HOOKS_PATH = path.join(ROOT, 'data', 'hooks.json');
+const DOMAINS_DIR = path.join(ROOT, 'data', 'domains');
 const VARIANTS_PATH = path.join(ROOT, 'data', 'agent-variants.json');
 const BRIEFS_PATH = process.env.BRIEFS_JSON || path.join(ROOT, 'config', 'briefs.json');
 const OUT_DIR = path.join(ROOT, 'output');
+
+const domainCache = new Map();
+
+/** ジャンルごとの型・フック・固有コピーを読み込む（--all で同じジャンルが繰り返し出ても1回だけ読む） */
+function loadDomain(domain) {
+  if (domainCache.has(domain)) return domainCache.get(domain);
+  const dir = path.join(DOMAINS_DIR, domain);
+  if (!fs.existsSync(dir)) {
+    throw new Error(`ジャンルが見つかりません: ${domain}（data/domains/${domain}/ が存在しない）`);
+  }
+  const data = {
+    patterns: readJSON(path.join(dir, 'viral-patterns.json')),
+    hooks: readJSON(path.join(dir, 'hooks.json')),
+    config: readJSON(path.join(dir, 'domain.json'))
+  };
+  domainCache.set(domain, data);
+  return data;
+}
 
 const PLATFORM_EXPORT = {
   instagram_reels: { res: '1080x1920', fps: 30, codec: 'H.264 High', bitrate: '12-16 Mbps (VBR 2pass)', audio: 'AAC 320kbps 48kHz', color: 'Rec.709 / sRGB', note: '90秒以内。フィード表示の上下約14%にUIが乗るため、テロップは中央60%に収める' },
@@ -94,11 +114,12 @@ function buildValues(brief, hooks) {
 }
 
 /** ChatGPT 画像生成用プロンプト（カットごと） */
-function imagePrompts(pattern, persona, values) {
+function imagePrompts(pattern, persona, values, domainConfig) {
+  const subject = domainConfig.subject_label;
   const base = [
-    `同一人物・同一世界観で通すこと。人物設定: ${persona.age_look}、${persona.features}。`,
-    `衣装: ${persona.wardrobe}。場所: ${persona.location}。`,
-    '写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。',
+    `同一${subject}・同一世界観で通すこと。${subject}設定: ${persona.age_look}、${persona.features}。`,
+    `${persona.wardrobe ? `身なり: ${persona.wardrobe}。` : ''}場所: ${persona.location}。`,
+    `${domainConfig.image_prompt_intro}`,
     `禁止: ${persona.forbidden}。`
   ].join('');
 
@@ -111,13 +132,13 @@ function imagePrompts(pattern, persona, values) {
 }
 
 /** Grok Imagine 画像→動画プロンプト（英語。動きの記述と「動かさないもの」を必ずセットで書く） */
-function videoPrompts(pattern, values) {
+function videoPrompts(pattern, values, domainConfig) {
   return pattern.cuts.map((cut, i) => {
     const [start, end] = cut.t.split('-').map(Number);
     const sec = Math.max(3, Math.min(10, Math.round(end - start)));
     const motion = fill(cut.motion, values);
     // 「静止」と書いてあるカットに Animate を素直に投げると、モデルが動きを捏造して
-    // 顔が溶ける。ほぼ静止であることを明示的に指示に翻訳する。
+    // 被写体が崩れる。ほぼ静止であることを明示的に指示に翻訳する。
     const motionLine = /^静止/.test(motion)
       ? `Motion: near-static — ${motion}。Only micro-movements are allowed (breathing, a single blink, a subtle shift of light). Nothing else moves.`
       : `Motion: ${motion}. Keep the motion subtle and single-purpose — one clear movement only.`;
@@ -129,8 +150,8 @@ function videoPrompts(pattern, values) {
         `Animate this still photo. Subject: ${fill(cut.shot, values)}.`,
         motionLine,
         `Camera: hold the framing of the source image; no whip pans, no cuts inside the clip.`,
-        `Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point.`,
-        `Mood: calm, natural daylight, soft contrast, editorial skincare commercial.`,
+        `Must stay stable: ${domainConfig.stability_en}, and the product label must not change or morph at any point.`,
+        `Mood: ${domainConfig.mood_en}.`,
         `Audio: ambient room tone only, no speech.`,
         `Duration: ${sec} seconds. 9:16 vertical.`
       ].join(' ')
@@ -144,13 +165,13 @@ function captions(pattern, values) {
 }
 
 /** 投稿キャプション（本文）。compliance を通す前提の素案 */
-function postCaption(brief, pattern, values) {
+function postCaption(brief, pattern, values, domainConfig) {
   const lines = [
     fill(pattern.cuts[0].caption, values).replace(/^\(.*\)$/, ''),
     '',
-    `${brief.product}｜${values.concern}が気になる日に。`,
+    `${brief.product}｜${values.concern}が気になる時に。`,
     values.usp ? `・${values.usp}` : null,
-    '・個人差があります。パッチテストをしてから使ってください',
+    domainConfig.disclaimer_line,
     '',
     brief.ai_disclosure ? '※映像はAI生成です' : null,
     '#PR'
@@ -158,8 +179,8 @@ function postCaption(brief, pattern, values) {
   return lines.join('\n');
 }
 
-/** 型・フックの禁止語チェック（compliance.js の一般ルールに、スキンケア固有語を上乗せする） */
-function skincareLint(texts, banned) {
+/** 型・フックの禁止語チェック（compliance.js の一般ルールに、ジャンル固有語を上乗せする） */
+function contentLint(texts, banned) {
   const hits = [];
   for (const t of texts) {
     for (const word of banned) {
@@ -180,7 +201,8 @@ function skincareLint(texts, banned) {
  * - ループ癖があるので「終端の状態を始端と変える」ことを明示する
  * - ストーリーボード承認を挟むかどうかを毎回明示する（黙っていると止まる）
  */
-function agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant) {
+function agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant, domainConfig) {
+  const subject = domainConfig.subject_label;
   const sceneTable = pattern.cuts.map((cut, i) => {
     const [s, e] = cut.t.split('-').map(Number);
     return `| ${i + 1} | ${(e - s).toFixed(1)}秒 | ${cut.role} | ${fill(cut.shot, values)} | ${fill(cut.motion, values)} |`;
@@ -202,7 +224,7 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 - 形式: 9:16 縦型（${brief.platform}）
 - 尺: ${pattern.duration_sec}秒
 - トーン: ${brief.tone || '自然なUGC風。広告然としない、生活の中で撮られた感じ'}
-- ターゲット: ${values.concern}が気になっている20代後半〜30代前半
+- ターゲット: ${values.concern}が気になっている${brief.target || '20代後半〜30代前半'}
 - 採用する型: ${pattern.name}
   （${pattern.why}）
 
@@ -212,9 +234,9 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 - 主な特徴・訴求: ${values.usp || '【要記入:usp】'}
 - CTA文言: ${caps[caps.length - 1].text}
 
-【登場人物 — 全シーンで固定】
-${persona.age_look}、${persona.features}。衣装: ${persona.wardrobe}。場所: ${persona.location}。
-アップロードした人物画像を厳密に参照し、シーンをまたいで顔・髪型・肌の色・衣装が変化しないようにしてください。
+【${subject} — 全シーンで固定】
+${persona.age_look}、${persona.features}。${persona.wardrobe ? `身なり: ${persona.wardrobe}。` : ''}場所: ${persona.location}。
+アップロードした${subject}画像を厳密に参照し、シーンをまたいで${domainConfig.stability_ja}が変化しないようにしてください。
 変化したシーンは採用せず、生成し直してください。
 
 【シーン構成 — この順序と尺を守る】
@@ -227,9 +249,9 @@ ${sceneTable}
 - カメラは1シーン内でフレーミングを保持。シーンの内側でカットを割らないでください
 - 目標尺が3秒を超えるシーンは、カットを割らずに、ゆっくりした寄り／引きで内部に変化を作ってください（動きが一定だと3秒目から離脱します）
 - **ループ回避**: 各シーンは終端の状態を始端と変えてください（同じ位置に戻すとループに見えます）
-- 顔の構造・髪型・肌の色・衣装・商品ラベルは一切変形させないでください
+- ${domainConfig.stability_ja}・商品ラベルは一切変形させないでください
 - 商品の見た目・色・ロゴは、アップロードした商品画像どおりに正確に保ってください
-- 人物にセリフを喋らせないでください。音声は環境音とBGMのみ
+- ${subject}にセリフを喋らせないでください。音声は環境音とBGMのみ
 - 0〜2秒に商品名・ロゴを出さないでください（広告と判定されて離脱します）
 
 【テロップの扱い — 重要】
@@ -253,9 +275,9 @@ ${exportSpec.res} / ${exportSpec.fps}fps / ${exportSpec.codec} / ${exportSpec.bi
 ${exportSpec.note}
 
 【守ること — 違反したシーンは採用しない】
-- 効果・効能を断定しないでください。化粧品の効能効果の範囲を超える表現（「シミが消える」「ニキビが治る」「美白になる」等）を、映像・音声・テロップ案のいずれにも入れないでください
-- 使用前後の変化を見せる画、示唆する画を作らないでください。この人物の肌は「成果」ではなく「世界観」です
-- 架空の人物に一人称の体験談・使用感を語らせないでください
+- 効果・効能を断定しないでください。${domainConfig.banned_claims_note}
+- ${domainConfig.forbidden_visuals}
+- 架空の${subject}に一人称の体験談・使用感を語らせないでください
 - 実在の人物・ブランド・キャラクターに似せないでください
 - 露出の高い服装、扇情的なポーズにしないでください
 ${brief.ai_disclosure ? '- 最終シーンに「AI生成」の旨を表示できる無地の余白を残してください' : ''}
@@ -272,31 +294,37 @@ ${brief.ai_disclosure ? '- 最終シーンに「AI生成」の旨を表示でき
 5. 上の「守ること」への自己チェック結果（各項目 OK/NG と根拠）${variant ? `\n\n【追加指示（${variant.name}）】\n${variant.add}` : ''}`;
 }
 
-function render(brief, patterns, hooks, variants, personaDefault) {
+function render(brief, cfg, variants) {
+  const domain = brief.domain || 'skincare';
+  const { patterns, hooks, config: domainConfig } = loadDomain(domain);
   const pattern = patterns.patterns.find((p) => p.id === brief.pattern_id);
-  if (!pattern) throw new Error(`型が見つかりません: ${brief.pattern_id}`);
-  const persona = brief.persona || personaDefault;
+  if (!pattern) throw new Error(`型が見つかりません: ${brief.pattern_id}（domain: ${domain}）`);
+  const personas = cfg.personas || (cfg.persona ? { skincare: cfg.persona } : {});
+  const persona = brief.persona || personas[domain];
+  if (!persona) throw new Error(`ペルソナが見つかりません。config/briefs.json の personas.${domain} を定義してください`);
   const values = buildValues(brief, hooks);
   const exportSpec = PLATFORM_EXPORT[brief.platform] || PLATFORM_EXPORT.instagram_reels;
 
-  const imgs = imagePrompts(pattern, persona, values);
-  const vids = videoPrompts(pattern, values);
+  const imgs = imagePrompts(pattern, persona, values, domainConfig);
+  const vids = videoPrompts(pattern, values, domainConfig);
   const caps = captions(pattern, values);
-  const caption = postCaption(brief, pattern, values);
+  const caption = postCaption(brief, pattern, values, domainConfig);
   const variant = brief.variant ? (variants.variants || {})[brief.variant] : null;
   if (brief.variant && !variant) throw new Error(`variant が見つかりません: ${brief.variant}`);
-  const agentPrompt = agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant);
+  const agentPrompt = agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant, domainConfig);
 
   // 検品
   const captionCheck = checkContent(caption);
   // 検品対象は「視聴者の目に触れるもの」だけ。agentPrompt は禁止語を禁止語として列挙して
   // いるため、ここに含めると必ず自己ヒットする。
   const lintTargets = [...caps.map((c) => c.text), caption];
-  const lintHits = skincareLint(lintTargets, hooks.banned_in_hooks);
+  const lintHits = contentLint(lintTargets, hooks.banned_in_hooks);
   const missing = collectMissing([...caps.map((c) => c.text), ...imgs.map((i) => i.prompt), agentPrompt]);
 
+  const subject = domainConfig.subject_label;
   const md = `# 動画ブリーフ: ${brief.id}
 
+- ジャンル: **${domain}**
 - 商品: **${brief.product}**（${brief.category}）
 - 悩み: ${values.concern} / 訴求: ${values.usp || '（未設定）'}
 - 型: **${pattern.name}**（\`${pattern.id}\` / ${pattern.tier}ランク）
@@ -310,7 +338,7 @@ function render(brief, patterns, hooks, variants, personaDefault) {
 ## ① Grok Imagine Agent Mode まるなげプロンプト ← 本命
 
 **手順**: grok.com/imagine（デスクトップ）→ Agent Mode を ON → プリセット **UGC Product Stories** を選択
-→ 人物画像（②で作ったもの）と商品写真をアップロード → 以下を貼って送信 → ストーリーボードを承認。
+→ ${subject}画像（②で作ったもの）と商品写真をアップロード → 以下を貼って送信 → ストーリーボードを承認。
 
 ${variant ? `適用バリアント: **${variant.name}**（\`${brief.variant}\`）\n` : ''}
 \`\`\`
@@ -322,8 +350,8 @@ ${agentPrompt}
 ## ② ChatGPT 画像生成プロンプト（Agent Modeに渡す素材）
 
 先に \`prompts/character-sheet.md\` でベース画像を1枚作り、**そのベース画像を毎回添付した上で**以下を投げる。
-テキストだけで同一人物を出そうとすると必ず顔が変わる。
-Agent Mode に渡すのは人物カットだけでよい（商品カットは実物の商品写真を使う方が正確）。
+テキストだけで同一${subject}を出そうとすると必ず特徴が変わる。
+Agent Mode に渡すのは${subject}カットだけでよい（商品カットは実物の商品写真を使う方が正確）。
 
 ${imgs.map((p) => `### カット${p.n}（${p.t} ${p.role}）\n\`\`\`\n${p.prompt}\n\`\`\``).join('\n\n')}
 
@@ -355,7 +383,7 @@ ${captionCheck.text}
 ## ⑥ 検品結果
 
 - compliance.checkContent: **${captionCheck.ok ? 'PASS' : 'BLOCK'}**${captionCheck.reasons.length ? `（${captionCheck.reasons.join(' / ')}）` : ''}
-- スキンケア禁止語: ${lintHits.length === 0 ? '**なし**' : `**${lintHits.length}件** → ${lintHits.map((h) => `「${h.word}」`).join(' ')}`}
+- ${domainConfig.banned_word_label}: ${lintHits.length === 0 ? '**なし**' : `**${lintHits.length}件** → ${lintHits.map((h) => `「${h.word}」`).join(' ')}`}
 - 記入漏れ: ${missing.length === 0 ? '**なし**' : `**${missing.join(', ')}** を briefs.json の \`fill\` に追加すること`}
 - 型の固有リスク: ${pattern.risk_notes}
 - AIラベル: ${brief.ai_disclosure ? '**必要**（投稿時にプラットフォームのAI表示をONにする）' : '不要'}
@@ -373,16 +401,18 @@ Agent Mode は日本語テロップを焼き込めないので、①の納品物
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const patterns = readJSON(PATTERNS_PATH);
-  const hooks = readJSON(HOOKS_PATH);
   const variants = readJSON(VARIANTS_PATH);
   const cfg = readJSON(BRIEFS_PATH);
 
   if (args.list) {
-    console.log('--- 型 ---');
-    for (const p of patterns.patterns) console.log(`  ${p.tier}  ${p.id.padEnd(24)} ${p.name}（${p.duration_sec}秒 / 画像${p.cuts.length}枚）`);
+    const domains = [...new Set(cfg.briefs.map((b) => b.domain || 'skincare'))];
+    for (const domain of domains) {
+      const { patterns } = loadDomain(domain);
+      console.log(`--- 型（${domain}） ---`);
+      for (const p of patterns.patterns) console.log(`  ${p.tier}  ${p.id.padEnd(28)} ${p.name}（${p.duration_sec}秒 / 画像${p.cuts.length}枚）`);
+    }
     console.log('--- ブリーフ ---');
-    for (const b of cfg.briefs) console.log(`     ${b.id.padEnd(24)} ${b.product} / ${b.pattern_id}`);
+    for (const b of cfg.briefs) console.log(`     [${(b.domain || 'skincare').padEnd(9)}] ${b.id.padEnd(20)} ${b.product} / ${b.pattern_id}`);
     return;
   }
 
@@ -395,7 +425,7 @@ function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   let failed = 0;
   for (const brief of targets) {
-    const { md, ok, missing, lintHits } = render(brief, patterns, hooks, variants, cfg.persona);
+    const { md, ok, missing, lintHits } = render(brief, cfg, variants);
     const out = path.join(OUT_DIR, `${brief.id}.md`);
     fs.writeFileSync(out, md);
     const status = ok ? 'OK' : 'REQUIRES FIX';
@@ -409,4 +439,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { render, fill, videoPrompts, imagePrompts, agentModePrompt, skincareLint, PLATFORM_EXPORT };
+module.exports = { render, fill, videoPrompts, imagePrompts, agentModePrompt, contentLint, loadDomain, PLATFORM_EXPORT };

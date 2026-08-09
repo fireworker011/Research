@@ -1,18 +1,31 @@
 {
-  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『Grok Imagine Agent Mode まるなげプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。tone/variant は任意。variant は data/agent-variants.json のキー。",
-  "persona": {
-    "id": "mio",
-    "name": "澪（みお）",
-    "note": "全案件で使い回す固定キャラ。ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
-    "age_look": "26-29歳に見える",
-    "features": "黒髪セミロング、やや目尻の下がった一重寄りの二重、ナチュラルメイク、日本人、清潔感、生活感のある部屋",
-    "wardrobe": "オフホワイトのリブトップス／グレーのルームウェア",
-    "location": "自然光の入る洗面台、白いタイル、木のトレー",
-    "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変"
+  "_comment": "1案件＝1ブリーフ。build-brief.js がこれを読んで『Grok Imagine Agent Mode まるなげプロンプト』を組み立てる。実ファイルは briefs.json（Git管理してよい／秘密情報は書かない）。domain でジャンル（data/domains/<domain>/）を切り替える。省略時は skincare 扱い。tone/variant は任意。variant は data/agent-variants.json のキー。",
+  "personas": {
+    "skincare": {
+      "id": "mio",
+      "name": "澪（みお）",
+      "note": "全案件で使い回す固定キャラ。ChatGPTのキャラシート（prompts/character-sheet.md）と対で管理する",
+      "age_look": "26-29歳に見える",
+      "features": "黒髪セミロング、やや目尻の下がった一重寄りの二重、ナチュラルメイク、日本人、清潔感、生活感のある部屋",
+      "wardrobe": "オフホワイトのリブトップス／グレーのルームウェア",
+      "location": "自然光の入る洗面台、白いタイル、木のトレー",
+      "forbidden": "露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変"
+    },
+    "pet": {
+      "id": "example_dog",
+      "name": "（例）柴犬",
+      "note": "ペットジャンルのペルソナ例。実運用は config/briefs.json の personas.pet（『ふく』）を参照",
+      "age_look": "2歳前後に見える成犬",
+      "features": "柴犬、赤褐色の被毛、立ち耳、巻き尾",
+      "wardrobe": "首輪なし",
+      "location": "自然光の入るリビング",
+      "forbidden": "実在の犬アカウントに似せる、苦しんでいる・怯えているように見える表情"
+    }
   },
   "briefs": [
     {
       "id": "2026-08-serum-a",
+      "domain": "skincare",
       "product": "◯◯セラム（ブランド名は案件規約に従う）",
       "category": "美容液",
       "link_key": "skincare_serum_a",
@@ -32,6 +45,7 @@
     },
     {
       "id": "2026-08-cleansing-b",
+      "domain": "skincare",
       "product": "△△クレンジングバーム",
       "category": "クレンジング",
       "link_key": "skincare_cleansing_b",
@@ -44,6 +58,22 @@
       "notes": "テクスチャが主役の案件。ASMR型で3本まで横展開できる",
       "tone": "シネマティックで高級感のあるトーン",
       "variant": "cinematic"
+    },
+    {
+      "id": "2026-09-camera-example",
+      "domain": "pet",
+      "product": "□□見守りカメラ",
+      "category": "見守りカメラ",
+      "link_key": "pet_camera_example",
+      "concern": "留守番中の様子",
+      "pattern_id": "pet_p1_furbo_curiosity",
+      "usp": "スマホから室温と様子をいつでも確認できる",
+      "fill": {},
+      "platform": "instagram_reels",
+      "ai_disclosure": true,
+      "notes": "ペットジャンルの記入例。実運用は config/briefs.json の furbo-01 等を参照",
+      "tone": "自然なUGC風。恐怖訴求ではなく好奇心と安心感で引く",
+      "variant": "problem_solution"
     }
   ]
 }
