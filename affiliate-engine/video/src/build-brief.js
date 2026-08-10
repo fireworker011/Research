@@ -144,11 +144,11 @@ function captions(pattern, values) {
 }
 
 /** 投稿キャプション（本文）。compliance を通す前提の素案 */
-function postCaption(brief, pattern, values) {
+function postCaption(brief, pattern, values, caps) {
   const lines = [
     // 丸括弧だけのキャプションは「テロップなし」等の制作メモなので投稿本文には出さない。
     // 全角括弧も対象にする（型のJSONは日本語で書かれるため、半角だけだと素通りする）
-    fill(pattern.cuts[0].caption, values).replace(/^[(（].*[)）]$/, ''),
+    caps[0].text.replace(/^[(（].*[)）]$/, ''),
     '',
     `${brief.product}｜${values.concern}が気になる日に。`,
     values.usp ? `・${values.usp}` : null,
@@ -183,12 +183,76 @@ function skincareLint(texts, banned) {
  * - ストーリーボード承認を挟むかどうかを毎回明示する（黙っていると止まる）
  */
 function agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant) {
+  const narrationMode = !!brief.narration_mode;
+  // 「AI美女」は人物カットの共通マーカー。「人物なし」等の否定表現を誤検知しないよう
+  // 単純な「人物」部分一致ではなくこちらを使う
+  const hasFaceCuts = pattern.cuts.some((c) => c.shot.includes('AI美女'));
+
   const sceneTable = pattern.cuts.map((cut, i) => {
     const [s, e] = cut.t.split('-').map(Number);
     return `| ${i + 1} | ${(e - s).toFixed(1)}秒 | ${cut.role} | ${fill(cut.shot, values)} | ${fill(cut.motion, values)} |`;
   }).join('\n');
 
   const capTable = caps.map((c) => `| ${c.n} | ${c.t} | ${c.text} |`).join('\n');
+
+  const doStep4 = narrationMode
+    ? '4. ナレーションと字幕（下の【テンポの仕様】【音声の仕様】【キャプションの仕様】に従う）を配置し、CTAを組み込む'
+    : '4. 効果音・BGM・CTAを配置する';
+
+  const lengthLine = narrationMode
+    ? '20〜25秒程度（ナレーション長で決まる。下の【テンポの仕様】参照）'
+    : `${pattern.duration_sec}秒`;
+
+  const speechRule = narrationMode
+    ? `- 音声はオフスクリーンのナレーションです。画面に人物が映るシーンでも、口を動かして喋っているように見せないでください（表情は自然なまま、話す演技はしない）${hasFaceCuts ? '' : '。この型は人物が画面に映らないため、この点は元々問題になりません'}`
+    : '- 人物にセリフを喋らせないでください。音声は環境音とBGMのみ';
+
+  const audioAndCaptionSection = narrationMode ? `【テンポの仕様（最重要・厳守）】
+※ここで削るのは「ナレーションとナレーションの間の無音」だけです。
+　声の読み上げ speed は速くしないでください（下の音声の仕様を優先）。
+- 各シーンの尺は固定ではなく「そのシーンのナレーションの長さ＋0.3秒」に合わせて詰める
+- シーンが切り替わったら即（0.3秒以内に）次のナレーションを開始する
+- ナレーションとナレーションの間の無音は最大でも0.5秒。間延びした沈黙を作らない
+- 上記を守れば全体は20〜25秒程度に収まるはず。尺を縮めるために早口にはしないこと
+
+【音声の仕様】
+- 音声はナレーションのみ。BGM・効果音・環境音は完全に入れない
+- 日本語・自然な女性の声
+- 読み方はゆっくり穏やかに、優しく語りかけるトーン。癒し系の動画なので
+  早口・急いだ喋り方は絶対にしないこと。一文一文を丁寧に読む
+- 人物は映らないためリップシンクは不要
+- ナレーションとキャプションの内容とタイミングが必ず一致すること
+
+【キャプション（字幕）の仕様】
+- 各シーンのナレーション文をそのまま画面下部中央に表示
+- 白文字・黒縁取り・読みやすい太めのゴシック体
+- 画面の下端から10〜15%上に配置（スマホUIと被らない安全圏）
+- そのシーンのナレーションが流れている間だけ表示
+
+想定しているナレーション文（このテキストをそのままナレーション兼キャプションとして使用してください）:
+| # | 役割 | ナレーション文 |
+|---|---|---|
+${pattern.cuts.map((cut, i) => `| ${i + 1} | ${cut.role} | ${caps[i].text} |`).join('\n')}
+` : `【テロップの扱い — 重要】
+動画内に日本語の文字を焼き込まないでください。文字が崩れます。
+代わりに、以下2点を守ってください。
+1. 全シーンで、画面**上15%と下25%を無地に近い状態**に保つ（後からテロップを乗せるセーフエリア）
+2. テロップ文言は焼き込まず、納品物④としてタイムコード付きのテキストで出力する
+英数字の短い表記（商品名の英字ロゴなど）だけは、商品画像に写っているものをそのまま保つ形で可とします。
+
+想定しているテロップ（この文言をタイムコードに割り当てて④として出力してください）:
+| # | タイムコード | テロップ |
+|---|---|---|
+${capTable}
+
+【音】
+${pattern.audio}
+シーンの切り替わりに合わせてSFXを置き、5秒に1回は音か画に変化を作ってください（パターンインタラプト）。
+`;
+
+  const deliverable4 = narrationMode
+    ? '4. ナレーション台本（実際に使用した文言。字幕として画面に焼き込み済み）'
+    : '4. テロップ台本（タイムコード付きテキスト。動画には焼き込まない）';
 
   return `あなたはプロのアフィリエイト動画ディレクター兼UGCクリエイターです。
 Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持率が高くクリックしたくなる縦型アフィリエイト動画を、まるなげで最後まで完成させてください。
@@ -197,12 +261,12 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 1. 下の構成表をもとに ${pattern.cuts.length} シーンのストーリーボードを確定する
 2. 同一人物・同一商品を保ったまま各シーンを生成する（素材は6秒で作り、目標尺にトリムする）
 3. スティッチして1本に繋ぐ
-4. 効果音・BGM・CTAを配置する
+${doStep4}
 5. 完成動画と、後述の納品物一式を出力する
 
 【動画の条件】
 - 形式: 9:16 縦型（${brief.platform}）
-- 尺: ${pattern.duration_sec}秒
+- 尺: ${lengthLine}
 - トーン: ${brief.tone || '自然なUGC風。広告然としない、生活の中で撮られた感じ'}
 - ターゲット: ${values.concern}が気になっている20代後半〜30代前半
 - 採用する型: ${pattern.name}
@@ -219,7 +283,7 @@ ${persona.age_look}、${persona.features}。衣装: ${persona.wardrobe}。場所
 アップロードした人物画像を厳密に参照し、シーンをまたいで顔・髪型・肌の色・衣装が変化しないようにしてください。
 変化したシーンは採用せず、生成し直してください。
 
-【シーン構成 — この順序と尺を守る】
+【シーン構成 — この順序${narrationMode ? '' : 'と尺'}を守る】${narrationMode ? '\n※ 尺の列は絵作りの目安。実際の尺は【テンポの仕様】のナレーション長ルールに従ってください。' : ''}
 | # | 目標尺 | 役割 | 画（何が映るか） | 動き |
 |---|---|---|---|---|
 ${sceneTable}
@@ -231,25 +295,10 @@ ${sceneTable}
 - **ループ回避**: 各シーンは終端の状態を始端と変えてください（同じ位置に戻すとループに見えます）
 - 顔の構造・髪型・肌の色・衣装・商品ラベルは一切変形させないでください
 - 商品の見た目・色・ロゴは、アップロードした商品画像どおりに正確に保ってください
-- 人物にセリフを喋らせないでください。音声は環境音とBGMのみ
+${speechRule}
 - 0〜2秒に商品名・ロゴを出さないでください（広告と判定されて離脱します）
 
-【テロップの扱い — 重要】
-動画内に日本語の文字を焼き込まないでください。文字が崩れます。
-代わりに、以下2点を守ってください。
-1. 全シーンで、画面**上15%と下25%を無地に近い状態**に保つ（後からテロップを乗せるセーフエリア）
-2. テロップ文言は焼き込まず、納品物④としてタイムコード付きのテキストで出力する
-英数字の短い表記（商品名の英字ロゴなど）だけは、商品画像に写っているものをそのまま保つ形で可とします。
-
-想定しているテロップ（この文言をタイムコードに割り当てて④として出力してください）:
-| # | タイムコード | テロップ |
-|---|---|---|
-${capTable}
-
-【音】
-${pattern.audio}
-シーンの切り替わりに合わせてSFXを置き、5秒に1回は音か画に変化を作ってください（パターンインタラプト）。
-
+${audioAndCaptionSection}
 【書き出し】
 ${exportSpec.res} / ${exportSpec.fps}fps / ${exportSpec.codec} / ${exportSpec.bitrate} / 音声 ${exportSpec.audio} / ${exportSpec.color}
 ${exportSpec.note}
@@ -267,10 +316,10 @@ ${brief.ai_disclosure ? '- 最終シーンに「AI生成」の旨を表示でき
 まずストーリーボードを提示してください。私が承認したら、生成・スティッチ・仕上げまで止まらずに実行してください。
 
 【納品物】
-1. 完成動画（${pattern.duration_sec}秒 / 9:16）
+1. 完成動画（${lengthLine} / 9:16）
 2. 使用したシーンごとの生成プロンプト
 3. 編集判断の一覧（タイムコード / 編集アクション / ビジュアル / 音声・SFX / メモ の5列の表）
-4. テロップ台本（タイムコード付きテキスト。動画には焼き込まない）
+${deliverable4}
 5. 上の「守ること」への自己チェック結果（各項目 OK/NG と根拠）${variant ? `\n\n【追加指示（${variant.name}）】\n${variant.add}` : ''}`;
 }
 
@@ -283,8 +332,12 @@ function render(brief, patterns, hooks, variants, personaDefault) {
 
   const imgs = imagePrompts(pattern, persona, values);
   const vids = videoPrompts(pattern, values);
-  const caps = captions(pattern, values);
-  const caption = postCaption(brief, pattern, values);
+  // narration_mode + narration_lines がある場合は、パターンの短いテロップ文言ではなく
+  // ナレーションとして自然に読める完全な文を使う（読み上げ前提の文体が別物のため）
+  const caps = (brief.narration_mode && brief.narration_lines)
+    ? pattern.cuts.map((cut, i) => ({ n: i + 1, t: cut.t, text: brief.narration_lines[i] || cut.caption }))
+    : captions(pattern, values);
+  const caption = postCaption(brief, pattern, values, caps);
   const variant = brief.variant ? (variants.variants || {})[brief.variant] : null;
   if (brief.variant && !variant) throw new Error(`variant が見つかりません: ${brief.variant}`);
   const agentPrompt = agentModePrompt(brief, pattern, persona, values, caps, exportSpec, variant);
@@ -342,9 +395,9 @@ ${vids.map((p) => `### カット${p.n}（${p.t} / ${p.sec}秒）\n\`\`\`\n${p.pr
 
 ---
 
-## ④ テロップ全文
+## ④ ${brief.narration_mode ? 'ナレーション全文（字幕として動画内に焼き込み済み）' : 'テロップ全文'}
 
-| # | タイムコード | テロップ |
+| # | タイムコード | ${brief.narration_mode ? 'ナレーション' : 'テロップ'} |
 |---|---|---|
 ${caps.map((c) => `| ${c.n} | ${c.t} | ${c.text} |`).join('\n')}
 
@@ -364,8 +417,9 @@ ${captionCheck.text}
 
 ## ⑦ 仕上げ
 
-Agent Mode は日本語テロップを焼き込めないので、①の納品物④として出てくるテロップ台本を
-自分で乗せる。上下のセーフエリア（上15% / 下25%）を空けさせてあるのでそこに置く。
+${brief.narration_mode
+  ? '⚠️ この案件は narration_mode（ナレーション＋字幕をGrokに焼き込ませる指定）。Grokは日本語を文字ではなくピクセルとして描画するため、字幕が崩れる既知のリスクがある（`docs/market-research.md` §5）。生成結果を確認し、崩れていたら字幕なしで出力させ直し、下の通常フローと同様に後乗せに切り替えること。'
+  : 'Agent Mode は日本語テロップを焼き込めないので、①の納品物④として出てくるテロップ台本を\n自分で乗せる。上下のセーフエリア（上15% / 下25%）を空けさせてあるのでそこに置く。'}
 出しきれない時の追い込み方は \`prompts/grok-agent-mode.md\` の「詰まった時」を参照。
 投稿前に \`docs/compliance-checklist.md\` を1回通すこと。
 `;

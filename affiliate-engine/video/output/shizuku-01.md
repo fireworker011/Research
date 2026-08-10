@@ -2,11 +2,11 @@
 
 - 商品: **しずくセラム（架空ブランド／美容液）**（美容液）
 - 悩み: くすみ / 訴求: 一滴で顔全体に伸びる
-- 型: **暗示型ナラティブ（Before/Afterの安全代替）**（`p6_implied_narrative` / Sランク）
-- 尺: 14秒 / 必要画像: 5枚 / 配信先: instagram_reels
+- 型: **無人称・手元オンリー型（YouTube Shorts特化）**（`p8_handsonly_shorts` / Sランク）
+- 尺: 20秒 / 必要画像: 7枚 / 配信先: instagram_reels
 - link_key: `skincare_shizuku_serum`
 
-> なぜこの型か: Before/Afterの直接表現はMeta・TikTokの広告ポリシーでも規制が強く、AI画像でやれば即捏造。『この状態を保つためにやってること』という語り口にすると、変化を見せずに変化を想起させられる。バズの型として最も相性がいい。
+> なぜこの型か: YouTube Shorts はブラウジングとは別のレコメンドで動き、登録者数は初動にしか効かない。効くのは『スワイプされずに見られたか』だけなので、登録者1000人規模でも再生数だけ跳ねる（＝インプが登録者の10倍以上になる）現象はこの型で起きる。さらにAI生成の最大の事故ポイントである『シーンをまたいで顔が変わる』を、顔を1カットも出さないことで構造的にゼロにできる。言語非依存で海外流入も乗るため、7つの型の中でAI再現性が最も高い。
 
 ---
 
@@ -15,46 +15,48 @@
 **手順**: grok.com/imagine（デスクトップ）→ Agent Mode を ON → プリセット **UGC Product Stories** を選択
 → 人物画像（②で作ったもの）と商品写真をアップロード → 以下を貼って送信 → ストーリーボードを承認。
 
-適用バリアント: **問題解決型（CVR最優先）**（`problem_solution`）
 
 ```
 あなたはプロのアフィリエイト動画ディレクター兼UGCクリエイターです。
 Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持率が高くクリックしたくなる縦型アフィリエイト動画を、まるなげで最後まで完成させてください。
 
 【やること】
-1. 下の構成表をもとに 5 シーンのストーリーボードを確定する
+1. 下の構成表をもとに 7 シーンのストーリーボードを確定する
 2. 同一人物・同一商品を保ったまま各シーンを生成する（素材は6秒で作り、目標尺にトリムする）
 3. スティッチして1本に繋ぐ
-4. 効果音・BGM・CTAを配置する
+4. ナレーションと字幕（下の【テンポの仕様】【音声の仕様】【キャプションの仕様】に従う）を配置し、CTAを組み込む
 5. 完成動画と、後述の納品物一式を出力する
 
 【動画の条件】
 - 形式: 9:16 縦型（instagram_reels）
-- 尺: 14秒
-- トーン: 自然なUGC風。広告然としない、生活の中で撮られた感じ
+- 尺: 20〜25秒程度（ナレーション長で決まる。下の【テンポの仕様】参照）
+- トーン: 癒し系。ゆっくり穏やかなナレーションで語りかける
 - ターゲット: くすみが気になっている20代後半〜30代前半
-- 採用する型: 暗示型ナラティブ（Before/Afterの安全代替）
-  （Before/Afterの直接表現はMeta・TikTokの広告ポリシーでも規制が強く、AI画像でやれば即捏造。『この状態を保つためにやってること』という語り口にすると、変化を見せずに変化を想起させられる。バズの型として最も相性がいい。）
+- 採用する型: 無人称・手元オンリー型（YouTube Shorts特化）
+  （YouTube Shorts はブラウジングとは別のレコメンドで動き、登録者数は初動にしか効かない。効くのは『スワイプされずに見られたか』だけなので、登録者1000人規模でも再生数だけ跳ねる（＝インプが登録者の10倍以上になる）現象はこの型で起きる。さらにAI生成の最大の事故ポイントである『シーンをまたいで顔が変わる』を、顔を1カットも出さないことで構造的にゼロにできる。言語非依存で海外流入も乗るため、7つの型の中でAI再現性が最も高い。）
 
 【商品情報】
 - 商品名: しずくセラム（架空ブランド／美容液）（美容液）
 - 狙う悩み: くすみ
 - 主な特徴・訴求: 一滴で顔全体に伸びる
-- CTA文言: 続けてるやつはプロフに／#PR
+- CTA文言: 詳細は概要欄のリンクからご覧ください。
 
 【登場人物 — 全シーンで固定】
 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。
 アップロードした人物画像を厳密に参照し、シーンをまたいで顔・髪型・肌の色・衣装が変化しないようにしてください。
 変化したシーンは採用せず、生成し直してください。
 
-【シーン構成 — この順序と尺を守る】
+【シーン構成 — この順序を守る】
+※ 尺の列は絵作りの目安。実際の尺は【テンポの仕様】のナレーション長ルールに従ってください。
 | # | 目標尺 | 役割 | 画（何が映るか） | 動き |
 |---|---|---|---|---|
-| 1 | 2.0秒 | フック | AI美女：自然光、肌のツヤが乗った状態のバストアップ | 髪がわずかに揺れる、カメラ微前進 |
-| 2 | 3.0秒 | 否定 | 同一人物・別カット | 静止 |
-| 3 | 4.0秒 | 習慣1 | 手元：夜のルーティン | 手の動きのみ |
-| 4 | 3.0秒 | 習慣2 | 商品のテクスチャ接写 | スロー |
-| 5 | 2.0秒 | CTA | 商品単体 | 静止 |
+| 1 | 2.5秒 | 視覚フック | とろみが糸を引く超接写。指先は第二関節から先だけがフレームに入る（手全体を映さない） | 極スローで滴が落ちる。カメラは固定 |
+| 2 | 3.0秒 | 設置 | 洗面台の棚に商品を置く手。置いた直後に手はフレーム外へ抜ける | 手が入る→置く→抜ける、の一方向だけ |
+| 3 | 3.5秒 | 情報提示 | 商品パッケージの完全静物カット。人体は一切映さない | ゆっくりドリーイン |
+| 4 | 3.5秒 | 使用 | 手の甲にのばす超接写。手の甲の面だけを使い、指は画面に入れない | のばす動きのみ |
+| 5 | 3.0秒 | 質感の再フック | 肌の表面を光が横切る超接写。どこの部位か特定できない寄り | 光が横に流れる |
+| 6 | 2.5秒 | 時間の暗示 | 同じ棚を、朝の自然光と夜の電球色で2カット続ける（人物なし） | 静止＋わずかなパララックス |
+| 7 | 2.0秒 | CTA | 商品単体、余白多め | 静止 |
 
 【生成時のルール】
 - 1シーンにつき動きは1種類だけ。複数の動きを重ねると破綻します
@@ -63,28 +65,41 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 - **ループ回避**: 各シーンは終端の状態を始端と変えてください（同じ位置に戻すとループに見えます）
 - 顔の構造・髪型・肌の色・衣装・商品ラベルは一切変形させないでください
 - 商品の見た目・色・ロゴは、アップロードした商品画像どおりに正確に保ってください
-- 人物にセリフを喋らせないでください。音声は環境音とBGMのみ
+- 音声はオフスクリーンのナレーションです。画面に人物が映るシーンでも、口を動かして喋っているように見せないでください（表情は自然なまま、話す演技はしない）。この型は人物が画面に映らないため、この点は元々問題になりません
 - 0〜2秒に商品名・ロゴを出さないでください（広告と判定されて離脱します）
 
-【テロップの扱い — 重要】
-動画内に日本語の文字を焼き込まないでください。文字が崩れます。
-代わりに、以下2点を守ってください。
-1. 全シーンで、画面**上15%と下25%を無地に近い状態**に保つ（後からテロップを乗せるセーフエリア）
-2. テロップ文言は焼き込まず、納品物④としてタイムコード付きのテキストで出力する
-英数字の短い表記（商品名の英字ロゴなど）だけは、商品画像に写っているものをそのまま保つ形で可とします。
+【テンポの仕様（最重要・厳守）】
+※ここで削るのは「ナレーションとナレーションの間の無音」だけです。
+　声の読み上げ speed は速くしないでください（下の音声の仕様を優先）。
+- 各シーンの尺は固定ではなく「そのシーンのナレーションの長さ＋0.3秒」に合わせて詰める
+- シーンが切り替わったら即（0.3秒以内に）次のナレーションを開始する
+- ナレーションとナレーションの間の無音は最大でも0.5秒。間延びした沈黙を作らない
+- 上記を守れば全体は20〜25秒程度に収まるはず。尺を縮めるために早口にはしないこと
 
-想定しているテロップ（この文言をタイムコードに割り当てて④として出力してください）:
-| # | タイムコード | テロップ |
+【音声の仕様】
+- 音声はナレーションのみ。BGM・効果音・環境音は完全に入れない
+- 日本語・自然な女性の声
+- 読み方はゆっくり穏やかに、優しく語りかけるトーン。癒し系の動画なので
+  早口・急いだ喋り方は絶対にしないこと。一文一文を丁寧に読む
+- 人物は映らないためリップシンクは不要
+- ナレーションとキャプションの内容とタイミングが必ず一致すること
+
+【キャプション（字幕）の仕様】
+- 各シーンのナレーション文をそのまま画面下部中央に表示
+- 白文字・黒縁取り・読みやすい太めのゴシック体
+- 画面の下端から10〜15%上に配置（スマホUIと被らない安全圏）
+- そのシーンのナレーションが流れている間だけ表示
+
+想定しているナレーション文（このテキストをそのままナレーション兼キャプションとして使用してください）:
+| # | 役割 | ナレーション文 |
 |---|---|---|
-| 1 | 0.0-2.0 | くすみは、隠すより先に整えるほうが早いって知った |
-| 2 | 2.0-5.0 | 特別なことは何もしてない |
-| 3 | 5.0-9.0 | やめたこと：厚塗りでごまかすこと |
-| 4 | 9.0-12.0 | 続けてること：夜だけ一滴、しずくセラムを足すこと |
-| 5 | 12.0-14.0 | 続けてるやつはプロフに／#PR |
-
-【音】
-静かなBGM。ナレーションは囁き寄りか、テロップのみ
-シーンの切り替わりに合わせてSFXを置き、5秒に1回は音か画に変化を作ってください（パターンインタラプト）。
+| 1 | 視覚フック | 毎晩、ひとしずくだけで整う夜があります。 |
+| 2 | 設置 | くすみが気になる日は、これを鏡の前に置くところから。 |
+| 3 | 情報提示 | しずくセラム、一滴で顔全体に伸びる美容液です。 |
+| 4 | 使用 | 手のひらで少しだけ温めてから、そっとなじませます。 |
+| 5 | 質感の再フック | 肌にのせた瞬間、すっと溶けていくような感触です。 |
+| 6 | 時間の暗示 | 朝も夜も、置く場所は変えません。 |
+| 7 | CTA | 詳細は概要欄のリンクからご覧ください。 |
 
 【書き出し】
 1080x1920 / 30fps / H.264 High / 12-16 Mbps (VBR 2pass) / 音声 AAC 320kbps 48kHz / Rec.709 / sRGB
@@ -103,14 +118,11 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 まずストーリーボードを提示してください。私が承認したら、生成・スティッチ・仕上げまで止まらずに実行してください。
 
 【納品物】
-1. 完成動画（14秒 / 9:16）
+1. 完成動画（20〜25秒程度（ナレーション長で決まる。下の【テンポの仕様】参照） / 9:16）
 2. 使用したシーンごとの生成プロンプト
 3. 編集判断の一覧（タイムコード / 編集アクション / ビジュアル / 音声・SFX / メモ の5列の表）
-4. テロップ台本（タイムコード付きテキスト。動画には焼き込まない）
+4. ナレーション台本（実際に使用した文言。字幕として画面に焼き込み済み）
 5. 上の「守ること」への自己チェック結果（各項目 OK/NG と根拠）
-
-【追加指示（問題解決型（CVR最優先））】
-感情曲線を『日常の小さなストレス → この商品で解決』に振り切ってください。シーン1で視聴者が『あるある』と思う状況を、セリフではなくビジュアルだけで突きつけてください（例: 夕方の鏡、崩れたメイク、時計）。商品はシーン2の後半まで出さないでください。解決のカットは、変化そのものではなく『その後の余裕のある所作』で表現してください。
 ```
 
 ---
@@ -121,34 +133,46 @@ Grok Imagine Agent Mode として、以下をすべて活用し、視聴維持�
 テキストだけで同一人物を出そうとすると必ず顔が変わる。
 Agent Mode に渡すのは人物カットだけでよい（商品カットは実物の商品写真を使う方が正確）。
 
-### カット1（0.0-2.0 フック）
+### カット1（0.0-2.5 視覚フック）
 ```
 同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
-【カット1（フック）】AI美女：自然光、肌のツヤが乗った状態のバストアップ。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+【カット1（視覚フック）】とろみが糸を引く超接写。指先は第二関節から先だけがフレームに入る（手全体を映さない）。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
 ```
 
-### カット2（2.0-5.0 否定）
+### カット2（2.5-5.5 設置）
 ```
 同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
-【カット2（否定）】同一人物・別カット。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+【カット2（設置）】洗面台の棚に商品を置く手。置いた直後に手はフレーム外へ抜ける。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
 ```
 
-### カット3（5.0-9.0 習慣1）
+### カット3（5.5-9.0 情報提示）
 ```
 同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
-【カット3（習慣1）】手元：夜のルーティン。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+【カット3（情報提示）】商品パッケージの完全静物カット。人体は一切映さない。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
 ```
 
-### カット4（9.0-12.0 習慣2）
+### カット4（9.0-12.5 使用）
 ```
 同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
-【カット4（習慣2）】商品のテクスチャ接写。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+【カット4（使用）】手の甲にのばす超接写。手の甲の面だけを使い、指は画面に入れない。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
 ```
 
-### カット5（12.0-14.0 CTA）
+### カット5（12.5-15.5 質感の再フック）
 ```
 同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
-【カット5（CTA）】商品単体。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+【カット5（質感の再フック）】肌の表面を光が横切る超接写。どこの部位か特定できない寄り。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+```
+
+### カット6（15.5-18.0 時間の暗示）
+```
+同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
+【カット6（時間の暗示）】同じ棚を、朝の自然光と夜の電球色で2カット続ける（人物なし）。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
+```
+
+### カット7（18.0-20.0 CTA）
+```
+同一人物・同一世界観で通すこと。人物設定: 30代前半に見える（エイジングケア案件のターゲットに合わせる。若すぎると訴求が刺さらない）、黒髪ミディアム、やわらかい印象の二重、眉はナチュラル、ほぼノーメイクに近い薄化粧、日本人、生活感のある部屋で気負っていない雰囲気。衣装: グレーのスウェット／オフホワイトのリブトップス。部屋着で完結させる。場所: 自然光の入る洗面台、白いタイル、木のトレー。夜のカットは電球色の間接照明。写真的リアリズム、自然光、9:16縦構図、被写界深度浅め、加工しすぎない肌質（毛穴とうぶ毛を残す）。禁止: 露出の高い服装、扇情的なポーズ、実在の芸能人に似せる、ブランドロゴの改変、盛りすぎた肌加工。
+【カット7（CTA）】商品単体、余白多め。この画像は静止画として完結させ、次の工程で動かす前提のため、被写体の輪郭がフレーム端で切れないようにする。
 ```
 
 ---
@@ -160,47 +184,59 @@ Agent Mode を使わない場合、またはAgent Modeの出力が破綻した�
 被写体と動きの記述は編集しやすいよう日本語のまま残してある。指示追従が弱い時は英訳する。
 動きが出ない場合は「Motion:」の動詞を強い語（drifts / unfurls / surges）に差し替える。
 
-### カット1（0.0-2.0 / 3秒）
+### カット1（0.0-2.5 / 3秒）
 ```
-Animate this still photo. Subject: AI美女：自然光、肌のツヤが乗った状態のバストアップ. Motion: 髪がわずかに揺れる、カメラ微前進. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
-```
-
-### カット2（2.0-5.0 / 3秒）
-```
-Animate this still photo. Subject: 同一人物・別カット. Motion: near-static — 静止。Only micro-movements are allowed (breathing, a single blink, a subtle shift of light). Nothing else moves. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
+Animate this still photo. Subject: とろみが糸を引く超接写。指先は第二関節から先だけがフレームに入る（手全体を映さない）. Motion: 極スローで滴が落ちる。カメラは固定. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
 ```
 
-### カット3（5.0-9.0 / 4秒）
+### カット2（2.5-5.5 / 3秒）
 ```
-Animate this still photo. Subject: 手元：夜のルーティン. Motion: 手の動きのみ. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 4 seconds. 9:16 vertical.
-```
-
-### カット4（9.0-12.0 / 3秒）
-```
-Animate this still photo. Subject: 商品のテクスチャ接写. Motion: スロー. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
+Animate this still photo. Subject: 洗面台の棚に商品を置く手。置いた直後に手はフレーム外へ抜ける. Motion: 手が入る→置く→抜ける、の一方向だけ. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
 ```
 
-### カット5（12.0-14.0 / 3秒）
+### カット3（5.5-9.0 / 4秒）
 ```
-Animate this still photo. Subject: 商品単体. Motion: near-static — 静止。Only micro-movements are allowed (breathing, a single blink, a subtle shift of light). Nothing else moves. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
+Animate this still photo. Subject: 商品パッケージの完全静物カット。人体は一切映さない. Motion: ゆっくりドリーイン. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 4 seconds. 9:16 vertical.
+```
+
+### カット4（9.0-12.5 / 4秒）
+```
+Animate this still photo. Subject: 手の甲にのばす超接写。手の甲の面だけを使い、指は画面に入れない. Motion: のばす動きのみ. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 4 seconds. 9:16 vertical.
+```
+
+### カット5（12.5-15.5 / 3秒）
+```
+Animate this still photo. Subject: 肌の表面を光が横切る超接写。どこの部位か特定できない寄り. Motion: 光が横に流れる. Keep the motion subtle and single-purpose — one clear movement only. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
+```
+
+### カット6（15.5-18.0 / 3秒）
+```
+Animate this still photo. Subject: 同じ棚を、朝の自然光と夜の電球色で2カット続ける（人物なし）. Motion: near-static — 静止＋わずかなパララックス。Only micro-movements are allowed (breathing, a single blink, a subtle shift of light). Nothing else moves. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
+```
+
+### カット7（18.0-20.0 / 3秒）
+```
+Animate this still photo. Subject: 商品単体、余白多め. Motion: near-static — 静止。Only micro-movements are allowed (breathing, a single blink, a subtle shift of light). Nothing else moves. Camera: hold the framing of the source image; no whip pans, no cuts inside the clip. Must stay stable: the person's facial structure, hairstyle, skin tone, clothing, and the product label must not change or morph at any point. Mood: calm, natural daylight, soft contrast, editorial skincare commercial. Audio: ambient room tone only, no speech. Duration: 3 seconds. 9:16 vertical.
 ```
 
 ---
 
-## ④ テロップ全文
+## ④ ナレーション全文（字幕として動画内に焼き込み済み）
 
-| # | タイムコード | テロップ |
+| # | タイムコード | ナレーション |
 |---|---|---|
-| 1 | 0.0-2.0 | くすみは、隠すより先に整えるほうが早いって知った |
-| 2 | 2.0-5.0 | 特別なことは何もしてない |
-| 3 | 5.0-9.0 | やめたこと：厚塗りでごまかすこと |
-| 4 | 9.0-12.0 | 続けてること：夜だけ一滴、しずくセラムを足すこと |
-| 5 | 12.0-14.0 | 続けてるやつはプロフに／#PR |
+| 1 | 0.0-2.5 | 毎晩、ひとしずくだけで整う夜があります。 |
+| 2 | 2.5-5.5 | くすみが気になる日は、これを鏡の前に置くところから。 |
+| 3 | 5.5-9.0 | しずくセラム、一滴で顔全体に伸びる美容液です。 |
+| 4 | 9.0-12.5 | 手のひらで少しだけ温めてから、そっとなじませます。 |
+| 5 | 12.5-15.5 | 肌にのせた瞬間、すっと溶けていくような感触です。 |
+| 6 | 15.5-18.0 | 朝も夜も、置く場所は変えません。 |
+| 7 | 18.0-20.0 | 詳細は概要欄のリンクからご覧ください。 |
 
 ## ⑤ 投稿キャプション
 
 ```
-くすみは、隠すより先に整えるほうが早いって知った
+毎晩、ひとしずくだけで整う夜があります。
 
 しずくセラム（架空ブランド／美容液）｜くすみが気になる日に。
 ・一滴で顔全体に伸びる
@@ -215,12 +251,11 @@ Animate this still photo. Subject: 商品単体. Motion: near-static — 静止�
 - compliance.checkContent: **PASS**
 - スキンケア禁止語: **なし**
 - 記入漏れ: **なし**
-- 型の固有リスク: AI美女の肌を『成果』として提示しない。あくまで映像の雰囲気。テロップで『この肌になれる』と書いた瞬間にアウト
+- 型の固有リスク: 薬機法リスクは全型で最小。ただしカット4〜5の「のびる」「質感」は使用感の話に留めること。肌の状態が改善したように見せる画（カット5でトーンを明るく寄せる等のグレーディング）を作った時点で暗黙のビフォーアフターになる。カット6は『置き場所を変えない』という習慣の話であって、朝夜で肌が変わる話ではない
 - AIラベル: **必要**（投稿時にプラットフォームのAI表示をONにする）
 
 ## ⑦ 仕上げ
 
-Agent Mode は日本語テロップを焼き込めないので、①の納品物④として出てくるテロップ台本を
-自分で乗せる。上下のセーフエリア（上15% / 下25%）を空けさせてあるのでそこに置く。
+⚠️ この案件は narration_mode（ナレーション＋字幕をGrokに焼き込ませる指定）。Grokは日本語を文字ではなくピクセルとして描画するため、字幕が崩れる既知のリスクがある（`docs/market-research.md` §5）。生成結果を確認し、崩れていたら字幕なしで出力させ直し、下の通常フローと同様に後乗せに切り替えること。
 出しきれない時の追い込み方は `prompts/grok-agent-mode.md` の「詰まった時」を参照。
 投稿前に `docs/compliance-checklist.md` を1回通すこと。

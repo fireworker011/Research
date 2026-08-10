@@ -137,18 +137,23 @@
       "category": "美容液",
       "link_key": "skincare_shizuku_serum",
       "concern": "くすみ",
-      "pattern_id": "p6_implied_narrative",
+      "pattern_id": "p8_handsonly_shorts",
       "usp": "一滴で顔全体に伸びる",
-      "fill": {
-        "hook_line": "くすみは、隠すより先に整えるほうが早いって知った",
-        "stopped": "厚塗りでごまかすこと",
-        "kept": "夜だけ一滴、しずくセラムを足すこと"
-      },
-      "tone": "自然なUGC風。広告然としない、生活の中で撮られた感じ",
-      "variant": "problem_solution",
+      "fill": {},
+      "tone": "癒し系。ゆっくり穏やかなナレーションで語りかける",
       "platform": "instagram_reels",
       "ai_disclosure": true,
-      "notes": "架空ブランドでの実演用。link_key は links.json に存在しないため、既存エンジンで実投稿する場合は自動スキップされる（URLを持つ実案件に差し替えるか、link_key を実在キーに変更すること）。商品名は架空だが、薬機法・体験談ルールは実案件と同じ基準で検品している"
+      "narration_mode": true,
+      "narration_lines": [
+        "毎晩、ひとしずくだけで整う夜があります。",
+        "くすみが気になる日は、これを鏡の前に置くところから。",
+        "しずくセラム、一滴で顔全体に伸びる美容液です。",
+        "手のひらで少しだけ温めてから、そっとなじませます。",
+        "肌にのせた瞬間、すっと溶けていくような感触です。",
+        "朝も夜も、置く場所は変えません。",
+        "詳細は概要欄のリンクからご覧ください。"
+      ],
+      "notes": "架空ブランドでの実演用。link_key は links.json に存在しないため、既存エンジンで実投稿する場合は自動スキップされる。narration_mode: ナレーション＋字幕焼き込み仕様に対応するため、型を p6 から人物が画面に映らない p8（無人称・手元オンリー型）に変更した——ナレーションを画面上の人物にリップシンクさせず自然に流すため。narration_lines は読み上げ用の完全文で、pattern.cuts のテロップ短文とは別に用意している。日本語字幕の焼き込みはGrokが文字をピクセル描画するため崩れるリスクがある既知の弱点（docs/market-research.md §5, prompts/grok-agent-mode.md）。試して崩れる場合は字幕だけ後乗せに戻すこと"
     }
   ]
 }
