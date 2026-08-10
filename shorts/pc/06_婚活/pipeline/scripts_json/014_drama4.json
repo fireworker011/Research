@@ -1,0 +1,63 @@
+{
+  "project_id": "konkatsu_014_drama4",
+  "genre": "婚活",
+  "title": "また、結婚報告だ。スマホを持つ手が止まりました #Shorts",
+  "description": "SNSを開くたび、友人の結婚報告に複雑な気持ちになっていた頃の私。女性の平均初婚年齢は約31歳だそうです。それでも8ヶ月で入籍できた理由を話します。\n\n焦りを感じたら、一人で抱え込まないでください👇\nhttps://px.a8.net/svt/ejp?a8mat=4B5MC7+FCIA5U+17R0+626XU\n#PR\n\n#婚活 #30代婚活 #婚活の本音 #結婚相談所 #SNS疲れ #Shorts",
+  "tags": ["婚活", "30代婚活", "婚活の本音", "結婚相談所", "SNS疲れ"],
+  "bgm": "bgm/piano_ambient.mp3",
+  "telop": true,
+  "final_filename": "婚活ドラマ4_完成ショート.mp4",
+  "character": "以下の2人の日本人女性が登場する婚活ドラマ。各シーンで指定した人物を、全シーンを通じて同一人物として完全に一致させること。縦長9:16のリアルな写真風、高詳細。\nクライアント役「ミキ」: 30代前半、茶色がかった黒髪ミディアム、細面、清楚感のある顔立ち、ベージュのニット。\nカウンセラー役: 40代、黒髪の上品なショートボブ、知的で少し厳しさのある顔立ち、紺色のジャケット。",
+  "source_scenes": [
+    {
+      "video": "scene_01.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」がソファでスマートフォンのSNS画面を見ていて、友人の結婚報告を見た瞬間に表情が固まる。口は閉じたまま、話していない。複雑な、少し寂しさのにじむ表情。明るい室内。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラが素早くズームイン。スマホを持つ手がぴたりと止まり、表情が固まる動き。"
+    },
+    {
+      "video": "scene_02.mp4",
+      "duration": 10,
+      "image_prompt": "カウンセラー役が穏やかな表情で、データを見せながらクライアントに語りかけている。口は閉じたまま、話していない。明るいカウンセリングルーム。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。資料を指し示す手の動き、優しい表情。"
+    },
+    {
+      "video": "scene_03.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」が友人の結婚式に一人で参加し、笑顔を作りながらもどこか寂しそうな表情を見せる回想シーン。口は閉じたまま、話していない。明るい披露宴会場。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラ固定。作り笑いから一瞬素の表情に戻る動き。"
+    },
+    {
+      "video": "scene_04.mp4",
+      "duration": 10,
+      "image_prompt": "カウンセラー役が身を乗り出し、はっきりとした口調でクライアントを励ましている。口は閉じたまま、話していない。明るいカウンセリングルーム。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。真剣な表情で頷く動き。"
+    },
+    {
+      "video": "scene_05.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」が肩の力が抜けたような、前向きな柔らかい表情に変わっていく。口は閉じたまま、話していない。明るい室内、温かい光。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。硬さから柔らかい笑顔へ表情が変化。"
+    },
+    {
+      "video": "scene_06.mp4",
+      "duration": 10,
+      "image_prompt": "クライアント役「ミキ」が白のワンピースを着て、屋外で30代の男性と自然に笑い合っている幸せそうな場面。口は閉じたまま、話していない。公園、柔らかい自然光。",
+      "motion_prompt": "口を閉じたまま、話さない。カメラがゆっくり近づく。2人の穏やかな笑顔にフォーカス。"
+    }
+  ],
+  "scenes": [
+    {"video": "scene_01.mp4", "speaker": "client", "narration": "また、結婚報告だ。スマホを持つ手が止まりました。", "telop_text": "また、結婚報告だ…", "hook": true},
+    {"video": "scene_02.mp4", "speaker": "counselor", "narration": "女性の平均初婚年齢は、今およそ31歳だそうです。", "telop_text": "平均初婚年齢、約31歳"},
+    {"video": "scene_02.mp4", "speaker": "counselor", "narration": "焦る気持ちは、決しておかしくありません。", "telop_text": "焦る気持ちはおかしくない"},
+    {"video": "scene_03.mp4", "speaker": "client", "narration": "友人の結婚式に一人で参加するたび、笑顔の裏で焦っていました。", "telop_text": "笑顔の裏でずっと焦ってた"},
+    {"video": "scene_03.mp4", "speaker": "client", "narration": "SNSを見るのが、だんだん怖くなっていきました。", "telop_text": "SNSを見るのが怖くなった"},
+    {"video": "scene_04.mp4", "speaker": "counselor", "narration": "周りと比べるより、自分のペースを持つことが大切です。", "telop_text": "比べるより自分のペースを"},
+    {"video": "scene_04.mp4", "speaker": "counselor", "narration": "そのペースを一緒に作るのが、私たちの仕事です。", "telop_text": "ペースを一緒に作るのが仕事"},
+    {"video": "scene_05.mp4", "speaker": "client", "narration": "一人で焦っていた時間が、急に軽くなった気がしました。", "telop_text": "焦ってた時間が急に軽くなった"},
+    {"video": "scene_05.mp4", "speaker": "client", "narration": "8ヶ月後、私は入籍していました。", "telop_text": "8ヶ月後、入籍しました"},
+    {"video": "scene_06.mp4", "speaker": "client", "narration": "焦りを感じているなら、それは頑張ってきた証拠です。", "telop_text": "焦りは頑張ってきた証拠"},
+    {"video": "scene_01.mp4", "speaker": "client", "narration": "一人で抱え込まず、プロに話を聞いてみませんか?", "telop_text": "一人で抱え込まないで"},
+    {"video": "scene_01.mp4", "speaker": "client", "narration": "無料相談は今日からできます。詳細は概要欄から。保存してね。", "telop_text": "詳細は概要欄📌保存してね"}
+  ]
+}
