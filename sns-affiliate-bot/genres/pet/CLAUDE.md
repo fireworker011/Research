@@ -61,6 +61,7 @@
 | 40 | 休日は、いつもより長く一緒にいられる（女性復帰・CTAなし） | 投稿済 | 低迷 ❌（女性復帰は撤回） |
 | 41 | お昼休み、こっそり様子を見てしまう（女性復帰・CTAあり） | 投稿済 | 300 ❌（女性復帰は撤回） |
 | 42 | 新しいおもちゃ、3秒で飽きられました（猫のみ路線・確定方針） | **ストック済** | - |
+| 43 | お気に入りの場所、また変わりました（CAT統一設定 導入第1弾） | **ストック済** | - |
 
 ※再生数はスマホYouTube Studioより手動確認（2026/07/23時点）。
 ※㉞㉟は連日投稿が原因で強い抑制を受けた（上記の緊急事態セクション参照）。
@@ -73,6 +74,19 @@ WOMAN = "Japanese woman in her early 30s, black shoulder-length straight hair
 slightly tucked behind one ear, oval face, natural makeup,
 wearing a light beige turtleneck sweater and dark navy trousers"
 ```
+※2026/08〜 女性キャラクターは当面封印中（上記「女性キャラクター復帰ルールは撤回」参照）。
+
+**CAT**（2026/08〜 猫のみ路線の全動画で共通使用。動画㊸で導入）
+```
+CAT = "A tabby cat with a dense, soft double coat — dark brown and black
+mackerel stripe pattern down the back and tail, lighter warm cream-colored
+belly and chest, white paws like little mittens, a white patch under the
+chin. Round plump cheeks, amber-green eyes, medium-length whiskers, alert
+triangular ears with faint fur tufts at the tips. Medium-sized adult cat,
+slightly stocky build, well-groomed glossy coat that catches the light."
+```
+全シーンで同一個体として描写すること。今後の動画のプロンプトには必ずこの
+CAT設定を含めて猫の外見を統一する。
 
 ## フックパターン（実績あり・2026/07/12 データ更新）
 - **最強: 謎×事件型**: 「深夜2時、通知が鳴った」3,419再生・いいね61（1.8%）← 過去最高

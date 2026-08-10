@@ -53,6 +53,15 @@ CapCut・FFmpeg・Voicevox・手動編集は一切不要になる。
 - 画面の下端から10〜15%上に配置（スマホUIと被らない安全圏）
 - そのシーンのナレーションが流れている間だけ表示
 
+【猫のキャラクター設定（全シーン共通・厳守）】
+A tabby cat with a dense, soft double coat — dark brown and black mackerel
+stripe pattern down the back and tail, lighter warm cream-colored belly
+and chest, white paws like little mittens, a white patch under the chin.
+Round plump cheeks, amber-green eyes, medium-length whiskers, alert
+triangular ears with faint fur tufts at the tips. Medium-sized adult cat,
+slightly stocky build, well-groomed glossy coat that catches the light.
+全シーンで同一個体として描写すること（毛柄・体格・目の色を変えない）。
+
 【各シーンの内容】
 
 ■ scene1（映像）: 【シーン1の映像の指示】
@@ -72,7 +81,7 @@ CapCut・FFmpeg・Voicevox・手動編集は一切不要になる。
 
 【映像の共通スタイル】
 - 実写風・シネマティック・日本の住宅
-- キジトラ猫（同一個体として一貫させる）
+- 上記の猫のキャラクター設定を全シーンで一貫させる
 - 人物は登場させない
 - 動きは自然でゆったり、コミカルなトーン
 
@@ -86,6 +95,8 @@ CapCut・FFmpeg・Voicevox・手動編集は一切不要になる。
   （フォールバックとして残しておく）
 - ナレーションの声質が毎回変わる場合は「前回と同じ声で」と追記して調整する
 - キャプションのズレ・誤字が出た場合はそのシーンだけ再指示する
+- 猫の外見（毛柄・体格・目の色）が動画ごとにブレる場合は、CAT設定の描写を
+  さらに具体化する（例: 体重・柄の左右非対称の位置など）
 
 ## 改訂履歴
 - 2026/08 第2版: 初版はナレーション間の無音が長くテンポが悪かったため、
@@ -101,3 +112,6 @@ CapCut・FFmpeg・Voicevox・手動編集は一切不要になる。
   速い読みで伸びた実績は無い ③癒し系ジャンルで語りが速いと情緒が壊れる。
   → 逆に「ゆっくり穏やかに、早口にしない」を明示する指示へ変更。
   尺は読み速度ではなく行数・文字数で調整する。
+- 2026/08 第4版: 猫のキャラクター統一設定（CAT）を新設（動画㊸で導入）。
+  毛柄・体格・目の色を明文化し、全動画で同一個体として一貫させる
+  （従来のWOMAN変数と同じ役割）。
