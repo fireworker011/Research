@@ -130,6 +130,25 @@
       "platform": "youtube_shorts",
       "ai_disclosure": true,
       "notes": "YouTube Shorts のインプ/登録者比を狙う型の1本目。顔を1カットも出さないためAI生成の最大事故（シーンをまたいだ顔の変化）が構造的に起きない。02（テクスチャASMR）と素材を共用できるので、同じ撮影セットで続けて作るのが効率的"
+    },
+    {
+      "id": "shizuku-01",
+      "product": "しずくセラム（架空ブランド／美容液）",
+      "category": "美容液",
+      "link_key": "skincare_shizuku_serum",
+      "concern": "くすみ",
+      "pattern_id": "p6_implied_narrative",
+      "usp": "一滴で顔全体に伸びる",
+      "fill": {
+        "hook_line": "くすみは、隠すより先に整えるほうが早いって知った",
+        "stopped": "厚塗りでごまかすこと",
+        "kept": "夜だけ一滴、しずくセラムを足すこと"
+      },
+      "tone": "自然なUGC風。広告然としない、生活の中で撮られた感じ",
+      "variant": "problem_solution",
+      "platform": "instagram_reels",
+      "ai_disclosure": true,
+      "notes": "架空ブランドでの実演用。link_key は links.json に存在しないため、既存エンジンで実投稿する場合は自動スキップされる（URLを持つ実案件に差し替えるか、link_key を実在キーに変更すること）。商品名は架空だが、薬機法・体験談ルールは実案件と同じ基準で検品している"
     }
   ]
 }
