@@ -3790,6 +3790,26 @@
       "status": "success",
       "post_id": "18103099121615544",
       "at": "2026-08-21T10:53:44.429Z"
+    },
+    "2026-08-21_21:00_education": {
+      "status": "skipped_duplicate",
+      "at": "2026-08-21T13:16:48.584Z"
+    },
+    "2026-08-21_21:00_sidejob": {
+      "status": "skipped_no_link",
+      "at": "2026-08-21T13:16:48.584Z"
+    },
+    "2026-08-21_21:00_beauty": {
+      "status": "skipped_no_link",
+      "at": "2026-08-21T13:16:48.585Z"
+    },
+    "2026-08-21_21:00_konkatsu": {
+      "status": "skipped_no_link",
+      "at": "2026-08-21T13:16:48.585Z"
+    },
+    "2026-08-21_21:00_bodymake": {
+      "status": "skipped_duplicate",
+      "at": "2026-08-21T13:16:48.585Z"
     }
   },
   "recent": {
