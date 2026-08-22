@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "check": "node --check src/cli.js && node --check src/compliance.js && node --check src/finance.js && node --check src/generate.js && node --check src/emit-woditor.js && node --check src/emit-html.js",
+    "check": "node --check src/cli.js && node --check src/compliance.js && node --check src/finance.js && node --check src/generate.js && node --check src/emit-woditor.js && node --check src/emit-html.js && node --check src/emit-event-code.js",
     "generate": "node src/cli.js generate --seed data/seeds/sample-adult-adv.json",
     "preview": "node src/cli.js preview --in output/ir/game.json",
     "woditor": "node src/cli.js woditor --in output/ir/game.json",

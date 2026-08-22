@@ -27,8 +27,8 @@ function help() {
   process.stdout.write(`doujin-game-factory
   generate  --seed <json>     検品して IR を output/ir/game.json へ
   validate  --in <json>
-  preview   --in <json>       スマホで開ける HTML
-  woditor   --in <json>       貼り付け用コマンド文（Windowsが別途必要）
+  preview   --in <json>       グラフ確認用 HTML（Editorの代用ではない）
+  woditor   --in <json>       PCのEditorへ貼る event-code.txt
   finance   --price --copies --works [--cap]
   gate      同上。今決めることだけ出す
   scenarios --price
@@ -56,13 +56,18 @@ function main() {
   if (c === "preview") {
     const spec = loadJson(arg("--in"));
     const file = writeHtml(spec, path.join(__dirname, "..", "output", "preview"));
-    print({ ok: true, file, hint: "スマホのブラウザで index.html を開く。これが今できる唯一のプレイテスト" });
+    print({ ok: true, file, hint: "グラフ確認用。本番テストは PC の Editor F9" });
     return;
   }
   if (c === "woditor") {
     const spec = loadJson(arg("--in"));
     const out = writeWoditor(spec, path.join(__dirname, "..", "output", "woditor"));
-    print({ ok: true, ...out, warning: "Game.exe は生成していない" });
+    print({
+      ok: true,
+      ...out,
+      next: "PC で scripts/windows/01_check.bat → event-code.txt を自動実行イベントへ貼る → F9",
+      warning: "このコマンドは Game.exe をビルドしない。Editor.exe -gamedata がビルド",
+    });
     return;
   }
   if (c === "finance" || c === "gate" || c === "scenarios") {
@@ -80,12 +85,12 @@ function main() {
     if (c === "gate") {
       print({
         now_decide: [
-          "フルAIで週1を捨てる（DLsite AI生成は申請月3本）",
-          "販売物の第一ターゲットを HTMLプレビュー可能なADVにするか、Windows last mile を買うか",
+          "エンジンはウディタ。最初の作品は戦闘なしの短い成人ADV（自動実行イベント）",
+          "フルAIで週1を捨てる（DLsite AI生成は申請月3本）。PCがあっても販売枠は増えない",
           "月200万を『初月から』語らない。初作30本ゲートを先に置く",
         ],
         later: [
-          "ウディタに寄せるか",
+          "RPG戦闘を足すか",
           "価格",
           "サークル名・世界観の量産",
         ],

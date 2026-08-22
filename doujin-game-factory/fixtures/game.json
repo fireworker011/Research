@@ -73,10 +73,10 @@
     {
       "id": "end_h",
       "type": "end",
-      "text": "朝。これはプレビュー用の最小エロゲー骨格であり、RPGでもウディタ製でもない。"
+      "text": "朝。これは最小のウディタ向けADV骨格であり、戦闘RPGではない。"
     }
   ],
-  "generated_at": "2026-08-22T11:49:17.992Z",
+  "generated_at": "2026-08-22T12:11:45.564Z",
   "pipeline": "doujin-game-factory/0.1",
   "compile_targets": [
     "html_preview",

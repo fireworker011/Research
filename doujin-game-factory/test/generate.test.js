@@ -24,8 +24,12 @@ describe("generate and emit", () => {
     assert.match(html, /終電後の事務所/);
     assert.match(html, /青山 綾/);
     const txt = fs.readFileSync(w.file, "utf8");
-    assert.match(txt, /Editor\.exe/);
     assert.match(txt, /■文章の表示/);
+    const code = fs.readFileSync(w.eventCodeFile, "utf8");
+    assert.match(code, /WoditorEvCOMMAND_START/);
+    assert.match(code, /\[102\]/);
+    const guide = fs.readFileSync(w.readme, "utf8");
+    assert.match(guide, /WOLF_DIR/);
     assert.equal(emitHtml(spec).includes("<script>"), true);
     assert.match(emitWoditor(spec), /h1/);
   });
