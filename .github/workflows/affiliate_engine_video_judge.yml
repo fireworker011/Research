@@ -1,0 +1,45 @@
+name: Affiliate Engine 動画キャッシュループ（判定のみ）
+
+on:
+  schedule:
+    # 06:37 JST。遅延前提。投稿しない。数字は発明しない。
+    - cron: '37 21 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: affiliate-video-judge
+  cancel-in-progress: false
+
+jobs:
+  video-judge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/setup-colab-comfyui-Eb9Lh
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 判定
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          cd affiliate-engine
+          node --check src/video-judge.js
+          node src/video-judge.js --self-test
+          node src/video-judge.js
+
+      - name: 判定を保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add affiliate-engine/output/video || true
+          git diff --staged --quiet || {
+            git commit -m "chore: 動画キャッシュループの日次判定"
+            git pull --rebase origin claude/setup-colab-comfyui-Eb9Lh
+            git push origin claude/setup-colab-comfyui-Eb9Lh
+          }
