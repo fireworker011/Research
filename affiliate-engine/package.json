@@ -12,6 +12,8 @@
     "post:dry": "node src/threads-poster.js --dry-run",
     "report": "node src/report.js",
     "video": "node src/video-semi-auto.js",
+    "video:healing": "node src/video-semi-auto.js --healing --limit 3",
+    "youtube:next3": "node src/youtube-next3.js",
     "plan": "node src/funnel-calc.js"
   }
 }

@@ -24,6 +24,7 @@ const readline = require('readline');
 const { execFile } = require('child_process');
 const { promisify } = require('util');
 const { OUTPUT_DIR, parseCSV, todayJST } = require('./util');
+const { isHealingPet, applyProfileCta, youtubeDescription } = require('./youtube-cta');
 
 const execFileAsync = promisify(execFile);
 
@@ -53,7 +54,7 @@ function wrapText(text, charsPerLine = 16) {
 
 async function generateVideo(text, outputPath, font) {
   // drawtext 用エスケープ
-  const wrapped = wrapText(text.replace(/\{\{AFFILIATE_LINK\}\}/g, 'プロフィールのリンクへ'))
+  const wrapped = wrapText(text.replace(/\{\{AFFILIATE_LINK\}\}/g, ''))
     .replace(/\\/g, '\\\\')
     .replace(/'/g, "\\'")
     .replace(/:/g, '\\:')
@@ -89,8 +90,9 @@ async function main() {
 
   const dateArg = process.argv.indexOf('--date');
   const limitArg = process.argv.indexOf('--limit');
+  const healingOnly = process.argv.includes('--healing');
   const targetDate = dateArg !== -1 ? process.argv[dateArg + 1] : todayJST();
-  const limit = limitArg !== -1 ? parseInt(process.argv[limitArg + 1], 10) : 5;
+  const limit = limitArg !== -1 ? parseInt(process.argv[limitArg + 1], 10) : healingOnly ? 3 : 5;
 
   try {
     await execFileAsync('ffmpeg', ['-version']);
@@ -109,7 +111,10 @@ async function main() {
     process.exit(1);
   }
   const schedule = parseCSV(fs.readFileSync(CSV_PATH, 'utf-8'));
-  const posts = schedule.filter((r) => r.date === targetDate).slice(0, limit);
+  const posts = schedule
+    .filter((r) => r.date === targetDate)
+    .filter((r) => !healingOnly || isHealingPet(r))
+    .slice(0, limit);
 
   if (posts.length === 0) {
     console.log(`${targetDate} の投稿はスケジュールにありません`);
@@ -130,7 +135,8 @@ async function main() {
 
     console.log('\n🎬 動画生成中...');
     try {
-      await generateVideo(`${post.content}\n${post.emoji || ''}`, videoPath, font);
+      const overlay = isHealingPet(post) ? applyProfileCta(post.content) : post.content;
+      await generateVideo(`${overlay}\n${post.emoji || ''}`, videoPath, font);
       console.log(`  ✓ ${videoPath}`);
     } catch (err) {
       console.error(`  ❌ 生成失敗: ${err.message}`);
@@ -141,23 +147,29 @@ async function main() {
     if (answer === 'q') break;
     if (answer === 's') continue;
 
-    let content = post.content;
+    let content = isHealingPet(post) ? applyProfileCta(post.content) : post.content;
     if (answer === 'e') {
       content = (await ask(rl, '新しい本文: ')) || content;
       await generateVideo(`${content}\n${post.emoji || ''}`, videoPath, font);
     }
     if (answer === 'y' || answer === 'e') {
+      const description = isHealingPet(post) ? youtubeDescription(content) : `${content}\n#PR`;
       const meta = {
         timestamp: new Date().toISOString(),
         videoPath,
         genre: post.genre,
         title: `【${post.genre}】${content.split('\n')[0].slice(0, 40)}`,
-        description: `${content}\n#PR`,
-        status: 'queued'
+        description,
+        status: 'queued',
+        commentUrl: null
       };
       enqueue('youtube_uploads.jsonl', meta);
-      enqueue('instagram_uploads.jsonl', { ...meta, caption: `${content}\n\n#${post.genre} #PR` });
-      console.log('  ✓ YouTube / Instagram キューに追加');
+      if (!isHealingPet(post)) {
+        enqueue('instagram_uploads.jsonl', { ...meta, caption: `${content}\n\n#${post.genre} #PR` });
+        console.log('  ✓ YouTube / Instagram キューに追加');
+      } else {
+        console.log('  ✓ YouTube キューに追加（癒し実験: Instagramなし・コメントURLなし）');
+      }
     }
   }
 
