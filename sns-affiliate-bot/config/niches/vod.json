@@ -1,0 +1,16 @@
+{
+  "_note": "このファイルは career.json をベースに後で設定します",
+  "id": "PLACEHOLDER",
+  "name": "PLACEHOLDER",
+  "language": "ja",
+  "accounts": {
+    "threads": { "user_id_env": "", "access_token_env": "" },
+    "youtube": { "channel_id_env": "", "credentials_file": "" },
+    "instagram": null
+  },
+  "affiliate": { "platform": "a8net", "id_env": "A8_AFFILIATE_ID", "products": [] },
+  "hashtags": { "base": [] },
+  "content_types": { "threads": [], "youtube": [] },
+  "templates": {},
+  "image_keywords": {}
+}
