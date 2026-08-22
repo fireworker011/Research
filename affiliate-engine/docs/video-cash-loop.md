@@ -68,6 +68,10 @@ A8 と YouTube スタジオだけ見る。
 
 数字は `data/video_cash_log.csv` に追記する。GitHub アプリから編集してよい。
 
+毎日 06:37 JST 前後に `video-judge.js` がこのCSVだけを見て判定する。
+結果は `output/video/TODAY.md` と Issue「動画キャッシュループ — 今日の判定」。
+投稿しない。数字が無い日は「記録不足」とだけ書く。
+
 ## 14日後の判定
 
 | 結果 | 判定 | 次 |

@@ -38,6 +38,7 @@ GitHub Actions で無人運転し、判断（案件選定・ジャンル取捨�
 
 ＋ video-semi-auto.js（任意・手動）: 反応が良かった投稿を
   Shorts/Reels 動画化 → 確認 → 公式ツールで予約投稿
+＋ video-judge.js（毎日・自動）: YouTubeのクリック記録だけを見て判定。投稿しない
 ＋ funnel-calc.js: 目標金額から必要ビュー数を逆算
 ```
 
