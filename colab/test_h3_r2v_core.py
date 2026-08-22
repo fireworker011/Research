@@ -7,10 +7,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from h3_r2v_core import (
     assert_graph_identity_motion,
     build_r2v_graph,
+    cap_duration_for_vram,
     comfy_media_name,
     finalize_prompt,
     frames,
+    is_oom_error,
     prefer_ref2v_lora,
+    r2v_retry_plans,
     vhs_load_video_inputs,
 )
 
@@ -101,7 +104,32 @@ def test_graph_rejects_non_multiple_of_32():
         raise AssertionError("expected ValueError")
 
 
-def test_vhs_schema_uses_file_key_when_that_is_the_widget():
+def test_cap_duration_prevents_14s_max_on_40gb():
+    capped = cap_duration_for_vram(
+        14,
+        vram_gb=39.5,
+        n_images=2,
+        has_video=True,
+        ref_image_size="max",
+    )
+    assert capped <= 6
+    assert frames(capped) < 200
+
+
+def test_retry_plans_never_drop_video():
+    plans = r2v_retry_plans(
+        duration_s=14,
+        ref_image_size="max",
+        width=960,
+        height=544,
+        n_images=2,
+        has_video=True,
+        vram_gb=39.5,
+    )
+    assert plans[0]["duration_s"] <= 6
+    assert all(p["motion_max_edge"] for p in plans)
+    assert any(p["ref_image_size"] == "match" for p in plans)
+    assert is_oom_error(["execution_error", {"exception_message": "torch.OutOfMemoryError"}])
     inputs = vhs_load_video_inputs(
         {"VHS_LoadVideo": {"input": {"required": {"file": ["COMBO", {}]}}}},
         "clip.mp4",

@@ -155,10 +155,105 @@ def video_ref_key(i: int) -> str:
     return f"ref_videos.ref_video_{i}"
 
 
+def cap_duration_for_vram(
+    duration_s: float,
+    *,
+    vram_gb: float,
+    n_images: int,
+    has_video: bool,
+    ref_image_size: str,
+) -> float:
+    """R2V VRAM scales with frames × ref_image_size × video tokens. 14s+max OOMs on 40GB."""
+    duration_s = float(duration_s)
+    if duration_s < 1:
+        duration_s = 5
+    if not has_video:
+        return min(duration_s, 15.0)
+    if vram_gb < 24:
+        cap = 5.0
+    elif vram_gb < 48:
+        # A100 40GB: 14s + max + 2 stills + motion clip requested 18.5GiB extra and died
+        cap = 6.0 if (ref_image_size == "max" and n_images >= 2) else 8.0
+    else:
+        cap = 15.0
+    return min(duration_s, cap)
+
+
+def r2v_retry_plans(
+    *,
+    duration_s: float,
+    ref_image_size: str,
+    width: int,
+    height: int,
+    n_images: int,
+    has_video: bool,
+    vram_gb: float,
+) -> list[dict[str, Any]]:
+    """Smaller later. Never drops the motion video."""
+    first_dur = cap_duration_for_vram(
+        duration_s,
+        vram_gb=vram_gb,
+        n_images=n_images,
+        has_video=has_video,
+        ref_image_size=ref_image_size,
+    )
+    plans = [
+        {
+            "duration_s": first_dur,
+            "ref_image_size": ref_image_size if ref_image_size in ("match", "max") else "max",
+            "width": width,
+            "height": height,
+            "motion_max_edge": 768 if has_video else None,
+            "label": f"dur={first_dur:.0f}s size={ref_image_size} motion_edge=768",
+        }
+    ]
+    if has_video:
+        plans.append(
+            {
+                "duration_s": min(first_dur, 6.0),
+                "ref_image_size": "match",
+                "width": width,
+                "height": height,
+                "motion_max_edge": 640,
+                "label": "dur<=6s size=match motion_edge=640",
+            }
+        )
+        plans.append(
+            {
+                "duration_s": 5.0,
+                "ref_image_size": "match",
+                "width": min(width, 768) if width >= height else width,
+                "height": min(height, 448) if width >= height else min(height, 768),
+                "motion_max_edge": 512,
+                "label": "dur=5s size=match 768-class canvas motion_edge=512",
+            }
+        )
+    # snap spatial to multiple of 32
+    for p in plans:
+        p["width"] = max(32, int(p["width"]) // 32 * 32)
+        p["height"] = max(32, int(p["height"]) // 32 * 32)
+    # de-dupe identical plans
+    out: list[dict[str, Any]] = []
+    seen: set[tuple] = set()
+    for p in plans:
+        key = (p["duration_s"], p["ref_image_size"], p["width"], p["height"], p["motion_max_edge"])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out
+
+
+def is_oom_error(payload: Any) -> bool:
+    text = str(payload).lower()
+    return "out of memory" in text or "outofmemory" in text or "cuda oom" in text
+
+
 def vhs_load_video_inputs(
     object_info: dict[str, Any] | None,
     filename: str,
     length: int,
+    motion_max_edge: int | None = 768,
 ) -> dict[str, Any]:
     """Fill VHS_LoadVideo widgets from live object_info so schema drift does not drop the clip."""
     filename = comfy_media_name(filename)
@@ -184,9 +279,31 @@ def vhs_load_video_inputs(
         inputs["skip_first_frames"] = 0
     if "select_every_nth" in merged:
         inputs["select_every_nth"] = 1
-    if "force_size" in merged:
+    if motion_max_edge:
+        _apply_vhs_motion_size(inputs, merged, int(motion_max_edge))
+    elif "force_size" in merged:
         inputs["force_size"] = "Disabled"
     return inputs
+
+
+def _apply_vhs_motion_size(inputs: dict[str, Any], merged: dict[str, Any], max_edge: int) -> None:
+    """Downscale motion frames. Full-res 14s clips blow 40GB during sampling."""
+    max_edge = max(256, int(max_edge))
+    if "force_size" in merged:
+        spec = merged["force_size"]
+        choices = spec[0] if isinstance(spec, list) and spec else []
+        picked = None
+        if isinstance(choices, list):
+            for cand in ("Custom", "Custom Width", str(max_edge), "768", "512"):
+                if cand in choices:
+                    picked = cand
+                    break
+        inputs["force_size"] = picked or "Custom"
+    if "custom_width" in merged:
+        inputs["custom_width"] = max_edge
+    if "custom_height" in merged:
+        h = max(256, (max_edge * 9 // 16) // 2 * 2)
+        inputs["custom_height"] = h
 
 
 def native_load_video_inputs(filename: str) -> dict[str, Any]:
@@ -214,6 +331,7 @@ def build_r2v_graph(
     has_lora_loader: bool = True,
     has_audio_decode: bool = True,
     object_info: dict[str, Any] | None = None,
+    motion_max_edge: int | None = 768,
     clip_name: str = "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
     vvae: str = "minimax_h3_video_vae_fp16.safetensors",
     avae: str = "minimax_h3_audio_vae_fp32.safetensors",
@@ -273,7 +391,9 @@ def build_r2v_graph(
             if has_vhs:
                 g[node_id] = {
                     "class_type": "VHS_LoadVideo",
-                    "inputs": vhs_load_video_inputs(object_info, vname, length),
+                    "inputs": vhs_load_video_inputs(
+                        object_info, vname, length, motion_max_edge=motion_max_edge
+                    ),
                 }
             else:
                 g[node_id] = {
