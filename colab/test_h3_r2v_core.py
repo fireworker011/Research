@@ -135,3 +135,6 @@ def test_fixed_notebook_cell8_compiles():
     assert 'print("=" * 60)' in cell8
     assert "attempts.append" not in cell8
     compile(cell8, "cell8.py", "exec")
+    blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
+    assert r"C:\Users\ys734\Desktop\minimaxh3" in blob
+    assert "%%writefile h3_r2v_core.py" in blob
