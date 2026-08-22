@@ -155,6 +155,49 @@ def video_ref_key(i: int) -> str:
     return f"ref_videos.ref_video_{i}"
 
 
+def gpu_vram_tier(vram_gb: float) -> str:
+    """40GB A100 vs 80GB A100 High Memory. Host RAM is ignored."""
+    v = float(vram_gb)
+    if v >= 70:
+        return "80plus"
+    if v >= 32:
+        return "40"
+    if v >= 20:
+        return "24"
+    return "low"
+
+
+def format_gpu_runtime_note(
+    vram_gb: float,
+    *,
+    host_ram_gb: float | None = None,
+    gpu_name: str = "",
+) -> str:
+    """Tell High-RAM (CPU) apart from A100 High Memory (80GB VRAM)."""
+    name = gpu_name or "GPU"
+    ram = f"  host RAM={host_ram_gb:.0f}GB" if host_ram_gb else ""
+    head = f"{name}  VRAM={float(vram_gb):.1f}GB{ram}"
+    tier = gpu_vram_tier(vram_gb)
+    if tier == "80plus":
+        return head + "\n判定: 80GB クラス。14秒 + REF_IMAGE_SIZE=max + 参照動画をそのまま通します。"
+    if tier == "40":
+        extra = ""
+        if host_ram_gb is not None and host_ram_gb >= 50:
+            extra = (
+                " システムRAMは足りていますが、前回の OOM は GPU VRAM 不足です。"
+                " Colab の High-RAM は CPU メモリなので、これでは 14秒 R2V は通りません。"
+                " ランタイムで A100 High Memory（80GB GPU）を選んでください。"
+            )
+        return (
+            head
+            + "\n判定: 40GB クラス。14秒 + max + 参照動画は OOM するので、先に約6秒で回します。"
+            + extra
+        )
+    if tier == "24":
+        return head + "\n判定: 24GB クラス。R2V は 5秒・match 寄りになります。"
+    return head + "\n判定: VRAM 不足。GPU ランタイムを選んでください。"
+
+
 def cap_duration_for_vram(
     duration_s: float,
     *,
@@ -169,12 +212,16 @@ def cap_duration_for_vram(
         duration_s = 5
     if not has_video:
         return min(duration_s, 15.0)
-    if vram_gb < 24:
+    tier = gpu_vram_tier(vram_gb)
+    if tier == "low":
         cap = 5.0
-    elif vram_gb < 48:
+    elif tier == "24":
+        cap = 5.0
+    elif tier == "40":
         # A100 40GB: 14s + max + 2 stills + motion clip requested 18.5GiB extra and died
         cap = 6.0 if (ref_image_size == "max" and n_images >= 2) else 8.0
     else:
+        # A100 80GB High Memory: peak request was ~18.5GiB extra; keep full length
         cap = 15.0
     return min(duration_s, cap)
 
@@ -190,6 +237,7 @@ def r2v_retry_plans(
     vram_gb: float,
 ) -> list[dict[str, Any]]:
     """Smaller later. Never drops the motion video."""
+    size = ref_image_size if ref_image_size in ("match", "max") else "max"
     first_dur = cap_duration_for_vram(
         duration_s,
         vram_gb=vram_gb,
@@ -197,37 +245,66 @@ def r2v_retry_plans(
         has_video=has_video,
         ref_image_size=ref_image_size,
     )
-    plans = [
-        {
-            "duration_s": first_dur,
-            "ref_image_size": ref_image_size if ref_image_size in ("match", "max") else "max",
-            "width": width,
-            "height": height,
-            "motion_max_edge": 768 if has_video else None,
-            "label": f"dur={first_dur:.0f}s size={ref_image_size} motion_edge=768",
-        }
-    ]
-    if has_video:
-        plans.append(
+    tier = gpu_vram_tier(vram_gb)
+    if has_video and tier == "80plus":
+        plans = [
             {
-                "duration_s": min(first_dur, 6.0),
+                "duration_s": first_dur,
+                "ref_image_size": size,
+                "width": width,
+                "height": height,
+                "motion_max_edge": None,
+                "label": f"80GB dur={first_dur:.0f}s size={size} motion=native",
+            },
+            {
+                "duration_s": min(first_dur, 10.0),
+                "ref_image_size": size,
+                "width": width,
+                "height": height,
+                "motion_max_edge": 768,
+                "label": "80GB fallback dur<=10s motion_edge=768",
+            },
+            {
+                "duration_s": 6.0,
                 "ref_image_size": "match",
                 "width": width,
                 "height": height,
                 "motion_max_edge": 640,
-                "label": "dur<=6s size=match motion_edge=640",
-            }
-        )
-        plans.append(
+                "label": "dur=6s size=match motion_edge=640",
+            },
+        ]
+    else:
+        plans = [
             {
-                "duration_s": 5.0,
-                "ref_image_size": "match",
-                "width": min(width, 768) if width >= height else width,
-                "height": min(height, 448) if width >= height else min(height, 768),
-                "motion_max_edge": 512,
-                "label": "dur=5s size=match 768-class canvas motion_edge=512",
+                "duration_s": first_dur,
+                "ref_image_size": size,
+                "width": width,
+                "height": height,
+                "motion_max_edge": 768 if has_video else None,
+                "label": f"dur={first_dur:.0f}s size={size} motion_edge=768",
             }
-        )
+        ]
+        if has_video:
+            plans.append(
+                {
+                    "duration_s": min(first_dur, 6.0),
+                    "ref_image_size": "match",
+                    "width": width,
+                    "height": height,
+                    "motion_max_edge": 640,
+                    "label": "dur<=6s size=match motion_edge=640",
+                }
+            )
+            plans.append(
+                {
+                    "duration_s": 5.0,
+                    "ref_image_size": "match",
+                    "width": min(width, 768) if width >= height else width,
+                    "height": min(height, 448) if width >= height else min(height, 768),
+                    "motion_max_edge": 512,
+                    "label": "dur=5s size=match 768-class canvas motion_edge=512",
+                }
+            )
     # snap spatial to multiple of 32
     for p in plans:
         p["width"] = max(32, int(p["width"]) // 32 * 32)

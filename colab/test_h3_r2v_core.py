@@ -10,7 +10,9 @@ from h3_r2v_core import (
     cap_duration_for_vram,
     comfy_media_name,
     finalize_prompt,
+    format_gpu_runtime_note,
     frames,
+    gpu_vram_tier,
     is_oom_error,
     prefer_ref2v_lora,
     r2v_retry_plans,
@@ -116,6 +118,37 @@ def test_cap_duration_prevents_14s_max_on_40gb():
     assert frames(capped) < 200
 
 
+def test_a100_80gb_keeps_14s_max():
+    assert gpu_vram_tier(79.6) == "80plus"
+    assert gpu_vram_tier(39.5) == "40"
+    capped = cap_duration_for_vram(
+        14,
+        vram_gb=80.0,
+        n_images=2,
+        has_video=True,
+        ref_image_size="max",
+    )
+    assert capped == 14
+    plans = r2v_retry_plans(
+        duration_s=14,
+        ref_image_size="max",
+        width=960,
+        height=544,
+        n_images=2,
+        has_video=True,
+        vram_gb=80.0,
+    )
+    assert plans[0]["duration_s"] == 14
+    assert plans[0]["ref_image_size"] == "max"
+    assert plans[0]["motion_max_edge"] is None
+    note = format_gpu_runtime_note(39.5, host_ram_gb=83, gpu_name="NVIDIA A100-SXM4-40GB")
+    assert "40GB" in note
+    assert "High-RAM" in note
+    note80 = format_gpu_runtime_note(80, host_ram_gb=83, gpu_name="NVIDIA A100-SXM4-80GB")
+    assert "80GB" in note80
+    assert "14秒" in note80
+
+
 def test_retry_plans_never_drop_video():
     plans = r2v_retry_plans(
         duration_s=14,
@@ -162,6 +195,8 @@ def test_fixed_notebook_cell8_compiles():
     assert "print(= * 60)" not in cell8
     assert 'print("=" * 60)' in cell8
     assert "attempts.append" not in cell8
+    assert "DURATION_S = 14" in cell8
+    assert "format_gpu_runtime_note" in cell8
     compile(cell8, "cell8.py", "exec")
     blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
     assert r"C:\Users\ys734\Desktop\minimaxh3" in blob
