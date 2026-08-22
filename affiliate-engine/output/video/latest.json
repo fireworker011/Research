@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-22T07:44:44.643Z",
+  "generated_at": "2026-08-22T21:53:52.243Z",
   "summary": {
-    "today": "2026-08-22",
-    "rowCount": 0,
-    "lastDate": null,
+    "today": "2026-08-23",
+    "rowCount": 1,
+    "lastDate": "2026-08-22",
     "last7": {
-      "start": "2026-08-16",
-      "end": "2026-08-22",
+      "start": "2026-08-17",
+      "end": "2026-08-23",
       "videos": 0,
       "views": 0,
       "clicks": 0,
@@ -21,34 +21,34 @@
     },
     "experiment": {
       "start": "2026-08-22",
-      "day": 1,
+      "day": 2,
       "videos": 0,
       "clicks": 0,
       "conversions": 0
     },
     "weekClicks": [
       {
-        "start": "2026-08-16",
-        "end": "2026-08-22",
+        "start": "2026-08-17",
+        "end": "2026-08-23",
         "clicks": 0
       },
       {
-        "start": "2026-08-09",
-        "end": "2026-08-15",
+        "start": "2026-08-10",
+        "end": "2026-08-16",
         "clicks": 0
       },
       {
-        "start": "2026-08-02",
-        "end": "2026-08-08",
+        "start": "2026-08-03",
+        "end": "2026-08-09",
         "clicks": 0
       }
     ]
   },
   "verdict": {
-    "code": "RECORD_MISSING",
-    "title": "記録が無い。改善できない",
-    "improve": "CSVに数字を書け。記録が無い改善は妄想",
-    "action": "A8とYouTubeスタジオの数字をCSVに1行書け。未投稿なら癒し3本。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
+    "code": "CONTINUE_EXPERIMENT",
+    "title": "実験 2/14日目。型は変えない",
+    "improve": "なし。実験中に型を変えないことが改善",
+    "action": "癒しShortsを残り3本出す。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
     "includeNext3": true,
     "canTalk1M": false,
     "inExperiment": true
