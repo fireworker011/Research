@@ -16,6 +16,9 @@
  *
  * 使用方法:
  *   node src/video-semi-auto.js [--date YYYY-MM-DD] [--limit N]
+ *   node src/video-semi-auto.js --healing --limit 3
+ *
+ * --healing: ペットの癒し型だけ。プロフィールCTAを足す。URLは置かない。Instagramキューに入れない。
  */
 
 const fs = require('fs');
