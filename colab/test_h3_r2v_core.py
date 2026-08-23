@@ -201,3 +201,6 @@ def test_fixed_notebook_cell8_compiles():
     blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
     assert r"C:\Users\ys734\Desktop\minimaxh3" in blob
     assert "%%writefile h3_r2v_core.py" in blob
+    assert "%%writefile pose_motion_lock.py" in blob
+    assert "WanAnimateToVideo" in blob
+    assert "STAGE = \"preview\"" in blob
