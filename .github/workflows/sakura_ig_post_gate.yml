@@ -1,0 +1,24 @@
+name: サクラ投稿ゲート（06:00 JST）
+
+on:
+  schedule:
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sakura-ig-post-gate
+  cancel-in-progress: false
+
+jobs:
+  post-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: 投稿ゲートを Issue に書く
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node sakura-ig/src/post-gate.js
