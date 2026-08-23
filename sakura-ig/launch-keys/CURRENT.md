@@ -1,13 +1,25 @@
-# 起動キー — サクラ専属自動投稿
+# 起動キー — テスト
 
 宛先: **サクラ専属自動投稿**  
-このファイルを開いたら即実行する。文を足すな。Imagine 用プロンプトは下のブロックだけ。
+渡し元: マネージャー  
+渡した時刻: 2026-08-23 12:06 JST（テスト。本番の 05:00 受け渡しではない）
+
+このファイルを開いたら即実行。文を足すな。
 
 1. 下の `IMAGINE_THROW` を **Grok Imagine agent** にそのまま投げる
-2. 参照は `sakura-ig/refs/sakura-face.jpg`（チャットの赤着物の女性）。新しい顔を作らせない
-3. できた `reel.mp4` を `output/reel-2026-08-24/reel.mp4` に置く
-4. キャプションは下のまま。**毎朝 06:00 JST** に `sakura_ai_beauty` へ投稿する。6時を過ぎて未投稿ならその日のうちに投稿する
-5. いいね・フォロー・DM・人間のふりはしない
+2. 参照は `sakura-ig/refs/sakura-face.jpg`。新しい顔を作らせない
+3. 動画を `sakura-ig/output/reel-test-ref/reel.mp4` に置く
+4. **投稿するな。** これはテスト。06:00 投稿は本番だけ
+
+---
+
+## 本番の時計（このテストでは使わない）
+
+| JST | 誰 | 仕事 |
+|---|---|---|
+| 05:00 | マネージャー | この起動キーをボットに渡す |
+| 05:00〜06:00 | ボット | Imagine に投げて動画完成 |
+| 06:00 | ボット | 投稿 |
 
 ---
 
@@ -15,21 +27,19 @@
 
 | 項目 | 値 |
 |---|---|
-| id | reel-2026-08-24 |
-| type | which-one ではない。参照1枚のビタ止め |
+| id | reel-test-ref |
+| run | test |
+| post | false |
 | duration | 5 |
 | aspect | 9:16 |
 | resolution | 720p |
 | model | grok-imagine-video-1.5 |
 | mode | image-to-video |
 | reference | sakura-ig/refs/sakura-face.jpg |
-| post_time_jst | 06:00 |
 
 ---
 
 ## IMAGINE_THROW
-
-Imagine agent に投げる文はここから下、次の行まで。前後に説明を足すな。
 
 ```
 Image-to-video from the attached reference sakura-ig/refs/sakura-face.jpg only. Do not generate a new woman.
@@ -45,10 +55,10 @@ Soft garden air only. No lyrics. No song title. No on-screen text. No second per
 
 ---
 
-## CAPTION（一字も変えない）
+## CAPTION（テスト。投稿しない）
 
 ```
-朱の一呼吸。AI生成の成人モデルです。
-One breath in red. AI-generated adult model.
-#AI和装 #着物 #kimono #sakura
+テスト。投稿しない。
+AI生成の成人モデルです。
+Test. Do not post.
 ```
