@@ -14,6 +14,9 @@
     "video": "node src/video-semi-auto.js",
     "video:healing": "node src/video-semi-auto.js --healing --limit 3",
     "youtube:next3": "node src/youtube-next3.js",
+    "video:genre": "node src/genre-video-gen.js",
+    "video:genre:test": "node src/genre-video-gen.js --self-test",
+    "video:genre:agents": "node src/genre-video-gen.js --write-agents",
     "video:judge": "node src/video-judge.js",
     "video:judge:test": "node src/video-judge.js --self-test",
     "plan": "node src/funnel-calc.js"

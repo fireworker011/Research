@@ -1,0 +1,289 @@
+{
+  "cta": "詳しくはプロフィールのリンク（PR）",
+  "imagine_prefix": "Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.",
+  "genres": [
+    {
+      "id": "pet",
+      "bot_name": "ジャンル_ペット",
+      "genre": "ペット",
+      "account_key": "pet",
+      "link_keys": ["ペット_Furbo", "ペット_保険", "ペット_フード"],
+      "persona": "犬と暮らす飼い主。あたたかい、心配性の飼い主に寄り添う、安全側に倒す。迷ったら病院へ。",
+      "experiment_lock": true,
+      "imagine_extra": "Japanese indoor home, pets only, healing, quiet.",
+      "packets": [
+        {
+          "id": "pet_20260801_02",
+          "link_key": null,
+          "phase": "experiment",
+          "spoken": "猫って、名前を呼んでも無視するくせに、袋のガサガサ音には即反応しますよね。呼ばれて来る犬と、都合よく現れる猫。この違いって性格なのか、それとも生き物としての本能なのか気になります。あなたの子はどっち派ですか？",
+          "imagine": "A calico cat on a sunlit wooden floor ignores a distant voice, then ears snap toward a rustling paper bag just out of frame. One slow blink. Tail tip moves once. A dog's paws enter at the edge in the last second."
+        },
+        {
+          "id": "pet_20260729_01",
+          "link_key": null,
+          "phase": "experiment",
+          "spoken": "うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。\n\n・ごはん前だけ静かに待てる\n・来客時だけ人見知りが激しくなる\n・特定の音（袋の音・冷蔵庫の音）に異常に反応する\n\nあなたの子の『地味に謎な行動』は何ですか？",
+          "imagine": "A small dog sits still near a food bowl, then a cat startles at a fridge-door sound. Soft afternoon light. No people. No products."
+        },
+        {
+          "id": "pet_20260713_02",
+          "link_key": null,
+          "phase": "experiment",
+          "spoken": "うちの子だけかな…と思ったこと、ありませんか？\n\n・ご飯の時間が近づくと数分前からソワソワし始める\n・来客時だけ妙にお利口になる\n・寝る場所を毎晩少しずつ変える\n\n『あるある』と思ったもの、コメントで教えてください。意外な共通点が見つかるかもしれません。",
+          "imagine": "A cat walks into a late-afternoon living room, sits, looks at the camera, looks away, then settles on a slightly different spot on the same blanket. Slow 5 percent push-in."
+        },
+        {
+          "id": "pet_furbo_observe_01",
+          "link_key": "ペット_Furbo",
+          "phase": "after_experiment",
+          "spoken": "留守番中の様子が気になる、という話はよく見ます。見守りカメラを調べると、 Dual で見る／通知する／双方向、の差が出てきます。うちの子に要るかは生活リズム次第。比べ方のメモはプロフィールに置いてあります。",
+          "imagine": "An empty Japanese living room, a dog bed in a sun patch, a dog walks in and looks toward a shelf, then lies down. No screens, no gadgets shown as brands."
+        },
+        {
+          "id": "pet_insure_observe_01",
+          "link_key": "ペット_保険",
+          "phase": "after_experiment",
+          "spoken": "ペット保険、資料だけ取り寄せて比較してる人が多いらしいです。見る点は免責・通院・年齢条件。加入を急がせる話は扱いません。整理の仕方だけプロフィールにまとめています。",
+          "imagine": "A notebook and pen on a wooden table, a dog sleeping in the background, soft light. No logos, no documents with readable text."
+        },
+        {
+          "id": "pet_food_observe_01",
+          "link_key": "ペット_フード",
+          "phase": "after_experiment",
+          "spoken": "フード選び、成分表の最初の3行だけ見る、という整理の仕方があります。合わないサインは病院。おすすめを断定しません。調べた観点はプロフィールへ。",
+          "imagine": "A ceramic bowl on a kitchen floor, a cat approaching slowly, no bag labels readable. Quiet home."
+        }
+      ]
+    },
+    {
+      "id": "konkatsu",
+      "bot_name": "ジャンル_婚活",
+      "genre": "婚活",
+      "account_key": "konkatsu",
+      "link_keys": ["婚活", "婚活_相談所"],
+      "persona": "婚活情報を整理して発信する30代女性。共感ファースト、押し付けない、絵文字は控えめ。",
+      "experiment_lock": false,
+      "imagine_extra": "Quiet Japanese cafe table, notebook, no people, no couples.",
+      "packets": [
+        {
+          "id": "konkatsu_app_fatigue_01",
+          "link_key": "婚活",
+          "phase": "ready",
+          "spoken": "マッチングアプリ、返信が仕事みたいになって疲れた、という声をよく見ます。続ける／休む／別の形を調べる、の三択で整理すると楽になる人が多いらしい。あなたは今どれに近いですか？",
+          "imagine": "A phone face-down on a wooden cafe table beside a closed notebook and a cooling cup of tea. Afternoon window light. No screen content, no logos."
+        },
+        {
+          "id": "konkatsu_office_research_01",
+          "link_key": "婚活_相談所",
+          "phase": "ready",
+          "spoken": "相談所を調べると、資料請求と無料カウンセリングが入口、という説明が多いです。使った体験は書きません。見る点は費用の出し方・連絡の頻度・合う／合わないの断り方。比較の観点だけプロフィールに置いてあります。",
+          "imagine": "Two unlabeled pamphlets and a pencil on a beige table, a window with sheer curtains. No readable text, no faces."
+        }
+      ]
+    },
+    {
+      "id": "sidejob",
+      "bot_name": "ジャンル_副業",
+      "genre": "副業",
+      "account_key": "sidejob",
+      "link_keys": ["副業_ココナラ", "副業_A8", "副業_mixhost", "副業_FX"],
+      "persona": "数字に慎重で誠実な30代会社員男性。盛らない、断定しない、失敗談に寛容。",
+      "experiment_lock": false,
+      "imagine_extra": "Modest home desk, laptop closed, navy mood, no cash, no coins, no luxury watches.",
+      "packets": [
+        {
+          "id": "sidejob_coconala_01",
+          "link_key": "副業_ココナラ",
+          "phase": "ready",
+          "spoken": "スキル出品、最初の1件までが長い、という話をよく見ます。プロフィール文・納期・やらないことの3点を先に書く人が多いらしい。盛った月収の話は扱いません。手順の整理はプロフィールへ。",
+          "imagine": "A closed laptop and a plain notebook on a small desk, navy wall, coffee cup. No money motifs."
+        },
+        {
+          "id": "sidejob_a8_01",
+          "link_key": "副業_A8",
+          "phase": "ready",
+          "spoken": "アフィリエイト、登録したあと何を書くかで止まる人が多いらしいです。案件の成果地点を先に読む、本文に体験を盛らない、広告であることは明示する。それだけでも事故が減る、という整理です。メモはプロフィールにあります。",
+          "imagine": "A notebook with a simple checklist of three blank lines, pen beside it, desk lamp. No readable words, no URLs."
+        },
+        {
+          "id": "sidejob_mixhost_01",
+          "link_key": "副業_mixhost",
+          "phase": "ready",
+          "spoken": "ブログを始める話、ドメインより先に『週何本書けるか』を決めた方が続きやすい、という観察です。サーバー比較の表はプロフィール側。ここでは続かない原因だけ置きます。",
+          "imagine": "An empty desk, a closed laptop, a small plant, morning light. No screens on, no brand marks."
+        },
+        {
+          "id": "sidejob_fx_01",
+          "link_key": "副業_FX",
+          "phase": "ready",
+          "spoken": "FXは余剰資金でやる前提、元本割れする、という一文が先です。個別の売買は勧めません。口座を急がせる話もしません。リスクの読み方のメモだけプロフィールにあります。",
+          "imagine": "A blank notebook and a turned-off calculator on a desk. No charts, no candlesticks, no money."
+        }
+      ]
+    },
+    {
+      "id": "beauty",
+      "bot_name": "ジャンル_美容",
+      "genre": "美容",
+      "account_key": "beauty",
+      "link_keys": ["美容_オルビスユー"],
+      "persona": "仕事と家のことで手一杯な30代後半女性。ゆるい、やさしい、頑張らせない。",
+      "experiment_lock": false,
+      "imagine_extra": "Pale beige bathroom shelf, one unbranded bottle silhouette, no skin close-ups.",
+      "packets": [
+        {
+          "id": "beauty_min_care_01",
+          "link_key": "美容_オルビスユー",
+          "phase": "ready",
+          "spoken": "疲れた夜、工程を落とす＋保湿の2つまで削る人がいます。感じ方には個人差があります。効く／消える、とは言いません。続け方の組み立てだけプロフィールにまとめています。",
+          "imagine": "A bathroom shelf at night, one unlabelled pump bottle and a towel, warm dim light. No face, no before-after, no logos."
+        }
+      ]
+    },
+    {
+      "id": "bodymake",
+      "bot_name": "ジャンル_筋トレ",
+      "genre": "筋トレ",
+      "account_key": "bodymake",
+      "link_keys": ["筋トレ_マッスルデリ", "筋トレ_HMB"],
+      "persona": "週2×30分だけジムに行くデスクワーカー。軽妙、ストイックさを求めない。",
+      "experiment_lock": false,
+      "imagine_extra": "Gym back-view silhouette or kitchen meal prep, average build, no bodybuilder, no supplement labels.",
+      "packets": [
+        {
+          "id": "body_meal_01",
+          "link_key": "筋トレ_マッスルデリ",
+          "phase": "ready",
+          "spoken": "体は台所で作る、という整理の人がいます。週2×30分のトレより、コンビニでタンパク質を足すかの方が先、という観察です。宅食は選択肢の一つ。比較の観点はプロフィールへ。",
+          "imagine": "A kitchen counter, a plain bento box from above, chopsticks, no brand printing readable. Quiet daylight."
+        },
+        {
+          "id": "body_hmb_01",
+          "link_key": "筋トレ_HMB",
+          "phase": "ready",
+          "spoken": "サプリはトレーニングのお供、以上のことは言いません。筋肉がつく、とは断定しません。先に週2が続くか。中身の読み方はプロフィールに置いてあります。",
+          "imagine": "A gym bench, a water bottle, no labels, charcoal space, orange accent line of light. No faces."
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "bot_name": "ジャンル_教育",
+      "genre": "教育",
+      "account_key": "education",
+      "link_keys": ["教育_ヒューマン"],
+      "persona": "小学生の子を持つ保護者。丁寧、焦らせない、家庭ごとの事情を尊重。",
+      "experiment_lock": false,
+      "imagine_extra": "Notebook, pencil, cream-yellow table, no children faces, no classrooms with kids.",
+      "packets": [
+        {
+          "id": "edu_class_01",
+          "link_key": "教育_ヒューマン",
+          "phase": "ready",
+          "spoken": "習い事、見るのは月謝・送迎・続くかの3点、という整理です。必修化で焦らせる話は扱いません。体験会の資料の読み方だけプロフィールにまとめています。",
+          "imagine": "A notebook, a pencil and a small star-shaped eraser on a cream-yellow table. Picture-book light. No people."
+        }
+      ]
+    },
+    {
+      "id": "setsuyaku",
+      "bot_name": "ジャンル_節約",
+      "genre": "節約",
+      "account_key": "setsuyaku",
+      "link_keys": ["節約", "節約_格安SIM", "節約_ふるさと納税"],
+      "persona": "我慢する節約をやめた30代。実利主義だが説教しない、仕組み好き。",
+      "experiment_lock": false,
+      "imagine_extra": "Mint-green table, notebook and calculator, no cash, no coins.",
+      "packets": [
+        {
+          "id": "save_quit_01",
+          "link_key": "節約",
+          "phase": "ready",
+          "spoken": "やめた節約、という話の方が続きやすいらしいです。変動費を気合いで削るより、固定費を年1回見る。あなたが最近やめた節約、何ですか？",
+          "imagine": "A notebook and a calculator on a mint-green table, morning light. No money, no receipts with readable text."
+        },
+        {
+          "id": "save_sim_01",
+          "link_key": "節約_格安SIM",
+          "phase": "ready",
+          "spoken": "通信費、プラン名より『月の実データ量』を先に見ると比較しやすい、という整理です。乗り換えを急がせません。観点だけプロフィールへ。",
+          "imagine": "A simple phone face-down next to a notebook. No carrier logos, no screen UI."
+        },
+        {
+          "id": "save_furusato_01",
+          "link_key": "節約_ふるさと納税",
+          "phase": "ready",
+          "spoken": "ふるさと納税、限度額を先に出してからサイトを開く、という順番の人が多いらしいです。返礼品の自慢はしません。手順の骨格だけプロフィールにあります。",
+          "imagine": "A blank yearly calendar page and a pen on a table. No product photos, no logos."
+        }
+      ]
+    },
+    {
+      "id": "tenshoku",
+      "bot_name": "ジャンル_転職",
+      "genre": "転職",
+      "account_key": "tenshoku",
+      "link_keys": ["転職", "転職_エージェント", "転職_スカウト"],
+      "persona": "転職を煽らないキャリア整理役。冷静、データ好き、『残る選択』も尊重。",
+      "experiment_lock": false,
+      "imagine_extra": "Dark teal desk, compass motif, quiet, not corporate stock-photo.",
+      "packets": [
+        {
+          "id": "job_stay_or_go_01",
+          "link_key": "転職",
+          "phase": "ready",
+          "spoken": "辞めたいと転職したいは別、という切り分けがあります。今すぐ辞めよう、とは言いません。市場を見て残る、という選択肢も残します。整理の順番はプロフィールへ。",
+          "imagine": "A small compass on a dark teal desk, a closed notebook. No people, no office towers."
+        },
+        {
+          "id": "job_agent_01",
+          "link_key": "転職_エージェント",
+          "phase": "ready",
+          "spoken": "エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。",
+          "imagine": "Two plain folders and a pencil on a desk. No logos, no readable names."
+        },
+        {
+          "id": "job_scout_01",
+          "link_key": "転職_スカウト",
+          "phase": "ready",
+          "spoken": "スカウト型、プロフィールを置いて待つ、という使い方もあります。応募し続けるだけが転職活動ではない、という観察です。登録の注意点はプロフィール側。",
+          "imagine": "A laptop closed, a chair empty, evening window. No screens, no faces."
+        }
+      ]
+    },
+    {
+      "id": "sleep",
+      "bot_name": "ジャンル_睡眠",
+      "genre": "睡眠",
+      "account_key": "sleep",
+      "link_keys": ["睡眠", "睡眠_マットレス", "睡眠_リカバリー"],
+      "persona": "眠りを整えることに詳しい30代。落ち着いた夜のトーン、頑張らせない、断定しない。",
+      "experiment_lock": false,
+      "imagine_extra": "Deep navy room, moon and pillow motifs, no people, no medical devices.",
+      "packets": [
+        {
+          "id": "sleep_rhythm_01",
+          "link_key": "睡眠",
+          "phase": "ready",
+          "spoken": "眠れない、の切り分けはカフェイン・光・温度・リズムのどれか、という整理があります。全部やらなくていい。1つだけ。感じ方には個人差があります。",
+          "imagine": "A pillow and a crescent-moon lamp glow in a deep navy room. No people, no phones with screens on."
+        },
+        {
+          "id": "sleep_mattress_01",
+          "link_key": "睡眠_マットレス",
+          "phase": "ready",
+          "spoken": "マットレス、硬さの好みは分かれるので断定しません。見る点は厚さ・試し寝できるか・返品の条件。買った話はしません。観点だけプロフィールへ。",
+          "imagine": "An empty made bed, pale sheet, navy wall, soft night light. No brand tags."
+        },
+        {
+          "id": "sleep_recovery_01",
+          "link_key": "睡眠_リカバリー",
+          "phase": "ready",
+          "spoken": "リカバリー系の衣類、温かい／締めつけ、の感想は個人差が大きいです。効く、とは言いません。素材とサイズの見方だけプロフィールにまとめています。",
+          "imagine": "A folded plain garment on a chair in a dark quiet room. No logos, no people."
+        }
+      ]
+    }
+  ]
+}
