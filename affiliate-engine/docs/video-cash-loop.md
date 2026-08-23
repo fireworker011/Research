@@ -113,6 +113,7 @@ A8 と YouTube スタジオだけ見る。
 
 ## 拡張用マニュアル（今は開かない）
 
-全案件×3媒体の設計、ベンチマークの落とし込み、Grok/Cursor の制作プロンプト、15分×4の日次ルーティンは `docs/video-channel-playbook.md`。
+全案件×3媒体の設計、ベンチマークの落とし込み、Grok/Cursor の制作プロンプト、15分×4の日次ルーティンは `docs/video-channel-playbook.md`。  
+Grok bot の起動キー一式は `docs/grok-bots/`。今日貼ってよいのは LIVE だけ。PARKED を起動するな。
 
 ゲート（週15クリック）を超えるまで着手しない。開いても媒体は増やさない。実験中は次の3本以外の台本を創らない。
