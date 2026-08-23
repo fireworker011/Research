@@ -413,16 +413,50 @@ ${later.length ? `## 後で使うレシピ（今は生成するな）\n\n${block
 }
 
 function wakeText(genre) {
-  const rel = agentRepoPath(genre);
-  const raw = githubRaw(rel);
+  const raw = githubRaw(agentRepoPath(genre));
+  const nowWork = genre.experiment_lock
+    ? '今すぐその本文の「今使うレシピ」から未作成の先頭1本を、編集仕様（テロップ位置・ナレーション・テンポ）どおりに作れ。実験3本以外と after_experiment は出すな。'
+    : '今すぐその本文の「今使うレシピ」から未作成の先頭1本を、編集仕様（テロップ位置・ナレーション・テンポ）どおりに作れ。公開・投稿はするな。チャンネル未開設でもよい。';
   return [
-    `毎朝 06:00 JST になったら、次の URL を開き、開いた本文の全文に従え。`,
-    `このチャットの過去ログより、今開いた本文が上。PC接続は不要。ファイルをここに貼らなくてよい。投稿するな。`,
+    `あなたは Grok Bot「${genre.bot_name}」。ジャンルは「${genre.genre}」だけ。他ジャンルはやるな。`,
+    '',
+    'これ以降、ファイルをこのチャットに貼らなくてよい。PC接続も不要。追加の指示を待つな。',
+    '',
+    '今すぐ次のURLを開き、開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。',
     '',
     raw,
     '',
-    `パス: ${rel}`,
+    nowWork,
+    '',
+    'これから毎朝 06:00 JST になったら、同じURLを開き直して全文に従え。',
+    '',
+    '投稿するな。予約するな。いいね・フォロー・DMするな。URLを動画の本文・説明・コメントに書くな。',
+    'CTAは「詳しくはプロフィールのリンク（PR）」1回だけ。説明の末尾に #PR。',
+    'できたら「投稿してよい / 失敗」だけ返せ。',
     ''
+  ].join('\n');
+}
+
+function writePhonePaste(catalog) {
+  const blocks = catalog.genres.map((g) => {
+    return [
+      `## ${g.bot_name}`,
+      '',
+      'このボットのチャットを開き、次をコピーして送信。',
+      '',
+      '```',
+      wakeText(g).trimEnd(),
+      '```',
+      ''
+    ].join('\n');
+  });
+  return [
+    '# スマホから一度貼って送る文',
+    '',
+    '各 Grok Bot を開く → 下の枠をコピー → 送信。9体それぞれに1回。これで終わり。',
+    '以降は GitHub の所定ファイルだけ読む。チャットに md 全文を貼り直すな。投稿するな。',
+    '',
+    ...blocks
   ].join('\n');
 }
 
@@ -447,7 +481,7 @@ function writeAgents(catalog, kataCatalog, prod) {
     `リポジトリ: ${GITHUB_REPO}`,
     `参照ブランチ: \`${GITHUB_REF}\`（マージ後は作業ブランチに合わせる。環境変数 GROK_BOT_REF）`,
     '',
-    '各 Grok Bot に、対応する `wake/<id>.txt` を **一度だけ** 貼る。以降は毎朝その raw URL を開く。チャットに md 全文を貼り直さなくてよい。',
+    'スマホから一度貼る文は [PHONE.md](PHONE.md)。各 Grok Bot に対応する枠をコピーして送信。以降は毎朝その raw URL を開く。チャットに md 全文を貼り直さなくてよい。',
     '',
     '各 `agents/<id>.md` に契約・編集仕様（テロップ位置・ナレーション・テンポ）・型・レシピ・テロップ表が入っている。追加ファイルは不要。',
     '',
@@ -465,11 +499,15 @@ function writeAgents(catalog, kataCatalog, prod) {
   fs.writeFileSync(fetchPath, fetchLines.join('\n'), 'utf-8');
   written.push(path.relative(ROOT, fetchPath));
 
+  const phonePath = path.join(ROOT, 'docs', 'grok-bots', 'PHONE.md');
+  fs.writeFileSync(phonePath, writePhonePaste(catalog), 'utf-8');
+  written.push(path.relative(ROOT, phonePath));
+
   const roster = [
     '# Grok Bot に今作るエージェント',
     '',
     '9体。毎朝読むファイルは ASCII 名（`agents/pet.md` など）。日本語名のファイルは同じ中身のコピー。',
-    '一度だけ `docs/grok-bots/wake/<id>.txt` を貼る。以降は GitHub raw。詳細は [FETCH.md](FETCH.md)。',
+    'スマホから一度貼る文は [PHONE.md](PHONE.md)。以降は GitHub raw。詳細は [FETCH.md](FETCH.md)。',
     '投稿しない。',
     '',
     '| 作る名前 | 毎朝読む | 今の型 | 今生成してよいもの |',
@@ -553,6 +591,10 @@ function selfTest() {
     if (!body.includes('raw.githubusercontent.com')) throw new Error(`missing github raw in ${file}`);
     if (!body.includes('y_from_bottom') && !body.includes('下から')) throw new Error(`missing telop position in ${file}`);
   }
+  const wakeSample = fs.readFileSync(path.join(WAKE_DIR, 'pet.txt'), 'utf-8');
+  if (!wakeSample.includes('今すぐ次のURL')) throw new Error('wake text missing phone paste cue');
+  const phone = fs.readFileSync(path.join(ROOT, 'docs', 'grok-bots', 'PHONE.md'), 'utf-8');
+  if (!phone.includes('ジャンル_睡眠')) throw new Error('PHONE.md missing all bots');
   if (written.length < 20) throw new Error(`expected many agent files, got ${written.length}`);
   console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas, github fetch`);
 }

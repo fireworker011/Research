@@ -3,7 +3,7 @@
 リポジトリ: fireworker011/Research
 参照ブランチ: `cursor/video-channel-playbook-e013`（マージ後は作業ブランチに合わせる。環境変数 GROK_BOT_REF）
 
-各 Grok Bot に、対応する `wake/<id>.txt` を **一度だけ** 貼る。以降は毎朝その raw URL を開く。チャットに md 全文を貼り直さなくてよい。
+スマホから一度貼る文は [PHONE.md](PHONE.md)。各 Grok Bot に対応する枠をコピーして送信。以降は毎朝その raw URL を開く。チャットに md 全文を貼り直さなくてよい。
 
 各 `agents/<id>.md` に契約・編集仕様（テロップ位置・ナレーション・テンポ）・型・レシピ・テロップ表が入っている。追加ファイルは不要。
 

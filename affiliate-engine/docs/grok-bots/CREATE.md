@@ -1,7 +1,7 @@
 # Grok Bot に今作るエージェント
 
 9体。毎朝読むファイルは ASCII 名（`agents/pet.md` など）。日本語名のファイルは同じ中身のコピー。
-一度だけ `docs/grok-bots/wake/<id>.txt` を貼る。以降は GitHub raw。詳細は [FETCH.md](FETCH.md)。
+スマホから一度貼る文は [PHONE.md](PHONE.md)。以降は GitHub raw。詳細は [FETCH.md](FETCH.md)。
 投稿しない。
 
 | 作る名前 | 毎朝読む | 今の型 | 今生成してよいもの |
