@@ -14,6 +14,8 @@ function loadKey() {
 
 function main() {
   const key = loadKey();
+  const todayJst = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tokyo' });
+  const tooEarly = key.post_date && key.post_date > todayJst;
   const body = key.post === false
     ? [
       `<!-- sakura-post-gate ${key.id} -->`,
@@ -22,6 +24,14 @@ function main() {
       `- output: ${key.output}`,
       ''
     ].join('\n')
+    : tooEarly
+      ? [
+        `<!-- sakura-post-gate ${key.id} -->`,
+        '06:00 ゲート（まだ早い）',
+        `投稿日は ${key.post_date}。今日は作成待ち。投稿するな。`,
+        `- output: ${key.output}`,
+        ''
+      ].join('\n')
     : [
       `<!-- sakura-post-gate ${key.id} -->`,
       '06:00 投稿ゲート',
