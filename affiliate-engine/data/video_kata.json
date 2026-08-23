@@ -1,0 +1,160 @@
+{
+  "researched_at": "2026-08-23",
+  "cta": "詳しくはプロフィールのリンク（PR）",
+  "copy_rule": "コピーしてよいのは押せる場所へ1回誘導する構造だけ。動画・台本・サムネ・BGMは複製しない。調べられないアカウントを成功例にしない。",
+  "katas": [
+    {
+      "id": "visual_question",
+      "name": "映像フック＋問い",
+      "seconds": "15-25",
+      "beats": [
+        "0.0-0.5 映像だけ。文字なし。動きが1つ（瞬き、耳、袋音への反応）",
+        "0.5-3 問い1文。誰向けかは映像で分かる。挨拶なし",
+        "3-18 観察1つ。体験の購入談は置かない",
+        "18-末 二択かどっち派。CTA1回"
+      ],
+      "spoken_skeleton": "[観察の一文]。[なぜ気になるか]。あなたの場合はどっちですか？\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "First half-second is the subject moving, not a landscape. No text. No logos. No human faces.",
+      "use_when": "癒し・生き物・物の動きで止められるとき"
+    },
+    {
+      "id": "aruaru3",
+      "name": "あるある3点＋問い",
+      "seconds": "20-35",
+      "beats": [
+        "0-3 うちの子／あるある、の導入1文。ロゴ・自己紹介なし",
+        "3-22 箇条書き3つ。各1行。商品名なし",
+        "22-末 どれ？／何？ で閉じる。CTA1回"
+      ],
+      "spoken_skeleton": "[導入]。\n\n・[点1]\n・[点2]\n・[点3]\n\n[問い]？\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "Quiet indoor, one subject, no product labels. Motion is small.",
+      "use_when": "コメントを取りたい認知動画。ペット実験の本線"
+    },
+    {
+      "id": "kiriwake",
+      "name": "切り分け（AとBは別）",
+      "seconds": "18-30",
+      "beats": [
+        "0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止",
+        "3-20 選択肢を2〜3。残る／休むも含める",
+        "20-末 今どれに近いか。CTAは整理メモへ1回"
+      ],
+      "spoken_skeleton": "[X]と[Y]は別、という切り分けがあります。[選択肢]。あなたは今どれに近いですか？\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "Two objects or an empty fork in the road (desk/notebook). No people acting drama.",
+      "use_when": "婚活・転職・副業・睡眠の整理"
+    },
+    {
+      "id": "miruten",
+      "name": "見る点3つ（調べた）",
+      "seconds": "18-30",
+      "beats": [
+        "0-3 見る点はN、と宣言。使った体験は書かない",
+        "3-22 点を2〜3。急がせるな",
+        "22-末 整理はプロフィール。CTA1回"
+      ],
+      "spoken_skeleton": "[対象]を調べると、見る点は[点]。使った体験は書きません。観点だけプロフィールに置いてあります。\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "Notebook, unlabeled papers, no readable brand. No fake review face.",
+      "use_when": "案件キーに触れる準備動画。申込を急がせない"
+    },
+    {
+      "id": "yamenai",
+      "name": "扱わない宣言",
+      "seconds": "15-25",
+      "beats": [
+        "0-3 これは扱わない、を先に（盛った月収、効果断定、元本保証）",
+        "3-18 代わりに書く範囲",
+        "18-末 CTA1回"
+      ],
+      "spoken_skeleton": "[禁止トピック]は扱いません。[代わりの範囲]。メモはプロフィールへ。\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "Calm desk. No cash, no charts that imply guaranteed profit, no bodybuilder.",
+      "use_when": "副業FX・サプリ・保険など、断定が事故る案件"
+    },
+    {
+      "id": "min_care",
+      "name": "削る／1つだけ",
+      "seconds": "15-25",
+      "beats": [
+        "0-3 工程を削る／全部やらなくていい",
+        "3-18 残す最小。個人差があると書く",
+        "18-末 効く・治る・消えるは言わない。CTA1回"
+      ],
+      "spoken_skeleton": "[最小限]。感じ方には個人差があります。[効く等]とは言いません。\n\n詳しくはプロフィールのリンク（PR）",
+      "imagine_rule": "One object on a shelf. No skin close-up, no before/after bodies.",
+      "use_when": "美容・睡眠"
+    }
+  ],
+  "genre_defaults": {
+    "ペット": {
+      "now": ["visual_question", "aruaru3"],
+      "later": ["miruten"],
+      "forbid": ["商品デモを冒頭に置く", "ビフォーアフターの体調", "子ども顔"]
+    },
+    "婚活": {
+      "now": ["kiriwake", "miruten"],
+      "later": [],
+      "forbid": ["偽カップル顔", "成婚体験の捏造", "出会い系ワード"]
+    },
+    "副業": {
+      "now": ["miruten", "yamenai", "kiriwake"],
+      "later": [],
+      "forbid": ["誰でも月○万", "札束", "FXの売買指示"]
+    },
+    "美容": {
+      "now": ["min_care"],
+      "later": [],
+      "forbid": ["肌のビフォーアフター", "シミが消える", "ロゴボトル"]
+    },
+    "筋トレ": {
+      "now": ["kiriwake", "yamenai"],
+      "later": [],
+      "forbid": ["筋肉がつく断定", "ボディビルダー誇張"]
+    },
+    "教育": {
+      "now": ["miruten"],
+      "later": [],
+      "forbid": ["子どもの顔", "通わないと遅れる煽り"]
+    },
+    "節約": {
+      "now": ["kiriwake", "miruten"],
+      "later": [],
+      "forbid": ["札束", "必ず貯まる"]
+    },
+    "転職": {
+      "now": ["kiriwake", "miruten"],
+      "later": [],
+      "forbid": ["今すぐ辞めろ", "偽の退職劇"]
+    },
+    "睡眠": {
+      "now": ["kiriwake", "min_care", "miruten"],
+      "later": [],
+      "forbid": ["必ず眠れる", "医療断定", "人物の不眠演技"]
+    }
+  },
+  "packet_kata": {
+    "pet_20260801_02": "visual_question",
+    "pet_20260729_01": "aruaru3",
+    "pet_20260713_02": "aruaru3",
+    "pet_furbo_observe_01": "miruten",
+    "pet_insure_observe_01": "miruten",
+    "pet_food_observe_01": "miruten",
+    "konkatsu_app_fatigue_01": "kiriwake",
+    "konkatsu_office_research_01": "miruten",
+    "sidejob_coconala_01": "miruten",
+    "sidejob_a8_01": "yamenai",
+    "sidejob_mixhost_01": "kiriwake",
+    "sidejob_fx_01": "yamenai",
+    "beauty_min_care_01": "min_care",
+    "body_meal_01": "kiriwake",
+    "body_hmb_01": "yamenai",
+    "edu_class_01": "miruten",
+    "save_quit_01": "kiriwake",
+    "save_sim_01": "miruten",
+    "save_furusato_01": "miruten",
+    "job_stay_or_go_01": "kiriwake",
+    "job_agent_01": "miruten",
+    "job_scout_01": "kiriwake",
+    "sleep_rhythm_01": "kiriwake",
+    "sleep_mattress_01": "miruten",
+    "sleep_recovery_01": "min_care"
+  }
+}

@@ -11,7 +11,7 @@
 | 将来BOT追加 | 新ジャンル1体。リンクキー22本分のボットは作らない |
 | 作らない | 投稿ボット、判定ボット、TikTok/IG専用、サクラ（Issue #54） |
 
-共通契約: [COMMON.md](COMMON.md)  
-生成コマンド: `cd affiliate-engine && node src/genre-video-gen.js --genre ペット`
+市場と型: [MARKET_AND_KATA.md](MARKET_AND_KATA.md) / `data/video_kata.json`  
+生成コマンド: `cd affiliate-engine && node src/genre-video-gen.js --genre ペット --list-kata`
 
 旧 `launch-keys/LIVE-video-*.md` は機能分割の下書き。Grok Bot 上では作らなくてよい。中身は各 `agents/ジャンル_*.md` に入った。

@@ -19,6 +19,7 @@ const { checkContent } = require('./compliance');
 const { PROFILE_CTA, applyProfileCta, youtubeDescription } = require('./youtube-cta');
 
 const DATA_PATH = path.join(ROOT, 'data', 'genre_video_packets.json');
+const KATA_PATH = path.join(ROOT, 'data', 'video_kata.json');
 const AGENT_DIR = path.join(ROOT, 'docs', 'grok-bots', 'agents');
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 
@@ -26,6 +27,16 @@ function loadCatalog() {
   const raw = JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8'));
   if (!raw || !Array.isArray(raw.genres)) throw new Error('catalog missing genres');
   return raw;
+}
+
+function loadKata() {
+  const raw = JSON.parse(fs.readFileSync(KATA_PATH, 'utf-8'));
+  if (!raw || !Array.isArray(raw.katas)) throw new Error('kata catalog missing');
+  return raw;
+}
+
+function kataById(kataCatalog, id) {
+  return (kataCatalog.katas || []).find((k) => k.id === id) || null;
 }
 
 function genreByName(catalog, name) {
@@ -41,10 +52,12 @@ function activePackets(genre, { includeAfter = false } = {}) {
   return packets;
 }
 
-function buildPacket(catalog, genre, packet) {
+function buildPacket(catalog, genre, packet, kataCatalog) {
   const spoken = applyProfileCta(packet.spoken);
   const description = youtubeDescription(packet.spoken);
-  const imagine = [catalog.imagine_prefix, genre.imagine_extra, packet.imagine]
+  const kataId = (kataCatalog && kataCatalog.packet_kata && kataCatalog.packet_kata[packet.id]) || packet.kata || '';
+  const kata = kataId && kataCatalog ? kataById(kataCatalog, kataId) : null;
+  const imagine = [catalog.imagine_prefix, genre.imagine_extra, kata && kata.imagine_rule, packet.imagine]
     .filter(Boolean)
     .join('\n\n');
   const compliance = checkContent(`${spoken}\n${description}`);
@@ -56,6 +69,7 @@ function buildPacket(catalog, genre, packet) {
   if (urls) reasons.push('URLが含まれている');
   if (!spoken.includes(PROFILE_CTA)) reasons.push('CTAが無い');
   if (!/#(PR|pr|広告|プロモーション|アフィリエイト)/.test(description)) reasons.push('#PRが無い');
+  if (!kataId) reasons.push('kata未設定');
 
   return {
     bot_name: genre.bot_name,
@@ -63,6 +77,8 @@ function buildPacket(catalog, genre, packet) {
     id: packet.id,
     link_key: packet.link_key,
     phase: packet.phase,
+    kata: kataId,
+    kata_name: kata ? kata.name : '',
     spoken,
     description,
     imagine,
@@ -84,6 +100,7 @@ function renderThrow(built) {
     '',
     '## メタ',
     `- id: ${built.id}`,
+    `- kata: ${built.kata}（${built.kata_name}）`,
     `- genre: ${built.genre}`,
     `- link_key: ${built.link_key || 'なし（認知・観察）'}`,
     `- phase: ${built.phase}`,
@@ -109,7 +126,48 @@ function renderThrow(built) {
   ].join('\n');
 }
 
-function renderAgent(catalog, genre) {
+function renderKataSection(kataCatalog, genre) {
+  const defaults = (kataCatalog.genre_defaults && kataCatalog.genre_defaults[genre.genre]) || {
+    now: [],
+    later: [],
+    forbid: []
+  };
+  const ids = [...new Set([...(defaults.now || []), ...(defaults.later || [])])];
+  const blocks = ids
+    .map((id) => {
+      const k = kataById(kataCatalog, id);
+      if (!k) return '';
+      return [
+        `### ${k.id} — ${k.name}（${k.seconds}秒）`,
+        `使うとき: ${k.use_when}`,
+        '',
+        '秒:',
+        ...k.beats.map((b) => `- ${b}`),
+        '',
+        '台本骨格:',
+        '```',
+        k.spoken_skeleton,
+        '```',
+        '',
+        `Imagine: ${k.imagine_rule}`
+      ].join('\n');
+    })
+    .filter(Boolean)
+    .join('\n\n');
+  return [
+    '## このジャンルの型（新レシピを足すときもこのどれか）',
+    '',
+    `今使う型: ${(defaults.now || []).join(', ') || 'なし'}`,
+    defaults.later && defaults.later.length ? `後で: ${defaults.later.join(', ')}` : '',
+    `禁止: ${(defaults.forbid || []).join(' / ')}`,
+    '',
+    blocks
+  ]
+    .filter((line) => line !== '')
+    .join('\n');
+}
+
+function renderAgent(catalog, genre, kataCatalog) {
   const experiment = (genre.packets || []).filter((p) => p.phase === 'experiment');
   const ready = (genre.packets || []).filter((p) => p.phase !== 'experiment' && p.phase !== 'after_experiment');
   const after = (genre.packets || []).filter((p) => p.phase === 'after_experiment');
@@ -118,12 +176,12 @@ function renderAgent(catalog, genre) {
 
   const blocks = (list) =>
     list
-      .map((packet) => renderThrow(buildPacket(catalog, genre, packet)))
+      .map((packet) => renderThrow(buildPacket(catalog, genre, packet, kataCatalog)))
       .join('\n---\n\n');
 
   const lockLine = genre.experiment_lock
-    ? '「これだけ読んで」＝今使うレシピ（実験3本）を生成する。after_experiment は出すな。投稿するな。'
-    : '「これだけ読んで」＝今使うレシピから1本生成する（id指定があればそれ）。投稿するな。チャンネルが未開設でもパケットは作ってよい。公開は人間。';
+    ? '「これだけ読んで」＝今使うレシピ（実験3本）を生成する。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。'
+    : '「これだけ読んで」＝今使うレシピから1本生成する（id指定があればそれ）。投稿するな。チャンネルが未開設でもパケットは作ってよい。公開は人間。新テーマは下の型のどれかで書け。';
 
   return `# ${genre.bot_name}
 
@@ -131,6 +189,8 @@ function renderAgent(catalog, genre) {
 人間が「これだけ読んで」と言ったら、**このファイルだけ**を読め。他のマニュアル・他ジャンル・insight.js を開くな。
 
 ${lockLine}
+
+市場リサーチの要約はファイル末尾の型に入っている。調べられないチャンネルを成功例にするな。動画・台本はコピーするな。
 
 ## 契約（全部守れ）
 
@@ -145,6 +205,7 @@ ${lockLine}
 - 他ボットに直接メンションするな
 - TikTok / Instagram を足すな
 - ジャンルをまたぐな
+- 型 id を新造するな。6つの型から選べ
 
 ペルソナ: ${genre.persona}
 担当リンクキー: ${genre.link_keys.join(' / ')}
@@ -153,10 +214,11 @@ ${lockLine}
 ## これだけ読んで／作れと言われたら（この順）
 
 1. 下の「今使うレシピ」から1本選ぶ（人間が id を指定したらそれ）
-2. IMAGINE_THROW を Grok Imagine にそのまま投げる（5秒 / 9:16 / 文字なし）
-3. 動画を output に保存する。リポジトリへ mp4 をコミットするな
-4. テロップと説明文はレシピのまま。文を足すな
-5. 「投稿してよい / 失敗」だけ返す。公式アプリで上げるのは人間
+2. レシピの kata を守れ。秒の骨格を崩すな
+3. IMAGINE_THROW を Grok Imagine にそのまま投げる（5秒 / 9:16 / 文字なし）
+4. 動画を output に保存する。リポジトリへ mp4 をコミットするな
+5. テロップと説明文はレシピのまま。文を足すな
+6. 「投稿してよい / 失敗」だけ返す。公式アプリで上げるのは人間
 
 リポジトリがあるなら:
 
@@ -164,7 +226,10 @@ ${lockLine}
 cd affiliate-engine
 node src/genre-video-gen.js --genre ${genre.genre}
 node src/genre-video-gen.js --genre ${genre.genre} --id <id> --write
+node src/genre-video-gen.js --list-kata
 \`\`\`
+
+${renderKataSection(kataCatalog, genre)}
 
 ## 今使うレシピ
 
@@ -174,25 +239,27 @@ ${later.length ? `## 後で使うレシピ（今は生成するな）\n\n${block
 `.trim() + '\n';
 }
 
-function writeAgents(catalog) {
+function writeAgents(catalog, kataCatalog) {
   fs.mkdirSync(AGENT_DIR, { recursive: true });
   const written = [];
   for (const genre of catalog.genres) {
     const file = path.join(AGENT_DIR, `${genre.bot_name}.md`);
-    fs.writeFileSync(file, renderAgent(catalog, genre), 'utf-8');
+    fs.writeFileSync(file, renderAgent(catalog, genre, kataCatalog), 'utf-8');
     written.push(path.relative(ROOT, file));
   }
   const roster = [
     '# Grok Bot に今作るエージェント',
     '',
     '9体。名前は下のまま。最初のメッセージに対応ファイルを貼り、続けて「これだけ読んで」と書く。',
-    '投稿しない。リンク22本分のボットは作らない。1ジャンル1体が、そのジャンルの案件キー分のレシピを持つ。',
+    '投稿しない。リンク22本分のボットは作らない。1ジャンル1体が、そのジャンルの案件キー分のレシピと型を持つ。',
+    '市場と型の本文: docs/grok-bots/MARKET_AND_KATA.md',
     '',
-    '| 作る名前 | 貼るファイル | 今生成してよいもの |',
-    '|---|---|---|',
+    '| 作る名前 | 貼るファイル | 今の型 | 今生成してよいもの |',
+    '|---|---|---|---|',
     ...catalog.genres.map((g) => {
       const n = activePackets(g).length;
-      return `| ${g.bot_name} | docs/grok-bots/agents/${g.bot_name}.md | ${g.experiment_lock ? `実験レシピ ${n}本` : `準備レシピ ${n}本（投稿禁止）`} |`;
+      const nowKata = ((kataCatalog.genre_defaults || {})[g.genre] || {}).now || [];
+      return `| ${g.bot_name} | docs/grok-bots/agents/${g.bot_name}.md | ${nowKata.join(', ')} | ${g.experiment_lock ? `実験レシピ ${n}本` : `準備レシピ ${n}本（投稿禁止）`} |`;
     }),
     '',
     '作らない: 動画判定、投稿ボット、TikTok/IG専用、サクラ（Issue #54）、同人/アダアフィ。',
@@ -204,8 +271,8 @@ function writeAgents(catalog) {
   return written;
 }
 
-function writeOne(catalog, genre, packet) {
-  const built = buildPacket(catalog, genre, packet);
+function writeOne(catalog, genre, packet, kataCatalog) {
+  const built = buildPacket(catalog, genre, packet, kataCatalog);
   if (!built.ok) throw new Error(`${packet.id}: ${built.reasons.join('; ')}`);
   const dir = path.join(PACKET_OUT, genre.id, packet.id);
   fs.mkdirSync(dir, { recursive: true });
@@ -223,19 +290,22 @@ function writeOne(catalog, genre, packet) {
 
 function selfTest() {
   const catalog = loadCatalog();
+  const kataCatalog = loadKata();
   const links = loadConfig('links', {});
   const linkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   if (catalog.genres.length !== 9) throw new Error(`expected 9 genres, got ${catalog.genres.length}`);
+  if (kataCatalog.katas.length !== 6) throw new Error(`expected 6 katas, got ${kataCatalog.katas.length}`);
 
   const seenLink = new Set();
   const seenId = new Set();
   for (const genre of catalog.genres) {
     if (!genre.bot_name || !genre.genre) throw new Error('genre missing names');
+    if (!kataCatalog.genre_defaults[genre.genre]) throw new Error(`no kata defaults for ${genre.genre}`);
     for (const packet of genre.packets || []) {
       if (seenId.has(packet.id)) throw new Error(`duplicate id ${packet.id}`);
       seenId.add(packet.id);
       if (packet.link_key) seenLink.add(packet.link_key);
-      const built = buildPacket(catalog, genre, packet);
+      const built = buildPacket(catalog, genre, packet, kataCatalog);
       if (!built.ok) throw new Error(`${packet.id}: ${built.reasons.join('; ')}`);
       if (built.spoken.length < 30) throw new Error(`${packet.id} too short`);
     }
@@ -245,12 +315,18 @@ function selfTest() {
     }
   }
 
+  const missingKata = [...seenId].filter((id) => !kataCatalog.packet_kata[id]);
+  if (missingKata.length) throw new Error(`packets without kata: ${missingKata.join(', ')}`);
+  for (const [id, kataId] of Object.entries(kataCatalog.packet_kata)) {
+    if (!kataById(kataCatalog, kataId)) throw new Error(`unknown kata ${kataId} for ${id}`);
+  }
+
   const missing = linkKeys.filter((k) => !seenLink.has(k));
   if (missing.length) throw new Error(`link keys without packet: ${missing.join(', ')}`);
 
-  const written = writeAgents(catalog);
+  const written = writeAgents(catalog, kataCatalog);
   if (written.length < 10) throw new Error('agent files not written');
-  console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, links covered`);
+  console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas`);
 }
 
 function main() {
@@ -260,23 +336,31 @@ function main() {
     return;
   }
   const catalog = loadCatalog();
+  const kataCatalog = loadKata();
   if (args.includes('--write-agents')) {
-    const written = writeAgents(catalog);
+    const written = writeAgents(catalog, kataCatalog);
     console.log(written.join('\n'));
+    return;
+  }
+  if (args.includes('--list-kata')) {
+    for (const k of kataCatalog.katas) {
+      console.log(`${k.id}\t${k.name}\t${k.seconds}\t${k.use_when}`);
+    }
     return;
   }
   if (args.includes('--list')) {
     for (const g of catalog.genres) {
       const n = activePackets(g).length;
       const total = (g.packets || []).length;
-      console.log(`${g.bot_name}\t${g.genre}\tnow=${n}\tall=${total}\t${g.link_keys.join(',')}`);
+      const nowKata = ((kataCatalog.genre_defaults || {})[g.genre] || {}).now || [];
+      console.log(`${g.bot_name}\t${g.genre}\tkata=${nowKata.join(',')}\tnow=${n}\tall=${total}`);
     }
     return;
   }
 
   const gi = args.indexOf('--genre');
   if (gi === -1) {
-    console.error('usage: --list | --genre NAME [--id ID] [--write] [--all] | --write-agents | --self-test');
+    console.error('usage: --list | --list-kata | --genre NAME [--id ID] [--write] [--all] | --write-agents | --self-test');
     process.exit(2);
   }
   const genre = genreByName(catalog, args[gi + 1]);
@@ -296,13 +380,13 @@ function main() {
     }
   }
   for (const packet of packets) {
-    const built = buildPacket(catalog, genre, packet);
+    const built = buildPacket(catalog, genre, packet, kataCatalog);
     if (!built.ok) {
       console.error(`${packet.id}: ${built.reasons.join('; ')}`);
       process.exit(1);
     }
     if (args.includes('--write')) {
-      const dir = writeOne(catalog, genre, packet);
+      const dir = writeOne(catalog, genre, packet, kataCatalog);
       console.log(`wrote ${dir}`);
     } else {
       process.stdout.write(renderThrow(built));

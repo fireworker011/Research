@@ -19,7 +19,8 @@ node src/genre-video-gen.js --genre ペット
 node src/genre-video-gen.js --genre ペット --id pet_20260801_02 --write
 ```
 
-レシピを足したら `node src/genre-video-gen.js --write-agents` でエージェントファイルを再生成する。
+レシピ追加後は `node src/genre-video-gen.js --write-agents` でエージェントファイルを再生成する。
+型は `data/video_kata.json` の6つだけ。新造するな。
 
 ## やってはいけない
 
