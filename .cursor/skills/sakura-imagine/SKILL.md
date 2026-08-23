@@ -9,4 +9,5 @@ description: Grok Imagine agent。サクラ専属自動投稿から渡された 
 
 - 一文も足さない
 - 新しい顔を作らない。参照は `refs/sakura-face.jpg`
+- **APIキーは不要。** 渡されたプロンプトを Imagine で実行するだけ
 - 返したら終わり。投稿はボットが本番 06:00 にやる。テスト（post:false）では投稿しない

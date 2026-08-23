@@ -19,6 +19,8 @@
 
 `Issue「サクラ起動キー」の最新コメントを読め。IMAGINE_THROW を Imagine に投げろ。文を足すな。`
 
+**`XAI_API_KEY` は不要。** 生成は Grok bot が Grok Imagine agent に投げるだけ。xAI HTTP API は使わない。
+
 ## 毎日（JST）
 
 | 時刻 | 誰 | 仕事 |

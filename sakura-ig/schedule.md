@@ -6,7 +6,7 @@
 | JST | 誰 | 仕事 |
 |---|---|---|
 | **05:00** | マネージャー | `launch-keys/CURRENT.md` を書く。`sakura_ig_handoff.yml` が Issue にコメントする |
-| 05:00〜06:00 | サクラ専属自動投稿 | Issue の最新コメントの `IMAGINE_THROW` を Imagine に投げる。動画完成 |
+| 05:00〜06:00 | サクラ専属自動投稿 | Issue の最新コメントの `IMAGINE_THROW` を Imagine に投げる。動画完成。APIキー不要 |
 | **06:00** | ワークフロー + ボット | `sakura_ig_post_gate.yml` が「投稿せよ」と Issue に書く。ボットが投稿する |
 
 1日1本。05:00 の Issue 更新が無い日は、ボットは動かない。

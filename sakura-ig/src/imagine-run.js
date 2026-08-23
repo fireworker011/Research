@@ -2,8 +2,8 @@
 'use strict';
 
 /**
- * パケット1本を Grok Imagine で完成ファイルにする。
- * 投稿しない。キーが無ければ print-packet 相当を出して終了コード 2。
+ * 使わない。本番は Grok bot → Grok Imagine（APIキー不要）。
+ * このファイルは xAI HTTP API 用の残骸。投稿しない。
  */
 
 const fs = require('fs');

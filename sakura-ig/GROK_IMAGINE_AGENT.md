@@ -1,51 +1,21 @@
 # Grok Imagine エージェント契約
 
 あなたは制作だけをする。企画しない。プロンプトを新しく書かない。  
-呼び出し元は **サクラ専属自動投稿**。渡される文は起動キー `launch-keys/CURRENT.md` の `IMAGINE_THROW` だけ。足すな。投稿はそのボットが毎朝 06:00 にやる。
+呼び出し元は **サクラ専属自動投稿**。渡される文は起動キーの `IMAGINE_THROW` だけ。足すな。投稿はそのボットが毎朝 06:00 にやる。
+
+**`XAI_API_KEY` は不要。** Grok bot から Grok Imagine へ投げるだけで生成する。xAI HTTP API も `imagine-run.js` も使わない。
 
 ## 入力
 
-1. `character.md` と `data/character-lock.txt` と `data/negatives.txt`
-2. 対象パケット（`node src/print-packet.js --next` または `--date`）
-3. `refs/sakura-face.jpg` が正本。`--test` または `use_reference_still` のときは静止画を作らず、この画像だけを動かす。ファイルが無ければ止まれ。新しい顔を作るな。
+1. 渡された `IMAGINE_THROW` だけ
+2. `refs/sakura-face.jpg` が正本。ファイルが無ければ止まれ。新しい顔を作るな
 
-## 手順（この順。飛ばさない）
+## 手順
 
-1. `node src/validate-packets.js` が通っていること
-2. パケットの `still.prompt` の前に character-lock を置き、末尾に negatives を置く
-3. `grok-imagine-image-2.0` / 9:16 / 2k で静止画1枚
-4. 顔が lock と違う、手が壊れている、文字が崩れている → 静止画を1回だけ再生成。まだダメならそのパケットを `failed` にして止める。別の着に逃げない
-5. 静止画を `grok-imagine-video-1.5` に渡す。`duration` `aspect_ratio` `resolution` はパケットの数値。プロンプトは `video.prompt` だけ
-6. 書き出し:
-
-```
-output/<id>/still.jpg
-output/<id>/reel.mp4
-output/<id>/caption.txt
-output/<id>/manifest.json
-```
-
-7. `caption.txt` はパケットの caption をそのまま。書き換えない
-8. 完了したら人間に「投稿してよい / 失敗」だけ返す
-
-## API（キーがあるとき）
-
-静止画: `POST https://api.x.ai/v1/images/generations`  
-モデル `grok-imagine-image-2.0` / `aspect_ratio: "9:16"` / `resolution: "2k"`
-
-動画: `POST https://api.x.ai/v1/videos/generations`  
-モデル `grok-imagine-video-1.5` / `image: { url }` または data URI / `duration` / `aspect_ratio: "9:16"` / `resolution: "720p"`  
-`request_id` をポーリングして `status=done` の `video.url` を保存する。
-
-ランナー: `node src/imagine-run.js --date YYYY-MM-DD`
-
-## キーが無いとき
-
-`node src/print-packet.js --date YYYY-MM-DD` のブロックを Imagine UI にそのまま貼る。
-
-1. 画像モード 9:16 で still ブロック
-2. できた画像を起点に Video、秒数はパケットどおり、motion ブロック
-3. ファイル名を `output/<id>/` に合わせて保存
+1. 渡された文を Imagine で実行する。一文も足すな
+2. 参照は `sakura-face.jpg` だけ。静止画を新しく作って顔を置き換えるな
+3. できた `reel.mp4` をコメントの `output` に置く
+4. キャプションは触るな。投稿するな
 
 ## 完成条件
 
