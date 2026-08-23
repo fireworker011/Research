@@ -34,6 +34,17 @@
 | 導線 | リンクタップ 週15 |
 | 成果 | タップが足りない週は Fanvue を語らない |
 
+## テスト作成（投稿しない）
+
+正本画像を `refs/sakura-face.jpg` に置いてから:
+
+```bash
+cd sakura-ig
+node src/imagine-run.js --test
+```
+
+サクラ専属自動投稿への指示は `bots/TEST_NOW.md`。新しい顔を作らせない。
+
 ## 人間が1回だけ
 
 1. `bio.md` をプロフィールに貼る。Fanvueリンクを1本

@@ -7,7 +7,7 @@
 
 1. `character.md` と `data/character-lock.txt` と `data/negatives.txt`
 2. 対象パケット（`node src/print-packet.js --next` または `--date`）
-3. 任意: `refs/sakura-face.jpg`（ある場合は静止画生成後の顔合わせに使う。無ければ lock 文だけで進む）
+3. `refs/sakura-face.jpg` が正本。`--test` または `use_reference_still` のときは静止画を作らず、この画像だけを動かす。ファイルが無ければ止まれ。新しい顔を作るな。
 
 ## 手順（この順。飛ばさない）
 

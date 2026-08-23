@@ -14,8 +14,16 @@ const {
   findPacket,
   composeStillPrompt,
   composeVideoPrompt,
-  parseArgs
+  parseArgs,
+  resolveReferenceStill
 } = require('./lib');
+
+function fileToDataUri(filePath) {
+  const buf = fs.readFileSync(filePath);
+  const ext = path.extname(filePath).toLowerCase();
+  const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+  return `data:${mime};base64,${buf.toString('base64')}`;
+}
 
 const API = 'https://api.x.ai/v1';
 
@@ -95,6 +103,15 @@ async function main() {
     process.exit(1);
   }
 
+  if (packet.use_reference_still) {
+    try {
+      resolveReferenceStill(packet);
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
+  }
+
   if (!process.env.XAI_API_KEY) {
     console.error('XAI_API_KEY が無い。下を Imagine UI に貼るか、キーを入れて再実行。投稿はするな。');
     require('child_process').execFileSync(process.execPath, [
@@ -108,10 +125,18 @@ async function main() {
   const dir = path.join(ROOT, 'output', packet.id);
   fs.mkdirSync(dir, { recursive: true });
 
-  console.log(`still ${packet.id}...`);
-  const stillUrl = await generateStill(packet);
   const stillPath = path.join(dir, 'still.jpg');
-  await download(stillUrl, stillPath);
+  let stillUrl;
+  if (packet.use_reference_still) {
+    const ref = resolveReferenceStill(packet);
+    fs.copyFileSync(ref, stillPath);
+    stillUrl = fileToDataUri(ref);
+    console.log(`still ${packet.id}: reference ${path.relative(ROOT, ref)}`);
+  } else {
+    console.log(`still ${packet.id}...`);
+    stillUrl = await generateStill(packet);
+    await download(stillUrl, stillPath);
+  }
 
   console.log(`video ${packet.id} (${packet.duration_sec}s)...`);
   const videoUrl = await generateVideo(packet, stillUrl);

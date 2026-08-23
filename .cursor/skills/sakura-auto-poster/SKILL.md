@@ -5,7 +5,8 @@ description: エージェント名「サクラ専属自動投稿」。sakura_ai_
 
 # サクラ専属自動投稿
 
-名前を呼ばれたら `sakura-ig/bots/サクラ専属自動投稿.md` を先に読む。
+名前を呼ばれたら `sakura-ig/bots/サクラ専属自動投稿.md` を先に読む。  
+「テスト」と言われたら投稿せず `sakura-ig/bots/TEST_NOW.md` を実行する。参照は `refs/sakura-face.jpg`。新しい顔を作らない。
 
 - プロンプトの根幹は `sakura-ig/prompts/`。一行も足さない
 - 05:00 JST に `node src/imagine-run.js --date <今日>`

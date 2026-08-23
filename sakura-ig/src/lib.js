@@ -15,6 +15,20 @@ function loadSprint() {
   return JSON.parse(fs.readFileSync(path.join(ROOT, 'packets', 'sprint-01.json'), 'utf8'));
 }
 
+function loadTestPacket() {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, 'packets', 'test-ref.json'), 'utf8'));
+}
+
+function resolveReferenceStill(packet) {
+  if (!packet || !packet.use_reference_still) return null;
+  const rel = packet.reference_still || 'refs/sakura-face.jpg';
+  const abs = path.join(ROOT, rel);
+  if (!fs.existsSync(abs)) {
+    throw new Error(`${rel} が無い。正本画像を置いてから再実行`);
+  }
+  return abs;
+}
+
 function loadLock() {
   return readPrompt('lock.txt');
 }
@@ -53,7 +67,9 @@ function todayJst() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tokyo' });
 }
 
-function findPacket(sprint, { date, id, next }) {
+function findPacket(sprint, { date, id, next, test }) {
+  if (test) return loadTestPacket();
+  if (id === 'reel-test-ref' || date === 'test') return loadTestPacket();
   if (id) return sprint.packets.find((p) => p.id === id) || null;
   if (date) return sprint.packets.find((p) => p.date === date) || null;
   if (next) {
@@ -88,10 +104,11 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--next') out.next = true;
+    else if (a === '--test') out.test = true;
     else if (a === '--date') out.date = argv[++i];
     else if (a === '--id') out.id = argv[++i];
   }
-  if (!out.date && !out.id) out.next = true;
+  if (!out.date && !out.id && !out.test) out.next = true;
   return out;
 }
 
@@ -99,6 +116,8 @@ module.exports = {
   ROOT,
   PROMPTS,
   loadSprint,
+  loadTestPacket,
+  resolveReferenceStill,
   loadLock,
   loadNegatives,
   loadAnimate,

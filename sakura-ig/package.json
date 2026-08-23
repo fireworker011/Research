@@ -10,6 +10,7 @@
     "validate": "node src/validate-packets.js",
     "next": "node src/print-packet.js --next",
     "imagine": "node src/imagine-run.js --next",
+    "test": "node src/imagine-run.js --test",
     "imagine:date": "node src/imagine-run.js"
   }
 }

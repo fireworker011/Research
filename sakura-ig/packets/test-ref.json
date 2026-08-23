@@ -1,0 +1,24 @@
+{
+  "id": "reel-test-ref",
+  "date": "test",
+  "weekday": "test",
+  "type": "micro-motion",
+  "signature_kimono": true,
+  "wardrobe": "red_signature",
+  "duration_sec": 5,
+  "aspect_ratio": "9:16",
+  "resolution": "720p",
+  "image_model": "grok-imagine-image-2.0",
+  "video_model": "grok-imagine-video-1.5",
+  "use_reference_still": true,
+  "reference_still": "refs/sakura-face.jpg",
+  "still": {
+    "prompt": "Do not generate a new woman. Start from refs/sakura-face.jpg only. Keep her exact face, smile, bangs, gold kanzashi, hourglass body, and the off-shoulder red kimono with white-gold sakura. If a still must be reframed, crop 9:16 on her face and upper body. Garden and petals may stay. No Japanese text."
+  },
+  "video": {
+    "prompt": "Animate refs/sakura-face.jpg only. Do not change her face, body, or kimono. First half-second: eyes and hair. She blinks once, wispy bangs move, a few pink petals drift, the red sleeve shifts one centimeter. Slow 5 percent push-in on the face. Soft garden air, no lyrics. No new person. No overlay."
+  },
+  "overlay": { "text": "", "position": "none", "burn": false },
+  "cta": false,
+  "caption": "テスト。投稿しない。\nAI生成の成人モデルです。\nTest. Do not post."
+}
