@@ -5,7 +5,7 @@ description: sakura_ai_beauty のリールを Grok Imagine で完成させる。
 
 # サクラ Imagine
 
-`sakura-ig/GROK_IMAGINE_AGENT.md` が契約。先に読め。企画しない。プロンプトは `sakura-ig/prompts/` 以外を足さない。投稿は **サクラ専属自動投稿** が 21:00 にやる。
+`sakura-ig/GROK_IMAGINE_AGENT.md` が契約。先に読め。企画しない。プロンプトは `sakura-ig/prompts/` 以外を足さない。投稿は **サクラ専属自動投稿** が毎朝 06:00 にやる。
 
 ## 手順
 
