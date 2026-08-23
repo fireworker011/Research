@@ -1,1 +1,1 @@
-Avoid: child, teen, underage, loli, school uniform, western blonde, different face, face morph, extra fingers, extra limbs, deformed hands, garbled text, random letters, watermark, logo, subtitle, bikini, nude, explicit sexual content, pornographic pose, bed sex scene, second person, crowd of faces, cartoon, anime, chibi
+canonical: ../prompts/negatives.txt

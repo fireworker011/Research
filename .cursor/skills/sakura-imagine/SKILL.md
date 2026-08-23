@@ -5,7 +5,7 @@ description: sakura_ai_beauty のリールを Grok Imagine で完成させる。
 
 # サクラ Imagine
 
-`sakura-ig/GROK_IMAGINE_AGENT.md` が契約。先に読め。企画しない。投稿しない。
+`sakura-ig/GROK_IMAGINE_AGENT.md` が契約。先に読め。企画しない。プロンプトは `sakura-ig/prompts/` 以外を足さない。投稿は **サクラ専属自動投稿** が 21:00 にやる。
 
 ## 手順
 
@@ -27,4 +27,4 @@ node src/imagine-run.js --date 2026-08-24
 - 裸・性行為・未成年は不合格
 - 完成物は `still.jpg` `reel.mp4` `caption.txt` `manifest.json`
 - キャプションはパケットのまま
-- 人間が投稿する。エージェントは「納品 / 失敗」だけ返す
+- 納品したら サクラ専属自動投稿 に返す。こちらから投稿しない

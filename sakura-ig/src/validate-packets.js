@@ -4,10 +4,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
+const {
+  ROOT,
+  loadLock,
+  loadNegatives,
+  loadAnimate,
+  wardrobeIds,
+  loadWardrobe,
+  loadTypeBlock
+} = require('./lib');
+
 const sprint = JSON.parse(fs.readFileSync(path.join(ROOT, 'packets', 'sprint-01.json'), 'utf8'));
-const lock = fs.readFileSync(path.join(ROOT, 'data', 'character-lock.txt'), 'utf8').trim();
-const negatives = fs.readFileSync(path.join(ROOT, 'data', 'negatives.txt'), 'utf8').trim();
+const lock = loadLock();
+const negatives = loadNegatives();
+const animate = loadAnimate();
 
 const TYPES = new Set(['question', 'which-one', 'micro-motion', 'researcher', 'push-pull', 'season', 'loop']);
 const REQUIRED = [
@@ -21,8 +31,9 @@ const ids = new Set();
 const dates = new Set();
 let signatureCount = 0;
 
-if (!lock) errors.push('character-lock.txt is empty');
-if (!negatives) errors.push('negatives.txt is empty');
+if (!lock) errors.push('prompts/lock.txt is empty');
+if (!negatives) errors.push('prompts/negatives.txt is empty');
+if (!animate) errors.push('prompts/animate.txt is empty');
 if (!Array.isArray(sprint.packets) || sprint.packets.length !== 14) {
   errors.push(`expected 14 packets, got ${sprint.packets ? sprint.packets.length : 0}`);
 }
@@ -48,6 +59,17 @@ for (const p of sprint.packets || []) {
     errors.push(`${p.id}: overlay must not burn Japanese`);
   }
   if (p.signature_kimono) signatureCount += 1;
+  try {
+    loadWardrobe(p);
+  } catch (err) {
+    errors.push(`${p.id}: wardrobe ${wardrobeIds(p).join('+')}: ${err.message}`);
+  }
+  try {
+    loadTypeBlock(p.type, 'STILL');
+    loadTypeBlock(p.type, 'VIDEO');
+  } catch (err) {
+    errors.push(`${p.id}: type ${p.type}: ${err.message}`);
+  }
 }
 
 if (signatureCount > 7) errors.push(`too many signature red kimonos: ${signatureCount}`);

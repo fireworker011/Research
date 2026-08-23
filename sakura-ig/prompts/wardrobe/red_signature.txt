@@ -1,0 +1,1 @@
+Wardrobe red_signature (brand mark): vermillion red silk kimono, gold-and-white sakura embroidery, cream-gold obi, gold kanzashi in the dark-brown hair. Elegant off-shoulder drape only, no nudity, no explicit chest focus. This is the default "Sakura" look. Use only when the packet says signature_kimono true or wardrobe includes red_signature.

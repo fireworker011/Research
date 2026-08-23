@@ -1,0 +1,3 @@
+TYPE researcher
+STILL: Vertical 9:16 macro of the named part (obi knot or kanzashi). Her adult hand or ear may be in frame. Full face is optional. Textile and metal must be sharp. No text.
+VIDEO: Start on the object. Tilt or creep toward ear, cheek, or eye. Stop if the face would morph. Overlay is the part name in English (Obi, Kanzashi).
