@@ -1,25 +1,15 @@
-# 起動キー — テスト
+# 起動キー — 2026-08-24 投稿
 
 宛先: **サクラ専属自動投稿**  
 渡し元: マネージャー  
-渡した時刻: 2026-08-23 12:27 JST（テスト。Issue「サクラ起動キー」経由）
+渡した時刻: 2026-08-23 19:13 JST（明日 06:00 投稿分。05:00 より前倒し）
 
-このファイルを開いたら即実行。文を足すな。
+このファイルと Issue「サクラ起動キー」の最新コメントが同じ内容。文を足すな。
 
-1. 下の `IMAGINE_THROW` を **Grok Imagine agent** にそのまま投げる
+1. `IMAGINE_THROW` を **Grok Imagine agent** にそのまま投げる
 2. 参照は `sakura-ig/refs/sakura-face.jpg`。新しい顔を作らせない
-3. 動画を `sakura-ig/output/reel-test-ref/reel.mp4` に置く
-4. **投稿するな。** これはテスト。06:00 投稿は本番だけ
-
----
-
-## 本番の時計（このテストでは使わない）
-
-| JST | 誰 | 仕事 |
-|---|---|---|
-| 05:00 | マネージャー | この起動キーをボットに渡す |
-| 05:00〜06:00 | ボット | Imagine に投げて動画完成 |
-| 06:00 | ボット | 投稿 |
+3. 動画を `sakura-ig/output/reel-2026-08-24/reel.mp4` に置く
+4. **2026-08-24 06:00 JST より前に投稿するな。** 今は作成して待つ
 
 ---
 
@@ -27,12 +17,12 @@
 
 | 項目 | 値 |
 |---|---|
-| id | reel-test-ref |
-| run | test |
-| post | false |
+| id | reel-2026-08-24 |
+| run | production |
+| post | true |
+| post_at | 2026-08-24 06:00 JST |
 | duration | 5 |
 | aspect | 9:16 |
-| resolution | 720p |
 | model | grok-imagine-video-1.5 |
 | mode | image-to-video |
 | reference | sakura-ig/refs/sakura-face.jpg |
@@ -55,10 +45,10 @@ Soft garden air only. No lyrics. No song title. No on-screen text. No second per
 
 ---
 
-## CAPTION（テスト。投稿しない）
+## CAPTION（一字も変えない）
 
 ```
-テスト。投稿しない。
-AI生成の成人モデルです。
-Test. Do not post.
+朱の一呼吸。AI生成の成人モデルです。
+One breath in red. AI-generated adult model.
+#AI和装 #着物 #kimono #sakura
 ```

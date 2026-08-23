@@ -27,7 +27,9 @@ function render(key) {
     `post: ${key.post}`,
     '',
     '起動キー。IMAGINE_THROW を Grok Imagine agent にそのまま投げろ。文を足すな。',
-    key.post === false ? 'テスト。投稿するな。' : `投稿は ${key.post_time_jst} JST。`,
+    key.post === false
+      ? 'テスト。投稿するな。'
+      : `投稿は ${key.post_date || ''} ${key.post_time_jst} JST。それより前に投稿するな。今は作成して待て。`,
     '',
     '## メタ',
     `- id: ${key.id}`,
@@ -35,7 +37,9 @@ function render(key) {
     `- duration: ${key.duration_sec}`,
     `- output: ${key.output}`,
     `- reference: ${key.reference_still}`,
+    `- post_date: ${key.post_date || ''}`,
     `- post_time_jst: ${key.post_time_jst}`,
+    `- do_not_post_before: ${key.do_not_post_before || ''}`,
     `- manager_handoff_jst: ${key.manager_handoff_jst}`,
     '',
     '## IMAGINE_THROW',
