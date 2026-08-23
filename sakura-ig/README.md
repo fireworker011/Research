@@ -1,60 +1,31 @@
 # サクラIG
 
-ゴールはフォロワー増ではない。**リールが非フォロワーに届き、リンクタップが週15を超え、Fanvueの課金が判定できること。**
+ゴールはフォロワー増ではない。リールが届き、リンクタップが週15を超え、Fanvueの課金が判定できること。
 
-## 役割
+## 役割（これ以外はやらない）
 
 | 誰 | やること |
 |---|---|
-| マネージャー（このセッション系） | `prompts/` の根幹だけを書く。型の残棄 |
-| **サクラ専属自動投稿** | 毎日 05:00 JST に作成、**06:00 JST に投稿**。プロンプトは書かない |
-| 人間 | 初回のバイオとリンク。インサイトの4数字を CSV に書く |
+| マネージャー（このセッション） | Imagine 用の**動画プロンプト**を書き、`launch-keys/CURRENT.md` を起動キーとして渡す |
+| **サクラ専属自動投稿** | 起動キーを読み、`IMAGINE_THROW` を **Grok Imagine agent** に投げる。動画作成 → 毎朝 06:00 投稿 |
+| Grok Imagine agent | 渡されたプロンプトだけで動画を出す。企画しない |
 
-定時と投稿の指示書: `bots/サクラ専属自動投稿.md`  
-スキル: `.cursor/skills/sakura-auto-poster/SKILL.md`
+マネージャーは Imagine に直接投げない。投稿しない。ボットはプロンプトを書かない。
 
-## 根幹プロンプト
+## 起動キー
 
-映像の文はここだけが正本。
+正本: `launch-keys/CURRENT.md`  
+説明: `launch-keys/README.md`
 
-- `prompts/CORE.md`
-- `prompts/lock.txt` `animate.txt` `negatives.txt`
-- `prompts/wardrobe/`
-- `prompts/types/`
-- 日付の差分だけ `packets/sprint-01.json` の scene
+ボットは起動時にそれだけを読む。
 
-組み立ては `node src/print-packet.js`。ボットはこれを Imagine に渡す。
+## キャラ正本
 
-## ゲート（8/23–9/5）
-
-| ゲート | 数字 |
-|---|---|
-| 再生 | 1本でも ÷2468 ≥ 10（24,700） |
-| 弱い | 14本すべて 2倍未満なら型を変える。本数は維持 |
-| 導線 | リンクタップ 週15 |
-| 成果 | タップが足りない週は Fanvue を語らない |
-
-## テスト作成（投稿しない）
-
-正本画像を `refs/sakura-face.jpg` に置いてから:
-
-```bash
-cd sakura-ig
-node src/imagine-run.js --test
-```
-
-サクラ専属自動投稿への指示は `bots/TEST_NOW.md`。新しい顔を作らせない。
-
-## 人間が1回だけ
-
-1. `bio.md` をプロフィールに貼る。Fanvueリンクを1本
-2. 任意で `refs/sakura-face.jpg`
-3. 翌日から再生とタップを `data/reel_log.csv` に書く
+`refs/sakura-face.jpg` = チャットの赤着物の女性。顔・体型・オフショル。新しい顔は禁止。
 
 ## やらないこと
 
-- マネージャーが投稿や cron を自分で回す
-- ボットが `prompts/` を書き換える
-- 人間を装うDM
-- Threadsエンジンへの接続
-- 水着・別顔への転換
+- マネージャーが cron や投稿を回す
+- ボットが `prompts/` や起動キーの文を足す
+- 人間を装う DM
+- Threads エンジンへの接続
