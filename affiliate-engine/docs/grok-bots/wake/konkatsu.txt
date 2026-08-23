@@ -1,0 +1,6 @@
+毎朝 06:00 JST になったら、次の URL を開き、開いた本文の全文に従え。
+このチャットの過去ログより、今開いた本文が上。PC接続は不要。ファイルをここに貼らなくてよい。投稿するな。
+
+https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/konkatsu.md
+
+パス: affiliate-engine/docs/grok-bots/agents/konkatsu.md

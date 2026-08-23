@@ -50,7 +50,7 @@
 - **ベンチマークを1本分析したい** → §1 のシートを埋める
 - **映像を作りたい** → §2 のプロンプトを Grok / Cursor に貼る
 - **エージェントに今日の作業を任せたい** → 下のマスター指示を最初に貼り、続けて「今日のセットは A / B / C / D」と書く
-- **Grok Bot にエージェントを作る** → `docs/grok-bots/CREATE.md` の9体。ファイルを貼って「これだけ読んで」
+- **Grok Bot にエージェントを作る** → 一度だけ `docs/grok-bots/wake/<id>.txt` を貼る。以降は GitHub の所定ファイルだけ読む（[FETCH.md](grok-bots/FETCH.md)）。チャットに md 全文を貼り直すな
 
 ### AIに貼る — マスター指示
 
@@ -194,7 +194,7 @@ video-channel-playbook.md の §1 に従い、次のアカウントを分析せ�
 ## 2. Grok / Cursor での制作（投稿は人間）
 
 役割を固定する。Grok を投稿ボットにしない。Cursor に組織図を作らせない。  
-起動キー本文は `docs/grok-bots/launch-keys/`。Imagine は `LIVE-video-imagine.md`、台本再掲は `LIVE-video-shorts.md`。
+ジャンル9体は ASCII の `docs/grok-bots/agents/<id>.md` を raw で読む（[FETCH.md](grok-bots/FETCH.md)）。編集仕様は各ファイル内と `data/video_production.json`。旧 `launch-keys/` は下書き。
 
 | 担当 | やること | やらないこと |
 |---|---|---|

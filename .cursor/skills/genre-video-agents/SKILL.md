@@ -9,6 +9,7 @@ Grok Bot に今作るのは `affiliate-engine/docs/grok-bots/CREATE.md` の9体�
 各体の本文は `affiliate-engine/docs/grok-bots/agents/`。データ源は `affiliate-engine/data/genre_video_packets.json`。
 
 人間が「これだけ読んで」と言ったら、そのファイルだけを読む。他ジャンルを開かない。
+毎朝06:00は `docs/grok-bots/FETCH.md` の raw URL。PC不要。`wake/<id>.txt` を一度貼る。
 
 ## 生成
 
