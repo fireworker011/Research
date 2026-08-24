@@ -21,8 +21,10 @@ const { PROFILE_CTA, applyProfileCta, youtubeDescription } = require('./youtube-
 const DATA_PATH = path.join(ROOT, 'data', 'genre_video_packets.json');
 const KATA_PATH = path.join(ROOT, 'data', 'video_kata.json');
 const PROD_PATH = path.join(ROOT, 'data', 'video_production.json');
+const LEDGER_PATH = path.join(ROOT, 'data', 'video_ledger.json');
 const AGENT_DIR = path.join(ROOT, 'docs', 'grok-bots', 'agents');
 const WAKE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'wake');
+const LEDGER_DIR = path.join(ROOT, 'docs', 'grok-bots', 'ledger');
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY || 'fireworker011/Research';
 const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/video-channel-playbook-e013';
@@ -51,6 +53,35 @@ function loadProduction() {
 
 function agentRepoPath(genre) {
   return `affiliate-engine/docs/grok-bots/agents/${genre.id}.md`;
+}
+
+function ledgerRepoPath(genre) {
+  return `affiliate-engine/docs/grok-bots/ledger/${genre.id}.md`;
+}
+
+function loadLedger() {
+  const raw = JSON.parse(fs.readFileSync(LEDGER_PATH, 'utf-8'));
+  if (!raw || !raw.genres) throw new Error('video ledger missing');
+  return raw;
+}
+
+function genreLedger(ledger, genre) {
+  const entry = ledger.genres[genre.id];
+  if (!entry) throw new Error(`ledger missing genre ${genre.id}`);
+  return entry;
+}
+
+function canMakeVideo(entry) {
+  if (!entry || entry.make !== 'one_if_clear') return false;
+  if (!entry.next_id) return false;
+  if (!entry.channel_open) return false;
+  if (Array.isArray(entry.unposted) && entry.unposted.length) return false;
+  if (entry.last_post) {
+    const check = entry.last_check;
+    if (!check || check.status !== 'done') return false;
+    if (check.id !== entry.last_post.id) return false;
+  }
+  return true;
 }
 
 function githubRaw(repoPath) {
@@ -191,17 +222,22 @@ function buildPacket(catalog, genre, packet, kataCatalog, prod) {
   };
 }
 
-function renderThrow(built) {
+function renderThrow(built, status = 'wait') {
+  const statusLine =
+    status === 'make'
+      ? '- status: 今の1本。条件を全部満たしたときだけ作れ'
+      : '- status: 待つ。今は作るな';
   return [
     `宛先: ${built.bot_name}`,
     'from: manager',
     `run: ${built.phase === 'experiment' ? 'production' : built.phase === 'after_experiment' ? 'parked' : 'ready'}`,
     'post: false',
     '',
-    'これだけ読んで。他のファイルを開くな。IMAGINE_THROW を Grok Imagine にそのまま投げろ。文を足すな。投稿するな。',
+    '条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。',
     '',
     '## メタ',
     `- id: ${built.id}`,
+    statusLine,
     `- kata: ${built.kata}（${built.kata_name}）`,
     `- genre: ${built.genre}`,
     `- link_key: ${built.link_key || 'なし（認知・観察）'}`,
@@ -310,48 +346,142 @@ function renderProductionSection(prod) {
 }
 
 function renderGithubSection(genre) {
-  const rel = agentRepoPath(genre);
-  const raw = githubRaw(rel);
-  const blob = githubBlob(rel);
+  const agentRel = agentRepoPath(genre);
+  const ledgerRel = ledgerRepoPath(genre);
   return [
     '## GitHubから読む（毎朝06:00 JST。これだけでよい）',
     '',
     'PC接続は不要。ファイルをチャットに貼らなくてよい。このチャットの過去ログより、今開いた本文が上。',
     '',
-    '1. 次の raw URL をブラウザで開く',
-    '2. 開いた全文に従う',
-    '3. 今使うレシピを1本、編集仕様どおりに作る',
-    '4. 投稿するな',
+    '毎朝開く所定ファイルは2つ。',
     '',
-    '所定ファイル:',
+    '1. 指示・レシピ:',
     '',
-    `\`${rel}\``,
+    `\`${agentRel}\``,
     '',
-    'raw（毎朝これを開け）:',
+    githubRaw(agentRel),
     '',
-    raw,
+    '2. 台帳（投稿とチェック）:',
     '',
-    'GitHub表示:',
+    `\`${ledgerRel}\``,
     '',
-    blob
+    githubRaw(ledgerRel)
   ].join('\n');
 }
 
-function renderAgent(catalog, genre, kataCatalog, prod) {
+function renderDailyOrder(genre, entry) {
+  const makeLine = canMakeVideo(entry)
+    ? `今の next_id は \`${entry.next_id}\`。条件クリア時だけこの1本。`
+    : '今は動画を作るな。';
+  return [
+    '## 毎朝の順番（上から。途中で終われ）',
+    '',
+    '量産するな。1日1本が上限。2本目以降は今日やるな。',
+    '',
+    '0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな',
+    '1. 所定の2ファイル（agents と ledger）を開け',
+    '2. 前回開いた全文と一字一句同じ → 「変更なし。スルー」だけ返して終了。動画を作るな',
+    '3. 台帳に未チェックの投稿がある、または直近投稿のチェックが無い（前日分を含む） → 投稿チェックだけやって終了。動画を作るな',
+    '4. 未投稿の完成動画がある → 「未投稿あり。作らない」で終了',
+    '5. 台帳の make が never、チャンネル未開設、next_id が空 → 「作るな」で終了',
+    `6. ${makeLine} チェックした当日は次を作るな`,
+    '',
+    `台帳メモ: ${entry.note}`
+  ].join('\n');
+}
+
+function renderPostCheck() {
+  return [
+    '## 投稿チェック（投稿したと言われたらこれだけ）',
+    '',
+    '投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。',
+    'KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。',
+    '',
+    '公開URLを開け（アフィURLは見るな・書くな）。',
+    '',
+    '| 項目 | 書き方 |',
+    '|---|---|',
+    '| レシピid | 人間が言ったid |',
+    '| 公開された | はい / いいえ / 不明 |',
+    '| 末尾CTA（詳しくはプロフィールのリンク（PR）） | あり / なし / 不明 |',
+    '| 説明にURL | ないこと。あったら失敗 |',
+    '| 説明に#PR | あり / なし / 不明 |',
+    '| 固定コメントのURL | ないこと。あったら失敗 |',
+    '| 再生 | 人間が言った数字だけ。無ければ記録不足 |',
+    '| A8クリック | 同上。推測するな |',
+    '',
+    '返し方（この形だけ）:',
+    '',
+    '```',
+    '投稿チェック: 済み',
+    'id: <id>',
+    '公開: はい',
+    'CTA: あり',
+    '説明URL: ない',
+    '#PR: あり',
+    '固定URL: ない',
+    '再生: 記録不足',
+    'クリック: 記録不足',
+    '失敗: なし',
+    '次の動画: 作らない（チェック当日は作るな。台帳が更新されてから）',
+    '```',
+    '',
+    'チェックが「済み」になるまで、次の動画は作るな。前日の投稿チェックが無ければ、今日の動画は作るな。'
+  ].join('\n');
+}
+
+function renderLedgerMd(genre, entry, ledger) {
+  const makeOk = canMakeVideo(entry);
+  const lastPost = entry.last_post
+    ? `${entry.last_post.date || '日付不明'} / ${entry.last_post.id}`
+    : 'なし';
+  const lastCheck = entry.last_check
+    ? `${entry.last_check.date || '日付不明'} / ${entry.last_check.id} / ${entry.last_check.status}`
+    : 'なし';
+  const unposted = (entry.unposted || []).length ? entry.unposted.join(', ') : 'なし';
+  return [
+    `# ${genre.bot_name} 台帳`,
+    '',
+    `更新: ${ledger.as_of}`,
+    `ルール: ${ledger.rule}`,
+    '',
+    `- チャンネル: ${entry.channel || '未開設'}`,
+    `- チャンネル開設: ${entry.channel_open ? 'はい' : 'いいえ'}`,
+    `- 未投稿の完成動画: ${unposted}`,
+    `- 直近の投稿: ${lastPost}`,
+    `- 直近の投稿チェック: ${lastCheck}`,
+    `- next_id: ${entry.next_id || 'なし'}`,
+    `- make: ${entry.make}`,
+    `- 今動画を作ってよいか: ${makeOk ? '条件つき可（1本だけ）' : '不可'}`,
+    `- メモ: ${entry.note}`,
+    '',
+    'このファイルが前回と同じなら、動画を作るな（スルー）。',
+    '投稿したら人間が「投稿した」を送る。ボットは投稿チェックだけする。',
+    '前日の投稿チェックが無ければ動画を作るな。',
+    ''
+  ].join('\n');
+}
+
+function renderAgent(catalog, genre, kataCatalog, prod, ledger) {
+  const entry = genreLedger(ledger, genre);
   const experiment = (genre.packets || []).filter((p) => p.phase === 'experiment');
   const ready = (genre.packets || []).filter((p) => p.phase !== 'experiment' && p.phase !== 'after_experiment');
   const after = (genre.packets || []).filter((p) => p.phase === 'after_experiment');
   const now = genre.experiment_lock ? experiment : [...experiment, ...ready];
   const later = genre.experiment_lock ? [...ready, ...after] : after;
+  const makeId = canMakeVideo(entry) ? entry.next_id : null;
 
   const blocks = (list) =>
     list
-      .map((packet) => renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod)))
+      .map((packet) => {
+        const status = makeId && packet.id === makeId ? 'make' : 'wait';
+        return renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod), status);
+      })
       .join('\n---\n\n');
 
   const lockLine = genre.experiment_lock
-    ? '毎朝の仕事＝今使うレシピ（実験3本）を編集仕様どおりに1本作る。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。'
-    : '毎朝の仕事＝今使うレシピから1本を編集仕様どおりに作る。投稿するな。チャンネル未開設でもパケットは作ってよい。公開は人間。';
+    ? '実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。'
+    : 'チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。';
 
   return `# ${genre.bot_name}
 
@@ -361,7 +491,9 @@ ${renderGithubSection(genre)}
 
 ${lockLine}
 
-調べられないチャンネルを成功例にするな。動画・台本はコピーするな。
+${renderDailyOrder(genre, entry)}
+
+調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
 
 ## 契約（全部守れ）
 
@@ -377,6 +509,10 @@ ${lockLine}
 - TikTok / Instagram を足すな
 - ジャンルをまたぐな
 - 型 id を新造するな。6つの型から選べ
+- 全文が前回と同じならスルー。動画を足すな
+- 前日の投稿チェックが無ければ動画を作るな
+- 未投稿の完成動画があるなら次を作るな
+- 1日1本を超えるな
 
 ペルソナ: ${genre.persona}
 担当リンクキー: ${genre.link_keys.join(' / ')}
@@ -384,15 +520,19 @@ ${lockLine}
 
 ${renderProductionSection(prod)}
 
-## 作れ（この順）
+${renderPostCheck()}
 
-1. 下の「今使うレシピ」から1本選ぶ（未作成の先頭。id指定があればそれ）
+## 動画を作る（条件を全部満たしたときだけ）
+
+条件を満たさないなら、この節は読むな。レシピを順に全部作るな。
+
+1. 台帳の next_id の1本だけ選ぶ
 2. レシピのテロップ表の秒に従え
 3. IMAGINE_THROW を、クリップ本数だけ Grok Imagine に投げる（各5秒・9:16・文字なし）
 4. クリップを編集仕様どおり繋ぎ、テロップを載せる
 5. ナレーションはテロップ／読み上げと同一
 6. \`output\` に保存。mp4 を Git にコミットするな
-7. 「投稿してよい / 失敗」だけ返す
+7. 「未投稿の完成1本あり / 失敗」だけ返す。投稿してよいとは言うな
 
 リポジトリがあるなら:
 
@@ -413,27 +553,39 @@ ${later.length ? `## 後で使うレシピ（今は生成するな）\n\n${block
 }
 
 function wakeText(genre) {
-  const raw = githubRaw(agentRepoPath(genre));
-  const nowWork = genre.experiment_lock
-    ? '今すぐその本文の「今使うレシピ」から未作成の先頭1本を、編集仕様（テロップ位置・ナレーション・テンポ）どおりに作れ。実験3本以外と after_experiment は出すな。'
-    : '今すぐその本文の「今使うレシピ」から未作成の先頭1本を、編集仕様（テロップ位置・ナレーション・テンポ）どおりに作れ。公開・投稿はするな。チャンネル未開設でもよい。';
+  const agentRaw = githubRaw(agentRepoPath(genre));
+  const ledgerRaw = githubRaw(ledgerRepoPath(genre));
   return [
     `あなたは Grok Bot「${genre.bot_name}」。ジャンルは「${genre.genre}」だけ。他ジャンルはやるな。`,
     '',
-    'これ以降、ファイルをこのチャットに貼らなくてよい。PC接続も不要。追加の指示を待つな。',
+    'これ以降、ファイルをこのチャットに貼らなくてよい。PC接続も不要。',
     '',
-    '今すぐ次のURLを開き、開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。',
+    '今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。',
     '',
-    raw,
+    agentRaw,
     '',
-    nowWork,
+    ledgerRaw,
     '',
-    'これから毎朝 06:00 JST になったら、同じURLを開き直して全文に従え。',
+    '前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。',
+    '',
+    '例外: 私が「投稿した」と送ったら、全文が同じでも投稿チェックだけやれ。動画は作るな。',
+    '',
+    '動画を作ってよいのは、台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ。1日1本。前日の投稿チェックが無ければ作るな。',
     '',
     '投稿するな。予約するな。いいね・フォロー・DMするな。URLを動画の本文・説明・コメントに書くな。',
     'CTAは「詳しくはプロフィールのリンク（PR）」1回だけ。説明の末尾に #PR。',
-    'できたら「投稿してよい / 失敗」だけ返せ。',
     ''
+  ].join('\n');
+}
+
+function postedPaste() {
+  return [
+    '投稿した。',
+    'id: （レシピid）',
+    '公開URL: （YouTubeの動画URL。アフィURLは送るな）',
+    '',
+    '投稿チェックして。数字は発明するな。分からない項目は「不明」。',
+    'チェックが終わるまで、次の動画は作るな。'
   ].join('\n');
 }
 
@@ -453,26 +605,44 @@ function writePhonePaste(catalog) {
   return [
     '# スマホから一度貼って送る文',
     '',
-    '各 Grok Bot を開く → 下の枠をコピー → 送信。9体それぞれに1回。これで終わり。',
-    '以降は GitHub の所定ファイルだけ読む。チャットに md 全文を貼り直すな。投稿するな。',
+    '各 Grok Bot を開く → 下の枠をコピー → 送信。9体それぞれに1回。',
+    '以降は GitHub の所定ファイルだけ読む。全文が同じならスルー。量産するな。投稿するな。',
+    '',
+    '## 投稿したら（どのボットにも同じ文）',
+    '',
+    '該当ボットにこれを送る。動画は作らせない。',
+    '',
+    '```',
+    postedPaste(),
+    '```',
     '',
     ...blocks
   ].join('\n');
 }
 
 function writeAgents(catalog, kataCatalog, prod) {
+  const ledger = loadLedger();
   fs.mkdirSync(AGENT_DIR, { recursive: true });
   fs.mkdirSync(WAKE_DIR, { recursive: true });
+  fs.mkdirSync(LEDGER_DIR, { recursive: true });
   const written = [];
   for (const genre of catalog.genres) {
-    const body = renderAgent(catalog, genre, kataCatalog, prod);
+    const entry = genreLedger(ledger, genre);
+    const body = renderAgent(catalog, genre, kataCatalog, prod, ledger);
     const ascii = path.join(AGENT_DIR, `${genre.id}.md`);
     const named = path.join(AGENT_DIR, `${genre.bot_name}.md`);
     fs.writeFileSync(ascii, body, 'utf-8');
     fs.writeFileSync(named, body, 'utf-8');
     const wake = path.join(WAKE_DIR, `${genre.id}.txt`);
     fs.writeFileSync(wake, wakeText(genre), 'utf-8');
-    written.push(path.relative(ROOT, ascii), path.relative(ROOT, named), path.relative(ROOT, wake));
+    const ledgerMd = path.join(LEDGER_DIR, `${genre.id}.md`);
+    fs.writeFileSync(ledgerMd, renderLedgerMd(genre, entry, ledger), 'utf-8');
+    written.push(
+      path.relative(ROOT, ascii),
+      path.relative(ROOT, named),
+      path.relative(ROOT, wake),
+      path.relative(ROOT, ledgerMd)
+    );
   }
 
   const fetchLines = [
@@ -481,15 +651,17 @@ function writeAgents(catalog, kataCatalog, prod) {
     `リポジトリ: ${GITHUB_REPO}`,
     `参照ブランチ: \`${GITHUB_REF}\`（マージ後は作業ブランチに合わせる。環境変数 GROK_BOT_REF）`,
     '',
-    'スマホから一度貼る文は [PHONE.md](PHONE.md)。各 Grok Bot に対応する枠をコピーして送信。以降は毎朝その raw URL を開く。チャットに md 全文を貼り直さなくてよい。',
+    'スマホから一度貼る文は [PHONE.md](PHONE.md)。投稿後は [POSTED.md](POSTED.md)。',
+    '全文が前回と同じならスルー。投稿したらチェック。前日の投稿チェックが無ければ動画を作るな。量産するな。',
     '',
-    '各 `agents/<id>.md` に契約・編集仕様（テロップ位置・ナレーション・テンポ）・型・レシピ・テロップ表が入っている。追加ファイルは不要。',
+    '毎朝開くのは `agents/<id>.md` と `ledger/<id>.md` の2つ。',
     '',
-    '| ボット | 所定ファイル | 一度だけ貼る | raw（毎朝開く） |',
-    '|---|---|---|---|',
+    '| ボット | 指示 | 台帳 | raw（指示） | raw（台帳） |',
+    '|---|---|---|---|---|',
     ...catalog.genres.map((g) => {
-      const rel = agentRepoPath(g);
-      return `| ${g.bot_name} | \`${rel}\` | docs/grok-bots/wake/${g.id}.txt | ${githubRaw(rel)} |`;
+      const agent = agentRepoPath(g);
+      const ledgerRel = ledgerRepoPath(g);
+      return `| ${g.bot_name} | \`${agent}\` | \`${ledgerRel}\` | ${githubRaw(agent)} | ${githubRaw(ledgerRel)} |`;
     }),
     '',
     '投稿しない。PC接続は不要。',
@@ -503,19 +675,37 @@ function writeAgents(catalog, kataCatalog, prod) {
   fs.writeFileSync(phonePath, writePhonePaste(catalog), 'utf-8');
   written.push(path.relative(ROOT, phonePath));
 
+  const postedPath = path.join(ROOT, 'docs', 'grok-bots', 'POSTED.md');
+  fs.writeFileSync(
+    postedPath,
+    [
+      '# 投稿したらこれを貼る',
+      '',
+      '該当する Grok Bot に送る。動画は作らせない。',
+      '',
+      '```',
+      postedPaste(),
+      '```',
+      ''
+    ].join('\n'),
+    'utf-8'
+  );
+  written.push(path.relative(ROOT, postedPath));
+
   const roster = [
     '# Grok Bot に今作るエージェント',
     '',
-    '9体。毎朝読むファイルは ASCII 名（`agents/pet.md` など）。日本語名のファイルは同じ中身のコピー。',
-    'スマホから一度貼る文は [PHONE.md](PHONE.md)。以降は GitHub raw。詳細は [FETCH.md](FETCH.md)。',
-    '投稿しない。',
+    '9体。毎朝読むファイルは `agents/<id>.md` と `ledger/<id>.md`。',
+    'スマホから一度貼る文は [PHONE.md](PHONE.md)。投稿後は [POSTED.md](POSTED.md)。',
+    '全文同じならスルー。チェック前に次を作るな。量産するな。投稿しない。',
     '',
     '| 作る名前 | 毎朝読む | 今の型 | 今生成してよいもの |',
     '|---|---|---|---|',
     ...catalog.genres.map((g) => {
-      const n = activePackets(g).length;
+      const entry = genreLedger(ledger, g);
       const nowKata = ((kataCatalog.genre_defaults || {})[g.genre] || {}).now || [];
-      return `| ${g.bot_name} | docs/grok-bots/agents/${g.id}.md | ${nowKata.join(', ')} | ${g.experiment_lock ? `実験レシピ ${n}本` : `準備レシピ ${n}本（投稿禁止）`} |`;
+      const allowed = canMakeVideo(entry) ? `条件つき1本（${entry.next_id}）` : '作るな';
+      return `| ${g.bot_name} | agents/${g.id}.md + ledger/${g.id}.md | ${nowKata.join(', ')} | ${allowed} |`;
     }),
     '',
     '作らない: 動画判定、投稿ボット、TikTok/IG専用、サクラ（Issue #54）、同人/アダアフィ。',
@@ -548,10 +738,12 @@ function selfTest() {
   const catalog = loadCatalog();
   const kataCatalog = loadKata();
   const prod = loadProduction();
+  const ledger = loadLedger();
   const links = loadConfig('links', {});
   const linkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   if (catalog.genres.length !== 9) throw new Error(`expected 9 genres, got ${catalog.genres.length}`);
   if (kataCatalog.katas.length !== 6) throw new Error(`expected 6 katas, got ${kataCatalog.katas.length}`);
+  if (Object.keys(ledger.genres).length !== 9) throw new Error('ledger must cover 9 genres');
 
   const seenLink = new Set();
   const seenId = new Set();
@@ -572,6 +764,7 @@ function selfTest() {
       const exp = activePackets(genre);
       if (exp.length !== 3) throw new Error(`pet experiment expected 3, got ${exp.length}`);
     }
+    genreLedger(ledger, genre);
   }
 
   const missingKata = [...seenId].filter((id) => !kataCatalog.packet_kata[id]);
@@ -590,13 +783,26 @@ function selfTest() {
     if (!body.includes('## 編集仕様')) throw new Error(`missing production in ${file}`);
     if (!body.includes('raw.githubusercontent.com')) throw new Error(`missing github raw in ${file}`);
     if (!body.includes('y_from_bottom') && !body.includes('下から')) throw new Error(`missing telop position in ${file}`);
+    if (!body.includes('変更なし。スルー')) throw new Error(`missing skip rule in ${file}`);
+    if (!body.includes('投稿チェック')) throw new Error(`missing post-check in ${file}`);
+    if (!body.includes('前日の投稿チェック')) throw new Error(`missing yesterday-check gate in ${file}`);
   }
+  const pet = fs.readFileSync(path.join(AGENT_DIR, 'pet.md'), 'utf-8');
+  if (!pet.includes('status: 今の1本')) throw new Error('pet should allow exactly one next recipe');
+  const sleep = fs.readFileSync(path.join(AGENT_DIR, 'sleep.md'), 'utf-8');
+  if (sleep.includes('status: 今の1本')) throw new Error('sleep must not mass-produce');
   const wakeSample = fs.readFileSync(path.join(WAKE_DIR, 'pet.txt'), 'utf-8');
-  if (!wakeSample.includes('今すぐ次のURL')) throw new Error('wake text missing phone paste cue');
+  if (!wakeSample.includes('変更なし。スルー')) throw new Error('wake text missing skip cue');
+  if (wakeSample.includes('今すぐその本文の「今使うレシピ」から未作成の先頭1本')) {
+    throw new Error('wake text still tells bots to mass-produce');
+  }
   const phone = fs.readFileSync(path.join(ROOT, 'docs', 'grok-bots', 'PHONE.md'), 'utf-8');
   if (!phone.includes('ジャンル_睡眠')) throw new Error('PHONE.md missing all bots');
+  if (!phone.includes('投稿した。')) throw new Error('PHONE.md missing posted paste');
+  const ledgerPet = fs.readFileSync(path.join(LEDGER_DIR, 'pet.md'), 'utf-8');
+  if (!ledgerPet.includes('next_id: pet_20260801_02')) throw new Error('pet ledger next_id missing');
   if (written.length < 20) throw new Error(`expected many agent files, got ${written.length}`);
-  console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas, github fetch`);
+  console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas, no mass-produce`);
 }
 
 function main() {

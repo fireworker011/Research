@@ -15,7 +15,7 @@ description: A8案件別動画チャンネルの作業手順。ベンチマー�
 - ベンチマーク分析の項目・手順 → §1
 - Grok Imagine / Cursor の制作プロンプト → §2
 - 日々の作業ルーティン（15分×4） → §3
-- Grok Bot に作る9体 → `affiliate-engine/docs/grok-bots/PHONE.md` をスマホから一度貼って送る。以降は GitHub の所定ファイルだけ読む。投稿はしない
+- Grok Bot に作る9体 → `affiliate-engine/docs/grok-bots/PHONE.md` をスマホから一度貼って送る。以降は GitHub の所定ファイルだけ読む。全文が同じならスルー。投稿後は `POSTED.md`。前日チェックが無ければ動画を作らせない。投稿はしない
 - 市場リサーチと動画の型 → `affiliate-engine/docs/grok-bots/MARKET_AND_KATA.md`。型 id を新造するな
 
 ## 先に固定する役割

@@ -114,6 +114,6 @@ A8 と YouTube スタジオだけ見る。
 ## 拡張用マニュアル（今は開かない）
 
 全案件×3媒体の設計、ベンチマークの落とし込み、Grok/Cursor の制作プロンプト、15分×4の日次ルーティンは `docs/video-channel-playbook.md`。  
-Grok Bot に作る9体は `docs/grok-bots/PHONE.md` をスマホから一度貼って送る。以降は GitHub raw だけ読む。投稿はしない。ペット実験中は after_experiment レシピを出すな。
+Grok Bot に作る9体は `docs/grok-bots/PHONE.md` をスマホから一度貼って送る。以降は GitHub raw だけ読む。全文が同じならスルー。投稿したら `docs/grok-bots/POSTED.md` でチェックさせる。前日の投稿チェックが無ければ動画を作らせない。量産するな。投稿はしない。ペット実験中は after_experiment レシピを出すな。
 
 ゲート（週15クリック）を超えるまで着手しない。開いても媒体は増やさない。実験中は次の3本以外の台本を創らない。

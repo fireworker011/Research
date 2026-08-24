@@ -6,26 +6,37 @@
 
 PC接続は不要。ファイルをチャットに貼らなくてよい。このチャットの過去ログより、今開いた本文が上。
 
-1. 次の raw URL をブラウザで開く
-2. 開いた全文に従う
-3. 今使うレシピを1本、編集仕様どおりに作る
-4. 投稿するな
+毎朝開く所定ファイルは2つ。
 
-所定ファイル:
+1. 指示・レシピ:
 
 `affiliate-engine/docs/grok-bots/agents/sidejob.md`
 
-raw（毎朝これを開け）:
-
 https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/sidejob.md
 
-GitHub表示:
+2. 台帳（投稿とチェック）:
 
-https://github.com/fireworker011/Research/blob/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/sidejob.md
+`affiliate-engine/docs/grok-bots/ledger/sidejob.md`
 
-毎朝の仕事＝今使うレシピから1本を編集仕様どおりに作る。投稿するな。チャンネル未開設でもパケットは作ってよい。公開は人間。
+https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/sidejob.md
 
-調べられないチャンネルを成功例にするな。動画・台本はコピーするな。
+チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+## 毎朝の順番（上から。途中で終われ）
+
+量産するな。1日1本が上限。2本目以降は今日やるな。
+
+0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな
+1. 所定の2ファイル（agents と ledger）を開け
+2. 前回開いた全文と一字一句同じ → 「変更なし。スルー」だけ返して終了。動画を作るな
+3. 台帳に未チェックの投稿がある、または直近投稿のチェックが無い（前日分を含む） → 投稿チェックだけやって終了。動画を作るな
+4. 未投稿の完成動画がある → 「未投稿あり。作らない」で終了
+5. 台帳の make が never、チャンネル未開設、next_id が空 → 「作るな」で終了
+6. 今は動画を作るな。 チェックした当日は次を作るな
+
+台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
 
 ## 契約（全部守れ）
 
@@ -41,6 +52,10 @@ https://github.com/fireworker011/Research/blob/cursor/video-channel-playbook-e01
 - TikTok / Instagram を足すな
 - ジャンルをまたぐな
 - 型 id を新造するな。6つの型から選べ
+- 全文が前回と同じならスルー。動画を足すな
+- 前日の投稿チェックが無ければ動画を作るな
+- 未投稿の完成動画があるなら次を作るな
+- 1日1本を超えるな
 
 ペルソナ: 数字に慎重で誠実な30代会社員男性。盛らない、断定しない、失敗談に寛容。
 担当リンクキー: 副業_ココナラ / 副業_A8 / 副業_mixhost / 副業_FX
@@ -76,15 +91,53 @@ https://github.com/fireworker011/Research/blob/cursor/video-channel-playbook-e01
 - 素材のつなぎ: Imagineは1クリップ5秒。必要本数=ceil(完成尺/5)。同じIMAGINE_THROWを繰り返し、順番に繋ぐ。足りなければ最後のクリップをループ。台本より映像を長くし、黒で埋めない
 - Imagine 1本は 5秒。必要本数は各レシピのテロップ表を見ろ
 
-## 作れ（この順）
+## 投稿チェック（投稿したと言われたらこれだけ）
 
-1. 下の「今使うレシピ」から1本選ぶ（未作成の先頭。id指定があればそれ）
+投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+公開URLを開け（アフィURLは見るな・書くな）。
+
+| 項目 | 書き方 |
+|---|---|
+| レシピid | 人間が言ったid |
+| 公開された | はい / いいえ / 不明 |
+| 末尾CTA（詳しくはプロフィールのリンク（PR）） | あり / なし / 不明 |
+| 説明にURL | ないこと。あったら失敗 |
+| 説明に#PR | あり / なし / 不明 |
+| 固定コメントのURL | ないこと。あったら失敗 |
+| 再生 | 人間が言った数字だけ。無ければ記録不足 |
+| A8クリック | 同上。推測するな |
+
+返し方（この形だけ）:
+
+```
+投稿チェック: 済み
+id: <id>
+公開: はい
+CTA: あり
+説明URL: ない
+#PR: あり
+固定URL: ない
+再生: 記録不足
+クリック: 記録不足
+失敗: なし
+次の動画: 作らない（チェック当日は作るな。台帳が更新されてから）
+```
+
+チェックが「済み」になるまで、次の動画は作るな。前日の投稿チェックが無ければ、今日の動画は作るな。
+
+## 動画を作る（条件を全部満たしたときだけ）
+
+条件を満たさないなら、この節は読むな。レシピを順に全部作るな。
+
+1. 台帳の next_id の1本だけ選ぶ
 2. レシピのテロップ表の秒に従え
 3. IMAGINE_THROW を、クリップ本数だけ Grok Imagine に投げる（各5秒・9:16・文字なし）
 4. クリップを編集仕様どおり繋ぎ、テロップを載せる
 5. ナレーションはテロップ／読み上げと同一
 6. `output` に保存。mp4 を Git にコミットするな
-7. 「投稿してよい / 失敗」だけ返す
+7. 「未投稿の完成1本あり / 失敗」だけ返す。投稿してよいとは言うな
 
 リポジトリがあるなら:
 
@@ -155,10 +208,11 @@ from: manager
 run: ready
 post: false
 
-これだけ読んで。他のファイルを開くな。IMAGINE_THROW を Grok Imagine にそのまま投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
 
 ## メタ
 - id: sidejob_coconala_01
+- status: 待つ。今は作るな
 - kata: miruten（見る点3つ（調べた））
 - genre: 副業
 - link_key: 副業_ココナラ
@@ -213,10 +267,11 @@ from: manager
 run: ready
 post: false
 
-これだけ読んで。他のファイルを開くな。IMAGINE_THROW を Grok Imagine にそのまま投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
 
 ## メタ
 - id: sidejob_a8_01
+- status: 待つ。今は作るな
 - kata: yamenai（扱わない宣言）
 - genre: 副業
 - link_key: 副業_A8
@@ -272,10 +327,11 @@ from: manager
 run: ready
 post: false
 
-これだけ読んで。他のファイルを開くな。IMAGINE_THROW を Grok Imagine にそのまま投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
 
 ## メタ
 - id: sidejob_mixhost_01
+- status: 待つ。今は作るな
 - kata: kiriwake（切り分け（AとBは別））
 - genre: 副業
 - link_key: 副業_mixhost
@@ -330,10 +386,11 @@ from: manager
 run: ready
 post: false
 
-これだけ読んで。他のファイルを開くな。IMAGINE_THROW を Grok Imagine にそのまま投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
 
 ## メタ
 - id: sidejob_fx_01
+- status: 待つ。今は作るな
 - kata: yamenai（扱わない宣言）
 - genre: 副業
 - link_key: 副業_FX
