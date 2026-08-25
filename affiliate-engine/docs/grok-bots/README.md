@@ -14,6 +14,7 @@
 **毎朝読む:** [FETCH.md](FETCH.md) の raw URL（`agents/` と `ledger/`）。全文同じならスルー。  
 投稿後: [POSTED.md](POSTED.md)  
 市場と型: [MARKET_AND_KATA.md](MARKET_AND_KATA.md) / `data/video_kata.json`  
+日次の事実inbox: [research/](research/)（ここでプレイブックは直さない。Cursorが後で読む）  
 編集仕様: `data/video_production.json`  
 台帳: `data/video_ledger.json`  
 生成コマンド: `cd affiliate-engine && node src/genre-video-gen.js --write-agents`
