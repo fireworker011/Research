@@ -202,5 +202,14 @@ def test_fixed_notebook_cell8_compiles():
     assert r"C:\Users\ys734\Desktop\minimaxh3" in blob
     assert "%%writefile h3_r2v_core.py" in blob
     assert "%%writefile pose_motion_lock.py" in blob
+    assert "%%writefile h3_motion_graphics.py" in blob
     assert "WanAnimateToVideo" in blob
     assert "STAGE = \"preview\"" in blob
+    assert "MiniMaxH3ImageToVideo" in blob
+    cell10 = next(
+        "".join(c.get("source") or [])
+        for c in nb["cells"]
+        if c["cell_type"] == "code" and "セル10：I2VA" in "".join(c.get("source") or [])
+    )
+    assert "px.a8.net" not in cell10
+    assert "a8mat=" not in cell10

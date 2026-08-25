@@ -1,0 +1,16 @@
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Live-action, cinematic photorealism, no anime and no illustration. <Picture 1> is the exact first frame. The woman is photorealistic young Japanese woman in her early 20s, long straight dark brown hair with soft bangs, gentle warm smile, fair translucent skin, natural makeup, wearing a white linen sleeveless camisole top with small buttons and matching long flowing drawstring skirt, barefoot, standing in a traditional Japanese tatami room with shoji doors and bonsai, soft natural sunlight, highly detailed realistic skin and fabric texture, pure photorealism. The camera holds a static shot then adds 2.5D parallax with small amplitude at slow speed: hair sways, sunlight on shoji shifts, she blinks once. Identity, clothes, eye color, and room stay locked.
+[Shot 2] At 00:01.000, the shot transitions with a soft diagonal wipe as motion-graphic type, not a subtitle, slides in: "好きは、仕事になる。" appears with outline registration then fill, followed by tracking on "未経験から、クリエイターへ。". A tiny "広告" mark sits in a corner. The previous wipe triggers the type.
+[Shot 3] At 00:02.000, the camera cuts to a close-up of her right hand. Fingers move as if drawing; cyan trim-path lines extend from the fingertip and write "未経験" as "未経験" in the air above the tatami. The line motion is caused by the hand.
+[Shot 4] At 00:03.000, the shot pulls back with small amplitude at slow speed. Huge tracking type "未経験から、クリエイターへ。" floats in front of her. Her smile stays the same face from <Picture 1>, with a slightly more hopeful catchlight. Hair continues to sway.
+[Shot 5] At 00:04.500, the giant type triggers two clean pop-in cards of copy: "動画・デザイン・AIを実践で学ぶ" and "プロのスキルが、すぐ見つかる。". Text is a graphic object in 3D space, not burned-in captions.
+[Shot 6] At 00:05.500, three portal cards open in a row, each caused by the previous pop: "動画編集" / "ゼロから学べる"; "デザイン" / "想いをカタチに"; "AI活用" / "未来の武器になる". Icons look like real objects, not flat anime stickers.
+[Shot 7] At 00:06.500, each card expands as a portal window into a photoreal skill-work scene (editing timeline, design canvas, AI interface) while the woman remains the same person from <Picture 1> in the room behind the cards.
+[Shot 8] At 00:07.500, a badge scales up: "たった1分で無料登録" and "カンタン申込み！". No income claims. The portal motion triggers the badge.
+[Shot 9] At 00:08.500, the camera pulls out with medium amplitude at slow speed to the full advertisement layout. She looks toward the lens with the same gentle smile.
+[Shot 10] At 00:09.200, a red CTA button reading "無料で始める" scales up and stays locked until 10.00 seconds. Secondary type "ココナラでスキルを探す" sits under it. The "広告" mark remains. Do not drop the CTA. Do not change her face, hair, or clothes.
+
+overall_soundscape: Quiet tatami-room ambience, soft fabric rustle, a faint stylus tick when the trim-path line is drawn, light UI whooshes as cards open, a soft click when the CTA locks.
+
+non_diegetic_music: Sparse warm piano at a moderate tempo with a low pulse that rises slightly into the final button hold, then holds a single resolving chord.
