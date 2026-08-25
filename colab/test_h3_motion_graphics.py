@@ -7,11 +7,13 @@ from h3_motion_graphics import (
     CANVAS_8_9,
     CANVAS_8_9_NATIVE,
     COPY,
+    DEFAULT_FIRST_IMAGE,
     I2VA_HEADER,
     assert_i2va_graph,
     build_i2va_graph,
     build_i2va_prompt,
     prefer_fl2v_lora,
+    resolve_motion_prompt,
     validate_motion_ad_prompt,
 )
 
@@ -78,6 +80,23 @@ def test_fl2va_graph_wires_last_frame():
     )
     assert assert_i2va_graph(g, expect_last=True) == []
     assert g["101"]["inputs"]["image"] == "cta_end.jpg"
+
+
+def test_resolve_motion_prompt_keeps_prefilled():
+    filled = build_i2va_prompt()
+    assert resolve_motion_prompt(filled) == filled.strip()
+    assert resolve_motion_prompt("") == filled
+    fl = resolve_motion_prompt(filled, with_last_frame=True)
+    assert "Picture 2" in fl
+
+
+def test_dropin_prompt_txt_matches_builder():
+    p = Path(__file__).resolve().parents[1] / "minimaxh3" / "coconala_h3_i2va_prompt.txt"
+    assert p.read_text(encoding="utf-8").strip() == build_i2va_prompt().strip()
+
+
+def test_default_first_image_name():
+    assert DEFAULT_FIRST_IMAGE == "Image 1.jpg"
 
 
 def test_canvas_matches_x_post_8_9():

@@ -19,6 +19,7 @@ from h3_r2v_core import comfy_media_name, frames
 DURATION_S = 10.0
 CANVAS_8_9 = (1024, 1152)
 CANVAS_8_9_NATIVE = (1280, 1440)
+DEFAULT_FIRST_IMAGE = "Image 1.jpg"
 
 I2VA_HEADER = (
     "For the target video, at 0.00 seconds into the target video, "
@@ -92,6 +93,21 @@ overall_soundscape: Quiet tatami-room ambience, soft fabric rustle, a faint styl
 non_diegetic_music: Sparse warm piano at a moderate tempo with a low pulse that rises slightly into the final button hold, then holds a single resolving chord.
 """
     return header + "\n\n" + body.strip() + "\n"
+
+
+def resolve_motion_prompt(
+    prompt: str | None,
+    *,
+    duration_s: float = DURATION_S,
+    with_last_frame: bool = False,
+) -> str:
+    """Use the pre-filled cell prompt, or rebuild if empty / last-frame lock is missing."""
+    text = (prompt or "").strip()
+    if not text:
+        return build_i2va_prompt(duration_s=duration_s, with_last_frame=with_last_frame)
+    if with_last_frame and "Picture 2" not in text:
+        return build_i2va_prompt(duration_s=duration_s, with_last_frame=True)
+    return text
 
 
 def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> list[str]:
