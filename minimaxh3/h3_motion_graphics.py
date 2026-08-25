@@ -15,10 +15,13 @@ from typing import Any
 from h3_r2v_core import comfy_media_name, frames
 
 # X @ponzponz15/2091744536716611856: 1280x1440 (8:9), 9.87s, 30fps, one still → video.
-# Homage keeps 8:9. Default is VRAM-safer; native matches the posted file.
+# Homage keeps 8:9. 1024x1152 OOMs on A100 40GB I2VA 10s; default is 768x864.
 DURATION_S = 10.0
-CANVAS_8_9 = (1024, 1152)
+CANVAS_8_9 = (768, 864)
+CANVAS_8_9_HIGH = (1024, 1152)
 CANVAS_8_9_NATIVE = (1280, 1440)
+CANVAS_8_9_MIN = (512, 576)
+CANVAS_8_9_LADDER = (CANVAS_8_9_NATIVE, CANVAS_8_9_HIGH, CANVAS_8_9, CANVAS_8_9_MIN)
 DEFAULT_FIRST_IMAGE = "Image 1.jpg"
 
 I2VA_HEADER = (
@@ -108,6 +111,26 @@ def resolve_motion_prompt(
     if with_last_frame and "Picture 2" not in text:
         return build_i2va_prompt(duration_s=duration_s, with_last_frame=True)
     return text
+
+
+def i2va_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
+    """Smaller 8:9 canvases after OOM. Never drops first_frame or switches to R2V."""
+    w = max(32, int(width) // 32 * 32)
+    h = max(32, int(height) // 32 * 32)
+    plans = [{"width": w, "height": h, "label": f"{w}x{h}"}]
+    area = w * h
+    for cw, ch in CANVAS_8_9_LADDER:
+        if cw * ch < area:
+            plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}"})
+    out: list[dict[str, Any]] = []
+    seen: set[tuple[int, int]] = set()
+    for p in plans:
+        key = (p["width"], p["height"])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(p)
+    return out
 
 
 def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> list[str]:

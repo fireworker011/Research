@@ -5,6 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_motion_graphics import (
     CANVAS_8_9,
+    CANVAS_8_9_HIGH,
     CANVAS_8_9_NATIVE,
     COPY,
     DEFAULT_FIRST_IMAGE,
@@ -12,6 +13,7 @@ from h3_motion_graphics import (
     assert_i2va_graph,
     build_i2va_graph,
     build_i2va_prompt,
+    i2va_retry_plans,
     prefer_fl2v_lora,
     resolve_motion_prompt,
     validate_motion_ad_prompt,
@@ -100,10 +102,20 @@ def test_default_first_image_name():
 
 
 def test_canvas_matches_x_post_8_9():
-    for w, h in (CANVAS_8_9, CANVAS_8_9_NATIVE):
+    for w, h in (CANVAS_8_9, CANVAS_8_9_HIGH, CANVAS_8_9_NATIVE):
         assert w % 32 == 0 and h % 32 == 0
         assert abs(w / h - 8 / 9) < 0.01
+    assert CANVAS_8_9 == (768, 864)
     assert CANVAS_8_9_NATIVE == (1280, 1440)
+
+
+def test_i2va_retry_plans_shrink_8_9_never_go_up():
+    plans = i2va_retry_plans(width=1024, height=1152)
+    sizes = [(p["width"], p["height"]) for p in plans]
+    assert sizes[0] == (1024, 1152)
+    assert sizes == [(1024, 1152), (768, 864), (512, 576)]
+    small = i2va_retry_plans(width=768, height=864)
+    assert [(p["width"], p["height"]) for p in small] == [(768, 864), (512, 576)]
 
 
 def test_prefer_fl2v_lora(tmp_path):
