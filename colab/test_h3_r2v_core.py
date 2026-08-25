@@ -213,3 +213,6 @@ def test_fixed_notebook_cell8_compiles():
     )
     assert "px.a8.net" not in cell10
     assert "a8mat=" not in cell10
+    assert "WIDTH = 1024" in cell10
+    assert "HEIGHT = 1152" in cell10
+    assert "768" not in cell10.split("WIDTH", 1)[1][:80]

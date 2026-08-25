@@ -14,7 +14,11 @@ from typing import Any
 
 from h3_r2v_core import comfy_media_name, frames
 
+# X @ponzponz15/2091744536716611856: 1280x1440 (8:9), 9.87s, 30fps, one still → video.
+# Homage keeps 8:9. Default is VRAM-safer; native matches the posted file.
 DURATION_S = 10.0
+CANVAS_8_9 = (1024, 1152)
+CANVAS_8_9_NATIVE = (1280, 1440)
 
 I2VA_HEADER = (
     "For the target video, at 0.00 seconds into the target video, "

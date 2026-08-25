@@ -4,6 +4,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_motion_graphics import (
+    CANVAS_8_9,
+    CANVAS_8_9_NATIVE,
     COPY,
     I2VA_HEADER,
     assert_i2va_graph,
@@ -44,8 +46,8 @@ def test_i2va_graph_first_frame_only():
         unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
         lora_name="minimax_h3_fl2v_turbo_4step.safetensors",
         lora_strength=1.0,
-        width=768,
-        height=1344,
+        width=CANVAS_8_9[0],
+        height=CANVAS_8_9[1],
         duration_s=10,
         seed=1,
         steps=4,
@@ -65,8 +67,8 @@ def test_fl2va_graph_wires_last_frame():
         unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
         lora_name=None,
         lora_strength=1.0,
-        width=768,
-        height=1344,
+        width=CANVAS_8_9[0],
+        height=CANVAS_8_9[1],
         duration_s=10,
         seed=1,
         steps=16,
@@ -76,6 +78,13 @@ def test_fl2va_graph_wires_last_frame():
     )
     assert assert_i2va_graph(g, expect_last=True) == []
     assert g["101"]["inputs"]["image"] == "cta_end.jpg"
+
+
+def test_canvas_matches_x_post_8_9():
+    for w, h in (CANVAS_8_9, CANVAS_8_9_NATIVE):
+        assert w % 32 == 0 and h % 32 == 0
+        assert abs(w / h - 8 / 9) < 0.01
+    assert CANVAS_8_9_NATIVE == (1280, 1440)
 
 
 def test_prefer_fl2v_lora(tmp_path):
