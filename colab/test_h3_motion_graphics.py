@@ -25,6 +25,9 @@ def test_i2va_prompt_has_ten_shots_and_cta():
     assert p.startswith(I2VA_HEADER)
     assert validate_motion_ad_prompt(p) == []
     assert COPY["cta"] in p
+    assert COPY["brand"] in p
+    assert "hoodie" in p.lower()
+    assert "tatami" not in p.lower()
     assert "px.a8.net" not in p
 
 
@@ -98,7 +101,10 @@ def test_dropin_prompt_txt_matches_builder():
 
 
 def test_default_first_image_name():
-    assert DEFAULT_FIRST_IMAGE == "Image 1.jpg"
+    assert DEFAULT_FIRST_IMAGE == "coconala_creator_ref.jpg"
+    assert (
+        Path(__file__).resolve().parents[1] / "minimaxh3" / DEFAULT_FIRST_IMAGE
+    ).is_file()
 
 
 def test_canvas_matches_x_post_8_9():

@@ -215,9 +215,12 @@ def test_fixed_notebook_cell8_compiles():
     assert "a8mat=" not in cell10
     assert "WIDTH = 768" in cell10
     assert "HEIGHT = 864" in cell10
-    assert 'FIRST_IMAGE = "Image 1.jpg"' in cell10
+    assert 'FIRST_IMAGE = "coconala_creator_ref.jpg"' in cell10
     assert "PROMPT = r'''" in cell10
     assert "好きは、仕事になる。" in cell10
+    assert "ココナラ クリエイター" in cell10
+    assert "hoodie" in cell10
+    assert "tatami" not in cell10
     assert "resolve_motion_prompt" in cell10
     assert "i2va_retry_plans" in cell10
     compile(cell10, "cell10.py", "exec")

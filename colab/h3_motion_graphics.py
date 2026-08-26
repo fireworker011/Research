@@ -22,7 +22,7 @@ CANVAS_8_9_HIGH = (1024, 1152)
 CANVAS_8_9_NATIVE = (1280, 1440)
 CANVAS_8_9_MIN = (512, 576)
 CANVAS_8_9_LADDER = (CANVAS_8_9_NATIVE, CANVAS_8_9_HIGH, CANVAS_8_9, CANVAS_8_9_MIN)
-DEFAULT_FIRST_IMAGE = "Image 1.jpg"
+DEFAULT_FIRST_IMAGE = "coconala_creator_ref.jpg"
 
 I2VA_HEADER = (
     "For the target video, at 0.00 seconds into the target video, "
@@ -30,15 +30,16 @@ I2VA_HEADER = (
 )
 
 CHARACTER_LOCK = (
-    "photorealistic young Japanese woman in her early 20s, long straight dark brown hair "
-    "with soft bangs, gentle warm smile, fair translucent skin, natural makeup, wearing a "
-    "white linen sleeveless camisole top with small buttons and matching long flowing "
-    "drawstring skirt, barefoot, standing in a traditional Japanese tatami room with shoji "
-    "doors and bonsai, soft natural sunlight, highly detailed realistic skin and fabric texture, "
-    "pure photorealism"
+    "the exact same photorealistic young Japanese woman as <Picture 1>, early 20s, "
+    "long straight dark brown hair with soft bangs, gentle calm expression, fair skin, "
+    "natural makeup, wearing a dark navy zip-up hoodie over a white top, seated at a desk "
+    "with a laptop and a drawing tablet plus stylus, surrounded by glowing cyan holographic "
+    "UI panels and floating windows, clean futuristic creative workspace, no anime, "
+    "no illustration"
 )
 
 COPY = {
+    "brand": "ココナラ クリエイター",
     "main_a": "好きは、仕事になる。",
     "main_b": "未経験から、クリエイターへ。",
     "sub": "プロのスキルが、すぐ見つかる。",
@@ -49,9 +50,9 @@ COPY = {
     "card_design_sub": "想いをカタチに",
     "card_ai": "AI活用",
     "card_ai_sub": "未来の武器になる",
-    "timer": "たった1分で無料登録",
+    "timer": "たった1分でカンタン申込み！",
     "easy": "カンタン申込み！",
-    "cta": "無料で始める",
+    "cta": "無料体験をはじめる",
     "cta_sub": "ココナラでスキルを探す",
     "pr": "広告",
 }
@@ -80,18 +81,18 @@ def build_i2va_prompt(*, duration_s: float = DURATION_S, with_last_frame: bool =
     d = float(duration_s)
     header = fl2va_header(d) if with_last_frame else I2VA_HEADER
     c = COPY
-    body = f"""integrated_multimodal_description: [Shot 1] Live-action, cinematic photorealism, no anime and no illustration. <Picture 1> is the exact first frame. The woman is {CHARACTER_LOCK}. The camera holds a static shot then adds 2.5D parallax with small amplitude at slow speed: hair sways, sunlight on shoji shifts, she blinks once. Identity, clothes, eye color, and room stay locked.
-[Shot 2] At 00:01.000, the shot transitions with a soft diagonal wipe as motion-graphic type, not a subtitle, slides in: "{c['main_a']}" appears with outline registration then fill, followed by tracking on "{c['main_b']}". A tiny "{c['pr']}" mark sits in a corner. The previous wipe triggers the type.
-[Shot 3] At 00:02.000, the camera cuts to a close-up of her right hand. Fingers move as if drawing; cyan trim-path lines extend from the fingertip and write "{c['main_b'][:3]}" as "未経験" in the air above the tatami. The line motion is caused by the hand.
-[Shot 4] At 00:03.000, the shot pulls back with small amplitude at slow speed. Huge tracking type "{c['main_b']}" floats in front of her. Her smile stays the same face from <Picture 1>, with a slightly more hopeful catchlight. Hair continues to sway.
-[Shot 5] At 00:04.500, the giant type triggers two clean pop-in cards of copy: "{c['learn']}" and "{c['sub']}". Text is a graphic object in 3D space, not burned-in captions.
-[Shot 6] At 00:05.500, three portal cards open in a row, each caused by the previous pop: "{c['card_video']}" / "{c['card_video_sub']}"; "{c['card_design']}" / "{c['card_design_sub']}"; "{c['card_ai']}" / "{c['card_ai_sub']}". Icons look like real objects, not flat anime stickers.
-[Shot 7] At 00:06.500, each card expands as a portal window into a photoreal skill-work scene (editing timeline, design canvas, AI interface) while the woman remains the same person from <Picture 1> in the room behind the cards.
-[Shot 8] At 00:07.500, a badge scales up: "{c['timer']}" and "{c['easy']}". No income claims. The portal motion triggers the badge.
-[Shot 9] At 00:08.500, the camera pulls out with medium amplitude at slow speed to the full advertisement layout. She looks toward the lens with the same gentle smile.
-[Shot 10] At 00:09.200, a red CTA button reading "{c['cta']}" scales up and stays locked until {d:.2f} seconds. Secondary type "{c['cta_sub']}" sits under it. The "{c['pr']}" mark remains. Do not drop the CTA. Do not change her face, hair, or clothes.
+    body = f"""integrated_multimodal_description: [Shot 1] Live-action, cinematic photorealism, no anime and no illustration. <Picture 1> is the exact identity and costume lock. The woman is {CHARACTER_LOCK}. If <Picture 1> is a storyboard collage, the live video shows only her key visual (hoodie, desk, tablet, cyan UI), not the instruction-sheet labels or numbered panels. The camera holds then adds 2.5D parallax at slow speed: she blinks, gaze shifts slightly, hair sways, holographic panels drift. Identity, hoodie, eye color, and desk stay locked.
+[Shot 2] At 00:01.000, motion-graphic type, not a subtitle, slides in: brand "{c['brand']}" with outline registration then fill, then "{c['main_a']}". A tiny "{c['pr']}" mark sits in a corner. The previous parallax triggers the type.
+[Shot 3] At 00:02.000, close-up of her right hand and stylus on the tablet. Fingers draw; cyan trim-path lines extend from the pen tip and write "未経験" in the air. The line motion is caused by the hand.
+[Shot 4] At 00:03.000, the shot pulls back with small amplitude at slow speed. Huge tracking type "{c['main_b']}" floats in front of her. Same face as <Picture 1>, slightly more hopeful catchlight. Hair continues to sway.
+[Shot 5] At 00:04.500, the giant type triggers two clean pop-in cards: "{c['learn']}" and "{c['sub']}". Text is a graphic object in 3D space, not burned-in captions.
+[Shot 6] At 00:05.500, three portal cards open in a row, each caused by the previous pop: "{c['card_video']}" / "{c['card_video_sub']}"; "{c['card_design']}" / "{c['card_design_sub']}"; "{c['card_ai']}" / "{c['card_ai_sub']}". Icons look like real objects, not flat stickers.
+[Shot 7] At 00:06.500, each card expands as a portal into a photoreal skill-work scene (editing timeline, design canvas, AI interface) while the woman remains the same person from <Picture 1> at the desk behind the cards.
+[Shot 8] At 00:07.500, a badge scales up: "{c['timer']}". No income claims. The portal motion triggers the badge.
+[Shot 9] At 00:08.500, the camera pulls out with medium amplitude at slow speed to the full advertisement layout. She looks toward the lens with the same face from <Picture 1>.
+[Shot 10] At 00:09.200, a red CTA button reading "{c['cta']}" scales up and stays locked until {d:.2f} seconds. Secondary type "{c['cta_sub']}" sits under it. The "{c['pr']}" mark remains. Do not drop the CTA. Do not change her face, hair, hoodie, or desk.
 
-overall_soundscape: Quiet tatami-room ambience, soft fabric rustle, a faint stylus tick when the trim-path line is drawn, light UI whooshes as cards open, a soft click when the CTA locks.
+overall_soundscape: Quiet desk-room ambience, soft fabric rustle, a faint stylus tick when the trim-path line is drawn, light UI whooshes as cards open, a soft click when the CTA locks.
 
 non_diegetic_music: Sparse warm piano at a moderate tempo with a low pulse that rises slightly into the final button hold, then holds a single resolving chord.
 """
@@ -152,11 +153,13 @@ def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> 
     for i in range(1, 11):
         if f"[Shot {i}]" not in p:
             errs.append(f"missing [Shot {i}]")
-    for key in ("main_a", "main_b", "cta", "pr", "card_video", "cta_sub"):
+    for key in ("brand", "main_a", "main_b", "cta", "pr", "card_video", "cta_sub"):
         if COPY[key] not in p:
             errs.append(f"missing on-screen copy {key}")
     if "photoreal" not in low:
         errs.append("photoreal lock missing")
+    if "hoodie" not in low:
+        errs.append("hoodie identity lock missing")
     if "<Picture 1>" not in p:
         errs.append("Picture 1 tag missing")
     for bad in FORBIDDEN_IN_PROMPT:
