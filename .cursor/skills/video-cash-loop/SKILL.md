@@ -7,6 +7,7 @@ description: アフィ動画の判断基準。量産・エージェント増設�
 
 このリポジトリの動画案件で、エージェントや量産を提案する前に使う。
 定期実行の本体は `affiliate-engine/src/video-judge.js`。Claudeやinsight.jsで動画を改善するな。
+`video-pipeline.js` は Grokbot 指示書ファイルを書くだけ。投稿しない。14日実験中は emit しない。
 
 ## 先に疑うこと
 
@@ -63,6 +64,7 @@ Furbo 系は A8 公開情報で購入10%。本体はセール時で数千円、�
 6. コードを変えるのは、判定ロジックがゲートと食い違っているときだけ
 
 GitHub Actions `affiliate_engine_video_judge.yml` が毎日同じ判定を書く。Cursor側で定期実行するなら、この手順以外を足すな。両方回っても判定は上書きするだけ。
+`affiliate_engine_video_pipeline.yml` は指示書ファイルとレビューだけ。投稿ジョブではない。
 
 ## 人間が承認すること
 

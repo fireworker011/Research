@@ -15,7 +15,7 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 4. **AI生成テンプレは必ず検品を通す**: `compliance.js` の `validateTemplate()`（構造）→ `checkContent()`（法令/規約）。この順序・両方必須。モデルの賢さに品質を依存させない
 5. **やらないこと（倫理・凍結リスク）**: いいね/フォローの自動実行（公式API非対応）、人間を装う自動返信・DM、#PRなしのリンク投稿、体験談の捏造
 6. **トークン等の秘密情報はGitHub Secretsのみ**。ファイル・コミット・ログに書かない
-7. **動画改善は video-judge.js だけ**: 再生→クリック→成果のゲート判定。投稿しない。数字を発明しない。`insight.js` をYouTubeに使わない。ジャンル転換しない
+7. **動画改善は video-judge.js だけ**: 再生→クリック→成果のゲート判定。投稿しない。数字を発明しない。`insight.js` をYouTubeに使わない。ジャンル転換しない。`video-pipeline.js` は Grokbot 指示書ファイルと 48h レビューだけ。投稿・削除・Imagine API は呼ばない。基準値が null の間は削除判定しない
 
 ## 構成（すべてGitHub上で完結・ローカル依存なし）
 
@@ -25,6 +25,7 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 | `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。1日2ティック+冪等ガード。分析→ジャンル別リサーチ→テンプレ自動反映→エンゲージキット→Issue #13へ投稿 |
 | `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート（14時JST） |
 | `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ |
+| `.github/workflows/affiliate_engine_video_pipeline.yml` | Grokbot 指示書の期日到来分を最大1件ファイル化 + 48h レビュー。投稿しない |
 | `.github/workflows/refresh_threads_token.yml` | 週次トークン更新。`GH_SECRETS_PAT` があればSecrets自動書き戻し |
 | `affiliate-engine/config/accounts.json` | 9アカウント定義。`created` はランプアップ起点（1週目1本/日→2週目2本→3本） |
 | `affiliate-engine/config/budget.json` | **APIコスト制御**（リサーチは日替わりNジャンルのローテーション）。スマホから編集可 |
@@ -46,6 +47,7 @@ cd affiliate-engine
 node --check src/<変更ファイル>.js
 node src/strategy-engine.js --from-file data/seed_templates.json   # 破棄警告が出ないこと
 node src/threads-poster.js --dry-run                               # 実投稿なしで内容確認
+node src/video-pipeline.js --self-test                             # 動画指示書は投稿しないこと
 # スケジュールの決定論性: 2回生成してmd5が一致すること
 ```
 
