@@ -12,6 +12,7 @@
 | 作らない | 投稿ボット、判定ボット、TikTok/IG専用、サクラ（Issue #54） |
 
 **毎朝読む:** [FETCH.md](FETCH.md) の raw URL（`agents/` と `ledger/`）。全文同じならスルー。  
+**20:00 JST 司令部:** [HQ_100MAN.md](HQ_100MAN.md)（期限 ¥1,000,000。円は `data/conversions.csv` が先、次に `data/video_cash_log.csv`）。  
 投稿後: [POSTED.md](POSTED.md)  
 市場と型: [MARKET_AND_KATA.md](MARKET_AND_KATA.md) / `data/video_kata.json`  
 編集仕様: `data/video_production.json`  

@@ -5,7 +5,9 @@
 ## やってよい
 
 - 渡された起動キーの範囲だけ働く
-- 数字は `affiliate-engine/data/video_cash_log.csv` と `output/video/TODAY.md` にある分だけ使う
+- 数字はファイルにある分だけ使う。無いものは「ファイルに無い」
+- 期限の円・クリックは `docs/grok-bots/HQ_100MAN.md` と `data/conversions.csv`（20:00 JST は conversions.csv が先、次に `data/video_cash_log.csv`）
+- 動画判定の数字は `affiliate-engine/data/video_cash_log.csv` と `output/video/TODAY.md` にある分だけ。転記で埋めない
 - Imagine は文字なし・ロゴなし・9:16
 - 台本・説明文に URL を書かない。CTA は「詳しくはプロフィールのリンク（PR）」1回
 - 広告明示 `#PR`
