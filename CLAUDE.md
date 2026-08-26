@@ -3,6 +3,12 @@
 Threads 9アカウントのアフィリエイト完全自動運用システム。詳細は `affiliate-engine/README.md`。
 このファイルは**将来の保守セッション（モデル不問）が壊さず作業するための不変条件と手順**をまとめる。
 
+> **⚠️ 2026-08-26 Threads 自動更新は停止中（故障ではない・ユーザー指示による）**
+> 自動投稿・デイリー改善・日次レポート・婚活メトリクスの schedule を意図的に外した。
+> 「投稿されない」は正常。勝手に schedule を戻さないこと。運用ナレッジは Cursor / Grok Bot へ
+> 移管済みで、引き継ぎ内容と再開手順は `handover/HANDOVER.md` にある。
+> `refresh_threads_token.yml`（トークン延命）と `affiliate_engine_video_judge.yml`（動画判定）は継続稼働。
+
 ## 絶対に守る不変条件
 
 1. **ブランチ運用**: 開発は `claude/monthly-revenue-system-gvi02u`。デフォルトブランチは `claude/setup-colab-comfyui-Eb9Lh`。

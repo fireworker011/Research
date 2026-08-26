@@ -1,12 +1,8 @@
 name: Affiliate Engine デイリー自動改善（分析→リサーチ→反映→エンゲージ素材）
 
 on:
-  schedule:
-    # GitHub の schedule は混雑で1〜4時間遅延・稀にスキップされるため、
-    # 1日2ティック（05:37 / 08:07 JST）用意し、各ステップの冪等ガードで
-    # 「その日すでに生成済みなら何もしない」ようにして二重実行を防ぐ
-    - cron: '37 20 * * *'
-    - cron: '7 23 * * *'
+  # 2026-08-26 デイリー自動改善を停止（handover/HANDOVER.md 参照）。
+  # 再開時は schedule（'37 20 * * *' と '7 23 * * *' の2ティック）を戻してデフォルトブランチへ反映。
   workflow_dispatch:
 
 concurrency:
