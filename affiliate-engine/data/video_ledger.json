@@ -1,0 +1,96 @@
+{
+  "as_of": "2026-08-24",
+  "rule": "全文同じならスルー。投稿したらチェック。前日の投稿チェックがなければ動画を作るな。未投稿があるなら作るな。1日1本。",
+  "genres": {
+    "pet": {
+      "channel": "@pet_story_select",
+      "channel_open": true,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": "pet_20260801_02",
+      "make": "one_if_clear",
+      "note": "実験3本は1本ずつ。投稿→チェックが済むまで次を作るな"
+    },
+    "konkatsu": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "sidejob": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "beauty": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "bodymake": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "education": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "setsuyaku": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "tenshoku": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    },
+    "sleep": {
+      "channel": null,
+      "channel_open": false,
+      "unposted": [],
+      "last_post": null,
+      "last_check": null,
+      "next_id": null,
+      "make": "never",
+      "note": "チャンネル未開設。準備レシピを量産するな"
+    }
+  }
+}

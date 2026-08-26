@@ -3,3 +3,4 @@
 # GitHub Actions が参照するためコミットする（リポジトリは Private 前提）。
 node_modules/
 output/videos/
+output/video/packets/

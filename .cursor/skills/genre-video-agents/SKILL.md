@@ -1,0 +1,35 @@
+---
+name: genre-video-agents
+description: Grok Botに作るジャンル動画エージェント9体。「これだけ読んで」でそのジャンルの動画パケットを生成する。投稿はしない。
+---
+
+# ジャンル動画エージェント
+
+Grok Bot に今作るのは `affiliate-engine/docs/grok-bots/CREATE.md` の9体。
+各体の本文は `affiliate-engine/docs/grok-bots/agents/`。データ源は `affiliate-engine/data/genre_video_packets.json`。
+
+人間がスマホから `docs/grok-bots/PHONE.md` の文を一度貼って送る。以降は GitHub の所定ファイルだけ読む。全文が同じならスルー。投稿したら `POSTED.md` を送らせて投稿チェックする。前日の投稿チェックが無ければ動画を作るな。量産するな。他ジャンルを開かない。
+
+## 生成
+
+```bash
+cd affiliate-engine
+node src/genre-video-gen.js --self-test
+node src/genre-video-gen.js --genre ペット
+node src/genre-video-gen.js --genre ペット --id pet_20260801_02 --write
+```
+
+レシピ追加後は `node src/genre-video-gen.js --write-agents` でエージェントファイルを再生成する。
+型は `data/video_kata.json` の6つだけ。新造するな。
+
+## やってはいけない
+
+- 投稿する
+- リンクキーごとにボットを増やす
+- 実験中のペットで after_experiment レシピを出す
+- 数字を発明する
+- URL を説明文に書く
+- 全文が変わっていないのに動画を作る
+- 前日の投稿チェックが無いのに次の動画を作る
+- 未投稿があるのに次を作る
+- 1日に2本以上作る
