@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 5. 台帳の make が never、チャンネル未開設、next_id が空 → 「作るな」で終了
 6. 今は動画を作るな。 チェックした当日は次を作るな
 
-台帳メモ: チャンネル未開設。準備レシピを量産するな
+台帳メモ: 司令部指示。実チャンネルはみくこんかつ。未投稿1本と ZF_C-IubJes のチェックが先。準備レシピの量産禁止
 
 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
 
