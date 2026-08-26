@@ -6,6 +6,7 @@ description: アフィ動画の判断基準。量産・エージェント増設�
 # 動画キャッシュループ
 
 このリポジトリの動画案件で、エージェントや量産を提案する前に使う。
+運用ナレッジの正本は `handover/HANDOVER.md`（Grok Bot へ `.cursor/rules/grok-bot-handover.mdc` で常時適用）。
 定期実行の本体は `affiliate-engine/src/video-judge.js`。Claudeやinsight.jsで動画を改善するな。
 
 ## 先に疑うこと

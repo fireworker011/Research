@@ -1,12 +1,12 @@
 # Affiliate Engine 運用ガイド（保守セッション向け）
 
-Threads 9アカウントのアフィリエイト完全自動運用システム。詳細は `affiliate-engine/README.md`。
+Threads 9アカウントのアフィリエイト運用システム。詳細は `affiliate-engine/README.md`。
 このファイルは**将来の保守セッション（モデル不問）が壊さず作業するための不変条件と手順**をまとめる。
+事業・コンセプト・判定ゲートの正本は `handover/HANDOVER.md`。Grok Bot へは `.cursor/rules/grok-bot-handover.mdc`（alwaysApply）で毎セッション注入する。
 
 > **⚠️ 2026-08-26 Threads 自動更新は停止中（故障ではない・ユーザー指示による）**
 > 自動投稿・デイリー改善・日次レポート・婚活メトリクスの schedule を意図的に外した。
-> 「投稿されない」は正常。勝手に schedule を戻さないこと。運用ナレッジは Cursor / Grok Bot へ
-> 移管済みで、引き継ぎ内容と再開手順は `handover/HANDOVER.md` にある。
+> 「投稿されない」は正常。勝手に schedule を戻さないこと。再開手順は `handover/HANDOVER.md` §6。
 > `refresh_threads_token.yml`（トークン延命）と `affiliate_engine_video_judge.yml`（動画判定）は継続稼働。
 
 ## 絶対に守る不変条件
@@ -27,11 +27,11 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 
 | 場所 | 役割 |
 |---|---|
-| `.github/workflows/affiliate_engine_post.yml` | 投稿。毎時23分起動、期日到来分のみ投稿（ステートレス）。concurrencyで二重実行防止。投稿後に amplify.js（500ビュー超の投稿へ自動リンクリプライ・1アカ2回/日）も実行 |
-| `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。1日2ティック+冪等ガード。分析→ジャンル別リサーチ→テンプレ自動反映→エンゲージキット→Issue #13へ投稿 |
-| `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート（14時JST） |
-| `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ |
-| `.github/workflows/refresh_threads_token.yml` | 週次トークン更新。`GH_SECRETS_PAT` があればSecrets自動書き戻し |
+| `.github/workflows/affiliate_engine_post.yml` | Threads自動投稿 + Amplify。**停止中**（workflow_dispatch のみ。schedule 再開は人間承認） |
+| `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。**停止中**（同上） |
+| `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート。**停止中**（同上） |
+| `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ。**継続** |
+| `.github/workflows/refresh_threads_token.yml` | 週次トークン更新。`GH_SECRETS_PAT` があればSecrets自動書き戻し。**継続** |
 | `affiliate-engine/config/accounts.json` | 9アカウント定義。`created` はランプアップ起点（1週目1本/日→2週目2本→3本） |
 | `affiliate-engine/config/budget.json` | **APIコスト制御**（リサーチは日替わりNジャンルのローテーション）。スマホから編集可 |
 | `affiliate-engine/config/links.json` | アフィリンク。空キーのテンプレは投稿時に自動スキップ。`awareness_until`（accounts.json）まではリンク投稿自体を除外 |
@@ -40,7 +40,7 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 
 ## よくある保守タスク
 
-- **投稿されない**: ①GitHub cronは1〜4時間遅延が常態（毎時起動で吸収済み。数時間は待つ）②Actionsの実行ログ→`skipped_*` の理由を見る（duplicate/no_link/awareness は正常動作）③トークン失効なら Issue が立つ
+- **投稿されない**: 現在は schedule 停止が原因（故障ではない）。再開は人間承認が必要。停止前の切り分けは ①GitHub cronは1〜4時間遅延が常態 ②Actionsログの `skipped_*`（duplicate/no_link/awareness は正常）③トークン失効なら Issue が立つ
 - **コスト調整**: `config/budget.json` の数値を変えるだけ（翌朝反映）
 - **アカウント追加**: accounts.json に追記 + links.json にキー + seed にテンプレ（validateTemplate を通す）+ 4つのワークフローに Secrets env 追加 + engage.js の PERSONAS/SEARCH_KEYWORDS + insight.js の link_key リスト
 - **8/5リンク解禁**: links.json にURLを入れておけば自動で収益投稿に切り替わる。追加作業なし

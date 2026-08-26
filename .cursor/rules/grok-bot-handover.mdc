@@ -1,3 +1,26 @@
+---
+description: 婚活・ペット・美容の運用ナレッジ。Grok Bot / Cursor の全セッションで適用する。
+alwaysApply: true
+---
+
+# Grok Bot 環境への適用
+
+このルールは `handover/HANDOVER.md` を **Grok Bot / Cursor Cloud Agent の毎セッションに常時注入する**。正本は `handover/HANDOVER.md`。食い違う場合は HANDOVER.md を正とし、このルールを同じ内容に直す。
+
+## この環境での役割（先に適用）
+
+- このセッションは Grok Bot（Cursor Cloud Agent）である。
+- **運用判断**: 数値の読み取りと「次の改善を1つ」まで。実投稿・Threads schedule 再開・案件変更・新媒体・量産・ジャンル転換を自分で実行しない。
+- **人間がコード変更を指示したときだけ**: コードと実験記録を直す。`node --check` → `strategy-engine.js --from-file`（破棄警告なし）→ `threads-poster.js --dry-run`。日付決定論と重複ガードを壊さない。コミット前は `git pull --rebase`。
+- **ナレッジ**: 下記本文以外の数字・報酬・実績を発明しない。不明は「未確認」。アフィリンクとトークンを Git にコミットしない。
+- ソースや深掘りファイル（HANDOVER §9）は、人間が明示したとき、またはコード変更に必要なときにだけ開く。
+
+@handover/HANDOVER.md
+
+---
+
+# 正本（handover/HANDOVER.md と同期）
+
 # 引き継ぎ書 — 婚活・ペット・美容（Cursor / Grok Bot 用）
 
 最終更新: 2026-08-26（Claude セッションからのナレッジ移管。Grok Bot 環境へ alwaysApply 注入）
