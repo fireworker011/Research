@@ -15,6 +15,7 @@
 **20:00 JST 司令部:** [HQ_100MAN.md](HQ_100MAN.md)（期限 ¥1,000,000。円は `data/conversions.csv` が先、次に `data/video_cash_log.csv`）。  
 投稿後: [POSTED.md](POSTED.md)  
 市場と型: [MARKET_AND_KATA.md](MARKET_AND_KATA.md) / `data/video_kata.json`  
+日次の事実inbox: [research/](research/)（ここでプレイブックは直さない。Cursorが後で読む）  
 編集仕様: `data/video_production.json`  
 台帳: `data/video_ledger.json`  
 生成コマンド: `cd affiliate-engine && node src/genre-video-gen.js --write-agents`
