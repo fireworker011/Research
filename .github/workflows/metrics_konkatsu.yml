@@ -1,9 +1,8 @@
 name: Threads 婚活 メトリクス収集
 
 on:
-  schedule:
-    - cron: '0 5 * * *'    # 14:00 JST (毎日) - メトリクス収集
-    - cron: '0 1 * * 0'    # 10:00 JST (日曜) - 週次分析
+  # 2026-08-26 メトリクス収集を停止（handover/HANDOVER.md 参照）。
+  # 再開時は schedule（毎日 '0 5 * * *'・日曜 '0 1 * * 0'）を戻してデフォルトブランチへ反映。
   workflow_dispatch:
     inputs:
       weekly:

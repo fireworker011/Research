@@ -1,8 +1,8 @@
 name: Affiliate Engine 日次レポート
 
 on:
-  schedule:
-    - cron: '0 5 * * *'   # 14:00 JST
+  # 2026-08-26 日次レポートを停止（handover/HANDOVER.md 参照）。
+  # 再開時は schedule（'0 5 * * *' = 14:00 JST）を戻してデフォルトブランチへ反映。
   workflow_dispatch:
 
 jobs:
