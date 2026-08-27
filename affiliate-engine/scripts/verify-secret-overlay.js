@@ -8,11 +8,64 @@
  *   node scripts/verify-secret-overlay.js
  */
 
-const { loadLinks } = require('../src/util');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+const { loadLinks, redactAffiliateUrls, escapeCSV, readJSON } = require('../src/util');
 const seed = require('../data/seed_templates.json');
 
 function resolveLink(row, links) {
   return links[row.link_key] || links[row.genre] || '';
+}
+
+function jstSlotMinutesAgo(mins) {
+  const t = new Date(Date.now() - mins * 60000 + 9 * 3600 * 1000);
+  const date = t.toISOString().split('T')[0];
+  const hh = String(t.getUTCHours()).padStart(2, '0');
+  const mm = String(t.getUTCMinutes()).padStart(2, '0');
+  return { date, time: `${hh}:${mm}` };
+}
+
+function pickDueSlot(posted) {
+  for (const mins of [4, 8, 12, 17, 23, 31]) {
+    const slot = jstSlotMinutesAgo(mins);
+    if (!posted[`${slot.date}_${slot.time}_education`]) return slot;
+  }
+  throw new Error('no free dry-run slot');
+}
+
+function assertPosterDryRunRedacts(dummy) {
+  const t = seed.posting_templates.find((x) => x.id === 'education_20260828_eyes_01');
+  if (!t) throw new Error('missing education_20260828_eyes_01');
+  const posted = readJSON(path.join(__dirname, '..', 'output', 'state', 'posted.json'), { posted: {} }).posted || {};
+  const slot = pickDueSlot(posted);
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'poster-verify-'));
+  const csvPath = path.join(dir, 'sched.csv');
+  const header = 'date,time,account,platform,genre,content,emoji,engagement_prediction,cta_type,link_key';
+  const fields = [slot.date, slot.time, 'education', 'threads', '教育', t.content, t.emoji || '', 'medium', 'direct', '教育_アイズ'];
+  fs.writeFileSync(csvPath, `${header}\n${fields.map(escapeCSV).join(',')}\n`);
+  const result = spawnSync(process.execPath, ['src/threads-poster.js', '--dry-run'], {
+    cwd: path.join(__dirname, '..'),
+    encoding: 'utf-8',
+    timeout: 20000,
+    env: {
+      ...process.env,
+      AFFILIATE_LINKS_JSON: JSON.stringify({ 教育_アイズ: dummy }),
+      SCHEDULE_CSV: csvPath,
+      CATCHUP_HOURS: '6',
+      JITTER: '0'
+    }
+  });
+  const out = `${result.stdout || ''}${result.stderr || ''}`;
+  if (result.status !== 0) {
+    throw new Error(`poster dry-run exit ${result.status}: ${out.slice(0, 500)}`);
+  }
+  if (out.includes('example.invalid')) throw new Error('poster dry-run leaked URL');
+  if (!/投稿対象 [1-9]/.test(out)) {
+    throw new Error(`poster dry-run had no due posts: ${out.slice(0, 400)}`);
+  }
+  if (!out.includes('[link]')) throw new Error('poster dry-run did not redact');
 }
 
 function main() {
@@ -30,7 +83,6 @@ function main() {
   });
   if (dumped.includes('example.invalid')) throw new Error('verify leaked a URL');
 
-  const { redactAffiliateUrls } = require('../src/util');
   const redacted = redactAffiliateUrls(`see ${dummy} #PR`);
   if (redacted.includes('example.invalid')) throw new Error('redact leaked a URL');
   if (!redacted.includes('[link]')) throw new Error('redact did not replace URL');
@@ -52,8 +104,8 @@ function main() {
     if (!/#PR/i.test(text)) throw new Error(`${id} missing #PR`);
   }
 
-  const emptyEnv = { ...process.env };
-  delete emptyEnv.AFFILIATE_LINKS_JSON;
+  assertPosterDryRunRedacts(dummy);
+
   process.env.AFFILIATE_LINKS_JSON = '';
   const empty = loadLinks();
   for (const key of ['転職_neo', '教育_N高', '教育_アイズ', '転職_チケット']) {
