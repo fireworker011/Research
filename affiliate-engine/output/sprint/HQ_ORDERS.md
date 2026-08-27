@@ -2,7 +2,9 @@
 
 指令塔が採否する。Cursor は発出しない。
 **今夜貼る dump は1つ:** `docs/grok-bots/dump/G_hq_cw_n10.txt`
-次の仕事（CW dump を出したあと）: `docs/grok-bots/dump/G_hq_sns_next.txt`（第二新卒エージェントneo の掲載媒体だけ。結合するな）
+出したあと（結合するな）:
+1. `dump/G_hq_note_place.txt` — SKU1 下書きを note に置く。公開するな
+2. `dump/G_hq_sns_next.txt` — 第二新卒エージェントneo の掲載媒体だけ
 
 盤面の表: `output/sprint/BLOCKERS.md`
 

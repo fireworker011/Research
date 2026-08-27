@@ -7,9 +7,10 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。出していなければ盤面のみ。SNS確認は G_hq_sns_next（neo）",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。次は G_hq_note_place。公開するな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -21,6 +22,16 @@
     "day": "7/14",
     "log_last": "2026-08-22",
     "note": "円本線ではない。数字は invent していない"
+  },
+  "funnel": {
+    "named_next": "第二新卒エージェントneo",
+    "source": "https://support.a8.net/as/HintOfProgram/sns.php",
+    "keys": [
+      "転職_neo",
+      "教育_N高"
+    ],
+    "filled": 0,
+    "note": "掲載媒体未確認。貼っていない。カタログ円は足していない"
   },
   "commander": "Grok Bot 指令塔",
   "staff": "Cursor",
@@ -104,16 +115,18 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:21:18.292Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
     }
   ],
-  "funnel": {
-    "named_next": "第二新卒エージェントneo",
-    "source": "https://support.a8.net/as/HintOfProgram/sns.php",
-    "keys": [
-      "転職_neo",
-      "教育_N高"
-    ],
-    "filled": 0,
-    "note": "掲載媒体未確認。貼っていない。カタログ円は足していない"
+  "note_sku1": {
+    "path": "docs/grok-bots/note/SKU1_tejun.md",
+    "published": false,
+    "price_in_body": false
   }
 }

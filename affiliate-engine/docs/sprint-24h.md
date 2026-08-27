@@ -31,7 +31,7 @@
 | 5 | video-judge。CONTINUE_EXPERIMENT 7/14。記録不足（済） |
 | 6 | ブロッカー表 BLOCKERS.md と dump `G_hq_cw_n10` / `G_hq_sns_next`（済） |
 | 7 | 高単価導線: sns.php の申込型を FUNNEL_APPLY に固定。鍵 `転職_neo` / `教育_N高`。貼らない（済） |
-| 8 | エンゲージ下書きの生成可否をコード面だけ。送信しない |
+| 8 | SKU1 手順書下書きを note/SKU1_tejun.md に置く。公開しない（済） |
 | 9 | 重複ガードと日付決定論 |
 | 10 | conversions.csv。増えていなければ実測円 0 |
 | 11 | HQ_ORDERS を1手に圧縮。dump が古ければ差し替え |

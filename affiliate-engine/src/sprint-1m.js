@@ -219,7 +219,7 @@ function writeOutputs(snapshot) {
     hours_elapsed: snapshot.hours_elapsed
   });
   const keep = {};
-  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel']) {
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1']) {
     if (prev[key] !== undefined) keep[key] = prev[key];
   }
   const state = {
