@@ -34,7 +34,8 @@
 - post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない
 - 2026-08-28 08:16 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
-- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。
+- 同ページ売れてる案件の **キャリアチケット転職エージェント** は `s00000011866027`（会員登録3000円はカタログ）。アイズの前に開くな。転職アカが `未開設` なら新造するな。パーソル `s00000026823002` はドライバー特化なので開くな
+- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。
 
 ## 計測
 

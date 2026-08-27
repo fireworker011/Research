@@ -14,3 +14,5 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 「チャイルド・アイズの掲載媒体に Threads が無いので、教育 Threads のプロフィールにも副サイトにも置くな。教育YouTubeは始めるな。ペットと転職にアイズを置くな。指令塔が既存動画を指名するまで貼るな。」
 
 復唱して、人間への指示を1文で書け。数字は発明するな。URLはチャットに貼るな。
+
+次のファイル名だけ: `dump/G_hq_tenshoku_exist.txt`（転職 Threads の有無。結合するな。未開設なら新造するな）。

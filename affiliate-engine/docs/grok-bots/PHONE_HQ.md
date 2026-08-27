@@ -26,7 +26,14 @@
 | 教育が 開設済み のあと | `dump/G_hq_a8_site_edu.txt` | その教育 Threads を副サイト。転職アカにアイズを載せるな |
 | そのあと | `dump/G_hq_secret_eyes.txt` | Secret の `教育_アイズ` だけ。links.json は空。cron は戻すな |
 | そのあと | `dump/G_hq_threads_profile_eyes.txt` | 教育 Threads のプロフィールリンク欄だけ。本文は貼るな |
-| アイズが YouTubeあり のあと | `dump/G_hq_yt_only_eyes.txt` | 教育 Threads に置くな。教育YouTubeは始めるな |
+| アイズが YouTubeあり のあと | `dump/G_hq_yt_only_eyes.txt` | 教育 Threads に置くな。教育YouTubeは始めるな。次は転職アカの有無 |
+| アイズが 項目なし / 媒体なし / YouTubeあり のあと | `dump/G_hq_tenshoku_exist.txt` | 転職 Threads は 開設済み / 未開設。未開設なら新造するな。neo が Threadsあり なら使うな |
+| 開設済みのあと | `dump/G_hq_sns_ticket.txt` | キャリアチケット `s00000011866027` だけ開け。UZUZ は開くな。パーソル（ドライバー）は開くな |
+| チケットが 未提携 のあと | `dump/G_hq_a8_partner_ticket.txt` | チケットだけ提携申請。承認後は sns_ticket を再貼り |
+| チケットが Threadsあり のあと | `dump/G_hq_a8_site.txt` | 開設済み転職 Threads を副サイト。教育アカにチケットを載せるな |
+| そのあと | `dump/G_hq_secret_ticket.txt` | Secret の `転職_チケット` だけ。links.json は空。cron は戻すな |
+| そのあと | `dump/G_hq_threads_profile_ticket.txt` | 転職 Threads のプロフィールリンク欄だけ。本文は貼るな |
+| チケットが YouTubeあり のあと | `dump/G_hq_yt_only_ticket.txt` | プロフィールに置くな。転職YouTubeは始めるな |
 | そのあと | `dump/G_hq_banner_10.txt` | 秋バナーは製作済。出品するな |
 | そのあと | `dump/G_hq_a8_csv.txt` | A8 で見た数字だけ conversions に1行。開いていないなら足すな |
 | 自動投稿を出す前 | `dump/G_hq_merge_overlay.txt` | PR 77 と 78 をマージ。schedule は戻すな。プロフィールは待たない |

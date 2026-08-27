@@ -31,6 +31,8 @@ sns.php の「提携する」href は未ログインでも `detail-not-partnered
 | 第二新卒向け転職エージェント【UZUZ第二新卒】 | `s00000014490001` | neo の代わりにしない |
 | ネット×リアルで高卒資格＋進路実現！KADOKAWA・ドワンゴが贈る通信制高校【N高等学校】 | `s00000027548001` | 教育。neo の掲載媒体の前に開くな。そのあとの次はアイズ |
 | 考える力を育む！1.5歳からの知能育成・受験対策教室【チャイルド・アイズ】 | `s00000027572003` | 教育。N高の掲載媒体の前に開くな |
+| 成長企業特化型転職【キャリアチケット転職エージェント】 | `s00000011866027` | 転職。アイズの掲載媒体の前に開くな。未開設の転職アカへは置くな |
+| パーソル発！ドライバー特化型転職支援【パーソルイノベーション転職エージェント】 | `s00000026823002` | ドライバー特化。けいの転職準備の代わりにしない |
 
 ## 同じページにあるが、今夜の代入に使わない
 
@@ -79,7 +81,13 @@ dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` �
 
 N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。
 
-アイズ dump: `G_hq_sns_eyes.txt` → `未提携` なら `G_hq_a8_partner_eyes.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_eyes.txt` → `G_hq_threads_profile_eyes.txt`。アイズ `YouTubeあり` なら `G_hq_yt_only_eyes.txt`。
+アイズ dump: `G_hq_sns_eyes.txt` → `未提携` なら `G_hq_a8_partner_eyes.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_eyes.txt` → `G_hq_threads_profile_eyes.txt`。アイズ `YouTubeあり` なら `G_hq_yt_only_eyes.txt` のあと `G_hq_tenshoku_exist.txt`。`項目なし` / `媒体なし` なら `G_hq_tenshoku_exist.txt`。`未開設` なら新造するな。
+
+チケット dump: `G_hq_tenshoku_exist.txt` が `開設済み` のあと `G_hq_sns_ticket.txt`（`s00000011866027`）。`未提携` なら `G_hq_a8_partner_ticket.txt`。`Threadsあり` なら `G_hq_a8_site.txt` → `G_hq_secret_ticket.txt` → `G_hq_threads_profile_ticket.txt`。`YouTubeあり` なら `G_hq_yt_only_ticket.txt`。パーソル `s00000026823002` は開くな。
+
+## ファイルに有るもの（置き場を間違えるな）
+
+- 副業 Threads は 2026-08-28 公開プロフィールが実在（表示名「ゆう｜盛らない副業メモ」）。neo / N高 / アイズ / チケットをこのアカに置くな。プロフィールの値は書かない
 
 ## ファイルに無いもの
 

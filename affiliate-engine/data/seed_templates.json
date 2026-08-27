@@ -2977,6 +2977,15 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "教育_アイズ"
+    },
+    {
+      "id": "career_20260828_ticket_01",
+      "genre": "転職",
+      "content": "20〜30代向けの転職エージェントをいくつか調べると、「成長企業」と書くところと「求人数」と書くところに分かれる印象があった。\n\n比較するときに見ていたのは3つ。\n・対象年齢が公開ページに書いてあるか\n・入口が登録か、面談か\n・無料の範囲がどこまでか\n\n調べたときのメモはこちら。\n{{AFFILIATE_LINK}}\n今の自分は、情報収集と応募のどちらが先だと思いますか？\n#PR",
+      "emoji": "🗂️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_チケット"
     }
   ]
 }

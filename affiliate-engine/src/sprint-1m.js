@@ -154,7 +154,7 @@ function buildSnapshot(opts = {}) {
   blockers.push({
     id: 'high_ticket_nko',
     owner: '指令塔→人間',
-    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。neo の前に N高を開くな。教育YouTubeは始めるな'
+    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なしなら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。アイズも同じなら転職アカの有無。未開設なら新造するな。開設済みなら キャリアチケット s00000011866027。教育YouTubeは始めるな'
   });
   if (filled > 0) {
     blockers.unshift({
@@ -336,6 +336,9 @@ function selfTest() {
   if (snap.hours_left !== 21) throw new Error('hours_left');
   if (snap.commander !== 'Grok Bot 指令塔') throw new Error('commander');
   if (snap.staff !== 'Cursor') throw new Error('staff');
+  const { spawnSync } = require('child_process');
+  const verify = spawnSync(process.execPath, [path.join(__dirname, '..', 'scripts', 'verify-secret-overlay.js')], { encoding: 'utf-8' });
+  if (verify.status !== 0) throw new Error(`verify-secret-overlay: ${verify.stderr || verify.stdout}`);
   if (lastLiveConversionDate(csv) !== '2026-08-27') throw new Error('lastLiveConversionDate');
   if (snap.csv_stale !== false) throw new Error('same-day csv should not be stale');
   const staleSnap = buildSnapshot({

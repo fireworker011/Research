@@ -39,13 +39,13 @@ neo 公開ID **`s00000018427001`**。UZUZ は開くな。
 | `YouTubeあり` | `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな。**次は N高** `G_hq_sns_nko.txt` |
 | `項目なし` / `媒体なし` | neo は貼るな。**止まれではない。** 次は N高 `G_hq_sns_nko.txt` |
 
-N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロフィールが実在。未開設なら新造するな。教育 YouTube は始めるな。N高を転職アカに置くな。N高も `項目なし` / `媒体なし` / `YouTubeあり` なら次は チャイルド・アイズ **`s00000027572003`**（`G_hq_sns_eyes.txt`）。6767はカタログ。足すな。
+N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロフィールが実在。未開設なら新造するな。教育 YouTube は始めるな。N高を転職アカに置くな。N高も `項目なし` / `媒体なし` / `YouTubeあり` なら次は チャイルド・アイズ **`s00000027572003`**（`G_hq_sns_eyes.txt`）。6767はカタログ。足すな。アイズも同じなら転職アカの有無（`G_hq_tenshoku_exist.txt`）。未開設なら新造するな。開設済みなら キャリアチケット **`s00000011866027`**。3000はカタログ。足すな。パーソルは開くな。
 
 未開設なら新造するな。転職 YouTube は始めるな。cron は戻すな。
 
 ## 仕組み（円ではない）
 
-- 重ね PR 77 MERGEABLE: https://github.com/fireworker011/Research/pull/77 （checkout `claude/monthly-revenue-system-gvi02u`。N高テンプレも重ねに足す）
+- 重ね PR 77 MERGEABLE: https://github.com/fireworker011/Research/pull/77 （checkout `claude/monthly-revenue-system-gvi02u`。N高・アイズ・チケットテンプレも重ねに足す）
 - YAML env PR 78 MERGEABLE: https://github.com/fireworker011/Research/pull/78
 - マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
 - conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる
