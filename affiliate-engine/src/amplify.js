@@ -21,7 +21,7 @@
 
 const path = require('path');
 const { checkContent } = require('./compliance');
-const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, todayJST } = require('./util');
+const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, redactAffiliateUrls, todayJST } = require('./util');
 const { sleep } = require('./claude-client');
 
 const THREADS_API = 'https://graph.threads.net/v1.0';
@@ -188,7 +188,7 @@ async function main() {
 
       if (isDryRun) {
         console.log(`📝 ${account.key}: views=${views} ${post.permalink || post.id}`);
-        console.log(replyText.split('\n').map((l) => `   │ ${l}`).join('\n'));
+        console.log(redactAffiliateUrls(replyText).split('\n').map((l) => `   │ ${l}`).join('\n'));
         remaining--;
         continue;
       }

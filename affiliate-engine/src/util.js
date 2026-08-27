@@ -105,6 +105,11 @@ function loadLinks() {
   return out;
 }
 
+/** ログ・ドライランにアフィURLを出さない */
+function redactAffiliateUrls(text) {
+  return String(text || '').replace(/https?:\/\/[^\s)>\]]+/gi, '[link]');
+}
+
 /** 値が入っているリンクキー数（URL は返さない） */
 function countFilledLinks(links) {
   if (!links || typeof links !== 'object') return 0;
@@ -141,6 +146,7 @@ module.exports = {
   loadLinks,
   countFilledLinks,
   filledLinkKeys,
+  redactAffiliateUrls,
   todayJST,
   scheduleEpoch
 };
