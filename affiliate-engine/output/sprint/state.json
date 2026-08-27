@@ -14,9 +14,10 @@
     11,
     12,
     13,
-    14
+    14,
+    15
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。13405803 期限 8/29。次は G_hq_note_place。公開するな。バナーは製作済・出品するな。YouTubeありのあとだけ G_hq_secret_neo。cron は戻すな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。13405803 期限 8/29。次は G_hq_note_place。公開するな。neo は s00000018427001。YouTubeありのあと Secret→プロフィール。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -37,7 +38,8 @@
       "教育_N高"
     ],
     "filled": 0,
-    "note": "sns.php 再読 2026-08-28。掲載媒体未確認。貼っていない。カタログ15000は足していない。YouTubeありのあとだけ SECRET.md"
+    "program_id": "s00000018427001",
+    "note": "sns.php 再々読 2026-08-28 07:51 JST。公開ID s00000018427001。UZUZ s00000014490001 は開くな。掲載媒体未確認。貼っていない。カタログ15000は足していない。YouTubeありのあと SECRET.md の次 PROFILE.md"
   },
   "note_sku1": {
     "path": "docs/grok-bots/note/SKU1_tejun.md",
@@ -197,6 +199,13 @@
     },
     {
       "at": "2026-08-27T22:49:56.963Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:55:50.979Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

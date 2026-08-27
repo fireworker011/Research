@@ -17,6 +17,8 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 他の鍵（`申込_auひかり` / `教育_N高` / `ペット_Furbo`）は、指令塔が別途「入れてよい」と出すまで足すな。
 
+次の仕事（結合するな）: `dump/G_hq_threads_profile.txt`。Secret だけではクリックできない。
+
 ## 貼る位置（指令塔が「貼ってよい」と出したあと）
 
 | 媒体 | 位置 | やるな |

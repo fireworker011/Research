@@ -9,14 +9,14 @@
 
 ## 次に確認する1件（auひかりではない）
 
-公開実測: `docs/grok-bots/FUNNEL_LIVE.md`（2026-08-28 再読。sns.php に neo / N高は載っている）。
+公開実測: `docs/grok-bots/FUNNEL_LIVE.md`（2026-08-28 07:51 JST 再々読。sns.php に neo / N高は載っている。neo の公開ID `s00000018427001`）。
 
-| 公開名 | ページ | 公開の成果地点（カタログ） | 既存アカ |
-|---|---|---|---|
-| 第二/既卒/フリーター/中退/高卒の就職・転職支援【第二新卒エージェントneo】 | sns.php「売れてる案件」 | 新規カウンセリング15000円（足すな） | 転職 |
-| N高等学校 | sns.php「注目案件」 | 新規資料請求15000円（足すな） | 教育 |
+| 公開名 | ページ | 公開プログラムID | 公開の成果地点（カタログ） | 既存アカ |
+|---|---|---|---|---|
+| 第二/既卒/フリーター/中退/高卒の就職・転職支援【第二新卒エージェントneo】 | sns.php「売れてる案件」 | `s00000018427001` | 新規カウンセリング15000円（足すな） | 転職 |
+| N高等学校 | sns.php「注目案件」 | `s00000027548001` | 新規資料請求15000円（足すな） | 教育 |
 
-sns.php は「前月 SNS 経由で成果が出た」と書いてある。プログラム詳細の掲載媒体（YouTube の有無）はログイン後。**確認前に貼るな。** 同じページの UZUZ第二新卒は neo の代わりにしない。
+sns.php は「前月 SNS 経由で成果が出た」と書いてある。プログラム詳細の掲載媒体（YouTube の有無）はログイン後。**確認前に貼るな。** 同じページの UZUZ第二新卒（`s00000014490001`）は neo の代わりにしない。
 
 人間の返し: `YouTubeあり` / `YouTubeなし` / `項目なし`。項目なし＝貼らない。
 
@@ -31,4 +31,4 @@ sns.php は「前月 SNS 経由で成果が出た」と書いてある。プロ�
 
 テンプレは seed に `転職_neo` / `教育_N高`。値は空。本文は「調べた／整理した」。体験の捏造なし。#PR 付き。
 
-空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `YouTubeあり` と返したあとに人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（なし／項目なしでは使わない）。
+空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `YouTubeあり` と返したあとに人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（なし／項目なしでは使わない）。Secret の次はプロフィールリンク欄: `docs/grok-bots/PROFILE.md` / `dump/G_hq_threads_profile.txt`。
