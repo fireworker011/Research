@@ -2976,6 +2976,15 @@
       "engagement_prediction": "medium",
       "cta_type": "direct",
       "link_key": "転職_neo"
+    },
+    {
+      "id": "education_20260828_nko_01",
+      "genre": "教育",
+      "content": "通信制高校を調べると、オンラインと通学を両方持つところがあるらしい。\n\n資料請求前に見ていた点は3つ。\n・授業の受け方\n・相談窓口の有無\n・費用の内訳が資料で分かるか\n\n選択肢の整理はここにまとめた。\n{{AFFILIATE_LINK}}\n進路の候補に、通信制は入っていますか？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_N高"
     }
   ]
 }
