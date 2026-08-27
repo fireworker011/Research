@@ -15,10 +15,11 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 
 ## 絶対に守る不変条件
 
-1. **ブランチ運用**: 開発は `claude/monthly-revenue-system-gvi02u`。デフォルトブランチは `claude/setup-colab-comfyui-Eb9Lh`。
-   - コード変更は作業ブランチに push した時点で本番反映される（全ワークフローが実行時に作業ブランチを checkout するため）
-   - **ワークフローYAMLの cron/トリガー変更だけはデフォルトブランチへのマージが必要**（GitHubの仕様）
-   - マージ後は必ず `git fetch origin <default> && git checkout -B <作業ブランチ> origin/<default> && git push --force-with-lease` で作業ブランチを再スタート
+1. **ブランチ運用**: 開発の意図は `claude/monthly-revenue-system-gvi02u`。デフォルトブランチは `claude/setup-colab-comfyui-Eb9Lh`。
+ - **post / insight / report / refresh_threads_token は実行時に `claude/monthly-revenue-system-gvi02u` を checkout する**。sprint へ push しただけでは本番ジョブの JS は変わらない（実測: `affiliate-engine/docs/grok-bots/CHECKOUT.md`）
+ - **video_judge / sprint_1m はデフォルトブランチを checkout する**
+ - **ワークフローYAMLの cron/トリガー変更だけはデフォルトブランチへのマージが必要**（GitHubの仕様）。`AFFILIATE_LINKS_JSON` の env 追加も、schedule 再開後はデフォルトの YAML が要る。schedule 自体は指令塔が出すまで戻すな
+ - Secret 重ね（`loadLinks()`）も checkout ブランチに無いと自動投稿は空キーのまま。プロフィールリンク欄は Actions を通らない
 2. **スケジュールCSVは日付決定論**: `strategy-engine.js` のテンプレ選択は日付から計算で決まる。
    生成ごとにリセットされる巡回カーソル等を導入してはならない（毎日再生成されるため「毎日同じ投稿」事故になる。2026-07-07〜09に実際に発生）
 3. **重複ガードを外さない**: `threads-poster.js` は直近7日の投稿内容ハッシュ（`output/state/posted.json` の `recent`）と照合し、一致は投稿しない

@@ -54,7 +54,7 @@ A8 の YouTube ガイドは「詳細欄にリンク + PR + 有料プロモーシ
 
 ## クリック可能な場所（確認後・指令塔が「置いてよい」と出したあと）
 
-Secret に URL を入れただけでは円は動かない。cron を戻さなくても、次だけ人間が置ける。
+Secret に URL を入れただけでは円は動かない。post / insight は `claude/monthly-revenue-system-gvi02u` を checkout し、2026-08-28 時点のそのブランチは Secret を読まない（`CHECKOUT.md`）。cron を戻さなくても、次だけ人間が置ける。
 
 | 場所 | 条件 | やるな |
 |---|---|---|

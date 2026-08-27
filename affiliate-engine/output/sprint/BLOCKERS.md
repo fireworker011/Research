@@ -26,6 +26,7 @@
 - neo `s00000018427001` の提携済みかは **ファイルに無い**。sns.php の「提携する」は未ログインでも detail-not-partnered。ログイン後の返しは `未提携` / YouTube 3語。未提携なら dump `G_hq_a8_partner.txt`。承認前に貼るな
 - Secret の前に、開設済み転職 Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`。未開設なら登録するな
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（プロフィールリンク欄だけ。cron は戻すな）
+- post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。`YouTubeあり` のあとだけ `SECRET.md` / `dump/G_hq_secret_neo.txt`。cron は戻すな。
 

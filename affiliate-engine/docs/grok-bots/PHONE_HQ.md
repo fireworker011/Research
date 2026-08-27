@@ -9,7 +9,7 @@
 | そのあと | `dump/G_hq_sns_next.txt` | neo `s00000018427001` を開け。返しは 未提携 / YouTubeあり / YouTubeなし / 項目なし。UZUZ は開くな |
 | 未提携のあと | `dump/G_hq_a8_partner.txt` | neo だけ提携申請。UZUZ に申請するな。承認前に貼るな。承認後は sns_next を再貼り |
 | YouTubeありのあと | `dump/G_hq_a8_site.txt` | 開設済み転職 Threads を副サイト登録。未開設なら登録するな。転職YouTubeは始めるな |
-| そのあと | `dump/G_hq_secret_neo.txt` | 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ。links.json は空。cron は戻すな |
+| そのあと | `dump/G_hq_secret_neo.txt` | 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ。links.json は空。cron は戻すな。自動投稿は checkout ブランチに重ねが無いと空のまま（`CHECKOUT.md`）。プロフィールは待たない |
 | そのあと | `dump/G_hq_threads_profile.txt` | 開設済み転職 Threads のプロフィールリンク欄だけ。本文は貼るな。cron は戻すな |
 | そのあと | `dump/G_hq_banner_10.txt` | 秋バナーは製作済。出品するな |
 | そのあと | `dump/G_hq_a8_csv.txt` | A8 で見た数字だけ conversions に1行。開いていないなら足すな |

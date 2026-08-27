@@ -21,6 +21,12 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 次の仕事（結合するな）: `dump/G_hq_threads_profile.txt`。Secret だけではクリックできない。
 
+## 本番ジョブは sprint を読まない
+
+post / insight / report は `claude/monthly-revenue-system-gvi02u` を checkout する。実測: `docs/grok-bots/CHECKOUT.md`。
+
+Secret を入れても、そのブランチに `loadLinks()` が無いあいだは自動投稿は空キーのまま。今夜のクリック場所はプロフィールリンク欄（手動）。自動投稿の再開は指令塔が出すまでしない。
+
 ## 貼る位置（指令塔が「貼ってよい」と出したあと）
 
 | 媒体 | 位置 | やるな |
