@@ -1,5 +1,19 @@
 {
-  "commander": "ナオミチ",
+  "completed_hours": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "next_hour_task": "video-judge。記録不足なら指令塔が人間へ CSV 追記を出せと HQ_ORDERS に書く。台本は創らない",
+  "last_dry_run": {
+    "at": "2026-08-27T22:06:00Z",
+    "due": 9,
+    "note": "ドライラン9件。価値提供投稿。リンク必須テンプレは未設定のため対象外。実投稿していない"
+  },
+  "commander": "Grok Bot 指令塔",
+  "staff": "Cursor",
   "today": "2026-08-28",
   "deadline": "2026-09-30",
   "target_yen": 1000000,
@@ -19,26 +33,31 @@
   "hours_left": 24,
   "blockers": [
     {
-      "id": "no_affiliate_links",
-      "owner": "ナオミチ",
-      "action": "貼ってよい案件だけ GitHub Secret AFFILIATE_LINKS_JSON に JSON で入れる。URLはチャットにも Git にも貼らない"
+      "id": "hq_do_not_paste",
+      "owner": "指令塔→人間",
+      "action": "auひかりは SNS 掲載項目なし。貼るな。Secret に URL を入れるな"
+    },
+    {
+      "id": "run_cw_note_banner",
+      "owner": "指令塔→人間",
+      "action": "KEEP_CUT の run だけ: CW応募 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない"
     },
     {
       "id": "a8_csv",
-      "owner": "ナオミチ",
+      "owner": "指令塔→人間",
       "action": "A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない"
     },
     {
       "id": "video_csv",
-      "owner": "ナオミチ",
+      "owner": "指令塔→人間",
       "action": "ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま"
     }
   ],
   "notes": [
     "確定円だけが売上。再生・カタログ単価・EPC は売上ではない",
-    "Threads 自動投稿の cron はリンク Secret が入るまで戻さない",
-    "いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない",
-    "指令はナオミチ。Grok Bot は数値の読み取りと改善1つまで"
+    "司令塔は Grok Bot。Cursor は参謀。指示を出すのも動くのも BOT",
+    "Threads 自動投稿の cron は指令塔が再開を出すまで戻さない",
+    "いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない"
   ],
   "ticks": [
     {
@@ -47,13 +66,13 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:11:37.192Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
     }
-  ],
-  "completed_hours": [0, 1, 2, 3],
-  "next_hour_task": "HUMAN.md を1枚に保ち、A8 SNS可否が未確認なら貼るなと繰り返す",
-  "last_dry_run": {
-    "at": "2026-08-27T22:06:00Z",
-    "due": 9,
-    "note": "ドライラン9件。価値提供投稿。リンク必須テンプレは未設定のため対象外。実投稿していない"
-  }
+  ]
 }

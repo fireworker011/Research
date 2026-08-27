@@ -9,9 +9,9 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 > 移管済みで、引き継ぎ内容と再開手順は `handover/HANDOVER.md` にある。
 > `refresh_threads_token.yml`（トークン延命）と `affiliate_engine_video_judge.yml`（動画判定）は継続稼働。
 >
-> **2026-08-27 ナオミチ指令:** 期限 2026-09-30・目標 確定 ¥1,000,000。この Cursor エージェントが 24 時間毎時活動する。
-> 指令はナオミチ優先。Grok Bot は数値読み取りと改善1つまで。Threads の post cron は
-> GitHub Secret `AFFILIATE_LINKS_JSON` が入るまで戻さない。スコアボードは `node src/sprint-1m.js`。
+> **役割（2026-08-27 確定）:** 司令塔は Grok Bot。Cursor は参謀（企画・運用・指示書・仕組み）。
+> 指示を出すのも動くのも BOT。期限 2026-09-30・目標 確定 ¥1,000,000 は変えない。
+> Threads の post cron は指令塔が再開を出すまで戻さない。スコアボードは `node src/sprint-1m.js`。
 
 ## 絶対に守る不変条件
 

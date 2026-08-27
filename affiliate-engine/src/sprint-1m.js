@@ -84,31 +84,42 @@ function buildSnapshot(opts = {}) {
   const filled = countFilledLinks(links);
   const filledKeys = filledLinkKeys(links);
   const prev = opts.prevState || readJSON(STATE_PATH, {}) || {};
-  const startedAt = prev.sprint_started_at || opts.startedAt || new Date().toISOString();
+  const startedAt = opts.startedAt || prev.sprint_started_at || new Date().toISOString();
   const elapsed = hoursElapsed(startedAt, opts.nowMs);
   const hoursLeft = Math.max(0, SPRINT_HOURS - elapsed);
 
   const blockers = [];
-  if (filled === 0) {
-    blockers.push({
-      id: 'no_affiliate_links',
-      owner: 'ナオミチ',
-      action: '貼ってよい案件だけ GitHub Secret AFFILIATE_LINKS_JSON に JSON で入れる。URLはチャットにも Git にも貼らない'
-    });
-  }
+  blockers.push({
+    id: 'hq_do_not_paste',
+    owner: '指令塔→人間',
+    action: 'auひかりは SNS 掲載項目なし。貼るな。Secret に URL を入れるな'
+  });
+  blockers.push({
+    id: 'run_cw_note_banner',
+    owner: '指令塔→人間',
+    action: 'KEEP_CUT の run だけ: CW応募 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない'
+  });
   blockers.push({
     id: 'a8_csv',
-    owner: 'ナオミチ',
+    owner: '指令塔→人間',
     action: 'A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない'
   });
   blockers.push({
     id: 'video_csv',
-    owner: 'ナオミチ',
+    owner: '指令塔→人間',
     action: 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま'
   });
+  if (filled > 0) {
+    blockers.unshift({
+      id: 'links_present',
+      owner: '指令塔',
+      action: `値が入っている link_key が ${filled}。貼る可否は HQ_APPLY を見て指令塔が決める。Cursor は再開しない`
+    });
+  }
 
   return {
-    commander: 'ナオミチ',
+    commander: 'Grok Bot 指令塔',
+    staff: 'Cursor',
     today,
     deadline: DEADLINE,
     target_yen: TARGET_YEN,
@@ -129,9 +140,9 @@ function buildSnapshot(opts = {}) {
     blockers,
     notes: [
       '確定円だけが売上。再生・カタログ単価・EPC は売上ではない',
-      'Threads 自動投稿の cron はリンク Secret が入るまで戻さない',
-      'いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない',
-      '指令はナオミチ。Grok Bot は数値の読み取りと改善1つまで'
+      '司令塔は Grok Bot。Cursor は参謀。指示を出すのも動くのも BOT',
+      'Threads 自動投稿の cron は指令塔が再開を出すまで戻さない',
+      'いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない'
     ]
   };
 }
@@ -142,8 +153,9 @@ function renderTodayMd(s) {
   return `# 9/30 ¥100万 — 今日のスコアボード
 
 日付: ${s.today}（JST）
-指令: **${s.commander}**（Grok Bot ではなくこの人）
-24hスプリント: 経過 ${s.hours_elapsed} / ${s.sprint_hours} 時間（残り ${s.hours_left}）
+司令塔: **${s.commander}**
+参謀: **${s.staff}**（企画・運用・指示書・仕組み。指示は出さない）
+参謀ループ: 経過 ${s.hours_elapsed} / ${s.sprint_hours} 時間（残り ${s.hours_left}）
 
 ## 円
 
@@ -165,9 +177,9 @@ function renderTodayMd(s) {
 
 - 値が入っている link_key 数: ${s.filled_link_keys}
 - キー名: ${keyNames}
-- Threads cron: **${s.threads_cron}**（リンク Secret が入るまで再開しない）
+- Threads cron: **${s.threads_cron}**（再開は指令塔が出す。参謀は出さない）
 
-## ナオミチがやること（エージェントでは代替できない）
+## 司令部が人間へ出す手（参謀は代替しない）
 
 ${blockerLines}
 
@@ -182,16 +194,18 @@ ${blockerLines}
 }
 
 function renderHumanMd(s) {
-  return `# 今すぐ1手（ナオミチ・スマホ）
+  return `# 司令部が人間へ出す1手（参謀下書き）
 
-24hスプリント残り **${s.hours_left} 時間**。目標は ${s.deadline} までに確定 ¥${s.target_yen.toLocaleString()}。いまの実測円は ¥${s.measured_yen.toLocaleString()}。
+指令塔がこの文を採否する。Cursor は送らない。
 
-1. A8 で「SNSに貼ってよい」と管理画面に書いてある案件だけ選ぶ。書いていなければ貼らない。
-2. 貼ってよい URL を GitHub → Settings → Secrets → \`AFFILIATE_LINKS_JSON\` に JSON で入れる。例: \`{"申込_auひかり":"https://..."}\` 。チャットに貼らない。
-3. 同じ画面の数字を \`affiliate-engine/data/conversions.csv\` に1行。カタログの 30,000 は書かない。
-4. ペット実験を続けている日は \`video_cash_log.csv\` に1行。
+目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。参謀ループ残り ${s.hours_left} 時間。
 
-これ以外の指令は、このエージェントのスレッドに直接書いてください。Grok Bot 経由は不要です。
+1. auひかりは貼るな。SNS掲載の項目なし。Secret にも URL を入れるな。
+2. KEEP_CUT の run だけやれ: CW応募 / note下書き / 秋バナー製作。公開・出品はするな。
+3. A8 で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない。
+4. ペット実験の当日数字があれば video_cash_log.csv に1行。
+
+次の指示は指令塔が出す。参謀への要望も指令塔が出す。
 `;
 }
 
@@ -265,6 +279,8 @@ function selfTest() {
   if (snap.pace_yen_per_day !== Math.ceil(1_000_000 / 35)) throw new Error('pace');
   if (snap.hours_elapsed !== 3) throw new Error('hours_elapsed');
   if (snap.hours_left !== 21) throw new Error('hours_left');
+  if (snap.commander !== 'Grok Bot 指令塔') throw new Error('commander');
+  if (snap.staff !== 'Cursor') throw new Error('staff');
   console.log('self-test ok');
 }
 
