@@ -16,9 +16,10 @@
     13,
     14,
     15,
-    16
+    16,
+    17
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。13405803 期限 8/29。neo は s00000018427001。YouTubeありのあと 副サイト登録→Secret→プロフィール。未開設なら登録するな。cron は戻すな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。08:01 JST でも新規4に fireworker12 なし。13405803 期限 8/29。neo は s00000018427001。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -55,7 +56,7 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T07:44+09:00",
+    "reopen": "2026-08-28T08:01+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
