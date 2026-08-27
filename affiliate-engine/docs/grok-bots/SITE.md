@@ -1,6 +1,7 @@
 # A8 サイト登録（参謀・URL を Git に書くな）
 
-指令塔が `YouTubeあり` と返したあとの仕事。`YouTubeなし` / `項目なし` では使わない。
+指令塔が `YouTubeあり` と返し、`G_hq_threads_exist.txt` が **`開設済み`** のあとの仕事。
+`YouTubeなし` / `項目なし` / `未開設` では使わない。
 Secret の **前**。未登録のままリンクを発行するな。cron は戻さない。投稿しない。新媒体を今日開くな。
 
 A8 公式: SNS に掲載するには、主サイトまたは副サイトとして **事前に** その SNS アカウントの登録が必要。
@@ -20,7 +21,7 @@ A8 公式: SNS に掲載するには、主サイトまたは副サイトとし�
 
 ## ファイルに無いもの
 
-- 転職 Threads が開設済みか（`accounts.json` の tenshoku `handle` は未記入）
+- 転職 Threads が開設済みか。見る仕事は `EXIST.md` / dump `G_hq_threads_exist.txt`
 - 2026-08-28 公開 fetch: `threads.com/@kei_tenshoku_junbi` / `@shizuka_tenshoku` / `@kei_career_memo` はアプリ誘導のみ。存在の証明にも不存在の証明にも使えない
 - いま副サイトに何が登録されているか（ログイン後）
 

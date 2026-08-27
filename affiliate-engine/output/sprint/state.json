@@ -19,9 +19,10 @@
     16,
     17,
     18,
-    19
+    19,
+    20
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。08:16 JST でも新規4に fireworker12 なし。N=6。13405300 応募13。13405803 期限 8/29。neo は s00000018427001。重ね PR #77/#78 は draft。cron は戻すな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。YouTubeありのあと G_hq_threads_exist。未開設なら新造するな。N=6。neo s00000018427001。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -43,7 +44,7 @@
     ],
     "filled": 0,
     "program_id": "s00000018427001",
-    "note": "sns.php Hour19 再読 2026-08-28 08:16 JST。公開ID s00000018427001。提携済みかはファイルに無い。未提携なら PARTNER.md。YouTubeありのあと SITE → SECRET → PROFILE。重ね PR #77/#78 draft。tenshoku handle はファイルに無い"
+    "note": "sns.php Hour19 再読 2026-08-28 08:16 JST。公開ID s00000018427001。YouTubeありのあと EXIST → SITE。未開設なら新造するな。重ね PR #77/#78 draft。tenshoku handle はファイルに無い"
   },
   "note_sku1": {
     "path": "docs/grok-bots/note/SKU1_tejun.md",
@@ -231,6 +232,13 @@
     },
     {
       "at": "2026-08-27T23:17:42.982Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:21:34.053Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

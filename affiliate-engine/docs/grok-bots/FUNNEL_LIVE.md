@@ -18,7 +18,7 @@
 
 人間が返すのは次の1語だけ: `未提携` / `YouTubeあり` / `YouTubeなし` / `項目なし`。
 - `未提携` → dump `G_hq_a8_partner.txt`。承認前に貼るな
-- `YouTubeあり` → dump `G_hq_a8_site.txt`
+- `YouTubeあり` → dump `G_hq_threads_exist.txt`（開設済み / 未開設）
 - `YouTubeなし` / `項目なし` → 貼るな（auひかりと同じ）
 
 sns.php の「提携する」href は未ログインでも `detail-not-partnered`。**このメディアが未提携である証明ではない。** 提携済みかはログイン後だけ。
@@ -58,11 +58,11 @@ Secret に URL を入れただけでは円は動かない。post / insight は `
 
 | 場所 | 条件 | やるな |
 |---|---|---|
-| A8 副サイト | `YouTubeあり` のあと。開設済み転職 Threads だけ。公式「副サイトを登録する」 | 未開設の箱を新造。転職 YouTube。URL をチャットへ |
+| A8 副サイト | `YouTubeあり` かつ `開設済み` のあと。開設済み転職 Threads だけ。公式「副サイトを登録する」 | 未開設の箱を新造。転職 YouTube。URL をチャットへ |
 | 転職 Threads のプロフィールリンク欄 | Secret のあと。掲載媒体に Threads が書いてあるとき。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
 | 指令塔が指名した既存 YouTube の詳細欄 | `YouTubeあり` のあと。動画を指令塔が指名したとき | 転職ジャンルの新規チャンネル（`make: never`）。動画内URL。Shortsコメント |
 
-dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `YouTubeあり` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。結合するな。
+dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `YouTubeあり` なら `G_hq_threads_exist.txt` → `開設済み` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。`未開設` なら新造するな。結合するな。
 
 ## ファイルに無いもの
 

@@ -31,4 +31,4 @@ sns.php は「前月 SNS 経由で成果が出た」と書いてある。プロ�
 
 テンプレは seed に `転職_neo` / `教育_N高`。値は空。本文は「調べた／整理した」。体験の捏造なし。#PR 付き。
 
-空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `YouTubeあり` と返したあと、副サイト登録（`SITE.md` / `dump/G_hq_a8_site.txt`）を経て人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（なし／項目なしでは使わない）。その次はプロフィールリンク欄: `docs/grok-bots/PROFILE.md` / `dump/G_hq_threads_profile.txt`。
+空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `YouTubeあり` と返し、転職 Threads が `開設済み`（`EXIST.md` / `dump/G_hq_threads_exist.txt`）のあと、副サイト登録（`SITE.md` / `dump/G_hq_a8_site.txt`）を経て人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（なし／項目なし／未開設では使わない）。その次はプロフィールリンク欄: `docs/grok-bots/PROFILE.md` / `dump/G_hq_threads_profile.txt`。

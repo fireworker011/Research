@@ -38,9 +38,10 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 
 指令塔が `YouTubeあり` と返したあとの手動導線:
 
-1. 開設済み転職 Threads を副サイト登録（`SITE.md`）
-2. 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ（`SECRET.md`）
-3. 同じ URL を転職 Threads の **プロフィールリンク欄**（`PROFILE.md`）
+1. 開設済みか（`EXIST.md`）。未開設なら新造せず止まれ
+2. 開設済み転職 Threads を副サイト登録（`SITE.md`）
+3. 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ（`SECRET.md`）
+4. 同じ URL を転職 Threads の **プロフィールリンク欄**（`PROFILE.md`）
 
 プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。
 

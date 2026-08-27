@@ -24,7 +24,8 @@
 - 同ページの **UZUZ第二新卒** は `s00000014490001`。neo の代わりに開くな。
 - 同ページ注目案件の **N高等学校** は `s00000027548001`（資料請求15000円はカタログ）。neo の前に開くな。
 - neo `s00000018427001` の提携済みかは **ファイルに無い**。sns.php の「提携する」は未ログインでも detail-not-partnered。ログイン後の返しは `未提携` / YouTube 3語。未提携なら dump `G_hq_a8_partner.txt`。承認前に貼るな
-- Secret の前に、開設済み転職 Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`。未開設なら登録するな
+- Secret の前に、転職 Threads が開設済みかを1語で返す（`EXIST.md` / dump `G_hq_threads_exist.txt`）。未開設なら新造するな。トークン未登録は未開設の証明ではない
+- `開設済み` のあと、その Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（プロフィールリンク欄だけ。cron は戻すな）
 - post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない
 - 2026-08-28 08:16 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`
