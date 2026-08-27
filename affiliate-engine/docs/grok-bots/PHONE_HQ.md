@@ -15,6 +15,7 @@
 | YouTubeありのあと | `dump/G_hq_yt_only.txt` | Threads が欄に無い。プロフィールに置くな。転職YouTubeは始めるな。ペットに neo を置くな |
 | そのあと | `dump/G_hq_banner_10.txt` | 秋バナーは製作済。出品するな |
 | そのあと | `dump/G_hq_a8_csv.txt` | A8 で見た数字だけ conversions に1行。開いていないなら足すな |
+| 自動投稿を出す前 | `dump/G_hq_merge_overlay.txt` | PR 77 と 78 をマージ。schedule は戻すな。プロフィールは待たない |
 | 旧 | `dump/G_hq_20260828.txt` | 使わない。今夜の1手は上 |
 
 ジャンル9体の貼り文は `cursor/video-channel-playbook-e013` の `PHONE.md` が正。

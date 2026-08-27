@@ -53,6 +53,35 @@ function isLiveConversionRow(row) {
   return true;
 }
 
+function conversionShapeErrors(csvText, today) {
+  const errors = [];
+  const rows = parseCSV(csvText).filter(isLiveConversionRow);
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const label = `row ${i + 1} ${row.date}`;
+    const fields = [row.date, row.source, row.program, row.clicks, row.cv, row.approved_yen, row.note];
+    if (fields.some((v) => /https?:\/\//i.test(String(v || '')))) {
+      errors.push(`${label}: URL を書くな`);
+    }
+    for (const col of ['clicks', 'cv', 'approved_yen']) {
+      const raw = String(row[col] ?? '').trim();
+      if (!/^-?\d+$/.test(raw)) {
+        errors.push(`${label}: ${col} は整数`);
+        continue;
+      }
+      if (Number.parseInt(raw, 10) < 0) errors.push(`${label}: ${col} は 0 以上`);
+    }
+    const yen = toInt(row.approved_yen);
+    if (yen > 0 && /カタログ/.test(String(row.note || ''))) {
+      errors.push(`${label}: カタログ円を approved_yen に足すな`);
+    }
+    if (today && row.date > today) {
+      errors.push(`${label}: 未来日`);
+    }
+  }
+  return errors;
+}
+
 function lastLiveConversionDate(csvText) {
   const rows = parseCSV(csvText).filter(isLiveConversionRow);
   let last = null;
@@ -309,6 +338,19 @@ function selfTest() {
   });
   if (staleSnap.csv_stale !== true) throw new Error('next-day csv should be stale');
   if (!staleSnap.blockers.some((b) => b.id === 'csv_stale')) throw new Error('csv_stale blocker missing');
+
+  const shapeOk = conversionShapeErrors(csv, '2026-08-27');
+  if (shapeOk.length) throw new Error(`shape want empty, got ${shapeOk.join('; ')}`);
+  const urlBad = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,all,1,0,0,see https://example.invalid\n',
+    '2026-08-27'
+  );
+  if (!urlBad.some((e) => /URL/.test(e))) throw new Error('URL in note should fail');
+  const catalogBad = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,neo,0,1,15000,sns.php カタログ\n',
+    '2026-08-27'
+  );
+  if (!catalogBad.some((e) => /カタログ/.test(e))) throw new Error('catalog yen should fail');
   console.log('self-test ok');
 }
 
@@ -316,6 +358,12 @@ function main() {
   if (process.argv.includes('--self-test')) {
     selfTest();
     return;
+  }
+  const csvText = fs.readFileSync(CONVERSIONS_PATH, 'utf-8');
+  const today = process.env.SPRINT_TODAY || todayJST();
+  const shape = conversionShapeErrors(csvText, today);
+  if (shape.length) {
+    throw new Error(`conversions.csv が正本として読めない: ${shape.join('; ')}`);
   }
   const snapshot = buildSnapshot();
   writeOutputs(snapshot);
@@ -333,6 +381,7 @@ module.exports = {
   daysInclusive,
   sumConversions,
   lastLiveConversionDate,
+  conversionShapeErrors,
   buildSnapshot
 };
 

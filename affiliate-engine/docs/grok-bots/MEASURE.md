@@ -25,9 +25,9 @@ date,source,program,clicks,cv,approved_yen,note
 ## 手順
 
 1. A8 管理画面を開く。開いていないなら **行を足すな**（0 を invent するな）。
-2. 見えた clicks / cv / 確定金額だけを1行にする。見えない列は空にしない。見えた 0 は 0 と書く。
+2. 見えた clicks / cv / 確定金額だけを1行にする。見えない列は空にしない。見えた 0 は 0 と書く。note に「カタログ」と書いて yen を足すな。
 3. 同じ日・同じ source・同じ program の行が既にあれば、上書きするか新しい行にするかを画面の数字に合わせる。数字を足して倍にしない。
-4. `node src/sprint-1m.js --self-test && node src/sprint-1m.js` で TODAY.md の実測円が CSV と一致することを見る。
+4. `node src/sprint-1m.js --self-test && node src/sprint-1m.js` で TODAY.md の実測円が CSV と一致することを見る。URL やカタログ円が入っているとここで落ちる。
 5. アフィURL・トークンを Git / チャット / ログに書くな。
 
 ## 円にしないもの

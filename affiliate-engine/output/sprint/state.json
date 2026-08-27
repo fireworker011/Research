@@ -21,9 +21,10 @@
     18,
     19,
     20,
-    21
+    21,
+    22
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。sns_next は Threadsあり優先。YouTubeだけならプロフィールに置くな。N=6。neo s00000018427001。cron は戻すな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。重ね PR 77/78 は MERGEABLE。マージは自動投稿の前。N=6。円は0。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -247,6 +248,13 @@
     },
     {
       "at": "2026-08-27T23:24:59.317Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:27:18.669Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
