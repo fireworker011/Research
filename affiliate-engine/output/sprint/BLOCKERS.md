@@ -24,7 +24,7 @@
 - 同ページに **UZUZ第二新卒** もある。neo の代わりにしない。
 - 同ページ注目案件に **N高等学校**（資料請求15000円はカタログ）。教育アカ用。neo の前に開くな。
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
-- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。
+- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。`YouTubeあり` のあとだけ `SECRET.md` / `dump/G_hq_secret_neo.txt`。cron は戻すな。
 
 ## 計測
 

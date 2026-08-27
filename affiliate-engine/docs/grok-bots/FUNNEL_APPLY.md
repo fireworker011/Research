@@ -26,9 +26,9 @@ sns.php は「前月 SNS 経由で成果が出た」と書いてある。プロ�
 
 | 媒体 | 位置 | 足すな |
 |---|---|---|
-| YouTube | 詳細欄 + PR表記 + 有料プロモーション | 動画内URL。ShortsコメントのアフィURL |
-| Threads | プロフィールのリンク欄 | スレッド本文の広告リンク（A8 FAQ: iOS遷移不良のため本文は控える） |
+| YouTube | 指令塔が指定した既存動画の詳細欄 + PR表記 + 有料プロモーション | 動画内URL。ShortsコメントのアフィURL。転職ジャンルの新規チャンネル（台帳 `make: never`） |
+| Threads | プロフィールのリンク欄 | スレッド本文の広告リンク（A8 FAQ: iOS遷移不良のため本文は控える）。cron 独断再開 |
 
 テンプレは seed に `転職_neo` / `教育_N高`。値は空。本文は「調べた／整理した」。体験の捏造なし。#PR 付き。
 
-空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が「貼ってよい」と出したあとに人間が入れる。
+空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `YouTubeあり` と返したあとに人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（なし／項目なしでは使わない）。

@@ -36,7 +36,8 @@
 | 10 | conversions.csv。最終実測行 2026-08-27。今日の行は無い。実測円 0。MEASURE.md と dump `G_hq_a8_csv`（済） |
 | 11 | HQ_ORDERS を今夜1手に圧縮。sns.php 再読を FUNNEL_LIVE。掲載媒体はまだログイン後（済） |
 | 12 | CW 新規4を再読。まだ fireworker12 なし。応募文 CW_APPLY.md（捏造なし）（済） |
-| 13–22 | 指令塔の新しい dump / 要望があればそれを1件。無ければ盤面更新のみ |
+| 13 | YouTubeありのあとの Secret dump `G_hq_secret_neo`。cron は戻さない（済） |
+| 14–22 | 指令塔の新しい dump / 要望があればそれを1件。無ければ盤面更新のみ |
 | 23 | 総括。指令塔へ返す材料だけ書く |
 
 ## 指令塔が人間へ出す手
