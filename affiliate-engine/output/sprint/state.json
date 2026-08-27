@@ -10,9 +10,10 @@
     7,
     8,
     9,
-    10
+    10,
+    11
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。CSV は MEASURE.md。今日の行は無い。invent するな。次は G_hq_note_place。公開するな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。次は G_hq_note_place。公開するな。neo は sns.php に載っている。掲載媒体はまだ見るな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -33,7 +34,7 @@
       "教育_N高"
     ],
     "filled": 0,
-    "note": "掲載媒体未確認。貼っていない。カタログ円は足していない"
+    "note": "sns.php 再読 2026-08-28。掲載媒体未確認。貼っていない。カタログ15000は足していない"
   },
   "note_sku1": {
     "path": "docs/grok-bots/note/SKU1_tejun.md",
@@ -160,6 +161,13 @@
     },
     {
       "at": "2026-08-27T22:33:37.711Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:36:36.727Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

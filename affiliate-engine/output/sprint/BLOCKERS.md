@@ -20,8 +20,9 @@
 
 - A8 公開FAQの許可SNS: Instagram / YouTube / TikTok / Pinterest。Threads 本文は不可、プロフィールリンク欄は可。
 - auひかり `s00000019044001` は管理画面に SNS 掲載項目なし＝貼らない。
-- 2026-08-28 開封の [sns.php](https://support.a8.net/as/HintOfProgram/sns.php) に、SNS経由で成果が出たと書いてある申込型がある。次に確認する1件は **第二新卒エージェントneo**（売れてる案件・新規カウンセリング）。プログラム詳細の YouTube 可否はログイン後。確認前に貼るな。
-- 同ページ注目案件に **N高等学校**（資料請求）。教育アカ用。確認前に貼るな。
+- 2026-08-28 再読の [sns.php](https://support.a8.net/as/HintOfProgram/sns.php) に、SNS経由で成果が出たと書いてある申込型がある。次に確認する1件は **第二新卒エージェントneo**（売れてる案件・新規カウンセリング15000円はカタログ）。プログラム詳細の YouTube 可否はログイン後。確認前に貼るな。公開実測: `docs/grok-bots/FUNNEL_LIVE.md`
+- 同ページに **UZUZ第二新卒** もある。neo の代わりにしない。
+- 同ページ注目案件に **N高等学校**（資料請求15000円はカタログ）。教育アカ用。neo の前に開くな。
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。
 
