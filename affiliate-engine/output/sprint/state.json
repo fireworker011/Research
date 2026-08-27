@@ -20,9 +20,10 @@
     17,
     18,
     19,
-    20
+    20,
+    21
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。YouTubeありのあと G_hq_threads_exist。未開設なら新造するな。N=6。neo s00000018427001。cron は戻すな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。sns_next は Threadsあり優先。YouTubeだけならプロフィールに置くな。N=6。neo s00000018427001。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -44,7 +45,7 @@
     ],
     "filled": 0,
     "program_id": "s00000018427001",
-    "note": "sns.php Hour19 再読 2026-08-28 08:16 JST。公開ID s00000018427001。YouTubeありのあと EXIST → SITE。未開設なら新造するな。重ね PR #77/#78 draft。tenshoku handle はファイルに無い"
+    "note": "sns_next 返しは 未提携/Threadsあり/YouTubeあり/項目なし/媒体なし。Threadsあり→EXIST。YouTubeあり→yt_only。公開ID s00000018427001"
   },
   "note_sku1": {
     "path": "docs/grok-bots/note/SKU1_tejun.md",
@@ -239,6 +240,13 @@
     },
     {
       "at": "2026-08-27T23:21:34.053Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:24:59.317Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
