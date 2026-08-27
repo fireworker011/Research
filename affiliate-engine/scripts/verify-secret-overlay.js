@@ -30,6 +30,11 @@ function main() {
   });
   if (dumped.includes('example.invalid')) throw new Error('verify leaked a URL');
 
+  const { redactAffiliateUrls } = require('../src/util');
+  const redacted = redactAffiliateUrls(`see ${dummy} #PR`);
+  if (redacted.includes('example.invalid')) throw new Error('redact leaked a URL');
+  if (!redacted.includes('[link]')) throw new Error('redact did not replace URL');
+
   const ids = [
     'career_20260828_neo_01',
     'education_20260828_nko_01',

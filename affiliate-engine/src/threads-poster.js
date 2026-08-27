@@ -32,6 +32,7 @@ const {
   writeJSON,
   loadConfig,
   loadLinks,
+  redactAffiliateUrls,
   todayJST,
   scheduleEpoch
 } = require('./util');
@@ -106,7 +107,14 @@ function logPosting(entry) {
   const logDir = path.join(OUTPUT_DIR, 'posting_logs');
   fs.mkdirSync(logDir, { recursive: true });
   const logPath = path.join(logDir, `posting_${todayJST()}.jsonl`);
-  fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf-8');
+  fs.appendFileSync(logPath, JSON.stringify(sanitizeLog(entry)) + '\n', 'utf-8');
+}
+
+function sanitizeLog(entry) {
+  const out = { ...entry };
+  if (typeof out.text === 'string') out.text = redactAffiliateUrls(out.text);
+  if (typeof out.error === 'string') out.error = redactAffiliateUrls(out.error);
+  return out;
 }
 
 async function main() {
@@ -263,7 +271,7 @@ async function main() {
 
     if (isDryRun) {
       console.log(`📝 ${label}`);
-      console.log(text.split('\n').map((l) => `   │ ${l}`).join('\n'));
+      console.log(redactAffiliateUrls(text).split('\n').map((l) => `   │ ${l}`).join('\n'));
       console.log('');
       continue;
     }

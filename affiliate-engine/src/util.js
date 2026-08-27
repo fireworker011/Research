@@ -105,6 +105,11 @@ function loadLinks() {
   return out;
 }
 
+/** ログ・ドライランにアフィURLを出さない */
+function redactAffiliateUrls(text) {
+  return String(text || '').replace(/https?:\/\/[^\s)>\]]+/gi, '[link]');
+}
+
 /** JST の今日の日付文字列 YYYY-MM-DD */
 function todayJST(offsetDays = 0) {
   const now = new Date(Date.now() + 9 * 3600 * 1000 + offsetDays * 86400 * 1000);
@@ -125,6 +130,7 @@ module.exports = {
   writeJSON,
   loadConfig,
   loadLinks,
+  redactAffiliateUrls,
   todayJST,
   scheduleEpoch
 };
