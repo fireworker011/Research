@@ -196,16 +196,15 @@ ${blockerLines}
 function renderHumanMd(s) {
   return `# 司令部が人間へ出す1手（参謀下書き）
 
-指令塔がこの文を採否する。Cursor は送らない。
+指令塔がこの文を採否する。Cursor は送らない。今夜の dump は \`G_hq_cw_n10.txt\` が正。
 
-目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。参謀ループ残り ${s.hours_left} 時間。
+目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. auひかりは貼るな。SNS掲載の項目なし。Secret にも URL を入れるな。
-2. KEEP_CUT の run だけやれ: CW応募 / note下書き / 秋バナー製作。公開・出品はするな。
-3. A8 で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない。
-4. ペット実験の当日数字があれば video_cash_log.csv に1行。
+1. CW fireworker12 で応募を再開し N=10 まで。プロフィールは直すな。
+2. auひかりは貼るな。note は公開するな。バナーは出品するな。
+3. 見た A8 の数字だけ conversions.csv に1行。ペット実験の当日数字があれば video_cash_log.csv に1行。
 
-次の指示は指令塔が出す。参謀への要望も指令塔が出す。
+次の指示は指令塔が出す。
 `;
 }
 
@@ -220,7 +219,7 @@ function writeOutputs(snapshot) {
     hours_elapsed: snapshot.hours_elapsed
   });
   const keep = {};
-  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run']) {
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge']) {
     if (prev[key] !== undefined) keep[key] = prev[key];
   }
   const state = {

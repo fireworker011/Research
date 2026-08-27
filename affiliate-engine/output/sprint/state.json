@@ -4,13 +4,22 @@
     1,
     2,
     3,
-    4
+    4,
+    5,
+    6
   ],
-  "next_hour_task": "video-judge。記録不足なら指令塔が人間へ CSV 追記を出せと HQ_ORDERS に書く。台本は創らない",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。出していなければ盤面更新のみ。トークン未設定アカの列挙は指示にしない",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
     "note": "ドライラン9件。価値提供投稿。リンク必須テンプレは未設定のため対象外。実投稿していない"
+  },
+  "video_judge": {
+    "at": "2026-08-28",
+    "code": "CONTINUE_EXPERIMENT",
+    "day": "7/14",
+    "log_last": "2026-08-22",
+    "note": "円本線ではない。数字は invent していない"
   },
   "commander": "Grok Bot 指令塔",
   "staff": "Cursor",
@@ -69,6 +78,20 @@
     },
     {
       "at": "2026-08-27T22:11:37.192Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:15:29.460Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:15:55.842Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
