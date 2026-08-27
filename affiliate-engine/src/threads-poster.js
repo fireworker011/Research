@@ -31,6 +31,7 @@ const {
   readJSON,
   writeJSON,
   loadConfig,
+  loadLinks,
   todayJST,
   scheduleEpoch
 } = require('./util');
@@ -130,7 +131,7 @@ async function main() {
         }
       ])
   );
-  const links = loadConfig('links', {});
+  const links = loadLinks();
 
   const schedule = parseCSV(fs.readFileSync(CSV_PATH, 'utf-8'));
   const state = readJSON(STATE_PATH, { posted: {} });
@@ -203,7 +204,7 @@ async function main() {
 
     let text = buildPostText(row, links);
     if (text === null) {
-      console.log(`⏭  ${label}: config/links.json に「${row.genre}」のリンク未設定のためスキップ`);
+      console.log(`⏭  ${label}: リンク未設定（links.json も AFFILIATE_LINKS_JSON も空）のためスキップ`);
       if (!isDryRun) {
         state.posted[key] = { status: 'skipped_no_link', at: new Date().toISOString() };
       }

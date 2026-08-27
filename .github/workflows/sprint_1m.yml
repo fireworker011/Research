@@ -1,0 +1,43 @@
+name: 9/30 100万スコアボード（判定のみ・投稿しない）
+
+on:
+  schedule:
+    # 毎時17分。GitHub cron は遅延する。投稿しない。数字は発明しない。
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sprint-1m
+  cancel-in-progress: false
+
+jobs:
+  scoreboard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/setup-colab-comfyui-Eb9Lh
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: スコアボード更新
+        env:
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
+        run: |
+          cd affiliate-engine
+          node --check src/sprint-1m.js
+          node src/sprint-1m.js --self-test
+          node src/sprint-1m.js
+
+      - name: スコアボードを保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add affiliate-engine/output/sprint || true
+          git diff --staged --quiet || {
+            git commit -m "chore: 9/30 100万スコアボードを更新"
+            git pull --rebase origin claude/setup-colab-comfyui-Eb9Lh
+            git push origin claude/setup-colab-comfyui-Eb9Lh
+          }

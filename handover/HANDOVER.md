@@ -138,8 +138,9 @@
 | `metrics_konkatsu.yml` | 婚活メトリクス収集（旧系統） | **停止**（同上） |
 | `refresh_threads_token.yml` | 週次トークン延命（月曜9時JST） | **継続** — 止めると60日で全トークン失効し、再開時に9アカ分の再発行が必要になるため意図的に残している |
 | `affiliate_engine_video_judge.yml` | 動画キャッシュループ判定（毎日・投稿しない） | **継続** — Threads ではなく YouTube 実験の判定装置 |
+| `sprint_1m.yml` | 9/30 ¥100万スコアボード（毎時・投稿しない） | **2026-08-27 追加** — デフォルトブランチへマージ後に cron が有効。円は conversions.csv のみ |
 
-再開手順（人間の承認が必要）: デフォルトブランチ `claude/setup-colab-comfyui-Eb9Lh` の該当 YAML に `schedule:` ブロックを戻す（削除コミットの差分を git 履歴から逆適用）。GitHub の仕様で schedule はデフォルトブランチの YAML だけが有効。実行時の checkout 先は post/insight/report が `claude/monthly-revenue-system-gvi02u`、video_judge がデフォルトブランチ。
+再開手順（人間の承認が必要）: デフォルトブランチ `claude/setup-colab-comfyui-Eb9Lh` の該当 YAML に `schedule:` ブロックを戻す（削除コミットの差分を git 履歴から逆適用）。GitHub の仕様で schedule はデフォルトブランチの YAML だけが有効。実行時の checkout 先は post/insight/report が `claude/monthly-revenue-system-gvi02u`、video_judge がデフォルトブランチ。**post の再開は `AFFILIATE_LINKS_JSON` が入ってから。**
 
 ## 7. 全ジャンル共通の運用原則（violate したら事業が死ぬ順）
 
@@ -154,8 +155,8 @@
 ## 8. Grok Bot / Cursor への具体的な指示
 
 - **Grok Bot**: 数値の読み取りと「次の改善を1つ」の提案まで。実投稿・スケジュール再開・案件変更を自分で実行しない。数字がなければ「記録不足」と言い、人間に CSV 追記を頼む。
-- **Cursor**: コード変更と実験記録のみ。変更時は最低限 `node --check` → `strategy-engine.js --from-file` で破棄警告なし → `threads-poster.js --dry-run` を通す。スケジュール決定論（日付から計算）と重複ガード（直近7日ハッシュ照合）を壊さない。コミット前に `git pull --rebase`。
-- **両者共通**: 停止中の Threads 自動更新を勝手に再開しない。新媒体・量産・ジャンル転換・50体化を提案する前に、このファイルの判定ゲート（週15/週50クリック）を確認する。
+- **Cursor**: コード変更と実験記録のみ。2026-08-27 以降、ナオミチ直下の 24h スプリント（`docs/sprint-24h.md`）では毎時スコアボードを更新する。変更時は最低限 `node --check` → `strategy-engine.js --from-file` で破棄警告なし → `threads-poster.js --dry-run` を通す。スケジュール決定論（日付から計算）と重複ガード（直近7日ハッシュ照合）を壊さない。コミット前に `git pull --rebase`。
+- **両者共通**: 停止中の Threads 自動更新を、リンク Secret 無しで再開しない。新媒体・量産・ジャンル転換・50体化を提案する前に、判定ゲート（週15/週50クリック）を確認する。期限 ¥1,000,000 の円の正本は `docs/grok-bots/HQ_100MAN.md` と `sprint-1m.js`。
 
 ## 9. 深掘り参照マップ（人間の指示があるときのみ開く）
 

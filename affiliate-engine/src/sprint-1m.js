@@ -1,0 +1,301 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * 9/30 まで ¥1,000,000（確定円）のスコアボード。
+ * 24時間スプリントの毎時ティックでも使う。数字は invent しない。
+ *
+ *   node src/sprint-1m.js
+ *   node src/sprint-1m.js --self-test
+ *   SPRINT_TODAY=2026-08-27 node src/sprint-1m.js
+ *
+ * 円の正本: data/conversions.csv の approved_yen。カタログ単価は足さない。
+ * リンクの実 URL はログに出さない。
+ */
+
+const fs = require('fs');
+const path = require('path');
+const {
+  ROOT,
+  OUTPUT_DIR,
+  parseCSV,
+  readJSON,
+  writeJSON,
+  loadLinks,
+  countFilledLinks,
+  filledLinkKeys,
+  todayJST
+} = require('./util');
+
+const TARGET_YEN = 1_000_000;
+const DEADLINE = '2026-09-30';
+const SPRINT_HOURS = 24;
+const CONVERSIONS_PATH = process.env.CONVERSIONS_CSV || path.join(ROOT, 'data', 'conversions.csv');
+const STATE_PATH = path.join(OUTPUT_DIR, 'sprint', 'state.json');
+const TODAY_PATH = path.join(OUTPUT_DIR, 'sprint', 'TODAY.md');
+const HUMAN_PATH = path.join(OUTPUT_DIR, 'sprint', 'HUMAN.md');
+
+function daysInclusive(start, end) {
+  const [sy, sm, sd] = start.split('-').map(Number);
+  const [ey, em, ed] = end.split('-').map(Number);
+  const diff = Math.round((Date.UTC(ey, em - 1, ed) - Date.UTC(sy, sm - 1, sd)) / 86400000);
+  if (diff < 0) return 0;
+  return diff + 1;
+}
+
+function toInt(value) {
+  const n = Number.parseInt(String(value ?? '').trim(), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function isLiveConversionRow(row) {
+  if (!row || !/^\d{4}-\d{2}-\d{2}$/.test(row.date || '')) return false;
+  return true;
+}
+
+function sumConversions(csvText) {
+  const rows = parseCSV(csvText).filter(isLiveConversionRow);
+  let clicks = 0;
+  let cv = 0;
+  let approvedYen = 0;
+  for (const row of rows) {
+    clicks += toInt(row.clicks);
+    cv += toInt(row.cv);
+    approvedYen += toInt(row.approved_yen);
+  }
+  return { rows: rows.length, clicks, cv, approvedYen };
+}
+
+function hoursElapsed(startedAtIso, nowMs = Date.now()) {
+  if (!startedAtIso) return 0;
+  const started = Date.parse(startedAtIso);
+  if (!Number.isFinite(started)) return 0;
+  return Math.max(0, Math.floor((nowMs - started) / 3600000));
+}
+
+function buildSnapshot(opts = {}) {
+  const today = opts.today || process.env.SPRINT_TODAY || todayJST();
+  const csvText = opts.csvText != null ? opts.csvText : fs.readFileSync(CONVERSIONS_PATH, 'utf-8');
+  const conversions = sumConversions(csvText);
+  const remainingDays = daysInclusive(today, DEADLINE);
+  const remainingYen = Math.max(0, TARGET_YEN - conversions.approvedYen);
+  const paceYenPerDay = remainingDays > 0 ? Math.ceil(remainingYen / remainingDays) : remainingYen;
+  const links = opts.links || loadLinks();
+  const filled = countFilledLinks(links);
+  const filledKeys = filledLinkKeys(links);
+  const prev = opts.prevState || readJSON(STATE_PATH, {}) || {};
+  const startedAt = prev.sprint_started_at || opts.startedAt || new Date().toISOString();
+  const elapsed = hoursElapsed(startedAt, opts.nowMs);
+  const hoursLeft = Math.max(0, SPRINT_HOURS - elapsed);
+
+  const blockers = [];
+  if (filled === 0) {
+    blockers.push({
+      id: 'no_affiliate_links',
+      owner: 'ナオミチ',
+      action: '貼ってよい案件だけ GitHub Secret AFFILIATE_LINKS_JSON に JSON で入れる。URLはチャットにも Git にも貼らない'
+    });
+  }
+  blockers.push({
+    id: 'a8_csv',
+    owner: 'ナオミチ',
+    action: 'A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない'
+  });
+  blockers.push({
+    id: 'video_csv',
+    owner: 'ナオミチ',
+    action: 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま'
+  });
+
+  return {
+    commander: 'ナオミチ',
+    today,
+    deadline: DEADLINE,
+    target_yen: TARGET_YEN,
+    measured_yen: conversions.approvedYen,
+    remaining_yen: remainingYen,
+    remaining_days: remainingDays,
+    pace_yen_per_day: paceYenPerDay,
+    conversion_rows: conversions.rows,
+    clicks: conversions.clicks,
+    cv: conversions.cv,
+    filled_link_keys: filled,
+    filled_link_key_names: filledKeys,
+    threads_cron: 'stopped',
+    sprint_started_at: startedAt,
+    sprint_hours: SPRINT_HOURS,
+    hours_elapsed: elapsed,
+    hours_left: hoursLeft,
+    blockers,
+    notes: [
+      '確定円だけが売上。再生・カタログ単価・EPC は売上ではない',
+      'Threads 自動投稿の cron はリンク Secret が入るまで戻さない',
+      'いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない',
+      '指令はナオミチ。Grok Bot は数値の読み取りと改善1つまで'
+    ]
+  };
+}
+
+function renderTodayMd(s) {
+  const blockerLines = s.blockers.map((b) => `- **${b.owner}**: ${b.action}`).join('\n');
+  const keyNames = s.filled_link_key_names.length ? s.filled_link_key_names.join(', ') : 'なし（値は出さない）';
+  return `# 9/30 ¥100万 — 今日のスコアボード
+
+日付: ${s.today}（JST）
+指令: **${s.commander}**（Grok Bot ではなくこの人）
+24hスプリント: 経過 ${s.hours_elapsed} / ${s.sprint_hours} 時間（残り ${s.hours_left}）
+
+## 円
+
+| 項目 | 値 |
+|---|---|
+| 期限 | ${s.deadline} |
+| 目標 | ¥${s.target_yen.toLocaleString()}（確定円） |
+| 実測円 | ¥${s.measured_yen.toLocaleString()} |
+| 不足円 | ¥${s.remaining_yen.toLocaleString()} |
+| 残日数（今日含む） | ${s.remaining_days} |
+| 必要ペース | ¥${s.pace_yen_per_day.toLocaleString()} / 日 |
+| conversions 行 | ${s.conversion_rows} |
+| clicks（ファイルにある分） | ${s.clicks} |
+| cv（ファイルにある分） | ${s.cv} |
+
+カタログ単価は足していない。
+
+## 導線
+
+- 値が入っている link_key 数: ${s.filled_link_keys}
+- キー名: ${keyNames}
+- Threads cron: **${s.threads_cron}**（リンク Secret が入るまで再開しない）
+
+## ナオミチがやること（エージェントでは代替できない）
+
+${blockerLines}
+
+## やらないこと
+
+- 数字を発明する
+- アフィURLを Git / チャット / ログに書く
+- いいね・フォロー・自動DM
+- YouTube 投稿の自動化
+- 体験談の捏造、#PR なしのリンク
+`;
+}
+
+function renderHumanMd(s) {
+  return `# 今すぐ1手（ナオミチ・スマホ）
+
+24hスプリント残り **${s.hours_left} 時間**。目標は ${s.deadline} までに確定 ¥${s.target_yen.toLocaleString()}。いまの実測円は ¥${s.measured_yen.toLocaleString()}。
+
+1. A8 で「SNSに貼ってよい」と管理画面に書いてある案件だけ選ぶ。書いていなければ貼らない。
+2. 貼ってよい URL を GitHub → Settings → Secrets → \`AFFILIATE_LINKS_JSON\` に JSON で入れる。例: \`{"申込_auひかり":"https://..."}\` 。チャットに貼らない。
+3. 同じ画面の数字を \`affiliate-engine/data/conversions.csv\` に1行。カタログの 30,000 は書かない。
+4. ペット実験を続けている日は \`video_cash_log.csv\` に1行。
+
+これ以外の指令は、このエージェントのスレッドに直接書いてください。Grok Bot 経由は不要です。
+`;
+}
+
+function writeOutputs(snapshot) {
+  const prev = readJSON(STATE_PATH, {}) || {};
+  const ticks = Array.isArray(prev.ticks) ? prev.ticks.slice() : [];
+  ticks.push({
+    at: new Date().toISOString(),
+    today: snapshot.today,
+    measured_yen: snapshot.measured_yen,
+    filled_link_keys: snapshot.filled_link_keys,
+    hours_elapsed: snapshot.hours_elapsed
+  });
+  const keep = {};
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run']) {
+    if (prev[key] !== undefined) keep[key] = prev[key];
+  }
+  const state = {
+    ...keep,
+    ...snapshot,
+    ticks: ticks.slice(-48)
+  };
+  writeJSON(STATE_PATH, state);
+  fs.mkdirSync(path.dirname(TODAY_PATH), { recursive: true });
+  fs.writeFileSync(TODAY_PATH, renderTodayMd(snapshot), 'utf-8');
+  fs.writeFileSync(HUMAN_PATH, renderHumanMd(snapshot), 'utf-8');
+  return state;
+}
+
+function selfTest() {
+  const remaining = daysInclusive('2026-08-27', '2026-09-30');
+  if (remaining !== 35) throw new Error(`remaining days want 35, got ${remaining}`);
+  if (daysInclusive('2026-09-30', '2026-09-30') !== 1) throw new Error('deadline day should be 1');
+  if (daysInclusive('2026-10-01', '2026-09-30') !== 0) throw new Error('past deadline should be 0');
+
+  const csv = [
+    'date,source,program,clicks,cv,approved_yen,note',
+    '#,,,,,,comment',
+    '2026-08-27,A8,all,33,0,0,period monthly'
+  ].join('\n');
+  const sums = sumConversions(csv);
+  if (sums.rows !== 1) throw new Error(`rows want 1, got ${sums.rows}`);
+  if (sums.clicks !== 33) throw new Error(`clicks want 33, got ${sums.clicks}`);
+  if (sums.approvedYen !== 0) throw new Error(`yen want 0, got ${sums.approvedYen}`);
+
+  const prev = process.env.AFFILIATE_LINKS_JSON;
+  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({ 申込_auひかり: 'https://example.invalid/secret' });
+  const links = loadLinks();
+  if (countFilledLinks(links) < 1) throw new Error('env overlay should fill at least 1 key');
+  if (filledLinkKeys(links).includes('申込_auひかり') !== true) throw new Error('key name missing');
+  const dumped = JSON.stringify(buildSnapshot({
+    today: '2026-08-27',
+    csvText: csv,
+    links,
+    startedAt: '2026-08-27T00:00:00.000Z',
+    nowMs: Date.parse('2026-08-27T03:00:00.000Z')
+  }));
+  if (dumped.includes('example.invalid')) throw new Error('snapshot leaked a link URL');
+  if (prev === undefined) delete process.env.AFFILIATE_LINKS_JSON;
+  else process.env.AFFILIATE_LINKS_JSON = prev;
+
+  const snap = buildSnapshot({
+    today: '2026-08-27',
+    csvText: csv,
+    links: { 婚活: '', 申込_auひかり: '' },
+    startedAt: '2026-08-27T00:00:00.000Z',
+    nowMs: Date.parse('2026-08-27T03:00:00.000Z')
+  });
+  if (snap.remaining_days !== 35) throw new Error('snapshot remaining_days');
+  if (snap.measured_yen !== 0) throw new Error('snapshot measured_yen');
+  if (snap.pace_yen_per_day !== Math.ceil(1_000_000 / 35)) throw new Error('pace');
+  if (snap.hours_elapsed !== 3) throw new Error('hours_elapsed');
+  if (snap.hours_left !== 21) throw new Error('hours_left');
+  console.log('self-test ok');
+}
+
+function main() {
+  if (process.argv.includes('--self-test')) {
+    selfTest();
+    return;
+  }
+  const snapshot = buildSnapshot();
+  writeOutputs(snapshot);
+  console.log(`🎯 ${snapshot.deadline} まで ¥${snapshot.target_yen.toLocaleString()}`);
+  console.log(`   実測円 ¥${snapshot.measured_yen.toLocaleString()} / 不足 ¥${snapshot.remaining_yen.toLocaleString()}`);
+  console.log(`   残日数 ${snapshot.remaining_days}（今日含む）/ 必要ペース ¥${snapshot.pace_yen_per_day.toLocaleString()}/日`);
+  console.log(`   リンク値が入っているキー ${snapshot.filled_link_keys} 個（URLは出さない）`);
+  console.log(`   24hスプリント 残り ${snapshot.hours_left} 時間`);
+  console.log(`   書き出し: ${TODAY_PATH}`);
+}
+
+module.exports = {
+  TARGET_YEN,
+  DEADLINE,
+  daysInclusive,
+  sumConversions,
+  buildSnapshot
+};
+
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    console.error(`sprint-1m failed: ${err.message}`);
+    process.exit(1);
+  }
+}

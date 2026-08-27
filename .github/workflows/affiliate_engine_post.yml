@@ -4,6 +4,7 @@ on:
   # 2026-08-26 自動投稿を停止（handover/HANDOVER.md 参照）。
   # 再開する場合はこのコミットの差分を逆適用して schedule（毎時23分 '23 * * * *'）を戻し、
   # デフォルトブランチへ反映する（GitHub の仕様で schedule はデフォルトブランチのみ有効）。
+  # 実リンクは GitHub Secret AFFILIATE_LINKS_JSON（JSONオブジェクト）。links.json の値は空のまま。
   workflow_dispatch:
     inputs:
       dry_run:
@@ -50,6 +51,7 @@ jobs:
           THREADS_PET_ACCESS_TOKEN: ${{ secrets.THREADS_PET_ACCESS_TOKEN }}
           THREADS_SLEEP_USER_ID: ${{ secrets.THREADS_SLEEP_USER_ID }}
           THREADS_SLEEP_ACCESS_TOKEN: ${{ secrets.THREADS_SLEEP_ACCESS_TOKEN }}
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           cd affiliate-engine
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -80,6 +82,7 @@ jobs:
           THREADS_PET_ACCESS_TOKEN: ${{ secrets.THREADS_PET_ACCESS_TOKEN }}
           THREADS_SLEEP_USER_ID: ${{ secrets.THREADS_SLEEP_USER_ID }}
           THREADS_SLEEP_ACCESS_TOKEN: ${{ secrets.THREADS_SLEEP_ACCESS_TOKEN }}
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           cd affiliate-engine
           node src/amplify.js

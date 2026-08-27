@@ -16,6 +16,8 @@
     "youtube:next3": "node src/youtube-next3.js",
     "video:judge": "node src/video-judge.js",
     "video:judge:test": "node src/video-judge.js --self-test",
-    "plan": "node src/funnel-calc.js"
+    "plan": "node src/funnel-calc.js",
+    "sprint": "node src/sprint-1m.js",
+    "sprint:test": "node src/sprint-1m.js --self-test"
   }
 }

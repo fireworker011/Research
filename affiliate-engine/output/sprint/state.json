@@ -1,0 +1,59 @@
+{
+  "commander": "ナオミチ",
+  "today": "2026-08-28",
+  "deadline": "2026-09-30",
+  "target_yen": 1000000,
+  "measured_yen": 0,
+  "remaining_yen": 1000000,
+  "remaining_days": 34,
+  "pace_yen_per_day": 29412,
+  "conversion_rows": 1,
+  "clicks": 33,
+  "cv": 0,
+  "filled_link_keys": 0,
+  "filled_link_key_names": [],
+  "threads_cron": "stopped",
+  "sprint_started_at": "2026-08-27T22:05:22.511Z",
+  "sprint_hours": 24,
+  "hours_elapsed": 0,
+  "hours_left": 24,
+  "blockers": [
+    {
+      "id": "no_affiliate_links",
+      "owner": "ナオミチ",
+      "action": "貼ってよい案件だけ GitHub Secret AFFILIATE_LINKS_JSON に JSON で入れる。URLはチャットにも Git にも貼らない"
+    },
+    {
+      "id": "a8_csv",
+      "owner": "ナオミチ",
+      "action": "A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない"
+    },
+    {
+      "id": "video_csv",
+      "owner": "ナオミチ",
+      "action": "ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま"
+    }
+  ],
+  "notes": [
+    "確定円だけが売上。再生・カタログ単価・EPC は売上ではない",
+    "Threads 自動投稿の cron はリンク Secret が入るまで戻さない",
+    "いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない",
+    "指令はナオミチ。Grok Bot は数値の読み取りと改善1つまで"
+  ],
+  "ticks": [
+    {
+      "at": "2026-08-27T22:05:22.511Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    }
+  ],
+  "completed_hours": [0, 1, 2, 3],
+  "next_hour_task": "HUMAN.md を1枚に保ち、A8 SNS可否が未確認なら貼るなと繰り返す",
+  "last_dry_run": {
+    "at": "2026-08-27T22:06:00Z",
+    "due": 9,
+    "note": "ドライラン9件。価値提供投稿。リンク必須テンプレは未設定のため対象外。実投稿していない"
+  }
+}

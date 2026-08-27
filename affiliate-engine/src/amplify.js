@@ -21,7 +21,7 @@
 
 const path = require('path');
 const { checkContent } = require('./compliance');
-const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
+const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, todayJST } = require('./util');
 const { sleep } = require('./claude-client');
 
 const THREADS_API = 'https://graph.threads.net/v1.0';
@@ -129,7 +129,7 @@ async function replyToPost(userId, token, postId, text) {
 async function main() {
   console.log(`📈 Amplify（バズ投稿へのリンク増幅）${isDryRun ? '（ドライラン）' : ''}\n`);
   const accountsConfig = loadConfig('accounts', { accounts: [] });
-  const links = loadConfig('links', {});
+  const links = loadLinks();
   const state = readJSON(STATE_PATH, { posted: {} });
   state.amplified = state.amplified || {};
 
