@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-25T21:56:58.108Z",
+  "generated_at": "2026-08-27T01:02:00.314Z",
   "summary": {
-    "today": "2026-08-26",
+    "today": "2026-08-27",
     "rowCount": 1,
     "lastDate": "2026-08-22",
     "last7": {
-      "start": "2026-08-20",
-      "end": "2026-08-26",
+      "start": "2026-08-21",
+      "end": "2026-08-27",
       "videos": 0,
       "views": 0,
       "clicks": 0,
@@ -21,32 +21,32 @@
     },
     "experiment": {
       "start": "2026-08-22",
-      "day": 5,
+      "day": 6,
       "videos": 0,
       "clicks": 0,
       "conversions": 0
     },
     "weekClicks": [
       {
-        "start": "2026-08-20",
-        "end": "2026-08-26",
+        "start": "2026-08-21",
+        "end": "2026-08-27",
         "clicks": 0
       },
       {
-        "start": "2026-08-13",
-        "end": "2026-08-19",
+        "start": "2026-08-14",
+        "end": "2026-08-20",
         "clicks": 0
       },
       {
-        "start": "2026-08-06",
-        "end": "2026-08-12",
+        "start": "2026-08-07",
+        "end": "2026-08-13",
         "clicks": 0
       }
     ]
   },
   "verdict": {
     "code": "CONTINUE_EXPERIMENT",
-    "title": "実験 5/14日目。型は変えない",
+    "title": "実験 6/14日目。型は変えない",
     "improve": "なし。実験中に型を変えないことが改善",
     "action": "癒しShortsを残り3本出す。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
     "includeNext3": true,
