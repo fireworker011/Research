@@ -5,20 +5,22 @@ Cursor は参謀。あなたが司令塔。このファイルは仕事1つだけ
 
 今すぐ次を開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/BLOCKERS.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/CW_LIVE.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/TODAY.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/BLOCKERS.md
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/KEEP_CUT.md
 
 仕事はこれだけ:
 
-円を止めている最初のブロッカーは、始まっている CW 応募が 2026-08-26 時点で 6/10 のままなこと。追加4はブラウザ障害で未完。今日の件数はファイルに無い。
+円を止めている最初のブロッカーは、CW の分母が 6/10 のままなこと。公開ページでは既応募6件に `fireworker12` が載っている。再応募しても N は増えない。
+13406612 は応募済みで期限が 2026-08-29。期限待ちで貼り直すな。
+追加4は CW_LIVE.md の新規4（13405300 / 13405200 / 13405801 / 13405803）。公開条件に合わない1件だけ 13407700 に替えろ。
 
 人間へ出す指示は1つ:
-「CW fireworker12 で応募を再開し、N=10 まで出せ。プロフィールは直すな。auひかりは貼るな。note は公開するな。バナーは出品するな。」
+「CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件だけ応募して N=10 にせよ。プロフィールは直すな。auひかりは貼るな。note は公開するな。バナーは出品するな。」
 
 ジャンルbotへは「作るな」（ペットも今夜は作るな。実験のCSVが 8/22 止まりで記録不足）。
 
 復唱して、人間への指示を1文で書け。参謀への要望が無ければ「参謀への要望なし」。
-数字は発明するな。投稿するな。auひかりを貼るな。
+数字は発明するな。投稿するな。auひかりを貼るな。カタログ円を足すな。

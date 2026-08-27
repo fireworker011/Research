@@ -97,7 +97,7 @@ function buildSnapshot(opts = {}) {
   blockers.push({
     id: 'run_cw_note_banner',
     owner: '指令塔→人間',
-    action: 'KEEP_CUT の run だけ: CW応募 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない'
+    action: 'KEEP_CUT の run: CWは既応募6へ再応募せず新規4でN=10 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない'
   });
   blockers.push({
     id: 'a8_csv',
@@ -200,7 +200,7 @@ function renderHumanMd(s) {
 
 目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. CW fireworker12 で応募を再開し N=10 まで。プロフィールは直すな。
+1. CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件だけ応募して N=10 にせよ。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
 3. 見た A8 の数字だけ conversions.csv に1行。ペット実験の当日数字があれば video_cash_log.csv に1行。
 
@@ -219,7 +219,7 @@ function writeOutputs(snapshot) {
     hours_elapsed: snapshot.hours_elapsed
   });
   const keep = {};
-  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1']) {
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1', 'cw_live', 'banner_10']) {
     if (prev[key] !== undefined) keep[key] = prev[key];
   }
   const state = {

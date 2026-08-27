@@ -32,7 +32,7 @@
 | 6 | ブロッカー表 BLOCKERS.md と dump `G_hq_cw_n10` / `G_hq_sns_next`（済） |
 | 7 | 高単価導線: sns.php の申込型を FUNNEL_APPLY に固定。鍵 `転職_neo` / `教育_N高`。貼らない（済） |
 | 8 | SKU1 手順書下書きを note/SKU1_tejun.md に置く。公開しない（済） |
-| 9 | 重複ガードと日付決定論 |
+| 9 | CW 公開6件を CW_LIVE.md に固定。再応募禁止。新規4と秋バナー10枚ブリーフ（済） |
 | 10 | conversions.csv。増えていなければ実測円 0 |
 | 11 | HQ_ORDERS を1手に圧縮。dump が古ければ差し替え |
 | 12–22 | 指令塔の新しい dump / 要望があればそれを1件。無ければ盤面更新のみ |

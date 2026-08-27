@@ -8,9 +8,10 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。次は G_hq_note_place。公開するな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。中身は再応募禁止＋新規4。次は G_hq_note_place。公開するな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -32,6 +33,25 @@
     ],
     "filled": 0,
     "note": "掲載媒体未確認。貼っていない。カタログ円は足していない"
+  },
+  "note_sku1": {
+    "path": "docs/grok-bots/note/SKU1_tejun.md",
+    "published": false,
+    "price_in_body": false
+  },
+  "cw_live": {
+    "path": "output/sprint/CW_LIVE.md",
+    "applied_public": 6,
+    "need_new": 4,
+    "n": 10,
+    "urgent_id": "13406612",
+    "urgent_deadline": "2026-08-29",
+    "reapply": false
+  },
+  "banner_10": {
+    "path": "docs/grok-bots/note/BANNER_10.md",
+    "listed": false,
+    "complete_count": null
   },
   "commander": "Grok Bot 指令塔",
   "staff": "Cursor",
@@ -61,7 +81,7 @@
     {
       "id": "run_cw_note_banner",
       "owner": "指令塔→人間",
-      "action": "KEEP_CUT の run だけ: CW応募 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない"
+      "action": "KEEP_CUT の run: CWは既応募6へ再応募せず新規4でN=10 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない"
     },
     {
       "id": "a8_csv",
@@ -122,11 +142,13 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:29:18.645Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
     }
-  ],
-  "note_sku1": {
-    "path": "docs/grok-bots/note/SKU1_tejun.md",
-    "published": false,
-    "price_in_body": false
-  }
+  ]
 }
