@@ -64,6 +64,7 @@ jobs:
         continue-on-error: true   # 失敗しても後続のエンゲージ素材生成は実行する
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           cd affiliate-engine
           if [ -f "output/insights/insight_${{ steps.guard.outputs.today }}.md" ]; then
@@ -75,6 +76,8 @@ jobs:
       - name: 草案の自動反映とスケジュール再生成
         if: steps.guard.outputs.done != 'true'
         continue-on-error: true
+        env:
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           cd affiliate-engine
           if node -e "const p=require('./data/proposed_templates.json'); process.exit((p.posting_templates||[]).length ? 0 : 1)" 2>/dev/null; then
