@@ -30,7 +30,7 @@
 | 4 | 役割を司令塔=Grok / 参謀=Cursor に直す（済） |
 | 5 | video-judge。CONTINUE_EXPERIMENT 7/14。記録不足（済） |
 | 6 | ブロッカー表 BLOCKERS.md と dump `G_hq_cw_n10` / `G_hq_sns_next`（済） |
-| 7 | トークン未設定アカを state に列挙。発行指示は指令塔 |
+| 7 | 高単価導線: sns.php の申込型を FUNNEL_APPLY に固定。鍵 `転職_neo` / `教育_N高`。貼らない（済） |
 | 8 | エンゲージ下書きの生成可否をコード面だけ。送信しない |
 | 9 | 重複ガードと日付決定論 |
 | 10 | conversions.csv。増えていなければ実測円 0 |

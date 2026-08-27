@@ -4,15 +4,15 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_cw_n10.txt を�
 
 今すぐ次を開け。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/BLOCKERS.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_APPLY.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/hq-apply-sns-check-43fc/affiliate-engine/docs/grok-bots/HQ_APPLY.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/BLOCKERS.md
 
 仕事はこれだけ:
 
-高単価導線のブロッカーは、auひかりの管理画面に SNS/YouTube/TikTok/Threads 掲載項目がないこと。項目なし＝貼らない。
+高単価導線の次確認は auひかりではない。A8 の SNS投稿おすすめ（sns.php）に載っている「第二新卒エージェントneo」を1件、管理画面で開き、掲載媒体に YouTube があるかだけ見て返せ。
 
 人間へ出す指示は1つ:
-「A8 管理画面で、auひかり以外の highprice 帯プログラムを1件開き、掲載媒体に YouTube があるかだけ見て返せ。オリコで乗ーるをオリコカードに代入するな。ガス屋がファイルに無いならガス屋と書くな。URLはチャットに貼るな。」
+「A8 で『第二新卒エージェントneo』の掲載媒体に YouTube があるかだけ見て返せ。auひかりは見るな。オリコで乗ーるをカードに代入するな。URLはチャットに貼るな。」
 
-復唱して、人間への指示を1文で書け。無いものは「ファイルに無い」。投稿するな。
+無いものは「ファイルに無い」。投稿するな。カタログ円を足すな。

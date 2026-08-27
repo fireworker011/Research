@@ -5,7 +5,7 @@
 | 順 | ファイル | 仕事 |
 |---|---|---|
 | 今夜 | `dump/G_hq_cw_n10.txt` | CW 応募を N=10 まで。貼るな |
-| そのあと | `dump/G_hq_sns_next.txt` | auひかり以外の掲載媒体を1件確認。代入するな |
+| そのあと | `dump/G_hq_sns_next.txt` | 第二新卒エージェントneo の掲載媒体に YouTube があるか。auひかりは見るな |
 | 旧 | `dump/G_hq_20260828.txt` | 使わない。今夜の1手は上 |
 
 ジャンル9体の貼り文は `cursor/video-channel-playbook-e013` の `PHONE.md` が正。

@@ -6,9 +6,10 @@
     3,
     4,
     5,
-    6
+    6,
+    7
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。出していなければ盤面更新のみ。トークン未設定アカの列挙は指示にしない",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。出していなければ盤面のみ。SNS確認は G_hq_sns_next（neo）",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -96,6 +97,23 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:19:17.262Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
     }
-  ]
+  ],
+  "funnel": {
+    "named_next": "第二新卒エージェントneo",
+    "source": "https://support.a8.net/as/HintOfProgram/sns.php",
+    "keys": [
+      "転職_neo",
+      "教育_N高"
+    ],
+    "filled": 0,
+    "note": "掲載媒体未確認。貼っていない。カタログ円は足していない"
+  }
 }
