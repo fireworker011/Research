@@ -13,9 +13,10 @@
     10,
     11,
     12,
-    13
+    13,
+    14
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。YouTubeありのあとだけ G_hq_secret_neo。cron は戻すな。次は G_hq_note_place。公開するな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。13405803 期限 8/29。次は G_hq_note_place。公開するな。バナーは製作済・出品するな。YouTubeありのあとだけ G_hq_secret_neo。cron は戻すな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -51,13 +52,16 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T22:37Z",
+    "reopen": "2026-08-28T07:44+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
     "path": "docs/grok-bots/note/BANNER_10.md",
+    "log": "docs/grok-bots/note/BANNER_LOG.md",
     "listed": false,
-    "complete_count": null
+    "complete_count": 10,
+    "route": "local_pil",
+    "note": "通す10。PNGはGitに無い。出品していない"
   },
   "measure": {
     "path": "docs/grok-bots/MEASURE.md",
@@ -186,6 +190,13 @@
     },
     {
       "at": "2026-08-27T22:42:08.716Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:49:56.963Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
