@@ -1,11 +1,13 @@
 # Secret の入れ方（参謀・URL を Git に書くな）
 
-指令塔が `YouTubeあり` と返したあとの仕事。`YouTubeなし` / `項目なし` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+指令塔が `YouTubeあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeなし` / `項目なし` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+
+値は A8 管理画面で、**掲載サイトに登録した転職 Threads を選んで**発行した広告リンク（チャットに貼るな）。未登録のまま発行するな。
 
 ## 入れるもの
 
 GitHub Secret 名: `AFFILIATE_LINKS_JSON`  
-中身: JSON オブジェクト。鍵は **`転職_neo` だけ**。値は A8 管理画面で発行した広告リンク（チャットに貼るな）。
+中身: JSON オブジェクト。鍵は **`転職_neo` だけ**。値は上の発行リンク。
 
 `config/links.json` の値は空文字のまま。
 

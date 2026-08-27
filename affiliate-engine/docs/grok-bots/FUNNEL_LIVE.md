@@ -53,15 +53,17 @@ Secret に URL を入れただけでは円は動かない。cron を戻さなく
 
 | 場所 | 条件 | やるな |
 |---|---|---|
-| 転職 Threads のプロフィールリンク欄 | `YouTubeあり` のあと。掲載媒体に Threads が書いてあるとき。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
+| A8 副サイト | `YouTubeあり` のあと。開設済み転職 Threads だけ。公式「副サイトを登録する」 | 未開設の箱を新造。転職 YouTube。URL をチャットへ |
+| 転職 Threads のプロフィールリンク欄 | Secret のあと。掲載媒体に Threads が書いてあるとき。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
 | 指令塔が指名した既存 YouTube の詳細欄 | `YouTubeあり` のあと。動画を指令塔が指名したとき | 転職ジャンルの新規チャンネル（`make: never`）。動画内URL。Shortsコメント |
 
-dump: `dump/G_hq_threads_profile.txt`（Secret のあと。結合するな）
+dump: `dump/G_hq_a8_site.txt`（YouTubeありの直後）→ `dump/G_hq_secret_neo.txt` → `dump/G_hq_threads_profile.txt`。結合するな。
 
 ## ファイルに無いもの
 
 - ログイン後の掲載媒体欄
 - 提携済みかどうか（画面を見ていない）
 - カタログ 15000 円が確定円になる日
-- 転職 Threads のハンドル（accounts.json は未記入。トークンは engage ログで未設定）
+- 転職 Threads のハンドル（accounts.json は未記入。トークンは engage ログで未設定。公開 fetch はアプリ誘導のみで存在は証明できない）
 - 指令塔が指名する既存 YouTube 動画
+- ログイン後の副サイト一覧

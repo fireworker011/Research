@@ -23,7 +23,8 @@
 - 2026-08-28 07:51 JST 再々読の [sns.php](https://support.a8.net/as/HintOfProgram/sns.php) に neo は載っている。公開プログラムID **`s00000018427001`**。掲載媒体の YouTube 可否はログイン後。確認前に貼るな。公開実測: `docs/grok-bots/FUNNEL_LIVE.md`
 - 同ページの **UZUZ第二新卒** は `s00000014490001`。neo の代わりに開くな。
 - 同ページ注目案件の **N高等学校** は `s00000027548001`（資料請求15000円はカタログ）。neo の前に開くな。
-- Secret だけではクリックできない。`YouTubeあり` のあと dump `G_hq_threads_profile.txt`（プロフィールリンク欄だけ。cron は戻すな）
+- Secret の前に、開設済み転職 Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`。未開設なら登録するな。新媒体を今日開くな
+- Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（プロフィールリンク欄だけ。cron は戻すな）
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。`YouTubeあり` のあとだけ `SECRET.md` / `dump/G_hq_secret_neo.txt`。cron は戻すな。
 
