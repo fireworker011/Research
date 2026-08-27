@@ -23,6 +23,7 @@
 - 2026-08-28 07:51 JST 再々読の [sns.php](https://support.a8.net/as/HintOfProgram/sns.php) に neo は載っている。公開プログラムID **`s00000018427001`**。掲載媒体の YouTube 可否はログイン後。確認前に貼るな。公開実測: `docs/grok-bots/FUNNEL_LIVE.md`
 - 同ページの **UZUZ第二新卒** は `s00000014490001`。neo の代わりに開くな。
 - 同ページ注目案件の **N高等学校** は `s00000027548001`（資料請求15000円はカタログ）。neo の前に開くな。neo が `項目なし` / `媒体なし` / `YouTubeあり` のあとだけ dump `G_hq_sns_nko.txt`
+- 同ページ注目案件の **チャイルド・アイズ** は `s00000027572003`（無料体験予約6767円はカタログ）。N高の前に開くな。N高が `項目なし` / `媒体なし` / `YouTubeあり` のあとだけ dump `G_hq_sns_eyes.txt`
 - neo `s00000018427001` の提携済みかは **ファイルに無い**。sns.php の「提携する」は未ログインでも detail-not-partnered。ログイン後の返しは `未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`。未提携なら dump `G_hq_a8_partner.txt`。承認前に貼るな
 - Secret の前に、`Threadsあり` なら転職 Threads が開設済みかを1語で返す（`EXIST.md` / dump `G_hq_threads_exist.txt`）。未開設なら新造するな。トークン未登録は未開設の証明ではない
 - `YouTubeあり`（Threads 無し）なら dump `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな。そのあと N高
@@ -33,7 +34,7 @@
 - post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない
 - 2026-08-28 08:16 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
-- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。`Threadsあり` かつ `開設済み` のあとだけ `SECRET.md` / `dump/G_hq_secret_neo.txt`（neo）または `dump/G_hq_secret_nko.txt`（N高）。cron は戻すな。
+- 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。
 
 ## 計測
 

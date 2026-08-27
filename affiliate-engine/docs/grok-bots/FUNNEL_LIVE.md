@@ -1,6 +1,6 @@
 # 申込型 公開ページ実測（参謀・2026-08-28 JST）
 
-開封: 2026-08-28 再読。**再々読: 2026-08-28 07:51 JST**。**Hour19: 2026-08-28 08:16 JST**（sns.php HTML）。**Hour+ : 2026-08-28 08:40 JST**（教育 Threads 公開プロフィール再読。sns.php は timeout）。円は足していない。掲載媒体（YouTube の有無）はこの公開ページに無い。neo 公開IDは **`s00000018427001` のまま**。UZUZ `s00000014490001`、N高 `s00000027548001`。auひかりはこのページに無い。
+開封: 2026-08-28 再読。**再々読: 2026-08-28 07:51 JST**。**Hour19: 2026-08-28 08:16 JST**（sns.php HTML）。**Hour+ : 2026-08-28 08:40 JST**（教育 Threads）。**sns.php HTML 再読: 2026-08-28 08:50 JST**。円は足していない。掲載媒体（YouTube の有無）はこの公開ページに無い。neo 公開IDは **`s00000018427001` のまま**。UZUZ `s00000014490001`、N高 `s00000027548001`、チャイルド・アイズ **`s00000027572003`**。auひかりはこのページに無い。
 
 出典:
 - [sns.php](https://support.a8.net/as/HintOfProgram/sns.php)（SNS投稿おすすめ）
@@ -29,7 +29,8 @@ sns.php の「提携する」href は未ログインでも `detail-not-partnered
 | 公開名 | 公開プログラムID | 理由 |
 |---|---|---|
 | 第二新卒向け転職エージェント【UZUZ第二新卒】 | `s00000014490001` | neo の代わりにしない |
-| ネット×リアルで高卒資格＋進路実現！KADOKAWA・ドワンゴが贈る通信制高校【N高等学校】 | `s00000027548001` | 教育。neo の掲載媒体の前に開くな |
+| ネット×リアルで高卒資格＋進路実現！KADOKAWA・ドワンゴが贈る通信制高校【N高等学校】 | `s00000027548001` | 教育。neo の掲載媒体の前に開くな。そのあとの次はアイズ |
+| 考える力を育む！1.5歳からの知能育成・受験対策教室【チャイルド・アイズ】 | `s00000027572003` | 教育。N高の掲載媒体の前に開くな |
 
 ## 同じページにあるが、今夜の代入に使わない
 
@@ -51,6 +52,14 @@ sns.php の「提携する」href は未ログインでも `detail-not-partnered
 
 教育 Threads は公開プロフィールが **2026-08-28 08:40 JST に実在**（表示名「はな｜小学生の習い事メモ」。ハンドルは `accounts.json`。チャットに書くな）。未開設の証明には使わない。返しは `EXIST_EDU.md` の1語。教育 YouTube は始めない（台帳 `make: never`）。N高を転職 / ペット / 副業アカに置くな。
 
+## 注目案件（教育。N高の次）
+
+公開タイトル: **考える力を育む！1.5歳からの知能育成・受験対策教室【チャイルド・アイズ】**  
+置き場: sns.php「注目案件」  
+公開プログラムID: **`s00000027572003`**（バナー `insId` と「提携する」が一致。隣の NOL World は `s00000027412001`。混ぜるな）  
+公開の成果地点（カタログ）: 新規無料体験予約6767円 → **足すな**  
+鍵 `教育_アイズ` は空。N高の掲載媒体を見る前にアイズを開くな。N高が `項目なし` / `媒体なし` / `YouTubeあり` のあとだけ開く。教育 Threads に置く。転職アカに置くな。
+
 ## 一般ガイド（個別許可ではない）
 
 A8 の YouTube ガイドは「詳細欄にリンク + PR + 有料プロモーション」と書く。YouTube アカウントのサイト登録も求める。これは **全プログラムに YouTube が載っている証明ではない**。neo の掲載媒体欄の代わりにしない。
@@ -61,13 +70,16 @@ Secret に URL を入れただけでは円は動かない。post / insight は `
 
 | 場所 | 条件 | やるな |
 |---|---|---|
-| A8 副サイト | `Threadsあり` かつ `開設済み` のあと。開設済み転職 Threads だけ。公式「副サイトを登録する」 | 未開設の箱を新造。転職 YouTube。URL をチャットへ |
-| 転職 Threads のプロフィールリンク欄 | Secret のあと。掲載媒体に Threads が書いてあるとき。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
+| A8 副サイト | `Threadsあり` かつ `開設済み` のあと。neo なら転職 Threads。N高／アイズなら教育 Threads。公式「副サイトを登録する」 | 未開設の箱を新造。教育 YouTube。URL をチャットへ |
+| 転職 Threads のプロフィールリンク欄 | neo が `Threadsあり`。Secret のあと。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
+| 教育 Threads のプロフィールリンク欄 | N高またはアイズが `Threadsあり`。Secret のあと。開設済みの教育アカだけ | スレッド本文。転職アカに N高／アイズ。cron 再開 |
 | 指令塔が指名した既存 YouTube の詳細欄 | `YouTubeあり` のあと。動画を指令塔が指名したとき | 転職ジャンルの新規チャンネル（`make: never`）。ペットに neo。動画内URL。Shortsコメント |
 
 dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `Threadsあり` なら `G_hq_threads_exist.txt` → `開設済み` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。`YouTubeあり`（Threads 無し）なら `G_hq_yt_only.txt` のあと `G_hq_sns_nko.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_nko.txt`。`未開設` なら新造するな。結合するな。
 
-N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt`。
+N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。
+
+アイズ dump: `G_hq_sns_eyes.txt` → `未提携` なら `G_hq_a8_partner_eyes.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_eyes.txt` → `G_hq_threads_profile_eyes.txt`。アイズ `YouTubeあり` なら `G_hq_yt_only_eyes.txt`。
 
 ## ファイルに無いもの
 

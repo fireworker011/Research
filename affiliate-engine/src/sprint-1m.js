@@ -154,7 +154,7 @@ function buildSnapshot(opts = {}) {
   blockers.push({
     id: 'high_ticket_nko',
     owner: '指令塔→人間',
-    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。neo の前に N高を開くな。教育YouTubeは始めるな'
+    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。neo の前に N高を開くな。教育YouTubeは始めるな'
   });
   if (filled > 0) {
     blockers.unshift({

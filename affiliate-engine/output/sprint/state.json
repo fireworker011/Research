@@ -43,12 +43,14 @@
     "source": "https://support.a8.net/as/HintOfProgram/sns.php",
     "keys": [
       "転職_neo",
-      "教育_N高"
+      "教育_N高",
+      "教育_アイズ"
     ],
     "filled": 0,
     "program_id": "s00000018427001",
     "fallback_id": "s00000027548001",
-    "fallback_when": "neo 項目なし/媒体なし/YouTubeあり → G_hq_sns_nko",
+    "fallback2_id": "s00000027572003",
+    "fallback_when": "neo 項目なし/媒体なし/YouTubeあり → N高。N高も同じ → チャイルド・アイズ",
     "note": "sns_next 返しは 未提携/Threadsあり/YouTubeあり/項目なし/媒体なし。Threadsあり→EXIST。YouTubeあり/項目なし/媒体なし→N高。公開ID s00000018427001"
   },
   "note_sku1": {
@@ -131,7 +133,7 @@
     {
       "id": "high_ticket_nko",
       "owner": "指令塔→人間",
-      "action": "neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。neo の前に N高を開くな。教育YouTubeは始めるな"
+      "action": "neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。neo の前に N高を開くな。教育YouTubeは始めるな"
     }
   ],
   "notes": [
@@ -283,6 +285,13 @@
     },
     {
       "at": "2026-08-27T23:37:24.833Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:43:19.390Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

@@ -19,7 +19,14 @@
 | 教育が 開設済み のあと | `dump/G_hq_a8_site_edu.txt` | その教育 Threads を副サイト。転職アカに N高を載せるな。教育YouTubeは始めるな |
 | そのあと | `dump/G_hq_secret_nko.txt` | Secret の `教育_N高` だけ。links.json は空。cron は戻すな |
 | そのあと | `dump/G_hq_threads_profile_edu.txt` | 教育 Threads のプロフィールリンク欄だけ。本文は貼るな |
-| N高が YouTubeあり のあと | `dump/G_hq_yt_only_nko.txt` | 教育 Threads に置くな。教育YouTubeは始めるな |
+| N高が YouTubeあり のあと | `dump/G_hq_yt_only_nko.txt` | 教育 Threads に置くな。教育YouTubeは始めるな。次はアイズ |
+| N高が 項目なし / 媒体なし / YouTubeあり のあと | `dump/G_hq_sns_eyes.txt` | チャイルド・アイズ `s00000027572003` だけ開け。N高が Threadsあり なら使うな。UZUZ は開くな |
+| アイズが 未提携 のあと | `dump/G_hq_a8_partner_eyes.txt` | アイズだけ提携申請。承認後は sns_eyes を再貼り |
+| アイズが Threadsあり のあと | `dump/G_hq_edu_exist.txt` | 教育 Threads は 開設済み / 未開設。未開設なら新造するな |
+| 教育が 開設済み のあと | `dump/G_hq_a8_site_edu.txt` | その教育 Threads を副サイト。転職アカにアイズを載せるな |
+| そのあと | `dump/G_hq_secret_eyes.txt` | Secret の `教育_アイズ` だけ。links.json は空。cron は戻すな |
+| そのあと | `dump/G_hq_threads_profile_eyes.txt` | 教育 Threads のプロフィールリンク欄だけ。本文は貼るな |
+| アイズが YouTubeあり のあと | `dump/G_hq_yt_only_eyes.txt` | 教育 Threads に置くな。教育YouTubeは始めるな |
 | そのあと | `dump/G_hq_banner_10.txt` | 秋バナーは製作済。出品するな |
 | そのあと | `dump/G_hq_a8_csv.txt` | A8 で見た数字だけ conversions に1行。開いていないなら足すな |
 | 自動投稿を出す前 | `dump/G_hq_merge_overlay.txt` | PR 77 と 78 をマージ。schedule は戻すな。プロフィールは待たない |
