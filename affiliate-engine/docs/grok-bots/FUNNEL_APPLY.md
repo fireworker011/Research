@@ -18,7 +18,7 @@
 
 sns.php は「前月 SNS 経由で成果が出た」と書いてある。プログラム詳細の掲載媒体（YouTube の有無）はログイン後。**確認前に貼るな。** 同じページの UZUZ第二新卒（`s00000014490001`）は neo の代わりにしない。
 
-人間の返し: `未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`。未提携＝申請は `dump/G_hq_a8_partner.txt`。項目なし・媒体なし＝貼らない。YouTubeあり（Threads 無し）＝プロフィールに置くな（`dump/G_hq_yt_only.txt`）。
+人間の返し: `未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`。未提携＝申請は `dump/G_hq_a8_partner.txt`。項目なし・媒体なし＝neo は貼らない。次は N高 `dump/G_hq_sns_nko.txt`。YouTubeあり（Threads 無し）＝プロフィールに置くな（`dump/G_hq_yt_only.txt`）。そのあと N高。
 
 見ないもの: auひかり（項目なし）。オリコで乗ーるをオリコカードに代入するな。Pappy 等のマッチングは Meta の出会い系リスクで使わない。
 
@@ -32,3 +32,5 @@ sns.php は「前月 SNS 経由で成果が出た」と書いてある。プロ�
 テンプレは seed に `転職_neo` / `教育_N高`。値は空。本文は「調べた／整理した」。体験の捏造なし。#PR 付き。
 
 空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `Threadsあり` と返し、転職 Threads が `開設済み`（`EXIST.md` / `dump/G_hq_threads_exist.txt`）のあと、副サイト登録（`SITE.md` / `dump/G_hq_a8_site.txt`）を経て人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（YouTubeあり／項目なし／媒体なし／未開設では使わない）。その次はプロフィールリンク欄: `docs/grok-bots/PROFILE.md` / `dump/G_hq_threads_profile.txt`。
+
+neo が `項目なし` / `媒体なし` / `YouTubeあり` のときは N高へ。教育 Threads が `開設済み`（`EXIST_EDU.md`）なら副サイト `dump/G_hq_a8_site_edu.txt` → Secret `教育_N高`（`dump/G_hq_secret_nko.txt`）→ 教育プロフィール `dump/G_hq_threads_profile_edu.txt`。教育 YouTube は始めない。

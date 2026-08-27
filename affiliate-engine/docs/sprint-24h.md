@@ -48,6 +48,8 @@
 | 22 | 計測: conversions のカタログ円・URL をスコアボードが落とす。重ね PR は MERGEABLE。マージ dump を自動投稿の前に置く（済） |
 | 23 | 総括。指令塔へ返す材料 `output/sprint/WRAP.md`（済） |
 
+24h タスク表は済。壁時計の hourly は `hours_left=0` まで回す。続きの最善手: CW 公開 N が 6 のあいだは `G_hq_cw_n10` を今夜の1手のまま。neo が項目なしでも N高へ落とす dump は `PHONE_HQ.md`。
+
 ## 指令塔が人間へ出す手
 
 参謀下書きは `output/sprint/HUMAN.md`。採否は指令塔。

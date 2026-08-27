@@ -12,7 +12,14 @@
 | 開設済みのあと | `dump/G_hq_a8_site.txt` | その Threads を副サイト登録。未開設では使うな。転職YouTubeは始めるな |
 | そのあと | `dump/G_hq_secret_neo.txt` | 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ。links.json は空。cron は戻すな。自動投稿は checkout ブランチに重ねが無いと空のまま（`CHECKOUT.md`）。プロフィールは待たない |
 | そのあと | `dump/G_hq_threads_profile.txt` | 開設済み転職 Threads のプロフィールリンク欄だけ。本文は貼るな。cron は戻すな |
-| YouTubeありのあと | `dump/G_hq_yt_only.txt` | Threads が欄に無い。プロフィールに置くな。転職YouTubeは始めるな。ペットに neo を置くな |
+| YouTubeありのあと | `dump/G_hq_yt_only.txt` | Threads が欄に無い。プロフィールに置くな。転職YouTubeは始めるな。ペットに neo を置くな。次は N高 |
+| neo が 項目なし / 媒体なし / YouTubeあり のあと | `dump/G_hq_sns_nko.txt` | N高 `s00000027548001` だけ開け。neo が Threadsあり なら使うな。UZUZ は開くな |
+| N高が 未提携 のあと | `dump/G_hq_a8_partner_nko.txt` | N高だけ提携申請。UZUZ に出すな。承認後は sns_nko を再貼り |
+| N高が Threadsあり のあと | `dump/G_hq_edu_exist.txt` | 教育 Threads は 開設済み / 未開設。未開設なら新造するな。ハンドルはチャットに書くな |
+| 教育が 開設済み のあと | `dump/G_hq_a8_site_edu.txt` | その教育 Threads を副サイト。転職アカに N高を載せるな。教育YouTubeは始めるな |
+| そのあと | `dump/G_hq_secret_nko.txt` | Secret の `教育_N高` だけ。links.json は空。cron は戻すな |
+| そのあと | `dump/G_hq_threads_profile_edu.txt` | 教育 Threads のプロフィールリンク欄だけ。本文は貼るな |
+| N高が YouTubeあり のあと | `dump/G_hq_yt_only_nko.txt` | 教育 Threads に置くな。教育YouTubeは始めるな |
 | そのあと | `dump/G_hq_banner_10.txt` | 秋バナーは製作済。出品するな |
 | そのあと | `dump/G_hq_a8_csv.txt` | A8 で見た数字だけ conversions に1行。開いていないなら足すな |
 | 自動投稿を出す前 | `dump/G_hq_merge_overlay.txt` | PR 77 と 78 をマージ。schedule は戻すな。プロフィールは待たない |

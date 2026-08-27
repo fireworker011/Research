@@ -1,6 +1,6 @@
 # 24h 参謀総括（指令塔へ返す材料）
 
-書いた日: 2026-08-28 08:28 JST。Cursor は発出しない。採否は指令塔。
+書いた日: 2026-08-28 08:40 JST。Cursor は発出しない。採否は指令塔。
 目標 2026-09-30 確定 ¥1,000,000 は変えない。実測円は **¥0**（未達）。
 
 ## 円（正本 `data/conversions.csv`）
@@ -20,7 +20,7 @@
 
 dump は **1つ**: `docs/grok-bots/dump/G_hq_cw_n10.txt`
 
-- 公開 N は **6**。新規4に `fireworker12` なし（08:16 JST 公開再読）
+- 公開 N は **6**。新規4に `fireworker12` なし（08:40 JST 公開再読）
 - 13405300 応募 13。13405803 期限 **2026-08-29**
 - 既応募6へ再応募するな。無い実績は書くな
 
@@ -36,14 +36,16 @@ neo 公開ID **`s00000018427001`**。UZUZ は開くな。
 |---|---|
 | `未提携` | `G_hq_a8_partner.txt`。承認前に貼るな |
 | `Threadsあり` | `G_hq_threads_exist.txt` → 開設済みなら副サイト → Secret → プロフィール |
-| `YouTubeあり` | `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな |
-| `項目なし` / `媒体なし` | 貼るな |
+| `YouTubeあり` | `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな。**次は N高** `G_hq_sns_nko.txt` |
+| `項目なし` / `媒体なし` | neo は貼るな。**止まれではない。** 次は N高 `G_hq_sns_nko.txt` |
+
+N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロフィールが実在。未開設なら新造するな。教育 YouTube は始めるな。N高を転職アカに置くな。
 
 未開設なら新造するな。転職 YouTube は始めるな。cron は戻すな。
 
 ## 仕組み（円ではない）
 
-- 重ね PR 77 MERGEABLE: https://github.com/fireworker011/Research/pull/77 （checkout `claude/monthly-revenue-system-gvi02u`）
+- 重ね PR 77 MERGEABLE: https://github.com/fireworker011/Research/pull/77 （checkout `claude/monthly-revenue-system-gvi02u`。N高テンプレも重ねに足す）
 - YAML env PR 78 MERGEABLE: https://github.com/fireworker011/Research/pull/78
 - マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
 - conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる

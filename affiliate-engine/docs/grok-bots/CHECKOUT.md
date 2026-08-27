@@ -25,7 +25,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 - poster / amplify / insight / strategy-engine は `loadConfig('links')` のファイルだけを見る
 - `config/links.json` に `転職_neo` / `教育_N高` / `申込_auひかり` が無い
 - post / insight の YAML に `AFFILIATE_LINKS_JSON` が無い
-- seed に `career_20260828_neo_01/02` が無い
+- seed に `career_20260828_neo_01/02` が無い（重ね PR 77 が足す。N高 `education_20260828_nko_01` も重ねに足す）
 
 GitHub Secret を入れても、checkout ブランチがファイルの空キーしか見ない。`skipped_no_link` になる。sprint ブランチの重ねは本番ジョブでは使われない。
 
@@ -45,6 +45,8 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 4. 同じ URL を転職 Threads の **プロフィールリンク欄**（`PROFILE.md`）
 
 プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。
+
+neo が `項目なし` / `媒体なし` / `YouTubeあり` なら、同じ手動導線を教育 Threads × N高で行う（`EXIST_EDU.md` → `SITE_EDU.md` → `dump/G_hq_secret_nko.txt` → `dump/G_hq_threads_profile_edu.txt`）。教育 YouTube は始めない。N高を転職アカに置くな。
 
 ## やらないこと
 

@@ -1,6 +1,8 @@
 # Secret の入れ方（参謀・URL を Git に書くな）
 
-指令塔が `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+指令塔が neo で `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+
+N高の Secret は `dump/G_hq_secret_nko.txt`（鍵 `教育_N高`）。このファイルと混ぜるな。neo が項目なしのときは `転職_neo` を空のままにして `教育_N高` だけ入れる。
 
 値は A8 管理画面で、**掲載サイトに登録した転職 Threads を選んで**発行した広告リンク（チャットに貼るな）。未登録のまま発行するな。
 
@@ -17,7 +19,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 {"転職_neo":"https://example.invalid/replace-in-github-secret-only"}
 ```
 
-他の鍵（`申込_auひかり` / `教育_N高` / `ペット_Furbo`）は、指令塔が別途「入れてよい」と出すまで足すな。
+他の鍵（`申込_auひかり` / `教育_N高` / `ペット_Furbo`）は、指令塔が別途「入れてよい」と出すまで足すな。N高経路で入れてよいと出たあとは鍵 `教育_N高` だけ（`dump/G_hq_secret_nko.txt`）。URL はここに書くな。
 
 次の仕事（結合するな）: `dump/G_hq_threads_profile.txt`。Secret だけではクリックできない。
 

@@ -151,6 +151,11 @@ function buildSnapshot(opts = {}) {
     owner: '指令塔→人間',
     action: 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま'
   });
+  blockers.push({
+    id: 'high_ticket_nko',
+    owner: '指令塔→人間',
+    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なし/媒体なし/YouTubeありなら N高 s00000027548001。neo の前に N高を開くな。教育YouTubeは始めるな'
+  });
   if (filled > 0) {
     blockers.unshift({
       id: 'links_present',
