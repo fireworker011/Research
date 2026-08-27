@@ -16,7 +16,12 @@
 既存アカ: 転職（鍵 `転職_neo` は空。`accounts.json` の tenshoku `handle` は未記入）  
 掲載媒体に YouTube があるか: **ファイルに無い**（ログイン後のプログラム詳細）
 
-人間が返すのは次の1語だけ: `YouTubeあり` / `YouTubeなし` / `項目なし`。項目なし＝貼らない（auひかりと同じ扱い）。
+人間が返すのは次の1語だけ: `未提携` / `YouTubeあり` / `YouTubeなし` / `項目なし`。
+- `未提携` → dump `G_hq_a8_partner.txt`。承認前に貼るな
+- `YouTubeあり` → dump `G_hq_a8_site.txt`
+- `YouTubeなし` / `項目なし` → 貼るな（auひかりと同じ）
+
+sns.php の「提携する」href は未ログインでも `detail-not-partnered`。**このメディアが未提携である証明ではない。** 提携済みかはログイン後だけ。
 
 開くIDは `s00000018427001` だけ。次は開くな:
 
@@ -57,12 +62,12 @@ Secret に URL を入れただけでは円は動かない。cron を戻さなく
 | 転職 Threads のプロフィールリンク欄 | Secret のあと。掲載媒体に Threads が書いてあるとき。開設済みの転職アカだけ | スレッド本文。未開設の箱。他ジャンルのアカ。cron 再開 |
 | 指令塔が指名した既存 YouTube の詳細欄 | `YouTubeあり` のあと。動画を指令塔が指名したとき | 転職ジャンルの新規チャンネル（`make: never`）。動画内URL。Shortsコメント |
 
-dump: `dump/G_hq_a8_site.txt`（YouTubeありの直後）→ `dump/G_hq_secret_neo.txt` → `dump/G_hq_threads_profile.txt`。結合するな。
+dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `YouTubeあり` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。結合するな。
 
 ## ファイルに無いもの
 
 - ログイン後の掲載媒体欄
-- 提携済みかどうか（画面を見ていない）
+- 提携済みかどうか（画面を見ていない。sns.php の detail-not-partnered は未ログイン CTA）
 - カタログ 15000 円が確定円になる日
 - 転職 Threads のハンドル（accounts.json は未記入。トークンは engage ログで未設定。公開 fetch はアプリ誘導のみで存在は証明できない）
 - 指令塔が指名する既存 YouTube 動画

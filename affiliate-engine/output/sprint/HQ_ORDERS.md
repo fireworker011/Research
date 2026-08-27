@@ -15,4 +15,4 @@ CW `fireworker12` で、既応募6件には再応募せず、CW_LIVE.md の新�
 
 ## 盤面（invent していない）
 
-実測円 ¥0。conversions 最終行 2026-08-27。CW 公開 N は 6。08:01 JST でも新規4に fireworker12 なし。sns.php に neo は載っている。公開ID `s00000018427001`。掲載媒体はログイン後。貼るな。
+実測円 ¥0。conversions 最終行 2026-08-27。CW 公開 N は 6。08:01 JST でも新規4に fireworker12 なし。neo `s00000018427001` の提携済みかはファイルに無い。掲載媒体はログイン後。貼るな。
