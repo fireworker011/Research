@@ -11,9 +11,10 @@
     8,
     9,
     10,
-    11
+    11,
+    12
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。次は G_hq_note_place。公開するな。neo は sns.php に載っている。掲載媒体はまだ見るな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。本文は CW_APPLY。無い実績は書くな。次は G_hq_note_place。公開するな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -48,7 +49,9 @@
     "n": 10,
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
-    "reapply": false
+    "apply": "docs/grok-bots/CW_APPLY.md",
+    "reopen": "2026-08-28T22:37Z",
+    "new4_public_apply": false
   },
   "banner_10": {
     "path": "docs/grok-bots/note/BANNER_10.md",
@@ -168,6 +171,13 @@
     },
     {
       "at": "2026-08-27T22:36:36.727Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:39:45.342Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

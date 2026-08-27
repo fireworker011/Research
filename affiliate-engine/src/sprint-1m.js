@@ -217,7 +217,7 @@ function renderHumanMd(s) {
 
 目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件だけ応募して N=10 にせよ。プロフィールは直すな。
+1. CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件へ CW_APPLY.md の文で応募して N=10 にせよ。無い実績は書くな。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
 
 CSV の1行は dump \`G_hq_a8_csv.txt\` の仕事。今夜の dump と結合するな。
