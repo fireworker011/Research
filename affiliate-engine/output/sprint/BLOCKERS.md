@@ -9,7 +9,7 @@
 
 | 順 | 線 | 状態 | ブロッカー（ファイルにある分） | 今夜やってよいか |
 |---|---|---|---|---|
-| 1 | CW `fireworker12` | **run** | 再読でも公開6件のみ。新規4に fireworker12 なし。応募文 `CW_APPLY.md`。13406612 期限 **2026-08-29**（応募済） | 新規4だけ。無い実績は書くな。プロフィールは直すな |
+| 1 | CW `fireworker12` | **run** | 08:16 JST 再読でも公開6件のみ。新規4に fireworker12 なし。13405300 応募 **13**。応募文 `CW_APPLY.md`。13406612 / 13405803 期限 **2026-08-29** | 新規4だけ。無い実績は書くな。プロフィールは直すな |
 | 2 | note 手順書 980 | **run**（下書きあり・未公開） | 本文: `docs/grok-bots/note/SKU1_tejun.md`。公開URL **ファイルに無い**。今夜はD0にしない | 下書きを note に置く。公開するな |
 | 3 | 秋バナー10枚 | **run**（製作済）/ 出品は未開始 | 記録: `docs/grok-bots/note/BANNER_LOG.md`。通す **10**。出品URL **ファイルに無い** | 出品するな |
 | 4 | 申込型ハイチケット | **INSUFFICIENT / 未開始** | auひかりは提携済みだが 2026-08-27 管理画面に SNS/YouTube/TikTok/Threads 掲載項目なし＝貼らない。オリコカード・ガス屋のプログラム名は公式公開ページに **ファイルに無い**。オリコで乗ーるはカードではない（代入禁止） | 貼るな。応募を始めるな |
@@ -26,7 +26,8 @@
 - neo `s00000018427001` の提携済みかは **ファイルに無い**。sns.php の「提携する」は未ログインでも detail-not-partnered。ログイン後の返しは `未提携` / YouTube 3語。未提携なら dump `G_hq_a8_partner.txt`。承認前に貼るな
 - Secret の前に、開設済み転職 Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`。未開設なら登録するな
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（プロフィールリンク欄だけ。cron は戻すな）
-- post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける
+- post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない
+- 2026-08-28 08:16 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` は空。`YouTubeあり` のあとだけ `SECRET.md` / `dump/G_hq_secret_neo.txt`。cron は戻すな。
 
