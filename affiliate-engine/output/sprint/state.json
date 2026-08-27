@@ -22,9 +22,10 @@
     19,
     20,
     21,
-    22
+    22,
+    23
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。重ね PR 77/78 は MERGEABLE。マージは自動投稿の前。N=6。円は0。cron は戻すな",
+  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。指令塔が G_hq_cw_n10 を出したか見る。円は0。cron は戻すな。タイマーは hours_left=0 まで止めるな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -259,6 +260,19 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:28:59.428Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
     }
-  ]
+  ],
+  "wrap": {
+    "path": "output/sprint/WRAP.md",
+    "at": "2026-08-28T08:28+09:00",
+    "measured_yen": 0,
+    "issued": false
+  }
 }

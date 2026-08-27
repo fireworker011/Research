@@ -236,6 +236,10 @@ ${blockerLines}
 - いいね・フォロー・自動DM
 - YouTube 投稿の自動化
 - 体験談の捏造、#PR なしのリンク
+
+## 指令塔へ返す材料
+
+\`output/sprint/WRAP.md\`。参謀は発出しない。採否は指令塔。
 `;
 }
 
@@ -266,7 +270,7 @@ function writeOutputs(snapshot) {
     hours_elapsed: snapshot.hours_elapsed
   });
   const keep = {};
-  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1', 'cw_live', 'banner_10', 'measure']) {
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1', 'cw_live', 'banner_10', 'measure', 'wrap']) {
     if (prev[key] !== undefined) keep[key] = prev[key];
   }
   const state = {
