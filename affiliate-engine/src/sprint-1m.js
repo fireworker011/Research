@@ -53,6 +53,15 @@ function isLiveConversionRow(row) {
   return true;
 }
 
+function lastLiveConversionDate(csvText) {
+  const rows = parseCSV(csvText).filter(isLiveConversionRow);
+  let last = null;
+  for (const row of rows) {
+    if (!last || row.date > last) last = row.date;
+  }
+  return last;
+}
+
 function sumConversions(csvText) {
   const rows = parseCSV(csvText).filter(isLiveConversionRow);
   let clicks = 0;
@@ -63,7 +72,7 @@ function sumConversions(csvText) {
     cv += toInt(row.cv);
     approvedYen += toInt(row.approved_yen);
   }
-  return { rows: rows.length, clicks, cv, approvedYen };
+  return { rows: rows.length, clicks, cv, approvedYen, lastDate: lastLiveConversionDate(csvText) };
 }
 
 function hoursElapsed(startedAtIso, nowMs = Date.now()) {
@@ -99,10 +108,14 @@ function buildSnapshot(opts = {}) {
     owner: '指令塔→人間',
     action: 'KEEP_CUT の run: CWは既応募6へ再応募せず新規4でN=10 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない'
   });
+  const lastDate = conversions.lastDate;
+  const csvStale = !lastDate || lastDate < today;
   blockers.push({
-    id: 'a8_csv',
+    id: csvStale ? 'csv_stale' : 'a8_csv',
     owner: '指令塔→人間',
-    action: 'A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない'
+    action: csvStale
+      ? `conversions 最終実測行は ${lastDate || '無し'}。今日 ${today} の行はファイルに無い。管理画面を見てから1行。開いていないなら足すな。invent するな`
+      : 'A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない'
   });
   blockers.push({
     id: 'video_csv',
@@ -128,6 +141,8 @@ function buildSnapshot(opts = {}) {
     remaining_days: remainingDays,
     pace_yen_per_day: paceYenPerDay,
     conversion_rows: conversions.rows,
+    conversion_last_date: conversions.lastDate,
+    csv_stale: csvStale,
     clicks: conversions.clicks,
     cv: conversions.cv,
     filled_link_keys: filled,
@@ -168,6 +183,8 @@ function renderTodayMd(s) {
 | 残日数（今日含む） | ${s.remaining_days} |
 | 必要ペース | ¥${s.pace_yen_per_day.toLocaleString()} / 日 |
 | conversions 行 | ${s.conversion_rows} |
+| 最終実測行 | ${s.conversion_last_date || '無し'} |
+| 今日の行 | ${s.csv_stale ? 'ファイルに無い' : 'ある'} |
 | clicks（ファイルにある分） | ${s.clicks} |
 | cv（ファイルにある分） | ${s.cv} |
 
@@ -202,7 +219,8 @@ function renderHumanMd(s) {
 
 1. CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件だけ応募して N=10 にせよ。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
-3. 見た A8 の数字だけ conversions.csv に1行。ペット実験の当日数字があれば video_cash_log.csv に1行。
+
+CSV の1行は dump \`G_hq_a8_csv.txt\` の仕事。今夜の dump と結合するな。
 
 次の指示は指令塔が出す。
 `;
@@ -219,7 +237,7 @@ function writeOutputs(snapshot) {
     hours_elapsed: snapshot.hours_elapsed
   });
   const keep = {};
-  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1', 'cw_live', 'banner_10']) {
+  for (const key of ['completed_hours', 'next_hour_task', 'last_dry_run', 'video_judge', 'funnel', 'note_sku1', 'cw_live', 'banner_10', 'measure']) {
     if (prev[key] !== undefined) keep[key] = prev[key];
   }
   const state = {
@@ -280,6 +298,17 @@ function selfTest() {
   if (snap.hours_left !== 21) throw new Error('hours_left');
   if (snap.commander !== 'Grok Bot 指令塔') throw new Error('commander');
   if (snap.staff !== 'Cursor') throw new Error('staff');
+  if (lastLiveConversionDate(csv) !== '2026-08-27') throw new Error('lastLiveConversionDate');
+  if (snap.csv_stale !== false) throw new Error('same-day csv should not be stale');
+  const staleSnap = buildSnapshot({
+    today: '2026-08-28',
+    csvText: csv,
+    links: { 婚活: '' },
+    startedAt: '2026-08-27T00:00:00.000Z',
+    nowMs: Date.parse('2026-08-27T03:00:00.000Z')
+  });
+  if (staleSnap.csv_stale !== true) throw new Error('next-day csv should be stale');
+  if (!staleSnap.blockers.some((b) => b.id === 'csv_stale')) throw new Error('csv_stale blocker missing');
   console.log('self-test ok');
 }
 
@@ -303,6 +332,7 @@ module.exports = {
   DEADLINE,
   daysInclusive,
   sumConversions,
+  lastLiveConversionDate,
   buildSnapshot
 };
 

@@ -6,6 +6,7 @@
 
 1. CW fireworker12 で、既応募6件には再応募せず、CW_LIVE.md の新規4件だけ応募して N=10 にせよ。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
-3. 見た A8 の数字だけ conversions.csv に1行。ペット実験の当日数字があれば video_cash_log.csv に1行。
+
+CSV の1行は dump `G_hq_a8_csv.txt` の仕事。今夜の dump と結合するな。
 
 次の指示は指令塔が出す。

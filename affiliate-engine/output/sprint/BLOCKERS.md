@@ -27,10 +27,12 @@
 
 ## 計測
 
-- 円: `data/conversions.csv` が正本
+- 円: `data/conversions.csv` が正本。書き方: `docs/grok-bots/MEASURE.md`
+- 最終実測行: **2026-08-27**。今日（2026-08-28）の行は **ファイルに無い**。実測円は ¥0 のまま（invent していない）
 - 残日数・ペース: `output/sprint/TODAY.md`（`node src/sprint-1m.js`）
 - ペット実験: `output/video/TODAY.md`（円に足さない）
 - CW 公開実測: `output/sprint/CW_LIVE.md`
+- 日次レポート cron: **stopped**。`report.js` は `approved_yen` を読む。amount_jpy は使わない
 
 ## 参謀がやらないこと
 

@@ -9,9 +9,10 @@
     6,
     7,
     8,
-    9
+    9,
+    10
   ],
-  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。中身は再応募禁止＋新規4。次は G_hq_note_place。公開するな",
+  "next_hour_task": "指令塔が G_hq_cw_n10 を出したか見る。CSV は MEASURE.md。今日の行は無い。invent するな。次は G_hq_note_place。公開するな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -53,6 +54,11 @@
     "listed": false,
     "complete_count": null
   },
+  "measure": {
+    "path": "docs/grok-bots/MEASURE.md",
+    "dump": "docs/grok-bots/dump/G_hq_a8_csv.txt",
+    "invent": false
+  },
   "commander": "Grok Bot 指令塔",
   "staff": "Cursor",
   "today": "2026-08-28",
@@ -63,6 +69,8 @@
   "remaining_days": 34,
   "pace_yen_per_day": 29412,
   "conversion_rows": 1,
+  "conversion_last_date": "2026-08-27",
+  "csv_stale": true,
   "clicks": 33,
   "cv": 0,
   "filled_link_keys": 0,
@@ -84,9 +92,9 @@
       "action": "KEEP_CUT の run: CWは既応募6へ再応募せず新規4でN=10 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない"
     },
     {
-      "id": "a8_csv",
+      "id": "csv_stale",
       "owner": "指令塔→人間",
-      "action": "A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない"
+      "action": "conversions 最終実測行は 2026-08-27。今日 2026-08-28 の行はファイルに無い。管理画面を見てから1行。開いていないなら足すな。invent するな"
     },
     {
       "id": "video_csv",
@@ -145,6 +153,13 @@
     },
     {
       "at": "2026-08-27T22:29:18.645Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:33:37.711Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

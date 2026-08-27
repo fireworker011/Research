@@ -6,6 +6,7 @@
 1. `dump/G_hq_note_place.txt` — SKU1 下書きを note に置く。公開するな
 2. `dump/G_hq_sns_next.txt` — 第二新卒エージェントneo の掲載媒体だけ
 3. `dump/G_hq_banner_10.txt` — 秋バナー10枚の製作。出品するな
+4. `dump/G_hq_a8_csv.txt` — A8 で見た数字だけ1行。開いていないなら足すな
 
 盤面の表: `output/sprint/BLOCKERS.md`
 CW 公開実測: `output/sprint/CW_LIVE.md`

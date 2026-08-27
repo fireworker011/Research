@@ -10,8 +10,8 @@
  *
  * 収集するもの:
  * - Threads Insights API: フォロワー数、投稿ごとの views/likes/replies/reposts
- * - data/conversions.csv: ASP 管理画面から手動エクスポートした成果データ
- *   （date,genre,amount_jpy,status[approved|pending|rejected]）
+ * - data/conversions.csv: ASP 管理画面から手動で書いた成果
+ *   （date,source,program,clicks,cv,approved_yen,note）
  *
  * 出力:
  * - output/reports/report_YYYY-MM-DD.md   日次レポート
@@ -85,12 +85,14 @@ async function collectAccountMetrics(account) {
   return result;
 }
 
-/** ASP 成果 CSV（手動エクスポート）を月次集計 */
+/** ASP 成果 CSV（手動）。正本列は approved_yen。amount_jpy は使わない。 */
 function loadConversions() {
   const csvPath = path.join(OUTPUT_DIR, '..', 'data', 'conversions.csv');
   if (!fs.existsSync(csvPath)) return null;
 
-  const rows = parseCSV(fs.readFileSync(csvPath, 'utf-8'));
+  const rows = parseCSV(fs.readFileSync(csvPath, 'utf-8')).filter((r) =>
+    /^\d{4}-\d{2}-\d{2}$/.test(r.date || '')
+  );
   const thisMonth = todayJST().slice(0, 7); // YYYY-MM
   const monthly = rows.filter((r) => (r.date || '').startsWith(thisMonth));
 
@@ -98,16 +100,13 @@ function loadConversions() {
   let approvedTotal = 0;
   let pendingTotal = 0;
   for (const r of monthly) {
-    const amount = parseInt(r.amount_jpy || '0', 10);
-    byGenre[r.genre] = byGenre[r.genre] || { approved: 0, pending: 0, count: 0 };
-    byGenre[r.genre].count++;
-    if (r.status === 'approved') {
-      byGenre[r.genre].approved += amount;
-      approvedTotal += amount;
-    } else if (r.status === 'pending') {
-      byGenre[r.genre].pending += amount;
-      pendingTotal += amount;
-    }
+    const amount = Number.parseInt(String(r.approved_yen ?? '').trim(), 10);
+    const yen = Number.isFinite(amount) ? amount : 0;
+    const key = r.program || r.source || 'unknown';
+    byGenre[key] = byGenre[key] || { approved: 0, pending: 0, count: 0 };
+    byGenre[key].count++;
+    byGenre[key].approved += yen;
+    approvedTotal += yen;
   }
   return { approvedTotal, pendingTotal, byGenre, count: monthly.length };
 }
@@ -165,7 +164,7 @@ function renderReport(date, accountMetrics, conversions, gap) {
     }
   } else {
     lines.push('- ⚠️ `data/conversions.csv` がありません。ASP 管理画面から成果をエクスポートして配置してください');
-    lines.push('  （フォーマット: `date,genre,amount_jpy,status`、status は approved/pending/rejected）');
+    lines.push('  （フォーマット: `date,source,program,clicks,cv,approved_yen,note`。円は approved_yen だけ）');
   }
   lines.push('');
   lines.push('## 必要ファネル（目標達成に必要な月間数値）');
@@ -266,7 +265,11 @@ async function main() {
   console.log(`   月末着地予測: ¥${gap.projectedMonthly.toLocaleString()} / 目標 ¥${TARGET_MONTHLY_JPY.toLocaleString()}`);
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+module.exports = { loadConversions, funnelGapAnalysis, renderReport };
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}

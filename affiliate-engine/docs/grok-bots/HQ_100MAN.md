@@ -34,8 +34,9 @@
 1. **先に** `affiliate-engine/data/conversions.csv`
 2. **そのあと** `output/sprint/TODAY.md`（残日数・ペース。円の合計には CSV が正）
 3. `affiliate-engine/data/video_cash_log.csv`（履歴。円の合計には使うな）
-4. 今夜の1手: `docs/grok-bots/dump/` の最新 `G_hq_*.txt` と `output/sprint/HQ_ORDERS.md`
-5. このファイルに書いていない閲覧数・売上は **ファイルに無い**
+4. 行の書き方: `docs/grok-bots/MEASURE.md`
+5. 今夜の1手: `docs/grok-bots/dump/` の最新 `G_hq_*.txt` と `output/sprint/HQ_ORDERS.md`
+6. このファイルに書いていない閲覧数・売上は **ファイルに無い**
 
 ## 決定済み（ピボット）
 
