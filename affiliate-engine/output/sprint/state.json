@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。14:05 JST 新規4に fireworker12 なし。N=6。GitHub 発出は無い。PR #79 はデフォルト pointer（マージするな）。neo のあとも N高。円は0。cron は戻すな。タイマーは hours_left=0 まで止めるな",
+  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。N=6。GitHub 発出は無い。dump raw は 200。デフォルト HANDOVER はまだ円本線を止める。PR #79 は入口（デフォルトへ入れてよい。75/77/78 は dump までマージするな）。円は0。cron は戻すな。タイマーは hours_left=0 まで止めるな",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
