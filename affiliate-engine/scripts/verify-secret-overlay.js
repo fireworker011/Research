@@ -68,6 +68,26 @@ function assertPosterDryRunRedacts(dummy) {
   if (!out.includes('[link]')) throw new Error('poster dry-run did not redact');
 }
 
+function assertAmplifyStaysOff(dummy) {
+  const result = spawnSync(process.execPath, ['src/amplify.js', '--dry-run'], {
+    cwd: path.join(__dirname, '..'),
+    encoding: 'utf-8',
+    timeout: 20000,
+    env: {
+      ...process.env,
+      AFFILIATE_LINKS_JSON: JSON.stringify({ 教育_アイズ: dummy }),
+      AMPLIFY_ENABLED: '',
+      JITTER: '0'
+    }
+  });
+  const out = `${result.stdout || ''}${result.stderr || ''}`;
+  if (result.status !== 0) {
+    throw new Error(`amplify dry-run exit ${result.status}: ${out.slice(0, 500)}`);
+  }
+  if (out.includes('example.invalid')) throw new Error('amplify dry-run leaked URL');
+  if (!out.includes('AMPLIFY_ENABLED')) throw new Error('amplify should stay off without AMPLIFY_ENABLED=1');
+}
+
 function main() {
   const dummy = 'https://example.invalid/secret-overlay-test';
   const prev = process.env.AFFILIATE_LINKS_JSON;
@@ -105,6 +125,7 @@ function main() {
   }
 
   assertPosterDryRunRedacts(dummy);
+  assertAmplifyStaysOff(dummy);
 
   process.env.AFFILIATE_LINKS_JSON = '';
   const empty = loadLinks();
