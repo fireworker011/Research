@@ -1,6 +1,6 @@
 # 24h 参謀総括（指令塔へ返す材料）
 
-書いた日: 2026-08-28 08:40 JST。CW 再読: 2026-08-28 16:08 JST。Cursor は発出しない。採否は指令塔。
+書いた日: 2026-08-28 08:40 JST。CW 再読: 2026-08-28 16:39 JST。Cursor は発出しない。採否は指令塔。
 目標 2026-09-30 確定 ¥1,000,000 は変えない。実測円は **¥0**（未達）。
 
 ## 円（正本 `data/conversions.csv`）
@@ -20,7 +20,7 @@
 
 dump は **1つ**: `docs/grok-bots/dump/G_hq_cw_n10.txt`
 
-- 公開 N は **6**。新規4に `fireworker12` なし（16:08 JST 公開再読。応募 16/9/7/46）
+- 公開 N は **6**。新規4に `fireworker12` なし（16:39 JST 公開再読。応募 16/9/7/46）。13406612 は応募 **24**（再応募するな）
 - 13405801 は契約した人 1（誰かはファイルに無い）。募集2。4枚目にしない理由にはしない
 - 4枚目は 13406725（短尺素材支給）。合わなければ同型 13408073。2件もダメなら貼るな。13407700 は通常尺なので4の代替にしない
 - 13405803 は期限明日・対象狭いので4に入れない
@@ -47,7 +47,7 @@ N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロ�
 
 ## 仕組み（円ではない）
 
-- 重ね PR **#77 MERGED**。YAML env PR **#78 MERGED**。auひかり drop PR **#84 MERGED**（本番 HEAD `37044d1`）
+- 重ね PR **#77 MERGED**。YAML env PR **#78 MERGED**。auひかり drop PR **#84 MERGED**。insight は PR **#87 MERGED**（auひかりを link_key 候補に出さない。本番 HEAD `f659bfb`）。cron は戻していない
 - デフォルト dump PR **#82/#83/#85/#86 MERGED**（HEAD `f8d5906`。clone なら dump → `CW_APPLY.md`。デフォルト `HQ_100MAN.md` は dump へ送る短文）
 - overlay_status dispatch PR **#81 MERGED**（今夜の1手ではない。run list 空）
 - マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない。cron は戻すな）
