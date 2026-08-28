@@ -236,7 +236,7 @@ function buildSnapshot(opts = {}) {
 }
 
 function renderTodayMd(s) {
-  const blockerLines = s.blockers.map((b) => `- **${b.owner}**: ${b.action}`).join('\n');
+  const boardLines = s.blockers.map((b) => `- ${b.action}`).join('\n');
   const keyNames = s.filled_link_key_names.length ? s.filled_link_key_names.join(', ') : 'なし（値は出さない）';
   return `# 9/30 ¥100万 — 今日のスコアボード
 
@@ -269,11 +269,13 @@ function renderTodayMd(s) {
 - キー名: ${keyNames}
 - Threads cron: **${s.threads_cron}**（再開は指令塔が出す。参謀は出さない）
 
-## 司令部が人間へ出す手（参謀は代替しない）
+## 今夜の1手
 
-今夜の1手は \`output/sprint/HQ_ORDERS.md\` が指名した dump **1ファイルだけ**。Cursor は送らない。下の盤面と結合するな。
+\`output/sprint/HQ_ORDERS.md\` が指名した dump **1ファイルだけ**。Cursor は送らない。
 
-${blockerLines}
+## 盤面（1手ではない。結合するな）
+
+${boardLines}
 
 ## やらないこと
 
@@ -688,8 +690,8 @@ function selfTest() {
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
   if (!hq100.includes('G_hq_20260828.txt')) throw new Error('HQ_100MAN should name the unused old dump so HQ does not open it');
   const todayTpl = fs.readFileSync(path.join(__dirname, 'sprint-1m.js'), 'utf8');
-  if (!todayTpl.includes('指名した dump')) throw new Error('TODAY renderer should send HQ to HQ_ORDERS dump, not the whole blocker list as 1手');
-  if (!todayTpl.includes('は参謀用')) throw new Error('TODAY renderer must not send HQ to WRAP as tonight 1手');
+  if (!todayTpl.includes('盤面（1手ではない')) throw new Error('TODAY should keep blockers as 盤面 not 1手');
+  if (!todayTpl.includes('const boardLines')) throw new Error('TODAY board lines must not prefix 指令塔→人間');
   const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
   if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
   if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {
