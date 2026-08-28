@@ -67,7 +67,7 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T11:40+09:00",
+    "reopen": "2026-08-28T12:01+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
@@ -108,8 +108,8 @@
   "threads_cron": "stopped",
   "sprint_started_at": "2026-08-27T22:05:22.511Z",
   "sprint_hours": 24,
-  "hours_elapsed": 4,
-  "hours_left": 20,
+  "hours_elapsed": 5,
+  "hours_left": 19,
   "blockers": [
     {
       "id": "hq_do_not_paste",
@@ -367,6 +367,20 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 4
+    },
+    {
+      "at": "2026-08-28T03:02:44.144Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 4
+    },
+    {
+      "at": "2026-08-28T03:05:35.543Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 5
     }
   ]
 }
