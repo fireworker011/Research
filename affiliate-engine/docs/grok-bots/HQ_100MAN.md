@@ -32,7 +32,7 @@
 ## 20:00 JST 指令塔の読み順
 
 1. **先に** `affiliate-engine/data/conversions.csv`
-2. **そのあと** `output/sprint/TODAY.md`（残日数・ペース。円の合計には CSV が正）
+2. **そのあと** `output/sprint/TODAY.md`（残日数・ペース。円の合計には CSV が正。ここにある盤面は1手ではない）
 3. `affiliate-engine/data/video_cash_log.csv`（履歴。円の合計には使うな）
 4. 行の書き方: `docs/grok-bots/MEASURE.md`
 5. 今夜の1手: **先に** `output/sprint/HQ_ORDERS.md`。指名された dump **1ファイルだけ** を開け。`docs/grok-bots/dump/` を更新日時や名前で自分で選ぶな。結合するな。旧 `G_hq_20260828.txt` は使うな。PR 76 の auひかり絞り込みは今夜の1手ではない。

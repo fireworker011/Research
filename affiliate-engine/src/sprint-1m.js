@@ -271,6 +271,8 @@ function renderTodayMd(s) {
 
 ## 司令部が人間へ出す手（参謀は代替しない）
 
+今夜の1手は \`output/sprint/HQ_ORDERS.md\` が指名した dump **1ファイルだけ**。Cursor は送らない。下の盤面と結合するな。
+
 ${blockerLines}
 
 ## やらないこと
@@ -283,7 +285,7 @@ ${blockerLines}
 
 ## 指令塔へ返す材料
 
-\`output/sprint/WRAP.md\`。参謀は発出しない。採否は指令塔。
+\`output/sprint/WRAP.md\` は参謀用。指令塔は今夜開くな。採否は指令塔。今夜の dump と結合するな。
 `;
 }
 
@@ -685,6 +687,9 @@ function selfTest() {
   }
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
   if (!hq100.includes('G_hq_20260828.txt')) throw new Error('HQ_100MAN should name the unused old dump so HQ does not open it');
+  const todayTpl = fs.readFileSync(path.join(__dirname, 'sprint-1m.js'), 'utf8');
+  if (!todayTpl.includes('指名した dump')) throw new Error('TODAY renderer should send HQ to HQ_ORDERS dump, not the whole blocker list as 1手');
+  if (!todayTpl.includes('は参謀用')) throw new Error('TODAY renderer must not send HQ to WRAP as tonight 1手');
   const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
   if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
   if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {
