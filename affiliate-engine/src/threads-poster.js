@@ -19,6 +19,7 @@
  *   各アカウントの user_id / access_token（config/accounts.json の env 名で指定）
  *   CATCHUP_HOURS   何時間前までの未投稿分を拾うか（デフォルト: 6）
  *   DAILY_CAP       1アカウントの1日最大投稿数（デフォルト: 10、API上限は250）
+ *   AFFILIATE_BODY_LINKS  1 のときだけ {{AFFILIATE_LINK}} を本文に載せる。既定は載せない（A8 FAQ: Threads 本文の広告は控える。円の置き場はプロフィール）
  */
 
 const fs = require('fs');
@@ -206,6 +207,12 @@ async function main() {
       if (!isDryRun) {
         state.posted[key] = { status: 'skipped_awareness', at: new Date().toISOString() };
       }
+      skipped++;
+      continue;
+    }
+
+    if (String(row.content || '').includes('{{AFFILIATE_LINK}}') && process.env.AFFILIATE_BODY_LINKS !== '1') {
+      console.log(`⏭  ${label}: 本文のアフィは控える（AFFILIATE_BODY_LINKS≠1。円の置き場はプロフィール）`);
       skipped++;
       continue;
     }

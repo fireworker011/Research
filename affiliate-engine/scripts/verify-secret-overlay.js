@@ -35,7 +35,7 @@ function pickDueSlot(posted) {
   throw new Error('no free dry-run slot');
 }
 
-function assertPosterDryRunRedacts(dummy) {
+function writeEducationCsv() {
   const t = seed.posting_templates.find((x) => x.id === 'education_20260828_eyes_01');
   if (!t) throw new Error('missing education_20260828_eyes_01');
   const posted = readJSON(path.join(__dirname, '..', 'output', 'state', 'posted.json'), { posted: {} }).posted || {};
@@ -45,7 +45,12 @@ function assertPosterDryRunRedacts(dummy) {
   const header = 'date,time,account,platform,genre,content,emoji,engagement_prediction,cta_type,link_key';
   const fields = [slot.date, slot.time, 'education', 'threads', '教育', t.content, t.emoji || '', 'medium', 'direct', '教育_アイズ'];
   fs.writeFileSync(csvPath, `${header}\n${fields.map(escapeCSV).join(',')}\n`);
-  const result = spawnSync(process.execPath, ['src/threads-poster.js', '--dry-run'], {
+  return csvPath;
+}
+
+function spawnPosterDryRun(dummy, extraEnv) {
+  const csvPath = writeEducationCsv();
+  return spawnSync(process.execPath, ['src/threads-poster.js', '--dry-run'], {
     cwd: path.join(__dirname, '..'),
     encoding: 'utf-8',
     timeout: 20000,
@@ -54,9 +59,27 @@ function assertPosterDryRunRedacts(dummy) {
       AFFILIATE_LINKS_JSON: JSON.stringify({ 教育_アイズ: dummy }),
       SCHEDULE_CSV: csvPath,
       CATCHUP_HOURS: '6',
-      JITTER: '0'
+      JITTER: '0',
+      ...extraEnv
     }
   });
+}
+
+function assertPosterSkipsBodyLinks(dummy) {
+  const result = spawnPosterDryRun(dummy, { AFFILIATE_BODY_LINKS: '' });
+  const out = `${result.stdout || ''}${result.stderr || ''}`;
+  if (result.status !== 0) {
+    throw new Error(`poster skip-body exit ${result.status}: ${out.slice(0, 500)}`);
+  }
+  if (out.includes('example.invalid')) throw new Error('poster skip-body leaked URL');
+  if (!/投稿対象 [1-9]/.test(out)) {
+    throw new Error(`poster skip-body had no due posts: ${out.slice(0, 400)}`);
+  }
+  if (!out.includes('本文のアフィは控える')) throw new Error('poster should skip body affiliate by default');
+}
+
+function assertPosterDryRunRedacts(dummy) {
+  const result = spawnPosterDryRun(dummy, { AFFILIATE_BODY_LINKS: '1' });
   const out = `${result.stdout || ''}${result.stderr || ''}`;
   if (result.status !== 0) {
     throw new Error(`poster dry-run exit ${result.status}: ${out.slice(0, 500)}`);
@@ -124,6 +147,7 @@ function main() {
     if (!/#PR/i.test(text)) throw new Error(`${id} missing #PR`);
   }
 
+  assertPosterSkipsBodyLinks(dummy);
   assertPosterDryRunRedacts(dummy);
   assertAmplifyStaysOff(dummy);
 
