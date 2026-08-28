@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-08-27T22:14:15.122Z",
+  "generated_at": "2026-08-28T09:47:58.845Z",
   "summary": {
     "today": "2026-08-28",
-    "rowCount": 1,
-    "lastDate": "2026-08-22",
+    "rowCount": 2,
+    "lastDate": "2026-08-27",
     "last7": {
       "start": "2026-08-22",
       "end": "2026-08-28",
-      "videos": 0,
-      "views": 0,
+      "videos": 1,
+      "views": 1416,
       "clicks": 0,
       "conversions": 0
     },
     "prev7Clicks": 0,
     "cumulative": {
-      "videos": 0,
-      "views": 0,
+      "videos": 1,
+      "views": 1416,
       "clicks": 0,
       "conversions": 0
     },
     "experiment": {
       "start": "2026-08-22",
       "day": 7,
-      "videos": 0,
+      "videos": 1,
       "clicks": 0,
       "conversions": 0
     },
@@ -48,9 +48,26 @@
     "code": "CONTINUE_EXPERIMENT",
     "title": "実験 7/14日目。型は変えない",
     "improve": "なし。実験中に型を変えないことが改善",
-    "action": "癒しShortsを残り3本出す。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
+    "action": "癒しShortsを残り2本出す。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
     "includeNext3": true,
     "canTalk1M": false,
     "inExperiment": true
+  },
+  "measured_latest_public": {
+    "channel_id": "UC65pP_901i2ERosuStSAIVw",
+    "channel_title": "ペットと暮らす小さな物語",
+    "video_id": "Vx7LWL8yoJY",
+    "same_as_ledger_id": true,
+    "title": "新入りの夜、先住はケージの前から動かなかった",
+    "url": "https://www.youtube.com/shorts/Vx7LWL8yoJY",
+    "published_watch_dateText": "Aug 26, 2026",
+    "published_rss": "2026-08-26T22:46:43+00:00",
+    "published_jst_date": "2026-08-27",
+    "views_watch_subtitle": "1,416 views",
+    "views_rss": 1416,
+    "clicks": "画面に無い",
+    "conversions": "画面に無い",
+    "tiktok_handle": "@pet_mimamori222",
+    "tiktok_latest": "画面に無い"
   }
 }
