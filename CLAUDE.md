@@ -32,7 +32,7 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 
 | 場所 | 役割 |
 |---|---|
-| `.github/workflows/affiliate_engine_post.yml` | 投稿。毎時23分起動、期日到来分のみ投稿（ステートレス）。concurrencyで二重実行防止。投稿後に amplify.js（500ビュー超の投稿へ自動リンクリプライ・1アカ2回/日）も実行 |
+| `.github/workflows/affiliate_engine_post.yml` | 投稿。schedule は停止中。再開は指令塔。期日到来分のみ投稿。concurrencyで二重実行防止。amplify.js は `AMPLIFY_ENABLED=1` のときだけリプ増幅（既定オフ。Threads 本文/リプのアフィは控える） |
 | `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。1日2ティック+冪等ガード。分析→ジャンル別リサーチ→テンプレ自動反映→エンゲージキット→Issue #13へ投稿 |
 | `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート（14時JST） |
 | `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ |

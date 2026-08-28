@@ -44,7 +44,7 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 3. 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ（`SECRET.md`）
 4. 同じ URL を転職 Threads の **プロフィールリンク欄**（`PROFILE.md`）
 
-プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。ドライランと投稿ログは URL を出さない（`redactAffiliateUrls`）。
+プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。ドライランと投稿ログは URL を出さない（`redactAffiliateUrls`）。amplify のリプ増幅は `AMPLIFY_ENABLED=1` が無いと動かない。YAML に足すな。
 
 neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` なら、同じ手動導線を教育 Threads × N高で行う（`EXIST_EDU.md` → `SITE_EDU.md` → `dump/G_hq_secret_nko.txt` → `dump/G_hq_threads_profile_edu.txt`）。教育 YouTube は始めない。N高を転職アカに置くな。教育アカに neo を置くな。
 
