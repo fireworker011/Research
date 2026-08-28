@@ -25,4 +25,5 @@ jobs:
           node --check src/util.js
           node --check src/threads-poster.js
           node --check src/amplify.js
+          node --check src/strategy-engine.js
           node scripts/verify-secret-overlay.js

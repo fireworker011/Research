@@ -26,6 +26,8 @@
  *   TEMPLATES_PER_GENRE  ジャンルあたりのテンプレ数（デフォルト: 32）
  *   CAMPAIGN_DAYS        スケジュール日数（デフォルト: 60）
  *   POSTS_PER_DAY        1アカウントあたりの投稿数/日（デフォルト: 3）
+ *   AFFILIATE_BODY_LINKS  1 のときだけ {{AFFILIATE_LINK}} テンプレをスケジュールに載せる。
+ *                         既定は載せない（poster と同じ。円の置き場はプロフィール）
  */
 
 const fs = require('fs');
@@ -147,14 +149,24 @@ function epochDay(date) {
   return Math.floor(new Date(`${date}T00:00:00+09:00`).getTime() / 86400000);
 }
 
+function allowBodyAffiliateLinks() {
+  return process.env.AFFILIATE_BODY_LINKS === '1';
+}
+
 /**
  * アカウント×日付×時刻でスケジュール CSV を組み立てる
  * - ランプアップ: 開設1週目は1本/日（19時）、2週目は2本/日（7時・19時）、以降フル
  *   （新規アカウントの急激な投稿開始はスパム判定・リーチ抑制の要因になるため）
  * - 認知フェーズ: awareness_until より前の日付にはリンク付きテンプレを割り当てない
  *   （最初の1ヶ月はフォロワー獲得・信頼構築に専念する運用方針）
+ * - AFFILIATE_BODY_LINKS≠1: 本文アフィは控える。リンク付きテンプレは載せず価値提供だけ組む
+ *   （poster が毎スロット skip して空きになるのを防ぐ。選択は日付決定論のまま）
  */
-function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } = {}) {
+function buildScheduleCSV(
+  templatesByGenre,
+  accounts,
+  { awarenessUntil = null, allowBodyLinks = allowBodyAffiliateLinks() } = {}
+) {
   const rows = [
     ['date', 'time', 'account', 'platform', 'genre', 'content', 'emoji', 'engagement_prediction', 'cta_type', 'link_key'].join(',')
   ];
@@ -182,7 +194,7 @@ function buildScheduleCSV(templatesByGenre, accounts, { awarenessUntil = null } 
       for (let slot = 0; slot < slotTimes.length; slot++) {
         const genre = genrePool[(day + slot) % genrePool.length];
         let templates = templatesByGenre[genre] || templatesByGenre[account.genre] || [];
-        if (inAwareness) {
+        if (inAwareness || !allowBodyLinks) {
           templates = templates.filter((t) => !String(t.content).includes('{{AFFILIATE_LINK}}'));
         }
         if (templates.length === 0) continue;
@@ -285,6 +297,11 @@ async function main() {
   if (accountsConfig.awareness_until && todayJST() < accountsConfig.awareness_until) {
     console.log(`  🌱 認知フェーズ（〜${accountsConfig.awareness_until}）: リンク付き投稿は組み込みません`);
   }
+  if (!allowBodyAffiliateLinks()) {
+    console.log(
+      '  📎 本文のアフィは控える（AFFILIATE_BODY_LINKS≠1）: リンク付きテンプレは組み込みません。円の置き場はプロフィール'
+    );
+  }
   const csv = buildScheduleCSV(templatesByGenre, accounts, {
     awarenessUntil: accountsConfig.awareness_until || null
   });
@@ -308,7 +325,11 @@ async function main() {
   console.log('\n次のステップ: node src/threads-poster.js --dry-run で投稿内容を確認');
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = { buildScheduleCSV, allowBodyAffiliateLinks };
