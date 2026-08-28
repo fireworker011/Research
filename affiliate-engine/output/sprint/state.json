@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。15:00 JST N=6 fireworker12なし 15/9/7/44。13406612 応募23。GitHub 発出は無い。dump は G_hq_cw_n10。overlay_status run list 空（dispatch 403。人間が GitHub UI。今夜の1手ではない）。Secret 鍵名 #81 入済み。重ね入済み。再マージするな。PR 76 は OPEN。#75 は dump までマージするな。円は0。cron は戻すな。",
+  "next_hour_task": "hours_left は壁時計。経過 8/24。タスク表 0–23 済。CI 8f16d0a 緑。15:00 JST N=6 fireworker12なし。dump は G_hq_cw_n10。overlay run list 空。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -108,8 +108,8 @@
   "threads_cron": "stopped",
   "sprint_started_at": "2026-08-27T22:05:22.511Z",
   "sprint_hours": 24,
-  "hours_elapsed": 7,
-  "hours_left": 17,
+  "hours_elapsed": 8,
+  "hours_left": 16,
   "blockers": [
     {
       "id": "hq_do_not_paste",
@@ -430,6 +430,13 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 7
+    },
+    {
+      "at": "2026-08-28T06:06:36.346Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 8
     }
   ]
 }
