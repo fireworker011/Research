@@ -452,6 +452,16 @@ function selfTest() {
   if (!secretNko.includes('G_hq_threads_profile_edu.txt')) throw new Error('N高 Secret should name edu profile dump');
   const secretNeo = readDump('G_hq_secret_neo.txt');
   if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
+  const eduProfile = readDump('G_hq_threads_profile_edu.txt');
+  if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
+  if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');
+  const eyesProfile = readDump('G_hq_threads_profile_eyes.txt');
+  if (!eyesProfile.includes('PROFILE_EDU.md')) throw new Error('eyes profile dump should open PROFILE_EDU');
+  if (/docs\/grok-bots\/PROFILE\.md/.test(eyesProfile)) throw new Error('eyes profile dump must not open tenshoku PROFILE.md');
+  const ticketProfile = readDump('G_hq_threads_profile_ticket.txt');
+  if (!ticketProfile.includes('PROFILE_TICKET.md')) throw new Error('ticket profile dump should open PROFILE_TICKET');
+  if (!ticketProfile.includes('EXIST_TICKET.md')) throw new Error('ticket profile dump must open EXIST_TICKET.md');
+  if (/docs\/grok-bots\/EXIST\.md/.test(ticketProfile)) throw new Error('ticket profile dump must not open neo EXIST.md');
   const partner = readDump('G_hq_a8_partner.txt');
   if (!partner.includes('G_hq_sns_next.txt')) throw new Error('partner dump should re-open sns_next after approval');
   const mergeOv = readDump('G_hq_merge_overlay.txt');
