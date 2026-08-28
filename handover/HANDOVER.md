@@ -1,12 +1,13 @@
 # 引き継ぎ書 — 婚活・ペット・美容（Cursor / Grok Bot 用）
 
-最終更新: 2026-08-28（司令塔=Grok Bot。今夜の dump は sprint ブランチ）
+最終更新: 2026-08-28（司令塔=Grok Bot。今夜の dump 1ファイルはデフォルトにも置いた）
 
 ## 0. このファイルの使い方（最初に必ず読む）
 
 - **期限 2026-09-30 確定 ¥1,000,000 の円と今夜の1手は、このファイルに書かない。** 24h 中は 20:00 を待つな。指令塔は今すぐ dump 1ファイルだけ開け:
-  https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
-  デフォルトブランチに `HQ_100MAN.md` は無い。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
+  `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt`
+  同じ本文: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
+  他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` はデフォルトに無い。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
 - Threads の自動更新（自動投稿・デイリー自動改善・日次レポート・婚活メトリクス収集）は **2026-08-26 に停止済み**。詳細と再開手順は「6. 自動化の現在状態」。
