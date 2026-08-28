@@ -39,7 +39,7 @@
 - 2026-08-28 15:00 JST sns.php HTML 再読でも上の4つの公開IDは同じ（neo / N高 / アイズ / チケット）。auひかり `s00000019044001` はこのページに無い（出現 0）。UZUZ / パーソル / NOL はページに残る。円は足していない
 - 2026-08-28 15:35 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかり出現 0。円は足していない
 - 2026-08-28 15:09 JST: neo 詳細 `media-console.a8.net/...programId=s00000018427001` は `login_required` に飛ぶ。Threads / 掲載媒体は HTML に 0。1語は invent していない。今夜の1手は CW dump のまま（sns_next に差し替えるな）
-- Secret 鍵名の確認は人間が GitHub UI で [overlay_status](https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml) を Run workflow（ref デフォルト。投稿しない。schedule なし。この参謀ランから dispatch は 403。2026-08-28 15:35 JST `gh run list` は空。**0 workflow runs**。今夜の1手ではない）
+- Secret 鍵名の確認は人間が GitHub UI で [overlay_status](https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml) を Run workflow（ref デフォルト。投稿しない。schedule なし。この参謀ランから dispatch は 403）。sprint PR CI は 2026-08-28 19:18 JST に Secret を読んで `filled 0` / `keys (none)`（URL は出ていない）。2026-08-28 15:35 JST `gh run list` は空。**0 workflow runs**。今夜の1手ではない
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 同ページ売れてる案件の **キャリアチケット転職エージェント** は `s00000011866027`（会員登録3000円はカタログ）。アイズの前に開くな。neo 未置きかつ転職アカが `開設済み` のあと。`未開設` / チケット `項目なし` / `媒体なし` / `YouTubeあり` ならバナー（出品するな）。新造するな。パーソル `s00000026823002` はドライバー特化なので開くな
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。Secret の鍵名確認は PR #81 が入済み（dispatch。今夜の1手ではない）
