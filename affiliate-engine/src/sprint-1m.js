@@ -679,6 +679,12 @@ function selfTest() {
     throw new Error('SITE.md must not guess tenshoku handles; HQ would copy them into chat');
   }
   if (!siteMd.includes('副サイトを登録する')) throw new Error('SITE.md should keep official 副サイト button name');
+  const hq100 = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'HQ_100MAN.md'), 'utf8');
+  if (/最新 `?G_hq_\*\.txt/.test(hq100) || hq100.includes('最新 G_hq_')) {
+    throw new Error('HQ_100MAN must not tell HQ to pick latest dump; HQ_ORDERS names the one file');
+  }
+  if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
+  if (!hq100.includes('G_hq_20260828.txt')) throw new Error('HQ_100MAN should name the unused old dump so HQ does not open it');
   const posterSrc = fs.readFileSync(path.join(__dirname, 'threads-poster.js'), 'utf8');
   if (/status:\s*'skipped_no_link'/.test(posterSrc)) {
     throw new Error('empty-link skip must not persist to posted.json; Secret later would never post');
