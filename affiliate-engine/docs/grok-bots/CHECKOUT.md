@@ -32,7 +32,7 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 重ねコードの置き場:
 
 - checkout ブランチ（JS + 空キー + neo テンプレ + YAML env）: https://github.com/fireworker011/Research/pull/77 （`cursor/prod-neo-secret-overlay-a971` → `claude/monthly-revenue-system-gvi02u`）。2026-08-28 12:41 JST 時点 draft MERGEABLE。HEAD `2b00812`。空リンクのスキップは posted.json に書かない。schedule は戻していない
-- デフォルト YAML の env だけ（schedule は戻していない）: https://github.com/fireworker011/Research/pull/78 。2026-08-28 12:25 JST 時点 draft MERGEABLE。HEAD `0dc40f6`。デフォルトブランチ本体（`e8ebd82`）の post YAML に `AFFILIATE_LINKS_JSON` はまだ無い。`AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` もデフォルト YAML に無い
+- デフォルト YAML の env だけ（schedule は戻していない）: https://github.com/fireworker011/Research/pull/78 。2026-08-28 13:09 JST 時点 draft MERGEABLE。HEAD `32620c9`。`AFFILIATE_LINKS_JSON` を post / insight に渡す。`AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` も足していない。YAML ガード CI を足した。デフォルトブランチ本体（`e8ebd82`）の post YAML に `AFFILIATE_LINKS_JSON` はまだ無い。マージは `G_hq_merge_overlay.txt` のあと
 - マージ指示 dump: `dump/G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
 
 ## 今夜の円の置き場（重ねを待たない）
