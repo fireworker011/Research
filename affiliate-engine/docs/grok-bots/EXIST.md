@@ -3,6 +3,8 @@
 指令塔が `Threadsあり` と返したあと、副サイト登録の **前**。
 `YouTubeあり` / `項目なし` / `媒体なし` では使わない。新媒体を今日開くな。cron は戻すな。
 
+アイズのあとでチケット用に聞く仕事は `EXIST_TICKET.md` / dump `G_hq_tenshoku_exist.txt`。混ぜるな。
+
 ## 人間が返す1語
 
 - `開設済み` → dump `G_hq_a8_site.txt`

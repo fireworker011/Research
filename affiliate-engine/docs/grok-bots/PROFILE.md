@@ -3,7 +3,7 @@
 指令塔が neo で `Threadsあり` と返し、Secret に `転職_neo` を入れたあとの仕事。
 `YouTubeあり` / `項目なし` / `媒体なし` では使わない。cron は戻さない。投稿しない。
 
-N高を教育 Threads のプロフィールに置く仕事は `dump/G_hq_threads_profile_edu.txt`。neo と混ぜるな。教育 YouTube は始めない。
+N高を教育 Threads のプロフィールに置く仕事は `dump/G_hq_threads_profile_edu.txt`。neo と混ぜるな。neo を置いたあとも教育アカで N高へ進む（別アカ）。教育 YouTube は始めない。
 
 A8 の一般FAQ: スレッド**本文**の広告リンクは控える。**プロフィールのリンク欄**は可。
 プログラム詳細の掲載媒体に Threads が書いていなければ、プロフィールにも置くな。

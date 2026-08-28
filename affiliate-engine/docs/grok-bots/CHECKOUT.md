@@ -46,7 +46,7 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 
 プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。ドライランと投稿ログは URL を出さない（`redactAffiliateUrls`）。amplify のリプ増幅は `AMPLIFY_ENABLED=1` が無いと動かない。本文の `{{AFFILIATE_LINK}}` は `AFFILIATE_BODY_LINKS=1` が無いと載せない。YAML に足すな。
 
-neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` なら、同じ手動導線を教育 Threads × N高で行う（`EXIST_EDU.md` → `SITE_EDU.md` → `dump/G_hq_secret_nko.txt` → `dump/G_hq_threads_profile_edu.txt`）。教育 YouTube は始めない。N高を転職アカに置くな。教育アカに neo を置くな。
+neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` なら、同じ手動導線を教育 Threads × N高で行う（`EXIST_EDU.md` → `SITE_EDU.md` → `dump/G_hq_secret_nko.txt` → `dump/G_hq_threads_profile_edu.txt`）。neo を転職プロフィールに置いたあとも教育アカで N高へ進む。教育 YouTube は始めない。N高を転職アカに置くな。教育アカに neo を置くな。チケットが置けなければバナー出品するな。
 
 ## やらないこと
 

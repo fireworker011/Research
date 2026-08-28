@@ -35,4 +35,4 @@ sns.php は「前月 SNS 経由で成果が出た」と書いてある。プロ�
 
 空キーのまま投稿すると `skipped_no_link`。Secret `AFFILIATE_LINKS_JSON` は指令塔が `Threadsあり` と返し、転職 Threads が `開設済み`（`EXIST.md` / `dump/G_hq_threads_exist.txt`）のあと、副サイト登録（`SITE.md` / `dump/G_hq_a8_site.txt`）を経て人間が入れる。手順: `docs/grok-bots/SECRET.md`。dump: `dump/G_hq_secret_neo.txt`（YouTubeあり／項目なし／媒体なし／未開設では使わない）。その次はプロフィールリンク欄: `docs/grok-bots/PROFILE.md` / `dump/G_hq_threads_profile.txt`。
 
-neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` のときは N高へ。N高も同じなら チャイルド・アイズへ（`dump/G_hq_sns_eyes.txt`）。教育 Threads が `開設済み`（`EXIST_EDU.md`）なら副サイト `dump/G_hq_a8_site_edu.txt` → Secret `教育_N高` または `教育_アイズ` → 教育プロフィール。教育が `未開設` ならアイズも置けない。次は転職アカの有無。教育 YouTube は始めない。教育アカに neo を置くな。
+neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` のときは N高へ。neo を転職プロフィールに置いたあとも教育アカで N高へ（転職アカに N高を置くな。教育アカに neo を置くな）。N高も同じなら チャイルド・アイズへ（`dump/G_hq_sns_eyes.txt`）。教育 Threads が `開設済み`（`EXIST_EDU.md`）なら副サイト `dump/G_hq_a8_site_edu.txt` → Secret `教育_N高` または `教育_アイズ` → 教育プロフィール。教育が `未開設` ならアイズも置けない。次は転職アカの有無。neo 未置きかつ `開設済み` ならチケット。`未開設` / チケット `項目なし` / `媒体なし` / `YouTubeあり` ならバナー（出品するな）。教育 YouTube は始めない。教育アカに neo を置くな。

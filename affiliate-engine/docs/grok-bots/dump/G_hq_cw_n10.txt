@@ -17,7 +17,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 円を止めている最初のブロッカーは、CW の分母が 6/10 のままなこと。公開ページでは既応募6件に `fireworker12` が載っている。再応募しても N は増えない。
 13406612 は応募済みで期限が 2026-08-29。期限待ちで貼り直すな。
-追加4は CW_LIVE.md の新規4（13405300 / 13405200 / 13405801 / 13405803）。09:07 JST 公開再読でも fireworker12 は無い。N は 6 のまま。13405300 の応募は 13。13405803 の応募期限は **2026-08-29**（JST では明日）。公開条件に合わない1件だけ 13407700 に替えろ。本文は CW_APPLY.md。無い実績は書くな。
+追加4は CW_LIVE.md の新規4（13405300 / 13405200 / 13405801 / 13405803）。09:32 JST 公開再読でも fireworker12 は無い。N は 6 のまま。13405300 の応募は 13。最新応募 SHOW_HEY 08:11。13405803 の応募期限は **2026-08-29**（JST では明日）。公開条件に合わない1件だけ 13407700 に替えろ。本文は CW_APPLY.md。無い実績は書くな。
 
 人間へ出す指示は1つ:
 「CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13405803 へ CW_APPLY.md の文で応募して N=10 にせよ。4が公開条件に合わなければ https://crowdworks.jp/public/jobs/13407700 。無い実績は書くな。プロフィールは直すな。auひかりは貼るな。note は公開するな。バナーは出品するな。」

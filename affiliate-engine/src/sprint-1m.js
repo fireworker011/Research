@@ -182,7 +182,7 @@ function buildSnapshot(opts = {}) {
   blockers.push({
     id: 'high_ticket_nko',
     owner: '指令塔→人間',
-    action: 'neo s00000018427001 の掲載媒体はログイン後。項目なし／媒体なし／YouTubeあり／転職未開設なら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。教育未開設ならアイズも置けない。次は転職アカの有無。未開設なら新造するな。開設済みなら キャリアチケット s00000011866027。教育アカに neo を置くな。教育YouTubeは始めるな'
+    action: 'neo s00000018427001 の掲載媒体はログイン後。置けるなら転職プロフィール。そのあと教育アカで N高 s00000027548001（別アカ。neo を教育に置くな。N高を転職に置くな）。N高が置けなければ チャイルド・アイズ s00000027572003。教育未開設ならアイズも置けない。転職アカが空なら キャリアチケット s00000011866027。未開設・項目なし・媒体なし・YouTubeありならバナー出品するな。新造するな。教育YouTubeは始めるな'
   });
   if (filled > 0) {
     blockers.unshift({
@@ -416,6 +416,26 @@ function selfTest() {
     '2026-08-28'
   );
   if (!mixed.some((e) => /混ぜるな/.test(e))) throw new Error('all+program mix should fail');
+
+  const dumpDir = path.join(__dirname, '..', 'docs', 'grok-bots', 'dump');
+  const readDump = (name) => fs.readFileSync(path.join(dumpDir, name), 'utf8');
+  const ticketSns = readDump('G_hq_sns_ticket.txt');
+  if (!ticketSns.includes('G_hq_banner_10.txt')) throw new Error('ticket 項目なし should name banner dump');
+  const ticketYt = readDump('G_hq_yt_only_ticket.txt');
+  if (!ticketYt.includes('G_hq_banner_10.txt')) throw new Error('ticket YouTubeあり should name banner dump');
+  const tenshokuExist = readDump('G_hq_tenshoku_exist.txt');
+  if (tenshokuExist.includes('ここで止まれ')) throw new Error('tenshoku 未開設 must not stop the chain');
+  if (!tenshokuExist.includes('G_hq_banner_10.txt')) throw new Error('tenshoku 未開設 should name banner dump');
+  if (!tenshokuExist.includes('EXIST_TICKET.md')) throw new Error('ticket exist dump must not reuse EXIST.md');
+  const neoExist = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'EXIST.md'), 'utf8');
+  if (!neoExist.includes('G_hq_sns_nko.txt')) throw new Error('neo 未開設 should still fall to N高');
+  const neoProfile = readDump('G_hq_threads_profile.txt');
+  if (!neoProfile.includes('G_hq_sns_nko.txt')) throw new Error('neo profile should continue to N高');
+  const nkoSns = readDump('G_hq_sns_nko.txt');
+  if (!nkoSns.includes('置いたあとでも使え')) throw new Error('N高 dump should run after neo placed');
+  const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
+  if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
+
   console.log('self-test ok');
 }
 

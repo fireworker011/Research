@@ -21,6 +21,7 @@
 - `Threadsあり` → dump `G_hq_threads_exist.txt`（開設済み / 未開設）。`未開設` なら neo は貼るな。次は N高
 - `YouTubeあり` → dump `G_hq_yt_only.txt`（Threads が欄に無い。プロフィールに置くな）。そのあと dump `G_hq_sns_nko.txt`
 - `項目なし` / `媒体なし` → neo は貼るな（auひかりと同じ）。**止まれではない。** 次は N高 dump `G_hq_sns_nko.txt`
+- neo を転職プロフィールに置いたあとも N高へ（教育アカは別。教育アカに neo を置くな。転職アカに N高を置くな）
 
 sns.php の「提携する」href は未ログインでも `detail-not-partnered`。**このメディアが未提携である証明ではない。** 提携済みかはログイン後だけ。
 
@@ -50,7 +51,7 @@ sns.php の「提携する」href は未ログインでも `detail-not-partnered
 置き場: sns.php「注目案件」  
 公開プログラムID: **`s00000027548001`**  
 公開の成果地点（カタログ）: 新規資料請求15000円 → **足すな**  
-鍵 `教育_N高` は空。neo の掲載媒体を見る前に N高を開くな。neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` のあとだけ開く。
+鍵 `教育_N高` は空。neo の掲載媒体を見る前に N高を開くな。neo を見たあと（置いた／置けなかった両方）で開く。教育アカに置く。転職アカに N高を置くな。
 
 教育 Threads は公開プロフィールが **2026-08-28 08:40 JST に実在**（表示名「はな｜小学生の習い事メモ」。ハンドルは `accounts.json`。チャットに書くな）。未開設の証明には使わない。返しは `EXIST_EDU.md` の1語。教育 YouTube は始めない（台帳 `make: never`）。N高を転職 / ペット / 副業アカに置くな。
 
@@ -77,13 +78,13 @@ Secret に URL を入れただけでは円は動かない。post / insight は `
 | 教育 Threads のプロフィールリンク欄 | N高またはアイズが `Threadsあり`。Secret のあと。開設済みの教育アカだけ | スレッド本文。転職アカに N高／アイズ。cron 再開 |
 | 指令塔が指名した既存 YouTube の詳細欄 | `YouTubeあり` のあと。動画を指令塔が指名したとき | 転職ジャンルの新規チャンネル（`make: never`）。ペットに neo。動画内URL。Shortsコメント |
 
-dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `Threadsあり` なら `G_hq_threads_exist.txt` → `開設済み` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。`YouTubeあり`（Threads 無し）なら `G_hq_yt_only.txt` のあと `G_hq_sns_nko.txt`。`項目なし` / `媒体なし` / 転職 `未開設` なら `G_hq_sns_nko.txt`。新造するな。結合するな。
+dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `Threadsあり` なら `G_hq_threads_exist.txt` → `開設済み` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。置いたあとも教育アカで `G_hq_sns_nko.txt`（転職アカに N高を置くな）。`YouTubeあり`（Threads 無し）なら `G_hq_yt_only.txt` のあと `G_hq_sns_nko.txt`。`項目なし` / `媒体なし` / 転職 `未開設` なら `G_hq_sns_nko.txt`。新造するな。結合するな。
 
-N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。教育 `未開設` ならアイズも置けない。次は `G_hq_tenshoku_exist.txt`。
+N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。教育 `未開設` ならアイズも置けない。次は `G_hq_tenshoku_exist.txt`。N高を置いたあと、neo が未置きならチケット。neo を既に置いたならバナー（出品するな）。
 
 アイズ dump: `G_hq_sns_eyes.txt` → `未提携` なら `G_hq_a8_partner_eyes.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_eyes.txt` → `G_hq_threads_profile_eyes.txt`。アイズ `YouTubeあり` なら `G_hq_yt_only_eyes.txt` のあと `G_hq_tenshoku_exist.txt`。`項目なし` / `媒体なし` なら `G_hq_tenshoku_exist.txt`。`未開設` なら新造するな。
 
-チケット dump: `G_hq_tenshoku_exist.txt` が `開設済み` のあと `G_hq_sns_ticket.txt`（`s00000011866027`）。`未提携` なら `G_hq_a8_partner_ticket.txt`。`Threadsあり` なら `G_hq_a8_site.txt` → `G_hq_secret_ticket.txt` → `G_hq_threads_profile_ticket.txt`。`YouTubeあり` なら `G_hq_yt_only_ticket.txt`。パーソル `s00000026823002` は開くな。
+チケット dump: `G_hq_tenshoku_exist.txt` が `開設済み` かつ neo 未置きのあと `G_hq_sns_ticket.txt`（`s00000011866027`）。`未提携` なら `G_hq_a8_partner_ticket.txt`。`Threadsあり` なら `G_hq_a8_site.txt` → `G_hq_secret_ticket.txt` → `G_hq_threads_profile_ticket.txt`。`YouTubeあり` / `項目なし` / `媒体なし` ならチケットは置くな。次は `G_hq_banner_10.txt`（出品するな）。`未開設` もバナー。neo を既に置いたならチケットは使うな。パーソル `s00000026823002` は開くな。
 
 ## ファイルに有るもの（置き場を間違えるな）
 
