@@ -857,6 +857,10 @@ function selfTest() {
   if (/status:\s*'skipped_no_link'/.test(posterSrc)) {
     throw new Error('empty-link skip must not persist to posted.json; Secret later would never post');
   }
+  const strategySrc = fs.readFileSync(path.join(__dirname, 'strategy-engine.js'), 'utf8');
+  if (!strategySrc.includes('allowBodyLinks') || !strategySrc.includes('AFFILIATE_BODY_LINKS')) {
+    throw new Error('strategy-engine must omit body-affiliate templates unless AFFILIATE_BODY_LINKS=1');
+  }
   const kitMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'account-setup-kit.md'), 'utf8');
   if (guessedHandles.some((h) => kitMd.includes(h))) {
     throw new Error('account-setup-kit.md must not guess tenshoku handles; HQ would copy them into chat');
