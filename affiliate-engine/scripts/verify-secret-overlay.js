@@ -91,6 +91,82 @@ function assertPosterDryRunRedacts(dummy) {
   if (!out.includes('[link]')) throw new Error('poster dry-run did not redact');
 }
 
+function assertScheduleOmitsBodyLinks() {
+  const prevDays = process.env.CAMPAIGN_DAYS;
+  process.env.CAMPAIGN_DAYS = '3';
+  const enginePath = require.resolve('../src/strategy-engine');
+  delete require.cache[enginePath];
+  const { buildScheduleCSV } = require('../src/strategy-engine');
+  const accounts = [{ key: 'tenshoku', genre: '転職', created: '2026-01-01' }];
+  const templatesByGenre = {
+    転職: [
+      {
+        genre: '転職',
+        content:
+          '第二新卒向けの入口を調べると、無料カウンセリングと登録完了に分かれる印象があった。今の自分は情報収集と応募のどちらが先だと思いますか？',
+        emoji: '🗂️',
+        engagement_prediction: 'medium',
+        cta_type: 'implicit'
+      },
+      {
+        genre: '転職',
+        content: '調べたときのメモはこちら。\n{{AFFILIATE_LINK}}\n#PR',
+        emoji: '🗂️',
+        engagement_prediction: 'medium',
+        cta_type: 'direct',
+        link_key: '転職_neo'
+      }
+    ]
+  };
+  const csvOff = buildScheduleCSV(templatesByGenre, accounts, {
+    awarenessUntil: '2026-08-05',
+    allowBodyLinks: false
+  });
+  if (csvOff.includes('{{AFFILIATE_LINK}}')) {
+    throw new Error('schedule must omit body affiliate when allowBodyLinks is false');
+  }
+  if (!csvOff.includes('第二新卒向けの入口')) {
+    throw new Error('schedule should keep value templates when body affiliate is off');
+  }
+  const csvOff2 = buildScheduleCSV(templatesByGenre, accounts, {
+    awarenessUntil: '2026-08-05',
+    allowBodyLinks: false
+  });
+  if (csvOff !== csvOff2) throw new Error('schedule must stay date-deterministic');
+  const csvOn = buildScheduleCSV(templatesByGenre, accounts, {
+    awarenessUntil: '2026-08-05',
+    allowBodyLinks: true
+  });
+  if (!csvOn.includes('{{AFFILIATE_LINK}}')) {
+    throw new Error('schedule should include body affiliate when allowBodyLinks is true');
+  }
+  if (prevDays === undefined) delete process.env.CAMPAIGN_DAYS;
+  else process.env.CAMPAIGN_DAYS = prevDays;
+}
+
+function assertHighTicketValueTemplates() {
+  const { validateTemplate, checkContent } = require('../src/compliance');
+  const ids = [
+    'career_20260828_neo_01_value',
+    'career_20260828_neo_02_value',
+    'education_20260828_nko_01_value',
+    'education_20260828_eyes_01_value',
+    'career_20260828_ticket_01_value'
+  ];
+  const genres = ['婚活', '副業', '美容', '筋トレ', '教育', '節約', '転職', 'ペット', '睡眠'];
+  for (const id of ids) {
+    const t = seed.posting_templates.find((x) => x.id === id);
+    if (!t) throw new Error(`missing template ${id}`);
+    if (String(t.content).includes('{{AFFILIATE_LINK}}')) {
+      throw new Error(`${id} must not put affiliate URL placeholder in body`);
+    }
+    const structural = validateTemplate(t, { genres });
+    if (!structural.ok) throw new Error(`${id} validateTemplate: ${structural.reasons.join(', ')}`);
+    const result = checkContent(structural.template.content || '');
+    if (!result.ok) throw new Error(`${id} checkContent: ${result.reasons.join(', ')}`);
+  }
+}
+
 function assertAmplifyStaysOff(dummy) {
   const result = spawnSync(process.execPath, ['src/amplify.js', '--dry-run'], {
     cwd: path.join(__dirname, '..'),
@@ -150,6 +226,8 @@ function main() {
   assertPosterSkipsBodyLinks(dummy);
   assertPosterDryRunRedacts(dummy);
   assertAmplifyStaysOff(dummy);
+  assertScheduleOmitsBodyLinks();
+  assertHighTicketValueTemplates();
 
   process.env.AFFILIATE_LINKS_JSON = '';
   const empty = loadLinks();
