@@ -8,17 +8,17 @@ neo 用は `SECRET.md`。チケット用は `SECRET_TICKET.md`。混ぜるな。
 ## 入れるもの
 
 GitHub Secret 名: `AFFILIATE_LINKS_JSON`  
-中身: JSON オブジェクト。鍵は dump が指名した **1つだけ**（`教育_N高` または `教育_アイズ`）。値は上の発行リンク。
+中身: JSON オブジェクト。dump が指名した鍵（`教育_N高` または `教育_アイズ`）を **足す**。既にある `転職_neo` などは消すな。`申込_auひかり` は足すな。
 
 `config/links.json` の値は空文字のまま。
 
-例の形（URL はダミー。本番の値をここに書くな）:
+例の形（既存が空のとき。URL はダミー。本番の値をここに書くな）:
 
 ```
 {"教育_N高":"https://example.invalid/replace-in-github-secret-only"}
 ```
 
-アイズ経路なら鍵は `教育_アイズ` だけ。同じ JSON に `転職_neo` を足すな（neo は別 dump）。N高を既に入れたならアイズで上書きするな。
+既存に `転職_neo` があるなら、同じオブジェクトに `教育_N高` を足す。Secret 全体を1鍵だけで上書きするな。この dump で `転職_neo` を新たに足すな（neo は別 dump）。N高を既に入れたならアイズで上書きするな。
 
 `config/links.json` と Git / チャットに URL を書くな。
 

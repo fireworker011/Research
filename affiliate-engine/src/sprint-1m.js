@@ -524,6 +524,18 @@ function selfTest() {
     }
   }
   if (secretNko.includes('SITE_EDU.md')) throw new Error('N高 Secret must not open SITE_EDU.md; site dump already ran');
+  if (secretNko.includes('だけ入れよ')) {
+    throw new Error('N高 Secret must add 教育_N高 without replacing other keys');
+  }
+  if (!secretNko.includes('消すな')) {
+    throw new Error('N高 Secret must keep existing Secret keys');
+  }
+  if (secretEyes.includes('だけ入れよ')) {
+    throw new Error('アイズ Secret must add 教育_アイズ without replacing other keys');
+  }
+  if (!secretEyes.includes('消すな')) {
+    throw new Error('アイズ Secret must keep existing Secret keys');
+  }
   if (secretEyes.includes('SITE_EDU.md')) throw new Error('アイズ Secret must not open SITE_EDU.md; site dump already ran');
   if (secretTicket.includes('SITE.md')) throw new Error('ticket Secret must not open SITE.md; site dump already ran');
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
