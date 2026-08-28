@@ -13,7 +13,7 @@
 | `affiliate_engine_report.yml` | 同上 | 動かない |
 | `refresh_threads_token.yml` | 同上 | 動かない |
 | `affiliate_engine_video_judge.yml` | デフォルト `claude/setup-colab-comfyui-Eb9Lh` | 動かない |
-| `sprint_1m.yml` | デフォルト | 動かない |
+| `affiliate_engine_overlay_status.yml` | `claude/monthly-revenue-system-gvi02u` | 動かない（鍵名だけ。投稿しない） |
 
 GitHub の schedule / デフォルトからの dispatch が使う **YAML** はデフォルトブランチ。`AFFILIATE_LINKS_JSON` を env に書く変更は、dispatch するブランチ（再開後の schedule ならデフォルト）の YAML が要る。schedule 自体は指令塔が出すまで戻すな。
 
@@ -34,13 +34,14 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 
-Secret を入れたあと、投稿せず鍵名だけ見るジョブ: https://github.com/fireworker011/Research/pull/81 （`workflow_dispatch` のみ。デフォルトへ入るまで Actions には出ない。今夜の1手ではない）。
+Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 が 2026-08-28 14:53 JST に入った。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。
 
 重ね PR の状態（再マージするな）:
 
 - https://github.com/fireworker011/Research/pull/77 MERGED
 - https://github.com/fireworker011/Research/pull/78 MERGED
 - https://github.com/fireworker011/Research/pull/80 MERGED
+- https://github.com/fireworker011/Research/pull/81 MERGED（鍵名 dispatch。投稿しない）
 - 旧マージ指示 dump: `dump/G_hq_merge_overlay.txt`（入済み。今夜の1手ではない）
 
 ## 今夜の円の置き場（重ねを待たない）

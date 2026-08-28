@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。N=6（14:46 JST でも 13405801 は応募7・契約1。fireworker12 なし）。GitHub 発出は無い。dump は G_hq_cw_n10。Secret 鍵名 dispatch は PR #81（今夜の1手ではない。schedule なし）。重ね入済み。再マージするな。PR 76 は OPEN。#75 は dump までマージするな。円は0。cron は戻すな。",
+  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。N=6。GitHub 発出は無い。dump は G_hq_cw_n10。Secret 鍵名 dispatch は PR #81 入済み（今夜の1手ではない。schedule なし）。重ね入済み。再マージするな。PR 76 は OPEN。#75 は dump までマージするな。円は0。cron は戻すな。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
