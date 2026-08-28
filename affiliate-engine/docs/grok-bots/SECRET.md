@@ -1,6 +1,6 @@
 # Secret の入れ方（参謀・URL を Git に書くな）
 
-指令塔が neo で `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+指令塔が neo で `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
 
 N高の Secret は `dump/G_hq_secret_nko.txt`（鍵 `教育_N高`）。アイズの Secret は `dump/G_hq_secret_eyes.txt`（鍵 `教育_アイズ`）。チケットの Secret は `dump/G_hq_secret_ticket.txt`（鍵 `転職_チケット`）。このファイルと混ぜるな。neo が項目なしのときは `転職_neo` を空のまま。N高が項目なしのときは `教育_N高` を空のまま。アイズが項目なしのときは `教育_アイズ` を空のままにして、転職アカが `開設済み` なら `転職_チケット` だけ入れる。
 
