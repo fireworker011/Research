@@ -433,6 +433,9 @@ function selfTest() {
   if (!neoProfile.includes('G_hq_sns_nko.txt')) throw new Error('neo profile should continue to N高');
   const nkoSns = readDump('G_hq_sns_nko.txt');
   if (!nkoSns.includes('置いたあとでも使え')) throw new Error('N高 dump should run after neo placed');
+  if (!nkoSns.includes('G_hq_yt_only_nko.txt')) throw new Error('N高 YouTubeあり should name yt_only_nko');
+  const eyesSns = readDump('G_hq_sns_eyes.txt');
+  if (!eyesSns.includes('G_hq_yt_only_eyes.txt')) throw new Error('アイズ YouTubeあり should name yt_only_eyes');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 
