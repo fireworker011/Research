@@ -5,14 +5,14 @@
 4 + 代替2 が全部合わないとき、または次サイクルの分母用。カタログ報酬は足さない。円ではない。
 応募文: `docs/grok-bots/CW_APPLY_NEXT.md`（`G_hq_cw_n10` は開くな）。
 
-今夜の据え置き（11:28 JST 再読でも fireworker12 なし。N は 6）:
+今夜の据え置き（11:40 JST 再読でも fireworker12 なし。N は 6）:
 
 | 役割 | ID | 応募 | 契約 | 募集 | 期限 |
 |---|---|---|---|---|---|
 | 新規1 | [13405300](https://crowdworks.jp/public/jobs/13405300) | 13 | 0 | 20 | 2026-09-09 |
 | 新規2 | [13405200](https://crowdworks.jp/public/jobs/13405200) | 9 | 0 | 1 | 2026-09-02 |
 | 新規3 | [13405801](https://crowdworks.jp/public/jobs/13405801) | 7 | 0 | 2 | 2026-08-31 |
-| 新規4 | [13406725](https://crowdworks.jp/public/jobs/13406725) | 41 | 0 | 8 | 2026-09-09 |
+| 新規4 | [13406725](https://crowdworks.jp/public/jobs/13406725) | 42 | 0 | 8 | 2026-09-09 |
 | 代替1 | [13408073](https://crowdworks.jp/public/jobs/13408073) | 5 | 0 | 5 | 2026-09-01 |
 | 代替2 | [13408021](https://crowdworks.jp/public/jobs/13408021) | 4 | 0 | 5 | 2026-09-01 |
 
