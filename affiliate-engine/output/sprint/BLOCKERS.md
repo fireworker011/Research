@@ -48,6 +48,7 @@
 - 円: `data/conversions.csv` が正本。書き方: `docs/grok-bots/MEASURE.md`
 - 最終実測行: **2026-08-27**。今日（2026-08-28）の行は **ファイルに無い**。実測円は ¥0 のまま（invent していない）
 - Notion に A8 / conversions の別正本は無い（2026-08-28 15:00 JST workspace search。ヒットは 2022 の無関係ページ。円の行は足していない）
+- Google Drive に A8 / conversions の別正本は無い（2026-08-28 15:13 JST search。ヒットは 2022 の売上台帳テンプレと a8net.py リンク生成。確定円は書いていない。円の行は足していない）
 - 同じ source+program の月次再掲は最新日だけが円。`all` と案件別を混ぜるな
 - 残日数・ペース: `output/sprint/TODAY.md`（`node src/sprint-1m.js`）
 - ペット実験: `output/video/TODAY.md`（円に足さない）
