@@ -600,6 +600,9 @@ function selfTest() {
   const skuBody = sku1.split('## 無料部')[1] || '';
   if (!skuBody) throw new Error('SKU1 must have ## 無料部');
   if (skuBody.includes('980')) throw new Error('SKU1 無料部+ must not contain 980; that belongs in note UI 価格欄 only');
+  if (skuBody.includes('公開ボタン') || skuBody.includes('D0')) {
+    throw new Error('SKU1 copy body must not include 公開ボタン / D0; those stay in the file header and dump');
+  }
   const bannerDump = readDump('G_hq_banner_10.txt');
   if (!bannerDump.includes('BANNER_10.md')) throw new Error('banner dump should open BANNER_10.md');
   if (!bannerDump.includes('BANNER_LOG.md')) throw new Error('banner dump should open BANNER_LOG.md');
