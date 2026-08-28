@@ -10,6 +10,7 @@
 再生成: `docs/grok-bots/note/render_banners.py`
 
 通した枚数: **10** / 10。落とし: 0。INSUFFICIENT（経路が Imagine/Canva ではないこと）は下の各枚に書かない。落とし3項（比率・文字・商標）と顔は通した。
+ディスク再測: 2026-08-28 11:33 JST。`banner_01.png` … `banner_10.png` の10枚とも PIL で **1280×670** RGB。Git に画像は置いていない。出品していない。
 
 ---
 

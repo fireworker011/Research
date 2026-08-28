@@ -13,7 +13,7 @@
 | 新規2 | [13405200](https://crowdworks.jp/public/jobs/13405200) | 9 | 0 | 1 | 2026-09-02 |
 | 新規3 | [13405801](https://crowdworks.jp/public/jobs/13405801) | 7 | 0 | 2 | 2026-08-31 |
 | 新規4 | [13406725](https://crowdworks.jp/public/jobs/13406725) | 41 | 0 | 8 | 2026-09-09 |
-| 代替1 | [13408073](https://crowdworks.jp/public/jobs/13408073) | 4 | 0 | 5 | 2026-09-01 |
+| 代替1 | [13408073](https://crowdworks.jp/public/jobs/13408073) | 5 | 0 | 5 | 2026-09-01 |
 | 代替2 | [13408021](https://crowdworks.jp/public/jobs/13408021) | 4 | 0 | 5 | 2026-09-01 |
 
 ## 同型として残す（短尺編集・素材/台本支給・fireworker12 なし）
