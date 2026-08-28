@@ -511,6 +511,13 @@ function selfTest() {
   if (!existEdu.includes('アイズ')) throw new Error('EXIST_EDU should cover アイズ Threadsあり');
   const cwDump = readDump('G_hq_cw_n10.txt');
   if (!cwDump.includes('13406725')) throw new Error('CW dump should name same-type primary 13406725');
+  if (!cwDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/KEEP_CUT.md')) {
+    throw new Error('CW dump KEEP_CUT must live on the sprint branch');
+  }
+  const noteDump = readDump('G_hq_note_place.txt');
+  if (!noteDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/ACCOUNT_NOTE.md')) {
+    throw new Error('note dump ACCOUNT_NOTE must live on the sprint branch');
+  }
   const quoted = cwDump.split('人間へ出す指示は1つ:')[1] || '';
   if (!quoted.includes('13406725')) throw new Error('CW human 1手 should use 13406725 as one of the four');
   if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
