@@ -581,6 +581,8 @@ function selfTest() {
   const cwApplyNext = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CW_APPLY_NEXT.md'), 'utf8');
   if (!cwApplyNext.includes('## 8. 13410155')) throw new Error('CW_APPLY_NEXT must keep header for 13410155');
   if (!cwApplyNext.includes('## 9. 13410136')) throw new Error('CW_APPLY_NEXT must keep header for 13410136');
+  if (!cwApplyNext.includes('## 12. 13410619')) throw new Error('CW_APPLY_NEXT must keep header for 13410619');
+  if (!cwApplyNext.includes('## 13. 13410740')) throw new Error('CW_APPLY_NEXT must keep header for 13410740');
   const cwApply = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CW_APPLY.md'), 'utf8');
   if (!cwApply.includes('455')) throw new Error('CW_APPLY should keep 13405300 public 契約金額 455');
   if (!cwApply.includes('100円')) throw new Error('CW_APPLY should keep 13405801 public apply amount 100円');
