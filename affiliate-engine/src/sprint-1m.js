@@ -31,6 +31,7 @@ const TARGET_YEN = 1_000_000;
 const DEADLINE = '2026-09-30';
 const SPRINT_HOURS = 24;
 const CONVERSIONS_PATH = process.env.CONVERSIONS_CSV || path.join(ROOT, 'data', 'conversions.csv');
+const VIDEO_LOG_PATH = process.env.VIDEO_CASH_LOG || path.join(ROOT, 'data', 'video_cash_log.csv');
 const STATE_PATH = path.join(OUTPUT_DIR, 'sprint', 'state.json');
 const TODAY_PATH = path.join(OUTPUT_DIR, 'sprint', 'TODAY.md');
 const HUMAN_PATH = path.join(OUTPUT_DIR, 'sprint', 'HUMAN.md');
@@ -150,6 +151,23 @@ function hoursElapsed(startedAtIso, nowMs = Date.now()) {
   return Math.max(0, Math.floor((nowMs - started) / 3600000));
 }
 
+function lastVideoLogDate(csvText) {
+  const rows = parseCSV(csvText || '').filter(
+    (row) => /^\d{4}-\d{2}-\d{2}$/.test(row.date || '') && !/\bexample\b/i.test(row.note || '')
+  );
+  return rows.length ? rows[rows.length - 1].date : null;
+}
+
+function videoCsvAction(today, lastDate) {
+  if (!lastDate) return 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま';
+  return `ペット実験の最終記録は ${lastDate}。今日 ${today} が無ければ空のまま。円に足すな`;
+}
+
+function readVideoLogText() {
+  if (!fs.existsSync(VIDEO_LOG_PATH)) return '';
+  return fs.readFileSync(VIDEO_LOG_PATH, 'utf-8');
+}
+
 function buildSnapshot(opts = {}) {
   const today = opts.today || process.env.SPRINT_TODAY || todayJST();
   const csvText = opts.csvText != null ? opts.csvText : fs.readFileSync(CONVERSIONS_PATH, 'utf-8');
@@ -185,10 +203,12 @@ function buildSnapshot(opts = {}) {
       ? `conversions 最終実測行は ${lastDate || '無し'}。今日 ${today} の行はファイルに無い。管理画面を見てから1行。開いていないなら足すな。invent するな`
       : 'A8 管理画面で見た clicks / cv / approved_yen だけ conversions.csv に1行。カタログ円は書かない'
   });
+  const videoLast =
+    opts.videoLastDate !== undefined ? opts.videoLastDate : lastVideoLogDate(readVideoLogText());
   blockers.push({
     id: 'video_csv',
     owner: '指令塔→人間',
-    action: 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま'
+    action: videoCsvAction(today, videoLast)
   });
   blockers.push({
     id: 'high_ticket_nko',
@@ -395,6 +415,27 @@ function selfTest() {
   });
   if (staleSnap.csv_stale !== true) throw new Error('next-day csv should be stale');
   if (!staleSnap.blockers.some((b) => b.id === 'csv_stale')) throw new Error('csv_stale blocker missing');
+  if (lastVideoLogDate('date,videos_published,views,a8_clicks,conversions,note\n2026-08-22,0,0,0,0,example. copy\n') != null) {
+    throw new Error('example video row should be skipped');
+  }
+  if (lastVideoLogDate('date,videos_published,views,a8_clicks,conversions,note\n2026-08-22,0,0,0,0,A8\n2026-08-27,1,1416,,,measured\n') !== '2026-08-27') {
+    throw new Error('lastVideoLogDate should be last live row');
+  }
+  if (videoCsvAction('2026-08-28', null) !== 'ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま') {
+    throw new Error('empty video log keeps fill-row text');
+  }
+  const videoSnap = buildSnapshot({
+    today: '2026-08-28',
+    csvText: csv,
+    links: { 婚活: '' },
+    startedAt: '2026-08-27T00:00:00.000Z',
+    nowMs: Date.parse('2026-08-27T03:00:00.000Z'),
+    videoLastDate: '2026-08-27'
+  });
+  const videoBlocker = videoSnap.blockers.find((b) => b.id === 'video_csv');
+  if (!videoBlocker || !videoBlocker.action.includes('2026-08-27') || !videoBlocker.action.includes('円に足すな')) {
+    throw new Error('video_csv blocker should name last recorded date and not add yen');
+  }
 
   const shapeOk = conversionShapeErrors(csv, '2026-08-27');
   if (shapeOk.length) throw new Error(`shape want empty, got ${shapeOk.join('; ')}`);
