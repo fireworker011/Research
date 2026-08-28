@@ -5,6 +5,7 @@ Cursor は参謀。あなたが司令塔。このファイルは仕事1つだけ
 
 今すぐ次を開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 開けなければ（404・権限・ネット切れ）止まらず、下の「人間へ出す指示は1つ」の「」をそのまま人間へ出せ。結合するな。応募本文の空欄は人間が書く。無い実績は書くな。
+応募本文: デフォルト clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md`。無ければ下の raw。
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/CW_LIVE.md
 
