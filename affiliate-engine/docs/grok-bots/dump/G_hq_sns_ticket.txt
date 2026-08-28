@@ -20,4 +20,4 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 人間へ出す指示は1つ:
 「A8 でプログラムID s00000011866027（キャリアチケット転職エージェント）を1件開け。未提携なら『未提携』と返せ。提携済みなら掲載媒体を見ろ。Threads があれば『Threadsあり』。Threads が無く YouTube があれば『YouTubeあり』。欄が無ければ『項目なし』。欄はあるがどちらも無ければ『媒体なし』。UZUZ は開くな。3000はカタログなので CSV に足すな。URLはチャットに貼るな。転職YouTubeは始めるな。」
 
-`未提携`＝申請は次の dump。`項目なし` / `媒体なし`＝チケットは置くな。次のファイル名だけ: `dump/G_hq_banner_10.txt`（出品するな）。`YouTubeあり`＝先に `dump/G_hq_yt_only_ticket.txt`、そのあとバナー。投稿するな。数字は発明するな。
+`未提携`＝次のファイル名だけ: `dump/G_hq_a8_partner_ticket.txt`（承認前に貼るな）。`Threadsあり`＝次のファイル名だけ: `dump/G_hq_a8_site.txt`。`項目なし` / `媒体なし`＝チケットは置くな。次のファイル名だけ: `dump/G_hq_banner_10.txt`（出品するな）。`YouTubeあり`＝先に `dump/G_hq_yt_only_ticket.txt`、そのあとバナー。投稿するな。数字は発明するな。

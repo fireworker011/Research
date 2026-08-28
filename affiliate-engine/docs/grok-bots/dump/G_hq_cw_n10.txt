@@ -26,3 +26,5 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 復唱して、人間への指示を1文で書け。参謀への要望が無ければ「参謀への要望なし」。
 数字は発明するな。投稿するな。auひかりを貼るな。カタログ円を足すな。
+
+人間が4件出したあとの次のファイル名だけ: `dump/G_hq_note_place.txt`（公開するな。結合するな）。

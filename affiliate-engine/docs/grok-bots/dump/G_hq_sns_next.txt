@@ -24,4 +24,4 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 人間へ出す指示は1つ:
 「A8 でプログラムID s00000018427001（第二新卒エージェントneo）を1件開け。未提携なら『未提携』と返せ。提携済みなら掲載媒体を見ろ。Threads があれば『Threadsあり』。Threads が無く YouTube があれば『YouTubeあり』。欄が無ければ『項目なし』。欄はあるがどちらも無ければ『媒体なし』。UZUZ は開くな。15000はカタログなので CSV に足すな。URLはチャットに貼るな。」
 
-`項目なし` と `媒体なし`＝neo は貼るな。次の dump は `G_hq_sns_nko.txt`（N高）。`YouTubeあり`＝先に `G_hq_yt_only.txt`、そのあと `G_hq_sns_nko.txt`。`未提携`＝申請は次の dump。投稿するな。数字は発明するな。
+`項目なし` と `媒体なし`＝neo は貼るな。次の dump は `G_hq_sns_nko.txt`（N高）。`YouTubeあり`＝先に `G_hq_yt_only.txt`、そのあと `G_hq_sns_nko.txt`。`未提携`＝次のファイル名だけ: `dump/G_hq_a8_partner.txt`（承認前に貼るな）。`Threadsあり`＝次のファイル名だけ: `dump/G_hq_threads_exist.txt`。投稿するな。数字は発明するな。

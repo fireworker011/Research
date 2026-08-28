@@ -17,3 +17,5 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 「秋バナー10枚は作ってある。note と BOOTH に出すな。手順書と1記事に同梱するな。980・月収を画像に足すな。」
 
 復唱して、人間への指示を1文で書け。通った枚数は BANNER_LOG の数字だけ数えろ。数字は発明するな。投稿するな。出品するな。
+
+次のファイル名だけ: `dump/G_hq_a8_csv.txt`（見た数字だけ。開いていないなら足すな。結合するな）。

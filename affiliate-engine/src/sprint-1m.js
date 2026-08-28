@@ -434,8 +434,26 @@ function selfTest() {
   const nkoSns = readDump('G_hq_sns_nko.txt');
   if (!nkoSns.includes('置いたあとでも使え')) throw new Error('N高 dump should run after neo placed');
   if (!nkoSns.includes('G_hq_yt_only_nko.txt')) throw new Error('N高 YouTubeあり should name yt_only_nko');
+  if (!nkoSns.includes('G_hq_edu_exist.txt')) throw new Error('N高 Threadsあり should name edu_exist');
+  if (!nkoSns.includes('G_hq_a8_partner_nko.txt')) throw new Error('N高 未提携 should name partner_nko');
   const eyesSns = readDump('G_hq_sns_eyes.txt');
   if (!eyesSns.includes('G_hq_yt_only_eyes.txt')) throw new Error('アイズ YouTubeあり should name yt_only_eyes');
+  if (!eyesSns.includes('G_hq_edu_exist.txt')) throw new Error('アイズ Threadsあり should name edu_exist');
+  const snsNext = readDump('G_hq_sns_next.txt');
+  if (!snsNext.includes('G_hq_a8_partner.txt')) throw new Error('neo 未提携 should name partner dump');
+  if (!snsNext.includes('G_hq_threads_exist.txt')) throw new Error('neo Threadsあり should name exist dump');
+  const threadsExist = readDump('G_hq_threads_exist.txt');
+  if (!threadsExist.includes('G_hq_a8_site.txt')) throw new Error('転職 開設済み should name site dump');
+  const eduExist = readDump('G_hq_edu_exist.txt');
+  if (!eduExist.includes('G_hq_a8_site_edu.txt')) throw new Error('教育 開設済み should name site_edu dump');
+  if (!eduExist.includes('アイズ')) throw new Error('edu_exist should also run after アイズ Threadsあり');
+  const secretNko = readDump('G_hq_secret_nko.txt');
+  if (secretNko.includes('neo が Threadsあり ならこの dump は使うな')) throw new Error('N高 Secret must still run after neo placed');
+  if (!secretNko.includes('G_hq_threads_profile_edu.txt')) throw new Error('N高 Secret should name edu profile dump');
+  const secretNeo = readDump('G_hq_secret_neo.txt');
+  if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
+  const partner = readDump('G_hq_a8_partner.txt');
+  if (!partner.includes('G_hq_sns_next.txt')) throw new Error('partner dump should re-open sns_next after approval');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 

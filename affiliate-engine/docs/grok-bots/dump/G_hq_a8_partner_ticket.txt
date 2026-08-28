@@ -13,3 +13,5 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 「A8 で s00000011866027（キャリアチケット転職エージェント）だけ提携申請せよ。UZUZ には申請するな。neo の申請はこの指示ではするな。承認前に貼るな。URLはチャットに貼るな。3000はカタログなので CSV に足すな。」
 
 復唱して、人間への指示を1文で書け。投稿するな。数字は発明するな。cron は戻すな。
+
+承認後の次のファイル名だけ: `dump/G_hq_sns_ticket.txt`（掲載媒体。承認前に貼るな。結合するな）。
