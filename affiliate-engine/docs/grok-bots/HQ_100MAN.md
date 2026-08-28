@@ -23,6 +23,8 @@
 
 計算は参謀が `node src/sprint-1m.js` で書く。期限後の残日数は 0。毎時の盤面は `output/sprint/TODAY.md`。
 
+24h スプリント中は **20:00 を待つな。** 同じ読み順で、指名 dump を人間へ貼れ。Cursor は貼らない。
+
 ## いまの実測円
 
 `affiliate-engine/data/conversions.csv` の `approved_yen` 合計。コメント行（`date` が `#` で始まる行）は足さない。

@@ -701,6 +701,14 @@ function selfTest() {
   if (!hq100.includes('HUMAN.md') || !hq100.includes('貼るな')) {
     throw new Error('HQ_100MAN must tell HQ not to paste HUMAN.md');
   }
+  if (!hq100.includes('20:00 を待つな')) {
+    throw new Error('HQ_100MAN must not make HQ wait until 20:00 during the 24h sprint');
+  }
+  const handover = fs.readFileSync(path.join(__dirname, '..', '..', 'handover', 'HANDOVER.md'), 'utf8');
+  if (handover.includes('このファイルだけでよい')) {
+    throw new Error('HANDOVER must not block HQ_100MAN; yen 1手 is HQ_ORDERS dump');
+  }
+  if (!handover.includes('HQ_100MAN.md')) throw new Error('HANDOVER should send HQ to HQ_100MAN for yen deadline');
   const staffMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'STAFF.md'), 'utf8');
   if (/最新 `docs\/grok-bots\/dump/.test(staffMd) || staffMd.includes('最新 `docs/grok-bots/dump/G_*.txt`')) {
     throw new Error('STAFF.md must not pick latest dump by mtime; HQ_ORDERS names the one file');
