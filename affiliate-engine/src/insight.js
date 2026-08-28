@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { askClaude, extractJSON } = require('./claude-client');
 const { checkContent, validateTemplate } = require('./compliance');
-const { ROOT, OUTPUT_DIR, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
+const { ROOT, OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, todayJST } = require('./util');
 
 const SYSTEM_PROMPT = `あなたは日本のSNSアフィリエイト運用のグロースアナリストです。
 遵守事項:
@@ -103,7 +103,7 @@ ${JSON.stringify(genreAnalytics || {}, null, 1)}
   "sources": ["参照したURL"]
 }
 
-利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン, 節約_格安SIM, 節約_ふるさと納税, 転職_エージェント, 転職_スカウト, ペット_Furbo, ペット_保険, ペット_フード, 睡眠_マットレス, 睡眠_リカバリー`;
+利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン, 教育_N高, 教育_アイズ, 節約_格安SIM, 節約_ふるさと納税, 転職_エージェント, 転職_スカウト, 転職_neo, 転職_チケット, ペット_Furbo, ペット_保険, ペット_フード, 睡眠_マットレス, 睡眠_リカバリー, 申込_auひかり`;
 }
 
 function renderMarkdown(data, complianceNotes) {
@@ -221,7 +221,7 @@ async function main() {
   };
 
   // 草案の検品: 構造チェック（モデル非依存の品質ゲート）→ コンプライアンスチェック
-  const links = loadConfig('links', {});
+  const links = loadLinks();
   const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   const complianceNotes = [];
   for (const f of failedGenres) complianceNotes.push(`生成失敗（次回リトライ）: ${f}`);

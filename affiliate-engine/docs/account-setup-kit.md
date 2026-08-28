@@ -313,9 +313,7 @@ English: Flat illustration of a smiling woman in her 30s (ponytail, simple cloth
 
 **ユーザー名候補**
 ```
-kei_tenshoku_junbi
-kei_career_memo
-shizuka_tenshoku
+（開設後に記入。accounts.json の tenshoku handle は未記入。今夜は新造するな。ハンドルはチャットに書くな）
 ```
 
 **アイコン生成プロンプト（コピペ）**

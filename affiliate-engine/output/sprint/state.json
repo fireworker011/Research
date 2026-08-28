@@ -1,0 +1,414 @@
+{
+  "completed_hours": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。N=6。GitHub 発出は無い。dump raw は 200。デフォルト HANDOVER はまだ円本線を止める。PR #79 は入口（デフォルトへ入れてよい。75/77/78 は dump までマージするな）。円は0。cron は戻すな。タイマーは hours_left=0 まで止めるな",
+  "last_dry_run": {
+    "at": "2026-08-27T22:06:00Z",
+    "due": 9,
+    "note": "ドライラン9件。価値提供投稿。リンク必須テンプレは未設定のため対象外。実投稿していない"
+  },
+  "video_judge": {
+    "at": "2026-08-28",
+    "code": "CONTINUE_EXPERIMENT",
+    "day": "7/14",
+    "log_last": "2026-08-22",
+    "note": "円本線ではない。数字は invent していない"
+  },
+  "funnel": {
+    "named_next": "第二新卒エージェントneo",
+    "source": "https://support.a8.net/as/HintOfProgram/sns.php",
+    "keys": [
+      "転職_neo",
+      "教育_N高",
+      "教育_アイズ",
+      "転職_チケット"
+    ],
+    "filled": 0,
+    "program_id": "s00000018427001",
+    "fallback_id": "s00000027548001",
+    "fallback2_id": "s00000027572003",
+    "fallback_when": "neo を見たあと（置いた／置けなかった）→ N高。N高も同じ → アイズ。教育未開設 → 転職アカの有無。neo 未置きかつ開設済み → チケット。未開設/項目なし/媒体なし/YouTubeあり → バナー（出品するな）",
+    "note": "sns_next 返しは 未提携/Threadsあり/YouTubeあり/項目なし/媒体なし。Threadsあり→EXIST。開設済み→副サイト→プロフィール→N高。未開設→N高。YouTubeあり/項目なし/媒体なし→N高。公開ID s00000018427001"
+  },
+  "note_sku1": {
+    "path": "docs/grok-bots/note/SKU1_tejun.md",
+    "published": false,
+    "price_in_body": false
+  },
+  "cw_live": {
+    "path": "output/sprint/CW_LIVE.md",
+    "applied_public": 6,
+    "need_new": 4,
+    "n": 10,
+    "urgent_id": "13406612",
+    "urgent_deadline": "2026-08-29",
+    "apply": "docs/grok-bots/CW_APPLY.md",
+    "reopen": "2026-08-28T13:17+09:00",
+    "new4_public_apply": false
+  },
+  "banner_10": {
+    "path": "docs/grok-bots/note/BANNER_10.md",
+    "log": "docs/grok-bots/note/BANNER_LOG.md",
+    "listed": false,
+    "complete_count": 10,
+    "route": "local_pil",
+    "note": "通す10。PNGはGitに無い。出品していない"
+  },
+  "measure": {
+    "path": "docs/grok-bots/MEASURE.md",
+    "dump": "docs/grok-bots/dump/G_hq_a8_csv.txt",
+    "invent": false
+  },
+  "wrap": {
+    "path": "output/sprint/WRAP.md",
+    "at": "2026-08-28T08:40+09:00",
+    "measured_yen": 0,
+    "issued": false
+  },
+  "commander": "Grok Bot 指令塔",
+  "staff": "Cursor",
+  "today": "2026-08-28",
+  "deadline": "2026-09-30",
+  "target_yen": 1000000,
+  "measured_yen": 0,
+  "remaining_yen": 1000000,
+  "remaining_days": 34,
+  "pace_yen_per_day": 29412,
+  "conversion_rows": 1,
+  "conversion_last_date": "2026-08-27",
+  "csv_stale": true,
+  "clicks": 33,
+  "cv": 0,
+  "filled_link_keys": 0,
+  "filled_link_key_names": [],
+  "threads_cron": "stopped",
+  "sprint_started_at": "2026-08-27T22:05:22.511Z",
+  "sprint_hours": 24,
+  "hours_elapsed": 7,
+  "hours_left": 17,
+  "blockers": [
+    {
+      "id": "hq_do_not_paste",
+      "owner": "指令塔→人間",
+      "action": "auひかりは SNS 掲載項目なし。貼るな。Secret に URL を入れるな"
+    },
+    {
+      "id": "run_cw_note_banner",
+      "owner": "指令塔→人間",
+      "action": "KEEP_CUT の run: CWは既応募6へ再応募せず新規4でN=10 / note下書き / 秋バナー製作。出品と公開は指令塔がまだ出していない"
+    },
+    {
+      "id": "csv_stale",
+      "owner": "指令塔→人間",
+      "action": "conversions 最終実測行は 2026-08-27。今日 2026-08-28 の行はファイルに無い。管理画面を見てから1行。開いていないなら足すな。invent するな"
+    },
+    {
+      "id": "video_csv",
+      "owner": "指令塔→人間",
+      "action": "ペット実験の当日数字を video_cash_log.csv に1行。無い日は空のまま"
+    },
+    {
+      "id": "high_ticket_nko",
+      "owner": "指令塔→人間",
+      "action": "neo s00000018427001 の掲載媒体はログイン後。置けるなら転職プロフィール。そのあと教育アカで N高 s00000027548001（別アカ。neo を教育に置くな。N高を転職に置くな）。N高が置けなければ チャイルド・アイズ s00000027572003。教育未開設ならアイズも置けない。転職アカが空なら キャリアチケット s00000011866027。未開設・項目なし・媒体なし・YouTubeありならバナー出品するな。新造するな。教育YouTubeは始めるな"
+    }
+  ],
+  "notes": [
+    "確定円だけが売上。再生・カタログ単価・EPC は売上ではない",
+    "司令塔は Grok Bot。Cursor は参謀。指示を出すのも動くのも BOT",
+    "Threads 自動投稿の cron は指令塔が再開を出すまで戻さない",
+    "いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない"
+  ],
+  "ticks": [
+    {
+      "at": "2026-08-27T22:05:22.511Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:11:37.192Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:15:29.460Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:15:55.842Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:19:17.262Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:21:18.292Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:29:18.645Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:33:37.711Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:36:36.727Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:39:45.342Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:42:08.716Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:49:56.963Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:55:50.979Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T22:59:34.232Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T23:04:52.273Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 0
+    },
+    {
+      "at": "2026-08-27T23:17:42.982Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:21:34.053Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:24:59.317Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:27:18.669Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:28:59.428Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:37:24.833Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:43:19.390Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:49:16.295Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-27T23:52:34.346Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-28T00:04:49.314Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-28T00:07:58.552Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T00:12:00.792Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T00:15:10.995Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T01:04:09.751Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T01:05:41.061Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 3
+    },
+    {
+      "at": "2026-08-28T02:01:58.285Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 3
+    },
+    {
+      "at": "2026-08-28T02:05:42.768Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 4
+    },
+    {
+      "at": "2026-08-28T03:02:44.144Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 4
+    },
+    {
+      "at": "2026-08-28T03:05:35.543Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 5
+    },
+    {
+      "at": "2026-08-28T04:02:58.091Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 5
+    },
+    {
+      "at": "2026-08-28T04:05:55.546Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 6
+    },
+    {
+      "at": "2026-08-28T05:04:28.203Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 6
+    },
+    {
+      "at": "2026-08-28T05:05:32.627Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 7
+    }
+  ]
+}

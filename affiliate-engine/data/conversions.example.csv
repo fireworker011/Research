@@ -1,4 +1,3 @@
-date,genre,amount_jpy,status
-2026-07-01,婚活,4000,pending
-2026-07-01,転職,12000,approved
-2026-07-02,美容,2500,rejected
+date,source,program,clicks,cv,approved_yen,note
+#,,,,,,comment rows start with # and are not summed
+2026-08-27,A8,all,33,0,0,example only. copy the header. do not copy this yen into the live file

@@ -2941,6 +2941,51 @@
       "cta_type": "direct",
       "link_key": "節約_格安SIM",
       "genre": "節約"
+    },
+    {
+      "id": "career_20260828_neo_01",
+      "genre": "転職",
+      "content": "第二新卒・既卒向けの転職支援をいくつか調べて、入口が「無料カウンセリング」のものと「登録だけ」のものに分かれる印象があった。\n\n比較するときに見ていたのは3つ。\n・初回が面談か、登録完了か\n・条件の棚卸しが先か、求人提示が先か\n・入社後の記述があるか\n\n調べたときのメモはこちら。\n{{AFFILIATE_LINK}}\n今の自分は、情報収集と応募のどちらが先だと思いますか？\n#PR",
+      "emoji": "🗂️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_neo"
+    },
+    {
+      "id": "career_20260828_neo_02",
+      "genre": "転職",
+      "content": "20代の転職記事を読んでいると、「職務経歴書の添削」や「模擬面接」まで書く支援と、求人紹介が中心の支援が混在している。\n\n整理した観点:\n1. 支援の範囲が公開ページに書いてあるか\n2. 対象（第二新卒／既卒／フリーター）が自分と重なるか\n3. 無料の範囲がどこまでか\n\n比較の置き場はここ。\n{{AFFILIATE_LINK}}\nあなたが先に確認したいのは、支援の中身と対象、どちらですか？\n#PR",
+      "emoji": "📝",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_neo"
+    },
+    {
+      "id": "education_20260828_nko_01",
+      "genre": "教育",
+      "content": "通信制高校を調べると、オンラインと通学を両方持つところがあるらしい。\n\n資料請求前に見ていた点は3つ。\n・授業の受け方\n・相談窓口の有無\n・費用の内訳が資料で分かるか\n\n選択肢の整理はここにまとめた。\n{{AFFILIATE_LINK}}\n進路の候補に、通信制は入っていますか？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_N高"
+    },
+    {
+      "id": "education_20260828_eyes_01",
+      "genre": "教育",
+      "content": "幼児教室と小学校受験の教室をいくつか調べると、「無料体験の予約」が入口のものがあるらしい。\n\n体験の前に見ていた点は3つ。\n・対象年齢が公開ページに書いてあるか\n・体験が無料か\n・受験対策の範囲がどこまでか\n\n選択肢の整理はここにまとめた。\n{{AFFILIATE_LINK}}\n習い事の候補に、教室型は入っていますか？\n#PR",
+      "emoji": "📚",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "教育_アイズ"
+    },
+    {
+      "id": "career_20260828_ticket_01",
+      "genre": "転職",
+      "content": "20〜30代向けの転職エージェントをいくつか調べると、「成長企業」と書くところと「求人数」と書くところに分かれる印象があった。\n\n比較するときに見ていたのは3つ。\n・対象年齢が公開ページに書いてあるか\n・入口が登録か、面談か\n・無料の範囲がどこまでか\n\n調べたときのメモはこちら。\n{{AFFILIATE_LINK}}\n今の自分は、情報収集と応募のどちらが先だと思いますか？\n#PR",
+      "emoji": "🗂️",
+      "engagement_prediction": "medium",
+      "cta_type": "direct",
+      "link_key": "転職_チケット"
     }
   ]
 }

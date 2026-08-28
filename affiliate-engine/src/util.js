@@ -75,6 +75,55 @@ function loadConfig(name, fallback = null) {
   return readJSON(real) ?? readJSON(example) ?? fallback;
 }
 
+/**
+ * アフィリンクを読む。ファイルの空キーは Git に残し、実 URL は
+ * GitHub Secret `AFFILIATE_LINKS_JSON`（環境変数）だけから載せる。
+ * 値はログに出さない。パース失敗時はファイル側のみ使う。
+ */
+function loadLinks() {
+  const file = loadConfig('links', {}) || {};
+  const out = { ...file };
+  const raw = process.env.AFFILIATE_LINKS_JSON;
+  if (!raw || !String(raw).trim()) return out;
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (_) {
+    console.warn('⚠️ AFFILIATE_LINKS_JSON が JSON として読めないため、ファイル側のリンクだけを使う');
+    return out;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    console.warn('⚠️ AFFILIATE_LINKS_JSON がオブジェクトではないため、ファイル側のリンクだけを使う');
+    return out;
+  }
+  for (const [key, value] of Object.entries(parsed)) {
+    if (key.startsWith('_')) continue;
+    if (typeof value === 'string' && value.trim()) {
+      out[key] = value.trim();
+    }
+  }
+  return out;
+}
+
+/** ログ・ドライランにアフィURLを出さない */
+function redactAffiliateUrls(text) {
+  return String(text || '').replace(/https?:\/\/[^\s)>\]]+/gi, '[link]');
+}
+
+/** 値が入っているリンクキー数（URL は返さない） */
+function countFilledLinks(links) {
+  if (!links || typeof links !== 'object') return 0;
+  return Object.entries(links).filter(([k, v]) => !k.startsWith('_') && String(v || '').trim()).length;
+}
+
+/** キー名だけ（値は出さない） */
+function filledLinkKeys(links) {
+  if (!links || typeof links !== 'object') return [];
+  return Object.entries(links)
+    .filter(([k, v]) => !k.startsWith('_') && String(v || '').trim())
+    .map(([k]) => k);
+}
+
 /** JST の今日の日付文字列 YYYY-MM-DD */
 function todayJST(offsetDays = 0) {
   const now = new Date(Date.now() + 9 * 3600 * 1000 + offsetDays * 86400 * 1000);
@@ -94,6 +143,10 @@ module.exports = {
   readJSON,
   writeJSON,
   loadConfig,
+  loadLinks,
+  countFilledLinks,
+  filledLinkKeys,
+  redactAffiliateUrls,
   todayJST,
   scheduleEpoch
 };
