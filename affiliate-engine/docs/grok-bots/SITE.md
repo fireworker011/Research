@@ -13,6 +13,8 @@ A8 公式: SNS に掲載するには、主サイトまたは副サイトとし�
 - https://support.a8.net/a8/as/faq/2022/post_1953.html （複数サイト・SNSは副サイトで登録）
 - https://support.a8.net/a8/as/faq/manual/change_registration_info.php （「副サイトを登録する」）
 
+公式FAQ再読: 2026-08-28 11:42 JST。3件とも HTTP 200。ボタン名は「サイト情報の登録・修正」「副サイトを登録する」のまま。プロフィールのリンク欄は可。スレッド本文は控え。円は足していない。
+
 ## 手順（公式のボタン名だけ）
 
 1. 管理画面の【登録情報】→「サイト情報の登録・修正」
@@ -24,7 +26,7 @@ A8 公式: SNS に掲載するには、主サイトまたは副サイトとし�
 ## ファイルに無いもの
 
 - 転職 Threads が開設済みか。見る仕事は `EXIST.md` / dump `G_hq_threads_exist.txt`
-- 2026-08-28 公開 fetch: `threads.com/@kei_tenshoku_junbi` / `@shizuka_tenshoku` / `@kei_career_memo` はアプリ誘導のみ。存在の証明にも不存在の証明にも使えない
+- 公開 fetch のアプリ誘導は、存在の証明にも不存在の証明にも使えない
 - いま副サイトに何が登録されているか（ログイン後）
 
 ## やらないこと

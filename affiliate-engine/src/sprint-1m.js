@@ -635,6 +635,11 @@ function selfTest() {
   if (!funnelEyes.includes('s00000027572003')) throw new Error('FUNNEL_EYES should name アイズ id');
   const funnelTicket = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_TICKET.md'), 'utf8');
   if (!funnelTicket.includes('s00000011866027')) throw new Error('FUNNEL_TICKET should name ticket id');
+  const siteMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'SITE.md'), 'utf8');
+  if (siteMd.includes('kei_tenshoku') || siteMd.includes('shizuka_tenshoku') || siteMd.includes('kei_career_memo')) {
+    throw new Error('SITE.md must not guess tenshoku handles; HQ would copy them into chat');
+  }
+  if (!siteMd.includes('副サイトを登録する')) throw new Error('SITE.md should keep official 副サイト button name');
 
   console.log('self-test ok');
 }
