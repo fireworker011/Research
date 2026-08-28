@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。経過 9/24（08:05 UTC で 10）。タスク表 0–23 済。16:08 JST N=6。応募 16/9/7/46。dump は G_hq_cw_n10（差し替えない）。#75 コメント 0。overlay run list 空。PR #82/#83/#84/#85 入済み。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
+  "next_hour_task": "hours_left は壁時計。経過 9/24（08:05 UTC で 10）。タスク表 0–23 済。16:08 JST N=6。応募 16/9/7/46。dump は G_hq_cw_n10（差し替えない）。#75 コメント 0。overlay run list 空。PR #82/#83/#84/#85/#86 入済み。デフォルト HEAD f8d5906。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,

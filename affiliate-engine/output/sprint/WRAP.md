@@ -48,7 +48,7 @@ N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロ�
 ## 仕組み（円ではない）
 
 - 重ね PR **#77 MERGED**。YAML env PR **#78 MERGED**。auひかり drop PR **#84 MERGED**（本番 HEAD `37044d1`）
-- デフォルト dump PR **#82/#83/#85 MERGED**（HEAD `53ae3ac`。clone なら `CW_APPLY.md` を先に開け）
+- デフォルト dump PR **#82/#83/#85/#86 MERGED**（HEAD `f8d5906`。clone なら dump → `CW_APPLY.md`。デフォルト `HQ_100MAN.md` は dump へ送る短文）
 - overlay_status dispatch PR **#81 MERGED**（今夜の1手ではない。run list 空）
 - マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない。cron は戻すな）
 - conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる。同じ source+program の月次再掲は最新日だけが円。`all` と案件別を混ぜると落ちる
