@@ -709,6 +709,9 @@ function selfTest() {
     throw new Error('HANDOVER must not block HQ_100MAN; yen 1手 is HQ_ORDERS dump');
   }
   if (!handover.includes('HQ_100MAN.md')) throw new Error('HANDOVER should send HQ to HQ_100MAN for yen deadline');
+  if (!handover.includes('cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt')) {
+    throw new Error('HANDOVER must give HQ a sprint-branch raw dump URL; default branch has no HQ_100MAN');
+  }
   if (handover.includes('**月100万の話は週50クリックが3週続くまでしない。**')) {
     throw new Error('HANDOVER pet click gate must not stop 9/30 yen 1手');
   }
