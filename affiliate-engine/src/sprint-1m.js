@@ -79,6 +79,18 @@ function conversionShapeErrors(csvText, today) {
       errors.push(`${label}: 未来日`);
     }
   }
+  const bySource = new Map();
+  for (const row of rows) {
+    const src = String(row.source || '').trim();
+    const prog = String(row.program || '').trim();
+    if (!bySource.has(src)) bySource.set(src, new Set());
+    bySource.get(src).add(prog);
+  }
+  for (const [src, progs] of bySource) {
+    if (progs.has('all') && progs.size > 1) {
+      errors.push(`${src}: program=all と案件別を混ぜるな（円が倍になる）`);
+    }
+  }
   return errors;
 }
 
@@ -91,12 +103,28 @@ function lastLiveConversionDate(csvText) {
   return last;
 }
 
+function sourceProgramKey(row) {
+  return `${String(row.source || '').trim()}\t${String(row.program || '').trim()}`;
+}
+
+/** 同じ source+program は最新日だけ。月次スナップの再掲を足して倍にしない */
+function latestBySourceProgram(rows) {
+  const map = new Map();
+  for (const row of rows) {
+    const key = sourceProgramKey(row);
+    const prev = map.get(key);
+    if (!prev || row.date > prev.date) map.set(key, row);
+  }
+  return [...map.values()];
+}
+
 function sumConversions(csvText) {
   const rows = parseCSV(csvText).filter(isLiveConversionRow);
+  const latest = latestBySourceProgram(rows);
   let clicks = 0;
   let cv = 0;
   let approvedYen = 0;
-  for (const row of rows) {
+  for (const row of latest) {
     clicks += toInt(row.clicks);
     cv += toInt(row.cv);
     approvedYen += toInt(row.approved_yen);
@@ -363,6 +391,31 @@ function selfTest() {
     '2026-08-27'
   );
   if (!catalogBad.some((e) => /カタログ/.test(e))) throw new Error('catalog yen should fail');
+
+  const twoDays = [
+    'date,source,program,clicks,cv,approved_yen,note',
+    '2026-08-27,A8,all,33,0,0,monthly',
+    '2026-08-28,A8,all,40,1,15000,monthly'
+  ].join('\n');
+  const latestSum = sumConversions(twoDays);
+  if (latestSum.approvedYen !== 15000) throw new Error(`latest yen want 15000, got ${latestSum.approvedYen}`);
+  if (latestSum.clicks !== 40) throw new Error(`latest clicks want 40, got ${latestSum.clicks}`);
+  if (latestSum.cv !== 1) throw new Error(`latest cv want 1, got ${latestSum.cv}`);
+  if (latestSum.rows !== 2) throw new Error(`rows want 2, got ${latestSum.rows}`);
+
+  const twoPrograms = [
+    'date,source,program,clicks,cv,approved_yen,note',
+    '2026-08-28,A8,neo,10,1,15000,screen',
+    '2026-08-28,A8,nko,2,1,8000,screen'
+  ].join('\n');
+  const progSum = sumConversions(twoPrograms);
+  if (progSum.approvedYen !== 23000) throw new Error(`program yen want 23000, got ${progSum.approvedYen}`);
+
+  const mixed = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,all,33,0,0,monthly\n2026-08-28,A8,neo,1,1,15000,screen\n',
+    '2026-08-28'
+  );
+  if (!mixed.some((e) => /混ぜるな/.test(e))) throw new Error('all+program mix should fail');
   console.log('self-test ok');
 }
 

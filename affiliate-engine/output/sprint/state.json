@@ -66,7 +66,7 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T08:40+09:00",
+    "reopen": "2026-08-28T09:02+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
@@ -306,6 +306,13 @@
     },
     {
       "at": "2026-08-27T23:52:34.346Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 1
+    },
+    {
+      "at": "2026-08-28T00:04:49.314Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

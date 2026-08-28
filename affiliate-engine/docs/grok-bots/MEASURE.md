@@ -26,9 +26,10 @@ date,source,program,clicks,cv,approved_yen,note
 
 1. A8 管理画面を開く。開いていないなら **行を足すな**（0 を invent するな）。
 2. 見えた clicks / cv / 確定金額だけを1行にする。見えない列は空にしない。見えた 0 は 0 と書く。note に「カタログ」と書いて yen を足すな。
-3. 同じ日・同じ source・同じ program の行が既にあれば、上書きするか新しい行にするかを画面の数字に合わせる。数字を足して倍にしない。
-4. `node src/sprint-1m.js --self-test && node src/sprint-1m.js` で TODAY.md の実測円が CSV と一致することを見る。URL やカタログ円が入っているとここで落ちる。
-5. アフィURL・トークンを Git / チャット / ログに書くな。
+3. 同じ source・同じ program は **最新日の行だけ** が円・clicks・cv。古い行は履歴。画面の月次合計を日付を変えて再掲するときは、新しい行を足してよい（コードは最新だけ読む）。同じ数字を手で足して倍にするな。
+4. `program=all`（画面の全プログラム合計）と案件別行を同じ source に並べるな。円が倍になる。全部か案件別か、どちらか一方。
+5. `node src/sprint-1m.js --self-test && node src/sprint-1m.js` で TODAY.md の実測円が CSV と一致することを見る。URL やカタログ円が入っているとここで落ちる。
+6. アフィURL・トークンを Git / チャット / ログに書くな。
 
 ## 円にしないもの
 

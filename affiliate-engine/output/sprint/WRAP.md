@@ -1,6 +1,6 @@
 # 24h 参謀総括（指令塔へ返す材料）
 
-書いた日: 2026-08-28 08:40 JST。Cursor は発出しない。採否は指令塔。
+書いた日: 2026-08-28 08:40 JST。CW 再読: 2026-08-28 09:02 JST。Cursor は発出しない。採否は指令塔。
 目標 2026-09-30 確定 ¥1,000,000 は変えない。実測円は **¥0**（未達）。
 
 ## 円（正本 `data/conversions.csv`）
@@ -20,7 +20,7 @@
 
 dump は **1つ**: `docs/grok-bots/dump/G_hq_cw_n10.txt`
 
-- 公開 N は **6**。新規4に `fireworker12` なし（08:40 JST 公開再読）
+- 公開 N は **6**。新規4に `fireworker12` なし（09:02 JST 公開再読）
 - 13405300 応募 13。13405803 期限 **2026-08-29**
 - 既応募6へ再応募するな。無い実績は書くな
 
@@ -48,7 +48,7 @@ N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロ�
 - 重ね PR 77 MERGEABLE: https://github.com/fireworker011/Research/pull/77 （checkout `claude/monthly-revenue-system-gvi02u`。N高・アイズ・チケットテンプレも重ねに足す）
 - YAML env PR 78 MERGEABLE: https://github.com/fireworker011/Research/pull/78
 - マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
-- conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる
+- conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる。同じ source+program の月次再掲は最新日だけが円。`all` と案件別を混ぜると落ちる
 
 ## 参謀が閉じていない
 
