@@ -19,9 +19,10 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 ## Secret 重ねは入った。cron は止まっている
 
-2026-08-28 14:37 JST に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（HEAD `5ae52e2`）:
+2026-08-28 15:59 JST に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（HEAD `37044d1`）:
 
 - `util.js` に `loadLinks()` がある（PR #77、マージ `5ae52e2`、2026-08-28T05:27:22Z）
+- PR #84 入済み（`37044d1`、2026-08-28T06:58:44Z）。`申込_auひかり` は Secret / ファイルのどちらからもも載せない
 - `config/links.json` に `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` / `申込_auひかり` がある。**値は全部空**
 - seed に `career_20260828_neo_01/02` / `education_20260828_nko_01` / `education_20260828_eyes_01` / `career_20260828_ticket_01` がある
 - 空リンクのスキップは `posted.json` に書かない（PR #80、マージ `307a858`、2026-08-28T05:24:20Z）
@@ -43,6 +44,7 @@ Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォ�
 - https://github.com/fireworker011/Research/pull/78 MERGED
 - https://github.com/fireworker011/Research/pull/80 MERGED
 - https://github.com/fireworker011/Research/pull/81 MERGED（鍵名 dispatch。投稿しない）
+- https://github.com/fireworker011/Research/pull/84 MERGED（auひかりを loadLinks から除外。投稿しない）
 - 旧マージ指示 dump: `dump/G_hq_merge_overlay.txt`（入済み。今夜の1手ではない）
 
 ## 今夜の円の置き場（重ねを待たない）

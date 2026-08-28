@@ -145,13 +145,6 @@
   ],
   "ticks": [
     {
-      "at": "2026-08-27T22:05:22.511Z",
-      "today": "2026-08-28",
-      "measured_yen": 0,
-      "filled_link_keys": 0,
-      "hours_elapsed": 0
-    },
-    {
       "at": "2026-08-27T22:11:37.192Z",
       "today": "2026-08-28",
       "measured_yen": 0,
@@ -475,6 +468,13 @@
     },
     {
       "at": "2026-08-28T06:57:07.209Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 8
+    },
+    {
+      "at": "2026-08-28T07:00:11.040Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
