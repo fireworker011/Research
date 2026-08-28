@@ -454,6 +454,10 @@ function selfTest() {
   if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
   const partner = readDump('G_hq_a8_partner.txt');
   if (!partner.includes('G_hq_sns_next.txt')) throw new Error('partner dump should re-open sns_next after approval');
+  const mergeOv = readDump('G_hq_merge_overlay.txt');
+  if (!mergeOv.includes('次は無い')) throw new Error('merge overlay is the last dump before cron');
+  const existEdu = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'EXIST_EDU.md'), 'utf8');
+  if (!existEdu.includes('アイズ')) throw new Error('EXIST_EDU should cover アイズ Threadsあり');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 
