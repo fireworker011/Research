@@ -50,12 +50,12 @@ N高公開ID **`s00000027548001`**。教育 Threads は 08:40 JST 公開プロ�
 - 重ね PR **#77 MERGED**。YAML env PR **#78 MERGED**。auひかり drop PR **#84 MERGED**。insight は PR **#87 MERGED**（auひかりを link_key 候補に出さない。本番 HEAD `f659bfb`）。cron は戻していない
 - デフォルト dump PR **#82/#83/#85/#86 MERGED**（HEAD `f8d5906`。clone なら dump → `CW_APPLY.md`。デフォルト `HQ_100MAN.md` は dump へ送る短文）
 - overlay_status dispatch PR **#81 MERGED**（今夜の1手ではない。run list 空）
-- マージ dump: `G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない。cron は戻すな）
+- マージ dump: `G_hq_merge_overlay.txt`（PR 77 / 78 / 80 入済み。再マージするな。プロフィールは待たない。cron は戻すな）
 - conversions に URL や「カタログ」付き yen が入ると `sprint-1m.js` が落ちる。同じ source+program の月次再掲は最新日だけが円。`all` と案件別を混ぜると落ちる
 
 ## 参謀が閉じていない
 
-CW 応募、A8 ログイン後の掲載媒体、Secret の URL、PR マージ、note 公開、バナー出品、今日の conversions 行。これらは指令塔が人間へ出す。
+CW 応募、A8 ログイン後の掲載媒体、Secret の URL（既存 JSON に足す。他鍵は消すな）、note 公開、バナー出品、今日の conversions 行。これらは指令塔が人間へ出す。overlay の再マージは残っていない。
 
 ## やっていない
 
