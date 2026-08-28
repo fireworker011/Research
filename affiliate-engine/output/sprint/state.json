@@ -108,8 +108,8 @@
   "threads_cron": "stopped",
   "sprint_started_at": "2026-08-27T22:05:22.511Z",
   "sprint_hours": 24,
-  "hours_elapsed": 3,
-  "hours_left": 21,
+  "hours_elapsed": 4,
+  "hours_left": 20,
   "blockers": [
     {
       "id": "hq_do_not_paste",
@@ -360,6 +360,13 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 3
+    },
+    {
+      "at": "2026-08-28T02:05:42.768Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 4
     }
   ]
 }
