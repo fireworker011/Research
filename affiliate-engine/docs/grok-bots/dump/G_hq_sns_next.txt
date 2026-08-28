@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_note_place.txt �
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_LIVE.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_APPLY.md
-
 仕事はこれだけ:
 
 高単価導線の次確認は auひかりではない。sns.php「売れてる案件」の公開名は『第二/既卒/フリーター/中退/高卒の就職・転職支援【第二新卒エージェントneo】』。公開プログラムIDは `s00000018427001`。管理画面でこの1件だけ開け。

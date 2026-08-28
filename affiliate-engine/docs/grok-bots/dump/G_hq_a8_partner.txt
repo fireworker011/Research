@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_sns_next.txt の
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/PARTNER.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_LIVE.md
-
 仕事はこれだけ:
 
 ログイン後、neo `s00000018427001` が未提携だった。次は提携申請だけ。承認前にリンクを発行するな。人間へ出す指示は1つ。

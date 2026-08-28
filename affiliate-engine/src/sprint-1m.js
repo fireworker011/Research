@@ -444,6 +444,8 @@ function selfTest() {
   const snsNext = readDump('G_hq_sns_next.txt');
   if (!snsNext.includes('G_hq_a8_partner.txt')) throw new Error('neo 未提携 should name partner dump');
   if (!snsNext.includes('G_hq_threads_exist.txt')) throw new Error('neo Threadsあり should name exist dump');
+  if (!snsNext.includes('FUNNEL_LIVE.md')) throw new Error('neo sns dump should open FUNNEL_LIVE');
+  if (snsNext.includes('FUNNEL_APPLY.md')) throw new Error('neo sns dump must not open FUNNEL_APPLY; listing job is FUNNEL_LIVE');
   const threadsExist = readDump('G_hq_threads_exist.txt');
   if (!threadsExist.includes('G_hq_a8_site.txt')) throw new Error('転職 開設済み should name site dump');
   const eduExist = readDump('G_hq_edu_exist.txt');
@@ -506,6 +508,9 @@ function selfTest() {
   if (ytTicket.includes('FUNNEL_LIVE.md')) throw new Error('ticket yt_only dump must not open neo-first FUNNEL_LIVE');
   const ytNeo = readDump('G_hq_yt_only.txt');
   if (!ytNeo.includes('FUNNEL_LIVE.md')) throw new Error('neo yt_only dump should still open FUNNEL_LIVE');
+  const partnerNeo = readDump('G_hq_a8_partner.txt');
+  if (!partnerNeo.includes('PARTNER.md')) throw new Error('neo partner dump should open PARTNER.md');
+  if (partnerNeo.includes('FUNNEL_LIVE.md')) throw new Error('neo partner dump must not open FUNNEL_LIVE; listing dump already ran');
   const partnerNko = readDump('G_hq_a8_partner_nko.txt');
   if (!partnerNko.includes('PARTNER_NKO.md')) throw new Error('N高 partner dump should open PARTNER_NKO');
   if (partnerNko.includes('FUNNEL_LIVE.md')) throw new Error('N高 partner dump must not open neo-first FUNNEL_LIVE');
