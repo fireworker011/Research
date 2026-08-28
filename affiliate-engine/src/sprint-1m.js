@@ -509,6 +509,9 @@ function selfTest() {
   if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
   if (!secretNeo.includes('SECRET.md')) throw new Error('neo Secret should still open SECRET.md');
   if (secretNeo.includes('SITE.md')) throw new Error('neo Secret must not open SITE.md; site dump already ran');
+  if (secretNeo.includes('重ねが無い')) {
+    throw new Error('secret neo dump must not say production overlay missing after #77');
+  }
   if (secretNko.includes('SITE_EDU.md')) throw new Error('N高 Secret must not open SITE_EDU.md; site dump already ran');
   if (secretEyes.includes('SITE_EDU.md')) throw new Error('アイズ Secret must not open SITE_EDU.md; site dump already ran');
   if (secretTicket.includes('SITE.md')) throw new Error('ticket Secret must not open SITE.md; site dump already ran');
@@ -748,6 +751,9 @@ function selfTest() {
   if (!phoneHq.includes('G_hq_cw_n10.txt')) throw new Error('PHONE_HQ should keep tonight dump as CW N=10');
   if (!phoneHq.includes('今夜の人間1手には使うな')) {
     throw new Error('PHONE_HQ must not send tonight human 1手 to playbook PHONE.md');
+  }
+  if (phoneHq.includes('重ねが無い')) {
+    throw new Error('PHONE_HQ must not say production overlay missing after #77');
   }
   const posterSrc = fs.readFileSync(path.join(__dirname, 'threads-poster.js'), 'utf8');
   if (/status:\s*'skipped_no_link'/.test(posterSrc)) {

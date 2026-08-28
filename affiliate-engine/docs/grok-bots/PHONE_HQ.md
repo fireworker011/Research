@@ -10,7 +10,7 @@
 | 未提携のあと | `dump/G_hq_a8_partner.txt` | neo だけ提携申請。UZUZ に申請するな。承認前に貼るな。承認後は sns_next を再貼り |
 | Threadsありのあと | `dump/G_hq_threads_exist.txt` | 転職 Threads は 開設済み / 未開設。未開設なら新造するな。ハンドルはチャットに書くな |
 | 開設済みのあと | `dump/G_hq_a8_site.txt` | その Threads を副サイト登録。未開設では使うな。転職YouTubeは始めるな |
-| そのあと | `dump/G_hq_secret_neo.txt` | 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ。links.json は空。cron は戻すな。自動投稿は checkout ブランチに重ねが無いと空のまま（`CHECKOUT.md`）。プロフィールは待たない |
+| そのあと | `dump/G_hq_secret_neo.txt` | 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ。links.json は空。cron は戻すな。PR #77 入済み。プロフィールは待たない |
 | そのあと | `dump/G_hq_threads_profile.txt` | 開設済み転職 Threads のプロフィールリンク欄だけ。本文は貼るな。cron は戻すな。次は N高（教育アカは別。neo を教育に置くな） |
 | YouTubeありのあと | `dump/G_hq_yt_only.txt` | Threads が欄に無い。プロフィールに置くな。転職YouTubeは始めるな。ペットに neo を置くな。次は N高 |
 | neo の掲載を見たあと（置いた／置けなかった両方） | `dump/G_hq_sns_nko.txt` | N高 `s00000027548001` だけ開け。教育アカに置く。転職アカに N高を置くな。教育アカに neo を置くな。UZUZ は開くな |
