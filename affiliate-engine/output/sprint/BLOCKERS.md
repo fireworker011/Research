@@ -13,7 +13,7 @@
 | 2 | note 手順書 980 | **run**（下書きあり・未公開） | 本文: `docs/grok-bots/note/SKU1_tejun.md`。公開URL **ファイルに無い**。今夜はD0にしない | 下書きを note に置く。公開するな |
 | 3 | 秋バナー10枚 | **run**（製作済）/ 出品は未開始 | 記録: `docs/grok-bots/note/BANNER_LOG.md`。通す **10**。出品URL **ファイルに無い** | 出品するな |
 | 4 | 申込型ハイチケット | **INSUFFICIENT / 未開始** | auひかりは提携済みだが 2026-08-27 管理画面に SNS/YouTube/TikTok/Threads 掲載項目なし＝貼らない。オリコカード・ガス屋のプログラム名は公式公開ページに **ファイルに無い**。オリコで乗ーるはカードではない（代入禁止） | 貼るな。応募を始めるな |
-| 5 | Threads 5アカ | 稼働面。cron 停止 | links.json 空。トークン Issue #56 OPEN。投稿可否 INSUFFICIENT | 指令塔が再開を出すまで cron を戻すな |
+| 5 | Threads 5アカ | 稼働面。cron 停止 | links.json 空。トークン Issue #56 OPEN（2026-08-24 リフレッシュ。教育含む5アカの次回期限 2026-10-23。tenshoku は更新対象に無い）。投稿可否 INSUFFICIENT。**プロフィールリンク欄は API を通らないので #56 は今夜の手動導線を止めない** | 指令塔が再開を出すまで cron を戻すな。#56 を CW / note / プロフィールの前に出すな |
 | 6 | ペット Shorts 実験 | CONTINUE_EXPERIMENT 7/14 | video_cash_log 最終行 2026-08-22。直近7日の記録 投稿0/クリック0。**円本線としては cut**（Furbo では期限に届かない） | 型を変えるな。量産するな。CSV 追記は人間 |
 
 ## 高単価導線が止まっている理由（貼れない）
