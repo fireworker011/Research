@@ -26,5 +26,13 @@ jobs:
           node --check src/threads-poster.js
           node --check src/amplify.js
           node --check src/sprint-1m.js
+          node --check scripts/print-overlay-status.js
           node scripts/verify-secret-overlay.js
           node src/sprint-1m.js --self-test
+
+      - name: 埋まっている鍵名だけ出す（投稿しない）
+        env:
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
+        run: |
+          cd affiliate-engine
+          node scripts/print-overlay-status.js

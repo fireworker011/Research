@@ -114,6 +114,15 @@ function assertAmplifyStaysOff(dummy) {
 function main() {
   const dummy = 'https://example.invalid/secret-overlay-test';
   const prev = process.env.AFFILIATE_LINKS_JSON;
+  const { overlayStatus } = require('./print-overlay-status');
+  const status = overlayStatus({
+    転職_neo: dummy,
+    教育_N高: '',
+    _comment: dummy
+  });
+  if (status.line.includes('example.invalid')) throw new Error('overlay-status leaked a URL');
+  if (status.names.join(',') !== '転職_neo') throw new Error(`overlay-status keys want 転職_neo, got ${status.names.join(',')}`);
+
   process.env.AFFILIATE_LINKS_JSON = JSON.stringify({
     転職_neo: dummy,
     教育_N高: dummy,
