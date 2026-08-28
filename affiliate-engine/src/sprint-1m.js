@@ -532,6 +532,10 @@ function selfTest() {
   if (!fs.existsSync(path.join(__dirname, '..', 'output', 'sprint', 'CW_NEXT.md'))) {
     throw new Error('CW_NEXT.md must remain on the sprint branch');
   }
+  if (cwDump.includes('CW_APPLY_NEXT.md')) throw new Error('CW dump must not open CW_APPLY_NEXT.md; tonight copy is CW_APPLY.md');
+  if (!fs.existsSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CW_APPLY_NEXT.md'))) {
+    throw new Error('CW_APPLY_NEXT.md must remain on the sprint branch');
+  }
   const csvDump = readDump('G_hq_a8_csv.txt');
   if (!csvDump.includes('MEASURE.md')) throw new Error('csv dump should open MEASURE.md');
   if (!csvDump.includes('conversions.csv')) throw new Error('csv dump should open conversions.csv');
