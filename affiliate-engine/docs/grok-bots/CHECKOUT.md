@@ -37,7 +37,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 
-Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。API 上は `state=active`。この参謀ランの `gh workflow run` は 403。2026-08-28 17:19 JST のブラウザは GitHub 右上が **Sign in**（未ログインの公開閲覧）。Run workflow が無いのは YAML 不足ではない。人間が write 付きでログインした UI から Run workflow（ref デフォルト。投稿しない）。`gh run list` は空。`gh secret list` は 403。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。A8 と CrowdWorks も未ログイン。conversions の今日の行は足していない。
+Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。API 上は `state=active`（id 344355680）。この参謀ランの `gh workflow run` は 403。2026-08-28 17:19 JST のブラウザは GitHub 右上が **Sign in**（未ログインの公開閲覧）。Run workflow が無いのは YAML 不足ではない。人間が write 付きでログインした UI から Run workflow（ref デフォルト。投稿しない）。2026-08-28 17:41 JST に `origin/claude/monthly-revenue-system-gvi02u` を再読しても HEAD は `f659bfb`。デフォルト HEAD は `f8d5906`。`gh run list --workflow=affiliate_engine_overlay_status.yml` は空。`gh secret list` は 403。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。conversions の今日の行は足していない。
 
 重ね PR の状態（再マージするな）:
 
