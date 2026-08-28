@@ -16,7 +16,7 @@
 公開プログラムID（sns.php「提携する」の `programId`）: **`s00000018427001`**  
 公開の成果地点（カタログ）: 新規カウンセリング15000円 → **approved_yen に足すな**  
 既存アカ: 転職（鍵 `転職_neo` は空。`accounts.json` の tenshoku `handle` は未記入）  
-掲載媒体に YouTube があるか: **ファイルに無い**（ログイン後のプログラム詳細）
+掲載媒体に YouTube があるか: **ファイルに無い**（ログイン後のプログラム詳細）。2026-08-28 15:09 JST に `media-console.a8.net/program/detail-not-partnered?programId=s00000018427001` を開くと最終URLは `common/re-authentication?messageType=login_required`。HTML に Threads / YouTube / 掲載媒体は 0。sns.php の「提携する」href は未ログインの証明でも掲載媒体の証明でもない。1語（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`）はファイルに無い。invent していない。
 
 人間が返すのは次の1語だけ: `未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`。
 - `未提携` → dump `G_hq_a8_partner.txt`。承認前に貼るな
@@ -94,7 +94,7 @@ N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` �
 
 ## ファイルに無いもの
 
-- ログイン後の掲載媒体欄
+- ログイン後の掲載媒体欄（2026-08-28 15:09 JST: media-console の neo 詳細は `login_required` に飛ぶ。Threads / 掲載媒体は HTML に 0）
 - 提携済みかどうか（画面を見ていない。sns.php の detail-not-partnered は未ログイン CTA）
 - カタログ 15000 円が確定円になる日
 - 転職 Threads のハンドル（accounts.json は未記入。トークンは engage ログで未設定。公開 fetch はアプリ誘導のみで存在は証明できない）
