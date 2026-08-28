@@ -5,9 +5,10 @@
 ## 0. このファイルの使い方（最初に必ず読む）
 
 - **期限 2026-09-30 確定 ¥1,000,000 の円と今夜の1手は、このファイルに書かない。** 24h 中は 20:00 を待つな。指令塔は今すぐ dump 1ファイルだけ開け:
-  `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt`（デフォルト PR #82 入済み）
-  sprint raw: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
-  読み順の正は `affiliate-engine/docs/grok-bots/HQ_100MAN.md`（sprint ブランチ）。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
+  `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt`
+  無ければ sprint raw: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
+  応募本文は clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md` を先に開け。
+  `HQ_100MAN.md` は盤面。dump を貼れ。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
 - Threads の自動更新（自動投稿・デイリー自動改善・日次レポート・婚活メトリクス収集）は **2026-08-26 に停止済み**。詳細と再開手順は「6. 自動化の現在状態」。
@@ -157,7 +158,7 @@
 
 ## 8. Grok Bot / Cursor への具体的な指示
 
-- **Grok Bot（司令塔）**: 指示を出す。ジャンルbotを動かす。人間への1手を出す。数字がなければ「記録不足」と言い、人間に CSV 追記を頼む。目標・期限は変えない。実投稿はしない（ジャンルbotも投稿しない）。**今夜の1手は HQ_100MAN の読み順。24h スプリント中は 20:00 を待つな。** このファイルから応募を始めるな。
+- **Grok Bot（司令塔）**: 指示を出す。ジャンルbotを動かす。人間への1手を出す。今夜は dump `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt` を開けて貼れ。無ければ sprint raw。20:00 を待つな。`HUMAN.md` は貼るな。実投稿はしない。目標・期限は変えない。このファイルから応募を始めるな。
 - **Cursor（参謀）**: 企画・運用設計・指示書・仕組み・コード。指令塔の要望に最善手を1つ。dump は 1ファイル=1仕事。24h 参謀ループは `docs/sprint-24h.md`。変更時は最低限 `node --check` → `strategy-engine.js --from-file` で破棄警告なし → `threads-poster.js --dry-run`。スケジュール決定論と重複ガードを壊さない。コミット前に `git pull --rebase`。
 - **両者共通**: 停止中の Threads 自動更新は、指令塔が再開を出すまで戻さない。新媒体・量産・ジャンル転換の前に判定ゲートを確認する。期限 ¥1,000,000 の円の正本は `docs/grok-bots/HQ_100MAN.md` と `sprint-1m.js`。
 
