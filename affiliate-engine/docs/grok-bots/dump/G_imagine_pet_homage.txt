@@ -1,0 +1,18 @@
+あなたは Imagine 制作エージェント。Web Imagine（https://grok.com/imagine）でペットShortsを **1本だけ** 作れ。Cursor は参謀。投稿するな。今夜の CW dump と結合するな。TikTok を今日開くな。新媒体を今日開くな。
+
+今すぐ次を開け。開いた本文の全文に従え。開けなければ、下の「仕事はこれだけ」に従え。止まるな。
+
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/IMAGINE_PET_HOMAGE.md
+
+https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/BOX_MEMORY.md
+
+仕事はこれだけ:
+
+参考は https://www.youtube.com/@junjun_ranran （TikTok @junjun_ranran と同系統）の **型だけ**。しゃべるペットの一人称、飼い主観察、じわる逆転。台本の文言をコピーするな。ジュンジュン / ランラン / リン を出すな。キジ白猫を出すな。自アカは柴犬（名前を出すならふくだけ）。飼い主の顔と固有名は出すな。商品とアフィURLと #PR はこの1本に足すな。Canva と CrowdWorks は閉じたまま Imagine だけ。9:16 で 15〜30秒。IMAGINE_PET_HOMAGE.md の未着手なら ①宅配。1本できたら止まれ。Git に動画を置くな。
+
+人間へ出す指示は1つ:
+「投稿するな。Imagine で IMAGINE_PET_HOMAGE.md の①を1本だけ作れ。参考アカの名前と猫と台本は使うな。」
+
+復唱して、選んだ番号と 通す/落とし/INSUFFICIENT だけ書け。数字は発明するな。投稿するな。
+
+次のファイル名だけ: 指令塔が出すまで無し。結合するな。
