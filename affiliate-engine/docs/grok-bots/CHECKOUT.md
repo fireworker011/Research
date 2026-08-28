@@ -17,23 +17,29 @@
 
 GitHub の schedule / デフォルトからの dispatch が使う **YAML** はデフォルトブランチ。`AFFILIATE_LINKS_JSON` を env に書く変更は、dispatch するブランチ（再開後の schedule ならデフォルト）の YAML が要る。schedule 自体は指令塔が出すまで戻すな。
 
-## Secret だけでは自動投稿は空のまま
+## Secret 重ねは入った。cron は止まっている
 
-2026-08-28 に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（**再読: 2026-08-28 13:21 JST**。HEAD `3596fe6` のまま）:
+2026-08-28 14:37 JST に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（HEAD `5ae52e2`）:
 
-- `util.js` に `loadLinks()` が無い
-- poster / amplify / insight / strategy-engine は `loadConfig('links')` のファイルだけを見る
-- `config/links.json` に `転職_neo` / `教育_N高` / `申込_auひかり` が無い
-- post / insight の YAML に `AFFILIATE_LINKS_JSON` が無い
-- seed に `career_20260828_neo_01/02` が無い（重ね PR 77 が足す。N高 `education_20260828_nko_01`、アイズ `education_20260828_eyes_01`、チケット `career_20260828_ticket_01` も重ねに足す）
+- `util.js` に `loadLinks()` がある（PR #77、マージ `5ae52e2`、2026-08-28T05:27:22Z）
+- `config/links.json` に `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` / `申込_auひかり` がある。**値は全部空**
+- seed に `career_20260828_neo_01/02` / `education_20260828_nko_01` / `education_20260828_eyes_01` / `career_20260828_ticket_01` がある
+- 空リンクのスキップは `posted.json` に書かない（PR #80、マージ `307a858`、2026-08-28T05:24:20Z）
 
-GitHub Secret を入れても、checkout ブランチがファイルの空キーしか見ない。本文投稿は空のまま。sprint ブランチの重ねは本番ジョブでは使われない。空リンクのスキップは `posted.json` に書かない（Secret 後に同じキーを拾う）。重ね PR 77 も同じ。
+デフォルト YAML（`origin/claude/setup-colab-comfyui-Eb9Lh`、HANDOVER は dump raw を指す）:
 
-重ねコードの置き場:
+- post / insight に `AFFILIATE_LINKS_JSON` がある（PR #78、マージ `2cd4499`、2026-08-28T05:26:53Z）
+- `AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` も YAML に足していない
+- schedule は post / insight / report とも **無い**（`workflow_dispatch` のみ）
 
-- checkout ブランチ（JS + 空キー + neo テンプレ + YAML env）: https://github.com/fireworker011/Research/pull/77 （`cursor/prod-neo-secret-overlay-a971` → `claude/monthly-revenue-system-gvi02u`）。2026-08-28 13:21 JST 時点 draft MERGEABLE。HEAD `2b00812`。空リンクのスキップは posted.json に書かない。schedule は戻していない
-- デフォルト YAML の env だけ（schedule は戻していない）: https://github.com/fireworker011/Research/pull/78 。2026-08-28 13:21 JST 時点 draft MERGEABLE。HEAD `32620c9`。`AFFILIATE_LINKS_JSON` を post / insight に渡す。`AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` も足していない。YAML ガード CI を足した。デフォルトブランチ本体（`e8ebd82`）の post YAML に `AFFILIATE_LINKS_JSON` はまだ無い。マージは `G_hq_merge_overlay.txt` のあと
-- マージ指示 dump: `dump/G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
+GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
+
+重ね PR の状態（再マージするな）:
+
+- https://github.com/fireworker011/Research/pull/77 MERGED
+- https://github.com/fireworker011/Research/pull/78 MERGED
+- https://github.com/fireworker011/Research/pull/80 MERGED
+- 旧マージ指示 dump: `dump/G_hq_merge_overlay.txt`（入済み。今夜の1手ではない）
 
 ## 今夜の円の置き場（重ねを待たない）
 
@@ -44,7 +50,7 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 3. 掲載サイトにその Threads を選んで発行した URL を Secret の `転職_neo` だけ（`SECRET.md`）
 4. 同じ URL を転職 Threads の **プロフィールリンク欄**（`PROFILE.md`）
 
-プロフィール欄は GitHub Actions を通らない。overlay 未マージでも置ける。本文に貼るな。cron は戻すな。ドライランと投稿ログは URL を出さない（`redactAffiliateUrls`）。amplify のリプ増幅は `AMPLIFY_ENABLED=1` が無いと動かない。本文の `{{AFFILIATE_LINK}}` は `AFFILIATE_BODY_LINKS=1` が無いと載せない。YAML に足すな。
+プロフィール欄は GitHub Actions を通らない。overlay 入済みでも置ける。本文に貼るな。cron は戻すな。ドライランと投稿ログは URL を出さない（`redactAffiliateUrls`）。amplify のリプ増幅は `AMPLIFY_ENABLED=1` が無いと動かない。本文の `{{AFFILIATE_LINK}}` は `AFFILIATE_BODY_LINKS=1` が無いと載せない。YAML に足すな。
 
 neo が `項目なし` / `媒体なし` / `YouTubeあり` / 転職 `未開設` なら、同じ手動導線を教育 Threads × N高で行う（`EXIST_EDU.md` → `SITE_EDU.md` → `dump/G_hq_secret_nko.txt` → `dump/G_hq_threads_profile_edu.txt`）。neo を転職プロフィールに置いたあとも教育アカで N高へ進む。教育 YouTube は始めない。N高を転職アカに置くな。教育アカに neo を置くな。チケットが置けなければバナー出品するな。
 

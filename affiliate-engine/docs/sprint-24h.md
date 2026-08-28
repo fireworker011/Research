@@ -48,7 +48,7 @@
 | 22 | 計測: conversions のカタログ円・URL をスコアボードが落とす。重ね PR は MERGEABLE。マージ dump を自動投稿の前に置く（済） |
 | 23 | 総括。指令塔へ返す材料 `output/sprint/WRAP.md`（済） |
 
-24h タスク表は済。壁時計の hourly は `hours_left=0` まで回す。続きの最善手: CW 公開 N が 6 のあいだは `G_hq_cw_n10` を今夜の1手のまま。14:21 JST 再読でも fireworker12 なし。応募 15/9/7/44。GitHub 発出は無い。dump raw は HTTP 200。デフォルト HANDOVER は PR #79 が入った。本番 skip 非永続化は #80。Secret 重ねは #77（本番 checkout）と #78（デフォルト YAML）が入った。cron は戻すな。#75 は dump までマージするな。次プールは `output/sprint/CW_NEXT.md`（dump は開くな）。`PHONE_HQ.md` は参謀用。指令塔は今夜開くな。
+24h タスク表は済。壁時計の hourly は `hours_left=0` まで回す。続きの最善手: CW 公開 N が 6 のあいだは `G_hq_cw_n10` を今夜の1手のまま。14:37 JST 再読でも fireworker12 なし。応募 15/9/7/44。GitHub 発出は無い（Issue/PR #75 コメント 0）。dump raw は HTTP 200。デフォルト HANDOVER は PR #79 が入った。本番 skip 非永続化は #80。Secret 重ねは #77（本番 checkout）と #78（デフォルト YAML）が入った。再マージするな。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。次プールは `output/sprint/CW_NEXT.md`（dump は開くな）。`PHONE_HQ.md` は参謀用。指令塔は今夜開くな。
 
 ## 指令塔が人間へ出す手
 

@@ -679,6 +679,15 @@ function selfTest() {
   }
   const funnelLive = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_LIVE.md'), 'utf8');
   if (!funnelLive.includes('s00000018427001')) throw new Error('FUNNEL_LIVE should keep neo id');
+  if (funnelLive.includes('そのブランチは Secret を読まない')) {
+    throw new Error('FUNNEL_LIVE must not say production cannot read Secret after #77');
+  }
+  const checkoutMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CHECKOUT.md'), 'utf8');
+  if (checkoutMd.includes('時点 draft MERGEABLE') || checkoutMd.includes('どちらも draft')) {
+    throw new Error('CHECKOUT must not call merged overlay PRs draft');
+  }
+  if (!checkoutMd.includes('loadLinks()')) throw new Error('CHECKOUT should record production loadLinks');
+  if (!mergeOv.includes('入済み')) throw new Error('merge overlay dump should say 77/78 already landed');
   const funnelNko = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_NKO.md'), 'utf8');
   if (!funnelNko.includes('s00000027548001')) throw new Error('FUNNEL_NKO should name N高 id');
   const funnelEyes = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_EYES.md'), 'utf8');
