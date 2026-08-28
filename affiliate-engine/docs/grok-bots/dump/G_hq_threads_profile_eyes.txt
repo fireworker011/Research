@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_secret_eyes.txt 
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/PROFILE_EDU.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/EXIST_EDU.md
-
 仕事はこれだけ:
 
 Secret に `教育_アイズ` を入れただけでは円は動かない。次はクリックできる場所を1つ作ること。人間へ出す指示は1つ。

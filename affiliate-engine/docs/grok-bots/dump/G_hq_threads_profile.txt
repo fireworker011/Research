@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_secret_neo.txt �
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/PROFILE.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/SECRET.md
-
 仕事はこれだけ:
 
 Secret に `転職_neo` を入れただけでは円は動かない。次はクリックできる場所を1つ作ること。人間へ出す指示は1つ。

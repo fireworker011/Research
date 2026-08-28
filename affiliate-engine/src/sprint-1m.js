@@ -431,6 +431,8 @@ function selfTest() {
   if (!neoExist.includes('G_hq_sns_nko.txt')) throw new Error('neo 未開設 should still fall to N高');
   const neoProfile = readDump('G_hq_threads_profile.txt');
   if (!neoProfile.includes('G_hq_sns_nko.txt')) throw new Error('neo profile should continue to N高');
+  if (!neoProfile.includes('PROFILE.md')) throw new Error('neo profile dump should open PROFILE.md');
+  if (neoProfile.includes('SECRET.md')) throw new Error('neo profile dump must not open SECRET.md; secret dump already ran');
   const nkoSns = readDump('G_hq_sns_nko.txt');
   if (!nkoSns.includes('置いたあとでも使え')) throw new Error('N高 dump should run after neo placed');
   if (!nkoSns.includes('G_hq_yt_only_nko.txt')) throw new Error('N高 YouTubeあり should name yt_only_nko');
@@ -468,12 +470,14 @@ function selfTest() {
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
   if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');
+  if (eduProfile.includes('EXIST_EDU.md')) throw new Error('edu profile dump must not open EXIST_EDU.md; exist dump already ran');
   const eyesProfile = readDump('G_hq_threads_profile_eyes.txt');
   if (!eyesProfile.includes('PROFILE_EDU.md')) throw new Error('eyes profile dump should open PROFILE_EDU');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eyesProfile)) throw new Error('eyes profile dump must not open tenshoku PROFILE.md');
+  if (eyesProfile.includes('EXIST_EDU.md')) throw new Error('eyes profile dump must not open EXIST_EDU.md; exist dump already ran');
   const ticketProfile = readDump('G_hq_threads_profile_ticket.txt');
   if (!ticketProfile.includes('PROFILE_TICKET.md')) throw new Error('ticket profile dump should open PROFILE_TICKET');
-  if (!ticketProfile.includes('EXIST_TICKET.md')) throw new Error('ticket profile dump must open EXIST_TICKET.md');
+  if (ticketProfile.includes('EXIST_TICKET.md')) throw new Error('ticket profile dump must not open EXIST_TICKET.md; exist dump already ran');
   if (/docs\/grok-bots\/EXIST\.md/.test(ticketProfile)) throw new Error('ticket profile dump must not open neo EXIST.md');
   const partnerEyes = readDump('G_hq_a8_partner_eyes.txt');
   if (!partnerEyes.includes('PARTNER_EYES.md')) throw new Error('アイズ partner dump should open PARTNER_EYES');
