@@ -569,6 +569,9 @@ function selfTest() {
   if (!cwDump.includes('13406725')) throw new Error('CW dump should name same-type primary 13406725');
   if (!cwDump.includes('CW_LIVE.md')) throw new Error('CW dump should open CW_LIVE.md');
   if (!cwDump.includes('CW_APPLY.md')) throw new Error('CW dump should open CW_APPLY.md');
+  if (!cwDump.includes('開けなければ')) {
+    throw new Error('CW dump must still issue quoted 1手 if CW_LIVE/CW_APPLY raw cannot be opened');
+  }
   if (cwDump.includes('KEEP_CUT.md')) throw new Error('CW dump must not open KEEP_CUT.md; note/banner mix delays N=10');
   if (cwDump.includes('BLOCKERS.md')) throw new Error('CW dump must not open BLOCKERS.md; high-ticket mix delays N=10');
   if (cwDump.includes('PHONE_HQ.md')) throw new Error('CW dump must not open PHONE_HQ.md; that file is the whole chain');
