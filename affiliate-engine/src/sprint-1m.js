@@ -528,6 +528,10 @@ function selfTest() {
   if (!cwDump.includes('CW_APPLY.md')) throw new Error('CW dump should open CW_APPLY.md');
   if (cwDump.includes('KEEP_CUT.md')) throw new Error('CW dump must not open KEEP_CUT.md; note/banner mix delays N=10');
   if (cwDump.includes('BLOCKERS.md')) throw new Error('CW dump must not open BLOCKERS.md; high-ticket mix delays N=10');
+  if (cwDump.includes('CW_NEXT.md')) throw new Error('CW dump must not open CW_NEXT.md; tonight 1手 stays the four');
+  if (!fs.existsSync(path.join(__dirname, '..', 'output', 'sprint', 'CW_NEXT.md'))) {
+    throw new Error('CW_NEXT.md must remain on the sprint branch');
+  }
   const csvDump = readDump('G_hq_a8_csv.txt');
   if (!csvDump.includes('MEASURE.md')) throw new Error('csv dump should open MEASURE.md');
   if (!csvDump.includes('conversions.csv')) throw new Error('csv dump should open conversions.csv');
