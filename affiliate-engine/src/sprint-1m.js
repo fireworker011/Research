@@ -563,6 +563,9 @@ function selfTest() {
   if (!fs.existsSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CW_APPLY_NEXT.md'))) {
     throw new Error('CW_APPLY_NEXT.md must remain on the sprint branch');
   }
+  const cwApply = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'CW_APPLY.md'), 'utf8');
+  if (!cwApply.includes('455')) throw new Error('CW_APPLY should keep 13405300 public 契約金額 455');
+  if (!cwApply.includes('100円')) throw new Error('CW_APPLY should keep 13405801 public apply amount 100円');
   const csvDump = readDump('G_hq_a8_csv.txt');
   if (!csvDump.includes('MEASURE.md')) throw new Error('csv dump should open MEASURE.md');
   if (!csvDump.includes('conversions.csv')) throw new Error('csv dump should open conversions.csv');
