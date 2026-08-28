@@ -644,10 +644,24 @@ function selfTest() {
   const funnelTicket = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_TICKET.md'), 'utf8');
   if (!funnelTicket.includes('s00000011866027')) throw new Error('FUNNEL_TICKET should name ticket id');
   const siteMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'SITE.md'), 'utf8');
-  if (siteMd.includes('kei_tenshoku') || siteMd.includes('shizuka_tenshoku') || siteMd.includes('kei_career_memo')) {
+  const guessedHandles = ['kei_tenshoku', 'shizuka_tenshoku', 'kei_career_memo'];
+  if (guessedHandles.some((h) => siteMd.includes(h))) {
     throw new Error('SITE.md must not guess tenshoku handles; HQ would copy them into chat');
   }
   if (!siteMd.includes('副サイトを登録する')) throw new Error('SITE.md should keep official 副サイト button name');
+  const kitMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'account-setup-kit.md'), 'utf8');
+  if (guessedHandles.some((h) => kitMd.includes(h))) {
+    throw new Error('account-setup-kit.md must not guess tenshoku handles; HQ would copy them into chat');
+  }
+  for (const name of fs.readdirSync(dumpDir).filter((n) => n.endsWith('.txt'))) {
+    const text = fs.readFileSync(path.join(dumpDir, name), 'utf8');
+    if (guessedHandles.some((h) => text.includes(h))) {
+      throw new Error(`${name} must not guess tenshoku handles`);
+    }
+    if (text.includes('account-setup-kit.md')) {
+      throw new Error(`${name} must not open account-setup-kit.md`);
+    }
+  }
 
   console.log('self-test ok');
 }
