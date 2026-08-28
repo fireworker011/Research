@@ -33,7 +33,7 @@ date,source,program,clicks,cv,approved_yen,note
 
 ## 円にしないもの
 
-- CW 公開ページの報酬表示・契約人数
+- CW 公開ページの報酬表示・契約人数・応募画面の 455円 / 100円。source を `CW` にして足してもスコアボードは拒否する
 - note 価格欄 980・未公開
 - 秋バナーの枚数
 - `video_cash_log.csv` の再生・A8 累計クリック

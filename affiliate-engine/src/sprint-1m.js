@@ -85,6 +85,10 @@ function conversionShapeErrors(csvText, today) {
     if (today && row.date > today) {
       errors.push(`${label}: 未来日`);
     }
+    const src = String(row.source || '').trim();
+    if (yen > 0 && /crowdworks|クラウドワークス|^CW$/i.test(src)) {
+      errors.push(`${label}: CW の応募金額・カタログ報酬を approved_yen に足すな`);
+    }
   }
   const bySource = new Map();
   for (const row of rows) {
@@ -398,6 +402,11 @@ function selfTest() {
     '2026-08-27'
   );
   if (!catalogBad.some((e) => /カタログ/.test(e))) throw new Error('catalog yen should fail');
+  const cwYenBad = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-28,CW,13405300,0,0,455,apply screen\n',
+    '2026-08-28'
+  );
+  if (!cwYenBad.some((e) => /CW/.test(e))) throw new Error('CW apply amount must not become approved_yen');
 
   const twoDays = [
     'date,source,program,clicks,cv,approved_yen,note',
