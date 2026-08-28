@@ -27,7 +27,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 - post / insight の YAML に `AFFILIATE_LINKS_JSON` が無い
 - seed に `career_20260828_neo_01/02` が無い（重ね PR 77 が足す。N高 `education_20260828_nko_01`、アイズ `education_20260828_eyes_01`、チケット `career_20260828_ticket_01` も重ねに足す）
 
-GitHub Secret を入れても、checkout ブランチがファイルの空キーしか見ない。`skipped_no_link` になる。sprint ブランチの重ねは本番ジョブでは使われない。
+GitHub Secret を入れても、checkout ブランチがファイルの空キーしか見ない。本文投稿は空のまま。sprint ブランチの重ねは本番ジョブでは使われない。空リンクのスキップは `posted.json` に書かない（Secret 後に同じキーを拾う）。重ね PR 77 も同じ。
 
 重ねコードの置き場:
 

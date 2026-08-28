@@ -664,6 +664,10 @@ function selfTest() {
     throw new Error('SITE.md must not guess tenshoku handles; HQ would copy them into chat');
   }
   if (!siteMd.includes('副サイトを登録する')) throw new Error('SITE.md should keep official 副サイト button name');
+  const posterSrc = fs.readFileSync(path.join(__dirname, 'threads-poster.js'), 'utf8');
+  if (/status:\s*'skipped_no_link'/.test(posterSrc)) {
+    throw new Error('empty-link skip must not persist to posted.json; Secret later would never post');
+  }
   const kitMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'account-setup-kit.md'), 'utf8');
   if (guessedHandles.some((h) => kitMd.includes(h))) {
     throw new Error('account-setup-kit.md must not guess tenshoku handles; HQ would copy them into chat');
