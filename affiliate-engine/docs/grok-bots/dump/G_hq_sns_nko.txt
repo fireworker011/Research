@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。neo の掲載を見�
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_LIVE.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_APPLY.md
-
 仕事はこれだけ:
 
 高単価の次確認は neo のあと。sns.php「注目案件」の公開名は『N高等学校』。公開プログラムIDは `s00000027548001`。管理画面でこの1件だけ開け。neo（`s00000018427001`）を先に見ていないなら開けるな。

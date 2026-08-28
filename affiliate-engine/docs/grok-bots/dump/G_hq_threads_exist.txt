@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_sns_next.txt の
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/EXIST.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/SITE.md
-
 仕事はこれだけ:
 
 副サイト登録の前に、転職 Threads があるかを1語で返せ。トークン未登録は未開設の証明ではない。公開 fetch のアプリ誘導も証明に使うな。
