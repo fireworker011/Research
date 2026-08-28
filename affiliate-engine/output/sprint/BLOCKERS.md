@@ -9,7 +9,7 @@
 
 | 順 | 線 | 状態 | ブロッカー（ファイルにある分） | 今夜やってよいか |
 |---|---|---|---|---|
-| 1 | CW `fireworker12` | **run** | 15:16 JST 再読でも公開6件のみ。新規4は 13405300（応募 **15**）/ 13405200（9・募集1・契約0）/ 13405801（応募7・**契約1**・募集2）/ **13406725**（応募 **44**）。fireworker12 なし。枠は閉じていない。dump `G_hq_cw_n10` は差し替えない。13405801 の契約者はファイルに無い。4が合わなければ同型 **13408073**（応募5/募集5）。2件もダメなら貼るな。13407700 は通常尺なので代替にしない。応募文 `CW_APPLY.md`（13405300 は 455円、13405801 は 100円。13405200 と 13406725 に「応募時はX円」は無い）。13406612 期限 **2026-08-29**（15:00 JST 一覧に fireworker12 あり。応募23・契約0） | 新規4だけ。無い実績は書くな。プロフィールは直すな |
+| 1 | CW `fireworker12` | **run** | 15:35 JST 再読でも公開6件のみ。新規4は 13405300（応募 **15**）/ 13405200（9・募集1・契約0）/ 13405801（応募7・**契約1**・募集2）/ **13406725**（応募 **44**）。fireworker12 なし。枠は閉じていない。dump `G_hq_cw_n10` は差し替えない。13405801 の契約者はファイルに無い。4が合わなければ同型 **13408073**（応募5/募集5）。2件もダメなら貼るな。13407700 は通常尺なので代替にしない。応募文 `CW_APPLY.md`（13405300 は 455円、13405801 は 100円。13405200 と 13406725 に「応募時はX円」は無い）。13406612 期限 **2026-08-29**（15:35 JST 一覧に fireworker12 あり。応募23・契約0） | 新規4だけ。無い実績は書くな。プロフィールは直すな |
 | 2 | note 手順書 980 | **run**（下書きあり・未公開） | 本文: `docs/grok-bots/note/SKU1_tejun.md`。公開URL **ファイルに無い**。今夜はD0にしない | 下書きを note に置く。公開するな |
 | 3 | 秋バナー10枚 | **run**（製作済）/ 出品は未開始 | 記録: `docs/grok-bots/note/BANNER_LOG.md`。通す **10**。出品URL **ファイルに無い** | 出品するな |
 | 4 | 申込型ハイチケット | **INSUFFICIENT / 未開始** | auひかりは提携済みだが 2026-08-27 管理画面に SNS/YouTube/TikTok/Threads 掲載項目なし＝貼らない。オリコカード・ガス屋のプログラム名は公式公開ページに **ファイルに無い**。オリコで乗ーるはカードではない（代入禁止） | 貼るな。応募を始めるな |
@@ -37,8 +37,9 @@
 - 2026-08-28 13:51 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかりはこのページに無い。円は足していない
 - 2026-08-28 14:37 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかり `s00000019044001` はこのページに無い。円は足していない
 - 2026-08-28 15:00 JST sns.php HTML 再読でも上の4つの公開IDは同じ（neo / N高 / アイズ / チケット）。auひかり `s00000019044001` はこのページに無い（出現 0）。UZUZ / パーソル / NOL はページに残る。円は足していない
+- 2026-08-28 15:35 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかり出現 0。円は足していない
 - 2026-08-28 15:09 JST: neo 詳細 `media-console.a8.net/...programId=s00000018427001` は `login_required` に飛ぶ。Threads / 掲載媒体は HTML に 0。1語は invent していない。今夜の1手は CW dump のまま（sns_next に差し替えるな）
-- Secret 鍵名の確認は人間が GitHub UI で [overlay_status](https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml) を Run workflow（ref デフォルト。投稿しない。schedule なし。この参謀ランから dispatch は 403。2026-08-28 15:25 JST ブラウザは Sign in で Run workflow 無し。**0 workflow runs**。今夜の1手ではない）
+- Secret 鍵名の確認は人間が GitHub UI で [overlay_status](https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml) を Run workflow（ref デフォルト。投稿しない。schedule なし。この参謀ランから dispatch は 403。2026-08-28 15:35 JST `gh run list` は空。**0 workflow runs**。今夜の1手ではない）
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 同ページ売れてる案件の **キャリアチケット転職エージェント** は `s00000011866027`（会員登録3000円はカタログ）。アイズの前に開くな。neo 未置きかつ転職アカが `開設済み` のあと。`未開設` / チケット `項目なし` / `媒体なし` / `YouTubeあり` ならバナー（出品するな）。新造するな。パーソル `s00000026823002` はドライバー特化なので開くな
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。Secret の鍵名確認は PR #81 が入済み（dispatch。今夜の1手ではない）
@@ -47,7 +48,7 @@
 
 - 円: `data/conversions.csv` が正本。書き方: `docs/grok-bots/MEASURE.md`
 - 最終実測行: **2026-08-27**。今日（2026-08-28）の行は **ファイルに無い**。実測円は ¥0 のまま（invent していない）
-- Notion に A8 / conversions の別正本は無い（2026-08-28 15:00 JST workspace search。ヒットは 2022 の無関係ページ。円の行は足していない）
+- Notion に A8 / conversions の別正本は無い（2026-08-28 15:35 JST workspace search。ヒット 0。円の行は足していない）
 - Google Drive に A8 / conversions の別正本は無い（2026-08-28 15:13 JST search。ヒットは 2022 の売上台帳テンプレと a8net.py リンク生成。確定円は書いていない。円の行は足していない）
 - 同じ source+program の月次再掲は最新日だけが円。`all` と案件別を混ぜるな
 - 残日数・ペース: `output/sprint/TODAY.md`（`node src/sprint-1m.js`）

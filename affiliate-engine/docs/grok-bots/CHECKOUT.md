@@ -35,7 +35,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 
-Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 が 2026-08-28 14:53 JST に入った。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。この参謀ランから dispatch は 403。人間が https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml で Run workflow（ref デフォルト。投稿しない）。2026-08-28 15:25 JST ブラウザで同URLを開くと Sign in が出て Run workflow ボタンは無い。ページは **0 workflow runs**。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。
+Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 が 2026-08-28 14:53 JST に入った。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。この参謀ランから dispatch は 403。人間が https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml で Run workflow（ref デフォルト。投稿しない）。2026-08-28 15:35 JST `gh run list` は空。ページは **0 workflow runs**。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。
 
 重ね PR の状態（再マージするな）:
 
