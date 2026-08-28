@@ -50,8 +50,8 @@
     "program_id": "s00000018427001",
     "fallback_id": "s00000027548001",
     "fallback2_id": "s00000027572003",
-    "fallback_when": "neo 項目なし/媒体なし/YouTubeあり → N高。N高も同じ → チャイルド・アイズ",
-    "note": "sns_next 返しは 未提携/Threadsあり/YouTubeあり/項目なし/媒体なし。Threadsあり→EXIST。YouTubeあり/項目なし/媒体なし→N高。公開ID s00000018427001"
+    "fallback_when": "neo 項目なし/媒体なし/YouTubeあり/転職未開設 → N高。N高も同じ → チャイルド・アイズ。教育未開設 → 転職アカの有無",
+    "note": "sns_next 返しは 未提携/Threadsあり/YouTubeあり/項目なし/媒体なし。Threadsあり→EXIST。開設済み→副サイト。未開設→N高。YouTubeあり/項目なし/媒体なし→N高。公開ID s00000018427001"
   },
   "note_sku1": {
     "path": "docs/grok-bots/note/SKU1_tejun.md",
@@ -133,7 +133,7 @@
     {
       "id": "high_ticket_nko",
       "owner": "指令塔→人間",
-      "action": "neo s00000018427001 の掲載媒体はログイン後。項目なしなら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。アイズも同じなら転職アカの有無。未開設なら新造するな。開設済みなら キャリアチケット s00000011866027。教育YouTubeは始めるな"
+      "action": "neo s00000018427001 の掲載媒体はログイン後。項目なし／媒体なし／YouTubeあり／転職未開設なら N高 s00000027548001。N高も同じなら チャイルド・アイズ s00000027572003。教育未開設ならアイズも置けない。次は転職アカの有無。未開設なら新造するな。開設済みなら キャリアチケット s00000011866027。教育アカに neo を置くな。教育YouTubeは始めるな"
     }
   ],
   "notes": [
@@ -320,6 +320,13 @@
     },
     {
       "at": "2026-08-28T00:07:58.552Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T00:12:00.792Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

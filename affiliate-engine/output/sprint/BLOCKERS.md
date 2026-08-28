@@ -25,10 +25,10 @@
 - 同ページ注目案件の **N高等学校** は `s00000027548001`（資料請求15000円はカタログ）。neo の前に開くな。neo が `項目なし` / `媒体なし` / `YouTubeあり` のあとだけ dump `G_hq_sns_nko.txt`
 - 同ページ注目案件の **チャイルド・アイズ** は `s00000027572003`（無料体験予約6767円はカタログ）。N高の前に開くな。N高が `項目なし` / `媒体なし` / `YouTubeあり` のあとだけ dump `G_hq_sns_eyes.txt`
 - neo `s00000018427001` の提携済みかは **ファイルに無い**。sns.php の「提携する」は未ログインでも detail-not-partnered。ログイン後の返しは `未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`。未提携なら dump `G_hq_a8_partner.txt`。承認前に貼るな
-- Secret の前に、`Threadsあり` なら転職 Threads が開設済みかを1語で返す（`EXIST.md` / dump `G_hq_threads_exist.txt`）。未開設なら新造するな。トークン未登録は未開設の証明ではない
+- Secret の前に、`Threadsあり` なら転職 Threads が開設済みかを1語で返す（`EXIST.md` / dump `G_hq_threads_exist.txt`）。未開設なら新造するな。neo は貼るな。次は N高。トークン未登録は未開設の証明ではない
 - `YouTubeあり`（Threads 無し）なら dump `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな。そのあと N高
 - `項目なし` / `媒体なし` は neo を貼るな。**止まれではない。** 次は N高
-- 教育 Threads は 2026-08-28 08:40 JST 公開プロフィールが実在（`EXIST_EDU.md`）。未開設なら新造するな。教育 YouTube は始めない
+- 教育 Threads は 2026-08-28 08:40 JST 公開プロフィールが実在（`EXIST_EDU.md`）。未開設なら新造するな。アイズも置けない。次は転職アカの有無。教育 YouTube は始めない
 - `開設済み` のあと、その Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`（neo）/ `G_hq_a8_site_edu.txt`（N高）
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（neo）/ `G_hq_threads_profile_edu.txt`（N高）。cron は戻すな
 - post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない

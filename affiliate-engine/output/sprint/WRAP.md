@@ -35,7 +35,7 @@ neo 公開ID **`s00000018427001`**。UZUZ は開くな。
 | 1語 | 次 |
 |---|---|
 | `未提携` | `G_hq_a8_partner.txt`。承認前に貼るな |
-| `Threadsあり` | `G_hq_threads_exist.txt` → 開設済みなら副サイト → Secret → プロフィール |
+| `Threadsあり` | `G_hq_threads_exist.txt` → 開設済みなら副サイト → Secret → プロフィール。**未開設なら N高**（新造するな。教育アカに neo を置くな） |
 | `YouTubeあり` | `G_hq_yt_only.txt`。プロフィールに置くな。ペットに neo を置くな。**次は N高** `G_hq_sns_nko.txt` |
 | `項目なし` / `媒体なし` | neo は貼るな。**止まれではない。** 次は N高 `G_hq_sns_nko.txt` |
 
