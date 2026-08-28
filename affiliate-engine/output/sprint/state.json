@@ -108,8 +108,8 @@
   "threads_cron": "stopped",
   "sprint_started_at": "2026-08-27T22:05:22.511Z",
   "sprint_hours": 24,
-  "hours_elapsed": 2,
-  "hours_left": 22,
+  "hours_elapsed": 3,
+  "hours_left": 21,
   "blockers": [
     {
       "id": "hq_do_not_paste",
@@ -339,6 +339,20 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T01:04:09.751Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 2
+    },
+    {
+      "at": "2026-08-28T01:05:41.061Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 3
     }
   ]
 }
