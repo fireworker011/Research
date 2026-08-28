@@ -203,10 +203,8 @@ async function main() {
 
     let text = buildPostText(row, links);
     if (text === null) {
+      // posted.json に書かない。リンクが空の実行でキーを殺すと、Secret のあと永遠に飛ばない
       console.log(`⏭  ${label}: config/links.json に「${row.genre}」のリンク未設定のためスキップ`);
-      if (!isDryRun) {
-        state.posted[key] = { status: 'skipped_no_link', at: new Date().toISOString() };
-      }
       skipped++;
       continue;
     }
