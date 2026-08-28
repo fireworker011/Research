@@ -570,7 +570,7 @@ function selfTest() {
   if (!cwDump.includes('CW_APPLY.md')) throw new Error('CW dump should open CW_APPLY.md');
   if (cwDump.includes('KEEP_CUT.md')) throw new Error('CW dump must not open KEEP_CUT.md; note/banner mix delays N=10');
   if (cwDump.includes('BLOCKERS.md')) throw new Error('CW dump must not open BLOCKERS.md; high-ticket mix delays N=10');
-  if (cwDump.includes('CW_NEXT.md')) throw new Error('CW dump must not open CW_NEXT.md; tonight 1手 stays the four');
+  if (cwDump.includes('PHONE_HQ.md')) throw new Error('CW dump must not open PHONE_HQ.md; that file is the whole chain');
   if (!fs.existsSync(path.join(__dirname, '..', 'output', 'sprint', 'CW_NEXT.md'))) {
     throw new Error('CW_NEXT.md must remain on the sprint branch');
   }
@@ -685,6 +685,16 @@ function selfTest() {
   }
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
   if (!hq100.includes('G_hq_20260828.txt')) throw new Error('HQ_100MAN should name the unused old dump so HQ does not open it');
+  const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
+  if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
+  if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {
+    throw new Error('HQ_ORDERS must not send HQ into PHONE_HQ.md tonight; that file is the whole chain');
+  }
+  const phoneHq = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'PHONE_HQ.md'), 'utf8');
+  if (!phoneHq.includes('G_hq_cw_n10.txt')) throw new Error('PHONE_HQ should keep tonight dump as CW N=10');
+  if (!phoneHq.includes('今夜の人間1手には使うな')) {
+    throw new Error('PHONE_HQ must not send tonight human 1手 to playbook PHONE.md');
+  }
   const posterSrc = fs.readFileSync(path.join(__dirname, 'threads-poster.js'), 'utf8');
   if (/status:\s*'skipped_no_link'/.test(posterSrc)) {
     throw new Error('empty-link skip must not persist to posted.json; Secret later would never post');

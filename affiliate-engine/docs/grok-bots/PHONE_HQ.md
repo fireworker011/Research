@@ -44,4 +44,4 @@
 | 自動投稿を出す前 | `dump/G_hq_merge_overlay.txt` | PR 77 と 78 をマージ。schedule は戻すな。プロフィールは待たない |
 | 旧 | `dump/G_hq_20260828.txt` | 使わない。今夜の1手は上 |
 
-ジャンル9体の貼り文は `cursor/video-channel-playbook-e013` の `PHONE.md` が正。
+ジャンル9体の貼り文は `cursor/video-channel-playbook-e013` の `PHONE.md`。今夜の人間1手には使うな。ジャンルbotへは dump が「作るな」。

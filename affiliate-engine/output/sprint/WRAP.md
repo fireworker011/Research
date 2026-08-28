@@ -26,7 +26,7 @@ dump は **1つ**: `docs/grok-bots/dump/G_hq_cw_n10.txt`
 - 13405803 は期限明日・対象狭いので4に入れない
 - 既応募6へ再応募するな。無い実績は書くな
 
-次のファイル名だけ: `dump/G_hq_note_place.txt`。結合するな。順は `PHONE_HQ.md`。
+次のファイル名だけ: `dump/G_hq_note_place.txt`。結合するな。指令塔は `PHONE_HQ.md` を今夜開くな。
 
 ## 高単価（貼るな。ログイン後）
 

@@ -3,7 +3,7 @@
 指令塔が採否する。Cursor は発出しない。
 **今夜貼る dump は1つ:** `docs/grok-bots/dump/G_hq_cw_n10.txt`
 次のファイル名だけ: `dump/G_hq_note_place.txt`（結合するな）
-以降の順は `docs/grok-bots/PHONE_HQ.md`
+`PHONE_HQ.md` は参謀用。指令塔は今夜開くな。playbook の `PHONE.md` も今夜の人間1手には使うな。
 総括: `output/sprint/WRAP.md`（参謀は発出しない）
 
 ## 指令塔 → 人間（今夜の1つ）
