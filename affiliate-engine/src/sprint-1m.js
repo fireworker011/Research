@@ -628,6 +628,8 @@ function selfTest() {
   if (!quoted.includes('13408073')) throw new Error('CW human 1手 same-type alt should be 13408073');
   if (quoted.includes('13407700')) throw new Error('CW human 1手 should not send 通常尺 13407700 as the alt');
   if (!quoted.includes('2件もダメなら貼るな')) throw new Error('CW human 1手 should stop after alts; do not invent IDs');
+  if (cwDump.includes('13410619')) throw new Error('CW dump must not send next-pool 13410619 tonight');
+  if (cwDump.includes('13410740')) throw new Error('CW dump must not send next-pool 13410740 tonight');
   if (!quoted.includes('455')) throw new Error('CW human 1手 should keep 13405300 public apply amount 455 (raw CDN can be stale)');
   if (!quoted.includes('100円')) throw new Error('CW human 1手 should keep 13405801 public apply amount 100円');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
