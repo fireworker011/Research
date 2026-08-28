@@ -519,6 +519,35 @@ function selfTest() {
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 
+  const { validateTemplate, checkContent } = require('./compliance');
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'seed_templates.json'), 'utf8'));
+  const linkKeys = Object.keys(require('../config/links.json')).filter((k) => !k.startsWith('_'));
+  const yenIds = [
+    'career_20260828_neo_01',
+    'career_20260828_neo_02',
+    'education_20260828_nko_01',
+    'education_20260828_eyes_01',
+    'career_20260828_ticket_01'
+  ];
+  const yenGenres = new Set(['転職', '教育']);
+  for (const id of yenIds) {
+    const t = (seed.posting_templates || []).find((x) => x.id === id);
+    if (!t) throw new Error(`missing yen template ${id}`);
+    const structural = validateTemplate(t, { genres: yenGenres, linkKeys });
+    if (!structural.ok) throw new Error(`${id} validateTemplate: ${structural.reasons.join(', ')}`);
+    const dummy = String(structural.template.content || '').replaceAll('{{AFFILIATE_LINK}}', 'https://example.invalid/x');
+    const content = checkContent(dummy);
+    if (!content.ok) throw new Error(`${id} checkContent: ${content.reasons.join(', ')}`);
+  }
+  const funnelLive = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_LIVE.md'), 'utf8');
+  if (!funnelLive.includes('s00000018427001')) throw new Error('FUNNEL_LIVE should keep neo id');
+  const funnelNko = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_NKO.md'), 'utf8');
+  if (!funnelNko.includes('s00000027548001')) throw new Error('FUNNEL_NKO should name N高 id');
+  const funnelEyes = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_EYES.md'), 'utf8');
+  if (!funnelEyes.includes('s00000027572003')) throw new Error('FUNNEL_EYES should name アイズ id');
+  const funnelTicket = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_TICKET.md'), 'utf8');
+  if (!funnelTicket.includes('s00000011866027')) throw new Error('FUNNEL_TICKET should name ticket id');
+
   console.log('self-test ok');
 }
 
