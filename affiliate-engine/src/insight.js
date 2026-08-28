@@ -103,7 +103,7 @@ ${JSON.stringify(genreAnalytics || {}, null, 1)}
   "sources": ["参照したURL"]
 }
 
-利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン, 教育_N高, 教育_アイズ, 節約_格安SIM, 節約_ふるさと納税, 転職_エージェント, 転職_スカウト, 転職_neo, 転職_チケット, ペット_Furbo, ペット_保険, ペット_フード, 睡眠_マットレス, 睡眠_リカバリー, 申込_auひかり`;
+利用可能な link_key: 婚活_相談所, 副業_ココナラ, 副業_A8, 副業_mixhost, 副業_FX, 美容_オルビスユー, 筋トレ_マッスルデリ, 筋トレ_HMB, 教育_ヒューマン, 教育_N高, 教育_アイズ, 節約_格安SIM, 節約_ふるさと納税, 転職_エージェント, 転職_スカウト, 転職_neo, 転職_チケット, ペット_Furbo, ペット_保険, ペット_フード, 睡眠_マットレス, 睡眠_リカバリー`;
 }
 
 function renderMarkdown(data, complianceNotes) {
@@ -222,7 +222,8 @@ async function main() {
 
   // 草案の検品: 構造チェック（モデル非依存の品質ゲート）→ コンプライアンスチェック
   const links = loadLinks();
-  const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
+  const blockedLinkKeys = new Set(['申込_auひかり']);
+  const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_') && !blockedLinkKeys.has(k));
   const complianceNotes = [];
   for (const f of failedGenres) complianceNotes.push(`生成失敗（次回リトライ）: ${f}`);
   const proposals = [];
