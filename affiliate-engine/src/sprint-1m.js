@@ -709,6 +709,9 @@ function selfTest() {
     throw new Error('HANDOVER must not block HQ_100MAN; yen 1手 is HQ_ORDERS dump');
   }
   if (!handover.includes('HQ_100MAN.md')) throw new Error('HANDOVER should send HQ to HQ_100MAN for yen deadline');
+  if (handover.includes('**月100万の話は週50クリックが3週続くまでしない。**')) {
+    throw new Error('HANDOVER pet click gate must not stop 9/30 yen 1手');
+  }
   const staffMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'STAFF.md'), 'utf8');
   if (/最新 `docs\/grok-bots\/dump/.test(staffMd) || staffMd.includes('最新 `docs/grok-bots/dump/G_*.txt`')) {
     throw new Error('STAFF.md must not pick latest dump by mtime; HQ_ORDERS names the one file');
