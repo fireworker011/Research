@@ -19,10 +19,11 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 ## Secret 重ねは入った。cron は止まっている
 
-2026-08-28 15:59 JST に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（HEAD `37044d1`）:
+2026-08-28 16:45 JST に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（HEAD `f659bfb`）:
 
 - `util.js` に `loadLinks()` がある（PR #77、マージ `5ae52e2`、2026-08-28T05:27:22Z）
-- PR #84 入済み（`37044d1`、2026-08-28T06:58:44Z）。`申込_auひかり` は Secret / ファイルのどちらからもも載せない
+- PR #84 入済み。`申込_auひかり` は Secret / ファイルのどちらからもも載せない
+- PR #87 入済み（`f659bfb`）。insight は `申込_auひかり` を link_key 候補に出さない
 - `config/links.json` に `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` / `申込_auひかり` がある。**値は全部空**
 - seed に `career_20260828_neo_01/02` / `education_20260828_nko_01` / `education_20260828_eyes_01` / `career_20260828_ticket_01` がある
 - 空リンクのスキップは `posted.json` に書かない（PR #80、マージ `307a858`、2026-08-28T05:24:20Z）
@@ -36,7 +37,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 
-Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 が 2026-08-28 14:53 JST に入った。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。この参謀ランから dispatch は 403。人間が https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml で Run workflow（ref デフォルト。投稿しない）。2026-08-28 15:35 JST `gh run list` は空。ページは **0 workflow runs**。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。
+Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み。`workflow_dispatch` のみ。schedule は無い。今夜の1手ではない）。この参謀ランから dispatch は 403。人間が https://github.com/fireworker011/Research/actions/workflows/affiliate_engine_overlay_status.yml で Run workflow（ref デフォルト。投稿しない）。2026-08-28 16:45 JST `gh run list` は空。`gh secret list` は 403。環境変数に `AFFILIATE_LINKS_JSON` / A8 系は無い（値は書いていない）。
 
 重ね PR の状態（再マージするな）:
 
@@ -45,6 +46,7 @@ Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォ�
 - https://github.com/fireworker011/Research/pull/80 MERGED
 - https://github.com/fireworker011/Research/pull/81 MERGED（鍵名 dispatch。投稿しない）
 - https://github.com/fireworker011/Research/pull/84 MERGED（auひかりを loadLinks から除外。投稿しない）
+- https://github.com/fireworker011/Research/pull/87 MERGED（insight が auひかりを候補に出さない。投稿しない）
 - 旧マージ指示 dump: `dump/G_hq_merge_overlay.txt`（入済み。今夜の1手ではない）
 
 ## 今夜の円の置き場（重ねを待たない）
