@@ -760,6 +760,10 @@ function selfTest() {
   if (phoneHq.includes('重ねが無い')) {
     throw new Error('PHONE_HQ must not say production overlay missing after #77');
   }
+  const insightSrc = fs.readFileSync(path.join(__dirname, 'insight.js'), 'utf8');
+  if (/利用可能な link_key:[^`]*申込_auひかり/.test(insightSrc)) {
+    throw new Error('insight must not offer 申込_auひかり as a link_key');
+  }
   const posterSrc = fs.readFileSync(path.join(__dirname, 'threads-poster.js'), 'utf8');
   if (/status:\s*'skipped_no_link'/.test(posterSrc)) {
     throw new Error('empty-link skip must not persist to posted.json; Secret later would never post');
