@@ -522,6 +522,22 @@ function selfTest() {
   if (!bannerDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/IMAGE_PLAYBOOK.md')) {
     throw new Error('banner dump IMAGE_PLAYBOOK must live on the sprint branch');
   }
+  const rawPrefix = 'https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/';
+  const repoRoot = path.join(__dirname, '..', '..');
+  for (const name of fs.readdirSync(dumpDir).filter((n) => n.endsWith('.txt'))) {
+    const text = fs.readFileSync(path.join(dumpDir, name), 'utf8');
+    const urls = [...text.matchAll(/https:\/\/raw\.githubusercontent\.com\/[^\s]+/g)].map((m) => m[0]);
+    for (const u of urls) {
+      if (!u.startsWith(rawPrefix)) {
+        if (name === 'G_hq_20260828.txt') continue;
+        throw new Error(`${name} opens off-sprint URL`);
+      }
+      const rel = u.slice(rawPrefix.length);
+      if (!fs.existsSync(path.join(repoRoot, rel))) {
+        throw new Error(`${name} opens missing ${rel}`);
+      }
+    }
+  }
   const quoted = cwDump.split('人間へ出す指示は1つ:')[1] || '';
   if (!quoted.includes('13406725')) throw new Error('CW human 1手 should use 13406725 as one of the four');
   if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
