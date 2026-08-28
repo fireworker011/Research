@@ -632,6 +632,12 @@ function selfTest() {
   if (!csvDump.includes('MEASURE.md')) throw new Error('csv dump should open MEASURE.md');
   if (!csvDump.includes('conversions.csv')) throw new Error('csv dump should open conversions.csv');
   if (csvDump.includes('TODAY.md')) throw new Error('csv dump must not open TODAY.md; scoreboard is after the row');
+  if (csvDump.includes('G_hq_merge_overlay.txt')) {
+    throw new Error('csv dump must not send HQ to re-merge overlay; 77/78/80 already landed');
+  }
+  if (!csvDump.includes('次は無い')) {
+    throw new Error('csv dump should stop after the conversions row');
+  }
   const noteDump = readDump('G_hq_note_place.txt');
   if (!noteDump.includes('SKU1_tejun.md')) throw new Error('note dump should open SKU1_tejun.md');
   if (noteDump.includes('ACCOUNT_NOTE.md')) throw new Error('note dump must not open ACCOUNT_NOTE.md; that file mixes 2本目 banners');
@@ -789,6 +795,9 @@ function selfTest() {
   }
   if (phoneHq.includes('重ねが無い')) {
     throw new Error('PHONE_HQ must not say production overlay missing after #77');
+  }
+  if (phoneHq.includes('PR 77 と 78 をマージ')) {
+    throw new Error('PHONE_HQ must not re-merge overlay PRs already landed');
   }
   const insightSrc = fs.readFileSync(path.join(__dirname, 'insight.js'), 'utf8');
   if (/利用可能な link_key:[^`]*申込_auひかり/.test(insightSrc)) {
