@@ -593,6 +593,13 @@ function selfTest() {
   const noteDump = readDump('G_hq_note_place.txt');
   if (!noteDump.includes('SKU1_tejun.md')) throw new Error('note dump should open SKU1_tejun.md');
   if (noteDump.includes('ACCOUNT_NOTE.md')) throw new Error('note dump must not open ACCOUNT_NOTE.md; that file mixes 2本目 banners');
+  if (noteDump.includes('CW_NEXT.md')) throw new Error('note dump must not open CW_NEXT.md');
+  if (!noteDump.includes('公開ボタンは押すな')) throw new Error('note dump must keep 公開するな');
+  if (!noteDump.includes('## 無料部')) throw new Error('note dump should tell HQ to copy from ## 無料部, not the 980 header');
+  const sku1 = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'note', 'SKU1_tejun.md'), 'utf8');
+  const skuBody = sku1.split('## 無料部')[1] || '';
+  if (!skuBody) throw new Error('SKU1 must have ## 無料部');
+  if (skuBody.includes('980')) throw new Error('SKU1 無料部+ must not contain 980; that belongs in note UI 価格欄 only');
   const bannerDump = readDump('G_hq_banner_10.txt');
   if (!bannerDump.includes('BANNER_10.md')) throw new Error('banner dump should open BANNER_10.md');
   if (!bannerDump.includes('BANNER_LOG.md')) throw new Error('banner dump should open BANNER_LOG.md');
