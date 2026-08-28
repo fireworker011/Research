@@ -35,7 +35,7 @@
 
 1. **先に** `affiliate-engine/data/conversions.csv`（円。無いあいだは ¥0。行は足すな）
 2. **そのあと** `output/sprint/TODAY.md`（残日数・ペース。盤面は1手ではない）
-3. 今夜の1手: **先に** `output/sprint/HQ_ORDERS.md`。指名された dump **1ファイルだけ** を開け（デフォルトブランチには無い。raw: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt ）。リポジトリは public。この raw は 2026-08-28 14:08 JST に HTTP 200。デフォルト origin の HANDOVER はまだ「このファイルだけでよい」＋ペット週50で円本線を止める。PR #79 はその入口だけ（dump 本文ではない）。#79 をデフォルトへ入れてよい。#75 / #77 / #78 は dump までマージするな。`HUMAN.md` は参謀下書き。貼るな。`docs/grok-bots/dump/` を更新日時や名前で自分で選ぶな。結合するな。旧 `G_hq_20260828.txt` は使うな。PR 76 の auひかり絞り込みは今夜の1手ではない。
+3. 今夜の1手: **先に** `output/sprint/HQ_ORDERS.md`。指名された dump **1ファイルだけ** を開け（デフォルトブランチには無い。raw: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt ）。リポジトリは public。デフォルトの HANDOVER は 2026-08-28 14:24 JST に同じ raw を指す（PR #79 入済み）。`HUMAN.md` は参謀下書き。貼るな。`docs/grok-bots/dump/` を更新日時や名前で自分で選ぶな。結合するな。旧 `G_hq_20260828.txt` は使うな。PR 76 の auひかり絞り込みは今夜の1手ではない。#75 / #77 / #78 は dump までマージするな。
 4. `video_cash_log.csv` と `MEASURE.md` は参照。今夜の1手ではない。開いていない画面の行は足すな。
 5. このファイルに書いていない閲覧数・売上は **ファイルに無い**
 
