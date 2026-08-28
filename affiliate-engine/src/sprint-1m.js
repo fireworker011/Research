@@ -290,7 +290,7 @@ function renderHumanMd(s) {
 
 目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。無い実績は書くな。プロフィールは直すな。
+1. CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。13405300 の応募画面は公開文どおり 455円、13405801 は 100円（CSV に足すな）。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。無い実績は書くな。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
 
 CSV の1行は dump \`G_hq_a8_csv.txt\` の仕事。今夜の dump と結合するな。
@@ -607,6 +607,8 @@ function selfTest() {
   if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
   if (!quoted.includes('13408073')) throw new Error('CW human 1手 same-type alt should be 13408073');
   if (quoted.includes('13407700')) throw new Error('CW human 1手 should not send 通常尺 13407700 as the alt');
+  if (!quoted.includes('455')) throw new Error('CW human 1手 should keep 13405300 public apply amount 455 (raw CDN can be stale)');
+  if (!quoted.includes('100円')) throw new Error('CW human 1手 should keep 13405801 public apply amount 100円');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 

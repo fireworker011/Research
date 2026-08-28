@@ -8,7 +8,7 @@
 
 ## 指令塔 → 人間（今夜の1つ）
 
-CW `fireworker12` で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。無い実績は書くな。プロフィールは直すな。auひかりは貼るな。note 公開するな。バナー出品するな。
+CW `fireworker12` で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。13405300 の応募画面は公開文どおり 455円、13405801 は 100円（CSV に足すな）。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。無い実績は書くな。プロフィールは直すな。auひかりは貼るな。note 公開するな。バナー出品するな。
 
 ## 指令塔 → ジャンルbot
 
