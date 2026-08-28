@@ -527,6 +527,11 @@ function selfTest() {
   if (!cwDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/KEEP_CUT.md')) {
     throw new Error('CW dump KEEP_CUT must live on the sprint branch');
   }
+  if (cwDump.includes('BLOCKERS.md')) throw new Error('CW dump must not open BLOCKERS.md; high-ticket mix delays N=10');
+  const csvDump = readDump('G_hq_a8_csv.txt');
+  if (!csvDump.includes('MEASURE.md')) throw new Error('csv dump should open MEASURE.md');
+  if (!csvDump.includes('conversions.csv')) throw new Error('csv dump should open conversions.csv');
+  if (csvDump.includes('TODAY.md')) throw new Error('csv dump must not open TODAY.md; scoreboard is after the row');
   const noteDump = readDump('G_hq_note_place.txt');
   if (!noteDump.includes('SKU1_tejun.md')) throw new Error('note dump should open SKU1_tejun.md');
   if (noteDump.includes('ACCOUNT_NOTE.md')) throw new Error('note dump must not open ACCOUNT_NOTE.md; that file mixes 2本目 banners');

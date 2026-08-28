@@ -8,8 +8,6 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/data/conversions.csv
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/output/sprint/TODAY.md
-
 仕事はこれだけ:
 
 conversions.csv の最終実測行は 2026-08-27。今日の行はファイルに無い。実測円は approved_yen の合計で、無いあいだは ¥0。カタログを足すな。
