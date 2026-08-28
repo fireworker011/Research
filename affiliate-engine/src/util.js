@@ -79,28 +79,38 @@ function loadConfig(name, fallback = null) {
  * アフィリンクを読む。ファイルの空キーは Git に残し、実 URL は
  * GitHub Secret `AFFILIATE_LINKS_JSON`（環境変数）だけから載せる。
  * 値はログに出さない。パース失敗時はファイル側のみ使う。
+ * `申込_auひかり` は SNS 掲載項目なし。Secret / ファイルのどちらからもも載せない。
  */
 function loadLinks() {
   const file = loadConfig('links', {}) || {};
   const out = { ...file };
   const raw = process.env.AFFILIATE_LINKS_JSON;
-  if (!raw || !String(raw).trim()) return out;
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (_) {
-    console.warn('⚠️ AFFILIATE_LINKS_JSON が JSON として読めないため、ファイル側のリンクだけを使う');
-    return out;
-  }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    console.warn('⚠️ AFFILIATE_LINKS_JSON がオブジェクトではないため、ファイル側のリンクだけを使う');
-    return out;
-  }
-  for (const [key, value] of Object.entries(parsed)) {
-    if (key.startsWith('_')) continue;
-    if (typeof value === 'string' && value.trim()) {
-      out[key] = value.trim();
+  if (raw && String(raw).trim()) {
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (_) {
+      console.warn('⚠️ AFFILIATE_LINKS_JSON が JSON として読めないため、ファイル側のリンクだけを使う');
+      parsed = null;
     }
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      for (const [key, value] of Object.entries(parsed)) {
+        if (key.startsWith('_')) continue;
+        if (key === '申込_auひかり') {
+          console.warn('⚠️ 申込_auひかり は SNS 掲載項目なしのため Secret から載せない');
+          continue;
+        }
+        if (typeof value === 'string' && value.trim()) {
+          out[key] = value.trim();
+        }
+      }
+    } else if (parsed) {
+      console.warn('⚠️ AFFILIATE_LINKS_JSON がオブジェクトではないため、ファイル側のリンクだけを使う');
+    }
+  }
+  if (out['申込_auひかり']) {
+    out['申込_auひかり'] = '';
+    console.warn('⚠️ 申込_auひかり は SNS 掲載項目なしのため載せない');
   }
   return out;
 }

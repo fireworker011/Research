@@ -347,10 +347,15 @@ function selfTest() {
   if (sums.approvedYen !== 0) throw new Error(`yen want 0, got ${sums.approvedYen}`);
 
   const prev = process.env.AFFILIATE_LINKS_JSON;
-  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({ 申込_auひかり: 'https://example.invalid/secret' });
+  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({ 転職_neo: 'https://example.invalid/secret' });
   const links = loadLinks();
   if (countFilledLinks(links) < 1) throw new Error('env overlay should fill at least 1 key');
-  if (filledLinkKeys(links).includes('申込_auひかり') !== true) throw new Error('key name missing');
+  if (filledLinkKeys(links).includes('転職_neo') !== true) throw new Error('key name missing');
+  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({ 申込_auひかり: 'https://example.invalid/secret' });
+  const blocked = loadLinks();
+  if (filledLinkKeys(blocked).includes('申込_auひかり')) {
+    throw new Error('申込_auひかり must not overlay from Secret');
+  }
   const dumped = JSON.stringify(buildSnapshot({
     today: '2026-08-27',
     csvText: csv,
