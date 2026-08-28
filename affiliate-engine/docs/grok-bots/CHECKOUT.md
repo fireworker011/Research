@@ -19,7 +19,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 ## Secret だけでは自動投稿は空のまま
 
-2026-08-28 に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果:
+2026-08-28 に `origin/claude/monthly-revenue-system-gvi02u` を読んだ結果（**再読: 2026-08-28 11:07 JST**）:
 
 - `util.js` に `loadLinks()` が無い
 - poster / amplify / insight / strategy-engine は `loadConfig('links')` のファイルだけを見る
@@ -31,8 +31,8 @@ GitHub Secret を入れても、checkout ブランチがファイルの空キー
 
 重ねコードの置き場:
 
-- checkout ブランチ（JS + 空キー + neo テンプレ + YAML env）: https://github.com/fireworker011/Research/pull/77 （`cursor/prod-neo-secret-overlay-a971` → `claude/monthly-revenue-system-gvi02u`）。2026-08-27 23:25 UTC 時点 MERGEABLE。schedule は戻していない
-- デフォルト YAML の env だけ（schedule は戻していない）: https://github.com/fireworker011/Research/pull/78
+- checkout ブランチ（JS + 空キー + neo テンプレ + YAML env）: https://github.com/fireworker011/Research/pull/77 （`cursor/prod-neo-secret-overlay-a971` → `claude/monthly-revenue-system-gvi02u`）。2026-08-28 11:07 JST 時点 draft MERGEABLE。schedule は戻していない
+- デフォルト YAML の env だけ（schedule は戻していない）: https://github.com/fireworker011/Research/pull/78 。2026-08-28 11:07 JST 時点 draft MERGEABLE。`AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` もデフォルト YAML に無い
 - マージ指示 dump: `dump/G_hq_merge_overlay.txt`（自動投稿を出す前。プロフィールは待たない）
 
 ## 今夜の円の置き場（重ねを待たない）
