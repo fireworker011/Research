@@ -34,6 +34,8 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 
+Secret を入れたあと、投稿せず鍵名だけ見るジョブ: https://github.com/fireworker011/Research/pull/81 （`workflow_dispatch` のみ。デフォルトへ入るまで Actions には出ない。今夜の1手ではない）。
+
 重ね PR の状態（再マージするな）:
 
 - https://github.com/fireworker011/Research/pull/77 MERGED

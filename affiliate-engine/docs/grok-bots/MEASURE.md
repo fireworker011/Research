@@ -31,6 +31,8 @@ date,source,program,clicks,cv,approved_yen,note
 5. `node src/sprint-1m.js --self-test && node src/sprint-1m.js` で TODAY.md の実測円が CSV と一致することを見る。URL やカタログ円が入っているとここで落ちる。
 6. アフィURL・トークンを Git / チャット / ログに書くな。
 
+Secret の埋まっている鍵名だけ見る（投稿しない）: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81）。`workflow_dispatch`。schedule は無い。URL は出さない。`申込_auひかり` が埋まっていたら落とす。今夜の1手ではない。開いていない A8 の円は足すな。
+
 ## 円にしないもの
 
 - CW 公開ページの報酬表示・契約人数・応募画面の 455円 / 100円。source を `CW` にして足してもスコアボードは拒否する
