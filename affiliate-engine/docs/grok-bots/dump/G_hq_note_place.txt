@@ -6,8 +6,6 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_cw_n10.txt の�
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/note/SKU1_tejun.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/ACCOUNT_NOTE.md
-
 仕事はこれだけ:
 
 SKU1 の下書きがリポジトリに置いてある。人間へ出す指示は1つ。

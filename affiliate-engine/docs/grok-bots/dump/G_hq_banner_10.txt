@@ -8,8 +8,6 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/note/BANNER_LOG.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/IMAGE_PLAYBOOK.md
-
 仕事はこれだけ:
 
 秋バナー10枚は KEEP_CUT の run（製作）。参謀が 2026-08-28 にローカルで 1280×670 を10枚作った。通した枚数は BANNER_LOG.md の **10**。出品は未開始。公開URLはファイルに無い。人間へ出す指示は1つ。

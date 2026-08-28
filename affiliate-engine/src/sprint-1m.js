@@ -528,15 +528,23 @@ function selfTest() {
     throw new Error('CW dump KEEP_CUT must live on the sprint branch');
   }
   const noteDump = readDump('G_hq_note_place.txt');
-  if (!noteDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/ACCOUNT_NOTE.md')) {
-    throw new Error('note dump ACCOUNT_NOTE must live on the sprint branch');
-  }
+  if (!noteDump.includes('SKU1_tejun.md')) throw new Error('note dump should open SKU1_tejun.md');
+  if (noteDump.includes('ACCOUNT_NOTE.md')) throw new Error('note dump must not open ACCOUNT_NOTE.md; that file mixes 2本目 banners');
   const bannerDump = readDump('G_hq_banner_10.txt');
-  if (!bannerDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/IMAGE_PLAYBOOK.md')) {
-    throw new Error('banner dump IMAGE_PLAYBOOK must live on the sprint branch');
+  if (!bannerDump.includes('BANNER_10.md')) throw new Error('banner dump should open BANNER_10.md');
+  if (!bannerDump.includes('BANNER_LOG.md')) throw new Error('banner dump should open BANNER_LOG.md');
+  if (bannerDump.includes('IMAGE_PLAYBOOK.md')) throw new Error('banner dump must not open IMAGE_PLAYBOOK.md; remake is not tonight');
+  const repoRoot = path.join(__dirname, '..', '..');
+  if (!fs.existsSync(path.join(repoRoot, 'affiliate-engine/docs/grok-bots/ACCOUNT_NOTE.md'))) {
+    throw new Error('ACCOUNT_NOTE.md must remain on the sprint branch');
+  }
+  if (!fs.existsSync(path.join(repoRoot, 'affiliate-engine/docs/grok-bots/IMAGE_PLAYBOOK.md'))) {
+    throw new Error('IMAGE_PLAYBOOK.md must remain on the sprint branch');
+  }
+  if (!fs.existsSync(path.join(repoRoot, 'affiliate-engine/docs/grok-bots/KEEP_CUT.md'))) {
+    throw new Error('KEEP_CUT.md must remain on the sprint branch');
   }
   const rawPrefix = 'https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/';
-  const repoRoot = path.join(__dirname, '..', '..');
   for (const name of fs.readdirSync(dumpDir).filter((n) => n.endsWith('.txt'))) {
     const text = fs.readFileSync(path.join(dumpDir, name), 'utf8');
     const urls = [...text.matchAll(/https:\/\/raw\.githubusercontent\.com\/[^\s]+/g)].map((m) => m[0]);
