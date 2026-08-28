@@ -16,12 +16,14 @@
  * 3. 二重リプ防止は output/state/posted.json の amplified で管理
  * 4. 1アカウント1日最大 AMPLIFY_MAX_PER_DAY 回（既定2。リンク連発によるスパム判定回避）
  *
- * リンク未設定のジャンルでは何もしない（安全側）。Claude API 不使用（コスト$0）。
+ * 既定はオフ。AMPLIFY_ENABLED=1 のときだけ動く。
+ * A8 FAQ は Threads 本文の広告リンクを控える。円の置き場はプロフィール欄。
+ * 指令塔がリプ増幅を出すまで環境変数を足すな。cron 独断再開と一緒にオンにするな。
  */
 
 const path = require('path');
 const { checkContent } = require('./compliance');
-const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
+const { OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, redactAffiliateUrls, todayJST } = require('./util');
 const { sleep } = require('./claude-client');
 
 const THREADS_API = 'https://graph.threads.net/v1.0';
@@ -128,8 +130,12 @@ async function replyToPost(userId, token, postId, text) {
 
 async function main() {
   console.log(`📈 Amplify（バズ投稿へのリンク増幅）${isDryRun ? '（ドライラン）' : ''}\n`);
+  if (process.env.AMPLIFY_ENABLED !== '1') {
+    console.log('⏭  AMPLIFY_ENABLED≠1 のためリプ増幅しない（Threads 本文/リプのアフィは控える。円の置き場はプロフィール）');
+    return;
+  }
   const accountsConfig = loadConfig('accounts', { accounts: [] });
-  const links = loadConfig('links', {});
+  const links = loadLinks();
   const state = readJSON(STATE_PATH, { posted: {} });
   state.amplified = state.amplified || {};
 
@@ -188,7 +194,7 @@ async function main() {
 
       if (isDryRun) {
         console.log(`📝 ${account.key}: views=${views} ${post.permalink || post.id}`);
-        console.log(replyText.split('\n').map((l) => `   │ ${l}`).join('\n'));
+        console.log(redactAffiliateUrls(replyText).split('\n').map((l) => `   │ ${l}`).join('\n'));
         remaining--;
         continue;
       }

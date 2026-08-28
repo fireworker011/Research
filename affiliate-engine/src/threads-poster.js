@@ -19,6 +19,7 @@
  *   各アカウントの user_id / access_token（config/accounts.json の env 名で指定）
  *   CATCHUP_HOURS   何時間前までの未投稿分を拾うか（デフォルト: 6）
  *   DAILY_CAP       1アカウントの1日最大投稿数（デフォルト: 10、API上限は250）
+ *   AFFILIATE_BODY_LINKS  1 のときだけ {{AFFILIATE_LINK}} を本文に載せる。既定は載せない（A8 FAQ: Threads 本文の広告は控える。円の置き場はプロフィール）
  */
 
 const fs = require('fs');
@@ -31,6 +32,8 @@ const {
   readJSON,
   writeJSON,
   loadConfig,
+  loadLinks,
+  redactAffiliateUrls,
   todayJST,
   scheduleEpoch
 } = require('./util');
@@ -105,7 +108,14 @@ function logPosting(entry) {
   const logDir = path.join(OUTPUT_DIR, 'posting_logs');
   fs.mkdirSync(logDir, { recursive: true });
   const logPath = path.join(logDir, `posting_${todayJST()}.jsonl`);
-  fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf-8');
+  fs.appendFileSync(logPath, JSON.stringify(sanitizeLog(entry)) + '\n', 'utf-8');
+}
+
+function sanitizeLog(entry) {
+  const out = { ...entry };
+  if (typeof out.text === 'string') out.text = redactAffiliateUrls(out.text);
+  if (typeof out.error === 'string') out.error = redactAffiliateUrls(out.error);
+  return out;
 }
 
 async function main() {
@@ -130,7 +140,7 @@ async function main() {
         }
       ])
   );
-  const links = loadConfig('links', {});
+  const links = loadLinks();
 
   const schedule = parseCSV(fs.readFileSync(CSV_PATH, 'utf-8'));
   const state = readJSON(STATE_PATH, { posted: {} });
@@ -201,10 +211,16 @@ async function main() {
       continue;
     }
 
+    if (String(row.content || '').includes('{{AFFILIATE_LINK}}') && process.env.AFFILIATE_BODY_LINKS !== '1') {
+      console.log(`⏭  ${label}: 本文のアフィは控える（AFFILIATE_BODY_LINKS≠1。円の置き場はプロフィール）`);
+      skipped++;
+      continue;
+    }
+
     let text = buildPostText(row, links);
     if (text === null) {
-      // posted.json に書かない。リンクが空の実行でキーを殺すと、Secret のあと永遠に飛ばない
-      console.log(`⏭  ${label}: config/links.json に「${row.genre}」のリンク未設定のためスキップ`);
+      // posted.json に書かない。Secret が入ったあとの実行で同じキーを拾えるようにする
+      console.log(`⏭  ${label}: config/links.json に「${row.genre}」のリンク未設定（links.json も AFFILIATE_LINKS_JSON も空）のためスキップ`);
       skipped++;
       continue;
     }
@@ -260,7 +276,7 @@ async function main() {
 
     if (isDryRun) {
       console.log(`📝 ${label}`);
-      console.log(text.split('\n').map((l) => `   │ ${l}`).join('\n'));
+      console.log(redactAffiliateUrls(text).split('\n').map((l) => `   │ ${l}`).join('\n'));
       console.log('');
       continue;
     }
