@@ -16,7 +16,7 @@ A8 の一般FAQ: スレッド**本文**の広告リンクは控える。**プロ
 
 同じ欄に2本目を足すな。N高を既に置いたならアイズで上書きするな。
 
-この手順は GitHub Actions を通らない。本番 checkout に `loadLinks()` が無くても置ける。自動投稿の再開とは別件（`CHECKOUT.md`）。
+この手順は GitHub Actions を通らない。プロフィール欄は Secret のあと人間が置く。本番 `loadLinks()` は PR #77 入済み（post/insight 用。プロフィールは通らない）。重ね待ちで置くな。cron は戻すな。自動投稿の再開とは別件（`CHECKOUT.md`）。
 
 ## やらないこと
 

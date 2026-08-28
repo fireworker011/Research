@@ -517,6 +517,12 @@ function selfTest() {
   if (secretNeo.includes('重ねが無い')) {
     throw new Error('secret neo dump must not say production overlay missing after #77');
   }
+  for (const name of ['PROFILE.md', 'PROFILE_EDU.md', 'PROFILE_TICKET.md']) {
+    const profileMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', name), 'utf8');
+    if (profileMd.includes('が無くても')) {
+      throw new Error(`${name} must not say production lacks loadLinks after #77`);
+    }
+  }
   if (secretNko.includes('SITE_EDU.md')) throw new Error('N高 Secret must not open SITE_EDU.md; site dump already ran');
   if (secretEyes.includes('SITE_EDU.md')) throw new Error('アイズ Secret must not open SITE_EDU.md; site dump already ran');
   if (secretTicket.includes('SITE.md')) throw new Error('ticket Secret must not open SITE.md; site dump already ran');
