@@ -283,7 +283,7 @@ function renderHumanMd(s) {
 
 目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13405803 へ CW_APPLY.md の文で応募して N=10 にせよ。4が公開条件に合わなければ https://crowdworks.jp/public/jobs/13406725 。それも合わなければ https://crowdworks.jp/public/jobs/13407700 。無い実績は書くな。プロフィールは直すな。
+1. CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。4が合わなければ https://crowdworks.jp/public/jobs/13407700 。無い実績は書くな。プロフィールは直すな。
 2. auひかりは貼るな。note は公開するな。バナーは出品するな。
 
 CSV の1行は dump \`G_hq_a8_csv.txt\` の仕事。今夜の dump と結合するな。
@@ -460,6 +460,9 @@ function selfTest() {
   if (!existEdu.includes('アイズ')) throw new Error('EXIST_EDU should cover アイズ Threadsあり');
   const cwDump = readDump('G_hq_cw_n10.txt');
   if (!cwDump.includes('13406725')) throw new Error('CW dump should name same-type alt 13406725');
+  const quoted = cwDump.split('人間へ出す指示は1つ:')[1] || '';
+  if (!quoted.includes('13406725')) throw new Error('CW human 1手 should use 13406725 as one of the four');
+  if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
   const ht = staleSnap.blockers.find((b) => b.id === 'high_ticket_nko');
   if (!ht || !/バナー/.test(ht.action)) throw new Error('high_ticket blocker should mention banner fallthrough');
 
