@@ -31,6 +31,7 @@ GitHub の schedule / デフォルトからの dispatch が使う **YAML** は�
 - post / insight に `AFFILIATE_LINKS_JSON` がある（PR #78、マージ `2cd4499`、2026-08-28T05:26:53Z）
 - `AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` も YAML に足していない
 - schedule は post / insight / report とも **無い**（`workflow_dispatch` のみ）
+- 2026-08-28 15:07 JST に `origin/claude/setup-colab-comfyui-Eb9Lh` を再読しても、post / insight / report / overlay_status に `cron:` は無い。`AMPLIFY_ENABLED` も `AFFILIATE_BODY_LINKS` も YAML に無い。戻すな
 
 GitHub Secret の**値**はファイルに無い。`gh secret list` は 403。空の Secret なら本文は今までどおりスキップする（キーは残さない）。auひかりは Secret に入れるな。cron は戻すな。再マージするな。
 

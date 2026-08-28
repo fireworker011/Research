@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。経過 8/24。タスク表 0–23 済。CI 8f16d0a 緑。15:00 JST N=6 fireworker12なし。dump は G_hq_cw_n10。overlay run list 空。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
+  "next_hour_task": "hours_left は壁時計。経過 8/24。タスク表 0–23 済。CI a7777c7 緑。15:00 JST N=6。dump は G_hq_cw_n10。overlay run list 空。デフォルト YAML は 15:07 JST でも cron 無し。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -433,6 +433,13 @@
     },
     {
       "at": "2026-08-28T06:06:36.346Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 8
+    },
+    {
+      "at": "2026-08-28T06:08:15.008Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,
