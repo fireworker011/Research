@@ -688,7 +688,8 @@ function selfTest() {
     throw new Error('HQ_100MAN must not tell HQ to pick latest dump; HQ_ORDERS names the one file');
   }
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
-  if (!hq100.includes('G_hq_20260828.txt')) throw new Error('HQ_100MAN should name the unused old dump so HQ does not open it');
+  if (hq100.includes('行の書き方:')) throw new Error('HQ_100MAN must not run MEASURE as tonight 1手 before CW dump');
+  if (!hq100.includes('1手ではない')) throw new Error('HQ_100MAN should keep MEASURE/video as 参照 not tonight 1手');
   const todayTpl = fs.readFileSync(path.join(__dirname, 'sprint-1m.js'), 'utf8');
   if (!todayTpl.includes('盤面（1手ではない')) throw new Error('TODAY should keep blockers as 盤面 not 1手');
   if (!todayTpl.includes('const boardLines')) throw new Error('TODAY board lines must not prefix 指令塔→人間');
