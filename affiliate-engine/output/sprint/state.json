@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。N=6。GitHub 発出は無い。dump は G_hq_cw_n10。Secret 鍵名 dispatch は PR #81 入済み（今夜の1手ではない。schedule なし）。重ね入済み。再マージするな。PR 76 は OPEN。#75 は dump までマージするな。円は0。cron は戻すな。",
+  "next_hour_task": "hours_left は壁時計。タスク表 0–23 済。15:00 JST N=6 fireworker12なし 15/9/7/44。13406612 応募23。GitHub 発出は無い。dump は G_hq_cw_n10。overlay_status run list 空（dispatch 403。人間が GitHub UI。今夜の1手ではない）。Secret 鍵名 #81 入済み。重ね入済み。再マージするな。PR 76 は OPEN。#75 は dump までマージするな。円は0。cron は戻すな。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -67,7 +67,7 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T14:37+09:00",
+    "reopen": "2026-08-28T15:00+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
@@ -85,7 +85,7 @@
   },
   "wrap": {
     "path": "output/sprint/WRAP.md",
-    "at": "2026-08-28T14:37+09:00",
+    "at": "2026-08-28T15:00+09:00",
     "measured_yen": 0,
     "issued": false
   },
@@ -419,6 +419,13 @@
     },
     {
       "at": "2026-08-28T05:50:01.209Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 7
+    },
+    {
+      "at": "2026-08-28T06:03:43.969Z",
       "today": "2026-08-28",
       "measured_yen": 0,
       "filled_link_keys": 0,

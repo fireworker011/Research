@@ -25,9 +25,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 ## 本番ジョブは sprint を読まない
 
-post / insight / report は `claude/monthly-revenue-system-gvi02u` を checkout する。実測: `docs/grok-bots/CHECKOUT.md`。
-
-Secret を入れても、そのブランチに `loadLinks()` が無いあいだは自動投稿は空キーのまま。今夜のクリック場所はプロフィールリンク欄（手動）。自動投稿の再開は指令塔が出すまでしない。
+post / insight / report は `claude/monthly-revenue-system-gvi02u` を checkout する。実測: `docs/grok-bots/CHECKOUT.md`。PR #77 入済みなので `loadLinks()` は Secret を読む。schedule は止まっているので自動投稿は走らない。今夜のクリック場所はプロフィールリンク欄（手動）。自動投稿の再開は指令塔が出すまでしない。埋まっている鍵名はデフォルトの `affiliate_engine_overlay_status.yml`（PR #81）を GitHub UI から `workflow_dispatch`。この参謀ランから dispatch は 403。URL はログに出ない。
 
 ## 貼る位置（指令塔が「貼ってよい」と出したあと）
 
