@@ -9,17 +9,17 @@ N高の Secret は `SECRET_EDU.md` / `dump/G_hq_secret_nko.txt`（鍵 `教育_N�
 ## 入れるもの
 
 GitHub Secret 名: `AFFILIATE_LINKS_JSON`  
-中身: JSON オブジェクト。鍵は **`転職_neo` だけ**。値は上の発行リンク。
+中身: JSON オブジェクト。鍵 `転職_neo` を **足す**。既にある `教育_N高` などは消すな。`申込_auひかり` は足すな。
 
 `config/links.json` の値は空文字のまま。
 
-例の形（URL はダミー。本番の値をここに書くな）:
+例の形（既存が空のとき。URL はダミー。本番の値をここに書くな）:
 
 ```
 {"転職_neo":"https://example.invalid/replace-in-github-secret-only"}
 ```
 
-他の鍵（`申込_auひかり` / `教育_N高` / `教育_アイズ` / `ペット_Furbo`）は、指令塔が別途「入れてよい」と出すまで足すな。N高経路は鍵 `教育_N高`（`dump/G_hq_secret_nko.txt`）。アイズ経路は鍵 `教育_アイズ`（`dump/G_hq_secret_eyes.txt`）。URL はここに書くな。
+この dump で `教育_N高` / `教育_アイズ` / `ペット_Furbo` を新たに足すな（別 dump）。既にあるなら消すな。N高経路は鍵 `教育_N高`（`dump/G_hq_secret_nko.txt`）。アイズ経路は鍵 `教育_アイズ`（`dump/G_hq_secret_eyes.txt`）。URL はここに書くな。
 
 次の仕事（結合するな）: `dump/G_hq_threads_profile.txt`。Secret だけではクリックできない。
 

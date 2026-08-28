@@ -517,6 +517,12 @@ function selfTest() {
   if (secretNeo.includes('重ねが無い')) {
     throw new Error('secret neo dump must not say production overlay missing after #77');
   }
+  if (secretNeo.includes('だけ入れよ')) {
+    throw new Error('neo Secret must add 転職_neo without replacing other keys');
+  }
+  if (!secretNeo.includes('消すな')) {
+    throw new Error('neo Secret must keep existing Secret keys');
+  }
   for (const name of ['PROFILE.md', 'PROFILE_EDU.md', 'PROFILE_TICKET.md']) {
     const profileMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', name), 'utf8');
     if (profileMd.includes('が無くても')) {
@@ -538,6 +544,12 @@ function selfTest() {
   }
   if (secretEyes.includes('SITE_EDU.md')) throw new Error('アイズ Secret must not open SITE_EDU.md; site dump already ran');
   if (secretTicket.includes('SITE.md')) throw new Error('ticket Secret must not open SITE.md; site dump already ran');
+  if (secretTicket.includes('だけ入れよ')) {
+    throw new Error('ticket Secret must add 転職_チケット without replacing other keys');
+  }
+  if (!secretTicket.includes('消すな')) {
+    throw new Error('ticket Secret must keep existing Secret keys');
+  }
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
   if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');
