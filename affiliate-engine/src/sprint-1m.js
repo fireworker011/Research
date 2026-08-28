@@ -518,6 +518,10 @@ function selfTest() {
   if (!noteDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/ACCOUNT_NOTE.md')) {
     throw new Error('note dump ACCOUNT_NOTE must live on the sprint branch');
   }
+  const bannerDump = readDump('G_hq_banner_10.txt');
+  if (!bannerDump.includes('sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/IMAGE_PLAYBOOK.md')) {
+    throw new Error('banner dump IMAGE_PLAYBOOK must live on the sprint branch');
+  }
   const quoted = cwDump.split('人間へ出す指示は1つ:')[1] || '';
   if (!quoted.includes('13406725')) throw new Error('CW human 1手 should use 13406725 as one of the four');
   if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
