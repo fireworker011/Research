@@ -13,7 +13,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 conversions.csv の最終実測行は 2026-08-27。**2026-08-28** の行はファイルに無い。実測円は approved_yen の合計で、無いあいだは ¥0。カタログを足すな。
 
 人間へ出す指示は1つ:
-「A8 管理画面を開いて見た clicks / cv / 確定金額だけ conversions.csv に1行せよ。開いていないなら行を足すな。同じ source と program の月次合計は最新日だけが円になる。all と案件別を混ぜるな。カタログ円は書くな。URLは書くな。書いたら `node src/sprint-1m.js --self-test && node src/sprint-1m.js` を回せ。」
+「A8 管理画面を開いて見た clicks / cv / 確定金額だけ conversions.csv に1行せよ。数はカンマも円も外した整数（15000）。引用符なしの 1,000 は書くな。開いていないなら行を足すな。同じ source と program の月次合計は最新日だけが円になる。all と案件別を混ぜるな。カタログ円は書くな。URLは書くな。書いたら `node src/sprint-1m.js --self-test && node src/sprint-1m.js` を回せ。」
 
 復唱して、人間への指示を1文で書け。投稿するな。auひかりを貼るな。
 

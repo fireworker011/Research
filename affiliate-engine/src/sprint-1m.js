@@ -43,9 +43,12 @@ function daysInclusive(start, end) {
   return diff + 1;
 }
 
-function toInt(value) {
-  const n = Number.parseInt(String(value ?? '').trim(), 10);
-  return Number.isFinite(n) ? n : 0;
+/** 1セルの確定金額・件数。引用符付き 1,000 や 15000円は読む。カンマ区切りの生CSVは列が壊れる */
+function parseMoneyInt(value) {
+  const s = String(value ?? '').trim().replace(/[¥￥円,\s]/g, '');
+  if (!/^-?\d+$/.test(s)) return null;
+  const n = Number.parseInt(s, 10);
+  return Number.isFinite(n) ? n : null;
 }
 
 function isLiveConversionRow(row) {
@@ -65,13 +68,17 @@ function conversionShapeErrors(csvText, today) {
     }
     for (const col of ['clicks', 'cv', 'approved_yen']) {
       const raw = String(row[col] ?? '').trim();
-      if (!/^-?\d+$/.test(raw)) {
-        errors.push(`${label}: ${col} は整数`);
+      const n = parseMoneyInt(raw);
+      if (n == null) {
+        errors.push(`${label}: ${col} は整数（カンマも円も外す。生の 1,000 は列が壊れる）`);
         continue;
       }
-      if (Number.parseInt(raw, 10) < 0) errors.push(`${label}: ${col} は 0 以上`);
+      if (n < 0) errors.push(`${label}: ${col} は 0 以上`);
     }
-    const yen = toInt(row.approved_yen);
+    if (/^\d{3}$/.test(String(row.note || '').trim()) && parseMoneyInt(row.approved_yen) != null && parseMoneyInt(row.approved_yen) < 1000) {
+      errors.push(`${label}: カンマ区切りは列が壊れる。1000 のように整数だけ書け`);
+    }
+    const yen = parseMoneyInt(row.approved_yen) ?? 0;
     if (yen > 0 && /カタログ/.test(String(row.note || ''))) {
       errors.push(`${label}: カタログ円を approved_yen に足すな`);
     }
@@ -125,9 +132,9 @@ function sumConversions(csvText) {
   let cv = 0;
   let approvedYen = 0;
   for (const row of latest) {
-    clicks += toInt(row.clicks);
-    cv += toInt(row.cv);
-    approvedYen += toInt(row.approved_yen);
+    clicks += parseMoneyInt(row.clicks) ?? 0;
+    cv += parseMoneyInt(row.cv) ?? 0;
+    approvedYen += parseMoneyInt(row.approved_yen) ?? 0;
   }
   return { rows: rows.length, clicks, cv, approvedYen, lastDate: lastLiveConversionDate(csvText) };
 }
@@ -416,6 +423,26 @@ function selfTest() {
     '2026-08-28'
   );
   if (!mixed.some((e) => /混ぜるな/.test(e))) throw new Error('all+program mix should fail');
+
+  const quotedYen = [
+    'date,source,program,clicks,cv,approved_yen,note',
+    '2026-08-28,A8,all,33,0,"1,000",screen'
+  ].join('\n');
+  const quotedSum = sumConversions(quotedYen);
+  if (quotedSum.approvedYen !== 1000) throw new Error(`quoted 1,000 want 1000, got ${quotedSum.approvedYen}`);
+  const yenMark = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-28,A8,all,33,0,15000円,screen\n',
+    '2026-08-28'
+  );
+  if (yenMark.length) throw new Error(`15000円 should parse, got ${yenMark.join('; ')}`);
+  if (sumConversions('date,source,program,clicks,cv,approved_yen,note\n2026-08-28,A8,all,33,0,15000円,screen\n').approvedYen !== 15000) {
+    throw new Error('15000円 should sum 15000');
+  }
+  const commaSplit = conversionShapeErrors(
+    'date,source,program,clicks,cv,approved_yen,note\n2026-08-28,A8,all,33,0,1,000,monthly\n',
+    '2026-08-28'
+  );
+  if (!commaSplit.some((e) => /カンマ/.test(e))) throw new Error('unquoted 1,000 should fail as broken columns');
 
   const dumpDir = path.join(__dirname, '..', 'docs', 'grok-bots', 'dump');
   const readDump = (name) => fs.readFileSync(path.join(dumpDir, name), 'utf8');
