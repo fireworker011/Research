@@ -550,6 +550,15 @@ function selfTest() {
   if (!secretTicket.includes('消すな')) {
     throw new Error('ticket Secret must keep existing Secret keys');
   }
+  for (const name of ['SECRET.md', 'SECRET_EDU.md', 'SECRET_TICKET.md']) {
+    const secretMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', name), 'utf8');
+    if (secretMd.includes('既存が空のとき')) {
+      throw new Error(`${name} must not offer a whole-object example for an empty Secret`);
+    }
+    if (!secretMd.includes('上書きするな')) {
+      throw new Error(`${name} must forbid replacing the whole Secret JSON`);
+    }
+  }
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
   if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');

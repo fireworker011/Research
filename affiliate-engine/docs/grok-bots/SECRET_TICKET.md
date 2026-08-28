@@ -12,11 +12,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 `config/links.json` の値は空文字のまま。
 
-例の形（既存が空のとき。URL はダミー。本番の値をここに書くな）:
-
-```
-{"転職_チケット":"https://example.invalid/replace-in-github-secret-only"}
-```
+既存の `AFFILIATE_LINKS_JSON` を開いて鍵 `転職_チケット` を1つ足せ。他のキーは残す。1鍵だけの JSON で Secret 全体を上書きするな。URL のダミーも、本番の値も、ここに書くな。
 
 この dump で `転職_neo` を新たに足すな（neo は別 dump）。教育アカにチケットを入れるな。既存の教育鍵は消すな。
 

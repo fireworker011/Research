@@ -12,13 +12,9 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 `config/links.json` の値は空文字のまま。
 
-例の形（既存が空のとき。URL はダミー。本番の値をここに書くな）:
+既存の `AFFILIATE_LINKS_JSON` を開いて、dump が指名した鍵を1つ足せ。他のキーは残す。1鍵だけの JSON で Secret 全体を上書きするな。URL のダミーも、本番の値も、ここに書くな。
 
-```
-{"教育_N高":"https://example.invalid/replace-in-github-secret-only"}
-```
-
-既存に `転職_neo` があるなら、同じオブジェクトに `教育_N高` を足す。Secret 全体を1鍵だけで上書きするな。この dump で `転職_neo` を新たに足すな（neo は別 dump）。N高を既に入れたならアイズで上書きするな。
+既存に `転職_neo` があるなら、同じオブジェクトに `教育_N高` を足す。この dump で `転職_neo` を新たに足すな（neo は別 dump）。N高を既に入れたならアイズで上書きするな。
 
 `config/links.json` と Git / チャットに URL を書くな。
 
