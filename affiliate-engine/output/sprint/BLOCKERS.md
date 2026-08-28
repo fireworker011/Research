@@ -32,7 +32,7 @@
 - 教育 Threads は 2026-08-28 08:40 JST 公開プロフィールが実在（`EXIST_EDU.md`）。未開設なら新造するな。アイズも置けない。次は転職アカの有無。教育 YouTube は始めない
 - `開設済み` のあと、その Threads の副サイト登録が必要（公式 FAQ post_1955）。dump `G_hq_a8_site.txt`（neo）/ `G_hq_a8_site_edu.txt`（N高）
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（neo）/ `G_hq_threads_profile_edu.txt`（N高）。cron は戻すな
-- post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。2026-08-28 14:27 JST に PR #77 が入ったので本番 `loadLinks()` は Secret を読む。デフォルト YAML は PR #78。空リンクのスキップは PR #80 で `posted.json` に書かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らない。Secret の値はファイルに無い。cron は戻していない。再マージするな。PR 76 は OPEN のまま。今夜の1手ではない
+- post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。2026-08-28 14:27 JST に PR #77 が入ったので本番 `loadLinks()` は Secret を読む。デフォルト YAML は PR #78。空リンクのスキップは PR #80 で `posted.json` に書かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らない。Secret の値はファイルに無い。cron は戻していない。再マージするな。PR 76 は OPEN のまま。今夜の1手ではない。PR #89 は本文アフィをスケジュールから外す（verify SUCCESS / MERGEABLE。未マージ。今夜の1手ではない）
 - 2026-08-28 12:25 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`。N高 `s00000027548001`、アイズ `s00000027572003`、チケット `s00000011866027` もページに残る。auひかり `s00000019044001` はこのページに無い
 - 2026-08-28 13:51 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかりはこのページに無い。円は足していない
 - 2026-08-28 14:37 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかり `s00000019044001` はこのページに無い。円は足していない

@@ -49,6 +49,16 @@ Secret を入れたあと、投稿せず鍵名だけ見るジョブ: デフォ�
 - https://github.com/fireworker011/Research/pull/87 MERGED（insight が auひかりを候補に出さない。投稿しない）
 - 旧マージ指示 dump: `dump/G_hq_merge_overlay.txt`（入済み。今夜の1手ではない）
 
+## PR #89（本文アフィをスケジュールから外す・未マージ）
+
+https://github.com/fireworker011/Research/pull/89 は draft。base は `claude/monthly-revenue-system-gvi02u`。
+2026-08-28 19:38 JST の verify は SUCCESS（runs `33164090000` / `33164108406`）。MERGEABLE / CLEAN。
+`AFFILIATE_BODY_LINKS` は YAML に足していない。円の置き場はプロフィール。投稿しない。cron は戻していない。
+
+入るまで本番 HEAD は `f659bfb` のまま。awareness 終了後のスケジュールは `{{AFFILIATE_LINK}}` を選び、poster が毎スロット skip する。高単価5本（neo / N高 / アイズ / チケット）も同じ穴。seed の `_value` 比較文はマージ後に本番へ乗る。
+
+マージはナオミチ。再マージするな（まだ入っていない）。**今夜の1手ではない。** dump は `G_hq_cw_n10.txt` のまま。
+
 ## 今夜の円の置き場（重ねを待たない）
 
 指令塔が `Threadsあり` と返したあとの手動導線:

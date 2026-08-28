@@ -784,6 +784,28 @@ function selfTest() {
     throw new Error('CHECKOUT must not call merged overlay PRs draft');
   }
   if (!checkoutMd.includes('loadLinks()')) throw new Error('CHECKOUT should record production loadLinks');
+  if (!checkoutMd.includes('pull/89')) throw new Error('CHECKOUT should record PR #89 schedule no-body-affi');
+  if (!checkoutMd.includes('今夜の1手ではない')) {
+    throw new Error('CHECKOUT must not make #89 tonight 1手');
+  }
+  const yenValueIds = [
+    'career_20260828_neo_01_value',
+    'career_20260828_neo_02_value',
+    'education_20260828_nko_01_value',
+    'education_20260828_eyes_01_value',
+    'career_20260828_ticket_01_value'
+  ];
+  for (const id of yenValueIds) {
+    const t = (seed.posting_templates || []).find((x) => x.id === id);
+    if (!t) throw new Error(`missing yen value template ${id}`);
+    if (String(t.content).includes('{{AFFILIATE_LINK}}')) {
+      throw new Error(`${id} must not put affiliate URL placeholder in body`);
+    }
+    const structural = validateTemplate(t, { genres: yenGenres, linkKeys });
+    if (!structural.ok) throw new Error(`${id} validateTemplate: ${structural.reasons.join(', ')}`);
+    const content = checkContent(structural.template.content || '');
+    if (!content.ok) throw new Error(`${id} checkContent: ${content.reasons.join(', ')}`);
+  }
   if (!mergeOv.includes('入済み')) throw new Error('merge overlay dump should say 77/78 already landed');
   const funnelNko = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'FUNNEL_NKO.md'), 'utf8');
   if (!funnelNko.includes('s00000027548001')) throw new Error('FUNNEL_NKO should name N高 id');
@@ -834,6 +856,9 @@ function selfTest() {
   }
   const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
   if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
+  if (hqOrders.includes('#89') && !hqOrders.includes('今夜の1手ではない')) {
+    throw new Error('HQ_ORDERS must not make #89 tonight 1手');
+  }
   if (!hqOrders.includes(quotedOne)) throw new Error('HQ_ORDERS 人間1手 must match dump quoted 1手');
   if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {
     throw new Error('HQ_ORDERS must not send HQ into PHONE_HQ.md tonight; that file is the whole chain');
