@@ -461,6 +461,10 @@ function selfTest() {
   const secretNeo = readDump('G_hq_secret_neo.txt');
   if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
   if (!secretNeo.includes('SECRET.md')) throw new Error('neo Secret should still open SECRET.md');
+  if (secretNeo.includes('SITE.md')) throw new Error('neo Secret must not open SITE.md; site dump already ran');
+  if (secretNko.includes('SITE_EDU.md')) throw new Error('N高 Secret must not open SITE_EDU.md; site dump already ran');
+  if (secretEyes.includes('SITE_EDU.md')) throw new Error('アイズ Secret must not open SITE_EDU.md; site dump already ran');
+  if (secretTicket.includes('SITE.md')) throw new Error('ticket Secret must not open SITE.md; site dump already ran');
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
   if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');
