@@ -271,7 +271,7 @@ function renderTodayMd(s) {
 
 ## 今夜の1手
 
-\`output/sprint/HQ_ORDERS.md\` が指名した dump **1ファイルだけ**。Cursor は送らない。
+\`output/sprint/HQ_ORDERS.md\` が指名した dump **1ファイルだけ**。Cursor は送らない。\`HUMAN.md\` は参謀下書き。貼るな。
 
 ## 盤面（1手ではない。結合するな）
 
@@ -698,6 +698,9 @@ function selfTest() {
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
   if (hq100.includes('行の書き方:')) throw new Error('HQ_100MAN must not run MEASURE as tonight 1手 before CW dump');
   if (!hq100.includes('1手ではない')) throw new Error('HQ_100MAN should keep MEASURE/video as 参照 not tonight 1手');
+  if (!hq100.includes('HUMAN.md') || !hq100.includes('貼るな')) {
+    throw new Error('HQ_100MAN must tell HQ not to paste HUMAN.md');
+  }
   const staffMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'STAFF.md'), 'utf8');
   if (/最新 `docs\/grok-bots\/dump/.test(staffMd) || staffMd.includes('最新 `docs/grok-bots/dump/G_*.txt`')) {
     throw new Error('STAFF.md must not pick latest dump by mtime; HQ_ORDERS names the one file');
@@ -706,6 +709,9 @@ function selfTest() {
   const todayTpl = fs.readFileSync(path.join(__dirname, 'sprint-1m.js'), 'utf8');
   if (!todayTpl.includes('盤面（1手ではない')) throw new Error('TODAY should keep blockers as 盤面 not 1手');
   if (!todayTpl.includes('const boardLines')) throw new Error('TODAY board lines must not prefix 指令塔→人間');
+  if (!todayTpl.includes('HUMAN.md') || !todayTpl.includes('参謀下書き')) {
+    throw new Error('TODAY 今夜の1手 must tell HQ not to paste HUMAN.md');
+  }
   const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
   if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
   if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {

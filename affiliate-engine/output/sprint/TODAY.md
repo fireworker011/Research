@@ -31,7 +31,7 @@
 
 ## 今夜の1手
 
-`output/sprint/HQ_ORDERS.md` が指名した dump **1ファイルだけ**。Cursor は送らない。
+`output/sprint/HQ_ORDERS.md` が指名した dump **1ファイルだけ**。Cursor は送らない。`HUMAN.md` は参謀下書き。貼るな。
 
 ## 盤面（1手ではない。結合するな）
 

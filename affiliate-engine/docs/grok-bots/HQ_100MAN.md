@@ -33,7 +33,7 @@
 
 1. **先に** `affiliate-engine/data/conversions.csv`（円。無いあいだは ¥0。行は足すな）
 2. **そのあと** `output/sprint/TODAY.md`（残日数・ペース。盤面は1手ではない）
-3. 今夜の1手: **先に** `output/sprint/HQ_ORDERS.md`。指名された dump **1ファイルだけ** を開け。`docs/grok-bots/dump/` を更新日時や名前で自分で選ぶな。結合するな。旧 `G_hq_20260828.txt` は使うな。PR 76 の auひかり絞り込みは今夜の1手ではない。
+3. 今夜の1手: **先に** `output/sprint/HQ_ORDERS.md`。指名された dump **1ファイルだけ** を開け。`HUMAN.md` は参謀下書き。貼るな。`docs/grok-bots/dump/` を更新日時や名前で自分で選ぶな。結合するな。旧 `G_hq_20260828.txt` は使うな。PR 76 の auひかり絞り込みは今夜の1手ではない。
 4. `video_cash_log.csv` と `MEASURE.md` は参照。今夜の1手ではない。開いていない画面の行は足すな。
 5. このファイルに書いていない閲覧数・売上は **ファイルに無い**
 
