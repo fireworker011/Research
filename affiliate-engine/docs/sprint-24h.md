@@ -48,7 +48,7 @@
 | 22 | 計測: conversions のカタログ円・URL をスコアボードが落とす。重ね PR は MERGEABLE。マージ dump を自動投稿の前に置く（済） |
 | 23 | 総括。指令塔へ返す材料 `output/sprint/WRAP.md`（済） |
 
-24h タスク表は済。壁時計の hourly は `hours_left=0` まで回す。続きの最善手: CW 公開 N が 6 のあいだは `G_hq_cw_n10` を今夜の1手のまま。18:07 JST 再読でも新規4に fireworker12 なし（応募 17/9/7/49）。13406612 は応募24（再応募するな）。デフォルトに dump と `CW_APPLY.md` と HQ_100MAN 短文がある（PR #82/#83/#85/#86 入済み。HEAD `f8d5906`）。本番 `loadLinks()` は PR #84 で auひかりを載せない。insight は PR #87 で auひかりを候補に出さない。sns.php 18:07 JST でも neo / N高 / アイズ / チケットあり。auひかり出現 0。GitHub 発出は無い（Issue/PR #75 コメント 0）。RUNNING の指令塔は無い（この参謀ランだけ）。Cursor は貼るな。cron は戻すな。#75 はマージするな。PR 76 は OPEN。今夜の1手ではない。
+24h タスク表は済。壁時計の hourly は `hours_left=0` まで回す。続きの最善手: CW 公開 N が 6 のあいだは `G_hq_cw_n10` を今夜の1手のまま。19:11 JST 再読でも新規4に fireworker12 なし（応募 17/10/7/49）。13406612 は応募24（再応募するな）。デフォルトに dump と `CW_APPLY.md` と HQ_100MAN 短文がある（PR #82/#83/#85/#86 入済み。HEAD `f8d5906`）。本番 `loadLinks()` は PR #84 で auひかりを載せない。insight は PR #87 で auひかりを候補に出さない。GitHub 発出は無い（Issue/PR #75 コメント 0）。RUNNING の指令塔は無い（この参謀ランだけ）。Cursor は貼るな。cron は戻すな。#75 はマージするな。PR 76 は OPEN。今夜の1手ではない。
 
 ## 指令塔が人間へ出す手
 

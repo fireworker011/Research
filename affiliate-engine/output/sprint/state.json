@@ -25,7 +25,7 @@
     22,
     23
   ],
-  "next_hour_task": "hours_left は壁時計。経過 11/24（10:05 UTC で 12）。タスク表 0–23 済。18:53 JST N=6。応募 17/10/7/49。fireworker12 は新規4に無し。13406612 は応募24（再応募するな）。dump は G_hq_cw_n10（差し替えない）。ペット最終記録 2026-08-27 Vx7LWL8yoJY 同じID。#75 コメント 0。overlay run list 空。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
+  "next_hour_task": "hours_left は壁時計。経過 12/24（11:05 UTC で 13）。タスク表 0–23 済。19:11 JST N=6。応募 17/10/7/49。fireworker12 は新規4に無し。13406612 は応募24（再応募するな）。dump は G_hq_cw_n10（差し替えない）。ペット最終記録 2026-08-27 Vx7LWL8yoJY 同じID。#75 コメント 0。overlay run list 空。円は0。cron は戻すな。#75 は dump までマージするな。PR 76 は OPEN。今夜の1手ではない。",
   "last_dry_run": {
     "at": "2026-08-27T22:06:00Z",
     "due": 9,
@@ -69,7 +69,7 @@
     "urgent_id": "13406612",
     "urgent_deadline": "2026-08-29",
     "apply": "docs/grok-bots/CW_APPLY.md",
-    "reopen": "2026-08-28T18:53+09:00",
+    "reopen": "2026-08-28T19:11+09:00",
     "new4_public_apply": false
   },
   "banner_10": {
@@ -110,8 +110,8 @@
   "threads_cron": "stopped",
   "sprint_started_at": "2026-08-27T22:05:22.511Z",
   "sprint_hours": 24,
-  "hours_elapsed": 11,
-  "hours_left": 13,
+  "hours_elapsed": 12,
+  "hours_left": 12,
   "blockers": [
     {
       "id": "hq_do_not_paste",
@@ -146,13 +146,6 @@
     "いいね / フォロー / DM / 体験談の捏造 / #PR なしリンクはやらない"
   ],
   "ticks": [
-    {
-      "at": "2026-08-27T22:33:37.711Z",
-      "today": "2026-08-28",
-      "measured_yen": 0,
-      "filled_link_keys": 0,
-      "hours_elapsed": 0
-    },
     {
       "at": "2026-08-27T22:36:36.727Z",
       "today": "2026-08-28",
@@ -481,6 +474,13 @@
       "measured_yen": 0,
       "filled_link_keys": 0,
       "hours_elapsed": 11
+    },
+    {
+      "at": "2026-08-28T10:12:03.574Z",
+      "today": "2026-08-28",
+      "measured_yen": 0,
+      "filled_link_keys": 0,
+      "hours_elapsed": 12
     }
   ]
 }
