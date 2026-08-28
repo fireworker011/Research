@@ -450,8 +450,17 @@ function selfTest() {
   const secretNko = readDump('G_hq_secret_nko.txt');
   if (secretNko.includes('neo が Threadsあり ならこの dump は使うな')) throw new Error('N高 Secret must still run after neo placed');
   if (!secretNko.includes('G_hq_threads_profile_edu.txt')) throw new Error('N高 Secret should name edu profile dump');
+  if (!secretNko.includes('SECRET_EDU.md')) throw new Error('N高 Secret should open SECRET_EDU not neo SECRET');
+  if (/docs\/grok-bots\/SECRET\.md/.test(secretNko)) throw new Error('N高 Secret must not open neo SECRET.md');
+  const secretEyes = readDump('G_hq_secret_eyes.txt');
+  if (!secretEyes.includes('SECRET_EDU.md')) throw new Error('アイズ Secret should open SECRET_EDU');
+  if (/docs\/grok-bots\/SECRET\.md/.test(secretEyes)) throw new Error('アイズ Secret must not open neo SECRET.md');
+  const secretTicket = readDump('G_hq_secret_ticket.txt');
+  if (!secretTicket.includes('SECRET_TICKET.md')) throw new Error('ticket Secret should open SECRET_TICKET');
+  if (/docs\/grok-bots\/SECRET\.md/.test(secretTicket)) throw new Error('ticket Secret must not open neo SECRET.md');
   const secretNeo = readDump('G_hq_secret_neo.txt');
   if (!secretNeo.includes('G_hq_threads_profile.txt')) throw new Error('neo Secret should name profile dump');
+  if (!secretNeo.includes('SECRET.md')) throw new Error('neo Secret should still open SECRET.md');
   const eduProfile = readDump('G_hq_threads_profile_edu.txt');
   if (!eduProfile.includes('PROFILE_EDU.md')) throw new Error('edu profile dump should open PROFILE_EDU not tenshoku PROFILE');
   if (/docs\/grok-bots\/PROFILE\.md/.test(eduProfile)) throw new Error('edu profile dump must not open tenshoku PROFILE.md');
