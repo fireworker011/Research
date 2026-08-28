@@ -34,7 +34,7 @@
 - Secret だけではクリックできない。そのあと dump `G_hq_threads_profile.txt`（neo）/ `G_hq_threads_profile_edu.txt`（N高）。cron は戻すな
 - post / insight / report の checkout は `claude/monthly-revenue-system-gvi02u`。sprint の `loadLinks()` は本番ジョブで動かない。実測: `docs/grok-bots/CHECKOUT.md`。プロフィール欄は Actions を通らないので重ね未マージでも置ける。重ね PR https://github.com/fireworker011/Research/pull/77 （checkout）/ https://github.com/fireworker011/Research/pull/78 （デフォルト YAML env）。どちらも draft。cron は戻していない
 - 2026-08-28 12:25 JST sns.php HTML 再読でも neo 公開IDは `s00000018427001`。N高 `s00000027548001`、アイズ `s00000027572003`、チケット `s00000011866027` もページに残る。auひかり `s00000019044001` はこのページに無い
-- 2026-08-28 13:17 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかりはこのページに無い。円は足していない
+- 2026-08-28 13:51 JST sns.php HTML 再読でも上の4つの公開IDは同じ。auひかりはこのページに無い。円は足していない
 - 公開 Shorts 例 `umfmYHktBNk` は他チャンネル。自チャンネルの許可には使わない。
 - 同ページ売れてる案件の **キャリアチケット転職エージェント** は `s00000011866027`（会員登録3000円はカタログ）。アイズの前に開くな。neo 未置きかつ転職アカが `開設済み` のあと。`未開設` / チケット `項目なし` / `媒体なし` / `YouTubeあり` ならバナー（出品するな）。新造するな。パーソル `s00000026823002` はドライバー特化なので開くな
 - 導線の置き場: `docs/grok-bots/FUNNEL_APPLY.md`。テンプレ鍵 `転職_neo` / `教育_N高` / `教育_アイズ` / `転職_チケット` は空。`Threadsあり` かつ `開設済み` のあとだけ Secret。cron は戻すな。

@@ -714,6 +714,7 @@ function selfTest() {
   }
   const hqOrders = fs.readFileSync(path.join(__dirname, '..', 'output', 'sprint', 'HQ_ORDERS.md'), 'utf8');
   if (!hqOrders.includes('G_hq_cw_n10.txt')) throw new Error('HQ_ORDERS should name tonight dump');
+  if (!hqOrders.includes(quotedOne)) throw new Error('HQ_ORDERS 人間1手 must match dump quoted 1手');
   if (/以降の順は/.test(hqOrders) && hqOrders.includes('PHONE_HQ.md')) {
     throw new Error('HQ_ORDERS must not send HQ into PHONE_HQ.md tonight; that file is the whole chain');
   }
