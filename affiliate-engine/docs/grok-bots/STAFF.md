@@ -24,5 +24,5 @@
 1. `docs/grok-bots/HQ_100MAN.md`
 2. `data/conversions.csv`
 3. `output/sprint/TODAY.md`
-4. 最新 `docs/grok-bots/dump/G_*.txt`
+4. `output/sprint/HQ_ORDERS.md` が指名した dump **1ファイル**（mtime や名前で最新を選ぶな）
 5. 指令塔から来た要望（このスレッド）

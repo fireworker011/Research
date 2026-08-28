@@ -52,4 +52,4 @@
 
 ## 指令塔が人間へ出す手
 
-参謀下書きは `output/sprint/HUMAN.md`。採否は指令塔。
+今夜人間へ貼るのは `HQ_ORDERS.md` が指名した dump **1ファイル**（いまは `G_hq_cw_n10.txt`）。`output/sprint/HUMAN.md` は参謀下書き。指令塔は HUMAN.md を貼るな。dump を貼れ。採否は指令塔。

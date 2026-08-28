@@ -294,14 +294,11 @@ ${boardLines}
 function renderHumanMd(s) {
   return `# 司令部が人間へ出す1手（参謀下書き）
 
-指令塔がこの文を採否する。Cursor は送らない。今夜の dump は \`G_hq_cw_n10.txt\` が正。
+指令塔がこの文を採否する。Cursor は送らない。**貼るのは dump \`G_hq_cw_n10.txt\`。このファイルは貼るな。**
 
 目標 ${s.deadline} 確定 ¥${s.target_yen.toLocaleString()}。実測円 ¥${s.measured_yen.toLocaleString()}。
 
-1. CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。13405300 の応募画面は公開文どおり 455円、13405801 は 100円（CSV に足すな）。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。2件もダメなら貼るな。次の dump を待て。無い実績は書くな。プロフィールは直すな。
-2. auひかりは貼るな。note は公開するな。バナーは出品するな。
-
-CSV の1行は dump \`G_hq_a8_csv.txt\` の仕事。今夜の dump と結合するな。
+CW fireworker12 で、既応募6件には再応募せず、https://crowdworks.jp/public/jobs/13405300 と https://crowdworks.jp/public/jobs/13405200 と https://crowdworks.jp/public/jobs/13405801 と https://crowdworks.jp/public/jobs/13406725 へ CW_APPLY.md の文で応募して N=10 にせよ。13405300 の応募画面は公開文どおり 455円、13405801 は 100円（CSV に足すな）。4が合わなければ https://crowdworks.jp/public/jobs/13408073 。それも合わなければ https://crowdworks.jp/public/jobs/13408021 。2件もダメなら貼るな。次の dump を待て。無い実績は書くな。プロフィールは直すな。auひかりは貼るな。note は公開するな。バナーは出品するな。
 
 次の指示は指令塔が出す。
 `;
@@ -637,6 +634,17 @@ function selfTest() {
     }
   }
   const quoted = cwDump.split('人間へ出す指示は1つ:')[1] || '';
+  const quotedOne = (quoted.match(/「([^」]+)」/) || [])[1] || '';
+  const humanOut = renderHumanMd({ deadline: '2026-09-30', target_yen: 1000000, measured_yen: 0 });
+  if (!quotedOne) throw new Error('CW dump missing quoted 1手');
+  if (!humanOut.includes(quotedOne)) throw new Error('HUMAN.md 1手 must match dump quoted 1手');
+  if (/\n2\./.test(humanOut)) throw new Error('HUMAN.md must not number a second 1手');
+  if (humanOut.includes('G_hq_a8_csv')) throw new Error('HUMAN.md must not send csv dump as tonight 1手');
+  if (!humanOut.includes('このファイルは貼るな')) throw new Error('HUMAN.md must tell HQ not to paste HUMAN.md');
+  const sprint24 = fs.readFileSync(path.join(__dirname, '..', 'docs', 'sprint-24h.md'), 'utf8');
+  if (!sprint24.includes('HUMAN.md を貼るな')) {
+    throw new Error('sprint-24h must tell HQ to paste the dump, not HUMAN.md');
+  }
   if (!quoted.includes('13406725')) throw new Error('CW human 1手 should use 13406725 as one of the four');
   if (quoted.includes('13405803')) throw new Error('CW human 1手 should not send 13405803 as a primary URL');
   if (!quoted.includes('13408073')) throw new Error('CW human 1手 same-type alt should be 13408073');
@@ -690,6 +698,11 @@ function selfTest() {
   if (!hq100.includes('HQ_ORDERS.md')) throw new Error('HQ_100MAN should send HQ to HQ_ORDERS for tonight 1手');
   if (hq100.includes('行の書き方:')) throw new Error('HQ_100MAN must not run MEASURE as tonight 1手 before CW dump');
   if (!hq100.includes('1手ではない')) throw new Error('HQ_100MAN should keep MEASURE/video as 参照 not tonight 1手');
+  const staffMd = fs.readFileSync(path.join(__dirname, '..', 'docs', 'grok-bots', 'STAFF.md'), 'utf8');
+  if (/最新 `docs\/grok-bots\/dump/.test(staffMd) || staffMd.includes('最新 `docs/grok-bots/dump/G_*.txt`')) {
+    throw new Error('STAFF.md must not pick latest dump by mtime; HQ_ORDERS names the one file');
+  }
+  if (!staffMd.includes('HQ_ORDERS.md')) throw new Error('STAFF.md should open HQ_ORDERS-named dump');
   const todayTpl = fs.readFileSync(path.join(__dirname, 'sprint-1m.js'), 'utf8');
   if (!todayTpl.includes('盤面（1手ではない')) throw new Error('TODAY should keep blockers as 盤面 not 1手');
   if (!todayTpl.includes('const boardLines')) throw new Error('TODAY board lines must not prefix 指令塔→人間');
