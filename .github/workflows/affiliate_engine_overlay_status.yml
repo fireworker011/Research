@@ -1,0 +1,47 @@
+name: Affiliate Secret 重ね確認（投稿しない）
+
+on:
+  # 2026-08-28 計測回転。schedule は足さない。cron は戻さない。
+  # 埋まっている link_key 名と件数だけ出す。URL は出さない。実投稿しない。
+  workflow_dispatch:
+
+concurrency:
+  group: affiliate-overlay-status
+  cancel-in-progress: false
+
+jobs:
+  overlay-status:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/monthly-revenue-system-gvi02u
+          persist-credentials: false
+
+      - name: 埋まっている鍵名だけ出す
+        env:
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
+        run: |
+          set -euo pipefail
+          cd affiliate-engine
+          node --check src/util.js
+          node <<'NODE'
+          'use strict';
+          const { loadLinks } = require('./src/util');
+          const links = loadLinks();
+          const names = Object.entries(links)
+            .filter(([k, v]) => !k.startsWith('_') && String(v || '').trim())
+            .map(([k]) => k)
+            .sort();
+          const line = `filled ${names.length}\nkeys ${names.join(',') || '(none)'}\n`;
+          if (/https?:\/\//i.test(line) || names.some((n) => /https?:/i.test(n))) {
+            throw new Error('url leak');
+          }
+          process.stdout.write(line);
+          if (names.includes('申込_auひかり')) {
+            console.error('WARN 申込_auひかり is filled; SNS listing is missing so this key should stay empty');
+            process.exit(1);
+          }
+          NODE

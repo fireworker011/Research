@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/affiliate_engine_post.yml'
       - '.github/workflows/affiliate_engine_insight.yml'
+      - '.github/workflows/affiliate_engine_overlay_status.yml'
       - '.github/workflows/affiliate_yaml_guard.yml'
 
 concurrency:
@@ -37,4 +38,21 @@ jobs:
           if grep -q "^  schedule:" .github/workflows/affiliate_engine_post.yml .github/workflows/affiliate_engine_insight.yml; then
             echo "schedule must stay off"
             exit 1
+          fi
+          status=.github/workflows/affiliate_engine_overlay_status.yml
+          if [ -f "$status" ]; then
+            grep -q 'AFFILIATE_LINKS_JSON' "$status"
+            grep -q 'workflow_dispatch' "$status"
+            if grep -q "^  schedule:" "$status"; then
+              echo "overlay status must not have schedule"
+              exit 1
+            fi
+            if grep -q 'threads-poster.js' "$status" || grep -q 'amplify.js' "$status"; then
+              echo "overlay status must not post"
+              exit 1
+            fi
+            if grep -q 'AMPLIFY_ENABLED' "$status" || grep -q 'AFFILIATE_BODY_LINKS' "$status"; then
+              echo "overlay status must not enable body links or amplify"
+              exit 1
+            fi
           fi
