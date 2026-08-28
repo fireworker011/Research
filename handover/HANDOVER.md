@@ -6,7 +6,8 @@
 
 - **期限 2026-09-30 確定 ¥1,000,000 の円と今夜の1手は、このファイルに書かない。** 24h 中は 20:00 を待つな。指令塔は今すぐ dump 1ファイルだけ開け:
   `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt`
-  同じ本文: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
+  無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt
+  応募本文は clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md` を先に開け。
   他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` はデフォルトに無い。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
@@ -156,7 +157,7 @@
 
 ## 8. Grok Bot / Cursor への具体的な指示
 
-- **Grok Bot（司令塔）**: 指示を出す。人間への1手を出す。今夜は dump `G_hq_cw_n10.txt`（sprint ブランチ raw）を貼れ。20:00 を待つな。`HUMAN.md` は貼るな。実投稿はしない。目標・期限は変えない。
+- **Grok Bot（司令塔）**: 指示を出す。人間への1手を出す。今夜は dump `affiliate-engine/docs/grok-bots/dump/G_hq_cw_n10.txt` を開けて貼れ。無ければ sprint raw。20:00 を待つな。`HUMAN.md` は貼るな。実投稿はしない。目標・期限は変えない。
 - **Cursor（参謀）**: コード変更と実験記録・指示書。指令塔の代わりに dump を貼るな。スケジュール決定論と重複ガードを壊さない。コミット前に `git pull --rebase`。
 - **両者共通**: 停止中の Threads 自動更新を勝手に再開しない。ペット実験の週15/週50クリック門は Furbo 線。期限 2026-09-30 確定円の1手をそれで止めるな。
 
