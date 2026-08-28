@@ -407,6 +407,12 @@ function selfTest() {
     '2026-08-28'
   );
   if (!cwYenBad.some((e) => /CW/.test(e))) throw new Error('CW apply amount must not become approved_yen');
+  const liveCsvText = fs.readFileSync(CONVERSIONS_PATH, 'utf-8');
+  for (const row of parseCSV(liveCsvText).filter(isLiveConversionRow)) {
+    if (/crowdworks|クラウドワークス|^CW$/i.test(String(row.source || ''))) {
+      throw new Error('live conversions.csv must not use CW as source');
+    }
+  }
 
   const twoDays = [
     'date,source,program,clicks,cv,approved_yen,note',
