@@ -48,13 +48,21 @@ function escapeDrawtext(text) {
     .replace(/%/g, '\\%');
 }
 
+function firstExisting(paths) {
+  return paths.find((p) => fs.existsSync(p)) || null;
+}
+
 function stillPath(imagesDir, video, beat) {
+  const exts = ['.jpg', '.jpeg', '.png', '.webp'];
   if (beat.id === 'cta') {
-    const cta = path.join(imagesDir, `${video.id}_cta.png`);
-    if (fs.existsSync(cta)) return cta;
-    return path.join(imagesDir, `${video.id}_b3.png`);
+    const cta = firstExisting(exts.map((e) => path.join(imagesDir, `${video.id}_cta${e}`)));
+    if (cta) return cta;
+    const b3 = firstExisting(exts.map((e) => path.join(imagesDir, `${video.id}_b3${e}`)));
+    if (b3) return b3;
+    return path.join(imagesDir, `${video.id}_b3.jpg`);
   }
-  return path.join(imagesDir, `${video.id}_${beat.id}.png`);
+  const found = firstExisting(exts.map((e) => path.join(imagesDir, `${video.id}_${beat.id}${e}`)));
+  return found || path.join(imagesDir, `${video.id}_${beat.id}.jpg`);
 }
 
 function selfTest(pack) {
@@ -153,10 +161,10 @@ async function renderVideo(video, imagesDir, outPath, font) {
     filters.push(
       `[${i}:v]scale=1080:1920:force_original_aspect_ratio=increase,` +
         `crop=1080:1920,` +
-        `drawbox=x=0:y=ih-460:w=iw:h=460:color=black@0.38:t=fill,` +
+        `drawbox=x=0:y=ih-300:w=iw:h=300:color=black@0.32:t=fill,` +
         `drawtext=fontfile='${font}':text='${text}':fontcolor=white:` +
         `fontsize=${fontsize}:borderw=5:bordercolor=black:` +
-        `x=(w-text_w)/2:y=h-280:` +
+        `x=(w-text_w)/2:y=h-168:` +
         `enable='gte(t,0.15)',` +
         `fade=t=in:st=0:d=0.12,fade=t=out:st=${beat.dur}:d=0.18[v${i}]`
     );
