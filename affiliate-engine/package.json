@@ -17,6 +17,7 @@
     "youtube:catfood": "node src/catfood-homage-render.js",
     "youtube:catfood:test": "node src/catfood-homage-render.js --self-test",
     "youtube:catfood:copy": "node src/catfood-homage-render.js --print-copy",
+    "youtube:catfood:assemble": "node src/catfood-homage-assemble.js",
     "video:judge": "node src/video-judge.js",
     "video:judge:test": "node src/video-judge.js --self-test",
     "plan": "node src/funnel-calc.js"

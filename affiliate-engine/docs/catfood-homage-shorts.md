@@ -23,18 +23,22 @@
 - `links.json` の `ペット_フード` が空のままリンク投稿すること
 - 自動投稿
 
-## 3本
+## 制作パイプライン（このパック）
 
-生成:
+1. 起点画像を複数枚（Imagine。猫はブルーグレーのブリティッシュショートヘア1匹。茶トラ＋白は使わない）
+2. 各画像を動画化（Wan I2V。Grok Imagine クリップは有料プランが必要）
+3. 無音のままつなぎ、下中央テロップ
+4. **最後に**ナレーションだけ載せる。BGM・効果音なし
 
 ```bash
 cd affiliate-engine
-node src/catfood-homage-render.js --self-test
-node src/catfood-homage-render.js --print-copy
-node src/catfood-homage-render.js \
-  --images-dir data/catfood-homage-stills \
-  --out-dir output/videos/catfood-homage
+npm run youtube:catfood:test
+# clips を output/videos/catfood-homage/clips/{id}_b1.mp4 に置いてから
+node src/catfood-homage-assemble.js --video catfood_01_bag_sound
 ```
+
+完成ファイル: `output/videos/catfood-homage/{id}_narrated.mp4`（gitignore）
+
 
 | id | タイトル | 3拍 |
 |---|---|---|
