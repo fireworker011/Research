@@ -13,17 +13,18 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Callable
 
-from h3_imagine import data_uri, download_to
+from h3_imagine import data_uri, download_to, secret_value
 
 ENDPOINT = "https://fal.run/minimax/h3-max/image-to-video"
 MODEL_ID = "minimax/h3-max/image-to-video"
 
 
 def fal_api_key() -> str:
-    key = (os.environ.get("FAL_KEY") or os.environ.get("FAL_API_KEY") or "").strip()
+    key = secret_value("FAL_KEY", "FAL_API_KEY")
     if not key:
         raise RuntimeError(
-            "FAL_KEY がありません。H3 Max 無人実行は fal API です。"
+            "FAL_KEY がありません。H3 Max は fal API です。"
+            "スマホ Colab なら左の鍵アイコン → FAL_KEY。"
             "無料ページ（ログインなし5本/5秒）は手試し専用。Git にキーを書かない。"
         )
     return key
