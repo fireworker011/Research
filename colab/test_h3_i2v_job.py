@@ -34,6 +34,7 @@ def test_default_job_is_homage_and_clean():
     assert validate_motion_ad_prompt(p) == []
     assert "hoodie" in p.lower()
     assert job["imagine"]["model"] == "grok-imagine-image-2.0"
+    assert job["backend"] == "fal-max"
     assert "URL" in DEFAULT_IMAGINE_PROMPT or "url" in DEFAULT_IMAGINE_PROMPT.lower() or "No extra" in DEFAULT_IMAGINE_PROMPT
 
 
@@ -120,7 +121,62 @@ def test_generate_i2va_dry_run(tmp_path):
     assert "first_frame" in result["graph"]["20"]["inputs"]
 
 
-def test_drop_and_grokbot_dry_run(tmp_path):
+def test_fal_i2v_payload_keeps_prompt_and_hides_key(tmp_path):
+    from h3_fal_max import i2v_payload, is_fal_backend, payload_log, resolve_backend
+
+    img = tmp_path / "p.jpg"
+    img.write_bytes(b"\xff\xd8\xff" + b"x" * 50)
+    payload = i2v_payload(prompt="hoodie desk cyan UI 広告", image_path=img, duration_s=10)
+    blob = json.dumps(payload)
+    assert payload["duration"] == 10
+    assert payload["prompt_expansion_mode"] == "disabled"
+    assert payload["resolution"] == "768P"
+    assert payload["image_url"].startswith("data:image/jpeg;base64,")
+    assert "FAL_KEY" not in blob
+    assert "px.a8.net" not in blob
+    assert i2v_payload(prompt="x", image_path=img, duration_s=3)["duration"] == 5
+    assert i2v_payload(prompt="x", image_path=img, duration_s=99)["duration"] == 15
+    assert payload_log(payload)["image_url"].startswith("data-uri:")
+    assert is_fal_backend(resolve_backend("", {"backend": "fal-max"}))
+    assert resolve_backend("", None) == "fal-max"
+    assert resolve_backend("colab", {"backend": "fal-max"}) == "colab"
+
+
+def test_fal_generate_i2v_mocked(tmp_path, monkeypatch):
+    from h3_fal_max import generate_i2v
+
+    img = tmp_path / "p.jpg"
+    img.write_bytes(b"\xff\xd8\xff" + b"x" * 50)
+    dest = tmp_path / "out.mp4"
+    captured = {}
+
+    def opener(req, timeout=None):
+        captured["url"] = req.full_url
+        captured["auth"] = req.get_header("Authorization")
+        captured["body"] = json.loads(req.data.decode())
+
+        class R:
+            def read(self):
+                return json.dumps({"video": {"url": "https://cdn.example/v.mp4"}}).encode()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        return R()
+
+    monkeypatch.setattr("h3_fal_max.download_to", lambda url, dest: dest.write_bytes(b"m" * 2000) or dest)
+    generate_i2v(img, dest, prompt="hoodie 広告", key="test-key", opener=opener)
+    assert captured["url"].endswith("/minimax/h3-max/image-to-video")
+    assert captured["auth"] == "Key test-key"
+    assert captured["body"]["prompt_expansion_mode"] == "disabled"
+    assert captured["body"]["duration"] == 10
+    assert dest.is_file()
+
+
+def test_drop_and_grokbot_dry_run(tmp_path, capsys):
     drive = tmp_path / "minimax-h3-comfyui"
     img = tmp_path / "draft.jpg"
     img.write_bytes(b"draft")
@@ -133,12 +189,40 @@ def test_drop_and_grokbot_dry_run(tmp_path):
     job = json.loads((inbox / "job.json").read_text())
     assert job["status"] == "ready"
     assert job["imagine"]["enabled"] is False
+    assert job["backend"] == "fal-max"
     rc = run_i2v.run(["--drive", str(drive), "--dry-run", "--out", str(tmp_path / "out.mp4")])
+    assert rc == 0
+    done = drive / "done" / inbox.name
+    assert (done / "job.json").is_file()
+    saved = json.loads((done / "job.json").read_text())
+    assert saved["status"] == "done"
+    assert saved["backend"] == "fal-max"
+    assert (done / "picture1.jpg").is_file()
+    assert (drive / "output" / f"{saved['id']}.mp4").is_file()
+    assert (tmp_path / "out.mp4").is_file()
+    out = capsys.readouterr().out
+    assert "fal.run/minimax/h3-max/image-to-video" in out
+    assert "colab new" not in out
+    assert "FAL_KEY" not in json.dumps(saved)
+
+
+def test_colab_backend_dry_run_prints_colab(tmp_path, capsys):
+    drive = tmp_path / "minimax-h3-comfyui"
+    img = tmp_path / "draft.jpg"
+    img.write_bytes(b"draft")
+    import drop_job
+    import run_i2v
+
+    assert drop_job.main(["--drive", str(drive), "--image", str(img), "--slug", "coconala", "--no-imagine"]) == 0
+    inbox = next((drive / "inbox").iterdir())
+    rc = run_i2v.run(["--drive", str(drive), "--dry-run", "--backend", "colab"])
     assert rc == 0
     queued = drive / "queued" / inbox.name
     assert (queued / "job.json").is_file()
     assert json.loads((queued / "job.json").read_text())["status"] == "queued"
-    assert (queued / "picture1.jpg").is_file()
+    out = capsys.readouterr().out
+    assert "colab" in out
+    assert "dry-run colab commands" in out
 
 
 def test_orphan_still_and_idle_and_watch(tmp_path):
@@ -152,7 +236,8 @@ def test_orphan_still_and_idle_and_watch(tmp_path):
     assert not (root / "inbox" / "a.jpg").exists()
     (root / "inbox" / "b.jpg").write_bytes(b"b")
     assert run_i2v.run(["--drive", str(root), "--dry-run", "--watch", "--max-jobs", "2", "--interval", "1"]) == 0
-    assert len(list((root / "queued").iterdir())) == 2
+    assert len([p for p in (root / "done").iterdir() if p.is_dir()]) == 2
+    assert not list((root / "queued").iterdir())
     assert run_i2v.run(["--drive", str(root), "--dry-run"]) == 0
     skill = Path(__file__).resolve().parents[1] / ".cursor" / "skills" / "h3-i2v-grokbot" / "SKILL.md"
     assert "一度きり" in skill.read_text(encoding="utf-8")
@@ -164,12 +249,16 @@ def test_example_job_file_has_no_secrets():
     raw = path.read_text(encoding="utf-8")
     data = json.loads(raw)
     assert data["schema"] == SCHEMA
+    assert data["backend"] == "fal-max"
     assert "XAI" not in raw
+    assert "FAL_KEY" not in raw
     assert "px.a8.net" not in raw
     assert validate_job(data) == []
     skill = Path(__file__).resolve().parents[1] / ".cursor" / "skills" / "h3-i2v-grokbot" / "SKILL.md"
     text = skill.read_text(encoding="utf-8")
     assert text.startswith("---")
+    assert "fal-max" in text
+    assert "FAL_KEY" in text
     assert "colab stop" in text
     assert "I2VA" in text
     assert "px.a8.net" in text or "アフィ" in text

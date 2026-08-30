@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Grokbot: Imagine 2.0 quality pass → Colab I2VA → download → stop runtime.
+"""Grokbot: Imagine 2.0 quality pass → fal H3 Max I2V (Colab fallback) → download.
 
 One-shot (cron / Cursor Automation): process inbox, idle exit 0.
 Watch: keep polling. Humans do not re-prompt after the one-time start.
+Default backend is fal MiniMax H3 Max API (seconds, no A100). Do not scrape
+the free playground (5×5s/day). Colab Comfy I2VA is --backend colab.
 """
 
 from __future__ import annotations
@@ -21,6 +23,14 @@ for p in ROOTS:
         sys.path.insert(0, str(p))
 
 from h3_colab_cli import exec_file, mount_drive, orchestrate_commands, start_session, stop_session  # noqa: E402
+from h3_fal_max import (  # noqa: E402
+    ENDPOINT,
+    generate_i2v,
+    i2v_payload,
+    is_colab_backend,
+    payload_log,
+    resolve_backend,
+)
 from h3_i2v_job import (  # noqa: E402
     DEFAULT_IMAGINE_PROMPT,
     DRIVE_ROOT_DEFAULT,
@@ -79,6 +89,107 @@ def enhance_job(folder: Path, job: dict, drive: Path) -> Path:
     return dest
 
 
+def fail_job(folder: Path, job: dict, drive: Path, err: object) -> Path:
+    job["error"] = str(err)
+    if job.get("status") != "failed":
+        try:
+            set_status(job, "failed")
+        except ValueError:
+            job["status"] = "failed"
+    save_job(folder, job)
+    return move_job(folder, "failed", drive)
+
+
+def copy_output(dest: Path, job: dict, args: argparse.Namespace) -> None:
+    if not dest.is_file():
+        print("mp4 を確認:", dest)
+        return
+    if args.dry_run and not args.out:
+        print("dry-run mp4", dest)
+        return
+    local = Path(args.out) if args.out else Path.cwd() / f"{job.get('id')}.mp4"
+    local.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(dest, local)
+    print("downloaded", local)
+
+
+def process_fal(args: argparse.Namespace, drive: Path, folder: Path, job: dict) -> str:
+    """Official fal API only. Never hit the no-login 5s playground HTML."""
+    try:
+        if job.get("status") == "queued":
+            set_status(job, "running")
+            save_job(folder, job)
+            folder = move_job(folder, "running", drive)
+            job = load_job(folder)
+        still = folder / "picture1.jpg"
+        if not still.is_file():
+            still = resolve_job_image(folder, job)
+        prompt = resolve_motion_prompt(job.get("prompt"), duration_s=float(job.get("duration_s") or 10))
+        errs = validate_motion_ad_prompt(prompt)
+        if errs:
+            raise RuntimeError(errs)
+        dest = drive / "output" / f"{job['id']}.mp4"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        duration_s = int(float(job.get("duration_s") or 10))
+        payload = i2v_payload(
+            prompt=prompt,
+            image_path=still,
+            duration_s=duration_s,
+            seed=int(job.get("seed") or 42),
+            prompt_expansion_mode="disabled",
+        )
+        print("fal", ENDPOINT, payload_log(payload))
+        if args.dry_run:
+            dest.write_bytes(b"dry-run-fal-mp4\n" * 80)
+            print("dry-run fal: no Colab, no FAL_KEY call")
+        else:
+            generate_i2v(
+                still,
+                dest,
+                prompt=prompt,
+                duration_s=duration_s,
+                seed=int(job.get("seed") or 42),
+                prompt_expansion_mode="disabled",
+            )
+        job["output_mp4"] = str(dest)
+        job["backend"] = "fal-max"
+        set_status(job, "done")
+        save_job(folder, job)
+        folder = move_job(folder, "done", drive)
+        copy_output(dest, job, args)
+        print("DONE", job["id"], dest)
+        return "done"
+    except Exception as e:
+        fail_job(folder, job, drive, e)
+        raise
+
+
+def process_colab(args: argparse.Namespace, drive: Path, folder: Path, job: dict) -> str:
+    script = repo_script()
+    os.environ["H3_DRIVE_ROOT"] = str(drive)
+    os.environ["H3_JOB_ID"] = str(job.get("id") or folder.name)
+    if args.dry_run:
+        os.environ["H3_DRY_RUN"] = "1"
+        print("dry-run colab commands:")
+        for cmd in orchestrate_commands(script, gpu=args.gpu, name=args.session):
+            print("colab", " ".join(cmd))
+        return "done"
+
+    try:
+        start_session(name=args.session, gpu=args.gpu)
+        mount_drive(name=args.session)
+        exec_file(script, name=args.session)
+    finally:
+        if not args.keep_runtime:
+            stop_session(name=args.session)
+
+    done = drive / "done" / folder.name
+    job_done = load_job(done) if (done / "job.json").is_file() else job
+    mp4 = job_done.get("output_mp4") or str(drive / "output" / f"{job_done.get('id')}.mp4")
+    copy_output(Path(mp4), job_done, args)
+    return "done"
+
+
 def process_one(args: argparse.Namespace, drive: Path) -> str:
     """Return idle | done. Empty inbox is success (automation can poll)."""
     adopt_orphan_stills(drive)
@@ -110,39 +221,19 @@ def process_one(args: argparse.Namespace, drive: Path) -> str:
         print("imagine-only done", folder)
         return "done"
 
-    script = repo_script()
-    os.environ["H3_DRIVE_ROOT"] = str(drive)
-    os.environ["H3_JOB_ID"] = str(job.get("id") or folder.name)
-    if args.dry_run:
-        os.environ["H3_DRY_RUN"] = "1"
-        print("dry-run colab commands:")
-        for cmd in orchestrate_commands(script, gpu=args.gpu, name=args.session):
-            print("colab", " ".join(cmd))
-        return "done"
+    backend = resolve_backend(None if args.colab_only else args.backend, job)
+    if args.colab_only:
+        backend = "colab"
+    job["backend"] = backend
+    save_job(folder, job)
 
-    try:
-        start_session(name=args.session, gpu=args.gpu)
-        mount_drive(name=args.session)
-        exec_file(script, name=args.session)
-    finally:
-        if not args.keep_runtime:
-            stop_session(name=args.session)
-
-    done = drive / "done" / folder.name
-    job_done = load_job(done) if (done / "job.json").is_file() else job
-    mp4 = job_done.get("output_mp4") or str(drive / "output" / f"{job_done.get('id')}.mp4")
-    local = Path(args.out) if args.out else Path.cwd() / f"{job_done.get('id')}.mp4"
-    src_mp4 = Path(mp4)
-    if src_mp4.is_file():
-        shutil.copy2(src_mp4, local)
-        print("downloaded", local)
-    else:
-        print("Drive 上の mp4 を確認:", mp4)
-    return "done"
+    if is_colab_backend(backend):
+        return process_colab(args, drive, folder, job)
+    return process_fal(args, drive, folder, job)
 
 
 def run(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Grokbot H3 I2VA: Imagine → Colab → download → stop")
+    p = argparse.ArgumentParser(description="Grokbot H3 I2VA: Imagine → fal H3 Max (or Colab)")
     p.add_argument("--drive", default=os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT)
     p.add_argument("--job", default="", help="job folder; default = oldest ready in inbox")
     p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")
@@ -152,6 +243,11 @@ def run(argv: list[str] | None = None) -> int:
     p.add_argument("--colab-only", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--keep-runtime", action="store_true")
+    p.add_argument(
+        "--backend",
+        default=os.environ.get("H3_BACKEND") or "",
+        help="fal-max (default) or colab",
+    )
     p.add_argument("--watch", action="store_true", help="poll inbox forever; do not ask the human again")
     p.add_argument("--interval", type=int, default=int(os.environ.get("H3_WATCH_INTERVAL") or 120))
     p.add_argument("--max-jobs", type=int, default=0, help="test/watch cap; 0 = unlimited")

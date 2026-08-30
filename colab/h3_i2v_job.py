@@ -1,7 +1,7 @@
 """Drive job contract for unattended MiniMax H3 I2VA.
 
-Video agents drop a folder. Grokbot enhances the still, starts Colab, then
-stops the runtime. Affiliate URLs never go in prompts or git.
+Video agents drop a folder. Grokbot enhances the still, then fal H3 Max
+(default) or Colab I2VA. Affiliate URLs never go in prompts or git.
 """
 
 from __future__ import annotations
@@ -92,6 +92,7 @@ def default_job(**overrides: Any) -> dict[str, Any]:
         "use_lora": True,
         "lora_strength": 1.0,
         "filename_prefix": "video/h3_i2va_job",
+        "backend": "fal-max",
         "imagine": {
             "enabled": True,
             "model": "grok-imagine-image-2.0",
