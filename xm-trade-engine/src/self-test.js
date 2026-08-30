@@ -11,13 +11,14 @@ const {
   dailyLossExceeded,
   LIVE_CONFIRM_PHRASE
 } = require('./risk');
-const { parseCommandText, applyCommand, latestCommandFromComments, defaultCommander } = require('./commander');
+const { parseCommandText, applyCommand, latestCommandFromComments, defaultCommander, parseGoldArmText } = require('./commander');
 const { parseYahooChart, dropIncompleteLastBar } = require('./market-data');
 const { tradeBody, isSuccess } = require('./adapters/metaapi');
 const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
-const { loadConfig } = require('./util');
+const { loadConfig, pipSize } = require('./util');
+const { proposeSetup, applyArm, detectFill, isFirstFriday } = require('./gold-breakout');
 
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
@@ -53,6 +54,24 @@ function makeBars({ n = 80, start = 1.08, drift = 0.00008, startTime = Date.pars
     });
     price = close;
     t += 3600000;
+  }
+  return bars;
+}
+
+function goldAsiaBars() {
+  const bars = [];
+  const day = Date.parse('2024-03-05T00:00:00Z');
+  for (let h = 0; h < 8; h++) {
+    const t = day + h * 3600000;
+    const mid = 2400;
+    bars.push({
+      time: t,
+      open: mid,
+      high: mid + 4,
+      low: mid - 4,
+      close: mid,
+      volume: 1
+    });
   }
   return bars;
 }
@@ -212,12 +231,13 @@ async function runSelfTest() {
 
   const fixture = makeBars({ n: 100, drift: 0.0001 });
   const jpy = makeBars({ n: 100, start: 150, drift: 0.02 });
-  const fixtures = { EURUSD: fixture, GBPUSD: fixture, USDJPY: jpy };
+  const fixtures = { EURUSD: fixture, GBPUSD: fixture, USDJPY: jpy, GOLD: goldAsiaBars() };
   const now = new Date(fixture[fixture.length - 1].time);
   const tick = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures });
   assert(Array.isArray(tick.intents), 'tick intents');
   assertEqual(tick.dryRun, true, 'dry run');
   assert(tick.live_gate.length > 0, 'live still gated');
+  assert(tick.gold != null, 'gold state');
   const second = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures });
   assertEqual(
     JSON.stringify(tick.intents.map((i) => `${i.symbol}:${i.action}`)),
@@ -246,6 +266,50 @@ async function runSelfTest() {
   assert(/ペーパー/.test(md), 'report labels paper');
   assert(/KILL_SWITCH/.test(md), 'report has kill switch');
   assert(!/必ず稼げる/.test(md), 'no guarantee copy');
+  assert(/Gold 半自動/.test(md), 'report has gold section');
+
+  const goldCfg = loadConfig('gold');
+  const goldTestCfg = { ...goldCfg, atr_period: 3 };
+  assertEqual(pipSize('GOLD'), 0.01, 'gold pip');
+  assertEqual(parseGoldArmText('ARM: GOLD'), 'ARM', 'arm parse');
+  assertEqual(parseGoldArmText('SKIP: GOLD'), 'SKIP', 'skip parse');
+  assertEqual(parseGoldArmText('KILL_SWITCH: HALT'), null, 'kill is not arm');
+  assertEqual(isFirstFriday(new Date('2026-09-04T08:00:00Z')), true, 'first friday');
+  assertEqual(isFirstFriday(new Date('2026-09-11T08:00:00Z')), false, 'second friday');
+
+  const lockNow = new Date('2024-03-05T08:00:00Z');
+  const proposed = proposeSetup({ bars: goldAsiaBars(), now: lockNow, cfg: goldTestCfg, dailyAtrOverride: 20 });
+  assertEqual(proposed.status, 'awaiting_arm', `gold propose ${proposed.status} ${proposed.reason}`);
+  assert(proposed.buy_stop > proposed.asia_high, 'buy stop above asia');
+  assert(proposed.sell_stop < proposed.asia_low, 'sell stop below asia');
+
+  const unarmedFill = detectFill(
+    proposed,
+    [{ time: Date.parse('2024-03-05T08:00:00Z'), high: 2500, low: 2390, open: 2400, close: 2490, volume: 1 }],
+    lockNow,
+    goldTestCfg
+  );
+  assertEqual(unarmedFill.status, 'awaiting_arm', 'no fill without ARM');
+
+  const armed = applyArm(proposed, { goldArm: 'ARM', goldArmDate: '2024-03-05', halted: false, now: lockNow });
+  assertEqual(armed.status, 'armed', 'armed');
+  const filled = detectFill(
+    armed,
+    [{ time: Date.parse('2024-03-05T08:00:00Z'), high: armed.buy_stop + 1, low: armed.asia_low + 1, open: 2400, close: armed.buy_stop + 0.4, volume: 1 }],
+    new Date('2024-03-05T08:30:00Z'),
+    goldTestCfg
+  );
+  assertEqual(filled.status, 'filled', `fill ${filled.reason}`);
+  assertEqual(filled.fill_side, 'BUY', 'oco buy only');
+
+  const skipped = applyArm(proposed, { goldArm: 'SKIP', goldArmDate: '2024-03-05', halted: false, now: lockNow });
+  assertEqual(skipped.status, 'skipped', 'skip command');
+
+  const tiny = proposeSetup({ bars: goldAsiaBars(), now: lockNow, cfg: goldTestCfg, dailyAtrOverride: 200 });
+  assertEqual(tiny.status, 'skipped', 'range too small vs daily atr');
+
+  const nfp = proposeSetup({ bars: goldAsiaBars(), now: new Date('2026-09-04T08:00:00Z'), cfg: goldCfg, dailyAtrOverride: 20 });
+  assertEqual(nfp.reason, 'skip_first_friday', 'first friday sit out');
 
   console.log('self-test ok');
 }

@@ -53,6 +53,7 @@ function roundTo(n, digits) {
 
 function pipSize(symbol) {
   const base = String(symbol || '').replace(/[^A-Z]/gi, '').toUpperCase();
+  if (base.includes('XAU') || base.includes('GOLD')) return 0.01;
   return base.endsWith('JPY') ? 0.01 : 0.0001;
 }
 

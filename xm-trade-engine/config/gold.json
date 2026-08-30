@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "mode": "semi_auto",
+  "symbol": "GOLD",
+  "yahoo_symbol": "XAUUSD=X",
+  "contract_size": 100,
+  "disclaimer": "方向はOCOが市場に任せる。ARMは方向予想ではない。マーチンゲール禁止。",
+  "asia_start_utc": 0,
+  "asia_end_utc": 7,
+  "london_start_utc": 7,
+  "london_end_utc": 11,
+  "daily_atr_period": 14,
+  "atr_period": 14,
+  "min_range_atr_frac": 0.15,
+  "max_range_atr_frac": 0.70,
+  "breakout_buffer_atr": 0.15,
+  "sl_atr": 1.2,
+  "reward_multiple": 1.8,
+  "max_spread_pips": 80,
+  "skip_first_friday": true,
+  "one_setup_per_day": true
+}

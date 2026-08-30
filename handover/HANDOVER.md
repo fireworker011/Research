@@ -177,6 +177,6 @@
 ## 10. XM Trade（Cursor / Grok Bot）
 
 - 実発注の正は XM MT5 の EA。GitHub cron は遅延するので発注クロックにしない。
-- Grok Bot がやってよいのは Issue「XM Trade — 日次レポート」を読んで `KILL_SWITCH:` を1行出すことだけ。売買指示は出さない。
+- Grok Bot がやってよいのは Issue「XM Trade — 日次レポート」を読んで `KILL_SWITCH:` を1行出すことだけ。売買指示は出さない。Gold の `ARM: GOLD` は方向予想ではなく、その日の OCO 許可。
 - ペーパー帳簿の数字は XM 口座ではない。未確認の実損益を発明しない。
 - 既定は `PAPER_ONLY`。実口座の `RESUME` は人間がデモ検証後に明示したときだけ。

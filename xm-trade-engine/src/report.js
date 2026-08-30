@@ -7,20 +7,22 @@ const commanderMod = require('./commander');
 const paper = require('./paper-broker');
 const { loadAllConfig } = require('./tick');
 const { liveGateReasons, dailyLossExceeded } = require('./risk');
+const goldMod = require('./gold-breakout');
 const { todayUTC } = require('./util');
 
 const TRACKING_ISSUE_TITLE = commanderMod.ISSUE_TITLE;
 const FORBIDDEN = [
-  'LLM / Grok にエントリーを選ばせるな',
+  'LLM / Grok にエントリー方向を選ばせるな（Gold の ARM は方向予想ではない）',
   'マーチンゲール・ナンピン・グリッドを足すな',
   'リスク上限を上げるな',
   'XM_LIVE_CONFIRM なしで実口座発注するな',
   'GitHub cron を実時間の発注クロックにするな（遅延する）',
   'ペーパー損益をXM口座の損益として語るな',
-  '数字が無いのに「勝っている」と書くな'
+  '数字が無いのに「勝っている」と書くな',
+  '巷の Gold EA のグリッド／ナンピンをコピーするな'
 ];
 
-function renderMarkdown({ today, book, commander, runtime, liveGate, now }) {
+function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldState }) {
   const open = book.positions || [];
   const closedToday = (book.closed || []).filter((c) => (c.closed_at || '').slice(0, 10) === todayUTC(now));
   const lines = [];
@@ -36,6 +38,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now }) {
   lines.push(`- source: ${commander.source}`);
   lines.push(`- reason: ${commander.reason || '—'}`);
   lines.push(`- updated_at: ${commander.updated_at}`);
+  lines.push(`- gold_arm: \`${commander.gold_arm || 'IDLE'}\` (${commander.gold_arm_date || '—'})`);
   lines.push('');
   lines.push('## ペーパー帳簿（XMではない）');
   lines.push('');
@@ -62,6 +65,22 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now }) {
     }
     lines.push('');
   }
+  lines.push('## Gold 半自動（アジアレンジ → ロンドン OCO）');
+  lines.push('');
+  if (goldState && goldState.status && goldState.status !== 'idle') {
+    lines.push(`- status: \`${goldState.status}\``);
+    lines.push(`- reason: ${goldState.reason || '—'}`);
+    if (goldState.asia_high != null) {
+      lines.push(`- asia: ${goldState.asia_low} – ${goldState.asia_high} (range ${goldState.range}, frac ${goldState.range_atr_frac})`);
+      lines.push(`- OCO: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
+    }
+    if (goldState.status === 'awaiting_arm') {
+      lines.push('- 方向は選ぶな。フィルタ通過なら `ARM: GOLD`、疑うなら `SKIP: GOLD`');
+    }
+  } else {
+    lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
+  }
+  lines.push('');
   lines.push('## 実口座ゲート');
   lines.push('');
   lines.push(`- adapter: ${runtime.adapter}`);
@@ -83,6 +102,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now }) {
   lines.push('');
   lines.push('再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`');
   lines.push('`RESUME` はライブゲートを全部満たさない限り実発注しない。');
+  lines.push('Gold 半自動: `ARM: GOLD` は今日の OCO を許可するだけ。Buy/Sell を指定するな。');
   lines.push('');
   lines.push('## やるな');
   lines.push('');
@@ -138,9 +158,10 @@ async function runReport({ now = new Date(), skipIssue = false } = {}) {
   const { risk, runtime } = loadAllConfig();
   const commander = commanderMod.loadCommander();
   const book = paper.loadBook(risk);
+  const goldState = goldMod.loadGoldState();
   const liveGate = liveGateReasons({ runtime, commander, env: process.env });
   const today = todayJST(now);
-  const markdown = renderMarkdown({ today, book, commander, runtime, liveGate, now });
+  const markdown = renderMarkdown({ today, book, commander, runtime, liveGate, now, goldState });
   const outDir = path.join(OUTPUT_DIR, 'reports');
   fs.mkdirSync(outDir, { recursive: true });
   const dated = path.join(outDir, `report_${today}.md`);
@@ -153,6 +174,7 @@ async function runReport({ now = new Date(), skipIssue = false } = {}) {
     paper_equity: book.equity,
     paper_balance: book.balance,
     live_gate: liveGate,
+    gold: goldState && { status: goldState.status, reason: goldState.reason },
     daily_loss_exceeded: dailyLossExceeded(book, risk, todayUTC(now))
   });
   if (!skipIssue) await upsertIssue(markdown);

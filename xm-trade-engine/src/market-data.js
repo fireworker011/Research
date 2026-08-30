@@ -5,7 +5,9 @@ const YAHOO_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
 const YAHOO_SYMBOLS = {
   EURUSD: 'EURUSD=X',
   GBPUSD: 'GBPUSD=X',
-  USDJPY: 'USDJPY=X'
+  USDJPY: 'USDJPY=X',
+  GOLD: 'XAUUSD=X',
+  XAUUSD: 'XAUUSD=X'
 };
 
 function mapYahooSymbol(symbol) {
@@ -42,9 +44,9 @@ function parseYahooChart(payload) {
   return dropIncompleteLastBar(bars);
 }
 
-async function fetchYahooH1(symbol, { range = '60d', timeoutMs = 15000 } = {}) {
+async function fetchYahooH1(symbol, { range = '60d', interval = '1h', timeoutMs = 15000 } = {}) {
   const yahoo = mapYahooSymbol(symbol);
-  const url = `${YAHOO_BASE}/${encodeURIComponent(yahoo)}?interval=1h&range=${encodeURIComponent(range)}`;
+  const url = `${YAHOO_BASE}/${encodeURIComponent(yahoo)}?interval=${encodeURIComponent(interval)}&range=${encodeURIComponent(range)}`;
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {

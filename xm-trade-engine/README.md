@@ -15,7 +15,8 @@ GitHub の cron は 1〜4 時間遅延するのが常態なので、H1 の発注
 ```
 Grok Bot（司令塔）
   Issue「XM Trade — 日次レポート」を読む
-  1手は KILL_SWITCH: HALT | PAPER_ONLY | REDUCE_RISK | RESUME だけ
+1手は KILL_SWITCH: HALT | PAPER_ONLY | REDUCE_RISK | RESUME
+  Gold 半自動だけ ARM: GOLD / SKIP: GOLD（方向は書かない）
         │
 Cursor（参謀）          GitHub Actions（ペーパー + 報告）
   戦略・リスク・EA保守     価格取得 → 仮想帳簿 → commander.json 更新
@@ -23,8 +24,8 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
         └──────────┬──────────────┘
                    ▼
             XM MT5 デモ / 実口座
-            ea/XMGrokEngine.mq5
-            閉じた H1 で EMA 戦略を実行
+            ea/XMGrokEngine.mq5（majors）
+            ea/XMGoldSemi.mq5（GOLD 半自動 OCO）
             60秒ごとに commander.json を WebRequest
 ```
 
@@ -46,6 +47,29 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 - セッション: 07:00–21:00 UTC、金曜 18:00 UTC 以降は新規禁止＋決済
 - 禁止: マーチンゲール、ナンピン、グリッド、LLM エントリー
 
+## Gold 半自動（巷の Gold EA から取るもの / 捨てるもの）
+
+巷の XAUUSD EA で **使えるのは半自動の骨格だけ**。99%勝率・グリッド・ナンピンは捨てる。
+
+取るもの:
+
+1. アジア時間にレンジを測る
+2. ロンドン前半に BuyStop と SellStop を両方置く（OCO。方向は市場が決める）
+3. 人がその日のセットアップを ARM するまで待ってから置く
+4. スプレッドが広い日・月初金曜（NFP 隣接）は休む
+5. 約定後は SL/TP と「片方約定で反対を取消」だけ自動
+
+捨てるもの: マーチンゲール、ナンピン、グリッド、Telegram シグナルのコピー、LLM に「金は上」と言わせること。
+
+実装:
+
+- Node: `src/gold-breakout.js` + Issue の `ARM: GOLD` / `SKIP: GOLD`
+- 実時間: `ea/XMGoldSemi.mq5` を XM の **GOLD（または XAUUSD）M15** に載せる
+- リスクは majors と同じ 0.5% / 日次 2% / 最大 0.10 lot。上げない
+- GitHub cron では Gold を発注しない（遅延するためペーパー追跡のみ）
+
+XM のゴールド銘柄はエンティティにより `GOLD` / `XAUUSD`。チャートの銘柄に EA を付ける。
+
 ## リスク（`config/risk.json`）
 
 | 項目 | 既定 |
@@ -63,12 +87,12 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 3. 環境変数 `XM_LIVE_CONFIRM=I_UNDERSTAND_THE_RISK`
 4. `METAAPI_TOKEN` と `METAAPI_ACCOUNT_ID`
 
-EA 側はこれと独立に、**リアル口座では commander が RESUME のときだけ新規**。デモは HALT 以外で動く。
+EA 側はこれと独立に、**リアル口座では commander が RESUME のときだけ新規**。デモは HALT 以外で動く。Gold 半自動も同じ。
 
 ## セットアップ（デモが先）
 
 1. XM で **デモ口座** を開き、MT5 を入れる（Windows、または Windows VPS。GitHub ランナーでは動かない）。
-2. `ea/XMGrokEngine.mq5` を MetaEditor でコンパイルし、EURUSD H1 に載せる。AutoTrading を ON。
+2. `ea/XMGrokEngine.mq5` を EURUSD H1 に載せる。Gold 半自動は `ea/XMGoldSemi.mq5` を GOLD M15 に載せる。AutoTrading を ON。
 3. MT5 → ツール → オプション → EA → **WebRequest を許可** に、このリポジトリの `raw.githubusercontent.com`（必要なら `api.github.com`）を追加。
 4. EA の `CommanderURL` に、マージ後の raw URL を入れる:
 
@@ -98,7 +122,11 @@ KILL_SWITCH: HALT
 KILL_SWITCH: PAPER_ONLY
 KILL_SWITCH: REDUCE_RISK
 KILL_SWITCH: RESUME
+ARM: GOLD
+SKIP: GOLD
 ```
+
+`ARM: GOLD` は今日の OCO 許可だけ。Buy/Sell を書くな。
 
 次の tick が Issue コメントを `commander.json` に写し、EA がそれを読む。
 `RESUME` は「実口座ゲートを開け」であり、利益保証ではない。
@@ -109,11 +137,10 @@ KILL_SWITCH: RESUME
 xm-trade-engine/
 ├── config/strategy.json     # 戦略（決定論）
 ├── config/risk.json         # リスク上限
-├── config/runtime.example.json
-├── src/tick.js              # ペーパー 1 ティック
-├── src/report.js            # 日次レポート → Issue
-├── src/self-test.js
-├── ea/XMGrokEngine.mq5      # XM 実時間
+├── config/gold.json         # アジアレンジ / ロンドン OCO
+├── src/gold-breakout.js
+├── ea/XMGrokEngine.mq5      # majors H1
+├── ea/XMGoldSemi.mq5        # GOLD M15 半自動
 └── docs/grok-bots/G_xm_trade.txt
 ```
 

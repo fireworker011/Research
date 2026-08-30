@@ -15,14 +15,16 @@ const { writeSignals } = require('./adapters/signal-file');
 const metaapi = require('./adapters/metaapi');
 const { fetchYahooH1 } = require('./market-data');
 const commanderMod = require('./commander');
+const gold = require('./gold-breakout');
 const { loadConfig, todayUTC, roundTo, pipSize } = require('./util');
 
 function loadAllConfig() {
   const strategy = loadConfig('strategy');
   const risk = loadConfig('risk');
   const runtime = loadConfig('runtime', { live_enabled: false, adapter: 'paper' });
+  const goldCfg = loadConfig('gold', { enabled: false });
   if (!strategy || !risk) throw new Error('config/strategy.json or config/risk.json missing');
-  return { strategy, risk, runtime };
+  return { strategy, risk, runtime, goldCfg };
 }
 
 function lastClosedLot(book, symbol) {
@@ -143,8 +145,115 @@ async function maybeLive(runtime, commander, env, intent) {
   return { sent: true, result };
 }
 
+async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtureBySymbol, errors, prices }) {
+  const symbol = goldCfg.symbol || 'GOLD';
+  let bars = fixtureBySymbol?.[symbol] || fixtureBySymbol?.XAUUSD || fixtureBySymbol?.GOLD;
+  if (!bars) {
+    try {
+      bars = await fetchYahooH1('GOLD', { range: '60d' });
+    } catch (err) {
+      errors[symbol] = err.message;
+      return { status: 'idle', reason: `data_error:${err.message}` };
+    }
+  }
+  if (!bars.length) {
+    errors[symbol] = 'no bars';
+    return { status: 'idle', reason: 'no bars' };
+  }
+  prices[symbol] = bars[bars.length - 1].close;
+
+  let setup = gold.proposeSetup({ bars, now, cfg: goldCfg, spreadPips: 0 });
+  setup = gold.applyArm(setup, {
+    goldArm: commander.gold_arm,
+    goldArmDate: commander.gold_arm_date,
+    halted: commander.command === 'HALT',
+    now
+  });
+  setup = gold.detectFill(setup, bars, now, goldCfg);
+
+  const alreadyOpen = (book.positions || []).some((p) => p.symbol === symbol);
+  const closedToday = (book.closed || []).some(
+    (c) => c.symbol === symbol && (c.closed_at || '').slice(0, 10) === todayUTC(now)
+  );
+
+  if (setup.status === 'filled' && setup.fill_side && !alreadyOpen && !closedToday) {
+    const sized = lotFromRisk({
+      symbol,
+      price: setup.fill_price,
+      slPrice: setup.sl,
+      equity: book.equity,
+      riskPct: effectiveRiskPct(risk, commander),
+      maxLot: risk.max_lot,
+      minLot: risk.min_lot,
+      lotStep: risk.lot_step,
+      contractSize: goldCfg.contract_size
+    });
+    const prev = lastClosedLot(book, symbol);
+    if (sized.lot && !forbidMartingale(prev.lot, sized.lot, prev.pnl)) {
+      paper.openPosition(book, {
+        symbol,
+        side: setup.fill_side,
+        lot: sized.lot,
+        price: setup.fill_price,
+        sl: setup.sl,
+        tp: setup.tp,
+        pip_value: pipValuePerLot(symbol, setup.fill_price, goldCfg.contract_size),
+        now,
+        reason: setup.reason,
+        commission: (risk.commission_per_lot || 0) * sized.lot
+      });
+      setup = { ...setup, lot: sized.lot };
+    } else {
+      setup = { ...setup, lot: 0, lot_reason: sized.reason || 'martingale_blocked' };
+    }
+  }
+
+  if (!dryRun) gold.saveGoldState(setup);
+  if (!dryRun && setup.status === 'awaiting_arm') {
+    await notifyGoldAwaitingArm(setup);
+  }
+  return setup;
+}
+
+async function notifyGoldAwaitingArm(setup) {
+  const token = process.env.GITHUB_TOKEN || '';
+  const repo = process.env.GITHUB_REPOSITORY || '';
+  if (!token || !repo || !setup?.date) return;
+  const marker = `gold-notice:${setup.date}`;
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json',
+    'content-type': 'application/json'
+  };
+  const base = `https://api.github.com/repos/${repo}`;
+  const searchRes = await fetch(`${base}/issues?state=open&per_page=100`, { headers });
+  const existing = await searchRes.json().catch(() => []);
+  const found = Array.isArray(existing) ? existing.find((i) => i.title === commanderMod.ISSUE_TITLE) : null;
+  if (!found) return;
+  const commentsRes = await fetch(`${base}/issues/${found.number}/comments?per_page=100`, { headers });
+  const comments = await commentsRes.json().catch(() => []);
+  if (Array.isArray(comments) && comments.some((c) => String(c.body || '').includes(marker))) return;
+  const body = [
+    marker,
+    '',
+    `Gold 半自動 ${setup.date} は \`awaiting_arm\`。方向は選ぶな。`,
+    `asia ${setup.asia_low} – ${setup.asia_high} (frac ${setup.range_atr_frac})`,
+    `OCO BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
+    '',
+    '```',
+    'ARM: GOLD',
+    '```',
+    '見送りなら `SKIP: GOLD`。HALT 中は ARM しても発注しない。'
+  ].join('\n');
+  await fetch(`${base}/issues/${found.number}/comments`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ body })
+  });
+}
+
 async function runTick({ now = new Date(), env = process.env, dryRun = false, fixtureBySymbol = null } = {}) {
-  const { strategy, risk, runtime } = loadAllConfig();
+  const { strategy, risk, runtime, goldCfg } = loadAllConfig();
   let commander = commanderMod.loadCommander();
 
   if (!dryRun) {
@@ -209,6 +318,22 @@ async function runTick({ now = new Date(), env = process.env, dryRun = false, fi
     }
   }
 
+  let goldState = null;
+  if (goldCfg?.enabled) {
+    goldState = await runGoldPaper({
+      goldCfg,
+      risk,
+      book,
+      commander,
+      now,
+      dryRun,
+      fixtureBySymbol,
+      errors,
+      prices
+    });
+    paper.markToMarket(book, prices);
+  }
+
   const signals = dryRun ? { kind: 'shadow_signals', updated_at: now.toISOString(), intents } : writeSignals(intents, now);
   if (!dryRun) paper.saveBook(book);
 
@@ -223,6 +348,7 @@ async function runTick({ now = new Date(), env = process.env, dryRun = false, fi
     signals,
     book,
     liveResults,
+    gold: goldState,
     dryRun
   };
 }
@@ -242,6 +368,7 @@ if (require.main === module) {
       live_gate: result.live_gate,
       data_errors: result.data_errors,
       intents: result.intents.map((i) => ({ symbol: i.symbol, action: i.action, reason: i.reason, lot: i.lot })),
+      gold: result.gold ? { status: result.gold.status, reason: result.gold.reason, arm: result.gold.arm } : null,
       paper_equity: result.book.equity,
       dryRun: result.dryRun
     };
