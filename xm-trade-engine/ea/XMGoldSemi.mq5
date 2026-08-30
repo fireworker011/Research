@@ -1,9 +1,9 @@
-// Gold 半自動: アジアレンジをロックし、Grok の ENTRY: GOLD BUY|SELL で片側 pending。
-// ARM は両方 OCO。予想文は使わない。グリッド／ナンピンは実装しない。
+// Gold 半自動。時間はブローカーサーバー時刻（GoldLondonBreakout と同じ 0-7 / 7-11）。
+// Grok ENTRY で片側 pending。ARM で OCO 両方。グリッド／ナンピンなし。
 
 #property copyright "xm-trade-engine"
-#property version   "1.00"
-#property description "XM GOLD semi-auto: Grok ENTRY BUY/SELL or ARM OCO via commander.json"
+#property version   "1.11"
+#property description "XM GOLD semi-auto. Broker-time Asia range, Grok ENTRY or ARM OCO."
 
 #include <Trade/Trade.mqh>
 
@@ -11,7 +11,7 @@ input group "Commander"
 input string CommanderURL = "";
 input string CommanderAuthHeader = "";
 input bool   FailClosedOnFetchError = true;
-input int    CommanderPollSeconds = 60;
+input int    CommanderPollSeconds = 30;
 
 input group "Risk"
 input int    MagicNumber = 260831;
@@ -21,11 +21,11 @@ input double MinLot = 0.01;
 input int    MaxDailyLossPct = 2;
 input double MaxSpreadPrice = 0.80;
 
-input group "Gold London (UTC)"
-input int    AsiaStartUtc = 0;
-input int    AsiaEndUtc = 7;
-input int    LondonStartUtc = 7;
-input int    LondonEndUtc = 11;
+input group "Gold London (broker server time, same as GoldLondonBreakout)"
+input int    AsiaStartHour = 0;
+input int    AsiaEndHour = 7;
+input int    LondonStartHour = 7;
+input int    LondonEndHour = 11;
 input int    DailyAtrPeriod = 14;
 input int    AtrPeriod = 14;
 input double MinRangeAtrFrac = 0.15;
@@ -46,8 +46,10 @@ double gDayStartEquity = 0;
 int gDayStamp = 0;
 double gAsiaHigh = 0;
 double gAsiaLow = 0;
+double gAsiaClose = 0;
 bool gAsiaLocked = false;
 bool gPlacedToday = false;
+bool gAlerted = false;
 
 int OnInit()
 {
@@ -58,30 +60,54 @@ int OnInit()
    if(hAtr == INVALID_HANDLE || hDailyAtr == INVALID_HANDLE)
       return INIT_FAILED;
    gDayStartEquity = AccountInfoDouble(ACCOUNT_EQUITY);
-   gDayStamp = DayStampGmt();
-   Print("XMGoldSemi init");
+   gDayStamp = BrokerDayStamp();
+   EventSetTimer(1);
+   if(StringFind(_Symbol, "GOLD") < 0 && StringFind(_Symbol, "XAU") < 0)
+      Print("warning: attach to GOLD/XAUUSD M15, chart is ", _Symbol);
+   if(AccountInfoInteger(ACCOUNT_MARGIN_MODE) == ACCOUNT_MARGIN_MODE_RETAIL_NETTING)
+      Print("warning: netting account. Keep this EA alone on the symbol.");
+   Print("XMGoldSemi init broker-time asia ", AsiaStartHour, "-", AsiaEndHour,
+         " london ", LondonStartHour, "-", LondonEndHour);
    return INIT_SUCCEEDED;
 }
 
 void OnDeinit(const int reason)
 {
+   EventKillTimer();
+   ObjectDelete(0, "xmge_asia_high");
+   ObjectDelete(0, "xmge_asia_low");
+   Comment("");
    if(hAtr != INVALID_HANDLE) IndicatorRelease(hAtr);
    if(hDailyAtr != INVALID_HANDLE) IndicatorRelease(hDailyAtr);
 }
 
+void OnTimer()
+{
+   Run();
+}
+
 void OnTick()
 {
-   if(DayStampGmt() != gDayStamp)
+   Run();
+}
+
+void Run()
+{
+   if(BrokerDayStamp() != gDayStamp)
    {
-      gDayStamp = DayStampGmt();
+      gDayStamp = BrokerDayStamp();
       gDayStartEquity = AccountInfoDouble(ACCOUNT_EQUITY);
       gAsiaLocked = false;
       gPlacedToday = false;
+      gAlerted = false;
       gAsiaHigh = 0;
       gAsiaLow = 0;
+      gAsiaClose = 0;
    }
 
    PollCommander();
+   PaintStatus();
+
    if(DailyLossHit() || gCommand == "HALT")
    {
       CancelPendings();
@@ -89,29 +115,39 @@ void OnTick()
       return;
    }
 
-   MqlDateTime gmt;
-   TimeToStruct(TimeGMT(), gmt);
-   if(gmt.day_of_week == 0 || gmt.day_of_week == 6)
+   MqlDateTime sv;
+   TimeToStruct(TimeCurrent(), sv);
+   if(sv.day_of_week == 0 || sv.day_of_week == 6)
       return;
-   if(SkipFirstFriday && gmt.day_of_week == 5 && gmt.day <= 7)
+   if(SkipFirstFriday && sv.day_of_week == 5 && sv.day <= 7)
       return;
 
-   if(!gAsiaLocked && gmt.hour >= AsiaEndUtc)
+   if(!gAsiaLocked && sv.hour >= AsiaEndHour)
       LockAsiaRange();
 
    ManageOcoFill();
+   if(CountMagicPositions() > 0)
+      gPlacedToday = true;
+
+   if(gGoldArm == "SKIP" && gGoldArmDate == UtcDateStr())
+   {
+      CancelPendings();
+      if(CountMagicPositions() == 0)
+         gPlacedToday = true;
+      return;
+   }
 
    if(!gAsiaLocked || gPlacedToday)
       return;
-   if(gmt.hour < LondonStartUtc || gmt.hour >= LondonEndUtc)
+   if(sv.hour < LondonStartHour || sv.hour >= LondonEndHour)
    {
-      if(gmt.hour >= LondonEndUtc)
+      if(sv.hour >= LondonEndHour)
          CancelPendings();
       return;
    }
    if(gGoldArm != "ARM" && gGoldArm != "BUY" && gGoldArm != "SELL")
       return;
-   if(gGoldArmDate != GmtDateStr())
+   if(gGoldArmDate != UtcDateStr())
       return;
    if(!AllowRealOrDemo())
       return;
@@ -125,15 +161,16 @@ void OnTick()
 
 void LockAsiaRange()
 {
-   datetime start = GmtOfUtcHour(AsiaStartUtc);
-   datetime end = GmtOfUtcHour(AsiaEndUtc);
+   datetime start = BrokerHourToday(AsiaStartHour);
+   datetime end = BrokerHourToday(AsiaEndHour);
    gAsiaHigh = 0;
    gAsiaLow = 0;
    int bars = iBars(_Symbol, PERIOD_M15);
    bool any = false;
-   for(int i = 1; i < bars && i < 96; i++)
+   for(int i = 1; i < bars && i < 120; i++)
    {
-      datetime t = BarGmt(iTime(_Symbol, PERIOD_M15, i));
+      datetime t = iTime(_Symbol, PERIOD_M15, i);
+      if(t == 0) continue;
       if(t < start) break;
       if(t >= end) continue;
       double h = iHigh(_Symbol, PERIOD_M15, i);
@@ -142,6 +179,7 @@ void LockAsiaRange()
       {
          gAsiaHigh = h;
          gAsiaLow = l;
+         gAsiaClose = iClose(_Symbol, PERIOD_M15, i);
          any = true;
       }
       else
@@ -158,52 +196,124 @@ void LockAsiaRange()
    double range = gAsiaHigh - gAsiaLow;
    double frac = range / dailyAtr;
    if(frac < MinRangeAtrFrac || frac > MaxRangeAtrFrac)
+   {
+      Print("asia skip frac=", frac);
       return;
+   }
    gAsiaLocked = true;
+   DrawLevels();
+   if(!gAlerted)
+   {
+      Alert("XMGoldSemi asia locked. Wait for ENTRY/ARM. high=", gAsiaHigh, " low=", gAsiaLow);
+      gAlerted = true;
+   }
    Print("asia locked high=", gAsiaHigh, " low=", gAsiaLow, " frac=", frac);
 }
 
 void PlaceStops(string side)
 {
+   if(CountMagicPositions() > 0)
+   {
+      gPlacedToday = true;
+      return;
+   }
    double atr;
    if(!Copy1(hAtr, 1, atr) || atr <= 0)
       return;
    double buffer = atr * BreakoutBufferAtr;
    double slDist = atr * SlAtr;
    double tpDist = slDist * RewardMultiple;
-   double buy = gAsiaHigh + buffer;
-   double sell = gAsiaLow - buffer;
+   double buy = NormalizeDouble(gAsiaHigh + buffer, _Digits);
+   double sell = NormalizeDouble(gAsiaLow - buffer, _Digits);
+   datetime expiry = BrokerHourToday(LondonEndHour);
+   if(expiry <= TimeCurrent())
+      return;
    bool wantBuy = (side == "ARM" || side == "BUY");
    bool wantSell = (side == "ARM" || side == "SELL");
-   if(wantBuy)
+   double riskPct = RiskPercent;
+   if(gCommand == "REDUCE_RISK")
+      riskPct = RiskPercent * 0.5;
+   if(wantBuy && !HasPendingType(ORDER_TYPE_BUY_STOP) && StopsClear(buy))
    {
-      double lotBuy = LotFromRisk(buy, buy - slDist);
-      if(lotBuy < MinLot) return;
-      trade.BuyStop(lotBuy, buy, _Symbol, buy - slDist, buy + tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
+      double lotBuy = LotFromRisk(buy, buy - slDist, riskPct);
+      if(lotBuy >= MinLot)
+         trade.BuyStop(lotBuy, buy, _Symbol, NormalizeDouble(buy - slDist, _Digits),
+                       NormalizeDouble(buy + tpDist, _Digits), ORDER_TIME_SPECIFIED, expiry, "xmge-gold");
    }
-   if(wantSell)
+   else if(wantBuy && !HasPendingType(ORDER_TYPE_BUY_STOP))
+      Print("buy stop too close to market");
+   if(wantSell && !HasPendingType(ORDER_TYPE_SELL_STOP) && StopsClear(sell))
    {
-      double lotSell = LotFromRisk(sell, sell + slDist);
-      if(lotSell < MinLot) return;
-      trade.SellStop(lotSell, sell, _Symbol, sell + slDist, sell - tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
+      double lotSell = LotFromRisk(sell, sell + slDist, riskPct);
+      if(lotSell >= MinLot)
+         trade.SellStop(lotSell, sell, _Symbol, NormalizeDouble(sell + slDist, _Digits),
+                        NormalizeDouble(sell - tpDist, _Digits), ORDER_TIME_SPECIFIED, expiry, "xmge-gold");
    }
-   gPlacedToday = true;
+   else if(wantSell && !HasPendingType(ORDER_TYPE_SELL_STOP))
+      Print("sell stop too close to market");
+   bool buyOk = !wantBuy || HasPendingType(ORDER_TYPE_BUY_STOP);
+   bool sellOk = !wantSell || HasPendingType(ORDER_TYPE_SELL_STOP);
+   if((wantBuy || wantSell) && buyOk && sellOk)
+      gPlacedToday = true;
+}
+
+bool HasPendingType(ENUM_ORDER_TYPE typ)
+{
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = OrderGetTicket(i);
+      if(ticket == 0) continue;
+      if(OrderGetInteger(ORDER_MAGIC) != MagicNumber) continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+      if((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE) == typ) return true;
+   }
+   return false;
+}
+
+bool StopsClear(double pending)
+{
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   int stops = (int)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
+   double minDist = stops * SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+   if(minDist <= 0) minDist = SymbolInfoDouble(_Symbol, SYMBOL_POINT) * 50;
+   if(MathAbs(pending - ask) < minDist) return false;
+   if(MathAbs(pending - bid) < minDist) return false;
+   return true;
 }
 
 void ManageOcoFill()
 {
-   bool hasPos = false;
+   if(CountMagicPositions() > 0)
+      CancelPendings();
+}
+
+int CountMagicPendings()
+{
+   int n = 0;
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = OrderGetTicket(i);
+      if(ticket == 0) continue;
+      if(OrderGetInteger(ORDER_MAGIC) != MagicNumber) continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
+      n++;
+   }
+   return n;
+}
+
+int CountMagicPositions()
+{
+   int n = 0;
    for(int i = PositionsTotal() - 1; i >= 0; i--)
    {
       ulong ticket = PositionGetTicket(i);
       if(ticket == 0) continue;
       if(PositionGetInteger(POSITION_MAGIC) != MagicNumber) continue;
       if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
-      hasPos = true;
-      break;
+      n++;
    }
-   if(hasPos)
-      CancelPendings();
+   return n;
 }
 
 void CancelPendings()
@@ -231,7 +341,7 @@ void CloseMagic(string reason)
    }
 }
 
-double LotFromRisk(double price, double sl)
+double LotFromRisk(double price, double sl, double riskPct)
 {
    double equity = AccountInfoDouble(ACCOUNT_EQUITY);
    double slDist = MathAbs(price - sl);
@@ -241,10 +351,12 @@ double LotFromRisk(double price, double sl)
       return 0;
    double lossPerLot = (slDist / tickSize) * tickValue;
    if(lossPerLot <= 0) return 0;
-   double lot = (equity * (RiskPercent / 100.0)) / lossPerLot;
+   double lot = (equity * (riskPct / 100.0)) / lossPerLot;
    double step = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    if(step <= 0) step = 0.01;
    lot = MathFloor(lot / step) * step;
+   double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   if(vmin > 0 && lot < vmin) return 0;
    if(lot > MaxLot) lot = MaxLot;
    return lot;
 }
@@ -272,33 +384,66 @@ bool Copy1(int handle, int shift, double &out)
    return MathIsValidNumber(out);
 }
 
-int DayStampGmt()
+int BrokerDayStamp()
 {
    MqlDateTime dt;
-   TimeToStruct(TimeGMT(), dt);
+   TimeToStruct(TimeCurrent(), dt);
    return dt.year * 10000 + dt.mon * 100 + dt.day;
 }
 
-string GmtDateStr()
+datetime BrokerHourToday(int hour)
+{
+   MqlDateTime dt;
+   TimeToStruct(TimeCurrent(), dt);
+   dt.hour = hour;
+   dt.min = 0;
+   dt.sec = 0;
+   return StructToTime(dt);
+}
+
+string UtcDateStr()
 {
    MqlDateTime dt;
    TimeToStruct(TimeGMT(), dt);
    return StringFormat("%04d-%02d-%02d", dt.year, dt.mon, dt.day);
 }
 
-datetime BarGmt(datetime serverTime)
+void DrawLevels()
 {
-   return serverTime + (TimeGMT() - TimeCurrent());
+   if(gAsiaHigh <= 0) return;
+   if(ObjectFind(0, "xmge_asia_high") < 0)
+      ObjectCreate(0, "xmge_asia_high", OBJ_HLINE, 0, 0, gAsiaHigh);
+   ObjectSetDouble(0, "xmge_asia_high", OBJPROP_PRICE, gAsiaHigh);
+   ObjectSetInteger(0, "xmge_asia_high", OBJPROP_COLOR, clrDodgerBlue);
+   if(ObjectFind(0, "xmge_asia_low") < 0)
+      ObjectCreate(0, "xmge_asia_low", OBJ_HLINE, 0, 0, gAsiaLow);
+   ObjectSetDouble(0, "xmge_asia_low", OBJPROP_PRICE, gAsiaLow);
+   ObjectSetInteger(0, "xmge_asia_low", OBJPROP_COLOR, clrTomato);
 }
 
-datetime GmtOfUtcHour(int hour)
+string ChartSuggestedSide()
 {
-   MqlDateTime dt;
-   TimeToStruct(TimeGMT(), dt);
-   dt.hour = hour;
-   dt.min = 0;
-   dt.sec = 0;
-   return StructToTime(dt);
+   if(gAsiaHigh <= gAsiaLow) return "NONE";
+   double pos = (gAsiaClose - gAsiaLow) / (gAsiaHigh - gAsiaLow);
+   if(pos >= 2.0 / 3.0) return "BUY";
+   if(pos <= 1.0 / 3.0) return "SELL";
+   return "NONE";
+}
+
+void PaintStatus()
+{
+   Comment(
+      "XMGoldSemi GOLD M15 broker-time 0-7 / 7-11\n",
+      "cmd=", gCommand, " gold_arm=", gGoldArm, " date=", gGoldArmDate, "\n",
+      "asia_locked=", (gAsiaLocked ? "yes" : "no"),
+      " high=", DoubleToString(gAsiaHigh, _Digits),
+      " low=", DoubleToString(gAsiaLow, _Digits),
+      " close=", DoubleToString(gAsiaClose, _Digits),
+      " chart_side=", ChartSuggestedSide(), "\n",
+      "placed=", (gPlacedToday ? "yes" : "no"),
+      " pendings=", CountMagicPendings(),
+      " positions=", CountMagicPositions()
+   );
 }
 
 void PollCommander()
@@ -335,7 +480,13 @@ string FetchJson()
    char post[];
    char result[];
    string resultHeaders;
-   int code = WebRequest("GET", CommanderURL, CommanderAuthHeader, 5000, post, result, resultHeaders);
+   string headers = CommanderAuthHeader;
+   if(StringLen(headers) > 0 && StringFind(headers, "\r\n") < 0)
+      headers = headers + "\r\n";
+   headers += "User-Agent: XMGoldSemi\r\n";
+   if(StringFind(CommanderURL, "api.github.com") >= 0)
+      headers += "Accept: application/vnd.github.raw\r\n";
+   int code = WebRequest("GET", CommanderURL, headers, 8000, post, result, resultHeaders);
    if(code != 200)
    {
       Print("commander HTTP ", code);

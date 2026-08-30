@@ -53,12 +53,13 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 
 取るもの:
 
-1. アジア時間にレンジを測る
+1. アジア時間にレンジを測る（ブローカーサーバー 0–7。UTC ではない）
+2. ロンドン開始（サーバー 7–11）に pending を置く
 3. Grok がセットアップカードの `suggested_side` に従い `ENTRY: GOLD BUY|SELL`（または NONE なら SKIP）
 4. スプレッドが広い日・月初金曜（NFP 隣接）は休む
 5. 約定後は SL/TP と反対 pending の取消だけ自動
 
-捨てるもの: マーチンゲール、ナンピン、グリッド、Telegram シグナルのコピー、Grok に「金は上」と自由予想させること。
+捨てるもの: マーチンゲール、ナンピン、グリッド、Telegram シグナルのコピー、Grok に「金は上」と自由予想させること。元 EA がロンドン開始で **両方** 置く点は再現しない（Grok が片側ボタン）。対応表は [`docs/SETUP.md`](docs/SETUP.md)。
 
 Grok はパネルの Buy/Sell ボタン。価格・ロット・SL はエンジンが決める。`suggested_side` はアジア終値がレンジの上1/3か下1/3かだけ。
 
@@ -92,16 +93,16 @@ EA 側はこれと独立に、**リアル口座では commander が RESUME の�
 
 ## セットアップ（デモが先）
 
-1. XM で **デモ口座** を開き、MT5 を入れる（Windows、または Windows VPS。GitHub ランナーでは動かない）。
-2. `ea/XMGrokEngine.mq5` を EURUSD H1 に載せる。Gold 半自動は `ea/XMGoldSemi.mq5` を GOLD M15 に載せる。AutoTrading を ON。
-3. MT5 → ツール → オプション → EA → **WebRequest を許可** に、このリポジトリの `raw.githubusercontent.com`（必要なら `api.github.com`）を追加。
-4. EA の `CommanderURL` に、マージ後の raw URL を入れる:
+載せ方の正は [`docs/SETUP.md`](docs/SETUP.md)。要約:
 
-   `https://raw.githubusercontent.com/<owner>/<repo>/<branch>/xm-trade-engine/output/state/commander.json`
+1. この変更を **デフォルトブランチへマージ**する（`issue_comment` はデフォルトの YAML だけ動く）。
+2. XM **デモ** MT5 で `ea/XMGoldSemi.mq5` を **GOLD/XAUUSD の M15** に載せる。AutoTrading ON。
+3. WebRequest に `raw.githubusercontent.com`（private なら `api.github.com`）を許可。
+4. `CommanderURL` はデフォルトブランチの `commander.json`。PR ブランチの raw を指定しない。
+5. private なら Contents API URL + `CommanderAuthHeader: Authorization: token ghp_...`（Git に書かない）。
+6. `docs/grok-bots/G_xm_trade.txt` を Grok Bot に貼る。Issue タイトルは `XM Trade — 日次レポート`。
 
-   リポジトリが private なら、contents 読み取りだけの PAT を EA 入力 `CommanderAuthHeader` に `Authorization: token ghp_...` として入れる。**Git にコミットしない。**
-
-5. ローカル確認:
+ローカル確認:
 
 ```bash
 cd xm-trade-engine
@@ -110,9 +111,8 @@ node src/self-test.js
 node src/tick.js --dry-run
 ```
 
-6. Grok Bot に `docs/grok-bots/G_xm_trade.txt` を貼る。日次 Issue 以外の dump（月100万など）と混ぜない。
-
-7. 実口座は、デモで同じ設定が問題なく回ったあと。リスク上限は上げない。
+Majors は `ea/XMGrokEngine.mq5` を EURUSD H1 に別チャートで載せる。Gold と混ぜない。
+実口座は、デモでアジアロック → ENTRY → pending を確認したあと。リスク上限は上げない。
 
 ## 運用コマンド（Grok Bot / 人間）
 
@@ -130,7 +130,7 @@ ARM: GOLD
 ```
 
 Grok の Gold 行は `suggested_side` に従う。NONE なら SKIP。`ARM` は人間が OCO 両方を明示したときだけ。
-Issue コメントは commander へ即時反映。EA が 60 秒ごとに読む。`RESUME` は利益保証ではない。
+Issue コメントは commander へ即時反映。Gold EA は 30 秒ごとに読む。`RESUME` は利益保証ではない。
 
 ## ファイル
 
@@ -138,7 +138,8 @@ Issue コメントは commander へ即時反映。EA が 60 秒ごとに読む�
 xm-trade-engine/
 ├── config/strategy.json     # 戦略（決定論）
 ├── config/risk.json         # リスク上限
-├── config/gold.json         # アジアレンジ / ロンドン OCO
+├── config/gold.json         # アジア/ロンドンはブローカー時刻。offset はペーパー用
+├── docs/SETUP.md            # MT5 への載せ方
 ├── src/gold-breakout.js
 ├── ea/XMGrokEngine.mq5      # majors H1
 ├── ea/XMGoldSemi.mq5        # GOLD M15 半自動

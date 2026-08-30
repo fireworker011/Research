@@ -2,22 +2,67 @@
 
 const path = require('path');
 const { atrSeries } = require('./indicators');
-const { todayUTC, utcHour, utcDay, roundTo, pipSize, readJSON, writeJSON, OUTPUT_DIR } = require('./util');
+const { todayUTC, roundTo, pipSize, readJSON, writeJSON, OUTPUT_DIR } = require('./util');
 
 const GOLD_STATE_PATH = path.join(OUTPUT_DIR, 'state', 'gold.json');
+
+/**
+ * asia_* / london_* は GoldLondonBreakout と同じブローカーサーバー時刻。
+ * Yahoo 足は UTC なので broker_utc_offset_hours で窓をずらす。XM 冬期は +2、夏期は +3。
+ */
+function brokerUtcOffsetHours(cfg) {
+  const n = Number(cfg && cfg.broker_utc_offset_hours);
+  return Number.isFinite(n) ? n : 2;
+}
+
+function hourField(cfg, name, legacy, fallback) {
+  const n = Number(cfg && (cfg[name] ?? cfg[legacy]));
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function goldWindows(cfg) {
+  return {
+    offset: brokerUtcOffsetHours(cfg),
+    asiaStart: hourField(cfg, 'asia_start_hour', 'asia_start_utc', 0),
+    asiaEnd: hourField(cfg, 'asia_end_hour', 'asia_end_utc', 7),
+    londonStart: hourField(cfg, 'london_start_hour', 'london_start_utc', 7),
+    londonEnd: hourField(cfg, 'london_end_hour', 'london_end_utc', 11)
+  };
+}
+
+function brokerDate(now, offsetHours) {
+  return new Date(now.getTime() + offsetHours * 3600000);
+}
+
+function brokerParts(now, cfg) {
+  const d = brokerDate(now, brokerUtcOffsetHours(cfg));
+  return {
+    y: d.getUTCFullYear(),
+    m: d.getUTCMonth(),
+    day: d.getUTCDate(),
+    hour: d.getUTCHours(),
+    dow: d.getUTCDay()
+  };
+}
+
+function brokerHour(now, cfg) {
+  return brokerParts(now, cfg).hour;
+}
+
+function brokerHourStart(now, hour, cfg) {
+  const p = brokerParts(now, cfg);
+  return Date.UTC(p.y, p.m, p.day, hour, 0, 0) - brokerUtcOffsetHours(cfg) * 3600000;
+}
 
 function isGoldSymbol(symbol) {
   const base = String(symbol || '').replace(/[^A-Z]/gi, '').toUpperCase();
   return base.includes('XAU') || base.includes('GOLD');
 }
 
-function isFirstFriday(date) {
-  return utcDay(date) === 5 && date.getUTCDate() <= 7;
-}
-
-function utcHourStart(date, hour) {
-  const d = todayUTC(date);
-  return Date.parse(`${d}T${String(hour).padStart(2, '0')}:00:00.000Z`);
+function isFirstFriday(date, cfg) {
+  const offset = cfg == null ? 0 : brokerUtcOffsetHours(cfg);
+  const d = brokerDate(date, offset);
+  return d.getUTCDay() === 5 && d.getUTCDate() <= 7;
 }
 
 function barsInWindow(bars, startMs, endMs) {
@@ -55,15 +100,18 @@ function lastAtr(bars, period) {
 }
 
 function asianRange(bars, now, cfg) {
-  const start = utcHourStart(now, cfg.asia_start_utc);
-  const end = utcHourStart(now, cfg.asia_end_utc);
+  const w = goldWindows(cfg);
+  const start = brokerHourStart(now, w.asiaStart, cfg);
+  const end = brokerHourStart(now, w.asiaEnd, cfg);
   const window = barsInWindow(bars, start, end);
   if (!window.length) return null;
   return {
     high: Math.max(...window.map((b) => b.high)),
     low: Math.min(...window.map((b) => b.low)),
     close: window[window.length - 1].close,
-    bars: window.length
+    bars: window.length,
+    start_ms: start,
+    end_ms: end
   };
 }
 
@@ -95,11 +143,12 @@ function suggestedSide(asia) {
  */
 function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null }) {
   if (!cfg || cfg.enabled === false) return emptyGoldState(now, 'disabled');
-  if (utcDay(now) === 0 || utcDay(now) === 6) return emptyGoldState(now, 'weekend');
-  if (cfg.skip_first_friday && isFirstFriday(now)) return emptyGoldState(now, 'skip_first_friday');
+  const w = goldWindows(cfg);
+  const parts = brokerParts(now, cfg);
+  if (parts.dow === 0 || parts.dow === 6) return emptyGoldState(now, 'weekend');
+  if (cfg.skip_first_friday && isFirstFriday(now, cfg)) return emptyGoldState(now, 'skip_first_friday');
 
-  const hour = utcHour(now);
-  if (hour < cfg.asia_end_utc) return emptyGoldState(now, 'waiting_asia');
+  if (parts.hour < w.asiaEnd) return emptyGoldState(now, 'waiting_asia');
 
   const asia = asianRange(bars, now, cfg);
   if (!asia) return { ...emptyGoldState(now, 'no_asia_bars'), status: 'skipped' };
@@ -154,6 +203,8 @@ function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null 
     reason: 'asia_locked',
     arm: 'IDLE',
     symbol: cfg.symbol,
+    broker_hour: parts.hour,
+    broker_utc_offset_hours: w.offset,
     asia_high: roundTo(asia.high, 2),
     asia_low: roundTo(asia.low, 2),
     asia_close: roundTo(asia.close, 2),
@@ -198,21 +249,24 @@ function applyArm(setup, { goldArm, goldArmDate, halted, now }) {
 }
 
 function inLondonWindow(now, cfg) {
-  const hour = utcHour(now);
-  return hour >= cfg.london_start_utc && hour < cfg.london_end_utc;
+  const w = goldWindows(cfg);
+  const hour = brokerHour(now, cfg);
+  return hour >= w.londonStart && hour < w.londonEnd;
 }
 
 /**
  * ペーパー用。ARM 済みの OCO を、閉じた足の high/low で片方だけ約定させる。
  */
 function detectFill(setup, bars, now, cfg) {
+  const w = goldWindows(cfg);
+  const hour = brokerHour(now, cfg);
   if (!setup || setup.status !== 'armed') {
-    if (setup && setup.status === 'armed' && utcHour(now) >= cfg.london_end_utc) {
+    if (setup && setup.status === 'armed' && hour >= w.londonEnd) {
       return { ...setup, status: 'expired', reason: 'london_expired' };
     }
     return setup;
   }
-  if (utcHour(now) >= cfg.london_end_utc) {
+  if (hour >= w.londonEnd) {
     return { ...setup, status: 'expired', reason: 'london_expired' };
   }
   if (!inLondonWindow(now, cfg)) return setup;
@@ -270,6 +324,10 @@ module.exports = {
   applyArm,
   detectFill,
   inLondonWindow,
+  goldWindows,
+  brokerUtcOffsetHours,
+  brokerHour,
+  brokerHourStart,
   loadGoldState,
   saveGoldState,
   emptyGoldState

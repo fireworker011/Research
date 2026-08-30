@@ -45,6 +45,7 @@ ARM: GOLD
 
 価格・ロット・SL を変えるな。「金は上がる／下がる」と書くな。
 `ARM: GOLD`（両方 OCO）は人間が明示したときだけ。Grok の既定ではない。
+Issue の `suggested_side` は Yahoo ペーパー。MT5 チャートの `chart_side` と違うなら `SKIP: GOLD`。
 
 ## やるな
 

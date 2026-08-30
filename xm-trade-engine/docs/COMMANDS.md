@@ -14,5 +14,7 @@ Issue「XM Trade — 日次レポート」へのコメントは次の1行のみ�
 | `SKIP: GOLD` | 今日の Gold を見送り |
 
 Grok は `suggested_side` に従う。NONE なら SKIP。価格・ロット・SL をコメントに書いてはいけない。
-`gold_arm` は日付付き。翌日は `IDLE`。
-Issue コメントは `xm_trade_commander.yml` が commander.json へ即時写す（cron を待たない）。HALT 中は EA が発注しない。
+`gold_arm` は日付付き（UTC）。翌日は `IDLE`。
+`SKIP: GOLD` は未約定の pending を取り消す。建玉は閉じない。
+Issue コメントは `xm_trade_commander.yml` が **デフォルトブランチ**の commander.json へ即時写す。HALT 中は EA が発注しない。
+載せ方は `SETUP.md`。

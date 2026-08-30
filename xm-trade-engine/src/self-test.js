@@ -19,7 +19,7 @@ const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
 const { loadConfig, pipSize } = require('./util');
-const { proposeSetup, applyArm, detectFill, isFirstFriday, suggestedSide } = require('./gold-breakout');
+const { proposeSetup, applyArm, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows } = require('./gold-breakout');
 
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
@@ -64,6 +64,25 @@ function goldAsiaBars() {
   const day = Date.parse('2024-03-05T00:00:00Z');
   for (let h = 0; h < 8; h++) {
     const t = day + h * 3600000;
+    const mid = 2400;
+    bars.push({
+      time: t,
+      open: mid,
+      high: mid + 4,
+      low: mid - 4,
+      close: mid,
+      volume: 1
+    });
+  }
+  return bars;
+}
+
+/** XM +2: ブローカー 0-7 = UTC 前日 22:00–当日 05:00 */
+function goldAsiaBarsXm() {
+  const bars = [];
+  const start = Date.parse('2024-03-04T22:00:00Z');
+  for (let h = 0; h < 7; h++) {
+    const t = start + h * 3600000;
     const mid = 2400;
     bars.push({
       time: t,
@@ -270,7 +289,10 @@ async function runSelfTest() {
   assert(/Gold 半自動/.test(md), 'report has gold section');
 
   const goldCfg = loadConfig('gold');
-  const goldTestCfg = { ...goldCfg, atr_period: 3 };
+  const goldTestCfg = { ...goldCfg, atr_period: 3, broker_utc_offset_hours: 0 };
+  const goldXmCfg = { ...goldCfg, atr_period: 3, broker_utc_offset_hours: 2 };
+  assertEqual(goldWindows(goldCfg).offset, 2, 'gold.json default XM +2');
+  assertEqual(goldWindows(goldCfg).asiaEnd, 7, 'asia end is broker hour 7');
   assertEqual(pipSize('GOLD'), 0.01, 'gold pip');
   assertEqual(parseGoldArmText('ARM: GOLD'), 'ARM', 'arm parse');
   assertEqual(parseGoldArmText('SKIP: GOLD'), 'SKIP', 'skip parse');
@@ -359,6 +381,49 @@ async function runSelfTest() {
 
   const nfp = proposeSetup({ bars: goldAsiaBars(), now: new Date('2026-09-04T08:00:00Z'), cfg: goldCfg, dailyAtrOverride: 20 });
   assertEqual(nfp.reason, 'skip_first_friday', 'first friday sit out');
+
+  const xmNow = new Date('2024-03-05T06:00:00Z');
+  assertEqual(inLondonWindow(xmNow, goldXmCfg), true, 'broker 08 is london');
+  assertEqual(inLondonWindow(new Date('2024-03-05T04:00:00Z'), goldXmCfg), false, 'broker 06 is still asia');
+  assertEqual(
+    brokerHourStart(xmNow, 0, goldXmCfg),
+    Date.parse('2024-03-04T22:00:00Z'),
+    'asia start broker 0 = UTC prev 22:00'
+  );
+  assertEqual(
+    brokerHourStart(xmNow, 7, goldXmCfg),
+    Date.parse('2024-03-05T05:00:00Z'),
+    'asia end broker 7 = UTC 05:00'
+  );
+  const waitingXm = proposeSetup({
+    bars: goldAsiaBarsXm(),
+    now: new Date('2024-03-05T04:00:00Z'),
+    cfg: goldXmCfg,
+    dailyAtrOverride: 20
+  });
+  assertEqual(waitingXm.reason, 'waiting_asia', 'XM +2 still in asia at 04:00 UTC');
+  const xmRange = asianRange(goldAsiaBarsXm(), xmNow, goldXmCfg);
+  assert(xmRange && xmRange.bars === 7, `xm asia bars ${xmRange && xmRange.bars}`);
+  const xmProposed = proposeSetup({ bars: goldAsiaBarsXm(), now: xmNow, cfg: goldXmCfg, dailyAtrOverride: 20 });
+  assertEqual(xmProposed.status, 'awaiting_arm', `xm propose ${xmProposed.status} ${xmProposed.reason}`);
+  assertEqual(xmProposed.broker_utc_offset_hours, 2, 'setup records offset');
+  const utcFridayEarly = proposeSetup({
+    bars: goldAsiaBarsXm(),
+    now: new Date('2026-09-03T23:00:00Z'),
+    cfg: { ...goldXmCfg, skip_first_friday: true },
+    dailyAtrOverride: 20
+  });
+  assertEqual(utcFridayEarly.reason, 'skip_first_friday', 'broker Friday after UTC Thursday');
+  const utcFriNight = proposeSetup({
+    bars: goldAsiaBarsXm(),
+    now: new Date('2024-03-08T22:00:00Z'),
+    cfg: goldXmCfg,
+    dailyAtrOverride: 20
+  });
+  assertEqual(utcFriNight.reason, 'weekend', 'broker Saturday after UTC Friday 22:00');
+  const xmArmed = applyArm(xmProposed, { goldArm: 'BUY', goldArmDate: '2024-03-05', halted: false, now: xmNow });
+  const xmExpired = detectFill(xmArmed, goldAsiaBarsXm(), new Date('2024-03-05T09:00:00Z'), goldXmCfg);
+  assertEqual(xmExpired.status, 'expired', 'london end at broker 11 = 09:00 UTC');
 
   console.log('self-test ok');
 }

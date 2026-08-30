@@ -2,8 +2,9 @@ name: XM Trade ペーパーティック（実発注しない）
 
 on:
   schedule:
-    # 平日 08-21 UTC。GitHub cron は遅延する。EA の発注クロックには使わない。
-    - cron: '17 8-21 * * 1-5'
+    # ペーパー追跡用。GitHub cron は遅延する。EA の発注クロックには使わない。
+    # Gold ロンドンはブローカー 7-11 ≈ UTC 5-9（XM +2）。窓を逃さないよう 04 UTC から。
+    - cron: '17 4-21 * * 1-5'
   workflow_dispatch:
 
 concurrency:

@@ -77,6 +77,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     }
     if (goldState.status === 'awaiting_arm') {
       lines.push('- Grok は suggested_side に従え。BUY→`ENTRY: GOLD BUY` / SELL→`ENTRY: GOLD SELL` / NONE→`SKIP: GOLD`');
+      lines.push('- この suggested_side は Yahoo H1（ペーパー）。MT5 の chart_side と違うなら SKIP');
     }
   } else {
     lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
