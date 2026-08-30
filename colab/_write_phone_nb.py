@@ -28,6 +28,8 @@ MD0 = r"""# MiniMax H3 I2V（スマホ）
 空のままだとパーカーの参考画像 `coconala_creator_ref.jpg` を使う。
 
 動画の中にアフィURLは出さない。リンクはプロフィール。画面上は「広告」。
+
+無人で毎回回す（Grokbot）: `minimaxh3/GROKBOT.md`。動画エージェントが Drive inbox に置き、Grokbot が Imagine 2.0 → Colab 起動 → ダウンロード → ランタイム停止。
 """
 
 CELL1 = r'''#@title ① Driveをつなぐ（最初の許可だけ）

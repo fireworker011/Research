@@ -1,0 +1,27 @@
+{
+  "schema": "h3-i2v-job/v1",
+  "id": "example-coconala-ad",
+  "status": "ready",
+  "created_by": "video-agent",
+  "source_image": "source.jpg",
+  "picture1": "",
+  "prompt": "",
+  "width": 768,
+  "height": 864,
+  "duration_s": 10,
+  "seed": 42,
+  "steps": 4,
+  "use_lora": true,
+  "lora_strength": 1.0,
+  "filename_prefix": "video/h3_i2va_job",
+  "imagine": {
+    "enabled": true,
+    "model": "grok-imagine-image-2.0",
+    "quality": "medium",
+    "resolution": "2k",
+    "aspect_ratio": "3:4",
+    "prompt": "Photoreal quality pass of Picture 1 only. Keep the exact same young Japanese woman, face, long dark brown hair with bangs, dark navy zip-up hoodie over a white top, desk, laptop, drawing tablet, stylus, and cyan holographic UI. No anime. No illustration. No extra on-screen URL. No instruction-sheet labels or numbered panels. Clean 3:4 still, usable as MiniMax H3 first frame."
+  },
+  "output_mp4": "",
+  "error": ""
+}
