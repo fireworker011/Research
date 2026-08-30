@@ -141,6 +141,24 @@ def test_drop_and_grokbot_dry_run(tmp_path):
     assert (queued / "picture1.jpg").is_file()
 
 
+def test_orphan_still_and_idle_and_watch(tmp_path):
+    from h3_i2v_job import adopt_orphan_stills, ensure_drive_tree
+    import run_i2v
+
+    root = ensure_drive_tree(tmp_path / "drive")
+    (root / "inbox" / "a.jpg").write_bytes(b"a")
+    made = adopt_orphan_stills(root)
+    assert len(made) == 1
+    assert not (root / "inbox" / "a.jpg").exists()
+    (root / "inbox" / "b.jpg").write_bytes(b"b")
+    assert run_i2v.run(["--drive", str(root), "--dry-run", "--watch", "--max-jobs", "2", "--interval", "1"]) == 0
+    assert len(list((root / "queued").iterdir())) == 2
+    assert run_i2v.run(["--drive", str(root), "--dry-run"]) == 0
+    skill = Path(__file__).resolve().parents[1] / ".cursor" / "skills" / "h3-i2v-grokbot" / "SKILL.md"
+    assert "一度きり" in skill.read_text(encoding="utf-8")
+    assert "idle" in skill.read_text(encoding="utf-8")
+
+
 def test_example_job_file_has_no_secrets():
     path = Path(__file__).resolve().parents[1] / "minimaxh3" / "grokbot" / "job.example.json"
     raw = path.read_text(encoding="utf-8")

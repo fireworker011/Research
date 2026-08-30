@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Grokbot: Imagine 2.0 quality pass → Colab I2VA → download → stop runtime."""
+"""Grokbot: Imagine 2.0 quality pass → Colab I2VA → download → stop runtime.
+
+One-shot (cron / Cursor Automation): process inbox, idle exit 0.
+Watch: keep polling. Humans do not re-prompt after the one-time start.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +11,7 @@ import argparse
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve()
@@ -15,10 +20,11 @@ for p in ROOTS:
     if p.is_dir():
         sys.path.insert(0, str(p))
 
-from h3_colab_cli import exec_file, mount_drive, start_session, stop_session  # noqa: E402
+from h3_colab_cli import exec_file, mount_drive, orchestrate_commands, start_session, stop_session  # noqa: E402
 from h3_i2v_job import (  # noqa: E402
     DEFAULT_IMAGINE_PROMPT,
     DRIVE_ROOT_DEFAULT,
+    adopt_orphan_stills,
     ensure_drive_tree,
     load_job,
     move_job,
@@ -73,23 +79,13 @@ def enhance_job(folder: Path, job: dict, drive: Path) -> Path:
     return dest
 
 
-def run(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Grokbot H3 I2VA: Imagine → Colab → download → stop")
-    p.add_argument("--drive", default=os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT)
-    p.add_argument("--job", default="", help="job folder; default = oldest ready in inbox")
-    p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")
-    p.add_argument("--session", default="h3-i2v")
-    p.add_argument("--out", default="", help="local mp4 download path")
-    p.add_argument("--imagine-only", action="store_true")
-    p.add_argument("--colab-only", action="store_true")
-    p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--keep-runtime", action="store_true")
-    args = p.parse_args(argv)
-
-    drive = ensure_drive_tree(args.drive)
+def process_one(args: argparse.Namespace, drive: Path) -> str:
+    """Return idle | done. Empty inbox is success (automation can poll)."""
+    adopt_orphan_stills(drive)
     folder = Path(args.job) if args.job else next_ready_job(drive)
     if folder is None:
-        raise SystemExit("ready ジョブが inbox にありません。動画エージェントが drop_job してください。")
+        print("idle: inbox empty")
+        return "idle"
     job = load_job(folder)
     errs = validate_job(job, folder=folder)
     if errs:
@@ -112,7 +108,7 @@ def run(argv: list[str] | None = None) -> int:
 
     if args.imagine_only:
         print("imagine-only done", folder)
-        return 0
+        return "done"
 
     script = repo_script()
     os.environ["H3_DRIVE_ROOT"] = str(drive)
@@ -120,11 +116,9 @@ def run(argv: list[str] | None = None) -> int:
     if args.dry_run:
         os.environ["H3_DRY_RUN"] = "1"
         print("dry-run colab commands:")
-        from h3_colab_cli import orchestrate_commands
-
         for cmd in orchestrate_commands(script, gpu=args.gpu, name=args.session):
             print("colab", " ".join(cmd))
-        return 0
+        return "done"
 
     try:
         start_session(name=args.session, gpu=args.gpu)
@@ -144,7 +138,42 @@ def run(argv: list[str] | None = None) -> int:
         print("downloaded", local)
     else:
         print("Drive 上の mp4 を確認:", mp4)
-    return 0
+    return "done"
+
+
+def run(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(description="Grokbot H3 I2VA: Imagine → Colab → download → stop")
+    p.add_argument("--drive", default=os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT)
+    p.add_argument("--job", default="", help="job folder; default = oldest ready in inbox")
+    p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")
+    p.add_argument("--session", default="h3-i2v")
+    p.add_argument("--out", default="", help="local mp4 download path")
+    p.add_argument("--imagine-only", action="store_true")
+    p.add_argument("--colab-only", action="store_true")
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--keep-runtime", action="store_true")
+    p.add_argument("--watch", action="store_true", help="poll inbox forever; do not ask the human again")
+    p.add_argument("--interval", type=int, default=int(os.environ.get("H3_WATCH_INTERVAL") or 120))
+    p.add_argument("--max-jobs", type=int, default=0, help="test/watch cap; 0 = unlimited")
+    args = p.parse_args(argv)
+
+    drive = ensure_drive_tree(args.drive)
+    processed = 0
+    while True:
+        status = process_one(args, drive)
+        if status == "done":
+            processed += 1
+            args.job = ""
+            if args.max_jobs and processed >= args.max_jobs:
+                return 0
+            if not args.watch:
+                return 0
+            continue
+        if not args.watch:
+            return 0
+        time.sleep(max(5, int(args.interval)))
+        if args.max_jobs and processed >= args.max_jobs:
+            return 0
 
 
 if __name__ == "__main__":

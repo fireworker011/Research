@@ -70,7 +70,7 @@ def save_job(folder: Path | str, job: dict[str, Any]) -> Path:
 
 
 def new_job_id(slug: str = "h3") -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
     safe = re.sub(r"[^a-zA-Z0-9._-]+", "-", (slug or "h3").strip())[:40].strip("-") or "h3"
     return f"{stamp}-{safe}"
 
@@ -223,3 +223,30 @@ def stage_picture1(folder: Path, src: Path, job: dict[str, Any], input_dir: Path
     job["picture1"] = "picture1.jpg"
     job["staged_input"] = name
     return name
+
+
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def adopt_orphan_stills(root: Path | str, *, slug: str = "coconala") -> list[Path]:
+    """Turn a bare still in inbox/ into a ready job folder. Video agents can drop only a jpg."""
+    root = Path(root)
+    inbox = root / "inbox"
+    inbox.mkdir(parents=True, exist_ok=True)
+    made: list[Path] = []
+    for p in sorted(inbox.iterdir()):
+        if not p.is_file() or p.suffix.lower() not in IMAGE_SUFFIXES:
+            continue
+        if p.name.startswith("."):
+            continue
+        jid = new_job_id(slug)
+        folder = inbox / jid
+        folder.mkdir(parents=True, exist_ok=False)
+        dest = folder / "source.jpg"
+        dest.write_bytes(p.read_bytes())
+        p.unlink()
+        job = default_job(id=jid, source_image="source.jpg", created_by="inbox-drop")
+        save_job(folder, job)
+        made.append(folder)
+    return made
+
