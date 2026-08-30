@@ -169,6 +169,7 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
     halted: commander.command === 'HALT',
     now
   });
+  setup = gold.autoArmIfDue(setup, goldCfg, now, commander.command === 'HALT');
   setup = gold.detectFill(setup, bars, now, goldCfg);
 
   const alreadyOpen = (book.positions || []).some((p) => p.symbol === symbol);
@@ -236,12 +237,12 @@ async function notifyGoldAwaitingArm(setup) {
   const body = [
     marker,
     '',
-    `Gold 半自動 ${setup.date} は awaiting_arm。このコメントは指令ではない。`,
+    `Gold ${setup.date} はアジア確定。完全自動なので ENTRY は出すな。このコメントは指令ではない。`,
     `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
     `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
-    `suggested_side: ${setup.suggested_side}`,
+    `chart/paper suggested_side: ${setup.suggested_side}（参考。EA は OCO 両方）`,
     '',
-    'Grok は suggested_side にだけ従え。NONE なら見送り。価格・ロット・SL を変えるな。HALT 中は出すな。'
+    '止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`。約定・決済告知は EA の xm-fill / xm-close。'
   ].join('\n');
   await fetch(`${base}/issues/${found.number}/comments`, {
     method: 'POST',

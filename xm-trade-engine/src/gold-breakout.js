@@ -255,6 +255,22 @@ function inLondonWindow(now, cfg) {
 }
 
 /**
+ * 完全自動: ロンドン枠で Grok を待たず OCO 両方を武装する。SKIP/HALT/片側 ENTRY は applyArm 側。
+ */
+function autoArmIfDue(setup, cfg, now, halted) {
+  if (!setup || !cfg || cfg.entry_operator !== 'auto') return setup;
+  if (halted) return setup;
+  if (setup.status !== 'awaiting_arm') return setup;
+  if (!inLondonWindow(now, cfg)) return setup;
+  return applyArm(setup, {
+    goldArm: 'ARM',
+    goldArmDate: todayUTC(now),
+    halted: false,
+    now
+  });
+}
+
+/**
  * ペーパー用。ARM 済みの OCO を、閉じた足の high/low で片方だけ約定させる。
  */
 function detectFill(setup, bars, now, cfg) {
@@ -322,6 +338,7 @@ module.exports = {
   groupDaily,
   proposeSetup,
   applyArm,
+  autoArmIfDue,
   detectFill,
   inLondonWindow,
   goldWindows,

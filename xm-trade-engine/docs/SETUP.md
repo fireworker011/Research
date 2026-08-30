@@ -1,146 +1,127 @@
-# XM Gold 半自動の載せ方
+# XM Trade — 完全自動の載せ方
 
-このファイルが **MT5 に載せる手順の正**。戦略の中身は `README.md`。Grok の1行は `COMMANDS.md`。
+このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。
 
 > 自動売買は口座資金を失う。利益は保証しない。デモが先。リスク上限（0.5% / 日次 2% / 0.10 lot）は上げない。
+> Threads の schedule は戻さない。
 
-## 全体像
+## 何が自動か
+
+| 役割 | 自動 | 人間 / Grok |
+|---|---|---|
+| Gold | アジアレンジ確定後、ロンドン 7–11 に **BuyStop と SellStop の両方**（OCO）。約定したら反対 pending を消す | `HALT` で全停止。`SKIP: GOLD` で今日だけ見送り |
+| Majors（任意） | EURUSD 等 H1 の EMA クロス | 同じ `HALT` |
+| 告知 | 約定で Issue に `xm-fill:`、決済で `xm-close:`。MT5 の Alert も鳴る | 読む。ENTRY は出すな |
+
+Grok は予想もエントリーもやらない。止めるボタンだけ。
 
 ```
-Grok Bot  → Issue「XM Trade — 日次レポート」に ENTRY/SKIP 1行
-     ↓  issue_comment（デフォルトブランチの workflow）
+Grok / 人間  HALT or SKIP
+        │
 commander.json（デフォルトブランチ）
-     ↓  MT5 WebRequest 30秒ごと
-XMGoldSemi.mq5 が GOLD M15 に BuyStop または SellStop
+        │  30秒ごと WebRequest
+XM MT5 デモ
+  XMGoldSemi.mq5   GOLD M15  → 自動 OCO
+  XMGrokEngine.mq5 EURUSD H1 → 自動 EMA（載せる場合）
+        │  約定 / 決済
+Issue「XM Trade — 日次レポート」へコメント
 ```
-
-GitHub cron は発注クロックに使わない。ロンドン開始は EA のサーバー時刻が正。
 
 ## 手順（この順）
 
-### 1. この PR をデフォルトブランチへマージする
+### 1. PR をデフォルトへマージする
 
-`issue_comment` ワークフローは **デフォルトブランチの YAML だけ**が動く。
-マージしないと Grok のコメントは `commander.json` に届かない。
+https://github.com/fireworker011/Research/pull/91  
+先: `claude/setup-colab-comfyui-Eb9Lh`
 
-デフォルトブランチは `claude/setup-colab-comfyui-Eb9Lh`。
-Threads の schedule は戻さない。
+`issue_comment` と日次レポートはデフォルトの YAML だけ動く。
 
-### 2. XM の MT5 デモを用意する
+マージ後、Actions で **XM Trade 日次レポート** を 1 回 Run する。  
+Issue タイトルは正確に `XM Trade — 日次レポート`。番号を控える（EA の `NotifyIssueNumber` に使える）。
 
-Windows か Windows VPS。GitHub ランナーでは動かない。
-チャートの銘柄名はエンティティにより `GOLD` または `XAUUSD`。
+### 2. XM デモと MT5
 
-### 3. EA をコンパイルして載せる
+Windows か Windows VPS。GitHub 上では動かない。銘柄は `GOLD` または `XAUUSD`。
 
-1. MetaEditor で `xm-trade-engine/ea/XMGoldSemi.mq5` をコンパイルする。
-2. **GOLD（または XAUUSD）の M15** チャートに付ける。H1 や EURUSD には付けない。
-3. AutoTrading を ON。
-4. 同じ銘柄に他の EA を同時に載せない（特にネット口座）。
+### 3. PAT を作る（private リポジトリ）
 
-`XMGrokEngine.mq5`（EURUSD など H1）とは別チャート。混ぜない。
+GitHub → Settings → Developer settings → Fine-grained PAT（または classic `repo`）。
+
+必要な権限:
+
+- Contents: Read（`commander.json` を読む）
+- Issues: Read and Write（`xm-fill` / `xm-close` を書く）
+
+トークンは Git にコミットしない。
 
 ### 4. WebRequest を許可する
 
-MT5 → ツール → オプション → EA → **WebRequest で許可された URL**:
+MT5 → ツール → オプション → EA:
 
-| リポジトリ | URL |
+- `https://api.github.com`
+- Slack も使うなら Incoming Webhook のホスト（例 `https://hooks.slack.com`）
+
+### 5. Gold EA を載せる（必須）
+
+1. `xm-trade-engine/ea/` の `XMGoldSemi.mq5` と `xm_notify.mqh` を同じフォルダに入れる。
+2. MetaEditor で `XMGoldSemi.mq5` をコンパイルする。
+3. **GOLD（または XAUUSD）の M15** に付ける。AutoTrading ON。
+4. 入力:
+
+| 入力 | 値 |
 |---|---|
-| public | `https://raw.githubusercontent.com` |
-| private | `https://api.github.com` も追加 |
+| `CommanderURL` | `https://api.github.com/repos/fireworker011/Research/contents/xm-trade-engine/output/state/commander.json?ref=claude/setup-colab-comfyui-Eb9Lh` |
+| `CommanderAuthHeader` | `Authorization: token ghp_xxxxxxxx` |
+| `GitHubRepo` | `fireworker011/Research` |
+| `NotifyIssueNumber` | 追跡 Issue の番号。空なら `commander.json` の `issue_number`（日次レポート実行後に入る） |
+| `NotifyEnabled` | true |
+| `AutoOco` | true（完全自動） |
+| `SlackWebhookURL` | 使うなら Incoming Webhook。使わないなら空 |
 
-### 5. `CommanderURL` を入れる
+PR ブランチの URL は使わない。同じ銘柄に他の EA を載せない。
 
-**public の raw（デフォルトブランチ）:**
+チャート左下に `cmd=` `auto=yes` `notify_issue=` が出れば通信は生きている。
+
+### 6. Majors EA（任意）
+
+EURUSD / GBPUSD / USDJPY の **H1** に `XMGrokEngine.mq5`（同じ `xm_notify.mqh`）。  
+Commander / Notify の入力は Gold と同じ。Gold と **別チャート**。
+
+### 7. Grok Bot
+
+`xm-trade-engine/docs/grok-bots/G_xm_trade.txt` **だけ**を貼る。月100万 dump と混ぜない。
+
+Grok が出してよい行:
 
 ```
-https://raw.githubusercontent.com/<owner>/<repo>/claude/setup-colab-comfyui-Eb9Lh/xm-trade-engine/output/state/commander.json
+KILL_SWITCH: HALT
+KILL_SWITCH: PAPER_ONLY
+KILL_SWITCH: REDUCE_RISK
+SKIP: GOLD
 ```
 
-PR ブランチの raw を指定すると、Grok のコメント（デフォルトへ書く）と EA が食い違う。
+`ENTRY: GOLD BUY` は出さない。完全自動。`ARM: GOLD` も不要（IDLE で両方置く）。
 
-**private リポジトリ**は raw が 404 になる。Contents API を使う:
+### 8. デモで1サイクル
 
-```
-https://api.github.com/repos/<owner>/<repo>/contents/xm-trade-engine/output/state/commander.json?ref=claude/setup-colab-comfyui-Eb9Lh
-```
+ブローカーサーバー時刻（XM はだいたい UTC+2）。
 
-EA 入力 `CommanderAuthHeader` に次を入れる（Git にコミットしない）:
+| 時刻 | 動き |
+|---|---|
+| 0:00–7:00 | アジアレンジ |
+| 7:00 以降 | ロック。Issue に `gold-notice:`（指令ではない） |
+| 7:00–11:00 | **自動で** BuyStop と SellStop |
+| 片方約定 | 反対 pending 削除。Issue に `xm-fill:` と Alert |
+| SL/TP/金曜クローズ等 | Issue に `xm-close:` と Alert |
+| 11:00 | 未約定 pending 取消 |
 
-```
-Authorization: token ghp_xxxxxxxx
-```
-
-PAT は contents:read だけでよい。EA は `Accept: application/vnd.github.raw` を付ける。
-
-### 6. チャートで時刻を確認する
-
-EA は **ブローカーサーバー時刻**でアジア 0–7 / ロンドン 7–11（GoldLondonBreakout と同じ）。
-XM はだいたい UTC+2（夏時間 +3）。
-
-チャート左下の Comment に `asia_locked` と `chart_side` が出る。
-アジア確定で Alert が1回鳴る。
-
-`config/gold.json` の `broker_utc_offset_hours` は **ペーパー / Yahoo 用**。
-MT5 の「サーバー時刻 − UTC」が 3 なら 3 に変える。EA 自体は `TimeCurrent()` なのでこの値を読まない。
-
-### 7. Grok Bot を載せる
-
-`docs/grok-bots/G_xm_trade.txt` だけを貼る。月100万 dump と混ぜない。
-Issue タイトルは正確に `XM Trade — 日次レポート`。
-Grok はセットアップカードの `suggested_side` にだけ従う。
-
-### 8. デモで1サイクル見てから実口座
-
-実口座は commander が `RESUME` のときだけ新規。デモは HALT 以外で動く。
-`RESUME` の前に、アジアロック → ENTRY → pending → 約定または期限切れ をデモで確認する。
-
-## GoldLondonBreakout との対応
-
-巷の Gold EA（GoldLondonBreakout、M15、サーバー 0–7 / 7–11）の **半自動の骨格だけ**を載せる。99%勝率・グリッド・ナンピンは捨てた。
-
-| 項目 | 元 EA | この実装 |
-|---|---|---|
-| 時間 | ブローカー アジア 0–7、ロンドン 7–11 | **同じ**（EA は `TimeCurrent()`） |
-| 足 | GOLD/XAUUSD M15 | **同じ** |
-| レンジ | アジア高安 | **同じ**（確定足、形成中バー除外） |
-| エントリー | ロンドン開始で **BuyStop と SellStop を両方** | **違う（意図）**: Grok の `ENTRY: GOLD BUY\|SELL` で片側。人間の `ARM: GOLD` だけ両方 |
-| バッファ / SL / TP | ATR 比 | **同じ既定**（0.15 ATR / 1.2 ATR / 1.8R） |
-| レンジフィルタ | 日足 ATR 比 | **同じ**（0.15–0.70） |
-| 期限 | ロンドン終了で pending 取消 | **同じ**（`ORDER_TIME_SPECIFIED`） |
-| 約定後 | 反対 pending を消す | **同じ** |
-| スプレッド | 広すぎたら見送り | **同じ**（既定 0.80） |
-| 月初金曜 | 元は自動発注することが多い | **違う（意図）**: NFP 隣接を休む |
-| グリッド / ナンピン | 巷の改変版に多い | **載せない** |
-| ロット | 元は固定ロットが多い | 残高 0.5%（`REDUCE_RISK` で半分）。最大 0.10 |
-| 日次損失 | なしが多い | 2% で HALT・決済 |
-
-完全再現ではない。**時間窓・レンジ・OCO の置き方・ATR パラメータは揃えた。** 自動で両方置く代わりに、Grok がパネルの片側ボタンを押す。
-
-## 残る差（直さない／直した）
-
-直した:
-
-- Node ペーパーが UTC 0–7 をアジアと誤認していた → `broker_utc_offset_hours` で XM に合わせる
-- 片側 ENTRY なのに反対値幅が近いと両方とも置かなかった → 置く側だけ判定
-- ARM で片方が失敗するとリトライしなかった
-- `SKIP: GOLD` が既存 pending を消さなかった
-- `REDUCE_RISK` が Gold EA のロットに効いていなかった
-- 司令塔 workflow が PR ブランチに書いて EA の raw とずれることがあった → デフォルトブランチへ書く
-
-直さない（設計）:
-
-- ペーパーの `suggested_side` は Yahoo `XAUUSD=X` の H1。MT5 の高安・終値とは一致しないことがある。チャートの `chart_side` と Issue が食い違ったら **SKIP**
-- GitHub tick は遅延する。約定の正は EA
-- 実口座の損益をペーパーから発明しない
+月初金曜は休む。実口座はデモで fill/close の告知を見てから。実口座の新規は `KILL_SWITCH: RESUME` が必要。
 
 ## 動かないとき
 
 | 症状 | 見る場所 |
 |---|---|
-| コメントしても EA が IDLE のまま | デフォルトへマージしたか。Issue タイトルが完全一致か。`gold-notice:` 付きコメントは指令ではない |
-| `commander HTTP 404` | private なのに raw URL。API + PAT にする |
-| `commander HTTP 403/401` | WebRequest 許可リスト、PAT、ヘッダの改行 |
-| アジアがロックされない | 銘柄が GOLD/XAUUSD か。M15 か。サーバー時刻 7 時以降か。レンジが ATR 比の外なら `asia skip frac=` がログに出る |
-| pending が付かない | AutoTrading。`gold_arm_date` が今日の UTC 日付か。ロンドン 7–11 か。リアル口座なら RESUME |
-| 毎日同じ方向 | `suggested_side` はアジア終値の位置だけ。予想ではない |
+| pending が付かない | AutoTrading。M15 か。サーバー 7–11 か。`HALT` / `SKIP` か。リアルなら RESUME。レンジが ATR 比の外ならログ `asia skip frac=` |
+| 告知が来ない | PAT に Issues Write。`NotifyIssueNumber` か `issue_number`。WebRequest に `api.github.com`。Experts ログ `notify github HTTP` |
+| コメントが司令塔に食われる | 本文先頭が `xm-fill:` / `xm-close:` なら無視される。壊さない |
+| `commander HTTP 404` | private なのに raw URL。Contents API にする |

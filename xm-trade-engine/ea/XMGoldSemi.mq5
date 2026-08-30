@@ -1,17 +1,23 @@
-// Gold 半自動。時間はブローカーサーバー時刻（GoldLondonBreakout と同じ 0-7 / 7-11）。
-// Grok ENTRY で片側 pending。ARM で OCO 両方。グリッド／ナンピンなし。
+// Gold 完全自動。ブローカー 0-7 / 7-11。IDLE で OCO 両方。SKIP/HALT のみ人間。告知は xm-fill / xm-close。
 
 #property copyright "xm-trade-engine"
-#property version   "1.11"
-#property description "XM GOLD semi-auto. Broker-time Asia range, Grok ENTRY or ARM OCO."
+#property version   "1.20"
+#property description "XM GOLD full-auto. Broker-time OCO, GitHub fill/close notify."
 
 #include <Trade/Trade.mqh>
+#include "xm_notify.mqh"
 
 input group "Commander"
 input string CommanderURL = "";
 input string CommanderAuthHeader = "";
 input bool   FailClosedOnFetchError = true;
 input int    CommanderPollSeconds = 30;
+
+input group "Notify (fill / close)"
+input bool   NotifyEnabled = true;
+input string GitHubRepo = "fireworker011/Research";
+input string NotifyIssueNumber = "";
+input string SlackWebhookURL = "";
 
 input group "Risk"
 input int    MagicNumber = 260831;
@@ -34,6 +40,7 @@ input double BreakoutBufferAtr = 0.15;
 input double SlAtr = 1.2;
 input double RewardMultiple = 1.8;
 input bool   SkipFirstFriday = true;
+input bool   AutoOco = true;
 
 CTrade trade;
 int hAtr = INVALID_HANDLE;
@@ -50,6 +57,8 @@ double gAsiaClose = 0;
 bool gAsiaLocked = false;
 bool gPlacedToday = false;
 bool gAlerted = false;
+string gIssueNumber = "";
+ulong gLastNotifiedDeal = 0;
 
 int OnInit()
 {
@@ -89,6 +98,12 @@ void OnTimer()
 void OnTick()
 {
    Run();
+}
+
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+{
+   string issue = StringLen(NotifyIssueNumber) > 0 ? NotifyIssueNumber : gIssueNumber;
+   XmDealNotify(trans, MagicNumber, NotifyEnabled, CommanderAuthHeader, GitHubRepo, issue, SlackWebhookURL, gLastNotifiedDeal);
 }
 
 void Run()
@@ -145,9 +160,16 @@ void Run()
          CancelPendings();
       return;
    }
-   if(gGoldArm != "ARM" && gGoldArm != "BUY" && gGoldArm != "SELL")
+   if(gGoldArm != "ARM" && gGoldArm != "BUY" && gGoldArm != "SELL" && gGoldArm != "IDLE")
       return;
-   if(gGoldArmDate != UtcDateStr())
+   if(gGoldArm == "BUY" || gGoldArm == "SELL")
+   {
+      if(gGoldArmDate != UtcDateStr())
+         return;
+   }
+   else if(gGoldArm == "ARM" && StringLen(gGoldArmDate) > 0 && gGoldArmDate != UtcDateStr())
+      return;
+   else if(gGoldArm == "IDLE" && !AutoOco)
       return;
    if(!AllowRealOrDemo())
       return;
@@ -156,7 +178,7 @@ void Run()
    if(spread > MaxSpreadPrice)
       return;
 
-   PlaceStops(gGoldArm);
+   PlaceStops((gGoldArm == "BUY" || gGoldArm == "SELL") ? gGoldArm : "ARM");
 }
 
 void LockAsiaRange()
@@ -439,7 +461,9 @@ void PaintStatus()
       " high=", DoubleToString(gAsiaHigh, _Digits),
       " low=", DoubleToString(gAsiaLow, _Digits),
       " close=", DoubleToString(gAsiaClose, _Digits),
-      " chart_side=", ChartSuggestedSide(), "\n",
+      " chart_side=", ChartSuggestedSide(),
+      " auto=", (AutoOco ? "yes" : "no"), "\n",
+      "notify_issue=", (StringLen(NotifyIssueNumber) > 0 ? NotifyIssueNumber : gIssueNumber), "\n",
       "placed=", (gPlacedToday ? "yes" : "no"),
       " pendings=", CountMagicPendings(),
       " positions=", CountMagicPositions()
@@ -473,6 +497,9 @@ void PollCommander()
    if(arm == "ARM" || arm == "SKIP" || arm == "IDLE" || arm == "BUY" || arm == "SELL")
       gGoldArm = arm;
    gGoldArmDate = ExtractJsonString(json, "gold_arm_date");
+   string issue = ExtractJsonString(json, "issue_number");
+   if(StringLen(issue) > 0)
+      gIssueNumber = issue;
 }
 
 string FetchJson()

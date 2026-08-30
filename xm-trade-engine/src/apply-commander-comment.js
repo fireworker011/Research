@@ -19,9 +19,13 @@ function readEvent() {
   return null;
 }
 
+function isNotifyComment(body) {
+  return /(?:gold-notice|xm-fill|xm-close|gold-fill|gold-close):/.test(body || '');
+}
+
 function applyComment({ body, login, now, current, persist = false }) {
-  if (/gold-notice:/.test(body || '')) {
-    return { skipped: true, reason: 'gold-notice' };
+  if (isNotifyComment(body)) {
+    return { skipped: true, reason: 'notify-comment' };
   }
   if (login === 'github-actions[bot]') {
     return { skipped: true, reason: 'actions-bot' };
@@ -81,7 +85,7 @@ function main() {
   console.log(JSON.stringify({ skipped: true, reason: 'no_event' }));
 }
 
-module.exports = { applyComment };
+module.exports = { applyComment, isNotifyComment };
 
 if (require.main === module) {
   try {

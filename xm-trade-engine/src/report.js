@@ -12,7 +12,7 @@ const { todayUTC } = require('./util');
 
 const TRACKING_ISSUE_TITLE = commanderMod.ISSUE_TITLE;
 const FORBIDDEN = [
-  'LLM / Grok に majors のエントリーを選ばせるな。Gold は suggested_side 以外で方向を決めるな',
+  'LLM / Grok に majors のエントリーを選ばせるな。Gold も ENTRY を出すな（完全自動）',
   'マーチンゲール・ナンピン・グリッドを足すな',
   'リスク上限を上げるな',
   'XM_LIVE_CONFIRM なしで実口座発注するな',
@@ -65,7 +65,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     }
     lines.push('');
   }
-  lines.push('## Gold 半自動（アジアレンジ → ロンドン OCO）');
+  lines.push('## Gold 完全自動（アジアレンジ → ロンドン OCO）');
   lines.push('');
   if (goldState && goldState.status && goldState.status !== 'idle') {
     lines.push(`- status: \`${goldState.status}\``);
@@ -76,8 +76,8 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
       lines.push(`- levels: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
     }
     if (goldState.status === 'awaiting_arm') {
-      lines.push('- Grok は suggested_side に従え。BUY→`ENTRY: GOLD BUY` / SELL→`ENTRY: GOLD SELL` / NONE→`SKIP: GOLD`');
-      lines.push('- この suggested_side は Yahoo H1（ペーパー）。MT5 の chart_side と違うなら SKIP');
+      lines.push('- 完全自動: ロンドン枠で EA が OCO を置く。Grok は ENTRY を出すな');
+      lines.push('- 止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`');
     }
   } else {
     lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
@@ -104,7 +104,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`');
   lines.push('`RESUME` はライブゲートを全部満たさない限り実発注しない。');
-  lines.push('Gold 半自動: Grok は `ENTRY: GOLD BUY` / `ENTRY: GOLD SELL` / `SKIP: GOLD`。suggested_side 以外で方向を決めるな。');
+  lines.push('Gold: 完全自動 OCO。Grok は ENTRY を出すな。約定・決済は Issue の `xm-fill:` / `xm-close:`。止めるなら `HALT` または `SKIP: GOLD`。');
   lines.push('');
   lines.push('## やるな');
   lines.push('');
@@ -179,7 +179,15 @@ async function runReport({ now = new Date(), skipIssue = false } = {}) {
     gold: goldState && { status: goldState.status, reason: goldState.reason },
     daily_loss_exceeded: dailyLossExceeded(book, risk, todayUTC(now))
   });
-  if (!skipIssue) await upsertIssue(markdown);
+  if (!skipIssue) {
+    const issueNumber = await upsertIssue(markdown);
+    if (issueNumber) {
+      const current = commanderMod.loadCommander();
+      if (String(current.issue_number || '') !== String(issueNumber)) {
+        commanderMod.saveCommander({ ...current, issue_number: String(issueNumber) });
+      }
+    }
+  }
   return { markdown, dated, latest };
 }
 

@@ -3,16 +3,23 @@
 // commander.json の HALT だけクラウドから読む。口座番号・パスワードは書くな。
 
 #property copyright "xm-trade-engine"
-#property version   "1.00"
-#property description "XM MT5 engine. Local H1 EMA strategy. Commander kill switch via WebRequest."
+#property version   "1.10"
+#property description "XM MT5 majors. Local H1 EMA. Fill/close notify to GitHub Issue."
 
 #include <Trade/Trade.mqh>
+#include "xm_notify.mqh"
 
 input group "Commander"
 input string CommanderURL = ""; // GitHub raw commander.json。空ならローカルリスクのみ
 input string CommanderAuthHeader = ""; // 非公開repoなら "Authorization: token ghp_..." 。Gitに書くな
 input bool   FailClosedOnFetchError = true;
 input int    CommanderPollSeconds = 60;
+
+input group "Notify (fill / close)"
+input bool   NotifyEnabled = true;
+input string GitHubRepo = "fireworker011/Research";
+input string NotifyIssueNumber = "";
+input string SlackWebhookURL = "";
 
 input group "Risk"
 input int    MagicNumber = 260830;
@@ -45,6 +52,8 @@ string gCommand = "PAPER_ONLY";
 datetime gLastFetch = 0;
 double gDayStartEquity = 0;
 int gDayStamp = 0;
+string gIssueNumber = "";
+ulong gLastNotifiedDeal = 0;
 
 int OnInit()
 {
@@ -58,6 +67,7 @@ int OnInit()
       return INIT_FAILED;
    gDayStartEquity = AccountInfoDouble(ACCOUNT_EQUITY);
    gDayStamp = DayStamp();
+   EventSetTimer(1);
    if(StringLen(SymbolSuffix) > 0 && StringFind(_Symbol, SymbolSuffix) < 0)
       Print("warning: attach this EA to the XM symbol that already has suffix ", SymbolSuffix);
    Print("XMGrokEngine init. commander=", CommanderURL);
@@ -66,10 +76,22 @@ int OnInit()
 
 void OnDeinit(const int reason)
 {
+   EventKillTimer();
    if(hFast != INVALID_HANDLE) IndicatorRelease(hFast);
    if(hSlow != INVALID_HANDLE) IndicatorRelease(hSlow);
    if(hRsi != INVALID_HANDLE) IndicatorRelease(hRsi);
    if(hAtr != INVALID_HANDLE) IndicatorRelease(hAtr);
+}
+
+void OnTimer()
+{
+   PollCommander();
+}
+
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+{
+   string issue = StringLen(NotifyIssueNumber) > 0 ? NotifyIssueNumber : gIssueNumber;
+   XmDealNotify(trans, MagicNumber, NotifyEnabled, CommanderAuthHeader, GitHubRepo, issue, SlackWebhookURL, gLastNotifiedDeal);
 }
 
 void OnTick()
@@ -308,33 +330,40 @@ void PollCommander()
    if(gLastFetch != 0 && now - gLastFetch < CommanderPollSeconds)
       return;
    gLastFetch = now;
-   string cmd = FetchCommand();
-   if(cmd == "")
+   string json = FetchJson();
+   if(json == "")
    {
       if(FailClosedOnFetchError)
          gCommand = "HALT";
       return;
    }
-   gCommand = cmd;
+   string cmd = ExtractJsonString(json, "command");
+   StringToUpper(cmd);
+   if(cmd == "HALT" || cmd == "PAPER_ONLY" || cmd == "RESUME" || cmd == "REDUCE_RISK")
+      gCommand = cmd;
+   string issue = ExtractJsonString(json, "issue_number");
+   if(StringLen(issue) > 0)
+      gIssueNumber = issue;
 }
 
-string FetchCommand()
+string FetchJson()
 {
    char post[];
    char result[];
    string resultHeaders;
-   int code = WebRequest("GET", CommanderURL, CommanderAuthHeader, 5000, post, result, resultHeaders);
+   string headers = CommanderAuthHeader;
+   if(StringLen(headers) > 0 && StringFind(headers, "\r\n") < 0)
+      headers = headers + "\r\n";
+   headers += "User-Agent: XMGrokEngine\r\n";
+   if(StringFind(CommanderURL, "api.github.com") >= 0)
+      headers += "Accept: application/vnd.github.raw\r\n";
+   int code = WebRequest("GET", CommanderURL, headers, 8000, post, result, resultHeaders);
    if(code != 200)
    {
       Print("commander HTTP ", code);
       return "";
    }
-   string json = CharArrayToString(result, 0, WHOLE_ARRAY, CP_UTF8);
-   string cmd = ExtractJsonString(json, "command");
-   StringToUpper(cmd);
-   if(cmd == "HALT" || cmd == "PAPER_ONLY" || cmd == "RESUME" || cmd == "REDUCE_RISK")
-      return cmd;
-   return "";
+   return CharArrayToString(result, 0, WHOLE_ARRAY, CP_UTF8);
 }
 
 string ExtractJsonString(string json, string key)

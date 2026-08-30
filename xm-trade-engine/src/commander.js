@@ -17,7 +17,8 @@ function defaultCommander() {
     risk_multiplier: 1,
     updated_at: '2026-08-30T00:00:00.000Z',
     gold_arm: 'IDLE',
-    gold_arm_date: null
+    gold_arm_date: null,
+    issue_number: ''
   };
 }
 
@@ -71,7 +72,8 @@ function applyCommand(current, { command, source, reason, now }) {
     updated_at: (now || new Date()).toISOString(),
     previous: current?.command || null,
     gold_arm: current?.gold_arm || 'IDLE',
-    gold_arm_date: current?.gold_arm_date || null
+    gold_arm_date: current?.gold_arm_date || null,
+    issue_number: current?.issue_number || ''
   };
 }
 
@@ -112,18 +114,23 @@ function latestCommandFromComments(comments) {
 async function syncFromGitHubIssue({ token, repo, now }) {
   const current = loadCommander();
   if (!token || !repo) return { commander: current, synced: false, reason: 'no_github' };
-  const { comments } = await fetchIssueComments({ token, repo, title: ISSUE_TITLE });
+  const { issue, comments } = await fetchIssueComments({ token, repo, title: ISSUE_TITLE });
   const latest = latestCommandFromComments(comments);
   const gold = latestGoldArmFromComments(comments);
   let commander = current;
   let synced = false;
+
+  if (issue && String(issue.number) !== String(commander.issue_number || '')) {
+    commander = { ...commander, issue_number: String(issue.number) };
+    synced = true;
+  }
 
   if (latest) {
     const currentTs = Date.parse(current.updated_at || 0);
     const riskGuardBlocks = latest.ts < currentTs && current.source === 'risk-guard';
     const unchanged = latest.command === current.command && current.source === 'grok-bot-issue';
     if (!riskGuardBlocks && !unchanged) {
-      commander = applyCommand(current, {
+      commander = applyCommand(commander, {
         command: latest.command,
         source: 'grok-bot-issue',
         reason: latest.reason,

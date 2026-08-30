@@ -12,14 +12,14 @@ const {
   LIVE_CONFIRM_PHRASE
 } = require('./risk');
 const { parseCommandText, applyCommand, latestCommandFromComments, defaultCommander, parseGoldArmText } = require('./commander');
-const { applyComment } = require('./apply-commander-comment');
+const { applyComment, isNotifyComment } = require('./apply-commander-comment');
 const { parseYahooChart, dropIncompleteLastBar } = require('./market-data');
 const { tradeBody, isSuccess } = require('./adapters/metaapi');
 const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
 const { loadConfig, pipSize } = require('./util');
-const { proposeSetup, applyArm, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows } = require('./gold-breakout');
+const { proposeSetup, applyArm, autoArmIfDue, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows } = require('./gold-breakout');
 
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
@@ -286,12 +286,12 @@ async function runSelfTest() {
   assert(/ペーパー/.test(md), 'report labels paper');
   assert(/KILL_SWITCH/.test(md), 'report has kill switch');
   assert(!/必ず稼げる/.test(md), 'no guarantee copy');
-  assert(/Gold 半自動/.test(md), 'report has gold section');
+  assert(/Gold 完全自動/.test(md), 'report has gold section');
 
   const goldCfg = loadConfig('gold');
   const goldTestCfg = { ...goldCfg, atr_period: 3, broker_utc_offset_hours: 0 };
   const goldXmCfg = { ...goldCfg, atr_period: 3, broker_utc_offset_hours: 2 };
-  assertEqual(goldWindows(goldCfg).offset, 2, 'gold.json default XM +2');
+  assertEqual(goldCfg.entry_operator, 'auto', 'gold full auto');
   assertEqual(goldWindows(goldCfg).asiaEnd, 7, 'asia end is broker hour 7');
   assertEqual(pipSize('GOLD'), 0.01, 'gold pip');
   assertEqual(parseGoldArmText('ARM: GOLD'), 'ARM', 'arm parse');
@@ -353,6 +353,20 @@ async function runSelfTest() {
     persist: false
   });
   assertEqual(ignored.skipped, true, 'gold-notice is not a command');
+  const fillComment = applyComment({
+    body: 'xm-fill:2024-03-05\nエントリー GOLD BUY lot=0.02 @ 2401.20',
+    login: 'human',
+    now: lockNow,
+    persist: false
+  });
+  assertEqual(fillComment.skipped, true, 'xm-fill is not a command');
+  assertEqual(isNotifyComment('xm-close:2024-03-05\n決済'), true, 'close marker');
+
+  const autoArmed = autoArmIfDue(proposed, { ...goldTestCfg, entry_operator: 'auto' }, lockNow, false);
+  assertEqual(autoArmed.status, 'armed', 'auto oco in london');
+  assertEqual(autoArmed.entry_side, null, 'auto both sides');
+  const grokWait = autoArmIfDue(proposed, { ...goldTestCfg, entry_operator: 'grok' }, lockNow, false);
+  assertEqual(grokWait.status, 'awaiting_arm', 'grok mode still waits');
 
   const unarmedFill = detectFill(
     proposed,

@@ -2,19 +2,18 @@
 
 Issue「XM Trade — 日次レポート」へのコメントは次の1行のみ。大文字小文字は問わない。
 
+完全自動なので、Grok の既定は **何も書かない**。止めるときだけ書く。
+
 | 行 | 意味 |
 |---|---|
 | `KILL_SWITCH: HALT` | 新規禁止。建玉を閉じる。日次損失ガードもこれを書く |
 | `KILL_SWITCH: PAPER_ONLY` | 既定。Node はペーパーのみ。EA はデモなら新規可、リアル口座は新規不可 |
 | `KILL_SWITCH: REDUCE_RISK` | リスク半分 |
 | `KILL_SWITCH: RESUME` | リアル口座の新規を許可（他ゲートも必要） |
-| `ARM: GOLD` | 両方の pending（OCO）。人間が明示したときだけ。Grok の既定ではない |
-| `ENTRY: GOLD BUY` | Grok のエントリー。BuyStop だけ置く。suggested_side が BUY のとき |
-| `ENTRY: GOLD SELL` | Grok のエントリー。SellStop だけ置く。suggested_side が SELL のとき |
-| `SKIP: GOLD` | 今日の Gold を見送り |
+| `SKIP: GOLD` | 今日の Gold pending を置かない。未約定 pending は取消。建玉は閉じない |
+| `ARM: GOLD` | 不要（IDLE で OCO 両方）。人間の明示用に残してある |
+| `ENTRY: GOLD BUY` / `SELL` | 片側だけに上書き。完全自動では使わない |
 
-Grok は `suggested_side` に従う。NONE なら SKIP。価格・ロット・SL をコメントに書いてはいけない。
-`gold_arm` は日付付き（UTC）。翌日は `IDLE`。
-`SKIP: GOLD` は未約定の pending を取り消す。建玉は閉じない。
-Issue コメントは `xm_trade_commander.yml` が **デフォルトブランチ**の commander.json へ即時写す。HALT 中は EA が発注しない。
+`xm-fill:` と `xm-close:` と `gold-notice:` は EA / Actions の告知。指令ではない。
+`gold_arm` は日付付き（UTC）。翌日は `IDLE` に戻り、また自動 OCO。
 載せ方は `SETUP.md`。
