@@ -15,33 +15,10 @@ GENERATE_URL = "https://api.x.ai/v1/images/generations"
 DEFAULT_MODEL = "grok-imagine-image-2.0"
 
 
-def secret_value(*names: str) -> str:
-    """Env first, then Colab userdata. Never print the value. Never write it to git."""
-    for n in names:
-        v = (os.environ.get(n) or "").strip()
-        if v:
-            return v
-    try:
-        from google.colab import userdata
-    except Exception:
-        return ""
-    for n in names:
-        try:
-            v = (userdata.get(n) or "").strip()
-            if v:
-                return v
-        except Exception:
-            continue
-    return ""
-
-
 def imagine_api_key() -> str:
-    key = secret_value("XAI_API_KEY", "GROK_API_KEY")
+    key = (os.environ.get("XAI_API_KEY") or os.environ.get("GROK_API_KEY") or "").strip()
     if not key:
-        raise RuntimeError(
-            "XAI_API_KEY がありません。Imagine 2.0 はキーが必要です。"
-            "スマホ Colab なら左の鍵アイコンに入れる。Git には書かない。"
-        )
+        raise RuntimeError("XAI_API_KEY がありません。Imagine 2.0 はキーが必要です。Git には書かない。")
     return key
 
 

@@ -7,7 +7,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from h3_i2v_phone import (
     BRANCH,
     DEFAULT_FIRST_IMAGE,
-    HELPER_FILES,
     I2V_WEIGHTS,
     TURBO_LORA_NAME,
     TURBO_LORA_URL,
@@ -45,7 +44,6 @@ def test_i2v_downloads_skip_ref2va():
     assert not any("ref2va" in n or "ref2v" in n for n in names)
     assert len(I2V_WEIGHTS) == 4
     assert TURBO_LORA_URL.startswith("https://huggingface.co/lightx2v/")
-    assert "colab/h3_fal_max.py" in HELPER_FILES
 
 
 def test_missing_weight_files(tmp_path):
@@ -118,10 +116,7 @@ def test_phone_notebook_is_three_i2v_cells():
     codes = [c for c in nb["cells"] if c["cell_type"] == "code"]
     assert len(codes) == 3
     blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
-    assert "fal.run/minimax/h3-max/image-to-video" in blob or "h3_fal_max" in blob
-    assert "FAL_KEY" in blob
-    assert "userdata" in blob
-    assert "GPU 不要" in blob or "GPUもA100もPCも不要" in blob
+    assert "MiniMaxH3ImageToVideo" in blob
     assert "MiniMaxH3ReferenceToVideo" not in blob
     assert "WanAnimateToVideo" not in blob
     assert "loca.lt" not in blob
@@ -132,7 +127,6 @@ def test_phone_notebook_is_three_i2v_cells():
     assert DEFAULT_FIRST_IMAGE in blob
     assert "display(Video" in blob
     assert "MODE=both" not in blob
-    assert "A100 を選んでください" not in blob
     for i, cell in enumerate(codes):
         src = "".join(cell.get("source") or [])
         assert not src.strip().startswith("%%")
@@ -146,36 +140,13 @@ def test_phone_generate_cell_keeps_i2va_invariants():
         for c in nb["cells"]
         if c["cell_type"] == "code" and "I2VA" in "".join(c.get("source") or [])
     )
-    assert "run_phone_session" in gen
-    assert "validate_motion_ad_prompt" in gen
+    assert "build_i2va_graph" in gen
+    assert "i2va_retry_plans" in gen
+    assert "first_image" in gen
     assert "WIDTH = 768" in gen
     assert "HEIGHT = 864" in gen
     assert "DURATION_S = 10" in gen
+    assert "USE_LORA = True" in gen
+    assert "validate_motion_ad_prompt" in gen
+    assert "is_auto_image_name" in gen
     assert 'FIRST_IMAGE = "coconala_creator_ref.jpg"' in gen
-    assert "prompt_expansion" not in gen or "disabled" in gen
-
-
-def test_run_phone_session_dry_run(tmp_path):
-    from h3_i2v_phone import run_phone_session
-
-    drive = tmp_path / "minimax-h3-comfyui"
-    inp = drive / "input"
-    inp.mkdir(parents=True)
-    img = inp / "mine.jpg"
-    img.write_bytes(b"\xff\xd8\xff" + b"x" * 50)
-    paths = run_phone_session(
-        drive,
-        first_image="auto",
-        duration_s=10,
-        dry_run=True,
-        drain_inbox=True,
-        key="unused",
-    )
-    assert len(paths) == 1
-    assert paths[0].is_file()
-    assert paths[0].suffix == ".mp4"
-    (drive / "inbox" / "drop.jpg").write_bytes(b"\xff\xd8\xff" + b"y" * 50)
-    more = run_phone_session(drive, first_image="auto", dry_run=True, drain_inbox=True, key="unused")
-    assert len(more) == 1
-    assert (drive / "done").is_dir()
-    assert any((drive / "done").iterdir())

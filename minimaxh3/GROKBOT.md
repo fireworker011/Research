@@ -3,26 +3,31 @@
 Naomi が Grokbot に話しかけるのは初回の Automation 登録（または `--watch` 起動）だけ。
 ジョブが来るたびに指示しない。
 
-**PC が無いときの最善手はスマホ Colab + fal。A100 も 42GB モデルも不要。**
+## 初回（人間が1回）
 
-https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb
-
-1. 左の鍵に `FAL_KEY`（任意で `XAI_API_KEY`）
-2. CPU のまま全セル実行
-3. 写真は Drive `minimax-h3-comfyui/input/`（または inbox/）
-
-無料の fal ページ（1日5本・5秒）は使わない。オマージュは 10 秒の公式 API。
-
-## Cursor があるとき（無人）
-
-デフォルトは **fal MiniMax H3 Max API**。
+1. Colab Pro + `pip install google-colab-cli` + 一度 `colab new` でログイン
+2. シェルに `XAI_API_KEY`（Git禁止）
+3. Cursor → Automations → 新規。スケジュール **15分ごと**。プロンプトは下をそのまま。
 
 ```
 skill h3-i2v-grokbot を読む。
 inbox を1件だけ処理して終了する（空なら idle で終わる。待たない。質問しない）。
 python minimaxh3/grokbot/run_i2v.py
-投稿するな。R2V/Wan/Hailuo/10Eros/完全版ノート/loca.lt は使うな。
+投稿するな。R2V/Wan/Max/完全版ノート/loca.lt は使うな。終わったら colab stop。
 空のときは「idle」とだけ書いて終わる。
 ```
 
-Comfy 公式重みに戻すときだけ `--backend colab`（A100 が要る）。
+常時PCがあるなら Automation の代わりにこれでもよい（これも一度だけ）:
+
+```bash
+python minimaxh3/grokbot/run_i2v.py --watch
+```
+
+## 以降（全自動）
+
+動画エージェントは Drive の `minimax-h3-comfyui/inbox/` に **jpg を置くだけ**。
+job.json は無くてよい。監視がフォルダを作る。
+
+完成: `minimax-h3-comfyui/output/{id}.mp4`
+
+投稿は人間。リンクはプロフィール。
