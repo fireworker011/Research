@@ -3,7 +3,7 @@
 // commander.json の HALT だけクラウドから読む。口座番号・パスワードは書くな。
 
 #property copyright "xm-trade-engine"
-#property version   "1.10"
+#property version   "1.11"
 #property description "XM MT5 majors. Local H1 EMA. Fill/close notify to GitHub Issue."
 
 #include <Trade/Trade.mqh>
@@ -54,6 +54,8 @@ double gDayStartEquity = 0;
 int gDayStamp = 0;
 string gIssueNumber = "";
 ulong gLastNotifiedDeal = 0;
+int gFetchFails = 0;
+bool gFetchBlocked = false;
 
 int OnInit()
 {
@@ -266,6 +268,8 @@ bool AllowNewEntries()
 {
    if(gCommand == "HALT")
       return false;
+   if(gFetchBlocked)
+      return false;
    long mode = AccountInfoInteger(ACCOUNT_TRADE_MODE);
    if(mode == ACCOUNT_TRADE_MODE_REAL)
       return gCommand == "RESUME";
@@ -333,10 +337,17 @@ void PollCommander()
    string json = FetchJson();
    if(json == "")
    {
-      if(FailClosedOnFetchError)
-         gCommand = "HALT";
+      // 一瞬の通信断で建玉を閉じない。5回連続で新規だけ止める。
+      gFetchFails++;
+      if(FailClosedOnFetchError && gFetchFails >= 5 && !gFetchBlocked)
+      {
+         gFetchBlocked = true;
+         Print("commander unreachable x", gFetchFails, ": new entries blocked");
+      }
       return;
    }
+   gFetchFails = 0;
+   gFetchBlocked = false;
    string cmd = ExtractJsonString(json, "command");
    StringToUpper(cmd);
    if(cmd == "HALT" || cmd == "PAPER_ONLY" || cmd == "RESUME" || cmd == "REDUCE_RISK")

@@ -1,7 +1,7 @@
 // Gold 完全自動。ブローカー 0-7 / 7-11。IDLE で OCO 両方。SKIP/HALT のみ人間。告知は xm-fill / xm-close。
 
 #property copyright "xm-trade-engine"
-#property version   "1.20"
+#property version   "1.21"
 #property description "XM GOLD full-auto. Broker-time OCO, GitHub fill/close notify."
 
 #include <Trade/Trade.mqh>
@@ -59,17 +59,21 @@ bool gPlacedToday = false;
 bool gAlerted = false;
 string gIssueNumber = "";
 ulong gLastNotifiedDeal = 0;
+int gFetchFails = 0;
+bool gFetchBlocked = false;
 
 int OnInit()
 {
    trade.SetExpertMagicNumber(MagicNumber);
    trade.SetDeviationInPoints(50);
-   hAtr = iATR(_Symbol, PERIOD_M15, AtrPeriod);
+   // SL/バッファは Node・セットアップカードと同じ H1 ATR。M15 だと狭すぎて刈られる
+   hAtr = iATR(_Symbol, PERIOD_H1, AtrPeriod);
    hDailyAtr = iATR(_Symbol, PERIOD_D1, DailyAtrPeriod);
    if(hAtr == INVALID_HANDLE || hDailyAtr == INVALID_HANDLE)
       return INIT_FAILED;
    gDayStartEquity = AccountInfoDouble(ACCOUNT_EQUITY);
    gDayStamp = BrokerDayStamp();
+   gPlacedToday = TradedToday();
    EventSetTimer(1);
    if(StringFind(_Symbol, "GOLD") < 0 && StringFind(_Symbol, "XAU") < 0)
       Print("warning: attach to GOLD/XAUUSD M15, chart is ", _Symbol);
@@ -102,6 +106,9 @@ void OnTick()
 
 void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
 {
+   // 約定したら即座に反対 pending を消す（タイマーを待つと急変時に両方約定し得る）
+   if(trans.type == TRADE_TRANSACTION_DEAL_ADD && CountMagicPositions() > 0)
+      CancelPendings();
    string issue = StringLen(NotifyIssueNumber) > 0 ? NotifyIssueNumber : gIssueNumber;
    XmDealNotify(trans, MagicNumber, NotifyEnabled, CommanderAuthHeader, GitHubRepo, issue, SlackWebhookURL, gLastNotifiedDeal);
 }
@@ -113,7 +120,7 @@ void Run()
       gDayStamp = BrokerDayStamp();
       gDayStartEquity = AccountInfoDouble(ACCOUNT_EQUITY);
       gAsiaLocked = false;
-      gPlacedToday = false;
+      gPlacedToday = TradedToday();
       gAlerted = false;
       gAsiaHigh = 0;
       gAsiaLow = 0;
@@ -172,6 +179,8 @@ void Run()
    else if(gGoldArm == "IDLE" && !AutoOco)
       return;
    if(!AllowRealOrDemo())
+      return;
+   if(gFetchBlocked)
       return;
 
    double spread = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
@@ -413,6 +422,28 @@ int BrokerDayStamp()
    return dt.year * 10000 + dt.mon * 100 + dt.day;
 }
 
+// 1日1セットの約束を EA 再起動でも守る。今日この銘柄で約定歴があれば true。
+bool TradedToday()
+{
+   MqlDateTime dt;
+   TimeToStruct(TimeCurrent(), dt);
+   dt.hour = 0;
+   dt.min = 0;
+   dt.sec = 0;
+   datetime dayStart = StructToTime(dt);
+   if(!HistorySelect(dayStart, TimeCurrent() + 60))
+      return false;
+   for(int i = HistoryDealsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket == 0) continue;
+      if(HistoryDealGetInteger(ticket, DEAL_MAGIC) != MagicNumber) continue;
+      if(HistoryDealGetString(ticket, DEAL_SYMBOL) != _Symbol) continue;
+      return true;
+   }
+   return false;
+}
+
 datetime BrokerHourToday(int hour)
 {
    MqlDateTime dt;
@@ -466,7 +497,8 @@ void PaintStatus()
       "notify_issue=", (StringLen(NotifyIssueNumber) > 0 ? NotifyIssueNumber : gIssueNumber), "\n",
       "placed=", (gPlacedToday ? "yes" : "no"),
       " pendings=", CountMagicPendings(),
-      " positions=", CountMagicPositions()
+      " positions=", CountMagicPositions(),
+      " fetch_blocked=", (gFetchBlocked ? "yes" : "no")
    );
 }
 
@@ -481,13 +513,18 @@ void PollCommander()
    string json = FetchJson();
    if(json == "")
    {
-      if(FailClosedOnFetchError)
+      // 一瞬の通信断で建玉を閉じない。SL/TP はサーバー側にある。
+      // 5回連続（約2.5分）で新規だけ止める。
+      gFetchFails++;
+      if(FailClosedOnFetchError && gFetchFails >= 5 && !gFetchBlocked)
       {
-         gCommand = "HALT";
-         gGoldArm = "IDLE";
+         gFetchBlocked = true;
+         Print("commander unreachable x", gFetchFails, ": new entries blocked");
       }
       return;
    }
+   gFetchFails = 0;
+   gFetchBlocked = false;
    string cmd = ExtractJsonString(json, "command");
    StringToUpper(cmd);
    if(cmd == "HALT" || cmd == "PAPER_ONLY" || cmd == "RESUME" || cmd == "REDUCE_RISK")

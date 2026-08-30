@@ -117,11 +117,20 @@ SKIP: GOLD
 
 月初金曜は休む。実口座はデモで fill/close の告知を見てから。実口座の新規は `KILL_SWITCH: RESUME` が必要。
 
+## ロットと損切り（数字の意味）
+
+- **0.10 lot は固定ではなく上限。** 実ロットは `残高 × 0.5% ÷ SL 距離` で計算し、0.10 で頭打ち。
+  例: SL 距離 $10 の日に 0.10 lot（= 10 oz、含み損 $100）へ届くのは残高 $20,000 前後から。$2,000 なら 0.01 lot。
+- SL は `1.2 × ATR(H1,14)`、TP はその 1.8 倍。SL/TP はサーバー側に付くので、PC や回線が死んでも損切りは生きる。
+- 二段目のガードが日次 2%: その日 2% 減ったら新規停止＋全決済。
+- 勝率 100% を狙う設定は存在しない。ブレイクアウトの勝率はだいたい 4〜5 割で、1.8R が取れれば残る。勝率を上げようと SL を広げる・ナンピンする、が破産の型。
+
 ## 動かないとき
 
 | 症状 | 見る場所 |
 |---|---|
-| pending が付かない | AutoTrading。M15 か。サーバー 7–11 か。`HALT` / `SKIP` か。リアルなら RESUME。レンジが ATR 比の外ならログ `asia skip frac=` |
+| pending が付かない | AutoTrading。M15 か。サーバー 7–11 か。`HALT` / `SKIP` か。リアルなら RESUME。レンジが ATR 比の外ならログ `asia skip frac=`。Comment の `fetch_blocked=yes` なら GitHub に5回連続で届いていない |
 | 告知が来ない | PAT に Issues Write。`NotifyIssueNumber` か `issue_number`。WebRequest に `api.github.com`。Experts ログ `notify github HTTP` |
 | コメントが司令塔に食われる | 本文先頭が `xm-fill:` / `xm-close:` なら無視される。壊さない |
 | `commander HTTP 404` | private なのに raw URL。Contents API にする |
+| 通信断のとき | 建玉は閉じない（SL/TP はサーバー側）。新規だけ止まり、復帰で自動解除 |
