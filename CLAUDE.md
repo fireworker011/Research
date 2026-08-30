@@ -56,3 +56,16 @@ node src/threads-poster.js --dry-run                               # 実投稿�
 ```
 
 コミットは `git pull --rebase` してから push（自動投稿の状態コミットと競合するため）。
+
+## XM Trade Engine（`xm-trade-engine/`）
+
+XM に公式 REST はない。実時間の発注は `ea/XMGrokEngine.mq5`。GitHub cron はペーパー追跡と commander の配信だけ。
+
+1. **LLM にエントリーを選ばせるな**。戦略は `config/strategy.json`（閉じた H1 の EMA/RSI/ATR）だけ
+2. **マーチンゲール・ナンピン・グリッドを足すな**
+3. **リスク上限を上げるな**（0.5%/日次2%/最大0.10lot）
+4. **ライブゲートを外すな**: `runtime.live_enabled` + commander `RESUME` + `XM_LIVE_CONFIRM=I_UNDERSTAND_THE_RISK`
+5. **ペーパー損益を XM 残高として語るな**。未確認は未確認
+6. **Threads の schedule を戻すな**（本エンジンの YAML とは別）
+
+検証: `cd xm-trade-engine && node src/self-test.js`

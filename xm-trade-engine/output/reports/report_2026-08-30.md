@@ -1,0 +1,52 @@
+# XM Trade 日次 — 2026-08-30
+
+生成: 2026-08-30T07:15:50.282Z
+
+> ペーパー帳簿は仮想資金。XMの残高・損益は MetaApi 未接続なら **未確認**。発明しない。
+
+## 司令塔ステータス
+
+- command: `PAPER_ONLY`
+- source: init
+- reason: live is gated until a human enables it
+- updated_at: 2026-08-30T00:00:00.000Z
+
+## ペーパー帳簿（XMではない）
+
+- equity: 10000
+- balance: 10000
+- daily start_equity: 10000 (2026-08-30)
+- daily realized: 0
+- open: 0
+- closed today: 0
+
+## 実口座ゲート
+
+- adapter: paper
+- live_enabled: false
+- blocked: runtime.live_enabled is false
+- blocked: commander PAPER_ONLY
+- blocked: XM_LIVE_CONFIRM is not I_UNDERSTAND_THE_RISK
+
+## 人間 / Grok Bot の1手
+
+デモEAが未設置なら、今日の1手は **MT5デモに EA を載せる**。実口座はまだ開くな。
+停止するときは Issue に次の1行だけ:
+
+```
+KILL_SWITCH: HALT
+```
+
+再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`
+`RESUME` はライブゲートを全部満たさない限り実発注しない。
+
+## やるな
+
+- LLM / Grok にエントリーを選ばせるな
+- マーチンゲール・ナンピン・グリッドを足すな
+- リスク上限を上げるな
+- XM_LIVE_CONFIRM なしで実口座発注するな
+- GitHub cron を実時間の発注クロックにするな（遅延する）
+- ペーパー損益をXM口座の損益として語るな
+- 数字が無いのに「勝っている」と書くな
+

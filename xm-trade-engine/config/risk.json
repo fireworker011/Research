@@ -1,0 +1,12 @@
+{
+  "paper_start_balance": 10000,
+  "risk_per_trade_pct": 0.5,
+  "max_daily_loss_pct": 2,
+  "max_open_positions": 2,
+  "max_lot": 0.1,
+  "min_lot": 0.01,
+  "lot_step": 0.01,
+  "contract_size": 100000,
+  "spread_pips": 1.2,
+  "commission_per_lot": 0
+}

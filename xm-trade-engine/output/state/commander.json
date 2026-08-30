@@ -1,0 +1,7 @@
+{
+  "command": "PAPER_ONLY",
+  "source": "init",
+  "reason": "live is gated until a human enables it",
+  "risk_multiplier": 1,
+  "updated_at": "2026-08-30T00:00:00.000Z"
+}
