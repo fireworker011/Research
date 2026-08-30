@@ -236,14 +236,12 @@ async function notifyGoldAwaitingArm(setup) {
   const body = [
     marker,
     '',
-    `Gold 半自動 ${setup.date} は \`awaiting_arm\`。方向は選ぶな。`,
-    `asia ${setup.asia_low} – ${setup.asia_high} (frac ${setup.range_atr_frac})`,
-    `OCO BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
+    `Gold 半自動 ${setup.date} は awaiting_arm。このコメントは指令ではない。`,
+    `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
+    `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
+    `suggested_side: ${setup.suggested_side}`,
     '',
-    '```',
-    'ARM: GOLD',
-    '```',
-    '見送りなら `SKIP: GOLD`。HALT 中は ARM しても発注しない。'
+    'Grok は suggested_side にだけ従え。NONE なら見送り。価格・ロット・SL を変えるな。HALT 中は出すな。'
   ].join('\n');
   await fetch(`${base}/issues/${found.number}/comments`, {
     method: 'POST',

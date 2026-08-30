@@ -1,10 +1,11 @@
 {
   "enabled": true,
   "mode": "semi_auto",
+  "entry_operator": "grok",
   "symbol": "GOLD",
   "yahoo_symbol": "XAUUSD=X",
   "contract_size": 100,
-  "disclaimer": "方向はOCOが市場に任せる。ARMは方向予想ではない。マーチンゲール禁止。",
+  "disclaimer": "Grok は suggested_side に従い ENTRY する。自由な予想は禁止。マーチンゲール禁止。",
   "asia_start_utc": 0,
   "asia_end_utc": 7,
   "london_start_utc": 7,

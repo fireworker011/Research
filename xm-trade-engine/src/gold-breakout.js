@@ -62,6 +62,7 @@ function asianRange(bars, now, cfg) {
   return {
     high: Math.max(...window.map((b) => b.high)),
     low: Math.min(...window.map((b) => b.low)),
+    close: window[window.length - 1].close,
     bars: window.length
   };
 }
@@ -69,7 +70,7 @@ function asianRange(bars, now, cfg) {
 function emptyGoldState(now, reason) {
   return {
     kind: 'gold_semi_auto',
-    disclaimer: '方向はOCO。ARMは買い／売り予想ではない。XM残高ではない。',
+    disclaimer: 'Grok のエントリーは suggested_side に従うパネル操作。予想文は禁止。XM残高ではない。',
     date: todayUTC(now),
     status: 'idle',
     reason: reason || 'waiting_asia',
@@ -78,7 +79,19 @@ function emptyGoldState(now, reason) {
 }
 
 /**
- * アジアレンジ確定後のセットアップ。方向は出さない（BuyStop と SellStop の両方）。
+ * アジア終値がレンジのどこにいるかだけ見る。LLM の予想ではない。
+ * 上1/3 → BUY、下1/3 → SELL、真ん中 → NONE（見送り）。
+ */
+function suggestedSide(asia) {
+  if (!asia || !(asia.high > asia.low) || asia.close == null) return 'NONE';
+  const pos = (asia.close - asia.low) / (asia.high - asia.low);
+  if (pos >= 2 / 3) return 'BUY';
+  if (pos <= 1 / 3) return 'SELL';
+  return 'NONE';
+}
+
+/**
+ * アジアレンジ確定後のセットアップ。Grok が ENTRY するまで発注しない。
  */
 function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null }) {
   if (!cfg || cfg.enabled === false) return emptyGoldState(now, 'disabled');
@@ -131,10 +144,11 @@ function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null 
   const buffer = h1Atr * cfg.breakout_buffer_atr;
   const slDist = h1Atr * cfg.sl_atr;
   const tpDist = slDist * cfg.reward_multiple;
+  const side = suggestedSide(asia);
 
   return {
     kind: 'gold_semi_auto',
-    disclaimer: '方向はOCO。ARMは買い／売り予想ではない。XM残高ではない。',
+    disclaimer: 'Grok のエントリーは suggested_side に従うパネル操作。予想文は禁止。XM残高ではない。',
     date: todayUTC(now),
     status: 'awaiting_arm',
     reason: 'asia_locked',
@@ -142,10 +156,12 @@ function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null 
     symbol: cfg.symbol,
     asia_high: roundTo(asia.high, 2),
     asia_low: roundTo(asia.low, 2),
+    asia_close: roundTo(asia.close, 2),
     range: roundTo(range, 2),
     daily_atr: roundTo(dailyAtr, 2),
     h1_atr: roundTo(h1Atr, 2),
     range_atr_frac: roundTo(frac, 3),
+    suggested_side: side,
     buy_stop: roundTo(asia.high + buffer, 2),
     sell_stop: roundTo(asia.low - buffer, 2),
     sl_distance: roundTo(slDist, 2),
@@ -167,7 +183,16 @@ function applyArm(setup, { goldArm, goldArmDate, halted, now }) {
     return { ...setup, status: 'skipped', arm: 'SKIP', reason: 'skip_command' };
   }
   if (goldArm === 'ARM' && goldArmDate === today && setup.status === 'awaiting_arm') {
-    return { ...setup, status: 'armed', arm: 'ARM', reason: 'armed' };
+    return { ...setup, status: 'armed', arm: 'ARM', entry_side: null, reason: 'armed_oco' };
+  }
+  if ((goldArm === 'BUY' || goldArm === 'SELL') && goldArmDate === today && setup.status === 'awaiting_arm') {
+    return {
+      ...setup,
+      status: 'armed',
+      arm: goldArm,
+      entry_side: goldArm,
+      reason: 'grok_entry'
+    };
   }
   return setup;
 }
@@ -193,8 +218,10 @@ function detectFill(setup, bars, now, cfg) {
   if (!inLondonWindow(now, cfg)) return setup;
   const last = bars && bars[bars.length - 1];
   if (!last) return setup;
-  const hitBuy = last.high >= setup.buy_stop;
-  const hitSell = last.low <= setup.sell_stop;
+  const allowBuy = !setup.entry_side || setup.entry_side === 'BUY';
+  const allowSell = !setup.entry_side || setup.entry_side === 'SELL';
+  const hitBuy = allowBuy && last.high >= setup.buy_stop;
+  const hitSell = allowSell && last.low <= setup.sell_stop;
   if (hitBuy && hitSell) {
     return { ...setup, status: 'armed', reason: 'ambiguous_both_sides' };
   }
@@ -237,6 +264,7 @@ module.exports = {
   isGoldSymbol,
   isFirstFriday,
   asianRange,
+  suggestedSide,
   groupDaily,
   proposeSetup,
   applyArm,

@@ -15,8 +15,8 @@ GitHub の cron は 1〜4 時間遅延するのが常態なので、H1 の発注
 ```
 Grok Bot（司令塔）
   Issue「XM Trade — 日次レポート」を読む
-1手は KILL_SWITCH: HALT | PAPER_ONLY | REDUCE_RISK | RESUME
-  Gold 半自動だけ ARM: GOLD / SKIP: GOLD（方向は書かない）
+  1手は KILL_SWITCH または Gold の ENTRY/SKIP
+  Gold は suggested_side に従う。自由予想は禁止
         │
 Cursor（参謀）          GitHub Actions（ペーパー + 報告）
   戦略・リスク・EA保守     価格取得 → 仮想帳簿 → commander.json 更新
@@ -33,7 +33,7 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 |---|---|---|
 | **EA（実時間）** | XM への発注・SL/TP・日次損失で全決済 | GitHub の遅延シグナルでエントリー |
 | **Node tick** | ペーパー追跡・シグナル記録・日次損失で HALT 書き込み | 実口座の損益を捏造 |
-| **Grok Bot** | 停止・縮小・継続の 1 手 | 通貨ペアの売買指示、目標金額の変更 |
+| **Grok Bot** | 停止判断と Gold の ENTRY（suggested_side のみ） | 自由な方向予想、ロット変更 |
 | **Cursor** | コードと不変条件 | リスク上限を上げる、マーチンゲールを足す |
 
 ## 戦略（日付でも乱数でもなく、閉じた足だけ）
@@ -45,7 +45,7 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 - エントリー: 終値が EMA20 をトレンド方向へクロス、RSI(14) が極端域でない
 - 損切 1.5×ATR(14)、利確 2.0×ATR(14)
 - セッション: 07:00–21:00 UTC、金曜 18:00 UTC 以降は新規禁止＋決済
-- 禁止: マーチンゲール、ナンピン、グリッド、LLM エントリー
+- 禁止: マーチンゲール、ナンピン、グリッド。Majors は LLM エントリー禁止。Gold は suggested_side パネルのみ
 
 ## Gold 半自動（巷の Gold EA から取るもの / 捨てるもの）
 
@@ -54,19 +54,20 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 取るもの:
 
 1. アジア時間にレンジを測る
-2. ロンドン前半に BuyStop と SellStop を両方置く（OCO。方向は市場が決める）
-3. 人がその日のセットアップを ARM するまで待ってから置く
+3. Grok がセットアップカードの `suggested_side` に従い `ENTRY: GOLD BUY|SELL`（または NONE なら SKIP）
 4. スプレッドが広い日・月初金曜（NFP 隣接）は休む
-5. 約定後は SL/TP と「片方約定で反対を取消」だけ自動
+5. 約定後は SL/TP と反対 pending の取消だけ自動
 
-捨てるもの: マーチンゲール、ナンピン、グリッド、Telegram シグナルのコピー、LLM に「金は上」と言わせること。
+捨てるもの: マーチンゲール、ナンピン、グリッド、Telegram シグナルのコピー、Grok に「金は上」と自由予想させること。
+
+Grok はパネルの Buy/Sell ボタン。価格・ロット・SL はエンジンが決める。`suggested_side` はアジア終値がレンジの上1/3か下1/3かだけ。
 
 実装:
 
-- Node: `src/gold-breakout.js` + Issue の `ARM: GOLD` / `SKIP: GOLD`
-- 実時間: `ea/XMGoldSemi.mq5` を XM の **GOLD（または XAUUSD）M15** に載せる
+- Node: `src/gold-breakout.js` + Issue の `ENTRY: GOLD BUY|SELL` / `SKIP: GOLD`
+- コメント即時反映: `.github/workflows/xm_trade_commander.yml`（cron を待たない）
+- 実時間: `ea/XMGoldSemi.mq5` を XM の **GOLD M15** に載せる
 - リスクは majors と同じ 0.5% / 日次 2% / 最大 0.10 lot。上げない
-- GitHub cron では Gold を発注しない（遅延するためペーパー追跡のみ）
 
 XM のゴールド銘柄はエンティティにより `GOLD` / `XAUUSD`。チャートの銘柄に EA を付ける。
 
@@ -122,14 +123,14 @@ KILL_SWITCH: HALT
 KILL_SWITCH: PAPER_ONLY
 KILL_SWITCH: REDUCE_RISK
 KILL_SWITCH: RESUME
-ARM: GOLD
+ENTRY: GOLD BUY
+ENTRY: GOLD SELL
 SKIP: GOLD
+ARM: GOLD
 ```
 
-`ARM: GOLD` は今日の OCO 許可だけ。Buy/Sell を書くな。
-
-次の tick が Issue コメントを `commander.json` に写し、EA がそれを読む。
-`RESUME` は「実口座ゲートを開け」であり、利益保証ではない。
+Grok の Gold 行は `suggested_side` に従う。NONE なら SKIP。`ARM` は人間が OCO 両方を明示したときだけ。
+Issue コメントは commander へ即時反映。EA が 60 秒ごとに読む。`RESUME` は利益保証ではない。
 
 ## ファイル
 

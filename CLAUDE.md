@@ -61,7 +61,7 @@ node src/threads-poster.js --dry-run                               # 実投稿�
 
 XM に公式 REST はない。実時間の発注は `ea/XMGrokEngine.mq5`。GitHub cron はペーパー追跡と commander の配信だけ。
 
-1. **LLM にエントリーを選ばせるな**。戦略は `config/strategy.json`（閉じた H1 の EMA/RSI/ATR）だけ。Gold の `ARM: GOLD` は方向予想ではない
+1. **LLM にエントリーを選ばせるな**（Majors）。Gold だけ `ENTRY: GOLD BUY|SELL` を許す。中身は `suggested_side`（アジア終値の位置）に従うパネル操作であり、自由な予想ではない
 2. **マーチンゲール・ナンピン・グリッドを足すな**（巷の Gold EA をコピーするな）
 3. **リスク上限を上げるな**（0.5%/日次2%/最大0.10lot）
 4. **ライブゲートを外すな**: `runtime.live_enabled` + commander `RESUME` + `XM_LIVE_CONFIRM=I_UNDERSTAND_THE_RISK`

@@ -35,6 +35,7 @@ jobs:
           node --check src/paper-broker.js
           node --check src/adapters/signal-file.js
           node --check src/adapters/metaapi.js
+          node --check src/apply-commander-comment.js
           node --check src/gold-breakout.js
           node --check src/tick.js
           node --check src/report.js

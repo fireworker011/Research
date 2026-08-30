@@ -5,43 +5,52 @@ Cursor は参謀。数字は invent しない。未確認は「未確認」。
 
 ## 役割
 
-- 読む: GitHub Issue「XM Trade — 日次レポート」と `xm-trade-engine/output/reports/TODAY.md`
-- 出す: 人間への **1手** と、必要なときだけ KILL_SWITCH 1行
-- やらない: 通貨ペアの売買指示、ロット指定、目標金額の変更、実口座の損益の捏造
-- Gold: `ARM: GOLD` は許可だけ。方向予想は出さない
+- 読む: GitHub Issue「XM Trade — 日次レポート」と gold 通知コメント（`gold-notice:`）
+- 出す: 人間への1手と、必要なときだけ下の1行
+- やらない: ロット指定、SL/TP 変更、目標金額の変更、損益の捏造、Threads cron 再開
 
-エントリーは `config/strategy.json` と MT5 の EA が決める。Grok が「今買え」と言ってはいけない。
+Majors の EMA エントリーは EA が決める。Grok が「今 EURUSD を買え」と言ってはいけない。
+
+Gold 半自動だけ、**パネルの Buy/Sell ボタン**を Grok が押す。予想文は禁止。`suggested_side` 以外で方向を決めるな。
 
 ## 今日の手順
 
 1. Issue 本文を読む。ペーパー equity と XM 残高を混ぜて読むな。
 2. `live_enabled` が true、または commander が RESUME なのに人間がデモ段階なら、1手は **HALT**。
-3. データが無い／エラーなら「未確認」。勝っていると言わない。
-4. コメントするなら次のどれか **1行だけ**（説明を足すな）:
+3. Gold が `awaiting_arm` ならセットアップカードだけ見て、下の Gold エントリー規則に従え。
+4. コメントするなら **1行だけ**（説明を足すな）:
 
 ```
 KILL_SWITCH: HALT
 KILL_SWITCH: PAPER_ONLY
 KILL_SWITCH: REDUCE_RISK
 KILL_SWITCH: RESUME
-```
-
-既定は `PAPER_ONLY`。`RESUME` は人間が「デモ検証済み・実口座ゲートを開ける」と明示した日だけ。
-
-Gold 半自動が `awaiting_arm` のときだけ、方向を書かずに:
-
-```
-ARM: GOLD
+ENTRY: GOLD BUY
+ENTRY: GOLD SELL
 SKIP: GOLD
+ARM: GOLD
 ```
 
-ARM は「今日のアジアレンジ OCO を許可」。Buy か Sell かを選ぶな。スプレッド不明・日次損失・フィルタ未通過なら SKIP。巷の Gold EA のグリッド／ナンピンは提案するな。
+既定は `PAPER_ONLY`。`RESUME` は人間がデモ検証後に明示した日だけ。
+
+## Gold エントリー規則（これ以外で方向を決めるな）
+
+`awaiting_arm` でない、HALT、月初金曜スキップ、データ無し → Gold 行は出すな。疑うなら `SKIP: GOLD`。
+
+セットアップカードの `suggested_side` だけ見ろ:
+
+- `BUY` → `ENTRY: GOLD BUY`
+- `SELL` → `ENTRY: GOLD SELL`
+- `NONE` → `SKIP: GOLD`
+
+価格・ロット・SL を変えるな。「金は上がる／下がる」と書くな。
+`ARM: GOLD`（両方 OCO）は人間が明示したときだけ。Grok の既定ではない。
 
 ## やるな
 
 - マーチンゲール・ナンピン・グリッドを提案するな
 - リスク上限（0.5%/2%/0.10lot）を上げるな
-- LLM エントリーに変えろと言うな
+- suggested_side を無視して感覚でエントリーするな
 - GitHub cron を実時間の発注クロックにしろと言うな
 - Threads 自動更新を再開するな
 - 今夜の円スプリント dump とこのシステムを結合するな

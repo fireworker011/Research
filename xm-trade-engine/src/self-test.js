@@ -12,13 +12,14 @@ const {
   LIVE_CONFIRM_PHRASE
 } = require('./risk');
 const { parseCommandText, applyCommand, latestCommandFromComments, defaultCommander, parseGoldArmText } = require('./commander');
+const { applyComment } = require('./apply-commander-comment');
 const { parseYahooChart, dropIncompleteLastBar } = require('./market-data');
 const { tradeBody, isSuccess } = require('./adapters/metaapi');
 const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
 const { loadConfig, pipSize } = require('./util');
-const { proposeSetup, applyArm, detectFill, isFirstFriday } = require('./gold-breakout');
+const { proposeSetup, applyArm, detectFill, isFirstFriday, suggestedSide } = require('./gold-breakout');
 
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
@@ -273,6 +274,8 @@ async function runSelfTest() {
   assertEqual(pipSize('GOLD'), 0.01, 'gold pip');
   assertEqual(parseGoldArmText('ARM: GOLD'), 'ARM', 'arm parse');
   assertEqual(parseGoldArmText('SKIP: GOLD'), 'SKIP', 'skip parse');
+  assertEqual(parseGoldArmText('ENTRY: GOLD BUY'), 'BUY', 'entry buy');
+  assertEqual(parseGoldArmText('ENTRY: GOLD SELL'), 'SELL', 'entry sell');
   assertEqual(parseGoldArmText('KILL_SWITCH: HALT'), null, 'kill is not arm');
   assertEqual(isFirstFriday(new Date('2026-09-04T08:00:00Z')), true, 'first friday');
   assertEqual(isFirstFriday(new Date('2026-09-11T08:00:00Z')), false, 'second friday');
@@ -281,7 +284,53 @@ async function runSelfTest() {
   const proposed = proposeSetup({ bars: goldAsiaBars(), now: lockNow, cfg: goldTestCfg, dailyAtrOverride: 20 });
   assertEqual(proposed.status, 'awaiting_arm', `gold propose ${proposed.status} ${proposed.reason}`);
   assert(proposed.buy_stop > proposed.asia_high, 'buy stop above asia');
-  assert(proposed.sell_stop < proposed.asia_low, 'sell stop below asia');
+  assertEqual(proposed.suggested_side, 'NONE', 'mid asia close is none');
+
+  const buyBars = goldAsiaBars();
+  const lastAsia = buyBars.findLast
+    ? buyBars.filter((b) => b.time < Date.parse('2024-03-05T07:00:00Z')).slice(-1)[0]
+    : null;
+  const idx = buyBars.indexOf(lastAsia);
+  buyBars[idx].close = 2403.2;
+  buyBars[idx].high = Math.max(buyBars[idx].high, 2403.2);
+  const buySetup = proposeSetup({ bars: buyBars, now: lockNow, cfg: goldTestCfg, dailyAtrOverride: 20 });
+  assertEqual(buySetup.suggested_side, 'BUY', 'upper third suggests buy');
+  assertEqual(suggestedSide({ high: 100, low: 0, close: 80 }), 'BUY', 'suggested buy');
+  assertEqual(suggestedSide({ high: 100, low: 0, close: 20 }), 'SELL', 'suggested sell');
+
+  const grokBuy = applyArm(buySetup, { goldArm: 'BUY', goldArmDate: '2024-03-05', halted: false, now: lockNow });
+  assertEqual(grokBuy.entry_side, 'BUY', 'grok entry side');
+  const grokFilled = detectFill(
+    grokBuy,
+    [{
+      time: Date.parse('2024-03-05T08:00:00Z'),
+      high: grokBuy.buy_stop + 1,
+      low: grokBuy.sell_stop - 1,
+      open: 2400,
+      close: grokBuy.buy_stop + 0.4,
+      volume: 1
+    }],
+    new Date('2024-03-05T08:30:00Z'),
+    goldTestCfg
+  );
+  assertEqual(grokFilled.status, 'filled', 'grok buy fills');
+  assertEqual(grokFilled.fill_side, 'BUY', 'buy-only ignores sell stop');
+
+  const applied = applyComment({
+    body: 'ENTRY: GOLD SELL',
+    login: 'grok-bot',
+    now: lockNow,
+    current: defaultCommander(),
+    persist: false
+  });
+  assertEqual(applied.gold_arm, 'SELL', 'comment writes sell');
+  const ignored = applyComment({
+    body: 'gold-notice:2024-03-05\nENTRY: GOLD BUY',
+    login: 'human',
+    now: lockNow,
+    persist: false
+  });
+  assertEqual(ignored.skipped, true, 'gold-notice is not a command');
 
   const unarmedFill = detectFill(
     proposed,

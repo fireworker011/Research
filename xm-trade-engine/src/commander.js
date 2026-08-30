@@ -7,7 +7,7 @@ const path = require('path');
 const COMMANDER_PATH = path.join(OUTPUT_DIR, 'state', 'commander.json');
 const ISSUE_TITLE = 'XM Trade — 日次レポート';
 const COMMAND_RE = /(?:KILL_SWITCH|COMMAND)\s*:\s*(HALT|PAPER_ONLY|RESUME|REDUCE_RISK)\b/i;
-const GOLD_ARM_RE = /\b(ARM|SKIP)\s*:\s*GOLD\b/i;
+const GOLD_ARM_RE = /\b(?:ENTRY\s*:\s*GOLD\s*(BUY|SELL)|(ARM|SKIP)\s*:\s*GOLD)\b/i;
 
 function defaultCommander() {
   return {
@@ -41,7 +41,7 @@ function parseCommandText(text) {
 function parseGoldArmText(text) {
   const m = String(text || '').match(GOLD_ARM_RE);
   if (!m) return null;
-  return m[1].toUpperCase();
+  return (m[1] || m[2]).toUpperCase();
 }
 
 function latestGoldArmFromComments(comments) {

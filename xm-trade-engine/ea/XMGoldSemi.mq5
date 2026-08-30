@@ -1,9 +1,9 @@
-// Gold 半自動: アジアレンジをロックし、ARM された日だけロンドン OCO を置く。
-// 方向は選ばない。グリッド／ナンピンは実装しない。時間は TimeGMT()。
+// Gold 半自動: アジアレンジをロックし、Grok の ENTRY: GOLD BUY|SELL で片側 pending。
+// ARM は両方 OCO。予想文は使わない。グリッド／ナンピンは実装しない。
 
 #property copyright "xm-trade-engine"
 #property version   "1.00"
-#property description "XM GOLD semi-auto: Asian range, London OCO, ARM from commander.json"
+#property description "XM GOLD semi-auto: Grok ENTRY BUY/SELL or ARM OCO via commander.json"
 
 #include <Trade/Trade.mqh>
 
@@ -109,7 +109,9 @@ void OnTick()
          CancelPendings();
       return;
    }
-   if(gGoldArm != "ARM" || gGoldArmDate != GmtDateStr())
+   if(gGoldArm != "ARM" && gGoldArm != "BUY" && gGoldArm != "SELL")
+      return;
+   if(gGoldArmDate != GmtDateStr())
       return;
    if(!AllowRealOrDemo())
       return;
@@ -118,7 +120,7 @@ void OnTick()
    if(spread > MaxSpreadPrice)
       return;
 
-   PlaceOco();
+   PlaceStops(gGoldArm);
 }
 
 void LockAsiaRange()
@@ -161,7 +163,7 @@ void LockAsiaRange()
    Print("asia locked high=", gAsiaHigh, " low=", gAsiaLow, " frac=", frac);
 }
 
-void PlaceOco()
+void PlaceStops(string side)
 {
    double atr;
    if(!Copy1(hAtr, 1, atr) || atr <= 0)
@@ -171,12 +173,20 @@ void PlaceOco()
    double tpDist = slDist * RewardMultiple;
    double buy = gAsiaHigh + buffer;
    double sell = gAsiaLow - buffer;
-   double lotBuy = LotFromRisk(buy, buy - slDist);
-   double lotSell = LotFromRisk(sell, sell + slDist);
-   if(lotBuy < MinLot || lotSell < MinLot)
-      return;
-   trade.BuyStop(lotBuy, buy, _Symbol, buy - slDist, buy + tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
-   trade.SellStop(lotSell, sell, _Symbol, sell + slDist, sell - tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
+   bool wantBuy = (side == "ARM" || side == "BUY");
+   bool wantSell = (side == "ARM" || side == "SELL");
+   if(wantBuy)
+   {
+      double lotBuy = LotFromRisk(buy, buy - slDist);
+      if(lotBuy < MinLot) return;
+      trade.BuyStop(lotBuy, buy, _Symbol, buy - slDist, buy + tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
+   }
+   if(wantSell)
+   {
+      double lotSell = LotFromRisk(sell, sell + slDist);
+      if(lotSell < MinLot) return;
+      trade.SellStop(lotSell, sell, _Symbol, sell + slDist, sell - tpDist, ORDER_TIME_GTC, 0, "xmge-gold");
+   }
    gPlacedToday = true;
 }
 
@@ -315,7 +325,7 @@ void PollCommander()
       gCommand = cmd;
    string arm = ExtractJsonString(json, "gold_arm");
    StringToUpper(arm);
-   if(arm == "ARM" || arm == "SKIP" || arm == "IDLE")
+   if(arm == "ARM" || arm == "SKIP" || arm == "IDLE" || arm == "BUY" || arm == "SELL")
       gGoldArm = arm;
    gGoldArmDate = ExtractJsonString(json, "gold_arm_date");
 }

@@ -12,7 +12,7 @@ const { todayUTC } = require('./util');
 
 const TRACKING_ISSUE_TITLE = commanderMod.ISSUE_TITLE;
 const FORBIDDEN = [
-  'LLM / Grok にエントリー方向を選ばせるな（Gold の ARM は方向予想ではない）',
+  'LLM / Grok に majors のエントリーを選ばせるな。Gold は suggested_side 以外で方向を決めるな',
   'マーチンゲール・ナンピン・グリッドを足すな',
   'リスク上限を上げるな',
   'XM_LIVE_CONFIRM なしで実口座発注するな',
@@ -71,11 +71,12 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     lines.push(`- status: \`${goldState.status}\``);
     lines.push(`- reason: ${goldState.reason || '—'}`);
     if (goldState.asia_high != null) {
-      lines.push(`- asia: ${goldState.asia_low} – ${goldState.asia_high} (range ${goldState.range}, frac ${goldState.range_atr_frac})`);
-      lines.push(`- OCO: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
+      lines.push(`- asia: ${goldState.asia_low} – ${goldState.asia_high} close ${goldState.asia_close ?? '—'} (range ${goldState.range}, frac ${goldState.range_atr_frac})`);
+      lines.push(`- suggested_side: ${goldState.suggested_side || 'NONE'}`);
+      lines.push(`- levels: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
     }
     if (goldState.status === 'awaiting_arm') {
-      lines.push('- 方向は選ぶな。フィルタ通過なら `ARM: GOLD`、疑うなら `SKIP: GOLD`');
+      lines.push('- Grok は suggested_side に従え。BUY→`ENTRY: GOLD BUY` / SELL→`ENTRY: GOLD SELL` / NONE→`SKIP: GOLD`');
     }
   } else {
     lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
@@ -102,7 +103,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`');
   lines.push('`RESUME` はライブゲートを全部満たさない限り実発注しない。');
-  lines.push('Gold 半自動: `ARM: GOLD` は今日の OCO を許可するだけ。Buy/Sell を指定するな。');
+  lines.push('Gold 半自動: Grok は `ENTRY: GOLD BUY` / `ENTRY: GOLD SELL` / `SKIP: GOLD`。suggested_side 以外で方向を決めるな。');
   lines.push('');
   lines.push('## やるな');
   lines.push('');
