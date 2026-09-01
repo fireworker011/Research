@@ -1,6 +1,22 @@
 {
   "kind": "shadow_signals",
   "disclaimer": "GitHub cron は1〜4時間遅延する。XMの実時間発注には使わず、EAのローカル戦略を正とする。",
-  "updated_at": "2026-08-30T00:00:00.000Z",
-  "intents": []
+  "updated_at": "2026-09-01T23:19:13.864Z",
+  "intents": [
+    {
+      "symbol": "EURUSD",
+      "action": "FLAT",
+      "reason": "out_of_session"
+    },
+    {
+      "symbol": "GBPUSD",
+      "action": "FLAT",
+      "reason": "out_of_session"
+    },
+    {
+      "symbol": "USDJPY",
+      "action": "FLAT",
+      "reason": "out_of_session"
+    }
+  ]
 }
