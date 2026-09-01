@@ -1,0 +1,20 @@
+{
+  "symbols": ["EURUSD", "GBPUSD", "USDJPY"],
+  "ema_fast": 20,
+  "ema_slow": 50,
+  "rsi_period": 14,
+  "atr_period": 14,
+  "sl_atr": 1.5,
+  "tp_atr": 2.0,
+  "rsi_overbought": 70,
+  "rsi_oversold": 30,
+  "atr_filter": {
+    "min_atr_over_close": 0.00025,
+    "max_atr_over_close": 0.008
+  },
+  "session": {
+    "utc_start_hour": 7,
+    "utc_end_hour": 21,
+    "friday_flatten_utc_hour": 18
+  }
+}

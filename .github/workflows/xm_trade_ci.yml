@@ -1,0 +1,45 @@
+name: XM Trade CI（発注しない）
+
+on:
+  pull_request:
+    paths:
+      - 'xm-trade-engine/**'
+      - '.github/workflows/xm_trade_*.yml'
+  push:
+    paths:
+      - 'xm-trade-engine/**'
+      - '.github/workflows/xm_trade_*.yml'
+
+concurrency:
+  group: xm-trade-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: node --check と self-test
+        run: |
+          set -euo pipefail
+          cd xm-trade-engine
+          node --check src/util.js
+          node --check src/indicators.js
+          node --check src/strategy.js
+          node --check src/risk.js
+          node --check src/commander.js
+          node --check src/market-data.js
+          node --check src/paper-broker.js
+          node --check src/adapters/signal-file.js
+          node --check src/adapters/metaapi.js
+          node --check src/apply-commander-comment.js
+          node --check src/gold-breakout.js
+          node --check src/tick.js
+          node --check src/report.js
+          node --check src/backtest.js
+          node --check src/self-test.js
+          node src/self-test.js
+          node src/tick.js --dry-run

@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-30T07:15:50.282Z",
+  "commander": {
+    "command": "PAPER_ONLY",
+    "source": "init",
+    "reason": "live is gated until a human enables it",
+    "risk_multiplier": 1,
+    "updated_at": "2026-08-30T00:00:00.000Z"
+  },
+  "paper_equity": 10000,
+  "paper_balance": 10000,
+  "live_gate": [
+    "runtime.live_enabled is false",
+    "commander PAPER_ONLY",
+    "XM_LIVE_CONFIRM is not I_UNDERSTAND_THE_RISK"
+  ],
+  "daily_loss_exceeded": false
+}

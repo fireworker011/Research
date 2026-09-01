@@ -1,0 +1,14 @@
+{
+  "kind": "paper",
+  "disclaimer": "仮想資金。XM口座の残高ではない。数字を実口座と混ぜて読むな。",
+  "currency": "USD",
+  "balance": 10000,
+  "equity": 10000,
+  "positions": [],
+  "closed": [],
+  "daily": {
+    "date": "2026-08-30",
+    "start_equity": 10000,
+    "realized_pnl": 0
+  }
+}

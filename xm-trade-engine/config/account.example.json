@@ -1,0 +1,8 @@
+{
+  "broker": "XM",
+  "platform": "MT5",
+  "entity_note": "契約エンティティ（XM Global 等）で EA 可否を自分で確認する。ここに口座番号を書くな。",
+  "symbol_suffix": "",
+  "magic": 260830,
+  "metaapi_domain": "https://mt-client-api-v1.new-york.agiliumtrade.ai"
+}

@@ -1,0 +1,49 @@
+name: XM Trade ペーパーティック（実発注しない）
+
+on:
+  schedule:
+    # ペーパー追跡用。GitHub cron は遅延する。EA の発注クロックには使わない。
+    # Gold ロンドンはブローカー 7-11 ≈ UTC 5-9（XM +2）。窓を逃さないよう 04 UTC から。
+    - cron: '17 4-21 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: xm-trade-tick
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ペーパーティック
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          METAAPI_TOKEN: ${{ secrets.METAAPI_TOKEN }}
+          METAAPI_ACCOUNT_ID: ${{ secrets.METAAPI_ACCOUNT_ID }}
+          METAAPI_DOMAIN: ${{ secrets.METAAPI_DOMAIN }}
+          XM_LIVE_CONFIRM: ${{ secrets.XM_LIVE_CONFIRM }}
+        run: |
+          set -euo pipefail
+          cd xm-trade-engine
+          node --check src/tick.js
+          node src/self-test.js
+          node src/tick.js
+
+      - name: 状態を保存
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add xm-trade-engine/output/state || true
+          git diff --staged --quiet || {
+            git commit -m "chore: XM ペーパーティック"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push
+          }

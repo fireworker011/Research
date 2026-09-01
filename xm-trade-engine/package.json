@@ -1,0 +1,16 @@
+{
+  "name": "xm-trade-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "XM MT5 向けの Cursor / Grok Bot 自動トレード。エントリーはルール、司令塔は停止判断。",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node src/self-test.js",
+    "tick": "node src/tick.js",
+    "tick:dry": "node src/tick.js --dry-run",
+    "report": "node src/report.js",
+    "backtest": "node src/backtest.js"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "live_enabled": false,
+  "adapter": "paper",
+  "note": "adapter は paper | signal | metaapi。live_enabled を true にするな（人間がデモ検証した後だけ）。"
+}
