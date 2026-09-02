@@ -1,6 +1,6 @@
 # XM Trade — 完全自動の載せ方
 
-このファイルが MT5 側の要約。**手元が iPhone だけの手順の正は [`IPHONE.md`](IPHONE.md)。**
+このファイルが MT5 側の要約。**iPhone だけ・初めての人（生姜含む）向けの手順の正は [`IPHONE.md`](IPHONE.md)。** 画面の言葉どおりに進める。
 
 Issue は作成済み: https://github.com/fireworker011/Research/issues/93 （`NotifyIssueNumber` は `93`）
 PR #91 はデフォルトへマージ済み。Threads の schedule は戻さない。
