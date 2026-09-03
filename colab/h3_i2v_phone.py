@@ -39,8 +39,25 @@ def github_raw(rel: str, *, repo: str = REPO, branch: str = BRANCH) -> str:
     return f"https://raw.githubusercontent.com/{repo}/{branch}/{rel}"
 
 
+BOT_NOTEBOOKS = {
+    "t2v": "minimax_h3_t2v_bot.ipynb",
+    "i2v": "minimax_h3_i2v_bot.ipynb",
+    "r2v": "minimax_h3_r2v_bot.ipynb",
+}
+
+
 def colab_open_url(*, repo: str = REPO, branch: str = BRANCH, path: str = "minimax_h3_i2v_phone.ipynb") -> str:
     return f"https://colab.research.google.com/github/{repo}/blob/{branch}/{path}"
+
+
+def bot_colab_url(mode: str, *, repo: str = REPO, branch: str = BRANCH) -> str:
+    key = str(mode or "i2v").strip().lower()
+    aliases = {"i2va": "i2v", "fl2va": "i2v", "text": "t2v", "ref2v": "r2v", "ref2va": "r2v"}
+    key = aliases.get(key, key)
+    path = BOT_NOTEBOOKS.get(key)
+    if not path:
+        raise ValueError(f"unknown bot mode: {mode}")
+    return colab_open_url(repo=repo, branch=branch, path=path)
 
 
 def ref_image_url(*, repo: str = REPO, branch: str = BRANCH) -> str:

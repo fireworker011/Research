@@ -13,6 +13,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_i2v_job import (
     DRIVE_ROOT_DEFAULT,
+    GROKBOT_DURATION_S,
+    adopt_orphan_prompts,
+    adopt_orphan_r2v_folders,
+    adopt_orphan_stills,
     ensure_drive_tree,
     find_jobs,
     load_job,
@@ -42,7 +46,7 @@ from h3_r2v_core import finalize_prompt
 from h3_t2v import resolve_t2v_prompt, validate_t2v_prompt
 
 
-def _pick_folder(drive_root: Path) -> Path:
+def _pick_folder(drive_root: Path) -> Path | None:
     job_id = (os.environ.get("H3_JOB_ID") or "").strip()
     folder = None
     if job_id:
@@ -58,8 +62,60 @@ def _pick_folder(drive_root: Path) -> Path:
             queued = [p for p in queued if normalize_mode(load_job(p).get("mode")) == want]
         folder = queued[0] if queued else None
     if folder is None:
+        if os.environ.get("H3_BOT_IDLE_OK") == "1":
+            return None
         raise SystemExit("queued のジョブがありません。Grokbot が Imagine まで済ませて queued にしてください。")
     return folder
+
+
+def _queue_ready_without_imagine(folder: Path, job: dict, drive_root: Path, mode: str) -> Path:
+    """Colab bot notebook path: no Imagine. Grokbot host still does Imagine before exec."""
+    mode = normalize_mode(mode)
+    if mode == "t2v":
+        prompt = resolve_t2v_prompt(job.get("prompt"))
+        errs = validate_t2v_prompt(prompt)
+        if errs:
+            raise SystemExit(errs)
+        job["prompt"] = prompt
+    else:
+        still = resolve_job_image(folder, job)
+        dest = folder / "picture1.jpg"
+        dest.write_bytes(still.read_bytes())
+        stage_picture1(folder, dest, job, drive_root / "input")
+        if mode == "r2v":
+            vid = resolve_job_video(folder, job)
+            stage_motion(folder, vid, job, drive_root / "input")
+            job["prompt"] = finalize_prompt(
+                str(job.get("prompt") or ""),
+                [str(job.get("picture1") or "picture1.jpg")],
+                [str(job.get("source_video") or "motion.mp4")],
+                float(job.get("duration_s") or GROKBOT_DURATION_S),
+            )
+    job["duration_s"] = float(job.get("duration_s") or GROKBOT_DURATION_S)
+    if job.get("status") == "ready":
+        set_status(job, "queued")
+    save_job(folder, job)
+    if folder.parent.name != "queued":
+        folder = move_job(folder, "queued", drive_root)
+    return folder
+
+
+def bot_prepare(mode: str, drive_root: Path | None = None) -> None:
+    mode = normalize_mode(mode)
+    os.environ["H3_JOB_MODE"] = mode
+    root = Path(drive_root or os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT)
+    ensure_drive_tree(root)
+    if mode == "t2v":
+        adopt_orphan_prompts(root)
+    elif mode == "r2v":
+        adopt_orphan_r2v_folders(root)
+    else:
+        adopt_orphan_stills(root)
+    for folder in find_jobs(root, status="ready"):
+        job = load_job(folder)
+        if normalize_mode(job.get("mode")) != mode:
+            continue
+        _queue_ready_without_imagine(folder, job, root, mode)
 
 
 def _finish(job: dict, folder: Path, drive_root: Path, result: dict, dry: bool) -> int:
@@ -97,6 +153,10 @@ def main() -> int:
         sys.path.insert(0, "/content")
 
     folder = _pick_folder(drive_root)
+    if folder is None:
+        print("idle: inbox empty")
+        maybe_unassign()
+        return 0
     job = load_job(folder)
     errs = validate_job(job, folder=folder)
     if errs:

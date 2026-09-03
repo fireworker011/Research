@@ -16,6 +16,8 @@ description: Unattended MiniMax H3 T2V (10s, 9:16). After one-time Automation or
 3. 投稿しない。ランタイムはスクリプトが `colab stop` する。
 4. 結果は job id と mp4 パスだけ。空なら `idle`。
 
+専用 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb
+
 `--watch` は常時プロセス用。Cursor Automation では **watch しない**。1件または idle で終わる。
 
 ## Drive

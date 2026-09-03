@@ -229,6 +229,9 @@ def test_skills_and_docs_name_three_agents():
     assert "run_r2v.py" in r2v and "ref2va" in r2v
     assert "ponz" in r2v.lower()
     assert "run_t2v.py" in docs and "run_r2v.py" in docs
+    assert "minimax_h3_t2v_bot.ipynb" in docs
+    assert "minimax_h3_i2v_bot.ipynb" in docs
+    assert "minimax_h3_r2v_bot.ipynb" in docs
     for text in (i2v, t2v, r2v, docs):
         assert "px.a8.net" not in text
         assert "colab stop" in text or "stop" in text
@@ -240,3 +243,60 @@ def test_skills_and_docs_name_three_agents():
         assert "XAI" not in raw
         assert "px.a8.net" not in raw
         assert validate_job(data) == []
+
+
+def test_bot_colabs_are_one_cell_and_mode_locked():
+    from h3_i2v_phone import bot_colab_url
+
+    root = Path(__file__).resolve().parents[1]
+    for mode, needle in (
+        ("t2v", "first_frame"),
+        ("i2v", "first_frame"),
+        ("r2v", "ref2va"),
+    ):
+        url = bot_colab_url(mode)
+        assert url.endswith(f"minimax_h3_{mode}_bot.ipynb")
+        assert "cursor/minimax-h3-motion-identity-e959" in url
+        nb = json.loads((root / f"minimax_h3_{mode}_bot.ipynb").read_text(encoding="utf-8"))
+        codes = [c for c in nb["cells"] if c["cell_type"] == "code"]
+        assert len(codes) == 1
+        src = "".join(codes[0].get("source") or [])
+        compile(src, f"{mode}_bot.py", "exec")
+        assert f'MODE = "{mode}"' in src
+        assert "H3_BOT_IDLE_OK" in src
+        assert "bot_prepare" in src
+        assert "px.a8.net" not in src
+        blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
+        assert "10秒" in blob or "10" in blob
+        if mode == "t2v":
+            assert "first_frame" in blob
+        if mode == "r2v":
+            assert "ref2va" in blob.lower() or "ref2va" in blob
+        assert (root / "minimaxh3" / f"minimax_h3_{mode}_bot.ipynb").is_file()
+
+
+def test_bot_prepare_queues_and_idles(tmp_path, monkeypatch):
+    import os
+    from h3_colab_main import bot_prepare, main
+
+    root = ensure_drive_tree(tmp_path / "drive")
+    monkeypatch.setenv("H3_DRIVE_ROOT", str(root))
+    monkeypatch.setenv("H3_BOT_IDLE_OK", "1")
+    monkeypatch.setenv("H3_DRY_RUN", "1")
+    monkeypatch.setenv("H3_JOB_MODE", "t2v")
+    bot_prepare("t2v", root)
+    assert main() == 0
+    (root / "inbox" / "hook.txt").write_text("Quiet desk, navy hoodie, 広告 in the corner.\n", encoding="utf-8")
+    (root / "inbox" / "face.jpg").write_bytes(b"jpg")
+    bot_prepare("t2v", root)
+    queued = list((root / "queued").iterdir()) if (root / "queued").exists() else []
+    assert len(queued) == 1
+    job = json.loads((queued[0] / "job.json").read_text(encoding="utf-8"))
+    assert job["mode"] == "t2v"
+    assert job["status"] == "queued"
+    assert job["duration_s"] == 10
+    bot_prepare("i2v", root)
+    i2v_q = [p for p in (root / "queued").iterdir() if json.loads((p / "job.json").read_text())["mode"] == "i2v"]
+    assert len(i2v_q) == 1
+    assert (i2v_q[0] / "picture1.jpg").is_file()
+

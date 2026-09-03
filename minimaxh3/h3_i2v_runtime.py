@@ -75,6 +75,7 @@ def fetch_helpers(dest_dir: Path, drive_root: Path) -> None:
         "colab/h3_i2v_phone.py",
         "colab/h3_i2v_job.py",
         "colab/h3_i2v_runtime.py",
+        "colab/h3_colab_main.py",
     ):
         name = Path(rel).name
         dest = dest_dir / name

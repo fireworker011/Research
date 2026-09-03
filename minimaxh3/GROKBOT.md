@@ -51,6 +51,18 @@ python minimaxh3/grokbot/run_r2v.py --watch
 
 セッション名は `h3-i2v` / `h3-t2v` / `h3-r2v`。GPU は A100（`--high-mem`）。R2V の確実な10秒は 80GB。
 
+## bot 専用 Colab（モードごと 1ノート）
+
+コードセルは1本。inbox が空なら idle でランタイムを手放す。人間用のスマホノートとは別。
+
+| bot | 専用 Colab |
+|---|---|
+| T2V | [minimax_h3_t2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb) |
+| I2V | [minimax_h3_i2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_bot.ipynb) |
+| R2V | [minimax_h3_r2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_r2v_bot.ipynb) |
+
+Grokbot の `run_*.py` は同じ処理を `google-colab-cli` で `h3_*_colab_main.py` として exec する。ノートを開いて Run all しても同じ 1件処理。
+
 ## 以降（全自動）
 
 Drive `minimax-h3-comfyui/inbox/`
