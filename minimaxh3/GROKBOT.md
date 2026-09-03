@@ -55,11 +55,11 @@ python minimaxh3/grokbot/run_r2v.py --watch
 
 コードセルは1本。inbox が空なら idle でランタイムを手放す。人間用のスマホノートとは別。
 
-| bot | 専用 Colab |
-|---|---|
-| T2V | [minimax_h3_t2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb) |
-| I2V | [minimax_h3_i2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_bot.ipynb) |
-| R2V | [minimax_h3_r2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_r2v_bot.ipynb) |
+| bot | 専用 Colab（GitHub） | Drive 上の同じノート |
+|---|---|---|
+| T2V | [minimax_h3_t2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1ST6gGKP7T3leIDoozk7jfV30dEXA6m8-) |
+| I2V | [minimax_h3_i2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1myFp5BxF7JlaQvgm5PeMj-FFIOKT4yUE) |
+| R2V | [minimax_h3_r2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_r2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1uon_V60eQo7rfiyG5P4JXhX6JksBpsbZ) |
 
 Grokbot の `run_*.py` は同じ処理を `google-colab-cli` で `h3_*_colab_main.py` として exec する。ノートを開いて Run all しても同じ 1件処理。
 
