@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
-"""Write the phone I2V Colab notebook."""
+"""Write the phone T2V Colab notebook (9:16, no still)."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "minimax_h3_i2v_phone.ipynb"
+OUTS = [
+    ROOT / "minimax_h3_t2v_phone.ipynb",
+    ROOT / "minimaxh3" / "minimax_h3_t2v_phone.ipynb",
+]
 
-MD0 = r"""# MiniMax H3 I2V（スマホ）
+MD0 = r"""# MiniMax H3 T2V（スマホ・9:16）
 
-**セルは3本だけ。** 1枚の画像から10秒の動画を作る（I2VA）。Comfyの画面は開かない。
+**セルは3本だけ。** テキストから動画（T2V）。画像は不要。縦 9:16（576×1024）。Comfyの画面は開かない。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)
+
+1枚から作る I2V は [こちら](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)。
 
 ## スマホでの手順
 
@@ -20,18 +25,10 @@ MD0 = r"""# MiniMax H3 I2V（スマホ）
 2. 右上 ** ram/disk のあたり → ランタイムのタイプ → GPU（A100）**
 3. メニュー **⋮ → ランタイム → すべてのセルを実行**
 4. ①で Google Drive の許可を出す
-5. ②は初回だけ長い（モデル約42GBを Drive に保存。2回目はスキップ）
-6. ③が終わると、この画面に動画が出る。同じファイルは Drive の `MyDrive/minimax-h3-comfyui/output`
-
-自分の写真を使うとき: スマホの Drive アプリで `マイドライブ/minimax-h3-comfyui/input/` に jpg を置く。③の `FIRST_IMAGE` を `auto` にするか、ファイル名を入れる。
-
-空のままだとパーカーの参考画像 `coconala_creator_ref.jpg` を使う。
+5. ②は初回だけ長い（I2V と同じモデル約42GB。既にあればスキップ）
+6. ③の `PROMPT` を書いて実行。動画は Drive の `MyDrive/minimax-h3-comfyui/output`
 
 動画の中にアフィURLは出さない。リンクはプロフィール。画面上は「広告」。
-
-無人で毎回回す（Grokbot）: `minimaxh3/GROKBOT.md`。動画エージェントが Drive inbox に置き、Grokbot が Imagine 2.0 → Colab 起動 → ダウンロード → ランタイム停止。
-
-テキストだけ（T2V・9:16）: [minimax_h3_t2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)
 """
 
 CELL1 = r'''#@title ① Driveをつなぐ（最初の許可だけ）
@@ -60,7 +57,6 @@ with open("/content/h3_paths.env", "w") as f:
     f.write(f"COMFY_DIR={COMFY_DIR}\n")
 
 print("Drive:", DRIVE_ROOT)
-print("写真を置く場所:", f"{DRIVE_ROOT}/input")
 print("動画の保存先:", f"{DRIVE_ROOT}/output")
 
 import torch
@@ -72,15 +68,15 @@ print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
 if vram < 20:
     raise SystemExit("VRAM が足りません。A100 を選んでください。")
 if vram < 70:
-    print("40GB クラス: キャンバスは 768x864。OOM なら自動で 512x576。")
+    print("40GB クラス: 9:16 は 576x1024。OOM なら 288x512。")
 else:
-    print("80GB クラス: そのまま 768x864 で回します。")
+    print("80GB クラス: 9:16 576x1024（必要なら 768x1344）。")
 print("OK → 次は②")
 '''
 
-CELL2 = r'''#@title ② ComfyとI2Vモデルを用意（初回は待つ）
+CELL2 = r'''#@title ② ComfyとH3モデルを用意（初回は待つ）
 print("=" * 60)
-print(" ② I2V 準備（FL2VA + turbo LoRA）")
+print(" ② T2V 準備（FL2VA + turbo LoRA。画像なし）")
 print("=" * 60)
 
 import json, os, shutil, subprocess, sys, time, urllib.request
@@ -110,7 +106,12 @@ def fetch_text(url: str, dest: Path) -> bool:
         print("fetch fail", url, e)
         return False
 
-for rel in ["colab/h3_r2v_core.py", "colab/h3_motion_graphics.py", "colab/h3_i2v_phone.py"]:
+for rel in [
+    "colab/h3_r2v_core.py",
+    "colab/h3_motion_graphics.py",
+    "colab/h3_i2v_phone.py",
+    "colab/h3_t2v.py",
+]:
     name = Path(rel).name
     dest = Path("/content") / name
     ok = fetch_text(f"{RAW}/{rel}", dest)
@@ -224,40 +225,36 @@ else:
         raise SystemExit("ComfyUI 起動失敗")
     print("ComfyUI 起動OK")
 
-print("OK → 次は③（動画をつくる）")
+print("OK → 次は③（テキストから動画）")
 '''
 
-CELL3 = r'''#@title ③ 1枚から動画をつくる（I2VA）
+CELL3 = r'''#@title ③ テキストから動画（T2V・9:16）
 print("=" * 60)
-print(" ③ H3 I2VA")
+print(" ③ H3 T2V — no first frame, 9:16")
 print("=" * 60)
 
-import json, os, sys, time, uuid, urllib.request, urllib.error, shutil
+import json, os, sys, time, uuid, urllib.request, urllib.error
 from pathlib import Path
 from IPython.display import display, Video, HTML
 
-FIRST_IMAGE = "coconala_creator_ref.jpg"  #@param {type:"string"}
-LAST_IMAGE = ""  #@param {type:"string"}
-WIDTH = 768  #@param {type:"integer"}
-HEIGHT = 864  #@param {type:"integer"}
-DURATION_S = 10  #@param {type:"number"}
+PROMPT = ""  #@param {type:"string"}
+WIDTH = 576  #@param {type:"integer"}
+HEIGHT = 1024  #@param {type:"integer"}
+DURATION_S = 5  #@param {type:"number"}
 STEPS = 4  #@param {type:"integer"}
 SEED = 42  #@param {type:"integer"}
 USE_LORA = True  #@param {type:"boolean"}
 LORA_STRENGTH = 1.0  #@param {type:"number"}
-FILENAME_PREFIX = "video/h3_i2va_phone"  #@param {type:"string"}
+FILENAME_PREFIX = "video/h3_t2v_phone"  #@param {type:"string"}
 DRY_RUN = False  #@param {type:"boolean"}
-PROMPT = ""  #@param {type:"string"}
 
 sys.path.insert(0, "/content")
 from h3_r2v_core import is_oom_error, frames
-from h3_motion_graphics import (
-    build_i2va_graph, validate_motion_ad_prompt, prefer_fl2v_lora,
-    resolve_motion_prompt, i2va_retry_plans, assert_i2va_graph,
-)
-from h3_i2v_phone import (
-    DEFAULT_FIRST_IMAGE, is_auto_image_name, newest_image,
-    stage_image_into_input, collect_output_videos, newest_mp4, ref_image_url,
+from h3_motion_graphics import prefer_fl2v_lora
+from h3_i2v_phone import collect_output_videos, newest_mp4
+from h3_t2v import (
+    assert_t2v_graph, build_t2v_graph, resolve_t2v_prompt,
+    t2v_retry_plans, validate_t2v_prompt,
 )
 
 env = {}
@@ -266,47 +263,15 @@ with open("/content/h3_paths.env") as f:
         k, v = line.strip().split("=", 1)
         env[k] = v
 COMFY_DIR = Path(env["COMFY_DIR"])
-DRIVE_ROOT = Path(env["DRIVE_ROOT"])
-INP = COMFY_DIR / "input"
 OUT = COMFY_DIR / "output"
 PORT = 8188
-INP.mkdir(parents=True, exist_ok=True)
 
-def resolve_picture(name: str, *, required: bool) -> str | None:
-    raw = (name or "").strip().strip('"').strip("'")
-    if is_auto_image_name(raw):
-        hit = newest_image([INP, DRIVE_ROOT / "input"])
-        if hit:
-            return stage_image_into_input(hit, INP)
-        raw = DEFAULT_FIRST_IMAGE
-    if not raw:
-        if required:
-            raise SystemExit("FIRST_IMAGE が空です。auto かファイル名を入れてください。")
-        return None
-    for cand in [INP / raw, INP / Path(raw).name, DRIVE_ROOT / "input" / Path(raw).name, Path("/content") / Path(raw).name]:
-        if cand.is_file():
-            return stage_image_into_input(cand, INP)
-    if required and Path(raw).name == DEFAULT_FIRST_IMAGE:
-        dest = INP / DEFAULT_FIRST_IMAGE
-        print("参考画像を取得", ref_image_url())
-        urllib.request.urlretrieve(ref_image_url(), dest)
-        if dest.is_file() and dest.stat().st_size > 1000:
-            return dest.name
-    if required:
-        raise SystemExit(f"画像が見つかりません: {raw}\nDrive の {DRIVE_ROOT / 'input'} に jpg を置いて、FIRST_IMAGE を auto にするかファイル名を入れてください。")
-    return None
-
-first = resolve_picture(FIRST_IMAGE, required=True)
-last = resolve_picture(LAST_IMAGE, required=False) if (LAST_IMAGE or "").strip() else None
-print("Picture 1:", first)
-print("Picture 2:", last or "(none)")
-
-prompt = resolve_motion_prompt(PROMPT, duration_s=float(DURATION_S), with_last_frame=bool(last))
-errs = validate_motion_ad_prompt(prompt, with_last_frame=bool(last))
+prompt = resolve_t2v_prompt(PROMPT)
+errs = validate_t2v_prompt(prompt)
 if errs:
     raise SystemExit(errs)
 print(prompt[:400], "...")
-print("frames", frames(DURATION_S))
+print("frames", frames(DURATION_S), "canvas", int(WIDTH), "x", int(HEIGHT))
 
 obj = {}
 if not DRY_RUN:
@@ -323,13 +288,11 @@ lora_paths = list((COMFY_DIR / "models/loras").glob("*.safetensors")) if (COMFY_
 lora = prefer_fl2v_lora(lora_paths, USE_LORA)
 print("unet", unet, "lora", lora)
 
-plans = i2va_retry_plans(width=int(WIDTH), height=int(HEIGHT))
+plans = t2v_retry_plans(width=int(WIDTH), height=int(HEIGHT))
 print("retry plans:", [p["label"] for p in plans])
 
 def make_graph(plan):
-    g = build_i2va_graph(
-        first_image=first,
-        last_image=last,
+    g = build_t2v_graph(
         prompt=prompt,
         unet=unet,
         lora_name=lora,
@@ -343,7 +306,7 @@ def make_graph(plan):
         has_lora_loader=("LoraLoaderModelOnly" in obj) or DRY_RUN,
         has_audio_decode=("VAEDecodeAudio" in obj) or DRY_RUN,
     )
-    g_errs = assert_i2va_graph(g, expect_last=bool(last))
+    g_errs = assert_t2v_graph(g)
     if g_errs:
         raise SystemExit(g_errs)
     return g
@@ -428,7 +391,7 @@ for plan in plans:
         continue
     raise SystemExit(payload)
 else:
-    raise SystemExit(last_err or "I2VA failed")
+    raise SystemExit(last_err or "T2V failed")
 
 print("used canvas", (used or {}).get("label"))
 videos = collect_output_videos(ok_entry, OUT)
@@ -460,11 +423,13 @@ nb = {
     },
     "cells": [
         {"cell_type": "markdown", "metadata": {}, "source": [line + "\n" for line in MD0.strip("\n").split("\n")]},
-        {"cell_type": "code", "metadata": {"id": "phone1_drive"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL1.strip("\n").split("\n")]},
-        {"cell_type": "code", "metadata": {"id": "phone2_setup"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL2.strip("\n").split("\n")]},
-        {"cell_type": "code", "metadata": {"id": "phone3_i2va"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL3.strip("\n").split("\n")]},
+        {"cell_type": "code", "metadata": {"id": "t2v1_drive"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL1.strip("\n").split("\n")]},
+        {"cell_type": "code", "metadata": {"id": "t2v2_setup"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL2.strip("\n").split("\n")]},
+        {"cell_type": "code", "metadata": {"id": "t2v3_gen"}, "execution_count": None, "outputs": [], "source": [line + "\n" for line in CELL3.strip("\n").split("\n")]},
     ],
 }
-# last lines should not force extra blank issues; Jupyter is fine with trailing newline on last source line
-OUT.write_text(json.dumps(nb, ensure_ascii=False, indent=1), encoding="utf-8")
-print("wrote", OUT, "bytes", OUT.stat().st_size)
+blob = json.dumps(nb, ensure_ascii=False, indent=1)
+for out in OUTS:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(blob, encoding="utf-8")
+    print("wrote", out, "bytes", out.stat().st_size)
