@@ -14,6 +14,7 @@ from h3_motion_graphics import FORBIDDEN_IN_PROMPT
 from h3_r2v_core import frames
 
 DURATION_S = 5.0
+GROKBOT_DURATION_S = 10.0
 # Exact 9:16 and multiples of 32: 288x512, 576x1024, 864x1536.
 CANVAS_9_16 = (576, 1024)
 CANVAS_9_16_HIGH = (768, 1344)  # official short-edge 768 cap; slightly off 9:16
@@ -52,6 +53,15 @@ def t2v_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
             continue
         seen.add(key)
         out.append(p)
+    return out
+
+
+def t2v_length_plans(duration_s: float) -> list[float]:
+    """Grokbot asks for 10s; OOM may fall back to 5s. Canvas stays 9:16."""
+    d = float(duration_s)
+    out = [d]
+    if d > 5:
+        out.append(5.0)
     return out
 
 

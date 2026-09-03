@@ -1,7 +1,10 @@
-"""Drive job contract for unattended MiniMax H3 I2VA.
+"""Drive job contract for unattended MiniMax H3 T2V / I2VA / R2V.
 
-Video agents drop a folder. Grokbot enhances the still, starts Colab, then
-stops the runtime. Affiliate URLs never go in prompts or git.
+Video agents drop a folder. Grokbot starts Colab, then stops the runtime.
+Affiliate URLs never go in prompts or git.
+
+`mode` is t2v | i2v | r2v. Missing mode means i2v so older homage jobs keep working.
+Grokbot duration is 10s for every mode.
 """
 
 from __future__ import annotations
@@ -16,6 +19,16 @@ SCHEMA = "h3-i2v-job/v1"
 DRIVE_ROOT_DEFAULT = "/content/drive/MyDrive/minimax-h3-comfyui"
 JOB_DIRS = ("inbox", "queued", "running", "done", "failed", "input", "output", "models")
 STATUSES = ("draft", "ready", "enhancing", "queued", "running", "done", "failed")
+MODES = ("t2v", "i2v", "r2v")
+MODE_ALIASES = {
+    "i2va": "i2v",
+    "fl2va": "i2v",
+    "text": "t2v",
+    "t2va": "t2v",
+    "ref2v": "r2v",
+    "ref2va": "r2v",
+}
+GROKBOT_DURATION_S = 10.0
 TRANSITIONS = {
     "draft": {"ready", "failed"},
     "ready": {"enhancing", "queued", "failed"},
@@ -34,6 +47,10 @@ DEFAULT_IMAGINE_PROMPT = (
     "Clean 3:4 still, sharp, usable as MiniMax H3 first frame."
 )
 ID_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9._-]{0,80}$")
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+VIDEO_SUFFIXES = {".mp4", ".mov", ".webm", ".mkv"}
+PROMPT_SUFFIXES = {".txt", ".md"}
+CANVAS_9_16_HIGH = (768, 1344)
 
 
 def drive_root(path: str | Path | None = None) -> Path:
@@ -59,12 +76,15 @@ def load_job(folder: Path | str) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("job.json must be an object")
+    data["mode"] = normalize_mode(data.get("mode"))
     return data
 
 
 def save_job(folder: Path | str, job: dict[str, Any]) -> Path:
     path = job_path(folder)
     path.parent.mkdir(parents=True, exist_ok=True)
+    job = dict(job)
+    job["mode"] = normalize_mode(job.get("mode"))
     path.write_text(json.dumps(job, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path
 
@@ -75,35 +95,107 @@ def new_job_id(slug: str = "h3") -> str:
     return f"{stamp}-{safe}"
 
 
+def normalize_mode(mode: Any, *, default: str = "i2v") -> str:
+    raw = str(mode or default).strip().lower()
+    return MODE_ALIASES.get(raw, raw or default)
+
+
+def is_8_9(width: int, height: int, *, tol: float = 0.02) -> bool:
+    return height > 0 and abs(width / height - 8 / 9) <= tol
+
+
+def is_9_16(width: int, height: int, *, tol: float = 0.03) -> bool:
+    return height > 0 and abs(width / height - 9 / 16) <= tol
+
+
 def default_job(**overrides: Any) -> dict[str, Any]:
-    job: dict[str, Any] = {
-        "schema": SCHEMA,
-        "id": new_job_id("coconala"),
-        "status": "ready",
-        "created_by": "video-agent",
-        "source_image": "source.jpg",
-        "picture1": "",
-        "prompt": "",
-        "width": 768,
-        "height": 864,
-        "duration_s": 10,
-        "seed": 42,
-        "steps": 4,
-        "use_lora": True,
-        "lora_strength": 1.0,
-        "filename_prefix": "video/h3_i2va_job",
-        "imagine": {
-            "enabled": True,
-            "model": "grok-imagine-image-2.0",
-            "quality": "medium",
-            "resolution": "2k",
-            "aspect_ratio": "3:4",
-            "prompt": DEFAULT_IMAGINE_PROMPT,
-        },
-        "output_mp4": "",
-        "error": "",
-    }
+    mode = normalize_mode(overrides.get("mode", "i2v"))
+    if mode == "t2v":
+        job: dict[str, Any] = {
+            "schema": SCHEMA,
+            "id": new_job_id("t2v"),
+            "mode": "t2v",
+            "status": "ready",
+            "created_by": "video-agent",
+            "source_image": "",
+            "source_video": "",
+            "picture1": "",
+            "prompt": "",
+            "width": 576,
+            "height": 1024,
+            "duration_s": GROKBOT_DURATION_S,
+            "seed": 42,
+            "steps": 4,
+            "use_lora": True,
+            "lora_strength": 1.0,
+            "filename_prefix": "video/h3_t2v_job",
+            "imagine": {"enabled": False},
+            "output_mp4": "",
+            "error": "",
+        }
+    elif mode == "r2v":
+        job = {
+            "schema": SCHEMA,
+            "id": new_job_id("r2v"),
+            "mode": "r2v",
+            "status": "ready",
+            "created_by": "video-agent",
+            "source_image": "source.jpg",
+            "source_video": "motion.mp4",
+            "picture1": "",
+            "prompt": "",
+            "width": 768,
+            "height": 864,
+            "duration_s": GROKBOT_DURATION_S,
+            "seed": 42,
+            "steps": 4,
+            "use_lora": True,
+            "lora_strength": 1.0,
+            "ref_image_size": "max",
+            "filename_prefix": "video/h3_r2v_job",
+            "imagine": {
+                "enabled": True,
+                "model": "grok-imagine-image-2.0",
+                "quality": "medium",
+                "resolution": "2k",
+                "aspect_ratio": "3:4",
+                "prompt": DEFAULT_IMAGINE_PROMPT,
+            },
+            "output_mp4": "",
+            "error": "",
+        }
+    else:
+        job = {
+            "schema": SCHEMA,
+            "id": new_job_id("coconala"),
+            "mode": "i2v",
+            "status": "ready",
+            "created_by": "video-agent",
+            "source_image": "source.jpg",
+            "source_video": "",
+            "picture1": "",
+            "prompt": "",
+            "width": 768,
+            "height": 864,
+            "duration_s": GROKBOT_DURATION_S,
+            "seed": 42,
+            "steps": 4,
+            "use_lora": True,
+            "lora_strength": 1.0,
+            "filename_prefix": "video/h3_i2va_job",
+            "imagine": {
+                "enabled": True,
+                "model": "grok-imagine-image-2.0",
+                "quality": "medium",
+                "resolution": "2k",
+                "aspect_ratio": "3:4",
+                "prompt": DEFAULT_IMAGINE_PROMPT,
+            },
+            "output_mp4": "",
+            "error": "",
+        }
     job.update(overrides)
+    job["mode"] = normalize_mode(job.get("mode"), default=mode)
     return job
 
 
@@ -140,12 +232,22 @@ def find_jobs(root: Path | str, *, status: str | None = None) -> list[Path]:
     return out
 
 
-def next_ready_job(root: Path | str) -> Path | None:
+def next_ready_job(root: Path | str, mode: str | None = None) -> Path | None:
     ready = find_jobs(root, status="ready")
-    if not ready:
+    want = normalize_mode(mode) if mode else None
+    hits: list[Path] = []
+    for folder in ready:
+        try:
+            job = load_job(folder)
+        except Exception:
+            continue
+        if want and normalize_mode(job.get("mode")) != want:
+            continue
+        hits.append(folder)
+    if not hits:
         return None
-    ready.sort(key=lambda p: p.stat().st_mtime)
-    return ready[0]
+    hits.sort(key=lambda p: p.stat().st_mtime)
+    return hits[0]
 
 
 def move_job(folder: Path, bucket: str, root: Path) -> Path:
@@ -171,7 +273,28 @@ def resolve_job_image(folder: Path, job: dict[str, Any]) -> Path:
         bare = folder / Path(name).name
         if bare.is_file():
             return bare
+    for p in sorted(folder.iterdir()):
+        if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES and not p.name.startswith("."):
+            return p
     raise FileNotFoundError(f"no still in {folder}")
+
+
+def resolve_job_video(folder: Path, job: dict[str, Any]) -> Path:
+    folder = Path(folder)
+    for key in ("source_video", "motion_video", "ref_video"):
+        name = str(job.get(key) or "").strip()
+        if not name:
+            continue
+        cand = folder / name
+        if cand.is_file():
+            return cand
+        bare = folder / Path(name).name
+        if bare.is_file():
+            return bare
+    for p in sorted(folder.iterdir()):
+        if p.is_file() and p.suffix.lower() in VIDEO_SUFFIXES and not p.name.startswith("."):
+            return p
+    raise FileNotFoundError(f"no motion video in {folder}")
 
 
 def forbidden_hits(text: str) -> list[str]:
@@ -188,11 +311,22 @@ def validate_job(job: dict[str, Any], *, folder: Path | None = None) -> list[str
         errs.append("id must be a short slug")
     if job.get("status") not in STATUSES:
         errs.append("bad status")
+    mode = normalize_mode(job.get("mode"))
+    if mode not in MODES:
+        errs.append("mode must be t2v, i2v, or r2v")
+        mode = "i2v"
     w, h = int(job.get("width") or 0), int(job.get("height") or 0)
     if w % 32 or h % 32 or w < 32 or h < 32:
         errs.append("width/height must be multiples of 32")
-    if abs(w / h - 8 / 9) > 0.02:
-        errs.append("canvas must stay 8:9")
+    elif mode == "t2v":
+        if not is_9_16(w, h) and (w, h) != CANVAS_9_16_HIGH:
+            errs.append("t2v canvas must stay 9:16")
+    elif mode == "i2v":
+        if not is_8_9(w, h):
+            errs.append("canvas must stay 8:9")
+    elif mode == "r2v":
+        if not is_8_9(w, h) and not is_9_16(w, h) and (w, h) != CANVAS_9_16_HIGH:
+            errs.append("r2v canvas must stay 8:9 or 9:16")
     dur = float(job.get("duration_s") or 0)
     if dur < 4 or dur > 15:
         errs.append("duration_s must be 4–15")
@@ -204,11 +338,16 @@ def validate_job(job: dict[str, Any], *, folder: Path | None = None) -> list[str
     if isinstance(imagine, dict):
         errs.extend(f"forbidden in imagine {w}" for w in forbidden_hits(str(imagine.get("prompt") or "")))
     if folder is not None:
-        src = str(job.get("source_image") or "").strip()
-        if src and not (Path(folder) / Path(src).name).is_file() and not (Path(folder) / src).is_file():
-            pic = str(job.get("picture1") or "").strip()
-            if not pic or not (Path(folder) / Path(pic).name).is_file():
+        if mode in ("i2v", "r2v"):
+            try:
+                resolve_job_image(folder, job)
+            except FileNotFoundError:
                 errs.append("source_image missing")
+        if mode == "r2v":
+            try:
+                resolve_job_video(folder, job)
+            except FileNotFoundError:
+                errs.append("source_video missing")
     return errs
 
 
@@ -225,11 +364,21 @@ def stage_picture1(folder: Path, src: Path, job: dict[str, Any], input_dir: Path
     return name
 
 
-IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+def stage_motion(folder: Path, src: Path, job: dict[str, Any], input_dir: Path) -> str:
+    name = f"{job['id']}.mp4"
+    dest_job = folder / "motion.mp4"
+    dest_in = input_dir / name
+    data = Path(src).read_bytes()
+    dest_job.write_bytes(data)
+    input_dir.mkdir(parents=True, exist_ok=True)
+    dest_in.write_bytes(data)
+    job["source_video"] = "motion.mp4"
+    job["staged_motion"] = name
+    return name
 
 
 def adopt_orphan_stills(root: Path | str, *, slug: str = "coconala") -> list[Path]:
-    """Turn a bare still in inbox/ into a ready job folder. Video agents can drop only a jpg."""
+    """Turn a bare still in inbox/ into a ready I2V job folder."""
     root = Path(root)
     inbox = root / "inbox"
     inbox.mkdir(parents=True, exist_ok=True)
@@ -245,8 +394,80 @@ def adopt_orphan_stills(root: Path | str, *, slug: str = "coconala") -> list[Pat
         dest = folder / "source.jpg"
         dest.write_bytes(p.read_bytes())
         p.unlink()
-        job = default_job(id=jid, source_image="source.jpg", created_by="inbox-drop")
+        job = default_job(id=jid, mode="i2v", source_image="source.jpg", created_by="inbox-drop")
         save_job(folder, job)
         made.append(folder)
     return made
 
+
+def adopt_orphan_prompts(root: Path | str, *, slug: str = "t2v") -> list[Path]:
+    """Turn a bare prompt .txt in inbox/ into a ready T2V job folder."""
+    root = Path(root)
+    inbox = root / "inbox"
+    inbox.mkdir(parents=True, exist_ok=True)
+    made: list[Path] = []
+    for p in sorted(inbox.iterdir()):
+        if not p.is_file() or p.suffix.lower() not in PROMPT_SUFFIXES:
+            continue
+        if p.name.startswith("."):
+            continue
+        text = p.read_text(encoding="utf-8")
+        if forbidden_hits(text):
+            continue
+        jid = new_job_id(slug)
+        folder = inbox / jid
+        folder.mkdir(parents=True, exist_ok=False)
+        (folder / "prompt.txt").write_text(text, encoding="utf-8")
+        p.unlink()
+        job = default_job(
+            id=jid,
+            mode="t2v",
+            prompt=text,
+            source_image="",
+            created_by="inbox-drop",
+        )
+        save_job(folder, job)
+        made.append(folder)
+    return made
+
+
+def adopt_orphan_r2v_folders(root: Path | str, *, slug: str = "r2v") -> list[Path]:
+    """Inbox folder with still + mp4 and no job.json becomes an R2V job."""
+    root = Path(root)
+    inbox = root / "inbox"
+    inbox.mkdir(parents=True, exist_ok=True)
+    made: list[Path] = []
+    for folder in sorted(inbox.iterdir()):
+        if not folder.is_dir() or job_path(folder).is_file():
+            continue
+        stills = [
+            p
+            for p in sorted(folder.iterdir())
+            if p.is_file() and p.suffix.lower() in IMAGE_SUFFIXES and not p.name.startswith(".")
+        ]
+        vids = [
+            p
+            for p in sorted(folder.iterdir())
+            if p.is_file() and p.suffix.lower() in VIDEO_SUFFIXES and not p.name.startswith(".")
+        ]
+        if not stills or not vids:
+            continue
+        still = stills[0]
+        vid = vids[0]
+        dest_img = folder / "source.jpg"
+        dest_vid = folder / "motion.mp4"
+        if still.resolve() != dest_img.resolve():
+            dest_img.write_bytes(still.read_bytes())
+        if vid.resolve() != dest_vid.resolve():
+            dest_vid.write_bytes(vid.read_bytes())
+        jid = folder.name if ID_RE.match(folder.name) else new_job_id(slug)
+        job = default_job(
+            id=jid,
+            mode="r2v",
+            source_image="source.jpg",
+            source_video="motion.mp4",
+            created_by="inbox-drop",
+        )
+        save_job(folder, job)
+        made.append(folder)
+    return made

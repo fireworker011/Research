@@ -29,7 +29,23 @@ from h3_motion_graphics import (
     resolve_motion_prompt,
     validate_motion_ad_prompt,
 )
-from h3_r2v_core import frames, is_oom_error
+from h3_r2v_core import (
+    assert_graph_identity_motion,
+    build_r2v_graph,
+    frames,
+    grokbot_r2v_retry_plans,
+    is_oom_error,
+    missing_r2v_weight_files,
+    prefer_ref2v_lora,
+    r2v_download_jobs,
+)
+from h3_t2v import (
+    assert_t2v_graph,
+    build_t2v_graph,
+    t2v_length_plans,
+    t2v_retry_plans,
+    validate_t2v_prompt,
+)
 
 PORT = 8188
 COMFY_DIR_DEFAULT = "/content/ComfyUI"
@@ -55,6 +71,7 @@ def fetch_helpers(dest_dir: Path, drive_root: Path) -> None:
     for rel in (
         "colab/h3_r2v_core.py",
         "colab/h3_motion_graphics.py",
+        "colab/h3_t2v.py",
         "colab/h3_i2v_phone.py",
         "colab/h3_i2v_job.py",
         "colab/h3_i2v_runtime.py",
@@ -111,7 +128,7 @@ def fetch_weight(url: str, dest: Path, min_bytes: int = 1_000_000) -> None:
     tmp.replace(dest)
 
 
-def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path) -> None:
+def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path, *, need_r2v: bool = False) -> None:
     if not (comfy_dir / "main.py").is_file():
         sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(comfy_dir)])
     req = comfy_dir / "requirements.txt"
@@ -123,9 +140,14 @@ def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path) -> None:
         link_dir(models_root / sub, drive_models / sub)
     link_dir(comfy_dir / "output", drive_root / "output")
     link_dir(comfy_dir / "input", drive_root / "input")
-    for url, dest in i2v_download_jobs(drive_models):
+    jobs = i2v_download_jobs(drive_models)
+    if need_r2v:
+        jobs = list(jobs) + list(r2v_download_jobs(drive_models))
+    for url, dest in jobs:
         fetch_weight(url, dest)
     left = missing_weight_files(drive_models)
+    if need_r2v:
+        left = left + missing_r2v_weight_files(drive_models)
     if left:
         raise SystemExit("weights missing: " + ", ".join(left))
 
@@ -294,6 +316,235 @@ def generate_i2va(
     fresh = newest_mp4(out_root)
     if fresh and fresh not in videos and (before is None or fresh != before):
         videos.append(fresh)
+    return {"plan": used, "videos": [str(p) for p in videos], "entry": ok_entry}
+
+
+def detect_vram_gb(*, dry_run: bool = False) -> float:
+    if dry_run:
+        return 40.0
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            return torch.cuda.get_device_properties(0).total_memory / 1e9
+    except Exception:
+        pass
+    return 40.0
+
+
+def _collect_fresh_videos(ok_entry: Any, out_root: Path, before: Path | None) -> list[Path]:
+    videos = collect_output_videos(ok_entry, out_root)
+    fresh = newest_mp4(out_root)
+    if fresh and fresh not in videos and (before is None or fresh != before):
+        videos.append(fresh)
+    return videos
+
+
+def generate_t2v(
+    *,
+    prompt: str,
+    comfy_dir: Path,
+    width: int,
+    height: int,
+    duration_s: float,
+    seed: int,
+    steps: int,
+    use_lora: bool,
+    lora_strength: float,
+    filename_prefix: str,
+    dry_run: bool = False,
+    port: int = PORT,
+    object_info: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    errs = validate_t2v_prompt(prompt)
+    if errs:
+        raise SystemExit(errs)
+    obj = object_info or {}
+    if not dry_run and not obj:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=60) as r:
+            obj = json.loads(r.read().decode())
+        if "MiniMaxH3ImageToVideo" not in obj:
+            raise SystemExit("MiniMaxH3ImageToVideo missing")
+    diff = list((comfy_dir / "models/diffusion_models").glob("*fl2va*")) if (comfy_dir / "models/diffusion_models").exists() else []
+    unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    lora_paths = list((comfy_dir / "models/loras").glob("*.safetensors")) if (comfy_dir / "models/loras").exists() else []
+    lora = prefer_fl2v_lora(lora_paths, use_lora)
+    last_err: Any = None
+    used = None
+    ok_entry = None
+    out_root = comfy_dir / "output"
+    before = newest_mp4(out_root)
+    for dur in t2v_length_plans(duration_s):
+        for plan in t2v_retry_plans(width=int(width), height=int(height)):
+            g = build_t2v_graph(
+                prompt=prompt,
+                unet=unet,
+                lora_name=lora,
+                lora_strength=float(lora_strength),
+                width=int(plan["width"]),
+                height=int(plan["height"]),
+                duration_s=float(dur),
+                seed=int(seed),
+                steps=int(steps),
+                filename_prefix=filename_prefix,
+                has_lora_loader=("LoraLoaderModelOnly" in obj) or dry_run,
+                has_audio_decode=("VAEDecodeAudio" in obj) or dry_run,
+            )
+            g_errs = assert_t2v_graph(g)
+            if g_errs:
+                raise SystemExit(g_errs)
+            label = f"{plan['label']} dur={dur:.0f}s frames={frames(dur)}"
+            print("try t2v", label)
+            if dry_run:
+                return {
+                    "dry_run": True,
+                    "plan": {**plan, "duration_s": dur, "label": label},
+                    "graph": g,
+                    "videos": [],
+                }
+            res, err = post_prompt(g, port)
+            if err:
+                last_err = err
+                if is_oom_error(err):
+                    comfy_free(port)
+                    continue
+                raise SystemExit(err)
+            if not (res and "prompt_id" in res):
+                raise SystemExit(res)
+            ok, payload = wait_prompt(res["prompt_id"], port)
+            if ok:
+                ok_entry = payload
+                used = {**plan, "duration_s": dur, "label": label}
+                break
+            last_err = payload
+            if is_oom_error(payload):
+                comfy_free(port)
+                continue
+            raise SystemExit(payload)
+        else:
+            continue
+        break
+    else:
+        raise SystemExit(last_err or "T2V failed")
+    videos = _collect_fresh_videos(ok_entry, out_root, before)
+    return {"plan": used, "videos": [str(p) for p in videos], "entry": ok_entry}
+
+
+def generate_r2v(
+    *,
+    img_names: list[str],
+    vid_names: list[str],
+    prompt: str,
+    comfy_dir: Path,
+    width: int,
+    height: int,
+    duration_s: float,
+    seed: int,
+    steps: int,
+    use_lora: bool,
+    lora_strength: float,
+    filename_prefix: str,
+    ref_image_size: str = "max",
+    dry_run: bool = False,
+    port: int = PORT,
+    object_info: dict[str, Any] | None = None,
+    vram_gb: float | None = None,
+) -> dict[str, Any]:
+    if not img_names:
+        raise SystemExit("R2V needs a still")
+    if not vid_names:
+        raise SystemExit("R2V needs a motion video; never drop ref_videos")
+    obj = object_info or {}
+    if not dry_run and not obj:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=60) as r:
+            obj = json.loads(r.read().decode())
+        if "MiniMaxH3ReferenceToVideo" not in obj:
+            raise SystemExit("MiniMaxH3ReferenceToVideo missing")
+    if dry_run and not obj:
+        obj = {
+            "VHS_LoadVideo": {
+                "input": {
+                    "required": {
+                        "video": ["STRING", {"default": ""}],
+                        "force_rate": ["FLOAT", {"default": 0}],
+                        "frame_load_cap": ["INT", {"default": 0}],
+                    }
+                }
+            },
+            "LoraLoaderModelOnly": {},
+            "VAEDecodeAudio": {},
+        }
+    diff = list((comfy_dir / "models/diffusion_models").glob("*ref2va*")) if (comfy_dir / "models/diffusion_models").exists() else []
+    unet = diff[0].name if diff else "minimax_h3_ref2va_pruned_int8_convrot.safetensors"
+    lora_paths = list((comfy_dir / "models/loras").glob("*.safetensors")) if (comfy_dir / "models/loras").exists() else []
+    lora = prefer_ref2v_lora(lora_paths, use_lora)
+    vram = float(vram_gb) if vram_gb is not None else detect_vram_gb(dry_run=dry_run)
+    plans = grokbot_r2v_retry_plans(
+        duration_s=float(duration_s),
+        width=int(width),
+        height=int(height),
+        n_images=len(img_names),
+        vram_gb=vram,
+        ref_image_size=ref_image_size,
+    )
+    last_err: Any = None
+    used = None
+    ok_entry = None
+    out_root = comfy_dir / "output"
+    before = newest_mp4(out_root)
+    has_vhs = ("VHS_LoadVideo" in obj) or dry_run
+    for plan in plans:
+        g = build_r2v_graph(
+            img_names=img_names,
+            vid_names=vid_names,
+            prompt=prompt,
+            unet=unet,
+            lora_name=lora,
+            lora_strength=float(lora_strength),
+            width=int(plan["width"]),
+            height=int(plan["height"]),
+            duration_s=float(plan["duration_s"]),
+            seed=int(seed),
+            steps=int(steps),
+            filename_prefix=filename_prefix,
+            ref_image_size=str(plan["ref_image_size"]),
+            use_videos=True,
+            has_vhs=has_vhs,
+            has_lora_loader=("LoraLoaderModelOnly" in obj) or dry_run,
+            has_audio_decode=("VAEDecodeAudio" in obj) or dry_run,
+            object_info=obj,
+            motion_max_edge=plan.get("motion_max_edge"),
+        )
+        g_errs = assert_graph_identity_motion(
+            g, expect_images=len(img_names), expect_videos=len(vid_names), prompt=prompt
+        )
+        if g_errs:
+            raise SystemExit(g_errs)
+        print("try r2v", plan.get("label"), "frames", frames(plan["duration_s"]))
+        if dry_run:
+            return {"dry_run": True, "plan": plan, "graph": g, "videos": []}
+        res, err = post_prompt(g, port)
+        if err:
+            last_err = err
+            if is_oom_error(err):
+                comfy_free(port)
+                continue
+            raise SystemExit(err)
+        if not (res and "prompt_id" in res):
+            raise SystemExit(res)
+        ok, payload = wait_prompt(res["prompt_id"], port)
+        if ok:
+            ok_entry = payload
+            used = plan
+            break
+        last_err = payload
+        if is_oom_error(payload):
+            comfy_free(port)
+            continue
+        raise SystemExit(payload)
+    else:
+        raise SystemExit(last_err or "R2V failed")
+    videos = _collect_fresh_videos(ok_entry, out_root, before)
     return {"plan": used, "videos": [str(p) for p in videos], "entry": ok_entry}
 
 

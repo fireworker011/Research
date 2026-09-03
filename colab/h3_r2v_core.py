@@ -9,10 +9,35 @@ from pathlib import Path
 from typing import Any
 
 
+HF_COMFY = "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main"
+REF2VA_NAME = "minimax_h3_ref2va_pruned_int8_convrot.safetensors"
+REF2V_LORA_NAME = "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"
+REF2V_LORA_URL = (
+    "https://huggingface.co/lightx2v/Minimax-h3-Turbo/resolve/main/" + REF2V_LORA_NAME
+)
+
+
 def frames(duration_s: float) -> int:
     """H3 length grid: 17k+5 at 24fps."""
     base = max(5, int(round(float(duration_s) * 24)))
     return int(base + (5 - (base % 17)) % 17)
+
+
+def r2v_download_jobs(drive_models: Path | str) -> list[tuple[str, Path]]:
+    """ref2va unet + Ref2V turbo. Never mix FL2VA LoRA onto this unet."""
+    root = Path(drive_models)
+    return [
+        (f"{HF_COMFY}/diffusion_models/{REF2VA_NAME}", root / "diffusion_models" / REF2VA_NAME),
+        (REF2V_LORA_URL, root / "loras" / REF2V_LORA_NAME),
+    ]
+
+
+def missing_r2v_weight_files(drive_models: Path | str, min_bytes: int = 1_000_000) -> list[str]:
+    missing: list[str] = []
+    for _url, dest in r2v_download_jobs(drive_models):
+        if not dest.is_file() or dest.stat().st_size < min_bytes:
+            missing.append(dest.name)
+    return missing
 
 
 def parse_list(s: str) -> list[str]:
@@ -309,7 +334,13 @@ def r2v_retry_plans(
     for p in plans:
         p["width"] = max(32, int(p["width"]) // 32 * 32)
         p["height"] = max(32, int(p["height"]) // 32 * 32)
-    # de-dupe identical plans
+    return _dedupe_r2v_plans(plans)
+
+
+def _dedupe_r2v_plans(plans: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    for p in plans:
+        p["width"] = max(32, int(p["width"]) // 32 * 32)
+        p["height"] = max(32, int(p["height"]) // 32 * 32)
     out: list[dict[str, Any]] = []
     seen: set[tuple] = set()
     for p in plans:
@@ -319,6 +350,43 @@ def r2v_retry_plans(
         seen.add(key)
         out.append(p)
     return out
+
+
+def grokbot_r2v_retry_plans(
+    *,
+    duration_s: float,
+    width: int,
+    height: int,
+    n_images: int,
+    vram_gb: float,
+    ref_image_size: str = "max",
+) -> list[dict[str, Any]]:
+    """Ask for 10s first. OOM ladder may shorten length; never drops the motion clip."""
+    requested = float(duration_s)
+    size = ref_image_size if ref_image_size in ("match", "max") else "max"
+    tier = gpu_vram_tier(vram_gb)
+    head: list[dict[str, Any]] = []
+    if requested >= 10 and tier != "80plus":
+        head.append(
+            {
+                "duration_s": requested,
+                "ref_image_size": "match",
+                "width": width,
+                "height": height,
+                "motion_max_edge": 768,
+                "label": f"grokbot try {requested:.0f}s size=match motion_edge=768",
+            }
+        )
+    base = r2v_retry_plans(
+        duration_s=requested,
+        ref_image_size=size,
+        width=width,
+        height=height,
+        n_images=n_images,
+        has_video=True,
+        vram_gb=vram_gb,
+    )
+    return _dedupe_r2v_plans(head + base)
 
 
 def is_oom_error(payload: Any) -> bool:
