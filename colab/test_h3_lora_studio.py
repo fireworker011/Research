@@ -1,10 +1,12 @@
 import sys
+import urllib.parse
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
     apply_user_prompt,
+    civitai_download_url,
     civitai_token,
     civitai_token_help,
     explain_choice,
@@ -15,6 +17,7 @@ from h3_lora_studio import (
     load_catalog,
     merge_optional,
     missing_civitai_files,
+    quote_http_url,
     resolve_mode,
     resolve_situation,
     situation_ids,
@@ -151,6 +154,20 @@ def test_optional_prompt_uses_custom_or_default():
     locked, custom = apply_user_prompt("Keep <Picture 1> identity. She waves.", mode="i2v")
     assert custom is True
     assert locked.startswith("Keep <Picture 1>")
+
+
+def test_civitai_redirect_quotes_chinese_filename():
+    raw = "https://civitai.com/api/download/models/3289775?fileId=3174203"
+    assert civitai_download_url({
+        "civitai_version_id": 3289775,
+        "civitai_file_id": 3174203,
+    }) == raw
+    loc = "https://cdn.example/Minimax H3真实电影质感V0.1（解决张量报错）.safetensors"
+    quoted = quote_http_url(loc)
+    path = urllib.parse.urlsplit(quoted).path
+    assert " " not in path
+    assert "真实" not in quoted
+    assert urllib.parse.unquote(path).endswith(".safetensors")
 
 
 def test_civitai_token_prefers_form(monkeypatch):

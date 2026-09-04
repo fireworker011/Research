@@ -12,6 +12,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -202,6 +203,17 @@ def missing_civitai_files(
     return names
 
 
+DOWNLOAD_UA = "Mozilla/5.0 (compatible; h3-lora-studio/1.0)"
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+        return None
+
+
+_DOWNLOAD_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
 def civitai_token_help() -> str:
     return (
         "Civitai の API キーが空です。シークレットは使わなくて大丈夫です。\n"
@@ -228,6 +240,55 @@ def civitai_download_url(row: dict[str, Any]) -> str:
     version = int(row["civitai_version_id"])
     file_id = int(row["civitai_file_id"])
     return f"https://civitai.com/api/download/models/{version}?fileId={file_id}"
+
+
+def civitai_download_fallbacks(row: dict[str, Any]) -> list[str]:
+    version = int(row["civitai_version_id"])
+    primary = civitai_download_url(row)
+    bare = f"https://civitai.com/api/download/models/{version}"
+    out = [primary]
+    if bare not in out:
+        out.append(bare)
+    return out
+
+
+def quote_http_url(url: str) -> str:
+    """Encode non-ASCII redirect paths. Civitai 400s on Chinese filenames otherwise."""
+    parts = urllib.parse.urlsplit(url)
+    path = urllib.parse.quote(urllib.parse.unquote(parts.path), safe="/")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, path, parts.query, parts.fragment))
+
+
+def _civitai_host(netloc: str) -> bool:
+    host = (netloc or "").lower().split(":")[0]
+    return host == "civitai.com" or host.endswith(".civitai.com")
+
+
+def open_download(url: str, headers: dict[str, str], *, timeout: int = 600):
+    current = quote_http_url(url)
+    hdrs = dict(headers)
+    last_exc: urllib.error.HTTPError | None = None
+    for _ in range(8):
+        req = urllib.request.Request(current, headers=hdrs)
+        try:
+            return _DOWNLOAD_OPENER.open(req, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            if exc.code not in {301, 302, 303, 307, 308}:
+                raise
+            loc = exc.headers.get("Location") or exc.headers.get("location")
+            try:
+                exc.read()
+            finally:
+                exc.close()
+            if not loc:
+                raise
+            current = quote_http_url(urllib.parse.urljoin(current, loc))
+            if not _civitai_host(urllib.parse.urlsplit(current).netloc):
+                hdrs.pop("Authorization", None)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("download redirect failed")
 
 
 def download_jobs_for(
@@ -271,36 +332,55 @@ def fetch_weight(
     token: str = "",
     auth: str = "",
     min_bytes: int = 1_000_000,
+    fallback_urls: list[str] | None = None,
 ) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.is_file() and dest.stat().st_size > min_bytes:
         print(f"skip {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
         return
+    urls = [url]
+    for extra in fallback_urls or []:
+        if extra and extra not in urls:
+            urls.append(extra)
+    if auth == "civitai" and "fileId=" in url:
+        bare = url.split("?", 1)[0]
+        if bare not in urls:
+            urls.append(bare)
     tmp = dest.with_name(dest.name + ".part")
-    headers = {"User-Agent": "h3-lora-studio/colab"}
-    if auth == "civitai" and token:
-        headers["Authorization"] = f"Bearer {token}"
-    req = urllib.request.Request(url, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=600) as resp, open(tmp, "wb") as out:
-            while True:
-                chunk = resp.read(1024 * 1024)
-                if not chunk:
-                    break
-                out.write(chunk)
-    except urllib.error.HTTPError as exc:
-        if tmp.exists():
-            tmp.unlink()
-        if exc.code in {401, 403}:
-            raise SystemExit(
-                f"Civitai が {exc.code} を返した: {dest.name}。\n"
-                + civitai_token_help()
-            ) from exc
-        raise SystemExit(f"DL 失敗 {exc.code}: {dest.name}") from exc
+    last_code = None
+    for attempt, current in enumerate(urls):
+        headers = {"User-Agent": DOWNLOAD_UA}
+        if auth == "civitai" and token:
+            headers["Authorization"] = f"Bearer {token}"
+        try:
+            with open_download(current, headers, timeout=600) as resp, open(tmp, "wb") as out:
+                while True:
+                    chunk = resp.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+            last_code = None
+            break
+        except urllib.error.HTTPError as exc:
+            last_code = exc.code
+            if tmp.exists():
+                tmp.unlink()
+            if exc.code in {401, 403}:
+                raise RuntimeError(
+                    f"Civitai が {exc.code} を返した: {dest.name}。\n" + civitai_token_help()
+                ) from None
+            if attempt + 1 < len(urls) and exc.code in {400, 404}:
+                print(f"取得をやり直します: {dest.name}")
+                continue
+            raise RuntimeError(
+                f"DL 失敗 {exc.code}: {dest.name}。"
+                " Drive の models/loras に同じファイル名で置いてから②を再実行しても大丈夫です。"
+            ) from None
     if not tmp.is_file() or tmp.stat().st_size < min_bytes:
         if tmp.exists():
             tmp.unlink()
-        raise SystemExit(f"DL 失敗（小さい）: {dest.name}")
+        extra = f"（{last_code}）" if last_code else ""
+        raise RuntimeError(f"DL 失敗（小さい）: {dest.name}{extra}")
     tmp.replace(dest)
     print(f"saved {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
 
