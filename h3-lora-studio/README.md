@@ -9,12 +9,12 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
-2. 左の鍵に `CIVITAI_API_TOKEN`（値は Civitai の API キー。ノートに貼らない）
+2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シークレット不要）
 3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
 
 ③のリストは日本語（穴アップ、アナル挿入、ふたなりフェラ、フェラ、騎乗位）。文章は空でOK。Turbo は入れない。
 
-Civitai 用: Colab シークレット `CIVITAI_API_TOKEN`。ログに出さない。
+Civitai API はノートのフォームから読む。値は print しない。ノート保存前に欄を空に戻す。左の鍵（`CIVITAI_API_TOKEN`）でも読めるが、初心者はフォームでよい。
 
 ## シチュエーション
 
@@ -41,5 +41,5 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。sampler は
 2. FL2VA に ref2va を載せない
 3. T2V に Picture 1 を書かない
 4. 未成年・ロリ・ショタ禁止
-5. キーは `.env` / Colab Secrets 以外に出さない
+5. キーは print しない。Git に入れない。Colab は ②のフォーム（またはシークレット）から読む
 6. ココナラ homage の turbo 既定を変えない

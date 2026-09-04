@@ -28,13 +28,16 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
 3. **③** でシーンを選んで実行 → 下に動画が出る
 
-初めてなら、フォームは **いじらなくて大丈夫** です。上から順に ▶ を押すだけ。
+初めてなら、シーンのフォームはいじらなくて大丈夫です。**②の「CivitaiのAPIキー」だけ貼って**、上から順に ▶ を押す。
 
 ## 準備（最初の1回）
 
 1. 上の **Open in Colab** を開く
 2. 右上の **ランタイム → ランタイムのタイプを変更 → GPU を A100**
-3. 一部の部品は Civitai の鍵が要ります。左の鍵アイコン（シークレット）に名前 `CIVITAI_API_TOKEN` を追加。値は Civitai の API キー。**ノートやチャットに貼らない**
+3. **Civitai の API キー**（部品のダウンロードに使う。シークレットは不要）
+   - https://civitai.com/user/account を開く → 下の **API Keys** → **Add API key** → コピー
+   - **②の「CivitaiのAPIキー」欄に貼る**（このノートのフォーム。左の鍵マークは使わなくてよい）
+   - キーは画面に出ません。ノートを保存する前に欄を空に戻す
 4. メニュー **ランタイム → すべてのセルを実行** でも、①②③を順に押しても同じ
 
 できた動画は Google Drive の  
@@ -109,12 +112,21 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い）
 - **2回目以降** … すでに入っているファイルは飛ばすので速いです
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
 
-鍵エラー（401 / 403）が出たら、Civitai の API キーを Colab のシークレットに入れて①からやり直します。キー自体は画面に出ません。
+**Civitai の API キー** は下の②セルの欄に貼ります。左の鍵（シークレット）は使わなくて大丈夫です。
+
+1. [civitai.com のアカウント画面](https://civitai.com/user/account) を開く
+2. **API Keys** → **Add API key** でキーを作ってコピー
+3. ②の **CivitaiのAPIキー** 欄に貼って実行
+
+401 / 403 が出たら、キーの貼り忘れです。欄に貼って②をもう一度。キー自体は画面に出ません。
 """
 
 CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ）
 print("② 準備を始めています…")
 
+#@markdown ### Civitai の API キー（ここに貼る。シークレット不要）
+#@markdown 取り方: [civitai.com/user/account](https://civitai.com/user/account) → API Keys → Add API key
+CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
@@ -178,8 +190,8 @@ for rel in studio_files:
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs
 from h3_lora_studio import (
-    SITUATION_HELP, civitai_token, download_jobs_for, fetch_weight, load_catalog,
-    resolve_situation, situation_ids,
+    SITUATION_HELP, civitai_token, civitai_token_help, download_jobs_for,
+    fetch_weight, load_catalog, missing_civitai_files, resolve_situation, situation_ids,
 )
 
 print("今のシーン:", 今使うシーン)
@@ -228,9 +240,14 @@ else:
     print("今のシーン用だけ入れます:", 今使うシーン)
 
 catalog = load_catalog(STUDIO)
-token = civitai_token()
-print("Civitai の鍵:", "入っています" if token else "まだありません（公開ファイルだけなら動くこともあります）")
-for url, dest, row in download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog):
+# Civitai API をここで読む。名前は CIVITAI_API_TOKEN。値は print しない。
+token = civitai_token(CivitaiのAPIキー)
+print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
+jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
+need = missing_civitai_files(jobs)
+if need and not token:
+    raise SystemExit(civitai_token_help())
+for url, dest, row in jobs:
     auth = "civitai" if str(row.get("source")) == "civitai" else ""
     fetch_weight(url, dest, token=token, auth=auth)
 

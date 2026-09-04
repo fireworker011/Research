@@ -13,4 +13,4 @@ python h3-lora-studio/scripts/select_loras.py --situation anal_closeup --mode t2
 python colab/_write_lora_studio_nb.py
 ```
 
-Fal H3 Max に LoRA は差せない。Turbo オフ。成人 21+。CIVITAI_API_TOKEN は Colab シークレット / `.env` のみ。ログに出さない。gayanalh3 は使わない。ココナラ homage を触らない。
+Fal H3 Max に LoRA は差せない。Turbo オフ。成人 21+。Civitai API は Colab ②のフォーム `CivitaiのAPIキー` から読む（シークレット不要）。値は print しない。gayanalh3 は使わない。ココナラ homage を触らない。

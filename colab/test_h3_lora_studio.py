@@ -4,11 +4,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
+    civitai_token,
+    civitai_token_help,
     explain_choice,
     friendly_lora,
     inject_lora_stack,
     load_catalog,
     merge_optional,
+    missing_civitai_files,
     resolve_mode,
     resolve_situation,
 )
@@ -65,3 +68,19 @@ def test_japanese_form_labels():
     assert "竿" in text
     assert "blowjob-h3" not in text
     assert friendly_lora("synth-pussy-h3") == "穴の見え方"
+
+
+def test_civitai_token_prefers_form(monkeypatch):
+    monkeypatch.delenv("CIVITAI_API_TOKEN", raising=False)
+    assert civitai_token(form_value="  pasted-key  ") == "pasted-key"
+    monkeypatch.setenv("CIVITAI_API_TOKEN", "from-env")
+    assert civitai_token(form_value="") == "from-env"
+    assert civitai_token(form_value="form-wins") == "form-wins"
+    help_text = civitai_token_help()
+    assert "CivitaiのAPIキー" in help_text
+    assert "user/account" in help_text
+    dest = Path("/tmp/h3-missing-lora.safetensors")
+    if dest.exists():
+        dest.unlink()
+    jobs = [("https://example.invalid", dest, {"source": "civitai"})]
+    assert missing_civitai_files(jobs) == ["h3-missing-lora.safetensors"]

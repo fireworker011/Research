@@ -111,7 +111,11 @@ def explain_choice(situation: str, mode: str) -> str:
     )
 
 
-def civitai_token() -> str:
+def civitai_token(form_value: str = "") -> str:
+    """Read Civitai API key. Form paste first, then Colab secret, then env. Never print it."""
+    pasted = str(form_value or "").strip()
+    if pasted:
+        return pasted
     for getter in (_colab_userdata_token, lambda: os.environ.get("CIVITAI_API_TOKEN") or ""):
         try:
             raw = getter()
@@ -127,6 +131,32 @@ def _colab_userdata_token() -> str:
     from google.colab import userdata  # type: ignore
 
     return str(userdata.get("CIVITAI_API_TOKEN") or "")
+
+
+def missing_civitai_files(
+    jobs: list[tuple[str, Path, dict[str, Any]]],
+    *,
+    min_bytes: int = 1_000_000,
+) -> list[str]:
+    names: list[str] = []
+    for _url, dest, row in jobs:
+        if str(row.get("source") or "") != "civitai":
+            continue
+        if dest.is_file() and dest.stat().st_size > min_bytes:
+            continue
+        names.append(dest.name)
+    return names
+
+
+def civitai_token_help() -> str:
+    return (
+        "Civitai の API キーが空です。シークレットは使わなくて大丈夫です。\n"
+        "1. https://civitai.com/user/account を開く（ログイン）\n"
+        "2. 下のほうの API Keys → Add API key → 作った文字列をコピー\n"
+        "3. ②セルの「CivitaiのAPIキー」欄に貼る\n"
+        "4. ②をもう一度実行\n"
+        "キー自体は画面に出しません。ノートを保存・共有する前に欄を空に戻してください。"
+    )
 
 
 def load_catalog(studio_root: Path | str | None = None) -> dict[str, Any]:
@@ -209,9 +239,8 @@ def fetch_weight(
             tmp.unlink()
         if exc.code in {401, 403}:
             raise SystemExit(
-                f"Civitai が {exc.code} を返した: {dest.name}。"
-                "Colab シークレット CIVITAI_API_TOKEN を入れて①からやり直す。"
-                "トークン自体はログに出さない。"
+                f"Civitai が {exc.code} を返した: {dest.name}。\n"
+                + civitai_token_help()
             ) from exc
         raise SystemExit(f"DL 失敗 {exc.code}: {dest.name}") from exc
     if not tmp.is_file() or tmp.stat().st_size < min_bytes:
