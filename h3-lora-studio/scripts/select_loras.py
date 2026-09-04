@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Emit a MiniMax H3 LoRA stack for one h3-lora-studio profile.
+"""Emit a MiniMax H3 LoRA stack for one situation profile and mode.
 
-Loads only catalog entries listed in the profile's `enabled` list.
-Everything else (including Turbo / Acc / ref2va-on-I2V) is listed for unload.
+Loads only catalog entries listed in that situation's enabled list for the mode.
+Everything else (including Turbo / Acc / ref2va on FL2VA) is listed for unload.
+
+T2V uses scenes.t2v and 9:16. I2V uses scenes.i2v and Picture 1. Never mix them.
 
 This script never reads `.env` and never prints API keys.
 """
@@ -20,8 +22,14 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "catalog" / "loras.json"
 PROFILES_DIR = ROOT / "profiles"
 SCHEMA = "h3-lora-studio/v1"
+SITUATIONS_SCHEMA = "h3-lora-studio-situations/v1"
 MODES = ("t2v", "i2v", "r2v")
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}
+DEFAULT_CANVAS = {
+    "t2v": {"width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16"},
+    "i2v": {"width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9"},
+    "r2v": {"width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9"},
+}
 SECRET_KEY_RE = re.compile(
     r"(api[_-]?key|secret|token|password|authorization|hf_token|xai)",
     re.I,
@@ -36,6 +44,7 @@ FORBIDDEN_SUBJECT_RE = re.compile(
     re.I,
 )
 TURBO_NAME_RE = re.compile(r"(turbo|\bacc[-_]?lora|\b4step\b|\b8step\b)", re.I)
+PICTURE1_RE = re.compile(r"Picture 1|first_frame", re.I)
 
 
 class SelectError(SystemExit):
@@ -64,10 +73,17 @@ def catalog_index(catalog: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return out
 
 
+def always_unload_ids(catalog: dict[str, Any]) -> set[str]:
+    rows = catalog.get("always_unload") or []
+    if not isinstance(rows, list):
+        raise SelectError("catalog.always_unload must be a list")
+    return {str(x) for x in rows}
+
+
 def load_profile(name: str, profiles_dir: Path = PROFILES_DIR) -> dict[str, Any]:
     path = profiles_dir / f"{name}.json"
     if not path.is_file():
-        raise SelectError(f"unknown profile: {name}")
+        raise SelectError(f"unknown situation: {name}")
     profile = load_json(path)
     if str(profile.get("id") or "") != name:
         raise SelectError(f"profile id mismatch in {path}")
@@ -88,33 +104,75 @@ def forbidden_hits(text: str) -> list[str]:
     return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(text)})
 
 
-def resolve_prompt(profile: dict[str, Any], prompt_arg: str | None) -> str:
-    raw = "" if prompt_arg is None else str(prompt_arg).strip()
-    if raw in SCENE_ALIASES:
-        scene = str(profile.get("scene") or "").strip()
-        if not scene:
-            raise SelectError("profile.scene is empty")
-        return scene
-    return raw
-
-
-def enabled_specs(profile: dict[str, Any]) -> list[dict[str, Any]]:
-    rows = profile.get("enabled")
+def normalize_specs(rows: Any, *, where: str) -> list[dict[str, Any]]:
     if not isinstance(rows, list) or not rows:
-        raise SelectError("profile.enabled must be a non-empty list")
+        raise SelectError(f"{where} must be a non-empty list")
     out: list[dict[str, Any]] = []
     seen: set[str] = set()
     for row in rows:
         if isinstance(row, str):
             row = {"id": row}
         if not isinstance(row, dict) or not row.get("id"):
-            raise SelectError("enabled entries need an id")
+            raise SelectError(f"{where} entries need an id")
         lid = str(row["id"])
         if lid in seen:
             raise SelectError(f"duplicate enabled id: {lid}")
         seen.add(lid)
         out.append(row)
     return out
+
+
+def enabled_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]]:
+    rows = profile.get("enabled")
+    if isinstance(rows, dict):
+        if mode not in rows:
+            raise SelectError(f"situation has no enabled LoRAs for mode {mode}")
+        return normalize_specs(rows.get(mode), where=f"enabled.{mode}")
+    return normalize_specs(rows, where="profile.enabled")
+
+
+def resolve_prompt(profile: dict[str, Any], prompt_arg: str | None, mode: str) -> str:
+    raw = "" if prompt_arg is None else str(prompt_arg).strip()
+    if raw not in SCENE_ALIASES:
+        return raw
+    scenes = profile.get("scenes")
+    if isinstance(scenes, dict):
+        scene = str(scenes.get(mode) or "").strip()
+        if scene:
+            return scene
+        if mode == "t2v":
+            raise SelectError("t2v requires scenes.t2v; do not reuse the I2V Picture 1 prompt")
+    scene = str(profile.get("scene") or "").strip()
+    if mode == "t2v":
+        raise SelectError("t2v requires scenes.t2v; do not reuse the I2V Picture 1 prompt")
+    if not scene:
+        raise SelectError("profile scene is empty")
+    return scene
+
+
+def resolve_canvas(profile: dict[str, Any], mode: str) -> dict[str, Any]:
+    base = dict(DEFAULT_CANVAS[mode])
+    canvas = profile.get("canvas")
+    chosen: dict[str, Any]
+    if isinstance(canvas, dict) and isinstance(canvas.get(mode), dict):
+        chosen = canvas[mode]
+    elif isinstance(canvas, dict) and "width" in canvas and mode != "t2v":
+        chosen = canvas
+    else:
+        chosen = base
+    out = dict(base)
+    out["width"] = int(chosen.get("width") or base["width"])
+    out["height"] = int(chosen.get("height") or base["height"])
+    out["duration_s"] = float(chosen.get("duration_s") or base["duration_s"])
+    out["aspect"] = str(chosen.get("aspect") or base["aspect"])
+    return out
+
+
+def assert_mode_prompt(mode: str, prompt: str) -> None:
+    if mode == "t2v" and PICTURE1_RE.search(prompt):
+        raise SelectError("t2v prompt must not use Picture 1 / first_frame")
+    if mode == "i2v" and "Picture 1" not in prompt:
+        raise SelectError("i2v scene must reference Picture 1")
 
 
 def assert_adults_only(profile: dict[str, Any]) -> None:
@@ -153,6 +211,53 @@ def comfy_lora_nodes(stack: list[dict[str, Any]], *, model_node: str = "1") -> l
     return nodes
 
 
+def situation_modes(profile: dict[str, Any]) -> list[str]:
+    raw = profile.get("modes")
+    if isinstance(raw, list) and raw:
+        return [str(m) for m in raw if str(m) in MODES]
+    enabled = profile.get("enabled")
+    if isinstance(enabled, dict):
+        return [m for m in MODES if m in enabled]
+    return list(MODES)
+
+
+def list_situations(
+    *,
+    catalog_path: Path = CATALOG_PATH,
+    profiles_dir: Path = PROFILES_DIR,
+) -> dict[str, Any]:
+    catalog = load_json(catalog_path)
+    index = catalog_index(catalog)
+    rows: list[dict[str, Any]] = []
+    for path in sorted(profiles_dir.glob("*.json")):
+        profile = load_json(path)
+        assert_adults_only(profile)
+        sid = str(profile.get("id") or path.stem)
+        enabled_by_mode: dict[str, list[str]] = {}
+        for mode in situation_modes(profile):
+            try:
+                specs = enabled_specs(profile, mode)
+            except SelectError:
+                continue
+            ids = [str(s["id"]) for s in specs]
+            for lid in ids:
+                if lid not in index:
+                    raise SelectError(f"{sid}: unknown LoRA {lid}")
+            enabled_by_mode[mode] = ids
+        rows.append(
+            {
+                "id": sid,
+                "modes": list(enabled_by_mode),
+                "enabled": enabled_by_mode,
+                "adults_only": True,
+                "turbo": False,
+            }
+        )
+    payload = {"schema": SITUATIONS_SCHEMA, "situations": rows}
+    assert_no_secrets(payload)
+    return payload
+
+
 def select_loras(
     *,
     profile_name: str,
@@ -168,18 +273,23 @@ def select_loras(
 
     profile = load_profile(profile_name, profiles_dir)
     assert_adults_only(profile)
+    allowed = situation_modes(profile)
+    if allowed and mode not in allowed:
+        raise SelectError(f"{profile_name} does not support mode {mode}")
     turbo = bool(profile.get("turbo")) if turbo_override is None else bool(turbo_override)
     if turbo:
         raise SelectError("Turbo must stay off for this studio profile")
 
-    prompt = resolve_prompt(profile, prompt_arg)
+    prompt = resolve_prompt(profile, prompt_arg, mode)
     hits = forbidden_hits(prompt)
     if hits:
         raise SelectError(f"forbidden subject in prompt: {hits}")
+    assert_mode_prompt(mode, prompt)
 
-    index = catalog_index(load_json(catalog_path))
-    disabled_ids = {str(x) for x in (profile.get("disabled") or [])}
-    enabled = enabled_specs(profile)
+    catalog = load_json(catalog_path)
+    index = catalog_index(catalog)
+    disabled_ids = always_unload_ids(catalog) | {str(x) for x in (profile.get("disabled") or [])}
+    enabled = enabled_specs(profile, mode)
 
     stack: list[dict[str, Any]] = []
     for spec in enabled:
@@ -227,7 +337,7 @@ def select_loras(
         if is_turbo_row(row):
             reasons.append("turbo_off")
         if mode in {"t2v", "i2v"} and str(row.get("arch") or "") == "ref2va":
-            reasons.append("ref2va_not_for_i2v")
+            reasons.append("ref2va_not_for_fl2va")
         if mode not in [str(m) for m in (row.get("modes") or [])]:
             reasons.append("wrong_mode")
         if not reasons:
@@ -243,9 +353,10 @@ def select_loras(
 
     nodes = comfy_lora_nodes(stack)
     model_out = nodes[-1]["id"] if nodes else "1"
-    canvas = profile.get("canvas") if isinstance(profile.get("canvas"), dict) else {}
+    canvas = resolve_canvas(profile, mode)
     payload = {
         "schema": SCHEMA,
+        "situation": profile_name,
         "profile": profile_name,
         "mode": mode,
         "adults_only": True,
@@ -254,12 +365,7 @@ def select_loras(
         "prompt": prompt,
         "negative": str(profile.get("negative") or ""),
         "first_frame_required": mode == "i2v",
-        "canvas": {
-            "width": int(canvas.get("width") or 768),
-            "height": int(canvas.get("height") or 864),
-            "duration_s": float(canvas.get("duration_s") or 10.0),
-            "aspect": str(canvas.get("aspect") or "8:9"),
-        },
+        "canvas": canvas,
         "sampler": {
             "sampler_name": "res_multistep",
             "scheduler": "beta",
@@ -282,25 +388,34 @@ def select_loras(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--profile", required=True)
-    p.add_argument("--mode", required=True, choices=MODES)
-    p.add_argument("--prompt", default="（シーン）", help="Use シーン to take profile.scene")
+    p.add_argument("--profile", "--situation", dest="profile", default=None)
+    p.add_argument("--mode", choices=MODES, default=None)
+    p.add_argument("--prompt", default="（シーン）", help="Use シーン to take scenes.<mode>")
     p.add_argument("--catalog", type=Path, default=CATALOG_PATH)
     p.add_argument("--profiles-dir", type=Path, default=PROFILES_DIR)
     p.add_argument("--out", type=Path, default=None)
+    p.add_argument("--list", action="store_true", help="List situations and per-mode LoRA stacks")
     return p.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    payload = select_loras(
-        profile_name=args.profile,
-        mode=args.mode,
-        prompt_arg=args.prompt,
-        catalog_path=args.catalog,
-        profiles_dir=args.profiles_dir,
-        turbo_override=False,
-    )
+    if args.list:
+        payload: dict[str, Any] = list_situations(
+            catalog_path=args.catalog,
+            profiles_dir=args.profiles_dir,
+        )
+    else:
+        if not args.profile or not args.mode:
+            raise SelectError("--profile/--situation and --mode are required (or pass --list)")
+        payload = select_loras(
+            profile_name=args.profile,
+            mode=args.mode,
+            prompt_arg=args.prompt,
+            catalog_path=args.catalog,
+            profiles_dir=args.profiles_dir,
+            turbo_override=False,
+        )
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     sys.stdout.write(text)
     if args.out:

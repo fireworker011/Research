@@ -1,5 +1,11 @@
 {
   "schema": "h3-lora-studio-catalog/v1",
+  "always_unload": [
+    "minimax-h3-turbo-fl2v-4step",
+    "minimax-h3-turbo-fl2v-8step",
+    "minimax-h3-turbo-ref2v-4step",
+    "aftermidnight-ref2va"
+  ],
   "loras": [
     {
       "id": "h3-realism-people",
