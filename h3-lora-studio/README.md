@@ -2,19 +2,21 @@
 
 MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V）専用。
 
-成人のみ（21+）。Turbo オフ。API キーは `.env` / Colab シークレットだけ。
+成人のみ（21+）。Turbo オフ。API キーは Drive の `civitai_api_token.txt`、①のフォーム、または Colab シークレット。ログに出さない。
 
 ## Colab（初心者はここだけ）
 
 [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
-2. 左の鍵に `CIVITAI_API_TOKEN`（値は Civitai の API キー。ノートに貼らない）
-3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
+2. Civitai の API キーを取る: https://civitai.com/user/account → API Keys
+3. **シークレットは不要。** Drive の `マイドライブ/minimax-h3-comfyui/civitai_api_token.txt` にキーを1行置く
+4. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
+
 
 ③のリストは日本語（穴アップ、アナル挿入、ふたなりフェラ、フェラ、騎乗位）。文章は空でOK。Turbo は入れない。
 
-Civitai 用: Colab シークレット `CIVITAI_API_TOKEN`。ログに出さない。
+Civitai 用: Drive の `civitai_api_token.txt`（おすすめ）/ ①のフォーム / シークレット `CIVITAI_API_TOKEN`。ログに出さない。
 
 ## シチュエーション
 

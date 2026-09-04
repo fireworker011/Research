@@ -9,6 +9,7 @@ link lives on the human's profile.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -73,6 +74,38 @@ FORBIDDEN_IN_PROMPT = (
     "月収",
     "年収",
 )
+
+# Prompts that describe minors are refused before any graph is posted to Comfy.
+# Checked by every free-text prompt validator (T2V, free I2V, motion ad).
+UNDERAGE_PATTERNS = (
+    r"\b(?:[1-9]|1[0-7])\s*(?:-|\s)?\s*(?:years?[\s-]*old|yo|y/o|y\.o\.)\b",
+    r"\bage[ds]?\s*(?:[1-9]|1[0-7])\b",
+    r"\b(?:pre)?teen(?:age|ager|s)?\b",
+    r"\b(?:underage|schoolgirls?|schoolboys?|loli|lolita|shota)\b",
+    r"\b(?:child|children|toddlers?|infants?)\b",
+    r"\b(?:high|middle|junior high|elementary|primary)[\s-]school\b",
+    r"\bjk\b",
+    r"(?:未成年|中学生|小学生|高校生|女子高生|女子中学生|女子小学生|幼女|児童|ロリ|ショタ|園児|\d{1,2}歳(?![0-9]))",
+)
+_UNDERAGE_RE = tuple(re.compile(p, re.IGNORECASE) for p in UNDERAGE_PATTERNS)
+_JP_AGE_RE = re.compile(r"(\d{1,2})歳")
+
+
+def underage_prompt_errors(prompt: str) -> list[str]:
+    """Reject any prompt that places a person under 18 in the video."""
+    text = prompt or ""
+    hits: list[str] = []
+    for rx in _UNDERAGE_RE:
+        for m in rx.finditer(text):
+            frag = m.group(0)
+            age = _JP_AGE_RE.fullmatch(frag)
+            if age and int(age.group(1)) >= 18:
+                continue
+            hits.append(frag)
+    if not hits:
+        return []
+    uniq = sorted(set(h.strip() for h in hits))
+    return ["prompt describes a minor; refused: " + ", ".join(uniq)]
 
 
 def fl2va_header(duration_s: float = DURATION_S) -> str:
@@ -179,6 +212,7 @@ def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> 
     for bad in FORBIDDEN_IN_PROMPT:
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
+    errs.extend(underage_prompt_errors(p))
     return errs
 
 

@@ -65,3 +65,20 @@ def test_japanese_form_labels():
     assert "竿" in text
     assert "blowjob-h3" not in text
     assert friendly_lora("synth-pussy-h3") == "穴の見え方"
+
+
+def test_studio_notebook_documents_drive_token_not_only_secrets():
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    nb = json.loads((root / "minimax_h3_lora_studio.ipynb").read_text(encoding="utf-8"))
+    blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
+    assert "civitai.com/user/account" in blob
+    assert "civitai_api_token.txt" in blob
+    assert 'CIVITAI_API_TOKEN = ""' in blob
+    assert "シークレットは使わなくてよい" in blob or "シークレットは不要" in blob
+    codes = [c for c in nb["cells"] if c["cell_type"] == "code"]
+    for i, cell in enumerate(codes):
+        src = "".join(cell.get("source") or [])
+        compile(src, f"studio_cell{i+1}.py", "exec")
+

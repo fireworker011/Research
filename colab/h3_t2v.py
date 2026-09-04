@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from h3_motion_graphics import FORBIDDEN_IN_PROMPT
+from h3_motion_graphics import FORBIDDEN_IN_PROMPT, underage_prompt_errors
 from h3_r2v_core import frames
 
 DURATION_S = 5.0
@@ -114,6 +114,7 @@ def validate_t2v_prompt(prompt: str) -> list[str]:
     for bad in FORBIDDEN_IN_PROMPT:
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
+    errs.extend(underage_prompt_errors(p))
     return errs
 
 

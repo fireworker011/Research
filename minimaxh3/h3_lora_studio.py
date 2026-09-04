@@ -14,6 +14,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from h3_civitai import apply_civitai_token, civitai_headers, load_civitai_token
+
 STUDIO_ROOT = Path(__file__).resolve().parents[1] / "h3-lora-studio"
 if not STUDIO_ROOT.is_dir():
     STUDIO_ROOT = Path("/content/h3-lora-studio")
@@ -111,22 +113,10 @@ def explain_choice(situation: str, mode: str) -> str:
     )
 
 
-def civitai_token() -> str:
-    for getter in (_colab_userdata_token, lambda: os.environ.get("CIVITAI_API_TOKEN") or ""):
-        try:
-            raw = getter()
-        except Exception:
-            raw = ""
-        token = str(raw or "").strip()
-        if token:
-            return token
-    return ""
-
-
-def _colab_userdata_token() -> str:
-    from google.colab import userdata  # type: ignore
-
-    return str(userdata.get("CIVITAI_API_TOKEN") or "")
+def civitai_token(pasted: str = "", drive_root: Path | str | None = None) -> str:
+    token, _source = load_civitai_token(pasted=pasted, drive_root=drive_root)
+    apply_civitai_token(token)
+    return token
 
 
 def load_catalog(studio_root: Path | str | None = None) -> dict[str, Any]:
@@ -195,7 +185,7 @@ def fetch_weight(
     tmp = dest.with_name(dest.name + ".part")
     headers = {"User-Agent": "h3-lora-studio/colab"}
     if auth == "civitai" and token:
-        headers["Authorization"] = f"Bearer {token}"
+        headers.update(civitai_headers(token))
     req = urllib.request.Request(url, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=600) as resp, open(tmp, "wb") as out:
@@ -210,8 +200,8 @@ def fetch_weight(
         if exc.code in {401, 403}:
             raise SystemExit(
                 f"Civitai が {exc.code} を返した: {dest.name}。"
-                "Colab シークレット CIVITAI_API_TOKEN を入れて①からやり直す。"
-                "トークン自体はログに出さない。"
+                "Drive の civitai_api_token.txt か ①のフォームに API キーを入れてやり直す。"
+                "取り方: https://civitai.com/user/account → API Keys。キー自体はログに出さない。"
             ) from exc
         raise SystemExit(f"DL 失敗 {exc.code}: {dest.name}") from exc
     if not tmp.is_file() or tmp.stat().st_size < min_bytes:
