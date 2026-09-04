@@ -72,7 +72,8 @@ def _queue_ready_without_imagine(folder: Path, job: dict, drive_root: Path, mode
     """Colab bot notebook path: no Imagine. Grokbot host still does Imagine before exec."""
     mode = normalize_mode(mode)
     if mode == "t2v":
-        prompt = resolve_t2v_prompt(job.get("prompt"))
+        landscape = int(job.get("width") or 0) > int(job.get("height") or 0)
+        prompt = resolve_t2v_prompt(job.get("prompt"), landscape=landscape)
         errs = validate_t2v_prompt(prompt)
         if errs:
             raise SystemExit(errs)
@@ -179,7 +180,10 @@ def main() -> int:
         if not dry:
             ensure_comfy(comfy_dir, drive_root, drive_root / "models", need_r2v=False)
             start_comfy(comfy_dir)
-        prompt = resolve_t2v_prompt(job.get("prompt"))
+        prompt = resolve_t2v_prompt(
+            job.get("prompt"),
+            landscape=int(job.get("width") or 0) > int(job.get("height") or 0),
+        )
         errs = validate_t2v_prompt(prompt)
         if errs:
             raise SystemExit(errs)

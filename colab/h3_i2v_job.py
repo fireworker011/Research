@@ -51,6 +51,8 @@ IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 VIDEO_SUFFIXES = {".mp4", ".mov", ".webm", ".mkv"}
 PROMPT_SUFFIXES = {".txt", ".md"}
 CANVAS_9_16_HIGH = (768, 1344)
+CANVAS_16_9 = (1024, 576)
+CANVAS_16_9_HIGH = (1344, 768)
 
 
 def drive_root(path: str | Path | None = None) -> Path:
@@ -106,6 +108,21 @@ def is_8_9(width: int, height: int, *, tol: float = 0.02) -> bool:
 
 def is_9_16(width: int, height: int, *, tol: float = 0.03) -> bool:
     return height > 0 and abs(width / height - 9 / 16) <= tol
+
+
+def is_16_9(width: int, height: int, *, tol: float = 0.03) -> bool:
+    return height > 0 and abs(width / height - 16 / 9) <= tol
+
+
+def canvas_ok_for_mode(mode: str, width: int, height: int) -> bool:
+    w, h = int(width), int(height)
+    pair = (w, h)
+    high = pair in (CANVAS_9_16_HIGH, CANVAS_16_9_HIGH)
+    if mode == "t2v":
+        return is_9_16(w, h) or is_16_9(w, h) or high
+    if mode == "i2v":
+        return is_8_9(w, h) or is_16_9(w, h) or high
+    return is_8_9(w, h) or is_9_16(w, h) or is_16_9(w, h) or high
 
 
 def default_job(**overrides: Any) -> dict[str, Any]:
@@ -318,15 +335,13 @@ def validate_job(job: dict[str, Any], *, folder: Path | None = None) -> list[str
     w, h = int(job.get("width") or 0), int(job.get("height") or 0)
     if w % 32 or h % 32 or w < 32 or h < 32:
         errs.append("width/height must be multiples of 32")
-    elif mode == "t2v":
-        if not is_9_16(w, h) and (w, h) != CANVAS_9_16_HIGH:
-            errs.append("t2v canvas must stay 9:16")
-    elif mode == "i2v":
-        if not is_8_9(w, h):
-            errs.append("canvas must stay 8:9")
-    elif mode == "r2v":
-        if not is_8_9(w, h) and not is_9_16(w, h) and (w, h) != CANVAS_9_16_HIGH:
-            errs.append("r2v canvas must stay 8:9 or 9:16")
+    elif not canvas_ok_for_mode(mode, w, h):
+        if mode == "t2v":
+            errs.append("t2v canvas must stay 9:16 or 16:9")
+        elif mode == "i2v":
+            errs.append("i2v canvas must stay 8:9 or 16:9")
+        else:
+            errs.append("r2v canvas must stay 8:9, 9:16, or 16:9")
     dur = float(job.get("duration_s") or 0)
     if dur < 4 or dur > 15:
         errs.append("duration_s must be 4–15")

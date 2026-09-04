@@ -124,6 +124,15 @@ def test_i2va_retry_plans_shrink_8_9_never_go_up():
     assert [(p["width"], p["height"]) for p in small] == [(768, 864), (512, 576)]
 
 
+def test_i2va_retry_plans_keep_16_9():
+    plans = i2va_retry_plans(width=1024, height=576)
+    sizes = [(p["width"], p["height"]) for p in plans]
+    assert sizes[0] == (1024, 576)
+    assert (512, 288) in sizes
+    assert all(w > h for w, h in sizes)
+    assert (768, 864) not in sizes
+
+
 def test_prefer_fl2v_lora(tmp_path):
     a = tmp_path / "minimax_h3_ref2v_turbo.safetensors"
     b = tmp_path / "minimax_h3_fl2v_turbo_4step.safetensors"

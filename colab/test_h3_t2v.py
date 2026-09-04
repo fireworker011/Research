@@ -60,6 +60,37 @@ def test_t2v_retry_plans_stay_vertical():
     plans = t2v_retry_plans(width=576, height=1024)
     assert plans[0]["label"] == "576x1024"
     assert any(p["label"] == "288x512" for p in plans)
+    assert all(p["width"] < p["height"] for p in plans)
+
+
+def test_t2v_16_9_canvas_and_retry():
+    from h3_t2v import CANVAS_16_9, canvas_for_aspect, is_16_9, t2v_canvas_ok
+
+    assert canvas_for_aspect("16:9") == CANVAS_16_9 == (1024, 576)
+    assert is_16_9(1024, 576)
+    assert t2v_canvas_ok(1024, 576)
+    assert t2v_canvas_ok(1344, 768)
+    assert not t2v_canvas_ok(1280, 720)
+    g = build_t2v_graph(
+        prompt=DEFAULT_T2V_PROMPT,
+        unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        lora_name="minimax_h3_fl2v_turbo_4step.safetensors",
+        lora_strength=1.0,
+        width=1024,
+        height=576,
+        duration_s=5,
+        seed=1,
+        steps=4,
+        filename_prefix="video/h3_t2v",
+    )
+    assert assert_t2v_graph(g) == []
+    assert g["20"]["inputs"]["width"] == 1024
+    assert g["20"]["inputs"]["height"] == 576
+    plans = t2v_retry_plans(width=1024, height=576)
+    assert plans[0]["label"] == "1024x576"
+    assert any(p["label"] == "512x288" for p in plans)
+    assert all(p["width"] > p["height"] for p in plans)
+    assert resolve_t2v_prompt("", landscape=True).startswith("Horizontal 16:9")
 
 
 def test_t2v_colab_url():
@@ -82,8 +113,11 @@ def test_t2v_phone_notebook_is_three_cells():
     blob = "\n".join("".join(c.get("source") or []) for c in nb["cells"])
     assert "build_t2v_graph" in blob
     assert "first_frame" not in blob or "must not wire first_frame" in blob or "no first frame" in blob.lower() or "T2V" in blob
-    assert "WIDTH = 576" in blob
-    assert "HEIGHT = 1024" in blob
+    assert "ASPECT = \"9:16\"" in blob
+    assert "16:9" in blob
+    assert "canvas_for_aspect" in blob
+    assert "WIDTH = 0" in blob
+    assert "HEIGHT = 0" in blob
     assert "MiniMaxH3ReferenceToVideo" not in blob
     assert "px.a8.net" not in blob
     assert "display(Video" in blob

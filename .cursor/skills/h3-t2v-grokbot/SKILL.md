@@ -7,7 +7,7 @@ description: Unattended MiniMax H3 T2V (10s, 9:16). After one-time Automation or
 
 人間の指示は **一度きり**。以降は Drive `inbox/` に `.txt` が来たら **T2V だけ** 処理する。チャットで毎回呼ばない。
 
-公式 T2V は `MiniMaxH3ImageToVideo` に **first_frame を繋がない**。キャンバス 9:16（576×1024）。Grokbot は **10秒**。Imagine しない。静止画は使わない。
+公式 T2V は `MiniMaxH3ImageToVideo` に **first_frame を繋がない**。デフォルトキャンバス 9:16（576×1024）。横 16:9 は `drop_job.py --aspect 16:9`（1024×576）。Grokbot は **10秒**。Imagine しない。静止画は使わない。
 
 ## このエージェントが起きたとき
 
@@ -24,7 +24,7 @@ description: Unattended MiniMax H3 T2V (10s, 9:16). After one-time Automation or
 
 `inbox/` に `prompt.txt` を置くだけで T2V ジョブになる。
 明示ジョブは `python minimaxh3/grokbot/drop_job.py --mode t2v --prompt-file prompt.txt`。
-キー不要（Imagine しない）。`XAI_API_KEY` は I2V/R2V 用。
+横動画は `--aspect 16:9`。キー不要（Imagine しない）。`XAI_API_KEY` は I2V/R2V 用。
 
 ## やってはいけないこと
 

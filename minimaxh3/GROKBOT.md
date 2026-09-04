@@ -76,4 +76,16 @@ Drive `minimax-h3-comfyui/inbox/`
 
 完成: `minimax-h3-comfyui/output/{id}.mp4`
 
+## 16:9（横動画）
+
+デフォルトは T2V=9:16、I2V オマージュ=8:9。横は **1024×576**（H3 は 32 倍数。1280×720 は不可）。
+
+スマホ T2V: [minimax_h3_t2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb) の ③で `ASPECT` を `16:9`。
+
+```bash
+python minimaxh3/grokbot/drop_job.py --mode t2v --aspect 16:9 --prompt-file prompt.txt
+```
+
+I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそのまま）。`--aspect 16:9`。Hailuo API ノートの RATIO は使わない。
+
 投稿は人間。リンクはプロフィール。

@@ -22,6 +22,14 @@ CANVAS_8_9_HIGH = (1024, 1152)
 CANVAS_8_9_NATIVE = (1280, 1440)
 CANVAS_8_9_MIN = (512, 576)
 CANVAS_8_9_LADDER = (CANVAS_8_9_NATIVE, CANVAS_8_9_HIGH, CANVAS_8_9, CANVAS_8_9_MIN)
+CANVAS_16_9 = (1024, 576)
+CANVAS_16_9_HIGH = (1344, 768)
+CANVAS_16_9_MIN = (512, 288)
+CANVAS_16_9_LADDER = (CANVAS_16_9_HIGH, CANVAS_16_9, CANVAS_16_9_MIN)
+CANVAS_9_16 = (576, 1024)
+CANVAS_9_16_HIGH = (768, 1344)
+CANVAS_9_16_MIN = (288, 512)
+CANVAS_9_16_LADDER = (CANVAS_9_16_HIGH, CANVAS_9_16, CANVAS_9_16_MIN)
 DEFAULT_FIRST_IMAGE = "coconala_creator_ref.jpg"
 
 I2VA_HEADER = (
@@ -115,12 +123,18 @@ def resolve_motion_prompt(
 
 
 def i2va_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
-    """Smaller 8:9 canvases after OOM. Never drops first_frame or switches to R2V."""
+    """Smaller same-aspect canvases after OOM. Never drops first_frame or switches to R2V."""
     w = max(32, int(width) // 32 * 32)
     h = max(32, int(height) // 32 * 32)
     plans = [{"width": w, "height": h, "label": f"{w}x{h}"}]
     area = w * h
-    for cw, ch in CANVAS_8_9_LADDER:
+    if (h > 0 and abs(w / h - 16 / 9) <= 0.03) or (w, h) == CANVAS_16_9_HIGH:
+        ladder = CANVAS_16_9_LADDER
+    elif (h > 0 and abs(w / h - 9 / 16) <= 0.03) or (w, h) == CANVAS_9_16_HIGH:
+        ladder = CANVAS_9_16_LADDER
+    else:
+        ladder = CANVAS_8_9_LADDER
+    for cw, ch in ladder:
         if cw * ch < area:
             plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}"})
     out: list[dict[str, Any]] = []

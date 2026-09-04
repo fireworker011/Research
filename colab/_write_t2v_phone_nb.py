@@ -11,9 +11,9 @@ OUTS = [
     ROOT / "minimaxh3" / "minimax_h3_t2v_phone.ipynb",
 ]
 
-MD0 = r"""# MiniMax H3 T2V（スマホ・9:16）
+MD0 = r"""# MiniMax H3 T2V（スマホ・9:16 / 16:9）
 
-**セルは3本だけ。** テキストから動画（T2V）。画像は不要。縦 9:16（576×1024）。Comfyの画面は開かない。
+**セルは3本だけ。** テキストから動画（T2V）。画像は不要。デフォルトは縦 9:16（576×1024）。横 16:9 は ③で `ASPECT` を `16:9`（1024×576）。Comfyの画面は開かない。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)
 
@@ -26,7 +26,7 @@ MD0 = r"""# MiniMax H3 T2V（スマホ・9:16）
 3. メニュー **⋮ → ランタイム → すべてのセルを実行**
 4. ①で Google Drive の許可を出す
 5. ②は初回だけ長い（I2V と同じモデル約42GB。既にあればスキップ）
-6. ③の `PROMPT` を書いて実行。動画は Drive の `MyDrive/minimax-h3-comfyui/output`
+6. ③の `PROMPT` を書いて実行。横動画なら `ASPECT` を **16:9**。1280×720 は H3 非対応（720 が 32 の倍数ではない）。動画は Drive の `MyDrive/minimax-h3-comfyui/output`
 
 動画の中にアフィURLは出さない。リンクはプロフィール。画面上は「広告」。
 """
@@ -68,9 +68,9 @@ print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
 if vram < 20:
     raise SystemExit("VRAM が足りません。A100 を選んでください。")
 if vram < 70:
-    print("40GB クラス: 9:16 は 576x1024。OOM なら 288x512。")
+    print("40GB クラス: 9:16 は 576x1024。16:9 は 1024x576。OOM なら短辺を半分。")
 else:
-    print("80GB クラス: 9:16 576x1024（必要なら 768x1344）。")
+    print("80GB クラス: 9:16 576x1024 / 16:9 1024x576（必要なら 768 短辺クラス）。")
 print("OK → 次は②")
 '''
 
@@ -228,9 +228,9 @@ else:
 print("OK → 次は③（テキストから動画）")
 '''
 
-CELL3 = r'''#@title ③ テキストから動画（T2V・9:16）
+CELL3 = r'''#@title ③ テキストから動画（T2V・9:16 / 16:9）
 print("=" * 60)
-print(" ③ H3 T2V — no first frame, 9:16")
+print(" ③ H3 T2V — no first frame")
 print("=" * 60)
 
 import json, os, sys, time, uuid, urllib.request, urllib.error
@@ -238,8 +238,9 @@ from pathlib import Path
 from IPython.display import display, Video, HTML
 
 PROMPT = ""  #@param {type:"string"}
-WIDTH = 576  #@param {type:"integer"}
-HEIGHT = 1024  #@param {type:"integer"}
+ASPECT = "9:16"  #@param ["9:16", "16:9"]
+WIDTH = 0  #@param {type:"integer"}
+HEIGHT = 0  #@param {type:"integer"}
 DURATION_S = 5  #@param {type:"number"}
 STEPS = 4  #@param {type:"integer"}
 SEED = 42  #@param {type:"integer"}
@@ -253,7 +254,7 @@ from h3_r2v_core import is_oom_error, frames
 from h3_motion_graphics import prefer_fl2v_lora
 from h3_i2v_phone import collect_output_videos, newest_mp4
 from h3_t2v import (
-    assert_t2v_graph, build_t2v_graph, resolve_t2v_prompt,
+    assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt,
     t2v_retry_plans, validate_t2v_prompt,
 )
 
@@ -266,12 +267,15 @@ COMFY_DIR = Path(env["COMFY_DIR"])
 OUT = COMFY_DIR / "output"
 PORT = 8188
 
-prompt = resolve_t2v_prompt(PROMPT)
+w, h = int(WIDTH), int(HEIGHT)
+if w <= 0 or h <= 0:
+    w, h = canvas_for_aspect(ASPECT)
+prompt = resolve_t2v_prompt(PROMPT, landscape=w > h)
 errs = validate_t2v_prompt(prompt)
 if errs:
     raise SystemExit(errs)
 print(prompt[:400], "...")
-print("frames", frames(DURATION_S), "canvas", int(WIDTH), "x", int(HEIGHT))
+print("frames", frames(DURATION_S), "canvas", w, "x", h, "aspect", ASPECT)
 
 obj = {}
 if not DRY_RUN:
@@ -288,7 +292,7 @@ lora_paths = list((COMFY_DIR / "models/loras").glob("*.safetensors")) if (COMFY_
 lora = prefer_fl2v_lora(lora_paths, USE_LORA)
 print("unet", unet, "lora", lora)
 
-plans = t2v_retry_plans(width=int(WIDTH), height=int(HEIGHT))
+plans = t2v_retry_plans(width=w, height=h)
 print("retry plans:", [p["label"] for p in plans])
 
 def make_graph(plan):

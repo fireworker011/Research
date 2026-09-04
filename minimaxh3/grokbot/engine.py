@@ -100,7 +100,8 @@ def enhance_still_job(folder: Path, job: dict, drive: Path) -> Path:
 
 
 def prepare_t2v(folder: Path, job: dict) -> None:
-    prompt = resolve_t2v_prompt(job.get("prompt"))
+    landscape = int(job.get("width") or 0) > int(job.get("height") or 0)
+    prompt = resolve_t2v_prompt(job.get("prompt"), landscape=landscape)
     errs = validate_t2v_prompt(prompt)
     if errs:
         raise SystemExit(errs)

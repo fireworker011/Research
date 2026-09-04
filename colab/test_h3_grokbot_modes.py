@@ -208,6 +208,20 @@ def test_drop_and_run_each_mode_dry(tmp_path):
     assert t2v_job["status"] == "queued"
 
 
+def test_drop_t2v_16_9(tmp_path):
+    import drop_job
+
+    drive = tmp_path / "minimax-h3-comfyui"
+    prompt = tmp_path / "wide.txt"
+    prompt.write_text("Horizontal 16:9 photoreal desk scene. 広告. No URL.\n", encoding="utf-8")
+    assert drop_job.main(["--drive", str(drive), "--mode", "t2v", "--aspect", "16:9", "--prompt-file", str(prompt)]) == 0
+    folder = next((drive / "inbox").iterdir())
+    job = json.loads((folder / "job.json").read_text(encoding="utf-8"))
+    assert job["mode"] == "t2v"
+    assert (job["width"], job["height"]) == (1024, 576)
+    assert validate_job(job) == []
+
+
 def test_idle_when_wrong_mode_inbox(tmp_path):
     import run_t2v
 
