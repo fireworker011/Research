@@ -217,6 +217,7 @@ def test_free_phone_notebook_is_three_i2v_cells():
         assert "civitai_api_token.txt" in blob
         assert 'CIVITAI_API_TOKEN = ""' in blob
         assert "シークレットは不要" in blob or "シークレットは使わなくてよい" in blob
+        assert "drive/1DdzLY-zRwCi_1VlW9dq9f8ljQ8QXmvTp" in blob
         assert "sk-live-" not in blob
         for i, cell in enumerate(codes):
             src = "".join(cell.get("source") or [])

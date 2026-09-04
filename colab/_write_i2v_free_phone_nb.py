@@ -15,7 +15,9 @@ MD0 = r"""# MiniMax H3 I2V（スマホ・自由プロンプト・auto / 9:16 / 1
 
 **セルは3本だけ。** 1枚の画像からテキスト指示で動画（I2V）。T2V スマホ版と同じモデル（FL2VA + turbo LoRA）に、写真を最初のフレームとして渡す。Comfyの画面は開かない。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_free_phone.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1DdzLY-zRwCi_1VlW9dq9f8ljQ8QXmvTp)
+
+Google Drive コピー（Civitai 記載）: https://colab.research.google.com/drive/1DdzLY-zRwCi_1VlW9dq9f8ljQ8QXmvTp
 
 テキストだけ（T2V）: [minimax_h3_t2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)。ココナラ広告固定の I2V は [minimax_h3_i2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)。
 

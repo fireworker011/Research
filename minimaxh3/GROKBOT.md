@@ -82,7 +82,7 @@ Drive `minimax-h3-comfyui/inbox/`
 
 スマホ T2V: [minimax_h3_t2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb) の ③で `ASPECT` を `16:9`。
 
-スマホ I2V（写真＋自由プロンプト。広告固定なし）: [minimax_h3_i2v_free_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_free_phone.ipynb)。`ASPECT` は `auto`（写真の向きで 9:16 / 16:9 / 8:9）か明示。`LAST_IMAGE` で最終フレームも固定できる。
+スマホ I2V（写真＋自由プロンプト。広告固定なし）: [Drive Colab](https://colab.research.google.com/drive/1DdzLY-zRwCi_1VlW9dq9f8ljQ8QXmvTp)（Civitai 記載版）。GitHub: [minimax_h3_i2v_free_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-i2v-free-phone-22ce/minimax_h3_i2v_free_phone.ipynb)。`ASPECT` は `auto`（写真の向きで 9:16 / 16:9 / 8:9）か明示。`LAST_IMAGE` で最終フレームも固定できる。Civitai API はシークレット不要。Drive の `minimax-h3-comfyui/civitai_api_token.txt` にキーを1行置くか、①のフォームに貼る（ノートは保存しない）。取り方: https://civitai.com/user/account → API Keys。
 
 ```bash
 python minimaxh3/grokbot/drop_job.py --mode t2v --aspect 16:9 --prompt-file prompt.txt
