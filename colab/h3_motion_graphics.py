@@ -82,6 +82,14 @@ STUDIO_I2V_MINOR_RE = re.compile(
     r"小学生|中学生|pedo)",
     re.I,
 )
+_STUDIO_FORBIDDEN_TERM = (
+    r"(?:child|children|kids?|loli(?:ta)?|shota|syota|teen(?:agers?|age)?|"
+    r"underage|minors?|toddler|infant|schoolgirl|小学生|中学生)"
+)
+STUDIO_SAFETY_CLAUSE_RE = re.compile(
+    rf"(?ix)\b(?:no|not\s+a|not|without|avoid|exclude|never)\s+(?:a\s+)?{_STUDIO_FORBIDDEN_TERM}"
+    rf"(?:\s*,\s*(?:no\s+|not\s+a\s+|not\s+)?{_STUDIO_FORBIDDEN_TERM})*"
+)
 
 
 def fl2va_header(duration_s: float = DURATION_S) -> str:
@@ -204,7 +212,8 @@ def validate_studio_i2v_prompt(prompt: str) -> list[str]:
     for bad in FORBIDDEN_IN_PROMPT:
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
-    hits = sorted({m.group(0).lower() for m in STUDIO_I2V_MINOR_RE.finditer(p)})
+    cleaned = STUDIO_SAFETY_CLAUSE_RE.sub(" ", p)
+    hits = sorted({m.group(0).lower() for m in STUDIO_I2V_MINOR_RE.finditer(cleaned)})
     if hits:
         errs.append(f"adults-only: forbidden subject {hits}")
     return errs

@@ -187,3 +187,7 @@ def test_studio_i2v_still_requires_picture1_and_forbids_affiliate():
     assert any("forbidden" in e for e in errs)
     minor = validate_studio_i2v_prompt("<Picture 1> loli character waves")
     assert any("adults-only" in e for e in minor)
+    safe = validate_studio_i2v_prompt(
+        "<Picture 1> Adult woman over 21. No child. She looks at the camera."
+    )
+    assert safe == []

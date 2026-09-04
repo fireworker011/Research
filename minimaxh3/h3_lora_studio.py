@@ -166,6 +166,23 @@ def explain_choice(situation: str, mode: str) -> str:
     )
 
 
+def friendly_select_error(exc: BaseException) -> str | None:
+    """Japanese hint for leftover photo prompts / 'no child' false positives."""
+    msg = str(exc)
+    low = msg.lower()
+    if "picture 1" in low or "first_frame" in low:
+        return (
+            "テキストから作るときは、写真用の文が文章欄に残っています。"
+            "欄を空にするとこのシーンのおすすめ文になります。"
+        )
+    if "forbidden subject" in low:
+        return (
+            "未成年の表現は作れません。文章欄に child / teen / loli などが残っていないか見てください。"
+            "空欄にするとおすすめ文を使います。no child のような禁止の意味は大丈夫です。"
+        )
+    return None
+
+
 def civitai_token(form_value: str = "") -> str:
     """Read Civitai API key. Form paste first, then Colab secret, then env. Never print it."""
     pasted = str(form_value or "").strip()

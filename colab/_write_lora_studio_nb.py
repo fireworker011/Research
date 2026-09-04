@@ -376,8 +376,9 @@ from h3_motion_graphics import (
     validate_studio_i2v_prompt,
 )
 from h3_lora_studio import (
-    apply_user_prompt, explain_choice, friendly_lora, inject_lora_stack,
-    is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation,
+    apply_user_prompt, explain_choice, friendly_lora, friendly_select_error,
+    inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
+    resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
 
@@ -429,14 +430,23 @@ if VANILLA:
 else:
     FILENAME_PREFIX = "video/h3_preview" if SITUATION in {"preview", "sfw_preview"} else "video/h3_lora_studio"
     prompt_arg, CUSTOM_PROMPT = apply_user_prompt(文章, mode=MODE, default_prompt="（シーン）")
-    cfg = select_loras(
-        profile_name=SITUATION,
-        mode=MODE,
-        prompt_arg=prompt_arg,
-        catalog_path=STUDIO / "catalog" / "loras.json",
-        profiles_dir=STUDIO / "profiles",
-        turbo_override=None,
-    )
+    print("文章:", "自分のプロンプト" if CUSTOM_PROMPT else "シーンのおすすめ文（空欄）")
+    if CUSTOM_PROMPT:
+        print("文章欄（先頭）:", prompt_arg[:180].replace("\n", " "))
+    if MODE == "t2v" and ("Picture 1" in prompt_arg or "first_frame" in prompt_arg.lower()):
+        raise SystemExit("テキストから作るときは、写真用の文が文章欄に残っています。欄を空にするとこのシーンのおすすめ文になります。")
+    try:
+        cfg = select_loras(
+            profile_name=SITUATION,
+            mode=MODE,
+            prompt_arg=prompt_arg,
+            catalog_path=STUDIO / "catalog" / "loras.json",
+            profiles_dir=STUDIO / "profiles",
+            turbo_override=None,
+        )
+    except SystemExit as exc:
+        hint = friendly_select_error(exc)
+        raise SystemExit(hint or str(exc)) from None
     if 動きの底上げ or 胸を強調 or リアル寄り or 静止画用の写実:
         print("上級の追加部品は重ね上限（行為1+ヘルパー1+Turbo1）のため無視します。")
     stack = cfg["stack"]
@@ -445,7 +455,6 @@ else:
     STEPS = int(SAMPLER["steps"])
     if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
         raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にするか、Picture 1 を消してください。")
-    print("文章:", "自分のプロンプト" if CUSTOM_PROMPT else "シーンのおすすめ文（空欄）")
     print("入る部品:")
     for x in stack:
         role = x.get("role") or ""

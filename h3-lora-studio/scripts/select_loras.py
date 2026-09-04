@@ -53,6 +53,15 @@ FORBIDDEN_SUBJECT_RE = re.compile(
     r"小学生|中学生| pedo|loliita)",
     re.I,
 )
+_FORBIDDEN_TERM = (
+    r"(?:child|children|kids?|loli(?:ta)?|shota|syota|teen(?:agers?|age)?|"
+    r"underage|minors?|toddler|infant|schoolgirl|小学生|中学生)"
+)
+# "no child" / "not a teen" / comma lists after no — safety language, not a request.
+SAFETY_CLAUSE_RE = re.compile(
+    rf"(?ix)\b(?:no|not\s+a|not|without|avoid|exclude|never)\s+(?:a\s+)?{_FORBIDDEN_TERM}"
+    rf"(?:\s*,\s*(?:no\s+|not\s+a\s+|not\s+)?{_FORBIDDEN_TERM})*"
+)
 TURBO_NAME_RE = re.compile(r"(turbo|\bacc[-_]?lora|\b4step\b|\b8step\b)", re.I)
 PICTURE1_RE = re.compile(r"Picture 1|first_frame", re.I)
 
@@ -110,8 +119,14 @@ def is_turbo_row(row: dict[str, Any]) -> bool:
     return bool(TURBO_NAME_RE.search(blob))
 
 
-def forbidden_hits(text: str) -> list[str]:
-    return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(text)})
+def forbidden_hits(text: str, *, negative: str | None = None) -> list[str]:
+    """Flag requested minors. Do not flag 'no child' / pasted negative lists."""
+    cleaned = str(text or "")
+    neg = str(negative or "").strip()
+    if neg:
+        cleaned = cleaned.replace(neg, " ")
+    cleaned = SAFETY_CLAUSE_RE.sub(" ", cleaned)
+    return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(cleaned)})
 
 
 def profile_is_nsfw(profile: dict[str, Any]) -> bool:
@@ -435,7 +450,7 @@ def select_loras(
         raise SelectError(f"{profile_name} does not support mode {mode}")
 
     prompt = resolve_prompt(profile, prompt_arg, mode)
-    hits = forbidden_hits(prompt)
+    hits = forbidden_hits(prompt, negative=str(profile.get("negative") or ""))
     if hits:
         raise SelectError(f"forbidden subject in prompt: {hits}")
     assert_mode_prompt(mode, prompt)

@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
-from select_loras import SelectError, list_situations, select_loras  # noqa: E402
+from select_loras import SelectError, forbidden_hits, list_situations, select_loras  # noqa: E402
 
 
 def test_anal_penetration_i2v_stacks_enabled_only():
@@ -269,6 +269,30 @@ def test_sfw_daily_splits_turbo_and_quality():
     r2v = select_loras(profile_name="sfw_r2v", mode="r2v")
     assert [row["id"] for row in r2v["stack"]] == ["minimax-h3-turbo-ref2v-4step", "cinema-dy"]
     assert r2v["stack"][1]["strength_model"] == 0.5
+
+
+def test_safety_no_child_is_not_a_request():
+    assert forbidden_hits("Adult woman over 21. No child. No loli.") == []
+    assert forbidden_hits("not a child, not a teen") == []
+    assert forbidden_hits("no child, teen, loli, shota") == []
+    assert forbidden_hits("a child sits on the bed") == ["child"]
+    data = select_loras(
+        profile_name="anal_closeup",
+        mode="t2v",
+        prompt_arg="Adult woman over 21 presents her anus. No child. A man licks then fingers the hole.",
+    )
+    assert data["situation"] == "anal_closeup"
+    assert "anus" in data["prompt"].lower()
+    try:
+        select_loras(
+            profile_name="anal_closeup",
+            mode="t2v",
+            prompt_arg="a child is in the scene",
+        )
+    except SelectError as exc:
+        assert "child" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
 
 
 def test_custom_prompt_replaces_scene_template():

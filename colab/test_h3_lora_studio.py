@@ -11,6 +11,7 @@ from h3_lora_studio import (
     civitai_token_help,
     explain_choice,
     friendly_lora,
+    friendly_select_error,
     inject_lora_stack,
     is_blank_prompt,
     is_vanilla,
@@ -211,3 +212,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "homage=homage" in blob
     assert "validate_studio_i2v_prompt" in blob
     assert "validate_motion_ad_prompt(prompt, with_last_frame=False)" in blob
+    assert "写真用の文が文章欄に残っています" in src
+    assert "friendly_select_error" in src
+
+
+def test_friendly_select_error_for_child_and_picture1():
+    assert "空欄" in (friendly_select_error(SystemExit("forbidden subject in prompt: ['child']")) or "")
+    assert "写真用" in (friendly_select_error(SystemExit("t2v prompt must not use Picture 1 / first_frame")) or "")
+    assert friendly_select_error(SystemExit("CoachBate anal penetration stays turbo off")) is None
