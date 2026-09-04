@@ -4,23 +4,27 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 成人のみ（21+）。Turbo オフ。API キーは `.env` / Colab シークレットだけ。
 
-## Colab
+## Colab（初心者はここだけ）
 
 [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
 
-セル① Drive → ② 本体+LoRA（Turbo は入れない）→ ③ SITUATION で組み合わせ。推奨プロンプトはノート先頭。
+1. Open in Colab → GPU を **A100**
+2. 左の鍵に `CIVITAI_API_TOKEN`（値は Civitai の API キー。ノートに貼らない）
+3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
+
+③のリストは日本語（穴アップ、アナル挿入、ふたなりフェラ、フェラ、騎乗位）。文章は空でOK。Turbo は入れない。
 
 Civitai 用: Colab シークレット `CIVITAI_API_TOKEN`。ログに出さない。
 
 ## シチュエーション
 
-| situation | 積む | 用途 |
-|---|---|---|
-| `anal_closeup` | Synth Pussy 0.75 + Anal Penetration 0.85 | 舐め・指・穴アップ。Turbo 切る |
-| `anal_penetration` | HMNSFW AIO V2.5 + Anal Penetration | セックスで穴が膣に逃げるとき |
-| `futa_blowjob` | Futa v5.1 + Penis 0.7 + Blowjob 0.85 | I2V が安定 |
-| `oral` | Blowjob + Penis | `bl0w_j0b` / `PENISLORA` |
-| `riding` | I2V: riding pose / T2V: AIO V2.5 | riding は I2V 専用 |
+| ③の名前 | situation | 積む | 用途 |
+|---|---|---|---|
+| 穴アップ（舐め・指） | `anal_closeup` | Synth Pussy 0.75 + Anal Penetration 0.85 | 舐め・指・穴アップ。Turbo 切る |
+| アナル挿入 | `anal_penetration` | HMNSFW AIO V2.5 + Anal Penetration | セックスで穴が膣に逃げるとき |
+| ふたなりフェラ | `futa_blowjob` | Futa v5.1 + Penis 0.7 + Blowjob 0.85 | I2V が安定 |
+| フェラ | `oral` | Blowjob + Penis | `bl0w_j0b` / `PENISLORA` |
+| 騎乗位 | `riding` | I2V: riding pose / T2V: AIO V2.5 | riding は I2V 専用 |
 
 任意: Astro 0.25–0.5、Tiddies 1.0–2.0、Realism People。Photoreal still は静止画用で穴動画には使わない。gayanalh3 は入れない。
 

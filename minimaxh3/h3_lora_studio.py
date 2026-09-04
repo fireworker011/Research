@@ -33,6 +33,83 @@ SITUATION_DOWNLOAD = {
     "riding": ["riding-pose-i2v", "hmnsfw-aio-v25", "h3-realism-people"],
 }
 
+SITUATION_JA = {
+    "穴アップ（舐め・指）": "anal_closeup",
+    "アナル挿入": "anal_penetration",
+    "ふたなりフェラ": "futa_blowjob",
+    "フェラ": "oral",
+    "騎乗位": "riding",
+    "anal_closeup": "anal_closeup",
+    "anal_penetration": "anal_penetration",
+    "futa_blowjob": "futa_blowjob",
+    "oral": "oral",
+    "riding": "riding",
+}
+
+MODE_JA = {
+    "テキストから（写真なし）": "t2v",
+    "写真から（1枚必要）": "i2v",
+    "t2v": "t2v",
+    "i2v": "i2v",
+}
+
+SITUATION_HELP = {
+    "anal_closeup": "穴がよく見えるアップ。舐め・指。部品は穴の見え方とアナル挿入。",
+    "anal_penetration": "後ろからの挿入。穴が膣に逃げやすいときのセット。部品は総合えっちとアナル挿入。",
+    "futa_blowjob": "ふたなりフェラ。部品はふたなり・竿・フェラ。写真からの方が安定。",
+    "oral": "フェラ。部品はフェラと竿。",
+    "riding": "騎乗位。写真からなら騎乗用、テキストからなら総合えっち。",
+}
+
+LORA_JA = {
+    "synth-pussy-h3": "穴の見え方",
+    "anal-penetration-coachbate": "アナル挿入",
+    "hmnsfw-aio-v25": "総合えっち",
+    "futa-h3-v51": "ふたなり",
+    "penis-lora-h3": "竿",
+    "blowjob-h3": "フェラ",
+    "riding-pose-i2v": "騎乗のポーズ",
+    "h3-realism-people": "肌のリアルさ",
+    "tiddies-realism-slider": "胸の大きさ",
+    "astro-nsfw-h3": "動きの底上げ",
+    "photoreal-h3-still": "静止画用の写実",
+}
+
+
+def resolve_situation(name: str) -> str:
+    key = str(name or "").strip()
+    if key in SITUATION_JA:
+        return SITUATION_JA[key]
+    raise SystemExit(
+        "シーンの名前が分かりません。フォームのリストから選んでください。"
+        f" 入力: {name}"
+    )
+
+
+def resolve_mode(name: str) -> str:
+    key = str(name or "").strip()
+    if key in MODE_JA:
+        return MODE_JA[key]
+    raise SystemExit("作り方は「テキストから（写真なし）」か「写真から（1枚必要）」を選んでください。")
+
+
+def friendly_lora(lora_id: str) -> str:
+    return LORA_JA.get(str(lora_id), str(lora_id))
+
+
+def explain_choice(situation: str, mode: str) -> str:
+    sid = resolve_situation(situation)
+    mid = resolve_mode(mode)
+    how = "テキストから動画（写真は使いません）" if mid == "t2v" else "写真1枚から動画（Drive の input に jpg）"
+    parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
+    return (
+        f"シーン: {situation}\n"
+        f"作り方: {how}\n"
+        f"説明: {SITUATION_HELP[sid]}\n"
+        f"使う部品: {parts}\n"
+        "速いモード（Turbo）は使いません。"
+    )
+
 
 def civitai_token() -> str:
     for getter in (_colab_userdata_token, lambda: os.environ.get("CIVITAI_API_TOKEN") or ""):

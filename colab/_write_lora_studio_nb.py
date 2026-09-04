@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the MiniMax H3 LoRA studio Colab (stack Civitai NSFW LoRAs, turbo off)."""
+"""Write a beginner-friendly MiniMax H3 LoRA studio Colab."""
 from __future__ import annotations
 
 import json
@@ -12,95 +12,62 @@ OUTS = [
     ROOT / "h3-lora-studio" / "minimax_h3_lora_studio.ipynb",
 ]
 
-MD0 = r"""# MiniMax H3 LoRA Studio（Colab・組み合わせ）
+MD0 = r"""# えっちな動画を作る（MiniMax H3）
 
-**成人のみ（21+）。** Fal の H3 Max API には LoRA を差せない。このノートは **ローカル ComfyUI の MiniMax H3（T2V / I2V）**。Turbo はオフ（`res_multistep` / `beta` / 16 step）。
+写真なしの文章から、または写真1枚から、短い動画を作ります。
+
+**18歳未満は使えません。出演者は全員 21歳以上の設定です。**
+
+このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
 
-gayanalh3 は入れない（女体・ふたなり用途には向かない）。
+## やること（3つだけ）
 
-Civitai の一部はトークン必須。Colab → 🔑 シークレットに `CIVITAI_API_TOKEN`。**.env とシークレット以外にキーを書かない。** ログにも出さない。
+1. **①** を実行 → Google Drive の許可を出す
+2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
+3. **③** でシーンを選んで実行 → 下に動画が出る
 
-## 推奨組み合わせ（③の SITUATION）
+初めてなら、フォームは **いじらなくて大丈夫** です。上から順に ▶ を押すだけ。
 
-| SITUATION | 積む LoRA | 強度 | 用途 |
-|---|---|---|---|
-| `anal_closeup` | Synth Pussy + Anal Penetration | 0.6–0.9 / 0.7–1.0 | アナル舐め・指・穴アップ。穴が見える構図。Turbo 切る |
-| `anal_penetration` | HMNSFW AIO V2.5 + Anal Penetration | 0.5–0.9 / 0.7–1.0 | セックス全般で穴が膣に逃げるとき。AIO 土台にアナルを足す |
-| `futa_blowjob` | Futanari v5.1 + Penis 0.6–0.8 + Blowjob 0.7–1.0 | I2V が安定。竿が細いとき Penis を併用 |
-| `oral` | Blowjob + Penis | トリガー `bl0w_j0b` / `PENISLORA` |
-| `riding` | I2V: riding pose / T2V: AIO V2.5 | riding LoRA は I2V 専用 |
+## 準備（最初の1回）
 
-任意（③のチェック）。掛け率は低め:
+1. 上の **Open in Colab** を開く
+2. 右上の **ランタイム → ランタイムのタイプを変更 → GPU を A100**
+3. 一部の部品は Civitai の鍵が要ります。左の鍵アイコン（シークレット）に名前 `CIVITAI_API_TOKEN` を追加。値は Civitai の API キー。**ノートやチャットに貼らない**
+4. メニュー **ランタイム → すべてのセルを実行** でも、①②③を順に押しても同じ
 
-- Astro NSFW … 人体と動きの底上げ。トリガーなし。**0.25–0.5**
-- Tiddies and Realism Slider … リアル寄せ＋胸。**1.0–2.0**。性器専用ではない
-- Realism People … トリガー `r34l1sm`
-- Photoreal still (`ph0t0r34l`) … **静止画用。穴ディテール動画には使わない**
+できた動画は Google Drive の  
+`マイドライブ / minimax-h3-comfyui / output`
 
-## 推奨プロンプト（③で PROMPT を空＝シーン、または下を貼る）
+写真から作るときは、同じ Drive の `input` フォルダに jpg を置いてから ③ を実行。
 
-共通: 出演者は同意した **21歳以上の成人**。未成年・ロリ・ショタ禁止。T2V に Picture 1 を書かない。I2V は `<Picture 1>` が first frame。
+## シーンの選び方（③で選ぶ）
 
-### anal_closeup（T2V）
+| ③で選ぶ名前 | どんな動画 | 自動で入る部品 |
+|---|---|---|
+| 穴アップ（舐め・指） | 穴がよく見えるアップ | 穴の見え方 + アナル挿入 |
+| アナル挿入 | 後ろからの挿入。穴が膣に逃げやすいとき | 総合えっち + アナル挿入 |
+| ふたなりフェラ | ふたなりのフェラ。写真からの方が安定 | ふたなり + 竿 + フェラ |
+| フェラ | フェラ | フェラ + 竿 |
+| 騎乗位 | 上に乗って動く | 写真なら騎乗のポーズ、文章なら総合えっち |
 
-```
-Vertical 9:16 live-action cinematic photorealism, no anime.
-Two consenting adults, both clearly over 21.
-Close-up of an adult woman's anus, hole clearly visible.
-An adult man licks then slowly fingers the anus.
-Photoreal skin, detailed anus. Warm lamp, bedroom. Continuous motion.
-All performers are consenting adults 21 years or older.
-```
+文章欄は **空のままでOK**。おすすめの英文が自動で入ります。自分で書きたいときだけ貼る。
 
-### anal_penetration（T2V）
-
-```
-Vertical 9:16 live-action cinematic photorealism, no anime.
-Adult woman over 21 on all fours looking back. Adult man over 21 behind her.
-He penetrates her anus, not the vagina. Hole clearly visible. Steady rhythm.
-Photoreal. Bedroom lamp. All performers are consenting adults 21 years or older.
-```
-
-### futa_blowjob（T2V）
-
-```
-bl0w_j0b, PENISLORA, Cinematic realism.
-Vertical 9:16. Adult woman over 21, futanari transformation, erect penis.
-Another adult over 21 giving a deepthroat blow job. The penis is visible from the front.
-Photoreal. All performers are consenting adults 21 years or older.
-```
-
-### oral（T2V）
-
-```
-bl0w_j0b, PENISLORA, Cinematic realism.
-Adult woman over 21 giving a deepthroat blow job to an adult man's erect penis.
-The penis is visible from the front. Photoreal. All performers are consenting adults 21+.
-```
-
-I2V は上に「For the target video, at 0.00 seconds ... `<Picture 1>` is fully referenced.」を付け、identity を Picture 1 にロックする。
-
-Penis LoRA: `stroke`（jerk 禁止）、`hand job`、正面は `The penis is visible from the front`、横は `from the side`。
-
-Anal Penetration: トリガーなし。穴が見えるクローズアップ。Turbo なし。
-
-## 手順
-
-1. Open in Colab → GPU **A100**
-2. シークレットに `CIVITAI_API_TOKEN`（必要な LoRA 用）
-3. すべてのセルを実行。① Drive 許可 → ② モデル+LoRA → ③ 生成
-4. 動画は `MyDrive/minimax-h3-comfyui/output`
+触らなくていい項目（リアル寄せ・胸など）は ③ のいちばん下にあります。
 """
 
-CELL1 = r'''#@title ① Drive をつなぐ
-print("=" * 60)
-print(" ① Google Drive + GPU（LoRA Studio / Turbo オフ）")
-print("=" * 60)
+MD1 = r"""## ① Google Drive をつなぐ
+
+下のセルを実行すると、許可のポップアップが出ます。**許可** を押してください。
+
+フォームは触らなくて大丈夫です。GPU が A100 でないとここで止まります。
+"""
+
+CELL1 = r'''#@title ① Drive の許可を出す（ここは触らなくてOK）
+print("① Google Drive につないでいます…")
 
 from google.colab import drive
-from pathlib import Path
 import os
 
 DRIVE_ROOT = "/content/drive/MyDrive/minimax-h3-comfyui"  #@param {type:"string"}
@@ -119,35 +86,42 @@ with open("/content/h3_paths.env", "w") as f:
     f.write(f"DRIVE_MODELS={DRIVE_MODELS}\n")
     f.write(f"COMFY_DIR={COMFY_DIR}\n")
 
-print("Drive:", DRIVE_ROOT)
-print("LoRA:", f"{DRIVE_MODELS}/loras")
-print("出力:", f"{DRIVE_ROOT}/output")
-
 import torch
 if not torch.cuda.is_available():
-    raise SystemExit("GPU がオフです。ランタイム → A100。")
+    raise SystemExit("GPU がオフです。上のメニュー「ランタイム」→「ランタイムのタイプを変更」→ GPU を A100 にして、①からやり直してください。")
 props = torch.cuda.get_device_properties(0)
 vram = props.total_memory / 1024 ** 3
-print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
+print("つながった Drive:", DRIVE_ROOT)
+print("動画の保存先:", f"{DRIVE_ROOT}/output")
+print("写真を置く場所:", f"{DRIVE_ROOT}/input")
+print("GPU:", torch.cuda.get_device_name(0), "メモリ:", round(vram, 1), "GB")
 if vram < 20:
-    raise SystemExit("VRAM が足りません。A100 を選んでください。")
-print("OK → 次は②")
+    raise SystemExit("メモリが足りません。GPU を A100 にしてください。")
+print()
+print("① 完了。次は②を実行してください。初回は待ちます。")
 '''
 
-CELL2 = r'''#@title ② Comfy + H3 + 選択 LoRA（Turbo は入れない）
-print("=" * 60)
-print(" ② LoRA Studio 準備（FL2VA / Turbo オフ）")
-print("=" * 60)
+MD2 = r"""## ② 部品を用意する（初回だけ長い）
+
+下のセルで、動画の土台と「えっち用の部品（LoRA）」を Drive に入れます。
+
+- **初めて** … 20〜40分かかることがあります。途中で止まっても、もう一度押せば続きから入ります
+- **2回目以降** … すでに入っているファイルは飛ばすので速いです
+- 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
+
+鍵エラー（401 / 403）が出たら、Civitai の API キーを Colab のシークレットに入れて①からやり直します。キー自体は画面に出ません。
+"""
+
+CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ）
+print("② 準備を始めています…")
+
+#@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
+よく使う部品を全部入れる = True  #@param {type:"boolean"}
+#@markdown 全部オフにするなら、今使うシーンだけ:
+今使うシーン = "穴アップ（舐め・指）"  #@param ["穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
-
-SITUATION = "anal_closeup"  #@param ["anal_closeup", "anal_penetration", "futa_blowjob", "oral", "riding"]
-DOWNLOAD_ALL_COMBO_LORAS = False  #@param {type:"boolean"}
-DOWNLOAD_ASTRO = False  #@param {type:"boolean"}
-DOWNLOAD_TIDDIES = False  #@param {type:"boolean"}
-DOWNLOAD_REALISM_PEOPLE = False  #@param {type:"boolean"}
-DOWNLOAD_PHOTOREAL_STILL = False  #@param {type:"boolean"}
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -163,7 +137,6 @@ RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
 def sh(cmd, **kw):
-    print("+", " ".join(cmd) if isinstance(cmd, list) else cmd)
     return subprocess.run(cmd, check=False, **kw)
 
 def fetch_text(url: str, dest: Path) -> bool:
@@ -171,10 +144,11 @@ def fetch_text(url: str, dest: Path) -> bool:
     try:
         urllib.request.urlretrieve(url, dest)
         return dest.is_file() and dest.stat().st_size > 100
-    except Exception as e:
-        print("fetch fail", dest.name, type(e).__name__)
+    except Exception:
+        print("ファイル取得に失敗:", dest.name)
         return False
 
+print("説明書を取っています…")
 helpers = [
     "colab/h3_r2v_core.py",
     "colab/h3_motion_graphics.py",
@@ -194,20 +168,26 @@ studio_files = [
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
     if not fetch_text(f"{RAW}/{rel}", dest):
-        raise SystemExit(f"helper 取得失敗: {rel}")
+        raise SystemExit("説明書の取得に失敗しました。ネットを確認して②をもう一度。")
     shutil.copy2(dest, DRIVE_ROOT / dest.name)
 for rel in studio_files:
     dest = Path("/content") / rel
     if not fetch_text(f"{RAW}/{rel}", dest):
-        raise SystemExit(f"studio 取得失敗: {rel}")
+        raise SystemExit("シーン設定の取得に失敗しました。②をもう一度。")
 
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs
 from h3_lora_studio import (
-    civitai_token, download_jobs_for, fetch_weight, load_catalog, situation_ids,
+    SITUATION_HELP, civitai_token, download_jobs_for, fetch_weight, load_catalog,
+    resolve_situation, situation_ids,
 )
 
+print("今のシーン:", 今使うシーン)
+print(SITUATION_HELP[resolve_situation(今使うシーン)])
+print()
+
 if not (COMFY_DIR / "main.py").is_file():
+    print("動画ソフトを入れています…")
     sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(COMFY_DIR)])
 else:
     sh(["git", "-C", str(COMFY_DIR), "pull", "--ff-only"])
@@ -222,7 +202,6 @@ def link_dir(link_path: Path, target: Path):
     elif link_path.is_dir():
         shutil.rmtree(link_path)
     link_path.symlink_to(target)
-    print("link", link_path, "→", target)
 
 models_root = COMFY_DIR / "models"
 models_root.mkdir(parents=True, exist_ok=True)
@@ -231,30 +210,26 @@ for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
 link_dir(COMFY_DIR / "output", DRIVE_ROOT / "output")
 link_dir(COMFY_DIR / "input", DRIVE_ROOT / "input")
 
-print("H3 本体（Turbo LoRA はスキップ）")
+print("大きな土台を入れています（すでにあれば飛ばします）…")
 for url, dest in i2v_download_jobs(DRIVE_MODELS):
     if "turbo" in dest.name.lower():
-        print("skip turbo", dest.name)
+        print("  高速化部品は使いません:", dest.name)
         continue
     fetch_weight(url, dest)
 
-ids = situation_ids(SITUATION)
-if DOWNLOAD_ALL_COMBO_LORAS:
+sid = resolve_situation(今使うシーン)
+ids = situation_ids(sid)
+if よく使う部品を全部入れる:
     ids = []
     for key in ("anal_closeup", "anal_penetration", "futa_blowjob", "oral", "riding"):
         ids.extend(situation_ids(key))
-if DOWNLOAD_ASTRO:
-    ids.append("astro-nsfw-h3")
-if DOWNLOAD_TIDDIES:
-    ids.append("tiddies-realism-slider")
-if DOWNLOAD_REALISM_PEOPLE:
-    ids.append("h3-realism-people")
-if DOWNLOAD_PHOTOREAL_STILL:
-    ids.append("photoreal-h3-still")
+    print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
+else:
+    print("今のシーン用だけ入れます:", 今使うシーン)
 
 catalog = load_catalog(STUDIO)
 token = civitai_token()
-print("Civitai token:", "set" if token else "missing（公開ファイルは不要なことも）")
+print("Civitai の鍵:", "入っています" if token else "まだありません（公開ファイルだけなら動くこともあります）")
 for url, dest, row in download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog):
     auth = "civitai" if str(row.get("source")) == "civitai" else ""
     fetch_weight(url, dest, token=token, auth=auth)
@@ -270,8 +245,9 @@ def comfy_up() -> bool:
         return False
 
 if comfy_up():
-    print("ComfyUI はすでに起動中")
+    print("動画エンジンはすでに起動しています")
 else:
+    print("動画エンジンを起動しています…")
     log = Path("/content/comfyui.log")
     log_f = open(log, "w", buffering=1)
     cmd = [sys.executable, "main.py", "--listen", "127.0.0.1", "--port", str(PORT),
@@ -284,35 +260,56 @@ else:
             break
         time.sleep(2)
     if not ok:
-        print(log.read_text(errors="replace")[-4000:])
-        raise SystemExit("ComfyUI 起動失敗")
-    print("ComfyUI 起動OK")
-print("OK → 次は③。推奨プロンプトは一番上の Markdown。")
+        print(log.read_text(errors="replace")[-2000:])
+        raise SystemExit("起動に失敗しました。ランタイムを再起動して①からやり直してください。")
+    print("起動できました")
+
+print()
+print("② 完了。次は③でシーンを選んで実行してください。")
 '''
 
-CELL3 = r'''#@title ③ 生成（シチュエーション別に LoRA を積む）
-print("=" * 60)
-print(" ③ LoRA Studio — Turbo オフ / 成人のみ")
-print("=" * 60)
+MD3 = r"""## ③ 動画を作る
 
-import json, os, sys, time, uuid, urllib.request, urllib.error, shutil
+**シーン** と **作り方** を選んで実行します。文章は空のままで、おすすめ文が入ります。
+
+| 作り方 | 必要なもの |
+|---|---|
+| テキストから（写真なし） | なし。縦動画（9:16） |
+| 写真から（1枚必要） | Drive の `input` に jpg。顔や体を固定したいとき |
+
+自分で文章を書くなら、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。
+
+おすすめ文の例（空欄のときに自動で近い内容になります）:
+
+- **穴アップ** … 穴が見えるクローズアップ。舐め、それから指
+- **アナル挿入** … 四つん這い、後ろから肛門。膣には入れない
+- **ふたなりフェラ / フェラ** … 正面から竿が見える。`bl0w_j0b` と `PENISLORA` は自動で足します
+"""
+
+CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
+#@markdown ### まずここ
+やりたいシーン = "穴アップ（舐め・指）"  #@param ["穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
+作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
+#@markdown 文章は空でOK（おすすめ文を自動で使います）
+文章 = ""  #@param {type:"string"}
+#@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
+写真ファイル = "auto"  #@param {type:"string"}
+秒数 = 10  #@param {type:"number"}
+
+#@markdown ---
+#@markdown ### 触らなくていい（上級）
+画面の向き = "おまかせ"  #@param ["おまかせ", "縦（スマホ）", "横", "やや正方形"]
+リアル寄り = False  #@param {type:"boolean"}
+胸を強調 = False  #@param {type:"boolean"}
+動きの底上げ = False  #@param {type:"boolean"}
+静止画用の写実 = False  #@param {type:"boolean"}
+試し打ちだけ = False  #@param {type:"boolean"}
+
+print("③ 設定を読みます…")
+
+import json, os, sys, time, uuid, urllib.request, urllib.error
 from pathlib import Path
 from IPython.display import display, Video, HTML
-
-SITUATION = "anal_closeup"  #@param ["anal_closeup", "anal_penetration", "futa_blowjob", "oral", "riding"]
-MODE = "t2v"  #@param ["t2v", "i2v"]
-PROMPT = "（シーン）"  #@param {type:"string"}
-FIRST_IMAGE = "auto"  #@param {type:"string"}
-ASPECT = "auto"  #@param ["auto", "9:16", "8:9", "16:9"]
-DURATION_S = 10  #@param {type:"number"}
-STEPS = 16  #@param {type:"integer"}
-SEED = 42  #@param {type:"integer"}
-ADD_ASTRO = False  #@param {type:"boolean"}
-ADD_TIDDIES = False  #@param {type:"boolean"}
-ADD_REALISM_PEOPLE = False  #@param {type:"boolean"}
-ADD_PHOTOREAL_STILL = False  #@param {type:"boolean"}
-FILENAME_PREFIX = "video/h3_lora_studio"  #@param {type:"string"}
-DRY_RUN = False  #@param {type:"boolean"}
 
 sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
@@ -320,7 +317,10 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name
 from h3_t2v import assert_t2v_graph, build_t2v_graph, canvas_for_aspect, t2v_retry_plans
 from h3_motion_graphics import assert_i2va_graph, build_i2va_graph, i2va_retry_plans, CANVAS_8_9
-from h3_lora_studio import inject_lora_stack, merge_optional, prepend_triggers, load_catalog
+from h3_lora_studio import (
+    explain_choice, friendly_lora, inject_lora_stack, load_catalog, merge_optional,
+    prepend_triggers, resolve_mode, resolve_situation,
+)
 from select_loras import select_loras
 
 env = {}
@@ -333,6 +333,16 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 OUT = COMFY_DIR / "output"
 PORT = 8188
 STUDIO = Path("/content/h3-lora-studio")
+STEPS = 16
+SEED = 42
+FILENAME_PREFIX = "video/h3_lora_studio"
+
+SITUATION = resolve_situation(やりたいシーン)
+MODE = resolve_mode(作り方)
+PROMPT = 文章.strip() or "（シーン）"
+print()
+print(explain_choice(やりたいシーン, 作り方))
+print()
 
 cfg = select_loras(
     profile_name=SITUATION,
@@ -343,61 +353,66 @@ cfg = select_loras(
     turbo_override=False,
 )
 extras = []
-if ADD_ASTRO:
+if 動きの底上げ:
     extras.append("astro-nsfw-h3")
-if ADD_TIDDIES:
+if 胸を強調:
     extras.append("tiddies-realism-slider")
-if ADD_REALISM_PEOPLE:
+if リアル寄り:
     extras.append("h3-realism-people")
-if ADD_PHOTOREAL_STILL:
+if 静止画用の写実:
     extras.append("photoreal-h3-still")
-    print("注意: Photoreal still は穴ディテール用ではない")
+    print("注意: 静止画用の写実は、穴のアップ動画向きではありません。")
 stack = merge_optional(cfg["stack"], extras=extras, catalog=load_catalog(STUDIO), mode=MODE)
 prompt = prepend_triggers(cfg["prompt"], stack)
 if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
-    raise SystemExit("T2V に Picture 1 を使わない")
-print("situation", SITUATION, "mode", MODE, "turbo", False)
-print("stack", [(x["id"], x.get("strength_model"), x["filename"]) for x in stack])
-print("unload", [x["id"] for x in cfg["unload"] if "turbo" in x["id"] or x["id"] in ("aftermidnight-ref2va",)])
-print(prompt[:500], "...")
+    raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
+
+print("入る部品:")
+for x in stack:
+    print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"))
+print()
+print("使う文章（先頭）:")
+print(prompt[:450])
+print("…")
+print()
 
 w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
-if ASPECT == "9:16":
+if 画面の向き == "縦（スマホ）":
     w, h = canvas_for_aspect("9:16")
-elif ASPECT == "16:9":
+elif 画面の向き == "横":
     w, h = canvas_for_aspect("16:9")
-elif ASPECT == "8:9":
+elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
-print("canvas", w, "x", h, "frames", frames(DURATION_S), "steps", max(int(STEPS), 16))
+print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / 品質ステップ:", max(int(STEPS), 16), "（速いモードは使いません）")
 
 obj = {}
-if not DRY_RUN:
+if not 試し打ちだけ:
     with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60) as r:
         obj = json.loads(r.read().decode())
     if "MiniMaxH3ImageToVideo" not in obj:
-        raise SystemExit("MiniMaxH3ImageToVideo がありません。②をやり直す。")
+        raise SystemExit("エンジンがまだです。②を先に実行してください。")
 
 diff = list((COMFY_DIR / "models/diffusion_models").glob("*fl2va*"))
-if not diff and not DRY_RUN:
-    raise SystemExit("fl2va がありません。")
+if not diff and not 試し打ちだけ:
+    raise SystemExit("土台がありません。②を先に実行してください。")
 unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 
 first_name = None
 if MODE == "i2v":
     inp = COMFY_DIR / "input"
-    if is_auto_image_name(FIRST_IMAGE):
+    if is_auto_image_name(写真ファイル):
         hit = newest_image([DRIVE_ROOT / "input", inp])
         if hit is None:
-            raise SystemExit("I2V は first_frame 必須。Drive input/ に jpg を置く。")
+            raise SystemExit("写真が見つかりません。スマホの Drive で「minimax-h3-comfyui/input」に jpg を置いてから、もう一度③を実行してください。")
         first_name = stage_image_into_input(hit, inp)
     else:
-        src = Path(FIRST_IMAGE)
+        src = Path(写真ファイル)
         if not src.is_file():
-            src = DRIVE_ROOT / "input" / FIRST_IMAGE
+            src = DRIVE_ROOT / "input" / 写真ファイル
         if not src.is_file():
-            raise SystemExit(f"画像がない: {FIRST_IMAGE}")
+            raise SystemExit("その写真ファイルがありません: " + 写真ファイル)
         first_name = stage_image_into_input(src, inp)
-    print("first_frame", first_name)
+    print("使う写真:", first_name)
 
 plans = t2v_retry_plans(width=w, height=h) if MODE == "t2v" else i2va_retry_plans(width=w, height=h)
 
@@ -406,10 +421,10 @@ def make_graph(plan):
         g = build_t2v_graph(
             prompt=prompt, unet=unet, lora_name=None, lora_strength=0,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(DURATION_S), seed=int(SEED), steps=max(int(STEPS), 16),
+            duration_s=float(秒数), seed=int(SEED), steps=max(int(STEPS), 16),
             filename_prefix=FILENAME_PREFIX,
-            has_lora_loader=("LoraLoaderModelOnly" in obj) or DRY_RUN,
-            has_audio_decode=("VAEDecodeAudio" in obj) or DRY_RUN,
+            has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
+            has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
         inject_lora_stack(g, stack, steps=max(int(STEPS), 16))
         errs = assert_t2v_graph(g)
@@ -418,10 +433,10 @@ def make_graph(plan):
             first_image=first_name, last_image=None, prompt=prompt, unet=unet,
             lora_name=None, lora_strength=0,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(DURATION_S), seed=int(SEED), steps=max(int(STEPS), 16),
+            duration_s=float(秒数), seed=int(SEED), steps=max(int(STEPS), 16),
             filename_prefix=FILENAME_PREFIX,
-            has_lora_loader=("LoraLoaderModelOnly" in obj) or DRY_RUN,
-            has_audio_decode=("VAEDecodeAudio" in obj) or DRY_RUN,
+            has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
+            has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
         inject_lora_stack(g, stack, steps=max(int(STEPS), 16))
         errs = assert_i2va_graph(g, expect_last=False)
@@ -429,7 +444,7 @@ def make_graph(plan):
         raise SystemExit(errs)
     loaders = [n for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
     if any("turbo" in str(n["inputs"].get("lora_name", "")).lower() for n in loaders):
-        raise SystemExit("Turbo LoRA が混ざった。積まない。")
+        raise SystemExit("速いモードの部品が混ざったので止めています。②からやり直してください。")
     return g
 
 def post_prompt(g):
@@ -460,48 +475,53 @@ def wait_prompt(pid):
         time.sleep(2)
     return False, "timeout"
 
-if DRY_RUN:
+if 試し打ちだけ:
     g = make_graph(plans[0])
-    print("dry_run loaders", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
-    print("sampler", g["22"]["inputs"]["sampler_name"], g["23"]["inputs"]["scheduler"], g["23"]["inputs"]["steps"])
+    print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
+    print("実際の動画は「試し打ちだけ」をオフにして③をもう一度。")
 else:
+    print()
+    print("作り始めています。数分〜十数分かかることがあります…")
     last_err = None
     ok_entry = None
-    used = None
     before = newest_mp4(OUT)
     for plan in plans:
-        print("try", plan.get("label") or plan)
+        print("サイズを試しています:", plan.get("label") or plan)
         g = make_graph(plan)
         res, err = post_prompt(g)
         if err:
             last_err = err
             if is_oom_error(err):
+                print("メモリが足りなかったので、小さい画面でやり直します。")
                 continue
-            raise SystemExit(err)
+            raise SystemExit("失敗しました。②からやり直すか、シーンを変えてみてください。")
         ok, payload = wait_prompt(res["prompt_id"])
         if ok:
             ok_entry = payload
-            used = plan
             break
         last_err = payload
         if is_oom_error(str(payload)):
+            print("メモリが足りなかったので、小さい画面でやり直します。")
             continue
-        raise SystemExit(payload)
+        raise SystemExit("失敗しました。写真から作るなら input の jpg を確認してください。")
     else:
-        raise SystemExit(last_err or "failed")
+        raise SystemExit("メモリ不足で作れませんでした。秒数を 5 にするか、A100 のまま②からやり直してください。")
     videos = collect_output_videos(ok_entry, OUT)
     fresh = newest_mp4(OUT)
     if fresh and fresh not in videos and (before is None or fresh != before):
         videos.append(fresh)
     if not videos:
-        print("Drive output を見てください:", OUT)
+        print("ファイル名が取れませんでした。Drive の output フォルダを見てください:", OUT)
     else:
+        print()
+        print("できました。下に再生、Drive にも保存しています。")
         for p in videos:
             print("保存:", p)
             if p.is_file():
-                display(HTML(f"<p>保存: <code>{p}</code></p>"))
+                display(HTML(f"<p style='font-size:16px'>保存先: <code>{p}</code></p>"))
                 display(Video(str(p), embed=True, width=360))
-print("完了。キーは出していない。")
+print()
+print("③ 完了。キーは画面に出していません。")
 '''
 
 
@@ -520,8 +540,11 @@ nb = {
     },
     "cells": [
         {"cell_type": "markdown", "metadata": {}, "source": to_source(MD0)},
+        {"cell_type": "markdown", "metadata": {}, "source": to_source(MD1)},
         {"cell_type": "code", "metadata": {"id": "ls1_drive"}, "execution_count": None, "outputs": [], "source": to_source(CELL1)},
+        {"cell_type": "markdown", "metadata": {}, "source": to_source(MD2)},
         {"cell_type": "code", "metadata": {"id": "ls2_setup"}, "execution_count": None, "outputs": [], "source": to_source(CELL2)},
+        {"cell_type": "markdown", "metadata": {}, "source": to_source(MD3)},
         {"cell_type": "code", "metadata": {"id": "ls3_gen"}, "execution_count": None, "outputs": [], "source": to_source(CELL3)},
     ],
 }

@@ -5,7 +5,7 @@ description: MiniMax H3 LoRA studio for Colab. Stack Civitai NSFW LoRAs by situa
 
 # h3-lora-studio
 
-質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。
+質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`（初心者向け・日本語フォーム）。設定だけなら `select_loras.py`。ノートは `python colab/_write_lora_studio_nb.py` で再生成。英語 id（`anal_closeup` 等）は内部用。画面の選択肢は日本語。
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list

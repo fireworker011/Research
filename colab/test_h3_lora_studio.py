@@ -3,7 +3,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from h3_lora_studio import inject_lora_stack, merge_optional, load_catalog
+from h3_lora_studio import (
+    explain_choice,
+    friendly_lora,
+    inject_lora_stack,
+    load_catalog,
+    merge_optional,
+    resolve_mode,
+    resolve_situation,
+)
 from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_graph
 
 
@@ -44,3 +52,16 @@ def test_merge_optional_skips_photoreal_on_i2v():
     ids = [row["id"] for row in out]
     assert "photoreal-h3-still" not in ids
     assert "astro-nsfw-h3" in ids
+
+
+def test_japanese_form_labels():
+    assert resolve_situation("穴アップ（舐め・指）") == "anal_closeup"
+    assert resolve_situation("アナル挿入") == "anal_penetration"
+    assert resolve_mode("テキストから（写真なし）") == "t2v"
+    assert resolve_mode("写真から（1枚必要）") == "i2v"
+    text = explain_choice("フェラ", "テキストから（写真なし）")
+    assert "写真は使いません" in text
+    assert "フェラ" in text
+    assert "竿" in text
+    assert "blowjob-h3" not in text
+    assert friendly_lora("synth-pussy-h3") == "穴の見え方"
