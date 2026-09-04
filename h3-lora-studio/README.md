@@ -10,7 +10,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）
-3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
+3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行。**プロンプトは任意**（空ならおすすめ文。写真からで Picture 1 が無いときは自動で足す）
 
 Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 ノートを動かさない。ココナラ homage ノートの Turbo 既定は変えない。
 

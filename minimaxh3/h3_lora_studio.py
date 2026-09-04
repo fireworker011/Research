@@ -370,6 +370,37 @@ def situation_ids(situation: str) -> list[str]:
     return list(SITUATION_DOWNLOAD[situation])
 
 
+BLANK_PROMPTS = {"", "（シーン）", "(シーン)", "シーン", "scene", "auto", "おすすめ"}
+I2V_CUSTOM_LOCK = (
+    "For the target video, at 0.00 seconds into the target video, "
+    "<Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+    "subject_definitions:\n"
+    "<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>.\n\n"
+)
+
+
+def is_blank_prompt(text: str | None) -> bool:
+    return str(text or "").strip() in BLANK_PROMPTS
+
+
+def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str = "") -> tuple[str, bool]:
+    """Empty → default scene. Custom I2V gets a Picture 1 lock if the user omitted it."""
+    raw = str(user_text or "").strip()
+    if is_blank_prompt(raw):
+        return str(default_prompt or ""), False
+    if str(mode).lower() == "i2v" and "Picture 1" not in raw:
+        wrapped = (
+            I2V_CUSTOM_LOCK
+            + "integrated_multimodal_description: "
+            + raw
+            + " Identity of (S1) stays locked to <Picture 1>. Photoreal. No freeze frame.\n"
+            "overall_soundscape: Natural ambient sound.\n"
+            "All performers are consenting adults 21 years or older."
+        )
+        return wrapped, True
+    return raw, True
+
+
 def prepend_triggers(prompt: str, stack: list[dict[str, Any]]) -> str:
     triggers = []
     low = prompt.lower()

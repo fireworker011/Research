@@ -4,11 +4,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
+    apply_user_prompt,
     civitai_token,
     civitai_token_help,
     explain_choice,
     friendly_lora,
     inject_lora_stack,
+    is_blank_prompt,
     is_vanilla,
     load_catalog,
     merge_optional,
@@ -130,6 +132,25 @@ def test_vanilla_sfw_shares_phone_path():
     text = explain_choice("普通（エロなし）", "テキストから（写真なし）")
     assert "えっち用の部品は使いません" in text
     assert "Turbo" in text
+
+
+def test_optional_prompt_uses_custom_or_default():
+    assert is_blank_prompt("")
+    assert is_blank_prompt("（シーン）")
+    default_t2v, custom = apply_user_prompt("", mode="t2v", default_prompt="DEFAULT SCENE")
+    assert custom is False
+    assert default_t2v == "DEFAULT SCENE"
+    own, custom = apply_user_prompt("Adult woman walks through a quiet kitchen.", mode="t2v", default_prompt="DEFAULT SCENE")
+    assert custom is True
+    assert "kitchen" in own
+    assert "Picture 1" not in own
+    i2v, custom = apply_user_prompt("she smiles and looks at the camera", mode="i2v", default_prompt="DEFAULT I2V")
+    assert custom is True
+    assert "<Picture 1>" in i2v
+    assert "smiles" in i2v
+    locked, custom = apply_user_prompt("Keep <Picture 1> identity. She waves.", mode="i2v")
+    assert custom is True
+    assert locked.startswith("Keep <Picture 1>")
 
 
 def test_civitai_token_prefers_form(monkeypatch):

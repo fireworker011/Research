@@ -69,7 +69,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
-文章欄は **空のままでOK**。おすすめの英文が自動で入ります。自分で書きたいときだけ貼る。
+**プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。
 
 上級の追加部品（リアル寄せ・胸など）は重ね上限のため無視します。
 """
@@ -307,14 +307,14 @@ print("② 完了。次は③でシーンを選んで実行してください。
 
 MD3 = r"""## ③ 動画を作る
 
-**シーン** と **作り方** を選んで実行します。文章は空のままで、おすすめ文が入ります。
+**シーン** と **作り方** を選んで実行します。**プロンプトは任意**（空ならおすすめ文）。
 
 | 作り方 | 必要なもの |
 |---|---|
 | テキストから（写真なし） | なし。縦動画（9:16） |
 | 写真から（1枚必要） | Drive の `input` に jpg。顔や体を固定したいとき |
 
-自分で文章を書くなら、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。
+自分の文を書くときは、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。写真からのときに Picture 1 を書かなくても、顔ロックは自動で足します。
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
@@ -332,7 +332,8 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
 やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
-#@markdown 文章は空でOK（おすすめ文を自動で使います）
+#@markdown ### プロンプト（任意）
+#@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
 写真ファイル = "auto"  #@param {type:"string"}
@@ -369,8 +370,8 @@ from h3_motion_graphics import (
     prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt,
 )
 from h3_lora_studio import (
-    explain_choice, friendly_lora, inject_lora_stack, is_vanilla,
-    prepend_triggers, resolve_mode, resolve_situation,
+    apply_user_prompt, explain_choice, friendly_lora, inject_lora_stack,
+    is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
 
@@ -393,32 +394,39 @@ print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
 
+CUSTOM_PROMPT = not is_blank_prompt(文章)
+
 if VANILLA:
     stack = []
     STEPS = 4
     FILENAME_PREFIX = "video/h3_t2v_phone" if MODE == "t2v" else "video/h3_i2va_phone"
     if MODE == "t2v":
         w, h = CANVAS_9_16
-        prompt = resolve_t2v_prompt(文章, landscape=False)
+        prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="t2v", default_prompt=resolve_t2v_prompt("", landscape=False))
         errs = validate_t2v_prompt(prompt)
         if errs:
             raise SystemExit(errs)
     else:
         w, h = CANVAS_8_9
-        prompt = resolve_motion_prompt(文章, duration_s=float(秒数), with_last_frame=False)
-        errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
+        default_i2v = resolve_motion_prompt("", duration_s=float(秒数), with_last_frame=False)
+        prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
+        if CUSTOM_PROMPT:
+            errs = validate_t2v_prompt(prompt)
+        else:
+            errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
         if errs:
             raise SystemExit(errs)
     print("入る部品: 速いモード（Turbo）だけ。えっち用は使いません。")
+    print("文章:", "自分のプロンプト" if CUSTOM_PROMPT else "おすすめ文（空欄）")
     SAMPLER = {"sampler_name": "euler", "scheduler": "simple", "steps": 4}
     cfg = None
 else:
     FILENAME_PREFIX = "video/h3_preview" if SITUATION in {"preview", "sfw_preview"} else "video/h3_lora_studio"
-    PROMPT = 文章.strip() or "（シーン）"
+    prompt_arg, CUSTOM_PROMPT = apply_user_prompt(文章, mode=MODE, default_prompt="（シーン）")
     cfg = select_loras(
         profile_name=SITUATION,
         mode=MODE,
-        prompt_arg=PROMPT,
+        prompt_arg=prompt_arg,
         catalog_path=STUDIO / "catalog" / "loras.json",
         profiles_dir=STUDIO / "profiles",
         turbo_override=None,
@@ -430,7 +438,8 @@ else:
     SAMPLER = cfg["sampler"]
     STEPS = int(SAMPLER["steps"])
     if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
-        raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
+        raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にするか、Picture 1 を消してください。")
+    print("文章:", "自分のプロンプト" if CUSTOM_PROMPT else "シーンのおすすめ文（空欄）")
     print("入る部品:")
     for x in stack:
         role = x.get("role") or ""
@@ -438,7 +447,7 @@ else:
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
 
 if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
-    raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
+    raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にするか、Picture 1 を消してください。")
 
 print()
 print("使う文章（先頭）:")

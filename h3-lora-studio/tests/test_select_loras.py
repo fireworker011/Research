@@ -271,6 +271,23 @@ def test_sfw_daily_splits_turbo_and_quality():
     assert r2v["stack"][1]["strength_model"] == 0.5
 
 
+def test_custom_prompt_replaces_scene_template():
+    data = select_loras(
+        profile_name="sfw_daily",
+        mode="t2v",
+        prompt_arg="An adult over 21 cooks quietly in a sunlit kitchen.",
+    )
+    assert "sunlit kitchen" in data["prompt"]
+    assert "Picture 1" not in data["prompt"]
+    i2v = select_loras(
+        profile_name="sfw_daily",
+        mode="i2v",
+        prompt_arg="For the target video, <Picture 1> is fully referenced. An adult over 21 waves.",
+    )
+    assert "waves" in i2v["prompt"]
+    assert "<Picture 1>" in i2v["prompt"]
+
+
 def test_sfw_refuses_adult_lora(tmp_path: Path):
     catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     cat_path = tmp_path / "loras.json"
