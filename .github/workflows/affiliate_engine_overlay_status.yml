@@ -4,6 +4,7 @@ on:
   # 2026-08-28 計測回転。schedule は足さない。cron は戻さない。
   # 埋まっている link_key 名と件数だけ出す。URL は出さない。実投稿しない。
   workflow_dispatch:
+  pull_request:
 
 concurrency:
   group: affiliate-overlay-status
