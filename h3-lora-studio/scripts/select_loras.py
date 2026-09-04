@@ -24,6 +24,14 @@ PROFILES_DIR = ROOT / "profiles"
 SCHEMA = "h3-lora-studio/v1"
 SITUATIONS_SCHEMA = "h3-lora-studio-situations/v1"
 MODES = ("t2v", "i2v", "r2v")
+STACK_ROLES = ("act", "helper", "turbo", "cinema")
+MAX_CINEMA = 0.6
+FULL_STACK_IDS = {
+    "anal-penetration-coachbate",
+    "hmnsfw-aio-v25",
+    "penis-lora-h3",
+    "synth-pussy-h3",
+}
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}
 DEFAULT_CANVAS = {
     "t2v": {"width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16"},
@@ -104,6 +112,18 @@ def forbidden_hits(text: str) -> list[str]:
     return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(text)})
 
 
+def turbo_family(row: dict[str, Any]) -> str:
+    fam = str(row.get("turbo_family") or "").strip().lower()
+    if fam:
+        return fam
+    blob = " ".join(str(row.get(k) or "") for k in ("id", "filename", "repo"))
+    if "larry" in blob.lower():
+        return "larry"
+    if "lightx2v" in blob.lower() or "fl2v_turbo" in blob.lower() or "ref2v_turbo" in blob.lower():
+        return "lightx2v"
+    return "turbo"
+
+
 def normalize_specs(rows: Any, *, where: str) -> list[dict[str, Any]]:
     if not isinstance(rows, list) or not rows:
         raise SelectError(f"{where} must be a non-empty list")
@@ -118,17 +138,116 @@ def normalize_specs(rows: Any, *, where: str) -> list[dict[str, Any]]:
         if lid in seen:
             raise SelectError(f"duplicate enabled id: {lid}")
         seen.add(lid)
-        out.append(row)
+        out.append(dict(row))
     return out
 
 
+def plan_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]] | None:
+    plan = profile.get("stack_plan")
+    if not isinstance(plan, dict) or not plan:
+        return None
+    chosen = plan.get(mode) if isinstance(plan.get(mode), dict) else plan
+    if not isinstance(chosen, dict):
+        return None
+    if not any(role in chosen for role in STACK_ROLES):
+        return None
+    specs: list[dict[str, Any]] = []
+    for role in STACK_ROLES:
+        raw = chosen.get(role)
+        if raw in (None, "", False):
+            continue
+        if isinstance(raw, str):
+            raw = {"id": raw}
+        if not isinstance(raw, dict) or not raw.get("id"):
+            raise SelectError(f"stack_plan.{role} needs an id")
+        spec = dict(raw)
+        spec["role"] = role
+        specs.append(spec)
+    if not specs:
+        raise SelectError(f"{profile.get('id')} stack_plan is empty")
+    return specs
+
+
 def enabled_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]]:
+    planned = plan_specs(profile, mode)
+    if planned is not None:
+        return planned
     rows = profile.get("enabled")
     if isinstance(rows, dict):
         if mode not in rows:
             raise SelectError(f"situation has no enabled LoRAs for mode {mode}")
         return normalize_specs(rows.get(mode), where=f"enabled.{mode}")
     return normalize_specs(rows, where="profile.enabled")
+
+
+def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dict[str, Any]:
+    raw = profile.get("sampler")
+    if isinstance(raw, dict) and raw.get("steps"):
+        note = str(raw.get("note") or "")
+        return {
+            "sampler_name": str(raw.get("sampler_name") or "res_multistep"),
+            "scheduler": str(raw.get("scheduler") or "beta"),
+            "steps": int(raw.get("steps")),
+            "cfg": float(raw.get("cfg") or 4.0),
+            "denoise": float(raw.get("denoise") or 1.0),
+            "note": note,
+        }
+    has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
+    if has_turbo:
+        steps = 8 if any("larry" in str(s.get("id")) for s in specs) else 4
+        return {
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "steps": steps,
+            "cfg": 4.0,
+            "denoise": 1.0,
+            "note": "Thin turbo. Larry and LightX2V stay mutually exclusive.",
+        }
+    return {
+        "sampler_name": "res_multistep",
+        "scheduler": "beta",
+        "steps": 16,
+        "cfg": 4.0,
+        "denoise": 1.0,
+        "note": "Quality path. Turbo off.",
+    }
+
+
+def assert_stack_budget(specs: list[dict[str, Any]], index: dict[str, dict[str, Any]]) -> None:
+    roles = [str(s.get("role") or "") for s in specs]
+    for role in STACK_ROLES:
+        if roles.count(role) > 1:
+            raise SelectError(f"only one {role} LoRA is allowed")
+    if "act" not in roles:
+        raise SelectError("adult stack needs one act LoRA")
+    if "helper" in roles and "cinema" in roles:
+        raise SelectError("cinema replaces helper; do not stack both")
+    ids = {str(s["id"]) for s in specs}
+    if FULL_STACK_IDS <= ids:
+        raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
+    families: set[str] = set()
+    for spec in specs:
+        row = index.get(str(spec["id"])) or {}
+        if is_turbo_row(row) or spec.get("role") == "turbo":
+            families.add(turbo_family(row) or turbo_family(spec))
+    if "larry" in families and "lightx2v" in families:
+        raise SelectError("do not stack Larry and LightX2V")
+    if len(families) > 1:
+        raise SelectError("only one turbo family at a time")
+    act = next((s for s in specs if s.get("role") == "act"), None)
+    cinema = next((s for s in specs if s.get("role") == "cinema"), None)
+    turbo = next((s for s in specs if s.get("role") == "turbo"), None)
+    if cinema is not None:
+        strength = float(cinema.get("strength") or 0.4)
+        if strength > MAX_CINEMA:
+            raise SelectError("cinema DY must stay at 0.4-0.6")
+        if act and str(act.get("id")) == "anal-penetration-coachbate":
+            raise SelectError("cinema off for anal penetration")
+    if turbo is not None and act and str(act.get("id")) == "anal-penetration-coachbate":
+        raise SelectError("CoachBate anal penetration stays turbo off")
+    non_turbo = [s for s in specs if s.get("role") != "turbo"]
+    if len(non_turbo) > 2:
+        raise SelectError("quality LoRAs are act + optional helper or cinema only")
 
 
 def resolve_prompt(profile: dict[str, Any], prompt_arg: str | None, mode: str) -> str:
@@ -234,12 +353,14 @@ def list_situations(
         assert_adults_only(profile)
         sid = str(profile.get("id") or path.stem)
         enabled_by_mode: dict[str, list[str]] = {}
+        turbo_any = False
         for mode in situation_modes(profile):
             try:
                 specs = enabled_specs(profile, mode)
             except SelectError:
                 continue
             ids = [str(s["id"]) for s in specs]
+            turbo_any = turbo_any or any(str(s.get("role")) == "turbo" for s in specs)
             for lid in ids:
                 if lid not in index:
                     raise SelectError(f"{sid}: unknown LoRA {lid}")
@@ -250,7 +371,7 @@ def list_situations(
                 "modes": list(enabled_by_mode),
                 "enabled": enabled_by_mode,
                 "adults_only": True,
-                "turbo": False,
+                "turbo": turbo_any,
             }
         )
     payload = {"schema": SITUATIONS_SCHEMA, "situations": rows}
@@ -265,7 +386,7 @@ def select_loras(
     prompt_arg: str | None = "（シーン）",
     catalog_path: Path = CATALOG_PATH,
     profiles_dir: Path = PROFILES_DIR,
-    turbo_override: bool | None = False,
+    turbo_override: bool | None = None,
 ) -> dict[str, Any]:
     mode = str(mode).lower().strip()
     if mode not in MODES:
@@ -276,9 +397,6 @@ def select_loras(
     allowed = situation_modes(profile)
     if allowed and mode not in allowed:
         raise SelectError(f"{profile_name} does not support mode {mode}")
-    turbo = bool(profile.get("turbo")) if turbo_override is None else bool(turbo_override)
-    if turbo:
-        raise SelectError("Turbo must stay off for this studio profile")
 
     prompt = resolve_prompt(profile, prompt_arg, mode)
     hits = forbidden_hits(prompt)
@@ -290,6 +408,11 @@ def select_loras(
     index = catalog_index(catalog)
     disabled_ids = always_unload_ids(catalog) | {str(x) for x in (profile.get("disabled") or [])}
     enabled = enabled_specs(profile, mode)
+    if turbo_override is False:
+        enabled = [spec for spec in enabled if spec.get("role") != "turbo"]
+    if turbo_override is True and profile_name == "anal_penetration":
+        raise SelectError("CoachBate anal penetration stays turbo off")
+    assert_stack_budget(enabled, index)
 
     stack: list[dict[str, Any]] = []
     for spec in enabled:
@@ -299,8 +422,11 @@ def select_loras(
         row = index.get(lid)
         if row is None:
             raise SelectError(f"enabled id not in catalog: {lid}")
-        if is_turbo_row(row):
-            raise SelectError(f"refusing turbo LoRA in stack: {lid}")
+        role = str(spec.get("role") or ("turbo" if is_turbo_row(row) else "act"))
+        if role == "turbo" and not is_turbo_row(row):
+            raise SelectError(f"turbo slot must be a turbo LoRA: {lid}")
+        if role != "turbo" and is_turbo_row(row):
+            raise SelectError(f"turbo LoRA must use the turbo slot: {lid}")
         modes = [str(m) for m in (row.get("modes") or [])]
         if mode not in modes:
             raise SelectError(f"{lid} does not support mode {mode}")
@@ -312,10 +438,13 @@ def select_loras(
         if bad:
             raise SelectError(f"forbidden subject in catalog {lid}: {bad}")
         strength = spec.get("strength", row.get("default_strength", 1.0))
+        if role == "cinema" and float(strength) > MAX_CINEMA:
+            raise SelectError("cinema DY must stay at 0.4-0.6")
         trigger = str(row.get("trigger") or "").strip()
         stack.append(
             {
                 "id": lid,
+                "role": role,
                 "filename": str(row["filename"]),
                 "repo": str(row.get("repo") or ""),
                 "file": str(row.get("file") or row["filename"]),
@@ -323,6 +452,7 @@ def select_loras(
                 "strength_model": float(strength),
                 "trigger": trigger,
                 "adult": bool(row.get("adult")),
+                "turbo": bool(is_turbo_row(row)),
             }
         )
 
@@ -334,8 +464,10 @@ def select_loras(
         reasons: list[str] = []
         if lid in disabled_ids:
             reasons.append("profile_disabled")
-        if is_turbo_row(row):
+        if is_turbo_row(row) and not any(item.get("turbo") for item in stack):
             reasons.append("turbo_off")
+        elif is_turbo_row(row):
+            reasons.append("other_turbo")
         if mode in {"t2v", "i2v"} and str(row.get("arch") or "") == "ref2va":
             reasons.append("ref2va_not_for_fl2va")
         if mode not in [str(m) for m in (row.get("modes") or [])]:
@@ -354,6 +486,8 @@ def select_loras(
     nodes = comfy_lora_nodes(stack)
     model_out = nodes[-1]["id"] if nodes else "1"
     canvas = resolve_canvas(profile, mode)
+    sampler = default_sampler(profile, enabled)
+    has_turbo = any(item.get("turbo") for item in stack)
     payload = {
         "schema": SCHEMA,
         "situation": profile_name,
@@ -361,19 +495,12 @@ def select_loras(
         "mode": mode,
         "adults_only": True,
         "min_age": int(profile.get("min_age") or 21),
-        "turbo": False,
+        "turbo": has_turbo,
         "prompt": prompt,
         "negative": str(profile.get("negative") or ""),
         "first_frame_required": mode == "i2v",
         "canvas": canvas,
-        "sampler": {
-            "sampler_name": "res_multistep",
-            "scheduler": "beta",
-            "steps": 16,
-            "cfg": 4.0,
-            "denoise": 1.0,
-            "note": "Turbo is off. Do not switch to euler/simple/4-step even if LoRAs are stacked.",
-        },
+        "sampler": sampler,
         "stack": stack,
         "unload": unload,
         "comfy": {
@@ -414,7 +541,7 @@ def main(argv: list[str] | None = None) -> int:
             prompt_arg=args.prompt,
             catalog_path=args.catalog,
             profiles_dir=args.profiles_dir,
-            turbo_override=False,
+            turbo_override=None,
         )
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     sys.stdout.write(text)

@@ -60,13 +60,40 @@ def test_prefer_turbo_ignores_nsfw_files(tmp_path):
     assert prefer_fl2v_lora([nsfw, turbo], True) == turbo.name
 
 
+def test_inject_thin_turbo_keeps_larry():
+    g = build_t2v_graph(
+        prompt=DEFAULT_T2V_PROMPT,
+        unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        lora_name=None,
+        lora_strength=0.0,
+        width=CANVAS_9_16[0],
+        height=CANVAS_9_16[1],
+        duration_s=5,
+        seed=1,
+        steps=4,
+        filename_prefix="video/h3_t2v",
+    )
+    stack = [
+        {"id": "blowjob-h3", "filename": "H3_blowjob_v1.safetensors", "strength_model": 0.75},
+        {"id": "penis-lora-h3", "filename": "PENISLORA_H3.safetensors", "strength_model": 0.7},
+        {"id": "larry-v4", "filename": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors", "strength_model": 0.7},
+    ]
+    inject_lora_stack(g, stack, sampler={"sampler_name": "euler", "scheduler": "simple", "steps": 8})
+    names = [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
+    assert any("turbo_v4" in n.lower() for n in names)
+    assert g["22"]["inputs"]["sampler_name"] == "euler"
+    assert g["23"]["inputs"]["scheduler"] == "simple"
+    assert g["23"]["inputs"]["steps"] == 8
+    assert assert_t2v_graph(g) == []
+
+
 def test_merge_optional_skips_photoreal_on_i2v():
     catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
     stack = [{"id": "anal-penetration-coachbate", "filename": "H3_anal_penetration_v1.safetensors", "strength_model": 0.85}]
     out = merge_optional(stack, extras=["photoreal-h3-still", "astro-nsfw-h3"], catalog=catalog, mode="i2v")
     ids = [row["id"] for row in out]
-    assert "photoreal-h3-still" not in ids
-    assert "astro-nsfw-h3" in ids
+    assert ids == ["anal-penetration-coachbate"]
+    assert "astro-nsfw-h3" not in ids
 
 
 def test_japanese_form_labels():
@@ -80,6 +107,12 @@ def test_japanese_form_labels():
     assert "竿" in text
     assert "blowjob-h3" not in text
     assert friendly_lora("synth-pussy-h3") == "穴の見え方"
+    assert resolve_situation("アナル挿入（画質）") == "anal_penetration"
+    assert resolve_situation("アナル舐め・指") == "anal_closeup"
+    assert resolve_situation("試し打ち") == "preview"
+    assert resolve_situation("汎用エロ") == "general_sex"
+    help_text = explain_choice("アナル挿入（画質）", "テキストから（写真なし）")
+    assert "Turbo なし" in help_text or "CoachBate" in help_text
 
 
 def test_vanilla_sfw_shares_phone_path():

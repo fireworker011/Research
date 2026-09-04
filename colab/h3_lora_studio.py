@@ -1,6 +1,8 @@
 """Colab helper for stacking MiniMax H3 NSFW LoRAs.
 
-Turbo stays off. Adults 21+ only. Never print API keys.
+Adult stacks stay thin: act + optional helper + optional turbo.
+Cinema replaces helper. CoachBate anal stays turbo off.
+Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 """
 
@@ -27,25 +29,33 @@ OPTIONAL_IDS = {
 
 SITUATION_DOWNLOAD = {
     "vanilla": [],
-    "anal_closeup": ["synth-pussy-h3", "anal-penetration-coachbate"],
-    "anal_penetration": ["hmnsfw-aio-v25", "anal-penetration-coachbate"],
-    "futa_blowjob": ["futa-h3-v51", "penis-lora-h3", "blowjob-h3"],
-    "oral": ["blowjob-h3", "penis-lora-h3"],
-    "riding": ["riding-pose-i2v", "hmnsfw-aio-v25", "h3-realism-people"],
+    "anal_closeup": ["synth-pussy-h3", "larry-v4", "cinema-dy"],
+    "anal_penetration": ["anal-penetration-coachbate", "synth-pussy-h3"],
+    "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
+    "oral": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
+    "general_sex": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
+    "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
+    "riding": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
 }
 
 SITUATION_JA = {
     "普通（エロなし）": "vanilla",
-    "穴アップ（舐め・指）": "anal_closeup",
+    "アナル挿入（画質）": "anal_penetration",
     "アナル挿入": "anal_penetration",
-    "ふたなりフェラ": "futa_blowjob",
+    "アナル舐め・指": "anal_closeup",
+    "穴アップ（舐め・指）": "anal_closeup",
     "フェラ": "oral",
+    "ふたなりフェラ": "futa_blowjob",
+    "汎用エロ": "general_sex",
+    "試し打ち": "preview",
     "騎乗位": "riding",
     "vanilla": "vanilla",
     "anal_closeup": "anal_closeup",
     "anal_penetration": "anal_penetration",
     "futa_blowjob": "futa_blowjob",
     "oral": "oral",
+    "general_sex": "general_sex",
+    "preview": "preview",
     "riding": "riding",
 }
 
@@ -58,11 +68,13 @@ MODE_JA = {
 
 SITUATION_HELP = {
     "vanilla": "普通の動画。えっち用の部品は使いません。速いモード（Turbo）で、専用の I2V / T2V ノートと同じ土台です。",
-    "anal_closeup": "穴がよく見えるアップ。舐め・指。部品は穴の見え方とアナル挿入。",
-    "anal_penetration": "後ろからの挿入。穴が膣に逃げやすいときのセット。部品は総合えっちとアナル挿入。",
-    "futa_blowjob": "ふたなりフェラ。部品はふたなり・竿・フェラ。写真からの方が安定。",
-    "oral": "フェラ。部品はフェラと竿。",
-    "riding": "騎乗位。写真からなら騎乗用、テキストからなら総合えっち。",
+    "anal_closeup": "舐め・指。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。行為は1本だけ。",
+    "anal_penetration": "アナル挿入の本線。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。12〜20 step。",
+    "futa_blowjob": "ふたなりフェラ。フェラ + 竿 + Larry 0.7。AIO とふたなり部品は足さない。",
+    "oral": "フェラ本線。フェラ 0.75 + 竿 0.7 + Larry 0.7。",
+    "general_sex": "汎用エロ。AIO 0.75 + LightX2V 0.5 / 12 step。穴が曖昧でいいとき。",
+    "preview": "試し打ち。AIO 0.7 + LightX2V 4step。当たりだけ本線で焼き直す。",
+    "riding": "騎乗は汎用エロと同じ薄い積み。",
 }
 
 LORA_JA = {
@@ -75,7 +87,10 @@ LORA_JA = {
     "riding-pose-i2v": "騎乗のポーズ",
     "h3-realism-people": "肌のリアルさ",
     "tiddies-realism-slider": "胸の大きさ",
-    "astro-nsfw-h3": "動きの底上げ",
+    "larry-v4": "Larry（薄く速く）",
+    "cinema-dy": "シネマ",
+    "minimax-h3-turbo-fl2v-4step": "LightX2V 4step",
+    "minimax-h3-turbo-fl2v-8step": "LightX2V 8step",
     "photoreal-h3-still": "静止画用の写実",
 }
 
@@ -122,7 +137,7 @@ def explain_choice(situation: str, mode: str) -> str:
         f"作り方: {how}\n"
         f"説明: {SITUATION_HELP[sid]}\n"
         f"使う部品: {parts}\n"
-        "速いモード（Turbo）は使いません。"
+        "重ね上限は 行為1 + ヘルパー1 + Turbo1。Fal には載せません。"
     )
 
 
@@ -270,10 +285,11 @@ def inject_lora_stack(
     g: dict[str, Any],
     stack: list[dict[str, Any]],
     *,
-    steps: int = 16,
+    steps: int | None = None,
+    sampler: dict[str, Any] | None = None,
     unet_node: str = "1",
 ) -> dict[str, Any]:
-    """Chain LoraLoaderModelOnly. Always turbo-off sampler."""
+    """Chain LoraLoaderModelOnly. Sampler comes from the situation plan."""
     if g.get("2", {}).get("class_type") == "LoraLoaderModelOnly":
         del g["2"]
     prev = unet_node
@@ -294,12 +310,17 @@ def inject_lora_stack(
         prev = nid
         last = nid
     model = [last, 0] if stack else [unet_node, 0]
+    plan = sampler or {
+        "sampler_name": "res_multistep",
+        "scheduler": "beta",
+        "steps": max(int(steps or 16), 16),
+    }
     if "22" in g:
-        g["22"]["inputs"]["sampler_name"] = "res_multistep"
+        g["22"]["inputs"]["sampler_name"] = str(plan.get("sampler_name") or "res_multistep")
     if "23" in g:
         g["23"]["inputs"]["model"] = model
-        g["23"]["inputs"]["scheduler"] = "beta"
-        g["23"]["inputs"]["steps"] = max(int(steps), 16)
+        g["23"]["inputs"]["scheduler"] = str(plan.get("scheduler") or "beta")
+        g["23"]["inputs"]["steps"] = int(plan.get("steps") or steps or 16)
     if "24" in g:
         g["24"]["inputs"]["model"] = model
     return g
@@ -312,32 +333,11 @@ def merge_optional(
     catalog: dict[str, Any] | None = None,
     mode: str = "t2v",
 ) -> list[dict[str, Any]]:
-    index = catalog_by_id(catalog)
-    have = {item["id"] for item in stack}
-    out = list(stack)
-    for lid in extras:
-        if lid in have:
-            continue
-        row = index.get(lid)
-        if row is None:
-            raise SystemExit(f"unknown extra LoRA: {lid}")
-        modes = [str(m) for m in (row.get("modes") or [])]
-        if mode not in modes:
-            print(f"skip extra {lid}: not for {mode}")
-            continue
-        if row.get("turbo") is True:
-            print(f"skip extra {lid}: turbo stays off")
-            continue
-        out.append(
-            {
-                "id": lid,
-                "filename": str(row["filename"]),
-                "strength_model": float(OPTIONAL_IDS.get(lid, row.get("default_strength") or 1.0)),
-                "trigger": str(row.get("trigger") or ""),
-            }
-        )
-        have.add(lid)
-    return out
+    """Extras stay off. Three quality LoRAs collapse hole, shaft, and face."""
+    del catalog, mode
+    if extras:
+        print("上級の追加部品は重ね上限（行為1+ヘルパー1+Turbo1）のため無視します。")
+    return list(stack)
 
 
 def situation_ids(situation: str) -> list[str]:

@@ -55,16 +55,19 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 
 | ③で選ぶ名前 | どんな動画 | 自動で入る部品 |
 |---|---|---|
-| 普通（エロなし） | 通常の I2V / T2V。えっち用なし | 速いモード（Turbo）だけ |
-| 穴アップ（舐め・指） | 穴がよく見えるアップ | 穴の見え方 + アナル挿入 |
-| アナル挿入 | 後ろからの挿入。穴が膣に逃げやすいとき | 総合えっち + アナル挿入 |
-| ふたなりフェラ | ふたなりのフェラ。写真からの方が安定 | ふたなり + 竿 + フェラ |
-| フェラ | フェラ | フェラ + 竿 |
-| 騎乗位 | 上に乗って動く | 写真なら騎乗のポーズ、文章なら総合えっち |
+| 普通（エロなし） | 通常の I2V / T2V | Turbo だけ |
+| アナル挿入（画質） | 穴が見える挿入。本線 | CoachBate 0.85 + 穴の見え方 0.55。Turbo なし |
+| アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
+| フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
+| ふたなりフェラ | フェラと同じ積み。AIO なし | フェラ + 竿 + Larry |
+| 汎用エロ | 挿入が曖昧でいい | AIO 0.75 + LightX2V 0.5 / 12 step |
+| 試し打ち | 量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
+
+**重ね上限:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。Larry と LightX2V は同時に積まない。Fal には載せない。
 
 文章欄は **空のままでOK**。おすすめの英文が自動で入ります。自分で書きたいときだけ貼る。
 
-触らなくていい項目（リアル寄せ・胸など）は ③ のいちばん下にあります。
+上級の追加部品（リアル寄せ・胸など）は重ね上限のため無視します。
 """
 
 MD1 = r"""## ① Google Drive をつなぐ
@@ -138,7 +141,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "穴アップ（舐め・指）"  #@param ["普通（エロなし）", "穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
+今使うシーン = "アナル挿入（画質）"  #@param ["普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -183,6 +186,8 @@ studio_files = [
     "h3-lora-studio/profiles/anal_penetration.json",
     "h3-lora-studio/profiles/futa_blowjob.json",
     "h3-lora-studio/profiles/oral.json",
+    "h3-lora-studio/profiles/general_sex.json",
+    "h3-lora-studio/profiles/preview.json",
     "h3-lora-studio/profiles/riding.json",
 ]
 for rel in helpers:
@@ -240,7 +245,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("anal_closeup", "anal_penetration", "futa_blowjob", "oral", "riding"):
+    for key in ("anal_closeup", "anal_penetration", "futa_blowjob", "oral", "general_sex", "preview"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -305,15 +310,16 @@ MD3 = r"""## ③ 動画を作る
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
-- **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文。えっち用の部品は入りません
-- **穴アップ** … 穴が見えるクローズアップ。舐め、それから指
-- **アナル挿入** … 四つん這い、後ろから肛門。膣には入れない
-- **ふたなりフェラ / フェラ** … 正面から竿が見える。`bl0w_j0b` と `PENISLORA` は自動で足します
+- **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
+- **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし
+- **アナル舐め・指** … 舐め、それから指
+- **フェラ / ふたなりフェラ** … 正面から竿。`bl0w_j0b` と `PENISLORA` は自動
+- **汎用エロ / 試し打ち** … 挿入は曖昧でいい。試し打ちの当たりは本線で焼き直す
 """
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "穴アップ（舐め・指）"  #@param ["普通（エロなし）", "穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
+やりたいシーン = "アナル挿入（画質）"  #@param ["普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown 文章は空でOK（おすすめ文を自動で使います）
 文章 = ""  #@param {type:"string"}
@@ -352,8 +358,8 @@ from h3_motion_graphics import (
     prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt,
 )
 from h3_lora_studio import (
-    explain_choice, friendly_lora, inject_lora_stack, is_vanilla, load_catalog,
-    merge_optional, prepend_triggers, resolve_mode, resolve_situation,
+    explain_choice, friendly_lora, inject_lora_stack, is_vanilla,
+    prepend_triggers, resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
 
@@ -393,9 +399,10 @@ if VANILLA:
         if errs:
             raise SystemExit(errs)
     print("入る部品: 速いモード（Turbo）だけ。えっち用は使いません。")
+    SAMPLER = {"sampler_name": "euler", "scheduler": "simple", "steps": 4}
+    cfg = None
 else:
-    STEPS = 16
-    FILENAME_PREFIX = "video/h3_lora_studio"
+    FILENAME_PREFIX = "video/h3_preview" if SITUATION == "preview" else "video/h3_lora_studio"
     PROMPT = 文章.strip() or "（シーン）"
     cfg = select_loras(
         profile_name=SITUATION,
@@ -403,25 +410,20 @@ else:
         prompt_arg=PROMPT,
         catalog_path=STUDIO / "catalog" / "loras.json",
         profiles_dir=STUDIO / "profiles",
-        turbo_override=False,
+        turbo_override=None,
     )
-    extras = []
-    if 動きの底上げ:
-        extras.append("astro-nsfw-h3")
-    if 胸を強調:
-        extras.append("tiddies-realism-slider")
-    if リアル寄り:
-        extras.append("h3-realism-people")
-    if 静止画用の写実:
-        extras.append("photoreal-h3-still")
-        print("注意: 静止画用の写実は、穴のアップ動画向きではありません。")
-    stack = merge_optional(cfg["stack"], extras=extras, catalog=load_catalog(STUDIO), mode=MODE)
+    if 動きの底上げ or 胸を強調 or リアル寄り or 静止画用の写実:
+        print("上級の追加部品は重ね上限（行為1+ヘルパー1+Turbo1）のため無視します。")
+    stack = cfg["stack"]
     prompt = prepend_triggers(cfg["prompt"], stack)
+    SAMPLER = cfg["sampler"]
+    STEPS = int(SAMPLER["steps"])
     if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
         raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
     print("入る部品:")
     for x in stack:
-        print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"))
+        role = x.get("role") or ""
+        print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), role)
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
 
 if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
@@ -439,7 +441,7 @@ elif 画面の向き == "横":
     w, h = canvas_for_aspect("16:9")
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
-print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / 品質ステップ:", STEPS, "（普通は速いモード、えっち用は使いません）")
+print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt(文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
@@ -494,7 +496,7 @@ if VANILLA:
 plans = t2v_retry_plans(width=w, height=h) if MODE == "t2v" else i2va_retry_plans(width=w, height=h)
 
 def make_graph(plan):
-    steps = int(STEPS) if VANILLA else max(int(STEPS), 16)
+    steps = int(SAMPLER["steps"])
     if MODE == "t2v":
         g = build_t2v_graph(
             prompt=prompt, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
@@ -505,7 +507,7 @@ def make_graph(plan):
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
         if not VANILLA:
-            inject_lora_stack(g, stack, steps=steps)
+            inject_lora_stack(g, stack, sampler=SAMPLER)
         errs = assert_t2v_graph(g)
     else:
         g = build_i2va_graph(
@@ -518,19 +520,27 @@ def make_graph(plan):
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
         if not VANILLA:
-            inject_lora_stack(g, stack, steps=steps)
+            inject_lora_stack(g, stack, sampler=SAMPLER)
         errs = assert_i2va_graph(g, expect_last=False)
     if errs:
         raise SystemExit(errs)
     loaders = [n for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
     names = [str(n["inputs"].get("lora_name", "")) for n in loaders]
+    blob = " ".join(names).lower()
+    has_larry = "turbo_v4" in blob or "larry" in blob
+    has_lx = "fl2v_turbo" in blob or "fl2v_lightx2v" in blob or "lightx2v" in blob
+    if has_larry and has_lx:
+        raise SystemExit("Larry と LightX2V は同時に積みません。")
     if VANILLA:
         if not names or all("turbo" not in n.lower() for n in names):
             raise SystemExit("普通（エロなし）なのに速いモードが入っていません。②からやり直してください。")
         if any("turbo" not in n.lower() for n in names):
             raise SystemExit("普通（エロなし）にえっち用の部品が混ざったので止めています。")
-    elif any("turbo" in n.lower() for n in names):
-        raise SystemExit("速いモードの部品が混ざったので止めています。②からやり直してください。")
+    elif cfg and cfg.get("turbo"):
+        if not (has_larry or has_lx):
+            raise SystemExit("このシーンは薄い Turbo が必要です。②からやり直してください。")
+    elif has_larry or has_lx:
+        raise SystemExit("アナル挿入の本線に Turbo は入れません。")
     return g
 
 def post_prompt(g):

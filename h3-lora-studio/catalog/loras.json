@@ -1,9 +1,6 @@
 {
   "schema": "h3-lora-studio-catalog/v1",
   "always_unload": [
-    "minimax-h3-turbo-fl2v-4step",
-    "minimax-h3-turbo-fl2v-8step",
-    "minimax-h3-turbo-ref2v-4step",
     "aftermidnight-ref2va"
   ],
   "loras": [
@@ -274,9 +271,11 @@
       "modes": ["t2v", "i2v"],
       "arch": "fl2va",
       "turbo": true,
+      "turbo_family": "lightx2v",
       "adult": false,
       "trigger": "",
-      "default_strength": 1.0
+      "default_strength": 1.0,
+      "note": "Preview only. Never stack with larry-v4."
     },
     {
       "id": "minimax-h3-turbo-fl2v-8step",
@@ -286,9 +285,11 @@
       "modes": ["t2v", "i2v"],
       "arch": "fl2va",
       "turbo": true,
+      "turbo_family": "lightx2v",
       "adult": false,
       "trigger": "",
-      "default_strength": 1.0
+      "default_strength": 1.0,
+      "note": "Do not stack with larry-v4 or the 4-step LightX2V."
     },
     {
       "id": "minimax-h3-turbo-ref2v-4step",
@@ -298,9 +299,45 @@
       "modes": ["r2v"],
       "arch": "ref2va",
       "turbo": true,
+      "turbo_family": "lightx2v",
       "adult": false,
       "trigger": "",
-      "default_strength": 1.0
+      "default_strength": 0.5,
+      "note": "R2V only. Not for FL2VA."
+    },
+    {
+      "id": "larry-v4",
+      "filename": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
+      "repo": "DarkRomeo88/MiniMax-H3-turbo-lora-comfyui",
+      "file": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": true,
+      "turbo_family": "larry",
+      "adult": false,
+      "trigger": "",
+      "default_strength": 0.5,
+      "source": "hf",
+      "strength_range": [0.4, 0.8],
+      "note": "Thin turbo. 8-step. Never 1.0 on anal. Never stack with LightX2V."
+    },
+    {
+      "id": "cinema-dy",
+      "filename": "Minimax_H3_cinematic_DY.safetensors",
+      "repo": "civitai:2908686",
+      "file": "Minimax_H3_cinematic_DY.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": false,
+      "trigger": "DY",
+      "default_strength": 0.4,
+      "source": "civitai",
+      "civitai_model_id": 2908686,
+      "civitai_version_id": 3289775,
+      "civitai_file_id": 3174203,
+      "strength_range": [0.4, 0.6],
+      "note": "Cinema DY. 0.4-0.6. Never 0.7+ on insertion. Drop helper if this is on."
     }
   ]
 }
