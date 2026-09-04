@@ -213,7 +213,7 @@ def validate_studio_i2v_prompt(prompt: str, *, extra: list[str] | None = None) -
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
     try:
-        from forbidden_words import forbidden_hits as _fh
+        from select_loras import forbidden_hits as _fh
         hits = _fh(p, extra=extra)
     except ImportError:
         cleaned = STUDIO_SAFETY_CLAUSE_RE.sub(" ", p)

@@ -187,7 +187,6 @@ studio_files = [
     "h3-lora-studio/catalog/loras.json",
     "h3-lora-studio/catalog/forbidden.json",
     "h3-lora-studio/scripts/select_loras.py",
-    "h3-lora-studio/scripts/forbidden_words.py",
     "h3-lora-studio/profiles/anal_closeup.json",
     "h3-lora-studio/profiles/anal_penetration.json",
     "h3-lora-studio/profiles/futa_blowjob.json",
@@ -395,33 +394,7 @@ from h3_lora_studio import (
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
     resolve_mode, resolve_situation,
 )
-from select_loras import select_loras
-try:
-    from forbidden_words import extra_terms, parse_extra_terms
-except Exception:
-    def parse_extra_terms(text):
-        raw = str(text or "").replace("、", ",")
-        return [p.strip() for p in raw.split(",") if p.strip()]
-    def extra_terms(path=None):
-        cands = []
-        if path:
-            cands.append(Path(path))
-        cands.append(Path("/content/h3-lora-studio/catalog/forbidden.json"))
-        try:
-            cands.append(DRIVE_ROOT / "forbidden.json")
-        except NameError:
-            cands.append(Path("/content/drive/MyDrive/minimax-h3-comfyui/forbidden.json"))
-        seen = set()
-        for p in cands:
-            if p in seen or not p.is_file():
-                continue
-            seen.add(p)
-            try:
-                rows = json.loads(p.read_text(encoding="utf-8")).get("extra") or []
-                return [str(x).strip() for x in rows if str(x).strip()]
-            except Exception:
-                continue
-        return []
+from select_loras import extra_terms, parse_extra_terms, select_loras
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -442,12 +415,7 @@ print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
 print("禁止語の編集:", DRIVE_ROOT / "forbidden.json")
-try:
-    extra_now = extra_terms(STUDIO / "catalog" / "forbidden.json")
-except TypeError:
-    extra_now = extra_terms()
-except Exception:
-    extra_now = extra_terms()
+extra_now = extra_terms(DRIVE_ROOT / "forbidden.json")
 print("追加の禁止語:", ", ".join(extra_now) or "（json の extra は空）")
 EXTRA_FORBIDDEN = parse_extra_terms(追加の禁止語)
 if EXTRA_FORBIDDEN:

@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
-from select_loras import SelectError, forbidden_hits, list_situations, select_loras  # noqa: E402
+from select_loras import SelectError, forbidden_hits, list_situations, load_forbidden, select_loras  # noqa: E402
 
 
 def test_anal_penetration_i2v_stacks_enabled_only():
@@ -357,9 +357,6 @@ def test_sfw_r2v_refuses_fl2va_turbo(tmp_path: Path):
 
 
 def test_forbidden_json_extra_is_editable(tmp_path: Path):
-    from forbidden_words import forbidden_hits as fh
-    from forbidden_words import load_forbidden
-
     cfg = load_forbidden()
     assert "schoolgirl" in cfg["extra"]
     assert "loli" in cfg["minors"]
@@ -368,9 +365,9 @@ def test_forbidden_json_extra_is_editable(tmp_path: Path):
         json.dumps({"schema": "h3-lora-studio-forbidden/v1", "minors": [], "extra": ["brandx"]}),
         encoding="utf-8",
     )
-    assert fh("Adult woman over 21. brandx logo.", path=empty) == ["brandx"]
-    assert "loli" in fh("loli character", path=empty)
-    assert "schoolgirl" not in fh("schoolgirl uniform, adult over 21", path=empty)
+    assert forbidden_hits("Adult woman over 21. brandx logo.", path=empty) == ["brandx"]
+    assert "loli" in forbidden_hits("loli character", path=empty)
+    assert "schoolgirl" not in forbidden_hits("schoolgirl uniform, adult over 21", path=empty)
     data = select_loras(
         profile_name="anal_closeup",
         mode="t2v",
