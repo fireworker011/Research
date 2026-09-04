@@ -1,0 +1,137 @@
+{
+  "schema": "h3-lora-studio-catalog/v1",
+  "loras": [
+    {
+      "id": "h3-realism-people",
+      "filename": "h3-realism-people-t2v-i2v-r2v.safetensors",
+      "repo": "fal/MiniMax-H3-Realism-People-LoRA",
+      "file": "h3-realism-people-t2v-i2v-r2v.safetensors",
+      "modes": ["t2v", "i2v", "r2v"],
+      "arch": "shared",
+      "turbo": false,
+      "adult": false,
+      "trigger": "r34l1sm",
+      "default_strength": 1.0
+    },
+    {
+      "id": "hmnsfw-aio-v2",
+      "filename": "HMNSFW_AIO_V2.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "hmnsfw-aio-sex/HMNSFW_AIO_V2.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.85
+    },
+    {
+      "id": "riding-pose-i2v",
+      "filename": "riding_pose_H3_i2v_v1.0.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "riding/riding_pose_H3_i2v_v1.0.safetensors",
+      "modes": ["i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.8
+    },
+    {
+      "id": "deepthroat-v02",
+      "filename": "deepthroat_v02.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "darings-deepthroat/deepthroat_v02.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.8
+    },
+    {
+      "id": "hmcumshot-v2",
+      "filename": "HMCumshot_V2.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "hmcumshot/HMCumshot_V2.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.8
+    },
+    {
+      "id": "hmpussy-v6",
+      "filename": "hmpussy_v6_epoch30.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "hmpussy/hmpussy_v6_epoch30.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.8
+    },
+    {
+      "id": "vagassist-e40",
+      "filename": "vagassist_e40.safetensors",
+      "repo": "nikdevs/minimax-h3-loras",
+      "file": "hmpussy/vagassist_e40.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.8
+    },
+    {
+      "id": "aftermidnight-ref2va",
+      "filename": "AfterMidnight_ref2va_h3_sexytime_rank64-v1.2.safetensors",
+      "repo": "SexGod1979/AfterMidnight-MiniMax-H3-NSFW",
+      "file": "AfterMidnight_ref2va_h3_sexytime_rank64-v1.2.safetensors",
+      "modes": ["r2v"],
+      "arch": "ref2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 1.0
+    },
+    {
+      "id": "minimax-h3-turbo-fl2v-4step",
+      "filename": "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
+      "repo": "lightx2v/Minimax-h3-Turbo",
+      "file": "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": true,
+      "adult": false,
+      "trigger": "",
+      "default_strength": 1.0
+    },
+    {
+      "id": "minimax-h3-turbo-fl2v-8step",
+      "filename": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+      "repo": "lightx2v/Minimax-h3-Turbo",
+      "file": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": true,
+      "adult": false,
+      "trigger": "",
+      "default_strength": 1.0
+    },
+    {
+      "id": "minimax-h3-turbo-ref2v-4step",
+      "filename": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+      "repo": "lightx2v/Minimax-h3-Turbo",
+      "file": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+      "modes": ["r2v"],
+      "arch": "ref2va",
+      "turbo": true,
+      "adult": false,
+      "trigger": "",
+      "default_strength": 1.0
+    }
+  ]
+}

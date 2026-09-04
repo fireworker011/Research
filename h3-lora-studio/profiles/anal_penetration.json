@@ -1,0 +1,30 @@
+{
+  "id": "anal_penetration",
+  "adults_only": true,
+  "min_age": 21,
+  "mode_default": "i2v",
+  "turbo": false,
+  "canvas": {
+    "width": 768,
+    "height": 864,
+    "duration_s": 10.0,
+    "aspect": "8:9"
+  },
+  "enabled": [
+    { "id": "h3-realism-people", "strength": 1.0 },
+    { "id": "hmnsfw-aio-v2", "strength": 0.85 }
+  ],
+  "disabled": [
+    "minimax-h3-turbo-fl2v-4step",
+    "minimax-h3-turbo-fl2v-8step",
+    "minimax-h3-turbo-ref2v-4step",
+    "aftermidnight-ref2va",
+    "riding-pose-i2v",
+    "deepthroat-v02",
+    "hmcumshot-v2",
+    "hmpussy-v6",
+    "vagassist-e40"
+  ],
+  "scene": "r34l1sm\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light, rumpled bed sheets, color temperature matching <Picture 1>.\ncamera: The camera holds a medium shot from behind and slightly to the side, then pushes in with small amplitude at slow speed.\nintegrated_multimodal_description: (S1) is on all fours on the bed looking back over her shoulder at (S2). (S2) is behind her and penetrating her anus, hips moving in a steady consensual rhythm. Continuous adult anal sex, photoreal skin, visible adult genitals. Identity of (S1) stays locked to <Picture 1>. No freeze frame. No cartoon. No illustration.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21; the camera settles on the connected bodies.\n\nAll performers are consenting adults 21 years or older.",
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, turbo artifacts"
+}
