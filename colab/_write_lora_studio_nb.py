@@ -265,16 +265,16 @@ token = civitai_token(CivitaiのAPIキー)
 print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
 jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
 need = missing_civitai_files(jobs)
-    if need and not token:
-        raise SystemExit(civitai_token_help())
-    skipped = []
-    for url, dest, row in jobs:
-        auth = "civitai" if str(row.get("source")) == "civitai" else ""
-        if not fetch_weight(url, dest, token=token, auth=auth):
-            skipped.append(dest.name)
-    if skipped:
-        print("一部スキップ:", ", ".join(skipped))
-        print("今のシーンに不要なら③へ。必要なら②をあとで再実行。")
+if need and not token:
+    raise SystemExit(civitai_token_help())
+skipped = []
+for url, dest, row in jobs:
+    auth = "civitai" if str(row.get("source")) == "civitai" else ""
+    if not fetch_weight(url, dest, token=token, auth=auth):
+        skipped.append(dest.name)
+if skipped:
+    print("一部スキップ:", ", ".join(skipped))
+    print("今のシーンに不要なら③へ。必要なら②をあとで再実行。")
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
@@ -648,6 +648,10 @@ print("③ 完了。キーは画面に出していません。")
 
 def to_source(text: str) -> list[str]:
     return [line + "\n" for line in text.strip("\n").split("\n")]
+
+
+for _name, _src in (("CELL1", CELL1), ("CELL2", CELL2), ("CELL3", CELL3)):
+    compile(_src, _name, "exec")
 
 
 nb = {
