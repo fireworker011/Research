@@ -82,6 +82,8 @@ Drive `minimax-h3-comfyui/inbox/`
 
 スマホ T2V: [minimax_h3_t2v_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb) の ③で `ASPECT` を `16:9`。
 
+スマホ I2V（写真＋自由プロンプト。広告固定なし）: [minimax_h3_i2v_free_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_free_phone.ipynb)。`ASPECT` は `auto`（写真の向きで 9:16 / 16:9 / 8:9）か明示。`LAST_IMAGE` で最終フレームも固定できる。
+
 ```bash
 python minimaxh3/grokbot/drop_job.py --mode t2v --aspect 16:9 --prompt-file prompt.txt
 ```

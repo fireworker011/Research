@@ -17,7 +17,7 @@ MD0 = r"""# MiniMax H3 T2V（スマホ・9:16 / 16:9）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)
 
-1枚から作る I2V は [こちら](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)。
+1枚から作る I2V は [こちら](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)。写真＋この T2V と同じ自由プロンプトで作る I2V は [minimax_h3_i2v_free_phone.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_free_phone.ipynb)。
 
 ## スマホでの手順
 
