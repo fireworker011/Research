@@ -76,12 +76,15 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert preview["stack"][1]["strength_model"] == 1.0
     listed = list_situations()
     ids = {row["id"] for row in listed["situations"]}
-    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "general_sex", "preview"} <= ids
+    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "general_sex", "preview", "sfw_daily", "sfw_preview", "sfw_audio"} <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
     assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
     assert oral["turbo"] is True
     anal = next(row for row in listed["situations"] if row["id"] == "anal_penetration")
     assert anal["turbo"] is False
+    daily = next(row for row in listed["situations"] if row["id"] == "sfw_daily")
+    assert daily["nsfw"] is False
+    assert daily["enabled"]["t2v"] == ["larry-v4", "cinema-dy"]
 
 
 def test_cli_t2v_and_list():
@@ -241,5 +244,72 @@ def test_refuses_ref2va_on_i2v(tmp_path: Path):
         )
     except SelectError as exc:
         assert "ref2va" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
+
+
+def test_sfw_daily_splits_turbo_and_quality():
+    data = select_loras(profile_name="sfw_daily", mode="t2v", prompt_arg="（シーン）")
+    assert data["nsfw"] is False
+    assert data["turbo"] is True
+    assert [row["id"] for row in data["stack"]] == ["larry-v4", "cinema-dy"]
+    assert [row["role"] for row in data["stack"]] == ["turbo", "cinema"]
+    assert data["stack"][0]["strength_model"] == 1.0
+    assert data["stack"][1]["strength_model"] == 0.65
+    assert data["sampler"]["sampler_name"] == "res_multistep"
+    assert data["sampler"]["scheduler"] == "simple"
+    assert data["sampler"]["steps"] == 8
+    assert "Picture 1" not in data["prompt"]
+    assert all(row.get("adult") is False for row in data["stack"])
+    preview = select_loras(profile_name="sfw_preview", mode="t2v")
+    assert [row["id"] for row in preview["stack"]] == ["minimax-h3-turbo-fl2v-4step", "cinema-dy"]
+    assert preview["sampler"]["steps"] == 4
+    audio = select_loras(profile_name="sfw_audio", mode="t2v")
+    assert [row["id"] for row in audio["stack"]] == ["minimax-h3-turbo-fl2v-8step", "cinema-dy"]
+    r2v = select_loras(profile_name="sfw_r2v", mode="r2v")
+    assert [row["id"] for row in r2v["stack"]] == ["minimax-h3-turbo-ref2v-4step", "cinema-dy"]
+    assert r2v["stack"][1]["strength_model"] == 0.5
+
+
+def test_sfw_refuses_adult_lora(tmp_path: Path):
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    cat_path = tmp_path / "loras.json"
+    cat_path.write_text(json.dumps(catalog), encoding="utf-8")
+    profile = json.loads((ROOT / "profiles" / "sfw_daily.json").read_text(encoding="utf-8"))
+    profile["stack_plan"]["cinema"] = {"id": "hmnsfw-aio-v25", "strength": 0.7}
+    profile["disabled"] = [x for x in profile["disabled"] if x != "hmnsfw-aio-v25"]
+    (tmp_path / "sfw_daily.json").write_text(json.dumps(profile), encoding="utf-8")
+    try:
+        select_loras(profile_name="sfw_daily", mode="t2v", catalog_path=cat_path, profiles_dir=tmp_path)
+    except SelectError as exc:
+        assert "adult" in str(exc).lower() or "SFW" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
+
+
+def test_sfw_allows_cinema_point_seven(tmp_path: Path):
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    cat_path = tmp_path / "loras.json"
+    cat_path.write_text(json.dumps(catalog), encoding="utf-8")
+    profile = json.loads((ROOT / "profiles" / "sfw_daily.json").read_text(encoding="utf-8"))
+    profile["stack_plan"]["cinema"] = {"id": "cinema-dy", "strength": 0.7}
+    (tmp_path / "sfw_daily.json").write_text(json.dumps(profile), encoding="utf-8")
+    data = select_loras(profile_name="sfw_daily", mode="t2v", catalog_path=cat_path, profiles_dir=tmp_path)
+    assert data["stack"][1]["strength_model"] == 0.7
+
+
+def test_sfw_r2v_refuses_fl2va_turbo(tmp_path: Path):
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    cat_path = tmp_path / "loras.json"
+    cat_path.write_text(json.dumps(catalog), encoding="utf-8")
+    profile = json.loads((ROOT / "profiles" / "sfw_r2v.json").read_text(encoding="utf-8"))
+    profile["stack_plan"]["turbo"] = {"id": "minimax-h3-turbo-fl2v-4step", "strength": 1.0}
+    profile["disabled"] = [x for x in profile["disabled"] if x != "minimax-h3-turbo-fl2v-4step"]
+    (tmp_path / "sfw_r2v.json").write_text(json.dumps(profile), encoding="utf-8")
+    try:
+        select_loras(profile_name="sfw_r2v", mode="r2v", catalog_path=cat_path, profiles_dir=tmp_path)
+    except SelectError as exc:
+        msg = str(exc).lower()
+        assert "fl2va" in msg or "r2v" in msg
     else:
         raise AssertionError("expected SelectError")

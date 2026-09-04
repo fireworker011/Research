@@ -1,0 +1,43 @@
+{
+  "id": "sfw_r2v",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": false,
+  "modes": ["r2v"],
+  "allow_turbo": true,
+  "canvas": {
+    "r2v": { "width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9" }
+  },
+  "stack_plan": {
+    "turbo": { "id": "minimax-h3-turbo-ref2v-4step", "strength": 1.0 },
+    "cinema": { "id": "cinema-dy", "strength": 0.5 }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 4,
+    "note": "Face-lock R2V. LightX2V Ref2VA 4step + cinematic 0.5. Do not stack FL2VA turbo."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "synth-pussy-h3",
+    "hmnsfw-aio-v25",
+    "hmnsfw-aio-v2",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
+    "astro-nsfw-h3",
+    "tiddies-realism-slider",
+    "riding-pose-i2v",
+    "photoreal-h3-still",
+    "astro-cinema-h3",
+    "larry-v4",
+    "minimax-h3-turbo-fl2v-4step",
+    "minimax-h3-turbo-fl2v-8step",
+    "aftermidnight-ref2va"
+  ],
+  "scenes": {
+    "r2v": "DY\nKeep the face and body of the reference video. Adult, clearly over 21. Cinematic lighting, natural skin. No nsfw. No freeze frame.\n\nAll performers are consenting adults 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, nsfw, nude"
+}

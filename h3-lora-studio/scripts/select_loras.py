@@ -25,7 +25,9 @@ SCHEMA = "h3-lora-studio/v1"
 SITUATIONS_SCHEMA = "h3-lora-studio-situations/v1"
 MODES = ("t2v", "i2v", "r2v")
 STACK_ROLES = ("act", "helper", "turbo", "cinema")
-MAX_CINEMA = 0.6
+MAX_CINEMA_NSFW = 0.6
+MAX_CINEMA_SFW = 0.7
+STILL_ONLY_IDS = {"photoreal-h3-still"}
 FULL_STACK_IDS = {
     "anal-penetration-coachbate",
     "hmnsfw-aio-v25",
@@ -110,6 +112,17 @@ def is_turbo_row(row: dict[str, Any]) -> bool:
 
 def forbidden_hits(text: str) -> list[str]:
     return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(text)})
+
+
+def profile_is_nsfw(profile: dict[str, Any]) -> bool:
+    if "nsfw" in profile:
+        return bool(profile.get("nsfw"))
+    return True
+
+
+def max_cinema(profile: dict[str, Any] | None = None, *, nsfw: bool | None = None) -> float:
+    is_nsfw = profile_is_nsfw(profile) if profile is not None else bool(nsfw)
+    return MAX_CINEMA_NSFW if is_nsfw else MAX_CINEMA_SFW
 
 
 def turbo_family(row: dict[str, Any]) -> str:
@@ -213,18 +226,41 @@ def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dic
     }
 
 
-def assert_stack_budget(specs: list[dict[str, Any]], index: dict[str, dict[str, Any]]) -> None:
+def assert_stack_budget(
+    specs: list[dict[str, Any]],
+    index: dict[str, dict[str, Any]],
+    *,
+    nsfw: bool = True,
+) -> None:
     roles = [str(s.get("role") or "") for s in specs]
     for role in STACK_ROLES:
         if roles.count(role) > 1:
             raise SelectError(f"only one {role} LoRA is allowed")
-    if "act" not in roles:
-        raise SelectError("adult stack needs one act LoRA")
-    if "helper" in roles and "cinema" in roles:
-        raise SelectError("cinema replaces helper; do not stack both")
     ids = {str(s["id"]) for s in specs}
-    if FULL_STACK_IDS <= ids:
-        raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
+    if STILL_ONLY_IDS & ids:
+        raise SelectError("photoreal still is for keyframes, not the video body")
+    if not nsfw:
+        if "act" in roles or "helper" in roles:
+            raise SelectError("SFW stack is turbo plus one quality LoRA only")
+        if "turbo" not in roles:
+            raise SelectError("SFW fast+quality needs one turbo LoRA")
+        for spec in specs:
+            row = index.get(str(spec["id"])) or {}
+            if row.get("adult") is True:
+                raise SelectError(f"SFW stack cannot load adult LoRA: {spec['id']}")
+        non_turbo = [s for s in specs if s.get("role") != "turbo"]
+        if len(non_turbo) > 1:
+            raise SelectError("SFW quality is one cinematic LoRA, or none")
+    else:
+        if "act" not in roles:
+            raise SelectError("adult stack needs one act LoRA")
+        if "helper" in roles and "cinema" in roles:
+            raise SelectError("cinema replaces helper; do not stack both")
+        if FULL_STACK_IDS <= ids:
+            raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
+        non_turbo = [s for s in specs if s.get("role") != "turbo"]
+        if len(non_turbo) > 2:
+            raise SelectError("quality LoRAs are act + optional helper or cinema only")
     families: set[str] = set()
     for spec in specs:
         row = index.get(str(spec["id"])) or {}
@@ -237,17 +273,15 @@ def assert_stack_budget(specs: list[dict[str, Any]], index: dict[str, dict[str, 
     act = next((s for s in specs if s.get("role") == "act"), None)
     cinema = next((s for s in specs if s.get("role") == "cinema"), None)
     turbo = next((s for s in specs if s.get("role") == "turbo"), None)
+    cinema_cap = MAX_CINEMA_NSFW if nsfw else MAX_CINEMA_SFW
     if cinema is not None:
         strength = float(cinema.get("strength") or 0.4)
-        if strength > MAX_CINEMA:
-            raise SelectError("cinema DY must stay at 0.4-0.6")
+        if strength > cinema_cap:
+            raise SelectError(f"cinema DY must stay at 0.4-{cinema_cap}")
         if act and str(act.get("id")) == "anal-penetration-coachbate":
             raise SelectError("cinema off for anal penetration")
     if turbo is not None and act and str(act.get("id")) == "anal-penetration-coachbate":
         raise SelectError("CoachBate anal penetration stays turbo off")
-    non_turbo = [s for s in specs if s.get("role") != "turbo"]
-    if len(non_turbo) > 2:
-        raise SelectError("quality LoRAs are act + optional helper or cinema only")
 
 
 def resolve_prompt(profile: dict[str, Any], prompt_arg: str | None, mode: str) -> str:
@@ -371,6 +405,7 @@ def list_situations(
                 "modes": list(enabled_by_mode),
                 "enabled": enabled_by_mode,
                 "adults_only": True,
+                "nsfw": profile_is_nsfw(profile),
                 "turbo": turbo_any,
             }
         )
@@ -394,6 +429,7 @@ def select_loras(
 
     profile = load_profile(profile_name, profiles_dir)
     assert_adults_only(profile)
+    nsfw = profile_is_nsfw(profile)
     allowed = situation_modes(profile)
     if allowed and mode not in allowed:
         raise SelectError(f"{profile_name} does not support mode {mode}")
@@ -412,7 +448,7 @@ def select_loras(
         enabled = [spec for spec in enabled if spec.get("role") != "turbo"]
     if turbo_override is True and profile_name == "anal_penetration":
         raise SelectError("CoachBate anal penetration stays turbo off")
-    assert_stack_budget(enabled, index)
+    assert_stack_budget(enabled, index, nsfw=nsfw)
 
     stack: list[dict[str, Any]] = []
     for spec in enabled:
@@ -433,13 +469,15 @@ def select_loras(
         arch = str(row.get("arch") or "")
         if mode in {"t2v", "i2v"} and arch == "ref2va":
             raise SelectError(f"ref2va LoRA cannot stack on {mode}: {lid}")
+        if mode == "r2v" and arch == "fl2va" and is_turbo_row(row):
+            raise SelectError(f"FL2VA turbo cannot stack on r2v: {lid}")
         blob = json.dumps(row, ensure_ascii=False)
         bad = forbidden_hits(blob)
         if bad:
             raise SelectError(f"forbidden subject in catalog {lid}: {bad}")
         strength = spec.get("strength", row.get("default_strength", 1.0))
-        if role == "cinema" and float(strength) > MAX_CINEMA:
-            raise SelectError("cinema DY must stay at 0.4-0.6")
+        if role == "cinema" and float(strength) > max_cinema(profile):
+            raise SelectError(f"cinema DY must stay at 0.4-{max_cinema(profile)}")
         trigger = str(row.get("trigger") or "").strip()
         stack.append(
             {
@@ -495,6 +533,7 @@ def select_loras(
         "mode": mode,
         "adults_only": True,
         "min_age": int(profile.get("min_age") or 21),
+        "nsfw": nsfw,
         "turbo": has_turbo,
         "prompt": prompt,
         "negative": str(profile.get("negative") or ""),

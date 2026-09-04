@@ -12,7 +12,7 @@ OUTS = [
     ROOT / "h3-lora-studio" / "minimax_h3_lora_studio.ipynb",
 ]
 
-MD0 = r"""# えっちな動画を作る（MiniMax H3）
+MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 写真なしの文章から、または写真1枚から、短い動画を作ります。
 
@@ -28,13 +28,13 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
 3. **③** でシーンを選んで実行 → 下に動画が出る
 
-初めてなら、シーンのフォームはいじらなくて大丈夫です。えっち用なら **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。普通（エロなし）だけならキーは空でOK。
+初めてなら **日常（速い＋綺麗）** のままで大丈夫です。シネマ質感を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。
 
 ## 準備（最初の1回）
 
 1. 上の **Open in Colab** を開く
 2. 右上の **ランタイム → ランタイムのタイプを変更 → GPU を A100**
-3. **Civitai の API キー**（えっち用の部品を取るとき。**普通（エロなし）だけなら不要**）
+3. **Civitai の API キー**（シネマ質感とえっち用。**普通（エロなし）だけなら不要**）
    - https://civitai.com/user/account を開く → 下の **API Keys** → **Add API key** → コピー
    - **②の「CivitaiのAPIキー」欄に貼る**（このノートのフォーム。左の鍵マークは使わなくてよい）
    - キーは画面に出ません。ノートを保存する前に欄を空に戻す
@@ -55,15 +55,19 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 
 | ③で選ぶ名前 | どんな動画 | 自動で入る部品 |
 |---|---|---|
-| 普通（エロなし） | 通常の I2V / T2V | Turbo だけ |
+| 日常（速い＋綺麗） | 会話・商品・風景 | Larry v4 1.0 + シネマ 0.65 / 8step |
+| 最速プレビュー（エロなし） | 量産プレビュー | LightX2V 4step 1.0 + シネマ 0.4 |
+| 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
+| 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
 | アナル挿入（画質） | 穴が見える挿入。本線 | CoachBate 0.85 + 穴の見え方 0.55。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
 | ふたなりフェラ | フェラと同じ積み。AIO なし | フェラ + 竿 + Larry |
 | 汎用エロ | 挿入が曖昧でいい | AIO 0.75 + LightX2V 0.5 / 12 step |
-| 試し打ち | 量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
+| 試し打ち | エロの量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
 
-**重ね上限:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。Larry と LightX2V は同時に積まない。Fal には載せない。
+**エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
+**エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
 文章欄は **空のままでOK**。おすすめの英文が自動で入ります。自分で書きたいときだけ貼る。
 
@@ -141,7 +145,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "アナル挿入（画質）"  #@param ["普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -189,6 +193,10 @@ studio_files = [
     "h3-lora-studio/profiles/general_sex.json",
     "h3-lora-studio/profiles/preview.json",
     "h3-lora-studio/profiles/riding.json",
+    "h3-lora-studio/profiles/sfw_daily.json",
+    "h3-lora-studio/profiles/sfw_preview.json",
+    "h3-lora-studio/profiles/sfw_audio.json",
+    "h3-lora-studio/profiles/sfw_r2v.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -245,7 +253,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("anal_closeup", "anal_penetration", "futa_blowjob", "oral", "general_sex", "preview"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "oral", "general_sex", "preview"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -310,6 +318,9 @@ MD3 = r"""## ③ 動画を作る
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
+- **日常（速い＋綺麗）** … Larry + シネマ。8step
+- **最速プレビュー（エロなし）** … LightX2V 4step。当たりは日常で焼き直し
+- **音も残す（エロなし）** … LightX2V 8step
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし
 - **アナル舐め・指** … 舐め、それから指
@@ -319,7 +330,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "アナル挿入（画質）"  #@param ["普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown 文章は空でOK（おすすめ文を自動で使います）
 文章 = ""  #@param {type:"string"}
@@ -402,7 +413,7 @@ if VANILLA:
     SAMPLER = {"sampler_name": "euler", "scheduler": "simple", "steps": 4}
     cfg = None
 else:
-    FILENAME_PREFIX = "video/h3_preview" if SITUATION == "preview" else "video/h3_lora_studio"
+    FILENAME_PREFIX = "video/h3_preview" if SITUATION in {"preview", "sfw_preview"} else "video/h3_lora_studio"
     PROMPT = 文章.strip() or "（シーン）"
     cfg = select_loras(
         profile_name=SITUATION,

@@ -177,7 +177,7 @@
       "civitai_version_id": 3260165,
       "civitai_file_id": 3143491,
       "strength_range": [0.9, 1.5],
-      "note": "Still photoreal. Not for hole-detail video. Default off."
+      "note": "Still / keyframe only. Weak on the video body. Do not stack on T2V/I2V/R2V."
     },
     {
       "id": "hmnsfw-aio-v2",
@@ -275,7 +275,7 @@
       "adult": false,
       "trigger": "",
       "default_strength": 1.0,
-      "note": "Preview only. Never stack with larry-v4."
+      "note": "Fastest FL2VA preview. 4step 768p. Audio is weak. Never stack with larry-v4."
     },
     {
       "id": "minimax-h3-turbo-fl2v-8step",
@@ -289,7 +289,7 @@
       "adult": false,
       "trigger": "",
       "default_strength": 1.0,
-      "note": "Do not stack with larry-v4 or the 4-step LightX2V."
+      "note": "FL2VA 8step. Audio better than 4step. Larry is stabler for song/Japanese. Never stack with larry-v4."
     },
     {
       "id": "minimax-h3-turbo-ref2v-4step",
@@ -303,31 +303,33 @@
       "adult": false,
       "trigger": "",
       "default_strength": 0.5,
-      "note": "R2V only. Not for FL2VA."
+      "note": "R2V only. Do not mix with FL2VA turbo."
     },
     {
       "id": "larry-v4",
       "filename": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
       "repo": "DarkRomeo88/MiniMax-H3-turbo-lora-comfyui",
       "file": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
+      "official_repo": "larryvrh/MiniMax-H3-Turbo-Lora",
+      "official_file": "minimax_h3_turbo_v4_step600_ema.safetensors",
       "modes": ["t2v", "i2v"],
       "arch": "fl2va",
       "turbo": true,
       "turbo_family": "larry",
       "adult": false,
       "trigger": "",
-      "default_strength": 0.5,
+      "default_strength": 1.0,
       "source": "hf",
-      "strength_range": [0.4, 0.8],
-      "note": "Thin turbo. 8-step. Never 1.0 on anal. Never stack with LightX2V."
+      "strength_range": [0.4, 1.2],
+      "note": "larryvrh v4 step600 EMA, Comfy keys. SFW daily 1.0 / 6-8 step. Adult stacks stay thinner. Never 4step for daily (motion smear). Never stack with LightX2V."
     },
     {
       "id": "cinema-dy",
       "filename": "Minimax_H3_cinematic_DY.safetensors",
       "repo": "civitai:2908686",
       "file": "Minimax_H3_cinematic_DY.safetensors",
-      "modes": ["t2v", "i2v"],
-      "arch": "fl2va",
+      "modes": ["t2v", "i2v", "r2v"],
+      "arch": "shared",
       "turbo": false,
       "adult": false,
       "trigger": "DY",
@@ -336,8 +338,26 @@
       "civitai_model_id": 2908686,
       "civitai_version_id": 3289775,
       "civitai_file_id": 3174203,
-      "strength_range": [0.4, 0.6],
-      "note": "Cinema DY. 0.4-0.6. Never 0.7+ on insertion. Drop helper if this is on."
+      "strength_range": [0.4, 0.7],
+      "note": "Authentic cinematic texture, tensor-fixed fork of 2890588. Trigger DY. SFW 0.6-0.7 (0.5 if lots of motion). Adult insertion 0.4-0.6. Do not stack with astro-cinema-h3."
+    },
+    {
+      "id": "astro-cinema-h3",
+      "filename": "Cinema-MH3-V02_000010000.safetensors",
+      "repo": "civitai:2849726",
+      "file": "Cinema-MH3-V02_000010000.safetensors",
+      "modes": ["t2v", "i2v"],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": false,
+      "trigger": "ASTROCINEMAV01K2T",
+      "default_strength": 0.7,
+      "source": "civitai",
+      "civitai_model_id": 2849726,
+      "civitai_version_id": 3278719,
+      "civitai_file_id": 3162803,
+      "strength_range": [0.5, 0.8],
+      "note": "Cinematic Style + Detail V2. Trigger ASTROCINEMAV01K2T at the front. Not NSFW. Do not stack with cinema-dy. Daily SFW uses cinema-dy instead."
     }
   ]
 }

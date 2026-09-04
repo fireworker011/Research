@@ -1,6 +1,6 @@
-"""Colab helper for stacking MiniMax H3 NSFW LoRAs.
+"""Colab helper for stacking MiniMax H3 LoRAs.
 
-Adult stacks stay thin: act + optional helper + optional turbo.
+SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
 Cinema replaces helper. CoachBate anal stays turbo off.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
@@ -29,6 +29,10 @@ OPTIONAL_IDS = {
 
 SITUATION_DOWNLOAD = {
     "vanilla": [],
+    "sfw_daily": ["larry-v4", "cinema-dy"],
+    "sfw_preview": ["minimax-h3-turbo-fl2v-4step", "cinema-dy"],
+    "sfw_audio": ["minimax-h3-turbo-fl2v-8step", "cinema-dy"],
+    "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["synth-pussy-h3", "larry-v4", "cinema-dy"],
     "anal_penetration": ["anal-penetration-coachbate", "synth-pussy-h3"],
     "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
@@ -40,6 +44,9 @@ SITUATION_DOWNLOAD = {
 
 SITUATION_JA = {
     "普通（エロなし）": "vanilla",
+    "日常（速い＋綺麗）": "sfw_daily",
+    "最速プレビュー（エロなし）": "sfw_preview",
+    "音も残す（エロなし）": "sfw_audio",
     "アナル挿入（画質）": "anal_penetration",
     "アナル挿入": "anal_penetration",
     "アナル舐め・指": "anal_closeup",
@@ -50,6 +57,10 @@ SITUATION_JA = {
     "試し打ち": "preview",
     "騎乗位": "riding",
     "vanilla": "vanilla",
+    "sfw_daily": "sfw_daily",
+    "sfw_preview": "sfw_preview",
+    "sfw_audio": "sfw_audio",
+    "sfw_r2v": "sfw_r2v",
     "anal_closeup": "anal_closeup",
     "anal_penetration": "anal_penetration",
     "futa_blowjob": "futa_blowjob",
@@ -67,7 +78,11 @@ MODE_JA = {
 }
 
 SITUATION_HELP = {
-    "vanilla": "普通の動画。えっち用の部品は使いません。速いモード（Turbo）で、専用の I2V / T2V ノートと同じ土台です。",
+    "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。",
+    "sfw_daily": "日常・会話・商品・風景。Larry v4 1.0 + シネマ 0.65 / 8step。エロ用は入れない。",
+    "sfw_preview": "エロなしの最速プレビュー。LightX2V 4step 1.0 + シネマ 0.4。当たりは日常で焼き直す。",
+    "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
+    "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "舐め・指。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。行為は1本だけ。",
     "anal_penetration": "アナル挿入の本線。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。12〜20 step。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 + Larry 0.7。AIO とふたなり部品は足さない。",
@@ -87,12 +102,16 @@ LORA_JA = {
     "riding-pose-i2v": "騎乗のポーズ",
     "h3-realism-people": "肌のリアルさ",
     "tiddies-realism-slider": "胸の大きさ",
-    "larry-v4": "Larry（薄く速く）",
-    "cinema-dy": "シネマ",
+    "larry-v4": "Larry v4",
+    "cinema-dy": "シネマ質感",
+    "astro-cinema-h3": "映画レンズ",
     "minimax-h3-turbo-fl2v-4step": "LightX2V 4step",
     "minimax-h3-turbo-fl2v-8step": "LightX2V 8step",
+    "minimax-h3-turbo-ref2v-4step": "LightX2V Ref2VA",
     "photoreal-h3-still": "静止画用の写実",
 }
+
+SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
 
 
 def resolve_situation(name: str) -> str:
@@ -132,12 +151,17 @@ def explain_choice(situation: str, mode: str) -> str:
             "えっち用の部品は使いません。速いモード（Turbo）を使います。"
         )
     parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
+    cap = (
+        "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
+        if sid in SFW_SITUATIONS
+        else "重ね上限は 行為1 + ヘルパー1 + Turbo1。Fal には載せません。"
+    )
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
         f"説明: {SITUATION_HELP[sid]}\n"
         f"使う部品: {parts}\n"
-        "重ね上限は 行為1 + ヘルパー1 + Turbo1。Fal には載せません。"
+        + cap
     )
 
 

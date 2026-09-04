@@ -113,6 +113,13 @@ def test_japanese_form_labels():
     assert resolve_situation("汎用エロ") == "general_sex"
     help_text = explain_choice("アナル挿入（画質）", "テキストから（写真なし）")
     assert "Turbo なし" in help_text or "CoachBate" in help_text
+    assert resolve_situation("日常（速い＋綺麗）") == "sfw_daily"
+    assert resolve_situation("最速プレビュー（エロなし）") == "sfw_preview"
+    assert resolve_situation("音も残す（エロなし）") == "sfw_audio"
+    sfw = explain_choice("日常（速い＋綺麗）", "テキストから（写真なし）")
+    assert "Larry" in sfw
+    assert "エロ用は入れません" in sfw
+    assert "blowjob-h3" not in sfw
 
 
 def test_vanilla_sfw_shares_phone_path():
