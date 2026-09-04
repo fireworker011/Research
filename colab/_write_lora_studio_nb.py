@@ -69,7 +69,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
-**プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。
+**プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。禁止語の extra は Drive の `forbidden.json` か③の欄。未成年ロックは外せません。
 
 上級の追加部品（リアル寄せ・胸など）は重ね上限のため無視します。
 """
@@ -185,7 +185,9 @@ helpers = [
 ]
 studio_files = [
     "h3-lora-studio/catalog/loras.json",
+    "h3-lora-studio/catalog/forbidden.json",
     "h3-lora-studio/scripts/select_loras.py",
+    "h3-lora-studio/scripts/forbidden_words.py",
     "h3-lora-studio/profiles/anal_closeup.json",
     "h3-lora-studio/profiles/anal_penetration.json",
     "h3-lora-studio/profiles/futa_blowjob.json",
@@ -207,6 +209,14 @@ for rel in studio_files:
     dest = Path("/content") / rel
     if not fetch_text(f"{RAW}/{rel}", dest):
         raise SystemExit("シーン設定の取得に失敗しました。②をもう一度。")
+drive_fb = DRIVE_ROOT / "forbidden.json"
+git_fb = Path("/content/h3-lora-studio/catalog/forbidden.json")
+if drive_fb.is_file() and drive_fb.stat().st_size > 20:
+    shutil.copy2(drive_fb, git_fb)
+    print("禁止語: Drive の forbidden.json を使います")
+else:
+    shutil.copy2(git_fb, drive_fb)
+    print("禁止語の編集ファイル:", drive_fb)
 
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs
@@ -321,6 +331,8 @@ MD3 = r"""## ③ 動画を作る
 
 自分の文を書くときは、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。写真からのときに Picture 1 を書かなくても、顔ロックは自動で足します。
 
+**禁止語の編集:** Drive の `minimax-h3-comfyui/forbidden.json` の `extra`。③の「追加の禁止語」欄でもカンマで足せます。ロリ・ショタ・child などは消せません。
+
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
 - **日常（速い＋綺麗）** … Larry + シネマ。8step
@@ -340,6 +352,9 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。
 文章 = ""  #@param {type:"string"}
+#@markdown ### 禁止語（任意）
+#@markdown Drive の `minimax-h3-comfyui/forbidden.json` の extra を編集するか、ここにカンマで足す。未成年の語は消せません。
+追加の禁止語 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
 写真ファイル = "auto"  #@param {type:"string"}
 秒数 = 10  #@param {type:"number"}
@@ -381,6 +396,7 @@ from h3_lora_studio import (
     resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
+from forbidden_words import extra_terms, parse_extra_terms
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -400,6 +416,12 @@ VANILLA = is_vanilla(やりたいシーン)
 print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
+print("禁止語の編集:", DRIVE_ROOT / "forbidden.json")
+print("追加の禁止語:", ", ".join(extra_terms()) or "（json の extra は空）")
+EXTRA_FORBIDDEN = parse_extra_terms(追加の禁止語)
+if EXTRA_FORBIDDEN:
+    print("③で足した禁止語:", ", ".join(EXTRA_FORBIDDEN))
+print()
 
 CUSTOM_PROMPT = not is_blank_prompt(文章)
 
@@ -418,7 +440,7 @@ if VANILLA:
         default_i2v = resolve_motion_prompt("", duration_s=float(秒数), with_last_frame=False)
         prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
         if CUSTOM_PROMPT:
-            errs = validate_studio_i2v_prompt(prompt)
+            errs = validate_studio_i2v_prompt(prompt, extra=EXTRA_FORBIDDEN)
         else:
             errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
         if errs:
@@ -443,6 +465,8 @@ else:
             catalog_path=STUDIO / "catalog" / "loras.json",
             profiles_dir=STUDIO / "profiles",
             turbo_override=None,
+            extra_forbidden=EXTRA_FORBIDDEN,
+            forbidden_path=STUDIO / "catalog" / "forbidden.json",
         )
     except SystemExit as exc:
         hint = friendly_select_error(exc)
@@ -461,7 +485,7 @@ else:
         print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), role)
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
     if MODE == "i2v":
-        errs = validate_studio_i2v_prompt(prompt)
+        errs = validate_studio_i2v_prompt(prompt, extra=EXTRA_FORBIDDEN)
         if errs:
             raise SystemExit(errs)
 

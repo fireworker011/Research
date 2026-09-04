@@ -1,0 +1,40 @@
+{
+  "schema": "h3-lora-studio-forbidden/v1",
+  "comment_ja": "Drive の minimax-h3-comfyui/forbidden.json を編集して②→③。minors を消しても未成年チェックは残る。足したい語は extra へ。③の「追加の禁止語」欄でもカンマ区切りで足せる。",
+  "minors": [
+    "shota",
+    "syota",
+    "loli",
+    "lolita",
+    "loliita",
+    "child",
+    "children",
+    "kid",
+    "kids",
+    "toddler",
+    "infant",
+    "minor",
+    "underage",
+    "teen",
+    "teenage",
+    "teenager",
+    "小学生",
+    "中学生",
+    "pedo"
+  ],
+  "word_boundary": [
+    "child",
+    "children",
+    "kid",
+    "kids",
+    "minor",
+    "teen"
+  ],
+  "extra": [
+    "schoolgirl",
+    "稼げる",
+    "必ず稼",
+    "月収",
+    "年収"
+  ]
+}

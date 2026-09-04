@@ -199,7 +199,7 @@ def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> 
     return errs
 
 
-def validate_studio_i2v_prompt(prompt: str) -> list[str]:
+def validate_studio_i2v_prompt(prompt: str, *, extra: list[str] | None = None) -> list[str]:
     """Picture 1 lock for studio / custom I2V. Not the 10-shot homage ad."""
     errs: list[str] = []
     p = prompt or ""
@@ -212,8 +212,16 @@ def validate_studio_i2v_prompt(prompt: str) -> list[str]:
     for bad in FORBIDDEN_IN_PROMPT:
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
-    cleaned = STUDIO_SAFETY_CLAUSE_RE.sub(" ", p)
-    hits = sorted({m.group(0).lower() for m in STUDIO_I2V_MINOR_RE.finditer(cleaned)})
+    try:
+        from forbidden_words import forbidden_hits as _fh
+        hits = _fh(p, extra=extra)
+    except ImportError:
+        cleaned = STUDIO_SAFETY_CLAUSE_RE.sub(" ", p)
+        hits = sorted({m.group(0).lower() for m in STUDIO_I2V_MINOR_RE.finditer(cleaned)})
+        for term in extra or []:
+            if str(term).lower() in cleaned.lower():
+                hits.append(str(term).lower())
+        hits = sorted(set(hits))
     if hits:
         errs.append(f"adults-only: forbidden subject {hits}")
     return errs

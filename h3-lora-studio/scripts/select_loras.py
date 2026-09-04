@@ -18,6 +18,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from forbidden_words import (  # noqa: E402
+    DEFAULT_PATH as FORBIDDEN_PATH,
+    extra_terms,
+    forbidden_hits,
+    parse_extra_terms,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "catalog" / "loras.json"
 PROFILES_DIR = ROOT / "profiles"
@@ -46,21 +53,6 @@ SECRET_KEY_RE = re.compile(
 )
 LIVE_SECRET_RE = re.compile(
     r"\b(sk-[A-Za-z0-9_-]{8,}|hf_[A-Za-z0-9]{8,}|xai-[A-Za-z0-9_-]{8,})\b"
-)
-FORBIDDEN_SUBJECT_RE = re.compile(
-    r"(shota|syota|loli|lolita|\bchild\b|\bchildren\b|\bkids?\b|toddler|"
-    r"infant|\bminor\b|underage|\bteen\b|teenage|schoolgirl|"
-    r"小学生|中学生| pedo|loliita)",
-    re.I,
-)
-_FORBIDDEN_TERM = (
-    r"(?:child|children|kids?|loli(?:ta)?|shota|syota|teen(?:agers?|age)?|"
-    r"underage|minors?|toddler|infant|schoolgirl|小学生|中学生)"
-)
-# "no child" / "not a teen" / comma lists after no — safety language, not a request.
-SAFETY_CLAUSE_RE = re.compile(
-    rf"(?ix)\b(?:no|not\s+a|not|without|avoid|exclude|never)\s+(?:a\s+)?{_FORBIDDEN_TERM}"
-    rf"(?:\s*,\s*(?:no\s+|not\s+a\s+|not\s+)?{_FORBIDDEN_TERM})*"
 )
 TURBO_NAME_RE = re.compile(r"(turbo|\bacc[-_]?lora|\b4step\b|\b8step\b)", re.I)
 PICTURE1_RE = re.compile(r"Picture 1|first_frame", re.I)
@@ -117,16 +109,6 @@ def is_turbo_row(row: dict[str, Any]) -> bool:
         for k in ("id", "filename", "repo", "file", "arch")
     )
     return bool(TURBO_NAME_RE.search(blob))
-
-
-def forbidden_hits(text: str, *, negative: str | None = None) -> list[str]:
-    """Flag requested minors. Do not flag 'no child' / pasted negative lists."""
-    cleaned = str(text or "")
-    neg = str(negative or "").strip()
-    if neg:
-        cleaned = cleaned.replace(neg, " ")
-    cleaned = SAFETY_CLAUSE_RE.sub(" ", cleaned)
-    return sorted({m.group(0).lower() for m in FORBIDDEN_SUBJECT_RE.finditer(cleaned)})
 
 
 def profile_is_nsfw(profile: dict[str, Any]) -> bool:
@@ -437,6 +419,8 @@ def select_loras(
     catalog_path: Path = CATALOG_PATH,
     profiles_dir: Path = PROFILES_DIR,
     turbo_override: bool | None = None,
+    extra_forbidden: list[str] | None = None,
+    forbidden_path: Path | str | None = None,
 ) -> dict[str, Any]:
     mode = str(mode).lower().strip()
     if mode not in MODES:
@@ -450,7 +434,12 @@ def select_loras(
         raise SelectError(f"{profile_name} does not support mode {mode}")
 
     prompt = resolve_prompt(profile, prompt_arg, mode)
-    hits = forbidden_hits(prompt, negative=str(profile.get("negative") or ""))
+    hits = forbidden_hits(
+        prompt,
+        negative=str(profile.get("negative") or ""),
+        extra=extra_forbidden,
+        path=forbidden_path,
+    )
     if hits:
         raise SelectError(f"forbidden subject in prompt: {hits}")
     assert_mode_prompt(mode, prompt)
@@ -487,7 +476,7 @@ def select_loras(
         if mode == "r2v" and arch == "fl2va" and is_turbo_row(row):
             raise SelectError(f"FL2VA turbo cannot stack on r2v: {lid}")
         blob = json.dumps(row, ensure_ascii=False)
-        bad = forbidden_hits(blob)
+        bad = forbidden_hits(blob, extra=extra_forbidden, path=forbidden_path)
         if bad:
             raise SelectError(f"forbidden subject in catalog {lid}: {bad}")
         strength = spec.get("strength", row.get("default_strength", 1.0))
@@ -552,6 +541,9 @@ def select_loras(
         "turbo": has_turbo,
         "prompt": prompt,
         "negative": str(profile.get("negative") or ""),
+        "forbidden_extra": parse_extra_terms(
+            ",".join(extra_terms(forbidden_path) + list(extra_forbidden or []))
+        ),
         "first_frame_required": mode == "i2v",
         "canvas": canvas,
         "sampler": sampler,
@@ -574,6 +566,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--prompt", default="（シーン）", help="Use シーン to take scenes.<mode>")
     p.add_argument("--catalog", type=Path, default=CATALOG_PATH)
     p.add_argument("--profiles-dir", type=Path, default=PROFILES_DIR)
+    p.add_argument("--forbidden", type=Path, default=FORBIDDEN_PATH)
+    p.add_argument("--extra-forbidden", default="", help="Comma-separated extra banned words")
     p.add_argument("--out", type=Path, default=None)
     p.add_argument("--list", action="store_true", help="List situations and per-mode LoRA stacks")
     return p.parse_args(argv)
@@ -596,6 +590,8 @@ def main(argv: list[str] | None = None) -> int:
             catalog_path=args.catalog,
             profiles_dir=args.profiles_dir,
             turbo_override=None,
+            extra_forbidden=parse_extra_terms(args.extra_forbidden),
+            forbidden_path=args.forbidden,
         )
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     sys.stdout.write(text)

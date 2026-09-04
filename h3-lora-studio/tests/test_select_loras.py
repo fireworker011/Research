@@ -354,3 +354,40 @@ def test_sfw_r2v_refuses_fl2va_turbo(tmp_path: Path):
         assert "fl2va" in msg or "r2v" in msg
     else:
         raise AssertionError("expected SelectError")
+
+
+def test_forbidden_json_extra_is_editable(tmp_path: Path):
+    from forbidden_words import forbidden_hits as fh
+    from forbidden_words import load_forbidden
+
+    cfg = load_forbidden()
+    assert "schoolgirl" in cfg["extra"]
+    assert "loli" in cfg["minors"]
+    empty = tmp_path / "forbidden.json"
+    empty.write_text(
+        json.dumps({"schema": "h3-lora-studio-forbidden/v1", "minors": [], "extra": ["brandx"]}),
+        encoding="utf-8",
+    )
+    assert fh("Adult woman over 21. brandx logo.", path=empty) == ["brandx"]
+    assert "loli" in fh("loli character", path=empty)
+    assert "schoolgirl" not in fh("schoolgirl uniform, adult over 21", path=empty)
+    data = select_loras(
+        profile_name="anal_closeup",
+        mode="t2v",
+        prompt_arg="Adult woman over 21. No child. A man licks the anus.",
+        extra_forbidden=["brandx"],
+        forbidden_path=empty,
+    )
+    assert "brandx" in data["forbidden_extra"]
+    try:
+        select_loras(
+            profile_name="anal_closeup",
+            mode="t2v",
+            prompt_arg="Adult woman over 21 with a brandx tattoo. Anus visible.",
+            extra_forbidden=["brandx"],
+            forbidden_path=empty,
+        )
+    except SelectError as exc:
+        assert "brandx" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
