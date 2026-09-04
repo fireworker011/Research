@@ -17,6 +17,7 @@ from h3_motion_graphics import (
     prefer_fl2v_lora,
     resolve_motion_prompt,
     validate_motion_ad_prompt,
+    validate_studio_i2v_prompt,
 )
 
 
@@ -139,3 +140,50 @@ def test_prefer_fl2v_lora(tmp_path):
     a.write_bytes(b"x")
     b.write_bytes(b"x")
     assert prefer_fl2v_lora([a, b], True) == b.name
+
+
+STUDIO_ONE_SHOT = (
+    "For the target video, at 0.00 seconds into the target video, "
+    "<Picture 1> (from [Shot 1]) is fully referenced.  "
+    "integrated_multimodal_description: [Shot 1] 15-second vertical image-to-video, "
+    "one continuous take, no cuts. Locked-off static shot. The camera never moves. "
+    "No push in, no pull out, no zoom, no pan, no tilt, no handheld, no dolly, "
+    "no roll, no reframe, no crop change.  Picture 1 is the only background and "
+    "layout reference: a smartphone X."
+)
+
+
+def _studio_i2v_graph(prompt: str):
+    return build_i2va_graph(
+        first_image="IMG_0076.jpg",
+        last_image=None,
+        prompt=prompt,
+        unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        lora_name="minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
+        lora_strength=1.0,
+        width=CANVAS_8_9[0],
+        height=CANVAS_8_9[1],
+        duration_s=15,
+        seed=1,
+        steps=8,
+        filename_prefix="video/h3_lora_studio",
+    )
+
+
+def test_studio_i2v_skips_homage_shot_checklist():
+    assert validate_studio_i2v_prompt(STUDIO_ONE_SHOT) == []
+    g = _studio_i2v_graph(STUDIO_ONE_SHOT)
+    assert assert_i2va_graph(g, expect_last=False, homage=False) == []
+    homage_errs = assert_i2va_graph(g, expect_last=False, homage=True)
+    assert "missing [Shot 2]" in homage_errs
+    assert "hoodie identity lock missing" in homage_errs
+    assert any("missing on-screen copy" in e for e in homage_errs)
+
+
+def test_studio_i2v_still_requires_picture1_and_forbids_affiliate():
+    assert "Picture 1 tag missing" in validate_studio_i2v_prompt("an adult walks")
+    bad = STUDIO_ONE_SHOT + "\nhttps://px.a8.net/svt/ejp?a8mat=x\n"
+    errs = validate_studio_i2v_prompt(bad)
+    assert any("forbidden" in e for e in errs)
+    minor = validate_studio_i2v_prompt("<Picture 1> loli character waves")
+    assert any("adults-only" in e for e in minor)

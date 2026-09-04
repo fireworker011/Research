@@ -198,3 +198,16 @@ def test_civitai_token_prefers_form(monkeypatch):
         dest.unlink()
     jobs = [("https://example.invalid", dest, {"source": "civitai"})]
     assert missing_civitai_files(jobs) == ["h3-missing-lora.safetensors"]
+
+
+def test_studio_cell3_skips_homage_ad_prompt():
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    src = writer.read_text(encoding="utf-8")
+    assert "validate_studio_i2v_prompt" in src
+    assert "homage = bool(VANILLA and not CUSTOM_PROMPT)" in src
+    assert "assert_i2va_graph(g, expect_last=False, homage=homage)" in src
+    nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
+    blob = nb_path.read_text(encoding="utf-8")
+    assert "homage=homage" in blob
+    assert "validate_studio_i2v_prompt" in blob
+    assert "validate_motion_ad_prompt(prompt, with_last_frame=False)" in blob

@@ -9,6 +9,7 @@ link lives on the human's profile.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -72,6 +73,14 @@ FORBIDDEN_IN_PROMPT = (
     "必ず稼",
     "月収",
     "年収",
+)
+
+# Studio / custom I2V only. Homage ads stay on validate_motion_ad_prompt.
+STUDIO_I2V_MINOR_RE = re.compile(
+    r"(shota|syota|loli|lolita|\bchild\b|\bchildren\b|\bkids?\b|toddler|"
+    r"infant|\bminor\b|underage|\bteen\b|teenage|schoolgirl|"
+    r"小学生|中学生|pedo)",
+    re.I,
 )
 
 
@@ -179,6 +188,25 @@ def validate_motion_ad_prompt(prompt: str, *, with_last_frame: bool = False) -> 
     for bad in FORBIDDEN_IN_PROMPT:
         if bad.lower() in low:
             errs.append(f"forbidden string in prompt: {bad}")
+    return errs
+
+
+def validate_studio_i2v_prompt(prompt: str) -> list[str]:
+    """Picture 1 lock for studio / custom I2V. Not the 10-shot homage ad."""
+    errs: list[str] = []
+    p = prompt or ""
+    if not p.strip():
+        errs.append("I2V prompt is empty")
+        return errs
+    low = p.lower()
+    if "<Picture 1>" not in p and "Picture 1" not in p:
+        errs.append("Picture 1 tag missing")
+    for bad in FORBIDDEN_IN_PROMPT:
+        if bad.lower() in low:
+            errs.append(f"forbidden string in prompt: {bad}")
+    hits = sorted({m.group(0).lower() for m in STUDIO_I2V_MINOR_RE.finditer(p)})
+    if hits:
+        errs.append(f"adults-only: forbidden subject {hits}")
     return errs
 
 
@@ -310,7 +338,7 @@ def build_i2va_graph(
     return g
 
 
-def assert_i2va_graph(g: dict[str, Any], *, expect_last: bool) -> list[str]:
+def assert_i2va_graph(g: dict[str, Any], *, expect_last: bool, homage: bool = True) -> list[str]:
     errs: list[str] = []
     node = g.get("20") or {}
     if node.get("class_type") != "MiniMaxH3ImageToVideo":
@@ -325,5 +353,8 @@ def assert_i2va_graph(g: dict[str, Any], *, expect_last: bool) -> list[str]:
     if any(n.get("class_type") == "MiniMaxH3ReferenceToVideo" for n in g.values()):
         errs.append("R2V node must not be in the I2VA graph")
     prompt = inn.get("prompt") or ""
-    errs.extend(validate_motion_ad_prompt(prompt, with_last_frame=expect_last))
+    if homage:
+        errs.extend(validate_motion_ad_prompt(prompt, with_last_frame=expect_last))
+    else:
+        errs.extend(validate_studio_i2v_prompt(prompt))
     return errs

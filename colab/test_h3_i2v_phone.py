@@ -148,5 +148,7 @@ def test_phone_generate_cell_keeps_i2va_invariants():
     assert "DURATION_S = 10" in gen
     assert "USE_LORA = True" in gen
     assert "validate_motion_ad_prompt" in gen
+    assert "homage=False" not in gen
+    assert "validate_studio_i2v_prompt" not in gen
     assert "is_auto_image_name" in gen
     assert 'FIRST_IMAGE = "coconala_creator_ref.jpg"' in gen

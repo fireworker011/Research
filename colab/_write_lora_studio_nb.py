@@ -373,6 +373,7 @@ from h3_t2v import (
 from h3_motion_graphics import (
     CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans,
     prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt,
+    validate_studio_i2v_prompt,
 )
 from h3_lora_studio import (
     apply_user_prompt, explain_choice, friendly_lora, inject_lora_stack,
@@ -416,7 +417,7 @@ if VANILLA:
         default_i2v = resolve_motion_prompt("", duration_s=float(秒数), with_last_frame=False)
         prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
         if CUSTOM_PROMPT:
-            errs = validate_t2v_prompt(prompt)
+            errs = validate_studio_i2v_prompt(prompt)
         else:
             errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
         if errs:
@@ -450,6 +451,10 @@ else:
         role = x.get("role") or ""
         print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), role)
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
+    if MODE == "i2v":
+        errs = validate_studio_i2v_prompt(prompt)
+        if errs:
+            raise SystemExit(errs)
 
 if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
     raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にするか、Picture 1 を消してください。")
@@ -546,7 +551,8 @@ def make_graph(plan):
         )
         if not VANILLA:
             inject_lora_stack(g, stack, sampler=SAMPLER)
-        errs = assert_i2va_graph(g, expect_last=False)
+        homage = bool(VANILLA and not CUSTOM_PROMPT)
+        errs = assert_i2va_graph(g, expect_last=False, homage=homage)
     if errs:
         raise SystemExit(errs)
     loaders = [n for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
