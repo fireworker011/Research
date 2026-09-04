@@ -182,11 +182,12 @@ def test_urls_and_helper_set():
     assert BRANCH in url and url.endswith(NOTEBOOK)
     assert HELPER_BRANCHES[0] == BRANCH
     assert "colab/h3_i2v_free.py" in HELPER_FILES
+    assert "colab/h3_civitai.py" in HELPER_FILES
     assert "colab/h3_t2v.py" in HELPER_FILES and "colab/h3_motion_graphics.py" in HELPER_FILES
 
 
 def test_mirror_copies_match():
-    for name in ("h3_i2v_free.py", "h3_motion_graphics.py", "h3_t2v.py"):
+    for name in ("h3_i2v_free.py", "h3_motion_graphics.py", "h3_t2v.py", "h3_civitai.py"):
         a = (ROOT / "colab" / name).read_text(encoding="utf-8")
         b = (ROOT / "minimaxh3" / name).read_text(encoding="utf-8")
         assert a == b, name
@@ -212,6 +213,11 @@ def test_free_phone_notebook_is_three_i2v_cells():
         assert "稼げる" not in blob
         assert "coconala_creator_ref" not in blob
         assert "display(Video" in blob
+        assert "civitai.com/user/account" in blob
+        assert "civitai_api_token.txt" in blob
+        assert 'CIVITAI_API_TOKEN = ""' in blob
+        assert "シークレットは不要" in blob or "シークレットは使わなくてよい" in blob
+        assert "sk-live-" not in blob
         for i, cell in enumerate(codes):
             src = "".join(cell.get("source") or [])
             assert not src.strip().startswith("%%")
@@ -225,8 +231,10 @@ def test_free_phone_setup_cell_probes_helper_branches():
         assert b in setup
     for rel in HELPER_FILES:
         assert rel in setup
-    assert 'PROBE = "colab/h3_i2v_free.py"' in setup
+    assert 'PROBE = "colab/h3_civitai.py"' in setup
     assert "i2v_download_jobs" in setup and "missing_weight_files" in setup
+    assert "load_civitai_token" in setup
+    assert "CIVITAI_LORA_URL" in setup
 
 
 def test_free_phone_generate_cell_keeps_i2v_invariants():

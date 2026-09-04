@@ -34,7 +34,10 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 
 1. 上の **Open in Colab** を開く
 2. 右上の **ランタイム → ランタイムのタイプを変更 → GPU を A100**
-3. 一部の部品は Civitai の鍵が要ります。左の鍵アイコン（シークレット）に名前 `CIVITAI_API_TOKEN` を追加。値は Civitai の API キー。**ノートやチャットに貼らない**
+3. Civitai の部品を取るには API キーが要ります。**Colab の鍵（シークレット）は使わなくてよい。**
+   - https://civitai.com/user/account → API Keys → Add API key
+   - Drive の `マイドライブ/minimax-h3-comfyui/civitai_api_token.txt` にキーを1行だけ置く（おすすめ）
+   - または ①のフォーム `CIVITAI_API_TOKEN` に貼る（ノートは保存しない）
 4. メニュー **ランタイム → すべてのセルを実行** でも、①②③を順に押しても同じ
 
 できた動画は Google Drive の  
@@ -72,6 +75,8 @@ import os
 
 DRIVE_ROOT = "/content/drive/MyDrive/minimax-h3-comfyui"  #@param {type:"string"}
 COMFY_DIR = "/content/ComfyUI"
+#@markdown **Civitai API キー（空でOK。Drive の civitai_api_token.txt があればそれを読む）**
+CIVITAI_API_TOKEN = ""  #@param {type:"string"}
 
 drive.mount("/content/drive")
 
@@ -81,10 +86,34 @@ for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
 os.makedirs(f"{DRIVE_ROOT}/output", exist_ok=True)
 os.makedirs(f"{DRIVE_ROOT}/input", exist_ok=True)
 
+import urllib.request
+from pathlib import Path
+REPO = "fireworker011/Research"
+for branch in ["cursor/minimax-h3-motion-identity-e959", "cursor/h3-i2v-free-phone-22ce"]:
+    url = f"https://raw.githubusercontent.com/{REPO}/{branch}/colab/h3_civitai.py"
+    dest = Path("/content/h3_civitai.py")
+    try:
+        urllib.request.urlretrieve(url, dest)
+        if dest.is_file() and dest.stat().st_size > 100:
+            break
+    except Exception:
+        pass
+import sys
+sys.path.insert(0, "/content")
+civitai_src = "missing"
+try:
+    from h3_civitai import apply_civitai_token, describe_civitai_status, load_civitai_token
+    token, civitai_src = load_civitai_token(pasted=CIVITAI_API_TOKEN, drive_root=DRIVE_ROOT)
+    apply_civitai_token(token)
+    print("Civitai API:", describe_civitai_status(civitai_src, bool(token)))
+except Exception as e:
+    print("Civitai API: ②で再読み込みします。", e)
+
 with open("/content/h3_paths.env", "w") as f:
     f.write(f"DRIVE_ROOT={DRIVE_ROOT}\n")
     f.write(f"DRIVE_MODELS={DRIVE_MODELS}\n")
     f.write(f"COMFY_DIR={COMFY_DIR}\n")
+    f.write(f"CIVITAI_TOKEN_SOURCE={civitai_src}\n")
 
 import torch
 if not torch.cuda.is_available():
@@ -94,6 +123,7 @@ vram = props.total_memory / 1024 ** 3
 print("つながった Drive:", DRIVE_ROOT)
 print("動画の保存先:", f"{DRIVE_ROOT}/output")
 print("写真を置く場所:", f"{DRIVE_ROOT}/input")
+print("Civitai キーのファイル:", f"{DRIVE_ROOT}/civitai_api_token.txt")
 print("GPU:", torch.cuda.get_device_name(0), "メモリ:", round(vram, 1), "GB")
 if vram < 20:
     raise SystemExit("メモリが足りません。GPU を A100 にしてください。")
@@ -109,7 +139,7 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い）
 - **2回目以降** … すでに入っているファイルは飛ばすので速いです
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
 
-鍵エラー（401 / 403）が出たら、Civitai の API キーを Colab のシークレットに入れて①からやり直します。キー自体は画面に出ません。
+鍵エラー（401 / 403）が出たら、Civitai の API キーが読めていません。シークレットは不要です。Drive に `civitai_api_token.txt` を置くか、①のフォームに貼って①からやり直します。キー自体は画面に出ません。
 """
 
 CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ）
@@ -132,8 +162,8 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/minimax-h3-motion-identity-e959"
-RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
+REPO = "fireworker011/Research"
+BRANCHES = ["cursor/minimax-h3-motion-identity-e959", "cursor/h3-i2v-free-phone-22ce"]
 STUDIO = Path("/content/h3-lora-studio")
 
 def sh(cmd, **kw):
@@ -154,6 +184,7 @@ helpers = [
     "colab/h3_motion_graphics.py",
     "colab/h3_i2v_phone.py",
     "colab/h3_t2v.py",
+    "colab/h3_civitai.py",
     "colab/h3_lora_studio.py",
 ]
 studio_files = [
@@ -165,6 +196,13 @@ studio_files = [
     "h3-lora-studio/profiles/oral.json",
     "h3-lora-studio/profiles/riding.json",
 ]
+branch = None
+for b in BRANCHES:
+    if fetch_text(f"https://raw.githubusercontent.com/{REPO}/{b}/colab/h3_civitai.py", Path("/content/h3_civitai.py")):
+        branch = b
+        break
+print("helper branch:", branch or "(取得失敗)")
+RAW = f"https://raw.githubusercontent.com/{REPO}/{branch or BRANCHES[0]}"
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
     if not fetch_text(f"{RAW}/{rel}", dest):
@@ -181,6 +219,7 @@ from h3_lora_studio import (
     SITUATION_HELP, civitai_token, download_jobs_for, fetch_weight, load_catalog,
     resolve_situation, situation_ids,
 )
+from h3_civitai import describe_civitai_status, load_civitai_token
 
 print("今のシーン:", 今使うシーン)
 print(SITUATION_HELP[resolve_situation(今使うシーン)])
@@ -228,8 +267,9 @@ else:
     print("今のシーン用だけ入れます:", 今使うシーン)
 
 catalog = load_catalog(STUDIO)
-token = civitai_token()
-print("Civitai の鍵:", "入っています" if token else "まだありません（公開ファイルだけなら動くこともあります）")
+token, src = load_civitai_token(drive_root=DRIVE_ROOT)
+token = token or civitai_token(drive_root=DRIVE_ROOT)
+print("Civitai API:", describe_civitai_status(src, bool(token)))
 for url, dest, row in download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog):
     auth = "civitai" if str(row.get("source")) == "civitai" else ""
     fetch_weight(url, dest, token=token, auth=auth)

@@ -35,6 +35,7 @@ HELPER_FILES = (
     "colab/h3_motion_graphics.py",
     "colab/h3_i2v_phone.py",
     "colab/h3_t2v.py",
+    "colab/h3_civitai.py",
     "colab/h3_i2v_free.py",
 )
 

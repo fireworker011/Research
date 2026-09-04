@@ -29,6 +29,16 @@ MD0 = r"""# MiniMax H3 I2V（スマホ・自由プロンプト・auto / 9:16 / 1
 6. ②は初回だけ長い（T2V と同じモデル約42GB。既にあればスキップ）
 7. ③の `PROMPT` を書いて実行。`FIRST_IMAGE` が `auto` なら input の一番新しい画像を使う。`ASPECT` が `auto` なら画像の向きから 9:16（576×1024）/ 16:9（1024×576）/ 8:9（768×864）を選ぶ。1280×720 は H3 非対応（720 が 32 の倍数ではない）。動画は Drive の `MyDrive/minimax-h3-comfyui/output`
 
+## Civitai API（シークレットは使わなくてよい）
+
+Civitai から LoRA を取るときに使う。**キーそのものは画面に出ません。ノートやチャットに貼ったまま保存しない。**
+
+1. ブラウザで https://civitai.com/user/account を開く
+2. **API Keys** → Add API key → コピー
+3. **いちばん簡単:** スマホの Drive アプリで `マイドライブ/minimax-h3-comfyui/` を開き、新規テキスト `civitai_api_token.txt` を作ってキーを **1行だけ** 貼る。①を実行すると読み込む
+4. 今回だけなら、①のフォーム `CIVITAI_API_TOKEN` に貼る（ノートは保存しない）
+5. PC で鍵アイコンが分かる人だけ: 左の鍵 → 名前は必ず `CIVITAI_API_TOKEN`
+
 `LAST_IMAGE` に2枚目を入れると、最後のフレームも固定する（FL2VA）。
 
 動画の中にアフィURLは出さない。リンクはプロフィール。画面上は「広告」。未成年を描くプロンプトは③で止まる。
@@ -36,15 +46,17 @@ MD0 = r"""# MiniMax H3 I2V（スマホ・自由プロンプト・auto / 9:16 / 1
 
 CELL1 = r'''#@title ① Driveをつなぐ（最初の許可だけ）
 print("=" * 60)
-print(" ① Google Drive + GPU")
+print(" ① Google Drive + GPU + Civitai API")
 print("=" * 60)
 
 from google.colab import drive
 from pathlib import Path
-import os
+import os, urllib.request
 
 DRIVE_ROOT = "/content/drive/MyDrive/minimax-h3-comfyui"  #@param {type:"string"}
 COMFY_DIR = "/content/ComfyUI"
+#@markdown **Civitai API キー（空でOK。Drive の civitai_api_token.txt があればそれを読む）**
+CIVITAI_API_TOKEN = ""  #@param {type:"string"}
 
 drive.mount("/content/drive")
 
@@ -54,14 +66,40 @@ for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
 os.makedirs(f"{DRIVE_ROOT}/output", exist_ok=True)
 os.makedirs(f"{DRIVE_ROOT}/input", exist_ok=True)
 
+# ヘルパーは②でも取る。①では API 読み込みだけ先に取る
+REPO = "fireworker011/Research"
+for branch in ["cursor/minimax-h3-motion-identity-e959", "cursor/h3-i2v-free-phone-22ce"]:
+    url = f"https://raw.githubusercontent.com/{REPO}/{branch}/colab/h3_civitai.py"
+    dest = Path("/content/h3_civitai.py")
+    try:
+        urllib.request.urlretrieve(url, dest)
+        if dest.is_file() and dest.stat().st_size > 100:
+            break
+    except Exception as e:
+        print("helper fetch skip", branch, e)
+
+import sys
+sys.path.insert(0, "/content")
+try:
+    from h3_civitai import apply_civitai_token, describe_civitai_status, load_civitai_token
+    token, src = load_civitai_token(pasted=CIVITAI_API_TOKEN, drive_root=DRIVE_ROOT)
+    apply_civitai_token(token)
+    print("Civitai API:", describe_civitai_status(src, bool(token)))
+    civitai_src = src
+except Exception as e:
+    token, civitai_src = "", "missing"
+    print("Civitai API: ヘルパー未取得。Drive の civitai_api_token.txt を②で読む。", e)
+
 with open("/content/h3_paths.env", "w") as f:
     f.write(f"DRIVE_ROOT={DRIVE_ROOT}\n")
     f.write(f"DRIVE_MODELS={DRIVE_MODELS}\n")
     f.write(f"COMFY_DIR={COMFY_DIR}\n")
+    f.write(f"CIVITAI_TOKEN_SOURCE={civitai_src}\n")
 
 print("Drive:", DRIVE_ROOT)
 print("写真を置く場所:", f"{DRIVE_ROOT}/input")
 print("動画の保存先:", f"{DRIVE_ROOT}/output")
+print("Civitai キーのファイル:", f"{DRIVE_ROOT}/civitai_api_token.txt")
 
 import torch
 if not torch.cuda.is_available():
@@ -83,6 +121,9 @@ print("=" * 60)
 print(" ② I2V 準備（FL2VA + turbo LoRA。写真は③で渡す）")
 print("=" * 60)
 
+#@markdown **任意:** Civitai の LoRA を1本追加するなら URL か modelVersionId（空なら土台だけ）
+CIVITAI_LORA_URL = ""  #@param {type:"string"}
+
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
 
@@ -102,9 +143,10 @@ HELPERS = [
     "colab/h3_motion_graphics.py",
     "colab/h3_i2v_phone.py",
     "colab/h3_t2v.py",
+    "colab/h3_civitai.py",
     "colab/h3_i2v_free.py",
 ]
-PROBE = "colab/h3_i2v_free.py"
+PROBE = "colab/h3_civitai.py"
 
 def sh(cmd, **kw):
     print("+", " ".join(cmd) if isinstance(cmd, list) else cmd)
@@ -145,6 +187,14 @@ for rel in HELPERS:
 
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs, missing_weight_files
+from h3_civitai import (
+    apply_civitai_token, describe_civitai_status, fetch_civitai_weight,
+    load_civitai_token, lora_dest_from_url, parse_civitai_lora_url,
+)
+
+token, src = load_civitai_token(drive_root=DRIVE_ROOT)
+apply_civitai_token(token)
+print("Civitai API:", describe_civitai_status(src, bool(token)))
 
 if not (COMFY_DIR / "main.py").is_file():
     sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(COMFY_DIR)])
@@ -206,6 +256,14 @@ for url, dest in i2v_download_jobs(DRIVE_MODELS):
 left = missing_weight_files(DRIVE_MODELS)
 if left:
     raise SystemExit("まだ足りない: " + ", ".join(left))
+
+lora_url = parse_civitai_lora_url(CIVITAI_LORA_URL)
+if lora_url:
+    if not token:
+        raise SystemExit("Civitai LoRA を取るには API キーが必要。①を見て Drive の civitai_api_token.txt を置いてください。")
+    dest = lora_dest_from_url(lora_url, DRIVE_MODELS / "loras")
+    print("Civitai LoRA を入れます:", dest.name)
+    fetch_civitai_weight(lora_url, dest, token=token)
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
