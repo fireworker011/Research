@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-03T23:30:49.320Z",
+  "generated_at": "2026-09-04T23:16:30.557Z",
   "summary": {
-    "today": "2026-09-04",
+    "today": "2026-09-05",
     "rowCount": 1,
     "lastDate": "2026-08-22",
     "last7": {
-      "start": "2026-08-29",
-      "end": "2026-09-04",
+      "start": "2026-08-30",
+      "end": "2026-09-05",
       "videos": 0,
       "views": 0,
       "clicks": 0,
@@ -21,36 +21,36 @@
     },
     "experiment": {
       "start": "2026-08-22",
-      "day": 14,
+      "day": 15,
       "videos": 0,
       "clicks": 0,
       "conversions": 0
     },
     "weekClicks": [
       {
-        "start": "2026-08-29",
-        "end": "2026-09-04",
+        "start": "2026-08-30",
+        "end": "2026-09-05",
         "clicks": 0
       },
       {
-        "start": "2026-08-22",
-        "end": "2026-08-28",
+        "start": "2026-08-23",
+        "end": "2026-08-29",
         "clicks": 0
       },
       {
-        "start": "2026-08-15",
-        "end": "2026-08-21",
+        "start": "2026-08-16",
+        "end": "2026-08-22",
         "clicks": 0
       }
     ]
   },
   "verdict": {
-    "code": "CONTINUE_EXPERIMENT",
-    "title": "実験 14/14日目。型は変えない",
-    "improve": "なし。実験中に型を変えないことが改善",
-    "action": "癒しShortsを残り3本出す。末尾は「詳しくはプロフィールのリンク（PR）」。URLは置かない",
-    "includeNext3": true,
+    "code": "FUNNEL_WEAK",
+    "title": "導線では足りない",
+    "improve": "量産禁止。案件を安い/申込型にするか、長尺1本で比較する。どちらも人間が決める",
+    "action": "量産するな。ジャンル転換するな。次の一手は人間が1つだけ選ぶ",
+    "includeNext3": false,
     "canTalk1M": false,
-    "inExperiment": true
+    "inExperiment": false
   }
 }
