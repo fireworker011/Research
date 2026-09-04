@@ -76,7 +76,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert preview["stack"][1]["strength_model"] == 1.0
     listed = list_situations()
     ids = {row["id"] for row in listed["situations"]}
-    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "general_sex", "preview", "sfw_daily", "sfw_preview", "sfw_audio"} <= ids
+    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "general_sex", "preview", "sfw_daily", "sfw_preview", "sfw_audio", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"} <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
     assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
     assert oral["turbo"] is True
@@ -85,6 +85,32 @@ def test_situations_switch_loras_by_profile_and_mode():
     daily = next(row for row in listed["situations"] if row["id"] == "sfw_daily")
     assert daily["nsfw"] is False
     assert daily["enabled"]["t2v"] == ["larry-v4", "cinema-dy"]
+
+
+def test_lesbian_and_spread_stacks():
+    les = select_loras(profile_name="lesbian_cunnilingus", mode="t2v")
+    assert [r["id"] for r in les["stack"]] == ["lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"]
+    assert [r["role"] for r in les["stack"]] == ["act", "helper", "turbo"]
+    assert [r["strength_model"] for r in les["stack"]] == [0.8, 0.55, 0.5]
+    assert "Picture 1" not in les["prompt"]
+    unload = {r["id"] for r in les["unload"]}
+    assert "pussy-spread-h3" in unload
+    assert "cinema-dy" in unload
+    spread = select_loras(profile_name="pussy_spread", mode="i2v")
+    assert [r["id"] for r in spread["stack"]] == ["pussy-spread-h3", "synth-pussy-h3", "larry-v4"]
+    assert [r["strength_model"] for r in spread["stack"]] == [0.75, 0.55, 0.5]
+    assert "<Picture 1>" in spread["prompt"]
+    combo = select_loras(profile_name="lesbian_spread", mode="t2v")
+    assert [r["id"] for r in combo["stack"]] == ["lesbian-cunnilingus-h3", "pussy-spread-h3", "larry-v4"]
+    assert "synth-pussy-h3" not in [r["id"] for r in combo["stack"]]
+    assert combo["sampler"]["steps"] == 8
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    by_id = {row["id"]: row for row in catalog["loras"]}
+    assert by_id["synth-pussy-h3"]["civitai_version_id"] == 3204862
+    assert by_id["lesbian-cunnilingus-h3"]["civitai_version_id"] == 3282598
+    assert by_id["pussy-spread-h3"]["civitai_version_id"] == 3261512
+    assert by_id["lesbian-cunnilingus-h3"]["trigger"] == ""
+    assert by_id["pussy-spread-h3"]["trigger"] == ""
 
 
 def test_cli_t2v_and_list():

@@ -57,6 +57,9 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | AIO / Futa LoRA なし |
 | 汎用エロ | `general_sex` | AIO 0.75 | なし | LightX2V 0.5 | なし | euler / simple / 12 |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
+| レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
+| 性器を広げる | `pussy_spread` | 広げる 0.75 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
+| レズ＋広げる | `lesbian_spread` | クンニ 0.8 | 広げる 0.6 | Larry 0.5 | なし | euler / simple / 8 |
 
 ## やらないこと
 
