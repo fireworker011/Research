@@ -216,6 +216,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "friendly_select_error" in src
     assert "追加の禁止語" in src
     assert "forbidden.json" in src
+    assert "except Exception:" in src
+    assert "def extra_terms(" in src
 
 
 def test_friendly_select_error_for_child_and_picture1():

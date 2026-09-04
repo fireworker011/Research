@@ -396,7 +396,32 @@ from h3_lora_studio import (
     resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
-from forbidden_words import extra_terms, parse_extra_terms
+try:
+    from forbidden_words import extra_terms, parse_extra_terms
+except Exception:
+    def parse_extra_terms(text):
+        raw = str(text or "").replace("、", ",")
+        return [p.strip() for p in raw.split(",") if p.strip()]
+    def extra_terms(path=None):
+        cands = []
+        if path:
+            cands.append(Path(path))
+        cands.append(Path("/content/h3-lora-studio/catalog/forbidden.json"))
+        try:
+            cands.append(DRIVE_ROOT / "forbidden.json")
+        except NameError:
+            cands.append(Path("/content/drive/MyDrive/minimax-h3-comfyui/forbidden.json"))
+        seen = set()
+        for p in cands:
+            if p in seen or not p.is_file():
+                continue
+            seen.add(p)
+            try:
+                rows = json.loads(p.read_text(encoding="utf-8")).get("extra") or []
+                return [str(x).strip() for x in rows if str(x).strip()]
+            except Exception:
+                continue
+        return []
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -417,7 +442,13 @@ print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
 print("禁止語の編集:", DRIVE_ROOT / "forbidden.json")
-print("追加の禁止語:", ", ".join(extra_terms()) or "（json の extra は空）")
+try:
+    extra_now = extra_terms(STUDIO / "catalog" / "forbidden.json")
+except TypeError:
+    extra_now = extra_terms()
+except Exception:
+    extra_now = extra_terms()
+print("追加の禁止語:", ", ".join(extra_now) or "（json の extra は空）")
 EXTRA_FORBIDDEN = parse_extra_terms(追加の禁止語)
 if EXTRA_FORBIDDEN:
     print("③で足した禁止語:", ", ".join(EXTRA_FORBIDDEN))
@@ -467,6 +498,15 @@ else:
             turbo_override=None,
             extra_forbidden=EXTRA_FORBIDDEN,
             forbidden_path=STUDIO / "catalog" / "forbidden.json",
+        )
+    except TypeError:
+        cfg = select_loras(
+            profile_name=SITUATION,
+            mode=MODE,
+            prompt_arg=prompt_arg,
+            catalog_path=STUDIO / "catalog" / "loras.json",
+            profiles_dir=STUDIO / "profiles",
+            turbo_override=None,
         )
     except SystemExit as exc:
         hint = friendly_select_error(exc)
