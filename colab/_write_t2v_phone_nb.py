@@ -29,6 +29,8 @@ MD0 = r"""# MiniMax H3 T2V（スマホ・9:16 / 16:9）
 6. ③の `PROMPT` を書いて実行。横動画なら `ASPECT` を **16:9**。1280×720 は H3 非対応（720 が 32 の倍数ではない）。動画は Drive の `MyDrive/minimax-h3-comfyui/output`
 
 動画の中にアフィURLは出さない。リンクはプロフィール。画面上は「広告」。
+
+えっち用は別ノート [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)。Drive の `minimax-h3-comfyui` は同じなので、土台は1回入れれば共用できる。同時に2つのノートを動かさない。
 """
 
 CELL1 = r'''#@title ① Driveをつなぐ（最初の許可だけ）

@@ -26,6 +26,7 @@ OPTIONAL_IDS = {
 }
 
 SITUATION_DOWNLOAD = {
+    "vanilla": [],
     "anal_closeup": ["synth-pussy-h3", "anal-penetration-coachbate"],
     "anal_penetration": ["hmnsfw-aio-v25", "anal-penetration-coachbate"],
     "futa_blowjob": ["futa-h3-v51", "penis-lora-h3", "blowjob-h3"],
@@ -34,11 +35,13 @@ SITUATION_DOWNLOAD = {
 }
 
 SITUATION_JA = {
+    "普通（エロなし）": "vanilla",
     "穴アップ（舐め・指）": "anal_closeup",
     "アナル挿入": "anal_penetration",
     "ふたなりフェラ": "futa_blowjob",
     "フェラ": "oral",
     "騎乗位": "riding",
+    "vanilla": "vanilla",
     "anal_closeup": "anal_closeup",
     "anal_penetration": "anal_penetration",
     "futa_blowjob": "futa_blowjob",
@@ -54,6 +57,7 @@ MODE_JA = {
 }
 
 SITUATION_HELP = {
+    "vanilla": "普通の動画。えっち用の部品は使いません。速いモード（Turbo）で、専用の I2V / T2V ノートと同じ土台です。",
     "anal_closeup": "穴がよく見えるアップ。舐め・指。部品は穴の見え方とアナル挿入。",
     "anal_penetration": "後ろからの挿入。穴が膣に逃げやすいときのセット。部品は総合えっちとアナル挿入。",
     "futa_blowjob": "ふたなりフェラ。部品はふたなり・竿・フェラ。写真からの方が安定。",
@@ -97,10 +101,21 @@ def friendly_lora(lora_id: str) -> str:
     return LORA_JA.get(str(lora_id), str(lora_id))
 
 
+def is_vanilla(situation: str) -> bool:
+    return resolve_situation(situation) == "vanilla"
+
+
 def explain_choice(situation: str, mode: str) -> str:
     sid = resolve_situation(situation)
     mid = resolve_mode(mode)
     how = "テキストから動画（写真は使いません）" if mid == "t2v" else "写真1枚から動画（Drive の input に jpg）"
+    if sid == "vanilla":
+        return (
+            f"シーン: {situation}\n"
+            f"作り方: {how}\n"
+            f"説明: {SITUATION_HELP[sid]}\n"
+            "えっち用の部品は使いません。速いモード（Turbo）を使います。"
+        )
     parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
     return (
         f"シーン: {situation}\n"
@@ -326,10 +341,9 @@ def merge_optional(
 
 
 def situation_ids(situation: str) -> list[str]:
-    ids = SITUATION_DOWNLOAD.get(situation)
-    if not ids:
+    if situation not in SITUATION_DOWNLOAD:
         raise SystemExit(f"unknown situation: {situation}")
-    return list(ids)
+    return list(SITUATION_DOWNLOAD[situation])
 
 
 def prepend_triggers(prompt: str, stack: list[dict[str, Any]]) -> str:

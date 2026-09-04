@@ -2,7 +2,7 @@
 
 MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V）専用。
 
-成人のみ（21+）。Turbo オフ。API キーは `.env` / Colab シークレットだけ。
+成人のみ（21+）。えっち用は Turbo オフ。普通（エロなし）は専用 I2V / T2V と同じ Turbo。API キーは print しない。
 
 ## Colab（初心者はここだけ）
 
@@ -12,7 +12,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シークレット不要）
 3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行
 
-③のリストは日本語（穴アップ、アナル挿入、ふたなりフェラ、フェラ、騎乗位）。文章は空でOK。Turbo は入れない。
+③のリストは日本語（普通／穴アップ／アナル挿入／ふたなりフェラ／フェラ／騎乗位）。**普通（エロなし）** は専用 I2V / T2V と同じ Turbo。えっち用は Turbo オフ。Drive `minimax-h3-comfyui` は共用。同時に2ノートを動かさない。
 
 Civitai API はノートのフォームから読む。値は print しない。ノート保存前に欄を空に戻す。左の鍵（`CIVITAI_API_TOKEN`）でも読めるが、初心者はフォームでよい。
 
@@ -20,6 +20,7 @@ Civitai API はノートのフォームから読む。値は print しない。�
 
 | ③の名前 | situation | 積む | 用途 |
 |---|---|---|---|
+| 普通（エロなし） | `vanilla` | Turbo 4-step のみ | 専用 I2V / T2V と同じ。えっち用なし |
 | 穴アップ（舐め・指） | `anal_closeup` | Synth Pussy 0.75 + Anal Penetration 0.85 | 舐め・指・穴アップ。Turbo 切る |
 | アナル挿入 | `anal_penetration` | HMNSFW AIO V2.5 + Anal Penetration | セックスで穴が膣に逃げるとき |
 | ふたなりフェラ | `futa_blowjob` | Futa v5.1 + Penis 0.7 + Blowjob 0.85 | I2V が安定 |
@@ -37,7 +38,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。sampler は
 
 ## 不変条件
 
-1. Turbo / Acc を積まない
+1. えっち用に Turbo / Acc を積まない。普通（エロなし）だけ Turbo（専用ノートと同じ）
 2. FL2VA に ref2va を載せない
 3. T2V に Picture 1 を書かない
 4. 未成年・ロリ・ショタ禁止

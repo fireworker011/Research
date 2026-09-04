@@ -28,13 +28,13 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
 3. **③** でシーンを選んで実行 → 下に動画が出る
 
-初めてなら、シーンのフォームはいじらなくて大丈夫です。**②の「CivitaiのAPIキー」だけ貼って**、上から順に ▶ を押す。
+初めてなら、シーンのフォームはいじらなくて大丈夫です。えっち用なら **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。普通（エロなし）だけならキーは空でOK。
 
 ## 準備（最初の1回）
 
 1. 上の **Open in Colab** を開く
 2. 右上の **ランタイム → ランタイムのタイプを変更 → GPU を A100**
-3. **Civitai の API キー**（部品のダウンロードに使う。シークレットは不要）
+3. **Civitai の API キー**（えっち用の部品を取るとき。**普通（エロなし）だけなら不要**）
    - https://civitai.com/user/account を開く → 下の **API Keys** → **Add API key** → コピー
    - **②の「CivitaiのAPIキー」欄に貼る**（このノートのフォーム。左の鍵マークは使わなくてよい）
    - キーは画面に出ません。ノートを保存する前に欄を空に戻す
@@ -43,12 +43,19 @@ MD0 = r"""# えっちな動画を作る（MiniMax H3）
 できた動画は Google Drive の  
 `マイドライブ / minimax-h3-comfyui / output`
 
+このフォルダは、普通の I2V / T2V ノートと**同じ**です。土台（FL2VA）と速いモード（Turbo）を共用します。ノートを別々に開いても、同じ Colab の③で「普通（エロなし）」を選んでも大丈夫です。同時に2つのノートを動かさないでください。
+
 写真から作るときは、同じ Drive の `input` フォルダに jpg を置いてから ③ を実行。
+
+普通の専用ノート:
+- [I2V（写真から・エロなし）](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_phone.ipynb)
+- [T2V（文章から・エロなし）](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_phone.ipynb)
 
 ## シーンの選び方（③で選ぶ）
 
 | ③で選ぶ名前 | どんな動画 | 自動で入る部品 |
 |---|---|---|
+| 普通（エロなし） | 通常の I2V / T2V。えっち用なし | 速いモード（Turbo）だけ |
 | 穴アップ（舐め・指） | 穴がよく見えるアップ | 穴の見え方 + アナル挿入 |
 | アナル挿入 | 後ろからの挿入。穴が膣に逃げやすいとき | 総合えっち + アナル挿入 |
 | ふたなりフェラ | ふたなりのフェラ。写真からの方が安定 | ふたなり + 竿 + フェラ |
@@ -106,13 +113,14 @@ print("① 完了。次は②を実行してください。初回は待ちます
 
 MD2 = r"""## ② 部品を用意する（初回だけ長い）
 
-下のセルで、動画の土台と「えっち用の部品（LoRA）」を Drive に入れます。
+下のセルで、動画の土台と部品を Drive に入れます。普通の I2V / T2V ノートと同じ場所です。
 
 - **初めて** … 20〜40分かかることがあります。途中で止まっても、もう一度押せば続きから入ります
 - **2回目以降** … すでに入っているファイルは飛ばすので速いです
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
+- 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
 
-**Civitai の API キー** は下の②セルの欄に貼ります。左の鍵（シークレット）は使わなくて大丈夫です。
+**Civitai の API キー** は、えっち用の部品を取るときだけ。**普通（エロなし）だけなら空でOK。** 左の鍵（シークレット）は使わなくて大丈夫です。
 
 1. [civitai.com のアカウント画面](https://civitai.com/user/account) を開く
 2. **API Keys** → **Add API key** でキーを作ってコピー
@@ -130,7 +138,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "穴アップ（舐め・指）"  #@param ["穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
+今使うシーン = "穴アップ（舐め・指）"  #@param ["普通（エロなし）", "穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -225,8 +233,7 @@ link_dir(COMFY_DIR / "input", DRIVE_ROOT / "input")
 print("大きな土台を入れています（すでにあれば飛ばします）…")
 for url, dest in i2v_download_jobs(DRIVE_MODELS):
     if "turbo" in dest.name.lower():
-        print("  高速化部品は使いません:", dest.name)
-        continue
+        print("  速いモード（Turbo）も入れます。普通の I2V / T2V と共用します:", dest.name)
     fetch_weight(url, dest)
 
 sid = resolve_situation(今使うシーン)
@@ -298,6 +305,7 @@ MD3 = r"""## ③ 動画を作る
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
+- **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文。えっち用の部品は入りません
 - **穴アップ** … 穴が見えるクローズアップ。舐め、それから指
 - **アナル挿入** … 四つん這い、後ろから肛門。膣には入れない
 - **ふたなりフェラ / フェラ** … 正面から竿が見える。`bl0w_j0b` と `PENISLORA` は自動で足します
@@ -305,7 +313,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "穴アップ（舐め・指）"  #@param ["穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
+やりたいシーン = "穴アップ（舐め・指）"  #@param ["普通（エロなし）", "穴アップ（舐め・指）", "アナル挿入", "ふたなりフェラ", "フェラ", "騎乗位"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown 文章は空でOK（おすすめ文を自動で使います）
 文章 = ""  #@param {type:"string"}
@@ -331,12 +339,21 @@ from IPython.display import display, Video, HTML
 sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
 from h3_r2v_core import is_oom_error, frames
-from h3_i2v_phone import collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name
-from h3_t2v import assert_t2v_graph, build_t2v_graph, canvas_for_aspect, t2v_retry_plans
-from h3_motion_graphics import assert_i2va_graph, build_i2va_graph, i2va_retry_plans, CANVAS_8_9
+from h3_i2v_phone import (
+    DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image,
+    stage_image_into_input, is_auto_image_name, ref_image_url,
+)
+from h3_t2v import (
+    CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect,
+    resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt,
+)
+from h3_motion_graphics import (
+    CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans,
+    prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt,
+)
 from h3_lora_studio import (
-    explain_choice, friendly_lora, inject_lora_stack, load_catalog, merge_optional,
-    prepend_triggers, resolve_mode, resolve_situation,
+    explain_choice, friendly_lora, inject_lora_stack, is_vanilla, load_catalog,
+    merge_optional, prepend_triggers, resolve_mode, resolve_situation,
 )
 from select_loras import select_loras
 
@@ -350,57 +367,84 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 OUT = COMFY_DIR / "output"
 PORT = 8188
 STUDIO = Path("/content/h3-lora-studio")
-STEPS = 16
 SEED = 42
-FILENAME_PREFIX = "video/h3_lora_studio"
 
 SITUATION = resolve_situation(やりたいシーン)
 MODE = resolve_mode(作り方)
-PROMPT = 文章.strip() or "（シーン）"
+VANILLA = is_vanilla(やりたいシーン)
 print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
 
-cfg = select_loras(
-    profile_name=SITUATION,
-    mode=MODE,
-    prompt_arg=PROMPT,
-    catalog_path=STUDIO / "catalog" / "loras.json",
-    profiles_dir=STUDIO / "profiles",
-    turbo_override=False,
-)
-extras = []
-if 動きの底上げ:
-    extras.append("astro-nsfw-h3")
-if 胸を強調:
-    extras.append("tiddies-realism-slider")
-if リアル寄り:
-    extras.append("h3-realism-people")
-if 静止画用の写実:
-    extras.append("photoreal-h3-still")
-    print("注意: 静止画用の写実は、穴のアップ動画向きではありません。")
-stack = merge_optional(cfg["stack"], extras=extras, catalog=load_catalog(STUDIO), mode=MODE)
-prompt = prepend_triggers(cfg["prompt"], stack)
+if VANILLA:
+    stack = []
+    STEPS = 4
+    FILENAME_PREFIX = "video/h3_t2v_phone" if MODE == "t2v" else "video/h3_i2va_phone"
+    if MODE == "t2v":
+        w, h = CANVAS_9_16
+        prompt = resolve_t2v_prompt(文章, landscape=False)
+        errs = validate_t2v_prompt(prompt)
+        if errs:
+            raise SystemExit(errs)
+    else:
+        w, h = CANVAS_8_9
+        prompt = resolve_motion_prompt(文章, duration_s=float(秒数), with_last_frame=False)
+        errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
+        if errs:
+            raise SystemExit(errs)
+    print("入る部品: 速いモード（Turbo）だけ。えっち用は使いません。")
+else:
+    STEPS = 16
+    FILENAME_PREFIX = "video/h3_lora_studio"
+    PROMPT = 文章.strip() or "（シーン）"
+    cfg = select_loras(
+        profile_name=SITUATION,
+        mode=MODE,
+        prompt_arg=PROMPT,
+        catalog_path=STUDIO / "catalog" / "loras.json",
+        profiles_dir=STUDIO / "profiles",
+        turbo_override=False,
+    )
+    extras = []
+    if 動きの底上げ:
+        extras.append("astro-nsfw-h3")
+    if 胸を強調:
+        extras.append("tiddies-realism-slider")
+    if リアル寄り:
+        extras.append("h3-realism-people")
+    if 静止画用の写実:
+        extras.append("photoreal-h3-still")
+        print("注意: 静止画用の写実は、穴のアップ動画向きではありません。")
+    stack = merge_optional(cfg["stack"], extras=extras, catalog=load_catalog(STUDIO), mode=MODE)
+    prompt = prepend_triggers(cfg["prompt"], stack)
+    if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
+        raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
+    print("入る部品:")
+    for x in stack:
+        print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"))
+    w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
+
 if MODE == "t2v" and ("Picture 1" in prompt or "first_frame" in prompt.lower()):
     raise SystemExit("テキストから作るときは、写真ロックの文を入れません。文章欄を空にしてください。")
 
-print("入る部品:")
-for x in stack:
-    print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"))
 print()
 print("使う文章（先頭）:")
 print(prompt[:450])
 print("…")
 print()
 
-w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
 if 画面の向き == "縦（スマホ）":
     w, h = canvas_for_aspect("9:16")
 elif 画面の向き == "横":
     w, h = canvas_for_aspect("16:9")
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
-print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / 品質ステップ:", max(int(STEPS), 16), "（速いモードは使いません）")
+print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / 品質ステップ:", STEPS, "（普通は速いモード、えっち用は使いません）")
+if VANILLA and MODE == "t2v":
+    prompt = resolve_t2v_prompt(文章, landscape=w > h)
+    errs = validate_t2v_prompt(prompt)
+    if errs:
+        raise SystemExit(errs)
 
 obj = {}
 if not 試し打ちだけ:
@@ -417,8 +461,15 @@ unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetenso
 first_name = None
 if MODE == "i2v":
     inp = COMFY_DIR / "input"
+    inp.mkdir(parents=True, exist_ok=True)
     if is_auto_image_name(写真ファイル):
         hit = newest_image([DRIVE_ROOT / "input", inp])
+        if hit is None and VANILLA:
+            dest = inp / DEFAULT_FIRST_IMAGE
+            print("参考画像を取得します")
+            urllib.request.urlretrieve(ref_image_url(), dest)
+            if dest.is_file() and dest.stat().st_size > 1000:
+                hit = dest
         if hit is None:
             raise SystemExit("写真が見つかりません。スマホの Drive で「minimax-h3-comfyui/input」に jpg を置いてから、もう一度③を実行してください。")
         first_name = stage_image_into_input(hit, inp)
@@ -431,36 +482,54 @@ if MODE == "i2v":
         first_name = stage_image_into_input(src, inp)
     print("使う写真:", first_name)
 
+lora_name = None
+lora_strength = 0.0
+if VANILLA:
+    lora_paths = list((COMFY_DIR / "models" / "loras").glob("*.safetensors"))
+    lora_name = prefer_fl2v_lora(lora_paths, True)
+    lora_strength = 1.0
+    if not lora_name:
+        raise SystemExit("速いモード（Turbo）がありません。②を先に実行してください。")
+
 plans = t2v_retry_plans(width=w, height=h) if MODE == "t2v" else i2va_retry_plans(width=w, height=h)
 
 def make_graph(plan):
+    steps = int(STEPS) if VANILLA else max(int(STEPS), 16)
     if MODE == "t2v":
         g = build_t2v_graph(
-            prompt=prompt, unet=unet, lora_name=None, lora_strength=0,
+            prompt=prompt, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(秒数), seed=int(SEED), steps=max(int(STEPS), 16),
+            duration_s=float(秒数), seed=int(SEED), steps=steps,
             filename_prefix=FILENAME_PREFIX,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
-        inject_lora_stack(g, stack, steps=max(int(STEPS), 16))
+        if not VANILLA:
+            inject_lora_stack(g, stack, steps=steps)
         errs = assert_t2v_graph(g)
     else:
         g = build_i2va_graph(
             first_image=first_name, last_image=None, prompt=prompt, unet=unet,
-            lora_name=None, lora_strength=0,
+            lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(秒数), seed=int(SEED), steps=max(int(STEPS), 16),
+            duration_s=float(秒数), seed=int(SEED), steps=steps,
             filename_prefix=FILENAME_PREFIX,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
-        inject_lora_stack(g, stack, steps=max(int(STEPS), 16))
+        if not VANILLA:
+            inject_lora_stack(g, stack, steps=steps)
         errs = assert_i2va_graph(g, expect_last=False)
     if errs:
         raise SystemExit(errs)
     loaders = [n for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
-    if any("turbo" in str(n["inputs"].get("lora_name", "")).lower() for n in loaders):
+    names = [str(n["inputs"].get("lora_name", "")) for n in loaders]
+    if VANILLA:
+        if not names or all("turbo" not in n.lower() for n in names):
+            raise SystemExit("普通（エロなし）なのに速いモードが入っていません。②からやり直してください。")
+        if any("turbo" not in n.lower() for n in names):
+            raise SystemExit("普通（エロなし）にえっち用の部品が混ざったので止めています。")
+    elif any("turbo" in n.lower() for n in names):
         raise SystemExit("速いモードの部品が混ざったので止めています。②からやり直してください。")
     return g
 
