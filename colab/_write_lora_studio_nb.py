@@ -265,11 +265,16 @@ token = civitai_token(CivitaiのAPIキー)
 print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
 jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
 need = missing_civitai_files(jobs)
-if need and not token:
-    raise SystemExit(civitai_token_help())
-for url, dest, row in jobs:
-    auth = "civitai" if str(row.get("source")) == "civitai" else ""
-    fetch_weight(url, dest, token=token, auth=auth)
+    if need and not token:
+        raise SystemExit(civitai_token_help())
+    skipped = []
+    for url, dest, row in jobs:
+        auth = "civitai" if str(row.get("source")) == "civitai" else ""
+        if not fetch_weight(url, dest, token=token, auth=auth):
+            skipped.append(dest.name)
+    if skipped:
+        print("一部スキップ:", ", ".join(skipped))
+        print("今のシーンに不要なら③へ。必要なら②をあとで再実行。")
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 

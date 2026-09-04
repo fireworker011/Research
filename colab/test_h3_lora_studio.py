@@ -15,6 +15,7 @@ from h3_lora_studio import (
     is_blank_prompt,
     is_vanilla,
     load_catalog,
+    looks_like_safetensors,
     merge_optional,
     missing_civitai_files,
     quote_http_url,
@@ -168,6 +169,19 @@ def test_civitai_redirect_quotes_chinese_filename():
     assert " " not in path
     assert "真实" not in quoted
     assert urllib.parse.unquote(path).endswith(".safetensors")
+
+
+def test_looks_like_safetensors(tmp_path):
+    fake_html = tmp_path / "page.safetensors"
+    fake_html.write_bytes(b"<html>login</html>" + b"\0" * 1_200_000)
+    assert looks_like_safetensors(fake_html) is False
+    header = b'{"__metadata__":{"format":"pt"}}'
+    real = tmp_path / "real.safetensors"
+    real.write_bytes(len(header).to_bytes(8, "little") + header + b"\0" * 1_200_000)
+    assert looks_like_safetensors(real) is True
+    tiny = tmp_path / "tiny.safetensors"
+    tiny.write_bytes(b'{"error":"no"}')
+    assert looks_like_safetensors(tiny) is False
 
 
 def test_civitai_token_prefers_form(monkeypatch):

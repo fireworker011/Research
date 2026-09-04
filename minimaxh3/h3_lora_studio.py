@@ -245,11 +245,26 @@ def civitai_download_url(row: dict[str, Any]) -> str:
 def civitai_download_fallbacks(row: dict[str, Any]) -> list[str]:
     version = int(row["civitai_version_id"])
     primary = civitai_download_url(row)
+    typed = f"https://civitai.com/api/download/models/{version}?type=Model&format=SafeTensor"
     bare = f"https://civitai.com/api/download/models/{version}"
-    out = [primary]
-    if bare not in out:
-        out.append(bare)
+    out: list[str] = []
+    for url in (primary, typed, bare):
+        if url not in out:
+            out.append(url)
     return out
+
+
+def looks_like_safetensors(path: Path, *, min_bytes: int = 1_000_000) -> bool:
+    """Reject HTML/JSON error bodies that Civitai sometimes returns as HTTP 200."""
+    if not path.is_file() or path.stat().st_size < min_bytes:
+        return False
+    head = path.read_bytes()[:16]
+    if len(head) < 9:
+        return False
+    header_len = int.from_bytes(head[:8], "little")
+    if header_len < 2 or header_len > 100_000_000:
+        return False
+    return head[8:9] == b"{"
 
 
 def quote_http_url(url: str) -> str:
@@ -333,21 +348,30 @@ def fetch_weight(
     auth: str = "",
     min_bytes: int = 1_000_000,
     fallback_urls: list[str] | None = None,
-) -> None:
+    strict: bool | None = None,
+) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if dest.is_file() and dest.stat().st_size > min_bytes:
+    if dest.is_file() and looks_like_safetensors(dest, min_bytes=min_bytes):
         print(f"skip {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
-        return
+        return True
     urls = [url]
     for extra in fallback_urls or []:
         if extra and extra not in urls:
             urls.append(extra)
-    if auth == "civitai" and "fileId=" in url:
-        bare = url.split("?", 1)[0]
-        if bare not in urls:
-            urls.append(bare)
+    if auth == "civitai":
+        if "fileId=" in url:
+            bare = url.split("?", 1)[0]
+            if bare not in urls:
+                urls.append(bare)
+            typed = bare + "?type=Model&format=SafeTensor"
+            if typed not in urls:
+                urls.append(typed)
+    must = True if strict is None else bool(strict)
+    if strict is None and auth == "civitai":
+        must = False
     tmp = dest.with_name(dest.name + ".part")
     last_code = None
+    last_reason = "取得できない"
     for attempt, current in enumerate(urls):
         headers = {"User-Agent": DOWNLOAD_UA}
         if auth == "civitai" and token:
@@ -359,30 +383,48 @@ def fetch_weight(
                     if not chunk:
                         break
                     out.write(chunk)
-            last_code = None
-            break
-        except urllib.error.HTTPError as exc:
-            last_code = exc.code
+            if looks_like_safetensors(tmp, min_bytes=min_bytes):
+                last_code = None
+                break
+            last_reason = "LoRAとして読めない"
             if tmp.exists():
                 tmp.unlink()
-            if exc.code in {401, 403}:
+            if attempt + 1 < len(urls):
+                print(f"取得をやり直します: {dest.name}")
+                continue
+        except urllib.error.HTTPError as exc:
+            last_code = exc.code
+            last_reason = str(exc.code)
+            if tmp.exists():
+                tmp.unlink()
+            if exc.code in {401, 403} and must:
                 raise RuntimeError(
                     f"Civitai が {exc.code} を返した: {dest.name}。\n" + civitai_token_help()
                 ) from None
-            if attempt + 1 < len(urls) and exc.code in {400, 404}:
+            if attempt + 1 < len(urls) and exc.code in {400, 401, 403, 404}:
                 print(f"取得をやり直します: {dest.name}")
                 continue
-            raise RuntimeError(
-                f"DL 失敗 {exc.code}: {dest.name}。"
-                " Drive の models/loras に同じファイル名で置いてから②を再実行しても大丈夫です。"
-            ) from None
-    if not tmp.is_file() or tmp.stat().st_size < min_bytes:
-        if tmp.exists():
-            tmp.unlink()
-        extra = f"（{last_code}）" if last_code else ""
-        raise RuntimeError(f"DL 失敗（小さい）: {dest.name}{extra}")
-    tmp.replace(dest)
-    print(f"saved {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
+            if must:
+                raise RuntimeError(
+                    f"DL 失敗 {exc.code}: {dest.name}。"
+                    " Drive の models/loras に同じファイル名で置いてから②を再実行しても大丈夫です。"
+                ) from None
+            break
+    if looks_like_safetensors(tmp, min_bytes=min_bytes):
+        tmp.replace(dest)
+        print(f"saved {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
+        return True
+    if tmp.exists():
+        tmp.unlink()
+    extra = f"（{last_code}）" if last_code else f"（{last_reason}）"
+    msg = (
+        f"DL 失敗{extra}: {dest.name}。"
+        " 今のシーンに不要ならこのまま③へ。必要なら Drive の models/loras に置いて②を再実行。"
+    )
+    if must:
+        raise RuntimeError(msg)
+    print("スキップ:", msg)
+    return False
 
 
 def inject_lora_stack(
