@@ -1,6 +1,9 @@
 # XM Trade — 完全自動の載せ方
 
-このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。
+このファイルが MT5 側の要約。**iPhone だけ・初めての人（生姜含む）向けの手順の正は [`IPHONE.md`](IPHONE.md)。** 画面の言葉どおりに進める。
+
+Issue は作成済み: https://github.com/fireworker011/Research/issues/93 （`NotifyIssueNumber` は `93`）
+PR #91 はデフォルトへマージ済み。Threads の schedule は戻さない。
 
 > 自動売買は口座資金を失う。利益は保証しない。デモが先。リスク上限（0.5% / 日次 2% / 0.10 lot）は上げない。
 > Threads の schedule は戻さない。
