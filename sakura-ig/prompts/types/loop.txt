@@ -1,0 +1,3 @@
+TYPE loop
+STILL: Vertical 9:16. Body readable, face readable. Start pose must be able to match the end pose.
+VIDEO: Two steps or a head turn that returns to the first frame. Footsteps or petals. No overlay. Last frame equals first frame.

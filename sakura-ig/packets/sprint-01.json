@@ -1,0 +1,319 @@
+{
+  "sprint": "2026-08-23_2026-09-05",
+  "account": "sakura_ai_beauty",
+  "followers_baseline": 2468,
+  "view_gate_10x": 24680,
+  "view_gate_2x": 4936,
+  "post_time_jst": "06:00",
+  "create_time_jst": "05:00",
+  "packets": [
+    {
+      "id": "reel-2026-08-23",
+      "date": "2026-08-23",
+      "weekday": "Sun",
+      "type": "question",
+      "signature_kimono": false,
+      "wardrobe": "navy_yukata",
+      "duration_sec": 6,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 close-up of SAKURA's face filling the upper half, navy yukata with white asanoha pattern just visible at the shoulders. Night festival bokeh of paper lanterns behind her, out of focus. She looks just past the camera, lips slightly parted, calm. Photorealistic cinematic lighting, warm lantern key light on the left cheek. No on-image Japanese text."
+      },
+      "video": {
+        "prompt": "Start on her eyes. She blinks once, a lantern flame flickers in the bokeh, a single strand of dark hair drifts across her cheek. Slow 5 percent push-in. Soft night-festival ambience, distant wooden clappers, no lyrics, no song with words. Keep this exact face. Overlay the English word Summer in thin white sans-serif in the top third, nothing else."
+      },
+      "overlay": { "text": "Summer", "position": "top_third", "burn": true },
+      "cta": false,
+      "caption": "夜の浴衣。AI生成の成人モデルです。\nNavy yukata at night. AI-generated adult model.\n#AI和装 #浴衣 #kimono #AIart #sakura"
+    },
+    {
+      "id": "reel-2026-08-24",
+      "date": "2026-08-24",
+      "weekday": "Mon",
+      "type": "which-one",
+      "signature_kimono": true,
+      "wardrobe": "red_signature+gold_cream",
+      "duration_sec": 6,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 split screen, a thin gold line down the center. LEFT: SAKURA in the vermillion red signature kimono with gold-and-white sakura embroidery, cream-gold obi, gold kanzashi, face and upper chest, off-shoulder elegant drape, no nudity. RIGHT: the SAME woman, same face, in a pale gold-cream furisode with a vermillion obi. Both look toward the camera. Dark lacquered-wood background. Photorealistic. No Japanese text."
+      },
+      "video": {
+        "prompt": "Both sides breathe. Left sleeve shifts, right sleeve shifts, same woman, two kimonos. Tiny parallax. Soft silk rustle only, no music with lyrics. Overlay Which? in white sans-serif top center. Keep both faces identical to each other."
+      },
+      "overlay": { "text": "Which?", "position": "top_center", "burn": true },
+      "cta": false,
+      "caption": "朱か、金か。同じ顔です。AI生成の成人モデルです。\nRed or gold. Same face. AI-generated adult model.\n#着物 #whichone #AI和装 #kimono"
+    },
+    {
+      "id": "reel-2026-08-25",
+      "date": "2026-08-25",
+      "weekday": "Tue",
+      "type": "micro-motion",
+      "signature_kimono": true,
+      "wardrobe": "red_signature",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 extreme close-up of SAKURA's eyes and bridge of nose, vermillion red kimono collar just in the bottom edge, gold embroidery hint. Night courtyard, one red lantern reflected in the pupil. Photorealistic, shallow depth of field. No text."
+      },
+      "video": {
+        "prompt": "She opens her eyes in the first half second. A slow blink. Hair at the temple moves in a night breeze. Almost no camera move. Quiet silk and distant night insects, no lyrics. No overlay text if it would cover the eyes."
+      },
+      "overlay": { "text": "", "position": "none", "burn": false },
+      "cta": false,
+      "caption": "瞬きひとつ。AI生成の成人モデルです。\nOne blink. AI-generated adult model.\n#AI美女 #和装 #cinematic"
+    },
+    {
+      "id": "reel-2026-08-26",
+      "date": "2026-08-26",
+      "weekday": "Wed",
+      "type": "researcher",
+      "signature_kimono": false,
+      "wardrobe": "indigo_komon",
+      "duration_sec": 8,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 macro of a silver obi knot on deep indigo komon silk, SAKURA's hand with natural adult fingers resting on the knot, her jawline and ear with a silver kanzashi in frame at the top. Same dark-brown hair. Indoor tatami light, late afternoon. Photorealistic textile detail. No text."
+      },
+      "video": {
+        "prompt": "Start on the silver obi knot. Her fingers adjust the silk one centimeter. Camera tilts up along the indigo fabric to her ear and kanzashi, then stops before a full face if the face would drift — prefer ear and cheek. Soft indoor hush, one faint koto note, no lyrics. Overlay Obi in small white type bottom left."
+      },
+      "overlay": { "text": "Obi", "position": "bottom_left", "burn": true },
+      "cta": false,
+      "caption": "帯を見る日。同じ人です。AI生成の成人モデルです。\nA day for the obi. Same woman. AI-generated adult model.\n#帯 #着物研究 #indigo #kimono"
+    },
+    {
+      "id": "reel-2026-08-27",
+      "date": "2026-08-27",
+      "weekday": "Thu",
+      "type": "push-pull",
+      "signature_kimono": true,
+      "wardrobe": "red_signature",
+      "duration_sec": 7,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 of SAKURA's face filling the frame, vermillion red kimono and gold kanzashi, night shrine lanterns far behind her as a soft red blur. Photorealistic, she meets the lens. Elegant off-shoulder drape, no nudity. No text."
+      },
+      "video": {
+        "prompt": "Open on the face. Smooth pull-back over seven seconds until she is three-quarter body in the courtyard, red kimono readable, lanterns and wooden gates behind, not dominating the first second. She does not walk. Fabric settles. Low ambient night, no lyrics. Overlay more on profile in tiny white type only in the last second."
+      },
+      "overlay": { "text": "more on profile", "position": "bottom_center", "burn": true },
+      "cta": true,
+      "caption": "続きはプロフィール。AI生成の成人モデルです。\nMore on the profile. AI-generated adult model.\n#AI和装 #kimono #sakura"
+    },
+    {
+      "id": "reel-2026-08-28",
+      "date": "2026-08-28",
+      "weekday": "Fri",
+      "type": "season",
+      "signature_kimono": false,
+      "wardrobe": "navy_yukata",
+      "duration_sec": 7,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 SAKURA in a navy yukata with white asanoha, holding a round uchiwa near her shoulder, face clear in the upper third. Summer night riverbank, fireworks bokeh far away, not a landscape poster. Photorealistic. Same face as the red-kimono woman. No text."
+      },
+      "video": {
+        "prompt": "The uchiwa moves once. Sleeve lifts in the breeze. A distant firework bloom stays out of focus. She glances aside then back. Soft river and one firework pop, no pop song. Overlay Yukata top third."
+      },
+      "overlay": { "text": "Yukata", "position": "top_third", "burn": true },
+      "cta": false,
+      "caption": "夏だけ浴衣。顔は同じです。AI生成の成人モデルです。\nYukata for summer only. Same face. AI-generated adult model.\n#浴衣 #夏 #AI和装"
+    },
+    {
+      "id": "reel-2026-08-29",
+      "date": "2026-08-29",
+      "weekday": "Sat",
+      "type": "loop",
+      "signature_kimono": true,
+      "wardrobe": "red_signature",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 three-quarter view of SAKURA walking toward camera on wet stone, vermillion red signature kimono, gold embroidery, night lanterns at the sides. Face readable. Photorealistic. No text."
+      },
+      "video": {
+        "prompt": "Two steps toward camera, sleeve swing, then she turns her head the same way the clip started so the last frame matches the first for a loop. Footsteps on wet stone, silk, no lyrics. No overlay."
+      },
+      "overlay": { "text": "", "position": "none", "burn": false },
+      "cta": false,
+      "caption": "同じ一歩。AI生成の成人モデルです。\nThe same step. AI-generated adult model.\n#リール #着物 #loop"
+    },
+    {
+      "id": "reel-2026-08-30",
+      "date": "2026-08-30",
+      "weekday": "Sun",
+      "type": "question",
+      "signature_kimono": false,
+      "wardrobe": "indigo_komon",
+      "duration_sec": 6,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 SAKURA in deep indigo komon, silver kanzashi, face close, cool moonlight from the right, wooden veranda behind her blurred. Photorealistic, same woman. No text."
+      },
+      "video": {
+        "prompt": "Moonlight slides across her cheek. She looks down, then up. Quiet night, one distant temple bell, no lyrics. Overlay Night in white top third."
+      },
+      "overlay": { "text": "Night", "position": "top_third", "burn": true },
+      "cta": false,
+      "caption": "藍の夜。AI生成の成人モデルです。\nIndigo night. AI-generated adult model.\n#藍 #着物 #night"
+    },
+    {
+      "id": "reel-2026-08-31",
+      "date": "2026-08-31",
+      "weekday": "Mon",
+      "type": "which-one",
+      "signature_kimono": false,
+      "wardrobe": "sakura_pink+black_formal",
+      "duration_sec": 6,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 split screen, thin white center line. LEFT: SAKURA in pale sakura-pink kimono with a red obi, spring daylight, soft petals out of focus. RIGHT: the SAME face in a black formal kimono with gold family-crest-like circles, indoor gold screen. Both adult, photorealistic, elegant, no nudity. No Japanese text."
+      },
+      "video": {
+        "prompt": "Left side: one petal falls. Right side: gold leaf on the screen glints. Same blink timing. Silk rustle only. Overlay Pink or Black top center."
+      },
+      "overlay": { "text": "Pink or Black", "position": "top_center", "burn": true },
+      "cta": false,
+      "caption": "桜か、黒か。AI生成の成人モデルです。\nPink or black. AI-generated adult model.\n#whichone #着物 #AI和装"
+    },
+    {
+      "id": "reel-2026-09-01",
+      "date": "2026-09-01",
+      "weekday": "Tue",
+      "type": "micro-motion",
+      "signature_kimono": true,
+      "wardrobe": "red_signature",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 close-up of SAKURA's vermillion red sleeve and gold-white sakura embroidery, her collarbone and lower face in frame, gold kanzashi at the top edge. Night air. Photorealistic. No text."
+      },
+      "video": {
+        "prompt": "The red sleeve lifts two centimeters in wind, embroidery catches light, she exhales. Almost locked-off camera. Fabric sound only. No overlay."
+      },
+      "overlay": { "text": "", "position": "none", "burn": false },
+      "cta": false,
+      "caption": "袖が動く。AI生成の成人モデルです。\nThe sleeve moves. AI-generated adult model.\n#着物 #redkimono #AI"
+    },
+    {
+      "id": "reel-2026-09-02",
+      "date": "2026-09-02",
+      "weekday": "Wed",
+      "type": "researcher",
+      "signature_kimono": false,
+      "wardrobe": "gold_cream",
+      "duration_sec": 8,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 macro of a gold kanzashi in SAKURA's dark-brown hair, pale gold-cream furisode collar at the bottom, her eye visible at the left third. Soft studio-daylight through shoji. Photorealistic metal and hair detail. No text."
+      },
+      "video": {
+        "prompt": "Start on the kanzashi. Camera creeps to her eye. A hair pin charm turns. Soft shoji room tone, no lyrics. Overlay Kanzashi bottom left."
+      },
+      "overlay": { "text": "Kanzashi", "position": "bottom_left", "burn": true },
+      "cta": false,
+      "caption": "簪だけ見る。AI生成の成人モデルです。\nOnly the kanzashi. AI-generated adult model.\n#簪 #着物研究 #kanzashi"
+    },
+    {
+      "id": "reel-2026-09-03",
+      "date": "2026-09-03",
+      "weekday": "Thu",
+      "type": "push-pull",
+      "signature_kimono": true,
+      "wardrobe": "red_signature",
+      "duration_sec": 7,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 SAKURA from behind the right shoulder, vermillion red kimono, she looks back over the shoulder so one eye and lips are visible. Night torii soft in the distance, not the hero. Photorealistic. No text."
+      },
+      "video": {
+        "prompt": "She completes the look-back in the first second, then the camera orbits to a front three-quarter. Same face. Night hush. Overlay more on profile in the last second only, tiny white type."
+      },
+      "overlay": { "text": "more on profile", "position": "bottom_center", "burn": true },
+      "cta": true,
+      "caption": "続きはプロフィール。AI生成の成人モデルです。\nMore on the profile. AI-generated adult model.\n#AI和装 #kimono"
+    },
+    {
+      "id": "reel-2026-09-04",
+      "date": "2026-09-04",
+      "weekday": "Fri",
+      "type": "season",
+      "signature_kimono": false,
+      "wardrobe": "black_formal",
+      "duration_sec": 7,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 SAKURA in a black formal kimono with spare gold circular motifs, hair in a slightly higher style with gold kanzashi, face clear. Quiet indoor gold folding screen. Photorealistic, solemn, adult. No text."
+      },
+      "video": {
+        "prompt": "A slow light change as if a door opened. She inhales. Gold motif gleams. Room tone only. Overlay Formal top third."
+      },
+      "overlay": { "text": "Formal", "position": "top_third", "burn": true },
+      "cta": false,
+      "caption": "黒の日。AI生成の成人モデルです。\nA formal day. AI-generated adult model.\n#黒留袖 #着物 #formal"
+    },
+    {
+      "id": "reel-2026-09-05",
+      "date": "2026-09-05",
+      "weekday": "Sat",
+      "type": "loop",
+      "signature_kimono": false,
+      "wardrobe": "sakura_pink",
+      "duration_sec": 5,
+      "aspect_ratio": "9:16",
+      "resolution": "720p",
+      "image_model": "grok-imagine-image-2.0",
+      "video_model": "grok-imagine-video-1.5",
+      "still": {
+        "prompt": "Vertical 9:16 SAKURA in pale sakura-pink kimono, red obi, standing under falling petals, face toward camera, upper body. Daylight, soft. Photorealistic, same woman. No text."
+      },
+      "video": {
+        "prompt": "Petals fall. She turns her head left then back to center so the last frame can loop to the first. Light outdoor air, no pop song. No overlay."
+      },
+      "overlay": { "text": "", "position": "none", "burn": false },
+      "cta": false,
+      "caption": "花が落ちる。AI生成の成人モデルです。\nPetals fall. AI-generated adult model.\n#桜 #着物 #loop"
+    }
+  ]
+}

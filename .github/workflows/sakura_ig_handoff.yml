@@ -1,0 +1,32 @@
+name: サクラ起動キー受け渡し（05:00 JST）
+
+# cron はデフォルトブランチにマージされるまで動かない（GitHub仕様）。
+# 今は CURRENT.json の push と手動実行で回す。
+on:
+  schedule:
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'sakura-ig/launch-keys/CURRENT.json'
+      - '.github/workflows/sakura_ig_handoff.yml'
+
+concurrency:
+  group: sakura-ig-handoff
+  cancel-in-progress: false
+
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: 起動キーを Issue に渡す
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node sakura-ig/src/handoff.js
+          test -f sakura-ig/output/handoff-latest.md
