@@ -1,40 +1,16 @@
 ---
 name: h3-lora-studio
-description: MiniMax H3 LoRA stack from a situation profile. Run scripts/select_loras.py for t2v or i2v, load enabled only, unload disabled, Turbo off, adults only. Do not print API keys. Use when the user names h3-lora-studio, a LoRA situation (anal_penetration, oral, riding), T2V LoRA, or select_loras.py.
+description: MiniMax H3 LoRA studio for Colab. Stack Civitai NSFW LoRAs by situation (anal_closeup, anal_penetration, futa_blowjob, oral, riding), T2V or I2V, turbo off, adults only. Use when the user names h3-lora-studio, Colab LoRA, CoachBate anal, Synth Pussy, or select_loras.py.
 ---
 
 # h3-lora-studio
 
-質問しない。mode はユーザー指定。無指定なら i2v だった会話を引き継がず、書いてある mode を使う。
-
-シチュエーション一覧:
+質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
+python h3-lora-studio/scripts/select_loras.py --situation anal_closeup --mode t2v --prompt '（シーン）'
+python colab/_write_lora_studio_nb.py
 ```
 
-T2V（first_frame なし・9:16）:
-
-```bash
-python h3-lora-studio/scripts/select_loras.py --situation anal_penetration --mode t2v --prompt '（シーン）'
-```
-
-I2V（Picture 1 必須・8:9）:
-
-```bash
-python h3-lora-studio/scripts/select_loras.py --profile anal_penetration --mode i2v --prompt '（シーン）'
-```
-
-`prompt: （シーン）` は `scenes.<mode>`。T2V に I2V 文面を使わない。
-
-## ルール
-
-- シチュエーションごとに **enabled だけ** `LoraLoaderModelOnly` を直列で積む
-- 他シチュエーションと Turbo は **アンロード**。FL2VA（t2v/i2v）に ref2va を載せない
-- **Turbo オフ** → `res_multistep` / `beta` / steps ≥ 16
-- **成人のみ**（21+）。shota / loli / Live2D syota 禁止
-- **API キーは `.env` 以外に出さない**。スクリプトは `.env` を読まない
-- ココナラ homage ジョブや Threads schedule を触らない
-- T2V は静止画なし。I2V は first_frame 必須。このスクリプトは LoRA 設定だけ出す
-
-空のときは設定 JSON だけ書いて終わる。投稿しない。
+Fal H3 Max に LoRA は差せない。Turbo オフ。成人 21+。CIVITAI_API_TOKEN は Colab シークレット / `.env` のみ。ログに出さない。gayanalh3 は使わない。ココナラ homage を触らない。

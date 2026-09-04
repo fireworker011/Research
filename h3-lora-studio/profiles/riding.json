@@ -14,11 +14,17 @@
       { "id": "riding-pose-i2v", "strength": 0.8 }
     ],
     "t2v": [
-      { "id": "h3-realism-people", "strength": 1.0 },
-      { "id": "hmnsfw-aio-v2", "strength": 0.85 }
+      { "id": "hmnsfw-aio-v25", "strength": 0.7 }
     ]
   },
   "disabled": [
+    "anal-penetration-coachbate",
+    "synth-pussy-h3",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
+    "hmnsfw-aio-v2",
+    "photoreal-h3-still",
     "deepthroat-v02",
     "hmcumshot-v2",
     "hmpussy-v6",

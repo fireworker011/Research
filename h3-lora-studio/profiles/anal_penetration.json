@@ -10,24 +10,26 @@
   },
   "enabled": {
     "i2v": [
-      { "id": "h3-realism-people", "strength": 1.0 },
-      { "id": "hmnsfw-aio-v2", "strength": 0.85 }
+      { "id": "hmnsfw-aio-v25", "strength": 0.7 },
+      { "id": "anal-penetration-coachbate", "strength": 0.85 }
     ],
     "t2v": [
-      { "id": "h3-realism-people", "strength": 1.0 },
-      { "id": "hmnsfw-aio-v2", "strength": 0.85 }
+      { "id": "hmnsfw-aio-v25", "strength": 0.7 },
+      { "id": "anal-penetration-coachbate", "strength": 0.85 }
     ]
   },
   "disabled": [
+    "synth-pussy-h3",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
     "riding-pose-i2v",
-    "deepthroat-v02",
-    "hmcumshot-v2",
-    "hmpussy-v6",
-    "vagassist-e40"
+    "hmnsfw-aio-v2",
+    "photoreal-h3-still"
   ],
   "scenes": {
-    "i2v": "r34l1sm\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light, rumpled bed sheets, color temperature matching <Picture 1>.\ncamera: The camera holds a medium shot from behind and slightly to the side, then pushes in with small amplitude at slow speed.\nintegrated_multimodal_description: (S1) is on all fours on the bed looking back over her shoulder at (S2). (S2) is behind her and penetrating her anus, hips moving in a steady consensual rhythm. Continuous adult anal sex, photoreal skin, visible adult genitals. Identity of (S1) stays locked to <Picture 1>. No freeze frame. No cartoon. No illustration.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21; the camera settles on the connected bodies.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "r34l1sm\nVertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, long dark hair, fair skin.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom at night, warm lamp light, rumpled white sheets.\ncamera: Medium shot from behind and slightly to the side, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is on all fours on the bed looking back over her shoulder. (S2) is behind her penetrating her anus, hips moving in a steady consensual rhythm. Continuous adult anal sex, photoreal skin, visible adult genitals. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light, rumpled bed sheets, color temperature matching <Picture 1>.\ncamera: Medium shot from behind and slightly to the side, hole clearly visible, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is on all fours on the bed looking back over her shoulder at (S2). (S2) is behind her and penetrating her anus, not the vagina. Hips move in a steady consensual rhythm. The anus stays the target hole. Photoreal skin, visible adult genitals. Identity of (S1) stays locked to <Picture 1>. No freeze frame. No cartoon.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21; the camera settles on the connected bodies.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "Vertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, long dark hair, fair skin.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom at night, warm lamp light, rumpled white sheets.\ncamera: Medium shot from behind and slightly to the side, hole clearly visible, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is on all fours on the bed looking back over her shoulder. (S2) is behind her penetrating her anus, not the vagina, hips moving in a steady consensual rhythm. The anus stays the target hole. Photoreal skin, visible adult genitals. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, turbo artifacts"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, turbo artifacts, vaginal penetration, invented extra hole"
 }

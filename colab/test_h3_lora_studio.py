@@ -1,0 +1,46 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from h3_lora_studio import inject_lora_stack, merge_optional, load_catalog
+from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_graph
+
+
+def test_inject_stack_drops_turbo_and_chains():
+    g = build_t2v_graph(
+        prompt=DEFAULT_T2V_PROMPT,
+        unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        lora_name="minimax_h3_fl2v_turbo_4step.safetensors",
+        lora_strength=1.0,
+        width=CANVAS_9_16[0],
+        height=CANVAS_9_16[1],
+        duration_s=5,
+        seed=1,
+        steps=4,
+        filename_prefix="video/h3_t2v",
+    )
+    stack = [
+        {"id": "synth-pussy-h3", "filename": "SynthPussy_H3_closeups_v1-step00008300.safetensors", "strength_model": 0.75},
+        {"id": "anal-penetration-coachbate", "filename": "H3_anal_penetration_v1.safetensors", "strength_model": 0.85},
+    ]
+    inject_lora_stack(g, stack, steps=16)
+    assert "2" not in g
+    assert g["201"]["inputs"]["lora_name"] == "SynthPussy_H3_closeups_v1-step00008300.safetensors"
+    assert g["202"]["inputs"]["model"] == ["201", 0]
+    assert g["23"]["inputs"]["model"] == ["202", 0]
+    assert g["22"]["inputs"]["sampler_name"] == "res_multistep"
+    assert g["23"]["inputs"]["scheduler"] == "beta"
+    assert g["23"]["inputs"]["steps"] >= 16
+    assert assert_t2v_graph(g) == []
+    names = [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
+    assert all("turbo" not in n.lower() for n in names)
+
+
+def test_merge_optional_skips_photoreal_on_i2v():
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    stack = [{"id": "anal-penetration-coachbate", "filename": "H3_anal_penetration_v1.safetensors", "strength_model": 0.85}]
+    out = merge_optional(stack, extras=["photoreal-h3-still", "astro-nsfw-h3"], catalog=catalog, mode="i2v")
+    ids = [row["id"] for row in out]
+    assert "photoreal-h3-still" not in ids
+    assert "astro-nsfw-h3" in ids

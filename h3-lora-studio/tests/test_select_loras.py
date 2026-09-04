@@ -20,7 +20,7 @@ def test_anal_penetration_i2v_stacks_enabled_only():
     assert data["min_age"] >= 21
     assert data["first_frame_required"] is True
     ids = [row["id"] for row in data["stack"]]
-    assert ids == ["h3-realism-people", "hmnsfw-aio-v2"]
+    assert ids == ["hmnsfw-aio-v25", "anal-penetration-coachbate"]
     unload_ids = {row["id"] for row in data["unload"]}
     assert "minimax-h3-turbo-fl2v-4step" in unload_ids
     assert "minimax-h3-turbo-fl2v-8step" in unload_ids
@@ -33,8 +33,7 @@ def test_anal_penetration_i2v_stacks_enabled_only():
     assert data["sampler"]["scheduler"] == "beta"
     assert data["sampler"]["steps"] >= 16
     assert data["canvas"]["aspect"] == "8:9"
-    assert "r34l1sm" in data["prompt"]
-    assert "anal" in data["prompt"].lower()
+    assert "anus" in data["prompt"].lower()
     assert "<Picture 1>" in data["prompt"]
     dumped = json.dumps(data)
     assert "XAI_API_KEY" not in dumped
@@ -56,7 +55,7 @@ def test_anal_penetration_t2v_has_no_first_frame():
     assert data["canvas"]["aspect"] == "9:16"
     assert data["canvas"]["width"] == 576
     assert data["canvas"]["height"] == 1024
-    assert [row["id"] for row in data["stack"]] == ["h3-realism-people", "hmnsfw-aio-v2"]
+    assert [row["id"] for row in data["stack"]] == ["hmnsfw-aio-v25", "anal-penetration-coachbate"]
     assert "Picture 1" not in data["prompt"]
     assert "first_frame" not in data["prompt"].lower()
     assert "Vertical 9:16" in data["prompt"]
@@ -68,19 +67,23 @@ def test_anal_penetration_t2v_has_no_first_frame():
 
 def test_situations_switch_loras_by_profile_and_mode():
     anal_t2v = [r["id"] for r in select_loras(profile_name="anal_penetration", mode="t2v")["stack"]]
+    close_t2v = [r["id"] for r in select_loras(profile_name="anal_closeup", mode="t2v")["stack"]]
     oral_t2v = [r["id"] for r in select_loras(profile_name="oral", mode="t2v")["stack"]]
+    futa_t2v = [r["id"] for r in select_loras(profile_name="futa_blowjob", mode="t2v")["stack"]]
     riding_i2v = [r["id"] for r in select_loras(profile_name="riding", mode="i2v")["stack"]]
     riding_t2v = [r["id"] for r in select_loras(profile_name="riding", mode="t2v")["stack"]]
-    assert anal_t2v == ["h3-realism-people", "hmnsfw-aio-v2"]
-    assert oral_t2v == ["h3-realism-people", "deepthroat-v02"]
+    assert anal_t2v == ["hmnsfw-aio-v25", "anal-penetration-coachbate"]
+    assert close_t2v == ["synth-pussy-h3", "anal-penetration-coachbate"]
+    assert oral_t2v == ["blowjob-h3", "penis-lora-h3"]
+    assert futa_t2v == ["futa-h3-v51", "penis-lora-h3", "blowjob-h3"]
     assert riding_i2v == ["h3-realism-people", "riding-pose-i2v"]
-    assert riding_t2v == ["h3-realism-people", "hmnsfw-aio-v2"]
+    assert riding_t2v == ["hmnsfw-aio-v25"]
     assert "riding-pose-i2v" not in riding_t2v
     listed = list_situations()
     ids = {row["id"] for row in listed["situations"]}
-    assert {"anal_penetration", "oral", "riding"} <= ids
+    assert {"anal_penetration", "anal_closeup", "oral", "riding", "futa_blowjob"} <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
-    assert oral["enabled"]["t2v"] == ["h3-realism-people", "deepthroat-v02"]
+    assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3"]
     assert oral["turbo"] is False
 
 
@@ -123,7 +126,7 @@ def test_cli_emits_json():
     )
     data = json.loads(proc.stdout)
     assert data["turbo"] is False
-    assert [row["id"] for row in data["stack"]] == ["h3-realism-people", "hmnsfw-aio-v2"]
+    assert [row["id"] for row in data["stack"]] == ["hmnsfw-aio-v25", "anal-penetration-coachbate"]
 
 
 def test_refuses_turbo_override():

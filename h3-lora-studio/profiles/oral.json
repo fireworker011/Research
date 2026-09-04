@@ -10,24 +10,25 @@
   },
   "enabled": {
     "i2v": [
-      { "id": "h3-realism-people", "strength": 1.0 },
-      { "id": "deepthroat-v02", "strength": 0.8 }
+      { "id": "blowjob-h3", "strength": 0.85 },
+      { "id": "penis-lora-h3", "strength": 0.7 }
     ],
     "t2v": [
-      { "id": "h3-realism-people", "strength": 1.0 },
-      { "id": "deepthroat-v02", "strength": 0.8 }
+      { "id": "blowjob-h3", "strength": 0.85 },
+      { "id": "penis-lora-h3", "strength": 0.7 }
     ]
   },
   "disabled": [
-    "hmnsfw-aio-v2",
+    "anal-penetration-coachbate",
+    "synth-pussy-h3",
+    "hmnsfw-aio-v25",
+    "futa-h3-v51",
     "riding-pose-i2v",
-    "hmcumshot-v2",
-    "hmpussy-v6",
-    "vagassist-e40"
+    "photoreal-h3-still"
   ],
   "scenes": {
-    "i2v": "r34l1sm\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light, matching <Picture 1>.\ncamera: Medium close shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is kneeling in front of (S2) and performing oral sex, slow consensual rhythm. Photoreal skin. Identity of (S1) stays locked to <Picture 1>. No freeze frame. No cartoon.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "r34l1sm\nVertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, long dark hair.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium close shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is kneeling in front of (S2) and performing oral sex, slow consensual rhythm, photoreal skin. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "bl0w_j0b, PENISLORA, Cinematic realism.\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light, matching <Picture 1>.\ncamera: Medium close shot from the front, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is giving a deepthroat blow job to (S2)'s erect penis. The penis is visible from the front. Photoreal. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "bl0w_j0b, PENISLORA, Cinematic realism. Vertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium close shot from the front, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) is giving a deepthroat blow job to (S2)'s erect penis. The penis is visible from the front. Photoreal. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, turbo artifacts"
 }
