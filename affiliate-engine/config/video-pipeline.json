@@ -1,0 +1,39 @@
+{
+  "_comment": "動画パイプラインの設定。null と false は未確認を勝手に埋めないための明示。実投稿・自動削除・Grokbot API 呼び出しはここでは動かない。",
+  "duration_sec_min": 30,
+  "duration_sec_max": 60,
+  "post_every_n_days": 2,
+  "stagger_minutes": 30,
+  "review_after_hours": 48,
+  "view_threshold_48h": null,
+  "view_threshold_48h_note": "指示書は『基準値を下回ったら削除』とだけ書いてあり、数値は無い。null の間は削除判定しない。",
+  "slot_start_jst": "00:00",
+  "slot_start_jst_note": "指示書に1日の開始時刻が無い。JST 日付境界から 30 分刻み。時刻を変えるならこの値だけ直す。",
+  "generation_enabled": false,
+  "generation_enabled_note": "14日実験中（2026-08-22 起算）は新作指示を出さない。実験終了後も人間が true にするまで emit しない。",
+  "auto_post": false,
+  "auto_delete": false,
+  "grokbot_transport": "file",
+  "grokbot_transport_note": "Grokbot の API 仕様がこのリポジトリに無い。指示書ファイルを書くだけ。",
+  "campaign_days": 14,
+  "platforms": [
+    {
+      "id": "youtube_shorts",
+      "label": "YouTube Shorts",
+      "enabled": true,
+      "note": "実験対象は @pet_story_select のみ。説明欄・コメントに URL は置かない。"
+    },
+    {
+      "id": "instagram_reels",
+      "label": "Instagram Reels",
+      "enabled": false,
+      "blocked_reason": "video-cash-loop: YouTube / TikTok / Instagram の同時立ち上げ禁止。投稿 API 未確認。"
+    },
+    {
+      "id": "tiktok",
+      "label": "TikTok",
+      "enabled": false,
+      "blocked_reason": "video-cash-loop: YouTube / TikTok / Instagram の同時立ち上げ禁止。投稿 API 未確認。"
+    }
+  ]
+}
