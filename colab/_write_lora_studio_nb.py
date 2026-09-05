@@ -399,11 +399,11 @@ from h3_motion_graphics import (
     validate_studio_i2v_prompt,
 )
 from h3_lora_studio import (
-    apply_user_prompt, explain_choice, friendly_lora, friendly_select_error,
+    apply_user_prompt, explain_choice, format_job_fail, friendly_lora, friendly_select_error,
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
     resolve_mode, resolve_situation,
 )
-from select_loras import extra_terms, parse_extra_terms, select_loras
+from select_loras import extra_terms, forbidden_hits, parse_extra_terms, select_loras
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -522,6 +522,16 @@ elif 画面の向き == "横":
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
 print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
+if float(秒数) > 10:
+    print("秒数は 10 までが安定です。15 はメモリ不足やエラーになりやすいです。")
+hits = forbidden_hits(
+    prompt,
+    extra=EXTRA_FORBIDDEN,
+    path=DRIVE_ROOT / "forbidden.json",
+)
+if hits:
+    hint = friendly_select_error(SystemExit(f"forbidden subject in prompt: {hits}"))
+    raise SystemExit(hint or f"forbidden subject in prompt: {hits}")
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt(文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
@@ -638,17 +648,20 @@ def post_prompt(g):
     except urllib.error.HTTPError as e:
         return None, e.read().decode(errors="replace")[:2000]
 
-def wait_prompt(pid):
-    for _ in range(360):
+def wait_prompt(pid, timeout=3600):
+    t0 = time.time()
+    while time.time() - t0 < timeout:
         with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/history/{pid}", timeout=60) as r:
             hist = json.loads(r.read().decode())
-        entry = hist.get(pid)
-        if entry:
-            st = entry.get("status") or {}
-            if st.get("completed") or entry.get("outputs"):
-                if st.get("status_str") == "error":
-                    return False, entry
-                return True, entry
+        entry = hist.get(pid) or {}
+        st = entry.get("status") or {}
+        if st.get("completed") or entry.get("outputs"):
+            if st.get("status_str") == "error":
+                return False, entry
+            return True, entry
+        for m in st.get("messages") or []:
+            if isinstance(m, list) and m and m[0] == "execution_error":
+                return False, m
         time.sleep(2)
     return False, "timeout"
 
@@ -680,7 +693,7 @@ else:
         if is_oom_error(str(payload)):
             print("メモリが足りなかったので、小さい画面でやり直します。")
             continue
-        raise SystemExit("失敗しました。写真から作るなら input の jpg を確認してください。")
+        raise SystemExit(format_job_fail(MODE, payload))
     else:
         raise SystemExit("メモリ不足で作れませんでした。秒数を 5 にするか、A100 のまま②からやり直してください。")
     videos = collect_output_videos(ok_entry, OUT)

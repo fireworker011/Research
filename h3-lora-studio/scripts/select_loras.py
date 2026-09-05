@@ -74,6 +74,12 @@ LOCKED_MINORS = (
 LOCKED_COMMERCIAL = ("px.a8.net", "a8mat=")
 DEFAULT_BOUNDARY = ("child", "children", "kid", "kids", "minor", "teen")
 SAFETY_PREFIX = r"(?:no|not\s+a|not|without|avoid|exclude|never)"
+_FULLWIDTH_DIGITS = str.maketrans("０１２３４５６７８９", "0123456789")
+# Explicit ages under 21. "15 seconds" / "24fps" must not match.
+UNDERAGE_YEARS_RE = re.compile(
+    r"(?i)(?<!\d)(20|1[0-9]|[1-9])\s*(?:-?\s*years?\s*old|-?\s*year[- ]olds?|y\.?o\.?\b|yo\b|歳)"
+)
+UNDERAGE_AGE_EQ_RE = re.compile(r"(?i)\bage\s*[:=]?\s*(20|1[0-9]|[1-9])\b")
 
 
 class SelectError(SystemExit):
@@ -151,6 +157,24 @@ def _safety_re(minors: list[str]) -> re.Pattern[str]:
     )
 
 
+def underage_age_hits(text: str) -> list[str]:
+    """Lock numeric ages under 21. JSON cannot turn this off."""
+    folded = str(text or "").translate(_FULLWIDTH_DIGITS)
+    hits: list[str] = []
+    seen: set[str] = set()
+    for rx in (UNDERAGE_YEARS_RE, UNDERAGE_AGE_EQ_RE):
+        for match in rx.finditer(folded):
+            n = int(match.group(1))
+            if n < 1 or n >= 21:
+                continue
+            token = match.group(0).strip().lower()
+            if token in seen:
+                continue
+            seen.add(token)
+            hits.append(token)
+    return hits
+
+
 def forbidden_hits(
     text: str,
     *,
@@ -171,6 +195,7 @@ def forbidden_hits(
     hits: set[str] = set()
     for match in _subject_re(minors, boundary).finditer(cleaned):
         hits.add(match.group(0).lower())
+    hits.update(underage_age_hits(cleaned))
     low = cleaned.lower()
     for term in list(LOCKED_COMMERCIAL) + extra_terms_:
         if term.lower() in low:

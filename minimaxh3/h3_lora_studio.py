@@ -191,10 +191,48 @@ def friendly_select_error(exc: BaseException) -> str | None:
         )
     if "forbidden subject" in low:
         return (
-            "未成年の表現は作れません。文章欄に child / teen / loli などが残っていないか見てください。"
+            "未成年の表現は作れません。出演者は 21歳以上にしてください。"
+            "child / teen / loli や 15 years old / 15歳 は通りません。"
             "空欄にするとおすすめ文を使います。no child のような禁止の意味は大丈夫です。"
         )
     return None
+
+
+def comfy_fail_detail(payload: Any) -> str:
+    """Short Comfy execution error. Never dump the full graph."""
+    if payload is None:
+        return ""
+    if isinstance(payload, str):
+        return payload.strip()[:800]
+    if isinstance(payload, (list, tuple)) and payload:
+        if str(payload[0]) == "execution_error" and len(payload) > 1 and isinstance(payload[1], dict):
+            info = payload[1]
+            msg = str(info.get("exception_message") or info.get("exception_type") or "").strip()
+            ntype = str(info.get("node_type") or "").strip()
+            blob = f"{ntype}: {msg}".strip(": ")
+            return (blob or str(payload))[:800]
+        return str(payload)[:800]
+    if isinstance(payload, dict):
+        st = payload.get("status") or {}
+        for row in st.get("messages") or []:
+            detail = comfy_fail_detail(row)
+            if detail:
+                return detail
+        if st.get("status_str") == "error":
+            return str(st.get("messages") or st)[:800]
+    return str(payload)[:800]
+
+
+def format_job_fail(mode: str, payload: Any) -> str:
+    """T2V must not tell the user to check an input jpg."""
+    detail = comfy_fail_detail(payload)
+    if str(mode).lower() == "t2v":
+        base = "テキストから作れませんでした。写真は不要です。秒数を 10 にするか、画面を小さくして③をもう一度。"
+    else:
+        base = "写真から作れませんでした。Drive の input の jpg を確認してください。"
+    if detail:
+        return f"{base}\n{detail}"
+    return base
 
 
 def civitai_token(form_value: str = "") -> str:

@@ -302,6 +302,14 @@ def test_safety_no_child_is_not_a_request():
     assert forbidden_hits("not a child, not a teen") == []
     assert forbidden_hits("no child, teen, loli, shota") == []
     assert forbidden_hits("a child sits on the bed") == ["child"]
+    assert "15 years old" in forbidden_hits("Adult woman, 15 years old, in a station.")
+    assert "15歳" in forbidden_hits("成人女性、15歳。")
+    assert any("15" in x and "yo" in x for x in forbidden_hits("cast is 15yo"))
+    assert forbidden_hits("Photoreal widescreen 16:9, 1344x768, 15 seconds, 24fps.") == []
+    assert forbidden_hits("Adult woman 21 years old in a station.") == []
+    assert forbidden_hits("Adult woman 25 years old.") == []
+    assert any("20" in x for x in forbidden_hits("Adult, 20 years old."))
+    assert any("20" in x for x in forbidden_hits("age 20"))
     data = select_loras(
         profile_name="anal_closeup",
         mode="t2v",
@@ -317,6 +325,16 @@ def test_safety_no_child_is_not_a_request():
         )
     except SelectError as exc:
         assert "child" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
+    try:
+        select_loras(
+            profile_name="general_sex",
+            mode="t2v",
+            prompt_arg="Photoreal 16:9 adult film. One woman is 15 years old.",
+        )
+    except SelectError as exc:
+        assert "15" in str(exc).lower() or "forbidden" in str(exc).lower()
     else:
         raise AssertionError("expected SelectError")
 

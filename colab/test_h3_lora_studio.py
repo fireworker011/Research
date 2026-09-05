@@ -10,6 +10,7 @@ from h3_lora_studio import (
     civitai_token,
     civitai_token_help,
     explain_choice,
+    format_job_fail,
     friendly_lora,
     friendly_select_error,
     inject_lora_stack,
@@ -227,9 +228,26 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "forbidden_words.py" not in src
     assert "h3-lora-studio/scripts/forbidden_words.py" not in blob
     assert "from forbidden_words" not in blob
+    assert "format_job_fail" in src
+    assert "timeout=3600" in src
+    assert "format_job_fail(MODE, payload)" in src
+    assert "写真から作るなら input の jpg" not in src
+    helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
+    assert "テキストから作れませんでした" in helper.read_text(encoding="utf-8")
+
+
+def test_format_job_fail_t2v_does_not_ask_for_jpg():
+    t2v = format_job_fail("t2v", ["execution_error", {"node_type": "MiniMaxH3ImageToVideo", "exception_message": "length too large"}])
+    assert "テキストから" in t2v
+    assert "jpg" not in t2v.lower()
+    assert "length too large" in t2v
+    i2v = format_job_fail("i2v", "missing image")
+    assert "jpg" in i2v
+    assert format_job_fail("t2v", "timeout").startswith("テキストから")
 
 
 def test_friendly_select_error_for_child_and_picture1():
     assert "空欄" in (friendly_select_error(SystemExit("forbidden subject in prompt: ['child']")) or "")
+    assert "21" in (friendly_select_error(SystemExit("forbidden subject in prompt: ['15 years old']")) or "")
     assert "写真用" in (friendly_select_error(SystemExit("t2v prompt must not use Picture 1 / first_frame")) or "")
     assert friendly_select_error(SystemExit("CoachBate anal penetration stays turbo off")) is None
