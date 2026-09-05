@@ -78,13 +78,14 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
     assert "futa-h3-v51" not in futa_t2v
     assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
+    assert general["stack"][0]["strength_model"] == 0.8
     assert general["stack"][1]["strength_model"] == 0.5
-    assert general["sampler"]["steps"] == 8
+    assert general["sampler"]["steps"] == 12
     assert general["sampler"]["sampler_name"] == "euler"
     assert general["sampler"]["scheduler"] == "simple"
     riding = select_loras(profile_name="riding", mode="t2v")
     assert [r["id"] for r in riding["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
-    assert riding["sampler"]["steps"] == 8
+    assert riding["sampler"]["steps"] == 12
     assert preview["sampler"]["steps"] == 4
     assert preview["stack"][1]["strength_model"] == 1.0
     listed = list_situations()
@@ -176,8 +177,9 @@ def test_futa_sex_and_anal_stay_feminine():
     sex = select_loras(profile_name="futa_sex", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in sex["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"]
     assert [r["role"] for r in sex["stack"]] == ["act", "helper", "turbo"]
-    assert sex["stack"][2]["strength_model"] == 0.7
-    assert sex["sampler"]["steps"] == 8
+    assert sex["stack"][0]["strength_model"] == 0.8
+    assert sex["stack"][2]["strength_model"] == 0.5
+    assert sex["sampler"]["steps"] == 12
     assert sex["sampler"]["sampler_name"] == "euler"
     assert sex["sampler"]["scheduler"] == "simple"
     assert "futa-h3-v51" not in [r["id"] for r in sex["stack"]]
@@ -189,6 +191,10 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "adult man" not in low
     assert "man" in sex["negative"].lower()
     assert "Picture 1" not in sex["prompt"]
+    assert "penetrat" in low
+    assert "vagina" in low
+    assert "rhythm" in low
+    assert "implied" not in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
     assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3"]
     assert anal["turbo"] is False
@@ -221,6 +227,25 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "feminine_lock:" in locked.lower()
     assert "no man" in locked.lower()
     assert "male body" in neg.lower()
+
+
+def test_aio_sex_prompts_show_penetration_not_implied():
+    general = select_loras(profile_name="general_sex", mode="t2v", prompt_arg="（シーン）")
+    glow = general["prompt"].lower()
+    assert "implied" not in glow
+    assert "penetrat" in glow
+    assert "vagina" in glow
+    assert "rhythm" in glow
+    assert "missionary" in glow
+    assert general["sampler"]["steps"] == 12
+    i2v = select_loras(profile_name="general_sex", mode="i2v", prompt_arg="（シーン）")
+    assert "<Picture 1>" in i2v["prompt"]
+    assert "implied" not in i2v["prompt"].lower()
+    ride = select_loras(profile_name="riding", mode="t2v", prompt_arg="（シーン）")
+    rlow = ride["prompt"].lower()
+    assert "cowgirl" in rlow
+    assert "penetrat" in rlow
+    assert ride["sampler"]["steps"] == 12
 
 
 def test_refuses_turbo_override():

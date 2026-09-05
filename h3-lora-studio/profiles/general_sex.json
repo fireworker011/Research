@@ -9,14 +9,14 @@
     "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
   },
   "stack_plan": {
-    "act": { "id": "hmnsfw-aio-v25", "strength": 0.75 },
+    "act": { "id": "hmnsfw-aio-v25", "strength": 0.8 },
     "turbo": { "id": "larry-v4", "strength": 0.5 }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 8,
-    "note": "AIO 0.75 + Larry 0.5 / Euler Simple / 8step. No helper. LightX2V off."
+    "steps": 12,
+    "note": "AIO 0.8 + Larry 0.5 / Euler Simple / 12step. Hearmeman AIO path. LightX2V off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -32,8 +32,8 @@
     "cinema-dy"
   ],
   "scenes": {
-    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light matching <Picture 1>.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: Consenting adult sex. (S1) and (S2) stay photoreal. Identity of (S1) stays locked to <Picture 1>. Insertion may be implied. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "Vertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: Consenting adult sex. Photoreal skin. Insertion may be implied. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "hmmotion\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>, nude.\n<Subject 2> Adult man, clearly over 21, nude, erect penis.\n\nenvironment: Private bedroom, warm lamp light matching <Picture 1>.\ncamera: Medium-close side three-quarter, hips and genitals readable, then a slow small-amplitude push-in. No cut. No freeze frame.\nintegrated_multimodal_description: Missionary sex. (S1) lies on her back on the bed with her legs open. (S2) is between her legs. His erect penis is penetrating her vagina, not the anus. Hips thrust in a steady consensual rhythm. The penis and the vaginal connection stay visible. Photoreal adult genitals. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "hmmotion\nVertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, nude.\n<Subject 2> Adult man, clearly over 21, nude, erect penis.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium-close side three-quarter, hips and genitals readable, then a slow small-amplitude push-in. No freeze frame.\nintegrated_multimodal_description: Missionary sex. (S1) lies on her back on the bed with her legs open. (S2) is between her legs. His erect penis is penetrating her vagina, not the anus. Hips thrust in a steady consensual rhythm. The penis and the vaginal connection stay visible. Photoreal adult genitals. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
 }

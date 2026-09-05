@@ -10,15 +10,15 @@
     "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
   },
   "stack_plan": {
-    "act": { "id": "hmnsfw-aio-v25", "strength": 0.75 },
+    "act": { "id": "hmnsfw-aio-v25", "strength": 0.8 },
     "helper": { "id": "penis-lora-h3", "strength": 0.7 },
-    "turbo": { "id": "larry-v4", "strength": 0.7 }
+    "turbo": { "id": "larry-v4", "strength": 0.5 }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 8,
-    "note": "AIO sex + penis helper + Larry 0.7 / 8step. Futa transform LoRA stays off so the shaft does not melt. Bodies stay feminine."
+    "steps": 12,
+    "note": "AIO 0.8 + penis 0.7 + Larry 0.5 / 12step. Futa transform LoRA stays off so the shaft does not melt. Bodies stay feminine."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -33,8 +33,8 @@
     "cinema-dy"
   ],
   "scenes": {
-    "i2v": "hmmotion, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>, feminine face, feminine body, breasts, soft waist, no male physique, futanari with an erect penis.\n<Subject 2> Adult woman, clearly over 21, feminine face, feminine body, breasts, no male physique.\n\nenvironment: Private bedroom, warm lamp light matching <Picture 1>.\ncamera: Medium side shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: Two adult women having consensual sex. (S1) keeps a feminine body and an erect penis. (S2) is also a woman. No man appears. No masculine face. No muscular male body. Photoreal skin. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adult women over 21.\n\nAll performers are consenting adult women 21 years or older.",
-    "t2v": "hmmotion, PENISLORA\nVertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, feminine face, feminine body, breasts, soft waist, no male physique, futanari with an erect penis.\n<Subject 2> Adult woman, clearly over 21, feminine face, feminine body, breasts, no male physique.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium side shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: Two adult women having consensual sex. (S1) keeps a feminine body and an erect penis. (S2) is also a woman. No man appears. No masculine face. No muscular male body. Photoreal skin. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adult women over 21.\n\nAll performers are consenting adult women 21 years or older."
+    "i2v": "hmmotion, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same face body and hair as <Picture 1>, feminine face, feminine body, breasts, soft waist, no male physique, futanari with an erect penis.\n<Subject 2> Adult woman, clearly over 21, feminine face, feminine body, breasts, no male physique, nude.\n\nenvironment: Private bedroom, warm lamp light matching <Picture 1>.\ncamera: Medium-close side three-quarter, hips and genitals readable, then a slow small-amplitude push-in. No cut. No freeze frame.\nintegrated_multimodal_description: Two adult women having penetrative sex. (S2) lies on her back with legs open. (S1) is between (S2)'s legs. (S1)'s erect penis is penetrating (S2)'s vagina, not the anus. Hips thrust in a steady consensual rhythm. The penis and the vaginal connection stay visible. (S1) keeps a feminine body. (S2) is also a woman. No man appears. No masculine face. No muscular male body. Photoreal skin. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adult women over 21.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "hmmotion, PENISLORA\nVertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, feminine face, feminine body, breasts, soft waist, no male physique, futanari with an erect penis.\n<Subject 2> Adult woman, clearly over 21, feminine face, feminine body, breasts, no male physique, nude.\n\nenvironment: Private bedroom at night, warm lamp light.\ncamera: Medium-close side three-quarter, hips and genitals readable, then a slow small-amplitude push-in. No freeze frame.\nintegrated_multimodal_description: Two adult women having penetrative sex. (S2) lies on her back with legs open. (S1) is between (S2)'s legs. (S1)'s erect penis is penetrating (S2)'s vagina, not the anus. Hips thrust in a steady consensual rhythm. The penis and the vaginal connection stay visible. (S1) keeps a feminine body. (S2) is also a woman. No man appears. No masculine face. No muscular male body. Photoreal skin. No freeze frame.\noverall_soundscape: Intimate breathing and bed rustle.\nending: Motion continues; both remain adult women over 21.\n\nAll performers are consenting adult women 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, worm-like penis"
 }

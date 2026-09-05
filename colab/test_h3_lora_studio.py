@@ -157,9 +157,8 @@ def test_japanese_form_labels():
     assert "blowjob-h3" not in sfw
     general = explain_choice("汎用エロ", "テキストから（写真なし）")
     assert "Larry" in general
-    assert "8step" in general
-    assert "12 step" not in general
-    assert "12step" not in general
+    assert "12step" in general
+    assert "LightX2V 12" not in general
 
 
 def test_vanilla_sfw_shares_phone_path():
@@ -446,10 +445,10 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "concat_studio_clips" in src
     assert "continue_chain_prompt" in src
     assert "homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)" in src
-    assert "AIO 0.75 + Larry 0.5 / 8step" in src
+    assert "AIO 0.8 + Larry 0.5 / 12step" in src
     assert "LightX2V 0.5 / 12 step" not in src
     assert "DURATION, CLIPS, CHAIN = resolve_studio_length" in blob
     assert "duration_s=CLIP_DURATION" in blob
     assert "duration_s=float(秒数)" not in blob
     assert "つなぐ（16〜60秒）" in blob
-    assert "AIO 0.75 + Larry 0.5 / 8step" in blob
+    assert "AIO 0.8 + Larry 0.5 / 12step" in blob
