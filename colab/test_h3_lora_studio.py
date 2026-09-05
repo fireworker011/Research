@@ -26,6 +26,7 @@ from h3_lora_studio import (
     already_have_weight,
     merge_optional,
     missing_civitai_files,
+    next_chain_prompt,
     quote_http_url,
     resolve_length_mode,
     resolve_mode,
@@ -399,6 +400,36 @@ def test_continue_chain_prompt_keeps_picture1_and_does_not_restart():
     assert "Continue from this exact last frame" in wrapped
 
 
+def test_next_chain_prompt_uses_extras_or_continues_prev():
+    first = "Clip one seated sex. feminine_lock: Every visible person is an adult woman, clearly over 21."
+    extras = ["", "Immediate deep tongue kiss. Keep Aya seated.", "", "Keep thrusting. Joining point visible."]
+    clip0 = next_chain_prompt(0, first_prompt=first, prev_prompt=first, extras=extras)
+    assert clip0 == first
+    clip1 = next_chain_prompt(1, first_prompt=first, prev_prompt=first, extras=extras)
+    assert "Continue from this exact last frame" in clip1
+    assert "Picture 1" in clip1
+    assert "seated sex" in clip1
+    clip2 = next_chain_prompt(2, first_prompt=first, prev_prompt=clip1, extras=extras)
+    assert "deep tongue kiss" in clip2
+    assert "seated sex" not in clip2
+    assert "feminine_lock:" in clip2.lower()
+    clip3 = next_chain_prompt(3, first_prompt=first, prev_prompt=clip2, extras=extras)
+    assert "deep tongue kiss" in clip3
+    clip4 = next_chain_prompt(4, first_prompt=first, prev_prompt=clip3, extras=extras)
+    assert "Keep thrusting" in clip4
+    empty = next_chain_prompt(1, first_prompt=first, prev_prompt=first, extras=["", "", "", "", ""])
+    assert "seated sex" in empty
+    structured = next_chain_prompt(
+        1,
+        first_prompt=first,
+        prev_prompt=first,
+        extras=["subject_definitions:\nAya\n\nintegrated_multimodal_description:\nKiss only. Aya stays seated."],
+    )
+    assert structured.count("integrated_multimodal_description:") == 1
+    assert "Kiss only" in structured
+    assert "Picture 1" in structured
+
+
 def test_concat_studio_clips_prefers_stream_copy(tmp_path):
     import subprocess
 
@@ -455,6 +486,9 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "つなぐ（16〜60秒）" in src
     assert "concat_studio_clips" in src
     assert "continue_chain_prompt" in src
+    assert "next_chain_prompt" in src
+    assert "つなぎ2" in src
+    assert "CHAIN_EXTRAS" in src
     assert "homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)" in src
     assert "AIO 0.8 + Larry 0.5 / 12step" in src
     assert "LightX2V 0.5 / 12 step" not in src
@@ -462,4 +496,7 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "duration_s=CLIP_DURATION" in blob
     assert "duration_s=float(秒数)" not in blob
     assert "つなぐ（16〜60秒）" in blob
+    assert "continue_chain_prompt" in blob
+    assert "next_chain_prompt" in blob
+    assert "つなぎ2" in blob
     assert "AIO 0.8 + Larry 0.5 / 12step" in blob

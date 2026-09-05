@@ -76,7 +76,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 性器を広げる | 広げて見せるクローズ | 広げる 0.75 + 穴の見え方 0.55 + Larry 0.5 |
 | レズ＋広げる | クンニに広げるを足す | クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方は外す |
 
-**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける。1本で伸ばさない）。
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける。1本で伸ばさない）。60秒は 10×6。2〜6本目の文は③のつなぎ欄。空なら前の続き。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
@@ -172,7 +172,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260905-futa-bj6"
+FETCH_REV = "h2-20260905-chain-prompts"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -396,7 +396,7 @@ MD3 = r"""## ③ 動画を作る
 - **アナルセックス（女体）** … CoachBate + 竿 + 穴の見え方。Turbo なし。アナル挿入本線。マンコは文章欄で足す。挿入側も女体
 - **汎用エロ** … AIO + Larry 12step。正常位。挿入が見える
 - **試し打ち** … AIO + LightX2V 4step。当たりは本線で焼き直す
-- **秒数** … 4〜15 は1本。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける）。1本で 16 秒以上は作らない
+- **秒数** … 4〜15 は1本。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける）。60秒は 10×6。2〜6本目の文は③のつなぎ欄。空なら前の続き。1本で 16 秒以上は作らない
 - **レズビアンクンニ** … 全裸の出会い→抱きつきキス→押し倒してクンニ。穴の見え方付き。秒数は 10 が安定
 - **性器を広げる** … 広げる + 穴の見え方
 - **レズ＋広げる** … クンニ + 広げる（穴の見え方は枠の都合で外す）
@@ -415,6 +415,13 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 秒数 = 10  #@param {type:"number"}
 #@markdown 16〜60秒は 10秒ずつ、前のクリップの最後のコマから続ける（解像度もステップも落とさない）。
 長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ（16〜60秒）"]
+#@markdown ### つなぐときだけ（任意）
+#@markdown 60秒は 10秒×6本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
+つなぎ2 = ""  #@param {type:"string"}
+つなぎ3 = ""  #@param {type:"string"}
+つなぎ4 = ""  #@param {type:"string"}
+つなぎ5 = ""  #@param {type:"string"}
+つなぎ6 = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown ### 触らなくていい（上級）
@@ -439,13 +446,14 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, continue_chain_prompt, extract_last_frame, concat_studio_clips
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 if not getattr(_select_loras, "MAX_HELPERS", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
+CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6]
 if float(DURATION) != float(秒数):
     if CHAIN:
         print("秒数は", int(DURATION), "にします（つなぐは 16〜60 秒）。")
@@ -453,6 +461,11 @@ if float(DURATION) != float(秒数):
         print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
 if CHAIN:
     print("つなぎ:", " + ".join(str(int(x)) + "秒" for x in CLIPS), "（最後のコマから続ける。画質は落とさない）")
+    named = [str(i + 2) + "本目" for i, x in enumerate(CHAIN_EXTRAS) if not is_blank_prompt(x)]
+    if named:
+        print("別の文を使うクリップ:", "、".join(named), "。空の欄は前の続き。")
+elif any(not is_blank_prompt(x) for x in CHAIN_EXTRAS):
+    print("つなぎ欄は「つなぐ」のときだけ使います。今は1本なので無視します。")
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -650,7 +663,7 @@ CLIP_INDEX = 0
 GRAPH_MODE = MODE
 GRAPH_FIRST = first_name
 GRAPH_PROMPT = prompt
-CHAIN_I2V_PROMPT = continue_chain_prompt(prompt)
+prev_prompt = prompt
 
 def make_graph(plan):
     steps = int(SAMPLER["steps"])
@@ -770,6 +783,9 @@ if 試し打ちだけ:
     print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
     if CHAIN:
         print("つなぎ予定:", " + ".join(str(int(x)) + "秒" for x in CLIPS))
+        named = [str(i + 2) + "本目" for i, x in enumerate(CHAIN_EXTRAS) if not is_blank_prompt(x)]
+        if named:
+            print("別の文:", "、".join(named))
     print("実際の動画は「試し打ちだけ」をオフにして③をもう一度。")
 else:
     print()
@@ -779,12 +795,20 @@ else:
     inp.mkdir(parents=True, exist_ok=True)
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
         GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
-        if CLIP_INDEX == 0:
-            GRAPH_FIRST = first_name
-            GRAPH_PROMPT = prompt
-        else:
-            GRAPH_FIRST = first_name
-            GRAPH_PROMPT = CHAIN_I2V_PROMPT
+        GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)
+        if CLIP_INDEX > 0:
+            GRAPH_PROMPT = prepend_triggers(GRAPH_PROMPT, stack)
+            extra_now = CHAIN_EXTRAS[CLIP_INDEX - 1] if CLIP_INDEX - 1 < len(CHAIN_EXTRAS) else ""
+            if not is_blank_prompt(extra_now):
+                print("このクリップはつなぎ欄の文を使います")
+            hits = forbidden_hits(GRAPH_PROMPT, path=FORBIDDEN_FILE)
+            if hits:
+                hint = friendly_select_error(SystemExit("forbidden subject in prompt: " + str(hits)))
+                raise SystemExit(hint or ("forbidden subject in prompt: " + str(hits)))
+            if "Picture 1" not in GRAPH_PROMPT:
+                raise SystemExit("つなぎの2本目以降に最後のコマ（Picture 1）がありません。②のあと③をもう一度。")
+        GRAPH_FIRST = first_name
+        prev_prompt = GRAPH_PROMPT
         if GRAPH_MODE == "i2v" and not GRAPH_FIRST:
             raise SystemExit("写真または前のクリップの最後のコマがありません。")
         print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", int(CLIP_DURATION), "秒", GRAPH_MODE)

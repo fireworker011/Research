@@ -769,6 +769,30 @@ CHAIN_CONTINUE_LINE = (
 )
 
 
+def next_chain_prompt(
+    clip_index: int,
+    *,
+    first_prompt: str,
+    prev_prompt: str,
+    extras: list[str] | None = None,
+) -> str:
+    """Clip 0 uses first_prompt. Later clips use extras[n-1] if filled, else continue prev."""
+    idx = int(clip_index)
+    first = str(first_prompt or "")
+    if idx <= 0:
+        return first
+    rows = [str(x or "") for x in (extras or [])]
+    extra = rows[idx - 1] if idx - 1 < len(rows) else ""
+    if is_blank_prompt(extra):
+        return continue_chain_prompt(prev_prompt or first)
+    body = continue_chain_prompt(extra.strip())
+    low_first = first.lower()
+    if "feminine_lock:" in low_first and "feminine_lock:" not in body.lower():
+        mark = low_first.find("feminine_lock:")
+        body = body.rstrip() + "\n\n" + first[mark:].strip()
+    return body
+
+
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
     """One shot is 4–15s. Chain mode is 16–60s via 10s last-frame clips. Homage notebooks stay as they are."""
     try:
@@ -835,6 +859,16 @@ def continue_chain_prompt(prompt: str) -> str:
         return wrapped
     if "Picture 1" in text:
         return CHAIN_CONTINUE_LINE + "\n\n" + text
+    structured = (
+        "integrated_multimodal_description:" in text.lower()
+        or "subject_definitions:" in text.lower()
+    )
+    if structured:
+        header = (
+            "For the target video, at 0.00 seconds into the target video, "
+            "<Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+        )
+        return CHAIN_CONTINUE_LINE + "\n\n" + header + text
     wrapped, _ = apply_user_prompt(
         text or "Continue the same live scene.",
         mode="i2v",
