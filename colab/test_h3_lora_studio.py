@@ -257,6 +257,12 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "format_job_fail" in src
     assert "timeout=3600" in src
     assert "format_job_fail(MODE, payload)" in src
+    assert "format_prompt_http_fail(err, stack)" in src
+    assert "失敗しました。②からやり直すか、シーンを変えてみてください。" not in src
+    assert "apply_stack_fallbacks" in src
+    assert "restart_studio_comfy" in src
+    assert "apply_stack_fallbacks" in blob
+    assert "format_prompt_http_fail(err, stack)" in blob
     assert "写真から作るなら input の jpg" not in src
     assert ".h3_pip_ok" in src
     assert "更新はしません" in src
@@ -273,6 +279,50 @@ def test_format_job_fail_t2v_does_not_ask_for_jpg():
     i2v = format_job_fail("i2v", "missing image")
     assert "jpg" in i2v
     assert format_job_fail("t2v", "timeout").startswith("テキストから")
+
+
+def test_coachbate_falls_back_to_aio_when_missing(tmp_path):
+    from h3_lora_studio import apply_stack_fallbacks, comfy_missing_loras, format_prompt_http_fail, missing_stack_files
+
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    lora_dir = tmp_path / "loras"
+    lora_dir.mkdir()
+    aio = lora_dir / "HMNSFW-AIO-V2.5.safetensors"
+    aio.write_bytes(b"x" * 6_000_000)
+    synth = lora_dir / "SynthPussy_H3_closeups_v1-step00008300.safetensors"
+    synth.write_bytes(b"x" * 6_000_000)
+    stack = [
+        {"id": "anal-penetration-coachbate", "filename": "H3_anal_penetration_v1.safetensors", "strength_model": 0.85, "role": "act"},
+        {"id": "synth-pussy-h3", "filename": "SynthPussy_H3_closeups_v1-step00008300.safetensors", "strength_model": 0.55, "role": "helper"},
+    ]
+    assert missing_stack_files(stack, lora_dir) == ["H3_anal_penetration_v1.safetensors"]
+    out, replaced = apply_stack_fallbacks(stack, lora_dir, catalog)
+    assert replaced is True
+    assert [row["id"] for row in out] == ["hmnsfw-aio-v25", "synth-pussy-h3"]
+    assert missing_stack_files(out, lora_dir) == []
+    obj = {"LoraLoaderModelOnly": {"input": {"required": {"lora_name": [["larry.safetensors"]]}}}}
+    assert comfy_missing_loras(out, obj) == ["HMNSFW-AIO-V2.5.safetensors", "SynthPussy_H3_closeups_v1-step00008300.safetensors"]
+    msg = format_prompt_http_fail("lora_name 'H3_anal_penetration_v1.safetensors' not in list", stack)
+    assert "②からやり直すか" not in msg
+    assert "H3_anal_penetration_v1.safetensors" in msg or "HMNSFW" in msg
+    assert "エンジン" in msg
+    g = build_t2v_graph(
+        prompt=DEFAULT_T2V_PROMPT,
+        unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+        lora_name=None,
+        lora_strength=0.0,
+        width=CANVAS_9_16[0],
+        height=CANVAS_9_16[1],
+        duration_s=5,
+        seed=1,
+        steps=16,
+        filename_prefix="video/h3_lora_studio",
+    )
+    inject_lora_stack(g, out, sampler={"sampler_name": "res_multistep", "scheduler": "beta", "steps": 16})
+    names = [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"]
+    assert names == ["HMNSFW-AIO-V2.5.safetensors", "SynthPussy_H3_closeups_v1-step00008300.safetensors"]
+    assert all("turbo" not in n.lower() and "larry" not in n.lower() for n in names)
+    assert assert_t2v_graph(g) == []
 
 
 def test_friendly_select_error_for_child_and_picture1():

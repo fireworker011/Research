@@ -505,3 +505,20 @@ def test_forbidden_json_extra_is_editable(tmp_path: Path):
         assert "brandx" in str(exc)
     else:
         raise AssertionError("expected SelectError")
+
+
+def test_locked_minors_stay_child_terms():
+    from select_loras import LOCKED_MINORS
+
+    assert "shota" in LOCKED_MINORS
+    assert "loli" in LOCKED_MINORS
+    assert "child" in LOCKED_MINORS
+    assert "政府" not in LOCKED_MINORS
+    assert "暴力" not in LOCKED_MINORS
+    catalog = json.loads((ROOT / "catalog" / "forbidden.json").read_text(encoding="utf-8"))
+    assert catalog["min_age"] == 21
+    assert "shota" in catalog["minors"]
+    assert "政府" not in catalog["minors"]
+    loras = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    coach = next(row for row in loras["loras"] if row["id"] == "anal-penetration-coachbate")
+    assert coach.get("paid") is True

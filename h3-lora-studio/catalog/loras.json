@@ -32,8 +32,9 @@
       "civitai_model_id": 2901443,
       "civitai_version_id": 3280824,
       "civitai_file_id": 3171526,
+      "paid": true,
       "strength_range": [0.7, 1.0],
-      "note": "No trigger. Hole-visible close-up. Turbo off."
+      "note": "No trigger. Hole-visible close-up. Turbo off. Civitai paidAccess; ③ falls back to AIO if the file is missing."
     },
     {
       "id": "synth-pussy-h3",

@@ -59,7 +59,12 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 最速プレビュー（エロなし） | 量産プレビュー | LightX2V 4step 1.0 + シネマ 0.4 |
 | 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
-| アナル挿入（画質） | 穴が見える挿入。本線 | CoachBate 0.85 + 穴の見え方 0.55。Turbo なし |
+| アナル挿入（画質） | 穴が見える挿入。本線 | CoachBate。無いときは総合えっち。Turbo なし |
+| アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
+| フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
+| ふたなりフェラ | フェラと同じ積み。AIO なし。女体のみ | フェラ + 竿 + Larry |
+| セックス（女体） | 挿入。男にはしない | 総合えっち 0.75 + 竿 0.7 + Larry 0.7 / 8step |
+| アナルセックス（女体） | アナル挿入。挿入側も女体 | CoachBate + 竿。無いときは総合えっち＋竿 |
 | アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
 | ふたなりフェラ | フェラと同じ積み。AIO なし。女体のみ | フェラ + 竿 + Larry |
@@ -239,8 +244,9 @@ except Exception:
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs
 from h3_lora_studio import (
-    SITUATION_HELP, civitai_token, civitai_token_help, download_jobs_for,
-    fetch_weight, load_catalog, missing_civitai_files, resolve_situation, situation_ids,
+    SITUATION_HELP, civitai_token, civitai_token_help, civitai_download_fallbacks,
+    download_jobs_for, fetch_weight, load_catalog, missing_civitai_files,
+    resolve_situation, situation_ids,
 )
 
 print("今のシーン:", 今使うシーン)
@@ -295,6 +301,8 @@ else:
 catalog = load_catalog(STUDIO)
 # Civitai API をここで読む。名前は CIVITAI_API_TOKEN。値は print しない。
 token = civitai_token(CivitaiのAPIキー)
+if token:
+    os.environ["CIVITAI_API_TOKEN"] = token
 print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
 jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
 need = missing_civitai_files(jobs)
@@ -303,11 +311,14 @@ if need and not token:
 skipped = []
 for url, dest, row in jobs:
     auth = "civitai" if str(row.get("source")) == "civitai" else ""
-    if not fetch_weight(url, dest, token=token, auth=auth):
+    fallbacks = civitai_download_fallbacks(row) if auth else None
+    if not fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks):
         skipped.append(dest.name)
+        if dest.name == "H3_anal_penetration_v1.safetensors":
+            print("アナル挿入の専用部品は Civitai 有料のことがあります。③では総合えっちで代用します。Drive の models/loras に置けば専用になります。")
 if skipped:
     print("一部スキップ:", ", ".join(skipped))
-    print("今のシーンに不要なら③へ。必要なら②をあとで再実行。")
+    print("今のシーンに不要なら③へ。必要なら Drive の models/loras に置いてください。②をもう一度回すだけでは取れないことがあります。")
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
@@ -362,7 +373,8 @@ MD3 = r"""## ③ 動画を作る
 - **最速プレビュー（エロなし）** … LightX2V 4step。当たりは日常で焼き直し
 - **音も残す（エロなし）** … LightX2V 8step
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
-- **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし
+- **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし。専用部品が無いときは総合えっちで代用
+- **アナルセックス（女体）** … CoachBate + 竿。Turbo なし。挿入側も女体。専用部品が無いときは総合えっち＋竿
 - **アナル舐め・指** … 舐め、それから指
 - **フェラ / ふたなりフェラ** … 正面から竿。`bl0w_j0b` と `PENISLORA` は自動。女体のみ
 - **セックス（女体）** … 総合えっち + 竿 + Larry 8step。男・筋肉質の男体にはしない
@@ -419,9 +431,13 @@ from h3_motion_graphics import (
     validate_studio_i2v_prompt,
 )
 from h3_lora_studio import (
-    apply_user_prompt, explain_choice, format_job_fail, friendly_lora, friendly_select_error,
+    apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail,
+    friendly_lora, friendly_select_error,
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
     resolve_mode, resolve_situation, clamp_studio_duration,
+    apply_stack_fallbacks, missing_stack_files, comfy_missing_loras,
+    download_jobs_for, fetch_weight, load_catalog, civitai_token,
+    civitai_download_fallbacks, restart_studio_comfy,
 )
 from select_loras import forbidden_hits, load_forbidden, select_loras
 
@@ -567,6 +583,43 @@ if not diff and not 試し打ちだけ:
     raise SystemExit("土台がありません。②を先に実行してください。")
 unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 
+if not VANILLA:
+    lora_dir = COMFY_DIR / "models" / "loras"
+    catalog_now = load_catalog(STUDIO)
+    need = missing_stack_files(stack, lora_dir)
+    if need:
+        print("足りない部品を入れます:", ", ".join(need))
+        token = civitai_token("")
+        jobs = download_jobs_for([str(x.get("id") or "") for x in stack if x.get("id")], lora_dir, catalog=catalog_now)
+        for url, dest, row in jobs:
+            if dest.name not in need and dest.name not in [Path(n).name for n in need]:
+                continue
+            auth = "civitai" if str(row.get("source")) == "civitai" else ""
+            fallbacks = civitai_download_fallbacks(row) if auth else None
+            fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)
+    stack, replaced = apply_stack_fallbacks(stack, lora_dir, catalog_now)
+    if replaced:
+        print("アナル専用部品が無かったので総合えっちで代用します。Drive の models/loras に H3_anal_penetration_v1.safetensors を置けば専用になります。")
+        print("入る部品:")
+        for x in stack:
+            print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), x.get("role") or "")
+    still = missing_stack_files(stack, lora_dir)
+    if still and not 試し打ちだけ:
+        raise SystemExit(
+            "このシーンの部品がありません: " + ", ".join(still)
+            + "。Drive の models/loras に置いて③をもう一度実行してください。"
+            " ②をもう一度回すだけでは取れないことがあります（Civitai 有料）。"
+        )
+    unseen = comfy_missing_loras(stack, obj) if obj else []
+    if unseen and not 試し打ちだけ:
+        print("エンジンが新しい部品をまだ見ていないので、再読み込みします…")
+        restart_studio_comfy(COMFY_DIR, port=PORT)
+        with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60) as r:
+            obj = json.loads(r.read().decode())
+        unseen = comfy_missing_loras(stack, obj)
+        if unseen:
+            print("まだ見えていないファイル:", ", ".join(unseen), "（このまま試します）")
+
 first_name = None
 if MODE == "i2v":
     inp = COMFY_DIR / "input"
@@ -701,7 +754,7 @@ else:
             if is_oom_error(err):
                 print("メモリが足りなかったので、小さい画面でやり直します。")
                 continue
-            raise SystemExit("失敗しました。②からやり直すか、シーンを変えてみてください。")
+            raise SystemExit(format_prompt_http_fail(err, stack))
         ok, payload = wait_prompt(res["prompt_id"])
         if ok:
             ok_entry = payload

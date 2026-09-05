@@ -103,13 +103,13 @@ SITUATION_HELP = {
     "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "舐め・指。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。行為は1本だけ。",
-    "anal_penetration": "アナル挿入の本線。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。12〜20 step。",
+    "anal_penetration": "アナル挿入の本線。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。12〜20 step。専用部品が Civitai 有料で無いときは総合えっちで代用。",
     "lesbian_cunnilingus": "レズクンニ。全裸の出会い→抱きつきキス→押し倒してクンニ。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。秒数は 10 が安定。",
     "pussy_spread": "性器を広げる。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。",
     "lesbian_spread": "レズクンニに広げるを足す。クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方はヘルパー枠のため外す。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 + Larry 0.7。AIO とふたなり部品は足さない。出演は女体のみ。男・筋肉質の男体にはしない。",
     "futa_sex": "セックス（女体）。総合えっち 0.75 + 竿 0.7 + Larry 0.7 / 8step。ふたなり変身 LoRA は足さない。男・筋肉質・男らしい体にはしない。",
-    "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7。Turbo なし・16step。挿入側も女体。男にはしない。",
+    "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7。Turbo なし・16step。挿入側も女体。男にはしない。専用部品が無いときは総合えっち＋竿。",
     "oral": "フェラ本線。フェラ 0.75 + 竿 0.7 + Larry 0.7。",
     "general_sex": "汎用エロ。AIO 0.75 + Larry 0.5 / 8step。穴が曖昧でいいとき。",
     "preview": "試し打ち。AIO 0.7 + LightX2V 4step。当たりだけ本線で焼き直す。",
@@ -519,6 +519,161 @@ def fetch_weight(
         raise RuntimeError(msg)
     print("スキップ:", msg)
     return False
+
+
+def resolve_lora_relname(lora_dir: Path | str, filename: str) -> str | None:
+    """Return the Comfy lora_name (relative to models/loras) if the weight is on disk."""
+    root = Path(lora_dir)
+    name = str(filename or "").strip()
+    if not name:
+        return None
+    direct = root / name
+    if already_have_weight(direct):
+        return name.replace("\\", "/")
+    target = Path(name).name.lower()
+    if not root.is_dir():
+        return None
+    for hit in root.rglob("*.safetensors"):
+        if hit.name.lower() == target and already_have_weight(hit):
+            return str(hit.relative_to(root)).replace("\\", "/")
+    return None
+
+
+def missing_stack_files(stack: list[dict[str, Any]], lora_dir: Path | str) -> list[str]:
+    missing: list[str] = []
+    for item in stack:
+        name = str(item.get("filename") or "")
+        if not resolve_lora_relname(lora_dir, name):
+            missing.append(name or str(item.get("id") or "?"))
+    return missing
+
+
+def comfy_lora_basenames(obj: dict[str, Any] | None) -> set[str]:
+    names: set[str] = set()
+
+    def walk(node: Any) -> None:
+        if isinstance(node, str):
+            if node.lower().endswith(".safetensors"):
+                names.add(Path(node).name.lower())
+            return
+        if isinstance(node, dict):
+            for val in node.values():
+                walk(val)
+            return
+        if isinstance(node, (list, tuple)):
+            for val in node:
+                walk(val)
+
+    walk((obj or {}).get("LoraLoaderModelOnly") or {})
+    return names
+
+
+def comfy_missing_loras(stack: list[dict[str, Any]], obj: dict[str, Any] | None) -> list[str]:
+    known = comfy_lora_basenames(obj)
+    if not known:
+        return []
+    missing: list[str] = []
+    for item in stack:
+        name = Path(str(item.get("filename") or "")).name
+        if name and name.lower() not in known:
+            missing.append(name)
+    return missing
+
+
+def apply_stack_fallbacks(
+    stack: list[dict[str, Any]],
+    lora_dir: Path | str,
+    catalog: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], bool]:
+    """CoachBate is often Civitai-paid. If it is missing, use AIO so ③ still runs."""
+    index = catalog_by_id(catalog)
+    out: list[dict[str, Any]] = []
+    replaced = False
+    for item in stack:
+        resolved = resolve_lora_relname(lora_dir, str(item.get("filename") or ""))
+        if resolved:
+            row = dict(item)
+            row["filename"] = resolved
+            out.append(row)
+            continue
+        if str(item.get("id")) != "anal-penetration-coachbate":
+            out.append(item)
+            continue
+        alt = index.get("hmnsfw-aio-v25") or {}
+        alt_name = resolve_lora_relname(lora_dir, str(alt.get("filename") or ""))
+        if not alt_name:
+            out.append(item)
+            continue
+        replaced = True
+        out.append(
+            {
+                "id": "hmnsfw-aio-v25",
+                "role": "act",
+                "filename": alt_name,
+                "strength_model": 0.75,
+                "trigger": str(alt.get("trigger") or ""),
+                "turbo": False,
+            }
+        )
+    return out, replaced
+
+
+def format_prompt_http_fail(err: str, stack: list[dict[str, Any]] | None = None) -> str:
+    """HTTP 400 from Comfy. Do not send the user back to ② as the only hint."""
+    detail = str(err or "").strip()[:800]
+    names = [str(x.get("filename") or "") for x in (stack or []) if x.get("filename")]
+    low = detail.lower()
+    base = "エンジンがグラフを受け取りませんでした。"
+    if any(key in low for key in ("lora", "not in list", "not found", "does not exist", "value not")):
+        base += (
+            " 部品のファイルがエンジンに見えていません。"
+            " Drive の models/loras を確認するか、このセルをもう一度実行します（エンジンを再読み込みします）。"
+        )
+    if names:
+        base += " 使うファイル: " + ", ".join(names) + "。"
+    if detail:
+        return base + "\n" + detail
+    return base
+
+
+def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
+    """New LoRAs are invisible until Comfy restarts."""
+    import subprocess
+    import time
+
+    subprocess.run(["fuser", "-k", f"{port}/tcp"], check=False, capture_output=True)
+    time.sleep(2)
+    log = Path("/content/comfyui.log")
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log_f = open(log, "a", buffering=1)
+    cmd = [
+        sys.executable,
+        "main.py",
+        "--listen",
+        "127.0.0.1",
+        "--port",
+        str(port),
+        "--highvram",
+        "--disable-auto-launch",
+        "--enable-cors-header",
+    ]
+    subprocess.Popen(
+        cmd,
+        cwd=str(comfy_dir),
+        stdout=log_f,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    for _ in range(90):
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=3) as resp:
+                data = json.loads(resp.read().decode())
+            if "MiniMaxH3ImageToVideo" in data:
+                return
+        except Exception:
+            pass
+        time.sleep(2)
+    raise SystemExit("エンジンの再起動に失敗しました。ランタイムを再起動して①から実行してください。")
 
 
 def inject_lora_stack(
