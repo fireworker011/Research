@@ -80,6 +80,31 @@ UNDERAGE_YEARS_RE = re.compile(
     r"(?i)(?<!\d)(20|1[0-9]|[1-9])\s*(?:-?\s*years?\s*old|-?\s*year[- ]olds?|y\.?o\.?\b|yo\b|歳)"
 )
 UNDERAGE_AGE_EQ_RE = re.compile(r"(?i)\bage\s*[:=]?\s*(20|1[0-9]|[1-9])\b")
+FEMININE_LOCK_MARK = "feminine_lock:"
+FEMININE_LOCK_PROMPT = (
+    "feminine_lock: Every visible person is an adult woman, clearly over 21. "
+    "Soft feminine face, feminine body, feminine hips and breasts. "
+    "No man. No male. No muscle. No masculine face. No masculine body. "
+    "No muscular male physique. No muscle-bound body. No beard. No adam's apple. "
+    "No broad male shoulders. The partner with a penis remains a woman, never a man."
+)
+FEMININE_NEGATIVE = (
+    "man, male, male body, masculine, muscular man, muscular male, muscle-bound, "
+    "bodybuilder, beard, mustache, adam's apple, male face, male torso, male chest, "
+    "1boy, 男, 男性, 男体, 筋肉質の男, 男らしい顔, 男らしい体"
+)
+MALE_SUBJECT_RES = (
+    (re.compile(r"(?i)\badult men\b"), "adult women, feminine bodies, not men"),
+    (re.compile(r"(?i)\badult man\b"), "adult woman, feminine body, not a man"),
+    (re.compile(r"(?i)(?<!not )(?<!never )(?<!no )\b(?:a|the) men\b"), "adult women"),
+    (re.compile(r"(?i)(?<!not )(?<!never )(?<!no )\b(?:a|the) man\b"), "an adult woman"),
+    (re.compile(r"(?i)\b1boys?\b"), "adult woman"),
+    (re.compile(r"(?i)\bmuscular (?:man|male|men|male body)\b"), "soft feminine body"),
+    (re.compile(r"(?i)\blying on his back\b"), "lying on her back"),
+    (re.compile(r"(?i)\brides him\b"), "rides her partner"),
+    (re.compile(r"男性"), "成人女性"),
+    (re.compile(r"マッチョ"), "柔らかい女体"),
+)
 
 
 class SelectError(SystemExit):
@@ -430,6 +455,27 @@ def assert_stack_budget(
         raise SelectError("CoachBate anal penetration stays turbo off")
 
 
+def strip_male_subjects(text: str) -> str:
+    out = str(text or "")
+    for rx, repl in MALE_SUBJECT_RES:
+        out = rx.sub(repl, out)
+    return out
+
+
+def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> tuple[str, str]:
+    if not bool(profile.get("feminine_lock")):
+        return str(prompt or ""), str(negative or "")
+    prompt = strip_male_subjects(prompt)
+    low = prompt.lower()
+    if FEMININE_LOCK_MARK not in low:
+        prompt = prompt.rstrip() + "\n\n" + FEMININE_LOCK_PROMPT
+    neg = str(negative or "").strip()
+    extra = FEMININE_NEGATIVE
+    if extra.lower() not in neg.lower():
+        neg = (neg + ", " + extra).strip(", ")
+    return prompt, neg
+
+
 def resolve_prompt(profile: dict[str, Any], prompt_arg: str | None, mode: str) -> str:
     raw = "" if prompt_arg is None else str(prompt_arg).strip()
     if raw not in SCENE_ALIASES:
@@ -583,9 +629,11 @@ def select_loras(
         raise SelectError(f"{profile_name} does not support mode {mode}")
 
     prompt = resolve_prompt(profile, prompt_arg, mode)
+    negative = str(profile.get("negative") or "")
+    prompt, negative = apply_feminine_lock(prompt, negative, profile)
     hits = forbidden_hits(
         prompt,
-        negative=str(profile.get("negative") or ""),
+        negative=negative,
         extra=extra_forbidden,
         path=forbidden_path,
     )
@@ -599,8 +647,10 @@ def select_loras(
     enabled = enabled_specs(profile, mode)
     if turbo_override is False:
         enabled = [spec for spec in enabled if spec.get("role") != "turbo"]
-    if turbo_override is True and profile_name == "anal_penetration":
-        raise SelectError("CoachBate anal penetration stays turbo off")
+    if turbo_override is True:
+        act = next((spec for spec in enabled if spec.get("role") == "act"), None)
+        if act and str(act.get("id")) == "anal-penetration-coachbate":
+            raise SelectError("CoachBate anal penetration stays turbo off")
     assert_stack_budget(enabled, index, nsfw=nsfw)
 
     stack: list[dict[str, Any]] = []
@@ -689,7 +739,7 @@ def select_loras(
         "nsfw": nsfw,
         "turbo": has_turbo,
         "prompt": prompt,
-        "negative": str(profile.get("negative") or ""),
+        "negative": negative,
         "forbidden_extra": parse_extra_terms(
             ",".join(extra_terms(forbidden_path) + list(extra_forbidden or []))
         ),

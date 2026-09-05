@@ -123,6 +123,17 @@ def test_japanese_form_labels():
     assert resolve_situation("レズビアンクンニ") == "lesbian_cunnilingus"
     assert resolve_situation("性器を広げる") == "pussy_spread"
     assert resolve_situation("レズ＋広げる") == "lesbian_spread"
+    assert resolve_situation("セックス（女体）") == "futa_sex"
+    assert resolve_situation("ふたなりセックス") == "futa_sex"
+    assert resolve_situation("アナルセックス（女体）") == "futa_anal"
+    assert resolve_situation("アナルセックス") == "futa_anal"
+    futa_sex = explain_choice("セックス（女体）", "テキストから（写真なし）")
+    assert "総合えっち" in futa_sex or "竿" in futa_sex
+    assert "男" in futa_sex
+    assert "hmnsfw-aio-v25" not in futa_sex
+    futa_anal = explain_choice("アナルセックス（女体）", "テキストから（写真なし）")
+    assert "Turbo" in futa_anal or "CoachBate" in futa_anal
+    assert "竿" in futa_anal
     assert friendly_lora("lesbian-cunnilingus-h3") == "レズクンニ"
     assert friendly_lora("pussy-spread-h3") == "性器を広げる"
     les = explain_choice("レズビアンクンニ", "テキストから（写真なし）")

@@ -54,7 +54,9 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル挿入（画質） | `anal_penetration` | CoachBate 0.85 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8 |
 | フェラ | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | euler / simple / 8 |
-| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | AIO / Futa LoRA なし |
+| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | AIO / Futa LoRA なし。女体ロック |
+| セックス（女体） | `futa_sex` | AIO 0.75 | Penis 0.7 | Larry 0.5 | なし | 男・筋肉質の男体にしない |
+| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 | **切る** | **切る** | 挿入側も女体。Turbo なし |
 | 汎用エロ | `general_sex` | AIO 0.75 | なし | LightX2V 0.5 | なし | euler / simple / 12 |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |

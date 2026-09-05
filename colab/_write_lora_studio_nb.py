@@ -62,7 +62,9 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | アナル挿入（画質） | 穴が見える挿入。本線 | CoachBate 0.85 + 穴の見え方 0.55。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
-| ふたなりフェラ | フェラと同じ積み。AIO なし | フェラ + 竿 + Larry |
+| ふたなりフェラ | フェラと同じ積み。AIO なし。女体のみ | フェラ + 竿 + Larry |
+| セックス（女体） | 挿入。男にはしない | 総合えっち 0.75 + 竿 0.7 + Larry 0.5 |
+| アナルセックス（女体） | アナル挿入。挿入側も女体 | CoachBate 0.85 + 竿 0.7。Turbo なし |
 | 汎用エロ | 挿入が曖昧でいい | AIO 0.75 + LightX2V 0.5 / 12 step |
 | 試し打ち | エロの量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
 | レズビアンクンニ | 全裸の出会い→キス→クンニ | クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5 |
@@ -149,7 +151,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -194,6 +196,8 @@ studio_files = [
     "h3-lora-studio/profiles/anal_closeup.json",
     "h3-lora-studio/profiles/anal_penetration.json",
     "h3-lora-studio/profiles/futa_blowjob.json",
+    "h3-lora-studio/profiles/futa_sex.json",
+    "h3-lora-studio/profiles/futa_anal.json",
     "h3-lora-studio/profiles/oral.json",
     "h3-lora-studio/profiles/general_sex.json",
     "h3-lora-studio/profiles/lesbian_cunnilingus.json",
@@ -281,7 +285,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -359,7 +363,9 @@ MD3 = r"""## ③ 動画を作る
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし
 - **アナル舐め・指** … 舐め、それから指
-- **フェラ / ふたなりフェラ** … 正面から竿。`bl0w_j0b` と `PENISLORA` は自動
+- **フェラ / ふたなりフェラ** … 正面から竿。`bl0w_j0b` と `PENISLORA` は自動。女体のみ
+- **セックス（女体）** … 総合えっち + 竿。男・筋肉質の男体にはしない
+- **アナルセックス（女体）** … CoachBate + 竿。Turbo なし。挿入側も女体
 - **汎用エロ / 試し打ち** … 挿入は曖昧でいい。試し打ちの当たりは本線で焼き直す
 - **レズビアンクンニ** … 全裸の出会い→抱きつきキス→押し倒してクンニ。穴の見え方付き。秒数は 10 が安定
 - **性器を広げる** … 広げる + 穴の見え方
@@ -368,7 +374,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。

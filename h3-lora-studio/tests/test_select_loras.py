@@ -7,7 +7,15 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
-from select_loras import SelectError, forbidden_hits, list_situations, load_forbidden, select_loras  # noqa: E402
+from select_loras import (  # noqa: E402
+    SelectError,
+    apply_feminine_lock,
+    forbidden_hits,
+    list_situations,
+    load_forbidden,
+    select_loras,
+    strip_male_subjects,
+)
 
 
 def test_anal_penetration_i2v_stacks_enabled_only():
@@ -76,7 +84,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert preview["stack"][1]["strength_model"] == 1.0
     listed = list_situations()
     ids = {row["id"] for row in listed["situations"]}
-    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "general_sex", "preview", "sfw_daily", "sfw_preview", "sfw_audio", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"} <= ids
+    assert {"anal_penetration", "anal_closeup", "oral", "futa_blowjob", "futa_sex", "futa_anal", "general_sex", "preview", "sfw_daily", "sfw_preview", "sfw_audio", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"} <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
     assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
     assert oral["turbo"] is True
@@ -157,6 +165,54 @@ def test_cli_emits_json():
     data = json.loads(proc.stdout)
     assert data["turbo"] is False
     assert [row["id"] for row in data["stack"]] == ["anal-penetration-coachbate", "synth-pussy-h3"]
+
+
+def test_futa_sex_and_anal_stay_feminine():
+    sex = select_loras(profile_name="futa_sex", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in sex["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"]
+    assert [r["role"] for r in sex["stack"]] == ["act", "helper", "turbo"]
+    assert sex["sampler"]["steps"] == 8
+    assert "futa-h3-v51" not in [r["id"] for r in sex["stack"]]
+    low = sex["prompt"].lower()
+    assert "adult woman" in low
+    assert "no man" in low
+    assert "no muscle" in low
+    assert "feminine_lock:" in low
+    assert "adult man" not in low
+    assert "man" in sex["negative"].lower()
+    assert "Picture 1" not in sex["prompt"]
+    anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3"]
+    assert anal["turbo"] is False
+    assert anal["sampler"]["steps"] >= 16
+    assert "<Picture 1>" in anal["prompt"]
+    assert "adult man" not in anal["prompt"].lower()
+    assert "anus" in anal["prompt"].lower()
+    custom = select_loras(
+        profile_name="futa_sex",
+        mode="t2v",
+        prompt_arg="An adult man and a muscular man have sex in a bedroom. All performers are 21.",
+    )
+    clow = custom["prompt"].lower()
+    assert "adult man" not in clow
+    assert "muscular man" not in clow
+    assert "feminine" in clow
+    assert "no man" in clow
+    bj = select_loras(profile_name="futa_blowjob", mode="t2v")
+    assert "adult woman" in bj["prompt"].lower()
+    assert "adult man" not in bj["prompt"].lower()
+    try:
+        select_loras(profile_name="futa_anal", mode="i2v", turbo_override=True)
+    except SelectError as exc:
+        assert "turbo" in str(exc).lower() or "CoachBate" in str(exc)
+    else:
+        raise AssertionError("expected SelectError")
+    rewritten = strip_male_subjects("Adult man lying on his back. A man waits.")
+    assert "adult man" not in rewritten.lower()
+    locked, neg = apply_feminine_lock("Two adults over 21.", "child", {"feminine_lock": True})
+    assert "feminine_lock:" in locked.lower()
+    assert "no man" in locked.lower()
+    assert "male body" in neg.lower()
 
 
 def test_refuses_turbo_override():
