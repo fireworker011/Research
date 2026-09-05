@@ -358,7 +358,7 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert situation_ids("riding") == ["hmnsfw-aio-v25", "larry-v4"]
     assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("futa_anal") == ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
 

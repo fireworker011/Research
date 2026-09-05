@@ -440,8 +440,6 @@ def assert_stack_budget(
             raise SelectError("adult stack needs one act LoRA")
         if helper_n and "cinema" in roles:
             raise SelectError("cinema replaces helper; do not stack both")
-        if helper_n > 1 and "turbo" in roles:
-            raise SelectError("two helpers stay turbo off")
         if FULL_STACK_IDS <= ids:
             raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
         non_turbo = [s for s in specs if s.get("role") != "turbo"]

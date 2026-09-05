@@ -75,9 +75,8 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert oral_t2v["stack"][2]["strength_model"] == 0.7
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
-    assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert "futa-h3-v51" not in futa_t2v
-    assert "larry-v4" not in futa_t2v
     assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
     assert general["stack"][0]["strength_model"] == 0.8
     assert general["stack"][1]["strength_model"] == 0.5
@@ -220,12 +219,13 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "feminine" in clow
     assert "no man" in clow
     bj = select_loras(profile_name="futa_blowjob", mode="t2v")
-    assert [r["id"] for r in bj["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert [r["role"] for r in bj["stack"]] == ["act", "helper", "helper"]
+    assert [r["id"] for r in bj["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+    assert [r["role"] for r in bj["stack"]] == ["act", "helper", "helper", "turbo"]
     assert bj["stack"][1]["strength_model"] == 0.7
     assert bj["stack"][2]["strength_model"] == 0.55
-    assert bj["turbo"] is False
-    assert bj["sampler"]["steps"] == 12
+    assert bj["stack"][3]["strength_model"] == 0.5
+    assert bj["turbo"] is True
+    assert bj["sampler"]["steps"] == 8
     blow = bj["prompt"].lower()
     assert "adult woman" in blow
     assert "adult man" not in blow
@@ -351,19 +351,22 @@ def test_refuses_full_quality_stack(tmp_path: Path):
         raise AssertionError("expected SelectError")
 
 
-def test_two_helpers_stay_turbo_off(tmp_path: Path):
+def test_refuses_three_helpers(tmp_path: Path):
     catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     cat_path = tmp_path / "loras.json"
     cat_path.write_text(json.dumps(catalog), encoding="utf-8")
     profile = json.loads((ROOT / "profiles" / "futa_blowjob.json").read_text(encoding="utf-8"))
-    profile["stack_plan"]["turbo"] = {"id": "larry-v4", "strength": 0.5}
-    profile["disabled"] = [x for x in profile["disabled"] if x != "larry-v4"]
+    profile["stack_plan"]["helper"] = [
+        {"id": "penis-lora-h3", "strength": 0.7},
+        {"id": "synth-pussy-h3", "strength": 0.55},
+        {"id": "pussy-spread-h3", "strength": 0.6},
+    ]
+    profile["disabled"] = [x for x in profile["disabled"] if x != "pussy-spread-h3"]
     (tmp_path / "futa_blowjob.json").write_text(json.dumps(profile), encoding="utf-8")
     try:
         select_loras(profile_name="futa_blowjob", mode="t2v", catalog_path=cat_path, profiles_dir=tmp_path)
     except SelectError as exc:
-        msg = str(exc).lower()
-        assert "two helpers" in msg or "turbo" in msg
+        assert "helper" in str(exc).lower()
     else:
         raise AssertionError("expected SelectError")
 
