@@ -273,6 +273,8 @@ def missing_civitai_files(
 
 
 DOWNLOAD_UA = "Mozilla/5.0 (compatible; h3-lora-studio/1.0)"
+# Drive FUSE: reading 16 bytes of a GB file can stream the whole object. Trust size.
+SKIP_WITHOUT_HEADER = 5 * 1024 * 1024
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -334,6 +336,18 @@ def looks_like_safetensors(path: Path, *, min_bytes: int = 1_000_000) -> bool:
     if header_len < 2 or header_len > 100_000_000:
         return False
     return head[8:9] == b"{"
+
+
+def already_have_weight(path: Path, *, min_bytes: int = 1_000_000) -> bool:
+    """Skip without reading GB files from Google Drive."""
+    if not path.is_file():
+        return False
+    size = path.stat().st_size
+    if size < min_bytes:
+        return False
+    if size >= SKIP_WITHOUT_HEADER:
+        return True
+    return looks_like_safetensors(path, min_bytes=min_bytes)
 
 
 def quote_http_url(url: str) -> str:
@@ -420,7 +434,7 @@ def fetch_weight(
     strict: bool | None = None,
 ) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if dest.is_file() and looks_like_safetensors(dest, min_bytes=min_bytes):
+    if already_have_weight(dest, min_bytes=min_bytes):
         print(f"skip {dest.name} ({dest.stat().st_size / 1e6:.1f} MB)")
         return True
     urls = [url]

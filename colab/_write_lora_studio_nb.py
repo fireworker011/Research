@@ -126,7 +126,8 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い）
 下のセルで、動画の土台と部品を Drive に入れます。普通の I2V / T2V ノートと同じ場所です。
 
 - **初めて** … 20〜40分かかることがあります。途中で止まっても、もう一度押せば続きから入ります
-- **2回目以降** … すでに入っているファイルは飛ばすので速いです
+- **同じランタイムで2回目** … Drive にあるファイルは飛ばす。pip も飛ばす。エンジンが生きていればすぐ終わる
+- **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。Comfy の入れ直しと起動で数分
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
 - 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
 
@@ -238,10 +239,15 @@ if not (COMFY_DIR / "main.py").is_file():
     print("動画ソフトを入れています…")
     sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(COMFY_DIR)])
 else:
-    sh(["git", "-C", str(COMFY_DIR), "pull", "--ff-only"])
+    print("動画ソフトはすでにあります。更新はしません。")
 req = COMFY_DIR / "requirements.txt"
-if req.is_file():
+pip_stamp = Path("/content/.h3_pip_ok")
+if pip_stamp.is_file():
+    print("Python 部品は前回入れ済み。飛ばします。")
+elif req.is_file():
+    print("Python 部品を入れています（このランタイムの初回だけ）…")
     sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    pip_stamp.write_text("ok", encoding="utf-8")
 
 def link_dir(link_path: Path, target: Path):
     target.mkdir(parents=True, exist_ok=True)

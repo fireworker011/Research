@@ -18,6 +18,7 @@ from h3_lora_studio import (
     is_vanilla,
     load_catalog,
     looks_like_safetensors,
+    already_have_weight,
     merge_optional,
     missing_civitai_files,
     quote_http_url,
@@ -192,6 +193,12 @@ def test_looks_like_safetensors(tmp_path):
     tiny = tmp_path / "tiny.safetensors"
     tiny.write_bytes(b'{"error":"no"}')
     assert looks_like_safetensors(tiny) is False
+    big = tmp_path / "big.bin"
+    big.write_bytes(b"not-safetensors" + b"\0" * 6_000_000)
+    assert already_have_weight(big) is True
+    assert already_have_weight(fake_html) is False
+    assert already_have_weight(real) is True
+    assert already_have_weight(tiny) is False
 
 
 def test_civitai_token_prefers_form(monkeypatch):
@@ -232,8 +239,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "timeout=3600" in src
     assert "format_job_fail(MODE, payload)" in src
     assert "写真から作るなら input の jpg" not in src
+    assert ".h3_pip_ok" in src
+    assert "更新はしません" in src
     helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
     assert "テキストから作れませんでした" in helper.read_text(encoding="utf-8")
+    assert "already_have_weight" in helper.read_text(encoding="utf-8")
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
