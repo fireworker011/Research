@@ -206,8 +206,7 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "<Picture 1>" in anal["prompt"]
     assert "adult man" not in anal["prompt"].lower()
     assert "anus" in anal["prompt"].lower()
-    assert "vulva" in anal["prompt"].lower()
-    assert "not futanari" in anal["prompt"].lower()
+    assert "vulva" not in anal["prompt"].lower()
     custom = select_loras(
         profile_name="futa_sex",
         mode="t2v",
@@ -229,12 +228,10 @@ def test_futa_sex_and_anal_stay_feminine():
     blow = bj["prompt"].lower()
     assert "adult woman" in blow
     assert "adult man" not in blow
-    assert "vulva" in blow
-    assert "anus" in blow
     assert "bl0w_j0b" in blow
     assert "penislora" in blow
-    assert "not futanari" in blow
-    assert "complete futanari" in blow
+    assert "vulva" not in blow
+    assert "complete futanari" not in blow
     try:
         select_loras(profile_name="futa_anal", mode="i2v", turbo_override=True)
     except SelectError as exc:

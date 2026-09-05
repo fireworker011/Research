@@ -47,16 +47,16 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ（既存）
 
-同時オンは **行為 1 + ヘルパー 0〜1 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 8step。** セックス（女体）/ アナルはヘルパー2で Turbo オフ。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。アナル専用の見た目 LoRA は無く、穴の見え方がマンコとアナル。
+同時オンは **行為 1 + ヘルパー 0〜1 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 8step。** セックス（女体）/ アナルはヘルパー2で Turbo オフ。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は行為本線だけ。マンコ/アナルの強調は③の文章欄。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
 | アナル挿入（画質） | `anal_penetration` | CoachBate 0.85 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8 |
 | フェラ | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | euler / simple / 8 |
-| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 竿と穴を併用。相手はふたなりではない。8step |
-| セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。挿入と相手の穴 |
-| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 受け側のマンコとアナル。16step |
+| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 空欄はフェラ本線。穴は文章欄。8step |
+| セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。挿入本線。穴の強調は文章欄 |
+| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | アナル挿入本線。マンコは文章欄。16step |
 | 汎用エロ | `general_sex` | AIO 0.8 | なし | Larry 0.5 | なし | euler / simple / 12。正常位。挿入が見える |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
