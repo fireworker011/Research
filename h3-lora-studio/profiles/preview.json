@@ -2,15 +2,34 @@
   "id": "preview",
   "adults_only": true,
   "min_age": 21,
-  "modes": ["i2v", "t2v"],
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
   "allow_turbo": true,
   "canvas": {
-    "i2v": { "width": 768, "height": 864, "duration_s": 5.0, "aspect": "8:9" },
-    "t2v": { "width": 576, "height": 1024, "duration_s": 5.0, "aspect": "9:16" }
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 5.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 5.0,
+      "aspect": "9:16"
+    }
   },
   "stack_plan": {
-    "act": { "id": "hmnsfw-aio-v25", "strength": 0.7 },
-    "turbo": { "id": "minimax-h3-turbo-fl2v-4step", "strength": 1.0 }
+    "act": {
+      "id": "hmnsfw-aio-v25",
+      "strength": 0.7
+    },
+    "turbo": {
+      "id": "minimax-h3-turbo-fl2v-4step",
+      "strength": 1.0
+    }
   },
   "sampler": {
     "sampler_name": "euler",
@@ -32,8 +51,9 @@
     "cinema-dy"
   ],
   "scenes": {
-    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same identity as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom matching <Picture 1>.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of consenting adult sex. Photoreal. Identity locked to <Picture 1>.\noverall_soundscape: Intimate breathing.\nending: Both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "Vertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of consenting adult sex. Photoreal.\noverall_soundscape: Intimate breathing.\nending: Both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "hmmotion\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "hmmotion\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis",
+  "feminine_lock": true
 }

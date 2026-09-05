@@ -133,7 +133,10 @@ def test_lesbian_and_spread_stacks():
     assert [r["strength_model"] for r in les["stack"]] == [0.8, 0.55, 0.5]
     assert "Picture 1" not in les["prompt"]
     low = les["prompt"].lower()
-    assert "kiss" in low and "lick" in low and "sweat" in low
+    assert "kiss" not in low
+    assert "girl-next-door" in low
+    assert "fully nude" in low
+    assert "adult man" not in low
     assert "over 21" in low
     assert "15 years" not in low
     unload = {r["id"] for r in les["unload"]}
@@ -219,10 +222,9 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "adult man" not in low
     assert "man" in sex["negative"].lower()
     assert "Picture 1" not in sex["prompt"]
-    assert "penetrat" in low
-    assert "vagina" in low
-    assert "rhythm" in low
-    assert "implied" not in low
+    assert "girl-next-door" in low
+    assert "fully nude" in low
+    assert "futanari" in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
     assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"]
     assert [r["role"] for r in anal["stack"]] == ["act", "helper", "helper"]
@@ -271,22 +273,23 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "male body" in neg.lower()
 
 
-def test_aio_sex_prompts_show_penetration_not_implied():
+def test_empty_adult_prompts_are_girl_next_door_no_men():
     general = select_loras(profile_name="general_sex", mode="t2v", prompt_arg="（シーン）")
     glow = general["prompt"].lower()
-    assert "implied" not in glow
-    assert "penetrat" in glow
-    assert "vagina" in glow
-    assert "rhythm" in glow
-    assert "missionary" in glow
+    assert "girl-next-door" in glow
+    assert "fully nude" in glow
+    assert "futanari" in glow
+    assert "adult man" not in glow
+    assert "feminine_lock:" in glow
     assert general["sampler"]["steps"] == 12
     i2v = select_loras(profile_name="general_sex", mode="i2v", prompt_arg="（シーン）")
     assert "<Picture 1>" in i2v["prompt"]
-    assert "implied" not in i2v["prompt"].lower()
+    assert "adult man" not in i2v["prompt"].lower()
     ride = select_loras(profile_name="riding", mode="t2v", prompt_arg="（シーン）")
     rlow = ride["prompt"].lower()
     assert "cowgirl" in rlow
-    assert "penetrat" in rlow
+    assert "girl-next-door" in rlow
+    assert "adult man" not in rlow
     assert ride["sampler"]["steps"] == 12
     assert "Picture 1" not in ride["prompt"]
     assert ride["turbo"] is False
@@ -295,6 +298,44 @@ def test_aio_sex_prompts_show_penetration_not_implied():
     assert "hmnsfw-aio-v25" in unload_ride
     assert "riding-pose-i2v" in unload_ride
     assert "larry-v4" in unload_ride
+    oral = select_loras(profile_name="oral", mode="t2v", prompt_arg="（シーン）")
+    olow = oral["prompt"].lower()
+    assert "adult man" not in olow
+    assert "futanari" in olow
+    assert "bl0w_j0b" in olow
+    preview = select_loras(profile_name="preview", mode="t2v", prompt_arg="（シーン）")
+    assert "adult man" not in preview["prompt"].lower()
+    assert "futanari" in preview["prompt"].lower()
+    anal = select_loras(profile_name="anal_penetration", mode="t2v", prompt_arg="（シーン）")
+    assert "adult man" not in anal["prompt"].lower()
+    assert "futanari" in anal["prompt"].lower()
+    close = select_loras(profile_name="anal_closeup", mode="t2v", prompt_arg="（シーン）")
+    assert "adult man" not in close["prompt"].lower()
+    assert "futanari" not in close["prompt"].lower()
+    for name in (
+        "futa_sex",
+        "futa_anal",
+        "futa_blowjob",
+        "riding",
+        "doggy",
+        "missionary_pov",
+        "after_ejaculation",
+        "footjob",
+        "fingering",
+        "masturbation",
+        "remote_orgasm",
+        "pussy_spread",
+        "lesbian_cunnilingus",
+        "lesbian_spread",
+    ):
+        row = select_loras(profile_name=name, mode="t2v", prompt_arg="（シーン）")
+        low = row["prompt"].lower()
+        assert "adult man" not in low, name
+        assert "girl-next-door" in low, name
+        assert "fully nude" in low, name
+        assert "over 21" in low, name
+        assert "feminine_lock:" in low, name
+        assert "Picture 1" not in row["prompt"], name
 
 
 def test_pose_aftercare_and_solo_act_stacks():
@@ -327,7 +368,6 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "h-zshr" in doggy["prompt"].lower()
     assert "Picture 1" not in doggy["prompt"]
     assert "hmnsfw-aio-v25" not in [r["id"] for r in doggy["stack"]]
-    assert "in and out" in doggy["prompt"].lower()
     doggy_i2v = select_loras(profile_name="doggy", mode="i2v", prompt_arg="（シーン）")
     assert "<Picture 1>" in doggy_i2v["prompt"]
 
@@ -337,7 +377,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert pov["sampler"]["steps"] == 8
     assert "synth-pussy-h3" not in [r["id"] for r in pov["stack"]]
     assert "hmnsfw-aio-v25" not in [r["id"] for r in pov["stack"]]
-    assert "point of view" in pov["prompt"].lower()
+    assert "pov" in pov["prompt"].lower()
     assert "Picture 1" not in pov["prompt"]
 
     after = select_loras(profile_name="after_ejaculation", mode="t2v", prompt_arg="（シーン）")

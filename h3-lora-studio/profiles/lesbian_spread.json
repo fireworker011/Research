@@ -3,16 +3,38 @@
   "adults_only": true,
   "min_age": 21,
   "nsfw": true,
-  "modes": ["i2v", "t2v"],
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
   "allow_turbo": true,
   "canvas": {
-    "i2v": { "width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9" },
-    "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
   },
   "stack_plan": {
-    "act": { "id": "lesbian-cunnilingus-h3", "strength": 0.8 },
-    "helper": { "id": "pussy-spread-h3", "strength": 0.6 },
-    "turbo": { "id": "larry-v4", "strength": 0.5 }
+    "act": {
+      "id": "lesbian-cunnilingus-h3",
+      "strength": 0.8
+    },
+    "helper": {
+      "id": "pussy-spread-h3",
+      "strength": 0.6
+    },
+    "turbo": {
+      "id": "larry-v4",
+      "strength": 0.5
+    }
   },
   "sampler": {
     "sampler_name": "euler",
@@ -33,8 +55,9 @@
     "cinema-dy"
   ],
   "scenes": {
-    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same identity as <Picture 1>, sitting on the left, receiving cunnilingus, pussy spread open.\n<Subject 2> Adult woman, clearly over 21, on the right, licking (S1).\n\nenvironment: Private bedroom matching <Picture 1>, warm lamp.\ncamera: Medium close side shot, vulva readable, slow small-amplitude push-in.\nintegrated_multimodal_description: (S2) licks (S1)'s spread pussy. The vulva stays open. Photoreal adult genitals. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "Vertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, sitting on the left, receiving cunnilingus, pussy spread open.\n<Subject 2> Adult woman, clearly over 21, on the right, licking (S1).\n\nenvironment: Private bedroom, warm lamp light.\ncamera: Medium close side shot, vulva readable, slow small-amplitude push-in.\nintegrated_multimodal_description: (S2) licks (S1)'s spread pussy. The vulva stays open. Photoreal adult genitals. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready cunnilingus. No man. No penis. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "Vertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready cunnilingus. No man. No penis.\n\nAll performers are consenting adult women 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, penis, male body"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, penis",
+  "feminine_lock": true
 }

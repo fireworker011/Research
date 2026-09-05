@@ -47,14 +47,14 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は行為本線だけ。マンコ/アナルの強調は③の文章欄。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
 | アナル挿入（画質） | `anal_penetration` | CoachBate 0.85 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8 |
-| フェラ | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | euler / simple / 8 |
-| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 空欄はフェラ本線。穴は文章欄。6step |
+| フェラ（女体） | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | 女がふたなりに。男なし |
+| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
 | アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | アナル挿入本線。マンコは文章欄。16step |
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
@@ -65,7 +65,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
 | 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
 | 絶頂 | `remote_orgasm` | Remoteorgasm 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 8step。射精ではない |
-| 汎用エロ | `general_sex` | AIO 0.8 | なし | Larry 0.5 | なし | euler / simple / 12。正常位。挿入が見える |
+| 汎用エロ（女体） | `general_sex` | AIO 0.8 | なし | Larry 0.5 | なし | ふたなり＋女。男なし。12step |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
 | 性器を広げる | `pussy_spread` | 広げる 0.75 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
@@ -117,3 +117,4 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 7. ココナラ homage の turbo 既定を変えない
 8. Fal に LoRA を載せない
 9. 体位 LoRA は AIO の代わり。同時に積まない。訓練で体位を足さない
+10. エロは女かふたなりのみ。男は出さない。空欄は全裸のごく普通の若い成人女性（21+）

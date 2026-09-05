@@ -119,16 +119,20 @@ def test_japanese_form_labels():
     assert resolve_situation("アナル挿入") == "anal_penetration"
     assert resolve_mode("テキストから（写真なし）") == "t2v"
     assert resolve_mode("写真から（1枚必要）") == "i2v"
-    text = explain_choice("フェラ", "テキストから（写真なし）")
+    assert resolve_situation("フェラ") == "oral"
+    assert resolve_situation("フェラ（女体）") == "oral"
+    text = explain_choice("フェラ（女体）", "テキストから（写真なし）")
     assert "写真は使いません" in text
     assert "フェラ" in text
     assert "竿" in text
+    assert "男なし" in text
     assert "blowjob-h3" not in text
     assert friendly_lora("synth-pussy-h3") == "穴の見え方"
     assert resolve_situation("アナル挿入（画質）") == "anal_penetration"
     assert resolve_situation("アナル舐め・指") == "anal_closeup"
     assert resolve_situation("試し打ち") == "preview"
     assert resolve_situation("汎用エロ") == "general_sex"
+    assert resolve_situation("汎用エロ（女体）") == "general_sex"
     assert resolve_situation("レズビアンクンニ") == "lesbian_cunnilingus"
     assert resolve_situation("性器を広げる") == "pussy_spread"
     assert resolve_situation("レズ＋広げる") == "lesbian_spread"
@@ -167,9 +171,10 @@ def test_japanese_form_labels():
     assert "Larry" in sfw
     assert "エロ用は入れません" in sfw
     assert "blowjob-h3" not in sfw
-    general = explain_choice("汎用エロ", "テキストから（写真なし）")
+    general = explain_choice("汎用エロ（女体）", "テキストから（写真なし）")
     assert "Larry" in general
     assert "12step" in general
+    assert "男なし" in general
     assert "LightX2V 12" not in general
     riding = explain_choice("騎乗位（女体）", "テキストから（写真なし）")
     assert "騎乗" in riding
@@ -303,10 +308,12 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in src
     assert "h3-lora-studio/profiles/after_ejaculation.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260905-pose-t2v"' in src
+    assert 'FETCH_REV = "h2-20260905-no-men"' in src
+    assert "フェラ（女体）" in src
+    assert "汎用エロ（女体）" in src
     assert "騎乗位（女体）" in blob
     assert "後射精（女体）" in blob
-    assert "h2-20260905-pose-t2v" in blob
+    assert "h2-20260905-no-men" in blob
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():

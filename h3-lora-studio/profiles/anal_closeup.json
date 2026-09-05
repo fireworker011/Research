@@ -2,16 +2,38 @@
   "id": "anal_closeup",
   "adults_only": true,
   "min_age": 21,
-  "modes": ["i2v", "t2v"],
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
   "allow_turbo": true,
   "canvas": {
-    "i2v": { "width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9" },
-    "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
   },
   "stack_plan": {
-    "act": { "id": "synth-pussy-h3", "strength": 0.7 },
-    "turbo": { "id": "larry-v4", "strength": 0.5 },
-    "cinema": { "id": "cinema-dy", "strength": 0.4 }
+    "act": {
+      "id": "synth-pussy-h3",
+      "strength": 0.7
+    },
+    "turbo": {
+      "id": "larry-v4",
+      "strength": 0.5
+    },
+    "cinema": {
+      "id": "cinema-dy",
+      "strength": 0.4
+    }
   },
   "sampler": {
     "sampler_name": "euler",
@@ -33,8 +55,9 @@
     "minimax-h3-turbo-fl2v-4step"
   ],
   "scenes": {
-    "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same identity as <Picture 1>.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp, close readable angle matching <Picture 1>.\ncamera: Close-up of the hips and anus, hole clearly visible, slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) presents her anus to the camera. The hole stays visible. (S2) licks then slowly fingers the anus. Photoreal adult genitals, detailed anus, sweat on skin, nothing cartoon. Identity of (S1) stays locked to <Picture 1>. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "DY\nVertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n<Subject 2> Adult man, clearly over 21.\n\nenvironment: Private bedroom, warm lamp light.\ncamera: Close-up of the hips and anus, hole clearly visible, slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) presents her anus. The hole stays visible. (S2) licks then slowly fingers the anus. Photoreal adult genitals, detailed anus, sweat on skin. No freeze frame.\noverall_soundscape: Intimate breathing.\nending: Motion continues; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready licking and fingering. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "DY\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready licking and fingering. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, invented extra hole"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, invented extra hole",
+  "feminine_lock": true
 }

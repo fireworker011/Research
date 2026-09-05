@@ -478,7 +478,8 @@ def strip_male_subjects(text: str) -> str:
 
 
 def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> tuple[str, str]:
-    if not bool(profile.get("feminine_lock")):
+    nsfw = profile_is_nsfw(profile)
+    if not bool(profile.get("feminine_lock")) and not nsfw:
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
     low = prompt.lower()
