@@ -75,9 +75,9 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert oral_t2v["stack"][2]["strength_model"] == 0.7
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
-    assert futa_t2v == ["blowjob-h3", "synth-pussy-h3", "larry-v4"]
+    assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert "futa-h3-v51" not in futa_t2v
-    assert "penis-lora-h3" not in futa_t2v
+    assert "larry-v4" not in futa_t2v
     assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
     assert general["stack"][0]["strength_model"] == 0.8
     assert general["stack"][1]["strength_model"] == 0.5
@@ -176,14 +176,17 @@ def test_cli_emits_json():
 
 def test_futa_sex_and_anal_stay_feminine():
     sex = select_loras(profile_name="futa_sex", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in sex["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"]
-    assert [r["role"] for r in sex["stack"]] == ["act", "helper", "turbo"]
+    assert [r["id"] for r in sex["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in sex["stack"]] == ["act", "helper", "helper"]
     assert sex["stack"][0]["strength_model"] == 0.8
-    assert sex["stack"][2]["strength_model"] == 0.5
+    assert sex["stack"][1]["strength_model"] == 0.7
+    assert sex["stack"][2]["strength_model"] == 0.55
+    assert sex["turbo"] is False
     assert sex["sampler"]["steps"] == 12
     assert sex["sampler"]["sampler_name"] == "euler"
     assert sex["sampler"]["scheduler"] == "simple"
     assert "futa-h3-v51" not in [r["id"] for r in sex["stack"]]
+    assert "larry-v4" not in [r["id"] for r in sex["stack"]]
     low = sex["prompt"].lower()
     assert "adult woman" in low
     assert "no man" in low
@@ -197,12 +200,15 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "rhythm" in low
     assert "implied" not in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3"]
+    assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in anal["stack"]] == ["act", "helper", "helper"]
     assert anal["turbo"] is False
     assert anal["sampler"]["steps"] >= 16
     assert "<Picture 1>" in anal["prompt"]
     assert "adult man" not in anal["prompt"].lower()
     assert "anus" in anal["prompt"].lower()
+    assert "vulva" in anal["prompt"].lower()
+    assert "not futanari" in anal["prompt"].lower()
     custom = select_loras(
         profile_name="futa_sex",
         mode="t2v",
@@ -214,9 +220,12 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "feminine" in clow
     assert "no man" in clow
     bj = select_loras(profile_name="futa_blowjob", mode="t2v")
-    assert [r["id"] for r in bj["stack"]] == ["blowjob-h3", "synth-pussy-h3", "larry-v4"]
-    assert [r["role"] for r in bj["stack"]] == ["act", "helper", "turbo"]
-    assert bj["stack"][1]["strength_model"] == 0.55
+    assert [r["id"] for r in bj["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in bj["stack"]] == ["act", "helper", "helper"]
+    assert bj["stack"][1]["strength_model"] == 0.7
+    assert bj["stack"][2]["strength_model"] == 0.55
+    assert bj["turbo"] is False
+    assert bj["sampler"]["steps"] == 12
     blow = bj["prompt"].lower()
     assert "adult woman" in blow
     assert "adult man" not in blow
@@ -224,6 +233,8 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "anus" in blow
     assert "bl0w_j0b" in blow
     assert "penislora" in blow
+    assert "not futanari" in blow
+    assert "complete futanari" in blow
     try:
         select_loras(profile_name="futa_anal", mode="i2v", turbo_override=True)
     except SelectError as exc:
@@ -336,6 +347,23 @@ def test_refuses_full_quality_stack(tmp_path: Path):
     except SelectError as exc:
         msg = str(exc).lower()
         assert "cinema" in msg or "full stack" in msg or "helper" in msg
+    else:
+        raise AssertionError("expected SelectError")
+
+
+def test_two_helpers_stay_turbo_off(tmp_path: Path):
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    cat_path = tmp_path / "loras.json"
+    cat_path.write_text(json.dumps(catalog), encoding="utf-8")
+    profile = json.loads((ROOT / "profiles" / "futa_blowjob.json").read_text(encoding="utf-8"))
+    profile["stack_plan"]["turbo"] = {"id": "larry-v4", "strength": 0.5}
+    profile["disabled"] = [x for x in profile["disabled"] if x != "larry-v4"]
+    (tmp_path / "futa_blowjob.json").write_text(json.dumps(profile), encoding="utf-8")
+    try:
+        select_loras(profile_name="futa_blowjob", mode="t2v", catalog_path=cat_path, profiles_dir=tmp_path)
+    except SelectError as exc:
+        msg = str(exc).lower()
+        assert "two helpers" in msg or "turbo" in msg
     else:
         raise AssertionError("expected SelectError")
 

@@ -25,6 +25,7 @@ SCHEMA = "h3-lora-studio/v1"
 SITUATIONS_SCHEMA = "h3-lora-studio-situations/v1"
 MODES = ("t2v", "i2v", "r2v")
 STACK_ROLES = ("act", "helper", "turbo", "cinema")
+MAX_HELPERS = 2
 MAX_CINEMA_NSFW = 0.6
 MAX_CINEMA_SFW = 0.7
 STILL_ONLY_IDS = {"photoreal-h3-still"}
@@ -340,13 +341,20 @@ def plan_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]] | Non
         raw = chosen.get(role)
         if raw in (None, "", False):
             continue
-        if isinstance(raw, str):
-            raw = {"id": raw}
-        if not isinstance(raw, dict) or not raw.get("id"):
-            raise SelectError(f"stack_plan.{role} needs an id")
-        spec = dict(raw)
-        spec["role"] = role
-        specs.append(spec)
+        rows = raw if (role == "helper" and isinstance(raw, list)) else [raw]
+        seen: set[str] = set()
+        for item in rows:
+            if isinstance(item, str):
+                item = {"id": item}
+            if not isinstance(item, dict) or not item.get("id"):
+                raise SelectError(f"stack_plan.{role} needs an id")
+            lid = str(item["id"])
+            if lid in seen:
+                raise SelectError(f"duplicate stack_plan.{role} id: {lid}")
+            seen.add(lid)
+            spec = dict(item)
+            spec["role"] = role
+            specs.append(spec)
     if not specs:
         raise SelectError(f"{profile.get('id')} stack_plan is empty")
     return specs
@@ -404,7 +412,12 @@ def assert_stack_budget(
     nsfw: bool = True,
 ) -> None:
     roles = [str(s.get("role") or "") for s in specs]
+    helper_n = roles.count("helper")
+    if helper_n > MAX_HELPERS:
+        raise SelectError("at most two helper LoRAs")
     for role in STACK_ROLES:
+        if role == "helper":
+            continue
         if roles.count(role) > 1:
             raise SelectError(f"only one {role} LoRA is allowed")
     ids = {str(s["id"]) for s in specs}
@@ -425,12 +438,16 @@ def assert_stack_budget(
     else:
         if "act" not in roles:
             raise SelectError("adult stack needs one act LoRA")
-        if "helper" in roles and "cinema" in roles:
+        if helper_n and "cinema" in roles:
             raise SelectError("cinema replaces helper; do not stack both")
+        if helper_n > 1 and "turbo" in roles:
+            raise SelectError("two helpers stay turbo off")
         if FULL_STACK_IDS <= ids:
             raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
         non_turbo = [s for s in specs if s.get("role") != "turbo"]
-        if len(non_turbo) > 2:
+        if len(non_turbo) > 3:
+            raise SelectError("quality LoRAs are act + at most two helpers")
+        if helper_n <= 1 and len(non_turbo) > 2:
             raise SelectError("quality LoRAs are act + optional helper or cinema only")
     families: set[str] = set()
     for spec in specs:
