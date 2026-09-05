@@ -1,7 +1,7 @@
 """Colab helper for stacking MiniMax H3 LoRAs.
 
 SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
-Futa blowjob may use two helpers plus thin Larry 8step. Futa sex/anal stay turbo off.
+Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal stay turbo off.
 Cinema replaces helper. CoachBate anal stays turbo off.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
@@ -110,7 +110,7 @@ SITUATION_HELP = {
     "lesbian_cunnilingus": "レズクンニ。全裸の出会い→抱きつきキス→押し倒してクンニ。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。秒数は 10 が安定。",
     "pussy_spread": "性器を広げる。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。",
     "lesbian_spread": "レズクンニに広げるを足す。クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方はヘルパー枠のため外す。",
-    "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。空欄文はフェラ本線。マンコやアナルを出したいときは文章欄に足す。変身 LoRA は足さない。女体のみ。",
+    "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄文はフェラ本線。マンコやアナルを出したいときは文章欄に足す。変身 LoRA は足さない。女体のみ。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。挿入が見える横クローズ。マンコやアナルを強調したいときは文章欄に足す。ふたなり変身 LoRA は足さない。男・筋肉質・男らしい体にはしない。",
     "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・16step。挿入側も女体。男にはしない。専用部品が無いときは総合えっち＋竿。",
     "oral": "フェラ本線。フェラ 0.75 + 竿 0.7 + Larry 0.7。",

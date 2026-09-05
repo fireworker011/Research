@@ -224,7 +224,7 @@ def test_futa_sex_and_anal_stay_feminine():
     assert bj["stack"][2]["strength_model"] == 0.55
     assert bj["stack"][3]["strength_model"] == 0.5
     assert bj["turbo"] is True
-    assert bj["sampler"]["steps"] == 8
+    assert bj["sampler"]["steps"] == 6
     blow = bj["prompt"].lower()
     assert "adult woman" in blow
     assert "adult man" not in blow
