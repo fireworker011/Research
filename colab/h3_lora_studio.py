@@ -843,17 +843,31 @@ def next_chain_prompt(
     return body
 
 
+CHAIN_MIN_S = 16
+CHAIN_MAX_S = 90
+CHAIN_PRESETS = {
+    "つなぐ 20秒": 20.0,
+    "つなぐ 30秒": 30.0,
+    "つなぐ 40秒": 40.0,
+    "つなぐ 50秒": 50.0,
+    "つなぐ 60秒": 60.0,
+    "つなぐ 70秒": 70.0,
+    "つなぐ 80秒": 80.0,
+    "つなぐ 90秒": 90.0,
+}
+
+
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
-    """One shot is 4–15s. Chain mode is 16–60s via 10s last-frame clips. Homage notebooks stay as they are."""
+    """One shot is 4–15s. Chain mode is 16–90s via 10s last-frame clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
         return 16.0 if chain else 10.0
     if chain:
-        if n > 60:
-            return 60.0
-        if n < 16:
-            return 16.0
+        if n > CHAIN_MAX_S:
+            return float(CHAIN_MAX_S)
+        if n < CHAIN_MIN_S:
+            return float(CHAIN_MIN_S)
         return float(n)
     if n > 15:
         return 15.0
@@ -863,14 +877,23 @@ def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
 
 
 def resolve_length_mode(label: str | bool) -> bool:
-    key = str(label or "").strip().lower()
-    return key in {
+    key = str(label or "").strip()
+    if key in CHAIN_PRESETS:
+        return True
+    return key.lower() in {
+        "つなぐ（16〜90秒）",
+        "つなぐ（秒数欄・16〜90）",
         "つなぐ（16〜60秒）",
         "つなぐ",
         "chain",
         "true",
         "1",
     }
+
+
+def chain_preset_seconds(label: str | bool) -> float | None:
+    key = str(label or "").strip()
+    return CHAIN_PRESETS.get(key)
 
 
 def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
@@ -894,7 +917,8 @@ def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
 
 def resolve_studio_length(seconds: float, length_mode: str | bool) -> tuple[float, list[float], bool]:
     chain = resolve_length_mode(length_mode)
-    total = clamp_studio_duration(seconds, chain=chain)
+    preset = chain_preset_seconds(length_mode)
+    total = clamp_studio_duration(preset if preset is not None else seconds, chain=chain)
     clips = studio_clip_plan(total, chain=chain)
     return total, clips, chain
 
