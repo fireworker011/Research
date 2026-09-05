@@ -1,0 +1,40 @@
+{
+  "id": "lesbian_cunnilingus",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": true,
+  "modes": ["i2v", "t2v"],
+  "allow_turbo": true,
+  "canvas": {
+    "i2v": { "width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9" },
+    "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
+  },
+  "stack_plan": {
+    "act": { "id": "lesbian-cunnilingus-h3", "strength": 0.8 },
+    "helper": { "id": "synth-pussy-h3", "strength": 0.55 },
+    "turbo": { "id": "larry-v4", "strength": 0.5 }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 8,
+    "note": "Lesbian cunnilingus + Synth detail + Larry 0.5 / 8step. Cinema off because helper is on."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "hmnsfw-aio-v25",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
+    "pussy-spread-h3",
+    "riding-pose-i2v",
+    "photoreal-h3-still",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy"
+  ],
+  "scenes": {
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, same identity as <Picture 1>, fully nude, light sheen of sweat, starts standing then is pushed onto the bed on the left, receiving cunnilingus.\n<Subject 2> Adult woman, clearly over 21, fully nude, light sheen of sweat, on the right, kissing then licking (S1).\n\nenvironment: Private apartment at night matching <Picture 1>, warm lamp, rumpled bed, no public space.\ncamera: Medium side two-shot, one continuous take, then a slow small-amplitude push-in. No cut. No freeze frame.\nintegrated_multimodal_description: A sudden encounter. (S1) and (S2) meet already nude, wrap their arms around each other, and kiss. (S2) pushes (S1) onto the bed. (S2) drops between (S1)'s legs on the right and licks (S1)'s pussy with rhythmic strokes. (S1) reclines on the left and receives. Photoreal adult genitals, visible vulva, light sweat on skin. Identity of (S1) stays locked to <Picture 1>. No cartoon. No penis.\noverall_soundscape: Intimate breathing, a soft gasp, skin and sheets.\nending: Motion continues into cunnilingus; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "Vertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, fully nude, light sheen of sweat on skin, on the left, receiving cunnilingus after being pushed down.\n<Subject 2> Adult woman, clearly over 21, Japanese, fully nude, light sheen of sweat on skin, on the right, kissing then licking (S1).\n\nenvironment: Private apartment at night, warm lamp, rumpled bed just behind them, no public space.\ncamera: Medium side two-shot, one continuous take, then a slow small-amplitude push-in. No cut. No freeze frame.\nintegrated_multimodal_description: A sudden encounter. (S1) and (S2) meet already nude, wrap their arms around each other, and kiss deeply. (S2) pushes (S1) onto the bed. (S2) drops between (S1)'s legs on the right and licks (S1)'s pussy with rhythmic strokes. (S1) reclines on the left and receives. Photoreal adult genitals, visible vulva, light sweat. No cartoon. No penis.\noverall_soundscape: Intimate breathing, a soft gasp, skin and sheets.\nending: Motion continues into cunnilingus; both remain adults over 21.\n\nAll performers are consenting adults 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, penis, male body"
+}
