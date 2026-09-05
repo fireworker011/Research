@@ -9,7 +9,11 @@
       "filename": "h3-realism-people-t2v-i2v-r2v.safetensors",
       "repo": "fal/MiniMax-H3-Realism-People-LoRA",
       "file": "h3-realism-people-t2v-i2v-r2v.safetensors",
-      "modes": ["t2v", "i2v", "r2v"],
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
       "arch": "shared",
       "turbo": false,
       "adult": false,
@@ -22,7 +26,11 @@
       "filename": "H3_anal_penetration_v1.safetensors",
       "repo": "civitai:2901443",
       "file": "H3_anal_penetration_v1.safetensors",
-      "modes": ["t2v", "i2v", "r2v"],
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
       "arch": "shared",
       "turbo": false,
       "adult": true,
@@ -33,7 +41,10 @@
       "civitai_version_id": 3280824,
       "civitai_file_id": 3171526,
       "paid": true,
-      "strength_range": [0.7, 1.0],
+      "strength_range": [
+        0.7,
+        1.0
+      ],
       "note": "No trigger. Hole-visible close-up. Turbo off. Civitai paidAccess; ③ falls back to AIO if the file is missing."
     },
     {
@@ -41,7 +52,10 @@
       "filename": "SynthPussy_H3_closeups_v1-step00008300.safetensors",
       "repo": "civitai:2509189",
       "file": "SynthPussy_H3_closeups_v1-step00008300.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -51,7 +65,10 @@
       "civitai_model_id": 2509189,
       "civitai_version_id": 3204862,
       "civitai_file_id": 3086301,
-      "strength_range": [0.6, 0.9],
+      "strength_range": [
+        0.6,
+        0.9
+      ],
       "note": "Pussy/anus detail. Motion almost untrained."
     },
     {
@@ -59,7 +76,10 @@
       "filename": "H3_cunnilingus_v2.safetensors",
       "repo": "civitai:2879676",
       "file": "H3_cunnilingus_v2.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -69,7 +89,10 @@
       "civitai_model_id": 2879676,
       "civitai_version_id": 3282598,
       "civitai_file_id": 3168507,
-      "strength_range": [0.6, 1.0],
+      "strength_range": [
+        0.6,
+        1.0
+      ],
       "note": "Lesbian cunnilingus. (S1) left receiving, (S2) right licking. No short trigger. Pair with synth-pussy or pussy-spread helper."
     },
     {
@@ -77,7 +100,10 @@
       "filename": "minimax_h3_pussy_spread_v0.1.safetensors",
       "repo": "civitai:2885332",
       "file": "minimax_h3_pussy_spread_v0.1.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -87,7 +113,10 @@
       "civitai_model_id": 2885332,
       "civitai_version_id": 3261512,
       "civitai_file_id": 3144893,
-      "strength_range": [0.5, 0.9],
+      "strength_range": [
+        0.5,
+        0.9
+      ],
       "note": "Pussy spread. Helper or close-up act. No trigger. Do not stack with cinema."
     },
     {
@@ -95,7 +124,10 @@
       "filename": "HMNSFW-AIO-V2.5.safetensors",
       "repo": "civitai:2834417",
       "file": "HMNSFW-AIO-V2.5.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -105,7 +137,10 @@
       "civitai_model_id": 2834417,
       "civitai_version_id": 3268303,
       "civitai_file_id": 3152083,
-      "strength_range": [0.5, 0.9],
+      "strength_range": [
+        0.5,
+        0.9
+      ],
       "note": "General sex motion. Anal is weak; add anal-penetration-coachbate. Sex scenes: Euler Simple 12step, Larry 0.5. Do not imply insertion."
     },
     {
@@ -113,7 +148,10 @@
       "filename": "PLORA_H3_V2-step00006300.safetensors",
       "repo": "civitai:2895526",
       "file": "PLORA_H3_V2-step00006300.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -123,7 +161,10 @@
       "civitai_model_id": 2895526,
       "civitai_version_id": 3277703,
       "civitai_file_id": 3161784,
-      "strength_range": [0.6, 0.8],
+      "strength_range": [
+        0.6,
+        0.8
+      ],
       "note": "Trigger PENISLORA. Use stroke not jerk. Side/front, not POV."
     },
     {
@@ -131,7 +172,10 @@
       "filename": "MiniMax-H3_Futa_Transformations_LoRA_V5.1.safetensors",
       "repo": "civitai:1911812",
       "file": "MiniMax-H3_Futa_Transformations_LoRA_V5.1.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -141,7 +185,10 @@
       "civitai_model_id": 1911812,
       "civitai_version_id": 3212000,
       "civitai_file_id": 3093723,
-      "strength_range": [0.8, 1.0],
+      "strength_range": [
+        0.8,
+        1.0
+      ],
       "note": "I2V more stable. Pair with penis-lora-h3 if the shaft is thin."
     },
     {
@@ -149,7 +196,11 @@
       "filename": "MM-H3_Blowjob_v3.safetensors",
       "repo": "civitai:2845331",
       "file": "MM-H3_Blowjob_v3.safetensors",
-      "modes": ["t2v", "i2v", "r2v"],
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
       "arch": "shared",
       "turbo": false,
       "adult": true,
@@ -159,7 +210,10 @@
       "civitai_model_id": 2845331,
       "civitai_version_id": 3285598,
       "civitai_file_id": 3169863,
-      "strength_range": [0.7, 1.0],
+      "strength_range": [
+        0.7,
+        1.0
+      ],
       "note": "Trigger bl0w_j0b. Saved without spaces in the filename."
     },
     {
@@ -167,7 +221,10 @@
       "filename": "Astro_nsfw.safetensors",
       "repo": "civitai:2895273",
       "file": "Astro_nsfw.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -177,7 +234,10 @@
       "civitai_model_id": 2895273,
       "civitai_version_id": 3273104,
       "civitai_file_id": 3157069,
-      "strength_range": [0.25, 0.5],
+      "strength_range": [
+        0.25,
+        0.5
+      ],
       "note": "No trigger. Keep strength low; it changes look easily."
     },
     {
@@ -185,7 +245,11 @@
       "filename": "PlagueKind-tiddies-realismslider.safetensors",
       "repo": "civitai:2858760",
       "file": "PlagueKind-tiddies-realismslider.safetensors",
-      "modes": ["t2v", "i2v", "r2v"],
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
       "arch": "shared",
       "turbo": false,
       "adult": true,
@@ -195,7 +259,10 @@
       "civitai_model_id": 2858760,
       "civitai_version_id": 3229050,
       "civitai_file_id": 3111384,
-      "strength_range": [1.0, 2.0],
+      "strength_range": [
+        1.0,
+        2.0
+      ],
       "note": "Realism 1.0-2.0. Not a genital LoRA."
     },
     {
@@ -203,7 +270,9 @@
       "filename": "h3_photoreal_ph0t0r34l_1024-step00003780.safetensors",
       "repo": "civitai:2884206",
       "file": "h3_photoreal_ph0t0r34l_1024-step00003780.safetensors",
-      "modes": ["t2v"],
+      "modes": [
+        "t2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": false,
@@ -213,7 +282,10 @@
       "civitai_model_id": 2884206,
       "civitai_version_id": 3260165,
       "civitai_file_id": 3143491,
-      "strength_range": [0.9, 1.5],
+      "strength_range": [
+        0.9,
+        1.5
+      ],
       "note": "Still / keyframe only. Weak on the video body. Do not stack on T2V/I2V/R2V."
     },
     {
@@ -221,7 +293,10 @@
       "filename": "HMNSFW_AIO_V2.safetensors",
       "repo": "nikdevs/minimax-h3-loras",
       "file": "hmnsfw-aio-sex/HMNSFW_AIO_V2.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -233,19 +308,25 @@
       "filename": "riding_pose_H3_i2v_v1.0.safetensors",
       "repo": "nikdevs/minimax-h3-loras",
       "file": "riding/riding_pose_H3_i2v_v1.0.safetensors",
-      "modes": ["i2v"],
+      "modes": [
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
       "trigger": "",
-      "default_strength": 0.8
+      "default_strength": 0.8,
+      "note": "I2V-only riding POV (blo01). T2V uses cowgirl-position-h3 instead. Strength 0.6 less jitter."
     },
     {
       "id": "deepthroat-v02",
       "filename": "deepthroat_v02.safetensors",
       "repo": "nikdevs/minimax-h3-loras",
       "file": "darings-deepthroat/deepthroat_v02.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -255,21 +336,36 @@
     {
       "id": "hmcumshot-v2",
       "filename": "HMCumshot_V2.safetensors",
-      "repo": "nikdevs/minimax-h3-loras",
-      "file": "hmcumshot/HMCumshot_V2.safetensors",
-      "modes": ["t2v", "i2v"],
+      "repo": "civitai:2857340",
+      "file": "HMCumshot_V2.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
-      "trigger": "",
-      "default_strength": 0.8
+      "trigger": "cumshot",
+      "default_strength": 0.9,
+      "source": "civitai",
+      "civitai_model_id": 2857340,
+      "civitai_version_id": 3238531,
+      "civitai_file_id": 3121030,
+      "strength_range": [
+        0.7,
+        1.0
+      ],
+      "note": "Hearmeman V0.5. Trigger cumshot. Action LoRA: ejaculation leaving the penis. Do not stack with AIO as a second act. Pair with penis helper."
     },
     {
       "id": "hmpussy-v6",
       "filename": "hmpussy_v6_epoch30.safetensors",
       "repo": "nikdevs/minimax-h3-loras",
       "file": "hmpussy/hmpussy_v6_epoch30.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -281,7 +377,10 @@
       "filename": "vagassist_e40.safetensors",
       "repo": "nikdevs/minimax-h3-loras",
       "file": "hmpussy/vagassist_e40.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": true,
@@ -293,7 +392,9 @@
       "filename": "AfterMidnight_ref2va_h3_sexytime_rank64-v1.2.safetensors",
       "repo": "SexGod1979/AfterMidnight-MiniMax-H3-NSFW",
       "file": "AfterMidnight_ref2va_h3_sexytime_rank64-v1.2.safetensors",
-      "modes": ["r2v"],
+      "modes": [
+        "r2v"
+      ],
       "arch": "ref2va",
       "turbo": false,
       "adult": true,
@@ -305,7 +406,10 @@
       "filename": "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
       "repo": "lightx2v/Minimax-h3-Turbo",
       "file": "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": true,
       "turbo_family": "lightx2v",
@@ -319,7 +423,10 @@
       "filename": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
       "repo": "lightx2v/Minimax-h3-Turbo",
       "file": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": true,
       "turbo_family": "lightx2v",
@@ -333,7 +440,9 @@
       "filename": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
       "repo": "lightx2v/Minimax-h3-Turbo",
       "file": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
-      "modes": ["r2v"],
+      "modes": [
+        "r2v"
+      ],
       "arch": "ref2va",
       "turbo": true,
       "turbo_family": "lightx2v",
@@ -349,7 +458,10 @@
       "file": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
       "official_repo": "larryvrh/MiniMax-H3-Turbo-Lora",
       "official_file": "minimax_h3_turbo_v4_step600_ema.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": true,
       "turbo_family": "larry",
@@ -357,7 +469,10 @@
       "trigger": "",
       "default_strength": 1.0,
       "source": "hf",
-      "strength_range": [0.4, 1.2],
+      "strength_range": [
+        0.4,
+        1.2
+      ],
       "note": "larryvrh v4 step600 EMA, Comfy keys. SFW daily 1.0 / 6-8 step. Adult stacks stay thinner. Never 4step for daily (motion smear). Never stack with LightX2V."
     },
     {
@@ -365,7 +480,11 @@
       "filename": "Minimax_H3_cinematic_DY.safetensors",
       "repo": "civitai:2908686",
       "file": "Minimax_H3_cinematic_DY.safetensors",
-      "modes": ["t2v", "i2v", "r2v"],
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
       "arch": "shared",
       "turbo": false,
       "adult": false,
@@ -375,7 +494,10 @@
       "civitai_model_id": 2908686,
       "civitai_version_id": 3289775,
       "civitai_file_id": 3174203,
-      "strength_range": [0.4, 0.7],
+      "strength_range": [
+        0.4,
+        0.7
+      ],
       "note": "Authentic cinematic texture, tensor-fixed fork of 2890588. Trigger DY. SFW 0.6-0.7 (0.5 if lots of motion). Adult insertion 0.4-0.6. Do not stack with astro-cinema-h3."
     },
     {
@@ -383,7 +505,10 @@
       "filename": "Cinema-MH3-V02_000010000.safetensors",
       "repo": "civitai:2849726",
       "file": "Cinema-MH3-V02_000010000.safetensors",
-      "modes": ["t2v", "i2v"],
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
       "arch": "fl2va",
       "turbo": false,
       "adult": false,
@@ -393,8 +518,179 @@
       "civitai_model_id": 2849726,
       "civitai_version_id": 3278719,
       "civitai_file_id": 3162803,
-      "strength_range": [0.5, 0.8],
+      "strength_range": [
+        0.5,
+        0.8
+      ],
       "note": "Cinematic Style + Detail V2. Trigger ASTROCINEMAV01K2T at the front. Not NSFW. Do not stack with cinema-dy. Daily SFW uses cinema-dy instead."
+    },
+    {
+      "id": "cowgirl-position-h3",
+      "filename": "Minimaxh3-cowgirl_position-Ref2V-512_000000550.safetensors",
+      "repo": "civitai:2882639",
+      "file": "Minimaxh3-cowgirl_position-Ref2V-512_000000550.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "cowgirl position",
+      "default_strength": 0.8,
+      "source": "civitai",
+      "civitai_model_id": 2882639,
+      "civitai_version_id": 3258236,
+      "civitai_file_id": 3141444,
+      "strength_range": [
+        0.7,
+        1.0
+      ],
+      "note": "brand175 cowgirl. Trigger cowgirl position. Author I2V/Ref2V INT8; T2V reported working. Replaces AIO on riding. Do not stack with AIO or riding-pose-i2v."
+    },
+    {
+      "id": "doggy-h3",
+      "filename": "H-ZSHR-2_000002900.safetensors",
+      "repo": "civitai:2913762",
+      "file": "H-ZSHR-2_000002900.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "H-ZSHR",
+      "default_strength": 0.8,
+      "source": "civitai",
+      "civitai_model_id": 2913762,
+      "civitai_version_id": 3296173,
+      "civitai_file_id": 3180908,
+      "strength_range": [
+        0.7,
+        1.0
+      ],
+      "note": "smNime doggy FL2VA. Trigger H-ZSHR. Trained I2V; T2V experimental. In-out thrust, not up-down bounce. Do not stack with AIO."
+    },
+    {
+      "id": "missionary-pov-h3",
+      "filename": "H3_Mis_Insrt_v07.safetensors",
+      "repo": "civitai:2843744",
+      "file": "H3_Mis_Insrt_v07.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.85,
+      "source": "civitai",
+      "civitai_model_id": 2843744,
+      "civitai_version_id": 3210503,
+      "civitai_file_id": 3092209,
+      "strength_range": [
+        0.7,
+        1.0
+      ],
+      "note": "The_Cook POV missionary insertion. T2V+I2V. Male-POV trained; studio rewrites to feminine insertor. Author wants Euler Simple 6-8 with thin turbo. Noisy if turbo-off. Side-view missionary stays AIO."
+    },
+    {
+      "id": "fingering-h3",
+      "filename": "MinimaxH3-Fingering_000002000.safetensors",
+      "repo": "civitai:2887438",
+      "file": "MinimaxH3-Fingering_000002000.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.85,
+      "source": "civitai",
+      "civitai_model_id": 2887438,
+      "civitai_version_id": 3264127,
+      "civitai_file_id": 3147656,
+      "strength_range": [
+        0.8,
+        1.0
+      ],
+      "note": "Solo fingering FL2VA. No trigger. Describe the finger motion. Do not stack with HMMasturbation."
+    },
+    {
+      "id": "hmmasturbation-h3",
+      "filename": "HMMasturbationV1.safetensors",
+      "repo": "civitai:2893742",
+      "file": "HMMasturbationV1.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "hmmasturbation",
+      "default_strength": 0.8,
+      "source": "civitai",
+      "civitai_model_id": 2893742,
+      "civitai_version_id": 3275625,
+      "civitai_file_id": 3159664,
+      "strength_range": [
+        0.7,
+        1.0
+      ],
+      "note": "Hearmeman V1 squirting/masturbation. Trigger hmmasturbation. Euler Simple 12 + Larry 0.5. Pair with synth 0.55. Do not stack with fingering-h3."
+    },
+    {
+      "id": "footjob-h3",
+      "filename": "H3_Footjob_TypeD_v1.safetensors",
+      "repo": "civitai:2839680",
+      "file": "H3_Footjob_TypeD_v1.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "fj.",
+      "default_strength": 0.85,
+      "source": "civitai",
+      "civitai_model_id": 2839680,
+      "civitai_version_id": 3292464,
+      "civitai_file_id": 3177007,
+      "strength_range": [
+        0.8,
+        1.0
+      ],
+      "note": "icelouse Type D. Trigger fj. Both feet, penis between toes. FL2VA. One version only; do not stack Type A/B/C."
+    },
+    {
+      "id": "remote-orgasm-h3",
+      "filename": "MiniMax-H3_RemoteOrgasm_v1.safetensors",
+      "repo": "civitai:2858113",
+      "file": "MiniMax-H3_RemoteOrgasm_v1.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "Remoteorgasm",
+      "default_strength": 0.8,
+      "source": "civitai",
+      "civitai_model_id": 2858113,
+      "civitai_version_id": 3228264,
+      "civitai_file_id": 3110547,
+      "strength_range": [
+        0.6,
+        1.0
+      ],
+      "note": "Female climax reaction. Trigger Remoteorgasm. Not ejaculation; after-ejaculation uses hmcumshot-v2. Do not stack with cumshot."
     }
   ]
 }

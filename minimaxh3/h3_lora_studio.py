@@ -1,8 +1,8 @@
 """Colab helper for stacking MiniMax H3 LoRAs.
 
 SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
-Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal stay turbo off.
-Cinema replaces helper. CoachBate anal stays turbo off.
+Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
+Cinema replaces helper. CoachBate anal stays turbo off. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 """
@@ -48,7 +48,14 @@ SITUATION_DOWNLOAD = {
     "oral": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "larry-v4"],
     "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
-    "riding": ["hmnsfw-aio-v25", "larry-v4"],
+    "riding": ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "doggy": ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "missionary_pov": ["missionary-pov-h3", "penis-lora-h3", "larry-v4"],
+    "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "larry-v4"],
+    "fingering": ["fingering-h3", "synth-pussy-h3", "larry-v4"],
+    "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
+    "footjob": ["footjob-h3", "penis-lora-h3", "larry-v4"],
+    "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
 }
 
 SITUATION_JA = {
@@ -70,9 +77,20 @@ SITUATION_JA = {
     "アナルセックス（女体）": "futa_anal",
     "ふたなりアナル": "futa_anal",
     "アナルセックス": "futa_anal",
+    "騎乗位（女体）": "riding",
+    "騎乗位": "riding",
+    "後背位（女体）": "doggy",
+    "後背位": "doggy",
+    "正常位POV（女体）": "missionary_pov",
+    "正常位POV": "missionary_pov",
+    "後射精（女体）": "after_ejaculation",
+    "後射精": "after_ejaculation",
+    "指入れ": "fingering",
+    "オナニー": "masturbation",
+    "足コキ": "footjob",
+    "絶頂": "remote_orgasm",
     "汎用エロ": "general_sex",
     "試し打ち": "preview",
-    "騎乗位": "riding",
     "vanilla": "vanilla",
     "sfw_daily": "sfw_daily",
     "sfw_preview": "sfw_preview",
@@ -90,6 +108,13 @@ SITUATION_JA = {
     "general_sex": "general_sex",
     "preview": "preview",
     "riding": "riding",
+    "doggy": "doggy",
+    "missionary_pov": "missionary_pov",
+    "after_ejaculation": "after_ejaculation",
+    "fingering": "fingering",
+    "masturbation": "masturbation",
+    "footjob": "footjob",
+    "remote_orgasm": "remote_orgasm",
 }
 
 MODE_JA = {
@@ -116,7 +141,14 @@ SITUATION_HELP = {
     "oral": "フェラ本線。フェラ 0.75 + 竿 0.7 + Larry 0.7。",
     "general_sex": "汎用エロ。AIO 0.8 + Larry 0.5 / 12step。正常位。挿入が見える。",
     "preview": "試し打ち。AIO 0.7 + LightX2V 4step。当たりだけ本線で焼き直す。",
-    "riding": "騎乗。AIO 0.8 + Larry 0.5 / 12step。騎乗で挿入が見える。",
+    "riding": "騎乗位（女体）。騎乗 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。",
+    "doggy": "後背位（女体）。後背位 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。前後の突き。",
+    "missionary_pov": "正常位POV（女体）。POV挿入 0.85 + 竿 0.7 + Larry 0.5 / 8step。横からの正常位はセックス（女体）。",
+    "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + Larry 0.5 / 8step。射精そのもの。絶頂とは別。",
+    "fingering": "指入れ。指 LoRA 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。オナニー LoRA は積まない。",
+    "masturbation": "オナニー。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。指入れ LoRA は積まない。",
+    "footjob": "足コキ。Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step。",
+    "remote_orgasm": "絶頂。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。射精ではない。",
 }
 
 LORA_JA = {
@@ -128,7 +160,15 @@ LORA_JA = {
     "futa-h3-v51": "ふたなり",
     "penis-lora-h3": "竿",
     "blowjob-h3": "フェラ",
-    "riding-pose-i2v": "騎乗のポーズ",
+    "riding-pose-i2v": "騎乗のポーズ（I2V専用・未使用）",
+    "cowgirl-position-h3": "騎乗",
+    "doggy-h3": "後背位",
+    "missionary-pov-h3": "正常位POV",
+    "hmcumshot-v2": "射精",
+    "fingering-h3": "指入れ",
+    "hmmasturbation-h3": "オナニー",
+    "footjob-h3": "足コキ",
+    "remote-orgasm-h3": "絶頂",
     "h3-realism-people": "肌のリアルさ",
     "tiddies-realism-slider": "胸の大きさ",
     "larry-v4": "Larry v4",
@@ -183,7 +223,7 @@ def explain_choice(situation: str, mode: str) -> str:
     cap = (
         "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
         if sid in SFW_SITUATIONS
-        else "重ね上限は 行為1 + ヘルパー1 + Turbo1。Fal には載せません。"
+        else "重ね上限は 行為1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
     )
     return (
         f"シーン: {situation}\n"
@@ -588,12 +628,20 @@ def comfy_missing_loras(stack: list[dict[str, Any]], obj: dict[str, Any] | None)
     return missing
 
 
+ACT_FALLBACK_TO_AIO = {
+    "anal-penetration-coachbate",
+    "cowgirl-position-h3",
+    "doggy-h3",
+    "missionary-pov-h3",
+}
+
+
 def apply_stack_fallbacks(
     stack: list[dict[str, Any]],
     lora_dir: Path | str,
     catalog: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], bool]:
-    """CoachBate is often Civitai-paid. If it is missing, use AIO so ③ still runs."""
+    """CoachBate is often Civitai-paid. Pose LoRAs can also be missing. Use AIO so ③ still runs."""
     index = catalog_by_id(catalog)
     out: list[dict[str, Any]] = []
     replaced = False
@@ -604,7 +652,7 @@ def apply_stack_fallbacks(
             row["filename"] = resolved
             out.append(row)
             continue
-        if str(item.get("id")) != "anal-penetration-coachbate":
+        if str(item.get("id")) not in ACT_FALLBACK_TO_AIO:
             out.append(item)
             continue
         alt = index.get("hmnsfw-aio-v25") or {}

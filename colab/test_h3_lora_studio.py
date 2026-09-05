@@ -136,6 +136,16 @@ def test_japanese_form_labels():
     assert resolve_situation("ふたなりセックス") == "futa_sex"
     assert resolve_situation("アナルセックス（女体）") == "futa_anal"
     assert resolve_situation("アナルセックス") == "futa_anal"
+    assert resolve_situation("騎乗位（女体）") == "riding"
+    assert resolve_situation("騎乗位") == "riding"
+    assert resolve_situation("後背位（女体）") == "doggy"
+    assert resolve_situation("正常位POV（女体）") == "missionary_pov"
+    assert resolve_situation("後射精（女体）") == "after_ejaculation"
+    assert resolve_situation("後射精") == "after_ejaculation"
+    assert resolve_situation("指入れ") == "fingering"
+    assert resolve_situation("オナニー") == "masturbation"
+    assert resolve_situation("足コキ") == "footjob"
+    assert resolve_situation("絶頂") == "remote_orgasm"
     futa_sex = explain_choice("セックス（女体）", "テキストから（写真なし）")
     assert "総合えっち" in futa_sex or "竿" in futa_sex
     assert "男" in futa_sex
@@ -161,6 +171,19 @@ def test_japanese_form_labels():
     assert "Larry" in general
     assert "12step" in general
     assert "LightX2V 12" not in general
+    riding = explain_choice("騎乗位（女体）", "テキストから（写真なし）")
+    assert "騎乗" in riding
+    assert "AIO は積まない" in riding
+    assert "ヘルパー0〜2" in riding
+    assert "cowgirl-position-h3" not in riding
+    after = explain_choice("後射精（女体）", "テキストから（写真なし）")
+    assert "射精" in after
+    assert "絶頂" in after
+    assert "hmcumshot-v2" not in after
+    assert friendly_lora("cowgirl-position-h3") == "騎乗"
+    assert friendly_lora("doggy-h3") == "後背位"
+    assert friendly_lora("hmcumshot-v2") == "射精"
+    assert friendly_lora("remote-orgasm-h3") == "絶頂"
 
 
 def test_vanilla_sfw_shares_phone_path():
@@ -276,6 +299,14 @@ def test_studio_cell3_skips_homage_ad_prompt():
     helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
     assert "テキストから作れませんでした" in helper.read_text(encoding="utf-8")
     assert "already_have_weight" in helper.read_text(encoding="utf-8")
+    assert "騎乗位（女体）" in src
+    assert "後射精（女体）" in src
+    assert "h3-lora-studio/profiles/after_ejaculation.json" in src
+    assert "h3-lora-studio/profiles/doggy.json" in src
+    assert 'FETCH_REV = "h2-20260905-pose-t2v"' in src
+    assert "騎乗位（女体）" in blob
+    assert "後射精（女体）" in blob
+    assert "h2-20260905-pose-t2v" in blob
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
@@ -313,6 +344,16 @@ def test_coachbate_falls_back_to_aio_when_missing(tmp_path):
     assert "②からやり直すか" not in msg
     assert "H3_anal_penetration_v1.safetensors" in msg or "HMNSFW" in msg
     assert "エンジン" in msg
+    cowgirl_missing = [
+        {"id": "cowgirl-position-h3", "filename": "Minimaxh3-cowgirl_position-Ref2V-512_000000550.safetensors", "strength_model": 0.8, "role": "act"},
+        {"id": "penis-lora-h3", "filename": "Penis_Lora_H3.safetensors", "strength_model": 0.7, "role": "helper"},
+        {"id": "synth-pussy-h3", "filename": "SynthPussy_H3_closeups_v1-step00008300.safetensors", "strength_model": 0.55, "role": "helper"},
+    ]
+    penis = lora_dir / "Penis_Lora_H3.safetensors"
+    penis.write_bytes(b"x" * 6_000_000)
+    out2, replaced2 = apply_stack_fallbacks(cowgirl_missing, lora_dir, catalog)
+    assert replaced2 is True
+    assert [row["id"] for row in out2] == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     g = build_t2v_graph(
         prompt=DEFAULT_T2V_PROMPT,
         unet="minimax_h3_fl2va_pruned_int8_convrot.safetensors",
@@ -357,7 +398,14 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert clamp_studio_duration(61, chain=True) == 60.0
     assert clamp_studio_duration("nope", chain=True) == 16.0
     assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "larry-v4"]
-    assert situation_ids("riding") == ["hmnsfw-aio-v25", "larry-v4"]
+    assert situation_ids("riding") == ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("doggy") == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("missionary_pov") == ["missionary-pov-h3", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("fingering") == ["fingering-h3", "synth-pussy-h3", "larry-v4"]
+    assert situation_ids("masturbation") == ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"]
+    assert situation_ids("footjob") == ["footjob-h3", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("remote_orgasm") == ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]

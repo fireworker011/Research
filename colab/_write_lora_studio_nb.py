@@ -64,12 +64,15 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
 | ふたなりフェラ | フェラ本線。穴は文章欄で足す | フェラ 0.75 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step |
 | セックス（女体） | 挿入本線。男にはしない。穴の強調は文章欄 | 総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step |
-| アナルセックス（女体） | アナル挿入本線。マンコは文章欄で足す | CoachBate + 竿 + 穴の見え方。無いときは総合えっち＋竿 |
-| アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
-| フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
-| ふたなりフェラ | フェラ本線。穴は文章欄で足す | フェラ 0.75 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step |
-| セックス（女体） | 挿入本線。男にはしない。穴の強調は文章欄 | 総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step |
 | アナルセックス（女体） | アナル挿入本線。マンコは文章欄で足す | CoachBate 0.85 + 竿 0.7 + 穴の見え方。Turbo なし |
+| 騎乗位（女体） | 騎乗。総合えっちは積まない | 騎乗 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし |
+| 後背位（女体） | 後ろから前後の突き | 後背位 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし |
+| 正常位POV（女体） | 挿入側の視点。横からの正常位はセックス（女体） | POV挿入 0.85 + 竿 0.7 + Larry 0.5 / 8step |
+| 後射精（女体） | 射精そのもの。絶頂とは別 | 射精 0.9 + 竿 0.7 + Larry 0.5 / 8step |
+| 指入れ | 指の出し入れ。オナニー LoRA は積まない | 指 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step |
+| オナニー | 潮吹き。指入れ LoRA は積まない | オナニー 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step |
+| 足コキ | 両足で竿 | Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step |
+| 絶頂 | 女体の絶頂反応。射精ではない | 絶頂 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step |
 | 汎用エロ | 正常位。挿入が見える | AIO 0.8 + Larry 0.5 / 12step |
 | 試し打ち | エロの量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
 | レズビアンクンニ | 全裸の出会い→キス→クンニ | クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5 |
@@ -78,7 +81,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 **速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける。1本で伸ばさない）。60秒は 10×6。2〜6本目の文は③のつなぎ欄。空なら前の続き。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
-**エロの重ね:** 行為1 + ヘルパー1 + Turbo1。ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
+**エロの重ね:** 行為1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
 **プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。禁止語は Drive の `forbidden.json` だけ。未成年ロックは外せません。
 
@@ -157,7 +160,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -172,7 +175,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260905-chain-prompts"
+FETCH_REV = "h2-20260905-pose-t2v"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -217,6 +220,13 @@ studio_files = [
     "h3-lora-studio/profiles/pussy_spread.json",
     "h3-lora-studio/profiles/preview.json",
     "h3-lora-studio/profiles/riding.json",
+    "h3-lora-studio/profiles/doggy.json",
+    "h3-lora-studio/profiles/missionary_pov.json",
+    "h3-lora-studio/profiles/after_ejaculation.json",
+    "h3-lora-studio/profiles/fingering.json",
+    "h3-lora-studio/profiles/masturbation.json",
+    "h3-lora-studio/profiles/footjob.json",
+    "h3-lora-studio/profiles/remote_orgasm.json",
     "h3-lora-studio/profiles/sfw_daily.json",
     "h3-lora-studio/profiles/sfw_preview.json",
     "h3-lora-studio/profiles/sfw_audio.json",
@@ -306,7 +316,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "fingering", "masturbation", "footjob", "remote_orgasm"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -394,6 +404,14 @@ MD3 = r"""## ③ 動画を作る
 - **ふたなりフェラ** … フェラ + 竿 + 穴の見え方 + Larry 0.5 / 6step。空欄はフェラ本線。マンコやアナルは文章欄で足す。変身 LoRA は足さない
 - **セックス（女体）** … 総合えっち + 竿 + 穴の見え方 / 12step。挿入が見える横クローズ。穴の強調は文章欄。男・筋肉質の男体にはしない
 - **アナルセックス（女体）** … CoachBate + 竿 + 穴の見え方。Turbo なし。アナル挿入本線。マンコは文章欄で足す。挿入側も女体
+- **騎乗位（女体）** … 騎乗 + 竿 + 穴の見え方 / 12step。Turbo なし。総合えっちは積まない
+- **後背位（女体）** … 後背位 + 竿 + 穴の見え方 / 12step。Turbo なし。前後の突き
+- **正常位POV（女体）** … POV挿入 + 竿 + Larry 0.5 / 8step。横からの正常位はセックス（女体）
+- **後射精（女体）** … 射精 + 竿 + Larry 0.5 / 8step。射精そのもの。絶頂とは別
+- **指入れ** … 指 + 穴の見え方 + Larry 0.5 / 8step。オナニー LoRA は積まない
+- **オナニー** … 潮吹き + 穴の見え方 + Larry 0.5 / 12step。指入れ LoRA は積まない
+- **足コキ** … Type D + 竿 + Larry 0.5 / 8step
+- **絶頂** … 反応 + 穴の見え方 + Larry 0.5 / 8step。射精ではない
 - **汎用エロ** … AIO + Larry 12step。正常位。挿入が見える
 - **試し打ち** … AIO + LightX2V 4step。当たりは本線で焼き直す
 - **秒数** … 4〜15 は1本。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける）。60秒は 10×6。2〜6本目の文は③のつなぎ欄。空なら前の続き。1本で 16 秒以上は作らない
@@ -404,7 +422,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。

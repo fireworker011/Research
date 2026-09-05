@@ -45,9 +45,9 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 `video shift 6` / `audio shift 3` は sampler のメモ。グラフに ModelSamplingAV ノードは無いので未配線。SageAttention / Sol-Attn / Spectrum は LoRA ではない（Turbo と併用するとさらに短いが、このノートでは入れない）。
 
-## エロ（既存）
+## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜1 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナルはヘルパー2で Turbo オフ。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は行為本線だけ。マンコ/アナルの強調は③の文章欄。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は行為本線だけ。マンコ/アナルの強調は③の文章欄。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
@@ -55,8 +55,16 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8 |
 | フェラ | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | euler / simple / 8 |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 空欄はフェラ本線。穴は文章欄。6step |
-| セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。挿入本線。穴の強調は文章欄 |
+| セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
 | アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | アナル挿入本線。マンコは文章欄。16step |
+| 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
+| 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
+| 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Synth オフ。横はセックス（女体） |
+| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。射精そのもの。絶頂とは別 |
+| 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。オナニー LoRA は積まない |
+| オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
+| 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
+| 絶頂 | `remote_orgasm` | Remoteorgasm 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 8step。射精ではない |
 | 汎用エロ | `general_sex` | AIO 0.8 | なし | Larry 0.5 | なし | euler / simple / 12。正常位。挿入が見える |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
@@ -68,10 +76,16 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - Turbo を 2 本同時（Larry + LightX2V）
 - FL2VA 用と Ref2VA 用の取り違え
 - エロ挿入 LoRA との併用（アナル系は Turbo 切るのが前提）
+- 体位 LoRA と総合えっち（AIO）の同時積み。体位が AIO の代わり
+- 指入れ + オナニー、射精 + 絶頂
+- `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl）
 - シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
 - Photoreal still を動画本体に載せる
 - DY と ASTROCINEMA の同時積み
 - Fal H3 Max に LoRA を差す
+- 訓練で体位を足す（既存 FL2VA LoRA を積む）
+
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、ThumbInButt、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
@@ -102,3 +116,4 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 6. キーは print しない。Git に入れない
 7. ココナラ homage の turbo 既定を変えない
 8. Fal に LoRA を載せない
+9. 体位 LoRA は AIO の代わり。同時に積まない。訓練で体位を足さない
