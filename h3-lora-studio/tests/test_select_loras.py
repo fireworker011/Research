@@ -93,6 +93,10 @@ def test_lesbian_and_spread_stacks():
     assert [r["role"] for r in les["stack"]] == ["act", "helper", "turbo"]
     assert [r["strength_model"] for r in les["stack"]] == [0.8, 0.55, 0.5]
     assert "Picture 1" not in les["prompt"]
+    low = les["prompt"].lower()
+    assert "kiss" in low and "lick" in low and "sweat" in low
+    assert "over 21" in low
+    assert "15 years" not in low
     unload = {r["id"] for r in les["unload"]}
     assert "pussy-spread-h3" in unload
     assert "cinema-dy" in unload

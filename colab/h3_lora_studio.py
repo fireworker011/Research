@@ -95,7 +95,7 @@ SITUATION_HELP = {
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "舐め・指。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。行為は1本だけ。",
     "anal_penetration": "アナル挿入の本線。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。12〜20 step。",
-    "lesbian_cunnilingus": "レズクンニ。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。",
+    "lesbian_cunnilingus": "レズクンニ。全裸の出会い→抱きつきキス→押し倒してクンニ。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。秒数は 10 が安定。",
     "pussy_spread": "性器を広げる。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。",
     "lesbian_spread": "レズクンニに広げるを足す。クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方はヘルパー枠のため外す。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 + Larry 0.7。AIO とふたなり部品は足さない。",
