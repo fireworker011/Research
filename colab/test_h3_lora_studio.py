@@ -335,6 +335,7 @@ def test_friendly_select_error_for_child_and_picture1():
     assert "21" in (friendly_select_error(SystemExit("forbidden subject in prompt: ['15 years old']")) or "")
     assert "写真用" in (friendly_select_error(SystemExit("t2v prompt must not use Picture 1 / first_frame")) or "")
     assert friendly_select_error(SystemExit("CoachBate anal penetration stays turbo off")) is None
+    assert "②" in (friendly_select_error(SystemExit("stack_plan.helper needs an id")) or "")
 
 
 def test_clamp_studio_duration_is_four_to_fifteen():

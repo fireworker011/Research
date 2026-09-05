@@ -172,6 +172,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
+FETCH_REV = "h2-20260905"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -180,8 +181,13 @@ def sh(cmd, **kw):
 
 def fetch_text(url: str, dest: Path) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
+    req = urllib.request.Request(
+        f"{url}?rev={FETCH_REV}",
+        headers={"Cache-Control": "no-cache", "Pragma": "no-cache"},
+    )
     try:
-        urllib.request.urlretrieve(url, dest)
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            dest.write_bytes(resp.read())
         return dest.is_file() and dest.stat().st_size > 100
     except Exception:
         print("ファイル取得に失敗:", dest.name)
@@ -241,7 +247,15 @@ try:
 except Exception:
     raise SystemExit("禁止語ファイルが壊れています。Drive の forbidden.json を直してください。")
 
+sel = Path("/content/h3-lora-studio/scripts/select_loras.py")
+if "MAX_HELPERS" not in sel.read_text(encoding="utf-8"):
+    raise SystemExit("設定の取り直しに失敗しました。②をもう一度実行してください。")
+print("設定の版:", FETCH_REV)
+
 sys.path.insert(0, "/content")
+sys.path.insert(0, "/content/h3-lora-studio/scripts")
+for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
+    sys.modules.pop(name, None)
 from h3_i2v_phone import i2v_download_jobs
 from h3_lora_studio import (
     SITUATION_HELP, civitai_token, civitai_token_help, civitai_download_fallbacks,
@@ -419,6 +433,8 @@ from IPython.display import display, Video, HTML
 
 sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
+for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
+    sys.modules.pop(name, None)
 from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import (
     DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image,
@@ -444,6 +460,9 @@ from h3_lora_studio import (
     continue_chain_prompt, extract_last_frame, concat_studio_clips,
 )
 from select_loras import forbidden_hits, load_forbidden, select_loras
+import select_loras as _select_loras
+if not getattr(_select_loras, "MAX_HELPERS", None):
+    raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 if float(DURATION) != float(秒数):

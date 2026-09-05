@@ -209,6 +209,11 @@ def friendly_select_error(exc: BaseException) -> str | None:
             "child / teen / loli や 15 years old / 15歳 は通りません。"
             "空欄にするとおすすめ文を使います。no child のような禁止の意味は大丈夫です。"
         )
+    if "stack_plan" in low and "needs an id" in low:
+        return (
+            "部品の読み込みが古いです。ランタイムを再起動して①→②→③の順、"
+            "または②をもう一度実行してから③。"
+        )
     return None
 
 
