@@ -79,7 +79,7 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 python colab/_write_lora_studio_nb.py
 ```
 
-T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 4〜10（整数）。15 は OOM。
+T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 1本 4〜15。16〜60秒は「つなぐ」（10秒クリップを最後のコマから続ける。1本で 16秒以上は作らない）。
 
 ## 禁止語
 

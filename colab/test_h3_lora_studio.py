@@ -10,7 +10,10 @@ from h3_lora_studio import (
     civitai_token,
     civitai_token_help,
     clamp_studio_duration,
+    concat_studio_clips,
+    continue_chain_prompt,
     explain_choice,
+    extract_last_frame,
     format_job_fail,
     friendly_lora,
     friendly_select_error,
@@ -23,9 +26,12 @@ from h3_lora_studio import (
     merge_optional,
     missing_civitai_files,
     quote_http_url,
+    resolve_length_mode,
     resolve_mode,
     resolve_situation,
+    resolve_studio_length,
     situation_ids,
+    studio_clip_plan,
 )
 from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_graph
 
@@ -238,7 +244,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
     src = writer.read_text(encoding="utf-8")
     assert "validate_studio_i2v_prompt" in src
-    assert "homage = bool(VANILLA and not CUSTOM_PROMPT)" in src
+    assert "homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)" in src
     assert "assert_i2va_graph(g, expect_last=False, homage=homage)" in src
     nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
     blob = nb_path.read_text(encoding="utf-8")
@@ -256,7 +262,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "from forbidden_words" not in blob
     assert "format_job_fail" in src
     assert "timeout=3600" in src
-    assert "format_job_fail(MODE, payload)" in src
+    assert "format_job_fail(GRAPH_MODE, payload)" in src
     assert "format_prompt_http_fail(err, stack)" in src
     assert "失敗しました。②からやり直すか、シーンを変えてみてください。" not in src
     assert "apply_stack_fallbacks" in src
@@ -332,19 +338,96 @@ def test_friendly_select_error_for_child_and_picture1():
     assert friendly_select_error(SystemExit("CoachBate anal penetration stays turbo off")) is None
 
 
-def test_clamp_studio_duration_is_four_to_ten():
+def test_clamp_studio_duration_is_four_to_fifteen():
     assert clamp_studio_duration(10) == 10.0
     assert clamp_studio_duration(5) == 5.0
     assert clamp_studio_duration(4) == 4.0
     assert clamp_studio_duration(3) == 4.0
-    assert clamp_studio_duration(15) == 10.0
+    assert clamp_studio_duration(15) == 15.0
+    assert clamp_studio_duration(16) == 15.0
     assert clamp_studio_duration(10.4) == 10.0
     assert clamp_studio_duration("8") == 8.0
     assert clamp_studio_duration("nope") == 10.0
+    assert clamp_studio_duration(12, chain=False) == 12.0
+    assert clamp_studio_duration(10, chain=True) == 16.0
+    assert clamp_studio_duration(16, chain=True) == 16.0
+    assert clamp_studio_duration(60, chain=True) == 60.0
+    assert clamp_studio_duration(61, chain=True) == 60.0
+    assert clamp_studio_duration("nope", chain=True) == 16.0
     assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "larry-v4"]
     assert situation_ids("riding") == ["hmnsfw-aio-v25", "larry-v4"]
     assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"]
+
+
+def test_studio_clip_plan_chain_stays_under_sixteen():
+    assert studio_clip_plan(15) == [15.0]
+    assert studio_clip_plan(16, chain=True) == [10.0, 6.0]
+    assert studio_clip_plan(25, chain=True) == [10.0, 15.0]
+    assert studio_clip_plan(26, chain=True) == [10.0, 10.0, 6.0]
+    assert studio_clip_plan(60, chain=True) == [10.0] * 6
+    assert all(4 <= c <= 15 for c in studio_clip_plan(60, chain=True))
+    total, clips, chain = resolve_studio_length(30, "つなぐ（16〜60秒）")
+    assert chain is True
+    assert total == 30.0
+    assert clips == [10.0, 10.0, 10.0]
+    total, clips, chain = resolve_studio_length(30, "1本（最大15秒）")
+    assert chain is False
+    assert total == 15.0
+    assert clips == [15.0]
+    assert resolve_length_mode("つなぐ") is True
+    assert resolve_length_mode("1本（最大15秒）") is False
+
+
+def test_continue_chain_prompt_keeps_picture1_and_does_not_restart():
+    base = (
+        "For the target video, at 0.00 seconds into the target video, "
+        "<Picture 1> (from [Shot 1]) is fully referenced.\nConsenting adults over 21."
+    )
+    out = continue_chain_prompt(base)
+    assert "Continue from this exact last frame" in out
+    assert "<Picture 1>" in out
+    assert "Do not restart" in out
+    again = continue_chain_prompt(out)
+    assert again.count("Continue from this exact last frame") == 1
+    wrapped = continue_chain_prompt("keep walking in the same room")
+    assert "Picture 1" in wrapped
+    assert "Continue from this exact last frame" in wrapped
+
+
+def test_concat_studio_clips_prefers_stream_copy(tmp_path):
+    import subprocess
+
+    ff = "ffmpeg"
+
+    def tiny(path, color):
+        subprocess.run(
+            [
+                ff, "-y", "-f", "lavfi", "-i", f"color=c={color}:s=64x64:d=0.5:r=24",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", str(path),
+            ],
+            check=True,
+            capture_output=True,
+        )
+
+    a = tmp_path / "a.mp4"
+    b = tmp_path / "b.mp4"
+    tiny(a, "red")
+    tiny(b, "blue")
+    dest = tmp_path / "joined.mp4"
+    out = concat_studio_clips([a, b], dest)
+    assert out == dest
+    assert dest.is_file() and dest.stat().st_size > 1000
+    frame = tmp_path / "last.png"
+    extract_last_frame(b, frame)
+    assert frame.is_file() and frame.stat().st_size >= 100
+    probe = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(dest)],
+        capture_output=True,
+        text=True,
+    )
+    dur = float((probe.stdout or "0").strip() or "0")
+    assert 0.85 <= dur <= 1.25
 
 
 def test_notebook_clamps_duration_and_uses_it_in_graphs():
@@ -352,15 +435,21 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
     src = writer.read_text(encoding="utf-8")
     blob = nb_path.read_text(encoding="utf-8")
-    assert "clamp_studio_duration" in src
-    assert "DURATION = clamp_studio_duration(秒数)" in src
-    assert "duration_s=DURATION" in src
+    assert "resolve_studio_length" in src
+    assert "DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)" in src
+    assert "duration_s=CLIP_DURATION" in src
     assert "duration_s=float(秒数)" not in src
     assert "duration_s=5.0" not in src
     assert "DURATION = float(秒数)" not in src
+    assert "長さの作り方" in src
+    assert "つなぐ（16〜60秒）" in src
+    assert "concat_studio_clips" in src
+    assert "continue_chain_prompt" in src
+    assert "homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)" in src
     assert "AIO 0.75 + Larry 0.5 / 8step" in src
     assert "LightX2V 0.5 / 12 step" not in src
-    assert "DURATION = clamp_studio_duration" in blob
-    assert "duration_s=DURATION" in blob
+    assert "DURATION, CLIPS, CHAIN = resolve_studio_length" in blob
+    assert "duration_s=CLIP_DURATION" in blob
     assert "duration_s=float(秒数)" not in blob
+    assert "つなぐ（16〜60秒）" in blob
     assert "AIO 0.75 + Larry 0.5 / 8step" in blob

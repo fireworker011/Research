@@ -76,7 +76,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 性器を広げる | 広げて見せるクローズ | 広げる 0.75 + 穴の見え方 0.55 + Larry 0.5 |
 | レズ＋広げる | クンニに広げるを足す | クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方は外す |
 
-**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜10（整数）。15 はメモリ不足で落ちます。
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける。1本で伸ばさない）。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
@@ -381,7 +381,7 @@ MD3 = r"""## ③ 動画を作る
 - **アナルセックス（女体）** … CoachBate + 竿。Turbo なし。挿入側も女体
 - **汎用エロ** … AIO + Larry 8step。挿入は曖昧でいい
 - **試し打ち** … AIO + LightX2V 4step。当たりは本線で焼き直す
-- **秒数** … 4〜10。10 が綺麗め、5 が速い。15 は落ちる
+- **秒数** … 4〜15 は1本。16〜60秒は「つなぐ」（10秒ずつ最後のコマから続ける）。1本で 16 秒以上は作らない
 - **レズビアンクンニ** … 全裸の出会い→抱きつきキス→押し倒してクンニ。穴の見え方付き。秒数は 10 が安定
 - **性器を広げる** … 広げる + 穴の見え方
 - **レズ＋広げる** … クンニ + 広げる（穴の見え方は枠の都合で外す）
@@ -396,8 +396,10 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
 写真ファイル = "auto"  #@param {type:"string"}
-#@markdown 秒数は 4〜10（整数）。10 が綺麗め、5 が速い。15 は落ちます。
+#@markdown 秒数。1本は 4〜15。16秒以上は下で「つなぐ」を選ぶ。
 秒数 = 10  #@param {type:"number"}
+#@markdown 16〜60秒は 10秒ずつ、前のクリップの最後のコマから続ける（解像度もステップも落とさない）。
+長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ（16〜60秒）"]
 
 #@markdown ---
 #@markdown ### 触らなくていい（上級）
@@ -434,16 +436,22 @@ from h3_lora_studio import (
     apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail,
     friendly_lora, friendly_select_error,
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
-    resolve_mode, resolve_situation, clamp_studio_duration,
+    resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length,
     apply_stack_fallbacks, missing_stack_files, comfy_missing_loras,
     download_jobs_for, fetch_weight, load_catalog, civitai_token,
     civitai_download_fallbacks, restart_studio_comfy,
+    continue_chain_prompt, extract_last_frame, concat_studio_clips,
 )
 from select_loras import forbidden_hits, load_forbidden, select_loras
 
-DURATION = clamp_studio_duration(秒数)
+DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 if float(DURATION) != float(秒数):
-    print("秒数は", int(DURATION), "にします（このノートは 4〜10 秒。10 超は不安定）。")
+    if CHAIN:
+        print("秒数は", int(DURATION), "にします（つなぐは 16〜60 秒）。")
+    else:
+        print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
+if CHAIN:
+    print("つなぎ:", " + ".join(str(int(x)) + "秒" for x in CLIPS), "（最後のコマから続ける。画質は落とさない）")
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -484,7 +492,7 @@ if VANILLA:
             raise SystemExit(errs)
     else:
         w, h = CANVAS_8_9
-        default_i2v = resolve_motion_prompt("", duration_s=float(DURATION), with_last_frame=False)
+        default_i2v = resolve_motion_prompt("", duration_s=float(CLIPS[0]), with_last_frame=False)
         prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
         if CUSTOM_PROMPT:
             errs = validate_studio_i2v_prompt(prompt, forbidden_path=FORBIDDEN_FILE)
@@ -561,6 +569,8 @@ elif 画面の向き == "横":
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
 print("画面サイズ:", w, "x", h, " / 秒数:", int(DURATION), " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
+if CHAIN:
+    print("1本で 16秒以上は作りません。画質を保ったまま 10秒ずつつなぎます。")
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt(文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
@@ -654,15 +664,23 @@ if VANILLA:
         raise SystemExit("速いモード（Turbo）がありません。②を先に実行してください。")
 
 plans = t2v_retry_plans(width=w, height=h) if MODE == "t2v" else i2va_retry_plans(width=w, height=h)
+CLIP_DURATION = float(CLIPS[0])
+CLIP_INDEX = 0
+GRAPH_MODE = MODE
+GRAPH_FIRST = first_name
+GRAPH_PROMPT = prompt
+CHAIN_I2V_PROMPT = continue_chain_prompt(prompt)
 
 def make_graph(plan):
     steps = int(SAMPLER["steps"])
-    if MODE == "t2v":
+    clip_seed = int(SEED) + int(CLIP_INDEX)
+    prefix = FILENAME_PREFIX + ("_p" + str(int(CLIP_INDEX)) if CHAIN else "")
+    if GRAPH_MODE == "t2v":
         g = build_t2v_graph(
-            prompt=prompt, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
+            prompt=GRAPH_PROMPT, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=DURATION, seed=int(SEED), steps=steps,
-            filename_prefix=FILENAME_PREFIX,
+            duration_s=CLIP_DURATION, seed=clip_seed, steps=steps,
+            filename_prefix=prefix,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
@@ -671,17 +689,17 @@ def make_graph(plan):
         errs = assert_t2v_graph(g)
     else:
         g = build_i2va_graph(
-            first_image=first_name, last_image=None, prompt=prompt, unet=unet,
+            first_image=GRAPH_FIRST, last_image=None, prompt=GRAPH_PROMPT, unet=unet,
             lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=DURATION, seed=int(SEED), steps=steps,
-            filename_prefix=FILENAME_PREFIX,
+            duration_s=CLIP_DURATION, seed=clip_seed, steps=steps,
+            filename_prefix=prefix,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
         )
         if not VANILLA:
             inject_lora_stack(g, stack, sampler=SAMPLER)
-        homage = bool(VANILLA and not CUSTOM_PROMPT)
+        homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)
         errs = assert_i2va_graph(g, expect_last=False, homage=homage)
     if errs:
         raise SystemExit(errs)
@@ -735,22 +753,15 @@ def wait_prompt(pid, timeout=3600):
         time.sleep(2)
     return False, "timeout"
 
-if 試し打ちだけ:
-    g = make_graph(plans[0])
-    print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
-    print("実際の動画は「試し打ちだけ」をオフにして③をもう一度。")
-else:
-    print()
-    print("作り始めています。数分〜十数分かかることがあります…")
-    last_err = None
+def generate_one():
+    plans_now = t2v_retry_plans(width=w, height=h) if GRAPH_MODE == "t2v" else i2va_retry_plans(width=w, height=h)
     ok_entry = None
     before = newest_mp4(OUT)
-    for plan in plans:
+    for plan in plans_now:
         print("サイズを試しています:", plan.get("label") or plan)
         g = make_graph(plan)
         res, err = post_prompt(g)
         if err:
-            last_err = err
             if is_oom_error(err):
                 print("メモリが足りなかったので、小さい画面でやり直します。")
                 continue
@@ -759,27 +770,60 @@ else:
         if ok:
             ok_entry = payload
             break
-        last_err = payload
         if is_oom_error(str(payload)):
             print("メモリが足りなかったので、小さい画面でやり直します。")
             continue
-        raise SystemExit(format_job_fail(MODE, payload))
+        raise SystemExit(format_job_fail(GRAPH_MODE, payload))
     else:
-        raise SystemExit("メモリ不足で作れませんでした。秒数を 5 にするか、A100 のまま②からやり直してください。")
+        raise SystemExit("メモリ不足で作れませんでした。秒数を短くするか、A100 のまま②からやり直してください。")
     videos = collect_output_videos(ok_entry, OUT)
     fresh = newest_mp4(OUT)
     if fresh and fresh not in videos and (before is None or fresh != before):
         videos.append(fresh)
     if not videos:
-        print("ファイル名が取れませんでした。Drive の output フォルダを見てください:", OUT)
-    else:
-        print()
-        print("できました。下に再生、Drive にも保存しています。")
-        for p in videos:
-            print("保存:", p)
-            if p.is_file():
-                display(HTML(f"<p style='font-size:16px'>保存先: <code>{p}</code></p>"))
-                display(Video(str(p), embed=True, width=360))
+        raise SystemExit("ファイル名が取れませんでした。Drive の output フォルダを見てください: " + str(OUT))
+    return videos[0]
+
+if 試し打ちだけ:
+    g = make_graph(plans[0])
+    print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
+    if CHAIN:
+        print("つなぎ予定:", " + ".join(str(int(x)) + "秒" for x in CLIPS))
+    print("実際の動画は「試し打ちだけ」をオフにして③をもう一度。")
+else:
+    print()
+    print("作り始めています。数分〜十数分かかることがあります…")
+    clip_paths = []
+    inp = COMFY_DIR / "input"
+    inp.mkdir(parents=True, exist_ok=True)
+    for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
+        GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
+        if CLIP_INDEX == 0:
+            GRAPH_FIRST = first_name
+            GRAPH_PROMPT = prompt
+        else:
+            GRAPH_FIRST = first_name
+            GRAPH_PROMPT = CHAIN_I2V_PROMPT
+        if GRAPH_MODE == "i2v" and not GRAPH_FIRST:
+            raise SystemExit("写真または前のクリップの最後のコマがありません。")
+        print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", int(CLIP_DURATION), "秒", GRAPH_MODE)
+        clip_path = generate_one()
+        clip_paths.append(clip_path)
+        print("保存:", clip_path)
+        if CLIP_INDEX + 1 < len(CLIPS):
+            frame = inp / ("h3_chain_" + str(CLIP_INDEX) + ".png")
+            extract_last_frame(clip_path, frame)
+            first_name = stage_image_into_input(frame, inp)
+    final = clip_paths[0]
+    if len(clip_paths) > 1:
+        final = concat_studio_clips(clip_paths, OUT / ("h3_chain_" + str(int(DURATION)) + "s.mp4"))
+        print("つなぎ完了:", final)
+    print()
+    print("できました。下に再生、Drive にも保存しています。")
+    print("保存:", final)
+    if final.is_file():
+        display(HTML(f"<p style='font-size:16px'>保存先: <code>{final}</code></p>"))
+        display(Video(str(final), embed=True, width=360))
 print()
 print("③ 完了。キーは画面に出していません。")
 '''

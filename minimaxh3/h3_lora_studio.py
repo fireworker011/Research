@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -754,17 +756,141 @@ def is_blank_prompt(text: str | None) -> bool:
     return str(text or "").strip() in BLANK_PROMPTS
 
 
-def clamp_studio_duration(seconds: float) -> float:
-    """H3 is stable at 4–10s integer. 15s OOMs. Homage notebooks keep their own defaults."""
+CHAIN_CONTINUE_LINE = (
+    "Continue from this exact last frame as <Picture 1>. "
+    "Do not restart the scene. Keep identity, clothes, and lighting. "
+    "Natural ongoing motion. No freeze frame, no jump cut."
+)
+
+
+def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
+    """One shot is 4–15s. Chain mode is 16–60s via 10s last-frame clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
-        return 10.0
-    if n > 10:
-        return 10.0
+        return 16.0 if chain else 10.0
+    if chain:
+        if n > 60:
+            return 60.0
+        if n < 16:
+            return 16.0
+        return float(n)
+    if n > 15:
+        return 15.0
     if n < 4:
         return 4.0
     return float(n)
+
+
+def resolve_length_mode(label: str | bool) -> bool:
+    key = str(label or "").strip().lower()
+    return key in {
+        "つなぐ（16〜60秒）",
+        "つなぐ",
+        "chain",
+        "true",
+        "1",
+    }
+
+
+def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
+    """Native H3 clips. Do not generate 16s+ in one MiniMaxH3ImageToVideo pass."""
+    total = clamp_studio_duration(total_s, chain=chain)
+    if not chain:
+        return [total]
+    clips: list[float] = []
+    left = int(total)
+    while left > 15:
+        clips.append(10.0)
+        left -= 10
+    if left >= 4:
+        clips.append(float(left))
+    elif clips:
+        clips[-1] = float(int(clips[-1]) + left)
+    else:
+        clips.append(10.0)
+    return clips
+
+
+def resolve_studio_length(seconds: float, length_mode: str | bool) -> tuple[float, list[float], bool]:
+    chain = resolve_length_mode(length_mode)
+    total = clamp_studio_duration(seconds, chain=chain)
+    clips = studio_clip_plan(total, chain=chain)
+    return total, clips, chain
+
+
+def continue_chain_prompt(prompt: str) -> str:
+    """Clip 2+ uses the previous last frame as Picture 1. Same scene, no restart."""
+    text = str(prompt or "").strip()
+    if CHAIN_CONTINUE_LINE in text:
+        if "Picture 1" in text:
+            return text
+        wrapped, _ = apply_user_prompt(text, mode="i2v", default_prompt=text)
+        return wrapped
+    if "Picture 1" in text:
+        return CHAIN_CONTINUE_LINE + "\n\n" + text
+    wrapped, _ = apply_user_prompt(
+        text or "Continue the same live scene.",
+        mode="i2v",
+        default_prompt=text,
+    )
+    return CHAIN_CONTINUE_LINE + "\n\n" + wrapped
+
+
+def extract_last_frame(video: Path | str, dest: Path | str) -> Path:
+    """Last decoded PNG of a clip. Next I2V first_frame. No JPEG recompress."""
+    src = Path(video)
+    out = Path(dest)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    ff = shutil.which("ffmpeg") or "/usr/bin/ffmpeg"
+    if not src.is_file():
+        raise SystemExit("つなぐ用のクリップがありません。")
+    for seek in (["-sseof", "-0.05"], ["-sseof", "-1"]):
+        if out.is_file():
+            out.unlink()
+        cmd = [ff, "-y", *seek, "-i", str(src), "-frames:v", "1", "-update", "1", str(out)]
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode == 0 and out.is_file() and out.stat().st_size >= 100:
+            return out
+    raise SystemExit("最後のフレームを取れませんでした。秒数を 15 以下の1本にしてください。")
+
+
+def concat_studio_clips(clips: list[Path], dest: Path | str) -> Path:
+    """Join native clips. Prefer stream copy so H3 frames are not re-encoded."""
+    out = Path(dest)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if not clips:
+        raise SystemExit("つなぐクリップが空です。")
+    if len(clips) == 1:
+        if Path(clips[0]).resolve() != out.resolve():
+            out.write_bytes(Path(clips[0]).read_bytes())
+        return out
+    ff = shutil.which("ffmpeg") or "/usr/bin/ffmpeg"
+    lst = out.with_suffix(".concat.txt")
+    lines = []
+    for clip in clips:
+        path = Path(clip).resolve()
+        if not path.is_file():
+            raise SystemExit("つなぐクリップが欠けています: " + path.name)
+        lines.append("file '" + str(path).replace("'", "'\\''") + "'")
+    lst.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    copy = subprocess.run(
+        [ff, "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    if copy.returncode == 0 and out.is_file() and out.stat().st_size > 1000:
+        lst.unlink(missing_ok=True)
+        return out
+    enc_base = [ff, "-y", "-f", "concat", "-safe", "0", "-i", str(lst),
+                "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p"]
+    enc = subprocess.run(enc_base + ["-c:a", "aac", "-b:a", "192k", str(out)], capture_output=True, text=True)
+    if enc.returncode != 0 or not out.is_file() or out.stat().st_size < 1000:
+        enc = subprocess.run(enc_base + ["-an", str(out)], capture_output=True, text=True)
+    lst.unlink(missing_ok=True)
+    if enc.returncode != 0 or not out.is_file() or out.stat().st_size < 1000:
+        raise SystemExit("クリップの結合に失敗しました。")
+    return out
 
 
 def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str = "") -> tuple[str, bool]:
