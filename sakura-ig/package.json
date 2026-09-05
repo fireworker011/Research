@@ -1,0 +1,19 @@
+{
+  "name": "sakura-ig",
+  "version": "1.0.0",
+  "private": true,
+  "description": "sakura_ai_beauty 専属マネージャー。リールは Grok Imagine に丸投げする。",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "validate": "node src/validate-packets.js",
+    "key": "node src/print-launch-key.js",
+    "handoff": "node src/handoff.js --local",
+    "post-gate": "node src/post-gate.js --local",
+    "next": "node src/print-packet.js --next",
+    "imagine": "node src/imagine-run.js --next",
+    "test": "node src/imagine-run.js --test",
+    "imagine:date": "node src/imagine-run.js"
+  }
+}

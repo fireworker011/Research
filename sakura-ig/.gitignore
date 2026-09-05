@@ -1,0 +1,7 @@
+output/*
+!output/.gitkeep
+refs/*.jpg
+refs/*.jpeg
+refs/*.png
+refs/*.webp
+!refs/README.md

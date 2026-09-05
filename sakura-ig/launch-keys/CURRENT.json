@@ -1,0 +1,23 @@
+{
+  "to": "サクラ専属自動投稿",
+  "from": "manager",
+  "handed_off_at": "2026-08-23T19:15:00+09:00",
+  "run": "production",
+  "throw_to": "Grok Imagine agent",
+  "id": "reel-2026-08-24",
+  "do_not_edit_prompt": true,
+  "post": true,
+  "post_date": "2026-08-24",
+  "post_time_jst": "06:00",
+  "do_not_post_before": "2026-08-24T06:00:00+09:00",
+  "manager_handoff_jst": "05:00",
+  "reference_still": "sakura-ig/refs/sakura-face.jpg",
+  "model": "grok-imagine-video-1.5",
+  "mode": "image-to-video",
+  "duration_sec": 5,
+  "aspect_ratio": "9:16",
+  "resolution": "720p",
+  "output": "sakura-ig/output/reel-2026-08-24/reel.mp4",
+  "imagine_prompt": "Image-to-video from the attached reference sakura-ig/refs/sakura-face.jpg only. Do not generate a new woman.\n\nThis is SAKURA, this exact face and body. Adult Japanese woman, mid-20s. Slender oval face, porcelain-fair skin, large dark almond eyes, thin natural eyebrows, small straight nose, soft reddish-pink lips with a slight closed-mouth smile. Long voluminous wavy dark-brown hair, wispy see-through bangs, gold floral kanzashi on the side. Slender hourglass figure, defined waist, full chest, graceful shoulders. Deep vermillion-red kimono with large white-and-gold cherry-blossom embroidery, worn off both shoulders, loosely draped on the upper arms. Elegant and sensual. No nudity. No sexual act.\n\nOutput: 9:16, 5 seconds, 720p, grok-imagine-video-1.5.\n\nFirst half-second is her eyes and hair, not the garden. She blinks once. Wispy bangs move. A few pink petals drift. The red sleeve shifts one centimeter. Slow 5 percent push-in on the face. Keep the same smile, same eyes, same kimono, same body.\n\nSoft garden air only. No lyrics. No song title. No on-screen text. No second person. No face morph.",
+  "caption": "朱の一呼吸。AI生成の成人モデルです。\nOne breath in red. AI-generated adult model.\n#AI和装 #着物 #kimono #sakura"
+}
