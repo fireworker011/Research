@@ -1,3 +1,4 @@
+import json
 import sys
 import urllib.parse
 from pathlib import Path
@@ -438,6 +439,12 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
     src = writer.read_text(encoding="utf-8")
     blob = nb_path.read_text(encoding="utf-8")
+    nb = json.loads(nb_path.read_text(encoding="utf-8"))
+    for i, cell in enumerate(nb["cells"]):
+        if cell.get("cell_type") != "code":
+            continue
+        body = "".join(cell.get("source") or [])
+        compile(body, f"notebook-cell-{i}", "exec")
     assert "resolve_studio_length" in src
     assert "DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)" in src
     assert "duration_s=CLIP_DURATION" in src

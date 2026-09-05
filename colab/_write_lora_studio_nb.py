@@ -172,7 +172,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260905-larry8"
+FETCH_REV = "h2-20260905-cell3flat"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -436,29 +436,10 @@ sys.path.insert(0, "/content/h3-lora-studio/scripts")
 for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
     sys.modules.pop(name, None)
 from h3_r2v_core import is_oom_error, frames
-from h3_i2v_phone import (
-    DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image,
-    stage_image_into_input, is_auto_image_name, ref_image_url,
-)
-from h3_t2v import (
-    CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect,
-    resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt,
-)
-from h3_motion_graphics import (
-    CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans,
-    prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt,
-    validate_studio_i2v_prompt,
-)
-from h3_lora_studio import (
-    apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail,
-    friendly_lora, friendly_select_error,
-    inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
-    resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length,
-    apply_stack_fallbacks, missing_stack_files, comfy_missing_loras,
-    download_jobs_for, fetch_weight, load_catalog, civitai_token,
-    civitai_download_fallbacks, restart_studio_comfy,
-    continue_chain_prompt, extract_last_frame, concat_studio_clips,
-)
+from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
+from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
+from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, continue_chain_prompt, extract_last_frame, concat_studio_clips
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 if not getattr(_select_loras, "MAX_HELPERS", None):
@@ -533,25 +514,9 @@ else:
     if MODE == "t2v" and ("Picture 1" in prompt_arg or "first_frame" in prompt_arg.lower()):
         raise SystemExit("テキストから作るときは、写真用の文が文章欄に残っています。欄を空にするとこのシーンのおすすめ文になります。")
     try:
-        cfg = select_loras(
-            profile_name=SITUATION,
-            mode=MODE,
-            prompt_arg=prompt_arg,
-            catalog_path=STUDIO / "catalog" / "loras.json",
-            profiles_dir=STUDIO / "profiles",
-            turbo_override=None,
-            extra_forbidden=None,
-            forbidden_path=FORBIDDEN_FILE,
-        )
+        cfg = select_loras(profile_name=SITUATION, mode=MODE, prompt_arg=prompt_arg, catalog_path=STUDIO / "catalog" / "loras.json", profiles_dir=STUDIO / "profiles", turbo_override=None, extra_forbidden=None, forbidden_path=FORBIDDEN_FILE)
     except TypeError:
-        cfg = select_loras(
-            profile_name=SITUATION,
-            mode=MODE,
-            prompt_arg=prompt_arg,
-            catalog_path=STUDIO / "catalog" / "loras.json",
-            profiles_dir=STUDIO / "profiles",
-            turbo_override=None,
-        )
+        cfg = select_loras(profile_name=SITUATION, mode=MODE, prompt_arg=prompt_arg, catalog_path=STUDIO / "catalog" / "loras.json", profiles_dir=STUDIO / "profiles", turbo_override=None)
     except SystemExit as exc:
         hint = friendly_select_error(exc)
         raise SystemExit(hint or str(exc)) from None
@@ -635,11 +600,7 @@ if not VANILLA:
             print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), x.get("role") or "")
     still = missing_stack_files(stack, lora_dir)
     if still and not 試し打ちだけ:
-        raise SystemExit(
-            "このシーンの部品がありません: " + ", ".join(still)
-            + "。Drive の models/loras に置いて③をもう一度実行してください。"
-            " ②をもう一度回すだけでは取れないことがあります（Civitai 有料）。"
-        )
+        raise SystemExit("このシーンの部品がありません: " + ", ".join(still) + "。Drive の models/loras に置いて③をもう一度実行してください。②をもう一度回すだけでは取れないことがあります（Civitai 有料）。")
     unseen = comfy_missing_loras(stack, obj) if obj else []
     if unseen and not 試し打ちだけ:
         print("エンジンが新しい部品をまだ見ていないので、再読み込みします…")
@@ -873,7 +834,7 @@ nb = {
         {"cell_type": "markdown", "metadata": {}, "source": to_source(MD2)},
         {"cell_type": "code", "metadata": {"id": "ls2_setup"}, "execution_count": None, "outputs": [], "source": to_source(CELL2)},
         {"cell_type": "markdown", "metadata": {}, "source": to_source(MD3)},
-        {"cell_type": "code", "metadata": {"id": "ls3_gen"}, "execution_count": None, "outputs": [], "source": to_source(CELL3)},
+        {"cell_type": "code", "metadata": {"id": "ls3_gen_v2"}, "execution_count": None, "outputs": [], "source": to_source(CELL3)},
     ],
 }
 blob = json.dumps(nb, ensure_ascii=False, indent=1)
