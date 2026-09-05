@@ -75,8 +75,9 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert oral_t2v["stack"][2]["strength_model"] == 0.7
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
-    assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
+    assert futa_t2v == ["blowjob-h3", "synth-pussy-h3", "larry-v4"]
     assert "futa-h3-v51" not in futa_t2v
+    assert "penis-lora-h3" not in futa_t2v
     assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
     assert general["stack"][0]["strength_model"] == 0.8
     assert general["stack"][1]["strength_model"] == 0.5
@@ -213,8 +214,16 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "feminine" in clow
     assert "no man" in clow
     bj = select_loras(profile_name="futa_blowjob", mode="t2v")
-    assert "adult woman" in bj["prompt"].lower()
-    assert "adult man" not in bj["prompt"].lower()
+    assert [r["id"] for r in bj["stack"]] == ["blowjob-h3", "synth-pussy-h3", "larry-v4"]
+    assert [r["role"] for r in bj["stack"]] == ["act", "helper", "turbo"]
+    assert bj["stack"][1]["strength_model"] == 0.55
+    blow = bj["prompt"].lower()
+    assert "adult woman" in blow
+    assert "adult man" not in blow
+    assert "vulva" in blow
+    assert "anus" in blow
+    assert "bl0w_j0b" in blow
+    assert "penislora" in blow
     try:
         select_loras(profile_name="futa_anal", mode="i2v", turbo_override=True)
     except SelectError as exc:

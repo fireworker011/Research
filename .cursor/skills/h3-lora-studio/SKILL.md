@@ -17,4 +17,4 @@ Fal に LoRA は差せない。成人 21+。
 
 エロなし: Turbo1 + 画質1。日常は Larry v4 1.0 + シネマ DY 0.65 / 8step。最速は LightX2V 4step。音残しは LightX2V 8step。専用「普通」は LightX2V 4step のみ。Larry と LightX2V は同時に積まない。FL2VA と Ref2VA を混ぜない。Photoreal still は動画本体に載せない。DY と ASTROCINEMA は同時に積まない。
 
-エロ: 行為1 + ヘルパー0〜1 + Turbo0〜1。CoachBate アナルは Turbo オフ・16step。汎用エロ / 騎乗 / セックス（女体）は AIO + Larry 0.5 / 12step（LightX2V にはしない）。セックス（女体）は竿 0.7。空欄文は挿入・リズム・横クローズを書く。秒数は 1本 4〜15。16〜60秒は最後のコマつなぎ。挿入 LoRA と SFW の速い＋綺麗は併用しない。セックス（女体）/ アナルセックス（女体）は男・筋肉質の男体にしない。
+エロ: 行為1 + ヘルパー0〜1 + Turbo0〜1。CoachBate アナルは Turbo オフ・16step。汎用エロ / 騎乗 / セックス（女体）は AIO + Larry 0.5 / 12step（LightX2V にはしない）。セックス（女体）は竿 0.7。ふたなりフェラはフェラ + 穴の見え方（竿 LoRA は枠のため外す。PENISLORA は文に残す）。空欄文は挿入・リズム・横クローズを書く。秒数は 1本 4〜15。16〜60秒は最後のコマつなぎ。挿入 LoRA と SFW の速い＋綺麗は併用しない。セックス（女体）/ アナルセックス（女体）は男・筋肉質の男体にしない。
