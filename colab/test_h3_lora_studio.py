@@ -230,8 +230,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "validate_motion_ad_prompt(prompt, with_last_frame=False)" in blob
     assert "写真用の文が文章欄に残っています" in src
     assert "friendly_select_error" in src
-    assert "追加の禁止語" in src
     assert "forbidden.json" in src
+    assert "追加の禁止語 =" not in src
+    assert "FORBIDDEN_FILE" in src
+    assert "forbidden_path=FORBIDDEN_FILE" in src
     assert "forbidden_words.py" not in src
     assert "h3-lora-studio/scripts/forbidden_words.py" not in blob
     assert "from forbidden_words" not in blob

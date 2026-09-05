@@ -1,6 +1,7 @@
 {
   "schema": "h3-lora-studio-forbidden/v1",
-  "comment_ja": "Drive の minimax-h3-comfyui/forbidden.json を編集して②→③。minors を消しても未成年チェックは残る。足したい語は extra へ。③の「追加の禁止語」欄でもカンマ区切りで足せる。",
+  "comment_ja": "禁止語の設定はこのファイルだけ。Drive では minimax-h3-comfyui/forbidden.json。足す・消すのは extra。③に欄は無い。編集したら③を再実行（②は不要）。minors / commercial / min_age を消してもコード側のロックは残る。",
+  "min_age": 21,
   "minors": [
     "shota",
     "syota",
@@ -29,6 +30,10 @@
     "kids",
     "minor",
     "teen"
+  ],
+  "commercial": [
+    "px.a8.net",
+    "a8mat="
   ],
   "extra": [
     "schoolgirl",

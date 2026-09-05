@@ -408,6 +408,11 @@ def test_forbidden_json_extra_is_editable(tmp_path: Path):
     cfg = load_forbidden()
     assert "schoolgirl" in cfg["extra"]
     assert "loli" in cfg["minors"]
+    assert cfg["min_age"] == 21
+    assert "px.a8.net" in cfg["commercial"]
+    comment = json.loads((ROOT / "catalog" / "forbidden.json").read_text(encoding="utf-8"))["comment_ja"]
+    assert "このファイル" in comment
+    assert "欄でも" not in comment
     empty = tmp_path / "forbidden.json"
     empty.write_text(
         json.dumps({"schema": "h3-lora-studio-forbidden/v1", "minors": [], "extra": ["brandx"]}),

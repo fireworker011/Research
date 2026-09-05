@@ -81,14 +81,13 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。
 
 ## 禁止語
 
-`catalog/forbidden.json`。Colab では Drive の `minimax-h3-comfyui/forbidden.json` が優先（②が無ければ作る。あれば上書きしない）。③の「追加の禁止語」でもカンマ区切りで足せる。
+設定は **1ファイルだけ**。`catalog/forbidden.json`。Colab では Drive の `minimax-h3-comfyui/forbidden.json`（②が無ければ作る。あれば上書きしない）。③に欄は無い。編集したら③を再実行。
 
 - `extra` … 足す・消してよい（初期は schoolgirl / 稼げる / 月収 など）
-- `minors` … 書いても足される。消してもコード側の未成年ロックは残る
-- アフィURL断片（`px.a8.net`）は JSON から消せない
+- `minors` / `commercial` / `min_age` … 書いてあるのは一覧。消してもコード側のロックは残る（未成年・21歳未満の数字・`px.a8.net`）
 
 ```bash
-python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v --prompt '（シーン）' --extra-forbidden 'ブランド名'
+python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v --prompt '（シーン）'
 ```
 
 ## 不変条件

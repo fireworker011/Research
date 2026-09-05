@@ -117,16 +117,24 @@ def load_forbidden(path: Path | str | None = None) -> dict[str, Any]:
             data = loaded
     minors = _clean_terms(list(LOCKED_MINORS) + list(data.get("minors") or []))
     extra = _clean_terms(data.get("extra") or [])
+    commercial = _clean_terms(list(LOCKED_COMMERCIAL) + list(data.get("commercial") or []))
     boundary = {
         str(x).strip().lower()
         for x in (data.get("word_boundary") or DEFAULT_BOUNDARY)
         if str(x).strip()
     } or set(DEFAULT_BOUNDARY)
+    min_age = 21
+    try:
+        min_age = max(21, int(data.get("min_age") or 21))
+    except (TypeError, ValueError):
+        min_age = 21
     return {
         "path": str(p),
         "minors": minors,
         "extra": extra,
+        "commercial": commercial,
         "word_boundary": sorted(boundary),
+        "min_age": min_age,
     }
 
 
@@ -197,7 +205,7 @@ def forbidden_hits(
         hits.add(match.group(0).lower())
     hits.update(underage_age_hits(cleaned))
     low = cleaned.lower()
-    for term in list(LOCKED_COMMERCIAL) + extra_terms_:
+    for term in list(cfg.get("commercial") or LOCKED_COMMERCIAL) + extra_terms_:
         if term.lower() in low:
             hits.add(term.lower())
     return sorted(hits)

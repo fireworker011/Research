@@ -72,7 +72,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
-**プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。禁止語の extra は Drive の `forbidden.json` か③の欄。未成年ロックは外せません。
+**プロンプトは任意。** 空ならシーンのおすすめ文。自分の文を③の欄に貼ってもよい。写真からのときは顔ロック（Picture 1）を自動で足します。禁止語は Drive の `forbidden.json` だけ。未成年ロックは外せません。
 
 上級の追加部品（リアル寄せ・胸など）は重ね上限のため無視します。
 """
@@ -217,12 +217,19 @@ for rel in studio_files:
         raise SystemExit("シーン設定の取得に失敗しました。②をもう一度。")
 drive_fb = DRIVE_ROOT / "forbidden.json"
 git_fb = Path("/content/h3-lora-studio/catalog/forbidden.json")
-if drive_fb.is_file() and drive_fb.stat().st_size > 20:
-    shutil.copy2(drive_fb, git_fb)
-    print("禁止語: Drive の forbidden.json を使います")
-else:
+if not (drive_fb.is_file() and drive_fb.stat().st_size > 20):
     shutil.copy2(git_fb, drive_fb)
-    print("禁止語の編集ファイル:", drive_fb)
+    print("禁止語ファイルを作りました:", drive_fb)
+else:
+    print("禁止語ファイル:", drive_fb)
+shutil.copy2(drive_fb, git_fb)
+try:
+    fb = json.loads(drive_fb.read_text(encoding="utf-8"))
+    extra_now = [str(x).strip() for x in (fb.get("extra") or []) if str(x).strip()]
+    print("extra:", ", ".join(extra_now) or "（空）")
+    print("足す・消すのは extra だけ。minors を消しても未成年ロックは残ります。")
+except Exception:
+    raise SystemExit("禁止語ファイルが壊れています。Drive の forbidden.json を直してください。")
 
 sys.path.insert(0, "/content")
 from h3_i2v_phone import i2v_download_jobs
@@ -342,7 +349,7 @@ MD3 = r"""## ③ 動画を作る
 
 自分の文を書くときは、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。写真からのときに Picture 1 を書かなくても、顔ロックは自動で足します。
 
-**禁止語の編集:** Drive の `minimax-h3-comfyui/forbidden.json` の `extra`。③の「追加の禁止語」欄でもカンマで足せます。ロリ・ショタ・child などは消せません。
+**禁止語:** Drive の `minimax-h3-comfyui/forbidden.json` だけ。`extra` を足す・消す。③に欄は無い。編集したら③を再実行。ロリ・ショタ・child・21歳未満・アフィURLは消せません。
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
@@ -366,9 +373,6 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。
 文章 = ""  #@param {type:"string"}
-#@markdown ### 禁止語（任意）
-#@markdown Drive の `minimax-h3-comfyui/forbidden.json` の extra を編集するか、ここにカンマで足す。未成年の語は消せません。
-追加の禁止語 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
 写真ファイル = "auto"  #@param {type:"string"}
 秒数 = 10  #@param {type:"number"}
@@ -409,7 +413,7 @@ from h3_lora_studio import (
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
     resolve_mode, resolve_situation,
 )
-from select_loras import extra_terms, forbidden_hits, parse_extra_terms, select_loras
+from select_loras import forbidden_hits, load_forbidden, select_loras
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -429,12 +433,11 @@ VANILLA = is_vanilla(やりたいシーン)
 print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
-print("禁止語の編集:", DRIVE_ROOT / "forbidden.json")
-extra_now = extra_terms(DRIVE_ROOT / "forbidden.json")
-print("追加の禁止語:", ", ".join(extra_now) or "（json の extra は空）")
-EXTRA_FORBIDDEN = parse_extra_terms(追加の禁止語)
-if EXTRA_FORBIDDEN:
-    print("③で足した禁止語:", ", ".join(EXTRA_FORBIDDEN))
+FORBIDDEN_FILE = DRIVE_ROOT / "forbidden.json"
+fb = load_forbidden(FORBIDDEN_FILE)
+print("禁止語ファイル:", FORBIDDEN_FILE)
+print("extra:", ", ".join(fb["extra"]) or "（空）")
+print("未成年・21歳未満・アフィURLはファイルから消せません。足す・消すのは extra。")
 print()
 
 CUSTOM_PROMPT = not is_blank_prompt(文章)
@@ -454,7 +457,7 @@ if VANILLA:
         default_i2v = resolve_motion_prompt("", duration_s=float(秒数), with_last_frame=False)
         prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
         if CUSTOM_PROMPT:
-            errs = validate_studio_i2v_prompt(prompt, extra=EXTRA_FORBIDDEN)
+            errs = validate_studio_i2v_prompt(prompt, forbidden_path=FORBIDDEN_FILE)
         else:
             errs = validate_motion_ad_prompt(prompt, with_last_frame=False)
         if errs:
@@ -479,8 +482,8 @@ else:
             catalog_path=STUDIO / "catalog" / "loras.json",
             profiles_dir=STUDIO / "profiles",
             turbo_override=None,
-            extra_forbidden=EXTRA_FORBIDDEN,
-            forbidden_path=STUDIO / "catalog" / "forbidden.json",
+            extra_forbidden=None,
+            forbidden_path=FORBIDDEN_FILE,
         )
     except TypeError:
         cfg = select_loras(
@@ -508,7 +511,7 @@ else:
         print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), role)
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
     if MODE == "i2v":
-        errs = validate_studio_i2v_prompt(prompt, extra=EXTRA_FORBIDDEN)
+        errs = validate_studio_i2v_prompt(prompt, forbidden_path=FORBIDDEN_FILE)
         if errs:
             raise SystemExit(errs)
 
@@ -530,19 +533,15 @@ elif 画面の向き == "やや正方形":
 print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
 if float(秒数) > 10:
     print("秒数は 10 までが安定です。15 はメモリ不足やエラーになりやすいです。")
-hits = forbidden_hits(
-    prompt,
-    extra=EXTRA_FORBIDDEN,
-    path=DRIVE_ROOT / "forbidden.json",
-)
-if hits:
-    hint = friendly_select_error(SystemExit(f"forbidden subject in prompt: {hits}"))
-    raise SystemExit(hint or f"forbidden subject in prompt: {hits}")
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt(文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
     if errs:
         raise SystemExit(errs)
+hits = forbidden_hits(prompt, path=FORBIDDEN_FILE)
+if hits:
+    hint = friendly_select_error(SystemExit(f"forbidden subject in prompt: {hits}"))
+    raise SystemExit(hint or f"forbidden subject in prompt: {hits}")
 
 obj = {}
 if not 試し打ちだけ:
