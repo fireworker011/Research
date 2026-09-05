@@ -55,9 +55,9 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8 |
 | フェラ | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | euler / simple / 8 |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | AIO / Futa LoRA なし。女体ロック |
-| セックス（女体） | `futa_sex` | AIO 0.75 | Penis 0.7 | Larry 0.5 | なし | 男・筋肉質の男体にしない |
-| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 | **切る** | **切る** | 挿入側も女体。Turbo なし |
-| 汎用エロ | `general_sex` | AIO 0.75 | なし | LightX2V 0.5 | なし | euler / simple / 12 |
+| セックス（女体） | `futa_sex` | AIO 0.75 | Penis 0.7 | Larry 0.7 | なし | 男・筋肉質の男体にしない。8step |
+| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 | **切る** | **切る** | 挿入側も女体。Turbo なし・16step |
+| 汎用エロ | `general_sex` | AIO 0.75 | なし | Larry 0.5 | なし | euler / simple / 8 |
 | 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
 | 性器を広げる | `pussy_spread` | 広げる 0.75 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
@@ -79,7 +79,7 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 python colab/_write_lora_studio_nb.py
 ```
 
-T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。
+T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 4〜10（整数）。15 は OOM。
 
 ## 禁止語
 

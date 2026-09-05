@@ -63,14 +63,15 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | アナル舐め・指 | 舐め・指のアップ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | フェラ | フェラ本線 | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
 | ふたなりフェラ | フェラと同じ積み。AIO なし。女体のみ | フェラ + 竿 + Larry |
-| セックス（女体） | 挿入。男にはしない | 総合えっち 0.75 + 竿 0.7 + Larry 0.5 |
+| セックス（女体） | 挿入。男にはしない | 総合えっち 0.75 + 竿 0.7 + Larry 0.7 / 8step |
 | アナルセックス（女体） | アナル挿入。挿入側も女体 | CoachBate 0.85 + 竿 0.7。Turbo なし |
-| 汎用エロ | 挿入が曖昧でいい | AIO 0.75 + LightX2V 0.5 / 12 step |
+| 汎用エロ | 挿入が曖昧でいい | AIO 0.75 + Larry 0.5 / 8step |
 | 試し打ち | エロの量産プレビュー | AIO 0.7 + LightX2V 4step。当たりは本線で焼き直し |
 | レズビアンクンニ | 全裸の出会い→キス→クンニ | クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5 |
 | 性器を広げる | 広げて見せるクローズ | 広げる 0.75 + 穴の見え方 0.55 + Larry 0.5 |
 | レズ＋広げる | クンニに広げるを足す | クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方は外す |
 
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜10（整数）。15 はメモリ不足で落ちます。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー1 + Turbo1。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 
@@ -364,9 +365,11 @@ MD3 = r"""## ③ 動画を作る
 - **アナル挿入（画質）** … 穴が見えるクローズ。Turbo なし
 - **アナル舐め・指** … 舐め、それから指
 - **フェラ / ふたなりフェラ** … 正面から竿。`bl0w_j0b` と `PENISLORA` は自動。女体のみ
-- **セックス（女体）** … 総合えっち + 竿。男・筋肉質の男体にはしない
+- **セックス（女体）** … 総合えっち + 竿 + Larry 8step。男・筋肉質の男体にはしない
 - **アナルセックス（女体）** … CoachBate + 竿。Turbo なし。挿入側も女体
-- **汎用エロ / 試し打ち** … 挿入は曖昧でいい。試し打ちの当たりは本線で焼き直す
+- **汎用エロ** … AIO + Larry 8step。挿入は曖昧でいい
+- **試し打ち** … AIO + LightX2V 4step。当たりは本線で焼き直す
+- **秒数** … 4〜10。10 が綺麗め、5 が速い。15 は落ちる
 - **レズビアンクンニ** … 全裸の出会い→抱きつきキス→押し倒してクンニ。穴の見え方付き。秒数は 10 が安定
 - **性器を広げる** … 広げる + 穴の見え方
 - **レズ＋広げる** … クンニ + 広げる（穴の見え方は枠の都合で外す）
@@ -381,6 +384,7 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` なら input フォルダの一番新しい jpg
 写真ファイル = "auto"  #@param {type:"string"}
+#@markdown 秒数は 4〜10（整数）。10 が綺麗め、5 が速い。15 は落ちます。
 秒数 = 10  #@param {type:"number"}
 
 #@markdown ---
@@ -417,9 +421,13 @@ from h3_motion_graphics import (
 from h3_lora_studio import (
     apply_user_prompt, explain_choice, format_job_fail, friendly_lora, friendly_select_error,
     inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers,
-    resolve_mode, resolve_situation,
+    resolve_mode, resolve_situation, clamp_studio_duration,
 )
 from select_loras import forbidden_hits, load_forbidden, select_loras
+
+DURATION = clamp_studio_duration(秒数)
+if float(DURATION) != float(秒数):
+    print("秒数は", int(DURATION), "にします（このノートは 4〜10 秒。10 超は不安定）。")
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -460,7 +468,7 @@ if VANILLA:
             raise SystemExit(errs)
     else:
         w, h = CANVAS_8_9
-        default_i2v = resolve_motion_prompt("", duration_s=float(秒数), with_last_frame=False)
+        default_i2v = resolve_motion_prompt("", duration_s=float(DURATION), with_last_frame=False)
         prompt, CUSTOM_PROMPT = apply_user_prompt(文章, mode="i2v", default_prompt=default_i2v)
         if CUSTOM_PROMPT:
             errs = validate_studio_i2v_prompt(prompt, forbidden_path=FORBIDDEN_FILE)
@@ -536,9 +544,7 @@ elif 画面の向き == "横":
     w, h = canvas_for_aspect("16:9")
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
-print("画面サイズ:", w, "x", h, " / 秒数:", 秒数, " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
-if float(秒数) > 10:
-    print("秒数は 10 までが安定です。15 はメモリ不足やエラーになりやすいです。")
+print("画面サイズ:", w, "x", h, " / 秒数:", int(DURATION), " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt(文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
@@ -602,7 +608,7 @@ def make_graph(plan):
         g = build_t2v_graph(
             prompt=prompt, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(秒数), seed=int(SEED), steps=steps,
+            duration_s=DURATION, seed=int(SEED), steps=steps,
             filename_prefix=FILENAME_PREFIX,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
@@ -615,7 +621,7 @@ def make_graph(plan):
             first_image=first_name, last_image=None, prompt=prompt, unet=unet,
             lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=float(秒数), seed=int(SEED), steps=steps,
+            duration_s=DURATION, seed=int(SEED), steps=steps,
             filename_prefix=FILENAME_PREFIX,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,

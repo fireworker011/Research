@@ -10,13 +10,13 @@
   },
   "stack_plan": {
     "act": { "id": "hmnsfw-aio-v25", "strength": 0.75 },
-    "turbo": { "id": "minimax-h3-turbo-fl2v-4step", "strength": 0.5 }
+    "turbo": { "id": "larry-v4", "strength": 0.5 }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "Riding uses the general-sex thin stack. Riding-pose LoRA stays off to keep the cap."
+    "steps": 8,
+    "note": "Riding uses the general-sex stack: AIO + Larry 0.5 / 8step. Riding-pose LoRA stays off to keep the cap."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -28,7 +28,7 @@
     "blowjob-h3",
     "riding-pose-i2v",
     "photoreal-h3-still",
-    "larry-v4",
+    "minimax-h3-turbo-fl2v-4step",
     "cinema-dy"
   ],
   "scenes": {

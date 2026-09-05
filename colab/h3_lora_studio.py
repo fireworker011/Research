@@ -43,9 +43,9 @@ SITUATION_DOWNLOAD = {
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"],
     "futa_anal": ["anal-penetration-coachbate", "penis-lora-h3"],
     "oral": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
-    "general_sex": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
+    "general_sex": ["hmnsfw-aio-v25", "larry-v4"],
     "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
-    "riding": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
+    "riding": ["hmnsfw-aio-v25", "larry-v4"],
 }
 
 SITUATION_JA = {
@@ -108,12 +108,12 @@ SITUATION_HELP = {
     "pussy_spread": "性器を広げる。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。",
     "lesbian_spread": "レズクンニに広げるを足す。クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方はヘルパー枠のため外す。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 + Larry 0.7。AIO とふたなり部品は足さない。出演は女体のみ。男・筋肉質の男体にはしない。",
-    "futa_sex": "セックス（女体）。総合えっち 0.75 + 竿 0.7 + Larry 0.5。ふたなり変身 LoRA は足さない。男・筋肉質・男らしい体にはしない。",
-    "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7。Turbo なし。挿入側も女体。男にはしない。",
+    "futa_sex": "セックス（女体）。総合えっち 0.75 + 竿 0.7 + Larry 0.7 / 8step。ふたなり変身 LoRA は足さない。男・筋肉質・男らしい体にはしない。",
+    "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7。Turbo なし・16step。挿入側も女体。男にはしない。",
     "oral": "フェラ本線。フェラ 0.75 + 竿 0.7 + Larry 0.7。",
-    "general_sex": "汎用エロ。AIO 0.75 + LightX2V 0.5 / 12 step。穴が曖昧でいいとき。",
+    "general_sex": "汎用エロ。AIO 0.75 + Larry 0.5 / 8step。穴が曖昧でいいとき。",
     "preview": "試し打ち。AIO 0.7 + LightX2V 4step。当たりだけ本線で焼き直す。",
-    "riding": "騎乗は汎用エロと同じ薄い積み。",
+    "riding": "騎乗は汎用エロと同じ。AIO 0.75 + Larry 0.5 / 8step。",
 }
 
 LORA_JA = {
@@ -597,6 +597,19 @@ I2V_CUSTOM_LOCK = (
 
 def is_blank_prompt(text: str | None) -> bool:
     return str(text or "").strip() in BLANK_PROMPTS
+
+
+def clamp_studio_duration(seconds: float) -> float:
+    """H3 is stable at 4–10s integer. 15s OOMs. Homage notebooks keep their own defaults."""
+    try:
+        n = int(round(float(seconds)))
+    except (TypeError, ValueError):
+        return 10.0
+    if n > 10:
+        return 10.0
+    if n < 4:
+        return 4.0
+    return float(n)
 
 
 def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str = "") -> tuple[str, bool]:

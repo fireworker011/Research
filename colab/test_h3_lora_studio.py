@@ -9,6 +9,7 @@ from h3_lora_studio import (
     civitai_download_url,
     civitai_token,
     civitai_token_help,
+    clamp_studio_duration,
     explain_choice,
     format_job_fail,
     friendly_lora,
@@ -148,6 +149,11 @@ def test_japanese_form_labels():
     assert "Larry" in sfw
     assert "エロ用は入れません" in sfw
     assert "blowjob-h3" not in sfw
+    general = explain_choice("汎用エロ", "テキストから（写真なし）")
+    assert "Larry" in general
+    assert "8step" in general
+    assert "12 step" not in general
+    assert "12step" not in general
 
 
 def test_vanilla_sfw_shares_phone_path():
@@ -274,3 +280,37 @@ def test_friendly_select_error_for_child_and_picture1():
     assert "21" in (friendly_select_error(SystemExit("forbidden subject in prompt: ['15 years old']")) or "")
     assert "写真用" in (friendly_select_error(SystemExit("t2v prompt must not use Picture 1 / first_frame")) or "")
     assert friendly_select_error(SystemExit("CoachBate anal penetration stays turbo off")) is None
+
+
+def test_clamp_studio_duration_is_four_to_ten():
+    assert clamp_studio_duration(10) == 10.0
+    assert clamp_studio_duration(5) == 5.0
+    assert clamp_studio_duration(4) == 4.0
+    assert clamp_studio_duration(3) == 4.0
+    assert clamp_studio_duration(15) == 10.0
+    assert clamp_studio_duration(10.4) == 10.0
+    assert clamp_studio_duration("8") == 8.0
+    assert clamp_studio_duration("nope") == 10.0
+    assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "larry-v4"]
+    assert situation_ids("riding") == ["hmnsfw-aio-v25", "larry-v4"]
+    assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
+    assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "larry-v4"]
+
+
+def test_notebook_clamps_duration_and_uses_it_in_graphs():
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
+    src = writer.read_text(encoding="utf-8")
+    blob = nb_path.read_text(encoding="utf-8")
+    assert "clamp_studio_duration" in src
+    assert "DURATION = clamp_studio_duration(秒数)" in src
+    assert "duration_s=DURATION" in src
+    assert "duration_s=float(秒数)" not in src
+    assert "duration_s=5.0" not in src
+    assert "DURATION = float(秒数)" not in src
+    assert "AIO 0.75 + Larry 0.5 / 8step" in src
+    assert "LightX2V 0.5 / 12 step" not in src
+    assert "DURATION = clamp_studio_duration" in blob
+    assert "duration_s=DURATION" in blob
+    assert "duration_s=float(秒数)" not in blob
+    assert "AIO 0.75 + Larry 0.5 / 8step" in blob

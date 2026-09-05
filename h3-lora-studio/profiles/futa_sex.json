@@ -12,13 +12,13 @@
   "stack_plan": {
     "act": { "id": "hmnsfw-aio-v25", "strength": 0.75 },
     "helper": { "id": "penis-lora-h3", "strength": 0.7 },
-    "turbo": { "id": "larry-v4", "strength": 0.5 }
+    "turbo": { "id": "larry-v4", "strength": 0.7 }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "AIO sex + penis helper + Larry 0.5. Futa transform LoRA stays off so the shaft does not melt. Bodies stay feminine."
+    "note": "AIO sex + penis helper + Larry 0.7 / 8step. Futa transform LoRA stays off so the shaft does not melt. Bodies stay feminine."
   },
   "disabled": [
     "anal-penetration-coachbate",
