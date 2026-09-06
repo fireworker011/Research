@@ -54,7 +54,8 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル挿入（画質） | `anal_penetration` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。穴のアップ。遅いが綺麗 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
 | アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
-| フェラ（女体） | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | 女がふたなりに。男なし |
+| フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 | Larry 0.6 | なし | 8step。女がふたなりに。男なし |
+| 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | なし | Larry 0.6 | 0.5 | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
 | アナルセックス（女体） | `futa_anal` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | euler / simple / 12。アナル本線。後ろから、穴が膣より上の構図。手は腰。I2V本線 |
@@ -116,6 +117,19 @@ python colab/_write_lora_studio_nb.py
 ```
 
 T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 1本 4〜15。20〜120秒は③の「つなぐ 20秒」〜「つなぐ 120秒」（10秒クリップ。1本で 16秒以上は作らない）。120秒は 10×12。任意の 16〜120 は「つなぐ（秒数欄・16〜120）」。2〜12本目は③のつなぎ欄。空なら前の続き。帰宅・洗い物・登校・授業・屋上〜下校・おかえり・風呂・食卓・布団・休日・縁側の専用はカット編集。全話 10秒・1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は LoRA のカメラ（口元／舌／接合点／膝元）。歩く本に行為部品を載せない。体位とカメラが合わない行為は捩じ込まない。登校・おかえり・風呂・食卓・布団・休日・縁側は 10秒×12本・16:9。授業と屋上は 10秒×10本・16:9。
+
+### 専用ストーリーの追従最適化（速度と再現の両立）
+
+専用の各本は独立生成（前の本も他の話もモデルは見ない）。③は JSON の文をそのまま送らず `compact_story_prompt()` で整えてから送る。
+
+- **画面に居ない人の全身描写を消す**。`X = NOT IN FRAME` / `NOT IN THIS CLIP` の人は `subject_definitions` から外し、`Not in this clip: X.` の1行にする。居ない裸の女を細かく書くのが「勝手に出てくる」最大の原因
+- **編集者向けのメタ行を消す**。`Do not copy the previous clip` / `Clip 7 of 12` / CAST LOCK の他話タイトル列挙はモデルに意味が無い。CAST LOCK は「同じ顔・髪・体」の1文に置き換える
+- **H3 の正規順に並べ直す**。`subject_definitions → environment → integrated_multimodal_description → overall_soundscape → non_diegetic_music`。WHO の配置と HARD LOCK / CAMERA / LIP SYNC は description ブロックの中に畳む。feminine_lock も soundscape の前に入る
+- **セリフの本だけフルステップ**。`「」` がある本は Larry を外して res_multistep 12step（口の動きと日本語の音）。歩く・キス・テレビの本は Larry 0.6 / 8step
+- **部品の切り替えで VRAM を空けない**。土台と文章モデル（Qwen3-VL）を Drive から読み直すのが一番遅い。解放はメモリ不足の再試行だけ
+- **トリガーは単語一致**。`DY` が `body` の中に見つかって落ちていた。今は `PENISLORA, DY` が歩く本の先頭に付く
+- **`negative` は文書用**。公式グラフは BasicGuider（CFG なし）で負の文を送る配線が無い。除外したいものは正の文に `No men. No feces.` のように書く（専用文はそうしている）。CFG を足すと NFE が倍になるので入れない
+- `validate_story_follow()` は 10秒／行為中は無言／口元の寄り／接合点に加えて **hmmotion は AIO セックス本だけ・先頭** を検査する
 
 ## 禁止語
 

@@ -74,8 +74,8 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert anal_t2v == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert close_t2v == ["synth-pussy-h3", "larry-v4", "cinema-dy"]
     assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
-    assert oral_t2v["stack"][0]["strength_model"] == 0.75
-    assert oral_t2v["stack"][2]["strength_model"] == 0.7
+    assert oral_t2v["stack"][0]["strength_model"] == 0.8
+    assert oral_t2v["stack"][2]["strength_model"] == 0.6
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
     assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
@@ -322,6 +322,31 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "feminine_lock:" in locked.lower()
     assert "no man" in locked.lower()
     assert "male body" in neg.lower()
+    structured = (
+        "subject_definitions:\nA: adult woman.\n\nintegrated_multimodal_description:\nShe walks.\n\n"
+        "overall_soundscape:\nWind.\n\nnon_diegetic_music:\nN/A"
+    )
+    locked2, _ = apply_feminine_lock(structured, "", {"feminine_lock": True})
+    assert locked2.count("feminine_lock:") == 1
+    assert locked2.find("feminine_lock:") < locked2.find("overall_soundscape:")
+    assert locked2.rstrip().endswith("N/A")
+    again, _ = apply_feminine_lock(locked2, "", {"feminine_lock": True})
+    assert again.count("feminine_lock:") == 1
+
+
+def test_sampler_no_turbo_used_when_turbo_stripped():
+    vis = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）")
+    assert vis["turbo"] is True
+    assert vis["sampler"]["steps"] == 8
+    assert vis["sampler"]["sampler_name"] == "euler"
+    speech = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
+    assert speech["turbo"] is False
+    assert speech["sampler"]["steps"] == 12
+    assert speech["sampler"]["sampler_name"] == "res_multistep"
+    assert [r["id"] for r in speech["stack"]] == ["penis-lora-h3", "cinema-dy"]
+    oral = select_loras(profile_name="oral", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
+    assert oral["turbo"] is False
+    assert oral["sampler"]["steps"] == 8
 
 
 def test_empty_adult_prompts_are_girl_next_door_no_men():

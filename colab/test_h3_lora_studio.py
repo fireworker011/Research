@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 import urllib.parse
 from pathlib import Path
@@ -39,6 +40,24 @@ from h3_lora_studio import (
     studio_clip_plan,
 )
 from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_graph
+
+
+def _check_visible_plan(planned, clip_prompt):
+    """futa_visible: spoken 「line」 clips run full-step without Larry; walk/kiss/TV clips take thin Larry 8step."""
+    ids = [row["id"] for row in planned["stack"]]
+    if "「" in clip_prompt:
+        assert ids == ["penis-lora-h3", "cinema-dy"], ids
+        assert planned["cfg"]["turbo"] is False
+        assert planned["turbo"] is False
+        assert planned["sampler"]["steps"] == 12
+        assert planned["sampler"]["sampler_name"] == "res_multistep"
+    else:
+        assert ids == ["penis-lora-h3", "larry-v4", "cinema-dy"], ids
+        assert planned["cfg"]["turbo"] is True
+        assert planned["turbo"] is True
+        assert planned["sampler"]["steps"] == 8
+        assert planned["sampler"]["sampler_name"] == "euler"
+    assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
 def test_inject_stack_drops_turbo_and_chains():
@@ -370,7 +389,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-engawa"' in src
+    assert 'FETCH_REV = "h2-20260906-follow"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -410,7 +429,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-engawa" in blob
+    assert "h2-20260906-follow" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -993,8 +1012,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             assert ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in ids
         if planned["situation"] == "futa_visible":
-            assert ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "cunnilingus_futa":
             assert "lesbian-cunnilingus-h3" in ids
             assert "blowjob-h3" not in ids
@@ -1003,8 +1021,14 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             assert ids[0] == "hmmasturbation-h3"
             assert "penis-lora-h3" in ids
     vis = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）")
-    assert vis["turbo"] is False
-    assert vis["sampler"]["steps"] == 12
+    assert vis["turbo"] is True
+    assert vis["sampler"]["steps"] == 8
+    assert [r["id"] for r in vis["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
+    vis_speech = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
+    assert vis_speech["turbo"] is False
+    assert vis_speech["sampler"]["steps"] == 12
+    assert vis_speech["sampler"]["sampler_name"] == "res_multistep"
+    assert [r["id"] for r in vis_speech["stack"]] == ["penis-lora-h3", "cinema-dy"]
     mast = select_loras(profile_name="futa_masturbation", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in mast["stack"]] == ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"]
     cun = select_loras(profile_name="cunnilingus_futa", mode="t2v", prompt_arg="（シーン）")
@@ -1108,8 +1132,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     (tmp_path / "01-sink.jpg").write_bytes(b"fake-jpg")
     with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
     assert with_still["mode"] == "i2v"
@@ -1212,8 +1235,7 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
             assert stack_ids[0] == "blowjob-h3"
             assert "cumouf-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     assert "No classroom" in story["clips"][-1]["prompt"]
     assert "No going home" in story["clips"][-1]["prompt"]
     (tmp_path / "01-hall.jpg").write_bytes(b"fake-jpg")
@@ -1320,8 +1342,7 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "futa_masturbation":
             assert stack_ids == ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"]
         if planned["situation"] == "cunnilingus_futa":
@@ -1358,6 +1379,7 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
     assert ids == [
         "penis-lora-h3",
         "cinema-dy",
+        "larry-v4",
         "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ]
@@ -1422,8 +1444,7 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
             assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "futa_sex":
             assert stack_ids == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
             assert "larry-v4" not in stack_ids
@@ -1534,8 +1555,7 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     assert "Pudding is the next chapter" in story["clips"][-1]["prompt"] or "dishes chapter" in story["clips"][-1]["prompt"]
     (tmp_path / "01-gate.jpg").write_bytes(b"fake-jpg")
     with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
@@ -1646,8 +1666,7 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
     assert "next chapter" in last
     assert "Dinner" in last or "dining" in last.lower()
@@ -1760,8 +1779,7 @@ def test_dinner_story_twelve_clips_table(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
     assert "next chapter" in last
     assert "futon" in last.lower() or "bedroom" in last.lower()
@@ -1874,8 +1892,7 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
             assert stack_ids[0] == "cumouf-h3"
             assert "blowjob-h3" not in stack_ids
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
     assert "next chapter" in last
     assert "morning" in last.lower()
@@ -2004,8 +2021,7 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             assert "blowjob-h3" not in stack_ids
             assert planned["cfg"]["turbo"] is False
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
-            assert planned["cfg"]["turbo"] is False
+            _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
     assert "next chapter" in last
     assert "afternoon" in last.lower() or "shopping" in last.lower()
@@ -2121,11 +2137,24 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
             assert stack_ids == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
             assert planned["cfg"]["turbo"] is False
         if planned["situation"] == "futa_visible":
-            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
+            _check_visible_plan(planned, clip["prompt"])
     (tmp_path / "05-in.jpg").write_bytes(b"fake-jpg")
     with_still = prepare_story_clip(story, 4, stills_dir=tmp_path, last_frame="ignored.png")
     assert with_still["mode"] == "i2v"
     assert with_still["first_kind"] == "still"
+
+
+def test_story_download_lists_cover_every_planned_stack(tmp_path):
+    """② downloads SITUATION_DOWNLOAD[story]; every LoRA any clip plans must be in it."""
+    from h3_lora_studio import STORY_IDS, load_story, prepare_story_clip, situation_ids
+
+    for sid in sorted(STORY_IDS):
+        story = load_story(sid)
+        listed = set(situation_ids(sid))
+        for i in range(len(story["clips"])):
+            planned = prepare_story_clip(story, i, last_frame=None, stills_dir=tmp_path)
+            need = {row["id"] for row in planned["stack"]}
+            assert need <= listed, (sid, i + 1, sorted(need - listed))
 
 
 def test_all_stories_pass_follow():
@@ -2139,6 +2168,119 @@ def test_all_stories_pass_follow():
             abs(float(c.get("duration_s") or story["clip_s"]) - 10) < 0.01
             for c in story["clips"]
         )
+
+
+def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
+    from h3_lora_studio import CAST_LOCK_SERIES_LINE, STORY_IDS, compact_story_prompt, load_story, studio_sys_path
+
+    studio_sys_path()
+    from select_loras import forbidden_hits
+
+    canon = ["subject_definitions:", "environment:", "integrated_multimodal_description:", "overall_soundscape:", "non_diegetic_music:"]
+    total_raw = total_out = 0
+    for sid in sorted(STORY_IDS):
+        story = load_story(sid)
+        for i, clip in enumerate(story["clips"]):
+            raw = clip["prompt"]
+            out = compact_story_prompt(raw)
+            where = f"{sid} clip {i + 1}"
+            total_raw += len(raw)
+            total_out += len(out)
+            assert len(out) < len(raw), where
+            positions = [out.find(k) for k in canon]
+            assert all(p >= 0 for p in positions), where
+            assert positions == sorted(positions), where
+            assert out.count("subject_definitions:") == 1, where
+            assert "Do not copy the previous clip" not in out, where
+            assert "NOT IN THIS CLIP" not in out, where
+            assert not re.search(r"Clip \d+ of \d+\.", out), where
+            assert "stories." not in out, where
+            if "CAST LOCK" in raw:
+                assert CAST_LOCK_SERIES_LINE in out, where
+            assert forbidden_hits(out) == [], where
+            absent = set(re.findall(r"^([A-Z][a-z]+) = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)", raw, re.M))
+            absent |= set(re.findall(r"^([A-Z][a-z]+):\s.*NOT IN THIS CLIP", raw, re.M))
+            present = set(re.findall(r"^(Sayaka|Rei|Aya|Madoka): Adult", raw, re.M)) - absent
+            for name in absent:
+                assert f"\n{name}: Adult" not in out, (where, name)
+                assert f"{name} = NOT IN FRAME" not in out, (where, name)
+            for name in present:
+                line = re.search(rf"^{name}: Adult[^\n]*", raw, re.M).group(0)
+                assert line in out, (where, name)
+            if absent:
+                assert "Not in this clip: " in out, where
+            for spoken in re.findall(r"「[^」]+」", raw):
+                assert spoken in out, where
+            for key in ("LIP SYNC:", "CAMERA:", "HARD LOCK", "No men.", "Breast sizes stay locked"):
+                if key in raw and key != "HARD LOCK":
+                    assert key in out, (where, key)
+            desc = re.search(r"integrated_multimodal_description:\n(.+?)\n\n", raw, re.S).group(1).strip()
+            assert desc in out, where
+            sound = re.search(r"overall_soundscape:\n(.+?)\n\n", raw, re.S).group(1).strip()
+            assert sound in out, where
+            # WHO blocking of the women who are in frame stays word for word.
+            who = re.search(r"WHO:\n(.+?)\n\n", raw, re.S)
+            if who:
+                for row in who.group(1).split("\n"):
+                    row = row.strip()
+                    if row and not re.match(r"^[A-Z][a-z]+ = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)", row):
+                        assert row in out, (where, row)
+    assert total_out < total_raw * 0.92
+
+
+def test_compact_story_prompt_unstructured_text_only_gets_line_cleanup():
+    from h3_lora_studio import compact_story_prompt
+
+    plain = "A woman walks.\nNew 10-second take. Hard cut. Do not copy the previous clip.\nShe smiles."
+    assert compact_story_prompt(plain) == "A woman walks.\nShe smiles."
+    assert compact_story_prompt("") == ""
+    assert compact_story_prompt("   ") == ""
+
+
+def test_prepend_triggers_uses_whole_tokens():
+    from h3_lora_studio import has_trigger_word, prepend_triggers
+
+    stack = [
+        {"id": "penis-lora-h3", "trigger": "PENISLORA"},
+        {"id": "cinema-dy", "trigger": "DY"},
+        {"id": "hmnsfw-aio-v25", "trigger": ""},
+    ]
+    assert not has_trigger_word("Full bodies from head to feet. Everybody nude.", "DY")
+    assert has_trigger_word("PENISLORA, DY\nFull bodies", "DY")
+    assert has_trigger_word("hmmotion, PENISLORA\nx", "PENISLORA")
+    out = prepend_triggers("Full bodies from head to feet.", stack)
+    assert out.startswith("PENISLORA, DY\n")
+    assert prepend_triggers("PENISLORA, DY\nFull bodies", stack) == "PENISLORA, DY\nFull bodies"
+    assert prepend_triggers("bl0w_j0b close", [{"trigger": "bl0w_j0b"}]) == "bl0w_j0b close"
+
+
+def test_story_clip_prompt_keeps_schema_order_with_lock_inside_description(tmp_path):
+    from h3_lora_studio import load_story, prepare_story_clip
+
+    story = load_story("engawa-120s")
+    planned = prepare_story_clip(story, 1, last_frame=None, stills_dir=tmp_path)
+    text = planned["prompt"]
+    assert text.startswith("PENISLORA, DY\n")
+    order = [text.find(k) for k in ("subject_definitions:", "environment:", "integrated_multimodal_description:", "feminine_lock:", "overall_soundscape:", "non_diegetic_music:")]
+    assert all(p >= 0 for p in order)
+    assert order == sorted(order)
+    assert "Sayaka: Adult" not in text
+    assert "Not in this clip: Sayaka." in text
+    assert text.rstrip().endswith("N/A")
+
+
+def test_validate_story_follow_hmmotion_only_on_aio_sex():
+    from h3_lora_studio import validate_story_follow
+
+    base = "medium-close on the mouth. joining point. No speech."
+    bad_oral = {"clip_s": 10, "clips": [{"duration_s": 10, "situation": "oral", "prompt": "hmmotion, PENISLORA\n" + base}]}
+    errs = validate_story_follow(bad_oral)
+    assert any("hmmotion is only for the AIO sex clip" in e for e in errs)
+    no_trigger_sex = {"clip_s": 10, "clips": [{"duration_s": 10, "situation": "futa_sex", "prompt": "PENISLORA\nAlready in. " + base}]}
+    errs = validate_story_follow(no_trigger_sex)
+    assert any("must start with hmmotion" in e for e in errs)
+    good = {"clip_s": 10, "clips": [{"duration_s": 10, "situation": "futa_sex", "prompt": "hmmotion, PENISLORA\nAlready in. " + base}]}
+    assert validate_story_follow(good) == []
 
 
 def test_validate_story_follow_rejects_act_speech_and_15s():

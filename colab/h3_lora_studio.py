@@ -62,7 +62,7 @@ SITUATION_DOWNLOAD = {
     "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
     "footjob": ["footjob-h3", "penis-lora-h3", "larry-v4"],
     "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_visible": ["penis-lora-h3", "cinema-dy"],
+    "futa_visible": ["penis-lora-h3", "cinema-dy", "larry-v4"],
     "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"],
     "cunnilingus_futa": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
@@ -101,6 +101,7 @@ SITUATION_DOWNLOAD = {
     "rooftop-100s": [
         "penis-lora-h3",
         "cinema-dy",
+        "larry-v4",
         "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ],
@@ -291,7 +292,7 @@ SITUATION_HELP = {
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
     "futa_anal": "アナルセックス（女体）。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・12step。ふたなり＋女。男なし。後ろから、穴が膣より上に見える構図。手は腰。写真からが本線。",
-    "oral": "フェラ（女体）。フェラ 0.75 + 竿 0.7 + Larry 0.7。受けはふたなり。男なし。",
+    "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + Larry 0.6 / 8step。受けはふたなり。男なし。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + Larry 0.5 / 12step。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + LightX2V 4step。ふたなり＋女。男なし。",
     "riding": "騎乗位（女体）。騎乗 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
@@ -305,7 +306,7 @@ SITUATION_HELP = {
     "masturbation": "オナニー。女1人。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。男なし。",
     "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
     "remote_orgasm": "絶頂。女1人。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。射精ではない。",
-    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。Turbo なし・12step。男なし。",
+    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は竿 0.7 + シネマ 0.5 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
@@ -1324,12 +1325,20 @@ def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str =
     return raw, True
 
 
+def has_trigger_word(prompt: str, trigger: str) -> bool:
+    """Whole-token match. 'DY' inside 'body' or 'bodies' does not count."""
+    trig = str(trigger or "").strip()
+    if not trig:
+        return True
+    pattern = r"(?<![A-Za-z0-9_])" + re.escape(trig) + r"(?![A-Za-z0-9_])"
+    return re.search(pattern, str(prompt or ""), re.I) is not None
+
+
 def prepend_triggers(prompt: str, stack: list[dict[str, Any]]) -> str:
     triggers = []
-    low = prompt.lower()
     for item in stack:
         trig = str(item.get("trigger") or "").strip()
-        if trig and trig.lower() not in low:
+        if trig and not has_trigger_word(prompt, trig) and trig not in triggers:
             triggers.append(trig)
     if not triggers:
         return prompt
@@ -1398,6 +1407,122 @@ ACT_SITUATIONS = frozenset({
 })
 
 
+STORY_CANON_KEYS = (
+    "subject_definitions",
+    "environment",
+    "integrated_multimodal_description",
+    "overall_soundscape",
+    "non_diegetic_music",
+)
+_STORY_SECTION_RE = re.compile(
+    r"^(subject_definitions|environment|integrated_multimodal_description|"
+    r"overall_soundscape|non_diegetic_music|WHO|HARD LOCK):\s*(.*)$"
+)
+_ABSENT_WHO_RE = re.compile(r"^([A-Z][a-z]+) = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)\b")
+_ABSENT_DEF_RE = re.compile(r"^([A-Z][a-z]+):\s.*\bNOT IN THIS CLIP\.?\s*$")
+_META_TAKE_RE = re.compile(r"^New \d+-second take\. Hard cut\. Do not copy the previous clip\.\s*$")
+_CLIP_INDEX_RE = re.compile(r"^Clip \d+ of \d+\.\s*")
+_CAST_STORIES_RE = re.compile(r"Same faces and bodies as the [^.]*stories\.")
+CAST_LOCK_SERIES_LINE = "Same faces, hair and bodies in every clip of this series."
+HMMOTION_SITUATIONS = frozenset({"futa_sex"})
+
+
+def compact_story_prompt(prompt: str) -> str:
+    """Trim what the model cannot use, keep every instruction it can.
+
+    Each story clip is an independent generation, so the encoder never sees the
+    previous clip or the other stories. Lines that only make sense to a human
+    editor ("Do not copy the previous clip", "Clip 7 of 12", the list of other
+    story names in CAST LOCK) are dropped. Full body descriptions of women who
+    are NOT IN FRAME are removed: describing an absent nude woman in detail is
+    the strongest pull to render her. The result is put back in the canonical
+    H3 order (subject_definitions, environment, integrated_multimodal_description,
+    overall_soundscape, non_diegetic_music) with WHO blocking and the HARD LOCK /
+    CAMERA / LIP SYNC lines folded into the description block.
+    Prompts without the five canonical keys only get the line-level cleanup.
+    """
+    text = str(prompt or "").strip()
+    if not text:
+        return text
+    preamble: list[str] = []
+    sections: dict[str, list[str]] = {}
+    current: str | None = None
+    for raw in text.split("\n"):
+        line = raw.rstrip()
+        match = _STORY_SECTION_RE.match(line)
+        if match:
+            current = match.group(1)
+            sections.setdefault(current, [])
+            rest = match.group(2).strip()
+            if rest:
+                sections[current].append(rest)
+            continue
+        if current is None:
+            preamble.append(line)
+        else:
+            sections[current].append(line)
+
+    def clean(rows: list[str]) -> list[str]:
+        out: list[str] = []
+        for row in rows:
+            s = row.strip()
+            if not s or _META_TAKE_RE.match(s):
+                continue
+            s = _CLIP_INDEX_RE.sub("", s).strip()
+            s = _CAST_STORIES_RE.sub(CAST_LOCK_SERIES_LINE, s)
+            if s:
+                out.append(s)
+        return out
+
+    if not all(key in sections for key in STORY_CANON_KEYS):
+        rows = clean(text.split("\n"))
+        return "\n".join(rows)
+
+    absent: list[str] = []
+    who_keep: list[str] = []
+    for row in clean(sections.get("WHO") or []):
+        hit = _ABSENT_WHO_RE.match(row)
+        if hit:
+            if hit.group(1) not in absent:
+                absent.append(hit.group(1))
+            continue
+        who_keep.append(row)
+    defs_keep: list[str] = []
+    for row in clean(sections.get("subject_definitions") or []):
+        hit = _ABSENT_DEF_RE.match(row)
+        if hit:
+            if hit.group(1) not in absent:
+                absent.append(hit.group(1))
+            continue
+        name = row.split(":", 1)[0].strip()
+        if name in absent:
+            continue
+        defs_keep.append(row)
+
+    out: list[str] = []
+    out.extend(clean(preamble))
+    out.append("")
+    out.append("subject_definitions:")
+    out.extend(defs_keep)
+    if absent:
+        out.append("Not in this clip: " + ", ".join(absent) + ".")
+    out.append("")
+    out.append("environment:")
+    out.extend(clean(sections.get("environment") or []))
+    out.append("")
+    out.append("integrated_multimodal_description:")
+    out.extend(who_keep)
+    out.extend(clean(sections.get("integrated_multimodal_description") or []))
+    out.extend(clean(sections.get("HARD LOCK") or []))
+    out.append("")
+    out.append("overall_soundscape:")
+    out.extend(clean(sections.get("overall_soundscape") or []))
+    out.append("")
+    out.append("non_diegetic_music:")
+    out.extend(clean(sections.get("non_diegetic_music") or []) or ["N/A"])
+    return "\n".join(out).strip()
+
+
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
     """H3 following: 10s, one place, act cameras, lip-sync only on speaking face clips."""
     errors: list[str] = []
@@ -1414,6 +1539,11 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         if "15-second take" in prompt or "15-second" in prompt:
             errors.append(f"clip {n}: use a 10-second take, not 15")
         prompt_l = prompt.lower()
+        has_hmmotion = "hmmotion" in prompt_l
+        if situation in HMMOTION_SITUATIONS and not prompt.startswith("hmmotion"):
+            errors.append(f"clip {n}: {situation} prompt must start with hmmotion")
+        if situation not in HMMOTION_SITUATIONS and has_hmmotion:
+            errors.append(f"clip {n}: hmmotion is only for the AIO sex clip, not {situation}")
         if situation in ACT_SITUATIONS:
             if lines:
                 errors.append(f"clip {n}: act situation {situation} must not speak")
@@ -1520,7 +1650,8 @@ def prepare_story_clip(
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
-    raw_prompt = str(clip.get("prompt") or "").strip()
+    raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
+    speaks = bool(re.search(r"「[^」]+」", raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
@@ -1551,6 +1682,8 @@ def prepare_story_clip(
     root = Path(studio_root or STUDIO_ROOT)
     cat = Path(catalog_path) if catalog_path else root / "catalog" / "loras.json"
     profiles = root / "profiles"
+    # Lip-sync clips keep the full-step path: distilled turbo steps blur audio timing.
+    turbo_override = False if speaks else None
     try:
         cfg = select_loras(
             profile_name=situation,
@@ -1558,7 +1691,7 @@ def prepare_story_clip(
             prompt_arg=prompt,
             catalog_path=cat,
             profiles_dir=profiles,
-            turbo_override=None,
+            turbo_override=turbo_override,
             extra_forbidden=None,
             forbidden_path=forbidden_path,
         )
@@ -1569,7 +1702,7 @@ def prepare_story_clip(
             prompt_arg=prompt,
             catalog_path=cat,
             profiles_dir=profiles,
-            turbo_override=None,
+            turbo_override=turbo_override,
         )
     stack = list(cfg.get("stack") or [])
     prompt = prepend_triggers(str(cfg.get("prompt") or prompt), stack)

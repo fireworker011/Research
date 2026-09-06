@@ -5,20 +5,27 @@
   "nsfw": true,
   "feminine_lock": true,
   "modes": ["i2v", "t2v"],
-  "allow_turbo": false,
+  "allow_turbo": true,
   "canvas": {
     "i2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" },
     "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
   },
   "stack_plan": {
     "act": { "id": "penis-lora-h3", "strength": 0.7 },
-    "cinema": { "id": "cinema-dy", "strength": 0.5 }
+    "cinema": { "id": "cinema-dy", "strength": 0.5 },
+    "turbo": { "id": "larry-v4", "strength": 0.6 }
   },
   "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 8,
+    "note": "Penis visible, no sex act. Walk / door / kiss / TV clips: penis 0.7 + cinema 0.5 + thin Larry 0.6 / 8step. Same thin-turbo shape as the oral path."
+  },
+  "sampler_no_turbo": {
     "sampler_name": "res_multistep",
     "scheduler": "beta",
     "steps": 12,
-    "note": "Penis visible, no sex act. Turbo off so walk/door/speech follow the prompt. Cinema 0.5."
+    "note": "Lip-sync clips (a spoken 「line」): the story planner strips Larry and uses this full-step plan so mouth timing and the Japanese line stay clean."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -35,7 +42,6 @@
     "final-thrust-h3",
     "photoreal-h3-still",
     "minimax-h3-turbo-fl2v-4step",
-    "larry-v4",
     "hmmasturbation-h3",
     "fingering-h3",
     "astro-nsfw-h3",

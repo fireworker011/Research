@@ -73,7 +73,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
-| フェラ（女体） | 女がふたなりにフェラ。男なし | フェラ 0.75 + 竿 0.7 + Larry 0.7 |
+| フェラ（女体） | 女がふたなりにフェラ。男なし | フェラ 0.8 + 竿 0.7 + Larry 0.6 / 8step |
 | ふたなりフェラ | ふたなりがフェラされる。男なし | フェラ 0.75 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step |
 | セックス（女体） | ふたなり＋女。男なし。描写は文章欄 | 総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step |
 | アナルセックス（女体） | アナル本線。後ろから、穴が膣より上に見える構図 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。写真からが本線 |
@@ -192,7 +192,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-engawa"
+FETCH_REV = "h2-20260906-follow"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -953,11 +953,10 @@ else:
             elif GRAPH_MODE == "t2v":
                 first_name = None
             if planned.get("stack_changed"):
-                print("部品を切り替えます:", planned["label"], planned["situation"])
-                comfy_free(PORT)
+                print("部品を切り替えます:", planned["label"], planned["situation"], "（土台と文章モデルは載せたまま。メモリ不足のときだけ解放）")
             w, h = int(planned["width"]), int(planned["height"])
             CLIP_DURATION = float(planned.get("duration_s") or CLIP_DURATION)
-            print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack])
+            print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack], str(SAMPLER.get("steps")) + "step", "Turbo" if planned.get("turbo") else "フルステップ")
         else:
             GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
             GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)

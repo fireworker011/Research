@@ -24,7 +24,7 @@
   "stack_plan": {
     "act": {
       "id": "blowjob-h3",
-      "strength": 0.75
+      "strength": 0.8
     },
     "helper": {
       "id": "penis-lora-h3",
@@ -32,14 +32,14 @@
     },
     "turbo": {
       "id": "larry-v4",
-      "strength": 0.7
+      "strength": 0.6
     }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Blowjob + Penis + Larry 0.7 / 8step. Cinema off because helper is on."
+    "note": "Blowjob 0.8 + Penis 0.7 + Larry 0.6 / 8step. Blowjob nearer its author default (0.85) so to-the-base and hands-off follow; Larry thinner so the prompt leads. Cinema off because helper is on."
   },
   "disabled": [
     "anal-penetration-coachbate",

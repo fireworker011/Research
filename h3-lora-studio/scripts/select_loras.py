@@ -382,7 +382,12 @@ def enabled_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]]:
 
 
 def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dict[str, Any]:
+    has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
     raw = profile.get("sampler")
+    # A turbo profile run with the turbo stripped (lip-sync clips) needs its full-step plan.
+    fallback = profile.get("sampler_no_turbo")
+    if not has_turbo and isinstance(fallback, dict) and fallback.get("steps"):
+        raw = fallback
     if isinstance(raw, dict) and raw.get("steps"):
         note = str(raw.get("note") or "")
         return {
@@ -393,7 +398,6 @@ def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dic
             "denoise": float(raw.get("denoise") or 1.0),
             "note": note,
         }
-    has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
     if has_turbo:
         steps = 8 if any("larry" in str(s.get("id")) for s in specs) else 4
         return {
@@ -493,7 +497,13 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
     prompt = strip_male_subjects(prompt)
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:
-        prompt = prompt.rstrip() + "\n\n" + FEMININE_LOCK_PROMPT
+        # Keep the H3 schema order: the lock belongs to the visual description,
+        # so it goes in front of overall_soundscape when that section exists.
+        cut = prompt.find("\noverall_soundscape:")
+        if cut > 0 and "integrated_multimodal_description:" in low[:cut]:
+            prompt = prompt[:cut].rstrip() + "\n" + FEMININE_LOCK_PROMPT + "\n" + prompt[cut:]
+        else:
+            prompt = prompt.rstrip() + "\n\n" + FEMININE_LOCK_PROMPT
     neg = str(negative or "").strip()
     extra = FEMININE_NEGATIVE
     if extra.lower() not in neg.lower():
