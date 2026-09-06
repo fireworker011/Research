@@ -122,6 +122,9 @@ def test_situations_switch_loras_by_profile_and_mode():
         "masturbation",
         "footjob",
         "remote_orgasm",
+        "futa_visible",
+        "futa_masturbation",
+        "cunnilingus_futa",
     } <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
     assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]

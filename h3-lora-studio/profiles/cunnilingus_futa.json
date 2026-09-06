@@ -1,0 +1,51 @@
+{
+  "id": "cunnilingus_futa",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": true,
+  "feminine_lock": true,
+  "modes": ["i2v", "t2v"],
+  "allow_turbo": true,
+  "canvas": {
+    "i2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" },
+    "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
+  },
+  "stack_plan": {
+    "act": { "id": "lesbian-cunnilingus-h3", "strength": 0.8 },
+    "helper": [
+      { "id": "synth-pussy-h3", "strength": 0.55 },
+      { "id": "penis-lora-h3", "strength": 0.45 }
+    ],
+    "turbo": { "id": "larry-v4", "strength": 0.5 }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 8,
+    "note": "Cunnilingus while a futanari penis hangs unused. Lesbian 0.8 + synth 0.55 + penis 0.45 + Larry 0.5. Not a blowjob."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "pussy-spread-h3",
+    "hmnsfw-aio-v25",
+    "futa-h3-v51",
+    "blowjob-h3",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "thumbinbutt-h3",
+    "cumouf-h3",
+    "final-thrust-h3",
+    "photoreal-h3-still",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy",
+    "hmmasturbation-h3",
+    "astro-nsfw-h3",
+    "tiddies-realism-slider",
+    "aftermidnight-ref2va"
+  ],
+  "scenes": {
+    "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, NO penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, feminine body, futanari with a penis that hangs unused. Not a man.\n\nAlready cunnilingus. Tongue on (S1)'s pussy. (S2)'s penis is unused, not in a mouth. No blowjob. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, feminine body, NO penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, feminine body, futanari with a penis that hangs unused. Not a man.\n\nAlready cunnilingus. Tongue on (S1)'s pussy. (S2)'s penis is unused, not in a mouth. No blowjob. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, blowjob, jupo"
+}

@@ -370,9 +370,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-oom-min"' in src
+    assert 'FETCH_REV = "h2-20260906-story90"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
+    assert "帰宅90秒（専用）" in src
+    assert "prepare_story_clip" in src
+    assert "h3-lora-studio/stories/homecoming-90s.json" in src
+    assert "h3-lora-studio/profiles/futa_visible.json" in src
     assert "CoachBate 0.85" not in src
     assert "穴が膣より上" in src
     assert "フェラ（女体）" in src
@@ -383,7 +387,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-oom-min" in blob
+    assert "h2-20260906-story90" in blob
+    assert "帰宅90秒（専用）" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
@@ -851,4 +856,91 @@ def test_comfy_free_posts_unload(monkeypatch):
     comfy_free(8188)
     assert hits
     assert hits[0].endswith("/free")
+
+
+def test_homecoming_story_nine_clips_switch_loras(tmp_path):
+    from h3_lora_studio import (
+        is_story,
+        load_story,
+        prepare_story_clip,
+        situation_ids,
+        resolve_situation,
+        studio_sys_path,
+    )
+
+    studio_sys_path()
+    from select_loras import forbidden_hits, select_loras
+
+    assert resolve_situation("帰宅90秒（専用）") == "homecoming-90s"
+    assert is_story("帰宅90秒（専用）")
+    assert "cumouf-h3" in situation_ids("homecoming-90s")
+    story = load_story("homecoming-90s")
+    assert story["duration_s"] == 90
+    assert len(story["clips"]) == 9
+    assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
+    want = [
+        "futa_visible",
+        "oral",
+        "futa_visible",
+        "cunnilingus_futa",
+        "cunnilingus_futa",
+        "futa_masturbation",
+        "oral",
+        "oral_creampie",
+        "futa_visible",
+    ]
+    assert [c["situation"] for c in story["clips"]] == want
+    last = "h3_chain_0.png"
+    prev = None
+    for i, clip in enumerate(story["clips"]):
+        hits = forbidden_hits(clip["prompt"])
+        assert hits == [], hits
+        assert "21" in clip["prompt"] or "22" in clip["prompt"] or "24" in clip["prompt"] or "39" in clip["prompt"]
+        assert "15," not in clip["prompt"]
+        planned = prepare_story_clip(
+            story,
+            i,
+            last_frame=last if i else None,
+            stills_dir=tmp_path,
+            prev_situation=prev,
+        )
+        prev = planned["situation"]
+        if i == 0:
+            assert planned["mode"] == "t2v"
+            assert "Picture 1" not in planned["prompt"]
+            assert planned["missing_still"] == "01-genkan.jpg"
+        elif clip["start"] == "continue":
+            assert planned["mode"] == "i2v"
+            assert "Picture 1" in planned["prompt"]
+            assert planned["stack_changed"] == (want[i] != want[i - 1])
+        ids = [row["id"] for row in planned["stack"]]
+        if planned["situation"] == "oral":
+            assert ids[0] == "blowjob-h3"
+            assert "cumouf-h3" not in ids
+        if planned["situation"] == "oral_creampie":
+            assert ids[0] == "cumouf-h3"
+            assert "blowjob-h3" not in ids
+        if planned["situation"] == "futa_visible":
+            assert ids == ["penis-lora-h3", "cinema-dy"]
+            assert planned["cfg"]["turbo"] is False
+        if planned["situation"] == "cunnilingus_futa":
+            assert "lesbian-cunnilingus-h3" in ids
+            assert "blowjob-h3" not in ids
+            assert "penis-lora-h3" in ids
+        if planned["situation"] == "futa_masturbation":
+            assert ids[0] == "hmmasturbation-h3"
+            assert "penis-lora-h3" in ids
+    vis = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）")
+    assert vis["turbo"] is False
+    assert vis["sampler"]["steps"] == 12
+    mast = select_loras(profile_name="futa_masturbation", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in mast["stack"]] == ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"]
+    cun = select_loras(profile_name="cunnilingus_futa", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in cun["stack"]] == [
+        "lesbian-cunnilingus-h3",
+        "synth-pussy-h3",
+        "penis-lora-h3",
+        "larry-v4",
+    ]
+
 

@@ -61,6 +61,19 @@ SITUATION_DOWNLOAD = {
     "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
     "footjob": ["footjob-h3", "penis-lora-h3", "larry-v4"],
     "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
+    "futa_visible": ["penis-lora-h3", "cinema-dy"],
+    "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"],
+    "cunnilingus_futa": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
+    "homecoming-90s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "lesbian-cunnilingus-h3",
+        "synth-pussy-h3",
+        "hmmasturbation-h3",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -108,6 +121,11 @@ SITUATION_JA = {
     "汎用エロ": "general_sex",
     "汎用エロ（女体）": "general_sex",
     "試し打ち": "preview",
+    "帰宅90秒（専用）": "homecoming-90s",
+    "homecoming-90s": "homecoming-90s",
+    "futa_visible": "futa_visible",
+    "futa_masturbation": "futa_masturbation",
+    "cunnilingus_futa": "cunnilingus_futa",
     "vanilla": "vanilla",
     "sfw_daily": "sfw_daily",
     "sfw_preview": "sfw_preview",
@@ -174,6 +192,10 @@ SITUATION_HELP = {
     "masturbation": "オナニー。女1人。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。男なし。",
     "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
     "remote_orgasm": "絶頂。女1人。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。射精ではない。",
+    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。Turbo なし・12step。男なし。",
+    "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
+    "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
+    "homecoming-90s": "90秒専用。10秒×9本。玄関フェラ→トイレクンニ→リビング口内。文章欄は使わない。画面 576×1024。顔固定は input/homecoming-90s の3枚。",
 }
 
 LORA_JA = {
@@ -210,6 +232,8 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
+STORY_IDS = {"homecoming-90s"}
+STORY_CANVAS = (576, 1024)
 
 
 def resolve_situation(name: str) -> str:
@@ -235,6 +259,13 @@ def friendly_lora(lora_id: str) -> str:
 
 def is_vanilla(situation: str) -> bool:
     return resolve_situation(situation) == "vanilla"
+
+
+def is_story(situation: str) -> bool:
+    try:
+        return resolve_situation(situation) in STORY_IDS
+    except SystemExit:
+        return str(situation or "").strip() in STORY_IDS
 
 
 def explain_choice(situation: str, mode: str) -> str:
@@ -1186,3 +1217,159 @@ def studio_sys_path(studio_root: Path | str | None = None) -> None:
     scripts = root / "scripts"
     if str(scripts) not in sys.path:
         sys.path.insert(0, str(scripts))
+
+
+def stories_dir(studio_root: Path | str | None = None) -> Path:
+    return Path(studio_root or STUDIO_ROOT) / "stories"
+
+
+def lock_i2v_story_prompt(text: str, *, continue_from_last: bool) -> str:
+    """Keep story structure. Do not wrap the whole block as one integrated_multimodal_description."""
+    raw = str(text or "").strip()
+    if continue_from_last:
+        return continue_chain_prompt(raw)
+    if "Picture 1" in raw:
+        return raw
+    header = (
+        "For the target video, at 0.00 seconds into the target video, "
+        "<Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+    )
+    return header + raw
+
+
+def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[str, Any]:
+    sid = str(story_id or "").strip()
+    if sid in SITUATION_JA:
+        sid = SITUATION_JA[sid]
+    path = stories_dir(studio_root) / f"{sid}.json"
+    if not path.is_file():
+        raise SystemExit(f"専用ストーリーがありません: {sid}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    clips = data.get("clips") or []
+    if len(clips) != 9:
+        raise SystemExit("帰宅90秒は 10秒×9本である必要があります。")
+    if int(data.get("min_age") or 0) < 21:
+        raise SystemExit("専用ストーリーは 21歳以上のみです。")
+    return data
+
+
+def story_stills_dir(drive_input: Path | str, story: dict[str, Any]) -> Path:
+    root = Path(drive_input)
+    sub = str(story.get("stills_dir") or story.get("id") or "homecoming-90s")
+    return root / sub
+
+
+def resolve_story_still(
+    clip: dict[str, Any],
+    stills_dir: Path,
+    *,
+    clip_index: int,
+    override: Path | str | None = None,
+) -> Path | None:
+    if clip_index == 0 and override:
+        ov = Path(override)
+        if ov.is_file():
+            return ov
+    name = str(clip.get("still") or "").strip()
+    if not name:
+        return None
+    for cand in (
+        stills_dir / name,
+        stills_dir.parent / name,
+        Path(name),
+    ):
+        if cand.is_file():
+            return cand
+    return None
+
+
+def prepare_story_clip(
+    story: dict[str, Any],
+    index: int,
+    *,
+    last_frame: str | None = None,
+    stills_dir: Path | None = None,
+    studio_root: Path | str | None = None,
+    catalog_path: Path | None = None,
+    forbidden_path: Path | str | None = None,
+    clip0_override: Path | str | None = None,
+    prev_situation: str | None = None,
+) -> dict[str, Any]:
+    """One 10s clip of a 90s story. Switches LoRA with the act. New people need a still."""
+    clips = list(story.get("clips") or [])
+    if index < 0 or index >= len(clips):
+        raise SystemExit(f"クリップ番号が範囲外です: {index}")
+    clip = clips[index]
+    situation = str(clip.get("situation") or "").strip()
+    raw_prompt = str(clip.get("prompt") or "").strip()
+    start = str(clip.get("start") or "continue").strip()
+    still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
+    still_path = resolve_story_still(
+        clip, still_dir, clip_index=index, override=clip0_override
+    )
+    missing_still = None
+    want_still = start == "still_or_t2v" or bool(clip.get("still"))
+    if want_still and still_path is None and start == "still_or_t2v":
+        missing_still = str(clip.get("still") or "")
+    if still_path is not None:
+        mode = "i2v"
+        prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
+        first_kind = "still"
+    elif start == "continue" and last_frame:
+        mode = "i2v"
+        prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
+        first_kind = "last_frame"
+    else:
+        mode = "t2v"
+        prompt, _ = apply_user_prompt(raw_prompt, mode="t2v", default_prompt=raw_prompt)
+        first_kind = "t2v"
+        if start == "continue" and not last_frame:
+            missing_still = missing_still or "last_frame"
+
+    studio_sys_path(studio_root)
+    from select_loras import select_loras
+
+    root = Path(studio_root or STUDIO_ROOT)
+    cat = Path(catalog_path) if catalog_path else root / "catalog" / "loras.json"
+    profiles = root / "profiles"
+    try:
+        cfg = select_loras(
+            profile_name=situation,
+            mode=mode,
+            prompt_arg=prompt,
+            catalog_path=cat,
+            profiles_dir=profiles,
+            turbo_override=None,
+            extra_forbidden=None,
+            forbidden_path=forbidden_path,
+        )
+    except TypeError:
+        cfg = select_loras(
+            profile_name=situation,
+            mode=mode,
+            prompt_arg=prompt,
+            catalog_path=cat,
+            profiles_dir=profiles,
+            turbo_override=None,
+        )
+    stack = list(cfg.get("stack") or [])
+    prompt = prepend_triggers(str(cfg.get("prompt") or prompt), stack)
+    canvas = story.get("canvas") or {}
+    return {
+        "index": index,
+        "label": str(clip.get("label") or f"clip {index + 1}"),
+        "situation": situation,
+        "mode": mode,
+        "prompt": prompt,
+        "stack": stack,
+        "sampler": cfg.get("sampler") or {},
+        "cfg": cfg,
+        "still_path": still_path,
+        "first_kind": first_kind,
+        "missing_still": missing_still,
+        "stack_changed": bool(prev_situation) and prev_situation != situation,
+        "width": int(canvas.get("width") or STORY_CANVAS[0]),
+        "height": int(canvas.get("height") or STORY_CANVAS[1]),
+        "duration_s": float(clip.get("duration_s") or story.get("clip_s") or 10),
+        "turbo": bool(cfg.get("turbo")),
+    }

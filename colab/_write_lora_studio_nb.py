@@ -59,6 +59,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 最速プレビュー（エロなし） | 量産プレビュー | LightX2V 4step 1.0 + シネマ 0.4 |
 | 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
+| 帰宅90秒（専用） | 玄関フェラ→トイレクンニ→口内。10×9 | 行為ごとに部品切替。576×1024。文章欄は使わない |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -166,7 +167,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -181,7 +182,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-oom-min"
+FETCH_REV = "h2-20260906-story90"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -241,6 +242,10 @@ studio_files = [
     "h3-lora-studio/profiles/sfw_preview.json",
     "h3-lora-studio/profiles/sfw_audio.json",
     "h3-lora-studio/profiles/sfw_r2v.json",
+    "h3-lora-studio/profiles/futa_visible.json",
+    "h3-lora-studio/profiles/futa_masturbation.json",
+    "h3-lora-studio/profiles/cunnilingus_futa.json",
+    "h3-lora-studio/stories/homecoming-90s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -326,7 +331,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -395,6 +400,7 @@ MD3 = r"""## ③ 動画を作る
 - **最速プレビュー（エロなし）** … LightX2V 4step。当たりは日常で焼き直し
 - **音も残す（エロなし）** … LightX2V 8step
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
+- **帰宅90秒（専用）** … 10秒×9本。行為ごとに LoRA を切り替える。文章欄・つなぎ欄は使わない。顔固定は `input/homecoming-90s/` の3枚（任意）
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
 - **アナル舐め・指** … 女同士。男なし。動きの本線はアナル指入れ
@@ -423,7 +429,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
@@ -468,11 +474,11 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 90 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 90 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -505,6 +511,9 @@ SEED = 42
 SITUATION = resolve_situation(やりたいシーン)
 MODE = resolve_mode(作り方)
 VANILLA = is_vanilla(やりたいシーン)
+STORY = None
+STORY_STILLS = None
+STORY_OVERRIDE = None
 print()
 print(explain_choice(やりたいシーン, 作り方))
 print()
@@ -515,14 +524,59 @@ print("extra:", ", ".join(fb["extra"]) or "（空）")
 print("未成年・21歳未満・アフィURLはファイルから消せません。足す・消すのは extra。")
 print()
 
+if is_story(やりたいシーン):
+    STORY = load_story(SITUATION, studio_root=STUDIO)
+    DURATION = float(STORY.get("duration_s") or 90)
+    CLIPS = [float(STORY.get("clip_s") or 10)] * len(STORY["clips"])
+    CHAIN = True
+    VANILLA = False
+    STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
+    STORY_STILLS.mkdir(parents=True, exist_ok=True)
+    print("帰宅90秒専用。文章欄・つなぎ欄・秒数は使いません。9本の専用文で部品を切り替えます。")
+    print("画面は 576x1024（9:16）固定。")
+    print("顔固定の写真（任意）:", STORY_STILLS)
+    print("  01-genkan.jpg = レイ＋サヤカ（玄関）")
+    print("  04-toilet.jpg = アヤ（22歳の成人）＋レイ（トイレ）")
+    print("  06-living.jpg = マドカ＋レイ（リビング）")
+    print("写真が無いクリップはテキストから作ります（顔は流れやすい）。")
+    if MODE == "i2v" and not is_auto_image_name(写真ファイル):
+        src = Path(写真ファイル)
+        if not src.is_file():
+            src = DRIVE_ROOT / "input" / 写真ファイル
+        if src.is_file():
+            STORY_OVERRIDE = src
+            print("1本目の写真として使います:", src.name)
+
 CUSTOM_PROMPT = not is_blank_prompt(文章)
-if MODE == "t2v":
+if STORY:
+    CUSTOM_PROMPT = True
+elif MODE == "t2v":
     print("写真欄はテキストからでは使いません。空でも auto でもエラーにしません。")
     if has_i2v_lock(文章):
         print("文章欄に写真用の文（Picture 1）が残っていたので外します。このシーンのおすすめ文でテキストから作ります。")
         CUSTOM_PROMPT = False
 
-if VANILLA:
+if STORY:
+    FILENAME_PREFIX = "video/h3_homecoming"
+    try:
+        planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE)
+    except SystemExit as exc:
+        hint = friendly_select_error(exc)
+        raise SystemExit(hint or str(exc)) from None
+    stack = planned0["stack"]
+    prompt = planned0["prompt"]
+    SAMPLER = planned0["sampler"]
+    STEPS = int(SAMPLER.get("steps") or 12)
+    cfg = planned0["cfg"]
+    w, h = int(planned0["width"]), int(planned0["height"])
+    MODE = planned0["mode"]
+    print("1本目:", planned0["label"], MODE)
+    print("入る部品:")
+    for x in stack:
+        print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), x.get("role") or "")
+    if planned0.get("missing_still"):
+        print("1本目の写真が無いのでテキストから作ります。")
+elif VANILLA:
     stack = []
     STEPS = 4
     FILENAME_PREFIX = "video/h3_t2v_phone" if MODE == "t2v" else "video/h3_i2va_phone"
@@ -581,7 +635,9 @@ print(prompt[:450])
 print("…")
 print()
 
-if 画面の向き == "縦（スマホ）":
+if STORY:
+    w, h = canvas_for_aspect("9:16")
+elif 画面の向き == "縦（スマホ）":
     w, h = canvas_for_aspect("9:16")
 elif 画面の向き == "横":
     w, h = canvas_for_aspect("16:9")
@@ -615,11 +671,18 @@ unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetenso
 if not VANILLA:
     lora_dir = COMFY_DIR / "models" / "loras"
     catalog_now = load_catalog(STUDIO)
+    id_list = [str(x.get("id") or "") for x in stack if x.get("id")]
+    if STORY:
+        id_list = situation_ids(SITUATION)
+        print("90秒分の部品を確認します:", ", ".join(id_list))
     need = missing_stack_files(stack, lora_dir)
+    if STORY:
+        jobs_all = download_jobs_for(id_list, lora_dir, catalog=catalog_now)
+        need = [str(dest.name) for url, dest, row in jobs_all if not dest.is_file() or dest.stat().st_size < 1000]
     if need:
         print("足りない部品を入れます:", ", ".join(need))
         token = civitai_token("")
-        jobs = download_jobs_for([str(x.get("id") or "") for x in stack if x.get("id")], lora_dir, catalog=catalog_now)
+        jobs = download_jobs_for(id_list, lora_dir, catalog=catalog_now)
         for url, dest, row in jobs:
             if dest.name not in need and dest.name not in [Path(n).name for n in need]:
                 continue
@@ -645,9 +708,13 @@ if not VANILLA:
             print("まだ見えていないファイル:", ", ".join(unseen), "（このまま試します）")
 
 first_name = None
-if MODE == "i2v":
-    inp = COMFY_DIR / "input"
-    inp.mkdir(parents=True, exist_ok=True)
+inp = COMFY_DIR / "input"
+inp.mkdir(parents=True, exist_ok=True)
+if STORY:
+    if planned0.get("still_path"):
+        first_name = stage_image_into_input(planned0["still_path"], inp)
+        print("使う写真:", first_name)
+elif MODE == "i2v":
     if is_auto_image_name(写真ファイル):
         hit = newest_image([DRIVE_ROOT / "input", inp])
         if hit is None and VANILLA:
@@ -812,7 +879,11 @@ def generate_one():
 if 試し打ちだけ:
     g = make_graph(plans[0])
     print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
-    if CHAIN:
+    if STORY:
+        print("専用9本:")
+        for i, c in enumerate(STORY["clips"]):
+            print(" ", i + 1, c.get("label"), c.get("situation"), c.get("start"))
+    elif CHAIN:
         print("つなぎ予定:", " + ".join(str(int(x)) + "秒" for x in CLIPS))
         named = [str(i + 2) + "本目" for i, x in enumerate(CHAIN_EXTRAS) if not is_blank_prompt(x)]
         if named:
@@ -824,25 +895,49 @@ else:
     clip_paths = []
     inp = COMFY_DIR / "input"
     inp.mkdir(parents=True, exist_ok=True)
+    prev_sit = None
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
-        GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
-        GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)
-        if CLIP_INDEX > 0:
-            GRAPH_PROMPT = prepend_triggers(GRAPH_PROMPT, stack)
-            extra_now = CHAIN_EXTRAS[CLIP_INDEX - 1] if CLIP_INDEX - 1 < len(CHAIN_EXTRAS) else ""
-            if not is_blank_prompt(extra_now):
-                print("このクリップはつなぎ欄の文を使います")
-            hits = forbidden_hits(GRAPH_PROMPT, path=FORBIDDEN_FILE)
-            if hits:
-                hint = friendly_select_error(SystemExit("forbidden subject in prompt: " + str(hits)))
-                raise SystemExit(hint or ("forbidden subject in prompt: " + str(hits)))
-            if "Picture 1" not in GRAPH_PROMPT:
-                raise SystemExit("つなぎの2本目以降に最後のコマ（Picture 1）がありません。②のあと③をもう一度。")
+        if STORY:
+            try:
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=first_name, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE if CLIP_INDEX == 0 else None, prev_situation=prev_sit)
+            except SystemExit as exc:
+                hint = friendly_select_error(exc)
+                raise SystemExit(hint or str(exc)) from None
+            prev_sit = planned["situation"]
+            stack = planned["stack"]
+            SAMPLER = planned["sampler"]
+            cfg = planned["cfg"]
+            GRAPH_MODE = planned["mode"]
+            GRAPH_PROMPT = planned["prompt"]
+            if planned.get("missing_still"):
+                print("写真が無いのでテキストから:", planned["label"], planned.get("missing_still"))
+            if planned.get("still_path") is not None:
+                first_name = stage_image_into_input(planned["still_path"], inp)
+            elif GRAPH_MODE == "t2v":
+                first_name = None
+            if planned.get("stack_changed"):
+                print("部品を切り替えます:", planned["label"], planned["situation"])
+                comfy_free(PORT)
+            print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack])
+        else:
+            GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
+            GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)
+            if CLIP_INDEX > 0:
+                GRAPH_PROMPT = prepend_triggers(GRAPH_PROMPT, stack)
+                extra_now = CHAIN_EXTRAS[CLIP_INDEX - 1] if CLIP_INDEX - 1 < len(CHAIN_EXTRAS) else ""
+                if not is_blank_prompt(extra_now):
+                    print("このクリップはつなぎ欄の文を使います")
+                hits = forbidden_hits(GRAPH_PROMPT, path=FORBIDDEN_FILE)
+                if hits:
+                    hint = friendly_select_error(SystemExit("forbidden subject in prompt: " + str(hits)))
+                    raise SystemExit(hint or ("forbidden subject in prompt: " + str(hits)))
+                if "Picture 1" not in GRAPH_PROMPT:
+                    raise SystemExit("つなぎの2本目以降に最後のコマ（Picture 1）がありません。②のあと③をもう一度。")
+            print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", int(CLIP_DURATION), "秒", GRAPH_MODE)
         GRAPH_FIRST = first_name
         prev_prompt = GRAPH_PROMPT
         if GRAPH_MODE == "i2v" and not GRAPH_FIRST:
             raise SystemExit("写真または前のクリップの最後のコマがありません。")
-        print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", int(CLIP_DURATION), "秒", GRAPH_MODE)
         clip_path = generate_one()
         clip_paths.append(clip_path)
         print("保存:", clip_path)
