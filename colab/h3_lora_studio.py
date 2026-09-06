@@ -97,6 +97,12 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
         "cumouf-h3",
     ],
+    "rooftop-100s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "hmnsfw-aio-v25",
+        "synth-pussy-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -152,10 +158,13 @@ SITUATION_JA = {
     "朝〜正門120秒（専用）": "commute-120s",
     "授業120秒（専用）": "lecture-120s",
     "授業〜昼120秒（専用）": "lecture-120s",
+    "屋上〜下校（専用）": "rooftop-100s",
+    "屋上100秒（専用）": "rooftop-100s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
     "lecture-120s": "lecture-120s",
+    "rooftop-100s": "rooftop-100s",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -231,7 +240,8 @@ SITUATION_HELP = {
     "homecoming-90s": "120秒専用。10秒×12本のカット。クンニ LoRA は寄りの1本だけ（入室は歩行部品）。抜く・歩く・キス退出は別本。写真は input/homecoming-90s の 01〜12（11-lick.jpg は舌と穴の寄り）。",
     "dishes-90s": "洗い物120秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降で口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
     "commute-120s": "登校第1話。朝〜大学正門。15秒×8本＝120秒。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業は授業120秒。写真は input/commute-120s の 01〜08（16:9）。",
-    "lecture-120s": "授業第2話。授業〜昼。15秒×8本＝120秒。16:9。家とサヤカは出さない。机のシコはオナニー部品。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。昼へ歩く本は歩行。セックス・下校は次の話。写真は input/lecture-120s の 01〜08（16:9）。",
+    "lecture-120s": "授業第2話。授業〜昼。15秒×8本＝120秒。16:9。家とサヤカは出さない。机のシコはオナニー部品。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。昼へ歩く本は歩行。セックスは屋上〜下校。写真は input/lecture-120s の 01〜08（16:9）。",
+    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関は次の話。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
 }
 
 LORA_JA = {
@@ -268,7 +278,7 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s"}
+STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s"}
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
 
@@ -1307,12 +1317,16 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
         raise SystemExit("専用ストーリーは 8〜12本です。")
     if abs(clip_s - 10.0) > 0.01 and abs(clip_s - 15.0) > 0.01:
         raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
+    clip_durs = [float(c.get("duration_s") or clip_s) for c in clips]
+    for d in clip_durs:
+        if abs(d - 10.0) > 0.01 and abs(d - 15.0) > 0.01:
+            raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
     if int(data.get("min_age") or 0) < 21:
         raise SystemExit("専用ストーリーは 21歳以上のみです。")
     duration = float(data.get("duration_s") or 0)
     if duration > 120:
         raise SystemExit("専用ストーリーは 120秒までです。")
-    if abs(duration - n * clip_s) > 0.51:
+    if abs(duration - sum(clip_durs)) > 0.51:
         raise SystemExit("専用ストーリーの秒数と本数が合いません。")
     return data
 
