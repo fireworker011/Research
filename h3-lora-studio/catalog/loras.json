@@ -355,7 +355,7 @@
         0.7,
         1.0
       ],
-      "note": "Hearmeman V0.5. Trigger cumshot. Action LoRA: ejaculation leaving the penis. Do not stack with AIO as a second act. Pair with penis helper. Not facial; use facial-cumshot-h3."
+      "note": "Hearmeman V0.5. Trigger cumshot. Action LoRA: ejaculation leaving the penis (external). Do not stack with AIO as a second act. Pair with penis helper. Not facial; use facial-cumshot-h3. Not vaginal creampie; use final-thrust-h3. Not oral creampie; use cumouf-h3."
     },
     {
       "id": "facial-cumshot-h3",
@@ -376,7 +376,55 @@
         0.65,
         0.9
       ],
-      "note": "Looking-down facial. Trigger cmst first. Author card says Ref2VA/I2VA; I2VA is studio I2V with Picture 1 as the woman looking up. T2V experimental. Strength 0.75-0.85. Pair with penis helper. Do not stack with HMCumshot, Remoteorgasm, AIO, or the REF2VA-named duplicate file."
+      "note": "Looking-down facial. Trigger cmst first. Author card says Ref2VA/I2VA; I2VA is studio I2V with Picture 1 as the woman looking up. T2V experimental. Strength 0.75-0.85. Pair with penis helper. Do not stack with HMCumshot, Remoteorgasm, AIO, CUMOUF, Final Thrust, or the REF2VA-named duplicate file."
+    },
+    {
+      "id": "final-thrust-h3",
+      "filename": "H3_FinalThrust.safetensors",
+      "repo": "civitai:2891879",
+      "file": "V1.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "",
+      "default_strength": 0.85,
+      "source": "civitai",
+      "civitai_model_id": 2891879,
+      "civitai_version_id": 3269564,
+      "civitai_file_id": 3157295,
+      "strength_range": [
+        0.75,
+        1.0
+      ],
+      "note": "Vaginal creampie during deep thrusts. Author trainedWords are a male caption; studio scenes rewrite to two adult women, insertor is futanari. Do not put 'male character' in the prompt. Dest filename drops V1. I2V recommended. Pair with penis helper. Turbo off. Do not stack with HMCumshot, facial, CUMOUF, AIO."
+    },
+    {
+      "id": "cumouf-h3",
+      "filename": "CUMOUF_oral_creampie_H3_v1.safetensors",
+      "repo": "civitai:2846978",
+      "file": "CUMOUF_oral_creampie_H3_v1.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "CUMOUF",
+      "default_strength": 0.5,
+      "source": "civitai",
+      "civitai_model_id": 2846978,
+      "civitai_version_id": 3223411,
+      "civitai_file_id": 3105419,
+      "strength_range": [
+        0.4,
+        0.6
+      ],
+      "note": "Oral creampie / CIM. Trigger CUMOUF first. Strength 0.5; 0.7 makes cum too thick. I2V mid-action start. Author captions are male; studio rewrites to futanari + woman. Not a facial money shot. Not TADA swallow-and-show. Pair with penis helper. Do not stack with blowjob as a second act, HMCumshot, facial, or Final Thrust."
     },
     {
       "id": "hmpussy-v6",

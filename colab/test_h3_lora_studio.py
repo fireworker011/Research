@@ -151,6 +151,12 @@ def test_japanese_form_labels():
     assert resolve_situation("後射精") == "after_ejaculation"
     assert resolve_situation("顔射（女体）") == "facial"
     assert resolve_situation("顔射") == "facial"
+    assert resolve_situation("中出し（女体）") == "creampie"
+    assert resolve_situation("中出し") == "creampie"
+    assert resolve_situation("膣中出し") == "creampie"
+    assert resolve_situation("口内射精（女体）") == "oral_creampie"
+    assert resolve_situation("口内射精") == "oral_creampie"
+    assert resolve_situation("口内") == "oral_creampie"
     assert resolve_situation("指入れ") == "fingering"
     assert resolve_situation("オナニー") == "masturbation"
     assert resolve_situation("足コキ") == "footjob"
@@ -199,6 +205,17 @@ def test_japanese_form_labels():
     assert "指入れ（膣）" in anal_finger or "アナルセックス" in anal_finger
     assert "thumbinbutt-h3" not in anal_finger
     assert "写真" in anal_finger
+    cream = explain_choice("中出し（女体）", "写真から（1枚必要）")
+    assert "中出し" in cream
+    assert "口内" in cream or "顔射" in cream or "後射精" in cream
+    assert "final-thrust-h3" not in cream
+    assert "男なし" in cream
+    oral_c = explain_choice("口内射精（女体）", "写真から（1枚必要）")
+    assert "口内" in oral_c
+    assert "CUMOUF" in oral_c
+    assert "cumouf-h3" not in oral_c
+    assert friendly_lora("final-thrust-h3") == "中出し"
+    assert friendly_lora("cumouf-h3") == "口内射精"
     assert friendly_lora("cowgirl-position-h3") == "騎乗"
     assert friendly_lora("doggy-h3") == "後背位"
     assert friendly_lora("hmcumshot-v2") == "射精"
@@ -331,8 +348,12 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/after_ejaculation.json" in src
     assert "h3-lora-studio/profiles/facial.json" in src
     assert "h3-lora-studio/profiles/anal_fingering.json" in src
+    assert "h3-lora-studio/profiles/creampie.json" in src
+    assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-anal-thumb"' in src
+    assert 'FETCH_REV = "h2-20260906-creampie"' in src
+    assert "中出し（女体）" in src
+    assert "口内射精（女体）" in src
     assert "CoachBate 0.85" not in src
     assert "穴が膣より上" in src
     assert "フェラ（女体）" in src
@@ -343,7 +364,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-anal-thumb" in blob
+    assert "h2-20260906-creampie" in blob
+    assert "中出し（女体）" in blob
+    assert "口内射精（女体）" in blob
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
@@ -443,6 +466,8 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert situation_ids("missionary_pov") == ["missionary-pov-h3", "penis-lora-h3", "larry-v4"]
     assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "larry-v4"]
     assert situation_ids("facial") == ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("creampie") == ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("oral_creampie") == ["cumouf-h3", "penis-lora-h3", "larry-v4"]
     assert situation_ids("fingering") == ["fingering-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("anal_fingering") == ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("masturbation") == ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"]
@@ -480,6 +505,33 @@ def test_thumbinbutt_download_job_uses_civitai_file_id_and_clean_filename(tmp_pa
     assert " " not in dest.name
     assert row["id"] == "thumbinbutt-h3"
     assert row["trigger"] == "thum1n8utt"
+
+
+def test_final_thrust_download_job_uses_civitai_file_id_and_clean_filename(tmp_path):
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    jobs = download_jobs_for(["final-thrust-h3"], tmp_path, catalog=catalog)
+    assert len(jobs) == 1
+    url, dest, row = jobs[0]
+    assert "fileId=3157295" in url
+    assert "3269564" in url
+    assert dest.name == "H3_FinalThrust.safetensors"
+    assert dest.name != "V1.safetensors"
+    assert " " not in dest.name
+    assert row["id"] == "final-thrust-h3"
+    assert (row.get("trigger") or "") == ""
+
+
+def test_cumouf_download_job_uses_civitai_file_id_and_half_strength(tmp_path):
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    jobs = download_jobs_for(["cumouf-h3"], tmp_path, catalog=catalog)
+    assert len(jobs) == 1
+    url, dest, row = jobs[0]
+    assert "fileId=3105419" in url
+    assert "3223411" in url
+    assert dest.name == "CUMOUF_oral_creampie_H3_v1.safetensors"
+    assert row["id"] == "cumouf-h3"
+    assert row["trigger"] == "CUMOUF"
+    assert row["default_strength"] == 0.5
 
 
 def test_studio_clip_plan_chain_stays_under_sixteen():

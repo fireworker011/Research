@@ -61,8 +61,10 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Synth オフ。横はセックス（女体） |
-| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。射精そのもの。絶頂・顔射とは別 |
-| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 | Larry 0.5 | **切る** | 8step。顔にかける。後射精とは別。I2V本線。T2Vは実験的 |
+| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
+| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
+| 中出し（女体） | `creampie` | Final Thrust 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。膣の中。男なし。I2V本線 |
+| 口内射精（女体） | `oral_creampie` | CUMOUF 0.5 | Penis 0.7 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線。強さ 0.5 |
 | 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。膣。オナニー LoRA は積まない。アナルはアナル指入れ |
 | オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
 | 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
@@ -79,7 +81,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - FL2VA 用と Ref2VA 用の取り違え
 - エロ挿入 LoRA との併用（アナル系は Turbo 切るのが前提）
 - 体位 LoRA と総合えっち（AIO）の同時積み。体位が AIO の代わり
-- 指入れ + オナニー、指入れ + アナル指入れ、アナル指入れ + アナルセックス、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂
+- 指入れ + オナニー、指入れ + アナル指入れ、アナル指入れ + アナルセックス、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂、中出し + 後射精、中出し + 顔射、中出し + 口内、口内 + 顔射、口内 + フェラ本線
 - `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl）
 - シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
 - Photoreal still を動画本体に載せる
@@ -99,6 +101,13 @@ studio での使い方:
 - **アナルセックス（女体） / アナル挿入（画質）**: 入れる物を**ふたなりの竿**にする（`(S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure`）。竿 0.7 + 穴 0.55、Turbo オフ。挿入側の**両手は腰**に置く（LoRA が竿を親指に置き換えるのを防ぐ）。ネガに `thumb in anus, fingers in anus, hand near anus, vaginal penetration`
 - 共通: **四つん這い・後ろから・穴が膣より上**。写真からが本線で、写真は後ろから穴が見えるもの。空欄文は男を一切書かない（`the man` / `his` は使わない。feminine_lock が書き換えるが、最初から書かないのが確実）
 - 積まない: 膣の指入れ、CoachBate、AIO、HMMasturbation。行為は 1 本
+
+### 中出し / 口内射精
+
+後射精（HMCumshot）は**外に出す**。顔射（cmst）は顔。中に出す動きは別 LoRA。
+
+- **中出し（女体）**: [Final Thrust 2891879](https://civitai.com/models/2891879)。深い突きのまま膣の中に出す。学習文は男なので studio は `(S2) performs powerful, intense thrusts with her penis inside (S1) and cums inside of her` に置換。空欄に `male character` / `the man` / `his` は書かない。竿 + 穴、Turbo オフ・12step。写真からが本線。後射精・顔射・口内とは積まない
+- **口内射精（女体）**: [CUMOUF 2846978](https://civitai.com/models/2846978)。口の中で痙攣しながら出す。トリガー `CUMOUF` を先頭。強さ **0.5**（0.7で精液が不自然）。I2V は口が付いた途中の写真。作者文の he/his は her に置換。顔にかける金玉ショットではない。フェラ本線・顔射・中出しとは積まない
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list

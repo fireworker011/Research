@@ -116,6 +116,8 @@ def test_situations_switch_loras_by_profile_and_mode():
         "missionary_pov",
         "after_ejaculation",
         "facial",
+        "creampie",
+        "oral_creampie",
         "fingering",
         "masturbation",
         "footjob",
@@ -307,7 +309,11 @@ def test_futa_sex_and_anal_stay_feminine():
         assert "turbo" in str(exc).lower() or "CoachBate" in str(exc)
     else:
         raise AssertionError("expected SelectError")
-    rewritten = strip_male_subjects("Adult man lying on his back. A man waits.")
+    rewritten = strip_male_subjects("Adult man lying on his back. A man waits. The male character uses his penis.")
+    assert "adult man" not in rewritten.lower()
+    assert "male character" not in rewritten.lower()
+    assert "his penis" not in rewritten.lower()
+    assert "her penis" in rewritten.lower()
     assert "adult man" not in rewritten.lower()
     locked, neg = apply_feminine_lock("Two adults over 21.", "child", {"feminine_lock": True})
     assert "feminine_lock:" in locked.lower()
@@ -363,6 +369,8 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
         "missionary_pov",
         "after_ejaculation",
         "facial",
+        "creampie",
+        "oral_creampie",
         "footjob",
         "fingering",
         "anal_fingering",
@@ -461,6 +469,79 @@ def test_pose_aftercare_and_solo_act_stacks():
     facial_i2v = select_loras(profile_name="facial", mode="i2v", prompt_arg="（シーン）")
     assert "<Picture 1>" in facial_i2v["prompt"]
     assert "looking up" in facial_i2v["prompt"].lower()
+
+    cream_row = by_id["final-thrust-h3"]
+    assert cream_row["civitai_model_id"] == 2891879
+    assert cream_row["civitai_file_id"] == 3157295
+    assert cream_row["filename"] == "H3_FinalThrust.safetensors"
+    assert cream_row["trigger"] == ""
+    assert "t2v" in cream_row["modes"]
+    cumouf_row = by_id["cumouf-h3"]
+    assert cumouf_row["civitai_model_id"] == 2846978
+    assert cumouf_row["civitai_file_id"] == 3105419
+    assert cumouf_row["trigger"] == "CUMOUF"
+    assert cumouf_row["default_strength"] == 0.5
+
+    cream = select_loras(profile_name="creampie", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in cream["stack"]] == ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert cream["turbo"] is False
+    assert cream["sampler"]["steps"] == 12
+    clow = cream["prompt"].lower()
+    assert "cums inside of her" in clow
+    assert "powerful, intense thrusts with her penis" in clow
+    assert "futanari" in clow
+    assert "adult man" not in clow
+    assert "the man" not in clow
+    assert "male character" not in clow
+    assert " his " not in clow
+    assert "Picture 1" not in cream["prompt"]
+    assert "hmcumshot-v2" not in [r["id"] for r in cream["stack"]]
+    assert "facial-cumshot-h3" not in [r["id"] for r in cream["stack"]]
+    assert "cumouf-h3" not in [r["id"] for r in cream["stack"]]
+    unload_c = {r["id"] for r in cream["unload"]}
+    assert "hmcumshot-v2" in unload_c
+    assert "facial-cumshot-h3" in unload_c
+    assert "cumouf-h3" in unload_c
+    cream_i2v = select_loras(profile_name="creampie", mode="i2v", prompt_arg="（シーン）")
+    assert "<Picture 1>" in cream_i2v["prompt"]
+    assert "male character" not in cream_i2v["prompt"].lower()
+
+    oral_c = select_loras(profile_name="oral_creampie", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in oral_c["stack"]] == ["cumouf-h3", "penis-lora-h3", "larry-v4"]
+    assert oral_c["stack"][0]["trigger"] == "CUMOUF"
+    assert oral_c["stack"][0]["strength_model"] == 0.5
+    assert oral_c["turbo"] is True
+    assert oral_c["sampler"]["steps"] == 8
+    olow = oral_c["prompt"].lower()
+    assert olow.startswith("cumouf")
+    assert "fills (s1)'s mouth" in olow or "fills (s1)'s mouth" in oral_c["prompt"].lower()
+    assert "inside the mouth" in olow
+    assert "not a facial" in olow
+    assert "futanari" in olow
+    assert "adult man" not in olow
+    assert "the man" not in olow
+    assert "male character" not in olow
+    assert " his " not in olow
+    assert "blowjob-h3" not in [r["id"] for r in oral_c["stack"]]
+    assert "facial-cumshot-h3" not in [r["id"] for r in oral_c["stack"]]
+    assert "final-thrust-h3" not in [r["id"] for r in oral_c["stack"]]
+    unload_o = {r["id"] for r in oral_c["unload"]}
+    assert "blowjob-h3" in unload_o
+    assert "facial-cumshot-h3" in unload_o
+    assert "final-thrust-h3" in unload_o
+    oral_c_i2v = select_loras(profile_name="oral_creampie", mode="i2v", prompt_arg="（シーン）")
+    assert "<Picture 1>" in oral_c_i2v["prompt"]
+    assert "wrapped around" in oral_c_i2v["prompt"].lower()
+
+    custom_male = select_loras(
+        profile_name="creampie",
+        mode="t2v",
+        prompt_arg="CUMOUF. The male character inserts his penis and cums inside. All performers are 21.",
+    )
+    cm = custom_male["prompt"].lower()
+    assert "male character" not in cm
+    assert "his penis" not in cm
+    assert "her penis" in cm
 
     fingering = select_loras(profile_name="fingering", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in fingering["stack"]] == ["fingering-h3", "synth-pussy-h3", "larry-v4"]
