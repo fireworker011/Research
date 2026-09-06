@@ -1111,12 +1111,30 @@ def concat_studio_clips(clips: list[Path], dest: Path | str) -> Path:
     return out
 
 
-def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str = "") -> tuple[str, bool]:
-    """Empty → default scene. Custom I2V gets a Picture 1 lock if the user omitted it."""
+def has_i2v_lock(text: str | None) -> bool:
+    raw = str(text or "")
+    return "Picture 1" in raw or "first_frame" in raw.lower()
+
+
+def t2v_user_text(user_text: str | None) -> str:
+    """T2V ignores leftover I2V photo locks. Empty means the situation default."""
     raw = str(user_text or "").strip()
+    if is_blank_prompt(raw) or has_i2v_lock(raw):
+        return ""
+    return raw
+
+
+def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str = "") -> tuple[str, bool]:
+    """Empty → default scene. Custom I2V gets a Picture 1 lock if the user omitted it.
+
+    T2V after I2V: leftover Picture 1 / first_frame text is dropped so switching
+    作り方 does not error. The selected scene's T2V prompt is used instead.
+    """
+    mode_key = str(mode).lower()
+    raw = t2v_user_text(user_text) if mode_key == "t2v" else str(user_text or "").strip()
     if is_blank_prompt(raw):
         return str(default_prompt or ""), False
-    if str(mode).lower() == "i2v" and "Picture 1" not in raw:
+    if mode_key == "i2v" and "Picture 1" not in raw:
         wrapped = (
             I2V_CUSTOM_LOCK
             + "integrated_multimodal_description: "

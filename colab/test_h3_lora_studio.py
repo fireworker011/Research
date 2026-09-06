@@ -7,6 +7,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
     apply_user_prompt,
+    has_i2v_lock,
+    t2v_user_text,
     civitai_download_url,
     civitai_token,
     civitai_token_help,
@@ -257,6 +259,20 @@ def test_optional_prompt_uses_custom_or_default():
     locked, custom = apply_user_prompt("Keep <Picture 1> identity. She waves.", mode="i2v")
     assert custom is True
     assert locked.startswith("Keep <Picture 1>")
+    leftover = (
+        "For the target video, at 0.00 seconds into the target video, "
+        "<Picture 1> (from [Shot 1]) is fully referenced.\nAya waves."
+    )
+    assert has_i2v_lock(leftover) is True
+    assert t2v_user_text(leftover) == ""
+    dropped, custom = apply_user_prompt(leftover, mode="t2v", default_prompt="（シーン）")
+    assert custom is False
+    assert dropped == "（シーン）"
+    assert "Picture 1" not in dropped
+    kept, custom = apply_user_prompt("Adult woman rides, already in.", mode="t2v", default_prompt="（シーン）")
+    assert custom is True
+    assert "rides" in kept
+    assert has_i2v_lock("") is False
 
 
 def test_civitai_redirect_quotes_chinese_filename():
@@ -319,7 +335,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "homage=homage" in blob
     assert "validate_studio_i2v_prompt" in blob
     assert "validate_motion_ad_prompt(prompt, with_last_frame=False)" in blob
-    assert "写真用の文が文章欄に残っています" in src
+    assert "写真用の文" in src
+    assert "写真欄はテキストからでは使いません" in src
+    assert "残っていたので外します" in src
+    assert "テキストから作るときは、写真ロックの文を入れません" not in src
     assert "friendly_select_error" in src
     assert "forbidden.json" in src
     assert "追加の禁止語 =" not in src
@@ -351,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-comfy-info"' in src
+    assert 'FETCH_REV = "h2-20260906-t2v-switch"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "CoachBate 0.85" not in src
@@ -364,7 +383,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-comfy-info" in blob
+    assert "h2-20260906-t2v-switch" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
