@@ -351,7 +351,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-creampie"' in src
+    assert 'FETCH_REV = "h2-20260906-comfy-info"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "CoachBate 0.85" not in src
@@ -364,9 +364,14 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-creampie" in blob
+    assert "h2-20260906-comfy-info" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
+    assert "fetch_comfy_object_info" in src
+    assert "comfy_alive" in src
+    assert "wait_comfy_ready" in src
+    assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
+    assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
@@ -711,3 +716,100 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
     assert "つなぐ（16〜60秒）" in helper.read_text(encoding="utf-8")
     assert "CHAIN_MAX_S = 90" in helper.read_text(encoding="utf-8")
+
+
+class _FakeHttp:
+    def __init__(self, payload, status=200):
+        self._payload = json.dumps(payload).encode()
+        self.status = status
+
+    def read(self):
+        return self._payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+
+def test_comfy_alive_uses_system_stats_not_object_info(monkeypatch):
+    import urllib.request
+    from h3_lora_studio import comfy_alive
+
+    hits = []
+
+    def fake_urlopen(url, timeout=None):
+        hits.append(str(url))
+        if str(url).endswith("/system_stats"):
+            return _FakeHttp({"system": {}})
+        raise AssertionError(f"unexpected url {url}")
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    assert comfy_alive(8188) is True
+    assert hits == ["http://127.0.0.1:8188/system_stats"]
+    assert all("/object_info" not in u for u in hits)
+
+
+def test_fetch_comfy_object_info_uses_per_node_and_skips_full_dump(monkeypatch):
+    import urllib.request
+    from h3_lora_studio import fetch_comfy_object_info
+
+    hits = []
+
+    def fake_urlopen(url, timeout=None):
+        u = str(url)
+        hits.append(u)
+        if u.endswith("/system_stats"):
+            return _FakeHttp({"system": {}})
+        if u.endswith("/object_info/MiniMaxH3ImageToVideo"):
+            return _FakeHttp({"MiniMaxH3ImageToVideo": {"input": {}}})
+        if u.endswith("/object_info/LoraLoaderModelOnly"):
+            return _FakeHttp({"LoraLoaderModelOnly": {"input": {"required": {"lora_name": [["larry.safetensors"]]}}}})
+        if u.endswith("/object_info/MiniMaxH3TextToVideo"):
+            return _FakeHttp({"MiniMaxH3TextToVideo": {"input": {}}})
+        if u.endswith("/object_info/VAEDecodeAudio"):
+            return _FakeHttp({"VAEDecodeAudio": {"input": {}}})
+        if u.rstrip("/").endswith("/object_info"):
+            raise AssertionError("full /object_info dump should not be used")
+        return _FakeHttp({})
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    obj = fetch_comfy_object_info(8188)
+    assert "MiniMaxH3ImageToVideo" in obj
+    assert "LoraLoaderModelOnly" in obj
+    assert not any(u.rstrip("/").endswith("/object_info") for u in hits)
+
+
+def test_fetch_comfy_object_info_times_out_with_japanese_exit(monkeypatch):
+    import urllib.request
+    from h3_lora_studio import fetch_comfy_object_info
+
+    def fake_urlopen(url, timeout=None):
+        u = str(url)
+        if u.endswith("/system_stats") or u.endswith("/queue"):
+            return _FakeHttp({"system": {}})
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr("h3_lora_studio.time.sleep", lambda *_a, **_k: None)
+    try:
+        fetch_comfy_object_info(8188)
+    except SystemExit as exc:
+        assert "部品表" in str(exc)
+    else:
+        raise AssertionError("expected SystemExit")
+
+
+def test_fetch_comfy_object_info_says_engine_down(monkeypatch):
+    from h3_lora_studio import fetch_comfy_object_info
+
+    monkeypatch.setattr("h3_lora_studio.comfy_alive", lambda *_a, **_k: False)
+    monkeypatch.setattr("h3_lora_studio.wait_comfy_ready", lambda *_a, **_k: False)
+    try:
+        fetch_comfy_object_info(8188)
+    except SystemExit as exc:
+        assert "応答していません" in str(exc)
+    else:
+        raise AssertionError("expected SystemExit")
+

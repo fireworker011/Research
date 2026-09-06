@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -720,11 +721,96 @@ def format_prompt_http_fail(err: str, stack: list[dict[str, Any]] | None = None)
     return base
 
 
+COMFY_OBJECT_INFO_TIMEOUT = 180.0
+STUDIO_OBJECT_INFO_NODES = (
+    "MiniMaxH3ImageToVideo",
+    "MiniMaxH3TextToVideo",
+    "LoraLoaderModelOnly",
+    "VAEDecodeAudio",
+)
+COMFY_UNREADY = (
+    "動画エンジンが応答していません。①が終わっているか確認してください。"
+    " 前の生成が走っているときは終わるまで待ってから③を再実行。"
+    " それでもダメならランタイムを再起動して①→②→③。"
+)
+
+
+def _comfy_url(port: int, path: str) -> str:
+    return f"http://127.0.0.1:{int(port)}{path}"
+
+
+def _http_json(url: str, timeout: float) -> Any:
+    with urllib.request.urlopen(url, timeout=timeout) as resp:
+        return json.loads(resp.read().decode())
+
+
+def comfy_alive(port: int = 8188, timeout: float = 5.0) -> bool:
+    """Cheap liveness. Do not use /object_info — that dump can exceed 60s on Colab."""
+    for path in ("/system_stats", "/queue"):
+        try:
+            _http_json(_comfy_url(port, path), timeout)
+            return True
+        except Exception:
+            continue
+    return False
+
+
+def fetch_comfy_node_info(port: int, node_class: str, *, timeout: float = 45.0) -> dict[str, Any]:
+    data = _http_json(_comfy_url(port, f"/object_info/{node_class}"), timeout)
+    if isinstance(data, dict) and node_class in data:
+        return {node_class: data[node_class]}
+    if isinstance(data, dict) and "input" in data:
+        return {node_class: data}
+    return {}
+
+
+def comfy_has_h3(port: int = 8188) -> bool:
+    try:
+        return "MiniMaxH3ImageToVideo" in fetch_comfy_node_info(port, "MiniMaxH3ImageToVideo")
+    except Exception:
+        return False
+
+
+def wait_comfy_ready(port: int = 8188, *, seconds: float = 180.0) -> bool:
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        if comfy_alive(port) and comfy_has_h3(port):
+            return True
+        time.sleep(2)
+    return False
+
+
+def fetch_comfy_object_info(port: int = 8188, *, timeout: float = COMFY_OBJECT_INFO_TIMEOUT) -> dict[str, Any]:
+    """Prefer per-node /object_info/{class}. Full dump is last resort (slow on Colab)."""
+    if not comfy_alive(port) and not wait_comfy_ready(port, seconds=30):
+        raise SystemExit(COMFY_UNREADY)
+    merged: dict[str, Any] = {}
+    for name in STUDIO_OBJECT_INFO_NODES:
+        try:
+            merged.update(fetch_comfy_node_info(port, name, timeout=45))
+        except Exception:
+            continue
+    if "MiniMaxH3ImageToVideo" in merged:
+        return merged
+    last_err: Exception | None = None
+    for attempt in range(3):
+        try:
+            print("エンジンの部品表を読んでいます…" if attempt == 0 else "部品表が重いので再試行します…")
+            data = _http_json(_comfy_url(port, "/object_info"), timeout)
+            if isinstance(data, dict) and data:
+                return data
+        except Exception as exc:
+            last_err = exc
+            time.sleep(4)
+    raise SystemExit(
+        "エンジンの部品表が時間内に返りませんでした。"
+        " 前の生成が終わるまで待って③を再実行するか、ランタイムを再起動して①から。"
+        + (f"\n{last_err}" if last_err else "")
+    )
+
+
 def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
     """New LoRAs are invisible until Comfy restarts."""
-    import subprocess
-    import time
-
     subprocess.run(["fuser", "-k", f"{port}/tcp"], check=False, capture_output=True)
     time.sleep(2)
     log = Path("/content/comfyui.log")
@@ -748,16 +834,8 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
         stderr=subprocess.STDOUT,
         start_new_session=True,
     )
-    for _ in range(90):
-        try:
-            with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=3) as resp:
-                data = json.loads(resp.read().decode())
-            if "MiniMaxH3ImageToVideo" in data:
-                return
-        except Exception:
-            pass
-        time.sleep(2)
-    raise SystemExit("エンジンの再起動に失敗しました。ランタイムを再起動して①から実行してください。")
+    if not wait_comfy_ready(port, seconds=180):
+        raise SystemExit("エンジンの再起動に失敗しました。ランタイムを再起動して①から実行してください。")
 
 
 def inject_lora_stack(

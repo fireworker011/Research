@@ -181,7 +181,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-creampie"
+FETCH_REV = "h2-20260906-comfy-info"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -280,7 +280,7 @@ from h3_i2v_phone import i2v_download_jobs
 from h3_lora_studio import (
     SITUATION_HELP, civitai_token, civitai_token_help, civitai_download_fallbacks,
     download_jobs_for, fetch_weight, load_catalog, missing_civitai_files,
-    resolve_situation, situation_ids,
+    resolve_situation, situation_ids, comfy_alive, wait_comfy_ready,
 )
 
 print("今のシーン:", 今使うシーン)
@@ -356,16 +356,10 @@ if skipped:
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
-def comfy_up() -> bool:
-    try:
-        with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3) as r:
-            obj = json.loads(r.read().decode())
-        return "MiniMaxH3ImageToVideo" in obj
-    except Exception:
-        return False
-
-if comfy_up():
-    print("動画エンジンはすでに起動しています")
+if comfy_alive(PORT):
+    print("動画エンジンはすでに起動しています。部品の準備を待ちます…")
+    if not wait_comfy_ready(PORT, seconds=180):
+        raise SystemExit("エンジンの準備が終わりません。ランタイムを再起動して①からやり直してください。")
 else:
     print("動画エンジンを起動しています…")
     log = Path("/content/comfyui.log")
@@ -373,13 +367,7 @@ else:
     cmd = [sys.executable, "main.py", "--listen", "127.0.0.1", "--port", str(PORT),
            "--highvram", "--disable-auto-launch", "--enable-cors-header"]
     subprocess.Popen(cmd, cwd=str(COMFY_DIR), stdout=log_f, stderr=subprocess.STDOUT, start_new_session=True)
-    ok = False
-    for _ in range(90):
-        if comfy_up():
-            ok = True
-            break
-        time.sleep(2)
-    if not ok:
+    if not wait_comfy_ready(PORT, seconds=180):
         print(log.read_text(errors="replace")[-2000:])
         raise SystemExit("起動に失敗しました。ランタイムを再起動して①からやり直してください。")
     print("起動できました")
@@ -480,11 +468,11 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 90:
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 90 or not getattr(_h3_studio, "fetch_comfy_object_info", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -616,8 +604,8 @@ if hits:
 
 obj = {}
 if not 試し打ちだけ:
-    with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60) as r:
-        obj = json.loads(r.read().decode())
+    print("エンジンの部品表を確認しています…")
+    obj = fetch_comfy_object_info(PORT)
     if "MiniMaxH3ImageToVideo" not in obj:
         raise SystemExit("エンジンがまだです。②を先に実行してください。")
 
@@ -653,8 +641,7 @@ if not VANILLA:
     if unseen and not 試し打ちだけ:
         print("エンジンが新しい部品をまだ見ていないので、再読み込みします…")
         restart_studio_comfy(COMFY_DIR, port=PORT)
-        with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60) as r:
-            obj = json.loads(r.read().decode())
+        obj = fetch_comfy_object_info(PORT)
         unseen = comfy_missing_loras(stack, obj)
         if unseen:
             print("まだ見えていないファイル:", ", ".join(unseen), "（このまま試します）")
