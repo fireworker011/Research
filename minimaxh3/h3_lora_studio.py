@@ -838,6 +838,22 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
         raise SystemExit("エンジンの再起動に失敗しました。ランタイムを再起動して①から実行してください。")
 
 
+def comfy_free(port: int = 8188) -> None:
+    """Unload models after OOM so the next size (or next clip) can retry."""
+    try:
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{int(port)}/free",
+            data=json.dumps({"unload_models": True, "free_memory": True}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=60).read()
+        print("VRAM を解放しました")
+        time.sleep(3)
+    except Exception as exc:
+        print("/free skip:", exc)
+
+
 def inject_lora_stack(
     g: dict[str, Any],
     stack: list[dict[str, Any]],

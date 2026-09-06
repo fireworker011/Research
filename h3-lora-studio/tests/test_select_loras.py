@@ -806,6 +806,8 @@ def test_safety_no_child_is_not_a_request():
     assert forbidden_hits("no child, teen, loli, shota") == []
     assert forbidden_hits("a child sits on the bed") == ["child"]
     assert "15 years old" in forbidden_hits("Adult woman, 15 years old, in a station.")
+    assert any("15" in x for x in forbidden_hits("Adult Japanese woman, 15, 150cm, fully nude."))
+    assert forbidden_hits("Adult Japanese woman, 24, 150cm.") == []
     assert "15歳" in forbidden_hits("成人女性、15歳。")
     assert any("15" in x and "yo" in x for x in forbidden_hits("cast is 15yo"))
     assert forbidden_hits("Photoreal widescreen 16:9, 1344x768, 15 seconds, 24fps.") == []

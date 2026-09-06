@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-t2v-switch"' in src
+    assert 'FETCH_REV = "h2-20260906-oom-free"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "CoachBate 0.85" not in src
@@ -383,12 +383,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-t2v-switch" in blob
+    assert "h2-20260906-oom-free" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
+    assert "comfy_free(PORT)" in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
 
@@ -831,4 +832,21 @@ def test_fetch_comfy_object_info_says_engine_down(monkeypatch):
         assert "応答していません" in str(exc)
     else:
         raise AssertionError("expected SystemExit")
+
+
+def test_comfy_free_posts_unload(monkeypatch):
+    import urllib.request
+    from h3_lora_studio import comfy_free
+
+    hits = []
+
+    def fake_urlopen(req, timeout=None):
+        hits.append(getattr(req, "full_url", str(req)))
+        return _FakeHttp({"ok": True})
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr("h3_lora_studio.time.sleep", lambda *_a, **_k: None)
+    comfy_free(8188)
+    assert hits
+    assert hits[0].endswith("/free")
 

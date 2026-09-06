@@ -81,6 +81,10 @@ UNDERAGE_YEARS_RE = re.compile(
     r"(?i)(?<!\d)(20|1[0-9]|[1-9])\s*(?:-?\s*years?\s*old|-?\s*year[- ]olds?|y\.?o\.?\b|yo\b|歳)"
 )
 UNDERAGE_AGE_EQ_RE = re.compile(r"(?i)\bage\s*[:=]?\s*(20|1[0-9]|[1-9])\b")
+# "Adult Japanese woman, 15, 150cm" — comma age, not "15 seconds"
+UNDERAGE_COMMA_AGE_RE = re.compile(
+    r"(?i)(?:woman|girl|female|女性)[^\n,]{0,40},\s*(20|1[0-9]|[1-9])\s*,"
+)
 FEMININE_LOCK_MARK = "feminine_lock:"
 FEMININE_LOCK_PROMPT = (
     "feminine_lock: Every visible person is an adult woman, clearly over 21. "
@@ -201,7 +205,7 @@ def underage_age_hits(text: str) -> list[str]:
     folded = str(text or "").translate(_FULLWIDTH_DIGITS)
     hits: list[str] = []
     seen: set[str] = set()
-    for rx in (UNDERAGE_YEARS_RE, UNDERAGE_AGE_EQ_RE):
+    for rx in (UNDERAGE_YEARS_RE, UNDERAGE_AGE_EQ_RE, UNDERAGE_COMMA_AGE_RE):
         for match in rx.finditer(folded):
             n = int(match.group(1))
             if n < 1 or n >= 21:
