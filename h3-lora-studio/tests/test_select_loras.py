@@ -28,10 +28,13 @@ def test_anal_penetration_i2v_stacks_enabled_only():
     assert data["min_age"] >= 21
     assert data["first_frame_required"] is True
     ids = [row["id"] for row in data["stack"]]
-    assert ids == ["anal-penetration-coachbate", "synth-pussy-h3"]
-    assert [row["role"] for row in data["stack"]] == ["act", "helper"]
+    assert ids == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [row["role"] for row in data["stack"]] == ["act", "helper", "helper"]
     assert data["stack"][0]["strength_model"] == 0.85
-    assert data["stack"][1]["strength_model"] == 0.55
+    assert data["stack"][1]["strength_model"] == 0.7
+    assert data["stack"][2]["strength_model"] == 0.55
+    assert "anal-penetration-coachbate" not in ids
+    assert "hmnsfw-aio-v25" not in ids
     unload_ids = {row["id"] for row in data["unload"]}
     assert "minimax-h3-turbo-fl2v-4step" in unload_ids
     assert "larry-v4" in unload_ids
@@ -56,7 +59,7 @@ def test_anal_penetration_t2v_has_no_first_frame():
     assert data["turbo"] is False
     assert data["first_frame_required"] is False
     assert data["canvas"]["aspect"] == "9:16"
-    assert [row["id"] for row in data["stack"]] == ["anal-penetration-coachbate", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert "Picture 1" not in data["prompt"]
     assert "first_frame" not in data["prompt"].lower()
 
@@ -68,7 +71,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     futa_t2v = [r["id"] for r in select_loras(profile_name="futa_blowjob", mode="t2v")["stack"]]
     general = select_loras(profile_name="general_sex", mode="t2v")
     preview = select_loras(profile_name="preview", mode="t2v")
-    assert anal_t2v == ["anal-penetration-coachbate", "synth-pussy-h3"]
+    assert anal_t2v == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert close_t2v == ["synth-pussy-h3", "larry-v4", "cinema-dy"]
     assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
     assert oral_t2v["stack"][0]["strength_model"] == 0.75
@@ -200,7 +203,7 @@ def test_cli_emits_json():
     )
     data = json.loads(proc.stdout)
     assert data["turbo"] is False
-    assert [row["id"] for row in data["stack"]] == ["anal-penetration-coachbate", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
 
 
 def test_futa_sex_and_anal_stay_feminine():
@@ -228,14 +231,51 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "fully nude" in low
     assert "futanari" in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in anal["stack"]] == ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["id"] for r in anal["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert [r["role"] for r in anal["stack"]] == ["act", "helper", "helper"]
+    assert [r["strength_model"] for r in anal["stack"]] == [0.85, 0.7, 0.55]
+    assert anal["stack"][0]["trigger"] == "thum1n8utt"
     assert anal["turbo"] is False
-    assert anal["sampler"]["steps"] >= 16
+    assert anal["sampler"]["steps"] == 12
+    assert anal["sampler"]["sampler_name"] == "euler"
     assert "<Picture 1>" in anal["prompt"]
-    assert "adult man" not in anal["prompt"].lower()
-    assert "anus" in anal["prompt"].lower()
-    assert "vulva" not in anal["prompt"].lower()
+    alow = anal["prompt"].lower()
+    assert alow.startswith("thum1n8utt, penislora")
+    assert "inserts her penis in (s1)'s anus" in alow
+    assert "causing (s1) to moan with pleasure" in alow
+    assert "anus sits above her vagina" in alow
+    assert "hands of (s2) stay on (s1)'s hips" in alow
+    assert "not pov" in alow
+    assert "adult man" not in alow
+    assert "the man" not in alow
+    assert " his " not in alow
+    assert "thumb" not in alow
+    assert "anus" in alow
+    assert "vulva" not in alow
+    assert "futanari" in alow
+    aneg = anal["negative"].lower()
+    assert "thumb in anus" in aneg
+    assert "hand near anus" in aneg
+    assert "vaginal penetration" in aneg
+    assert "man" in aneg
+    unload_anal = {r["id"] for r in anal["unload"]}
+    assert "anal-penetration-coachbate" in unload_anal
+    assert "hmnsfw-aio-v25" in unload_anal
+    assert "fingering-h3" in unload_anal
+    assert "doggy-h3" in unload_anal
+    assert "larry-v4" in unload_anal
+    anal_t2v = select_loras(profile_name="futa_anal", mode="t2v", prompt_arg="（シーン）")
+    assert "Picture 1" not in anal_t2v["prompt"]
+    assert "inserts her penis in (s1)'s anus" in anal_t2v["prompt"].lower()
+    close = select_loras(profile_name="anal_penetration", mode="i2v", prompt_arg="（シーン）")
+    assert close["sampler"]["sampler_name"] == "res_multistep"
+    assert close["sampler"]["steps"] == 16
+    clow = close["prompt"].lower()
+    assert clow.startswith("thum1n8utt, penislora")
+    assert "close-up on (s1)'s anus" in clow
+    assert "inserts her penis in (s1)'s anus" in clow
+    assert "thumb" not in clow
+    assert "the man" not in clow
     custom = select_loras(
         profile_name="futa_sex",
         mode="t2v",
@@ -438,10 +478,12 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert anal_finger["sampler"]["steps"] == 8
     assert anal_finger["turbo"] is True
     assert "thum1n8utt" in anal_finger["prompt"].lower()
-    assert "own right thumb" in anal_finger["prompt"].lower()
-    assert "anus" in anal_finger["prompt"].lower()
+    assert "rub around her anus in a circular motion then inserts her right thumb in her anus" in anal_finger["prompt"].lower()
+    assert "anus sits above her vagina" in anal_finger["prompt"].lower()
+    assert "no penis" in anal_finger["prompt"].lower()
     assert "adult man" not in anal_finger["prompt"].lower()
     assert "the man" not in anal_finger["prompt"].lower()
+    assert " his " not in anal_finger["prompt"].lower()
     assert "Picture 1" not in anal_finger["prompt"]
     assert "fingering-h3" not in [r["id"] for r in anal_finger["stack"]]
     assert "anal-penetration-coachbate" not in [r["id"] for r in anal_finger["stack"]]
@@ -509,6 +551,23 @@ def test_refuses_turbo_override():
         assert "turbo" in str(exc).lower() or "CoachBate" in str(exc)
     else:
         raise AssertionError("expected SelectError")
+
+
+def test_anal_profiles_refuse_turbo_in_stack(tmp_path: Path):
+    catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
+    cat_path = tmp_path / "loras.json"
+    cat_path.write_text(json.dumps(catalog), encoding="utf-8")
+    for name in ("futa_anal", "anal_penetration"):
+        profile = json.loads((ROOT / "profiles" / f"{name}.json").read_text(encoding="utf-8"))
+        profile["stack_plan"]["turbo"] = {"id": "larry-v4", "strength": 0.5}
+        profile["disabled"] = [x for x in profile["disabled"] if x != "larry-v4"]
+        (tmp_path / f"{name}.json").write_text(json.dumps(profile), encoding="utf-8")
+        try:
+            select_loras(profile_name=name, mode="i2v", catalog_path=cat_path, profiles_dir=tmp_path)
+        except SelectError as exc:
+            assert "turbo off" in str(exc).lower(), name
+        else:
+            raise AssertionError(f"expected SelectError for {name}")
 
 
 def test_refuses_cinema_plus_helper(tmp_path: Path):

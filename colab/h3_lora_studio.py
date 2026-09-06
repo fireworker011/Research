@@ -2,7 +2,7 @@
 
 SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
-Cinema replaces helper. CoachBate anal stays turbo off. Pose LoRAs replace AIO; do not stack both.
+Cinema replaces helper. Anal sex (ThumbInButt + penis + synth) stays turbo off. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 """
@@ -39,13 +39,13 @@ SITUATION_DOWNLOAD = {
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["synth-pussy-h3", "larry-v4", "cinema-dy"],
     "anal_fingering": ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
-    "anal_penetration": ["anal-penetration-coachbate", "synth-pussy-h3"],
+    "anal_penetration": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
     "lesbian_cunnilingus": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "pussy_spread": ["pussy-spread-h3", "synth-pussy-h3", "larry-v4"],
     "lesbian_spread": ["lesbian-cunnilingus-h3", "pussy-spread-h3", "larry-v4"],
     "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
-    "futa_anal": ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"],
+    "futa_anal": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
     "oral": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "larry-v4"],
     "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
@@ -141,14 +141,14 @@ SITUATION_HELP = {
     "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。女同士。男なし。動きの本線はアナル指入れ。",
-    "anal_fingering": "アナル指入れ。女1人。ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（女体）。CoachBate 0.85 + 穴の見え方 0.55。Turbo なし。挿入側はふたなり。男なし。専用部品が無いときは総合えっちで代用。",
+    "anal_fingering": "アナル指入れ。女1人。ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・16step。挿入側はふたなり。男なし。写真からが本線（後ろから、穴が見える写真）。",
     "lesbian_cunnilingus": "レズクンニ。女同士。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。クンニ 0.8 + 広げる 0.6 + Larry 0.5。男なし。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
-    "futa_anal": "アナルセックス（女体）。CoachBate 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・16step。ふたなり＋女。男なし。",
+    "futa_anal": "アナルセックス（女体）。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・12step。ふたなり＋女。男なし。後ろから、穴が膣より上に見える構図。手は腰。写真からが本線。",
     "oral": "フェラ（女体）。フェラ 0.75 + 竿 0.7 + Larry 0.7。受けはふたなり。男なし。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + Larry 0.5 / 12step。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + LightX2V 4step。ふたなり＋女。男なし。",
@@ -167,7 +167,7 @@ LORA_JA = {
     "synth-pussy-h3": "穴の見え方",
     "lesbian-cunnilingus-h3": "レズクンニ",
     "pussy-spread-h3": "性器を広げる",
-    "anal-penetration-coachbate": "アナル挿入",
+    "anal-penetration-coachbate": "アナル挿入（CoachBate・有料・未使用）",
     "hmnsfw-aio-v25": "総合えっち",
     "futa-h3-v51": "ふたなり",
     "penis-lora-h3": "竿",
@@ -179,7 +179,7 @@ LORA_JA = {
     "hmcumshot-v2": "射精",
     "facial-cumshot-h3": "顔射",
     "fingering-h3": "指入れ",
-    "thumbinbutt-h3": "アナル指入れ",
+    "thumbinbutt-h3": "アナル挿入の動き（ThumbInButt）",
     "hmmasturbation-h3": "オナニー",
     "footjob-h3": "足コキ",
     "remote-orgasm-h3": "絶頂",

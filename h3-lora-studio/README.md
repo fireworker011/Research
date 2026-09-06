@@ -47,17 +47,17 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。CoachBate アナルは Turbo オフ。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA は無い。CoachBate は有料で未使用、AIO は微妙）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
-| アナル挿入（画質） | `anal_penetration` | CoachBate 0.85 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16 |
+| アナル挿入（画質） | `anal_penetration` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。穴のアップ。遅いが綺麗 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
 | アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
 | フェラ（女体） | `oral` | Blowjob 0.75 | Penis 0.7 | Larry 0.7 | なし | 女がふたなりに。男なし |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
-| アナルセックス（女体） | `futa_anal` | CoachBate 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | アナル挿入本線。マンコは文章欄。16step |
+| アナルセックス（女体） | `futa_anal` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | euler / simple / 12。アナル本線。後ろから、穴が膣より上の構図。手は腰。I2V本線 |
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Synth オフ。横はセックス（女体） |
@@ -87,7 +87,18 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - Fal H3 Max に LoRA を差す
 - 訓練で体位を足す（既存 FL2VA LoRA を積む）
 
-積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。ThumbInButt は③アナル指入れ専用（膣の指入れ・CoachBate とは積まない）。
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。
+
+### ThumbInButt（アナル系の行為 LoRA）
+
+[Civitai 2904444](https://civitai.com/models/2904444)。作者の説明: 親指をアナルに入れる動きに加えて「**物をアナルに入れる**」動作を H3 に教える。トリガー `thum1n8utt`。学習文は「the man inserts his right thumb in her anus causing the woman to moan with pleasure」の形。I2V 学習。T2V / R2V は「一応動くが見た目は良くない」。**膣がアナルより上に映る構図だと親指は膣に入る。**
+
+studio での使い方:
+
+- **アナル指入れ**: 女1人・自分の右親指。学習文の構造を女体に書き換え（`(S1) uses her right thumb to rub around her anus in a circular motion then inserts her right thumb in her anus`）。竿 LoRA は積まない
+- **アナルセックス（女体） / アナル挿入（画質）**: 入れる物を**ふたなりの竿**にする（`(S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure`）。竿 0.7 + 穴 0.55、Turbo オフ。挿入側の**両手は腰**に置く（LoRA が竿を親指に置き換えるのを防ぐ）。ネガに `thumb in anus, fingers in anus, hand near anus, vaginal penetration`
+- 共通: **四つん這い・後ろから・穴が膣より上**。写真からが本線で、写真は後ろから穴が見えるもの。空欄文は男を一切書かない（`the man` / `his` は使わない。feminine_lock が書き換えるが、最初から書かないのが確実）
+- 積まない: 膣の指入れ、CoachBate、AIO、HMMasturbation。行為は 1 本
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
@@ -111,7 +122,7 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 ## 不変条件
 
 1. 速さ用と画質用を分け、Larry と LightX2V を同時に積まない
-2. CoachBate アナル挿入は Turbo オフ
+2. アナル挿入・アナルセックス（ThumbInButt + 竿 + 穴）は Turbo オフ
 3. FL2VA に ref2va を載せない
 4. T2V に Picture 1 を書かない
 5. 未成年・ロリ・ショタ禁止

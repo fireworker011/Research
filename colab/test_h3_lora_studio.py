@@ -203,7 +203,13 @@ def test_japanese_form_labels():
     assert friendly_lora("doggy-h3") == "後背位"
     assert friendly_lora("hmcumshot-v2") == "射精"
     assert friendly_lora("facial-cumshot-h3") == "顔射"
-    assert friendly_lora("thumbinbutt-h3") == "アナル指入れ"
+    assert "ThumbInButt" in friendly_lora("thumbinbutt-h3")
+    futa_anal_help = explain_choice("アナルセックス（女体）", "写真から（1枚必要）")
+    assert "ThumbInButt" in futa_anal_help
+    assert "Turbo なし" in futa_anal_help
+    assert "12step" in futa_anal_help
+    assert "CoachBate" not in futa_anal_help
+    assert "男なし" in futa_anal_help
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
 
 
@@ -326,7 +332,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/facial.json" in src
     assert "h3-lora-studio/profiles/anal_fingering.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-anal-finger"' in src
+    assert 'FETCH_REV = "h2-20260906-anal-thumb"' in src
+    assert "CoachBate 0.85" not in src
+    assert "穴が膣より上" in src
     assert "フェラ（女体）" in src
     assert "汎用エロ（女体）" in src
     assert "顔射（女体）" in src
@@ -335,7 +343,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-anal-finger" in blob
+    assert "h2-20260906-anal-thumb" in blob
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
@@ -443,7 +451,8 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
-    assert situation_ids("futa_anal") == ["anal-penetration-coachbate", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("futa_anal") == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("anal_penetration") == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
 
 

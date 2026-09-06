@@ -667,6 +667,10 @@ def select_loras(
         act = next((spec for spec in enabled if spec.get("role") == "act"), None)
         if act and str(act.get("id")) == "anal-penetration-coachbate":
             raise SelectError("CoachBate anal penetration stays turbo off")
+        if profile.get("allow_turbo") is False:
+            raise SelectError(f"{profile_name} stays turbo off (insertion with two helpers)")
+    if profile.get("allow_turbo") is False and any(spec.get("role") == "turbo" for spec in enabled):
+        raise SelectError(f"{profile_name} stays turbo off (insertion with two helpers)")
     assert_stack_budget(enabled, index, nsfw=nsfw)
 
     stack: list[dict[str, Any]] = []

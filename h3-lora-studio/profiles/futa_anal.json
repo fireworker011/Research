@@ -24,7 +24,7 @@
   },
   "stack_plan": {
     "act": {
-      "id": "anal-penetration-coachbate",
+      "id": "thumbinbutt-h3",
       "strength": 0.85
     },
     "helper": [
@@ -39,12 +39,13 @@
     ]
   },
   "sampler": {
-    "sampler_name": "res_multistep",
-    "scheduler": "beta",
-    "steps": 16,
-    "note": "CoachBate anal + penis + Synth. Two helpers, turbo off. Penetrator stays a woman, never a man."
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 12,
+    "note": "ThumbInButt 0.85 (object-into-anus motion) + penis 0.7 + Synth 0.55 / 12step. Two helpers, turbo off. Penetrator stays a woman, never a man. Anus above vagina in frame or the LoRA aims at the vagina. Hands stay on hips so the LoRA does not swap the penis for a thumb. I2V recommended."
   },
   "disabled": [
+    "anal-penetration-coachbate",
     "hmnsfw-aio-v25",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
@@ -52,15 +53,19 @@
     "blowjob-h3",
     "riding-pose-i2v",
     "facial-cumshot-h3",
-    "thumbinbutt-h3",
+    "fingering-h3",
+    "hmmasturbation-h3",
+    "doggy-h3",
+    "cowgirl-position-h3",
+    "missionary-pov-h3",
     "photoreal-h3-still",
     "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
     "cinema-dy"
   ],
   "scenes": {
-    "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n\nAlready anal. Anus. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
-    "t2v": "PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n\nAlready anal. Anus. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+    "i2v": "thum1n8utt, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, kneeling on all fours with her hips raised and her back arched, seen from behind so her anus sits above her vagina in frame. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari with a penis, kneeling behind (S1). Not a man.\n\nthum1n8utt. (S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure. The penis goes into the anus, not the vagina. Slow steady in-and-out strokes of the penis. Both hands of (S2) stay on (S1)'s hips, away from the anus. Camera three-quarter view from behind and slightly above, not POV. Already anal. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "thum1n8utt, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, kneeling on all fours with her hips raised and her back arched, seen from behind so her anus sits above her vagina in frame. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari with a penis, kneeling behind (S1). Not a man.\n\nthum1n8utt. (S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure. The penis goes into the anus, not the vagina. Slow steady in-and-out strokes of the penis. Both hands of (S2) stay on (S1)'s hips, away from the anus. Camera three-quarter view from behind and slightly above, not POV. Already anal. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis, vaginal penetration, invented extra hole"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, male hand, thumb in anus, fingers in anus, hand near anus, worm-like penis, vaginal penetration, invented extra hole"
 }
