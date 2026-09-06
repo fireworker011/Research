@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import sys
 import urllib.parse
@@ -389,7 +390,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-follow"' in src
+    assert 'FETCH_REV = "h2-20260906-hotcache"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -429,7 +430,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-follow" in blob
+    assert "h2-20260906-hotcache" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -449,6 +450,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "input/futon-120s/" in src
     assert "input/sunday-120s/" in src
     assert "input/engawa-120s/" in src
+    assert "apply_drive_cache_env" in src
+    assert "stage_models_to_local" in src
+    assert "warmup_h3_engine" in src
+    assert "PIP_CACHE_DIR" in src
+    assert "CUDA_MODULE_LOADING" in src
+    assert 'HF_HOME' in src
+    assert "link_dir(models_root / sub, DRIVE_MODELS / sub)" not in src
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
@@ -937,6 +945,109 @@ def test_comfy_free_posts_unload(monkeypatch):
     comfy_free(8188)
     assert hits
     assert hits[0].endswith("/free")
+
+
+def test_apply_drive_cache_env_points_at_drive(tmp_path, monkeypatch):
+    from h3_lora_studio import DRIVE_CACHE_SUBS, apply_drive_cache_env
+
+    monkeypatch.delenv("HF_HOME", raising=False)
+    monkeypatch.delenv("PIP_CACHE_DIR", raising=False)
+    applied = apply_drive_cache_env(tmp_path)
+    assert applied["CUDA_MODULE_LOADING"] == "EAGER"
+    for key, rel in DRIVE_CACHE_SUBS.items():
+        dest = tmp_path / rel
+        assert dest.is_dir(), rel
+        assert os.environ[key] == str(dest)
+    assert os.environ["CUDA_MODULE_LOADING"] == "EAGER"
+
+
+def test_stage_models_to_local_copies_once_and_breaks_symlink(tmp_path):
+    from h3_lora_studio import (
+        model_dir_is_drive_link,
+        prepare_local_model_roots,
+        stage_models_to_local,
+        stage_weight_file,
+    )
+
+    drive = tmp_path / "drive" / "models"
+    comfy = tmp_path / "ComfyUI"
+    (drive / "text_encoders").mkdir(parents=True)
+    payload = b"x" * (2 * 1024 * 1024)
+    src = drive / "text_encoders" / "clip.safetensors"
+    src.write_bytes(payload)
+    models = comfy / "models"
+    models.mkdir(parents=True)
+    (models / "text_encoders").symlink_to(drive / "text_encoders")
+    assert model_dir_is_drive_link(comfy)
+    assert prepare_local_model_roots(comfy) is True
+    assert not (comfy / "models" / "text_encoders").is_symlink()
+    stats = stage_models_to_local(drive, comfy / "models", min_free_bytes=0)
+    dest = comfy / "models" / "text_encoders" / "clip.safetensors"
+    assert dest.is_file() and not dest.is_symlink()
+    assert dest.stat().st_size == len(payload)
+    assert src.name in stats["copied"]
+    again = stage_models_to_local(drive, comfy / "models", min_free_bytes=0)
+    assert src.name in again["skipped"]
+    assert stage_weight_file(src, dest) == "skipped"
+
+
+def test_stage_models_to_local_falls_back_when_disk_is_tight(tmp_path, monkeypatch):
+    from h3_lora_studio import stage_models_to_local
+
+    drive = tmp_path / "drive" / "models"
+    local = tmp_path / "local" / "models"
+    (drive / "vae").mkdir(parents=True)
+    (drive / "vae" / "vae.safetensors").write_bytes(b"y" * (3 * 1024 * 1024))
+    monkeypatch.setattr(
+        "h3_lora_studio.shutil.disk_usage",
+        lambda _p: type("U", (), {"free": 100})(),
+    )
+    stats = stage_models_to_local(drive, local, min_free_bytes=2 * 1024 ** 3)
+    assert stats["drive_direct"] is True
+    assert not (local / "vae" / "vae.safetensors").exists()
+
+
+def test_build_studio_warmup_graph_is_one_step_tiny():
+    from h3_lora_studio import build_studio_warmup_graph
+    from h3_t2v import CANVAS_9_16_MIN
+
+    g = build_studio_warmup_graph("minimax_h3_fl2va_pruned_int8_convrot.safetensors")
+    assert g["20"]["class_type"] == "MiniMaxH3ImageToVideo"
+    assert "Picture 1" not in g["20"]["inputs"]["prompt"]
+    assert g["20"]["inputs"]["width"] == CANVAS_9_16_MIN[0]
+    assert g["20"]["inputs"]["height"] == CANVAS_9_16_MIN[1]
+    assert g["23"]["inputs"]["steps"] == 1
+    assert g["22"]["inputs"]["sampler_name"] == "euler"
+    assert "2" not in g
+
+
+def test_warmup_h3_engine_skips_when_stamped(tmp_path, monkeypatch):
+    from h3_lora_studio import warmup_h3_engine, warmup_stamp_path
+
+    stamp = warmup_stamp_path(tmp_path)
+    stamp.write_text("ok")
+    called = []
+    monkeypatch.setattr("h3_lora_studio._post_comfy_prompt", lambda *_a, **_k: called.append(1) or (None, "nope"))
+    assert warmup_h3_engine(tmp_path, 8188, "unet.safetensors") is True
+    assert called == []
+
+
+def test_restart_studio_comfy_clears_warmup_stamp(tmp_path, monkeypatch):
+    from h3_lora_studio import restart_studio_comfy, warmup_stamp_path
+
+    stamp = warmup_stamp_path(tmp_path)
+    stamp.write_text("ok")
+
+    class _P:
+        def __init__(self, *a, **k):
+            pass
+
+    monkeypatch.setattr("h3_lora_studio.subprocess.run", lambda *_a, **_k: None)
+    monkeypatch.setattr("h3_lora_studio.subprocess.Popen", _P)
+    monkeypatch.setattr("h3_lora_studio.time.sleep", lambda *_a, **_k: None)
+    monkeypatch.setattr("h3_lora_studio.wait_comfy_ready", lambda *_a, **_k: True)
+    restart_studio_comfy(tmp_path, port=8188)
+    assert not stamp.exists()
 
 
 def test_homecoming_story_twelve_clips_switch_loras(tmp_path):

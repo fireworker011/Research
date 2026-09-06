@@ -128,6 +128,21 @@ for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
     os.makedirs(f"{DRIVE_MODELS}/{sub}", exist_ok=True)
 os.makedirs(f"{DRIVE_ROOT}/output", exist_ok=True)
 os.makedirs(f"{DRIVE_ROOT}/input", exist_ok=True)
+# pip / HuggingFace / torch / Triton は Colab の消えるディスクではなく Drive に置く
+for sub in ["cache/hf/hub", "cache/hf/transformers", "cache/torch/inductor", "cache/triton", "cache/pip", "cache/xdg"]:
+    os.makedirs(f"{DRIVE_ROOT}/{sub}", exist_ok=True)
+os.environ["HF_HOME"] = f"{DRIVE_ROOT}/cache/hf"
+os.environ["HUGGINGFACE_HUB_CACHE"] = f"{DRIVE_ROOT}/cache/hf/hub"
+os.environ["HF_HUB_CACHE"] = f"{DRIVE_ROOT}/cache/hf/hub"
+os.environ["TRANSFORMERS_CACHE"] = f"{DRIVE_ROOT}/cache/hf/transformers"
+os.environ["TORCH_HOME"] = f"{DRIVE_ROOT}/cache/torch"
+os.environ["TORCHINDUCTOR_CACHE_DIR"] = f"{DRIVE_ROOT}/cache/torch/inductor"
+os.environ["TRITON_CACHE_DIR"] = f"{DRIVE_ROOT}/cache/triton"
+os.environ["PIP_CACHE_DIR"] = f"{DRIVE_ROOT}/cache/pip"
+os.environ["XDG_CACHE_HOME"] = f"{DRIVE_ROOT}/cache/xdg"
+os.environ["CUDA_MODULE_LOADING"] = "EAGER"
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 with open("/content/h3_paths.env", "w") as f:
     f.write(f"DRIVE_ROOT={DRIVE_ROOT}\n")
@@ -142,6 +157,8 @@ vram = props.total_memory / 1024 ** 3
 print("つながった Drive:", DRIVE_ROOT)
 print("動画の保存先:", f"{DRIVE_ROOT}/output")
 print("写真を置く場所:", f"{DRIVE_ROOT}/input")
+print("部品の保存先:", DRIVE_MODELS)
+print("キャッシュ（pip/torch）:", f"{DRIVE_ROOT}/cache")
 print("GPU:", torch.cuda.get_device_name(0), "メモリ:", round(vram, 1), "GB")
 if vram < 20:
     raise SystemExit("メモリが足りません。GPU を A100 にしてください。")
@@ -151,11 +168,12 @@ print("① 完了。次は②を実行してください。初回は待ちます
 
 MD2 = r"""## ② 部品を用意する（初回だけ長い）
 
-下のセルで、動画の土台と部品を Drive に入れます。普通の I2V / T2V ノートと同じ場所です。
+下のセルで、動画の土台と部品を **Google Drive に保存**します。生成のときは Drive を直接読まず、ローカル SSD に載せてから GPU に入れます（初回③で GPU が遊んで見えた原因は Drive FUSE の mmap）。
 
 - **初めて** … 20〜40分かかることがあります。途中で止まっても、もう一度押せば続きから入ります
-- **同じランタイムで2回目** … Drive にあるファイルは飛ばす。pip も飛ばす。エンジンが生きていればすぐ終わる
-- **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。Comfy の入れ直しと起動で数分
+- **同じランタイムで2回目** … Drive にあるファイルは飛ばす。ローカルに既にあればコピーも飛ばす。pip も飛ばす
+- **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。ローカルへコピー＋GPU 載せ＋Comfy 起動で数分
+- pip / torch / Triton のキャッシュも Drive の `cache/`。Colab の消えるディスクには置かない
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
 - 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
 
@@ -192,7 +210,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-follow"
+FETCH_REV = "h2-20260906-hotcache"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -306,7 +324,11 @@ from h3_lora_studio import (
     SITUATION_HELP, civitai_token, civitai_token_help, civitai_download_fallbacks,
     download_jobs_for, fetch_weight, load_catalog, missing_civitai_files,
     resolve_situation, situation_ids, comfy_alive, wait_comfy_ready,
+    apply_drive_cache_env, prepare_local_model_roots, stage_models_to_local,
+    model_dir_is_drive_link, link_model_dirs_to_drive, warmup_h3_engine,
+    clear_warmup_stamp,
 )
+apply_drive_cache_env(DRIVE_ROOT)
 
 print("今のシーン:", 今使うシーン)
 print(SITUATION_HELP[resolve_situation(今使うシーン)])
@@ -319,11 +341,13 @@ else:
     print("動画ソフトはすでにあります。更新はしません。")
 req = COMFY_DIR / "requirements.txt"
 pip_stamp = Path("/content/.h3_pip_ok")
+pip_cache = Path(os.environ.get("PIP_CACHE_DIR") or (DRIVE_ROOT / "cache" / "pip"))
+pip_cache.mkdir(parents=True, exist_ok=True)
 if pip_stamp.is_file():
     print("Python 部品は前回入れ済み。飛ばします。")
 elif req.is_file():
-    print("Python 部品を入れています（このランタイムの初回だけ）…")
-    sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    print("Python 部品を入れています（このランタイムの初回だけ。wheel は Drive の cache/pip）…")
+    sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req), "--cache-dir", str(pip_cache)])
     pip_stamp.write_text("ok", encoding="utf-8")
 
 def link_dir(link_path: Path, target: Path):
@@ -336,10 +360,17 @@ def link_dir(link_path: Path, target: Path):
 
 models_root = COMFY_DIR / "models"
 models_root.mkdir(parents=True, exist_ok=True)
-for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
-    link_dir(models_root / sub, DRIVE_MODELS / sub)
+# input / output は Drive のまま（写真と完成動画）。重みは FUSE mmap しない。
 link_dir(COMFY_DIR / "output", DRIVE_ROOT / "output")
 link_dir(COMFY_DIR / "input", DRIVE_ROOT / "input")
+if comfy_alive(PORT) and model_dir_is_drive_link(COMFY_DIR):
+    print("エンジンが Drive 直読みのままなので、一度止めてローカルに載せ直します…")
+    subprocess.run(["fuser", "-k", f"{PORT}/tcp"], check=False, capture_output=True)
+    time.sleep(2)
+    clear_warmup_stamp(COMFY_DIR)
+broke_link = prepare_local_model_roots(COMFY_DIR)
+if broke_link:
+    print("モデルフォルダをローカル SSD に切り替えました。")
 
 print("大きな土台を入れています（すでにあれば飛ばします）…")
 for url, dest in i2v_download_jobs(DRIVE_MODELS):
@@ -379,6 +410,20 @@ if skipped:
     print("一部スキップ:", ", ".join(skipped))
     print("今のシーンに不要なら③へ。必要なら Drive の models/loras に置いてください。②をもう一度回すだけでは取れないことがあります。")
 
+print("Drive の重みをローカル SSD に載せます（FUSE mmap だと初回の GPU が遊ります）…")
+staged = stage_models_to_local(DRIVE_MODELS, COMFY_DIR / "models")
+if staged.get("copied"):
+    print("コピーしたファイル:", len(staged["copied"]), "（", round(staged.get("bytes") or 0) / 1e9, "GB）")
+if staged.get("skipped"):
+    print("ローカル済み:", len(staged["skipped"]))
+if staged.get("drive_direct"):
+    print("空きが足りないので Drive 直読みに戻します。")
+    if comfy_alive(PORT):
+        subprocess.run(["fuser", "-k", f"{PORT}/tcp"], check=False, capture_output=True)
+        time.sleep(2)
+        clear_warmup_stamp(COMFY_DIR)
+    link_model_dirs_to_drive(COMFY_DIR, DRIVE_MODELS)
+
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 if comfy_alive(PORT):
@@ -397,8 +442,13 @@ else:
         raise SystemExit("起動に失敗しました。ランタイムを再起動して①からやり直してください。")
     print("起動できました")
 
+diff = list((COMFY_DIR / "models" / "diffusion_models").glob("*fl2va*"))
+unet_name = diff[0].name if diff else ""
+if unet_name:
+    warmup_h3_engine(COMFY_DIR, PORT, unet_name)
+
 print()
-print("② 完了。次は③でシーンを選んで実行してください。")
+print("② 完了。次は③でシーンを選んで実行してください。1本目から GPU 本体の計算に入ります。")
 '''
 
 MD3 = r"""## ③ 動画を作る
@@ -507,11 +557,11 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or not getattr(_h3_studio, "validate_story_follow", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -536,10 +586,12 @@ with open("/content/h3_paths.env") as f:
         env[k] = v
 COMFY_DIR = Path(env["COMFY_DIR"])
 DRIVE_ROOT = Path(env["DRIVE_ROOT"])
+DRIVE_MODELS = Path(env.get("DRIVE_MODELS") or (DRIVE_ROOT / "models"))
 OUT = COMFY_DIR / "output"
 PORT = 8188
 STUDIO = Path("/content/h3-lora-studio")
 SEED = 42
+apply_drive_cache_env(DRIVE_ROOT)
 
 SITUATION = resolve_situation(やりたいシーン)
 MODE = resolve_mode(作り方)
@@ -707,6 +759,7 @@ unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetenso
 
 if not VANILLA:
     lora_dir = COMFY_DIR / "models" / "loras"
+    drive_lora = DRIVE_MODELS / "loras"
     catalog_now = load_catalog(STUDIO)
     id_list = [str(x.get("id") or "") for x in stack if x.get("id")]
     if STORY:
@@ -714,18 +767,19 @@ if not VANILLA:
         print(str(int(DURATION)) + "秒分の部品を確認します:", ", ".join(id_list))
     need = missing_stack_files(stack, lora_dir)
     if STORY:
-        jobs_all = download_jobs_for(id_list, lora_dir, catalog=catalog_now)
+        jobs_all = download_jobs_for(id_list, drive_lora, catalog=catalog_now)
         need = [str(dest.name) for url, dest, row in jobs_all if not dest.is_file() or dest.stat().st_size < 1000]
     if need:
-        print("足りない部品を入れます:", ", ".join(need))
+        print("足りない部品を Drive に入れます:", ", ".join(need))
         token = civitai_token("")
-        jobs = download_jobs_for(id_list, lora_dir, catalog=catalog_now)
+        jobs = download_jobs_for(id_list, drive_lora, catalog=catalog_now)
         for url, dest, row in jobs:
             if dest.name not in need and dest.name not in [Path(n).name for n in need]:
                 continue
             auth = "civitai" if str(row.get("source")) == "civitai" else ""
             fallbacks = civitai_download_fallbacks(row) if auth else None
             fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)
+        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / "models")
     stack, replaced = apply_stack_fallbacks(stack, lora_dir, catalog_now)
     if replaced:
         print("アナル専用部品が無かったので総合えっちで代用します。Drive の models/loras に H3_anal_penetration_v1.safetensors を置けば専用になります。")
@@ -743,6 +797,10 @@ if not VANILLA:
         unseen = comfy_missing_loras(stack, obj)
         if unseen:
             print("まだ見えていないファイル:", ", ".join(unseen), "（このまま試します）")
+        warmup_h3_engine(COMFY_DIR, PORT, unet)
+
+if not 試し打ちだけ and unet:
+    warmup_h3_engine(COMFY_DIR, PORT, unet)
 
 first_name = None
 inp = COMFY_DIR / "input"

@@ -594,6 +594,308 @@ def already_have_weight(path: Path, *, min_bytes: int = 1_000_000) -> bool:
     return looks_like_safetensors(path, min_bytes=min_bytes)
 
 
+HOT_MODEL_SUBS = ("diffusion_models", "text_encoders", "vae", "loras")
+DRIVE_CACHE_SUBS = {
+    "HF_HOME": "cache/hf",
+    "HUGGINGFACE_HUB_CACHE": "cache/hf/hub",
+    "HF_HUB_CACHE": "cache/hf/hub",
+    "TRANSFORMERS_CACHE": "cache/hf/transformers",
+    "TORCH_HOME": "cache/torch",
+    "TORCHINDUCTOR_CACHE_DIR": "cache/torch/inductor",
+    "TRITON_CACHE_DIR": "cache/triton",
+    "PIP_CACHE_DIR": "cache/pip",
+    "XDG_CACHE_HOME": "cache/xdg",
+}
+WARMUP_STAMP_NAME = ".h3_warmup_ok"
+_COPY_CHUNK = 16 * 1024 * 1024
+
+
+def is_under_drive(path: Path | str) -> bool:
+    try:
+        text = str(Path(path).resolve()).replace("\\", "/")
+    except Exception:
+        text = str(path).replace("\\", "/")
+    return "/drive/MyDrive/" in text or text.startswith("/content/drive/")
+
+
+def apply_drive_cache_env(drive_root: Path | str) -> dict[str, str]:
+    """Keep pip / HuggingFace / torch / Triton caches on Drive. Do not fill Colab ephemeral disk."""
+    root = Path(drive_root)
+    applied: dict[str, str] = {}
+    for key, rel in DRIVE_CACHE_SUBS.items():
+        dest = root / rel
+        dest.mkdir(parents=True, exist_ok=True)
+        os.environ[key] = str(dest)
+        applied[key] = str(dest)
+    os.environ["CUDA_MODULE_LOADING"] = "EAGER"
+    os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+    applied["CUDA_MODULE_LOADING"] = "EAGER"
+    return applied
+
+
+def warmup_stamp_path(comfy_dir: Path | str) -> Path:
+    return Path(comfy_dir) / WARMUP_STAMP_NAME
+
+
+def clear_warmup_stamp(comfy_dir: Path | str) -> None:
+    warmup_stamp_path(comfy_dir).unlink(missing_ok=True)
+
+
+def model_dir_is_drive_link(comfy_dir: Path | str) -> bool:
+    """True when Comfy would mmap weights through Google Drive FUSE."""
+    probe = Path(comfy_dir) / "models" / "text_encoders"
+    if probe.is_symlink():
+        return True
+    if probe.exists() and is_under_drive(probe):
+        return True
+    return False
+
+
+def prepare_local_model_roots(comfy_dir: Path | str) -> bool:
+    """Comfy model folders become real local dirs. Returns True if a Drive symlink was removed."""
+    changed = False
+    models = Path(comfy_dir) / "models"
+    models.mkdir(parents=True, exist_ok=True)
+    for sub in HOT_MODEL_SUBS:
+        dest = models / sub
+        if dest.is_symlink() or dest.is_file():
+            dest.unlink()
+            changed = True
+        elif dest.is_dir() and is_under_drive(dest):
+            try:
+                dest.rmdir()
+            except OSError:
+                pass
+            changed = True
+        dest.mkdir(parents=True, exist_ok=True)
+    return changed
+
+
+def _iter_drive_weights(drive_models: Path) -> list[tuple[str, Path]]:
+    rows: list[tuple[str, Path]] = []
+    for sub in HOT_MODEL_SUBS:
+        folder = drive_models / sub
+        if not folder.is_dir():
+            continue
+        for path in sorted(folder.iterdir()):
+            if path.name.startswith(".") or path.suffix != ".safetensors":
+                continue
+            if path.name.endswith(".part"):
+                continue
+            if path.is_file():
+                rows.append((sub, path))
+    return rows
+
+
+def stage_weight_file(src: Path, dest: Path) -> str:
+    """Sequential copy Drive → local NVMe. Never Path.read_bytes() on GB files."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if not src.is_file():
+        return "missing"
+    size = src.stat().st_size
+    if dest.is_symlink():
+        dest.unlink()
+    if dest.is_file() and dest.stat().st_size == size and size > 0 and not is_under_drive(dest):
+        return "skipped"
+    tmp = dest.with_name(dest.name + ".part")
+    print(f"ローカルへコピー中: {src.name} ({size / 1e9:.2f} GB)…", flush=True)
+    with open(src, "rb") as inf, open(tmp, "wb") as out:
+        shutil.copyfileobj(inf, out, length=_COPY_CHUNK)
+    if not tmp.is_file() or tmp.stat().st_size != size:
+        tmp.unlink(missing_ok=True)
+        return "missing"
+    tmp.replace(dest)
+    return "copied"
+
+
+def stage_models_to_local(
+    drive_models: Path | str,
+    local_models: Path | str,
+    *,
+    min_free_bytes: int = 2 * 1024 ** 3,
+) -> dict[str, Any]:
+    """Drive stays the durable copy. Comfy reads local SSD so the first gen does not stall on FUSE mmap."""
+    drive_root = Path(drive_models)
+    local_root = Path(local_models)
+    stats: dict[str, Any] = {
+        "copied": [],
+        "skipped": [],
+        "missing": [],
+        "bytes": 0,
+        "drive_direct": False,
+    }
+    pairs: list[tuple[Path, Path, int]] = []
+    for sub, src in _iter_drive_weights(drive_root):
+        dest = local_root / sub / src.name
+        try:
+            size = src.stat().st_size
+        except OSError:
+            stats["missing"].append(src.name)
+            continue
+        if (
+            dest.is_file()
+            and not dest.is_symlink()
+            and dest.stat().st_size == size
+            and size > 0
+            and not is_under_drive(dest)
+        ):
+            stats["skipped"].append(src.name)
+            continue
+        pairs.append((src, dest, size))
+    need = sum(row[2] for row in pairs)
+    try:
+        free = shutil.disk_usage(str(local_root if local_root.exists() else local_root.parent)).free
+    except OSError:
+        free = 0
+    if pairs and free < need + min_free_bytes:
+        stats["drive_direct"] = True
+        print(
+            "ローカル空きが足りないので Drive 直読みにします。"
+            f" 必要 {need / 1e9:.1f} GB / 空き {free / 1e9:.1f} GB"
+        )
+        return stats
+    for src, dest, size in pairs:
+        result = stage_weight_file(src, dest)
+        if result == "copied":
+            stats["copied"].append(src.name)
+            stats["bytes"] += size
+        elif result == "skipped":
+            stats["skipped"].append(src.name)
+        else:
+            stats["missing"].append(src.name)
+    return stats
+
+
+def link_model_dirs_to_drive(comfy_dir: Path | str, drive_models: Path | str) -> None:
+    """Fallback only: mmap through FUSE. Prefer stage_models_to_local."""
+    models = Path(comfy_dir) / "models"
+    drive = Path(drive_models)
+    models.mkdir(parents=True, exist_ok=True)
+    for sub in HOT_MODEL_SUBS:
+        dest = models / sub
+        target = drive / sub
+        target.mkdir(parents=True, exist_ok=True)
+        if dest.is_symlink() or dest.is_file():
+            dest.unlink()
+        elif dest.is_dir():
+            shutil.rmtree(dest)
+        dest.symlink_to(target)
+
+
+def build_studio_warmup_graph(
+    unet: str,
+    *,
+    duration_s: float = 0.2,
+    has_audio_decode: bool = True,
+) -> dict[str, Any]:
+    """1-step tiny T2V. Loads UNET + CLIP + VAE into VRAM so clip 1 is not the cold start."""
+    from h3_t2v import CANVAS_9_16_MIN, build_t2v_graph
+
+    g = build_t2v_graph(
+        prompt="Vertical 9:16. An adult woman over 21 blinks once. Photoreal. No speech.",
+        unet=str(unet),
+        lora_name=None,
+        lora_strength=0.0,
+        width=int(CANVAS_9_16_MIN[0]),
+        height=int(CANVAS_9_16_MIN[1]),
+        duration_s=float(duration_s),
+        seed=1,
+        steps=1,
+        filename_prefix="video/_h3_warmup",
+        has_lora_loader=False,
+        has_audio_decode=has_audio_decode,
+    )
+    if "22" in g:
+        g["22"]["inputs"]["sampler_name"] = "euler"
+    if "23" in g:
+        g["23"]["inputs"]["scheduler"] = "simple"
+        g["23"]["inputs"]["steps"] = 1
+    return g
+
+
+def _post_comfy_prompt(port: int, graph: dict[str, Any]) -> tuple[dict[str, Any] | None, str | None]:
+    body = {"prompt": graph, "client_id": "h3-warmup"}
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{int(port)}/prompt",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read().decode()), None
+    except urllib.error.HTTPError as exc:
+        return None, exc.read().decode(errors="replace")[:2000]
+    except Exception as exc:
+        return None, str(exc)
+
+
+def _wait_comfy_prompt(port: int, prompt_id: str, *, timeout: float = 900) -> bool:
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        try:
+            with urllib.request.urlopen(
+                f"http://127.0.0.1:{int(port)}/history/{prompt_id}", timeout=60
+            ) as resp:
+                hist = json.loads(resp.read().decode())
+        except Exception:
+            time.sleep(2)
+            continue
+        entry = hist.get(prompt_id) or {}
+        st = entry.get("status") or {}
+        if st.get("completed") or entry.get("outputs"):
+            return st.get("status_str") != "error"
+        for msg in st.get("messages") or []:
+            if isinstance(msg, list) and msg and msg[0] == "execution_error":
+                return False
+        time.sleep(2)
+    return False
+
+
+def _delete_warmup_videos(comfy_dir: Path | str) -> None:
+    root = Path(comfy_dir) / "output"
+    if not root.is_dir():
+        return
+    for hit in root.rglob("*"):
+        if hit.is_file() and "_h3_warmup" in hit.name:
+            hit.unlink(missing_ok=True)
+
+
+def warmup_h3_engine(
+    comfy_dir: Path | str,
+    port: int,
+    unet: str,
+    *,
+    force: bool = False,
+) -> bool:
+    """Load the H3 stack onto the GPU during ②. Clip 1 then starts with VRAM already hot."""
+    stamp = warmup_stamp_path(comfy_dir)
+    if stamp.is_file() and not force:
+        print("GPU は準備済み。土台の載せ直しは飛ばします。")
+        return True
+    if not str(unet or "").strip():
+        return False
+    print("GPU に土台を載せています（初回だけ。Drive ではなくローカルから）…")
+    for duration in (0.2, 4.0):
+        graph = build_studio_warmup_graph(unet, duration_s=duration, has_audio_decode=True)
+        res, err = _post_comfy_prompt(int(port), graph)
+        if err or not res or not res.get("prompt_id"):
+            if duration == 4.0:
+                print("GPU 事前載せをスキップ:", (err or "no prompt_id")[:200])
+                return False
+            continue
+        if _wait_comfy_prompt(int(port), str(res["prompt_id"])):
+            stamp.write_text("ok", encoding="utf-8")
+            _delete_warmup_videos(comfy_dir)
+            print("GPU 準備完了。③の1本目から本体の計算に入れます。")
+            return True
+        if duration == 4.0:
+            print("GPU 事前載せに失敗。③の1本目で土台を載せます。")
+            return False
+    return False
+
+
 def quote_http_url(url: str) -> str:
     """Encode non-ASCII redirect paths. Civitai 400s on Chinese filenames otherwise."""
     parts = urllib.parse.urlsplit(url)
@@ -967,10 +1269,15 @@ def fetch_comfy_object_info(port: int = 8188, *, timeout: float = COMFY_OBJECT_I
 
 def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
     """New LoRAs are invisible until Comfy restarts."""
+    clear_warmup_stamp(comfy_dir)
     subprocess.run(["fuser", "-k", f"{port}/tcp"], check=False, capture_output=True)
     time.sleep(2)
     log = Path("/content/comfyui.log")
-    log.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        log.parent.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        log = Path(comfy_dir) / "comfyui.log"
+        log.parent.mkdir(parents=True, exist_ok=True)
     log_f = open(log, "a", buffering=1)
     cmd = [
         sys.executable,

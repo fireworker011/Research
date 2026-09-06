@@ -14,6 +14,8 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 ノートを動かさない。ココナラ homage ノートの Turbo 既定は変えない。
 
+重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②がローカル SSD に載せてから GPU に載せる（初回③で GPU が遊んで見えた原因は FUSE）。空きが足りないときだけ Drive 直読みに戻す。
+
 ## エロなし（速い＋綺麗）
 
 速さ LoRA と画質 LoRA を分ける。同時オンは **Turbo 1 + 画質 0〜1**。
