@@ -95,6 +95,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert {
         "anal_penetration",
         "anal_closeup",
+        "anal_fingering",
         "oral",
         "futa_blowjob",
         "futa_sex",
@@ -324,6 +325,7 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
         "facial",
         "footjob",
         "fingering",
+        "anal_fingering",
         "masturbation",
         "remote_orgasm",
         "pussy_spread",
@@ -349,6 +351,7 @@ def test_pose_aftercare_and_solo_act_stacks():
         "missionary-pov-h3",
         "hmcumshot-v2",
         "fingering-h3",
+        "thumbinbutt-h3",
         "hmmasturbation-h3",
         "footjob-h3",
         "remote-orgasm-h3",
@@ -427,6 +430,44 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "Picture 1" not in fingering["prompt"]
     unload_f = {r["id"] for r in fingering["unload"]}
     assert "hmmasturbation-h3" in unload_f
+    assert "thumbinbutt-h3" in unload_f
+
+    anal_finger = select_loras(profile_name="anal_fingering", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in anal_finger["stack"]] == ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"]
+    assert anal_finger["stack"][0]["trigger"] == "thum1n8utt"
+    assert anal_finger["sampler"]["steps"] == 8
+    assert anal_finger["turbo"] is True
+    assert "thum1n8utt" in anal_finger["prompt"].lower()
+    assert "own right thumb" in anal_finger["prompt"].lower()
+    assert "anus" in anal_finger["prompt"].lower()
+    assert "adult man" not in anal_finger["prompt"].lower()
+    assert "the man" not in anal_finger["prompt"].lower()
+    assert "Picture 1" not in anal_finger["prompt"]
+    assert "fingering-h3" not in [r["id"] for r in anal_finger["stack"]]
+    assert "anal-penetration-coachbate" not in [r["id"] for r in anal_finger["stack"]]
+    assert "hmnsfw-aio-v25" not in [r["id"] for r in anal_finger["stack"]]
+    assert "penis-lora-h3" not in [r["id"] for r in anal_finger["stack"]]
+    unload_af = {r["id"] for r in anal_finger["unload"]}
+    assert "fingering-h3" in unload_af
+    assert "anal-penetration-coachbate" in unload_af
+    assert "hmmasturbation-h3" in unload_af
+    anal_finger_i2v = select_loras(profile_name="anal_fingering", mode="i2v", prompt_arg="（シーン）")
+    assert "<Picture 1>" in anal_finger_i2v["prompt"]
+    assert "thum1n8utt" in anal_finger_i2v["prompt"].lower()
+    assert "adult man" not in anal_finger_i2v["prompt"].lower()
+
+    thumb_row = by_id["thumbinbutt-h3"]
+    assert "t2v" in thumb_row["modes"]
+    assert "i2v" in thumb_row["modes"]
+    assert thumb_row["arch"] == "fl2va"
+    assert thumb_row["adult"] is True
+    assert thumb_row["source"] == "civitai"
+    assert thumb_row["trigger"] == "thum1n8utt"
+    assert thumb_row["civitai_model_id"] == 2904444
+    assert thumb_row["civitai_version_id"] == 3284492
+    assert thumb_row["civitai_file_id"] == 3168734
+    assert thumb_row["filename"] == "H3_ThumbInButt.safetensors"
+    assert " " not in thumb_row["filename"]
 
     solo = select_loras(profile_name="masturbation", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in solo["stack"]] == ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"]
@@ -435,6 +476,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "fingering-h3" not in [r["id"] for r in solo["stack"]]
     unload_m = {r["id"] for r in solo["unload"]}
     assert "fingering-h3" in unload_m
+    assert "thumbinbutt-h3" in unload_m
 
     foot = select_loras(profile_name="footjob", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in foot["stack"]] == ["footjob-h3", "penis-lora-h3", "larry-v4"]

@@ -131,6 +131,8 @@ def test_japanese_form_labels():
     assert friendly_lora("synth-pussy-h3") == "穴の見え方"
     assert resolve_situation("アナル挿入（画質）") == "anal_penetration"
     assert resolve_situation("アナル舐め・指") == "anal_closeup"
+    assert resolve_situation("アナル指入れ") == "anal_fingering"
+    assert resolve_situation("アナル指いれ") == "anal_fingering"
     assert resolve_situation("試し打ち") == "preview"
     assert resolve_situation("汎用エロ") == "general_sex"
     assert resolve_situation("汎用エロ（女体）") == "general_sex"
@@ -192,10 +194,16 @@ def test_japanese_form_labels():
     assert "顔射" in facial
     assert "後射精" in facial
     assert "facial-cumshot-h3" not in facial
+    anal_finger = explain_choice("アナル指入れ", "写真から（1枚必要）")
+    assert "アナル指入れ" in anal_finger or "ThumbInButt" in anal_finger
+    assert "指入れ（膣）" in anal_finger or "アナルセックス" in anal_finger
+    assert "thumbinbutt-h3" not in anal_finger
+    assert "写真" in anal_finger
     assert friendly_lora("cowgirl-position-h3") == "騎乗"
     assert friendly_lora("doggy-h3") == "後背位"
     assert friendly_lora("hmcumshot-v2") == "射精"
     assert friendly_lora("facial-cumshot-h3") == "顔射"
+    assert friendly_lora("thumbinbutt-h3") == "アナル指入れ"
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
 
 
@@ -316,15 +324,18 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in src
     assert "h3-lora-studio/profiles/after_ejaculation.json" in src
     assert "h3-lora-studio/profiles/facial.json" in src
+    assert "h3-lora-studio/profiles/anal_fingering.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-facial"' in src
+    assert 'FETCH_REV = "h2-20260906-anal-finger"' in src
     assert "フェラ（女体）" in src
     assert "汎用エロ（女体）" in src
     assert "顔射（女体）" in src
+    assert "アナル指入れ" in src
     assert "騎乗位（女体）" in blob
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
-    assert "h2-20260906-facial" in blob
+    assert "アナル指入れ" in blob
+    assert "h2-20260906-anal-finger" in blob
 
 
 def test_format_job_fail_t2v_does_not_ask_for_jpg():
@@ -425,6 +436,7 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "larry-v4"]
     assert situation_ids("facial") == ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"]
     assert situation_ids("fingering") == ["fingering-h3", "synth-pussy-h3", "larry-v4"]
+    assert situation_ids("anal_fingering") == ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("masturbation") == ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("footjob") == ["footjob-h3", "penis-lora-h3", "larry-v4"]
     assert situation_ids("remote_orgasm") == ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"]
@@ -446,6 +458,19 @@ def test_facial_download_job_uses_hf_and_clean_filename(tmp_path):
     encoded = quote_http_url(url)
     assert " " not in encoded.split("?")[0]
     assert "cmst.safetensors" in encoded
+
+
+def test_thumbinbutt_download_job_uses_civitai_file_id_and_clean_filename(tmp_path):
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    jobs = download_jobs_for(["thumbinbutt-h3"], tmp_path, catalog=catalog)
+    assert len(jobs) == 1
+    url, dest, row = jobs[0]
+    assert "fileId=3168734" in url
+    assert "3284492" in url
+    assert dest.name == "H3_ThumbInButt.safetensors"
+    assert " " not in dest.name
+    assert row["id"] == "thumbinbutt-h3"
+    assert row["trigger"] == "thum1n8utt"
 
 
 def test_studio_clip_plan_chain_stays_under_sixteen():

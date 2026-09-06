@@ -639,7 +639,31 @@
         0.8,
         1.0
       ],
-      "note": "Solo fingering FL2VA. No trigger. Describe the finger motion. Do not stack with HMMasturbation."
+      "note": "Solo fingering FL2VA. Vaginal / masturbation dataset. No trigger. Describe the finger motion. Not anal; use thumbinbutt-h3. Do not stack with HMMasturbation."
+    },
+    {
+      "id": "thumbinbutt-h3",
+      "filename": "H3_ThumbInButt.safetensors",
+      "repo": "civitai:2904444",
+      "file": "MiniMax H3 - ThumbInButt.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "thum1n8utt",
+      "default_strength": 0.85,
+      "source": "civitai",
+      "civitai_model_id": 2904444,
+      "civitai_version_id": 3284492,
+      "civitai_file_id": 3168734,
+      "strength_range": [
+        0.8,
+        1.0
+      ],
+      "note": "Thumb-in-anus I2V. Trigger thum1n8utt first. Author captions are male; studio rewrites to a solo adult woman 21+ inserting her own right thumb. I2V recommended. T2V experimental. Dest filename drops spaces. Do not stack with fingering-h3, CoachBate, AIO, HMMasturbation, or penis helper."
     },
     {
       "id": "hmmasturbation-h3",
