@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-story120"' in src
+    assert 'FETCH_REV = "h2-20260906-framing"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -392,7 +392,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-story120" in blob
+    assert "h2-20260906-framing" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "中出し（女体）" in blob
@@ -913,7 +913,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
         "oral",
         "oral",
         "futa_visible",
-        "cunnilingus_futa",
+        "futa_visible",
         "cunnilingus_futa",
         "futa_visible",
         "futa_masturbation",
@@ -923,6 +923,11 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
+    assert sum(1 for c in story["clips"] if c["situation"] == "cunnilingus_futa") == 1
+    assert "Close-up" in story["clips"][5]["prompt"]
+    assert "mini breasts and full bodies" not in story["clips"][5]["prompt"]
+    assert "Do not pull back to full bodies" in story["clips"][5]["prompt"]
+    assert "Not a crotch close-up" in story["clips"][4]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -1026,6 +1031,12 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         "oral_creampie",
     ]
     assert [c["situation"] for c in story["clips"]] == want
+    assert "hairless pussy readable" not in "".join(c["prompt"] for c in story["clips"])
+    assert all(
+        "CAMERA:" in c["prompt"]
+        for c in story["clips"]
+        if c["situation"] in {"oral", "oral_creampie"}
+    )
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
