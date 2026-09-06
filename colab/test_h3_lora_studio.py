@@ -370,15 +370,18 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-framing"' in src
+    assert 'FETCH_REV = "h2-20260906-commute"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
     assert "洗い物120秒（専用）" in src
+    assert "登校120秒（専用）" in src
     assert "prepare_story_clip" in src
     assert "カット編集" in src
     assert "h3-lora-studio/stories/homecoming-90s.json" in src
     assert "h3-lora-studio/stories/dishes-90s.json" in src
+    assert "h3-lora-studio/stories/commute-120s.json" in src
+    assert 'if STORY:\n    w, h = int(planned0["width"]), int(planned0["height"])' in src
     assert 'FILENAME_PREFIX = "video/h3_" + str(STORY.get("id") or "story")' in src
     assert "input/dishes-90s/" in src
     assert "h3-lora-studio/profiles/futa_visible.json" in src
@@ -392,9 +395,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-framing" in blob
+    assert "h2-20260906-commute" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
+    assert "登校120秒（専用）" in blob
+    assert "input/commute-120s/" in src
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
@@ -1078,5 +1083,104 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     assert with_still["mode"] == "i2v"
     assert with_still["first_kind"] == "still"
     assert "Picture 1" in with_still["prompt"]
+
+
+def test_commute_story_eight_clips_landscape(tmp_path):
+    from h3_lora_studio import (
+        is_story,
+        load_story,
+        prepare_story_clip,
+        situation_ids,
+        resolve_situation,
+        story_canvas_wh,
+        studio_sys_path,
+    )
+
+    studio_sys_path()
+    from select_loras import forbidden_hits
+
+    assert resolve_situation("登校120秒（専用）") == "commute-120s"
+    assert resolve_situation("朝〜正門120秒（専用）") == "commute-120s"
+    assert is_story("登校120秒（専用）")
+    assert is_story("commute-120s")
+    ids = situation_ids("commute-120s")
+    assert ids == [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+    ]
+    assert "cumouf-h3" not in ids
+    story = load_story("commute-120s")
+    assert story["duration_s"] == 120
+    assert story["clip_s"] == 15
+    assert story["min_age"] == 22
+    assert len(story["clips"]) == 8
+    assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
+    assert story_canvas_wh(story) == (1024, 576)
+    assert story.get("seamless") is False
+    assert story.get("stills_dir") == "commute-120s"
+    want = [
+        "futa_visible",
+        "futa_visible",
+        "oral",
+        "oral",
+        "futa_visible",
+        "futa_visible",
+        "oral",
+        "futa_visible",
+    ]
+    assert [c["situation"] for c in story["clips"]] == want
+    assert [float(c["duration_s"]) for c in story["clips"]] == [15.0] * 8
+    prev = None
+    for i, clip in enumerate(story["clips"]):
+        hits = forbidden_hits(clip["prompt"])
+        assert hits == [], hits
+        assert "schoolgirl" not in clip["prompt"].lower()
+        assert "15," not in clip["prompt"]
+        assert "woman, 15" not in clip["prompt"].lower()
+        assert "Adult 22" in clip["prompt"] or "woman, 22" in clip["prompt"]
+        assert "Adult university" in clip["prompt"]
+        assert "Not a high school" in clip["prompt"]
+        assert "CAST LOCK" in clip["prompt"]
+        assert "15-second take" in clip["prompt"]
+        assert "Do not pack this into 10 seconds" in clip["prompt"]
+        if i == 0 or i >= 4:
+            assert "Sayaka = NOT IN FRAME" in clip["prompt"] or "NOT IN FRAME" in clip["prompt"]
+        if i >= 4:
+            assert "She stayed at home" in clip["prompt"] or "Home." in clip["prompt"] or "NOT IN THIS CLIP" in clip["prompt"]
+        planned = prepare_story_clip(
+            story,
+            i,
+            last_frame="h3_chain_0.png",
+            stills_dir=tmp_path,
+            prev_situation=prev,
+        )
+        prev = planned["situation"]
+        assert planned["mode"] == "t2v"
+        assert planned["first_kind"] == "t2v"
+        assert "Picture 1" not in planned["prompt"]
+        assert planned["missing_still"]
+        assert planned["width"] == 1024
+        assert planned["height"] == 576
+        assert planned["duration_s"] == 15
+        if i > 0:
+            assert planned["stack_changed"] == (want[i] != want[i - 1])
+        stack_ids = [row["id"] for row in planned["stack"]]
+        if planned["situation"] == "oral":
+            assert stack_ids[0] == "blowjob-h3"
+            assert "cumouf-h3" not in stack_ids
+        if planned["situation"] == "futa_visible":
+            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
+            assert planned["cfg"]["turbo"] is False
+    assert "No classroom" in story["clips"][-1]["prompt"]
+    assert "No going home" in story["clips"][-1]["prompt"]
+    (tmp_path / "01-hall.jpg").write_bytes(b"fake-jpg")
+    with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
+    assert with_still["mode"] == "i2v"
+    assert with_still["first_kind"] == "still"
+    assert "Picture 1" in with_still["prompt"]
+    assert with_still["width"] == 1024
+    assert with_still["height"] == 576
 
 

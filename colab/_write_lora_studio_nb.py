@@ -61,6 +61,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
 | 帰宅120秒（専用） | 玄関フェラ→トイレクンニ寄り→口内。10×12のカット | クンニ LoRA は寄り1本。入室・退出は歩行部品。576×1024 |
 | 洗い物120秒（専用） | シンク洗い物＋プリン。アヤが床で口。10×12のカット | サヤカはシンク固定。レイは椅子で竿。入室と着席は別本。フェラは60秒以降。口内は CUMOUF |
+| 登校120秒（専用） | 朝〜大学正門。15秒×8本。16:9 全身 | サヤカは家だけ。フェラは玄関と路地の2本。授業は次の話 |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -168,7 +169,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -183,7 +184,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-framing"
+FETCH_REV = "h2-20260906-commute"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -248,6 +249,7 @@ studio_files = [
     "h3-lora-studio/profiles/cunnilingus_futa.json",
     "h3-lora-studio/stories/homecoming-90s.json",
     "h3-lora-studio/stories/dishes-90s.json",
+    "h3-lora-studio/stories/commute-120s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -333,7 +335,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s", "dishes-90s"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s", "dishes-90s", "commute-120s"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -404,6 +406,7 @@ MD3 = r"""## ③ 動画を作る
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **帰宅120秒（専用）** … 10秒×12本のカット編集。クンニ LoRA は寄りの1本だけ。入室・キス退出は歩行部品。写真は `input/homecoming-90s/` の 01〜12（`11-lick.jpg` は舌と穴の寄り）
 - **洗い物120秒（専用）** … 10秒×12本のカット編集。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降。口内は CUMOUF。写真は `input/dishes-90s/` の 01〜12（任意。01〜09は従来のまま）
+- **登校120秒（専用）** … 第1話。朝〜大学正門。15秒×8本。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業・下校は次の話。写真は `input/commute-120s/` の 01〜08（16:9）
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
 - **アナル舐め・指** … 女同士。男なし。動きの本線はアナル指入れ
@@ -432,7 +435,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
@@ -441,7 +444,7 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 写真ファイル = "auto"  #@param {type:"string"}
 #@markdown 秒数。1本は 4〜15。20〜120秒は下の「つなぐ」を選ぶ。
 秒数 = 10  #@param {type:"number"}
-#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。帰宅・洗い物の専用はカット編集。
+#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。専用ストーリーはカット編集。
 長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
 #@markdown ### つなぐときだけ（任意）
 #@markdown 20秒は2本、120秒は12本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
@@ -484,7 +487,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "dishes-90s" not in getattr(_h3_studio, "STORY_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "commute-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -533,14 +536,15 @@ print()
 if is_story(やりたいシーン):
     STORY = load_story(SITUATION, studio_root=STUDIO)
     DURATION = float(STORY.get("duration_s") or 120)
-    CLIPS = [float(STORY.get("clip_s") or 10)] * len(STORY["clips"])
+    CLIPS = [float(c.get("duration_s") or STORY.get("clip_s") or 10) for c in STORY["clips"]]
     CHAIN = True
     VANILLA = False
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
     print(str(STORY.get("title_ja") or STORY.get("id")), "専用。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の専用文で部品を切り替えます。")
     print("カット編集です。最後のコマからは続けません（再現優先）。")
-    print("画面は 576x1024（9:16）固定。")
+    cv = STORY.get("canvas") or {}
+    print("画面は", int(cv.get("width") or 576), "x", int(cv.get("height") or 1024), "（", str(cv.get("aspect") or "9:16"), "）固定。1本", int(STORY.get("clip_s") or CLIPS[0]), "秒。")
     print("各本の写真（任意）:", STORY_STILLS)
     for c in STORY["clips"]:
         print(" ", c.get("still") or "（写真なし）", c.get("label") or "")
@@ -642,7 +646,7 @@ print("…")
 print()
 
 if STORY:
-    w, h = canvas_for_aspect("9:16")
+    w, h = int(planned0["width"]), int(planned0["height"])
 elif 画面の向き == "縦（スマホ）":
     w, h = canvas_for_aspect("9:16")
 elif 画面の向き == "横":
@@ -651,7 +655,10 @@ elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
 print("画面サイズ:", w, "x", h, " / 秒数:", int(DURATION), " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
 if CHAIN:
-    print("1本で 16秒以上は作りません。画質を保ったまま 10秒ずつつなぎます。")
+    if STORY:
+        print("カット編集。1本", int(CLIPS[0]), "秒 ×", len(CLIPS), "本。1本で 16秒以上は作りません。")
+    else:
+        print("1本で 16秒以上は作りません。画質を保ったまま 10秒ずつつなぎます。")
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt("" if has_i2v_lock(文章) else 文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
@@ -924,6 +931,8 @@ else:
             if planned.get("stack_changed"):
                 print("部品を切り替えます:", planned["label"], planned["situation"])
                 comfy_free(PORT)
+            w, h = int(planned["width"]), int(planned["height"])
+            CLIP_DURATION = float(planned.get("duration_s") or CLIP_DURATION)
             print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack])
         else:
             GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
@@ -953,7 +962,7 @@ else:
             first_name = stage_image_into_input(frame, inp)
     final = clip_paths[0]
     if len(clip_paths) > 1:
-        final = concat_studio_clips(clip_paths, OUT / ("h3_chain_" + str(int(DURATION)) + "s.mp4"))
+        final = concat_studio_clips(clip_paths, OUT / (("h3_" + str(STORY.get("id")) + "_concat.mp4") if STORY else ("h3_chain_" + str(int(DURATION)) + "s.mp4")))
         print("つなぎ完了:", final)
         if STORY:
             print("カット編集です。クリップの境はシームレスではありません。")
