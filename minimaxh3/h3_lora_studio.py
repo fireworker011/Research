@@ -132,6 +132,15 @@ SITUATION_DOWNLOAD = {
         "larry-v4",
         "cumouf-h3",
     ],
+    "sunday-120s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "hmnsfw-aio-v25",
+        "synth-pussy-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -201,6 +210,9 @@ SITUATION_JA = {
     "布団120秒（専用）": "futon-120s",
     "和室120秒（専用）": "futon-120s",
     "夜布団（専用）": "futon-120s",
+    "休日120秒（専用）": "sunday-120s",
+    "日曜120秒（専用）": "sunday-120s",
+    "休日午前（専用）": "sunday-120s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
@@ -210,6 +222,7 @@ SITUATION_JA = {
     "bath-120s": "bath-120s",
     "dinner-120s": "dinner-120s",
     "futon-120s": "futon-120s",
+    "sunday-120s": "sunday-120s",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -290,7 +303,8 @@ SITUATION_HELP = {
     "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
     "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（先に洗って／湯だと余計勃ってる／上がったらご飯）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
     "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。非日常はテーブルの下で根元まで。セリフは口元3本（食べなさい／ご飯中なのに／ちゃんと上も食べなさい）。フェラはテーブル下の寄り。口内は CUMOUF。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
-    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（寝る前なのに／電気消したよ）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。朝の二日目は次。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
+    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（寝る前なのに／電気消したよ）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（休日なのに朝から勃ってる／昼ごはんまだよ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の買い物は次。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
 }
 
 LORA_JA = {
@@ -327,7 +341,7 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s", "okaeri-120s", "bath-120s", "dinner-120s", "futon-120s"}
+STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s", "okaeri-120s", "bath-120s", "dinner-120s", "futon-120s", "sunday-120s"}
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
 
