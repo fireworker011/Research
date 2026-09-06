@@ -195,7 +195,7 @@ SITUATION_HELP = {
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。Turbo なし・12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
-    "homecoming-90s": "90秒専用。10秒×9本。玄関フェラ→トイレクンニ→リビング口内。文章欄は使わない。画面 576×1024。顔固定は input/homecoming-90s の3枚。",
+    "homecoming-90s": "90秒専用。10秒×9本のカット編集（最後のコマからは続けない）。行為ごとに部品切替。文章欄は使わない。画面 576×1024。写真は input/homecoming-90s の 01〜09（任意）。",
 }
 
 LORA_JA = {
@@ -1295,27 +1295,29 @@ def prepare_story_clip(
     clip0_override: Path | str | None = None,
     prev_situation: str | None = None,
 ) -> dict[str, Any]:
-    """One 10s clip of a 90s story. Switches LoRA with the act. New people need a still."""
+    """One 10s clip. Homecoming is hard cuts: photo if present, else T2V. No last-frame continue."""
     clips = list(story.get("clips") or [])
     if index < 0 or index >= len(clips):
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
     raw_prompt = str(clip.get("prompt") or "").strip()
-    start = str(clip.get("start") or "continue").strip()
+    start = str(clip.get("start") or "still_or_t2v").strip()
+    seamless = bool(story.get("seamless"))
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
     still_path = resolve_story_still(
         clip, still_dir, clip_index=index, override=clip0_override
     )
     missing_still = None
     want_still = start == "still_or_t2v" or bool(clip.get("still"))
-    if want_still and still_path is None and start == "still_or_t2v":
-        missing_still = str(clip.get("still") or "")
+    if want_still and still_path is None:
+        missing_still = str(clip.get("still") or "") or None
+    use_last = bool(seamless and start == "continue" and last_frame and still_path is None)
     if still_path is not None:
         mode = "i2v"
         prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
         first_kind = "still"
-    elif start == "continue" and last_frame:
+    elif use_last:
         mode = "i2v"
         prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
         first_kind = "last_frame"
@@ -1323,8 +1325,6 @@ def prepare_story_clip(
         mode = "t2v"
         prompt, _ = apply_user_prompt(raw_prompt, mode="t2v", default_prompt=raw_prompt)
         first_kind = "t2v"
-        if start == "continue" and not last_frame:
-            missing_still = missing_still or "last_frame"
 
     studio_sys_path(studio_root)
     from select_loras import select_loras

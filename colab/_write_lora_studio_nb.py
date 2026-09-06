@@ -59,7 +59,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 最速プレビュー（エロなし） | 量産プレビュー | LightX2V 4step 1.0 + シネマ 0.4 |
 | 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
-| 帰宅90秒（専用） | 玄関フェラ→トイレクンニ→口内。10×9 | 行為ごとに部品切替。576×1024。文章欄は使わない |
+| 帰宅90秒（専用） | 玄関フェラ→トイレクンニ→口内。10×9のカット | 行為ごとに部品切替。576×1024。最後のコマからは続けない |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -182,7 +182,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-story90"
+FETCH_REV = "h2-20260906-story90-cut"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -400,7 +400,7 @@ MD3 = r"""## ③ 動画を作る
 - **最速プレビュー（エロなし）** … LightX2V 4step。当たりは日常で焼き直し
 - **音も残す（エロなし）** … LightX2V 8step
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
-- **帰宅90秒（専用）** … 10秒×9本。行為ごとに LoRA を切り替える。文章欄・つなぎ欄は使わない。顔固定は `input/homecoming-90s/` の3枚（任意）
+- **帰宅90秒（専用）** … 10秒×9本のカット編集。最後のコマからは続けない。行為ごとに LoRA。文章欄は使わない。写真は `input/homecoming-90s/` の 01〜09（任意）
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
 - **アナル舐め・指** … 女同士。男なし。動きの本線はアナル指入れ
@@ -533,12 +533,13 @@ if is_story(やりたいシーン):
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
     print("帰宅90秒専用。文章欄・つなぎ欄・秒数は使いません。9本の専用文で部品を切り替えます。")
+    print("カット編集です。最後のコマからは続けません（再現優先）。")
     print("画面は 576x1024（9:16）固定。")
-    print("顔固定の写真（任意）:", STORY_STILLS)
-    print("  01-genkan.jpg = レイ＋サヤカ（玄関）")
-    print("  04-toilet.jpg = アヤ（22歳の成人）＋レイ（トイレ）")
-    print("  06-living.jpg = マドカ＋レイ（リビング）")
-    print("写真が無いクリップはテキストから作ります（顔は流れやすい）。")
+    print("各本の写真（任意）:", STORY_STILLS)
+    print("  01-genkan.jpg 玄関 / 02-bj.jpg 玄関フェラ / 03-hallway.jpg 廊下")
+    print("  04-toilet.jpg トイレ / 05-kiss.jpg キス退出 / 06-living.jpg リビング")
+    print("  07-sofa-bj.jpg ソファフェラ / 08-cumouf.jpg 口内 / 09-fridge.jpg 冷蔵庫")
+    print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
     if MODE == "i2v" and not is_auto_image_name(写真ファイル):
         src = Path(写真ファイル)
         if not src.is_file():
@@ -899,7 +900,7 @@ else:
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
         if STORY:
             try:
-                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=first_name, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE if CLIP_INDEX == 0 else None, prev_situation=prev_sit)
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE if CLIP_INDEX == 0 else None, prev_situation=prev_sit)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None
@@ -941,7 +942,7 @@ else:
         clip_path = generate_one()
         clip_paths.append(clip_path)
         print("保存:", clip_path)
-        if CLIP_INDEX + 1 < len(CLIPS):
+        if CLIP_INDEX + 1 < len(CLIPS) and not STORY:
             frame = inp / ("h3_chain_" + str(CLIP_INDEX) + ".png")
             extract_last_frame(clip_path, frame)
             first_name = stage_image_into_input(frame, inp)
@@ -949,6 +950,8 @@ else:
     if len(clip_paths) > 1:
         final = concat_studio_clips(clip_paths, OUT / ("h3_chain_" + str(int(DURATION)) + "s.mp4"))
         print("つなぎ完了:", final)
+        if STORY:
+            print("カット編集です。クリップの境はシームレスではありません。")
     print()
     print("できました。下に再生、Drive にも保存しています。")
     print("保存:", final)

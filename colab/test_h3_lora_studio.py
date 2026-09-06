@@ -370,11 +370,12 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-story90"' in src
+    assert 'FETCH_REV = "h2-20260906-story90-cut"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅90秒（専用）" in src
     assert "prepare_story_clip" in src
+    assert "カット編集" in src
     assert "h3-lora-studio/stories/homecoming-90s.json" in src
     assert "h3-lora-studio/profiles/futa_visible.json" in src
     assert "CoachBate 0.85" not in src
@@ -387,7 +388,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-story90" in blob
+    assert "h2-20260906-story90-cut" in blob
     assert "帰宅90秒（専用）" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
@@ -878,6 +879,7 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
     assert story["duration_s"] == 90
     assert len(story["clips"]) == 9
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
+    assert story.get("seamless") is False
     want = [
         "futa_visible",
         "oral",
@@ -890,7 +892,6 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
-    last = "h3_chain_0.png"
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -900,18 +901,16 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
         planned = prepare_story_clip(
             story,
             i,
-            last_frame=last if i else None,
+            last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
         )
         prev = planned["situation"]
-        if i == 0:
-            assert planned["mode"] == "t2v"
-            assert "Picture 1" not in planned["prompt"]
-            assert planned["missing_still"] == "01-genkan.jpg"
-        elif clip["start"] == "continue":
-            assert planned["mode"] == "i2v"
-            assert "Picture 1" in planned["prompt"]
+        assert planned["mode"] == "t2v"
+        assert planned["first_kind"] == "t2v"
+        assert "Picture 1" not in planned["prompt"]
+        assert planned["missing_still"]
+        if i > 0:
             assert planned["stack_changed"] == (want[i] != want[i - 1])
         ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
@@ -942,5 +941,10 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
         "penis-lora-h3",
         "larry-v4",
     ]
+    (tmp_path / "01-genkan.jpg").write_bytes(b"fake-jpg")
+    with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
+    assert with_still["mode"] == "i2v"
+    assert with_still["first_kind"] == "still"
+    assert "Picture 1" in with_still["prompt"]
 
 
