@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-sunday"' in src
+    assert 'FETCH_REV = "h2-20260906-engawa"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -395,6 +395,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/stories/dinner-120s.json" in src
     assert "h3-lora-studio/stories/futon-120s.json" in src
     assert "h3-lora-studio/stories/sunday-120s.json" in src
+    assert "h3-lora-studio/stories/engawa-120s.json" in src
     assert 'if STORY:\n    w, h = int(planned0["width"]), int(planned0["height"])' in src
     assert 'FILENAME_PREFIX = "video/h3_" + str(STORY.get("id") or "story")' in src
     assert "input/dishes-90s/" in src
@@ -409,7 +410,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-sunday" in blob
+    assert "h2-20260906-engawa" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -428,6 +429,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "input/dinner-120s/" in src
     assert "input/futon-120s/" in src
     assert "input/sunday-120s/" in src
+    assert "input/engawa-120s/" in src
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
@@ -2012,6 +2014,118 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
     assert with_still["mode"] == "i2v"
     assert with_still["first_kind"] == "still"
     assert "Picture 1" in with_still["prompt"]
+
+
+def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
+    from h3_lora_studio import (
+        is_story,
+        load_story,
+        prepare_story_clip,
+        situation_ids,
+        resolve_situation,
+        story_canvas_wh,
+        studio_sys_path,
+    )
+
+    studio_sys_path()
+    from select_loras import forbidden_hits
+
+    assert resolve_situation("縁側120秒（専用）") == "engawa-120s"
+    assert resolve_situation("休日午後（専用）") == "engawa-120s"
+    assert resolve_situation("縁側二回戦（専用）") == "engawa-120s"
+    assert is_story("縁側120秒（専用）")
+    assert situation_ids("engawa-120s") == situation_ids("sunday-120s")
+    story = load_story("engawa-120s")
+    assert story["duration_s"] == 120
+    assert story["clip_s"] == 10
+    assert story["min_age"] == 22
+    assert len(story["clips"]) == 12
+    assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
+    assert story_canvas_wh(story) == (1024, 576)
+    assert story.get("seamless") is False
+    assert story.get("stills_dir") == "engawa-120s"
+    want = [
+        "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "futa_sex",
+        "futa_sex",
+        "futa_sex",
+        "oral",
+        "oral",
+        "oral",
+        "oral_creampie",
+        "futa_visible",
+    ]
+    assert [c["situation"] for c in story["clips"]] == want
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
+    assert "LIP SYNC" in story["clips"][2]["prompt"]
+    assert "LIP SYNC" in story["clips"][11]["prompt"]
+    for idx in (0, 1, 3, 4, 5, 6, 7, 8, 9, 10):
+        assert "LIP SYNC" not in story["clips"][idx]["prompt"], idx
+    assert "午後も勃ってる" in story["clips"][2]["prompt"]
+    assert "皿洗っとくから" in story["clips"][11]["prompt"]
+    assert "joining point" in story["clips"][4]["prompt"].lower()
+    assert "ALREADY IN" in story["clips"][4]["prompt"]
+    assert "Do not put Rei inside" in story["clips"][4]["prompt"]
+    for idx in (4, 5, 6, 7, 8, 9, 10):
+        assert "Rei = NOT IN FRAME" in story["clips"][idx]["prompt"], idx
+    for idx in (7, 8, 9, 10):
+        assert "MADOKA" in story["clips"][idx]["prompt"], idx
+        assert "Madoka's 20cm" in story["clips"][idx]["prompt"] or "Madoka's wet" in story["clips"][idx]["prompt"] or "Madoka's base" in story["clips"][idx]["prompt"], idx
+        assert "Rei looks pleasured" not in story["clips"][idx]["prompt"], idx
+    assert "Do not suck Rei" in story["clips"][7]["prompt"]
+    assert "In-mouth climax from MADOKA" in story["clips"][10]["prompt"]
+    prev = None
+    for i, clip in enumerate(story["clips"]):
+        hits = forbidden_hits(clip["prompt"])
+        assert hits == [], hits
+        assert "schoolgirl" not in clip["prompt"].lower()
+        assert "15-second take" not in clip["prompt"]
+        if clip["situation"] != "futa_sex":
+            assert "hmmotion" not in clip["prompt"]
+        else:
+            assert clip["prompt"].startswith("hmmotion")
+        low = clip["prompt"].lower()
+        for neg in ("not anal", "no anal", "switch to anal"):
+            low = low.replace(neg, "")
+        assert "anal" not in low, i
+        assert "Adult university" in clip["prompt"]
+        assert "Not a high school" in clip["prompt"]
+        assert "CAST LOCK" in clip["prompt"]
+        assert "10-second take" in clip["prompt"]
+        assert "No feces" in clip["prompt"] or "no feces" in clip["prompt"]
+        planned = prepare_story_clip(
+            story,
+            i,
+            last_frame="h3_chain_0.png",
+            stills_dir=tmp_path,
+            prev_situation=prev,
+        )
+        prev = planned["situation"]
+        assert planned["mode"] == "t2v"
+        assert planned["width"] == 1024
+        assert planned["height"] == 576
+        assert planned["duration_s"] == 10
+        if i > 0:
+            assert planned["stack_changed"] == (want[i] != want[i - 1])
+        stack_ids = [row["id"] for row in planned["stack"]]
+        if planned["situation"] == "oral":
+            assert stack_ids[0] == "blowjob-h3"
+            assert "hmnsfw-aio-v25" not in stack_ids
+        if planned["situation"] == "oral_creampie":
+            assert stack_ids[0] == "cumouf-h3"
+            assert "blowjob-h3" not in stack_ids
+        if planned["situation"] == "futa_sex":
+            assert stack_ids == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+            assert planned["cfg"]["turbo"] is False
+        if planned["situation"] == "futa_visible":
+            assert stack_ids == ["penis-lora-h3", "cinema-dy"]
+    (tmp_path / "05-in.jpg").write_bytes(b"fake-jpg")
+    with_still = prepare_story_clip(story, 4, stills_dir=tmp_path, last_frame="ignored.png")
+    assert with_still["mode"] == "i2v"
+    assert with_still["first_kind"] == "still"
 
 
 def test_all_stories_pass_follow():
