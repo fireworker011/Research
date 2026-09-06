@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-story90-cut"' in src
+    assert 'FETCH_REV = "h2-20260906-chain120"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅90秒（専用）" in src
@@ -388,7 +388,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-story90-cut" in blob
+    assert "h2-20260906-chain120" in blob
     assert "帰宅90秒（専用）" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
@@ -491,7 +491,9 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert clamp_studio_duration(61, chain=True) == 61.0
     assert clamp_studio_duration(70, chain=True) == 70.0
     assert clamp_studio_duration(90, chain=True) == 90.0
-    assert clamp_studio_duration(91, chain=True) == 90.0
+    assert clamp_studio_duration(91, chain=True) == 91.0
+    assert clamp_studio_duration(120, chain=True) == 120.0
+    assert clamp_studio_duration(121, chain=True) == 120.0
     assert clamp_studio_duration("nope", chain=True) == 16.0
     assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "larry-v4"]
     assert situation_ids("riding") == ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"]
@@ -580,15 +582,21 @@ def test_studio_clip_plan_chain_stays_under_sixteen():
     assert studio_clip_plan(70, chain=True) == [10.0] * 7
     assert studio_clip_plan(80, chain=True) == [10.0] * 8
     assert studio_clip_plan(90, chain=True) == [10.0] * 9
-    assert all(4 <= c <= 15 for c in studio_clip_plan(90, chain=True))
+    assert studio_clip_plan(100, chain=True) == [10.0] * 10
+    assert studio_clip_plan(110, chain=True) == [10.0] * 11
+    assert studio_clip_plan(120, chain=True) == [10.0] * 12
+    assert all(4 <= c <= 15 for c in studio_clip_plan(120, chain=True))
     total, clips, chain = resolve_studio_length(30, "つなぐ（16〜60秒）")
     assert chain is True
     assert total == 30.0
     assert clips == [10.0, 10.0, 10.0]
-    total, clips, chain = resolve_studio_length(45, "つなぐ（秒数欄・16〜90）")
+    total, clips, chain = resolve_studio_length(45, "つなぐ（秒数欄・16〜120）")
     assert chain is True
     assert total == 45.0
     assert clips == [10.0, 10.0, 10.0, 15.0]
+    total, clips, chain = resolve_studio_length(45, "つなぐ（秒数欄・16〜90）")
+    assert chain is True
+    assert total == 45.0
     for label, n in (
         ("つなぐ 20秒", 20),
         ("つなぐ 30秒", 30),
@@ -598,6 +606,10 @@ def test_studio_clip_plan_chain_stays_under_sixteen():
         ("つなぐ 70秒", 70),
         ("つなぐ 80秒", 80),
         ("つなぐ 90秒", 90),
+        ("つなぐ 100秒", 100),
+        ("つなぐ 110秒", 110),
+        ("つなぐ 120秒", 120),
+        ("つなぐ 2分", 120),
     ):
         total, clips, chain = resolve_studio_length(10, label)
         assert chain is True
@@ -653,6 +665,10 @@ def test_next_chain_prompt_uses_extras_or_continues_prev():
     assert "Clip nine keeps the same pose" in clip8
     clip7 = next_chain_prompt(7, first_prompt=first, prev_prompt=first, extras=long_extras)
     assert "seated sex" in clip7
+    long12 = [""] * 11
+    long12[10] = "Clip twelve walks to the fridge."
+    clip11 = next_chain_prompt(11, first_prompt=first, prev_prompt=first, extras=long12)
+    assert "Clip twelve walks to the fridge" in clip11
     structured = next_chain_prompt(
         1,
         first_prompt=first,
@@ -719,12 +735,15 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "長さの作り方" in src
     assert "つなぐ 20秒" in src
     assert "つなぐ 90秒" in src
-    assert "つなぐ（秒数欄・16〜90）" in src
+    assert "つなぐ 120秒" in src
+    assert "つなぐ 2分" in src
+    assert "つなぐ（秒数欄・16〜120）" in src
     assert "concat_studio_clips" in src
     assert "continue_chain_prompt" in src
     assert "next_chain_prompt" in src
     assert "つなぎ2" in src
     assert "つなぎ9" in src
+    assert "つなぎ12" in src
     assert "CHAIN_EXTRAS" in src
     assert "CHAIN_MAX_S" in src
     assert "homage = bool(VANILLA and not CUSTOM_PROMPT and CLIP_INDEX == 0)" in src
@@ -735,15 +754,17 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "duration_s=float(秒数)" not in blob
     assert "つなぐ 20秒" in blob
     assert "つなぐ 90秒" in blob
-    assert "つなぐ（秒数欄・16〜90）" in blob
+    assert "つなぐ 120秒" in blob
+    assert "つなぐ（秒数欄・16〜120）" in blob
     assert "つなぎ9" in blob
+    assert "つなぎ12" in blob
     assert "continue_chain_prompt" in blob
     assert "next_chain_prompt" in blob
     assert "つなぎ2" in blob
     assert "AIO 0.8 + Larry 0.5 / 12step" in blob
     helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
     assert "つなぐ（16〜60秒）" in helper.read_text(encoding="utf-8")
-    assert "CHAIN_MAX_S = 90" in helper.read_text(encoding="utf-8")
+    assert "CHAIN_MAX_S = 120" in helper.read_text(encoding="utf-8")
 
 
 class _FakeHttp:

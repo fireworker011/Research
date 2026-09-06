@@ -84,7 +84,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 性器を広げる | 広げて見せるクローズ | 広げる 0.75 + 穴の見え方 0.55 + Larry 0.5 |
 | レズ＋広げる | クンニに広げるを足す | クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方は外す |
 
-**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。20〜90秒は「つなぐ」（10秒ずつ最後のコマから続ける。1本で伸ばさない）。20秒は 10×2、90秒は 10×9。2〜9本目の文は③のつなぎ欄。空なら前の続き。
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。20〜120秒は「つなぐ」（10秒ずつ。1本で伸ばさない）。20秒は 10×2、90秒は 10×9、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 **エロの空欄:** 全員 21歳以上の全裸のごく普通の若い成人女性（女かふたなり）。男は出さない。行為の細かい描写は③の文章欄で足す。
@@ -182,7 +182,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-story90-cut"
+FETCH_REV = "h2-20260906-chain120"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -421,7 +421,7 @@ MD3 = r"""## ③ 動画を作る
 - **絶頂** … 女1人。男なし。射精ではない
 - **汎用エロ（女体）** … ふたなり＋女。男なし。AIO + Larry 12step
 - **試し打ち** … ふたなり＋女。男なし
-- **秒数** … 4〜15 は1本。20〜90秒は「つなぐ 20秒」〜「つなぐ 90秒」（10秒ずつ最後のコマから続ける）。90秒は 10×9。2〜9本目の文は③のつなぎ欄。空なら前の続き。1本で 16 秒以上は作らない
+- **秒数** … 4〜15 は1本。20〜120秒は「つなぐ 20秒」〜「つなぐ 120秒」（10秒ずつ）。120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。1本で 16 秒以上は作らない
 - **レズビアンクンニ** … 女同士。男なし
 - **性器を広げる** … 女1人。男なし
 - **レズ＋広げる** … 女同士。男なし
@@ -436,12 +436,12 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` か空なら input の一番新しい jpg。テキストからでは使いません。
 写真ファイル = "auto"  #@param {type:"string"}
-#@markdown 秒数。1本は 4〜15。20〜90秒は下の「つなぐ」を選ぶ。
+#@markdown 秒数。1本は 4〜15。20〜120秒は下の「つなぐ」を選ぶ。
 秒数 = 10  #@param {type:"number"}
-#@markdown 20〜90秒は 10秒ずつ、前のクリップの最後のコマから続ける（解像度もステップも落とさない）。
-長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ（秒数欄・16〜90）"]
+#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。帰宅90秒専用はカット編集。
+長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
 #@markdown ### つなぐときだけ（任意）
-#@markdown 20秒は2本、90秒は9本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
+#@markdown 20秒は2本、120秒は12本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
 つなぎ2 = ""  #@param {type:"string"}
 つなぎ3 = ""  #@param {type:"string"}
 つなぎ4 = ""  #@param {type:"string"}
@@ -450,6 +450,9 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 つなぎ7 = ""  #@param {type:"string"}
 つなぎ8 = ""  #@param {type:"string"}
 つなぎ9 = ""  #@param {type:"string"}
+つなぎ10 = ""  #@param {type:"string"}
+つなぎ11 = ""  #@param {type:"string"}
+つなぎ12 = ""  #@param {type:"string"}
 
 #@markdown ---
 #@markdown ### 触らなくていい（上級）
@@ -478,14 +481,14 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 90 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
-CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9]
+CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
 if float(DURATION) != float(秒数):
     if CHAIN:
-        print("秒数は", int(DURATION), "にします（つなぐは 16〜90 秒。20〜90秒のボタンは秒数欄を無視）。")
+        print("秒数は", int(DURATION), "にします（つなぐは 16〜120 秒。20〜120秒のボタンは秒数欄を無視）。")
     else:
         print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
 if CHAIN:

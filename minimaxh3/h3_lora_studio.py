@@ -995,7 +995,7 @@ def next_chain_prompt(
 
 
 CHAIN_MIN_S = 16
-CHAIN_MAX_S = 90
+CHAIN_MAX_S = 120
 CHAIN_PRESETS = {
     "つなぐ 20秒": 20.0,
     "つなぐ 30秒": 30.0,
@@ -1005,11 +1005,15 @@ CHAIN_PRESETS = {
     "つなぐ 70秒": 70.0,
     "つなぐ 80秒": 80.0,
     "つなぐ 90秒": 90.0,
+    "つなぐ 100秒": 100.0,
+    "つなぐ 110秒": 110.0,
+    "つなぐ 120秒": 120.0,
+    "つなぐ 2分": 120.0,
 }
 
 
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
-    """One shot is 4–15s. Chain mode is 16–90s via 10s last-frame clips. Homage notebooks stay as they are."""
+    """One shot is 4–15s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
@@ -1034,6 +1038,8 @@ def resolve_length_mode(label: str | bool) -> bool:
     return key.lower() in {
         "つなぐ（16〜90秒）",
         "つなぐ（秒数欄・16〜90）",
+        "つなぐ（16〜120秒）",
+        "つなぐ（秒数欄・16〜120）",
         "つなぐ（16〜60秒）",
         "つなぐ",
         "chain",
