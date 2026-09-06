@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-oom-free"' in src
+    assert 'FETCH_REV = "h2-20260906-oom-min"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "CoachBate 0.85" not in src
@@ -383,13 +383,15 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-oom-free" in blob
+    assert "h2-20260906-oom-min" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
+    assert "同じサイズ再試行" in src
+    assert "if CLIP_INDEX + 1 < len(CLIPS):\n            comfy_free(PORT)" not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
 

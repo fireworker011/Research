@@ -839,7 +839,7 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
 
 
 def comfy_free(port: int = 8188) -> None:
-    """Unload models after OOM so the next size (or next clip) can retry."""
+    """Unload models after OOM only. Do not call between successful chain clips."""
     try:
         req = urllib.request.Request(
             f"http://127.0.0.1:{int(port)}/free",

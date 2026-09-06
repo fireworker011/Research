@@ -181,7 +181,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-oom-free"
+FETCH_REV = "h2-20260906-oom-min"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -772,25 +772,34 @@ def generate_one():
     ok_entry = None
     before = newest_mp4(OUT)
     for plan in plans_now:
-        print("サイズを試しています:", plan.get("label") or plan)
-        g = make_graph(plan)
-        res, err = post_prompt(g)
-        if err:
-            if is_oom_error(err):
-                print("メモリが足りなかったので、小さい画面でやり直します。")
-                comfy_free(PORT)
-                continue
-            raise SystemExit(format_prompt_http_fail(err, stack))
-        ok, payload = wait_prompt(res["prompt_id"])
-        if ok:
-            ok_entry = payload
-            break
-        if is_oom_error(str(payload)):
-            print("メモリが足りなかったので、小さい画面でやり直します。")
+        label = plan.get("label") or plan
+        for attempt in (1, 2):
+            print("サイズを試しています:", label, "（同じサイズ再試行）" if attempt == 2 else "")
+            g = make_graph(plan)
+            res, err = post_prompt(g)
+            oom = False
+            if err:
+                if is_oom_error(err):
+                    oom = True
+                else:
+                    raise SystemExit(format_prompt_http_fail(err, stack))
+            else:
+                ok, payload = wait_prompt(res["prompt_id"])
+                if ok:
+                    ok_entry = payload
+                    break
+                if is_oom_error(str(payload)):
+                    oom = True
+                else:
+                    raise SystemExit(format_job_fail(GRAPH_MODE, payload))
+            print("メモリが足りません。VRAM を解放します。")
             comfy_free(PORT)
-            continue
-        raise SystemExit(format_job_fail(GRAPH_MODE, payload))
-    else:
+            if attempt == 1:
+                continue
+            print("小さい画面でやり直します。")
+        if ok_entry is not None:
+            break
+    if ok_entry is None:
         raise SystemExit("メモリ不足で作れませんでした。秒数を短くするか、A100 のまま②からやり直してください。")
     videos = collect_output_videos(ok_entry, OUT)
     fresh = newest_mp4(OUT)
@@ -838,7 +847,6 @@ else:
         clip_paths.append(clip_path)
         print("保存:", clip_path)
         if CLIP_INDEX + 1 < len(CLIPS):
-            comfy_free(PORT)
             frame = inp / ("h3_chain_" + str(CLIP_INDEX) + ".png")
             extract_last_frame(clip_path, frame)
             first_name = stage_image_into_input(frame, inp)
