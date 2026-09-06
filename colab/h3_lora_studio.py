@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -237,11 +238,11 @@ SITUATION_HELP = {
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。Turbo なし・12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
-    "homecoming-90s": "120秒専用。10秒×12本のカット。クンニ LoRA は寄りの1本だけ（入室は歩行部品）。抜く・歩く・キス退出は別本。写真は input/homecoming-90s の 01〜12（11-lick.jpg は舌と穴の寄り）。",
-    "dishes-90s": "洗い物120秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降で口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。15秒×8本＝120秒。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業は授業120秒。写真は input/commute-120s の 01〜08（16:9）。",
-    "lecture-120s": "授業第2話。授業〜昼。15秒×8本＝120秒。16:9。家とサヤカは出さない。机のシコはオナニー部品。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。昼へ歩く本は歩行。セックスは屋上〜下校。写真は input/lecture-120s の 01〜08（16:9）。",
-    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関は次の話。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
+    "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
+    "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
+    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。写真は input/commute-120s の 01〜12（16:9。無い本はテキストから）。",
+    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「昼だよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
+    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関は次の話。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
 }
 
 LORA_JA = {
@@ -1302,6 +1303,67 @@ def story_canvas_wh(story: dict[str, Any]) -> tuple[int, int]:
     return STORY_CANVAS
 
 
+ACT_SITUATIONS = frozenset({
+    "oral",
+    "oral_creampie",
+    "cunnilingus_futa",
+    "futa_sex",
+    "futa_anal",
+    "futa_masturbation",
+    "futa_blowjob",
+    "riding",
+    "doggy",
+    "missionary_pov",
+    "creampie",
+    "facial",
+    "after_ejaculation",
+    "fingering",
+    "masturbation",
+})
+
+
+def validate_story_follow(story: dict[str, Any]) -> list[str]:
+    """H3 following: 10s, one place, act cameras, lip-sync only on speaking face clips."""
+    errors: list[str] = []
+    clips = list(story.get("clips") or [])
+    clip_s = float(story.get("clip_s") or 10)
+    for i, clip in enumerate(clips):
+        n = i + 1
+        duration = float(clip.get("duration_s") or clip_s)
+        if abs(duration - 10.0) > 0.01:
+            errors.append(f"clip {n}: duration_s must be 10 for H3 following (got {duration:g})")
+        prompt = str(clip.get("prompt") or "")
+        situation = str(clip.get("situation") or "").strip()
+        lines = re.findall(r"「([^」]+)」", prompt)
+        if "15-second take" in prompt or "15-second" in prompt:
+            errors.append(f"clip {n}: use a 10-second take, not 15")
+        prompt_l = prompt.lower()
+        if situation in ACT_SITUATIONS:
+            if lines:
+                errors.append(f"clip {n}: act situation {situation} must not speak")
+            if "Full bodies from head to feet" in prompt:
+                errors.append(f"clip {n}: act clip must not be a full-body wide")
+            if situation in {"oral", "oral_creampie"} and "close" not in prompt_l and "medium-close" not in prompt_l:
+                errors.append(f"clip {n}: oral camera must be close or medium-close")
+            if situation == "cunnilingus_futa" and "close-up" not in prompt_l and "extreme close" not in prompt_l:
+                errors.append(f"clip {n}: cunnilingus camera must be a close-up")
+            if situation == "futa_sex" and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
+                errors.append(f"clip {n}: sex clip must already be in / show the joining point")
+            if situation == "futa_masturbation" and "strok" not in prompt_l and "pump" not in prompt_l and "lap" not in prompt_l:
+                errors.append(f"clip {n}: masturbation clip needs a lap/hand camera")
+        if lines:
+            if situation != "futa_visible":
+                errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
+            if "LIP SYNC" not in prompt:
+                errors.append(f"clip {n}: spoken line needs LIP SYNC on a visible mouth")
+            if "Full bodies from head to feet" in prompt:
+                errors.append(f"clip {n}: lip-sync clip must not be a full-body wide")
+            unique = set(lines)
+            if len(unique) > 1:
+                errors.append(f"clip {n}: one spoken line only, got {sorted(unique)}")
+    return errors
+
+
 def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[str, Any]:
     sid = str(story_id or "").strip()
     if sid in SITUATION_JA:
@@ -1328,6 +1390,9 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
         raise SystemExit("専用ストーリーは 120秒までです。")
     if abs(duration - sum(clip_durs)) > 0.51:
         raise SystemExit("専用ストーリーの秒数と本数が合いません。")
+    follow_errors = validate_story_follow(data)
+    if follow_errors:
+        raise SystemExit("専用ストーリーの追従ルール: " + " / ".join(follow_errors))
     return data
 
 

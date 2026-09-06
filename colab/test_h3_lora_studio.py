@@ -370,7 +370,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-rooftop"' in src
+    assert 'FETCH_REV = "h2-20260906-follow"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -378,7 +378,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "登校120秒（専用）" in src
     assert "授業120秒（専用）" in src
     assert "屋上〜下校（専用）" in src
-    assert "prepare_story_clip" in src
+    assert "validate_story_follow" in src
     assert "カット編集" in src
     assert "h3-lora-studio/stories/homecoming-90s.json" in src
     assert "h3-lora-studio/stories/dishes-90s.json" in src
@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-rooftop" in blob
+    assert "h2-20260906-follow" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -941,6 +941,8 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     assert "mini breasts and full bodies" not in story["clips"][5]["prompt"]
     assert "Do not pull back to full bodies" in story["clips"][5]["prompt"]
     assert "Not a crotch close-up" in story["clips"][4]["prompt"]
+    assert "LIP SYNC" in story["clips"][10]["prompt"]
+    assert "LIP SYNC" not in story["clips"][0]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -1093,7 +1095,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     assert "Picture 1" in with_still["prompt"]
 
 
-def test_commute_story_eight_clips_landscape(tmp_path):
+def test_commute_story_twelve_clips_landscape(tmp_path):
     from h3_lora_studio import (
         is_story,
         load_story,
@@ -1121,9 +1123,9 @@ def test_commute_story_eight_clips_landscape(tmp_path):
     assert "cumouf-h3" not in ids
     story = load_story("commute-120s")
     assert story["duration_s"] == 120
-    assert story["clip_s"] == 15
+    assert story["clip_s"] == 10
     assert story["min_age"] == 22
-    assert len(story["clips"]) == 8
+    assert len(story["clips"]) == 12
     assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
     assert story_canvas_wh(story) == (1024, 576)
     assert story.get("seamless") is False
@@ -1131,15 +1133,24 @@ def test_commute_story_eight_clips_landscape(tmp_path):
     want = [
         "futa_visible",
         "futa_visible",
+        "futa_visible",
         "oral",
         "oral",
         "futa_visible",
         "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "oral",
         "oral",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
-    assert [float(c["duration_s"]) for c in story["clips"]] == [15.0] * 8
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
+    assert "LIP SYNC" in story["clips"][1]["prompt"]
+    assert "LIP SYNC" in story["clips"][5]["prompt"]
+    assert "LIP SYNC" in story["clips"][7]["prompt"]
+    assert "LIP SYNC" not in story["clips"][0]["prompt"]
+    assert "LIP SYNC" not in story["clips"][3]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -1147,15 +1158,15 @@ def test_commute_story_eight_clips_landscape(tmp_path):
         assert "schoolgirl" not in clip["prompt"].lower()
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
+        assert "15-second take" not in clip["prompt"]
         assert "Adult 22" in clip["prompt"] or "woman, 22" in clip["prompt"]
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
         assert "CAST LOCK" in clip["prompt"]
-        assert "15-second take" in clip["prompt"]
-        assert "Do not pack this into 10 seconds" in clip["prompt"]
-        if i == 0 or i >= 4:
+        assert "10-second take" in clip["prompt"]
+        if i == 0 or i >= 6:
             assert "Sayaka = NOT IN FRAME" in clip["prompt"] or "NOT IN FRAME" in clip["prompt"]
-        if i >= 4:
+        if i >= 6:
             assert "She stayed at home" in clip["prompt"] or "Home." in clip["prompt"] or "NOT IN THIS CLIP" in clip["prompt"]
         planned = prepare_story_clip(
             story,
@@ -1171,7 +1182,7 @@ def test_commute_story_eight_clips_landscape(tmp_path):
         assert planned["missing_still"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
-        assert planned["duration_s"] == 15
+        assert planned["duration_s"] == 10
         if i > 0:
             assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
@@ -1192,7 +1203,7 @@ def test_commute_story_eight_clips_landscape(tmp_path):
     assert with_still["height"] == 576
 
 
-def test_lecture_story_eight_clips_campus_noon(tmp_path):
+def test_lecture_story_ten_clips_campus_noon(tmp_path):
     from h3_lora_studio import (
         is_story,
         load_story,
@@ -1222,10 +1233,10 @@ def test_lecture_story_eight_clips_campus_noon(tmp_path):
         "cumouf-h3",
     ]
     story = load_story("lecture-120s")
-    assert story["duration_s"] == 120
-    assert story["clip_s"] == 15
+    assert story["duration_s"] == 100
+    assert story["clip_s"] == 10
     assert story["min_age"] == 22
-    assert len(story["clips"]) == 8
+    assert len(story["clips"]) == 10
     assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
     assert story_canvas_wh(story) == (1024, 576)
     assert story.get("seamless") is False
@@ -1238,15 +1249,19 @@ def test_lecture_story_eight_clips_campus_noon(tmp_path):
         "cunnilingus_futa",
         "oral",
         "oral_creampie",
+        "oral",
+        "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
-    assert [float(c["duration_s"]) for c in story["clips"]] == [15.0] * 8
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 10
     assert sum(1 for c in story["clips"] if c["situation"] == "cunnilingus_futa") == 1
     assert "Close-up" in story["clips"][4]["prompt"]
     assert "Do not pull back to full bodies" in story["clips"][4]["prompt"]
     assert "Not a crotch close-up" in story["clips"][3]["prompt"]
     assert "already stroking" in story["clips"][1]["prompt"].lower() or "already seated" in story["clips"][1]["prompt"]
+    assert "LIP SYNC" in story["clips"][8]["prompt"]
+    assert "LIP SYNC" not in story["clips"][0]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -1254,11 +1269,12 @@ def test_lecture_story_eight_clips_campus_noon(tmp_path):
         assert "schoolgirl" not in clip["prompt"].lower()
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
+        assert "15-second take" not in clip["prompt"]
         assert "Adult 22" in clip["prompt"] or "woman, 22" in clip["prompt"]
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
         assert "CAST LOCK" in clip["prompt"]
-        assert "15-second take" in clip["prompt"]
+        assert "10-second take" in clip["prompt"]
         assert "Sayaka = NOT IN THIS STORY" in clip["prompt"] or "NOT IN THIS STORY" in clip["prompt"]
         planned = prepare_story_clip(
             story,
@@ -1271,7 +1287,7 @@ def test_lecture_story_eight_clips_campus_noon(tmp_path):
         assert planned["mode"] == "t2v"
         assert planned["width"] == 1024
         assert planned["height"] == 576
-        assert planned["duration_s"] == 15
+        assert planned["duration_s"] == 10
         if i > 0:
             assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
@@ -1397,5 +1413,48 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
     assert with_still["mode"] == "i2v"
     assert with_still["first_kind"] == "still"
     assert "Picture 1" in with_still["prompt"]
+
+
+def test_all_stories_pass_follow():
+    from h3_lora_studio import STORY_IDS, load_story, validate_story_follow
+
+    for sid in sorted(STORY_IDS):
+        story = load_story(sid)
+        assert validate_story_follow(story) == [], sid
+        assert abs(float(story["clip_s"]) - 10) < 0.01
+        assert all(
+            abs(float(c.get("duration_s") or story["clip_s"]) - 10) < 0.01
+            for c in story["clips"]
+        )
+
+
+def test_validate_story_follow_rejects_act_speech_and_15s():
+    from h3_lora_studio import validate_story_follow
+
+    spoken_oral = {
+        "clip_s": 10,
+        "clips": [
+            {
+                "duration_s": 10,
+                "situation": "oral",
+                "prompt": "medium-close on the mouth\n「だめ」",
+            }
+        ],
+    }
+    errs = validate_story_follow(spoken_oral)
+    assert any("must not speak" in e for e in errs)
+    fifteen = {
+        "clip_s": 15,
+        "clips": [
+            {
+                "duration_s": 15,
+                "situation": "futa_visible",
+                "prompt": "ONE UNBROKEN 15-second take. Full bodies from head to feet. No speech.",
+            }
+        ],
+    }
+    errs = validate_story_follow(fifteen)
+    assert any("duration_s must be 10" in e for e in errs)
+    assert any("10-second take" in e for e in errs)
 
 
