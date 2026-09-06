@@ -60,6 +60,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
 | 帰宅90秒（専用） | 玄関フェラ→トイレクンニ→口内。10×9のカット | 行為ごとに部品切替。576×1024。最後のコマからは続けない |
+| 洗い物90秒（専用） | シンク洗い物＋プリン。アヤが床で口。10×9のカット | サヤカはシンク固定。レイは椅子で竿。フェラは40秒以降。口内は CUMOUF |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -167,7 +168,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "洗い物90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -182,7 +183,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-chain120"
+FETCH_REV = "h2-20260906-dishes90"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -246,6 +247,7 @@ studio_files = [
     "h3-lora-studio/profiles/futa_masturbation.json",
     "h3-lora-studio/profiles/cunnilingus_futa.json",
     "h3-lora-studio/stories/homecoming-90s.json",
+    "h3-lora-studio/stories/dishes-90s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -331,7 +333,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s", "dishes-90s"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -401,6 +403,7 @@ MD3 = r"""## ③ 動画を作る
 - **音も残す（エロなし）** … LightX2V 8step
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **帰宅90秒（専用）** … 10秒×9本のカット編集。最後のコマからは続けない。行為ごとに LoRA。文章欄は使わない。写真は `input/homecoming-90s/` の 01〜09（任意）
+- **洗い物90秒（専用）** … 10秒×9本のカット編集。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。フェラは40秒以降。口内は CUMOUF。写真は `input/dishes-90s/` の 01〜09（任意）
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
 - **アナル舐め・指** … 女同士。男なし。動きの本線はアナル指入れ
@@ -429,7 +432,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅90秒（専用）", "洗い物90秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
@@ -438,7 +441,7 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 写真ファイル = "auto"  #@param {type:"string"}
 #@markdown 秒数。1本は 4〜15。20〜120秒は下の「つなぐ」を選ぶ。
 秒数 = 10  #@param {type:"number"}
-#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。帰宅90秒専用はカット編集。
+#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。90秒専用はカット編集。
 長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
 #@markdown ### つなぐときだけ（任意）
 #@markdown 20秒は2本、120秒は12本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
@@ -481,7 +484,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "dishes-90s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -535,13 +538,12 @@ if is_story(やりたいシーン):
     VANILLA = False
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
-    print("帰宅90秒専用。文章欄・つなぎ欄・秒数は使いません。9本の専用文で部品を切り替えます。")
+    print(str(STORY.get("title_ja") or STORY.get("id")), "専用。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の専用文で部品を切り替えます。")
     print("カット編集です。最後のコマからは続けません（再現優先）。")
     print("画面は 576x1024（9:16）固定。")
     print("各本の写真（任意）:", STORY_STILLS)
-    print("  01-genkan.jpg 玄関 / 02-bj.jpg 玄関フェラ / 03-hallway.jpg 廊下")
-    print("  04-toilet.jpg トイレ / 05-kiss.jpg キス退出 / 06-living.jpg リビング")
-    print("  07-sofa-bj.jpg ソファフェラ / 08-cumouf.jpg 口内 / 09-fridge.jpg 冷蔵庫")
+    for c in STORY["clips"]:
+        print(" ", c.get("still") or "（写真なし）", c.get("label") or "")
     print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
     if MODE == "i2v" and not is_auto_image_name(写真ファイル):
         src = Path(写真ファイル)
@@ -561,7 +563,7 @@ elif MODE == "t2v":
         CUSTOM_PROMPT = False
 
 if STORY:
-    FILENAME_PREFIX = "video/h3_homecoming"
+    FILENAME_PREFIX = "video/h3_" + str(STORY.get("id") or "story")
     try:
         planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE)
     except SystemExit as exc:
@@ -884,7 +886,7 @@ if 試し打ちだけ:
     g = make_graph(plans[0])
     print("試し打ちOK。部品:", [n["inputs"]["lora_name"] for n in g.values() if n.get("class_type") == "LoraLoaderModelOnly"])
     if STORY:
-        print("専用9本:")
+        print("専用" + str(len(STORY["clips"])) + "本:")
         for i, c in enumerate(STORY["clips"]):
             print(" ", i + 1, c.get("label"), c.get("situation"), c.get("start"))
     elif CHAIN:

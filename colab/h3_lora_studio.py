@@ -74,6 +74,13 @@ SITUATION_DOWNLOAD = {
         "hmmasturbation-h3",
         "cumouf-h3",
     ],
+    "dishes-90s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -122,7 +129,9 @@ SITUATION_JA = {
     "汎用エロ（女体）": "general_sex",
     "試し打ち": "preview",
     "帰宅90秒（専用）": "homecoming-90s",
+    "洗い物90秒（専用）": "dishes-90s",
     "homecoming-90s": "homecoming-90s",
+    "dishes-90s": "dishes-90s",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -196,6 +205,7 @@ SITUATION_HELP = {
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "90秒専用。10秒×9本のカット編集（最後のコマからは続けない）。行為ごとに部品切替。文章欄は使わない。画面 576×1024。写真は input/homecoming-90s の 01〜09（任意）。",
+    "dishes-90s": "洗い物90秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。フェラは40秒以降。口内は CUMOUF。写真は input/dishes-90s の 01〜09（任意）。",
 }
 
 LORA_JA = {
@@ -232,7 +242,7 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s"}
+STORY_IDS = {"homecoming-90s", "dishes-90s"}
 STORY_CANVAS = (576, 1024)
 
 
@@ -1252,16 +1262,19 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
         raise SystemExit(f"専用ストーリーがありません: {sid}")
     data = json.loads(path.read_text(encoding="utf-8"))
     clips = data.get("clips") or []
-    if len(clips) != 9:
-        raise SystemExit("帰宅90秒は 10秒×9本である必要があります。")
+    n = len(clips)
+    if n < 9 or n > 12:
+        raise SystemExit("専用ストーリーは 10秒×9〜12本です。")
     if int(data.get("min_age") or 0) < 21:
         raise SystemExit("専用ストーリーは 21歳以上のみです。")
+    if int(data.get("duration_s") or 0) > 120:
+        raise SystemExit("専用ストーリーは 120秒までです。")
     return data
 
 
 def story_stills_dir(drive_input: Path | str, story: dict[str, Any]) -> Path:
     root = Path(drive_input)
-    sub = str(story.get("stills_dir") or story.get("id") or "homecoming-90s")
+    sub = str(story.get("stills_dir") or story.get("id") or "story")
     return root / sub
 
 
@@ -1301,7 +1314,7 @@ def prepare_story_clip(
     clip0_override: Path | str | None = None,
     prev_situation: str | None = None,
 ) -> dict[str, Any]:
-    """One 10s clip. Homecoming is hard cuts: photo if present, else T2V. No last-frame continue."""
+    """One 10s story clip. Hard cut: photo if present, else T2V. Matching LoRA per act."""
     clips = list(story.get("clips") or [])
     if index < 0 or index >= len(clips):
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
