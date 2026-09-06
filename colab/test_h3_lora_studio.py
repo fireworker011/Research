@@ -370,11 +370,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-dishes90"' in src
+    assert 'FETCH_REV = "h2-20260906-story120"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
-    assert "帰宅90秒（専用）" in src
-    assert "洗い物90秒（専用）" in src
+    assert "帰宅120秒（専用）" in src
+    assert "洗い物120秒（専用）" in src
     assert "prepare_story_clip" in src
     assert "カット編集" in src
     assert "h3-lora-studio/stories/homecoming-90s.json" in src
@@ -392,9 +392,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-dishes90" in blob
-    assert "帰宅90秒（専用）" in blob
-    assert "洗い物90秒（専用）" in blob
+    assert "h2-20260906-story120" in blob
+    assert "帰宅120秒（専用）" in blob
+    assert "洗い物120秒（専用）" in blob
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
@@ -885,7 +885,7 @@ def test_comfy_free_posts_unload(monkeypatch):
     assert hits[0].endswith("/free")
 
 
-def test_homecoming_story_nine_clips_switch_loras(tmp_path):
+def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     from h3_lora_studio import (
         is_story,
         load_story,
@@ -898,23 +898,28 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
     studio_sys_path()
     from select_loras import forbidden_hits, select_loras
 
+    assert resolve_situation("帰宅120秒（専用）") == "homecoming-90s"
     assert resolve_situation("帰宅90秒（専用）") == "homecoming-90s"
+    assert is_story("帰宅120秒（専用）")
     assert is_story("帰宅90秒（専用）")
     assert "cumouf-h3" in situation_ids("homecoming-90s")
     story = load_story("homecoming-90s")
-    assert story["duration_s"] == 90
-    assert len(story["clips"]) == 9
+    assert story["duration_s"] == 120
+    assert len(story["clips"]) == 12
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
     assert story.get("seamless") is False
     want = [
         "futa_visible",
         "oral",
+        "oral",
         "futa_visible",
         "cunnilingus_futa",
         "cunnilingus_futa",
+        "futa_visible",
         "futa_masturbation",
         "oral",
         "oral_creampie",
+        "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -974,7 +979,7 @@ def test_homecoming_story_nine_clips_switch_loras(tmp_path):
     assert "Picture 1" in with_still["prompt"]
 
 
-def test_dishes_story_nine_clips_sink_locked(tmp_path):
+def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     from h3_lora_studio import (
         is_story,
         load_story,
@@ -987,8 +992,9 @@ def test_dishes_story_nine_clips_sink_locked(tmp_path):
     studio_sys_path()
     from select_loras import forbidden_hits
 
+    assert resolve_situation("洗い物120秒（専用）") == "dishes-90s"
     assert resolve_situation("洗い物90秒（専用）") == "dishes-90s"
-    assert is_story("洗い物90秒（専用）")
+    assert is_story("洗い物120秒（専用）")
     ids = situation_ids("dishes-90s")
     assert ids == [
         "penis-lora-h3",
@@ -999,9 +1005,9 @@ def test_dishes_story_nine_clips_sink_locked(tmp_path):
     ]
     assert "lesbian-cunnilingus-h3" not in ids
     story = load_story("dishes-90s")
-    assert story["duration_s"] == 90
+    assert story["duration_s"] == 120
     assert story["clip_s"] == 10
-    assert len(story["clips"]) == 9
+    assert len(story["clips"]) == 12
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
     assert story.get("seamless") is False
     assert story.get("stills_dir") == "dishes-90s"
@@ -1010,6 +1016,9 @@ def test_dishes_story_nine_clips_sink_locked(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "oral",
         "oral",
         "oral",
         "oral",

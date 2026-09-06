@@ -128,7 +128,9 @@ SITUATION_JA = {
     "汎用エロ": "general_sex",
     "汎用エロ（女体）": "general_sex",
     "試し打ち": "preview",
+    "帰宅120秒（専用）": "homecoming-90s",
     "帰宅90秒（専用）": "homecoming-90s",
+    "洗い物120秒（専用）": "dishes-90s",
     "洗い物90秒（専用）": "dishes-90s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
@@ -204,8 +206,8 @@ SITUATION_HELP = {
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。Turbo なし・12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
-    "homecoming-90s": "90秒専用。10秒×9本のカット編集（最後のコマからは続けない）。行為ごとに部品切替。文章欄は使わない。画面 576×1024。写真は input/homecoming-90s の 01〜09（任意）。",
-    "dishes-90s": "洗い物90秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。フェラは40秒以降。口内は CUMOUF。写真は input/dishes-90s の 01〜09（任意）。",
+    "homecoming-90s": "120秒専用。10秒×12本のカット編集（最後のコマからは続けない）。抜く・歩く・キス退出は別本。行為ごとに部品切替。文章欄は使わない。画面 576×1024。写真は input/homecoming-90s の 01〜12（任意。01〜09は従来のまま）。",
+    "dishes-90s": "洗い物120秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降。口内は CUMOUF。写真は input/dishes-90s の 01〜12（任意。01〜09は従来のまま）。",
 }
 
 LORA_JA = {
