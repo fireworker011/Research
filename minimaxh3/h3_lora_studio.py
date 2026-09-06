@@ -111,6 +111,13 @@ SITUATION_DOWNLOAD = {
         "larry-v4",
         "cumouf-h3",
     ],
+    "bath-120s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -171,12 +178,16 @@ SITUATION_JA = {
     "おかえり120秒（専用）": "okaeri-120s",
     "玄関おかえり（専用）": "okaeri-120s",
     "玄関120秒（専用）": "okaeri-120s",
+    "風呂120秒（専用）": "bath-120s",
+    "夜風呂（専用）": "bath-120s",
+    "風呂夜（専用）": "bath-120s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
     "lecture-120s": "lecture-120s",
     "rooftop-100s": "rooftop-100s",
     "okaeri-120s": "okaeri-120s",
+    "bath-120s": "bath-120s",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -254,7 +265,8 @@ SITUATION_HELP = {
     "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。写真は input/commute-120s の 01〜12（16:9。無い本はテキストから）。",
     "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「昼だよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
     "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
-    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。食卓は洗い物。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
+    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
+    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（先に洗って／湯だと余計勃ってる／上がったらご飯）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は次の話。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
 }
 
 LORA_JA = {
@@ -291,7 +303,7 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s", "okaeri-120s"}
+STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s", "okaeri-120s", "bath-120s"}
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
 
