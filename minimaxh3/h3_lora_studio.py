@@ -87,6 +87,16 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
     ],
+    "lecture-120s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "hmmasturbation-h3",
+        "lesbian-cunnilingus-h3",
+        "synth-pussy-h3",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -140,9 +150,12 @@ SITUATION_JA = {
     "洗い物90秒（専用）": "dishes-90s",
     "登校120秒（専用）": "commute-120s",
     "朝〜正門120秒（専用）": "commute-120s",
+    "授業120秒（専用）": "lecture-120s",
+    "授業〜昼120秒（専用）": "lecture-120s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
+    "lecture-120s": "lecture-120s",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -217,7 +230,8 @@ SITUATION_HELP = {
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "120秒専用。10秒×12本のカット。クンニ LoRA は寄りの1本だけ（入室は歩行部品）。抜く・歩く・キス退出は別本。写真は input/homecoming-90s の 01〜12（11-lick.jpg は舌と穴の寄り）。",
     "dishes-90s": "洗い物120秒。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降で口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。15秒×8本＝120秒。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業・下校は次の話。写真は input/commute-120s の 01〜08（16:9）。",
+    "commute-120s": "登校第1話。朝〜大学正門。15秒×8本＝120秒。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業は授業120秒。写真は input/commute-120s の 01〜08（16:9）。",
+    "lecture-120s": "授業第2話。授業〜昼。15秒×8本＝120秒。16:9。家とサヤカは出さない。机のシコはオナニー部品。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。昼へ歩く本は歩行。セックス・下校は次の話。写真は input/lecture-120s の 01〜08（16:9）。",
 }
 
 LORA_JA = {
@@ -254,7 +268,7 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s"}
+STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s"}
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
 

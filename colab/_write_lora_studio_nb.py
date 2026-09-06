@@ -61,7 +61,8 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
 | 帰宅120秒（専用） | 玄関フェラ→トイレクンニ寄り→口内。10×12のカット | クンニ LoRA は寄り1本。入室・退出は歩行部品。576×1024 |
 | 洗い物120秒（専用） | シンク洗い物＋プリン。アヤが床で口。10×12のカット | サヤカはシンク固定。レイは椅子で竿。入室と着席は別本。フェラは60秒以降。口内は CUMOUF |
-| 登校120秒（専用） | 朝〜大学正門。15秒×8本。16:9 全身 | サヤカは家だけ。フェラは玄関と路地の2本。授業は次の話 |
+| 登校120秒（専用） | 朝〜大学正門。15秒×8本。16:9 全身 | サヤカは家だけ。フェラは玄関と路地の2本。授業は授業120秒 |
+| 授業120秒（専用） | 授業〜昼。15秒×8本。16:9 | 家とサヤカなし。机のシコはオナニー。クンニは寄り1本。口内は CUMOUF。セックスは次の話 |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -169,7 +170,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -184,7 +185,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-commute"
+FETCH_REV = "h2-20260906-lecture"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -250,6 +251,7 @@ studio_files = [
     "h3-lora-studio/stories/homecoming-90s.json",
     "h3-lora-studio/stories/dishes-90s.json",
     "h3-lora-studio/stories/commute-120s.json",
+    "h3-lora-studio/stories/lecture-120s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -335,7 +337,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s", "dishes-90s", "commute-120s"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", "homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -406,7 +408,8 @@ MD3 = r"""## ③ 動画を作る
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **帰宅120秒（専用）** … 10秒×12本のカット編集。クンニ LoRA は寄りの1本だけ。入室・キス退出は歩行部品。写真は `input/homecoming-90s/` の 01〜12（`11-lick.jpg` は舌と穴の寄り）
 - **洗い物120秒（専用）** … 10秒×12本のカット編集。サヤカはシンクで洗い続ける。レイは椅子で竿。アヤは床で口。入室と着席、キスと床降りは別本。フェラは60秒以降。口内は CUMOUF。写真は `input/dishes-90s/` の 01〜12（任意。01〜09は従来のまま）
-- **登校120秒（専用）** … 第1話。朝〜大学正門。15秒×8本。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業・下校は次の話。写真は `input/commute-120s/` の 01〜08（16:9）
+- **登校120秒（専用）** … 第1話。朝〜大学正門。15秒×8本。16:9 全身。サヤカは家だけ。フェラは玄関と路地の2本。授業は授業120秒。写真は `input/commute-120s/` の 01〜08（16:9）
+- **授業120秒（専用）** … 第2話。授業〜昼。15秒×8本。16:9。家とサヤカは出さない。机のシコはオナニー部品。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。昼へ歩く本は歩行。セックス・下校は次の話。写真は `input/lecture-120s/` の 01〜08（16:9）
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
 - **アナル舐め・指** … 女同士。男なし。動きの本線はアナル指入れ
@@ -435,7 +438,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
@@ -487,7 +490,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "commute-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "lecture-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
