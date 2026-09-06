@@ -68,7 +68,8 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 騎乗位（女体） | 騎乗。総合えっちは積まない | 騎乗 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし |
 | 後背位（女体） | 後ろから前後の突き | 後背位 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし |
 | 正常位POV（女体） | 挿入側の視点。横からの正常位はセックス（女体） | POV挿入 0.85 + 竿 0.7 + Larry 0.5 / 8step |
-| 後射精（女体） | 射精そのもの。絶頂とは別 | 射精 0.9 + 竿 0.7 + Larry 0.5 / 8step |
+| 後射精（女体） | 射精そのもの。絶頂・顔射とは別 | 射精 0.9 + 竿 0.7 + Larry 0.5 / 8step |
+| 顔射（女体） | 顔にかける。後射精とは別 | 顔射 0.8 + 竿 0.7 + Larry 0.5 / 8step。写真からが本線 |
 | 指入れ | 指の出し入れ。オナニー LoRA は積まない | 指 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step |
 | オナニー | 潮吹き。指入れ LoRA は積まない | オナニー 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step |
 | 足コキ | 両足で竿 | Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step |
@@ -161,7 +162,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -176,7 +177,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260905-chain-90"
+FETCH_REV = "h2-20260906-facial"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -224,6 +225,7 @@ studio_files = [
     "h3-lora-studio/profiles/doggy.json",
     "h3-lora-studio/profiles/missionary_pov.json",
     "h3-lora-studio/profiles/after_ejaculation.json",
+    "h3-lora-studio/profiles/facial.json",
     "h3-lora-studio/profiles/fingering.json",
     "h3-lora-studio/profiles/masturbation.json",
     "h3-lora-studio/profiles/footjob.json",
@@ -317,7 +319,7 @@ sid = resolve_situation(今使うシーン)
 ids = situation_ids(sid)
 if よく使う部品を全部入れる:
     ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "fingering", "masturbation", "footjob", "remote_orgasm"):
+    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "fingering", "masturbation", "footjob", "remote_orgasm"):
         ids.extend(situation_ids(key))
     print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
 else:
@@ -407,7 +409,8 @@ MD3 = r"""## ③ 動画を作る
 - **騎乗位（女体）** … ふたなり＋女。男なし。総合えっちは積まない
 - **後背位（女体）** … ふたなり＋女。男なし
 - **正常位POV（女体）** … ふたなり＋女。男なし
-- **後射精（女体）** … ふたなり。男なし。絶頂とは別
+- **後射精（女体）** … ふたなり。男なし。絶頂・顔射とは別
+- **顔射（女体）** … ふたなり＋女。男なし。後射精・絶頂とは別。写真からが本線
 - **指入れ** … 女1人。男なし
 - **オナニー** … 女1人。男なし
 - **足コキ** … ふたなり＋女。男なし
@@ -422,7 +425,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "アナル挿入（画質）", "アナル舐め・指", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。

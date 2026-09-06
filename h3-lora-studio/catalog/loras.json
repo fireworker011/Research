@@ -355,7 +355,28 @@
         0.7,
         1.0
       ],
-      "note": "Hearmeman V0.5. Trigger cumshot. Action LoRA: ejaculation leaving the penis. Do not stack with AIO as a second act. Pair with penis helper."
+      "note": "Hearmeman V0.5. Trigger cumshot. Action LoRA: ejaculation leaving the penis. Do not stack with AIO as a second act. Pair with penis helper. Not facial; use facial-cumshot-h3."
+    },
+    {
+      "id": "facial-cumshot-h3",
+      "filename": "H3_facial_cumshot_cmst.safetensors",
+      "repo": "EllaPriest45/MinimaxH3_Actions",
+      "file": "Facial CumShot v0.1 - MinimaxH3 - cmst.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": true,
+      "trigger": "cmst",
+      "default_strength": 0.8,
+      "source": "hf",
+      "strength_range": [
+        0.65,
+        0.9
+      ],
+      "note": "Looking-down facial. Trigger cmst first. Author card says Ref2VA/I2VA; I2VA is studio I2V with Picture 1 as the woman looking up. T2V experimental. Strength 0.75-0.85. Pair with penis helper. Do not stack with HMCumshot, Remoteorgasm, AIO, or the REF2VA-named duplicate file."
     },
     {
       "id": "hmpussy-v6",
@@ -690,7 +711,7 @@
         0.6,
         1.0
       ],
-      "note": "Female climax reaction. Trigger Remoteorgasm. Not ejaculation; after-ejaculation uses hmcumshot-v2. Do not stack with cumshot."
+      "note": "Female climax reaction. Trigger Remoteorgasm. Not ejaculation; after-ejaculation uses hmcumshot-v2. Facial uses facial-cumshot-h3. Do not stack with cumshot."
     }
   ]
 }

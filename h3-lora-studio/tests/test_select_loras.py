@@ -111,6 +111,7 @@ def test_situations_switch_loras_by_profile_and_mode():
         "doggy",
         "missionary_pov",
         "after_ejaculation",
+        "facial",
         "fingering",
         "masturbation",
         "footjob",
@@ -320,6 +321,7 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
         "doggy",
         "missionary_pov",
         "after_ejaculation",
+        "facial",
         "footjob",
         "fingering",
         "masturbation",
@@ -358,6 +360,14 @@ def test_pose_aftercare_and_solo_act_stacks():
         assert row["adult"] is True
         assert row["source"] == "civitai"
         assert row["civitai_file_id"]
+    facial_row = by_id["facial-cumshot-h3"]
+    assert "t2v" in facial_row["modes"]
+    assert "i2v" in facial_row["modes"]
+    assert facial_row["arch"] == "fl2va"
+    assert facial_row["adult"] is True
+    assert facial_row["source"] == "hf"
+    assert facial_row["trigger"] == "cmst"
+    assert facial_row["repo"] == "EllaPriest45/MinimaxH3_Actions"
     assert by_id["riding-pose-i2v"]["modes"] == ["i2v"]
 
     doggy = select_loras(profile_name="doggy", mode="t2v", prompt_arg="（シーン）")
@@ -389,6 +399,25 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "hmnsfw-aio-v25" not in [r["id"] for r in after["stack"]]
     unload_after = {r["id"] for r in after["unload"]}
     assert "remote-orgasm-h3" in unload_after
+    assert "facial-cumshot-h3" in unload_after
+
+    facial = select_loras(profile_name="facial", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in facial["stack"]] == ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"]
+    assert facial["stack"][0]["trigger"] == "cmst"
+    assert facial["sampler"]["steps"] == 8
+    assert facial["turbo"] is True
+    assert "cmst" in facial["prompt"].lower()
+    assert "hmcumshot-v2" not in [r["id"] for r in facial["stack"]]
+    assert "remote-orgasm-h3" not in [r["id"] for r in facial["stack"]]
+    assert "hmnsfw-aio-v25" not in [r["id"] for r in facial["stack"]]
+    assert "adult man" not in facial["prompt"].lower()
+    assert "Picture 1" not in facial["prompt"]
+    unload_facial = {r["id"] for r in facial["unload"]}
+    assert "hmcumshot-v2" in unload_facial
+    assert "remote-orgasm-h3" in unload_facial
+    facial_i2v = select_loras(profile_name="facial", mode="i2v", prompt_arg="（シーン）")
+    assert "<Picture 1>" in facial_i2v["prompt"]
+    assert "looking up" in facial_i2v["prompt"].lower()
 
     fingering = select_loras(profile_name="fingering", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in fingering["stack"]] == ["fingering-h3", "synth-pussy-h3", "larry-v4"]

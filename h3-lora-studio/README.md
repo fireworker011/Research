@@ -60,7 +60,8 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Synth オフ。横はセックス（女体） |
-| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。射精そのもの。絶頂とは別 |
+| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。射精そのもの。絶頂・顔射とは別 |
+| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 | Larry 0.5 | **切る** | 8step。顔にかける。後射精とは別。I2V本線。T2Vは実験的 |
 | 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。オナニー LoRA は積まない |
 | オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
 | 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
@@ -77,7 +78,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - FL2VA 用と Ref2VA 用の取り違え
 - エロ挿入 LoRA との併用（アナル系は Turbo 切るのが前提）
 - 体位 LoRA と総合えっち（AIO）の同時積み。体位が AIO の代わり
-- 指入れ + オナニー、射精 + 絶頂
+- 指入れ + オナニー、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂
 - `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl）
 - シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
 - Photoreal still を動画本体に載せる
