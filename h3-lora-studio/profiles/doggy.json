@@ -1,0 +1,79 @@
+{
+  "id": "doggy",
+  "adults_only": true,
+  "min_age": 21,
+  "feminine_lock": true,
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
+  "allow_turbo": false,
+  "canvas": {
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
+  },
+  "stack_plan": {
+    "act": {
+      "id": "doggy-h3",
+      "strength": 0.8
+    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ]
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 12,
+    "note": "Doggy H-ZSHR 0.8 + penis 0.7 + Synth 0.55 / 12step. AIO off. Turbo off. T2V experimental."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "lesbian-cunnilingus-h3",
+    "pussy-spread-h3",
+    "futa-h3-v51",
+    "blowjob-h3",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "thumbinbutt-h3",
+    "cumouf-h3",
+    "final-thrust-h3",
+    "photoreal-h3-still",
+    "larry-v4",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy",
+    "astro-nsfw-h3",
+    "tiddies-realism-slider",
+    "aftermidnight-ref2va",
+    "hmnsfw-aio-v25",
+    "cowgirl-position-h3",
+    "missionary-pov-h3",
+    "hmcumshot-v2",
+    "fingering-h3",
+    "hmmasturbation-h3",
+    "footjob-h3",
+    "remote-orgasm-h3"
+  ],
+  "scenes": {
+    "i2v": "H-ZSHR, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "H-ZSHR, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis"
+}

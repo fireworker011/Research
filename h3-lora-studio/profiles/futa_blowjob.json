@@ -1,0 +1,71 @@
+{
+  "id": "futa_blowjob",
+  "adults_only": true,
+  "min_age": 21,
+  "feminine_lock": true,
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
+  "allow_turbo": true,
+  "canvas": {
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
+  },
+  "stack_plan": {
+    "act": {
+      "id": "blowjob-h3",
+      "strength": 0.75
+    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
+    "turbo": {
+      "id": "larry-v4",
+      "strength": 0.5
+    }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 6,
+    "note": "Futa BJ. Penis + Synth helpers with thin Larry 0.5 / 6step. Futa transform and AIO stay off."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "lesbian-cunnilingus-h3",
+    "pussy-spread-h3",
+    "hmnsfw-aio-v25",
+    "futa-h3-v51",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "thumbinbutt-h3",
+    "cumouf-h3",
+    "final-thrust-h3",
+    "photoreal-h3-still",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy"
+  ],
+  "scenes": {
+    "i2v": "bl0w_j0b, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari with a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis"
+}
