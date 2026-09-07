@@ -55,7 +55,8 @@ def _check_visible_plan(planned, clip_prompt):
         assert planned["sampler"]["steps"] == 12
         assert planned["sampler"]["sampler_name"] == "res_multistep"
         assert "[AUDIO-LOCK]" in planned["prompt"]
-        assert "spoken_transcript:" in planned["prompt"]
+        assert "spoken_transcript: once" in planned["prompt"]
+        assert "repeat: 0" in planned["prompt"]
         assert "プロンプトは読まない" not in planned["prompt"]
     else:
         assert ids == ["penis-lora-h3", "larry-v4", "cinema-dy"], ids
@@ -398,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-vram-1"' in src
+    assert 'FETCH_REV = "h3-20260907-audio-2"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -441,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-vram-1" in blob
+    assert "h3-20260907-audio-2" in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -3354,10 +3355,13 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         ["こんにちは"],
     )
     assert locked.index("overall_soundscape:") < locked.index("[AUDIO-LOCK]")
-    assert "「こんにちは」" in locked
-    assert "spoken_transcript:" in locked
+    assert locked.count("「こんにちは」") == 1
+    assert "spoken_transcript: once" in locked
+    assert "repeat: 0" in locked
+    assert "stretch: off" in locked
     assert "プロンプトは読まない" not in locked
     lock_line = next(ln for ln in locked.splitlines() if ln.startswith("[AUDIO-LOCK]"))
+    assert "「" not in lock_line
     assert jp_outside_quotes(lock_line) == ""
     silent_lock = lock_spoken_japanese("overall_soundscape:\nKiss. No spoken words.\n", [])
     assert "spoken_transcript: mute" in silent_lock
@@ -3368,9 +3372,11 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         ["こんにちは"],
     )
     assert old.count("[AUDIO-LOCK]") == 1
+    assert old.count("「こんにちは」") == 1
     assert "プロンプトは読まない" not in old
     assert lock_spoken_japanese(old, ["こんにちは"]).count("[AUDIO-LOCK]") == 1
     assert audio_lock_line(["こんにちは"]).startswith("[AUDIO-LOCK]")
+    assert "「" not in audio_lock_line(["こんにちは"])
     assert "prompt" not in audio_lock_line(["こんにちは"]).lower()
     assert strip_audio_lock(old).count("[AUDIO-LOCK]") == 0
 
@@ -3379,6 +3385,8 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3"]
     assert speech["stack_changed"] is False
     assert "[AUDIO-LOCK]" in speech["prompt"]
+    assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") == 1
+    assert "repeat: 0" in speech["prompt"]
     assert "こんにちは" in speech["prompt"]
     assert "プロンプトは読まない" not in speech["prompt"]
     assert "DY" not in speech["prompt"].split("\n", 1)[0]
@@ -3588,7 +3596,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-vram-1" in cell2
+    assert "h3-20260907-audio-2" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src

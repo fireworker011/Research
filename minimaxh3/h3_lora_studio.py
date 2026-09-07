@@ -2524,13 +2524,29 @@ def strip_audio_lock(prompt: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
-def audio_lock_line(lines: list[str] | None) -> str:
-    """One ASCII lock line. The only Japanese allowed is the 「」 transcript."""
+def collapse_spoken_quotes(text: str, lines: list[str] | None) -> str:
+    """Keep the first 「line」 (mouth visemes). Extra copies make H3 loop the line."""
+    out = str(text or "")
+    for ln in lines or []:
+        token = f"「{ln}」"
+        first = out.find(token)
+        if first < 0:
+            continue
+        out = out[: first + len(token)] + out[first + len(token) :].replace(token, "")
+    return out
+
+
+def audio_lock_line(lines: list[str] | None, *, transcript: str | None = None) -> str:
+    """ASCII lock. Embed 「」 only when the prompt has no copy left (visemes already have one)."""
     spoken = [str(x).strip() for x in (lines or []) if str(x).strip()]
     if spoken:
-        quoted = "".join(f"「{ln}」" for ln in spoken)
+        if transcript:
+            head = f"spoken_transcript: {transcript} count: 1."
+        else:
+            head = "spoken_transcript: once. count: 1."
         return (
-            f"{AUDIO_LOCK_MARK} spoken_transcript: {quoted} then: mute. "
+            f"{AUDIO_LOCK_MARK} {head} repeat: 0. loop: off. "
+            "pace: natural. stretch: off. rest_of_clip: silence. "
             "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
         )
     return (
@@ -2540,12 +2556,22 @@ def audio_lock_line(lines: list[str] | None) -> str:
 
 
 def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
-    """Pin H3 audio to the 「」 lines. Never put Japanese instructions in the prompt
-    (H3 TTS reads 「プロンプトは読まない」 as dialogue). Camera English stays visual-only.
+    """Pin H3 audio to one 「」 reading. Duplicate quotes and 10s leftover otherwise loop
+    or stretch the line. Never put Japanese instructions in the lock (those get TTS'd).
     """
-    text = strip_audio_lock(prompt)
-    spoken = list(lines) if lines is not None else spoken_lines(text)
-    lock = audio_lock_line(spoken)
+    raw = str(prompt or "")
+    spoken = list(lines) if lines is not None else spoken_lines(raw)
+    text = strip_audio_lock(raw)
+    if not spoken:
+        spoken = spoken_lines(text)
+    text = collapse_spoken_quotes(text, spoken)
+    need_embed = bool(spoken) and any(text.count(f"「{ln}」") == 0 for ln in spoken)
+    if need_embed:
+        for ln in spoken:
+            text = text.replace(f"「{ln}」", "")
+        lock = audio_lock_line(spoken, transcript="".join(f"「{ln}」" for ln in spoken))
+    else:
+        lock = audio_lock_line(spoken)
     marker = "overall_soundscape:"
     idx = text.find(marker)
     if idx >= 0:
