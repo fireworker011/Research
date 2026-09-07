@@ -399,10 +399,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-skin-1"' in src
+    assert 'FETCH_REV = "h3-20260907-who-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
-    assert "「」の中はカタカナ" in src
+    assert "「」の中は話し言葉" in src
     assert "漢字のまま" not in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-skin-1" in blob
+    assert "h3-20260907-who-1" in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -1836,9 +1836,9 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "サキにアラって" in story["clips"][2]["prompt"]
-    assert "ユだとヨケイムクってる" in story["clips"][5]["prompt"]
-    assert "アガッたらゴハン" in story["clips"][11]["prompt"]
+    assert "さきにあらってて" in story["clips"][2]["prompt"]
+    assert "おふろだとよけいムクってる" in story["clips"][5]["prompt"]
+    assert "あがったらごはんね" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
     for i, clip in enumerate(story["clips"]):
@@ -1952,9 +1952,9 @@ def test_dinner_story_twelve_clips_table(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "タベなさい" in story["clips"][2]["prompt"]
-    assert "ゴハンチュウなのに" in story["clips"][5]["prompt"]
-    assert "ちゃんとウエもタベなさい" in story["clips"][11]["prompt"]
+    assert "たべなさい" in story["clips"][2]["prompt"]
+    assert "ごはんのとちゅうなのに" in story["clips"][5]["prompt"]
+    assert "うえもちゃんとたべなさい" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
     for i, clip in enumerate(story["clips"]):
@@ -2069,8 +2069,8 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "ネルマエなのに" in story["clips"][5]["prompt"]
-    assert "デンキケしたよ" in story["clips"][11]["prompt"]
+    assert "ねるまえなのに" in story["clips"][5]["prompt"]
+    assert "でんき、けしたよ" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
     for i, clip in enumerate(story["clips"]):
@@ -2185,8 +2185,8 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
     assert "Already in" in story["clips"][5]["prompt"] or "ALREADY IN" in story["clips"][5]["prompt"]
     assert "NOT IN FRAME" in story["clips"][5]["prompt"]
     assert "NOT IN FRAME" in story["clips"][8]["prompt"]
-    assert "キュウジツなのにアサからムクってる" in story["clips"][3]["prompt"]
-    assert "ヒルごはんまだよ" in story["clips"][11]["prompt"]
+    assert "やすみなのにアサからムクってる" in story["clips"][3]["prompt"]
+    assert "ひるごはん、まだだよ" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
     for i, clip in enumerate(story["clips"]):
@@ -2300,8 +2300,8 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
     assert "LIP SYNC" in story["clips"][11]["prompt"]
     for idx in (0, 1, 3, 4, 5, 6, 7, 8, 9, 10):
         assert "LIP SYNC" not in story["clips"][idx]["prompt"], idx
-    assert "ゴゴもムクってる" in story["clips"][2]["prompt"]
-    assert "サラアラっとくから" in story["clips"][11]["prompt"]
+    assert "ひるからもムクってる" in story["clips"][2]["prompt"]
+    assert "さらあらっとくから" in story["clips"][11]["prompt"]
     assert "joining point" in story["clips"][4]["prompt"].lower()
     assert "ALREADY IN" in story["clips"][4]["prompt"]
     assert "Do not put Rei inside" in story["clips"][4]["prompt"]
@@ -2816,12 +2816,12 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
         "cafe-100s", tmp_path, n_clips=10,
         situations=["futa_visible"] * 3 + ["oral"] + ["futa_visible"] * 3 + ["oral", "oral_creampie", "futa_visible"],
         lines=[
-            ["あちぃー", "あー、スズシイ！いきかえるー！"],
-            ["いらっしゃいませ。ゴチュウモンはいかがしますか？", "アイスコーヒーで"],
+            ["あちぃー", "あー、すずしい！いきかえるー！"],
+            ["いらっしゃいませ。ごちゅうもんはいかがしますか", "アイスコーヒーで"],
             ["あ、おミズください", "あ、はい、どうぞ"],
             [],
             ["あー！おいし！いきかえる！", "ありがとうございます。コーヒー、すぐおもちしますね"],
-            ["おマたせしました", "あ、ミルクください！"],
+            ["おまたせしました", "あ、ミルクください！"],
             ["かしこまりました。はい、どうぞ"],
             [],
             [],
@@ -2850,14 +2850,14 @@ def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
         "train-sales-80s", tmp_path, n_clips=8,
         situations=["futa_visible", "futa_visible", "oral", "futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
         lines=[
-            ["おチャ、コーヒー、いかがですか", "おチャ、ください"],
-            ["はい。アツいのとヒヤシ、どっち", "ヒヤシで"],
+            ["おちゃ、コーヒー、いかがですか", "おちゃ、ください"],
+            ["はい。あついのとひやし、どっち", "ひやしで"],
             [],
-            ["あー、シミる", "ほかにごヨウは？"],
+            ["あー、しみる", "ほかにごようは？"],
             ["ミルクコーヒーも"],
             [],
             [],
-            ["ん、アツイ。ミルクきいてる", "ありがとうございました"],
+            ["ん、あつい。ミルクきいてる", "ありがとうございました"],
         ],
         cast_defs=["Rei", "Seller"],
         download=["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -2871,7 +2871,7 @@ def test_red_light_pack_hands_on_wheel(tmp_path):
     story = _check_pretext_pack(
         "red-light-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
-        lines=[["アカだね", "つぎ、ミギだよ"], ["エアコン、ヨワくする？", "このままでいい"], [], [], ["アオになった。ミギね", "うん"]],
+        lines=[["あかだね", "つぎ、みぎだよ"], ["エアコン、よわくする？", "このままでいい"], [], [], ["あおになった。みぎね", "うん"]],
         cast_defs=["Aya", "Rei"],
         download=["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
@@ -2884,7 +2884,7 @@ def test_yoga_pack_doggy_already_in(tmp_path):
     story = _check_pretext_pack(
         "yoga-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "doggy", "doggy", "futa_visible"],
-        lines=[["コシ、オトして", "ここ？"], ["もうスコし、マエ", "コツバン、オトしたまま"], [], [], ["イキをトトのえて", "スイブン、とってね"]],
+        lines=[["こし、おとして", "ここ？"], ["もうすこし、まえ", "こつばん、おとしたまま"], [], [], ["いきをととのえて", "すいぶん、とってね"]],
         cast_defs=["Aya", "Instructor"],
         download=["penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
     )
@@ -2899,7 +2899,7 @@ def test_back_wash_pack_cunnilingus_then_pee(tmp_path):
     story = _check_pretext_pack(
         "back-wash-60s", tmp_path, n_clips=6,
         situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_visible"],
-        lines=[["カタいね", "カタ、やって"], ["アワ、タすよ", "シタも"], [], ["アガリユ"], [], ["シミる。アガっていいよ"]],
+        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ"], [], ["しみる。あがっていいよ"]],
         cast_defs=["Madoka", "Sayaka"],
         download=["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
     )
@@ -2914,7 +2914,7 @@ def test_karaoke_pack_jupo_during_song(tmp_path):
     story = _check_pretext_pack(
         "karaoke-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
-        lines=[["このキョク、サビたかい", "キー、サげないの"], ["このまま"], [], [], ["キュウヨンてん", "サビ、キレてた"]],
+        lines=[["このきょく、サビたかい", "キー、さげないの"], ["このまま"], [], [], ["きゅうよんてん", "サビ、きれてた"]],
         cast_defs=["Aya", "Madoka"],
         download=["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
@@ -2926,7 +2926,7 @@ def test_laundromat_pack_aio_on_machine(tmp_path):
     story = _check_pretext_pack(
         "laundromat-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
-        lines=[["あとナンプン", "ジュウハチふん"], ["ナガいね", "スワる？"], [], [], ["オわった", "たたもう"]],
+        lines=[["あとなんぷん", "じゅうはちふん"], ["ながいね", "すわる？"], [], [], ["おわった", "たたもう"]],
         cast_defs=["Aya", "Rei"],
         download=["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
     )
@@ -2940,7 +2940,7 @@ def test_lecture_desk_pack_under_the_lectern(tmp_path):
     story = _check_pretext_pack(
         "lecture-desk-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
-        lines=[["ここ、シケンにでます", "ハイ"], ["ノート、トって"], [], [], ["シュクダイ、ニジュウページ", "ハイ"]],
+        lines=[["ここ、しけんにでます", "はい"], ["ノート、とって"], [], [], ["しゅくだい、にじゅうページ", "はい"]],
         cast_defs=["Aya", "Professor"],
         download=["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
@@ -2955,7 +2955,7 @@ def test_camp_pack_cunnilingus_only(tmp_path):
     story = _check_pretext_pack(
         "camp-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "cunnilingus_futa", "cunnilingus_futa", "futa_visible"],
-        lines=[["カ、いる", "スプレー、どこ"], ["テントのナカ", "ココ、ヤラれた？"], [], [], ["スプレー、ダしてくる", "ライト、モっていって"]],
+        lines=[["か、いる", "スプレー、どこ"], ["テントのなか", "ここ、やられた？"], [], [], ["スプレー、だしてくる", "ライト、もっていって"]],
         cast_defs=["Aya", "Rei"],
         download=["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     )
@@ -2970,7 +2970,7 @@ def test_fireworks_pack_standing_from_behind(tmp_path):
     story = _check_pretext_pack(
         "fireworks-50s", tmp_path, n_clips=5,
         situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
-        lines=[["いちハツめ", "アオい"], ["ウチアゲ、オソいね"], [], [], ["かえろっか", "ゴミ、ヒロって"]],
+        lines=[["いちはつめ", "あおい"], ["うちあげ、おそいね"], [], [], ["かえろっか", "ゴミ、ひろって"]],
         cast_defs=["Madoka", "Sayaka"],
         download=["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
     )
@@ -3033,7 +3033,7 @@ def test_story_play_chain_prepares_last_frame_i2v(tmp_path):
     assert c1["missing_still"] is None
     assert "Picture 1" in c1["prompt"]
     assert "Continue from this exact last frame" in c1["prompt"]
-    assert "イってらっしゃい" in c1["prompt"]
+    assert "いってらっしゃい" in c1["prompt"]
     # chain-raw: ③ fit does nothing, even on the last clip.
     c_last = prepare_story_clip(chain, n - 1, last_frame="x.png", stills_dir=tmp_path, fit_scene=True)
     assert c_last["fit_scene"] is False
@@ -3242,11 +3242,11 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         ["futa_visible"] * 3 + ["oral", "futa_visible", "oral", "oral_creampie", "futa_visible"]
     )
     want = [
-        "こんにちは。おミズをおトドケにきました",
-        "オソいわよ",
-        "ハヤクおミズちょうだい",
+        "こんにちは。おミズ、とどけにきました",
+        "おそいわよ",
+        "はやくおミズちょうだい",
         None,
-        "あー、シミる",
+        "あー、しみる",
         None,
         None,
         "ありがとうございました",
@@ -3435,7 +3435,7 @@ def test_last_stop_pack_four_clips_rei_seated(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert len(story["clips"]) == 4
     assert [c["situation"] for c in story["clips"]] == ["futa_visible", "oral", "oral_creampie", "futa_visible"]
-    want = ["シュウテンです、オキテください", None, None, "オキましたか？オキャクサン、シュウテンだからオリテください"]
+    want = ["しゅうてんです、おきてください", None, None, "おきましたか？おきゃくさん、しゅうてんだからおりてください"]
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
         assert (got[0] if got else None) == line, clip["label"]
@@ -3601,9 +3601,9 @@ def test_notebook_story_play_flow():
     assert "旧名「訪問販売60秒（つなぐ）」" in md0
     assert "登校（専用）" in md0
     assert "竿＋マンコ、金玉なし" in md0
-    assert "「」の中はカタカナ" in md0
+    assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-skin-1" in cell2
+    assert "h3-20260907-who-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
