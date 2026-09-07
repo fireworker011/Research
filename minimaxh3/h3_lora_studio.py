@@ -171,6 +171,18 @@ SITUATION_DOWNLOAD = {
         "larry-v4",
         "cumouf-h3",
     ],
+    # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
+    # pee-as-drink = oral, cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy.
+    "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "train-sales-80s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "red-light-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "yoga-50s": ["penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
+    "back-wash-60s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
+    "karaoke-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "laundromat-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "lecture-desk-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "camp-50s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
 }
 
 SITUATION_JA = {
@@ -256,6 +268,16 @@ SITUATION_JA = {
     "sales-visit-60s": "sales-visit-60s",
     "checkup-100s": "checkup-100s",
     "last-stop-40s": "last-stop-40s",
+    "cafe-100s": "cafe-100s",
+    "train-sales-80s": "train-sales-80s",
+    "red-light-50s": "red-light-50s",
+    "yoga-50s": "yoga-50s",
+    "back-wash-60s": "back-wash-60s",
+    "karaoke-50s": "karaoke-50s",
+    "laundromat-50s": "laundromat-50s",
+    "lecture-desk-50s": "lecture-desk-50s",
+    "camp-50s": "camp-50s",
+    "fireworks-50s": "fireworks-50s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
@@ -353,6 +375,16 @@ SITUATION_HELP = {
     "sales-visit-60s": "訪問販売60秒（つなぐ）。10秒×6本。9:16 576×1024。専用ではなく名前付きの「つなぐ」パック。1本目はテキスト、2本目以降は最後のコマから I2V。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・水ケース。セリフは口元4本（こんにちはお届け／遅いわよ／申し訳ございません／早くお水ちょうだい。漢字のまま）。5〜6本目はフェラ（放尿→根元）、無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診100秒（つなぐ）。10秒×10本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞はカタカナ（漢字なし）: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／（キス無言）／ん…クチとムネ…カクニンをします。根元までフェラ→口内 CUMOUF→「モンダイありますね」は別の本。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ: シュウテンです、オキテください／オキましたか？オキャクサン、シュウテンだからオリテください。hmmotion なし。",
+    "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞はカタカナ（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
+    "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞はカタカナ。行為は無言・寄り。",
+    "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞はカタカナ。",
+    "yoga-50s": "ヨガ50秒。10秒×5本。9:16。建前: コツバンを落とす。講師29・お団子・中乳・ふたなり20cm。生徒はアヤ22。四つん這いで最初から入っている（後背位 LoRA）。ジュボなし・放尿なし。台詞はカタカナ。",
+    "back-wash-60s": "背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝放尿。ジュボなし。台詞はカタカナ。",
+    "karaoke-50s": "カラオケ50秒。10秒×5本。9:16。建前: サビ待ちと点数。歌うのはマドカ22（20cm・マイク）。口はアヤ22。歌のあいだジュボ、最後の音で口内。放尿なし。台詞はカタカナ。",
+    "laundromat-50s": "コインランドリー50秒。10秒×5本。9:16。建前: あと何分。竿はレイ24、受けはアヤ22。洗濯機の上でもう入っている（AIO 横クローズ）。ジュボなし・放尿なし。台詞はカタカナ。",
+    "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞はカタカナ。授業120秒（専用）とは別。",
+    "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞はカタカナ。",
+    "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞はカタカナ。",
 }
 
 LORA_JA = {
@@ -404,9 +436,27 @@ STORY_ORDER = (
     "engawa-120s",
 )
 STORY_IDS = set(STORY_ORDER)
-# Named last-frame chain packs. Not stories (is_story False). Never added to STORY_IDS.
-CHAIN_PACK_ORDER = ("sales-visit-60s", "checkup-100s", "last-stop-40s")
+# Named chain packs. Not stories (is_story False). Never added to STORY_IDS.
+# The JSON on disk is seamless (last-frame I2V); ③ replays each pack in the same
+# three plays as the dedicated stories (専用 / つなぐ / つなぐ修).
+CHAIN_PACK_ORDER = (
+    "sales-visit-60s",
+    "checkup-100s",
+    "last-stop-40s",
+    "cafe-100s",
+    "train-sales-80s",
+    "red-light-50s",
+    "yoga-50s",
+    "back-wash-60s",
+    "karaoke-50s",
+    "laundromat-50s",
+    "lecture-desk-50s",
+    "camp-50s",
+    "fireworks-50s",
+)
 CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
+# Legacy long labels of the first three packs. They keep the old behaviour
+# (last-frame chain, clip 1 rewritten as a long take) = つなぐ修.
 CHAIN_PACK_TITLE_JA = {
     "sales-visit-60s": "訪問販売60秒（つなぐ）",
     "checkup-100s": "定期検診100秒（つなぐ）",
@@ -431,6 +481,19 @@ STORY_TITLE_JA = {
     "futon-120s": "布団",
     "sunday-120s": "休日",
     "engawa-120s": "縁側",
+    "sales-visit-60s": "訪問販売",
+    "checkup-100s": "定期検診",
+    "last-stop-40s": "終点",
+    "cafe-100s": "カフェ",
+    "train-sales-80s": "車内販売",
+    "red-light-50s": "赤信号",
+    "yoga-50s": "ヨガ",
+    "back-wash-60s": "背中流し",
+    "karaoke-50s": "カラオケ",
+    "laundromat-50s": "ランドリー",
+    "lecture-desk-50s": "講義机",
+    "camp-50s": "キャンプ",
+    "fireworks-50s": "花火",
 }
 STORY_PLAY_JA = {
     STORY_PLAY_DEDICATED: "専用",
@@ -459,19 +522,36 @@ def story_play_labels() -> list[str]:
 
 
 def chain_pack_labels() -> list[str]:
-    return [CHAIN_PACK_TITLE_JA[pid] for pid in CHAIN_PACK_ORDER]
+    """③ dropdown rows after the stories: every pack × 3 plays, pack order."""
+    out: list[str] = []
+    for pid in CHAIN_PACK_ORDER:
+        for play in STORY_PLAYS:
+            out.append(story_play_label(pid, play))
+    return out
+
+
+def chain_pack_legacy_labels() -> list[str]:
+    return [CHAIN_PACK_TITLE_JA[pid] for pid in CHAIN_PACK_ORDER if pid in CHAIN_PACK_TITLE_JA]
 
 
 def _register_story_play_labels() -> None:
-    """{短名}（専用|つなぐ|つなぐ修） → story id + play. Long legacy 「〜（専用）」 labels stay dedicated."""
-    for sid in STORY_ORDER:
+    """{短名}（専用|つなぐ|つなぐ修） → id + play for stories and packs.
+
+    Long legacy 「〜（専用）」 story labels stay dedicated. Long legacy pack labels
+    (「訪問販売60秒（つなぐ）」 etc.) keep their old behaviour: つなぐ修.
+    """
+    for sid in STORY_ORDER + CHAIN_PACK_ORDER:
         for play in STORY_PLAYS:
             label = story_play_label(sid, play)
             SITUATION_JA.setdefault(label, sid)
             _STORY_PLAY_LABELS[label] = (sid, play)
     for label, sid in list(SITUATION_JA.items()):
-        if sid in STORY_IDS and label not in _STORY_PLAY_LABELS:
+        if label in _STORY_PLAY_LABELS:
+            continue
+        if sid in STORY_IDS:
             _STORY_PLAY_LABELS[label] = (sid, STORY_PLAY_DEDICATED)
+        elif sid in CHAIN_PACK_IDS:
+            _STORY_PLAY_LABELS[label] = (sid, STORY_PLAY_CHAIN_REWRITE)
 
 
 _register_story_play_labels()
@@ -518,7 +598,7 @@ def is_chain_pack(situation: str) -> bool:
 
 
 def resolve_story_play(situation: str) -> str:
-    """dedicated | chain | chain_rewrite. Meaningful when is_story(situation)."""
+    """dedicated | chain | chain_rewrite. Meaningful when is_story or is_chain_pack."""
     key = str(situation or "").strip()
     hit = _STORY_PLAY_LABELS.get(key)
     if hit is not None:
@@ -586,7 +666,8 @@ def explain_choice(situation: str, mode: str) -> str:
         play = resolve_story_play(situation)
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）\n"
     elif sid in CHAIN_PACK_IDS:
-        play_line = "再生: つなぐパック（最後のコマから I2V。1本目を長回しに直す。専用ではありません）\n"
+        play = resolve_story_play(situation)
+        play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -2106,8 +2187,12 @@ _CLIP_INDEX_RE = re.compile(r"^Clip \d+ of \d+\.\s*")
 _CAST_STORIES_RE = re.compile(r"Same faces and bodies as the [^.]*stories\.")
 CAST_LOCK_SERIES_LINE = "Same faces, hair and bodies in every clip of this series."
 HMMOTION_SITUATIONS = frozenset({"futa_sex"})
-STORY_CAST_NAMES = ("Sayaka", "Rei", "Aya", "Madoka", "Saleswoman", "Doctor", "Conductor")
-STORY_CAST_DEF_RE = re.compile(r"^(Sayaka|Rei|Aya|Madoka|Saleswoman|Doctor|Conductor): Adult", re.M)
+STORY_CAST_NAMES = (
+    "Sayaka", "Rei", "Aya", "Madoka",
+    "Saleswoman", "Doctor", "Conductor",
+    "Clerk", "Seller", "Instructor", "Professor",
+)
+STORY_CAST_DEF_RE = re.compile(r"^(" + "|".join(STORY_CAST_NAMES) + r"): Adult", re.M)
 _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
 
@@ -2227,6 +2312,8 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
     clips = list(story.get("clips") or [])
     clip_s = float(story.get("clip_s") or 10)
     no_kanji = bool(story.get("spoken_no_kanji"))
+    # 建前 packs carry one short exchange (2 speakers) in a 10s face clip. Default stays 1.
+    spoken_max = max(1, min(2, int(story.get("spoken_max") or 1)))
     for i, clip in enumerate(clips):
         n = i + 1
         duration = float(clip.get("duration_s") or clip_s)
@@ -2257,7 +2344,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                 errors.append(f"clip {n}: oral camera must be close or medium-close")
             if situation == "cunnilingus_futa" and "close-up" not in prompt_l and "extreme close" not in prompt_l:
                 errors.append(f"clip {n}: cunnilingus camera must be a close-up")
-            if situation == "futa_sex" and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
+            if situation in {"futa_sex", "doggy"} and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
                 errors.append(f"clip {n}: sex clip must already be in / show the joining point")
             if situation == "futa_masturbation" and "strok" not in prompt_l and "pump" not in prompt_l and "lap" not in prompt_l:
                 errors.append(f"clip {n}: masturbation clip needs a lap/hand camera")
@@ -2269,8 +2356,9 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if "Full bodies from head to feet" in prompt:
                 errors.append(f"clip {n}: lip-sync clip must not be a full-body wide")
             unique = set(lines)
-            if len(unique) > 1:
-                errors.append(f"clip {n}: one spoken line only, got {sorted(unique)}")
+            if len(unique) > spoken_max:
+                what = "one spoken line only" if spoken_max == 1 else f"at most {spoken_max} spoken lines"
+                errors.append(f"clip {n}: {what}, got {sorted(unique)}")
     return errors
 
 
