@@ -2584,6 +2584,12 @@ ORAL_IN_MOUTH_LINE = (
     "Cheeks hollow. This is sucking (jupo), not licking. Do not lick the side of the shaft. "
     "Do not kiss the shaft. Do not run the tongue along the shaft. The penis stays in the mouth, not beside it."
 )
+ORAL_IN_MOUTH_SHARE_LINE = (
+    ORAL_IN_MOUTH_LINE
+    + " Until the last cum pulses, stay like that. After the last pulse only: mouth off the penis. "
+    "HOLD STILL a thick sticky pool of white liquid on the tongue, then 口移し ベロチュー. "
+    "Do not lick the shaft when coming off."
+)
 _ORAL_SUCK_RE = re.compile(
     r"Already oral|jupo|blow job|Mouth already on|Mouth already wrapped|"
     r"takes it to the BASE|takes .+ to the BASE|sucks the |already at .+ base",
@@ -2591,7 +2597,7 @@ _ORAL_SUCK_RE = re.compile(
 )
 
 
-def lock_oral_in_mouth(text: str, *, situation: str = "") -> str:
+def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> str:
     """Stop H3 from turning a blowjob into shaft-licking."""
     raw = str(text or "")
     if not raw or "ORAL LOCK:" in raw:
@@ -2601,14 +2607,181 @@ def lock_oral_in_mouth(text: str, *, situation: str = "") -> str:
         return raw
     if re.search(r"urine|yellow stream|pees a |drinks the yellow", raw, re.I):
         return raw
-    if re.search(r"pulls OFF|pulls her mouth off", raw, re.I):
+    share_end = str(ending or "").strip() == "share"
+    if not share_end and re.search(r"pulls OFF|pulls her mouth off", raw, re.I):
         return raw
     if sit in {"oral", "futa_blowjob"} and not _ORAL_SUCK_RE.search(raw):
         return raw
+    line = ORAL_IN_MOUTH_SHARE_LINE if share_end else ORAL_IN_MOUTH_LINE
     cut = raw.find("\noverall_soundscape:")
     if cut > 0:
-        return raw[:cut].rstrip() + "\n" + ORAL_IN_MOUTH_LINE + "\n" + raw[cut:]
-    return raw.rstrip() + "\n" + ORAL_IN_MOUTH_LINE
+        return raw[:cut].rstrip() + "\n" + line + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + line
+
+
+SEMEN_SHARE_LINE = (
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a thick sticky gooey pool of "
+    "white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
+    "Then 口移し ベロチュー: they lean in and pass that same thick white liquid tongue-to-tongue in a "
+    "deep messy tongue kiss. Do not swallow it all first. Do not add a new clip."
+)
+SEMEN_SHARE_BEAT = (
+    "HOLD STILL: a thick sticky gooey pool of white liquid sits on the tongue, viscous "
+    "(ドロドロの白い液体), not watery. Then 口移し ベロチュー: they lean in and pass that same thick "
+    "white liquid tongue-to-tongue in a deep messy tongue kiss. Do not swallow it all first."
+)
+# Geometry or act that cannot take a mouth-to-mouth share (vaginal creampie, under-desk, walk-away).
+SEMEN_SHARE_SKIP = frozenset({
+    "commute-120s",
+    "rooftop-100s",
+    "yoga-50s",
+    "laundromat-50s",
+    "fireworks-50s",
+    "camp-50s",
+    "back-wash-60s",
+    "lecture-desk-50s",
+})
+# story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
+# on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
+SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
+    "bath-120s": [(10, "silent_next")],
+    "dinner-120s": [(10, "silent_next")],
+    "futon-120s": [(10, "silent_next")],
+    "okaeri-120s": [(8, "silent_next")],
+    "lecture-120s": [(7, "silent_next")],
+    "dishes-90s": [(11, "silent_next")],
+    "cafe-100s": [(9, "after_speech")],
+    "checkup-100s": [(8, "after_speech")],
+    "homecoming-90s": [(10, "after_speech")],
+    "karaoke-50s": [(4, "after_speech")],
+    "sales-visit-60s": [(7, "after_speech")],
+    "train-sales-80s": [(7, "after_speech")],
+    "engawa-120s": [(10, "on_cumouf")],
+    "sunday-120s": [(10, "on_cumouf")],
+    "last-stop-40s": [(2, "on_cumouf")],
+    "red-light-50s": [(3, "on_cumouf")],
+}
+_REMAINING_SILENCE_RE = re.compile(
+    r"Remaining seconds, silence:.*?(?:Do not freeze\.|No freeze\.)",
+    re.S,
+)
+_STILL_IN_MOUTH_END_RE = re.compile(r"End: still in her mouth[^.]*\.")
+_MOUTH_STILL_ON_END_RE = re.compile(r"End: mouth still on[^.]*\.")
+
+
+def semen_share_plan(story: dict[str, Any] | None) -> list[tuple[int, str]]:
+    """Which clip gets the HOLD + 口移し ベロチュー beat. Empty = skip this story."""
+    data = story or {}
+    sid = str(data.get("id") or "").strip()
+    if sid in SEMEN_SHARE_SKIP:
+        return []
+    if str(data.get("kind") or "") == "anthology":
+        return [
+            (i, "on_cumouf")
+            for i, clip in enumerate(data.get("clips") or [])
+            if str(clip.get("situation") or "") == "oral_creampie"
+        ]
+    return list(SEMEN_SHARE_BY_STORY.get(sid, []))
+
+
+def lock_semen_share_kiss(text: str) -> str:
+    """Idempotent marker so H3 holds viscous white on the tongue, then 口移し."""
+    raw = str(text or "")
+    if not raw or "SEMEN SHARE:" in raw:
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SEMEN_SHARE_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SEMEN_SHARE_LINE
+
+
+def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
+    """Rewrite the share clip so the last seconds are HOLD white liquid + 口移し ベロチュー."""
+    raw = str(prompt or "")
+    if not raw or "SEMEN SHARE:" in raw:
+        return raw
+    mode = str(where or "").strip()
+    share_end = (
+        f"After the last pulse, mouth off. {SEMEN_SHARE_BEAT} "
+        "End: tongues sharing the thick white liquid, not still on the shaft."
+    )
+    if mode == "after_speech":
+        if _REMAINING_SILENCE_RE.search(raw):
+            raw = _REMAINING_SILENCE_RE.sub(
+                f"Remaining seconds, silence: mouth off the penis. {SEMEN_SHARE_BEAT} Do not freeze.",
+                raw,
+                count=1,
+            )
+        elif "口移し" in raw and "HOLD STILL" in raw:
+            return raw
+        elif re.search(r"tongue kiss", raw, re.I) or "ベロチュー" in raw:
+            raw = re.sub(
+                r"(deep wet tongue kiss)",
+                r"\1, 口移し of the thick sticky white liquid still on the tongue",
+                raw,
+                count=1,
+                flags=re.I,
+            )
+            if "HOLD STILL" not in raw:
+                raw = raw.replace(
+                    "Then she stands and they fall into a deep wet tongue kiss",
+                    "HOLD STILL the thick sticky white liquid on her tongue. Then she stands and they fall into a deep wet tongue kiss",
+                    1,
+                )
+        elif "\noverall_soundscape:" in raw:
+            raw = raw.replace(
+                "\noverall_soundscape:",
+                f"\n{SEMEN_SHARE_BEAT}\n\noverall_soundscape:",
+                1,
+            )
+        return raw
+    if mode == "on_cumouf":
+        if _STILL_IN_MOUTH_END_RE.search(raw):
+            raw = _STILL_IN_MOUTH_END_RE.sub(share_end, raw, count=1)
+        elif _MOUTH_STILL_ON_END_RE.search(raw):
+            raw = _MOUTH_STILL_ON_END_RE.sub(share_end, raw, count=1)
+        else:
+            raw = raw.replace("Nobody pulls off.", f"{SEMEN_SHARE_BEAT} ")
+            if "口移し" not in raw and "\noverall_soundscape:" in raw:
+                raw = raw.replace(
+                    "\noverall_soundscape:",
+                    f"\n{SEMEN_SHARE_BEAT}\n\noverall_soundscape:",
+                    1,
+                )
+        raw = raw.replace(
+            "Mouth stays on until the last frames.",
+            "Mouth stays on until the last pulses, then mouth off for 口移し.",
+        )
+        return raw
+    if mode == "silent_next":
+        raw = raw.replace("Mouth stays on the penis.", "Mouth comes off the penis.")
+        raw = raw.replace("Mouth stays on.", "Mouth comes off.")
+        raw = raw.replace("Mouth never leaves.", "Mouth comes off.")
+        raw = raw.replace("She does not pull off.", "She pulls off, then 口移し.")
+        raw = raw.replace("Do not pull off.", "Pull off, then 口移し.")
+        raw = raw.replace("No pull-off.", "Pull off, then 口移し.")
+        raw = raw.replace("Nobody kisses.", "")
+        raw = raw.replace("Do not kiss.", "")
+        if _STILL_IN_MOUTH_END_RE.search(raw):
+            raw = _STILL_IN_MOUTH_END_RE.sub(share_end, raw, count=1)
+        elif _MOUTH_STILL_ON_END_RE.search(raw):
+            raw = _MOUTH_STILL_ON_END_RE.sub(share_end, raw, count=1)
+        if "口移し" not in raw and "\noverall_soundscape:" in raw:
+            raw = raw.replace(
+                "\noverall_soundscape:",
+                f"\n{SEMEN_SHARE_BEAT}\n\noverall_soundscape:",
+                1,
+            )
+        return raw
+    return raw
+
+
+def apply_semen_share_label(label: str, *, mode: str) -> str:
+    text = str(label or "")
+    if mode != "silent_next" or "口移し" in text:
+        return text
+    swapped = re.sub(r"(抜く|離さない|咥えたまま)", "口移し", text)
+    return swapped if swapped != text else text + " 口移し"
 
 
 def spoken_lines(prompt: str) -> list[str]:
@@ -3001,7 +3174,9 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "inside her little sister's mouth. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth, "
                 "overflows down the shaft as thick opaque white gooey strands onto Aya's chin and mini breasts. "
                 "Messy swallows, more white liquid leaking than she can keep. "
-                "End: mouth still on, white liquid still leaking."
+                "After the last pulse: mouth off. HOLD STILL a thick sticky pool of white liquid on the tongue, "
+                "viscous (ドロドロ). Then 口移し ベロチュー, passing that same white liquid tongue-to-tongue. "
+                "End: tongues sharing the thick white liquid, not still on the shaft."
             ),
             "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water. No spoken words.",
         },
@@ -3127,7 +3302,9 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Under the family table Aya's lips stay wrapped around Madoka's 20cm. Madoka cums inside her sister's "
                 "mouth while the dinner bowls sit above. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth "
                 "and runs down the shaft onto the tatami edge as thick opaque white gooey strands. Messy swallows. "
-                "End: mouth still on, white liquid leaking."
+                "After the last pulse: mouth off. HOLD STILL a thick sticky pool of white liquid on the tongue, "
+                "viscous (ドロドロ). Then 口移し ベロチュー, passing that same white liquid tongue-to-tongue. "
+                "End: tongues sharing the thick white liquid, not still on the shaft."
             ),
             "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink. No spoken words.",
         },
@@ -3264,6 +3441,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
         )
         if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
             prompt = "hmmotion, PENISLORA\n" + prompt
+        if spec["situation"] == "oral_creampie":
+            prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
         clips.append(
             {
                 "id": spec["id"],
@@ -3504,13 +3683,23 @@ def prepare_story_clip(
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
-    raw_prompt = lock_oral_in_mouth(
-        lock_semen_look(
-            compact_story_prompt(str(clip.get("prompt") or "")),
-            situation=situation,
-        ),
+    label = str(clip.get("label") or f"clip {index + 1}")
+    share_modes = {i: mode for i, mode in semen_share_plan(story)}
+    share_mode = share_modes.get(index)
+    raw_prompt = lock_semen_look(
+        compact_story_prompt(str(clip.get("prompt") or "")),
         situation=situation,
     )
+    if share_mode == "on_cumouf":
+        raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation, ending="share")
+        raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where="on_cumouf"))
+    elif share_mode in {"silent_next", "after_speech"}:
+        raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where=share_mode))
+        if share_mode == "silent_next":
+            situation = "futa_visible"
+            label = apply_semen_share_label(label, mode=share_mode)
+    else:
+        raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
@@ -3603,7 +3792,7 @@ def prepare_story_clip(
     width, height = story_canvas_wh(story, clip)
     return {
         "index": index,
-        "label": str(clip.get("label") or f"clip {index + 1}"),
+        "label": label,
         "situation": situation,
         "mode": mode,
         "prompt": prompt,

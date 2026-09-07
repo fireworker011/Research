@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-jubo-1"' in src
+    assert 'FETCH_REV = "h3-20260907-share-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-jubo-1" in blob
+    assert "h3-20260907-share-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -481,6 +481,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "ensure_r2v_in_object_info" in src
     assert "ensure_comfy_r2v_node" in src
     assert "lock_oral_in_mouth" in src
+    assert "lock_semen_share_kiss" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -1383,7 +1384,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         "oral",
         "oral",
         "oral_creampie",
-        "oral_creampie",
+        "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert "hairless pussy readable" not in "".join(c["prompt"] for c in story["clips"])
@@ -1603,7 +1604,7 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         "cunnilingus_futa",
         "oral",
         "oral_creampie",
-        "oral",
+        "futa_visible",
         "futa_visible",
         "futa_visible",
     ]
@@ -1818,7 +1819,7 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
         "oral",
         "oral",
         "oral_creampie",
-        "oral",
+        "futa_visible",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -1929,7 +1930,7 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
         "oral",
         "oral",
         "oral_creampie",
-        "oral",
+        "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -2045,7 +2046,7 @@ def test_dinner_story_twelve_clips_table(tmp_path):
         "oral",
         "oral",
         "oral_creampie",
-        "oral",
+        "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -2162,7 +2163,7 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
         "oral",
         "oral",
         "oral_creampie",
-        "oral",
+        "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -3658,6 +3659,94 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
     assert "ORAL LOCK:" not in walk
     creampie = lock_oral_in_mouth("CUMOUF. Already deep in the mouth.", situation="oral_creampie")
     assert "ORAL LOCK:" in creampie
+    share = lock_oral_in_mouth(
+        "CUMOUF. Already deep in the mouth. After the last pulse she pulls her mouth off.\n",
+        situation="oral_creampie",
+        ending="share",
+    )
+    assert "ORAL LOCK:" in share
+    assert "口移し" in share
+
+
+def test_semen_share_plan_hold_then_kiss(tmp_path):
+    from h3_lora_studio import (
+        SEMEN_SHARE_SKIP,
+        inject_semen_share_into_prompt,
+        load_story,
+        lock_semen_share_kiss,
+        prepare_story_clip,
+        semen_share_plan,
+    )
+
+    assert semen_share_plan({"id": "yoga-50s", "clips": []}) == []
+    assert "lecture-desk-50s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("lecture-desk-50s")) == []
+    assert semen_share_plan(load_story("commute-120s")) == []
+    assert semen_share_plan(load_story("bath-120s")) == [(10, "silent_next")]
+    assert semen_share_plan(load_story("last-stop-40s")) == [(2, "on_cumouf")]
+    assert semen_share_plan(load_story("red-light-50s")) == [(3, "on_cumouf")]
+    assert semen_share_plan(load_story("engawa-120s")) == [(10, "on_cumouf")]
+    assert semen_share_plan(load_story("cafe-100s")) == [(9, "after_speech")]
+    shorts = load_story("shorts-immoral")
+    assert semen_share_plan(shorts) == [(1, "on_cumouf"), (6, "on_cumouf")]
+    for i, mode in semen_share_plan(shorts):
+        assert shorts["clips"][i]["situation"] == "oral_creampie"
+        assert "口移し" in shorts["clips"][i]["prompt"]
+        assert "HOLD STILL" in shorts["clips"][i]["prompt"]
+        assert "Full bodies from head to feet" not in shorts["clips"][i]["prompt"]
+
+    locked = lock_semen_share_kiss("CUMOUF.\n\noverall_soundscape:\nWet.\n")
+    assert "SEMEN SHARE:" in locked
+    assert "HOLD STILL" in locked
+    assert "口移し" in locked
+    assert "ベロチュー" in locked
+    assert locked.index("SEMEN SHARE:") < locked.index("overall_soundscape:")
+    assert lock_semen_share_kiss(locked) == locked
+
+    after = inject_semen_share_into_prompt(
+        "She speaks: 「モンダイありますね」. Remaining seconds, silence: she stays squatting. Do not freeze.",
+        where="after_speech",
+    )
+    assert "口移し" in after
+    assert "HOLD STILL" in after
+    assert "モンダイありますね" in after
+
+    bath = load_story("bath-120s")
+    assert bath["duration_s"] == 120
+    share_clip = prepare_story_clip(bath, 10, last_frame="x.png", stills_dir=tmp_path)
+    assert share_clip["situation"] == "futa_visible"
+    assert share_clip["duration_s"] == 10
+    assert "口移し" in share_clip["prompt"]
+    assert "HOLD STILL" in share_clip["prompt"]
+    assert "SEMEN SHARE:" in share_clip["prompt"]
+    assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
+    assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
+    cumouf = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
+    assert cumouf["situation"] == "oral_creampie"
+    assert "SEMEN SHARE:" not in cumouf["prompt"]
+
+    stop = load_story("last-stop-40s")
+    assert sum(float(c["duration_s"]) for c in stop["clips"]) == 40
+    cum_share = prepare_story_clip(stop, 2, last_frame="x.png", stills_dir=tmp_path)
+    assert cum_share["situation"] == "oral_creampie"
+    assert "ORAL LOCK:" in cum_share["prompt"]
+    assert "not licking" in cum_share["prompt"].lower()
+    assert "口移し" in cum_share["prompt"]
+    assert "SEMEN SHARE:" in cum_share["prompt"]
+    speech = prepare_story_clip(stop, 3, last_frame="x.png", stills_dir=tmp_path)
+    assert "おきましたか？おきゃくさん、しゅうてんだからおりてください" in speech["prompt"]
+    assert "SEMEN SHARE:" not in speech["prompt"]
+
+    desk = load_story("lecture-desk-50s")
+    under = prepare_story_clip(desk, 3, last_frame="x.png", stills_dir=tmp_path)
+    assert under["situation"] == "oral_creampie"
+    assert "SEMEN SHARE:" not in under["prompt"]
+    assert "口移し" not in under["prompt"]
+
+    sex = load_story("yoga-50s")
+    last = prepare_story_clip(sex, 4, last_frame="x.png", stills_dir=tmp_path)
+    assert "SEMEN SHARE:" not in last["prompt"]
+    assert "口移し" not in last["prompt"]
 
 
 def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
@@ -3763,7 +3852,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-jubo-1" in cell2
+    assert "h3-20260907-share-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -3787,6 +3876,7 @@ def test_notebook_story_play_flow():
     assert "raise SystemExit(R2V_NODE_MISSING)" in cell3
     assert "ensure_r2v_in_object_info" in cell3
     assert "lock_oral_in_mouth" in src
+    assert "lock_semen_share_kiss" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
