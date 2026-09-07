@@ -396,7 +396,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-door-visit-1"' in src
+    assert 'FETCH_REV = "h3-20260907-act15-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -439,7 +439,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-door-visit-1" in blob
+    assert "h3-20260907-act15-1" in blob
+    assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
     assert "input/commute-120s/" in src
     assert 'やりたいシーン = "登校（専用）"' in code
@@ -2509,7 +2510,7 @@ def test_validate_story_follow_hmmotion_only_on_aio_sex():
     assert validate_story_follow(good) == []
 
 
-def test_validate_story_follow_rejects_act_speech_and_15s():
+def test_validate_story_follow_rejects_act_speech_and_spoken_15s():
     from h3_lora_studio import validate_story_follow
 
     spoken_oral = {
@@ -2524,19 +2525,41 @@ def test_validate_story_follow_rejects_act_speech_and_15s():
     }
     errs = validate_story_follow(spoken_oral)
     assert any("must not speak" in e for e in errs)
-    fifteen = {
-        "clip_s": 15,
+    spoken_15 = {
+        "clip_s": 10,
         "clips": [
             {
                 "duration_s": 15,
                 "situation": "futa_visible",
-                "prompt": "ONE UNBROKEN 15-second take. Full bodies from head to feet. No speech.",
+                "prompt": "ONE UNBROKEN 15-second take. LIP SYNC: face large.\n「こんにちは」",
             }
         ],
     }
-    errs = validate_story_follow(fifteen)
-    assert any("duration_s must be 10" in e for e in errs)
+    errs = validate_story_follow(spoken_15)
+    assert any("spoken clips stay 10s" in e for e in errs)
+    ten_says_fifteen = {
+        "clip_s": 10,
+        "clips": [
+            {
+                "duration_s": 10,
+                "situation": "futa_visible",
+                "prompt": "ONE UNBROKEN 15-second take. LIP SYNC: face large.\n「こんにちは」",
+            }
+        ],
+    }
+    errs = validate_story_follow(ten_says_fifteen)
     assert any("10-second take" in e for e in errs)
+    silent_15 = {
+        "clip_s": 10,
+        "clips": [
+            {
+                "duration_s": 15,
+                "situation": "oral",
+                "prompt": "ONE UNBROKEN 15-second take. medium-close on the mouth. Already oral.",
+            }
+        ],
+    }
+    assert validate_story_follow(silent_15) == []
 
 
 def test_story_play_labels_resolve_to_story_and_play():
@@ -3133,7 +3156,9 @@ def _check_pack_common(story, sid, tmp_path):
     assert "rewrite_chain_prompts" not in story
     assert story["min_age"] >= 21
     assert story["clip_s"] == 10
-    assert story["duration_s"] == 10 * len(story["clips"])
+    durs = [float(c.get("duration_s") or story["clip_s"]) for c in story["clips"]]
+    assert all(d in (10.0, 15.0) for d in durs)
+    assert story["duration_s"] == sum(durs)
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
     assert story_canvas_wh(story) == (576, 1024)
     assert validate_story_follow(story) == []
@@ -3145,12 +3170,19 @@ def _check_pack_common(story, sid, tmp_path):
     prev_stack = None
     for i, clip in enumerate(story["clips"]):
         prompt = clip["prompt"]
+        lines = spoken_lines(prompt)
         assert "hmmotion" not in prompt.lower()
-        assert "15-second" not in prompt
+        dur = float(clip.get("duration_s") or story["clip_s"])
+        if dur == 15:
+            assert "15-second take" in prompt
+            assert "10-second take" not in prompt
+            assert not lines
+        else:
+            assert dur == 10
+            assert "15-second" not in prompt
         assert "Hard cut" not in prompt
         assert "Do not copy the previous clip" not in prompt
         assert "576x1024" in prompt
-        lines = spoken_lines(prompt)
         assert len(set(lines)) <= 1, (sid, i + 1, lines)
         if clip["situation"] in ACT_SITUATIONS:
             assert not lines
@@ -3168,7 +3200,7 @@ def _check_pack_common(story, sid, tmp_path):
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
         assert planned["width"] == 576 and planned["height"] == 1024
-        assert planned["duration_s"] == 10
+        assert planned["duration_s"] == dur
         assert planned["seamless"] is True and planned["rewrite_chain_prompts"] is True
         if i == 0:
             assert planned["mode"] == "t2v"
@@ -3233,7 +3265,10 @@ def test_checkup_pack_eleven_clips_doorway_kana_lines(tmp_path):
     story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
     assert story["spoken_no_kanji"] is True
     assert len(story["clips"]) == 11
-    assert story["duration_s"] == 110
+    assert story["duration_s"] == 120
+    assert [float(c["duration_s"]) for c in story["clips"]] == (
+        [10, 10, 10, 10, 10, 15, 10, 10, 15, 10, 10]
+    )
     assert [c["situation"] for c in story["clips"]] == (
         ["futa_visible"] * 8 + ["oral", "oral_creampie", "futa_visible"]
     )
@@ -3519,7 +3554,8 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-door-visit-1" in cell2
+    assert "h3-20260907-act15-1" in cell2
+    assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
     assert "短編集（参照）" in cell3

@@ -398,7 +398,7 @@ SITUATION_HELP = {
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（キュウジツなのにアサからムクってる／ヒルごはんまだよ。カタカナ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ゴゴもムクってる／サラアラっとくから。カタカナ）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。元の15秒×4を10秒×9本＝90秒。9:16。玄関の対面。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。おミズ＝放尿を飲み干してからジュボ。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズをおトドケにきました／オソいわよ／モウシワケございません／ハヤクおミズちょうだい／あー、シミる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
-    "checkup-100s": "定期検診。元の15秒×4を10秒×11本＝110秒。9:16。診察室ではない。家の玄関で対面したあと、その場で進める。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。キスは両手で胸。カクニンの2文は口パクを分け、ジュボは無言。口内は粘る白液を残して見せる。台詞: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
+    "checkup-100s": "定期検診。セリフは10秒、ベロチューとジュボは無言15秒。11本＝120秒。9:16。診察室ではない。家の玄関で対面したあと、その場で進める。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。キスは両手で胸。カクニンの2文は口パクを分け、ジュボは無言。口内は粘る白液を残して見せる。台詞: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ: シュウテンです、オキテください／オキましたか？オキャクサン、シュウテンだからオリテください。hmmotion なし。",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞はカタカナ（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞はカタカナ。行為は無言・寄り。",
@@ -2969,27 +2969,36 @@ def generate_immoral_shorts() -> dict[str, Any]:
 
 
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
-    """H3 following: 10s stories / 15s anthology, one place, act cameras, lip-sync only on speaking face clips."""
+    """H3 following: 10s speech / 15s silent acts / 15s anthology. One place, act cameras, lip-sync only on speaking face clips."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     anthology = str(story.get("kind") or "") == "anthology"
-    want_s = 15.0 if anthology else 10.0
-    clip_s = float(story.get("clip_s") or want_s)
+    clip_s = float(story.get("clip_s") or (15.0 if anthology else 10.0))
     # 建前 packs carry one short exchange (2 speakers) in a 10s face clip. Default stays 1.
     spoken_max = max(1, min(2, int(story.get("spoken_max") or 1)))
     for i, clip in enumerate(clips):
         n = i + 1
         duration = float(clip.get("duration_s") or clip_s)
-        if abs(duration - want_s) > 0.01:
-            errors.append(f"clip {n}: duration_s must be {int(want_s)} for H3 following (got {duration:g})")
         prompt = str(clip.get("prompt") or "")
         situation = str(clip.get("situation") or "").strip()
         lines = spoken_lines(prompt)
         if anthology:
+            if abs(duration - 15.0) > 0.01:
+                errors.append(f"clip {n}: duration_s must be 15 for H3 following (got {duration:g})")
             if "15-second take" not in prompt and "15-second" not in prompt:
                 errors.append(f"clip {n}: anthology clips must be a 15-second take")
-        elif "15-second take" in prompt or "15-second" in prompt:
-            errors.append(f"clip {n}: use a 10-second take, not 15")
+        else:
+            if abs(duration - 10.0) > 0.01 and abs(duration - 15.0) > 0.01:
+                errors.append(f"clip {n}: duration_s must be 10 or 15 for H3 following (got {duration:g})")
+            if abs(duration - 15.0) < 0.01:
+                if lines:
+                    errors.append(f"clip {n}: spoken clips stay 10s (leftover seconds fill with extra speech)")
+                if "15-second take" not in prompt and "15-second" not in prompt:
+                    errors.append(f"clip {n}: 15s clip must be a 15-second take")
+                if "10-second take" in prompt:
+                    errors.append(f"clip {n}: 15s clip must not say 10-second take")
+            elif "15-second take" in prompt or "15-second" in prompt:
+                errors.append(f"clip {n}: use a 10-second take, not 15")
         for spoken in lines:
             if _KANJI_RE.search(spoken):
                 errors.append(f"clip {n}: write the spoken line in kana (no kanji): 「{spoken}」")
