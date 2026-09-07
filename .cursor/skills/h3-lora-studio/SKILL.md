@@ -12,7 +12,7 @@ description: MiniMax H3 LoRA studio for Colab. SFW fast+quality is turbo plus on
 - `〜（つなぐ）` = 文を直さずつなぐ。last-frame I2V。`rewrite_chain_opening_prompt` も最後の `rewrite_final_scene_i2v_prompt` もオフ。Picture 1 ロック（`continue_chain_prompt`）だけ必須
 - `〜（つなぐ修）` = 文を直してつなぐ。last-frame I2V ＋ 1本目に `rewrite_chain_opening_prompt`。③「最終シーン合わせ」オンなら最後の本だけ `rewrite_final_scene_i2v_prompt`
 
-名前付きつなぐパック（`CHAIN_PACK_IDS` = sales-visit-60s / checkup-100s / last-stop-40s）は専用ではない（`is_story` False）。`kind:"chain"`・`seamless:true`・9:16 576×1024・10秒×N・last-frame I2V・LoRA は JSON の本ごと。3パターンに増やさない。検診・終点だけ `spoken_no_kanji`（「」内の漢字はカタカナ、ひらがな/助詞はそのまま。`validate_story_follow` が検査）。訪問販売の「遅いわよ」などは漢字のまま。
+名前付きパック（`CHAIN_PACK_IDS` = sales-visit-60s / checkup-100s / last-stop-40s ＋ 建前パック cafe-100s / train-sales-80s / red-light-50s / yoga-50s / back-wash-60s / karaoke-50s / laundromat-50s / lecture-desk-50s / camp-50s / fireworks-50s）は専用ではない（`is_story` False、`is_chain_pack` True）が、③では**同じ3パターン**で再生する（`訪問販売（専用｜つなぐ｜つなぐ修）` … `花火（…）`。`resolve_story_play` / `apply_story_play` は packs にも効く）。JSON は `kind:"chain"`・`seamless:true`・9:16 576×1024・10秒×N・LoRA は JSON の本ごと。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」と裸の id は **つなぐ修**（前と同じ動き）。画像サイズは JSON の `canvas` だけで決まる（`story_canvas_wh`）ので、建前パックの文に大きさは書かない。検診・終点・建前10本は `spoken_no_kanji`（「」内の漢字はカタカナ、ひらがな/助詞はそのまま。`validate_story_follow` が検査）。訪問販売の「遅いわよ」などは漢字のまま。建前パックは `spoken_max: 2`（口元の本に1往復2行まで。上限2、他は1）。建前パックのユーザー原稿は 15秒×N だったが H3 追従のため 10秒×N に割り直し（行為の本は無言なので、行為中の台詞は前後の口元の本へ）。行為→LoRA: ジュボ=oral、口内=oral_creampie、放尿を飲む=oral、クンニ=cunnilingus_futa（寄り）、もう入っている=futa_sex（hmmotion 先頭）または四つん這いは doggy。アナル舐め・アナル指入れの建前パックは無い（アナル舐め LoRA が無い）。
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
