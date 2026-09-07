@@ -46,10 +46,10 @@ from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_
 
 
 def _check_visible_plan(planned, clip_prompt):
-    """futa_visible: spoken 「line」 clips drop cinema+Larry (jaw melt); walk/kiss keep thin Larry 8step."""
+    """futa_visible: spoken 「line」 clips drop Larry (jaw melt); walk/kiss keep thin Larry 8step."""
     ids = [row["id"] for row in planned["stack"]]
     if "「" in clip_prompt:
-        assert ids == ["penis-lora-h3"], ids
+        assert ids == ["penis-lora-h3", "synth-pussy-h3"], ids
         assert planned["cfg"]["turbo"] is False
         assert planned["turbo"] is False
         assert planned["sampler"]["steps"] == 12
@@ -59,7 +59,7 @@ def _check_visible_plan(planned, clip_prompt):
         assert "repeat: 0" in planned["prompt"]
         assert "プロンプトは読まない" not in planned["prompt"]
     else:
-        assert ids == ["penis-lora-h3", "larry-v4", "cinema-dy"], ids
+        assert ids == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"], ids
         assert planned["cfg"]["turbo"] is True
         assert planned["turbo"] is True
         assert planned["sampler"]["steps"] == 8
@@ -213,7 +213,7 @@ def test_japanese_form_labels():
     assert "エロ用は入れません" in sfw
     assert "blowjob-h3" not in sfw
     general = explain_choice("汎用エロ（女体）", "テキストから（写真なし）")
-    assert "Larry" in general
+    assert "穴の見え方" in general
     assert "12step" in general
     assert "男なし" in general
     assert "LightX2V 12" not in general
@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-semen-1"' in src
+    assert 'FETCH_REV = "h3-20260907-pussy-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-semen-1" in blob
+    assert "h3-20260907-pussy-1" in blob
     assert "h3-20260907-shorts-1" not in blob
     assert "h3-20260907-who-1" not in blob
     assert "h3-20260907-act15-1" not in blob
@@ -590,20 +590,20 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert clamp_studio_duration(120, chain=True) == 120.0
     assert clamp_studio_duration(121, chain=True) == 120.0
     assert clamp_studio_duration("nope", chain=True) == 16.0
-    assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "larry-v4"]
+    assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("riding") == ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("doggy") == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("missionary_pov") == ["missionary-pov-h3", "penis-lora-h3", "larry-v4"]
-    assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "larry-v4"]
-    assert situation_ids("facial") == ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("missionary_pov") == ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+    assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+    assert situation_ids("facial") == ["facial-cumshot-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("creampie") == ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral_creampie") == ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("fingering") == ["fingering-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("anal_fingering") == ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("masturbation") == ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"]
-    assert situation_ids("footjob") == ["footjob-h3", "penis-lora-h3", "larry-v4"]
+    assert situation_ids("footjob") == ["footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("remote_orgasm") == ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"]
-    assert situation_ids("preview") == ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"]
+    assert situation_ids("preview") == ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("futa_anal") == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
@@ -1210,12 +1210,12 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     vis = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）")
     assert vis["turbo"] is True
     assert vis["sampler"]["steps"] == 8
-    assert [r["id"] for r in vis["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
+    assert [r["id"] for r in vis["stack"]] == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     vis_speech = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
     assert vis_speech["turbo"] is False
     assert vis_speech["sampler"]["steps"] == 12
     assert vis_speech["sampler"]["sampler_name"] == "res_multistep"
-    assert [r["id"] for r in vis_speech["stack"]] == ["penis-lora-h3", "cinema-dy"]
+    assert [r["id"] for r in vis_speech["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     mast = select_loras(profile_name="futa_masturbation", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in mast["stack"]] == ["hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     cun = select_loras(profile_name="cunnilingus_futa", mode="t2v", prompt_arg="（シーン）")
@@ -2500,7 +2500,7 @@ def test_story_clip_prompt_keeps_schema_order_with_lock_inside_description(tmp_p
     story = load_story("engawa-120s")
     planned = prepare_story_clip(story, 1, last_frame=None, stills_dir=tmp_path)
     text = planned["prompt"]
-    assert text.startswith("PENISLORA, DY\n")
+    assert text.startswith("PENISLORA\n")
     order = [text.find(k) for k in ("subject_definitions:", "environment:", "integrated_multimodal_description:", "feminine_lock:", "overall_soundscape:", "non_diegetic_music:")]
     assert all(p >= 0 for p in order)
     assert order == sorted(order)
@@ -3048,7 +3048,7 @@ def test_story_play_chain_prepares_last_frame_i2v(tmp_path):
     r0 = prepare_story_clip(rewrite, 0, last_frame=None, stills_dir=tmp_path, force_t2v=True)
     assert r0["mode"] == "t2v"
     assert "opening of one continuous long take" in r0["prompt"]
-    assert r0["prompt"].startswith("PENISLORA, DY\n")
+    assert r0["prompt"].startswith("PENISLORA\n")
     assert "Picture 1" not in r0["prompt"]
     r1 = prepare_story_clip(rewrite, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, force_t2v=True)
     assert r1["mode"] == "i2v" and r1["first_kind"] == "last_frame"
@@ -3391,7 +3391,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
 
     story = load_story("checkup-100s")
     speech = prepare_story_clip(story, 0, stills_dir=tmp_path)
-    assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3"]
+    assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     assert speech["stack_changed"] is False
     assert "[AUDIO-LOCK]" in speech["prompt"]
     assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") == 1
@@ -3412,7 +3412,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert kiss["situation"] == "futa_visible"
     assert kiss["stack_changed"] is True
     assert stack_signature(kiss["stack"]) != stack_signature(speech["stack"])
-    assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
+    assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert "spoken_transcript: mute" in kiss["prompt"]
     assert "誰も話さない" not in kiss["prompt"]
     oral = prepare_story_clip(
@@ -3618,7 +3618,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-semen-1" in cell2
+    assert "h3-20260907-pussy-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
@@ -3690,6 +3690,7 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
     assert "ROLE LOCK" in p0["prompt"]
     assert "at 0.00 seconds" not in p0["prompt"]
     assert "penis-lora-h3" not in [row["id"] for row in p0["stack"]]
+    assert "synth-pussy-h3" in [row["id"] for row in p0["stack"]]
     assert all(row.get("arch") != "fl2va" for row in p0["stack"])
     p1 = prepare_story_clip(story, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, cast_dir=cast)
     assert p1["first_kind"] == "last_frame"
@@ -3741,7 +3742,7 @@ def test_anthology_shorts_immoral(tmp_path):
     assert "aftermidnight-ref2va" in situation_ids("shorts-immoral")
     assert "blowjob-h3" in situation_ids("shorts-immoral")
     assert "minimax-h3-turbo-ref2v-4step" in situation_ids("shorts-immoral")
-    assert "synth-pussy-h3" not in situation_ids("shorts-immoral")
+    assert "synth-pussy-h3" in situation_ids("shorts-immoral")
     assert "penis-lora-h3" not in situation_ids("shorts-immoral")
     assert "larry-v4" not in situation_ids("shorts-immoral")
     assert "futa-h3-v51" not in situation_ids("shorts-immoral")
@@ -3832,22 +3833,22 @@ def test_anthology_shorts_immoral(tmp_path):
         ids = [row["id"] for row in planned["stack"]]
         assert "futa-h3-v51" not in ids
         assert "penis-lora-h3" not in ids
-        assert "synth-pussy-h3" not in ids
+        assert "synth-pussy-h3" in ids
         assert "larry-v4" not in ids
         assert all(row.get("arch") != "fl2va" for row in planned["stack"])
         if planned["situation"] == "oral":
             assert "blowjob-h3" in ids
             assert "minimax-h3-turbo-ref2v-4step" in ids or not planned.get("turbo")
         if planned["situation"] == "oral_creampie":
-            assert ids == ["aftermidnight-ref2va"]
+            assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert "white liquid" in planned["prompt"].lower()
             assert "ドロドロ" in planned["prompt"]
         if planned["situation"] == "futa_sex":
-            assert ids == ["aftermidnight-ref2va"]
+            assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert clip["prompt"].startswith("hmmotion, PENISLORA")
             assert "hmmotion" in planned["prompt"]
         if planned["situation"] == "doggy":
-            assert ids == ["aftermidnight-ref2va"]
+            assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
         if planned["situation"] == "cunnilingus_futa":
-            assert ids == ["aftermidnight-ref2va"]
+            assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert "blowjob-h3" not in ids

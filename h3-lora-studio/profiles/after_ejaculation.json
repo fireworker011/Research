@@ -27,10 +27,16 @@
       "id": "hmcumshot-v2",
       "strength": 0.9
     },
-    "helper": {
-      "id": "penis-lora-h3",
-      "strength": 0.7
-    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
@@ -40,7 +46,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "HMCumshot 0.9 + penis 0.7 + Larry 0.5 / 8step. AIO off. Not stacked with Remoteorgasm."
+    "note": "HMCumshot 0.9 + penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. AIO off. Pussy helper so the non-shaft partner does not grow a penis. Not stacked with Remoteorgasm."
   },
   "disabled": [
     "anal-penetration-coachbate",

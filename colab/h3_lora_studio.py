@@ -57,20 +57,20 @@ SITUATION_DOWNLOAD = {
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "futa_anal": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
     "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "general_sex": ["hmnsfw-aio-v25", "larry-v4"],
-    "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
+    "general_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
+    "preview": ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
     "riding": ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"],
     "doggy": ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "missionary_pov": ["missionary-pov-h3", "penis-lora-h3", "larry-v4"],
-    "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "larry-v4"],
-    "facial": ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"],
+    "missionary_pov": ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "facial": ["facial-cumshot-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "creampie": ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"],
     "oral_creampie": ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "fingering": ["fingering-h3", "synth-pussy-h3", "larry-v4"],
     "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
-    "footjob": ["footjob-h3", "penis-lora-h3", "larry-v4"],
+    "footjob": ["footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_visible": ["penis-lora-h3", "cinema-dy", "larry-v4"],
+    "futa_visible": ["penis-lora-h3", "synth-pussy-h3", "larry-v4", "cinema-dy"],
     "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "cunnilingus_futa": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
@@ -203,6 +203,7 @@ SITUATION_DOWNLOAD = {
     "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
     "shorts-immoral": [
         "blowjob-h3",
+        "synth-pussy-h3",
         "minimax-h3-turbo-ref2v-4step",
         "aftermidnight-ref2va",
     ],
@@ -370,20 +371,20 @@ SITUATION_HELP = {
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
     "futa_anal": "アナルセックス（女体）。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・12step。ふたなり＋女。男なし。後ろから、穴が膣より上に見える構図。手は腰。写真からが本線。",
     "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
-    "general_sex": "汎用エロ（女体）。AIO 0.8 + Larry 0.5 / 12step。ふたなり＋女。男なし。",
-    "preview": "試し打ち（女体）。AIO 0.7 + LightX2V 4step。ふたなり＋女。男なし。",
+    "general_sex": "汎用エロ（女体）。AIO 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。",
+    "preview": "試し打ち（女体）。AIO 0.7 + 穴の見え方 0.55 + LightX2V 4step。ふたなり＋女。男なし。",
     "riding": "騎乗位（女体）。騎乗 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
     "doggy": "後背位（女体）。後背位 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。男なし。",
-    "missionary_pov": "正常位POV（女体）。POV挿入 0.85 + 竿 0.7 + Larry 0.5 / 8step。男なし。横はセックス（女体）。",
-    "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
-    "facial": "顔射（女体）。顔射 LoRA 0.8 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。後射精・絶頂・口内とは別。写真からが本線。",
+    "missionary_pov": "正常位POV（女体）。POV挿入 0.85 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。横はセックス（女体）。",
+    "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
+    "facial": "顔射（女体）。顔射 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり＋女。男なし。後射精・絶頂・口内とは別。写真からが本線。",
     "creampie": "中出し（女体）。Final Thrust 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。膣の中に出す。ふたなり＋女。男なし。後射精・顔射・口内とは別。写真からが本線。",
     "oral_creampie": "口内射精（女体）。CUMOUF 0.5 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。口の中で出す。ふたなり（竿＋根元のマンコ）＋女。男なし。顔射・フェラ本線とは別。写真からが本線（口が付いた途中の写真）。",
     "fingering": "指入れ。女1人。指 LoRA 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。膣。アナルはアナル指入れ。",
     "masturbation": "オナニー。女1人。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。男なし。",
-    "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
+    "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
     "remote_orgasm": "絶頂。女1人。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。射精ではない。",
-    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は竿 0.7 + シネマ 0.5 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
+    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は竿 0.7 + 穴の見え方 0.55 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + 穴の見え方 + Larry 12step。根元のマンコが見える寄り。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
@@ -410,7 +411,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿/穴は載せない。",
+    "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
 }
 
 LORA_JA = {
@@ -2532,7 +2533,7 @@ def drop_speech_face_killers(
     speaks: bool,
     mode: str,
 ) -> list[dict[str, Any]]:
-    """Lip-sync + cinema DY melts the jaw. Keep penis. R2V speech keeps thin cinema (it is the act)."""
+    """Lip-sync + cinema DY melts the jaw. Keep penis and synth-pussy. R2V speech keeps thin cinema (it is the act)."""
     rows = [dict(x) for x in (stack or [])]
     if not speaks:
         return rows
@@ -3188,7 +3189,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
         "comment_ja": (
             "15秒完結の超濃厚日常インモラル×12。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。"
             "つなぎなし。各本は input/cast/ の人物写真を R2V 参照。フェラは 9:16 寄り（blowjob LoRA）、"
-            "挿入は 16:9 か立ち 9:16。部品は situation から自動。FL2VA の竿/穴は載せない。"
+            "挿入は 16:9 か立ち 9:16。部品は situation から自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる。"
         ),
         "download": list(SITUATION_DOWNLOAD["shorts-immoral"]),
         "clips": clips,

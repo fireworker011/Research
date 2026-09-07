@@ -49,7 +49,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA は無い。CoachBate は有料で未使用、AIO は微妙）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA は無い。CoachBate は有料で未使用、AIO は微妙）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
@@ -57,23 +57,23 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
 | アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
 | フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 8step。女がふたなりに。竿＋根元のマンコ。男なし |
-| 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | なし | Larry 0.6 | 0.5 | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
+| 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | Synth 0.55 | Larry 0.6 | **切る** | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
 | アナルセックス（女体） | `futa_anal` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | euler / simple / 12。アナル本線。後ろから、穴が膣より上の構図。手は腰。I2V本線 |
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
-| 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Synth オフ。横はセックス（女体） |
-| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
-| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
+| 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
+| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
+| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
 | 中出し（女体） | `creampie` | Final Thrust 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。膣の中。男なし。I2V本線 |
 | 口内射精（女体） | `oral_creampie` | CUMOUF 0.5 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線。強さ 0.5 |
 | 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。膣。オナニー LoRA は積まない。アナルはアナル指入れ |
 | オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
-| 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
+| 足コキ | `footjob` | Type D 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
 | 絶頂 | `remote_orgasm` | Remoteorgasm 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 8step。射精ではない |
-| 汎用エロ（女体） | `general_sex` | AIO 0.8 | なし | Larry 0.5 | なし | ふたなり＋女。男なし。12step |
-| 試し打ち | `preview` | AIO 0.7 | なし | LightX2V 4step 1.0 | なし | euler / simple / 4 |
+| 汎用エロ（女体） | `general_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | なし | ふたなり＋女。男なし。12step。セックス（女体）と同じ |
+| 試し打ち | `preview` | AIO 0.7 | Synth 0.55 | LightX2V 4step 1.0 | なし | euler / simple / 4 |
 | レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
 | 性器を広げる | `pussy_spread` | 広げる 0.75 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
 | レズ＋広げる | `lesbian_spread` | クンニ 0.8 | 広げる 0.6 | Larry 0.5 | なし | euler / simple / 8 |
@@ -125,7 +125,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | `登校（専用）` など | カット。JSON のまま（`CHAIN=False`、`last_frame=None`） | なし | なし（③「最終シーン合わせ」オン＋写真からの静止画だけ `rewrite_dedicated_scene_i2v_prompt`） |
 | `登校（つなぐ）` | 文を直さずつなぐ | 2本目以降 I2V | Picture 1 ロック（`continue_chain_prompt`）だけ。`rewrite_chain_opening_prompt` も最後の `rewrite_final_scene_i2v_prompt` もオフ |
 | `登校（つなぐ修）` | 文を直してつなぐ | 2本目以降 I2V | 1本目に `rewrite_chain_opening_prompt`。③オンなら最後の本だけ `rewrite_final_scene_i2v_prompt` |
-| `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` を **R2V 参照** | 2本目以降 I2V | 文はそのまま。③テキストからは無視。FL2VA の竿/穴は1本目に載せない |
+| `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` を **R2V 参照** | 2本目以降 I2V | 文はそのまま。③テキストからは無視。FL2VA の竿は1本目に載せない。穴（synth-pussy）は載せる |
 | `登校（参照つなぐ修）` | 参照つなぐ＋1本目を長回し | 2本目以降 I2V | 1本目 `rewrite_chain_opening_prompt`。③オンなら最後の本だけ |
 | `短編集（参照）` | 15秒完結×複数。つなぎなし。メイン4人のうち竿＋ハメの2人。画面は本ごと | なし | 文は自動。各本が独立 **R2V**（フェラは blowjob＋Ref2VA turbo・9:16寄り、挿入は AfterMidnight・16:9または立ち9:16） |
 

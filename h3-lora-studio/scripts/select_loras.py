@@ -35,6 +35,31 @@ FULL_STACK_IDS = {
     "penis-lora-h3",
     "synth-pussy-h3",
 }
+PENIS_HELPER_ID = "penis-lora-h3"
+PUSSY_HELPER_ID = "synth-pussy-h3"
+# Futa anatomy scenes. Without synth-pussy the non-shaft partner grows a penis.
+FUTA_SITUATIONS = frozenset(
+    {
+        "anal_penetration",
+        "oral",
+        "oral_creampie",
+        "futa_blowjob",
+        "futa_sex",
+        "futa_anal",
+        "futa_visible",
+        "futa_masturbation",
+        "cunnilingus_futa",
+        "doggy",
+        "riding",
+        "creampie",
+        "facial",
+        "after_ejaculation",
+        "missionary_pov",
+        "footjob",
+        "general_sex",
+        "preview",
+    }
+)
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}
 DEFAULT_CANVAS = {
     "t2v": {"width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16"},
@@ -467,7 +492,7 @@ def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dic
             "steps": 12,
             "cfg": 4.0,
             "denoise": 1.0,
-            "note": "AfterMidnight Ref2VA. 12step euler simple. No FL2VA helpers.",
+            "note": "AfterMidnight Ref2VA. 12step euler simple. Shared pussy helper is allowed so the non-shaft partner keeps a vagina.",
         }
     has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
     raw = profile.get("sampler")
@@ -568,6 +593,21 @@ def assert_stack_budget(
             raise SelectError("cinema off for anal penetration")
     if turbo is not None and act and str(act.get("id")) == "anal-penetration-coachbate":
         raise SelectError("CoachBate anal penetration stays turbo off")
+
+
+def assert_futa_pussy_helper(
+    profile_name: str,
+    specs: list[dict[str, Any]],
+) -> None:
+    """Penis LoRA without pussy LoRA paints a shaft on every woman in frame."""
+    ids = {str(s.get("id") or "") for s in specs}
+    if PUSSY_HELPER_ID in ids:
+        return
+    if str(profile_name) in FUTA_SITUATIONS or PENIS_HELPER_ID in ids:
+        raise SelectError(
+            f"{profile_name}: futa scenes must stack synth-pussy-h3 "
+            "so the non-shaft partner does not grow a penis"
+        )
 
 
 def strip_male_subjects(text: str) -> str:
@@ -824,6 +864,8 @@ def select_loras(
                 "turbo": bool(is_turbo_row(row)),
             }
         )
+
+    assert_futa_pussy_helper(profile_name, stack)
 
     enabled_ids = {item["id"] for item in stack}
     unload: list[dict[str, Any]] = []

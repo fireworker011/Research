@@ -53,6 +53,10 @@
       "act": {
         "id": "aftermidnight-ref2va",
         "strength": 1.0
+      },
+      "helper": {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
       }
     }
   },
