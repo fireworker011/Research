@@ -247,7 +247,7 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い）
 - **同じランタイムで2回目** … Drive にあるファイルは飛ばす。ローカルに既にあればコピーも飛ばす。pip も飛ばす
 - **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。ローカルへコピー＋GPU 載せ＋Comfy 起動で数分
 - pip / torch / Triton のキャッシュも Drive の `cache/`。Colab の消えるディスクには置かない
-- 初めてなら「よく使う部品を全部入れる」は **オンのまま**（③でシーンを変えても困らない）
+- 初めてなら「よく使う部品を全部入れる」は **オンのまま**（ディスクへ保存。再生中に全部を同時積みはしない）
 - 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
 
 **Civitai の API キー** は、えっち用の部品を取るときだけ。**普通（エロなし）だけなら空でOK。** 左の鍵（シークレット）は使わなくて大丈夫です。
@@ -283,7 +283,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-ref-r2v-1"
+FETCH_REV = "h3-20260907-checkup-face-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -475,7 +475,7 @@ if よく使う部品を全部入れる:
     ids = []
     for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", *__STORY_ID_LIST__):
         ids.extend(situation_ids(key))
-    print("よく使う部品を全部入れます。③でシーンを変えても大丈夫です。")
+    print("よく使う部品を全部ディスクへ入れます。再生は今の本の LoRA だけ載せます。")
 else:
     print("今のシーン用だけ入れます:", 今使うシーン)
 
@@ -577,7 +577,7 @@ MD3 = r"""## ③ 動画を作る
 - **休日（専用 / つなぐ / つなぐ修）** … 第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（休日なのに朝から勃ってる／昼ごはんまだよ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側。写真は `input/sunday-120s/` の 01〜12（16:9。無い本はテキストから）
 - **縁側（専用 / つなぐ / つなぐ修）** … 第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（午後も勃ってる／皿洗っとくから）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は `input/engawa-120s/` の 01〜12（16:9。無い本はテキストから）
 - **訪問販売（専用 / つなぐ / つなぐ修）** … 名前付きパック（専用ではない）。10秒×6本。9:16。口はアヤ22ミニ・竿なし。販売員は5人目（25・短め黒髪・中乳・ふたなり20cm・金玉なし・根元にマンコ）。セリフは口元4本（こんにちはおトドケです／オソいわよ／モウシワケございません／ハヤクおミズちょうだい。カタカナ）。5〜6本目はフェラ（放尿→根元）。旧名「訪問販売60秒（つなぐ）」＝つなぐ修
-- **定期検診100秒（つなぐ）** … 名前付きパック。10秒×10本。9:16。医師（32・結い髪・中乳・竿なし・聴診器）とレイ（20cm 立ち）。台詞はカタカナ（漢字なし）: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／（キス無言）／ん…クチとムネはモンダイないですね。では、つぎはおチンチンのカクニンをします。根元まで→口内 CUMOUF→「モンダイありますね」は別の本
+- **定期検診100秒（つなぐ）** … 名前付きパック。10秒×10本。9:16。医師（32・結い髪・中乳・竿なし・聴診器）とレイ（20cm 立ち）。台詞はカタカナ（漢字なし）: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／（キス無言）／クチとムネはモンダイないですね。根元まで→口内 CUMOUF→「モンダイありますね」は別の本。台詞本はシネマを外す。音声は「」の日本語だけ
 - **終点40秒（つなぐ）** … 名前付きパック。10秒×4本。9:16。車掌（29・短髪・中乳・竿なし・ホイッスル）と座席で寝ているレイ（立たない）。「シュウテンです、オキテください」では起きない。ジュボで起きる。口内 CUMOUF（無言）。「オキましたか？オキャクサン、シュウテンだからオリテください」で車掌に戻る
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
 - **アナルセックス（女体）** … ふたなり＋女。男なし。Turbo なし・12step。後ろから、穴が膣より上。手は腰。写真からが本線
@@ -662,7 +662,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -1222,6 +1222,7 @@ else:
     inp = COMFY_DIR / "input"
     inp.mkdir(parents=True, exist_ok=True)
     prev_sit = None
+    prev_stack = None
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
         if STORY:
             # 専用（カット）は last_frame なし。つなぐ / つなぐ修 / パックは 2本目以降を前の本の最後のコマから。
@@ -1233,11 +1234,12 @@ else:
                 # 専用: 写真からの本だけ rewrite_dedicated_scene_i2v_prompt（prepare_story_clip が静止画のときだけ掛ける）
                 fit_now = bool(最終シーン合わせ)
             try:
-                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, force_t2v=FORCE_T2V, fit_scene=fit_now, cast_dir=CAST_DIR)
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, prev_stack=prev_stack, force_t2v=FORCE_T2V, fit_scene=fit_now, cast_dir=CAST_DIR)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None
             prev_sit = planned["situation"]
+            prev_stack = planned["stack"]
             stack = planned["stack"]
             SAMPLER = planned["sampler"]
             cfg = planned["cfg"]
@@ -1262,17 +1264,22 @@ else:
                 first_name = None
             if planned.get("fit_scene"):
                 print("最終シーン合わせ:", "最後の本を合わせます" if planned.get("first_kind") == "last_frame" else "この本の静止画・独立カットとして送ります")
-            if planned.get("stack_changed"):
-                print("部品を切り替えます:", planned["label"], planned["situation"], "（土台と文章モデルは載せたまま。メモリ不足のときだけ解放）")
             w, h = int(planned["width"]), int(planned["height"])
             CLIP_DURATION = float(planned.get("duration_s") or CLIP_DURATION)
             print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack], str(SAMPLER.get("steps")) + "step", "Turbo" if planned.get("turbo") else "フルステップ")
             next_unet = unet_for(GRAPH_MODE)
-            if next_unet != unet:
+            unet_switched = next_unet != unet
+            if unet_switched:
                 print("土台を切り替えます:", unet, "→", next_unet)
                 comfy_free(PORT)
                 clear_warmup_stamp(COMFY_DIR)
                 unet = next_unet
+                if GRAPH_MODE != "r2v" and not 試し打ちだけ:
+                    warmup_h3_engine(COMFY_DIR, PORT, unet, force=True)
+            elif CLIP_INDEX > 0 and planned.get("stack_changed"):
+                print("部品を切り替えます:", planned["label"], planned["situation"], "（前の LoRA を VRAM から下ろし、この本の部品だけ載せます）")
+                comfy_free(PORT)
+                clear_warmup_stamp(COMFY_DIR)
                 if GRAPH_MODE != "r2v" and not 試し打ちだけ:
                     warmup_h3_engine(COMFY_DIR, PORT, unet, force=True)
         else:

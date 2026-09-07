@@ -1783,7 +1783,7 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
 
 
 def comfy_free(port: int = 8188) -> None:
-    """Unload models after OOM only. Do not call between successful chain clips."""
+    """Unload models after OOM, UNET switch, or a live LoRA stack change. Not every clip."""
     try:
         req = urllib.request.Request(
             f"http://127.0.0.1:{int(port)}/free",
@@ -2417,6 +2417,9 @@ STORY_CAST_NAMES = (
 STORY_CAST_DEF_RE = re.compile(r"^(" + "|".join(STORY_CAST_NAMES) + r"): Adult", re.M)
 _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
+_LATIN_IN_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af]")
+SPEECH_FACE_KILLER_IDS = frozenset({"cinema-dy"})
+AUDIO_LOCK_MARK = "【音声ルール】"
 # Default futanari = 玉なし＋マンコあり (the futa-blowjob still). Keep in sync with select_loras.lock_futa_anatomy.
 FUTA_SCENE_ANATOMY = (
     "futanari: erect penis, hairless female pussy at the base of the shaft, "
@@ -2459,6 +2462,75 @@ def lock_futa_anatomy(text: str) -> str:
 
 def spoken_lines(prompt: str) -> list[str]:
     return _SPOKEN_RE.findall(str(prompt or ""))
+
+
+def stack_signature(stack: list[dict[str, Any]] | None) -> tuple[tuple[str, float], ...]:
+    """Stable id+strength fingerprint so VRAM unloads when the live LoRA set changes."""
+    out: list[tuple[str, float]] = []
+    for row in stack or []:
+        rid = str(row.get("id") or "").strip()
+        if not rid:
+            continue
+        raw = row.get("strength_model", row.get("strength", 0.0))
+        try:
+            val = round(float(raw), 3)
+        except (TypeError, ValueError):
+            val = 0.0
+        out.append((rid, val))
+    return tuple(out)
+
+
+def drop_speech_face_killers(
+    stack: list[dict[str, Any]] | None,
+    *,
+    speaks: bool,
+    mode: str,
+) -> list[dict[str, Any]]:
+    """Lip-sync + cinema DY melts the jaw. Keep penis. R2V speech keeps thin cinema (it is the act)."""
+    rows = [dict(x) for x in (stack or [])]
+    if not speaks:
+        return rows
+    mode_l = str(mode or "").strip().lower()
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        rid = str(row.get("id") or "")
+        if rid in SPEECH_FACE_KILLER_IDS:
+            if mode_l in {"t2v", "i2v"}:
+                continue
+            if mode_l == "r2v":
+                thin = min(float(row.get("strength_model", row.get("strength", 0.5)) or 0.5), 0.35)
+                row["strength"] = thin
+                row["strength_model"] = thin
+        out.append(row)
+    return out
+
+
+def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
+    """Pin H3 audio to the 「」 Japanese lines. English in the prompt is silent camera direction."""
+    text = str(prompt or "").strip()
+    if AUDIO_LOCK_MARK in text:
+        return text
+    spoken = list(lines) if lines is not None else spoken_lines(text)
+    if spoken:
+        quoted = "".join(f"「{ln}」" for ln in spoken)
+        lock = (
+            f"{AUDIO_LOCK_MARK}日本語以外は絶対に話さない。"
+            f"声に出していいのは次の台詞だけ。{quoted}"
+            "このあとに続く英語は映像の説明であり、読み上げない。"
+            "英語・中国語・韓国語・それ以外の言語・意味のわからない音は禁止。"
+            "台詞のあとに言葉を足さない。余った秒数は無音。口は閉じて部屋の音だけ。"
+        )
+    else:
+        lock = (
+            f"{AUDIO_LOCK_MARK}誰も話さない。日本語の部屋の音だけ。"
+            "英語・中国語・韓国語・歌・意味のわからない音は禁止。読み上げない。"
+        )
+    marker = "overall_soundscape:"
+    idx = text.find(marker)
+    if idx >= 0:
+        insert_at = idx + len(marker)
+        return text[:insert_at] + "\n" + lock + text[insert_at:]
+    return text + "\n" + lock
 
 
 def story_cast_present(prompt: str) -> list[str]:
@@ -2922,6 +2994,9 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if _KANJI_RE.search(spoken):
                 errors.append(f"clip {n}: write the spoken line in kana (no kanji): 「{spoken}」")
                 break
+            if _LATIN_IN_SPEECH_RE.search(spoken):
+                errors.append(f"clip {n}: spoken line must be Japanese only (no Latin letters): 「{spoken}」")
+                break
         if "Clear futanari" in prompt and "Penis plus vagina, never balls" not in prompt:
             errors.append(f"clip {n}: futanari must be penis plus vagina, no balls")
         if "Clear futanari" in prompt and "no scrotum" not in prompt:
@@ -3058,6 +3133,7 @@ def prepare_story_clip(
     forbidden_path: Path | str | None = None,
     clip0_override: Path | str | None = None,
     prev_situation: str | None = None,
+    prev_stack: list[dict[str, Any]] | None = None,
     force_t2v: bool = False,
     fit_scene: bool = False,
     cast_dir: Path | str | None = None,
@@ -3161,8 +3237,16 @@ def prepare_story_clip(
             profiles_dir=profiles,
             turbo_override=turbo_override,
         )
-    stack = list(cfg.get("stack") or [])
+    stack = drop_speech_face_killers(list(cfg.get("stack") or []), speaks=speaks, mode=mode)
+    if isinstance(cfg, dict):
+        cfg = dict(cfg)
+        cfg["stack"] = stack
     prompt = prepend_triggers(str(cfg.get("prompt") or prompt), stack)
+    prompt = lock_spoken_japanese(prompt, spoken_lines(raw_prompt))
+    if prev_stack is not None:
+        stack_changed = stack_signature(prev_stack) != stack_signature(stack)
+    else:
+        stack_changed = bool(prev_situation) and prev_situation != situation
     width, height = story_canvas_wh(story)
     return {
         "index": index,
@@ -3177,7 +3261,7 @@ def prepare_story_clip(
         "still_paths": still_paths,
         "first_kind": first_kind,
         "missing_still": missing_still,
-        "stack_changed": bool(prev_situation) and prev_situation != situation,
+        "stack_changed": stack_changed,
         "width": width,
         "height": height,
         "duration_s": duration_s,

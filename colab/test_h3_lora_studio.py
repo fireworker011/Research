@@ -46,20 +46,23 @@ from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_
 
 
 def _check_visible_plan(planned, clip_prompt):
-    """futa_visible: spoken 「line」 clips run full-step without Larry; walk/kiss/TV clips take thin Larry 8step."""
+    """futa_visible: spoken 「line」 clips drop cinema+Larry (jaw melt); walk/kiss keep thin Larry 8step."""
     ids = [row["id"] for row in planned["stack"]]
     if "「" in clip_prompt:
-        assert ids == ["penis-lora-h3", "cinema-dy"], ids
+        assert ids == ["penis-lora-h3"], ids
         assert planned["cfg"]["turbo"] is False
         assert planned["turbo"] is False
         assert planned["sampler"]["steps"] == 12
         assert planned["sampler"]["sampler_name"] == "res_multistep"
+        assert "【音声ルール】" in planned["prompt"]
+        assert "日本語以外は絶対に話さない" in planned["prompt"]
     else:
         assert ids == ["penis-lora-h3", "larry-v4", "cinema-dy"], ids
         assert planned["cfg"]["turbo"] is True
         assert planned["turbo"] is True
         assert planned["sampler"]["steps"] == 8
         assert planned["sampler"]["sampler_name"] == "euler"
+        assert "誰も話さない" in planned["prompt"]
     assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
@@ -393,7 +396,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-ref-r2v-1"' in src
+    assert 'FETCH_REV = "h3-20260907-checkup-face-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -436,8 +439,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-ref-r2v-1" in blob
-    assert "h3-20260907-chain-open" not in blob
+    assert "h3-20260907-checkup-face-1" in blob
+    assert "h3-20260907-ref-r2v-1" not in blob
     assert "input/commute-120s/" in src
     assert 'やりたいシーン = "登校（専用）"' in code
     assert '今使うシーン = "登校（専用）"' in code
@@ -471,6 +474,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "comfy_free(PORT)" in src
     assert "同じサイズ再試行" in src
     assert "if CLIP_INDEX + 1 < len(CLIPS):\n            comfy_free(PORT)" not in src
+    assert "elif CLIP_INDEX > 0 and planned.get(\"stack_changed\")" in src
+    assert "前の LoRA を VRAM から下ろし" in src
+    assert "よく使う部品を全部ディスクへ入れます" in src
+    assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
 
@@ -1144,6 +1151,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     assert "LIP SYNC" in story["clips"][10]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1155,14 +1163,16 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
         assert planned["first_kind"] == "t2v"
         assert "Picture 1" not in planned["prompt"]
         assert planned["missing_still"]
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert ids[0] == "blowjob-h3"
@@ -1262,6 +1272,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         if c["situation"] in {"oral", "oral_creampie"}
     )
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1279,14 +1290,16 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
         assert planned["first_kind"] == "t2v"
         assert "Picture 1" not in planned["prompt"]
         assert planned["missing_still"]
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -1361,6 +1374,7 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     assert "LIP SYNC" not in story["clips"][3]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1383,8 +1397,12 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         # Unplayed JSON (seamless False): a passed last_frame is ignored → T2V hard cut.
         assert planned["mode"] == "t2v"
         assert planned["first_kind"] == "t2v"
@@ -1394,8 +1412,6 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -1480,6 +1496,7 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
     assert "LIP SYNC" in story["clips"][8]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1499,14 +1516,15 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -1589,6 +1607,7 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
     assert "Not a courtyard" in story["clips"][0]["prompt"]
     assert "One place" in story["clips"][8]["prompt"] or "the campus gate" in story["clips"][8]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1607,14 +1626,15 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
@@ -1693,6 +1713,7 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
     assert "NOT IN FRAME" in story["clips"][5]["prompt"]
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1713,14 +1734,15 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -1805,6 +1827,7 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
     assert "ユだとヨケイムクってる" in story["clips"][5]["prompt"]
     assert "アガッたらゴハン" in story["clips"][11]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1825,14 +1848,15 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -1919,6 +1943,7 @@ def test_dinner_story_twelve_clips_table(tmp_path):
     assert "ゴハンチュウなのに" in story["clips"][5]["prompt"]
     assert "ちゃんとウエもタベなさい" in story["clips"][11]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -1939,14 +1964,15 @@ def test_dinner_story_twelve_clips_table(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -2033,6 +2059,7 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
     assert "ネルマエなのに" in story["clips"][5]["prompt"]
     assert "デンキケしたよ" in story["clips"][11]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -2053,14 +2080,15 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -2147,6 +2175,7 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
     assert "キュウジツなのにアサからムクってる" in story["clips"][3]["prompt"]
     assert "ヒルごはんまだよ" in story["clips"][11]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -2175,14 +2204,15 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -2271,6 +2301,7 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
     assert "Do not suck Rei" in story["clips"][7]["prompt"]
     assert "In-mouth climax from MADOKA" in story["clips"][10]["prompt"]
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
         assert hits == [], hits
@@ -2295,14 +2326,15 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
             last_frame="h3_chain_0.png",
             stills_dir=tmp_path,
             prev_situation=prev,
+            prev_stack=prev_stack,
         )
+        if i > 0 and want[i] != want[i - 1]:
+            assert planned["stack_changed"]
         prev = planned["situation"]
-        assert planned["mode"] == "t2v"
+        prev_stack = planned["stack"]
         assert planned["width"] == 1024
         assert planned["height"] == 576
         assert planned["duration_s"] == 10
-        if i > 0:
-            assert planned["stack_changed"] == (want[i] != want[i - 1])
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "oral":
             assert stack_ids[0] == "blowjob-h3"
@@ -2688,6 +2720,7 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
     assert set(situation_ids(sid)) == set(download)
     assert [c["situation"] for c in story["clips"]] == situations
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         prompt = clip["prompt"]
         assert clip["duration_s"] == 10
@@ -2724,9 +2757,10 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
             assert "NO penis" in prompt
         assert "No men" in prompt
         planned = prepare_story_clip(
-            story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev
+            story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev, prev_stack=prev_stack
         )
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= set(download)
         assert planned["width"] == 576 and planned["height"] == 1024
         assert planned["duration_s"] == 10
@@ -3107,6 +3141,7 @@ def _check_pack_common(story, sid, tmp_path):
     listed = set(situation_ids(sid))
     assert listed == set(story["download"])
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         prompt = clip["prompt"]
         assert "hmmotion" not in prompt.lower()
@@ -3126,9 +3161,10 @@ def _check_pack_common(story, sid, tmp_path):
             assert "Penis plus vagina, never balls" in prompt
             assert "no scrotum" in prompt
         planned = prepare_story_clip(
-            story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev
+            story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev, prev_stack=prev_stack
         )
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
         assert planned["width"] == 576 and planned["height"] == 1024
         assert planned["duration_s"] == 10
@@ -3189,7 +3225,7 @@ def test_checkup_pack_ten_clips_kana_lines(tmp_path):
         "あ…はい、ヨロシクオネガイします",
         "では、シツレイします",
         None,
-        "ん…クチとムネはモンダイないですね。では、つぎはおチンチンのカクニンをします",
+        "クチとムネはモンダイないですね",
         None,
         None,
         "モンダイありますね",
@@ -3205,6 +3241,79 @@ def test_checkup_pack_ten_clips_kana_lines(tmp_path):
     assert "kiss" in story["clips"][5]["prompt"].lower()
     assert "CUMOUF" in story["clips"][8]["prompt"]
     assert "cumouf-h3" in story["download"]
+
+
+def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path):
+    from h3_lora_studio import (
+        drop_speech_face_killers,
+        load_story,
+        lock_spoken_japanese,
+        prepare_story_clip,
+        stack_signature,
+        validate_story_follow,
+    )
+
+    stack = [
+        {"id": "penis-lora-h3", "strength": 0.7, "strength_model": 0.7},
+        {"id": "cinema-dy", "strength": 0.5, "strength_model": 0.5},
+    ]
+    i2v = drop_speech_face_killers(stack, speaks=True, mode="i2v")
+    assert [x["id"] for x in i2v] == ["penis-lora-h3"]
+    silent = drop_speech_face_killers(stack, speaks=False, mode="i2v")
+    assert [x["id"] for x in silent] == ["penis-lora-h3", "cinema-dy"]
+    r2v = drop_speech_face_killers(
+        [{"id": "cinema-dy", "strength": 0.5, "strength_model": 0.5}],
+        speaks=True,
+        mode="r2v",
+    )
+    assert r2v[0]["id"] == "cinema-dy"
+    assert r2v[0]["strength_model"] == 0.35
+
+    locked = lock_spoken_japanese(
+        "overall_soundscape:\nClinic hum. Rei speaks, lip-synced: 「こんにちは」. No other speech.\n",
+        ["こんにちは"],
+    )
+    assert locked.index("overall_soundscape:") < locked.index("【音声ルール】")
+    assert "「こんにちは」" in locked
+    assert "読み上げない" in locked
+    silent_lock = lock_spoken_japanese("overall_soundscape:\nKiss. No spoken words.\n", [])
+    assert "誰も話さない" in silent_lock
+
+    story = load_story("checkup-100s")
+    speech = prepare_story_clip(story, 0, stills_dir=tmp_path)
+    assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3"]
+    assert speech["stack_changed"] is False
+    assert "【音声ルール】" in speech["prompt"]
+    assert "こんにちは" in speech["prompt"]
+    assert "DY" not in speech["prompt"].split("\n", 1)[0]
+    next_speech = prepare_story_clip(
+        story, 1, last_frame="x.png", stills_dir=tmp_path, prev_situation=speech["situation"], prev_stack=speech["stack"]
+    )
+    assert next_speech["situation"] == "futa_visible"
+    assert next_speech["stack_changed"] is False
+    assert next_speech["mode"] == "i2v"
+    assert next_speech["prompt"].index("Picture 1") < next_speech["prompt"].index("【音声ルール】")
+    kiss = prepare_story_clip(
+        story, 5, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
+    )
+    assert kiss["situation"] == "futa_visible"
+    assert kiss["stack_changed"] is True
+    assert stack_signature(kiss["stack"]) != stack_signature(speech["stack"])
+    assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
+    assert "誰も話さない" in kiss["prompt"]
+    oral = prepare_story_clip(
+        story, 7, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
+    )
+    assert oral["situation"] == "oral"
+    assert oral["stack_changed"] is True
+    assert "blowjob-h3" in [row["id"] for row in oral["stack"]]
+
+    bad = dict(story)
+    clip0 = dict(story["clips"][0])
+    clip0["prompt"] = clip0["prompt"].replace("こんにちは", "hello")
+    bad["clips"] = [clip0, *story["clips"][1:]]
+    errs = validate_story_follow(bad)
+    assert any("Japanese only" in e for e in errs)
 
 
 def test_last_stop_pack_four_clips_rei_seated(tmp_path):
@@ -3299,6 +3408,7 @@ def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
             where = f"{sid} clip {i + 1}"
             for spoken in spoken_lines(prompt):
                 assert not _KANJI_RE.search(spoken), (where, spoken)
+                assert not re.search(r"[A-Za-z]", spoken), (where, spoken)
             if "Clear futanari" in prompt:
                 assert "Penis plus vagina, never balls" in prompt, where
                 assert "no scrotum" in prompt, where
@@ -3381,7 +3491,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-ref-r2v-1" in cell2
+    assert "h3-20260907-checkup-face-1" in cell2
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
     assert "短編集（参照）" in cell3
@@ -3511,6 +3621,7 @@ def test_anthology_shorts_immoral(tmp_path):
         assert "Aya:" not in clip["prompt"] or "NO penis" in clip["prompt"] or "NEVER futanari" in clip["prompt"]
     cast = _write_cast_stills(tmp_path / "cast")
     prev = None
+    prev_stack = None
     for i, clip in enumerate(story["clips"]):
         planned = prepare_story_clip(
             story,
@@ -3519,9 +3630,11 @@ def test_anthology_shorts_immoral(tmp_path):
             stills_dir=tmp_path,
             cast_dir=cast,
             prev_situation=prev,
+            prev_stack=prev_stack,
             force_t2v=True,
         )
         prev = planned["situation"]
+        prev_stack = planned["stack"]
         assert planned["mode"] == "r2v"
         assert planned["first_kind"] == "cast"
         assert planned["duration_s"] == 15
