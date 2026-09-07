@@ -396,7 +396,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-act15-1"' in src
+    assert 'FETCH_REV = "h3-20260907-pace-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -439,7 +439,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-act15-1" in blob
+    assert "h3-20260907-pace-1" in blob
+    assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
     assert "input/commute-120s/" in src
@@ -3219,20 +3220,20 @@ def _check_pack_common(story, sid, tmp_path):
     return story
 
 
-def test_sales_visit_pack_nine_clips_aya_mouth(tmp_path):
+def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     from h3_lora_studio import load_story, spoken_lines
 
     story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
     assert story.get("spoken_no_kanji") is True
-    assert len(story["clips"]) == 9
-    assert story["duration_s"] == 90
+    assert len(story["clips"]) == 8
+    assert story["duration_s"] == 85
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 15, 10, 10]
     assert [c["situation"] for c in story["clips"]] == (
-        ["futa_visible"] * 4 + ["oral", "futa_visible", "oral", "oral_creampie", "futa_visible"]
+        ["futa_visible"] * 3 + ["oral", "futa_visible", "oral", "oral_creampie", "futa_visible"]
     )
     want = [
         "こんにちは。おミズをおトドケにきました",
         "オソいわよ",
-        "モウシワケございません",
         "ハヤクおミズちょうだい",
         None,
         "あー、シミる",
@@ -3252,30 +3253,31 @@ def test_sales_visit_pack_nine_clips_aya_mouth(tmp_path):
         assert "Sayaka" not in clip["prompt"] and "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"].replace("not Madoka", "")
         assert "clinic" not in clip["prompt"].lower()
         assert "exam room" not in clip["prompt"].lower()
-    assert "yellow" in story["clips"][4]["prompt"].lower()
-    assert "BASE" in story["clips"][6]["prompt"]
-    assert "CUMOUF" in story["clips"][7]["prompt"] or "ejaculat" in story["clips"][7]["prompt"].lower()
+    assert "already kneeling" in story["clips"][2]["prompt"]
+    assert "Then she kneels" not in story["clips"][2]["prompt"]
+    assert "yellow" in story["clips"][3]["prompt"].lower()
+    assert "BASE" in story["clips"][5]["prompt"]
+    assert story["clips"][5]["duration_s"] == 15
+    assert "CUMOUF" in story["clips"][6]["prompt"] or "ejaculat" in story["clips"][6]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
-    assert "sticky" in story["clips"][7]["prompt"].lower() or "viscous" in story["clips"][7]["prompt"].lower()
+    assert "sticky" in story["clips"][6]["prompt"].lower() or "viscous" in story["clips"][6]["prompt"].lower()
 
 
-def test_checkup_pack_eleven_clips_doorway_kana_lines(tmp_path):
+def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
 
     story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
     assert story["spoken_no_kanji"] is True
-    assert len(story["clips"]) == 11
-    assert story["duration_s"] == 120
+    assert len(story["clips"]) == 9
+    assert story["duration_s"] == 100
     assert [float(c["duration_s"]) for c in story["clips"]] == (
-        [10, 10, 10, 10, 10, 15, 10, 10, 15, 10, 10]
+        [10, 10, 10, 15, 10, 10, 15, 10, 10]
     )
     assert [c["situation"] for c in story["clips"]] == (
-        ["futa_visible"] * 8 + ["oral", "oral_creampie", "futa_visible"]
+        ["futa_visible"] * 6 + ["oral", "oral_creampie", "futa_visible"]
     )
     want = [
-        "こんにちは",
-        "はーい",
-        "テイキケンシンにきました",
+        "こんにちは。テイキケンシンにきました",
         "あ…はい、ヨロシクオネガイします",
         "では、シツレイします",
         None,
@@ -3296,13 +3298,17 @@ def test_checkup_pack_eleven_clips_doorway_kana_lines(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
         assert "genkan" in clip["prompt"].lower() or "door" in clip["prompt"].lower()
     assert "Not a clinic" in story["clips"][0]["prompt"]
-    kiss = story["clips"][5]["prompt"].lower()
+    assert "already at the open door" in story["clips"][0]["prompt"]
+    kiss = story["clips"][3]["prompt"].lower()
     assert "kiss" in kiss
     assert "breast" in kiss
     assert "both hands" in kiss
-    assert "CUMOUF" in story["clips"][9]["prompt"] or "ejaculat" in story["clips"][9]["prompt"].lower()
+    kakunin = story["clips"][5]["prompt"]
+    assert "does NOT squat" in kakunin
+    assert "begins to squat" not in kakunin
+    assert "already squatting" in story["clips"][6]["prompt"]
+    assert "CUMOUF" in story["clips"][7]["prompt"] or "ejaculat" in story["clips"][7]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
-    assert "squat" in story["clips"][8]["prompt"].lower()
 
 
 def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path):
@@ -3357,7 +3363,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert next_speech["mode"] == "i2v"
     assert next_speech["prompt"].index("Picture 1") < next_speech["prompt"].index("【音声ルール】")
     kiss = prepare_story_clip(
-        story, 5, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
+        story, 3, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
     )
     assert kiss["situation"] == "futa_visible"
     assert kiss["stack_changed"] is True
@@ -3365,7 +3371,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
     assert "誰も話さない" in kiss["prompt"]
     oral = prepare_story_clip(
-        story, 8, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
+        story, 6, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
     )
     assert oral["situation"] == "oral"
     assert oral["stack_changed"] is True
@@ -3554,7 +3560,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-act15-1" in cell2
+    assert "h3-20260907-pace-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
