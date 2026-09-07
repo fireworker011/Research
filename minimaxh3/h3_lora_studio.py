@@ -1668,11 +1668,18 @@ def format_prompt_http_fail(err: str, stack: list[dict[str, Any]] | None = None)
 
 
 COMFY_OBJECT_INFO_TIMEOUT = 180.0
+R2V_NODE = "MiniMaxH3ReferenceToVideo"
 STUDIO_OBJECT_INFO_NODES = (
     "MiniMaxH3ImageToVideo",
     "MiniMaxH3TextToVideo",
+    R2V_NODE,
     "LoraLoaderModelOnly",
     "VAEDecodeAudio",
+)
+R2V_NODE_MISSING = (
+    "短い参照動画の部品（参照ノード）がエンジンにありません。"
+    "②をもう一度実行しても古い動画ソフトはそのままです。"
+    "ランタイムを再起動して①→②からやり直してください。"
 )
 COMFY_UNREADY = (
     "動画エンジンが応答していません。①が終わっているか確認してください。"
@@ -1710,11 +1717,19 @@ def fetch_comfy_node_info(port: int, node_class: str, *, timeout: float = 45.0) 
     return {}
 
 
-def comfy_has_h3(port: int = 8188) -> bool:
+def comfy_has_node(port: int, node_class: str, *, timeout: float = 45.0) -> bool:
     try:
-        return "MiniMaxH3ImageToVideo" in fetch_comfy_node_info(port, "MiniMaxH3ImageToVideo")
+        return node_class in fetch_comfy_node_info(port, node_class, timeout=timeout)
     except Exception:
         return False
+
+
+def comfy_has_h3(port: int = 8188) -> bool:
+    return comfy_has_node(port, "MiniMaxH3ImageToVideo")
+
+
+def comfy_has_r2v(port: int = 8188) -> bool:
+    return comfy_has_node(port, R2V_NODE)
 
 
 def wait_comfy_ready(port: int = 8188, *, seconds: float = 180.0) -> bool:
@@ -1736,6 +1751,7 @@ def fetch_comfy_object_info(port: int = 8188, *, timeout: float = COMFY_OBJECT_I
             merged.update(fetch_comfy_node_info(port, name, timeout=45))
         except Exception:
             continue
+    # I2V があっても R2V を問い合わせ済み。短編集は R2V 必須なので一覧に含める。
     if "MiniMaxH3ImageToVideo" in merged:
         return merged
     last_err: Exception | None = None
@@ -1753,6 +1769,61 @@ def fetch_comfy_object_info(port: int = 8188, *, timeout: float = COMFY_OBJECT_I
         " 前の生成が終わるまで待って③を再実行するか、ランタイムを再起動して①から。"
         + (f"\n{last_err}" if last_err else "")
     )
+
+
+def ensure_comfy_r2v_node(comfy_dir: Path | str, *, port: int = 8188) -> bool:
+    """True if MiniMaxH3ReferenceToVideo is registered. Pull ComfyUI once if missing."""
+    if comfy_has_r2v(port):
+        return True
+    root = Path(comfy_dir)
+    if not (root / "main.py").is_file():
+        return False
+    print("参照用の部品が動画ソフトに無いので、ソフトを更新します…")
+    fetch = subprocess.run(
+        ["git", "-C", str(root), "fetch", "--depth", "1", "origin"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if fetch.returncode != 0:
+        print("動画ソフトの更新に失敗しました。")
+        return comfy_has_r2v(port)
+    subprocess.run(
+        ["git", "-C", str(root), "reset", "--hard", "FETCH_HEAD"],
+        check=False,
+    )
+    restart_studio_comfy(root, port=port)
+    if not wait_comfy_ready(port, seconds=180):
+        return False
+    return comfy_has_r2v(port)
+
+
+def ensure_r2v_in_object_info(
+    obj: dict[str, Any],
+    port: int,
+    *,
+    comfy_dir: Path | str | None = None,
+) -> dict[str, Any]:
+    """Probe R2V even if the I2V-only object_info cache skipped it."""
+    merged = dict(obj or {})
+    if R2V_NODE in merged:
+        return merged
+    try:
+        merged.update(fetch_comfy_node_info(port, R2V_NODE))
+    except Exception:
+        pass
+    if R2V_NODE in merged:
+        return merged
+    if comfy_dir is None:
+        return merged
+    print("参照ノードが見えないので、動画ソフトを更新して再読み込みします…")
+    if not ensure_comfy_r2v_node(comfy_dir, port=port):
+        return merged
+    try:
+        merged.update(fetch_comfy_node_info(port, R2V_NODE))
+    except Exception:
+        pass
+    return merged
 
 
 def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:

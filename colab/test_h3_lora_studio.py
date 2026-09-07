@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-pussy-1"' in src
+    assert 'FETCH_REV = "h3-20260907-r2v-node-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-pussy-1" in blob
+    assert "h3-20260907-r2v-node-1" in blob
+    assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
     assert "h3-20260907-who-1" not in blob
     assert "h3-20260907-act15-1" not in blob
@@ -476,6 +477,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "中出し（女体）" in blob
     assert "口内射精（女体）" in blob
     assert "fetch_comfy_object_info" in src
+    assert "ensure_r2v_in_object_info" in src
+    assert "ensure_comfy_r2v_node" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -954,6 +957,8 @@ def test_fetch_comfy_object_info_uses_per_node_and_skips_full_dump(monkeypatch):
             return _FakeHttp({"LoraLoaderModelOnly": {"input": {"required": {"lora_name": [["larry.safetensors"]]}}}})
         if u.endswith("/object_info/MiniMaxH3TextToVideo"):
             return _FakeHttp({"MiniMaxH3TextToVideo": {"input": {}}})
+        if u.endswith("/object_info/MiniMaxH3ReferenceToVideo"):
+            return _FakeHttp({"MiniMaxH3ReferenceToVideo": {"input": {}}})
         if u.endswith("/object_info/VAEDecodeAudio"):
             return _FakeHttp({"VAEDecodeAudio": {"input": {}}})
         if u.rstrip("/").endswith("/object_info"):
@@ -963,8 +968,107 @@ def test_fetch_comfy_object_info_uses_per_node_and_skips_full_dump(monkeypatch):
     monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
     obj = fetch_comfy_object_info(8188)
     assert "MiniMaxH3ImageToVideo" in obj
+    assert "MiniMaxH3ReferenceToVideo" in obj
     assert "LoraLoaderModelOnly" in obj
     assert not any(u.rstrip("/").endswith("/object_info") for u in hits)
+    assert any(u.endswith("/object_info/MiniMaxH3ReferenceToVideo") for u in hits)
+
+
+def test_studio_object_info_nodes_include_r2v():
+    from h3_lora_studio import R2V_NODE, STUDIO_OBJECT_INFO_NODES
+
+    assert R2V_NODE == "MiniMaxH3ReferenceToVideo"
+    assert "MiniMaxH3ReferenceToVideo" in STUDIO_OBJECT_INFO_NODES
+
+
+def test_fetch_comfy_object_info_does_not_full_dump_when_r2v_missing(monkeypatch):
+    import urllib.request
+    from h3_lora_studio import fetch_comfy_object_info
+
+    hits = []
+
+    def fake_urlopen(url, timeout=None):
+        u = str(url)
+        hits.append(u)
+        if u.endswith("/system_stats"):
+            return _FakeHttp({"system": {}})
+        if u.endswith("/object_info/MiniMaxH3ImageToVideo"):
+            return _FakeHttp({"MiniMaxH3ImageToVideo": {"input": {}}})
+        if u.endswith("/object_info/MiniMaxH3ReferenceToVideo"):
+            raise OSError("404")
+        if u.rstrip("/").endswith("/object_info"):
+            raise AssertionError("full /object_info dump should not be used")
+        return _FakeHttp({})
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    obj = fetch_comfy_object_info(8188)
+    assert "MiniMaxH3ImageToVideo" in obj
+    assert "MiniMaxH3ReferenceToVideo" not in obj
+    assert any(u.endswith("/object_info/MiniMaxH3ReferenceToVideo") for u in hits)
+
+
+def test_ensure_r2v_in_object_info_probes_when_i2v_cache_skipped_it(monkeypatch):
+    from h3_lora_studio import ensure_r2v_in_object_info
+
+    monkeypatch.setattr(
+        "h3_lora_studio.fetch_comfy_node_info",
+        lambda *_a, **_k: {"MiniMaxH3ReferenceToVideo": {"input": {}}},
+    )
+    called = []
+    monkeypatch.setattr(
+        "h3_lora_studio.ensure_comfy_r2v_node",
+        lambda *_a, **_k: called.append(1) or True,
+    )
+    obj = ensure_r2v_in_object_info({"MiniMaxH3ImageToVideo": {}}, 8188, comfy_dir="/tmp/comfy")
+    assert "MiniMaxH3ReferenceToVideo" in obj
+    assert called == []
+
+
+def test_ensure_r2v_in_object_info_pulls_comfy_when_truly_missing(monkeypatch, tmp_path):
+    from h3_lora_studio import ensure_r2v_in_object_info
+
+    monkeypatch.setattr("h3_lora_studio.fetch_comfy_node_info", lambda *_a, **_k: {})
+    pulls = []
+    monkeypatch.setattr(
+        "h3_lora_studio.ensure_comfy_r2v_node",
+        lambda *_a, **_k: pulls.append(1) or False,
+    )
+    obj = ensure_r2v_in_object_info({"MiniMaxH3ImageToVideo": {}}, 8188, comfy_dir=tmp_path)
+    assert "MiniMaxH3ReferenceToVideo" not in obj
+    assert pulls == [1]
+
+
+def test_ensure_comfy_r2v_node_skips_git_when_present(monkeypatch, tmp_path):
+    from h3_lora_studio import ensure_comfy_r2v_node
+
+    monkeypatch.setattr("h3_lora_studio.comfy_has_r2v", lambda *_a, **_k: True)
+    runs = []
+    monkeypatch.setattr(
+        "h3_lora_studio.subprocess.run",
+        lambda *a, **k: runs.append(a[0]) or type("R", (), {"returncode": 0})(),
+    )
+    assert ensure_comfy_r2v_node(tmp_path, port=8188) is True
+    assert runs == []
+
+
+def test_ensure_comfy_r2v_node_fetches_when_missing(monkeypatch, tmp_path):
+    from h3_lora_studio import ensure_comfy_r2v_node
+
+    (tmp_path / "main.py").write_text("# comfy\n", encoding="utf-8")
+    monkeypatch.setattr("h3_lora_studio.comfy_has_r2v", lambda *_a, **_k: False)
+    runs = []
+
+    def fake_run(cmd, **kw):
+        runs.append(list(cmd))
+        return type("R", (), {"returncode": 0})()
+
+    monkeypatch.setattr("h3_lora_studio.subprocess.run", fake_run)
+    monkeypatch.setattr("h3_lora_studio.restart_studio_comfy", lambda *_a, **_k: None)
+    monkeypatch.setattr("h3_lora_studio.wait_comfy_ready", lambda *_a, **_k: True)
+    # after pull, still missing
+    assert ensure_comfy_r2v_node(tmp_path, port=8188) is False
+    assert any(cmd[:3] == ["git", "-C", str(tmp_path)] and "fetch" in cmd for cmd in runs)
+    assert any(cmd[:3] == ["git", "-C", str(tmp_path)] and "reset" in cmd for cmd in runs)
 
 
 def test_fetch_comfy_object_info_times_out_with_japanese_exit(monkeypatch):
@@ -3618,7 +3722,8 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-pussy-1" in cell2
+    assert "h3-20260907-r2v-node-1" in cell2
+    assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
@@ -3633,6 +3738,16 @@ def test_notebook_story_play_flow():
     assert "専用（参照つなぐ）" in md0
     assert "短編集（参照）" in md0
     assert "R2V" in md0
+    assert "ensure_r2v_in_object_info" in src
+    assert "ensure_comfy_r2v_node" in src
+    assert "参照ノード: あり" in cell2
+    assert "参照（R2V）ノードがありません。②をもう一度実行してください。" not in cell3
+    assert "raise SystemExit(R2V_NODE_MISSING)" in cell3
+    assert "ensure_r2v_in_object_info" in cell3
+    helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
+    assert "短い参照動画の部品" in helper_src
+    assert "MiniMaxH3ReferenceToVideo" in helper_src
+    assert '"MiniMaxH3ReferenceToVideo"' in helper_src or "R2V_NODE" in helper_src
 
 
 def _write_cast_stills(root):
