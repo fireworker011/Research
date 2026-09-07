@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-audio-2"' in src
+    assert 'FETCH_REV = "h3-20260907-skin-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-audio-2" in blob
+    assert "h3-20260907-skin-1" in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -3319,6 +3319,13 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     assert "already squatting" in story["clips"][6]["prompt"]
     assert "CUMOUF" in story["clips"][7]["prompt"] or "ejaculat" in story["clips"][7]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
+    kiss = story["clips"][3]["prompt"].lower()
+    assert "grind" in kiss or "stomach" in kiss
+    assert "no freeze" in story["clips"][0]["prompt"].lower() or "not frozen" in story["clips"][0]["prompt"].lower()
+    assert "bob" in story["clips"][6]["prompt"].lower()
+    assert "ONLY Rei looks pleasured" not in story["clips"][6]["prompt"]
+    assert "straight clinical face" not in story["clips"][8]["prompt"]
+    assert "immoral" in story["clips"][8]["prompt"].lower()
 
 
 def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path):
@@ -3596,7 +3603,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-audio-2" in cell2
+    assert "h3-20260907-skin-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
