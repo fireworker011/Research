@@ -2419,8 +2419,14 @@ STORY_CAST_DEF_RE = re.compile(r"^(" + "|".join(STORY_CAST_NAMES) + r"): Adult",
 _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
 _LATIN_IN_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af]")
+_JP_SCRIPT_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
 SPEECH_FACE_KILLER_IDS = frozenset({"cinema-dy"})
-AUDIO_LOCK_MARK = "【音声ルール】"
+# ASCII on purpose. Japanese instruction sentences get TTS'd as dialogue.
+AUDIO_LOCK_MARK = "[AUDIO-LOCK]"
+_AUDIO_LOCK_LINE_RE = re.compile(r"(?:【音声ルール】|\[AUDIO-LOCK\])[^\n]*\n?")
+_OLD_JP_AUDIO_LOCK_RE = re.compile(
+    r"プロンプトは読まない。.*?(?:口は閉じて部屋の音だけ。|意味のわからない音は禁止。)"
+)
 # Default futanari = 玉なし＋マンコあり (the futa-blowjob still). Keep in sync with select_loras.lock_futa_anatomy.
 FUTA_SCENE_ANATOMY = (
     "futanari: erect penis, hairless female pussy at the base of the shaft, "
@@ -2506,25 +2512,40 @@ def drop_speech_face_killers(
     return out
 
 
-def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
-    """Pin H3 audio to the 「」 Japanese lines. English in the prompt is silent camera direction."""
-    text = str(prompt or "").strip()
-    if AUDIO_LOCK_MARK in text:
-        return text
-    spoken = list(lines) if lines is not None else spoken_lines(text)
+def jp_outside_quotes(text: str) -> str:
+    """Japanese script left after stripping 「」. A lock line must return empty."""
+    return "".join(_JP_SCRIPT_RE.findall(_SPOKEN_RE.sub("", str(text or ""))))
+
+
+def strip_audio_lock(prompt: str) -> str:
+    """Drop a previous audio lock so a new one can be written."""
+    text = _AUDIO_LOCK_LINE_RE.sub("", str(prompt or ""))
+    text = _OLD_JP_AUDIO_LOCK_RE.sub("", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def audio_lock_line(lines: list[str] | None) -> str:
+    """One ASCII lock line. The only Japanese allowed is the 「」 transcript."""
+    spoken = [str(x).strip() for x in (lines or []) if str(x).strip()]
     if spoken:
         quoted = "".join(f"「{ln}」" for ln in spoken)
-        lock = (
-            f"{AUDIO_LOCK_MARK}プロンプトは読まない。英語を音読しない。"
-            f"声に出していいのは日本語の台詞だけ。{quoted}"
-            "英語・中国語・韓国語・ローマ字・意味のわからない音は禁止。"
-            "台詞のあとに言葉を足さない。余った秒数は無音。口は閉じて部屋の音だけ。"
+        return (
+            f"{AUDIO_LOCK_MARK} spoken_transcript: {quoted} then: mute. "
+            "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
         )
-    else:
-        lock = (
-            f"{AUDIO_LOCK_MARK}プロンプトは読まない。誰も話さない。英語を音読しない。"
-            "日本語の部屋の音だけ。英語・中国語・韓国語・歌・ローマ字・意味のわからない音は禁止。"
-        )
+    return (
+        f"{AUDIO_LOCK_MARK} spoken_transcript: mute. "
+        "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
+    )
+
+
+def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
+    """Pin H3 audio to the 「」 lines. Never put Japanese instructions in the prompt
+    (H3 TTS reads 「プロンプトは読まない」 as dialogue). Camera English stays visual-only.
+    """
+    text = strip_audio_lock(prompt)
+    spoken = list(lines) if lines is not None else spoken_lines(text)
+    lock = audio_lock_line(spoken)
     marker = "overall_soundscape:"
     idx = text.find(marker)
     if idx >= 0:

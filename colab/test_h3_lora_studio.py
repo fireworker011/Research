@@ -54,15 +54,17 @@ def _check_visible_plan(planned, clip_prompt):
         assert planned["turbo"] is False
         assert planned["sampler"]["steps"] == 12
         assert planned["sampler"]["sampler_name"] == "res_multistep"
-        assert "【音声ルール】" in planned["prompt"]
-        assert "プロンプトは読まない" in planned["prompt"]
+        assert "[AUDIO-LOCK]" in planned["prompt"]
+        assert "spoken_transcript:" in planned["prompt"]
+        assert "プロンプトは読まない" not in planned["prompt"]
     else:
         assert ids == ["penis-lora-h3", "larry-v4", "cinema-dy"], ids
         assert planned["cfg"]["turbo"] is True
         assert planned["turbo"] is True
         assert planned["sampler"]["steps"] == 8
         assert planned["sampler"]["sampler_name"] == "euler"
-        assert "誰も話さない" in planned["prompt"]
+        assert "spoken_transcript: mute" in planned["prompt"]
+        assert "誰も話さない" not in planned["prompt"]
     assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
@@ -396,7 +398,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-pace-1"' in src
+    assert 'FETCH_REV = "h3-20260907-audio-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -439,7 +441,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-pace-1" in blob
+    assert "h3-20260907-audio-1" in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -477,6 +479,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "同じサイズ再試行" in src
     assert "if CLIP_INDEX + 1 < len(CLIPS):\n            comfy_free(PORT)" not in src
     assert "prompt_now = lock_spoken_japanese(GRAPH_PROMPT)" in src
+    assert 'AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]"' in src
     assert "prompt=prompt_now" in src
     assert "前の LoRA を VRAM から下ろし" in src
     assert "よく使う部品を全部ディスクへ入れます" in src
@@ -3313,11 +3316,14 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path):
     from h3_lora_studio import (
+        audio_lock_line,
         drop_speech_face_killers,
+        jp_outside_quotes,
         load_story,
         lock_spoken_japanese,
         prepare_story_clip,
         stack_signature,
+        strip_audio_lock,
         validate_story_follow,
     )
 
@@ -3341,19 +3347,34 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         "overall_soundscape:\nClinic hum. Rei speaks, lip-synced: 「こんにちは」. No other speech.\n",
         ["こんにちは"],
     )
-    assert locked.index("overall_soundscape:") < locked.index("【音声ルール】")
+    assert locked.index("overall_soundscape:") < locked.index("[AUDIO-LOCK]")
     assert "「こんにちは」" in locked
-    assert "プロンプトは読まない" in locked
+    assert "spoken_transcript:" in locked
+    assert "プロンプトは読まない" not in locked
+    lock_line = next(ln for ln in locked.splitlines() if ln.startswith("[AUDIO-LOCK]"))
+    assert jp_outside_quotes(lock_line) == ""
     silent_lock = lock_spoken_japanese("overall_soundscape:\nKiss. No spoken words.\n", [])
-    assert "誰も話さない" in silent_lock
-    assert "プロンプトは読まない" in silent_lock
+    assert "spoken_transcript: mute" in silent_lock
+    assert "誰も話さない" not in silent_lock
+    assert "プロンプトは読まない" not in silent_lock
+    old = lock_spoken_japanese(
+        "overall_soundscape:\n【音声ルール】プロンプトは読まない。英語を音読しない。声に出していいのは日本語の台詞だけ。「こんにちは」英語・中国語・韓国語・ローマ字・意味のわからない音は禁止。台詞のあとに言葉を足さない。余った秒数は無音。口は閉じて部屋の音だけ。\nClinic hum.\n",
+        ["こんにちは"],
+    )
+    assert old.count("[AUDIO-LOCK]") == 1
+    assert "プロンプトは読まない" not in old
+    assert lock_spoken_japanese(old, ["こんにちは"]).count("[AUDIO-LOCK]") == 1
+    assert audio_lock_line(["こんにちは"]).startswith("[AUDIO-LOCK]")
+    assert "prompt" not in audio_lock_line(["こんにちは"]).lower()
+    assert strip_audio_lock(old).count("[AUDIO-LOCK]") == 0
 
     story = load_story("checkup-100s")
     speech = prepare_story_clip(story, 0, stills_dir=tmp_path)
     assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3"]
     assert speech["stack_changed"] is False
-    assert "【音声ルール】" in speech["prompt"]
+    assert "[AUDIO-LOCK]" in speech["prompt"]
     assert "こんにちは" in speech["prompt"]
+    assert "プロンプトは読まない" not in speech["prompt"]
     assert "DY" not in speech["prompt"].split("\n", 1)[0]
     next_speech = prepare_story_clip(
         story, 1, last_frame="x.png", stills_dir=tmp_path, prev_situation=speech["situation"], prev_stack=speech["stack"]
@@ -3361,7 +3382,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert next_speech["situation"] == "futa_visible"
     assert next_speech["stack_changed"] is False
     assert next_speech["mode"] == "i2v"
-    assert next_speech["prompt"].index("Picture 1") < next_speech["prompt"].index("【音声ルール】")
+    assert next_speech["prompt"].index("Picture 1") < next_speech["prompt"].index("[AUDIO-LOCK]")
     kiss = prepare_story_clip(
         story, 3, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
     )
@@ -3369,7 +3390,8 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert kiss["stack_changed"] is True
     assert stack_signature(kiss["stack"]) != stack_signature(speech["stack"])
     assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "larry-v4", "cinema-dy"]
-    assert "誰も話さない" in kiss["prompt"]
+    assert "spoken_transcript: mute" in kiss["prompt"]
+    assert "誰も話さない" not in kiss["prompt"]
     oral = prepare_story_clip(
         story, 6, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
     )
@@ -3560,7 +3582,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-pace-1" in cell2
+    assert "h3-20260907-audio-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
