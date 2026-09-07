@@ -311,7 +311,7 @@ SITUATION_HELP = {
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
     "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。写真は input/commute-120s の 01〜12（16:9。無い本はテキストから）。",
+    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
     "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「昼だよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
     "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
     "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
@@ -1950,8 +1950,12 @@ def prepare_story_clip(
     forbidden_path: Path | str | None = None,
     clip0_override: Path | str | None = None,
     prev_situation: str | None = None,
+    force_t2v: bool = False,
 ) -> dict[str, Any]:
-    """One story clip. Hard cut: photo if present, else T2V. Matching LoRA per act."""
+    """One story clip. Hard cut: photo if present, else T2V. Matching LoRA per act.
+
+    force_t2v: Colab ③「テキストから」は Drive に試験 jpg があっても使わない。
+    """
     clips = list(story.get("clips") or [])
     if index < 0 or index >= len(clips):
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
@@ -1962,14 +1966,16 @@ def prepare_story_clip(
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
-    still_path = resolve_story_still(
+    still_path = None if force_t2v else resolve_story_still(
         clip, still_dir, clip_index=index, override=clip0_override
     )
     missing_still = None
-    want_still = start == "still_or_t2v" or bool(clip.get("still"))
+    want_still = (not force_t2v) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
-    use_last = bool(seamless and start == "continue" and last_frame and still_path is None)
+    use_last = bool(
+        (not force_t2v) and seamless and start == "continue" and last_frame and still_path is None
+    )
     if still_path is not None:
         mode = "i2v"
         prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)

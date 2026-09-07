@@ -28,7 +28,11 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
 3. **③** でシーンを選んで実行 → 下に動画が出る
 
-初めてなら **日常（速い＋綺麗）** のままで大丈夫です。シネマ質感を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。
+③の初期値はこの版の準備どおり **登校120秒（専用）** ＋ **テキストから（写真なし）**。シネマ質感とえっち部品を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。
+
+## 今の準備（この版）
+
+専用9話（帰宅〜縁側）まで入っています。**写真が無くても動画は作れます**（T2V）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（Imagine 2.0 用。このノートでは使わない）。Imagine で still を作り直したら③を「写真から」に変える。
 
 ## 準備（最初の1回）
 
@@ -61,7 +65,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
 | 帰宅120秒（専用） | 玄関フェラ→トイレクンニ寄り→口内。10×12のカット | クンニ LoRA は寄り1本。入室・退出は歩行部品。576×1024 |
 | 洗い物120秒（専用） | シンク洗い物＋プリン。アヤが床で口。10×12のカット | サヤカはシンク固定。レイは椅子で竿。入室と着席は別本。フェラは60秒以降。口内は CUMOUF |
-| 登校120秒（専用） | 朝〜大学正門。10秒×12本。16:9 | 1本1場所。セリフは口元3本。フェラは玄関と路地の寄り。授業は授業120秒 |
+| 登校120秒（専用） | 朝〜大学正門。10秒×12本。16:9。**今はテキストから** | 1本1場所。セリフは口元3本。フェラは玄関と路地の寄り。授業は授業120秒。写真は任意 |
 | 授業120秒（専用） | 授業〜昼。10秒×10本＝100秒。16:9 | 家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。口内は CUMOUF。セリフは「昼だよ」だけ。セックスは屋上〜下校 |
 | 屋上〜下校（専用） | 屋上挿入〜家の門。10秒×10本。16:9 | 1本1場所。セリフは口元2本。セックスは横クローズ。玄関はおかえり |
 | おかえり120秒（専用） | 家の門〜玄関ジュボ〜廊下。10秒×12本。16:9 | 屋上の続き。セリフは口元3本。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。食卓は洗い物 |
@@ -195,7 +199,7 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ:
-今使うシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "屋上〜下校（専用）", "おかえり120秒（専用）", "風呂120秒（専用）", "食卓120秒（専用）", "布団120秒（専用）", "休日120秒（専用）", "縁側120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+今使うシーン = "登校120秒（専用）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "屋上〜下校（専用）", "おかえり120秒（専用）", "風呂120秒（専用）", "食卓120秒（専用）", "布団120秒（専用）", "休日120秒（専用）", "縁側120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
@@ -210,7 +214,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h2-20260906-hotcache"
+FETCH_REV = "h3-20260907-t2v-ready"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -457,8 +461,8 @@ MD3 = r"""## ③ 動画を作る
 
 | 作り方 | 必要なもの |
 |---|---|
-| テキストから（写真なし） | なし。縦動画（9:16） |
-| 写真から（1枚必要） | Drive の `input` に jpg。顔や体を固定したいとき |
+| テキストから（写真なし） | なし。専用も JSON の文だけ。16:9 の話は横のまま。Drive に試験jpgがあっても使わない |
+| 写真から（1枚必要） | Drive の `input` または専用フォルダの jpg。顔を固定したいとき |
 
 自分の文を書くときは、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。写真からのときに Picture 1 を書かなくても、顔ロックは自動で足します。
 
@@ -472,7 +476,7 @@ MD3 = r"""## ③ 動画を作る
 - **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
 - **帰宅120秒（専用）** … 10秒×12本。1本1場所。セリフは口元の1本だけ（リップシンク）。クンニ LoRA は寄り1本。行為は口元・舌・竿の寄り。写真は `input/homecoming-90s/` の 01〜12（`11-lick.jpg` は舌と穴の寄り）
 - **洗い物120秒（専用）** … 10秒×12本。1本1場所。サヤカはシンク固定。セリフは口元の2本だけ。フェラは口元の寄り。口内は CUMOUF。写真は `input/dishes-90s/` の 01〜12（任意。01〜09は従来のまま）
-- **登校120秒（専用）** … 第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。写真は `input/commute-120s/` の 01〜12（16:9。無い本はテキストから）
+- **登校120秒（専用）** … 第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。**今の準備はテキストから。** `input/commute-120s/` の試験jpgは③がテキストからなら使わない。Imagine 後に写真からへ
 - **授業120秒（専用）** … 第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカは出さない。机のシコはオナニー寄り。クンニ LoRA は寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「昼だよ」だけ。セックスは屋上〜下校。写真は `input/lecture-120s/` の 01〜10（16:9。無い本はテキストから）
 - **屋上〜下校（専用）** … 第3話。屋上で挿入（もう入っている）〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元2本（ほしい／帰ろ）。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は `input/rooftop-100s/` の 01〜10（16:9）。全話同じ追従ルール（10秒・1場所・口パクは顔寄り・行為は LoRA のカメラ）
 - **おかえり120秒（専用）** … 第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。食卓のプリンは洗い物。写真は `input/okaeri-120s/` の 01〜12（16:9。無い本はテキストから）
@@ -509,7 +513,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-やりたいシーン = "日常（速い＋綺麗）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "屋上〜下校（専用）", "おかえり120秒（専用）", "風呂120秒（専用）", "食卓120秒（専用）", "布団120秒（専用）", "休日120秒（専用）", "縁側120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
+やりたいシーン = "登校120秒（専用）"  #@param ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）", "帰宅120秒（専用）", "洗い物120秒（専用）", "登校120秒（専用）", "授業120秒（専用）", "屋上〜下校（専用）", "おかえり120秒（専用）", "風呂120秒（専用）", "食卓120秒（専用）", "布団120秒（専用）", "休日120秒（専用）", "縁側120秒（専用）", "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）", "アナルセックス（女体）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）", "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち", "レズビアンクンニ", "性器を広げる", "レズ＋広げる"]
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
@@ -561,7 +565,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "force_t2v" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -595,6 +599,7 @@ apply_drive_cache_env(DRIVE_ROOT)
 
 SITUATION = resolve_situation(やりたいシーン)
 MODE = resolve_mode(作り方)
+FORCE_T2V = MODE == "t2v"
 VANILLA = is_vanilla(やりたいシーン)
 STORY = None
 STORY_STILLS = None
@@ -624,7 +629,10 @@ if is_story(やりたいシーン):
     print("各本の写真（任意）:", STORY_STILLS)
     for c in STORY["clips"]:
         print(" ", c.get("still") or "（写真なし）", c.get("label") or "")
-    print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
+    if FORCE_T2V:
+        print("作り方はテキストから。専用フォルダの写真は使いません。")
+    else:
+        print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
     if MODE == "i2v" and not is_auto_image_name(写真ファイル):
         src = Path(写真ファイル)
         if not src.is_file():
@@ -645,7 +653,7 @@ elif MODE == "t2v":
 if STORY:
     FILENAME_PREFIX = "video/h3_" + str(STORY.get("id") or "story")
     try:
-        planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE)
+        planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=None if FORCE_T2V else STORY_OVERRIDE, force_t2v=FORCE_T2V)
     except SystemExit as exc:
         hint = friendly_select_error(exc)
         raise SystemExit(hint or str(exc)) from None
@@ -994,7 +1002,7 @@ else:
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
         if STORY:
             try:
-                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=STORY_OVERRIDE if CLIP_INDEX == 0 else None, prev_situation=prev_sit)
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, force_t2v=FORCE_T2V)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None

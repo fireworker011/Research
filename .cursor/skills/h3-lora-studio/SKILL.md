@@ -5,7 +5,7 @@ description: MiniMax H3 LoRA studio for Colab. SFW fast+quality is turbo plus on
 
 # h3-lora-studio
 
-質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。ノートは `python colab/_write_lora_studio_nb.py` で再生成。`colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ココナラ homage ノートの Turbo 既定は変えない。
+質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。ノートは `python colab/_write_lora_studio_nb.py` で再生成。`colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ココナラ homage ノートの Turbo 既定は変えない。③の初期値は登校120秒＋テキストから。`prepare_story_clip(..., force_t2v=True)` は Drive の試験 jpg を無視する。
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list

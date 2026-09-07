@@ -390,7 +390,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h2-20260906-hotcache"' in src
+    assert 'FETCH_REV = "h3-20260907-t2v-ready"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -430,7 +430,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h2-20260906-hotcache" in blob
+    assert "h3-20260907-t2v-ready" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -442,6 +442,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "布団120秒（専用）" in blob
     assert "休日120秒（専用）" in blob
     assert "input/commute-120s/" in src
+    assert 'やりたいシーン = "登校120秒（専用）"' in src
+    assert "force_t2v=FORCE_T2V" in src
+    assert "作り方はテキストから。専用フォルダの写真は使いません。" in src
     assert "input/lecture-120s/" in src
     assert "input/rooftop-100s/" in src
     assert "input/okaeri-120s/" in src
@@ -1356,6 +1359,11 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
     assert "Picture 1" in with_still["prompt"]
     assert with_still["width"] == 1024
     assert with_still["height"] == 576
+    forced = prepare_story_clip(story, 0, stills_dir=tmp_path, force_t2v=True)
+    assert forced["mode"] == "t2v"
+    assert forced["first_kind"] == "t2v"
+    assert forced["still_path"] is None
+    assert "Picture 1" not in forced["prompt"]
 
 
 def test_lecture_story_ten_clips_campus_noon(tmp_path):
