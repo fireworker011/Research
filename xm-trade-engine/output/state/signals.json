@@ -1,17 +1,17 @@
 {
   "kind": "shadow_signals",
   "disclaimer": "GitHub cron は1〜4時間遅延する。XMの実時間発注には使わず、EAのローカル戦略を正とする。",
-  "updated_at": "2026-09-08T21:10:26.075Z",
+  "updated_at": "2026-09-07T04:09:56.092Z",
   "intents": [
     {
       "symbol": "EURUSD",
-      "action": "HOLD",
-      "reason": "out_of_session_hold"
+      "action": "FLAT",
+      "reason": "out_of_session"
     },
     {
       "symbol": "GBPUSD",
-      "action": "HOLD",
-      "reason": "out_of_session_hold"
+      "action": "FLAT",
+      "reason": "out_of_session"
     },
     {
       "symbol": "USDJPY",

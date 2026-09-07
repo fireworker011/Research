@@ -14,6 +14,7 @@ function emptyBook(risk) {
     balance,
     equity: balance,
     positions: [],
+    pending: [],
     closed: [],
     daily: {
       date: todayUTC(),
@@ -26,6 +27,7 @@ function emptyBook(risk) {
 function loadBook(risk) {
   const book = readJSON(PAPER_PATH, null);
   if (!book) return emptyBook(risk);
+  if (!Array.isArray(book.pending)) book.pending = [];
   return book;
 }
 
@@ -106,6 +108,55 @@ function closePosition(book, symbol, price, now, reason) {
   return closed;
 }
 
+function upsertPending(book, order) {
+  if (!Array.isArray(book.pending)) book.pending = [];
+  const placed = (order.now instanceof Date ? order.now.toISOString() : order.placed_at) || new Date().toISOString();
+  book.pending = book.pending.filter((p) => !(p.symbol === order.symbol && p.status === 'working'));
+  const row = {
+    id: order.id || `pend_${order.symbol}_${placed}`,
+    symbol: order.symbol,
+    type: order.type || 'OCO',
+    status: 'working',
+    buy_stop: order.buy_stop,
+    sell_stop: order.sell_stop,
+    buy_sl: order.buy_sl,
+    buy_tp: order.buy_tp,
+    sell_sl: order.sell_sl,
+    sell_tp: order.sell_tp,
+    sl_distance: order.sl_distance,
+    tp_distance: order.tp_distance,
+    lot: order.lot,
+    reason: order.reason,
+    setup_status: order.setup_status,
+    placed_at: placed
+  };
+  book.pending.push(row);
+  if (book.pending.length > 200) book.pending = book.pending.slice(-200);
+  return row;
+}
+
+function cancelWorkingPending(book, symbol, reason, now) {
+  if (!Array.isArray(book.pending)) book.pending = [];
+  for (const p of book.pending) {
+    if (p.symbol === symbol && p.status === 'working') {
+      p.status = 'cancelled';
+      p.cancel_reason = reason;
+      p.cancelled_at = now.toISOString();
+    }
+  }
+}
+
+function markPendingFilled(book, symbol, side, now) {
+  if (!Array.isArray(book.pending)) book.pending = [];
+  for (const p of book.pending) {
+    if (p.symbol === symbol && p.status === 'working') {
+      p.status = 'filled';
+      p.fill_side = side;
+      p.filled_at = now.toISOString();
+    }
+  }
+}
+
 function hitStops(book, prices, now) {
   const closed = [];
   for (const p of [...book.positions]) {
@@ -138,5 +189,8 @@ module.exports = {
   pnlOf,
   openPosition,
   closePosition,
-  hitStops
+  hitStops,
+  upsertPending,
+  cancelWorkingPending,
+  markPendingFilled
 };

@@ -19,7 +19,7 @@ Grok Bot（司令塔）
   エントリーは出さない。xm-fill / xm-close は告知
         │
 Cursor（参謀）          GitHub Actions（ペーパー + 報告）
-  戦略・リスク・EA保守     価格取得 → 仮想帳簿 → commander.json 更新
+  戦略・リスク・EA保守     TradingView/OKX足 → 仮想OCO（SL/TP） → commander.json
         │                         │
         └──────────┬──────────────┘
                    ▼
@@ -32,7 +32,7 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 | 役割 | やる | やらない |
 |---|---|---|
 | **EA（実時間）** | XM への発注・SL/TP・日次損失で全決済・約定/決済告知 | GitHub の遅延シグナルでエントリー |
-| **Node tick** | ペーパー追跡・シグナル記録・日次損失で HALT 書き込み | 実口座の損益を捏造 |
+| **Node tick / virtual-desk** | TradingViewスナップショット + OKX金足でペーパーOCO（SL/TP明示）。MajorsはEMAルールのみ | 実口座の損益を捏造。LLMに方向を選ばせる |
 | **Grok Bot** | 停止判断。fill/close を読む | 方向予想、ENTRY、ロット変更 |
 | **Cursor** | コードと不変条件 | リスク上限を上げる、マーチンゲールを足す |
 
@@ -105,6 +105,7 @@ cd xm-trade-engine
 node --check src/tick.js
 node src/self-test.js
 node src/tick.js --dry-run
+node src/virtual-desk.js --dry-run
 ```
 
 Majors は `ea/XMGrokEngine.mq5` を EURUSD H1 に別チャートで載せる。Gold と混ぜない。

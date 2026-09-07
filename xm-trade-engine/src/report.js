@@ -72,8 +72,12 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     lines.push(`- reason: ${goldState.reason || '—'}`);
     if (goldState.asia_high != null) {
       lines.push(`- asia: ${goldState.asia_low} – ${goldState.asia_high} close ${goldState.asia_close ?? '—'} (range ${goldState.range}, frac ${goldState.range_atr_frac})`);
-      lines.push(`- suggested_side: ${goldState.suggested_side || 'NONE'}`);
-      lines.push(`- levels: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
+      lines.push(`- suggested_side: ${goldState.suggested_side || 'NONE'}（参考。OCOは両方）`);
+      lines.push(`- BuyStop ${goldState.buy_stop} SL ${goldState.buy_sl ?? '—'} TP ${goldState.buy_tp ?? '—'}`);
+      lines.push(`- SellStop ${goldState.sell_stop} SL ${goldState.sell_sl ?? '—'} TP ${goldState.sell_tp ?? '—'}`);
+    }
+    if (goldState.status === 'forming') {
+      lines.push('- アジア形成中。ペーパーは仮の OCO。確定はブローカー7時');
     }
     if (goldState.status === 'awaiting_arm') {
       lines.push('- 完全自動: ロンドン枠で EA が OCO を置く。Grok は ENTRY を出すな');
@@ -81,6 +85,15 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     }
   } else {
     lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
+  }
+  const pending = (book.pending || []).filter((p) => p.status === 'working');
+  if (pending.length) {
+    lines.push('');
+    lines.push('### ペーパー pending（XMではない）');
+    lines.push('');
+    for (const p of pending) {
+      lines.push(`- ${p.symbol} lot=${p.lot} BUY ${p.buy_stop} / SELL ${p.sell_stop}`);
+    }
   }
   lines.push('');
   lines.push('## 実口座ゲート');
