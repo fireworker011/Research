@@ -422,6 +422,25 @@ def enabled_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]]:
 
 
 def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dict[str, Any]:
+    ids = {str(s.get("id") or "") for s in specs}
+    if "minimax-h3-turbo-ref2v-4step" in ids:
+        return {
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "steps": 4,
+            "cfg": 4.0,
+            "denoise": 1.0,
+            "note": "Ref2VA turbo 4step. Do not mix with FL2VA turbo.",
+        }
+    if "aftermidnight-ref2va" in ids:
+        return {
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "steps": 12,
+            "cfg": 4.0,
+            "denoise": 1.0,
+            "note": "AfterMidnight Ref2VA. 12step euler simple. No FL2VA helpers.",
+        }
     has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
     raw = profile.get("sampler")
     # A turbo profile run with the turbo stripped (lip-sync clips) needs its full-step plan.
@@ -752,8 +771,8 @@ def select_loras(
         arch = str(row.get("arch") or "")
         if mode in {"t2v", "i2v"} and arch == "ref2va":
             raise SelectError(f"ref2va LoRA cannot stack on {mode}: {lid}")
-        if mode == "r2v" and arch == "fl2va" and is_turbo_row(row):
-            raise SelectError(f"FL2VA turbo cannot stack on r2v: {lid}")
+        if mode == "r2v" and arch == "fl2va":
+            raise SelectError(f"{lid} is FL2VA-only; do not stack on Ref2VA")
         blob = json.dumps(row, ensure_ascii=False)
         bad = forbidden_hits(blob, extra=extra_forbidden, path=forbidden_path)
         if bad:
@@ -791,6 +810,8 @@ def select_loras(
             reasons.append("other_turbo")
         if mode in {"t2v", "i2v"} and str(row.get("arch") or "") == "ref2va":
             reasons.append("ref2va_not_for_fl2va")
+        if mode == "r2v" and str(row.get("arch") or "") == "fl2va":
+            reasons.append("fl2va_not_for_ref2va")
         if mode not in [str(m) for m in (row.get("modes") or [])]:
             reasons.append("wrong_mode")
         if not reasons:

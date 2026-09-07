@@ -69,7 +69,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 ## 今の準備（この版）
 
-専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）/（参照つなぐ）/（参照つなぐ修）** の5つから選べます。**短編集（参照）** は15秒完結×複数・つなぎなし。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックと短編集は 9:16 576×1024）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V。参照モードだけ `input/cast/` の8枚が必須）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（`sayaka-bust` / `sayaka-full` / `rei-bust` / `rei-full` / `aya-bust` / `aya-full` / `madoka-bust` / `madoka-full`）。Imagine 2.0 でも使える。**参照つなぐ・参照つなぐ修・短編集（参照）** ではこの8枚を Picture 1 にする。
+専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）/（参照つなぐ）/（参照つなぐ修）** の5つから選べます。**短編集（参照）** は15秒完結×複数・つなぎなし。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックと短編集は 9:16 576×1024）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V。参照モードだけ `input/cast/` の8枚が必須）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（`sayaka-bust` / `sayaka-full` / `rei-bust` / `rei-full` / `aya-bust` / `aya-full` / `madoka-bust` / `madoka-full`）。Imagine 2.0 でも使える。**参照つなぐ・参照つなぐ修・短編集（参照）** ではこの8枚を **R2V の identity 参照**にする（I2V の最初のコマではない。FL2VA と Ref2VA は混ぜない）。
 
 ## 120秒は混ぜない（普通のつなぐ / 専用5パターン / 名前付きパック5パターン / 短編集）
 
@@ -79,10 +79,10 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | **専用（専用）** | 「登校（専用）」など | **カット編集**。JSON のまま。各本は独立。最後のコマからは続けない。長さの作り方・つなぎ欄・秒数は無視 |
 | **専用（つなぐ）** | 「登校（つなぐ）」など | 同じ JSON を**最後のコマから I2V** で繋ぐ。文は直さない（1本目も長回しに直さない。③合わせも掛けない）。Picture 1 のロックだけ足す |
 | **専用（つなぐ修）** | 「登校（つなぐ修）」など | 最後のコマから I2V ＋ 1本目を長回しに直す。「最終シーン合わせ」オンなら最後の本だけ合わせる |
-| **専用（参照つなぐ）** | 「登校（参照つなぐ）」など | 1本目は `input/cast/` の人物写真（上半身 or 全身）から I2V。文はそのまま。2本目以降は最後のコマ。③のテキストから／写真ファイルは無視 |
+| **専用（参照つなぐ）** | 「登校（参照つなぐ）」など | 1本目は `input/cast/` を **R2V 参照**（上半身＋全身。最初のコマではない）。文はそのまま。2本目以降は最後のコマから I2V。③のテキストから／写真ファイルは無視 |
 | **専用（参照つなぐ修）** | 「登校（参照つなぐ修）」など | 参照つなぐ ＋ 1本目を長回しに直す。③オンなら最後の本だけ合わせる |
 | **名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）** | 「訪問販売（つなぐ修）」「カフェ（参照つなぐ）」「花火（専用）」など | 専用ストーリーではないが再生は同じ5つ。JSON の本ごとの部品はそのまま |
-| **短編集（参照）** | 「短編集（参照）」 | 15秒完結の濃厚日常インモラル×複数。**つなぎなし・連結なし**。各本は人物写真から。文と部品は自動（最適な LoRA を situation から選ぶ） |
+| **短編集（参照）** | 「短編集（参照）」 | 15秒完結の濃厚日常インモラル×複数。**つなぎなし・連結なし**。各本は人物写真を **R2V 参照**。文と部品は自動（R2V 安全な LoRA だけ） |
 
 専用は 11話 × 5 ＝ 55行、パックは 13本 × 5 ＝ 65行、短編集は1行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
 
@@ -139,7 +139,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 講義机（専用 / つなぐ / つなぐ修） | 大学の講義。先生（36・眼鏡・結い髪・中乳・20cm・チョーク）、アヤが教卓の下でジュボ→口内。上の声は授業。10秒×5本。9:16 | 建前パック。授業（専用11話）とは別。放尿なし |
 | キャンプ（専用 / つなぐ / つなぐ修） | 夜のキャンプ。レイがアヤのマンコを舐めるだけ。虫よけ。レイの20cmは使わない。10秒×5本。9:16 | 建前パック。クンニ LoRA。ジュボなし・放尿なし |
 | 花火（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修） | 川べりの花火。竿マドカ、受けサヤカ。立ったまま後ろから入っている。顔は花火。10秒×5本。9:16 | 建前パック。AIO。ジュボなし・放尿なし |
-| 短編集（参照） | 15秒完結の濃厚日常インモラル×12。玄関ジュボ・シンク口内・路地・トイレクンニ・屋上挿入・洗い場・食卓下・布団・ソファ・縁側マドカ・訪問おミズ・ヨガ後背。つなぎなし | 本ごとの部品（フェラ＋竿＋穴 / 口内 / クンニ / AIO / 後背位）。人物写真必須 |
+| 短編集（参照） | 15秒完結の濃厚日常インモラル×12。玄関ジュボ・シンク口内・路地・トイレクンニ・屋上挿入・洗い場・食卓下・布団・ソファ・縁側マドカ・訪問おミズ・ヨガ後背。つなぎなし | 各本 R2V（フェラは blowjob＋Ref2VA turbo、他は AfterMidnight）。FL2VA の竿/穴は載せない。人物写真必須 |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -283,7 +283,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-ref-shorts-1"
+FETCH_REV = "h3-20260907-ref-r2v-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -406,6 +406,7 @@ sys.path.insert(0, "/content/h3-lora-studio/scripts")
 for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
     sys.modules.pop(name, None)
 from h3_i2v_phone import i2v_download_jobs
+from h3_r2v_core import r2v_download_jobs
 from h3_lora_studio import (
     SITUATION_HELP, civitai_token, civitai_token_help, civitai_download_fallbacks,
     download_jobs_for, fetch_weight, load_catalog, missing_civitai_files,
@@ -462,6 +463,10 @@ print("大きな土台を入れています（すでにあれば飛ばします�
 for url, dest in i2v_download_jobs(DRIVE_MODELS):
     if "turbo" in dest.name.lower():
         print("  速いモード（Turbo）も入れます。普通の I2V / T2V と共用します:", dest.name)
+    fetch_weight(url, dest)
+print("参照用の土台（R2V / ref2va）も入れます。FL2VA とは混ぜません…")
+for url, dest in r2v_download_jobs(DRIVE_MODELS):
+    print("  参照:", dest.name)
     fetch_weight(url, dest)
 
 sid = resolve_situation(今使うシーン)
@@ -649,22 +654,22 @@ sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
 for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
     sys.modules.pop(name, None)
-from h3_r2v_core import is_oom_error, frames
+from h3_r2v_core import REF2VA_NAME, assert_graph_identity_motion, build_r2v_graph, is_oom_error, frames, r2v_retry_plans
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, resolve_story_play, apply_story_play, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, STORY_PLAY_JA, STORY_PLAY_DEDICATED
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, clear_warmup_stamp, resolve_story_play, apply_story_play, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, STORY_PLAY_JA, STORY_PLAY_DEDICATED
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
 STORY_PLAY = None
 if is_anthology(やりたいシーン):
-    print("短編集（参照）。15秒完結×複数。つなぎなし。長さの作り方・秒数・つなぎ欄は無視します。人物写真は Drive の input/cast/。")
+    print("短編集（参照）。15秒完結×複数。つなぎなし。長さの作り方・秒数・つなぎ欄は無視します。人物写真は Drive の input/cast/ を R2V 参照（最初のコマではない）。")
     CHAIN = False
 if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY_PLAY = resolve_story_play(やりたいシーン)
@@ -739,7 +744,7 @@ if is_anthology(やりたいシーン):
     VANILLA = False
     STORY_STILLS = CAST_DIR
     print(str(STORY.get("title_ja") or STORY.get("id")), "短編集。", len(STORY["clips"]), "本 ×", int(STORY.get("clip_s") or 15), "秒。各本は独立。最後のコマではつなぎません。連結しません。")
-    print("人物写真:", CAST_DIR, "（sayaka/rei/aya/madoka の bust と full）")
+    print("人物写真:", CAST_DIR, "（sayaka/rei/aya/madoka の bust と full）を R2V 参照。I2V の最初のコマにはしません。")
     print("③のテキストから／写真ファイルは使いません。")
 elif is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY = load_story(SITUATION, studio_root=STUDIO)
@@ -765,7 +770,7 @@ elif is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
         else:
             print("文は直しません（JSON のまま。Picture 1 のロックだけ足す）。", "最終シーン合わせはこの再生では使いません。" if 最終シーン合わせ else "")
     if STORY.get("use_cast_ref"):
-        print("人物参照: Drive input/cast/ を1本目の Picture 1 に使います。③のテキストから／写真ファイルは無視します。")
+        print("人物参照: Drive input/cast/ を1本目の R2V 参照に使います（最初のコマではない）。③のテキストから／写真ファイルは無視します。2本目以降は最後のコマから I2V。")
         FORCE_T2V = False
         STORY_OVERRIDE = None
     cv = STORY.get("canvas") or {}
@@ -776,7 +781,7 @@ elif is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     if FORCE_T2V and not STORY.get("use_cast_ref"):
         print("作り方はテキストから。専用フォルダの写真は使いません。")
     elif STORY.get("use_cast_ref"):
-        print("1本目は input/cast/ の人物写真です。専用フォルダの試験jpgは使いません。")
+        print("1本目は input/cast/ の人物写真を R2V 参照します。専用フォルダの試験jpgは使いません。")
     else:
         print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
     if (not STORY.get("use_cast_ref")) and MODE == "i2v" and not is_auto_image_name(写真ファイル):
@@ -908,16 +913,29 @@ if hits:
     raise SystemExit(hint or f"forbidden subject in prompt: {hits}")
 
 obj = {}
+need_r2v = bool(STORY) and (STORY.get("use_cast_ref") or str(STORY.get("kind") or "") == "anthology")
+need_i2v = not (STORY and str(STORY.get("kind") or "") == "anthology")
 if not 試し打ちだけ:
     print("エンジンの部品表を確認しています…")
     obj = fetch_comfy_object_info(PORT)
-    if "MiniMaxH3ImageToVideo" not in obj:
+    if need_i2v and "MiniMaxH3ImageToVideo" not in obj:
         raise SystemExit("エンジンがまだです。②を先に実行してください。")
+    if need_r2v and "MiniMaxH3ReferenceToVideo" not in obj:
+        raise SystemExit("参照（R2V）ノードがありません。②をもう一度実行してください。")
 
-diff = list((COMFY_DIR / "models/diffusion_models").glob("*fl2va*"))
-if not diff and not 試し打ちだけ:
-    raise SystemExit("土台がありません。②を先に実行してください。")
-unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+fl2va_files = list((COMFY_DIR / "models/diffusion_models").glob("*fl2va*"))
+ref2va_files = list((COMFY_DIR / "models/diffusion_models").glob("*ref2va*"))
+
+def unet_for(mode):
+    if mode == "r2v":
+        if not ref2va_files and not 試し打ちだけ:
+            raise SystemExit("参照用の土台（ref2va）がありません。②をもう一度実行してください。")
+        return ref2va_files[0].name if ref2va_files else REF2VA_NAME
+    if not fl2va_files and not 試し打ちだけ:
+        raise SystemExit("土台がありません。②を先に実行してください。")
+    return fl2va_files[0].name if fl2va_files else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+
+unet = unet_for(MODE)
 
 if not VANILLA:
     lora_dir = COMFY_DIR / "models" / "loras"
@@ -926,6 +944,10 @@ if not VANILLA:
     id_list = [str(x.get("id") or "") for x in stack if x.get("id")]
     if STORY:
         id_list = situation_ids(SITUATION)
+        if STORY.get("use_cast_ref") or str(STORY.get("kind") or "") == "anthology":
+            for extra in ("minimax-h3-turbo-ref2v-4step", "aftermidnight-ref2va", "blowjob-h3", "cinema-dy"):
+                if extra not in id_list:
+                    id_list.append(extra)
         print(str(int(DURATION)) + "秒分の部品を確認します:", ", ".join(id_list))
     need = missing_stack_files(stack, lora_dir)
     if STORY:
@@ -959,16 +981,28 @@ if not VANILLA:
         unseen = comfy_missing_loras(stack, obj)
         if unseen:
             print("まだ見えていないファイル:", ", ".join(unseen), "（このまま試します）")
-        warmup_h3_engine(COMFY_DIR, PORT, unet)
+        if str(MODE) != "r2v":
+            warmup_h3_engine(COMFY_DIR, PORT, unet)
 
-if not 試し打ちだけ and unet:
+r2v_first = bool(STORY) and str(planned0.get("mode") or "") == "r2v"
+if not 試し打ちだけ and unet and not r2v_first:
     warmup_h3_engine(COMFY_DIR, PORT, unet)
+elif r2v_first:
+    print("1本目は参照（R2V）。FL2VA の事前載せはしません。")
+    comfy_free(PORT)
+    clear_warmup_stamp(COMFY_DIR)
 
 first_name = None
+GRAPH_IMGS = []
 inp = COMFY_DIR / "input"
 inp.mkdir(parents=True, exist_ok=True)
 if STORY:
-    if planned0.get("still_path"):
+    if str(planned0.get("mode") or "") == "r2v":
+        still_paths0 = list(planned0.get("still_paths") or ([planned0["still_path"]] if planned0.get("still_path") else []))
+        GRAPH_IMGS = [stage_image_into_input(p, inp) for p in still_paths0]
+        first_name = GRAPH_IMGS[0] if GRAPH_IMGS else None
+        print("使う参照写真:", ", ".join(GRAPH_IMGS))
+    elif planned0.get("still_path"):
         first_name = stage_image_into_input(planned0["still_path"], inp)
         print("使う写真:", first_name)
 elif MODE == "i2v":
@@ -1001,7 +1035,19 @@ if VANILLA:
     if not lora_name:
         raise SystemExit("速いモード（Turbo）がありません。②を先に実行してください。")
 
-plans = t2v_retry_plans(width=w, height=h) if MODE == "t2v" else i2va_retry_plans(width=w, height=h)
+vram_gb = 40.0
+try:
+    import torch
+    if torch.cuda.is_available():
+        vram_gb = float(torch.cuda.get_device_properties(0).total_memory) / (1024 ** 3)
+except Exception:
+    pass
+if MODE == "r2v":
+    plans = r2v_retry_plans(duration_s=float(CLIPS[0]), ref_image_size="max", width=w, height=h, n_images=max(1, len(GRAPH_IMGS)), has_video=False, vram_gb=vram_gb)
+elif MODE == "t2v":
+    plans = t2v_retry_plans(width=w, height=h)
+else:
+    plans = i2va_retry_plans(width=w, height=h)
 CLIP_DURATION = float(CLIPS[0])
 CLIP_INDEX = 0
 GRAPH_MODE = MODE
@@ -1013,7 +1059,25 @@ def make_graph(plan):
     steps = int(SAMPLER["steps"])
     clip_seed = int(SEED) + int(CLIP_INDEX)
     prefix = FILENAME_PREFIX + ("_p" + str(int(CLIP_INDEX)) if CHAIN else "")
-    if GRAPH_MODE == "t2v":
+    if GRAPH_MODE == "r2v":
+        imgs = list(GRAPH_IMGS or ([] if not GRAPH_FIRST else [GRAPH_FIRST]))
+        if not imgs:
+            raise SystemExit("参照用の人物写真がありません。Drive の input/cast/ を確認してください。")
+        g = build_r2v_graph(
+            img_names=imgs, vid_names=[], prompt=GRAPH_PROMPT, unet=unet,
+            lora_name=lora_name if VANILLA else None, lora_strength=lora_strength if VANILLA else 0.0,
+            width=int(plan["width"]), height=int(plan["height"]),
+            duration_s=float(plan.get("duration_s") or CLIP_DURATION), seed=clip_seed, steps=steps,
+            filename_prefix=prefix,
+            ref_image_size=str(plan.get("ref_image_size") or "max"),
+            use_videos=False, has_vhs=False,
+            has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
+            has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
+        )
+        if not VANILLA:
+            inject_lora_stack(g, stack, sampler=SAMPLER)
+        errs = assert_graph_identity_motion(g, expect_images=len(imgs), expect_videos=0, prompt=GRAPH_PROMPT)
+    elif GRAPH_MODE == "t2v":
         g = build_t2v_graph(
             prompt=GRAPH_PROMPT, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
@@ -1045,7 +1109,7 @@ def make_graph(plan):
     names = [str(n["inputs"].get("lora_name", "")) for n in loaders]
     blob = " ".join(names).lower()
     has_larry = "turbo_v4" in blob or "larry" in blob
-    has_lx = "fl2v_turbo" in blob or "fl2v_lightx2v" in blob or "lightx2v" in blob
+    has_lx = "fl2v_turbo" in blob or "fl2v_lightx2v" in blob or "lightx2v" in blob or "ref2v_turbo" in blob
     if has_larry and has_lx:
         raise SystemExit("Larry と LightX2V は同時に積みません。")
     if VANILLA:
@@ -1092,7 +1156,12 @@ def wait_prompt(pid, timeout=3600):
     return False, "timeout"
 
 def generate_one():
-    plans_now = t2v_retry_plans(width=w, height=h) if GRAPH_MODE == "t2v" else i2va_retry_plans(width=w, height=h)
+    if GRAPH_MODE == "r2v":
+        plans_now = r2v_retry_plans(duration_s=CLIP_DURATION, ref_image_size="max", width=w, height=h, n_images=max(1, len(GRAPH_IMGS or [])), has_video=False, vram_gb=vram_gb)
+    elif GRAPH_MODE == "t2v":
+        plans_now = t2v_retry_plans(width=w, height=h)
+    else:
+        plans_now = i2va_retry_plans(width=w, height=h)
     ok_entry = None
     before = newest_mp4(OUT)
     for plan in plans_now:
@@ -1180,10 +1249,13 @@ else:
                 if not last_now:
                     raise SystemExit("前の本の最後のコマがありません。③をもう一度。")
                 first_name = last_now
+                GRAPH_IMGS = []
                 print("前の本の最後のコマから続けます:", planned["label"])
             elif planned.get("first_kind") == "cast":
-                first_name = stage_image_into_input(planned["still_path"], inp)
-                print("人物写真から:", planned["label"], Path(str(planned["still_path"])).name)
+                still_now = list(planned.get("still_paths") or ([planned["still_path"]] if planned.get("still_path") else []))
+                GRAPH_IMGS = [stage_image_into_input(p, inp) for p in still_now]
+                first_name = GRAPH_IMGS[0] if GRAPH_IMGS else None
+                print("人物参照 (R2V):", planned["label"], [Path(str(p)).name for p in still_now])
             elif planned.get("still_path") is not None:
                 first_name = stage_image_into_input(planned["still_path"], inp)
             elif GRAPH_MODE == "t2v":
@@ -1195,6 +1267,14 @@ else:
             w, h = int(planned["width"]), int(planned["height"])
             CLIP_DURATION = float(planned.get("duration_s") or CLIP_DURATION)
             print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", GRAPH_MODE, [x.get("id") for x in stack], str(SAMPLER.get("steps")) + "step", "Turbo" if planned.get("turbo") else "フルステップ")
+            next_unet = unet_for(GRAPH_MODE)
+            if next_unet != unet:
+                print("土台を切り替えます:", unet, "→", next_unet)
+                comfy_free(PORT)
+                clear_warmup_stamp(COMFY_DIR)
+                unet = next_unet
+                if GRAPH_MODE != "r2v" and not 試し打ちだけ:
+                    warmup_h3_engine(COMFY_DIR, PORT, unet, force=True)
         else:
             GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
             GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)
@@ -1233,6 +1313,8 @@ else:
         prev_prompt = GRAPH_PROMPT
         if GRAPH_MODE == "i2v" and not GRAPH_FIRST:
             raise SystemExit("写真または前のクリップの最後のコマがありません。")
+        if GRAPH_MODE == "r2v" and not GRAPH_IMGS:
+            raise SystemExit("参照用の人物写真がありません。Drive の input/cast/ を確認してください。")
         clip_path = generate_one()
         clip_paths.append(clip_path)
         print("保存:", clip_path)

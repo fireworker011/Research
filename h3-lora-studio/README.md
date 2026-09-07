@@ -1,6 +1,6 @@
 # h3-lora-studio
 
-MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V）専用。
+MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V / 参照は R2V）専用。
 
 成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。3 本以上の画質 LoRA は穴も竿も顔も崩れる。API キーは print しない。
 
@@ -25,7 +25,7 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 | 常用・顔と質感 | larryvrh v4 step600 EMA（Comfy 変換） | 6–8 | 作者推奨。4step は動きが滲む。8超はシャープ過多。強さ 1.0 |
 | 最速プレビュー | LightX2V FL2VA 4step 768p v1.0 | 4 | 768p 直出し。音は弱い |
 | 音も残して速く | LightX2V FL2VA 8step v1.0 | 8 | 4step より音がマシ。歌・日本語は Larry の方が安定 |
-| 顔固定 R2V | LightX2V Ref2VA 4step v0.1 | 4 | FL2VA 用と混ぜない。この Colab では選ばない |
+| 顔固定 R2V | LightX2V Ref2VA 4step v0.1 | 4 | FL2VA 用と混ぜない。参照つなぐの1本目と短編集（参照）で使う |
 
 | 画質（エロなし） | 強さ | 効果 |
 |---|---|---|
@@ -125,9 +125,9 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | `登校（専用）` など | カット。JSON のまま（`CHAIN=False`、`last_frame=None`） | なし | なし（③「最終シーン合わせ」オン＋写真からの静止画だけ `rewrite_dedicated_scene_i2v_prompt`） |
 | `登校（つなぐ）` | 文を直さずつなぐ | 2本目以降 I2V | Picture 1 ロック（`continue_chain_prompt`）だけ。`rewrite_chain_opening_prompt` も最後の `rewrite_final_scene_i2v_prompt` もオフ |
 | `登校（つなぐ修）` | 文を直してつなぐ | 2本目以降 I2V | 1本目に `rewrite_chain_opening_prompt`。③オンなら最後の本だけ `rewrite_final_scene_i2v_prompt` |
-| `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` | 2本目以降 I2V | 文はそのまま。③テキストからは無視 |
+| `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` を **R2V 参照** | 2本目以降 I2V | 文はそのまま。③テキストからは無視。FL2VA の竿/穴は1本目に載せない |
 | `登校（参照つなぐ修）` | 参照つなぐ＋1本目を長回し | 2本目以降 I2V | 1本目 `rewrite_chain_opening_prompt`。③オンなら最後の本だけ |
-| `短編集（参照）` | 15秒完結×複数。つなぎなし | なし | 文は自動。各本が独立 I2V |
+| `短編集（参照）` | 15秒完結×複数。つなぎなし | なし | 文は自動。各本が独立 **R2V**（AfterMidnight / blowjob＋Ref2VA turbo） |
 
 旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアス（dedicated）。初期値は **登校（専用）**。実装は `resolve_story_play()` / `apply_story_play()`。キャスト8枚: `sayaka-bust` `sayaka-full` `rei-bust` `rei-full` `aya-bust` `aya-full` `madoka-bust` `madoka-full`。
 

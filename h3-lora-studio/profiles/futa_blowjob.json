@@ -5,7 +5,8 @@
   "feminine_lock": true,
   "modes": [
     "i2v",
-    "t2v"
+    "t2v",
+    "r2v"
   ],
   "allow_turbo": true,
   "canvas": {
@@ -16,6 +17,12 @@
       "aspect": "8:9"
     },
     "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    },
+    "r2v": {
       "width": 576,
       "height": 1024,
       "duration_s": 10.0,
@@ -40,6 +47,16 @@
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
+    },
+    "r2v": {
+      "act": {
+        "id": "blowjob-h3",
+        "strength": 0.8
+      },
+      "turbo": {
+        "id": "minimax-h3-turbo-ref2v-4step",
+        "strength": 0.5
+      }
     }
   },
   "sampler": {
@@ -65,7 +82,8 @@
   ],
   "scenes": {
     "i2v": "bl0w_j0b, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
-    "t2v": "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+    "t2v": "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears.\n\nAll performers are consenting adult women 21 years or older.",
+    "r2v": "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready a blow job. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis"
 }

@@ -26,6 +26,14 @@ STUDIO_ROOT = Path(__file__).resolve().parents[1] / "h3-lora-studio"
 if not STUDIO_ROOT.is_dir():
     STUDIO_ROOT = Path("/content/h3-lora-studio")
 
+_HERE = Path(__file__).resolve().parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
+_COLAB_R2V = Path(__file__).resolve().parents[1] / "colab"
+if _COLAB_R2V.is_dir() and str(_COLAB_R2V) not in sys.path:
+    sys.path.insert(0, str(_COLAB_R2V))
+from h3_r2v_core import finalize_prompt as r2v_finalize_prompt
+
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
     "tiddies-realism-slider": 1.2,
@@ -194,13 +202,8 @@ SITUATION_DOWNLOAD = {
     "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
     "shorts-immoral": [
         "blowjob-h3",
-        "penis-lora-h3",
-        "synth-pussy-h3",
-        "cumouf-h3",
-        "lesbian-cunnilingus-h3",
-        "hmnsfw-aio-v25",
-        "doggy-h3",
-        "larry-v4",
+        "minimax-h3-turbo-ref2v-4step",
+        "aftermidnight-ref2va",
     ],
 }
 
@@ -406,7 +409,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞はカタカナ。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞はカタカナ。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞はカタカナ。",
-    "shorts-immoral": "短編集（参照）。15秒完結の濃厚日常インモラルを複数本。つなぎなし。各本は input/cast/ の人物写真から I2V。文と部品は自動。",
+    "shorts-immoral": "短編集（参照）。15秒完結の濃厚日常インモラルを複数本。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。文と部品は自動。FL2VA の竿/穴は載せない。",
 }
 
 LORA_JA = {
@@ -439,6 +442,7 @@ LORA_JA = {
     "minimax-h3-turbo-fl2v-4step": "LightX2V 4step",
     "minimax-h3-turbo-fl2v-8step": "LightX2V 8step",
     "minimax-h3-turbo-ref2v-4step": "LightX2V Ref2VA",
+    "aftermidnight-ref2va": "AfterMidnight（R2V行為）",
     "photoreal-h3-still": "静止画用の写実",
 }
 
@@ -540,8 +544,8 @@ STORY_PLAY_HELP_JA = {
     STORY_PLAY_DEDICATED: "カット。JSON のまま。最後のコマからは続けない",
     STORY_PLAY_CHAIN: "つなぐ・文そのまま。最後のコマから I2V。1本目の文は直さない",
     STORY_PLAY_CHAIN_REWRITE: "つなぐ・1本目を長回しに直す。最後のコマから I2V。③オンなら最後の本だけ合わせる",
-    STORY_PLAY_REF_CHAIN: "参照つなぐ。1本目は input/cast/ の人物写真。文はそのまま。2本目以降は最後のコマから I2V",
-    STORY_PLAY_REF_CHAIN_REWRITE: "参照つなぐ修。1本目は人物写真＋長回しに直す。③オンなら最後の本だけ合わせる",
+    STORY_PLAY_REF_CHAIN: "参照つなぐ。1本目は input/cast/ を R2V 参照（最初のコマではない）。文はそのまま。2本目以降は最後のコマから I2V",
+    STORY_PLAY_REF_CHAIN_REWRITE: "参照つなぐ修。1本目は R2V 参照＋長回しに直す。2本目以降は最後のコマから I2V。③オンなら最後の本だけ合わせる",
 }
 _STORY_PLAY_LABELS: dict[str, tuple[str, str]] = {}
 
@@ -751,7 +755,7 @@ def clip_cast_people(clip: dict[str, Any]) -> list[str]:
 
 
 def pick_cast_lead(clip: dict[str, Any]) -> tuple[str, str]:
-    """(person, bust|full) for Picture 1. One still: FL2VA I2V, not Ref2VA."""
+    """(person, bust|full) for the first identity still. R2V uses bust+full, not I2V Picture 1."""
     people = clip_cast_people(clip)
     prompt = str(clip.get("prompt") or "")
     sit = str(clip.get("situation") or "").strip()
@@ -777,7 +781,8 @@ def pick_cast_lead(clip: dict[str, Any]) -> tuple[str, str]:
     return "rei", "full"
 
 
-def pick_cast_still(clip: dict[str, Any], cast_dir: Path | str) -> Path:
+def pick_cast_stills(clip: dict[str, Any], cast_dir: Path | str, *, max_stills: int = 4) -> list[Path]:
+    """Bust + full identity stills for people in the clip. Cap 4. Missing files abort."""
     root = Path(cast_dir)
     wanted = "、".join(EXPECTED_CAST_FILES)
     if not root.is_dir():
@@ -785,27 +790,84 @@ def pick_cast_still(clip: dict[str, Any], cast_dir: Path | str) -> Path:
             "参照モードは Drive の input/cast/ に4人の上半身・全身（8枚）が必要です。"
             f" 置く名前: {wanted}（jpg / jpeg / png / webp）"
         )
-    person, kind = pick_cast_lead(clip)
-    still = find_cast_file(root, person, kind)
-    if still is not None:
-        return still
-    missing = [
-        name
-        for name in EXPECTED_CAST_FILES
-        if find_cast_file(root, *name.rsplit("-", 1)) is None
-    ]
-    raise SystemExit(
-        "参照モードの人物写真が足りません。"
-        f" この本は {person}-{kind} が必要です。"
-        f" 置く名前: {wanted}。"
-        + (f" 足りない: {'、'.join(missing)}" if missing else "")
+    lead_person, lead_kind = pick_cast_lead(clip)
+    people = clip_cast_people(clip) or [lead_person]
+    ordered: list[str] = []
+    for n in [lead_person, *people]:
+        if n not in ordered:
+            ordered.append(n)
+    pairs: list[tuple[str, str]] = []
+    for person in ordered:
+        kinds = (lead_kind, "full" if lead_kind != "full" else "bust") if person == lead_person else ("bust", "full")
+        for kind in kinds:
+            pairs.append((person, kind))
+            if len(pairs) >= max_stills:
+                break
+        if len(pairs) >= max_stills:
+            break
+    paths: list[Path] = []
+    missing: list[str] = []
+    for person, kind in pairs:
+        still = find_cast_file(root, person, kind)
+        if still is None:
+            missing.append(f"{person}-{kind}")
+        else:
+            paths.append(still)
+    if missing or not paths:
+        all_missing = [
+            name
+            for name in EXPECTED_CAST_FILES
+            if find_cast_file(root, *name.rsplit("-", 1)) is None
+        ]
+        raise SystemExit(
+            "参照モードの人物写真が足りません。"
+            f" この本は {lead_person}-{lead_kind} が必要です。"
+            f" 置く名前: {wanted}。"
+            + (f" 足りない: {'、'.join(all_missing or missing)}" if (all_missing or missing) else "")
+        )
+    return paths
+
+
+def pick_cast_still(clip: dict[str, Any], cast_dir: Path | str) -> Path:
+    return pick_cast_stills(clip, cast_dir)[0]
+
+
+def lock_r2v_cast_prompt(prompt: str, still_paths: list[Path], *, duration_s: float = 10.0) -> str:
+    """Identity ROLE LOCK for Ref2VA. Never the I2V 'first frame is Picture 1' header."""
+    body = str(prompt or "").strip()
+    body = re.sub(
+        r"^For the target video, at 0\.00 seconds into the target video,\s*"
+        r"<Picture 1> \(from \[Shot 1\]\) is fully referenced\.\s*",
+        "",
+        body,
+        count=1,
+        flags=re.I,
+    ).strip()
+    img_names = [Path(p).name for p in still_paths]
+    extra = (
+        "Identity stills are references only, not the first frame of a clip. "
+        "Invent cinematic motion consistent with the stills. "
+        "Do not freeze on a portrait pose."
     )
+    locked = r2v_finalize_prompt(body, img_names, [], float(duration_s), inject_role_lock=True)
+    if extra.lower() not in locked.lower():
+        locked = f"{locked}\n\n{extra}"
+    return locked
 
 
 def explain_choice(situation: str, mode: str) -> str:
     sid = resolve_situation(situation)
     mid = resolve_mode(mode)
     how = "テキストから動画（写真は使いません）" if mid == "t2v" else "写真1枚から動画（Drive の input に jpg）"
+    play_now = ""
+    try:
+        play_now = resolve_story_play(situation) if sid in STORY_IDS or sid in CHAIN_PACK_IDS else ""
+    except Exception:
+        play_now = ""
+    if sid in ANTHOLOGY_ID_SET:
+        how = "人物写真を参照して動画（R2V。1枚を最初のコマにはしない）"
+    elif play_now in {STORY_PLAY_REF_CHAIN, STORY_PLAY_REF_CHAIN_REWRITE}:
+        how = "1本目は人物写真を参照（R2V）。2本目以降は最後のコマから I2V"
     if sid == "vanilla":
         return (
             f"シーン: {situation}\n"
@@ -827,7 +889,7 @@ def explain_choice(situation: str, mode: str) -> str:
         play = resolve_story_play(situation)
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
     elif sid in ANTHOLOGY_ID_SET:
-        play_line = "再生: 短編集（参照）。15秒完結×複数。つなぎなし。人物写真から\n"
+        play_line = "再生: 短編集（参照）。15秒完結×複数。つなぎなし。人物写真を R2V 参照\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -3005,11 +3067,12 @@ def prepare_story_clip(
     Dedicated (seamless False): hard cut. Photo if present, else T2V. Never the last frame.
     Chain (seamless True, via apply_story_play or a named pack): clip 2+ is I2V from
     last_frame. Clip 1 gets the long-take opening wrap only when rewrite_chain_prompts.
-    Ref chain: clip 1 is I2V from Drive input/cast/ (use_cast_ref). Ignore ③テキストから.
-    Anthology: every clip is I2V from a cast still. No last-frame chain.
+    Ref chain: clip 1 is R2V from Drive input/cast/ identity stills (use_cast_ref).
+    Ignore ③テキストから. Clip 2+ stays last-frame I2V on FL2VA.
+    Anthology: every clip is R2V from cast stills. No last-frame chain.
 
     force_t2v: Colab ③「テキストから」は Drive に試験 jpg があっても使わない（最後のコマは使う）。
-    参照モードでは force_t2v を無視して人物写真を使う。
+    参照モードでは force_t2v を無視して人物写真を R2V 参照する。
     fit_scene: ③合わせ. Dedicated still I2V → rewrite_dedicated_scene_i2v_prompt.
     chain_rewrite last clip → rewrite_final_scene_i2v_prompt. chain-raw: nothing.
     """
@@ -3031,9 +3094,11 @@ def prepare_story_clip(
     use_last = bool(seamless and last_frame and index > 0 and not anthology)
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
     still_path = None
+    still_paths: list[Path] = []
     first_kind_cast = False
     if use_cast and not use_last:
-        still_path = pick_cast_still(clip, cast_dir or still_dir)
+        still_paths = pick_cast_stills(clip, cast_dir or still_dir)
+        still_path = still_paths[0]
         first_kind_cast = True
     elif not force_t2v and not use_last:
         still_path = resolve_story_still(clip, still_dir, clip_index=index, override=clip0_override)
@@ -3041,6 +3106,7 @@ def prepare_story_clip(
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
+    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:
@@ -3048,13 +3114,17 @@ def prepare_story_clip(
         else:
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
         first_kind = "last_frame"
+    elif first_kind_cast:
+        mode = "r2v"
+        prompt = lock_r2v_cast_prompt(raw_prompt, still_paths, duration_s=duration_s)
+        first_kind = "cast"
     elif still_path is not None:
         mode = "i2v"
         if fit_scene and not seamless and not use_cast:
             prompt = rewrite_dedicated_scene_i2v_prompt(raw_prompt)
         else:
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
-        first_kind = "cast" if first_kind_cast else "still"
+        first_kind = "still"
     else:
         mode = "t2v"
         prompt, _ = apply_user_prompt(raw_prompt, mode="t2v", default_prompt=raw_prompt)
@@ -3104,12 +3174,13 @@ def prepare_story_clip(
         "sampler": cfg.get("sampler") or {},
         "cfg": cfg,
         "still_path": still_path,
+        "still_paths": still_paths,
         "first_kind": first_kind,
         "missing_still": missing_still,
         "stack_changed": bool(prev_situation) and prev_situation != situation,
         "width": width,
         "height": height,
-        "duration_s": float(clip.get("duration_s") or story.get("clip_s") or 10),
+        "duration_s": duration_s,
         "turbo": bool(cfg.get("turbo")),
         "seamless": seamless,
         "rewrite_chain_prompts": rewrite_chain,

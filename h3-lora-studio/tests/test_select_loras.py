@@ -1042,3 +1042,25 @@ def test_no_forbidden_or_unused_loras_in_any_profile_stack():
             live = select_loras(profile_name=row["id"], mode=mode, prompt_arg="（シーン）")
             live_ids = {r["id"] for r in live["stack"]}
             assert not (forbidden & live_ids), (row["id"], mode, live_ids)
+            if mode == "r2v":
+                for item in live["stack"]:
+                    assert item.get("arch") != "fl2va", (row["id"], item)
+            if mode in {"t2v", "i2v"}:
+                assert "aftermidnight-ref2va" not in live_ids, (row["id"], mode)
+
+
+def test_r2v_adult_stacks_are_ref2va_safe():
+    oral = select_loras(profile_name="oral", mode="r2v")
+    assert [row["id"] for row in oral["stack"]] == ["blowjob-h3", "minimax-h3-turbo-ref2v-4step"]
+    assert oral["sampler"]["steps"] == 4
+    assert oral["first_frame_required"] is False
+    bj = select_loras(profile_name="futa_blowjob", mode="r2v")
+    assert [row["id"] for row in bj["stack"]] == ["blowjob-h3", "minimax-h3-turbo-ref2v-4step"]
+    sex = select_loras(profile_name="futa_sex", mode="r2v")
+    assert [row["id"] for row in sex["stack"]] == ["aftermidnight-ref2va"]
+    assert sex["sampler"]["steps"] == 12
+    vis = select_loras(profile_name="futa_visible", mode="r2v")
+    assert [row["id"] for row in vis["stack"]] == ["cinema-dy", "minimax-h3-turbo-ref2v-4step"]
+    i2v = select_loras(profile_name="futa_sex", mode="i2v")
+    assert [row["id"] for row in i2v["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+    assert "aftermidnight-ref2va" in {row["id"] for row in i2v["unload"]}

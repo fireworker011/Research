@@ -1,8 +1,6 @@
 {
   "schema": "h3-lora-studio-catalog/v1",
-  "always_unload": [
-    "aftermidnight-ref2va"
-  ],
+  "always_unload": [],
   "loras": [
     {
       "id": "h3-realism-people",

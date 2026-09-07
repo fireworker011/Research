@@ -393,7 +393,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-ref-shorts-1"' in src
+    assert 'FETCH_REV = "h3-20260907-ref-r2v-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -436,7 +436,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-ref-shorts-1" in blob
+    assert "h3-20260907-ref-r2v-1" in blob
     assert "h3-20260907-chain-open" not in blob
     assert "input/commute-120s/" in src
     assert 'やりたいシーン = "登校（専用）"' in code
@@ -2589,9 +2589,9 @@ def test_story_play_labels_resolve_to_story_and_play():
     text = explain_choice("登校（つなぐ修）", "テキストから（写真なし）")
     assert "つなぐ・1本目を長回しに直す" in text
     text = explain_choice("登校（参照つなぐ）", "テキストから（写真なし）")
-    assert "参照つなぐ" in text and "input/cast" in text
+    assert "参照つなぐ" in text and "input/cast" in text and "R2V" in text
     text = explain_choice("短編集（参照）", "テキストから（写真なし）")
-    assert "短編集" in text and "15秒" in text
+    assert "短編集" in text and "15秒" in text and "R2V" in text
     text = explain_choice("訪問販売60秒（つなぐ）", "テキストから（写真なし）")
     assert "つなぐ・1本目を長回しに直す" in text and "名前付きパック" in text and "専用ストーリーではありません" in text
     text = explain_choice("カフェ（専用）", "テキストから（写真なし）")
@@ -3381,15 +3381,20 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-ref-shorts-1" in cell2
+    assert "h3-20260907-ref-r2v-1" in cell2
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
     assert "短編集（参照）" in cell3
     assert "pick_cast_still" in src
+    assert "pick_cast_stills" in src
+    assert "lock_r2v_cast_prompt" in src
+    assert "build_r2v_graph" in src
+    assert "r2v_download_jobs" in src
     assert "STORY_PLAY_REF_CHAIN" in src
     assert "shorts-immoral" in cell2
     assert "専用（参照つなぐ）" in md0
     assert "短編集（参照）" in md0
+    assert "R2V" in md0
 
 
 def _write_cast_stills(root):
@@ -3414,6 +3419,7 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
         load_story,
         pick_cast_lead,
         pick_cast_still,
+        pick_cast_stills,
         prepare_story_clip,
     )
 
@@ -3423,6 +3429,8 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
     assert (person, kind) == ("aya", "bust")
     still = pick_cast_still(oral, cast)
     assert still.name == "aya-bust.jpg"
+    paths = pick_cast_stills(oral, cast)
+    assert [p.name for p in paths] == ["aya-bust.jpg", "aya-full.jpg", "rei-bust.jpg", "rei-full.jpg"]
     sex = {"situation": "futa_sex", "names": ["rei", "aya"], "prompt": "hmmotion already in joining"}
     assert pick_cast_lead(sex) == ("rei", "full")
     dog = {"situation": "doggy", "names": ["aya"], "prompt": "already in from behind joining"}
@@ -3437,11 +3445,18 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
     story = apply_story_play(load_story("commute-120s"), "ref_chain")
     assert story["use_cast_ref"] is True
     p0 = prepare_story_clip(story, 0, stills_dir=tmp_path, cast_dir=cast, force_t2v=True)
-    assert p0["mode"] == "i2v"
+    assert p0["mode"] == "r2v"
     assert p0["first_kind"] == "cast"
     assert p0["still_path"].name.endswith(".jpg")
+    assert p0["still_paths"]
+    assert "ROLE LOCK" in p0["prompt"]
+    assert "at 0.00 seconds" not in p0["prompt"]
+    assert "penis-lora-h3" not in [row["id"] for row in p0["stack"]]
+    assert all(row.get("arch") != "fl2va" for row in p0["stack"])
     p1 = prepare_story_clip(story, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, cast_dir=cast)
     assert p1["first_kind"] == "last_frame"
+    assert p1["mode"] == "i2v"
+    assert "penis-lora-h3" in [row["id"] for row in p1["stack"]]
     raw = apply_story_play(load_story("commute-120s"), "chain")
     c0 = prepare_story_clip(raw, 0, stills_dir=tmp_path, force_t2v=True)
     assert c0["first_kind"] == "t2v"
@@ -3459,8 +3474,12 @@ def test_anthology_shorts_immoral(tmp_path):
 
     assert is_anthology("短編集（参照）")
     assert not is_story("短編集（参照）")
-    assert "synth-pussy-h3" in situation_ids("shorts-immoral")
+    assert "aftermidnight-ref2va" in situation_ids("shorts-immoral")
     assert "blowjob-h3" in situation_ids("shorts-immoral")
+    assert "minimax-h3-turbo-ref2v-4step" in situation_ids("shorts-immoral")
+    assert "synth-pussy-h3" not in situation_ids("shorts-immoral")
+    assert "penis-lora-h3" not in situation_ids("shorts-immoral")
+    assert "larry-v4" not in situation_ids("shorts-immoral")
     assert "futa-h3-v51" not in situation_ids("shorts-immoral")
     story = load_story("shorts-immoral")
     assert story["kind"] == "anthology"
@@ -3503,21 +3522,28 @@ def test_anthology_shorts_immoral(tmp_path):
             force_t2v=True,
         )
         prev = planned["situation"]
-        assert planned["mode"] == "i2v"
+        assert planned["mode"] == "r2v"
         assert planned["first_kind"] == "cast"
         assert planned["duration_s"] == 15
+        assert "ROLE LOCK" in planned["prompt"]
+        assert "at 0.00 seconds" not in planned["prompt"]
         ids = [row["id"] for row in planned["stack"]]
         assert "futa-h3-v51" not in ids
+        assert "penis-lora-h3" not in ids
+        assert "synth-pussy-h3" not in ids
+        assert "larry-v4" not in ids
+        assert all(row.get("arch") != "fl2va" for row in planned["stack"])
         if planned["situation"] == "oral":
-            assert ids == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+            assert "blowjob-h3" in ids
+            assert "minimax-h3-turbo-ref2v-4step" in ids or not planned.get("turbo")
         if planned["situation"] == "oral_creampie":
-            assert ids == ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+            assert ids == ["aftermidnight-ref2va"]
         if planned["situation"] == "futa_sex":
-            assert ids == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+            assert ids == ["aftermidnight-ref2va"]
             assert clip["prompt"].startswith("hmmotion, PENISLORA")
             assert "hmmotion" in planned["prompt"]
         if planned["situation"] == "doggy":
-            assert ids == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
+            assert ids == ["aftermidnight-ref2va"]
         if planned["situation"] == "cunnilingus_futa":
-            assert "lesbian-cunnilingus-h3" in ids
+            assert ids == ["aftermidnight-ref2va"]
             assert "blowjob-h3" not in ids

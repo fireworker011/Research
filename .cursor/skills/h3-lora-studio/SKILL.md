@@ -11,9 +11,9 @@ description: MiniMax H3 LoRA studio for Colab. SFW fast+quality is turbo plus on
 - `〜（専用）` = カット。JSON のまま。`CHAIN=False`・`last_frame=None`。旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアスで dedicated
 - `〜（つなぐ）` = 文を直さずつなぐ。last-frame I2V。`rewrite_chain_opening_prompt` も最後の `rewrite_final_scene_i2v_prompt` もオフ。Picture 1 ロック（`continue_chain_prompt`）だけ必須
 - `〜（つなぐ修）` = 文を直してつなぐ。last-frame I2V ＋ 1本目に `rewrite_chain_opening_prompt`。③「最終シーン合わせ」オンなら最後の本だけ `rewrite_final_scene_i2v_prompt`
-- `〜（参照つなぐ）` = つなぐと同じだが 1本目は Drive `input/cast/` の人物写真（上半身 or 全身、4人×2）。③テキストからは無視。FL2VA I2V は Picture 1 が1枚だけ（Ref2VA に切り替えない）
+- `〜（参照つなぐ）` = つなぐと同じだが **1本目は R2V**（Drive `input/cast/` の bust+full を identity 参照。I2V の最初のコマではない。FL2VA の竿/穴は載せない。口は blowjob＋Ref2VA turbo、歩行は cinema＋Ref2VA turbo、行為は AfterMidnight）。2本目以降は last-frame I2V（FL2VA の竿+穴スタック）
 - `〜（参照つなぐ修）` = 参照つなぐ ＋ 1本目を長回しに直す。③オンなら最後の本だけ合わせる
-- `短編集（参照）` = 15秒完結の濃厚日常インモラル×複数。つなぎなし・連結なし。文は `generate_immoral_shorts()`。部品は clip の situation
+- `短編集（参照）` = 15秒完結の濃厚日常インモラル×複数。つなぎなし・連結なし。各本 **R2V**。文は `generate_immoral_shorts()`。部品は clip の situation の `stack_plan.r2v`
 
 名前付きパック（`CHAIN_PACK_IDS` = sales-visit-60s / checkup-100s / last-stop-40s ＋ 建前パック cafe-100s / train-sales-80s / red-light-50s / yoga-50s / back-wash-60s / karaoke-50s / laundromat-50s / lecture-desk-50s / camp-50s / fireworks-50s）は専用ではない（`is_story` False、`is_chain_pack` True）が、③では**同じ5パターン**で再生する（`訪問販売（専用｜つなぐ｜つなぐ修｜参照つなぐ｜参照つなぐ修）` … `花火（…）`）。JSON は `kind:"chain"`・`seamless:true`・9:16 576×1024・10秒×N・LoRA は JSON の本ごと。旧名「訪問販売60秒（つなぐ）」と裸の id は **つなぐ修**。画像サイズは JSON の `canvas` だけ（`story_canvas_wh`）。全シーンのふたなりは **玉なし＋マンコあり**（`lock_futa_anatomy`）。口にする台詞はカタカナ。建前パックは `spoken_max: 2`。行為→LoRA: ジュボ=oral（フェラ+竿+穴）、口内=oral_creampie（CUMOUF+竿+穴）、放尿を飲む=oral、クンニ=cunnilingus_futa、もう入っている=futa_sex または doggy。
 
