@@ -410,7 +410,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "shorts-immoral": "短編集（参照）。15秒完結の濃厚日常インモラルを複数本。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。文と部品は自動。FL2VA の竿/穴は載せない。",
+    "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿/穴は載せない。",
 }
 
 LORA_JA = {
@@ -495,6 +495,11 @@ CHAIN_PACK_TITLE_JA = {
 }
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
+CANVAS_9_16 = {"width": 576, "height": 1024, "aspect": "9:16"}
+CANVAS_16_9 = {"width": 1024, "height": 576, "aspect": "16:9"}
+SHORTS_SHAFT = frozenset({"rei", "madoka"})
+SHORTS_RECEIVER = frozenset({"aya", "sayaka"})
+SHORTS_MAIN4 = ("Aya", "Rei", "Madoka", "Sayaka")
 
 STORY_PLAY_DEDICATED = "dedicated"
 STORY_PLAY_CHAIN = "chain"
@@ -2361,15 +2366,21 @@ def should_fit_scene_image_prompt(
     return True
 
 
-def story_canvas_wh(story: dict[str, Any]) -> tuple[int, int]:
-    canvas = story.get("canvas") if isinstance(story.get("canvas"), dict) else {}
-    w = int(canvas.get("width") or 0)
-    h = int(canvas.get("height") or 0)
-    if w >= 32 and h >= 32:
-        return w, h
-    aspect = str(canvas.get("aspect") or "9:16").replace("：", ":")
-    if aspect in {"16:9", "16/9"}:
-        return STORY_CANVAS_16_9
+def story_canvas_wh(story: dict[str, Any], clip: dict[str, Any] | None = None) -> tuple[int, int]:
+    """Clip canvas wins when present so shorts can mix 9:16 oral and 16:9 sex."""
+    for src in (clip, story):
+        if not isinstance(src, dict):
+            continue
+        canvas = src.get("canvas") if isinstance(src.get("canvas"), dict) else {}
+        w = int(canvas.get("width") or 0)
+        h = int(canvas.get("height") or 0)
+        if w >= 32 and h >= 32:
+            return w, h
+        aspect = str(canvas.get("aspect") or "").replace("：", ":")
+        if aspect in {"16:9", "16/9"}:
+            return STORY_CANVAS_16_9
+        if aspect in {"9:16", "9/16"}:
+            return STORY_CANVAS
     return STORY_CANVAS
 
 
@@ -2724,6 +2735,30 @@ _CAST_DEF = {
 }
 
 
+_SHORTS_CAM_ORAL_STAND = (
+    "medium-close two-shot. Show the kneeling mouth from head to knees and the standing shaft "
+    "from head to mid-thigh in the same 9:16 frame. Face, breasts, hips, and the 20cm in the mouth "
+    "all readable. Not a mouth-only crop. Not a street-wide shot that shrinks faces."
+)
+_SHORTS_CAM_ORAL_TABLE = (
+    "medium-close two-shot under the table. Show the kneeling mouth from head to knees and the "
+    "sitting hips-to-knees with the 20cm in the mouth. Face, breasts, and shaft readable. "
+    "Not a mouth-only crop. Not a room-wide."
+)
+_SHORTS_CAM_CUNNI = (
+    "close-up on the tongue on the hairless pussy at the base of the unused 20cm. Extreme close. "
+    "Show the hips, unused shaft, and the licking face. Do not pull back to a street-wide full-body."
+)
+_SHORTS_CAM_SEX_169 = (
+    "16:9 two-shot. Full bodies from head to feet fit in the 16:9 frame. Joining point stays readable "
+    "at the hips. Do not crop to genitals only."
+)
+_SHORTS_CAM_SEX_916_STAND = (
+    "9:16 two-shot. Full bodies from head to feet stacked in the 9:16 frame. "
+    "Joining point stays readable at hip height. Do not crop to genitals only."
+)
+
+
 def _anthology_prompt(
     *,
     prefix: str,
@@ -2734,20 +2769,32 @@ def _anthology_prompt(
     camera: str,
     action: str,
     sound: str,
+    canvas: dict[str, Any],
 ) -> str:
     defs = "\n".join(_CAST_DEF[n] for n in present)
+    w, h = story_canvas_wh({"canvas": canvas})
+    if w >= h:
+        frame = f"Widescreen 16:9 {w}x{h}"
+        cam_tag = "16:9"
+    else:
+        frame = f"Vertical 9:16 {w}x{h}"
+        cam_tag = "9:16"
+    absent = [n for n in SHORTS_MAIN4 if n not in present]
+    who_full = who.rstrip()
+    if absent:
+        who_full += "\n" + "\n".join(f"{n} = NOT IN FRAME." for n in absent)
     body = (
-        "Vertical 9:16 576x1024. ONE UNBROKEN 15-second take. The camera never cuts.\n"
+        f"{frame}. ONE UNBROKEN 15-second take. The camera never cuts.\n"
         f"{prefix}\n\n"
         "WHO:\n"
-        f"{who}\n\n"
+        f"{who_full}\n\n"
         "subject_definitions:\n"
         f"{defs}\n\n"
         "environment:\n"
         f"{environment}\n\n"
         "HARD LOCK:\n"
         f"{lock}\n"
-        f"CAMERA: 9:16 {camera}\n"
+        f"CAMERA: {cam_tag} {camera}\n"
         "No men. No feces. All performers are consenting adult women 22 years or older. Nobody under 22.\n"
         "CAST LOCK: Same faces, hair and bodies in every clip of this series. "
         "Do not redesign hair or breasts. Aya never grows a penis. Sayaka never grows a penis.\n\n"
@@ -2766,212 +2813,303 @@ def generate_immoral_shorts() -> dict[str, Any]:
     specs = (
         {
             "id": "s01-genkan-bj",
-            "label": "玄関ジュボ",
+            "label": "玄関・サヤカがレイをジュボ",
             "situation": "oral",
-            "names": ["aya", "rei"],
-            "present": ("Aya", "Rei"),
+            "names": ["sayaka", "rei"],
+            "present": ("Sayaka", "Rei"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral. Mouth already on. Already kneeling.",
             "who": (
-                "Aya = kneeling in the genkan. She is the mouth. Mini breasts. NO penis. "
-                "Hands on Rei's waist, NEVER on any penis.\n"
-                "Rei = STANDS in the genkan. Receiver. Pleasured face because the mouth is already on."
+                "Sayaka = kneeling in the genkan. She is the mouth (ハメ役). Mother, 39. Medium breasts. "
+                "NO penis. Hands on Rei's waist, NEVER on any penis. Thick saliva already on her chin and breasts.\n"
+                "Rei = STANDS in the genkan. She is the shaft (竿役). Eldest daughter. Filthy pleasured face "
+                "because her mother's mouth is already at the base of her 20cm."
             ),
-            "environment": "Daytime genkan of a two-story Japanese house. Tight on the mouth. Tile is only background.",
-            "lock": "Already on. Aya sucks REI to the BASE the whole 15-second take. Sloppy. No climax. No speech.",
-            "camera": "medium-close on Aya's mouth and the 20cm going to the base, mini breasts in the lower frame. Do not pull back to full bodies.",
-            "action": "Already on. Aya's mouth is already at Rei's base. Deep sloppy jupo-jupo the whole 15-second take. Saliva strings. Hands on waist only. Rei's head tips back. End: mouth still at the base, still medium-close.",
-            "sound": "Deep jupo-jupo, saliva, Rei's pleasured breath. No spoken words.",
+            "environment": (
+                "Daytime genkan of a two-story Japanese house, front door half-open, shoes kicked aside. "
+                "Tile and the open street are only background."
+            ),
+            "lock": (
+                "Already on. Mother sucks her daughter's 20cm to the BASE the whole 15-second take. "
+                "Filthy sloppy jupo. Drool ropes. No climax. No speech."
+            ),
+            "camera": _SHORTS_CAM_ORAL_STAND,
+            "action": (
+                "Already on. Sayaka's mouth is already at Rei's base in the open genkan, like this is everyday. "
+                "Deep filthy jupo-jupo the whole 15-second take. Thick saliva ropes swing from her lips onto "
+                "her breasts. Rei's unused pussy at the base of the shaft is wet against Sayaka's nose. "
+                "Rei's head tips back, hips dirty. End: mouth still at the base, still medium-close two-shot."
+            ),
+            "sound": "Deep filthy jupo-jupo, wet saliva, Rei's shaky breath, a distant street. No spoken words.",
         },
         {
             "id": "s02-sink-mouth",
-            "label": "シンク口内",
+            "label": "シンク・アヤがレイの口内",
             "situation": "oral_creampie",
             "names": ["aya", "rei"],
             "present": ("Aya", "Rei"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral. Mouth already wrapped around the shaft. Already kneeling by the sink.",
             "who": (
-                "Aya = kneeling at the kitchen sink. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
-                "Rei = stands at the sink. Holds deep and cums inside Aya's mouth."
+                "Aya = kneeling at the kitchen sink. She is the mouth (ハメ役). Lips wrapped tight around "
+                "Rei's 20cm. Mini breasts. NO penis. Chin already shiny with spit.\n"
+                "Rei = stands at the sink. She is the shaft (竿役). Holds deep and cums inside Aya's mouth."
             ),
-            "environment": "Kitchen sink, daytime. Tight on the mouth. Dishes only background.",
-            "lock": "CUMOUF. Cum fills Aya's mouth and runs out the side. Inside the mouth. Not a facial. No speech.",
-            "camera": "close side view of the penis in Aya's mouth, mini breasts in the lower frame. Medium-close. Do not pull back to full bodies.",
-            "action": "Aya's lips stay wrapped around Rei's 20cm. Rei holds deep and cums inside Aya's mouth. Thick white cum fills the mouth and runs down the shaft. It happens inside the mouth. End: mouth still on, cum leaking.",
-            "sound": "Wet swallows, a pulse, Rei's shaky breath. No spoken words.",
+            "environment": (
+                "Kitchen sink, daytime, dirty dishes piled, water still running. The sink is only background."
+            ),
+            "lock": "CUMOUF. Cum floods Aya's mouth and runs out the side onto her mini breasts. Inside the mouth. Not a facial. No speech.",
+            "camera": _SHORTS_CAM_ORAL_STAND,
+            "action": (
+                "Aya's lips stay wrapped around Rei's 20cm at the sink. Rei grips the counter and cums hard "
+                "inside her little sister's mouth. Thick white cum floods the mouth, overflows down the shaft, "
+                "onto Aya's chin and mini breasts. Messy swallows, more leaking than she can keep. "
+                "End: mouth still on, cum still leaking."
+            ),
+            "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water. No spoken words.",
         },
         {
             "id": "s03-alley-base",
-            "label": "路地根元",
+            "label": "路地・アヤがレイを根元",
             "situation": "oral",
             "names": ["aya", "rei"],
             "present": ("Aya", "Rei"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral. Mouth already on. Already kneeling in the alley.",
             "who": (
-                "Aya = kneeling on the alley concrete. She is the mouth. Mini breasts. NO penis. Hands on Rei's waist.\n"
-                "Rei = STANDS against the alley wall. Receiver."
+                "Aya = kneeling on the alley concrete. She is the mouth (ハメ役). Mini breasts. NO penis. "
+                "Hands on Rei's waist. Spit already pooling between her knees.\n"
+                "Rei = STANDS against the alley wall. She is the shaft (竿役). Receiver, filthy outdoor face."
             ),
-            "environment": "Narrow residential alley, daytime shade. Tight on the mouth. Wall is only background.",
-            "lock": "Already on. Aya takes Rei to the BASE. Sloppy outdoor jupo. No climax. No speech. Nobody walks away.",
-            "camera": "medium-close on Aya's mouth at the base of the 20cm. Mini breasts in the lower frame. Do not pull back to the street.",
-            "action": "Already on. Aya slides to the base and stays there, deep sloppy jupo-jupo the whole 15-second take. Saliva strings onto the concrete. Rei's knees soften. End: mouth still at the base.",
-            "sound": "Deep jupo-jupo, a distant bicycle, Rei's breath. No spoken words.",
+            "environment": (
+                "Narrow residential alley, daytime shade, anyone could pass. Wall and concrete are only background."
+            ),
+            "lock": "Already on. Aya takes Rei to the BASE. Filthy outdoor jupo. Saliva on the concrete. No climax. No speech. Nobody walks away.",
+            "camera": _SHORTS_CAM_ORAL_STAND,
+            "action": (
+                "Already on. Aya slides to the base and stays there in the alley, deep filthy jupo-jupo the whole "
+                "15-second take. Thick saliva strings drop onto the concrete between her knees. Rei's unused pussy "
+                "is wet at Aya's nose. Rei's knees soften, hips dirty. End: mouth still at the base."
+            ),
+            "sound": "Deep filthy jupo-jupo, saliva hitting concrete, a distant bicycle, Rei's breath. No spoken words.",
         },
         {
             "id": "s04-toilet-cunni",
-            "label": "トイレクンニ",
+            "label": "トイレ・サヤカがレイのマンコ舐め",
             "situation": "cunnilingus_futa",
-            "names": ["aya", "rei"],
-            "present": ("Aya", "Rei"),
+            "names": ["sayaka", "rei"],
+            "present": ("Sayaka", "Rei"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral on the pussy, not the penis. Already kneeling.",
             "who": (
-                "Aya = kneeling in the home toilet, tongue on Rei's hairless pussy at the base of the unused 20cm. Mini breasts. NO penis.\n"
-                "Rei = sits on the toilet lid, 20cm unused hanging forward. Receiver of cunnilingus."
+                "Sayaka = kneeling in the home toilet. She is the mouth (ハメ役). Tongue on Rei's hairless pussy "
+                "at the base of the unused 20cm. Medium breasts. NO penis. Chin wet.\n"
+                "Rei = sits on the toilet lid. She is the shaft (竿役) but the 20cm hangs unused forward. "
+                "Receiver of cunnilingus. Filthy pleasured face."
             ),
             "environment": "Home western toilet, door ajar, warm interior light. Extreme close on the tongue and pussy.",
             "lock": "Cunnilingus only. Not oral on the penis. The 20cm hangs unused. Close-up. No speech. No insertion.",
-            "camera": "close-up on Aya's tongue on Rei's hairless pussy at the base of the unused shaft. Extreme close. Do not pull back to full bodies.",
-            "action": "Aya licks Rei's hairless pussy at the base of the unused 20cm the whole 15-second take. The penis hangs unused in the upper frame, not in the mouth. Rei's thighs tremble. End: tongue still on the pussy, 20cm still unused.",
-            "sound": "Wet licking, Rei's high breath. No spoken words.",
+            "camera": _SHORTS_CAM_CUNNI,
+            "action": (
+                "Sayaka licks her daughter's hairless pussy at the base of the unused 20cm the whole 15-second take. "
+                "The penis hangs unused in the upper frame, not in the mouth, already shiny. Sayaka's tongue is messy, "
+                "wet, greedy. Rei's thighs tremble, juices on Sayaka's chin. End: tongue still on the pussy, 20cm still unused."
+            ),
+            "sound": "Wet filthy licking, Rei's high breath, a toilet-room echo. No spoken words.",
         },
         {
             "id": "s05-rooftop-in",
-            "label": "屋上挿入",
+            "label": "屋上・レイがアヤに挿入",
             "situation": "futa_sex",
             "names": ["rei", "aya"],
             "present": ("Aya", "Rei"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already having sex. Already in from the first frame.",
             "who": (
-                "Rei = already inside Aya on the rooftop bench. Hands on Aya's waist.\n"
-                "Aya = straddling Rei, receiving. Mini breasts. NO penis."
+                "Rei = STANDS on the rooftop. She is the shaft (竿役). Already inside Aya. Hands on Aya's ass.\n"
+                "Aya = standing, one leg hooked on Rei's hip, receiving (ハメ役). Mini breasts. NO penis. "
+                "Juices already on her thighs."
             ),
-            "environment": "University rooftop bench, noon light. Already tight on the two bodies. City is only background.",
-            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. No speech. Do not show the entry. Do not pull out.",
-            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a skyline shot.",
-            "action": "Already in. Rei's 20cm is already in Aya's hairless pussy on the rooftop bench. They move the whole 15-second take. The joining point stays readable. Aya flushed, mouth open with a moan, not speaking words. End: still inside, still moving.",
-            "sound": "Wet thrusting, Aya's female moan, rooftop wind. No spoken words.",
+            "environment": (
+                "University rooftop at noon, fence behind them, city only background. Two standing bodies fill 9:16."
+            ),
+            "lock": "ALREADY IN. Standing vaginal. Joining point visible. They move. Sweat. No speech. Do not show the entry. Do not pull out.",
+            "camera": _SHORTS_CAM_SEX_916_STAND,
+            "action": (
+                "Already in. Rei's 20cm is already buried in Aya's hairless pussy standing at the rooftop fence. "
+                "They fuck the whole 15-second take, dirty noon sweat, juices running down Aya's standing thigh. "
+                "The joining point stays readable at hip height. Aya's mouth hangs open with a moan, not speaking words. "
+                "End: still inside, still moving, both full bodies still in frame."
+            ),
+            "sound": "Wet filthy thrusting, Aya's female moan, rooftop wind. No spoken words.",
         },
         {
             "id": "s06-bath-bj",
-            "label": "洗い場ジュボ",
+            "label": "洗い場・サヤカがマドカをジュボ",
             "situation": "oral",
-            "names": ["aya", "rei"],
-            "present": ("Aya", "Rei"),
+            "names": ["sayaka", "madoka"],
+            "present": ("Sayaka", "Madoka"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral. Mouth already on. Already kneeling on the bath tiles.",
             "who": (
-                "Aya = kneeling in the wash place. She is the mouth. Wet mini breasts. NO penis. Hands on Rei's waist.\n"
-                "Rei = STANDS under the shower. Receiver. Wet 20cm."
+                "Sayaka = kneeling in the wash place. She is the mouth (ハメ役). Wet medium breasts. NO penis. "
+                "Hands on Madoka's waist. Water and spit mixed on her chest.\n"
+                "Madoka = STANDS under the shower. She is the shaft (竿役). Wet 20cm. Filthy pleasured face."
             ),
-            "environment": "Japanese bath wash place, wet tile, shower running. Tight on the mouth.",
-            "lock": "Already on. Aya sucks to the BASE under the shower. Sloppy wet jupo. No climax. No speech.",
-            "camera": "medium-close on Aya's mouth and the wet 20cm to the base. Mini breasts in the lower frame. Do not pull back to the whole bath.",
-            "action": "Already on. Water runs over Aya's twintails while her mouth stays at Rei's base. Deep sloppy jupo-jupo the whole 15-second take. End: mouth still at the base, still medium-close.",
-            "sound": "Shower, jupo-jupo, Rei's breath. No spoken words.",
+            "environment": "Japanese bath wash place, wet tile, shower running. Steam. Tile is only background.",
+            "lock": "Already on. Mother sucks her third daughter's 20cm to the BASE under the shower. Filthy wet jupo. No climax. No speech.",
+            "camera": _SHORTS_CAM_ORAL_STAND,
+            "action": (
+                "Already on. Water runs over Sayaka's tied hair while her mouth stays at Madoka's base. "
+                "Deep filthy jupo-jupo the whole 15-second take. Spit and shower water rope off her lips onto "
+                "her breasts. Madoka's unused pussy is wet at Sayaka's nose. End: mouth still at the base, still medium-close two-shot."
+            ),
+            "sound": "Shower, filthy jupo-jupo, Madoka's breath. No spoken words.",
         },
         {
             "id": "s07-table-mouth",
-            "label": "食卓下口内",
+            "label": "食卓下・アヤがマドカの口内",
             "situation": "oral_creampie",
-            "names": ["aya", "rei"],
-            "present": ("Aya", "Rei"),
+            "names": ["aya", "madoka"],
+            "present": ("Aya", "Madoka"),
+            "canvas": CANVAS_9_16,
             "prefix": "Already oral under the table. Mouth already wrapped around the shaft.",
             "who": (
-                "Aya = under the dining table on her knees. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
-                "Rei = sits at the table. Holds deep and cums inside Aya's mouth."
+                "Aya = under the dining table on her knees. She is the mouth (ハメ役). Lips wrapped tight around "
+                "Madoka's 20cm. Mini breasts. NO penis.\n"
+                "Madoka = sits at the table. She is the shaft (竿役). Holds deep and cums inside Aya's mouth "
+                "while dinner is still on the table."
             ),
-            "environment": "Japanese dining table, evening. Tight under the table on the mouth. Dishes only background.",
-            "lock": "CUMOUF under the table. Cum fills Aya's mouth. Inside the mouth. Not a facial. No speech.",
-            "camera": "close side view of the penis in Aya's mouth under the table. Medium-close. Do not pull back to the whole room.",
-            "action": "Under the table Aya's lips stay wrapped around Rei's 20cm. Rei cums inside her mouth. Thick white cum fills the mouth and runs down the shaft. End: mouth still on, cum leaking onto the tatami edge.",
-            "sound": "Wet swallows, a chair creak, Rei's breath. No spoken words.",
+            "environment": "Japanese dining table, evening, bowls still out. Tight under the table. Dishes only background.",
+            "lock": "CUMOUF under the table during dinner. Cum floods Aya's mouth. Inside the mouth. Not a facial. No speech.",
+            "camera": _SHORTS_CAM_ORAL_TABLE,
+            "action": (
+                "Under the family table Aya's lips stay wrapped around Madoka's 20cm. Madoka cums inside her sister's "
+                "mouth while the dinner bowls sit above. Thick white cum floods the mouth and runs down the shaft "
+                "onto the tatami edge. Messy swallows. End: mouth still on, cum leaking."
+            ),
+            "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink. No spoken words.",
         },
         {
-            "id": "s08-futon-bj",
-            "label": "布団ジュボ",
-            "situation": "oral",
-            "names": ["aya", "rei"],
-            "present": ("Aya", "Rei"),
-            "prefix": "Already oral. Mouth already on. Already lying on the futon.",
+            "id": "s08-futon-in",
+            "label": "布団・レイがサヤカに挿入",
+            "situation": "futa_sex",
+            "names": ["rei", "sayaka"],
+            "present": ("Sayaka", "Rei"),
+            "canvas": CANVAS_16_9,
+            "prefix": "Already having sex. Already in from the first frame.",
             "who": (
-                "Aya = lying on her side on the futon. She is the mouth. Mini breasts. NO penis. Hands on Rei's hip.\n"
-                "Rei = lying on the futon. Receiver."
+                "Rei = on the futon. She is the shaft (竿役). Already inside her mother. Hands on Sayaka's waist.\n"
+                "Sayaka = on her back on the futon, receiving (ハメ役). Medium breasts. NO penis. "
+                "Sweaty, already used, juices on her thighs."
             ),
-            "environment": "Japanese bedroom futon at night. Tight on the mouth. Blanket is only background.",
-            "lock": "Already on. Aya sucks to the BASE while both stay on the futon. No climax. No speech. Not a walking shot.",
-            "camera": "medium-close on Aya's mouth and the 20cm. Mini breasts in the lower frame. Do not pull back to full bodies.",
-            "action": "Already on. On the futon Aya's mouth stays at Rei's base. Slow sloppy jupo-jupo the whole 15-second take. End: mouth still at the base, still medium-close.",
-            "sound": "Soft jupo-jupo, futon rustle, Rei's breath. No spoken words.",
+            "environment": "Japanese bedroom futon at night, blanket kicked off. Two full bodies fit in 16:9. Room is only background.",
+            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. Sweaty dirty futon. No speech. Do not pull out.",
+            "camera": _SHORTS_CAM_SEX_169,
+            "action": (
+                "Already in. Rei's 20cm is already buried in Sayaka's hairless pussy on the futon. Mother and eldest "
+                "daughter fuck the whole 15-second take. Sweat, wet slaps, juices on the sheet. The joining point stays "
+                "readable at the hips. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
+            ),
+            "sound": "Wet filthy thrusting, futon rustle, Sayaka's female moan. No spoken words.",
         },
         {
             "id": "s09-sofa-in",
-            "label": "ソファ挿入",
+            "label": "ソファ・レイがアヤに挿入",
             "situation": "futa_sex",
             "names": ["rei", "aya"],
             "present": ("Aya", "Rei"),
+            "canvas": CANVAS_16_9,
             "prefix": "Already having sex. Sofa vaginal. Already in from the first frame.",
             "who": (
-                "Rei = SEATED CENTER sofa. She is already inside Aya. She holds Aya's waist.\n"
-                "Aya = already straddling Rei on the sofa, receiving. Mini breasts. NO penis."
+                "Rei = SEATED CENTER sofa. She is the shaft (竿役). Already inside Aya. Holds Aya's waist.\n"
+                "Aya = already straddling Rei on the sofa, receiving (ハメ役). Mini breasts. NO penis. "
+                "Juices already on Rei's lap."
             ),
-            "environment": "Living-room sofa, afternoon light. Already tight on the two bodies.",
-            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. No speech. Do not pull out.",
-            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a TV-watching shot.",
-            "action": "Already in. Rei's 20cm is already in Aya's hairless pussy on the sofa. They move the whole 15-second take. The joining point stays readable. End: still inside, still moving.",
-            "sound": "Wet thrusting, Aya's female moan, TV far. No spoken words.",
+            "environment": "Living-room sofa, afternoon light, TV on ignored. Two full bodies fit in 16:9.",
+            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. Messy sofa. No speech. Do not pull out.",
+            "camera": _SHORTS_CAM_SEX_169,
+            "action": (
+                "Already in. Rei's 20cm is already buried in Aya's hairless pussy on the sofa. Sisters fuck the whole "
+                "15-second take. Wet slaps, juices on the cushion, Aya's mini breasts bouncing. The joining point stays "
+                "readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
+            ),
+            "sound": "Wet filthy thrusting, Aya's female moan, TV far. No spoken words.",
         },
         {
             "id": "s10-engawa-in",
-            "label": "縁側マドカ挿入",
+            "label": "縁側・マドカがアヤに挿入",
             "situation": "futa_sex",
             "names": ["madoka", "aya"],
             "present": ("Aya", "Madoka"),
+            "canvas": CANVAS_16_9,
             "prefix": "Already having sex. Already in from the first frame.",
             "who": (
-                "Madoka = already inside Aya on the engawa. Hands on Aya's waist.\n"
-                "Aya = receiving on the engawa, mini breasts. NO penis."
+                "Madoka = already inside Aya on the engawa. She is the shaft (竿役). Hands on Aya's waist.\n"
+                "Aya = receiving on the engawa (ハメ役), mini breasts. NO penis. Sweat, juices on the wood."
             ),
-            "environment": "Wooden engawa, afternoon garden light. Already tight on the two bodies. Garden is only background.",
+            "environment": "Wooden engawa, afternoon garden light. Two full bodies fit in 16:9. Garden is only background.",
             "lock": "ALREADY IN. Vaginal only. Joining point visible. Madoka's 20cm. No speech. Rei is not in this clip.",
-            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a garden wide.",
-            "action": "Already in. Madoka's 20cm is already in Aya's hairless pussy on the engawa. They move the whole 15-second take. The joining point stays readable. End: still inside, still moving.",
-            "sound": "Wet thrusting, cicadas far, Aya's female moan. No spoken words.",
-        },
-        {
-            "id": "s11-visit-water",
-            "label": "訪問おミズ",
-            "situation": "oral",
-            "names": ["aya"],
-            "present": ("Aya", "Saleswoman"),
-            "prefix": "Already oral. Mouth already on the tip. Already kneeling.",
-            "who": (
-                "Aya = kneeling on the genkan step. She is the mouth. Lips close around the tip. Swallows. Mini breasts. NO penis.\n"
-                "Saleswoman = standing on the doorstep. Releases her warm stream into Aya's mouth, then holds still."
+            "camera": _SHORTS_CAM_SEX_169,
+            "action": (
+                "Already in. Madoka's 20cm is already buried in Aya's hairless pussy on the engawa, anyone in the garden "
+                "could see. They fuck the whole 15-second take. Sweat, wet slaps on wood, juices dripping. The joining "
+                "point stays readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
-            "environment": "Daytime genkan, front door open. Tight on the mouth. The water case is only background.",
-            "lock": "Mouth already on the tip. The saleswoman releases a warm clear stream into Aya's mouth. Aya swallows. No climax, no cum. No speech. Pee-as-drink, not a facial.",
-            "camera": "medium-close on Aya's mouth around the tip and the Saleswoman's 20cm. Mini breasts in the lower frame. Do not pull back to full bodies.",
-            "action": "Aya's lips stay around the tip. The saleswoman releases a warm clear stream into Aya's mouth; Aya swallows again and again, a little running down her chin. End: the stream has stopped, lips still sealed around the tip.",
-            "sound": "Close wet swallowing, a soft hiss of the stream, the Saleswoman's breath. No spoken words.",
+            "sound": "Wet filthy thrusting, cicadas far, Aya's female moan. No spoken words.",
         },
         {
-            "id": "s12-yoga-doggy",
-            "label": "ヨガ後背",
+            "id": "s11-kitchen-doggy",
+            "label": "台所・マドカがサヤカに後背",
             "situation": "doggy",
-            "names": ["aya"],
-            "present": ("Aya", "Instructor"),
+            "names": ["madoka", "sayaka"],
+            "present": ("Sayaka", "Madoka"),
+            "canvas": CANVAS_16_9,
             "prefix": "Already having sex. Already in from the first frame.",
             "who": (
-                "Instructor = kneeling behind Aya. ALREADY INSIDE Aya's hairless pussy from the first frame. Hands on Aya's waist.\n"
-                "Aya = on all fours on the mat, receiving. Mini breasts hanging. NO penis."
+                "Madoka = kneeling behind Sayaka on the kitchen floor. She is the shaft (竿役). ALREADY INSIDE "
+                "Sayaka's hairless pussy from the first frame. Hands on Sayaka's waist.\n"
+                "Sayaka = on all fours on the kitchen floor, receiving (ハメ役). Medium breasts hanging. NO penis. "
+                "Cooking abandoned."
             ),
-            "environment": "Small yoga studio, one mat, a wall mirror. Already tight on the two bodies.",
+            "environment": "Home kitchen floor, pots on the stove ignored. Two full bodies fit in 16:9. Kitchen is only background.",
             "lock": "ALREADY IN from behind. Joining point visible. Doggy. Vaginal only. No speech. Do not show the entry.",
-            "camera": "close on the joining point from behind, Aya on all fours, mini breasts hanging. Not a full-body wide.",
-            "action": "Already in. The instructor's 20cm is already in Aya's hairless pussy from behind on the mat. Small pose-holding thrusts the whole 15-second take. The joining point stays readable. End: still joined, still moving.",
-            "sound": "Wet thrusting, Aya's female moan, studio fan. No spoken words.",
+            "camera": _SHORTS_CAM_SEX_169,
+            "action": (
+                "Already in. Madoka's 20cm is already buried in her mother's hairless pussy from behind on the kitchen "
+                "floor. Filthy doggy the whole 15-second take. Wet slaps, hanging breasts, juices on the tile. The joining "
+                "point stays readable. Both full bodies stay in the 16:9 frame. End: still joined, still moving."
+            ),
+            "sound": "Wet filthy thrusting, Sayaka's female moan, a pot lid far. No spoken words.",
+        },
+        {
+            "id": "s12-hall-stand",
+            "label": "廊下・マドカがサヤカに立ち挿入",
+            "situation": "futa_sex",
+            "names": ["madoka", "sayaka"],
+            "present": ("Sayaka", "Madoka"),
+            "canvas": CANVAS_9_16,
+            "prefix": "Already having sex. Already in from the first frame.",
+            "who": (
+                "Madoka = STANDS in the hallway. She is the shaft (竿役). Already inside Sayaka against the wall. "
+                "Hands on Sayaka's ass.\n"
+                "Sayaka = standing, back to the wall, one leg up, receiving (ハメ役). Medium breasts. NO penis. "
+                "Anyone could walk the hall."
+            ),
+            "environment": "Narrow house hallway, afternoon. Two standing bodies fill 9:16. Doors are only background.",
+            "lock": "ALREADY IN. Standing vaginal. Joining point visible. They move. No speech. Do not show the entry. Do not pull out.",
+            "camera": _SHORTS_CAM_SEX_916_STAND,
+            "action": (
+                "Already in. Madoka's 20cm is already buried in Sayaka's hairless pussy standing against the hallway wall. "
+                "They fuck the whole 15-second take, dirty and hurried, juices on Sayaka's standing thigh. The joining "
+                "point stays readable at hip height. Both full bodies stay in the 9:16 frame. End: still inside, still moving."
+            ),
+            "sound": "Wet filthy thrusting, Sayaka's female moan, a floor creak. No spoken words.",
         },
     )
     clips: list[dict[str, Any]] = []
     for spec in specs:
+        canvas = dict(spec["canvas"])
         prompt = _anthology_prompt(
             prefix=str(spec["prefix"]),
             who=str(spec["who"]),
@@ -2981,6 +3119,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             camera=str(spec["camera"]),
             action=str(spec["action"]),
             sound=str(spec["sound"]),
+            canvas=canvas,
         )
         if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
             prompt = "hmmotion, PENISLORA\n" + prompt
@@ -2990,6 +3129,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "label": spec["label"],
                 "situation": spec["situation"],
                 "names": list(spec["names"]),
+                "canvas": canvas,
                 "start": "still_or_t2v",
                 "duration_s": 15,
                 "prompt": prompt,
@@ -3007,13 +3147,16 @@ def generate_immoral_shorts() -> dict[str, Any]:
         "seamless": False,
         "use_cast_ref": True,
         "spoken_no_kanji": True,
-        "canvas": {"width": 576, "height": 1024, "aspect": "9:16"},
+        "canvas": dict(CANVAS_9_16),
         "stills_dir": "cast",
-        "comment_ja": "15秒完結の濃厚日常インモラル×12。つなぎなし。各本は input/cast/ の人物写真から I2V。部品は situation から自動。",
+        "comment_ja": (
+            "15秒完結の超濃厚日常インモラル×12。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。"
+            "つなぎなし。各本は input/cast/ の人物写真を R2V 参照。フェラは 9:16 寄り（blowjob LoRA）、"
+            "挿入は 16:9 か立ち 9:16。部品は situation から自動。FL2VA の竿/穴は載せない。"
+        ),
         "download": list(SITUATION_DOWNLOAD["shorts-immoral"]),
         "clips": clips,
     }
-
 
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
     """H3 following: 10s speech / 15s silent acts / 15s anthology. One place, act cameras, lip-sync only on speaking face clips."""
@@ -3066,8 +3209,8 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         if situation in ACT_SITUATIONS:
             if lines:
                 errors.append(f"clip {n}: act situation {situation} must not speak")
-            if "Full bodies from head to feet" in prompt:
-                errors.append(f"clip {n}: act clip must not be a full-body wide")
+            if situation in {"oral", "oral_creampie", "cunnilingus_futa"} and "Full bodies from head to feet" in prompt:
+                errors.append(f"clip {n}: oral/cunni clip must not be a full-body wide")
             if situation in {"oral", "oral_creampie"} and "close" not in prompt_l and "medium-close" not in prompt_l:
                 errors.append(f"clip {n}: oral camera must be close or medium-close")
             if situation == "cunnilingus_futa" and "close-up" not in prompt_l and "extreme close" not in prompt_l:
@@ -3303,7 +3446,7 @@ def prepare_story_clip(
         stack_changed = stack_signature(prev_stack) != stack_signature(stack)
     else:
         stack_changed = bool(prev_situation) and prev_situation != situation
-    width, height = story_canvas_wh(story)
+    width, height = story_canvas_wh(story, clip)
     return {
         "index": index,
         "label": str(clip.get("label") or f"clip {index + 1}"),

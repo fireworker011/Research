@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-who-1"' in src
+    assert 'FETCH_REV = "h3-20260907-shorts-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-who-1" in blob
+    assert "h3-20260907-shorts-1" in blob
+    assert "h3-20260907-who-1" not in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -3603,7 +3604,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-who-1" in cell2
+    assert "h3-20260907-shorts-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
@@ -3685,13 +3686,39 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
     assert c0["first_kind"] == "t2v"
 
 
+def test_validate_story_follow_full_body_ok_on_sex_not_oral():
+    from h3_lora_studio import validate_story_follow
+
+    oral = {
+        "clip_s": 10,
+        "clips": [{
+            "duration_s": 10,
+            "situation": "oral",
+            "prompt": "medium-close two-shot. Full bodies from head to feet.",
+        }],
+    }
+    assert any("full-body" in e for e in validate_story_follow(oral))
+    sex = {
+        "clip_s": 10,
+        "clips": [{
+            "duration_s": 10,
+            "situation": "futa_sex",
+            "prompt": "hmmotion, PENISLORA\nAlready in. joining point. Full bodies from head to feet.",
+        }],
+    }
+    assert validate_story_follow(sex) == []
+
+
 def test_anthology_shorts_immoral(tmp_path):
     from h3_lora_studio import (
+        SHORTS_RECEIVER,
+        SHORTS_SHAFT,
         is_anthology,
         is_story,
         load_story,
         prepare_story_clip,
         situation_ids,
+        story_canvas_wh,
         validate_story_follow,
     )
 
@@ -3718,20 +3745,48 @@ def test_anthology_shorts_immoral(tmp_path):
         "futa_sex",
         "oral",
         "oral_creampie",
-        "oral",
         "futa_sex",
         "futa_sex",
-        "oral",
+        "futa_sex",
         "doggy",
+        "futa_sex",
     ]
     assert [c["situation"] for c in story["clips"]] == want
+    assert [c["label"] for c in story["clips"]] == [
+        "玄関・サヤカがレイをジュボ",
+        "シンク・アヤがレイの口内",
+        "路地・アヤがレイを根元",
+        "トイレ・サヤカがレイのマンコ舐め",
+        "屋上・レイがアヤに挿入",
+        "洗い場・サヤカがマドカをジュボ",
+        "食卓下・アヤがマドカの口内",
+        "布団・レイがサヤカに挿入",
+        "ソファ・レイがアヤに挿入",
+        "縁側・マドカがアヤに挿入",
+        "台所・マドカがサヤカに後背",
+        "廊下・マドカがサヤカに立ち挿入",
+    ]
     for clip in story["clips"]:
         assert float(clip["duration_s"]) == 15
         assert "15-second take" in clip["prompt"]
+        assert "Saleswoman" not in clip["prompt"]
+        assert "Instructor" not in clip["prompt"]
+        names = {str(n).strip().lower() for n in clip["names"]}
+        assert len(names) == 2
+        assert names <= (SHORTS_SHAFT | SHORTS_RECEIVER)
+        assert names & SHORTS_SHAFT
+        assert names & SHORTS_RECEIVER
         if "Clear futanari" in clip["prompt"]:
             assert "Penis plus vagina, never balls" in clip["prompt"]
             assert "no scrotum" in clip["prompt"]
-        assert "Aya:" not in clip["prompt"] or "NO penis" in clip["prompt"] or "NEVER futanari" in clip["prompt"]
+        if "Aya:" in clip["prompt"] or "Sayaka:" in clip["prompt"]:
+            assert "NO penis" in clip["prompt"]
+        sit = clip["situation"]
+        if sit in {"oral", "oral_creampie", "cunnilingus_futa"}:
+            assert "Full bodies from head to feet" not in clip["prompt"]
+            assert "Vertical 9:16 576x1024" in clip["prompt"]
+        else:
+            assert "Full bodies from head to feet" in clip["prompt"]
     cast = _write_cast_stills(tmp_path / "cast")
     prev = None
     prev_stack = None
@@ -3753,6 +3808,9 @@ def test_anthology_shorts_immoral(tmp_path):
         assert planned["duration_s"] == 15
         assert "ROLE LOCK" in planned["prompt"]
         assert "at 0.00 seconds" not in planned["prompt"]
+        cw, ch = story_canvas_wh(story, clip)
+        assert (planned["width"], planned["height"]) == (cw, ch)
+        assert (cw, ch) == (int(clip["canvas"]["width"]), int(clip["canvas"]["height"]))
         ids = [row["id"] for row in planned["stack"]]
         assert "futa-h3-v51" not in ids
         assert "penis-lora-h3" not in ids

@@ -127,7 +127,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | `登校（つなぐ修）` | 文を直してつなぐ | 2本目以降 I2V | 1本目に `rewrite_chain_opening_prompt`。③オンなら最後の本だけ `rewrite_final_scene_i2v_prompt` |
 | `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` を **R2V 参照** | 2本目以降 I2V | 文はそのまま。③テキストからは無視。FL2VA の竿/穴は1本目に載せない |
 | `登校（参照つなぐ修）` | 参照つなぐ＋1本目を長回し | 2本目以降 I2V | 1本目 `rewrite_chain_opening_prompt`。③オンなら最後の本だけ |
-| `短編集（参照）` | 15秒完結×複数。つなぎなし | なし | 文は自動。各本が独立 **R2V**（AfterMidnight / blowjob＋Ref2VA turbo） |
+| `短編集（参照）` | 15秒完結×複数。つなぎなし。メイン4人のうち竿＋ハメの2人。画面は本ごと | なし | 文は自動。各本が独立 **R2V**（フェラは blowjob＋Ref2VA turbo・9:16寄り、挿入は AfterMidnight・16:9または立ち9:16） |
 
 旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアス（dedicated）。初期値は **登校（専用）**。実装は `resolve_story_play()` / `apply_story_play()`。キャスト8枚: `sayaka-bust` `sayaka-full` `rei-bust` `rei-full` `aya-bust` `aya-full` `madoka-bust` `madoka-full`。
 
