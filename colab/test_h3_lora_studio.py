@@ -393,7 +393,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-story-play-2"' in src
+    assert 'FETCH_REV = "h3-20260907-futa-pussy-1"' in src
+    assert "**ふたなりの既定:**" in src
+    assert "竿＋マンコ、金玉なし" in src
+    assert "「」の中はカタカナ" in src
+    assert "漢字のまま" not in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     for short in ("帰宅", "洗い物", "登校", "授業", "屋上", "おかえり", "風呂", "食卓", "布団", "休日", "縁側"):
@@ -432,7 +436,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-story-play-2" in blob
+    assert "h3-20260907-futa-pussy-1" in blob
     assert "h3-20260907-chain-open" not in blob
     assert "input/commute-120s/" in src
     assert 'やりたいシーン = "登校（専用）"' in code
@@ -1790,9 +1794,9 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "先に洗って" in story["clips"][2]["prompt"]
-    assert "湯だと余計勃ってる" in story["clips"][5]["prompt"]
-    assert "上がったらご飯" in story["clips"][11]["prompt"]
+    assert "サキにアラって" in story["clips"][2]["prompt"]
+    assert "ユだとヨケイムクってる" in story["clips"][5]["prompt"]
+    assert "アガッたらゴハン" in story["clips"][11]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -1903,9 +1907,9 @@ def test_dinner_story_twelve_clips_table(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "食べなさい" in story["clips"][2]["prompt"]
-    assert "ご飯中なのに" in story["clips"][5]["prompt"]
-    assert "ちゃんと上も食べなさい" in story["clips"][11]["prompt"]
+    assert "タベなさい" in story["clips"][2]["prompt"]
+    assert "ゴハンチュウなのに" in story["clips"][5]["prompt"]
+    assert "ちゃんとウエもタベなさい" in story["clips"][11]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -2017,8 +2021,8 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "寝る前なのに" in story["clips"][5]["prompt"]
-    assert "電気消したよ" in story["clips"][11]["prompt"]
+    assert "ネルマエなのに" in story["clips"][5]["prompt"]
+    assert "デンキケしたよ" in story["clips"][11]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -2131,8 +2135,8 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
     assert "Already in" in story["clips"][5]["prompt"] or "ALREADY IN" in story["clips"][5]["prompt"]
     assert "NOT IN FRAME" in story["clips"][5]["prompt"]
     assert "NOT IN FRAME" in story["clips"][8]["prompt"]
-    assert "休日なのに朝から勃ってる" in story["clips"][3]["prompt"]
-    assert "昼ごはんまだよ" in story["clips"][11]["prompt"]
+    assert "キュウジツなのにアサからムクってる" in story["clips"][3]["prompt"]
+    assert "ヒルごはんまだよ" in story["clips"][11]["prompt"]
     prev = None
     for i, clip in enumerate(story["clips"]):
         hits = forbidden_hits(clip["prompt"])
@@ -2244,8 +2248,8 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
     assert "LIP SYNC" in story["clips"][11]["prompt"]
     for idx in (0, 1, 3, 4, 5, 6, 7, 8, 9, 10):
         assert "LIP SYNC" not in story["clips"][idx]["prompt"], idx
-    assert "午後も勃ってる" in story["clips"][2]["prompt"]
-    assert "皿洗っとくから" in story["clips"][11]["prompt"]
+    assert "ゴゴもムクってる" in story["clips"][2]["prompt"]
+    assert "サラアラっとくから" in story["clips"][11]["prompt"]
     assert "joining point" in story["clips"][4]["prompt"].lower()
     assert "ALREADY IN" in story["clips"][4]["prompt"]
     assert "Do not put Rei inside" in story["clips"][4]["prompt"]
@@ -2685,7 +2689,10 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         assert present and set(present) <= set(cast_defs), (sid, i + 1, present)
         for name in present:
             assert f"{name}: Adult Japanese woman" in prompt, (sid, i + 1, name)
-        if "Aya" in cast_defs or "Sayaka" in cast_defs:
+        if "Clear futanari" in prompt:
+            assert "Penis plus vagina, never balls" in prompt
+            assert "no scrotum" in prompt
+        if "Aya" in present or "Sayaka" in present:
             assert "NO penis" in prompt
         assert "No men" in prompt
         planned = prepare_story_clip(
@@ -2929,7 +2936,7 @@ def test_story_play_chain_prepares_last_frame_i2v(tmp_path):
     assert c1["missing_still"] is None
     assert "Picture 1" in c1["prompt"]
     assert "Continue from this exact last frame" in c1["prompt"]
-    assert "行ってらっしゃい" in c1["prompt"]
+    assert "イってらっしゃい" in c1["prompt"]
     # chain-raw: ③ fit does nothing, even on the last clip.
     c_last = prepare_story_clip(chain, n - 1, last_frame="x.png", stills_dir=tmp_path, fit_scene=True)
     assert c_last["fit_scene"] is False
@@ -3087,6 +3094,9 @@ def _check_pack_common(story, sid, tmp_path):
         if lines:
             assert clip["situation"] == "futa_visible"
             assert "LIP SYNC" in prompt
+        if "Clear futanari" in prompt:
+            assert "Penis plus vagina, never balls" in prompt
+            assert "no scrotum" in prompt
         planned = prepare_story_clip(
             story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev
         )
@@ -3116,10 +3126,10 @@ def test_sales_visit_pack_six_clips_aya_mouth(tmp_path):
     from h3_lora_studio import load_story, spoken_lines
 
     story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
-    assert story.get("spoken_no_kanji") is False
+    assert story.get("spoken_no_kanji") is True
     assert len(story["clips"]) == 6
     assert [c["situation"] for c in story["clips"]] == ["futa_visible"] * 4 + ["oral", "oral"]
-    want = ["こんにちは、お届けです", "遅いわよ", "申し訳ございません", "早くお水ちょうだい", None, None]
+    want = ["こんにちは、おトドケです", "オソいわよ", "モウシワケございません", "ハヤクおミズちょうだい", None, None]
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
         assert (got[0] if got else None) == line, clip["label"]
@@ -3127,6 +3137,8 @@ def test_sales_visit_pack_six_clips_aya_mouth(tmp_path):
         assert "Aya: Adult Japanese woman, 22" in clip["prompt"]
         assert "NO penis" in clip["prompt"]
         assert "no testicles" in clip["prompt"]
+        assert "no scrotum" in clip["prompt"]
+        assert "Penis plus vagina, never balls" in clip["prompt"]
         assert "Sayaka" not in clip["prompt"] and "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"].replace("not Madoka", "")
     assert "stream" in story["clips"][4]["prompt"].lower()
     assert "BASE" in story["clips"][5]["prompt"]
@@ -3198,22 +3210,81 @@ def test_validate_story_follow_spoken_no_kanji():
         "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「定期検診に来ました」"}],
     }
     errs = validate_story_follow(kanji)
-    assert any("spoken_no_kanji" in e for e in errs)
+    assert any("kana" in e for e in errs)
     kana = {
         "clip_s": 10,
         "spoken_no_kanji": True,
         "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「テイキケンシンにきました」"}],
     }
     assert validate_story_follow(kana) == []
-    # Without the flag kanji lines are fine (訪問販売 / 登校 keep 漢字).
+    # 台詞の漢字はフラグ無しでも通さない（読み間違え防止）。
     free = dict(kanji)
     free.pop("spoken_no_kanji")
-    assert validate_story_follow(free) == []
+    assert any("kana" in e for e in validate_story_follow(free))
     two = {
         "clip_s": 10,
         "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「はい」「いいえ」"}],
     }
     assert any("one spoken line only" in e for e in validate_story_follow(two))
+    missing = {
+        "clip_s": 10,
+        "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\nClear futanari. Erect 20cm.\n「ほしい」"}],
+    }
+    errs = validate_story_follow(missing)
+    assert any("penis plus vagina" in e for e in errs)
+    assert any("no scrotum" in e for e in errs)
+
+
+def test_lock_futa_anatomy_default_and_never_futanari():
+    from h3_lora_studio import lock_futa_anatomy
+
+    old = "Clear futanari with a penis. pale shaft, pink glans, no testicles. Not a man."
+    out = lock_futa_anatomy(old)
+    assert "Penis plus vagina, never balls" in out
+    assert "no scrotum" in out
+    assert "Hairless female pussy at the base of the shaft" in out
+    assert lock_futa_anatomy(out) == out
+    never = "Aya: Adult Japanese woman, 22, fully nude, hairless, NO penis, NEVER futanari."
+    assert lock_futa_anatomy(never) == never
+    hanging = lock_futa_anatomy("futanari with a penis that hangs unused")
+    assert "Her penis hangs unused" in hanging
+    assert "never balls that" not in hanging
+
+
+def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
+    from h3_lora_studio import (
+        CHAIN_PACK_IDS,
+        STORY_IDS,
+        _KANJI_RE,
+        compact_story_prompt,
+        load_story,
+        spoken_lines,
+        validate_story_follow,
+    )
+
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
+        story = load_story(sid)
+        assert story.get("spoken_no_kanji") is True, sid
+        assert validate_story_follow(story) == [], sid
+        for i, clip in enumerate(story["clips"]):
+            prompt = clip["prompt"]
+            where = f"{sid} clip {i + 1}"
+            for spoken in spoken_lines(prompt):
+                assert not _KANJI_RE.search(spoken), (where, spoken)
+            if "Clear futanari" in prompt:
+                assert "Penis plus vagina, never balls" in prompt, where
+                assert "no scrotum" in prompt, where
+            compact = compact_story_prompt(prompt)
+            if "Clear futanari" in compact:
+                assert "Penis plus vagina, never balls" in compact, where
+                assert "no scrotum" in compact, where
+            for name in ("Aya", "Sayaka"):
+                match = re.search(rf"^{name}: Adult[^\n]*", prompt, re.M)
+                if match:
+                    line = match.group(0)
+                    assert "NO penis" in line or "NEVER futanari" in line, (where, name)
+                    assert "Clear futanari" not in line, (where, name)
+                    assert "futanari:" not in line, (where, name)
 
 
 def test_notebook_story_play_flow():
@@ -3279,4 +3350,7 @@ def test_notebook_story_play_flow():
     assert "名前付きパック（専用 / つなぐ / つなぐ修）" in md0
     assert "旧名「訪問販売60秒（つなぐ）」" in md0
     assert "登校（専用）" in md0
-    assert "h3-20260907-story-play-2" in cell2
+    assert "竿＋マンコ、金玉なし" in md0
+    assert "「」の中はカタカナ" in md0
+    assert "漢字のまま" not in md0
+    assert "h3-20260907-futa-pussy-1" in cell2

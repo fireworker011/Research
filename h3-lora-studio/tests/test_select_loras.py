@@ -13,6 +13,7 @@ from select_loras import (  # noqa: E402
     forbidden_hits,
     list_situations,
     load_forbidden,
+    lock_futa_anatomy,
     select_loras,
     strip_male_subjects,
 )
@@ -334,6 +335,29 @@ def test_futa_sex_and_anal_stay_feminine():
     assert again.count("feminine_lock:") == 1
 
 
+def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
+    old = "Clear futanari with a penis. pale shaft, pink glans, no testicles. Not a man."
+    out = lock_futa_anatomy(old)
+    assert "futanari: erect penis" in out
+    assert "Hairless female pussy at the base of the shaft" in out
+    assert "no scrotum" in out
+    assert "Penis plus vagina, never balls" in out
+    assert "futanari with a penis" not in out
+    assert lock_futa_anatomy(out) == out
+    never = "Aya: Adult Japanese woman, 22, fully nude, hairless, NO penis, NEVER futanari."
+    assert lock_futa_anatomy(never) == never
+    hanging = lock_futa_anatomy("feminine body, futanari with a penis that hangs unused. Not a man.")
+    assert "Her penis hangs unused" in hanging
+    assert "never balls that" not in hanging
+    assert "Penis plus vagina, never balls" in hanging
+    assert lock_futa_anatomy(hanging) == hanging
+    face = lock_futa_anatomy("futanari with a penis in the foreground. Not a man.")
+    assert "Penis in the foreground" in face
+    assert "never balls in the foreground" not in face
+    remnant = lock_futa_anatomy("Penis plus vagina, never balls that hangs unused. Not a man.")
+    assert remnant == "Penis plus vagina, never balls. Her penis hangs unused. Not a man."
+
+
 def test_sampler_no_turbo_used_when_turbo_stripped():
     vis = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）")
     assert vis["turbo"] is True
@@ -379,15 +403,26 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
     assert "adult man" not in olow
     assert "futanari" in olow
     assert "bl0w_j0b" in olow
+    assert "penis plus vagina, never balls" in olow
+    assert "no scrotum" in olow
     preview = select_loras(profile_name="preview", mode="t2v", prompt_arg="（シーン）")
     assert "adult man" not in preview["prompt"].lower()
     assert "futanari" in preview["prompt"].lower()
+    assert "penis plus vagina, never balls" in preview["prompt"].lower()
     anal = select_loras(profile_name="anal_penetration", mode="t2v", prompt_arg="（シーン）")
     assert "adult man" not in anal["prompt"].lower()
     assert "futanari" in anal["prompt"].lower()
+    assert "penis plus vagina, never balls" in anal["prompt"].lower()
     close = select_loras(profile_name="anal_closeup", mode="t2v", prompt_arg="（シーン）")
     assert "adult man" not in close["prompt"].lower()
     assert "futanari" not in close["prompt"].lower()
+    for name in ("futa_visible", "futa_masturbation", "cunnilingus_futa", "general_sex"):
+        row = select_loras(profile_name=name, mode="t2v", prompt_arg="（シーン）")
+        low = row["prompt"].lower()
+        assert "penis plus vagina, never balls" in low, name
+        assert "no scrotum" in low, name
+        assert "never balls that" not in low, name
+        assert "never balls in the foreground" not in low, name
     for name in (
         "futa_sex",
         "futa_anal",
@@ -415,6 +450,9 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
         assert "fully nude" in low, name
         assert "over 21" in low, name
         assert "feminine_lock:" in low, name
+        if "futanari" in low and "never futanari" not in low:
+            assert "penis plus vagina, never balls" in low, name
+            assert "no scrotum" in low, name
         assert "Picture 1" not in row["prompt"], name
 
 

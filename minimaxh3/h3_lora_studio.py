@@ -363,16 +363,16 @@ SITUATION_HELP = {
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
     "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（行ってらっしゃい／遅刻するよ／ほしい）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
-    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「昼だよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
+    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（イってらっしゃい／チコクするよ／ほしい。カタカナ）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
+    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「ヒルだよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
     "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
-    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／手洗って）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
-    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（先に洗って／湯だと余計勃ってる／上がったらご飯）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
-    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。非日常はテーブルの下で根元まで。セリフは口元3本（食べなさい／ご飯中なのに／ちゃんと上も食べなさい）。フェラはテーブル下の寄り。口内は CUMOUF。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
-    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（寝る前なのに／電気消したよ）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（休日なのに朝から勃ってる／昼ごはんまだよ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
-    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（午後も勃ってる／皿洗っとくから）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sales-visit-60s": "訪問販売60秒（つなぐ）。10秒×6本。9:16 576×1024。専用ではなく名前付きの「つなぐ」パック。1本目はテキスト、2本目以降は最後のコマから I2V。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・水ケース。セリフは口元4本（こんにちはお届け／遅いわよ／申し訳ございません／早くお水ちょうだい。漢字のまま）。5〜6本目はフェラ（放尿→根元）、無言・寄り。hmmotion なし。",
+    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／テアラって。カタカナ）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
+    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（サキにアラって／ユだとヨケイムクってる／アガッたらゴハン。カタカナ）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
+    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。非日常はテーブルの下で根元まで。セリフは口元3本（タベなさい／ゴハンチュウなのに／ちゃんとウエもタベなさい。カタカナ）。フェラはテーブル下の寄り。口内は CUMOUF。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
+    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ネルマエなのに／デンキケしたよ。カタカナ）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（キュウジツなのにアサからムクってる／ヒルごはんまだよ。カタカナ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
+    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ゴゴもムクってる／サラアラっとくから。カタカナ）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sales-visit-60s": "訪問販売60秒。10秒×6本。9:16。名前付きパック。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。セリフは口元4本（こんにちはおトドケです／オソいわよ／モウシワケございません／ハヤクおミズちょうだい。カタカナ）。5〜6本目はフェラ（放尿→根元）、無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診100秒（つなぐ）。10秒×10本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞はカタカナ（漢字なし）: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／（キス無言）／ん…クチとムネ…カクニンをします。根元までフェラ→口内 CUMOUF→「モンダイありますね」は別の本。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ: シュウテンです、オキテください／オキましたか？オキャクサン、シュウテンだからオリテください。hmmotion なし。",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞はカタカナ（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
@@ -2195,6 +2195,44 @@ STORY_CAST_NAMES = (
 STORY_CAST_DEF_RE = re.compile(r"^(" + "|".join(STORY_CAST_NAMES) + r"): Adult", re.M)
 _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
+# Default futanari = 玉なし＋マンコあり (the futa-blowjob still). Keep in sync with select_loras.lock_futa_anatomy.
+FUTA_SCENE_ANATOMY = (
+    "futanari: erect penis, hairless female pussy at the base of the shaft, "
+    "no testicles, no scrotum. Penis plus vagina, never balls"
+)
+_FUTA_ANATOMY_TAIL = (
+    "no testicles, no scrotum. Hairless female pussy at the base of the shaft "
+    "where a scrotum would be. Penis plus vagina, never balls."
+)
+
+
+def lock_futa_anatomy(text: str) -> str:
+    """Keep every futanari as penis + vagina, no balls. Do not add a penis to NEVER-futanari women."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    out = raw.replace(
+        "pale shaft, pink glans, no testicles.",
+        "pale shaft, pink glans, " + _FUTA_ANATOMY_TAIL,
+    )
+    out = out.replace(
+        "futanari with a penis that hangs unused",
+        FUTA_SCENE_ANATOMY + ". Her penis hangs unused",
+    )
+    out = out.replace(
+        "futanari with a penis in the foreground",
+        FUTA_SCENE_ANATOMY + ". Penis in the foreground",
+    )
+    out = out.replace("futanari with a penis", FUTA_SCENE_ANATOMY)
+    out = out.replace(
+        "never balls that hangs unused",
+        "never balls. Her penis hangs unused",
+    )
+    out = out.replace(
+        "never balls in the foreground",
+        "never balls. Penis in the foreground",
+    )
+    return out
 
 
 def spoken_lines(prompt: str) -> list[str]:
@@ -2227,6 +2265,7 @@ def compact_story_prompt(prompt: str) -> str:
     text = str(prompt or "").strip()
     if not text:
         return text
+    text = lock_futa_anatomy(text)
     preamble: list[str] = []
     sections: dict[str, list[str]] = {}
     current: str | None = None
@@ -2311,7 +2350,6 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     clip_s = float(story.get("clip_s") or 10)
-    no_kanji = bool(story.get("spoken_no_kanji"))
     # 建前 packs carry one short exchange (2 speakers) in a 10s face clip. Default stays 1.
     spoken_max = max(1, min(2, int(story.get("spoken_max") or 1)))
     for i, clip in enumerate(clips):
@@ -2324,11 +2362,14 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         lines = spoken_lines(prompt)
         if "15-second take" in prompt or "15-second" in prompt:
             errors.append(f"clip {n}: use a 10-second take, not 15")
-        if no_kanji:
-            for spoken in lines:
-                if _KANJI_RE.search(spoken):
-                    errors.append(f"clip {n}: spoken_no_kanji pack, write the line in kana: 「{spoken}」")
-                    break
+        for spoken in lines:
+            if _KANJI_RE.search(spoken):
+                errors.append(f"clip {n}: write the spoken line in kana (no kanji): 「{spoken}」")
+                break
+        if "Clear futanari" in prompt and "Penis plus vagina, never balls" not in prompt:
+            errors.append(f"clip {n}: futanari must be penis plus vagina, no balls")
+        if "Clear futanari" in prompt and "no scrotum" not in prompt:
+            errors.append(f"clip {n}: futanari must have no scrotum")
         prompt_l = prompt.lower()
         has_hmmotion = "hmmotion" in prompt_l
         if situation in HMMOTION_SITUATIONS and not prompt.startswith("hmmotion"):

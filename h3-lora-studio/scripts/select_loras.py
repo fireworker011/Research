@@ -93,6 +93,46 @@ FEMININE_LOCK_PROMPT = (
     "No muscular male physique. No muscle-bound body. No beard. No adam's apple. "
     "No broad male shoulders. The partner with a penis remains a woman, never a man."
 )
+# Default futanari = 玉なし＋マンコあり (futa-blowjob still). Keep in sync with h3_lora_studio.lock_futa_anatomy.
+FUTA_SCENE_ANATOMY = (
+    "futanari: erect penis, hairless female pussy at the base of the shaft, "
+    "no testicles, no scrotum. Penis plus vagina, never balls"
+)
+_FUTA_ANATOMY_TAIL = (
+    "no testicles, no scrotum. Hairless female pussy at the base of the shaft "
+    "where a scrotum would be. Penis plus vagina, never balls."
+)
+
+
+def lock_futa_anatomy(text: str) -> str:
+    """Keep every futanari as penis + vagina, no balls. Do not add a penis to NEVER-futanari women."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    out = raw.replace(
+        "pale shaft, pink glans, no testicles.",
+        "pale shaft, pink glans, " + _FUTA_ANATOMY_TAIL,
+    )
+    out = out.replace(
+        "futanari with a penis that hangs unused",
+        FUTA_SCENE_ANATOMY + ". Her penis hangs unused",
+    )
+    out = out.replace(
+        "futanari with a penis in the foreground",
+        FUTA_SCENE_ANATOMY + ". Penis in the foreground",
+    )
+    out = out.replace("futanari with a penis", FUTA_SCENE_ANATOMY)
+    out = out.replace(
+        "never balls that hangs unused",
+        "never balls. Her penis hangs unused",
+    )
+    out = out.replace(
+        "never balls in the foreground",
+        "never balls. Penis in the foreground",
+    )
+    return out
+
+
 FEMININE_NEGATIVE = (
     "man, male, male body, masculine, muscular man, muscular male, muscle-bound, "
     "bodybuilder, beard, mustache, adam's apple, male face, male torso, male chest, "
@@ -495,6 +535,7 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
     if not bool(profile.get("feminine_lock")) and not nsfw:
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
+    prompt = lock_futa_anatomy(prompt)
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:
         # Keep the H3 schema order: the lock belongs to the visual description,
