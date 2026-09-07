@@ -354,6 +354,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "assert_i2va_graph(g, expect_last=False, homage=homage)" in src
     nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
     blob = nb_path.read_text(encoding="utf-8")
+    code = "\n".join("".join(c["source"]) for c in json.loads(blob)["cells"])
     assert "homage=homage" in blob
     assert "validate_studio_i2v_prompt" in blob
     assert "validate_motion_ad_prompt(prompt, with_last_frame=False)" in blob
@@ -392,19 +393,18 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-chain-open"' in src
+    assert 'FETCH_REV = "h3-20260907-story-play-1"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
-    assert "帰宅120秒（専用）" in src
-    assert "洗い物120秒（専用）" in src
-    assert "登校120秒（専用）" in src
-    assert "授業120秒（専用）" in src
-    assert "屋上〜下校（専用）" in src
-    assert "おかえり120秒（専用）" in src
-    assert "風呂120秒（専用）" in src
-    assert "食卓120秒（専用）" in src
-    assert "布団120秒（専用）" in src
-    assert "休日120秒（専用）" in src
+    for short in ("帰宅", "洗い物", "登校", "授業", "屋上", "おかえり", "風呂", "食卓", "布団", "休日", "縁側"):
+        for play in ("専用", "つなぐ", "つなぐ修"):
+            assert f"{short}（{play}）" in blob, (short, play)
+    assert "訪問販売60秒（つなぐ）" in blob
+    assert "定期検診100秒（つなぐ）" in blob
+    assert "終点40秒（つなぐ）" in blob
+    # Legacy long labels stay as SITUATION_JA aliases, not as the dropdown default.
+    assert resolve_situation("登校120秒（専用）") == "commute-120s"
+    assert 'やりたいシーン = "登校120秒（専用）"' not in code
     assert "validate_story_follow" in src
     assert "カット編集" in src
     assert "h3-lora-studio/stories/homecoming-90s.json" in src
@@ -432,19 +432,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-chain-open" in blob
-    assert "帰宅120秒（専用）" in blob
-    assert "洗い物120秒（専用）" in blob
-    assert "登校120秒（専用）" in blob
-    assert "授業120秒（専用）" in blob
-    assert "屋上〜下校（専用）" in blob
-    assert "おかえり120秒（専用）" in blob
-    assert "風呂120秒（専用）" in blob
-    assert "食卓120秒（専用）" in blob
-    assert "布団120秒（専用）" in blob
-    assert "休日120秒（専用）" in blob
+    assert "h3-20260907-story-play-1" in blob
+    assert "h3-20260907-chain-open" not in blob
     assert "input/commute-120s/" in src
-    assert 'やりたいシーン = "登校120秒（専用）"' in src
+    assert 'やりたいシーン = "登校（専用）"' in code
+    assert '今使うシーン = "登校（専用）"' in code
     assert "force_t2v=FORCE_T2V" in src
     assert "作り方はテキストから。専用フォルダの写真は使いません。" in src
     assert "rewrite_chain_opening_prompt" in src
@@ -1384,8 +1376,10 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
             prev_situation=prev,
         )
         prev = planned["situation"]
+        # Unplayed JSON (seamless False): a passed last_frame is ignored → T2V hard cut.
         assert planned["mode"] == "t2v"
         assert planned["first_kind"] == "t2v"
+        assert planned["seamless"] is False
         assert "Picture 1" not in planned["prompt"]
         assert planned["missing_still"]
         assert planned["width"] == 1024
@@ -2341,14 +2335,24 @@ def test_all_stories_pass_follow():
 
 
 def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
-    from h3_lora_studio import CAST_LOCK_SERIES_LINE, STORY_IDS, compact_story_prompt, load_story, studio_sys_path
+    from h3_lora_studio import (
+        CAST_LOCK_SERIES_LINE,
+        CHAIN_PACK_IDS,
+        STORY_CAST_DEF_RE,
+        STORY_IDS,
+        compact_story_prompt,
+        load_story,
+        story_cast_present,
+        studio_sys_path,
+    )
 
     studio_sys_path()
     from select_loras import forbidden_hits
 
+    assert STORY_CAST_DEF_RE.pattern.startswith("^(Sayaka|Rei|Aya|Madoka|Saleswoman|Doctor|Conductor): Adult")
     canon = ["subject_definitions:", "environment:", "integrated_multimodal_description:", "overall_soundscape:", "non_diegetic_music:"]
     total_raw = total_out = 0
-    for sid in sorted(STORY_IDS):
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
         story = load_story(sid)
         for i, clip in enumerate(story["clips"]):
             raw = clip["prompt"]
@@ -2370,7 +2374,8 @@ def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
             assert forbidden_hits(out) == [], where
             absent = set(re.findall(r"^([A-Z][a-z]+) = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)", raw, re.M))
             absent |= set(re.findall(r"^([A-Z][a-z]+):\s.*NOT IN THIS CLIP", raw, re.M))
-            present = set(re.findall(r"^(Sayaka|Rei|Aya|Madoka): Adult", raw, re.M)) - absent
+            present = set(story_cast_present(raw)) - absent
+            assert present, where
             for name in absent:
                 assert f"\n{name}: Adult" not in out, (where, name)
                 assert f"{name} = NOT IN FRAME" not in out, (where, name)
@@ -2483,3 +2488,438 @@ def test_validate_story_follow_rejects_act_speech_and_15s():
     assert any("10-second take" in e for e in errs)
 
 
+
+
+def test_story_play_labels_resolve_to_story_and_play():
+    from h3_lora_studio import (
+        CHAIN_PACK_IDS,
+        STORY_IDS,
+        STORY_ORDER,
+        apply_story_play,
+        chain_pack_labels,
+        is_chain_pack,
+        is_story,
+        load_story,
+        resolve_story_play,
+        story_play_labels,
+    )
+
+    assert STORY_IDS == set(STORY_ORDER)
+    assert len(STORY_IDS) == 11
+    assert "homecoming-90s" in STORY_IDS and "engawa-120s" in STORY_IDS
+    assert CHAIN_PACK_IDS == {"sales-visit-60s", "checkup-100s", "last-stop-40s"}
+    assert not (CHAIN_PACK_IDS & STORY_IDS)
+    labels = story_play_labels()
+    assert len(labels) == 33
+    assert labels[:3] == ["帰宅（専用）", "帰宅（つなぐ）", "帰宅（つなぐ修）"]
+    assert labels[6:9] == ["登校（専用）", "登校（つなぐ）", "登校（つなぐ修）"]
+    assert chain_pack_labels() == ["訪問販売60秒（つなぐ）", "定期検診100秒（つなぐ）", "終点40秒（つなぐ）"]
+    assert resolve_situation("登校（つなぐ）") == "commute-120s"
+    assert is_story("登校（つなぐ）")
+    assert not is_chain_pack("登校（つなぐ）")
+    assert resolve_situation("登校（専用）") == "commute-120s"
+    assert resolve_situation("登校（つなぐ修）") == "commute-120s"
+    assert resolve_story_play("登校（専用）") == "dedicated"
+    assert resolve_story_play("登校（つなぐ）") == "chain"
+    assert resolve_story_play("登校（つなぐ修）") == "chain_rewrite"
+    assert resolve_story_play("登校120秒（専用）") == "dedicated"
+    assert resolve_story_play("朝〜正門120秒（専用）") == "dedicated"
+    assert resolve_story_play("縁側二回戦（専用）") == "dedicated"
+    assert resolve_story_play("commute-120s") == "dedicated"
+    for sid in STORY_ORDER:
+        short = labels[STORY_ORDER.index(sid) * 3]
+        assert resolve_situation(short) == sid
+    # Named packs are chains but never stories.
+    assert resolve_situation("訪問販売60秒（つなぐ）") == "sales-visit-60s"
+    assert is_chain_pack("訪問販売60秒（つなぐ）")
+    assert not is_story("訪問販売60秒（つなぐ）")
+    assert is_chain_pack("定期検診100秒（つなぐ）")
+    assert is_chain_pack("終点40秒（つなぐ）")
+    assert not is_story("checkup-100s") and not is_story("last-stop-40s")
+    story = load_story("commute-120s")
+    assert story.get("seamless") is False
+    ded = apply_story_play(story, "dedicated")
+    assert ded["seamless"] is False and ded["rewrite_chain_prompts"] is False
+    assert all(c["start"] == "still_or_t2v" for c in ded["clips"])
+    ch = apply_story_play(story, "chain")
+    assert ch["seamless"] is True and ch["rewrite_chain_prompts"] is False
+    assert ch["clips"][0]["start"] == "still_or_t2v"
+    assert all(c["start"] == "continue" for c in ch["clips"][1:])
+    rw = apply_story_play(story, "chain_rewrite")
+    assert rw["seamless"] is True and rw["rewrite_chain_prompts"] is True
+    assert all(c["start"] == "continue" for c in rw["clips"][1:])
+    # The loaded JSON is untouched by apply_story_play.
+    assert story.get("seamless") is False
+    assert all(c["start"] == "still_or_t2v" for c in story["clips"])
+    assert "rewrite_chain_prompts" not in story
+    text = explain_choice("登校（専用）", "テキストから（写真なし）")
+    assert "再生: 専用（カット" in text
+    text = explain_choice("登校（つなぐ）", "テキストから（写真なし）")
+    assert "つなぐ・文そのまま" in text
+    text = explain_choice("登校（つなぐ修）", "テキストから（写真なし）")
+    assert "つなぐ・1本目を長回しに直す" in text
+    text = explain_choice("訪問販売60秒（つなぐ）", "テキストから（写真なし）")
+    assert "つなぐパック" in text and "専用ではありません" in text
+
+
+def test_story_play_chain_prepares_last_frame_i2v(tmp_path):
+    from h3_lora_studio import (
+        CHAIN_OPENING_LINE,
+        DEDICATED_SCENE_IMAGE_LINE,
+        FINAL_SCENE_LINE,
+        apply_story_play,
+        load_story,
+        prepare_story_clip,
+    )
+
+    story = load_story("commute-120s")
+    n = len(story["clips"])
+
+    chain = apply_story_play(story, "chain")
+    c0 = prepare_story_clip(chain, 0, last_frame=None, stills_dir=tmp_path, force_t2v=True)
+    assert c0["mode"] == "t2v"
+    assert c0["seamless"] is True and c0["rewrite_chain_prompts"] is False
+    assert "opening of one continuous long take" not in c0["prompt"]
+    assert CHAIN_OPENING_LINE not in c0["prompt"]
+    assert "Picture 1" not in c0["prompt"]
+    c1 = prepare_story_clip(chain, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, force_t2v=True)
+    assert c1["mode"] == "i2v"
+    assert c1["first_kind"] == "last_frame"
+    assert c1["missing_still"] is None
+    assert "Picture 1" in c1["prompt"]
+    assert "Continue from this exact last frame" in c1["prompt"]
+    assert "行ってらっしゃい" in c1["prompt"]
+    # chain-raw: ③ fit does nothing, even on the last clip.
+    c_last = prepare_story_clip(chain, n - 1, last_frame="x.png", stills_dir=tmp_path, fit_scene=True)
+    assert c_last["fit_scene"] is False
+    assert FINAL_SCENE_LINE not in c_last["prompt"]
+    # No last frame yet (clip 0 or a broken chain) → hard fallback to T2V, not an error.
+    c1_nolast = prepare_story_clip(chain, 1, last_frame=None, stills_dir=tmp_path, force_t2v=True)
+    assert c1_nolast["mode"] == "t2v"
+
+    rewrite = apply_story_play(story, "chain_rewrite")
+    r0 = prepare_story_clip(rewrite, 0, last_frame=None, stills_dir=tmp_path, force_t2v=True)
+    assert r0["mode"] == "t2v"
+    assert "opening of one continuous long take" in r0["prompt"]
+    assert r0["prompt"].startswith("PENISLORA, DY\n")
+    assert "Picture 1" not in r0["prompt"]
+    r1 = prepare_story_clip(rewrite, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, force_t2v=True)
+    assert r1["mode"] == "i2v" and r1["first_kind"] == "last_frame"
+    assert FINAL_SCENE_LINE not in r1["prompt"]
+    r_mid = prepare_story_clip(rewrite, 5, last_frame="x.png", stills_dir=tmp_path, fit_scene=True)
+    assert r_mid["fit_scene"] is False
+    assert FINAL_SCENE_LINE not in r_mid["prompt"]
+    r_last = prepare_story_clip(rewrite, n - 1, last_frame="x.png", stills_dir=tmp_path, fit_scene=True)
+    assert r_last["fit_scene"] is True
+    assert FINAL_SCENE_LINE in r_last["prompt"]
+    assert "Picture 1" in r_last["prompt"]
+    assert r_last["mode"] == "i2v"
+    r_last_off = prepare_story_clip(rewrite, n - 1, last_frame="x.png", stills_dir=tmp_path, fit_scene=False)
+    assert FINAL_SCENE_LINE not in r_last_off["prompt"]
+
+    # Dedicated: last_frame is never used; ③ fit only touches still-based I2V.
+    ded = apply_story_play(story, "dedicated")
+    d1 = prepare_story_clip(ded, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, fit_scene=True)
+    assert d1["mode"] == "t2v" and d1["first_kind"] == "t2v"
+    assert d1["fit_scene"] is False
+    assert DEDICATED_SCENE_IMAGE_LINE not in d1["prompt"]
+    (tmp_path / "01-hall.jpg").write_bytes(b"fake-jpg")
+    d0 = prepare_story_clip(ded, 0, last_frame=None, stills_dir=tmp_path, fit_scene=True)
+    assert d0["mode"] == "i2v" and d0["first_kind"] == "still"
+    assert d0["fit_scene"] is True
+    assert DEDICATED_SCENE_IMAGE_LINE in d0["prompt"]
+    assert FINAL_SCENE_LINE not in d0["prompt"]
+    assert "Continue from this exact last frame" not in d0["prompt"]
+    assert "opening of one continuous long take" not in d0["prompt"]
+    d0_off = prepare_story_clip(ded, 0, last_frame=None, stills_dir=tmp_path, fit_scene=False)
+    assert DEDICATED_SCENE_IMAGE_LINE not in d0_off["prompt"]
+    assert "Picture 1" in d0_off["prompt"]
+    # chain play prefers the last frame over a Drive still on clip 2+.
+    (tmp_path / "02-ittekimasu.jpg").write_bytes(b"fake-jpg")
+    c1_still = prepare_story_clip(chain, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path)
+    assert c1_still["first_kind"] == "last_frame"
+    assert c1_still["still_path"] is None
+
+
+def test_should_fit_scene_image_prompt_rules():
+    from h3_lora_studio import should_fit_scene_image_prompt as fit
+
+    assert fit(fit=False, mode="i2v", clip_index=0, clip_count=1) is False
+    assert fit(fit=True, mode="t2v", clip_index=0, clip_count=1) is False
+    # single photo I2V
+    assert fit(fit=True, mode="i2v", clip_index=0, clip_count=1) is True
+    # normal chain: last clip only, never the first T2V→I2V join (clip_index 1)
+    assert fit(fit=True, mode="i2v", clip_index=1, clip_count=2, chain=True) is False
+    assert fit(fit=True, mode="i2v", clip_index=1, clip_count=6, chain=True) is False
+    assert fit(fit=True, mode="i2v", clip_index=3, clip_count=6, chain=True) is False
+    assert fit(fit=True, mode="i2v", clip_index=5, clip_count=6, chain=True) is True
+    assert fit(fit=True, mode="i2v", clip_index=0, clip_count=6, chain=True) is False
+    # dedicated story: still-based clips (prepare_story_clip checks the still itself)
+    assert fit(fit=True, mode="i2v", clip_index=0, clip_count=12, is_story=True, seamless=False) is True
+    # chain-raw story: never
+    assert fit(fit=True, mode="i2v", clip_index=11, clip_count=12, is_story=True, seamless=True, rewrite_chain_prompts=False) is False
+    # chain_rewrite story: last only
+    assert fit(fit=True, mode="i2v", clip_index=11, clip_count=12, is_story=True, seamless=True, rewrite_chain_prompts=True) is True
+    assert fit(fit=True, mode="i2v", clip_index=1, clip_count=12, is_story=True, seamless=True, rewrite_chain_prompts=True) is False
+
+
+def test_rewrite_final_and_dedicated_scene_prompts():
+    from h3_lora_studio import (
+        CHAIN_CONTINUE_LINE,
+        DEDICATED_SCENE_IMAGE_LINE,
+        FINAL_SCENE_LINE,
+        FINAL_SCENE_TARGET_LINE,
+        I2V_PICTURE1_HEADER,
+        rewrite_dedicated_scene_i2v_prompt,
+        rewrite_final_scene_i2v_prompt,
+    )
+
+    base = "PENISLORA, DY\nNew 10-second take. Hard cut. Do not copy the previous clip.\nTwo adult women, 22, talk in a kitchen."
+    scene = I2V_PICTURE1_HEADER + "bl0w_j0b, PENISLORA\nAlready a blow job. No man appears."
+    out = rewrite_final_scene_i2v_prompt(base, scene_prompt=scene)
+    assert out.startswith("PENISLORA, DY\n")
+    assert CHAIN_CONTINUE_LINE in out
+    assert FINAL_SCENE_LINE in out
+    assert FINAL_SCENE_TARGET_LINE in out
+    assert "Already a blow job" in out
+    assert "Picture 1" in out
+    assert out.count("fully referenced") == 1
+    assert "Hard cut" not in out
+    assert "Do not copy the previous clip" not in out
+    assert rewrite_final_scene_i2v_prompt(out, scene_prompt=scene) == out
+    plain = rewrite_final_scene_i2v_prompt("She keeps walking.")
+    assert FINAL_SCENE_LINE in plain and "Picture 1" in plain and FINAL_SCENE_TARGET_LINE not in plain
+
+    ded = rewrite_dedicated_scene_i2v_prompt("PENISLORA, DY\nsubject_definitions:\nAya: Adult Japanese woman, 22.")
+    assert ded.startswith("PENISLORA, DY\n")
+    assert DEDICATED_SCENE_IMAGE_LINE in ded
+    assert "Picture 1" in ded
+    assert "Continue from this exact last frame" not in ded
+    assert FINAL_SCENE_LINE not in ded
+    assert "this clip's own still" in DEDICATED_SCENE_IMAGE_LINE
+    assert "own cut" in DEDICATED_SCENE_IMAGE_LINE
+    assert "Do not continue from a previous last frame" in DEDICATED_SCENE_IMAGE_LINE
+    locked = I2V_PICTURE1_HEADER + "Aya waits in the hall."
+    ded2 = rewrite_dedicated_scene_i2v_prompt(locked)
+    assert ded2.count("fully referenced") == 1
+    assert ded2.index("fully referenced") < ded2.index(DEDICATED_SCENE_IMAGE_LINE) < ded2.index("Aya waits")
+    assert rewrite_dedicated_scene_i2v_prompt(ded2) == ded2
+
+
+def _check_pack_common(story, sid, tmp_path):
+    from h3_lora_studio import (
+        ACT_SITUATIONS,
+        prepare_story_clip,
+        situation_ids,
+        spoken_lines,
+        story_canvas_wh,
+        validate_story_follow,
+    )
+
+    assert story["id"] == sid
+    assert story["kind"] == "chain"
+    assert story["seamless"] is True
+    assert "rewrite_chain_prompts" not in story
+    assert story["min_age"] >= 21
+    assert story["clip_s"] == 10
+    assert story["duration_s"] == 10 * len(story["clips"])
+    assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
+    assert story_canvas_wh(story) == (576, 1024)
+    assert validate_story_follow(story) == []
+    assert story["clips"][0]["start"] == "still_or_t2v"
+    assert all(c["start"] == "continue" for c in story["clips"][1:])
+    listed = set(situation_ids(sid))
+    assert listed == set(story["download"])
+    prev = None
+    for i, clip in enumerate(story["clips"]):
+        prompt = clip["prompt"]
+        assert "hmmotion" not in prompt.lower()
+        assert "15-second" not in prompt
+        assert "Hard cut" not in prompt
+        assert "Do not copy the previous clip" not in prompt
+        assert "576x1024" in prompt
+        lines = spoken_lines(prompt)
+        assert len(set(lines)) <= 1, (sid, i + 1, lines)
+        if clip["situation"] in ACT_SITUATIONS:
+            assert not lines
+            assert "close" in prompt.lower()
+        if lines:
+            assert clip["situation"] == "futa_visible"
+            assert "LIP SYNC" in prompt
+        planned = prepare_story_clip(
+            story, i, last_frame=("h3_chain_%d.png" % (i - 1)) if i else None, stills_dir=tmp_path, prev_situation=prev
+        )
+        prev = planned["situation"]
+        assert {row["id"] for row in planned["stack"]} <= listed
+        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["duration_s"] == 10
+        assert planned["seamless"] is True and planned["rewrite_chain_prompts"] is True
+        if i == 0:
+            assert planned["mode"] == "t2v"
+            assert "opening of one continuous long take" in planned["prompt"]
+            assert "Picture 1" not in planned["prompt"]
+        else:
+            assert planned["mode"] == "i2v"
+            assert planned["first_kind"] == "last_frame"
+            assert planned["missing_still"] is None
+            assert "Picture 1" in planned["prompt"]
+            assert "Continue from this exact last frame" in planned["prompt"]
+        if planned["situation"] == "futa_visible":
+            _check_visible_plan(planned, prompt)
+        for spoken in lines:
+            assert spoken in planned["prompt"]
+    return story
+
+
+def test_sales_visit_pack_six_clips_aya_mouth(tmp_path):
+    from h3_lora_studio import load_story, spoken_lines
+
+    story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
+    assert story.get("spoken_no_kanji") is False
+    assert len(story["clips"]) == 6
+    assert [c["situation"] for c in story["clips"]] == ["futa_visible"] * 4 + ["oral", "oral"]
+    want = ["こんにちは、お届けです", "遅いわよ", "申し訳ございません", "早くお水ちょうだい", None, None]
+    for clip, line in zip(story["clips"], want):
+        got = spoken_lines(clip["prompt"])
+        assert (got[0] if got else None) == line, clip["label"]
+        assert "Saleswoman: Adult Japanese woman, 25" in clip["prompt"]
+        assert "Aya: Adult Japanese woman, 22" in clip["prompt"]
+        assert "NO penis" in clip["prompt"]
+        assert "no testicles" in clip["prompt"]
+        assert "Sayaka" not in clip["prompt"] and "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"].replace("not Madoka", "")
+    assert "stream" in story["clips"][4]["prompt"].lower()
+    assert "BASE" in story["clips"][5]["prompt"]
+    assert "cumouf-h3" not in story["download"]
+
+
+def test_checkup_pack_ten_clips_kana_lines(tmp_path):
+    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
+
+    story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
+    assert story["spoken_no_kanji"] is True
+    assert len(story["clips"]) == 10
+    assert [c["situation"] for c in story["clips"]] == (
+        ["futa_visible"] * 7 + ["oral", "oral_creampie", "futa_visible"]
+    )
+    want = [
+        "こんにちは",
+        "はーい",
+        "テイキケンシンにきました",
+        "あ…はい、ヨロシクオネガイします",
+        "では、シツレイします",
+        None,
+        "ん…クチとムネはモンダイないですね。では、つぎはおチンチンのカクニンをします",
+        None,
+        None,
+        "モンダイありますね",
+    ]
+    for clip, line in zip(story["clips"], want):
+        got = spoken_lines(clip["prompt"])
+        assert (got[0] if got else None) == line, clip["label"]
+        for spoken in got:
+            assert not _KANJI_RE.search(spoken), spoken
+        assert "Doctor: Adult Japanese woman, 32" in clip["prompt"]
+        assert "stethoscope" in clip["prompt"]
+        assert "Rei: Adult Japanese woman, 24" in clip["prompt"]
+    assert "kiss" in story["clips"][5]["prompt"].lower()
+    assert "CUMOUF" in story["clips"][8]["prompt"]
+    assert "cumouf-h3" in story["download"]
+
+
+def test_last_stop_pack_four_clips_rei_seated(tmp_path):
+    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
+
+    story = _check_pack_common(load_story("last-stop-40s"), "last-stop-40s", tmp_path)
+    assert story["spoken_no_kanji"] is True
+    assert len(story["clips"]) == 4
+    assert [c["situation"] for c in story["clips"]] == ["futa_visible", "oral", "oral_creampie", "futa_visible"]
+    want = ["シュウテンです、オキテください", None, None, "オキましたか？オキャクサン、シュウテンだからオリテください"]
+    for clip, line in zip(story["clips"], want):
+        got = spoken_lines(clip["prompt"])
+        assert (got[0] if got else None) == line, clip["label"]
+        for spoken in got:
+            assert not _KANJI_RE.search(spoken), spoken
+        assert "Conductor: Adult Japanese woman, 29" in clip["prompt"]
+        assert "whistle" in clip["prompt"]
+        assert "seated" in clip["prompt"].lower() or "sits" in clip["prompt"].lower()
+    assert "does NOT wake" in story["clips"][0]["prompt"]
+    assert "flutter open" in story["clips"][1]["prompt"]
+    assert "conductor again" in story["clips"][3]["prompt"]
+
+
+def test_validate_story_follow_spoken_no_kanji():
+    from h3_lora_studio import _KANJI_RE, validate_story_follow
+
+    assert _KANJI_RE.pattern == "[\\u4e00-\\u9fff]"
+    kanji = {
+        "clip_s": 10,
+        "spoken_no_kanji": True,
+        "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「定期検診に来ました」"}],
+    }
+    errs = validate_story_follow(kanji)
+    assert any("spoken_no_kanji" in e for e in errs)
+    kana = {
+        "clip_s": 10,
+        "spoken_no_kanji": True,
+        "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「テイキケンシンにきました」"}],
+    }
+    assert validate_story_follow(kana) == []
+    # Without the flag kanji lines are fine (訪問販売 / 登校 keep 漢字).
+    free = dict(kanji)
+    free.pop("spoken_no_kanji")
+    assert validate_story_follow(free) == []
+    two = {
+        "clip_s": 10,
+        "clips": [{"duration_s": 10, "situation": "futa_visible", "prompt": "LIP SYNC: face large.\n「はい」「いいえ」"}],
+    }
+    assert any("one spoken line only" in e for e in validate_story_follow(two))
+
+
+def test_notebook_story_play_flow():
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    src = writer.read_text(encoding="utf-8")
+    nb_path = Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb"
+    blob = nb_path.read_text(encoding="utf-8")
+    nb = json.loads(blob)
+    cell3 = "".join(nb["cells"][6]["source"])
+    cell2 = "".join(nb["cells"][4]["source"])
+    md0 = "".join(nb["cells"][0]["source"])
+    assert 'やりたいシーン = "登校（専用）"' in cell3
+    assert '今使うシーン = "登校（専用）"' in cell2
+    for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）"):
+        assert f'"登校{suffix}"' in cell3
+    assert '"訪問販売60秒（つなぐ）"' in cell3 and '"定期検診100秒（つなぐ）"' in cell3 and '"終点40秒（つなぐ）"' in cell3
+    # order: 33 story rows, then the 3 packs, then the act scenes
+    assert cell3.index('"縁側（つなぐ修）"') < cell3.index('"訪問販売60秒（つなぐ）"') < cell3.index('"終点40秒（つなぐ）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
+    assert "resolve_story_play" in src and "apply_story_play" in src
+    assert "STORY_PLAY = resolve_story_play(やりたいシーン)" in src
+    assert "STORY = apply_story_play(STORY, STORY_PLAY)" in src
+    assert "is_chain_pack" in src
+    assert "最終シーン合わせ = False  #@param" in src
+    assert 'last_now = first_name if (STORY.get("seamless") and CLIP_INDEX > 0) else None' in src
+    assert "last_frame=last_now" in src
+    assert "fit_scene=fit_now" in src
+    assert "FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS)" in src
+    assert "fit_scene=FIT_CLIP0" in src
+    assert "rewrite_chain_prompts=STORY_REWRITE" in src
+    assert "is_story=False, chain=CHAIN" in src
+    assert "rewrite_final_scene_i2v_prompt(GRAPH_PROMPT, scene_prompt=" in src
+    assert "if CHAIN and not STORY:\n    prompt = rewrite_chain_opening_prompt(prompt)" in src
+    assert "if CLIP_INDEX + 1 < len(CLIPS) and CHAIN:" in src
+    assert "if CLIP_INDEX + 1 < len(CLIPS) and not STORY:" not in src
+    assert "CHAIN = STORY_SEAMLESS" in src
+    assert "CHAIN = False" in src
+    assert "専用ストーリーを選んでいるので「つなぐ」は使いません" in src
+    assert 'getattr(_h3_studio, "resolve_story_play", None)' in src
+    assert 'getattr(_h3_studio, "apply_story_play", None)' in src
+    assert 'getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None)' in src
+    assert '"last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
+    assert "h3-lora-studio/stories/sales-visit-60s.json" in src
+    assert "h3-lora-studio/stories/checkup-100s.json" in src
+    assert "h3-lora-studio/stories/last-stop-40s.json" in src
+    assert '"sales-visit-60s", "checkup-100s", "last-stop-40s"' in cell2
+    assert "専用（専用）" in md0 and "専用（つなぐ）" in md0 and "専用（つなぐ修）" in md0
+    assert "名前付きパック（つなぐ）" in md0
+    assert "登校（専用）" in md0
+    assert "h3-20260907-story-play-1" in cell2
