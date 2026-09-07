@@ -37,6 +37,8 @@ from h3_lora_studio import (
     resolve_mode,
     resolve_situation,
     resolve_studio_length,
+    rewrite_chain_opening_prompt,
+    strip_chain_restart_language,
     situation_ids,
     studio_clip_plan,
 )
@@ -390,7 +392,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-t2v-ready"' in src
+    assert 'FETCH_REV = "h3-20260907-chain-open"' in src
     assert "中出し（女体）" in src
     assert "口内射精（女体）" in src
     assert "帰宅120秒（専用）" in src
@@ -430,7 +432,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-t2v-ready" in blob
+    assert "h3-20260907-chain-open" in blob
     assert "帰宅120秒（専用）" in blob
     assert "洗い物120秒（専用）" in blob
     assert "登校120秒（専用）" in blob
@@ -445,6 +447,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert 'やりたいシーン = "登校120秒（専用）"' in src
     assert "force_t2v=FORCE_T2V" in src
     assert "作り方はテキストから。専用フォルダの写真は使いません。" in src
+    assert "rewrite_chain_opening_prompt" in src
+    assert "つなぐモード" in src
+    assert "専用ストーリーを選んでいるので「つなぐ」は使いません" in src
+    assert "専用120秒（カット）" in src
+    assert "CHAIN = False" in src
     assert "input/lecture-120s/" in src
     assert "input/rooftop-100s/" in src
     assert "input/okaeri-120s/" in src
@@ -748,6 +755,44 @@ def test_next_chain_prompt_uses_extras_or_continues_prev():
     assert structured.count("integrated_multimodal_description:") == 1
     assert "Kiss only" in structured
     assert "Picture 1" in structured
+    dirty = next_chain_prompt(
+        1,
+        first_prompt=first,
+        prev_prompt=first,
+        extras=["New 10-second take. Hard cut. Do not copy the previous clip.\nImmediate deep tongue kiss."],
+    )
+    assert "New 10-second take" not in dirty
+    assert "Hard cut." not in dirty
+    assert "Do not copy the previous clip" not in dirty
+    assert "deep tongue kiss" in dirty
+    assert "without a cut" in dirty
+
+
+def test_strip_and_rewrite_chain_opening_for_join():
+    dirty = (
+        "New 10-second take. Hard cut. Do not copy the previous clip.\n"
+        "Clip 2 of 12.\n"
+        "A woman sits on the sofa and talks."
+    )
+    cleaned = strip_chain_restart_language(dirty)
+    assert "New 10-second take" not in cleaned
+    assert "Hard cut." not in cleaned
+    assert "Do not copy the previous clip" not in cleaned
+    assert "Clip 2 of 12" not in cleaned
+    assert "sits on the sofa" in cleaned
+    raw = "PENISLORA, DY\nA woman sits on the sofa and talks."
+    out = rewrite_chain_opening_prompt(raw)
+    assert out.startswith("PENISLORA, DY")
+    assert "opening of one continuous long take" in out
+    assert "End this clip mid-motion" in out
+    assert "sits on the sofa" in out
+    again = rewrite_chain_opening_prompt(out)
+    assert again.count("opening of one continuous long take") == 1
+    cont = continue_chain_prompt(out)
+    assert "Continue from this exact last frame" in cont
+    assert "Do not restart" in cont
+    assert "Picture 1" in cont
+    assert "no teleport" in cont.lower() or "No teleport" in cont
 
 
 def test_concat_studio_clips_prefers_stream_copy(tmp_path):
@@ -811,6 +856,8 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "concat_studio_clips" in src
     assert "continue_chain_prompt" in src
     assert "next_chain_prompt" in src
+    assert "rewrite_chain_opening_prompt" in src
+    assert "つなぐモード" in src
     assert "つなぎ2" in src
     assert "つなぎ9" in src
     assert "つなぎ12" in src
@@ -830,6 +877,8 @@ def test_notebook_clamps_duration_and_uses_it_in_graphs():
     assert "つなぎ12" in blob
     assert "continue_chain_prompt" in blob
     assert "next_chain_prompt" in blob
+    assert "rewrite_chain_opening_prompt" in blob
+    assert "つなぐモード" in blob
     assert "つなぎ2" in blob
     assert "AIO 0.8 + Larry 0.5 / 12step" in blob
     helper = Path(__file__).resolve().parent / "h3_lora_studio.py"
@@ -1364,6 +1413,8 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
     assert forced["first_kind"] == "t2v"
     assert forced["still_path"] is None
     assert "Picture 1" not in forced["prompt"]
+    assert "opening of one continuous long take" not in forced["prompt"]
+    assert "Continue from this exact last frame" not in forced["prompt"]
 
 
 def test_lecture_story_ten_clips_campus_noon(tmp_path):

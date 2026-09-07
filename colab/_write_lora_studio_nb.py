@@ -34,6 +34,15 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 専用9話（帰宅〜縁側）まで入っています。**写真が無くても動画は作れます**（T2V）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（Imagine 2.0 用。このノートでは使わない）。Imagine で still を作り直したら③を「写真から」に変える。
 
+## 120秒は2種類（混ぜない）
+
+| 種類 | ③での選び方 | 何が起きるか |
+|---|---|---|
+| **つなぐ 120秒** | やりたいシーンは日常・フェラなど普通の1シーン ＋ 長さの作り方「つなぐ 120秒」 | 1本目はテキストまたは写真。2本目以降は**最後のコマから I2V**。同じ場所・人・服・カメラ。文章欄が1本目。つなぎ欄は続きの拍。カット割りは書かない |
+| **専用 120秒** | やりたいシーンで「登校120秒（専用）」など | **カット編集**。各本は独立。長さの作り方・つなぎ欄・秒数は無視。両方選ぶと専用が勝ち、つなぐは使わない |
+
+つなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。
+
 ## 準備（最初の1回）
 
 1. 上の **Open in Colab** を開く
@@ -98,7 +107,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 性器を広げる | 広げて見せるクローズ | 広げる 0.75 + 穴の見え方 0.55 + Larry 0.5 |
 | レズ＋広げる | クンニに広げるを足す | クンニ 0.8 + 広げる 0.6 + Larry 0.5。穴の見え方は外す |
 
-**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。20〜120秒は「つなぐ」（10秒ずつ。1本で伸ばさない）。20秒は 10×2、90秒は 10×9、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。20〜120秒の「つなぐ」は同じカットを最後のコマで繋ぐ（10秒ずつ。1本で伸ばさない）。20秒は 10×2、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。「登校120秒（専用）」などはカット割りで、つなぐとは別。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
 **エロの空欄:** 全員 21歳以上の全裸のごく普通の若い成人女性（女かふたなり）。男は出さない。行為の細かい描写は③の文章欄で足す。
@@ -214,7 +223,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-t2v-ready"
+FETCH_REV = "h3-20260907-chain-open"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -505,7 +514,7 @@ MD3 = r"""## ③ 動画を作る
 - **絶頂** … 女1人。男なし。射精ではない
 - **汎用エロ（女体）** … ふたなり＋女。男なし。AIO + Larry 12step
 - **試し打ち** … ふたなり＋女。男なし
-- **秒数** … 4〜15 は1本。20〜120秒は「つなぐ 20秒」〜「つなぐ 120秒」（10秒ずつ）。120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。1本で 16 秒以上は作らない
+- **秒数** … 4〜15 は1本。つなぐ 20〜120秒は同じカットを最後のコマで繋ぐ（10秒ずつ）。専用120秒は上の「やりたいシーン」で選ぶ（カット。ここは触らない）。1本で 16 秒以上は作らない
 - **レズビアンクンニ** … 女同士。男なし
 - **性器を広げる** … 女1人。男なし
 - **レズ＋広げる** … 女同士。男なし
@@ -520,12 +529,12 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` か空なら input の一番新しい jpg。テキストからでは使いません。
 写真ファイル = "auto"  #@param {type:"string"}
-#@markdown 秒数。1本は 4〜15。20〜120秒は下の「つなぐ」を選ぶ。
+#@markdown 秒数。1本は 4〜15。同じカットを長くするなら下の「つなぐ」。専用120秒では無視。
 秒数 = 10  #@param {type:"number"}
-#@markdown 20〜120秒は 10秒ずつつなぐ（解像度もステップも落とさない）。専用ストーリーはカット編集。
+#@markdown 専用120秒（帰宅・登校など）は上の「やりたいシーン」で選ぶ。ここは**同じカットを繋ぐ**用。専用では触らなくてよい。20〜120秒は 10秒ずつ、最後のコマから I2V（解像度もステップも落とさない）。
 長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
-#@markdown ### つなぐときだけ（任意）
-#@markdown 20秒は2本、120秒は12本。空欄は前の続き。別の指示を出すときだけ書く。Picture 1 は書かない。
+#@markdown ### つなぐときだけ（任意・専用では無視）
+#@markdown 同じ場所・同じ人の続き。空欄は前の動きのまま。別の拍だけ書く。Picture 1 とカット割りは書かない。
 つなぎ2 = ""  #@param {type:"string"}
 つなぎ3 = ""  #@param {type:"string"}
 つなぎ4 = ""  #@param {type:"string"}
@@ -561,27 +570,33 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "force_t2v" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "force_t2v" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
-if float(DURATION) != float(秒数):
+if is_story(やりたいシーン):
     if CHAIN:
-        print("秒数は", int(DURATION), "にします（つなぐは 16〜120 秒。20〜120秒のボタンは秒数欄を無視）。")
-    else:
-        print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
-if CHAIN:
-    print("つなぎ:", " + ".join(str(int(x)) + "秒" for x in CLIPS), "（最後のコマから続ける。画質は落とさない）")
-    named = [str(i + 2) + "本目" for i, x in enumerate(CHAIN_EXTRAS) if not is_blank_prompt(x)]
-    if named:
-        print("別の文を使うクリップ:", "、".join(named), "。空の欄は前の続き。")
-elif any(not is_blank_prompt(x) for x in CHAIN_EXTRAS):
-    print("つなぎ欄は「つなぐ」のときだけ使います。今は1本なので無視します。")
+        print("専用ストーリーを選んでいるので「つなぐ」は使いません。長さの作り方・秒数・つなぎ欄は無視します（カット編集）。")
+    CHAIN = False
+else:
+    if float(DURATION) != float(秒数):
+        if CHAIN:
+            print("秒数は", int(DURATION), "にします（つなぐは 16〜120 秒。20〜120秒のボタンは秒数欄を無視）。")
+        else:
+            print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
+    if CHAIN:
+        print("つなぐモード: 1本目はテキストまたは写真。2本目以降は最後のコマから I2V。同じ場所・同じ人・同じ服・同じカメラ。")
+        print("つなぎ:", " + ".join(str(int(x)) + "秒" for x in CLIPS), "（最後のコマから続ける。画質は落とさない）")
+        named = [str(i + 2) + "本目" for i, x in enumerate(CHAIN_EXTRAS) if not is_blank_prompt(x)]
+        if named:
+            print("別の文を使うクリップ:", "、".join(named), "。空の欄は前の続き。")
+    elif any(not is_blank_prompt(x) for x in CHAIN_EXTRAS):
+        print("つなぎ欄は「つなぐ」のときだけ使います。今は1本なので無視します。")
 
 env = {}
 with open("/content/h3_paths.env") as f:
@@ -618,12 +633,12 @@ if is_story(やりたいシーン):
     STORY = load_story(SITUATION, studio_root=STUDIO)
     DURATION = float(STORY.get("duration_s") or 120)
     CLIPS = [float(c.get("duration_s") or STORY.get("clip_s") or 10) for c in STORY["clips"]]
-    CHAIN = True
+    CHAIN = False
     VANILLA = False
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
-    print(str(STORY.get("title_ja") or STORY.get("id")), "専用。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の専用文で部品を切り替えます。")
-    print("カット編集です。最後のコマからは続けません（再現優先）。")
+    print(str(STORY.get("title_ja") or STORY.get("id")), "専用120秒（カット）。つなぐ120秒ではありません。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の専用文で部品を切り替えます。")
+    print("カット編集です。各本は独立で、最後のコマからは続けません（再現優先）。")
     cv = STORY.get("canvas") or {}
     print("画面は", int(cv.get("width") or 576), "x", int(cv.get("height") or 1024), "（", str(cv.get("aspect") or "9:16"), "）固定。1本", int(STORY.get("clip_s") or CLIPS[0]), "秒。")
     print("各本の写真（任意）:", STORY_STILLS)
@@ -723,6 +738,9 @@ else:
         if errs:
             raise SystemExit(errs)
 
+if CHAIN:
+    prompt = rewrite_chain_opening_prompt(prompt)
+
 print()
 print("使う文章（先頭）:")
 print(prompt[:450])
@@ -738,16 +756,17 @@ elif 画面の向き == "横":
 elif 画面の向き == "やや正方形":
     w, h = CANVAS_8_9
 print("画面サイズ:", w, "x", h, " / 秒数:", int(DURATION), " / ステップ:", STEPS, SAMPLER.get("sampler_name"), SAMPLER.get("scheduler"))
-if CHAIN:
-    if STORY:
-        print("カット編集。1本", int(CLIPS[0]), "秒 ×", len(CLIPS), "本。1本で 16秒以上は作りません。")
-    else:
-        print("1本で 16秒以上は作りません。画質を保ったまま 10秒ずつつなぎます。")
+if STORY:
+    print("専用はカット編集。1本", int(CLIPS[0]), "秒 ×", len(CLIPS), "本。1本で 16秒以上は作りません。最後のコマからは続けません。")
+elif CHAIN:
+    print("つなぐは最後のコマから続ける長回し。1本で 16秒以上は作りません。画質を保ったまま 10秒ずつ繋ぎます。")
 if VANILLA and MODE == "t2v":
     prompt = resolve_t2v_prompt("" if has_i2v_lock(文章) else 文章, landscape=w > h)
     errs = validate_t2v_prompt(prompt)
     if errs:
         raise SystemExit(errs)
+    if CHAIN:
+        prompt = rewrite_chain_opening_prompt(prompt)
 hits = forbidden_hits(prompt, path=FORBIDDEN_FILE)
 if hits:
     hint = friendly_select_error(SystemExit(f"forbidden subject in prompt: {hits}"))
@@ -1055,6 +1074,8 @@ else:
         print("つなぎ完了:", final)
         if STORY:
             print("カット編集です。クリップの境はシームレスではありません。")
+        else:
+            print("最後のコマから繋げました。同じカットの続きです。")
     print()
     print("できました。下に再生、Drive にも保存しています。")
     print("保存:", final)

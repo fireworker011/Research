@@ -1397,9 +1397,99 @@ def is_blank_prompt(text: str | None) -> bool:
 
 CHAIN_CONTINUE_LINE = (
     "Continue from this exact last frame as <Picture 1>. "
-    "Do not restart the scene. Keep identity, clothes, and lighting. "
-    "Natural ongoing motion. No freeze frame, no jump cut."
+    "Do not restart the scene. Keep identity, clothes, lighting, room, and camera. "
+    "Same people, same pose family, same place. No teleport, no new people, no new room. "
+    "Natural ongoing motion from this last frame. No freeze frame, no jump cut, no hard cut."
 )
+CHAIN_OPENING_LINE = (
+    "This is the opening of one continuous long take. "
+    "Same room, same people, same clothes, same lighting, same camera. "
+    "End this clip mid-motion in this exact place. "
+    "Do not finish the scene, freeze, fade out, or walk out of frame. "
+    "Later clips continue from this last frame with no cut."
+)
+CHAIN_EXTRA_LINE = (
+    "From this exact last frame, without a cut, continue into the next beat. "
+    "Same people, same clothes, same room, same camera. Do not teleport or add new people."
+)
+_CHAIN_META_TAKE_LINE_RE = re.compile(
+    r"^New \d+-second take\.?\s*(?:Hard cut\.?\s*)?(?:Do not copy the previous clip\.?\s*)?$",
+    re.I,
+)
+_CHAIN_CLIP_INDEX_RE = re.compile(r"^Clip \d+ of \d+\.\s*")
+_CHAIN_NEW_TAKE_RE = re.compile(r"(?i)New \d+-second take\.?\s*")
+_CHAIN_HARD_CUT_RE = re.compile(r"(?i)(?<!no )Hard cut\.?\s*")
+_CHAIN_NO_COPY_RE = re.compile(r"(?i)Do not copy the previous clip\.?\s*")
+_CHAIN_TRIGGER_LINE_RE = re.compile(
+    r"^[A-Za-z][A-Za-z0-9_\-+]*(?:\s*,\s*[A-Za-z][A-Za-z0-9_\-+]*)*\s*$"
+)
+
+
+def strip_chain_restart_language(text: str) -> str:
+    """Drop hard-cut / new-take editor lines so last-frame I2V can actually join."""
+    raw = str(text or "")
+    if not raw.strip():
+        return ""
+    out_lines: list[str] = []
+    for line in raw.split("\n"):
+        stripped = line.strip()
+        if not stripped:
+            if out_lines and out_lines[-1] != "":
+                out_lines.append("")
+            continue
+        if _CHAIN_META_TAKE_LINE_RE.match(stripped):
+            continue
+        if re.match(r"(?i)^(?:hard cut|do not copy the previous clip)\.?$", stripped):
+            continue
+        cleaned = _CHAIN_CLIP_INDEX_RE.sub("", stripped).strip()
+        cleaned = _CHAIN_NEW_TAKE_RE.sub("", cleaned)
+        cleaned = _CHAIN_HARD_CUT_RE.sub("", cleaned)
+        cleaned = _CHAIN_NO_COPY_RE.sub("", cleaned)
+        cleaned = re.sub(r"[ \t]{2,}", " ", cleaned).strip()
+        if cleaned:
+            out_lines.append(cleaned)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(out_lines)).strip()
+
+
+def split_leading_trigger_line(text: str) -> tuple[str, str]:
+    """Keep LoRA trigger tokens (PENISLORA, DY) on the first line."""
+    raw = str(text or "")
+    if "\n" not in raw:
+        head = raw.strip()
+        if head and len(head) <= 120 and _CHAIN_TRIGGER_LINE_RE.match(head):
+            return head, ""
+        return "", raw
+    first, rest = raw.split("\n", 1)
+    head = first.strip()
+    if head and len(head) <= 120 and _CHAIN_TRIGGER_LINE_RE.match(head):
+        return head, rest.lstrip("\n")
+    return "", raw
+
+
+def rewrite_chain_opening_prompt(prompt: str) -> str:
+    """Clip 1 of a last-frame chain: one long take, end mid-motion, do not hard-cut."""
+    text = strip_chain_restart_language(prompt)
+    if not text:
+        text = "Continue the same live scene."
+    if CHAIN_OPENING_LINE in text:
+        return text
+    prefix, body = split_leading_trigger_line(text)
+    body = body.strip()
+    if prefix:
+        if not body:
+            return prefix + "\n" + CHAIN_OPENING_LINE
+        return prefix + "\n" + CHAIN_OPENING_LINE + "\n\n" + body
+    return CHAIN_OPENING_LINE + "\n\n" + text
+
+
+def rewrite_chain_extra_prompt(prompt: str) -> str:
+    """User extras are the next beat of the same take, not a new shot."""
+    body = strip_chain_restart_language(prompt).strip()
+    if not body:
+        return ""
+    if CHAIN_EXTRA_LINE in body:
+        return body
+    return CHAIN_EXTRA_LINE + " " + body
 
 
 def next_chain_prompt(
@@ -1416,9 +1506,10 @@ def next_chain_prompt(
         return first
     rows = [str(x or "") for x in (extras or [])]
     extra = rows[idx - 1] if idx - 1 < len(rows) else ""
+    extra = strip_chain_restart_language(extra)
     if is_blank_prompt(extra):
         return continue_chain_prompt(prev_prompt or first)
-    body = continue_chain_prompt(extra.strip())
+    body = continue_chain_prompt(rewrite_chain_extra_prompt(extra.strip()))
     low_first = first.lower()
     if "feminine_lock:" in low_first and "feminine_lock:" not in body.lower():
         mark = low_first.find("feminine_lock:")
@@ -1514,12 +1605,14 @@ def resolve_studio_length(seconds: float, length_mode: str | bool) -> tuple[floa
 
 def continue_chain_prompt(prompt: str) -> str:
     """Clip 2+ uses the previous last frame as Picture 1. Same scene, no restart."""
-    text = str(prompt or "").strip()
+    text = strip_chain_restart_language(prompt)
     if CHAIN_CONTINUE_LINE in text:
         if "Picture 1" in text:
             return text
         wrapped, _ = apply_user_prompt(text, mode="i2v", default_prompt=text)
         return wrapped
+    if not text:
+        text = "Continue the same live scene."
     if "Picture 1" in text:
         return CHAIN_CONTINUE_LINE + "\n\n" + text
     structured = (
@@ -1533,7 +1626,7 @@ def continue_chain_prompt(prompt: str) -> str:
         )
         return CHAIN_CONTINUE_LINE + "\n\n" + header + text
     wrapped, _ = apply_user_prompt(
-        text or "Continue the same live scene.",
+        text,
         mode="i2v",
         default_prompt=text,
     )
