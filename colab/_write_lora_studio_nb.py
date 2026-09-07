@@ -282,8 +282,8 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-pace-1"
+BRANCH = "cursor/h3-cast-ref-shorts-f112"
+FETCH_REV = "h3-20260907-pace-2"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
