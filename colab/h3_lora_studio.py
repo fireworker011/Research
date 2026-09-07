@@ -400,7 +400,7 @@ SITUATION_HELP = {
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。対面20秒。8本＝85秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ15秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
-    "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
+    "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -2578,6 +2578,39 @@ def lock_semen_look(text: str, *, situation: str = "") -> str:
     return raw.rstrip() + "\n" + SEMEN_LOOK_LINE
 
 
+ORAL_SUCK_SITUATIONS = frozenset({"oral", "futa_blowjob", "oral_creampie"})
+ORAL_IN_MOUTH_LINE = (
+    "ORAL LOCK: The glans is already fully inside the mouth. Lips are a tight ring around the shaft. "
+    "Cheeks hollow. This is sucking (jupo), not licking. Do not lick the side of the shaft. "
+    "Do not kiss the shaft. Do not run the tongue along the shaft. The penis stays in the mouth, not beside it."
+)
+_ORAL_SUCK_RE = re.compile(
+    r"Already oral|jupo|blow job|Mouth already on|Mouth already wrapped|"
+    r"takes it to the BASE|takes .+ to the BASE|sucks the |already at .+ base",
+    re.I,
+)
+
+
+def lock_oral_in_mouth(text: str, *, situation: str = "") -> str:
+    """Stop H3 from turning a blowjob into shaft-licking."""
+    raw = str(text or "")
+    if not raw or "ORAL LOCK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in ORAL_SUCK_SITUATIONS:
+        return raw
+    if re.search(r"urine|yellow stream|pees a |drinks the yellow", raw, re.I):
+        return raw
+    if re.search(r"pulls OFF|pulls her mouth off", raw, re.I):
+        return raw
+    if sit in {"oral", "futa_blowjob"} and not _ORAL_SUCK_RE.search(raw):
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + ORAL_IN_MOUTH_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + ORAL_IN_MOUTH_LINE
+
+
 def spoken_lines(prompt: str) -> list[str]:
     return _SPOKEN_RE.findall(str(prompt or ""))
 
@@ -2991,7 +3024,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "lock": "Already on. Aya takes Rei to the BASE. Filthy outdoor jupo. Saliva on the concrete. No climax. No speech. Nobody walks away.",
             "camera": _SHORTS_CAM_ORAL_STAND,
             "action": (
-                "Already on. Aya slides to the base and stays there in the alley, deep filthy jupo-jupo the whole "
+                "Already on. Aya's mouth is already a ring around Rei's shaft at the base, deep filthy jupo-jupo the whole "
                 "15-second take. Thick saliva strings drop onto the concrete between her knees. Rei's unused pussy "
                 "is wet at Aya's nose. Rei's knees soften, hips dirty. End: mouth still at the base."
             ),
@@ -3471,8 +3504,11 @@ def prepare_story_clip(
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
-    raw_prompt = lock_semen_look(
-        compact_story_prompt(str(clip.get("prompt") or "")),
+    raw_prompt = lock_oral_in_mouth(
+        lock_semen_look(
+            compact_story_prompt(str(clip.get("prompt") or "")),
+            situation=situation,
+        ),
         situation=situation,
     )
     speaks = bool(spoken_lines(raw_prompt))

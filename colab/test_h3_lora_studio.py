@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-r2v-node-1"' in src
+    assert 'FETCH_REV = "h3-20260907-jubo-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-r2v-node-1" in blob
+    assert "h3-20260907-jubo-1" in blob
+    assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
     assert "h3-20260907-who-1" not in blob
@@ -479,6 +480,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "fetch_comfy_object_info" in src
     assert "ensure_r2v_in_object_info" in src
     assert "ensure_comfy_r2v_node" in src
+    assert "lock_oral_in_mouth" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -3535,7 +3537,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
 
 
 def test_last_stop_pack_four_clips_rei_seated(tmp_path):
-    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
+    from h3_lora_studio import _KANJI_RE, load_story, prepare_story_clip, spoken_lines
 
     story = _check_pack_common(load_story("last-stop-40s"), "last-stop-40s", tmp_path)
     assert story["spoken_no_kanji"] is True
@@ -3551,8 +3553,19 @@ def test_last_stop_pack_four_clips_rei_seated(tmp_path):
         assert "whistle" in clip["prompt"]
         assert "seated" in clip["prompt"].lower() or "sits" in clip["prompt"].lower()
     assert "does NOT wake" in story["clips"][0]["prompt"]
+    assert "already kneeling, mouth open at the tip" in story["clips"][0]["prompt"]
+    assert "does not kneel yet" not in story["clips"][0]["prompt"]
     assert "flutter open" in story["clips"][1]["prompt"]
+    assert "slides down" not in story["clips"][1]["prompt"]
+    assert "Glans already inside" in story["clips"][1]["prompt"]
+    assert "not licking" in story["clips"][1]["prompt"].lower()
+    assert "tight ring around the shaft" in story["clips"][1]["prompt"]
     assert "conductor again" in story["clips"][3]["prompt"]
+    jubo = prepare_story_clip(story, 1, last_frame="x.png", stills_dir=tmp_path)
+    assert "ORAL LOCK:" in jubo["prompt"]
+    assert "not licking" in jubo["prompt"].lower()
+    talk = prepare_story_clip(story, 0, stills_dir=tmp_path)
+    assert "ORAL LOCK:" not in talk["prompt"]
 
 
 def test_validate_story_follow_spoken_no_kanji():
@@ -3617,6 +3630,34 @@ def test_lock_semen_look_names_white_liquid():
     assert "SEMEN LOOK:" not in lock_semen_look("Already oral. Mouth already on. No climax.")
     by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
     assert "white liquid" in by_sit.lower()
+
+
+def test_lock_oral_in_mouth_blocks_shaft_lick():
+    from h3_lora_studio import lock_oral_in_mouth
+
+    suck = lock_oral_in_mouth(
+        "Already oral. Mouth already on.\nDeep jupo-jupo.\n\noverall_soundscape:\nWet. No spoken words.\n",
+        situation="oral",
+    )
+    assert "ORAL LOCK:" in suck
+    assert "not licking" in suck.lower()
+    assert "glans is already fully inside" in suck.lower()
+    assert suck.index("ORAL LOCK:") < suck.index("overall_soundscape:")
+    assert lock_oral_in_mouth(suck, situation="oral") == suck
+    pee = lock_oral_in_mouth(
+        "Already oral. Mouth already on the tip. She drinks the yellow stream.\n",
+        situation="oral",
+    )
+    assert "ORAL LOCK:" not in pee
+    pull = lock_oral_in_mouth(
+        "Already oral. Mouth already on. She pulls her mouth off the 20cm.\n",
+        situation="oral",
+    )
+    assert "ORAL LOCK:" not in pull
+    walk = lock_oral_in_mouth("Nobody sucks. They walk the platform.", situation="futa_visible")
+    assert "ORAL LOCK:" not in walk
+    creampie = lock_oral_in_mouth("CUMOUF. Already deep in the mouth.", situation="oral_creampie")
+    assert "ORAL LOCK:" in creampie
 
 
 def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
@@ -3722,7 +3763,8 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-r2v-node-1" in cell2
+    assert "h3-20260907-jubo-1" in cell2
+    assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
@@ -3744,6 +3786,7 @@ def test_notebook_story_play_flow():
     assert "参照（R2V）ノードがありません。②をもう一度実行してください。" not in cell3
     assert "raise SystemExit(R2V_NODE_MISSING)" in cell3
     assert "ensure_r2v_in_object_info" in cell3
+    assert "lock_oral_in_mouth" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
