@@ -24,7 +24,7 @@ OUTS = [
     ROOT / "h3-lora-studio" / "minimax_h3_lora_studio.ipynb",
 ]
 
-# ③ の並び: SFW → 専用11話×3再生（専用 / つなぐ / つなぐ修）→ 名前付きつなぐパック3つ → 行為シーン
+# ③ の並び: SFW → 専用11話×3再生（専用 / つなぐ / つなぐ修）→ 名前付きパック×3再生 → 行為シーン
 SFW_LABELS = ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）"]
 ACT_LABELS = [
     "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）",
@@ -37,8 +37,7 @@ SCENE_OPTIONS_3 = SFW_LABELS + story_play_labels() + chain_pack_labels() + ACT_L
 # ② は話ごとに1つ（専用）で足りる。ダウンロードは story id 単位。
 SCENE_OPTIONS_2 = (
     SFW_LABELS
-    + [story_play_label(sid, STORY_PLAY_DEDICATED) for sid in STORY_ORDER]
-    + chain_pack_labels()
+    + [story_play_label(sid, STORY_PLAY_DEDICATED) for sid in STORY_ORDER + CHAIN_PACK_ORDER]
     + ACT_LABELS
 )
 STORY_ID_LIST = list(STORY_ORDER) + list(CHAIN_PACK_ORDER)
@@ -68,9 +67,9 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 ## 今の準備（この版）
 
-専用11話（帰宅〜縁側）と、名前付きの「つなぐ」パック3つ（訪問販売60秒・定期検診100秒・終点40秒）が入っています。**写真が無くても動画は作れます**（T2V）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（Imagine 2.0 用。このノートでは使わない）。Imagine で still を作り直したら③を「写真から」に変える。
+専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）** の3つから選べます。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックは 9:16 576×1024）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（Imagine 2.0 用。このノートでは使わない）。Imagine で still を作り直したら③を「写真から」に変える。
 
-## 120秒は混ぜない（普通のつなぐ / 専用3パターン / 名前付きパック）
+## 120秒は混ぜない（普通のつなぐ / 専用3パターン / 名前付きパック3パターン）
 
 | 種類 | ③での選び方 | 何が起きるか |
 |---|---|---|
@@ -78,9 +77,9 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | **専用（専用）** | 「登校（専用）」など | **カット編集**。JSON のまま。各本は独立。最後のコマからは続けない。長さの作り方・つなぎ欄・秒数は無視 |
 | **専用（つなぐ）** | 「登校（つなぐ）」など | 同じ JSON を**最後のコマから I2V** で繋ぐ。文は直さない（1本目も長回しに直さない。③合わせも掛けない）。Picture 1 のロックだけ足す |
 | **専用（つなぐ修）** | 「登校（つなぐ修）」など | 最後のコマから I2V ＋ 1本目を長回しに直す。「最終シーン合わせ」オンなら最後の本だけ合わせる |
-| **名前付きパック（つなぐ）** | 「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」 | 専用ではない。つなぐだけ。JSON の本ごとの部品で最後のコマから I2V。1本目は長回しに直す |
+| **名前付きパック（専用 / つなぐ / つなぐ修）** | 「訪問販売（つなぐ修）」「カフェ（つなぐ）」「花火（専用）」など | 専用ストーリーではないが再生は同じ3つ。JSON の本ごとの部品（フェラ・口内・クンニ・AIO・後背位）はそのまま。（専用）はカット、（つなぐ）は文そのまま最後のコマから I2V、（つなぐ修）は1本目を長回しに直す。プロンプト・秒数・長さの作り方は不要 |
 
-専用は 11話 × 3 ＝ 33行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
+専用は 11話 × 3 ＝ 33行、パックは 13本 × 3 ＝ 39行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
 
 ## 準備（最初の1回）
 
@@ -122,9 +121,19 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 布団（専用 / つなぐ / つなぐ修） | 食卓から布団。片付けと布団〜横になったまま根元まで。10秒×12本。16:9 | セリフは口元2本。フェラは布団の寄り。口内は CUMOUF。仰向けにアナルは入れない。休日午前は休日 |
 | 休日（専用 / つなぐ / つなぐ修） | 休日午前。家から出ない。二度寝・テレビ・洗濯〜ソファでもう入っている、抜いたあと根元まで。10秒×12本。16:9 | セリフは口元2本。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。午後の縁側は縁側 |
 | 縁側（専用 / つなぐ / つなぐ修） | 休日午後。縁側と二回戦。竿役はマドカ。昼残り・縁側・庭の風〜縁側でもう入っている、抜いたあとアヤがマドカを根元まで。10秒×12本。16:9 | セリフは口元2本。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない |
-| 訪問販売60秒（つなぐ） | 玄関の水売り。口はアヤ、竿は5人目の販売員（25・短め黒髪・中乳・20cm）。10秒×6本。9:16 | 名前付きパック。専用ではない。セリフは口元4本（漢字のまま）。5〜6本目はフェラ（放尿→根元）。最後のコマから I2V |
-| 定期検診100秒（つなぐ） | 診察室。医師（32・結い髪・中乳・竿なし・聴診器）がレイ（20cm）を検診。10秒×10本。9:16 | 名前付きパック。台詞はカタカナ。キス→根元→口内 CUMOUF→「モンダイありますね」。最後のコマから I2V |
-| 終点40秒（つなぐ） | 終点の車内。車掌（29・短髪・中乳・竿なし・ホイッスル）が寝ているレイを起こす。10秒×4本。9:16 | 名前付きパック。声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ |
+| 訪問販売（専用 / つなぐ / つなぐ修） | 玄関の水売り。口はアヤ、竿は5人目の販売員（25・短め黒髪・中乳・20cm）。10秒×6本。9:16 | 名前付きパック。専用ではない。セリフは口元4本（漢字のまま）。5〜6本目はフェラ（放尿→根元）。旧名「訪問販売60秒（つなぐ）」＝つなぐ修 |
+| 定期検診（専用 / つなぐ / つなぐ修） | 診察室。医師（32・結い髪・中乳・竿なし・聴診器）がレイ（20cm）を検診。10秒×10本。9:16 | 名前付きパック。台詞はカタカナ。キス→根元→口内 CUMOUF→「モンダイありますね」 |
+| 終点（専用 / つなぐ / つなぐ修） | 終点の車内。車掌（29・短髪・中乳・竿なし・ホイッスル）が寝ているレイを起こす。10秒×4本。9:16 | 名前付きパック。声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ |
+| カフェ（専用 / つなぐ / つなぐ修） | 夏のカフェ。客アヤ、店員（25・お団子・中乳・20cm・トレイ）。おミズ＝放尿、ミルク＝ジュボと口内。コーヒーは本物。10秒×10本。9:16 | 建前パック。台詞はカタカナ、1本に2行まで。行為は無言・寄り。最後はベロチュー |
+| 車内販売（専用 / つなぐ / つなぐ修） | 電車の車内販売。客レイ（自分の20cmは使わない）、販売員（26・短め黒髪・中乳・20cm・ワゴン）。おチャ＝放尿、ミルクコーヒー＝ジュボと口内。10秒×8本。9:16 | 建前パック。台詞はカタカナ |
+| 赤信号（専用 / つなぐ / つなぐ修） | 信号待ちの車。運転レイ（両手はハンドル）、口アヤ。ジュボ→口内→アオになった。放尿なし。10秒×5本。9:16 | 建前パック。車は動かない |
+| ヨガ（専用 / つなぐ / つなぐ修） | ヨガ教室。講師（29・お団子・中乳・20cm）、生徒アヤ。四つん這いでもう入っている。10秒×5本。9:16 | 建前パック。後背位 LoRA。ジュボなし・放尿なし |
+| 背中流し（専用 / つなぐ / つなぐ修） | 風呂場。サヤカ（竿なし）がマドカ（20cm）を洗う。背中→マンコ舐め→アガリユ＝放尿。10秒×6本。9:16 | 建前パック。クンニ LoRA。マドカの竿は舐めない。ジュボなし |
+| カラオケ（専用 / つなぐ / つなぐ修） | カラオケ。歌うマドカ（20cm・マイク）、口アヤ。歌のあいだジュボ、最後の音で口内、点数。10秒×5本。9:16 | 建前パック。放尿なし |
+| ランドリー（専用 / つなぐ / つなぐ修） | 夜のコインランドリー。竿レイ、受けアヤ。洗濯機の上でもう入っている。あと何分。10秒×5本。9:16 | 建前パック。AIO 横クローズ。ジュボなし・放尿なし |
+| 講義机（専用 / つなぐ / つなぐ修） | 大学の講義。先生（36・眼鏡・結い髪・中乳・20cm・チョーク）、アヤが教卓の下でジュボ→口内。上の声は授業。10秒×5本。9:16 | 建前パック。授業（専用11話）とは別。放尿なし |
+| キャンプ（専用 / つなぐ / つなぐ修） | 夜のキャンプ。レイがアヤのマンコを舐めるだけ。虫よけ。レイの20cmは使わない。10秒×5本。9:16 | 建前パック。クンニ LoRA。ジュボなし・放尿なし |
+| 花火（専用 / つなぐ / つなぐ修） | 川べりの花火。竿マドカ、受けサヤカ。立ったまま後ろから入っている。顔は花火。10秒×5本。9:16 | 建前パック。AIO。ジュボなし・放尿なし |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
@@ -266,7 +275,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-story-play-1"
+FETCH_REV = "h3-20260907-story-play-2"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -343,6 +352,16 @@ studio_files = [
     "h3-lora-studio/stories/sales-visit-60s.json",
     "h3-lora-studio/stories/checkup-100s.json",
     "h3-lora-studio/stories/last-stop-40s.json",
+    "h3-lora-studio/stories/cafe-100s.json",
+    "h3-lora-studio/stories/train-sales-80s.json",
+    "h3-lora-studio/stories/red-light-50s.json",
+    "h3-lora-studio/stories/yoga-50s.json",
+    "h3-lora-studio/stories/back-wash-60s.json",
+    "h3-lora-studio/stories/karaoke-50s.json",
+    "h3-lora-studio/stories/laundromat-50s.json",
+    "h3-lora-studio/stories/lecture-desk-50s.json",
+    "h3-lora-studio/stories/camp-50s.json",
+    "h3-lora-studio/stories/fireworks-50s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -575,7 +594,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-#@markdown 専用は3パターン: （専用）＝カット、（つなぐ）＝文そのまま最後のコマから I2V、（つなぐ修）＝最後のコマから I2V＋1本目を長回しに直す。訪問販売・検診・終点は名前付きの「つなぐ」パック（専用ではない）。
+#@markdown 専用11話と名前付きパック13本は3パターン: （専用）＝カット、（つなぐ）＝文そのまま最後のコマから I2V、（つなぐ修）＝最後のコマから I2V＋1本目を長回しに直す。パック（訪問販売〜花火）は専用ストーリーではないが再生は同じ。プロンプト・秒数・長さの作り方は不要。
 やりたいシーン = "__DEFAULT_SCENE__"  #@param __SCENE_OPTIONS_3__
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown 最後の本だけ選んだシーンに合わせて直す（普通のつなぐ・つなぐ修）。専用（カット）は写真からの本に「この本の静止画・独立カット」を足すだけ。「つなぐ」（文そのまま）では何もしない。最初の T2V→I2V のつなぎは触らない。
@@ -630,24 +649,22 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
 STORY_PLAY = None
-if is_story(やりたいシーン):
+if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY_PLAY = resolve_story_play(やりたいシーン)
+    KIND_JA = "専用ストーリー" if is_story(やりたいシーン) else "名前付きパック（専用ストーリーではありません）"
     if STORY_PLAY == STORY_PLAY_DEDICATED:
         if CHAIN:
-            print("専用ストーリーを選んでいるので「つなぐ」は使いません。長さの作り方・秒数・つなぎ欄は無視します（カット編集）。")
+            print(KIND_JA + "を（専用）で選んでいるので「つなぐ」は使いません。長さの作り方・秒数・つなぎ欄は無視します（カット編集）。")
         CHAIN = False
     else:
-        print("専用ストーリーを最後のコマでつなぎます（" + STORY_PLAY_JA[STORY_PLAY] + "）。長さの作り方・秒数・つなぎ欄は無視します。JSON の本数と部品はそのまま。")
+        print(KIND_JA + "を最後のコマでつなぎます（" + STORY_PLAY_JA[STORY_PLAY] + "）。長さの作り方・秒数・つなぎ欄は無視します。JSON の本数と部品はそのまま。")
         CHAIN = True
-elif is_chain_pack(やりたいシーン):
-    print("名前付きの「つなぐ」パックです（専用ではありません）。JSON の本ごとの部品で、2本目以降は最後のコマから I2V。長さの作り方・秒数・つなぎ欄は無視します。")
-    CHAIN = True
 else:
     if float(DURATION) != float(秒数):
         if CHAIN:
@@ -709,7 +726,7 @@ if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
     if not STORY_SEAMLESS:
-        print(str(STORY.get("title_ja") or STORY.get("id")), "専用120秒（カット）。つなぐ120秒ではありません。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の専用文で部品を切り替えます。")
+        print(str(STORY.get("title_ja") or STORY.get("id")), "（専用＝カット）。つなぐではありません。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の JSON 文で部品を切り替えます。", int(DURATION), "秒。")
         print("カット編集です。各本は独立で、最後のコマからは続けません（再現優先）。")
         if 最終シーン合わせ:
             print("最終シーン合わせ: 専用は写真からの本だけ「この本の静止画・独立カット」を足します。部品は JSON のまま。")
