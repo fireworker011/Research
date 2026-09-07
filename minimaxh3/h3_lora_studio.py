@@ -48,7 +48,7 @@ SITUATION_DOWNLOAD = {
     "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "futa_anal": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "oral": ["blowjob-h3", "penis-lora-h3", "larry-v4"],
+    "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "larry-v4"],
     "preview": ["hmnsfw-aio-v25", "minimax-h3-turbo-fl2v-4step"],
     "riding": ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"],
@@ -57,13 +57,13 @@ SITUATION_DOWNLOAD = {
     "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "larry-v4"],
     "facial": ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"],
     "creampie": ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "oral_creampie": ["cumouf-h3", "penis-lora-h3", "larry-v4"],
+    "oral_creampie": ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "fingering": ["fingering-h3", "synth-pussy-h3", "larry-v4"],
     "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
     "footjob": ["footjob-h3", "penis-lora-h3", "larry-v4"],
     "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
     "futa_visible": ["penis-lora-h3", "cinema-dy", "larry-v4"],
-    "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "larry-v4"],
+    "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "cunnilingus_futa": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
         "penis-lora-h3",
@@ -81,12 +81,14 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "commute-120s": [
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
+        "synth-pussy-h3",
     ],
     "lecture-120s": [
         "penis-lora-h3",
@@ -111,6 +113,7 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "bath-120s": [
         "penis-lora-h3",
@@ -118,6 +121,7 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "dinner-120s": [
         "penis-lora-h3",
@@ -125,6 +129,7 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "futon-120s": [
         "penis-lora-h3",
@@ -132,6 +137,7 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "sunday-120s": [
         "penis-lora-h3",
@@ -156,6 +162,7 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
+        "synth-pussy-h3",
     ],
     "checkup-100s": [
         "penis-lora-h3",
@@ -163,6 +170,7 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     "last-stop-40s": [
         "penis-lora-h3",
@@ -170,19 +178,30 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
+        "synth-pussy-h3",
     ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
     # pee-as-drink = oral, cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy.
-    "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
-    "train-sales-80s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
-    "red-light-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "train-sales-80s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "red-light-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "yoga-50s": ["penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
     "back-wash-60s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
-    "karaoke-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "karaoke-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "laundromat-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "lecture-desk-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3"],
+    "lecture-desk-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "shorts-immoral": [
+        "blowjob-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "cumouf-h3",
+        "lesbian-cunnilingus-h3",
+        "hmnsfw-aio-v25",
+        "doggy-h3",
+        "larry-v4",
+    ],
 }
 
 SITUATION_JA = {
@@ -289,6 +308,8 @@ SITUATION_JA = {
     "futon-120s": "futon-120s",
     "sunday-120s": "sunday-120s",
     "engawa-120s": "engawa-120s",
+    "短編集（参照）": "shorts-immoral",
+    "shorts-immoral": "shorts-immoral",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -344,7 +365,7 @@ SITUATION_HELP = {
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
     "futa_anal": "アナルセックス（女体）。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・12step。ふたなり＋女。男なし。後ろから、穴が膣より上に見える構図。手は腰。写真からが本線。",
-    "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + Larry 0.6 / 8step。受けはふたなり。男なし。",
+    "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + Larry 0.5 / 12step。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + LightX2V 4step。ふたなり＋女。男なし。",
     "riding": "騎乗位（女体）。騎乗 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
@@ -353,13 +374,13 @@ SITUATION_HELP = {
     "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
     "facial": "顔射（女体）。顔射 LoRA 0.8 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。後射精・絶頂・口内とは別。写真からが本線。",
     "creampie": "中出し（女体）。Final Thrust 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。膣の中に出す。ふたなり＋女。男なし。後射精・顔射・口内とは別。写真からが本線。",
-    "oral_creampie": "口内射精（女体）。CUMOUF 0.5 + 竿 0.7 + Larry 0.5 / 8step。口の中で出す。ふたなり＋女。男なし。顔射・フェラ本線とは別。写真からが本線（口が付いた途中の写真）。",
+    "oral_creampie": "口内射精（女体）。CUMOUF 0.5 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。口の中で出す。ふたなり（竿＋根元のマンコ）＋女。男なし。顔射・フェラ本線とは別。写真からが本線（口が付いた途中の写真）。",
     "fingering": "指入れ。女1人。指 LoRA 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。膣。アナルはアナル指入れ。",
     "masturbation": "オナニー。女1人。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。男なし。",
     "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
     "remote_orgasm": "絶頂。女1人。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。射精ではない。",
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は竿 0.7 + シネマ 0.5 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
-    "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + Larry 12step。男なし。",
+    "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + 穴の見え方 + Larry 12step。根元のマンコが見える寄り。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
     "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
@@ -385,6 +406,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞はカタカナ。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞はカタカナ。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞はカタカナ。",
+    "shorts-immoral": "短編集（参照）。15秒完結の濃厚日常インモラルを複数本。つなぎなし。各本は input/cast/ の人物写真から I2V。文と部品は自動。",
 }
 
 LORA_JA = {
@@ -455,6 +477,10 @@ CHAIN_PACK_ORDER = (
     "fireworks-50s",
 )
 CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
+# 15s independent dirty shorts. Not a story (is_story False). Not a chain pack.
+ANTHOLOGY_IDS = ("shorts-immoral",)
+ANTHOLOGY_ID_SET = set(ANTHOLOGY_IDS)
+ANTHOLOGY_LABEL = "短編集（参照）"
 # Legacy long labels of the first three packs. They keep the old behaviour
 # (last-frame chain, clip 1 rewritten as a long take) = つなぐ修.
 CHAIN_PACK_TITLE_JA = {
@@ -468,7 +494,15 @@ STORY_CANVAS_16_9 = (1024, 576)
 STORY_PLAY_DEDICATED = "dedicated"
 STORY_PLAY_CHAIN = "chain"
 STORY_PLAY_CHAIN_REWRITE = "chain_rewrite"
-STORY_PLAYS = (STORY_PLAY_DEDICATED, STORY_PLAY_CHAIN, STORY_PLAY_CHAIN_REWRITE)
+STORY_PLAY_REF_CHAIN = "ref_chain"
+STORY_PLAY_REF_CHAIN_REWRITE = "ref_chain_rewrite"
+STORY_PLAYS = (
+    STORY_PLAY_DEDICATED,
+    STORY_PLAY_CHAIN,
+    STORY_PLAY_CHAIN_REWRITE,
+    STORY_PLAY_REF_CHAIN,
+    STORY_PLAY_REF_CHAIN_REWRITE,
+)
 STORY_TITLE_JA = {
     "homecoming-90s": "帰宅",
     "dishes-90s": "洗い物",
@@ -499,11 +533,15 @@ STORY_PLAY_JA = {
     STORY_PLAY_DEDICATED: "専用",
     STORY_PLAY_CHAIN: "つなぐ",
     STORY_PLAY_CHAIN_REWRITE: "つなぐ修",
+    STORY_PLAY_REF_CHAIN: "参照つなぐ",
+    STORY_PLAY_REF_CHAIN_REWRITE: "参照つなぐ修",
 }
 STORY_PLAY_HELP_JA = {
     STORY_PLAY_DEDICATED: "カット。JSON のまま。最後のコマからは続けない",
     STORY_PLAY_CHAIN: "つなぐ・文そのまま。最後のコマから I2V。1本目の文は直さない",
     STORY_PLAY_CHAIN_REWRITE: "つなぐ・1本目を長回しに直す。最後のコマから I2V。③オンなら最後の本だけ合わせる",
+    STORY_PLAY_REF_CHAIN: "参照つなぐ。1本目は input/cast/ の人物写真。文はそのまま。2本目以降は最後のコマから I2V",
+    STORY_PLAY_REF_CHAIN_REWRITE: "参照つなぐ修。1本目は人物写真＋長回しに直す。③オンなら最後の本だけ合わせる",
 }
 _STORY_PLAY_LABELS: dict[str, tuple[str, str]] = {}
 
@@ -513,7 +551,7 @@ def story_play_label(story_id: str, play: str) -> str:
 
 
 def story_play_labels() -> list[str]:
-    """③ dropdown rows: 11 stories × 3 plays, story order, 専用 → つなぐ → つなぐ修."""
+    """③ dropdown rows: 11 stories × 5 plays, story order, 専用 → つなぐ → つなぐ修 → 参照つなぐ → 参照つなぐ修."""
     out: list[str] = []
     for sid in STORY_ORDER:
         for play in STORY_PLAYS:
@@ -522,7 +560,7 @@ def story_play_labels() -> list[str]:
 
 
 def chain_pack_labels() -> list[str]:
-    """③ dropdown rows after the stories: every pack × 3 plays, pack order."""
+    """③ dropdown rows after the stories: every pack × 5 plays, pack order."""
     out: list[str] = []
     for pid in CHAIN_PACK_ORDER:
         for play in STORY_PLAYS:
@@ -535,7 +573,7 @@ def chain_pack_legacy_labels() -> list[str]:
 
 
 def _register_story_play_labels() -> None:
-    """{短名}（専用|つなぐ|つなぐ修） → id + play for stories and packs.
+    """{短名}（専用|つなぐ|つなぐ修|参照つなぐ|参照つなぐ修） → id + play for stories and packs.
 
     Long legacy 「〜（専用）」 story labels stay dedicated. Long legacy pack labels
     (「訪問販売60秒（つなぐ）」 etc.) keep their old behaviour: つなぐ修.
@@ -597,12 +635,25 @@ def is_chain_pack(situation: str) -> bool:
         return str(situation or "").strip() in CHAIN_PACK_IDS
 
 
+def is_anthology(situation: str) -> bool:
+    """15s independent shorts (短編集). Not a story, not a named pack."""
+    try:
+        return resolve_situation(situation) in ANTHOLOGY_ID_SET
+    except SystemExit:
+        return str(situation or "").strip() in ANTHOLOGY_ID_SET
+
+
 def resolve_story_play(situation: str) -> str:
-    """dedicated | chain | chain_rewrite. Meaningful when is_story or is_chain_pack."""
+    """dedicated | chain | chain_rewrite | ref_chain | ref_chain_rewrite."""
     key = str(situation or "").strip()
     hit = _STORY_PLAY_LABELS.get(key)
     if hit is not None:
         return hit[1]
+    # 「参照つなぐ」 contains 「つなぐ」 — check the longer suffixes first.
+    if key.endswith("（参照つなぐ修）"):
+        return STORY_PLAY_REF_CHAIN_REWRITE
+    if key.endswith("（参照つなぐ）"):
+        return STORY_PLAY_REF_CHAIN
     if key.endswith("（つなぐ修）"):
         return STORY_PLAY_CHAIN_REWRITE
     if key.endswith("（つなぐ）"):
@@ -616,23 +667,29 @@ def apply_story_play(story: dict[str, Any], play: str) -> dict[str, Any]:
     dedicated: seamless False, rewrite_chain_prompts False, every clip start still_or_t2v.
     chain: seamless True, rewrite False, clip 2+ start continue (prompts untouched).
     chain_rewrite: seamless True, rewrite True, clip 2+ start continue.
+    ref_chain / ref_chain_rewrite: same as chain / chain_rewrite, but clip 1 is I2V from
+    Drive input/cast/ (use_cast_ref). ③「テキストから」は無視する.
     """
     mode = str(play or STORY_PLAY_DEDICATED).strip()
     if mode not in STORY_PLAYS:
         raise SystemExit(f"再生の種類が分かりません: {play}")
     out = json.loads(json.dumps(story))
     clips = [dict(c) for c in (out.get("clips") or [])]
-    if mode == STORY_PLAY_DEDICATED:
+    use_cast = mode in (STORY_PLAY_REF_CHAIN, STORY_PLAY_REF_CHAIN_REWRITE)
+    rewrite = mode in (STORY_PLAY_CHAIN_REWRITE, STORY_PLAY_REF_CHAIN_REWRITE)
+    chained = mode != STORY_PLAY_DEDICATED
+    if not chained:
         out["seamless"] = False
         out["rewrite_chain_prompts"] = False
         for clip in clips:
             clip["start"] = "still_or_t2v"
     else:
         out["seamless"] = True
-        out["rewrite_chain_prompts"] = mode == STORY_PLAY_CHAIN_REWRITE
+        out["rewrite_chain_prompts"] = rewrite
         for i, clip in enumerate(clips):
             clip["start"] = "still_or_t2v" if i == 0 else "continue"
     out["play"] = mode
+    out["use_cast_ref"] = use_cast
     out["clips"] = clips
     return out
 
@@ -642,6 +699,107 @@ def story_rewrite_chain_prompts(story: dict[str, Any]) -> bool:
     if "rewrite_chain_prompts" in story:
         return bool(story.get("rewrite_chain_prompts"))
     return bool(story.get("seamless"))
+
+
+CAST_STILL_STEMS: dict[str, dict[str, tuple[str, ...]]] = {
+    "sayaka": {"bust": ("sayaka-bust", "sayaka_bust"), "full": ("sayaka-full", "sayaka_full")},
+    "rei": {"bust": ("rei-bust", "rei_bust"), "full": ("rei-full", "rei_full")},
+    "aya": {"bust": ("aya-bust", "aya_bust"), "full": ("aya-full", "aya_full")},
+    "madoka": {"bust": ("madoka-bust", "madoka_bust"), "full": ("madoka-full", "madoka_full")},
+}
+CAST_STILL_EXTS = (".jpg", ".jpeg", ".png", ".webp")
+CAST_STILL_PEOPLE = ("aya", "sayaka", "rei", "madoka")
+EXPECTED_CAST_FILES = (
+    "sayaka-bust",
+    "sayaka-full",
+    "rei-bust",
+    "rei-full",
+    "aya-bust",
+    "aya-full",
+    "madoka-bust",
+    "madoka-full",
+)
+
+
+def find_cast_file(cast_dir: Path | str, person: str, kind: str) -> Path | None:
+    root = Path(cast_dir)
+    if not root.is_dir():
+        return None
+    stems = CAST_STILL_STEMS.get(str(person).lower(), {}).get(str(kind).lower()) or ()
+    files = {fn.lower(): root / fn for fn in os.listdir(root)}
+    for stem in stems:
+        for ext in CAST_STILL_EXTS:
+            hit = files.get((stem + ext).lower())
+            if hit is not None and hit.is_file():
+                return hit
+    return None
+
+
+def clip_cast_people(clip: dict[str, Any]) -> list[str]:
+    named = [str(n).strip().lower() for n in (clip.get("names") or []) if str(n).strip()]
+    out: list[str] = []
+    for n in named:
+        if n in CAST_STILL_STEMS and n not in out:
+            out.append(n)
+    if out:
+        return out
+    prompt = str(clip.get("prompt") or "")
+    for n in CAST_STILL_PEOPLE:
+        if re.search(rf"\b{n}\b", prompt, re.I) and n not in out:
+            out.append(n)
+    return out
+
+
+def pick_cast_lead(clip: dict[str, Any]) -> tuple[str, str]:
+    """(person, bust|full) for Picture 1. One still: FL2VA I2V, not Ref2VA."""
+    people = clip_cast_people(clip)
+    prompt = str(clip.get("prompt") or "")
+    sit = str(clip.get("situation") or "").strip()
+    lip = "LIP SYNC" in prompt or bool(spoken_lines(prompt))
+    if lip:
+        for n in ("aya", "sayaka", "rei", "madoka"):
+            if n in people:
+                return n, "bust"
+        return "aya", "bust"
+    if sit in {"oral", "oral_creampie", "cunnilingus_futa"}:
+        for n in ("aya", "sayaka", "rei", "madoka"):
+            if n in people:
+                return n, "bust"
+        return "aya", "bust"
+    if sit in {"futa_sex", "doggy", "futa_masturbation"}:
+        for n in ("rei", "madoka", "aya", "sayaka"):
+            if n in people:
+                return n, "full"
+        return "rei", "full"
+    for n in ("rei", "aya", "madoka", "sayaka"):
+        if n in people:
+            return n, "full"
+    return "rei", "full"
+
+
+def pick_cast_still(clip: dict[str, Any], cast_dir: Path | str) -> Path:
+    root = Path(cast_dir)
+    wanted = "、".join(EXPECTED_CAST_FILES)
+    if not root.is_dir():
+        raise SystemExit(
+            "参照モードは Drive の input/cast/ に4人の上半身・全身（8枚）が必要です。"
+            f" 置く名前: {wanted}（jpg / jpeg / png / webp）"
+        )
+    person, kind = pick_cast_lead(clip)
+    still = find_cast_file(root, person, kind)
+    if still is not None:
+        return still
+    missing = [
+        name
+        for name in EXPECTED_CAST_FILES
+        if find_cast_file(root, *name.rsplit("-", 1)) is None
+    ]
+    raise SystemExit(
+        "参照モードの人物写真が足りません。"
+        f" この本は {person}-{kind} が必要です。"
+        f" 置く名前: {wanted}。"
+        + (f" 足りない: {'、'.join(missing)}" if missing else "")
+    )
 
 
 def explain_choice(situation: str, mode: str) -> str:
@@ -668,6 +826,8 @@ def explain_choice(situation: str, mode: str) -> str:
     elif sid in CHAIN_PACK_IDS:
         play = resolve_story_play(situation)
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
+    elif sid in ANTHOLOGY_ID_SET:
+        play_line = "再生: 短編集（参照）。15秒完結×複数。つなぎなし。人物写真から\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -2345,22 +2505,356 @@ def compact_story_prompt(prompt: str) -> str:
     return "\n".join(out).strip()
 
 
+_CAST_DEF = {
+    "Aya": (
+        "Aya: Adult Japanese woman, 22, second daughter, 150cm, petite adult, narrow cinched waist, "
+        "slim hips, slim thighs, slim ass, mini breasts, glossy black twintails, pretty adult face, "
+        "fully nude, hairless, NO penis, NEVER futanari. Adult 22, not a child."
+    ),
+    "Rei": (
+        "Rei: Adult Japanese woman, 24, eldest daughter, slim female body, medium breasts, "
+        "long dark-brown hair, fully nude. Clear futanari. Erect 20cm, pale shaft, pink glans, "
+        "no testicles, no scrotum. Hairless female pussy at the base of the shaft where a scrotum "
+        "would be. Penis plus vagina, never balls."
+    ),
+    "Madoka": (
+        "Madoka: Adult Japanese woman, 22, third daughter, slim body, flat breasts, slim waist, "
+        "slim thighs, short wavy chestnut hair, different face from Rei, fully nude. Clear futanari. "
+        "Erect 20cm, pale shaft, pink glans, no testicles, no scrotum. Hairless female pussy at the "
+        "base of the shaft where a scrotum would be. Penis plus vagina, never balls."
+    ),
+    "Sayaka": (
+        "Sayaka: Adult Japanese woman, 39, mother, slim mature female body, medium breasts, "
+        "long black hair tied back, fully nude, hairless, NO penis, NEVER futanari."
+    ),
+    "Saleswoman": (
+        "Saleswoman: Adult Japanese woman, 25, door-to-door water saleswoman, short black bob hair, "
+        "medium breasts, slim waist, fully nude except a small name badge on a neck strap. "
+        "Clear futanari. Erect 20cm, pale shaft, pink glans, no testicles, no scrotum. "
+        "Hairless female pussy at the base of the shaft where a scrotum would be. "
+        "Penis plus vagina, never balls."
+    ),
+    "Instructor": (
+        "Instructor: Adult Japanese woman, 29, yoga instructor, slim toned female body, medium breasts, "
+        "long black hair in a bun, fully nude. Clear futanari. Erect 20cm, pale shaft, pink glans, "
+        "no testicles, no scrotum. Hairless female pussy at the base of the shaft where a scrotum "
+        "would be. Penis plus vagina, never balls."
+    ),
+}
+
+
+def _anthology_prompt(
+    *,
+    prefix: str,
+    who: str,
+    present: tuple[str, ...],
+    environment: str,
+    lock: str,
+    camera: str,
+    action: str,
+    sound: str,
+) -> str:
+    defs = "\n".join(_CAST_DEF[n] for n in present)
+    body = (
+        "Vertical 9:16 576x1024. ONE UNBROKEN 15-second take. The camera never cuts.\n"
+        f"{prefix}\n\n"
+        "WHO:\n"
+        f"{who}\n\n"
+        "subject_definitions:\n"
+        f"{defs}\n\n"
+        "environment:\n"
+        f"{environment}\n\n"
+        "HARD LOCK:\n"
+        f"{lock}\n"
+        f"CAMERA: 9:16 {camera}\n"
+        "No men. No feces. All performers are consenting adult women 22 years or older. Nobody under 22.\n"
+        "CAST LOCK: Same faces, hair and bodies in every clip of this series. "
+        "Do not redesign hair or breasts. Aya never grows a penis. Sayaka never grows a penis.\n\n"
+        "integrated_multimodal_description:\n"
+        f"{action}\n\n"
+        "overall_soundscape:\n"
+        f"{sound}\n\n"
+        "non_diegetic_music:\n"
+        "N/A"
+    )
+    return lock_futa_anatomy(body)
+
+
+def generate_immoral_shorts() -> dict[str, Any]:
+    """12 independent 15s dirty daily shorts. Prompts and LoRA situations are built here, no LLM."""
+    specs = (
+        {
+            "id": "s01-genkan-bj",
+            "label": "玄関ジュボ",
+            "situation": "oral",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral. Mouth already on. Already kneeling.",
+            "who": (
+                "Aya = kneeling in the genkan. She is the mouth. Mini breasts. NO penis. "
+                "Hands on Rei's waist, NEVER on any penis.\n"
+                "Rei = STANDS in the genkan. Receiver. Pleasured face because the mouth is already on."
+            ),
+            "environment": "Daytime genkan of a two-story Japanese house. Tight on the mouth. Tile is only background.",
+            "lock": "Already on. Aya sucks REI to the BASE the whole 15-second take. Sloppy. No climax. No speech.",
+            "camera": "medium-close on Aya's mouth and the 20cm going to the base, mini breasts in the lower frame. Do not pull back to full bodies.",
+            "action": "Already on. Aya's mouth is already at Rei's base. Deep sloppy jupo-jupo the whole 15-second take. Saliva strings. Hands on waist only. Rei's head tips back. End: mouth still at the base, still medium-close.",
+            "sound": "Deep jupo-jupo, saliva, Rei's pleasured breath. No spoken words.",
+        },
+        {
+            "id": "s02-sink-mouth",
+            "label": "シンク口内",
+            "situation": "oral_creampie",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral. Mouth already wrapped around the shaft. Already kneeling by the sink.",
+            "who": (
+                "Aya = kneeling at the kitchen sink. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
+                "Rei = stands at the sink. Holds deep and cums inside Aya's mouth."
+            ),
+            "environment": "Kitchen sink, daytime. Tight on the mouth. Dishes only background.",
+            "lock": "CUMOUF. Cum fills Aya's mouth and runs out the side. Inside the mouth. Not a facial. No speech.",
+            "camera": "close side view of the penis in Aya's mouth, mini breasts in the lower frame. Medium-close. Do not pull back to full bodies.",
+            "action": "Aya's lips stay wrapped around Rei's 20cm. Rei holds deep and cums inside Aya's mouth. Thick white cum fills the mouth and runs down the shaft. It happens inside the mouth. End: mouth still on, cum leaking.",
+            "sound": "Wet swallows, a pulse, Rei's shaky breath. No spoken words.",
+        },
+        {
+            "id": "s03-alley-base",
+            "label": "路地根元",
+            "situation": "oral",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral. Mouth already on. Already kneeling in the alley.",
+            "who": (
+                "Aya = kneeling on the alley concrete. She is the mouth. Mini breasts. NO penis. Hands on Rei's waist.\n"
+                "Rei = STANDS against the alley wall. Receiver."
+            ),
+            "environment": "Narrow residential alley, daytime shade. Tight on the mouth. Wall is only background.",
+            "lock": "Already on. Aya takes Rei to the BASE. Sloppy outdoor jupo. No climax. No speech. Nobody walks away.",
+            "camera": "medium-close on Aya's mouth at the base of the 20cm. Mini breasts in the lower frame. Do not pull back to the street.",
+            "action": "Already on. Aya slides to the base and stays there, deep sloppy jupo-jupo the whole 15-second take. Saliva strings onto the concrete. Rei's knees soften. End: mouth still at the base.",
+            "sound": "Deep jupo-jupo, a distant bicycle, Rei's breath. No spoken words.",
+        },
+        {
+            "id": "s04-toilet-cunni",
+            "label": "トイレクンニ",
+            "situation": "cunnilingus_futa",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral on the pussy, not the penis. Already kneeling.",
+            "who": (
+                "Aya = kneeling in the home toilet, tongue on Rei's hairless pussy at the base of the unused 20cm. Mini breasts. NO penis.\n"
+                "Rei = sits on the toilet lid, 20cm unused hanging forward. Receiver of cunnilingus."
+            ),
+            "environment": "Home western toilet, door ajar, warm interior light. Extreme close on the tongue and pussy.",
+            "lock": "Cunnilingus only. Not oral on the penis. The 20cm hangs unused. Close-up. No speech. No insertion.",
+            "camera": "close-up on Aya's tongue on Rei's hairless pussy at the base of the unused shaft. Extreme close. Do not pull back to full bodies.",
+            "action": "Aya licks Rei's hairless pussy at the base of the unused 20cm the whole 15-second take. The penis hangs unused in the upper frame, not in the mouth. Rei's thighs tremble. End: tongue still on the pussy, 20cm still unused.",
+            "sound": "Wet licking, Rei's high breath. No spoken words.",
+        },
+        {
+            "id": "s05-rooftop-in",
+            "label": "屋上挿入",
+            "situation": "futa_sex",
+            "names": ["rei", "aya"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already having sex. Already in from the first frame.",
+            "who": (
+                "Rei = already inside Aya on the rooftop bench. Hands on Aya's waist.\n"
+                "Aya = straddling Rei, receiving. Mini breasts. NO penis."
+            ),
+            "environment": "University rooftop bench, noon light. Already tight on the two bodies. City is only background.",
+            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. No speech. Do not show the entry. Do not pull out.",
+            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a skyline shot.",
+            "action": "Already in. Rei's 20cm is already in Aya's hairless pussy on the rooftop bench. They move the whole 15-second take. The joining point stays readable. Aya flushed, mouth open with a moan, not speaking words. End: still inside, still moving.",
+            "sound": "Wet thrusting, Aya's female moan, rooftop wind. No spoken words.",
+        },
+        {
+            "id": "s06-bath-bj",
+            "label": "洗い場ジュボ",
+            "situation": "oral",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral. Mouth already on. Already kneeling on the bath tiles.",
+            "who": (
+                "Aya = kneeling in the wash place. She is the mouth. Wet mini breasts. NO penis. Hands on Rei's waist.\n"
+                "Rei = STANDS under the shower. Receiver. Wet 20cm."
+            ),
+            "environment": "Japanese bath wash place, wet tile, shower running. Tight on the mouth.",
+            "lock": "Already on. Aya sucks to the BASE under the shower. Sloppy wet jupo. No climax. No speech.",
+            "camera": "medium-close on Aya's mouth and the wet 20cm to the base. Mini breasts in the lower frame. Do not pull back to the whole bath.",
+            "action": "Already on. Water runs over Aya's twintails while her mouth stays at Rei's base. Deep sloppy jupo-jupo the whole 15-second take. End: mouth still at the base, still medium-close.",
+            "sound": "Shower, jupo-jupo, Rei's breath. No spoken words.",
+        },
+        {
+            "id": "s07-table-mouth",
+            "label": "食卓下口内",
+            "situation": "oral_creampie",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral under the table. Mouth already wrapped around the shaft.",
+            "who": (
+                "Aya = under the dining table on her knees. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
+                "Rei = sits at the table. Holds deep and cums inside Aya's mouth."
+            ),
+            "environment": "Japanese dining table, evening. Tight under the table on the mouth. Dishes only background.",
+            "lock": "CUMOUF under the table. Cum fills Aya's mouth. Inside the mouth. Not a facial. No speech.",
+            "camera": "close side view of the penis in Aya's mouth under the table. Medium-close. Do not pull back to the whole room.",
+            "action": "Under the table Aya's lips stay wrapped around Rei's 20cm. Rei cums inside her mouth. Thick white cum fills the mouth and runs down the shaft. End: mouth still on, cum leaking onto the tatami edge.",
+            "sound": "Wet swallows, a chair creak, Rei's breath. No spoken words.",
+        },
+        {
+            "id": "s08-futon-bj",
+            "label": "布団ジュボ",
+            "situation": "oral",
+            "names": ["aya", "rei"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already oral. Mouth already on. Already lying on the futon.",
+            "who": (
+                "Aya = lying on her side on the futon. She is the mouth. Mini breasts. NO penis. Hands on Rei's hip.\n"
+                "Rei = lying on the futon. Receiver."
+            ),
+            "environment": "Japanese bedroom futon at night. Tight on the mouth. Blanket is only background.",
+            "lock": "Already on. Aya sucks to the BASE while both stay on the futon. No climax. No speech. Not a walking shot.",
+            "camera": "medium-close on Aya's mouth and the 20cm. Mini breasts in the lower frame. Do not pull back to full bodies.",
+            "action": "Already on. On the futon Aya's mouth stays at Rei's base. Slow sloppy jupo-jupo the whole 15-second take. End: mouth still at the base, still medium-close.",
+            "sound": "Soft jupo-jupo, futon rustle, Rei's breath. No spoken words.",
+        },
+        {
+            "id": "s09-sofa-in",
+            "label": "ソファ挿入",
+            "situation": "futa_sex",
+            "names": ["rei", "aya"],
+            "present": ("Aya", "Rei"),
+            "prefix": "Already having sex. Sofa vaginal. Already in from the first frame.",
+            "who": (
+                "Rei = SEATED CENTER sofa. She is already inside Aya. She holds Aya's waist.\n"
+                "Aya = already straddling Rei on the sofa, receiving. Mini breasts. NO penis."
+            ),
+            "environment": "Living-room sofa, afternoon light. Already tight on the two bodies.",
+            "lock": "ALREADY IN. Vaginal only. Joining point visible. They move. No speech. Do not pull out.",
+            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a TV-watching shot.",
+            "action": "Already in. Rei's 20cm is already in Aya's hairless pussy on the sofa. They move the whole 15-second take. The joining point stays readable. End: still inside, still moving.",
+            "sound": "Wet thrusting, Aya's female moan, TV far. No spoken words.",
+        },
+        {
+            "id": "s10-engawa-in",
+            "label": "縁側マドカ挿入",
+            "situation": "futa_sex",
+            "names": ["madoka", "aya"],
+            "present": ("Aya", "Madoka"),
+            "prefix": "Already having sex. Already in from the first frame.",
+            "who": (
+                "Madoka = already inside Aya on the engawa. Hands on Aya's waist.\n"
+                "Aya = receiving on the engawa, mini breasts. NO penis."
+            ),
+            "environment": "Wooden engawa, afternoon garden light. Already tight on the two bodies. Garden is only background.",
+            "lock": "ALREADY IN. Vaginal only. Joining point visible. Madoka's 20cm. No speech. Rei is not in this clip.",
+            "camera": "horizontal close on the joining point and the two hips. Mini breasts in the upper frame. This is a sex close, not a garden wide.",
+            "action": "Already in. Madoka's 20cm is already in Aya's hairless pussy on the engawa. They move the whole 15-second take. The joining point stays readable. End: still inside, still moving.",
+            "sound": "Wet thrusting, cicadas far, Aya's female moan. No spoken words.",
+        },
+        {
+            "id": "s11-visit-water",
+            "label": "訪問おミズ",
+            "situation": "oral",
+            "names": ["aya"],
+            "present": ("Aya", "Saleswoman"),
+            "prefix": "Already oral. Mouth already on the tip. Already kneeling.",
+            "who": (
+                "Aya = kneeling on the genkan step. She is the mouth. Lips close around the tip. Swallows. Mini breasts. NO penis.\n"
+                "Saleswoman = standing on the doorstep. Releases her warm stream into Aya's mouth, then holds still."
+            ),
+            "environment": "Daytime genkan, front door open. Tight on the mouth. The water case is only background.",
+            "lock": "Mouth already on the tip. The saleswoman releases a warm clear stream into Aya's mouth. Aya swallows. No climax, no cum. No speech. Pee-as-drink, not a facial.",
+            "camera": "medium-close on Aya's mouth around the tip and the Saleswoman's 20cm. Mini breasts in the lower frame. Do not pull back to full bodies.",
+            "action": "Aya's lips stay around the tip. The saleswoman releases a warm clear stream into Aya's mouth; Aya swallows again and again, a little running down her chin. End: the stream has stopped, lips still sealed around the tip.",
+            "sound": "Close wet swallowing, a soft hiss of the stream, the Saleswoman's breath. No spoken words.",
+        },
+        {
+            "id": "s12-yoga-doggy",
+            "label": "ヨガ後背",
+            "situation": "doggy",
+            "names": ["aya"],
+            "present": ("Aya", "Instructor"),
+            "prefix": "Already having sex. Already in from the first frame.",
+            "who": (
+                "Instructor = kneeling behind Aya. ALREADY INSIDE Aya's hairless pussy from the first frame. Hands on Aya's waist.\n"
+                "Aya = on all fours on the mat, receiving. Mini breasts hanging. NO penis."
+            ),
+            "environment": "Small yoga studio, one mat, a wall mirror. Already tight on the two bodies.",
+            "lock": "ALREADY IN from behind. Joining point visible. Doggy. Vaginal only. No speech. Do not show the entry.",
+            "camera": "close on the joining point from behind, Aya on all fours, mini breasts hanging. Not a full-body wide.",
+            "action": "Already in. The instructor's 20cm is already in Aya's hairless pussy from behind on the mat. Small pose-holding thrusts the whole 15-second take. The joining point stays readable. End: still joined, still moving.",
+            "sound": "Wet thrusting, Aya's female moan, studio fan. No spoken words.",
+        },
+    )
+    clips: list[dict[str, Any]] = []
+    for spec in specs:
+        prompt = _anthology_prompt(
+            prefix=str(spec["prefix"]),
+            who=str(spec["who"]),
+            present=tuple(spec["present"]),
+            environment=str(spec["environment"]),
+            lock=str(spec["lock"]),
+            camera=str(spec["camera"]),
+            action=str(spec["action"]),
+            sound=str(spec["sound"]),
+        )
+        if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
+            prompt = "hmmotion, PENISLORA\n" + prompt
+        clips.append(
+            {
+                "id": spec["id"],
+                "label": spec["label"],
+                "situation": spec["situation"],
+                "names": list(spec["names"]),
+                "start": "still_or_t2v",
+                "duration_s": 15,
+                "prompt": prompt,
+            }
+        )
+    return {
+        "schema": "h3-lora-studio-story/v1",
+        "id": "shorts-immoral",
+        "kind": "anthology",
+        "title_ja": "短編集（参照）",
+        "adults_only": True,
+        "min_age": 22,
+        "duration_s": 15 * len(clips),
+        "clip_s": 15,
+        "seamless": False,
+        "use_cast_ref": True,
+        "spoken_no_kanji": True,
+        "canvas": {"width": 576, "height": 1024, "aspect": "9:16"},
+        "stills_dir": "cast",
+        "comment_ja": "15秒完結の濃厚日常インモラル×12。つなぎなし。各本は input/cast/ の人物写真から I2V。部品は situation から自動。",
+        "download": list(SITUATION_DOWNLOAD["shorts-immoral"]),
+        "clips": clips,
+    }
+
+
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
-    """H3 following: 10s, one place, act cameras, lip-sync only on speaking face clips."""
+    """H3 following: 10s stories / 15s anthology, one place, act cameras, lip-sync only on speaking face clips."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
-    clip_s = float(story.get("clip_s") or 10)
+    anthology = str(story.get("kind") or "") == "anthology"
+    want_s = 15.0 if anthology else 10.0
+    clip_s = float(story.get("clip_s") or want_s)
     # 建前 packs carry one short exchange (2 speakers) in a 10s face clip. Default stays 1.
     spoken_max = max(1, min(2, int(story.get("spoken_max") or 1)))
     for i, clip in enumerate(clips):
         n = i + 1
         duration = float(clip.get("duration_s") or clip_s)
-        if abs(duration - 10.0) > 0.01:
-            errors.append(f"clip {n}: duration_s must be 10 for H3 following (got {duration:g})")
+        if abs(duration - want_s) > 0.01:
+            errors.append(f"clip {n}: duration_s must be {int(want_s)} for H3 following (got {duration:g})")
         prompt = str(clip.get("prompt") or "")
         situation = str(clip.get("situation") or "").strip()
         lines = spoken_lines(prompt)
-        if "15-second take" in prompt or "15-second" in prompt:
+        if anthology:
+            if "15-second take" not in prompt and "15-second" not in prompt:
+                errors.append(f"clip {n}: anthology clips must be a 15-second take")
+        elif "15-second take" in prompt or "15-second" in prompt:
             errors.append(f"clip {n}: use a 10-second take, not 15")
         for spoken in lines:
             if _KANJI_RE.search(spoken):
@@ -2407,6 +2901,26 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
     sid = str(story_id or "").strip()
     if sid in SITUATION_JA:
         sid = SITUATION_JA[sid]
+    if sid in ANTHOLOGY_ID_SET:
+        data = generate_immoral_shorts()
+        n = len(data.get("clips") or [])
+        if n < 8 or n > 16:
+            raise SystemExit("短編集は 8〜16本です。")
+        clip_s = float(data.get("clip_s") or 15)
+        if abs(clip_s - 15.0) > 0.01:
+            raise SystemExit("短編集の1本は 15秒です。")
+        clip_durs = [float(c.get("duration_s") or clip_s) for c in data["clips"]]
+        duration = float(data.get("duration_s") or 0)
+        if duration > 240:
+            raise SystemExit("短編集は 240秒までです。")
+        if abs(duration - sum(clip_durs)) > 0.51:
+            raise SystemExit("短編集の秒数と本数が合いません。")
+        if int(data.get("min_age") or 0) < 21:
+            raise SystemExit("短編集は 21歳以上のみです。")
+        follow_errors = validate_story_follow(data)
+        if follow_errors:
+            raise SystemExit("短編集の追従ルール: " + " / ".join(follow_errors))
+        return data
     path = stories_dir(studio_root) / f"{sid}.json"
     if not path.is_file():
         raise SystemExit(f"専用ストーリーがありません: {sid}")
@@ -2484,14 +2998,18 @@ def prepare_story_clip(
     prev_situation: str | None = None,
     force_t2v: bool = False,
     fit_scene: bool = False,
+    cast_dir: Path | str | None = None,
 ) -> dict[str, Any]:
     """One story clip. Matching LoRA per act.
 
     Dedicated (seamless False): hard cut. Photo if present, else T2V. Never the last frame.
     Chain (seamless True, via apply_story_play or a named pack): clip 2+ is I2V from
     last_frame. Clip 1 gets the long-take opening wrap only when rewrite_chain_prompts.
+    Ref chain: clip 1 is I2V from Drive input/cast/ (use_cast_ref). Ignore ③テキストから.
+    Anthology: every clip is I2V from a cast still. No last-frame chain.
 
     force_t2v: Colab ③「テキストから」は Drive に試験 jpg があっても使わない（最後のコマは使う）。
+    参照モードでは force_t2v を無視して人物写真を使う。
     fit_scene: ③合わせ. Dedicated still I2V → rewrite_dedicated_scene_i2v_prompt.
     chain_rewrite last clip → rewrite_final_scene_i2v_prompt. chain-raw: nothing.
     """
@@ -2506,15 +3024,21 @@ def prepare_story_clip(
     seamless = bool(story.get("seamless"))
     rewrite_chain = story_rewrite_chain_prompts(story)
     is_last = index == len(clips) - 1
+    anthology = str(story.get("kind") or "") == "anthology"
+    use_cast = bool(story.get("use_cast_ref")) or anthology
     # Dedicated JSON keeps start: still_or_t2v on every clip, so the chain plays
     # decide by seamless + last_frame, not by start.
-    use_last = bool(seamless and last_frame and index > 0)
+    use_last = bool(seamless and last_frame and index > 0 and not anthology)
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
     still_path = None
-    if not force_t2v and not use_last:
+    first_kind_cast = False
+    if use_cast and not use_last:
+        still_path = pick_cast_still(clip, cast_dir or still_dir)
+        first_kind_cast = True
+    elif not force_t2v and not use_last:
         still_path = resolve_story_still(clip, still_dir, clip_index=index, override=clip0_override)
     missing_still = None
-    want_still = (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
+    want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
     if use_last:
@@ -2526,11 +3050,11 @@ def prepare_story_clip(
         first_kind = "last_frame"
     elif still_path is not None:
         mode = "i2v"
-        if fit_scene and not seamless:
+        if fit_scene and not seamless and not use_cast:
             prompt = rewrite_dedicated_scene_i2v_prompt(raw_prompt)
         else:
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
-        first_kind = "still"
+        first_kind = "cast" if first_kind_cast else "still"
     else:
         mode = "t2v"
         prompt, _ = apply_user_prompt(raw_prompt, mode="t2v", default_prompt=raw_prompt)
@@ -2589,5 +3113,11 @@ def prepare_story_clip(
         "turbo": bool(cfg.get("turbo")),
         "seamless": seamless,
         "rewrite_chain_prompts": rewrite_chain,
-        "fit_scene": bool(fit_scene and ((use_last and rewrite_chain and is_last) or (still_path is not None and not seamless))),
+        "fit_scene": bool(
+            fit_scene
+            and (
+                (use_last and rewrite_chain and is_last)
+                or (still_path is not None and not seamless and not use_cast)
+            )
+        ),
     }

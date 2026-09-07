@@ -23,15 +23,21 @@
       "aspect": "9:16"
     }
   },
-  "stack_plan": {
+    "stack_plan": {
     "act": {
       "id": "hmmasturbation-h3",
       "strength": 0.8
     },
-    "helper": {
-      "id": "penis-lora-h3",
-      "strength": 0.7
-    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
@@ -41,11 +47,10 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 12,
-    "note": "Futa masturbation. HMMasturbation 0.8 + penis 0.7 + Larry 0.5 / 12step. Synth off. Solo stroking a futanari penis."
+    "note": "Futa masturbation. HMMasturbation 0.8 + penis 0.7 + Synth 0.55 + Larry 0.5 / 12step. Crotch-close: penis plus hairless pussy, never balls. Solo stroking a futanari penis."
   },
   "disabled": [
     "anal-penetration-coachbate",
-    "synth-pussy-h3",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
     "hmnsfw-aio-v25",

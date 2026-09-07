@@ -56,7 +56,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナル挿入（画質） | `anal_penetration` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。穴のアップ。遅いが綺麗 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
 | アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
-| フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 | Larry 0.6 | なし | 8step。女がふたなりに。男なし |
+| フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 8step。女がふたなりに。竿＋根元のマンコ。男なし |
 | 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | なし | Larry 0.6 | 0.5 | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
@@ -67,7 +67,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
 | 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
 | 中出し（女体） | `creampie` | Final Thrust 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。膣の中。男なし。I2V本線 |
-| 口内射精（女体） | `oral_creampie` | CUMOUF 0.5 | Penis 0.7 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線。強さ 0.5 |
+| 口内射精（女体） | `oral_creampie` | CUMOUF 0.5 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線。強さ 0.5 |
 | 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。膣。オナニー LoRA は積まない。アナルはアナル指入れ |
 | オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
 | 足コキ | `footjob` | Type D 0.85 | Penis 0.7 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
@@ -118,15 +118,18 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 python colab/_write_lora_studio_nb.py
 ```
 
-T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 1本 4〜15。つなぐ 20〜120秒は同じカットを最後のコマで I2V 繋ぎ（③の「つなぐ 20秒」〜「つなぐ 120秒」。1本目は長回しにリライト。1本で 16秒以上は作らない）。120秒は 10×12。任意の 16〜120 は「つなぐ（秒数欄・16〜120）」。2〜12本目は③のつなぎ欄。空なら前の続き。帰宅・洗い物・登校・授業・屋上〜下校・おかえり・風呂・食卓・布団・休日・縁側の専用ストーリーは ③ で3パターン（長さの作り方・つなぎ欄・秒数は無視）。全話 10秒・1本1場所1動作。
+T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の秒数は 1本 4〜15。つなぐ 20〜120秒は同じカットを最後のコマで I2V 繋ぎ（③の「つなぐ 20秒」〜「つなぐ 120秒」。1本目は長回しにリライト。1本で 16秒以上は作らない）。120秒は 10×12。任意の 16〜120 は「つなぐ（秒数欄・16〜120）」。2〜12本目は③のつなぎ欄。空なら前の続き。帰宅・洗い物・登校・授業・屋上〜下校・おかえり・風呂・食卓・布団・休日・縁側の専用ストーリーは ③ で5パターン（長さの作り方・つなぎ欄・秒数は無視）。全話 10秒・1本1場所1動作。
 
 | ③のラベル | 再生 | last-frame | 文の修正 |
 |---|---|---|---|
 | `登校（専用）` など | カット。JSON のまま（`CHAIN=False`、`last_frame=None`） | なし | なし（③「最終シーン合わせ」オン＋写真からの静止画だけ `rewrite_dedicated_scene_i2v_prompt`） |
 | `登校（つなぐ）` | 文を直さずつなぐ | 2本目以降 I2V | Picture 1 ロック（`continue_chain_prompt`）だけ。`rewrite_chain_opening_prompt` も最後の `rewrite_final_scene_i2v_prompt` もオフ |
 | `登校（つなぐ修）` | 文を直してつなぐ | 2本目以降 I2V | 1本目に `rewrite_chain_opening_prompt`。③オンなら最後の本だけ `rewrite_final_scene_i2v_prompt` |
+| `登校（参照つなぐ）` | つなぐ＋1本目は `input/cast/` | 2本目以降 I2V | 文はそのまま。③テキストからは無視 |
+| `登校（参照つなぐ修）` | 参照つなぐ＋1本目を長回し | 2本目以降 I2V | 1本目 `rewrite_chain_opening_prompt`。③オンなら最後の本だけ |
+| `短編集（参照）` | 15秒完結×複数。つなぎなし | なし | 文は自動。各本が独立 I2V |
 
-旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアス（dedicated）。初期値は **登校（専用）**。実装は `resolve_story_play()` / `apply_story_play()`。
+旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアス（dedicated）。初期値は **登校（専用）**。実装は `resolve_story_play()` / `apply_story_play()`。キャスト8枚: `sayaka-bust` `sayaka-full` `rei-bust` `rei-full` `aya-bust` `aya-full` `madoka-bust` `madoka-full`。
 
 名前付きパック（`CHAIN_PACK_IDS`）は専用ではない（`is_story` False、`is_chain_pack` True）が、③では**同じ3パターン**で再生する。`訪問販売（専用）` / `訪問販売（つなぐ）` / `訪問販売（つなぐ修）` のように短名＋接尾辞。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」と裸の id は前と同じ動き（＝つなぐ修）。JSON は全部 9:16 576×1024・`kind:"chain"`・`seamless:true`・10秒×N・LoRA は JSON の本ごと。画像サイズは JSON の `canvas` で決まる（文に大きさは書かなくてよい）。
 

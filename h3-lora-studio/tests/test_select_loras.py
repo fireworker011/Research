@@ -74,9 +74,10 @@ def test_situations_switch_loras_by_profile_and_mode():
     preview = select_loras(profile_name="preview", mode="t2v")
     assert anal_t2v == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert close_t2v == ["synth-pussy-h3", "larry-v4", "cinema-dy"]
-    assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral_t2v["stack"][0]["strength_model"] == 0.8
-    assert oral_t2v["stack"][2]["strength_model"] == 0.6
+    assert oral_t2v["stack"][2]["strength_model"] == 0.55
+    assert oral_t2v["stack"][3]["strength_model"] == 0.5
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
     assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
@@ -128,7 +129,7 @@ def test_situations_switch_loras_by_profile_and_mode():
         "cunnilingus_futa",
     } <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
-    assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
+    assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral["turbo"] is True
     anal = next(row for row in listed["situations"] if row["id"] == "anal_penetration")
     assert anal["turbo"] is False
@@ -573,7 +574,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "male character" not in cream_i2v["prompt"].lower()
 
     oral_c = select_loras(profile_name="oral_creampie", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in oral_c["stack"]] == ["cumouf-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in oral_c["stack"]] == ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral_c["stack"][0]["trigger"] == "CUMOUF"
     assert oral_c["stack"][0]["strength_model"] == 0.5
     assert oral_c["turbo"] is True
@@ -1025,3 +1026,19 @@ def test_locked_minors_stay_child_terms():
     loras = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     coach = next(row for row in loras["loras"] if row["id"] == "anal-penetration-coachbate")
     assert coach.get("paid") is True
+
+
+def test_no_forbidden_or_unused_loras_in_any_profile_stack():
+    """Transform / paid / still-only LoRAs must never appear in a live stack."""
+    forbidden = {"futa-h3-v51", "anal-penetration-coachbate", "photoreal-h3-still", "riding-pose-i2v"}
+    listed = list_situations()
+    for row in listed["situations"]:
+        enabled = row.get("enabled") or {}
+        for mode, ids in enabled.items():
+            overlap = forbidden.intersection(ids)
+            assert not overlap, (row["id"], mode, overlap)
+            if not ids:
+                continue
+            live = select_loras(profile_name=row["id"], mode=mode, prompt_arg="（シーン）")
+            live_ids = {r["id"] for r in live["stack"]}
+            assert not (forbidden & live_ids), (row["id"], mode, live_ids)

@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (  # noqa: E402
+    ANTHOLOGY_LABEL,
     CHAIN_PACK_ORDER,
     STORY_ORDER,
     STORY_PLAY_DEDICATED,
@@ -24,7 +25,7 @@ OUTS = [
     ROOT / "h3-lora-studio" / "minimax_h3_lora_studio.ipynb",
 ]
 
-# ③ の並び: SFW → 専用11話×3再生（専用 / つなぐ / つなぐ修）→ 名前付きパック×3再生 → 行為シーン
+# ③ の並び: SFW → 専用11話×5再生 → 名前付きパック×5再生 → 短編集（参照） → 行為シーン
 SFW_LABELS = ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）"]
 ACT_LABELS = [
     "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）",
@@ -33,14 +34,15 @@ ACT_LABELS = [
     "レズビアンクンニ", "性器を広げる", "レズ＋広げる",
 ]
 DEFAULT_SCENE = story_play_label("commute-120s", STORY_PLAY_DEDICATED)  # 登校（専用）
-SCENE_OPTIONS_3 = SFW_LABELS + story_play_labels() + chain_pack_labels() + ACT_LABELS
-# ② は話ごとに1つ（専用）で足りる。ダウンロードは story id 単位。
+SCENE_OPTIONS_3 = SFW_LABELS + story_play_labels() + chain_pack_labels() + [ANTHOLOGY_LABEL] + ACT_LABELS
+# ② は話ごとに1つ（専用）で足りる。ダウンロードは story id 単位。短編集も入れる。
 SCENE_OPTIONS_2 = (
     SFW_LABELS
     + [story_play_label(sid, STORY_PLAY_DEDICATED) for sid in STORY_ORDER + CHAIN_PACK_ORDER]
+    + [ANTHOLOGY_LABEL]
     + ACT_LABELS
 )
-STORY_ID_LIST = list(STORY_ORDER) + list(CHAIN_PACK_ORDER)
+STORY_ID_LIST = list(STORY_ORDER) + list(CHAIN_PACK_ORDER) + ["shorts-immoral"]
 
 
 def _options(rows: list[str]) -> str:
@@ -67,9 +69,9 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 ## 今の準備（この版）
 
-専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）** の3つから選べます。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックは 9:16 576×1024）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（Imagine 2.0 用。このノートでは使わない）。Imagine で still を作り直したら③を「写真から」に変える。
+専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）/（参照つなぐ）/（参照つなぐ修）** の5つから選べます。**短編集（参照）** は15秒完結×複数・つなぎなし。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックと短編集は 9:16 576×1024）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V。参照モードだけ `input/cast/` の8枚が必須）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（`sayaka-bust` / `sayaka-full` / `rei-bust` / `rei-full` / `aya-bust` / `aya-full` / `madoka-bust` / `madoka-full`）。Imagine 2.0 でも使える。**参照つなぐ・参照つなぐ修・短編集（参照）** ではこの8枚を Picture 1 にする。
 
-## 120秒は混ぜない（普通のつなぐ / 専用3パターン / 名前付きパック3パターン）
+## 120秒は混ぜない（普通のつなぐ / 専用5パターン / 名前付きパック5パターン / 短編集）
 
 | 種類 | ③での選び方 | 何が起きるか |
 |---|---|---|
@@ -77,9 +79,12 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | **専用（専用）** | 「登校（専用）」など | **カット編集**。JSON のまま。各本は独立。最後のコマからは続けない。長さの作り方・つなぎ欄・秒数は無視 |
 | **専用（つなぐ）** | 「登校（つなぐ）」など | 同じ JSON を**最後のコマから I2V** で繋ぐ。文は直さない（1本目も長回しに直さない。③合わせも掛けない）。Picture 1 のロックだけ足す |
 | **専用（つなぐ修）** | 「登校（つなぐ修）」など | 最後のコマから I2V ＋ 1本目を長回しに直す。「最終シーン合わせ」オンなら最後の本だけ合わせる |
-| **名前付きパック（専用 / つなぐ / つなぐ修）** | 「訪問販売（つなぐ修）」「カフェ（つなぐ）」「花火（専用）」など | 専用ストーリーではないが再生は同じ3つ。JSON の本ごとの部品（フェラ・口内・クンニ・AIO・後背位）はそのまま。（専用）はカット、（つなぐ）は文そのまま最後のコマから I2V、（つなぐ修）は1本目を長回しに直す。プロンプト・秒数・長さの作り方は不要 |
+| **専用（参照つなぐ）** | 「登校（参照つなぐ）」など | 1本目は `input/cast/` の人物写真（上半身 or 全身）から I2V。文はそのまま。2本目以降は最後のコマ。③のテキストから／写真ファイルは無視 |
+| **専用（参照つなぐ修）** | 「登校（参照つなぐ修）」など | 参照つなぐ ＋ 1本目を長回しに直す。③オンなら最後の本だけ合わせる |
+| **名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）** | 「訪問販売（つなぐ修）」「カフェ（参照つなぐ）」「花火（専用）」など | 専用ストーリーではないが再生は同じ5つ。JSON の本ごとの部品はそのまま |
+| **短編集（参照）** | 「短編集（参照）」 | 15秒完結の濃厚日常インモラル×複数。**つなぎなし・連結なし**。各本は人物写真から。文と部品は自動（最適な LoRA を situation から選ぶ） |
 
-専用は 11話 × 3 ＝ 33行、パックは 13本 × 3 ＝ 39行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
+専用は 11話 × 5 ＝ 55行、パックは 13本 × 5 ＝ 65行、短編集は1行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
 
 ## 準備（最初の1回）
 
@@ -133,12 +138,13 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | ランドリー（専用 / つなぐ / つなぐ修） | 夜のコインランドリー。竿レイ、受けアヤ。洗濯機の上でもう入っている。あと何分。10秒×5本。9:16 | 建前パック。AIO 横クローズ。ジュボなし・放尿なし |
 | 講義机（専用 / つなぐ / つなぐ修） | 大学の講義。先生（36・眼鏡・結い髪・中乳・20cm・チョーク）、アヤが教卓の下でジュボ→口内。上の声は授業。10秒×5本。9:16 | 建前パック。授業（専用11話）とは別。放尿なし |
 | キャンプ（専用 / つなぐ / つなぐ修） | 夜のキャンプ。レイがアヤのマンコを舐めるだけ。虫よけ。レイの20cmは使わない。10秒×5本。9:16 | 建前パック。クンニ LoRA。ジュボなし・放尿なし |
-| 花火（専用 / つなぐ / つなぐ修） | 川べりの花火。竿マドカ、受けサヤカ。立ったまま後ろから入っている。顔は花火。10秒×5本。9:16 | 建前パック。AIO。ジュボなし・放尿なし |
+| 花火（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修） | 川べりの花火。竿マドカ、受けサヤカ。立ったまま後ろから入っている。顔は花火。10秒×5本。9:16 | 建前パック。AIO。ジュボなし・放尿なし |
+| 短編集（参照） | 15秒完結の濃厚日常インモラル×12。玄関ジュボ・シンク口内・路地・トイレクンニ・屋上挿入・洗い場・食卓下・布団・ソファ・縁側マドカ・訪問おミズ・ヨガ後背。つなぎなし | 本ごとの部品（フェラ＋竿＋穴 / 口内 / クンニ / AIO / 後背位）。人物写真必須 |
 | アナル挿入（画質） | 穴のアップで挿入。遅いが綺麗 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 16step。Turbo なし |
 | アナル舐め・指 | 舐め・指のアップ。動きの本線はアナル指入れ | 穴の見え方 0.7 + Larry 0.5 + シネマ 0.4 |
 | アナル指入れ | 自分の親指をアナルへ。指入れ（膣）とは別 | ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
-| フェラ（女体） | 女がふたなりにフェラ。男なし | フェラ 0.8 + 竿 0.7 + Larry 0.6 / 8step |
-| ふたなりフェラ | ふたなりがフェラされる。男なし | フェラ 0.75 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step |
+| フェラ（女体） | 女がふたなりにフェラ。竿＋根元のマンコが見える。男なし | フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step |
+| ふたなりフェラ | ふたなりがフェラされる。竿＋穴＋フェラ。男なし | フェラ 0.75 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step |
 | セックス（女体） | ふたなり＋女。男なし。描写は文章欄 | 総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step |
 | アナルセックス（女体） | アナル本線。後ろから、穴が膣より上に見える構図 | ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。写真からが本線 |
 | 騎乗位（女体） | 騎乗。総合えっちは積まない | 騎乗 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし |
@@ -147,7 +153,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 後射精（女体） | 外に出す射精。中出し・顔射とは別 | 射精 0.9 + 竿 0.7 + Larry 0.5 / 8step |
 | 顔射（女体） | 顔にかける。後射精・口内とは別 | 顔射 0.8 + 竿 0.7 + Larry 0.5 / 8step。写真からが本線 |
 | 中出し（女体） | 膣の中に出す。後射精・顔射とは別 | Final Thrust 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。写真からが本線 |
-| 口内射精（女体） | 口の中で出す。顔射・フェラ本線とは別 | CUMOUF 0.5 + 竿 0.7 + Larry 0.5 / 8step。写真からが本線 |
+| 口内射精（女体） | 口の中で出す。顔射・フェラ本線とは別 | CUMOUF 0.5 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。写真からが本線 |
 | 指入れ | 膣への指の出し入れ。オナニー LoRA は積まない。アナルはアナル指入れ | 指 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step |
 | オナニー | 潮吹き。指入れ LoRA は積まない | オナニー 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step |
 | 足コキ | 両足で竿 | Type D 0.85 + 竿 0.7 + Larry 0.5 / 8step |
@@ -277,7 +283,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/minimax-h3-motion-identity-e959"
-FETCH_REV = "h3-20260907-futa-pussy-1"
+FETCH_REV = "h3-20260907-ref-shorts-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -647,16 +653,19 @@ from h3_r2v_core import is_oom_error, frames
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, resolve_story_play, apply_story_play, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, STORY_PLAY_JA, STORY_PLAY_DEDICATED
+from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, resolve_story_play, apply_story_play, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, STORY_PLAY_JA, STORY_PLAY_DEDICATED
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
 STORY_PLAY = None
+if is_anthology(やりたいシーン):
+    print("短編集（参照）。15秒完結×複数。つなぎなし。長さの作り方・秒数・つなぎ欄は無視します。人物写真は Drive の input/cast/。")
+    CHAIN = False
 if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY_PLAY = resolve_story_play(やりたいシーン)
     KIND_JA = "専用ストーリー" if is_story(やりたいシーン) else "名前付きパック（専用ストーリーではありません）"
@@ -715,7 +724,24 @@ print()
 
 STORY_SEAMLESS = False
 STORY_REWRITE = False
-if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
+CAST_DIR = DRIVE_ROOT / "input" / "cast"
+CAST_DIR.mkdir(parents=True, exist_ok=True)
+if is_anthology(やりたいシーン):
+    STORY = load_story(SITUATION, studio_root=STUDIO)
+    STORY["use_cast_ref"] = True
+    STORY["seamless"] = False
+    STORY["rewrite_chain_prompts"] = False
+    STORY_SEAMLESS = False
+    STORY_REWRITE = False
+    DURATION = float(STORY.get("duration_s") or 180)
+    CLIPS = [float(c.get("duration_s") or STORY.get("clip_s") or 15) for c in STORY["clips"]]
+    CHAIN = False
+    VANILLA = False
+    STORY_STILLS = CAST_DIR
+    print(str(STORY.get("title_ja") or STORY.get("id")), "短編集。", len(STORY["clips"]), "本 ×", int(STORY.get("clip_s") or 15), "秒。各本は独立。最後のコマではつなぎません。連結しません。")
+    print("人物写真:", CAST_DIR, "（sayaka/rei/aya/madoka の bust と full）")
+    print("③のテキストから／写真ファイルは使いません。")
+elif is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY = load_story(SITUATION, studio_root=STUDIO)
     if STORY_PLAY:
         STORY = apply_story_play(STORY, STORY_PLAY)
@@ -738,16 +764,22 @@ if is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
             print("1本目は長回しに直します（途中の動きで終わる）。", "最終シーン合わせ: 最後の本だけ合わせます。" if 最終シーン合わせ else "")
         else:
             print("文は直しません（JSON のまま。Picture 1 のロックだけ足す）。", "最終シーン合わせはこの再生では使いません。" if 最終シーン合わせ else "")
+    if STORY.get("use_cast_ref"):
+        print("人物参照: Drive input/cast/ を1本目の Picture 1 に使います。③のテキストから／写真ファイルは無視します。")
+        FORCE_T2V = False
+        STORY_OVERRIDE = None
     cv = STORY.get("canvas") or {}
     print("画面は", int(cv.get("width") or 576), "x", int(cv.get("height") or 1024), "（", str(cv.get("aspect") or "9:16"), "）固定。1本", int(STORY.get("clip_s") or CLIPS[0]), "秒。")
     print("各本の写真（任意）:", STORY_STILLS)
     for c in STORY["clips"]:
         print(" ", c.get("still") or "（写真なし）", c.get("label") or "")
-    if FORCE_T2V:
+    if FORCE_T2V and not STORY.get("use_cast_ref"):
         print("作り方はテキストから。専用フォルダの写真は使いません。")
+    elif STORY.get("use_cast_ref"):
+        print("1本目は input/cast/ の人物写真です。専用フォルダの試験jpgは使いません。")
     else:
         print("写真が無いクリップはテキストから（顔はクリップごとに変わります）。")
-    if MODE == "i2v" and not is_auto_image_name(写真ファイル):
+    if (not STORY.get("use_cast_ref")) and MODE == "i2v" and not is_auto_image_name(写真ファイル):
         src = Path(写真ファイル)
         if not src.is_file():
             src = DRIVE_ROOT / "input" / 写真ファイル
@@ -767,9 +799,9 @@ elif MODE == "t2v":
 if STORY:
     FILENAME_PREFIX = "video/h3_" + str(STORY.get("id") or "story")
     # 専用+写真から+③: clip0 は rewrite_dedicated_scene_i2v_prompt だけ。rewrite_final_scene_i2v_prompt は走らせない。
-    FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS)
+    FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS and not STORY.get("use_cast_ref"))
     try:
-        planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=None if FORCE_T2V else STORY_OVERRIDE, force_t2v=FORCE_T2V, fit_scene=FIT_CLIP0)
+        planned0 = prepare_story_clip(STORY, 0, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=None if FORCE_T2V else STORY_OVERRIDE, force_t2v=FORCE_T2V, fit_scene=FIT_CLIP0, cast_dir=CAST_DIR)
     except SystemExit as exc:
         hint = friendly_select_error(exc)
         raise SystemExit(hint or str(exc)) from None
@@ -1132,7 +1164,7 @@ else:
                 # 専用: 写真からの本だけ rewrite_dedicated_scene_i2v_prompt（prepare_story_clip が静止画のときだけ掛ける）
                 fit_now = bool(最終シーン合わせ)
             try:
-                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, force_t2v=FORCE_T2V, fit_scene=fit_now)
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, force_t2v=FORCE_T2V, fit_scene=fit_now, cast_dir=CAST_DIR)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None
@@ -1149,6 +1181,9 @@ else:
                     raise SystemExit("前の本の最後のコマがありません。③をもう一度。")
                 first_name = last_now
                 print("前の本の最後のコマから続けます:", planned["label"])
+            elif planned.get("first_kind") == "cast":
+                first_name = stage_image_into_input(planned["still_path"], inp)
+                print("人物写真から:", planned["label"], Path(str(planned["still_path"])).name)
             elif planned.get("still_path") is not None:
                 first_name = stage_image_into_input(planned["still_path"], inp)
             elif GRAPH_MODE == "t2v":
@@ -1206,7 +1241,17 @@ else:
             extract_last_frame(clip_path, frame)
             first_name = stage_image_into_input(frame, inp)
     final = clip_paths[0]
-    if len(clip_paths) > 1:
+    showed_all = False
+    if STORY and str(STORY.get("kind") or "") == "anthology":
+        print("短編集: 各クリップは独立した15秒です。つなぎません。連結しません。")
+        for p in clip_paths:
+            print(" 短編:", p)
+            if p.is_file():
+                display(HTML(f"<p style='font-size:16px'>短編: <code>{p}</code></p>"))
+                display(Video(str(p), embed=True, width=360))
+        final = clip_paths[-1]
+        showed_all = True
+    elif len(clip_paths) > 1:
         final = concat_studio_clips(clip_paths, OUT / (("h3_" + str(STORY.get("id")) + "_concat.mp4") if STORY else ("h3_chain_" + str(int(DURATION)) + "s.mp4")))
         print("つなぎ完了:", final)
         if STORY and not STORY_SEAMLESS:
@@ -1216,7 +1261,7 @@ else:
     print()
     print("できました。下に再生、Drive にも保存しています。")
     print("保存:", final)
-    if final.is_file():
+    if (not showed_all) and final.is_file():
         display(HTML(f"<p style='font-size:16px'>保存先: <code>{final}</code></p>"))
         display(Video(str(final), embed=True, width=360))
 print()
