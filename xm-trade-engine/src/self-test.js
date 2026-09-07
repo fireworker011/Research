@@ -18,6 +18,7 @@ const { tradeBody, isSuccess } = require('./adapters/metaapi');
 const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
+const { virtualDeskCommentLines } = require('./issue-notify');
 const { loadConfig, pipSize } = require('./util');
 const paper = require('./paper-broker');
 const { proposeSetup, applyArm, autoArmIfDue, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows, barsToH1, ocoSideLevels } = require('./gold-breakout');
@@ -362,6 +363,36 @@ async function runSelfTest() {
   });
   assertEqual(fillComment.skipped, true, 'xm-fill is not a command');
   assertEqual(isNotifyComment('xm-close:2024-03-05\n決済'), true, 'close marker');
+  assertEqual(isNotifyComment('virtual-desk:2026-09-07:forming\nBuyStop 1'), true, 'virtual-desk is notify');
+  const virtualIgnored = applyComment({
+    body: 'virtual-desk:2026-09-07:forming\nENTRY: GOLD BUY',
+    login: 'grok-bot',
+    now: lockNow,
+    persist: false
+  });
+  assertEqual(virtualIgnored.skipped, true, 'virtual-desk is not a command');
+  const deskLines = virtualDeskCommentLines({
+    status: 'forming',
+    reason: 'asia_forming',
+    lot: 0.02,
+    asia_high: 4426.4,
+    asia_low: 4386.6,
+    asia_close: 4399.6,
+    range: 39.8,
+    buy_stop: 4429.2,
+    buy_sl: 4406.84,
+    buy_tp: 4469.46,
+    sell_stop: 4383.8,
+    sell_sl: 4406.16,
+    sell_tp: 4343.54,
+    h1_atr: 18.64,
+    sl_distance: 22.36,
+    tp_distance: 40.26,
+    h1_atr_source: 'tradingview_atr60',
+    suggested_side: 'SELL'
+  }, { pending: [] });
+  assert(deskLines.some((l) => /BuyStop 4429.2/.test(l)), 'desk comment has buy sl/tp');
+  assert(deskLines.some((l) => /ENTRY を出すな/.test(l)), 'desk comment forbids entry');
 
   const autoArmed = autoArmIfDue(proposed, { ...goldTestCfg, entry_operator: 'auto' }, lockNow, false);
   assertEqual(autoArmed.status, 'armed', 'auto oco in london');

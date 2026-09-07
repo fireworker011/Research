@@ -15,6 +15,7 @@ const { writeSignals } = require('./adapters/signal-file');
 const metaapi = require('./adapters/metaapi');
 const { fetchYahooH1, fetchGoldBars, fetchTradingViewSnapshot } = require('./market-data');
 const commanderMod = require('./commander');
+const { postIssueMarker } = require('./issue-notify');
 const gold = require('./gold-breakout');
 const { loadConfig, todayUTC, roundTo, pipSize } = require('./util');
 
@@ -290,37 +291,18 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
 }
 
 async function notifyGoldAwaitingArm(setup) {
-  const token = process.env.GITHUB_TOKEN || '';
-  const repo = process.env.GITHUB_REPOSITORY || '';
-  if (!token || !repo || !setup?.date) return;
+  if (!setup?.date) return;
   const marker = `gold-notice:${setup.date}`;
-  const headers = {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github.v3+json',
-    'content-type': 'application/json'
-  };
-  const base = `https://api.github.com/repos/${repo}`;
-  const searchRes = await fetch(`${base}/issues?state=open&per_page=100`, { headers });
-  const existing = await searchRes.json().catch(() => []);
-  const found = Array.isArray(existing) ? existing.find((i) => i.title === commanderMod.ISSUE_TITLE) : null;
-  if (!found) return;
-  const commentsRes = await fetch(`${base}/issues/${found.number}/comments?per_page=100`, { headers });
-  const comments = await commentsRes.json().catch(() => []);
-  if (Array.isArray(comments) && comments.some((c) => String(c.body || '').includes(marker))) return;
-  const body = [
+  await postIssueMarker({
     marker,
-    '',
-    `Gold ${setup.date} はアジア確定。完全自動なので ENTRY は出すな。このコメントは指令ではない。`,
-    `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
-    `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
-    `chart/paper suggested_side: ${setup.suggested_side}（参考。EA は OCO 両方）`,
-    '',
-    '止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`。約定・決済告知は EA の xm-fill / xm-close。'
-  ].join('\n');
-  await fetch(`${base}/issues/${found.number}/comments`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ body })
+    lines: [
+      `Gold ${setup.date} はアジア確定。完全自動なので ENTRY は出すな。このコメントは指令ではない。`,
+      `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
+      `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
+      `chart/paper suggested_side: ${setup.suggested_side}（参考。EA は OCO 両方）`,
+      '',
+      '止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`。約定・決済告知は EA の xm-fill / xm-close。'
+    ]
   });
 }
 

@@ -35,6 +35,7 @@ jobs:
           cd xm-trade-engine
           node --check src/tick.js
           node --check src/virtual-desk.js
+          node --check src/issue-notify.js
           node src/self-test.js
           node src/virtual-desk.js
 

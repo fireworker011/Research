@@ -108,7 +108,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('## 人間 / Grok Bot の1手');
   lines.push('');
-  lines.push('デモEAが未設置なら、今日の1手は **MT5デモに EA を載せる**。実口座はまだ開くな。');
+  lines.push('デモEAが未設置なら、今日の1手は **ペーパーOCOのSL/TPを人間へ写す**（`virtual-desk:`）。実口座はまだ開くな。');
   lines.push('停止するときは Issue に次の1行だけ:');
   lines.push('');
   lines.push('```');
@@ -117,7 +117,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`');
   lines.push('`RESUME` はライブゲートを全部満たさない限り実発注しない。');
-  lines.push('Gold: 完全自動 OCO。Grok は ENTRY を出すな。約定・決済は Issue の `xm-fill:` / `xm-close:`。止めるなら `HALT` または `SKIP: GOLD`。');
+  lines.push('Gold: 完全自動 OCO。Grok は ENTRY を出すな。チャットでは `virtual-desk:` の損切り・利確を写す。約定・決済は Issue の `xm-fill:` / `xm-close:`。止めるなら `HALT` または `SKIP: GOLD`。');
   lines.push('');
   lines.push('## やるな');
   lines.push('');

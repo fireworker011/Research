@@ -91,7 +91,9 @@ Commander / Notify の入力は Gold と同じ。Gold と **別チャート**。
 
 `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` **だけ**を貼る。月100万 dump と混ぜない。
 
-Grok が出してよい行:
+Grok のチャット: Issue の `virtual-desk:` または `output/reports/VIRTUAL.md` から、BuyStop/SellStop と損切り・利確を表で写す。数字は invent しない。
+
+Grok が Issue に出してよい行（止めるときだけ）:
 
 ```
 KILL_SWITCH: HALT
@@ -101,6 +103,7 @@ SKIP: GOLD
 ```
 
 `ENTRY: GOLD BUY` は出さない。完全自動。`ARM: GOLD` も不要（IDLE で両方置く）。
+`virtual-desk:` はペーパー告知。指令ではない。
 
 ### 8. デモで1サイクル
 

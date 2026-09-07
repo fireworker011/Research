@@ -33,7 +33,7 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 |---|---|---|
 | **EA（実時間）** | XM への発注・SL/TP・日次損失で全決済・約定/決済告知 | GitHub の遅延シグナルでエントリー |
 | **Node tick / virtual-desk** | TradingViewスナップショット + OKX金足でペーパーOCO（SL/TP明示）。MajorsはEMAルールのみ | 実口座の損益を捏造。LLMに方向を選ばせる |
-| **Grok Bot** | 停止判断。fill/close を読む | 方向予想、ENTRY、ロット変更 |
+| **Grok Bot** | ペーパーOCOのSL/TPを人間へ写す。止めるときだけ HALT/SKIP | 方向予想、ENTRY、ロット変更、XMログイン |
 | **Cursor** | コードと不変条件 | リスク上限を上げる、マーチンゲールを足す |
 
 ## 戦略（日付でも乱数でもなく、閉じた足だけ）
@@ -96,7 +96,7 @@ EA 側はこれと独立に、**リアル口座では commander が RESUME の�
 2. XM **デモ** MT5 で `XMGoldSemi.mq5` と `xm_notify.mqh` を **GOLD M15** に載せる。AutoTrading ON。
 3. WebRequest に `api.github.com` を許可。PAT は Contents Read + Issues Write。
 4. `CommanderURL` はデフォルトブランチの Contents API。`NotifyIssueNumber` に追跡 Issue 番号。
-5. `docs/grok-bots/G_xm_trade.txt` を Grok Bot に貼る。ENTRY は出さない。
+5. `docs/grok-bots/G_xm_trade.txt` を Grok Bot に貼る。チャットでペーパーの損切り・利確を写す。ENTRY は出さない。
 
 ローカル確認:
 

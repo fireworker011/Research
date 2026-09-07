@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { OUTPUT_DIR, writeJSON, roundTo } = require('./util');
 const { runTick } = require('./tick');
+const { postIssueMarker, virtualDeskCommentLines } = require('./issue-notify');
 
 const VIRTUAL_MD = path.join(OUTPUT_DIR, 'reports', 'VIRTUAL.md');
 const VIRTUAL_JSON = path.join(OUTPUT_DIR, 'reports', 'virtual.json');
@@ -140,6 +141,14 @@ async function runVirtualDesk({ now = new Date(), dryRun = false } = {}) {
     fs.mkdirSync(path.dirname(VIRTUAL_MD), { recursive: true });
     fs.writeFileSync(VIRTUAL_MD, md, 'utf-8');
     writeJSON(VIRTUAL_JSON, payload);
+    const gold = result.gold;
+    if (gold && gold.date && gold.buy_stop != null) {
+      const marker = `virtual-desk:${gold.date}:${gold.status}`;
+      await postIssueMarker({
+        marker,
+        lines: virtualDeskCommentLines(gold, result.book)
+      });
+    }
   }
   return { ...result, markdown: md };
 }
