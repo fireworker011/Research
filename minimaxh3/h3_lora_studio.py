@@ -151,6 +151,26 @@ SITUATION_DOWNLOAD = {
         "larry-v4",
         "cumouf-h3",
     ],
+    "sales-visit-60s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+    ],
+    "checkup-100s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
+    "last-stop-40s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
 }
 
 SITUATION_JA = {
@@ -226,6 +246,16 @@ SITUATION_JA = {
     "縁側120秒（専用）": "engawa-120s",
     "休日午後（専用）": "engawa-120s",
     "縁側二回戦（専用）": "engawa-120s",
+    "訪問販売60秒（つなぐ）": "sales-visit-60s",
+    "訪問販売（つなぐ）": "sales-visit-60s",
+    "定期検診100秒（つなぐ）": "checkup-100s",
+    "定期検診（つなぐ）": "checkup-100s",
+    "検診100秒（つなぐ）": "checkup-100s",
+    "終点40秒（つなぐ）": "last-stop-40s",
+    "終点（つなぐ）": "last-stop-40s",
+    "sales-visit-60s": "sales-visit-60s",
+    "checkup-100s": "checkup-100s",
+    "last-stop-40s": "last-stop-40s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
@@ -320,6 +350,9 @@ SITUATION_HELP = {
     "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（寝る前なのに／電気消したよ）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（休日なのに朝から勃ってる／昼ごはんまだよ）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（午後も勃ってる／皿洗っとくから）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sales-visit-60s": "訪問販売60秒（つなぐ）。10秒×6本。9:16 576×1024。専用ではなく名前付きの「つなぐ」パック。1本目はテキスト、2本目以降は最後のコマから I2V。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・水ケース。セリフは口元4本（こんにちはお届け／遅いわよ／申し訳ございません／早くお水ちょうだい。漢字のまま）。5〜6本目はフェラ（放尿→根元）、無言・寄り。hmmotion なし。",
+    "checkup-100s": "定期検診100秒（つなぐ）。10秒×10本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞はカタカナ（漢字なし）: こんにちは／はーい／テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／（キス無言）／ん…クチとムネ…カクニンをします。根元までフェラ→口内 CUMOUF→「モンダイありますね」は別の本。hmmotion なし。",
+    "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞はカタカナ: シュウテンです、オキテください／オキましたか？オキャクサン、シュウテンだからオリテください。hmmotion なし。",
 }
 
 LORA_JA = {
@@ -356,9 +389,92 @@ LORA_JA = {
 }
 
 SFW_SITUATIONS = {"sfw_daily", "sfw_preview", "sfw_audio", "sfw_r2v"}
-STORY_IDS = {"homecoming-90s", "dishes-90s", "commute-120s", "lecture-120s", "rooftop-100s", "okaeri-120s", "bath-120s", "dinner-120s", "futon-120s", "sunday-120s", "engawa-120s"}
+# Dedicated stories: hard cuts by default. ③ can replay them as a last-frame chain (STORY_PLAY_*).
+STORY_ORDER = (
+    "homecoming-90s",
+    "dishes-90s",
+    "commute-120s",
+    "lecture-120s",
+    "rooftop-100s",
+    "okaeri-120s",
+    "bath-120s",
+    "dinner-120s",
+    "futon-120s",
+    "sunday-120s",
+    "engawa-120s",
+)
+STORY_IDS = set(STORY_ORDER)
+# Named last-frame chain packs. Not stories (is_story False). Never added to STORY_IDS.
+CHAIN_PACK_ORDER = ("sales-visit-60s", "checkup-100s", "last-stop-40s")
+CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
+CHAIN_PACK_TITLE_JA = {
+    "sales-visit-60s": "訪問販売60秒（つなぐ）",
+    "checkup-100s": "定期検診100秒（つなぐ）",
+    "last-stop-40s": "終点40秒（つなぐ）",
+}
 STORY_CANVAS = (576, 1024)
 STORY_CANVAS_16_9 = (1024, 576)
+
+STORY_PLAY_DEDICATED = "dedicated"
+STORY_PLAY_CHAIN = "chain"
+STORY_PLAY_CHAIN_REWRITE = "chain_rewrite"
+STORY_PLAYS = (STORY_PLAY_DEDICATED, STORY_PLAY_CHAIN, STORY_PLAY_CHAIN_REWRITE)
+STORY_TITLE_JA = {
+    "homecoming-90s": "帰宅",
+    "dishes-90s": "洗い物",
+    "commute-120s": "登校",
+    "lecture-120s": "授業",
+    "rooftop-100s": "屋上",
+    "okaeri-120s": "おかえり",
+    "bath-120s": "風呂",
+    "dinner-120s": "食卓",
+    "futon-120s": "布団",
+    "sunday-120s": "休日",
+    "engawa-120s": "縁側",
+}
+STORY_PLAY_JA = {
+    STORY_PLAY_DEDICATED: "専用",
+    STORY_PLAY_CHAIN: "つなぐ",
+    STORY_PLAY_CHAIN_REWRITE: "つなぐ修",
+}
+STORY_PLAY_HELP_JA = {
+    STORY_PLAY_DEDICATED: "カット。JSON のまま。最後のコマからは続けない",
+    STORY_PLAY_CHAIN: "つなぐ・文そのまま。最後のコマから I2V。1本目の文は直さない",
+    STORY_PLAY_CHAIN_REWRITE: "つなぐ・1本目を長回しに直す。最後のコマから I2V。③オンなら最後の本だけ合わせる",
+}
+_STORY_PLAY_LABELS: dict[str, tuple[str, str]] = {}
+
+
+def story_play_label(story_id: str, play: str) -> str:
+    return f"{STORY_TITLE_JA[story_id]}（{STORY_PLAY_JA[play]}）"
+
+
+def story_play_labels() -> list[str]:
+    """③ dropdown rows: 11 stories × 3 plays, story order, 専用 → つなぐ → つなぐ修."""
+    out: list[str] = []
+    for sid in STORY_ORDER:
+        for play in STORY_PLAYS:
+            out.append(story_play_label(sid, play))
+    return out
+
+
+def chain_pack_labels() -> list[str]:
+    return [CHAIN_PACK_TITLE_JA[pid] for pid in CHAIN_PACK_ORDER]
+
+
+def _register_story_play_labels() -> None:
+    """{短名}（専用|つなぐ|つなぐ修） → story id + play. Long legacy 「〜（専用）」 labels stay dedicated."""
+    for sid in STORY_ORDER:
+        for play in STORY_PLAYS:
+            label = story_play_label(sid, play)
+            SITUATION_JA.setdefault(label, sid)
+            _STORY_PLAY_LABELS[label] = (sid, play)
+    for label, sid in list(SITUATION_JA.items()):
+        if sid in STORY_IDS and label not in _STORY_PLAY_LABELS:
+            _STORY_PLAY_LABELS[label] = (sid, STORY_PLAY_DEDICATED)
+
+
+_register_story_play_labels()
 
 
 def resolve_situation(name: str) -> str:
@@ -393,6 +509,61 @@ def is_story(situation: str) -> bool:
         return str(situation or "").strip() in STORY_IDS
 
 
+def is_chain_pack(situation: str) -> bool:
+    """Named last-frame chain pack (訪問販売 / 検診 / 終点). Not a story."""
+    try:
+        return resolve_situation(situation) in CHAIN_PACK_IDS
+    except SystemExit:
+        return str(situation or "").strip() in CHAIN_PACK_IDS
+
+
+def resolve_story_play(situation: str) -> str:
+    """dedicated | chain | chain_rewrite. Meaningful when is_story(situation)."""
+    key = str(situation or "").strip()
+    hit = _STORY_PLAY_LABELS.get(key)
+    if hit is not None:
+        return hit[1]
+    if key.endswith("（つなぐ修）"):
+        return STORY_PLAY_CHAIN_REWRITE
+    if key.endswith("（つなぐ）"):
+        return STORY_PLAY_CHAIN
+    return STORY_PLAY_DEDICATED
+
+
+def apply_story_play(story: dict[str, Any], play: str) -> dict[str, Any]:
+    """Copy of the story JSON with the ③ play applied. The JSON on disk is never edited.
+
+    dedicated: seamless False, rewrite_chain_prompts False, every clip start still_or_t2v.
+    chain: seamless True, rewrite False, clip 2+ start continue (prompts untouched).
+    chain_rewrite: seamless True, rewrite True, clip 2+ start continue.
+    """
+    mode = str(play or STORY_PLAY_DEDICATED).strip()
+    if mode not in STORY_PLAYS:
+        raise SystemExit(f"再生の種類が分かりません: {play}")
+    out = json.loads(json.dumps(story))
+    clips = [dict(c) for c in (out.get("clips") or [])]
+    if mode == STORY_PLAY_DEDICATED:
+        out["seamless"] = False
+        out["rewrite_chain_prompts"] = False
+        for clip in clips:
+            clip["start"] = "still_or_t2v"
+    else:
+        out["seamless"] = True
+        out["rewrite_chain_prompts"] = mode == STORY_PLAY_CHAIN_REWRITE
+        for i, clip in enumerate(clips):
+            clip["start"] = "still_or_t2v" if i == 0 else "continue"
+    out["play"] = mode
+    out["clips"] = clips
+    return out
+
+
+def story_rewrite_chain_prompts(story: dict[str, Any]) -> bool:
+    """Packs without the key keep the current behaviour: seamless → rewrite clip 1 as one long take."""
+    if "rewrite_chain_prompts" in story:
+        return bool(story.get("rewrite_chain_prompts"))
+    return bool(story.get("seamless"))
+
+
 def explain_choice(situation: str, mode: str) -> str:
     sid = resolve_situation(situation)
     mid = resolve_mode(mode)
@@ -410,11 +581,18 @@ def explain_choice(situation: str, mode: str) -> str:
         if sid in SFW_SITUATIONS
         else "重ね上限は 行為1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
     )
+    play_line = ""
+    if sid in STORY_IDS:
+        play = resolve_story_play(situation)
+        play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）\n"
+    elif sid in CHAIN_PACK_IDS:
+        play_line = "再生: つなぐパック（最後のコマから I2V。1本目を長回しに直す。専用ではありません）\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
         f"説明: {SITUATION_HELP[sid]}\n"
-        f"使う部品: {parts}\n"
+        + play_line
+        + f"使う部品: {parts}\n"
         + cap
     )
 
@@ -1776,6 +1954,109 @@ def lock_i2v_story_prompt(text: str, *, continue_from_last: bool) -> str:
     return header + raw
 
 
+I2V_PICTURE1_HEADER = (
+    "For the target video, at 0.00 seconds into the target video, "
+    "<Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+)
+FINAL_SCENE_LINE = (
+    "This is the last clip. Continue from <Picture 1> without a cut, "
+    "then bring this scene to its ending inside this clip: finish the action, settle, "
+    "and hold the final composition. Same people, same clothes, same place, same camera. "
+    "No new people, no new room, no restart."
+)
+FINAL_SCENE_TARGET_LINE = "Within this clip the scene arrives at:"
+DEDICATED_SCENE_IMAGE_LINE = (
+    "<Picture 1> is this clip's own still. This clip is its own cut. "
+    "Do not continue from a previous last frame. "
+    "Start from this still and play only this clip's action in this place."
+)
+
+
+def rewrite_final_scene_i2v_prompt(prompt: str, scene_prompt: str = "") -> str:
+    """③合わせ for the LAST clip of a last-frame chain (never the first T2V→I2V join).
+
+    The clip still starts from the previous last frame (Picture 1 lock via
+    continue_chain_prompt). scene_prompt, when given, is the ③ scene the clip
+    should land in; the LoRA stack for it is inferred by the caller.
+    """
+    body = strip_chain_restart_language(prompt)
+    if FINAL_SCENE_LINE in body:
+        return body if "Picture 1" in body else continue_chain_prompt(body)
+    target = strip_chain_restart_language(scene_prompt)
+    if target:
+        target = re.sub(
+            r"For the target video, at 0\.00 seconds into the target video,\s*<Picture 1> \(from \[Shot 1\]\) is fully referenced\.\s*",
+            "",
+            target,
+        ).strip()
+    prefix, rest = split_leading_trigger_line(body)
+    rest = rest.strip()
+    joined = I2V_PICTURE1_HEADER + FINAL_SCENE_LINE
+    if rest:
+        joined += "\n\n" + rest
+    if target:
+        joined += "\n\n" + FINAL_SCENE_TARGET_LINE + "\n" + target
+    out = continue_chain_prompt(joined)
+    if prefix:
+        return prefix + "\n" + out
+    return out
+
+
+def rewrite_dedicated_scene_i2v_prompt(prompt: str) -> str:
+    """③合わせ for a dedicated (cut) story clip that starts from its own still.
+
+    Only the Picture 1 lock plus DEDICATED_SCENE_IMAGE_LINE are added. The JSON
+    text and its LoRA stay. Never used on last-frame clips.
+    """
+    raw = str(prompt or "").strip()
+    if DEDICATED_SCENE_IMAGE_LINE in raw:
+        return raw
+    if "Picture 1" in raw:
+        if raw.startswith(I2V_PICTURE1_HEADER.strip()):
+            head, _, tail = raw.partition("\n\n")
+            return head + "\n\n" + DEDICATED_SCENE_IMAGE_LINE + "\n\n" + tail.lstrip("\n")
+        return DEDICATED_SCENE_IMAGE_LINE + "\n\n" + raw
+    prefix, body = split_leading_trigger_line(raw)
+    text = I2V_PICTURE1_HEADER + DEDICATED_SCENE_IMAGE_LINE + "\n\n" + body.strip()
+    return (prefix + "\n" + text) if prefix else text
+
+
+def should_fit_scene_image_prompt(
+    *,
+    fit: bool,
+    mode: str,
+    clip_index: int,
+    clip_count: int,
+    is_story: bool = False,
+    chain: bool = False,
+    seamless: bool = False,
+    rewrite_chain_prompts: bool = True,
+) -> bool:
+    """Which clip may be rewritten toward the ③ scene / its still.
+
+    ① The first T2V→I2V join (chain, clip_index == 1) is never touched.
+    ② Dedicated stories: only still-based I2V clips (prepare_story_clip decides by still).
+    ③ Chains: the last clip only. chain-raw stories (rewrite off) never.
+    """
+    if not fit:
+        return False
+    if str(mode or "").lower() != "i2v":
+        return False
+    idx = int(clip_index)
+    last = int(clip_count) - 1
+    if is_story:
+        if not seamless:
+            return True
+        if not rewrite_chain_prompts:
+            return False
+        return idx == last and idx > 0
+    if chain:
+        if idx == 1:
+            return False
+        return idx == last and idx > 0
+    return True
+
+
 def story_canvas_wh(story: dict[str, Any]) -> tuple[int, int]:
     canvas = story.get("canvas") if isinstance(story.get("canvas"), dict) else {}
     w = int(canvas.get("width") or 0)
@@ -1825,6 +2106,23 @@ _CLIP_INDEX_RE = re.compile(r"^Clip \d+ of \d+\.\s*")
 _CAST_STORIES_RE = re.compile(r"Same faces and bodies as the [^.]*stories\.")
 CAST_LOCK_SERIES_LINE = "Same faces, hair and bodies in every clip of this series."
 HMMOTION_SITUATIONS = frozenset({"futa_sex"})
+STORY_CAST_NAMES = ("Sayaka", "Rei", "Aya", "Madoka", "Saleswoman", "Doctor", "Conductor")
+STORY_CAST_DEF_RE = re.compile(r"^(Sayaka|Rei|Aya|Madoka|Saleswoman|Doctor|Conductor): Adult", re.M)
+_KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
+_SPOKEN_RE = re.compile(r"「([^」]+)」")
+
+
+def spoken_lines(prompt: str) -> list[str]:
+    return _SPOKEN_RE.findall(str(prompt or ""))
+
+
+def story_cast_present(prompt: str) -> list[str]:
+    """Names with a full subject_definitions line in this prompt (packs add Saleswoman / Doctor / Conductor)."""
+    out: list[str] = []
+    for name in STORY_CAST_DEF_RE.findall(str(prompt or "")):
+        if name not in out:
+            out.append(name)
+    return out
 
 
 def compact_story_prompt(prompt: str) -> str:
@@ -1928,6 +2226,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     clip_s = float(story.get("clip_s") or 10)
+    no_kanji = bool(story.get("spoken_no_kanji"))
     for i, clip in enumerate(clips):
         n = i + 1
         duration = float(clip.get("duration_s") or clip_s)
@@ -1935,9 +2234,14 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             errors.append(f"clip {n}: duration_s must be 10 for H3 following (got {duration:g})")
         prompt = str(clip.get("prompt") or "")
         situation = str(clip.get("situation") or "").strip()
-        lines = re.findall(r"「([^」]+)」", prompt)
+        lines = spoken_lines(prompt)
         if "15-second take" in prompt or "15-second" in prompt:
             errors.append(f"clip {n}: use a 10-second take, not 15")
+        if no_kanji:
+            for spoken in lines:
+                if _KANJI_RE.search(spoken):
+                    errors.append(f"clip {n}: spoken_no_kanji pack, write the line in kana: 「{spoken}」")
+                    break
         prompt_l = prompt.lower()
         has_hmmotion = "hmmotion" in prompt_l
         if situation in HMMOTION_SITUATIONS and not prompt.startswith("hmmotion"):
@@ -1981,7 +2285,13 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
     clips = data.get("clips") or []
     n = len(clips)
     clip_s = float(data.get("clip_s") or 10)
-    if n < 8 or n > 12:
+    chain_pack = sid in CHAIN_PACK_IDS or str(data.get("kind") or "") == "chain"
+    if chain_pack:
+        if n < 4 or n > 12:
+            raise SystemExit("つなぐパックは 4〜12本です。")
+        if not data.get("seamless"):
+            raise SystemExit("つなぐパックは seamless: true です。")
+    elif n < 8 or n > 12:
         raise SystemExit("専用ストーリーは 8〜12本です。")
     if abs(clip_s - 10.0) > 0.01 and abs(clip_s - 15.0) > 0.01:
         raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
@@ -2044,10 +2354,17 @@ def prepare_story_clip(
     clip0_override: Path | str | None = None,
     prev_situation: str | None = None,
     force_t2v: bool = False,
+    fit_scene: bool = False,
 ) -> dict[str, Any]:
-    """One story clip. Hard cut: photo if present, else T2V. Matching LoRA per act.
+    """One story clip. Matching LoRA per act.
 
-    force_t2v: Colab ③「テキストから」は Drive に試験 jpg があっても使わない。
+    Dedicated (seamless False): hard cut. Photo if present, else T2V. Never the last frame.
+    Chain (seamless True, via apply_story_play or a named pack): clip 2+ is I2V from
+    last_frame. Clip 1 gets the long-take opening wrap only when rewrite_chain_prompts.
+
+    force_t2v: Colab ③「テキストから」は Drive に試験 jpg があっても使わない（最後のコマは使う）。
+    fit_scene: ③合わせ. Dedicated still I2V → rewrite_dedicated_scene_i2v_prompt.
+    chain_rewrite last clip → rewrite_final_scene_i2v_prompt. chain-raw: nothing.
     """
     clips = list(story.get("clips") or [])
     if index < 0 or index >= len(clips):
@@ -2055,32 +2372,43 @@ def prepare_story_clip(
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
     raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
-    speaks = bool(re.search(r"「[^」]+」", raw_prompt))
+    speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
+    rewrite_chain = story_rewrite_chain_prompts(story)
+    is_last = index == len(clips) - 1
+    # Dedicated JSON keeps start: still_or_t2v on every clip, so the chain plays
+    # decide by seamless + last_frame, not by start.
+    use_last = bool(seamless and last_frame and index > 0)
     still_dir = Path(stills_dir) if stills_dir is not None else Path(".")
-    still_path = None if force_t2v else resolve_story_still(
-        clip, still_dir, clip_index=index, override=clip0_override
-    )
+    still_path = None
+    if not force_t2v and not use_last:
+        still_path = resolve_story_still(clip, still_dir, clip_index=index, override=clip0_override)
     missing_still = None
-    want_still = (not force_t2v) and (start == "still_or_t2v" or bool(clip.get("still")))
+    want_still = (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
-    use_last = bool(
-        (not force_t2v) and seamless and start == "continue" and last_frame and still_path is None
-    )
-    if still_path is not None:
+    if use_last:
         mode = "i2v"
-        prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
-        first_kind = "still"
-    elif use_last:
-        mode = "i2v"
-        prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
+        if fit_scene and rewrite_chain and is_last:
+            prompt = rewrite_final_scene_i2v_prompt(raw_prompt)
+        else:
+            prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
         first_kind = "last_frame"
+    elif still_path is not None:
+        mode = "i2v"
+        if fit_scene and not seamless:
+            prompt = rewrite_dedicated_scene_i2v_prompt(raw_prompt)
+        else:
+            prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=False)
+        first_kind = "still"
     else:
         mode = "t2v"
         prompt, _ = apply_user_prompt(raw_prompt, mode="t2v", default_prompt=raw_prompt)
         first_kind = "t2v"
+    # chain-raw (rewrite off) sends the compacted JSON text as is.
+    if index == 0 and seamless and rewrite_chain:
+        prompt = rewrite_chain_opening_prompt(prompt)
 
     studio_sys_path(studio_root)
     from select_loras import select_loras
@@ -2130,4 +2458,7 @@ def prepare_story_clip(
         "height": height,
         "duration_s": float(clip.get("duration_s") or story.get("clip_s") or 10),
         "turbo": bool(cfg.get("turbo")),
+        "seamless": seamless,
+        "rewrite_chain_prompts": rewrite_chain,
+        "fit_scene": bool(fit_scene and ((use_last and rewrite_chain and is_last) or (still_path is not None and not seamless))),
     }
