@@ -398,7 +398,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-audio-1"' in src
+    assert 'FETCH_REV = "h3-20260907-vram-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中はカタカナ" in src
@@ -441,7 +441,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-audio-1" in blob
+    assert "h3-20260907-vram-1" in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
@@ -481,7 +481,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "prompt_now = lock_spoken_japanese(GRAPH_PROMPT)" in src
     assert 'AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]"' in src
     assert "prompt=prompt_now" in src
-    assert "前の LoRA を VRAM から下ろし" in src
+    assert "前の LoRA を VRAM から下ろし" not in src
+    assert "土台は載せたまま。この本の LoRA だけ繋ぎます" in src
+    swap = src.find('elif CLIP_INDEX > 0 and planned.get("stack_changed"):')
+    assert swap != -1
+    swap_chunk = src[swap: src.find("else:", swap)]
+    assert "comfy_free" not in swap_chunk
+    assert "warmup_h3_engine" not in swap_chunk
     assert "よく使う部品を全部ディスクへ入れます" in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
@@ -3582,7 +3588,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中はカタカナ" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-audio-1" in cell2
+    assert "h3-20260907-vram-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src

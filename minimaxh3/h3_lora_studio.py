@@ -1784,7 +1784,7 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
 
 
 def comfy_free(port: int = 8188) -> None:
-    """Unload models after OOM, UNET switch, or a live LoRA stack change. Not every clip."""
+    """Unload models after OOM or UNET switch (FL2VA↔Ref2VA). Not on LoRA stack change."""
     try:
         req = urllib.request.Request(
             f"http://127.0.0.1:{int(port)}/free",
@@ -2472,7 +2472,7 @@ def spoken_lines(prompt: str) -> list[str]:
 
 
 def stack_signature(stack: list[dict[str, Any]] | None) -> tuple[tuple[str, float], ...]:
-    """Stable id+strength fingerprint so VRAM unloads when the live LoRA set changes."""
+    """Stable id+strength fingerprint. Used to log LoRA swaps; does not dump VRAM."""
     out: list[tuple[str, float]] = []
     for row in stack or []:
         rid = str(row.get("id") or "").strip()

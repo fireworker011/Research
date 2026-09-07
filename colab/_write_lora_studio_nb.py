@@ -283,7 +283,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260907-audio-1"
+FETCH_REV = "h3-20260907-vram-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -1282,11 +1282,7 @@ else:
                 if GRAPH_MODE != "r2v" and not 試し打ちだけ:
                     warmup_h3_engine(COMFY_DIR, PORT, unet, force=True)
             elif CLIP_INDEX > 0 and planned.get("stack_changed"):
-                print("部品を切り替えます:", planned["label"], planned["situation"], "（前の LoRA を VRAM から下ろし、この本の部品だけ載せます）")
-                comfy_free(PORT)
-                clear_warmup_stamp(COMFY_DIR)
-                if GRAPH_MODE != "r2v" and not 試し打ちだけ:
-                    warmup_h3_engine(COMFY_DIR, PORT, unet, force=True)
+                print("部品を切り替えます:", planned["label"], planned["situation"], "（土台は載せたまま。この本の LoRA だけ繋ぎます）")
         else:
             GRAPH_MODE = MODE if CLIP_INDEX == 0 else "i2v"
             GRAPH_PROMPT = next_chain_prompt(CLIP_INDEX, first_prompt=prompt, prev_prompt=prev_prompt, extras=CHAIN_EXTRAS)
