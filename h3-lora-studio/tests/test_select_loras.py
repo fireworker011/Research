@@ -14,6 +14,7 @@ from select_loras import (  # noqa: E402
     list_situations,
     load_forbidden,
     lock_futa_anatomy,
+    lock_semen_look,
     select_loras,
     strip_male_subjects,
 )
@@ -357,6 +358,12 @@ def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
     assert "never balls in the foreground" not in face
     remnant = lock_futa_anatomy("Penis plus vagina, never balls that hangs unused. Not a man.")
     assert remnant == "Penis plus vagina, never balls. Her penis hangs unused. Not a man."
+    semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
+    assert "white liquid" in semen.lower()
+    assert "viscous" in semen.lower()
+    assert "ドロドロ" in semen
+    assert lock_semen_look(semen) == semen
+    assert "SEMEN LOOK:" not in lock_semen_look("Already oral. No climax.")
 
 
 def test_sampler_no_turbo_used_when_turbo_stripped():
@@ -584,6 +591,9 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "fills (s1)'s mouth" in olow or "fills (s1)'s mouth" in oral_c["prompt"].lower()
     assert "inside the mouth" in olow
     assert "not a facial" in olow
+    assert "white liquid" in olow
+    assert "viscous" in olow
+    assert "ドロドロ" in oral_c["prompt"]
     assert "futanari" in olow
     assert "adult man" not in olow
     assert "the man" not in olow

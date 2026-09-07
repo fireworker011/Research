@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-shorts-1"' in src
+    assert 'FETCH_REV = "h3-20260907-semen-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-shorts-1" in blob
+    assert "h3-20260907-semen-1" in blob
+    assert "h3-20260907-shorts-1" not in blob
     assert "h3-20260907-who-1" not in blob
     assert "h3-20260907-act15-1" not in blob
     assert "h3-20260907-door-visit-1" not in blob
@@ -3501,6 +3502,19 @@ def test_lock_futa_anatomy_default_and_never_futanari():
     assert "never balls that" not in hanging
 
 
+def test_lock_semen_look_names_white_liquid():
+    from h3_lora_studio import lock_semen_look
+
+    semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
+    assert "white liquid" in semen.lower()
+    assert "viscous" in semen.lower()
+    assert "ドロドロ" in semen
+    assert lock_semen_look(semen) == semen
+    assert "SEMEN LOOK:" not in lock_semen_look("Already oral. Mouth already on. No climax.")
+    by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
+    assert "white liquid" in by_sit.lower()
+
+
 def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
     from h3_lora_studio import (
         CHAIN_PACK_IDS,
@@ -3604,7 +3618,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-shorts-1" in cell2
+    assert "h3-20260907-semen-1" in cell2
     assert "本ごとの秒:" in src
     assert "cast_dir=CAST_DIR" in src
     assert "is_anthology" in src
@@ -3787,6 +3801,10 @@ def test_anthology_shorts_immoral(tmp_path):
             assert "Vertical 9:16 576x1024" in clip["prompt"]
         else:
             assert "Full bodies from head to feet" in clip["prompt"]
+        if sit == "oral_creampie":
+            assert "white liquid" in clip["prompt"].lower()
+            assert "ドロドロ" in clip["prompt"]
+            assert "viscous" in clip["prompt"].lower()
     cast = _write_cast_stills(tmp_path / "cast")
     prev = None
     prev_stack = None
@@ -3822,6 +3840,8 @@ def test_anthology_shorts_immoral(tmp_path):
             assert "minimax-h3-turbo-ref2v-4step" in ids or not planned.get("turbo")
         if planned["situation"] == "oral_creampie":
             assert ids == ["aftermidnight-ref2va"]
+            assert "white liquid" in planned["prompt"].lower()
+            assert "ドロドロ" in planned["prompt"]
         if planned["situation"] == "futa_sex":
             assert ids == ["aftermidnight-ref2va"]
             assert clip["prompt"].startswith("hmmotion, PENISLORA")

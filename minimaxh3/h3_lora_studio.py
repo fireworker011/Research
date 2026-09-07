@@ -2478,6 +2478,34 @@ def lock_futa_anatomy(text: str) -> str:
     return out
 
 
+SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
+SEMEN_LOOK_LINE = (
+    "SEMEN LOOK: The semen is a viscous sticky white liquid (ドロドロの白い液体). "
+    "Opaque white, thick, gooey strands. Visible white liquid, not clear, not water, not saliva-only."
+)
+_SEMEN_CUE_RE = re.compile(
+    r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
+    r"Already a facial|Already after ejaculation|"
+    r"viscous white|Thick white cum|shows the semen|The semen stays|"
+    r"white semen|white liquid",
+    re.I,
+)
+
+
+def lock_semen_look(text: str, *, situation: str = "") -> str:
+    """H3 skips semen unless the prompt names a viscous white liquid."""
+    raw = str(text or "")
+    if not raw or "SEMEN LOOK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEMEN_SITUATIONS and not _SEMEN_CUE_RE.search(raw):
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SEMEN_LOOK_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SEMEN_LOOK_LINE
+
+
 def spoken_lines(prompt: str) -> list[str]:
     return _SPOKEN_RE.findall(str(prompt or ""))
 
@@ -2805,7 +2833,7 @@ def _anthology_prompt(
         "non_diegetic_music:\n"
         "N/A"
     )
-    return lock_futa_anatomy(body)
+    return lock_semen_look(lock_futa_anatomy(body))
 
 
 def generate_immoral_shorts() -> dict[str, Any]:
@@ -2858,13 +2886,17 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "environment": (
                 "Kitchen sink, daytime, dirty dishes piled, water still running. The sink is only background."
             ),
-            "lock": "CUMOUF. Cum floods Aya's mouth and runs out the side onto her mini breasts. Inside the mouth. Not a facial. No speech.",
+            "lock": (
+                "CUMOUF. Viscous sticky white liquid (ドロドロの白い液体) floods Aya's mouth and runs out the side "
+                "onto her mini breasts. Opaque white liquid, not clear. Inside the mouth. Not a facial. No speech."
+            ),
             "camera": _SHORTS_CAM_ORAL_STAND,
             "action": (
                 "Aya's lips stay wrapped around Rei's 20cm at the sink. Rei grips the counter and cums hard "
-                "inside her little sister's mouth. Thick white cum floods the mouth, overflows down the shaft, "
-                "onto Aya's chin and mini breasts. Messy swallows, more leaking than she can keep. "
-                "End: mouth still on, cum still leaking."
+                "inside her little sister's mouth. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth, "
+                "overflows down the shaft as thick opaque white gooey strands onto Aya's chin and mini breasts. "
+                "Messy swallows, more white liquid leaking than she can keep. "
+                "End: mouth still on, white liquid still leaking."
             ),
             "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water. No spoken words.",
         },
@@ -2981,12 +3013,16 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "while dinner is still on the table."
             ),
             "environment": "Japanese dining table, evening, bowls still out. Tight under the table. Dishes only background.",
-            "lock": "CUMOUF under the table during dinner. Cum floods Aya's mouth. Inside the mouth. Not a facial. No speech.",
+            "lock": (
+                "CUMOUF under the table during dinner. Viscous sticky white liquid (ドロドロの白い液体) floods Aya's mouth. "
+                "Opaque white liquid, not clear. Inside the mouth. Not a facial. No speech."
+            ),
             "camera": _SHORTS_CAM_ORAL_TABLE,
             "action": (
                 "Under the family table Aya's lips stay wrapped around Madoka's 20cm. Madoka cums inside her sister's "
-                "mouth while the dinner bowls sit above. Thick white cum floods the mouth and runs down the shaft "
-                "onto the tatami edge. Messy swallows. End: mouth still on, cum leaking."
+                "mouth while the dinner bowls sit above. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth "
+                "and runs down the shaft onto the tatami edge as thick opaque white gooey strands. Messy swallows. "
+                "End: mouth still on, white liquid leaking."
             ),
             "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink. No spoken words.",
         },
@@ -3219,6 +3255,13 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                 errors.append(f"clip {n}: sex clip must already be in / show the joining point")
             if situation == "futa_masturbation" and "strok" not in prompt_l and "pump" not in prompt_l and "lap" not in prompt_l:
                 errors.append(f"clip {n}: masturbation clip needs a lap/hand camera")
+            if situation in SEMEN_SITUATIONS:
+                look = lock_semen_look(prompt, situation=situation)
+                look_l = look.lower()
+                if "white liquid" not in look_l:
+                    errors.append(f"clip {n}: ejaculation must name a white liquid")
+                if "viscous" not in look_l and "sticky" not in look_l and "ドロドロ" not in look:
+                    errors.append(f"clip {n}: ejaculation must be viscous / ドロドロ")
         if lines:
             if situation != "futa_visible":
                 errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
@@ -3356,7 +3399,10 @@ def prepare_story_clip(
         raise SystemExit(f"クリップ番号が範囲外です: {index}")
     clip = clips[index]
     situation = str(clip.get("situation") or "").strip()
-    raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
+    raw_prompt = lock_semen_look(
+        compact_story_prompt(str(clip.get("prompt") or "")),
+        situation=situation,
+    )
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))

@@ -133,6 +133,34 @@ def lock_futa_anatomy(text: str) -> str:
     return out
 
 
+SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
+SEMEN_LOOK_LINE = (
+    "SEMEN LOOK: The semen is a viscous sticky white liquid (ドロドロの白い液体). "
+    "Opaque white, thick, gooey strands. Visible white liquid, not clear, not water, not saliva-only."
+)
+_SEMEN_CUE_RE = re.compile(
+    r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
+    r"Already a facial|Already after ejaculation|"
+    r"viscous white|Thick white cum|shows the semen|The semen stays|"
+    r"white semen|white liquid",
+    re.I,
+)
+
+
+def lock_semen_look(text: str, *, situation: str = "") -> str:
+    """H3 skips semen unless the prompt names a viscous white liquid. Keep in sync with h3_lora_studio.lock_semen_look."""
+    raw = str(text or "")
+    if not raw or "SEMEN LOOK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEMEN_SITUATIONS and not _SEMEN_CUE_RE.search(raw):
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SEMEN_LOOK_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SEMEN_LOOK_LINE
+
+
 FEMININE_NEGATIVE = (
     "man, male, male body, masculine, muscular man, muscular male, muscle-bound, "
     "bodybuilder, beard, mustache, adam's apple, male face, male torso, male chest, "
@@ -555,6 +583,7 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
     prompt = lock_futa_anatomy(prompt)
+    prompt = lock_semen_look(prompt, situation=str(profile.get("id") or ""))
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:
         # Keep the H3 schema order: the lock belongs to the visual description,
