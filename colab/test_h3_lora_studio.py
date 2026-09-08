@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-meat-1"' in src
+    assert 'FETCH_REV = "h3-20260908-kenshin-1"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-meat-1" in blob
+    assert "h3-20260908-kenshin-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -3965,7 +3965,7 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert set(story["download"]) == set(situation_ids("clinic-75s"))
     assert semen_share_plan(story) == [(4, "on_cumouf")]
     want = [
-        ["ツギのヒトどうぞー！", "ヨロシクオネガイします！あ、オチンチンおっきい！"],
+        ["ヨロシクオネガイします！あ、オチンチンおっきい！", "どうぞおすわりください"],
         ["ちょっとサイキン、ウンチがでなくて。ミッカまえからです", "タイヘンですね！じゃあまずおクチからみましょう！"],
         [],
         [],
@@ -4043,6 +4043,14 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "CLOSED" in c1
     assert "Do not show Aya until the door opens" in c1
     assert "exam" in c1.lower() or "clinic" in c1.lower()
+    assert "LEFT" in c1
+    assert "legs spread" in c1.lower()
+    assert "strok" in c1.lower() or "シコシコ" in c1
+    assert "expressionless" in c1.lower()
+    assert "どうぞおすわりください" in c1
+    assert "RIGHT" in c1
+    assert "ツギのヒト" not in c1
+    assert "brief wet kiss" not in c1.lower()
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     assert "START CAST:" in p0["prompt"]
@@ -5224,7 +5232,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-meat-1" in cell2
+    assert "h3-20260908-kenshin-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
