@@ -15,6 +15,7 @@ from select_loras import (  # noqa: E402
     list_situations,
     load_forbidden,
     lock_futa_anatomy,
+    lock_futa_shaft,
     lock_semen_look,
     select_loras,
     strip_male_subjects,
@@ -361,6 +362,21 @@ def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
     assert "never balls in the foreground" not in face
     remnant = lock_futa_anatomy("Penis plus vagina, never balls that hangs unused. Not a man.")
     assert remnant == "Penis plus vagina, never balls. Her penis hangs unused. Not a man."
+    shaft = lock_futa_shaft(out)
+    assert "SHAFT LOOK:" in shaft
+    assert "20cm" in shaft
+    assert "thick human girth" in shaft
+    assert "never balls" in shaft.lower()
+    assert "NO testicles" in shaft
+    assert lock_futa_shaft(shaft) == shaft
+    assert "SHAFT LOOK:" not in lock_futa_shaft(never)
+    locked_futa, _ = apply_feminine_lock(
+        "Clear futanari. Erect 20cm.\noverall_soundscape:\nWind.",
+        "",
+        {"id": "futa_visible", "feminine_lock": True},
+    )
+    assert "SHAFT LOOK:" in locked_futa
+    assert locked_futa.find("SHAFT LOOK:") < locked_futa.find("overall_soundscape:")
     semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
     assert "white liquid" in semen.lower()
     assert "viscous" in semen.lower()

@@ -2944,6 +2944,16 @@ def lock_futa_anatomy(text: str) -> str:
     return out
 
 
+SHAFT_LOOK_LINE = (
+    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, straight, heavy, "
+    "pale-tan shaft, flushed pink-red glans with a clear corona. Same size and same shape "
+    "the whole take. Not tiny, not horse-like, not a skinny stick, not a tapered spike, "
+    "not a hook, not changing mid-clip. NO testicles, NO scrotum. Hairless female pussy "
+    "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+
+
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
     "SEMEN LOOK: The semen is a heavy ネットリ viscous sticky white liquid (ドロドロの白い液体). "
@@ -3045,6 +3055,22 @@ def _inject_before_soundscape(raw: str, line: str) -> str:
     if cut > 0:
         return text[:cut].rstrip() + "\n" + line + "\n" + text[cut:]
     return text.rstrip() + "\n" + line
+
+
+def lock_futa_shaft(text: str) -> str:
+    """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
+    raw = str(text or "")
+    if not raw or "SHAFT LOOK:" in raw:
+        return raw
+    has_futa = (
+        "Clear futanari" in raw
+        or "Erect 20cm" in raw
+        or "erect 20cm" in raw
+        or "futanari: erect" in raw.lower()
+    )
+    if not has_futa:
+        return raw
+    return _inject_before_soundscape(raw, SHAFT_LOOK_LINE)
 
 
 URINE_LOOK_LINE = (
@@ -3771,7 +3797,7 @@ def _anthology_prompt(
         "non_diegetic_music:\n"
         "N/A"
     )
-    return lock_semen_look(lock_futa_anatomy(body))
+    return lock_semen_look(lock_futa_shaft(lock_futa_anatomy(body)))
 
 
 def generate_immoral_shorts() -> dict[str, Any]:
@@ -4439,6 +4465,7 @@ def prepare_story_clip(
     share_modes = {i: mode for i, mode in semen_share_plan(story)}
     share_mode = share_modes.get(index)
     raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
+    raw_prompt = lock_futa_shaft(raw_prompt)
     raw_prompt = lock_start_cast(raw_prompt)
     raw_prompt = lock_semen_look(raw_prompt, situation=situation)
     raw_prompt = lock_urine_look(raw_prompt)

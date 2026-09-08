@@ -158,6 +158,35 @@ def lock_futa_anatomy(text: str) -> str:
     return out
 
 
+SHAFT_LOOK_LINE = (
+    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, straight, heavy, "
+    "pale-tan shaft, flushed pink-red glans with a clear corona. Same size and same shape "
+    "the whole take. Not tiny, not horse-like, not a skinny stick, not a tapered spike, "
+    "not a hook, not changing mid-clip. NO testicles, NO scrotum. Hairless female pussy "
+    "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+
+
+def lock_futa_shaft(text: str) -> str:
+    """Pin futa penis to erect 20cm, same shape. Keep in sync with h3_lora_studio.lock_futa_shaft."""
+    raw = str(text or "")
+    if not raw or "SHAFT LOOK:" in raw:
+        return raw
+    has_futa = (
+        "Clear futanari" in raw
+        or "Erect 20cm" in raw
+        or "erect 20cm" in raw
+        or "futanari: erect" in raw.lower()
+    )
+    if not has_futa:
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SHAFT_LOOK_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SHAFT_LOOK_LINE
+
+
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
     "SEMEN LOOK: The semen is a viscous sticky white liquid (ドロドロの白い液体). "
@@ -623,6 +652,7 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
     prompt = lock_futa_anatomy(prompt)
+    prompt = lock_futa_shaft(prompt)
     prompt = lock_semen_look(prompt, situation=str(profile.get("id") or ""))
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:

@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-semen-1"' in src
+    assert 'FETCH_REV = "h3-20260908-shaft-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -495,7 +495,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-semen-1" in blob
+    assert "h3-20260908-shaft-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -572,6 +572,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert '"cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames' in src
     assert '"SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
@@ -4120,6 +4121,40 @@ def test_lock_futa_anatomy_default_and_never_futanari():
     assert "never balls that" not in hanging
 
 
+def test_lock_futa_shaft_pins_20cm_and_skips_never_futanari(tmp_path):
+    from h3_lora_studio import lock_futa_shaft, load_story, prepare_story_clip
+
+    raw = (
+        "Clear futanari. Erect 20cm, pale shaft, pink glans.\n"
+        "overall_soundscape:\nStreet."
+    )
+    out = lock_futa_shaft(raw)
+    assert "SHAFT LOOK:" in out
+    assert "When erect: 20cm" in out
+    assert "thick human girth" in out
+    assert "NO testicles" in out
+    assert "never balls" in out.lower()
+    assert "NEVER futanari stay NO penis" in out
+    assert out.find("SHAFT LOOK:") < out.find("overall_soundscape:")
+    assert lock_futa_shaft(out) == out
+    never = "Aya: Adult Japanese woman, 22, fully nude, hairless, NO penis, NEVER futanari."
+    assert "SHAFT LOOK:" not in lock_futa_shaft(never)
+
+    sales = prepare_story_clip(load_story("sales-visit-60s"), 0, stills_dir=tmp_path)
+    assert "SHAFT LOOK:" in sales["prompt"]
+    assert "When erect: 20cm" in sales["prompt"]
+    cafe0 = prepare_story_clip(load_story("cafe-100s"), 0, stills_dir=tmp_path)
+    assert "SHAFT LOOK:" not in cafe0["prompt"]
+    cafe1 = prepare_story_clip(
+        load_story("cafe-100s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "SHAFT LOOK:" in cafe1["prompt"]
+    commute1 = prepare_story_clip(
+        load_story("commute-120s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "SHAFT LOOK:" in commute1["prompt"]
+
+
 def test_lock_semen_look_names_white_liquid():
     from h3_lora_studio import lock_semen_look
 
@@ -4254,6 +4289,12 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 assert "urethral" in prompt.lower(), (story["id"], i + 1)
                 assert "yellow" in prompt.lower(), (story["id"], i + 1)
             orig_sit = str(clip.get("situation") or "")
+            if "Clear futanari" in prompt or "futanari: erect" in prompt.lower():
+                assert "SHAFT LOOK:" in prompt, (story["id"], i + 1)
+                assert "When erect: 20cm" in prompt, (story["id"], i + 1)
+                assert "thick human girth" in prompt, (story["id"], i + 1)
+            elif "NEVER futanari" in prompt and "Clear futanari" not in raw:
+                assert "SHAFT LOOK:" not in prompt, (story["id"], i + 1)
             if orig_sit in {"oral", "futa_blowjob"} and urine_re.search(raw):
                 assert "PLEASURE FACE:" not in prompt, (story["id"], i + 1)
             elif orig_sit in {"oral", "futa_blowjob"}:
@@ -4503,6 +4544,7 @@ def test_notebook_story_play_flow():
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert 'getattr(_h3_studio, "sanitize_story_soundscape", None)' in src
     assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
@@ -4520,7 +4562,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-semen-1" in cell2
+    assert "h3-20260908-shaft-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -4552,6 +4594,8 @@ def test_notebook_story_play_flow():
     assert "lock_pleasure_face" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
+    assert "def lock_futa_shaft" in helper_src
+    assert "SHAFT LOOK:" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
     assert '"MiniMaxH3ReferenceToVideo"' in helper_src or "R2V_NODE" in helper_src
 
