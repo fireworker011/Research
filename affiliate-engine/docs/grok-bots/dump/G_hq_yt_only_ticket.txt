@@ -4,7 +4,9 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_sns_ticket.txt �
 
 今すぐ次を開け。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/FUNNEL_TICKET.md
+clone なら `affiliate-engine/docs/grok-bots/FUNNEL_TICKET.md`。無ければ:
+
+https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/FUNNEL_TICKET.md
 
 仕事はこれだけ:
 
@@ -15,4 +17,4 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a9
 
 復唱して、人間への指示を1文で書け。数字は発明するな。URLはチャットに貼るな。
 
-次のファイル名だけ: `dump/G_hq_banner_10.txt`（出品するな。結合するな）。
+次のファイル名だけ: `dump/G_hq_a8_csv.txt`（見た数字だけ。開いていないなら足すな。バナーは出品するな。結合するな）。

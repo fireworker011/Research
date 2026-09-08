@@ -6,7 +6,7 @@
 
 `affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt`
 
-無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/cursor/hq-cw-remain-a971/affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt
+無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt
 
 `G_hq_cw_n10.txt` は開けるな（閉じた件へ送る）。応募本文は clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md` の 13406725 を先に開け。
 
