@@ -203,6 +203,23 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
         "synth-pussy-h3",
     ],
+    "last-train-120s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+        "synth-pussy-h3",
+        "cowgirl-position-h3",
+        "hmcumshot-v2",
+    ],
+    "semen-bath-70s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+        "hmcumshot-v2",
+    ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
     # pee-as-drink = oral, cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy.
     "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -317,10 +334,16 @@ SITUATION_JA = {
     "医院ケンシン": "clinic-75s",
     "終点40秒（つなぐ）": "last-stop-40s",
     "終点（つなぐ）": "last-stop-40s",
+    "終電": "last-train-120s",
+    "終電120秒": "last-train-120s",
+    "ザーメン風呂": "semen-bath-70s",
+    "ザーメンフロ": "semen-bath-70s",
     "sales-visit-60s": "sales-visit-60s",
     "checkup-100s": "checkup-100s",
     "clinic-75s": "clinic-75s",
     "last-stop-40s": "last-stop-40s",
+    "last-train-120s": "last-train-120s",
+    "semen-bath-70s": "semen-bath-70s",
     "cafe-100s": "cafe-100s",
     "train-sales-80s": "train-sales-80s",
     "red-light-50s": "red-light-50s",
@@ -451,6 +474,8 @@ SITUATION_HELP = {
     "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
     "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。前半テンポ良く。台詞10秒・2行まで。キス15は身を胸につける（胸は揉まない）。ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
+    "last-train-120s": "終電。終点の延長。9本＝120秒。9:16。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。ジュボ30秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。座ったまま騎乗→中に出す→抜くとドロドロが車掌のマンコから流れ出る。hmmotion なし。既存の終点はそのまま。",
+    "semen-bath-70s": "ザーメン風呂。5本＝70秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -532,6 +557,8 @@ CHAIN_PACK_ORDER = (
     "checkup-100s",
     "clinic-75s",
     "last-stop-40s",
+    "last-train-120s",
+    "semen-bath-70s",
     "cafe-100s",
     "train-sales-80s",
     "red-light-50s",
@@ -615,6 +642,8 @@ STORY_TITLE_JA = {
     "checkup-100s": "定期検診",
     "clinic-75s": "ケンシン",
     "last-stop-40s": "終点",
+    "last-train-120s": "終電",
+    "semen-bath-70s": "ザーメン風呂",
     "cafe-100s": "カフェ",
     "train-sales-80s": "車内販売",
     "red-light-50s": "赤信号",
@@ -735,7 +764,7 @@ def is_story(situation: str) -> bool:
 
 
 def is_chain_pack(situation: str) -> bool:
-    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 建前 / 物語の追加). Not a story."""
+    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 終電 / ザーメン風呂 / 建前 / 物語の追加). Not a story."""
     try:
         return resolve_situation(situation) in CHAIN_PACK_IDS
     except SystemExit:
@@ -3182,7 +3211,7 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
         if "PLEASURE FACE:" in raw:
             return raw
         return _inject_before_soundscape(raw, PLEASURE_JUPO_LINE)
-    if sit in {"futa_sex", "doggy", "cunnilingus_futa"}:
+    if sit in {"futa_sex", "doggy", "riding", "cunnilingus_futa"}:
         if "PLEASURE FACE:" in raw:
             return raw
         return _inject_before_soundscape(raw, SEX_PLEASURE_LINE)
@@ -3245,6 +3274,7 @@ SEMEN_SHARE_SKIP = frozenset({
     "camp-50s",
     "back-wash-60s",
     "lecture-desk-50s",
+    "semen-bath-70s",
 })
 # story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
 # on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
@@ -3265,6 +3295,7 @@ SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
     "engawa-120s": [(10, "on_cumouf")],
     "sunday-120s": [(10, "on_cumouf")],
     "last-stop-40s": [(2, "on_cumouf")],
+    "last-train-120s": [(3, "on_cumouf")],
     "red-light-50s": [(3, "on_cumouf")],
 }
 _REMAINING_SILENCE_RE = re.compile(
@@ -4276,7 +4307,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                 errors.append(f"clip {n}: oral camera must be close or medium-close")
             if situation == "cunnilingus_futa" and "close-up" not in prompt_l and "extreme close" not in prompt_l:
                 errors.append(f"clip {n}: cunnilingus camera must be a close-up")
-            if situation in {"futa_sex", "doggy"} and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
+            if situation in {"futa_sex", "doggy", "riding"} and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
                 errors.append(f"clip {n}: sex clip must already be in / show the joining point")
             if situation == "futa_masturbation" and "strok" not in prompt_l and "pump" not in prompt_l and "lap" not in prompt_l:
                 errors.append(f"clip {n}: masturbation clip needs a lap/hand camera")
