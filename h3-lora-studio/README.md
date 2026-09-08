@@ -169,7 +169,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 - **編集者向けのメタ行を消す**。`Do not copy the previous clip` / `Clip 7 of 12` / CAST LOCK の他話タイトル列挙はモデルに意味が無い。CAST LOCK は「同じ顔・髪・体」の1文に置き換える
 - **H3 の正規順に並べ直す**。`subject_definitions → environment → integrated_multimodal_description → overall_soundscape → non_diegetic_music`。WHO の配置と HARD LOCK / CAMERA / LIP SYNC は description ブロックの中に畳む。feminine_lock も soundscape の前に入る
 - **セリフの本だけフルステップ**。`「」` がある本は Larry とシネマを外して竿だけ・res_multistep 12step（口の動きと日本語の音。シネマ＋口パクで顎が溶ける）。歩く・キス・テレビの本は Larry 0.6 / 8step
-- **音声は「」の台詞を1回だけ**。`lock_spoken_japanese` が `overall_soundscape` 先頭に `[AUDIO-LOCK] spoken_transcript: once`（count:1 repeat:0）を足し、同じ「」の2回目以降を消す。止めの日本語は書かない。10秒の余りは無音。③の再生グラフも同じロック。`validate_story_follow` は「」内のラテン文字も落とす
+- **音声チャンネルは効果音と「」だけ**。`lock_spoken_japanese` が `overall_soundscape` から `lip-synced` / `No other speech` / `No spoken words` / 台詞だけ を消す。同じ「」は絵（LIP SYNC）と音で各1つ。`[AUDIO-LOCK] other_text: not_spoken` と日本語の音声ルールは撤回（H3が音読した）。③の再生グラフも同じ。`validate_story_follow` は「」内のラテン文字も落とす
 - **VRAM の /free は OOM と土台切替だけ**。②の全部入れはディスクへ保存するだけ。再生グラフは今の本の LoRA だけ繋ぐ。口パクでシネマを外しても H3 本体は載せたまま。FL2VA↔Ref2VA のときとメモリ不足の再試行だけ `/free`
 - **②の2回目は設定だけ**（既定オン）。文章・JSON を GitHub tar で一括取得。土台・LoRA の再取得と Drive の全部一覧は飛ばす。土台が無いときだけ全部入れる。欠けた部品は③で足す
 - **トリガーは単語一致**。`DY` が `body` の中に見つかって落ちていた。今は `PENISLORA, DY` が歩く本の先頭に付く

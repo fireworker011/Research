@@ -2866,12 +2866,44 @@ _SPOKEN_RE = re.compile(r"「([^」]+)」")
 _LATIN_IN_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af]")
 _JP_SCRIPT_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
 SPEECH_FACE_KILLER_IDS = frozenset({"cinema-dy"})
-# ASCII on purpose. Japanese instruction sentences get TTS'd as dialogue.
+# Kept so old notebooks / cached prompts can still be stripped. Do not inject a
+# new lock: H3 TTS'd both the JP 音声ルール and the ASCII "only say the line" flags.
 AUDIO_LOCK_MARK = "[AUDIO-LOCK]"
 _AUDIO_LOCK_LINE_RE = re.compile(r"(?:【音声ルール】|\[AUDIO-LOCK\])[^\n]*\n?")
 _OLD_JP_AUDIO_LOCK_RE = re.compile(
     r"プロンプトは読まない。.*?(?:口は閉じて部屋の音だけ。|意味のわからない音は禁止。)"
 )
+_JP_SPEECH_ONLY_RE = re.compile(
+    r"声に出していいのは日本語の台詞だけ。[^\n]*|"
+    r"英語を音読しない。[^\n]*|"
+    r"台詞のあとに言葉を足さない。[^\n]*|"
+    r"余った秒数は無音。[^\n]*"
+)
+_NEXT_AFTER_SOUND_RE = re.compile(r"\n(?:non_diegetic_music|feminine_lock)\s*:")
+_SOUND_SPEAKER_RE = re.compile(
+    r"(?:(?:The|A|An)\s+)?[A-Z][\w'-]+\s+(?:speaks|answers),?\s*lip[- ]synced:\s*",
+    re.I,
+)
+_SOUND_LIPSYNC_RE = re.compile(r"\blip[- ]synced:\s*", re.I)
+_SOUND_THEN_QUOTE_RE = re.compile(r"」\s*then\s*「")
+_SOUND_META_RES = (
+    re.compile(r"\s*No other speech\.?", re.I),
+    re.compile(r"\s*No spoken words\.?", re.I),
+    re.compile(r"\s*No speech from the four\.?", re.I),
+    re.compile(r"\s*\bNo speech\.?", re.I),
+    re.compile(r"\bHigh adult (?:fe)?male voices only\.?", re.I),
+    re.compile(r"\bone close high adult (?:fe)?male line,?\s*", re.I),
+    re.compile(
+        r"(?:^|[.,]\s*)Close high adult (?:fe)?male voices?\.?",
+        re.I,
+    ),
+)
+_SOUND_VOICE_META_RE = re.compile(
+    r"(?:,\s*)?(?:under\s+)?(?:(?:a|one|two)\s+)?(?:close\s+)?(?:high\s+)?"
+    r"adult\s+(?:fe)?male\s+(?:voice|voices|line)s?\b[,.]?",
+    re.I,
+)
+_SOUND_THEN_ONLY_RE = re.compile(r"\bthen only\b[^.]*\.?", re.I)
 # Default futanari = 玉なし＋マンコあり (the futa-blowjob still). Keep in sync with select_loras.lock_futa_anatomy.
 FUTA_SCENE_ANATOMY = (
     "futanari: erect penis, hairless female pussy at the base of the shaft, "
@@ -3375,15 +3407,34 @@ def jp_outside_quotes(text: str) -> str:
 
 
 def strip_audio_lock(prompt: str) -> str:
-    """Drop a previous audio lock so a new one can be written."""
+    """Drop a previous audio lock (JP 音声ルール or ASCII only-say-the-line flags)."""
     text = _AUDIO_LOCK_LINE_RE.sub("", str(prompt or ""))
     text = _OLD_JP_AUDIO_LOCK_RE.sub("", text)
+    text = _JP_SPEECH_ONLY_RE.sub("", text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
-def collapse_spoken_quotes(text: str, lines: list[str] | None) -> str:
-    """Keep the first 「line」 (mouth visemes). Extra copies make H3 loop the line."""
-    out = str(text or "")
+def soundscape_bounds(prompt: str) -> tuple[int, int] | None:
+    """Body of overall_soundscape, after the label, until the next canonical section."""
+    marker = "overall_soundscape:"
+    idx = str(prompt or "").find(marker)
+    if idx < 0:
+        return None
+    start = idx + len(marker)
+    nxt = _NEXT_AFTER_SOUND_RE.search(prompt, start)
+    end = nxt.start() if nxt else len(prompt)
+    return start, end
+
+
+def soundscape_text(prompt: str) -> str:
+    span = soundscape_bounds(prompt)
+    if span is None:
+        return ""
+    return str(prompt)[span[0] : span[1]]
+
+
+def _collapse_quotes_in(chunk: str, lines: list[str] | None) -> str:
+    out = str(chunk or "")
     for ln in lines or []:
         token = f"「{ln}」"
         first = out.find(token)
@@ -3393,48 +3444,105 @@ def collapse_spoken_quotes(text: str, lines: list[str] | None) -> str:
     return out
 
 
-def audio_lock_line(lines: list[str] | None, *, transcript: str | None = None) -> str:
-    """ASCII lock. Embed 「」 only when the prompt has no copy left (visemes already have one)."""
-    spoken = [str(x).strip() for x in (lines or []) if str(x).strip()]
-    if spoken:
-        if transcript:
-            head = f"spoken_transcript: {transcript} count: 1."
-        else:
-            head = "spoken_transcript: once. count: 1."
-        return (
-            f"{AUDIO_LOCK_MARK} {head} repeat: 0. loop: off. "
-            "pace: natural. monotone: off. emotion: on. stretch: off. rest_of_clip: silence. "
-            "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
-        )
+def collapse_spoken_quotes(text: str, lines: list[str] | None) -> str:
+    """Keep one 「line」 in the picture block and one in the soundscape.
+
+    Whole-prompt collapse used to delete the soundscape copy and leave
+    'speaks, lip-synced: . No other speech' as the audio — H3 read that English.
+    """
+    raw = str(text or "")
+    span = soundscape_bounds(raw)
+    if span is None:
+        return _collapse_quotes_in(raw, lines)
+    start, end = span
     return (
-        f"{AUDIO_LOCK_MARK} spoken_transcript: mute. "
-        "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
+        _collapse_quotes_in(raw[:start], lines)
+        + _collapse_quotes_in(raw[start:end], lines)
+        + _collapse_quotes_in(raw[end:], lines)
     )
 
 
+def strip_soundscape_speech_meta(body: str) -> str:
+    """Drop TTS fodder. Keep SFX and 「」. Do not write 'only say the line'."""
+    text = str(body or "")
+    if not text.strip():
+        return text
+    text = _SOUND_SPEAKER_RE.sub("", text)
+    text = _SOUND_LIPSYNC_RE.sub("", text)
+    text = _SOUND_THEN_QUOTE_RE.sub("」「", text)
+    for rx in _SOUND_META_RES:
+        text = rx.sub("", text)
+    text = _SOUND_VOICE_META_RE.sub("", text)
+    text = _SOUND_THEN_ONLY_RE.sub("", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r" *\n *", "\n", text)
+    text = re.sub(r"\s+([.,;:])", r"\1", text)
+    text = re.sub(r",\s*,+", ",", text)
+    text = re.sub(r"\.{2,}", ".", text)
+    text = re.sub(r",(?:\s*\.)+", ".", text)
+    lines = [ln.strip(" ,;:-") for ln in text.split("\n")]
+    return "\n".join(ln for ln in lines if ln)
+
+
+def sanitize_story_soundscape(prompt: str) -> str:
+    """overall_soundscape is the audio channel. Strip speech-direction English."""
+    raw = str(prompt or "")
+    span = soundscape_bounds(raw)
+    if span is None:
+        return raw
+    start, end = span
+    body = strip_soundscape_speech_meta(raw[start:end])
+    if body and not body.startswith("\n"):
+        body = "\n" + body
+    if body and not body.endswith("\n") and end < len(raw):
+        body += "\n"
+    elif not body and end < len(raw):
+        body = "\n"
+    return raw[:start] + body + raw[end:]
+
+
+def _put_quotes_in_soundscape(prompt: str, lines: list[str]) -> str:
+    """Audio channel needs the 「」. Visemes may already have a copy in LIP SYNC."""
+    wanted = [str(x).strip() for x in lines if str(x).strip()]
+    if not wanted:
+        return prompt
+    raw = str(prompt or "")
+    span = soundscape_bounds(raw)
+    quotes = " ".join(f"「{ln}」" for ln in wanted if f"「{ln}」" not in soundscape_text(raw))
+    if not quotes:
+        return raw
+    if span is None:
+        return raw.rstrip() + "\n" + quotes
+    start, end = span
+    body = raw[start:end].rstrip()
+    if body and not body.endswith("\n"):
+        body += "\n"
+    body = (body + quotes).rstrip() + "\n"
+    if not body.startswith("\n"):
+        body = "\n" + body
+    return raw[:start] + body + raw[end:]
+
+
+def audio_lock_line(lines: list[str] | None, *, transcript: str | None = None) -> str:
+    """Retracted. The old ASCII lock (other_text: not_spoken) was spoken as dialogue."""
+    return ""
+
+
 def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
-    """Pin H3 audio to one 「」 reading. Duplicate quotes and 10s leftover otherwise loop
-    or stretch the line. Never put Japanese instructions in the lock (those get TTS'd).
+    """Soundscape = SFX + 「」. Do not add 'only say the line' (H3 TTS'd that).
+
+    Collapse extras per section so the audio channel keeps its quote. Strip old
+    JP/ASCII locks. Missing quotes are written into the soundscape, never a lock.
     """
     raw = str(prompt or "")
     spoken = list(lines) if lines is not None else spoken_lines(raw)
     text = strip_audio_lock(raw)
     if not spoken:
         spoken = spoken_lines(text)
+    text = sanitize_story_soundscape(text)
     text = collapse_spoken_quotes(text, spoken)
-    need_embed = bool(spoken) and any(text.count(f"「{ln}」") == 0 for ln in spoken)
-    if need_embed:
-        for ln in spoken:
-            text = text.replace(f"「{ln}」", "")
-        lock = audio_lock_line(spoken, transcript="".join(f"「{ln}」" for ln in spoken))
-    else:
-        lock = audio_lock_line(spoken)
-    marker = "overall_soundscape:"
-    idx = text.find(marker)
-    if idx >= 0:
-        insert_at = idx + len(marker)
-        return text[:insert_at] + "\n" + lock + text[insert_at:]
-    return text + "\n" + lock
+    text = _put_quotes_in_soundscape(text, spoken)
+    return text
 
 
 def story_cast_present(prompt: str) -> list[str]:
@@ -3536,7 +3644,9 @@ def compact_story_prompt(prompt: str) -> str:
     out.extend(clean(sections.get("HARD LOCK") or []))
     out.append("")
     out.append("overall_soundscape:")
-    out.extend(clean(sections.get("overall_soundscape") or []))
+    sound = strip_soundscape_speech_meta("\n".join(clean(sections.get("overall_soundscape") or [])))
+    if sound:
+        out.append(sound)
     out.append("")
     out.append("non_diegetic_music:")
     out.extend(clean(sections.get("non_diegetic_music") or []) or ["N/A"])
@@ -3686,7 +3796,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "her breasts. Rei's unused pussy at the base of the shaft is wet against Sayaka's nose. "
                 "Rei's head tips back, hips dirty. End: mouth still at the base, still medium-close two-shot."
             ),
-            "sound": "Deep filthy jupo-jupo, wet saliva, Rei's shaky breath, a distant street. No spoken words.",
+            "sound": "Deep filthy jupo-jupo, wet saliva, Rei's shaky breath, a distant street.",
         },
         {
             "id": "s02-sink-mouth",
@@ -3720,7 +3830,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Then 口移し ベロチュー, a thick wet 濃厚キス passing that same white liquid tongue-to-tongue. "
                 "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues sharing the thick white liquid, not still on the shaft."
             ),
-            "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water. No spoken words.",
+            "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water.",
         },
         {
             "id": "s03-alley-base",
@@ -3746,7 +3856,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "15-second take. Thick saliva strings drop onto the concrete between her knees. Rei's unused pussy "
                 "is wet at Aya's nose. Rei's knees soften, hips dirty. End: mouth still at the base."
             ),
-            "sound": "Deep filthy jupo-jupo, saliva hitting concrete, a distant bicycle, Rei's breath. No spoken words.",
+            "sound": "Deep filthy jupo-jupo, saliva hitting concrete, a distant bicycle, Rei's breath.",
         },
         {
             "id": "s04-toilet-cunni",
@@ -3770,7 +3880,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "The penis hangs unused in the upper frame, not in the mouth, already shiny. Sayaka's tongue is messy, "
                 "wet, greedy. Rei's thighs tremble, juices on Sayaka's chin. End: tongue still on the pussy, 20cm still unused."
             ),
-            "sound": "Wet filthy licking, Rei's high breath, a toilet-room echo. No spoken words.",
+            "sound": "Wet filthy licking, Rei's high breath, a toilet-room echo.",
         },
         {
             "id": "s05-rooftop-in",
@@ -3796,7 +3906,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "The joining point stays readable at hip height. Aya's mouth hangs open with a moan, not speaking words. "
                 "End: still inside, still moving, both full bodies still in frame."
             ),
-            "sound": "Wet filthy thrusting, Aya's female moan, rooftop wind. No spoken words.",
+            "sound": "Wet filthy thrusting, Aya's female moan, rooftop wind.",
         },
         {
             "id": "s06-bath-bj",
@@ -3819,7 +3929,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Deep filthy jupo-jupo the whole 15-second take. Spit and shower water rope off her lips onto "
                 "her breasts. Madoka's unused pussy is wet at Sayaka's nose. End: mouth still at the base, still medium-close two-shot."
             ),
-            "sound": "Shower, filthy jupo-jupo, Madoka's breath. No spoken words.",
+            "sound": "Shower, filthy jupo-jupo, Madoka's breath.",
         },
         {
             "id": "s07-table-mouth",
@@ -3850,7 +3960,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Then 口移し ベロチュー, a thick wet 濃厚キス passing that same white liquid tongue-to-tongue. "
                 "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues sharing the thick white liquid, not still on the shaft."
             ),
-            "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink. No spoken words.",
+            "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink.",
         },
         {
             "id": "s08-futon-in",
@@ -3873,7 +3983,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "daughter fuck the whole 15-second take. Sweat, wet slaps, juices on the sheet. The joining point stays "
                 "readable at the hips. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
-            "sound": "Wet filthy thrusting, futon rustle, Sayaka's female moan. No spoken words.",
+            "sound": "Wet filthy thrusting, futon rustle, Sayaka's female moan.",
         },
         {
             "id": "s09-sofa-in",
@@ -3896,7 +4006,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "15-second take. Wet slaps, juices on the cushion, Aya's mini breasts bouncing. The joining point stays "
                 "readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
-            "sound": "Wet filthy thrusting, Aya's female moan, TV far. No spoken words.",
+            "sound": "Wet filthy thrusting, Aya's female moan, TV far.",
         },
         {
             "id": "s10-engawa-in",
@@ -3918,7 +4028,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "could see. They fuck the whole 15-second take. Sweat, wet slaps on wood, juices dripping. The joining "
                 "point stays readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
-            "sound": "Wet filthy thrusting, cicadas far, Aya's female moan. No spoken words.",
+            "sound": "Wet filthy thrusting, cicadas far, Aya's female moan.",
         },
         {
             "id": "s11-kitchen-doggy",
@@ -3942,7 +4052,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "floor. Filthy doggy the whole 15-second take. Wet slaps, hanging breasts, juices on the tile. The joining "
                 "point stays readable. Both full bodies stay in the 16:9 frame. End: still joined, still moving."
             ),
-            "sound": "Wet filthy thrusting, Sayaka's female moan, a pot lid far. No spoken words.",
+            "sound": "Wet filthy thrusting, Sayaka's female moan, a pot lid far.",
         },
         {
             "id": "s12-hall-stand",
@@ -3966,7 +4076,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "They fuck the whole 15-second take, dirty and hurried, juices on Sayaka's standing thigh. The joining "
                 "point stays readable at hip height. Both full bodies stay in the 9:16 frame. End: still inside, still moving."
             ),
-            "sound": "Wet filthy thrusting, Sayaka's female moan, a floor creak. No spoken words.",
+            "sound": "Wet filthy thrusting, Sayaka's female moan, a floor creak.",
         },
     )
     clips: list[dict[str, Any]] = []

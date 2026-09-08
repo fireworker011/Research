@@ -47,25 +47,33 @@ from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_
 
 def _check_visible_plan(planned, clip_prompt):
     """futa_visible: spoken 「line」 clips drop Larry (jaw melt); walk/kiss keep thin Larry 8step."""
+    from h3_lora_studio import soundscape_text
+
     ids = [row["id"] for row in planned["stack"]]
+    sound = soundscape_text(planned["prompt"])
+    assert "lip-synced" not in sound.lower()
+    assert "no other speech" not in sound.lower()
+    assert "no spoken words" not in sound.lower()
+    assert "spoken_transcript" not in planned["prompt"]
+    assert "other_text" not in planned["prompt"]
+    assert "プロンプトは読まない" not in planned["prompt"]
+    assert "台詞だけ" not in planned["prompt"]
+    assert "[AUDIO-LOCK]" not in planned["prompt"]
     if "「" in clip_prompt:
         assert ids == ["penis-lora-h3", "synth-pussy-h3"], ids
         assert planned["cfg"]["turbo"] is False
         assert planned["turbo"] is False
         assert planned["sampler"]["steps"] == 12
         assert planned["sampler"]["sampler_name"] == "res_multistep"
-        assert "[AUDIO-LOCK]" in planned["prompt"]
-        assert "spoken_transcript: once" in planned["prompt"]
-        assert "repeat: 0" in planned["prompt"]
-        assert "プロンプトは読まない" not in planned["prompt"]
+        assert "「" in sound
     else:
         assert ids == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"], ids
         assert planned["cfg"]["turbo"] is True
         assert planned["turbo"] is True
         assert planned["sampler"]["steps"] == 8
         assert planned["sampler"]["sampler_name"] == "euler"
-        assert "spoken_transcript: mute" in planned["prompt"]
         assert "誰も話さない" not in planned["prompt"]
+        assert "no speech" not in sound.lower()
     assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
@@ -444,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-share-1"' in src
+    assert 'FETCH_REV = "h3-20260908-audio-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -487,7 +495,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-share-1" in blob
+    assert "h3-20260908-audio-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -539,6 +547,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "if CLIP_INDEX + 1 < len(CLIPS):\n            comfy_free(PORT)" not in src
     assert "prompt_now = lock_spoken_japanese(GRAPH_PROMPT)" in src
     assert 'AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]"' in src
+    assert 'sanitize_story_soundscape", None)' in src
     assert "prompt=prompt_now" in src
     assert "前の LoRA を VRAM から下ろし" not in src
     assert "土台は載せたまま。この本の LoRA だけ繋ぎます" in src
@@ -2705,7 +2714,12 @@ def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
             desc = re.search(r"integrated_multimodal_description:\n(.+?)\n\n", raw, re.S).group(1).strip()
             assert desc in out, where
             sound = re.search(r"overall_soundscape:\n(.+?)\n\n", raw, re.S).group(1).strip()
-            assert sound in out, where
+            sound_out = re.search(r"overall_soundscape:\n(.+?)\n\n", out, re.S).group(1).strip()
+            assert "lip-synced" not in sound_out.lower(), where
+            assert "no other speech" not in sound_out.lower(), where
+            assert "no spoken words" not in sound_out.lower(), where
+            for spoken in re.findall(r"「[^」]+」", sound):
+                assert spoken in sound_out, (where, spoken)
             # WHO blocking of the women who are in frame stays word for word.
             who = re.search(r"WHO:\n(.+?)\n\n", raw, re.S)
             if who:
@@ -3887,6 +3901,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         load_story,
         lock_spoken_japanese,
         prepare_story_clip,
+        soundscape_text,
         stack_signature,
         strip_audio_lock,
         validate_story_follow,
@@ -3912,29 +3927,39 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         "overall_soundscape:\nClinic hum. Rei speaks, lip-synced: 「こんにちは」. No other speech.\n",
         ["こんにちは"],
     )
-    assert locked.index("overall_soundscape:") < locked.index("[AUDIO-LOCK]")
+    sound = soundscape_text(locked)
+    assert "overall_soundscape:" in locked
+    assert "[AUDIO-LOCK]" not in locked
     assert locked.count("「こんにちは」") == 1
-    assert "spoken_transcript: once" in locked
-    assert "repeat: 0" in locked
-    assert "stretch: off" in locked
+    assert "「こんにちは」" in sound
+    assert "Clinic hum" in sound
+    assert "lip-synced" not in sound.lower()
+    assert "no other speech" not in sound.lower()
+    assert "spoken_transcript" not in locked
+    assert "other_text" not in locked
+    assert "not_spoken" not in locked
     assert "プロンプトは読まない" not in locked
-    lock_line = next(ln for ln in locked.splitlines() if ln.startswith("[AUDIO-LOCK]"))
-    assert "「" not in lock_line
-    assert jp_outside_quotes(lock_line) == ""
+    assert "台詞だけ" not in locked
+    assert jp_outside_quotes(sound) == ""
     silent_lock = lock_spoken_japanese("overall_soundscape:\nKiss. No spoken words.\n", [])
-    assert "spoken_transcript: mute" in silent_lock
+    silent_sound = soundscape_text(silent_lock)
+    assert "[AUDIO-LOCK]" not in silent_lock
+    assert "spoken_transcript" not in silent_lock
+    assert "No spoken words" not in silent_sound
+    assert "Kiss" in silent_sound
     assert "誰も話さない" not in silent_lock
     assert "プロンプトは読まない" not in silent_lock
     old = lock_spoken_japanese(
         "overall_soundscape:\n【音声ルール】プロンプトは読まない。英語を音読しない。声に出していいのは日本語の台詞だけ。「こんにちは」英語・中国語・韓国語・ローマ字・意味のわからない音は禁止。台詞のあとに言葉を足さない。余った秒数は無音。口は閉じて部屋の音だけ。\nClinic hum.\n",
         ["こんにちは"],
     )
-    assert old.count("[AUDIO-LOCK]") == 1
+    assert old.count("[AUDIO-LOCK]") == 0
     assert old.count("「こんにちは」") == 1
     assert "プロンプトは読まない" not in old
-    assert lock_spoken_japanese(old, ["こんにちは"]).count("[AUDIO-LOCK]") == 1
-    assert audio_lock_line(["こんにちは"]).startswith("[AUDIO-LOCK]")
-    assert "「" not in audio_lock_line(["こんにちは"])
+    assert "台詞だけ" not in old
+    assert "「こんにちは」" in soundscape_text(old)
+    assert lock_spoken_japanese(old, ["こんにちは"]).count("[AUDIO-LOCK]") == 0
+    assert audio_lock_line(["こんにちは"]) == ""
     assert "prompt" not in audio_lock_line(["こんにちは"]).lower()
     assert strip_audio_lock(old).count("[AUDIO-LOCK]") == 0
 
@@ -3942,10 +3967,11 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     speech = prepare_story_clip(story, 0, stills_dir=tmp_path)
     assert [row["id"] for row in speech["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     assert speech["stack_changed"] is False
-    assert "[AUDIO-LOCK]" in speech["prompt"]
-    assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") == 1
-    assert "repeat: 0" in speech["prompt"]
-    assert "monotone: off" in speech["prompt"]
+    assert "[AUDIO-LOCK]" not in speech["prompt"]
+    assert "spoken_transcript" not in speech["prompt"]
+    assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") >= 1
+    assert "「こんにちは。テイキケンシンにきました」" in soundscape_text(speech["prompt"])
+    assert "lip-synced" not in soundscape_text(speech["prompt"]).lower()
     assert "SPEECH FACE:" in speech["prompt"]
     assert "こんにちは" in speech["prompt"]
     assert "プロンプトは読まない" not in speech["prompt"]
@@ -3956,7 +3982,8 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert next_speech["situation"] == "futa_visible"
     assert next_speech["stack_changed"] is False
     assert next_speech["mode"] == "i2v"
-    assert next_speech["prompt"].index("Picture 1") < next_speech["prompt"].index("[AUDIO-LOCK]")
+    assert "Picture 1" in next_speech["prompt"]
+    assert "[AUDIO-LOCK]" not in next_speech["prompt"]
     kiss = prepare_story_clip(
         story, 3, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
     )
@@ -3964,8 +3991,9 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert kiss["stack_changed"] is True
     assert stack_signature(kiss["stack"]) != stack_signature(speech["stack"])
     assert [row["id"] for row in kiss["stack"]] == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"]
-    assert "spoken_transcript: mute" in kiss["prompt"]
+    assert "spoken_transcript" not in kiss["prompt"]
     assert "誰も話さない" not in kiss["prompt"]
+    assert "No spoken words" not in soundscape_text(kiss["prompt"])
     oral = prepare_story_clip(
         story, 6, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
     )
@@ -3979,6 +4007,32 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     bad["clips"] = [clip0, *story["clips"][1:]]
     errs = validate_story_follow(bad)
     assert any("Japanese only" in e for e in errs)
+
+
+def test_all_stories_soundscape_is_sfx_and_quotes(tmp_path):
+    from h3_lora_studio import load_story, prepare_story_clip, soundscape_text, spoken_lines
+
+    cases = (
+        ("sales-visit-60s", 0),
+        ("commute-120s", 1),
+        ("manhole-30s", 0),
+        ("cafe-100s", 1),
+    )
+    for sid, idx in cases:
+        story = load_story(sid)
+        planned = prepare_story_clip(story, idx, stills_dir=tmp_path)
+        sound = soundscape_text(planned["prompt"])
+        lines = spoken_lines(story["clips"][idx]["prompt"])
+        assert "lip-synced" not in sound.lower(), (sid, sound)
+        assert "no other speech" not in sound.lower(), (sid, sound)
+        assert "no spoken words" not in sound.lower(), (sid, sound)
+        assert "under a close" not in sound.lower(), (sid, sound)
+        assert "adult female voice" not in sound.lower(), (sid, sound)
+        assert "[AUDIO-LOCK]" not in planned["prompt"]
+        assert "other_text" not in planned["prompt"]
+        assert "台詞だけ" not in planned["prompt"]
+        for ln in lines:
+            assert f"「{ln}」" in sound, (sid, ln, sound)
 
 
 def test_last_stop_pack_four_clips_rei_seated(tmp_path):
@@ -4135,6 +4189,7 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
         generate_immoral_shorts,
         load_story,
         prepare_story_clip,
+        soundscape_text,
         spoken_lines,
     )
 
@@ -4160,12 +4215,26 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             if lines:
                 seen_speech += 1
                 assert "SPEECH FACE:" in prompt, (story["id"], i + 1)
-                assert "monotone: off" in prompt
+                assert "Not monotone" in prompt
+                sound = soundscape_text(prompt)
+                assert "lip-synced" not in sound.lower(), (story["id"], i + 1, sound)
+                assert "no other speech" not in sound.lower(), (story["id"], i + 1, sound)
+                assert "spoken_transcript" not in prompt
+                assert "[AUDIO-LOCK]" not in prompt
+                for ln in lines:
+                    assert f"「{ln}」" in sound, (story["id"], i + 1, ln, sound)
                 if any(heat_re.search(ln) for ln in lines):
                     seen_heat += 1
                     assert "HEAT FACE:" in prompt, (story["id"], i + 1, lines)
                 else:
                     assert "HEAT FACE:" not in prompt, (story["id"], i + 1, lines)
+            else:
+                sound = soundscape_text(prompt)
+                assert "no spoken words" not in sound.lower(), (story["id"], i + 1, sound)
+                assert "no other speech" not in sound.lower(), (story["id"], i + 1, sound)
+                assert "lip-synced" not in sound.lower(), (story["id"], i + 1, sound)
+                assert "spoken_transcript" not in prompt
+                assert "[AUDIO-LOCK]" not in prompt
             if urine_re.search(raw) and "No urine yet" not in raw and "No urine." not in raw:
                 seen_urine += 1
                 assert "URINE LOOK:" in prompt, (story["id"], i + 1)
@@ -4410,6 +4479,7 @@ def test_notebook_story_play_flow():
     assert '"fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
+    assert 'getattr(_h3_studio, "sanitize_story_soundscape", None)' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
@@ -4426,7 +4496,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-share-1" in cell2
+    assert "h3-20260908-audio-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
