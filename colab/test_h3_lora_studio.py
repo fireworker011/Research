@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-addon-1"' in src
+    assert 'FETCH_REV = "h3-20260908-pose-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-addon-1" in blob
+    assert "h3-20260908-pose-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -2718,6 +2718,95 @@ def test_validate_story_follow_rejects_act_speech_and_spoken_15s():
     assert any("spoken clips stay 10s" in e for e in errs)
 
 
+def test_validate_story_follow_addon_pose_prep():
+    from h3_lora_studio import validate_story_follow
+
+    talk = "ONE UNBROKEN 15-second take. LIP SYNC: face large.\n「クーラーしんでる」\n「フィルタ、みて」"
+    sex = (
+        "hmmotion\nONE UNBROKEN 15-second take. ALREADY IN. Joining point visible. "
+        "No spoken words."
+    )
+    oral = (
+        "ONE UNBROKEN 15-second take. medium-close on the mouth. Already oral. "
+        "Already at the BASE. No spoken words."
+    )
+    cunni = (
+        "ONE UNBROKEN 15-second take. close-up. Already cunnilingus. No spoken words."
+    )
+    bad_sex = {
+        "id": "roof-ac-30s",
+        "addon": True,
+        "spoken_max": 2,
+        "clip_s": 15,
+        "clips": [
+            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 15, "situation": "futa_sex", "prompt": sex},
+        ],
+    }
+    errs = validate_story_follow(bad_sex)
+    assert any("hand's width" in e for e in errs)
+    assert any("NOT in" in e for e in errs)
+    assert any("accepting pose" in e for e in errs)
+    good_sex = dict(bad_sex)
+    good_sex["clips"] = [
+        {
+            "duration_s": 15,
+            "situation": "futa_visible",
+            "prompt": talk
+            + " After the lines she is in the accepting standing pose, hips back. "
+            "Erect 20cm a hand's width from her hairless pussy, NOT in.",
+        },
+        {"duration_s": 15, "situation": "futa_sex", "prompt": sex},
+    ]
+    assert validate_story_follow(good_sex) == []
+    bad_oral = {
+        "id": "manhole-30s",
+        "addon": True,
+        "spoken_max": 2,
+        "clip_s": 15,
+        "clips": [
+            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 15, "situation": "oral_creampie", "prompt": oral},
+        ],
+    }
+    errs = validate_story_follow(bad_oral)
+    assert any("hand's width" in e for e in errs)
+    assert any("mouth open" in e for e in errs)
+    good_oral = dict(bad_oral)
+    good_oral["clips"] = [
+        {
+            "duration_s": 15,
+            "situation": "futa_visible",
+            "prompt": talk
+            + " She opens her mouth. Tip a hand's width from her lips, not touching.",
+        },
+        {"duration_s": 15, "situation": "oral_creampie", "prompt": oral},
+    ]
+    assert validate_story_follow(good_oral) == []
+    bad_cunni = {
+        "id": "lookout-30s",
+        "addon": True,
+        "spoken_max": 2,
+        "clip_s": 15,
+        "clips": [
+            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 15, "situation": "cunnilingus_futa", "prompt": cunni},
+        ],
+    }
+    errs = validate_story_follow(bad_cunni)
+    assert any("knees open" in e for e in errs)
+    good_cunni = dict(bad_cunni)
+    good_cunni["clips"] = [
+        {
+            "duration_s": 15,
+            "situation": "futa_visible",
+            "prompt": talk + " Aya on her back, knees open. Nobody licks yet.",
+        },
+        {"duration_s": 15, "situation": "cunnilingus_futa", "prompt": cunni},
+    ]
+    assert validate_story_follow(good_cunni) == []
+
+
 def test_story_play_labels_resolve_to_story_and_play():
     from h3_lora_studio import (
         CHAIN_PACK_IDS,
@@ -3217,6 +3306,25 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
                 assert uniq == lines, (sid, uniq)
                 assert "LIP SYNC" in prompt
                 assert "hmmotion" not in prompt.lower()
+                c1 = prompt.lower()
+                sit2 = sits[1]
+                if sit2 in {"futa_sex", "doggy"}:
+                    assert "hand's width" in c1, sid
+                    assert "not in" in c1, sid
+                    assert any(k in c1 for k in ("accepting", "hips back", "knees apart")), sid
+                    assert "already in" not in c1, sid
+                elif sit2 in {"oral", "oral_creampie"}:
+                    assert "hand's width" in c1, sid
+                    assert (
+                        "mouth open" in c1
+                        or "open mouth" in c1
+                        or "opens her mouth" in c1
+                    ), sid
+                    assert "already oral" not in c1, sid
+                elif sit2 == "cunnilingus_futa":
+                    assert "knees open" in c1, sid
+                    assert "not licking" in c1, sid
+                    assert "already licking" not in c1, sid
             else:
                 assert not uniq, sid
                 assert "No spoken words" in prompt
@@ -4154,6 +4262,7 @@ def test_notebook_story_play_flow():
     assert '"fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
+    assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     for pid in CHAIN_PACK_ORDER:
         assert f"h3-lora-studio/stories/{pid}.json" in src, pid
         assert f'"{pid}"' in cell2, pid
@@ -4166,7 +4275,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-addon-1" in cell2
+    assert "h3-20260908-pose-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

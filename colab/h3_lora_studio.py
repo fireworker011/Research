@@ -443,16 +443,16 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "manhole-30s": "物語の追加。ハイスイコウ。15秒×2＝30秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話（口パク）。2本目は無言で根元までジュボ→口内。口内のあとは口移し。hmmotion なし。",
-    "roof-ac-30s": "物語の追加。屋上クーラー。15秒×2＝30秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
-    "tetrapod-30s": "物語の追加。ハマのテトラ。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は風の会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
-    "locker-30s": "物語の追加。廃校ロッカー。15秒×2＝30秒。9:16。アヤ＋マドカ。1本目はカギの会話のあとベロチュー（竿は触らない）。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
-    "crossing-30s": "物語の追加。ドウロのど真ん中。15秒×2＝30秒。9:16。サヤカ＋レイ。1本目は信号の会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
-    "lookout-30s": "物語の追加。ガケの展望台。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は霧の会話。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
-    "factory-30s": "物語の追加。コウジョウあと。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はサビの会話。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
-    "gas-station-30s": "物語の追加。ガソリンスタンド跡。15秒×2＝30秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲む（ジュボしない）。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
-    "tunnel-phone-30s": "物語の追加。トンネル非常電話。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は電話の会話。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。口移し。hmmotion なし。",
-    "riverbank-30s": "物語の追加。川原のゴミ。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はフクロの会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "manhole-30s": "物語の追加。ハイスイコウ。15秒×2＝30秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとは口移し。hmmotion なし。",
+    "roof-ac-30s": "物語の追加。屋上クーラー。15秒×2＝30秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
+    "tetrapod-30s": "物語の追加。ハマのテトラ。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "locker-30s": "物語の追加。廃校ロッカー。15秒×2＝30秒。9:16。アヤ＋マドカ。1本目はカギの会話とベロチューのあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "crossing-30s": "物語の追加。ドウロのど真ん中。15秒×2＝30秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "lookout-30s": "物語の追加。ガケの展望台。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は霧の会話のあと、アヤ仰向け・膝を開いて舐め寸前。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
+    "factory-30s": "物語の追加。コウジョウあと。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
+    "gas-station-30s": "物語の追加。ガソリンスタンド跡。15秒×2＝30秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲み、口を開けて先端から手の幅で止まる。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "tunnel-phone-30s": "物語の追加。トンネル非常電話。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。口移し。hmmotion なし。",
+    "riverbank-30s": "物語の追加。川原のゴミ。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
     "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
 }
 
@@ -3725,7 +3725,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
     }
 
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
-    """H3 following: 10s speech / 15s silent acts / 15s anthology. One place, act cameras, lip-sync only on speaking face clips."""
+    """H3 following: 10s speech / 15s silent acts / 15s anthology. One place, act cameras, lip-sync only on speaking face clips. Addon act clips need a pose-prep leftover on the previous clip."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     anthology = str(story.get("kind") or "") == "anthology"
@@ -3804,6 +3804,52 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if len(unique) > spoken_max:
                 what = "one spoken line only" if spoken_max == 1 else f"at most {spoken_max} spoken lines"
                 errors.append(f"clip {n}: {what}, got {sorted(unique)}")
+    errors.extend(addon_pose_prep_errors(story))
+    return errors
+
+
+def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
+    """Addon clip before an act must end insertion-imminent / mouth-open / knees-open.
+
+    Last-frame I2V continues from clip 1. Sex/oral/cunni clips are already in, so the
+    previous clip must freeze at a hand's width in the accepting pose. Single-clip
+    stubs used in unit tests are skipped.
+    """
+    errors: list[str] = []
+    addon = str(story.get("id") or "") in ADDON_PACK_IDS or bool(story.get("addon"))
+    if not addon:
+        return errors
+    clips = list(story.get("clips") or [])
+    if len(clips) < 2:
+        return errors
+    for i in range(len(clips) - 1):
+        nxt = str(clips[i + 1].get("situation") or "").strip()
+        prompt = str(clips[i].get("prompt") or "")
+        p = prompt.lower()
+        n = i + 1
+        if nxt in {"futa_sex", "doggy"}:
+            if "already in" in p or "already inside" in p:
+                errors.append(f"clip {n}: sex setup clip must not already be inside")
+            if "hand's width" not in p:
+                errors.append(f"clip {n}: sex setup clip must end a hand's width from insertion")
+            if "not in" not in p:
+                errors.append(f"clip {n}: sex setup clip must say NOT in")
+            if not any(k in p for k in ("accepting", "hips back", "knees apart")):
+                errors.append(f"clip {n}: sex setup clip must end in an accepting pose")
+        elif nxt in {"oral", "oral_creampie"}:
+            if "already oral" in p or "already at the base" in p:
+                errors.append(f"clip {n}: oral setup clip must not already be sucking")
+            if "hand's width" not in p:
+                errors.append(f"clip {n}: oral setup clip must end a hand's width from the lips")
+            if "mouth open" not in p and "opens her mouth" not in p and "open mouth" not in p:
+                errors.append(f"clip {n}: oral setup clip must end with mouth open")
+        elif nxt == "cunnilingus_futa":
+            if "already cunnilingus" in p or "already licking" in p:
+                errors.append(f"clip {n}: cunni setup clip must not already be licking")
+            if "knees open" not in p:
+                errors.append(f"clip {n}: cunni setup clip must end with knees open")
+            if "not licking" not in p and "nobody licks" not in p:
+                errors.append(f"clip {n}: cunni setup clip must say not licking yet")
     return errors
 
 
