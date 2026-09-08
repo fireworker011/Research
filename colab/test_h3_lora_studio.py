@@ -444,7 +444,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-copy-1"' in src
+    assert 'FETCH_REV = "h3-20260908-share-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -487,7 +487,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-copy-1" in blob
+    assert "h3-20260908-share-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -561,6 +561,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert 'link_dir(COMFY_DIR / "models" / "loras", DRIVE_MODELS / "loras")' in src
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     assert '"cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames' in src
+    assert '"SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
@@ -3489,6 +3490,9 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
                 assert "口移し" in planned["prompt"]
                 assert "SEMEN SHARE:" in planned["prompt"]
                 assert "ORAL LOCK:" in planned["prompt"]
+                assert "STANDS UP" in planned["prompt"]
+                assert "EYE LEVEL" in planned["prompt"]
+                assert "they lean in" not in planned["prompt"].lower()
             if clip["situation"] == "cunnilingus_futa":
                 assert "close-up" in prompt.lower()
                 assert "口移し" not in planned["prompt"]
@@ -4216,6 +4220,8 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
     )
     assert "ORAL LOCK:" in share
     assert "口移し" in share
+    assert "STANDS UP" in share
+    assert "EYE LEVEL" in share
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -4253,6 +4259,10 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "HOLD STILL" in locked
     assert "口移し" in locked
     assert "ベロチュー" in locked
+    assert "STANDS UP" in locked
+    assert "SAME EYE LEVEL" in locked
+    assert "濃厚キス" in locked
+    assert "they lean in" not in locked.lower()
     assert locked.index("SEMEN SHARE:") < locked.index("overall_soundscape:")
     assert lock_semen_share_kiss(locked) == locked
 
@@ -4272,6 +4282,9 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "口移し" in share_clip["prompt"]
     assert "HOLD STILL" in share_clip["prompt"]
     assert "SEMEN SHARE:" in share_clip["prompt"]
+    assert "STANDS UP" in share_clip["prompt"]
+    assert "SAME EYE LEVEL" in share_clip["prompt"]
+    assert "they lean in" not in share_clip["prompt"].lower()
     assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
     assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
     cumouf = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
@@ -4286,6 +4299,8 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "not licking" in cum_share["prompt"].lower()
     assert "口移し" in cum_share["prompt"]
     assert "SEMEN SHARE:" in cum_share["prompt"]
+    assert "STANDS UP" in cum_share["prompt"]
+    assert "SAME EYE LEVEL" in cum_share["prompt"]
     speech = prepare_story_clip(stop, 3, last_frame="x.png", stills_dir=tmp_path)
     assert "おきましたか？おきゃくさん、しゅうてんだからおりてください" in speech["prompt"]
     assert "SEMEN SHARE:" not in speech["prompt"]
@@ -4411,7 +4426,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-copy-1" in cell2
+    assert "h3-20260908-share-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
