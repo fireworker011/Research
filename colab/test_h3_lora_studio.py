@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-arrive-1"' in src
+    assert 'FETCH_REV = "h3-20260908-face-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-arrive-1" in blob
+    assert "h3-20260908-face-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -484,6 +484,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
+    assert "lock_spoken_emotion" in src
+    assert "lock_urine_look" in src
+    assert "lock_pleasure_face" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -1616,6 +1619,8 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
     assert "Close-up" in story["clips"][4]["prompt"]
     assert "Do not pull back to full bodies" in story["clips"][4]["prompt"]
     assert "Not a crotch close-up" in story["clips"][3]["prompt"]
+    assert "yellow" in story["clips"][3]["prompt"].lower()
+    assert "urethral" in story["clips"][3]["prompt"].lower()
     assert "already stroking" in story["clips"][1]["prompt"].lower() or "already seated" in story["clips"][1]["prompt"]
     assert "LIP SYNC" in story["clips"][8]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
@@ -2951,6 +2956,9 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
     assert "medium two-shot" not in cam.lower()
     assert "both faces" not in cam.lower()
     assert "Aya alone" in cam
+    assert "midsummer" in c1.lower() or "miserably hot" in c1.lower()
+    assert "あちぃー" in c1
+    assert "urethral opening at the glans tip" in story["clips"][3]["prompt"]
     for clip in story["clips"][1:]:
         assert story_cast_present(clip["prompt"]) == ["Aya", "Clerk"]
     assert "yellow stream" in story["clips"][3]["prompt"]
@@ -3525,6 +3533,8 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert "[AUDIO-LOCK]" in speech["prompt"]
     assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") == 1
     assert "repeat: 0" in speech["prompt"]
+    assert "monotone: off" in speech["prompt"]
+    assert "SPEECH FACE:" in speech["prompt"]
     assert "こんにちは" in speech["prompt"]
     assert "プロンプトは読まない" not in speech["prompt"]
     assert "DY" not in speech["prompt"].split("\n", 1)[0]
@@ -3653,6 +3663,116 @@ def test_lock_semen_look_names_white_liquid():
     assert "SEMEN LOOK:" not in lock_semen_look("Already oral. Mouth already on. No climax.")
     by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
     assert "white liquid" in by_sit.lower()
+
+
+def test_lock_speech_urine_pleasure_and_heat_face():
+    from h3_lora_studio import (
+        lock_pleasure_face,
+        lock_spoken_emotion,
+        lock_urine_look,
+    )
+
+    speech = lock_spoken_emotion(
+        "LIP SYNC: face large.\n「こんにちは」\n\noverall_soundscape:\nVoice.\n"
+    )
+    assert "SPEECH FACE:" in speech
+    assert "Not monotone" in speech
+    assert lock_spoken_emotion(speech) == speech
+    heat = lock_spoken_emotion(
+        "LIP SYNC: face large.\n「あちぃー」\n「あー、すずしい！いきかえるー！」\n\noverall_soundscape:\nCicadas.\n"
+    )
+    assert "HEAT FACE:" in heat
+    assert "Midsummer" in heat
+    tea = lock_spoken_emotion(
+        "LIP SYNC: both faces.\n「はい。あついのとひやし、どっち」\n「ひやしで」\n\noverall_soundscape:\nRail.\n"
+    )
+    assert "SPEECH FACE:" in tea
+    assert "HEAT FACE:" not in tea
+
+    pee = lock_urine_look(
+        "She drinks the yellow stream.\n\noverall_soundscape:\nHiss.\n"
+    )
+    assert "URINE LOOK:" in pee
+    assert "urethral opening at the glans tip" in pee
+    assert "黄色い水" in pee
+    assert lock_urine_look(pee) == pee
+    not_yet = lock_urine_look("Door and talk only. No urine yet. No oral yet.")
+    assert "URINE LOOK:" not in not_yet
+
+    jupo = lock_pleasure_face(
+        "Already oral. Mouth already on.\nDeep jupo-jupo.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "PLEASURE FACE:" in jupo
+    assert "enjoying the jupo" in jupo
+    pee_oral = lock_pleasure_face(
+        "Already oral. Mouth already on the tip. She drinks the yellow stream.\n",
+        situation="oral",
+    )
+    assert "PLEASURE FACE:" not in pee_oral
+    cum = lock_pleasure_face("CUMOUF. Already deep in the mouth.\n", situation="oral_creampie")
+    assert "ORGASM FACE:" in cum
+    assert "イキ顔" in cum
+    assert lock_pleasure_face(cum, situation="oral_creampie") == cum
+
+
+def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
+    from h3_lora_studio import (
+        CHAIN_PACK_IDS,
+        STORY_IDS,
+        generate_immoral_shorts,
+        load_story,
+        prepare_story_clip,
+        spoken_lines,
+    )
+
+    stories = [load_story(sid) for sid in sorted(STORY_IDS | CHAIN_PACK_IDS)]
+    stories.append(generate_immoral_shorts())
+    cast = _write_cast_stills(tmp_path / "cast")
+    heat_re = __import__("re").compile(r"あち[ぃい]+ー?|あっちー")
+    urine_re = __import__("re").compile(
+        r"yellow stream|yellow urine|pees a |drinks the yellow|peeing|Urine from .+ urethra",
+        __import__("re").I,
+    )
+    seen_speech = seen_heat = seen_urine = seen_jupo = seen_cum = 0
+    for story in stories:
+        for i, clip in enumerate(story["clips"]):
+            last = f"h3_chain_{i - 1}.png" if i and str(story.get("kind") or "") != "anthology" else None
+            planned = prepare_story_clip(
+                story, i, last_frame=last, stills_dir=tmp_path, cast_dir=cast
+            )
+            prompt = planned["prompt"]
+            sit = planned["situation"]
+            raw = clip["prompt"]
+            lines = spoken_lines(raw)
+            if lines:
+                seen_speech += 1
+                assert "SPEECH FACE:" in prompt, (story["id"], i + 1)
+                assert "monotone: off" in prompt
+                if any(heat_re.search(ln) for ln in lines):
+                    seen_heat += 1
+                    assert "HEAT FACE:" in prompt, (story["id"], i + 1, lines)
+                else:
+                    assert "HEAT FACE:" not in prompt, (story["id"], i + 1, lines)
+            if urine_re.search(raw) and "No urine yet" not in raw and "No urine." not in raw:
+                seen_urine += 1
+                assert "URINE LOOK:" in prompt, (story["id"], i + 1)
+                assert "urethral" in prompt.lower(), (story["id"], i + 1)
+                assert "yellow" in prompt.lower(), (story["id"], i + 1)
+            orig_sit = str(clip.get("situation") or "")
+            if orig_sit in {"oral", "futa_blowjob"} and urine_re.search(raw):
+                assert "PLEASURE FACE:" not in prompt, (story["id"], i + 1)
+            elif orig_sit in {"oral", "futa_blowjob"}:
+                seen_jupo += 1
+                assert "PLEASURE FACE:" in prompt, (story["id"], i + 1)
+            if orig_sit == "oral_creampie":
+                seen_cum += 1
+                assert "ORGASM FACE:" in prompt, (story["id"], i + 1)
+    assert seen_speech >= 70
+    assert seen_heat == 1
+    assert seen_urine >= 5
+    assert seen_jupo >= 10
+    assert seen_cum >= 8
 
 
 def test_lock_oral_in_mouth_blocks_shaft_lick():
@@ -3874,7 +3994,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-arrive-1" in cell2
+    assert "h3-20260908-face-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -3901,6 +4021,9 @@ def test_notebook_story_play_flow():
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
+    assert "lock_spoken_emotion" in src
+    assert "lock_urine_look" in src
+    assert "lock_pleasure_face" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src

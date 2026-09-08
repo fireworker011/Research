@@ -2677,6 +2677,108 @@ def lock_start_cast(text: str) -> str:
     return raw.rstrip() + "\n" + START_CAST_LINE
 
 
+def _inject_before_soundscape(raw: str, line: str) -> str:
+    text = str(raw or "")
+    cut = text.find("\noverall_soundscape:")
+    if cut > 0:
+        return text[:cut].rstrip() + "\n" + line + "\n" + text[cut:]
+    return text.rstrip() + "\n" + line
+
+
+URINE_LOOK_LINE = (
+    "URINE LOOK: Yellow urine (黄色い水). When a 20cm pees, the stream comes out of the urethral "
+    "opening at the glans tip (the small hole at the tip of the 20cm), the same hole semen would "
+    "pulse from, not from the pussy at the base. When a woman with no penis pees, yellow from her "
+    "urethral opening. Opaque yellow water, not clear, not white, not from off-screen."
+)
+_URINE_CUE_RE = re.compile(
+    r"yellow stream|yellow urine|pees a |pees from|drinks the yellow|"
+    r"urine stream|releases the stream|peeing|Urine from .+ urethra",
+    re.I,
+)
+_URINE_NEG_RE = re.compile(r"No urine yet|No urine\.|No urine,", re.I)
+
+
+def lock_urine_look(text: str) -> str:
+    """H3 skips pee unless the prompt names yellow water from the tip hole, like semen."""
+    raw = str(text or "")
+    if not raw or "URINE LOOK:" in raw:
+        return raw
+    if not _URINE_CUE_RE.search(raw):
+        return raw
+    if _URINE_NEG_RE.search(raw) and not re.search(
+        r"yellow stream|yellow urine|pees a |drinks the yellow|peeing", raw, re.I
+    ):
+        return raw
+    return _inject_before_soundscape(raw, URINE_LOOK_LINE)
+
+
+SPEECH_FACE_LINE = (
+    "SPEECH FACE: Not monotone. Not a recitation. The voice has feeling that matches the line. "
+    "The speaking face matches: brows, eyes, cheeks, and mouth move with the emotion. "
+    "Not a blank idle face. Not a news-anchor face."
+)
+HEAT_FACE_LINE = (
+    "HEAT FACE: Midsummer heat. On the hot line, a miserably hot face: flushed, sweaty, "
+    "damp bangs, squinted from the glare, panting between words, wiping sweat. "
+    "Then if a cool-relief line follows, the face melts into relief. "
+    "Not a cool indoor face while complaining about the heat."
+)
+_HEAT_COMPLAINT_RE = re.compile(r"あち[ぃい]+ー?|あっちー")
+
+
+def lock_spoken_emotion(text: str) -> str:
+    """Spoken clips need emotion in the voice and a matching face, not a flat reading."""
+    raw = str(text or "")
+    if not raw or not spoken_lines(raw):
+        return raw
+    out = raw
+    if "SPEECH FACE:" not in out:
+        out = _inject_before_soundscape(out, SPEECH_FACE_LINE)
+    if "HEAT FACE:" not in out and any(_HEAT_COMPLAINT_RE.search(ln) for ln in spoken_lines(out)):
+        out = _inject_before_soundscape(out, HEAT_FACE_LINE)
+    return out
+
+
+PLEASURE_JUPO_LINE = (
+    "PLEASURE FACE: The woman being sucked looks really good, not blank. "
+    "Head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face. "
+    "Breath hitches. She is enjoying the jupo. Not a work mask. Not a straight clinical face."
+)
+ORGASM_FACE_LINE = (
+    "ORGASM FACE: イキ顔. She is coming hard. Eyes rolling or squeezed shut, mouth open, "
+    "brows up, flushed, shaking through the pulses. Extremely good. Not a calm work face. "
+    "Not a straight clinical face."
+)
+SEX_PLEASURE_LINE = (
+    "PLEASURE FACE: Both look like it feels really good, not blank. Flushed, mouths open, "
+    "brows knit, hips moving. Not a work mask. Not a straight clinical face."
+)
+
+
+def lock_pleasure_face(text: str, *, situation: str = "") -> str:
+    """Jupo receivers look pleasured; ejaculation is an イキ顔; sex is not a blank stare."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    sit = str(situation or "").strip()
+    if _URINE_CUE_RE.search(raw) and sit in {"oral", "futa_blowjob"}:
+        return raw
+    if sit in SEMEN_SITUATIONS or sit == "oral_creampie":
+        if "ORGASM FACE:" in raw:
+            return raw
+        return _inject_before_soundscape(raw, ORGASM_FACE_LINE)
+    if sit in {"oral", "futa_blowjob"}:
+        if "PLEASURE FACE:" in raw:
+            return raw
+        return _inject_before_soundscape(raw, PLEASURE_JUPO_LINE)
+    if sit in {"futa_sex", "doggy", "cunnilingus_futa"}:
+        if "PLEASURE FACE:" in raw:
+            return raw
+        return _inject_before_soundscape(raw, SEX_PLEASURE_LINE)
+    return raw
+
+
 SEMEN_SHARE_LINE = (
     "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a thick sticky gooey pool of "
     "white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
@@ -2921,7 +3023,7 @@ def audio_lock_line(lines: list[str] | None, *, transcript: str | None = None) -
             head = "spoken_transcript: once. count: 1."
         return (
             f"{AUDIO_LOCK_MARK} {head} repeat: 0. loop: off. "
-            "pace: natural. stretch: off. rest_of_clip: silence. "
+            "pace: natural. monotone: off. emotion: on. stretch: off. rest_of_clip: silence. "
             "other_text: not_spoken. en_voice: off. zh_voice: off. ko_voice: off."
         )
     return (
@@ -3217,7 +3319,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "who": (
                 "Aya = kneeling at the kitchen sink. She is the mouth (ハメ役). Lips wrapped tight around "
                 "Rei's 20cm. Mini breasts. NO penis. Chin already shiny with spit.\n"
-                "Rei = stands at the sink. She is the shaft (竿役). Holds deep and cums inside Aya's mouth."
+                "Rei = stands at the sink. She is the shaft (竿役). Holds deep and cums inside Aya's mouth. "
+                "イキ顔, coming hard, eyes half-closed, mouth open."
             ),
             "environment": (
                 "Kitchen sink, daytime, dirty dishes piled, water still running. The sink is only background."
@@ -3249,7 +3352,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "who": (
                 "Aya = kneeling on the alley concrete. She is the mouth (ハメ役). Mini breasts. NO penis. "
                 "Hands on Rei's waist. Spit already pooling between her knees.\n"
-                "Rei = STANDS against the alley wall. She is the shaft (竿役). Receiver, filthy outdoor face."
+                "Rei = STANDS against the alley wall. She is the shaft (竿役). Receiver, filthy pleasured face, "
+                "head back, eyes half-closed, enjoying the jupo."
             ),
             "environment": (
                 "Narrow residential alley, daytime shade, anyone could pass. Wall and concrete are only background."
@@ -3348,7 +3452,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Aya = under the dining table on her knees. She is the mouth (ハメ役). Lips wrapped tight around "
                 "Madoka's 20cm. Mini breasts. NO penis.\n"
                 "Madoka = sits at the table. She is the shaft (竿役). Holds deep and cums inside Aya's mouth "
-                "while dinner is still on the table."
+                "while dinner is still on the table. イキ顔, coming hard, eyes half-closed."
             ),
             "environment": "Japanese dining table, evening, bowls still out. Tight under the table. Dishes only background.",
             "lock": (
@@ -3499,6 +3603,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
         )
         if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
             prompt = "hmmotion, PENISLORA\n" + prompt
+        prompt = lock_urine_look(prompt)
+        prompt = lock_pleasure_face(prompt, situation=str(spec["situation"]))
         if spec["situation"] == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
         clips.append(
@@ -3746,13 +3852,15 @@ def prepare_story_clip(
     label = str(clip.get("label") or f"clip {index + 1}")
     share_modes = {i: mode for i, mode in semen_share_plan(story)}
     share_mode = share_modes.get(index)
-    raw_prompt = lock_semen_look(
-        lock_start_cast(compact_story_prompt(str(clip.get("prompt") or ""))),
-        situation=situation,
-    )
+    raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
+    raw_prompt = lock_start_cast(raw_prompt)
+    raw_prompt = lock_semen_look(raw_prompt, situation=situation)
+    raw_prompt = lock_urine_look(raw_prompt)
+    raw_prompt = lock_spoken_emotion(raw_prompt)
     if share_mode == "on_cumouf":
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation, ending="share")
         raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where="on_cumouf"))
+        raw_prompt = lock_pleasure_face(raw_prompt, situation="oral_creampie")
     elif share_mode in {"silent_next", "after_speech"}:
         raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where=share_mode))
         if share_mode == "silent_next":
@@ -3760,6 +3868,7 @@ def prepare_story_clip(
             label = apply_semen_share_label(label, mode=share_mode)
     else:
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
+        raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
