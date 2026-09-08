@@ -10,6 +10,7 @@
     "test": "node src/self-test.js",
     "tick": "node src/tick.js",
     "tick:dry": "node src/tick.js --dry-run",
+    "virtual": "node src/virtual-desk.js",
     "report": "node src/report.js",
     "backtest": "node src/backtest.js"
   }

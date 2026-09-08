@@ -6,6 +6,7 @@ Affiliate Engine と同じく GitHub 上で保守し、Grok Bot が日次レポ�
 > **最初に正直な前提を。** 自動売買は口座資金を失う。このリポジトリは利益を保証しない。
 > 数字はペーパー帳簿か、接続した口座の実測だけを書く。未確認は「未確認」。
 > LLM（Grok / Cursor）に「今 EURUSD を買え」と選ばせない。それは幻覚で破産する。
+> **いま組む自動の正本は [`docs/AUTO.md`](docs/AUTO.md)。** iPhone の EA 載せ方は [`docs/IPHONE.md`](docs/IPHONE.md)。
 
 ## なぜ GitHub Actions だけでは XM を回せないか
 
@@ -19,7 +20,7 @@ Grok Bot（司令塔）
   エントリーは出さない。xm-fill / xm-close は告知
         │
 Cursor（参謀）          GitHub Actions（ペーパー + 報告）
-  戦略・リスク・EA保守     価格取得 → 仮想帳簿 → commander.json 更新
+  戦略・リスク・EA保守     TradingView/OKX足 → 仮想OCO（SL/TP） → commander.json
         │                         │
         └──────────┬──────────────┘
                    ▼
@@ -32,8 +33,8 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 | 役割 | やる | やらない |
 |---|---|---|
 | **EA（実時間）** | XM への発注・SL/TP・日次損失で全決済・約定/決済告知 | GitHub の遅延シグナルでエントリー |
-| **Node tick** | ペーパー追跡・シグナル記録・日次損失で HALT 書き込み | 実口座の損益を捏造 |
-| **Grok Bot** | 停止判断。fill/close を読む | 方向予想、ENTRY、ロット変更 |
+| **Node tick / virtual-desk** | TradingViewスナップショット + OKX金足でペーパーOCO（SL/TP明示）。MajorsはEMAルールのみ | 実口座の損益を捏造。LLMに方向を選ばせる |
+| **Grok Bot** | ペーパーOCOのSL/TPを人間へ写す。止めるときだけ HALT/SKIP | 方向予想、ENTRY、ロット変更、XMログイン |
 | **Cursor** | コードと不変条件 | リスク上限を上げる、マーチンゲールを足す |
 
 ## 戦略（日付でも乱数でもなく、閉じた足だけ）
@@ -96,7 +97,7 @@ EA 側はこれと独立に、**リアル口座では commander が RESUME の�
 2. XM **デモ** MT5 で `XMGoldSemi.mq5` と `xm_notify.mqh` を **GOLD M15** に載せる。AutoTrading ON。
 3. WebRequest に `api.github.com` を許可。PAT は Contents Read + Issues Write。
 4. `CommanderURL` はデフォルトブランチの Contents API。`NotifyIssueNumber` に追跡 Issue 番号。
-5. `docs/grok-bots/G_xm_trade.txt` を Grok Bot に貼る。ENTRY は出さない。
+5. `docs/grok-bots/G_xm_trade.txt` を Grok Bot に貼る。チャットでペーパーの損切り・利確を写す。ENTRY は出さない。
 
 ローカル確認:
 
@@ -105,6 +106,7 @@ cd xm-trade-engine
 node --check src/tick.js
 node src/self-test.js
 node src/tick.js --dry-run
+node src/virtual-desk.js --dry-run
 ```
 
 Majors は `ea/XMGrokEngine.mq5` を EURUSD H1 に別チャートで載せる。Gold と混ぜない。
@@ -131,6 +133,8 @@ xm-trade-engine/
 ├── config/strategy.json     # 戦略（決定論）
 ├── config/risk.json         # リスク上限
 ├── config/gold.json         # アジア/ロンドンはブローカー時刻。offset はペーパー用
+├── docs/AUTO.md             # 自動2層（ペーパー → VPS/EA）
+├── docs/IPHONE.md           # iPhone + Windows VPS の載せ方
 ├── docs/SETUP.md            # 完全自動の載せ方
 ├── src/gold-breakout.js
 ├── ea/xm_notify.mqh         # 約定・決済の Issue / Slack 告知

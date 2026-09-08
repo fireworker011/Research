@@ -1,6 +1,6 @@
 # XM Trade — 完全自動の載せ方
 
-このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。
+このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。いま組む自動の地図は [`AUTO.md`](AUTO.md)。iPhone のみなら [`IPHONE.md`](IPHONE.md)。いま組む自動の地図は [`AUTO.md`](AUTO.md)。iPhone のみなら [`IPHONE.md`](IPHONE.md)。
 
 > 自動売買は口座資金を失う。利益は保証しない。デモが先。リスク上限（0.5% / 日次 2% / 0.10 lot）は上げない。
 > Threads の schedule は戻さない。
@@ -91,7 +91,9 @@ Commander / Notify の入力は Gold と同じ。Gold と **別チャート**。
 
 `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` **だけ**を貼る。月100万 dump と混ぜない。
 
-Grok が出してよい行:
+Grok のチャット: Issue の `virtual-desk:` または `output/reports/VIRTUAL.md` から、BuyStop/SellStop と損切り・利確を表で写す。数字は invent しない。
+
+Grok が Issue に出してよい行（止めるときだけ）:
 
 ```
 KILL_SWITCH: HALT
@@ -101,6 +103,7 @@ SKIP: GOLD
 ```
 
 `ENTRY: GOLD BUY` は出さない。完全自動。`ARM: GOLD` も不要（IDLE で両方置く）。
+`virtual-desk:` はペーパー告知。指令ではない。
 
 ### 8. デモで1サイクル
 

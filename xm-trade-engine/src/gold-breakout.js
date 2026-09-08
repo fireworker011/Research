@@ -99,6 +99,42 @@ function lastAtr(bars, period) {
   return null;
 }
 
+/** M15 を H1 に間引く。SL/TP は H1 ATR。アジア高安は細かい足のまま測る。 */
+function barsToH1(bars) {
+  const map = new Map();
+  for (const b of bars || []) {
+    const hour = Math.floor(b.time / 3600000) * 3600000;
+    let g = map.get(hour);
+    if (!g) {
+      map.set(hour, {
+        time: hour,
+        open: b.open,
+        high: b.high,
+        low: b.low,
+        close: b.close,
+        volume: b.volume || 0
+      });
+    } else {
+      g.high = Math.max(g.high, b.high);
+      g.low = Math.min(g.low, b.low);
+      g.close = b.close;
+      g.volume = (g.volume || 0) + (b.volume || 0);
+    }
+  }
+  return [...map.values()].sort((a, b) => a.time - b.time);
+}
+
+function ocoSideLevels(setup) {
+  if (!setup || !(setup.buy_stop > 0) || !(setup.sell_stop > 0) || !(setup.sl_distance > 0)) return setup;
+  return {
+    ...setup,
+    buy_sl: roundTo(setup.buy_stop - setup.sl_distance, 2),
+    buy_tp: roundTo(setup.buy_stop + setup.tp_distance, 2),
+    sell_sl: roundTo(setup.sell_stop + setup.sl_distance, 2),
+    sell_tp: roundTo(setup.sell_stop - setup.tp_distance, 2)
+  };
+}
+
 function asianRange(bars, now, cfg) {
   const w = goldWindows(cfg);
   const start = brokerHourStart(now, w.asiaStart, cfg);
@@ -141,22 +177,27 @@ function suggestedSide(asia) {
 /**
  * アジアレンジ確定後のセットアップ。Grok が ENTRY するまで発注しない。
  */
-function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null }) {
+function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null, h1AtrOverride = null, allowForming = false }) {
   if (!cfg || cfg.enabled === false) return emptyGoldState(now, 'disabled');
   const w = goldWindows(cfg);
   const parts = brokerParts(now, cfg);
   if (parts.dow === 0 || parts.dow === 6) return emptyGoldState(now, 'weekend');
   if (cfg.skip_first_friday && isFirstFriday(now, cfg)) return emptyGoldState(now, 'skip_first_friday');
 
-  if (parts.hour < w.asiaEnd) return emptyGoldState(now, 'waiting_asia');
+  const forming = parts.hour < w.asiaEnd;
+  if (forming && !allowForming) return emptyGoldState(now, 'waiting_asia');
 
   const asia = asianRange(bars, now, cfg);
-  if (!asia) return { ...emptyGoldState(now, 'no_asia_bars'), status: 'skipped' };
+  if (!asia) {
+    if (forming) return emptyGoldState(now, 'waiting_asia');
+    return { ...emptyGoldState(now, 'no_asia_bars'), status: 'skipped' };
+  }
 
   const range = asia.high - asia.low;
   const dailyBars = groupDaily(bars);
   const dailyAtr = dailyAtrOverride ?? lastAtr(dailyBars, cfg.daily_atr_period);
-  const h1Atr = lastAtr(bars, cfg.atr_period);
+  const h1Bars = barsToH1(bars);
+  const h1Atr = h1AtrOverride ?? lastAtr(h1Bars.length >= cfg.atr_period + 2 ? h1Bars : bars, cfg.atr_period);
   if (!(dailyAtr > 0) || !(h1Atr > 0) || !(range > 0)) {
     return { ...emptyGoldState(now, 'atr_not_ready'), status: 'skipped', asia };
   }
@@ -195,12 +236,12 @@ function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null 
   const tpDist = slDist * cfg.reward_multiple;
   const side = suggestedSide(asia);
 
-  return {
+  return ocoSideLevels({
     kind: 'gold_semi_auto',
-    disclaimer: 'Grok のエントリーは suggested_side に従うパネル操作。予想文は禁止。XM残高ではない。',
+    disclaimer: '方向はOCO。LLMの予想ではない。ペーパーはXM残高ではない。',
     date: todayUTC(now),
-    status: 'awaiting_arm',
-    reason: 'asia_locked',
+    status: forming ? 'forming' : 'awaiting_arm',
+    reason: forming ? 'asia_forming' : 'asia_locked',
     arm: 'IDLE',
     symbol: cfg.symbol,
     broker_hour: parts.hour,
@@ -218,8 +259,9 @@ function proposeSetup({ bars, now, cfg, spreadPips = 0, dailyAtrOverride = null 
     sl_distance: roundTo(slDist, 2),
     tp_distance: roundTo(tpDist, 2),
     spread_pips: spreadPips,
-    pip
-  };
+    pip,
+    forming
+  });
 }
 
 function applyArm(setup, { goldArm, goldArmDate, halted, now }) {
@@ -276,46 +318,45 @@ function autoArmIfDue(setup, cfg, now, halted) {
 function detectFill(setup, bars, now, cfg) {
   const w = goldWindows(cfg);
   const hour = brokerHour(now, cfg);
-  if (!setup || setup.status !== 'armed') {
-    if (setup && setup.status === 'armed' && hour >= w.londonEnd) {
-      return { ...setup, status: 'expired', reason: 'london_expired' };
-    }
-    return setup;
-  }
-  if (hour >= w.londonEnd) {
+  if (!setup) return setup;
+  if (['forming', 'awaiting_arm', 'armed'].includes(setup.status) && hour >= w.londonEnd) {
     return { ...setup, status: 'expired', reason: 'london_expired' };
   }
+  if (setup.status !== 'armed') return setup;
   if (!inLondonWindow(now, cfg)) return setup;
-  const last = bars && bars[bars.length - 1];
-  if (!last) return setup;
+  const start = brokerHourStart(now, w.londonStart, cfg);
+  const end = Math.min(now.getTime() + 1, brokerHourStart(now, w.londonEnd, cfg));
+  const window = barsInWindow(bars, start, end).sort((a, b) => a.time - b.time);
   const allowBuy = !setup.entry_side || setup.entry_side === 'BUY';
   const allowSell = !setup.entry_side || setup.entry_side === 'SELL';
-  const hitBuy = allowBuy && last.high >= setup.buy_stop;
-  const hitSell = allowSell && last.low <= setup.sell_stop;
-  if (hitBuy && hitSell) {
-    return { ...setup, status: 'armed', reason: 'ambiguous_both_sides' };
-  }
-  if (hitBuy) {
-    return {
-      ...setup,
-      status: 'filled',
-      fill_side: 'BUY',
-      fill_price: setup.buy_stop,
-      sl: roundTo(setup.buy_stop - setup.sl_distance, 2),
-      tp: roundTo(setup.buy_stop + setup.tp_distance, 2),
-      reason: 'oco_buy_stop'
-    };
-  }
-  if (hitSell) {
-    return {
-      ...setup,
-      status: 'filled',
-      fill_side: 'SELL',
-      fill_price: setup.sell_stop,
-      sl: roundTo(setup.sell_stop + setup.sl_distance, 2),
-      tp: roundTo(setup.sell_stop - setup.tp_distance, 2),
-      reason: 'oco_sell_stop'
-    };
+  for (const bar of window) {
+    const hitBuy = allowBuy && bar.high >= setup.buy_stop;
+    const hitSell = allowSell && bar.low <= setup.sell_stop;
+    if (hitBuy && hitSell) {
+      return { ...setup, status: 'armed', reason: 'ambiguous_both_sides' };
+    }
+    if (hitBuy) {
+      return ocoSideLevels({
+        ...setup,
+        status: 'filled',
+        fill_side: 'BUY',
+        fill_price: setup.buy_stop,
+        sl: roundTo(setup.buy_stop - setup.sl_distance, 2),
+        tp: roundTo(setup.buy_stop + setup.tp_distance, 2),
+        reason: 'oco_buy_stop'
+      });
+    }
+    if (hitSell) {
+      return ocoSideLevels({
+        ...setup,
+        status: 'filled',
+        fill_side: 'SELL',
+        fill_price: setup.sell_stop,
+        sl: roundTo(setup.sell_stop + setup.sl_distance, 2),
+        tp: roundTo(setup.sell_stop - setup.tp_distance, 2),
+        reason: 'oco_sell_stop'
+      });
+    }
   }
   return setup;
 }
@@ -336,6 +377,9 @@ module.exports = {
   asianRange,
   suggestedSide,
   groupDaily,
+  lastAtr,
+  barsToH1,
+  ocoSideLevels,
   proposeSetup,
   applyArm,
   autoArmIfDue,

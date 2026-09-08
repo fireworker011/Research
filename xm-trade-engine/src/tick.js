@@ -13,8 +13,9 @@ const {
 const paper = require('./paper-broker');
 const { writeSignals } = require('./adapters/signal-file');
 const metaapi = require('./adapters/metaapi');
-const { fetchYahooH1 } = require('./market-data');
+const { fetchYahooH1, fetchGoldBars, fetchTradingViewSnapshot } = require('./market-data');
 const commanderMod = require('./commander');
+const { postIssueMarker } = require('./issue-notify');
 const gold = require('./gold-breakout');
 const { loadConfig, todayUTC, roundTo, pipSize } = require('./util');
 
@@ -145,12 +146,14 @@ async function maybeLive(runtime, commander, env, intent) {
   return { sent: true, result };
 }
 
-async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtureBySymbol, errors, prices }) {
+async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtureBySymbol, errors, prices, allowForming = true, tvSnapshot = null }) {
   const symbol = goldCfg.symbol || 'GOLD';
   let bars = fixtureBySymbol?.[symbol] || fixtureBySymbol?.XAUUSD || fixtureBySymbol?.GOLD;
+  let dailyBars = fixtureBySymbol?.[`${symbol}_1D`] || fixtureBySymbol?.GOLD_1D || null;
+  let h1Bars = fixtureBySymbol?.[`${symbol}_H1`] || fixtureBySymbol?.GOLD_H1 || null;
   if (!bars) {
     try {
-      bars = await fetchYahooH1('GOLD', { range: '60d' });
+      bars = await fetchGoldBars({ interval: goldCfg.paper_bar || '15m', cfg: goldCfg, limit: 300 });
     } catch (err) {
       errors[symbol] = err.message;
       return { status: 'idle', reason: `data_error:${err.message}` };
@@ -160,9 +163,35 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
     errors[symbol] = 'no bars';
     return { status: 'idle', reason: 'no bars' };
   }
+  if (!dailyBars) {
+    try {
+      dailyBars = await fetchGoldBars({ interval: '1D', cfg: goldCfg, limit: 100 });
+    } catch (_) {
+      dailyBars = null;
+    }
+  }
+  if (!h1Bars) {
+    try {
+      h1Bars = await fetchGoldBars({ interval: '1H', cfg: goldCfg, limit: 300 });
+    } catch (_) {
+      h1Bars = null;
+    }
+  }
   prices[symbol] = bars[bars.length - 1].close;
+  const dailyAtrOverride = dailyBars && dailyBars.length ? gold.lastAtr(dailyBars, goldCfg.daily_atr_period) : null;
+  const okxH1Atr = h1Bars && h1Bars.length ? gold.lastAtr(h1Bars, goldCfg.atr_period) : null;
+  const tvH1Atr = Number(tvSnapshot?.gold?.['ATR|60']);
+  const h1AtrOverride = (tvH1Atr > 0) ? tvH1Atr : okxH1Atr;
 
-  let setup = gold.proposeSetup({ bars, now, cfg: goldCfg, spreadPips: 0 });
+  let setup = gold.proposeSetup({
+    bars,
+    now,
+    cfg: goldCfg,
+    spreadPips: 0,
+    dailyAtrOverride,
+    h1AtrOverride,
+    allowForming
+  });
   setup = gold.applyArm(setup, {
     goldArm: commander.gold_arm,
     goldArmDate: commander.gold_arm_date,
@@ -171,14 +200,58 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
   });
   setup = gold.autoArmIfDue(setup, goldCfg, now, commander.command === 'HALT');
   setup = gold.detectFill(setup, bars, now, goldCfg);
+  setup = gold.ocoSideLevels(setup);
+  if (setup && setup.status) {
+    setup = {
+      ...setup,
+      h1_atr_source: tvH1Atr > 0 ? 'tradingview_atr60' : 'okx_h1',
+      okx_h1_atr: okxH1Atr != null ? roundTo(okxH1Atr, 2) : null
+    };
+  }
 
   const alreadyOpen = (book.positions || []).some((p) => p.symbol === symbol);
   const closedToday = (book.closed || []).some(
     (c) => c.symbol === symbol && (c.closed_at || '').slice(0, 10) === todayUTC(now)
   );
 
+  const sized = (setup.buy_stop && setup.sl_distance)
+    ? lotFromRisk({
+      symbol,
+      price: setup.buy_stop,
+      slPrice: setup.buy_sl,
+      equity: book.equity,
+      riskPct: effectiveRiskPct(risk, commander),
+      maxLot: risk.max_lot,
+      minLot: risk.min_lot,
+      lotStep: risk.lot_step,
+      contractSize: goldCfg.contract_size
+    })
+    : { lot: 0, reason: 'no_levels' };
+
+  if (['forming', 'awaiting_arm', 'armed'].includes(setup.status) && sized.lot) {
+    paper.upsertPending(book, {
+      symbol,
+      type: 'OCO',
+      buy_stop: setup.buy_stop,
+      sell_stop: setup.sell_stop,
+      buy_sl: setup.buy_sl,
+      buy_tp: setup.buy_tp,
+      sell_sl: setup.sell_sl,
+      sell_tp: setup.sell_tp,
+      sl_distance: setup.sl_distance,
+      tp_distance: setup.tp_distance,
+      lot: sized.lot,
+      reason: setup.reason,
+      setup_status: setup.status,
+      now
+    });
+    setup = { ...setup, lot: sized.lot };
+  } else if (['skipped', 'expired', 'idle'].includes(setup.status)) {
+    paper.cancelWorkingPending(book, symbol, setup.reason || setup.status, now);
+  }
+
   if (setup.status === 'filled' && setup.fill_side && !alreadyOpen && !closedToday) {
-    const sized = lotFromRisk({
+    const fillSized = lotFromRisk({
       symbol,
       price: setup.fill_price,
       slPrice: setup.sl,
@@ -190,22 +263,23 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
       contractSize: goldCfg.contract_size
     });
     const prev = lastClosedLot(book, symbol);
-    if (sized.lot && !forbidMartingale(prev.lot, sized.lot, prev.pnl)) {
+    if (fillSized.lot && !forbidMartingale(prev.lot, fillSized.lot, prev.pnl)) {
+      paper.markPendingFilled(book, symbol, setup.fill_side, now);
       paper.openPosition(book, {
         symbol,
         side: setup.fill_side,
-        lot: sized.lot,
+        lot: fillSized.lot,
         price: setup.fill_price,
         sl: setup.sl,
         tp: setup.tp,
         pip_value: pipValuePerLot(symbol, setup.fill_price, goldCfg.contract_size),
         now,
         reason: setup.reason,
-        commission: (risk.commission_per_lot || 0) * sized.lot
+        commission: (risk.commission_per_lot || 0) * fillSized.lot
       });
-      setup = { ...setup, lot: sized.lot };
+      setup = { ...setup, lot: fillSized.lot };
     } else {
-      setup = { ...setup, lot: 0, lot_reason: sized.reason || 'martingale_blocked' };
+      setup = { ...setup, lot: 0, lot_reason: fillSized.reason || 'martingale_blocked' };
     }
   }
 
@@ -217,41 +291,22 @@ async function runGoldPaper({ goldCfg, risk, book, commander, now, dryRun, fixtu
 }
 
 async function notifyGoldAwaitingArm(setup) {
-  const token = process.env.GITHUB_TOKEN || '';
-  const repo = process.env.GITHUB_REPOSITORY || '';
-  if (!token || !repo || !setup?.date) return;
+  if (!setup?.date) return;
   const marker = `gold-notice:${setup.date}`;
-  const headers = {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github.v3+json',
-    'content-type': 'application/json'
-  };
-  const base = `https://api.github.com/repos/${repo}`;
-  const searchRes = await fetch(`${base}/issues?state=open&per_page=100`, { headers });
-  const existing = await searchRes.json().catch(() => []);
-  const found = Array.isArray(existing) ? existing.find((i) => i.title === commanderMod.ISSUE_TITLE) : null;
-  if (!found) return;
-  const commentsRes = await fetch(`${base}/issues/${found.number}/comments?per_page=100`, { headers });
-  const comments = await commentsRes.json().catch(() => []);
-  if (Array.isArray(comments) && comments.some((c) => String(c.body || '').includes(marker))) return;
-  const body = [
+  await postIssueMarker({
     marker,
-    '',
-    `Gold ${setup.date} はアジア確定。完全自動なので ENTRY は出すな。このコメントは指令ではない。`,
-    `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
-    `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
-    `chart/paper suggested_side: ${setup.suggested_side}（参考。EA は OCO 両方）`,
-    '',
-    '止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`。約定・決済告知は EA の xm-fill / xm-close。'
-  ].join('\n');
-  await fetch(`${base}/issues/${found.number}/comments`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ body })
+    lines: [
+      `Gold ${setup.date} はアジア確定。完全自動なので ENTRY は出すな。このコメントは指令ではない。`,
+      `asia ${setup.asia_low} – ${setup.asia_high} close ${setup.asia_close} frac ${setup.range_atr_frac}`,
+      `BuyStop ${setup.buy_stop} / SellStop ${setup.sell_stop}`,
+      `chart/paper suggested_side: ${setup.suggested_side}（参考。EA は OCO 両方）`,
+      '',
+      '止めるなら `KILL_SWITCH: HALT` または `SKIP: GOLD`。約定・決済告知は EA の xm-fill / xm-close。'
+    ]
   });
 }
 
-async function runTick({ now = new Date(), env = process.env, dryRun = false, fixtureBySymbol = null } = {}) {
+async function runTick({ now = new Date(), env = process.env, dryRun = false, fixtureBySymbol = null, allowForming = true } = {}) {
   const { strategy, risk, runtime, goldCfg } = loadAllConfig();
   let commander = commanderMod.loadCommander();
 
@@ -270,6 +325,15 @@ async function runTick({ now = new Date(), env = process.env, dryRun = false, fi
   const { prices, barsBySymbol, errors } = await fetchPrices(strategy, { fixtureBySymbol });
   paper.hitStops(book, prices, now);
   paper.markToMarket(book, prices);
+
+  let tv = null;
+  if (!fixtureBySymbol) {
+    try {
+      tv = await fetchTradingViewSnapshot();
+    } catch (err) {
+      errors.tradingview = err.message;
+    }
+  }
 
   if (dailyLossExceeded(book, risk, todayUTC(now))) {
     commander = commanderMod.applyCommand(commander, {
@@ -328,9 +392,16 @@ async function runTick({ now = new Date(), env = process.env, dryRun = false, fi
       dryRun,
       fixtureBySymbol,
       errors,
-      prices
+      prices,
+      allowForming,
+      tvSnapshot: tv
     });
     paper.markToMarket(book, prices);
+  }
+
+  if (goldState && tv) {
+    goldState = { ...goldState, tv: { gold: tv.gold, disclaimer: tv.disclaimer }, h1_atr_source: goldState.h1_atr_source || 'tradingview_atr60' };
+    if (!dryRun) gold.saveGoldState(goldState);
   }
 
   const signals = dryRun ? { kind: 'shadow_signals', updated_at: now.toISOString(), intents } : writeSignals(intents, now);
@@ -348,6 +419,7 @@ async function runTick({ now = new Date(), env = process.env, dryRun = false, fi
     book,
     liveResults,
     gold: goldState,
+    tv,
     dryRun
   };
 }

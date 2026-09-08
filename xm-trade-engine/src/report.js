@@ -72,8 +72,12 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     lines.push(`- reason: ${goldState.reason || '—'}`);
     if (goldState.asia_high != null) {
       lines.push(`- asia: ${goldState.asia_low} – ${goldState.asia_high} close ${goldState.asia_close ?? '—'} (range ${goldState.range}, frac ${goldState.range_atr_frac})`);
-      lines.push(`- suggested_side: ${goldState.suggested_side || 'NONE'}`);
-      lines.push(`- levels: BuyStop ${goldState.buy_stop} / SellStop ${goldState.sell_stop}`);
+      lines.push(`- suggested_side: ${goldState.suggested_side || 'NONE'}（参考。OCOは両方）`);
+      lines.push(`- BuyStop ${goldState.buy_stop} SL ${goldState.buy_sl ?? '—'} TP ${goldState.buy_tp ?? '—'}`);
+      lines.push(`- SellStop ${goldState.sell_stop} SL ${goldState.sell_sl ?? '—'} TP ${goldState.sell_tp ?? '—'}`);
+    }
+    if (goldState.status === 'forming') {
+      lines.push('- アジア形成中。ペーパーは仮の OCO。確定はブローカー7時');
     }
     if (goldState.status === 'awaiting_arm') {
       lines.push('- 完全自動: ロンドン枠で EA が OCO を置く。Grok は ENTRY を出すな');
@@ -81,6 +85,15 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
     }
   } else {
     lines.push(`- ${goldState?.reason || 'waiting_asia / no state'}`);
+  }
+  const pending = (book.pending || []).filter((p) => p.status === 'working');
+  if (pending.length) {
+    lines.push('');
+    lines.push('### ペーパー pending（XMではない）');
+    lines.push('');
+    for (const p of pending) {
+      lines.push(`- ${p.symbol} lot=${p.lot} BUY ${p.buy_stop} / SELL ${p.sell_stop}`);
+    }
   }
   lines.push('');
   lines.push('## 実口座ゲート');
@@ -95,7 +108,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('## 人間 / Grok Bot の1手');
   lines.push('');
-  lines.push('デモEAが未設置なら、今日の1手は **MT5デモに EA を載せる**。実口座はまだ開くな。');
+  lines.push('デモEAが未設置なら、今日の1手は **ペーパーOCOのSL/TPを人間へ写す**（`virtual-desk:`）。実口座はまだ開くな。');
   lines.push('停止するときは Issue に次の1行だけ:');
   lines.push('');
   lines.push('```');
@@ -104,7 +117,7 @@ function renderMarkdown({ today, book, commander, runtime, liveGate, now, goldSt
   lines.push('');
   lines.push('再開（ペーパー）: `KILL_SWITCH: PAPER_ONLY` / リスク半減: `KILL_SWITCH: REDUCE_RISK`');
   lines.push('`RESUME` はライブゲートを全部満たさない限り実発注しない。');
-  lines.push('Gold: 完全自動 OCO。Grok は ENTRY を出すな。約定・決済は Issue の `xm-fill:` / `xm-close:`。止めるなら `HALT` または `SKIP: GOLD`。');
+  lines.push('Gold: 完全自動 OCO。Grok は ENTRY を出すな。チャットでは `virtual-desk:` の損切り・利確を写す。約定・決済は Issue の `xm-fill:` / `xm-close:`。止めるなら `HALT` または `SKIP: GOLD`。');
   lines.push('');
   lines.push('## やるな');
   lines.push('');

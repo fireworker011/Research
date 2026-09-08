@@ -20,7 +20,7 @@ function readEvent() {
 }
 
 function isNotifyComment(body) {
-  return /(?:gold-notice|xm-fill|xm-close|gold-fill|gold-close):/.test(body || '');
+  return /(?:gold-notice|xm-fill|xm-close|gold-fill|gold-close|virtual-desk):/.test(body || '');
 }
 
 function applyComment({ body, login, now, current, persist = false }) {

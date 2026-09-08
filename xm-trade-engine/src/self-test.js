@@ -13,13 +13,15 @@ const {
 } = require('./risk');
 const { parseCommandText, applyCommand, latestCommandFromComments, defaultCommander, parseGoldArmText } = require('./commander');
 const { applyComment, isNotifyComment } = require('./apply-commander-comment');
-const { parseYahooChart, dropIncompleteLastBar } = require('./market-data');
+const { parseYahooChart, dropIncompleteLastBar, parseOkxCandles, parseTradingViewScan } = require('./market-data');
 const { tradeBody, isSuccess } = require('./adapters/metaapi');
 const { runTick } = require('./tick');
 const { replay } = require('./backtest');
 const { renderMarkdown } = require('./report');
+const { virtualDeskCommentLines } = require('./issue-notify');
 const { loadConfig, pipSize } = require('./util');
-const { proposeSetup, applyArm, autoArmIfDue, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows } = require('./gold-breakout');
+const paper = require('./paper-broker');
+const { proposeSetup, applyArm, autoArmIfDue, detectFill, isFirstFriday, suggestedSide, asianRange, inLondonWindow, brokerHourStart, goldWindows, barsToH1, ocoSideLevels } = require('./gold-breakout');
 
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
@@ -361,6 +363,36 @@ async function runSelfTest() {
   });
   assertEqual(fillComment.skipped, true, 'xm-fill is not a command');
   assertEqual(isNotifyComment('xm-close:2024-03-05\n決済'), true, 'close marker');
+  assertEqual(isNotifyComment('virtual-desk:2026-09-07:forming\nBuyStop 1'), true, 'virtual-desk is notify');
+  const virtualIgnored = applyComment({
+    body: 'virtual-desk:2026-09-07:forming\nENTRY: GOLD BUY',
+    login: 'grok-bot',
+    now: lockNow,
+    persist: false
+  });
+  assertEqual(virtualIgnored.skipped, true, 'virtual-desk is not a command');
+  const deskLines = virtualDeskCommentLines({
+    status: 'forming',
+    reason: 'asia_forming',
+    lot: 0.02,
+    asia_high: 4426.4,
+    asia_low: 4386.6,
+    asia_close: 4399.6,
+    range: 39.8,
+    buy_stop: 4429.2,
+    buy_sl: 4406.84,
+    buy_tp: 4469.46,
+    sell_stop: 4383.8,
+    sell_sl: 4406.16,
+    sell_tp: 4343.54,
+    h1_atr: 18.64,
+    sl_distance: 22.36,
+    tp_distance: 40.26,
+    h1_atr_source: 'tradingview_atr60',
+    suggested_side: 'SELL'
+  }, { pending: [] });
+  assert(deskLines.some((l) => /BuyStop 4429.2/.test(l)), 'desk comment has buy sl/tp');
+  assert(deskLines.some((l) => /ENTRY を出すな/.test(l)), 'desk comment forbids entry');
 
   const autoArmed = autoArmIfDue(proposed, { ...goldTestCfg, entry_operator: 'auto' }, lockNow, false);
   assertEqual(autoArmed.status, 'armed', 'auto oco in london');
@@ -438,6 +470,137 @@ async function runSelfTest() {
   const xmArmed = applyArm(xmProposed, { goldArm: 'BUY', goldArmDate: '2024-03-05', halted: false, now: xmNow });
   const xmExpired = detectFill(xmArmed, goldAsiaBarsXm(), new Date('2024-03-05T09:00:00Z'), goldXmCfg);
   assertEqual(xmExpired.status, 'expired', 'london end at broker 11 = 09:00 UTC');
+  const missedLondon = detectFill(xmProposed, goldAsiaBarsXm(), new Date('2024-03-05T09:00:00Z'), goldXmCfg);
+  assertEqual(missedLondon.status, 'expired', 'awaiting_arm also expires after london');
+
+  const okxBars = parseOkxCandles({
+    code: '0',
+    data: [
+      ['1000000', '2', '3', '1', '2.5', '10'],
+      ['0', '1', '1.5', '0.5', '1.2', '8']
+    ]
+  });
+  assertEqual(okxBars.length, 2, 'okx newest-first reversed');
+  assertEqual(okxBars[0].close, 1.2, 'okx oldest first after reverse');
+  const tvRows = parseTradingViewScan({
+    data: [{ s: 'OANDA:XAUUSD', d: [4400, 4410, 4420, 4380] }]
+  }, ['close', 'open', 'high', 'low']);
+  assertEqual(tvRows[0].ticker, 'OANDA:XAUUSD', 'tv ticker');
+  assertEqual(tvRows[0].close, 4400, 'tv close');
+
+  const m15 = [
+    { time: Date.parse('2024-03-05T08:00:00Z'), open: 10, high: 11, low: 9, close: 10.5, volume: 1 },
+    { time: Date.parse('2024-03-05T08:15:00Z'), open: 10.5, high: 12, low: 10, close: 11, volume: 1 }
+  ];
+  const h1 = barsToH1(m15);
+  assertEqual(h1.length, 1, 'resample one hour');
+  assertEqual(h1[0].high, 12, 'h1 high');
+  assertEqual(h1[0].low, 9, 'h1 low');
+
+  const forming = proposeSetup({
+    bars: goldAsiaBarsXm(),
+    now: new Date('2024-03-05T04:00:00Z'),
+    cfg: goldXmCfg,
+    dailyAtrOverride: 20,
+    allowForming: true
+  });
+  assertEqual(forming.status, 'forming', `forming ${forming.status} ${forming.reason}`);
+  assert(forming.buy_sl < forming.buy_stop, 'buy sl below stop');
+  assert(forming.sell_sl > forming.sell_stop, 'sell sl above stop');
+  const levels = ocoSideLevels(forming);
+  assert(Math.abs((levels.tp_distance / levels.sl_distance) - goldXmCfg.reward_multiple) < 1e-6, 'tp is 1.8R');
+
+  const earlyFillBars = [
+    {
+      time: Date.parse('2024-03-05T07:15:00Z'),
+      high: armed.buy_stop + 1,
+      low: armed.asia_low + 1,
+      open: 2400,
+      close: armed.buy_stop + 0.4,
+      volume: 1
+    },
+    {
+      time: Date.parse('2024-03-05T08:30:00Z'),
+      high: armed.asia_high,
+      low: armed.asia_low + 1,
+      open: 2400,
+      close: 2401,
+      volume: 1
+    }
+  ];
+  const filledEarly = detectFill(armed, earlyFillBars, new Date('2024-03-05T08:30:00Z'), goldTestCfg);
+  assertEqual(filledEarly.status, 'filled', 'fill uses earlier london bar not only last');
+  assertEqual(filledEarly.fill_side, 'BUY', 'earlier bar buy');
+
+  const book = paper.emptyBook(risk);
+  paper.upsertPending(book, {
+    symbol: 'GOLD',
+    buy_stop: 2410,
+    sell_stop: 2390,
+    buy_sl: 2400,
+    buy_tp: 2428,
+    sell_sl: 2400,
+    sell_tp: 2372,
+    lot: 0.02,
+    reason: 'asia_forming',
+    setup_status: 'forming',
+    now: lockNow
+  });
+  assertEqual(book.pending.length, 1, 'pending placed');
+  paper.upsertPending(book, {
+    symbol: 'GOLD',
+    buy_stop: 2411,
+    sell_stop: 2389,
+    buy_sl: 2401,
+    buy_tp: 2429,
+    sell_sl: 2399,
+    sell_tp: 2371,
+    lot: 0.02,
+    reason: 'asia_locked',
+    setup_status: 'awaiting_arm',
+    now: lockNow
+  });
+  assertEqual(book.pending.filter((p) => p.status === 'working').length, 1, 'pending replaced');
+  assertEqual(book.pending.find((p) => p.status === 'working').buy_stop, 2411, 'latest pending');
+
+  const goldPad = [];
+  const padStart = goldAsiaBarsXm()[0].time - 48 * 3600000;
+  for (let i = 0; i < 48; i++) {
+    goldPad.push({
+      time: padStart + i * 3600000,
+      open: 2398,
+      high: 2405,
+      low: 2392,
+      close: 2400,
+      volume: 1
+    });
+  }
+  const goldDaily = [];
+  for (let i = 0; i < 20; i++) {
+    goldDaily.push({
+      time: Date.parse('2024-02-14T00:00:00Z') + i * 86400000,
+      open: 2380,
+      high: 2412,
+      low: 2388,
+      close: 2400,
+      volume: 1
+    });
+  }
+  const tickForming = await runTick({
+    now: new Date('2024-03-05T04:00:00Z'),
+    dryRun: true,
+    env: {},
+    fixtureBySymbol: {
+      EURUSD: fixture,
+      GBPUSD: fixture,
+      USDJPY: jpy,
+      GOLD: goldPad.concat(goldAsiaBarsXm()),
+      GOLD_1D: goldDaily
+    },
+    allowForming: true
+  });
+  assertEqual(tickForming.gold.status, 'forming', 'tick forming gold');
+  assert((tickForming.book.pending || []).some((p) => p.symbol === 'GOLD' && p.status === 'working'), 'tick writes gold pending');
 
   console.log('self-test ok');
 }

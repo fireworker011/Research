@@ -34,14 +34,16 @@ jobs:
           set -euo pipefail
           cd xm-trade-engine
           node --check src/tick.js
+          node --check src/virtual-desk.js
+          node --check src/issue-notify.js
           node src/self-test.js
-          node src/tick.js
+          node src/virtual-desk.js
 
       - name: 状態を保存
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add xm-trade-engine/output/state || true
+          git add xm-trade-engine/output || true
           git diff --staged --quiet || {
             git commit -m "chore: XM ペーパーティック"
             git pull --rebase origin "${{ github.ref_name }}"
