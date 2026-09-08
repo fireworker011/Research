@@ -38,7 +38,11 @@ GitHub Actions で無人運転し、判断（案件選定・ジャンル取捨�
 
 ＋ video-semi-auto.js（任意・手動）: 反応が良かった投稿を
   Shorts/Reels 動画化 → 確認 → 公式ツールで予約投稿
-＋ video-judge.js（毎日・自動）: YouTubeのクリック記録だけを見て判定。投稿しない
+＋ video-judge.js（毎日・自動）: 媒体別のクリック記録だけを見て判定。投稿しない。
+  投稿ゲート（posting.allowed / weekly_cap / platforms）を latest.json に書く
+＋ video-poster.js（手動起動・ゲート付き）: YouTube Shorts / TikTok / Instagram Reels に
+  多アカウント投稿。threads-poster と同じステートレス設計。判定ゲートが閉なら投稿しない。
+  アカウントは人間が開設 → video-oauth.js で OAuth 登録。詳細 docs/video-poster-setup.md
 ＋ funnel-calc.js: 目標金額から必要ビュー数を逆算
 ```
 
@@ -204,6 +208,10 @@ affiliate-engine/
 │   ├── engage.js            # 返信・コメント下書きの自動生成（毎朝のコピペ10分用）
 │   ├── funnel-calc.js       # 目標→必要数値の逆算
 │   ├── video-semi-auto.js   # Shorts/Reels 動画生成（要 ffmpeg + Noto CJK）
+│   ├── video-judge.js       # 動画キャッシュループの日次判定 + 投稿ゲート出力
+│   ├── video-poster.js      # YouTube/TikTok/Instagram 多アカウント投稿（判定ゲート + ライブゲート）
+│   ├── video-oauth.js       # 手動開設アカウントの OAuth 登録（ローカル1回・トークンは標準出力のみ）
+│   ├── video-platforms/     # 媒体アダプタ（youtube / tiktok / instagram）
 │   ├── compliance.js        # #PR付与・NG表現ブロック
 │   ├── claude-client.js     # Claude API（リトライ・JSON抽出）
 │   └── util.js              # CSV/JSON/日付ユーティリティ

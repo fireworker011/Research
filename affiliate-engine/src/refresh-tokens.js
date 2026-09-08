@@ -174,7 +174,11 @@ async function main() {
   console.log(`\n完了: リフレッシュ成功 ${results.filter((r) => !r.error).length}（うち自動書き戻し ${auto}）/ 失敗 ${results.filter((r) => r.error).length}`);
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+module.exports = { updateSecret };
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}

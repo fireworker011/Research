@@ -1,0 +1,46 @@
+{
+  "_comment": "動画投稿エンジン（src/video-poster.js）のアカウント定義。アカウントは人間が手動で開設し、node src/video-oauth.js <platform> で OAuth 登録した refresh_token / access_token を GitHub Secrets（*_env と同名）に入れる。live_enabled=false の間は全実行がドライラン。platform_unlock は人間が『この媒体を足す』と決めた日付。null の媒体は video-judge の判定に関係なく投稿しない。",
+  "live_enabled": false,
+  "platform_unlock": {
+    "youtube": "2026-06-20",
+    "tiktok": null,
+    "instagram": null
+  },
+  "defaults": {
+    "daily_cap": 1,
+    "privacy": "public",
+    "duplicate_window_days": 30
+  },
+  "accounts": [
+    {
+      "key": "pet_youtube",
+      "platform": "youtube",
+      "genre": "ペット",
+      "handle": "@pet_story_select",
+      "client_id_env": "YT_PET_CLIENT_ID",
+      "client_secret_env": "YT_PET_CLIENT_SECRET",
+      "refresh_token_env": "YT_PET_REFRESH_TOKEN",
+      "enabled": true
+    },
+    {
+      "key": "pet_tiktok",
+      "platform": "tiktok",
+      "genre": "ペット",
+      "handle": "(開設後に記入)",
+      "client_key_env": "TT_PET_CLIENT_KEY",
+      "client_secret_env": "TT_PET_CLIENT_SECRET",
+      "refresh_token_env": "TT_PET_REFRESH_TOKEN",
+      "enabled": false
+    },
+    {
+      "key": "pet_instagram",
+      "platform": "instagram",
+      "genre": "ペット",
+      "handle": "(開設後に記入)",
+      "user_id_env": "IG_PET_USER_ID",
+      "token_env": "IG_PET_ACCESS_TOKEN",
+      "public_base_url": "",
+      "enabled": false
+    }
+  ]
+}
