@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-organ-1"' in src
+    assert 'FETCH_REV = "h3-20260908-floor-1"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-organ-1" in blob
+    assert "h3-20260908-floor-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4702,6 +4702,13 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "Walk only" in walk or "walking" in walk.lower()
     assert "No tub yet" in walk
     assert "slime" in walk.lower()
+    assert "FLOOR LOCK" in walk
+    assert "springy" in walk.lower() and "elastic" in walk.lower()
+    assert "gives under" not in walk.lower()
+    assert "quicksand" in walk.lower()
+    assert "feet stay on the surface" in walk.lower()
+    assert "swallow feet" in walk.lower() or "swallow walkers" in walk.lower()
+    assert "soft meat floor" not in walk.lower()
     enter = story["clips"][1]["prompt"]
     assert "climb" in enter.lower()
     assert "chest" in enter.lower()
@@ -5238,7 +5245,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-organ-1" in cell2
+    assert "h3-20260908-floor-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
