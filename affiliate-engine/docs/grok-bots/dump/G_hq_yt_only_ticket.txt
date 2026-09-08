@@ -17,4 +17,4 @@ https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comf
 
 復唱して、人間への指示を1文で書け。数字は発明するな。URLはチャットに貼るな。
 
-次のファイル名だけ: `dump/G_hq_banner_10.txt`（出品するな。結合するな）。
+次のファイル名だけ: `dump/G_hq_a8_csv.txt`（見た数字だけ。開いていないなら足すな。バナーは出品するな。結合するな）。

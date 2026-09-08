@@ -16,4 +16,4 @@ Secret に `教育_N高` を入れただけでは円は動かない。次はク�
 
 復唱して、人間への指示を1文で書け。数字は発明するな。教育YouTubeは始めるな。
 
-次のファイル名だけ: `dump/G_hq_tenshoku_exist.txt`（neo を転職プロフィールに既に置いたなら使うな。そのときは `dump/G_hq_banner_10.txt`。結合するな）。
+次のファイル名だけ: `dump/G_hq_tenshoku_exist.txt`（neo を転職プロフィールに既に置いたなら使うな。そのときは `dump/G_hq_a8_csv.txt`。結合するな）。
