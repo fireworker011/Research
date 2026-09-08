@@ -69,7 +69,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 ## 今の準備（この版）
 
-専用11話（帰宅〜縁側）と、名前付きパック13本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）/（参照つなぐ）/（参照つなぐ修）** の5つから選べます。**短編集（参照）** は15秒完結×複数・つなぎなし。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックは 9:16 576×1024、短編集は本ごと：フェラは 9:16 寄り、挿入は 16:9 または立ち 9:16）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V。参照モードだけ `input/cast/` の8枚が必須）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（`sayaka-bust` / `sayaka-full` / `rei-bust` / `rei-full` / `aya-bust` / `aya-full` / `madoka-bust` / `madoka-full`）。Imagine 2.0 でも使える。**参照つなぐ・参照つなぐ修・短編集（参照）** ではこの8枚を **R2V の identity 参照**にする（I2V の最初のコマではない。FL2VA と Ref2VA は混ぜない）。
+専用11話（帰宅〜縁側）と、名前付きパック23本（訪問販売・定期検診・終点、建前パックのカフェ・車内販売・赤信号・ヨガ・背中流し・カラオケ・ランドリー・講義机・キャンプ・花火、物語の追加のハイスイコウ〜川原のゴミ）が入っています。どちらも③で **（専用）/（つなぐ）/（つなぐ修）/（参照つなぐ）/（参照つなぐ修）** の5つから選べます。**短編集（参照）** は15秒完結×複数・つなぎなし。画像サイズは JSON の canvas で決まる（専用11話は 16:9 か 9:16、パックは 9:16 576×1024、短編集は本ごと：フェラは 9:16 寄り、挿入は 16:9 または立ち 9:16）ので、文章に大きさは書かなくてよい。**写真が無くても動画は作れます**（T2V。参照モードだけ `input/cast/` の8枚が必須）。登校の試験jpgは品質が足りないので、③を「テキストから」のままにすると Drive の `input/commute-120s/` があっても使いません。キャスト8枚は `input/cast/`（`sayaka-bust` / `sayaka-full` / `rei-bust` / `rei-full` / `aya-bust` / `aya-full` / `madoka-bust` / `madoka-full`）。Imagine 2.0 でも使える。**参照つなぐ・参照つなぐ修・短編集（参照）** ではこの8枚を **R2V の identity 参照**にする（I2V の最初のコマではない。FL2VA と Ref2VA は混ぜない）。
 
 ## 120秒は混ぜない（普通のつなぐ / 専用5パターン / 名前付きパック5パターン / 短編集）
 
@@ -84,7 +84,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | **名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）** | 「訪問販売（つなぐ修）」「カフェ（参照つなぐ）」「花火（専用）」など | 専用ストーリーではないが再生は同じ5つ。JSON の本ごとの部品はそのまま |
 | **短編集（参照）** | 「短編集（参照）」 | 15秒完結の超濃厚日常インモラル×複数。メイン4人のうち竿役とハメ役の2人。**つなぎなし・連結なし**。各本は人物写真を **R2V 参照**。画面は本ごと。文と部品は自動（R2V 安全な LoRA だけ） |
 
-専用は 11話 × 5 ＝ 55行、パックは 13本 × 5 ＝ 65行、短編集は1行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
+専用は 11話 × 5 ＝ 55行、パックは 23本 × 5 ＝ 115行、短編集は1行。旧名「登校120秒（専用）」なども同じ意味（専用＝カット）で残っています。旧名「訪問販売60秒（つなぐ）」「定期検診100秒（つなぐ）」「終点40秒（つなぐ）」は前と同じ動き（＝つなぐ修）です。普通のつなぐ側の文は、切れ目なく続きやすい長回しに直してから送ります（1本目は途中の動きで終わる。2本目以降は最後のコマから再開しない）。最初の T2V→I2V のつなぎ（1本目→2本目）は文を直しません（Picture 1 のロックだけ）。
 
 ## 準備（最初の1回）
 
@@ -283,7 +283,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260908-face-1"
+FETCH_REV = "h3-20260908-addon-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -370,6 +370,16 @@ studio_files = [
     "h3-lora-studio/stories/lecture-desk-50s.json",
     "h3-lora-studio/stories/camp-50s.json",
     "h3-lora-studio/stories/fireworks-50s.json",
+    "h3-lora-studio/stories/manhole-30s.json",
+    "h3-lora-studio/stories/roof-ac-30s.json",
+    "h3-lora-studio/stories/tetrapod-30s.json",
+    "h3-lora-studio/stories/locker-30s.json",
+    "h3-lora-studio/stories/crossing-30s.json",
+    "h3-lora-studio/stories/lookout-30s.json",
+    "h3-lora-studio/stories/factory-30s.json",
+    "h3-lora-studio/stories/gas-station-30s.json",
+    "h3-lora-studio/stories/tunnel-phone-30s.json",
+    "h3-lora-studio/stories/riverbank-30s.json",
 ]
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
@@ -612,7 +622,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ
-#@markdown 専用11話と名前付きパック13本は3パターン: （専用）＝カット、（つなぐ）＝文そのまま最後のコマから I2V、（つなぐ修）＝最後のコマから I2V＋1本目を長回しに直す。パック（訪問販売〜花火）は専用ストーリーではないが再生は同じ。プロンプト・秒数・長さの作り方は不要。
+#@markdown 専用11話と名前付きパック23本は3パターン: （専用）＝カット、（つなぐ）＝文そのまま最後のコマから I2V、（つなぐ修）＝最後のコマから I2V＋1本目を長回しに直す。パック（訪問販売〜川原のゴミ）は専用ストーリーではないが再生は同じ。物語の追加は15秒×2（台詞は1本目だけ）。プロンプト・秒数・長さの作り方は不要。
 やりたいシーン = "__DEFAULT_SCENE__"  #@param __SCENE_OPTIONS_3__
 作り方 = "テキストから（写真なし）"  #@param ["テキストから（写真なし）", "写真から（1枚必要）"]
 #@markdown 最後の本だけ選んだシーンに合わせて直す（普通のつなぐ・つなぐ修）。専用（カット）は写真からの本に「この本の静止画・独立カット」を足すだけ。「つなぐ」（文そのまま）では何もしない。最初の T2V→I2V のつなぎは触らない。
@@ -667,7 +677,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)

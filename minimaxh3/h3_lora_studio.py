@@ -201,6 +201,18 @@ SITUATION_DOWNLOAD = {
     "lecture-desk-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    # 物語の追加 (15s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
+    # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
+    "manhole-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "roof-ac-30s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "tetrapod-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "locker-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "crossing-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "lookout-30s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "factory-30s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "gas-station-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "tunnel-phone-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "riverbank-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "shorts-immoral": [
         "blowjob-h3",
         "synth-pussy-h3",
@@ -302,6 +314,26 @@ SITUATION_JA = {
     "lecture-desk-50s": "lecture-desk-50s",
     "camp-50s": "camp-50s",
     "fireworks-50s": "fireworks-50s",
+    "ハイスイコウ": "manhole-30s",
+    "屋上クーラー": "roof-ac-30s",
+    "ハマのテトラ": "tetrapod-30s",
+    "廃校ロッカー": "locker-30s",
+    "ドウロのど真ん中": "crossing-30s",
+    "ガケの展望台": "lookout-30s",
+    "コウジョウあと": "factory-30s",
+    "ガソリンスタンド跡": "gas-station-30s",
+    "トンネル非常電話": "tunnel-phone-30s",
+    "川原のゴミ": "riverbank-30s",
+    "manhole-30s": "manhole-30s",
+    "roof-ac-30s": "roof-ac-30s",
+    "tetrapod-30s": "tetrapod-30s",
+    "locker-30s": "locker-30s",
+    "crossing-30s": "crossing-30s",
+    "lookout-30s": "lookout-30s",
+    "factory-30s": "factory-30s",
+    "gas-station-30s": "gas-station-30s",
+    "tunnel-phone-30s": "tunnel-phone-30s",
+    "riverbank-30s": "riverbank-30s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
@@ -411,6 +443,16 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "manhole-30s": "物語の追加。ハイスイコウ。15秒×2＝30秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話（口パク）。2本目は無言で根元までジュボ→口内。口内のあとは口移し。hmmotion なし。",
+    "roof-ac-30s": "物語の追加。屋上クーラー。15秒×2＝30秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
+    "tetrapod-30s": "物語の追加。ハマのテトラ。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は風の会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "locker-30s": "物語の追加。廃校ロッカー。15秒×2＝30秒。9:16。アヤ＋マドカ。1本目はカギの会話のあとベロチュー（竿は触らない）。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "crossing-30s": "物語の追加。ドウロのど真ん中。15秒×2＝30秒。9:16。サヤカ＋レイ。1本目は信号の会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "lookout-30s": "物語の追加。ガケの展望台。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は霧の会話。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
+    "factory-30s": "物語の追加。コウジョウあと。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はサビの会話。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
+    "gas-station-30s": "物語の追加。ガソリンスタンド跡。15秒×2＝30秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲む（ジュボしない）。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
+    "tunnel-phone-30s": "物語の追加。トンネル非常電話。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は電話の会話。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。口移し。hmmotion なし。",
+    "riverbank-30s": "物語の追加。川原のゴミ。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はフクロの会話。2本目は無言ジュボ→口内。口移し。hmmotion なし。",
     "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
 }
 
@@ -481,8 +523,32 @@ CHAIN_PACK_ORDER = (
     "lecture-desk-50s",
     "camp-50s",
     "fireworks-50s",
+    "manhole-30s",
+    "roof-ac-30s",
+    "tetrapod-30s",
+    "locker-30s",
+    "crossing-30s",
+    "lookout-30s",
+    "factory-30s",
+    "gas-station-30s",
+    "tunnel-phone-30s",
+    "riverbank-30s",
 )
 CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
+# 物語の追加: 15秒×2＝30秒。台詞は1本目（futa_visible）だけ。行為は無言。
+ADDON_PACK_ORDER = (
+    "manhole-30s",
+    "roof-ac-30s",
+    "tetrapod-30s",
+    "locker-30s",
+    "crossing-30s",
+    "lookout-30s",
+    "factory-30s",
+    "gas-station-30s",
+    "tunnel-phone-30s",
+    "riverbank-30s",
+)
+ADDON_PACK_IDS = frozenset(ADDON_PACK_ORDER)
 # 15s independent dirty shorts. Not a story (is_story False). Not a chain pack.
 ANTHOLOGY_IDS = ("shorts-immoral",)
 ANTHOLOGY_ID_SET = set(ANTHOLOGY_IDS)
@@ -539,6 +605,16 @@ STORY_TITLE_JA = {
     "lecture-desk-50s": "講義机",
     "camp-50s": "キャンプ",
     "fireworks-50s": "花火",
+    "manhole-30s": "ハイスイコウ",
+    "roof-ac-30s": "屋上クーラー",
+    "tetrapod-30s": "ハマのテトラ",
+    "locker-30s": "廃校ロッカー",
+    "crossing-30s": "ドウロのど真ん中",
+    "lookout-30s": "ガケの展望台",
+    "factory-30s": "コウジョウあと",
+    "gas-station-30s": "ガソリンスタンド跡",
+    "tunnel-phone-30s": "トンネル非常電話",
+    "riverbank-30s": "川原のゴミ",
 }
 STORY_PLAY_JA = {
     STORY_PLAY_DEDICATED: "専用",
@@ -2841,6 +2917,12 @@ def semen_share_plan(story: dict[str, Any] | None) -> list[tuple[int, str]]:
             for i, clip in enumerate(data.get("clips") or [])
             if str(clip.get("situation") or "") == "oral_creampie"
         ]
+    if sid in ADDON_PACK_IDS or bool(data.get("addon")):
+        return [
+            (i, "on_cumouf")
+            for i, clip in enumerate(data.get("clips") or [])
+            if str(clip.get("situation") or "") == "oral_creampie"
+        ]
     return list(SEMEN_SHARE_BY_STORY.get(sid, []))
 
 
@@ -3665,7 +3747,8 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if abs(duration - 10.0) > 0.01 and abs(duration - 15.0) > 0.01:
                 errors.append(f"clip {n}: duration_s must be 10 or 15 for H3 following (got {duration:g})")
             if abs(duration - 15.0) < 0.01:
-                if lines:
+                addon = str(story.get("id") or "") in ADDON_PACK_IDS or bool(story.get("addon"))
+                if lines and not (addon and situation == "futa_visible"):
                     errors.append(f"clip {n}: spoken clips stay 10s (leftover seconds fill with extra speech)")
                 if "15-second take" not in prompt and "15-second" not in prompt:
                     errors.append(f"clip {n}: 15s clip must be a 15-second take")
@@ -3756,7 +3839,15 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
     n = len(clips)
     clip_s = float(data.get("clip_s") or 10)
     chain_pack = sid in CHAIN_PACK_IDS or str(data.get("kind") or "") == "chain"
-    if chain_pack:
+    addon = sid in ADDON_PACK_IDS or bool(data.get("addon"))
+    if addon:
+        if n != 2:
+            raise SystemExit("物語の追加は 2本です。")
+        if not data.get("seamless"):
+            raise SystemExit("物語の追加は seamless: true です。")
+        if abs(clip_s - 15.0) > 0.01:
+            raise SystemExit("物語の追加の1本は 15秒です。")
+    elif chain_pack:
         if n < 4 or n > 12:
             raise SystemExit("つなぐパックは 4〜12本です。")
         if not data.get("seamless"):
@@ -3769,11 +3860,15 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
     for d in clip_durs:
         if abs(d - 10.0) > 0.01 and abs(d - 15.0) > 0.01:
             raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
+    if addon and any(abs(d - 15.0) > 0.01 for d in clip_durs):
+        raise SystemExit("物語の追加の1本は 15秒です。")
     if int(data.get("min_age") or 0) < 21:
         raise SystemExit("専用ストーリーは 21歳以上のみです。")
     duration = float(data.get("duration_s") or 0)
     if duration > 120:
         raise SystemExit("専用ストーリーは 120秒までです。")
+    if addon and abs(duration - 30.0) > 0.51:
+        raise SystemExit("物語の追加は 30秒です。")
     if abs(duration - sum(clip_durs)) > 0.51:
         raise SystemExit("専用ストーリーの秒数と本数が合いません。")
     follow_errors = validate_story_follow(data)
