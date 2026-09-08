@@ -7,6 +7,7 @@ on:
       - '.github/workflows/affiliate_engine_post.yml'
       - '.github/workflows/affiliate_engine_insight.yml'
       - '.github/workflows/affiliate_engine_overlay_status.yml'
+      - '.github/workflows/affiliate_engine_a8_yen.yml'
       - '.github/workflows/affiliate_yaml_guard.yml'
 
 concurrency:
@@ -53,6 +54,17 @@ jobs:
             fi
             if grep -q 'AMPLIFY_ENABLED' "$status" || grep -q 'AFFILIATE_BODY_LINKS' "$status"; then
               echo "overlay status must not enable body links or amplify"
+              exit 1
+            fi
+          fi
+          yen=.github/workflows/affiliate_engine_a8_yen.yml
+          if [ -f "$yen" ]; then
+            if grep -q "^  schedule:" "$yen"; then
+              echo "a8 yen must not have schedule"
+              exit 1
+            fi
+            if grep -q 'threads-poster.js' "$yen" || grep -q 'amplify.js' "$yen"; then
+              echo "a8 yen must not post"
               exit 1
             fi
           fi
