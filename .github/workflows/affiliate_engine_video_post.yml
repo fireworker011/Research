@@ -1,0 +1,81 @@
+name: Affiliate Engine 動画投稿（YouTube / TikTok / Instagram・手動起動のみ）
+
+on:
+  # schedule は付けない。動画の実投稿は人間が起動する（video-cash-loop の原則）。
+  # 実投稿には dry_run=false と live_confirm=I_UNDERSTAND_THE_RISK と
+  # config/video_accounts.json の live_enabled=true の3つが必要。どれか欠けるとドライラン。
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'ドライラン（投稿せずプレビューのみ）'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+      live_confirm:
+        description: '実投稿の確認。I_UNDERSTAND_THE_RISK と入力（dry_run=false のときだけ見る）'
+        required: false
+        default: ''
+        type: string
+
+concurrency:
+  group: affiliate-video-post
+  cancel-in-progress: false
+
+jobs:
+  video-post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/setup-colab-comfyui-Eb9Lh
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 判定を最新にする（投稿ゲートの根拠）
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          cd affiliate-engine
+          node --check src/video-judge.js
+          node src/video-judge.js --self-test
+          node src/video-judge.js > /dev/null
+
+      - name: 投稿（期日到来分のみ・ゲート通過分のみ）
+        env:
+          VIDEO_POST_LIVE_CONFIRM: ${{ github.event.inputs.live_confirm }}
+          GH_SECRETS_PAT: ${{ secrets.GH_SECRETS_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          YT_PET_CLIENT_ID: ${{ secrets.YT_PET_CLIENT_ID }}
+          YT_PET_CLIENT_SECRET: ${{ secrets.YT_PET_CLIENT_SECRET }}
+          YT_PET_REFRESH_TOKEN: ${{ secrets.YT_PET_REFRESH_TOKEN }}
+          TT_PET_CLIENT_KEY: ${{ secrets.TT_PET_CLIENT_KEY }}
+          TT_PET_CLIENT_SECRET: ${{ secrets.TT_PET_CLIENT_SECRET }}
+          TT_PET_REFRESH_TOKEN: ${{ secrets.TT_PET_REFRESH_TOKEN }}
+          IG_PET_USER_ID: ${{ secrets.IG_PET_USER_ID }}
+          IG_PET_ACCESS_TOKEN: ${{ secrets.IG_PET_ACCESS_TOKEN }}
+        run: |
+          cd affiliate-engine
+          node --check src/video-poster.js
+          node src/video-poster.js --self-test
+          if [ "${{ github.event.inputs.dry_run }}" != "false" ]; then
+            node src/video-poster.js --dry-run
+          else
+            node src/video-poster.js
+          fi
+
+      - name: 投稿状態と判定を保存
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add affiliate-engine/output/state/video_posted.json affiliate-engine/output/posting_logs affiliate-engine/output/video || true
+          git diff --staged --quiet || {
+            git commit -m "chore: 動画投稿状態を更新"
+            git pull --rebase origin claude/setup-colab-comfyui-Eb9Lh
+            git push origin claude/setup-colab-comfyui-Eb9Lh
+          }

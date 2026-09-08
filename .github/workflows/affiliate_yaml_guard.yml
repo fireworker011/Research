@@ -7,6 +7,7 @@ on:
       - '.github/workflows/affiliate_engine_post.yml'
       - '.github/workflows/affiliate_engine_insight.yml'
       - '.github/workflows/affiliate_engine_overlay_status.yml'
+      - '.github/workflows/affiliate_engine_video_post.yml'
       - '.github/workflows/affiliate_yaml_guard.yml'
 
 concurrency:
@@ -53,6 +54,23 @@ jobs:
             fi
             if grep -q 'AMPLIFY_ENABLED' "$status" || grep -q 'AFFILIATE_BODY_LINKS' "$status"; then
               echo "overlay status must not enable body links or amplify"
+              exit 1
+            fi
+          fi
+          video=.github/workflows/affiliate_engine_video_post.yml
+          if [ -f "$video" ]; then
+            grep -q 'workflow_dispatch' "$video"
+            if grep -q "^  schedule:" "$video"; then
+              echo "video post must stay manual (no schedule)"
+              exit 1
+            fi
+            grep -q 'VIDEO_POST_LIVE_CONFIRM' "$video"
+            if ! grep -A4 'dry_run:' "$video" | grep -q "default: 'true'"; then
+              echo "video post dry_run must default to true"
+              exit 1
+            fi
+            if grep -q 'threads-poster.js' "$video" || grep -q 'amplify.js' "$video"; then
+              echo "video post must not run threads poster or amplify"
               exit 1
             fi
           fi

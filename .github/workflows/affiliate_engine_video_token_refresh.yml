@@ -1,0 +1,38 @@
+name: 動画アカウント トークン延命（Instagram 60日 / TikTok 回転・投稿しない）
+
+on:
+  schedule:
+    # 毎週月曜 09:37 JST。refresh_threads_token.yml と同じ考え方（週次なら数回失敗しても期限まで余裕がある）。
+    # 投稿はしない。YouTube の refresh_token は失効しないので対象外。
+    - cron: '37 0 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: affiliate-video-token-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: claude/setup-colab-comfyui-Eb9Lh
+          persist-credentials: false
+
+      - name: 延命 + Secrets 自動書き戻し
+        env:
+          # Secrets 書き換え権限付き Fine-grained PAT（未設定なら Step Summary に新トークンを出して手動更新）
+          GH_SECRETS_PAT: ${{ secrets.GH_SECRETS_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TT_PET_CLIENT_KEY: ${{ secrets.TT_PET_CLIENT_KEY }}
+          TT_PET_CLIENT_SECRET: ${{ secrets.TT_PET_CLIENT_SECRET }}
+          TT_PET_REFRESH_TOKEN: ${{ secrets.TT_PET_REFRESH_TOKEN }}
+          IG_PET_USER_ID: ${{ secrets.IG_PET_USER_ID }}
+          IG_PET_ACCESS_TOKEN: ${{ secrets.IG_PET_ACCESS_TOKEN }}
+        run: |
+          cd affiliate-engine
+          node --check src/video-poster.js
+          node src/video-poster.js --refresh-tokens
