@@ -3,32 +3,42 @@
   "disclaimer": "仮想資金。XM口座の残高ではない。数字を実口座と混ぜて読むな。",
   "currency": "USD",
   "balance": 10000,
-  "equity": 10000,
-  "positions": [],
+  "equity": 9996.63,
+  "positions": [
+    {
+      "id": "p_EURUSD_2026-09-08T13:38:58.703Z",
+      "symbol": "EURUSD",
+      "side": "BUY",
+      "lot": 0.1,
+      "entry": 1.162580408630371,
+      "sl": 1.16146,
+      "tp": 1.16394,
+      "pip_value": 10,
+      "opened_at": "2026-09-08T13:38:58.703Z",
+      "reason": "ema_cross_up_trend",
+      "mark": 1.1629259586334229,
+      "unrealized": 3.46
+    },
+    {
+      "id": "p_GBPUSD_2026-09-08T17:56:04.112Z",
+      "symbol": "GBPUSD",
+      "side": "BUY",
+      "lot": 0.1,
+      "entry": 1.354192890701294,
+      "sl": 1.35258,
+      "tp": 1.3562,
+      "pip_value": 10,
+      "opened_at": "2026-09-08T17:56:04.112Z",
+      "reason": "ema_cross_up_trend",
+      "mark": 1.3535096645355225,
+      "unrealized": -6.83
+    }
+  ],
   "closed": [],
   "daily": {
-    "date": "2026-09-07",
+    "date": "2026-09-08",
     "start_equity": 10000,
     "realized_pnl": 0
   },
-  "pending": [
-    {
-      "id": "pend_GOLD_2026-09-07T04:09:56.092Z",
-      "symbol": "GOLD",
-      "type": "OCO",
-      "status": "working",
-      "buy_stop": 4429.2,
-      "sell_stop": 4383.8,
-      "buy_sl": 4406.84,
-      "buy_tp": 4469.46,
-      "sell_sl": 4406.16,
-      "sell_tp": 4343.54,
-      "sl_distance": 22.36,
-      "tp_distance": 40.26,
-      "lot": 0.02,
-      "reason": "asia_forming",
-      "setup_status": "forming",
-      "placed_at": "2026-09-07T04:09:56.092Z"
-    }
-  ]
+  "pending": []
 }

@@ -53,16 +53,15 @@ suggested_side は参考。執行は OCO 両方。ENTRYは出さない。
 fill/close があれば、そのコメントを要約。数字が無ければ未確認。
 止めたなら「HALT を1行書いた」。
 
-## 貼った時点の控え（2026-09-07 04:09 UTC。Issue が新しければ捨てる）
+## 貼った時点の控え（2026-09-08 21:30 UTC。Issue が新しければ捨てる）
 
 - 源: TradingView OANDA:XAUUSD + OKX XAUT。Yahoo XAUUSD=X は 404
-- TV close 約 4405 / RSI 約 50.7 / H1 ATR 18.64
-- アジア形成中（ブローカー7時まで更新され得る）range 4386.6–4426.4 close 4399.6
-- lot 0.02（リスク 0.5%。0.10 は上限）
-- BuyStop 4429.20 / 損切り 4406.84 / 利確 4469.46
-- SellStop 4383.80 / 損切り 4406.16 / 利確 4343.54
-- Majors は 07:00 UTC まで FLAT（EMAルール。LLMは選ばない）
-- 仮想 equity 10000。XM残高は未確認
+- 今日の Gold OCO は `expired`（ロンドン枠終了。約定なし）
+- アジアは 4405–4441.4 close 4432.2。suggested_side BUY は参考。執行はしなかった
+- 次のセットアップは翌アジア（ブローカー 0–7）
+- ペーパー majors: EURUSD BUY / GBPUSD BUY（EMAルール）。XM残高は未確認
+- 仮想 equity 約 9996。勝ちではない。XMではない
+
 
 ## やるな
 

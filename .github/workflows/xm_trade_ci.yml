@@ -38,6 +38,8 @@ jobs:
           node --check src/apply-commander-comment.js
           node --check src/gold-breakout.js
           node --check src/tick.js
+          node --check src/virtual-desk.js
+          node --check src/issue-notify.js
           node --check src/report.js
           node --check src/backtest.js
           node --check src/self-test.js

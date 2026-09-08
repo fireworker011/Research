@@ -318,15 +318,11 @@ function autoArmIfDue(setup, cfg, now, halted) {
 function detectFill(setup, bars, now, cfg) {
   const w = goldWindows(cfg);
   const hour = brokerHour(now, cfg);
-  if (!setup || setup.status !== 'armed') {
-    if (setup && setup.status === 'armed' && hour >= w.londonEnd) {
-      return { ...setup, status: 'expired', reason: 'london_expired' };
-    }
-    return setup;
-  }
-  if (hour >= w.londonEnd) {
+  if (!setup) return setup;
+  if (['forming', 'awaiting_arm', 'armed'].includes(setup.status) && hour >= w.londonEnd) {
     return { ...setup, status: 'expired', reason: 'london_expired' };
   }
+  if (setup.status !== 'armed') return setup;
   if (!inLondonWindow(now, cfg)) return setup;
   const start = brokerHourStart(now, w.londonStart, cfg);
   const end = Math.min(now.getTime() + 1, brokerHourStart(now, w.londonEnd, cfg));

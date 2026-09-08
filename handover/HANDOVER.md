@@ -176,7 +176,7 @@
 
 ## 10. XM Trade（Cursor / Grok Bot）
 
-- 実発注の正は XM MT5 の EA。GitHub cron は遅延するので発注クロックにしない。
+- 自動の地図: `xm-trade-engine/docs/AUTO.md`。実発注は VPS + `docs/IPHONE.md`。dump は `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` だけ。`G_hq_*.txt` と混ぜるな
 - Grok Bot がやってよいのは、(1) Issue「XM Trade — 日次レポート」の `virtual-desk:` / `VIRTUAL.md` からペーパーOCOの損切り・利確を人間へ写すこと (2) 止めるときだけ `KILL_SWITCH:` または `SKIP: GOLD` を1行出すこと。ENTRY は出すな（完全自動）。`xm-fill:` / `xm-close:` / `virtual-desk:` は告知。dump は `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` だけ。載せ方は `xm-trade-engine/docs/SETUP.md`。
 - ペーパー帳簿の数字は XM 口座ではない。未確認の実損益を発明しない。
 - 既定は `PAPER_ONLY`。実口座の `RESUME` は人間がデモ検証後に明示したときだけ。

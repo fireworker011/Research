@@ -6,6 +6,7 @@ Affiliate Engine と同じく GitHub 上で保守し、Grok Bot が日次レポ�
 > **最初に正直な前提を。** 自動売買は口座資金を失う。このリポジトリは利益を保証しない。
 > 数字はペーパー帳簿か、接続した口座の実測だけを書く。未確認は「未確認」。
 > LLM（Grok / Cursor）に「今 EURUSD を買え」と選ばせない。それは幻覚で破産する。
+> **いま組む自動の正本は [`docs/AUTO.md`](docs/AUTO.md)。** iPhone の EA 載せ方は [`docs/IPHONE.md`](docs/IPHONE.md)。
 
 ## なぜ GitHub Actions だけでは XM を回せないか
 
@@ -132,6 +133,8 @@ xm-trade-engine/
 ├── config/strategy.json     # 戦略（決定論）
 ├── config/risk.json         # リスク上限
 ├── config/gold.json         # アジア/ロンドンはブローカー時刻。offset はペーパー用
+├── docs/AUTO.md             # 自動2層（ペーパー → VPS/EA）
+├── docs/IPHONE.md           # iPhone + Windows VPS の載せ方
 ├── docs/SETUP.md            # 完全自動の載せ方
 ├── src/gold-breakout.js
 ├── ea/xm_notify.mqh         # 約定・決済の Issue / Slack 告知

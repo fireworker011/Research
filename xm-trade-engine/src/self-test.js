@@ -470,6 +470,8 @@ async function runSelfTest() {
   const xmArmed = applyArm(xmProposed, { goldArm: 'BUY', goldArmDate: '2024-03-05', halted: false, now: xmNow });
   const xmExpired = detectFill(xmArmed, goldAsiaBarsXm(), new Date('2024-03-05T09:00:00Z'), goldXmCfg);
   assertEqual(xmExpired.status, 'expired', 'london end at broker 11 = 09:00 UTC');
+  const missedLondon = detectFill(xmProposed, goldAsiaBarsXm(), new Date('2024-03-05T09:00:00Z'), goldXmCfg);
+  assertEqual(missedLondon.status, 'expired', 'awaiting_arm also expires after london');
 
   const okxBars = parseOkxCandles({
     code: '0',
