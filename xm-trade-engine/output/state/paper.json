@@ -3,7 +3,7 @@
   "disclaimer": "仮想資金。XM口座の残高ではない。数字を実口座と混ぜて読むな。",
   "currency": "USD",
   "balance": 10000,
-  "equity": 10001.5,
+  "equity": 9999.56,
   "positions": [
     {
       "id": "p_EURUSD_2026-09-08T13:38:58.703Z",
@@ -16,8 +16,8 @@
       "pip_value": 10,
       "opened_at": "2026-09-08T13:38:58.703Z",
       "reason": "ema_cross_up_trend",
-      "mark": 1.1627906560897827,
-      "unrealized": 2.1
+      "mark": 1.1629259586334229,
+      "unrealized": 3.46
     },
     {
       "id": "p_GBPUSD_2026-09-08T17:56:04.112Z",
@@ -30,8 +30,8 @@
       "pip_value": 10,
       "opened_at": "2026-09-08T17:56:04.112Z",
       "reason": "ema_cross_up_trend",
-      "mark": 1.354132890701294,
-      "unrealized": -0.6
+      "mark": 1.3538029193878174,
+      "unrealized": -3.9
     }
   ],
   "closed": [],
