@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-audio-1"' in src
+    assert 'FETCH_REV = "h3-20260908-semen-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -495,7 +495,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-audio-1" in blob
+    assert "h3-20260908-semen-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -571,6 +571,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     assert '"cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames' in src
     assert '"SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
+    assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
@@ -4125,10 +4127,21 @@ def test_lock_semen_look_names_white_liquid():
     assert "white liquid" in semen.lower()
     assert "viscous" in semen.lower()
     assert "ドロドロ" in semen
+    assert "ネットリ" in semen
+    assert "clings" in semen.lower()
+    assert "ヌルヌル" in semen
+    assert "glans tip" in semen.lower()
+    assert "stays on the face" in semen.lower()
     assert lock_semen_look(semen) == semen
     assert "SEMEN LOOK:" not in lock_semen_look("Already oral. Mouth already on. No climax.")
     by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
     assert "white liquid" in by_sit.lower()
+    face = lock_semen_look("Already a facial. Thick white cum on her cheek.", situation="facial")
+    assert "ネットリ" in face
+    assert "clings" in face.lower()
+    assert "ヌルヌル" in face
+    after = lock_semen_look("Already after ejaculation. The semen stays.", situation="after_ejaculation")
+    assert "stays on the face" in after.lower()
 
 
 def test_lock_speech_urine_pleasure_and_heat_face():
@@ -4249,6 +4262,8 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             if orig_sit == "oral_creampie":
                 seen_cum += 1
                 assert "ORGASM FACE:" in prompt, (story["id"], i + 1)
+                assert "ネットリ" in prompt, (story["id"], i + 1)
+                assert "clings" in prompt.lower(), (story["id"], i + 1)
     assert seen_speech >= 70
     assert seen_heat == 1
     assert seen_urine >= 5
@@ -4331,6 +4346,8 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "STANDS UP" in locked
     assert "SAME EYE LEVEL" in locked
     assert "濃厚キス" in locked
+    assert "tongues wrap" in locked.lower()
+    assert "STAYS on both faces" in locked
     assert "they lean in" not in locked.lower()
     assert locked.index("SEMEN SHARE:") < locked.index("overall_soundscape:")
     assert lock_semen_share_kiss(locked) == locked
@@ -4353,6 +4370,8 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "SEMEN SHARE:" in share_clip["prompt"]
     assert "STANDS UP" in share_clip["prompt"]
     assert "SAME EYE LEVEL" in share_clip["prompt"]
+    assert "tongues wrap" in share_clip["prompt"].lower()
+    assert "ネットリ" in share_clip["prompt"]
     assert "they lean in" not in share_clip["prompt"].lower()
     assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
     assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
@@ -4370,6 +4389,9 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "SEMEN SHARE:" in cum_share["prompt"]
     assert "STANDS UP" in cum_share["prompt"]
     assert "SAME EYE LEVEL" in cum_share["prompt"]
+    assert "tongues wrap" in cum_share["prompt"].lower()
+    assert "ネットリ" in cum_share["prompt"]
+    assert "ヌルヌル" in cum_share["prompt"]
     speech = prepare_story_clip(stop, 3, last_frame="x.png", stills_dir=tmp_path)
     assert "おきましたか？おきゃくさん、しゅうてんだからおりてください" in speech["prompt"]
     assert "SEMEN SHARE:" not in speech["prompt"]
@@ -4480,6 +4502,8 @@ def test_notebook_story_play_flow():
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert 'getattr(_h3_studio, "sanitize_story_soundscape", None)' in src
+    assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
@@ -4496,7 +4520,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-audio-1" in cell2
+    assert "h3-20260908-semen-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

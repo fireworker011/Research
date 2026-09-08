@@ -110,7 +110,7 @@ studio での使い方:
 後射精（HMCumshot）は**外に出す**。顔射（cmst）は顔。中に出す動きは別 LoRA。
 
 - **中出し（女体）**: [Final Thrust 2891879](https://civitai.com/models/2891879)。深い突きのまま膣の中に出す。学習文は男なので studio は `(S2) performs powerful, intense thrusts with her penis inside (S1) and cums inside of her` に置換。空欄に `male character` / `the man` / `his` は書かない。竿 + 穴、Turbo オフ・12step。写真からが本線。後射精・顔射・口内とは積まない
-- **口内射精（女体）**: [CUMOUF 2846978](https://civitai.com/models/2846978)。口の中で痙攣しながら出す。トリガー `CUMOUF` を先頭。強さ **0.5**（0.7で精液が不自然）。I2V は口が付いた途中の写真。作者文の he/his は her に置換。顔にかける金玉ショットではない。フェラ本線・顔射・中出しとは積まない。口内のあとは尺を増やさず、ジュボ側が相手と同じ目線に立ち上がって濃厚キスで白い液体口移し（中出し・机の下・歩行は足さない）
+- **口内射精（女体）**: [CUMOUF 2846978](https://civitai.com/models/2846978)。口の中で痙攣しながら出す。トリガー `CUMOUF` を先頭。強さ **0.5**（0.7で精液が不自然）。I2V は口が付いた途中の写真。作者文の he/his は her に置換。顔にかける金玉ショットではない。フェラ本線・顔射・中出しとは積まない。精液はネットリで量多め、肌と顔に残る、竿先から垂れてヌルヌル。口内のあとは尺を増やさず、ジュボ側が相手と同じ目線に立ち上がって、白い粘つく液体を舌で絡める濃厚キス口移し（中出し・机の下・歩行は足さない）
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list

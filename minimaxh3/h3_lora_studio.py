@@ -2946,8 +2946,13 @@ def lock_futa_anatomy(text: str) -> str:
 
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
-    "SEMEN LOOK: The semen is a viscous sticky white liquid (ドロドロの白い液体). "
-    "Opaque white, thick, gooey strands. Visible white liquid, not clear, not water, not saliva-only."
+    "SEMEN LOOK: The semen is a heavy ネットリ viscous sticky white liquid (ドロドロの白い液体). "
+    "Heavy volume, a lot of it, opaque milk-white, thick gooey ropes that stretch. "
+    "Not watery, not clear, not saliva, not a thin drip. "
+    "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats. "
+    "It does not vanish, does not soak in, does not turn clear. "
+    "From the urethral opening at the glans tip leftover white liquid keeps drooling down the shaft "
+    "so the penis is ヌルヌル, glossy and slick with semen. It stays on the face and body after ejaculation."
 )
 _SEMEN_CUE_RE = re.compile(
     r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
@@ -2981,10 +2986,10 @@ ORAL_IN_MOUTH_LINE = (
 ORAL_IN_MOUTH_SHARE_LINE = (
     ORAL_IN_MOUTH_LINE
     + " Until the last cum pulses, stay like that. After the last pulse only: mouth off the penis. "
-    "HOLD STILL a thick sticky pool of white liquid on the tongue. "
+    "HOLD STILL a heavy ネットリ sticky pool of opaque white liquid on the tongue. "
     "The woman who was sucking (ジュボ側) STANDS UP off her knees to the partner's SAME EYE LEVEL, "
-    "then 口移し ベロチュー in a thick wet 濃厚キス. Do not kiss from the knees. "
-    "Do not lick the shaft when coming off."
+    "then 口移し ベロチュー: tongues wrap and tangle around that same heavy white liquid. "
+    "Do not kiss from the knees. Do not lick the shaft when coming off."
 )
 _ORAL_SUCK_RE = re.compile(
     r"Already oral|jupo|blow job|Mouth already on|Mouth already wrapped|"
@@ -3136,20 +3141,25 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
     return raw
 
 
+SEMEN_SHARE_KISS = (
+    "Then 口移し ベロチュー: a filthy 濃厚キス. Tongues wrap and tangle around a heavy pool of "
+    "opaque sticky white liquid (ドロドロの白い液体), pushing it back and forth, gooey strands stretching "
+    "between the tongues, coating both tongues, lips, and chins. The white liquid STAYS on both faces."
+)
 SEMEN_SHARE_LINE = (
-    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a thick sticky gooey pool of "
-    "white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy ネットリ sticky gooey pool of "
+    "opaque white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
     "The woman who was sucking (ジュボ側) STANDS UP off her knees until her eyes are at the SAME EYE LEVEL "
     "as the partner. If the partner was sitting or lying, they sit up or stand so both faces meet at equal height. "
-    "Then 口移し ベロチュー: a thick wet 濃厚キス, passing that same white liquid tongue-to-tongue. "
+    f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do NOT look up from the floor. Do NOT stay kneeling or squatting for the kiss. "
     "Do not swallow it all first. Do not add a new clip."
 )
 SEMEN_SHARE_BEAT = (
-    "HOLD STILL: a thick sticky gooey pool of white liquid sits on the tongue, viscous "
+    "HOLD STILL: a heavy ネットリ sticky gooey pool of opaque white liquid sits on the tongue, viscous "
     "(ドロドロの白い液体), not watery. The woman who was sucking (ジュボ側) STANDS UP off her knees "
     "to the partner's SAME EYE LEVEL. If the partner was sitting or lying, they sit up or stand to meet her. "
-    "Then 口移し ベロチュー: a thick wet 濃厚キス, passing that same white liquid tongue-to-tongue. "
+    f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do not swallow it all first."
 )
 _SHARE_STAND_REPLACEMENTS = (
@@ -3825,10 +3835,12 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "inside her little sister's mouth. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth, "
                 "overflows down the shaft as thick opaque white gooey strands onto Aya's chin and mini breasts. "
                 "Messy swallows, more white liquid leaking than she can keep. "
-                "After the last pulse: mouth off. HOLD STILL a thick sticky pool of white liquid on the tongue, "
-                "viscous (ドロドロ). The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
-                "Then 口移し ベロチュー, a thick wet 濃厚キス passing that same white liquid tongue-to-tongue. "
-                "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues sharing the thick white liquid, not still on the shaft."
+                "After the last pulse: mouth off. HOLD STILL a heavy ネットリ sticky pool of opaque white liquid "
+                "on the tongue, viscous (ドロドロ). Overflow clings to chin, lips, and breasts and STAYS. "
+                "The glans tip keeps drooling white liquid so the shaft is ヌルヌル. "
+                "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
+                f"{SEMEN_SHARE_KISS} "
+                "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues wrapping the heavy white liquid, not still on the shaft."
             ),
             "sound": "Wet swallows, a pulse, cum overflow, Rei's shaky breath, running water.",
         },
@@ -3955,10 +3967,12 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Under the family table Aya's lips stay wrapped around Madoka's 20cm. Madoka cums inside her sister's "
                 "mouth while the dinner bowls sit above. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth "
                 "and runs down the shaft onto the tatami edge as thick opaque white gooey strands. Messy swallows. "
-                "After the last pulse: mouth off. HOLD STILL a thick sticky pool of white liquid on the tongue, "
-                "viscous (ドロドロ). The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
-                "Then 口移し ベロチュー, a thick wet 濃厚キス passing that same white liquid tongue-to-tongue. "
-                "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues sharing the thick white liquid, not still on the shaft."
+                "After the last pulse: mouth off. HOLD STILL a heavy ネットリ sticky pool of opaque white liquid "
+                "on the tongue, viscous (ドロドロ). Overflow clings to chin, lips, and breasts and STAYS. "
+                "The glans tip keeps drooling white liquid so the shaft is ヌルヌル. "
+                "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
+                f"{SEMEN_SHARE_KISS} "
+                "Do not kiss from the knees. End: standing at the SAME EYE LEVEL, tongues wrapping the heavy white liquid, not still on the shaft."
             ),
             "sound": "Wet swallows, a chair creak, Madoka's breath, a bowl clink.",
         },
