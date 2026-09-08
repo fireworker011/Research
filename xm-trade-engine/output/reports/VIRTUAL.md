@@ -1,6 +1,6 @@
 # 仮想トレード机 — TradingView + ルール（XMではない）
 
-生成: 2026-09-08T21:30:07.851Z
+生成: 2026-09-08T23:24:21.674Z
 
 > これはペーパー。XM口座の残高・約定ではない。VPS/EA がまだでも、ルールで損切りと利確を置いて仮想執行する。
 > 方向は LLM の予想ではない。Gold はアジアレンジの OCO 両方。Majors は EMA20/50 クロスだけ。
@@ -14,31 +14,39 @@
 
 ## TradingView スナップショット
 
-- GOLD close 4355.705  high 4442.98  low 4345.06  RSI 47.5  ATR(D) 104.2597  ATR(H1) 18.1827  SMA20 4466.27225  SMA50 4254.3161
-- EURUSD close 1.16253  high 1.16262  low 1.16236  RSI 56.8  ATR(D) 0.0042  ATR(H1) 0.0007  SMA20 1.16211  SMA50 1.15218
-- GBPUSD close 1.3537  high 1.35392  low 1.35358  RSI 52.2  ATR(D) 0.0052  ATR(H1) 0.001  SMA20 1.35596  SMA50 1.34714
-- USDJPY close 153.962  high 154.019  low 153.914  RSI 26.1  ATR(D) 1.214  ATR(H1) 0.3201  SMA20 158.21595  SMA50 160.02266
+- GOLD close 4353.93  high 4357.92  low 4350.74  RSI 47.4  ATR(D) 97.3254  ATR(H1) 16.3784  SMA20 4463.5425  SMA50 4260.7606
+- EURUSD close 1.16258  high 1.16274  low 1.16236  RSI 56.8  ATR(D) 0.0042  ATR(H1) 0.0006  SMA20 1.16211  SMA50 1.15218
+- GBPUSD close 1.35413  high 1.35426  low 1.35358  RSI 52.9  ATR(D) 0.0053  ATR(H1) 0.0009  SMA20 1.35598  SMA50 1.34715
+- USDJPY close 153.564  high 154.019  low 153.51  RSI 25  ATR(D) 1.2429  ATR(H1) 0.3192  SMA20 158.19605  SMA50 160.0147
 
 ## Gold 仮想 OCO（損切り・利確）
 
-- status: `expired` / reason: london_expired
-- last: 4360.9
-- アジア: 4405 – 4441.4 close 4432.2（range 36.4, ATR日次比 0.528）
-- H1 ATR: 18.18（tradingview_atr60 / OKX H1 14.41） / SL距離 21.82（1.2×ATR） / TP距離 39.27（1.8R）
-- chart suggested_side: BUY（参考。執行は OCO 両方）
-- BuyStop 4444.13 → 損切り 4422.31 / 利確 4483.4
-- SellStop 4402.27 → 損切り 4424.09 / 利確 4363
+- status: `forming` / reason: asia_forming
+- last: 4354.5
+- アジア: 4353.1 – 4363.8 close 4354.5（range 10.7, ATR日次比 0.155）
+- H1 ATR: 16.38（tradingview_atr60 / OKX H1 13.34） / SL距離 19.65（1.2×ATR） / TP距離 35.38（1.8R）
+- chart suggested_side: SELL（参考。執行は OCO 両方）
+- BuyStop 4366.26 → 損切り 4346.61 / 利確 4401.64
+- SellStop 4350.64 → 損切り 4370.29 / 利確 4315.26
+- lot: 0.02（リスク 0.5%、上限 0.10。固定lotではない）
+- アジア未確定。ロンドン開始まで高安は更新され得る。OCO は仮置き。
 
 ## ペーパー帳簿（仮想資金）
 
-- equity: 9996.63 / balance: 10000 / 本日実現: 0
+- equity: 10003.04 / balance: 10000 / 本日実現: 0
 - commander: `PAPER_ONLY`
 - live_gate: runtime.live_enabled is false; commander PAPER_ONLY; XM_LIVE_CONFIRM is not I_UNDERSTAND_THE_RISK
+
+### 未約定 pending
+
+- OCO GOLD lot=0.02 status=forming
+  - BUY 4366.26 SL 4346.61 TP 4401.64
+  - SELL 4350.64 SL 4370.29 TP 4315.26
 
 ### 建玉
 
 - BUY EURUSD lot=0.1 entry=1.162580408630371 SL=1.16146 TP=1.16394 uPnL=3.46
-- BUY GBPUSD lot=0.1 entry=1.354192890701294 SL=1.35258 TP=1.3562 uPnL=-6.83
+- BUY GBPUSD lot=0.1 entry=1.354192890701294 SL=1.35258 TP=1.3562 uPnL=-0.42
 
 ## Majors（EMAルール。LLMは選ばない）
 
