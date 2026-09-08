@@ -1,7 +1,7 @@
 name: Affiliate Secret 重ね確認（投稿しない）
 
 on:
-  # 2026-08-28 計測回転。schedule は足さない。cron は戻さない。
+  # 2026-08-28 計測回転。2026-09-08 再読（鍵名だけ。マージしない）。schedule は足さない。cron は戻さない。
   # 埋まっている link_key 名と件数だけ出す。URL は出さない。実投稿しない。
   workflow_dispatch:
   pull_request:
