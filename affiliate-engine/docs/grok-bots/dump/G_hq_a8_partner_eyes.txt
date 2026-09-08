@@ -4,7 +4,9 @@ Cursor は参謀。このファイルは仕事1つだけ。G_hq_sns_eyes.txt の
 
 今すぐ次を開け。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/sprint-1m-24h-a971/affiliate-engine/docs/grok-bots/PARTNER_EYES.md
+clone なら `affiliate-engine/docs/grok-bots/PARTNER_EYES.md`。無ければ:
+
+https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/PARTNER_EYES.md
 
 仕事はこれだけ:
 
