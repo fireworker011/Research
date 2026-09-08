@@ -444,7 +444,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-fast2-1"' in src
+    assert 'FETCH_REV = "h3-20260908-copy-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -487,7 +487,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-fast2-1" in blob
+    assert "h3-20260908-copy-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -554,6 +554,15 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "update=not fast" in src
     assert "ローカルに土台あり。Drive からのコピーは飛ばします。" in src
     assert "土台がまだ無いので、設定だけではなく全部入れます。" in src
+    assert "LoRA は Drive のまま" in src
+    assert "土台だけローカル（FL2VA・文字・VAE）。LoRA は Drive のまま。" in src
+    assert "include_ref2v=need_r2v" in src
+    assert "cores_only=True" in src
+    assert 'link_dir(COMFY_DIR / "models" / "loras", DRIVE_MODELS / "loras")' in src
+    assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
+    assert '"cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames' in src
+    assert "参照用の土台（約21GB）をローカルへ載せます" in src
+    assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
@@ -1252,6 +1261,65 @@ def test_stage_models_to_local_falls_back_when_disk_is_tight(tmp_path, monkeypat
     stats = stage_models_to_local(drive, local, min_free_bytes=2 * 1024 ** 3)
     assert stats["drive_direct"] is True
     assert not (local / "vae" / "vae.safetensors").exists()
+
+
+def test_is_ref2v_weight_matches_ref2va_only():
+    from h3_lora_studio import is_ref2v_weight
+
+    assert is_ref2v_weight("minimax_h3_ref2va_pruned_int8.safetensors")
+    assert is_ref2v_weight("minimax_h3_ref2v_turbo.safetensors")
+    assert not is_ref2v_weight("minimax_h3_fl2va_pruned_int8_convrot.safetensors")
+    assert not is_ref2v_weight("qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors")
+
+
+def test_stage_models_cores_only_skips_loras_and_ref2va(tmp_path):
+    from h3_lora_studio import stage_models_to_local
+
+    drive = tmp_path / "drive" / "models"
+    local = tmp_path / "local" / "models"
+    (drive / "diffusion_models").mkdir(parents=True)
+    (drive / "text_encoders").mkdir()
+    (drive / "vae").mkdir()
+    (drive / "loras").mkdir()
+    (drive / "diffusion_models" / "minimax_h3_fl2va.safetensors").write_bytes(b"f" * 4000)
+    (drive / "diffusion_models" / "minimax_h3_ref2va.safetensors").write_bytes(b"r" * 8000)
+    (drive / "text_encoders" / "qwen.safetensors").write_bytes(b"t" * 2000)
+    (drive / "vae" / "vae.safetensors").write_bytes(b"v" * 500)
+    (drive / "loras" / "larry.safetensors").write_bytes(b"l" * 3000)
+    stats = stage_models_to_local(drive, local, min_free_bytes=0)
+    assert (local / "vae" / "vae.safetensors").is_file()
+    assert (local / "text_encoders" / "qwen.safetensors").is_file()
+    assert (local / "diffusion_models" / "minimax_h3_fl2va.safetensors").is_file()
+    assert not (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").exists()
+    assert not (local / "loras" / "larry.safetensors").exists()
+    assert "minimax_h3_ref2va.safetensors" not in stats["copied"]
+    assert "larry.safetensors" not in stats["copied"]
+    with_r2v = stage_models_to_local(drive, local, min_free_bytes=0, include_ref2v=True)
+    assert (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").is_file()
+    assert "minimax_h3_ref2va.safetensors" in with_r2v["copied"]
+    assert not (local / "loras" / "larry.safetensors").exists()
+    all_files = stage_models_to_local(drive, local, min_free_bytes=0, cores_only=False, include_ref2v=True)
+    assert (local / "loras" / "larry.safetensors").is_file()
+    assert "larry.safetensors" in all_files["copied"]
+
+
+def test_stage_weight_file_resumes_partial_copy(tmp_path):
+    from h3_lora_studio import stage_weight_file
+
+    src = tmp_path / "clip.safetensors"
+    dest = tmp_path / "out" / "clip.safetensors"
+    payload = b"abcdefgh" * 8000
+    src.write_bytes(payload)
+    part = dest.with_name(dest.name + ".part")
+    dest.parent.mkdir(parents=True)
+    part.write_bytes(payload[: len(payload) // 2])
+    assert stage_weight_file(src, dest) == "copied"
+    assert dest.read_bytes() == payload
+    assert not part.exists()
+    dest.unlink()
+    dest.write_bytes(payload[: 1000])
+    assert stage_weight_file(src, dest) == "copied"
+    assert dest.read_bytes() == payload
 
 
 def test_build_studio_warmup_graph_is_one_step_tiny():
@@ -4330,6 +4398,7 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
+    assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     for pid in CHAIN_PACK_ORDER:
         assert f"h3-lora-studio/stories/{pid}.json" in src, pid
         assert f'"{pid}"' in cell2, pid
@@ -4342,7 +4411,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-fast2-1" in cell2
+    assert "h3-20260908-copy-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

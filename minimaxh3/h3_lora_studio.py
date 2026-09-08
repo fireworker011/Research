@@ -1340,6 +1340,7 @@ def fetch_github_tree(
 
 
 HOT_MODEL_SUBS = ("diffusion_models", "text_encoders", "vae", "loras")
+ENGINE_MODEL_SUBS = ("diffusion_models", "text_encoders", "vae")
 DRIVE_CACHE_SUBS = {
     "HF_HOME": "cache/hf",
     "HUGGINGFACE_HUB_CACHE": "cache/hf/hub",
@@ -1352,7 +1353,7 @@ DRIVE_CACHE_SUBS = {
     "XDG_CACHE_HOME": "cache/xdg",
 }
 WARMUP_STAMP_NAME = ".h3_warmup_ok"
-_COPY_CHUNK = 16 * 1024 * 1024
+_COPY_CHUNK = 64 * 1024 * 1024
 
 
 def is_under_drive(path: Path | str) -> bool:
@@ -1417,24 +1418,55 @@ def prepare_local_model_roots(comfy_dir: Path | str) -> bool:
     return changed
 
 
-def _iter_drive_weights(drive_models: Path) -> list[tuple[str, Path]]:
+def is_ref2v_weight(name: str) -> bool:
+    n = str(name or "").lower()
+    return "ref2va" in n or "ref2v" in n
+
+
+def _iter_drive_weights(
+    drive_models: Path,
+    *,
+    cores_only: bool = True,
+    include_ref2v: bool = False,
+    lora_names: list[str] | None = None,
+) -> list[tuple[str, Path]]:
+    """List Drive weights to copy. Default: FL2VA + text encoder + VAE. Not every LoRA, not Ref2VA."""
+    want_loras = {str(n).strip() for n in (lora_names or []) if str(n).strip()}
+    if cores_only:
+        subs = list(ENGINE_MODEL_SUBS)
+        if want_loras:
+            subs.append("loras")
+    else:
+        subs = list(HOT_MODEL_SUBS)
     rows: list[tuple[str, Path]] = []
-    for sub in HOT_MODEL_SUBS:
+    for sub in subs:
         folder = drive_models / sub
         if not folder.is_dir():
             continue
-        for path in sorted(folder.iterdir()):
+        try:
+            paths = sorted(folder.iterdir())
+        except OSError:
+            continue
+        for path in paths:
             if path.name.startswith(".") or path.suffix != ".safetensors":
                 continue
             if path.name.endswith(".part"):
                 continue
-            if path.is_file():
-                rows.append((sub, path))
+            if not path.is_file():
+                continue
+            if sub == "diffusion_models" and not include_ref2v and is_ref2v_weight(path.name):
+                continue
+            if sub == "loras":
+                if cores_only and want_loras and path.name not in want_loras:
+                    continue
+                if not include_ref2v and is_ref2v_weight(path.name):
+                    continue
+            rows.append((sub, path))
     return rows
 
 
 def stage_weight_file(src: Path, dest: Path) -> str:
-    """Sequential copy Drive → local NVMe. Never Path.read_bytes() on GB files."""
+    """Sequential copy Drive → local NVMe. Resume .part. Never Path.read_bytes() on GB files."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     if not src.is_file():
         return "missing"
@@ -1444,11 +1476,58 @@ def stage_weight_file(src: Path, dest: Path) -> str:
     if dest.is_file() and dest.stat().st_size == size and size > 0 and not is_under_drive(dest):
         return "skipped"
     tmp = dest.with_name(dest.name + ".part")
-    print(f"ローカルへコピー中: {src.name} ({size / 1e9:.2f} GB)…", flush=True)
-    with open(src, "rb") as inf, open(tmp, "wb") as out:
-        shutil.copyfileobj(inf, out, length=_COPY_CHUNK)
+    if (
+        dest.is_file()
+        and not dest.is_symlink()
+        and dest.stat().st_size < size
+        and not tmp.is_file()
+    ):
+        dest.rename(tmp)
+    start = 0
+    if tmp.is_file():
+        start = tmp.stat().st_size
+        if start > size:
+            tmp.unlink()
+            start = 0
+        elif start == size and size > 0:
+            tmp.replace(dest)
+            return "copied"
+    mode = "ab" if start else "wb"
+    if start:
+        print(
+            f"ローカルへ続きから: {src.name} ({start / 1e9:.2f}/{size / 1e9:.2f} GB)…",
+            flush=True,
+        )
+    else:
+        print(f"ローカルへコピー中: {src.name} ({size / 1e9:.2f} GB)…", flush=True)
+    copied = start
+    last_print = time.time()
+    try:
+        with open(src, "rb") as inf, open(tmp, mode) as out:
+            if start:
+                inf.seek(start)
+            while True:
+                chunk = inf.read(_COPY_CHUNK)
+                if not chunk:
+                    break
+                out.write(chunk)
+                copied += len(chunk)
+                now = time.time()
+                if size and now - last_print >= 5:
+                    pct = 100.0 * copied / size
+                    print(
+                        f"  {src.name}: {copied / 1e9:.2f}/{size / 1e9:.2f} GB ({pct:.0f}%)",
+                        flush=True,
+                    )
+                    last_print = now
+    except OSError as exc:
+        print(
+            f"コピーが途中で止まりました: {src.name}（{copied / 1e9:.2f} GB まで。"
+            f"②か③をもう一度で続きから） {exc}",
+            flush=True,
+        )
+        return "missing"
     if not tmp.is_file() or tmp.stat().st_size != size:
-        tmp.unlink(missing_ok=True)
         return "missing"
     tmp.replace(dest)
     return "copied"
@@ -1459,10 +1538,14 @@ def stage_models_to_local(
     local_models: Path | str,
     *,
     min_free_bytes: int = 2 * 1024 ** 3,
+    cores_only: bool = True,
+    include_ref2v: bool = False,
+    lora_names: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Drive stays the durable copy. Comfy reads local SSD so the first gen does not stall on FUSE mmap."""
+    """Drive stays the durable copy. Copy only the H3 cores by default (not every LoRA, not Ref2VA)."""
     drive_root = Path(drive_models)
     local_root = Path(local_models)
+    local_root.mkdir(parents=True, exist_ok=True)
     stats: dict[str, Any] = {
         "copied": [],
         "skipped": [],
@@ -1471,7 +1554,12 @@ def stage_models_to_local(
         "drive_direct": False,
     }
     pairs: list[tuple[Path, Path, int]] = []
-    for sub, src in _iter_drive_weights(drive_root):
+    for sub, src in _iter_drive_weights(
+        drive_root,
+        cores_only=cores_only,
+        include_ref2v=include_ref2v,
+        lora_names=lora_names,
+    ):
         dest = local_root / sub / src.name
         try:
             size = src.stat().st_size
@@ -1488,9 +1576,10 @@ def stage_models_to_local(
             stats["skipped"].append(src.name)
             continue
         pairs.append((src, dest, size))
+    pairs.sort(key=lambda row: row[2])
     need = sum(row[2] for row in pairs)
     try:
-        free = shutil.disk_usage(str(local_root if local_root.exists() else local_root.parent)).free
+        free = shutil.disk_usage(str(local_root)).free
     except OSError:
         free = 0
     if pairs and free < need + min_free_bytes:
@@ -1500,6 +1589,12 @@ def stage_models_to_local(
             f" 必要 {need / 1e9:.1f} GB / 空き {free / 1e9:.1f} GB"
         )
         return stats
+    if pairs:
+        print(
+            f"ローカルへ {len(pairs)} ファイル {need / 1e9:.1f} GB。"
+            "途中で止まっても②をもう一度で続きから。",
+            flush=True,
+        )
     for src, dest, size in pairs:
         result = stage_weight_file(src, dest)
         if result == "copied":
