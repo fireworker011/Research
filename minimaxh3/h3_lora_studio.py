@@ -34,7 +34,11 @@ if str(_HERE) not in sys.path:
 _COLAB_R2V = Path(__file__).resolve().parents[1] / "colab"
 if _COLAB_R2V.is_dir() and str(_COLAB_R2V) not in sys.path:
     sys.path.insert(0, str(_COLAB_R2V))
-from h3_r2v_core import finalize_prompt as r2v_finalize_prompt
+# Colab ② writes this file first, then h3_r2v_core.py. Import must not fail.
+try:
+    from h3_r2v_core import finalize_prompt as r2v_finalize_prompt
+except ImportError:
+    r2v_finalize_prompt = None
 
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
@@ -987,7 +991,11 @@ def lock_r2v_cast_prompt(prompt: str, still_paths: list[Path], *, duration_s: fl
         "Invent cinematic motion consistent with the stills. "
         "Do not freeze on a portrait pose."
     )
-    locked = r2v_finalize_prompt(body, img_names, [], float(duration_s), inject_role_lock=True)
+    finalize = r2v_finalize_prompt
+    if finalize is None:
+        # ② imported us before h3_r2v_core.py existed. Load it now.
+        from h3_r2v_core import finalize_prompt as finalize
+    locked = finalize(body, img_names, [], float(duration_s), inject_role_lock=True)
     if extra.lower() not in locked.lower():
         locked = f"{locked}\n\n{extra}"
     return locked

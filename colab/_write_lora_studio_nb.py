@@ -287,7 +287,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260908-kenshin-2"
+FETCH_REV = "h3-20260908-colab-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -387,9 +387,12 @@ studio_files = [
     "h3-lora-studio/stories/riverbank-30s.json",
 ]
 needed = helpers + studio_files
-if not fetch_text(f"{RAW}/colab/h3_lora_studio.py", Path("/content/h3_lora_studio.py")):
-    raise SystemExit("説明書の取得に失敗しました。ネットを確認して②をもう一度。")
+for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):
+    dest = Path("/content") / Path(rel).name
+    if not fetch_text(f"{RAW}/{rel}", dest):
+        raise SystemExit("説明書の取得に失敗しました。ネットを確認して②をもう一度。")
 sys.path.insert(0, "/content")
+sys.modules.pop("h3_r2v_core", None)
 sys.modules.pop("h3_lora_studio", None)
 from h3_lora_studio import fetch_github_tree, studio_colab_dest
 failed = fetch_github_tree(BRANCH, needed, studio_colab_dest)

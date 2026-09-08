@@ -452,7 +452,14 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-kenshin-2"' in src
+    assert 'FETCH_REV = "h3-20260908-colab-1"' in src
+    assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
+    assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
+        "from h3_lora_studio import fetch_github_tree"
+    )
+    helper_text = helper.read_text(encoding="utf-8")
+    assert "except ImportError:" in helper_text
+    assert "r2v_finalize_prompt = None" in helper_text
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -495,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-kenshin-2" in blob
+    assert "h3-20260908-colab-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4739,7 +4746,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-kenshin-2" in cell2
+    assert "h3-20260908-colab-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -4775,6 +4782,56 @@ def test_notebook_story_play_flow():
     assert "SHAFT LOOK:" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
     assert '"MiniMaxH3ReferenceToVideo"' in helper_src or "R2V_NODE" in helper_src
+    assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in cell2
+    assert cell2.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < cell2.find(
+        "from h3_lora_studio import fetch_github_tree"
+    )
+    assert "except ImportError:" in helper_src
+    assert "r2v_finalize_prompt = None" in helper_src
+
+
+def test_studio_imports_when_r2v_core_is_missing(tmp_path, monkeypatch):
+    """Colab ② writes h3_lora_studio.py first. Import must not require h3_r2v_core yet."""
+    import builtins
+    import importlib.util
+
+    dest = tmp_path / "h3_lora_studio.py"
+    dest.write_text(
+        Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    real_import = builtins.__import__
+
+    def blocked(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == "h3_r2v_core" or name.startswith("h3_r2v_core."):
+            raise ImportError("No module named 'h3_r2v_core'")
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", blocked)
+    spec = importlib.util.spec_from_file_location("h3_lora_studio_colab2_bootstrap", dest)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+    try:
+        assert mod.r2v_finalize_prompt is None
+        assert callable(mod.fetch_github_tree)
+        assert callable(mod.studio_colab_dest)
+    finally:
+        sys.modules.pop(spec.name, None)
+
+
+def test_lock_r2v_cast_prompt_loads_finalize_after_bootstrap():
+    import h3_lora_studio as studio
+
+    saved = studio.r2v_finalize_prompt
+    studio.r2v_finalize_prompt = None
+    try:
+        out = studio.lock_r2v_cast_prompt("A woman walks.", [Path("aya-bust.jpg")], duration_s=10.0)
+    finally:
+        studio.r2v_finalize_prompt = saved
+    assert "ROLE LOCK" in out or "Identity for character 1" in out
+    assert "aya-bust.jpg" in out
+    assert "Invent cinematic motion" in out
 
 
 def _write_cast_stills(root):
