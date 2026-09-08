@@ -3190,7 +3190,8 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
 
 
 SEMEN_SHARE_KISS = (
-    "Then 口移し ベロチュー: a filthy 濃厚キス. Tongues wrap and tangle around a heavy pool of "
+    # Lowercase "tongues wrap": Colab ③'s freshness gate is case-sensitive.
+    "Then 口移し ベロチュー: a filthy 濃厚キス. tongues wrap and tangle around a heavy pool of "
     "opaque sticky white liquid (ドロドロの白い液体), pushing it back and forth, gooey strands stretching "
     "between the tongues, coating both tongues, lips, and chins. The white liquid STAYS on both faces."
 )

@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-colab-1"' in src
+    assert 'FETCH_REV = "h3-20260908-colab-2"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-colab-1" in blob
+    assert "h3-20260908-colab-2" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4746,7 +4746,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-colab-1" in cell2
+    assert "h3-20260908-colab-2" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -4788,6 +4788,8 @@ def test_notebook_story_play_flow():
     )
     assert "except ImportError:" in helper_src
     assert "r2v_finalize_prompt = None" in helper_src
+    assert "tongues wrap" in helper_src
+    assert 'Then 口移し ベロチュー: a filthy 濃厚キス. tongues wrap' in helper_src
 
 
 def test_studio_imports_when_r2v_core_is_missing(tmp_path, monkeypatch):
@@ -4832,6 +4834,25 @@ def test_lock_r2v_cast_prompt_loads_finalize_after_bootstrap():
     assert "ROLE LOCK" in out or "Identity for character 1" in out
     assert "aya-bust.jpg" in out
     assert "Invent cinematic motion" in out
+
+
+def test_cell3_freshness_gate_passes_on_current_helper():
+    """③'s one-liner is case-sensitive. 'Tongues wrap' made every run look stale."""
+    import h3_lora_studio as _h3_studio
+
+    scripts = Path(__file__).resolve().parents[1] / "h3-lora-studio" / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    import select_loras as _select_loras
+
+    writer = Path(__file__).resolve().parent.joinpath("_write_lora_studio_nb.py").read_text(encoding="utf-8")
+    start = writer.find('if not getattr(_select_loras, "MAX_HELPERS"')
+    end = writer.find(':\n    raise SystemExit("部品の読み込みが古いです', start)
+    assert start != -1 and end != -1
+    stale = eval(writer[start + 3 : end], {"_select_loras": _select_loras, "_h3_studio": _h3_studio})
+    assert stale is False
+    assert "tongues wrap" in _h3_studio.SEMEN_SHARE_LINE
+    assert "Tongues wrap" not in _h3_studio.SEMEN_SHARE_LINE
 
 
 def _write_cast_stills(root):
