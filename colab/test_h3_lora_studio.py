@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-train-1"' in src
+    assert 'FETCH_REV = "h3-20260908-meat-1"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-train-1" in blob
+    assert "h3-20260908-meat-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -3014,10 +3014,15 @@ def test_story_play_labels_resolve_to_story_and_play():
     assert resolve_situation("ザーメン風呂") == "semen-bath-70s"
     assert resolve_situation("ザーメンフロ") == "semen-bath-70s"
     assert resolve_situation("ザーメン風呂（つなぐ）") == "semen-bath-70s"
+    assert resolve_situation("ニクカベ") == "meat-wall-85s"
+    assert resolve_situation("肉壁") == "meat-wall-85s"
+    assert resolve_situation("ニクカベ（専用）") == "meat-wall-85s"
     assert is_chain_pack("last-train-120s") and not is_story("last-train-120s")
     assert is_chain_pack("semen-bath-70s") and not is_story("semen-bath-70s")
+    assert is_chain_pack("meat-wall-85s") and not is_story("meat-wall-85s")
     assert "終電（専用）" in pack_labels
     assert "ザーメン風呂（専用）" in pack_labels
+    assert "ニクカベ（専用）" in pack_labels
     assert resolve_situation("登校（つなぐ）") == "commute-120s"
     assert is_story("登校（つなぐ）")
     assert not is_chain_pack("登校（つなぐ）")
@@ -4556,6 +4561,165 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
     assert "overflow" in overflow.lower()
 
 
+def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
+    """ニクカベ: 肉壁の中。茶色い粘液＋白いおフロ。顔は液面より上。全部飲む。口移しなし。家のザーメン風呂とは別。"""
+    from h3_lora_studio import (
+        ACT_SITUATIONS,
+        _KANJI_RE,
+        is_chain_pack,
+        is_story,
+        load_story,
+        prepare_story_clip,
+        resolve_situation,
+        semen_share_plan,
+        situation_ids,
+        spoken_lines,
+        story_canvas_wh,
+        validate_story_follow,
+    )
+
+    assert resolve_situation("ニクカベ") == "meat-wall-85s"
+    assert resolve_situation("肉壁") == "meat-wall-85s"
+    assert resolve_situation("肉壁のザーメン風呂") == "meat-wall-85s"
+    assert resolve_situation("ニクカベ風呂") == "meat-wall-85s"
+    assert resolve_situation("ニクカベ（専用）") == "meat-wall-85s"
+    assert resolve_situation("ザーメン風呂") == "semen-bath-70s"
+    story = load_story("meat-wall-85s")
+    assert story["id"] == "meat-wall-85s"
+    assert story["kind"] == "chain"
+    assert story["seamless"] is True
+    assert story["spoken_no_kanji"] is True
+    assert story["spoken_max"] == 2
+    assert story["min_age"] >= 21
+    assert story["duration_s"] == 85
+    assert len(story["clips"]) == 7
+    assert [float(c["duration_s"]) for c in story["clips"]] == [15, 10, 10, 10, 15, 15, 10]
+    assert [c["situation"] for c in story["clips"]] == [
+        "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "futa_visible",
+        "oral",
+        "oral_creampie",
+        "futa_visible",
+    ]
+    assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
+    assert story_canvas_wh(story) == (576, 1024)
+    assert validate_story_follow(story) == []
+    assert is_chain_pack("meat-wall-85s") and not is_story("meat-wall-85s")
+    assert set(story["download"]) == set(situation_ids("meat-wall-85s"))
+    assert "blowjob-h3" in story["download"]
+    assert "cumouf-h3" in story["download"]
+    assert "hmnsfw-aio-v25" not in story["download"]
+    assert semen_share_plan(story) == []
+    want = [
+        [],
+        ["あ、おフロ。。。でもこれって", "ザーメンの、、、おフロ、、、すごいニオイ、、、"],
+        ["ザーメンのおフロ。。。あったかーい"],
+        ["もうガマンできない！おチンチンジュボジュボするの！"],
+        [],
+        [],
+        ["レイのザーメンおいしかった！"],
+    ]
+    listed = set(story["download"])
+    prev = None
+    prev_stack = None
+    planned_by_i = []
+    for i, clip in enumerate(story["clips"]):
+        prompt = clip["prompt"]
+        dur = float(clip["duration_s"])
+        got = spoken_lines(prompt)
+        uniq = []
+        for s in got:
+            if s not in uniq:
+                uniq.append(s)
+        assert uniq == want[i], (clip["label"], uniq)
+        for s in uniq:
+            assert not _KANJI_RE.search(s), s
+            assert not re.search(r"[A-Za-z]", s), s
+        assert "hmmotion" not in prompt.lower()
+        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        assert "Full bodies from head to feet" not in prompt
+        assert "Aya: Adult Japanese woman, 22" in prompt
+        assert "NO penis" in prompt
+        assert "NEVER futanari" in prompt
+        assert "Rei: Adult Japanese woman, 24" in prompt
+        assert "Clear futanari" in prompt
+        assert "Penis plus vagina, never balls" in prompt
+        assert "no scrotum" in prompt
+        assert "No men" in prompt
+        assert "No feces" in prompt
+        assert "Doctor" not in prompt and "Conductor" not in prompt
+        assert "Madoka" not in prompt and "Sayaka" not in prompt
+        assert "above" in prompt.lower()
+        assert "brown" in prompt.lower()
+        if dur == 15:
+            assert "15-second take" in prompt
+            assert "10-second take" not in prompt
+            assert not uniq
+        else:
+            assert dur == 10
+            assert "15-second" not in prompt
+        if uniq:
+            assert "LIP SYNC" in prompt
+            assert clip["situation"] == "futa_visible"
+        if clip["situation"] in ACT_SITUATIONS:
+            assert not uniq
+            assert "close" in prompt.lower()
+        planned = prepare_story_clip(
+            story,
+            i,
+            last_frame=("h3_chain_%d.png" % (i - 1)) if i else None,
+            stills_dir=tmp_path,
+            prev_situation=prev,
+            prev_stack=prev_stack,
+        )
+        prev = planned["situation"]
+        prev_stack = planned["stack"]
+        planned_by_i.append(planned)
+        assert {row["id"] for row in planned["stack"]} <= listed
+        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["duration_s"] == dur
+        assert "SHAFT LOOK:" in planned["prompt"]
+        assert "SEMEN SHARE:" not in planned["prompt"]
+        for spoken in uniq:
+            assert spoken in planned["prompt"]
+    walk = story["clips"][0]["prompt"]
+    assert "Walk only" in walk or "walking" in walk.lower()
+    assert "No tub yet" in walk
+    assert "slime" in walk.lower()
+    enter = story["clips"][1]["prompt"]
+    assert "climb" in enter.lower()
+    assert "chest" in enter.lower()
+    kiss = story["clips"][2]["prompt"]
+    assert "kiss" in kiss.lower()
+    prep = story["clips"][3]["prompt"]
+    assert "hand's width" in prep
+    assert "NOT in" in prep or "not in her mouth" in prep.lower()
+    jupo = story["clips"][4]["prompt"]
+    assert "Already at the BASE" in jupo or "already at the BASE" in jupo
+    assert "Glans already inside" in jupo
+    assert "not licking" in jupo.lower()
+    assert "Do not dunk" in jupo
+    cum = story["clips"][5]["prompt"]
+    assert "CUMOUF" in cum
+    assert "viscous" in cum.lower() or "sticky" in cum.lower() or "ドロドロ" in cum
+    assert "swallows" in cum.lower() or "swallow" in cum.lower()
+    tasty = story["clips"][6]["prompt"]
+    assert "レイのザーメンおいしかった！" in tasty
+    assert planned_by_i[0]["mode"] == "t2v"
+    oral_p = planned_by_i[4]
+    assert "ORAL LOCK:" in oral_p["prompt"]
+    assert "PLEASURE FACE:" in oral_p["prompt"]
+    assert "blowjob-h3" in [row["id"] for row in oral_p["stack"]]
+    cum_p = planned_by_i[5]
+    assert "ORGASM FACE:" in cum_p["prompt"]
+    assert "SEMEN SHARE:" not in cum_p["prompt"]
+    assert "cumouf-h3" in [row["id"] for row in cum_p["stack"]]
+    last_p = planned_by_i[6]
+    assert "SEMEN SHARE:" not in last_p["prompt"]
+
+
 def test_validate_story_follow_spoken_no_kanji():
     from h3_lora_studio import _KANJI_RE, validate_story_follow
 
@@ -4854,6 +5018,8 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf")]
     assert semen_share_plan(load_story("semen-bath-70s")) == []
     assert "semen-bath-70s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("meat-wall-85s")) == []
+    assert "meat-wall-85s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("red-light-50s")) == [(3, "on_cumouf")]
     assert semen_share_plan(load_story("manhole-30s")) == [(1, "on_cumouf")]
     assert semen_share_plan(load_story("roof-ac-30s")) == []
@@ -4989,13 +5155,13 @@ def test_notebook_story_play_flow():
     assert '今使うシーン = "登校（専用）"' in cell2
     for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
         assert f'"登校{suffix}"' in cell3
-    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ"):
+    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "ニクカベ", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ"):
         for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
             assert f'"{pack}{suffix}"' in cell3, pack + suffix
     # legacy long pack labels are aliases only, not dropdown rows
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
     # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
-    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
     from h3_lora_studio import CHAIN_PACK_ORDER, STORY_ORDER  # noqa: E402
 
@@ -5031,6 +5197,7 @@ def test_notebook_story_play_flow():
     assert '"last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
+    assert '"meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
@@ -5047,9 +5214,9 @@ def test_notebook_story_play_flow():
         assert f"h3-lora-studio/stories/{pid}.json" in src, pid
         assert f'"{pid}"' in cell2, pid
     assert CHAIN_PACK_ORDER[:4] == ("sales-visit-60s", "checkup-100s", "clinic-75s", "last-stop-40s")
-    assert CHAIN_PACK_ORDER[4:6] == ("last-train-120s", "semen-bath-70s")
-    assert src.find("stories/sales-visit-60s.json") < src.find("stories/checkup-100s.json") < src.find("stories/clinic-75s.json") < src.find("stories/last-stop-40s.json") < src.find("stories/last-train-120s.json") < src.find("stories/semen-bath-70s.json")
-    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2
+    assert CHAIN_PACK_ORDER[4:7] == ("last-train-120s", "semen-bath-70s", "meat-wall-85s")
+    assert src.find("stories/sales-visit-60s.json") < src.find("stories/checkup-100s.json") < src.find("stories/clinic-75s.json") < src.find("stories/last-stop-40s.json") < src.find("stories/last-train-120s.json") < src.find("stories/semen-bath-70s.json") < src.find("stories/meat-wall-85s.json")
+    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"ニクカベ（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2
     assert "専用（専用）" in md0 and "専用（つなぐ）" in md0 and "専用（つなぐ修）" in md0
     assert "名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）" in md0
     assert "旧名「訪問販売60秒（つなぐ）」" in md0
@@ -5057,7 +5224,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-train-1" in cell2
+    assert "h3-20260908-meat-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
