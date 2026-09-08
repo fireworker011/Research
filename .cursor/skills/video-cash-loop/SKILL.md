@@ -44,21 +44,32 @@ Furbo 系は A8 公開情報で購入10%。本体はセール時で数千円、�
 
 ## やってはいけないこと
 
-- YouTube / TikTok / Instagram を同時に立ち上げる
+- YouTube / TikTok / Instagram を同時に立ち上げる（`platform_unlock` は1媒体ずつ。人間が日付を書く）
 - 癒し動画の再生数を「売れている」と読む
 - 一番再生された動画に商品CTAが無い状態で、同じ型を量産する
 - アフィリンクをコミットする
-- 実投稿を自動化する
+- `video-poster.js` 以外で実投稿を自動化する。poster のワークフローに schedule を付ける。判定ゲート・ライブゲートを外す
+- アカウントを自動作成する（手動開設 → `video-oauth.js` で登録だけ）
 - 体験談の捏造、#PR なしのリンク誘導
 - 「参考」のチャンネルを見てジャンル転換する
 - 調べられないチャンネルを成功事例として使う
+
+## 自動投稿（2026-09 追加・人間承認済み）
+
+`affiliate-engine/src/video-poster.js` が YouTube / TikTok / Instagram へ投稿する。ただし:
+
+- `video-judge.js` が `output/video/latest.json` に書く `posting`（allowed / weekly_cap / platforms）を読むだけ。判定が閉・古い・無い日は何も出ない
+- `platforms` = 判定 × `config/video_accounts.json` の `platform_unlock`。媒体を足すのは人間がここに日付を書く行為
+- 実投稿は `live_enabled: true` + `VIDEO_POST_LIVE_CONFIRM=I_UNDERSTAND_THE_RISK` の両方。ワークフローは手動起動のみ
+- 本文に URL は置かない。導線は「詳しくはプロフィールのリンク（PR）」の1回だけ
+- 手順は `affiliate-engine/docs/video-poster-setup.md`
 
 ## 定期実行（このエージェントが起きたとき）
 
 1. `cd affiliate-engine && node src/video-judge.js --self-test && node src/video-judge.js` を回す
 2. `output/video/TODAY.md` を読む。数字が無い行を埋めない
-3. 投稿しない。媒体を足さない。ジャンルを変えない
-4. 記録不足なら、人間に CSV 追記だけ頼む
+3. この手順の中では投稿しない。媒体を足さない（`platform_unlock` を書き換えない）。ジャンルを変えない
+4. 記録不足なら、人間に CSV 追記だけ頼む（`platform` 列で媒体別に）
 5. 実験中なら次の3本を再掲するだけ。新しい台本を創るな
 6. コードを変えるのは、判定ロジックがゲートと食い違っているときだけ
 
