@@ -336,6 +336,51 @@ def test_looks_like_safetensors(tmp_path):
     assert already_have_weight(tiny) is False
 
 
+def test_unpack_github_archive_and_studio_dest(tmp_path):
+    import tarfile
+    from h3_lora_studio import (
+        fetch_github_files_raw,
+        github_member_rel,
+        has_fl2va_weight,
+        studio_colab_dest,
+        unpack_github_archive,
+    )
+
+    assert github_member_rel("Research-branch/colab/h3_lora_studio.py") == "colab/h3_lora_studio.py"
+    assert studio_colab_dest("colab/h3_lora_studio.py", content_root=tmp_path) == tmp_path / "h3_lora_studio.py"
+    assert studio_colab_dest("h3-lora-studio/stories/manhole-30s.json", content_root=tmp_path) == (
+        tmp_path / "h3-lora-studio/stories/manhole-30s.json"
+    )
+    empty = tmp_path / "models"
+    empty.mkdir()
+    assert has_fl2va_weight(empty) is False
+    (empty / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_text("x", encoding="utf-8")
+    assert has_fl2va_weight(empty) is True
+
+    tar_path = tmp_path / "repo.tgz"
+    with tarfile.open(tar_path, "w:gz") as tar:
+        py = tmp_path / "src.py"
+        py.write_text("# studio helper\n" + "x" * 40, encoding="utf-8")
+        story = tmp_path / "src.json"
+        story.write_text('{"id":"manhole-30s"}\n' + "y" * 40, encoding="utf-8")
+        tar.add(py, arcname="Research-branch/colab/h3_lora_studio.py")
+        tar.add(story, arcname="Research-branch/h3-lora-studio/stories/manhole-30s.json")
+    out = tmp_path / "out"
+    missing = unpack_github_archive(
+        tar_path,
+        [
+            "colab/h3_lora_studio.py",
+            "h3-lora-studio/stories/manhole-30s.json",
+            "missing.json",
+        ],
+        lambda rel: studio_colab_dest(rel, content_root=out),
+    )
+    assert missing == ["missing.json"]
+    assert (out / "h3_lora_studio.py").read_text(encoding="utf-8").startswith("# studio helper")
+    assert (out / "h3-lora-studio/stories/manhole-30s.json").is_file()
+    assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
+
+
 def test_civitai_token_prefers_form(monkeypatch):
     monkeypatch.delenv("CIVITAI_API_TOKEN", raising=False)
     assert civitai_token(form_value="  pasted-key  ") == "pasted-key"
@@ -399,7 +444,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-pose-1"' in src
+    assert 'FETCH_REV = "h3-20260908-fast2-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +487,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-pose-1" in blob
+    assert "h3-20260908-fast2-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -503,6 +548,12 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "comfy_free" not in swap_chunk
     assert "warmup_h3_engine" not in swap_chunk
     assert "よく使う部品を全部ディスクへ入れます" in src
+    assert "設定だけ更新する = True" in src
+    assert "fetch_github_tree" in src
+    assert "has_fl2va_weight" in src
+    assert "update=not fast" in src
+    assert "ローカルに土台あり。Drive からのコピーは飛ばします。" in src
+    assert "土台がまだ無いので、設定だけではなく全部入れます。" in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=60)' not in src
     assert 'urlopen(f"http://127.0.0.1:{PORT}/object_info", timeout=3)' not in src
@@ -1077,6 +1128,20 @@ def test_ensure_comfy_r2v_node_fetches_when_missing(monkeypatch, tmp_path):
     assert ensure_comfy_r2v_node(tmp_path, port=8188) is False
     assert any(cmd[:3] == ["git", "-C", str(tmp_path)] and "fetch" in cmd for cmd in runs)
     assert any(cmd[:3] == ["git", "-C", str(tmp_path)] and "reset" in cmd for cmd in runs)
+
+
+def test_ensure_comfy_r2v_node_skips_git_when_update_false(monkeypatch, tmp_path):
+    from h3_lora_studio import ensure_comfy_r2v_node
+
+    (tmp_path / "main.py").write_text("# comfy\n", encoding="utf-8")
+    monkeypatch.setattr("h3_lora_studio.comfy_has_r2v", lambda *_a, **_k: False)
+    runs = []
+    monkeypatch.setattr(
+        "h3_lora_studio.subprocess.run",
+        lambda *a, **k: runs.append(a[0]) or type("R", (), {"returncode": 0})(),
+    )
+    assert ensure_comfy_r2v_node(tmp_path, port=8188, update=False) is False
+    assert runs == []
 
 
 def test_fetch_comfy_object_info_times_out_with_japanese_exit(monkeypatch):
@@ -4263,6 +4328,8 @@ def test_notebook_story_play_flow():
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
+    assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
+    assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
     for pid in CHAIN_PACK_ORDER:
         assert f"h3-lora-studio/stories/{pid}.json" in src, pid
         assert f'"{pid}"' in cell2, pid
@@ -4275,7 +4342,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-pose-1" in cell2
+    assert "h3-20260908-fast2-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

@@ -171,6 +171,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 - **セリフの本だけフルステップ**。`「」` がある本は Larry とシネマを外して竿だけ・res_multistep 12step（口の動きと日本語の音。シネマ＋口パクで顎が溶ける）。歩く・キス・テレビの本は Larry 0.6 / 8step
 - **音声は「」の台詞を1回だけ**。`lock_spoken_japanese` が `overall_soundscape` 先頭に `[AUDIO-LOCK] spoken_transcript: once`（count:1 repeat:0）を足し、同じ「」の2回目以降を消す。止めの日本語は書かない。10秒の余りは無音。③の再生グラフも同じロック。`validate_story_follow` は「」内のラテン文字も落とす
 - **VRAM の /free は OOM と土台切替だけ**。②の全部入れはディスクへ保存するだけ。再生グラフは今の本の LoRA だけ繋ぐ。口パクでシネマを外しても H3 本体は載せたまま。FL2VA↔Ref2VA のときとメモリ不足の再試行だけ `/free`
+- **②の2回目は設定だけ**（既定オン）。文章・JSON を GitHub tar で一括取得。土台・LoRA の再取得と Drive の全部一覧は飛ばす。土台が無いときだけ全部入れる。欠けた部品は③で足す
 - **トリガーは単語一致**。`DY` が `body` の中に見つかって落ちていた。今は `PENISLORA, DY` が歩く本の先頭に付く
 - **`negative` は文書用**。公式グラフは BasicGuider（CFG なし）で負の文を送る配線が無い。除外したいものは正の文に `No men. No feces.` のように書く（専用文はそうしている）。CFG を足すと NFE が倍になるので入れない
 - `validate_story_follow()` は セリフ10秒／無言の行為は15秒可／行為中は無言／口元の寄り／接合点（futa_sex と doggy）に加えて **hmmotion は AIO セックス本だけ・先頭**、ユニーク「」は1本に `spoken_max`（既定1、上限2）まで、**「」内に漢字なし**、Clear futanari は玉なし＋マンコあり、物語の追加は行為の前の本が挿入寸前／口を開けて先端から手の幅／膝を開いて舐め寸前 を検査する

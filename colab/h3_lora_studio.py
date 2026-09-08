@@ -15,10 +15,12 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -1197,6 +1199,146 @@ def already_have_weight(path: Path, *, min_bytes: int = 1_000_000) -> bool:
     return looks_like_safetensors(path, min_bytes=min_bytes)
 
 
+def has_fl2va_weight(root: Path | str) -> bool:
+    """True if a FL2VA safetensors sits in this folder. Name only — do not open GB files."""
+    folder = Path(root)
+    if not folder.is_dir():
+        return False
+    try:
+        for path in folder.iterdir():
+            name = path.name.lower()
+            if "fl2va" in name and name.endswith(".safetensors") and not name.endswith(".part"):
+                return True
+    except OSError:
+        return False
+    return False
+
+
+def studio_colab_dest(rel: str, *, content_root: Path | str = "/content") -> Path:
+    """helpers land in /content/*.py. Studio JSON stays under /content/h3-lora-studio/."""
+    root = Path(content_root)
+    text = str(rel or "").replace("\\", "/").lstrip("/")
+    if text.startswith("colab/"):
+        return root / Path(text).name
+    return root / text
+
+
+def github_member_rel(name: str) -> str:
+    """Strip the GitHub archive's top folder: Research-branch/colab/foo.py → colab/foo.py."""
+    text = str(name or "").replace("\\", "/").strip()
+    if not text or text.endswith("/"):
+        return ""
+    if "/" not in text:
+        return ""
+    return text.split("/", 1)[1]
+
+
+def unpack_github_archive(
+    src: Path | str,
+    rels: list[str],
+    dest_for_rel,
+) -> list[str]:
+    """Copy listed paths out of a GitHub branch tarball. Returns rels that were missing."""
+    wanted = [str(r).replace("\\", "/") for r in rels]
+    wanted_set = set(wanted)
+    found: set[str] = set()
+    with tarfile.open(src, mode="r:gz") as tar:
+        for member in tar:
+            if not member.isfile():
+                continue
+            rel = github_member_rel(member.name)
+            if rel not in wanted_set:
+                continue
+            extracted = tar.extractfile(member)
+            if extracted is None:
+                continue
+            data = extracted.read()
+            if len(data) < 20:
+                continue
+            dest = Path(dest_for_rel(rel))
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(data)
+            found.add(rel)
+    return [r for r in wanted if r not in found]
+
+
+def fetch_github_files_raw(
+    branch: str,
+    rels: list[str],
+    dest_for_rel,
+    *,
+    repo: str = "fireworker011/Research",
+    workers: int = 8,
+) -> list[str]:
+    """Threaded raw.githubusercontent.com fallback. Returns still-missing rels."""
+    failed: list[str] = []
+
+    def one(rel: str) -> str | None:
+        dest = Path(dest_for_rel(rel))
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        url = f"https://raw.githubusercontent.com/{repo}/{branch}/{rel}"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "h3-lora-studio",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            dest.write_bytes(resp.read())
+        if dest.is_file() and dest.stat().st_size > 20:
+            return None
+        return rel
+
+    if not rels:
+        return []
+    pool_n = max(1, min(int(workers), 8))
+    with ThreadPoolExecutor(max_workers=pool_n) as pool:
+        futs = {pool.submit(one, rel): rel for rel in rels}
+        for fut in as_completed(futs):
+            rel = futs[fut]
+            try:
+                miss = fut.result()
+            except Exception:
+                miss = rel
+            if miss:
+                failed.append(rel)
+                print("ファイル取得に失敗:", rel)
+    return failed
+
+
+def fetch_github_tree(
+    branch: str,
+    rels: list[str],
+    dest_for_rel,
+    *,
+    repo: str = "fireworker011/Research",
+    timeout: int = 180,
+) -> list[str]:
+    """One GitHub tarball instead of N sequential raw GETs. Falls back to threaded GETs."""
+    wanted = [str(r).replace("\\", "/") for r in rels]
+    url = f"https://codeload.github.com/{repo}/tar.gz/refs/heads/{branch}"
+    tmp = Path("/tmp") / f"h3-studio-{os.getpid()}.tgz"
+    missing = list(wanted)
+    try:
+        print("説明書を一括で取っています…")
+        req = urllib.request.Request(url, headers={"User-Agent": "h3-lora-studio"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp, open(tmp, "wb") as out:
+            shutil.copyfileobj(resp, out, length=1024 * 1024)
+        missing = unpack_github_archive(tmp, wanted, dest_for_rel)
+    except Exception as exc:
+        print("一括取得に失敗。1ファイルずつ取ります:", str(exc)[:160])
+        missing = list(wanted)
+    finally:
+        tmp.unlink(missing_ok=True)
+    if not missing:
+        print("説明書:", len(wanted), "ファイル")
+        return []
+    print("残り", len(missing), "ファイルを個別に取ります…")
+    return fetch_github_files_raw(branch, missing, dest_for_rel, repo=repo)
+
+
 HOT_MODEL_SUBS = ("diffusion_models", "text_encoders", "vae", "loras")
 DRIVE_CACHE_SUBS = {
     "HF_HOME": "cache/hf",
@@ -1886,10 +2028,20 @@ def fetch_comfy_object_info(port: int = 8188, *, timeout: float = COMFY_OBJECT_I
     )
 
 
-def ensure_comfy_r2v_node(comfy_dir: Path | str, *, port: int = 8188) -> bool:
-    """True if MiniMaxH3ReferenceToVideo is registered. Pull ComfyUI once if missing."""
+def ensure_comfy_r2v_node(
+    comfy_dir: Path | str,
+    *,
+    port: int = 8188,
+    update: bool = True,
+) -> bool:
+    """True if MiniMaxH3ReferenceToVideo is registered. Pull ComfyUI once if missing.
+
+    update=False skips git fetch/restart (②の設定だけ更新)。短編集はフル②が必要。
+    """
     if comfy_has_r2v(port):
         return True
+    if not update:
+        return False
     root = Path(comfy_dir)
     if not (root / "main.py").is_file():
         return False

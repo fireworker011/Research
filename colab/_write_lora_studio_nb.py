@@ -62,7 +62,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 ## やること（3つだけ）
 
 1. **①** を実行 → Google Drive の許可を出す
-2. **②** を実行 → 初回だけ待ちます（部品のダウンロード。2回目は速い）
+2. **②** を実行 → **初めて**は待ちます。2回目以降は「設定だけ更新」（既定オン）で数十秒
 3. **③** でシーンを選んで実行 → 下に動画が出る
 
 ③の初期値はこの版の準備どおり **登校（専用）** ＋ **テキストから（写真なし）**。シネマ質感とえっち部品を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。
@@ -239,13 +239,14 @@ print()
 print("① 完了。次は②を実行してください。初回は待ちます。")
 '''
 
-MD2 = r"""## ② 部品を用意する（初回だけ長い）
+MD2 = r"""## ② 部品を用意する（初回だけ長い。2回目は短い）
 
 下のセルで、動画の土台と部品を **Google Drive に保存**します。生成のときは Drive を直接読まず、ローカル SSD に載せてから GPU に入れます（初回③で GPU が遊んで見えた原因は Drive FUSE の mmap）。
 
-- **初めて** … 20〜40分かかることがあります。途中で止まっても、もう一度押せば続きから入ります
-- **同じランタイムで2回目** … Drive にあるファイルは飛ばす。ローカルに既にあればコピーも飛ばす。pip も飛ばす
-- **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。ローカルへコピー＋GPU 載せ＋Comfy 起動で数分
+- **設定だけ更新（既定オン）** … 文章・JSON・説明書だけ取り直す。土台・LoRA の再取得も Drive の全部一覧もしない。**数十秒**。欠けた部品は③で足す
+- **初めて** … 土台が Drive にも無いときだけ全部入れる。20〜40分。途中で止まっても、もう一度押せば続きから
+- **同じランタイムで2回目** … 設定だけオンのまま。ローカルに土台があればコピーも飛ばす
+- **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。ローカルへコピー＋GPU 載せ＋Comfy 起動で数分。設定だけはオンのまま
 - pip / torch / Triton のキャッシュも Drive の `cache/`。Colab の消えるディスクには置かない
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（ディスクへ保存。再生中に全部を同時積みはしない）
 - 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
@@ -259,12 +260,14 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い）
 401 / 403 が出たら、キーの貼り忘れです。欄に貼って②をもう一度。キー自体は画面に出ません。
 """
 
-CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ）
+CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ。2回目は設定だけ）
 print("② 準備を始めています…")
 
 #@markdown ### Civitai の API キー（ここに貼る。シークレット不要）
 #@markdown 取り方: [civitai.com/user/account](https://civitai.com/user/account) → API Keys → Add API key
 CivitaiのAPIキー = ""  #@param {type:"string"}
+#@markdown **設定だけ更新（既定オン）** 文章・JSONだけ取り直す。土台・LoRAの再取得はしない。初めて／土台が無いときは自動で全部入れる。
+設定だけ更新する = True  #@param {type:"boolean"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ（専用は話ごとに1つ。ダウンロードは話単位）:
@@ -283,7 +286,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260908-pose-1"
+FETCH_REV = "h3-20260908-fast2-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -381,15 +384,19 @@ studio_files = [
     "h3-lora-studio/stories/tunnel-phone-30s.json",
     "h3-lora-studio/stories/riverbank-30s.json",
 ]
+needed = helpers + studio_files
+if not fetch_text(f"{RAW}/colab/h3_lora_studio.py", Path("/content/h3_lora_studio.py")):
+    raise SystemExit("説明書の取得に失敗しました。ネットを確認して②をもう一度。")
+sys.path.insert(0, "/content")
+sys.modules.pop("h3_lora_studio", None)
+from h3_lora_studio import fetch_github_tree, studio_colab_dest
+failed = fetch_github_tree(BRANCH, needed, studio_colab_dest)
+if failed:
+    raise SystemExit("シーン設定の取得に失敗しました。②をもう一度。")
 for rel in helpers:
     dest = Path("/content") / Path(rel).name
-    if not fetch_text(f"{RAW}/{rel}", dest):
-        raise SystemExit("説明書の取得に失敗しました。ネットを確認して②をもう一度。")
-    shutil.copy2(dest, DRIVE_ROOT / dest.name)
-for rel in studio_files:
-    dest = Path("/content") / rel
-    if not fetch_text(f"{RAW}/{rel}", dest):
-        raise SystemExit("シーン設定の取得に失敗しました。②をもう一度。")
+    if dest.is_file():
+        shutil.copy2(dest, DRIVE_ROOT / dest.name)
 drive_fb = DRIVE_ROOT / "forbidden.json"
 git_fb = Path("/content/h3-lora-studio/catalog/forbidden.json")
 if not (drive_fb.is_file() and drive_fb.stat().st_size > 20):
@@ -423,13 +430,25 @@ from h3_lora_studio import (
     resolve_situation, situation_ids, comfy_alive, wait_comfy_ready,
     apply_drive_cache_env, prepare_local_model_roots, stage_models_to_local,
     model_dir_is_drive_link, link_model_dirs_to_drive, warmup_h3_engine,
-    clear_warmup_stamp, ensure_comfy_r2v_node,
+    clear_warmup_stamp, ensure_comfy_r2v_node, has_fl2va_weight,
 )
 apply_drive_cache_env(DRIVE_ROOT)
 
 print("今のシーン:", 今使うシーン)
 print(SITUATION_HELP[resolve_situation(今使うシーン)])
 print()
+
+have_local = has_fl2va_weight(COMFY_DIR / "models" / "diffusion_models")
+have_drive = has_fl2va_weight(DRIVE_MODELS / "diffusion_models")
+fast = False
+if 設定だけ更新する:
+    if have_local or have_drive:
+        fast = True
+        print("設定だけ更新。土台と LoRA の再取得は飛ばします。欠けた部品は③で足します。")
+    else:
+        print("土台がまだ無いので、設定だけではなく全部入れます。")
+else:
+    print("部品を入れ直します（時間がかかります）。")
 
 if not (COMFY_DIR / "main.py").is_file():
     print("動画ソフトを入れています…")
@@ -469,61 +488,71 @@ broke_link = prepare_local_model_roots(COMFY_DIR)
 if broke_link:
     print("モデルフォルダをローカル SSD に切り替えました。")
 
-print("大きな土台を入れています（すでにあれば飛ばします）…")
-for url, dest in i2v_download_jobs(DRIVE_MODELS):
-    if "turbo" in dest.name.lower():
-        print("  速いモード（Turbo）も入れます。普通の I2V / T2V と共用します:", dest.name)
-    fetch_weight(url, dest)
-print("参照用の土台（R2V / ref2va）も入れます。FL2VA とは混ぜません…")
-for url, dest in r2v_download_jobs(DRIVE_MODELS):
-    print("  参照:", dest.name)
-    fetch_weight(url, dest)
-
-sid = resolve_situation(今使うシーン)
-ids = situation_ids(sid)
-if よく使う部品を全部入れる:
-    ids = []
-    for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", *__STORY_ID_LIST__):
-        ids.extend(situation_ids(key))
-    print("よく使う部品を全部ディスクへ入れます。再生は今の本の LoRA だけ載せます。")
+if fast:
+    print("土台と LoRA の再取得は飛ばします。")
+    token = civitai_token(CivitaiのAPIキー)
+    if token:
+        os.environ["CIVITAI_API_TOKEN"] = token
+    print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
 else:
-    print("今のシーン用だけ入れます:", 今使うシーン)
+    print("大きな土台を入れています（すでにあれば飛ばします）…")
+    for url, dest in i2v_download_jobs(DRIVE_MODELS):
+        if "turbo" in dest.name.lower():
+            print("  速いモード（Turbo）も入れます。普通の I2V / T2V と共用します:", dest.name)
+        fetch_weight(url, dest)
+    print("参照用の土台（R2V / ref2va）も入れます。FL2VA とは混ぜません…")
+    for url, dest in r2v_download_jobs(DRIVE_MODELS):
+        print("  参照:", dest.name)
+        fetch_weight(url, dest)
 
-catalog = load_catalog(STUDIO)
-# Civitai API をここで読む。名前は CIVITAI_API_TOKEN。値は print しない。
-token = civitai_token(CivitaiのAPIキー)
-if token:
-    os.environ["CIVITAI_API_TOKEN"] = token
-print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
-jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
-need = missing_civitai_files(jobs)
-if need and not token:
-    raise SystemExit(civitai_token_help())
-skipped = []
-for url, dest, row in jobs:
-    auth = "civitai" if str(row.get("source")) == "civitai" else ""
-    fallbacks = civitai_download_fallbacks(row) if auth else None
-    if not fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks):
-        skipped.append(dest.name)
-        if dest.name == "H3_anal_penetration_v1.safetensors":
-            print("アナル挿入の専用部品は Civitai 有料のことがあります。③では総合えっちで代用します。Drive の models/loras に置けば専用になります。")
-if skipped:
-    print("一部スキップ:", ", ".join(skipped))
-    print("今のシーンに不要なら③へ。必要なら Drive の models/loras に置いてください。②をもう一度回すだけでは取れないことがあります。")
+    sid = resolve_situation(今使うシーン)
+    ids = situation_ids(sid)
+    if よく使う部品を全部入れる:
+        ids = []
+        for key in ("sfw_daily", "sfw_preview", "sfw_audio", "anal_closeup", "anal_fingering", "anal_penetration", "futa_blowjob", "futa_sex", "futa_anal", "oral", "general_sex", "preview", "lesbian_cunnilingus", "pussy_spread", "lesbian_spread", "riding", "doggy", "missionary_pov", "after_ejaculation", "facial", "creampie", "oral_creampie", "fingering", "masturbation", "footjob", "remote_orgasm", "futa_visible", "futa_masturbation", "cunnilingus_futa", *__STORY_ID_LIST__):
+            ids.extend(situation_ids(key))
+        print("よく使う部品を全部ディスクへ入れます。再生は今の本の LoRA だけ載せます。")
+    else:
+        print("今のシーン用だけ入れます:", 今使うシーン)
 
-print("Drive の重みをローカル SSD に載せます（FUSE mmap だと初回の GPU が遊ります）…")
-staged = stage_models_to_local(DRIVE_MODELS, COMFY_DIR / "models")
-if staged.get("copied"):
-    print("コピーしたファイル:", len(staged["copied"]), "（", round(staged.get("bytes") or 0) / 1e9, "GB）")
-if staged.get("skipped"):
-    print("ローカル済み:", len(staged["skipped"]))
-if staged.get("drive_direct"):
-    print("空きが足りないので Drive 直読みに戻します。")
-    if comfy_alive(PORT):
-        subprocess.run(["fuser", "-k", f"{PORT}/tcp"], check=False, capture_output=True)
-        time.sleep(2)
-        clear_warmup_stamp(COMFY_DIR)
-    link_model_dirs_to_drive(COMFY_DIR, DRIVE_MODELS)
+    catalog = load_catalog(STUDIO)
+    # Civitai API をここで読む。名前は CIVITAI_API_TOKEN。値は print しない。
+    token = civitai_token(CivitaiのAPIキー)
+    if token:
+        os.environ["CIVITAI_API_TOKEN"] = token
+    print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
+    jobs = download_jobs_for(ids, DRIVE_MODELS / "loras", catalog=catalog)
+    need = missing_civitai_files(jobs)
+    if need and not token:
+        raise SystemExit(civitai_token_help())
+    skipped = []
+    for url, dest, row in jobs:
+        auth = "civitai" if str(row.get("source")) == "civitai" else ""
+        fallbacks = civitai_download_fallbacks(row) if auth else None
+        if not fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks):
+            skipped.append(dest.name)
+            if dest.name == "H3_anal_penetration_v1.safetensors":
+                print("アナル挿入の専用部品は Civitai 有料のことがあります。③では総合えっちで代用します。Drive の models/loras に置けば専用になります。")
+    if skipped:
+        print("一部スキップ:", ", ".join(skipped))
+        print("今のシーンに不要なら③へ。必要なら Drive の models/loras に置いてください。②をもう一度回すだけでは取れないことがあります。")
+
+if fast and have_local:
+    print("ローカルに土台あり。Drive からのコピーは飛ばします。")
+else:
+    print("Drive の重みをローカル SSD に載せます（FUSE mmap だと初回の GPU が遊ります）…")
+    staged = stage_models_to_local(DRIVE_MODELS, COMFY_DIR / "models")
+    if staged.get("copied"):
+        print("コピーしたファイル:", len(staged["copied"]), "（", round(staged.get("bytes") or 0) / 1e9, "GB）")
+    if staged.get("skipped"):
+        print("ローカル済み:", len(staged["skipped"]))
+    if staged.get("drive_direct"):
+        print("空きが足りないので Drive 直読みに戻します。")
+        if comfy_alive(PORT):
+            subprocess.run(["fuser", "-k", f"{PORT}/tcp"], check=False, capture_output=True)
+            time.sleep(2)
+            clear_warmup_stamp(COMFY_DIR)
+        link_model_dirs_to_drive(COMFY_DIR, DRIVE_MODELS)
 
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
@@ -543,10 +572,12 @@ else:
         raise SystemExit("起動に失敗しました。ランタイムを再起動して①からやり直してください。")
     print("起動できました")
 
-if ensure_comfy_r2v_node(COMFY_DIR, port=PORT):
+if ensure_comfy_r2v_node(COMFY_DIR, port=PORT, update=not fast):
     print("参照ノード: あり")
 else:
     print("参照ノードはありません。短編集（参照）と参照つなぐは使えません。日常・専用は使えます。")
+    if fast:
+        print("短編集が要るときは「設定だけ更新」をオフにして②を。")
 
 diff = list((COMFY_DIR / "models" / "diffusion_models").glob("*fl2va*"))
 unet_name = diff[0].name if diff else ""
@@ -677,7 +708,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "has_fl2va_weight", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
