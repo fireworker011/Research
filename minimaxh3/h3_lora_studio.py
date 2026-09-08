@@ -183,6 +183,14 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
         "synth-pussy-h3",
     ],
+    "clinic-75s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+        "synth-pussy-h3",
+    ],
     "last-stop-40s": [
         "penis-lora-h3",
         "cinema-dy",
@@ -301,10 +309,13 @@ SITUATION_JA = {
     "定期検診100秒（つなぐ）": "checkup-100s",
     "定期検診（つなぐ）": "checkup-100s",
     "検診100秒（つなぐ）": "checkup-100s",
+    "ケンシン": "clinic-75s",
+    "医院ケンシン": "clinic-75s",
     "終点40秒（つなぐ）": "last-stop-40s",
     "終点（つなぐ）": "last-stop-40s",
     "sales-visit-60s": "sales-visit-60s",
     "checkup-100s": "checkup-100s",
+    "clinic-75s": "clinic-75s",
     "last-stop-40s": "last-stop-40s",
     "cafe-100s": "cafe-100s",
     "train-sales-80s": "train-sales-80s",
@@ -434,6 +445,7 @@ SITUATION_HELP = {
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。対面20秒。8本＝85秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ15秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。前半テンポ良く。台詞10秒・2行まで。キス15・ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
@@ -514,6 +526,7 @@ STORY_IDS = set(STORY_ORDER)
 CHAIN_PACK_ORDER = (
     "sales-visit-60s",
     "checkup-100s",
+    "clinic-75s",
     "last-stop-40s",
     "cafe-100s",
     "train-sales-80s",
@@ -596,6 +609,7 @@ STORY_TITLE_JA = {
     "engawa-120s": "縁側",
     "sales-visit-60s": "訪問販売",
     "checkup-100s": "定期検診",
+    "clinic-75s": "ケンシン",
     "last-stop-40s": "終点",
     "cafe-100s": "カフェ",
     "train-sales-80s": "車内販売",
@@ -717,7 +731,7 @@ def is_story(situation: str) -> bool:
 
 
 def is_chain_pack(situation: str) -> bool:
-    """Named last-frame chain pack (訪問販売 / 検診 / 終点). Not a story."""
+    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 建前 / 物語の追加). Not a story."""
     try:
         return resolve_situation(situation) in CHAIN_PACK_IDS
     except SystemExit:
@@ -3234,6 +3248,7 @@ SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
     "dishes-90s": [(11, "silent_next")],
     "cafe-100s": [(9, "after_speech")],
     "checkup-100s": [(8, "after_speech")],
+    "clinic-75s": [(4, "on_cumouf")],
     "homecoming-90s": [(10, "after_speech")],
     "karaoke-50s": [(4, "after_speech")],
     "sales-visit-60s": [(7, "after_speech")],
