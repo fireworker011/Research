@@ -16,7 +16,7 @@ GitHub cron は遅延する。**EA の発注クロックには使わない。**
 1. PR をデフォルトブランチへマージする。
 2. Actions で **XM Trade ペーパーティック** を 1 回 Run する。
 3. Issue https://github.com/fireworker011/Research/issues/93 を Subscribe。
-4. Grok Bot には [`docs/grok-bots/G_xm_trade.txt`](docs/grok-bots/G_xm_trade.txt) **だけ**（貼済みなら貼り直さなくてよい）。
+4. Grok Bot の日常入口は `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`（中でこの `G_xm_trade.txt` を開く）。remain / n10 と混ぜるな。貼済みなら XM dump を貼り直さなくてよい。
 
 動くもの:
 

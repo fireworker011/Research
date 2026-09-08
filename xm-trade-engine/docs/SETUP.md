@@ -1,9 +1,9 @@
 # XM Trade — 完全自動の載せ方
 
-このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。いま組む自動の地図は [`AUTO.md`](AUTO.md)。iPhone のみなら [`IPHONE.md`](IPHONE.md)。いま組む自動の地図は [`AUTO.md`](AUTO.md)。iPhone のみなら [`IPHONE.md`](IPHONE.md)。
+このファイルが **実装手順の正**。コードは PR をデフォルトへマージしたあとで載せる。いま組む自動の地図は [`AUTO.md`](AUTO.md)。iPhone のみなら [`IPHONE.md`](IPHONE.md)。
 
 > 自動売買は口座資金を失う。利益は保証しない。デモが先。リスク上限（0.5% / 日次 2% / 0.10 lot）は上げない。
-> Threads の schedule は戻さない。
+> Threads の schedule は戻さない。人間の一度きりは `handover/HUMAN_ONCE.md`。日常は BOT（`G_hq_boot.txt` → この dump）。Cursor は載せたあと止まってよい。
 
 ## 何が自動か
 
