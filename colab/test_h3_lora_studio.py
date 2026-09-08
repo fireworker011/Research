@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-kenshin-1"' in src
+    assert 'FETCH_REV = "h3-20260908-kenshin-2"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -495,7 +495,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-kenshin-1" in blob
+    assert "h3-20260908-kenshin-2" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4027,8 +4027,17 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "START CAST:" in p0["prompt"]
     assert "SHAFT LOOK:" in p0["prompt"]
     assert "opening of one continuous long take" in p0["prompt"]
-    kiss = story["clips"][2]["prompt"].lower()
-    assert "kiss" in kiss and "breast" in kiss and "both hands" in kiss
+    kiss_raw = story["clips"][2]["prompt"]
+    kiss = kiss_raw.lower()
+    assert "kiss" in kiss
+    assert "身を胸につける" in kiss_raw
+    assert "chests pressed" in kiss
+    assert "flush against aya's chest" in kiss
+    assert "hands knead" not in kiss
+    assert "breast grab" not in kiss
+    assert "thumbs on" not in kiss
+    assert "both hands on" not in kiss
+    assert "nipple" not in kiss
     assert "hand's width" in kiss or "hand’s width" in kiss
     assert "mouth" in kiss and "open" in kiss
     assert "already oral" not in kiss
@@ -4730,7 +4739,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-kenshin-1" in cell2
+    assert "h3-20260908-kenshin-2" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
