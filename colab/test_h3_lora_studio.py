@@ -399,7 +399,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260907-share-1"' in src
+    assert 'FETCH_REV = "h3-20260908-arrive-1"' in src
     assert "**ふたなりの既定:**" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
@@ -442,7 +442,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260907-share-1" in blob
+    assert "h3-20260908-arrive-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -482,6 +482,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "ensure_comfy_r2v_node" in src
     assert "lock_oral_in_mouth" in src
     assert "lock_semen_share_kiss" in src
+    assert "who_hidden_at_start" in src
+    assert "lock_start_cast" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -2944,6 +2946,11 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
     assert "Clerk = NOT IN FRAME" in c1 and "Clerk: Adult" not in c1
     from h3_lora_studio import story_cast_present
     assert story_cast_present(c1) == ["Aya"]
+    assert "both faces" not in c1
+    cam = c1.split("CAMERA:", 1)[1].split("\n", 1)[0]
+    assert "medium two-shot" not in cam.lower()
+    assert "both faces" not in cam.lower()
+    assert "Aya alone" in cam
     for clip in story["clips"][1:]:
         assert story_cast_present(clip["prompt"]) == ["Aya", "Clerk"]
     assert "yellow stream" in story["clips"][3]["prompt"]
@@ -3374,6 +3381,15 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
     assert "already kneeling" in story["clips"][2]["prompt"]
     assert "Then she kneels" not in story["clips"][2]["prompt"]
+    c1 = story["clips"][0]["prompt"]
+    assert "HIDDEN at the start" in c1
+    assert "CLOSED front door" in c1 or "front door is CLOSED" in c1
+    assert "ENTERS FRAME" in c1
+    assert "already at the open door" not in c1.lower()
+    assert "faces Aya in the open door" not in c1
+    assert "spoken AFTER the door opens" in c1 or "AFTER the door opens" in c1
+    assert "こんにちは。おミズ、とどけにきました" in c1
+    assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
     assert "yellow" in story["clips"][3]["prompt"].lower()
     assert "BASE" in story["clips"][5]["prompt"]
     assert story["clips"][5]["duration_s"] == 15
@@ -3417,7 +3433,13 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
         assert "genkan" in clip["prompt"].lower() or "door" in clip["prompt"].lower()
     assert "Not a clinic" in story["clips"][0]["prompt"]
-    assert "already at the open door" in story["clips"][0]["prompt"]
+    c1 = story["clips"][0]["prompt"]
+    assert "already at the open door" not in c1
+    assert "HIDDEN at the start" in c1
+    assert "ENTERS FRAME" in c1
+    assert "CLOSED front door" in c1 or "CLOSED front door at the start" in c1
+    assert "Do not show Rei until the door opens" in c1
+    assert "こんにちは。テイキケンシンにきました" in c1
     kiss = story["clips"][3]["prompt"].lower()
     assert "kiss" in kiss
     assert "breast" in kiss
@@ -3852,7 +3874,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260907-share-1" in cell2
+    assert "h3-20260908-arrive-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -3877,6 +3899,8 @@ def test_notebook_story_play_flow():
     assert "ensure_r2v_in_object_info" in cell3
     assert "lock_oral_in_mouth" in src
     assert "lock_semen_share_kiss" in src
+    assert "who_hidden_at_start" in src
+    assert "lock_start_cast" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
@@ -3947,6 +3971,52 @@ def test_pick_cast_still_and_ref_chain(tmp_path):
     raw = apply_story_play(load_story("commute-120s"), "chain")
     c0 = prepare_story_clip(raw, 0, stills_dir=tmp_path, force_t2v=True)
     assert c0["first_kind"] == "t2v"
+
+
+def test_visit_opening_starts_solo_then_resident_enters(tmp_path):
+    from h3_lora_studio import (
+        apply_story_play,
+        clip_cast_people,
+        load_story,
+        lock_start_cast,
+        prepare_story_clip,
+        who_hidden_at_start,
+    )
+
+    sales = load_story("sales-visit-60s")
+    checkup = load_story("checkup-100s")
+    cafe = load_story("cafe-100s")
+    s1 = sales["clips"][0]
+    k1 = checkup["clips"][0]
+    assert who_hidden_at_start(s1["prompt"]) == {"aya"}
+    assert who_hidden_at_start(k1["prompt"]) == {"rei"}
+    assert clip_cast_people(s1) == []
+    assert clip_cast_people(k1) == []
+    assert "aya" in clip_cast_people(sales["clips"][1])
+    assert "rei" in clip_cast_people(checkup["clips"][1])
+    assert who_hidden_at_start(cafe["clips"][0]["prompt"]) == {"clerk"}
+    assert clip_cast_people(cafe["clips"][0]) == ["aya"]
+    locked = lock_start_cast(s1["prompt"])
+    assert "START CAST:" in locked
+    assert lock_start_cast(locked) == locked
+    assert "START CAST:" not in lock_start_cast(cafe["clips"][0]["prompt"])
+
+    cast = _write_cast_stills(tmp_path / "cast")
+    sales_ref = apply_story_play(sales, "ref_chain")
+    p0 = prepare_story_clip(sales_ref, 0, stills_dir=tmp_path, cast_dir=cast)
+    assert p0["mode"] == "t2v"
+    assert p0["first_kind"] == "t2v"
+    assert not p0["still_paths"]
+    assert "START CAST:" in p0["prompt"]
+    assert "HIDDEN at the start" in p0["prompt"]
+    p1 = prepare_story_clip(sales_ref, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path, cast_dir=cast)
+    assert p1["mode"] == "i2v" and p1["first_kind"] == "last_frame"
+    check_ref = apply_story_play(checkup, "ref_chain")
+    k0 = prepare_story_clip(check_ref, 0, stills_dir=tmp_path, cast_dir=cast)
+    assert k0["mode"] == "t2v"
+    commute = apply_story_play(load_story("commute-120s"), "ref_chain")
+    c0 = prepare_story_clip(commute, 0, stills_dir=tmp_path, cast_dir=cast, force_t2v=True)
+    assert c0["mode"] == "r2v" and c0["first_kind"] == "cast"
 
 
 def test_validate_story_follow_full_body_ok_on_sex_not_oral():

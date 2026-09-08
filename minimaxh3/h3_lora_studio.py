@@ -678,8 +678,11 @@ def apply_story_play(story: dict[str, Any], play: str) -> dict[str, Any]:
     dedicated: seamless False, rewrite_chain_prompts False, every clip start still_or_t2v.
     chain: seamless True, rewrite False, clip 2+ start continue (prompts untouched).
     chain_rewrite: seamless True, rewrite True, clip 2+ start continue.
-    ref_chain / ref_chain_rewrite: same as chain / chain_rewrite, but clip 1 is I2V from
-    Drive input/cast/ (use_cast_ref). ③「テキストから」は無視する.
+    ref_chain / ref_chain_rewrite: same as chain / chain_rewrite, but clip 1 is R2V from
+    Drive input/cast/ identity stills when a main-cast person is visible at t=0
+    (use_cast_ref). Visit openings (resident HIDDEN at the start) fall through to T2V
+    so those stills do not spawn a second body. Clip 2+ stays last-frame I2V.
+    ③「テキストから」は無視する.
     """
     mode = str(play or STORY_PLAY_DEDICATED).strip()
     if mode not in STORY_PLAYS:
@@ -746,16 +749,47 @@ def find_cast_file(cast_dir: Path | str, person: str, kind: str) -> Path | None:
     return None
 
 
+_WHO_BLOCK_RE = re.compile(
+    r"(?m)^WHO:\s*\n(.*?)(?=\n(?:subject_definitions:|environment:|HARD LOCK:|CAMERA:|\Z))",
+    re.S,
+)
+_HIDDEN_WHO_HINT_RE = re.compile(
+    r"NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN|HIDDEN at the start|"
+    r"not visible at the start|not in frame yet|behind the CLOSED door",
+    re.I,
+)
+
+
+def who_hidden_at_start(prompt: str) -> set[str]:
+    """WHO names who must not appear in frame 1 (behind a closed door, not in frame yet)."""
+    hidden: set[str] = set()
+    text = str(prompt or "")
+    match = _WHO_BLOCK_RE.search(text)
+    block = match.group(1) if match else ""
+    for line in block.split("\n"):
+        line = line.strip()
+        if " = " not in line:
+            continue
+        name, rest = line.split("=", 1)
+        if _HIDDEN_WHO_HINT_RE.search(rest):
+            hidden.add(name.strip().lower())
+    return hidden
+
+
 def clip_cast_people(clip: dict[str, Any]) -> list[str]:
+    """Main-cast people visible at t=0. Hidden / not-in-frame names are dropped."""
+    hidden = who_hidden_at_start(str(clip.get("prompt") or ""))
     named = [str(n).strip().lower() for n in (clip.get("names") or []) if str(n).strip()]
     out: list[str] = []
     for n in named:
-        if n in CAST_STILL_STEMS and n not in out:
+        if n in CAST_STILL_STEMS and n not in out and n not in hidden:
             out.append(n)
     if out:
         return out
     prompt = str(clip.get("prompt") or "")
     for n in CAST_STILL_PEOPLE:
+        if n in hidden:
+            continue
         if re.search(rf"\b{n}\b", prompt, re.I) and n not in out:
             out.append(n)
     return out
@@ -797,8 +831,10 @@ def pick_cast_stills(clip: dict[str, Any], cast_dir: Path | str, *, max_stills: 
             "参照モードは Drive の input/cast/ に4人の上半身・全身（8枚）が必要です。"
             f" 置く名前: {wanted}（jpg / jpeg / png / webp）"
         )
+    people = clip_cast_people(clip)
+    if not people:
+        return []
     lead_person, lead_kind = pick_cast_lead(clip)
-    people = clip_cast_people(clip) or [lead_person]
     ordered: list[str] = []
     for n in [lead_person, *people]:
         if n not in ordered:
@@ -836,7 +872,10 @@ def pick_cast_stills(clip: dict[str, Any], cast_dir: Path | str, *, max_stills: 
 
 
 def pick_cast_still(clip: dict[str, Any], cast_dir: Path | str) -> Path:
-    return pick_cast_stills(clip, cast_dir)[0]
+    paths = pick_cast_stills(clip, cast_dir)
+    if not paths:
+        raise SystemExit("参照モード: 開始時に見えるメインキャストがいません。")
+    return paths[0]
 
 
 def lock_r2v_cast_prompt(prompt: str, still_paths: list[Path], *, duration_s: float = 10.0) -> str:
@@ -2619,6 +2658,25 @@ def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> s
     return raw.rstrip() + "\n" + line
 
 
+START_CAST_LINE = (
+    "START CAST: START: one woman only. Closed door. Do not show the resident "
+    "until the door opens and she ENTERS FRAME. Not a two-shot at t=0."
+)
+
+
+def lock_start_cast(text: str) -> str:
+    """Visit openings must start as one person at a closed door, then the resident enters."""
+    raw = str(text or "")
+    if not raw or "START CAST:" in raw:
+        return raw
+    if not re.search(r"HIDDEN at the start", raw, re.I):
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + START_CAST_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + START_CAST_LINE
+
+
 SEMEN_SHARE_LINE = (
     "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a thick sticky gooey pool of "
     "white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
@@ -3669,7 +3727,9 @@ def prepare_story_clip(
     Dedicated (seamless False): hard cut. Photo if present, else T2V. Never the last frame.
     Chain (seamless True, via apply_story_play or a named pack): clip 2+ is I2V from
     last_frame. Clip 1 gets the long-take opening wrap only when rewrite_chain_prompts.
-    Ref chain: clip 1 is R2V from Drive input/cast/ identity stills (use_cast_ref).
+    Ref chain: clip 1 is R2V from Drive input/cast/ identity stills when a main-cast
+    person is visible at t=0 (use_cast_ref). Visit openings (resident hidden at the
+    start) fall through to T2V so those stills do not spawn a second body.
     Ignore ③テキストから. Clip 2+ stays last-frame I2V on FL2VA.
     Anthology: every clip is R2V from cast stills. No last-frame chain.
 
@@ -3687,7 +3747,7 @@ def prepare_story_clip(
     share_modes = {i: mode for i, mode in semen_share_plan(story)}
     share_mode = share_modes.get(index)
     raw_prompt = lock_semen_look(
-        compact_story_prompt(str(clip.get("prompt") or "")),
+        lock_start_cast(compact_story_prompt(str(clip.get("prompt") or ""))),
         situation=situation,
     )
     if share_mode == "on_cumouf":
@@ -3715,9 +3775,11 @@ def prepare_story_clip(
     still_paths: list[Path] = []
     first_kind_cast = False
     if use_cast and not use_last:
-        still_paths = pick_cast_stills(clip, cast_dir or still_dir)
-        still_path = still_paths[0]
-        first_kind_cast = True
+        if clip_cast_people(clip):
+            still_paths = pick_cast_stills(clip, cast_dir or still_dir)
+            if still_paths:
+                still_path = still_paths[0]
+                first_kind_cast = True
     elif not force_t2v and not use_last:
         still_path = resolve_story_still(clip, still_dir, clip_index=index, override=clip0_override)
     missing_still = None
