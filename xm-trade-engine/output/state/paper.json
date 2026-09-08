@@ -3,8 +3,23 @@
   "disclaimer": "仮想資金。XM口座の残高ではない。数字を実口座と混ぜて読むな。",
   "currency": "USD",
   "balance": 10000,
-  "equity": 10000,
-  "positions": [],
+  "equity": 9999.4,
+  "positions": [
+    {
+      "id": "p_EURUSD_2026-09-08T13:38:58.703Z",
+      "symbol": "EURUSD",
+      "side": "BUY",
+      "lot": 0.1,
+      "entry": 1.162580408630371,
+      "sl": 1.16146,
+      "tp": 1.16394,
+      "pip_value": 10,
+      "opened_at": "2026-09-08T13:38:58.703Z",
+      "reason": "ema_cross_up_trend",
+      "mark": 1.162520408630371,
+      "unrealized": -0.6
+    }
+  ],
   "closed": [],
   "daily": {
     "date": "2026-09-08",
