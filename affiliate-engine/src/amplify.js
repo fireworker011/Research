@@ -188,7 +188,7 @@ async function main() {
 
       if (isDryRun) {
         console.log(`📝 ${account.key}: views=${views} ${post.permalink || post.id}`);
-        console.log(replyText.split('\n').map((l) => `   │ ${l}`).join('\n'));
+        console.log(redactAffiliateUrls(replyText).split('\n').map((l) => `   │ ${l}`).join('\n'));
         remaining--;
         continue;
       }
