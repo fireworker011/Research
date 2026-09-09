@@ -19,8 +19,8 @@ clone なら `xm-trade-engine/docs/grok-bots/G_xm_trade.txt`。
 
 仕事はこれだけ:
 
-1. 上の XM dump に従え。エントリーは出すな。止める理由が無い日は Issue にコメントするな。
-2. hq-instruct が `G_hq_sns_next.txt` を指すか、人間が「アフィを進める」と言うまで `G_hq_sns_next.txt` は自分で選んで開けるな。進めるスイッチは Issue の行 `AFFI: GO`（止めるなら `AFFI: STOP`）。Cursor に言うな。
+1. いま開いた1ファイルに従え。XM なら ENTRY は出すな。止める理由が無い日は Issue にコメントするな。ポインタがアフィ dump ならその1ファイルだけ。boot に戻って XM へループするな。
+2. `hq-instruct:` が `G_hq_sns_next.txt` を指すまで、`G_hq_sns_next.txt` は自分で選んで開けるな。切替は Issue の行 `AFFI: GO`（止めるなら `AFFI: STOP`）。Cursor に言うな。
 3. 円は Issue コメントの `approved-yen:` を読め。invent するな。A8 画面を見ていない行を conversions.csv に足すな。
 4. 仕組みが足りないときだけ、人間チャットに1行 `参謀へ: …`。ログイン確認で Cursor を起こすな。
 

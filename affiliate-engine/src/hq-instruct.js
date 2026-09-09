@@ -286,6 +286,8 @@ function selfTest() {
   if (!instructYml.includes('affiliate-engine/data/conversions.csv')) throw new Error('instruct csv path');
   const boot = fs.readFileSync(path.join(__dirname, '../docs/grok-bots/dump/G_hq_boot.txt'), 'utf8');
   if (!boot.includes('https://github.com/fireworker011/Research/issues/110')) throw new Error('boot issue url');
+  if (/上の XM dump に従え/.test(boot)) throw new Error('boot always xm');
+  if (!boot.includes('いま開いた1ファイルに従え')) throw new Error('boot follow opened');
   const yenYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/affiliate_engine_a8_yen.yml'), 'utf8');
   if (!yenYml.includes(`github.event.issue.title == '${YEN_ISSUE_TITLE}'`)) {
     throw new Error('yen yml title');
