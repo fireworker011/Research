@@ -95,4 +95,8 @@ jobs:
             grep -q 'AFFILIATE_LINKS_JSON' "$instruct"
             grep -q 'overlay-keys.js' "$instruct"
             grep -q 'affi-step.js' "$instruct"
+            if ! grep -q 'issue_comment' "$instruct"; then
+              echo "grok instruct must run on human issue comments"
+              exit 1
+            fi
           fi
