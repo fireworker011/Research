@@ -23,7 +23,11 @@ function targetFor(go, state) {
   return go ? fileFor(state || START) : XM_POINTER;
 }
 
-function instructBody(go = false, state = START) {
+function neoFlag(neo) {
+  return neo === 'placed' ? 'placed' : 'no';
+}
+
+function instructBody(go = false, state = START, neo = 'no') {
   const pointer = targetFor(go, state);
   const extra = go
     ? '人間の1語（または完了）で次ファイルへ進め。ENTRY は出すな。'
@@ -36,6 +40,7 @@ function instructBody(go = false, state = START) {
   if (go) {
     const st = state || START;
     lines.push(`hq-affi-state: ${st}`);
+    lines.push(`hq-affi-neo: ${neoFlag(neo)}`);
     lines.push(`hq-affi-reply: ${repliesFor(st).join(' / ') || '(none)'}`);
   }
   return lines.join('\n');
@@ -45,8 +50,8 @@ function samePointer(body, go = false, state = START) {
   return String(body || '').includes(`hq-instruct: ${targetFor(go, state)}`);
 }
 
-function commentBody(go = false, state = START) {
-  return `${instructBody(go, state)}\n${overlayStatusText().text.trim()}`;
+function commentBody(go = false, state = START, neo = 'no') {
+  return `${instructBody(go, state, neo)}\n${overlayStatusText().text.trim()}`;
 }
 
 function affiGo(comments) {
@@ -142,10 +147,11 @@ async function run() {
   const { issue } = await ensureIssue(ISSUE_TITLE, INSTRUCT_BODY);
   const comments = await listComments(issue.number);
   const go = affiGo(comments);
-  const affi = go ? resolveAffi(comments) : { state: START, pointer: XM_POINTER, word: null };
+  const affi = go ? resolveAffi(comments) : { state: START, pointer: XM_POINTER, word: null, neo: 'no' };
   const pointer = go ? affi.pointer : XM_POINTER;
   const state = go ? affi.state : START;
-  const body = commentBody(go, state);
+  const neo = go ? affi.neo || 'no' : 'no';
+  const body = commentBody(go, state, neo);
   const last = comments.length ? comments[comments.length - 1] : null;
   if (last && String(last.body || '').trim() === body.trim() && isTodayUtc(last.created_at)) {
     process.stdout.write(
@@ -158,7 +164,8 @@ async function run() {
         overlay_filled: overlayStatusText().names.length,
         pointer,
         affi: go,
-        state
+        state,
+        neo
       })}\n`
     );
     return;
@@ -175,6 +182,7 @@ async function run() {
       affi: go,
       state,
       word: affi.word || null,
+      neo,
       yen_number: yen.issue.number,
       yen_created: yen.created,
       overlay_filled: overlayStatusText().names.length
@@ -191,8 +199,15 @@ function selfTest() {
   const affi = instructBody(true, START);
   if (!affi.includes(AFFI_POINTER)) throw new Error('affi pointer');
   if (!affi.includes('hq-affi-state: sns_next')) throw new Error('affi state');
+  if (!affi.includes('hq-affi-neo: no')) throw new Error('affi neo');
   if (!affi.includes('hq-affi-reply:')) throw new Error('affi reply');
   if (!affi.includes('未提携')) throw new Error('affi word');
+  const ticketExist = instructBody(true, 'tenshoku_exist', 'no');
+  if (!ticketExist.includes('置済み')) throw new Error('placed reply');
+  const afterNeo = instructBody(true, 'a8_csv', 'placed');
+  if (!afterNeo.includes('hq-affi-neo: placed')) throw new Error('neo placed line');
+  if (!afterNeo.includes('G_hq_a8_csv.txt')) throw new Error('csv after neo');
+  if (afterNeo.includes('G_hq_sns_ticket.txt') || afterNeo.includes('banner_10')) throw new Error('ticket overwrite');
   if (/\na8\.net/i.test(affi) || /crowdworks|AFFILIATE_LINKS/i.test(affi)) throw new Error('affi leak');
   if (/^\s*AFFI:\s*GO\b/m.test(affi) || /^\s*AFFI:\s*GO\b/m.test(INSTRUCT_BODY)) throw new Error('go loop');
   if (affiGo([])) throw new Error('go empty');

@@ -14,6 +14,7 @@ const WORDS = new Set([
   '媒体なし',
   '開設済み',
   '未開設',
+  '置済み',
   '完了'
 ]);
 
@@ -88,6 +89,7 @@ const NEXT = {
   'profile_edu_eyes|完了': 'tenshoku_exist',
   'tenshoku_exist|開設済み': 'sns_ticket',
   'tenshoku_exist|未開設': 'a8_csv',
+  'tenshoku_exist|置済み': 'a8_csv',
   'sns_ticket|未提携': 'a8_partner_ticket',
   'sns_ticket|Threadsあり': 'a8_site_ticket',
   'sns_ticket|YouTubeあり': 'yt_only_ticket',
@@ -127,14 +129,32 @@ function parseState(body) {
   return FILES[m[1]] ? m[1] : null;
 }
 
-function step(state, word) {
+function parseNeo(body) {
+  const m = String(body || '').match(/^\s*hq-affi-neo:\s*(placed|no)\s*$/im);
+  return m ? m[1] : null;
+}
+
+function neoAfter(state, word, neo) {
+  if (neo === 'placed') return 'placed';
+  if (state === 'profile_neo' && word === '完了') return 'placed';
+  if (state === 'tenshoku_exist' && word === '置済み') return 'placed';
+  return neo === 'placed' ? 'placed' : 'no';
+}
+
+function arrive(next, neo) {
+  if (neo === 'placed' && (next === 'tenshoku_exist' || next === 'sns_ticket')) return 'a8_csv';
+  return next;
+}
+
+function step(state, word, neo) {
   const cur = FILES[state] ? state : START;
+  const flag = neoAfter(cur, word, neo);
   if (!WORDS.has(word)) return cur;
   const next = NEXT[`${cur}|${word}`];
   if (!next) return cur;
   if (!FILES[next]) return cur;
   if (/remain|n10|cw_/i.test(FILES[next])) return cur;
-  return next;
+  return arrive(next, flag);
 }
 
 function isBot(comment) {
@@ -145,12 +165,15 @@ function resolveAffi(comments) {
   const list = comments || [];
   let lastBot = -1;
   let state = START;
+  let neo = 'no';
   list.forEach((c, i) => {
     if (!isBot(c)) return;
     const parsed = parseState(c.body);
     if (!parsed) return;
     lastBot = i;
     state = parsed;
+    const flag = parseNeo(c.body);
+    if (flag) neo = flag;
   });
   let word = null;
   for (let i = lastBot + 1; i < list.length; i++) {
@@ -158,8 +181,14 @@ function resolveAffi(comments) {
     const w = parseWord(list[i].body);
     if (w) word = w;
   }
-  if (word) state = step(state, word);
-  return { state, pointer: fileFor(state), word };
+  if (word) {
+    neo = neoAfter(state, word, neo);
+    state = step(state, word, neo);
+  }
+  if (neo === 'placed' && (state === 'tenshoku_exist' || state === 'sns_ticket')) {
+    state = 'a8_csv';
+  }
+  return { state, pointer: fileFor(state), word, neo };
 }
 
 function selfTest() {
@@ -168,9 +197,16 @@ function selfTest() {
   if (step('threads_exist', '未開設') !== 'sns_nko') throw new Error('skip neo');
   if (step('sns_nko', 'Threadsあり') !== 'edu_exist_nko') throw new Error('edu');
   if (step('a8_csv', '完了') !== 'a8_csv') throw new Error('csv stay');
+  if (step('profile_neo', '完了') !== 'sns_nko') throw new Error('after neo');
+  if (neoAfter('profile_neo', '完了', 'no') !== 'placed') throw new Error('neo placed');
+  if (step('tenshoku_exist', '開設済み', 'no') !== 'sns_ticket') throw new Error('ticket when empty');
+  if (step('tenshoku_exist', '開設済み', 'placed') !== 'a8_csv') throw new Error('no overwrite');
+  if (step('tenshoku_exist', '置済み', 'no') !== 'a8_csv') throw new Error('placed word');
+  if (step('edu_exist_eyes', '未開設', 'placed') !== 'a8_csv') throw new Error('skip ticket node');
   if (!repliesFor('sns_next').includes('未提携')) throw new Error('reply next');
   if (repliesFor('a8_csv').length !== 0) throw new Error('reply csv');
   if (!repliesFor('a8_partner').includes('完了')) throw new Error('reply partner');
+  if (!repliesFor('tenshoku_exist').includes('置済み')) throw new Error('reply placed');
   for (const node of Object.keys(FILES)) {
     if (node === 'a8_csv') continue;
     if (!repliesFor(node).length) throw new Error(`no reply ${node}`);
@@ -183,10 +219,18 @@ function selfTest() {
     { user: { login: 'n' }, body: '項目なし' }
   ]);
   if (r.state !== 'sns_nko') throw new Error('resolve');
+  const placed = resolveAffi([
+    { user: { login: 'github-actions[bot]' }, body: 'hq-affi-state: tenshoku_exist\nhq-affi-neo: placed\n' },
+    { user: { login: 'n' }, body: '開設済み' }
+  ]);
+  if (placed.state !== 'a8_csv') throw new Error('resolve no overwrite');
+  if (placed.neo !== 'placed') throw new Error('resolve neo');
   const root = path.join(__dirname, '../..');
   for (const rel of Object.values(FILES)) {
     if (/remain|n10|G_hq_cw_/i.test(rel)) throw new Error(`parked ${rel}`);
     if (!fs.existsSync(path.join(root, rel))) throw new Error(`missing ${rel}`);
+    const dump = fs.readFileSync(path.join(root, rel), 'utf8');
+    if (dump.includes('G_hq_banner_10.txt')) throw new Error(`banner ${rel}`);
   }
   process.stdout.write('affi-step self-test ok\n');
 }
@@ -199,6 +243,8 @@ module.exports = {
   repliesFor,
   parseWord,
   parseState,
+  parseNeo,
+  neoAfter,
   step,
   resolveAffi
 };

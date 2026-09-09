@@ -82,11 +82,11 @@ Secret に URL を入れただけでは円は動かない（cron は止まって
 
 dump: `未提携` → `G_hq_a8_partner.txt`（承認後に `G_hq_sns_next.txt` 再貼り）→ `Threadsあり` なら `G_hq_threads_exist.txt` → `開設済み` なら `G_hq_a8_site.txt` → `G_hq_secret_neo.txt` → `G_hq_threads_profile.txt`。置いたあとも教育アカで `G_hq_sns_nko.txt`（転職アカに N高を置くな）。`YouTubeあり`（Threads 無し）なら `G_hq_yt_only.txt` のあと `G_hq_sns_nko.txt`。`項目なし` / `媒体なし` / 転職 `未開設` なら `G_hq_sns_nko.txt`。新造するな。結合するな。
 
-N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。教育 `未開設` ならアイズも置けない。次は `G_hq_tenshoku_exist.txt`。N高を置いたあと、neo が未置きならチケット。neo を既に置いたならバナー（出品するな）。
+N高 dump: `G_hq_sns_nko.txt` → `未提携` なら `G_hq_a8_partner_nko.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_nko.txt` → `G_hq_threads_profile_edu.txt`。N高 `YouTubeあり` なら `G_hq_yt_only_nko.txt` のあと `G_hq_sns_eyes.txt`。`項目なし` / `媒体なし` なら `G_hq_sns_eyes.txt`。教育 `未開設` ならアイズも置けない。次は `G_hq_tenshoku_exist.txt`。N高を置いたあと、neo が未置きならチケット。neo を既に置いたなら計測 `G_hq_a8_csv.txt`（出品するな）。
 
 アイズ dump: `G_hq_sns_eyes.txt` → `未提携` なら `G_hq_a8_partner_eyes.txt` → `Threadsあり` なら `G_hq_edu_exist.txt` → `開設済み` なら `G_hq_a8_site_edu.txt` → `G_hq_secret_eyes.txt` → `G_hq_threads_profile_eyes.txt`。アイズ `YouTubeあり` なら `G_hq_yt_only_eyes.txt` のあと `G_hq_tenshoku_exist.txt`。`項目なし` / `媒体なし` なら `G_hq_tenshoku_exist.txt`。`未開設` なら新造するな。
 
-チケット dump: `G_hq_tenshoku_exist.txt` が `開設済み` かつ neo 未置きのあと `G_hq_sns_ticket.txt`（`s00000011866027`）。`未提携` なら `G_hq_a8_partner_ticket.txt`。`Threadsあり` なら `G_hq_a8_site.txt` → `G_hq_secret_ticket.txt` → `G_hq_threads_profile_ticket.txt`。`YouTubeあり` / `項目なし` / `媒体なし` ならチケットは置くな。次は `G_hq_banner_10.txt`（出品するな）。`未開設` もバナー。neo を既に置いたならチケットは使うな。パーソル `s00000026823002` は開くな。
+チケット dump: `G_hq_tenshoku_exist.txt` が `開設済み` かつ neo 未置きのあと `G_hq_sns_ticket.txt`（`s00000011866027`）。`未提携` なら `G_hq_a8_partner_ticket.txt`。`Threadsあり` なら `G_hq_a8_site.txt` → `G_hq_secret_ticket.txt` → `G_hq_threads_profile_ticket.txt`。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` / neo `置済み` ならチケットは置くな。次は計測 `G_hq_a8_csv.txt`（見た数字だけ。`G_hq_banner_10.txt` は無い。出品するな）。neo を既に置いたならチケットは使うな。パーソル `s00000026823002` は開くな。
 
 ## ファイルに有るもの（置き場を間違えるな）
 
