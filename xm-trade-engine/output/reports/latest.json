@@ -1,25 +1,26 @@
 {
-  "generated_at": "2026-09-08T09:31:59.864Z",
+  "generated_at": "2026-09-09T09:34:45.442Z",
   "commander": {
-    "command": "PAPER_ONLY",
-    "source": "init",
-    "reason": "live is gated until a human enables it",
+    "command": "HALT",
+    "source": "grok-bot-issue",
+    "reason": "issue comment 5593266167",
     "risk_multiplier": 1,
-    "updated_at": "2026-08-30T00:00:00.000Z",
-    "gold_arm": "IDLE",
-    "gold_arm_date": null,
+    "updated_at": "2026-09-09T08:58:38.510Z",
+    "previous": "PAPER_ONLY",
+    "gold_arm": "SKIP",
+    "gold_arm_date": "2026-09-09",
     "issue_number": "93"
   },
-  "paper_equity": 10000,
-  "paper_balance": 10000,
+  "paper_equity": 10014.64,
+  "paper_balance": 10014.64,
   "live_gate": [
     "runtime.live_enabled is false",
-    "commander PAPER_ONLY",
+    "commander HALT",
     "XM_LIVE_CONFIRM is not I_UNDERSTAND_THE_RISK"
   ],
   "gold": {
-    "status": "idle",
-    "reason": "weekend"
+    "status": "halted",
+    "reason": "halt"
   },
   "daily_loss_exceeded": false
 }
