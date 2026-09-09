@@ -34,8 +34,8 @@ Cursor（参謀）          GitHub Actions（ペーパー + 報告）
 |---|---|---|
 | **EA（実時間）** | XM への発注・SL/TP・日次損失で全決済・約定/決済告知 | GitHub の遅延シグナルでエントリー |
 | **Node tick / virtual-desk** | TradingViewスナップショット + OKX金足でペーパーOCO（SL/TP明示）。MajorsはEMAルールのみ | 実口座の損益を捏造。LLMに方向を選ばせる |
-| **Grok Bot** | ペーパーOCOのSL/TPを人間へ写す。止めるときだけ HALT/SKIP | 方向予想、ENTRY、ロット変更、XMログイン |
-| **Cursor** | コードと不変条件 | リスク上限を上げる、マーチンゲールを足す |
+| **Grok Bot** | ペーパーOCOのSL/TPを人間へ写す。止めるときだけ HALT/SKIP。日常チャット | 方向予想、ENTRY、ロット変更、XMログイン、Cursor を常時起こす |
+| **Cursor** | コードと不変条件・載せ方の環境 | リスク上限を上げる、マーチンゲールを足す、日々のルーチン |
 
 ## 戦略（日付でも乱数でもなく、閉じた足だけ）
 

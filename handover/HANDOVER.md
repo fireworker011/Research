@@ -1,14 +1,15 @@
 # 引き継ぎ書 — 婚活・ペット・美容（Cursor / Grok Bot 用）
 
-最終更新: 2026-09-08（司令塔=Grok Bot。今夜の dump 1ファイルは `G_hq_cw_remain.txt`。`G_hq_cw_n10.txt` の引用 1手は残すが開けるな）
+最終更新: 2026-09-09（3役。日常の入口は `G_hq_boot.txt`。remain / n10 は駐車。引用1手は替えるな）
 
 ## 0. このファイルの使い方（最初に必ず読む）
 
-- **期限 2026-09-30 確定 ¥1,000,000 の円と今夜の1手は、このファイルに書かない。** 指令塔は今すぐ dump 1ファイルだけ開け:
-  `affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt`
-  無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt
-  `G_hq_cw_n10.txt` は開けるな。応募本文は clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md` の 13406725 を先に開け。
-  他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` は dump へ送る短文（sprint の盤面ではない）。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。PR 76 の auひかり絞り込みは今夜の1手ではない。
+- **3役の正は `handover/ROLES.md` と `affiliate-engine/docs/grok-bots/MACHINE.md`。** 人間=外部サイトと重要判断。Grok Bot=日常。Cursor=仕組み（常時稼働しない）。
+- 指令塔は今すぐ dump 1ファイルだけ開け:
+  `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`
+  無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt
+  `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな。人間が「アフィを進める」と言うまで高単価 dump も開けるな。
+  他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` は dump へ送る短文。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。Cursor を時計進行させるな。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
 - Threads の自動更新（自動投稿・デイリー自動改善・日次レポート・婚活メトリクス収集）は **2026-08-26 に停止済み**。詳細と再開手順は「6. 自動化の現在状態」。
@@ -106,7 +107,7 @@
 - **判定ゲート**: 週15クリック → 導線は生きている（同じ型を週3本まで）／ 週15未満 → 量産禁止・案件を安い/申込型に変えるか長尺1本で比較 ／ 成果1件以上 → その動画の型だけ複製 ／ 累計50クリック超で成果0 → 案件か着地を疑う。
 - **ペット実験の「月100万」語りは、週50クリックが3週続くまでしない。** 期限 2026-09-30 確定 ¥1,000,000 は別線。Furbo は円本線ではない。今夜の人間1手をペットCSVで止めるな。
 - 切り分けの順番: ①再生がない→型と冒頭3秒 ②再生はあるがクリックが少ない→導線 ③クリックはあるが成果0→案件と着地 ④成果あり→その型だけ複製。**「仕組みがない」「案件が死んでる」と先に言わない。**
-- 役割: Grok Bot を自動化のメイン実行者にしない。実投稿・成果確認は人間（スマホ）。Cursor は記録とコード変更のみ。TikTok / Instagram / 新エージェント / 動画量産 / 案件総入れ替えは**同時にやらない**。
+- 役割: YouTube の実投稿と A8 画面の数字は人間（外部サイト）。日常チャットは Grok Bot。Cursor は仕組みだけで常時稼働しない。TikTok / Instagram / 新エージェント / 動画量産 / 案件総入れ替えは**同時にやらない**。
 
 ## 5. 美容 — コンセプト設計 / 運用設計 / 動画設計
 
@@ -157,14 +158,16 @@
 
 ## 8. Grok Bot / Cursor への具体的な指示
 
-- **Grok Bot（司令塔）**: 指示を出す。人間への1手を出す。今夜は dump `affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt` を開けて貼れ。無ければデフォルト raw。`G_hq_cw_n10.txt` は開けるな。`HUMAN.md` は貼るな。実投稿はしない。目標・期限は変えない。
-- **Cursor（参謀）**: コード変更と実験記録・指示書。指令塔の代わりに dump を貼るな。スケジュール決定論と重複ガードを壊さない。コミット前に `git pull --rebase`。
-- **両者共通**: 停止中の Threads 自動更新を勝手に再開しない。ペット実験の週15/週50クリック門は Furbo 線。期限 2026-09-30 確定円の1手をそれで止めるな。
+- **Grok Bot（日常）**: dump `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt` だけ開け。無ければデフォルト raw。普通のやり取りは Bot。remain / n10 は開けるな。`HUMAN.md` は貼るな。実投稿はしない。介入が多い宿題を毎晩出すな。
+- **Cursor（上流）**: 環境と仕組み。日常・ルーチン・時計は仕事ではない。指令塔の代わりに dump を貼るな。スケジュール決定論と重複ガードを壊さない。終わったら止まる。
+- **両者共通**: 停止中の Threads 自動更新を勝手に再開しない。ペット実験の週15/週50クリック門は Furbo 線。人間の外部クリック（A8/CW/MT5/Secrets）を Cursor に代行させるな。
 
 ## 9. 深掘り参照マップ（人間の指示があるときのみ開く）
 
 | 知りたいこと | ファイル |
 |---|---|
+| 3役・BOT入口 | `handover/ROLES.md` / `affiliate-engine/docs/grok-bots/MACHINE.md` / `dump/G_hq_boot.txt` |
+| 人間が一度だけやること | `handover/HUMAN_ONCE.md` |
 | アカウント開設素材（プロフィール文・アイコンプロンプト全文） | `affiliate-engine/docs/account-setup-kit.md` |
 | スロット再設計の背景・投稿の型の詳細 | `affiliate-engine/docs/account-strategy.md` |
 | 動画実験の全ルールと駐車場（やらないことリスト） | `affiliate-engine/docs/video-cash-loop.md` |
@@ -172,7 +175,7 @@
 | システム保守の不変条件 | リポジトリ直下 `CLAUDE.md` |
 | テンプレ本体（全9ジャンル320本） | `affiliate-engine/data/seed_templates.json` |
 | 美容動画エージェントの許容表現 | `affi-shorts-agent` リポジトリ `agents/orbis/claims-allowlist.md` |
-| XM 自動トレード（別線） | `xm-trade-engine/README.md`。司令塔 dump は `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` だけ。`G_hq_*.txt` と混ぜるな |
+| XM 自動トレード | `xm-trade-engine/README.md`。日常入口 `G_hq_boot.txt` が `G_xm_trade.txt` を開く。remain と混ぜるな |
 
 ## 10. XM Trade（Cursor / Grok Bot）
 

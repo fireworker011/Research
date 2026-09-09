@@ -306,9 +306,9 @@ async function notifyGoldAwaitingArm(setup) {
   });
 }
 
-async function runTick({ now = new Date(), env = process.env, dryRun = false, fixtureBySymbol = null, allowForming = true } = {}) {
+async function runTick({ now = new Date(), env = process.env, dryRun = false, fixtureBySymbol = null, allowForming = true, commander: commanderOverride = null } = {}) {
   const { strategy, risk, runtime, goldCfg } = loadAllConfig();
-  let commander = commanderMod.loadCommander();
+  let commander = commanderOverride || commanderMod.loadCommander();
 
   if (!dryRun) {
     const synced = await commanderMod.syncFromGitHubIssue({

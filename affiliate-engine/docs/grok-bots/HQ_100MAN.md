@@ -1,13 +1,15 @@
-# HQ 100万 — デフォルト clone 用
+# HQ — デフォルト clone 用
 
-指令塔（Grok Bot「月100万稼ぐまで帰れま10」）。Cursor は参謀。数字は invent しない。
+指令塔は Grok Bot。日常のやり取りは Bot。Cursor は上流（仕組み）だけ。数字は invent しない。
 
 今すぐ dump 1ファイルだけ開け:
 
-`affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt`
+`affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`
 
-無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_cw_remain.txt
+無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt
 
-`G_hq_cw_n10.txt` は開けるな（閉じた件へ送る）。応募本文は clone なら `affiliate-engine/docs/grok-bots/CW_APPLY.md` の 13406725 を先に開け。
+GitHub 指示役が Issue `Grok Bot — 指示` に毎日 `hq-instruct:` を書く。boot はそれを先に開け。毎日 dump を貼り直すな。
 
-`HUMAN.md` は貼るな。他の `G_hq_*.txt` を更新日時で選ぶな。結合するな。cron は戻すな。PR 76 は今夜の1手ではない。Cursor は dump を貼らない。目標・期限は変えるな。
+`G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな（駐車。引用1手は替えるな）。役割の正は `MACHINE.md`。
+
+`HUMAN.md` は貼るな。他の `G_hq_*.txt` を更新日時で選ぶな。結合するな。cron は戻すな。Cursor は dump を貼らない。Cursor を常時稼働させるな。

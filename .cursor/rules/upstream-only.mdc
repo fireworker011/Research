@@ -1,0 +1,29 @@
+---
+description: Cursor is upstream systems only. Grok Bot does daily routines. Human does external sites and judgment.
+alwaysApply: true
+---
+
+# Cursor = 上流の仕組み。日常は BOT。常時稼働するな
+
+ナオミチの役割分担（2026-09-08 確定）:
+
+- **人間**: 外部サイトの操作と、重要な判断だけ。時間がない。介入が多い仕事は出さない。
+- **Grok Bot**: 普通のやり取り、日次ルーチン、エントリー相当の実行（FX は止め役。発注は EA）。指示マシーンは `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`。
+- **Cursor（自分）**: 稼ぐための環境と仕組み。申請文の 100% 下書き、リサーチ成果物、BOT が回せる土台。日常タスク・ルーチン・時計進行は仕事ではない。
+
+## やるな（トークン浪費・介入過多）
+
+- ログイン確認・overlay 再読・円の再集計をループするな
+- dump を人間や HQ に貼るな（司令塔の代わりをするな）
+- Threads の post/insight/report cron を戻すな
+- いいね/フォロー自動、#PR なしリンク、体験談の捏造
+- 数字の発明。カタログ円を `approved_yen` に足すな
+- 「カード待ち」「変化なし」の定期報告。更新頻度を上げるな
+- 人間が毎ステップ押す仕事を、今夜の1手として量産するな
+
+## やれ
+
+- 依頼を 100% 理解し、BOT と人間が迷わない機械を作れ
+- 不足は仕組みで埋める。運用で埋めようとするな
+- FX なら EA・commander・レポート・BOT の止め役までを環境として整える。日々のエントリーは BOT/EA
+- 起きてよいのは「仕組みが足りない」「コードを変えろ」のときだけ。終わったら止まる

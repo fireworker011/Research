@@ -24,12 +24,19 @@ date,source,program,clicks,cv,approved_yen,note
 
 ## 手順
 
+人間は A8 画面を見る。CSV を手で編集しなくてよい。見た数字を Issue タイトル **`Affiliate — 確定円`** に1行:
+
+```
+A8_YEN: 2026-09-09,A8,all,33,0,0,screen monthly
+```
+
+Grok Bot がこの1行を Issue に書いてよい。Cursor は日常で起こすな。Actions が `conversions.csv` に書く。
+
 1. A8 管理画面を開く。開いていないなら **行を足すな**（0 を invent するな）。
-2. 見えた clicks / cv / 確定金額だけを1行にする。カンマと円記号は外す（`15000`）。引用符なしの `1,000` は列が壊れる。見えない列は空にしない。見えた 0 は 0 と書く。note に「カタログ」と書いて yen を足すな。
-3. 同じ source・同じ program は **最新日の行だけ** が円・clicks・cv。古い行は履歴。画面の月次合計を日付を変えて再掲するときは、新しい行を足してよい（コードは最新だけ読む）。同じ数字を手で足して倍にするな。
-4. `program=all`（画面の全プログラム合計）と案件別行を同じ source に並べるな。円が倍になる。全部か案件別か、どちらか一方。
-5. 書いた行が7列か、`approved_yen` がカンマ無し整数か、URL が無いかを目で見る。`sprint-1m.js` はデフォルト clone に無い。report の cron は回すな。
-6. アフィURL・トークンを Git / チャット / ログに書くな。
+2. 見えた clicks / cv / 確定金額だけを上の1行にする。カンマと円記号は外す（`15000`）。引用符なしの `1,000` は書くな。見えた 0 は 0 と書く。note に「カタログ」と書いて yen を足すな。
+3. 同じ source・同じ program は **最新日の行だけ** が円。同じ日の同じ program は上書き。
+4. `program=all` と案件別を同じ source に並べるな。
+5. URL を書くな。report の cron は回すな。
 
 Secret の埋まっている鍵名だけ見る（投稿しない）: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み）。`workflow_dispatch`。schedule は無い。URL は出さない。`申込_auひかり` が埋まっていたら落とす。今夜の1手ではない。開いていない A8 の円は足すな。
 
