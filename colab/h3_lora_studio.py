@@ -4219,6 +4219,27 @@ def strip_lipsync_speech_meta(prompt: str) -> str:
     return text
 
 
+ACT_SILENCE_LINE = (
+    "ACT SILENCE: No spoken Japanese. Do not add a new quoted line. "
+    "Do not lip-sync words. Mouths do the act. Small moans only, not words."
+)
+
+
+def lock_act_silent(text: str, *, situation: str = "") -> str:
+    """Jupo / in-mouth / sex / cunni stay mute. Do not add 「」. Common to every story."""
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw or sit not in ACT_SITUATIONS:
+        return raw
+    out = _SPOKEN_RE.sub("", raw)
+    out = strip_lipsync_speech_meta(out)
+    out = re.sub(r"[ \t]+\n", "\n", out)
+    out = re.sub(r"\n{3,}", "\n\n", out)
+    if "ACT SILENCE:" not in out:
+        out = _inject_before_soundscape(out, ACT_SILENCE_LINE)
+    return out
+
+
 def strip_audio_lock(prompt: str) -> str:
     """Drop a previous audio lock (JP 音声ルール or ASCII only-say-the-line flags)."""
     text = _AUDIO_LOCK_LINE_RE.sub("", str(prompt or ""))
@@ -4993,7 +5014,7 @@ def semen_share_follow_errors(story: dict[str, Any]) -> list[str]:
 
 
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
-    """H3 following: every clip is 10s (15s OOM). One place, act cameras, lip-sync only on speaking face clips. Addon act clips need a pose-prep leftover on the previous clip."""
+    """H3 following: every clip is 10s (15s OOM). One place, act cameras, lip-sync only on speaking face clips. Act clips (jupo / in-mouth / sex / cunni) stay mute. Addon act clips need a pose-prep leftover on the previous clip."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     anthology = str(story.get("kind") or "") == "anthology"
@@ -5033,6 +5054,8 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         if situation in ACT_SITUATIONS:
             if lines:
                 errors.append(f"clip {n}: act situation {situation} must not speak")
+            if "LIP SYNC" in prompt:
+                errors.append(f"clip {n}: act situation {situation} must not lip-sync")
             if situation in {"oral", "oral_creampie", "cunnilingus_futa"} and "Full bodies from head to feet" in prompt:
                 errors.append(f"clip {n}: oral/cunni clip must not be a full-body wide")
             if situation in {"oral", "oral_creampie"} and "close" not in prompt_l and "medium-close" not in prompt_l:
@@ -5260,6 +5283,7 @@ def prepare_story_clip(
     share_modes = {i: mode for i, mode in semen_share_plan(story)}
     share_mode = share_modes.get(index)
     raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
+    raw_prompt = lock_act_silent(raw_prompt, situation=situation)
     raw_prompt = lock_futa_shaft(raw_prompt)
     raw_prompt = lock_start_cast(raw_prompt)
     raw_prompt = lock_semen_look(raw_prompt, situation=situation)
