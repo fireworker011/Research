@@ -296,7 +296,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260909-redo-jupo-1"
+FETCH_REV = "h3-20260909-talk-fill-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 

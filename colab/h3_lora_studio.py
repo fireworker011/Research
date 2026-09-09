@@ -4141,6 +4141,18 @@ def english_except_speech(prompt: str) -> str:
 _LIPSYNC_JP_LINE_RE = (
     (re.compile(r"One short conversational Japanese line, natural adult voice, not recited, not stretched\.\s*"), "Mouth moves on the quoted line. "),
     (re.compile(r"Each line is conversational, not recited, not stretched\.\s*"), ""),
+    (re.compile(r"Then the mouth closes\. After the (?:line|lines): silence, but bodies keep moving\.\s*"), ""),
+    (re.compile(r"After the lines: silence, but bodies keep moving\.\s*"), ""),
+    (
+        re.compile(
+            r"Mouth closes\. Remaining seconds, silence: bodies keep moving — a look, a weight shift, skin still alive\. Do not freeze\.\s*"
+        ),
+        "",
+    ),
+    (re.compile(r"One short line only\.\s*"), ""),
+    (re.compile(r"speaks one short conversational line:"), "speaks:"),
+    (re.compile(r"speaks one short line with a clearly moving mouth:"), "speaks:"),
+    (re.compile(r"speaks one line with a clearly moving mouth:"), "speaks:"),
     (re.compile(r"Two Japanese lines\.?\s*"), ""),
     (re.compile(r"One Japanese line from \w+ only\.?\s*"), ""),
     (re.compile(r"speaks (?:her|his) Japanese line first"), "mouth moves on the quoted line first"),

@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-redo-jupo-1"' in src
+    assert 'FETCH_REV = "h3-20260909-talk-fill-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-redo-jupo-1" in blob
+    assert "h3-20260909-talk-fill-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4385,6 +4385,19 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert "「こんにちは」" in soundscape_text(old)
     assert lock_spoken_japanese(old, ["こんにちは"]).count("[AUDIO-LOCK]") == 0
     assert audio_lock_line(["こんにちは"]) == ""
+    from h3_lora_studio import strip_lipsync_speech_meta
+
+    stripped = strip_lipsync_speech_meta(
+        "LIP SYNC: One short conversational Japanese line, natural adult voice, not recited, not stretched. "
+        "Then the mouth closes. After the line: silence, but bodies keep moving. "
+        "She speaks one short conversational line: 「いってらっしゃい」. "
+        "Mouth closes. Remaining seconds, silence: bodies keep moving — a look, a weight shift, skin still alive. Do not freeze. End: done."
+    )
+    assert "Then the mouth closes" not in stripped
+    assert "Remaining seconds, silence" not in stripped
+    assert "One short conversational Japanese line" not in stripped
+    assert "speaks: 「いってらっしゃい」" in stripped
+    assert "End: done." in stripped
     assert "prompt" not in audio_lock_line(["こんにちは"]).lower()
     assert strip_audio_lock(old).count("[AUDIO-LOCK]") == 0
 
@@ -5697,6 +5710,39 @@ def test_all_stories_and_packs_futa_anatomy_and_spoken_kana():
                     assert "futanari:" not in line, (where, name)
 
 
+def test_dedicated_talk_clips_fill_the_take():
+    """Dedicated talk clips occupy the mouth with one long kana line, not a short line then silence."""
+    from h3_lora_studio import (
+        ACT_SITUATIONS,
+        STORY_ORDER,
+        load_story,
+        spoken_lines,
+        validate_story_follow,
+    )
+
+    punct = re.compile(r"[。、…・！？?\s]")
+    seen = 0
+    for sid in STORY_ORDER:
+        story = load_story(sid)
+        assert validate_story_follow(story) == [], sid
+        for i, clip in enumerate(story["clips"]):
+            if clip["situation"] in ACT_SITUATIONS:
+                continue
+            uniq = list(dict.fromkeys(spoken_lines(clip["prompt"])))
+            if not uniq:
+                continue
+            seen += 1
+            kana = sum(len(punct.sub("", s)) for s in uniq)
+            assert len(uniq) == 1, (sid, i + 1, uniq)
+            assert kana >= 40, (sid, i + 1, kana, uniq)
+            prompt = clip["prompt"]
+            assert "One short conversational Japanese line" not in prompt
+            assert "Then the mouth closes" not in prompt
+            assert "Remaining seconds, silence" not in prompt
+            assert "keep matching the quotes" in prompt
+    assert seen == 24
+
+
 def test_notebook_story_play_flow():
     writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
     src = writer.read_text(encoding="utf-8")
@@ -5787,7 +5833,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-redo-jupo-1" in cell2
+    assert "h3-20260909-talk-fill-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
