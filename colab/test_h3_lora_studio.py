@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-wait-all-1"' in src
+    assert 'FETCH_REV = "h3-20260909-redo-jupo-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-wait-all-1" in blob
+    assert "h3-20260909-redo-jupo-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -3148,6 +3148,71 @@ def test_story_play_labels_resolve_to_story_and_play():
     assert "参照つなぐ" in text and "input/cast" in text and "R2V" in text
     text = explain_choice("短編集（参照）", "テキストから（写真なし）")
     assert "短編集" in text and "10秒" in text and "R2V" in text
+    text = explain_choice("生成し直し", "テキストから（写真なし）")
+    assert "生成し直し" in text and "起点" in text
+
+
+def test_redo_from_clip_helpers(tmp_path):
+    from h3_lora_studio import (
+        REDO_LABEL,
+        apply_redo_play,
+        find_existing_story_clip,
+        is_redo,
+        is_story,
+        load_story,
+        parse_redo_start,
+        redo_start_frame_name,
+        redo_story_labels,
+        resolve_situation,
+        stock_completed_clips,
+    )
+
+    assert is_redo(REDO_LABEL) and is_redo("生成し直し")
+    assert resolve_situation("生成し直し") == "redo"
+    assert not is_story("生成し直し")
+    assert parse_redo_start("3", 9) == 3
+    assert parse_redo_start("0", 9) == 1
+    assert parse_redo_start("99", 8) == 8
+    assert parse_redo_start("x", 8) == 1
+    assert redo_start_frame_name(1) is None
+    assert redo_start_frame_name(3) == "h3_chain_1.png"
+    assert redo_start_frame_name(2) == "h3_chain_0.png"
+    labels = redo_story_labels()
+    assert "ニクカベ（つなぐ）" in labels
+    assert "生成し直し" not in labels
+    assert "短編集（参照）" not in labels
+    story = load_story("meat-wall-85s")
+    mid = apply_redo_play(story, "dedicated", 3)
+    assert mid["redo"] is True and mid["redo_start"] == 3
+    assert mid["seamless"] is True
+    assert mid["use_cast_ref"] is False
+    assert mid["rewrite_chain_prompts"] is False
+    assert mid["play"] == "chain"
+    first = apply_redo_play(story, "dedicated", 1)
+    assert first["redo_start"] == 1
+    assert first["seamless"] is False
+    assert first["play"] == "dedicated"
+    out = tmp_path / "output"
+    inp = tmp_path / "input"
+    out.mkdir()
+    inp.mkdir()
+    good = out / "video"
+    good.mkdir()
+    (good / "h3_meat-wall-85s_p0_00001.mp4").write_bytes(b"clip0")
+    (good / "h3_meat-wall-85s_p1_00001.mp4").write_bytes(b"clip1")
+    (inp / "h3_chain_0.png").write_bytes(b"x" * 120)
+    found = find_existing_story_clip(out, "meat-wall-85s", 0)
+    assert found is not None and found.name.startswith("h3_meat-wall-85s_p0")
+    stock = stock_completed_clips(
+        out_dir=out,
+        input_dir=inp,
+        story_id="meat-wall-85s",
+        start_1based=3,
+        stamp="test",
+    )
+    assert stock["dir"] is not None
+    assert len(stock["clips"]) == 2
+    assert any(p.name.startswith("h3_meat-wall-85s_p0") for p in stock["clips"])
     text = explain_choice("訪問販売60秒（つなぐ）", "テキストから（写真なし）")
     assert "つなぐ・1本目を長回しに直す" in text and "名前付きパック" in text and "専用ストーリーではありません" in text
     text = explain_choice("カフェ（専用）", "テキストから（写真なし）")
@@ -3309,7 +3374,7 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
             ["いらっしゃいませ。ごちゅうもんはいかがしますか", "アイスコーヒーで"],
             ["あ、おミズください", "あ、はい、どうぞ"],
             [],
-            ["あー！おいし！いきかえる！", "ありがとうございます。コーヒー、すぐおもちしますね"],
+            ["んっ、おチンチン、あつくて、おいしい、、、", "ありがとうございます。コーヒー、すぐおもちしますね"],
             ["おまたせしました", "あ、ミルクください！"],
             ["かしこまりました。はい、どうぞ"],
             [],
@@ -3331,10 +3396,11 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
     assert "Aya alone" in cam
     assert "midsummer" in c1.lower() or "miserably hot" in c1.lower()
     assert "あちぃー" in c1
-    assert "urethral opening at the glans tip" in story["clips"][3]["prompt"]
+    assert "to the BASE" in story["clips"][3]["prompt"] or "to the base" in story["clips"][3]["prompt"]
     for clip in story["clips"][1:]:
         assert story_cast_present(clip["prompt"]) == ["Aya", "Clerk"]
-    assert "yellow stream" in story["clips"][3]["prompt"]
+    assert "jupo-jupo" in story["clips"][3]["prompt"]
+    assert "yellow stream" not in story["clips"][3]["prompt"]
     assert "BASE" in story["clips"][7]["prompt"]
     assert "CUMOUF" in story["clips"][8]["prompt"]
     assert "iced coffee" in story["clips"][9]["prompt"] and "kiss" in story["clips"][9]["prompt"].lower()
@@ -3350,7 +3416,7 @@ def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
             ["おちゃ、コーヒー、いかがですか", "おちゃ、ください"],
             ["はい。あついのとひやし、どっち", "ひやしで"],
             [],
-            ["あー、しみる", "ほかにごようは？"],
+            ["んっ、おチンチン、あつい、、、", "ほかにごようは？"],
             ["ミルクコーヒーも"],
             [],
             [],
@@ -3392,17 +3458,18 @@ def test_yoga_pack_doggy_already_in(tmp_path):
     assert "NOT in" in story["clips"][1]["prompt"]
 
 
-def test_back_wash_pack_cunnilingus_then_pee(tmp_path):
+def test_back_wash_pack_cunnilingus_then_jupo(tmp_path):
     story = _check_pretext_pack(
         "back-wash-60s", tmp_path, n_clips=6,
         situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_visible"],
-        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ"], [], ["しみる。あがっていいよ"]],
+        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ"], [], ["んっ、おくまで、はいってた、、。あがっていいよ"]],
         cast_defs=["Madoka", "Sayaka"],
         download=["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
     )
     cunni = story["clips"][2]["prompt"]
     assert "close-up" in cunni.lower() and "Not oral on the penis" in cunni and "20cm unused" in cunni
-    assert "yellow stream" in story["clips"][4]["prompt"] and "No jupo" in story["clips"][4]["prompt"]
+    assert "jupo-jupo" in story["clips"][4]["prompt"] and "BASE" in story["clips"][4]["prompt"]
+    assert "yellow stream" not in story["clips"][4]["prompt"]
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"] and "Rei" not in clip["prompt"].replace("different face from Rei", "")
 
@@ -3506,7 +3573,7 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
         "crossing-30s": (["futa_visible", "oral_creampie"], ["シンゴウ、きえてる", "マツ"], ["Sayaka", "Rei"]),
         "lookout-30s": (["futa_visible", "cunnilingus_futa"], ["ナニモみえない", "シバラク、いよ"], ["Aya", "Rei"]),
         "factory-30s": (["futa_visible", "futa_sex"], ["サビ、ふむな", "キをつけて"], ["Sayaka", "Madoka"]),
-        "gas-station-30s": (["futa_visible", "oral_creampie"], ["ミズ、でる？", "はい、どうぞ"], ["Aya", "Rei"]),
+        "gas-station-30s": (["futa_visible", "oral_creampie"], ["おチンチン、ミズ、ちょうだい、、、", "はい、おくち、あけて"], ["Aya", "Rei"]),
         "tunnel-phone-30s": (["futa_visible", "oral_creampie"], ["ツウじてる？", "ダセない"], ["Aya", "Rei"]),
         "riverbank-30s": (["futa_visible", "oral_creampie"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
     }
@@ -3615,8 +3682,12 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
 
     gas = load_story("gas-station-30s")
     c1 = gas["clips"][0]["prompt"]
-    assert "urethral" in c1.lower() and "yellow" in c1.lower()
-    assert "pees a" in c1.lower() and "drinks the yellow" in c1.lower()
+    assert "mouth OPEN" in c1
+    assert "hand's width" in c1
+    assert "おチンチン、ミズ、ちょうだい、、、" in c1
+    assert "はい、おくち、あけて" in c1
+    assert "yellow" not in c1.lower() and "pees a" not in c1.lower()
+    assert "drinks the yellow" not in c1.lower()
     assert "jupo-jupo" not in c1.lower() and "already oral" not in c1.lower()
     c2 = gas["clips"][1]["prompt"]
     assert "urine" not in c2.lower() and "yellow stream" not in c2.lower()
@@ -3890,7 +3961,7 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         "おそいわよ",
         "はやくおミズちょうだい",
         None,
-        "あー、しみる",
+        "んっ、おチンチン、あつい、、、",
         None,
         None,
         "ありがとうございました",
@@ -3920,7 +3991,9 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "spoken AFTER the door opens" in c1 or "AFTER the door opens" in c1
     assert "こんにちは。おミズ、とどけにきました" in c1
     assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
-    assert "yellow" in story["clips"][3]["prompt"].lower()
+    assert "jupo-jupo" in story["clips"][3]["prompt"]
+    assert "BASE" in story["clips"][3]["prompt"]
+    assert "yellow" not in story["clips"][3]["prompt"].lower()
     assert "BASE" in story["clips"][5]["prompt"]
     assert story["clips"][5]["duration_s"] == 10
     assert "CUMOUF" in story["clips"][6]["prompt"] or "ejaculat" in story["clips"][6]["prompt"].lower()
@@ -5324,7 +5397,7 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 assert "INSIDE LOCK:" not in prompt, (story["id"], i + 1)
     assert seen_speech >= 70
     assert seen_heat == 1
-    assert seen_urine >= 5
+    assert seen_urine >= 1
     assert seen_jupo >= 10
     assert seen_cum >= 8
 
@@ -5644,12 +5717,15 @@ def test_notebook_story_play_flow():
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
     # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
     assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"普通（エロなし）"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
+    assert "作り直しの物語" in cell3 and "作り直し開始の本" in cell3
+    assert "is_redo" in src and "apply_redo_play" in src and "stock_completed_clips" in src
     from h3_lora_studio import CHAIN_PACK_ORDER, STORY_ORDER  # noqa: E402
 
     m = re.search(r'やりたいシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
     opts = json.loads(m.group(1))
-    assert len(opts) == 4 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 23
+    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 23
     assert len(set(opts)) == len(opts)
     for opt in opts:
         resolve_situation(opt)
@@ -5661,7 +5737,7 @@ def test_notebook_story_play_flow():
     assert 'last_now = first_name if (STORY.get("seamless") and CLIP_INDEX > 0) else None' in src
     assert "last_frame=last_now" in src
     assert "fit_scene=fit_now" in src
-    assert "FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS and not STORY.get(\"use_cast_ref\"))" in src
+    assert "FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS and not STORY.get(\"use_cast_ref\") and REDO_PLAN_IDX == 0)" in src
     assert "fit_scene=FIT_CLIP0" in src
     assert "rewrite_chain_prompts=STORY_REWRITE" in src
     assert "is_story=False, chain=CHAIN" in src
@@ -5711,7 +5787,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-wait-all-1" in cell2
+    assert "h3-20260909-redo-jupo-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

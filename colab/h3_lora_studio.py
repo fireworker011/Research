@@ -88,6 +88,7 @@ OPTIONAL_IDS = {
 }
 
 SITUATION_DOWNLOAD = {
+    "redo": [],
     "vanilla": [],
     "sfw_daily": ["larry-v4", "cinema-dy"],
     "sfw_preview": ["minimax-h3-turbo-fl2v-4step", "cinema-dy"],
@@ -269,7 +270,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
-    # pee-as-drink = oral, cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy.
+    # cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy. 飲尿は使わない（ジュボ）。
     "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "train-sales-80s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "red-light-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -440,6 +441,8 @@ SITUATION_JA = {
     "engawa-120s": "engawa-120s",
     "短編集（参照）": "shorts-immoral",
     "shorts-immoral": "shorts-immoral",
+    "生成し直し": "redo",
+    "redo": "redo",
     "futa_visible": "futa_visible",
     "futa_masturbation": "futa_masturbation",
     "cunnilingus_futa": "cunnilingus_futa",
@@ -523,18 +526,18 @@ SITUATION_HELP = {
     "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sales-visit-60s": "訪問販売。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ10秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
+    "sales-visit-60s": "訪問販売。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝ジュボ（根元まで）10秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／んっ、おチンチン、あつい、、、／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイしまーす！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。カクニンは立ちの口パクのみ。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
     "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで妖艶に微笑む）、騎乗で挿入→中出し→抜く→お掃除ジュボ→仰向けのまま口移し→ゲンキ。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
     "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、風呂に埋まらない、女体のみにしない）。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒はうわぁ＋手繋ぎ＋軽いフレンチキス（咥え・ジュボではない）。台詞10秒、ジュボ10・口内10は無言。口内のあとアヤが立ち上がって口移し。hmmotion なし。家のザーメン風呂とは別。台詞: うわぁ。。。すごいところだね。。。／あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
-    "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
-    "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
+    "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝ジュボ、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
+    "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝ジュボ、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
     "yoga-50s": "ヨガ50秒。10秒×5本。9:16。建前: コツバンを落とす。講師29・お団子・中乳・ふたなり20cm。生徒はアヤ22。四つん這いで最初から入っている（後背位 LoRA）。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "back-wash-60s": "背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝放尿。ジュボなし。台詞は話し言葉（漢字なし）。",
+    "back-wash-60s": "背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝ジュボ（根元まで）。台詞は話し言葉（漢字なし）。",
     "karaoke-50s": "カラオケ50秒。10秒×5本。9:16。建前: サビ待ちと点数。歌うのはマドカ22（20cm・マイク）。口はアヤ22。歌のあいだジュボ、最後の音で口内。放尿なし。台詞は話し言葉（漢字なし）。",
     "laundromat-50s": "コインランドリー50秒。10秒×5本。9:16。建前: あと何分。竿はレイ24、受けはアヤ22。洗濯機の上でもう入っている（AIO 横クローズ）。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
@@ -547,10 +550,11 @@ SITUATION_HELP = {
     "crossing-30s": "物語の追加。ドウロのど真ん中。10秒×2＝20秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "lookout-30s": "物語の追加。ガケの展望台。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は霧の会話のあと、アヤ仰向け・膝を開いて舐め寸前。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
     "factory-30s": "物語の追加。コウジョウあと。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
-    "gas-station-30s": "物語の追加。ガソリンスタンド跡。10秒×2＝20秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲み、口を開けて先端から手の幅で止まる。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "gas-station-30s": "物語の追加。ガソリンスタンド跡。10秒×2＝20秒。9:16。アヤ＋レイ。1本目はミズの会話のあと、口を開けて先端から手の幅で止まる（飲まない）。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "tunnel-phone-30s": "物語の追加。トンネル非常電話。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
+    "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
 
 LORA_JA = {
@@ -654,6 +658,7 @@ ADDON_PACK_IDS = frozenset(ADDON_PACK_ORDER)
 ANTHOLOGY_IDS = ("shorts-immoral",)
 ANTHOLOGY_ID_SET = set(ANTHOLOGY_IDS)
 ANTHOLOGY_LABEL = "短編集（参照）"
+REDO_LABEL = "生成し直し"
 # Legacy long labels of the first three packs. They keep the old behaviour
 # (last-frame chain, clip 1 rewritten as a long take) = つなぐ修.
 CHAIN_PACK_TITLE_JA = {
@@ -889,6 +894,145 @@ def apply_story_play(story: dict[str, Any], play: str) -> dict[str, Any]:
     return out
 
 
+def is_redo(situation: str) -> bool:
+    """③「生成し直し」。既存の物語／パックを途中の本から I2V し直す。"""
+    key = str(situation or "").strip()
+    if key == REDO_LABEL:
+        return True
+    try:
+        return resolve_situation(key) == "redo"
+    except SystemExit:
+        return False
+
+
+def redo_story_labels() -> list[str]:
+    """③「作り直しの物語」の候補。専用11話と名前付きパックの5再生。短編集はつながない。"""
+    return story_play_labels() + chain_pack_labels()
+
+
+def parse_redo_start(raw: Any, clip_count: int = 0) -> int:
+    """1始まりの開始本。範囲外は 1..clip_count に丸める。"""
+    try:
+        n = int(float(str(raw).strip()))
+    except (TypeError, ValueError):
+        n = 1
+    if n < 1:
+        n = 1
+    limit = int(clip_count or 0)
+    if limit > 0 and n > limit:
+        n = limit
+    return n
+
+
+def redo_start_frame_name(start_1based: int) -> str | None:
+    """N本目の起点は、N-1本目の最後のコマ = h3_chain_{N-2}.png。1本目はなし。"""
+    start = parse_redo_start(start_1based)
+    if start <= 1:
+        return None
+    return f"h3_chain_{start - 2}.png"
+
+
+def find_existing_story_clip(
+    out_dir: Path | str,
+    story_id: str,
+    clip_index: int,
+) -> Path | None:
+    """output にある h3_{id}_p{index}*.mp4。stock コピーは見ない。新しい方を返す。"""
+    root = Path(out_dir)
+    if not root.is_dir():
+        return None
+    key = f"h3_{story_id}_p{int(clip_index)}"
+    hits: list[Path] = []
+    for path in root.rglob("*.mp4"):
+        if key not in path.name:
+            continue
+        if "stock" in {part.lower() for part in path.parts}:
+            continue
+        hits.append(path)
+    hits.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return hits[0] if hits else None
+
+
+def stock_completed_clips(
+    *,
+    out_dir: Path | str,
+    input_dir: Path | str,
+    story_id: str,
+    start_1based: int,
+    stamp: str | None = None,
+) -> dict[str, Any]:
+    """開始本より前の動画と最後のコマを output/stock/<id>/<stamp>/ にコピーする。"""
+    start = parse_redo_start(start_1based)
+    if start <= 1:
+        return {"dir": None, "clips": [], "frames": []}
+    when = stamp or time.strftime("%Y%m%d-%H%M%S")
+    dest = Path(out_dir) / "stock" / str(story_id) / when
+    dest.mkdir(parents=True, exist_ok=True)
+    copied: list[Path] = []
+    frames: list[Path] = []
+    missing: list[int] = []
+    for i in range(start - 1):
+        src = find_existing_story_clip(out_dir, story_id, i)
+        if src is None:
+            missing.append(i + 1)
+            continue
+        target = dest / src.name
+        shutil.copy2(src, target)
+        copied.append(target)
+        frame_src = Path(input_dir) / f"h3_chain_{i}.png"
+        if frame_src.is_file() and frame_src.stat().st_size >= 100:
+            frame_dst = dest / frame_src.name
+            shutil.copy2(frame_src, frame_dst)
+            frames.append(frame_dst)
+    if missing:
+        raise SystemExit(
+            "生成し直しの前の本が output にありません: "
+            + "、".join(f"{n}本目" for n in missing)
+            + "。先に途中まで作ってから、③で生成し直しを選んでください。"
+        )
+    return {"dir": dest, "clips": copied, "frames": frames}
+
+
+def ensure_redo_start_frame(
+    input_dir: Path | str,
+    out_dir: Path | str,
+    story_id: str,
+    start_1based: int,
+) -> Path:
+    """開始本の起点画像。無ければ直前の動画から最後のコマを抜く。"""
+    name = redo_start_frame_name(start_1based)
+    if name is None:
+        raise SystemExit("1本目から作り直すときは起点画像は使いません。")
+    dest = Path(input_dir) / name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.is_file() and dest.stat().st_size >= 100:
+        return dest
+    prev = find_existing_story_clip(out_dir, story_id, int(start_1based) - 2)
+    if prev is None:
+        raise SystemExit(
+            f"{int(start_1based)}本目の起点画像（{name}）がありません。"
+            f"{int(start_1based) - 1}本目の動画か最後のコマを置いてから、③をもう一度。"
+        )
+    return extract_last_frame(prev, dest)
+
+
+def apply_redo_play(story: dict[str, Any], play: str, start_1based: int) -> dict[str, Any]:
+    """途中から作り直す再生。2本目以降の開始なら専用でも last-frame I2V（つなぐ・文そのまま）。"""
+    clips = list(story.get("clips") or [])
+    start = parse_redo_start(start_1based, len(clips))
+    source = str(play or STORY_PLAY_DEDICATED).strip()
+    if start <= 1:
+        out = apply_story_play(story, source)
+    else:
+        out = apply_story_play(story, STORY_PLAY_CHAIN)
+        out["use_cast_ref"] = False
+        out["rewrite_chain_prompts"] = False
+    out["redo"] = True
+    out["redo_start"] = start
+    out["redo_source_play"] = source
+    return out
+
+
 def story_rewrite_chain_prompts(story: dict[str, Any]) -> bool:
     """Packs without the key keep the current behaviour: seamless → rewrite clip 1 as one long take."""
     if "rewrite_chain_prompts" in story:
@@ -1087,6 +1231,13 @@ def lock_r2v_cast_prompt(prompt: str, still_paths: list[Path], *, duration_s: fl
 
 
 def explain_choice(situation: str, mode: str) -> str:
+    if is_redo(situation):
+        return (
+            f"シーン: {situation}\n"
+            "作り方: 途中の本から、前の本の最後のコマ（起点画像）で I2V し直す\n"
+            f"説明: {SITUATION_HELP['redo']}\n"
+            "作り直しの物語と開始の本を③で指定。開始より前の本はストックして連結します。"
+        )
     sid = resolve_situation(situation)
     mid = resolve_mode(mode)
     how = "テキストから動画（写真は使いません）" if mid == "t2v" else "写真1枚から動画（Drive の input に jpg）"
