@@ -2,6 +2,7 @@
 'use strict';
 
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
+const { overlayStatusText } = require('./overlay-keys');
 
 const ISSUE_TITLE = 'Grok Bot — 指示';
 const POINTER = 'xm-trade-engine/docs/grok-bots/G_xm_trade.txt';
@@ -22,6 +23,10 @@ function instructBody() {
 
 function samePointer(body) {
   return String(body || '').includes(`hq-instruct: ${POINTER}`);
+}
+
+function commentBody() {
+  return `${instructBody()}\n${overlayStatusText().text.trim()}`;
 }
 
 function isTodayUtc(iso) {
@@ -98,22 +103,24 @@ async function latestComment(issueNumber) {
 async function run() {
   const yen = await ensureIssue(YEN_ISSUE_TITLE, YEN_BODY);
   const { issue } = await ensureIssue(ISSUE_TITLE, INSTRUCT_BODY);
+  const body = commentBody();
   const last = await latestComment(issue.number);
-  if (last && samePointer(last.body) && isTodayUtc(last.created_at)) {
+  if (last && String(last.body || '').trim() === body.trim() && isTodayUtc(last.created_at)) {
     process.stdout.write(
       `${JSON.stringify({
         skipped: true,
         reason: 'already_today',
         number: issue.number,
         yen_number: yen.issue.number,
-        yen_created: yen.created
+        yen_created: yen.created,
+        overlay_filled: overlayStatusText().names.length
       })}\n`
     );
     return;
   }
   await api(repoApi(`/issues/${issue.number}/comments`), {
     method: 'POST',
-    body: { body: instructBody() }
+    body: { body }
   });
   process.stdout.write(
     `${JSON.stringify({
@@ -121,18 +128,21 @@ async function run() {
       number: issue.number,
       pointer: POINTER,
       yen_number: yen.issue.number,
-      yen_created: yen.created
+      yen_created: yen.created,
+      overlay_filled: overlayStatusText().names.length
     })}\n`
   );
 }
 
 function selfTest() {
-  const body = instructBody();
+  const body = commentBody();
   if (!body.startsWith(`hq-instruct: ${POINTER}`)) throw new Error('pointer');
   if (!body.includes(RAW)) throw new Error('raw');
   if (!samePointer(body)) throw new Error('same true');
   if (samePointer('nope')) throw new Error('same false');
   if (/crowdworks|a8\.net|AFFILIATE_LINKS/i.test(body)) throw new Error('leak');
+  if (/https?:\/\/example/i.test(body)) throw new Error('example url');
+  if (!body.includes('overlay-filled:')) throw new Error('overlay line');
   if (YEN_ISSUE_TITLE !== 'Affiliate — 確定円') throw new Error('yen title');
   if (/https?:\/\//i.test(YEN_BODY) || /https?:\/\//i.test(INSTRUCT_BODY)) throw new Error('issue url');
   if (!YEN_BODY.includes('A8_YEN:')) throw new Error('yen cmd');
@@ -153,6 +163,7 @@ module.exports = {
   YEN_ISSUE_TITLE,
   POINTER,
   instructBody,
+  commentBody,
   samePointer,
   findIssueByTitle,
   ensureIssue

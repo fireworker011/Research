@@ -13,6 +13,8 @@ on:
     paths:
       - '.github/workflows/grok_bot_instruct.yml'
       - 'affiliate-engine/src/hq-instruct.js'
+      - 'affiliate-engine/src/overlay-keys.js'
+      - 'affiliate-engine/src/util.js'
 
 concurrency:
   group: grok-bot-instruct
@@ -33,9 +35,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           set -euo pipefail
           cd affiliate-engine
           node --check src/hq-instruct.js
+          node --check src/overlay-keys.js
+          node src/overlay-keys.js --self-test
           node src/hq-instruct.js --self-test
           node src/hq-instruct.js

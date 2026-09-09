@@ -57,6 +57,11 @@ jobs:
               echo "overlay status must not enable body links or amplify"
               exit 1
             fi
+            if grep -q 'claude/monthly-revenue-system-gvi02u' "$status"; then
+              echo "overlay status must checkout default, not production"
+              exit 1
+            fi
+            grep -q 'overlay-keys.js' "$status"
           fi
           yen=.github/workflows/affiliate_engine_a8_yen.yml
           if [ -f "$yen" ]; then
@@ -87,4 +92,6 @@ jobs:
               echo "grok instruct must not post"
               exit 1
             fi
+            grep -q 'AFFILIATE_LINKS_JSON' "$instruct"
+            grep -q 'overlay-keys.js' "$instruct"
           fi

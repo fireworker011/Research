@@ -38,7 +38,7 @@ Grok Bot がこの1行を Issue に書いてよい。Cursor は日常で起こ�
 4. `program=all` と案件別を同じ source に並べるな。
 5. URL を書くな。report の cron は回すな。
 
-Secret の埋まっている鍵名だけ見る（投稿しない）: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み）。`workflow_dispatch`。schedule は無い。URL は出さない。`申込_auひかり` が埋まっていたら落とす。今夜の1手ではない。開いていない A8 の円は足すな。
+Secret の埋まっている鍵名は指示役 Issue の `overlay-filled:` / `overlay-keys:`（毎日。URL は出さない）。`affiliate_engine_overlay_status.yml` の Run は不要。`申込_auひかり` は載せない。開いていない A8 の円は足すな。
 
 ## 円にしないもの
 

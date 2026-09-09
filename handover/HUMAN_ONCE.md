@@ -14,7 +14,7 @@
 ## アフィ（進めると自分で言ったときだけ）
 
 1. GitHub Secret `AFFILIATE_LINKS_JSON` を自分で入れる（追加であり置換ではない）
-2. `affiliate_engine_overlay_status.yml` を Run。鍵名だけ見る。URL は出さない
+2. 指示役 Issue の `overlay-filled:` を見ろ。鍵名だけ。URL は出さない。overlay_status の Run は不要
 3. A8 の提携・掲載媒体は自分で見る。BOT に返すのは1語（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`）
 4. 投稿 cron は戻すな（別判断）
 
