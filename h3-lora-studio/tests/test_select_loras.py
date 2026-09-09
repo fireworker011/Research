@@ -32,11 +32,10 @@ def test_anal_penetration_i2v_stacks_enabled_only():
     assert data["min_age"] >= 21
     assert data["first_frame_required"] is True
     ids = [row["id"] for row in data["stack"]]
-    assert ids == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert [row["role"] for row in data["stack"]] == ["act", "helper", "helper"]
-    assert data["stack"][0]["strength_model"] == 0.85
-    assert data["stack"][1]["strength_model"] == 0.7
-    assert data["stack"][2]["strength_model"] == 0.55
+    assert ids == ["penis-lora-h3", "synth-pussy-h3"]
+    assert [row["role"] for row in data["stack"]] == ["act", "helper"]
+    assert data["stack"][0]["strength_model"] == 0.7
+    assert data["stack"][1]["strength_model"] == 0.55
     assert "anal-penetration-coachbate" not in ids
     assert "hmnsfw-aio-v25" not in ids
     unload_ids = {row["id"] for row in data["unload"]}
@@ -63,7 +62,7 @@ def test_anal_penetration_t2v_has_no_first_frame():
     assert data["turbo"] is False
     assert data["first_frame_required"] is False
     assert data["canvas"]["aspect"] == "9:16"
-    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     assert "Picture 1" not in data["prompt"]
     assert "first_frame" not in data["prompt"].lower()
 
@@ -75,7 +74,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     futa_t2v = [r["id"] for r in select_loras(profile_name="futa_blowjob", mode="t2v")["stack"]]
     general = select_loras(profile_name="general_sex", mode="t2v")
     preview = select_loras(profile_name="preview", mode="t2v")
-    assert anal_t2v == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert anal_t2v == ["penis-lora-h3", "synth-pussy-h3"]
     assert close_t2v == ["synth-pussy-h3", "larry-v4", "cinema-dy"]
     assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral_t2v["stack"][0]["strength_model"] == 0.8
@@ -108,6 +107,8 @@ def test_situations_switch_loras_by_profile_and_mode():
         "futa_blowjob",
         "futa_sex",
         "futa_anal",
+        "urine_drink",
+        "scat_act",
         "general_sex",
         "preview",
         "sfw_daily",
@@ -215,7 +216,7 @@ def test_cli_emits_json():
     )
     data = json.loads(proc.stdout)
     assert data["turbo"] is False
-    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
 
 
 def test_futa_sex_and_anal_stay_feminine():
@@ -243,21 +244,21 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "fully nude" in low
     assert "futanari" in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in anal["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert [r["role"] for r in anal["stack"]] == ["act", "helper", "helper"]
-    assert [r["strength_model"] for r in anal["stack"]] == [0.85, 0.7, 0.55]
-    assert anal["stack"][0]["trigger"] == "thum1n8utt"
+    assert [r["id"] for r in anal["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in anal["stack"]] == ["act", "helper"]
+    assert [r["strength_model"] for r in anal["stack"]] == [0.7, 0.55]
     assert anal["turbo"] is False
     assert anal["sampler"]["steps"] == 12
     assert anal["sampler"]["sampler_name"] == "euler"
     assert "<Picture 1>" in anal["prompt"]
     alow = anal["prompt"].lower()
-    assert alow.startswith("thum1n8utt, penislora")
+    assert alow.startswith("penislora")
+    assert "thum1n8utt" not in alow
     assert "inserts her penis in (s1)'s anus" in alow
     assert "causing (s1) to moan with pleasure" in alow
-    assert "anus sits above her vagina" in alow
+    assert "already fully inside the anus" in alow
     assert "hands of (s2) stay on (s1)'s hips" in alow
-    assert "not pov" in alow
+    assert "pose and camera follow the user prompt" in alow
     assert "adult man" not in alow
     assert "the man" not in alow
     assert " his " not in alow
@@ -271,6 +272,7 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "vaginal penetration" in aneg
     assert "man" in aneg
     unload_anal = {r["id"] for r in anal["unload"]}
+    assert "thumbinbutt-h3" in unload_anal
     assert "anal-penetration-coachbate" in unload_anal
     assert "hmnsfw-aio-v25" in unload_anal
     assert "fingering-h3" in unload_anal
@@ -283,7 +285,8 @@ def test_futa_sex_and_anal_stay_feminine():
     assert close["sampler"]["sampler_name"] == "res_multistep"
     assert close["sampler"]["steps"] == 16
     clow = close["prompt"].lower()
-    assert clow.startswith("thum1n8utt, penislora")
+    assert clow.startswith("penislora")
+    assert "thum1n8utt" not in clow
     assert "close-up on (s1)'s anus" in clow
     assert "inserts her penis in (s1)'s anus" in clow
     assert "thumb" not in clow
@@ -484,6 +487,29 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
             assert "penis plus vagina, never balls" in low, name
             assert "no scrotum" in low, name
         assert "Picture 1" not in row["prompt"], name
+
+
+def test_urine_drink_and_scat_act_are_helpers_only():
+    pee = select_loras(profile_name="urine_drink", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in pee["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert pee["turbo"] is False
+    assert pee["sampler"]["steps"] == 12
+    plow = pee["prompt"].lower()
+    assert plow.startswith("penislora")
+    assert "drinks the yellow" in plow
+    assert "glans tip" in plow
+    assert "thumbinbutt" not in plow
+    assert "thum1n8utt" not in plow
+    unload_pee = {r["id"] for r in pee["unload"]}
+    assert "thumbinbutt-h3" in unload_pee
+    assert "hmnsfw-aio-v25" in unload_pee
+    scat = select_loras(profile_name="scat_act", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in scat["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    slow = scat["prompt"].lower()
+    assert "act of defecating" in slow
+    assert "coming out of (s1)'s anus" in slow
+    assert "already coated" in slow
+    assert "thum1n8utt" not in slow
 
 
 def test_pose_aftercare_and_solo_act_stacks():

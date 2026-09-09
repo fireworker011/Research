@@ -2,7 +2,7 @@
 
 SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
-Cinema replaces helper. Anal sex (ThumbInButt + penis + synth) stays turbo off. Pose LoRAs replace AIO; do not stack both.
+Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 """
@@ -96,13 +96,15 @@ SITUATION_DOWNLOAD = {
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["synth-pussy-h3", "larry-v4", "cinema-dy"],
     "anal_fingering": ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
-    "anal_penetration": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "anal_penetration": ["penis-lora-h3", "synth-pussy-h3"],
     "lesbian_cunnilingus": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "pussy_spread": ["pussy-spread-h3", "synth-pussy-h3", "larry-v4"],
     "lesbian_spread": ["lesbian-cunnilingus-h3", "pussy-spread-h3", "larry-v4"],
     "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
-    "futa_anal": ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "futa_anal": ["penis-lora-h3", "synth-pussy-h3"],
+    "urine_drink": ["penis-lora-h3", "synth-pussy-h3"],
+    "scat_act": ["penis-lora-h3", "synth-pussy-h3"],
     "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "preview": ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
@@ -330,6 +332,11 @@ SITUATION_JA = {
     "アナルセックス（女体）": "futa_anal",
     "ふたなりアナル": "futa_anal",
     "アナルセックス": "futa_anal",
+    "アナルどの構図": "futa_anal",
+    "飲尿": "urine_drink",
+    "飲尿（どの構図）": "urine_drink",
+    "脱糞": "scat_act",
+    "脱糞（どの構図）": "scat_act",
     "騎乗位（女体）": "riding",
     "騎乗位": "riding",
     "後背位（女体）": "doggy",
@@ -475,6 +482,8 @@ SITUATION_JA = {
     "futa_blowjob": "futa_blowjob",
     "futa_sex": "futa_sex",
     "futa_anal": "futa_anal",
+    "urine_drink": "urine_drink",
+    "scat_act": "scat_act",
     "oral": "oral",
     "general_sex": "general_sex",
     "preview": "preview",
@@ -506,13 +515,15 @@ SITUATION_HELP = {
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（画質）。穴のアップ。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・16step。挿入側はふたなり。男なし。写真からが本線（後ろから、穴が見える写真）。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・16step。挿入側はふたなり。男なし。構図は文章欄。",
     "lesbian_cunnilingus": "レズクンニ。女同士。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。クンニ 0.8 + 広げる 0.6 + Larry 0.5。男なし。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
-    "futa_anal": "アナルセックス（女体）。ThumbInButt 0.85 + 竿 0.7 + 穴の見え方 0.55。Turbo なし・12step。ふたなり＋女。男なし。後ろから、穴が膣より上に見える構図。手は腰。写真からが本線。",
+    "futa_anal": "アナルセックス（女体）。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・12step。ふたなり＋女。男なし。構図は文章欄（立ち・騎乗・後背・横どれでも）。手は腰。",
+    "urine_drink": "飲尿（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。亀頭先の尿道口から黄色い水を飲む。男なし。構図は文章欄。既存話のジュボには戻さない。",
+    "scat_act": "脱糞（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。今出している動き。肥溜めの塗れとは別。男なし。構図は文章欄。医院・終電には足さない。",
     "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + 穴の見え方 0.55 + LightX2V 4step。ふたなり＋女。男なし。",
@@ -3169,6 +3180,9 @@ ACT_SITUATIONS = frozenset({
     "after_ejaculation",
     "fingering",
     "masturbation",
+    "urine_drink",
+    "scat_act",
+    "anal_penetration",
 })
 
 
@@ -3621,6 +3635,27 @@ def lock_urine_look(text: str) -> str:
     ):
         return raw
     return _inject_before_soundscape(raw, URINE_LOOK_LINE)
+
+
+SCAT_ACT_LINE = (
+    "SCAT ACT: Brown feces coming out of the anus in this clip. This is the act of "
+    "defecating now, not a body already coated from before."
+)
+_SCAT_CUE_RE = re.compile(
+    r"act of defecating|feces coming out|coming out of .+ anus|defecat",
+    re.I,
+)
+
+
+def lock_scat_act(text: str, *, situation: str = "") -> str:
+    """Keep scat as the act of passing, not a pre-coated cesspit look."""
+    raw = str(text or "")
+    if not raw or "SCAT ACT:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit != "scat_act" and not _SCAT_CUE_RE.search(raw):
+        return raw
+    return _inject_before_soundscape(raw, SCAT_ACT_LINE)
 
 
 SPEECH_FACE_LINE = (
@@ -5056,6 +5091,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
         if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
             prompt = "hmmotion, PENISLORA\n" + prompt
         prompt = lock_urine_look(prompt)
+        prompt = lock_scat_act(prompt, situation=str(spec["situation"]))
         sit = str(spec["situation"])
         prompt = lock_oral_in_mouth(
             prompt,
@@ -5418,6 +5454,7 @@ def prepare_story_clip(
         situation=situation,
     )
     raw_prompt = lock_urine_look(raw_prompt)
+    raw_prompt = lock_scat_act(raw_prompt, situation=situation)
     raw_prompt = lock_spoken_emotion(raw_prompt)
     if share_mode == "on_cumouf":
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation, ending="share")

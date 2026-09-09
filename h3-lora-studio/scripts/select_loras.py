@@ -58,6 +58,8 @@ FUTA_SITUATIONS = frozenset(
         "footjob",
         "general_sex",
         "preview",
+        "urine_drink",
+        "scat_act",
     }
 )
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}

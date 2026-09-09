@@ -266,11 +266,19 @@ def test_japanese_form_labels():
     assert friendly_lora("facial-cumshot-h3") == "顔射"
     assert "ThumbInButt" in friendly_lora("thumbinbutt-h3")
     futa_anal_help = explain_choice("アナルセックス（女体）", "写真から（1枚必要）")
-    assert "ThumbInButt" in futa_anal_help
+    assert "ThumbInButt なし" in futa_anal_help
     assert "Turbo なし" in futa_anal_help
     assert "12step" in futa_anal_help
     assert "CoachBate" not in futa_anal_help
     assert "男なし" in futa_anal_help
+    assert resolve_situation("飲尿") == "urine_drink"
+    assert resolve_situation("脱糞（どの構図）") == "scat_act"
+    pee_help = explain_choice("飲尿（どの構図）", "テキストから（写真なし）")
+    assert "黄色い" in pee_help
+    assert "Turbo なし" in pee_help
+    scat_help = explain_choice("脱糞（どの構図）", "テキストから（写真なし）")
+    assert "今出して" in scat_help
+    assert "肥溜め" in scat_help
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
 
 
@@ -491,7 +499,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-hachiko-1"' in src
+    assert "h3-lora-studio/profiles/urine_drink.json" in src
+    assert "h3-lora-studio/profiles/scat_act.json" in src
+    assert 'FETCH_REV = "h3-20260909-anypose-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -549,11 +559,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "汎用エロ（女体）" in src
     assert "顔射（女体）" in src
     assert "アナル指入れ" in src
+    assert "飲尿（どの構図）" in src
+    assert "脱糞（どの構図）" in src
     assert "騎乗位（女体）" in blob
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-hachiko-1" in blob
+    assert "h3-20260909-anypose-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -762,8 +774,10 @@ def test_clamp_studio_duration_is_four_to_ten():
     assert situation_ids("preview") == ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"]
     assert situation_ids("futa_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("futa_blowjob") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
-    assert situation_ids("futa_anal") == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("anal_penetration") == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("futa_anal") == ["penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("anal_penetration") == ["penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("urine_drink") == ["penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("scat_act") == ["penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
 
 
@@ -5370,6 +5384,7 @@ def test_lock_semen_look_names_white_liquid():
 def test_lock_speech_urine_pleasure_and_heat_face():
     from h3_lora_studio import (
         lock_pleasure_face,
+        lock_scat_act,
         lock_spoken_emotion,
         lock_urine_look,
     )
@@ -5400,6 +5415,13 @@ def test_lock_speech_urine_pleasure_and_heat_face():
     assert lock_urine_look(pee) == pee
     not_yet = lock_urine_look("Door and talk only. No urine yet. No oral yet.")
     assert "URINE LOOK:" not in not_yet
+    scat = lock_scat_act(
+        "The act of defecating now.\n\noverall_soundscape:\nWet.\n",
+        situation="scat_act",
+    )
+    assert "SCAT ACT:" in scat
+    assert "coming out of the anus" in scat
+    assert lock_scat_act(scat, situation="scat_act") == scat
 
     jupo = lock_pleasure_face(
         "Already oral. Mouth already on.\nDeep jupo-jupo.\n\noverall_soundscape:\nWet.\n",
@@ -6086,7 +6108,7 @@ def test_notebook_story_play_flow():
 
     m = re.search(r'やりたいシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
     opts = json.loads(m.group(1))
-    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 23
+    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 25
     assert len(set(opts)) == len(opts)
     for opt in opts:
         resolve_situation(opt)
@@ -6154,7 +6176,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-hachiko-1" in cell2
+    assert "h3-20260909-anypose-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

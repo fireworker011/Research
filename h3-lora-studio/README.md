@@ -49,18 +49,20 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA はまだ無い。CoachBate は有料で未使用、AIO は微妙。どの構図でも出す自作は `train/`）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
-| アナル挿入（画質） | `anal_penetration` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。穴のアップ。遅いが綺麗 |
+| アナル挿入（画質） | `anal_penetration` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。ThumbInButt なし。構図は文章欄 |
 | アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
 | アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
 | フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 8step。女がふたなりに。竿＋根元のマンコ。男なし |
 | 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | Synth 0.55 | Larry 0.6 | **切る** | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
 | ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
 | セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
-| アナルセックス（女体） | `futa_anal` | ThumbInButt 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | euler / simple / 12。アナル本線。後ろから、穴が膣より上の構図。手は腰。I2V本線 |
+| アナルセックス（女体） | `futa_anal` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | euler / simple / 12。ThumbInButt なし。構図は文章欄。手は腰 |
+| 飲尿（どの構図） | `urine_drink` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。亀頭先の黄色い水。既存話のジュボには戻さない |
+| 脱糞（どの構図） | `scat_act` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。今出している動き。肥溜めの塗れとは別 |
 | 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
@@ -101,19 +103,16 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 studio での使い方:
 
 - **アナル指入れ**: 女1人・自分の右親指。学習文の構造を女体に書き換え（`(S1) uses her right thumb to rub around her anus in a circular motion then inserts her right thumb in her anus`）。竿 LoRA は積まない
-- **アナルセックス（女体） / アナル挿入（画質）**: 入れる物を**ふたなりの竿**にする（`(S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure`）。竿 0.7 + 穴 0.55、Turbo オフ。挿入側の**両手は腰**に置く（LoRA が竿を親指に置き換えるのを防ぐ）。ネガに `thumb in anus, fingers in anus, hand near anus, vaginal penetration`
-- 共通: **四つん這い・後ろから・穴が膣より上**。写真からが本線で、写真は後ろから穴が見えるもの。空欄文は男を一切書かない（`the man` / `his` は使わない。feminine_lock が書き換えるが、最初から書かないのが確実）
+- **アナルセックス（女体） / アナル挿入（画質）**: ThumbInButt は積まない。竿 + 穴 + 文章。構図は文章欄
+- 指入れだけ **四つん這い・後ろから・穴が膣より上**。空欄文に男は書かない
 - 積まない: 膣の指入れ、CoachBate、AIO、HMMasturbation。行為は 1 本
 
 ### どの構図でも出す行為 LoRA（自作）
 
-膣セックスは AIO があるので新しく作らない。作るのは **アナル / 飲尿 / 脱糞** の3本だけ。混ぜない。手順とグリッドは [`train/README.md`](train/README.md)。
+公開の専用 LoRA は使い物にならない（ThumbInButt は四つん這い固定）。③は **今すぐ** 竿＋穴＋文章で出す。学習キットは後から効きを固める用。
 
-- `anal-any-h3`（`AN4LIN`）… 四つん這い固定を外す
-- `urine-drink-h3`（`URNKISS`）… 飲む行為。既存話のジュボ置き換えは戻さない
-- `scat-act-h3`（`DFCTH3`）… 今出している動き。肥溜めの塗れとは別。医院・終電には足さない
-
-重みが Drive に無いあいだは③とカタログに足さない。アナルは ThumbInButt のまま。
+- ③ `アナルセックス（女体）` / `飲尿（どの構図）` / `脱糞（どの構図）`
+- 学習 zip は [`train/README.md`](train/README.md)
 
 ```bash
 python3 h3-lora-studio/train/pack_dataset.py --list
@@ -213,7 +212,7 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 ## 不変条件
 
 1. 速さ用と画質用を分け、Larry と LightX2V を同時に積まない
-2. アナル挿入・アナルセックス（ThumbInButt + 竿 + 穴）は Turbo オフ
+2. アナル挿入・アナルセックス・飲尿・脱糞（竿 + 穴。ThumbInButt は指入れだけ）は Turbo オフ
 3. FL2VA に ref2va を載せない
 4. T2V に Picture 1 を書かない
 5. 未成年・ロリ・ショタ禁止
@@ -222,4 +221,4 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 8. Fal に LoRA を載せない
 9. 体位 LoRA は AIO の代わり。同時に積まない。訓練で体位を足さない
 10. エロは女かふたなりのみ。男は出さない。空欄は全裸のごく普通の若い成人女性（21+）
-11. 新しい行為 LoRA は概念ごとに1本。アナル+飲尿+脱糞を混ぜない。重みが Drive に無いあいだは③に足さない
+11. アナルセックスに ThumbInButt を戻さない。飲尿・脱糞は新しい situation だけ。既存話のジュボと医院・終電の糞禁止は触らない
