@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-niku-filth-1"' in src
+    assert 'FETCH_REV = "h3-20260909-jupo-only-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-niku-filth-1" in blob
+    assert "h3-20260909-jupo-only-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4089,7 +4089,7 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤが来る。医師が20cm。10本＝100秒。パイプ椅子。問診のあと立ち上がりディープキス。騎乗中出し。仰向け口移し。"""
+    """医院ケンシン: アヤが来る。医師が20cm。10本＝100秒。パイプ椅子。問診のあと立ち上がりディープキス。押し倒して仰向けジュボ。セックスなし。仰向け口移し。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
@@ -4127,9 +4127,9 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
         "futa_visible",
         "oral",
         "futa_visible",
-        "riding",
-        "riding",
         "oral",
+        "oral",
+        "oral_creampie",
         "futa_visible",
         "futa_visible",
     ]
@@ -4138,8 +4138,8 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert validate_story_follow(story) == []
     assert is_chain_pack("clinic-75s") and not is_story("clinic-75s")
     assert set(story["download"]) == set(situation_ids("clinic-75s"))
-    assert "cowgirl-position-h3" in story["download"]
-    assert "cumouf-h3" not in story["download"]
+    assert "cowgirl-position-h3" not in story["download"]
+    assert "cumouf-h3" in story["download"]
     assert "hmnsfw-aio-v25" not in story["download"]
     assert semen_share_plan(story) == [(8, "on_back")]
     want = [
@@ -4277,22 +4277,36 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "NOT in" in push
     assert "LYING ON THEIR BACK" in push
     assert "SEDUCTIVE" in push
-    ride = story["clips"][5]["prompt"]
-    assert ride.startswith("cowgirl position")
-    assert "INSERTION ON CAMERA" in ride
-    assert "LYING ON THEIR BACK" in ride
-    assert "hmmotion" not in ride.lower()
-    ride_p = planned_by_i[5]
-    assert "cowgirl-position-h3" in [row["id"] for row in ride_p["stack"]]
-    assert "hmnsfw-aio-v25" not in [row["id"] for row in ride_p["stack"]]
-    assert "INSIDE LOCK:" in ride_p["prompt"]
-    linger = story["clips"][6]["prompt"]
-    assert "already in" in linger.lower()
-    assert "then pulls OUT" in linger
-    assert "LYING ON THEIR BACK" in linger
-    clean = story["clips"][7]["prompt"]
-    assert "Already at the BASE" in clean or "already at the BASE" in clean
-    assert "LYING ON THEIR BACK" in clean
+    assert "NOT cowgirl" in push or "not cowgirl" in push.lower()
+    assert "kneel" in push.lower()
+    assert "mouth OPEN" in push
+    assert "cowgirl pose" not in push.lower()
+    assert "straddl" not in push.lower()
+    back1 = story["clips"][5]["prompt"]
+    assert not back1.startswith("cowgirl position")
+    assert "INSERTION ON CAMERA" not in back1
+    assert "LYING ON THEIR BACK" in back1
+    assert "Already at the BASE" in back1 or "already at the BASE" in back1
+    assert "NEVER on the shaft" in back1
+    assert "hmmotion" not in back1.lower()
+    back1_p = planned_by_i[5]
+    assert "blowjob-h3" in [row["id"] for row in back1_p["stack"]]
+    assert "cowgirl-position-h3" not in [row["id"] for row in back1_p["stack"]]
+    assert "hmnsfw-aio-v25" not in [row["id"] for row in back1_p["stack"]]
+    assert "ORAL LOCK:" in back1_p["prompt"]
+    assert "INSIDE LOCK:" not in back1_p["prompt"]
+    assert "PLEASURE FACE:" in back1_p["prompt"]
+    back2 = story["clips"][6]["prompt"]
+    assert "Already at the BASE" in back2 or "already at the BASE" in back2
+    assert "LYING ON THEIR BACK" in back2
+    assert "jupo" in back2.lower()
+    cum = story["clips"][7]["prompt"]
+    assert "CUMOUF" in cum
+    assert "LYING ON THEIR BACK" in cum
+    assert "End: still in her mouth" in cum
+    cum_p = planned_by_i[7]
+    assert "cumouf-h3" in [row["id"] for row in cum_p["stack"]]
+    assert "cowgirl-position-h3" not in [row["id"] for row in cum_p["stack"]]
     share_raw = story["clips"][8]["prompt"]
     assert "STAYS LYING ON THEIR BACK" in share_raw
     assert "leans DOWN" in share_raw
@@ -4513,8 +4527,8 @@ def test_last_stop_pack_four_clips_rei_seated(tmp_path):
     assert "ORAL LOCK:" not in talk["prompt"]
 
 
-def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
-    """終電: 2人だけ。声かけはレイに向ける。ジュボ20秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。既存の終点はそのまま。全部10秒（15秒禁止）。"""
+def test_last_train_pack_platform_jupo_after_waking(tmp_path):
+    """終電: 2人だけ。声かけはレイに向ける。ジュボ20秒→口内口移しで起こす→ホームへ。濃厚キス→ピロートーク→立ちジュボ→口内→抱擁口移し。セックスなし。全部10秒（15秒禁止）。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
@@ -4540,11 +4554,11 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
-    assert story["duration_s"] == 90
+    assert story["duration_s"] == 100
     assert "15秒禁止" in story["comment_ja"]
-    assert "9本＝90秒" in story["comment_ja"]
-    assert len(story["clips"]) == 9
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 9
+    assert "10本＝100秒" in story["comment_ja"]
+    assert len(story["clips"]) == 10
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 10
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "oral",
@@ -4552,26 +4566,29 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
         "oral_creampie",
         "futa_visible",
         "futa_visible",
-        "riding",
-        "riding",
-        "after_ejaculation",
+        "futa_visible",
+        "oral",
+        "oral_creampie",
+        "futa_visible",
     ]
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
     assert story_canvas_wh(story) == (576, 1024)
     assert validate_story_follow(story) == []
     assert is_chain_pack("last-train-120s") and not is_story("last-train-120s")
     assert set(story["download"]) == set(situation_ids("last-train-120s"))
-    assert "cowgirl-position-h3" in story["download"]
-    assert "hmcumshot-v2" in story["download"]
+    assert "cowgirl-position-h3" not in story["download"]
+    assert "hmcumshot-v2" not in story["download"]
+    assert "cumouf-h3" in story["download"]
     assert "final-thrust-h3" not in story["download"]
-    assert semen_share_plan(story) == [(3, "on_cumouf")]
+    assert semen_share_plan(story) == [(3, "on_cumouf"), (9, "silent_next")]
     want = [
         ["しゅうてんです、おきてください"],
         [],
         [],
         [],
         [],
-        ["まだおきないんですか！", "しょうがないですね"],
+        [],
+        ["んっ、おくまでだしてもらって、からだがあつい、、、", "おくちが、あったかかった、、、もっとして、、、"],
         [],
         [],
         [],
@@ -4603,7 +4620,12 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
         assert "Clear futanari" in prompt
         assert "Penis plus vagina, never balls" in prompt
         assert "no scrotum" in prompt
-        assert "does not stand" in prompt.lower() or "never stands" in prompt.lower() or "stays on the bench" in prompt.lower()
+        if i < 4:
+            assert "does not stand" in prompt.lower() or "never stands" in prompt.lower() or "stays on the bench" in prompt.lower()
+        else:
+            assert "STANDING" in prompt or "STANDS UP" in prompt
+            assert "never stands" not in prompt.lower()
+            assert "does not stand" not in prompt.lower()
         assert "No men" in prompt
         assert "No feces" in prompt
         assert "TWO WOMEN ONLY" in prompt
@@ -4657,41 +4679,31 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "CUMOUF" in cum
     assert "End: still in her mouth" in cum
     assert "viscous" in cum.lower() or "sticky" in cum.lower() or "ドロドロ" in cum
-    sleep = story["clips"][4]["prompt"]
-    assert "sleep" in sleep.lower()
-    assert spoken_lines(sleep) == []
-    setup = story["clips"][5]["prompt"]
-    assert "hand's width" in setup
-    assert "NOT in" in setup
-    assert "knees apart" in setup.lower()
-    assert "whole body and face toward seated Rei" in setup
-    assert "FACE TO FACE" in setup
-    assert "not to the camera" in setup
-    assert "not down the aisle" in setup
-    ride = story["clips"][6]["prompt"]
-    assert ride.startswith("cowgirl position")
-    assert "joining" in ride.lower()
-    assert "FACE TO FACE" in ride
-    assert "INSERTION ON CAMERA" in ride
-    assert "parts her pussy lips" in ride.lower() or "glans parts" in ride.lower()
-    assert "sinks into" in ride.lower()
-    assert "Do not show the entry" not in ride
-    assert "Do not reverse cowgirl" in ride
-    assert "sitting UPRIGHT" in ride
-    climax = story["clips"][7]["prompt"]
-    assert "inside" in climax.lower()
-    assert "do not pull out" in climax.lower()
-    assert "FACE TO FACE" in climax
-    assert "hips UP" in climax
-    assert "Do not reverse cowgirl" in climax
-    gush = story["clips"][8]["prompt"]
-    assert "after_ejaculation" == story["clips"][8]["situation"]
-    assert "pussy" in gush.lower()
-    assert "viscous" in gush.lower() or "ドロドロ" in gush
-    assert "FACE TO FACE" in gush
-    assert "gap between" in gush.lower()
-    assert "pussy lips" in gush.lower()
-    assert "from inside" in gush.lower()
+    walk = story["clips"][4]["prompt"]
+    assert "station platform" in walk.lower()
+    assert "STANDS UP" in walk
+    assert spoken_lines(walk) == []
+    kiss = story["clips"][5]["prompt"]
+    assert "station platform" in kiss.lower()
+    assert "kiss" in kiss.lower()
+    assert spoken_lines(kiss) == []
+    talk = story["clips"][6]["prompt"]
+    assert "hand's width" in talk
+    assert "NOT in" in talk
+    assert "mouth OPEN" in talk
+    assert "kneel" in talk.lower()
+    assert "STANDING" in talk
+    jubo2 = story["clips"][7]["prompt"]
+    assert "Already at the BASE" in jubo2 or "already at the BASE" in jubo2
+    assert "STANDING" in jubo2
+    assert "kneel" in jubo2.lower()
+    plat_cum = story["clips"][8]["prompt"]
+    assert "CUMOUF" in plat_cum
+    assert "End: still in her mouth" in plat_cum
+    hug = story["clips"][9]["prompt"]
+    assert "STANDS UP" in hug
+    assert "SAME EYE LEVEL" in hug
+    assert "embrac" in hug.lower() or "hug" in hug.lower()
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     jubo = planned_by_i[1]
@@ -4703,24 +4715,22 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "SAME EYE LEVEL" in share["prompt"]
     assert "mouth-to-mouth" in share["prompt"].lower()
     assert "ORGASM FACE:" in share["prompt"]
-    sleep_p = planned_by_i[4]
-    assert "SEMEN SHARE:" not in sleep_p["prompt"]
-    ride_p = planned_by_i[6]
-    assert "cowgirl-position-h3" in [row["id"] for row in ride_p["stack"]]
-    assert "hmnsfw-aio-v25" not in [row["id"] for row in ride_p["stack"]]
-    assert "final-thrust-h3" not in [row["id"] for row in ride_p["stack"]]
-    assert "PLEASURE FACE:" in ride_p["prompt"]
-    assert "hmmotion" not in ride_p["prompt"].lower()
-    assert "INSIDE LOCK:" in ride_p["prompt"]
-    assert "Show the entry" in ride_p["prompt"]
-    ride2 = planned_by_i[7]
-    assert "INSIDE LOCK:" in ride2["prompt"]
-    assert "already inside the pussy" in ride2["prompt"].lower()
-    gush_p = planned_by_i[8]
-    assert "hmcumshot-v2" in [row["id"] for row in gush_p["stack"]]
-    assert "ORGASM FACE:" in gush_p["prompt"]
-    assert "SEMEN SHARE:" not in gush_p["prompt"]
-    assert "INSIDE LOCK:" not in gush_p["prompt"]
+    walk_p = planned_by_i[4]
+    assert "SEMEN SHARE:" not in walk_p["prompt"]
+    kiss_p = planned_by_i[5]
+    assert "SEMEN SHARE:" not in kiss_p["prompt"]
+    plat_jubo = planned_by_i[7]
+    assert "ORAL LOCK:" in plat_jubo["prompt"]
+    assert "cowgirl-position-h3" not in [row["id"] for row in plat_jubo["stack"]]
+    assert "INSIDE LOCK:" not in plat_jubo["prompt"]
+    plat_cum_p = planned_by_i[8]
+    assert "cumouf-h3" in [row["id"] for row in plat_cum_p["stack"]]
+    assert "SEMEN SHARE:" not in plat_cum_p["prompt"]
+    hug_p = planned_by_i[9]
+    assert "SEMEN SHARE:" in hug_p["prompt"]
+    assert "SAME EYE LEVEL" in hug_p["prompt"]
+    assert "STANDS UP" in hug_p["prompt"]
+    assert "mouth-to-mouth" in hug_p["prompt"].lower()
     assert "INSIDE LOCK:" not in jubo["prompt"]
     assert "ORAL LOCK:" in jubo["prompt"]
     for clip in story["clips"]:
@@ -5684,13 +5694,6 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
         situation="futa_sex",
     )
     assert INSIDE_PUSSY_LINE in negative_anal
-    train = load_story("last-train-120s")
-    ride0 = train["clips"][6]["prompt"]
-    locked_entry = lock_penis_inside(ride0, situation="riding")
-    assert "INSIDE LOCK:" in locked_entry
-    assert "Show the entry" in locked_entry
-    ride1 = lock_penis_inside(train["clips"][7]["prompt"], situation="riding")
-    assert "already inside the pussy" in ride1.lower()
     roof = load_story("roof-ac-30s")
     sex = lock_penis_inside(roof["clips"][1]["prompt"], situation="futa_sex")
     assert "INSIDE LOCK:" in sex
@@ -5719,7 +5722,7 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert semen_share_plan(load_story("commute-120s")) == []
     assert semen_share_plan(load_story("bath-120s")) == [(10, "silent_next")]
     assert semen_share_plan(load_story("last-stop-40s")) == [(2, "on_cumouf")]
-    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf")]
+    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf"), (9, "silent_next")]
     assert semen_share_plan(load_story("semen-bath-70s")) == []
     assert "semen-bath-70s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("meat-wall-85s")) == [(6, "after_speech")]
@@ -5989,7 +5992,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-niku-filth-1" in cell2
+    assert "h3-20260909-jupo-only-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
