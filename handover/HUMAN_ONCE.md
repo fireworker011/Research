@@ -14,7 +14,7 @@
 ## アフィ（進めると自分で言ったときだけ）
 
 1. Issue `Grok Bot — 指示` に1行 `AFFI: GO`（Cursor に言うな。止めるなら `AFFI: STOP`）
-2. Bot が出した1手だけやる。A8 は指名された1件。返すのは1語（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`）
+2. Bot が出した1手だけやる。A8 は指名された1件。分岐の返事は Issue に1語だけ（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし` / `開設済み` / `未開設`）。申請・副サイト・Secret・プロフィールが終わったら `完了`
 3. GitHub Secret `AFFILIATE_LINKS_JSON` は Bot が「足せ」と言ったあと。追加であり置換ではない。`申込_auひかり` は足すな
 4. 指示役 Issue の `overlay-filled:` で鍵名だけ見る。URL は出さない
 5. 投稿 cron は戻すな（別判断）

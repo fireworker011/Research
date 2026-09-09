@@ -14,6 +14,7 @@ on:
       - '.github/workflows/grok_bot_instruct.yml'
       - 'affiliate-engine/src/hq-instruct.js'
       - 'affiliate-engine/src/overlay-keys.js'
+      - 'affiliate-engine/src/affi-step.js'
       - 'affiliate-engine/src/util.js'
 
 concurrency:
@@ -41,6 +42,8 @@ jobs:
           cd affiliate-engine
           node --check src/hq-instruct.js
           node --check src/overlay-keys.js
+          node --check src/affi-step.js
           node src/overlay-keys.js --self-test
+          node src/affi-step.js --self-test
           node src/hq-instruct.js --self-test
           node src/hq-instruct.js

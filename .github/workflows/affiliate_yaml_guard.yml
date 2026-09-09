@@ -94,4 +94,5 @@ jobs:
             fi
             grep -q 'AFFILIATE_LINKS_JSON' "$instruct"
             grep -q 'overlay-keys.js' "$instruct"
+            grep -q 'affi-step.js' "$instruct"
           fi

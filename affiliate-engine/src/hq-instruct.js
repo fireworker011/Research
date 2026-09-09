@@ -3,41 +3,44 @@
 
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
 const { overlayStatusText } = require('./overlay-keys');
+const { resolveAffi, START, fileFor } = require('./affi-step');
 
 const ISSUE_TITLE = 'Grok Bot — 指示';
 const RAW_PREFIX =
   'https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/';
 const XM_POINTER = 'xm-trade-engine/docs/grok-bots/G_xm_trade.txt';
-const AFFI_POINTER = 'affiliate-engine/docs/grok-bots/dump/G_hq_sns_next.txt';
+const AFFI_POINTER = fileFor(START);
 const POINTER = XM_POINTER;
 const RAW = `${RAW_PREFIX}${XM_POINTER}`;
 const INSTRUCT_BODY =
-  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。止めるなら `AFFI: STOP`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。';
+  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。止めるなら `AFFI: STOP`。分岐の返事は1語だけ。申請・副サイト・Secret・プロフィールが終わったら `完了`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。';
 const YEN_BODY =
   'A8 を自分で開いた日だけ1行。`A8_YEN: YYYY-MM-DD,A8,all,clicks,cv,yen,note`。URL・カンマ数字・カタログ円は拒否。開いていない日は書くな。';
 
-function targetFor(go) {
-  return go ? AFFI_POINTER : XM_POINTER;
+function targetFor(go, state) {
+  return go ? fileFor(state || START) : XM_POINTER;
 }
 
-function instructBody(go = false) {
-  const pointer = targetFor(go);
+function instructBody(go = false, state = START) {
+  const pointer = targetFor(go, state);
   const extra = go
-    ? '人間が返した1語の次ファイルへ進め。ENTRY は出すな。'
+    ? '人間の1語（または完了）で次ファイルへ進め。ENTRY は出すな。'
     : 'ENTRY は出すな。';
-  return [
+  const lines = [
     `hq-instruct: ${pointer}`,
     `${RAW_PREFIX}${pointer}`,
     `この1ファイルだけ開け。結合するな。remain / n10 は開けるな。Cursor を起こすな。Threads cron は戻すな。${extra} boot に戻ってループするな。`
-  ].join('\n');
+  ];
+  if (go) lines.push(`hq-affi-state: ${state || START}`);
+  return lines.join('\n');
 }
 
-function samePointer(body, go = false) {
-  return String(body || '').includes(`hq-instruct: ${targetFor(go)}`);
+function samePointer(body, go = false, state = START) {
+  return String(body || '').includes(`hq-instruct: ${targetFor(go, state)}`);
 }
 
-function commentBody(go = false) {
-  return `${instructBody(go)}\n${overlayStatusText().text.trim()}`;
+function commentBody(go = false, state = START) {
+  return `${instructBody(go, state)}\n${overlayStatusText().text.trim()}`;
 }
 
 function affiGo(comments) {
@@ -133,8 +136,10 @@ async function run() {
   const { issue } = await ensureIssue(ISSUE_TITLE, INSTRUCT_BODY);
   const comments = await listComments(issue.number);
   const go = affiGo(comments);
-  const pointer = targetFor(go);
-  const body = commentBody(go);
+  const affi = go ? resolveAffi(comments) : { state: START, pointer: XM_POINTER, word: null };
+  const pointer = go ? affi.pointer : XM_POINTER;
+  const state = go ? affi.state : START;
+  const body = commentBody(go, state);
   const last = comments.length ? comments[comments.length - 1] : null;
   if (last && String(last.body || '').trim() === body.trim() && isTodayUtc(last.created_at)) {
     process.stdout.write(
@@ -146,7 +151,8 @@ async function run() {
         yen_created: yen.created,
         overlay_filled: overlayStatusText().names.length,
         pointer,
-        affi: go
+        affi: go,
+        state
       })}\n`
     );
     return;
@@ -161,6 +167,8 @@ async function run() {
       number: issue.number,
       pointer,
       affi: go,
+      state,
+      word: affi.word || null,
       yen_number: yen.issue.number,
       yen_created: yen.created,
       overlay_filled: overlayStatusText().names.length
@@ -174,8 +182,9 @@ function selfTest() {
   if (!body.includes(RAW)) throw new Error('raw');
   if (!samePointer(body, false)) throw new Error('same true');
   if (samePointer('nope', false)) throw new Error('same false');
-  const affi = instructBody(true);
+  const affi = instructBody(true, START);
   if (!affi.includes(AFFI_POINTER)) throw new Error('affi pointer');
+  if (!affi.includes('hq-affi-state: sns_next')) throw new Error('affi state');
   if (/\na8\.net/i.test(affi) || /crowdworks|AFFILIATE_LINKS/i.test(affi)) throw new Error('affi leak');
   if (/^\s*AFFI:\s*GO\b/m.test(affi) || /^\s*AFFI:\s*GO\b/m.test(INSTRUCT_BODY)) throw new Error('go loop');
   if (affiGo([])) throw new Error('go empty');
