@@ -23,7 +23,7 @@ const fs = require('fs');
 const path = require('path');
 const { askClaude, extractJSON } = require('./claude-client');
 const { checkContent, validateTemplate } = require('./compliance');
-const { ROOT, OUTPUT_DIR, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
+const { ROOT, OUTPUT_DIR, readJSON, writeJSON, loadConfig, loadLinks, todayJST } = require('./util');
 
 const SYSTEM_PROMPT = `あなたは日本のSNSアフィリエイト運用のグロースアナリストです。
 遵守事項:
@@ -221,7 +221,7 @@ async function main() {
   };
 
   // 草案の検品: 構造チェック（モデル非依存の品質ゲート）→ コンプライアンスチェック
-  const links = loadConfig('links', {});
+  const links = loadLinks();
   const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   const complianceNotes = [];
   for (const f of failedGenres) complianceNotes.push(`生成失敗（次回リトライ）: ${f}`);

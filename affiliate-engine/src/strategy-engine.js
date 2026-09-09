@@ -32,7 +32,7 @@ const fs = require('fs');
 const path = require('path');
 const { askClaude, extractJSON, sleep } = require('./claude-client');
 const { checkContent, validateTemplate } = require('./compliance');
-const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, todayJST } = require('./util');
+const { OUTPUT_DIR, escapeCSV, readJSON, writeJSON, loadConfig, loadLinks, todayJST } = require('./util');
 
 const GENRES = (process.env.GENRES || '婚活,副業,美容,筋トレ,教育,節約,転職,ペット,睡眠').split(',').map((g) => g.trim());
 const TEMPLATES_PER_GENRE = parseInt(process.env.TEMPLATES_PER_GENRE || '32', 10);
@@ -117,7 +117,7 @@ JSON 配列のみで出力:
   const templates = extractJSON(response);
 
   // 構造検品 → コンプライアンスフィルタ
-  const links = loadConfig('links', {});
+  const links = loadLinks();
   const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
   const passed = [];
   for (const t of templates) {
@@ -241,7 +241,7 @@ async function main() {
       process.exit(1);
     }
     market = seed.market_analysis || [];
-    const links = loadConfig('links', {});
+    const links = loadLinks();
     const knownLinkKeys = Object.keys(links).filter((k) => !k.startsWith('_'));
     for (const t of seed.posting_templates) {
       // 構造検品（モデル非依存の品質ゲート）→ コンプライアンス
