@@ -97,12 +97,19 @@ const NEXT = {
   'yt_only_ticket|完了': 'a8_csv',
   'a8_site_ticket|完了': 'secret_ticket',
   'secret_ticket|完了': 'profile_ticket',
-  'profile_ticket|完了': 'a8_csv',
-  'a8_csv|完了': 'a8_csv'
+  'profile_ticket|完了': 'a8_csv'
 };
 
 function fileFor(state) {
   return FILES[state] || FILES[START];
+}
+
+function repliesFor(state) {
+  const cur = FILES[state] ? state : START;
+  const prefix = `${cur}|`;
+  return Object.keys(NEXT)
+    .filter((k) => k.startsWith(prefix))
+    .map((k) => k.slice(prefix.length));
 }
 
 function parseWord(body) {
@@ -161,6 +168,13 @@ function selfTest() {
   if (step('threads_exist', '未開設') !== 'sns_nko') throw new Error('skip neo');
   if (step('sns_nko', 'Threadsあり') !== 'edu_exist_nko') throw new Error('edu');
   if (step('a8_csv', '完了') !== 'a8_csv') throw new Error('csv stay');
+  if (!repliesFor('sns_next').includes('未提携')) throw new Error('reply next');
+  if (repliesFor('a8_csv').length !== 0) throw new Error('reply csv');
+  if (!repliesFor('a8_partner').includes('完了')) throw new Error('reply partner');
+  for (const node of Object.keys(FILES)) {
+    if (node === 'a8_csv') continue;
+    if (!repliesFor(node).length) throw new Error(`no reply ${node}`);
+  }
   if (step('sns_next', 'nonsense') !== 'sns_next') throw new Error('stay');
   if (parseWord('未提携') !== '未提携') throw new Error('word');
   if (parseWord('ね、未提携かも') !== null) throw new Error('loose');
@@ -182,6 +196,7 @@ module.exports = {
   WORDS,
   FILES,
   fileFor,
+  repliesFor,
   parseWord,
   parseState,
   step,

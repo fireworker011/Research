@@ -3,7 +3,7 @@
 
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
 const { overlayStatusText } = require('./overlay-keys');
-const { resolveAffi, START, fileFor } = require('./affi-step');
+const { resolveAffi, START, fileFor, repliesFor } = require('./affi-step');
 
 const ISSUE_TITLE = 'Grok Bot — 指示';
 const RAW_PREFIX =
@@ -31,7 +31,11 @@ function instructBody(go = false, state = START) {
     `${RAW_PREFIX}${pointer}`,
     `この1ファイルだけ開け。結合するな。remain / n10 は開けるな。Cursor を起こすな。Threads cron は戻すな。${extra} boot に戻ってループするな。`
   ];
-  if (go) lines.push(`hq-affi-state: ${state || START}`);
+  if (go) {
+    const st = state || START;
+    lines.push(`hq-affi-state: ${st}`);
+    lines.push(`hq-affi-reply: ${repliesFor(st).join(' / ') || '(none)'}`);
+  }
   return lines.join('\n');
 }
 
@@ -185,6 +189,8 @@ function selfTest() {
   const affi = instructBody(true, START);
   if (!affi.includes(AFFI_POINTER)) throw new Error('affi pointer');
   if (!affi.includes('hq-affi-state: sns_next')) throw new Error('affi state');
+  if (!affi.includes('hq-affi-reply:')) throw new Error('affi reply');
+  if (!affi.includes('未提携')) throw new Error('affi word');
   if (/\na8\.net/i.test(affi) || /crowdworks|AFFILIATE_LINKS/i.test(affi)) throw new Error('affi leak');
   if (/^\s*AFFI:\s*GO\b/m.test(affi) || /^\s*AFFI:\s*GO\b/m.test(INSTRUCT_BODY)) throw new Error('go loop');
   if (affiGo([])) throw new Error('go empty');
