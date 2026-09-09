@@ -1,6 +1,6 @@
 # 仮想トレード机 — TradingView + ルール（XMではない）
 
-生成: 2026-09-09T08:58:38.510Z
+生成: 2026-09-09T13:44:27.658Z
 
 > これはペーパー。XM口座の残高・約定ではない。VPS/EA がまだでも、ルールで損切りと利確を置いて仮想執行する。
 > 方向は LLM の予想ではない。Gold はアジアレンジの OCO 両方。Majors は EMA20/50 クロスだけ。
@@ -14,20 +14,20 @@
 
 ## TradingView スナップショット
 
-- GOLD close 4400.925  high 4413.01  low 4341.255  RSI 50.6  ATR(D) 101.9379  ATR(H1) 16.145  SMA20 4465.89225  SMA50 4261.7005
-- EURUSD close 1.16341  high 1.16494  low 1.16236  RSI 58.1  ATR(D) 0.0044  ATR(H1) 0.0007  SMA20 1.16215  SMA50 1.1522
-- GBPUSD close 1.35426  high 1.3568  low 1.35358  RSI 53  ATR(D) 0.0054  ATR(H1) 0.0009  SMA20 1.35598  SMA50 1.34716
-- USDJPY close 153.655  high 154.019  low 152.937  RSI 25.3  ATR(D) 1.2838  ATR(H1) 0.3339  SMA20 158.2006  SMA50 160.01652
+- GOLD close 4416.105  high 4434.175  low 4341.255  RSI 51.5  ATR(D) 103.4497  ATR(H1) 17.5573  SMA20 4466.65125  SMA50 4262.0041
+- EURUSD close 1.16471  high 1.16544  low 1.16219  RSI 60  ATR(D) 0.0044  ATR(H1) 0.0008  SMA20 1.16222  SMA50 1.15223
+- GBPUSD close 1.3558  high 1.3568  low 1.35304  RSI 55.1  ATR(D) 0.0055  ATR(H1) 0.0012  SMA20 1.35606  SMA50 1.34719
+- USDJPY close 153.401  high 154.019  low 152.937  RSI 24.6  ATR(D) 1.2838  ATR(H1) 0.3165  SMA20 158.1879  SMA50 160.01144
 
 ## Gold 仮想 OCO（損切り・利確）
 
 - status: `halted` / reason: halt
-- last: 4399.5
-- アジア: 4343 – 4381.9 close 4381.5（range 38.9, ATR日次比 0.555）
-- H1 ATR: 16.15（tradingview_atr60 / OKX H1 13.74） / SL距離 19.37（1.2×ATR） / TP距離 34.87（1.8R）
+- last: 4414.5
+- アジア: 4343 – 4381.9 close 4381.5（range 38.9, ATR日次比 0.544）
+- H1 ATR: 17.56（tradingview_atr60 / OKX H1 15.21） / SL距離 21.07（1.2×ATR） / TP距離 37.92（1.8R）
 - chart suggested_side: BUY（参考。執行は OCO 両方）
-- BuyStop 4384.32 → 損切り 4364.95 / 利確 4419.19
-- SellStop 4340.58 → 損切り 4359.95 / 利確 4305.71
+- BuyStop 4384.53 → 損切り 4363.46 / 利確 4422.45
+- SellStop 4340.37 → 損切り 4361.44 / 利確 4302.45
 
 ## ペーパー帳簿（仮想資金）
 
@@ -45,8 +45,8 @@
 
 ## Majors（EMAルール。LLMは選ばない）
 
-- EURUSD: CLOSE (halt) lot=0.1 SL=undefined TP=undefined
-- GBPUSD: CLOSE (halt) lot=0.1 SL=undefined TP=undefined
+- EURUSD: FLAT (halt)
+- GBPUSD: FLAT (halt)
 - USDJPY: FLAT (halt)
 
 ## やらない
