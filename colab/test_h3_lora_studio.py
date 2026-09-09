@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-semen-volume-1"' in src
+    assert 'FETCH_REV = "h3-20260909-semen-volume-2"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-semen-volume-1" in blob
+    assert "h3-20260909-semen-volume-2" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -637,6 +637,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert '"clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
@@ -5323,15 +5325,22 @@ def test_lock_semen_look_names_white_liquid():
     assert "too much" in semen.lower()
     assert "overflow" in semen.lower()
     assert "mouthful" in semen.lower()
+    assert "floods" in semen.lower()
+    assert "molasses" in semen.lower()
+    assert "cannot hold" in semen.lower()
     assert lock_semen_look(semen) == semen
     assert "SEMEN LOOK:" not in lock_semen_look("Already oral. Mouth already on. No climax.")
     by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
     assert "white liquid" in by_sit.lower()
+    assert "floods" in by_sit.lower()
+    assert "molasses" in by_sit.lower()
     face = lock_semen_look("Already a facial. Thick white cum on her cheek.", situation="facial")
     assert "clingy" in face.lower()
     assert "clings" in face.lower()
     assert "slick" in face.lower()
     assert "heavy-oil" in face.lower()
+    assert "floods" in face.lower()
+    assert "molasses" in face.lower()
     after = lock_semen_look("Already after ejaculation. The semen stays.", situation="after_ejaculation")
     assert "stays on the face" in after.lower()
 
@@ -5617,6 +5626,8 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 assert "never brown" in prompt.lower(), (story["id"], i + 1)
                 assert "too much" in prompt.lower(), (story["id"], i + 1)
                 assert "overflow" in prompt.lower(), (story["id"], i + 1)
+                assert "floods" in prompt.lower(), (story["id"], i + 1)
+                assert "molasses" in prompt.lower(), (story["id"], i + 1)
             if orig_sit in SEX_INSIDE_SITUATIONS and not _SEX_PULL_OUT_RE.search(raw):
                 assert "INSIDE LOCK:" in prompt, (story["id"], i + 1)
             elif orig_sit in {"oral", "oral_creampie", "cunnilingus_futa", "after_ejaculation", "futa_visible"}:
@@ -6093,6 +6104,8 @@ def test_notebook_story_play_flow():
     assert '"clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
@@ -6118,7 +6131,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-semen-volume-1" in cell2
+    assert "h3-20260909-semen-volume-2" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
