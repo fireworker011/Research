@@ -26,5 +26,7 @@ jobs:
           node --check src/threads-poster.js
           node --check src/amplify.js
           node --check src/report.js
+          node src/threads-poster.js --self-test
+          node src/amplify.js --self-test
           node src/report.js --self-test
           node scripts/verify-secret-overlay.js
