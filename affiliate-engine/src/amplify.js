@@ -104,11 +104,35 @@ async function getViews(mediaId, token) {
   }
 }
 
-/** リンク解決: ジャンル共通キー優先、なければ「ジャンル_」で始まる設定済みキーの先頭 */
+const HIGH_TICKET_KEYS = {
+  転職: ['転職_neo', '転職_チケット', '転職_エージェント', '転職_スカウト', '転職'],
+  教育: ['教育_N高', '教育_アイズ', '教育_ヒューマン', '教育']
+};
+
+function filledLink(links, key) {
+  const v = links && key ? links[key] : '';
+  return typeof v === 'string' && v.trim() ? v.trim() : '';
+}
+
+/** 高単価キーを先に使う。ジャンル共通やエージェントより neo / N高 を優先する */
 function resolveLink(links, genre) {
-  if (links[genre]) return links[genre];
-  for (const [k, v] of Object.entries(links)) {
-    if (v && k.startsWith(`${genre}_`)) return v;
+  const prefer = HIGH_TICKET_KEYS[genre];
+  if (prefer) {
+    for (const k of prefer) {
+      const v = filledLink(links, k);
+      if (v) return v;
+    }
+    return null;
+  }
+  const direct = filledLink(links, genre);
+  if (direct) return direct;
+  for (const [k, v] of Object.entries(links || {})) {
+    if (k.startsWith('_')) continue;
+    if (k === '申込_auひかり') continue;
+    if (v && k.startsWith(`${genre}_`)) {
+      const t = filledLink(links, k);
+      if (t) return t;
+    }
   }
   return null;
 }
@@ -218,7 +242,27 @@ async function main() {
   console.log(`\n完了: リンク増幅 ${amplifiedCount} 件`);
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+function selfTest() {
+  const both = {
+    転職: 'https://example.invalid/genre',
+    転職_エージェント: 'https://example.invalid/agent',
+    転職_neo: 'https://example.invalid/neo'
+  };
+  if (resolveLink(both, '転職') !== 'https://example.invalid/neo') throw new Error('prefer neo');
+  const agentOnly = { 転職: '', 転職_エージェント: 'https://example.invalid/agent', 転職_neo: '' };
+  if (resolveLink(agentOnly, '転職') !== 'https://example.invalid/agent') throw new Error('agent when no neo');
+  const empty = { 転職: '', 転職_neo: '' };
+  if (resolveLink(empty, '転職') !== null) throw new Error('empty');
+  const edu = { 教育_ヒューマン: 'https://example.invalid/human', 教育_N高: 'https://example.invalid/nko' };
+  if (resolveLink(edu, '教育') !== 'https://example.invalid/nko') throw new Error('prefer nko');
+  process.stdout.write('amplify self-test ok\n');
+}
+
+if (process.argv.includes('--self-test')) {
+  selfTest();
+} else {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}

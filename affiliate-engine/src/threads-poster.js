@@ -85,11 +85,22 @@ function contentHash(text) {
   return crypto.createHash('sha1').update(String(text || '')).digest('hex').slice(0, 16);
 }
 
+function filledLink(links, key) {
+  const v = links && key ? links[key] : '';
+  return typeof v === 'string' && v.trim() ? v.trim() : '';
+}
+
+/** link_key がある行はジャンル共通へ落とさない（neo 本文に別の転職URLを載せない） */
+function resolvePostLink(row, links) {
+  const key = String(row?.link_key || '').trim();
+  if (key) return filledLink(links, key);
+  return filledLink(links, row?.genre);
+}
+
 /** 投稿本文を組み立てる。リンク必須なのに未設定なら null（=スキップ） */
 function buildPostText(row, links) {
   let text = row.content || '';
-  // 案件別キー（link_key）優先、なければジャンル共通リンク
-  const link = links[row.link_key] || links[row.genre];
+  const link = resolvePostLink(row, links);
 
   if (text.includes('{{AFFILIATE_LINK}}')) {
     if (!link) {
@@ -220,7 +231,8 @@ async function main() {
     let text = buildPostText(row, links);
     if (text === null) {
       // posted.json に書かない。Secret が入ったあとの実行で同じキーを拾えるようにする
-      console.log(`⏭  ${label}: config/links.json に「${row.genre}」のリンク未設定（links.json も AFFILIATE_LINKS_JSON も空）のためスキップ`);
+      const missing = String(row.link_key || '').trim() || row.genre;
+      console.log(`⏭  ${label}: 「${missing}」のリンク未設定のためスキップ`);
       skipped++;
       continue;
     }
@@ -317,7 +329,35 @@ async function main() {
   // ログとレポートで検知する
 }
 
-main().catch((err) => {
-  console.error('\n🔴 致命的エラー:', err.message);
-  process.exit(1);
-});
+function selfTest() {
+  const neoRow = {
+    content: '調べたメモ\n{{AFFILIATE_LINK}}\n#PR',
+    link_key: '転職_neo',
+    genre: '転職',
+    emoji: ''
+  };
+  const genreOnly = {
+    content: '調べたメモ\n{{AFFILIATE_LINK}}\n#PR',
+    genre: '転職',
+    emoji: ''
+  };
+  const links = { 転職: 'https://example.invalid/genre', 転職_neo: '' };
+  if (buildPostText(neoRow, links) !== null) throw new Error('neo empty must not use genre');
+  if (resolvePostLink(neoRow, links) !== '') throw new Error('neo empty resolve');
+  const filled = { ...links, 転職_neo: 'https://example.invalid/neo' };
+  const neoText = buildPostText(neoRow, filled);
+  if (!neoText || !neoText.includes('example.invalid/neo')) throw new Error('neo exact');
+  if (neoText.includes('example.invalid/genre')) throw new Error('neo not genre');
+  const genreText = buildPostText(genreOnly, links);
+  if (!genreText || !genreText.includes('example.invalid/genre')) throw new Error('genre fallback');
+  process.stdout.write('threads-poster self-test ok\n');
+}
+
+if (process.argv.includes('--self-test')) {
+  selfTest();
+} else {
+  main().catch((err) => {
+    console.error('\n🔴 致命的エラー:', err.message);
+    process.exit(1);
+  });
+}
