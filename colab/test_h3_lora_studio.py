@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-fix-1"' in src
+    assert 'FETCH_REV = "h3-20260909-train-1"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-fix-1" in blob
+    assert "h3-20260909-train-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4289,10 +4289,11 @@ def test_last_stop_pack_four_clips_rei_seated(tmp_path):
 
 
 def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
-    """終電: 終点の延長。ジュボ30秒→口内口移し→また寝る→座ったまま騎乗中出し。既存の終点はそのまま。"""
+    """終電: 2人だけ。声かけはレイに向ける。ジュボ30秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。既存の終点はそのまま。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
+        clip_cast_people,
         is_chain_pack,
         is_story,
         load_story,
@@ -4378,6 +4379,11 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
         assert "does not stand" in prompt.lower() or "never stands" in prompt.lower() or "stays on the bench" in prompt.lower()
         assert "No men" in prompt
         assert "No feces" in prompt
+        assert "TWO WOMEN ONLY" in prompt
+        assert "Do not add a third person" in prompt
+        assert not re.search(r"\bAya\b", prompt)
+        assert "Sayaka" not in prompt
+        assert "Madoka" not in prompt
         if dur == 15:
             assert "15-second take" in prompt
             assert "10-second take" not in prompt
@@ -4412,6 +4418,10 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "does NOT wake" in c1
     assert "already kneeling, mouth OPEN at the tip" in c1 or "mouth OPEN at the tip" in c1
     assert "hand's width" in c1
+    assert "whole body and face toward seated Rei" in c1
+    assert "not to the camera" in c1
+    assert "not down the aisle" in c1
+    assert "not into the camera" in c1
     oral1 = story["clips"][1]["prompt"]
     assert "Already at the BASE" in oral1 or "already at the BASE" in oral1
     assert "flutter open" in oral1
@@ -4431,17 +4441,34 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "hand's width" in setup
     assert "NOT in" in setup
     assert "knees apart" in setup.lower()
+    assert "whole body and face toward seated Rei" in setup
+    assert "FACE TO FACE" in setup
+    assert "not to the camera" in setup
+    assert "not down the aisle" in setup
     ride = story["clips"][6]["prompt"]
     assert ride.startswith("cowgirl position")
-    assert "ALREADY INSIDE" in ride or "Already in" in ride
     assert "joining" in ride.lower()
+    assert "FACE TO FACE" in ride
+    assert "INSERTION ON CAMERA" in ride
+    assert "parts her pussy lips" in ride.lower() or "glans parts" in ride.lower()
+    assert "sinks into" in ride.lower()
+    assert "Do not show the entry" not in ride
+    assert "Do not reverse cowgirl" in ride
+    assert "sitting UPRIGHT" in ride
     climax = story["clips"][7]["prompt"]
     assert "inside" in climax.lower()
     assert "do not pull out" in climax.lower()
+    assert "FACE TO FACE" in climax
+    assert "hips UP" in climax
+    assert "Do not reverse cowgirl" in climax
     gush = story["clips"][8]["prompt"]
     assert "after_ejaculation" == story["clips"][8]["situation"]
     assert "pussy" in gush.lower()
     assert "viscous" in gush.lower() or "ドロドロ" in gush
+    assert "FACE TO FACE" in gush
+    assert "gap between" in gush.lower()
+    assert "pussy lips" in gush.lower()
+    assert "from inside" in gush.lower()
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     jubo = planned_by_i[1]
@@ -4465,6 +4492,8 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "hmcumshot-v2" in [row["id"] for row in gush_p["stack"]]
     assert "ORGASM FACE:" in gush_p["prompt"]
     assert "SEMEN SHARE:" not in gush_p["prompt"]
+    for clip in story["clips"]:
+        assert clip_cast_people(clip) == ["rei"], clip["id"]
 
 
 def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
@@ -5270,7 +5299,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-fix-1" in cell2
+    assert "h3-20260909-train-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
