@@ -75,6 +75,14 @@ jobs:
               echo "grok instruct must keep schedule"
               exit 1
             fi
+            if ! grep -q "^  push:" "$instruct"; then
+              echo "grok instruct must keep push (first run on default merge)"
+              exit 1
+            fi
+            if ! grep -q 'workflow_dispatch' "$instruct"; then
+              echo "grok instruct must keep workflow_dispatch"
+              exit 1
+            fi
             if grep -q 'threads-poster.js' "$instruct" || grep -q 'amplify.js' "$instruct"; then
               echo "grok instruct must not post"
               exit 1

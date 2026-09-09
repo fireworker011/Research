@@ -5,6 +5,14 @@ on:
     # 07:22 JST。dump を Bot に渡すだけ。Threads 投稿はしない。
     - cron: '22 22 * * *'
   workflow_dispatch:
+  # 初回: この YAML をデフォルトへマージした push で Issue を立てる。
+  # schedule / dispatch だけだと runs=0 のまま Issue が無い。
+  push:
+    branches:
+      - claude/setup-colab-comfyui-Eb9Lh
+    paths:
+      - '.github/workflows/grok_bot_instruct.yml'
+      - 'affiliate-engine/src/hq-instruct.js'
 
 concurrency:
   group: grok-bot-instruct
