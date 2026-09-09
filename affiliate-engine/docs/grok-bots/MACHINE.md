@@ -13,9 +13,9 @@
 | いつ | ファイル |
 |---|---|
 | **毎日の入口（clone に一度）** | `dump/G_hq_boot.txt` |
-| **指示役（GitHub）** | デフォルトへマージで初回。以後 07:22 JST に Issue `Grok Bot — 指示` へ `hq-instruct:`（今は XM dump）と `overlay-filled:`（鍵名だけ。URLなし）。同じジョブで `Affiliate — 確定円` も空で立てる |
+| **指示役（GitHub）** | デフォルトへマージで初回。以後 07:22 JST に Issue `Grok Bot — 指示` へ `hq-instruct:`（既定は XM。人間が `AFFI: GO` なら `G_hq_sns_next.txt`）と `overlay-filled:`（鍵名だけ。URLなし）。同じジョブで `Affiliate — 確定円` も空で立てる |
 | FX の日次（instruct / boot から開く） | `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` |
-| 人間が「アフィを進める」と言ったときだけ | `dump/G_hq_sns_next.txt` |
+| 人間が Issue に `AFFI: GO` したとき | `dump/G_hq_sns_next.txt` |
 | 仕組みが足りないとき（Cursor へ1行） | 下の「参謀へ」 |
 
 `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は **駐車**。引用1手は替えるな。開けるな。人間介入が多すぎて日常にしない。

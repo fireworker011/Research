@@ -13,10 +13,11 @@
 
 ## アフィ（進めると自分で言ったときだけ）
 
-1. GitHub Secret `AFFILIATE_LINKS_JSON` を自分で入れる（追加であり置換ではない）
-2. 指示役 Issue の `overlay-filled:` を見ろ。鍵名だけ。URL は出さない。overlay_status の Run は不要
-3. A8 の提携・掲載媒体は自分で見る。BOT に返すのは1語（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`）
-4. 投稿 cron は戻すな（別判断）
+1. Issue `Grok Bot — 指示` に1行 `AFFI: GO`（Cursor に言うな。止めるなら `AFFI: STOP`）
+2. Bot が出した1手だけやる。A8 は指名された1件。返すのは1語（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし`）
+3. GitHub Secret `AFFILIATE_LINKS_JSON` は Bot が「足せ」と言ったあと。追加であり置換ではない。`申込_auひかり` は足すな
+4. 指示役 Issue の `overlay-filled:` で鍵名だけ見る。URL は出さない
+5. 投稿 cron は戻すな（別判断）
 
 ## 計測（確定円。画面を見たときだけ）
 
