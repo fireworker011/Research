@@ -285,6 +285,10 @@ function selfTest() {
   if (approvedRows(cat).approvedTotal !== 0) throw new Error('catalog');
   const ok = parseCSV('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,1,5000,screen\n');
   if (approvedRows(ok).approvedTotal !== 5000) throw new Error('real yen');
+  const exampleFile = fs.readFileSync(path.join(__dirname, '../data/conversions.example.csv'), 'utf8');
+  if (!exampleFile.startsWith('date,source,program,clicks,cv,approved_yen,note')) throw new Error('example header');
+  if (/12000/.test(exampleFile) || /4000/.test(exampleFile)) throw new Error('example fake yen');
+  if (approvedRows(parseCSV(exampleFile)).approvedTotal !== 0) throw new Error('example file yen');
   process.stdout.write('report self-test ok\n');
 }
 
