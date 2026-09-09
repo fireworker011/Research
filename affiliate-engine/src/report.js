@@ -10,8 +10,7 @@
  *
  * 収集するもの:
  * - Threads Insights API: フォロワー数、投稿ごとの views/likes/replies/reposts
- * - data/conversions.csv: ASP 管理画面から手動エクスポートした成果データ
- *   （date,genre,amount_jpy,status[approved|pending|rejected]）
+ * - data/conversions.csv: 確定円の正本（`approved_yen`）。カタログ・example の amount_jpy は円ではない。
  *
  * 出力:
  * - output/reports/report_YYYY-MM-DD.md   日次レポート
@@ -85,27 +84,42 @@ async function collectAccountMetrics(account) {
   return result;
 }
 
-/** ASP 成果 CSV（手動エクスポート）を月次集計 */
+/** ASP 成果 CSV。正本は approved_yen。example の amount_jpy は円にしない。 */
 function loadConversions() {
   const csvPath = path.join(OUTPUT_DIR, '..', 'data', 'conversions.csv');
   if (!fs.existsSync(csvPath)) return null;
 
   const rows = parseCSV(fs.readFileSync(csvPath, 'utf-8'));
   const thisMonth = todayJST().slice(0, 7); // YYYY-MM
-  const monthly = rows.filter((r) => (r.date || '').startsWith(thisMonth));
+  const monthly = rows.filter((r) => {
+    const d = String(r.date || '');
+    if (d.startsWith('#')) return false;
+    return d.startsWith(thisMonth);
+  });
 
   const byGenre = {};
   let approvedTotal = 0;
   let pendingTotal = 0;
   for (const r of monthly) {
+    if (/カタログ/.test(String(r.note || '')) && parseInt(r.approved_yen || '0', 10) > 0) continue;
+    const key = r.program || r.genre || r.source || 'all';
+    byGenre[key] = byGenre[key] || { approved: 0, pending: 0, count: 0 };
+    if (r.approved_yen !== undefined && r.approved_yen !== '') {
+      const amount = parseInt(r.approved_yen, 10);
+      if (!Number.isFinite(amount)) continue;
+      byGenre[key].count++;
+      byGenre[key].approved += amount;
+      approvedTotal += amount;
+      continue;
+    }
     const amount = parseInt(r.amount_jpy || '0', 10);
-    byGenre[r.genre] = byGenre[r.genre] || { approved: 0, pending: 0, count: 0 };
-    byGenre[r.genre].count++;
+    if (!Number.isFinite(amount)) continue;
+    byGenre[key].count++;
     if (r.status === 'approved') {
-      byGenre[r.genre].approved += amount;
+      byGenre[key].approved += amount;
       approvedTotal += amount;
     } else if (r.status === 'pending') {
-      byGenre[r.genre].pending += amount;
+      byGenre[key].pending += amount;
       pendingTotal += amount;
     }
   }
@@ -164,8 +178,8 @@ function renderReport(date, accountMetrics, conversions, gap) {
       lines.push(`| ${genre} | ${v.count} | ¥${v.approved.toLocaleString()} | ¥${v.pending.toLocaleString()} |`);
     }
   } else {
-    lines.push('- ⚠️ `data/conversions.csv` がありません。ASP 管理画面から成果をエクスポートして配置してください');
-    lines.push('  （フォーマット: `date,genre,amount_jpy,status`、status は approved/pending/rejected）');
+    lines.push('- ⚠️ `data/conversions.csv` がありません。Issue `Affiliate — 確定円` に `A8_YEN:` を書くか、画面を見た行だけ置く。');
+    lines.push('  （正本: `date,source,program,clicks,cv,approved_yen,note`。カタログ円は足すな）');
   }
   lines.push('');
   lines.push('## 必要ファネル（目標達成に必要な月間数値）');

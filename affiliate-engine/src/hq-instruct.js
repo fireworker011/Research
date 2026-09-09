@@ -6,6 +6,7 @@ const path = require('path');
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
 const { overlayStatusText } = require('./overlay-keys');
 const { resolveAffi, START, fileFor, repliesFor } = require('./affi-step');
+const { parseCSV } = require('./util');
 
 const ISSUE_TITLE = 'Grok Bot — 指示';
 const RAW_PREFIX =
@@ -51,7 +52,27 @@ function samePointer(body, go = false, state = START) {
 }
 
 function commentBody(go = false, state = START, neo = 'no') {
-  return `${instructBody(go, state, neo)}\n${overlayStatusText().text.trim()}`;
+  return `${instructBody(go, state, neo)}\n${overlayStatusText().text.trim()}\n${yenStatusText()}`;
+}
+
+function approvedYenSum(csvText) {
+  const rows = parseCSV(String(csvText || ''));
+  let sum = 0;
+  for (const r of rows) {
+    const d = String(r.date || '');
+    if (d.startsWith('#')) continue;
+    if (/カタログ/.test(String(r.note || '')) && parseInt(r.approved_yen || '0', 10) > 0) continue;
+    const n = parseInt(r.approved_yen, 10);
+    if (!Number.isFinite(n)) continue;
+    sum += n;
+  }
+  return sum;
+}
+
+function yenStatusText() {
+  const csvPath = path.join(__dirname, '../data/conversions.csv');
+  const n = approvedYenSum(fs.readFileSync(csvPath, 'utf8'));
+  return `approved-yen: ${n}`;
 }
 
 function affiGo(comments) {
@@ -162,6 +183,7 @@ async function run() {
         yen_number: yen.issue.number,
         yen_created: yen.created,
         overlay_filled: overlayStatusText().names.length,
+        approved_yen: approvedYenSum(fs.readFileSync(path.join(__dirname, '../data/conversions.csv'), 'utf8')),
         pointer,
         affi: go,
         state,
@@ -220,6 +242,13 @@ function selfTest() {
   if (/crowdworks|a8\.net|AFFILIATE_LINKS/i.test(body)) throw new Error('leak');
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
+  if (!body.includes('approved-yen: 0')) throw new Error('yen line');
+  if (approvedYenSum('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,0,15000,カタログ\n') !== 0) {
+    throw new Error('catalog yen');
+  }
+  if (approvedYenSum('date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,all,33,0,0,x\n') !== 0) {
+    throw new Error('zero row');
+  }
   if (YEN_ISSUE_TITLE !== 'Affiliate — 確定円') throw new Error('yen title');
   const instructYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/grok_bot_instruct.yml'), 'utf8');
   if (!instructYml.includes(`github.event.issue.title == '${ISSUE_TITLE}'`)) {
@@ -253,6 +282,7 @@ module.exports = {
   commentBody,
   samePointer,
   affiGo,
+  approvedYenSum,
   targetFor,
   findIssueByTitle,
   ensureIssue
