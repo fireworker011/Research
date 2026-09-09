@@ -11,11 +11,16 @@ concurrency:
 
 jobs:
   apply:
-    if: github.event_name == 'workflow_dispatch' || github.event.issue.title == 'Affiliate — 確定円'
+    if: >
+      github.event_name == 'workflow_dispatch' || (
+        github.event.issue.title == 'Affiliate — 確定円' &&
+        !github.event.issue.pull_request &&
+        github.event.comment.user.login != 'github-actions[bot]'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: read
+      issues: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
@@ -30,7 +35,7 @@ jobs:
           cd affiliate-engine
           node --check src/apply-a8-yen.js
           node src/apply-a8-yen.js --self-test
-          node src/apply-a8-yen.js
+          node src/apply-a8-yen.js | tee /tmp/a8-yen.json
 
       - name: 行を保存
         env:
@@ -44,3 +49,30 @@ jobs:
             git pull --rebase origin "$DEFAULT_BRANCH"
             git push origin "HEAD:$DEFAULT_BRANCH"
           }
+
+      - name: 結果を Issue へ
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          node <<'EOF'
+          const fs = require('fs');
+          const j = JSON.parse(fs.readFileSync('/tmp/a8-yen.json', 'utf8'));
+          let body = '';
+          if (!j.skipped) {
+            body = `a8-yen: saved ${j.date} yen=${j.approved_yen}`;
+          } else if (['url', 'comma_number', 'catalog_yen', 'bad_format'].includes(j.reason)) {
+            body = `a8-yen: skipped ${j.reason}`;
+          }
+          if (!body) process.exit(0);
+          if (/https?:\/\//i.test(body) || /A8_YEN:/i.test(body)) {
+            throw new Error('yen ack leak');
+          }
+          fs.writeFileSync('/tmp/a8-yen-ack.txt', body);
+          EOF
+          if [ ! -f /tmp/a8-yen-ack.txt ]; then
+            exit 0
+          fi
+          gh issue comment "$ISSUE" --body "$(cat /tmp/a8-yen-ack.txt)"

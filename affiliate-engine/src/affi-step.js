@@ -60,9 +60,9 @@ const NEXT = {
   'yt_only|完了': 'sns_nko',
   'threads_exist|開設済み': 'a8_site_neo',
   'threads_exist|未開設': 'sns_nko',
-  'a8_site_neo|完了': 'secret_neo',
-  'secret_neo|完了': 'profile_neo',
-  'profile_neo|完了': 'sns_nko',
+  'a8_site_neo|完了': 'profile_neo',
+  'profile_neo|完了': 'secret_neo',
+  'secret_neo|完了': 'sns_nko',
   'sns_nko|未提携': 'a8_partner_nko',
   'sns_nko|Threadsあり': 'edu_exist_nko',
   'sns_nko|YouTubeあり': 'yt_only_nko',
@@ -72,9 +72,9 @@ const NEXT = {
   'yt_only_nko|完了': 'sns_eyes',
   'edu_exist_nko|開設済み': 'a8_site_edu_nko',
   'edu_exist_nko|未開設': 'tenshoku_exist',
-  'a8_site_edu_nko|完了': 'secret_nko',
-  'secret_nko|完了': 'profile_edu_nko',
-  'profile_edu_nko|完了': 'tenshoku_exist',
+  'a8_site_edu_nko|完了': 'profile_edu_nko',
+  'profile_edu_nko|完了': 'secret_nko',
+  'secret_nko|完了': 'tenshoku_exist',
   'sns_eyes|未提携': 'a8_partner_eyes',
   'sns_eyes|Threadsあり': 'edu_exist_eyes',
   'sns_eyes|YouTubeあり': 'yt_only_eyes',
@@ -84,9 +84,9 @@ const NEXT = {
   'yt_only_eyes|完了': 'tenshoku_exist',
   'edu_exist_eyes|開設済み': 'a8_site_edu_eyes',
   'edu_exist_eyes|未開設': 'tenshoku_exist',
-  'a8_site_edu_eyes|完了': 'secret_eyes',
-  'secret_eyes|完了': 'profile_edu_eyes',
-  'profile_edu_eyes|完了': 'tenshoku_exist',
+  'a8_site_edu_eyes|完了': 'profile_edu_eyes',
+  'profile_edu_eyes|完了': 'secret_eyes',
+  'secret_eyes|完了': 'tenshoku_exist',
   'tenshoku_exist|開設済み': 'sns_ticket',
   'tenshoku_exist|未開設': 'a8_csv',
   'tenshoku_exist|置済み': 'a8_csv',
@@ -97,9 +97,9 @@ const NEXT = {
   'sns_ticket|媒体なし': 'a8_csv',
   'a8_partner_ticket|完了': 'sns_ticket',
   'yt_only_ticket|完了': 'a8_csv',
-  'a8_site_ticket|完了': 'secret_ticket',
-  'secret_ticket|完了': 'profile_ticket',
-  'profile_ticket|完了': 'a8_csv'
+  'a8_site_ticket|完了': 'profile_ticket',
+  'profile_ticket|完了': 'secret_ticket',
+  'secret_ticket|完了': 'a8_csv'
 };
 
 function fileFor(state) {
@@ -197,7 +197,9 @@ function selfTest() {
   if (step('threads_exist', '未開設') !== 'sns_nko') throw new Error('skip neo');
   if (step('sns_nko', 'Threadsあり') !== 'edu_exist_nko') throw new Error('edu');
   if (step('a8_csv', '完了') !== 'a8_csv') throw new Error('csv stay');
-  if (step('profile_neo', '完了') !== 'sns_nko') throw new Error('after neo');
+  if (step('a8_site_neo', '完了') !== 'profile_neo') throw new Error('site then profile');
+  if (step('profile_neo', '完了') !== 'secret_neo') throw new Error('profile then secret');
+  if (step('secret_neo', '完了') !== 'sns_nko') throw new Error('after neo secret');
   if (neoAfter('profile_neo', '完了', 'no') !== 'placed') throw new Error('neo placed');
   if (step('tenshoku_exist', '開設済み', 'no') !== 'sns_ticket') throw new Error('ticket when empty');
   if (step('tenshoku_exist', '開設済み', 'placed') !== 'a8_csv') throw new Error('no overwrite');

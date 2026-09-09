@@ -1,6 +1,6 @@
 # Secret の入れ方・チケット（参謀・URL を Git に書くな）
 
-指令塔がチケットで `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+指令塔がチケットで `Threadsあり` と返し、プロフィールに置いたあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
 neo 用は `SECRET.md`。教育用は `SECRET_EDU.md`。混ぜるな。neo を既に Secret に入れた／プロフィールに置いたならこのファイルは使うな（同じ欄を上書きするな。次は計測 `G_hq_a8_csv.txt`）。
 
 値は A8 管理画面で、**掲載サイトに登録した転職 Threads を選んで**発行した広告リンク（チャットに貼るな）。未登録のまま発行するな。
@@ -16,7 +16,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 この dump で `転職_neo` を新たに足すな（neo は別 dump）。教育アカにチケットを入れるな。既存の教育鍵は消すな。
 
-次の仕事（結合するな）: `dump/G_hq_threads_profile_ticket.txt`。Secret だけではクリックできない。
+次の仕事（結合するな）: `dump/G_hq_a8_csv.txt`。クリック場所は既にプロフィール。Secret は自動投稿用。
 
 ## 本番ジョブは sprint を読まない
 

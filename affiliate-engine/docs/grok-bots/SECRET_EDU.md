@@ -1,6 +1,6 @@
 # Secret の入れ方・教育（参謀・URL を Git に書くな）
 
-指令塔が N高またはアイズで `Threadsあり` と返し、副サイト登録（`SITE_EDU.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。教育 YouTube は始めない（台帳 `make: never`）。
+指令塔が N高またはアイズで `Threadsあり` と返し、プロフィールに置いたあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。教育 YouTube は始めない（台帳 `make: never`）。
 neo 用は `SECRET.md`。チケット用は `SECRET_TICKET.md`。混ぜるな。転職アカに N高／アイズを入れるな。教育アカに neo を入れるな。
 
 値は A8 管理画面で、**掲載サイトに登録した教育 Threads を選んで**発行した広告リンク（チャットに貼るな）。未登録のまま発行するな。
@@ -18,7 +18,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 `config/links.json` と Git / チャットに URL を書くな。
 
-次の仕事（結合するな）: N高なら `dump/G_hq_threads_profile_edu.txt`。アイズなら `dump/G_hq_threads_profile_eyes.txt`。Secret だけではクリックできない。
+次の仕事（結合するな）: `dump/G_hq_tenshoku_exist.txt`。クリック場所は既に教育プロフィール。Secret は自動投稿用。
 
 ## 本番ジョブは sprint を読まない
 

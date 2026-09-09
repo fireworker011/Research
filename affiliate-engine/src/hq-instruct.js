@@ -15,7 +15,7 @@ const AFFI_POINTER = fileFor(START);
 const POINTER = XM_POINTER;
 const RAW = `${RAW_PREFIX}${XM_POINTER}`;
 const INSTRUCT_BODY =
-  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。止めるなら `AFFI: STOP`。分岐の返事は1語だけ。申請・副サイト・Secret・プロフィールが終わったら `完了`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。';
+  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。止めるなら `AFFI: STOP`。分岐の返事は1語だけ。申請・副サイト・プロフィール・Secret が終わったら `完了`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。';
 const YEN_BODY =
   'A8 を自分で開いた日だけ1行。`A8_YEN: YYYY-MM-DD,A8,all,clicks,cv,yen,note`。URL・カンマ数字・カタログ円は拒否。開いていない日は書くな。';
 
