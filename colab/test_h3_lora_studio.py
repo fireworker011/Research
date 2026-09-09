@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-meat-walk-1"' in src
+    assert 'FETCH_REV = "h3-20260909-wait-skin-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-meat-walk-1" in blob
+    assert "h3-20260909-wait-skin-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -5138,6 +5138,12 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "EROTIC WAIT:" in jupo
     assert "just to wait" in jupo.lower()
     assert "NEVER on the shaft" in jupo
+    assert "SEDUCTIVE SMILE" in jupo
+    assert "light French peck" in jupo
+    assert "leave at once" in jupo
+    assert "own breasts" in jupo
+    assert "Do not start oral" in jupo
+    assert "keep that mouth on the penis" in jupo
     assert "soft small female moans" in soundscape_text(jupo).lower()
     assert jp_outside_quotes(jupo) == ""
     assert lock_pleasure_voice_and_wait(jupo, situation="oral") == jupo
@@ -5148,6 +5154,7 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     )
     assert "EROTIC WAIT:" in ride
     assert "Do not add, skip, or replace the written beat" in ride
+    assert "do not replace a written deep kiss" in ride.lower() or "does not replace a written deep kiss" in ride
 
     pee = lock_pleasure_voice_and_wait(
         "Already oral. Mouth already on the tip. She drinks the yellow stream.\n\noverall_soundscape:\nHiss.\n",
@@ -5182,6 +5189,16 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     hall = prepare_story_clip(commute, 0, stills_dir=tmp_path, force_t2v=True)
     assert "EROTIC WAIT:" not in hall["prompt"]
     assert "PLEASURE VOICE:" not in hall["prompt"]
+    cafe0 = prepare_story_clip(load_story("cafe-100s"), 0, stills_dir=tmp_path)
+    assert "EROTIC WAIT:" not in cafe0["prompt"]
+    assert "Heat and relief only" in cafe0["prompt"]
+    checkup_talk = prepare_story_clip(
+        load_story("checkup-100s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "EROTIC WAIT:" in checkup_talk["prompt"]
+    assert "No kiss yet" in checkup_talk["prompt"]
+    assert "do not add a kiss" in checkup_talk["prompt"].lower()
+    assert "does not kiss this clip" in consult["prompt"] or "No deep kiss this clip" in consult["prompt"]
 
 
 def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
@@ -5668,7 +5685,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-meat-walk-1" in cell2
+    assert "h3-20260909-wait-skin-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
