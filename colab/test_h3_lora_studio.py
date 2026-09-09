@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-wait-skin-1"' in src
+    assert 'FETCH_REV = "h3-20260909-wait-all-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-wait-skin-1" in blob
+    assert "h3-20260909-wait-all-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -5172,6 +5172,16 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "EROTIC WAIT:" not in walk
     assert "PLEASURE VOICE:" not in walk
 
+    talk = lock_pleasure_voice_and_wait(
+        "They stand at the door. SPEAKS.\nNobody sucks. No oral.\n"
+        "「こんにちは」\n\noverall_soundscape:\n「こんにちは」\n",
+        situation="futa_visible",
+    )
+    assert "EROTIC WAIT:" in talk
+    assert "first partner peck" in talk
+    assert "light self-touch only" in talk
+    assert jp_outside_quotes(talk) == ""
+
     clinic = load_story("clinic-75s")
     oral = prepare_story_clip(clinic, 3, last_frame="x.png", stills_dir=tmp_path)
     assert "PLEASURE VOICE:" in oral["prompt"]
@@ -5192,6 +5202,22 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     cafe0 = prepare_story_clip(load_story("cafe-100s"), 0, stills_dir=tmp_path)
     assert "EROTIC WAIT:" not in cafe0["prompt"]
     assert "Heat and relief only" in cafe0["prompt"]
+    cafe1 = prepare_story_clip(
+        load_story("cafe-100s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "EROTIC WAIT:" in cafe1["prompt"]
+    assert "いらっしゃいませ" in cafe1["prompt"]
+    assert "first partner peck" in cafe1["prompt"]
+    genkan = prepare_story_clip(commute, 1, stills_dir=tmp_path, force_t2v=True)
+    assert "EROTIC WAIT:" in genkan["prompt"]
+    assert "いってらっしゃい" in genkan["prompt"]
+    meat1 = prepare_story_clip(
+        load_story("meat-wall-85s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "EROTIC WAIT:" in meat1["prompt"]
+    assert "あ、おフロ。。。でもこれって" in meat1["prompt"]
+    bath0 = prepare_story_clip(load_story("semen-bath-70s"), 0, stills_dir=tmp_path)
+    assert "EROTIC WAIT:" in bath0["prompt"]
     checkup_talk = prepare_story_clip(
         load_story("checkup-100s"), 1, last_frame="x.png", stills_dir=tmp_path
     )
@@ -5685,7 +5711,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-wait-skin-1" in cell2
+    assert "h3-20260909-wait-all-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

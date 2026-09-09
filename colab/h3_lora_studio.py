@@ -3462,6 +3462,10 @@ EROTIC_WAIT_LINE = (
     "If hands are on a wheel, a microphone, chalk, a tray, a door, or this clip says hands NEVER on the shaft, those hands stay there. "
     "If this clip says No kiss yet, does not kiss, or No deep kiss, do not add a kiss or a French peck. "
     "If this clip says No oral yet, do not start oral. If it says Walk only, keep walking. "
+    "If the written beat is talk, greet, order, wake, or consult only "
+    "(Nobody sucks, No oral yet, and no written kiss or grope yet), "
+    "leftover is a SEDUCTIVE SMILE and light self-touch only. "
+    "Do not add the first partner peck or the first grope. "
     "If this clip wants a blank / poker / expressionless / clinical face, do not add a smile. "
     "Do not start oral or insertion that is not already written. "
     "Do not squat, kneel, stand up, lie down, turn a rear pose into face-to-face, or enter a tub just to wait. "
@@ -3490,21 +3494,28 @@ _EROTIC_IDLE_CUE_RE = re.compile(
     r"fingers on her clit|fingers near",
     re.I,
 )
+_SKIP_COMMON_WAIT_RE = re.compile(
+    r"Heat and relief only|One woman only|HEAT FACE:",
+    re.I,
+)
 
 
 def _is_walk_or_opening_idle(prompt: str) -> bool:
-    """Entrance and commute walks stay walks. Do not grope them to fill leftover time."""
+    """Entrance, waiting halls, and silent walks stay as written. Speech leftover is not a walk."""
     p = str(prompt or "")
     if "HIDDEN at the start" in p:
         return True
     if "Waiting only" in p:
         return True
+    if _SPOKEN_RE.search(p):
+        return False
     if _WALK_IDLE_RE.search(p) and not _EROTIC_IDLE_CUE_RE.search(p):
         return True
     return False
 
 
 def wants_pleasure_idle(text: str, *, situation: str = "") -> bool:
+    """Common leftover wait for every story. Skip openings, silent walks, heat-only solos, urine-drink."""
     sit = str(situation or "").strip()
     raw = str(text or "")
     if not raw:
@@ -3517,6 +3528,10 @@ def wants_pleasure_idle(text: str, *, situation: str = "") -> bool:
         return False
     if _is_walk_or_opening_idle(raw):
         return False
+    if _SKIP_COMMON_WAIT_RE.search(raw):
+        return False
+    if _SPOKEN_RE.search(raw):
+        return True
     return bool(_EROTIC_IDLE_CUE_RE.search(raw))
 
 
