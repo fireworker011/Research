@@ -520,13 +520,13 @@ SITUATION_HELP = {
     "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sales-visit-60s": "訪問販売。対面20秒。8本＝85秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ15秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
-    "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
+    "sales-visit-60s": "訪問販売。対面20秒。8本＝80秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ10秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
+    "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言10秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝60秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ10・口内10は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
-    "semen-bath-70s": "ザーメン風呂。5本＝70秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
-    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝85秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行15秒、台詞10秒、ジュボ15・口内15は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
+    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒、台詞10秒、ジュボ10・口内10は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -537,17 +537,17 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "manhole-30s": "物語の追加。ハイスイコウ。15秒×2＝30秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "roof-ac-30s": "物語の追加。屋上クーラー。15秒×2＝30秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
-    "tetrapod-30s": "物語の追加。ハマのテトラ。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "locker-30s": "物語の追加。廃校ロッカー。15秒×2＝30秒。9:16。アヤ＋マドカ。1本目はカギの会話とベロチューのあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "crossing-30s": "物語の追加。ドウロのど真ん中。15秒×2＝30秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "lookout-30s": "物語の追加。ガケの展望台。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は霧の会話のあと、アヤ仰向け・膝を開いて舐め寸前。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
-    "factory-30s": "物語の追加。コウジョウあと。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
-    "gas-station-30s": "物語の追加。ガソリンスタンド跡。15秒×2＝30秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲み、口を開けて先端から手の幅で止まる。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "tunnel-phone-30s": "物語の追加。トンネル非常電話。15秒×2＝30秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "riverbank-30s": "物語の追加。川原のゴミ。15秒×2＝30秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "shorts-immoral": "短編集（参照）。15秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
+    "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
+    "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "locker-30s": "物語の追加。廃校ロッカー。10秒×2＝20秒。9:16。アヤ＋マドカ。1本目はカギの会話とベロチューのあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "crossing-30s": "物語の追加。ドウロのど真ん中。10秒×2＝20秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "lookout-30s": "物語の追加。ガケの展望台。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は霧の会話のあと、アヤ仰向け・膝を開いて舐め寸前。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
+    "factory-30s": "物語の追加。コウジョウあと。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
+    "gas-station-30s": "物語の追加。ガソリンスタンド跡。10秒×2＝20秒。9:16。アヤ＋レイ。1本目はミズの会話のあと亀頭先の黄色い水を飲み、口を開けて先端から手の幅で止まる。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "tunnel-phone-30s": "物語の追加。トンネル非常電話。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
 }
 
 LORA_JA = {
@@ -633,7 +633,7 @@ CHAIN_PACK_ORDER = (
     "riverbank-30s",
 )
 CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
-# 物語の追加: 15秒×2＝30秒。台詞は1本目（futa_visible）だけ。行為は無言。
+# 物語の追加: 10秒×2＝20秒。台詞は1本目（futa_visible）だけ。行為は無言。
 ADDON_PACK_ORDER = (
     "manhole-30s",
     "roof-ac-30s",
@@ -1117,7 +1117,7 @@ def explain_choice(situation: str, mode: str) -> str:
         play = resolve_story_play(situation)
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
     elif sid in ANTHOLOGY_ID_SET:
-        play_line = "再生: 短編集（参照）。15秒完結×複数。つなぎなし。人物写真を R2V 参照\n"
+        play_line = "再生: 短編集（参照）。10秒完結×複数。つなぎなし。人物写真を R2V 参照\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -3181,6 +3181,83 @@ def _inject_before_soundscape(raw: str, line: str) -> str:
     return text.rstrip() + "\n" + line
 
 
+SEX_INSIDE_SITUATIONS = frozenset({
+    "futa_sex",
+    "doggy",
+    "riding",
+    "missionary_pov",
+    "general_sex",
+    "futa_anal",
+    "anal_penetration",
+    "creampie",
+})
+SEX_ANAL_SITUATIONS = frozenset({"futa_anal", "anal_penetration"})
+INSIDE_PUSSY_LINE = (
+    "INSIDE LOCK: The erect 20cm is already inside the pussy. The shaft is buried in the vaginal canal. "
+    "The glans is in, not outside. Joining point visible: penis in pussy, not beside the labia, "
+    "not between the thighs, not rubbing the slit from outside. Not a soft penis. Not a miss. "
+    "Keep thrusting while it stays in. Do not pull out for this clip."
+)
+INSIDE_ANAL_LINE = (
+    "INSIDE LOCK: The erect 20cm is already inside the anus. The shaft is buried in the anal canal. "
+    "The glans is in, not outside. Joining point visible: penis in anus, not in the pussy this clip, "
+    "not beside the hole, not rubbing from outside. Not a soft penis. Not a miss. "
+    "Keep thrusting while it stays in. Do not pull out for this clip."
+)
+INSIDE_ENTRY_LINE = (
+    "INSIDE LOCK: Show the entry, then it STAYS in. The erect 20cm goes into the hole on camera: "
+    "glans parts the lips (or the anus), shaft sinks to the base. After it is in, keep it inside "
+    "and thrust. Not beside. Not between the thighs. Not a soft penis. Not a miss."
+)
+_SEX_ENTRY_RE = re.compile(r"INSERTION ON CAMERA|Show the entry", re.I)
+_SEX_PULL_OUT_RE = re.compile(
+    r"then pulls OUT|Starts inside, then pulls|pulls OUT\.|Sex ends\.|comes apart",
+    re.I,
+)
+_ANAL_IN_RE = re.compile(
+    r"inside the anus|anal canal|anal only|buried in (her |the )?anus|"
+    r"in her anus|into the anus|penis in (the )?anus",
+    re.I,
+)
+_VAGINAL_PREF_RE = re.compile(
+    r"vaginal only|no anal|not anal|never anal|do not switch to anal|"
+    r"inside the pussy|inside .+ hairless pussy|vaginal canal",
+    re.I,
+)
+
+
+def sex_inside_hole(text: str, *, situation: str = "") -> str:
+    """Pussy unless this clip is actually anal-in. Do not key off the substring 'anal' alone."""
+    sit = str(situation or "").strip()
+    if sit in SEX_ANAL_SITUATIONS:
+        return "anus"
+    raw = str(text or "")
+    if _VAGINAL_PREF_RE.search(raw):
+        return "pussy"
+    if _ANAL_IN_RE.search(raw):
+        return "anus"
+    return "pussy"
+
+
+def lock_penis_inside(text: str, *, situation: str = "") -> str:
+    """Stop H3 from showing sex beside / rubbing / not in / soft."""
+    raw = str(text or "")
+    if not raw or "INSIDE LOCK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEX_INSIDE_SITUATIONS:
+        return raw
+    if _SEX_PULL_OUT_RE.search(raw):
+        return raw
+    if _SEX_ENTRY_RE.search(raw):
+        line = INSIDE_ENTRY_LINE
+    elif sex_inside_hole(raw, situation=sit) == "anus":
+        line = INSIDE_ANAL_LINE
+    else:
+        line = INSIDE_PUSSY_LINE
+    return _inject_before_soundscape(raw, line)
+
+
 def lock_futa_shaft(text: str) -> str:
     """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
     raw = str(text or "")
@@ -4004,7 +4081,7 @@ def _anthology_prompt(
     if absent:
         who_full += "\n" + "\n".join(f"{n} = NOT IN FRAME." for n in absent)
     body = (
-        f"{frame}. ONE UNBROKEN 15-second take. The camera never cuts.\n"
+        f"{frame}. ONE UNBROKEN 10-second take. The camera never cuts.\n"
         f"{prefix}\n\n"
         "WHO:\n"
         f"{who_full}\n\n"
@@ -4029,7 +4106,7 @@ def _anthology_prompt(
 
 
 def generate_immoral_shorts() -> dict[str, Any]:
-    """12 independent 15s dirty daily shorts. Prompts and LoRA situations are built here, no LLM."""
+    """12 independent 10s dirty daily shorts. Prompts and LoRA situations are built here, no LLM."""
     specs = (
         {
             "id": "s01-genkan-bj",
@@ -4050,13 +4127,13 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Tile and the open street are only background."
             ),
             "lock": (
-                "Already on. Mother sucks her daughter's 20cm to the BASE the whole 15-second take. "
+                "Already on. Mother sucks her daughter's 20cm to the BASE the whole 10-second take. "
                 "Filthy sloppy jupo. Drool ropes. No climax. No speech."
             ),
             "camera": _SHORTS_CAM_ORAL_STAND,
             "action": (
                 "Already on. Sayaka's mouth is already at Rei's base in the open genkan, like this is everyday. "
-                "Deep filthy jupo-jupo the whole 15-second take. Thick saliva ropes swing from her lips onto "
+                "Deep filthy jupo-jupo the whole 10-second take. Thick saliva ropes swing from her lips onto "
                 "her breasts. Rei's unused pussy at the base of the shaft is wet against Sayaka's nose. "
                 "Rei's head tips back, hips dirty. End: mouth still at the base, still medium-close two-shot."
             ),
@@ -4119,7 +4196,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_ORAL_STAND,
             "action": (
                 "Already on. Aya's mouth is already a ring around Rei's shaft at the base, deep filthy jupo-jupo the whole "
-                "15-second take. Thick saliva strings drop onto the concrete between her knees. Rei's unused pussy "
+                "10-second take. Thick saliva strings drop onto the concrete between her knees. Rei's unused pussy "
                 "is wet at Aya's nose. Rei's knees soften, hips dirty. End: mouth still at the base."
             ),
             "sound": "Deep filthy jupo-jupo, saliva hitting concrete, a distant bicycle, Rei's breath.",
@@ -4142,7 +4219,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "lock": "Cunnilingus only. Not oral on the penis. The 20cm hangs unused. Close-up. No speech. No insertion.",
             "camera": _SHORTS_CAM_CUNNI,
             "action": (
-                "Sayaka licks her daughter's hairless pussy at the base of the unused 20cm the whole 15-second take. "
+                "Sayaka licks her daughter's hairless pussy at the base of the unused 20cm the whole 10-second take. "
                 "The penis hangs unused in the upper frame, not in the mouth, already shiny. Sayaka's tongue is messy, "
                 "wet, greedy. Rei's thighs tremble, juices on Sayaka's chin. End: tongue still on the pussy, 20cm still unused."
             ),
@@ -4168,7 +4245,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_916_STAND,
             "action": (
                 "Already in. Rei's 20cm is already buried in Aya's hairless pussy standing at the rooftop fence. "
-                "They fuck the whole 15-second take, dirty noon sweat, juices running down Aya's standing thigh. "
+                "They fuck the whole 10-second take, dirty noon sweat, juices running down Aya's standing thigh. "
                 "The joining point stays readable at hip height. Aya's mouth hangs open with a moan, not speaking words. "
                 "End: still inside, still moving, both full bodies still in frame."
             ),
@@ -4192,7 +4269,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_ORAL_STAND,
             "action": (
                 "Already on. Water runs over Sayaka's tied hair while her mouth stays at Madoka's base. "
-                "Deep filthy jupo-jupo the whole 15-second take. Spit and shower water rope off her lips onto "
+                "Deep filthy jupo-jupo the whole 10-second take. Spit and shower water rope off her lips onto "
                 "her breasts. Madoka's unused pussy is wet at Sayaka's nose. End: mouth still at the base, still medium-close two-shot."
             ),
             "sound": "Shower, filthy jupo-jupo, Madoka's breath.",
@@ -4248,7 +4325,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_169,
             "action": (
                 "Already in. Rei's 20cm is already buried in Sayaka's hairless pussy on the futon. Mother and eldest "
-                "daughter fuck the whole 15-second take. Sweat, wet slaps, juices on the sheet. The joining point stays "
+                "daughter fuck the whole 10-second take. Sweat, wet slaps, juices on the sheet. The joining point stays "
                 "readable at the hips. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
             "sound": "Wet filthy thrusting, futon rustle, Sayaka's female moan.",
@@ -4271,7 +4348,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_169,
             "action": (
                 "Already in. Rei's 20cm is already buried in Aya's hairless pussy on the sofa. Sisters fuck the whole "
-                "15-second take. Wet slaps, juices on the cushion, Aya's mini breasts bouncing. The joining point stays "
+                "10-second take. Wet slaps, juices on the cushion, Aya's mini breasts bouncing. The joining point stays "
                 "readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
             "sound": "Wet filthy thrusting, Aya's female moan, TV far.",
@@ -4293,7 +4370,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_169,
             "action": (
                 "Already in. Madoka's 20cm is already buried in Aya's hairless pussy on the engawa, anyone in the garden "
-                "could see. They fuck the whole 15-second take. Sweat, wet slaps on wood, juices dripping. The joining "
+                "could see. They fuck the whole 10-second take. Sweat, wet slaps on wood, juices dripping. The joining "
                 "point stays readable. Both full bodies stay in the 16:9 frame. End: still inside, still moving."
             ),
             "sound": "Wet filthy thrusting, cicadas far, Aya's female moan.",
@@ -4317,7 +4394,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_169,
             "action": (
                 "Already in. Madoka's 20cm is already buried in her mother's hairless pussy from behind on the kitchen "
-                "floor. Filthy doggy the whole 15-second take. Wet slaps, hanging breasts, juices on the tile. The joining "
+                "floor. Filthy doggy the whole 10-second take. Wet slaps, hanging breasts, juices on the tile. The joining "
                 "point stays readable. Both full bodies stay in the 16:9 frame. End: still joined, still moving."
             ),
             "sound": "Wet filthy thrusting, Sayaka's female moan, a pot lid far.",
@@ -4341,7 +4418,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
             "camera": _SHORTS_CAM_SEX_916_STAND,
             "action": (
                 "Already in. Madoka's 20cm is already buried in Sayaka's hairless pussy standing against the hallway wall. "
-                "They fuck the whole 15-second take, dirty and hurried, juices on Sayaka's standing thigh. The joining "
+                "They fuck the whole 10-second take, dirty and hurried, juices on Sayaka's standing thigh. The joining "
                 "point stays readable at hip height. Both full bodies stay in the 9:16 frame. End: still inside, still moving."
             ),
             "sound": "Wet filthy thrusting, Sayaka's female moan, a floor creak.",
@@ -4364,8 +4441,15 @@ def generate_immoral_shorts() -> dict[str, Any]:
         if spec["situation"] == "futa_sex" and not prompt.startswith("hmmotion"):
             prompt = "hmmotion, PENISLORA\n" + prompt
         prompt = lock_urine_look(prompt)
-        prompt = lock_pleasure_face(prompt, situation=str(spec["situation"]))
-        if spec["situation"] == "oral_creampie":
+        sit = str(spec["situation"])
+        prompt = lock_oral_in_mouth(
+            prompt,
+            situation=sit,
+            ending="share" if sit == "oral_creampie" else "",
+        )
+        prompt = lock_pleasure_face(prompt, situation=sit)
+        prompt = lock_penis_inside(prompt, situation=sit)
+        if sit == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
         clips.append(
             {
@@ -4375,7 +4459,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "names": list(spec["names"]),
                 "canvas": canvas,
                 "start": "still_or_t2v",
-                "duration_s": 15,
+                "duration_s": 10,
                 "prompt": prompt,
             }
         )
@@ -4386,15 +4470,15 @@ def generate_immoral_shorts() -> dict[str, Any]:
         "title_ja": "短編集（参照）",
         "adults_only": True,
         "min_age": 22,
-        "duration_s": 15 * len(clips),
-        "clip_s": 15,
+        "duration_s": 10 * len(clips),
+        "clip_s": 10,
         "seamless": False,
         "use_cast_ref": True,
         "spoken_no_kanji": True,
         "canvas": dict(CANVAS_9_16),
         "stills_dir": "cast",
         "comment_ja": (
-            "15秒完結の超濃厚日常インモラル×12。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。"
+            "10秒完結の超濃厚日常インモラル×12。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。"
             "つなぎなし。各本は input/cast/ の人物写真を R2V 参照。フェラは 9:16 寄り（blowjob LoRA）、"
             "挿入は 16:9 か立ち 9:16。部品は situation から自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる。"
         ),
@@ -4423,11 +4507,11 @@ def semen_share_follow_errors(story: dict[str, Any]) -> list[str]:
 
 
 def validate_story_follow(story: dict[str, Any]) -> list[str]:
-    """H3 following: 10s speech / 15s silent acts / 15s anthology. One place, act cameras, lip-sync only on speaking face clips. Addon act clips need a pose-prep leftover on the previous clip."""
+    """H3 following: every clip is 10s (15s OOM). One place, act cameras, lip-sync only on speaking face clips. Addon act clips need a pose-prep leftover on the previous clip."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     anthology = str(story.get("kind") or "") == "anthology"
-    clip_s = float(story.get("clip_s") or (15.0 if anthology else 10.0))
+    clip_s = float(story.get("clip_s") or 10.0)
     # 建前 packs carry one short exchange (2 speakers) in a 10s face clip. Default stays 1.
     spoken_max = max(1, min(2, int(story.get("spoken_max") or 1)))
     for i, clip in enumerate(clips):
@@ -4436,24 +4520,13 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         prompt = str(clip.get("prompt") or "")
         situation = str(clip.get("situation") or "").strip()
         lines = spoken_lines(prompt)
+        if abs(duration - 10.0) > 0.01:
+            errors.append(f"clip {n}: duration_s must be 10 for H3 following (got {duration:g})")
         if anthology:
-            if abs(duration - 15.0) > 0.01:
-                errors.append(f"clip {n}: duration_s must be 15 for H3 following (got {duration:g})")
-            if "15-second take" not in prompt and "15-second" not in prompt:
-                errors.append(f"clip {n}: anthology clips must be a 15-second take")
-        else:
-            if abs(duration - 10.0) > 0.01 and abs(duration - 15.0) > 0.01:
-                errors.append(f"clip {n}: duration_s must be 10 or 15 for H3 following (got {duration:g})")
-            if abs(duration - 15.0) < 0.01:
-                addon = str(story.get("id") or "") in ADDON_PACK_IDS or bool(story.get("addon"))
-                if lines and not (addon and situation == "futa_visible"):
-                    errors.append(f"clip {n}: spoken clips stay 10s (leftover seconds fill with extra speech)")
-                if "15-second take" not in prompt and "15-second" not in prompt:
-                    errors.append(f"clip {n}: 15s clip must be a 15-second take")
-                if "10-second take" in prompt:
-                    errors.append(f"clip {n}: 15s clip must not say 10-second take")
-            elif "15-second take" in prompt or "15-second" in prompt:
-                errors.append(f"clip {n}: use a 10-second take, not 15")
+            if "10-second take" not in prompt and "10-second" not in prompt:
+                errors.append(f"clip {n}: anthology clips must be a 10-second take")
+        if "15-second take" in prompt or "15-second" in prompt:
+            errors.append(f"clip {n}: use a 10-second take, not 15")
         for spoken in lines:
             if _KANJI_RE.search(spoken):
                 errors.append(f"clip {n}: write the spoken line in kana (no kanji): 「{spoken}」")
@@ -4480,7 +4553,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                 errors.append(f"clip {n}: oral camera must be close or medium-close")
             if situation == "cunnilingus_futa" and "close-up" not in prompt_l and "extreme close" not in prompt_l:
                 errors.append(f"clip {n}: cunnilingus camera must be a close-up")
-            if situation in {"futa_sex", "doggy", "riding"} and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l:
+            if situation in SEX_INSIDE_SITUATIONS and "joining" not in prompt_l and "already in" not in prompt_l and "already joined" not in prompt_l and "show the entry" not in prompt_l and "insertion on camera" not in prompt_l:
                 errors.append(f"clip {n}: sex clip must already be in / show the joining point")
             if situation == "futa_masturbation" and "strok" not in prompt_l and "pump" not in prompt_l and "lap" not in prompt_l:
                 errors.append(f"clip {n}: masturbation clip needs a lap/hand camera")
@@ -4561,9 +4634,9 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
         n = len(data.get("clips") or [])
         if n < 8 or n > 16:
             raise SystemExit("短編集は 8〜16本です。")
-        clip_s = float(data.get("clip_s") or 15)
-        if abs(clip_s - 15.0) > 0.01:
-            raise SystemExit("短編集の1本は 15秒です。")
+        clip_s = float(data.get("clip_s") or 10)
+        if abs(clip_s - 10.0) > 0.01:
+            raise SystemExit("短編集の1本は 10秒です。")
         clip_durs = [float(c.get("duration_s") or clip_s) for c in data["clips"]]
         duration = float(data.get("duration_s") or 0)
         if duration > 240:
@@ -4590,8 +4663,8 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
             raise SystemExit("物語の追加は 2本です。")
         if not data.get("seamless"):
             raise SystemExit("物語の追加は seamless: true です。")
-        if abs(clip_s - 15.0) > 0.01:
-            raise SystemExit("物語の追加の1本は 15秒です。")
+        if abs(clip_s - 10.0) > 0.01:
+            raise SystemExit("物語の追加の1本は 10秒です。")
     elif chain_pack:
         if n < 4 or n > 12:
             raise SystemExit("つなぐパックは 4〜12本です。")
@@ -4599,21 +4672,21 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
             raise SystemExit("つなぐパックは seamless: true です。")
     elif n < 8 or n > 12:
         raise SystemExit("専用ストーリーは 8〜12本です。")
-    if abs(clip_s - 10.0) > 0.01 and abs(clip_s - 15.0) > 0.01:
-        raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
+    if abs(clip_s - 10.0) > 0.01:
+        raise SystemExit("専用ストーリーの1本は 10秒です。")
     clip_durs = [float(c.get("duration_s") or clip_s) for c in clips]
     for d in clip_durs:
-        if abs(d - 10.0) > 0.01 and abs(d - 15.0) > 0.01:
-            raise SystemExit("専用ストーリーの1本は 10秒または 15秒です。")
-    if addon and any(abs(d - 15.0) > 0.01 for d in clip_durs):
-        raise SystemExit("物語の追加の1本は 15秒です。")
+        if abs(d - 10.0) > 0.01:
+            raise SystemExit("専用ストーリーの1本は 10秒です。")
+    if addon and any(abs(d - 10.0) > 0.01 for d in clip_durs):
+        raise SystemExit("物語の追加の1本は 10秒です。")
     if int(data.get("min_age") or 0) < 21:
         raise SystemExit("専用ストーリーは 21歳以上のみです。")
     duration = float(data.get("duration_s") or 0)
     if duration > 120:
         raise SystemExit("専用ストーリーは 120秒までです。")
-    if addon and abs(duration - 30.0) > 0.51:
-        raise SystemExit("物語の追加は 30秒です。")
+    if addon and abs(duration - 20.0) > 0.51:
+        raise SystemExit("物語の追加は 20秒です。")
     if abs(duration - sum(clip_durs)) > 0.51:
         raise SystemExit("専用ストーリーの秒数と本数が合いません。")
     follow_errors = validate_story_follow(data)
@@ -4711,6 +4784,7 @@ def prepare_story_clip(
     else:
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
+    raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))

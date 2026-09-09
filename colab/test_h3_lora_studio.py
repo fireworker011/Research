@@ -454,7 +454,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-train-2"' in src
+    assert 'FETCH_REV = "h3-20260909-inside-1"' in src
     assert "--reserve-vram" in src
     assert "keep_canvas = bool(STORY)" in src
     assert "cap_fl2va_clip_s" in src
@@ -511,7 +511,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-train-2" in blob
+    assert "h3-20260909-inside-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -550,6 +550,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "ensure_r2v_in_object_info" in src
     assert "ensure_comfy_r2v_node" in src
     assert "lock_oral_in_mouth" in src
+    assert "lock_penis_inside" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
@@ -2842,7 +2843,7 @@ def test_validate_story_follow_rejects_act_speech_and_spoken_15s():
         ],
     }
     errs = validate_story_follow(spoken_15)
-    assert any("spoken clips stay 10s" in e for e in errs)
+    assert any("duration_s must be 10" in e for e in errs)
     ten_says_fifteen = {
         "clip_s": 10,
         "clips": [
@@ -2865,61 +2866,61 @@ def test_validate_story_follow_rejects_act_speech_and_spoken_15s():
             }
         ],
     }
-    assert validate_story_follow(silent_15) == []
-    addon_talk_15 = {
+    errs = validate_story_follow(silent_15)
+    assert any("duration_s must be 10" in e for e in errs)
+    addon_talk_10 = {
         "id": "manhole-30s",
         "addon": True,
         "spoken_max": 2,
-        "clip_s": 15,
+        "clip_s": 10,
         "clips": [
             {
-                "duration_s": 15,
+                "duration_s": 10,
                 "situation": "futa_visible",
-                "prompt": "ONE UNBROKEN 15-second take. LIP SYNC: face large.\n「このフタ、ズレてる」\n「いまなおす」",
+                "prompt": "ONE UNBROKEN 10-second take. LIP SYNC: face large.\n「このフタ、ズレてる」\n「いまなおす」",
             }
         ],
     }
-    assert validate_story_follow(addon_talk_15) == []
+    assert validate_story_follow(addon_talk_10) == []
     addon_act_speech = {
         "id": "manhole-30s",
         "addon": True,
-        "clip_s": 15,
+        "clip_s": 10,
         "clips": [
             {
-                "duration_s": 15,
+                "duration_s": 10,
                 "situation": "oral_creampie",
-                "prompt": "ONE UNBROKEN 15-second take. medium-close on the mouth. Already oral.\n「だめ」",
+                "prompt": "ONE UNBROKEN 10-second take. medium-close on the mouth. Already oral.\n「だめ」",
             }
         ],
     }
     errs = validate_story_follow(addon_act_speech)
     assert any("must not speak" in e for e in errs)
-    assert any("spoken clips stay 10s" in e for e in errs)
 
 
 def test_validate_story_follow_addon_pose_prep():
     from h3_lora_studio import validate_story_follow
 
-    talk = "ONE UNBROKEN 15-second take. LIP SYNC: face large.\n「クーラーしんでる」\n「フィルタ、みて」"
+    talk = "ONE UNBROKEN 10-second take. LIP SYNC: face large.\n「クーラーしんでる」\n「フィルタ、みて」"
     sex = (
-        "hmmotion\nONE UNBROKEN 15-second take. ALREADY IN. Joining point visible. "
+        "hmmotion\nONE UNBROKEN 10-second take. ALREADY IN. Joining point visible. "
         "No spoken words."
     )
     oral = (
-        "ONE UNBROKEN 15-second take. medium-close on the mouth. Already oral. "
+        "ONE UNBROKEN 10-second take. medium-close on the mouth. Already oral. "
         "Already at the BASE. No spoken words."
     )
     cunni = (
-        "ONE UNBROKEN 15-second take. close-up. Already cunnilingus. No spoken words."
+        "ONE UNBROKEN 10-second take. close-up. Already cunnilingus. No spoken words."
     )
     bad_sex = {
         "id": "roof-ac-30s",
         "addon": True,
         "spoken_max": 2,
-        "clip_s": 15,
+        "clip_s": 10,
         "clips": [
-            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
-            {"duration_s": 15, "situation": "futa_sex", "prompt": sex},
+            {"duration_s": 10, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 10, "situation": "futa_sex", "prompt": sex},
         ],
     }
     errs = validate_story_follow(bad_sex)
@@ -2929,23 +2930,23 @@ def test_validate_story_follow_addon_pose_prep():
     good_sex = dict(bad_sex)
     good_sex["clips"] = [
         {
-            "duration_s": 15,
+            "duration_s": 10,
             "situation": "futa_visible",
             "prompt": talk
             + " After the lines she is in the accepting standing pose, hips back. "
             "Erect 20cm a hand's width from her hairless pussy, NOT in.",
         },
-        {"duration_s": 15, "situation": "futa_sex", "prompt": sex},
+        {"duration_s": 10, "situation": "futa_sex", "prompt": sex},
     ]
     assert validate_story_follow(good_sex) == []
     bad_oral = {
         "id": "manhole-30s",
         "addon": True,
         "spoken_max": 2,
-        "clip_s": 15,
+        "clip_s": 10,
         "clips": [
-            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
-            {"duration_s": 15, "situation": "oral_creampie", "prompt": oral},
+            {"duration_s": 10, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 10, "situation": "oral_creampie", "prompt": oral},
         ],
     }
     errs = validate_story_follow(bad_oral)
@@ -2954,22 +2955,22 @@ def test_validate_story_follow_addon_pose_prep():
     good_oral = dict(bad_oral)
     good_oral["clips"] = [
         {
-            "duration_s": 15,
+            "duration_s": 10,
             "situation": "futa_visible",
             "prompt": talk
             + " She opens her mouth. Tip a hand's width from her lips, not touching.",
         },
-        {"duration_s": 15, "situation": "oral_creampie", "prompt": oral},
+        {"duration_s": 10, "situation": "oral_creampie", "prompt": oral},
     ]
     assert validate_story_follow(good_oral) == []
     bad_cunni = {
         "id": "lookout-30s",
         "addon": True,
         "spoken_max": 2,
-        "clip_s": 15,
+        "clip_s": 10,
         "clips": [
-            {"duration_s": 15, "situation": "futa_visible", "prompt": talk},
-            {"duration_s": 15, "situation": "cunnilingus_futa", "prompt": cunni},
+            {"duration_s": 10, "situation": "futa_visible", "prompt": talk},
+            {"duration_s": 10, "situation": "cunnilingus_futa", "prompt": cunni},
         ],
     }
     errs = validate_story_follow(bad_cunni)
@@ -2977,11 +2978,11 @@ def test_validate_story_follow_addon_pose_prep():
     good_cunni = dict(bad_cunni)
     good_cunni["clips"] = [
         {
-            "duration_s": 15,
+            "duration_s": 10,
             "situation": "futa_visible",
             "prompt": talk + " Aya on her back, knees open. Nobody licks yet.",
         },
-        {"duration_s": 15, "situation": "cunnilingus_futa", "prompt": cunni},
+        {"duration_s": 10, "situation": "cunnilingus_futa", "prompt": cunni},
     ]
     assert validate_story_follow(good_cunni) == []
 
@@ -3101,7 +3102,7 @@ def test_story_play_labels_resolve_to_story_and_play():
     text = explain_choice("登校（参照つなぐ）", "テキストから（写真なし）")
     assert "参照つなぐ" in text and "input/cast" in text and "R2V" in text
     text = explain_choice("短編集（参照）", "テキストから（写真なし）")
-    assert "短編集" in text and "15秒" in text and "R2V" in text
+    assert "短編集" in text and "10秒" in text and "R2V" in text
     text = explain_choice("訪問販売60秒（つなぐ）", "テキストから（写真なし）")
     assert "つなぐ・1本目を長回しに直す" in text and "名前付きパック" in text and "専用ストーリーではありません" in text
     text = explain_choice("カフェ（専用）", "テキストから（写真なし）")
@@ -3433,8 +3434,8 @@ def test_fireworks_pack_standing_from_behind(tmp_path):
         assert "Aya" not in clip["prompt"]
 
 
-def test_addon_packs_15s_talk_then_silent_act(tmp_path):
-    """物語の追加: 15秒×2、台詞は1本目だけ、hmmotion は挿入本だけ、canvas のみ 9:16。"""
+def test_addon_packs_10s_talk_then_silent_act(tmp_path):
+    """物語の追加: 10秒×2、台詞は1本目だけ、hmmotion は挿入本だけ、canvas のみ 9:16。"""
     from h3_lora_studio import (
         ADDON_PACK_IDS,
         ADDON_PACK_ORDER,
@@ -3470,7 +3471,7 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
         story = load_story(sid)
         assert story["addon"] is True
         assert story["id"] == sid and story["kind"] == "chain" and story["seamless"] is True
-        assert story["clip_s"] == 15 and story["duration_s"] == 30
+        assert story["clip_s"] == 10 and story["duration_s"] == 20
         assert story["spoken_max"] == 2 and story["spoken_no_kanji"] is True
         assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
         assert story_canvas_wh(story) == (576, 1024)
@@ -3488,8 +3489,8 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
         prev_stack = None
         for i, clip in enumerate(story["clips"]):
             prompt = clip["prompt"]
-            assert clip["duration_s"] == 15
-            assert "15-second take" in prompt
+            assert clip["duration_s"] == 10
+            assert "10-second take" in prompt
             assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
             assert "Full bodies from head to feet" not in prompt
             got = spoken_lines(prompt)
@@ -3546,7 +3547,7 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
             prev_stack = planned["stack"]
             assert {row["id"] for row in planned["stack"]} <= set(story["download"]), (sid, i + 1)
             assert planned["width"] == 576 and planned["height"] == 1024
-            assert planned["duration_s"] == 15
+            assert planned["duration_s"] == 10
             if uniq:
                 assert "SPEECH FACE:" in planned["prompt"]
                 assert "HEAT FACE:" not in planned["prompt"]
@@ -3564,6 +3565,7 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
             if clip["situation"] == "futa_sex":
                 assert "joining" in prompt.lower() or "already in" in prompt.lower()
                 assert "口移し" not in planned["prompt"]
+                assert "INSIDE LOCK:" in planned["prompt"]
         assert all(name in " ".join(c["prompt"] for c in story["clips"]) for name in cast)
 
     gas = load_story("gas-station-30s")
@@ -3769,7 +3771,7 @@ def _check_pack_common(story, sid, tmp_path):
     assert story["min_age"] >= 21
     assert story["clip_s"] == 10
     durs = [float(c.get("duration_s") or story["clip_s"]) for c in story["clips"]]
-    assert all(d in (10.0, 15.0) for d in durs)
+    assert all(d == 10.0 for d in durs)
     assert story["duration_s"] == sum(durs)
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
     assert story_canvas_wh(story) == (576, 1024)
@@ -3785,13 +3787,8 @@ def _check_pack_common(story, sid, tmp_path):
         lines = spoken_lines(prompt)
         assert "hmmotion" not in prompt.lower()
         dur = float(clip.get("duration_s") or story["clip_s"])
-        if dur == 15:
-            assert "15-second take" in prompt
-            assert "10-second take" not in prompt
-            assert not lines
-        else:
-            assert dur == 10
-            assert "15-second" not in prompt
+        assert dur == 10
+        assert "15-second" not in prompt
         assert "Hard cut" not in prompt
         assert "Do not copy the previous clip" not in prompt
         assert "576x1024" in prompt
@@ -3837,8 +3834,8 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
     assert story.get("spoken_no_kanji") is True
     assert len(story["clips"]) == 8
-    assert story["duration_s"] == 85
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 15, 10, 10]
+    assert story["duration_s"] == 80
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == (
         ["futa_visible"] * 3 + ["oral", "futa_visible", "oral", "oral_creampie", "futa_visible"]
     )
@@ -3877,7 +3874,7 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
     assert "yellow" in story["clips"][3]["prompt"].lower()
     assert "BASE" in story["clips"][5]["prompt"]
-    assert story["clips"][5]["duration_s"] == 15
+    assert story["clips"][5]["duration_s"] == 10
     assert "CUMOUF" in story["clips"][6]["prompt"] or "ejaculat" in story["clips"][6]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
     assert "sticky" in story["clips"][6]["prompt"].lower() or "viscous" in story["clips"][6]["prompt"].lower()
@@ -3889,9 +3886,9 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
     assert story["spoken_no_kanji"] is True
     assert len(story["clips"]) == 9
-    assert story["duration_s"] == 100
+    assert story["duration_s"] == 90
     assert [float(c["duration_s"]) for c in story["clips"]] == (
-        [10, 10, 10, 15, 10, 10, 15, 10, 10]
+        [10, 10, 10, 10, 10, 10, 10, 10, 10]
     )
     assert [c["situation"] for c in story["clips"]] == (
         ["futa_visible"] * 6 + ["oral", "oral_creampie", "futa_visible"]
@@ -3945,7 +3942,7 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤが来る。医師が20cm。6本＝75秒。台詞は10秒・2行。キス/ジュボ/口内は無言15。"""
+    """医院ケンシン: アヤが来る。医師が20cm。6本＝60秒。台詞は10秒・2行。キス/ジュボ/口内は無言10。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
@@ -3973,9 +3970,9 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
     assert story["clip_s"] == 10
-    assert story["duration_s"] == 75
+    assert story["duration_s"] == 60
     assert len(story["clips"]) == 6
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 15, 15, 15, 10]
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == (
         ["futa_visible", "futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"]
     )
@@ -4023,14 +4020,10 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
         assert "Rei" not in prompt and "Madoka" not in prompt and "Sayaka" not in prompt
         assert "No men" in prompt
         assert "No feces" in prompt
-        if dur == 15:
-            assert "15-second take" in prompt
-            assert "10-second take" not in prompt
-            assert not uniq
-        else:
-            assert dur == 10
-            assert "15-second" not in prompt
-            assert uniq and "LIP SYNC" in prompt
+        assert dur == 10
+        assert "15-second" not in prompt
+        if uniq:
+            assert "LIP SYNC" in prompt
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
@@ -4507,10 +4500,18 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert "final-thrust-h3" not in [row["id"] for row in ride_p["stack"]]
     assert "PLEASURE FACE:" in ride_p["prompt"]
     assert "hmmotion" not in ride_p["prompt"].lower()
+    assert "INSIDE LOCK:" in ride_p["prompt"]
+    assert "Show the entry" in ride_p["prompt"]
+    ride2 = planned_by_i[7]
+    assert "INSIDE LOCK:" in ride2["prompt"]
+    assert "already inside the pussy" in ride2["prompt"].lower()
     gush_p = planned_by_i[8]
     assert "hmcumshot-v2" in [row["id"] for row in gush_p["stack"]]
     assert "ORGASM FACE:" in gush_p["prompt"]
     assert "SEMEN SHARE:" not in gush_p["prompt"]
+    assert "INSIDE LOCK:" not in gush_p["prompt"]
+    assert "INSIDE LOCK:" not in jubo["prompt"]
+    assert "ORAL LOCK:" in jubo["prompt"]
     for clip in story["clips"]:
         assert clip_cast_people(clip) == ["rei"], clip["id"]
 
@@ -4539,9 +4540,9 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
     assert story["seamless"] is True
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
-    assert story["duration_s"] == 70
+    assert story["duration_s"] == 50
     assert len(story["clips"]) == 5
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 15, 15, 15, 15]
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "after_ejaculation",
@@ -4592,15 +4593,14 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
         assert "No men" in prompt
         assert "Doctor" not in prompt and "Conductor" not in prompt
         assert "Madoka" not in prompt and "Sayaka" not in prompt
-        if dur == 15:
-            assert "15-second take" in prompt
-            assert "10-second take" not in prompt
-            assert not uniq
+        if clip["situation"] == "after_ejaculation":
             assert "viscous" in prompt.lower() or "sticky" in prompt.lower() or "ドロドロ" in prompt
             assert "white liquid" in prompt.lower()
+        if uniq:
+            assert "LIP SYNC" in prompt
         else:
             assert dur == 10
-            assert uniq and "LIP SYNC" in prompt
+            assert "15-second" not in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
             assert "close" in prompt.lower()
@@ -4662,9 +4662,9 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
-    assert story["duration_s"] == 85
+    assert story["duration_s"] == 70
     assert len(story["clips"]) == 7
-    assert [float(c["duration_s"]) for c in story["clips"]] == [15, 10, 10, 10, 15, 15, 10]
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "futa_visible",
@@ -4728,13 +4728,8 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
         assert "ORGANISM LOCK:" in prompt
         assert "giant living organism" in prompt.lower()
         assert "living flesh" in prompt.lower() or "living fleshy" in prompt.lower()
-        if dur == 15:
-            assert "15-second take" in prompt
-            assert "10-second take" not in prompt
-            assert not uniq
-        else:
-            assert dur == 10
-            assert "15-second" not in prompt
+        assert dur == 10
+        assert "15-second" not in prompt
         if uniq:
             assert "LIP SYNC" in prompt
             assert clip["situation"] == "futa_visible"
@@ -4974,7 +4969,9 @@ def test_lock_speech_urine_pleasure_and_heat_face():
 def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
     from h3_lora_studio import (
         CHAIN_PACK_IDS,
+        SEX_INSIDE_SITUATIONS,
         STORY_IDS,
+        _SEX_PULL_OUT_RE,
         generate_immoral_shorts,
         jp_outside_quotes,
         load_story,
@@ -5049,6 +5046,10 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 assert "ORGASM FACE:" in prompt, (story["id"], i + 1)
                 assert "clingy" in prompt.lower(), (story["id"], i + 1)
                 assert "clings" in prompt.lower(), (story["id"], i + 1)
+            if orig_sit in SEX_INSIDE_SITUATIONS and not _SEX_PULL_OUT_RE.search(raw):
+                assert "INSIDE LOCK:" in prompt, (story["id"], i + 1)
+            elif orig_sit in {"oral", "oral_creampie", "cunnilingus_futa", "after_ejaculation", "futa_visible"}:
+                assert "INSIDE LOCK:" not in prompt, (story["id"], i + 1)
     assert seen_speech >= 70
     assert seen_heat == 1
     assert seen_urine >= 5
@@ -5091,6 +5092,80 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
     assert "mouth-to-mouth" in share.lower()
     assert "STANDS UP" in share
     assert "EYE LEVEL" in share
+
+
+def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
+    from h3_lora_studio import (
+        INSIDE_ANAL_LINE,
+        INSIDE_ENTRY_LINE,
+        INSIDE_PUSSY_LINE,
+        lock_penis_inside,
+        lock_oral_in_mouth,
+        load_story,
+        prepare_story_clip,
+        sex_inside_hole,
+    )
+
+    already = (
+        "Already in. Joining point visible. Vaginal only. No anal.\n"
+        "\noverall_soundscape:\nWet. No spoken words.\n"
+    )
+    pussy = lock_penis_inside(already, situation="futa_sex")
+    assert "INSIDE LOCK:" in pussy
+    assert "already inside the pussy" in pussy.lower()
+    assert pussy.index("INSIDE LOCK:") < pussy.index("overall_soundscape:")
+    assert lock_penis_inside(pussy, situation="futa_sex") == pussy
+    assert sex_inside_hole(already, situation="futa_sex") == "pussy"
+    anal_raw = (
+        "Already in. The shaft is buried in the anal canal. Joining point visible.\n"
+        "\noverall_soundscape:\nWet.\n"
+    )
+    assert sex_inside_hole(anal_raw, situation="futa_anal") == "anus"
+    anal = lock_penis_inside(anal_raw, situation="futa_anal")
+    assert INSIDE_ANAL_LINE in anal
+    assert "not in the pussy this clip" in anal
+    entry_raw = (
+        "INSERTION ON CAMERA. Show the entry. Then ride.\n"
+        "\noverall_soundscape:\nWet insertion.\n"
+    )
+    entry = lock_penis_inside(entry_raw, situation="riding")
+    assert INSIDE_ENTRY_LINE in entry
+    oral = lock_penis_inside(
+        "Already oral. Mouth already on.\nDeep jupo-jupo.\n",
+        situation="oral",
+    )
+    assert "INSIDE LOCK:" not in oral
+    walk = lock_penis_inside("Nobody is inside yet. Tip a hand's width, NOT in.", situation="futa_visible")
+    assert "INSIDE LOCK:" not in walk
+    pull = lock_penis_inside(
+        "Starts inside, then pulls OUT. Sex ends. Joining point as it comes apart.\n",
+        situation="futa_sex",
+    )
+    assert "INSIDE LOCK:" not in pull
+    gush = lock_penis_inside("Already after ejaculation. Pull-out gush.", situation="after_ejaculation")
+    assert "INSIDE LOCK:" not in gush
+    negative_anal = lock_penis_inside(
+        "Already in. Vaginal only. Not anal. Joining point visible.\n",
+        situation="futa_sex",
+    )
+    assert INSIDE_PUSSY_LINE in negative_anal
+    train = load_story("last-train-120s")
+    ride0 = train["clips"][6]["prompt"]
+    locked_entry = lock_penis_inside(ride0, situation="riding")
+    assert "INSIDE LOCK:" in locked_entry
+    assert "Show the entry" in locked_entry
+    ride1 = lock_penis_inside(train["clips"][7]["prompt"], situation="riding")
+    assert "already inside the pussy" in ride1.lower()
+    roof = load_story("roof-ac-30s")
+    sex = lock_penis_inside(roof["clips"][1]["prompt"], situation="futa_sex")
+    assert "INSIDE LOCK:" in sex
+    oral_lock = lock_oral_in_mouth(roof["clips"][0]["prompt"], situation="futa_visible")
+    assert "ORAL LOCK:" not in oral_lock
+    assert "INSIDE LOCK:" not in lock_penis_inside(roof["clips"][0]["prompt"], situation="futa_visible")
+    planned = prepare_story_clip(
+        roof, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path
+    )
+    assert "INSIDE LOCK:" in planned["prompt"]
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -5301,6 +5376,8 @@ def test_notebook_story_play_flow():
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
+    assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
+    assert '"INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "")' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
@@ -5318,7 +5395,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-train-2" in cell2
+    assert "h3-20260909-inside-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5342,6 +5419,7 @@ def test_notebook_story_play_flow():
     assert "raise SystemExit(R2V_NODE_MISSING)" in cell3
     assert "ensure_r2v_in_object_info" in cell3
     assert "lock_oral_in_mouth" in src
+    assert "lock_penis_inside" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
@@ -5351,6 +5429,8 @@ def test_notebook_story_play_flow():
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
+    assert "def lock_penis_inside" in helper_src
+    assert "INSIDE LOCK:" in helper_src
     assert "SHAFT LOOK:" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
     assert '"MiniMaxH3ReferenceToVideo"' in helper_src or "R2V_NODE" in helper_src
@@ -5595,9 +5675,9 @@ def test_anthology_shorts_immoral(tmp_path):
     assert "futa-h3-v51" not in situation_ids("shorts-immoral")
     story = load_story("shorts-immoral")
     assert story["kind"] == "anthology"
-    assert story["clip_s"] == 15
+    assert story["clip_s"] == 10
     assert len(story["clips"]) == 12
-    assert story["duration_s"] == 180
+    assert story["duration_s"] == 120
     assert validate_story_follow(story) == []
     want = [
         "oral",
@@ -5629,8 +5709,8 @@ def test_anthology_shorts_immoral(tmp_path):
         "廊下・マドカがサヤカに立ち挿入",
     ]
     for clip in story["clips"]:
-        assert float(clip["duration_s"]) == 15
-        assert "15-second take" in clip["prompt"]
+        assert float(clip["duration_s"]) == 10
+        assert "10-second take" in clip["prompt"]
         assert "Saleswoman" not in clip["prompt"]
         assert "Instructor" not in clip["prompt"]
         names = {str(n).strip().lower() for n in clip["names"]}
@@ -5671,7 +5751,7 @@ def test_anthology_shorts_immoral(tmp_path):
         prev_stack = planned["stack"]
         assert planned["mode"] == "r2v"
         assert planned["first_kind"] == "cast"
-        assert planned["duration_s"] == 15
+        assert planned["duration_s"] == 10
         assert "ROLE LOCK" in planned["prompt"]
         assert "at 0.00 seconds" not in planned["prompt"]
         cw, ch = story_canvas_wh(story, clip)
@@ -5694,8 +5774,15 @@ def test_anthology_shorts_immoral(tmp_path):
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert clip["prompt"].startswith("hmmotion, PENISLORA")
             assert "hmmotion" in planned["prompt"]
+            assert "INSIDE LOCK:" in planned["prompt"]
+            assert "INSIDE LOCK:" in clip["prompt"]
         if planned["situation"] == "doggy":
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
+            assert "INSIDE LOCK:" in planned["prompt"]
+            assert "INSIDE LOCK:" in clip["prompt"]
+        if planned["situation"] in {"oral", "oral_creampie"}:
+            assert "ORAL LOCK:" in planned["prompt"]
+            assert "INSIDE LOCK:" not in planned["prompt"]
         if planned["situation"] == "cunnilingus_futa":
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert "blowjob-h3" not in ids
