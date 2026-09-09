@@ -7,7 +7,7 @@
 正本は `xm-trade-engine/docs/AUTO.md`。iPhone のみなら `docs/IPHONE.md`。
 
 1. **今**: GitHub ペーパー（Issue 93 の `virtual-desk:`）。XM にログインするな。数字は仮想。残高ではない
-2. Grok Bot には `G_hq_boot.txt` だけ貼る（XM dump は boot が開く）
+2. Grok Bot の clone に `HQ_100MAN.md` を **一度**入れる。毎日 dump を貼り直すな。指示役は GitHub Actions（Issue `Grok Bot — 指示` の `hq-instruct:`）
 3. **実発注**: iPhone の XM アプリには EA は載らない。VPS を借りた日に IPHONE.md。PAT は Bot に送るな。デモで `xm-fill` が付くまで本物の口座は開くな
 4. 載せたあと Cursor は止まる。日々の写しは BOT。止めも BOT
 

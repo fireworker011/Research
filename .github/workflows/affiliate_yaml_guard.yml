@@ -8,6 +8,7 @@ on:
       - '.github/workflows/affiliate_engine_insight.yml'
       - '.github/workflows/affiliate_engine_overlay_status.yml'
       - '.github/workflows/affiliate_engine_a8_yen.yml'
+      - '.github/workflows/grok_bot_instruct.yml'
       - '.github/workflows/affiliate_yaml_guard.yml'
 
 concurrency:
@@ -65,6 +66,17 @@ jobs:
             fi
             if grep -q 'threads-poster.js' "$yen" || grep -q 'amplify.js' "$yen"; then
               echo "a8 yen must not post"
+              exit 1
+            fi
+          fi
+          instruct=.github/workflows/grok_bot_instruct.yml
+          if [ -f "$instruct" ]; then
+            if ! grep -q "^  schedule:" "$instruct"; then
+              echo "grok instruct must keep schedule"
+              exit 1
+            fi
+            if grep -q 'threads-poster.js' "$instruct" || grep -q 'amplify.js' "$instruct"; then
+              echo "grok instruct must not post"
               exit 1
             fi
           fi
