@@ -49,7 +49,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA は無い。CoachBate は有料で未使用、AIO は微妙）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは ThumbInButt + 竿 + 穴で Turbo オフ（専用のアナルセックス LoRA はまだ無い。CoachBate は有料で未使用、AIO は微妙。どの構図でも出す自作は `train/`）。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|
@@ -104,6 +104,21 @@ studio での使い方:
 - **アナルセックス（女体） / アナル挿入（画質）**: 入れる物を**ふたなりの竿**にする（`(S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure`）。竿 0.7 + 穴 0.55、Turbo オフ。挿入側の**両手は腰**に置く（LoRA が竿を親指に置き換えるのを防ぐ）。ネガに `thumb in anus, fingers in anus, hand near anus, vaginal penetration`
 - 共通: **四つん這い・後ろから・穴が膣より上**。写真からが本線で、写真は後ろから穴が見えるもの。空欄文は男を一切書かない（`the man` / `his` は使わない。feminine_lock が書き換えるが、最初から書かないのが確実）
 - 積まない: 膣の指入れ、CoachBate、AIO、HMMasturbation。行為は 1 本
+
+### どの構図でも出す行為 LoRA（自作）
+
+膣セックスは AIO があるので新しく作らない。作るのは **アナル / 飲尿 / 脱糞** の3本だけ。混ぜない。手順とグリッドは [`train/README.md`](train/README.md)。
+
+- `anal-any-h3`（`AN4LIN`）… 四つん這い固定を外す
+- `urine-drink-h3`（`URNKISS`）… 飲む行為。既存話のジュボ置き換えは戻さない
+- `scat-act-h3`（`DFCTH3`）… 今出している動き。肥溜めの塗れとは別。医院・終電には足さない
+
+重みが Drive に無いあいだは③とカタログに足さない。アナルは ThumbInButt のまま。
+
+```bash
+python3 h3-lora-studio/train/pack_dataset.py --list
+python3 h3-lora-studio/train/pack_dataset.py --concept anal-any-h3 --print-grid
+```
 
 ### 中出し / 口内射精
 
@@ -207,3 +222,4 @@ python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v -
 8. Fal に LoRA を載せない
 9. 体位 LoRA は AIO の代わり。同時に積まない。訓練で体位を足さない
 10. エロは女かふたなりのみ。男は出さない。空欄は全裸のごく普通の若い成人女性（21+）
+11. 新しい行為 LoRA は概念ごとに1本。アナル+飲尿+脱糞を混ぜない。重みが Drive に無いあいだは③に足さない
