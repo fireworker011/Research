@@ -2,13 +2,11 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。高単価の置き場が一段落したあと。バナーは出品するな。note は公開するな。結合するな。目標は変えるな。数字は invent するな。
 
-今すぐ次を開け。clone なら `affiliate-engine/docs/grok-bots/MEASURE.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/MEASURE.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 
-conversions.csv の最終実測行は 2026-08-27。**2026-08-28 以降の行はファイルに無い。** 実測円は approved_yen。無いあいだは ¥0。カタログを足すな。
+conversions.csv の最終実測行は 2026-08-27。**2026-08-28 以降の行はファイルに無い。** 実測円は approved_yen。無いあいだは ¥0。指示役コメントの `approved-yen:` が合計。カタログを足すな。
 
 人間へ出す指示は1つ:
 「A8 管理画面を開いて見た clicks / cv / 確定金額だけを、Issue タイトル Affiliate — 確定円 に A8_YEN: 日付,A8,all,clicks,cv,確定,メモ の1行で書け。開いていないなら書くな。カンマ付きの 1,000 は書くな。カタログ円は書くな。URLは書くな。バナーは出品するな。note は公開するな。cron は戻すな。」

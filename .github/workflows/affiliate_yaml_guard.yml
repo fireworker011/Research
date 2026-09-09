@@ -57,6 +57,11 @@ jobs:
               echo "overlay status must not enable body links or amplify"
               exit 1
             fi
+            if grep -q 'claude/monthly-revenue-system-gvi02u' "$status"; then
+              echo "overlay status must checkout default, not production"
+              exit 1
+            fi
+            grep -q 'overlay-keys.js' "$status"
           fi
           yen=.github/workflows/affiliate_engine_a8_yen.yml
           if [ -f "$yen" ]; then
@@ -68,6 +73,8 @@ jobs:
               echo "a8 yen must not post"
               exit 1
             fi
+            grep -q 'github-actions\[bot\]' "$yen"
+            grep -q 'push_failed' "$yen"
           fi
           instruct=.github/workflows/grok_bot_instruct.yml
           if [ -f "$instruct" ]; then
@@ -75,8 +82,24 @@ jobs:
               echo "grok instruct must keep schedule"
               exit 1
             fi
+            if ! grep -q "^  push:" "$instruct"; then
+              echo "grok instruct must keep push (first run on default merge)"
+              exit 1
+            fi
+            if ! grep -q 'workflow_dispatch' "$instruct"; then
+              echo "grok instruct must keep workflow_dispatch"
+              exit 1
+            fi
             if grep -q 'threads-poster.js' "$instruct" || grep -q 'amplify.js' "$instruct"; then
               echo "grok instruct must not post"
+              exit 1
+            fi
+            grep -q 'AFFILIATE_LINKS_JSON' "$instruct"
+            grep -q 'overlay-keys.js' "$instruct"
+            grep -q 'affi-step.js' "$instruct"
+            grep -q 'affiliate-engine/data/conversions.csv' "$instruct"
+            if ! grep -q 'issue_comment' "$instruct"; then
+              echo "grok instruct must run on human issue comments"
               exit 1
             fi
           fi

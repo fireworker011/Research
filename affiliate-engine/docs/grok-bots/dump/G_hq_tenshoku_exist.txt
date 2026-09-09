@@ -2,11 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。アイズが置けないとき、または教育が `未開設` のとき使え。neo を転職プロフィールに既に置いたなら使うな（同じ欄をチケットで上書きするな。次は `dump/G_hq_a8_csv.txt`）。neo が `Threadsあり` かつ `未開設` ならこの dump は聞かず（既知。次は計測）。結合するな。目標は変えるな。cron は戻すな。投稿するな。新媒体を今日開くな。バナーは出品するな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/EXIST_TICKET.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/EXIST_TICKET.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 
@@ -15,9 +11,11 @@ https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comf
 返す言葉は次のどれか1つだけ:
 - `開設済み`
 - `未開設`
+- `置済み`
 
 人間へ出す指示は1つ:
-「スマホの Threads で表示名『けい｜しずかな転職準備』があるか見ろ。あれば『開設済み』、無ければ『未開設』と返せ。ハンドルとURLはチャットに書くな。未開設なら今夜は新造するな。転職YouTubeは始めるな。副業アカに転職案件を置くな。」
+「スマホの Threads で表示名『けい｜しずかな転職準備』があるか見ろ。neo を既に置いてあるなら『置済み』。アカはあるが neo 未置きなら『開設済み』。無ければ『未開設』と返せ。ハンドルとURLはチャットに書くな。未開設なら今夜は新造するな。転職YouTubeは始めるな。副業アカに転職案件を置くな。」
 
 `未開設`＝チケットは置くな。副サイト登録するな。Secret に入れるな。プロフィールに置くな。新造するな。**止まれではない。** 次のファイル名だけ: `dump/G_hq_a8_csv.txt`（見た数字だけ。出品するな。結合するな）。
+`置済み`＝チケットは使うな。次のファイル名だけ: `dump/G_hq_a8_csv.txt`。
 `開設済み`＝neo 未置きのときだけ次のファイル名: `dump/G_hq_sns_ticket.txt`。neo を既に置いたならチケットは使うな。次は `dump/G_hq_a8_csv.txt`。復唱して、人間への指示を1文で書け。数字は発明するな。

@@ -1,6 +1,6 @@
 # Secret の入れ方（参謀・URL を Git に書くな）
 
-指令塔が neo で `Threadsあり` と返し、副サイト登録（`SITE.md`）のあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
+指令塔が neo で `Threadsあり` と返し、プロフィールに置いたあとの仕事。`YouTubeあり` / `項目なし` / `媒体なし` / `未開設` では使わない。cron は戻さない。転職 YouTube は始めない（台帳 `make: never`）。
 
 N高の Secret は `SECRET_EDU.md` / `dump/G_hq_secret_nko.txt`（鍵 `教育_N高`）。アイズの Secret は `SECRET_EDU.md` / `dump/G_hq_secret_eyes.txt`（鍵 `教育_アイズ`）。チケットの Secret は `SECRET_TICKET.md` / `dump/G_hq_secret_ticket.txt`（鍵 `転職_チケット`）。このファイルと混ぜるな。neo が項目なしのときは `転職_neo` を空のまま。N高が項目なしのときは `教育_N高` を空のまま。アイズが項目なしのときは `教育_アイズ` を空のままにして、転職アカが `開設済み` なら `転職_チケット` だけ入れる。
 
@@ -17,7 +17,7 @@ GitHub Secret 名: `AFFILIATE_LINKS_JSON`
 
 この dump で `教育_N高` / `教育_アイズ` / `ペット_Furbo` を新たに足すな（別 dump）。既にあるなら消すな。N高経路は鍵 `教育_N高`（`dump/G_hq_secret_nko.txt`）。アイズ経路は鍵 `教育_アイズ`（`dump/G_hq_secret_eyes.txt`）。URL はここに書くな。
 
-次の仕事（結合するな）: `dump/G_hq_threads_profile.txt`。Secret だけではクリックできない。
+次の仕事（結合するな）: `dump/G_hq_sns_nko.txt`。クリック場所は既にプロフィール。Secret は自動投稿用。
 
 ## 本番ジョブは sprint を読まない
 

@@ -5,6 +5,20 @@ on:
     # 07:22 JST。dump を Bot に渡すだけ。Threads 投稿はしない。
     - cron: '22 22 * * *'
   workflow_dispatch:
+  issue_comment:
+    types: [created]
+  # 初回: この YAML をデフォルトへマージした push で Issue を立てる。
+  # schedule / dispatch だけだと runs=0 のまま Issue が無い。
+  push:
+    branches:
+      - claude/setup-colab-comfyui-Eb9Lh
+    paths:
+      - '.github/workflows/grok_bot_instruct.yml'
+      - 'affiliate-engine/src/hq-instruct.js'
+      - 'affiliate-engine/src/overlay-keys.js'
+      - 'affiliate-engine/src/affi-step.js'
+      - 'affiliate-engine/src/util.js'
+      - 'affiliate-engine/data/conversions.csv'
 
 concurrency:
   group: grok-bot-instruct
@@ -12,6 +26,12 @@ concurrency:
 
 jobs:
   instruct:
+    if: >
+      github.event_name != 'issue_comment' || (
+        github.event.issue.title == 'Grok Bot — 指示' &&
+        !github.event.issue.pull_request &&
+        github.event.comment.user.login != 'github-actions[bot]'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,9 +45,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          AFFILIATE_LINKS_JSON: ${{ secrets.AFFILIATE_LINKS_JSON }}
         run: |
           set -euo pipefail
           cd affiliate-engine
           node --check src/hq-instruct.js
+          node --check src/overlay-keys.js
+          node --check src/affi-step.js
+          node --check src/report.js
+          node src/overlay-keys.js --self-test
+          node src/affi-step.js --self-test
           node src/hq-instruct.js --self-test
+          node src/report.js --self-test
           node src/hq-instruct.js

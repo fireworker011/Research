@@ -30,7 +30,7 @@ date,source,program,clicks,cv,approved_yen,note
 A8_YEN: 2026-09-09,A8,all,33,0,0,screen monthly
 ```
 
-Grok Bot がこの1行を Issue に書いてよい。Cursor は日常で起こすな。Actions が `conversions.csv` に書く。
+Grok Bot がこの1行を Issue に書いてよい。Cursor は日常で起こすな。Actions が `conversions.csv` に書き、指示役コメントの `approved-yen:` が合計を出す。ファイルが無いときは `unknown`（0 を invent しない）。
 
 1. A8 管理画面を開く。開いていないなら **行を足すな**（0 を invent するな）。
 2. 見えた clicks / cv / 確定金額だけを上の1行にする。カンマと円記号は外す（`15000`）。引用符なしの `1,000` は書くな。見えた 0 は 0 と書く。note に「カタログ」と書いて yen を足すな。
@@ -38,7 +38,7 @@ Grok Bot がこの1行を Issue に書いてよい。Cursor は日常で起こ�
 4. `program=all` と案件別を同じ source に並べるな。
 5. URL を書くな。report の cron は回すな。
 
-Secret の埋まっている鍵名だけ見る（投稿しない）: デフォルトの `affiliate_engine_overlay_status.yml`（PR #81 入済み）。`workflow_dispatch`。schedule は無い。URL は出さない。`申込_auひかり` が埋まっていたら落とす。今夜の1手ではない。開いていない A8 の円は足すな。
+Secret の埋まっている鍵名は指示役 Issue の `overlay-filled:` / `overlay-keys:`（毎日。URL は出さない）。`affiliate_engine_overlay_status.yml` の Run は不要。`申込_auひかり` は載せない。開いていない A8 の円は足すな。
 
 ## 円にしないもの
 

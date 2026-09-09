@@ -2,11 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。G_hq_sns_next.txt の返しが `YouTubeあり` のときだけ使え。`Threadsあり` / `項目なし` / `媒体なし` / `未提携` では使うな。結合するな。目標は変えるな。cron は戻すな。投稿するな。新媒体を今日開くな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/FUNNEL_LIVE.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/FUNNEL_LIVE.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 

@@ -80,6 +80,9 @@ function selfTest() {
   const csv = applyRow('date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,all,33,0,0,old\n', ok.row);
   if (!csv.includes('2026-09-09,A8,all,33,0,0,screen')) throw new Error('append');
   if ((csv.match(/2026-09-09,A8,all,/g) || []).length !== 1) throw new Error('dedupe');
+  const created = applyRow('', ok.row);
+  if (!created.startsWith(HEADER)) throw new Error('missing csv header');
+  if (!created.includes('2026-09-09,A8,all,33,0,0,screen')) throw new Error('missing csv row');
   process.stdout.write('apply-a8-yen self-test ok\n');
 }
 
@@ -109,7 +112,8 @@ function main() {
       console.log(JSON.stringify({ skipped: true, reason: parsed.reason }));
       return;
     }
-    const next = applyRow(fs.readFileSync(CSV_PATH, 'utf-8'), parsed.row);
+    const prev = fs.existsSync(CSV_PATH) ? fs.readFileSync(CSV_PATH, 'utf-8') : `${HEADER}\n`;
+    const next = applyRow(prev, parsed.row);
     fs.writeFileSync(CSV_PATH, next);
     console.log(JSON.stringify({ skipped: false, date: parsed.row.date, approved_yen: parsed.row.approved_yen }));
     return;

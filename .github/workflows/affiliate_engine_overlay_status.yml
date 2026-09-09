@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
-          ref: claude/monthly-revenue-system-gvi02u
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
       - name: 埋まっている鍵名だけ出す
@@ -26,22 +26,6 @@ jobs:
         run: |
           set -euo pipefail
           cd affiliate-engine
-          node --check src/util.js
-          node <<'NODE'
-          'use strict';
-          const { loadLinks } = require('./src/util');
-          const links = loadLinks();
-          const names = Object.entries(links)
-            .filter(([k, v]) => !k.startsWith('_') && String(v || '').trim())
-            .map(([k]) => k)
-            .sort();
-          const line = `filled ${names.length}\nkeys ${names.join(',') || '(none)'}\n`;
-          if (/https?:\/\//i.test(line) || names.some((n) => /https?:/i.test(n))) {
-            throw new Error('url leak');
-          }
-          process.stdout.write(line);
-          if (names.includes('申込_auひかり')) {
-            console.error('WARN 申込_auひかり is filled; SNS listing is missing so this key should stay empty');
-            process.exit(1);
-          }
-          NODE
+          node --check src/overlay-keys.js
+          node src/overlay-keys.js --self-test
+          node src/overlay-keys.js
