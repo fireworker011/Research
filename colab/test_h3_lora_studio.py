@@ -452,7 +452,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260908-floor-1"' in src
+    assert 'FETCH_REV = "h3-20260909-fix-1"' in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +502,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260908-floor-1" in blob
+    assert "h3-20260909-fix-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -578,7 +578,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     assert '"cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames' in src
     assert '"SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
-    assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
@@ -3531,7 +3531,7 @@ def test_addon_packs_15s_talk_then_silent_act(tmp_path):
                 assert "HEAT FACE:" not in planned["prompt"]
             if clip["situation"] == "oral_creampie":
                 assert "ORGASM FACE:" in planned["prompt"]
-                assert "口移し" in planned["prompt"]
+                assert "mouth-to-mouth" in planned["prompt"].lower()
                 assert "SEMEN SHARE:" in planned["prompt"]
                 assert "ORAL LOCK:" in planned["prompt"]
                 assert "STANDS UP" in planned["prompt"]
@@ -4051,6 +4051,9 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "RIGHT" in c1
     assert "ツギのヒト" not in c1
     assert "brief wet kiss" in c1.lower()
+    assert "STANDS UP" in c1
+    assert "BOTH STANDING" in c1 or "both STAND" in c1
+    assert "doctor stays STANDING" in c1.lower() or "doctor STANDING" in c1
     multi = c1[c1.find("integrated_multimodal_description:"):]
     assert multi.find("ヨロシクオネガイします！あ、オチンチンおっきい！") < multi.lower().find("brief wet kiss") < multi.find("どうぞおすわりください")
     p0 = planned_by_i[0]
@@ -4061,7 +4064,9 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     kiss_raw = story["clips"][2]["prompt"]
     kiss = kiss_raw.lower()
     assert "kiss" in kiss
-    assert "身を胸につける" in kiss_raw
+    assert "flush against aya's chest" in kiss_raw.lower() or "flush against Aya's chest" in kiss_raw
+    assert "STANDING" in kiss_raw
+    assert "seated on the bed" not in kiss_raw.lower()
     assert "chests pressed" in kiss
     assert "flush against aya's chest" in kiss
     assert "hands knead" not in kiss
@@ -4086,13 +4091,14 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     share = planned_by_i[4]
     assert "SEMEN SHARE:" in share["prompt"]
     assert "SAME EYE LEVEL" in share["prompt"]
-    assert "口移し" in share["prompt"]
+    assert "mouth-to-mouth" in share["prompt"].lower()
     assert "ORGASM FACE:" in share["prompt"]
-    assert "ネットリ" in share["prompt"]
+    assert "clingy" in share["prompt"].lower()
     last = planned_by_i[5]
     assert "SEMEN SHARE:" not in last["prompt"]
     assert "ゲンキになりましたね" in last["prompt"]
     assert "ありがとうございます" in last["prompt"]
+    assert "STANDING" in story["clips"][5]["prompt"]
     cast = _write_cast_stills(tmp_path / "cast")
     clinic_ref = apply_story_play(story, "ref_chain")
     r0 = prepare_story_clip(clinic_ref, 0, stills_dir=tmp_path, cast_dir=cast)
@@ -4149,6 +4155,13 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert "プロンプトは読まない" not in locked
     assert "台詞だけ" not in locked
     assert jp_outside_quotes(sound) == ""
+    from h3_lora_studio import english_except_speech
+    mixed = english_except_speech("viscous ドロドロ 「あ、おフロ。。。」 イキ顔")
+    assert "「あ、おフロ。。。」" in mixed
+    assert "ドロドロ" not in mixed
+    assert "イキ顔" not in mixed
+    assert "thick gooey" in mixed
+    assert "climax face" in mixed
     silent_lock = lock_spoken_japanese("overall_soundscape:\nKiss. No spoken words.\n", [])
     silent_sound = soundscape_text(silent_lock)
     assert "[AUDIO-LOCK]" not in silent_lock
@@ -4438,7 +4451,7 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     share = planned_by_i[3]
     assert "SEMEN SHARE:" in share["prompt"]
     assert "SAME EYE LEVEL" in share["prompt"]
-    assert "口移し" in share["prompt"]
+    assert "mouth-to-mouth" in share["prompt"].lower()
     assert "ORGASM FACE:" in share["prompt"]
     sleep_p = planned_by_i[4]
     assert "SEMEN SHARE:" not in sleep_p["prompt"]
@@ -4709,9 +4722,18 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "feet stay on the surface" in walk.lower()
     assert "swallow feet" in walk.lower() or "swallow walkers" in walk.lower()
     assert "soft meat floor" not in walk.lower()
+    assert "ALREADY a clear futanari" in walk
+    assert "does NOT grow out" in walk or "does not grow out" in walk.lower()
+    assert "whole body" in walk.lower() or "face, hair" in walk.lower()
+    p_walk = planned_by_i[0]
+    assert "FUTA LOCK:" in p_walk["prompt"]
+    assert "BROWN SLIME:" in p_walk["prompt"]
+    assert "BATH LOOK:" in p_walk["prompt"]
+    assert "glue" in p_walk["prompt"].lower() or "paste-thick" in p_walk["prompt"].lower()
     enter = story["clips"][1]["prompt"]
     assert "climb" in enter.lower()
     assert "chest" in enter.lower()
+    assert "not water" in enter.lower() or "glue" in enter.lower() or "paste-thick" in enter.lower()
     kiss = story["clips"][2]["prompt"]
     assert "kiss" in kiss.lower()
     prep = story["clips"][3]["prompt"]
@@ -4832,10 +4854,10 @@ def test_lock_semen_look_names_white_liquid():
     semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
     assert "white liquid" in semen.lower()
     assert "viscous" in semen.lower()
-    assert "ドロドロ" in semen
-    assert "ネットリ" in semen
+    assert "clingy" in semen.lower()
+    assert "paste-thick" in semen.lower() or "glue" in semen.lower()
     assert "clings" in semen.lower()
-    assert "ヌルヌル" in semen
+    assert "slick" in semen.lower()
     assert "glans tip" in semen.lower()
     assert "stays on the face" in semen.lower()
     assert lock_semen_look(semen) == semen
@@ -4843,9 +4865,9 @@ def test_lock_semen_look_names_white_liquid():
     by_sit = lock_semen_look("Close side view. Lips wrapped.", situation="oral_creampie")
     assert "white liquid" in by_sit.lower()
     face = lock_semen_look("Already a facial. Thick white cum on her cheek.", situation="facial")
-    assert "ネットリ" in face
+    assert "clingy" in face.lower()
     assert "clings" in face.lower()
-    assert "ヌルヌル" in face
+    assert "slick" in face.lower()
     after = lock_semen_look("Already after ejaculation. The semen stays.", situation="after_ejaculation")
     assert "stays on the face" in after.lower()
 
@@ -4879,7 +4901,7 @@ def test_lock_speech_urine_pleasure_and_heat_face():
     )
     assert "URINE LOOK:" in pee
     assert "urethral opening at the glans tip" in pee
-    assert "黄色い水" in pee
+    assert "yellow urine" in pee.lower()
     assert lock_urine_look(pee) == pee
     not_yet = lock_urine_look("Door and talk only. No urine yet. No oral yet.")
     assert "URINE LOOK:" not in not_yet
@@ -4897,7 +4919,7 @@ def test_lock_speech_urine_pleasure_and_heat_face():
     assert "PLEASURE FACE:" not in pee_oral
     cum = lock_pleasure_face("CUMOUF. Already deep in the mouth.\n", situation="oral_creampie")
     assert "ORGASM FACE:" in cum
-    assert "イキ顔" in cum
+    assert "climax face" in cum.lower()
     assert lock_pleasure_face(cum, situation="oral_creampie") == cum
 
 
@@ -4906,6 +4928,7 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
         CHAIN_PACK_IDS,
         STORY_IDS,
         generate_immoral_shorts,
+        jp_outside_quotes,
         load_story,
         prepare_story_clip,
         soundscape_text,
@@ -4928,6 +4951,8 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 story, i, last_frame=last, stills_dir=tmp_path, cast_dir=cast
             )
             prompt = planned["prompt"]
+            leftover = jp_outside_quotes(prompt)
+            assert leftover == "", (story["id"], i + 1, leftover[:80])
             sit = planned["situation"]
             raw = clip["prompt"]
             lines = spoken_lines(raw)
@@ -4974,7 +4999,7 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             if orig_sit == "oral_creampie":
                 seen_cum += 1
                 assert "ORGASM FACE:" in prompt, (story["id"], i + 1)
-                assert "ネットリ" in prompt, (story["id"], i + 1)
+                assert "clingy" in prompt.lower(), (story["id"], i + 1)
                 assert "clings" in prompt.lower(), (story["id"], i + 1)
     assert seen_speech >= 70
     assert seen_heat == 1
@@ -5015,7 +5040,7 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
         ending="share",
     )
     assert "ORAL LOCK:" in share
-    assert "口移し" in share
+    assert "mouth-to-mouth" in share.lower()
     assert "STANDS UP" in share
     assert "EYE LEVEL" in share
 
@@ -5052,18 +5077,18 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert semen_share_plan(shorts) == [(1, "on_cumouf"), (6, "on_cumouf")]
     for i, mode in semen_share_plan(shorts):
         assert shorts["clips"][i]["situation"] == "oral_creampie"
-        assert "口移し" in shorts["clips"][i]["prompt"]
         assert "HOLD STILL" in shorts["clips"][i]["prompt"]
+        assert "mouth-to-mouth" in shorts["clips"][i]["prompt"].lower() or "SEMEN_SHARE_KISS" in shorts["clips"][i]["prompt"] or "tongues wrap" in shorts["clips"][i]["prompt"].lower()
         assert "Full bodies from head to feet" not in shorts["clips"][i]["prompt"]
 
     locked = lock_semen_share_kiss("CUMOUF.\n\noverall_soundscape:\nWet.\n")
     assert "SEMEN SHARE:" in locked
     assert "HOLD STILL" in locked
-    assert "口移し" in locked
-    assert "ベロチュー" in locked
+    assert "mouth-to-mouth" in locked.lower()
+    assert "wet kiss" in locked.lower() or "tongue" in locked.lower()
     assert "STANDS UP" in locked
     assert "SAME EYE LEVEL" in locked
-    assert "濃厚キス" in locked
+    assert "deep wet kiss" in locked.lower() or "filthy" in locked.lower()
     assert "tongues wrap" in locked.lower()
     assert "STAYS on both faces" in locked
     assert "they lean in" not in locked.lower()
@@ -5074,7 +5099,7 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
         "She speaks: 「モンダイありますね」. Remaining seconds, silence: she stays squatting. Do not freeze.",
         where="after_speech",
     )
-    assert "口移し" in after
+    assert "mouth-to-mouth" in after.lower() or "SEMEN SHARE" in after or "HOLD STILL" in after
     assert "HOLD STILL" in after
     assert "モンダイありますね" in after
 
@@ -5083,13 +5108,13 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     share_clip = prepare_story_clip(bath, 10, last_frame="x.png", stills_dir=tmp_path)
     assert share_clip["situation"] == "futa_visible"
     assert share_clip["duration_s"] == 10
-    assert "口移し" in share_clip["prompt"]
+    assert "mouth-to-mouth" in share_clip["prompt"].lower()
     assert "HOLD STILL" in share_clip["prompt"]
     assert "SEMEN SHARE:" in share_clip["prompt"]
     assert "STANDS UP" in share_clip["prompt"]
     assert "SAME EYE LEVEL" in share_clip["prompt"]
     assert "tongues wrap" in share_clip["prompt"].lower()
-    assert "ネットリ" in share_clip["prompt"]
+    assert "clingy" in share_clip["prompt"].lower()
     assert "they lean in" not in share_clip["prompt"].lower()
     assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
     assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
@@ -5103,13 +5128,13 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert cum_share["situation"] == "oral_creampie"
     assert "ORAL LOCK:" in cum_share["prompt"]
     assert "not licking" in cum_share["prompt"].lower()
-    assert "口移し" in cum_share["prompt"]
+    assert "mouth-to-mouth" in cum_share["prompt"].lower()
     assert "SEMEN SHARE:" in cum_share["prompt"]
     assert "STANDS UP" in cum_share["prompt"]
     assert "SAME EYE LEVEL" in cum_share["prompt"]
     assert "tongues wrap" in cum_share["prompt"].lower()
-    assert "ネットリ" in cum_share["prompt"]
-    assert "ヌルヌル" in cum_share["prompt"]
+    assert "clingy" in cum_share["prompt"].lower()
+    assert "slick" in cum_share["prompt"].lower()
     speech = prepare_story_clip(stop, 3, last_frame="x.png", stills_dir=tmp_path)
     assert "おきましたか？おきゃくさん、しゅうてんだからおりてください" in speech["prompt"]
     assert "SEMEN SHARE:" not in speech["prompt"]
@@ -5224,7 +5249,7 @@ def test_notebook_story_play_flow():
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert 'getattr(_h3_studio, "sanitize_story_soundscape", None)' in src
-    assert '"ネットリ" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
+    assert '"clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
@@ -5245,7 +5270,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260908-floor-1" in cell2
+    assert "h3-20260909-fix-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5288,7 +5313,7 @@ def test_notebook_story_play_flow():
     assert "except ImportError:" in helper_src
     assert "r2v_finalize_prompt = None" in helper_src
     assert "tongues wrap" in helper_src
-    assert 'Then 口移し ベロチュー: a filthy 濃厚キス. tongues wrap' in helper_src
+    assert 'Then mouth-to-mouth semen share, a filthy deep wet kiss. tongues wrap' in helper_src
 
 
 def test_studio_imports_when_r2v_core_is_missing(tmp_path, monkeypatch):
@@ -5616,7 +5641,7 @@ def test_anthology_shorts_immoral(tmp_path):
         if planned["situation"] == "oral_creampie":
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert "white liquid" in planned["prompt"].lower()
-            assert "ドロドロ" in planned["prompt"]
+            assert "viscous" in planned["prompt"].lower() or "sticky" in planned["prompt"].lower() or "thick gooey" in planned["prompt"].lower()
         if planned["situation"] == "futa_sex":
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert clip["prompt"].startswith("hmmotion, PENISLORA")

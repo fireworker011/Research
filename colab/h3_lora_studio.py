@@ -485,11 +485,11 @@ SITUATION_HELP = {
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。対面20秒。8本＝85秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ15秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」の直後に短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。2本目以降は変えない。台詞10秒・2行まで。キス15は身を胸につける（胸は揉まない）。ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝120秒。9:16。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。ジュボ30秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。座ったまま騎乗→中に出す→抜くとドロドロが車掌のマンコから流れ出る。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝70秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
-    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝85秒。9:16。茶色い粘液は壁から、白は風呂。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。アヤ22ミニ・竿なし。レイ24・20cm玉なしマンコあり。歩行15秒、台詞10秒、ジュボ15・口内15は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝85秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行15秒、台詞10秒、ジュボ15・口内15は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -3019,17 +3019,33 @@ SHAFT_LOOK_LINE = (
     "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
     "Women marked NEVER futanari stay NO penis."
 )
+MEAT_FUTA_LINE = (
+    "FUTA LOCK: Rei is already a clear futanari from frame 1. The erect 20cm is already "
+    "growing from her own groin, attached to her body, visible. It does NOT grow out of "
+    "the white bath. It does NOT emerge from the liquid. It does NOT appear later. "
+    "Aya stays NO penis, NEVER futanari."
+)
+MEAT_SLIME_LINE = (
+    "BROWN SLIME: Thick dark-brown viscous slime already coats BOTH whole bodies: "
+    "face, hair, eyebrows, lips, neck, breasts, belly, back, ass, thighs, Aya's hairless pussy, "
+    "Rei's erect 20cm, and Rei's pussy at the base. It STAYS. It does not fade."
+)
+BATH_LOOK_LINE = (
+    "BATH LOOK: The bath is paste-thick opaque gooey sticky white semen, like glue or fresh rice paste, "
+    "not water, not milk, not thin white bathwater. It clings to skin in strings and coats. "
+    "Fingers would pull sticky threads. It does not look like a water bath."
+)
 
 
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
-    "SEMEN LOOK: The semen is a heavy ネットリ viscous sticky white liquid (ドロドロの白い液体). "
+    "SEMEN LOOK: The semen is a heavy clingy viscous sticky white liquid, paste-thick like glue. "
     "Heavy volume, a lot of it, opaque milk-white, thick gooey ropes that stretch. "
-    "Not watery, not clear, not saliva, not a thin drip. "
-    "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats. "
-    "It does not vanish, does not soak in, does not turn clear. "
+    "Not watery, not clear, not saliva, not a thin drip, not milk, not bathwater. "
+    "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats like wet paint. "
+    "It does not vanish, does not soak in, does not turn clear, does not run off like water. "
     "From the urethral opening at the glans tip leftover white liquid keeps drooling down the shaft "
-    "so the penis is ヌルヌル, glossy and slick with semen. It stays on the face and body after ejaculation."
+    "so the penis is glossy and slick with semen. It stays on the face and body after ejaculation."
 )
 _SEMEN_CUE_RE = re.compile(
     r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
@@ -3063,9 +3079,9 @@ ORAL_IN_MOUTH_LINE = (
 ORAL_IN_MOUTH_SHARE_LINE = (
     ORAL_IN_MOUTH_LINE
     + " Until the last cum pulses, stay like that. After the last pulse only: mouth off the penis. "
-    "HOLD STILL a heavy ネットリ sticky pool of opaque white liquid on the tongue. "
-    "The woman who was sucking (ジュボ側) STANDS UP off her knees to the partner's SAME EYE LEVEL, "
-    "then 口移し ベロチュー: tongues wrap and tangle around that same heavy white liquid. "
+    "HOLD STILL a heavy clingy sticky pool of opaque white liquid on the tongue. "
+    "The woman who was sucking STANDS UP off her knees to the partner's SAME EYE LEVEL, "
+    "then mouth-to-mouth semen share, wet tongue kiss: tongues wrap and tangle around that same heavy white liquid. "
     "Do not kiss from the knees. Do not lick the shaft when coming off."
 )
 _ORAL_SUCK_RE = re.compile(
@@ -3140,8 +3156,27 @@ def lock_futa_shaft(text: str) -> str:
     return _inject_before_soundscape(raw, SHAFT_LOOK_LINE)
 
 
+def lock_meat_wall_look(text: str, *, story_id: str = "", clip_index: int = 0) -> str:
+    """Meat-wall: Rei is already futa; brown slime is whole-body; bath is glue-thick."""
+    raw = str(text or "")
+    sid = str(story_id or "").strip()
+    if not raw:
+        return raw
+    if sid == "meat-wall-85s":
+        if "FUTA LOCK:" not in raw:
+            raw = _inject_before_soundscape(raw, MEAT_FUTA_LINE)
+        if "BROWN SLIME:" not in raw:
+            raw = _inject_before_soundscape(raw, MEAT_SLIME_LINE)
+        if "BATH LOOK:" not in raw:
+            raw = _inject_before_soundscape(raw, BATH_LOOK_LINE)
+        return raw
+    if sid == "semen-bath-70s" and "BATH LOOK:" not in raw:
+        return _inject_before_soundscape(raw, BATH_LOOK_LINE)
+    return raw
+
+
 URINE_LOOK_LINE = (
-    "URINE LOOK: Yellow urine (黄色い水). When a 20cm pees, the stream comes out of the urethral "
+    "URINE LOOK: Yellow urine. When a 20cm pees, the stream comes out of the urethral "
     "opening at the glans tip (the small hole at the tip of the 20cm), the same hole semen would "
     "pulse from, not from the pussy at the base. When a woman with no penis pees, yellow from her "
     "urethral opening. Opaque yellow water, not clear, not white, not from off-screen."
@@ -3201,7 +3236,7 @@ PLEASURE_JUPO_LINE = (
     "Breath hitches. She is enjoying the jupo. Not a work mask. Not a straight clinical face."
 )
 ORGASM_FACE_LINE = (
-    "ORGASM FACE: イキ顔. She is coming hard. Eyes rolling or squeezed shut, mouth open, "
+    "ORGASM FACE: Climax face. She is coming hard. Eyes rolling or squeezed shut, mouth open, "
     "brows up, flushed, shaking through the pulses. Extremely good. Not a calm work face. "
     "Not a straight clinical face."
 )
@@ -3236,22 +3271,22 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
 
 SEMEN_SHARE_KISS = (
     # Lowercase "tongues wrap": Colab ③'s freshness gate is case-sensitive.
-    "Then 口移し ベロチュー: a filthy 濃厚キス. tongues wrap and tangle around a heavy pool of "
-    "opaque sticky white liquid (ドロドロの白い液体), pushing it back and forth, gooey strands stretching "
+    "Then mouth-to-mouth semen share, a filthy deep wet kiss. tongues wrap and tangle around a heavy pool of "
+    "opaque sticky white liquid, pushing it back and forth, gooey strands stretching "
     "between the tongues, coating both tongues, lips, and chins. The white liquid STAYS on both faces."
 )
 SEMEN_SHARE_LINE = (
-    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy ネットリ sticky gooey pool of "
-    "opaque white liquid sits on the tongue, viscous (ドロドロの白い液体), not watery, not a thin drip. "
-    "The woman who was sucking (ジュボ側) STANDS UP off her knees until her eyes are at the SAME EYE LEVEL "
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy clingy sticky gooey pool of "
+    "opaque white liquid sits on the tongue, viscous, not watery, not a thin drip. "
+    "The woman who was sucking STANDS UP off her knees until her eyes are at the SAME EYE LEVEL "
     "as the partner. If the partner was sitting or lying, they sit up or stand so both faces meet at equal height. "
     f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do NOT look up from the floor. Do NOT stay kneeling or squatting for the kiss. "
     "Do not swallow it all first. Do not add a new clip."
 )
 SEMEN_SHARE_BEAT = (
-    "HOLD STILL: a heavy ネットリ sticky gooey pool of opaque white liquid sits on the tongue, viscous "
-    "(ドロドロの白い液体), not watery. The woman who was sucking (ジュボ側) STANDS UP off her knees "
+    "HOLD STILL: a heavy clingy sticky gooey pool of opaque white liquid sits on the tongue, viscous, "
+    "not watery. The woman who was sucking STANDS UP off her knees "
     "to the partner's SAME EYE LEVEL. If the partner was sitting or lying, they sit up or stand to meet her. "
     f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do not swallow it all first."
@@ -3264,6 +3299,9 @@ _SHARE_STAND_REPLACEMENTS = (
     ("leans into the 口移し ベロチュー", "meets her at the SAME EYE LEVEL for 口移し ベロチュー after she stands"),
     ("leans down into the 口移し ベロチュー", "sits up or stands to the SAME EYE LEVEL for 口移し ベロチュー"),
     ("Then she rises just enough for 口移し", "Then she STANDS UP to the SAME EYE LEVEL for 口移し"),
+    ("Then mouth-to-mouth semen share: they lean in", "Then she STANDS UP to the SAME EYE LEVEL for mouth-to-mouth semen share"),
+    ("then leans into the mouth-to-mouth", "then meets her at the SAME EYE LEVEL for mouth-to-mouth after she stands"),
+    ("Then she rises just enough for mouth-to-mouth", "Then she STANDS UP to the SAME EYE LEVEL for mouth-to-mouth"),
     ("then pulls OFF and rises just enough to Rei's mouth", "then pulls OFF and STANDS UP to Rei's SAME EYE LEVEL"),
     ("then pulls OFF. HOLD STILL", "then pulls OFF and STANDS UP to the SAME EYE LEVEL. HOLD STILL"),
     ("she stays squatting", "she STANDS UP to the SAME EYE LEVEL"),
@@ -3277,8 +3315,9 @@ _SHARE_STAND_REPLACEMENTS = (
     ("She stays on the stool.", "She sits up on the stool so their eyes match at the SAME EYE LEVEL."),
     ("Rei stays seated.", "Rei sits up or stands so their eyes match at the SAME EYE LEVEL."),
     ("Rei remains seated.", "Rei sits up or stands so their eyes match at the SAME EYE LEVEL."),
-    ("Then she stands and they fall into a deep wet tongue kiss", "Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet 濃厚キス"),
-    ("then stands into a deep wet tongue kiss", "then STANDS UP to the SAME EYE LEVEL into a deep wet 濃厚キス"),
+    ("Then she stands and they fall into a deep wet tongue kiss", "Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet kiss"),
+    ("then stands into a deep wet tongue kiss", "then STANDS UP to the SAME EYE LEVEL into a deep wet kiss"),
+    ("Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet 濃厚キス", "Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet kiss"),
 )
 # Geometry or act that cannot take a mouth-to-mouth share (vaginal creampie, under-desk, walk-away).
 SEMEN_SHARE_SKIP = frozenset({
@@ -3392,12 +3431,12 @@ def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
                 raw,
                 count=1,
             )
-        elif "口移し" in raw and "HOLD STILL" in raw:
+        elif ("口移し" in raw or "mouth-to-mouth" in raw.lower()) and "HOLD STILL" in raw:
             return _rewrite_share_stand(raw)
-        elif re.search(r"tongue kiss", raw, re.I) or "ベロチュー" in raw:
+        elif re.search(r"tongue kiss", raw, re.I) or "ベロチュー" in raw or "wet tongue kiss" in raw.lower():
             raw = re.sub(
-                r"(deep wet tongue kiss|deep wet 濃厚キス)",
-                r"\1, 口移し of the thick sticky white liquid still on the tongue",
+                r"(deep wet tongue kiss|deep wet 濃厚キス|deep filthy wet kiss)",
+                r"\1, mouth-to-mouth semen share of the thick sticky white liquid still on the tongue",
                 raw,
                 count=1,
                 flags=re.I,
@@ -3405,7 +3444,12 @@ def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
             if "HOLD STILL" not in raw:
                 raw = raw.replace(
                     "Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet 濃厚キス",
-                    "HOLD STILL the thick sticky white liquid on her tongue. Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet 濃厚キス",
+                    "HOLD STILL the thick sticky white liquid on her tongue. Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet kiss",
+                    1,
+                )
+                raw = raw.replace(
+                    "Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet kiss",
+                    "HOLD STILL the thick sticky white liquid on her tongue. Then she STANDS UP to the SAME EYE LEVEL and they fall into a deep wet kiss",
                     1,
                 )
         elif "\noverall_soundscape:" in raw:
@@ -3422,7 +3466,7 @@ def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
             raw = _MOUTH_STILL_ON_END_RE.sub(share_end, raw, count=1)
         else:
             raw = raw.replace("Nobody pulls off.", f"{SEMEN_SHARE_BEAT} ")
-            if "口移し" not in raw and "\noverall_soundscape:" in raw:
+            if "口移し" not in raw and "mouth-to-mouth" not in raw.lower() and "\noverall_soundscape:" in raw:
                 raw = raw.replace(
                     "\noverall_soundscape:",
                     f"\n{SEMEN_SHARE_BEAT}\n\noverall_soundscape:",
@@ -3430,23 +3474,23 @@ def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
                 )
         raw = raw.replace(
             "Mouth stays on until the last frames.",
-            "Mouth stays on until the last pulses, then mouth off for 口移し.",
+            "Mouth stays on until the last pulses, then mouth off for mouth-to-mouth semen share.",
         )
         return _rewrite_share_stand(raw)
     if mode == "silent_next":
         raw = raw.replace("Mouth stays on the penis.", "Mouth comes off the penis.")
         raw = raw.replace("Mouth stays on.", "Mouth comes off.")
         raw = raw.replace("Mouth never leaves.", "Mouth comes off.")
-        raw = raw.replace("She does not pull off.", "She pulls off, then 口移し.")
-        raw = raw.replace("Do not pull off.", "Pull off, then 口移し.")
-        raw = raw.replace("No pull-off.", "Pull off, then 口移し.")
+        raw = raw.replace("She does not pull off.", "She pulls off, then mouth-to-mouth semen share.")
+        raw = raw.replace("Do not pull off.", "Pull off, then mouth-to-mouth semen share.")
+        raw = raw.replace("No pull-off.", "Pull off, then mouth-to-mouth semen share.")
         raw = raw.replace("Nobody kisses.", "")
         raw = raw.replace("Do not kiss.", "")
         if _STILL_IN_MOUTH_END_RE.search(raw):
             raw = _STILL_IN_MOUTH_END_RE.sub(share_end, raw, count=1)
         elif _MOUTH_STILL_ON_END_RE.search(raw):
             raw = _MOUTH_STILL_ON_END_RE.sub(share_end, raw, count=1)
-        if "口移し" not in raw and "\noverall_soundscape:" in raw:
+        if "口移し" not in raw and "mouth-to-mouth" not in raw.lower() and "\noverall_soundscape:" in raw:
             raw = raw.replace(
                 "\noverall_soundscape:",
                 f"\n{SEMEN_SHARE_BEAT}\n\noverall_soundscape:",
@@ -3512,6 +3556,75 @@ def drop_speech_face_killers(
 def jp_outside_quotes(text: str) -> str:
     """Japanese script left after stripping 「」. A lock line must return empty."""
     return "".join(_JP_SCRIPT_RE.findall(_SPOKEN_RE.sub("", str(text or ""))))
+
+
+# Longest first. Applied only outside 「」 so spoken lines stay Japanese.
+_JP_PROMPT_GLOSSARY = (
+    ("ドロドロの白い液体", "thick gooey sticky white liquid"),
+    ("身を胸につける", "presses her body flush against the chest"),
+    ("シコシコオナニー", "stroking the erect penis"),
+    ("黄色い水", "yellow urine"),
+    ("濃厚キス", "deep filthy wet kiss"),
+    ("口移し", "mouth-to-mouth semen share"),
+    ("ベロチュー", "wet tongue kiss"),
+    ("ジュボ側", "woman who was sucking"),
+    ("イキ顔", "climax face"),
+    ("画面右手", "camera right"),
+    ("シコシコ", "stroking"),
+    ("ネットリ", "clingy sticky"),
+    ("ヌルヌル", "slick and slimy"),
+    ("ドロドロ", "thick gooey"),
+    ("おフロ", "bath"),
+    ("おミズ", "water-drink pretext"),
+    ("オシッコ", "pee"),
+    ("ハメ役", "receiver"),
+    ("竿役", "shaft"),
+    ("ミズ", "water"),
+)
+
+
+def _apply_jp_glossary(chunk: str) -> str:
+    out = str(chunk or "")
+    for src, dst in _JP_PROMPT_GLOSSARY:
+        out = out.replace(src, dst)
+    return out
+
+
+def english_except_speech(prompt: str) -> str:
+    """Keep 「台詞」. Turn leftover Japanese in the picture/lock text into English.
+
+    H3 reads Japanese outside quotes as extra spoken words. Do not add a
+    'don't speak English' lock (that also gets read aloud).
+    """
+    raw = str(prompt or "")
+    if not raw:
+        return raw
+    out: list[str] = []
+    pos = 0
+    for match in _SPOKEN_RE.finditer(raw):
+        out.append(_apply_jp_glossary(raw[pos:match.start()]))
+        out.append(match.group(0))
+        pos = match.end()
+    out.append(_apply_jp_glossary(raw[pos:]))
+    return "".join(out)
+
+
+_LIPSYNC_JP_LINE_RE = (
+    (re.compile(r"One short conversational Japanese line, natural adult voice, not recited, not stretched\.\s*"), "Mouth moves on the quoted line. "),
+    (re.compile(r"Each line is conversational, not recited, not stretched\.\s*"), ""),
+    (re.compile(r"Two Japanese lines\.?\s*"), ""),
+    (re.compile(r"One Japanese line from \w+ only\.?\s*"), ""),
+    (re.compile(r"speaks (?:her|his) Japanese line first"), "mouth moves on the quoted line first"),
+    (re.compile(r"\bJapanese line\b"), "quoted line"),
+)
+
+
+def strip_lipsync_speech_meta(prompt: str) -> str:
+    """Drop 'Japanese line' / recitation notes that H3 reads aloud. Keep 「」."""
+    text = str(prompt or "")
+    for rx, repl in _LIPSYNC_JP_LINE_RE:
+        text = rx.sub(repl, text)
+    return text
 
 
 def strip_audio_lock(prompt: str) -> str:
@@ -3650,6 +3763,8 @@ def lock_spoken_japanese(prompt: str, lines: list[str] | None = None) -> str:
     text = sanitize_story_soundscape(text)
     text = collapse_spoken_quotes(text, spoken)
     text = _put_quotes_in_soundscape(text, spoken)
+    text = strip_lipsync_speech_meta(text)
+    text = english_except_speech(text)
     return text
 
 
@@ -4540,6 +4655,7 @@ def prepare_story_clip(
     raw_prompt = lock_futa_shaft(raw_prompt)
     raw_prompt = lock_start_cast(raw_prompt)
     raw_prompt = lock_semen_look(raw_prompt, situation=situation)
+    raw_prompt = lock_meat_wall_look(raw_prompt, story_id=str(story.get("id") or ""), clip_index=index)
     raw_prompt = lock_urine_look(raw_prompt)
     raw_prompt = lock_spoken_emotion(raw_prompt)
     if share_mode == "on_cumouf":
