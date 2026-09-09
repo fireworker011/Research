@@ -269,6 +269,14 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
         "synth-pussy-h3",
     ],
+    "meat-wall-cesspit-70s": [
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+        "synth-pussy-h3",
+    ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
     # cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy. 飲尿は使わない（ジュボ）。
     "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -391,6 +399,9 @@ SITUATION_JA = {
     "肉壁": "meat-wall-85s",
     "肉壁のザーメン風呂": "meat-wall-85s",
     "ニクカベ風呂": "meat-wall-85s",
+    "ニクカベ肥溜め": "meat-wall-cesspit-70s",
+    "肉壁肥溜め": "meat-wall-cesspit-70s",
+    "ニクヘキ肥溜め": "meat-wall-cesspit-70s",
     "sales-visit-60s": "sales-visit-60s",
     "checkup-100s": "checkup-100s",
     "clinic-75s": "clinic-75s",
@@ -398,6 +409,7 @@ SITUATION_JA = {
     "last-train-120s": "last-train-120s",
     "semen-bath-70s": "semen-bath-70s",
     "meat-wall-85s": "meat-wall-85s",
+    "meat-wall-cesspit-70s": "meat-wall-cesspit-70s",
     "cafe-100s": "cafe-100s",
     "train-sales-80s": "train-sales-80s",
     "red-light-50s": "red-light-50s",
@@ -532,7 +544,8 @@ SITUATION_HELP = {
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
-    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、風呂に埋まらない、女体のみにしない）。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒はうわぁ＋手繋ぎ＋軽いフレンチキス（咥え・ジュボではない）。台詞10秒、ジュボ10・口内10は無言。口内のあとアヤが立ち上がって口移し。hmmotion なし。家のザーメン風呂とは別。台詞: うわぁ。。。すごいところだね。。。／あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。廃油やヘドロの粘度だが色は不透明な白（茶色・黒のタールにしない）。水ではなくベトベトで肌に付く。混ざるが消えない。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、女体のみにしない）。竿は液から生えない。アヤ22ミニ・竿なし。歩行10秒はうわぁ＋手繋ぎ＋軽いフレンチキス（咥え・ジュボではない）。台詞10秒、ジュボ10・口内10は無言。ジュボは浸かり深さ判定なし（自然と根元まで）。口内のあとアヤが立ち上がって口移し。hmmotion なし。家のザーメン風呂とは別。台詞: うわぁ。。。すごいところだね。。。／あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "meat-wall-cesspit-70s": "ニクカベ肥溜め。ニクカベの別バージョン。巨大生物の体内。7本＝70秒。9:16。冒頭は2人とも頭から足先まで白い廃油級ザーメンまみれ→大きな肥溜めを発見→肩までうんこの中。頭から足先まで濃い茶色の糞まみれ。アヤとレイのキス→ジュボするの→無言ジュボ→無言口内→おいしかった＋立ち上がって口移し。ジュボは浸かり深さ判定なし。レイは毎本フタナリ勃起20cm。アヤ22ミニ・竿なし。hmmotion なし。素のニクカベ（白いおフロ）とは別。台詞: うわぁ。。。あんなにおおきいコエダメだね。。。しろいのがからだじゅうについてる、、、あたままで、あしさきまで／このニオイ、、、アタマおかしくなりそう、、、こんなにこくて、うんこのニオイ、いきもできない、、、アタマおかしくなりそう、、、／んっ、キスして、、、あたまおかしくなりそう、、、こんなこえだめのなかで、あたままでうんこまみれなのに、キスして、、、／もうガマンできない！おチンチンジュボジュボするの！こんなこえだめのなかでも、れいのおチンチン、おくまでジュボジュボするの！／レイのザーメンおいしかった！こんなにこくてしろいの、おくまでだしてもらって、あたまおかしくなりそう、、、",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝ジュボ、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝ジュボ、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -618,6 +631,7 @@ CHAIN_PACK_ORDER = (
     "last-train-120s",
     "semen-bath-70s",
     "meat-wall-85s",
+    "meat-wall-cesspit-70s",
     "cafe-100s",
     "train-sales-80s",
     "red-light-50s",
@@ -705,6 +719,7 @@ STORY_TITLE_JA = {
     "last-train-120s": "終電",
     "semen-bath-70s": "ザーメン風呂",
     "meat-wall-85s": "ニクカベ",
+    "meat-wall-cesspit-70s": "ニクカベ肥溜め",
     "cafe-100s": "カフェ",
     "train-sales-80s": "車内販売",
     "red-light-50s": "赤信号",
@@ -3270,7 +3285,7 @@ MEAT_FUTA_LINE = (
     "an erect 20cm growing from her own groin, attached to her body, visible in the LOWER "
     "THIRD of the frame, not cropped, not hidden by the tub rim, not a woman-only body. "
     "The erect 20cm STAYS hard the whole take. It does NOT go soft. It does NOT disappear. "
-    "It does NOT grow out of the white bath. It does NOT emerge from the liquid. "
+    "It does NOT grow out of the white bath or any liquid. It does NOT emerge from the liquid. "
     "It does NOT appear later. Aya stays NO penis, NEVER futanari."
 )
 MEAT_SLIME_LINE = (
@@ -3278,14 +3293,35 @@ MEAT_SLIME_LINE = (
     "face, hair, eyebrows, lips, neck, breasts, belly, back, ass, thighs, Aya's hairless pussy, "
     "Rei's erect 20cm, and Rei's pussy at the base. It STAYS. It does not fade."
 )
+MEAT_CESSPIT_LINE = (
+    "CESSPIT LOOK: A huge living cesspit of dense dark-brown fecal sludge, like manure paste, "
+    "shoulder-deep. Thick brown feces already coats BOTH whole bodies HEAD TO TOE: face, hair, "
+    "eyebrows, lips, neck, breasts, belly, back, ass, thighs, feet, Aya's hairless pussy, "
+    "Rei's erect 20cm, and Rei's pussy. It STAYS. It does not fade. Not water. Not the white semen. "
+    "White semen coating from before mixes with the brown and stays. Both colors remain."
+)
+MEAT_SEMEN_COAT_LINE = (
+    "SEMEN COAT: Both bodies are already coated HEAD TO TOE in that same WHITE waste-oil sludge semen: "
+    "face, hair, lips, neck, breasts, belly, back, ass, thighs, feet, pussy, and Rei's 20cm. "
+    "Opaque WHITE, like industrial sludge or used engine oil turned white. It STAYS."
+)
+MEAT_JUPO_DEPTH_LINE = (
+    "JUPO DEPTH: Ignore how deep anyone is in the liquid. Aya sucks Rei's erect 20cm to the BASE "
+    "as a natural jupo. Mouth on the penis. Do not pause to measure chest, shoulder, or face vs the surface. "
+    "Do not require only the lower body under. Do not refuse the suck because of the liquid. "
+    "The liquid can cover whatever it covers. The blowjob still happens."
+)
+MEAT_WALL_IDS = frozenset({"meat-wall-85s", "meat-wall-cesspit-70s"})
 SEMEN_HEAVY_OIL = (
-    "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), paste-thick like glue, "
-    "slow and weighty as heavy oil but WHITE, never brown, never black, never tar-colored. "
-    "Fat ropes sag and stretch. Fingers would pull sticky threads. "
-    "Not watery, not milk, not a thin drip, not saliva, not clear."
+    "WHITE industrial-sludge / waste-oil semen: the LOOK of heavy sludge or used engine oil, "
+    "but the COLOR is opaque WHITE, never brown, never black, never tar-colored. "
+    "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), "
+    "paste-thick like glue, slow and weighty as poured heavy oil, like white sludge that barely flows. "
+    "Fat ropes sag and stretch and hang without dripping off. Fingers would pull sticky threads. "
+    "Not watery, not milk, not a thin drip, not saliva, not clear, not foam, not yogurt-thin."
 )
 BATH_LOOK_LINE = (
-    "BATH LOOK: The bath is that same heavy-oil-thick opaque WHITE semen: "
+    "BATH LOOK: The bath is that same WHITE waste-oil sludge semen: "
     f"{SEMEN_HEAVY_OIL} "
     "It clings to skin in strings and coats. It does not look like a water bath."
 )
@@ -3508,19 +3544,35 @@ def lock_futa_shaft(text: str) -> str:
     return _inject_before_soundscape(raw, SHAFT_LOOK_LINE)
 
 
-def lock_meat_wall_look(text: str, *, story_id: str = "", clip_index: int = 0) -> str:
-    """Meat-wall: Rei is already futa; brown slime is whole-body; bath is glue-thick."""
+def lock_meat_wall_look(text: str, *, story_id: str = "", clip_index: int = 0, situation: str = "") -> str:
+    """Meat-wall: Rei is already futa; coating stays; jupo ignores how deep they sit in the liquid."""
     raw = str(text or "")
     sid = str(story_id or "").strip()
     if not raw:
         return raw
-    if sid == "meat-wall-85s":
+    idx = int(clip_index or 0)
+    oral = (
+        str(situation or "").strip() in ORAL_SUCK_SITUATIONS
+        or bool(re.search(r"Already oral|CUMOUF|jupo-jupo|takes .+ to the BASE", raw, re.I))
+    )
+    if sid in MEAT_WALL_IDS:
         if "FUTA LOCK:" not in raw:
             raw = _inject_before_soundscape(raw, MEAT_FUTA_LINE)
-        if "BROWN SLIME:" not in raw:
-            raw = _inject_before_soundscape(raw, MEAT_SLIME_LINE)
-        if "BATH LOOK:" not in raw:
-            raw = _inject_before_soundscape(raw, BATH_LOOK_LINE)
+        if "SEMEN LOOK:" not in raw:
+            raw = _inject_before_soundscape(raw, SEMEN_LOOK_LINE)
+        if sid == "meat-wall-85s":
+            if "BROWN SLIME:" not in raw:
+                raw = _inject_before_soundscape(raw, MEAT_SLIME_LINE)
+            if "BATH LOOK:" not in raw:
+                raw = _inject_before_soundscape(raw, BATH_LOOK_LINE)
+        else:
+            if idx == 0:
+                if "SEMEN COAT:" not in raw:
+                    raw = _inject_before_soundscape(raw, MEAT_SEMEN_COAT_LINE)
+            elif "CESSPIT LOOK:" not in raw:
+                raw = _inject_before_soundscape(raw, MEAT_CESSPIT_LINE)
+        if oral and "JUPO DEPTH:" not in raw:
+            raw = _inject_before_soundscape(raw, MEAT_JUPO_DEPTH_LINE)
         return raw
     if sid == "semen-bath-70s" and "BATH LOOK:" not in raw:
         return _inject_before_soundscape(raw, BATH_LOOK_LINE)
@@ -3837,6 +3889,7 @@ SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
     "checkup-100s": [(8, "after_speech")],
     "clinic-75s": [(8, "on_back")],
     "meat-wall-85s": [(6, "after_speech")],
+    "meat-wall-cesspit-70s": [(6, "after_speech")],
     "homecoming-90s": [(10, "after_speech")],
     "karaoke-50s": [(4, "after_speech")],
     "sales-visit-60s": [(7, "after_speech")],
@@ -5212,7 +5265,12 @@ def prepare_story_clip(
     raw_prompt = lock_futa_shaft(raw_prompt)
     raw_prompt = lock_start_cast(raw_prompt)
     raw_prompt = lock_semen_look(raw_prompt, situation=situation)
-    raw_prompt = lock_meat_wall_look(raw_prompt, story_id=str(story.get("id") or ""), clip_index=index)
+    raw_prompt = lock_meat_wall_look(
+        raw_prompt,
+        story_id=str(story.get("id") or ""),
+        clip_index=index,
+        situation=situation,
+    )
     raw_prompt = lock_urine_look(raw_prompt)
     raw_prompt = lock_spoken_emotion(raw_prompt)
     if share_mode == "on_cumouf":

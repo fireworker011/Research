@@ -380,7 +380,9 @@ def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
     semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
     assert "white liquid" in semen.lower()
     assert "viscous" in semen.lower()
-    assert "ドロドロ" in semen
+    assert "clingy" in semen.lower()
+    assert "heavy-oil" in semen.lower()
+    assert "never brown" in semen.lower()
     assert lock_semen_look(semen) == semen
     assert "SEMEN LOOK:" not in lock_semen_look("Already oral. No climax.")
 

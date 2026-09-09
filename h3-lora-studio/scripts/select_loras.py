@@ -188,9 +188,22 @@ def lock_futa_shaft(text: str) -> str:
 
 
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
+SEMEN_HEAVY_OIL = (
+    "WHITE industrial-sludge / waste-oil semen: the LOOK of heavy sludge or used engine oil, "
+    "but the COLOR is opaque WHITE, never brown, never black, never tar-colored. "
+    "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), "
+    "paste-thick like glue, slow and weighty as poured heavy oil, like white sludge that barely flows. "
+    "Fat ropes sag and stretch and hang without dripping off. Fingers would pull sticky threads. "
+    "Not watery, not milk, not a thin drip, not saliva, not clear, not foam, not yogurt-thin."
+)
 SEMEN_LOOK_LINE = (
-    "SEMEN LOOK: The semen is a viscous sticky white liquid (ドロドロの白い液体). "
-    "Opaque white, thick, gooey strands. Visible white liquid, not clear, not water, not saliva-only."
+    "SEMEN LOOK: The semen is always that same heavy-oil-thick WHITE goo: "
+    f"{SEMEN_HEAVY_OIL} "
+    "Heavy volume, a lot of it. "
+    "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats like wet paint. "
+    "It does not vanish, does not soak in, does not turn clear, does not run off like water. "
+    "From the urethral opening at the glans tip leftover white goo keeps drooling slowly down the shaft "
+    "so the penis is glossy and slick with heavy semen. It stays on the face and body after ejaculation."
 )
 _SEMEN_CUE_RE = re.compile(
     r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
