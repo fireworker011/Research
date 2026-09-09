@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-train-talk-1"' in src
+    assert 'FETCH_REV = "h3-20260909-act-sfx-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-train-talk-1" in blob
+    assert "h3-20260909-act-sfx-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -602,6 +602,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
     assert "lock_act_silent" in src
+    assert "lock_act_sfx" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -5405,7 +5406,7 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "own breasts" in jupo
     assert "Do not start oral" in jupo
     assert "keep that mouth on the penis" in jupo
-    assert "soft small female moans" in soundscape_text(jupo).lower()
+    assert "leaked female moans" in soundscape_text(jupo).lower()
     assert jp_outside_quotes(jupo) == ""
     assert lock_pleasure_voice_and_wait(jupo, situation="oral") == jupo
 
@@ -5557,8 +5558,33 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             if orig_sit in ACT_SITUATIONS:
                 assert spoken_lines(prompt) == [], (story["id"], i + 1, spoken_lines(prompt))
                 assert "ACT SILENCE:" in prompt, (story["id"], i + 1)
+                assert "KEEP wet sounds loud" in prompt, (story["id"], i + 1)
                 assert "LIP SYNC" not in prompt, (story["id"], i + 1)
                 assert "SPEECH FACE:" not in prompt, (story["id"], i + 1)
+                if not urine_re.search(raw):
+                    sound = soundscape_text(prompt)
+                    assert "moan" in sound.lower(), (story["id"], i + 1, sound)
+                    if orig_sit in {"oral", "futa_blowjob"}:
+                        assert "jupo" in sound.lower(), (story["id"], i + 1, sound)
+                        assert "saliva" in sound.lower(), (story["id"], i + 1, sound)
+                    elif orig_sit == "oral_creampie":
+                        assert "saliva" in sound.lower() or "in-mouth" in sound.lower(), (
+                            story["id"],
+                            i + 1,
+                            sound,
+                        )
+                    elif orig_sit == "cunnilingus_futa":
+                        assert "lick" in sound.lower() or "saliva" in sound.lower(), (
+                            story["id"],
+                            i + 1,
+                            sound,
+                        )
+                    elif orig_sit in SEX_INSIDE_SITUATIONS:
+                        assert "thrust" in sound.lower() or "wet" in sound.lower(), (
+                            story["id"],
+                            i + 1,
+                            sound,
+                        )
             if "Clear futanari" in prompt or "futanari: erect" in prompt.lower():
                 assert "SHAFT LOOK:" in prompt, (story["id"], i + 1)
                 assert "When erect: 20cm" in prompt, (story["id"], i + 1)
@@ -5928,7 +5954,9 @@ def test_all_act_clips_stay_silent():
         generate_immoral_shorts,
         jp_outside_quotes,
         load_story,
+        lock_act_sfx,
         lock_act_silent,
+        soundscape_text,
         spoken_lines,
         validate_story_follow,
     )
@@ -5950,7 +5978,15 @@ def test_all_act_clips_stay_silent():
             locked = lock_act_silent(raw, situation=sit)
             assert spoken_lines(locked) == [], (story["id"], i + 1)
             assert "ACT SILENCE:" in locked, (story["id"], i + 1)
+            assert "KEEP wet sounds loud" in locked, (story["id"], i + 1)
             assert lock_act_silent(locked, situation=sit) == locked
+            wet = lock_act_sfx(locked, situation=sit)
+            assert spoken_lines(wet) == [], (story["id"], i + 1)
+            assert "jupo-jupo" in wet.lower() or "moan" in soundscape_text(wet).lower(), (
+                story["id"],
+                i + 1,
+            )
+            assert lock_act_sfx(wet, situation=sit) == wet
     assert seen >= 80
 
     leaked = (
@@ -5963,9 +5999,24 @@ def test_all_act_clips_stay_silent():
     assert "こんにちは" not in silent
     assert "ACT SILENCE:" in silent
     assert "No spoken Japanese" in silent
+    assert "KEEP wet sounds loud" in silent
     assert jp_outside_quotes(silent) == ""
+    wet = lock_act_sfx(silent, situation="oral")
+    assert "jupo-jupo" in soundscape_text(wet).lower()
+    assert "saliva" in soundscape_text(wet).lower()
+    assert "moan" in soundscape_text(wet).lower()
+    kiss = lock_act_sfx(
+        "Silent deep filthy wet kiss.\nmouth-to-mouth.\n\noverall_soundscape:\nNight.\n",
+        situation="futa_visible",
+    )
+    assert spoken_lines(kiss) == []
+    assert "ACT SFX:" in kiss
+    assert "chu" in soundscape_text(kiss).lower()
+    assert "saliva" in soundscape_text(kiss).lower()
+    assert jp_outside_quotes(kiss) == ""
     talk = "LIP SYNC: face large.\n「こんにちは」\noverall_soundscape:\n「こんにちは」\n"
     assert lock_act_silent(talk, situation="futa_visible") == talk
+    assert lock_act_sfx(talk, situation="futa_visible") == talk
 
 
 def test_notebook_story_play_flow():
@@ -6060,7 +6111,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-train-talk-1" in cell2
+    assert "h3-20260909-act-sfx-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -6094,9 +6145,11 @@ def test_notebook_story_play_flow():
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
     assert "lock_act_silent" in src
+    assert "lock_act_sfx" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
     assert "def lock_pleasure_voice_and_wait" in helper_src
     assert "def lock_act_silent" in helper_src
+    assert "def lock_act_sfx" in helper_src
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
     assert "def lock_penis_inside" in helper_src

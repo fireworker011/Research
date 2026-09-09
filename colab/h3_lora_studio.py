@@ -3649,8 +3649,8 @@ SEX_PLEASURE_LINE = (
     "Not a work mask. Not a straight clinical face."
 )
 PLEASURE_VOICE_LINE = (
-    "PLEASURE VOICE: When it feels good, add small soft female moans and quiet wet hitching breath. "
-    "Tiny. Not words. Not extra Japanese dialogue. Not a scream. Not a new spoken line."
+    "PLEASURE VOICE: When it feels good, leaked female moans and wet hitching breath. "
+    "Audible. Not words. Not extra Japanese dialogue. Not a scream. Not a new spoken line."
 )
 EROTIC_WAIT_LINE = (
     "EROTIC WAIT: Leftover / pause seconds only. Do not freeze. Do not add, skip, or replace the written beat. "
@@ -3682,7 +3682,7 @@ EROTIC_WAIT_LINE = (
     "and the peck does not replace a written deep kiss or mouth-to-mouth semen share. "
     "NOT oral. NOT in the mouth. NOT jupo. NOT a squat."
 )
-PLEASURE_VOICE_SFX = "Soft small female moans, quiet hitching breath."
+PLEASURE_VOICE_SFX = "Leaked female moans, wet hitching breath, not words."
 _WALK_IDLE_RE = re.compile(
     r"\b(walks|walking|commute|on the way to school|street walk)\b",
     re.I,
@@ -4221,7 +4221,38 @@ def strip_lipsync_speech_meta(prompt: str) -> str:
 
 ACT_SILENCE_LINE = (
     "ACT SILENCE: No spoken Japanese. Do not add a new quoted line. "
-    "Do not lip-sync words. Mouths do the act. Small moans only, not words."
+    "Do not lip-sync words. Mouths do the act. "
+    "KEEP wet sounds loud and audible: filthy jupo-jupo on the penis, wet chu kisses, "
+    "saliva-lick slurp, and leaked female moans. Not words. Do not mute them."
+)
+ACT_SFX_LINE = (
+    "ACT SFX: Keep wet sounds loud and audible: filthy jupo-jupo on the penis, "
+    "wet chu kisses, saliva-lick slurp, and leaked female moans. Not words. Do not mute them."
+)
+ORAL_ACT_SFX = (
+    "Loud wet filthy jupo-jupo on the penis, saliva slurp, leaked female moans, hitching breath."
+)
+CUMOUF_ACT_SFX = (
+    "Wet in-mouth pulses, saliva slurp, leaked female moans, hitching breath."
+)
+CUNNI_ACT_SFX = (
+    "Wet tongue licks on the pussy, saliva slurp, leaked female moans, hitching breath."
+)
+SEX_ACT_SFX = (
+    "Wet filthy thrusting, leaked female moans, hitching breath."
+)
+KISS_ACT_SFX = (
+    "Wet chu kisses, saliva slurp, leaked female moans, hitching breath."
+)
+HAND_ACT_SFX = (
+    "Wet stroking, leaked female moans, hitching breath."
+)
+PULSE_ACT_SFX = (
+    "Wet pulses, leaked female moans, hitching breath."
+)
+_KISS_SFX_RE = re.compile(
+    r"mouth-to-mouth|SEMEN SHARE|deep kiss|filthy wet kiss|tongue kiss|wet chu",
+    re.I,
 )
 
 
@@ -4237,6 +4268,70 @@ def lock_act_silent(text: str, *, situation: str = "") -> str:
     out = re.sub(r"\n{3,}", "\n\n", out)
     if "ACT SILENCE:" not in out:
         out = _inject_before_soundscape(out, ACT_SILENCE_LINE)
+    return out
+
+
+def act_sfx_extra(text: str, *, situation: str = "") -> str:
+    """English wet SFX only. No 「」. Jupo / chu / saliva / leaked moans."""
+    sit = str(situation or "").strip()
+    raw = str(text or "")
+    if sit in ACT_SITUATIONS:
+        if sit in {"oral", "futa_blowjob"}:
+            extra = ORAL_ACT_SFX
+        elif sit == "oral_creampie":
+            extra = CUMOUF_ACT_SFX
+        elif sit == "cunnilingus_futa":
+            extra = CUNNI_ACT_SFX
+        elif sit in SEX_INSIDE_SITUATIONS:
+            extra = SEX_ACT_SFX
+        elif sit in {"fingering", "masturbation", "futa_masturbation"}:
+            extra = HAND_ACT_SFX
+        elif sit in {"facial", "after_ejaculation"}:
+            extra = PULSE_ACT_SFX
+        else:
+            extra = "Leaked female moans, hitching breath."
+        if _KISS_SFX_RE.search(raw) and "chu" not in extra.lower():
+            extra = extra + " " + KISS_ACT_SFX
+        return extra
+    if spoken_lines(raw):
+        return ""
+    if _KISS_SFX_RE.search(raw):
+        return KISS_ACT_SFX
+    return ""
+
+
+def _soundscape_needs_sfx(body: str, extra: str) -> bool:
+    if not extra:
+        return False
+    blob = str(body or "").lower()
+    if extra.lower() in blob:
+        return False
+    tokens = []
+    el = extra.lower()
+    for tok in ("jupo-jupo", "chu", "saliva", "lick", "thrust", "moan"):
+        if tok in el:
+            tokens.append(tok)
+    if tokens and all(tok in blob for tok in tokens):
+        return False
+    return True
+
+
+def lock_act_sfx(text: str, *, situation: str = "") -> str:
+    """Act clips stay wordless. Jupo / chu / saliva / leaked moans stay loud. Every story."""
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw:
+        return raw
+    if _URINE_CUE_RE.search(raw) and sit in {"oral", "futa_blowjob"}:
+        return raw
+    extra = act_sfx_extra(raw, situation=sit)
+    if not extra:
+        return raw
+    out = raw
+    if sit not in ACT_SITUATIONS and "ACT SFX:" not in out and "KEEP wet sounds loud" not in out:
+        out = _inject_before_soundscape(out, ACT_SFX_LINE)
+    if _soundscape_needs_sfx(soundscape_text(out), extra):
+        out = _append_soundscape(out, extra)
     return out
 
 
@@ -5314,6 +5409,7 @@ def prepare_story_clip(
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
+    raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
