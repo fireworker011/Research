@@ -525,7 +525,7 @@ SITUATION_HELP = {
     "clinic-75s": "ケンシン。医院にアヤが来る。6本＝60秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ10・口内10は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
-    "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
+    "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
     "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒、台詞10秒、ジュボ10・口内10は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
@@ -3071,44 +3071,48 @@ MEAT_SLIME_LINE = (
     "face, hair, eyebrows, lips, neck, breasts, belly, back, ass, thighs, Aya's hairless pussy, "
     "Rei's erect 20cm, and Rei's pussy at the base. It STAYS. It does not fade."
 )
+SEMEN_HEAVY_OIL = (
+    "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), paste-thick like glue, "
+    "slow and weighty as heavy oil but WHITE, never brown, never black, never tar-colored. "
+    "Fat ropes sag and stretch. Fingers would pull sticky threads. "
+    "Not watery, not milk, not a thin drip, not saliva, not clear."
+)
 BATH_LOOK_LINE = (
-    "BATH LOOK: The bath is paste-thick opaque gooey sticky white semen, like glue or fresh rice paste, "
-    "not water, not milk, not thin white bathwater. It clings to skin in strings and coats. "
-    "Fingers would pull sticky threads. It does not look like a water bath."
+    "BATH LOOK: The bath is that same heavy-oil-thick opaque WHITE semen: "
+    f"{SEMEN_HEAVY_OIL} "
+    "It clings to skin in strings and coats. It does not look like a water bath."
 )
 
 
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
-    "SEMEN LOOK: The semen is a heavy clingy viscous sticky white liquid, paste-thick like glue. "
-    "Heavy volume, a lot of it, opaque milk-white, thick gooey ropes that stretch. "
-    "Not watery, not clear, not saliva, not a thin drip, not milk, not bathwater. "
+    "SEMEN LOOK: The semen is always that same heavy-oil-thick WHITE goo: "
+    f"{SEMEN_HEAVY_OIL} "
+    "Heavy volume, a lot of it. "
     "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats like wet paint. "
     "It does not vanish, does not soak in, does not turn clear, does not run off like water. "
-    "From the urethral opening at the glans tip leftover white liquid keeps drooling down the shaft "
-    "so the penis is glossy and slick with semen. It stays on the face and body after ejaculation."
+    "From the urethral opening at the glans tip leftover white goo keeps drooling slowly down the shaft "
+    "so the penis is glossy and slick with heavy semen. It stays on the face and body after ejaculation."
 )
 _SEMEN_CUE_RE = re.compile(
     r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
     r"Already a facial|Already after ejaculation|"
     r"viscous white|Thick white cum|shows the semen|The semen stays|"
-    r"white semen|white liquid",
+    r"white semen|white liquid|white goo|white ropes|"
+    r"SEMEN SHARE|mouth-to-mouth semen|sticky white",
     re.I,
 )
 
 
 def lock_semen_look(text: str, *, situation: str = "") -> str:
-    """H3 skips semen unless the prompt names a viscous white liquid."""
+    """Every story: semen is meat-wall-thick, heavy-oil weight, opaque white."""
     raw = str(text or "")
     if not raw or "SEMEN LOOK:" in raw:
         return raw
     sit = str(situation or "").strip()
     if sit not in SEMEN_SITUATIONS and not _SEMEN_CUE_RE.search(raw):
         return raw
-    cut = raw.find("\noverall_soundscape:")
-    if cut > 0:
-        return raw[:cut].rstrip() + "\n" + SEMEN_LOOK_LINE + "\n" + raw[cut:]
-    return raw.rstrip() + "\n" + SEMEN_LOOK_LINE
+    return _inject_before_soundscape(raw, SEMEN_LOOK_LINE)
 
 
 ORAL_SUCK_SITUATIONS = frozenset({"oral", "futa_blowjob", "oral_creampie"})
@@ -3120,7 +3124,7 @@ ORAL_IN_MOUTH_LINE = (
 ORAL_IN_MOUTH_SHARE_LINE = (
     ORAL_IN_MOUTH_LINE
     + " Until the last cum pulses, stay like that. After the last pulse only: mouth off the penis. "
-    "HOLD STILL a heavy clingy sticky pool of opaque white liquid on the tongue. "
+    "HOLD STILL a heavy clingy sticky pool of opaque heavy-oil-thick WHITE goo on the tongue. "
     "The woman who was sucking STANDS UP off her knees to the partner's SAME EYE LEVEL, "
     "then mouth-to-mouth semen share, wet tongue kiss: tongues wrap and tangle around that same heavy white liquid. "
     "Do not kiss from the knees. Do not lick the shaft when coming off."
@@ -3390,12 +3394,12 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
 SEMEN_SHARE_KISS = (
     # Lowercase "tongues wrap": Colab ③'s freshness gate is case-sensitive.
     "Then mouth-to-mouth semen share, a filthy deep wet kiss. tongues wrap and tangle around a heavy pool of "
-    "opaque sticky white liquid, pushing it back and forth, gooey strands stretching "
-    "between the tongues, coating both tongues, lips, and chins. The white liquid STAYS on both faces."
+    "opaque sticky heavy-oil-thick WHITE goo, pushing it back and forth, gooey strands stretching "
+    "between the tongues, coating both tongues, lips, and chins. The white goo STAYS on both faces."
 )
 SEMEN_SHARE_LINE = (
     "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy clingy sticky gooey pool of "
-    "opaque white liquid sits on the tongue, viscous, not watery, not a thin drip. "
+    "opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
     "The woman who was sucking STANDS UP off her knees until her eyes are at the SAME EYE LEVEL "
     "as the partner. If the partner was sitting or lying, they sit up or stand so both faces meet at equal height. "
     f"{SEMEN_SHARE_KISS} "
@@ -3403,7 +3407,7 @@ SEMEN_SHARE_LINE = (
     "Do not swallow it all first. Do not add a new clip."
 )
 SEMEN_SHARE_BEAT = (
-    "HOLD STILL: a heavy clingy sticky gooey pool of opaque white liquid sits on the tongue, viscous, "
+    "HOLD STILL: a heavy clingy sticky gooey pool of opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
     "not watery. The woman who was sucking STANDS UP off her knees "
     "to the partner's SAME EYE LEVEL. If the partner was sitting or lying, they sit up or stand to meet her. "
     f"{SEMEN_SHARE_KISS} "
@@ -3678,7 +3682,8 @@ def jp_outside_quotes(text: str) -> str:
 
 # Longest first. Applied only outside 「」 so spoken lines stay Japanese.
 _JP_PROMPT_GLOSSARY = (
-    ("ドロドロの白い液体", "thick gooey sticky white liquid"),
+    ("ドロドロの白い液体", "heavy-oil-thick gooey sticky opaque white liquid"),
+    ("ドロッドロ", "heavy-oil-thick gooey"),
     ("身を胸につける", "presses her body flush against the chest"),
     ("シコシコオナニー", "stroking the erect penis"),
     ("黄色い水", "yellow urine"),
@@ -3691,7 +3696,7 @@ _JP_PROMPT_GLOSSARY = (
     ("シコシコ", "stroking"),
     ("ネットリ", "clingy sticky"),
     ("ヌルヌル", "slick and slimy"),
-    ("ドロドロ", "thick gooey"),
+    ("ドロドロ", "heavy-oil-thick gooey"),
     ("おフロ", "bath"),
     ("おミズ", "water-drink pretext"),
     ("オシッコ", "pee"),
@@ -4560,10 +4565,12 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if situation in SEMEN_SITUATIONS:
                 look = lock_semen_look(prompt, situation=situation)
                 look_l = look.lower()
-                if "white liquid" not in look_l:
+                if "white liquid" not in look_l and "white goo" not in look_l:
                     errors.append(f"clip {n}: ejaculation must name a white liquid")
                 if "viscous" not in look_l and "sticky" not in look_l and "ドロドロ" not in look:
                     errors.append(f"clip {n}: ejaculation must be viscous / ドロドロ")
+                if "heavy-oil" not in look_l:
+                    errors.append(f"clip {n}: semen must be heavy-oil thick, same as the meat-wall bath")
         if lines:
             if situation != "futa_visible":
                 errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
@@ -4776,8 +4783,10 @@ def prepare_story_clip(
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation, ending="share")
         raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where="on_cumouf"))
         raw_prompt = lock_pleasure_face(raw_prompt, situation="oral_creampie")
+        raw_prompt = lock_semen_look(raw_prompt, situation="oral_creampie")
     elif share_mode in {"silent_next", "after_speech"}:
         raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where=share_mode))
+        raw_prompt = lock_semen_look(raw_prompt, situation="oral_creampie")
         if share_mode == "silent_next":
             situation = "futa_visible"
             label = apply_semen_share_label(label, mode=share_mode)
