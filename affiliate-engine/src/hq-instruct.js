@@ -284,6 +284,8 @@ function selfTest() {
     throw new Error('instruct yml title');
   }
   if (!instructYml.includes('affiliate-engine/data/conversions.csv')) throw new Error('instruct csv path');
+  const boot = fs.readFileSync(path.join(__dirname, '../docs/grok-bots/dump/G_hq_boot.txt'), 'utf8');
+  if (!boot.includes('https://github.com/fireworker011/Research/issues/110')) throw new Error('boot issue url');
   const yenYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/affiliate_engine_a8_yen.yml'), 'utf8');
   if (!yenYml.includes(`github.event.issue.title == '${YEN_ISSUE_TITLE}'`)) {
     throw new Error('yen yml title');
