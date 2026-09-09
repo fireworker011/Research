@@ -232,7 +232,7 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
+        "cowgirl-position-h3",
         "synth-pussy-h3",
     ],
     "last-stop-40s": [
@@ -525,11 +525,11 @@ SITUATION_HELP = {
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。対面20秒。8本＝80秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ10秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言10秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。6本＝60秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ10・口内10は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。口の確認は女医が立って胸を触りながらディープキス。オクスリ台詞のあとしゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し、騎乗で挿入→中出し→抜く→お掃除ジュボ→仰向けのまま口移し→ゲンキ。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／クチとムネはモンダイないですね。じゃあツギはおチンチンでオクスリあげますね！／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
-    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒、台詞10秒、ジュボ10・口内10は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、風呂に埋まらない、女体のみにしない）。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行10秒、台詞10秒、ジュボ10・口内10は無言。口内のあとアヤが立ち上がって口移し。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
     "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝放尿、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
@@ -3115,10 +3115,12 @@ SHAFT_LOOK_LINE = (
     "Women marked NEVER futanari stay NO penis."
 )
 MEAT_FUTA_LINE = (
-    "FUTA LOCK: Rei is already a clear futanari from frame 1. The erect 20cm is already "
-    "growing from her own groin, attached to her body, visible. It does NOT grow out of "
-    "the white bath. It does NOT emerge from the liquid. It does NOT appear later. "
-    "Aya stays NO penis, NEVER futanari."
+    "FUTA LOCK: Rei is ALWAYS a clear futanari. From frame 1 of this clip she already has "
+    "an erect 20cm growing from her own groin, attached to her body, visible in the LOWER "
+    "THIRD of the frame, not cropped, not hidden by the tub rim, not a woman-only body. "
+    "The erect 20cm STAYS hard the whole take. It does NOT go soft. It does NOT disappear. "
+    "It does NOT grow out of the white bath. It does NOT emerge from the liquid. "
+    "It does NOT appear later. Aya stays NO penis, NEVER futanari."
 )
 MEAT_SLIME_LINE = (
     "BROWN SLIME: Thick dark-brown viscous slime already coats BOTH whole bodies: "
@@ -3490,6 +3492,22 @@ SEMEN_SHARE_BEAT = (
     f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do not swallow it all first."
 )
+SEMEN_SHARE_SUPINE_BEAT = (
+    "HOLD STILL: a heavy clingy sticky gooey pool of opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
+    "not watery. The woman who was sucking leans DOWN to the partner's mouth. "
+    "The partner STAYS LYING ON THEIR BACK the whole kiss. Do NOT sit them up. Do NOT stand them up. "
+    "Do NOT bring them to standing eye level. "
+    f"{SEMEN_SHARE_KISS} "
+    "Do not swallow it all first."
+)
+SEMEN_SHARE_SUPINE_LINE = (
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy clingy sticky gooey pool of "
+    "opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
+    "The woman who was sucking leans DOWN to the partner's mouth. The partner STAYS LYING ON THEIR BACK "
+    "the whole kiss. Do NOT sit them up. Do NOT stand them up. Do NOT bring them to standing eye level. "
+    f"{SEMEN_SHARE_KISS} "
+    "Do not swallow it all first. Do not add a new clip."
+)
 _SHARE_STAND_REPLACEMENTS = (
     ("they lean in and pass that same thick white liquid", "she STANDS UP to the SAME EYE LEVEL and they pass that same thick white liquid"),
     ("Then 口移し ベロチュー: they lean in", "Then she STANDS UP to the SAME EYE LEVEL for 口移し ベロチュー"),
@@ -3529,10 +3547,10 @@ SEMEN_SHARE_SKIP = frozenset({
     "back-wash-60s",
     "lecture-desk-50s",
     "semen-bath-70s",
-    "meat-wall-85s",
 })
 # story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
 # on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
+# on_back = 口移し while the partner STAYS LYING ON THEIR BACK (do not stand them).
 SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
     "bath-120s": [(10, "silent_next")],
     "dinner-120s": [(10, "silent_next")],
@@ -3542,7 +3560,8 @@ SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
     "dishes-90s": [(11, "silent_next")],
     "cafe-100s": [(9, "after_speech")],
     "checkup-100s": [(8, "after_speech")],
-    "clinic-75s": [(4, "on_cumouf")],
+    "clinic-75s": [(8, "on_back")],
+    "meat-wall-85s": [(6, "after_speech")],
     "homecoming-90s": [(10, "after_speech")],
     "karaoke-50s": [(4, "after_speech")],
     "sales-visit-60s": [(7, "after_speech")],
@@ -3590,11 +3609,30 @@ def _rewrite_share_stand(raw: str) -> str:
     return text
 
 
-def lock_semen_share_kiss(text: str) -> str:
-    """Idempotent marker: HOLD white, ジュボ側 stands to eye level, then 濃厚キス 口移し."""
+def lock_semen_share_kiss(text: str, *, supine: bool = False) -> str:
+    """Idempotent marker: HOLD white, then 濃厚キス 口移し.
+
+    Default: ジュボ側 stands to eye level. supine=True: partner STAYS LYING ON THEIR BACK.
+    """
     raw = str(text or "")
     if not raw:
         return raw
+    if supine:
+        if "SEMEN SHARE:" in raw and "STAYS LYING" in raw:
+            return raw
+        if "SEMEN SHARE:" in raw:
+            raw = re.sub(
+                r"SEMEN SHARE:.*?(?=\n\noverall_soundscape:|\noverall_soundscape:|\Z)",
+                SEMEN_SHARE_SUPINE_LINE + "\n",
+                raw,
+                count=1,
+                flags=re.S,
+            )
+            return raw
+        cut = raw.find("\noverall_soundscape:")
+        if cut > 0:
+            return raw[:cut].rstrip() + "\n" + SEMEN_SHARE_SUPINE_LINE + "\n" + raw[cut:]
+        return raw.rstrip() + "\n" + SEMEN_SHARE_SUPINE_LINE
     if "SEMEN SHARE:" in raw:
         if "SAME EYE LEVEL" in raw:
             return raw
@@ -3613,7 +3651,7 @@ def lock_semen_share_kiss(text: str) -> str:
 
 
 def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
-    """Rewrite the share clip so the last seconds are HOLD white liquid + stand-to-eye-level 口移し."""
+    """Rewrite the share clip so the last seconds are HOLD white liquid + 口移し."""
     raw = str(prompt or "")
     if not raw or "SEMEN SHARE:" in raw:
         return raw
@@ -3622,6 +3660,22 @@ def inject_semen_share_into_prompt(prompt: str, *, where: str) -> str:
         f"After the last pulse, mouth off. {SEMEN_SHARE_BEAT} "
         "End: standing at the SAME EYE LEVEL, tongues sharing the thick white liquid, not still on the shaft, not kneeling."
     )
+    if mode == "on_back":
+        if _REMAINING_SILENCE_RE.search(raw):
+            raw = _REMAINING_SILENCE_RE.sub(
+                f"Remaining seconds, silence: mouth off the penis. {SEMEN_SHARE_SUPINE_BEAT} Do not freeze.",
+                raw,
+                count=1,
+            )
+        elif "口移し" in raw or "mouth-to-mouth" in raw.lower() or "STAYS LYING" in raw:
+            return raw
+        elif "\noverall_soundscape:" in raw:
+            raw = raw.replace(
+                "\noverall_soundscape:",
+                f"\n{SEMEN_SHARE_SUPINE_BEAT}\n\noverall_soundscape:",
+                1,
+            )
+        return raw
     raw = _rewrite_share_stand(raw)
     if mode == "after_speech":
         if _REMAINING_SILENCE_RE.search(raw):
@@ -4569,7 +4623,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
     }
 
 def semen_share_follow_errors(story: dict[str, Any]) -> list[str]:
-    """口移し is standing at equal eye level, not a kneeling look-up kiss."""
+    """口移し is standing at equal eye level, unless the partner stays on their back."""
     errors: list[str] = []
     clips = list(story.get("clips") or [])
     for i, mode in semen_share_plan(story):
@@ -4577,8 +4631,19 @@ def semen_share_follow_errors(story: dict[str, Any]) -> list[str]:
             continue
         n = i + 1
         prompt = str(clips[i].get("prompt") or "")
-        locked = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where=mode))
+        locked = lock_semen_share_kiss(
+            inject_semen_share_into_prompt(prompt, where=mode),
+            supine=(mode == "on_back"),
+        )
         low = locked.lower()
+        if mode == "on_back":
+            if "stays lying" not in locked and "lying on their back" not in low:
+                errors.append(f"clip {n}: 口移し must keep the partner lying on their back")
+            if "leans down" not in low and "lean down" not in low:
+                errors.append(f"clip {n}: 口移し must lean down to the partner on their back")
+            if "stands up" in low or "same eye level" in low:
+                errors.append(f"clip {n}: 口移し must not stand the partner up")
+            continue
         if "stands up" not in low and "stand up" not in low:
             errors.append(f"clip {n}: 口移し must have the sucking woman stand up")
         if "eye level" not in low:
@@ -4867,8 +4932,11 @@ def prepare_story_clip(
         raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where="on_cumouf"))
         raw_prompt = lock_pleasure_face(raw_prompt, situation="oral_creampie")
         raw_prompt = lock_semen_look(raw_prompt, situation="oral_creampie")
-    elif share_mode in {"silent_next", "after_speech"}:
-        raw_prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(raw_prompt, where=share_mode))
+    elif share_mode in {"silent_next", "after_speech", "on_back"}:
+        raw_prompt = lock_semen_share_kiss(
+            inject_semen_share_into_prompt(raw_prompt, where=share_mode),
+            supine=(share_mode == "on_back"),
+        )
         raw_prompt = lock_semen_look(raw_prompt, situation="oral_creampie")
         if share_mode == "silent_next":
             situation = "futa_visible"
