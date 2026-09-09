@@ -2,9 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。高単価の置き場が一段落したあと。バナーは出品するな。note は公開するな。結合するな。目標は変えるな。数字は invent するな。
 
-今すぐ次を開け。clone なら `affiliate-engine/docs/grok-bots/MEASURE.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/MEASURE.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 

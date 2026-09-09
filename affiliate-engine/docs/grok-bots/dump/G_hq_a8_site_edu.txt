@@ -2,13 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。G_hq_edu_exist.txt の返しが `開設済み` のときだけ使え。`未開設` と `YouTubeあり` と `項目なし` と `媒体なし` では使うな。結合するな。目標は変えるな。cron は戻すな。投稿するな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/SITE_EDU.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/SITE_EDU.md
-
-https://support.a8.net/a8/as/faq/2022/post_1955.html
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 

@@ -2,11 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。neo の掲載を見たあと使え。neo を転職アカに置いたあとでも使え（教育アカは別）。転職アカに N高を置くな。教育アカに neo を置くな。結合するな。目標は変えるな。cron は戻すな。投稿するな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/FUNNEL_NKO.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/FUNNEL_NKO.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 

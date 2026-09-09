@@ -233,6 +233,8 @@ function selfTest() {
     if (!fs.existsSync(path.join(root, rel))) throw new Error(`missing ${rel}`);
     const dump = fs.readFileSync(path.join(root, rel), 'utf8');
     if (dump.includes('G_hq_banner_10.txt')) throw new Error(`banner ${rel}`);
+    if (dump.includes('今すぐ次を開け')) throw new Error(`open next ${rel}`);
+    if (/G_hq_cw_remain|G_hq_cw_n10/.test(dump)) throw new Error(`remain ${rel}`);
   }
   process.stdout.write('affi-step self-test ok\n');
 }

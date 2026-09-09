@@ -2,11 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。N高またはアイズの返しが `Threadsあり` のとき使え。`YouTubeあり` と `項目なし` と `媒体なし` では使うな。N高を教育プロフィールに既に置いたならアイズでは使うな。結合するな。目標は変えるな。cron は戻すな。投稿するな。新媒体を今日開くな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/EXIST_EDU.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/EXIST_EDU.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 

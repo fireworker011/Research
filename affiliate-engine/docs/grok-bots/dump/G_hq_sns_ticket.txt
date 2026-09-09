@@ -2,11 +2,7 @@
 
 Cursor は参謀。このファイルは仕事1つだけ。G_hq_tenshoku_exist.txt の返しが `開設済み` のときだけ使え。`未開設` では使うな。neo を転職プロフィールに既に置いたなら使うな。結合するな。目標は変えるな。cron は戻すな。投稿するな。
 
-今すぐ次を開け。
-
-clone なら `affiliate-engine/docs/grok-bots/FUNNEL_TICKET.md`。無ければ:
-
-https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/FUNNEL_TICKET.md
+このファイルだけ開け。参謀mdは開けるな。結合するな。
 
 仕事はこれだけ:
 
