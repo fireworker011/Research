@@ -21,7 +21,8 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 4. **AI生成テンプレは必ず検品を通す**: `compliance.js` の `validateTemplate()`（構造）→ `checkContent()`（法令/規約）。この順序・両方必須。モデルの賢さに品質を依存させない
 5. **やらないこと（倫理・凍結リスク）**: いいね/フォローの自動実行（公式API非対応）、人間を装う自動返信・DM、#PRなしのリンク投稿、体験談の捏造
 6. **トークン等の秘密情報はGitHub Secretsのみ**。ファイル・コミット・ログに書かない
-7. **動画改善は video-judge.js だけ**: 再生→クリック→成果のゲート判定。投稿しない。数字を発明しない。`insight.js` をYouTubeに使わない。ジャンル転換しない
+7. **動画改善は video-judge.js だけ**: 再生→クリック→成果のゲート判定。判定自体は投稿しない。数字を発明しない。`insight.js` をYouTubeに使わない。ジャンル転換しない
+8. **動画投稿は video-poster.js だけ、しかも判定ゲート経由**（2026-09 追加）: `output/video/latest.json` の `posting.allowed` が false／古い／無い日は投稿しない。媒体は `config/video_accounts.json` の `platform_unlock` に人間が日付を書いたものだけ。`live_enabled` + `VIDEO_POST_LIVE_CONFIRM=I_UNDERSTAND_THE_RISK` の両方が無ければ常にドライラン。ワークフローに schedule を付けない（`affiliate_yaml_guard.yml` が守る）。**アカウントの自動作成は実装しない**（手動開設 → `video-oauth.js` で登録）。詳細 `affiliate-engine/docs/video-poster-setup.md`
 
 ## 構成（すべてGitHub上で完結・ローカル依存なし）
 
@@ -30,7 +31,12 @@ Threads 9アカウントのアフィリエイト完全自動運用システム�
 | `.github/workflows/affiliate_engine_post.yml` | 投稿。毎時23分起動、期日到来分のみ投稿（ステートレス）。concurrencyで二重実行防止。投稿後に amplify.js（500ビュー超の投稿へ自動リンクリプライ・1アカ2回/日）も実行 |
 | `.github/workflows/affiliate_engine_insight.yml` | デイリー自動改善。1日2ティック+冪等ガード。分析→ジャンル別リサーチ→テンプレ自動反映→エンゲージキット→Issue #13へ投稿 |
 | `.github/workflows/affiliate_engine_report.yml` | 日次KPIレポート（14時JST） |
-| `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ |
+| `.github/workflows/affiliate_engine_video_judge.yml` | 動画キャッシュループ。毎日判定のみ。投稿しない。insight.jsを使わない。checkoutはデフォルトブランチ。`latest.json` に投稿ゲート（posting）を書く |
+| `.github/workflows/affiliate_engine_video_post.yml` | 動画投稿（YouTube / TikTok / Instagram）。**手動起動のみ・schedule 禁止**。dry_run 既定 true。判定→投稿→state コミット。checkoutはデフォルトブランチ |
+| `.github/workflows/affiliate_engine_video_token_refresh.yml` | 動画アカウントのトークン延命（Instagram 60日・TikTok 回転）。週次。投稿しない |
+| `affiliate-engine/config/video_accounts.json` | 動画アカウント定義。`platform_unlock`（媒体を開ける日付・人間が書く）、`live_enabled`、媒体別 `*_env` |
+| `affiliate-engine/output/video_queue.jsonl` | 動画投稿キュー（1行1件）。`video-poster.js --enqueue` か GitHub アプリで編集 |
+| `output/state/video_posted.json` | 動画投稿状態（済みキー+直近ハッシュ）。手で編集しない |
 | `.github/workflows/refresh_threads_token.yml` | 週次トークン更新。`GH_SECRETS_PAT` があればSecrets自動書き戻し |
 | `affiliate-engine/config/accounts.json` | 9アカウント定義。`created` はランプアップ起点（1週目1本/日→2週目2本→3本） |
 | `affiliate-engine/config/budget.json` | **APIコスト制御**（リサーチは日替わりNジャンルのローテーション）。スマホから編集可 |
@@ -53,6 +59,8 @@ node --check src/<変更ファイル>.js
 node src/strategy-engine.js --from-file data/seed_templates.json   # 破棄警告が出ないこと
 node src/threads-poster.js --dry-run                               # 実投稿なしで内容確認
 # スケジュールの決定論性: 2回生成してmd5が一致すること
+# 動画系を触ったら
+node src/video-judge.js --self-test && node src/video-poster.js --self-test && node src/video-poster.js --dry-run
 ```
 
 コミットは `git pull --rebase` してから push（自動投稿の状態コミットと競合するため）。

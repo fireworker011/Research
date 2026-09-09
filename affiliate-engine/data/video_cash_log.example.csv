@@ -1,2 +1,2 @@
-date,videos_published,views,a8_clicks,conversions,note
-2026-08-22,0,0,0,0,example. copy to video_cash_log.csv
+date,platform,videos_published,views,a8_clicks,conversions,note
+2026-08-22,youtube,0,0,0,0,example. copy to video_cash_log.csv. platform は youtube / tiktok / instagram。空なら youtube

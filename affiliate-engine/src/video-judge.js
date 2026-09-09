@@ -8,12 +8,17 @@
  * - video_cash_log.csv だけを見て、再生→クリック→成果を切り分ける
  * - スマホで読める判定を output/video/ と（任意で）GitHub Issue に書く
  * - 実験中は次の癒し3本を再掲する
+ * - video-poster.js が読む自動投稿ゲート（posting）を latest.json に書く。
+ *   ゲートが閉じている日は poster は何も投稿しない
  *
  * やらないこと:
- * - 投稿
+ * - 投稿（投稿は video-poster.js。判定は投稿を許可するだけで実行しない）
  * - 数字の発明
  * - insight.js / Claude でのジャンル転換
- * - TikTok / Instagram / 量産 / 新しいエージェント
+ * - 媒体の追加判断（TikTok / Instagram は config/video_accounts.json の
+ *   platform_unlock に人間が日付を書いたものだけをゲートに載せる）
+ *
+ * CSV の platform 列は任意。空なら youtube。tiktok / instagram は別行で記録する。
  *
  *   node src/video-judge.js
  *   node src/video-judge.js --self-test
@@ -23,7 +28,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { ROOT, OUTPUT_DIR, parseCSV, todayJST } = require('./util');
+const { ROOT, OUTPUT_DIR, parseCSV, todayJST, loadConfig } = require('./util');
 const { PROFILE_CTA } = require('./youtube-cta');
 
 const GATES = {
@@ -36,15 +41,20 @@ const GATES = {
   weeklyVideoCap: 3
 };
 
+const PLATFORMS = ['youtube', 'tiktok', 'instagram'];
+const DEFAULT_PLATFORM = 'youtube';
+// 実験（14日）の間は YouTube だけ。他媒体は実験後にゲートが開いてから
+const EXPERIMENT_PLATFORMS = ['youtube'];
+
 const LOG_PATH = process.env.VIDEO_CASH_LOG || path.join(ROOT, 'data', 'video_cash_log.csv');
 const OUT_DIR = process.env.VIDEO_JUDGE_OUT || path.join(OUTPUT_DIR, 'video');
 const TRACKING_ISSUE_TITLE = '動画キャッシュループ — 今日の判定';
 const FORBIDDEN = [
-  '投稿を自動化するな',
-  'TikTok / Instagram を足すな',
+  'video-poster.js 以外で投稿を自動化するな。ゲートが閉じた日は poster も投稿しない',
+  'TikTok / Instagram は platform_unlock に人間が日付を書くまで足すな。同時に2媒体を開けるな',
   'ジャンル転換するな。参考チャンネルの動画をコピーするな',
   'insight.js を動画に使うな',
-  'Shorts の説明欄・コメントにアフィURLを置くな',
+  'Shorts / Reels / TikTok の説明欄・コメントにアフィURLを置くな。押せる場所はプロフィール',
   '既存32本を編集するな',
   '数字が無いのに量産するな'
 ];
@@ -73,9 +83,15 @@ function isLiveRow(row) {
   return true;
 }
 
+function normalizePlatform(value) {
+  const p = String(value ?? '').trim().toLowerCase();
+  return PLATFORMS.includes(p) ? p : DEFAULT_PLATFORM;
+}
+
 function normalizeRow(row) {
   return {
     date: row.date,
+    platform: normalizePlatform(row.platform),
     videos_published: toInt(row.videos_published),
     views: toInt(row.views),
     a8_clicks: toInt(row.a8_clicks),
@@ -110,10 +126,33 @@ function summarize(rows, today) {
     weekClicks.push({ start, end, clicks: sumField(inRange(live, start, end), 'a8_clicks') });
   }
 
+  const byPlatform = {};
+  for (const platform of PLATFORMS) {
+    const rows7 = last7.filter((row) => row.platform === platform);
+    const rowsAll = live.filter((row) => row.platform === platform);
+    if (rowsAll.length === 0) continue;
+    byPlatform[platform] = {
+      rows: rowsAll.length,
+      last7: {
+        videos: sumField(rows7, 'videos_published'),
+        views: sumField(rows7, 'views'),
+        clicks: sumField(rows7, 'a8_clicks'),
+        conversions: sumField(rows7, 'conversions')
+      },
+      cumulative: {
+        videos: sumField(rowsAll, 'videos_published'),
+        views: sumField(rowsAll, 'views'),
+        clicks: sumField(rowsAll, 'a8_clicks'),
+        conversions: sumField(rowsAll, 'conversions')
+      }
+    };
+  }
+
   return {
     today,
     rowCount: live.length,
     lastDate: live.length ? live[live.length - 1].date : null,
+    byPlatform,
     last7: {
       start: addDays(today, -6),
       end: today,
@@ -226,6 +265,66 @@ function decide(summary) {
   };
 }
 
+/** platform_unlock（人間が書いた日付）のうち、today 時点で有効な媒体 */
+function unlockedPlatforms(unlock, today) {
+  const out = [];
+  for (const platform of PLATFORMS) {
+    const date = unlock && unlock[platform];
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && date <= today) {
+      out.push(platform);
+    }
+  }
+  return out;
+}
+
+/**
+ * video-poster.js が読む自動投稿ゲート。
+ * 判定コードから「今日は投稿してよいか・週何本まで・どの媒体か」だけを機械可読で出す。
+ * 媒体は人間の platform_unlock と判定の積集合。判定が閉じていれば全媒体が閉じる。
+ */
+function postingGate(summary, verdict, unlock) {
+  const unlocked = unlockedPlatforms(unlock, summary.today);
+  const closed = (reason) => ({ allowed: false, weekly_cap: 0, platforms: [], reason });
+
+  let cap = 0;
+  let platforms = [];
+  let reason = '';
+
+  switch (verdict.code) {
+    case 'RECORD_MISSING':
+      return closed('記録が無い。判定できない日は投稿しない');
+    case 'CONTINUE_EXPERIMENT': {
+      const remain = Math.max(0, GATES.weeklyVideoCap - summary.experiment.videos);
+      if (remain === 0) return closed('実験の3本は出した。触らない');
+      cap = remain;
+      platforms = unlocked.filter((p) => EXPERIMENT_PLATFORMS.includes(p));
+      reason = `実験中。癒し型を残り${remain}本、YouTube だけ`;
+      break;
+    }
+    case 'FUNNEL_ALIVE':
+      cap = GATES.weeklyVideoCap;
+      platforms = unlocked;
+      reason = `導線は生きている。同じ型を週${cap}本まで`;
+      break;
+    case 'OFFER_ALIVE':
+      cap = GATES.weeklyVideoCap;
+      platforms = unlocked;
+      reason = `案件は生きている。成果が付いた型だけ週${cap}本まで`;
+      break;
+    case 'SUSPECT_OFFER':
+      return closed('案件か着地を疑う。人間が1本選ぶまで自動投稿しない');
+    case 'FUNNEL_WEAK':
+      return closed('導線では足りない。量産しない。次の一手は人間が選ぶ');
+    default:
+      return closed(`未知の判定 ${verdict.code}`);
+  }
+
+  if (platforms.length === 0) {
+    return closed(`${reason}。ただし platform_unlock に有効な媒体が無い`);
+  }
+  return { allowed: true, weekly_cap: cap, platforms, reason };
+}
+
 function next3Markdown() {
   const result = spawnSync(process.execPath, [path.join(__dirname, 'youtube-next3.js')], {
     encoding: 'utf-8'
@@ -236,7 +335,7 @@ function next3Markdown() {
   return (result.stdout || '').trim();
 }
 
-function renderMarkdown(summary, verdict, next3) {
+function renderMarkdown(summary, verdict, next3, posting) {
   const lines = [
     `# ${TRACKING_ISSUE_TITLE}`,
     '',
@@ -246,6 +345,19 @@ function renderMarkdown(summary, verdict, next3) {
     `今日の作業: ${verdict.action}`,
     ''
   ];
+
+  if (posting) {
+    lines.push('## 自動投稿ゲート（video-poster.js が読む）');
+    lines.push('');
+    if (posting.allowed) {
+      lines.push(`- 開: 週${posting.weekly_cap}本まで / 媒体: ${posting.platforms.join(', ')}`);
+    } else {
+      lines.push('- 閉: 今日は自動投稿しない');
+    }
+    lines.push(`- 理由: ${posting.reason}`);
+    lines.push('- 媒体を足すのは人間。config/video_accounts.json の platform_unlock に日付を書く');
+    lines.push('');
+  }
 
   if (!verdict.canTalk1M) {
     lines.push(`月100万はまだ語らない。週${GATES.weeklyClick1M}クリックが${GATES.weeklyClick1MStreak}週続くまで待つ。`);
@@ -273,6 +385,15 @@ function renderMarkdown(summary, verdict, next3) {
     lines.push(
       `- 週次クリック: ${summary.weekClicks.map((w) => `${w.start}〜${w.end}=${w.clicks}`).join(' / ')}`
     );
+    const platforms = Object.keys(summary.byPlatform || {});
+    if (platforms.length > 1) {
+      for (const p of platforms) {
+        const s = summary.byPlatform[p];
+        lines.push(
+          `- ${p}: 直近7日 投稿${s.last7.videos} / 再生${s.last7.views} / クリック${s.last7.clicks} / 成果${s.last7.conversions}（累計 投稿${s.cumulative.videos} / クリック${s.cumulative.clicks} / 成果${s.cumulative.conversions}）`
+        );
+      }
+    }
   }
   lines.push('');
   lines.push('ゲート: 週15で導線、累計50+成果0で案件疑い、週50が3週で月100万の会話解禁。');
@@ -477,6 +598,106 @@ function runSelfTest() {
   assertEqual(talk.code, 'OFFER_ALIVE', 'conversion still wins over 1M talk');
   assertEqual(talk.canTalk1M, true, '3 weeks of 50');
 
+  // --- 自動投稿ゲート ---
+  const unlockYt = { youtube: '2026-06-20', tiktok: null, instagram: null };
+  const unlockAll = { youtube: '2026-06-20', tiktok: '2026-09-01', instagram: '2026-09-01' };
+  const unlockFuture = { youtube: '2026-06-20', tiktok: '2027-01-01', instagram: null };
+
+  assertEqual(unlockedPlatforms(unlockFuture, '2026-09-07').join(','), 'youtube', 'future unlock date is not yet open');
+  assertEqual(unlockedPlatforms(unlockAll, '2026-09-07').join(','), 'youtube,tiktok,instagram', 'all unlocked');
+  assertEqual(unlockedPlatforms({ youtube: 'yes' }, '2026-09-07').length, 0, 'non-date unlock ignored');
+
+  const gMissing = postingGate(summarize([], today), missingDuring, unlockAll);
+  assertEqual(gMissing.allowed, false, 'record missing closes gate');
+
+  const day3Summary = summarize(
+    parseLog(
+      [
+        'date,videos_published,views,a8_clicks,conversions,note',
+        '2026-08-22,1,800,1,0,healing',
+        '2026-08-23,1,500,1,0,'
+      ].join('\n')
+    ),
+    '2026-08-24'
+  );
+  const gExp = postingGate(day3Summary, decide(day3Summary), unlockAll);
+  assertEqual(gExp.allowed, true, 'experiment with remaining opens gate');
+  assertEqual(gExp.weekly_cap, 1, 'experiment cap is remaining count');
+  assertEqual(gExp.platforms.join(','), 'youtube', 'experiment is youtube only even if others unlocked');
+
+  const posted3Summary = summarize(
+    parseLog(
+      [
+        'date,videos_published,views,a8_clicks,conversions,note',
+        '2026-08-22,1,100,1,0,',
+        '2026-08-23,1,100,1,0,',
+        '2026-08-24,1,100,1,0,'
+      ].join('\n')
+    ),
+    '2026-08-24'
+  );
+  assertEqual(postingGate(posted3Summary, decide(posted3Summary), unlockAll).allowed, false, '3 posted closes gate');
+
+  const funnelSummary = summarize(
+    parseLog(
+      [
+        'date,videos_published,views,a8_clicks,conversions,note',
+        '2026-09-01,1,1000,5,0,',
+        '2026-09-02,1,1000,5,0,',
+        '2026-09-03,1,1000,6,0,'
+      ].join('\n')
+    ),
+    '2026-09-07'
+  );
+  const gFunnelYt = postingGate(funnelSummary, decide(funnelSummary), unlockYt);
+  assertEqual(gFunnelYt.allowed, true, 'funnel alive opens gate');
+  assertEqual(gFunnelYt.weekly_cap, GATES.weeklyVideoCap, 'funnel cap is weekly cap');
+  assertEqual(gFunnelYt.platforms.join(','), 'youtube', 'only unlocked platforms');
+  const gFunnelAll = postingGate(funnelSummary, decide(funnelSummary), unlockAll);
+  assertEqual(gFunnelAll.platforms.join(','), 'youtube,tiktok,instagram', 'human unlock adds platforms');
+  assertEqual(postingGate(funnelSummary, decide(funnelSummary), {}).allowed, false, 'no unlock closes gate');
+
+  const weakSummary = summarize(
+    parseLog('date,videos_published,views,a8_clicks,conversions,note\n2026-09-05,1,900,2,0,\n'),
+    '2026-09-07'
+  );
+  assertEqual(postingGate(weakSummary, decide(weakSummary), unlockAll).allowed, false, 'weak funnel closes gate');
+
+  const suspectSummary = summarize(
+    parseLog(
+      [
+        'date,videos_published,views,a8_clicks,conversions,note',
+        '2026-08-25,1,200,20,0,',
+        '2026-09-01,1,200,20,0,',
+        '2026-09-03,1,200,20,0,'
+      ].join('\n')
+    ),
+    '2026-09-07'
+  );
+  assertEqual(postingGate(suspectSummary, decide(suspectSummary), unlockAll).allowed, false, 'suspect offer closes gate');
+
+  // --- platform 列 ---
+  const multi = summarize(
+    parseLog(
+      [
+        'date,platform,videos_published,views,a8_clicks,conversions,note',
+        '2026-09-05,youtube,1,900,10,0,',
+        '2026-09-05,tiktok,1,300,2,0,',
+        '2026-09-06,,1,500,6,1,blank platform = youtube',
+        '2026-09-06,Instagram,1,100,0,0,case insensitive'
+      ].join('\n')
+    ),
+    '2026-09-07'
+  );
+  assertEqual(multi.cumulative.clicks, 18, 'platform rows sum into total');
+  assertEqual(multi.byPlatform.youtube.cumulative.videos, 2, 'blank platform counts as youtube');
+  assertEqual(multi.byPlatform.tiktok.cumulative.clicks, 2, 'tiktok rows split out');
+  assertEqual(multi.byPlatform.instagram.rows, 1, 'platform is case insensitive');
+  assertEqual(decide(multi).code, 'OFFER_ALIVE', 'conversion on any platform keeps offer alive');
+
+  const md = renderMarkdown(multi, decide(multi), '', postingGate(multi, decide(multi), unlockAll));
+  if (!/自動投稿ゲート/.test(md) || !/tiktok:/.test(md)) throw new Error('markdown lacks gate or platform lines');
+
   console.log('self-test ok');
 }
 
@@ -487,12 +708,15 @@ async function main() {
   const rows = loadRows();
   const summary = summarize(rows, today);
   const verdict = decide(summary);
+  const unlock = (loadConfig('video_accounts', {}) || {}).platform_unlock || {};
+  const posting = postingGate(summary, verdict, unlock);
   const next3 = verdict.includeNext3 ? next3Markdown() : '';
-  const markdown = renderMarkdown(summary, verdict, next3);
-  const payload = { generated_at: new Date().toISOString(), summary, verdict };
+  const markdown = renderMarkdown(summary, verdict, next3, posting);
+  const payload = { generated_at: new Date().toISOString(), summary, verdict, posting };
   const paths = writeOutputs(today, markdown, payload);
 
   console.log(`  ${verdict.code}: ${verdict.title}`);
+  console.log(`  ゲート: ${posting.allowed ? `開（週${posting.weekly_cap}本 / ${posting.platforms.join(',')}）` : '閉'} — ${posting.reason}`);
   console.log(`  ${paths.latest}`);
 
   if (process.argv.includes('--json')) {
@@ -506,9 +730,12 @@ async function main() {
 
 module.exports = {
   GATES,
+  PLATFORMS,
   parseLog,
   summarize,
   decide,
+  postingGate,
+  unlockedPlatforms,
   renderMarkdown,
   addDays
 };

@@ -67,10 +67,14 @@ A8 と YouTube スタジオだけ見る。
 |  |  |  |  |  |  |
 
 数字は `data/video_cash_log.csv` に追記する。GitHub アプリから編集してよい。
+媒体が増えたら `platform` 列（youtube / tiktok / instagram）で行を分ける。空なら youtube。
 
 毎日 06:37 JST 前後に `video-judge.js` がこのCSVだけを見て判定する。
 結果は `output/video/TODAY.md` と Issue「動画キャッシュループ — 今日の判定」。
-投稿しない。数字が無い日は「記録不足」とだけ書く。
+判定自体は投稿しない。数字が無い日は「記録不足」とだけ書き、投稿ゲートは閉じる。
+
+投稿は `video-poster.js`（手動起動）がこの判定の `posting` ゲートを読んで行う。
+ゲートが閉じている日・`platform_unlock` に無い媒体には出ない。手順は `docs/video-poster-setup.md`。
 
 ## 14日後の判定
 
@@ -108,5 +112,5 @@ A8 と YouTube スタジオだけ見る。
 
 - 新しい案件
 - 「実際に比較した」などの体験文言
-- 投稿そのもの
-- TikTok / Instagram を足すこと
+- 投稿そのもの（`video-poster.js` の起動と `live_enabled` / `VIDEO_POST_LIVE_CONFIRM`）
+- TikTok / Instagram を足すこと（`config/video_accounts.json` の `platform_unlock` に日付を書く。1媒体ずつ）
