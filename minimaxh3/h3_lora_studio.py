@@ -3315,13 +3315,14 @@ SEMEN_HEAVY_OIL = (
     "but the COLOR is opaque WHITE, never brown, never black, never tar-colored. "
     "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), "
     "paste-thick like glue, slow and weighty as poured heavy oil, like white sludge that barely flows. "
-    "Fat ropes sag and stretch and hang without dripping off. Fingers would pull sticky threads. "
-    "Not watery, not milk, not a thin drip, not saliva, not clear, not foam, not yogurt-thin."
+    "TOO MUCH of it. Overflowing. It piles and pools. Fat ropes sag and stretch and hang without dripping off. "
+    "Fingers would pull sticky threads. A mouth cannot hold it all. "
+    "Not watery, not milk, not a thin drip, not a teaspoon, not a thin streak, not saliva, not clear, not foam, not yogurt-thin."
 )
 BATH_LOOK_LINE = (
     "BATH LOOK: The bath is that same WHITE waste-oil sludge semen: "
     f"{SEMEN_HEAVY_OIL} "
-    "It clings to skin in strings and coats. It does not look like a water bath."
+    "It fills the tub deep. It clings to skin in fat strings and coats. It does not look like a water bath."
 )
 
 
@@ -3329,11 +3330,13 @@ SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejac
 SEMEN_LOOK_LINE = (
     "SEMEN LOOK: The semen is always that same heavy-oil-thick WHITE goo: "
     f"{SEMEN_HEAVY_OIL} "
-    "Heavy volume, a lot of it. "
+    "Heavy volume, TOO MUCH of it, overflowing. "
+    "The mouth holds a fat overflowing mouthful that spills from the corners, ropes down the chin, "
+    "and still more keeps pulsing. "
     "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats like wet paint. "
     "It does not vanish, does not soak in, does not turn clear, does not run off like water. "
     "From the urethral opening at the glans tip leftover white goo keeps drooling slowly down the shaft "
-    "so the penis is glossy and slick with heavy semen. It stays on the face and body after ejaculation."
+    "in fat sheets so the penis is glossy and slick with heavy semen. It stays on the face and body after ejaculation."
 )
 _SEMEN_CUE_RE = re.compile(
     r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
@@ -3371,7 +3374,7 @@ ORAL_IN_MOUTH_SHARE_LINE = (
     + " Until the last cum pulses, KEEP the lips at the BASE. Do not pull back to the glans to catch the cum. "
     "The heavy-oil-thick WHITE goo pulses in the mouth and throat while she is still deep. "
     "After the last pulse only: mouth off the penis. "
-    "HOLD STILL a heavy clingy sticky pool of opaque heavy-oil-thick WHITE goo on the tongue. "
+    "HOLD STILL a fat overflowing mouthful of opaque heavy-oil-thick WHITE goo on the tongue, spilling at the lips. "
     "The woman who was sucking STANDS UP off her knees to the partner's SAME EYE LEVEL, "
     "then mouth-to-mouth semen share, wet tongue kiss: tongues wrap and tangle around that same heavy white liquid. "
     "Do not kiss from the knees. Do not lick the shaft when coming off."
@@ -3797,13 +3800,13 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
 
 SEMEN_SHARE_KISS = (
     # Lowercase "tongues wrap": Colab ③'s freshness gate is case-sensitive.
-    "Then mouth-to-mouth semen share, a filthy deep wet kiss. tongues wrap and tangle around a heavy pool of "
-    "opaque sticky heavy-oil-thick WHITE goo, pushing it back and forth, gooey strands stretching "
-    "between the tongues, coating both tongues, lips, and chins. The white goo STAYS on both faces."
+    "Then mouth-to-mouth semen share, a filthy deep wet kiss. tongues wrap and tangle around a fat overflowing "
+    "mouthful of opaque sticky heavy-oil-thick WHITE goo, pushing it back and forth, gooey strands stretching "
+    "between the tongues, coating both tongues, lips, and chins. TOO MUCH of it. The white goo STAYS on both faces."
 )
 SEMEN_SHARE_LINE = (
-    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy clingy sticky gooey pool of "
-    "opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a fat overflowing mouthful of "
+    "clingy sticky gooey opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
     "The woman who was sucking STANDS UP off her knees until her eyes are at the SAME EYE LEVEL "
     "as the partner. If the partner was sitting or lying, they sit up or stand so both faces meet at equal height. "
     f"{SEMEN_SHARE_KISS} "
@@ -3811,14 +3814,14 @@ SEMEN_SHARE_LINE = (
     "Do not swallow it all first. Do not add a new clip."
 )
 SEMEN_SHARE_BEAT = (
-    "HOLD STILL: a heavy clingy sticky gooey pool of opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
+    "HOLD STILL: a fat overflowing mouthful of clingy sticky gooey opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
     "not watery. The woman who was sucking STANDS UP off her knees "
     "to the partner's SAME EYE LEVEL. If the partner was sitting or lying, they sit up or stand to meet her. "
     f"{SEMEN_SHARE_KISS} "
     "Do NOT kiss from the knees. Do not swallow it all first."
 )
 SEMEN_SHARE_SUPINE_BEAT = (
-    "HOLD STILL: a heavy clingy sticky gooey pool of opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
+    "HOLD STILL: a fat overflowing mouthful of clingy sticky gooey opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, "
     "not watery. The woman who was sucking leans DOWN to the partner's mouth. "
     "The partner STAYS LYING ON THEIR BACK the whole kiss. Do NOT sit them up. Do NOT stand them up. "
     "Do NOT bring them to standing eye level. "
@@ -3826,8 +3829,8 @@ SEMEN_SHARE_SUPINE_BEAT = (
     "Do not swallow it all first."
 )
 SEMEN_SHARE_SUPINE_LINE = (
-    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a heavy clingy sticky gooey pool of "
-    "opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
+    "SEMEN SHARE: After the last pulse, mouth off the penis. HOLD STILL: a fat overflowing mouthful of "
+    "clingy sticky gooey opaque heavy-oil-thick WHITE goo sits on the tongue, viscous, not watery, not a thin drip. "
     "The woman who was sucking leans DOWN to the partner's mouth. The partner STAYS LYING ON THEIR BACK "
     "the whole kiss. Do NOT sit them up. Do NOT stand them up. Do NOT bring them to standing eye level. "
     f"{SEMEN_SHARE_KISS} "
@@ -4756,8 +4759,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "inside her little sister's mouth. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth, "
                 "overflows down the shaft as thick opaque white gooey strands onto Aya's chin and mini breasts. "
                 "Messy swallows, more white liquid leaking than she can keep. "
-                "After the last pulse: mouth off. HOLD STILL a heavy ネットリ sticky pool of opaque white liquid "
-                "on the tongue, viscous (ドロドロ). Overflow clings to chin, lips, and breasts and STAYS. "
+                "After the last pulse: mouth off. HOLD STILL a fat overflowing mouthful of clingy sticky opaque white liquid "
+                "on the tongue, viscous (ドロドロ). TOO MUCH. Overflow clings to chin, lips, and breasts and STAYS. "
                 "The glans tip keeps drooling white liquid so the shaft is ヌルヌル. "
                 "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
                 f"{SEMEN_SHARE_KISS} "
@@ -4888,8 +4891,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
                 "Under the family table Aya's lips stay wrapped around Madoka's 20cm. Madoka cums inside her sister's "
                 "mouth while the dinner bowls sit above. Viscous sticky white liquid (ドロドロの白い液体) floods the mouth "
                 "and runs down the shaft onto the tatami edge as thick opaque white gooey strands. Messy swallows. "
-                "After the last pulse: mouth off. HOLD STILL a heavy ネットリ sticky pool of opaque white liquid "
-                "on the tongue, viscous (ドロドロ). Overflow clings to chin, lips, and breasts and STAYS. "
+                "After the last pulse: mouth off. HOLD STILL a fat overflowing mouthful of clingy sticky opaque white liquid "
+                "on the tongue, viscous (ドロドロ). TOO MUCH. Overflow clings to chin, lips, and breasts and STAYS. "
                 "The glans tip keeps drooling white liquid so the shaft is ヌルヌル. "
                 "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL. "
                 f"{SEMEN_SHARE_KISS} "
