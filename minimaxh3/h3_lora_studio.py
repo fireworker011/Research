@@ -27,6 +27,9 @@ from typing import Any
 STUDIO_ROOT = Path(__file__).resolve().parents[1] / "h3-lora-studio"
 if not STUDIO_ROOT.is_dir():
     STUDIO_ROOT = Path("/content/h3-lora-studio")
+_SCRIPTS = STUDIO_ROOT / "scripts"
+if _SCRIPTS.is_dir() and str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
 
 _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
@@ -1410,6 +1413,57 @@ def fetch_github_files_raw(
                 failed.append(rel)
                 print("ファイル取得に失敗:", rel)
     return failed
+
+
+def ensure_select_loras_on_path(
+    *,
+    content_root: Path | str = "/content",
+    drive_root: Path | str | None = None,
+    branch: str = "",
+    repo: str = "fireworker011/Research",
+) -> Path:
+    """③ imports `select_loras` from /content. Copy from scripts/Drive, or fetch, if ② left it only under scripts/."""
+    root = Path(content_root)
+    dest = root / "select_loras.py"
+    scripts = root / "h3-lora-studio" / "scripts" / "select_loras.py"
+    cands = [dest, scripts]
+    if drive_root:
+        cands.append(Path(drive_root) / "select_loras.py")
+
+    def _ok(path: Path) -> bool:
+        try:
+            return (
+                path.is_file()
+                and path.stat().st_size > 20
+                and "MAX_HELPERS" in path.read_text(encoding="utf-8")
+            )
+        except OSError:
+            return False
+
+    src = next((p for p in cands if _ok(p)), None)
+    if src is None and str(branch or "").strip():
+        miss = fetch_github_files_raw(
+            str(branch).strip(),
+            ["h3-lora-studio/scripts/select_loras.py"],
+            lambda rel: dest if str(rel).endswith("select_loras.py") else root / rel,
+            repo=repo,
+        )
+        if not miss and _ok(dest):
+            src = dest
+    if src is None or not _ok(src):
+        raise SystemExit("部品 select_loras がありません。②をもう一度実行してから③。")
+    if src.resolve() != dest.resolve():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+    if _ok(dest) and not scripts.is_file():
+        scripts.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dest, scripts)
+    scripts_dir = str(scripts.parent)
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    return dest
 
 
 def fetch_github_tree(

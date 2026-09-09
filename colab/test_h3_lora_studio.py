@@ -395,6 +395,39 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
 
+def test_ensure_select_loras_copies_from_scripts_and_drive(tmp_path):
+    from h3_lora_studio import ensure_select_loras_on_path
+
+    body = "MAX_HELPERS = 2\n" + ("x" * 80)
+    scripts = tmp_path / "h3-lora-studio" / "scripts"
+    scripts.mkdir(parents=True)
+    (scripts / "select_loras.py").write_text(body, encoding="utf-8")
+    dest = ensure_select_loras_on_path(content_root=tmp_path, branch="")
+    assert dest == tmp_path / "select_loras.py"
+    assert dest.read_text(encoding="utf-8") == body
+
+    other = tmp_path / "other"
+    drive = other / "drive"
+    drive.mkdir(parents=True)
+    (drive / "select_loras.py").write_text(body, encoding="utf-8")
+    dest2 = ensure_select_loras_on_path(content_root=other, drive_root=drive, branch="")
+    assert dest2 == other / "select_loras.py"
+    assert dest2.is_file()
+    assert (other / "h3-lora-studio" / "scripts" / "select_loras.py").is_file()
+
+
+def test_ensure_select_loras_missing_tells_to_rerun_cell2(tmp_path):
+    from h3_lora_studio import ensure_select_loras_on_path
+
+    try:
+        ensure_select_loras_on_path(content_root=tmp_path, branch="")
+    except SystemExit as exc:
+        assert "select_loras" in str(exc)
+        assert "②" in str(exc)
+    else:
+        raise AssertionError("expected SystemExit")
+
+
 def test_civitai_token_prefers_form(monkeypatch):
     monkeypatch.delenv("CIVITAI_API_TOKEN", raising=False)
     assert civitai_token(form_value="  pasted-key  ") == "pasted-key"
@@ -458,7 +491,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-final-1"' in src
+    assert 'FETCH_REV = "h3-20260909-import-1"' in src
+    assert "ensure_select_loras_on_path" in src
+    assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
+    assert "部品 select_loras がありません" in src
+    assert "from select_loras import forbidden_hits" in src
     assert "--reserve-vram" in src
     assert "keep_canvas = bool(STORY)" in src
     assert "cap_fl2va_clip_s" in src
@@ -466,8 +503,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "1本（最大10秒）" in src
     assert "garbage_collection_threshold:0.8" in src
     assert "15秒の本は10秒にします" in src
-    assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
-    assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
+    assert '("colab/h3_r2v_core.py", Path("/content/h3_r2v_core.py"))' in src
+    assert '("h3-lora-studio/scripts/select_loras.py", Path("/content/select_loras.py"))' in src
+    assert src.find('"colab/h3_r2v_core.py"') < src.find(
         "from h3_lora_studio import fetch_github_tree"
     )
     helper_text = helper.read_text(encoding="utf-8")
@@ -515,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-final-1" in blob
+    assert "h3-20260909-import-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -5430,6 +5468,7 @@ def test_notebook_story_play_flow():
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert '"INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "")' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
+    assert 'getattr(_h3_studio, "ensure_select_loras_on_path", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     for pid in CHAIN_PACK_ORDER:
@@ -5446,7 +5485,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-final-1" in cell2
+    assert "h3-20260909-import-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5487,8 +5526,9 @@ def test_notebook_story_play_flow():
     assert "SHAFT LOOK:" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src
     assert '"MiniMaxH3ReferenceToVideo"' in helper_src or "R2V_NODE" in helper_src
-    assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in cell2
-    assert cell2.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < cell2.find(
+    assert '("colab/h3_r2v_core.py", Path("/content/h3_r2v_core.py"))' in cell2
+    assert '("h3-lora-studio/scripts/select_loras.py", Path("/content/select_loras.py"))' in cell2
+    assert cell2.find('"colab/h3_r2v_core.py"') < cell2.find(
         "from h3_lora_studio import fetch_github_tree"
     )
     assert "except ImportError:" in helper_src
