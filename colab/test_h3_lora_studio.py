@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-semen-volume-2"' in src
+    assert 'FETCH_REV = "h3-20260909-hachiko-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-semen-volume-2" in blob
+    assert "h3-20260909-hachiko-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -3071,8 +3071,9 @@ def test_story_play_labels_resolve_to_story_and_play():
     from h3_lora_studio import ADDON_PACK_IDS, resolve_situation
 
     assert ADDON_PACK_IDS <= CHAIN_PACK_IDS
-    assert len(ADDON_PACK_IDS) == 10
+    assert len(ADDON_PACK_IDS) == 11
     assert "manhole-30s" in ADDON_PACK_IDS and "riverbank-30s" in ADDON_PACK_IDS
+    assert "hachiko-30s" in ADDON_PACK_IDS
     assert not (CHAIN_PACK_IDS & STORY_IDS)
     labels = story_play_labels()
     assert len(labels) == 55
@@ -3085,9 +3086,14 @@ def test_story_play_labels_resolve_to_story_and_play():
     assert "ケンシン（専用）" in pack_labels
     assert "ハイスイコウ（専用）" in pack_labels
     assert "川原のゴミ（参照つなぐ修）" in pack_labels
+    assert "ハチコウ（専用）" in pack_labels
     assert is_chain_pack("ハイスイコウ（専用）")
     assert resolve_situation("ハイスイコウ") == "manhole-30s"
     assert resolve_situation("川原のゴミ（つなぐ）") == "riverbank-30s"
+    assert resolve_situation("ハチコウ") == "hachiko-30s"
+    assert resolve_situation("渋谷ハチコウ") == "hachiko-30s"
+    assert resolve_situation("ハチコウ前") == "hachiko-30s"
+    assert resolve_situation("ハチコウ（専用）") == "hachiko-30s"
     assert chain_pack_legacy_labels() == ["訪問販売60秒（つなぐ）", "定期検診100秒（つなぐ）", "終点40秒（つなぐ）"]
     assert resolve_situation("ケンシン") == "clinic-75s"
     assert resolve_situation("医院ケンシン") == "clinic-75s"
@@ -3599,6 +3605,7 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
         "gas-station-30s": (["futa_visible", "oral_creampie"], ["おチンチン、ミズ、ちょうだい、、、", "はい、おくち、あけて"], ["Aya", "Rei"]),
         "tunnel-phone-30s": (["futa_visible", "oral_creampie"], ["ツウじてる？", "ダセない"], ["Aya", "Rei"]),
         "riverbank-30s": (["futa_visible", "oral_creampie"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
+        "hachiko-30s": (["futa_visible", "oral_creampie"], ["またシコシコしてる", "がまんできない"], ["Aya", "Rei"]),
     }
     assert tuple(ADDON_PACK_ORDER) == tuple(expect)
     assert ADDON_PACK_IDS == set(expect)
@@ -3722,6 +3729,21 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
     look = load_story("lookout-30s")
     assert "20cm hangs unused" in look["clips"][1]["prompt"]
     assert "Not oral on a penis" in look["clips"][1]["prompt"]
+    hachiko = load_story("hachiko-30s")
+    h1 = hachiko["clips"][0]["prompt"]
+    h2 = hachiko["clips"][1]["prompt"]
+    assert "Hachiko" in h1
+    assert "LEFT" in h1 and "RIGHT" in h1
+    assert "stroking" in h1.lower() or "pumping" in h1.lower()
+    assert "kiss" in h1.lower()
+    assert "jupo" not in h1.lower()
+    assert "hand's width" in h1
+    assert "mouth OPEN" in h1 or "opens her mouth" in h1
+    assert "15" not in str(hachiko.get("clip_s"))
+    assert hachiko["clip_s"] == 10 and hachiko["duration_s"] == 20
+    assert "CUMOUF" in h2
+    assert "face" in h2.lower()
+    assert "overflow" in h2.lower() or "floods" in h2.lower()
 
 
 def test_validate_story_follow_spoken_max_and_doggy():
@@ -6049,13 +6071,13 @@ def test_notebook_story_play_flow():
     assert '今使うシーン = "登校（専用）"' in cell2
     for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
         assert f'"登校{suffix}"' in cell3
-    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "ニクカベ", "ニクカベ肥溜め", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ"):
+    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "ニクカベ", "ニクカベ肥溜め", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ", "ハチコウ"):
         for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
             assert f'"{pack}{suffix}"' in cell3, pack + suffix
     # legacy long pack labels are aliases only, not dropdown rows
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
     # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
-    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
     assert "作り直しの物語" in cell3 and "作り直し開始の本" in cell3
@@ -6100,6 +6122,7 @@ def test_notebook_story_play_flow():
     assert '"fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
+    assert '"hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert 'getattr(_h3_studio, "sanitize_story_soundscape", None)' in src
     assert '"clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
@@ -6123,7 +6146,7 @@ def test_notebook_story_play_flow():
     assert CHAIN_PACK_ORDER[4:7] == ("last-train-120s", "semen-bath-70s", "meat-wall-85s")
     assert CHAIN_PACK_ORDER[7] == "meat-wall-cesspit-70s"
     assert src.find("stories/sales-visit-60s.json") < src.find("stories/checkup-100s.json") < src.find("stories/clinic-75s.json") < src.find("stories/last-stop-40s.json") < src.find("stories/last-train-120s.json") < src.find("stories/semen-bath-70s.json") < src.find("stories/meat-wall-85s.json") < src.find("stories/meat-wall-cesspit-70s.json")
-    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"ニクカベ（専用）"' in cell2 and '"ニクカベ肥溜め（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2
+    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"ニクカベ（専用）"' in cell2 and '"ニクカベ肥溜め（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2 and '"ハチコウ（専用）"' in cell2
     assert "専用（専用）" in md0 and "専用（つなぐ）" in md0 and "専用（つなぐ修）" in md0
     assert "名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）" in md0
     assert "旧名「訪問販売60秒（つなぐ）」" in md0
@@ -6131,7 +6154,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-semen-volume-2" in cell2
+    assert "h3-20260909-hachiko-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

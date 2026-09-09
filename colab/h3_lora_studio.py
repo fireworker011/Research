@@ -299,6 +299,7 @@ SITUATION_DOWNLOAD = {
     "gas-station-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "tunnel-phone-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "riverbank-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "hachiko-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "shorts-immoral": [
         "blowjob-h3",
         "synth-pussy-h3",
@@ -428,6 +429,9 @@ SITUATION_JA = {
     "ガソリンスタンド跡": "gas-station-30s",
     "トンネル非常電話": "tunnel-phone-30s",
     "川原のゴミ": "riverbank-30s",
+    "ハチコウ": "hachiko-30s",
+    "渋谷ハチコウ": "hachiko-30s",
+    "ハチコウ前": "hachiko-30s",
     "manhole-30s": "manhole-30s",
     "roof-ac-30s": "roof-ac-30s",
     "tetrapod-30s": "tetrapod-30s",
@@ -438,6 +442,7 @@ SITUATION_JA = {
     "gas-station-30s": "gas-station-30s",
     "tunnel-phone-30s": "tunnel-phone-30s",
     "riverbank-30s": "riverbank-30s",
+    "hachiko-30s": "hachiko-30s",
     "homecoming-90s": "homecoming-90s",
     "dishes-90s": "dishes-90s",
     "commute-120s": "commute-120s",
@@ -564,6 +569,7 @@ SITUATION_HELP = {
     "gas-station-30s": "物語の追加。ガソリンスタンド跡。10秒×2＝20秒。9:16。アヤ＋レイ。1本目はミズの会話のあと、口を開けて先端から手の幅で止まる（飲まない）。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "tunnel-phone-30s": "物語の追加。トンネル非常電話。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "hachiko-30s": "物語の追加。ハチコウ。10秒×2＝20秒（15秒禁止）。9:16。夜の渋谷ハチコウ前。レイ24・20cmが画面左手で立ってフルボッキをシコシコ。アヤ22ミニ・竿なしが右から現れてキス→口を開けて先端から手の幅。2本目は無言で根元まで濃厚ジュボ→口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
     "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
@@ -650,6 +656,7 @@ CHAIN_PACK_ORDER = (
     "gas-station-30s",
     "tunnel-phone-30s",
     "riverbank-30s",
+    "hachiko-30s",
 )
 CHAIN_PACK_IDS = set(CHAIN_PACK_ORDER)
 # 物語の追加: 10秒×2＝20秒。台詞は1本目（futa_visible）だけ。行為は無言。
@@ -664,6 +671,7 @@ ADDON_PACK_ORDER = (
     "gas-station-30s",
     "tunnel-phone-30s",
     "riverbank-30s",
+    "hachiko-30s",
 )
 ADDON_PACK_IDS = frozenset(ADDON_PACK_ORDER)
 # 15s independent dirty shorts. Not a story (is_story False). Not a chain pack.
@@ -738,6 +746,7 @@ STORY_TITLE_JA = {
     "gas-station-30s": "ガソリンスタンド跡",
     "tunnel-phone-30s": "トンネル非常電話",
     "riverbank-30s": "川原のゴミ",
+    "hachiko-30s": "ハチコウ",
 }
 STORY_PLAY_JA = {
     STORY_PLAY_DEDICATED: "専用",
