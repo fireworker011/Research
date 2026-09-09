@@ -84,6 +84,29 @@ async function collectAccountMetrics(account) {
   return result;
 }
 
+/** approved_yen だけを円にする。example の amount_jpy は足さない。 */
+function approvedRows(rows) {
+  const byGenre = {};
+  let approvedTotal = 0;
+  const pendingTotal = 0;
+  let count = 0;
+  for (const r of rows) {
+    const d = String(r.date || '');
+    if (d.startsWith('#')) continue;
+    if (/カタログ/.test(String(r.note || '')) && parseInt(r.approved_yen || '0', 10) > 0) continue;
+    if (r.approved_yen === undefined || r.approved_yen === '') continue;
+    const amount = parseInt(r.approved_yen, 10);
+    if (!Number.isFinite(amount)) continue;
+    const key = r.program || r.genre || r.source || 'all';
+    byGenre[key] = byGenre[key] || { approved: 0, pending: 0, count: 0 };
+    byGenre[key].count++;
+    byGenre[key].approved += amount;
+    approvedTotal += amount;
+    count++;
+  }
+  return { approvedTotal, pendingTotal, byGenre, count };
+}
+
 /** ASP 成果 CSV。正本は approved_yen。example の amount_jpy は円にしない。 */
 function loadConversions() {
   const csvPath = path.join(OUTPUT_DIR, '..', 'data', 'conversions.csv');
@@ -96,34 +119,7 @@ function loadConversions() {
     if (d.startsWith('#')) return false;
     return d.startsWith(thisMonth);
   });
-
-  const byGenre = {};
-  let approvedTotal = 0;
-  let pendingTotal = 0;
-  for (const r of monthly) {
-    if (/カタログ/.test(String(r.note || '')) && parseInt(r.approved_yen || '0', 10) > 0) continue;
-    const key = r.program || r.genre || r.source || 'all';
-    byGenre[key] = byGenre[key] || { approved: 0, pending: 0, count: 0 };
-    if (r.approved_yen !== undefined && r.approved_yen !== '') {
-      const amount = parseInt(r.approved_yen, 10);
-      if (!Number.isFinite(amount)) continue;
-      byGenre[key].count++;
-      byGenre[key].approved += amount;
-      approvedTotal += amount;
-      continue;
-    }
-    const amount = parseInt(r.amount_jpy || '0', 10);
-    if (!Number.isFinite(amount)) continue;
-    byGenre[key].count++;
-    if (r.status === 'approved') {
-      byGenre[key].approved += amount;
-      approvedTotal += amount;
-    } else if (r.status === 'pending') {
-      byGenre[key].pending += amount;
-      pendingTotal += amount;
-    }
-  }
-  return { approvedTotal, pendingTotal, byGenre, count: monthly.length };
+  return approvedRows(monthly);
 }
 
 /** 目標との差分から必要アクションを逆算 */
@@ -280,7 +276,23 @@ async function main() {
   console.log(`   月末着地予測: ¥${gap.projectedMonthly.toLocaleString()} / 目標 ¥${TARGET_MONTHLY_JPY.toLocaleString()}`);
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+function selfTest() {
+  const example = parseCSV('date,genre,amount_jpy,status\n2026-07-01,転職,12000,approved\n');
+  if (approvedRows(example).approvedTotal !== 0) throw new Error('example yen');
+  const live = parseCSV('date,source,program,clicks,cv,approved_yen,note\n2026-08-27,A8,all,33,0,0,x\n');
+  if (approvedRows(live).approvedTotal !== 0) throw new Error('zero row');
+  const cat = parseCSV('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,0,15000,カタログ\n');
+  if (approvedRows(cat).approvedTotal !== 0) throw new Error('catalog');
+  const ok = parseCSV('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,1,5000,screen\n');
+  if (approvedRows(ok).approvedTotal !== 5000) throw new Error('real yen');
+  process.stdout.write('report self-test ok\n');
+}
+
+if (process.argv.includes('--self-test')) {
+  selfTest();
+} else {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}
