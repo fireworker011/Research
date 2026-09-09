@@ -255,12 +255,12 @@ async function runSelfTest() {
   const jpy = makeBars({ n: 100, start: 150, drift: 0.02 });
   const fixtures = { EURUSD: fixture, GBPUSD: fixture, USDJPY: jpy, GOLD: goldAsiaBars() };
   const now = new Date(fixture[fixture.length - 1].time);
-  const tick = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures });
+  const tick = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures, commander: defaultCommander() });
   assert(Array.isArray(tick.intents), 'tick intents');
   assertEqual(tick.dryRun, true, 'dry run');
   assert(tick.live_gate.length > 0, 'live still gated');
   assert(tick.gold != null, 'gold state');
-  const second = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures });
+  const second = await runTick({ now, dryRun: true, env: {}, fixtureBySymbol: fixtures, commander: defaultCommander() });
   assertEqual(
     JSON.stringify(tick.intents.map((i) => `${i.symbol}:${i.action}`)),
     JSON.stringify(second.intents.map((i) => `${i.symbol}:${i.action}`)),
@@ -597,7 +597,8 @@ async function runSelfTest() {
       GOLD: goldPad.concat(goldAsiaBarsXm()),
       GOLD_1D: goldDaily
     },
-    allowForming: true
+    allowForming: true,
+    commander: defaultCommander()
   });
   assertEqual(tickForming.gold.status, 'forming', 'tick forming gold');
   assert((tickForming.book.pending || []).some((p) => p.symbol === 'GOLD' && p.status === 'working'), 'tick writes gold pending');
