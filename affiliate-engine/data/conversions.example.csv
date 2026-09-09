@@ -1,4 +1,2 @@
-date,genre,amount_jpy,status
-2026-07-01,婚活,4000,pending
-2026-07-01,転職,12000,approved
-2026-07-02,美容,2500,rejected
+date,source,program,clicks,cv,approved_yen,note
+# Do not invent yen. Write only A8 screens you opened. Catalog is not yen. The old genre/status export is not yen.
