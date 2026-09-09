@@ -13,7 +13,7 @@
 
 ## アフィ（進めると自分で言ったときだけ）
 
-1. Issue `Grok Bot — 指示` に1行 `AFFI: GO`（Cursor に言うな。止めるなら `AFFI: STOP`）
+1. Issue `Grok Bot — 指示`（https://github.com/fireworker011/Research/issues/110）に1行 `AFFI: GO`（Cursor に言うな。止めるなら `AFFI: STOP`）
 2. Bot が出した1手だけやる。A8 は指名された1件。分岐の返事は Issue に1語だけ（`未提携` / `Threadsあり` / `YouTubeあり` / `項目なし` / `媒体なし` / `開設済み` / `未開設` / `置済み`）。申請・副サイト・プロフィール・Secret が終わったら `完了`。書けば指示役がすぐ次を書く（翌朝まで待つな）。neo を転職プロフィールに置いたあとはチケットで上書きするな（`置済み`）
 3. GitHub Secret `AFFILIATE_LINKS_JSON` はプロフィールに置いたあと、Bot が「足せ」と言ってから。追加であり置換ではない。`申込_auひかり` は足すな
 4. 指示役 Issue の `overlay-filled:` で鍵名だけ見る。URL は出さない
@@ -22,7 +22,7 @@
 ## 計測（確定円。画面を見たときだけ）
 
 1. Issue `Affiliate — 確定円` は指示役が空で作る。手で作るな
-2. A8 を自分で開いた日だけ、その Issue に1行 `A8_YEN: 日付,A8,all,clicks,cv,確定,メモ`
+2. A8 を自分で開いた日だけ、Issue `Affiliate — 確定円`（https://github.com/fireworker011/Research/issues/109）に1行 `A8_YEN: 日付,A8,all,clicks,cv,確定,メモ`
 3. 開いていない日は書くな。カタログは円にしない
 
 ## やらなくていい
