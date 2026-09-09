@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
 const { overlayStatusText } = require('./overlay-keys');
 const { resolveAffi, START, fileFor, repliesFor } = require('./affi-step');
@@ -204,6 +206,14 @@ function selfTest() {
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
   if (YEN_ISSUE_TITLE !== 'Affiliate — 確定円') throw new Error('yen title');
+  const instructYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/grok_bot_instruct.yml'), 'utf8');
+  if (!instructYml.includes(`github.event.issue.title == '${ISSUE_TITLE}'`)) {
+    throw new Error('instruct yml title');
+  }
+  const yenYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/affiliate_engine_a8_yen.yml'), 'utf8');
+  if (!yenYml.includes(`github.event.issue.title == '${YEN_ISSUE_TITLE}'`)) {
+    throw new Error('yen yml title');
+  }
   if (/https?:\/\//i.test(YEN_BODY) || /https?:\/\//i.test(INSTRUCT_BODY)) throw new Error('issue url');
   if (!YEN_BODY.includes('A8_YEN:')) throw new Error('yen cmd');
   process.stdout.write('hq-instruct self-test ok\n');
