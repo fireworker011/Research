@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-visit-door-1"' in src
+    assert 'FETCH_REV = "h3-20260909-meat-walk-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-visit-door-1" in blob
+    assert "h3-20260909-meat-walk-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4803,7 +4803,7 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "hmnsfw-aio-v25" not in story["download"]
     assert semen_share_plan(story) == [(6, "after_speech")]
     want = [
-        [],
+        ["うわぁ。。。すごいところだね。。。"],
         ["あ、おフロ。。。でもこれって", "ザーメンの、、、おフロ、、、すごいニオイ、、、"],
         ["ザーメンのおフロ。。。あったかーい"],
         ["もうガマンできない！おチンチンジュボジュボするの！"],
@@ -4877,6 +4877,18 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     walk = story["clips"][0]["prompt"]
     assert "Walk only" in walk or "walking" in walk.lower()
     assert "No tub yet" in walk
+    assert "LIP SYNC" in walk
+    assert "fingers laced" in walk.lower()
+    assert "French" in walk
+    assert "leave at once" in walk.lower()
+    assert "NOT oral" in walk or "not oral" in walk.lower()
+    assert "NOT jupo" in walk or "not jupo" in walk.lower()
+    assert "Do not squat" in walk or "does not squat" in walk.lower()
+    assert "Do not stop walking" in walk or "keep walking" in walk.lower()
+    assert "No kiss yet" not in walk
+    assert "No speech" not in walk
+    assert "Already oral" not in walk
+    assert "jupo-jupo" not in walk.lower()
     assert "slime" in walk.lower()
     assert "FLOOR LOCK" in walk
     assert "springy" in walk.lower() and "elastic" in walk.lower()
@@ -4890,6 +4902,12 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "does NOT grow out" in walk or "does not grow out" in walk.lower()
     assert "whole body" in walk.lower() or "face, hair" in walk.lower()
     p_walk = planned_by_i[0]
+    _check_visible_plan(p_walk, walk)
+    assert [row["id"] for row in p_walk["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert p_walk["sampler"]["steps"] == 12
+    assert "larry-v4" not in [row["id"] for row in p_walk["stack"]]
+    assert "PLEASURE VOICE:" in p_walk["prompt"]
+    assert "EROTIC WAIT:" in p_walk["prompt"]
     assert "FUTA LOCK:" in p_walk["prompt"]
     assert "BROWN SLIME:" in p_walk["prompt"]
     assert "BATH LOOK:" in p_walk["prompt"]
@@ -5650,7 +5668,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-visit-door-1" in cell2
+    assert "h3-20260909-meat-walk-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
