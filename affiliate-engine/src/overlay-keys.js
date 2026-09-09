@@ -19,15 +19,19 @@ function assertNoUrl(text, names) {
   }
 }
 
+function resolveLinks(links) {
+  return links === undefined ? loadLinks() : links;
+}
+
 function overlayStatusText(links) {
-  const names = filledNames(links);
+  const names = filledNames(resolveLinks(links));
   const text = `overlay-filled: ${names.length}\noverlay-keys: ${names.join(',') || '(none)'}\n`;
   assertNoUrl(text, names);
   return { names, text };
 }
 
 function overlayLogText(links) {
-  const names = filledNames(links);
+  const names = filledNames(resolveLinks(links));
   const text = `filled ${names.length}\nkeys ${names.join(',') || '(none)'}\n`;
   assertNoUrl(text, names);
   return { names, text };
@@ -49,6 +53,9 @@ function selfTest() {
   const status = overlayStatusText(loaded);
   if (status.names.join(',') !== '教育_N高,転職_neo') throw new Error('names');
   if (/https?:\/\//i.test(status.text)) throw new Error('status url');
+  const implicit = overlayStatusText();
+  if (implicit.names.join(',') !== '教育_N高,転職_neo') throw new Error('implicit load');
+  if (!implicit.text.includes('overlay-filled: 2')) throw new Error('implicit filled');
   const log = overlayLogText(loaded);
   if (!log.text.startsWith('filled 2\n')) throw new Error('log filled');
   if (/https?:\/\//i.test(log.text)) throw new Error('log url');
