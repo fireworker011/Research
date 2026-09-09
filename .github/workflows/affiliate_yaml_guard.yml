@@ -74,6 +74,7 @@ jobs:
               exit 1
             fi
             grep -q 'github-actions\[bot\]' "$yen"
+            grep -q 'push_failed' "$yen"
           fi
           instruct=.github/workflows/grok_bot_instruct.yml
           if [ -f "$instruct" ]; then
