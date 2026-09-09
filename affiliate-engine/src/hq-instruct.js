@@ -6,7 +6,7 @@ const path = require('path');
 const { ISSUE_TITLE: YEN_ISSUE_TITLE } = require('./apply-a8-yen');
 const { overlayStatusText } = require('./overlay-keys');
 const { resolveAffi, START, fileFor, repliesFor } = require('./affi-step');
-const { parseCSV } = require('./util');
+const { parseCSV, loadLinks } = require('./util');
 
 const ISSUE_TITLE = 'Grok Bot — 指示';
 const RAW_PREFIX =
@@ -51,8 +51,12 @@ function samePointer(body, go = false, state = START) {
   return String(body || '').includes(`hq-instruct: ${targetFor(go, state)}`);
 }
 
+function overlayNow() {
+  return overlayStatusText(loadLinks());
+}
+
 function commentBody(go = false, state = START, neo = 'no') {
-  return `${instructBody(go, state, neo)}\n${overlayStatusText().text.trim()}\n${yenStatusText()}`;
+  return `${instructBody(go, state, neo)}\n${overlayNow().text.trim()}\n${yenStatusText()}`;
 }
 
 function approvedYenSum(csvText) {
@@ -192,7 +196,7 @@ async function run() {
         number: issue.number,
         yen_number: yen.issue.number,
         yen_created: yen.created,
-        overlay_filled: overlayStatusText().names.length,
+        overlay_filled: overlayNow().names.length,
         approved_yen: yenNow.approved_yen,
         pointer,
         affi: go,
@@ -217,7 +221,7 @@ async function run() {
       neo,
       yen_number: yen.issue.number,
       yen_created: yen.created,
-      overlay_filled: overlayStatusText().names.length,
+      overlay_filled: overlayNow().names.length,
       approved_yen: yenNow.approved_yen
     })}\n`
   );
@@ -254,6 +258,18 @@ function selfTest() {
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
   if (!body.includes('approved-yen: 0')) throw new Error('yen line');
+  const prevOverlay = process.env.AFFILIATE_LINKS_JSON;
+  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({
+    転職_neo: 'https://example.invalid/neo',
+    申込_auひかり: 'https://example.invalid/au'
+  });
+  const filled = commentBody(false);
+  if (!filled.includes('overlay-filled: 1')) throw new Error('secret overlay count');
+  if (!filled.includes('転職_neo')) throw new Error('secret overlay neo');
+  if (/申込_auひかり/.test(filled)) throw new Error('au in overlay');
+  if (/https?:\/\/example/i.test(filled)) throw new Error('secret url');
+  if (prevOverlay === undefined) delete process.env.AFFILIATE_LINKS_JSON;
+  else process.env.AFFILIATE_LINKS_JSON = prevOverlay;
   if (yenStatus('/no/such/conversions.csv').text !== 'approved-yen: unknown') throw new Error('yen missing');
   if (yenStatus('/no/such/conversions.csv').approved_yen !== null) throw new Error('yen missing null');
   if (approvedYenSum('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,0,15000,カタログ\n') !== 0) {
