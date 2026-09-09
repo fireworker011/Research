@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-act-silent-1"' in src
+    assert 'FETCH_REV = "h3-20260909-train-talk-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-act-silent-1" in blob
+    assert "h3-20260909-train-talk-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4601,7 +4601,7 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
         [],
         [],
         [],
-        ["んっ、おくまでだしてもらって、からだがあつい、、、", "おくちが、あったかかった、、、もっとして、、、"],
+        ["んっ、おくちにだしてもらって、からだがあつい、、、", "おくち、あったかい、、、もっとして、、、"],
         [],
         [],
         [],
@@ -6060,7 +6060,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-act-silent-1" in cell2
+    assert "h3-20260909-train-talk-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
