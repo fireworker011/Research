@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-clinic-meat-1"' in src
+    assert 'FETCH_REV = "h3-20260909-clinic-wait-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-clinic-meat-1" in blob
+    assert "h3-20260909-clinic-wait-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -600,6 +600,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_spoken_emotion" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
+    assert "lock_pleasure_voice_and_wait" in src
     assert "comfy_alive" in src
     assert "wait_comfy_ready" in src
     assert "comfy_free(PORT)" in src
@@ -3986,7 +3987,7 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤが来る。医師が20cm。10本＝100秒。パイプ椅子。胸を触りながらディープキス。騎乗中出し。仰向け口移し。"""
+    """医院ケンシン: アヤが来る。医師が20cm。10本＝100秒。パイプ椅子。問診のあと立ち上がりディープキス。騎乗中出し。仰向け口移し。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
@@ -4041,8 +4042,8 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert semen_share_plan(story) == [(8, "on_back")]
     want = [
         ["ヨロシクオネガイします！あ、オチンチンおっきい！", "どうぞおすわりください"],
-        [],
-        ["クチとムネはモンダイないですね。じゃあツギはおチンチンでオクスリあげますね！"],
+        ["キョウはどうしました？", "サイキンおマンコがウズウズして、、、"],
+        ["それはタイヘンですね！じゃあ、みていきますね"],
         [],
         ["もう、ガマンできない！"],
         [],
@@ -4138,17 +4139,25 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "START CAST:" in p0["prompt"]
     assert "SHAFT LOOK:" in p0["prompt"]
     assert "opening of one continuous long take" in p0["prompt"]
-    kiss_raw = story["clips"][1]["prompt"]
+    consult = story["clips"][1]["prompt"]
+    assert "キョウはどうしました？" in consult
+    assert "サイキンおマンコがウズウズして、、、" in consult
+    assert "SITS" in consult or "SEATED" in consult
+    assert "No deep kiss this clip" in consult
+    assert "クチとムネはモンダイないですね" not in consult
+    kiss_raw = story["clips"][2]["prompt"]
     kiss = kiss_raw.lower()
+    assert "それはタイヘンですね！じゃあ、みていきますね" in kiss_raw
+    assert "STANDS UP" in kiss_raw
+    assert "SEDUCTIVE" in kiss_raw
     assert "kiss" in kiss
-    assert "STANDING" in kiss_raw
     assert "knead" in kiss or "cup and knead" in kiss
     assert "hands" in kiss and "breast" in kiss
+    assert "hand's width" in kiss_raw or "hand’s width" in kiss_raw
+    assert "mouth OPEN" in kiss_raw
     assert "ウンチ" not in kiss_raw
     assert "胸は揉まない" not in kiss_raw
-    med = story["clips"][2]["prompt"]
-    assert "クチとムネはモンダイないですね。じゃあツギはおチンチンでオクスリあげますね！" in med
-    assert "hand's width" in med or "hand’s width" in med
+    assert "クチとムネはモンダイないですね" not in kiss_raw
     oral = story["clips"][3]["prompt"]
     assert "Already at the BASE" in oral or "already at the BASE" in oral
     assert "NEVER on the shaft" in oral
@@ -4157,12 +4166,15 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     jubo = planned_by_i[3]
     assert "ORAL LOCK:" in jubo["prompt"]
     assert "PLEASURE FACE:" in jubo["prompt"]
+    assert "PLEASURE VOICE:" in jubo["prompt"]
+    assert "EROTIC WAIT:" in jubo["prompt"]
     assert "blowjob-h3" in [row["id"] for row in jubo["stack"]]
     push = story["clips"][4]["prompt"]
     assert "もう、ガマンできない！" in push
     assert "hand's width" in push or "hand’s width" in push
     assert "NOT in" in push
     assert "LYING ON THEIR BACK" in push
+    assert "SEDUCTIVE" in push
     ride = story["clips"][5]["prompt"]
     assert ride.startswith("cowgirl position")
     assert "INSERTION ON CAMERA" in ride
@@ -5066,6 +5078,69 @@ def test_lock_speech_urine_pleasure_and_heat_face():
     assert lock_pleasure_face(cum, situation="oral_creampie") == cum
 
 
+def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
+    from h3_lora_studio import (
+        jp_outside_quotes,
+        load_story,
+        lock_pleasure_voice_and_wait,
+        prepare_story_clip,
+        soundscape_text,
+    )
+
+    jupo = lock_pleasure_voice_and_wait(
+        "Already oral. Mouth already on.\nHands NEVER on the shaft.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "PLEASURE VOICE:" in jupo
+    assert "EROTIC WAIT:" in jupo
+    assert "just to wait" in jupo.lower()
+    assert "NEVER on the shaft" in jupo
+    assert "soft small female moans" in soundscape_text(jupo).lower()
+    assert jp_outside_quotes(jupo) == ""
+    assert lock_pleasure_voice_and_wait(jupo, situation="oral") == jupo
+
+    ride = lock_pleasure_voice_and_wait(
+        "Already in. Cowgirl. She rides.\n\noverall_soundscape:\nWet.\n",
+        situation="riding",
+    )
+    assert "EROTIC WAIT:" in ride
+    assert "Do not add, skip, or replace the written beat" in ride
+
+    pee = lock_pleasure_voice_and_wait(
+        "Already oral. Mouth already on the tip. She drinks the yellow stream.\n\noverall_soundscape:\nHiss.\n",
+        situation="oral",
+    )
+    assert "PLEASURE VOICE:" not in pee
+    assert "EROTIC WAIT:" not in pee
+
+    walk = lock_pleasure_voice_and_wait(
+        "She walks down the street. Everyday faces. No oral.\n"
+        "Hairless female pussy at the base of the shaft where a scrotum would be.\n"
+        "\noverall_soundscape:\nSteps.\n",
+        situation="futa_visible",
+    )
+    assert "EROTIC WAIT:" not in walk
+    assert "PLEASURE VOICE:" not in walk
+
+    clinic = load_story("clinic-75s")
+    oral = prepare_story_clip(clinic, 3, last_frame="x.png", stills_dir=tmp_path)
+    assert "PLEASURE VOICE:" in oral["prompt"]
+    assert "EROTIC WAIT:" in oral["prompt"]
+    assert "Already at the BASE" in oral["prompt"] or "already at the BASE" in oral["prompt"]
+    assert "NEVER on the shaft" in oral["prompt"]
+    consult = prepare_story_clip(clinic, 1, last_frame="x.png", stills_dir=tmp_path)
+    assert "PLEASURE VOICE:" in consult["prompt"]
+    assert "EROTIC WAIT:" in consult["prompt"]
+    assert "キョウはどうしました？" in consult["prompt"]
+    opening = prepare_story_clip(clinic, 0, stills_dir=tmp_path)
+    assert "EROTIC WAIT:" not in opening["prompt"]
+    assert "PLEASURE VOICE:" not in opening["prompt"]
+    commute = load_story("commute-120s")
+    hall = prepare_story_clip(commute, 0, stills_dir=tmp_path, force_t2v=True)
+    assert "EROTIC WAIT:" not in hall["prompt"]
+    assert "PLEASURE VOICE:" not in hall["prompt"]
+
+
 def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
     from h3_lora_studio import (
         CHAIN_PACK_IDS,
@@ -5550,7 +5625,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-clinic-meat-1" in cell2
+    assert "h3-20260909-clinic-wait-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5582,7 +5657,9 @@ def test_notebook_story_play_flow():
     assert "lock_spoken_emotion" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
+    assert "lock_pleasure_voice_and_wait" in src
     helper_src = Path(__file__).resolve().parent.joinpath("h3_lora_studio.py").read_text(encoding="utf-8")
+    assert "def lock_pleasure_voice_and_wait" in helper_src
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
     assert "def lock_penis_inside" in helper_src

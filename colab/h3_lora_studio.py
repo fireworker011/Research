@@ -525,7 +525,7 @@ SITUATION_HELP = {
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。対面20秒。8本＝80秒。9:16。玄関。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。跪き済みではやく。おミズ＝放尿を飲み干してからジュボ10秒。口内は粘る白液を残して見せる。セリフ: こんにちは。おミズ、とどけにきました／おそいわよ／はやくおミズちょうだい／あー、しみる／ありがとうございました。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言10秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。口の確認は女医が立って胸を触りながらディープキス。オクスリ台詞のあとしゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し、騎乗で挿入→中出し→抜く→お掃除ジュボ→仰向けのまま口移し→ゲンキ。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／クチとムネはモンダイないですね。じゃあツギはおチンチンでオクスリあげますね！／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで妖艶に微笑む）、騎乗で挿入→中出し→抜く→お掃除ジュボ→仰向けのまま口移し→ゲンキ。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
@@ -3434,17 +3434,109 @@ def lock_spoken_emotion(text: str) -> str:
 PLEASURE_JUPO_LINE = (
     "PLEASURE FACE: The woman being sucked looks really good, not blank. "
     "Head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face. "
-    "Breath hitches. She is enjoying the jupo. Not a work mask. Not a straight clinical face."
+    "Breath hitches. Small soft female moans from the receiver, quiet, not words. "
+    "She is enjoying the jupo. Not a work mask. Not a straight clinical face."
 )
 ORGASM_FACE_LINE = (
     "ORGASM FACE: Climax face. She is coming hard. Eyes rolling or squeezed shut, mouth open, "
-    "brows up, flushed, shaking through the pulses. Extremely good. Not a calm work face. "
-    "Not a straight clinical face."
+    "brows up, flushed, shaking through the pulses. A small cry or hitch, not extra Japanese words. "
+    "Extremely good. Not a calm work face. Not a straight clinical face."
 )
 SEX_PLEASURE_LINE = (
     "PLEASURE FACE: Both look like it feels really good, not blank. Flushed, mouths open, "
-    "brows knit, hips moving. Not a work mask. Not a straight clinical face."
+    "brows knit, hips moving. Small soft female moans from both when it feels good, quiet, not words. "
+    "Not a work mask. Not a straight clinical face."
 )
+PLEASURE_VOICE_LINE = (
+    "PLEASURE VOICE: When it feels good, add small soft female moans and quiet wet hitching breath. "
+    "Tiny. Not words. Not extra Japanese dialogue. Not a scream. Not a new spoken line."
+)
+EROTIC_WAIT_LINE = (
+    "EROTIC WAIT: Leftover / pause seconds only. Do not freeze. Hands keep moving on the partner's body "
+    "(breasts, waist, hips, the erect 20cm, or a hairless pussy) in a way that matches who is already touching what. "
+    "Do not add, skip, or replace the written beat. Same who sits, stands, sucks, or is inside. "
+    "If this clip says hands NEVER on the shaft, stay off the shaft. "
+    "Do not pull off a suck or pull out of a hole just to wait. "
+    "If the written beat already pulls off or pulls out, do that written beat. "
+    "Do not start oral or insertion that is not already written. Not a frozen pose."
+)
+PLEASURE_VOICE_SFX = "Soft small female moans, quiet hitching breath."
+_WALK_IDLE_RE = re.compile(
+    r"\b(walks|walking|commute|on the way to school|street walk)\b",
+    re.I,
+)
+_EROTIC_IDLE_CUE_RE = re.compile(
+    r"\bkiss\b|knead|Already oral|jupo|already in|stroking the erect|"
+    r"one hand stroking|idly stroking|rubs her own|masturbat|creampie|"
+    r"cowgirl|straddl|hand['’]s width|mouth OPEN|"
+    r"deep kiss|tongue kiss|SEDUCTIVE|erotic wait|"
+    r"fingers on her clit|fingers near",
+    re.I,
+)
+
+
+def _is_walk_or_opening_idle(prompt: str) -> bool:
+    """Entrance and commute walks stay walks. Do not grope them to fill leftover time."""
+    p = str(prompt or "")
+    if "HIDDEN at the start" in p:
+        return True
+    if "Waiting only" in p:
+        return True
+    if _WALK_IDLE_RE.search(p) and not _EROTIC_IDLE_CUE_RE.search(p):
+        return True
+    return False
+
+
+def wants_pleasure_idle(text: str, *, situation: str = "") -> bool:
+    sit = str(situation or "").strip()
+    raw = str(text or "")
+    if not raw:
+        return False
+    if _URINE_CUE_RE.search(raw) and sit in {"oral", "futa_blowjob"}:
+        return False
+    if sit in ACT_SITUATIONS:
+        return True
+    if sit != "futa_visible":
+        return False
+    if _is_walk_or_opening_idle(raw):
+        return False
+    return bool(_EROTIC_IDLE_CUE_RE.search(raw))
+
+
+def _append_soundscape(raw: str, extra: str) -> str:
+    text = str(raw or "")
+    extra = str(extra or "").strip()
+    if not extra:
+        return text
+    span = soundscape_bounds(text)
+    if span is None:
+        return text
+    start, end = span
+    body = text[start:end]
+    if extra.lower() in body.lower():
+        return text
+    trimmed = body.rstrip()
+    if trimmed and not trimmed.endswith((".", "!", "?")):
+        trimmed += "."
+    new_body = (trimmed + " " + extra).strip()
+    if body.startswith("\n") or not body:
+        new_body = "\n" + new_body
+    if body.endswith("\n") or end < len(text):
+        new_body = new_body.rstrip() + "\n"
+    return text[:start] + new_body + text[end:]
+
+
+def lock_pleasure_voice_and_wait(text: str, *, situation: str = "") -> str:
+    """Small moans when it feels good. Leftover seconds stay erotic without rewriting the beat."""
+    raw = str(text or "")
+    if not raw or not wants_pleasure_idle(raw, situation=situation):
+        return raw
+    out = raw
+    if "PLEASURE VOICE:" not in out:
+        out = _inject_before_soundscape(out, PLEASURE_VOICE_LINE)
+    if "EROTIC WAIT:" not in out:
+        out = _inject_before_soundscape(out, EROTIC_WAIT_LINE)
+    return _append_soundscape(out, PLEASURE_VOICE_SFX)
 
 
 def lock_pleasure_face(text: str, *, situation: str = "") -> str:
@@ -4585,6 +4677,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
         )
         prompt = lock_pleasure_face(prompt, situation=sit)
         prompt = lock_penis_inside(prompt, situation=sit)
+        prompt = lock_pleasure_voice_and_wait(prompt, situation=sit)
         if sit == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
         clips.append(
@@ -4945,6 +5038,7 @@ def prepare_story_clip(
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
+    raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
