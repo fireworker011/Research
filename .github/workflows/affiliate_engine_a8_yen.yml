@@ -57,6 +57,22 @@ jobs:
             echo "pushed=1" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: 作業ブランチにも残す
+        if: steps.save.outputs.pushed == '1'
+        env:
+          PROD_BRANCH: claude/monthly-revenue-system-gvi02u
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$PROD_BRANCH" || exit 0
+          git checkout -B yen-prod "origin/$PROD_BRANCH"
+          git checkout "origin/$DEFAULT_BRANCH" -- affiliate-engine/data/conversions.csv
+          git add affiliate-engine/data/conversions.csv
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: A8 確定円を conversions へ"
+          git pull --rebase origin "$PROD_BRANCH" || exit 0
+          git push origin "HEAD:$PROD_BRANCH" || true
+
       - name: 結果を Issue へ
         if: github.event_name == 'issue_comment'
         env:
