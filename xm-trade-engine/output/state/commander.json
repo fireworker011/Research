@@ -1,10 +1,11 @@
 {
-  "command": "PAPER_ONLY",
-  "source": "init",
-  "reason": "live is gated until a human enables it",
+  "command": "HALT",
+  "source": "grok-bot-issue",
+  "reason": "issue comment 5593266167",
   "risk_multiplier": 1,
-  "updated_at": "2026-08-30T00:00:00.000Z",
-  "gold_arm": "IDLE",
-  "gold_arm_date": null,
+  "updated_at": "2026-09-09T08:58:38.510Z",
+  "previous": "PAPER_ONLY",
+  "gold_arm": "SKIP",
+  "gold_arm_date": "2026-09-09",
   "issue_number": "93"
 }

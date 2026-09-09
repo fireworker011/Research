@@ -2,9 +2,10 @@
   "kind": "paper",
   "disclaimer": "仮想資金。XM口座の残高ではない。数字を実口座と混ぜて読むな。",
   "currency": "USD",
-  "balance": 10000,
-  "equity": 10003.04,
-  "positions": [
+  "balance": 10014.64,
+  "equity": 10014.64,
+  "positions": [],
+  "closed": [
     {
       "id": "p_EURUSD_2026-09-08T13:38:58.703Z",
       "symbol": "EURUSD",
@@ -16,8 +17,12 @@
       "pip_value": 10,
       "opened_at": "2026-09-08T13:38:58.703Z",
       "reason": "ema_cross_up_trend",
-      "mark": 1.1629259586334229,
-      "unrealized": 3.46
+      "mark": 1.1637378931045532,
+      "unrealized": 11.57,
+      "exit": 1.1637378931045532,
+      "pnl": 11.57,
+      "closed_at": "2026-09-09T08:58:38.510Z",
+      "close_reason": "halt"
     },
     {
       "id": "p_GBPUSD_2026-09-08T17:56:04.112Z",
@@ -30,15 +35,18 @@
       "pip_value": 10,
       "opened_at": "2026-09-08T17:56:04.112Z",
       "reason": "ema_cross_up_trend",
-      "mark": 1.3541511297225952,
-      "unrealized": -0.42
+      "mark": 1.3544996976852417,
+      "unrealized": 3.07,
+      "exit": 1.3544996976852417,
+      "pnl": 3.07,
+      "closed_at": "2026-09-09T08:58:38.510Z",
+      "close_reason": "halt"
     }
   ],
-  "closed": [],
   "daily": {
-    "date": "2026-09-08",
-    "start_equity": 10000,
-    "realized_pnl": 0
+    "date": "2026-09-09",
+    "start_equity": 10003.04,
+    "realized_pnl": 14.64
   },
   "pending": [
     {
