@@ -491,7 +491,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-clinic-wait-1"' in src
+    assert 'FETCH_REV = "h3-20260909-visit-door-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -553,7 +553,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-clinic-wait-1" in blob
+    assert "h3-20260909-visit-door-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -3837,7 +3837,8 @@ def _check_pack_common(story, sid, tmp_path):
         assert "Hard cut" not in prompt
         assert "Do not copy the previous clip" not in prompt
         assert "576x1024" in prompt
-        assert len(set(lines)) <= 1, (sid, i + 1, lines)
+        spoken_cap = max(1, min(2, int(story.get("spoken_max") or 1)))
+        assert len(set(lines)) <= spoken_cap, (sid, i + 1, lines)
         if clip["situation"] in ACT_SITUATIONS:
             assert not lines
             assert "close" in prompt.lower()
@@ -3910,8 +3911,10 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "Then she kneels" not in story["clips"][2]["prompt"]
     c1 = story["clips"][0]["prompt"]
     assert "HIDDEN at the start" in c1
-    assert "CLOSED front door" in c1 or "front door is CLOSED" in c1
-    assert "ENTERS FRAME" in c1
+    assert "ENTERS FROM THE RIGHT" in c1
+    assert "LEFT" in c1
+    assert "Door on the right" in c1 or "door on the right" in c1
+    assert "CLOSED front door" in c1 or "CLOSED genkan door" in c1 or "front door is CLOSED" in c1
     assert "already at the open door" not in c1.lower()
     assert "faces Aya in the open door" not in c1
     assert "spoken AFTER the door opens" in c1 or "AFTER the door opens" in c1
@@ -3939,9 +3942,9 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
         ["futa_visible"] * 6 + ["oral", "oral_creampie", "futa_visible"]
     )
     want = [
-        "こんにちは。テイキケンシンにきました",
-        "あ…はい、ヨロシクオネガイします",
-        "では、シツレイします",
+        ["こんにちは", "はい"],
+        ["テイキケンシンにきました", "あ、ヨロシクオネガイします！"],
+        ["ふふ、オチンチンかたくておっきい！", "では、シツレイしまーす！"],
         None,
         "クチとムネはモンダイないですね",
         "では、つぎはおチンチンのカクニンをします",
@@ -3951,8 +3954,17 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     ]
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
-        assert (got[0] if got else None) == line, (clip["label"], got)
-        for spoken in got:
+        uniq = []
+        for s in got:
+            if s not in uniq:
+                uniq.append(s)
+        if line is None:
+            assert uniq == [], (clip["label"], uniq)
+        elif isinstance(line, list):
+            assert uniq == line, (clip["label"], uniq)
+        else:
+            assert uniq == [line], (clip["label"], uniq)
+        for spoken in uniq:
             assert not _KANJI_RE.search(spoken), spoken
         assert "Doctor: Adult Japanese woman, 32" in clip["prompt"]
         assert "stethoscope" in clip["prompt"]
@@ -3963,10 +3975,21 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     c1 = story["clips"][0]["prompt"]
     assert "already at the open door" not in c1
     assert "HIDDEN at the start" in c1
-    assert "ENTERS FRAME" in c1
-    assert "CLOSED front door" in c1 or "CLOSED front door at the start" in c1
+    assert "ENTERS FROM THE RIGHT" in c1
+    assert "LEFT" in c1
+    assert "Door on the right" in c1 or "door on the right" in c1
+    assert "CLOSED front door" in c1 or "CLOSED genkan door" in c1 or "CLOSED front door at the start" in c1
     assert "Do not show Rei until the door opens" in c1
-    assert "こんにちは。テイキケンシンにきました" in c1
+    assert "こんにちは" in c1
+    assert "「はい」" in c1
+    assert "テイキケンシンにきました" not in c1
+    peck = story["clips"][2]["prompt"]
+    assert "ふふ、オチンチンかたくておっきい！" in peck
+    assert "では、シツレイしまーす！" in peck
+    assert "SEDUCTIVE" in peck
+    assert "peck" in peck.lower()
+    assert "NOT oral" in peck or "not oral" in peck.lower()
+    assert "NOT jupo" in peck or "not jupo" in peck.lower()
     kiss = story["clips"][3]["prompt"].lower()
     assert "kiss" in kiss
     assert "breast" in kiss
@@ -4298,8 +4321,10 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert speech["stack_changed"] is False
     assert "[AUDIO-LOCK]" not in speech["prompt"]
     assert "spoken_transcript" not in speech["prompt"]
-    assert speech["prompt"].count("「こんにちは。テイキケンシンにきました」") >= 1
-    assert "「こんにちは。テイキケンシンにきました」" in soundscape_text(speech["prompt"])
+    assert speech["prompt"].count("「こんにちは」") >= 1
+    assert "「こんにちは」" in soundscape_text(speech["prompt"])
+    assert "「はい」" in speech["prompt"]
+    assert "こんにちは。テイキケンシンにきました" not in speech["prompt"]
     assert "lip-synced" not in soundscape_text(speech["prompt"]).lower()
     assert "SPEECH FACE:" in speech["prompt"]
     assert "こんにちは" in speech["prompt"]
@@ -5625,7 +5650,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-clinic-wait-1" in cell2
+    assert "h3-20260909-visit-door-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5834,6 +5859,10 @@ def test_visit_opening_starts_solo_then_resident_enters(tmp_path):
     assert "aya" in clip_cast_people(sales["clips"][1])
     assert "rei" in clip_cast_people(checkup["clips"][1])
     assert "aya" in clip_cast_people(clinic["clips"][1])
+    for raw in (s1["prompt"], k1["prompt"]):
+        assert "LEFT" in raw
+        assert "ENTERS FROM THE RIGHT" in raw
+        assert "Door on the right" in raw or "door on the right" in raw
     assert who_hidden_at_start(cafe["clips"][0]["prompt"]) == {"clerk"}
     assert clip_cast_people(cafe["clips"][0]) == ["aya"]
     locked = lock_start_cast(s1["prompt"])
