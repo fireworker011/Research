@@ -454,7 +454,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-semen-1"' in src
+    assert 'FETCH_REV = "h3-20260909-jupo-1"' in src
     assert "--reserve-vram" in src
     assert "keep_canvas = bool(STORY)" in src
     assert "cap_fl2va_clip_s" in src
@@ -511,7 +511,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-semen-1" in blob
+    assert "h3-20260909-jupo-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -550,6 +550,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "ensure_r2v_in_object_info" in src
     assert "ensure_comfy_r2v_node" in src
     assert "lock_oral_in_mouth" in src
+    assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert "lock_penis_inside" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
@@ -5050,12 +5051,17 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             elif orig_sit in {"oral", "futa_blowjob"}:
                 seen_jupo += 1
                 assert "PLEASURE FACE:" in prompt, (story["id"], i + 1)
+                if "ORAL LOCK:" in prompt:
+                    assert "to the BASE" in prompt, (story["id"], i + 1)
+                    assert "not a tip suck" in prompt.lower(), (story["id"], i + 1)
             if orig_sit == "oral_creampie":
                 seen_cum += 1
                 assert "ORGASM FACE:" in prompt, (story["id"], i + 1)
                 assert "clingy" in prompt.lower(), (story["id"], i + 1)
                 assert "clings" in prompt.lower(), (story["id"], i + 1)
                 assert "heavy-oil" in prompt.lower(), (story["id"], i + 1)
+                assert "ORAL LOCK:" in prompt, (story["id"], i + 1)
+                assert "to the BASE" in prompt, (story["id"], i + 1)
             if orig_sit in SEMEN_SITUATIONS:
                 assert "SEMEN LOOK:" in prompt, (story["id"], i + 1)
                 assert "heavy-oil" in prompt.lower(), (story["id"], i + 1)
@@ -5081,6 +5087,9 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
     assert "ORAL LOCK:" in suck
     assert "not licking" in suck.lower()
     assert "glans is already fully inside" in suck.lower()
+    assert "to the BASE" in suck
+    assert "not a tip suck" in suck.lower()
+    assert "not around the glans" in suck.lower()
     assert suck.index("ORAL LOCK:") < suck.index("overall_soundscape:")
     assert lock_oral_in_mouth(suck, situation="oral") == suck
     pee = lock_oral_in_mouth(
@@ -5097,12 +5106,29 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
     assert "ORAL LOCK:" not in walk
     creampie = lock_oral_in_mouth("CUMOUF. Already deep in the mouth.", situation="oral_creampie")
     assert "ORAL LOCK:" in creampie
+    assert "to the BASE" in creampie
+    assert "not a tip suck" in creampie.lower()
+    stay = lock_oral_in_mouth(
+        "CUMOUF. Mouth stays on. Nobody pulls off. She climaxes IN the mouth.\n",
+        situation="oral_creampie",
+    )
+    assert "ORAL LOCK:" in stay
+    assert "to the BASE" in stay
+    pull_show = lock_oral_in_mouth(
+        "CUMOUF. Climaxes IN the mouth, then PULLS OFF and shows the semen.\n",
+        situation="oral_creampie",
+    )
+    assert "ORAL LOCK:" in pull_show
+    assert "to the BASE" in pull_show
+    assert "While it pulses" in pull_show
     share = lock_oral_in_mouth(
         "CUMOUF. Already deep in the mouth. After the last pulse she pulls her mouth off.\n",
         situation="oral_creampie",
         ending="share",
     )
     assert "ORAL LOCK:" in share
+    assert "KEEP the lips at the BASE" in share
+    assert "Do not pull back to the glans" in share
     assert "mouth-to-mouth" in share.lower()
     assert "STANDS UP" in share
     assert "EYE LEVEL" in share
@@ -5392,6 +5418,7 @@ def test_notebook_story_play_flow():
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
+    assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert '"INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "")' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
@@ -5410,7 +5437,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-semen-1" in cell2
+    assert "h3-20260909-jupo-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5434,6 +5461,7 @@ def test_notebook_story_play_flow():
     assert "raise SystemExit(R2V_NODE_MISSING)" in cell3
     assert "ensure_r2v_in_object_info" in cell3
     assert "lock_oral_in_mouth" in src
+    assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert "lock_penis_inside" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
@@ -5445,6 +5473,7 @@ def test_notebook_story_play_flow():
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
     assert "def lock_penis_inside" in helper_src
+    assert "Deep jupo to the BASE" in helper_src
     assert "INSIDE LOCK:" in helper_src
     assert "SHAFT LOOK:" in helper_src
     assert "MiniMaxH3ReferenceToVideo" in helper_src

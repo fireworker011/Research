@@ -3117,13 +3117,19 @@ def lock_semen_look(text: str, *, situation: str = "") -> str:
 
 ORAL_SUCK_SITUATIONS = frozenset({"oral", "futa_blowjob", "oral_creampie"})
 ORAL_IN_MOUTH_LINE = (
-    "ORAL LOCK: The glans is already fully inside the mouth. Lips are a tight ring around the shaft. "
-    "Cheeks hollow. This is sucking (jupo), not licking. Do not lick the side of the shaft. "
-    "Do not kiss the shaft. Do not run the tongue along the shaft. The penis stays in the mouth, not beside it."
+    "ORAL LOCK: Deep jupo to the BASE, not a tip suck. The whole erect 20cm is already swallowed. "
+    "The glans is already fully inside the mouth, already in the throat. Lips are a tight ring at the "
+    "BASE of the shaft (at the hairless pussy), not around the glans, not mid-shaft. Nose at the groin. "
+    "Cheeks hollow. Throat full. Bob deep: lips stay at the base or slide a little then return to the base. "
+    "This is sucking (jupo), not licking. Do not lick the side of the shaft. Do not kiss the shaft. "
+    "Do not run the tongue along the shaft. Do not suck only the tip. The penis stays in the mouth "
+    "to the BASE, not beside it."
 )
 ORAL_IN_MOUTH_SHARE_LINE = (
     ORAL_IN_MOUTH_LINE
-    + " Until the last cum pulses, stay like that. After the last pulse only: mouth off the penis. "
+    + " Until the last cum pulses, KEEP the lips at the BASE. Do not pull back to the glans to catch the cum. "
+    "The heavy-oil-thick WHITE goo pulses in the mouth and throat while she is still deep. "
+    "After the last pulse only: mouth off the penis. "
     "HOLD STILL a heavy clingy sticky pool of opaque heavy-oil-thick WHITE goo on the tongue. "
     "The woman who was sucking STANDS UP off her knees to the partner's SAME EYE LEVEL, "
     "then mouth-to-mouth semen share, wet tongue kiss: tongues wrap and tangle around that same heavy white liquid. "
@@ -3134,10 +3140,16 @@ _ORAL_SUCK_RE = re.compile(
     r"takes it to the BASE|takes .+ to the BASE|sucks the |already at .+ base",
     re.I,
 )
+_ORAL_STAY_ON_RE = re.compile(
+    r"nobody pulls off|does not pull off|do not pull off|"
+    r"mouth still on|Mouth stays on",
+    re.I,
+)
+_ORAL_PULL_OFF_RE = re.compile(r"pulls(?: her mouth)? off", re.I)
 
 
 def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> str:
-    """Stop H3 from turning a blowjob into shaft-licking."""
+    """Stop H3 from turning a blowjob into tip-suck or shaft-licking. Deep to the BASE, including 口内."""
     raw = str(text or "")
     if not raw or "ORAL LOCK:" in raw:
         return raw
@@ -3147,15 +3159,20 @@ def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> s
     if re.search(r"urine|yellow stream|pees a |drinks the yellow", raw, re.I):
         return raw
     share_end = str(ending or "").strip() == "share"
-    if not share_end and re.search(r"pulls OFF|pulls her mouth off", raw, re.I):
+    pulling_off = bool(_ORAL_PULL_OFF_RE.search(raw) and not _ORAL_STAY_ON_RE.search(raw))
+    if sit != "oral_creampie" and not share_end and pulling_off:
         return raw
-    if sit in {"oral", "futa_blowjob"} and not _ORAL_SUCK_RE.search(raw):
-        return raw
-    line = ORAL_IN_MOUTH_SHARE_LINE if share_end else ORAL_IN_MOUTH_LINE
-    cut = raw.find("\noverall_soundscape:")
-    if cut > 0:
-        return raw[:cut].rstrip() + "\n" + line + "\n" + raw[cut:]
-    return raw.rstrip() + "\n" + line
+    if share_end:
+        line = ORAL_IN_MOUTH_SHARE_LINE
+    elif sit == "oral_creampie":
+        line = (
+            ORAL_IN_MOUTH_LINE
+            + " While it pulses, KEEP the lips at the BASE. Do not pull back to the glans to catch the cum. "
+            "The heavy-oil-thick WHITE goo pulses in the mouth and throat while she is still deep."
+        )
+    else:
+        line = ORAL_IN_MOUTH_LINE
+    return _inject_before_soundscape(raw, line)
 
 
 START_CAST_LINE = (
@@ -4571,6 +4588,12 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                     errors.append(f"clip {n}: ejaculation must be viscous / ドロドロ")
                 if "heavy-oil" not in look_l:
                     errors.append(f"clip {n}: semen must be heavy-oil thick, same as the meat-wall bath")
+            if situation in {"oral", "oral_creampie", "futa_blowjob"}:
+                urine = bool(re.search(r"urine|yellow stream|pees a |drinks the yellow", prompt, re.I))
+                if not urine:
+                    oral = lock_oral_in_mouth(prompt, situation=situation)
+                    if "ORAL LOCK:" in oral and "to the BASE" not in oral:
+                        errors.append(f"clip {n}: jupo / 口内 must be deep to the BASE, not a tip suck")
         if lines:
             if situation != "futa_visible":
                 errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
