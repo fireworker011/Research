@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
     apply_user_prompt,
+    cap_fl2va_clip_s,
     has_i2v_lock,
     t2v_user_text,
     civitai_download_url,
@@ -38,6 +39,7 @@ from h3_lora_studio import (
     resolve_situation,
     resolve_studio_length,
     rewrite_chain_opening_prompt,
+    rewrite_take_seconds,
     strip_chain_restart_language,
     situation_ids,
     studio_clip_plan,
@@ -452,7 +454,14 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-train-1"' in src
+    assert 'FETCH_REV = "h3-20260909-train-2"' in src
+    assert "--reserve-vram" in src
+    assert "keep_canvas = bool(STORY)" in src
+    assert "cap_fl2va_clip_s" in src
+    assert "rewrite_take_seconds" in src
+    assert "1本（最大10秒）" in src
+    assert "garbage_collection_threshold:0.8" in src
+    assert "15秒の本は10秒にします" in src
     assert 'for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py"):' in src
     assert src.find('for rel in ("colab/h3_r2v_core.py", "colab/h3_lora_studio.py")') < src.find(
         "from h3_lora_studio import fetch_github_tree"
@@ -502,7 +511,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-train-1" in blob
+    assert "h3-20260909-train-2" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -660,17 +669,17 @@ def test_friendly_select_error_for_child_and_picture1():
     assert "②" in (friendly_select_error(SystemExit("stack_plan.helper needs an id")) or "")
 
 
-def test_clamp_studio_duration_is_four_to_fifteen():
+def test_clamp_studio_duration_is_four_to_ten():
     assert clamp_studio_duration(10) == 10.0
     assert clamp_studio_duration(5) == 5.0
     assert clamp_studio_duration(4) == 4.0
     assert clamp_studio_duration(3) == 4.0
-    assert clamp_studio_duration(15) == 15.0
-    assert clamp_studio_duration(16) == 15.0
+    assert clamp_studio_duration(15) == 10.0
+    assert clamp_studio_duration(16) == 10.0
     assert clamp_studio_duration(10.4) == 10.0
     assert clamp_studio_duration("8") == 8.0
     assert clamp_studio_duration("nope") == 10.0
-    assert clamp_studio_duration(12, chain=False) == 12.0
+    assert clamp_studio_duration(12, chain=False) == 10.0
     assert clamp_studio_duration(10, chain=True) == 16.0
     assert clamp_studio_duration(16, chain=True) == 16.0
     assert clamp_studio_duration(60, chain=True) == 60.0
@@ -681,6 +690,11 @@ def test_clamp_studio_duration_is_four_to_fifteen():
     assert clamp_studio_duration(120, chain=True) == 120.0
     assert clamp_studio_duration(121, chain=True) == 120.0
     assert clamp_studio_duration("nope", chain=True) == 16.0
+    assert cap_fl2va_clip_s(15) == 10.0
+    assert cap_fl2va_clip_s(8) == 8.0
+    assert rewrite_take_seconds("ONE UNBROKEN 15-second take. the whole 15-second take.", 10) == (
+        "ONE UNBROKEN 10-second take. the whole 10-second take."
+    )
     assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("riding") == ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("doggy") == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
@@ -755,12 +769,13 @@ def test_cumouf_download_job_uses_civitai_file_id_and_half_strength(tmp_path):
     assert row["default_strength"] == 0.5
 
 
-def test_studio_clip_plan_chain_stays_under_sixteen():
-    assert studio_clip_plan(15) == [15.0]
+def test_studio_clip_plan_chain_stays_under_eleven():
+    assert studio_clip_plan(15) == [10.0]
     assert studio_clip_plan(16, chain=True) == [10.0, 6.0]
-    assert studio_clip_plan(25, chain=True) == [10.0, 15.0]
+    assert studio_clip_plan(25, chain=True) == [10.0, 10.0, 5.0]
     assert studio_clip_plan(26, chain=True) == [10.0, 10.0, 6.0]
     assert studio_clip_plan(20, chain=True) == [10.0] * 2
+    assert studio_clip_plan(21, chain=True) == [10.0, 7.0, 4.0]
     assert studio_clip_plan(30, chain=True) == [10.0] * 3
     assert studio_clip_plan(40, chain=True) == [10.0] * 4
     assert studio_clip_plan(50, chain=True) == [10.0] * 5
@@ -771,7 +786,8 @@ def test_studio_clip_plan_chain_stays_under_sixteen():
     assert studio_clip_plan(100, chain=True) == [10.0] * 10
     assert studio_clip_plan(110, chain=True) == [10.0] * 11
     assert studio_clip_plan(120, chain=True) == [10.0] * 12
-    assert all(4 <= c <= 15 for c in studio_clip_plan(120, chain=True))
+    assert all(4 <= c <= 10 for c in studio_clip_plan(120, chain=True))
+    assert all(4 <= c <= 10 for c in studio_clip_plan(21, chain=True))
     total, clips, chain = resolve_studio_length(30, "つなぐ（16〜60秒）")
     assert chain is True
     assert total == 30.0
@@ -779,7 +795,7 @@ def test_studio_clip_plan_chain_stays_under_sixteen():
     total, clips, chain = resolve_studio_length(45, "つなぐ（秒数欄・16〜120）")
     assert chain is True
     assert total == 45.0
-    assert clips == [10.0, 10.0, 10.0, 15.0]
+    assert clips == [10.0, 10.0, 10.0, 10.0, 5.0]
     total, clips, chain = resolve_studio_length(45, "つなぐ（秒数欄・16〜90）")
     assert chain is True
     assert total == 45.0
@@ -804,10 +820,15 @@ def test_studio_clip_plan_chain_stays_under_sixteen():
         assert resolve_length_mode(label) is True
     total, clips, chain = resolve_studio_length(30, "1本（最大15秒）")
     assert chain is False
-    assert total == 15.0
-    assert clips == [15.0]
+    assert total == 10.0
+    assert clips == [10.0]
     assert resolve_length_mode("つなぐ") is True
     assert resolve_length_mode("1本（最大15秒）") is False
+    total, clips, chain = resolve_studio_length(30, "1本（最大10秒）")
+    assert chain is False
+    assert total == 10.0
+    assert clips == [10.0]
+    assert resolve_length_mode("1本（最大10秒）") is False
 
 
 def test_continue_chain_prompt_keeps_picture1_and_does_not_restart():
@@ -4289,7 +4310,7 @@ def test_last_stop_pack_four_clips_rei_seated(tmp_path):
 
 
 def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
-    """終電: 2人だけ。声かけはレイに向ける。ジュボ30秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。既存の終点はそのまま。"""
+    """終電: 2人だけ。声かけはレイに向ける。ジュボ20秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。既存の終点はそのまま。全部10秒（15秒禁止）。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         _KANJI_RE,
@@ -4315,9 +4336,11 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
-    assert story["duration_s"] == 120
+    assert story["duration_s"] == 90
+    assert "15秒禁止" in story["comment_ja"]
+    assert "9本＝90秒" in story["comment_ja"]
     assert len(story["clips"]) == 9
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 15, 15, 15, 10, 10, 15, 15, 15]
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 9
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "oral",
@@ -4384,13 +4407,9 @@ def test_last_train_pack_seated_cowgirl_after_jupo(tmp_path):
         assert not re.search(r"\bAya\b", prompt)
         assert "Sayaka" not in prompt
         assert "Madoka" not in prompt
-        if dur == 15:
-            assert "15-second take" in prompt
-            assert "10-second take" not in prompt
-            assert not uniq
-        else:
-            assert dur == 10
-            assert "15-second" not in prompt
+        assert "15-second" not in prompt
+        assert "10-second take" in prompt
+        assert dur == 10
         if uniq:
             assert "LIP SYNC" in prompt
             assert clip["situation"] == "futa_visible"
@@ -5299,7 +5318,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-train-1" in cell2
+    assert "h3-20260909-train-2" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

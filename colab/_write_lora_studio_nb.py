@@ -130,7 +130,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 | 定期検診（専用 / つなぐ / つなぐ修） | 家の玄関。医師（32・結い髪・中乳・竿なし・聴診器）がレイ（20cm）を訪問検診。対面30秒。ベロチューとジュボは無言15秒。口パク後は肌。9本＝100秒。9:16 | 名前付きパック。対面→キスと胸→カクニン→口内。診察室ではない。台詞は話し言葉 |
 | ケンシン（専用 / つなぐ / つなぐ修） | 医院。アヤが来る。医師（32・結い髪・中乳・聴診器・20cm玉なしマンコあり）。口はアヤ。1本目は左手でシコシコ無表情、右から入場、「おっきい」のあとお互い立って短いキス、右の椅子におすわり（女医は立つ）。6本＝75秒。9:16 | 名前付きパック。シコシコ→右入場→立ちキス→おすわり→ウンチ相談→立ちのおクチキス（身を胸につける。胸は揉まない）→ジュボ尻餅→口内→同じ目線で口移し→ゲンキ。台詞は話し言葉 |
 | 終点（専用 / つなぐ / つなぐ修） | 終点の車内。車掌（29・短髪・中乳・竿なし・ホイッスル）が寝ているレイを起こす。10秒×4本。9:16 | 名前付きパック。声では起きない。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞は話し言葉 |
-| 終電（専用 / つなぐ / つなぐ修） | 終点の延長。車掌＋座席のレイの2人だけ。声かけはレイに向ける。ジュボ30秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。9本＝120秒。9:16 | 名前付きパック。既存の終点はそのまま。台詞は話し言葉 |
+| 終電（専用 / つなぐ / つなぐ修） | 終点の延長。車掌＋座席のレイの2人だけ。声かけはレイに向ける。ジュボ20秒→口内口移し→また寝る→向き合う座位で挿入を書いて騎乗中出し。9本＝90秒（全部10秒。15秒禁止）。9:16 | 名前付きパック。既存の終点はそのまま。台詞は話し言葉 |
 | ザーメン風呂（専用 / つなぐ / つなぐ修） | 家のおフロ。アヤ22ミニ・竿なしが湯船、レイ24が20cmでドロドロの白い液体を溜める。5本＝70秒。9:16 | 名前付きパック。口移しなし。挿入なし。hmmotion なし |
 | ニクカベ（専用 / つなぐ / つなぐ修） | 巨大生物の体内。コンクリートに肉を貼った部屋ではない。茶色い粘液で全身・顔・髪・チンチン・マンコ汚れ、白いおフロはベトベトで肌に付く。レイは1本目からフタナリ勃起。歩行の床は弾力。足は沈まない。アヤ22ミニ・竿なし＋レイ24・20cm。顔は液面より上。7本＝85秒。9:16 | 名前付きパック。全部飲む。口移しなし。家のザーメン風呂とは別。hmmotion なし |
 | カフェ（専用 / つなぐ / つなぐ修） | 夏のカフェ。客アヤ、店員（25・お団子・中乳・20cm・トレイ）。おミズ＝放尿、ミルク＝ジュボと口内。コーヒーは本物。10秒×10本。9:16 | 建前パック。台詞は話し言葉、1本に2行まで。行為は無言・寄り。最後はベロチュー |
@@ -170,7 +170,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 **ふたなりの既定:** 竿＋マンコ、金玉なし（フェラの参考画と同じ）。ボッキ時は約20cm・太い人間の竿で形は本ごと固定。アヤとサヤカは竿なしのまま。
 **台詞:** 「」の中は話し言葉（ひらがな。漢字は使わない。おチンチン・おミズ・ムク等の符丁はカタカナ）。1本1人1行。口パク後は無言のまま肌が動く。シーンごとに WHO で誰が出て何をするかを書く。余り役は NOT IN FRAME。常時2人以上ではない。
-**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜15（1本）。20〜120秒の「つなぐ」は同じカットを最後のコマで繋ぐ（10秒ずつ。1本で伸ばさない）。20秒は 10×2、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。「登校（専用）」などはカット割りで、つなぐとは別。「登校（つなぐ）」「登校（つなぐ修）」は同じ JSON を最後のコマで繋ぐ再生。
+**速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜10（1本）。15秒はメモリ不足で画面が小さくなるので使わない。20〜120秒の「つなぐ」は同じカットを最後のコマで繋ぐ（10秒ずつ。1本で伸ばさない）。20秒は 10×2、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。「登校（専用）」などはカット割りで、つなぐとは別。「登校（つなぐ）」「登校（つなぐ修）」は同じ JSON を最後のコマで繋ぐ再生。
 **最終シーン合わせ（③のチェック）:** 普通のつなぐと「つなぐ修」は**最後の本だけ**を選んだシーンに合わせて直す（最初の T2V→I2V のつなぎは触らない）。専用（カット）は**写真から**の本だけ「この本の静止画・独立カット・前の最後のコマから続けない」の1行を足す（JSON の部品はそのまま）。「つなぐ」（文そのまま）ではチェックしても何もしない。
 **エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
 **エロの重ね:** 行為1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。
@@ -219,7 +219,7 @@ os.environ["PIP_CACHE_DIR"] = f"{DRIVE_ROOT}/cache/pip"
 os.environ["XDG_CACHE_HOME"] = f"{DRIVE_ROOT}/cache/xdg"
 os.environ["CUDA_MODULE_LOADING"] = "EAGER"
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True,garbage_collection_threshold:0.8")
 
 with open("/content/h3_paths.env", "w") as f:
     f.write(f"DRIVE_ROOT={DRIVE_ROOT}\n")
@@ -290,7 +290,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-cast-ref-shorts-f112"
-FETCH_REV = "h3-20260909-train-1"
+FETCH_REV = "h3-20260909-train-2"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -575,7 +575,7 @@ else:
             clear_warmup_stamp(COMFY_DIR)
         link_model_dirs_to_drive(COMFY_DIR, DRIVE_MODELS)
 
-os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True,garbage_collection_threshold:0.8")
 
 if comfy_alive(PORT):
     print("動画エンジンはすでに起動しています。部品の準備を待ちます…")
@@ -586,7 +586,7 @@ else:
     log = Path("/content/comfyui.log")
     log_f = open(log, "w", buffering=1)
     cmd = [sys.executable, "main.py", "--listen", "127.0.0.1", "--port", str(PORT),
-           "--highvram", "--disable-auto-launch", "--enable-cors-header"]
+           "--highvram", "--reserve-vram", "2", "--disable-auto-launch", "--enable-cors-header"]
     subprocess.Popen(cmd, cwd=str(COMFY_DIR), stdout=log_f, stderr=subprocess.STDOUT, start_new_session=True)
     if not wait_comfy_ready(PORT, seconds=180):
         print(log.read_text(errors="replace")[-2000:])
@@ -647,7 +647,7 @@ MD3 = r"""## ③ 動画を作る
 - **定期検診（専用 / つなぐ / つなぐ修）** … 名前付きパック。対面30秒。セリフは10秒、ベロチューとジュボは無言15秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師（32・結い髪・中乳・竿なし・聴診器）とレイ（20cm 立ち）。キスは両手で胸＋腹に竿。口パク後の無言は肌が動く。カクニンは立ちの口パクのみ。口内は粘る白液を残して見せる。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。台詞本はシネマを外す。音声は「」の日本語だけ
 - **ケンシン（専用 / つなぐ / つなぐ修）** … 名前付きパック。医院にアヤが来る。6本＝75秒。9:16。医師（32・結い髪・中乳・聴診器・ふたなり20cm・玉なし・根元にマンコ）。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ。台詞は10秒・2行まで（余るとH3が喋る）。無言キス15は身を胸につける（胸は揉まない）・ジュボ15・口内15。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／ちょっとサイキン、ウンチがでなくて。ミッカまえからです／タイヘンですね！じゃあまずおクチからみましょう！／ゲンキになりましたね／ありがとうございます
 - **終点40秒（つなぐ）** … 名前付きパック。10秒×4本。9:16。車掌（29・短髪・中乳・竿なし・ホイッスル）と座席で寝ているレイ（立たない）。「しゅうてんです、おきてください」では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF（無言）。「おきましたか？おきゃくさん、しゅうてんだからおりてください」で車掌に戻る
-- **終電（専用 / つなぐ / つなぐ修）** … 名前付きパック。終点の延長。9本＝120秒。9:16。車掌（29・短髪・中乳・竿なし・ホイッスル）と座席のレイ（24・20cm・立たない）の2人だけ。声かけは座っているレイに身体も顔も向ける。ジュボ30秒で奥まで。口内のあと同じ目線で口移し。レイがまた寝ようとする。「まだおきないんですか！」「しょうがないですね」。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。既存の終点はそのまま
+- **終電（専用 / つなぐ / つなぐ修）** … 名前付きパック。終点の延長。9本＝90秒（全部10秒。15秒禁止）。9:16。車掌（29・短髪・中乳・竿なし・ホイッスル）と座席のレイ（24・20cm・立たない）の2人だけ。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで。口内のあと同じ目線で口移し。レイがまた寝ようとする。「まだおきないんですか！」「しょうがないですね」。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。既存の終点はそのまま
 - **ザーメン風呂（専用 / つなぐ / つなぐ修）** … 名前付きパック。5本＝70秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。台詞: ザーメンフロにして／いっぱいだすね
 - **ニクカベ（専用 / つなぐ / つなぐ修）** … 名前付きパック。7本＝85秒。9:16。巨大生物の体内。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。歩行の床は弾力。足は沈まない。茶色い粘液は全身・顔・髪・チンチン・マンコ。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。レイ24・20cm。歩行15秒、台詞10秒、ジュボ15・口内15は無言。全部飲む。口移しなし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！
 - **アナル挿入（画質）** … 穴のアップ。挿入側はふたなり。男なし。Turbo なし・16step
@@ -670,7 +670,7 @@ MD3 = r"""## ③ 動画を作る
 - **絶頂** … 女1人。男なし。射精ではない
 - **汎用エロ（女体）** … ふたなり＋女。男なし。AIO + Larry 12step
 - **試し打ち** … ふたなり＋女。男なし
-- **秒数** … 4〜15 は1本。つなぐ 20〜120秒は同じカットを最後のコマで繋ぐ（10秒ずつ）。専用120秒は上の「やりたいシーン」で選ぶ（カット。ここは触らない）。1本で 16 秒以上は作らない
+- **秒数** … 4〜10 は1本。15秒はメモリ不足で画面が小さくなるので使わない。つなぐ 20〜120秒は同じカットを最後のコマで繋ぐ（10秒ずつ）。専用120秒は上の「やりたいシーン」で選ぶ（カット。ここは触らない）。1本で 11 秒以上は作らない
 - **レズビアンクンニ** … 女同士。男なし
 - **性器を広げる** … 女1人。男なし
 - **レズ＋広げる** … 女同士。男なし
@@ -688,10 +688,10 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 文章 = ""  #@param {type:"string"}
 #@markdown 写真からのときだけ。`auto` か空なら input の一番新しい jpg。テキストからでは使いません。
 写真ファイル = "auto"  #@param {type:"string"}
-#@markdown 秒数。1本は 4〜15。同じカットを長くするなら下の「つなぐ」。専用120秒では無視。
+#@markdown 秒数。1本は 4〜10。同じカットを長くするなら下の「つなぐ」。専用120秒では無視。
 秒数 = 10  #@param {type:"number"}
 #@markdown 専用120秒（帰宅・登校など）は上の「やりたいシーン」で選ぶ。ここは**同じカットを繋ぐ**用。専用では触らなくてよい。20〜120秒は 10秒ずつ、最後のコマから I2V（解像度もステップも落とさない）。
-長さの作り方 = "1本（最大15秒）"  #@param ["1本（最大15秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
+長さの作り方 = "1本（最大10秒）"  #@param ["1本（最大10秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
 #@markdown ### つなぐときだけ（任意・専用では無視）
 #@markdown 同じ場所・同じ人の続き。空欄は前の動きのまま。別の拍だけ書く。Picture 1 とカット割りは書かない。
 つなぎ2 = ""  #@param {type:"string"}
@@ -725,7 +725,7 @@ sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
 for name in ("select_loras", "h3_lora_studio", "h3_i2v_phone", "h3_t2v", "h3_r2v_core", "h3_motion_graphics"):
     sys.modules.pop(name, None)
-from h3_r2v_core import REF2VA_NAME, assert_graph_identity_motion, build_r2v_graph, is_oom_error, frames, r2v_retry_plans
+from h3_r2v_core import REF2VA_NAME, FL2VA_MAX_CLIP_S, assert_graph_identity_motion, build_r2v_graph, cap_duration_for_vram, cap_fl2va_clip_s, is_oom_error, frames, r2v_retry_plans, rewrite_take_seconds
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
@@ -733,7 +733,7 @@ from h3_lora_studio import apply_user_prompt, explain_choice, format_job_fail, f
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None):
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None) or float(getattr(_h3_studio, "FL2VA_MAX_CLIP_S", 0) or 0) < 10 or not getattr(_h3_studio, "cap_fl2va_clip_s", None) or not getattr(_h3_studio, "rewrite_take_seconds", None) or not getattr(_h3_studio, "cap_duration_for_vram", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
@@ -757,7 +757,7 @@ else:
         if CHAIN:
             print("秒数は", int(DURATION), "にします（つなぐは 16〜120 秒。20〜120秒のボタンは秒数欄を無視）。")
         else:
-            print("秒数は", int(DURATION), "にします（1本は 4〜15 秒。16秒以上は「つなぐ」）。")
+            print("秒数は", int(DURATION), "にします（1本は 4〜10 秒。11秒以上は「つなぐ」）。")
     if CHAIN:
         print("つなぐモード: 1本目はテキストまたは写真。2本目以降は最後のコマから I2V。同じ場所・同じ人・同じ服・同じカメラ。")
         print("つなぎ:", " + ".join(str(int(x)) + "秒" for x in CLIPS), "（最後のコマから続ける。画質は落とさない）")
@@ -810,11 +810,13 @@ if is_anthology(やりたいシーン):
     STORY_SEAMLESS = False
     STORY_REWRITE = False
     DURATION = float(STORY.get("duration_s") or 180)
-    CLIPS = [float(c.get("duration_s") or STORY.get("clip_s") or 15) for c in STORY["clips"]]
+    CLIPS = [cap_fl2va_clip_s(float(c.get("duration_s") or STORY.get("clip_s") or 15)) for c in STORY["clips"]]
     CHAIN = False
     VANILLA = False
     STORY_STILLS = CAST_DIR
-    print(str(STORY.get("title_ja") or STORY.get("id")), "短編集。", len(STORY["clips"]), "本 ×", int(STORY.get("clip_s") or 15), "秒。各本は独立。最後のコマではつなぎません。連結しません。")
+    if any(float(c.get("duration_s") or 0) > FL2VA_MAX_CLIP_S + 0.01 for c in STORY["clips"]):
+        print("15秒の本は10秒にします（画面サイズは維持）")
+    print(str(STORY.get("title_ja") or STORY.get("id")), "短編集。", len(STORY["clips"]), "本 ×", int(CLIPS[0] if CLIPS else 10), "秒。各本は独立。最後のコマではつなぎません。連結しません。")
     print("人物写真:", CAST_DIR, "（sayaka/rei/aya/madoka の bust と full）を R2V 参照。I2V の最初のコマにはしません。")
     print("③のテキストから／写真ファイルは使いません。")
     print("各本はメイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。フェラは 9:16 寄り、挿入は 16:9 または立ち 9:16。")
@@ -828,11 +830,13 @@ elif is_story(やりたいシーン) or is_chain_pack(やりたいシーン):
     STORY_SEAMLESS = bool(STORY.get("seamless"))
     STORY_REWRITE = bool(STORY.get("rewrite_chain_prompts", STORY_SEAMLESS))
     DURATION = float(STORY.get("duration_s") or 120)
-    CLIPS = [float(c.get("duration_s") or STORY.get("clip_s") or 10) for c in STORY["clips"]]
+    CLIPS = [cap_fl2va_clip_s(float(c.get("duration_s") or STORY.get("clip_s") or 10)) for c in STORY["clips"]]
     CHAIN = STORY_SEAMLESS
     VANILLA = False
     STORY_STILLS = story_stills_dir(DRIVE_ROOT / "input", STORY)
     STORY_STILLS.mkdir(parents=True, exist_ok=True)
+    if any(float(c.get("duration_s") or 0) > FL2VA_MAX_CLIP_S + 0.01 for c in STORY["clips"]):
+        print("15秒の本は10秒にします（画面サイズは維持）")
     if not STORY_SEAMLESS:
         print(str(STORY.get("title_ja") or STORY.get("id")), "（専用＝カット）。つなぐではありません。文章欄・つなぎ欄・秒数は使いません。", len(STORY["clips"]), "本の JSON 文で部品を切り替えます。", int(DURATION), "秒。")
         print("カット編集です。各本は独立で、最後のコマからは続けません（再現優先）。")
@@ -1128,12 +1132,13 @@ try:
         vram_gb = float(torch.cuda.get_device_properties(0).total_memory) / (1024 ** 3)
 except Exception:
     pass
+keep_canvas = bool(STORY)
 if MODE == "r2v":
     plans = r2v_retry_plans(duration_s=float(CLIPS[0]), ref_image_size="max", width=w, height=h, n_images=max(1, len(GRAPH_IMGS)), has_video=False, vram_gb=vram_gb)
 elif MODE == "t2v":
-    plans = t2v_retry_plans(width=w, height=h)
+    plans = t2v_retry_plans(width=w, height=h, duration_s=float(CLIPS[0]), keep_canvas=keep_canvas)
 else:
-    plans = i2va_retry_plans(width=w, height=h)
+    plans = i2va_retry_plans(width=w, height=h, duration_s=float(CLIPS[0]), keep_canvas=keep_canvas)
 CLIP_DURATION = float(CLIPS[0])
 CLIP_INDEX = 0
 GRAPH_MODE = MODE
@@ -1168,7 +1173,7 @@ def make_graph(plan):
         g = build_t2v_graph(
             prompt=prompt_now, unet=unet, lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=CLIP_DURATION, seed=clip_seed, steps=steps,
+            duration_s=float(plan.get("duration_s") or CLIP_DURATION), seed=clip_seed, steps=steps,
             filename_prefix=prefix,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
@@ -1181,7 +1186,7 @@ def make_graph(plan):
             first_image=GRAPH_FIRST, last_image=None, prompt=prompt_now, unet=unet,
             lora_name=lora_name, lora_strength=lora_strength,
             width=int(plan["width"]), height=int(plan["height"]),
-            duration_s=CLIP_DURATION, seed=clip_seed, steps=steps,
+            duration_s=float(plan.get("duration_s") or CLIP_DURATION), seed=clip_seed, steps=steps,
             filename_prefix=prefix,
             has_lora_loader=("LoraLoaderModelOnly" in obj) or 試し打ちだけ,
             has_audio_decode=("VAEDecodeAudio" in obj) or 試し打ちだけ,
@@ -1243,12 +1248,13 @@ def wait_prompt(pid, timeout=3600):
     return False, "timeout"
 
 def generate_one():
+    keep_canvas = bool(STORY)
     if GRAPH_MODE == "r2v":
         plans_now = r2v_retry_plans(duration_s=CLIP_DURATION, ref_image_size="max", width=w, height=h, n_images=max(1, len(GRAPH_IMGS or [])), has_video=False, vram_gb=vram_gb)
     elif GRAPH_MODE == "t2v":
-        plans_now = t2v_retry_plans(width=w, height=h)
+        plans_now = t2v_retry_plans(width=w, height=h, duration_s=CLIP_DURATION, keep_canvas=keep_canvas)
     else:
-        plans_now = i2va_retry_plans(width=w, height=h)
+        plans_now = i2va_retry_plans(width=w, height=h, duration_s=CLIP_DURATION, keep_canvas=keep_canvas)
     ok_entry = None
     before = newest_mp4(OUT)
     for plan in plans_now:
@@ -1276,10 +1282,13 @@ def generate_one():
             comfy_free(PORT)
             if attempt == 1:
                 continue
-            print("小さい画面でやり直します。")
+            if not keep_canvas:
+                print("小さい画面でやり直します。")
         if ok_entry is not None:
             break
     if ok_entry is None:
+        if keep_canvas:
+            raise SystemExit("メモリ不足です。10秒・この画面のまま小さくしません。A100 のまま②→③をやり直してください。やり直しが一番時間がかかります。")
         raise SystemExit("メモリ不足で作れませんでした。秒数を短くするか、A100 のまま②からやり直してください。")
     videos = collect_output_videos(ok_entry, OUT)
     fresh = newest_mp4(OUT)
@@ -1310,6 +1319,7 @@ else:
     inp.mkdir(parents=True, exist_ok=True)
     prev_sit = None
     prev_stack = None
+    _capped_15s_note = False
     for CLIP_INDEX, CLIP_DURATION in enumerate(CLIPS):
         if STORY:
             # 専用（カット）は last_frame なし。つなぐ / つなぐ修 / パックは 2本目以降を前の本の最後のコマから。
@@ -1353,6 +1363,15 @@ else:
                 print("最終シーン合わせ:", "最後の本を合わせます" if planned.get("first_kind") == "last_frame" else "この本の静止画・独立カットとして送ります")
             w, h = int(planned["width"]), int(planned["height"])
             CLIP_DURATION = float(planned.get("duration_s") or CLIP_DURATION)
+            asked_s = CLIP_DURATION
+            if GRAPH_MODE != "r2v":
+                CLIP_DURATION = cap_fl2va_clip_s(CLIP_DURATION)
+            else:
+                CLIP_DURATION = cap_duration_for_vram(CLIP_DURATION, vram_gb=vram_gb, n_images=max(1, len(GRAPH_IMGS or [])), has_video=False, ref_image_size="max")
+            if asked_s > CLIP_DURATION + 0.01 and not _capped_15s_note:
+                print("15秒の本は10秒にします（画面サイズは維持）")
+                _capped_15s_note = True
+            GRAPH_PROMPT = rewrite_take_seconds(GRAPH_PROMPT, CLIP_DURATION)
             print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", planned["label"], int(CLIP_DURATION), "秒", w, "x", h, GRAPH_MODE, [x.get("id") for x in stack], str(SAMPLER.get("steps")) + "step", "Turbo" if planned.get("turbo") else "フルステップ")
             next_unet = unet_for(GRAPH_MODE)
             unet_switched = next_unet != unet
@@ -1398,6 +1417,15 @@ else:
                     raise SystemExit(hint or ("forbidden subject in prompt: " + str(hits)))
                 if "Picture 1" not in GRAPH_PROMPT:
                     raise SystemExit("つなぎの2本目以降に最後のコマ（Picture 1）がありません。②のあと③をもう一度。")
+            asked_s = float(CLIP_DURATION)
+            if GRAPH_MODE != "r2v":
+                CLIP_DURATION = cap_fl2va_clip_s(CLIP_DURATION)
+            else:
+                CLIP_DURATION = cap_duration_for_vram(CLIP_DURATION, vram_gb=vram_gb, n_images=max(1, len(GRAPH_IMGS or [])), has_video=False, ref_image_size="max")
+            if asked_s > CLIP_DURATION + 0.01 and not _capped_15s_note:
+                print("15秒の本は10秒にします（画面サイズは維持）")
+                _capped_15s_note = True
+            GRAPH_PROMPT = rewrite_take_seconds(GRAPH_PROMPT, CLIP_DURATION)
             print("クリップ", CLIP_INDEX + 1, "/", len(CLIPS), ":", int(CLIP_DURATION), "秒", GRAPH_MODE)
         GRAPH_FIRST = first_name
         prev_prompt = GRAPH_PROMPT

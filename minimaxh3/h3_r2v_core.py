@@ -5,8 +5,35 @@ No ComfyUI / network required. Used by minimax_h3_colab_完全版.ipynb cell 8.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
+
+FL2VA_MAX_CLIP_S = 10.0
+_TAKE_SECONDS_RE = re.compile(r"\b(\d+(?:\.\d+)?)-second(?: take)?\b")
+
+
+def cap_fl2va_clip_s(duration_s: float) -> float:
+    """FL2VA / stills R2V: never start a 15s pass. 15s OOMs then shrinks the canvas."""
+    try:
+        d = float(duration_s)
+    except (TypeError, ValueError):
+        d = FL2VA_MAX_CLIP_S
+    if d < 1:
+        d = 1.0
+    return min(d, FL2VA_MAX_CLIP_S)
+
+
+def rewrite_take_seconds(prompt: str, duration_s: float) -> str:
+    """Keep prompt take-length in sync after a duration cap (15-second → 10-second)."""
+    n = int(round(float(duration_s)))
+
+    def repl(m: re.Match[str]) -> str:
+        if m.group(0).endswith("take"):
+            return f"{n}-second take"
+        return f"{n}-second"
+
+    return _TAKE_SECONDS_RE.sub(repl, str(prompt or ""))
 
 
 HF_COMFY = "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main"
@@ -236,7 +263,7 @@ def cap_duration_for_vram(
     if duration_s < 1:
         duration_s = 5
     if not has_video:
-        return min(duration_s, 15.0)
+        return min(duration_s, FL2VA_MAX_CLIP_S)
     tier = gpu_vram_tier(vram_gb)
     if tier == "low":
         cap = 5.0

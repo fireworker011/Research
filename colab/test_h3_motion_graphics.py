@@ -134,6 +134,16 @@ def test_i2va_retry_plans_keep_16_9():
     assert (768, 864) not in sizes
 
 
+def test_i2va_retry_plans_keep_canvas_and_cap_duration():
+    plans = i2va_retry_plans(width=576, height=1024, duration_s=15, keep_canvas=True)
+    assert len(plans) == 1
+    assert plans[0]["label"] == "576x1024"
+    assert plans[0]["duration_s"] == 10
+    ladder = i2va_retry_plans(width=576, height=1024, duration_s=15)
+    assert any(p["label"] == "288x512" for p in ladder)
+    assert all(p["duration_s"] == 10 for p in ladder)
+
+
 def test_prefer_fl2v_lora(tmp_path):
     a = tmp_path / "minimax_h3_ref2v_turbo.safetensors"
     b = tmp_path / "minimax_h3_fl2v_turbo_4step.safetensors"

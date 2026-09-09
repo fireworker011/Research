@@ -36,9 +36,46 @@ if _COLAB_R2V.is_dir() and str(_COLAB_R2V) not in sys.path:
     sys.path.insert(0, str(_COLAB_R2V))
 # Colab ② writes this file first, then h3_r2v_core.py. Import must not fail.
 try:
-    from h3_r2v_core import finalize_prompt as r2v_finalize_prompt
+    from h3_r2v_core import (
+        FL2VA_MAX_CLIP_S,
+        cap_duration_for_vram,
+        cap_fl2va_clip_s,
+        finalize_prompt as r2v_finalize_prompt,
+        rewrite_take_seconds,
+    )
 except ImportError:
     r2v_finalize_prompt = None
+    FL2VA_MAX_CLIP_S = 10.0
+
+    def cap_duration_for_vram(
+        duration_s: float,
+        *,
+        vram_gb: float,
+        n_images: int,
+        has_video: bool,
+        ref_image_size: str,
+    ) -> float:
+        d = float(duration_s)
+        if not has_video:
+            return min(d, FL2VA_MAX_CLIP_S)
+        return min(d, 15.0)
+
+    def cap_fl2va_clip_s(duration_s: float) -> float:
+        try:
+            d = float(duration_s)
+        except (TypeError, ValueError):
+            d = FL2VA_MAX_CLIP_S
+        if d < 1:
+            d = 1.0
+        return min(d, FL2VA_MAX_CLIP_S)
+
+    def rewrite_take_seconds(prompt: str, duration_s: float) -> str:
+        n = int(round(float(duration_s)))
+        return re.sub(
+            r"\b(\d+(?:\.\d+)?)-second(?: take)?\b",
+            lambda m: f"{n}-second take" if m.group(0).endswith("take") else f"{n}-second",
+            str(prompt or ""),
+        )
 
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
@@ -487,7 +524,7 @@ SITUATION_HELP = {
     "checkup-100s": "定期検診。対面30秒。9本＝100秒。9:16。診察室ではない。家の玄関。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。セリフ10秒、ベロチューとジュボは無言15秒。キスは両手で胸。カクニンは立ちの口パクのみ。台詞: こんにちは。テイキケンシンにきました／あ…はい、ヨロシクオネガイします／では、シツレイします／クチとムネはモンダイないですね／では、つぎはおチンチンのカクニンをします／モンダイありますね。hmmotion なし。",
     "clinic-75s": "ケンシン。医院にアヤが来る。6本＝75秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。1本目: 女医は画面左手・また開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと女医が立ち上がり、お互い立ったまま短いキス。それから笑顔で、画面右手の目の前の椅子にどうぞおすわりください。女医は立ったまま。3本目のおクチキスもお互い立つ（身を胸につける。胸は揉まない）。台詞10秒・2行まで。ジュボ15・口内15は無言。ゲンキは口パク10秒。口内のあとジュボ側が同じ目線に立ち上がって口移し。hmmotion なし。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
-    "last-train-120s": "終電。終点の延長。9本＝120秒。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボ30秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。hmmotion なし。既存の終点はそのまま。",
+    "last-train-120s": "終電。終点の延長。9本＝90秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移し。レイがまた寝ようとする。台詞: しゅうてんです、おきてください／まだおきないんですか！／しょうがないですね。向き合う座位で挿入を見せて騎乗→中に出す→抜く途中は竿とマンコの隙間から白液、抜いたらドロドロが車掌のマンコから流れ出る。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝70秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立ってドロドロの白い液体を溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
     "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝85秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。水ではなくベトベトで肌に付く。混ざるが消えない。顔は液面より上。歩行の床は弾力。足は沈まない。レイは1本目からフタナリ勃起20cm。竿は風呂から生えない。アヤ22ミニ・竿なし。歩行15秒、台詞10秒、ジュボ15・口内15は無言。全部飲む。口移しなし。hmmotion なし。家のザーメン風呂とは別。台詞: あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
     "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝放尿、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
@@ -1442,7 +1479,7 @@ def apply_drive_cache_env(drive_root: Path | str) -> dict[str, str]:
         applied[key] = str(dest)
     os.environ["CUDA_MODULE_LOADING"] = "EAGER"
     os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True,garbage_collection_threshold:0.8")
     applied["CUDA_MODULE_LOADING"] = "EAGER"
     return applied
 
@@ -2275,6 +2312,8 @@ def restart_studio_comfy(comfy_dir: Path | str, *, port: int = 8188) -> None:
         "--port",
         str(port),
         "--highvram",
+        "--reserve-vram",
+        "2",
         "--disable-auto-launch",
         "--enable-cors-header",
     ]
@@ -2524,7 +2563,7 @@ CHAIN_PRESETS = {
 
 
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
-    """One shot is 4–15s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
+    """One shot is 4–10s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
@@ -2535,8 +2574,8 @@ def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
         if n < CHAIN_MIN_S:
             return float(CHAIN_MIN_S)
         return float(n)
-    if n > 15:
-        return 15.0
+    if n > 10:
+        return 10.0
     if n < 4:
         return 4.0
     return float(n)
@@ -2565,20 +2604,22 @@ def chain_preset_seconds(label: str | bool) -> float | None:
 
 
 def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
-    """Native H3 clips. Do not generate 16s+ in one MiniMaxH3ImageToVideo pass."""
+    """Native H3 clips. Do not generate 11s+ in one MiniMaxH3ImageToVideo pass (15s OOMs and shrinks the canvas)."""
     total = clamp_studio_duration(total_s, chain=chain)
     if not chain:
         return [total]
     clips: list[float] = []
     left = int(total)
-    while left > 15:
+    while left > 10:
         clips.append(10.0)
         left -= 10
     if left >= 4:
         clips.append(float(left))
-    elif clips:
-        clips[-1] = float(int(clips[-1]) + left)
-    else:
+    elif left > 0 and clips:
+        need = 4 - left
+        clips[-1] = float(max(4, int(clips[-1]) - need))
+        clips.append(4.0)
+    elif not clips:
         clips.append(10.0)
     return clips
 
