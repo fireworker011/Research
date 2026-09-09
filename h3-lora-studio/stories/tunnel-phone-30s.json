@@ -3,7 +3,7 @@
   "id": "tunnel-phone-30s",
   "kind": "chain",
   "addon": true,
-  "title_ja": "トンネル非常電話30秒",
+  "title_ja": "トンネル非常電話20秒",
   "adults_only": true,
   "min_age": 22,
   "duration_s": 20,

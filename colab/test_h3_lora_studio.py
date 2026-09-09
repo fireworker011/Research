@@ -43,6 +43,10 @@ from h3_lora_studio import (
     strip_chain_restart_language,
     situation_ids,
     studio_clip_plan,
+    load_story,
+    prepare_story_clip,
+    STORY_IDS,
+    CHAIN_PACK_IDS,
 )
 from h3_t2v import CANVAS_9_16, DEFAULT_T2V_PROMPT, assert_t2v_graph, build_t2v_graph
 
@@ -454,7 +458,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/creampie.json" in src
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
-    assert 'FETCH_REV = "h3-20260909-jupo-1"' in src
+    assert 'FETCH_REV = "h3-20260909-final-1"' in src
     assert "--reserve-vram" in src
     assert "keep_canvas = bool(STORY)" in src
     assert "cap_fl2va_clip_s" in src
@@ -511,7 +515,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-jupo-1" in blob
+    assert "h3-20260909-final-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -5052,7 +5056,7 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 seen_jupo += 1
                 assert "PLEASURE FACE:" in prompt, (story["id"], i + 1)
                 if "ORAL LOCK:" in prompt:
-                    assert "to the BASE" in prompt, (story["id"], i + 1)
+                    assert "to the BASE" in prompt or "Start deep at the BASE" in prompt, (story["id"], i + 1)
                     assert "not a tip suck" in prompt.lower(), (story["id"], i + 1)
             if orig_sit == "oral_creampie":
                 seen_cum += 1
@@ -5101,7 +5105,12 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
         "Already oral. Mouth already on. She pulls her mouth off the 20cm.\n",
         situation="oral",
     )
-    assert "ORAL LOCK:" not in pull
+    # 抜く本も frame 1 は根元。そこから一気に抜く。先端だけ咥えるに逃げない。
+    assert "ORAL LOCK:" in pull
+    assert "Start deep at the BASE" in pull
+    assert "slides all the way OFF" in pull
+    assert "Do not stop at the glans" in pull
+    assert "already swallowed. The glans is already fully inside" not in pull
     walk = lock_oral_in_mouth("Nobody sucks. They walk the platform.", situation="futa_visible")
     assert "ORAL LOCK:" not in walk
     creampie = lock_oral_in_mouth("CUMOUF. Already deep in the mouth.", situation="oral_creampie")
@@ -5437,7 +5446,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-jupo-1" in cell2
+    assert "h3-20260909-final-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -5830,3 +5839,35 @@ def test_anthology_shorts_immoral(tmp_path):
         if planned["situation"] == "cunnilingus_futa":
             assert ids == ["aftermidnight-ref2va", "synth-pussy-h3"]
             assert "blowjob-h3" not in ids
+
+
+def test_final_audit_no_thin_semen_no_water_bath_pull_off_starts_deep(tmp_path):
+    """総点検: 抜く本も frame 1 は根元。精液は全話で重油級（thin 禁止）。ザーメン風呂に湯は無い。題の秒数は実際の合計。"""
+    cast = tmp_path / "cast"
+    _write_cast_stills(cast)
+    thin = re.compile(r"(?<!not )\bthin white\b|hits the water|stays on the water|clinging to the water", re.I)
+    seen_pull_off = 0
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
+        story = load_story(sid)
+        total = int(sum(float(c.get("duration_s") or story.get("clip_s") or 10) for c in story["clips"]))
+        m = re.search(r"(\d+)秒", str(story.get("title_ja") or ""))
+        if m:
+            assert int(m.group(1)) == total, (sid, story.get("title_ja"), total)
+        for i, clip in enumerate(story["clips"]):
+            planned = prepare_story_clip(
+                story, i, last_frame=(f"h3_chain_{i-1}.png" if i else None), stills_dir=tmp_path, cast_dir=cast
+            )
+            prompt = planned["prompt"]
+            assert not thin.search(prompt), (sid, i + 1, thin.search(prompt).group(0))
+            sit = planned["situation"]
+            if sit in {"oral", "futa_blowjob", "oral_creampie"} and not re.search(r"urine|yellow", prompt, re.I):
+                assert "ORAL LOCK:" in prompt, (sid, i + 1)
+                assert "at the BASE" in prompt or "to the BASE" in prompt, (sid, i + 1)
+                if "Start deep at the BASE" in prompt:
+                    seen_pull_off += 1
+                    assert "slides all the way OFF" in prompt
+    assert seen_pull_off >= 3
+    bath = load_story("semen-bath-70s")
+    blob = "\n".join(c["prompt"] for c in bath["clips"])
+    assert "aimed down at the water" not in blob
+    assert "hits the water" not in blob

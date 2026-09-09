@@ -3146,6 +3146,12 @@ _ORAL_STAY_ON_RE = re.compile(
     re.I,
 )
 _ORAL_PULL_OFF_RE = re.compile(r"pulls(?: her mouth)? off", re.I)
+ORAL_PULL_OFF_LINE = (
+    "ORAL LOCK: Start deep at the BASE, not a tip suck. At frame 1 the whole erect 20cm is still swallowed, "
+    "lips a tight ring at the BASE (at the hairless pussy), glans in the throat, nose at the groin. "
+    "Then the mouth slides all the way OFF the 20cm in one motion, a saliva string from the lips to the glans. "
+    "Do not lick the shaft on the way off. Do not stop at the glans to suck the tip. Once off, the mouth stays off."
+)
 
 
 def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> str:
@@ -3161,7 +3167,7 @@ def lock_oral_in_mouth(text: str, *, situation: str = "", ending: str = "") -> s
     share_end = str(ending or "").strip() == "share"
     pulling_off = bool(_ORAL_PULL_OFF_RE.search(raw) and not _ORAL_STAY_ON_RE.search(raw))
     if sit != "oral_creampie" and not share_end and pulling_off:
-        return raw
+        return _inject_before_soundscape(raw, ORAL_PULL_OFF_LINE)
     if share_end:
         line = ORAL_IN_MOUTH_SHARE_LINE
     elif sit == "oral_creampie":
@@ -4592,7 +4598,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                 urine = bool(re.search(r"urine|yellow stream|pees a |drinks the yellow", prompt, re.I))
                 if not urine:
                     oral = lock_oral_in_mouth(prompt, situation=situation)
-                    if "ORAL LOCK:" in oral and "to the BASE" not in oral:
+                    if "ORAL LOCK:" in oral and "to the BASE" not in oral and "at the BASE" not in oral:
                         errors.append(f"clip {n}: jupo / 口内 must be deep to the BASE, not a tip suck")
         if lines:
             if situation != "futa_visible":
