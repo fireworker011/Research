@@ -16,7 +16,9 @@ const { loadLinks, redactAffiliateUrls, escapeCSV, readJSON } = require('../src/
 const seed = require('../data/seed_templates.json');
 
 function resolveLink(row, links) {
-  return links[row.link_key] || links[row.genre] || '';
+  const key = String(row.link_key || '').trim();
+  if (key) return String(links[key] || '').trim();
+  return String(links[row.genre] || '').trim();
 }
 
 function jstSlotMinutesAgo(mins) {
@@ -156,6 +158,11 @@ function main() {
   for (const key of ['転職_neo', '教育_N高', '教育_アイズ', '転職_チケット']) {
     if (String(empty[key] || '').trim()) throw new Error(`${key} should stay empty without secret`);
   }
+
+  process.env.AFFILIATE_LINKS_JSON = JSON.stringify({ 転職: dummy, 転職_neo: '' });
+  const mixed = loadLinks();
+  const neoTpl = seed.posting_templates.find((x) => x.id === 'career_20260828_neo_01');
+  if (resolveLink(neoTpl, mixed)) throw new Error('neo must not fall back to 転職');
 
   if (prev === undefined) delete process.env.AFFILIATE_LINKS_JSON;
   else process.env.AFFILIATE_LINKS_JSON = prev;
