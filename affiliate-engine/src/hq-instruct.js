@@ -69,10 +69,19 @@ function approvedYenSum(csvText) {
   return sum;
 }
 
+function yenStatus(csvPath = path.join(__dirname, '../data/conversions.csv')) {
+  try {
+    if (!fs.existsSync(csvPath)) return { approved_yen: null, text: 'approved-yen: unknown' };
+    const n = approvedYenSum(fs.readFileSync(csvPath, 'utf8'));
+    if (!Number.isFinite(n)) return { approved_yen: null, text: 'approved-yen: unknown' };
+    return { approved_yen: n, text: `approved-yen: ${n}` };
+  } catch (_) {
+    return { approved_yen: null, text: 'approved-yen: unknown' };
+  }
+}
+
 function yenStatusText() {
-  const csvPath = path.join(__dirname, '../data/conversions.csv');
-  const n = approvedYenSum(fs.readFileSync(csvPath, 'utf8'));
-  return `approved-yen: ${n}`;
+  return yenStatus().text;
 }
 
 function affiGo(comments) {
@@ -172,6 +181,7 @@ async function run() {
   const pointer = go ? affi.pointer : XM_POINTER;
   const state = go ? affi.state : START;
   const neo = go ? affi.neo || 'no' : 'no';
+  const yenNow = yenStatus();
   const body = commentBody(go, state, neo);
   const last = comments.length ? comments[comments.length - 1] : null;
   if (last && String(last.body || '').trim() === body.trim() && isTodayUtc(last.created_at)) {
@@ -183,7 +193,7 @@ async function run() {
         yen_number: yen.issue.number,
         yen_created: yen.created,
         overlay_filled: overlayStatusText().names.length,
-        approved_yen: approvedYenSum(fs.readFileSync(path.join(__dirname, '../data/conversions.csv'), 'utf8')),
+        approved_yen: yenNow.approved_yen,
         pointer,
         affi: go,
         state,
@@ -207,7 +217,8 @@ async function run() {
       neo,
       yen_number: yen.issue.number,
       yen_created: yen.created,
-      overlay_filled: overlayStatusText().names.length
+      overlay_filled: overlayStatusText().names.length,
+      approved_yen: yenNow.approved_yen
     })}\n`
   );
 }
@@ -243,6 +254,8 @@ function selfTest() {
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
   if (!body.includes('approved-yen: 0')) throw new Error('yen line');
+  if (yenStatus('/no/such/conversions.csv').text !== 'approved-yen: unknown') throw new Error('yen missing');
+  if (yenStatus('/no/such/conversions.csv').approved_yen !== null) throw new Error('yen missing null');
   if (approvedYenSum('date,source,program,clicks,cv,approved_yen,note\n2026-09-09,A8,all,1,0,15000,カタログ\n') !== 0) {
     throw new Error('catalog yen');
   }
@@ -254,6 +267,7 @@ function selfTest() {
   if (!instructYml.includes(`github.event.issue.title == '${ISSUE_TITLE}'`)) {
     throw new Error('instruct yml title');
   }
+  if (!instructYml.includes('affiliate-engine/data/conversions.csv')) throw new Error('instruct csv path');
   const yenYml = fs.readFileSync(path.join(__dirname, '../../.github/workflows/affiliate_engine_a8_yen.yml'), 'utf8');
   if (!yenYml.includes(`github.event.issue.title == '${YEN_ISSUE_TITLE}'`)) {
     throw new Error('yen yml title');
@@ -283,6 +297,7 @@ module.exports = {
   samePointer,
   affiGo,
   approvedYenSum,
+  yenStatus,
   targetFor,
   findIssueByTitle,
   ensureIssue

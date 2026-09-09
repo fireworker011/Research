@@ -18,6 +18,7 @@ on:
       - 'affiliate-engine/src/overlay-keys.js'
       - 'affiliate-engine/src/affi-step.js'
       - 'affiliate-engine/src/util.js'
+      - 'affiliate-engine/data/conversions.csv'
 
 concurrency:
   group: grok-bot-instruct
