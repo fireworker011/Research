@@ -671,7 +671,7 @@ def format_checklist(bundle: dict[str, Any] | None = None) -> str:
             "",
             "## 準備（撮る／集める前。これがないと始めない）",
             "",
-            "1. **ffmpeg / ffprobe**（24.000fps に打ち直す。無いとパックが落ちる）",
+            "1. **ffmpeg / ffprobe**（PCがあるとき。スマホだけなら不要。Colab ④が 24fps にする）",
             f"2. **fal アカウント**。trainer は `{trainer}`。Fal H3 Max には LoRA を差せない",
             "3. **作業フォルダを3つ**。zip も素材も Git に入れない",
             "",
@@ -694,6 +694,9 @@ def format_checklist(bundle: dict[str, Any] | None = None) -> str:
             "```",
             "",
             "印刷用は `h3-lora-studio/train/grids/<id>.txt`。",
+            "",
+            "スマホだけのとき: Drive `minimax-h3-comfyui/train/raw/<id>/<pose>/` に動画を入れる。",
+            "リネーム不要。Colab ④が ffmpeg して zip にする。手順は `PHONE.md`。",
             "",
             "## 素材の仕様（1本ずつ）",
             "",
@@ -756,8 +759,8 @@ def format_checklist(bundle: dict[str, Any] | None = None) -> str:
             "### A. 集める",
             "",
             "1. `grids/<id>.txt` を開く",
-            "2. 1セル1本撮る／集める。ファイル名をグリッド通りにする",
-            "3. 上の ffmpeg で 24.000fps にする",
+            "2. 1セル1本撮る／集める。PCならファイル名をグリッド通り。スマホなら体位フォルダへ入れる",
+            "3. PCなら上の ffmpeg。スマホなら Colab ④（`--ingest-phone`）",
             "4. 目視: 行為が見える。別行為が映っていない。男がいない",
             "",
             "### B. パック（キット）",
@@ -857,6 +860,187 @@ def write_kit(dest: Path | None = None, bundle: dict[str, Any] | None = None) ->
     return written
 
 
+POSE_FOLDER_ALIASES = {
+    "立ち": "standing",
+    "standing": "standing",
+    "騎乗": "cowgirl",
+    "騎乗位": "cowgirl",
+    "cowgirl": "cowgirl",
+    "後背": "doggy",
+    "後背位": "doggy",
+    "doggy": "doggy",
+    "正常位": "missionary",
+    "missionary": "missionary",
+    "横": "side",
+    "side": "side",
+    "しゃがみ": "squat",
+    "squat": "squat",
+    "膝立ち": "kneeling",
+    "kneeling": "kneeling",
+    "座り": "sitting",
+    "sitting": "sitting",
+    "POV": "pov",
+    "pov": "pov",
+}
+CONCEPT_JA = {
+    "アナル（どの構図）": "anal-any-h3",
+    "anal-any-h3": "anal-any-h3",
+    "放尿（性器から）": "urine-drink-h3",
+    "飲尿（どの構図）": "urine-drink-h3",
+    "urine-drink-h3": "urine-drink-h3",
+    "脱糞（どの構図）": "scat-act-h3",
+    "scat-act-h3": "scat-act-h3",
+}
+
+
+def resolve_concept_id(name: str) -> str:
+    key = str(name or "").strip()
+    if key in CONCEPT_JA:
+        return CONCEPT_JA[key]
+    return key
+
+
+def resolve_folder_pose(name: str) -> str:
+    key = str(name or "").strip()
+    if key in POSE_FOLDER_ALIASES:
+        return POSE_FOLDER_ALIASES[key]
+    low = key.lower()
+    if low in POSE_FOLDER_ALIASES:
+        return POSE_FOLDER_ALIASES[low]
+    return low.replace("-", "_")
+
+
+def drive_raw_layout(concept: dict[str, Any], root: Path) -> list[Path]:
+    cid = str(concept["id"])
+    poses = list(concept.get("poses") or [])
+    paths = [root / cid]
+    for pose in poses:
+        paths.append(root / cid / pose)
+    return paths
+
+
+def transcode_to_spec(
+    src: Path,
+    dest: Path,
+    *,
+    aspect: str = "9:16",
+    seconds: float = 10,
+    skip: bool = False,
+) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if skip:
+        dest.write_bytes(src.read_bytes())
+        return
+    if aspect == "16:9":
+        width, height = 1280, 704
+    else:
+        width, height = 704, 1280
+    vf = (
+        f"fps=24,scale={width}:{height}:force_original_aspect_ratio=decrease,"
+        f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2,setsar=1"
+    )
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(src),
+        "-filter:v",
+        vf,
+        "-t",
+        str(seconds),
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
+        "-ar",
+        "44100",
+        "-movflags",
+        "+faststart",
+        str(dest),
+    ]
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise PackError(f"ffmpeg failed for {src.name}: {exc}") from exc
+
+
+def ingest_phone_raw(
+    src: Path,
+    concept: dict[str, Any],
+    dest: Path,
+    *,
+    skip_transcode: bool = False,
+    default_aspect: str = "9:16",
+) -> tuple[Path, list[str]]:
+    """Turn phone dumps (pose folders or IMG_*.MOV) into packer filenames."""
+    if not src.is_dir():
+        raise PackError(f"src is not a folder: {src}")
+    poses = list(concept.get("poses") or [])
+    buckets: dict[str, list[Path]] = {pose: [] for pose in poses}
+    unknown: list[Path] = []
+    for child in sorted(src.iterdir(), key=lambda p: p.name.lower()):
+        if child.name.startswith(".") or child.name.startswith("_"):
+            continue
+        if child.is_dir():
+            pose = resolve_folder_pose(child.name)
+            if pose not in buckets:
+                buckets[pose] = []
+            for video in iter_videos(child):
+                if pose in poses:
+                    buckets[pose].append(video)
+                else:
+                    unknown.append(video)
+            continue
+        if child.suffix.lower() not in VIDEO_EXTS:
+            continue
+        tags = parse_filename_tags(child.name)
+        pose = tags.get("pose") or ""
+        if pose in buckets:
+            buckets[pose].append(child)
+        else:
+            unknown.append(child)
+    if unknown:
+        raise PackError(
+            "put clips in a pose folder ("
+            + ", ".join(poses)
+            + "): "
+            + ", ".join(p.name for p in unknown[:8])
+        )
+    dest.mkdir(parents=True, exist_ok=True)
+    if dest.resolve() != src.resolve():
+        for old in list(dest.iterdir()):
+            if old.is_file() and old.suffix.lower() in {".mp4", ".mov", ".avi", ".mkv", ".txt"}:
+                old.unlink()
+    written: list[str] = []
+    n = 0
+    aspect_token = default_aspect.replace(":", "x")
+    for pose in poses:
+        for video in buckets[pose]:
+            n += 1
+            tags = parse_filename_tags(video.name)
+            camera = tags.get("camera") or "front"
+            shot = tags.get("shot") or "medium"
+            aspect = tags.get("aspect") or default_aspect
+            aspect_token = str(aspect).replace(":", "x")
+            name = f"{pose}_{camera}_{shot}_{aspect_token}_{n:02d}.mp4"
+            out = dest / name
+            transcode_to_spec(
+                video,
+                out,
+                aspect=str(aspect),
+                skip=skip_transcode,
+            )
+            written.append(name)
+    if not written:
+        raise PackError(
+            f"no clips in {src}. drop phone videos in "
+            + ", ".join(str(src / pose) + "/" for pose in poses)
+        )
+    return dest, written
+
+
 def assert_ready(
     rows: list[dict[str, Any]],
     warnings: list[str],
@@ -911,6 +1095,15 @@ def run_pack(args: argparse.Namespace) -> int:
     if not args.src:
         raise PackError("need --src")
     src = Path(args.src)
+    if args.ingest_phone:
+        work = Path(args.out) / f"{concept['id']}-normalized" if args.out else src / "_normalized"
+        src, names = ingest_phone_raw(
+            src,
+            concept,
+            work,
+            skip_transcode=args.skip_transcode,
+        )
+        sys.stdout.write(f"ingested {len(names)} phone clips -> {src}\n")
     rows, warnings, errors = collect_rows(
         concept,
         src,
@@ -968,6 +1161,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--print-grid", action="store_true", help="print composition grid")
     parser.add_argument("--write-shot-list", help="write the grid to this text file")
+    parser.add_argument("--ingest-phone", action="store_true", help="pose folders / IMG files -> packer names")
+    parser.add_argument("--skip-transcode", action="store_true", help="rename only, skip ffmpeg")
     parser.add_argument("--check-only", action="store_true")
     parser.add_argument("--write-captions-only", action="store_true")
     parser.add_argument("--rewrite-captions", action="store_true")

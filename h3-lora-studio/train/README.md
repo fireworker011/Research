@@ -1,6 +1,6 @@
 # どの構図でも出す行為 LoRA
 
-**準備と作業は [`CHECKLIST.md`](CHECKLIST.md)。** 撮影リストは [`grids/`](grids/)。
+**準備と作業は [`CHECKLIST.md`](CHECKLIST.md)。** 撮影リストは [`grids/`](grids/)。**スマホだけ（PC・ffmpeg なし）は [`PHONE.md`](PHONE.md)。**
 
 膣セックスは今の `hmnsfw-aio-v25` で足りる。新しく作るのは **足りない3本だけ**。1ファイルに混ぜない。
 

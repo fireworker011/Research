@@ -45,6 +45,9 @@ from h3_lora_studio import (
     studio_clip_plan,
     load_story,
     prepare_story_clip,
+    apply_phone_act_locks,
+    apply_pose_situation,
+    resolve_pose,
     STORY_IDS,
     CHAIN_PACK_IDS,
 )
@@ -272,13 +275,16 @@ def test_japanese_form_labels():
     assert "CoachBate" not in futa_anal_help
     assert "男なし" in futa_anal_help
     assert resolve_situation("飲尿") == "urine_drink"
+    assert resolve_situation("放尿（性器から）") == "urine_pee"
     assert resolve_situation("脱糞（どの構図）") == "scat_act"
     pee_help = explain_choice("飲尿（どの構図）", "テキストから（写真なし）")
     assert "黄色い" in pee_help
     assert "Turbo なし" in pee_help
     scat_help = explain_choice("脱糞（どの構図）", "テキストから（写真なし）")
-    assert "今出して" in scat_help
+    assert "肛門" in scat_help
     assert "肥溜め" in scat_help
+    stream_help = explain_choice("放尿（性器から）", "テキストから（写真なし）")
+    assert "尿道" in stream_help
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
 
 
@@ -500,8 +506,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/oral_creampie.json" in src
     assert "h3-lora-studio/profiles/doggy.json" in src
     assert "h3-lora-studio/profiles/urine_drink.json" in src
+    assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
-    assert 'FETCH_REV = "h3-20260909-anypose-1"' in src
+    assert "h3-lora-studio/train/pack_dataset.py" in src
+    assert 'FETCH_REV = "h3-20260910-phone-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -560,12 +568,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "顔射（女体）" in src
     assert "アナル指入れ" in src
     assert "飲尿（どの構図）" in src
+    assert "放尿（性器から）" in src
     assert "脱糞（どの構図）" in src
     assert "騎乗位（女体）" in blob
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260909-anypose-1" in blob
+    assert "h3-20260910-phone-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -777,8 +786,68 @@ def test_clamp_studio_duration_is_four_to_ten():
     assert situation_ids("futa_anal") == ["penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("anal_penetration") == ["penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("urine_drink") == ["penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("urine_pee") == ["penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("scat_act") == ["penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
+
+
+def test_apply_pose_situation_and_phone_act_locks():
+    assert resolve_pose("騎乗") == "cowgirl"
+    assert resolve_pose("しゃがみ") == "squat"
+    assert apply_pose_situation("futa_sex", "騎乗") == "riding"
+    assert apply_pose_situation("futa_sex", "後背") == "doggy"
+    assert apply_pose_situation("futa_sex", "POV") == "missionary_pov"
+    assert apply_pose_situation("futa_sex", "立ち") == "futa_sex"
+    assert apply_pose_situation("general_sex", "後背") == "doggy"
+    assert apply_pose_situation("futa_anal", "騎乗") == "futa_anal"
+    assert apply_pose_situation("anal_penetration", "後背") == "anal_penetration"
+    assert apply_pose_situation("urine_pee", "立ち") == "urine_pee"
+    assert apply_pose_situation("scat_act", "しゃがみ") == "scat_act"
+
+    sex = apply_phone_act_locks(
+        "Already in. Thrusting.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_sex",
+        pose="立ち",
+    )
+    assert "POSE LOCK:" in sex
+    assert "AV LOOK:" in sex
+    assert "INSIDE LOCK:" in sex
+    assert "pussy" in sex.lower()
+
+    anal = apply_phone_act_locks(
+        "Already anal. The erect 20cm is inside the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        pose="騎乗",
+    )
+    assert "POSE LOCK:" in anal
+    assert "Cowgirl" in anal
+    assert "INSIDE LOCK:" in anal
+    assert "anus" in anal.lower()
+    assert "AV LOOK:" in anal
+
+    pee = apply_phone_act_locks(
+        "She pees a yellow stream.\n\noverall_soundscape:\nRoom tone.\n",
+        situation="urine_pee",
+        pose="立ち",
+    )
+    assert "URINE LOOK:" in pee
+    assert "GENITAL PEE:" in pee
+    assert "glans tip" in pee
+    assert "urethral opening" in pee
+    assert "INSIDE LOCK:" not in pee
+    assert "SCAT ACT:" not in pee
+    assert "Hiss of a yellow urine stream" in pee
+
+    scat = apply_phone_act_locks(
+        "The act of defecating now.\n\noverall_soundscape:\nWet.\n",
+        situation="scat_act",
+        pose="しゃがみ",
+    )
+    assert "SCAT ACT:" in scat
+    assert "coming out of the anus" in scat
+    assert "INSIDE LOCK:" not in scat
+    assert "feces leaving the anus" in scat.lower()
+    assert "Squat" in scat
 
 
 def test_facial_download_job_uses_hf_and_clean_filename(tmp_path):
@@ -6100,6 +6169,23 @@ def test_notebook_story_play_flow():
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
     # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
     assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"飲尿（どの構図）"') < cell3.index('"放尿（性器から）"') < cell3.index('"脱糞（どの構図）"')
+    assert '体位 = "立ち"' in cell3
+    assert "apply_phone_act_locks" in cell3
+    assert "apply_pose_situation" in cell3
+    assert "input/phone" in cell3
+    cell1 = "".join(nb["cells"][2]["source"])
+    assert "input/phone" in cell1
+    assert "train/raw" in cell1
+    assert nb["cells"][8]["metadata"]["id"] == "ls4_pack"
+    cell4 = "".join(nb["cells"][8]["source"])
+    assert "ingest_phone_raw" in cell4
+    assert "放尿（性器から）" in cell4
+    assert "minimax/h3/i2v/trainer" in "".join(nb["cells"][7]["source"])
+    assert "スマホだけの人" in md0
+    assert "放尿（性器から）" in md0
+    assert "亀頭先" in md0
+    assert len(nb["cells"]) == 9
     assert cell3.index('"普通（エロなし）"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
     assert "作り直しの物語" in cell3 and "作り直し開始の本" in cell3
@@ -6108,7 +6194,7 @@ def test_notebook_story_play_flow():
 
     m = re.search(r'やりたいシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
     opts = json.loads(m.group(1))
-    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 25
+    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 26
     assert len(set(opts)) == len(opts)
     for opt in opts:
         resolve_situation(opt)
@@ -6176,7 +6262,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260909-anypose-1" in cell2
+    assert "h3-20260910-phone-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src

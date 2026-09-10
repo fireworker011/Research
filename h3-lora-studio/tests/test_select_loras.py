@@ -108,6 +108,7 @@ def test_situations_switch_loras_by_profile_and_mode():
         "futa_sex",
         "futa_anal",
         "urine_drink",
+        "urine_pee",
         "scat_act",
         "general_sex",
         "preview",
@@ -510,6 +511,23 @@ def test_urine_drink_and_scat_act_are_helpers_only():
     assert "coming out of (s1)'s anus" in slow
     assert "already coated" in slow
     assert "thum1n8utt" not in slow
+
+
+def test_urine_pee_is_glans_stream_not_drink():
+    pee = select_loras(profile_name="urine_pee", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in pee["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert pee["turbo"] is False
+    assert pee["sampler"]["steps"] == 12
+    plow = pee["prompt"].lower()
+    assert plow.startswith("penislora")
+    assert "glans tip" in plow
+    assert "urethral opening" in plow
+    assert "drinks the yellow" not in plow
+    assert "thumbinbutt" not in plow
+    assert "thum1n8utt" not in plow
+    unload = {r["id"] for r in pee["unload"]}
+    assert "thumbinbutt-h3" in unload
+    assert "hmnsfw-aio-v25" in unload
 
 
 def test_pose_aftercare_and_solo_act_stacks():

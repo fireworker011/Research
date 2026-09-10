@@ -32,7 +32,7 @@
 
 ## 準備（撮る／集める前。これがないと始めない）
 
-1. **ffmpeg / ffprobe**（24.000fps に打ち直す。無いとパックが落ちる）
+1. **ffmpeg / ffprobe**（PCがあるとき。スマホだけなら不要。Colab ④が 24fps にする）
 2. **fal アカウント**。trainer は `minimax/h3/i2v/trainer`。Fal H3 Max には LoRA を差せない
 3. **作業フォルダを3つ**。zip も素材も Git に入れない
 
@@ -55,6 +55,9 @@ python3 h3-lora-studio/train/pack_dataset.py --write-kit
 ```
 
 印刷用は `h3-lora-studio/train/grids/<id>.txt`。
+
+スマホだけのとき: Drive `minimax-h3-comfyui/train/raw/<id>/<pose>/` に動画を入れる。
+リネーム不要。Colab ④が ffmpeg して zip にする。手順は `PHONE.md`。
 
 ## 素材の仕様（1本ずつ）
 
@@ -145,8 +148,8 @@ ffmpeg -y -i IN.mp4 \
 ### A. 集める
 
 1. `grids/<id>.txt` を開く
-2. 1セル1本撮る／集める。ファイル名をグリッド通りにする
-3. 上の ffmpeg で 24.000fps にする
+2. 1セル1本撮る／集める。PCならファイル名をグリッド通り。スマホなら体位フォルダへ入れる
+3. PCなら上の ffmpeg。スマホなら Colab ④（`--ingest-phone`）
 4. 目視: 行為が見える。別行為が映っていない。男がいない
 
 ### B. パック（キット）

@@ -29,6 +29,8 @@ from pack_dataset import (  # noqa: E402
     skipped_concepts,
     write_captions,
     write_kit,
+    ingest_phone_raw,
+    resolve_concept_id,
 )
 
 
@@ -276,6 +278,8 @@ def test_checklist_splits_prepare_and_do():
     assert "debug_dataset" in text
     assert "Lora_Trainer_XL.ipynb" in text
     assert "No feces" in text
+    assert "PHONE.md" in text
+    assert "スマホだけなら不要" in text
     assert main(["--print-checklist"]) == 0
 
 
@@ -340,3 +344,80 @@ def test_pack_zip_helper_direct(tmp_path):
     assert video.with_suffix(".txt").read_text(encoding="utf-8") == "DFCTH3, act\n"
     with zipfile.ZipFile(zpath) as zf:
         assert zf.read("01.txt").decode("utf-8") == "DFCTH3, act\n"
+
+
+def test_resolve_concept_id_maps_phone_labels():
+    assert resolve_concept_id("アナル（どの構図）") == "anal-any-h3"
+    assert resolve_concept_id("放尿（性器から）") == "urine-drink-h3"
+    assert resolve_concept_id("飲尿（どの構図）") == "urine-drink-h3"
+    assert resolve_concept_id("脱糞（どの構図）") == "scat-act-h3"
+
+
+def test_ingest_phone_raw_from_pose_folders(tmp_path):
+    concept = get_concept("anal-any-h3")
+    raw = tmp_path / "raw"
+    (raw / "standing").mkdir(parents=True)
+    (raw / "後背").mkdir(parents=True)
+    (raw / "standing" / "IMG_0001.MOV").write_bytes(b"fake-a")
+    (raw / "後背" / "clip.mp4").write_bytes(b"fake-b")
+    leftover = tmp_path / "work"
+    leftover.mkdir()
+    (leftover / "old_front_close_9x16_99.mp4").write_bytes(b"stale")
+    dest, names = ingest_phone_raw(raw, concept, leftover, skip_transcode=True)
+    assert dest == leftover
+    assert len(names) == 2
+    poses = {name.split("_", 1)[0] for name in names}
+    assert poses == {"standing", "doggy"}
+    assert not (leftover / "old_front_close_9x16_99.mp4").exists()
+    blobs = {name: (leftover / name).read_bytes() for name in names}
+    assert set(blobs.values()) == {b"fake-a", b"fake-b"}
+
+
+def test_ingest_phone_top_level_file_errors(tmp_path):
+    concept = get_concept("scat-act-h3")
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "IMG_0001.MOV").write_bytes(b"loose")
+    try:
+        ingest_phone_raw(raw, concept, tmp_path / "work", skip_transcode=True)
+    except PackError as exc:
+        assert "pose folder" in str(exc)
+    else:
+        raise AssertionError("expected PackError")
+
+
+def test_ingest_phone_empty_errors(tmp_path):
+    concept = get_concept("urine-drink-h3")
+    raw = tmp_path / "raw"
+    (raw / "standing").mkdir(parents=True)
+    try:
+        ingest_phone_raw(raw, concept, tmp_path / "work", skip_transcode=True)
+    except PackError as exc:
+        assert "no clips" in str(exc)
+    else:
+        raise AssertionError("expected PackError")
+
+
+def test_cli_ingest_phone_skip_transcode(tmp_path):
+    src = tmp_path / "raw"
+    (src / "standing").mkdir(parents=True)
+    (src / "standing" / "IMG_0001.MOV").write_bytes(b"clip")
+    out = tmp_path / "packed"
+    code = main(
+        [
+            "--concept",
+            "anal-any-h3",
+            "--src",
+            str(src),
+            "--out",
+            str(out),
+            "--ingest-phone",
+            "--skip-transcode",
+            "--skip-probe",
+            "--allow-small",
+            "--check-only",
+        ]
+    )
+    assert code == 0
+    report = json.loads((out / "anal-any-h3-pack-report.json").read_text(encoding="utf-8"))
+    assert len(report["clips"]) >= 1

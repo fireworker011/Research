@@ -59,6 +59,7 @@ FUTA_SITUATIONS = frozenset(
         "general_sex",
         "preview",
         "urine_drink",
+        "urine_pee",
         "scat_act",
     }
 )

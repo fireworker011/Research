@@ -104,6 +104,7 @@ SITUATION_DOWNLOAD = {
     "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "futa_anal": ["penis-lora-h3", "synth-pussy-h3"],
     "urine_drink": ["penis-lora-h3", "synth-pussy-h3"],
+    "urine_pee": ["penis-lora-h3", "synth-pussy-h3"],
     "scat_act": ["penis-lora-h3", "synth-pussy-h3"],
     "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
@@ -335,6 +336,9 @@ SITUATION_JA = {
     "アナルどの構図": "futa_anal",
     "飲尿": "urine_drink",
     "飲尿（どの構図）": "urine_drink",
+    "放尿": "urine_pee",
+    "放尿（性器から）": "urine_pee",
+    "小便": "urine_pee",
     "脱糞": "scat_act",
     "脱糞（どの構図）": "scat_act",
     "騎乗位（女体）": "riding",
@@ -483,6 +487,7 @@ SITUATION_JA = {
     "futa_sex": "futa_sex",
     "futa_anal": "futa_anal",
     "urine_drink": "urine_drink",
+    "urine_pee": "urine_pee",
     "scat_act": "scat_act",
     "oral": "oral",
     "general_sex": "general_sex",
@@ -515,15 +520,16 @@ SITUATION_HELP = {
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（画質）。穴のアップ。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・16step。挿入側はふたなり。男なし。構図は文章欄。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・16step。挿入側はふたなり。男なし。体位欄で構図。",
     "lesbian_cunnilingus": "レズクンニ。女同士。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。クンニ 0.8 + 広げる 0.6 + Larry 0.5。男なし。",
     "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
-    "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。空欄は全裸のごく普通の若い成人女性。描写は文章欄で足す。",
-    "futa_anal": "アナルセックス（女体）。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・12step。ふたなり＋女。男なし。構図は文章欄（立ち・騎乗・後背・横どれでも）。手は腰。",
-    "urine_drink": "飲尿（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。亀頭先の尿道口から黄色い水を飲む。男なし。構図は文章欄。既存話のジュボには戻さない。",
-    "scat_act": "脱糞（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。今出している動き。肥溜めの塗れとは別。男なし。構図は文章欄。医院・終電には足さない。",
+    "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
+    "futa_anal": "アナルセックス（女体）。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・12step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
+    "urine_drink": "飲尿（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
+    "urine_pee": "放尿（性器から）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
+    "scat_act": "脱糞（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。今、肛門から出している動き。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
     "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + 穴の見え方 0.55 + LightX2V 4step。ふたなり＋女。男なし。",
@@ -3181,6 +3187,7 @@ ACT_SITUATIONS = frozenset({
     "fingering",
     "masturbation",
     "urine_drink",
+    "urine_pee",
     "scat_act",
     "anal_penetration",
 })
@@ -3609,6 +3616,7 @@ def lock_meat_wall_look(text: str, *, story_id: str = "", clip_index: int = 0, s
     return raw
 
 
+URINE_SITUATIONS = frozenset({"urine_drink", "urine_pee"})
 URINE_LOOK_LINE = (
     "URINE LOOK: Yellow urine. When a 20cm pees, the stream comes out of the urethral "
     "opening at the glans tip (the small hole at the tip of the 20cm), the same hole semen would "
@@ -3623,14 +3631,15 @@ _URINE_CUE_RE = re.compile(
 _URINE_NEG_RE = re.compile(r"No urine yet|No urine\.|No urine,", re.I)
 
 
-def lock_urine_look(text: str) -> str:
+def lock_urine_look(text: str, *, situation: str = "") -> str:
     """H3 skips pee unless the prompt names yellow water from the tip hole, like semen."""
     raw = str(text or "")
     if not raw or "URINE LOOK:" in raw:
         return raw
-    if not _URINE_CUE_RE.search(raw):
+    sit = str(situation or "").strip()
+    if sit not in URINE_SITUATIONS and not _URINE_CUE_RE.search(raw):
         return raw
-    if _URINE_NEG_RE.search(raw) and not re.search(
+    if _URINE_NEG_RE.search(raw) and sit not in URINE_SITUATIONS and not re.search(
         r"yellow stream|yellow urine|pees a |drinks the yellow|peeing", raw, re.I
     ):
         return raw
@@ -3639,7 +3648,8 @@ def lock_urine_look(text: str) -> str:
 
 SCAT_ACT_LINE = (
     "SCAT ACT: Brown feces coming out of the anus in this clip. This is the act of "
-    "defecating now, not a body already coated from before."
+    "defecating now, not a body already coated from before. It leaves through the anus, "
+    "not the vagina, not from off-screen."
 )
 _SCAT_CUE_RE = re.compile(
     r"act of defecating|feces coming out|coming out of .+ anus|defecat",
@@ -3656,6 +3666,158 @@ def lock_scat_act(text: str, *, situation: str = "") -> str:
     if sit != "scat_act" and not _SCAT_CUE_RE.search(raw):
         return raw
     return _inject_before_soundscape(raw, SCAT_ACT_LINE)
+
+
+POSE_JA = {
+    "（シーンのまま）": "",
+    "シーンのまま": "",
+    "": "",
+    "立ち": "standing",
+    "standing": "standing",
+    "騎乗": "cowgirl",
+    "騎乗位": "cowgirl",
+    "cowgirl": "cowgirl",
+    "後背": "doggy",
+    "後背位": "doggy",
+    "doggy": "doggy",
+    "正常位": "missionary",
+    "missionary": "missionary",
+    "横": "side",
+    "side": "side",
+    "しゃがみ": "squat",
+    "squat": "squat",
+    "膝立ち": "kneeling",
+    "kneeling": "kneeling",
+    "座り": "sitting",
+    "sitting": "sitting",
+    "POV": "pov",
+    "pov": "pov",
+}
+POSE_LOCK_LINE = {
+    "standing": (
+        "POSE LOCK: Standing on their feet, front three-quarter, medium two-shot. "
+        "Hips at camera height. Not on all fours. Not cowgirl unless asked."
+    ),
+    "cowgirl": (
+        "POSE LOCK: Cowgirl. Receiver sits on the shaft facing, knees beside the hips, "
+        "riding up and down. Both faces readable. Not doggy."
+    ),
+    "doggy": (
+        "POSE LOCK: Doggy. Receiver on all fours, shaft from behind. Hands on the hips. "
+        "If anal, the anus sits above the vagina in frame."
+    ),
+    "missionary": (
+        "POSE LOCK: Missionary. Receiver on her back, legs open, shaft from the front. "
+        "Side-front camera. Not a first-person POV unless asked."
+    ),
+    "side": (
+        "POSE LOCK: Side / spoon. Both on their sides. Joining at the hips. Medium two-shot."
+    ),
+    "squat": (
+        "POSE LOCK: Squat. Knees bent, hips down. Front three-quarter. If defecating, "
+        "the anus faces the camera."
+    ),
+    "kneeling": (
+        "POSE LOCK: Kneeling. One or both on their knees. Front, medium two-shot."
+    ),
+    "sitting": (
+        "POSE LOCK: Sitting. Hips on a seat or floor. Front three-quarter."
+    ),
+    "pov": (
+        "POSE LOCK: Point-of-view from the shaft, looking down at the joining."
+    ),
+}
+POSE_SITUATION_MAP = {
+    ("futa_sex", "cowgirl"): "riding",
+    ("futa_sex", "doggy"): "doggy",
+    ("futa_sex", "pov"): "missionary_pov",
+    ("general_sex", "cowgirl"): "riding",
+    ("general_sex", "doggy"): "doggy",
+    ("general_sex", "pov"): "missionary_pov",
+}
+AV_LOOK_SITUATIONS = frozenset({
+    "futa_sex",
+    "riding",
+    "doggy",
+    "missionary_pov",
+    "general_sex",
+    "futa_anal",
+    "anal_penetration",
+    "urine_drink",
+    "urine_pee",
+    "scat_act",
+    "creampie",
+})
+AV_LOOK_LINE = (
+    "AV LOOK: Live-action Japanese adult video. Photoreal skin and sweat, wet genitals, "
+    "joining or stream readable like a sex-scene close. No anime. No illustration. No freeze."
+)
+GENITAL_PEE_LINE = (
+    "GENITAL PEE: The yellow stream leaves the body from the genitals on camera. "
+    "Futanari: from the urethral opening at the glans tip of the erect 20cm, the same hole "
+    "semen uses. Woman with no penis: from the urethral opening above the vagina. "
+    "Not from the anus. Not from the vaginal hole. Not from off-screen. Not white. Not clear water."
+)
+
+
+def resolve_pose(name: str) -> str:
+    key = str(name or "").strip()
+    if key in POSE_JA:
+        return str(POSE_JA[key] or "")
+    low = key.lower()
+    if low in POSE_JA:
+        return str(POSE_JA[low] or "")
+    return ""
+
+
+def apply_pose_situation(situation: str, pose: str) -> str:
+    """Sex in cowgirl/doggy/POV uses the pose LoRA. Anal/urine/scat stay unlocked."""
+    sit = str(situation or "").strip()
+    pose_key = resolve_pose(pose) if pose else str(pose or "").strip()
+    if not pose_key:
+        return sit
+    return POSE_SITUATION_MAP.get((sit, pose_key), sit)
+
+
+def apply_pose_lock(text: str, pose: str) -> str:
+    raw = str(text or "")
+    pose_key = resolve_pose(pose) if pose else str(pose or "").strip()
+    if not raw or not pose_key:
+        return raw
+    line = POSE_LOCK_LINE.get(pose_key)
+    if not line or "POSE LOCK:" in raw:
+        return raw
+    return _inject_before_soundscape(raw, line)
+
+
+def lock_av_look(text: str, *, situation: str = "") -> str:
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw or sit not in AV_LOOK_SITUATIONS or "AV LOOK:" in raw:
+        return raw
+    return _inject_before_soundscape(raw, AV_LOOK_LINE)
+
+
+def lock_genital_pee(text: str, *, situation: str = "") -> str:
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw or "GENITAL PEE:" in raw:
+        return raw
+    if sit not in URINE_SITUATIONS and not _URINE_CUE_RE.search(raw):
+        return raw
+    return _inject_before_soundscape(raw, GENITAL_PEE_LINE)
+
+
+def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> str:
+    """Phone ③: pose + AV look + genital pee / anal inside / scat from the anus."""
+    out = apply_pose_lock(text, pose)
+    out = lock_av_look(out, situation=situation)
+    out = lock_urine_look(out, situation=situation)
+    out = lock_genital_pee(out, situation=situation)
+    out = lock_scat_act(out, situation=situation)
+    out = lock_penis_inside(out, situation=situation)
+    out = lock_act_sfx(out, situation=situation)
+    return out
 
 
 SPEECH_FACE_LINE = (
@@ -4299,6 +4461,13 @@ CUNNI_ACT_SFX = (
 SEX_ACT_SFX = (
     "Wet filthy thrusting, leaked female moans, hitching breath."
 )
+URINE_ACT_SFX = (
+    "Hiss of a yellow urine stream leaving the urethral opening at the glans tip. "
+    "Wet splash. Not words."
+)
+SCAT_ACT_SFX = (
+    "Wet sounds of feces leaving the anus now. Not a pre-coated body. Not words."
+)
 KISS_ACT_SFX = (
     "Wet chu kisses, saliva slurp, leaked female moans, hitching breath."
 )
@@ -4342,6 +4511,10 @@ def act_sfx_extra(text: str, *, situation: str = "") -> str:
             extra = CUNNI_ACT_SFX
         elif sit in SEX_INSIDE_SITUATIONS:
             extra = SEX_ACT_SFX
+        elif sit in URINE_SITUATIONS:
+            extra = URINE_ACT_SFX
+        elif sit == "scat_act":
+            extra = SCAT_ACT_SFX
         elif sit in {"fingering", "masturbation", "futa_masturbation"}:
             extra = HAND_ACT_SFX
         elif sit in {"facial", "after_ejaculation"}:
@@ -5453,7 +5626,7 @@ def prepare_story_clip(
         clip_index=index,
         situation=situation,
     )
-    raw_prompt = lock_urine_look(raw_prompt)
+    raw_prompt = lock_urine_look(raw_prompt, situation=situation)
     raw_prompt = lock_scat_act(raw_prompt, situation=situation)
     raw_prompt = lock_spoken_emotion(raw_prompt)
     if share_mode == "on_cumouf":
