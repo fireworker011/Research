@@ -112,9 +112,10 @@ studio での使い方:
 公開の専用 LoRA は使い物にならない（ThumbInButt は四つん這い固定）。③は **今すぐ** 竿＋穴＋文章で出す。学習キットは後から効きを固める用。
 
 - ③ `アナルセックス（女体）` / `飲尿（どの構図）` / `脱糞（どの構図）`
-- 学習 zip は [`train/README.md`](train/README.md)
+- 準備と作業は [`train/CHECKLIST.md`](train/CHECKLIST.md)。撮影リストは [`train/grids/`](train/grids/)
 
 ```bash
+python3 h3-lora-studio/train/pack_dataset.py --print-checklist
 python3 h3-lora-studio/train/pack_dataset.py --list
 python3 h3-lora-studio/train/pack_dataset.py --concept anal-any-h3 --print-grid
 ```

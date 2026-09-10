@@ -13,6 +13,7 @@ from pack_dataset import (  # noqa: E402
     caption_starts_with_trigger,
     collect_rows,
     coverage_report,
+    format_checklist,
     format_grid,
     format_list,
     get_concept,
@@ -27,6 +28,7 @@ from pack_dataset import (  # noqa: E402
     render_caption,
     skipped_concepts,
     write_captions,
+    write_kit,
 )
 
 
@@ -258,6 +260,42 @@ def test_cli_list_and_grid():
 
 def test_cli_unknown_concept_is_exit_2():
     assert main(["--concept", "nope"]) == 2
+
+
+def test_checklist_splits_prepare_and_do():
+    text = format_checklist()
+    assert text.startswith("# 学習キット — 準備すること / やること")
+    assert "## 準備（撮る／集める前。これがないと始めない）" in text
+    assert "## やること（1概念ずつ。3本並行で混ぜない）" in text
+    for token in ("anal-any-h3", "urine-drink-h3", "scat-act-h3", "AN4LIN", "URNKISS", "DFCTH3"):
+        assert token in text
+    assert "sex-any-h3" in text
+    assert "80" in text
+    assert "25%" in text
+    assert "trigger_phrase" in text
+    assert "debug_dataset" in text
+    assert "Lora_Trainer_XL.ipynb" in text
+    assert "No feces" in text
+    assert main(["--print-checklist"]) == 0
+
+
+def test_write_kit_matches_repo_docs(tmp_path):
+    written = write_kit(tmp_path)
+    names = {path.name for path in written}
+    assert names == {
+        "CHECKLIST.md",
+        "anal-any-h3.txt",
+        "urine-drink-h3.txt",
+        "scat-act-h3.txt",
+    }
+    assert (tmp_path / "CHECKLIST.md").read_text(encoding="utf-8") == format_checklist()
+    anal = get_concept("anal-any-h3")
+    assert (tmp_path / "grids" / "anal-any-h3.txt").read_text(encoding="utf-8") == format_grid(anal)
+    repo_list = TRAIN / "CHECKLIST.md"
+    assert repo_list.read_text(encoding="utf-8") == format_checklist()
+    for concept in list_concepts():
+        grid_path = TRAIN / "grids" / f"{concept['id']}.txt"
+        assert grid_path.read_text(encoding="utf-8") == format_grid(concept)
 
 
 def test_write_captions_only(tmp_path):
