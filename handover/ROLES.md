@@ -10,4 +10,5 @@
 
 正: `affiliate-engine/docs/grok-bots/MACHINE.md`  
 BOT 入口: `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`  
+9/30 ゲート表（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_CALENDAR.md`  
 人間が一度だけやること: `handover/HUMAN_ONCE.md`
