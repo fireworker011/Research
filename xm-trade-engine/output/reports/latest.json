@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T09:34:51.300Z",
+  "generated_at": "2026-09-11T09:31:57.839Z",
   "commander": {
     "command": "HALT",
     "source": "grok-bot-issue",
@@ -8,7 +8,7 @@
     "updated_at": "2026-09-09T08:58:38.510Z",
     "previous": "PAPER_ONLY",
     "gold_arm": "SKIP",
-    "gold_arm_date": "2026-09-10",
+    "gold_arm_date": "2026-09-11",
     "issue_number": "93"
   },
   "paper_equity": 10014.64,
