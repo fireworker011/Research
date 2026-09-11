@@ -8,7 +8,7 @@
 - 指令塔は今すぐ dump 1ファイルだけ開け:
   `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`
   無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt
-  `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな。人間が「アフィを進める」と言うまで高単価 dump も開けるな。
+  `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな。高単価は指示役の `hq-instruct:` が指す1ファイル（既定は席1回）。1語分岐の dump を更新日時で選ぶな。
   他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` は dump へ送る短文。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。Cursor を時計進行させるな。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
