@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260910-phone-1"' in src
+    assert 'FETCH_REV = "h3-20260911-checkup-kiss-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260910-phone-1" in blob
+    assert "h3-20260911-checkup-kiss-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4130,7 +4130,7 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
 
 
 def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
-    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
+    from h3_lora_studio import _KANJI_RE, load_story, prepare_story_clip, semen_share_plan, spoken_lines
 
     story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
     assert story["spoken_no_kanji"] is True
@@ -4184,6 +4184,26 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     assert "こんにちは" in c1
     assert "「はい」" in c1
     assert "テイキケンシンにきました" not in c1
+    after_hai = c1[c1.find("「はい」"):]
+    assert "French kiss" in after_hai
+    assert "hug" in after_hai.lower()
+    assert "SEPARATE" in after_hai
+    assert "HIDDEN at the start" in c1
+    c2 = story["clips"][1]["prompt"]
+    assert "テイキケンシンにきました" in c2
+    assert "あ、ヨロシクオネガイします！" in c2
+    after_yoroshiku = c2[c2.find("あ、ヨロシクオネガイします！"):]
+    assert "light kiss" in after_yoroshiku.lower()
+    assert "bliss" in after_yoroshiku.lower()
+    assert "SEPARATE" in after_yoroshiku
+    assert "not kissing" in c2.lower()
+    last = story["clips"][8]["prompt"]
+    assert "モンダイありますね" in last
+    after_mondai = last[last.find("「モンダイありますね」"):]
+    assert "STANDS UP" in after_mondai
+    assert "SAME EYE LEVEL" in after_mondai
+    assert "mouth-to-mouth" in after_mondai.lower()
+    assert "Do NOT stay looking up" in last
     peck = story["clips"][2]["prompt"]
     assert "ふふ、オチンチンかたくておっきい！" in peck
     assert "では、シツレイしまーす！" in peck
@@ -4208,6 +4228,17 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     assert "ONLY Rei looks pleasured" not in story["clips"][6]["prompt"]
     assert "straight clinical face" not in story["clips"][8]["prompt"]
     assert "immoral" in story["clips"][8]["prompt"].lower()
+    assert semen_share_plan(story) == [(8, "after_speech")]
+    last_p = prepare_story_clip(story, 8, last_frame="x.png", stills_dir=tmp_path)
+    assert "SEMEN SHARE:" in last_p["prompt"]
+    assert "mouth-to-mouth" in last_p["prompt"].lower()
+    assert "STANDS UP" in last_p["prompt"]
+    assert "モンダイありますね" in last_p["prompt"]
+    c1p = prepare_story_clip(story, 0, stills_dir=tmp_path)
+    assert "START CAST:" in c1p["prompt"]
+    assert "French kiss" in c1p["prompt"]
+    assert "HIDDEN at the start" in c1p["prompt"]
+    assert "SEPARATE" in c1p["prompt"]
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
@@ -5606,12 +5637,15 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "あ、おフロ。。。でもこれって" in meat1["prompt"]
     bath0 = prepare_story_clip(load_story("semen-bath-70s"), 0, stills_dir=tmp_path)
     assert "EROTIC WAIT:" in bath0["prompt"]
+    checkup_story = load_story("checkup-100s")
     checkup_talk = prepare_story_clip(
-        load_story("checkup-100s"), 1, last_frame="x.png", stills_dir=tmp_path
+        checkup_story, 1, last_frame="x.png", stills_dir=tmp_path
     )
     assert "EROTIC WAIT:" in checkup_talk["prompt"]
-    assert "No kiss yet" in checkup_talk["prompt"]
-    assert "do not add a kiss" in checkup_talk["prompt"].lower()
+    assert "light kiss" in checkup_talk["prompt"].lower()
+    assert "bliss" in checkup_talk["prompt"].lower()
+    assert "SEPARATE" in checkup_talk["prompt"]
+    assert "No kiss yet" not in checkup_story["clips"][1]["prompt"]
     assert "does not kiss this clip" in consult["prompt"] or "No deep kiss this clip" in consult["prompt"]
 
 
@@ -6262,7 +6296,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260910-phone-1" in cell2
+    assert "h3-20260911-checkup-kiss-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -6506,6 +6540,51 @@ def test_visit_opening_starts_solo_then_resident_enters(tmp_path):
     commute = apply_story_play(load_story("commute-120s"), "ref_chain")
     c0 = prepare_story_clip(commute, 0, stills_dir=tmp_path, cast_dir=cast, force_t2v=True)
     assert c0["mode"] == "r2v" and c0["first_kind"] == "cast"
+
+
+def test_who_only_needed_people_on_screen():
+    """余り役は NOT IN FRAME / HIDDEN。訪問の1本目は一人＋閉扉。全員同時スタートではない。"""
+    from h3_lora_studio import (
+        CHAIN_PACK_IDS,
+        STORY_IDS,
+        clip_cast_people,
+        load_story,
+        who_hidden_at_start,
+    )
+
+    family = ("aya", "rei", "madoka", "sayaka")
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
+        story = load_story(sid)
+        for i, clip in enumerate(story["clips"]):
+            hidden = who_hidden_at_start(clip["prompt"])
+            visible = set(clip_cast_people(clip))
+            assert hidden.isdisjoint(visible), (sid, i + 1, hidden, visible)
+
+    sales = load_story("sales-visit-60s")
+    checkup = load_story("checkup-100s")
+    clinic = load_story("clinic-75s")
+    cafe = load_story("cafe-100s")
+    dishes = load_story("dishes-90s")
+    home = load_story("homecoming-90s")
+    assert who_hidden_at_start(sales["clips"][0]["prompt"]) == {"aya"}
+    assert who_hidden_at_start(checkup["clips"][0]["prompt"]) == {"rei"}
+    assert who_hidden_at_start(clinic["clips"][0]["prompt"]) == {"aya"}
+    assert clip_cast_people(sales["clips"][0]) == []
+    assert clip_cast_people(checkup["clips"][0]) == []
+    assert clip_cast_people(clinic["clips"][0]) == []
+    assert who_hidden_at_start(cafe["clips"][0]["prompt"]) == {"clerk"}
+    assert clip_cast_people(cafe["clips"][0]) == ["aya"]
+    d1 = dishes["clips"][0]["prompt"]
+    h1 = home["clips"][0]["prompt"]
+    assert "Aya = NOT IN FRAME" in d1
+    assert "Madoka = NOT IN FRAME" in d1
+    assert "Aya = NOT IN FRAME" in h1
+    assert "Madoka = NOT IN FRAME" in h1
+    futon = load_story("futon-120s")
+    assert set(clip_cast_people(futon["clips"][0])) == set(family)
+    sunday = load_story("sunday-120s")
+    assert "sayaka" not in clip_cast_people(sunday["clips"][0])
+    assert "Sayaka = NOT IN FRAME" in sunday["clips"][0]["prompt"]
 
 
 def test_validate_story_follow_full_body_ok_on_sex_not_oral():
