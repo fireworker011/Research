@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-real-shaft-1"' in src
+    assert 'FETCH_REV = "h3-20260911-sales-empty-hands-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-real-shaft-1" in blob
+    assert "h3-20260911-sales-empty-hands-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -620,6 +620,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
     assert "lock_clip_timeline" in src
+    assert "lock_sales_hat_hands" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
@@ -664,6 +665,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"coronal ridge" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"not a dildo" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"HAT LOCK:" not in getattr(_h3_studio, "SALES_HAT_HANDS_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
@@ -4123,9 +4125,11 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
         assert "water case" not in clip["prompt"].lower()
         assert "bottled water" not in clip["prompt"].lower()
-        assert "bottle cap" not in clip["prompt"].lower() or "not a bottle cap" in clip["prompt"].lower() or "no bottle cap" in clip["prompt"].lower()
-        assert "work cap" in clip["prompt"].lower()
+        assert not re.search(r"\bcap\b", clip["prompt"], re.I), clip["label"]
+        assert "bottle cap" not in clip["prompt"].lower()
+        assert "work hat" in clip["prompt"].lower()
         assert "on her head" in clip["prompt"].lower() or "on the saleswoman's head" in clip["prompt"].lower()
+        assert "Hands empty" in clip["prompt"] or "hands empty" in clip["prompt"].lower() or "hands stay empty" in clip["prompt"].lower()
         assert "おミズ" not in clip["prompt"]
     c3 = story["clips"][2]["prompt"]
     after_kachi = c3[c3.find("「それでこんなにカチカチなんだね！でもまちくたびれちゃったー」"):]
@@ -4162,7 +4166,8 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     after_hanbai = c1[c1.find("「こんにちは。ミルクのハンバイにきました」"):]
     assert "lightly stroke" in after_hanbai.lower() or "lightly strokes" in after_hanbai.lower()
     assert "あ、おっきいオチンチン" in after_hanbai
-    assert "does not hold milk" in c1.lower()
+    assert "does not hold" in c1.lower()
+    assert "hat" in c1.lower()
     assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
     c2 = story["clips"][1]["prompt"]
     assert "それにしてもおそかったねー" in c2
@@ -4179,6 +4184,36 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "CUMOUF" in story["clips"][6]["prompt"] or "ejaculat" in story["clips"][6]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
     assert "sticky" in story["clips"][6]["prompt"].lower() or "viscous" in story["clips"][6]["prompt"].lower()
+
+
+def test_lock_sales_hat_hands_empties_hands(tmp_path):
+    from h3_lora_studio import lock_sales_hat_hands, load_story, prepare_story_clip
+
+    raw = (
+        "Saleswoman: milk saleswoman. a small peaked work cap on her head. Not a bottle cap. "
+        "Hands empty. She does not hold milk, a carton, or bottles.\n"
+        "HARD LOCK: Same open door. Cap only.\n"
+        "No bottle cap. No milk carton.\n"
+        "\noverall_soundscape:\nDoor."
+    )
+    out = lock_sales_hat_hands(raw, story_id="sales-visit-60s")
+    assert "HAT LOCK:" in out
+    assert "work hat" in out.lower()
+    assert not re.search(r"\bcap\b", out, re.I), out
+    assert "EMPTY" in out
+    assert "never holds a hat" in out.lower()
+    assert "never holds an object" in out.lower()
+    assert lock_sales_hat_hands(out, story_id="sales-visit-60s") == out
+    assert "HAT LOCK:" not in lock_sales_hat_hands(
+        "Aya walks. NEVER futanari.", story_id="cafe-100s"
+    )
+
+    planned = prepare_story_clip(load_story("sales-visit-60s"), 0, stills_dir=tmp_path)
+    assert "HAT LOCK:" in planned["prompt"]
+    assert not re.search(r"\bcap\b", planned["prompt"], re.I)
+    assert "work hat" in planned["prompt"].lower()
+    assert "never holds" in planned["prompt"].lower()
+    assert "ON the saleswoman's HEAD" in planned["prompt"] or "ON HER HEAD" in planned["prompt"]
 
 
 def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
@@ -6421,6 +6456,7 @@ def test_notebook_story_play_flow():
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"coronal ridge" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"not a dildo" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"HAT LOCK:" not in getattr(_h3_studio, "SALES_HAT_HANDS_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
@@ -6445,7 +6481,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-real-shaft-1" in cell2
+    assert "h3-20260911-sales-empty-hands-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -6476,6 +6512,7 @@ def test_notebook_story_play_flow():
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
     assert "lock_clip_timeline" in src
+    assert "lock_sales_hat_hands" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
@@ -6486,6 +6523,8 @@ def test_notebook_story_play_flow():
     assert "def lock_act_silent" in helper_src
     assert "def lock_act_sfx" in helper_src
     assert "def lock_clip_timeline" in helper_src
+    assert "def lock_sales_hat_hands" in helper_src
+    assert "HAT LOCK:" in helper_src
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
     assert "def lock_penis_inside" in helper_src
