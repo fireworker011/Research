@@ -3301,10 +3301,15 @@ def lock_futa_anatomy(text: str) -> str:
 
 
 SHAFT_LOOK_LINE = (
-    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, straight, heavy, "
-    "pale-tan shaft, flushed pink-red glans with a clear corona. Same size and same shape "
-    "the whole take. Not tiny, not horse-like, not a skinny stick, not a tapered spike, "
-    "not a hook, not changing mid-clip. NO testicles, NO scrotum. Hairless female pussy "
+    "SHAFT LOOK: Same penis every clip. A real adult human penis of live-action flesh, "
+    "not a toy. When erect: 20cm, thick human girth, heavy, a slight natural curve is fine. "
+    "Pale-tan shaft with real skin texture, a visible dorsal vein, and a little loose skin, "
+    "not plastic-smooth. Distinct mushroom glans, flushed pink-red, with a raised coronal ridge "
+    "that overhangs the shaft, a frenulum on the underside, and a slit urethral opening at the tip. "
+    "Foreskin is rolled back behind the corona. Same size and same shape the whole take. "
+    "Not tiny, not horse-like, not a skinny stick, not a tapered spike, not a hook, "
+    "not a dildo, not a tentacle, not a cone, not changing mid-clip. "
+    "NO testicles, NO scrotum. Hairless female pussy "
     "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
     "Women marked NEVER futanari stay NO penis."
 )
@@ -3566,7 +3571,7 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
 
 
 def lock_futa_shaft(text: str) -> str:
-    """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
+    """Pin futa penis to a real 20cm human shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
     raw = str(text or "")
     if not raw or "SHAFT LOOK:" in raw:
         return raw

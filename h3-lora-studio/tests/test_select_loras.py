@@ -370,6 +370,10 @@ def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
     assert "SHAFT LOOK:" in shaft
     assert "20cm" in shaft
     assert "thick human girth" in shaft
+    assert "real adult human penis" in shaft
+    assert "mushroom glans" in shaft
+    assert "coronal ridge" in shaft
+    assert "not a dildo" in shaft
     assert "never balls" in shaft.lower()
     assert "NO testicles" in shaft
     assert lock_futa_shaft(shaft) == shaft

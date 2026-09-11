@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-speech-timeline-1"' in src
+    assert 'FETCH_REV = "h3-20260911-real-shaft-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-speech-timeline-1" in blob
+    assert "h3-20260911-real-shaft-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -662,6 +662,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert '"floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"coronal ridge" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"not a dildo" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
@@ -5560,6 +5562,11 @@ def test_lock_futa_shaft_pins_20cm_and_skips_never_futanari(tmp_path):
     assert "SHAFT LOOK:" in out
     assert "When erect: 20cm" in out
     assert "thick human girth" in out
+    assert "real adult human penis" in out
+    assert "mushroom glans" in out
+    assert "coronal ridge" in out
+    assert "frenulum" in out
+    assert "not a dildo" in out
     assert "NO testicles" in out
     assert "never balls" in out.lower()
     assert "NEVER futanari stay NO penis" in out
@@ -6412,6 +6419,8 @@ def test_notebook_story_play_flow():
     assert '"floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"coronal ridge" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"not a dildo" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
@@ -6436,7 +6445,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-speech-timeline-1" in cell2
+    assert "h3-20260911-real-shaft-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
