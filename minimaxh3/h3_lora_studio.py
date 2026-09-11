@@ -3847,6 +3847,84 @@ def lock_spoken_emotion(text: str) -> str:
     return out
 
 
+_SPEAK_AFTER_DOOR_RE = re.compile(r"AFTER the door opens", re.I)
+_SPEAK_FIRST_RE = re.compile(r"SPEAKS first|rings the doorbell and SPEAKS", re.I)
+_LINE_WINDOW_S = 1.6
+_OPENING_PAD_S = 2.0
+
+
+def unique_spoken_lines(prompt: str) -> list[str]:
+    """First-seen order. Repeats of the same 「」 do not get a second window."""
+    out: list[str] = []
+    for line in spoken_lines(prompt):
+        if line not in out:
+            out.append(line)
+    return out
+
+
+def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Pin the 10s axis. Each unique 「」 gets one window. No extra copy of the quote."""
+    try:
+        dur = float(duration_s or 10.0)
+    except (TypeError, ValueError):
+        dur = 10.0
+    if dur <= 0:
+        dur = 10.0
+    sit = str(situation or "").strip()
+    lines = unique_spoken_lines(text)
+    if sit in ACT_SITUATIONS or not lines:
+        return (
+            f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
+            "No quoted speech. No lip-sync words. No replay. Do not freeze."
+        )
+    opening = "HIDDEN at the start" in text
+    speak_first = bool(_SPEAK_FIRST_RE.search(text))
+    speak_after_door = bool(_SPEAK_AFTER_DOOR_RE.search(text))
+    pad = _OPENING_PAD_S if opening and speak_after_door and not speak_first else 0.0
+    chunks: list[str] = []
+    t = 0.0
+    if pad > 0:
+        chunks.append(
+            f"0.0-{pad:.1f}s written start beat only (chime / door / enter if written). "
+            "No quoted speech in this window. No replay."
+        )
+        t = pad
+    leftover_floor = 0.8
+    for i, _line in enumerate(lines, start=1):
+        if t >= dur:
+            break
+        remain_after = len(lines) - i
+        latest_end = dur - leftover_floor - remain_after * _LINE_WINDOW_S
+        end = min(t + _LINE_WINDOW_S, max(t + 0.8, latest_end), dur)
+        if end <= t:
+            end = min(t + 0.8, dur)
+        ordinal = "first" if i == 1 else "second" if i == 2 else f"number {i}"
+        chunks.append(
+            f"{t:.1f}-{end:.1f}s {ordinal} unique quoted speech, one time only, conversational pace. "
+            "That mouth moves only here. Then it closes. Do not repeat. Do not restart. "
+            "Do not stretch the words to fill time."
+        )
+        t = end
+    if t < dur:
+        chunks.append(
+            f"{t:.1f}-{dur:.1f}s mouths closed. No more quoted speech. No replay. "
+            "Do the written remaining beat. Bodies keep moving. Do not freeze."
+        )
+    return "TIMELINE: " + " ".join(chunks)
+
+
+def lock_clip_timeline(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Every story clip gets a second-axis. Stops H3 from replaying the same 「」 to fill 10s."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    if "TIMELINE:" in raw:
+        return raw
+    return _inject_before_soundscape(
+        raw, speech_timeline_line(raw, duration_s=duration_s, situation=situation)
+    )
+
+
 PLEASURE_JUPO_LINE = (
     "PLEASURE FACE: The woman being sucked looks really good, not blank. "
     "Head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face. "
@@ -5649,6 +5727,8 @@ def prepare_story_clip(
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
+    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
+    raw_prompt = lock_clip_timeline(raw_prompt, duration_s=duration_s, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
@@ -5675,7 +5755,6 @@ def prepare_story_clip(
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
-    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:
