@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-checkup-kiss-1"' in src
+    assert 'FETCH_REV = "h3-20260911-sales-milk-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-checkup-kiss-1" in blob
+    assert "h3-20260911-sales-milk-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -4074,10 +4074,11 @@ def _check_pack_common(story, sid, tmp_path):
 
 
 def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
-    from h3_lora_studio import load_story, spoken_lines
+    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
 
     story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
     assert story.get("spoken_no_kanji") is True
+    assert story.get("spoken_max") == 2
     assert len(story["clips"]) == 8
     assert story["duration_s"] == 80
     assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10, 10]
@@ -4085,9 +4086,9 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         ["futa_visible"] * 3 + ["oral", "futa_visible", "oral", "oral_creampie", "futa_visible"]
     )
     want = [
-        "こんにちは。おミズ、とどけにきました",
-        "おそいわよ",
-        "はやくおミズちょうだい",
+        ["こんにちは。ミルクのハンバイにきました", "あ、おっきいオチンチン"],
+        ["それにしてもおそかったねー", "あ、ごめんなさい、オチンチン、シコシコしてたらおそくなっちゃいました"],
+        "それでこんなにカチカチなんだね！でもまちくたびれちゃったー",
         None,
         "んっ、おチンチン、あつい、、、",
         None,
@@ -4096,7 +4097,18 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     ]
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
-        assert (got[0] if got else None) == line, clip["label"]
+        uniq = []
+        for s in got:
+            if s not in uniq:
+                uniq.append(s)
+        if line is None:
+            assert uniq == [], (clip["label"], uniq)
+        elif isinstance(line, list):
+            assert uniq == line, (clip["label"], uniq)
+        else:
+            assert uniq == [line], (clip["label"], uniq)
+        for spoken in uniq:
+            assert not _KANJI_RE.search(spoken), spoken
         assert "Saleswoman: Adult Japanese woman, 25" in clip["prompt"]
         assert "Aya: Adult Japanese woman, 22" in clip["prompt"]
         assert "NO penis" in clip["prompt"]
@@ -4106,8 +4118,15 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         assert "Sayaka" not in clip["prompt"] and "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"].replace("not Madoka", "")
         assert "clinic" not in clip["prompt"].lower()
         assert "exam room" not in clip["prompt"].lower()
-    assert "already kneeling" in story["clips"][2]["prompt"]
-    assert "Then she kneels" not in story["clips"][2]["prompt"]
+        assert "water case" not in clip["prompt"].lower()
+        assert "bottled water" not in clip["prompt"].lower()
+        assert "bottle cap" in clip["prompt"].lower()
+        assert "おミズ" not in clip["prompt"]
+    c3 = story["clips"][2]["prompt"]
+    after_kachi = c3[c3.find("「それでこんなにカチカチなんだね！でもまちくたびれちゃったー」"):]
+    assert "drops to her knees" in after_kachi or "knees" in after_kachi.lower()
+    assert "hand's width" in after_kachi
+    assert "already kneeling" not in c3
     c1 = story["clips"][0]["prompt"]
     assert "HIDDEN at the start" in c1
     assert "ENTERS FROM THE RIGHT" in c1
@@ -4117,8 +4136,17 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "already at the open door" not in c1.lower()
     assert "faces Aya in the open door" not in c1
     assert "spoken AFTER the door opens" in c1 or "AFTER the door opens" in c1
-    assert "こんにちは。おミズ、とどけにきました" in c1
+    assert "こんにちは。ミルクのハンバイにきました" in c1
+    after_hanbai = c1[c1.find("「こんにちは。ミルクのハンバイにきました」"):]
+    assert "lightly stroke" in after_hanbai.lower() or "lightly strokes" in after_hanbai.lower()
+    assert "あ、おっきいオチンチン" in after_hanbai
+    assert "does not hold milk" in c1.lower()
     assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
+    c2 = story["clips"][1]["prompt"]
+    assert "それにしてもおそかったねー" in c2
+    assert "シコシコしてたらおそくなっちゃいました" in c2
+    assert "lightly strok" in c2.lower()
+    assert "smile" in c2.lower()
     assert "jupo-jupo" in story["clips"][3]["prompt"]
     assert "BASE" in story["clips"][3]["prompt"]
     assert "yellow" not in story["clips"][3]["prompt"].lower()
@@ -6296,7 +6324,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-checkup-kiss-1" in cell2
+    assert "h3-20260911-sales-milk-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
