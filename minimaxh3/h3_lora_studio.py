@@ -558,7 +558,7 @@ SITUATION_HELP = {
     "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sales-visit-60s": "訪問販売。ミルク売り。キャップのみ。ミルクは持たない。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。ハンバイにきましたのあとアヤが笑顔で20cmを軽く扱きながらあ、おっきいオチンチン。10-20は扱きながらおそかったねー／シコシコしてたらおそく。20-30はカチカチ／まちくたびれのあと扱きながら熱烈ベロチュー。30-40はキスをやめてあつい／サービス（恍惚）。40-50はえーありがとうー／じゃあ、いっただきまーすで跪いてジュボ。50-60は無言ジュボ。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。口内は粘る白液を残して見せる。台詞は1本2行まで。行為は無言・寄り。hmmotion なし。",
+    "sales-visit-60s": "訪問販売。ミルク売り。頭に帽子のキャップ。ミルクは持たない。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。ハンバイにきましたのあとアヤが笑顔で20cmを軽く扱きながらあ、おっきいオチンチン。10-20は扱きながらおそかったねー／シコシコしてたらおそく。20-30はカチカチ／まちくたびれのあと扱きながら熱烈ベロチュー。30-40はキスをやめてあつい／サービス（恍惚）。40-50はえーありがとうー／じゃあ、いっただきまーすで跪き、口を開けて先端を咥える準備から根元までジュボ。竿舐め禁止。50-60は無言ジュボ。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。口内は粘る白液を残して見せる。台詞は1本2行まで。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。最後はモンダイありすぎ、おくちにだされすぎのあと立ち上がって精液口移し濃厚ディープキス。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
     "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで超気持ちよさそう）、仰向けのままジュボしまくる→口内→仰向けのまま口移し→ゲンキ。セックスなし。騎乗なし。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
@@ -3847,6 +3847,84 @@ def lock_spoken_emotion(text: str) -> str:
     return out
 
 
+_SPEAK_AFTER_DOOR_RE = re.compile(r"AFTER the door opens", re.I)
+_SPEAK_FIRST_RE = re.compile(r"SPEAKS first|rings the doorbell and SPEAKS", re.I)
+_LINE_WINDOW_S = 1.6
+_OPENING_PAD_S = 2.0
+
+
+def unique_spoken_lines(prompt: str) -> list[str]:
+    """First-seen order. Repeats of the same 「」 do not get a second window."""
+    out: list[str] = []
+    for line in spoken_lines(prompt):
+        if line not in out:
+            out.append(line)
+    return out
+
+
+def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Pin the 10s axis. Each unique 「」 gets one window. No extra copy of the quote."""
+    try:
+        dur = float(duration_s or 10.0)
+    except (TypeError, ValueError):
+        dur = 10.0
+    if dur <= 0:
+        dur = 10.0
+    sit = str(situation or "").strip()
+    lines = unique_spoken_lines(text)
+    if sit in ACT_SITUATIONS or not lines:
+        return (
+            f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
+            "No quoted speech. No lip-sync words. No replay. Do not freeze."
+        )
+    opening = "HIDDEN at the start" in text
+    speak_first = bool(_SPEAK_FIRST_RE.search(text))
+    speak_after_door = bool(_SPEAK_AFTER_DOOR_RE.search(text))
+    pad = _OPENING_PAD_S if opening and speak_after_door and not speak_first else 0.0
+    chunks: list[str] = []
+    t = 0.0
+    if pad > 0:
+        chunks.append(
+            f"0.0-{pad:.1f}s written start beat only (chime / door / enter if written). "
+            "No quoted speech in this window. No replay."
+        )
+        t = pad
+    leftover_floor = 0.8
+    for i, _line in enumerate(lines, start=1):
+        if t >= dur:
+            break
+        remain_after = len(lines) - i
+        latest_end = dur - leftover_floor - remain_after * _LINE_WINDOW_S
+        end = min(t + _LINE_WINDOW_S, max(t + 0.8, latest_end), dur)
+        if end <= t:
+            end = min(t + 0.8, dur)
+        ordinal = "first" if i == 1 else "second" if i == 2 else f"number {i}"
+        chunks.append(
+            f"{t:.1f}-{end:.1f}s {ordinal} unique quoted speech, one time only, conversational pace. "
+            "That mouth moves only here. Then it closes. Do not repeat. Do not restart. "
+            "Do not stretch the words to fill time."
+        )
+        t = end
+    if t < dur:
+        chunks.append(
+            f"{t:.1f}-{dur:.1f}s mouths closed. No more quoted speech. No replay. "
+            "Do the written remaining beat. Bodies keep moving. Do not freeze."
+        )
+    return "TIMELINE: " + " ".join(chunks)
+
+
+def lock_clip_timeline(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Every story clip gets a second-axis. Stops H3 from replaying the same 「」 to fill 10s."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    if "TIMELINE:" in raw:
+        return raw
+    return _inject_before_soundscape(
+        raw, speech_timeline_line(raw, duration_s=duration_s, situation=situation)
+    )
+
+
 PLEASURE_JUPO_LINE = (
     "PLEASURE FACE: The woman being sucked looks really good, not blank. "
     "Head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face. "
@@ -5649,6 +5727,8 @@ def prepare_story_clip(
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
+    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
+    raw_prompt = lock_clip_timeline(raw_prompt, duration_s=duration_s, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
@@ -5675,7 +5755,6 @@ def prepare_story_clip(
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
-    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:

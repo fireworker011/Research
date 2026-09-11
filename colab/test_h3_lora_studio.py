@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-sales-kiss-erotic-1"' in src
+    assert 'FETCH_REV = "h3-20260911-speech-timeline-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-sales-kiss-erotic-1" in blob
+    assert "h3-20260911-speech-timeline-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -619,6 +619,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
+    assert "lock_clip_timeline" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
@@ -4120,7 +4121,9 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
         assert "water case" not in clip["prompt"].lower()
         assert "bottled water" not in clip["prompt"].lower()
-        assert "bottle cap" in clip["prompt"].lower()
+        assert "bottle cap" not in clip["prompt"].lower() or "not a bottle cap" in clip["prompt"].lower() or "no bottle cap" in clip["prompt"].lower()
+        assert "work cap" in clip["prompt"].lower()
+        assert "on her head" in clip["prompt"].lower() or "on the saleswoman's head" in clip["prompt"].lower()
         assert "おミズ" not in clip["prompt"]
     c3 = story["clips"][2]["prompt"]
     after_kachi = c3[c3.find("「それでこんなにカチカチなんだね！でもまちくたびれちゃったー」"):]
@@ -4137,6 +4140,11 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "えーありがとうー" in c5
     assert "いっただきまーす" in c5
     assert "drops to her knees" in c5
+    after_itadaki = c5[c5.find("「じゃあ、いっただきまーす」"):]
+    assert "Mouth OPEN" in after_itadaki or "mouth OPEN" in after_itadaki
+    assert "TAKES" in after_itadaki
+    assert "INSIDE" in after_itadaki
+    assert "not licking" in after_itadaki.lower() or "do not lick" in after_itadaki.lower()
     assert "jupo-jupo" in c5
     assert "BASE" in c5
     c1 = story["clips"][0]["prompt"]
@@ -4160,6 +4168,8 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "lightly strok" in c2.lower()
     assert "smile" in c2.lower()
     assert "Already oral" in story["clips"][5]["prompt"]
+    assert "already fully INSIDE" in story["clips"][5]["prompt"] or "Glans already inside" in story["clips"][5]["prompt"]
+    assert "Not licking" in story["clips"][5]["prompt"]
     assert "jupo-jupo" in story["clips"][5]["prompt"]
     assert "BASE" in story["clips"][5]["prompt"]
     assert "yellow" not in story["clips"][5]["prompt"].lower()
@@ -4660,6 +4670,96 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     bad["clips"] = [clip0, *story["clips"][1:]]
     errs = validate_story_follow(bad)
     assert any("Japanese only" in e for e in errs)
+
+
+def _timeline_block(prompt: str) -> str:
+    i = prompt.find("TIMELINE:")
+    assert i >= 0, prompt[:240]
+    rest = prompt[i:]
+    cut = rest.find("\noverall_soundscape:")
+    return rest if cut < 0 else rest[:cut]
+
+
+def test_lock_clip_timeline_stops_repeat(tmp_path):
+    from h3_lora_studio import (
+        jp_outside_quotes,
+        load_story,
+        lock_clip_timeline,
+        prepare_story_clip,
+        speech_timeline_line,
+        spoken_lines,
+        unique_spoken_lines,
+    )
+
+    two = (
+        "integrated_multimodal_description:\n"
+        "Aya speaks: 「おそかったねー」. Saleswoman answers: 「ごめんなさい」.\n"
+        "\noverall_soundscape:\n"
+        "Door. 「おそかったねー」 「ごめんなさい」.\n"
+    )
+    locked = lock_clip_timeline(two, duration_s=10, situation="futa_visible")
+    tl = _timeline_block(locked)
+    assert "TIMELINE:" in tl
+    assert "0.0-1.6s first unique quoted speech" in tl
+    assert "1.6-3.2s second unique quoted speech" in tl
+    assert "3.2-10.0s mouths closed" in tl
+    assert "one time only" in tl
+    assert "Do not repeat" in tl
+    assert "Do not stretch" in tl
+    assert "「" not in tl and "」" not in tl
+    assert unique_spoken_lines(two) == ["おそかったねー", "ごめんなさい"]
+    assert lock_clip_timeline(locked) == locked
+
+    oral = (
+        "integrated_multimodal_description:\nAlready oral. Jupo to the BASE.\n"
+        "\noverall_soundscape:\nDeep jupo-jupo.\n"
+    )
+    oral_tl = _timeline_block(lock_clip_timeline(oral, duration_s=10, situation="oral"))
+    assert "0.0-10.0s one unbroken take" in oral_tl
+    assert "No quoted speech" in oral_tl
+    assert "「" not in oral_tl
+
+    sales = load_story("sales-visit-60s")
+    sales0 = prepare_story_clip(sales, 0, stills_dir=tmp_path)
+    sales0_tl = _timeline_block(sales0["prompt"])
+    assert "0.0-2.0s" in sales0_tl
+    assert "No quoted speech in this window" in sales0_tl
+    assert "2.0-3.6s first unique quoted speech" in sales0_tl
+    assert "3.6-5.2s second unique quoted speech" in sales0_tl
+    assert "「" not in sales0_tl
+    for line in unique_spoken_lines(sales["clips"][0]["prompt"]):
+        assert sales0["prompt"].count(f"「{line}」") == 2, line
+    assert jp_outside_quotes(sales0["prompt"]) == ""
+
+    sales1 = prepare_story_clip(sales, 1, last_frame="x.png", stills_dir=tmp_path)
+    sales1_tl = _timeline_block(sales1["prompt"])
+    assert "0.0-1.6s first unique quoted speech" in sales1_tl
+    assert "1.6-3.2s second unique quoted speech" in sales1_tl
+    assert "0.0-2.0s" not in sales1_tl
+    assert "「" not in sales1_tl
+    for line in unique_spoken_lines(sales["clips"][1]["prompt"]):
+        assert sales1["prompt"].count(f"「{line}」") == 2, line
+    assert jp_outside_quotes(sales1["prompt"]) == ""
+
+    oral_p = prepare_story_clip(sales, 5, last_frame="x.png", stills_dir=tmp_path)
+    oral_p_tl = _timeline_block(oral_p["prompt"])
+    assert "No quoted speech" in oral_p_tl
+    assert not spoken_lines(oral_p["prompt"])
+    assert jp_outside_quotes(oral_p["prompt"]) == ""
+
+    check = load_story("checkup-100s")
+    check0 = prepare_story_clip(check, 0, stills_dir=tmp_path)
+    check0_tl = _timeline_block(check0["prompt"])
+    assert "0.0-1.6s first unique quoted speech" in check0_tl
+    assert "written start beat only" not in check0_tl
+    assert "「" not in check0_tl
+    assert check0["prompt"].count("「こんにちは」") == 2
+    assert jp_outside_quotes(check0["prompt"]) == ""
+
+    empty_tl = speech_timeline_line("no quotes here", duration_s=10, situation="futa_visible")
+    assert empty_tl.startswith("TIMELINE:")
+    assert "No quoted speech" in empty_tl
+    assert "「" not in empty_tl
 
 
 def test_all_stories_soundscape_is_sfx_and_quotes(tmp_path):
@@ -6336,7 +6436,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-sales-kiss-erotic-1" in cell2
+    assert "h3-20260911-speech-timeline-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -6366,6 +6466,7 @@ def test_notebook_story_play_flow():
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
+    assert "lock_clip_timeline" in src
     assert "lock_urine_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
@@ -6375,6 +6476,7 @@ def test_notebook_story_play_flow():
     assert "def lock_pleasure_voice_and_wait" in helper_src
     assert "def lock_act_silent" in helper_src
     assert "def lock_act_sfx" in helper_src
+    assert "def lock_clip_timeline" in helper_src
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
     assert "def lock_penis_inside" in helper_src
