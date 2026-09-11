@@ -1,6 +1,6 @@
 # 仮想トレード机 — TradingView + ルール（XMではない）
 
-生成: 2026-09-10T23:11:42.323Z
+生成: 2026-09-11T08:55:45.407Z
 
 > これはペーパー。XM口座の残高・約定ではない。VPS/EA がまだでも、ルールで損切りと利確を置いて仮想執行する。
 > 方向は LLM の予想ではない。Gold はアジアレンジの OCO 両方。Majors は EMA20/50 クロスだけ。
@@ -14,20 +14,20 @@
 
 ## TradingView スナップショット
 
-- GOLD close 4318.525  high 4324.065  low 4313.765  RSI 45.4  ATR(D) 97.9731  ATR(H1) 18.1652  SMA20 4461.32475  SMA50 4268.4493
-- EURUSD close 1.16089  high 1.16141  low 1.16068  RSI 53  ATR(D) 0.0042  ATR(H1) 0.0009  SMA20 1.16275  SMA50 1.15289
-- GBPUSD close 1.35098  high 1.35159  low 1.35061  RSI 48.1  ATR(D) 0.0053  ATR(H1) 0.0011  SMA20 1.35601  SMA50 1.34781
-- USDJPY close 154.44  high 154.54  low 154.364  RSI 31.7  ATR(D) 1.2116  ATR(H1) 0.2263  SMA20 157.698  SMA50 159.74218
+- GOLD close 4348.24  high 4361.15  low 4300.795  RSI 47.5  ATR(D) 101.5485  ATR(H1) 19.5681  SMA20 4462.8105  SMA50 4269.0436
+- EURUSD close 1.16003  high 1.16176  low 1.15997  RSI 51.3  ATR(D) 0.0043  ATR(H1) 0.0008  SMA20 1.1627  SMA50 1.15288
+- GBPUSD close 1.3508  high 1.35266  low 1.34958  RSI 47.8  ATR(D) 0.0054  ATR(H1) 0.0011  SMA20 1.356  SMA50 1.3478
+- USDJPY close 154.088  high 154.618  low 153.962  RSI 30.5  ATR(D) 1.2459  ATR(H1) 0.246  SMA20 157.6804  SMA50 159.73514
 
 ## Gold 仮想 OCO（損切り・利確）
 
 - status: `halted` / reason: halt
-- last: 4322.6
-- アジア: 4319.2 – 4329.2 close undefined（range 10, ATR日次比 0.139）
-- H1 ATR: undefined（tradingview_atr60 / OKX H1 15.1） / SL距離 undefined（1.2×ATR） / TP距離 undefined（1.8R）
-- chart suggested_side: undefined（参考。執行は OCO 両方）
-- BuyStop undefined → 損切り undefined / 利確 undefined
-- SellStop undefined → 損切り undefined / 利確 undefined
+- last: 4350
+- アジア: 4303.7 – 4341.3 close 4332.7（range 37.6, ATR日次比 0.516）
+- H1 ATR: 19.57（tradingview_atr60 / OKX H1 17.19） / SL距離 23.48（1.2×ATR） / TP距離 42.27（1.8R）
+- chart suggested_side: BUY（参考。執行は OCO 両方）
+- BuyStop 4344.24 → 損切り 4320.76 / 利確 4386.51
+- SellStop 4300.76 → 損切り 4324.24 / 利確 4258.49
 
 ## ペーパー帳簿（仮想資金）
 

@@ -1,7 +1,7 @@
 {
   "kind": "shadow_signals",
   "disclaimer": "GitHub cron は1〜4時間遅延する。XMの実時間発注には使わず、EAのローカル戦略を正とする。",
-  "updated_at": "2026-09-10T23:11:42.323Z",
+  "updated_at": "2026-09-11T08:55:45.407Z",
   "intents": [
     {
       "symbol": "EURUSD",
