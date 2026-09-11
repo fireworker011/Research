@@ -8,12 +8,15 @@ SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
 from select_loras import (  # noqa: E402
+    FUTA_SITUATIONS,
     SelectError,
     apply_feminine_lock,
     forbidden_hits,
     list_situations,
     load_forbidden,
     lock_futa_anatomy,
+    lock_futa_shaft,
+    lock_semen_look,
     select_loras,
     strip_male_subjects,
 )
@@ -29,11 +32,10 @@ def test_anal_penetration_i2v_stacks_enabled_only():
     assert data["min_age"] >= 21
     assert data["first_frame_required"] is True
     ids = [row["id"] for row in data["stack"]]
-    assert ids == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert [row["role"] for row in data["stack"]] == ["act", "helper", "helper"]
-    assert data["stack"][0]["strength_model"] == 0.85
-    assert data["stack"][1]["strength_model"] == 0.7
-    assert data["stack"][2]["strength_model"] == 0.55
+    assert ids == ["penis-lora-h3", "synth-pussy-h3"]
+    assert [row["role"] for row in data["stack"]] == ["act", "helper"]
+    assert data["stack"][0]["strength_model"] == 0.7
+    assert data["stack"][1]["strength_model"] == 0.55
     assert "anal-penetration-coachbate" not in ids
     assert "hmnsfw-aio-v25" not in ids
     unload_ids = {row["id"] for row in data["unload"]}
@@ -60,7 +62,7 @@ def test_anal_penetration_t2v_has_no_first_frame():
     assert data["turbo"] is False
     assert data["first_frame_required"] is False
     assert data["canvas"]["aspect"] == "9:16"
-    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     assert "Picture 1" not in data["prompt"]
     assert "first_frame" not in data["prompt"].lower()
 
@@ -72,18 +74,19 @@ def test_situations_switch_loras_by_profile_and_mode():
     futa_t2v = [r["id"] for r in select_loras(profile_name="futa_blowjob", mode="t2v")["stack"]]
     general = select_loras(profile_name="general_sex", mode="t2v")
     preview = select_loras(profile_name="preview", mode="t2v")
-    assert anal_t2v == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert anal_t2v == ["penis-lora-h3", "synth-pussy-h3"]
     assert close_t2v == ["synth-pussy-h3", "larry-v4", "cinema-dy"]
-    assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in oral_t2v["stack"]] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral_t2v["stack"][0]["strength_model"] == 0.8
-    assert oral_t2v["stack"][2]["strength_model"] == 0.6
+    assert oral_t2v["stack"][2]["strength_model"] == 0.55
+    assert oral_t2v["stack"][3]["strength_model"] == 0.5
     assert oral_t2v["sampler"]["steps"] == 8
     assert oral_t2v["turbo"] is True
     assert futa_t2v == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert "futa-h3-v51" not in futa_t2v
-    assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "larry-v4"]
+    assert [r["id"] for r in general["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
     assert general["stack"][0]["strength_model"] == 0.8
-    assert general["stack"][1]["strength_model"] == 0.5
+    assert general["stack"][2]["strength_model"] == 0.55
     assert general["sampler"]["steps"] == 12
     assert general["sampler"]["sampler_name"] == "euler"
     assert general["sampler"]["scheduler"] == "simple"
@@ -93,7 +96,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert riding["turbo"] is False
     assert "hmnsfw-aio-v25" not in [r["id"] for r in riding["stack"]]
     assert preview["sampler"]["steps"] == 4
-    assert preview["stack"][1]["strength_model"] == 1.0
+    assert preview["stack"][-1]["strength_model"] == 1.0
     listed = list_situations()
     ids = {row["id"] for row in listed["situations"]}
     assert {
@@ -104,6 +107,9 @@ def test_situations_switch_loras_by_profile_and_mode():
         "futa_blowjob",
         "futa_sex",
         "futa_anal",
+        "urine_drink",
+        "urine_pee",
+        "scat_act",
         "general_sex",
         "preview",
         "sfw_daily",
@@ -128,7 +134,7 @@ def test_situations_switch_loras_by_profile_and_mode():
         "cunnilingus_futa",
     } <= ids
     oral = next(row for row in listed["situations"] if row["id"] == "oral")
-    assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "larry-v4"]
+    assert oral["enabled"]["t2v"] == ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral["turbo"] is True
     anal = next(row for row in listed["situations"] if row["id"] == "anal_penetration")
     assert anal["turbo"] is False
@@ -164,6 +170,8 @@ def test_lesbian_and_spread_stacks():
     catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     by_id = {row["id"]: row for row in catalog["loras"]}
     assert by_id["synth-pussy-h3"]["civitai_version_id"] == 3204862
+    assert by_id["synth-pussy-h3"]["arch"] == "shared"
+    assert by_id["synth-pussy-h3"]["modes"] == ["t2v", "i2v", "r2v"]
     assert by_id["lesbian-cunnilingus-h3"]["civitai_version_id"] == 3282598
     assert by_id["pussy-spread-h3"]["civitai_version_id"] == 3261512
     assert by_id["lesbian-cunnilingus-h3"]["trigger"] == ""
@@ -209,7 +217,7 @@ def test_cli_emits_json():
     )
     data = json.loads(proc.stdout)
     assert data["turbo"] is False
-    assert [row["id"] for row in data["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [row["id"] for row in data["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
 
 
 def test_futa_sex_and_anal_stay_feminine():
@@ -237,21 +245,21 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "fully nude" in low
     assert "futanari" in low
     anal = select_loras(profile_name="futa_anal", mode="i2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in anal["stack"]] == ["thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert [r["role"] for r in anal["stack"]] == ["act", "helper", "helper"]
-    assert [r["strength_model"] for r in anal["stack"]] == [0.85, 0.7, 0.55]
-    assert anal["stack"][0]["trigger"] == "thum1n8utt"
+    assert [r["id"] for r in anal["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in anal["stack"]] == ["act", "helper"]
+    assert [r["strength_model"] for r in anal["stack"]] == [0.7, 0.55]
     assert anal["turbo"] is False
     assert anal["sampler"]["steps"] == 12
     assert anal["sampler"]["sampler_name"] == "euler"
     assert "<Picture 1>" in anal["prompt"]
     alow = anal["prompt"].lower()
-    assert alow.startswith("thum1n8utt, penislora")
+    assert alow.startswith("penislora")
+    assert "thum1n8utt" not in alow
     assert "inserts her penis in (s1)'s anus" in alow
     assert "causing (s1) to moan with pleasure" in alow
-    assert "anus sits above her vagina" in alow
+    assert "already fully inside the anus" in alow
     assert "hands of (s2) stay on (s1)'s hips" in alow
-    assert "not pov" in alow
+    assert "pose and camera follow the user prompt" in alow
     assert "adult man" not in alow
     assert "the man" not in alow
     assert " his " not in alow
@@ -265,6 +273,7 @@ def test_futa_sex_and_anal_stay_feminine():
     assert "vaginal penetration" in aneg
     assert "man" in aneg
     unload_anal = {r["id"] for r in anal["unload"]}
+    assert "thumbinbutt-h3" in unload_anal
     assert "anal-penetration-coachbate" in unload_anal
     assert "hmnsfw-aio-v25" in unload_anal
     assert "fingering-h3" in unload_anal
@@ -277,7 +286,8 @@ def test_futa_sex_and_anal_stay_feminine():
     assert close["sampler"]["sampler_name"] == "res_multistep"
     assert close["sampler"]["steps"] == 16
     clow = close["prompt"].lower()
-    assert clow.startswith("thum1n8utt, penislora")
+    assert clow.startswith("penislora")
+    assert "thum1n8utt" not in clow
     assert "close-up on (s1)'s anus" in clow
     assert "inserts her penis in (s1)'s anus" in clow
     assert "thumb" not in clow
@@ -356,6 +366,29 @@ def test_lock_futa_anatomy_is_penis_plus_pussy_no_balls():
     assert "never balls in the foreground" not in face
     remnant = lock_futa_anatomy("Penis plus vagina, never balls that hangs unused. Not a man.")
     assert remnant == "Penis plus vagina, never balls. Her penis hangs unused. Not a man."
+    shaft = lock_futa_shaft(out)
+    assert "SHAFT LOOK:" in shaft
+    assert "20cm" in shaft
+    assert "thick human girth" in shaft
+    assert "never balls" in shaft.lower()
+    assert "NO testicles" in shaft
+    assert lock_futa_shaft(shaft) == shaft
+    assert "SHAFT LOOK:" not in lock_futa_shaft(never)
+    locked_futa, _ = apply_feminine_lock(
+        "Clear futanari. Erect 20cm.\noverall_soundscape:\nWind.",
+        "",
+        {"id": "futa_visible", "feminine_lock": True},
+    )
+    assert "SHAFT LOOK:" in locked_futa
+    assert locked_futa.find("SHAFT LOOK:") < locked_futa.find("overall_soundscape:")
+    semen = lock_semen_look("CUMOUF. She cums inside the mouth. Not a facial.")
+    assert "white liquid" in semen.lower()
+    assert "viscous" in semen.lower()
+    assert "clingy" in semen.lower()
+    assert "heavy-oil" in semen.lower()
+    assert "never brown" in semen.lower()
+    assert lock_semen_look(semen) == semen
+    assert "SEMEN LOOK:" not in lock_semen_look("Already oral. No climax.")
 
 
 def test_sampler_no_turbo_used_when_turbo_stripped():
@@ -363,11 +396,12 @@ def test_sampler_no_turbo_used_when_turbo_stripped():
     assert vis["turbo"] is True
     assert vis["sampler"]["steps"] == 8
     assert vis["sampler"]["sampler_name"] == "euler"
+    assert [r["id"] for r in vis["stack"]] == ["penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     speech = select_loras(profile_name="futa_visible", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
     assert speech["turbo"] is False
     assert speech["sampler"]["steps"] == 12
     assert speech["sampler"]["sampler_name"] == "res_multistep"
-    assert [r["id"] for r in speech["stack"]] == ["penis-lora-h3", "cinema-dy"]
+    assert [r["id"] for r in speech["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
     oral = select_loras(profile_name="oral", mode="t2v", prompt_arg="（シーン）", turbo_override=False)
     assert oral["turbo"] is False
     assert oral["sampler"]["steps"] == 8
@@ -456,6 +490,46 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
         assert "Picture 1" not in row["prompt"], name
 
 
+def test_urine_drink_and_scat_act_are_helpers_only():
+    pee = select_loras(profile_name="urine_drink", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in pee["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert pee["turbo"] is False
+    assert pee["sampler"]["steps"] == 12
+    plow = pee["prompt"].lower()
+    assert plow.startswith("penislora")
+    assert "drinks the yellow" in plow
+    assert "glans tip" in plow
+    assert "thumbinbutt" not in plow
+    assert "thum1n8utt" not in plow
+    unload_pee = {r["id"] for r in pee["unload"]}
+    assert "thumbinbutt-h3" in unload_pee
+    assert "hmnsfw-aio-v25" in unload_pee
+    scat = select_loras(profile_name="scat_act", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in scat["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    slow = scat["prompt"].lower()
+    assert "act of defecating" in slow
+    assert "coming out of (s1)'s anus" in slow
+    assert "already coated" in slow
+    assert "thum1n8utt" not in slow
+
+
+def test_urine_pee_is_glans_stream_not_drink():
+    pee = select_loras(profile_name="urine_pee", mode="t2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in pee["stack"]] == ["penis-lora-h3", "synth-pussy-h3"]
+    assert pee["turbo"] is False
+    assert pee["sampler"]["steps"] == 12
+    plow = pee["prompt"].lower()
+    assert plow.startswith("penislora")
+    assert "glans tip" in plow
+    assert "urethral opening" in plow
+    assert "drinks the yellow" not in plow
+    assert "thumbinbutt" not in plow
+    assert "thum1n8utt" not in plow
+    unload = {r["id"] for r in pee["unload"]}
+    assert "thumbinbutt-h3" in unload
+    assert "hmnsfw-aio-v25" in unload
+
+
 def test_pose_aftercare_and_solo_act_stacks():
     catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     by_id = {row["id"]: row for row in catalog["loras"]}
@@ -499,16 +573,16 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "<Picture 1>" in doggy_i2v["prompt"]
 
     pov = select_loras(profile_name="missionary_pov", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in pov["stack"]] == ["missionary-pov-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in pov["stack"]] == ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert pov["turbo"] is True
     assert pov["sampler"]["steps"] == 8
-    assert "synth-pussy-h3" not in [r["id"] for r in pov["stack"]]
+    assert "synth-pussy-h3" in [r["id"] for r in pov["stack"]]
     assert "hmnsfw-aio-v25" not in [r["id"] for r in pov["stack"]]
     assert "pov" in pov["prompt"].lower()
     assert "Picture 1" not in pov["prompt"]
 
     after = select_loras(profile_name="after_ejaculation", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in after["stack"]] == ["hmcumshot-v2", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in after["stack"]] == ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert after["stack"][0]["trigger"] == "cumshot"
     assert after["sampler"]["steps"] == 8
     assert "cumshot" in after["prompt"].lower()
@@ -519,7 +593,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "facial-cumshot-h3" in unload_after
 
     facial = select_loras(profile_name="facial", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in facial["stack"]] == ["facial-cumshot-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in facial["stack"]] == ["facial-cumshot-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert facial["stack"][0]["trigger"] == "cmst"
     assert facial["sampler"]["steps"] == 8
     assert facial["turbo"] is True
@@ -573,7 +647,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "male character" not in cream_i2v["prompt"].lower()
 
     oral_c = select_loras(profile_name="oral_creampie", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in oral_c["stack"]] == ["cumouf-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in oral_c["stack"]] == ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert oral_c["stack"][0]["trigger"] == "CUMOUF"
     assert oral_c["stack"][0]["strength_model"] == 0.5
     assert oral_c["turbo"] is True
@@ -583,6 +657,9 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "fills (s1)'s mouth" in olow or "fills (s1)'s mouth" in oral_c["prompt"].lower()
     assert "inside the mouth" in olow
     assert "not a facial" in olow
+    assert "white liquid" in olow
+    assert "viscous" in olow
+    assert "ドロドロ" in oral_c["prompt"]
     assert "futanari" in olow
     assert "adult man" not in olow
     assert "the man" not in olow
@@ -668,7 +745,7 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert "thumbinbutt-h3" in unload_m
 
     foot = select_loras(profile_name="footjob", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in foot["stack"]] == ["footjob-h3", "penis-lora-h3", "larry-v4"]
+    assert [r["id"] for r in foot["stack"]] == ["footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert foot["stack"][0]["trigger"] == "fj."
     assert "fj." in foot["prompt"]
     assert foot["sampler"]["steps"] == 8
@@ -1025,3 +1102,54 @@ def test_locked_minors_stay_child_terms():
     loras = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     coach = next(row for row in loras["loras"] if row["id"] == "anal-penetration-coachbate")
     assert coach.get("paid") is True
+
+
+def test_no_forbidden_or_unused_loras_in_any_profile_stack():
+    """Transform / paid / still-only LoRAs must never appear in a live stack."""
+    forbidden = {"futa-h3-v51", "anal-penetration-coachbate", "photoreal-h3-still", "riding-pose-i2v"}
+    listed = list_situations()
+    for row in listed["situations"]:
+        enabled = row.get("enabled") or {}
+        for mode, ids in enabled.items():
+            overlap = forbidden.intersection(ids)
+            assert not overlap, (row["id"], mode, overlap)
+            if not ids:
+                continue
+            live = select_loras(profile_name=row["id"], mode=mode, prompt_arg="（シーン）")
+            live_ids = {r["id"] for r in live["stack"]}
+            assert not (forbidden & live_ids), (row["id"], mode, live_ids)
+            if mode == "r2v":
+                for item in live["stack"]:
+                    assert item.get("arch") != "fl2va", (row["id"], item)
+            if mode in {"t2v", "i2v"}:
+                assert "aftermidnight-ref2va" not in live_ids, (row["id"], mode)
+
+
+def test_r2v_adult_stacks_are_ref2va_safe():
+    oral = select_loras(profile_name="oral", mode="r2v")
+    assert [row["id"] for row in oral["stack"]] == ["blowjob-h3", "synth-pussy-h3", "minimax-h3-turbo-ref2v-4step"]
+    assert oral["sampler"]["steps"] == 4
+    assert oral["first_frame_required"] is False
+    bj = select_loras(profile_name="futa_blowjob", mode="r2v")
+    assert [row["id"] for row in bj["stack"]] == ["blowjob-h3", "synth-pussy-h3", "minimax-h3-turbo-ref2v-4step"]
+    sex = select_loras(profile_name="futa_sex", mode="r2v")
+    assert [row["id"] for row in sex["stack"]] == ["aftermidnight-ref2va", "synth-pussy-h3"]
+    assert sex["sampler"]["steps"] == 12
+    vis = select_loras(profile_name="futa_visible", mode="r2v")
+    assert [row["id"] for row in vis["stack"]] == ["cinema-dy", "synth-pussy-h3", "minimax-h3-turbo-ref2v-4step"]
+    i2v = select_loras(profile_name="futa_sex", mode="i2v")
+    assert [row["id"] for row in i2v["stack"]] == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+    assert "aftermidnight-ref2va" in {row["id"] for row in i2v["unload"]}
+
+
+def test_every_futa_situation_stacks_synth_pussy():
+    listed = {row["id"] for row in list_situations()["situations"]}
+    assert FUTA_SITUATIONS <= listed
+    for name in sorted(FUTA_SITUATIONS):
+        profile = json.loads((ROOT / "profiles" / f"{name}.json").read_text(encoding="utf-8"))
+        for mode in profile.get("modes") or []:
+            live = select_loras(profile_name=name, mode=mode, prompt_arg="（シーン）")
+            ids = [row["id"] for row in live["stack"]]
+            assert "synth-pussy-h3" in ids, (name, mode, ids)
+            if mode == "r2v":
+                assert all(row.get("arch") != "fl2va" for row in live["stack"]), (name, ids)

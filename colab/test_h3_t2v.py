@@ -93,6 +93,17 @@ def test_t2v_16_9_canvas_and_retry():
     assert resolve_t2v_prompt("", landscape=True).startswith("Horizontal 16:9")
 
 
+def test_t2v_retry_plans_keep_canvas_and_cap_duration():
+    plans = t2v_retry_plans(width=576, height=1024, duration_s=15, keep_canvas=True)
+    assert len(plans) == 1
+    assert plans[0]["label"] == "576x1024"
+    assert plans[0]["duration_s"] == 10
+    ladder = t2v_retry_plans(width=576, height=1024, duration_s=15)
+    assert ladder[0]["label"] == "576x1024"
+    assert any(p["label"] == "288x512" for p in ladder)
+    assert all(p["duration_s"] == 10 for p in ladder)
+
+
 def test_t2v_colab_url():
     url = t2v_colab_url()
     assert url.endswith("minimax_h3_t2v_phone.ipynb")

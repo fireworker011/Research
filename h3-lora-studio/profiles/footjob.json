@@ -27,10 +27,16 @@
       "id": "footjob-h3",
       "strength": 0.85
     },
-    "helper": {
-      "id": "penis-lora-h3",
-      "strength": 0.7
-    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
@@ -40,7 +46,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Footjob Type D 0.85 + penis 0.7 + Larry 0.5 / 8step. Type A/B/C stay off."
+    "note": "Footjob Type D 0.85 + penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. Pussy helper so the non-shaft partner does not grow a penis. Type A/B/C stay off."
   },
   "disabled": [
     "anal-penetration-coachbate",

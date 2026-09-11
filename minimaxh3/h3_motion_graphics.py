@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from h3_r2v_core import comfy_media_name, frames
+from h3_r2v_core import cap_fl2va_clip_s, comfy_media_name, frames
 
 # X @ponzponz15/2091744536716611856: 1280x1440 (8:9), 9.87s, 30fps, one still → video.
 # Homage keeps 8:9. 1024x1152 OOMs on A100 40GB I2VA 10s; default is 768x864.
@@ -139,11 +139,23 @@ def resolve_motion_prompt(
     return text
 
 
-def i2va_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
-    """Smaller same-aspect canvases after OOM. Never drops first_frame or switches to R2V."""
+def i2va_retry_plans(
+    *,
+    width: int,
+    height: int,
+    duration_s: float | None = None,
+    keep_canvas: bool = False,
+) -> list[dict[str, Any]]:
+    """Smaller same-aspect canvases after OOM. Never drops first_frame or switches to R2V.
+
+    Stories pass keep_canvas=True so OOM does not shrink 576x1024 (retrying smaller is slower than a 10s first try).
+    """
     w = max(32, int(width) // 32 * 32)
     h = max(32, int(height) // 32 * 32)
-    plans = [{"width": w, "height": h, "label": f"{w}x{h}"}]
+    dur = cap_fl2va_clip_s(duration_s if duration_s is not None else 10.0)
+    plans = [{"width": w, "height": h, "label": f"{w}x{h}", "duration_s": dur}]
+    if keep_canvas:
+        return plans
     area = w * h
     if (h > 0 and abs(w / h - 16 / 9) <= 0.03) or (w, h) == CANVAS_16_9_HIGH:
         ladder = CANVAS_16_9_LADDER
@@ -153,7 +165,7 @@ def i2va_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
         ladder = CANVAS_8_9_LADDER
     for cw, ch in ladder:
         if cw * ch < area:
-            plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}"})
+            plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}", "duration_s": dur})
     out: list[dict[str, Any]] = []
     seen: set[tuple[int, int]] = set()
     for p in plans:

@@ -6,7 +6,7 @@
     "i2v",
     "t2v"
   ],
-  "allow_turbo": true,
+  "allow_turbo": false,
   "canvas": {
     "i2v": {
       "width": 768,
@@ -26,24 +26,28 @@
       "id": "hmnsfw-aio-v25",
       "strength": 0.8
     },
-    "turbo": {
-      "id": "larry-v4",
-      "strength": 0.5
-    }
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ]
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 12,
-    "note": "AIO 0.8 + Larry 0.5 / Euler Simple / 12step. Hearmeman AIO path. LightX2V off."
+    "note": "AIO 0.8 + penis 0.7 + Synth 0.55 / 12step. Two helpers, turbo off. Same futa pair as futa_sex so the non-shaft partner does not grow a penis. LightX2V off."
   },
   "disabled": [
     "anal-penetration-coachbate",
-    "synth-pussy-h3",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
     "futa-h3-v51",
-    "penis-lora-h3",
     "blowjob-h3",
     "riding-pose-i2v",
     "facial-cumshot-h3",
@@ -51,6 +55,7 @@
     "cumouf-h3",
     "final-thrust-h3",
     "photoreal-h3-still",
+    "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
     "cinema-dy"
   ],

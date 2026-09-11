@@ -26,6 +26,10 @@
       "id": "hmnsfw-aio-v25",
       "strength": 0.7
     },
+    "helper": {
+      "id": "synth-pussy-h3",
+      "strength": 0.55
+    },
     "turbo": {
       "id": "minimax-h3-turbo-fl2v-4step",
       "strength": 1.0
@@ -35,11 +39,10 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 4,
-    "note": "Preview only. AIO 0.7 + LightX2V 4step 1.0. Rebake hits on the quality path."
+    "note": "Preview only. AIO 0.7 + Synth 0.55 + LightX2V 4step 1.0. Pussy helper so the non-shaft partner does not grow a penis. Rebake hits on the quality path."
   },
   "disabled": [
     "anal-penetration-coachbate",
-    "synth-pussy-h3",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
     "futa-h3-v51",

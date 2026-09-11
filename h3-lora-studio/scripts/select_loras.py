@@ -35,6 +35,34 @@ FULL_STACK_IDS = {
     "penis-lora-h3",
     "synth-pussy-h3",
 }
+PENIS_HELPER_ID = "penis-lora-h3"
+PUSSY_HELPER_ID = "synth-pussy-h3"
+# Futa anatomy scenes. Without synth-pussy the non-shaft partner grows a penis.
+FUTA_SITUATIONS = frozenset(
+    {
+        "anal_penetration",
+        "oral",
+        "oral_creampie",
+        "futa_blowjob",
+        "futa_sex",
+        "futa_anal",
+        "futa_visible",
+        "futa_masturbation",
+        "cunnilingus_futa",
+        "doggy",
+        "riding",
+        "creampie",
+        "facial",
+        "after_ejaculation",
+        "missionary_pov",
+        "footjob",
+        "general_sex",
+        "preview",
+        "urine_drink",
+        "urine_pee",
+        "scat_act",
+    }
+)
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}
 DEFAULT_CANVAS = {
     "t2v": {"width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16"},
@@ -131,6 +159,76 @@ def lock_futa_anatomy(text: str) -> str:
         "never balls. Penis in the foreground",
     )
     return out
+
+
+SHAFT_LOOK_LINE = (
+    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, straight, heavy, "
+    "pale-tan shaft, flushed pink-red glans with a clear corona. Same size and same shape "
+    "the whole take. Not tiny, not horse-like, not a skinny stick, not a tapered spike, "
+    "not a hook, not changing mid-clip. NO testicles, NO scrotum. Hairless female pussy "
+    "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+
+
+def lock_futa_shaft(text: str) -> str:
+    """Pin futa penis to erect 20cm, same shape. Keep in sync with h3_lora_studio.lock_futa_shaft."""
+    raw = str(text or "")
+    if not raw or "SHAFT LOOK:" in raw:
+        return raw
+    has_futa = (
+        "Clear futanari" in raw
+        or "Erect 20cm" in raw
+        or "erect 20cm" in raw
+        or "futanari: erect" in raw.lower()
+    )
+    if not has_futa:
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SHAFT_LOOK_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SHAFT_LOOK_LINE
+
+
+SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
+SEMEN_HEAVY_OIL = (
+    "WHITE industrial-sludge / waste-oil semen: the LOOK of heavy sludge or used engine oil, "
+    "but the COLOR is opaque WHITE, never brown, never black, never tar-colored. "
+    "heavy-oil-thick clingy viscous sticky opaque WHITE goo (opaque white liquid), "
+    "paste-thick like glue, slow and weighty as poured heavy oil, like white sludge that barely flows. "
+    "Fat ropes sag and stretch and hang without dripping off. Fingers would pull sticky threads. "
+    "Not watery, not milk, not a thin drip, not saliva, not clear, not foam, not yogurt-thin."
+)
+SEMEN_LOOK_LINE = (
+    "SEMEN LOOK: The semen is always that same heavy-oil-thick WHITE goo: "
+    f"{SEMEN_HEAVY_OIL} "
+    "Heavy volume, a lot of it. "
+    "Where it lands on face, lips, chin, breasts, belly, thighs, or skin it STAYS: it clings and coats like wet paint. "
+    "It does not vanish, does not soak in, does not turn clear, does not run off like water. "
+    "From the urethral opening at the glans tip leftover white goo keeps drooling slowly down the shaft "
+    "so the penis is glossy and slick with heavy semen. It stays on the face and body after ejaculation."
+)
+_SEMEN_CUE_RE = re.compile(
+    r"CUMOUF|climaxes IN|ejaculates IN|cums inside|cum fills|"
+    r"Already a facial|Already after ejaculation|"
+    r"viscous white|Thick white cum|shows the semen|The semen stays|"
+    r"white semen|white liquid",
+    re.I,
+)
+
+
+def lock_semen_look(text: str, *, situation: str = "") -> str:
+    """H3 skips semen unless the prompt names a viscous white liquid. Keep in sync with h3_lora_studio.lock_semen_look."""
+    raw = str(text or "")
+    if not raw or "SEMEN LOOK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEMEN_SITUATIONS and not _SEMEN_CUE_RE.search(raw):
+        return raw
+    cut = raw.find("\noverall_soundscape:")
+    if cut > 0:
+        return raw[:cut].rstrip() + "\n" + SEMEN_LOOK_LINE + "\n" + raw[cut:]
+    return raw.rstrip() + "\n" + SEMEN_LOOK_LINE
 
 
 FEMININE_NEGATIVE = (
@@ -422,6 +520,25 @@ def enabled_specs(profile: dict[str, Any], mode: str) -> list[dict[str, Any]]:
 
 
 def default_sampler(profile: dict[str, Any], specs: list[dict[str, Any]]) -> dict[str, Any]:
+    ids = {str(s.get("id") or "") for s in specs}
+    if "minimax-h3-turbo-ref2v-4step" in ids:
+        return {
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "steps": 4,
+            "cfg": 4.0,
+            "denoise": 1.0,
+            "note": "Ref2VA turbo 4step. Do not mix with FL2VA turbo.",
+        }
+    if "aftermidnight-ref2va" in ids:
+        return {
+            "sampler_name": "euler",
+            "scheduler": "simple",
+            "steps": 12,
+            "cfg": 4.0,
+            "denoise": 1.0,
+            "note": "AfterMidnight Ref2VA. 12step euler simple. Shared pussy helper is allowed so the non-shaft partner keeps a vagina.",
+        }
     has_turbo = any(str(s.get("role")) == "turbo" for s in specs)
     raw = profile.get("sampler")
     # A turbo profile run with the turbo stripped (lip-sync clips) needs its full-step plan.
@@ -523,6 +640,21 @@ def assert_stack_budget(
         raise SelectError("CoachBate anal penetration stays turbo off")
 
 
+def assert_futa_pussy_helper(
+    profile_name: str,
+    specs: list[dict[str, Any]],
+) -> None:
+    """Penis LoRA without pussy LoRA paints a shaft on every woman in frame."""
+    ids = {str(s.get("id") or "") for s in specs}
+    if PUSSY_HELPER_ID in ids:
+        return
+    if str(profile_name) in FUTA_SITUATIONS or PENIS_HELPER_ID in ids:
+        raise SelectError(
+            f"{profile_name}: futa scenes must stack synth-pussy-h3 "
+            "so the non-shaft partner does not grow a penis"
+        )
+
+
 def strip_male_subjects(text: str) -> str:
     out = str(text or "")
     for rx, repl in MALE_SUBJECT_RES:
@@ -536,6 +668,8 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
     prompt = lock_futa_anatomy(prompt)
+    prompt = lock_futa_shaft(prompt)
+    prompt = lock_semen_look(prompt, situation=str(profile.get("id") or ""))
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:
         # Keep the H3 schema order: the lock belongs to the visual description,
@@ -752,8 +886,8 @@ def select_loras(
         arch = str(row.get("arch") or "")
         if mode in {"t2v", "i2v"} and arch == "ref2va":
             raise SelectError(f"ref2va LoRA cannot stack on {mode}: {lid}")
-        if mode == "r2v" and arch == "fl2va" and is_turbo_row(row):
-            raise SelectError(f"FL2VA turbo cannot stack on r2v: {lid}")
+        if mode == "r2v" and arch == "fl2va":
+            raise SelectError(f"{lid} is FL2VA-only; do not stack on Ref2VA")
         blob = json.dumps(row, ensure_ascii=False)
         bad = forbidden_hits(blob, extra=extra_forbidden, path=forbidden_path)
         if bad:
@@ -777,6 +911,8 @@ def select_loras(
             }
         )
 
+    assert_futa_pussy_helper(profile_name, stack)
+
     enabled_ids = {item["id"] for item in stack}
     unload: list[dict[str, Any]] = []
     for lid, row in index.items():
@@ -791,6 +927,8 @@ def select_loras(
             reasons.append("other_turbo")
         if mode in {"t2v", "i2v"} and str(row.get("arch") or "") == "ref2va":
             reasons.append("ref2va_not_for_fl2va")
+        if mode == "r2v" and str(row.get("arch") or "") == "fl2va":
+            reasons.append("fl2va_not_for_ref2va")
         if mode not in [str(m) for m in (row.get("modes") or [])]:
             reasons.append("wrong_mode")
         if not reasons:

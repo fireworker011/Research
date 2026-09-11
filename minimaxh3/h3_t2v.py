@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from h3_motion_graphics import FORBIDDEN_IN_PROMPT
-from h3_r2v_core import frames
+from h3_r2v_core import cap_fl2va_clip_s, frames
 
 DURATION_S = 5.0
 GROKBOT_DURATION_S = 10.0
@@ -75,15 +75,24 @@ def t2v_canvas_ok(width: int, height: int) -> bool:
     return is_9_16(w, h) or is_16_9(w, h) or pair in (CANVAS_9_16_HIGH, CANVAS_16_9_HIGH)
 
 
-def t2v_retry_plans(*, width: int, height: int) -> list[dict[str, Any]]:
+def t2v_retry_plans(
+    *,
+    width: int,
+    height: int,
+    duration_s: float | None = None,
+    keep_canvas: bool = False,
+) -> list[dict[str, Any]]:
     w = max(32, int(width) // 32 * 32)
     h = max(32, int(height) // 32 * 32)
-    plans = [{"width": w, "height": h, "label": f"{w}x{h}"}]
+    dur = cap_fl2va_clip_s(duration_s if duration_s is not None else 10.0)
+    plans = [{"width": w, "height": h, "label": f"{w}x{h}", "duration_s": dur}]
+    if keep_canvas:
+        return plans
     area = w * h
     ladder = CANVAS_16_9_LADDER if (is_16_9(w, h) or (w, h) == CANVAS_16_9_HIGH) else CANVAS_9_16_LADDER
     for cw, ch in ladder:
         if cw * ch < area:
-            plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}"})
+            plans.append({"width": int(cw), "height": int(ch), "label": f"{cw}x{ch}", "duration_s": dur})
     out: list[dict[str, Any]] = []
     seen: set[tuple[int, int]] = set()
     for p in plans:

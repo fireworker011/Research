@@ -5,7 +5,8 @@
   "feminine_lock": true,
   "modes": [
     "i2v",
-    "t2v"
+    "t2v",
+    "r2v"
   ],
   "allow_turbo": true,
   "canvas": {
@@ -20,6 +21,12 @@
       "height": 1024,
       "duration_s": 12.0,
       "aspect": "9:16"
+    },
+    "r2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 12.0,
+      "aspect": "9:16"
     }
   },
   "stack_plan": {
@@ -27,20 +34,36 @@
       "id": "cumouf-h3",
       "strength": 0.5
     },
-    "helper": {
-      "id": "penis-lora-h3",
-      "strength": 0.7
-    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
+    },
+    "r2v": {
+      "act": {
+        "id": "aftermidnight-ref2va",
+        "strength": 1.0
+      },
+      "helper": {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
     }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "CUMOUF 0.5 + penis 0.7 + Larry 0.5 / 8step. Oral creampie inside the mouth. Not a facial. Insertor is a woman, never a man. I2V mid-action recommended. Strength stays 0.5."
+    "note": "CUMOUF 0.5 + penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. Oral creampie inside the mouth. Pussy helper so the futa base stays a vagina, never balls. Not a facial. Insertor is a woman, never a man. I2V mid-action recommended. Strength stays 0.5."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -57,7 +80,6 @@
     "cinema-dy",
     "astro-nsfw-h3",
     "tiddies-realism-slider",
-    "aftermidnight-ref2va",
     "hmnsfw-aio-v25",
     "cowgirl-position-h3",
     "doggy-h3",
@@ -66,12 +88,12 @@
     "fingering-h3",
     "hmmasturbation-h3",
     "footjob-h3",
-    "remote-orgasm-h3",
-    "synth-pussy-h3"
+    "remote-orgasm-h3"
   ],
   "scenes": {
-    "i2v": "CUMOUF, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick white cum fills (S1)'s mouth and runs out the side of her mouth and down the shaft. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
-    "t2v": "CUMOUF, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick white cum fills (S1)'s mouth and runs out the side of her mouth and down the shaft. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+    "i2v": "CUMOUF, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick viscous sticky white liquid (ドロドロの白い液体) fills (S1)'s mouth and runs out the side of her mouth and down the shaft. Opaque white gooey strands. Visible white liquid, not clear. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "CUMOUF, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick viscous sticky white liquid (ドロドロの白い液体) fills (S1)'s mouth and runs out the side of her mouth and down the shaft. Opaque white gooey strands. Visible white liquid, not clear. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears.\n\nAll performers are consenting adult women 21 years or older.",
+    "r2v": "CUMOUF, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick viscous sticky white liquid (ドロドロの白い液体) fills (S1)'s mouth and runs out the side of her mouth and down the shaft. Opaque white gooey strands. Visible white liquid, not clear. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, male character, facial, money shot, cum on face, tongue out waiting, pulling out, worm-like penis"
 }

@@ -1,8 +1,6 @@
 {
   "schema": "h3-lora-studio-catalog/v1",
-  "always_unload": [
-    "aftermidnight-ref2va"
-  ],
+  "always_unload": [],
   "loras": [
     {
       "id": "h3-realism-people",
@@ -54,9 +52,10 @@
       "file": "SynthPussy_H3_closeups_v1-step00008300.safetensors",
       "modes": [
         "t2v",
-        "i2v"
+        "i2v",
+        "r2v"
       ],
-      "arch": "fl2va",
+      "arch": "shared",
       "turbo": false,
       "adult": true,
       "trigger": "",
@@ -69,7 +68,7 @@
         0.6,
         0.9
       ],
-      "note": "Pussy/anus detail. Motion almost untrained."
+      "note": "Pussy/anus detail. Motion almost untrained. Stack on every futa scene (T2V/I2V/R2V) so the non-shaft partner does not grow a penis."
     },
     {
       "id": "lesbian-cunnilingus-h3",

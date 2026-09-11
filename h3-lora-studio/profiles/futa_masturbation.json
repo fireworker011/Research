@@ -6,7 +6,8 @@
   "feminine_lock": true,
   "modes": [
     "i2v",
-    "t2v"
+    "t2v",
+    "r2v"
   ],
   "allow_turbo": true,
   "canvas": {
@@ -21,6 +22,12 @@
       "height": 1024,
       "duration_s": 10.0,
       "aspect": "9:16"
+    },
+    "r2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
     }
   },
   "stack_plan": {
@@ -28,24 +35,39 @@
       "id": "hmmasturbation-h3",
       "strength": 0.8
     },
-    "helper": {
-      "id": "penis-lora-h3",
-      "strength": 0.7
-    },
+    "helper": [
+      {
+        "id": "penis-lora-h3",
+        "strength": 0.7
+      },
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ],
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
+    },
+    "r2v": {
+      "act": {
+        "id": "aftermidnight-ref2va",
+        "strength": 1.0
+      },
+      "helper": {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
     }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 12,
-    "note": "Futa masturbation. HMMasturbation 0.8 + penis 0.7 + Larry 0.5 / 12step. Synth off. Solo stroking a futanari penis."
+    "note": "Futa masturbation. HMMasturbation 0.8 + penis 0.7 + Synth 0.55 + Larry 0.5 / 12step. Crotch-close: penis plus hairless pussy, never balls. Solo stroking a futanari penis."
   },
   "disabled": [
     "anal-penetration-coachbate",
-    "synth-pussy-h3",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
     "hmnsfw-aio-v25",
@@ -61,12 +83,12 @@
     "cinema-dy",
     "fingering-h3",
     "astro-nsfw-h3",
-    "tiddies-realism-slider",
-    "aftermidnight-ref2va"
+    "tiddies-realism-slider"
   ],
   "scenes": {
     "i2v": "hmmasturbation, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready stroking her own penis. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
-    "t2v": "hmmasturbation, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready stroking her own penis. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+    "t2v": "hmmasturbation, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready stroking her own penis. No man appears.\n\nAll performers are consenting adult women 21 years or older.",
+    "r2v": "hmmasturbation, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready stroking her own penis. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis"
 }
