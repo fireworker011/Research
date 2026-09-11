@@ -18,6 +18,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from PIL import Image
+except ImportError:  # Pillow is present on Colab; the CLI works without the image gate.
+    Image = None
+
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "catalog" / "loras.json"
 PROFILES_DIR = ROOT / "profiles"
@@ -100,13 +105,40 @@ LOCKED_MINORS = (
     "中学生",
     "pedo",
 )
+# Named anime/game characters who are minors in canon. A still or prompt that names them
+# is a minor request even when no age is written. Code lock: JSON cannot turn it off.
+LOCKED_MINOR_CHARACTERS = (
+    "ayanami rei",
+    "rei ayanami",
+    "asuka langley",
+    "souryuu asuka",
+    "soryu asuka",
+    "nakano yotsuba",
+    "yotsuba nakano",
+    "momo velia deviluke",
+    "nana asta deviluke",
+    "saten ruiko",
+    "ruiko saten",
+    "misaka mikoto",
+    "mikoto misaka",
+    "shirai kuroko",
+    "kuroko shirai",
+    "shokuhou misaki",
+    "misaki shokuhou",
+    "kallen stadtfeld",
+    "euphemia li britannia",
+    "jessica albert",
+    "rikku",
+)
 LOCKED_COMMERCIAL = ("px.a8.net", "a8mat=")
 DEFAULT_BOUNDARY = ("child", "children", "kid", "kids", "minor", "teen")
 SAFETY_PREFIX = r"(?:no|not\s+a|not|without|avoid|exclude|never)"
 _FULLWIDTH_DIGITS = str.maketrans("０１２３４５６７８９", "0123456789")
 # Explicit ages under 21. "15 seconds" / "24fps" must not match.
+# Hyphen/underscore forms ("16-years-old", "12_years_old", "13 years-old") are what
+# SD prompt tags actually use; they must hit too.
 UNDERAGE_YEARS_RE = re.compile(
-    r"(?i)(?<!\d)(20|1[0-9]|[1-9])\s*(?:-?\s*years?\s*old|-?\s*year[- ]olds?|y\.?o\.?\b|yo\b|歳)"
+    r"(?i)(?<!\d)(20|1[0-9]|[1-9])[\s_-]*(?:years?[\s_-]*olds?|yrs?[\s_-]*olds?|y\.?o\.?\b|yo\b|歳)"
 )
 UNDERAGE_AGE_EQ_RE = re.compile(r"(?i)\bage\s*[:=]?\s*(20|1[0-9]|[1-9])\b")
 # "Adult Japanese woman, 15, 150cm" — comma age, not "15 seconds"
@@ -288,7 +320,12 @@ def load_forbidden(path: Path | str | None = None) -> dict[str, Any]:
         loaded = json.loads(p.read_text(encoding="utf-8"))
         if isinstance(loaded, dict):
             data = loaded
-    minors = _clean_terms(list(LOCKED_MINORS) + list(data.get("minors") or []))
+    minors = _clean_terms(
+        list(LOCKED_MINORS)
+        + list(LOCKED_MINOR_CHARACTERS)
+        + list(data.get("minors") or [])
+        + list(data.get("minor_characters") or [])
+    )
     extra = _clean_terms(data.get("extra") or [])
     commercial = _clean_terms(list(LOCKED_COMMERCIAL) + list(data.get("commercial") or []))
     boundary = {
@@ -382,6 +419,113 @@ def forbidden_hits(
         if term.lower() in low:
             hits.add(term.lower())
     return sorted(hits)
+
+
+def _a1111_positive(parameters: str) -> str:
+    """A1111 `parameters`: positive prompt, then `Negative prompt:`, then settings."""
+    text = str(parameters or "")
+    neg_at = text.find("Negative prompt:")
+    if neg_at >= 0:
+        return text[:neg_at]
+    steps = re.search(r"\n(?:Steps|Size|Model|Sampler)\s*:", text)
+    return text[: steps.start()] if steps else text
+
+
+def _comfy_prompt_texts(raw: str) -> list[str]:
+    """ComfyUI `prompt` chunk: {node_id: {class_type, inputs: {text: ...}}}. Take string inputs."""
+    try:
+        graph = json.loads(raw)
+    except (TypeError, ValueError):
+        return []
+    if not isinstance(graph, dict):
+        return []
+    out: list[str] = []
+    for node in graph.values():
+        inputs = node.get("inputs") if isinstance(node, dict) else None
+        if not isinstance(inputs, dict):
+            continue
+        for key in ("text", "prompt", "positive", "text_g", "text_l", "string"):
+            value = inputs.get(key)
+            if isinstance(value, str) and value.strip():
+                out.append(value)
+    return out
+
+
+def ref_image_prompt(path: Path | str) -> str:
+    """Generation prompt embedded in a still (A1111 PNG/JPEG, ComfyUI PNG). '' when none.
+
+    Phone photos and Imagine downloads carry no prompt and return ''. Only the
+    positive prompt is returned: a negative prompt that says `loli` is not a request.
+    """
+    p = Path(path)
+    if Image is None or not p.is_file():
+        return ""
+    try:
+        with Image.open(p) as im:
+            info = dict(getattr(im, "info", {}) or {})
+            exif = im.getexif() if hasattr(im, "getexif") else None
+    except (OSError, ValueError, SyntaxError):
+        return ""
+    parts: list[str] = []
+    params = info.get("parameters")
+    if isinstance(params, bytes):
+        params = params.decode("utf-8", "ignore")
+    if isinstance(params, str) and params.strip():
+        parts.append(_a1111_positive(params))
+    for key in ("prompt", "workflow"):
+        raw = info.get(key)
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8", "ignore")
+        if isinstance(raw, str) and raw.strip():
+            parts.extend(_comfy_prompt_texts(raw))
+    if exif:
+        try:
+            user_comment = exif.get_ifd(0x8769).get(0x9286)
+        except (AttributeError, KeyError, TypeError, ValueError):
+            user_comment = None
+        text = _exif_user_comment_text(user_comment)
+        # Cameras and screenshots also fill UserComment ("Screenshot"). Only an A1111-shaped
+        # block counts as a generation prompt; anything else is "no prompt" (WARN, not OK).
+        if _looks_like_sd_parameters(text):
+            parts.append(_a1111_positive(text))
+    return "\n".join(part for part in parts if part.strip())
+
+
+_EXIF_COMMENT_PREFIXES = (b"ASCII\0\0\0", b"UNICODE\0", b"JIS\0\0\0\0\0", b"\0\0\0\0\0\0\0\0")
+
+
+def _exif_user_comment_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value.replace("\x00", "")
+    if not isinstance(value, bytes):
+        return ""
+    body = value
+    for prefix in _EXIF_COMMENT_PREFIXES:
+        if body.startswith(prefix):
+            body = body[len(prefix):]
+            if prefix == b"UNICODE\0":
+                return body.decode("utf-16-be", "ignore").replace("\x00", "")
+            break
+    return body.decode("utf-8", "ignore").replace("\x00", "")
+
+
+def _looks_like_sd_parameters(text: str) -> bool:
+    body = str(text or "")
+    if "Negative prompt:" in body:
+        return True
+    return bool(re.search(r"\bSteps:\s*\d", body)) and "," in body
+
+
+def ref_image_hits(path: Path | str, *, forbidden_path: Path | str | None = None) -> list[str]:
+    """Minor lock for a first-frame still. Reads the embedded prompt, not the pixels.
+
+    Returns the forbidden hits in the positive prompt (`loli`, `12-years-old`, a canon-minor
+    character, ...). Empty list when the still has no prompt or a clean one.
+    """
+    text = ref_image_prompt(path)
+    if not text.strip():
+        return []
+    return forbidden_hits(text, path=forbidden_path)
 
 
 def load_json(path: Path) -> Any:
