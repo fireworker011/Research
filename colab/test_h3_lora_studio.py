@@ -509,7 +509,13 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-speech-timeline-1"' in src
+    assert 'FETCH_REV = "h3-20260911-phone-refs-gate-1"' in src
+    # 写真の未成年ロック: 埋め込みプロンプトに loli / 12-years-old / 未成年キャラがあれば③は使わない
+    assert "h3-lora-studio/scripts/check_ref_images.py" in src
+    assert 'not getattr(_select_loras, "ref_image_hits", None)' in src
+    assert "_select_loras.ref_image_hits(src, forbidden_path=FORBIDDEN_FILE)" in src
+    assert "この写真は使えません（未成年ロック）" in src
+    assert src.find("_select_loras.ref_image_hits(src") < src.find("first_name = stage_image_into_input(src, inp)")
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +580,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-speech-timeline-1" in blob
+    assert "h3-20260911-phone-refs-gate-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -6436,7 +6442,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-speech-timeline-1" in cell2
+    assert "h3-20260911-phone-refs-gate-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
