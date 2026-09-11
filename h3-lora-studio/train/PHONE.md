@@ -28,7 +28,7 @@
 3. スマホの Chrome で Colab ノート `minimax_h3_lora_studio.ipynb` を開く
 4. ランタイム → GPU を **A100**
 5. **①** を実行 → Drive の許可
-6. **②** を実行 → えっちなら Civitai キーを貼る。2回目は「設定だけ更新」のまま。画面に `設定の版: h3-20260911-speech-timeline-1` が出ること
+6. **②** を実行 → えっちなら Civitai キーを貼る。2回目は「設定だけ更新」のまま。画面に `設定の版: h3-20260911-phone-refs-gate-1` が出ること
 7. **③**
    - やりたいシーン = 上の表
    - 体位 = 立ち／騎乗／後背／…
@@ -38,6 +38,42 @@
 8. 動画はノートの下と Drive `minimax-h3-comfyui/output`
 
 テキストからでも作れる（写真なし）。顔を固定したいときは写真から。
+
+## 最初の1コマ置き場（Drive `input/phone-refs/`）
+
+体位ごとにフォルダを分けて「最初の1コマ」候補を貯める場所。③が読むのは `input/phone` の最新1枚だけなので、使うときは1枚を `input/phone` にコピーする。ネットの AV は男＋女で無断転載なので入れない。21歳以上の女／ふたなり、男なし、実写っぽい png/jpg。
+
+| フォルダ | 何が写っているか |
+|---|---|
+| `sex-standing` | 立ち。もう中に入っている。胸〜股が見える |
+| `sex-cowgirl` | 騎乗。受けが上、顔が両方見える。もう中に入っている |
+| `sex-doggy` | 後背。四つん這い。手は腰。もう中に入っている |
+| `sex-missionary` | 正常位。仰向け、脚を開く。正面やや横 |
+| `sex-side` | 横／スプーン。腰がついている |
+| `sex-pov` | 竿から見た接合。下向き |
+| `anal-standing` | 立ちアナル。もう肛門に入っている。手は腰 |
+| `anal-cowgirl` | 騎乗アナル。受けが上、竿が肛門に入っている（下の竿は画面外でよい） |
+| `anal-doggy` | 後背アナル。穴が膣より上に見える |
+| `anal-missionary` | 仰向けアナル。脚を上げ、竿が肛門に入っている。膣が下に見える |
+| `pee-standing` | 立ち。勃起した竿の先（尿道口）が正面 |
+| `scat-squat` | しゃがみ。肛門がカメラ向き |
+
+**出し入れをAVっぽく動かすための1コマの選び方**（動かすのは H3 ＋ 文章ロック。1コマは「どこを・どの角度で・どこまで入っているか」を決める）:
+
+1. **接合部が隠れていない**。手・髪・相手の体で穴と竿が隠れた1コマは、動画でも隠れたまま
+2. **竿が半分見えている中間ストローク**が最良。根元まで入りきった1コマは動かす長さが無く、抜けた1コマは入るまで時間を食う
+3. **カメラは接合部の真横〜斜め後ろ・低め**。ピストンが画面内の移動になる。真上・真正面は出し入れが伸び縮みにしか見えない
+4. **穴を間違えない**。アナルのフォルダに膣挿入の1コマを入れると、動画も膣のまま進む（ロック文と喧嘩する）
+5. **相手の男が写った1コマは入れない**。竿だけが画面外から来ているものは可
+6. 画像は短辺 900px 以上、人体が崩れていない、2D・アニメ塗りでない
+
+**未成年ロック（写真）。** SD で作った png/jpg は生成プロンプトが埋め込まれている。③は使う前にそれを読み、`loli` / `12-years-old` / 未成年キャラ名があれば「この写真は使えません（未成年ロック）」で止まる。フォルダごとまとめて見るなら Colab で:
+
+```bash
+python3 /content/h3-lora-studio/scripts/check_ref_images.py /content/drive/MyDrive/minimax-h3-comfyui/input/phone-refs --quarantine /content/drive/MyDrive/minimax-h3-comfyui/input/phone-refs/_blocked
+```
+
+2026-09-11 の Eagle 書き出し（`input/eagle-inbox/` 991枚）の結果: 870枚が上のロックで BLOCK（`loli` 493、`12-years-old` 456、`16-years-old` 234 など。年齢はネガティブではなく正のプロンプトに書かれていた）、実写の人物写真・崩れ・ゲームキャラのパロディを除いて残り 13枚を `anal-doggy` 4・`anal-cowgirl` 4・`anal-missionary` 2・`sex-missionary` 1・`scat-squat` 2 に置いた。`sex-standing` / `sex-cowgirl` / `sex-doggy` / `sex-side` / `sex-pov` / `anal-standing` / `pee-standing` は該当なし（Imagine 2.0 で作るときは `adult woman, 28 years old` を必ず書く）。
 
 ## 学習（スマホ動画 → fal の zip）
 

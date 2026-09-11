@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from PIL import Image, PngImagePlugin
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
@@ -17,6 +19,8 @@ from select_loras import (  # noqa: E402
     lock_futa_anatomy,
     lock_futa_shaft,
     lock_semen_look,
+    ref_image_hits,
+    ref_image_prompt,
     select_loras,
     strip_male_subjects,
 )
@@ -958,6 +962,17 @@ def test_safety_no_child_is_not_a_request():
     assert forbidden_hits("Adult woman 25 years old.") == []
     assert any("20" in x for x in forbidden_hits("Adult, 20 years old."))
     assert any("20" in x for x in forbidden_hits("age 20"))
+    # SD tag spellings seen in a real 991-image export: 456 stills said "12-years-old",
+    # 234 "16-years-old". The old pattern needed whitespace before "old" and missed all of them.
+    assert "12-years-old" in forbidden_hits("1girl, 12-years-old, japanese")
+    assert "16-years-old" in forbidden_hits("1girl, 16-years-old, japanese")
+    assert "13_years_old" in forbidden_hits("1girl, 13_years_old")
+    assert "15 years-old" in forbidden_hits("1girl, 15 years-old")
+    assert "10-year-old" in forbidden_hits("a 10-year-old")
+    assert "18yrs old" in forbidden_hits("18yrs old woman")
+    assert forbidden_hits("1girl, 25-years-old, japanese") == []
+    assert forbidden_hits("1girl, 21-years-old") == []
+    assert forbidden_hits("1920x1080, 10-second clip") == []
     data = select_loras(
         profile_name="anal_closeup",
         mode="t2v",
@@ -1153,3 +1168,102 @@ def test_every_futa_situation_stacks_synth_pussy():
             assert "synth-pussy-h3" in ids, (name, mode, ids)
             if mode == "r2v":
                 assert all(row.get("arch") != "fl2va" for row in live["stack"]), (name, ids)
+
+
+def test_canon_minor_characters_are_locked_without_an_age():
+    assert "ayanami rei" in forbidden_hits("1girl, ayanami rei, blue hair, futanari")
+    assert "nakano yotsuba" in forbidden_hits("(1girl:1.2),solo,,nakano yotsuba, orange hair")
+    assert "momo velia deviluke" in forbidden_hits("BREAK,momo velia deviluke, demon tail")
+    assert "misaka mikoto" in forbidden_hits("solo,,misaka mikoto")
+    assert "rikku" in forbidden_hits("Rikku, blonde hair, blue headband")
+    assert forbidden_hits("1girl, adult woman, 25-years-old, brown hair") == []
+    assert "ayanami rei" in load_forbidden()["minors"]
+
+
+def _png_with_parameters(path: Path, parameters: str, size: tuple[int, int] = (1024, 1024)) -> Path:
+    meta = PngImagePlugin.PngInfo()
+    meta.add_text("parameters", parameters)
+    Image.new("RGB", size, (90, 60, 40)).save(path, pnginfo=meta)
+    return path
+
+
+def test_ref_image_gate_reads_a1111_positive_prompt_only(tmp_path):
+    bad = _png_with_parameters(
+        tmp_path / "bad.png",
+        "score_9, 1girl, 16-years-old, loli, japanese\nNegative prompt: adult, old\nSteps: 30, Size: 1368x1024, Model: harukiMIX",
+    )
+    hits = ref_image_hits(bad)
+    assert "16-years-old" in hits and "loli" in hits
+    assert "Negative prompt" not in ref_image_prompt(bad)
+    clean = _png_with_parameters(
+        tmp_path / "clean.png",
+        "photorealistic, 1girl, adult woman, 25-years-old, futanari, doggystyle\nNegative prompt: loli, child, 12-years-old\nSteps: 30",
+    )
+    assert ref_image_hits(clean) == []
+    Image.new("RGB", (800, 600), (10, 10, 10)).save(tmp_path / "phone.jpg", quality=80)
+    assert ref_image_prompt(tmp_path / "phone.jpg") == ""
+    assert ref_image_hits(tmp_path / "phone.jpg") == []
+    assert ref_image_hits(tmp_path / "missing.png") == []
+
+
+def _jpeg_with_user_comment(path: Path, comment: bytes) -> Path:
+    im = Image.new("RGB", (1024, 768), (40, 40, 40))
+    exif = Image.Exif()
+    exif.get_ifd(0x8769)[0x9286] = comment
+    im.save(path, quality=85, exif=exif.tobytes())
+    return path
+
+
+def test_ref_image_gate_reads_a1111_jpeg_user_comment_but_not_camera_comments(tmp_path):
+    a1111 = "1girl, 12-years-old, japanese\nNegative prompt: adult\nSteps: 30, Sampler: Euler a, Size: 1024x768"
+    bad = _jpeg_with_user_comment(tmp_path / "bad.jpg", b"UNICODE\0" + a1111.encode("utf-16-be"))
+    assert "12-years-old" in ref_image_hits(bad)
+    bad_ascii = _jpeg_with_user_comment(tmp_path / "bad2.jpg", b"ASCII\0\0\0" + a1111.encode("ascii"))
+    assert "12-years-old" in ref_image_hits(bad_ascii)
+    shot = _jpeg_with_user_comment(tmp_path / "shot.jpg", b"ASCII\0\0\0Screenshot")
+    assert ref_image_prompt(shot) == ""
+    assert ref_image_hits(shot) == []
+
+
+def test_ref_image_gate_reads_comfy_prompt_chunk(tmp_path):
+    graph = {
+        "6": {"class_type": "CLIPTextEncode", "inputs": {"text": "1girl, ayanami rei, plugsuit", "clip": ["4", 1]}},
+        "7": {"class_type": "CLIPTextEncode", "inputs": {"text": "child, loli", "clip": ["4", 1]}},
+    }
+    meta = PngImagePlugin.PngInfo()
+    meta.add_text("prompt", json.dumps(graph))
+    Image.new("RGB", (1024, 1024)).save(tmp_path / "comfy.png", pnginfo=meta)
+    hits = ref_image_hits(tmp_path / "comfy.png")
+    assert "ayanami rei" in hits
+
+
+def test_check_ref_images_cli_blocks_and_quarantines(tmp_path):
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    _png_with_parameters(inbox / "bad.png", "1girl, 12-years-old\nNegative prompt: x\nSteps: 1")
+    _png_with_parameters(inbox / "ok.png", "1girl, adult woman, 25-years-old\nNegative prompt: loli\nSteps: 1", (1400, 1000))
+    _png_with_parameters(inbox / "small.png", "1girl, adult woman\nNegative prompt: x\nSteps: 1", (640, 480))
+    (inbox / "broken.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 64)
+    Image.new("RGB", (1200, 1200)).save(inbox / "phone.jpg")
+    quarantine = tmp_path / "blocked"
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT.parent / "check_ref_images.py"), str(inbox), "--quarantine", str(quarantine)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 1, proc.stdout + proc.stderr
+    out = proc.stdout
+    assert "BLOCK" in out and "12-years-old" in out
+    assert "broken or truncated" in out
+    assert "OK" in out and "ok.png" in out
+    assert "WARN" in out and "coarse" in out and "no embedded prompt" in out
+    assert (quarantine / "bad.png").is_file() and (quarantine / "broken.png").is_file()
+    assert (inbox / "ok.png").is_file() and (inbox / "phone.jpg").is_file()
+    clean = subprocess.run(
+        [sys.executable, str(SCRIPT.parent / "check_ref_images.py"), str(inbox / "ok.png")],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert clean.returncode == 0, clean.stdout + clean.stderr

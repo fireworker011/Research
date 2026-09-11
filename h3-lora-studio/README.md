@@ -205,9 +205,14 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 
 - `extra` … 足す・消してよい（初期は schoolgirl / 稼げる / 月収 など）
 - `minors` / `commercial` / `min_age` … 書いてあるのは一覧。消してもコード側のロックは残る（未成年・21歳未満の数字・`px.a8.net`）
+- 21歳未満の数字は `15 years old` だけでなく SD タグの `16-years-old` / `12_years_old` / `13 years-old` / `18yrs old` も止まる。原作で未成年のキャラ名（綾波レイ・アスカ・中野四葉・御坂美琴・リッキュ など `LOCKED_MINOR_CHARACTERS`）も年齢が書いてなくても止まる
+- **写真にも同じロック。** ③「写真から」は使う前に `ref_image_hits(写真)` で、写真に埋め込まれた生成プロンプト（A1111 PNG の `parameters`、ComfyUI の `prompt`、A1111 JPEG の EXIF UserComment）を読む。そこに上の語があれば「この写真は使えません（未成年ロック）」で止まる。ネガティブプロンプト側の `loli` は要求ではないので数えない。スマホ写真（プロンプトなし）はそのまま通る（自分の目で 21+ を確かめる）
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v --prompt '（シーン）'
+# Drive の最初の1コマ置き場をまとめて検査（BLOCK があれば exit 1。--quarantine で隔離）
+python h3-lora-studio/scripts/check_ref_images.py /content/drive/MyDrive/minimax-h3-comfyui/input/phone
+python h3-lora-studio/scripts/check_ref_images.py /content/drive/MyDrive/minimax-h3-comfyui/input/phone-refs --quarantine /content/drive/MyDrive/minimax-h3-comfyui/input/phone-refs/_blocked
 ```
 
 ## 不変条件

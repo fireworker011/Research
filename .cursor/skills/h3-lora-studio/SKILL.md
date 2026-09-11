@@ -28,7 +28,7 @@ python colab/_write_lora_studio_nb.py
 
 Fal に LoRA は差せない。成人 21+。
 
-アナルセックス／飲尿／脱糞は ThumbInButt も AIO も積まない（構図が死ぬ）。③は竿＋穴＋文章。指入れだけ ThumbInButt。既存話の飲尿はジュボのまま。医院・終電の `No feces.` は外さない。学習キットは `h3-lora-studio/train/`。準備と作業は `h3-lora-studio/train/CHECKLIST.md`。撮影リストは `h3-lora-studio/train/grids/`。スマホだけ（PC・ffmpeg なし）は `h3-lora-studio/train/PHONE.md`：③の体位欄＋`input/phone` の jpg、学習は体位フォルダ→④→fal。設定の版 `h3-20260911-speech-timeline-1`。台詞の反復は `lock_clip_timeline`（TIMELINE で各「」1回、余りは無言）。
+アナルセックス／飲尿／脱糞は ThumbInButt も AIO も積まない（構図が死ぬ）。③は竿＋穴＋文章。指入れだけ ThumbInButt。既存話の飲尿はジュボのまま。医院・終電の `No feces.` は外さない。学習キットは `h3-lora-studio/train/`。準備と作業は `h3-lora-studio/train/CHECKLIST.md`。撮影リストは `h3-lora-studio/train/grids/`。スマホだけ（PC・ffmpeg なし）は `h3-lora-studio/train/PHONE.md`：③の体位欄＋`input/phone` の jpg、学習は体位フォルダ→④→fal。設定の版 `h3-20260911-phone-refs-gate-1`。台詞の反復は `lock_clip_timeline`（TIMELINE で各「」1回、余りは無言）。写真にも未成年ロック：③は `select_loras.ref_image_hits` で写真に埋まった生成プロンプト（A1111 `parameters` / ComfyUI `prompt` / JPEG UserComment）を読み、`loli`・`12-years-old`（ハイフン形も）・未成年キャラ名（`LOCKED_MINOR_CHARACTERS`）があれば使わない。Drive の `phone-refs/` は体位ごとの最初の1コマ置き場（`PHONE.md`）。フォルダ検査は `scripts/check_ref_images.py <dir>`。
 
 エロなし: Turbo1 + 画質1。日常は Larry v4 1.0 + シネマ DY 0.65 / 8step。最速は LightX2V 4step。音残しは LightX2V 8step。専用「普通」は LightX2V 4step のみ。Larry と LightX2V は同時に積まない。FL2VA と Ref2VA を混ぜない。Photoreal still は動画本体に載せない。DY と ASTROCINEMA は同時に積まない。
 
