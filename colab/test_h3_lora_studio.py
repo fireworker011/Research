@@ -509,7 +509,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260911-sales-kiss-erotic-1"' in src
+    assert 'FETCH_REV = "h3-20260912-shaft-kiss-wait-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -574,7 +574,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260911-sales-kiss-erotic-1" in blob
+    assert "h3-20260912-shaft-kiss-wait-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -662,6 +662,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
+    assert "lock_clip_timeline" in src
+    assert '"gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "")' in src
+    assert '"ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "")' in src
     assert "参照用の土台（約21GB）をローカルへ載せます" in src
     assert "fetch_weight(url, dest, token=token, auth=auth, fallback_urls=fallbacks, strict=False)\n        stage_models_to_local(DRIVE_MODELS, COMFY_DIR / \"models\")" not in src
     assert "土台と文章モデルは載せたまま。メモリ不足のときだけ解放" not in src
@@ -4159,6 +4163,10 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
     assert "シコシコしてたらおそくなっちゃいました" in c2
     assert "lightly strok" in c2.lower()
     assert "smile" in c2.lower()
+    assert "kisses on the mouth and/or breasts" in c2
+    assert "gentle slight upward" in story["clips"][0]["prompt"]
+    assert "easy to take" in story["clips"][4]["prompt"].lower()
+    assert "easy to take" in story["clips"][5]["prompt"].lower()
     assert "Already oral" in story["clips"][5]["prompt"]
     assert "jupo-jupo" in story["clips"][5]["prompt"]
     assert "BASE" in story["clips"][5]["prompt"]
@@ -4258,6 +4266,10 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     kakunin = story["clips"][5]["prompt"]
     assert "does NOT squat" in kakunin
     assert "begins to squat" not in kakunin
+    assert "kisses on the mouth and/or breasts" in story["clips"][4]["prompt"]
+    assert "easy to take" in story["clips"][4]["prompt"].lower()
+    assert "easy to take" in kakunin.lower()
+    assert "gentle slight upward" in story["clips"][0]["prompt"]
     assert "already squatting" in story["clips"][6]["prompt"]
     assert "CUMOUF" in story["clips"][7]["prompt"] or "ejaculat" in story["clips"][7]["prompt"].lower()
     assert "cumouf-h3" in story["download"]
@@ -5460,6 +5472,9 @@ def test_lock_futa_shaft_pins_20cm_and_skips_never_futanari(tmp_path):
     assert "SHAFT LOOK:" in out
     assert "When erect: 20cm" in out
     assert "thick human girth" in out
+    assert "gentle slight upward" in out
+    assert "clean smooth" in out
+    assert "not a hook" in out.lower()
     assert "NO testicles" in out
     assert "never balls" in out.lower()
     assert "NEVER futanari stay NO penis" in out
@@ -5481,6 +5496,136 @@ def test_lock_futa_shaft_pins_20cm_and_skips_never_futanari(tmp_path):
         load_story("commute-120s"), 1, last_frame="x.png", stills_dir=tmp_path
     )
     assert "SHAFT LOOK:" in commute1["prompt"]
+    assert "gentle slight upward" in sales["prompt"]
+    assert "ORAL EASY SHAFT:" in sales["prompt"]
+    assert "take it in easily" in sales["prompt"]
+    checkup0 = prepare_story_clip(load_story("checkup-100s"), 0, stills_dir=tmp_path)
+    assert "ORAL EASY SHAFT:" in checkup0["prompt"]
+    cafe1_easy = prepare_story_clip(
+        load_story("cafe-100s"), 1, last_frame="x.png", stills_dir=tmp_path
+    )
+    assert "ORAL EASY SHAFT:" not in cafe1_easy["prompt"]
+
+
+def _timeline_block(prompt: str) -> str:
+    i = prompt.find("TIMELINE:")
+    assert i >= 0, prompt[:240]
+    rest = prompt[i:]
+    cut = rest.find("\noverall_soundscape:")
+    return rest if cut < 0 else rest[:cut]
+
+
+def test_lock_clip_timeline_stops_repeat_and_leftover_kiss(tmp_path):
+    from h3_lora_studio import (
+        jp_outside_quotes,
+        leftover_timeline_beat,
+        load_story,
+        lock_clip_timeline,
+        prepare_story_clip,
+        speech_timeline_line,
+        spoken_lines,
+        unique_spoken_lines,
+    )
+
+    two = (
+        "integrated_multimodal_description:\n"
+        "Aya speaks: 「おそかったねー」. Saleswoman answers: 「ごめんなさい」.\n"
+        "\noverall_soundscape:\n"
+        "Door. 「おそかったねー」 「ごめんなさい」.\n"
+    )
+    locked = lock_clip_timeline(two, duration_s=10, situation="futa_visible")
+    tl = _timeline_block(locked)
+    assert "TIMELINE:" in tl
+    assert "0.0-1.6s first unique quoted speech" in tl
+    assert "1.6-3.2s second unique quoted speech" in tl
+    assert "3.2-10.0s mouths closed" in tl
+    assert "kisses on the mouth and/or breasts" in tl
+    assert "one time only" in tl
+    assert "Do not repeat" in tl
+    assert "Do not stretch" in tl
+    assert "「" not in tl and "」" not in tl
+    assert unique_spoken_lines(two) == ["おそかったねー", "ごめんなさい"]
+    assert leftover_timeline_beat(two, situation="futa_visible").startswith("mouths closed")
+    assert lock_clip_timeline(locked) == locked
+
+    oral = (
+        "integrated_multimodal_description:\nAlready oral. Jupo to the BASE.\n"
+        "\noverall_soundscape:\nDeep jupo-jupo.\n"
+    )
+    oral_tl = _timeline_block(lock_clip_timeline(oral, duration_s=10, situation="oral"))
+    assert "0.0-10.0s one unbroken take" in oral_tl
+    assert "No quoted speech" in oral_tl
+    assert "「" not in oral_tl
+
+    forbid = (
+        "integrated_multimodal_description:\n"
+        "She speaks: 「キョウはどうしました？」. No deep kiss this clip.\n"
+        "\noverall_soundscape:\n「キョウはどうしました？」\n"
+    )
+    forbid_tl = _timeline_block(lock_clip_timeline(forbid, duration_s=10, situation="futa_visible"))
+    assert "kisses on the mouth and/or breasts" not in forbid_tl
+    assert "No more quoted speech" in forbid_tl
+
+    sales = load_story("sales-visit-60s")
+    sales0 = prepare_story_clip(sales, 0, stills_dir=tmp_path)
+    sales0_tl = _timeline_block(sales0["prompt"])
+    assert "0.0-2.0s" in sales0_tl
+    assert "No quoted speech in this window" in sales0_tl
+    assert "2.0-3.6s first unique quoted speech" in sales0_tl
+    assert "3.6-5.2s second unique quoted speech" in sales0_tl
+    assert "「" not in sales0_tl
+    assert "kisses on the mouth and/or breasts" in sales0["prompt"]
+    for line in unique_spoken_lines(sales["clips"][0]["prompt"]):
+        assert sales0["prompt"].count(f"「{line}」") == 2, line
+    assert jp_outside_quotes(sales0["prompt"]) == ""
+
+    sales1 = prepare_story_clip(sales, 1, last_frame="x.png", stills_dir=tmp_path)
+    sales1_tl = _timeline_block(sales1["prompt"])
+    assert "0.0-1.6s first unique quoted speech" in sales1_tl
+    assert "1.6-3.2s second unique quoted speech" in sales1_tl
+    assert "0.0-2.0s" not in sales1_tl
+    assert "kisses on the mouth and/or breasts" in sales1["prompt"]
+    assert "「" not in sales1_tl
+    for line in unique_spoken_lines(sales["clips"][1]["prompt"]):
+        assert sales1["prompt"].count(f"「{line}」") == 2, line
+    assert jp_outside_quotes(sales1["prompt"]) == ""
+
+    oral_p = prepare_story_clip(sales, 5, last_frame="x.png", stills_dir=tmp_path)
+    oral_p_tl = _timeline_block(oral_p["prompt"])
+    assert "No quoted speech" in oral_p_tl
+    assert not spoken_lines(oral_p["prompt"])
+    assert jp_outside_quotes(oral_p["prompt"]) == ""
+    assert "ORAL EASY SHAFT:" in oral_p["prompt"]
+    assert "easy to take" in oral_p["prompt"].lower()
+
+    sales_jubo = prepare_story_clip(sales, 4, last_frame="x.png", stills_dir=tmp_path)
+    sales_jubo_tl = _timeline_block(sales_jubo["prompt"])
+    assert "Do the written remaining beat" in sales_jubo_tl
+    assert "drops to her knees" in sales_jubo["prompt"]
+    assert "ORAL EASY SHAFT:" in sales_jubo["prompt"]
+
+    check = load_story("checkup-100s")
+    check0 = prepare_story_clip(check, 0, stills_dir=tmp_path)
+    check0_tl = _timeline_block(check0["prompt"])
+    assert "0.0-1.6s first unique quoted speech" in check0_tl
+    assert "written start beat only" not in check0_tl
+    assert "「" not in check0_tl
+    assert check0["prompt"].count("「こんにちは」") == 2
+    assert jp_outside_quotes(check0["prompt"]) == ""
+
+    check5 = prepare_story_clip(check, 4, last_frame="x.png", stills_dir=tmp_path)
+    assert "kisses on the mouth and/or breasts" in check5["prompt"]
+    assert "ORAL EASY SHAFT:" in check5["prompt"]
+    assert "gentle slight upward" in check5["prompt"]
+    check6 = prepare_story_clip(check, 5, last_frame="x.png", stills_dir=tmp_path)
+    assert "easy to take" in check6["prompt"].lower()
+    assert "ORAL EASY SHAFT:" in check6["prompt"]
+    assert "does NOT squat" in check6["prompt"]
+
+    empty_tl = speech_timeline_line("no quotes here", duration_s=10, situation="futa_visible")
+    assert empty_tl.startswith("TIMELINE:")
+    assert "No quoted speech" in empty_tl
+    assert "「" not in empty_tl
 
 
 def test_lock_semen_look_names_white_liquid():
@@ -5639,6 +5784,8 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "EROTIC WAIT:" in talk
     assert "first partner peck" in talk
     assert "light self-touch only" in talk
+    assert "kisses on the mouth and/or breasts" in talk
+    assert "same Japanese line is not spoken twice" in talk
     assert jp_outside_quotes(talk) == ""
 
     clinic = load_story("clinic-75s")
@@ -5667,6 +5814,7 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "EROTIC WAIT:" in cafe1["prompt"]
     assert "いらっしゃいませ" in cafe1["prompt"]
     assert "first partner peck" in cafe1["prompt"]
+    assert "kisses on the mouth and/or breasts" in cafe1["prompt"]
     genkan = prepare_story_clip(commute, 1, stills_dir=tmp_path, force_t2v=True)
     assert "EROTIC WAIT:" in genkan["prompt"]
     assert "いってらっしゃい" in genkan["prompt"]
@@ -5728,6 +5876,14 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             lines = spoken_lines(raw)
             if lines:
                 seen_speech += 1
+                assert "TIMELINE:" in prompt, (story["id"], i + 1)
+                assert "unique quoted speech" in prompt, (story["id"], i + 1)
+                assert "Do not repeat" in prompt, (story["id"], i + 1)
+                tl = prompt[prompt.find("TIMELINE:"):]
+                cut = tl.find("\noverall_soundscape:")
+                if cut > 0:
+                    tl = tl[:cut]
+                assert "「" not in tl and "」" not in tl, (story["id"], i + 1)
                 assert "SPEECH FACE:" in prompt, (story["id"], i + 1)
                 assert "Not monotone" in prompt
                 sound = soundscape_text(prompt)
@@ -5757,6 +5913,8 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
             orig_sit = str(clip.get("situation") or "")
             if orig_sit in ACT_SITUATIONS:
                 assert spoken_lines(prompt) == [], (story["id"], i + 1, spoken_lines(prompt))
+                assert "TIMELINE:" in prompt, (story["id"], i + 1)
+                assert "No quoted speech" in prompt, (story["id"], i + 1)
                 assert "ACT SILENCE:" in prompt, (story["id"], i + 1)
                 assert "KEEP wet sounds loud" in prompt, (story["id"], i + 1)
                 assert "LIP SYNC" not in prompt, (story["id"], i + 1)
@@ -6313,6 +6471,10 @@ def test_notebook_story_play_flow():
     assert '"molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "")' in src
     assert '"SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
     assert '"tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "")' in src
+    assert "lock_clip_timeline" in src
+    assert '"gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "")' in src
+    assert '"kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "")' in src
+    assert '"ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
@@ -6336,7 +6498,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260911-sales-kiss-erotic-1" in cell2
+    assert "h3-20260912-shaft-kiss-wait-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
@@ -6377,6 +6539,8 @@ def test_notebook_story_play_flow():
     assert "def lock_act_sfx" in helper_src
     assert "短い参照動画の部品" in helper_src
     assert "def lock_futa_shaft" in helper_src
+    assert "def lock_oral_easy_shaft" in helper_src
+    assert "def lock_clip_timeline" in helper_src
     assert "def lock_penis_inside" in helper_src
     assert "Deep jupo to the BASE" in helper_src
     assert "INSIDE LOCK:" in helper_src
