@@ -88,4 +88,15 @@ python minimaxh3/grokbot/drop_job.py --mode t2v --aspect 16:9 --prompt-file prom
 
 I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそのまま）。`--aspect 16:9`。Hailuo API ノートの RATIO は使わない。
 
+## エピソード一発（別系統・inbox を使わない）
+
+複数ビートの完成動画（HUD・カード・連結つき）は **`episodes/<slug>/`** の別ルート。inbox に置かない（裸 jpg はココナラ I2V になる）。
+Automation は足さない。1回の実行 = 1本の完成 mp4。手順は `minimaxh3/episodes/README.md`、skill は `h3-episode-oneclick`。
+
+```bash
+python minimaxh3/grokbot/run_episode.py --episode bandai-district
+```
+
+スマホは `minimax_h3_episode_bot.ipynb` を Run all。
+
 投稿は人間。リンクはプロフィール。
