@@ -14,53 +14,75 @@ sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
     CANVAS,
+    CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
     I2VA_HEADER,
+    MUNDANE_CLAUSE,
     PRESETS,
     EpisodeError,
     assert_not_production_root,
+    beat_props,
     beat_prompts,
+    beat_window,
     build_beat_prompt,
     build_episode_graph,
     canvas_for,
     duration_ladder,
     episode_assets,
     episode_root,
+    expected_duration,
     finish_episode,
     forbidden_hits,
     load_episode,
+    materialize_reuse,
     output_size_for,
+    plan_lines,
     preflight,
     render_beat_comfy,
     resolve_preset,
     run_episode,
     stage_still,
+    stills_trailer,
+    subtitle_windows,
     validate_beat_prompt,
     validate_episode,
 )
 from h3_hud import (  # noqa: E402
+    compose_beat,
     expected_stitch_duration,
+    extract_frame,
     find_font,
     font_covers,
+    keyword_segments,
     probe_duration,
     probe_video_size,
     render_complete_layer,
     render_end_card,
+    render_fail_card,
     render_hud_layer,
+    render_menu_layer,
     render_mission_layer,
+    render_subtitle_layer,
     render_title_card,
+    synthetic_clip,
+    window_for,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
+SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
 
 def bandai() -> dict:
     return load_episode(EP_DIR / "episode.json")
+
+
+def short() -> dict:
+    return load_episode(SHORT_DIR / "episode.json")
 
 
 # ---------------------------------------------------------------- sync / files
@@ -121,13 +143,170 @@ def test_bandai_episode_validates_and_preflights():
 def test_template_validates_without_disk():
     ep = load_episode(TEMPLATE)
     assert validate_episode(ep) == []
-    assert ep["beats"][2]["source"] == "chain"
+    assert ep["tone"] == "mundane" and ep["cards"]["fail"]["text"] == "ミッション失敗"
+    assert ep["beats"][2]["source"] == "ui" and ep["beats"][3]["source"] == "chain"
+    assert [b["id"] for b, _p, _e in beat_prompts(ep)] == ["01-open", "02-talk", "04-end"]  # ui beat has no prompt
+
+
+# ---------------------------------------------------------------- short (mundane / failed) grammar
+
+def test_short_episode_validates_and_plans_under_25s():
+    ep = short()
+    assert validate_episode(ep, root=SHORT_DIR) == []
+    assert preflight(ep, SHORT_DIR, need_ffmpeg=False) == []
+    assert ep["tone"] == "mundane" and ep["violence"] == "none" and ep["cards"]["title"] is False
+    assert 20.0 <= expected_duration(ep) <= 25.0
+    ids = [b["id"] for b in ep["beats"]]
+    assert ids == ["01-exit-noren", "02-bike", "03-barber", "04-tools", "05-truck"]
+    assert [b.get("reuse") for b in ep["beats"]] == ["bandai-district/01-exit-noren", "bandai-district/02-bike", None, None, "bandai-district/05-truck"]
+    assert ep["beats"][2]["hud"]["visible"] is False and ep["beats"][2]["hud"]["complete"] is True
+    assert ep["beats"][4]["hud"]["complete"] is False  # Failed, not Complete
+    # the only GPU beat is the barbershop re-render; windows are 3-6s like the reference's cuts
+    assert [beat_window(ep, b) for b in ep["beats"]] == [(0.0, 3.0), (0.0, 5.0), (0.0, 6.0), (0.0, 2.2), (0.0, 4.8)]
+    assert [b["id"] for b, _p, _e in beat_prompts(ep, trigger="DY")] == ["01-exit-noren", "02-bike", "03-barber", "05-truck"]
+    for rel in episode_assets(ep):
+        assert (SHORT_DIR / rel).is_file(), rel
+    lines = plan_lines(ep, SHORT_DIR)
+    assert len(lines) == 5 and "cutscene" in lines[2] and "menu" in lines[3] and "reuse bandai-district/05-truck" in lines[4]
+
+
+def test_per_beat_props_and_continuity_lock_in_prompts():
+    ep = bandai()
+    rows = {b["id"]: p for b, p, _e in beat_prompts(ep, trigger="DY")}
+    truck = ep["props"]["truck"]
+    # the leak that put a firewood truck into the noren shot, the bicycle shot and the barbershop
+    for bid in ("01-exit-noren", "02-bike", "03-barber", "04-talk"):
+        assert truck not in rows[bid], bid
+        assert "kei pickup" not in rows[bid], bid
+    assert truck in rows["05-truck"] and truck in rows["08-boiler-blast"]
+    assert ep["props"]["bicycle"] in rows["02-bike"] and ep["props"]["bicycle"] not in rows["01-exit-noren"]
+    assert "Props in this shot stay locked" not in rows["04-talk"]
+    for p in rows.values():
+        assert CONTINUITY_CLAUSE in p
+        assert MUNDANE_CLAUSE not in p  # action tone
+        assert p.index("is the identity, costume, prop, and set lock") < p.index(CONTINUITY_CLAUSE)
+    assert rows["05-truck"].index(CONTINUITY_CLAUSE) < rows["05-truck"].index("Props in this shot stay locked")
+    assert beat_props(ep, ep["beats"][0]) == ["tenugui"]
+    # without an explicit list only props named in the beat text are attached
+    auto = dict(ep["beats"][1])
+    auto.pop("props")
+    assert beat_props(ep, auto) == ["bicycle"]
+    assert beat_props(ep, dict(auto, action="she walks", camera="camera behind her", place="street")) == []
+    assert any("unknown prop" in e for e in validate_episode(dict(ep, beats=[dict(ep["beats"][0], props=["laser"])] + ep["beats"][1:])))
+
+
+def test_mundane_tone_rules():
+    ep = short()
+    assert MUNDANE_CLAUSE in build_beat_prompt(ep, ep["beats"][2])
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["action"] += ", no explosion, nobody jumps"
+    errs = validate_episode(bad)
+    assert any("set-piece words" in e and "explosion" in e for e in errs)
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["physics"] = True
+    assert any("forbids physics" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["violence"] = "game"
+    assert any("violence none" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    for b in bad["beats"]:
+        if b["source"] != "ui":
+            b["face_visible"] = True
+    assert any("at most 2 face_visible" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["tone"] = "epic"
+    assert any("tone must be" in e for e in validate_episode(bad))
+    # the long action episode is untouched by the mundane rules
+    assert validate_episode(bandai(), root=EP_DIR) == []
+
+
+def test_trim_reuse_ui_and_fail_schema():
+    ep = short()
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["trim"] = {"start": 8, "seconds": 4}
+    assert any("ends after" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["trim"] = {"start": 0, "seconds": 1}
+    assert any(">= 1.5s" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["reuse"] = "Bad Slug/01"
+    assert any("reuse must look like" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][0]["reuse"] = "bandai-district-short/01-exit-noren"
+    assert any("point at itself" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][3]["seconds"] = 9
+    assert any("ui beat needs seconds" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][3]["menu"]["items"] = ["one"]
+    assert any("2-8 entries" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][3]["menu"]["selected"] = 7
+    assert any("selected out of range" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"].insert(0, copy.deepcopy(ep["beats"][3]))
+    assert any("first beat cannot be ui" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"].insert(4, dict(copy.deepcopy(ep["beats"][3]), id="04-again"))
+    assert any("two ui beats in a row" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][3]["speech"] = [{"who": "aki", "line": "あ"}]
+    assert any("frozen frame" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][2]["hud"]["mission_keyword"] = "薪"
+    assert any("mission_keyword must be part" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][-1]["hud"]["complete"] = True
+    assert any("cannot flash ミッション完了" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["cards"]["fail"]["reason"] = "あ" * 31
+    assert any("reason <= 30" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["cards"]["fail"]["image"] = "stills/nope.jpg"
+    assert "stills/nope.jpg" in episode_assets(bad)
+    assert any("asset missing" in e for e in validate_episode(bad, root=SHORT_DIR))
+    bad = copy.deepcopy(ep)
+    bad["beats"][2]["speech"][0]["at"] = 7.0  # window is 6s
+    assert any("inside the beat window" in e for e in validate_episode(bad))
+    bad = copy.deepcopy(ep)
+    bad["beats"][2]["speech"][0]["text"] = "x" * 31
+    assert any("subtitle" in e for e in validate_episode(bad))
+
+
+def test_subtitle_windows_and_keyword_segments():
+    lines = [{"line": "a"}, {"line": "b"}]
+    win = subtitle_windows(lines, 6.0)
+    assert len(win) == 2 and win[0][0] == pytest.approx(0.3) and win[0][1] < win[1][0] and win[1][1] <= 6.0
+    assert subtitle_windows([{"line": "a", "at": 1.0, "until": 2.5}], 6.0) == [(1.0, 2.5)]
+    assert subtitle_windows([], 6.0) == []
+    assert keyword_segments("薪を白湯へ運べ", "薪") == [("薪", True), ("を白湯へ運べ", False)]
+    assert keyword_segments("手ぬぐいを理容室へ返せ", "理容室") == [("手ぬぐいを", False), ("理容室", True), ("へ返せ", False)]
+    assert keyword_segments("手ぬぐいを返せ", "") == [("手ぬぐいを返せ", False)]
+    assert keyword_segments("手ぬぐいを返せ", "薪") == [("手ぬぐいを返せ", False)]
+
+
+def test_new_layers_render():
+    size = (1280, 720)
+    plain = render_mission_layer(size, "薪を白湯へ運べ")
+    accent = render_mission_layer(size, "薪を白湯へ運べ", keyword="薪")
+    assert accent.getbbox() == plain.getbbox()
+    assert accent.tobytes() != plain.tobytes()  # the keyword took the accent colour
+    sub = render_subtitle_layer(size, "おお、助かる。薪も頼むよ")
+    assert sub.getbbox() is not None and render_subtitle_layer(size, "").getbbox() is None
+    low = render_subtitle_layer(size, "字幕", above_mission=False).getbbox()
+    high = render_subtitle_layer(size, "字幕", above_mission=True).getbbox()
+    assert high[1] < low[1]
+    menu = render_menu_layer(size, title="番台の道具", items=["手ぬぐい", "桶", "軍手"], selected=2)
+    assert menu.size == size and menu.mode == "RGBA"
+    fail = render_fail_card(size, reason="薪を積みすぎて軽トラが動かなかった")
+    assert fail.size == size and fail.mode == "RGB"
+    assert render_fail_card((720, 1280), text="失敗").size == (720, 1280)
 
 
 def test_first_beat_cannot_chain_and_hud_stills_rejected(tmp_path):
     ep = bandai()
     ep["beats"][0]["source"] = "chain"
-    assert any("cannot chain" in e for e in validate_episode(ep))
+    assert any("first beat cannot be chain" in e for e in validate_episode(ep))
     ep = bandai()
     ep["beats"][1]["still"] = "stills/02-bike-hud.jpg"
     assert any("HUD-burned" in e for e in validate_episode(ep))
@@ -366,3 +545,96 @@ def test_dry_run_pipeline_end_to_end(tmp_path):
     assert (root / "raw" / "01-exit-noren.mp4").stat().st_mtime == before
     again = finish_episode(ep, root, out_name="again.mp4")
     assert again.is_file()
+
+
+@pytest.mark.skipif(not HAS_FFMPEG, reason="ffmpeg missing")
+def test_compose_beat_trim_subtitles_menu_and_frames(tmp_path):
+    clip = synthetic_clip(tmp_path / "raw.mp4", seconds=6.0, canvas=(1024, 576))
+    assert window_for(clip, trim_start=1.0, trim_seconds=3.0) == (1.0, pytest.approx(3.0, abs=0.05))
+    assert window_for(clip)[1] == pytest.approx(6.0, abs=0.1)
+    with pytest.raises(Exception):
+        window_for(clip, trim_start=5.9)
+    size = (1280, 720)
+    sub = tmp_path / "sub.png"
+    render_subtitle_layer(size, "字幕").save(sub)
+    menu = tmp_path / "menu.png"
+    render_menu_layer(size, title="道具", items=["一", "二"], selected=1).save(menu)
+    mission = tmp_path / "mission.png"
+    render_mission_layer(size, "薪を運べ", keyword="薪").save(mission)
+    out = compose_beat(clip, tmp_path / "hud.mp4", out_size=size, hud_png=None, mission_png=mission, trim_start=1.0, trim_seconds=3.0, subtitles=[(sub, 0.3, 1.5)], menu_png=menu)
+    assert probe_duration(out) == pytest.approx(3.0, abs=0.15) and probe_video_size(out) == size
+    cutscene = compose_beat(clip, tmp_path / "cut.mp4", out_size=size, trim_seconds=2.0, subtitles=[(sub, 0.0, 2.0)])
+    assert probe_duration(cutscene) == pytest.approx(2.0, abs=0.15)
+    frame = extract_frame(clip, tmp_path / "f.jpg", at_s=2.0)
+    assert Image.open(frame).size == (1024, 576)
+    late = extract_frame(clip, tmp_path / "late.jpg", at_s=99.0)  # clamps to the last frame
+    assert late.is_file()
+
+
+def _short_tree(tmp_path: Path, *, clip_seconds: float) -> tuple[dict, Path, Path]:
+    ep = copy.deepcopy(short())
+    ep["clip_seconds"] = clip_seconds
+    episodes = tmp_path / "episodes"
+    sibling = episodes / "bandai-district" / "raw"
+    sibling.mkdir(parents=True)
+    root = episodes / "bandai-district-short"
+    (root / "stills").mkdir(parents=True)
+    for rel in episode_assets(ep):
+        shutil.copy2(SHORT_DIR / rel, root / rel)
+    return ep, root, sibling
+
+
+@pytest.mark.skipif(not HAS_FFMPEG, reason="ffmpeg missing")
+def test_short_pipeline_reuse_trim_ui_fail_end_to_end(tmp_path):
+    ep, root, sibling = _short_tree(tmp_path, clip_seconds=6)
+    for i, bid in enumerate(("01-exit-noren", "02-bike", "05-truck")):
+        synthetic_clip(sibling / f"{bid}.mp4", seconds=6.0, canvas=(1024, 576), color=f"0x{40 + i * 60:02x}5060", tone_hz=300 + i * 50)
+    assert validate_episode(ep, root=root) == []
+    final = run_episode(ep, root, dry_run=True)
+    assert final.is_file() and (root / "final" / "latest.mp4").is_file()
+    status = json.loads((root / "status.json").read_text(encoding="utf-8"))
+    assert status["beats"]["01-exit-noren"]["source"] == "reuse" and status["beats"]["01-exit-noren"]["reused"].endswith("bandai-district/raw/01-exit-noren.mp4")
+    assert status["beats"]["05-truck"]["source"] == "reuse"
+    assert status["beats"]["03-barber"]["source"] == "still" and status["beats"]["03-barber"]["state"] == "done"
+    assert status["beats"]["04-tools"] == {"state": "done", "source": "ui"}
+    # reused takes are byte-identical copies, the ui beat is a freeze of 03 at its cut point
+    assert (root / "raw" / "02-bike.mp4").read_bytes() == (sibling / "02-bike.mp4").read_bytes()
+    assert (root / "input" / "04-tools-freeze.jpg").is_file() and (root / "raw" / "04-tools.mp4").is_file()
+    assert probe_duration(root / "raw" / "04-tools.mp4") == pytest.approx(2.2, abs=0.15)
+    # windows applied: 3.0 / 5.0 / 6.0 / 2.2 / 4.8
+    got = [probe_duration(root / "hud" / f"{b['id']}.mp4") for b in ep["beats"]]
+    assert got == pytest.approx([3.0, 5.0, 6.0, 2.2, 4.8], abs=0.15)
+    png = root / "hud" / "png"
+    assert not (png / "03-barber-hud.png").exists() and not (png / "03-barber-mission.png").exists()  # cutscene
+    assert (png / "03-barber-sub0.png").is_file() and (png / "03-barber-sub1.png").is_file() and (png / "03-barber-complete.png").is_file()
+    assert (png / "04-tools-menu.png").is_file() and (png / "01-exit-noren-mission.png").is_file()
+    assert (png / "card-fail.png").is_file() and (root / "input" / "fail-freeze.jpg").is_file()
+    assert (root / "hud" / "98-fail.mp4").is_file() and (root / "hud" / "99-end.mp4").is_file()
+    assert not (root / "hud" / "00-title.mp4").exists()  # cold open
+    assert probe_duration(final) == pytest.approx(expected_duration(ep), abs=0.3)
+    assert 20.0 <= probe_duration(final) <= 25.0
+    # a second run re-renders nothing and still finishes
+    before = (root / "raw" / "03-barber.mp4").stat().st_mtime
+    run_episode(ep, root, dry_run=True)
+    assert (root / "raw" / "03-barber.mp4").stat().st_mtime == before
+    # without the sibling take the reuse beat falls back to rendering from its still
+    ep2, root2, _sib2 = _short_tree(tmp_path / "b", clip_seconds=6)
+    run_episode(ep2, root2, dry_run=True)
+    st2 = json.loads((root2 / "status.json").read_text(encoding="utf-8"))
+    assert st2["beats"]["01-exit-noren"]["source"] == "still" and (root2 / "input" / "01-exit-noren.jpg").is_file()
+
+
+@pytest.mark.skipif(not HAS_FFMPEG, reason="ffmpeg missing")
+def test_finish_materializes_reuse_and_stills_preview_ignores_trim(tmp_path):
+    ep, root, sibling = _short_tree(tmp_path, clip_seconds=6)
+    assert materialize_reuse(ep, root) == {}  # nothing on disk yet, nothing copied, no error
+    for bid in ("01-exit-noren", "02-bike", "05-truck"):
+        synthetic_clip(sibling / f"{bid}.mp4", seconds=6.0, canvas=(1024, 576))
+    synthetic_clip(root / "raw" / "03-barber.mp4", seconds=6.0, canvas=(1024, 576), color="0x804020")
+    final = finish_episode(ep, root, out_name="f.mp4")
+    assert final.is_file() and (root / "raw" / "01-exit-noren.mp4").is_file()
+    assert probe_duration(final) == pytest.approx(expected_duration(ep), abs=0.3)
+    preview = stills_trailer(ep, root)
+    assert preview.name == "bandai-district-short-stills-preview.mp4"
+    want = expected_stitch_duration([2.5, 2.5, 2.5, 2.2, 2.5, 2.8, 3.0], xfade_s=0.35)
+    assert probe_duration(preview) == pytest.approx(want, abs=0.3)

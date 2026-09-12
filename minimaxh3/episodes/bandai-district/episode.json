@@ -5,6 +5,7 @@
   "subtitle": "架空オープンワールド 予告",
   "canvas": "16:9",
   "clip_seconds": 10,
+  "tone": "action",
   "render": {
     "preset": "daily",
     "fallback_preset": "fast",
@@ -44,14 +45,14 @@
   },
   "props": {
     "tenugui": "white cotton hand towels, folded in a neat stack",
-    "happi": "plain indigo happi jacket with no printed letters",
     "bicycle": "black city bicycle with a front wire basket",
     "truck": "small white Japanese kei pickup truck with split cedar firewood stacked in the bed"
   },
   "homage": {
     "borrowed": [
       "third-person game camera",
-      "mission subtitle grammar",
+      "mission subtitle grammar with the object noun in colour",
+      "HUD hidden in dialogue cutscenes",
       "a mundane errand that flips into action",
       "an explosive climax"
     ],
@@ -99,6 +100,7 @@
       "still": "stills/01-exit-noren.jpg",
       "cast": ["aki"],
       "face_visible": false,
+      "props": ["tenugui"],
       "place": "Bathhouse entrance opening onto the sunny shopping street, morning",
       "camera": "Over-the-shoulder third-person camera behind Aki at shoulder height, following her out of the doorway with a slight walking bob",
       "action": "Aki pushes through the blue wave-pattern noren of the bathhouse holding a folded stack of white towels, steps onto the sunny shopping street, glances right, and breaks into a jog down the street",
@@ -106,6 +108,7 @@
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
       "hud": {
         "mission": "貸し手ぬぐいを理容室へ返せ",
+        "mission_keyword": "手ぬぐい",
         "hint": "",
         "health": 0.86,
         "stamina": 0.72,
@@ -123,6 +126,7 @@
       "still": "stills/02-bike.jpg",
       "cast": ["aki"],
       "face_visible": false,
+      "props": ["tenugui", "bicycle"],
       "place": "Shopping street, morning light",
       "camera": "Third-person chase camera behind and slightly above the bicycle, tracking forward smoothly",
       "action": "Aki rides the black city bicycle down the shopping street with the towel stack in the front basket, pedals faster, leans into a gentle turn; shop curtains and potted plants slide past",
@@ -130,6 +134,7 @@
       "music": "Low pulsing synth bass, a little faster; a rhythmic hi-hat joins",
       "hud": {
         "mission": "貸し手ぬぐいを理容室へ返せ",
+        "mission_keyword": "手ぬぐい",
         "hint": "L 長押しで早漕ぎ",
         "health": 0.86,
         "stamina": 0.6,
@@ -147,6 +152,7 @@
       "still": "stills/03-barber.jpg",
       "cast": ["aki", "yoshida"],
       "face_visible": true,
+      "props": ["tenugui"],
       "place": "Inside a small old barbershop with a leather chair, mirrors, and lace curtains",
       "camera": "Static medium two-shot at eye level, a very slow push-in",
       "action": "Aki hands the folded white towels to Yoshida across the barber chair; he takes them with both hands and nods, relieved; Aki gives a small bow",
@@ -157,7 +163,9 @@
       "sfx": "Quiet barbershop, a wall clock ticking, cloth rustle",
       "music": "Soft warm pad, the bass rests",
       "hud": {
+        "visible": false,
         "mission": "貸し手ぬぐいを理容室へ返せ",
+        "mission_keyword": "手ぬぐい",
         "hint": "",
         "health": 0.86,
         "stamina": 0.7,
@@ -175,6 +183,7 @@
       "still": "stills/04-talk.jpg",
       "cast": ["aki", "yoshida"],
       "face_visible": true,
+      "props": [],
       "place": "Inside the barbershop, warm window light",
       "camera": "Over Aki's shoulder onto Yoshida's face, slow push-in, shallow depth of field",
       "action": "Yoshida wrings his hands and talks fast, pointing toward the back alley; Aki, seen from behind, listens, then squares her shoulders",
@@ -184,7 +193,9 @@
       "sfx": "Quiet barbershop, a wall clock ticking, a chair creak",
       "music": "Soft warm pad with a low ominous tone creeping in",
       "hud": {
+        "visible": false,
         "mission": "理容室の店主を落ち着かせろ",
+        "mission_keyword": "店主",
         "hint": "",
         "health": 0.86,
         "stamina": 0.75,
@@ -202,6 +213,7 @@
       "still": "stills/05-truck.jpg",
       "cast": ["aki"],
       "face_visible": false,
+      "props": ["truck"],
       "place": "Narrow wet alley with vending machines at dusk",
       "camera": "Third-person camera behind Aki at the open driver door, holding as the truck pulls away",
       "action": "Aki climbs into the white kei truck and shuts the door; the headlights flick on and the truck pulls away down the wet alley with the firewood swaying in the bed",
@@ -209,6 +221,7 @@
       "music": "Bass returns with a driving taiko pattern",
       "hud": {
         "mission": "薪を白湯へ取り返せ",
+        "mission_keyword": "薪",
         "hint": "F 乗車",
         "health": 0.86,
         "stamina": 0.75,
@@ -227,6 +240,7 @@
       "cast": ["aki"],
       "face_visible": false,
       "physics": true,
+      "props": ["truck", "bicycle"],
       "place": "Shopping street at dusk, headlights on",
       "camera": "Low third-person chase camera ahead of the speeding kei truck, swinging around behind it",
       "action": "The kei truck barrels down the shopping street; adults in shop aprons and a bicycle tumble harmlessly through the air like ragdolls, cabbages and a plastic crate scatter, a vending machine tips over; Aki grips the wheel with a small grin",
@@ -234,6 +248,7 @@
       "music": "Driving taiko and synth bass, rising",
       "hud": {
         "mission": "薪を白湯へ取り返せ",
+        "mission_keyword": "薪",
         "hint": "Shift ブースト",
         "health": 0.8,
         "stamina": 0.5,
@@ -252,6 +267,7 @@
       "cast": ["aki", "gen"],
       "face_visible": true,
       "physics": true,
+      "props": [],
       "place": "Brick boiler alley at night, wet ground, pipes, chimney",
       "camera": "Low dramatic angle holding on Aki, then a whip tilt upward following Gen",
       "action": "Aki plants her feet on the iron grate and launches a rising uppercut; a column of white steam erupts under her fist and hurls Gen straight up, arms flailing, sandals flying, and he tumbles out of the top of the frame",
@@ -262,6 +278,7 @@
       "music": "Taiko hits stop for a beat, then a big brass stab on the uppercut",
       "hud": {
         "mission": "金湯のゲンを止めろ",
+        "mission_keyword": "ゲン",
         "hint": "",
         "health": 0.78,
         "stamina": 0.45,
@@ -280,6 +297,7 @@
       "cast": ["aki"],
       "face_visible": true,
       "physics": true,
+      "props": ["truck"],
       "place": "Boiler alley at night, the boiler house behind",
       "camera": "Wide shot, camera retreating ahead of Aki as she sprints toward it",
       "action": "Behind her the brick boiler house erupts in an orange fireball and a white steam pillar; roof tiles and logs fly; the white kei truck tumbles end over end silhouetted against the blast; Aki sprints toward camera lit orange and does not look back",
@@ -287,6 +305,7 @@
       "music": "Full taiko and bass hit on the blast, then a rising synth swell",
       "hud": {
         "mission": "釜場から離れろ",
+        "mission_keyword": "釜場",
         "hint": "",
         "health": 0.7,
         "stamina": 0.35,
@@ -304,6 +323,7 @@
       "still": "stills/09-aftermath.jpg",
       "cast": ["aki"],
       "face_visible": false,
+      "props": [],
       "place": "Boiler alley, steam thinning, chimney standing",
       "camera": "Third-person camera behind Aki, slow push-in on her back",
       "action": "Aki stands still and catches her breath as steam vents from the wrecked boiler alley; she turns a valve on a pipe, the steam thins, and she tucks the white towel back over her hair",
@@ -311,6 +331,7 @@
       "music": "The beat drops out; a single warm koto note rings and fades",
       "hud": {
         "mission": "釜の蒸気を止めろ",
+        "mission_keyword": "蒸気",
         "hint": "",
         "health": 0.7,
         "stamina": 0.6,
