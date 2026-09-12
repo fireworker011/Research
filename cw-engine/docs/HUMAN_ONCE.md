@@ -14,7 +14,8 @@
 3. Settings → Actions → General → Workflow permissions を **Read and write**
 4. Secrets は任意。`CW_FACTS_JSON`（CW 公開プロフィールにある事実だけ。氏名・年齢は入れない）。完成品は Grok Bot が書くので `ANTHROPIC_API_KEY` は不要
 5. Actions で「CW 司令塔」を Run workflow → Issue `CW — 司令塔` が立つ
-6. `CW: PROFILE` → 自己PR を（人間が書く）を埋めてクラウドワークスのプロフィールに貼る
+6. `CW: PROFILE` → 自己PR を（人間が書く）を埋めてクラウドワークスのプロフィールに貼る（済）
+7. 既存 Grok Bot `6416ebcd-6cd0-42bb-92c3-55e00b13828c` の「指示」を `docs/grok-bots/G_cw.txt` に差し替える。ルーチン「CW採用連絡チェック」は `G_cw_watch.txt`。新しい Bot は作らない。HQ の指示には足さない
 
 ## 毎回（1 案件）
 

@@ -18,7 +18,7 @@ Affiliate / XM と同じく GitHub 上で保守する。ただし **実行と保
 | 定型文 | [`docs/TEMPLATES.md`](docs/TEMPLATES.md) |
 | 人間が一度だけ / 毎回 | [`docs/HUMAN_ONCE.md`](docs/HUMAN_ONCE.md) |
 | 非公開リポジトリの作り方 | [`private-repo/README.md`](private-repo/README.md) / [`private-repo/cw.yml`](private-repo/cw.yml) |
-| Grok 前面（任意・HQ clone とは別会話） | [`docs/grok-bots/G_cw.txt`](docs/grok-bots/G_cw.txt) |
+| Grok 前面（既存 Bot。HQ clone には足すな） | [`docs/grok-bots/ROSTER.md`](docs/grok-bots/ROSTER.md) / [`G_cw.txt`](docs/grok-bots/G_cw.txt) |
 
 ```
 ナオミチ ── Issue「CW — 司令塔」（非公開リポジトリ）にコメント ──▶ GitHub Actions（非公開）

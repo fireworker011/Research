@@ -316,7 +316,15 @@ function testDocsAndSideline() {
   assert(/Anthropic/.test(dump), 'dump no anthropic');
   assert(!/CW: RESUME/.test(dump.replace(/`CW: RESUME` は出すな/g, '')), 'dump resume forbidden');
   assert(/HQ clone|HQ の clone|別の会話/.test(dump), 'dump separate from HQ clone');
-  for (const f of ['README.md', 'docs/AUTO.md', 'docs/AGENTS.md', 'docs/BOTS.md', 'docs/COMMANDS.md', 'docs/CONCERNS.md', 'docs/PIPELINE.md', 'docs/TEMPLATES.md', 'docs/HUMAN_ONCE.md', 'private-repo/cw.yml', 'private-repo/README.md']) {
+  assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(dump), 'dump names existing bot');
+  assert(/月100万稼ぐまで帰れま10/.test(dump) && /帰すな/.test(dump), 'dump does not report to HQ');
+  const watch = readText(path.join(ROOT, 'docs/grok-bots/G_cw_watch.txt'));
+  assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(watch), 'watch bot id');
+  assert(!/crowdworks\.jp\/(public\/jobs|contracts|proposals)\/\d+/.test(watch), 'watch no live urls');
+  assert(/HQ/.test(watch) && /帰すな/.test(watch), 'watch not to HQ');
+  const roster = readText(path.join(ROOT, 'docs/grok-bots/ROSTER.md'));
+  assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(roster) && /clone を足さない/.test(roster), 'roster');
+  for (const f of ['README.md', 'docs/AUTO.md', 'docs/AGENTS.md', 'docs/BOTS.md', 'docs/COMMANDS.md', 'docs/CONCERNS.md', 'docs/PIPELINE.md', 'docs/TEMPLATES.md', 'docs/HUMAN_ONCE.md', 'docs/grok-bots/ROSTER.md', 'docs/grok-bots/G_cw_watch.txt', 'private-repo/cw.yml', 'private-repo/README.md']) {
     assert(fs.existsSync(path.join(ROOT, f)), `missing ${f}`);
   }
   const agents = readText(path.join(ROOT, 'docs/AGENTS.md'));

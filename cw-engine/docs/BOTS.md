@@ -6,7 +6,7 @@ CW 全自動受注は **5 役**。増やさない。各役の指示は下の枠�
 |---|---|---|---|
 | 0. 総統括 | Cursor「１００万円売り上げ自動化」 | 起こされた日だけ | 本線。CW は側線として可否だけ |
 | 1. CW 司令塔（機械） | 非公開リポジトリの GitHub Actions（`private-repo/cw.yml`）が `cw-engine/src/apply-commander-comment.js` を回す | イベント駆動（人間のコメント） | 非公開リポジトリの Issue `CW — 司令塔` と同リポジトリのファイル |
-| 2. CW 前面（任意） | Grok Bot の **別会話**（`docs/grok-bots/G_cw.txt`） | 人間が開いたとき | 告知を写す。完成品は `CW: DRAFT`。HQ clone には足さない |
+| 2. CW 前面（既存1） | Grok Bot「CW受注」`6416ebcd-6cd0-42bb-92c3-55e00b13828c` | 人間が開いたとき＋平日ルーチン | 告知を写す。完成品は `CW: DRAFT`。HQ へ報告しない |
 | 3. CW 総責任者 | Cursor（この PR の作者） | `参謀へ:` で起こされた日だけ | `cw-engine/**` と CI。本線は触らない |
 | 4. ナオミチ | 人間 | 外部サイトのクリックと受注可否 | クラウドワークス、非公開リポジトリの Issue と Secret |
 
@@ -48,17 +48,17 @@ Issue `CW — 司令塔` の人間コメントを 1 通ずつ処理し、`cw-<ki
 やらない: ログイン、応募 POST、`RESUME`、円の発明、素材に無い事実、公開リポジトリへの書き込み、HQ Issue への書き込み。
 `ANTHROPIC_API_KEY` は不要。`CW: MAKE` はプロンプトだけ出す。完成品は Grok Bot（別会話）が書いて `CW: DRAFT`。発明しない。QA は機械。
 
-## 2. CW 前面（Grok・任意）への指示
+## 2. CW 前面（Grok・既存1）への指示
 
-貼るのは `docs/grok-bots/G_cw.txt` の本文だけ。**HQ clone とは別の会話**。要点:
+貼る先は **新しい会話ではない**。既存 Bot `6416ebcd-6cd0-42bb-92c3-55e00b13828c` の「指示」に [`G_cw.txt`](grok-bots/G_cw.txt)。ルーチン「CW採用連絡チェック」には [`G_cw_watch.txt`](grok-bots/G_cw_watch.txt)。名簿は [`ROSTER.md`](grok-bots/ROSTER.md)。**HQ clone とは別。** 要点:
 
 ```
 機械の告知（cw-*:）を人間に写す。next_human の1行を言う。応募稿は変えずに写す。
 `cw-make:` が来たら完成品を書いて `CW: DRAFT <id>` で Issue に貼る。Anthropic は使わない。
-仕事 ID を自分で足すな。応募稿を自分で作るな。PAID を代筆するな。ログインするな。remain / n10 を開けるな。
+仕事 ID を自分で足すな。応募稿を自分で作るな。PAID を代筆するな。ログインして応募するな。HQ へ帰すな。remain / n10 を開けるな。
 ```
 
-非公開リポジトリを Grok が読めないなら、人間が `cw-make:` のプロンプトを Grok に貼り、返ってきた本文を Issue へ `CW: DRAFT` で載せる。HQ clone にこの dump を足すな。
+非公開リポジトリを Grok が読めないなら、人間が `cw-make:` のプロンプトをこの Bot に貼り、返ってきた本文を Issue へ `CW: DRAFT` で載せる。HQ clone にこの dump を足すな。旧「司令部が指定した案件に応募する」指示は捨てる。
 
 ## 3. CW 総責任者（Cursor）への指示
 
