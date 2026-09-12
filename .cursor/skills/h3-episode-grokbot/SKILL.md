@@ -12,7 +12,7 @@ description: One-shot MiniMax H3 episode render. After one explicit prompt, run 
 ## このエージェントが起きたとき
 
 1. この skill と `minimaxh3/episodes/README.md` を読む。質問しない。
-2. チャットに slug が無ければ `bandai-district`。`--fresh` と書いてあれば `--fresh`。
+2. チャットに slug が無ければ `bandai-district-short`（25秒・失敗落ち。`bandai-district/raw/` を reuse し理容室 1 本だけ描く）。`--fresh` と書いてあれば `--fresh`（reuse 元は消さない。描き直すのは自分の raw だけ）。
 3. `python minimaxh3/grokbot/run_episode.py --episode <slug>` を実行する（必要なら `--preset daily` / `--fresh`）。
 4. 投稿しない。ランタイムはスクリプトが `colab stop` する。
 5. 結果は slug と `episodes/<slug>/final/latest.mp4` のパスだけ。失敗なら `status.json` のエラー一行。
