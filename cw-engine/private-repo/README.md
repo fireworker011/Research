@@ -4,7 +4,9 @@
 だから **実行と保存は非公開リポジトリ**、**コードは公開リポジトリ** に分ける。
 
 1. GitHub で非公開リポジトリを作る（例: `cw-work`）。Issues を有効にする。README だけあればよい。
-2. `cw.yml` をその非公開リポジトリの `.github/workflows/cw.yml` に置く（このフォルダの `cw.yml` をコピー）。
+2. `cw.yml` をその非公開リポジトリの `.github/workflows/cw.yml` に置く。
+   コピー元: https://raw.githubusercontent.com/fireworker011/Research/cursor/cw-auto-commander-c1fb/cw-engine/private-repo/cw.yml
+   `ENGINE_REF` は今 `cursor/cw-auto-commander-c1fb`。#122 マージ後にデフォルト枝へ戻す。
 3. Settings → Secrets and variables → Actions に次を入れる。
    - `ANTHROPIC_API_KEY`（完成品・サンプル・構成案を作る。無いと完成品は作れず、発明もしない）
    - `CW_FACTS_JSON`（任意。`cw-engine/config/facts.example.json` の形。CW 公開プロフィールに既に書いてある事実だけ。氏名・年齢は入れない）

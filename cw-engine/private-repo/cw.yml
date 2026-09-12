@@ -18,8 +18,8 @@ concurrency:
 
 env:
   ENGINE_REPO: fireworker011/Research
-  # 動かし始めは PR の枝でもよい。マージ後はデフォルトブランチにする。
-  ENGINE_REF: claude/setup-colab-comfyui-Eb9Lh
+  # マージ前は PR 枝。#122 がデフォルトに入ったら claude/setup-colab-comfyui-Eb9Lh に戻す。
+  ENGINE_REF: cursor/cw-auto-commander-c1fb
 
 jobs:
   commander:
