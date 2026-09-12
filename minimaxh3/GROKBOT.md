@@ -60,6 +60,7 @@ python minimaxh3/grokbot/run_r2v.py --watch
 | T2V | [minimax_h3_t2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1ST6gGKP7T3leIDoozk7jfV30dEXA6m8-) |
 | I2V | [minimax_h3_i2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1myFp5BxF7JlaQvgm5PeMj-FFIOKT4yUE) |
 | R2V | [minimax_h3_r2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_r2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1uon_V60eQo7rfiyG5P4JXhX6JksBpsbZ) |
+| エピソード | [minimax_h3_episode_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-episode-oneclick-f112/minimax_h3_episode_bot.ipynb) | （inbox と別。`episodes/<slug>/`） |
 
 Grokbot の `run_*.py` は同じ処理を `google-colab-cli` で `h3_*_colab_main.py` として exec する。ノートを開いて Run all しても同じ 1件処理。
 

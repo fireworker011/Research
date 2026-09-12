@@ -89,6 +89,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
+    # Colab IPython treats SystemExit(0) as a red traceback; only fail on nonzero.
+    assert "if rc:" in src
+    assert 'raise SystemExit(rc)' in src
+    assert src.index("if rc:") < src.index("raise SystemExit(rc)")
     assert json.loads((ROOT / "minimaxh3" / "minimax_h3_episode_bot.ipynb").read_text(encoding="utf-8")) == nb
 
 

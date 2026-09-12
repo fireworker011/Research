@@ -88,7 +88,9 @@ from h3_episode_colab_main import main
 
 rc = main()
 print("episode exit", rc)
-raise SystemExit(rc)
+if rc:
+    raise SystemExit(rc)
+print("成功。完成動画は Drive episodes/" + EPISODE + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（episode.json → 完成動画）
@@ -103,6 +105,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
+- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """

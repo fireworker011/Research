@@ -20,7 +20,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 ## 一発の実行
 
 **スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、`EPISODE` に slug、`PRESET` を選んで Run all。
-GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。
+GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
 
