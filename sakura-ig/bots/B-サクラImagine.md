@@ -27,4 +27,4 @@
 - 髪色を変える（ダークブラウンのまま）
 - 画面内に文字を焼く
 - 投稿、いいね、フォロー、DM
-- xAI HTTP API、`imagine-run.js`。Imagine への投げだけ
+- xAI HTTP API やスクリプト経由の生成。Grok Imagine への投げだけ
