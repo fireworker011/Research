@@ -66,7 +66,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 ## やること（生成は3つ。学習するなら④）
 
-1. **①** を実行 → Google Drive の許可を出す
+1. **①** を実行 → Google Drive の許可を出す（②を先に押しても、今のノートは①の記録を作り直します）
 2. **②** を実行 → **初めて**は待ちます。2回目以降は「設定だけ更新」（既定オン）で数十秒
 3. **③** でシーン＋**体位**を選んで実行 → 下に動画が出る
 4. **④** は学習用。体位フォルダにスマホ動画を入れてから。生成だけなら触らない
@@ -213,11 +213,51 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 上級の追加部品（リアル寄せ・胸など）は重ね上限のため無視します。
 """
 
+# ②③④が読む。①が書く /content/h3_paths.env が無い（①を飛ばした／ランタイム切断）ときは Drive を繋いで作り直す。
+LOAD_H3_PATHS = r'''
+def _load_h3_paths():
+    env_path = Path("/content/h3_paths.env")
+    if not env_path.is_file():
+        print("①の記録がありません（/content/h3_paths.env）。①を飛ばしたか、ランタイムが切れています。Drive の許可からやり直します…")
+        try:
+            from google.colab import drive
+            drive.mount("/content/drive")
+        except Exception as e:
+            raise SystemExit("Drive につながりませんでした。上の①を先に実行してください（許可を出す）。") from e
+        drive_root = "/content/drive/MyDrive/minimax-h3-comfyui"
+        drive_models = f"{drive_root}/models"
+        comfy_dir = "/content/ComfyUI"
+        for sub in ("diffusion_models", "text_encoders", "vae", "loras"):
+            os.makedirs(f"{drive_models}/{sub}", exist_ok=True)
+        for rel in ("output", "input", "input/phone", "train/packed"):
+            os.makedirs(f"{drive_root}/{rel}", exist_ok=True)
+        with open(env_path, "w") as f:
+            f.write(f"DRIVE_ROOT={drive_root}\nDRIVE_MODELS={drive_models}\nCOMFY_DIR={comfy_dir}\n")
+        import torch
+        if not torch.cuda.is_available():
+            raise SystemExit("GPU がオフです。上のメニュー「ランタイム」→「ランタイムのタイプを変更」→ GPU を A100 にして、①からやり直してください。")
+        print("Drive を記録しました。このセルを続けます。")
+    env = {}
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            env[k] = v
+    for key in ("DRIVE_ROOT", "DRIVE_MODELS", "COMFY_DIR"):
+        if not str(env.get(key) or "").strip():
+            raise SystemExit(key + " が h3_paths.env にありません。①からやり直してください。")
+    return env
+'''
+
 MD1 = r"""## ① Google Drive をつなぐ
 
 下のセルを実行すると、許可のポップアップが出ます。**許可** を押してください。
 
 フォームは触らなくて大丈夫です。GPU が A100 でないとここで止まります。
+
+②を先に押すと、昔のノートは赤い `FileNotFoundError: /content/h3_paths.env` になります。今のノートは②が①の記録を作り直します（許可のポップアップが出ます）。
 """
 
 CELL1 = r'''#@title ① Drive の許可を出す（ここは触らなくてOK）
@@ -304,6 +344,8 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い。2回目は短い�
 3. ②の **CivitaiのAPIキー** 欄に貼って実行
 
 401 / 403 が出たら、キーの貼り忘れです。欄に貼って②をもう一度。キー自体は画面に出ません。
+
+①を飛ばしても、②が Drive の許可から記録を作り直します。赤い `h3_paths.env` の FileNotFoundError は出ません。
 """
 
 CELL2 = r'''#@title ② 土台と部品を入れる（初回は待つ。2回目は設定だけ）
@@ -321,12 +363,8 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 
 import json, os, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
-
-env = {}
-with open("/content/h3_paths.env") as f:
-    for line in f:
-        k, v = line.strip().split("=", 1)
-        env[k] = v
+''' + LOAD_H3_PATHS + r'''
+env = _load_h3_paths()
 DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
@@ -870,12 +908,8 @@ else:
             print("別の文を使うクリップ:", "、".join(named), "。空の欄は前の続き。")
     elif any(not is_blank_prompt(x) for x in CHAIN_EXTRAS):
         print("つなぎ欄は「つなぐ」のときだけ使います。今は1本なので無視します。")
-
-env = {}
-with open("/content/h3_paths.env") as f:
-    for line in f:
-        k, v = line.strip().split("=", 1)
-        env[k] = v
+''' + LOAD_H3_PATHS + r'''
+env = _load_h3_paths()
 COMFY_DIR = Path(env["COMFY_DIR"])
 DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env.get("DRIVE_MODELS") or (DRIVE_ROOT / "models"))
@@ -1630,14 +1664,10 @@ print("④ 学習パックを用意します…")
 #@markdown オフ = 検品だけ。警告が消えてからオン。
 本番zipを作る = False  #@param {type:"boolean"}
 
-import sys
+import os, sys
 from pathlib import Path
-
-env = {}
-with open("/content/h3_paths.env") as f:
-    for line in f:
-        k, v = line.strip().split("=", 1)
-        env[k] = v
+''' + LOAD_H3_PATHS + r'''
+env = _load_h3_paths()
 DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 sys.path.insert(0, "/content/h3-lora-studio/train")
 sys.modules.pop("pack_dataset", None)

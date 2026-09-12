@@ -6223,6 +6223,26 @@ def test_all_act_clips_stay_silent():
     assert lock_act_sfx(talk, situation="futa_visible") == talk
 
 
+def test_cell2_recovers_missing_h3_paths_env():
+    """①を飛ばすと /content/h3_paths.env が無くて②が FileNotFoundError になっていた。"""
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    src = writer.read_text(encoding="utf-8")
+    assert "def _load_h3_paths" in src
+    assert "①の記録がありません" in src
+    assert 'env_path = Path("/content/h3_paths.env")' in src
+    assert "with open(env_path) as f:" in src
+    nb = json.loads((Path(__file__).resolve().parents[1] / "minimax_h3_lora_studio.ipynb").read_text(encoding="utf-8"))
+    cell2 = "".join(nb["cells"][4]["source"])
+    cell3 = "".join(nb["cells"][6]["source"])
+    cell4 = "".join(nb["cells"][8]["source"])
+    assert cell2.index("② 準備を始めています") < cell2.index("_load_h3_paths()")
+    assert "drive.mount" in cell2
+    for body in (cell2, cell3, cell4):
+        assert "_load_h3_paths()" in body
+        assert "①の記録がありません" in body
+        compile(body, "cell", "exec")
+
+
 def test_notebook_story_play_flow():
     writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
     src = writer.read_text(encoding="utf-8")

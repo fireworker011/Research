@@ -5,7 +5,7 @@ description: MiniMax H3 LoRA studio for Colab. SFW fast+quality is turbo plus on
 
 # h3-lora-studio
 
-質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。ノートは `python colab/_write_lora_studio_nb.py` で再生成。`colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ココナラ homage ノートの Turbo 既定は変えない。③の初期値は **登校（専用）**＋テキストから（訪問販売/検診/終点を初期値にしない）。`prepare_story_clip(..., force_t2v=True)` は Drive の試験 jpg を無視する。普通のつなぐ 20〜120秒は 1シーン＋長さで last-frame I2V（`rewrite_chain_opening_prompt` / `continue_chain_prompt`）。②の2回目は **設定だけ更新（既定オン）** で文章・JSONだけ取り直す。土台・LoRAの再取得と Drive の全部一覧は飛ばす。初めて／土台が無いときだけ全部入れる。説明書は GitHub の tar 一括。ローカルコピーは土台だけ（FL2VA・文字・VAE）。LoRA は Drive のまま。ref2va は参照シーンだけ。途中再開（`.part`）。
+質問しない。Colab 実装なら `minimax_h3_lora_studio.ipynb`。設定だけなら `select_loras.py`。ノートは `python colab/_write_lora_studio_nb.py` で再生成。`colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ココナラ homage ノートの Turbo 既定は変えない。③の初期値は **登校（専用）**＋テキストから（訪問販売/検診/終点を初期値にしない）。`prepare_story_clip(..., force_t2v=True)` は Drive の試験 jpg を無視する。普通のつなぐ 20〜120秒は 1シーン＋長さで last-frame I2V（`rewrite_chain_opening_prompt` / `continue_chain_prompt`）。②の2回目は **設定だけ更新（既定オン）** で文章・JSONだけ取り直す。土台・LoRAの再取得と Drive の全部一覧は飛ばす。初めて／土台が無いときだけ全部入れる。①を飛ばすと `/content/h3_paths.env` が無くて②が落ちていた。今のノートは②③④が Drive を繋いで記録を作り直す（赤い FileNotFoundError は出さない）。説明書は GitHub の tar 一括。ローカルコピーは土台だけ（FL2VA・文字・VAE）。LoRA は Drive のまま。ref2va は参照シーンだけ。途中再開（`.part`）。
 
 専用ストーリー（`STORY_IDS`、帰宅〜縁側の11話）は ③ で5パターン（`resolve_story_play` / `apply_story_play`）:
 - `〜（専用）` = カット。JSON のまま。`CHAIN=False`・`last_frame=None`。旧名「登校120秒（専用）」は `SITUATION_JA` のエイリアスで dedicated
