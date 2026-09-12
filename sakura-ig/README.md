@@ -41,7 +41,8 @@ GitHub Actions                    CSV が push されたら src/judge.js が Iss
 
 ```bash
 cd sakura-ig
-node src/build-keys.js --from 2026-09-13 --days 100   # 銀行を作る／延ばす
+node src/build-keys.js --from 2026-09-13 --days 200   # 銀行を作る／延ばす（--days を増やすだけ。既存日は変わらない）
+node src/dry-run.js --date 2026-10-01                 # A の1日を模擬（raw URL → IMAGINE_THROW 切り出し → 参照2枚）
 node src/validate-keys.js                             # 検品（重複・ロック語・木曜CTA・時刻）
 node src/judge.js --self-test && node src/judge.js    # 台帳の切り分け
 node src/handoff.js --local                           # Issue 掲示文の確認
@@ -52,6 +53,12 @@ node src/handoff.js --local                           # Issue 掲示文の確認
 1. `config/links.json` に Fanvue の URL を1本入れる（A がバイオに置く）
 2. Grok Bot 2体にカードを貼る（`bots/ROSTER.md`）。A は IG と GitHub にログインした状態にする
 3. あとは A の `席: …` が出た時だけ
+
+## 運用メモ
+
+- 生きている場所はブランチ `cursor/sakura-ig-manager-7fd3`。キーの中の URL もそこを指す。デフォルトへ移すなら `config/account.json` の `branch` / `raw_base` を変えて `build-keys.js` を回し直す（1回）
+- 銀行は 2027-03-31 まで。尽きる前に `--days` を増やして回す
+- 台帳の行が無い週は判定しない。数字を推定しない
 
 ## しないこと
 

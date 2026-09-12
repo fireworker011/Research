@@ -74,6 +74,20 @@ function sceneById(id) {
   return s;
 }
 
+/** 通常日の場面。日番号だけで決まる。 */
+function generalSceneFor(d) {
+  return pick(generalScenes(), d * 7);
+}
+
+/** 季節日の場面。月で決まるが、前日・翌日（通常日）と同じなら別の場面へ。すべて日付から計算。 */
+function seasonSceneFor(d, month) {
+  const season = bank.season_by_month[String(month)];
+  const neighbours = new Set([generalSceneFor(d - 1).id, generalSceneFor(d + 1).id]);
+  if (!neighbours.has(season.scene)) return { scene: sceneById(season.scene), prop: season.prop };
+  const fallback = bank.scene.find((s) => !neighbours.has(s.id) && s.id !== season.scene && !SEASONAL_ONLY.has(s.id));
+  return { scene: fallback, prop: season.prop };
+}
+
 /** 日付 → キー。乱数・状態なし。 */
 function buildKey(iso) {
   const date = utcDate(iso);
@@ -86,11 +100,9 @@ function buildKey(iso) {
   let scene;
   let prop = null;
   if (type === 'season') {
-    const season = bank.season_by_month[String(month)];
-    scene = sceneById(season.scene);
-    prop = season.prop;
+    ({ scene, prop } = seasonSceneFor(d, month));
   } else {
-    scene = pick(generalScenes(), d * 7);
+    scene = generalSceneFor(d);
   }
   const variant = pick(def.variants, d);
   const captionJp = pick(def.caption_jp, d * 2 + 1);

@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "keys": "node src/build-keys.js --from 2026-09-13 --days 100",
+    "keys": "node src/build-keys.js --from 2026-09-13 --days 200",
     "validate": "node src/validate-keys.js",
     "judge": "node src/judge.js --self-test && node src/judge.js",
     "handoff": "node src/handoff.js --local",
