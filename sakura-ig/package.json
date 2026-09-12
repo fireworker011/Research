@@ -1,0 +1,16 @@
+{
+  "name": "sakura-ig",
+  "version": "2.0.0",
+  "private": true,
+  "description": "sakura_ai_beauty 専属マネージャー。起動キー銀行を書く。動画は Grok Bot → Grok Imagine（API 不要）。",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "keys": "node src/build-keys.js --from 2026-09-13 --days 200",
+    "validate": "node src/validate-keys.js",
+    "judge": "node src/judge.js --self-test && node src/judge.js",
+    "handoff": "node src/handoff.js --local",
+    "check": "node src/validate-keys.js && node src/judge.js --self-test"
+  }
+}
