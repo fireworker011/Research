@@ -15,7 +15,7 @@
 
 席1回。教育 Threads（『はな｜小学生の習い事メモ』）に N高またはアイズを置けるなら置く。1語は返すな。終わったら `完了`。
 
-独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
+Grok 管理者 `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4` が席を担当者へ出せ。独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
 
 ## 明日（ゲート未達なら同じ）
 

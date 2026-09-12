@@ -5,7 +5,8 @@
 
 棚卸し日: 2026-09-12 JST。Cloud Agent 87 体を読んだ。
 本線の Cursor は **総司令 1体だけ**: [１００万円売り上げ自動化](https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971)。
-統括命令: `HQ_COMMAND.md`。ピン留めチャットは総司令の下。独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。Grok Bot の clone も1つ（`dump/G_hq_boot.txt`）。
+統括命令: `HQ_COMMAND.md`。ピン留めチャットは総司令の下。独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。
+Grok 側は **管理者 1**（`b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`、入口 `dump/G_hq_admin.txt`）が Issue の1ファイルを読み、担当者へ実施する。日常 clone は1つ（`dump/G_hq_boot.txt`）。
 
 ## Cursor の最大化（台数ではなく権限）
 
@@ -17,9 +18,10 @@ Cursor が持つのは仕組みの全部: dump 選択、円カレンダー、こ
 
 | 何か | 役割 | 備考 |
 |---|---|---|
-| Cursor 総司令 1体 | 上流と他 Cursor の統括。起こされた日は命令・台帳・TODAY | 上の URL |
-| Grok Bot 1 clone | `G_hq_boot.txt` → Issue 110 の `hq-instruct:` 1ファイル | 毎日貼り直すな |
-| 指示役 07:22 JST | overlay / 円で sitting か計測かを書く | 投稿しない |
+| Cursor 総司令 1体 | 上流と他 Cursor の統括。起こされた日は命令・台帳・TODAY。管理者へ読むファイルを指定 | 上の URL |
+| Grok 管理者 | `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`。`G_hq_admin.txt` → Issue の1ファイル → 担当者へ実施1つ | コードしない。独立2体に振るな。HQ_COMMAND は開けるな |
+| Grok Bot 1 clone（担当者） | `G_hq_boot.txt` → Issue 110 の `hq-instruct:` 1ファイル | 毎日貼り直すな。管理者の実施に従う |
+| 指示役 07:22 JST | overlay / 円で sitting か計測かを書く | 投稿しない。管理者 dump は指名しない |
 | `G_hq_human_sitting.txt` | 人間の席1回 | overlay 空のあいだ |
 | `G_hq_a8_csv.txt` | 見た円だけ | overlay ≥ 1 |
 | `G_xm_trade.txt` | STOP のときだけ | ENTRY は出すな。ペーパー≠残高 |
@@ -53,13 +55,15 @@ Cursor が持つのは仕組みの全部: dump 選択、円カレンダー、こ
 H3 の JPEG アップロード専用（内部が数十体）。本線の円を動かさない。
 名前が「Check A8 yen if logged in」「Recheck GitHub A8 CW login」のものは全てここ。
 
-## Grok Bot が開いてよいファイル
+## Grok が開いてよいファイル
 
-`dump/README.md` の LIVE だけ。更新日時で他を選ぶな。結合するな。
-このファイルと `HQ_CALENDAR.md` は開けるな。
+管理者: `G_hq_admin.txt` と Issue の `hq-instruct:` 1ファイル。
+担当者（日常 clone）: `dump/README.md` の LIVE のうち boot と指示役が指す1ファイル。
+更新日時で他を選ぶな。結合するな。このファイルと `HQ_CALENDAR.md` / `HQ_COMMAND.md` は開けるな。指示役は `G_hq_admin.txt` を指名しない。
 
 ## 起こされた日の Cursor
 
 1. Issue 110 の `hq-gate:` / overlay / 円を読む
-2. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）。独立2体には仕事を振るな
-3. `output/sprint/TODAY.md` を1回更新して止まる
+2. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）。独立2体には仕事を振るな。担当者へ直接采配するな
+3. Grok 管理者へは `G_hq_admin.txt` と Issue の1ファイル。今日の実施は席1回
+4. `output/sprint/TODAY.md` を1回更新して止まる

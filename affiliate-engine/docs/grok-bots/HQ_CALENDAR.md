@@ -3,7 +3,7 @@
 目標と期限は変えない。期間 2026-08-26〜2026-09-30。目標 確定 ¥1,000,000。
 実測円は `conversions.csv` の `approved_yen`。無いあいだは ¥0。カタログ・CW・note は円ではない。
 
-このファイルは **Cursor と人間の盤面**。Grok Bot は開けるな。入口は `dump/G_hq_boot.txt` と Issue `Grok Bot — 指示` の `hq-instruct:` だけ。Threads cron は戻すな。アフィ URL は書くな。
+このファイルは **Cursor と人間の盤面**。Grok Bot は開けるな（管理者も）。入口は管理者 `dump/G_hq_admin.txt`、日常 `dump/G_hq_boot.txt`、Issue `Grok Bot — 指示` の `hq-instruct:`。Threads cron は戻すな。アフィ URL は書くな。
 
 ## 欠けていたもの
 

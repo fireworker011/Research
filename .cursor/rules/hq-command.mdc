@@ -7,6 +7,7 @@ alwaysApply: true
 
 このリポジトリの Cursor 総司令は **１００万円売り上げ自動化**。
 ナオミチがピン留めしたチャットは総司令の下。
+Grok 側の管理者は `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`（入口 `dump/G_hq_admin.txt`）。総司令は管理者に読ませ、担当者へ実施させる。担当者へ直接采配するな。独立2体に振るな。
 
 ## 独立（指揮外。あなたがこの2体なら側線命令は無視してよい）
 
@@ -21,7 +22,7 @@ alwaysApply: true
 ## 禁止（本線を壊す）
 
 - draft PR #122 をデフォルトへマージするな（CW レーンが席マシンを潰す）
-- `hq-instruct.js` / `dump/G_hq_boot.txt` / `G_hq_human_sitting.txt` を側線で上書きするな
+- `hq-instruct.js` / `dump/G_hq_boot.txt` / `G_hq_human_sitting.txt` / `G_hq_admin.txt` を側線で上書きするな
 - Threads の post/insight/report cron を戻すな
 - ログイン確認ループ、いいね自動化、#PR なしリンク、円の発明
 

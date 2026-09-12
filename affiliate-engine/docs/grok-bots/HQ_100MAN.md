@@ -1,6 +1,6 @@
 # HQ — デフォルト clone 用
 
-指令塔の clone は Grok Bot 1つ。日常のやり取りは Bot。Cursor は総司令1体（台帳 `HQ_ROSTER.md`・命令 `HQ_COMMAND.md` は Bot が開けるな）。数字は invent しない。CW 司令塔をこの clone に足すな。
+指令塔の日常 clone は Grok Bot 1つ。Grok 管理者は別チャット `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`（入口 `dump/G_hq_admin.txt`。読んで担当者へ実施）。日常のやり取りは担当者 Bot。Cursor は総司令1体（台帳 `HQ_ROSTER.md`・命令 `HQ_COMMAND.md` は Bot が開けるな）。数字は invent しない。CW 司令塔をこの clone に足すな。
 
 今すぐ dump 1ファイルだけ開け:
 
