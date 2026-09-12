@@ -1,0 +1,67 @@
+{
+  "id": "pussy_spread",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": true,
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
+  "allow_turbo": true,
+  "canvas": {
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
+  },
+  "stack_plan": {
+    "act": {
+      "id": "pussy-spread-h3",
+      "strength": 0.75
+    },
+    "helper": {
+      "id": "synth-pussy-h3",
+      "strength": 0.55
+    },
+    "turbo": {
+      "id": "larry-v4",
+      "strength": 0.5
+    }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 8,
+    "note": "Pussy spread + Synth detail + Larry 0.5 / 8step. Cinema off because helper is on."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "hmnsfw-aio-v25",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
+    "lesbian-cunnilingus-h3",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "thumbinbutt-h3",
+    "cumouf-h3",
+    "final-thrust-h3",
+    "photoreal-h3-still",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy"
+  ],
+  "scenes": {
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready spreading. No man appears. No partner. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "Vertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready spreading. No man appears. No partner.\n\nAll performers are consenting adult women 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, penis",
+  "feminine_lock": true
+}
