@@ -8,7 +8,13 @@ function nextHumanAction(queue, capability, commander) {
   const ready = jobs.filter((j) => j.status === 'ready');
   if (ready.length) return `納品待ち ${ready.length} 件（${ready.map((j) => j.id).join(', ')}）。DELIVERY.md を見て納品ボタン → CW: DELIVERED <id>`;
   const qaFailed = jobs.filter((j) => j.status === 'qa_failed');
-  if (qaFailed.length) return `QA 不合格 ${qaFailed.length} 件（${qaFailed.map((j) => j.id).join(', ')}）。素材を足して CW: MAKE <id>`;
+  if (qaFailed.length) {
+    return `QA 不合格 ${qaFailed.length} 件（${qaFailed.map((j) => j.id).join(', ')}）。直した本文を CW: DRAFT <id>、または素材を足して CW: MAKE <id>`;
+  }
+  const making = jobs.filter((j) => j.status === 'making');
+  if (making.length) {
+    return `完成品待ち ${making.length} 件（${making.map((j) => j.id).join(', ')}）。Grok が本文を書き CW: DRAFT <id>（Anthropic 不要）`;
+  }
   const contracted = jobs.filter((j) => j.status === 'contracted');
   if (contracted.length) return `契約済み ${contracted.length} 件（${contracted.map((j) => j.id).join(', ')}）。素材を貼って CW: MAKE <id>`;
   const drafted = jobs.filter((j) => j.status === 'drafted');

@@ -10,8 +10,9 @@
 | `CW: MSG <id>` + 相手の文 | 人間 | 定型返信の下書き |
 | `CW: CONTRACT <id>` + メモ | 人間 | **受注した**（可否は人間）→ BRIEF |
 | `CW: MATERIAL <id>` + 素材 | 人間 | 素材を足す |
-| `CW: MAKE <id>` (+素材) | 人間 | 完成品 → QA → 納品パッケージ |
-| `CW: REVISE <id>` + 修正依頼 | 人間 | 反映版 |
+| `CW: MAKE <id>` (+素材) | 人間 | Grok 用プロンプト（Anthropic 不要） |
+| `CW: DRAFT <id>` + 本文 | Grok / 人間 | 完成品を貼る → QA → 納品パッケージ |
+| `CW: REVISE <id>` + 修正依頼 | 人間 | 反映版のプロンプト → また `CW: DRAFT` |
 | `CW: DELIVERED <id>` | 人間 | 納品ボタンを押した |
 | `CW: PAID <id> <整数円> <メモ>` | 人間 | 画面で確定を見た日だけ。カンマ・カタログ・URL は拒否 |
 | `CW: REJECT <id>` | 人間 | 不採用・失注 |
@@ -20,7 +21,7 @@
 | `CW: PAPER_ONLY` | 人間 | 既定に戻す |
 | `CW: DESK` | 誰でも | デスクだけ出す |
 
-`cw-apply:` `cw-reply:` `cw-brief:` `cw-deliver:` `cw-qa:` `cw-profile:` `cw-note:` `cw-desk:` は機械の告知。指令ではない。
+`cw-apply:` `cw-reply:` `cw-brief:` `cw-make:` `cw-deliver:` `cw-qa:` `cw-profile:` `cw-note:` `cw-desk:` は機械の告知。指令ではない。
 
 `CW: RESUME` は **無い**。自動送信のライブゲートを作らない。
 `CW: GO` / `AFFI: GO` は本線（`Grok Bot — 指示`）の言葉。この Issue には無関係。

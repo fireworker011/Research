@@ -6,7 +6,7 @@ CW 全自動受注は **5 役**。増やさない。各役の指示は下の枠�
 |---|---|---|---|
 | 0. 総統括 | Cursor「１００万円売り上げ自動化」 | 起こされた日だけ | 本線。CW は側線として可否だけ |
 | 1. CW 司令塔（機械） | 非公開リポジトリの GitHub Actions（`private-repo/cw.yml`）が `cw-engine/src/apply-commander-comment.js` を回す | イベント駆動（人間のコメント） | 非公開リポジトリの Issue `CW — 司令塔` と同リポジトリのファイル |
-| 2. CW 前面（任意） | Grok Bot の **別会話**（`docs/grok-bots/G_cw.txt`） | 人間が開いたとき | 告知を写す。Issue には人間の文をそのまま載せる行だけ |
+| 2. CW 前面（任意） | Grok Bot の **別会話**（`docs/grok-bots/G_cw.txt`） | 人間が開いたとき | 告知を写す。完成品は `CW: DRAFT`。HQ clone には足さない |
 | 3. CW 総責任者 | Cursor（この PR の作者） | `参謀へ:` で起こされた日だけ | `cw-engine/**` と CI。本線は触らない |
 | 4. ナオミチ | 人間 | 外部サイトのクリックと受注可否 | クラウドワークス、非公開リポジトリの Issue と Secret |
 
@@ -35,8 +35,9 @@ Issue `CW — 司令塔` の人間コメントを 1 通ずつ処理し、`cw-<ki
 | `CW: MSG <id>` + 相手の文 | 意図分類 → 定型返信の下書き → `messages/` | `cw-reply:` |
 | `CW: CONTRACT <id>` + メモ | 状態 contracted → BRIEF（成果物定義・受入条件・手順・不足素材と依頼文）→ `BRIEF.md` | `cw-brief:` |
 | `CW: MATERIAL <id>` + 素材 | `materials/NN.md` に保存 | `cw-note:` |
-| `CW: MAKE <id>` (+素材) | 完成品（LLM。事実は素材だけ）→ QA → 合格なら `deliverables/vN/` + `DELIVERY.md` | `cw-deliver:` / 不合格 `cw-qa:` |
-| `CW: REVISE <id>` + 修正依頼 | 反映版 → QA | `cw-deliver:` / `cw-qa:` |
+| `CW: MAKE <id>` (+素材) | Grok 用プロンプト（Anthropic は使わない） | `cw-make:` |
+| `CW: DRAFT <id>` + 本文 | Grok / 人間の完成品 → QA。合格なら `deliverables/vN/` + `DELIVERY.md` | `cw-deliver:` / 不合格 `cw-qa:` |
+| `CW: REVISE <id>` + 修正依頼 | 反映版のプロンプト → また `CW: DRAFT` | `cw-make:` |
 | `CW: DELIVERED <id>` | 状態 delivered | `cw-note:` |
 | `CW: PAID <id> <整数円> <メモ>` | 台帳 `data/cw_ledger.csv`（カンマ・カタログ・URL は拒否）→ 状態 paid | `cw-note:` |
 | `CW: REJECT <id>` | 状態 lost | `cw-note:` |
@@ -45,19 +46,19 @@ Issue `CW — 司令塔` の人間コメントを 1 通ずつ処理し、`cw-<ki
 | `CW: DESK` | デスクだけ | `cw-desk:` |
 
 やらない: ログイン、応募 POST、`RESUME`、円の発明、素材に無い事実、公開リポジトリへの書き込み、HQ Issue への書き込み。
-`ANTHROPIC_API_KEY` が無いときは完成品を作らず `llm_missing` と言う（発明しない）。
+`ANTHROPIC_API_KEY` は不要。`CW: MAKE` はプロンプトだけ出す。完成品は Grok Bot（別会話）が書いて `CW: DRAFT`。発明しない。QA は機械。
 
 ## 2. CW 前面（Grok・任意）への指示
 
 貼るのは `docs/grok-bots/G_cw.txt` の本文だけ。**HQ clone とは別の会話**。要点:
 
 ```
-機械の告知（cw-*:）を人間に写す。next_human の1行を言う。下書きは変えずに写す。
-Issue に書くのは、人間がそう言ったときの CW: JOB / MSG / SENT / SKIP / CONTRACT / DELIVERED / REJECT と、止めるときの CW: HALT だけ。
-仕事 ID を自分で足すな。本文を自分で作るな。PAID を代筆するな。ログインするな。remain / n10 を開けるな。
+機械の告知（cw-*:）を人間に写す。next_human の1行を言う。応募稿は変えずに写す。
+`cw-make:` が来たら完成品を書いて `CW: DRAFT <id>` で Issue に貼る。Anthropic は使わない。
+仕事 ID を自分で足すな。応募稿を自分で作るな。PAID を代筆するな。ログインするな。remain / n10 を開けるな。
 ```
 
-非公開リポジトリを Grok が読めないなら、この役は置かない。人間が GitHub アプリで Issue を直接見る。
+非公開リポジトリを Grok が読めないなら、人間が `cw-make:` のプロンプトを Grok に貼り、返ってきた本文を Issue へ `CW: DRAFT` で載せる。HQ clone にこの dump を足すな。
 
 ## 3. CW 総責任者（Cursor）への指示
 
@@ -82,7 +83,7 @@ Issue に書くのは、人間がそう言ったときの CW: JOB / MSG / SENT /
 2. `cw-apply:` の応募稿の（人間が書く）を埋めて、クラウドワークスで送る → `CW: SENT <id>`。送らないなら `CW: SKIP <id>`
 3. 相手の文が来たら `CW: MSG <id>` + 文 → 返信下書きを貼る
 4. **受注するか決める**。契約したら `CW: CONTRACT <id>` + メモ。断るなら `CW: REJECT <id>`
-5. 仮払い確認 → 素材を `CW: MAKE <id>` に貼る → `cw-deliver:` の DELIVERY.md を見て納品ボタン → `CW: DELIVERED <id>`
+5. 仮払い確認 → 素材を `CW: MAKE <id>` に貼る → Grok が書いて `CW: DRAFT <id>` → `cw-deliver:` の DELIVERY.md を見て納品ボタン → `CW: DELIVERED <id>`
 6. 修正依頼は `CW: REVISE <id>` + 依頼文
 7. 報酬確定を画面で見た日だけ `CW: PAID <id> <整数円>`
 

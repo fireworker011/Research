@@ -5,8 +5,8 @@
                                                                     └─ OK ─▶ 応募稿 apply-draft.js ─▶ drafted
 人間: 貼って送る ─▶ CW: SENT ─▶ sent ──相手の文── CW: MSG ─▶ 定型返信 reply-draft.js
 人間: 受注する ─▶ CW: CONTRACT ─▶ contracted ─▶ BRIEF brief.js（成果物定義・受入条件・不足素材の依頼文）
-人間: 仮払い確認・素材 ─▶ CW: MAKE ─▶ making ─▶ 完成品 make.js ─▶ QA compliance.js ─┬─ fail ─▶ qa_failed
-                                                                                 └─ pass ─▶ ready + DELIVERY.md
+人間: 仮払い確認・素材 ─▶ CW: MAKE ─▶ making ─▶ Grok が本文 ─▶ CW: DRAFT ─▶ QA ─┬─ fail ─▶ qa_failed
+                                                                              └─ pass ─▶ ready + DELIVERY.md
 人間: 納品ボタン ─▶ CW: DELIVERED ─▶ delivered ──修正── CW: REVISE ─▶ making …
 人間: 画面で確定 ─▶ CW: PAID <円> ─▶ paid + cw_ledger.csv
 ```
@@ -19,7 +19,8 @@
 | qualified / drafted | 応募稿あり | 人間: 送る `SENT` / 見送り `SKIP` |
 | sent | 返事待ち | 人間: `MSG` / `CONTRACT` / `REJECT` |
 | contracted | BRIEF あり | 人間: 仮払い確認 → `MAKE` + 素材 |
-| making → qa_failed | QA 不合格（要確認が残る・URL・断定・分量） | 人間: 素材を足して `MAKE` |
+| making | Grok 用プロンプト待ち | Grok: `CW: DRAFT` |
+| making → qa_failed | QA 不合格（要確認が残る・URL・断定・分量） | 直した本文を `DRAFT`、または素材を足して `MAKE` |
 | making → ready | DELIVERY.md あり | 人間: 納品ボタン → `DELIVERED` |
 | delivered | 検収待ち | 人間: `REVISE` or `PAID` |
 | paid | 台帳に確定 | 終わり |
@@ -34,6 +35,7 @@ work/
   jobs/<id>/JOB.md  APPLY.md  BRIEF.md
   jobs/<id>/messages/NN_in.md  NN_reply.md
   jobs/<id>/materials/NN.md
+  jobs/<id>/GROK_PROMPT.md
   jobs/<id>/deliverables/vN/deliverable.md|.csv  deliverable.txt  QA.md  DELIVERY.md
   profile/PROFILE.md
   reports/TODAY.md
@@ -45,7 +47,7 @@ work/
 注意（落とさない）: 外部連絡の誘導 / 仮払い前作業の匂い / AI 申告必須 / スクール除外 / 応募が募集の10倍。
 優先度: カテゴリ優先度 + 未経験可 + 継続 + 枠余り + 応募項目が少ない − AI完結でない。
 
-## 完成品の型（`make.js`）
+## 完成品の型（`make.js` のプロンプト。本文は Grok）
 
 | カテゴリ | 出力 | 備考 |
 |---|---|---|

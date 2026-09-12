@@ -24,11 +24,11 @@ Affiliate / XM と同じく GitHub 上で保守する。ただし **実行と保
 ナオミチ ── Issue「CW — 司令塔」（非公開リポジトリ）にコメント ──▶ GitHub Actions（非公開）
                                                                       │ checkout: Research/cw-engine（公開・読むだけ）
                                                                       ▼
-   intake → qualify → apply-draft → reply-draft → brief → make → compliance(QA) → deliver → ledger
+   intake → qualify → apply-draft → reply-draft → brief → make(prompt) → Grok DRAFT → compliance(QA) → deliver → ledger
                                                                       │
                                                                       ▼
-                                              cw-apply: / cw-reply: / cw-brief: / cw-deliver: / cw-desk:（next_human）
-ナオミチ ── クラウドワークスで送信・契約・素材受領・納品ボタン・出金 ──▶ CW: SENT / CONTRACT / MAKE / DELIVERED / PAID
+                                              cw-apply: / cw-reply: / cw-brief: / cw-make: / cw-deliver: / cw-desk:（next_human）
+ナオミチ ── クラウドワークスで送信・契約・素材受領・納品ボタン・出金 ──▶ CW: SENT / CONTRACT / MAKE / DRAFT / DELIVERED / PAID
 ```
 
 ## 主力（AI で完結するもの）

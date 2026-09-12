@@ -11,7 +11,7 @@ const { qualify } = require('./qualify');
 const { draftApplication } = require('./apply-draft');
 const { draftReply } = require('./reply-draft');
 const { buildBrief, enrichBrief } = require('./brief');
-const { makeDeliverable } = require('./make');
+const { makeDeliverable, qaDeliverableText } = require('./make');
 const { buildDeliveryDoc } = require('./deliver');
 const { buildProfileDraft } = require('./profile-draft');
 const { recordPaid, ledgerTotal } = require('./ledger');
@@ -31,8 +31,9 @@ const CHEAT_SHEET = [
   '| `CW: MSG <id>` + 相手の文 | 定型返信の下書き |',
   '| `CW: CONTRACT <id>` + メモ | 契約した → BRIEF（業務の把握・素材依頼文） |',
   '| `CW: MATERIAL <id>` + 素材 | 素材を足す |',
-  '| `CW: MAKE <id>` (+素材) | 完成品 → QA → 納品パッケージ |',
-  '| `CW: REVISE <id>` + 修正依頼 | 反映版 |',
+  '| `CW: MAKE <id>` (+素材) | Grok 用プロンプト（完成品は `CW: DRAFT`。Anthropic 不要） |',
+  '| `CW: DRAFT <id>` + 完成品本文 | Grok / 人間が本文を貼る → QA → 納品パッケージ |',
+  '| `CW: REVISE <id>` + 修正依頼 | 反映版のプロンプト → また `CW: DRAFT` |',
   '| `CW: DELIVERED <id>` | 納品ボタンを押した |',
   '| `CW: PAID <id> <円>` | 画面で確定を見た日だけ |',
   '| `CW: REJECT <id>` | 不採用・失注 |',
@@ -168,30 +169,9 @@ function handleMaterial(cmd, ctx, now) {
   return { kind: 'note', id: cmd.id, body: `${cmd.id}: 素材 ${n} 件目を保存した。揃ったら \`CW: MAKE ${cmd.id}\`。`, queue: ctx.queue };
 }
 
-async function handleMake(cmd, ctx, now, { revision = false } = {}) {
-  const job0 = findJob(ctx.queue, cmd.id);
-  if (!job0) return { kind: 'note', id: cmd.id, body: `${cmd.id} はキューに無い。`, queue: ctx.queue };
-  if (revision && !cmd.payload) return { kind: 'note', id: cmd.id, body: `${cmd.id}: 修正依頼の文を2行目以降に貼る。`, queue: ctx.queue };
-  if (!revision && cmd.payload) appendMaterial(cmd.id, cmd.payload, now);
-  const start = transition(job0, 'MAKE', now);
-  if (!start.ok) return { kind: 'note', id: cmd.id, body: `${cmd.id}: ${start.reason}。先に \`CW: CONTRACT ${cmd.id}\`。`, queue: ctx.queue };
-  let job = start.job;
-  const materials = listMaterials(cmd.id).join('\n\n');
-  let briefText = readText(path.join(jobDir(cmd.id), 'BRIEF.md'), '');
-  let brief = buildBrief(job, { capability: ctx.capability, materials, now });
-  if (!briefText) {
-    briefText = brief.text;
-    writeText(path.join(jobDir(cmd.id), 'BRIEF.md'), briefText);
-  }
+function finalizeQa(cmd, job, ctx, now, result, { revision = false } = {}) {
   const version = Number(job.revisions || 0) + 1;
   const outDir = path.join(jobDir(cmd.id), 'deliverables', `v${version}`);
-  const result = await makeDeliverable(job, { capability: ctx.capability, brief, briefText, materials, revisionRequest: revision ? cmd.payload : null });
-  if (result.blocked) {
-    const fail = transition(job, 'QA_FAIL', now);
-    job = fail.ok ? { ...fail.job, last_block: result.blocked } : job;
-    const why = result.blocked === 'llm_missing' ? '非公開リポジトリの Secret `ANTHROPIC_API_KEY` が無い。完成品は発明しない。' : result.blocked;
-    return { kind: 'qa', id: cmd.id, body: `${cmd.id}: 完成品を作れなかった（${why}）。`, queue: upsertJob(ctx.queue, job, now) };
-  }
   const files = [];
   const main = path.join(outDir, `deliverable.${result.ext}`);
   writeText(main, result.text);
@@ -208,7 +188,7 @@ async function handleMake(cmd, ctx, now, { revision = false } = {}) {
     return {
       kind: 'qa',
       id: cmd.id,
-      body: `${cmd.id} v${version}: QA 不合格 — ${result.qa.issues.join(', ')}。素材を足すか指示を明確にして \`CW: MAKE ${cmd.id}\`（下書きは ${files[0]}）。`,
+      body: `${cmd.id} v${version}: QA 不合格 — ${result.qa.issues.join(', ')}。直した本文を \`CW: DRAFT ${cmd.id}\`、または素材を足して \`CW: MAKE ${cmd.id}\`（下書きは ${files[0]}）。`,
       queue: upsertJob(ctx.queue, job, now)
     };
   }
@@ -226,6 +206,63 @@ async function handleMake(cmd, ctx, now, { revision = false } = {}) {
     `納品ボタンを押したら \`CW: DELIVERED ${cmd.id}\`。修正依頼が来たら \`CW: REVISE ${cmd.id}\` + 依頼文。`
   ].join('\n');
   return { kind: 'deliver', id: cmd.id, body, queue: upsertJob(ctx.queue, job, now) };
+}
+
+async function handleMake(cmd, ctx, now, { revision = false } = {}) {
+  const job0 = findJob(ctx.queue, cmd.id);
+  if (!job0) return { kind: 'note', id: cmd.id, body: `${cmd.id} はキューに無い。`, queue: ctx.queue };
+  if (revision && !cmd.payload) return { kind: 'note', id: cmd.id, body: `${cmd.id}: 修正依頼の文を2行目以降に貼る。`, queue: ctx.queue };
+  if (!revision && cmd.payload) appendMaterial(cmd.id, cmd.payload, now);
+  const start = transition(job0, 'MAKE', now);
+  if (!start.ok) return { kind: 'note', id: cmd.id, body: `${cmd.id}: ${start.reason}。先に \`CW: CONTRACT ${cmd.id}\`。`, queue: ctx.queue };
+  let job = start.job;
+  const materials = listMaterials(cmd.id).join('\n\n');
+  let briefText = readText(path.join(jobDir(cmd.id), 'BRIEF.md'), '');
+  const brief = buildBrief(job, { capability: ctx.capability, materials, now });
+  if (!briefText) {
+    briefText = brief.text;
+    writeText(path.join(jobDir(cmd.id), 'BRIEF.md'), briefText);
+  }
+  const result = await makeDeliverable(job, { capability: ctx.capability, brief, briefText, materials, revisionRequest: revision ? cmd.payload : null });
+  if (result.blocked === 'await_grok') {
+    writeText(path.join(jobDir(cmd.id), 'GROK_PROMPT.md'), result.grokPrompt);
+    const shown = String(result.grokPrompt || '').slice(0, 12000);
+    return {
+      kind: 'make',
+      id: cmd.id,
+      body: [
+        `${cmd.id}: Anthropic API は使わない。Grok Bot（HQ clone ではない別会話）が完成品を書く。`,
+        `プロンプト全文: jobs/${cmd.id}/GROK_PROMPT.md`,
+        '',
+        fence(shown),
+        '',
+        `書けたら 1 行目 \`CW: DRAFT ${cmd.id}\`、2 行目以降に成果物本体。発明しない。`
+      ].join('\n'),
+      queue: upsertJob(ctx.queue, job, now)
+    };
+  }
+  if (result.blocked) {
+    const fail = transition(job, 'QA_FAIL', now);
+    job = fail.ok ? { ...fail.job, last_block: result.blocked } : job;
+    return { kind: 'qa', id: cmd.id, body: `${cmd.id}: 完成品を作れなかった（${result.blocked}）。Grok に \`CW: DRAFT ${cmd.id}\` で本文を貼る。`, queue: upsertJob(ctx.queue, job, now) };
+  }
+  return finalizeQa(cmd, job, ctx, now, result, { revision });
+}
+
+function handleDraft(cmd, ctx, now) {
+  const job0 = findJob(ctx.queue, cmd.id);
+  if (!job0) return { kind: 'note', id: cmd.id, body: `${cmd.id} はキューに無い。`, queue: ctx.queue };
+  if (!cmd.payload) return { kind: 'note', id: cmd.id, body: `${cmd.id}: 完成品の本文を2行目以降に貼る（\`CW: DRAFT ${cmd.id}\`）。`, queue: ctx.queue };
+  let job = job0;
+  if (job.status !== 'making') {
+    const start = transition(job, 'MAKE', now);
+    if (!start.ok) return { kind: 'note', id: cmd.id, body: `${cmd.id}: ${start.reason}。先に \`CW: CONTRACT ${cmd.id}\` と \`CW: MAKE ${cmd.id}\`。`, queue: ctx.queue };
+    job = start.job;
+  }
+  const materials = listMaterials(cmd.id).join('\n\n');
+  const brief = buildBrief(job, { capability: ctx.capability, materials, now });
+  const result = qaDeliverableText(job, { capability: ctx.capability, brief, materials, text: cmd.payload });
+  return finalizeQa(cmd, job, ctx, now, result, { revision: Number(job.revisions || 0) > 0 });
 }
 
 function handlePaid(cmd, ctx, now) {
@@ -266,6 +303,8 @@ async function dispatch(cmd, ctx, now) {
       return handleMaterial(cmd, ctx, now);
     case 'MAKE':
       return handleMake(cmd, ctx, now);
+    case 'DRAFT':
+      return handleDraft(cmd, ctx, now);
     case 'REVISE':
       return handleMake(cmd, ctx, now, { revision: true });
     case 'DELIVERED':

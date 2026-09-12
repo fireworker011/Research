@@ -39,26 +39,84 @@ function extension(category) {
   return category && category.id === 'data_structuring' ? 'csv' : 'md';
 }
 
-async function makeDeliverable(job, { capability, brief, briefText, materials, revisionRequest = null }) {
+function makerSystem(category) {
+  return MAKER_SYSTEM[category ? category.id : ''] || '成果物本体だけを書く。';
+}
+
+function grokPacket(job, { capability, brief, briefText, materials, revisionRequest = null }) {
   const category = categoryById(capability, job.category);
-  if (!llm.llmAvailable()) {
-    return { ok: false, blocked: 'llm_missing', text: null, category, ext: extension(category) };
-  }
   const prompt = buildPrompt(job, { category, brief: briefText, materials, revisionRequest });
-  const system = MAKER_SYSTEM[category ? category.id : ''] || '成果物本体だけを書く。';
-  let raw;
-  try {
-    raw = await llm.ask(prompt, { system, maxTokens: 8000 });
-  } catch (err) {
-    return { ok: false, blocked: `llm_error:${String(err.message || err).slice(0, 80)}`, text: null, category, ext: extension(category) };
-  }
-  const text = llm.stripFences(raw);
-  const qa = checkDeliverable(text, {
+  const system = `${llm.BASE_SYSTEM}\n\n${makerSystem(category)}`;
+  return { jobId: job.id, category, ext: extension(category), system, prompt };
+}
+
+function formatGrokPrompt(packet) {
+  return [
+    '# Grok への完成品依頼（Anthropic API は使わない）',
+    '',
+    'HQ clone には貼るな。この非公開 Issue の仕事だけ。素材に無い事実は書くな。',
+    '',
+    '## 守ること',
+    packet.system,
+    '',
+    '## 依頼',
+    packet.prompt,
+    '',
+    '## 書けたら Issue にこれだけ',
+    '',
+    '```',
+    `CW: DRAFT ${packet.jobId}`,
+    '<成果物本体だけ。このフェンスの説明文は貼らない>',
+    '```'
+  ].join('\n');
+}
+
+function qaDeliverableText(job, { capability, brief, materials, text }) {
+  const category = categoryById(capability, job.category);
+  const cleaned = llm.stripFences(text);
+  const qa = checkDeliverable(cleaned, {
     materials: `${materials || ''}\n${job.text_excerpt || ''}`,
     charSpec: brief && Array.isArray(brief.spec) ? brief.spec : null,
     category: category ? category.id : null
   });
-  return { ok: qa.ok, blocked: null, text, qa, category, ext: extension(category), human_tool_required: Boolean(category && category.ai_complete === false) };
+  return {
+    ok: qa.ok,
+    blocked: null,
+    text: cleaned,
+    qa,
+    category,
+    ext: extension(category),
+    human_tool_required: Boolean(category && category.ai_complete === false)
+  };
 }
 
-module.exports = { MAKER_SYSTEM, buildPrompt, makeDeliverable, extension };
+async function makeDeliverable(job, { capability, brief, briefText, materials, revisionRequest = null }) {
+  const packet = grokPacket(job, { capability, brief, briefText, materials, revisionRequest });
+  if (!llm.llmAvailable()) {
+    return {
+      ok: false,
+      blocked: 'await_grok',
+      text: null,
+      category: packet.category,
+      ext: packet.ext,
+      grokPrompt: formatGrokPrompt(packet)
+    };
+  }
+  let raw;
+  try {
+    raw = await llm.ask(packet.prompt, { system: makerSystem(packet.category), maxTokens: 8000 });
+  } catch (err) {
+    return { ok: false, blocked: `llm_error:${String(err.message || err).slice(0, 80)}`, text: null, category: packet.category, ext: packet.ext };
+  }
+  return qaDeliverableText(job, { capability, brief, materials, text: raw });
+}
+
+module.exports = {
+  MAKER_SYSTEM,
+  buildPrompt,
+  makeDeliverable,
+  extension,
+  grokPacket,
+  formatGrokPrompt,
+  qaDeliverableText
+};

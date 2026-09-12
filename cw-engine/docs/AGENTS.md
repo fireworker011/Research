@@ -22,7 +22,7 @@ XM は EA が発注し Grok が止め役。CW には公式の応募 API が無�
 | 応募稿 | `apply-draft.js` | 資格 OK | サンプル 1 段落だけ（無くても稿は出る） |
 | 定型返信 | `reply-draft.js` | `CW: MSG` | 使わない（意図分類 → 定型） |
 | 業務の把握 | `brief.js` | `CW: CONTRACT` | 構成案だけ（素材があるとき） |
-| 完成品 | `make.js` | `CW: MAKE` / `REVISE` | 使う（無ければ作らない・発明しない） |
+| 完成品 | `make.js` + Grok | `CW: MAKE` → `CW: DRAFT` | Anthropic は使わない。Grok が本文。QA は機械 |
 | 検品 | `compliance.js` | 稿と完成品の全部 | 使わない（決定論） |
 | 納品パッケージ | `deliver.js` | QA 合格 | 使わない |
 | 自己PR | `profile-draft.js` | `CW: PROFILE` | 使わない |

@@ -18,7 +18,8 @@ CW: JOB 13500001 + 公開文        → cw-apply: 応募稿
 CW: SENT 13500001                → 返事待ち
 CW: MSG 13500001 + 相手の文       → cw-reply: 返信下書き
 CW: CONTRACT 13500001 + メモ      → cw-brief: 業務の把握・素材依頼文（受注可否は人間）
-CW: MAKE 13500001 + 素材          → cw-deliver: 完成品 + DELIVERY.md（納品ボタンは人間）
+CW: MAKE 13500001 + 素材          → cw-make: Grok 用プロンプト
+CW: DRAFT 13500001 + 本文        → cw-deliver: 完成品 + DELIVERY.md（納品ボタンは人間）
 CW: DELIVERED 13500001 / CW: PAID 13500001 2000
 ```
 

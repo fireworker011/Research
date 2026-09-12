@@ -15,6 +15,7 @@ const COMMAND_TYPES = Object.freeze([
   'CONTRACT',
   'MATERIAL',
   'MAKE',
+  'DRAFT',
   'REVISE',
   'DELIVERED',
   'PAID',
@@ -22,9 +23,9 @@ const COMMAND_TYPES = Object.freeze([
   'PROFILE',
   'DESK'
 ]);
-const WITH_ID = new Set(['JOB', 'SKIP', 'SENT', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'REVISE', 'DELIVERED', 'PAID', 'REJECT']);
-const WITH_PAYLOAD = new Set(['JOB', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'REVISE']);
-const NOTIFY_RE = /^\s*cw-(desk|apply|reply|brief|deliver|qa|profile|note):/m;
+const WITH_ID = new Set(['JOB', 'SKIP', 'SENT', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'DRAFT', 'REVISE', 'DELIVERED', 'PAID', 'REJECT']);
+const WITH_PAYLOAD = new Set(['JOB', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'DRAFT', 'REVISE']);
+const NOTIFY_RE = /^\s*cw-(desk|apply|reply|brief|make|deliver|qa|profile|note):/m;
 const FIRST_LINE_RE = /^\s*CW:\s*([A-Z_]+)\b(.*)$/i;
 
 function defaultCommander() {

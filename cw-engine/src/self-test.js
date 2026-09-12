@@ -185,7 +185,7 @@ async function testWork(job, facts, capability) {
   const withMat = buildBrief(job, { capability, materials: 'キーワード: 犬 おもちゃ。読者: 初めて犬を飼う人。トーン: やさしく', now });
   assert(withMat.missing.length === 0 && withMat.ready, 'brief ready with materials');
   const made = await makeDeliverable(job, { capability, brief, briefText: brief.text, materials: '' });
-  assert(!made.ok && made.blocked === 'llm_missing', 'make blocked without llm');
+  assert(!made.ok && made.blocked === 'await_grok' && /CW: DRAFT/.test(made.grokPrompt), 'make waits for grok');
   const qaBad = checkDeliverable('これは【要確認】です。https://evil.example 必ず治る。私はAIです。```x```', { materials: '', charSpec: [2000, 3000] });
   assert(!qaBad.ok, 'qa fails');
   assert(qaBad.issues.some((i) => i.startsWith('needs_check_left')), 'qa needs check');
@@ -223,6 +223,8 @@ function testLedgerAndFunnel(capability) {
 function testCommander() {
   const c = parseCommand('CW: JOB 13500001 category=writing_article\n本文です\n続き');
   assert(c && c.type === 'JOB' && c.id === '13500001' && c.opts.category === 'writing_article' && c.payload === '本文です\n続き', 'parse job');
+  const d = parseCommand('CW: DRAFT 13500001\n本文');
+  assert(d.type === 'DRAFT' && d.payload === '本文', 'parse draft');
   const p = parseCommand('cw: paid 13500001 2000 画面で確定');
   assert(p.type === 'PAID' && p.id === '13500001' && p.extra[0] === '2000', 'parse paid');
   const noId = parseCommand('CW: SENT');
@@ -231,7 +233,7 @@ function testCommander() {
   assert(parseCommand('CW: RESUME') === null, 'no resume');
   assert(parseCommand('CW: GO') === null, 'no lane switch in engine');
   assert(!COMMAND_TYPES.includes('RESUME') && !COMMAND_TYPES.includes('GO'), 'no live gate');
-  assert(isNotifyComment('cw-apply: 1\n...') && isNotifyComment('cw-desk: paper') && !isNotifyComment('CW: HALT'), 'notify detect');
+  assert(isNotifyComment('cw-apply: 1\n...') && isNotifyComment('cw-desk: paper') && isNotifyComment('cw-make: 1') && !isNotifyComment('CW: HALT'), 'notify detect');
   assert(ISSUE_TITLE === 'CW — 司令塔', 'issue title');
 }
 
@@ -263,9 +265,20 @@ async function testDispatcher() {
   const mat = await run('CW: MATERIAL 13500001\nキーワード: 犬 おもちゃ 安全');
   assert(/素材 2 件目/.test(mat.result.body), `material ${mat.result.body}`);
   const make = await run('CW: MAKE 13500001');
-  assert(make.result.kind === 'qa' && /ANTHROPIC_API_KEY/.test(make.result.body), 'make blocked without llm');
-  const q = queueMod.loadQueue();
-  assert(queueMod.findJob(q, '13500001').status === 'qa_failed', 'status qa_failed');
+  assert(make.result.kind === 'make' && /CW: DRAFT/.test(make.result.body) && !/ANTHROPIC_API_KEY/.test(make.result.body), 'make waits for grok');
+  assert(make.comment.startsWith('cw-make: 13500001'), 'make comment head');
+  assert(fs.existsSync(workPath('jobs', '13500001', 'GROK_PROMPT.md')), 'grok prompt file');
+  let q = queueMod.loadQueue();
+  assert(queueMod.findJob(q, '13500001').status === 'making', 'status making');
+  const emptyDraft = await run('CW: DRAFT 13500001');
+  assert(/2行目以降/.test(emptyDraft.result.body), 'draft needs body');
+  const badDraft = await run('CW: DRAFT 13500001\nこれは【要確認】です。');
+  assert(badDraft.result.kind === 'qa', 'qa fail on invented check');
+  const article = `## 導入\n${'犬のおもちゃを選ぶときは安全性を見ます。'.repeat(80)}\n\n## 本文\n${'キーワードに沿って初心者向けに書きます。'.repeat(80)}\n\n## まとめ\n安全性を優先します。`;
+  const draft = await run(`CW: DRAFT 13500001\n${article}`);
+  assert(draft.result.kind === 'deliver' && /QA 合格/.test(draft.result.body), `draft qa ${draft.result.body}`);
+  q = queueMod.loadQueue();
+  assert(queueMod.findJob(q, '13500001').status === 'ready', 'status ready after draft');
   const delivered = await run('CW: DELIVERED 13500001');
   assert(/納品済み/.test(delivered.result.body), 'delivered');
   const paidBad = await run('CW: PAID 13500001 2,000');
@@ -299,6 +312,8 @@ function testDocsAndSideline() {
   assert(!/G_hq_cw_remain|G_hq_cw_n10/.test(dump), 'dump does not open parked dumps');
   assert(!/crowdworks\.jp\/public\/jobs\/\d+/.test(dump), 'dump no live job urls');
   assert(/CW: HALT/.test(dump), 'dump halt');
+  assert(/CW: DRAFT/.test(dump), 'dump draft');
+  assert(/Anthropic/.test(dump), 'dump no anthropic');
   assert(!/CW: RESUME/.test(dump.replace(/`CW: RESUME` は出すな/g, '')), 'dump resume forbidden');
   assert(/HQ clone|HQ の clone|別の会話/.test(dump), 'dump separate from HQ clone');
   for (const f of ['README.md', 'docs/AUTO.md', 'docs/AGENTS.md', 'docs/BOTS.md', 'docs/COMMANDS.md', 'docs/CONCERNS.md', 'docs/PIPELINE.md', 'docs/TEMPLATES.md', 'docs/HUMAN_ONCE.md', 'private-repo/cw.yml', 'private-repo/README.md']) {

@@ -12,7 +12,7 @@
    https://github.com/fireworker011/Research/blob/cursor/cw-auto-commander-c1fb/cw-engine/private-repo/cw.yml
    「Commit」/「コミット」→ main に直接コミット。これで「置く」は終わり。
 3. Settings → Actions → General → Workflow permissions を **Read and write**
-4. Secrets に `ANTHROPIC_API_KEY`。任意で `CW_FACTS_JSON`（CW 公開プロフィールにある事実だけ。氏名・年齢は入れない）
+4. Secrets は任意。`CW_FACTS_JSON`（CW 公開プロフィールにある事実だけ。氏名・年齢は入れない）。完成品は Grok Bot が書くので `ANTHROPIC_API_KEY` は不要
 5. Actions で「CW 司令塔」を Run workflow → Issue `CW — 司令塔` が立つ
 6. `CW: PROFILE` → 自己PR を（人間が書く）を埋めてクラウドワークスのプロフィールに貼る
 
@@ -24,7 +24,7 @@
 | 応募稿が出た | （人間が書く）を埋めて送る → `CW: SENT <id>`。送らない → `CW: SKIP <id>` |
 | 相手から文 | `CW: MSG <id>` + 文 → 下書きを貼る |
 | **受注する** | `CW: CONTRACT <id>` + メモ。断る → `CW: REJECT <id>` |
-| 仮払い確認・素材が来た | `CW: MAKE <id>` + 素材 |
+| 仮払い確認・素材が来た | `CW: MAKE <id>` + 素材 → Grok が書いて `CW: DRAFT <id>` |
 | DELIVERY.md を見た | 納品ボタン → `CW: DELIVERED <id>` |
 | 修正依頼 | `CW: REVISE <id>` + 依頼文 |
 | 報酬確定を画面で見た | `CW: PAID <id> <整数円>` |
