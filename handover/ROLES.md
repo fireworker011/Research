@@ -1,6 +1,6 @@
 # 3役（2026-09-08）
 
-直近2週間の確定円は `approved_yen=0`。人間介入が多い時計進行は止める。月100万の毎日応募チェーンは日常にしない。
+直近2週間の確定円は `approved_yen=0`。人間介入が多い時計進行は止める。月100万の毎日応募チェーンと1語チェーンは日常にしない。高単価は席1回。
 
 | 役 | 仕事 | 例 |
 |---|---|---|
@@ -10,4 +10,5 @@
 
 正: `affiliate-engine/docs/grok-bots/MACHINE.md`  
 BOT 入口: `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`  
+9/30 ゲート表（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_CALENDAR.md`  
 人間が一度だけやること: `handover/HUMAN_ONCE.md`
