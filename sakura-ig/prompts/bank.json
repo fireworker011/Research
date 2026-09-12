@@ -1,0 +1,201 @@
+{
+  "hair": [
+    {
+      "id": "waves_down",
+      "text": "long, voluminous dark-brown waves worn down over both shoulders, wispy see-through bangs, a small gold floral kanzashi above the left ear"
+    },
+    {
+      "id": "straight_bangs",
+      "text": "long, sleek straight dark-brown hair worn down, soft airy bangs, a thin gold hair pin at the temple"
+    },
+    {
+      "id": "side_braid",
+      "text": "a loose low braid of dark-brown hair draped over the left shoulder, a few soft strands framing the face, bangs swept to one side"
+    },
+    {
+      "id": "high_chignon",
+      "text": "dark-brown hair swept up into a high, polished chignon with a gold floral kanzashi, a few loose strands at the nape and temples, forehead open, no bangs"
+    },
+    {
+      "id": "half_up",
+      "text": "half-up dark-brown hair: the crown pinned back with a gold kanzashi, the rest falling in soft waves past the shoulders, light bangs"
+    },
+    {
+      "id": "low_ponytail",
+      "text": "a low dark-brown ponytail tied with a red silk cord and draped forward over the right shoulder, wispy bangs"
+    },
+    {
+      "id": "low_bun",
+      "text": "a soft, low dark-brown bun at the nape, two long face-framing strands left loose, forehead open, no bangs"
+    },
+    {
+      "id": "hime",
+      "text": "long straight dark-brown hair with blunt straight-cut bangs and cheek-length side locks, hime style, a small gold kanzashi on the right"
+    }
+  ],
+  "scene": [
+    {
+      "id": "garden_petals",
+      "text": "a spring-lit Japanese garden with pale-pink petals drifting through soft sunlight, deep bokeh behind her",
+      "ambience": "soft garden air, distant birdsong"
+    },
+    {
+      "id": "engawa_dusk",
+      "text": "a wooden engawa veranda at dusk, a single paper lantern glowing warm to her left, indigo sky behind",
+      "ambience": "quiet evening air, one wind chime"
+    },
+    {
+      "id": "shrine_lanterns",
+      "text": "a night shrine path lined with glowing red paper lanterns, thin mist at knee height, stars above",
+      "ambience": "night hush, gravel underfoot, a far-off bell"
+    },
+    {
+      "id": "rain_stone_garden",
+      "text": "a stone garden in soft rain, shallow puddles, grey-blue overcast light, wet moss",
+      "ambience": "steady light rain, drops on stone"
+    },
+    {
+      "id": "bamboo_grove",
+      "text": "a tall bamboo grove with dappled green light moving across her face and shoulders",
+      "ambience": "wind through bamboo, creaking stalks"
+    },
+    {
+      "id": "tatami_shoji",
+      "text": "a quiet tatami room, soft daylight through shoji paper screens from the left, a single ikebana branch behind her",
+      "ambience": "room tone, a faint shoji rattle"
+    },
+    {
+      "id": "moon_pond",
+      "text": "a moonlit pond at night, silver reflections rippling behind her, dark pines at the edge",
+      "ambience": "water lapping, a frog once, night insects"
+    },
+    {
+      "id": "temple_steps",
+      "text": "old temple stone steps in golden-hour light, warm side light on her cheek, soft shadow behind",
+      "ambience": "warm wind, cicadas far away"
+    },
+    {
+      "id": "dark_studio",
+      "text": "a dark studio, black background, one warm rim light tracing her hair and the red silk, no other light",
+      "ambience": "near silence, a low room hum"
+    },
+    {
+      "id": "river_bridge",
+      "text": "a wooden river bridge at blue hour, soft city lights far behind, cool blue air with warm light on her face",
+      "ambience": "slow river water, distant traffic hush"
+    },
+    {
+      "id": "maple_red",
+      "text": "an autumn garden of red maple, leaves drifting down past her, low warm sun",
+      "ambience": "dry leaves, a soft breeze"
+    },
+    {
+      "id": "first_snow",
+      "text": "first snow at night, soft flakes catching on her hair and shoulders, a warm lantern glow to one side",
+      "ambience": "snow silence, a single soft footstep"
+    }
+  ],
+  "season_by_month": {
+    "9": { "scene": "moon_pond", "prop": "she holds a folded paper fan; the harvest moon sits large behind her" },
+    "10": { "scene": "maple_red", "prop": "a single red maple leaf drifts down and she watches it pass" },
+    "11": { "scene": "temple_steps", "prop": "golden ginkgo leaves lie on the steps; one falls into frame" },
+    "12": { "scene": "first_snow", "prop": "snowflakes settle on her shoulders; she breathes out once, visible in the cold" },
+    "1": { "scene": "shrine_lanterns", "prop": "New Year shrine morning; her breath shows once in the cold" },
+    "2": { "scene": "dark_studio", "prop": "a single plum branch in a vase at the frame edge" },
+    "3": { "scene": "garden_petals", "prop": "early petals; one lands on her collarbone" },
+    "4": { "scene": "garden_petals", "prop": "full bloom; petals fall thick and slow" },
+    "5": { "scene": "bamboo_grove", "prop": "fresh green light; she lifts her face to it" },
+    "6": { "scene": "rain_stone_garden", "prop": "she holds a red paper umbrella at her shoulder" },
+    "7": { "scene": "river_bridge", "prop": "a paper fan moves once; summer night air" },
+    "8": { "scene": "engawa_dusk", "prop": "a wind chime rings once beside her" }
+  },
+  "types": {
+    "question": {
+      "weekday": 1,
+      "duration_sec": 6,
+      "framing": "her face fills the upper half of the frame, the red kimono and bare shoulders readable at the bottom edge, background as soft bokeh",
+      "variants": [
+        { "open": "her eyes, already on the lens", "motion": "she blinks once; one strand of hair lifts and settles; the light on her cheek warms slightly", "camera": "slow 5 percent push-in on the face" },
+        { "open": "her lips, slightly parted, then her eyes", "motion": "her gaze travels from just past the lens to the lens and holds; the shoulder line rises with one quiet breath", "camera": "static, then a barely visible drift left" },
+        { "open": "a three-degree head tilt beginning", "motion": "she tilts her head a few degrees, blinks, and a petal or lantern flicker moves behind her", "camera": "static, shallow focus stays on the eyes" }
+      ],
+      "caption_jp": ["朱か、金か。", "今日は、どちらの気分。", "この静けさ、届いていますか。"],
+      "caption_en": ["Red or gold", "Which mood today", "Does this quiet reach you"]
+    },
+    "turn": {
+      "weekday": 2,
+      "duration_sec": 6,
+      "framing": "three-quarter body, she stands in profile to the camera, the bare shoulder nearest the lens catching the light",
+      "variants": [
+        { "open": "her profile, the shoulder nearest the lens", "motion": "she turns slowly toward the lens over four seconds, the sleeve following a beat later, and holds with a slight smile", "camera": "static, letting her turn inside the frame" },
+        { "open": "the back of her shoulder and hair", "motion": "an over-the-shoulder look-back: her head turns first, then a quarter turn of the torso, the kimono edge stays on the upper arms", "camera": "very slow orbit of ten degrees against her turn" },
+        { "open": "her eyes cast down", "motion": "she lifts her gaze, turns thirty degrees toward the lens, and breathes out", "camera": "slow 5 percent push-in" }
+      ],
+      "caption_jp": ["横顔か、正面か。", "振り向くまでの、四秒。", "どちらの顔が好きですか。"],
+      "caption_en": ["Profile or face", "Four seconds to turn", "Which side do you prefer"]
+    },
+    "micro": {
+      "weekday": 3,
+      "duration_sec": 5,
+      "framing": "a tight close-up on her eyes and one bare shoulder, the red silk edge of the kimono at the frame bottom",
+      "variants": [
+        { "open": "the red sleeve edge on her upper arm", "motion": "the sleeve slips one centimeter and stops; nothing else moves except one blink", "camera": "locked off" },
+        { "open": "her eyes", "motion": "a single hair strand crosses her cheek and she does not brush it away; one slow blink", "camera": "locked off" },
+        { "open": "her collarbone", "motion": "a petal lands on her shoulder; she glances down at it, then back to the lens", "camera": "locked off, focus stays on the eyes" }
+      ],
+      "caption_jp": ["袖が、一センチ。", "髪が一本、頰に。", "花びらが、肩に。"],
+      "caption_en": ["One centimeter of sleeve", "One strand on the cheek", "One petal on the shoulder"]
+    },
+    "push-pull": {
+      "weekday": 4,
+      "duration_sec": 7,
+      "cta": true,
+      "framing": "a medium shot, face and bare shoulders, standing, the full red kimono implied below the frame",
+      "variants": [
+        { "open": "her face, close, eyes on the lens", "motion": "she stays still and lets the camera reveal the off-shoulder kimono and the obi; in the last second she looks straight into the lens", "camera": "slow pull-back from the face to three-quarter body" },
+        { "open": "her eyes closing", "motion": "she opens her eyes as the frame widens, one breath lifts the shoulders, the sleeve settles", "camera": "slow pull-back with a twenty-degree orbit" },
+        { "open": "her face, in profile light", "motion": "she turns her face to the lens as the frame widens to show both bare shoulders and the red silk", "camera": "pull-back, then a hold" }
+      ],
+      "caption_jp": ["続きはプロフィール"],
+      "caption_en": ["More on the profile"]
+    },
+    "detail": {
+      "weekday": 5,
+      "duration_sec": 8,
+      "framing": "a close-up on one detail (the gold kanzashi, the white-and-gold embroidery on the sleeve, or the obi knot), her face visible above it",
+      "variants": [
+        { "open": "the gold kanzashi in her hair", "motion": "the camera tilts down from the kanzashi to her eyes; she blinks once as the focus lands", "camera": "slow tilt down, rack focus to the eyes" },
+        { "open": "the white-and-gold cherry-blossom embroidery on the red sleeve", "motion": "focus travels from the embroidery up to her face; her hand rests on the sleeve and stays", "camera": "rack focus from sleeve to face" },
+        { "open": "the gold obi knot at her waist", "motion": "the camera tilts up over the red silk to the bare shoulders and her face; she looks down at the lens as it arrives", "camera": "slow tilt up" }
+      ],
+      "caption_jp": ["簪。", "袖の桜。", "帯の結び。"],
+      "caption_en": ["The kanzashi", "Sakura on the sleeve", "The obi knot"]
+    },
+    "season": {
+      "weekday": 6,
+      "duration_sec": 7,
+      "framing": "a medium shot with the seasonal element in frame, face and bare shoulders lit warm against the scene",
+      "variants": [
+        { "open": "her face, then the seasonal element enters", "motion": "she watches the seasonal element move, then returns her eyes to the lens", "camera": "static with a slow 3 percent push-in" },
+        { "open": "the seasonal element, then her face", "motion": "the seasonal element passes close to her; she breathes in once and the shoulders rise", "camera": "slow drift right" },
+        { "open": "her eyes", "motion": "she closes her eyes for one second, opens them, and the seasonal element crosses the frame", "camera": "locked off" }
+      ],
+      "caption_jp": ["季節が、ひとつ。", "この季節だけの、紅。", "同じ紅、違う季節。"],
+      "caption_en": ["One season", "Red for this season only", "Same red, another season"]
+    },
+    "loop": {
+      "weekday": 0,
+      "duration_sec": 5,
+      "framing": "a centered bust shot, face and both bare shoulders, symmetrical, background soft",
+      "variants": [
+        { "open": "her face at rest", "motion": "one full breath in and out; the hair sways out and returns exactly to its starting position so the clip loops", "camera": "locked off" },
+        { "open": "her eyes open", "motion": "a slow blink cycle that ends where it began; a petal or leaf drifts through and out so the clip loops", "camera": "locked off" },
+        { "open": "her shoulders", "motion": "the red sleeve lifts a centimeter on the breath and settles back to its start so the clip loops", "camera": "locked off" }
+      ],
+      "caption_jp": ["ひと呼吸。", "瞬きひとつ。", "戻る、紅。"],
+      "caption_en": ["One breath", "One blink", "Red, returning"]
+    }
+  },
+  "tags_base": "#AI和装 #着物 #kimono #sakura",
+  "tags_rotate": ["#AI美女", "#和美人", "#japanesebeauty", "#cinematic", "#AIart", "#和装美人"]
+}

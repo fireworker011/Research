@@ -1,0 +1,21 @@
+{
+  "handle": "sakura_ai_beauty",
+  "display_name": "サクラ🌸AI和装美女研究家",
+  "instagram_url": "https://www.instagram.com/sakura_ai_beauty/",
+  "followers_baseline": 2675,
+  "followers_baseline_date": "2026-09-12",
+  "repo": "fireworker011/Research",
+  "branch": "cursor/sakura-ig-manager-7fd3",
+  "raw_base": "https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig-manager-7fd3/sakura-ig",
+  "post_time_jst": "06:00",
+  "create_time_jst": "05:00",
+  "numbers_time_jst": "Sunday 07:00",
+  "gates": {
+    "views_x10": 10,
+    "views_x2": 2,
+    "link_taps_week_min": 15,
+    "link_taps_week_judge_offer": 50
+  },
+  "issue_launch_key": "サクラ起動キー",
+  "issue_judge": "サクラ判定"
+}
