@@ -1,0 +1,92 @@
+{
+  "account": "fireworker12",
+  "max_concurrent_contracts": 3,
+  "max_drafts_waiting_human": 3,
+  "public_fetch": {
+    "enabled": true,
+    "max_per_run": 3,
+    "note": "ログインなしの公開ページを1件1回だけ読む。応募は送らない。失敗したら人間が本文を貼る。"
+  },
+  "categories": [
+    {
+      "id": "writing_article",
+      "label": "記事・ブログ・コラム執筆",
+      "ai_complete": true,
+      "priority": 90,
+      "turnaround_days": 2,
+      "unit": "本",
+      "default_chars": [1500, 3000],
+      "keywords": ["記事", "ブログ", "コラム", "ライティング", "執筆", "SEO記事", "リライト", "ライター"]
+    },
+    {
+      "id": "writing_sns",
+      "label": "SNS投稿文・キャプション作成",
+      "ai_complete": true,
+      "priority": 85,
+      "turnaround_days": 1,
+      "unit": "本",
+      "default_chars": [80, 300],
+      "keywords": ["投稿文", "キャプション", "ツイート", "ポスト作成", "インスタ", "Instagram", "X（旧Twitter）", "SNS投稿"]
+    },
+    {
+      "id": "writing_script",
+      "label": "動画台本・ナレーション原稿",
+      "ai_complete": true,
+      "priority": 85,
+      "turnaround_days": 2,
+      "unit": "本",
+      "default_chars": [400, 1500],
+      "keywords": ["台本", "シナリオ", "ナレーション原稿", "脚本", "構成案", "原稿作成"]
+    },
+    {
+      "id": "writing_copy",
+      "label": "商品説明・LP・キャッチコピー",
+      "ai_complete": true,
+      "priority": 80,
+      "turnaround_days": 2,
+      "unit": "本",
+      "default_chars": [200, 1500],
+      "keywords": ["商品説明", "キャッチコピー", "LP", "セールスライティング", "紹介文", "説明文", "商品紹介"]
+    },
+    {
+      "id": "text_cleanup",
+      "label": "文字起こしの整文・要約・校正",
+      "ai_complete": true,
+      "priority": 75,
+      "turnaround_days": 1,
+      "unit": "本",
+      "default_chars": [300, 5000],
+      "keywords": ["文字起こし", "要約", "整文", "校正", "校閲", "テキスト化", "議事録"]
+    },
+    {
+      "id": "translation",
+      "label": "翻訳（日英・英日）",
+      "ai_complete": true,
+      "priority": 75,
+      "turnaround_days": 2,
+      "unit": "本",
+      "default_chars": [200, 5000],
+      "keywords": ["翻訳", "英訳", "和訳", "ローカライズ", "日英", "英日"]
+    },
+    {
+      "id": "data_structuring",
+      "label": "テキストの表・CSV・リスト整理",
+      "ai_complete": true,
+      "priority": 70,
+      "turnaround_days": 1,
+      "unit": "件",
+      "default_chars": [0, 0],
+      "keywords": ["データ入力", "リスト作成", "表にまとめ", "スプレッドシート", "CSV", "分類", "タグ付け", "リスト化"]
+    },
+    {
+      "id": "video_edit_short",
+      "label": "素材支給の短尺編集（機械は編集計画まで）",
+      "ai_complete": false,
+      "priority": 30,
+      "turnaround_days": 3,
+      "unit": "本",
+      "default_chars": [0, 0],
+      "keywords": ["ショート動画", "短尺", "リール", "TikTok", "テロップ", "動画編集", "カット編集"]
+    }
+  ]
+}
