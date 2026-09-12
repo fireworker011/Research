@@ -1,0 +1,23 @@
+{
+  "_comment": "公式で確認できた上限と、未確認の仮定を分ける。アフィリンクは書かない。料率の確定値はDMM管理画面を見たと書くまで仮定のまま。",
+  "official": {
+    "direct_reward_max_pct": 70,
+    "new_user_reward_max_jpy": 5240,
+    "new_user_reward_max_jpy_ex_tax": 4764,
+    "category_reward_max_pct": 20,
+    "payout_min_jpy": 5000,
+    "payout_day": "next_month_10",
+    "registration_fee_jpy": 0,
+    "sources": [
+      "https://affiliate.dmm.com/",
+      "https://support.dmm.co.jp/affiliate/article/44530",
+      "https://support.dmm.co.jp/affiliate/article/44528"
+    ]
+  },
+  "assumptions": {
+    "avg_commission_jpy": 1050,
+    "approval_rate": 0.8,
+    "cvr_click_to_conversion": 0.01,
+    "ctr_impression_to_click": 0.01
+  }
+}
