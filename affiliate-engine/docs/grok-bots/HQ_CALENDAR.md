@@ -19,7 +19,7 @@
 | `approved-yen` | 0 |
 | `overlay-filled` | 0 |
 | 指示役 dump | `G_hq_human_sitting.txt`（#115 マージ済み） |
-| 人間の未完了 | A8 の席1回（教育プロフィールを先） |
+| 人間の席の印 | Issue 110 `完了`（2026-09-12）。overlay は空。Secret 待ち |
 | 駐車 | CW 司令塔 #122（マージするな）/ XM 司令塔 / remain / n10 / H3 |
 | 停止のまま | Threads 自動投稿 / insight / 日次レポート |
 
