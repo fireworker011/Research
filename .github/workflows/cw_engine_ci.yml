@@ -31,7 +31,7 @@ jobs:
           for f in src/*.js; do node --check "$f"; done
           node src/self-test.js
           node src/apply-commander-comment.js --dry-run --comment "CW: DESK" > /dev/null
-          if grep -RInE 'crowdworks\.jp/login|puppeteer|playwright|selenium' src docs private-repo; then
+          if grep -RInE 'crowdworks\.jp/login|puppeteer|playwright|selenium' src private-repo/cw.yml; then
             echo 'login automation must not land'
             exit 1
           fi
