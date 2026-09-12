@@ -35,7 +35,7 @@ function deskLines({ commander, queue, capability, funnel, ledgerYen = 0, now })
     `confirmed_yen_total: ${ledgerYen}（画面で見た確定だけ。カタログではない）`,
     `gate: ${funnel ? funnel.gate : 'intake'}`,
     `next_human: ${nextHumanAction(queue, capability, commander)}`,
-    'auto_send: never（応募送信・契約・納品ボタンは人間）'
+    'auto_send: never（応募送信・契約・納品ボタンは人間が許可すれば送ることは🉑）'
   ];
 }
 
