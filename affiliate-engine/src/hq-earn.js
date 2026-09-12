@@ -74,6 +74,13 @@ function selfTest() {
   if (!sitting.includes('ペット')) throw new Error('no pet');
   const csv = assertDump(CSV_POINTER);
   if (!csv.includes('プロフィールに置いたリンクを外すな')) throw new Error('csv keep');
+  const root = path.join(__dirname, '../docs/grok-bots');
+  const roster = fs.readFileSync(path.join(root, 'HQ_ROSTER.md'), 'utf8');
+  if (!roster.includes('#122')) throw new Error('roster 122');
+  if (!roster.includes('マージするな')) throw new Error('roster no merge');
+  const dumpReadme = fs.readFileSync(path.join(root, 'dump/README.md'), 'utf8');
+  if (!dumpReadme.includes('G_hq_human_sitting.txt')) throw new Error('dump live sitting');
+  if (/https?:\/\//i.test(dumpReadme)) throw new Error('dump readme url');
   process.stdout.write('hq-earn self-test ok\n');
 }
 

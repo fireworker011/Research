@@ -1,10 +1,10 @@
 # 引き継ぎ書 — 婚活・ペット・美容（Cursor / Grok Bot 用）
 
-最終更新: 2026-09-09（3役。日常の入口は `G_hq_boot.txt`。remain / n10 は駐車。引用1手は替えるな）
+最終更新: 2026-09-12（3役。日常の入口は `G_hq_boot.txt`。remain / n10 は駐車。Cursor 台帳は `HQ_ROSTER.md`。引用1手は替えるな）
 
 ## 0. このファイルの使い方（最初に必ず読む）
 
-- **3役の正は `handover/ROLES.md` と `affiliate-engine/docs/grok-bots/MACHINE.md`。** 人間=外部サイトと重要判断。Grok Bot=日常。Cursor=仕組み（常時稼働しない）。
+- **3役の正は `handover/ROLES.md` と `affiliate-engine/docs/grok-bots/MACHINE.md`。** 人間=外部サイトと席1回。Grok Bot=日常1 clone。Cursor=100万本線の上流1体（常時稼働しない）。CW/XM 司令塔をこのファイルから始めない。
 - 指令塔は今すぐ dump 1ファイルだけ開け:
   `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`
   無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt

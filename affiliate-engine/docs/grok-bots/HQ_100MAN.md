@@ -1,6 +1,6 @@
 # HQ — デフォルト clone 用
 
-指令塔は Grok Bot。日常のやり取りは Bot。Cursor は上流（仕組み）だけ。数字は invent しない。
+指令塔の clone は Grok Bot 1つ。日常のやり取りは Bot。Cursor は上流1体（台帳 `HQ_ROSTER.md` は Bot が開けるな）。数字は invent しない。CW 司令塔をこの clone に足すな。
 
 今すぐ dump 1ファイルだけ開け:
 
@@ -13,5 +13,6 @@ GitHub 指示役が Issue `Grok Bot — 指示` に `hq-instruct:` を書く（�
 `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな（駐車。引用1手は替えるな）。役割の正は `MACHINE.md`。
 
 参謀の 9/30 ゲート表（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_CALENDAR.md`
+台帳（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`
 
 `HUMAN.md` は貼るな。他の `G_hq_*.txt` を更新日時で選ぶな。結合するな。cron は戻すな。Cursor は dump を貼らない。Cursor を常時稼働させるな。

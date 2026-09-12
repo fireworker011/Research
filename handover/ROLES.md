@@ -1,14 +1,15 @@
-# 3役（2026-09-08）
+# 3役（2026-09-12）
 
-直近2週間の確定円は `approved_yen=0`。人間介入が多い時計進行は止める。月100万の毎日応募チェーンと1語チェーンは日常にしない。高単価は席1回。
+確定円は `approved_yen=0`。Cursor の本線は1体。Grok Bot の clone は1つ。CW/XM/H3 の別司令塔は日常にしない。
 
 | 役 | 仕事 | 例 |
 |---|---|---|
-| **ナオミチ** | 外部サイトと重要判断 | A8/CW/GitHub Secrets/MT5 ログイン、ライブゲート、薬機法の最終承認 |
-| **Grok Bot** | 日常 | チャット、XM Issue の停止判断、dump 1ファイル、定期連絡 |
-| **Cursor** | 上流 | 環境、BOT 指示マシーン、申請文の完成稿、リサーチ成果物。終わったら止まる |
+| **ナオミチ** | 外部サイトと重要判断。席は1回 | A8 / GitHub Secrets。CW 応募と XM ログインは今夜の宿題にしない |
+| **Grok Bot** | 日常。dump 1ファイル | Issue 110 の `hq-instruct:`。XM は STOP のとき virtual-desk を写す |
+| **Cursor** | 上流1体。仕組み・台帳・カレンダー | 終わったら止まる。新しい司令塔を増やすな |
 
 正: `affiliate-engine/docs/grok-bots/MACHINE.md`  
 BOT 入口: `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`  
+台帳（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`  
 9/30 ゲート表（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_CALENDAR.md`  
 人間が一度だけやること: `handover/HUMAN_ONCE.md`
