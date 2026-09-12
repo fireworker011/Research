@@ -1,9 +1,19 @@
 """One-click MiniMax H3 episode trailers (game-style homage, original story).
 
 `episode.json` is the only input. Every beat is one 10-second H3 clip
-(I2V from a clean still, last-frame chain, or T2V). Raw clips get a HUD,
-title and end cards, and an audio crossfade stitch. Output lands in
-`episodes/<slug>/final/`.
+(I2V from a clean still, last-frame chain, or T2V), or a `ui` beat (a frozen
+frame with a pause menu, no GPU). A beat may show only a `trim` window of its
+clip, and may `reuse` a take from a sibling episode's raw/. Raw clips get a
+HUD (or subtitles only in cutscenes), title / mission-failed / end cards, and
+an audio crossfade stitch. Output lands in `episodes/<slug>/final/`.
+
+What the first render taught (measured against the reference video):
+- every prop was injected into every prompt → the firewood truck appeared in
+  the noren shot, the bicycle shot and inside the barbershop. Props are now
+  per beat and every prompt carries a one-location continuous-take lock.
+- 10s shots vs the reference's ~4s cuts → `trim`, and short `ui` freezes.
+- the joke is "ordinary footage, crime-game HUD" → `tone: mundane` rejects
+  set-piece words; endings are `cards.fail` (ミッション失敗), not Complete.
 
 Isolation from the production Grokbot pipeline:
 - own Drive root `minimax-h3-comfyui/episodes/<slug>/` (inbox/queued/output of
@@ -36,13 +46,18 @@ from h3_hud import (
     HudError,
     card_clip,
     compose_beat,
-    extract_last_frame,
+    expected_stitch_duration,
+    extract_frame,
     find_font,
     probe_duration,
+    probe_video_size,
     render_complete_layer,
     render_end_card,
+    render_fail_card,
     render_hud_layer,
+    render_menu_layer,
     render_mission_layer,
+    render_subtitle_layer,
     render_title_card,
     still_clip,
     stitch,
@@ -73,10 +88,19 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 }
 DURATION_LADDER = (10.0, 8.0, 6.0)
 MAX_BEATS = 12
-SOURCES = ("still", "chain", "t2v")
+# ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
+SOURCES = ("still", "chain", "t2v", "ui")
+# mundane = the reference's comedy: the footage stays ordinary, only the HUD text is a crime game.
+# action = the old default (game physics allowed). tone is opt-in so existing episodes keep validating.
+TONES = ("mundane", "action")
 EPISODE_DIRS = ("stills", "input", "output", "raw", "hud", "hud/png", "final", "logs")
 CARD_TITLE_S = 2.6
 CARD_END_S = 3.2
+CARD_SECONDS = (1.5, 6.0)
+FAIL_TEXT_DEFAULT = "ミッション失敗"
+# A beat may show only a window of its 10s clip (the reference cuts every ~4s; H3 drifts after ~5s).
+MIN_TRIM_S = 1.5
+UI_SECONDS = (1.5, 5.0)
 ORIGINAL_LINE = "舞台・人物・物語はオリジナル"
 # Files a fresh Colab runtime needs in /content. Fetched from GitHub, cached in Drive episodes/_lib/.
 EPISODE_HELPERS = (
@@ -106,6 +130,7 @@ PRESETS: dict[str, dict[str, Any]] = {
 
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
+REUSE_RE = re.compile(r"^([a-z0-9][a-z0-9-]{1,40})/([0-9]{2}-[a-z0-9-]{1,32})$")
 KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 CJK_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff\uff66-\uff9f]")
 QUOTE_RE = re.compile(r"「[^」]*」")
@@ -118,11 +143,26 @@ IP_TOKENS_RE = re.compile(
 META_AUDIO_TOKENS = ("lip-synced", "lip synced", "no other speech", "only say", "other_text", "not_spoken", "read aloud")
 SCREEN_TOKENS_RE = re.compile(r"\b(hud|mini-?map|subtitles?|captions?|on-screen text|watermark|health bar|game ui)\b", re.I)
 HARM_TOKENS_RE = re.compile(r"\b(blood|bloody|gore|gory|dismember\w*|corpses?|dead body|dead bodies)\b", re.I)
+# Words that make H3 stage a set piece. A mundane episode may not write them at all, not even negated:
+# H3 materializes what is named ("no explosion" still draws smoke), so the fix is to leave them out.
+ACTION_TOKENS_RE = re.compile(
+    r"\b(explosions?|explod\w*|fireballs?|blasts?|erupt\w*|uppercuts?|punch\w*|kick\w*|fights?|fighting|brawls?|"
+    r"ragdolls?|tumbl\w*|hurl\w*|crash\w*|gunshots?|weapons?|leaps?|leaping|jumps?|jumping|somersault\w*|"
+    r"flips?|flying|chases?|chasing|speeding|double exposure)\b",
+    re.I,
+)
 DEFAULT_MUSIC = "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip."
 VIOLENCE_CLAUSE = (
     "Exaggerated video-game physics: adults tumble harmlessly like ragdolls, objects fly, "
     "comedic tone. Nobody is hurt, no blood, no injuries, no children anywhere in frame."
 )
+# Positive phrasing on purpose (H3 obeys "add" better than "stop"). This is the per-shot location lock the
+# first render lacked: the barbershop turned into a street with a truck within 1.5s.
+CONTINUITY_CLAUSE = (
+    "One continuous take: the whole clip stays inside this one location with the same people in frame "
+    "from the first frame to the last, and nothing new enters the frame."
+)
+MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
 
 
 class EpisodeError(RuntimeError):
@@ -165,6 +205,97 @@ def duration_ladder(ep: dict[str, Any]) -> list[float]:
     return out
 
 
+def episode_tone(ep: dict[str, Any]) -> str:
+    return str(ep.get("tone") or "action")
+
+
+def beat_source(beat: dict[str, Any]) -> str:
+    return str(beat.get("source") or "still")
+
+
+def is_ui_beat(beat: dict[str, Any]) -> bool:
+    return beat_source(beat) == "ui"
+
+
+def beat_renders(beat: dict[str, Any]) -> bool:
+    """True when this beat can go to the GPU (a ui beat never does; a reuse beat only as fallback with a still)."""
+    source = beat_source(beat)
+    if source == "ui":
+        return False
+    if source == "still":
+        return bool(beat.get("still"))
+    return True
+
+
+def beat_props(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
+    """Prop keys locked into this beat's prompt: the explicit list, else keys named in the beat text.
+
+    Never every prop: the first render put the firewood truck into the barbershop and the noren shot
+    because `props` was injected into all nine prompts.
+    """
+    props = ep.get("props") or {}
+    if "props" in beat:
+        return [str(k) for k in (beat.get("props") or []) if str(k) in props]
+    text = " ".join(str(beat.get(k) or "") for k in ("action", "camera", "place")).lower()
+    return [k for k in props if re.search(rf"\b{re.escape(str(k).lower())}s?\b", text)]
+
+
+def beat_window(ep: dict[str, Any], beat: dict[str, Any]) -> tuple[float, float]:
+    """(start, seconds) of the raw clip that reaches the final cut."""
+    if is_ui_beat(beat):
+        return 0.0, float(beat.get("seconds") or UI_SECONDS[0])
+    trim = beat.get("trim") or {}
+    start = float(trim.get("start") or 0.0)
+    seconds = float(trim.get("seconds") or 0.0) or max(0.0, clip_seconds(ep) - start)
+    return start, seconds
+
+
+def card_seconds(ep: dict[str, Any]) -> dict[str, float]:
+    cards = ep.get("cards") or {}
+    fail = cards.get("fail") or {}
+    return {
+        "title": float(cards.get("title_seconds") or CARD_TITLE_S) if cards.get("title", True) else 0.0,
+        "fail": float(fail.get("seconds") or 3.2) if fail else 0.0,
+        "end": float(cards.get("end_seconds") or CARD_END_S) if cards.get("end", True) else 0.0,
+    }
+
+
+def expected_duration(ep: dict[str, Any]) -> float:
+    """Planned final length (nominal clip length for untrimmed beats)."""
+    cs = card_seconds(ep)
+    durs: list[float] = []
+    if cs["title"]:
+        durs.append(cs["title"])
+    durs.extend(beat_window(ep, b)[1] for b in ep.get("beats") or [])
+    if cs["fail"]:
+        durs.append(cs["fail"])
+    if cs["end"]:
+        durs.append(cs["end"])
+    cfg = ep.get("stitch") or {}
+    return expected_stitch_duration(durs, transition=str(cfg.get("transition") or "xfade"), xfade_s=float(cfg.get("xfade_s", 0.35)))
+
+
+def subtitle_windows(speech: list[dict[str, Any]], seconds: float, *, lead: float = 0.3, gap: float = 0.15) -> list[tuple[float, float]]:
+    """When each spoken line is on screen. Even split of the window unless `at`/`until` are authored."""
+    n = len(speech)
+    if not n or seconds <= 0:
+        return []
+    seg = max(0.5, (seconds - lead) / n)
+    out: list[tuple[float, float]] = []
+    for i, item in enumerate(speech):
+        a = float(item.get("at", lead + i * seg))
+        b = float(item.get("until", a + seg - gap))
+        out.append((max(0.0, min(a, seconds)), max(0.0, min(b, seconds))))
+    return out
+
+
+def fail_image_rel(ep: dict[str, Any]) -> str:
+    """Path of an authored fail-card image, or "" when it is the last frame / plain."""
+    fail = (ep.get("cards") or {}).get("fail") or {}
+    img = str(fail.get("image") or "last-frame")
+    return "" if img in ("last-frame", "") else img
+
+
 def episode_assets(ep: dict[str, Any]) -> list[str]:
     """Relative paths the episode needs on disk (stills, cast refs, card images)."""
     rels: list[str] = []
@@ -178,6 +309,8 @@ def episode_assets(ep: dict[str, Any]) -> list[str]:
     for key in ("title_image", "end_image"):
         if cards.get(key):
             rels.append(str(cards[key]))
+    if fail_image_rel(ep):
+        rels.append(fail_image_rel(ep))
     out: list[str] = []
     for r in rels:
         if r not in out:
@@ -185,11 +318,13 @@ def episode_assets(ep: dict[str, Any]) -> list[str]:
     return out
 
 
-def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str) -> list[str]:
+def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str, *, window_s: float) -> list[str]:
     errs: list[str] = []
     speech = beat.get("speech") or []
     if not isinstance(speech, list):
         return [f"{where}: speech must be a list"]
+    if speech and is_ui_beat(beat):
+        errs.append(f"{where}: a ui beat is a frozen frame; it cannot speak")
     if speech and not beat.get("face_visible"):
         errs.append(f"{where}: speech only on beats with face_visible true (H3 lip-sync needs the mouth)")
     if len(speech) > 2:
@@ -212,6 +347,93 @@ def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str) -> li
             errs.append(f"{where}: speech[{i}] too long for one breath (<= 26 chars)")
         if not CJK_RE.search(line):
             errs.append(f"{where}: speech[{i}] must be Japanese")
+        text = str(item.get("text") or "")
+        if text and (len(text) > 30 or not CJK_RE.search(text)):
+            errs.append(f"{where}: speech[{i}].text is the subtitle: Japanese, <= 30 chars")
+        try:
+            at = float(item["at"]) if "at" in item else None
+            until = float(item["until"]) if "until" in item else None
+            if at is not None and (at < 0 or at >= window_s):
+                errs.append(f"{where}: speech[{i}].at must be inside the beat window (0-{window_s:g}s)")
+            if until is not None and (until <= (at or 0.0) or until > window_s + 0.01):
+                errs.append(f"{where}: speech[{i}].until must be after at and inside the beat window")
+        except (TypeError, ValueError):
+            errs.append(f"{where}: speech[{i}].at/until must be seconds")
+    return errs
+
+
+def _ui_errors(beat: dict[str, Any], where: str) -> list[str]:
+    errs: list[str] = []
+    try:
+        sec = float(beat.get("seconds") or 0.0)
+        if sec < UI_SECONDS[0] or sec > UI_SECONDS[1]:
+            errs.append(f"{where}: ui beat needs seconds {UI_SECONDS[0]:g}-{UI_SECONDS[1]:g}")
+    except (TypeError, ValueError):
+        errs.append(f"{where}: seconds must be a number")
+    menu = beat.get("menu")
+    if not isinstance(menu, dict):
+        return errs + [f"{where}: ui beat needs menu {{title, items, selected}}"]
+    if not str(menu.get("title") or "").strip():
+        errs.append(f"{where}: menu.title missing")
+    items = menu.get("items") or []
+    if not isinstance(items, list) or not 2 <= len(items) <= 8:
+        errs.append(f"{where}: menu.items must list 2-8 entries")
+    elif any(not str(x).strip() or len(str(x)) > 12 for x in items):
+        errs.append(f"{where}: menu.items entries are 1-12 chars")
+    try:
+        sel = int(menu.get("selected", 0) or 0)
+        if items and not 0 <= sel < len(items):
+            errs.append(f"{where}: menu.selected out of range")
+    except (TypeError, ValueError):
+        errs.append(f"{where}: menu.selected must be an index")
+    for key in ("still", "trim", "reuse", "physics"):
+        if beat.get(key):
+            errs.append(f"{where}: ui beat cannot have {key}")
+    return errs
+
+
+def _trim_errors(ep: dict[str, Any], beat: dict[str, Any], where: str) -> list[str]:
+    trim = beat.get("trim")
+    if trim is None:
+        return []
+    if not isinstance(trim, dict):
+        return [f"{where}: trim must be {{start, seconds}}"]
+    errs: list[str] = []
+    try:
+        start = float(trim.get("start") or 0.0)
+        seconds = float(trim.get("seconds") or 0.0)
+    except (TypeError, ValueError):
+        return [f"{where}: trim.start/seconds must be numbers"]
+    if start < 0:
+        errs.append(f"{where}: trim.start must be >= 0")
+    if seconds and seconds < MIN_TRIM_S:
+        errs.append(f"{where}: trim.seconds must be >= {MIN_TRIM_S:g}s")
+    if start + seconds > clip_seconds(ep) + 0.01:
+        errs.append(f"{where}: trim window ends after the {clip_seconds(ep):g}s clip")
+    return errs
+
+
+def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
+    cards = ep.get("cards") or {}
+    fail = cards.get("fail")
+    if not fail:
+        return []
+    if not isinstance(fail, dict):
+        return ["cards.fail must be {text, reason, seconds, image}"]
+    errs: list[str] = []
+    if len(str(fail.get("text") or FAIL_TEXT_DEFAULT)) > 12:
+        errs.append("cards.fail.text <= 12 chars")
+    if len(str(fail.get("reason") or "")) > 30:
+        errs.append("cards.fail.reason <= 30 chars (one deadpan line)")
+    try:
+        sec = float(fail.get("seconds") or 3.2)
+        if sec < CARD_SECONDS[0] or sec > CARD_SECONDS[1]:
+            errs.append(f"cards.fail.seconds must be {CARD_SECONDS[0]:g}-{CARD_SECONDS[1]:g}")
+    except (TypeError, ValueError):
+        errs.append("cards.fail.seconds must be a number")
+    beats = [b for b in (ep.get("beats") or []) if isinstance(b, dict)]
+    if beats and (beats[-1].get("hud") or {}).get("complete"):
+        errs.append("cards.fail: the last beat cannot flash ミッション完了 right before ミッション失敗")
     return errs
 
 
@@ -239,6 +461,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
     fb = str(render.get("fallback_preset") or "fast")
     if fb not in PRESETS:
         errs.append(f"render.fallback_preset must be one of {list(PRESETS)}")
+    tone = episode_tone(ep)
+    if tone not in TONES:
+        errs.append(f"tone must be one of {TONES}")
+    if tone == "mundane" and str(ep.get("violence") or "none") != "none":
+        errs.append("tone mundane needs violence none (the footage stays ordinary; only the HUD is a crime game)")
     if not str(ep.get("style") or "").strip():
         errs.append("style (English look lock) missing")
     world = ep.get("world") or {}
@@ -270,7 +497,10 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         beats = []
     if len(beats) > MAX_BEATS:
         errs.append(f"at most {MAX_BEATS} beats")
+    props = ep.get("props") or {}
+    slug_now = str(ep.get("slug") or "")
     seen: set[str] = set()
+    face_beats = 0
     for i, beat in enumerate(beats):
         where = f"beats[{i}]"
         if not isinstance(beat, dict):
@@ -282,25 +512,47 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         if bid in seen:
             errs.append(f"{where}: duplicate id {bid}")
         seen.add(bid)
-        source = str(beat.get("source") or "still")
+        source = beat_source(beat)
         if source not in SOURCES:
             errs.append(f"{where}: source must be one of {SOURCES}")
-        if source == "chain" and i == 0:
-            errs.append(f"{where}: first beat cannot chain (nothing before it)")
+        if source in ("chain", "ui") and i == 0:
+            errs.append(f"{where}: first beat cannot be {source} (nothing before it)")
+        if source == "ui" and i > 0 and isinstance(beats[i - 1], dict) and is_ui_beat(beats[i - 1]):
+            errs.append(f"{where}: two ui beats in a row (the menu needs footage under it)")
+        reuse = str(beat.get("reuse") or "")
+        if reuse:
+            m = REUSE_RE.match(reuse)
+            if not m:
+                errs.append(f"{where}: reuse must look like other-slug/01-beat-id")
+            elif m.group(1) == slug_now and m.group(2) == bid:
+                errs.append(f"{where}: reuse cannot point at itself")
+            if source not in ("still", "t2v"):
+                errs.append(f"{where}: reuse works with source still or t2v (chain and ui are built here)")
         still = str(beat.get("still") or "")
         if source == "still":
-            if not still:
-                errs.append(f"{where}: source still needs a still path")
-            elif "-hud" in Path(still).stem or "hud" in Path(still).parts[:-1]:
+            if not still and not reuse:
+                errs.append(f"{where}: source still needs a still path (or reuse)")
+            elif still and ("-hud" in Path(still).stem or "hud" in Path(still).parts[:-1]):
                 errs.append(f"{where}: HUD-burned stills cannot be first frames: {still}")
-            elif root is not None and not (Path(root) / still).is_file():
+            elif still and root is not None and not (Path(root) / still).is_file():
                 errs.append(f"{where}: still missing on disk: {still}")
+        if source == "ui":
+            errs.extend(_ui_errors(beat, where))
+        errs.extend(_trim_errors(ep, beat, where))
+        window_s = beat_window(ep, beat)[1]
         for cid in beat.get("cast") or []:
             if cid not in cast:
                 errs.append(f"{where}: unknown cast id {cid}")
+        if "props" in beat:
+            if not isinstance(beat.get("props"), list):
+                errs.append(f"{where}: props must be a list of keys from the episode props")
+            else:
+                for k in beat["props"]:
+                    if str(k) not in props:
+                        errs.append(f"{where}: unknown prop {k}")
         for key in ("action", "camera"):
             text = str(beat.get(key) or "").strip()
-            if not text:
+            if not text and source != "ui":
                 errs.append(f"{where}: {key} missing")
             elif CJK_RE.search(text):
                 errs.append(f"{where}: {key} must be English")
@@ -308,15 +560,29 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             text = str(beat.get(key) or "")
             if text and CJK_RE.search(text):
                 errs.append(f"{where}: {key} must be English")
-        errs.extend(_speech_errors(beat, cast, where))
+        if tone == "mundane":
+            if beat.get("physics"):
+                errs.append(f"{where}: tone mundane forbids physics")
+            for key in ("action", "camera", "place"):
+                m = ACTION_TOKENS_RE.search(str(beat.get(key) or ""))
+                if m:
+                    errs.append(f"{where}: tone mundane: do not write set-piece words, not even negated ({key}: {m.group(0)!r})")
+        if beat.get("face_visible"):
+            face_beats += 1
+        errs.extend(_speech_errors(beat, cast, where, window_s=window_s))
         hud = beat.get("hud") or {}
         mission = str(hud.get("mission") or "").strip()
         if not mission:
             errs.append(f"{where}: hud.mission missing")
         elif len(mission) > 24:
             errs.append(f"{where}: hud.mission too long (<= 24 chars)")
+        keyword = str(hud.get("mission_keyword") or "")
+        if keyword and keyword not in mission:
+            errs.append(f"{where}: hud.mission_keyword must be part of hud.mission")
         if len(str(hud.get("hint") or "")) > 16:
             errs.append(f"{where}: hud.hint too long (<= 16 chars)")
+        if not isinstance(hud.get("visible", True), bool):
+            errs.append(f"{where}: hud.visible must be true or false")
         for key in ("health", "stamina"):
             try:
                 v = float(hud.get(key, 1.0))
@@ -330,9 +596,20 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 errs.append(f"{where}: hud.heat must be 0-5")
         except (TypeError, ValueError):
             errs.append(f"{where}: hud.heat must be an integer")
+    if tone == "mundane" and face_beats > 2:
+        errs.append("tone mundane: at most 2 face_visible beats (every new face shot is where the identity drifted)")
     cards = ep.get("cards") or {}
     if cards.get("end", True) and not str(cards.get("disclaimer") or "").strip():
         errs.append("cards.disclaimer required when the end card is on (fictional game notice)")
+    for key in ("title_seconds", "end_seconds"):
+        if cards.get(key) is not None:
+            try:
+                v = float(cards[key])
+                if v < CARD_SECONDS[0] or v > CARD_SECONDS[1]:
+                    errs.append(f"cards.{key} must be {CARD_SECONDS[0]:g}-{CARD_SECONDS[1]:g}")
+            except (TypeError, ValueError):
+                errs.append(f"cards.{key} must be a number")
+    errs.extend(_fail_card_errors(ep))
     stitch_cfg = ep.get("stitch") or {}
     if str(stitch_cfg.get("transition") or "xfade") not in ("xfade", "cut"):
         errs.append("stitch.transition must be xfade or cut")
@@ -417,11 +694,12 @@ def _speech_audio(ep: dict[str, Any], beat: dict[str, Any]) -> str:
 
 def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str = "") -> str:
     """Canonical H3 sections. English body, Japanese only inside 「」."""
-    source = str(beat.get("source") or "still")
+    source = beat_source(beat)
     canvas = str(ep.get("canvas") or "16:9")
     orientation = "Horizontal 16:9" if canvas == "16:9" else "Vertical 9:16"
     world = ep.get("world") or {}
     props = ep.get("props") or {}
+    keys = beat_props(ep, beat)
     style = str(ep.get("style") or "").strip().rstrip(".")
     env = str(world.get("lock") or "").strip().rstrip(".")
     place = str(beat.get("place") or "").strip().rstrip(".")
@@ -431,13 +709,16 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     env_line += ". Adults only in frame."
     desc: list[str] = [f"[Shot 1] {orientation} {style}."]
     if source in ("still", "chain"):
-        desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it.")
+        desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
     if source == "chain":
         desc.append("This shot continues the previous one without a cut.")
+    desc.append(CONTINUITY_CLAUSE)
+    if episode_tone(ep) == "mundane":
+        desc.append(MUNDANE_CLAUSE)
     desc.append(str(beat.get("camera") or "").strip().rstrip(".") + ".")
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
-    if props:
-        desc.append("Props stay locked: " + "; ".join(f"{k} = {str(v).rstrip('.')}" for k, v in props.items()) + ".")
+    if keys:
+        desc.append("Props in this shot stay locked: " + "; ".join(f"{k} = {str(props[k]).rstrip('.')}" for k in keys) + ".")
     if str(ep.get("violence") or "none") == "game" and beat.get("physics", False):
         desc.append(VIOLENCE_CLAUSE)
     vis = _speech_visual(ep, beat)
@@ -489,11 +770,14 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
 
 
 def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[str, Any], str, list[str]]]:
+    """Prompts for every beat that can reach the GPU (ui beats and still-less reuse beats have none)."""
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
     out = []
     for beat in ep.get("beats") or []:
+        if not beat_renders(beat):
+            continue
         prompt = build_beat_prompt(ep, beat, trigger=trigger)
-        errs = validate_beat_prompt(prompt, source=str(beat.get("source") or "still"), never=never)
+        errs = validate_beat_prompt(prompt, source=beat_source(beat), never=never)
         out.append((beat, prompt, errs))
     return out
 
@@ -790,25 +1074,100 @@ def write_prompts(ep: dict[str, Any], dest_dir: Path | str, *, trigger: str = ""
     return out
 
 
-def hud_pngs(ep: dict[str, Any], beat: dict[str, Any], out_size: tuple[int, int], png_dir: Path) -> dict[str, Path | None]:
+def hud_pngs(ep: dict[str, Any], beat: dict[str, Any], out_size: tuple[int, int], png_dir: Path, *, window_s: float | None = None) -> dict[str, Any]:
+    """All overlays of one beat as PNGs: hud, mission (keyword coloured), completion flash, menu, timed subtitles.
+
+    `hud.visible: false` is the cutscene grammar of the reference: dialogue shots drop bars and mission line
+    and keep only subtitles. The completion flash still fires so a cutscene can close a mission.
+    """
     hud_cfg = ep.get("hud") or {}
     hud = beat.get("hud") or {}
     theme_name = str(hud_cfg.get("theme") or "bandai")
     font = find_font(hud_cfg.get("font") or None)
     png_dir.mkdir(parents=True, exist_ok=True)
     bid = beat["id"]
-    layer = render_hud_layer(out_size, hud, theme_name=theme_name, district=str(hud_cfg.get("district_label") or ""), icons=list(hud_cfg.get("icons") or []), font_path=font)
-    p_hud = png_dir / f"{bid}-hud.png"
-    layer.save(p_hud)
-    mission = render_mission_layer(out_size, str(hud.get("mission") or ""), theme_name=theme_name, font_path=font)
-    p_mis = png_dir / f"{bid}-mission.png"
-    mission.save(p_mis)
-    p_cmp: Path | None = None
+    visible = bool(hud.get("visible", True))
+    out: dict[str, Any] = {"hud": None, "mission": None, "complete": None, "menu": None, "subtitles": []}
+    if visible:
+        layer = render_hud_layer(out_size, hud, theme_name=theme_name, district=str(hud_cfg.get("district_label") or ""), icons=list(hud_cfg.get("icons") or []), font_path=font)
+        out["hud"] = png_dir / f"{bid}-hud.png"
+        layer.save(out["hud"])
+        mission = render_mission_layer(out_size, str(hud.get("mission") or ""), theme_name=theme_name, font_path=font, keyword=str(hud.get("mission_keyword") or ""))
+        out["mission"] = png_dir / f"{bid}-mission.png"
+        mission.save(out["mission"])
     if hud.get("complete"):
         cmp_layer = render_complete_layer(out_size, str(hud_cfg.get("complete_text") or "ミッション完了"), theme_name=theme_name, font_path=font)
-        p_cmp = png_dir / f"{bid}-complete.png"
-        cmp_layer.save(p_cmp)
-    return {"hud": p_hud, "mission": p_mis, "complete": p_cmp}
+        out["complete"] = png_dir / f"{bid}-complete.png"
+        cmp_layer.save(out["complete"])
+    if is_ui_beat(beat):
+        menu = beat.get("menu") or {}
+        layer = render_menu_layer(out_size, title=str(menu.get("title") or ""), items=[str(x) for x in menu.get("items") or []], selected=int(menu.get("selected", 0) or 0), theme_name=theme_name, font_path=font)
+        out["menu"] = png_dir / f"{bid}-menu.png"
+        layer.save(out["menu"])
+    speech = beat.get("speech") or []
+    if speech and hud_cfg.get("subtitles", True):
+        seconds = float(window_s if window_s is not None else beat_window(ep, beat)[1])
+        for i, (item, (a, b)) in enumerate(zip(speech, subtitle_windows(speech, seconds))):
+            text = str(item.get("text") or item.get("line") or "")
+            layer = render_subtitle_layer(out_size, text, theme_name=theme_name, font_path=font, above_mission=visible)
+            p = png_dir / f"{bid}-sub{i}.png"
+            layer.save(p)
+            out["subtitles"].append((p, a, b))
+    return out
+
+
+def reuse_source(ep: dict[str, Any], beat: dict[str, Any], root: Path) -> Path | None:
+    """raw/<beat>.mp4 of a sibling episode named by `reuse: "slug/beat-id"` (same Drive episodes/ folder)."""
+    reuse = str(beat.get("reuse") or "")
+    m = REUSE_RE.match(reuse)
+    if not m:
+        return None
+    return Path(root).parent / m.group(1) / "raw" / f"{m.group(2)}.mp4"
+
+
+def materialize_reuse(ep: dict[str, Any], root: Path | str, *, fresh: bool = False) -> dict[str, str]:
+    """Copy reusable takes into raw/ so the rest of the pipeline sees plain raw clips. Returns beat id → source."""
+    root = Path(root)
+    copied: dict[str, str] = {}
+    for beat in ep.get("beats") or []:
+        src = reuse_source(ep, beat, root)
+        if src is None:
+            continue
+        dest = root / "raw" / f"{beat['id']}.mp4"
+        if dest.is_file() and not fresh:
+            continue
+        if not src.is_file():
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+        copied[beat["id"]] = str(src)
+    return copied
+
+
+def previous_footage(ep: dict[str, Any], idx: int, root: Path, raw: Path, *, apply_trim: bool = True) -> tuple[Path, float]:
+    """(raw clip, time inside it) of the nearest earlier non-ui beat's window end. Chain frames and menu freezes start here."""
+    beats = ep.get("beats") or []
+    for j in range(idx - 1, -1, -1):
+        prev = beats[j]
+        if is_ui_beat(prev):
+            continue
+        clip = raw / f"{prev['id']}.mp4"
+        if not clip.is_file():
+            raise EpisodeError(f"{beats[idx]['id']}: needs the previous clip first: {clip}")
+        start, seconds = beat_window(ep, prev) if apply_trim else (0.0, probe_duration(clip))
+        return clip, start + seconds - 0.12
+    raise EpisodeError(f"{beats[idx]['id']}: no footage before this beat")
+
+
+def materialize_ui_beat(ep: dict[str, Any], idx: int, root: Path, raw: Path, *, apply_trim: bool = True) -> Path:
+    """A ui beat's raw clip: the previous beat frozen at its cut point, held for `seconds`. No GPU."""
+    beat = (ep.get("beats") or [])[idx]
+    clip, at = previous_footage(ep, idx, root, raw, apply_trim=apply_trim)
+    frame = extract_frame(clip, root / "input" / f"{beat['id']}-freeze.jpg", at_s=at)
+    size = probe_video_size(clip)
+    if size == (0, 0):
+        size = canvas_for(ep)
+    return still_clip(frame, raw / f"{beat['id']}.mp4", seconds=float(beat.get("seconds") or UI_SECONDS[0]), canvas=size)
 
 
 def _card_images(ep: dict[str, Any], root: Path, out_size: tuple[int, int], png_dir: Path) -> tuple[Path | None, Path | None]:
@@ -839,29 +1198,76 @@ def _card_images(ep: dict[str, Any], root: Path, out_size: tuple[int, int], png_
     return title_png, end_png
 
 
-def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str | None = None, out_name: str | None = None) -> Path:
-    """raw/<beat>.mp4 → hud/<beat>.mp4 → cards → final/<slug>-<stamp>.mp4 (+ latest.mp4)."""
+def _fail_card_image(ep: dict[str, Any], root: Path, raw: Path, out_size: tuple[int, int], png_dir: Path, *, apply_trim: bool) -> Path | None:
+    """The ミッション失敗 freeze: last beat's cut point (default), an authored image, or plain dark."""
+    cards = ep.get("cards") or {}
+    fail = cards.get("fail")
+    if not fail:
+        return None
+    hud_cfg = ep.get("hud") or {}
+    font = find_font(hud_cfg.get("font") or None)
+    beats = ep.get("beats") or []
+    img: Path | None = None
+    rel = fail_image_rel(ep)
+    if rel:
+        img = root / rel
+    elif str(fail.get("image") or "last-frame") == "last-frame" and beats:
+        clip, at = previous_footage(ep, len(beats), root, raw, apply_trim=apply_trim)
+        img = extract_frame(clip, root / "input" / "fail-freeze.jpg", at_s=at)
+    png = png_dir / "card-fail.png"
+    render_fail_card(out_size, text=str(fail.get("text") or FAIL_TEXT_DEFAULT), reason=str(fail.get("reason") or ""), image=img, theme_name=str(hud_cfg.get("theme") or "bandai"), font_path=font).save(png)
+    return png
+
+
+def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str | None = None, out_name: str | None = None, apply_trim: bool = True) -> Path:
+    """raw/<beat>.mp4 → hud/<beat>.mp4 → cards → final/<slug>-<stamp>.mp4 (+ latest.mp4).
+
+    Reuse beats are copied in when missing, ui beats are frozen from the previous clip, trims are applied
+    (`apply_trim=False` for stills previews whose held stills are shorter than any trim window).
+    """
     root = Path(root)
     ensure_episode_tree(root)
     raw = Path(raw_dir) if raw_dir else root / "raw"
+    if raw == root / "raw":
+        materialize_reuse(ep, root)
     out_size = output_size_for(ep)
     png_dir = root / "hud" / "png"
+    cs = card_seconds(ep)
     ordered: list[Path] = []
-    for beat in ep.get("beats") or []:
-        src = raw / f"{beat['id']}.mp4"
-        if not src.is_file():
-            raise EpisodeError(f"raw clip missing: {src}")
-        pngs = hud_pngs(ep, beat, out_size, png_dir)
+    for idx, beat in enumerate(ep.get("beats") or []):
+        if is_ui_beat(beat):
+            src = materialize_ui_beat(ep, idx, root, raw, apply_trim=apply_trim)
+            start, seconds = 0.0, float(beat.get("seconds") or UI_SECONDS[0])
+        else:
+            src = raw / f"{beat['id']}.mp4"
+            if not src.is_file():
+                raise EpisodeError(f"raw clip missing: {src}")
+            start, seconds = beat_window(ep, beat) if apply_trim else (0.0, probe_duration(src))
+        pngs = hud_pngs(ep, beat, out_size, png_dir, window_s=seconds)
         dest = root / "hud" / f"{beat['id']}.mp4"
-        compose_beat(src, dest, out_size=out_size, hud_png=pngs["hud"], mission_png=pngs["mission"], complete_png=pngs["complete"])
+        compose_beat(
+            src,
+            dest,
+            out_size=out_size,
+            hud_png=pngs["hud"],
+            mission_png=pngs["mission"],
+            complete_png=pngs["complete"],
+            trim_start=start if apply_trim else 0.0,
+            trim_seconds=seconds if apply_trim else None,
+            subtitles=pngs["subtitles"],
+            menu_png=pngs["menu"],
+        )
         ordered.append(dest)
     title_png, end_png = _card_images(ep, root, out_size, png_dir)
+    fail_png = _fail_card_image(ep, root, raw, out_size, png_dir, apply_trim=apply_trim)
     clips: list[Path] = []
     if title_png:
-        clips.append(card_clip(title_png, root / "hud" / "00-title.mp4", seconds=CARD_TITLE_S, out_size=out_size))
+        clips.append(card_clip(title_png, root / "hud" / "00-title.mp4", seconds=cs["title"], out_size=out_size))
     clips.extend(ordered)
+    if fail_png:
+        clips.append(card_clip(fail_png, root / "hud" / "98-fail.mp4", seconds=cs["fail"], out_size=out_size, fade_in_s=0.0))
     if end_png:
-        clips.append(card_clip(end_png, root / "hud" / "99-end.mp4", seconds=CARD_END_S, out_size=out_size))
+        clips.append(card_clip(end_png, root / "hud" / "99-end.mp4", seconds=cs["end"], out_size=out_size))
     cfg = ep.get("stitch") or {}
     name = out_name or f"{ep['slug']}-{_now()}.mp4"
     final = root / "final" / name
@@ -873,19 +1279,19 @@ def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str 
 
 
 def _first_frame_for(beat: dict[str, Any], idx: int, ep: dict[str, Any], root: Path, canvas: tuple[int, int], comfy_input: Path | None) -> str | None:
-    source = str(beat.get("source") or "still")
+    source = beat_source(beat)
     if source == "t2v":
         return None
     staged = root / "input" / f"{beat['id']}.jpg"
     if source == "still":
+        if not beat.get("still"):
+            raise EpisodeError(f"{beat['id']}: reuse source not on disk and no still to render from")
         stage_still(root / str(beat["still"]), staged, canvas)
     else:
-        prev = (ep.get("beats") or [])[idx - 1]
-        prev_clip = root / "raw" / f"{prev['id']}.mp4"
-        if not prev_clip.is_file():
-            raise EpisodeError(f"chain source missing: {prev_clip}")
+        # chain continues from where the previous beat is cut, not from a frame the viewer never sees
+        prev_clip, at = previous_footage(ep, idx, root, root / "raw")
         tmp = root / "input" / f"{beat['id']}-last.jpg"
-        extract_last_frame(prev_clip, tmp)
+        extract_frame(prev_clip, tmp, at_s=at)
         stage_still(tmp, staged, canvas)
     if comfy_input is None:
         return staged.name
@@ -941,14 +1347,25 @@ def run_episode(
     save_status(root, status)
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
     beats = ep.get("beats") or []
+    reused = materialize_reuse(ep, root, fresh=fresh)
+    for bid, src in reused.items():
+        print("reuse", bid, "←", src)
+        status["beats"][bid] = {"state": "done", "source": "reuse", "reused": src, "finished": _now()}
     for idx, beat in enumerate(beats):
         bid = beat["id"]
         raw_out = root / "raw" / f"{bid}.mp4"
+        if is_ui_beat(beat):
+            status["beats"][bid] = {"state": "done", "source": "ui"}
+            continue
+        if bid in reused and raw_out.is_file():
+            continue
         if raw_out.is_file() and not fresh:
             print("skip (exists)", raw_out.name)
             status["beats"].setdefault(bid, {})["state"] = "done"
             continue
-        source = str(beat.get("source") or "still")
+        source = beat_source(beat)
+        if beat.get("reuse"):
+            print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))
         prompt = build_beat_prompt(ep, beat, trigger=preset.get("trigger") or "")
         perrs = validate_beat_prompt(prompt, source=source, never=never)
         if perrs:
@@ -1012,6 +1429,8 @@ def stills_trailer(ep: dict[str, Any], root: Path | str, *, seconds_per_beat: fl
     raw.mkdir(parents=True, exist_ok=True)
     prev_still: Path | None = None
     for beat in ep.get("beats") or []:
+        if is_ui_beat(beat):
+            continue  # frozen from the previous held still by finish_episode
         still = beat.get("still")
         if still:
             prev_still = root / str(still)
@@ -1020,7 +1439,31 @@ def stills_trailer(ep: dict[str, Any], root: Path | str, *, seconds_per_beat: fl
         staged = root / "input" / f"{beat['id']}-preview.jpg"
         stage_still(prev_still, staged, canvas)
         still_clip(staged, raw / f"{beat['id']}.mp4", seconds=seconds_per_beat, canvas=canvas)
-    return finish_episode(ep, root, raw_dir=raw, out_name=out_name or f"{ep['slug']}-stills-preview.mp4")
+    return finish_episode(ep, root, raw_dir=raw, out_name=out_name or f"{ep['slug']}-stills-preview.mp4", apply_trim=False)
+
+
+def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
+    """One line per beat for `check`: source, window, props, HUD flags, reuse availability."""
+    lines: list[str] = []
+    for beat in ep.get("beats") or []:
+        hud = beat.get("hud") or {}
+        start, seconds = beat_window(ep, beat)
+        src = beat_source(beat)
+        note = ""
+        if beat.get("reuse"):
+            path = reuse_source(ep, beat, Path(root)) if root is not None else None
+            state = "on disk" if path is not None and path.is_file() else ("missing → render" if beat_renders(beat) else "missing, no still")
+            note = f" reuse {beat['reuse']} ({state})"
+        flags = []
+        if not hud.get("visible", True):
+            flags.append("cutscene")
+        if hud.get("complete"):
+            flags.append("complete")
+        if beat.get("speech"):
+            flags.append(f"{len(beat['speech'])} lines")
+        props = ",".join(beat_props(ep, beat)) if src != "ui" else "menu"
+        lines.append(f"{beat['id']:<20} {src:<5} {start:>4.1f}s+{seconds:<4.1f} props[{props}] {' '.join(flags):<18} {hud.get('mission') or ''}{note}")
+    return lines
 
 
 # ---------------------------------------------------------------- CLI
@@ -1071,13 +1514,15 @@ def main(argv: list[str] | None = None) -> int:
                 shutil.copy2(src_root / rel, dest)
     if cmd == "check":
         errs = preflight(ep, work)
-        trig = PRESETS[str((ep.get("render") or {}).get("preset") or "fast")]["trigger"]
-        for beat, prompt, _e in beat_prompts(ep, trigger=trig):
-            print(f"{beat['id']:<22} {beat.get('source', 'still'):<5} {len(prompt):>5} chars  {((beat.get('hud') or {}).get('mission') or '')}")
+        print("\n".join(plan_lines(ep, work)))
+        cs = card_seconds(ep)
+        cards_note = " + ".join(f"{k} {v:g}s" for k, v in cs.items() if v)
+        print(f"tone {episode_tone(ep)} | cards: {cards_note or 'none'} | expected ≈ {expected_duration(ep):.1f}s")
         if errs:
             print("\n".join("ERR " + e for e in errs))
             return 1
-        print("preflight ok:", ep.get("slug"), f"{len(ep.get('beats') or [])} beats", canvas_for(ep), "→", output_size_for(ep))
+        gpu = sum(1 for b in ep.get("beats") or [] if beat_renders(b) and not (b.get("reuse") and reuse_source(ep, b, Path(work)) and reuse_source(ep, b, Path(work)).is_file()))
+        print("preflight ok:", ep.get("slug"), f"{len(ep.get('beats') or [])} beats", f"{gpu} to render", canvas_for(ep), "→", output_size_for(ep))
         return 0
     if cmd == "prompts":
         trig = PRESETS[str(preset or (ep.get("render") or {}).get("preset") or "fast")]["trigger"]

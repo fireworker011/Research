@@ -78,6 +78,9 @@ THEMES: dict[str, dict[str, Any]] = {
         "player": (80, 180, 255, 240),
         "objective": (255, 80, 80, 235),
         "complete": (255, 214, 90, 255),
+        "keyword": (255, 104, 64, 250),
+        "fail": (232, 52, 40, 255),
+        "menu_select": (255, 214, 90, 240),
     },
     "mono": {
         "health": (230, 230, 230),
@@ -91,6 +94,9 @@ THEMES: dict[str, dict[str, Any]] = {
         "player": (255, 255, 255, 240),
         "objective": (255, 90, 90, 235),
         "complete": (255, 255, 255, 255),
+        "keyword": (255, 120, 90, 250),
+        "fail": (235, 60, 50, 255),
+        "menu_select": (255, 255, 255, 240),
     },
 }
 
@@ -215,8 +221,23 @@ def render_hud_layer(size: Size, hud: dict[str, Any], *, theme_name: str = "band
     return layer
 
 
-def render_mission_layer(size: Size, mission: str, *, theme_name: str = "bandai", font_path: Path | None = None) -> Image.Image:
-    """Bottom-center mission subtitle. Faded in by ffmpeg."""
+def keyword_segments(text: str, keyword: str = "") -> list[tuple[str, bool]]:
+    """Split a mission line around its object noun so the noun can take the accent colour."""
+    kw = (keyword or "").strip()
+    if not kw or kw not in text:
+        return [(text, False)]
+    before, _sep, after = text.partition(kw)
+    out: list[tuple[str, bool]] = []
+    if before:
+        out.append((before, False))
+    out.append((kw, True))
+    if after:
+        out.append((after, False))
+    return out
+
+
+def render_mission_layer(size: Size, mission: str, *, theme_name: str = "bandai", font_path: Path | None = None, keyword: str = "") -> Image.Image:
+    """Bottom-center mission subtitle; `keyword` (the object noun) is drawn in the accent colour. Faded in by ffmpeg."""
     w, h = size
     s = scale(size)
     t = theme(theme_name)
@@ -230,7 +251,63 @@ def render_mission_layer(size: Size, mission: str, *, theme_name: str = "bandai"
     bx = (w - tw) // 2
     by = h - round(78 * s)
     d.rounded_rectangle([bx - 28 * s, by - 10 * s, bx + tw + 28 * s, by + th + 16 * s], radius=round(8 * s), fill=t["panel"])
-    d.text((bx - bbox[0], by), mission, font=f, fill=t["text"])
+    x = bx - bbox[0]
+    for seg, is_kw in keyword_segments(mission, keyword):
+        d.text((x, by), seg, font=f, fill=t["keyword"] if is_kw else t["text"])
+        x += d.textlength(seg, font=f)
+    return layer
+
+
+def render_subtitle_layer(size: Size, text: str, *, theme_name: str = "bandai", font_path: Path | None = None, above_mission: bool = False) -> Image.Image:
+    """Dialogue subtitle (white on a dark band). Sits where the mission line sits in a cutscene, or just above it."""
+    w, h = size
+    s = scale(size)
+    t = theme(theme_name)
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    if not text:
+        return layer
+    d = ImageDraw.Draw(layer)
+    f = load_font(round(28 * s), font_path)
+    bbox = d.textbbox((0, 0), text, font=f)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    bx = (w - tw) // 2
+    by = h - round((134 if above_mission else 72) * s)
+    d.rounded_rectangle([bx - 22 * s, by - 8 * s, bx + tw + 22 * s, by + th + 14 * s], radius=round(6 * s), fill=(0, 0, 0, 175))
+    d.text((bx - bbox[0], by), text, font=f, fill=t["text"])
+    return layer
+
+
+def render_menu_layer(size: Size, *, title: str, items: Sequence[str], selected: int = 0, theme_name: str = "bandai", font_path: Path | None = None) -> Image.Image:
+    """Pause-menu item list over a frozen frame: the 'inventory gag' beat. Nothing here is footage."""
+    w, h = size
+    s = scale(size)
+    t = theme(theme_name)
+    layer = Image.new("RGBA", size, (0, 0, 0, 95))
+    d = ImageDraw.Draw(layer)
+    f_title = load_font(round(24 * s), font_path)
+    f_item = load_font(round(26 * s), font_path)
+    row_h = round(54 * s)
+    panel_w = round(360 * s)
+    n = max(1, len(items))
+    panel_h = round(64 * s) + row_h * n + round(18 * s)
+    px = round(64 * s)
+    py = (h - panel_h) // 2
+    d.rounded_rectangle([px, py, px + panel_w, py + panel_h], radius=round(12 * s), fill=(10, 10, 12, 215), outline=(200, 200, 190, 120), width=max(1, round(2 * s)))
+    d.text((px + round(22 * s), py + round(16 * s)), title, font=f_title, fill=t["muted"])
+    d.line([px + 18 * s, py + 54 * s, px + panel_w - 18 * s, py + 54 * s], fill=(120, 120, 110, 160), width=max(1, round(1 * s)))
+    for i, label in enumerate(items):
+        y = py + round(64 * s) + i * row_h
+        active = i == selected
+        if active:
+            d.rounded_rectangle([px + 12 * s, y + 4 * s, px + panel_w - 12 * s, y + row_h - 4 * s], radius=round(8 * s), fill=(40, 40, 36, 230), outline=t["menu_select"], width=max(1, round(2 * s)))
+        cx = px + round(40 * s)
+        cy = y + row_h // 2
+        r = round(16 * s)
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(24, 24, 24, 230), outline=t["menu_select"] if active else (190, 190, 180, 170), width=max(1, round(2 * s)))
+        glyph = str(label)[:1]
+        gb = d.textbbox((0, 0), glyph, font=f_item)
+        d.text((cx - (gb[2] - gb[0]) / 2 - gb[0], cy - (gb[3] - gb[1]) / 2 - gb[1]), glyph, font=f_item, fill=t["text"])
+        d.text((px + round(72 * s), y + round(12 * s)), str(label), font=f_item, fill=t["text"] if active else t["muted"])
     return layer
 
 
@@ -297,6 +374,32 @@ def render_end_card(size: Size, *, title: str, lines: Sequence[str], image: Path
     return Image.alpha_composite(bg, ov).convert("RGB")
 
 
+def render_fail_card(size: Size, *, text: str = "ミッション失敗", reason: str = "", image: Path | None = None, theme_name: str = "bandai", font_path: Path | None = None) -> Image.Image:
+    """Mission-failed freeze: big accent-colour verdict over the darkened last frame, deadpan reason under it."""
+    w, h = size
+    s = scale(size)
+    t = theme(theme_name)
+    bg = _background(size, image, 120).convert("RGBA")
+    ov = Image.new("RGBA", size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(ov)
+    f_big = load_font(round(72 * s), font_path)
+    bbox = d.textbbox((0, 0), text, font=f_big)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    x = (w - tw) // 2 - bbox[0]
+    y = h // 2 - th - round(10 * s)
+    for dx, dy in ((3, 3), (2, 2)):
+        d.text((x + dx * s, y + dy * s), text, font=f_big, fill=(0, 0, 0, 220))
+    d.text((x, y), text, font=f_big, fill=t["fail"])
+    if reason:
+        f = load_font(round(26 * s), font_path)
+        rb = d.textbbox((0, 0), reason, font=f)
+        rw, rh = rb[2] - rb[0], rb[3] - rb[1]
+        ry = h // 2 + round(22 * s)
+        d.rounded_rectangle([(w - rw) // 2 - 20 * s, ry - 8 * s, (w + rw) // 2 + 20 * s, ry + rh + 14 * s], radius=round(6 * s), fill=(0, 0, 0, 170))
+        d.text(((w - rw) // 2 - rb[0], ry), reason, font=f, fill=(255, 255, 255, 245))
+    return Image.alpha_composite(bg, ov).convert("RGB")
+
+
 # ---------------------------------------------------------------- ffmpeg
 
 def ffmpeg_bin() -> str:
@@ -355,46 +458,78 @@ def _encode_args() -> list[str]:
     return ["-c:v", "libx264", "-crf", "18", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-ar", str(AUDIO_RATE), "-ac", "2", "-movflags", "+faststart"]
 
 
+def window_for(clip_in: Path | str, *, trim_start: float = 0.0, trim_seconds: float | None = None) -> tuple[float, float]:
+    """(start, duration) actually used from a raw clip once the beat's trim is applied."""
+    full = probe_duration(clip_in)
+    if full <= 0:
+        raise HudError(f"cannot read duration: {clip_in}")
+    start = max(0.0, float(trim_start or 0.0))
+    avail = full - start
+    if avail < 0.5:
+        raise HudError(f"trim start {start:.2f}s leaves nothing of {clip_in} ({full:.2f}s)")
+    dur = min(float(trim_seconds), avail) if trim_seconds else avail
+    return start, dur
+
+
 def compose_beat(
     clip_in: Path | str,
     clip_out: Path | str,
     *,
     out_size: Size,
-    hud_png: Path | str,
-    mission_png: Path | str,
+    hud_png: Path | str | None = None,
+    mission_png: Path | str | None = None,
     complete_png: Path | str | None = None,
     fade_in_s: float = 0.45,
     complete_s: float = 1.4,
+    trim_start: float = 0.0,
+    trim_seconds: float | None = None,
+    subtitles: Sequence[tuple[Path | str, float, float]] = (),
+    menu_png: Path | str | None = None,
 ) -> Path:
-    """Scale the raw clip to the delivery size and layer HUD + mission (+ completion flash)."""
+    """Scale the raw clip (or its trimmed window) to the delivery size and layer HUD, mission, subtitles, menu, completion flash.
+
+    A cutscene beat passes hud_png=None and mission_png=None (HUD hidden, subtitles only), which is the
+    game grammar the reference uses for dialogue shots.
+    """
     clip_in = Path(clip_in)
     clip_out = Path(clip_out)
     clip_out.parent.mkdir(parents=True, exist_ok=True)
-    dur = probe_duration(clip_in)
-    if dur <= 0:
-        raise HudError(f"cannot read duration: {clip_in}")
+    start, dur = window_for(clip_in, trim_start=trim_start, trim_seconds=trim_seconds)
     w, h = out_size
     has_audio = probe_has_audio(clip_in)
-    inputs: list[str] = ["-i", str(clip_in), "-loop", "1", "-t", f"{dur:.3f}", "-i", str(hud_png), "-loop", "1", "-t", f"{dur:.3f}", "-i", str(mission_png)]
-    parts = [
-        f"[0:v]scale={w}:{h}:flags=lanczos,setsar=1,fps={FPS},format=yuv420p[base]",
-        "[1:v]format=rgba[hud]",
-        f"[2:v]format=rgba,fade=t=in:st=0:d={fade_in_s:.2f}:alpha=1[mis]",
-        "[base][hud]overlay=0:0:format=auto[v1]",
-        "[v1][mis]overlay=0:0:format=auto[v2]",
-    ]
-    last = "[v2]"
+    inputs: list[str] = []
+    if start > 0:
+        inputs += ["-ss", f"{start:.3f}"]
+    inputs += ["-t", f"{dur:.3f}", "-i", str(clip_in)]
+    parts = [f"[0:v]scale={w}:{h}:flags=lanczos,setsar=1,fps={FPS},format=yuv420p[base]"]
+    last = "[base]"
+    n_inputs = 1
+
+    def overlay(png: Path | str, extra: str = "", enable: str | None = None) -> None:
+        nonlocal last, n_inputs
+        idx = n_inputs
+        inputs.extend(["-loop", "1", "-t", f"{dur:.3f}", "-i", str(png)])
+        parts.append(f"[{idx}:v]format=rgba{extra}[o{idx}]")
+        en = f":enable='{enable}'" if enable else ""
+        parts.append(f"{last}[o{idx}]overlay=0:0:format=auto{en}[v{idx}]")
+        last = f"[v{idx}]"
+        n_inputs += 1
+
+    if hud_png:
+        overlay(hud_png)
+    if mission_png:
+        overlay(mission_png, f",fade=t=in:st=0:d={fade_in_s:.2f}:alpha=1")
+    for png, a, b in subtitles:
+        overlay(png, enable=f"between(t,{max(0.0, a):.2f},{min(dur, b):.2f})")
+    if menu_png:
+        overlay(menu_png, ",fade=t=in:st=0:d=0.2:alpha=1")
     if complete_png:
         st = max(0.0, dur - complete_s)
-        inputs += ["-loop", "1", "-t", f"{dur:.3f}", "-i", str(complete_png)]
-        parts.append(f"[3:v]format=rgba,fade=t=in:st={st:.2f}:d=0.25:alpha=1[cmp]")
-        parts.append(f"[v2][cmp]overlay=0:0:format=auto:enable='gte(t,{st:.2f})'[v3]")
-        last = "[v3]"
+        overlay(complete_png, f",fade=t=in:st={st:.2f}:d=0.25:alpha=1", enable=f"gte(t,{st:.2f})")
     parts.append(f"{last}format=yuv420p[vout]")
-    audio_in = len(inputs) // 2  # index of the next input
     if not has_audio:
         inputs += ["-f", "lavfi", "-t", f"{dur:.3f}", "-i", f"anullsrc=r={AUDIO_RATE}:cl=stereo"]
-        audio_map = f"{audio_in}:a"
+        audio_map = f"{n_inputs}:a"
     else:
         audio_map = "0:a"
     cmd = [ffmpeg_bin(), "-y", "-hide_banner", "-loglevel", "error", *inputs, "-filter_complex", ";".join(parts), "-map", "[vout]", "-map", audio_map, "-t", f"{dur:.3f}", *_encode_args(), str(clip_out)]
@@ -402,12 +537,16 @@ def compose_beat(
     return clip_out
 
 
-def card_clip(image: Path | str, clip_out: Path | str, *, seconds: float, out_size: Size, fade_s: float = 0.35) -> Path:
+def card_clip(image: Path | str, clip_out: Path | str, *, seconds: float, out_size: Size, fade_s: float = 0.35, fade_in_s: float | None = None) -> Path:
     """Still → silent clip with fades. Same codec/size/fps as beats so xfade accepts it."""
     clip_out = Path(clip_out)
     clip_out.parent.mkdir(parents=True, exist_ok=True)
     w, h = out_size
-    vf = f"scale={w}:{h}:flags=lanczos,setsar=1,fps={FPS},format=yuv420p,fade=t=in:st=0:d={fade_s:.2f},fade=t=out:st={max(0.0, seconds - fade_s):.2f}:d={fade_s:.2f}"
+    fi = fade_s if fade_in_s is None else max(0.0, fade_in_s)
+    vf = f"scale={w}:{h}:flags=lanczos,setsar=1,fps={FPS},format=yuv420p"
+    if fi > 0:
+        vf += f",fade=t=in:st=0:d={fi:.2f}"
+    vf += f",fade=t=out:st={max(0.0, seconds - fade_s):.2f}:d={fade_s:.2f}"
     cmd = [ffmpeg_bin(), "-y", "-hide_banner", "-loglevel", "error", "-loop", "1", "-t", f"{seconds:.3f}", "-i", str(image), "-f", "lavfi", "-t", f"{seconds:.3f}", "-i", f"anullsrc=r={AUDIO_RATE}:cl=stereo", "-vf", vf, "-map", "0:v", "-map", "1:a", "-t", f"{seconds:.3f}", *_encode_args(), str(clip_out)]
     run(cmd)
     return clip_out
@@ -433,18 +572,23 @@ def synthetic_clip(clip_out: Path | str, *, seconds: float, canvas: Size, color:
     return clip_out
 
 
-def extract_last_frame(clip: Path | str, jpg_out: Path | str) -> Path:
-    """Last frame → JPEG, used as the next beat's first frame when `source: chain`."""
+def extract_frame(clip: Path | str, jpg_out: Path | str, *, at_s: float) -> Path:
+    """One frame at `at_s` → JPEG (chain first frames, frozen menu beats, the mission-failed freeze)."""
     clip = Path(clip)
     jpg_out = Path(jpg_out)
     jpg_out.parent.mkdir(parents=True, exist_ok=True)
     dur = probe_duration(clip)
-    ss = max(0.0, dur - 0.12)
+    ss = min(max(0.0, float(at_s)), max(0.0, dur - 0.12))
     cmd = [ffmpeg_bin(), "-y", "-hide_banner", "-loglevel", "error", "-ss", f"{ss:.3f}", "-i", str(clip), "-frames:v", "1", "-q:v", "2", "-update", "1", str(jpg_out)]
     run(cmd)
     if not jpg_out.is_file() or jpg_out.stat().st_size < 1000:
-        raise HudError(f"last frame extraction failed: {clip}")
+        raise HudError(f"frame extraction failed: {clip} @ {ss:.2f}s")
     return jpg_out
+
+
+def extract_last_frame(clip: Path | str, jpg_out: Path | str) -> Path:
+    """Last frame → JPEG, used as the next beat's first frame when `source: chain`."""
+    return extract_frame(clip, jpg_out, at_s=probe_duration(clip) - 0.12)
 
 
 def stitch(
