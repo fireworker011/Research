@@ -39,6 +39,7 @@ GitHub Actions で無人運転し、判断（案件選定・ジャンル取捨�
 ＋ video-semi-auto.js（任意・手動）: 反応が良かった投稿を
   Shorts/Reels 動画化 → 確認 → 公式ツールで予約投稿
 ＋ video-judge.js（毎日・自動）: YouTubeのクリック記録だけを見て判定。投稿しない
+＋ video-pipeline.js: 9ジャンルの日付決定論スケジュールと Grokbot 指示書ファイル。投稿・削除しない
 ＋ funnel-calc.js: 目標金額から必要ビュー数を逆算
 ```
 
@@ -203,18 +204,26 @@ affiliate-engine/
 │   ├── apply-proposals.js   # 草案の統合・引退・スケジュール再生成（--auto で無人運転）
 │   ├── engage.js            # 返信・コメント下書きの自動生成（毎朝のコピペ10分用）
 │   ├── funnel-calc.js       # 目標→必要数値の逆算
+│   ├── video-judge.js       # YouTubeクリック記録の判定。投稿しない
+│   ├── video-pipeline.js    # Grokbot指示書と48hレビュー。投稿しない
 │   ├── video-semi-auto.js   # Shorts/Reels 動画生成（要 ffmpeg + Noto CJK）
 │   ├── compliance.js        # #PR付与・NG表現ブロック
 │   ├── claude-client.js     # Claude API（リトライ・JSON抽出）
 │   └── util.js              # CSV/JSON/日付ユーティリティ
-├── config/                  # accounts / links / funnel（example をコピー）
+├── config/                  # accounts / links / funnel / video-pipeline
+├── data/video/              # ジャンル・投稿・視聴回数の CSV
+├── prompts/grokbot-instruction.md
+├── docs/system-map.md       # 現状の構成
+├── docs/video-pipeline.md   # 指示書との差分・確認待ち
 ├── data/conversions.csv     # ASP成果の手動エクスポート（週1更新）
 └── output/                  # スケジュールCSV・状態・ログ・レポート・engage素材
 
 .github/workflows/
 ├── affiliate_engine_post.yml     # 自動投稿（JST 7/12/19/21時・分散付き）
 ├── affiliate_engine_report.yml   # 日次レポート（JST 14時）
-└── affiliate_engine_insight.yml  # デイリー自動改善+エンゲージ素材（JST 6時）
+├── affiliate_engine_insight.yml  # デイリー自動改善+エンゲージ素材（JST 6時）
+├── affiliate_engine_video_judge.yml
+└── affiliate_engine_video_pipeline.yml  # 指示書ファイルのみ。投稿しない
 ```
 
 依存パッケージなし（Node.js 20+ のみ）。`npm install` 不要。

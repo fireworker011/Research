@@ -1,0 +1,10 @@
+key,genre,video_enabled,youtube_handle,note
+konkatsu,婚活,false,,Threadsアカウントのみ。動画チャンネル未確認
+sidejob,副業,false,,Threadsアカウントのみ。動画チャンネル未確認
+beauty,美容,false,,Threadsアカウントのみ。動画チャンネル未確認
+bodymake,筋トレ,false,,Threadsアカウントのみ。動画チャンネル未確認
+education,教育,false,,Threadsアカウントのみ。動画チャンネル未確認
+setsuyaku,節約,false,,Threadsアカウントのみ。動画チャンネル未確認
+tenshoku,転職,false,,Threadsアカウントのみ。動画チャンネル未確認
+pet,ペット,true,@pet_story_select,docs/video-cash-loop.md の実験対象。Shortsのみ。既存32本は編集しない
+sleep,睡眠,false,,Threadsアカウントのみ。動画チャンネル未確認
