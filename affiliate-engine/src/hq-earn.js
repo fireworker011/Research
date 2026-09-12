@@ -78,6 +78,9 @@ function selfTest() {
   const roster = fs.readFileSync(path.join(root, 'HQ_ROSTER.md'), 'utf8');
   if (!roster.includes('#122')) throw new Error('roster 122');
   if (!roster.includes('マージするな')) throw new Error('roster no merge');
+  const command = fs.readFileSync(path.join(root, 'HQ_COMMAND.md'), 'utf8');
+  if (!command.includes('bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971')) throw new Error('command hq id');
+  if (!command.includes('#122')) throw new Error('command 122');
   const dumpReadme = fs.readFileSync(path.join(root, 'dump/README.md'), 'utf8');
   if (!dumpReadme.includes('G_hq_human_sitting.txt')) throw new Error('dump live sitting');
   if (/https?:\/\//i.test(dumpReadme)) throw new Error('dump readme url');

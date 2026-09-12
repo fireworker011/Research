@@ -21,4 +21,4 @@ CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマ�
 
 overlay が 0 なら同じ席。FANZA・CW・XM・H3 に逃げない。
 
-正: `HQ_CALENDAR.md`。台帳: `HQ_ROSTER.md`（Bot は開けるな）
+正: `HQ_CALENDAR.md`。統括: `HQ_COMMAND.md`。台帳: `HQ_ROSTER.md`（Bot は開けるな）

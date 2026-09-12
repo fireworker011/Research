@@ -9,9 +9,10 @@ alwaysApply: true
 
 - **人間**: 外部サイトの操作と、重要な判断だけ。席は1回。介入が多い仕事は出さない。
 - **Grok Bot**: 普通のやり取り。clone は1つ。入口 `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`。FX は止め役。発注は EA。
-- **Cursor（自分）**: 100万本線の上流は **この1体**。仕組み・台帳・カレンダー・dump 選択。CW/XM/H3 の別司令塔を起こすな。申請文の 100% 下書き。日常・ログイン確認ループは仕事ではない。
+- **Cursor（自分）**: 100万本線の総司令は **１００万円売り上げ自動化**。仕組み・台帳・他 Cursor の統括。CW/XM/H3 の別司令塔を起こすな。申請文の 100% 下書き。日常・ログイン確認ループは仕事ではない。
 
 台帳（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`
+統括命令（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_COMMAND.md`
 draft PR #122（CW レーンを instruct/boot に差す）はマージするな。
 
 ## やるな（トークン浪費・介入過多）

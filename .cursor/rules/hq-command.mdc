@@ -1,0 +1,26 @@
+---
+description: 総司令は 100万 Cursor 1体。他の Cursor は側線。起動したら HQ_COMMAND に従え。
+alwaysApply: true
+---
+
+# 総司令命令（他の Cursor も従う）
+
+このリポジトリの Cursor 総司令は **１００万円売り上げ自動化**
+https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971
+
+自分を司令塔と名乗るな。新しい総司令 clone を作るな。
+起動したら先に `affiliate-engine/docs/grok-bots/HQ_COMMAND.md` と `HQ_ROSTER.md` を読め（Grok は開けるな）。
+
+## 禁止（本線を壊す）
+
+- draft PR #122 をデフォルトへマージするな（CW レーンが席マシンを潰す）
+- `hq-instruct.js` / `dump/G_hq_boot.txt` / `G_hq_human_sitting.txt` を側線で上書きするな
+- Threads の post/insight/report cron を戻すな
+- ログイン確認ループ、いいね自動化、#PR なしリンク、円の発明
+
+## やれ
+
+- 9/30 確定100万が正。円は `approved_yen`。無いあいだは 0
+- デフォルトへ出す変更は円の席を壊さないものだけ
+- H3 / CW / XM / FANZA は側線。デフォルトへ向け直すな
+- 終わったら止まる。足りなければ `参謀へ:` 1行

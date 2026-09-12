@@ -4,8 +4,8 @@
 実測円は `approved_yen`。無いあいだは ¥0。
 
 棚卸し日: 2026-09-12 JST。Cloud Agent 87 体を読んだ。
-本線の Cursor は **1体だけ**: [１００万円売り上げ自動化](https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971)。
-他の Cursor を「司令塔」として起こすな。Grok Bot の clone も1つ（`dump/G_hq_boot.txt`）。
+本線の Cursor は **総司令 1体だけ**: [１００万円売り上げ自動化](https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971)。
+統括命令: `HQ_COMMAND.md`。他の Cursor を「司令塔」として起こすな。Grok Bot の clone も1つ（`dump/G_hq_boot.txt`）。
 
 ## Cursor の最大化（台数ではなく権限）
 
@@ -17,7 +17,7 @@ Cursor が持つのは仕組みの全部: dump 選択、円カレンダー、こ
 
 | 何か | 役割 | 備考 |
 |---|---|---|
-| Cursor 本線 1体 | 上流。起こされた日はカレンダー照合と台帳更新 | 上の URL |
+| Cursor 総司令 1体 | 上流と他 Cursor の統括。起こされた日は命令・台帳・TODAY | 上の URL |
 | Grok Bot 1 clone | `G_hq_boot.txt` → Issue 110 の `hq-instruct:` 1ファイル | 毎日貼り直すな |
 | 指示役 07:22 JST | overlay / 円で sitting か計測かを書く | 投稿しない |
 | `G_hq_human_sitting.txt` | 人間の席1回 | overlay 空のあいだ |
@@ -54,5 +54,5 @@ H3 の JPEG アップロード専用（内部が数十体）。本線の円を�
 ## 起こされた日の Cursor
 
 1. Issue 110 の `hq-gate:` / overlay / 円を読む
-2. この台帳と食い違う司令塔 PR（とくに #122）を本線へ入れない
+2. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）
 3. `output/sprint/TODAY.md` を1回更新して止まる

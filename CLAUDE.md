@@ -3,7 +3,7 @@
 Threads 9アカウントのアフィリエイト完全自動運用システム。詳細は `affiliate-engine/README.md`。
 このファイルは**将来の保守セッション（モデル不問）が壊さず作業するための不変条件と手順**をまとめる。
 
-> **3役（2026-09-12）**: 人間=外部サイトと席1回。Grok Bot=日常1 clone（入口 `dump/G_hq_boot.txt`）。Cursor=100万本線の上流1体。別の CW/XM/H3 司令塔を起こすな。draft PR #122 を instruct/boot にマージするな。常時稼働・時計進行・ログイン確認ループはするな。正は `handover/ROLES.md`。台帳は `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`（Bot は開けるな）。
+> **3役（2026-09-12）**: 人間=外部サイトと席1回。Grok Bot=日常1 clone（入口 `dump/G_hq_boot.txt`）。Cursor 総司令=100万本線1体（https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971）。他の Cursor は側線。draft PR #122 を instruct/boot にマージするな。常時稼働・時計進行・ログイン確認ループはするな。正は `handover/ROLES.md`。命令は `affiliate-engine/docs/grok-bots/HQ_COMMAND.md`（Bot は開けるな）。
 > **⚠️ 2026-08-26 Threads 自動更新は停止中（故障ではない・ユーザー指示による）**
 > 自動投稿・デイリー改善・日次レポート・婚活メトリクスの schedule を意図的に外した。
 > 「投稿されない」は正常。勝手に schedule を戻さないこと。運用ナレッジは Cursor / Grok Bot へ

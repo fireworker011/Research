@@ -61,7 +61,7 @@ Cursor を常時動かさない。確認は既にある指示役で足りる。
 
 1. Issue 110 の最新 `hq-instruct:` / `hq-gate:` / `overlay-filled:` / `approved-yen:` を読む
 2. Issue 109 の `A8_YEN:` を読む（無ければ円は 0 のまま）
-3. `HQ_ROSTER.md` と食い違う司令塔 PR（とくに #122）を本線へ入れない
+3. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）
 4. 上の表で **今日のゲート** が達成かを書く
 5. `output/sprint/TODAY.md` を日付ごと更新する
 6. 仕組みの穴だけなら `参謀へ:` 1行。新しい Cursor 司令塔を増やさない
