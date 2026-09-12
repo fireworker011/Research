@@ -19,7 +19,6 @@ on:
       - 'affiliate-engine/src/affi-step.js'
       - 'affiliate-engine/src/util.js'
       - 'affiliate-engine/data/conversions.csv'
-      - 'cw-engine/docs/grok-bots/G_cw.txt'
 
 concurrency:
   group: grok-bot-instruct

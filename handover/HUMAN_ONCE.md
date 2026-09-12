@@ -19,15 +19,6 @@
 4. 指示役 Issue の `overlay-filled:` で鍵名だけ見る。URL は出さない
 5. 投稿 cron は戻すな（別判断）
 
-## CW（進めると自分で言ったときだけ）
-
-正本は `cw-engine/docs/AUTO.md`。dump は `cw-engine/docs/grok-bots/G_cw.txt`。remain / n10 は開けるな。
-
-1. Issue `Grok Bot — 指示` に1行 `CW: GO`（Cursor に言うな。止めるなら `CW: STOP`）
-2. Bot はデスクを写すだけ。仕事 ID を足させない。下書きが既にある日は新しい応募をしない
-3. 応募送信・契約・納品ボタンはあなた。パスワードを Bot に送るな
-4. 公開報酬は円にしない
-
 ## 計測（確定円。画面を見たときだけ）
 
 1. Issue `Affiliate — 確定円` は指示役が空で作る。手で作るな
@@ -38,7 +29,7 @@
 
 - Cursor を24時間動かさない
 - ログインしたかをエージェントに何度も確認させない
-- remain / n10 の CW 応募を毎晩の宿題にしない。進めるなら `CW: GO` だけ
+- remain / n10 の CW 応募を毎晩の宿題にしない
 - 見ていない A8 の円を CSV に足さない
 - 指示役ワークフローを手で Run しない（マージと cron がやる）
 - `Affiliate — 確定円` Issue を手で作らない

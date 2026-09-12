@@ -1,8 +1,0 @@
-{
-  "command": "PAPER_ONLY",
-  "source": "init",
-  "reason": "no official apply API; live send stays human",
-  "updated_at": "2026-09-12T00:00:00.000Z",
-  "previous": null,
-  "issue_number": ""
-}

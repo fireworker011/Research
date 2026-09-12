@@ -5,7 +5,7 @@
 | 誰 | やる | やらない |
 |---|---|---|
 | **ナオミチ** | 外部サイトのクリック、初回ログイン、重要判断 | 日常チャット、時計進行、コード、ログイン確認のループ |
-| **Grok Bot** | 普通のやり取り、日次1手、XM の停止判断、CW の停止判断、dump を1つ開く | コード、外部ログイン、Cursor を常時起こす、dump を結合 |
+| **Grok Bot** | 普通のやり取り、日次1手、XM の停止判断、dump を1つ開く | コード、外部ログイン、Cursor を常時起こす、dump を結合 |
 | **Cursor** | 仕組み・環境・リサーチ成果物・申請文の 100% 下書き | 日常、時計、dump 貼り付け、ルーチン |
 
 ## BOT が開くファイル
@@ -13,10 +13,9 @@
 | いつ | ファイル |
 |---|---|
 | **毎日の入口（clone に一度）** | `dump/G_hq_boot.txt` |
-| **指示役（GitHub）** | デフォルトへマージで初回。以後 07:22 JST と、Issue `Grok Bot — 指示` への人間コメントと `conversions.csv` 更新で `hq-instruct:`（既定は XM。`AFFI: GO` なら高単価 dump。`CW: GO` なら CW dump。1語 / `完了` で進む）と `overlay-filled:`（鍵名だけ。URLなし）と `approved-yen:`（CSV 合計。ファイルが無ければ `unknown`。0 を invent しない）。同じジョブで `Affiliate — 確定円` も空で立てる |
+| **指示役（GitHub）** | デフォルトへマージで初回。以後 07:22 JST と、Issue `Grok Bot — 指示` への人間コメントと `conversions.csv` 更新で `hq-instruct:`（既定は XM。`AFFI: GO` なら高単価 dump。1語 / `完了` で進む）と `overlay-filled:`（鍵名だけ。URLなし）と `approved-yen:`（CSV 合計。ファイルが無ければ `unknown`。0 を invent しない）。同じジョブで `Affiliate — 確定円` も空で立てる |
 | FX の日次（instruct / boot から開く） | `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` |
 | 人間が Issue に `AFFI: GO` したとき | `dump/G_hq_sns_next.txt` から開始。人間の1語 / `完了` で次 dump へ進む（毎日 neo に戻さない）。副サイトの次はプロフィール（円）。Secret は自動投稿用でそのあと。neo を置いたあとはチケットで上書きせず計測 `G_hq_a8_csv.txt` |
-| 人間が Issue に `CW: GO` したとき | `cw-engine/docs/grok-bots/G_cw.txt` だけ。応募送信は人間。remain / n10 は開けるな |
 | 仕組みが足りないとき（Cursor へ1行） | 下の「参謀へ」 |
 
 `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は **駐車**。引用1手は替えるな。開けるな。人間介入が多すぎて日常にしない。
