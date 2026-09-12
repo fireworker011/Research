@@ -8,8 +8,8 @@ alwaysApply: false
 
 - `affiliate-engine/src/hq-instruct.js` / `dump/G_hq_boot.txt` / `MACHINE.md` / `HQ_*.md` / `handover/*` に CW を差すな。総統括（`HQ_COMMAND.md`）が禁止している
 - 実行と状態は人間の非公開リポジトリ（`cw-engine/private-repo/cw.yml`）。公開リポジトリに `output/` や Issue コメントの告知を置くな。公開リポジトリには CI だけ
-- 公式の応募 API は無い。ログイン自動化・非公式 POST・スクレイピング応募を足すな。公開ページの1回読みまで
-- 受注可否は人間: `SENT` / `SKIP` / `CONTRACT` / `REJECT`。`CW: RESUME` や自動送信ゲートを作るな
+- 公式の応募 API は無い。**エンジン（Actions）に**ログイン自動化・非公式 POST・スクレイピング応募を足すな。公開ページの1回読みまで。応募操作は既存 Grok Bot「CW受注」
+- 人間だけ: **契約**・**外部サイトの案内誘導**・**納品**。`CW: RESUME` をエンジンに作るな
 - LLM に「この件は取れ」と選ばせるな。`qualify.js` の allowlist / deny（規約 22 条・AI ポリシー）で落とす
 - 実績・数字・体験談を発明しない。事実カードは CW 公開プロフィールにある事実だけ。氏名・年齢は Secret にも書かない
 - 公開の報酬表示は確定ではない。確定は `CW: PAID` で人間が画面を見た日だけ。`conversions.csv`（アフィ）には足さない

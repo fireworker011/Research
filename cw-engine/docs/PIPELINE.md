@@ -1,28 +1,28 @@
 # パイプライン（状態・成果物・誰が押すか）
 
 ```
-公開ページ ──人間: CW: JOB──▶ 取込 intake.js ─▶ 資格判定 qualify.js ─┬─ NG ─▶ rejected（理由）
-                                                                    └─ OK ─▶ 応募稿 apply-draft.js ─▶ drafted
-人間: 貼って送る ─▶ CW: SENT ─▶ sent ──相手の文── CW: MSG ─▶ 定型返信 reply-draft.js
-人間: 受注する ─▶ CW: CONTRACT ─▶ contracted ─▶ BRIEF brief.js（成果物定義・受入条件・不足素材の依頼文）
-人間: 仮払い確認・素材 ─▶ CW: MAKE ─▶ making ─▶ Grok が本文 ─▶ CW: DRAFT ─▶ QA ─┬─ fail ─▶ qa_failed
-                                                                              └─ pass ─▶ ready + DELIVERY.md
-人間: 納品ボタン ─▶ CW: DELIVERED ─▶ delivered ──修正── CW: REVISE ─▶ making …
-人間: 画面で確定 ─▶ CW: PAID <円> ─▶ paid + cw_ledger.csv
+公開ページ ──Grok: CW: JOB──▶ 取込 ─▶ 資格判定 ─┬─ NG ─▶ rejected
+                                              └─ OK ─▶ 応募稿 ─▶ drafted
+Grok: CWで応募 ─▶ CW: SENT ─▶ sent ──相手の文── Grok: MSG ─▶ 定型返信（CW内）
+人間: 契約 ─▶ CW: CONTRACT ─▶ contracted ─▶ BRIEF
+Grok: MAKE → DRAFT ─▶ QA ─┬─ fail ─▶ qa_failed
+                          └─ pass ─▶ ready
+人間: 納品ボタン ─▶ CW: DELIVERED ─▶ delivered ──修正── Grok: REVISE
+人間: 画面で確定 ─▶ CW: PAID <円>
 ```
 
 ## 状態
 
 | 状態 | 意味 | 次に押すのは |
 |---|---|---|
-| rejected | 資格判定で落ちた（規約・AI不可・顔出し・実績必須・カテゴリ不明・HALT・同時契約上限） | 人間: 別の仕事、または `category=` で上書き |
-| qualified / drafted | 応募稿あり | 人間: 送る `SENT` / 見送り `SKIP` |
-| sent | 返事待ち | 人間: `MSG` / `CONTRACT` / `REJECT` |
-| contracted | BRIEF あり | 人間: 仮払い確認 → `MAKE` + 素材 |
-| making | Grok 用プロンプト待ち | Grok: `CW: DRAFT` |
-| making → qa_failed | QA 不合格（要確認が残る・URL・断定・分量） | 直した本文を `DRAFT`、または素材を足して `MAKE` |
-| making → ready | DELIVERY.md あり | 人間: 納品ボタン → `DELIVERED` |
-| delivered | 検収待ち | 人間: `REVISE` or `PAID` |
+| rejected | 資格判定で落ちた | Grok: 別の仕事 |
+| qualified / drafted | 応募稿あり | Grok: 応募 `SENT` / 見送り `SKIP` |
+| sent | 返事待ち | Grok: `MSG`。**人間: `CONTRACT` / `REJECT`**。外部誘導は人間 |
+| contracted | BRIEF あり | Grok: 素材 `MAKE`（仮払い後） |
+| making | プロンプト待ち | Grok: `DRAFT` |
+| making → qa_failed | QA 不合格 | Grok: `DRAFT` |
+| making → ready | DELIVERY.md あり | **人間: 納品ボタン → `DELIVERED`** |
+| delivered | 検収待ち | Grok: `REVISE`。人間: `PAID` |
 | paid | 台帳に確定 | 終わり |
 | skipped / lost | 見送り・失注 | 終わり |
 

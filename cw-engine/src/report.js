@@ -17,7 +17,7 @@ function renderMarkdown({ commander, queue, capability, ledgerYen = 0, now }) {
   lines.push('');
   lines.push(`生成: ${(now || new Date()).toISOString()}`);
   lines.push('');
-  lines.push('> 公開の報酬表示・応募画面の円は確定ではない。確定は `CW: PAID` で人間が画面を見た日だけ。応募送信・契約・納品ボタンは人間。');
+  lines.push('> 公開の報酬表示は確定ではない。確定は `CW: PAID` で人間が画面を見た日だけ。人間は契約・外部案内誘導・納品。応募は Grok。エンジンは応募 POST しない。');
   lines.push('');
   lines.push('## 司令塔ステータス');
   lines.push('');
@@ -53,7 +53,7 @@ function renderMarkdown({ commander, queue, capability, ledgerYen = 0, now }) {
   lines.push('');
   lines.push('## やらない');
   lines.push('');
-  lines.push('- ログイン自動化・非公式 API での応募送信・スクレイピング応募');
+  lines.push('- エンジンへのログイン自動化・非公式 API での応募送信。契約ボタン・納品ボタン・外部誘導');
   lines.push('- 実績捏造。カタログ円を確定に足す');
   lines.push('- 仮払い前の着手。直接取引。クライアント素材の外部流用');
   lines.push('- Grok clone やジャンルbot の増設。本線（100万）の dump に CW を差す');

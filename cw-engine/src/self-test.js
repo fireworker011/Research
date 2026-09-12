@@ -301,7 +301,8 @@ async function testDispatcher() {
   const md = renderMarkdown({ commander: defaultCommander(), queue: queueMod.defaultQueue(), capability: loadCapability(), ledgerYen: 0, now });
   assert(/キュー空/.test(md), 'empty queue text');
   const desk = deskLines({ commander: defaultCommander(), queue: queueMod.defaultQueue(), capability: loadCapability(), funnel: funnel(queueMod.defaultQueue(), {}), now });
-  assert(desk[0] === 'cw-desk: paper' && desk.some((l) => l.startsWith('auto_send: never')), 'desk lines');
+  assert(desk[0] === 'cw-desk: paper' && desk.some((l) => l.startsWith('auto_send: grok')), 'desk lines');
+  assert(desk.some((l) => l.startsWith('next_grok:')), 'desk next_grok');
   assert(/CW: JOB/.test(CHEAT_SHEET) && !/RESUME/.test(CHEAT_SHEET), 'cheat sheet');
 }
 
@@ -317,6 +318,7 @@ function testDocsAndSideline() {
   assert(!/CW: RESUME/.test(dump.replace(/`CW: RESUME` は出すな/g, '')), 'dump resume forbidden');
   assert(/HQ clone|HQ の clone|別の会話/.test(dump), 'dump separate from HQ clone');
   assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(dump), 'dump names existing bot');
+  assert(/契約ボタン/.test(dump) && /納品ボタン/.test(dump) && /案内/.test(dump), 'dump human-only three');
   assert(/月100万稼ぐまで帰れま10/.test(dump) && /帰すな/.test(dump), 'dump does not report to HQ');
   const watch = readText(path.join(ROOT, 'docs/grok-bots/G_cw_watch.txt'));
   assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(watch), 'watch bot id');

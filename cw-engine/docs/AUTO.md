@@ -1,26 +1,25 @@
 # CW 自動システム — いま組んだもの / まだ組まないもの
 
-ナオミチは外部サイトと受注可否だけ。CrowdWorks のパスワードは Bot に渡さない。Threads の自動投稿は触らない。remain / n10 は駐車。HQ の Grok clone は触らない。
+ナオミチは **契約・外部サイトの案内誘導・納品** だけ。CrowdWorks のパスワードは Bot に渡さない。Threads の自動投稿は触らない。remain / n10 は駐車。HQ の Grok clone は触らない。
 
 自動は **2 層**。混ぜると守秘か本線が壊れる。
 
 | 層 | 何が自動か | 置き場 | 送信？ |
 |---|---|---|---|
 | **A. 公開リポジトリ** | コード・文書・CI（`cw-engine/`） | `fireworker011/Research` | 何もしない |
-| **B. 非公開リポジトリ** | Issue `CW — 司令塔` のコメントで、取込 → 資格判定 → 応募稿 → 定型返信 → BRIEF → 完成品 → QA → 納品パッケージ → 台帳 | 人間が作る `cw-work` | いいえ。送信・契約・納品ボタンは人間 |
+| **B. 非公開リポジトリ** | Issue コメントで取込〜QA・台帳 | 人間が作る `cw-work` | エンジンは送らない。応募は Grok。契約・納品は人間 |
 
 cron は使わない。人間のコメントが時計。
 
-## 層 B の 1 案件（人間のコメントは 6 行だけ）
+## 層 B の 1 案件（人間は契約と納品）
 
 ```
-CW: JOB 13500001 + 公開文        → cw-apply: 応募稿
-CW: SENT 13500001                → 返事待ち
-CW: MSG 13500001 + 相手の文       → cw-reply: 返信下書き
-CW: CONTRACT 13500001 + メモ      → cw-brief: 業務の把握・素材依頼文（受注可否は人間）
-CW: MAKE 13500001 + 素材          → cw-make: Grok 用プロンプト
-CW: DRAFT 13500001 + 本文        → cw-deliver: 完成品 + DELIVERY.md（納品ボタンは人間）
-CW: DELIVERED 13500001 / CW: PAID 13500001 2000
+Grok: CW: JOB + 公開文          → cw-apply: 応募稿
+Grok: CWで応募 → CW: SENT
+Grok: CW: MSG + 相手の文         → cw-reply: 返信下書き（CW内に貼る）
+人間: CW: CONTRACT / REJECT      → 契約だけ人間
+Grok: CW: MAKE + 素材 → CW: DRAFT → QA
+人間: 納品ボタン → CW: DELIVERED / CW: PAID
 ```
 
 ## いま組んだもの
@@ -35,11 +34,11 @@ CW: DELIVERED 13500001 / CW: PAID 13500001 2000
 
 - 動画のレンダリング（編集計画まで。主力にしない）
 - 文字起こし音声の自動処理（テキスト支給のみ受ける）
-- 自動送信・自動契約（公式 API が無い。作らない）
+- **エンジンへの**自動応募 POST・自動契約・自動納品
 - 2 体目の Grok、案件ごとの Bot
 
 ## ナオミチの 1 手
 
-- **今**: `private-repo/README.md` の一度だけ（非公開リポジトリ・Secret・Run workflow）
-- **毎日**: Issue の最新 `next_human:` の 1 行だけ。下書きが 3 件たまったら JOB を増やさない
-- **受注**: `CONTRACT` を書くのはあなた。書かなければ機械は何も作らない
+- **今**: 既存 Grok の「指示」を `G_cw.txt` / `G_cw_watch.txt` に差し替え
+- **毎回**: `next_human:` が契約・外部案内・納品のときだけ押す
+- **受注**: `CONTRACT` を書くのはあなた。書かなければ完成品に入らない

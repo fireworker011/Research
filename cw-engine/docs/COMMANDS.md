@@ -4,18 +4,18 @@
 
 | 行 | 誰 | 意味 |
 |---|---|---|
-| `CW: JOB <id>` + 公開文 | 人間 | 取込 → 資格判定 → 応募稿。本文が無ければ公開ページを1回読む。`category=<id>` `applied=yes` を1行目に足せる |
-| `CW: SENT <id>` | 人間 | 応募稿を貼って送った |
-| `CW: SKIP <id>` | 人間 | 見送り |
-| `CW: MSG <id>` + 相手の文 | 人間 | 定型返信の下書き |
-| `CW: CONTRACT <id>` + メモ | 人間 | **受注した**（可否は人間）→ BRIEF |
-| `CW: MATERIAL <id>` + 素材 | 人間 | 素材を足す |
-| `CW: MAKE <id>` (+素材) | 人間 | Grok 用プロンプト（Anthropic 不要） |
-| `CW: DRAFT <id>` + 本文 | Grok / 人間 | 完成品を貼る → QA → 納品パッケージ |
-| `CW: REVISE <id>` + 修正依頼 | 人間 | 反映版のプロンプト → また `CW: DRAFT` |
-| `CW: DELIVERED <id>` | 人間 | 納品ボタンを押した |
-| `CW: PAID <id> <整数円> <メモ>` | 人間 | 画面で確定を見た日だけ。カンマ・カタログ・URL は拒否 |
-| `CW: REJECT <id>` | 人間 | 不採用・失注 |
+| `CW: JOB <id>` + 公開文 | Grok | 取込 → 資格判定 → 応募稿 |
+| `CW: SENT <id>` | Grok | 応募した |
+| `CW: SKIP <id>` | Grok | 見送り |
+| `CW: MSG <id>` + 相手の文 | Grok | 定型返信の下書き |
+| `CW: CONTRACT <id>` + メモ | **人間** | **受注した** → BRIEF |
+| `CW: MATERIAL <id>` + 素材 | Grok | 素材を足す |
+| `CW: MAKE <id>` (+素材) | Grok | 完成品プロンプト |
+| `CW: DRAFT <id>` + 本文 | Grok | 完成品 → QA |
+| `CW: REVISE <id>` + 修正依頼 | Grok | 反映版プロンプト |
+| `CW: DELIVERED <id>` | **人間** | 納品ボタンを押した |
+| `CW: PAID <id> <整数円> <メモ>` | 人間 | 画面で確定を見た日だけ |
+| `CW: REJECT <id>` | **人間** | 不採用・失注 |
 | `CW: PROFILE` | 人間 | 自己PR の下書き |
 | `CW: HALT` | 人間 / CW 前面 | 新規の資格判定を止める |
 | `CW: PAPER_ONLY` | 人間 | 既定に戻す |
