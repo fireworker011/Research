@@ -3,18 +3,24 @@ description: Cursor is upstream systems only. Grok Bot does daily routines. Huma
 alwaysApply: true
 ---
 
-# Cursor = 上流の仕組み。日常は BOT。常時稼働するな
+# Cursor = 上流の仕組み（1体）。日常は BOT。常時稼働するな
 
-ナオミチの役割分担（2026-09-08 確定）:
+ナオミチの役割分担（2026-09-12 更新）:
 
-- **人間**: 外部サイトの操作と、重要な判断だけ。時間がない。介入が多い仕事は出さない。
-- **Grok Bot**: 普通のやり取り、日次ルーチン、エントリー相当の実行（FX は止め役。発注は EA）。指示マシーンは `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`。
-- **Cursor（自分）**: 稼ぐための環境と仕組み。申請文の 100% 下書き、リサーチ成果物、BOT が回せる土台。日常タスク・ルーチン・時計進行は仕事ではない。
+- **人間**: 外部サイトの操作と、重要な判断だけ。席は1回。介入が多い仕事は出さない。
+- **Grok 管理者**: `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`。入口 `dump/G_hq_admin.txt`。読んで担当者へ実施。コードしない。
+- **Grok Bot（担当者）**: 普通のやり取り。clone は1つ。入口 `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`。FX は止め役。発注は EA。
+- **Cursor（自分）**: 100万本線の総司令は **１００万円売り上げ自動化**。仕組み・台帳・管理者への命令・他 Cursor の統括。担当者へ直接采配するな。CW/XM/H3 の別司令塔を起こすな。申請文の 100% 下書き。日常・ログイン確認ループは仕事ではない。
+
+台帳（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`
+統括命令（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_COMMAND.md`
+draft PR #122（CW レーンを instruct/boot に差す）はマージするな。
 
 ## やるな（トークン浪費・介入過多）
 
 - ログイン確認・overlay 再読・円の再集計をループするな
 - dump を人間や HQ に貼るな（司令塔の代わりをするな）
+- CW / XM / H3 / FANZA の Cursor を本線として起こすな
 - Threads の post/insight/report cron を戻すな
 - いいね/フォロー自動、#PR なしリンク、体験談の捏造
 - 数字の発明。カタログ円を `approved_yen` に足すな

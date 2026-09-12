@@ -9,6 +9,8 @@ const GOAL_YEN = 1000000;
 const DUMP = 'affiliate-engine/docs/grok-bots/dump';
 const XM_POINTER = 'xm-trade-engine/docs/grok-bots/G_xm_trade.txt';
 const SITTING_POINTER = `${DUMP}/G_hq_human_sitting.txt`;
+const ADMIN_POINTER = `${DUMP}/G_hq_admin.txt`;
+const ADMIN_ID = 'b6bf30a6-a4f5-41ca-a2db-b417d936b9f4';
 const CSV_POINTER = fileFor('a8_csv');
 
 function pickDump({ stop, overlayCount, approvedYen } = {}) {
@@ -74,6 +76,44 @@ function selfTest() {
   if (!sitting.includes('ペット')) throw new Error('no pet');
   const csv = assertDump(CSV_POINTER);
   if (!csv.includes('プロフィールに置いたリンクを外すな')) throw new Error('csv keep');
+  const root = path.join(__dirname, '../docs/grok-bots');
+  const roster = fs.readFileSync(path.join(root, 'HQ_ROSTER.md'), 'utf8');
+  if (!roster.includes('#122')) throw new Error('roster 122');
+  if (!roster.includes('マージするな')) throw new Error('roster no merge');
+  const command = fs.readFileSync(path.join(root, 'HQ_COMMAND.md'), 'utf8');
+  if (!command.includes('bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971')) throw new Error('command hq id');
+  if (!command.includes('#122')) throw new Error('command 122');
+  if (!command.includes('bc-01a07bb1-da1a-7a05-a8a2-2c4a85bcf112')) throw new Error('command independent h3');
+  if (!command.includes('bc-bca5f77f-03dd-4bd9-b290-84557e23ab58')) throw new Error('command independent 2');
+  const dumpReadme = fs.readFileSync(path.join(root, 'dump/README.md'), 'utf8');
+  if (!dumpReadme.includes('G_hq_human_sitting.txt')) throw new Error('dump live sitting');
+  if (!dumpReadme.includes('G_hq_admin.txt')) throw new Error('dump live admin');
+  if (!dumpReadme.includes(ADMIN_ID)) throw new Error('dump admin id');
+  if (/https?:\/\//i.test(dumpReadme)) throw new Error('dump readme url');
+  if (!command.includes(ADMIN_ID)) throw new Error('command admin id');
+  if (!command.includes('G_hq_admin.txt')) throw new Error('command admin dump');
+  if (!command.includes('担当者への直接采配')) throw new Error('command no direct staff');
+  if (!roster.includes(ADMIN_ID)) throw new Error('roster admin id');
+  if (!roster.includes('G_hq_admin.txt')) throw new Error('roster admin dump');
+  const admin = assertDump(ADMIN_POINTER);
+  if (!admin.includes(ADMIN_ID)) throw new Error('admin id');
+  if (!admin.includes('担当者')) throw new Error('admin staff');
+  if (!admin.includes('席1回') && !admin.includes('席を1回')) throw new Error('admin sitting');
+  if (!admin.includes('@comback_nao6')) throw new Error('admin x');
+  if (!admin.includes('独立2体')) throw new Error('admin independent');
+  if (!admin.includes('HQ_COMMAND')) throw new Error('admin no hq command');
+  if (!admin.includes('コードはするな')) throw new Error('admin no code');
+  const boot = fs.readFileSync(path.join(root, 'dump/G_hq_boot.txt'), 'utf8');
+  if (!boot.includes(ADMIN_ID)) throw new Error('boot admin id');
+  if (!boot.includes('担当者')) throw new Error('boot staff');
+  for (const picked of [
+    pickDump({}),
+    pickDump({ overlayCount: 1, approvedYen: 0 }),
+    pickDump({ overlayCount: 2, approvedYen: GOAL_YEN }),
+    pickDump({ stop: true })
+  ]) {
+    if (picked.pointer === ADMIN_POINTER) throw new Error('instruct names admin');
+  }
   process.stdout.write('hq-earn self-test ok\n');
 }
 
@@ -81,6 +121,8 @@ module.exports = {
   GOAL_YEN,
   XM_POINTER,
   SITTING_POINTER,
+  ADMIN_POINTER,
+  ADMIN_ID,
   CSV_POINTER,
   pickDump
 };

@@ -3,7 +3,7 @@
 目標と期限は変えない。期間 2026-08-26〜2026-09-30。目標 確定 ¥1,000,000。
 実測円は `conversions.csv` の `approved_yen`。無いあいだは ¥0。カタログ・CW・note は円ではない。
 
-このファイルは **Cursor と人間の盤面**。Grok Bot は開けるな。入口は `dump/G_hq_boot.txt` と Issue `Grok Bot — 指示` の `hq-instruct:` だけ。Threads cron は戻すな。アフィ URL は書くな。
+このファイルは **Cursor と人間の盤面**。Grok Bot は開けるな（管理者も）。入口は管理者 `dump/G_hq_admin.txt`、日常 `dump/G_hq_boot.txt`、Issue `Grok Bot — 指示` の `hq-instruct:`。Threads cron は戻すな。アフィ URL は書くな。
 
 ## 欠けていたもの
 
@@ -11,15 +11,16 @@
 月100万はその上に載ったが、**日次ゲートが無かった**。自動投稿は 2026-08-26 から停止のまま。
 1語 dump は円の手前で日を食った。GO 待ちも同じ。采配は **席1回** に畳み、dump は overlay と確定円で自動選択する。
 
-## いまの実測（2026-09-11 JST）
+## いまの実測（2026-09-12 JST）
 
 | 項目 | 値 |
 |---|---|
-| 残日 | 20（9/11〜9/30 含む） |
+| 残日 | 19（9/12〜9/30 含む） |
 | `approved-yen` | 0 |
 | `overlay-filled` | 0 |
-| 指示役 dump | `G_hq_human_sitting.txt`（GO 不要） |
+| 指示役 dump | `G_hq_human_sitting.txt`（#115 マージ済み） |
 | 人間の未完了 | A8 の席1回（教育プロフィールを先） |
+| 駐車 | CW 司令塔 #122（マージするな）/ XM 司令塔 / remain / n10 / H3 |
 | 停止のまま | Threads 自動投稿 / insight / 日次レポート |
 
 ## 日次の進捗確認（時計の本体）
@@ -60,6 +61,7 @@ Cursor を常時動かさない。確認は既にある指示役で足りる。
 
 1. Issue 110 の最新 `hq-instruct:` / `hq-gate:` / `overlay-filled:` / `approved-yen:` を読む
 2. Issue 109 の `A8_YEN:` を読む（無ければ円は 0 のまま）
-3. 上の表で **今日のゲート** が達成かを書く
-4. `output/sprint/TODAY.md` を日付ごと更新する
-5. 仕組みの穴だけなら `参謀へ:` 1行。ログイン確認で起き続けるな
+3. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）
+4. 上の表で **今日のゲート** が達成かを書く
+5. `output/sprint/TODAY.md` を日付ごと更新する
+6. 仕組みの穴だけなら `参謀へ:` 1行。新しい Cursor 司令塔を増やさない
