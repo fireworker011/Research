@@ -12,51 +12,75 @@ const ISSUE_TITLE = 'Grok Bot — 指示';
 const RAW_PREFIX =
   'https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/';
 const XM_POINTER = 'xm-trade-engine/docs/grok-bots/G_xm_trade.txt';
+const CW_POINTER = 'cw-engine/docs/grok-bots/G_cw.txt';
 const AFFI_POINTER = fileFor(START);
 const POINTER = XM_POINTER;
 const RAW = `${RAW_PREFIX}${XM_POINTER}`;
 const INSTRUCT_BODY =
-  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。止めるなら `AFFI: STOP`。分岐の返事は1語だけ。申請・副サイト・プロフィール・Secret が終わったら `完了`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。';
+  '指示役が毎日 `hq-instruct:` を書く。高単価を進めるならコメントを `AFFI: GO` だけの行にする。CW を進めるなら `CW: GO`。止めるなら `AFFI: STOP` または `CW: STOP`。分岐の返事は1語だけ。申請・副サイト・プロフィール・Secret が終わったら `完了`。Grok Bot は最新コメントの1ファイルだけ開け。人間は外部サイトだけ。remain / n10 は開けるな。';
 const YEN_BODY =
   'A8 を自分で開いた日だけ1行。`A8_YEN: YYYY-MM-DD,A8,all,clicks,cv,yen,note`。URL・カンマ数字・カタログ円は拒否。開いていない日は書くな。';
 
-function targetFor(go, state) {
-  return go ? fileFor(state || START) : XM_POINTER;
+function normalizeLane(laneOrGo) {
+  if (laneOrGo === true || laneOrGo === 'affi') return 'affi';
+  if (laneOrGo === 'cw') return 'cw';
+  return 'xm';
+}
+
+function targetFor(laneOrGo, state) {
+  const lane = normalizeLane(laneOrGo);
+  if (lane === 'affi') return fileFor(state || START);
+  if (lane === 'cw') return CW_POINTER;
+  return XM_POINTER;
+}
+
+function extraFor(lane) {
+  switch (lane) {
+    case 'affi':
+      return '人間の1語（または完了）で次ファイルへ進め。ENTRY は出すな。';
+    case 'cw':
+      return '応募送信を連発するな。remain / n10 は開けるな。ENTRY は出すな。';
+    case 'xm':
+      return 'ENTRY は出すな。';
+    default: {
+      const _never = lane;
+      throw new Error(`unknown lane: ${_never}`);
+    }
+  }
 }
 
 function neoFlag(neo) {
   return neo === 'placed' ? 'placed' : 'no';
 }
 
-function instructBody(go = false, state = START, neo = 'no') {
-  const pointer = targetFor(go, state);
-  const extra = go
-    ? '人間の1語（または完了）で次ファイルへ進め。ENTRY は出すな。'
-    : 'ENTRY は出すな。';
+function instructBody(laneOrGo = 'xm', state = START, neo = 'no') {
+  const lane = normalizeLane(laneOrGo);
+  const pointer = targetFor(lane, state);
   const lines = [
     `hq-instruct: ${pointer}`,
     `${RAW_PREFIX}${pointer}`,
-    `この1ファイルだけ開け。結合するな。remain / n10 は開けるな。Cursor を起こすな。Threads cron は戻すな。${extra} boot に戻ってループするな。`
+    `この1ファイルだけ開け。結合するな。remain / n10 は開けるな。Cursor を起こすな。Threads cron は戻すな。${extraFor(lane)} boot に戻ってループするな。`
   ];
-  if (go) {
+  if (lane === 'affi') {
     const st = state || START;
     lines.push(`hq-affi-state: ${st}`);
     lines.push(`hq-affi-neo: ${neoFlag(neo)}`);
     lines.push(`hq-affi-reply: ${repliesFor(st).join(' / ') || '(none)'}`);
   }
+  if (lane === 'cw') lines.push('hq-cw: paper');
   return lines.join('\n');
 }
 
-function samePointer(body, go = false, state = START) {
-  return String(body || '').includes(`hq-instruct: ${targetFor(go, state)}`);
+function samePointer(body, laneOrGo = 'xm', state = START) {
+  return String(body || '').includes(`hq-instruct: ${targetFor(laneOrGo, state)}`);
 }
 
 function overlayNow() {
   return overlayStatusText(loadLinks());
 }
 
-function commentBody(go = false, state = START, neo = 'no') {
-  return `${instructBody(go, state, neo)}\n${overlayNow().text.trim()}\n${yenStatusText()}`;
+function commentBody(laneOrGo = 'xm', state = START, neo = 'no') {
+  return `${instructBody(laneOrGo, state, neo)}\n${overlayNow().text.trim()}\n${yenStatusText()}`;
 }
 
 function approvedYenSum(csvText) {
@@ -88,16 +112,31 @@ function yenStatusText() {
   return yenStatus().text;
 }
 
-function affiGo(comments) {
-  let go = false;
+function laneFromComments(comments) {
+  let lane = 'xm';
   for (const c of comments || []) {
     if ((c.user?.login || '') === 'github-actions[bot]') continue;
     for (const line of String(c.body || '').split(/\r?\n/)) {
-      if (/^\s*AFFI:\s*STOP\b/i.test(line)) go = false;
-      else if (/^\s*AFFI:\s*GO\b/i.test(line)) go = true;
+      if (/^\s*AFFI:\s*STOP\b/i.test(line)) {
+        if (lane === 'affi') lane = 'xm';
+      } else if (/^\s*AFFI:\s*GO\b/i.test(line)) {
+        lane = 'affi';
+      } else if (/^\s*CW:\s*STOP\b/i.test(line)) {
+        if (lane === 'cw') lane = 'xm';
+      } else if (/^\s*CW:\s*GO\b/i.test(line)) {
+        lane = 'cw';
+      }
     }
   }
-  return go;
+  return lane;
+}
+
+function affiGo(comments) {
+  return laneFromComments(comments) === 'affi';
+}
+
+function cwGo(comments) {
+  return laneFromComments(comments) === 'cw';
 }
 
 function isTodayUtc(iso) {
@@ -180,13 +219,14 @@ async function run() {
   const yen = await ensureIssue(YEN_ISSUE_TITLE, YEN_BODY);
   const { issue } = await ensureIssue(ISSUE_TITLE, INSTRUCT_BODY);
   const comments = await listComments(issue.number);
-  const go = affiGo(comments);
+  const lane = laneFromComments(comments);
+  const go = lane === 'affi';
   const affi = go ? resolveAffi(comments) : { state: START, pointer: XM_POINTER, word: null, neo: 'no' };
-  const pointer = go ? affi.pointer : XM_POINTER;
   const state = go ? affi.state : START;
   const neo = go ? affi.neo || 'no' : 'no';
+  const pointer = targetFor(lane, state);
   const yenNow = yenStatus();
-  const body = commentBody(go, state, neo);
+  const body = commentBody(lane, state, neo);
   const last = comments.length ? comments[comments.length - 1] : null;
   if (last && String(last.body || '').trim() === body.trim() && isTodayUtc(last.created_at)) {
     process.stdout.write(
@@ -199,6 +239,7 @@ async function run() {
         overlay_filled: overlayNow().names.length,
         approved_yen: yenNow.approved_yen,
         pointer,
+        lane,
         affi: go,
         state,
         neo
@@ -212,13 +253,14 @@ async function run() {
   });
   process.stdout.write(
     `${JSON.stringify({
-      skipped: false,
-      number: issue.number,
-      pointer,
-      affi: go,
-      state,
-      word: affi.word || null,
-      neo,
+        skipped: false,
+        number: issue.number,
+        pointer,
+        lane,
+        affi: go,
+        state,
+        word: affi.word || null,
+        neo,
       yen_number: yen.issue.number,
       yen_created: yen.created,
       overlay_filled: overlayNow().names.length,
@@ -254,6 +296,37 @@ function selfTest() {
     { user: { login: 'n' }, body: 'AFFI: STOP' }
   ])) throw new Error('go stop');
   if (affiGo([{ user: { login: 'github-actions[bot]' }, body: 'AFFI: GO' }])) throw new Error('bot go');
+  if (laneFromComments([]) !== 'xm') throw new Error('lane empty');
+  if (laneFromComments([{ user: { login: 'n' }, body: 'CW: GO' }]) !== 'cw') throw new Error('lane cw');
+  if (laneFromComments([
+    { user: { login: 'n' }, body: 'AFFI: GO' },
+    { user: { login: 'n' }, body: 'CW: GO' }
+  ]) !== 'cw') throw new Error('lane last cw');
+  if (laneFromComments([
+    { user: { login: 'n' }, body: 'CW: GO' },
+    { user: { login: 'n' }, body: 'CW: STOP' }
+  ]) !== 'xm') throw new Error('lane cw stop');
+  if (laneFromComments([
+    { user: { login: 'n' }, body: 'CW: GO' },
+    { user: { login: 'n' }, body: 'AFFI: GO' }
+  ]) !== 'affi') throw new Error('lane affi later');
+  if (cwGo([])) throw new Error('cw empty');
+  if (!cwGo([{ user: { login: 'n' }, body: 'CW: GO' }])) throw new Error('cw on');
+  if (cwGo([{ user: { login: 'github-actions[bot]' }, body: 'CW: GO' }])) throw new Error('bot cw');
+  const cw = instructBody('cw');
+  if (!cw.includes(CW_POINTER)) throw new Error('cw pointer');
+  if (!cw.includes(`${RAW_PREFIX}${CW_POINTER}`)) throw new Error('cw raw');
+  if (!cw.includes('hq-cw: paper')) throw new Error('cw flag');
+  if (cw.includes('hq-affi-state:')) throw new Error('cw affi mix');
+  if (/crowdworks/i.test(cw)) throw new Error('cw leak');
+  if (!samePointer(cw, 'cw')) throw new Error('cw same');
+  if (/^\s*CW:\s*GO\b/m.test(cw) || /^\s*CW:\s*GO\b/m.test(commentBody('cw'))) throw new Error('cw go loop');
+  const cwDump = path.join(__dirname, '../../cw-engine/docs/grok-bots/G_cw.txt');
+  if (!fs.existsSync(cwDump)) throw new Error('cw dump missing');
+  const cwDumpText = fs.readFileSync(cwDump, 'utf8');
+  if (/G_hq_cw_remain|G_hq_cw_n10/.test(cwDumpText)) throw new Error('cw dump remain');
+  if (/crowdworks\.jp\/public\/jobs\/\d+/.test(cwDumpText)) throw new Error('cw dump job url');
+  if (CW_POINTER.includes('remain') || CW_POINTER.includes('n10')) throw new Error('cw pointer parked');
   if (/crowdworks|a8\.net|AFFILIATE_LINKS/i.test(body)) throw new Error('leak');
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
@@ -307,11 +380,14 @@ module.exports = {
   YEN_ISSUE_TITLE,
   POINTER,
   XM_POINTER,
+  CW_POINTER,
   AFFI_POINTER,
   instructBody,
   commentBody,
   samePointer,
   affiGo,
+  cwGo,
+  laneFromComments,
   approvedYenSum,
   yenStatus,
   targetFor,

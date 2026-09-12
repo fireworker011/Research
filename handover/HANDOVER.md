@@ -1,6 +1,6 @@
 # 引き継ぎ書 — 婚活・ペット・美容（Cursor / Grok Bot 用）
 
-最終更新: 2026-09-09（3役。日常の入口は `G_hq_boot.txt`。remain / n10 は駐車。引用1手は替えるな）
+最終更新: 2026-09-12（3役。日常の入口は `G_hq_boot.txt`。remain / n10 は駐車。CW 全自動は `CW: GO` → `cw-engine/`。引用1手は替えるな）
 
 ## 0. このファイルの使い方（最初に必ず読む）
 
@@ -8,7 +8,7 @@
 - 指令塔は今すぐ dump 1ファイルだけ開け:
   `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`
   無ければ同じ本文: https://raw.githubusercontent.com/fireworker011/Research/claude/setup-colab-comfyui-Eb9Lh/affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt
-  `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな。人間が「アフィを進める」と言うまで高単価 dump も開けるな。
+  `G_hq_cw_remain.txt` と `G_hq_cw_n10.txt` は開けるな。人間が「アフィを進める」と言うまで高単価 dump も開けるな。CW 全自動は人間が `CW: GO` するまで `G_cw.txt` も開けるな。
   他の `G_hq_*.txt` を更新日時で選ぶな。この1ファイルだけ。`HQ_100MAN.md` は dump へ送る短文。`HUMAN.md` は貼るな。このファイルから応募・auひかり・note公開・バナー出品を始めるな。Cursor は dump を貼らない。Cursor を時計進行させるな。
 - 婚活・ペット・美容の運用ナレッジはこのファイル。ソースコード・過去レポート・ログは、人間から明示的に指示されたときだけ開く。**ここに書いていない数字・実績・報酬額を発明しない。** 不明なものは「未確認」と書き、人間に確認する。
 - 秘密情報（Threads アクセストークン・アフィリエイトの実URL）はこのファイルにもリポジトリにも存在しない。GitHub Secrets と A8 管理画面にのみある。**アフィリンクやトークンを Git にコミットしない。**
@@ -158,7 +158,7 @@
 
 ## 8. Grok Bot / Cursor への具体的な指示
 
-- **Grok Bot（日常）**: dump `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt` だけ開け。無ければデフォルト raw。普通のやり取りは Bot。remain / n10 は開けるな。`HUMAN.md` は貼るな。実投稿はしない。介入が多い宿題を毎晩出すな。
+- **Grok Bot（日常）**: dump `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt` だけ開け。無ければデフォルト raw。普通のやり取りは Bot。remain / n10 は開けるな。CW は人間が `CW: GO` するまで自分で選ぶな。`HUMAN.md` は貼るな。実投稿はしない。介入が多い宿題を毎晩出すな。
 - **Cursor（上流）**: 環境と仕組み。日常・ルーチン・時計は仕事ではない。指令塔の代わりに dump を貼るな。スケジュール決定論と重複ガードを壊さない。終わったら止まる。
 - **両者共通**: 停止中の Threads 自動更新を勝手に再開しない。ペット実験の週15/週50クリック門は Furbo 線。人間の外部クリック（A8/CW/MT5/Secrets）を Cursor に代行させるな。
 
@@ -176,6 +176,7 @@
 | テンプレ本体（全9ジャンル320本） | `affiliate-engine/data/seed_templates.json` |
 | 美容動画エージェントの許容表現 | `affi-shorts-agent` リポジトリ `agents/orbis/claims-allowlist.md` |
 | XM 自動トレード | `xm-trade-engine/README.md`。日常入口 `G_hq_boot.txt` が `G_xm_trade.txt` を開く。remain と混ぜるな |
+| CW 全自動受注 | `cw-engine/README.md`。エージェント数は `docs/AGENTS.md`。懸念は `docs/CONCERNS.md`。dump は `G_cw.txt`。remain / n10 は開けるな |
 
 ## 10. XM Trade（Cursor / Grok Bot）
 
@@ -183,3 +184,11 @@
 - Grok Bot がやってよいのは、(1) Issue「XM Trade — 日次レポート」の `virtual-desk:` / `VIRTUAL.md` からペーパーOCOの損切り・利確を人間へ写すこと (2) 止めるときだけ `KILL_SWITCH:` または `SKIP: GOLD` を1行出すこと。ENTRY は出すな（完全自動）。`xm-fill:` / `xm-close:` / `virtual-desk:` は告知。dump は `xm-trade-engine/docs/grok-bots/G_xm_trade.txt` だけ。載せ方は `xm-trade-engine/docs/SETUP.md`。
 - ペーパー帳簿の数字は XM 口座ではない。未確認の実損益を発明しない。
 - 既定は `PAPER_ONLY`。実口座の `RESUME` は人間がデモ検証後に明示したときだけ。
+
+## 11. CW 全自動受注（Cursor / Grok Bot）
+
+- 地図: `cw-engine/docs/AUTO.md`。役の数: `cw-engine/docs/AGENTS.md`。Grok dump は `cw-engine/docs/grok-bots/G_cw.txt` だけ。remain / n10 と混ぜるな
+- Grok Bot がやってよいのは、(1) Issue「CW — 司令塔」の `cw-desk:` / `TODAY.md` からキュー件数を写すこと (2) 止めるときだけ `CW: HALT` を1行出すこと。応募送信・仕事 ID の追加は出すな
+- 公開報酬・応募画面の円は `approved_yen` ではない
+- 公式応募 API は無い。ログイン自動化はするな
+- Grok Bot の clone は 1 体のまま。ジャンルbot を作るな

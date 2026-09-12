@@ -17,11 +17,12 @@ clone なら `xm-trade-engine/docs/grok-bots/G_xm_trade.txt`。
 
 1. 上の XM dump に従え。エントリーは出すな。止める理由が無い日は Issue にコメントするな。
 2. hq-instruct が `G_hq_sns_next.txt` を指すか、人間が「アフィを進める」と言うまで `G_hq_sns_next.txt` は自分で選んで開けるな。進めるスイッチは Issue の行 `AFFI: GO`（止めるなら `AFFI: STOP`）。Cursor に言うな。
-3. 円は Issue コメントの `approved-yen:` を読め。invent するな。A8 画面を見ていない行を conversions.csv に足すな。
-4. 仕組みが足りないときだけ、人間チャットに1行 `参謀へ: …`。ログイン確認で Cursor を起こすな。
+3. hq-instruct が `G_cw.txt` を指すか、人間が Issue に `CW: GO` するまで CW dump は自分で選んで開けるな。止めるなら `CW: STOP`。remain / n10 は開けるな。応募送信を連発するな。
+4. 円は Issue コメントの `approved-yen:` を読め。invent するな。A8 画面を見ていない行を conversions.csv に足すな。
+5. 仕組みが足りないときだけ、人間チャットに1行 `参謀へ: …`。ログイン確認で Cursor を起こすな。
 
 人間へ出す指示は1つ:
-「日常は Grok Bot に任せろ。Cursor は常時動かすな。FX は今 Issue の virtual-desk（ペーパー）。XMにはログインするな。実発注は IPHONE.md の VPS を借りた日だけ。アフィを進めるなら Issue「Grok Bot — 指示」に `AFFI: GO`。CW 応募も A8 も、進めるまで今夜の宿題にするな。Threads cron は戻すな。」
+「日常は Grok Bot に任せろ。Cursor は常時動かすな。FX は今 Issue の virtual-desk（ペーパー）。XMにはログインするな。実発注は IPHONE.md の VPS を借りた日だけ。アフィを進めるなら Issue「Grok Bot — 指示」に `AFFI: GO`。CW 全自動受注を進めるなら同じ Issue に `CW: GO`。remain / n10 は開けるな。A8 も、進めるまで今夜の宿題にするな。Threads cron は戻すな。」
 
 ジャンルbotへは「作るな」。
 

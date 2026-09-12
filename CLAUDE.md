@@ -71,3 +71,17 @@ XM に公式 REST はない。実時間の発注は `ea/XMGrokEngine.mq5`。GitH
 7. **Gold 実発注は EA。** GitHub は ARM 通知とペーパーだけ
 
 検証: `cd xm-trade-engine && node src/self-test.js`
+
+## CW Engine（`cw-engine/`）
+
+CrowdWorks に公式応募 REST はない。応募送信は人間。GitHub は資格判定とデスクだけ。
+
+1. **remain / n10 を開けるな**（駐車。引用1手は替えるな）
+2. **ログイン自動化・非公式応募 POST を足すな**
+3. **LLM に「この件は取れ」と選ばせるな**（`qualify.js` の allowlist）
+4. **カタログ円を `approved_yen` に足すな**
+5. **Grok Bot を案件数だけ増やすな**（clone は 1。dump は `G_cw.txt`）
+6. **同時契約の上限を上げるな**（初回は 1）
+7. **Threads の schedule を戻すな**
+
+検証: `cd cw-engine && node src/self-test.js`

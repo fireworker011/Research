@@ -1,0 +1,9 @@
+{
+  "handle": "fireworker12",
+  "completed_deliveries": 0,
+  "has_completed_delivery": false,
+  "age": null,
+  "occupation": null,
+  "available_hours_per_day": null,
+  "notes": "空欄は無し。無い実績をありますと書くな。実ファイル config/profile.json は Git に置くな。"
+}

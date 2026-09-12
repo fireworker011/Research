@@ -1,0 +1,25 @@
+{
+  "account": "fireworker12",
+  "max_concurrent_contracts": 1,
+  "max_drafts_waiting_human": 3,
+  "allow": [
+    {
+      "id": "short_vertical_edit",
+      "category": "video_edit_short",
+      "duration_sec_max": 60,
+      "materials_provided": true,
+      "on_camera": false,
+      "ai_disclosure": "required"
+    }
+  ],
+  "deny": [
+    "on_camera",
+    "location_shoot",
+    "long_form_without_materials",
+    "ai_hidden",
+    "experience_required_without_delivery",
+    "catalog_yen_as_approved",
+    "login_automation",
+    "undisclosed_ai"
+  ]
+}
