@@ -3301,13 +3301,23 @@ def lock_futa_anatomy(text: str) -> str:
 
 
 SHAFT_LOOK_LINE = (
-    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, straight, heavy, "
-    "pale-tan shaft, flushed pink-red glans with a clear corona. Same size and same shape "
-    "the whole take. Not tiny, not horse-like, not a skinny stick, not a tapered spike, "
-    "not a hook, not changing mid-clip. NO testicles, NO scrotum. Hairless female pussy "
-    "at the base of the shaft. Penis plus vagina, never balls. Do not grow balls. "
-    "Women marked NEVER futanari stay NO penis."
+    "SHAFT LOOK: Same penis every clip. When erect: 20cm, thick human girth, a clean smooth "
+    "human shaft, nearly level with a gentle slight upward curve pointing forward, heavy, "
+    "pale-tan shaft matching the body, flushed pink-red glans with a clear mushroom corona ridge. "
+    "One piece, left-right symmetric. Same size and same shape the whole take. "
+    "Not tiny, not horse-like, not a skinny stick, not a tapered spike, not a hook, "
+    "not a ceiling-pointing curve, not a downward droop when erect, not twisted, not forked, "
+    "not lumpy, not a mid-shaft bulge, not changing mid-clip. NO testicles, NO scrotum. "
+    "Hairless female pussy at the base of the shaft. Penis plus vagina, never balls. "
+    "Do not grow balls. Women marked NEVER futanari stay NO penis."
 )
+ORAL_EASY_SHAFT_LINE = (
+    "ORAL EASY SHAFT: The erect 20cm stays a clean human penis: nearly level, gentle slight "
+    "upward curve, glans pointing forward toward her mouth so she can take it in easily. "
+    "The pink corona is easy to wrap her lips around. Not a sharp upward hook. "
+    "Not pointing at the ceiling. Not a malformed bend."
+)
+ORAL_EASY_STORY_IDS = frozenset({"sales-visit-60s", "checkup-100s"})
 MEAT_FUTA_LINE = (
     "FUTA LOCK: Rei is ALWAYS a clear futanari. From frame 1 of this clip she already has "
     "an erect 20cm growing from her own groin, attached to her body, visible in the LOWER "
@@ -3579,6 +3589,19 @@ def lock_futa_shaft(text: str) -> str:
     if not has_futa:
         return raw
     return _inject_before_soundscape(raw, SHAFT_LOOK_LINE)
+
+
+def lock_oral_easy_shaft(text: str, *, story_id: str = "") -> str:
+    """Sales / house-call checkup: shaft angle like a clean human penis so a mouth can take it."""
+    raw = str(text or "")
+    sid = str(story_id or "").strip()
+    if not raw or sid not in ORAL_EASY_STORY_IDS:
+        return raw
+    if "ORAL EASY SHAFT:" in raw:
+        return raw
+    if "SHAFT LOOK:" not in raw and "Clear futanari" not in raw and "erect 20cm" not in raw.lower():
+        return raw
+    return _inject_before_soundscape(raw, ORAL_EASY_SHAFT_LINE)
 
 
 def lock_meat_wall_look(text: str, *, story_id: str = "", clip_index: int = 0, situation: str = "") -> str:
@@ -3876,19 +3899,18 @@ EROTIC_WAIT_LINE = (
     "If a mouth must stay OPEN a hand's width from the tip, keep it OPEN and off. Do not kiss that mouth. "
     "If a spoken Japanese line is still going, do not cover that mouth until the line ends. "
     "If hands are on a wheel, a microphone, chalk, a tray, a door, or this clip says hands NEVER on the shaft, those hands stay there. "
-    "If this clip says No kiss yet, does not kiss, or No deep kiss, do not add a kiss or a French peck. "
+    "If this clip says No kiss yet, does not kiss, or No deep kiss, leftover is a SEDUCTIVE SMILE and light self-touch only. "
+    "Do not add a kiss or a French peck. Do not add the first partner peck or the first grope. "
     "If this clip says No oral yet, do not start oral. If it says Walk only, keep walking. "
-    "If the written beat is talk, greet, order, wake, or consult only "
-    "(Nobody sucks, No oral yet, and no written kiss or grope yet), "
-    "leftover is a SEDUCTIVE SMILE and light self-touch only. "
-    "Do not add the first partner peck or the first grope. "
     "If this clip wants a blank / poker / expressionless / clinical face, do not add a smile. "
     "Do not start oral or insertion that is not already written. "
     "Do not squat, kneel, stand up, lie down, turn a rear pose into face-to-face, or enter a tub just to wait. "
     "Not a frozen pose. "
     "Hands keep moving on the partner's body "
     "(breasts, waist, hips, the erect 20cm, or a hairless pussy) in a way that matches who is already touching what. "
-    "Leftover only, after the written beat, and only with a free hand or a free mouth that does not change pose: "
+    "Leftover only, after the written beat and after the last unique quoted line, "
+    "and only with a free hand or a free mouth that does not change pose: "
+    "kisses on the mouth and/or breasts plus skinship so the same Japanese line is not spoken twice or three times; "
     "a SEDUCTIVE SMILE if the face is allowed to change; "
     "light self-touch on her own breasts, her own hairless pussy, or her own unused erect 20cm; "
     "light partner-touch on breasts, a hairless pussy, or an unused erect 20cm when they are already close enough; "
@@ -4309,6 +4331,119 @@ def apply_semen_share_label(label: str, *, mode: str) -> str:
 
 def spoken_lines(prompt: str) -> list[str]:
     return _SPOKEN_RE.findall(str(prompt or ""))
+
+
+def unique_spoken_lines(prompt: str) -> list[str]:
+    """First-seen order. Repeats of the same 「」 do not get a second window."""
+    out: list[str] = []
+    for line in spoken_lines(prompt):
+        if line not in out:
+            out.append(line)
+    return out
+
+
+_SPEAK_AFTER_DOOR_RE = re.compile(r"AFTER the door opens", re.I)
+_SPEAK_FIRST_RE = re.compile(r"SPEAKS first|rings the doorbell and SPEAKS", re.I)
+_LINE_WINDOW_S = 1.6
+_OPENING_PAD_S = 2.0
+_KISS_FORBID_RE = re.compile(
+    r"No kiss yet|does not kiss|No deep kiss|does not kiss this clip",
+    re.I,
+)
+_OPEN_MOUTH_WAIT_RE = re.compile(
+    r"hand['’]s width|mouth OPEN and off|keep it OPEN",
+    re.I,
+)
+_WRITTEN_LEFTOVER_ACT_RE = re.compile(
+    r"Remaining seconds[^.]*?(drops to her knees|takes the 20cm|jupo|"
+    r"French kiss|SEPARATE|STANDS UP|mouth-to-mouth|light peck|light kiss|"
+    r"filthy wet|kisses on the mouth|kisses on the breasts)",
+    re.I,
+)
+LEFTOVER_KISS_BEAT = (
+    "mouths closed. No more quoted speech. No replay. "
+    "Leftover: kisses on the mouth and/or breasts plus skinship "
+    "(hands on breasts, waist, hips). Do not say the same line again. Do not freeze."
+)
+
+
+def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
+    """Silent leftover window after unique 「」. Kiss + skinship unless the written leftover is already an act."""
+    sit = str(situation or "").strip()
+    raw = str(text or "")
+    if sit in ACT_SITUATIONS:
+        return "Do the written remaining beat. Bodies keep moving. Do not freeze."
+    if _KISS_FORBID_RE.search(raw) or _OPEN_MOUTH_WAIT_RE.search(raw):
+        return (
+            "Do the written remaining beat. Mouths stay closed after the last unique line. "
+            "No more quoted speech. No replay. Do not freeze."
+        )
+    if _WRITTEN_LEFTOVER_ACT_RE.search(raw):
+        return (
+            "Do the written remaining beat. Mouths stay closed except that written kiss or act. "
+            "No more quoted speech. No replay. Do not freeze."
+        )
+    return LEFTOVER_KISS_BEAT
+
+
+def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Pin the 10s axis. Each unique 「」 gets one window. Leftover is kiss + skinship, not a replay."""
+    try:
+        dur = float(duration_s or 10.0)
+    except (TypeError, ValueError):
+        dur = 10.0
+    if dur <= 0:
+        dur = 10.0
+    sit = str(situation or "").strip()
+    lines = unique_spoken_lines(text)
+    if sit in ACT_SITUATIONS or not lines:
+        return (
+            f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
+            "No quoted speech. No lip-sync words. No replay. Do not freeze."
+        )
+    opening = "HIDDEN at the start" in text
+    speak_first = bool(_SPEAK_FIRST_RE.search(text))
+    speak_after_door = bool(_SPEAK_AFTER_DOOR_RE.search(text))
+    pad = _OPENING_PAD_S if opening and speak_after_door and not speak_first else 0.0
+    chunks: list[str] = []
+    t = 0.0
+    if pad > 0:
+        chunks.append(
+            f"0.0-{pad:.1f}s written start beat only (chime / door / enter if written). "
+            "No quoted speech in this window. No replay."
+        )
+        t = pad
+    leftover_floor = 0.8
+    for i, _line in enumerate(lines, start=1):
+        if t >= dur:
+            break
+        remain_after = len(lines) - i
+        latest_end = dur - leftover_floor - remain_after * _LINE_WINDOW_S
+        end = min(t + _LINE_WINDOW_S, max(t + 0.8, latest_end), dur)
+        if end <= t:
+            end = min(t + 0.8, dur)
+        ordinal = "first" if i == 1 else "second" if i == 2 else f"number {i}"
+        chunks.append(
+            f"{t:.1f}-{end:.1f}s {ordinal} unique quoted speech, one time only, conversational pace. "
+            "That mouth moves only here. Then it closes. Do not repeat. Do not restart. "
+            "Do not stretch the words to fill time."
+        )
+        t = end
+    if t < dur:
+        chunks.append(f"{t:.1f}-{dur:.1f}s {leftover_timeline_beat(text, situation=sit)}")
+    return "TIMELINE: " + " ".join(chunks)
+
+
+def lock_clip_timeline(text: str, *, duration_s: float = 10.0, situation: str = "") -> str:
+    """Every story clip gets a second-axis. Stops H3 from replaying the same 「」 to fill 10s."""
+    raw = str(text or "")
+    if not raw:
+        return raw
+    if "TIMELINE:" in raw:
+        return raw
+    return _inject_before_soundscape(
+        raw, speech_timeline_line(raw, duration_s=duration_s, situation=situation)
+    )
 
 
 def stack_signature(stack: list[dict[str, Any]] | None) -> tuple[tuple[str, float], ...]:
@@ -5618,6 +5753,7 @@ def prepare_story_clip(
     raw_prompt = compact_story_prompt(str(clip.get("prompt") or ""))
     raw_prompt = lock_act_silent(raw_prompt, situation=situation)
     raw_prompt = lock_futa_shaft(raw_prompt)
+    raw_prompt = lock_oral_easy_shaft(raw_prompt, story_id=str(story.get("id") or ""))
     raw_prompt = lock_start_cast(raw_prompt)
     raw_prompt = lock_semen_look(raw_prompt, situation=situation)
     raw_prompt = lock_meat_wall_look(
@@ -5649,6 +5785,8 @@ def prepare_story_clip(
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
+    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
+    raw_prompt = lock_clip_timeline(raw_prompt, duration_s=duration_s, situation=situation)
     speaks = bool(spoken_lines(raw_prompt))
     start = str(clip.get("start") or "still_or_t2v").strip()
     seamless = bool(story.get("seamless"))
@@ -5675,7 +5813,6 @@ def prepare_story_clip(
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
         missing_still = str(clip.get("still") or "") or None
-    duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:
