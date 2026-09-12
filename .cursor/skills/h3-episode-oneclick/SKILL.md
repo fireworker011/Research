@@ -11,7 +11,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 
 1. `cd minimaxh3 && python h3_episode.py check episodes/<slug>` が通るまで `episode.json` を直す（英語本文、台詞はかなだけ、`homage.never`、免責）
 2. GPU なしの確認は `python h3_episode.py stills episodes/<slug> --out /tmp/ep`（スチール予告）か `dry-run`
-3. 本番は Colab ノート `minimax_h3_episode_bot.ipynb` の Run all、または `python minimaxh3/grokbot/run_episode.py --episode <slug>`。1ランタイムで全ビート → HUD → 連結 → 停止
+3. 本番は Colab ノート `minimax_h3_episode_bot.ipynb` の Run all、または Grokbot に `minimaxh3/GROKBOT.md` のエピソード命令をそのまま貼る（`python minimaxh3/grokbot/run_episode.py --episode <slug>`）。1ランタイムで全ビート → HUD → 連結 → 停止。回すだけのエージェントは skill `h3-episode-grokbot`
 4. 途中で落ちたら `raw/<beat>.mp4` を残したまま再実行（続きから）。作り直しは `--fresh`
 5. 新しいネタは `minimaxh3/episodes/_template` を複製し、slug・キャスト・ビート・スチールを差し替える。コードは触らない
 6. `colab/h3_*.py` と `minimaxh3/h3_*.py` を直したら両方に同じ内容をコピーし、`colab/test_h3_episode.py` を通す

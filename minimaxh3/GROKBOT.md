@@ -91,12 +91,42 @@ I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそ�
 ## エピソード一発（別系統・inbox を使わない）
 
 複数ビートの完成動画（HUD・カード・連結つき）は **`episodes/<slug>/`** の別ルート。inbox に置かない（裸 jpg はココナラ I2V になる）。
-Automation は足さない。1回の実行 = 1本の完成 mp4。手順は `minimaxh3/episodes/README.md`、skill は `h3-episode-oneclick`。
+**15分 Automation には登録しない。** 1回の実行 = 1本の完成 mp4。手順は `minimaxh3/episodes/README.md`。skill は `h3-episode-oneclick`（作る）と `h3-episode-grokbot`（回す）。
 
-```bash
+Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
+
+### 番台ディストリクト（続きから。raw があるビートは飛ばす）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
 python minimaxh3/grokbot/run_episode.py --episode bandai-district
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/bandai-district/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
 ```
 
-スマホは `minimax_h3_episode_bot.ipynb` を Run all。
+### 全部作り直し（`--fresh`）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode bandai-district --fresh
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/bandai-district/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 別ネタ（slug を差し替え）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode <slug>
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/<slug>/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+`<slug>` は `minimaxh3/episodes/<slug>/episode.json` があること。無ければ GitHub の同パスから取る。テンプレから新ネタを足す作業は skill `h3-episode-oneclick`（コードは触らない）。
+
+スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100（`--high-mem`）。
 
 投稿は人間。リンクはプロフィール。
