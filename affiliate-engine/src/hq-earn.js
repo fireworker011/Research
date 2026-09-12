@@ -81,6 +81,8 @@ function selfTest() {
   const command = fs.readFileSync(path.join(root, 'HQ_COMMAND.md'), 'utf8');
   if (!command.includes('bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971')) throw new Error('command hq id');
   if (!command.includes('#122')) throw new Error('command 122');
+  if (!command.includes('bc-01a07bb1-da1a-7a05-a8a2-2c4a85bcf112')) throw new Error('command independent h3');
+  if (!command.includes('bc-bca5f77f-03dd-4bd9-b290-84557e23ab58')) throw new Error('command independent 2');
   const dumpReadme = fs.readFileSync(path.join(root, 'dump/README.md'), 'utf8');
   if (!dumpReadme.includes('G_hq_human_sitting.txt')) throw new Error('dump live sitting');
   if (/https?:\/\//i.test(dumpReadme)) throw new Error('dump readme url');

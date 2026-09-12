@@ -5,7 +5,7 @@
 
 棚卸し日: 2026-09-12 JST。Cloud Agent 87 体を読んだ。
 本線の Cursor は **総司令 1体だけ**: [１００万円売り上げ自動化](https://cursor.com/agents/bc-9e6f3a09-eff4-42b2-adbe-9caa1758a971)。
-統括命令: `HQ_COMMAND.md`。他の Cursor を「司令塔」として起こすな。Grok Bot の clone も1つ（`dump/G_hq_boot.txt`）。
+統括命令: `HQ_COMMAND.md`。ピン留めチャットは総司令の下。独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。Grok Bot の clone も1つ（`dump/G_hq_boot.txt`）。
 
 ## Cursor の最大化（台数ではなく権限）
 
@@ -26,6 +26,13 @@ Cursor が持つのは仕組みの全部: dump 選択、円カレンダー、こ
 | video-judge / token refresh | 判定とトークン延命 | 投稿しない |
 | ナオミチの席 | A8・プロフィール・Secret | URL はチャットに貼るな |
 
+## 独立（指揮外。仕事を振らない）
+
+| 体 | 実体 | 扱い |
+|---|---|---|
+| 専用ストーリー再生 | `bc-01a07bb1-da1a-7a05-a8a2-2c4a85bcf112`。H3。PR #118 | H3 ベースで独立。100万 LIVE dump は触るな |
+| （名称未検出） | `bc-bca5f77f-03dd-4bd9-b290-84557e23ab58` | Cloud Agent 一覧に無い。指定どおり独立 |
+
 ## PARK（エンジンは残す。日常にしない。マージで本線を上書きするな）
 
 | 何か | 実体 | なぜ駐車 |
@@ -34,7 +41,7 @@ Cursor が持つのは仕組みの全部: dump 選択、円カレンダー、こ
 | **XM 司令塔** | [bc-01a05178…](https://cursor.com/agents/bc-01a05178-ea89-7fc3-9ddc-6183a41ae2c5) / [#94](https://github.com/fireworker011/Research/pull/94) | ペーパーは Issue 93 で足りる。VPS 実発注と ENTRY 再導入に戻りやすい。iPhone 手順は衝突中 |
 | remain / n10 dump | `G_hq_cw_remain.txt` / `G_hq_cw_n10.txt` | 引用1手は替えるな。開けるな |
 | 1語 dump 一式 | `G_hq_sns_next.txt` ほか | 席1回に畳んだ。affi-step のテスト用にファイルは残す。Bot は開くな |
-| H3 / MiniMax | #50 派生、JPEG アップローダ多数 | 映像。円の席ではない |
+| H3 JPEG アップローダほか | 内部エージェント多数 | 独立2体の管轄外。Archive してよい |
 | 動画投稿エンジン | #104 ほか | cron 停止中に投稿面を増やさない |
 | FANZA / 同人 / サクラIG | #49 #51 #53 | Threads 9アカに出さない。100万本線に足すな |
 | ペット試験・キャットフード | #114 #90 | 垂直が違う |
@@ -54,5 +61,5 @@ H3 の JPEG アップロード専用（内部が数十体）。本線の円を�
 ## 起こされた日の Cursor
 
 1. Issue 110 の `hq-gate:` / overlay / 円を読む
-2. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）
+2. `HQ_COMMAND.md` の禁止マージを守る（とくに #122）。独立2体には仕事を振るな
 3. `output/sprint/TODAY.md` を1回更新して止まる

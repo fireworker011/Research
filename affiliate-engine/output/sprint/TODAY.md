@@ -15,7 +15,7 @@
 
 席1回。教育 Threads（『はな｜小学生の習い事メモ』）に N高またはアイズを置けるなら置く。1語は返すな。終わったら `完了`。
 
-CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマージするな。XM 司令塔はペーパーのまま起こすな。
+独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
 
 ## 明日（ゲート未達なら同じ）
 
