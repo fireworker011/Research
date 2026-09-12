@@ -1,11 +1,54 @@
 'use strict';
 
-const path = require('path');
-const { OUTPUT_DIR, readJSON, writeJSON } = require('./util');
-const { qualify } = require('./qualify');
+const { workPath, readJSON, writeJSON, nowIso } = require('./util');
 
-const QUEUE_PATH = path.join(OUTPUT_DIR, 'state', 'queue.json');
-const STATUSES = ['scouted', 'qualified', 'drafted', 'sent', 'contracted', 'delivering', 'delivered', 'rejected', 'closed'];
+const QUEUE_PATH = workPath('state', 'queue.json');
+
+const STATUSES = Object.freeze([
+  'scouted',
+  'rejected',
+  'qualified',
+  'drafted',
+  'sent',
+  'skipped',
+  'lost',
+  'contracted',
+  'making',
+  'qa_failed',
+  'ready',
+  'delivered',
+  'paid'
+]);
+
+const EVENTS = Object.freeze([
+  'QUALIFY_OK',
+  'QUALIFY_NG',
+  'DRAFTED',
+  'SENT',
+  'SKIP',
+  'REJECT',
+  'CONTRACT',
+  'MAKE',
+  'QA_FAIL',
+  'QA_PASS',
+  'DELIVERED',
+  'PAID'
+]);
+
+const TRANSITIONS = Object.freeze({
+  QUALIFY_OK: { from: ['scouted', 'rejected'], to: 'qualified' },
+  QUALIFY_NG: { from: ['scouted', 'qualified'], to: 'rejected' },
+  DRAFTED: { from: ['qualified', 'drafted'], to: 'drafted' },
+  SENT: { from: ['qualified', 'drafted', 'sent'], to: 'sent' },
+  SKIP: { from: ['scouted', 'rejected', 'qualified', 'drafted', 'sent'], to: 'skipped' },
+  REJECT: { from: ['sent', 'contracted', 'making', 'qa_failed', 'ready', 'delivered', 'drafted', 'qualified'], to: 'lost' },
+  CONTRACT: { from: ['sent', 'drafted', 'qualified', 'skipped'], to: 'contracted' },
+  MAKE: { from: ['contracted', 'making', 'qa_failed', 'ready', 'delivered'], to: 'making' },
+  QA_FAIL: { from: ['making'], to: 'qa_failed' },
+  QA_PASS: { from: ['making'], to: 'ready' },
+  DELIVERED: { from: ['ready', 'making', 'qa_failed', 'contracted', 'delivered'], to: 'delivered' },
+  PAID: { from: ['delivered', 'ready', 'paid'], to: 'paid' }
+});
 
 function defaultQueue() {
   return { jobs: [], updated_at: '2026-09-12T00:00:00.000Z' };
@@ -21,93 +64,118 @@ function saveQueue(data) {
   return writeJSON(QUEUE_PATH, data);
 }
 
+function findJob(queue, id) {
+  return (queue?.jobs || []).find((j) => String(j.id) === String(id)) || null;
+}
+
+function upsertJob(queue, job, now) {
+  const jobs = (queue.jobs || []).filter((j) => String(j.id) !== String(job.id));
+  jobs.push(job);
+  jobs.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+  return { jobs, updated_at: nowIso(now) };
+}
+
+function newJobRecord(parsed, verdict, now) {
+  return {
+    id: parsed.id,
+    title: parsed.title || '',
+    category: parsed.category || 'unknown',
+    status: verdict.ok ? 'qualified' : 'rejected',
+    reasons: verdict.ok ? [] : verdict.reasons,
+    warnings: verdict.warnings || [],
+    priority: verdict.priority || 0,
+    flags: parsed.flags || {},
+    asks: parsed.asks || [],
+    deadline: parsed.deadline || null,
+    applicants: parsed.applicants,
+    contracted: parsed.contracted,
+    openings: parsed.openings,
+    public_price_yen: parsed.public_price_yen == null ? null : parsed.public_price_yen,
+    char_spec: parsed.char_spec || null,
+    confirmed_yen: null,
+    drafts: 0,
+    messages: 0,
+    revisions: 0,
+    created_at: nowIso(now),
+    updated_at: nowIso(now),
+    history: [{ at: nowIso(now), event: verdict.ok ? 'QUALIFY_OK' : 'QUALIFY_NG' }]
+  };
+}
+
+function transition(job, event, now) {
+  const rule = TRANSITIONS[event];
+  if (!rule) return { ok: false, reason: `unknown_event:${event}`, job };
+  if (!rule.from.includes(job.status)) return { ok: false, reason: `bad_state:${job.status}->${event}`, job };
+  const next = { ...job, status: rule.to, updated_at: nowIso(now), history: [...(job.history || []), { at: nowIso(now), event }] };
+  switch (event) {
+    case 'DRAFTED':
+      next.drafts = Number(job.drafts || 0) + 1;
+      break;
+    case 'MAKE':
+      if (job.status !== 'contracted') next.revisions = Number(job.revisions || 0) + 1;
+      break;
+    case 'QUALIFY_OK':
+    case 'QUALIFY_NG':
+    case 'SENT':
+    case 'SKIP':
+    case 'REJECT':
+    case 'CONTRACT':
+    case 'QA_FAIL':
+    case 'QA_PASS':
+    case 'DELIVERED':
+    case 'PAID':
+      break;
+    default: {
+      const _never = event;
+      return { ok: false, reason: `unhandled_event:${_never}`, job };
+    }
+  }
+  return { ok: true, job: next };
+}
+
 function counts(queue) {
   const jobs = queue?.jobs || [];
-  const n = (status) => jobs.filter((j) => j.status === status).length;
+  const n = (...statuses) => jobs.filter((j) => statuses.includes(j.status)).length;
   return {
     total: jobs.length,
+    rejected: n('rejected'),
     qualified: n('qualified'),
     drafted: n('drafted'),
     sent: n('sent'),
-    contracted: n('contracted') + n('delivering'),
-    waiting_human: n('drafted')
+    skipped: n('skipped'),
+    lost: n('lost'),
+    contracted: n('contracted', 'making', 'qa_failed', 'ready'),
+    making: n('making'),
+    qa_failed: n('qa_failed'),
+    ready: n('ready'),
+    delivered: n('delivered'),
+    paid: n('paid'),
+    waiting_human: n('drafted', 'ready')
   };
 }
 
 function waitingHumanOverflow(queue, capability) {
   const max = Number(capability?.max_drafts_waiting_human || 3);
-  return counts(queue).waiting_human >= max;
-}
-
-function addJob(queue, job, ctx) {
-  const id = String(job?.id || '').trim();
-  if (!id) return { skipped: true, reason: 'missing_id', queue };
-  if ((queue.jobs || []).some((j) => String(j.id) === id)) {
-    return { skipped: true, reason: 'duplicate', queue };
-  }
-  const verdict = qualify(job, ctx);
-  const next = {
-    id,
-    title: job.title || '',
-    category: job.category || '',
-    status: verdict.ok ? 'qualified' : 'rejected',
-    reasons: verdict.ok ? [] : verdict.reasons,
-    public_apply_yen: job.public_apply_yen == null ? null : job.public_apply_yen,
-    catalog_yen: job.catalog_yen == null ? null : job.catalog_yen,
-    approved_yen: null,
-    already_applied: Boolean(job.already_applied),
-    closed: Boolean(job.closed)
-  };
-  const jobs = [...(queue.jobs || []), next];
-  return {
-    skipped: false,
-    verdict,
-    job: next,
-    queue: { jobs, updated_at: (ctx?.now || new Date()).toISOString() }
-  };
-}
-
-function applyEvent(queue, event, now) {
-  if (!event) return { skipped: true, reason: 'no_event', queue };
-  const id = String(event.id || '').trim();
-  const jobs = (queue.jobs || []).map((j) => ({ ...j }));
-  const hit = jobs.find((j) => String(j.id) === id);
-  if (!hit) return { skipped: true, reason: 'unknown_id', queue };
-  switch (event.type) {
-    case 'SENT':
-      hit.status = 'sent';
-      break;
-    case 'CONTRACT':
-      hit.status = 'contracted';
-      break;
-    case 'REJECT':
-      hit.status = 'rejected';
-      break;
-    default: {
-      const _never = event.type;
-      return { skipped: true, reason: `unknown_type:${_never}`, queue };
-    }
-  }
-  return {
-    skipped: false,
-    job: hit,
-    queue: { jobs, updated_at: (now || new Date()).toISOString() }
-  };
+  return counts(queue).drafted >= max;
 }
 
 function catalogYenBlocked(job) {
-  return job?.catalog_yen != null && job?.approved_yen == null;
+  return job?.public_price_yen != null && job?.confirmed_yen == null;
 }
 
 module.exports = {
   QUEUE_PATH,
   STATUSES,
+  EVENTS,
+  TRANSITIONS,
   defaultQueue,
   loadQueue,
   saveQueue,
+  findJob,
+  upsertJob,
+  newJobRecord,
+  transition,
   counts,
   waitingHumanOverflow,
-  addJob,
-  applyEvent,
   catalogYenBlocked
 };

@@ -1,13 +1,14 @@
 {
   "name": "cw-engine",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "CrowdWorks 全自動受注の司令塔。選定と下書きはルール、応募送信は人間、Grok は停止判断。",
+  "description": "CrowdWorks 受注パイプライン。取込・資格判定・応募稿・定型返信・BRIEF・完成品・QA・納品・台帳。送信と受注可否は人間。",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "test": "node src/self-test.js",
-    "report": "node src/report.js"
+    "report": "node src/report.js",
+    "cmd": "node src/apply-commander-comment.js --dry-run --comment"
   }
 }

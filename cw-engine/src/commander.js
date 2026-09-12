@@ -1,20 +1,37 @@
 'use strict';
 
-const path = require('path');
-const { OUTPUT_DIR, readJSON, writeJSON } = require('./util');
+const { workPath, readJSON, writeJSON, nowIso } = require('./util');
 
-const COMMANDER_PATH = path.join(OUTPUT_DIR, 'state', 'commander.json');
+const COMMANDER_PATH = workPath('state', 'commander.json');
 const ISSUE_TITLE = 'CW — 司令塔';
-const COMMANDS = ['HALT', 'PAPER_ONLY'];
-const COMMAND_RE = /^\s*CW:\s*(HALT|PAPER_ONLY)\b/im;
-const EVENT_RE = /^\s*CW:\s*(SENT|CONTRACT|REJECT)\s+(\d+)\b/im;
-const DESK_RE = /^\s*cw-desk:/m;
+const KILL_COMMANDS = Object.freeze(['HALT', 'PAPER_ONLY']);
+const COMMAND_TYPES = Object.freeze([
+  'HALT',
+  'PAPER_ONLY',
+  'JOB',
+  'SKIP',
+  'SENT',
+  'MSG',
+  'CONTRACT',
+  'MATERIAL',
+  'MAKE',
+  'REVISE',
+  'DELIVERED',
+  'PAID',
+  'REJECT',
+  'PROFILE',
+  'DESK'
+]);
+const WITH_ID = new Set(['JOB', 'SKIP', 'SENT', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'REVISE', 'DELIVERED', 'PAID', 'REJECT']);
+const WITH_PAYLOAD = new Set(['JOB', 'MSG', 'CONTRACT', 'MATERIAL', 'MAKE', 'REVISE']);
+const NOTIFY_RE = /^\s*cw-(desk|apply|reply|brief|deliver|qa|profile|note):/m;
+const FIRST_LINE_RE = /^\s*CW:\s*([A-Z_]+)\b(.*)$/i;
 
 function defaultCommander() {
   return {
     command: 'PAPER_ONLY',
     source: 'init',
-    reason: 'no official apply API; live send stays human',
+    reason: 'no official apply API; sending stays human',
     updated_at: '2026-09-12T00:00:00.000Z',
     previous: null,
     issue_number: ''
@@ -29,45 +46,57 @@ function saveCommander(data) {
   return writeJSON(COMMANDER_PATH, data);
 }
 
-function parseCommandText(text) {
-  const m = String(text || '').match(COMMAND_RE);
-  if (!m) return null;
-  const command = m[1].toUpperCase();
-  if (!COMMANDS.includes(command)) return null;
-  return command;
+function isNotifyComment(body) {
+  return NOTIFY_RE.test(String(body || ''));
 }
 
-function parseQueueEvent(text) {
-  const m = String(text || '').match(EVENT_RE);
-  if (!m) return null;
-  return { type: m[1].toUpperCase(), id: m[2] };
+function parseCommand(body) {
+  const lines = String(body || '').replace(/\r/g, '').split('\n');
+  const idx = lines.findIndex((l) => FIRST_LINE_RE.test(l));
+  if (idx === -1) return null;
+  const m = lines[idx].match(FIRST_LINE_RE);
+  const type = m[1].toUpperCase();
+  if (!COMMAND_TYPES.includes(type)) return null;
+  const rest = m[2].trim();
+  const tokens = rest ? rest.split(/\s+/) : [];
+  let id = null;
+  const opts = {};
+  const extra = [];
+  for (const tok of tokens) {
+    if (!id && /^\d{4,12}$/.test(tok) && WITH_ID.has(type)) id = tok;
+    else if (/^[a-z_]+=\S+$/i.test(tok)) {
+      const [k, v] = tok.split('=');
+      opts[k.toLowerCase()] = v;
+    } else extra.push(tok);
+  }
+  if (WITH_ID.has(type) && !id) return { type, id: null, opts, extra, payload: '', error: 'missing_id' };
+  const payload = WITH_PAYLOAD.has(type) ? lines.slice(idx + 1).join('\n').trim() : '';
+  return { type, id, opts, extra, payload, error: null };
 }
 
-function isDeskComment(body) {
-  return DESK_RE.test(String(body || ''));
-}
-
-function applyCommand(current, { command, source, reason, now }) {
-  if (!COMMANDS.includes(command)) throw new Error(`unknown command: ${command}`);
+function applyKill(current, { command, source, reason, now }) {
+  if (!KILL_COMMANDS.includes(command)) throw new Error(`unknown command: ${command}`);
   return {
     command,
     source,
     reason: reason || '',
-    updated_at: (now || new Date()).toISOString(),
+    updated_at: nowIso(now),
     previous: current?.command || null,
     issue_number: current?.issue_number || ''
   };
 }
 
 module.exports = {
-  ISSUE_TITLE,
-  COMMANDS,
   COMMANDER_PATH,
+  ISSUE_TITLE,
+  KILL_COMMANDS,
+  COMMAND_TYPES,
+  WITH_ID,
+  WITH_PAYLOAD,
   defaultCommander,
   loadCommander,
   saveCommander,
-  parseCommandText,
-  parseQueueEvent,
-  isDeskComment,
-  applyCommand
+  isNotifyComment,
+  parseCommand,
+  applyKill
 };
