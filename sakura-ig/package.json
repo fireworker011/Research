@@ -1,19 +1,16 @@
 {
   "name": "sakura-ig",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "sakura_ai_beauty 専属マネージャー。リールは Grok Imagine に丸投げする。",
+  "description": "sakura_ai_beauty 専属マネージャー。起動キー銀行を書く。動画は Grok Bot → Grok Imagine（API 不要）。",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "validate": "node src/validate-packets.js",
-    "key": "node src/print-launch-key.js",
+    "keys": "node src/build-keys.js --from 2026-09-13 --days 100",
+    "validate": "node src/validate-keys.js",
+    "judge": "node src/judge.js --self-test && node src/judge.js",
     "handoff": "node src/handoff.js --local",
-    "post-gate": "node src/post-gate.js --local",
-    "next": "node src/print-packet.js --next",
-    "imagine": "node src/imagine-run.js --next",
-    "test": "node src/imagine-run.js --test",
-    "imagine:date": "node src/imagine-run.js"
+    "check": "node src/validate-keys.js && node src/judge.js --self-test"
   }
 }

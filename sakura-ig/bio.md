@@ -15,6 +15,7 @@ Virtual beauty model. AI-generated adult.
 続き・限定は下のリンクから。
 ```
 
-リンクは1本。Fanvue。リンクツリーを挟むならボタンは1つだけにする。
+リンクは1本。`config/links.json` の `fanvue`。リンクツリーは挟まない。  
+設定の実行は A が `ig/first-run.md` で1回やる。
 
-ハイライトは増やさない。今ある `which one` を「どっち」リールの受け皿にする。
+ハイライトは増やさない。今ある `which one` を「どっち」系リールの受け皿にする。
