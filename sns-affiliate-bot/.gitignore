@@ -1,0 +1,7 @@
+output/
+queue/
+logs/
+*.pyc
+__pycache__/
+.env
+config/credentials/

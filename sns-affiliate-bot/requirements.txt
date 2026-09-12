@@ -1,0 +1,25 @@
+# ── Core ──────────────────────────────────────────
+python-dotenv>=1.0.0
+requests>=2.31.0
+Pillow>=10.0.0
+schedule>=1.2.0
+
+# ── AI / LLM ──────────────────────────────────────
+anthropic>=0.25.0
+openai>=1.30.0
+
+# ── Media Synthesis ───────────────────────────────
+imageio-ffmpeg>=0.4.9          # 静的 FFmpeg バイナリ同梱
+edge-tts>=6.1.9                # Microsoft Edge TTS（APIキー不要・無料）
+
+# ── Google APIs (YouTube) ─────────────────────────
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.1.1
+google-auth-oauthlib>=1.1.0
+
+# ── Publishing Automation ─────────────────────────
+playwright>=1.40.0             # ブラウザ自動化（TikTok / Instagram 自動投稿）
+
+# ── External Services ─────────────────────────────
+fal-client>=0.5.0              # fal.ai（画像生成 fallback）
+cloudinary>=1.36.0             # 動画ホスティング

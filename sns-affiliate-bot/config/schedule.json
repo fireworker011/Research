@@ -1,0 +1,16 @@
+{
+  "threads": {
+    "career": {
+      "times": ["08:00", "12:00", "19:00"],
+      "days": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+      "posts_per_day": 3
+    }
+  },
+  "youtube": {
+    "career": {
+      "times": ["10:00", "17:00"],
+      "days": ["mon", "wed", "fri"],
+      "uploads_per_day": 2
+    }
+  }
+}
