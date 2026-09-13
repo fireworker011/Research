@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-7"
+STUDIO_REV = "h3-20260913-anal-8"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -3854,19 +3854,63 @@ INSIDE_PUSSY_LINE = (
 INSIDE_ANAL_LINE = (
     "INSIDE LOCK: The erect 20cm is already inside the anus. The shaft is buried in the anal canal. "
     "The glans is in, not outside. Joining point visible: penis in anus, not in the pussy this clip, "
-    "not beside the hole, not rubbing from outside. Not a soft penis. Not a miss. "
-    "Keep thrusting while it stays in. Do not pull out for this clip."
+    "not beside the hole, not rubbing from outside. The unused pussy stays shut, not spread, "
+    "not gaping. Not a soft penis. Not a miss. Keep thrusting while it stays in. "
+    "Do not pull out for this clip."
 )
 INSIDE_ENTRY_LINE = (
     "INSIDE LOCK: Show the entry, then it STAYS in. The erect 20cm goes into the hole on camera: "
     "glans parts the lips (or the anus), shaft sinks to the base. After it is in, keep it inside "
     "and thrust. Not beside. Not between the thighs. Not a soft penis. Not a miss."
 )
+INSIDE_ENTRY_ANAL_LINE = (
+    "INSIDE LOCK: Show the entry into the ANUS, then it STAYS in. The erect 20cm goes into the "
+    "anus on camera: glans parts the anus, shaft sinks to the BASE. Never into the pussy. "
+    "Never between the labia. The unused pussy stays shut, not spread, not gaping. "
+    "After it is in, keep it inside the anus and thrust. Not beside. Not a miss."
+)
 INSIDE_PACO_LINE = (
     "INSIDE LOCK: The erect 20cm pistons the anus. Pull out until only the glans sits at the rim, "
     "then slam in to the BASE. Repeat that in-and-out the whole take. Joining point visible: "
-    "penis in anus, not in the pussy, not beside the hole. Not out of the hole completely. "
-    "Not a soft penis. Not a miss."
+    "penis in anus, not in the pussy, not beside the hole. The unused pussy stays shut, "
+    "not spread, not gaping. Not out of the hole completely. Not a soft penis. Not a miss."
+)
+# Keep in sync with prompts/h3-body-lock.md
+ANAL_HOLE_LOCK_LINE = (
+    "ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. "
+    "The unused pussy stays shut: labia closed, not spread, not gaping, not entered. "
+    "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
+    "Not a vaginal creampie. Not pussy-spread."
+)
+ANAL_REAR_LOCK_LINE = (
+    "REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. "
+    "The UPPER hole is the anus — the 20cm enters THAT hole only, to the BASE. "
+    "The LOWER hole is the unused pussy: keep it closed, not opened, not spread, not gaping. "
+    "Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus "
+    "above the closed pussy."
+)
+ANAL_PULLOUT_LEAK_LINE = (
+    "ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks "
+    "OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen."
+)
+ANAL_HOLE_IDLE_LINE = (
+    "ANAL HOLE LOCK: Unused pussy stays shut, not spread, not gaping, not entered. "
+    "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
+    "Not a vaginal creampie."
+)
+_REAR_ANAL_POSE_RE = re.compile(
+    r"standing anal|STANDING anal|bent forward|all fours|on all fours|"
+    r"from behind|kneeling behind|hips back|doggy|accepting standing pose|"
+    r"facing away|reverse (sitting|cowgirl)",
+    re.I,
+)
+_ANAL_ALREADY_OUT_RE = re.compile(
+    r"pulled out|pulls OUT|Sex ends|comes apart|pulled out just before",
+    re.I,
+)
+_ANAL_AFTERGLOW_RE = re.compile(
+    r"afterglow|WHITE goo overflowing OUT OF THE ANUS|No new insertion",
+    re.I,
 )
 TALK_THEN_INSERT_MARK = "TALK THEN INSERT:"
 KISS_THEN_INSERT_MARK = "KISS THEN INSERT:"
@@ -3934,7 +3978,10 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     if PACO_MARK in raw:
         line = INSIDE_PACO_LINE
     elif _SEX_ENTRY_RE.search(raw):
-        line = INSIDE_ENTRY_LINE
+        if sit in SEX_ANAL_SITUATIONS or sex_inside_hole(raw, situation=sit) == "anus":
+            line = INSIDE_ENTRY_ANAL_LINE
+        else:
+            line = INSIDE_ENTRY_LINE
     elif sex_inside_hole(raw, situation=sit) == "anus":
         line = INSIDE_ANAL_LINE
     else:
@@ -3945,8 +3992,8 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
 ANAL_CREAMPIE_LINE = (
     "ANAL CREAMPIE: The erect 20cm stays in the receiver's ANUS. "
     "She ejaculates INTO the ANUS. WHITE goo overflows OUT OF THE ANUS around the shaft. "
-    "The unused pussy does NOT leak semen. Semen does not come out of the vagina. "
-    "Not a vaginal creampie."
+    "The unused pussy does NOT leak semen. It stays shut, not spread, not gaping. "
+    "Semen does not come out of the vagina. Not a vaginal creampie."
 )
 _ANAL_CREAMPIE_CUE_RE = re.compile(
     r"ejaculat|cums inside|cums into|pumps WHITE|WHITE goo|"
@@ -3974,6 +4021,42 @@ def lock_anal_creampie(text: str, *, situation: str = "") -> str:
     if not _ANAL_CREAMPIE_CUE_RE.search(raw):
         return raw
     return _inject_before_soundscape(raw, ANAL_CREAMPIE_LINE)
+
+
+def lock_anal_hole(
+    text: str,
+    *,
+    situation: str = "",
+    prev_situation: str | None = None,
+) -> str:
+    """Anal clips: penis in anus only. Unused pussy closed. Rear poses use the upper hole.
+
+    After the penis leaves, WHITE goo leaks from the open anus, never the pussy.
+    """
+    raw = str(text or "")
+    if not raw:
+        return raw
+    sit = str(situation or "").strip()
+    prev = str(prev_situation or "").strip()
+    is_anal_act = sit in SEX_ANAL_SITUATIONS
+    afterglow = (not is_anal_act) and (
+        bool(_ANAL_AFTERGLOW_RE.search(raw))
+        or (prev in SEX_ANAL_SITUATIONS and bool(_ANAL_ALREADY_OUT_RE.search(raw)))
+    )
+    if not is_anal_act and not afterglow:
+        return raw
+    out = raw
+    hole_line = ANAL_HOLE_LOCK_LINE if is_anal_act else ANAL_HOLE_IDLE_LINE
+    if "ANAL HOLE LOCK:" not in out:
+        out = _inject_before_soundscape(out, hole_line)
+    if is_anal_act and _REAR_ANAL_POSE_RE.search(out) and "REAR ANAL LOCK:" not in out:
+        out = _inject_before_soundscape(out, ANAL_REAR_LOCK_LINE)
+    pulled = bool(_ANAL_ALREADY_OUT_RE.search(out)) or (
+        afterglow and "No new insertion" in out
+    )
+    if pulled and PACO_MARK not in out and "ANAL PULL-OUT:" not in out:
+        out = _inject_before_soundscape(out, ANAL_PULLOUT_LEAK_LINE)
+    return out
 
 
 def lock_futa_shaft(text: str, *, force: bool = False) -> str:
@@ -4398,6 +4481,8 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
     out = lock_genital_pee(out, situation=situation)
     out = lock_scat_act(out, situation=situation)
     out = lock_penis_inside(out, situation=situation)
+    out = lock_anal_creampie(out, situation=situation)
+    out = lock_anal_hole(out, situation=situation)
     out = lock_act_sfx(out, situation=situation)
     if sit in ORAL_SUCK_SITUATIONS:
         out = lock_oral_camera(out, situation=sit)
@@ -6037,6 +6122,8 @@ def generate_immoral_shorts() -> dict[str, Any]:
         )
         prompt = lock_pleasure_face(prompt, situation=sit)
         prompt = lock_penis_inside(prompt, situation=sit)
+        prompt = lock_anal_creampie(prompt, situation=sit)
+        prompt = lock_anal_hole(prompt, situation=sit)
         prompt = lock_pleasure_voice_and_wait(prompt, situation=sit)
         if sit == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
@@ -6409,6 +6496,7 @@ def generate_anal_pattern(
         prompt = lock_pleasure_face(prompt, situation=situation)
         prompt = lock_penis_inside(prompt, situation=situation)
         prompt = lock_anal_creampie(prompt, situation=situation)
+        prompt = lock_anal_hole(prompt, situation=situation)
         prompt = lock_pleasure_voice_and_wait(prompt, situation=situation)
         clips.append(
             {
@@ -7269,6 +7357,11 @@ def prepare_story_clip(
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_anal_creampie(raw_prompt, situation=situation)
+    raw_prompt = lock_anal_hole(
+        raw_prompt,
+        situation=str(clip.get("situation") or situation),
+        prev_situation=prev_situation,
+    )
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)

@@ -16,11 +16,11 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260913-anal-7`
+設定の版: `h3-20260913-anal-8`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
-直近: アナル挿入を1シーン早め、空いた枠はパコパコ（根本まで出し入れ）。挿入中は恍惚・声・よだれ。ジュボの秒数とセリフは残す。GitHub から開き直す。
+直近: アナルはマンコに入れない・マンコを開かない・精液はアナルからだけ。抜いたら開いたアナルから漏れる。立ちバック／四つん這いは上の穴だけ。GitHub から開き直す。
 ```
 
 ## いまの枝
@@ -30,7 +30,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-7` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-8` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -76,7 +76,7 @@ JSON ではない。`generate_anal_pattern()` が組む。キャストはアヤ�
 - LoRA: Mystic 0.5 + 竿 0.45 + 穴 0.4 だけ。Turbo なし・8step
 - 積まない: cowgirl / riding-pose / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF
 - `hmmotion` は `futa_sex` だけ。アナル本に載せない
-- 精液は白。`lock_anal_creampie` で **アナルからだけ**。使っていないマンコから漏らさない
+- 精液は白。`lock_anal_creampie` と `lock_anal_hole` で **アナルからだけ**。マンコを開かない。使っていないマンコから漏らさない。抜いたら開いたアナルから漏れる。立ちバック／四つん這いは上の穴だけ
 - ②③で終わった話は口移しなし（`SEMEN_SHARE_SKIP`。`anal-p2` / `anal-p3` 含む）。①だけ `[(2, "on_cumouf")]`
 - 行為クリップは無言（`ACT_SITUATIONS`）
 - 直前の本は受け入れる姿勢＋穴から手の幅・未挿入。次が `INSERTION ON CAMERA`
@@ -142,4 +142,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-③会って即アナルは0-10で挿入、10-20パコパコ、20-30中出し。全物語のアナル挿入は1シーン早め、空いた枠はパコパコ。GitHub の Colab から開き直す。版 `h3-20260913-anal-7`。
+③会って即アナルは0-10で挿入、10-20パコパコ、20-30中出し。アナル本はマンコ禁止・マンコ閉じ・抜いたら開いたアナルから漏れる（`prompts/h3-body-lock.md`）。GitHub の Colab から開き直す。版 `h3-20260913-anal-8`。

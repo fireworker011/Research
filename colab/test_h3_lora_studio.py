@@ -94,6 +94,8 @@ def _check_anal_plan(planned):
     assert planned["turbo"] is False
     prompt = planned["prompt"]
     assert "ANAL CREAMPIE:" in prompt or "anus" in prompt.lower()
+    assert "ANAL HOLE LOCK:" in prompt
+    assert "Never in the pussy" in prompt or "never in the pussy" in prompt.lower()
     assert "hmmotion" not in prompt.lower()
     assert "SEMEN SHARE:" not in prompt
 
@@ -574,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-7"
+    assert STUDIO_REV == "h3-20260913-anal-8"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -679,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-7"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-8"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -751,9 +753,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-7" in blob
+    assert "h3-20260913-anal-8" in blob
+    assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-7" not in blob
     assert "h3-20260913-anal-6" not in blob
     assert "h3-20260913-anal-5" not in blob
     assert "h3-20260913-anal-4" not in blob
@@ -6683,6 +6687,7 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
 def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
     from h3_lora_studio import (
         INSIDE_ANAL_LINE,
+        INSIDE_ENTRY_ANAL_LINE,
         INSIDE_ENTRY_LINE,
         INSIDE_PUSSY_LINE,
         lock_penis_inside,
@@ -6716,6 +6721,12 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
     )
     entry = lock_penis_inside(entry_raw, situation="riding")
     assert INSIDE_ENTRY_LINE in entry
+    anal_entry = lock_penis_inside(
+        "INSERTION ON CAMERA. Show the entry into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert INSIDE_ENTRY_ANAL_LINE in anal_entry
+    assert "parts the lips" not in anal_entry
     oral = lock_penis_inside(
         "Already oral. Mouth already on.\nDeep jupo-jupo.\n",
         situation="oral",
@@ -6745,6 +6756,84 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
         roof, 1, last_frame="h3_chain_0.png", stills_dir=tmp_path
     )
     assert "INSIDE LOCK:" in planned["prompt"]
+
+
+def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
+    from h3_lora_studio import (
+        ANAL_HOLE_IDLE_LINE,
+        ANAL_HOLE_LOCK_LINE,
+        ANAL_PULLOUT_LEAK_LINE,
+        ANAL_REAR_LOCK_LINE,
+        load_story,
+        lock_anal_hole,
+        prepare_story_clip,
+    )
+
+    body = Path("/workspace/prompts/h3-body-lock.md").read_text(encoding="utf-8")
+    assert "マンコには絶対入れない" in body
+    assert "マンコを開かない" in body
+    assert "開いたアナル" in body
+    assert "立ちバック" in body
+
+    walk = lock_anal_hole("Walking only. No sex.\n\noverall_soundscape:\nSteps.\n", situation="futa_visible")
+    assert "ANAL HOLE LOCK:" not in walk
+
+    riding = lock_anal_hole(
+        "INSERTION ON CAMERA into the pussy.\n\noverall_soundscape:\nWet.\n",
+        situation="riding",
+    )
+    assert "ANAL HOLE LOCK:" not in riding
+
+    rear_raw = (
+        "Already on all fours. STANDING anal from behind. Bent forward. Anal only. Not vaginal.\n"
+        "\noverall_soundscape:\nWet thrusting.\n"
+    )
+    rear = lock_anal_hole(rear_raw, situation="futa_anal")
+    assert ANAL_HOLE_LOCK_LINE in rear
+    assert ANAL_REAR_LOCK_LINE in rear
+    assert "UPPER hole is the anus" in rear
+    assert "not gaping" in rear
+    assert lock_anal_hole(rear, situation="futa_anal") == rear
+
+    missionary = lock_anal_hole(
+        "On her back, knees apart. Anal only. Not vaginal.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_HOLE_LOCK_LINE in missionary
+    assert "REAR ANAL LOCK:" not in missionary
+
+    pulled = lock_anal_hole(
+        "Instructor pulled out just before this clip. No new insertion. Afterglow.\n"
+        "\noverall_soundscape:\nBreath.\n",
+        situation="futa_visible",
+        prev_situation="futa_anal",
+    )
+    assert ANAL_HOLE_IDLE_LINE in pulled
+    assert ANAL_PULLOUT_LEAK_LINE in pulled
+    assert "The erect 20cm is in the ANUS" not in pulled
+
+    manhole = load_story("manhole-30s")
+    p0 = prepare_story_clip(manhole, 0, stills_dir=tmp_path)
+    assert "ANAL HOLE LOCK:" in p0["prompt"]
+    assert "REAR ANAL LOCK:" in p0["prompt"]
+    p1 = prepare_story_clip(manhole, 1, last_frame="x.png", stills_dir=tmp_path)
+    assert "ANAL HOLE LOCK:" in p1["prompt"]
+    assert "REAR ANAL LOCK:" in p1["prompt"]
+    assert "ANAL PULL-OUT:" not in p1["prompt"]
+
+    yoga = load_story("yoga-50s")
+    last = prepare_story_clip(yoga, 4, last_frame="x.png", stills_dir=tmp_path, prev_situation="futa_anal")
+    assert "ANAL PULL-OUT:" in last["prompt"]
+    assert "OUT OF THAT OPEN ANUS" in last["prompt"]
+
+    cabin = load_story("cabin-40s")
+    ride = prepare_story_clip(cabin, 5, last_frame="x.png", stills_dir=tmp_path)
+    assert ride["situation"] == "riding"
+    assert "ANAL HOLE LOCK:" not in ride["prompt"]
+    anal = prepare_story_clip(cabin, 7, last_frame="x.png", stills_dir=tmp_path)
+    assert anal["situation"] == "futa_anal"
+    assert "ANAL HOLE LOCK:" in anal["prompt"]
+    assert "REAR ANAL LOCK:" in anal["prompt"]
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -7135,6 +7224,8 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
     assert 'getattr(_h3_studio, "lock_anal_creampie", None)' in src
+    assert 'getattr(_h3_studio, "lock_anal_hole", None)' in src
+    assert '"ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "")' in src
     assert 'getattr(_h3_studio, "lock_scat_look", None)' in src
     assert '"Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "")' in src
     assert '"ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "")' in src
@@ -7163,7 +7254,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-7" in cell2
+    assert "h3-20260913-anal-8" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
@@ -7217,6 +7308,8 @@ def test_notebook_story_play_flow():
     assert "def lock_clip_timeline" in helper_src
     assert "def lock_penis_inside" in helper_src
     assert "def lock_anal_creampie" in helper_src
+    assert "def lock_anal_hole" in helper_src
+    assert "ANAL HOLE LOCK:" in helper_src
     assert "def lock_scat_look" in helper_src
     assert "ANAL CREAMPIE:" in helper_src
     assert "Deep jupo to the BASE" in helper_src
