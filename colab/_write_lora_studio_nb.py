@@ -62,7 +62,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-scat-look-f112/minimax_h3_lora_studio.ipynb)
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古いです。②をしても GitHub は取り直しません。上のバッジから開き直して①→②。
 
@@ -335,7 +335,7 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/h3-mystic-daily-f112"
+BRANCH = "cursor/h3-scat-look-f112"
 FETCH_REV = "h3-20260913-scat-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
@@ -815,7 +815,7 @@ if Path("/content/h3_paths.env").is_file():
     _sel_drive = _sel_env.get("DRIVE_ROOT")
 _ensure = getattr(sys.modules.get("h3_lora_studio"), "ensure_select_loras_on_path", None)
 if callable(_ensure):
-    _ensure(drive_root=_sel_drive, branch="cursor/h3-mystic-daily-f112")
+    _ensure(drive_root=_sel_drive, branch="cursor/h3-scat-look-f112")
 else:
     if (not _sel.is_file()) and _sel_scripts.is_file():
         shutil.copy2(_sel_scripts, _sel)
@@ -826,7 +826,7 @@ else:
     if not _sel.is_file():
         try:
             _req = urllib.request.Request(
-                "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-mystic-daily-f112/h3-lora-studio/scripts/select_loras.py",
+                "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-scat-look-f112/h3-lora-studio/scripts/select_loras.py",
                 headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "User-Agent": "h3-lora-studio"},
             )
             with urllib.request.urlopen(_req, timeout=60) as _resp:

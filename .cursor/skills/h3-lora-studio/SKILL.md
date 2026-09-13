@@ -28,7 +28,7 @@ python colab/_write_lora_studio_nb.py
 
 Fal に LoRA は差せない。成人 21+。
 
-アナルセックス／飲尿／脱糞は ThumbInButt も AIO も積まない（構図が死ぬ）。③は竿＋穴＋文章。指入れだけ ThumbInButt。既存話の飲尿はジュボのまま。医院・終電の `No feces.` は外さない。学習キットは `h3-lora-studio/train/`。準備と作業は `h3-lora-studio/train/CHECKLIST.md`。撮影リストは `h3-lora-studio/train/grids/`。スマホだけ（PC・ffmpeg なし）は `h3-lora-studio/train/PHONE.md`：③の体位欄＋`input/phone` の jpg、学習は体位フォルダ→④→fal。設定の版 `h3-20260913-scat-1`。Driveコピーや xxx ノートの②は GitHub を取り直さない。`cursor/h3-mystic-daily-f112` の Open in Colab から開き直す。Mystic XXX v4 は全 FL2VA T2V/I2V の解剖スロット 0.5（日常エロ汎用含む）。単体は玉がつく。日常エロ汎用は竿 0.45 + 穴 0.4 も積む。行為 LoRA の代わりにはならない。普通（エロなし）と R2V と電話ノートは mystic なし。Ref2VA 版は実験・音なしなので載せない。
+アナルセックス／飲尿／脱糞は ThumbInButt も AIO も積まない（構図が死ぬ）。③は竿＋穴＋文章。指入れだけ ThumbInButt。既存話の飲尿はジュボのまま。医院・終電の `No feces.` は外さない。学習キットは `h3-lora-studio/train/`。準備と作業は `h3-lora-studio/train/CHECKLIST.md`。撮影リストは `h3-lora-studio/train/grids/`。スマホだけ（PC・ffmpeg なし）は `h3-lora-studio/train/PHONE.md`：③の体位欄＋`input/phone` の jpg、学習は体位フォルダ→④→fal。設定の版 `h3-20260913-scat-1`。Driveコピーや xxx ノートの②は GitHub を取り直さない。`cursor/h3-scat-look-f112` の Open in Colab から開き直す。Mystic XXX v4 は全 FL2VA T2V/I2V の解剖スロット 0.5（日常エロ汎用含む）。単体は玉がつく。日常エロ汎用は竿 0.45 + 穴 0.4 も積む。行為 LoRA の代わりにはならない。普通（エロなし）と R2V と電話ノートは mystic なし。Ref2VA 版は実験・音なしなので載せない。
 
 エロなし: Turbo1 + 画質1。専用「普通」と R2V は mystic なし。日常／最速／音残しはエロ汎用（nsfw）。Mystic 0.5 + 竿 0.45 + 穴 0.4 + Turbo。シネマなし。玉なし＋マンコあり。Larry と LightX2V は同時に積まない。FL2VA と Ref2VA を混ぜない。Photoreal still は動画本体に載せない。DY と ASTROCINEMA は同時に積まない。
 

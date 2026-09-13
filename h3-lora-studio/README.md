@@ -6,7 +6,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-scat-look-f112/minimax_h3_lora_studio.ipynb)
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。
 

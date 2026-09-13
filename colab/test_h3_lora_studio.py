@@ -560,7 +560,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
     assert 'FETCH_REV = "h3-20260913-scat-1"' in src
-    assert 'BRANCH = "cursor/h3-mystic-daily-f112"' in src
+    assert 'BRANCH = "cursor/h3-scat-look-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
     assert "Drive に保存したコピー" in src
