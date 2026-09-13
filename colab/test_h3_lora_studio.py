@@ -86,6 +86,18 @@ def _check_visible_plan(planned, clip_prompt):
     assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
+def _check_anal_plan(planned):
+    """futa_anal: 竿＋穴だけ。騎乗・後背・AIO・中出し LoRA は積まない。Turbo なし。"""
+    ids = [row["id"] for row in planned["stack"]]
+    assert ids == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"], ids
+    assert planned["cfg"]["turbo"] is False
+    assert planned["turbo"] is False
+    prompt = planned["prompt"]
+    assert "ANAL CREAMPIE:" in prompt or "anus" in prompt.lower()
+    assert "hmmotion" not in prompt.lower()
+    assert "SEMEN SHARE:" not in prompt
+
+
 def test_inject_stack_drops_turbo_and_chains():
     g = build_t2v_graph(
         prompt=DEFAULT_T2V_PROMPT,
@@ -1802,7 +1814,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     assert resolve_situation("帰宅90秒（専用）") == "homecoming-90s"
     assert is_story("帰宅120秒（専用）")
     assert is_story("帰宅90秒（専用）")
-    assert "cumouf-h3" in situation_ids("homecoming-90s")
+    assert "cumouf-h3" not in situation_ids("homecoming-90s")
     story = load_story("homecoming-90s")
     assert story["duration_s"] == 120
     assert len(story["clips"]) == 12
@@ -1818,7 +1830,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
         "futa_visible",
         "futa_masturbation",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
@@ -1846,7 +1858,10 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
@@ -1860,9 +1875,8 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             assert "synth-pussy-h3" in ids
             assert "penis-lora-h3" in ids
             assert "futa-h3-v51" not in ids
-        if planned["situation"] == "oral_creampie":
-            assert ids[0] == "mystic-xxx-h3" and "cumouf-h3" in ids
-            assert "blowjob-h3" not in ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "cunnilingus_futa":
@@ -1921,10 +1935,10 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "lesbian-cunnilingus-h3" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("dishes-90s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -1943,7 +1957,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         "oral",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -1951,7 +1965,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     assert all(
         "CAMERA:" in c["prompt"]
         for c in story["clips"]
-        if c["situation"] in {"oral", "oral_creampie"}
+        if c["situation"] in {"oral", "futa_anal"}
     )
     prev = None
     prev_stack = None
@@ -1975,7 +1989,10 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
@@ -1986,9 +2003,8 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
-        if planned["situation"] == "oral_creampie":
-            assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
-            assert "blowjob-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     (tmp_path / "01-sink.jpg").write_bytes(b"fake-jpg")
@@ -2046,7 +2062,7 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
         "futa_visible",
         "futa_visible",
         "oral",
-        "oral",
+        "futa_anal",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -2083,7 +2099,10 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         # Unplayed JSON (seamless False): a passed last_frame is ignored → T2V hard cut.
@@ -2099,6 +2118,8 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     assert "No classroom" in story["clips"][-1]["prompt"]
@@ -2147,8 +2168,8 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         "hmmasturbation-h3",
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
-        "cumouf-h3",
     ]
+    assert "cumouf-h3" not in ids
     story = load_story("lecture-120s")
     assert story["duration_s"] == 100
     assert story["clip_s"] == 10
@@ -2165,7 +2186,7 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         "futa_visible",
         "cunnilingus_futa",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2205,7 +2226,10 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2215,9 +2239,8 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
-        if planned["situation"] == "oral_creampie":
-            assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
-            assert "blowjob-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "futa_masturbation":
@@ -2258,10 +2281,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
         "penis-lora-h3",
         "cinema-dy",
         "larry-v4",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ]
     assert "blowjob-h3" not in ids
+    assert "hmnsfw-aio-v25" not in ids
     story = load_story("rooftop-100s")
     assert story["duration_s"] == 100
     assert story["clip_s"] == 10
@@ -2276,9 +2299,9 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2316,7 +2339,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2325,11 +2351,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
-        if planned["situation"] == "futa_sex":
-            assert stack_ids == ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
             assert "larry-v4" not in stack_ids
             assert "blowjob-h3" not in stack_ids
-            assert planned["cfg"]["turbo"] is False
     assert "Genkan BJ is the next chapter" in story["clips"][-1]["prompt"] or "next chapter" in story["clips"][-1]["prompt"]
     (tmp_path / "01-stairs.jpg").write_bytes(b"fake-jpg")
     with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
@@ -2363,10 +2388,10 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("okaeri-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2384,7 +2409,7 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
         "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2425,7 +2450,10 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2473,10 +2501,10 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("bath-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2496,7 +2524,7 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
         "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
@@ -2540,7 +2568,10 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2590,10 +2621,10 @@ def test_dinner_story_twelve_clips_table(tmp_path):
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("dinner-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2613,7 +2644,7 @@ def test_dinner_story_twelve_clips_table(tmp_path):
         "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
@@ -2657,7 +2688,10 @@ def test_dinner_story_twelve_clips_table(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2707,10 +2741,10 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     assert "thumbinbutt-h3" not in ids
     story = load_story("futon-120s")
     assert story["duration_s"] == 120
@@ -2731,7 +2765,7 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
         "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
@@ -2774,7 +2808,10 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2822,12 +2859,12 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
         "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
     ]
+    assert "hmnsfw-aio-v25" not in ids
     story = load_story("sunday-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2843,9 +2880,9 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "oral",
         "oral",
         "oral_creampie",
@@ -2875,14 +2912,7 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
         assert "15-second take" not in clip["prompt"]
-        if planned_hmmotion := ("hmmotion" in clip["prompt"]):
-            assert clip["situation"] == "futa_sex", i
-        else:
-            assert clip["situation"] != "futa_sex" or "hmmotion" in clip["prompt"]
-        if clip["situation"] != "futa_sex":
-            assert "hmmotion" not in clip["prompt"]
-        else:
-            assert clip["prompt"].startswith("hmmotion")
+        assert "hmmotion" not in clip["prompt"]
         assert "Adult 22" in clip["prompt"] or "woman, 22" in clip["prompt"] or "woman, 39" in clip["prompt"]
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
@@ -2899,7 +2929,10 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2914,11 +2947,10 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
             assert "blowjob-h3" not in stack_ids
             assert "hmnsfw-aio-v25" not in stack_ids
-        if planned["situation"] == "futa_sex":
-            assert stack_ids == ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
             assert "larry-v4" not in stack_ids
             assert "blowjob-h3" not in stack_ids
-            assert planned["cfg"]["turbo"] is False
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
@@ -2964,9 +2996,9 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "oral",
         "oral",
         "oral",
@@ -2999,14 +3031,11 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
         assert hits == [], hits
         assert "schoolgirl" not in clip["prompt"].lower()
         assert "15-second take" not in clip["prompt"]
-        if clip["situation"] != "futa_sex":
-            assert "hmmotion" not in clip["prompt"]
+        assert "hmmotion" not in clip["prompt"]
+        if clip["situation"] == "futa_anal":
+            assert "anus" in clip["prompt"].lower(), i
         else:
-            assert clip["prompt"].startswith("hmmotion")
-        low = clip["prompt"].lower()
-        for neg in ("not anal", "no anal", "switch to anal"):
-            low = low.replace(neg, "")
-        assert "anal" not in low, i
+            assert "anus" not in clip["prompt"].lower() or "NOT IN FRAME" in clip["prompt"], i
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
         assert "CAST LOCK" in clip["prompt"]
@@ -3021,7 +3050,10 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
