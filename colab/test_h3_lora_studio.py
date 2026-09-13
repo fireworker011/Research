@@ -373,10 +373,11 @@ def test_anal_pattern_three_choices(tmp_path):
     assert "射精せず" in p2h or "アナル中出し" in p2h
     p3h = explain_choice("③会って即アナル", "テキストから（写真なし）")
     assert "ベロチュー" in p3h
+    assert "10-20" in p3h
     for label, sid, sits in (
         ("①口内で終わる", "anal-p1-oral", ["futa_visible", "oral", "oral_creampie", "futa_visible"]),
         ("②フェラのあとアナル", "anal-p2-bj-anal", ["futa_visible", "oral", "futa_anal", "futa_visible"]),
-        ("③会って即アナル", "anal-p3-meet-anal", ["futa_visible", "futa_visible", "futa_anal", "futa_visible"]),
+        ("③会って即アナル", "anal-p3-meet-anal", ["futa_visible", "futa_anal", "futa_anal", "futa_visible"]),
     ):
         assert is_anal_pattern(label) and is_chain_pack(label)
         assert resolve_story_play(label) == STORY_PLAY_CHAIN
@@ -404,8 +405,17 @@ def test_anal_pattern_three_choices(tmp_path):
             )
             if clip["situation"] == "futa_anal":
                 _check_anal_plan(planned)
-                assert "INSERTION ON CAMERA" in planned["prompt"]
                 assert "Not vaginal" in planned["prompt"]
+                if sid == "anal-p3-meet-anal" and i == 2:
+                    assert "Already in" in planned["prompt"]
+                    assert "ejaculates INTO the ANUS" in planned["prompt"]
+                    assert "INSERTION ON CAMERA" not in planned["prompt"]
+                else:
+                    assert "INSERTION ON CAMERA" in planned["prompt"]
+                    if sid == "anal-p3-meet-anal" and i == 1:
+                        assert "No climax this clip" in planned["prompt"]
+                        assert "WHITE goo overflows" not in planned["prompt"]
+                        assert "ANAL CREAMPIE:" not in planned["prompt"]
             if clip["situation"] == "oral_creampie":
                 assert "CUMOUF" in planned["prompt"] or "INTO the MOUTH" in planned["prompt"]
             prev = planned["situation"]
@@ -413,7 +423,10 @@ def test_anal_pattern_three_choices(tmp_path):
     cow = generate_anal_pattern("anal-p2-bj-anal", pose="cowgirl")
     assert "straddling" in cow["clips"][2]["prompt"].lower()
     miss = generate_anal_pattern("anal-p3-meet-anal", pose="missionary")
+    assert "on her back" in miss["clips"][1]["prompt"].lower()
     assert "on her back" in miss["clips"][2]["prompt"].lower()
+    assert "INSERTION ON CAMERA" in miss["clips"][1]["prompt"]
+    assert "AT ONCE" in miss["clips"][0]["prompt"]
     assert "NOT oral" in miss["clips"][0]["prompt"]
     room = generate_anal_pattern("anal-p2-bj-anal", pose="standing", scene="a riverside fireworks night")
     assert "riverside fireworks" in room["clips"][0]["prompt"]
@@ -548,7 +561,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-5"
+    assert STUDIO_REV == "h3-20260913-anal-6"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -653,7 +666,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-5"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-6"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -725,9 +738,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-5" in blob
+    assert "h3-20260913-anal-6" in blob
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-5" not in blob
     assert "h3-20260913-anal-4" not in blob
     assert "h3-20260913-anal-3" not in blob
     assert "h3-20260913-anal-2" not in blob
@@ -7102,7 +7116,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-5" in cell2
+    assert "h3-20260913-anal-6" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

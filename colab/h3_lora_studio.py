@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-5"
+STUDIO_REV = "h3-20260913-anal-6"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -727,7 +727,7 @@ SITUATION_HELP = {
     "hachiko-30s": "物語の追加。ハチコウ。10秒×2＝20秒（15秒禁止）。9:16。夜の渋谷ハチコウ前。レイ24・20cmが画面左手で立ってフルボッキをシコシコ。アヤ22ミニ・竿なしが右から現れてキス→口を開けて先端から手の幅。2本目は無言で根元まで濃厚ジュボ→口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "anal-p1-oral": "①口内で終わる。汎用40秒。10秒×4本。9:16。アヤ22ミニ・竿なしが口、レイ24・20cm。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は使わない。既存の帰宅〜縁側とは別（こちらが三択そのもの）。",
     "anal-p2-bj-anal": "②フェラのあとアナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→根元ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。口内 CUMOUF なし。体位欄がアナル本に効く（既定は立ち後背）。",
-    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→即濃厚ベロチュー＋胸揉み＋チンチン／マンコシコシコ→アナル挿入オンカメラ→アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
+    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→短いベロチューですぐ受け入れる姿勢→10-20でアナル挿入オンカメラ（まだ出さない）→20-30アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
     "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
@@ -3924,6 +3924,12 @@ _ANAL_CREAMPIE_CUE_RE = re.compile(
 )
 
 
+_ANAL_NO_CLIMAX_RE = re.compile(
+    r"no ejaculation|nothing has come out yet|no climax this clip",
+    re.I,
+)
+
+
 def lock_anal_creampie(text: str, *, situation: str = "") -> str:
     """futa_anal climax stays in the anus. Do not let semen leak from the unused pussy."""
     raw = str(text or "")
@@ -3931,6 +3937,8 @@ def lock_anal_creampie(text: str, *, situation: str = "") -> str:
         return raw
     sit = str(situation or "").strip()
     if sit not in SEX_ANAL_SITUATIONS:
+        return raw
+    if _ANAL_NO_CLIMAX_RE.search(raw) and not re.search(r"ejaculates INTO", raw):
         return raw
     if not _ANAL_CREAMPIE_CUE_RE.search(raw):
         return raw
@@ -6565,76 +6573,73 @@ def generate_anal_pattern(
             cid="c1",
             label="0-10 キスして",
             situation="futa_visible",
-            prefix="Talk then wet tongue kiss plus fondling, then anal pose.",
+            prefix="Talk, a short wet tongue kiss, then the anal pose at once.",
             who=(
-                "Aya = SPEAKS first. Then the wet tongue kiss and fondling. Mini breasts. NO penis.\n"
-                "Rei = answers. Then the kiss and fondling. Erect 20cm."
+                "Aya = SPEAKS first. Then a short wet tongue kiss and fondling, then the pose. Mini breasts. NO penis.\n"
+                "Rei = answers. Then the kiss and the pose. Erect 20cm."
             ),
             lock=(
-                "Clip 1 of 4. Talk then wet tongue kiss plus fondling, then anal pose. Lip-sync. One line each. "
-                "Talk then kiss then pose. Insertion imminent. Tip a hand's width from the anus, NOT in. "
-                "Not sucking this clip. No oral. No insertion this clip.\n"
+                "Clip 1 of 4. Immediate. Two short lines, a brief wet tongue kiss plus fondling, then the anal pose. "
+                "Lip-sync. One line each. Do not spend the take kissing. Insertion imminent. "
+                "Tip a hand's width from the anus, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
                 f"{_ANAL_LIP}"
             ),
             camera=cam_talk,
             action=(
-                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds, silence: they fall into a sloppy wet tongue "
-                "kiss at once, tongues visible. She kneads the partner's breasts, pumps the erect 20cm with a "
-                "closed fist, and rubs the hairless pussy while they kiss. Bodies grind. NOT oral. NOT insertion. "
+                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds, silence: a SHORT sloppy wet tongue kiss, "
+                "tongues visible, she kneads a breast and pumps the 20cm once, then AT ONCE they take the "
+                "accepting pose. NOT oral. NOT insertion. "
                 f"{pose_end} Do not freeze."
             ),
             sound=(
                 "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「キスして」. "
-                "Rei answers, lip-synced: 「んっ」. Then wet kissing, no spoken words."
+                "Rei answers, lip-synced: 「んっ」. Then a short wet kiss, no spoken words."
             ),
             start="still_or_t2v",
         )
         add_clip(
             cid="c2",
-            label="10-20 ベロチューとこすり",
-            situation="futa_visible",
-            prefix="Already kissing. Already fondling. Still not oral. Not insertion.",
-            who=(
-                "Aya = still in the wet tongue kiss and fondling, then the accepting pose. Mini breasts. NO penis.\n"
-                "Rei = still kissing and fondling, then stays with her. Erect 20cm."
-            ),
+            label="10-20 アナル挿入",
+            situation="futa_anal",
+            prefix="INSERTION ON CAMERA. Show the entry into the anus. Start of anal. Nothing has come out yet.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
             lock=(
-                "Clip 2 of 4. Keep the wet tongue kiss and fondling, then the anal pose. No speech. "
-                "NOT oral. NOT insertion. Insertion imminent. Tip a hand's width from the anus, NOT in."
+                f"Clip 2 of 4. INSERTION ON CAMERA into Aya's anus. START of anal. Then it stays in and thrusts. "
+                f"{spec['lock']} Joining point visible. Not oral. No speech. Do not remount. "
+                "No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}"
             ),
-            camera=(
-                "medium two-shot on both faces and shoulders while they kiss. Follow into the pose. "
-                "End on the 20cm a hand's width from Aya's anus. Not a full-body wide. Not inside."
-            ),
+            camera=spec["camera"],
             action=(
-                "They keep a sloppy wet tongue kiss, tongues visible. She kneads the partner's breasts, "
-                "pumps the erect 20cm with a closed fist, and rubs the hairless pussy while they kiss. "
-                f"Bodies grind. NOT oral. NOT insertion. {pose_end} Do not freeze."
+                "INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
+                "START of anal now. No climax. Joining point visible: penis in anus. "
+                "End: still in the anus, thrusting, nothing has come out yet."
             ),
-            sound="Wet kissing, hands on skin, breath. No spoken words.",
+            sound="Wet anal insertion, thrusting, two women moaning. No spoken words.",
             start="continue",
         )
         add_clip(
             cid="c3",
             label="20-30 アナル中出し",
             situation="futa_anal",
-            prefix="INSERTION ON CAMERA. Show the entry into the anus.",
-            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
+            prefix="Already in. Already joined. Stay in the anus. Then the creampie.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
             lock=(
-                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. Then it stays in. {spec['lock']} "
-                "Joining point visible. Not oral. No speech. Do not remount. She ejaculates INTO the ANUS. "
+                f"Clip 3 of 4. Already in. Already joined. The 20cm is already in Aya's anus. Then it stays in. "
+                f"{spec['lock']} Joining point visible. Not oral. No speech. Do not remount. Do not pull out. "
+                "Do not show the entry again. She ejaculates INTO the ANUS. "
                 "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
                 "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie.\n"
                 f"{spec['face']}"
             ),
             camera=spec["camera"],
             action=(
-                f"INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
+                "Already in. Already joined. Rei's 20cm is already in Aya's anus, then stays in and thrusts. "
                 "She ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, "
                 "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
                 "End: still in the anus, WHITE goo overflowing out of the anus."
             ),
-            sound="Wet anal insertion, thrusting, a thick gush, two women moaning. No spoken words.",
+            sound="Wet anal thrusting, a thick gush, two women moaning. No spoken words.",
             start="continue",
         )
         add_clip(
@@ -6666,7 +6671,7 @@ def generate_anal_pattern(
     comment = {
         "anal-p1-oral": "①口内で終わる。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は無視。",
         "anal-p2-bj-anal": "②フェラのあとアナル。ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。体位欄がアナル本に効く。",
-        "anal-p3-meet-anal": "③会って即アナル。ベロチュー＋胸揉み＋シコシコ→アナル挿入オンカメラ→アナル中出し。体位欄がアナル本に効く。",
+        "anal-p3-meet-anal": "③会って即アナル。短いベロチュー→10-20でアナル挿入オンカメラ（まだ出さない）→20-30アナル中出し。体位欄がアナル本に効く。",
     }[sid]
     return {
         "schema": "h3-lora-studio-story/v1",

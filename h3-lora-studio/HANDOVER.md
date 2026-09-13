@@ -16,11 +16,11 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260913-anal-5`
+設定の版: `h3-20260913-anal-6`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
-直近: 脱糞は ThumbInButt を積む（積まないとマンコから出る）。訪問販売の「キャップ」は蓋ではなく頭の帽子（ハット）。GitHub から開き直す。
+直近: ③会って即アナルは10-20で挿入開始（20-30が中出し）。脱糞は ThumbInButt。GitHub から開き直す。
 ```
 
 ## いまの枝
@@ -30,7 +30,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-5` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-6` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -41,7 +41,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 
 1. **①口内で終わる** … 根元ジュボ → 口内射精。口移しあり
 2. **②フェラのあとアナル** … 根元ジュボで**出さない** → 抜く → アナル挿入オンカメラ → アナル中出し
-3. **③会って即アナル** … 濃厚ベロチュー＋胸揉み＋竿／マンコこすり（挿入でもジュボでもない）→ アナル挿入 → アナル中出し
+3. **③会って即アナル** … 短いベロチュー → 10-20でアナル挿入オンカメラ（まだ出さない） → 20-30アナル中出し
 
 体位は場面で変える（正常位・後背・立ち後背・騎乗・後輩騎乗・座位・後背座位）。結合部が見える後背／立ち後背を多めにするが無理はしない。
 
@@ -55,7 +55,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 |---|---|---|---|
 | ①口内で終わる | `anal-p1-oral` | 会話 → oral → `oral_creampie` + 口移し | 無視 |
 | ②フェラのあとアナル | `anal-p2-bj-anal` | 会話 → oral（出さない）→ `futa_anal` 中出し → 「アナルあつい」 | アナル本に効く |
-| ③会って即アナル | `anal-p3-meet-anal` | 会話 → ベロチュー（`NOT oral. NOT insertion`）→ `futa_anal` 中出し | アナル本に効く |
+| ③会って即アナル | `anal-p3-meet-anal` | 会話 → 短いベロチュー → 10-20 `futa_anal` 挿入（出さない）→ 20-30 中出し | アナル本に効く |
 
 JSON ではない。`generate_anal_pattern()` が組む。キャストはアヤ受け＋レイ20cm。再生は **つなぐ**（`STORY_PLAY_CHAIN`）。ドロップダウンは ×5 専用/つなぐを付けない。並びは SFW 4行の直後、`生成し直し` の前。
 
@@ -142,4 +142,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-脱糞は ThumbInButt を積む（積まないとマンコから出る）。訪問販売は蓋のキャップではなく頭のハット。GitHub の Colab から開き直す。版 `h3-20260913-anal-5`。
+③会って即アナルは10-20で挿入スタート。脱糞は ThumbInButt。GitHub の Colab から開き直す。版 `h3-20260913-anal-6`。
