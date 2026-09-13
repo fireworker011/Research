@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-12"
+STUDIO_REV = "h3-20260913-anal-13"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -4033,7 +4033,12 @@ ANAL_PREP_LINE = (
     "Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. "
     "The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. "
     "Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. "
-    "No extra walk. No solo heat. Do not start insertion in this prep beat."
+    "No extra walk. No solo heat. Do not start insertion in this prep beat. "
+    "CAMERA: After the written act, PULL BACK or ORBIT to a medium rear-side "
+    "(or the angle written for the coming insertion). Last seconds: BOTH bodies readable "
+    "and the joining point readable — the 20cm tip a hand's width from the anus, the GAP visible, NOT in. "
+    "Not a mouth crop at the end. Zoom and angle change inside this one take are OK. "
+    "No hard cut. Do not start insertion."
 )
 PREP_MARK = "ANAL PREP:"
 ANAL_HOLE_IDLE_LINE = (
@@ -5365,7 +5370,8 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
         return (
             "After the last unique quoted line: kiss or fondle if written, then ANAL PREP "
             "(both settle the accepting pose, giver hips aligned, hands on the waist, "
-            "20cm tip a hand's width from the anus, NOT in), then last seconds "
+            "20cm tip a hand's width from the anus, NOT in; PULL BACK or ORBIT off the mouth crop "
+            "so both bodies and the gap are readable), then last seconds "
             "INSERTION ON CAMERA into the anus to the BASE. Both wrecked-ecstatic, "
             "loud moans, a little drool. No climax. Mouths stay closed except the act. "
             "No more quoted speech. No replay. Do not freeze."
@@ -5374,7 +5380,8 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
         return (
             "ANAL PREP: both settle the next anal pose together. Receiver accepting pose. "
             "Giver hips aligned, hands on the waist. 20cm tip a hand's width from the anus, "
-            "not touching, NOT in. Unused pussy shut. No entry. No extra walk. "
+            "not touching, NOT in. PULL BACK or ORBIT off the mouth crop so both bodies "
+            "and the gap are readable. Unused pussy shut. No entry. No extra walk. "
             "No more quoted speech. No replay. Do not freeze."
         )
     if sit in ACT_SITUATIONS:
@@ -5407,7 +5414,8 @@ def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str 
         return (
             f"TIMELINE: 0.0-{prep_start:.1f}s the written act. "
             f"{prep_start:.1f}-{dur:.1f}s ANAL PREP: both settle the next pose, "
-            "20cm tip a hand's width from the anus, NOT in. No entry. "
+            "20cm tip a hand's width from the anus, NOT in. PULL BACK or ORBIT off the mouth crop. "
+            "No entry. "
             "No quoted speech. No lip-sync words. No replay. Do not freeze."
         )
     if (sit in ACT_SITUATIONS and not talks_then_insert(text)) or not lines:
