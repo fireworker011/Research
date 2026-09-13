@@ -11,15 +11,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from h3_lora_studio import (  # noqa: E402
     ANTHOLOGY_LABEL,
     CHAIN_PACK_ORDER,
+    NONE_LABEL,
     REDO_LABEL,
+    STORY_KEEP_LABEL,
     STORY_ORDER,
     STORY_PLAY_CHAIN,
     STORY_PLAY_DEDICATED,
+    STORY_PLAY_JA,
+    STORY_PLAYS,
+    TIB_ON_LABEL,
     anal_pattern_labels,
     chain_pack_labels,
     redo_story_labels,
     story_play_label,
     story_play_labels,
+    story_title_labels,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +35,8 @@ OUTS = [
     ROOT / "h3-lora-studio" / "minimax_h3_lora_studio.ipynb",
 ]
 
-# ③ の並び: SFW → アナル三択 → 専用11話×5再生 → 名前付きパック×5再生 → 短編集（参照） → 行為シーン
+# ③ の4欄: シーン（SFW→三択→生成し直し→短編集→行為） / 物語（タイトルのみ） / 再生5 / ThumbInButt
+# ② は話ごとに1つ（専用）で足りる。ダウンロードは story id 単位。
 SFW_LABELS = ["日常（エロ汎用）", "最速プレビュー（エロ汎用）", "音も残す（エロ汎用）", "普通（エロなし）"]
 ANAL_PATTERN_LABELS = anal_pattern_labels()
 ACT_LABELS = [
@@ -38,9 +45,25 @@ ACT_LABELS = [
     "中出し（女体）", "口内射精（女体）", "指入れ", "オナニー", "足コキ", "絶頂", "汎用エロ（女体）", "試し打ち",
     "レズビアンクンニ", "性器を広げる", "レズ＋広げる",
 ]
-DEFAULT_SCENE = story_play_label("commute-120s", STORY_PLAY_DEDICATED)  # 登校（専用）
+DEFAULT_SCENE = story_play_label("commute-120s", STORY_PLAY_DEDICATED)  # 登校（専用）＝②の初期値
+DEFAULT_SCENE_SPLIT = NONE_LABEL
+DEFAULT_STORY_TITLE = "登校"
+DEFAULT_PLAY_JA = STORY_PLAY_JA[STORY_PLAY_DEDICATED]
+DEFAULT_TIB = NONE_LABEL
 DEFAULT_REDO_STORY = story_play_label("meat-wall-85s", STORY_PLAY_CHAIN)  # ニクカベ（つなぐ）
 REDO_STORY_OPTIONS = redo_story_labels()
+SCENE_SPLIT_OPTIONS = (
+    [NONE_LABEL]
+    + SFW_LABELS
+    + ANAL_PATTERN_LABELS
+    + [REDO_LABEL]
+    + [ANTHOLOGY_LABEL]
+    + ACT_LABELS
+)
+STORY_TITLE_OPTIONS = [STORY_KEEP_LABEL] + story_title_labels()
+PLAY_JA_OPTIONS = [STORY_PLAY_JA[p] for p in STORY_PLAYS]
+TIB_OPTIONS = [NONE_LABEL, TIB_ON_LABEL]
+# 旧1欄（互換テスト・②用）。③本体は使わない。
 SCENE_OPTIONS_3 = (
     SFW_LABELS
     + ANAL_PATTERN_LABELS
@@ -350,7 +373,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-anal-stories-f112"
-FETCH_REV = "h3-20260913-anal-10"
+FETCH_REV = "h3-20260913-anal-12"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -758,20 +781,25 @@ MD3 = r"""## ③ 動画を作る
 - **絶頂** … 女1人。男なし。射精ではない
 - **汎用エロ（女体）** … ふたなり＋女。男なし。解剖 0.5 + AIO 0.55 + 竿 0.45 + 穴 0.4 / 8step。Turbo なし
 - **試し打ち** … ふたなり＋女。男なし
-- **秒数** … 4〜10 は1本。15秒はメモリ不足で画面が小さくなるので使わない。つなぐ 20〜120秒は同じカットを最後のコマで繋ぐ（10秒ずつ）。専用120秒は上の「やりたいシーン」で選ぶ（カット。ここは触らない）。1本で 11 秒以上は作らない
+- **秒数** … 4〜10 は1本。15秒はメモリ不足で画面が小さくなるので使わない。つなぐ 20〜120秒は同じカットを最後のコマで繋ぐ（10秒ずつ）。専用120秒は上の「物語」＋「再生」で選ぶ（カット。ここは触らない）。1本で 11 秒以上は作らない
 - **レズビアンクンニ** … 女同士。男なし
 - **性器を広げる** … 女1人。男なし
 - **レズ＋広げる** … 女同士。男なし
 """
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
-#@markdown ### まずここ
-#@markdown **アナルの三択**（いちばん上付近）: ①口内で終わる／②フェラのあとアナル／③会って即アナル。汎用40秒。③は10-20で挿入開始、20-30が中出し。体位欄は②③のアナル本に効く。**三択を選んでも帰宅や訪問販売の文は差し替わらない。** 既存話は各話にどれかが既に入っている。
-#@markdown 専用11話と名前付きパック30本は再生が5パターン: （専用）＝カット、（つなぐ）＝文そのまま最後のコマから I2V、（つなぐ修）＝最後のコマから I2V＋1本目を長回しに直す、（参照つなぐ）＝1本目 R2V、（参照つなぐ修）＝参照＋1本目を直す。パック（訪問販売〜ハチコウ）は専用ストーリーではないが再生は同じ。物語の追加は10秒×2＝20秒（台詞は1本目だけ）。プロンプト・秒数・長さの作り方は不要。
-#@markdown **脱糞**は「脱糞（どの構図）」＋体位＋文章欄の場所。物語を選ぶな。山小屋／肥溜めは塗れ（今出している動きではない）。医院・終電には足さない。
-#@markdown **生成し直し** は途中で止めた物語を、壊れた本から作り直す。下の「作り直しの物語」と「作り直し開始の本」だけ使う。
-やりたいシーン = "__DEFAULT_SCENE__"  #@param __SCENE_OPTIONS_3__
-#@markdown ### 生成し直し（やりたいシーンが「生成し直し」のときだけ）
+#@markdown ### まずここ（4欄）
+#@markdown **シーン / 物語 / 再生 / ThumbInButt**。物語を選ぶと物語が勝つ。行為・三択・生成し直し・短編集は物語を「（シーンのまま）」にしてからシーン欄を選ぶ。初期値は登校＋専用＋ThumbInButtなし。
+#@markdown **アナルの三択**（シーン欄）: ①口内で終わる／②フェラのあとアナル／③会って即アナル。汎用40秒。③は10-20で挿入開始、20-30が中出し。体位欄は②③のアナル本に効く。**三択を選んでも帰宅や訪問販売の文は差し替わらない。** 既存話は各話にどれかが既に入っている。
+#@markdown **再生が5パターン:** 専用＝カット、つなぐ＝文そのまま最後のコマから I2V、つなぐ修＝最後のコマから I2V＋1本目を長回しに直す、参照つなぐ＝1本目 R2V、参照つなぐ修＝参照＋1本目を直す。パック（訪問販売〜ハチコウ）は専用ストーリーではないが再生は同じ。物語の追加は10秒×2＝20秒（台詞は1本目だけ）。プロンプト・秒数・長さの作り方は不要。
+#@markdown **ThumbInButt** は既定オフ。あり＝挿入直前・挿入本・最初のパコパコだけ積む（トリガーは書かない）。脱糞シーン自体の ThumbInButt はこの欄と別。①口内終わりのパックには積まない。
+#@markdown **脱糞**はシーン「脱糞（どの構図）」＋体位＋文章欄の場所。物語を「（シーンのまま）」にする。山小屋／肥溜めは塗れ（今出している動きではない）。医院・終電には足さない。
+#@markdown **生成し直し** はシーンを「生成し直し」、物語を「（シーンのまま）」にして、下の「作り直しの物語」と「作り直し開始の本」を使う。
+シーン = "__DEFAULT_SCENE_SPLIT__"  #@param __SCENE_SPLIT_OPTIONS__
+物語 = "__DEFAULT_STORY_TITLE__"  #@param __STORY_TITLE_OPTIONS__
+再生 = "__DEFAULT_PLAY_JA__"  #@param __PLAY_JA_OPTIONS__
+ThumbInButt = "__DEFAULT_TIB__"  #@param __TIB_OPTIONS__
+#@markdown ### 生成し直し（シーンが「生成し直し」のときだけ。物語は「（シーンのまま）」）
 #@markdown 開始より前の本はストックして残す。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。他のシーンではこの2欄は無視。
 作り直しの物語 = "__DEFAULT_REDO_STORY__"  #@param __REDO_STORY_OPTIONS__
 作り直し開始の本 = 3  #@param {type:"number"}
@@ -787,7 +815,7 @@ CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 写真ファイル = "auto"  #@param {type:"string"}
 #@markdown 秒数。1本は 4〜10。同じカットを長くするなら下の「つなぐ」。専用120秒では無視。
 秒数 = 10  #@param {type:"number"}
-#@markdown 専用120秒（帰宅・登校など）は上の「やりたいシーン」で選ぶ。ここは**同じカットを繋ぐ**用。専用では触らなくてよい。20〜120秒は 10秒ずつ、最後のコマから I2V（解像度もステップも落とさない）。
+#@markdown 専用120秒（帰宅・登校など）は上の「物語」＋「再生」で選ぶ。ここは**同じカットを繋ぐ**用。専用では触らなくてよい。20〜120秒は 10秒ずつ、最後のコマから I2V（解像度もステップも落とさない）。
 長さの作り方 = "1本（最大10秒）"  #@param ["1本（最大10秒）", "つなぐ 20秒", "つなぐ 30秒", "つなぐ 40秒", "つなぐ 50秒", "つなぐ 60秒", "つなぐ 70秒", "つなぐ 80秒", "つなぐ 90秒", "つなぐ 100秒", "つなぐ 110秒", "つなぐ 120秒", "つなぐ 2分", "つなぐ（秒数欄・16〜120）"]
 #@markdown ### つなぐときだけ（任意・専用では無視）
 #@markdown 同じ場所・同じ人の続き。空欄は前の動きのまま。別の拍だけ書く。Picture 1 とカット割りは書かない。
@@ -826,7 +854,7 @@ from h3_r2v_core import REF2VA_NAME, FL2VA_MAX_CLIP_S, assert_graph_identity_mot
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, apply_phone_act_locks, ORAL_SUCK_SITUATIONS, apply_pose_situation, resolve_pose, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, is_anal_pattern, is_redo, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, ensure_r2v_in_object_info, R2V_NODE, R2V_NODE_MISSING, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, clear_warmup_stamp, resolve_story_play, apply_story_play, apply_redo_play, parse_redo_start, redo_start_frame_name, find_existing_story_clip, stock_completed_clips, ensure_redo_start_frame, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, lock_spoken_japanese, STORY_PLAY_JA, STORY_PLAY_DEDICATED, pick_studio_unet, drop_baked_turbo_loras, is_eros_turbo_hybrid_unet, EROS_FL2VA_NAME
+from h3_lora_studio import apply_user_prompt, apply_phone_act_locks, ORAL_SUCK_SITUATIONS, apply_pose_situation, resolve_pose, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, is_anal_pattern, is_redo, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, ensure_r2v_in_object_info, R2V_NODE, R2V_NODE_MISSING, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, clear_warmup_stamp, resolve_story_play, apply_story_play, apply_redo_play, parse_redo_start, redo_start_frame_name, find_existing_story_clip, stock_completed_clips, ensure_redo_start_frame, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, lock_spoken_japanese, STORY_PLAY_JA, STORY_PLAY_DEDICATED, pick_studio_unet, drop_baked_turbo_loras, is_eros_turbo_hybrid_unet, EROS_FL2VA_NAME, compose_scene_choice, parse_thumb_in_butt, generic_wants_thumbinbutt, apply_thumbinbutt_stack, extra_tib_download_ids, strip_thumb_in_butt_trigger
 _sel = Path("/content/select_loras.py")
 _sel_scripts = Path("/content/h3-lora-studio/scripts/select_loras.py")
 _sel_drive = None
@@ -858,9 +886,12 @@ else:
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-cesspit-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "cabin-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or "to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "") or "slides all the way OFF" not in getattr(_h3_studio, "ORAL_PULL_OFF_LINE", "") or not getattr(_h3_studio, "lock_penis_inside", None) or not getattr(_h3_studio, "lock_anal_creampie", None) or not getattr(_h3_studio, "lock_anal_hole", None) or "ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "") or "FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "") or "ANAL ANATOMY:" not in getattr(_h3_studio, "ANAL_ANATOMY_LINE", "") or "REAR ANAL LOCK:" not in getattr(_h3_studio, "ANAL_REAR_LOCK_LINE", "") or "ANAL PULL-OUT:" not in getattr(_h3_studio, "ANAL_PULLOUT_LEAK_LINE", "") or not getattr(_h3_studio, "lock_scat_look", None) or "Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "") or "ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "") or "INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "") or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or not getattr(_h3_studio, "lock_pleasure_voice_and_wait", None) or not getattr(_h3_studio, "lock_act_silent", None) or not getattr(_h3_studio, "lock_act_sfx", None) or not getattr(_h3_studio, "lock_clip_timeline", None) or not getattr(_h3_studio, "lock_oral_easy_shaft", None) or "gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "") or "ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "") or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "ensure_select_loras_on_path", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "overflow" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None) or float(getattr(_h3_studio, "FL2VA_MAX_CLIP_S", 0) or 0) < 10 or not getattr(_h3_studio, "cap_fl2va_clip_s", None) or not getattr(_h3_studio, "rewrite_take_seconds", None) or not getattr(_h3_studio, "cap_duration_for_vram", None) or not getattr(_h3_studio, "is_redo", None) or not getattr(_h3_studio, "parse_redo_start", None) or not getattr(_h3_studio, "stock_completed_clips", None) or not getattr(_h3_studio, "apply_redo_play", None) or not getattr(_h3_studio, "ensure_redo_start_frame", None) or not getattr(_h3_studio, "apply_phone_act_locks", None) or not getattr(_h3_studio, "wrap_phone_oral_prompt", None) or "ORAL CAMERA:" not in getattr(_h3_studio, "ORAL_CAMERA_LINE", "") or not getattr(_h3_studio, "lock_oral_camera", None) or not getattr(_h3_studio, "pick_studio_unet", None) or not getattr(_h3_studio, "studio_engine_download_jobs", None) or not getattr(_h3_studio, "drop_baked_turbo_loras", None) or not getattr(_h3_studio, "has_eros_unet", None) or "10Eros_Max" not in getattr(_h3_studio, "EROS_FL2VA_NAME", "") or "concept" not in getattr(_select_loras, "STACK_ROLES", ()) or not getattr(_h3_studio, "generate_anal_pattern", None) or "anal-p3-meet-anal" not in getattr(_h3_studio, "ANAL_PATTERN_IDS", set()) or getattr(_select_loras, "CONCEPT_LORA_ID", "") != "mystic-xxx-h3":
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-cesspit-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "cabin-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or "to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "") or "slides all the way OFF" not in getattr(_h3_studio, "ORAL_PULL_OFF_LINE", "") or not getattr(_h3_studio, "lock_penis_inside", None) or not getattr(_h3_studio, "lock_anal_creampie", None) or not getattr(_h3_studio, "lock_anal_hole", None) or "ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "") or "FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "") or "ANAL ANATOMY:" not in getattr(_h3_studio, "ANAL_ANATOMY_LINE", "") or "REAR ANAL LOCK:" not in getattr(_h3_studio, "ANAL_REAR_LOCK_LINE", "") or "ANAL PULL-OUT:" not in getattr(_h3_studio, "ANAL_PULLOUT_LEAK_LINE", "") or not getattr(_h3_studio, "lock_scat_look", None) or "Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "") or "ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "") or "INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "") or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or not getattr(_h3_studio, "lock_pleasure_voice_and_wait", None) or not getattr(_h3_studio, "lock_act_silent", None) or not getattr(_h3_studio, "lock_act_sfx", None) or not getattr(_h3_studio, "lock_clip_timeline", None) or not getattr(_h3_studio, "lock_oral_easy_shaft", None) or "gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "") or "ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "") or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "ensure_select_loras_on_path", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "overflow" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None) or float(getattr(_h3_studio, "FL2VA_MAX_CLIP_S", 0) or 0) < 10 or not getattr(_h3_studio, "cap_fl2va_clip_s", None) or not getattr(_h3_studio, "rewrite_take_seconds", None) or not getattr(_h3_studio, "cap_duration_for_vram", None) or not getattr(_h3_studio, "is_redo", None) or not getattr(_h3_studio, "parse_redo_start", None) or not getattr(_h3_studio, "stock_completed_clips", None) or not getattr(_h3_studio, "apply_redo_play", None) or not getattr(_h3_studio, "ensure_redo_start_frame", None) or not getattr(_h3_studio, "apply_phone_act_locks", None) or not getattr(_h3_studio, "wrap_phone_oral_prompt", None) or "ORAL CAMERA:" not in getattr(_h3_studio, "ORAL_CAMERA_LINE", "") or not getattr(_h3_studio, "lock_oral_camera", None) or not getattr(_h3_studio, "pick_studio_unet", None) or not getattr(_h3_studio, "studio_engine_download_jobs", None) or not getattr(_h3_studio, "drop_baked_turbo_loras", None) or not getattr(_h3_studio, "has_eros_unet", None) or "10Eros_Max" not in getattr(_h3_studio, "EROS_FL2VA_NAME", "") or "concept" not in getattr(_select_loras, "STACK_ROLES", ()) or not getattr(_h3_studio, "generate_anal_pattern", None) or "anal-p3-meet-anal" not in getattr(_h3_studio, "ANAL_PATTERN_IDS", set()) or getattr(_select_loras, "CONCEPT_LORA_ID", "") != "mystic-xxx-h3" or not getattr(_h3_studio, "compose_scene_choice", None) or not getattr(_h3_studio, "parse_thumb_in_butt", None) or not getattr(_h3_studio, "apply_thumbinbutt_stack", None) or not getattr(_h3_studio, "clip_wants_thumbinbutt", None) or "thumb_in_butt" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or getattr(_h3_studio, "TIB_ON_LABEL", "") != "あり（挿入前後）":
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
+やりたいシーン = compose_scene_choice(シーン, 物語, 再生)
+THUMB_IN_BUTT = parse_thumb_in_butt(ThumbInButt)
+print("③ 4欄:", シーン, "/", 物語, "/", 再生, "/ ThumbInButt", ThumbInButt, "→", やりたいシーン)
 DURATION, CLIPS, CHAIN = resolve_studio_length(秒数, 長さの作り方)
 CHAIN_EXTRAS = [つなぎ2, つなぎ3, つなぎ4, つなぎ5, つなぎ6, つなぎ7, つなぎ8, つなぎ9, つなぎ10, つなぎ11, つなぎ12]
 REDO = is_redo(やりたいシーン)
@@ -1047,7 +1078,7 @@ if STORY:
     FIT_CLIP0 = bool(最終シーン合わせ and not STORY_SEAMLESS and not STORY.get("use_cast_ref") and REDO_PLAN_IDX == 0)
     plan_last = redo_start_frame_name(REDO_START) if (REDO and REDO_START > 1) else None
     try:
-        planned0 = prepare_story_clip(STORY, REDO_PLAN_IDX, last_frame=plan_last, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if REDO_PLAN_IDX == 0 else None, force_t2v=FORCE_T2V, fit_scene=FIT_CLIP0, cast_dir=CAST_DIR)
+        planned0 = prepare_story_clip(STORY, REDO_PLAN_IDX, last_frame=plan_last, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if REDO_PLAN_IDX == 0 else None, force_t2v=FORCE_T2V, fit_scene=FIT_CLIP0, cast_dir=CAST_DIR, thumb_in_butt=THUMB_IN_BUTT)
     except SystemExit as exc:
         hint = friendly_select_error(exc)
         raise SystemExit(hint or str(exc)) from None
@@ -1105,6 +1136,11 @@ else:
         print("上級の追加部品は無視します。ふたなりの竿と穴はシーン側で既に併用しています。")
     stack = cfg["stack"]
     prompt = prepend_triggers(cfg["prompt"], stack)
+    if THUMB_IN_BUTT and generic_wants_thumbinbutt(SITUATION):
+        stack = apply_thumbinbutt_stack(stack, on=True)
+        cfg["stack"] = stack
+        prompt = prepend_triggers(cfg["prompt"], stack)
+    prompt = strip_thumb_in_butt_trigger(prompt)
     prompt = apply_phone_act_locks(prompt, situation=SITUATION, pose=POSE)
     SAMPLER = cfg["sampler"]
     STEPS = int(SAMPLER["steps"])
@@ -1202,6 +1238,10 @@ if not VANILLA:
                 if extra not in id_list:
                     id_list.append(extra)
         print(str(int(DURATION)) + "秒分の部品を確認します:", ", ".join(id_list))
+    if THUMB_IN_BUTT:
+        for extra in extra_tib_download_ids():
+            if extra not in id_list:
+                id_list.append(extra)
     need = missing_stack_files(stack, lora_dir)
     if STORY:
         jobs_all = download_jobs_for(id_list, drive_lora, catalog=catalog_now)
@@ -1503,7 +1543,7 @@ else:
             if existing is None:
                 raise SystemExit(str(CLIP_INDEX + 1) + "本目の動画が output にありません。先に途中まで作ってから、③で生成し直しを選んでください。")
             try:
-                planned_skip = prepare_story_clip(STORY, CLIP_INDEX, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, prev_situation=prev_sit, prev_stack=prev_stack, force_t2v=FORCE_T2V, cast_dir=CAST_DIR)
+                planned_skip = prepare_story_clip(STORY, CLIP_INDEX, last_frame=None, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, prev_situation=prev_sit, prev_stack=prev_stack, force_t2v=FORCE_T2V, cast_dir=CAST_DIR, thumb_in_butt=THUMB_IN_BUTT)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None
@@ -1522,7 +1562,7 @@ else:
                 # 専用: 写真からの本だけ rewrite_dedicated_scene_i2v_prompt（prepare_story_clip が静止画のときだけ掛ける）
                 fit_now = bool(最終シーン合わせ)
             try:
-                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, prev_stack=prev_stack, force_t2v=FORCE_T2V, fit_scene=fit_now, cast_dir=CAST_DIR)
+                planned = prepare_story_clip(STORY, CLIP_INDEX, last_frame=last_now, stills_dir=STORY_STILLS, studio_root=STUDIO, catalog_path=STUDIO / "catalog" / "loras.json", forbidden_path=FORBIDDEN_FILE, clip0_override=(None if FORCE_T2V else STORY_OVERRIDE) if CLIP_INDEX == 0 else None, prev_situation=prev_sit, prev_stack=prev_stack, force_t2v=FORCE_T2V, fit_scene=fit_now, cast_dir=CAST_DIR, thumb_in_butt=THUMB_IN_BUTT)
             except SystemExit as exc:
                 hint = friendly_select_error(exc)
                 raise SystemExit(hint or str(exc)) from None
@@ -1595,6 +1635,8 @@ else:
                     hint = friendly_select_error(exc)
                     raise SystemExit(hint or str(exc)) from None
                 fit_stack, _ = apply_stack_fallbacks(list(fit_cfg["stack"]), COMFY_DIR / "models" / "loras", load_catalog(STUDIO))
+                if THUMB_IN_BUTT and generic_wants_thumbinbutt(SITUATION):
+                    fit_stack = apply_thumbinbutt_stack(fit_stack, on=True)
                 if missing_stack_files(fit_stack, COMFY_DIR / "models" / "loras"):
                     print("最終シーン合わせの部品が足りないので、部品は今のまま文だけ合わせます。")
                 else:
@@ -1602,6 +1644,7 @@ else:
                     SAMPLER = fit_cfg["sampler"]
                     cfg = fit_cfg
                 GRAPH_PROMPT = prepend_triggers(str(fit_cfg.get("prompt") or fitted), stack)
+                GRAPH_PROMPT = strip_thumb_in_butt_trigger(GRAPH_PROMPT)
                 print("最終シーン合わせ: 最後の本を", やりたいシーン, "に合わせます。部品:", [x.get("id") for x in stack])
             if CLIP_INDEX > 0:
                 hits = forbidden_hits(GRAPH_PROMPT, path=FORBIDDEN_FILE)
@@ -1753,9 +1796,17 @@ def to_source(text: str) -> list[str]:
 def fill_scene_options(text: str) -> str:
     return (
         text        .replace("__DEFAULT_SCENE__", DEFAULT_SCENE)
+        .replace("__DEFAULT_SCENE_SPLIT__", DEFAULT_SCENE_SPLIT)
+        .replace("__DEFAULT_STORY_TITLE__", DEFAULT_STORY_TITLE)
+        .replace("__DEFAULT_PLAY_JA__", DEFAULT_PLAY_JA)
+        .replace("__DEFAULT_TIB__", DEFAULT_TIB)
         .replace("__DEFAULT_REDO_STORY__", DEFAULT_REDO_STORY)
         .replace("__SCENE_OPTIONS_2__", _options(SCENE_OPTIONS_2))
         .replace("__SCENE_OPTIONS_3__", _options(SCENE_OPTIONS_3))
+        .replace("__SCENE_SPLIT_OPTIONS__", _options(SCENE_SPLIT_OPTIONS))
+        .replace("__STORY_TITLE_OPTIONS__", _options(STORY_TITLE_OPTIONS))
+        .replace("__PLAY_JA_OPTIONS__", _options(PLAY_JA_OPTIONS))
+        .replace("__TIB_OPTIONS__", _options(TIB_OPTIONS))
         .replace("__REDO_STORY_OPTIONS__", _options(REDO_STORY_OPTIONS))
         .replace("__STORY_ID_LIST__", _options(STORY_ID_LIST))
     )
@@ -1763,8 +1814,15 @@ def fill_scene_options(text: str) -> str:
 
 CELL2 = fill_scene_options(CELL2)
 CELL3 = fill_scene_options(CELL3)
-assert 'やりたいシーン = "登校（専用）"' in CELL3
+assert '今使うシーン = "登校（専用）"' in CELL2
+assert '物語 = "登校"' in CELL3
+assert '再生 = "専用"' in CELL3
+assert 'シーン = "なし"' in CELL3
+assert 'ThumbInButt = "なし"' in CELL3
+assert "やりたいシーン = compose_scene_choice(シーン, 物語, 再生)" in CELL3
+assert 'やりたいシーン = "登校（専用）"' not in CELL3
 assert "__" + "SCENE_OPTIONS" not in CELL2 + CELL3
+assert "__DEFAULT_" not in CELL2 + CELL3
 
 for _name, _src in (("CELL1", CELL1), ("CELL2", CELL2), ("CELL3", CELL3), ("CELL4", CELL4)):
     compile(_src, _name, "exec")

@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-10"
+    assert STUDIO_REV == "h3-20260913-anal-12"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-10"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-12"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,10 +753,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-10" in blob
+    assert "h3-20260913-anal-12" in blob
     assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-10" not in blob
     assert "h3-20260913-anal-8" not in blob
     assert "h3-20260913-anal-7" not in blob
     assert "h3-20260913-anal-6" not in blob
@@ -775,7 +776,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
     assert "input/commute-120s/" in src
-    assert 'やりたいシーン = "登校（専用）"' in code
+    assert 'やりたいシーン = compose_scene_choice(シーン, 物語, 再生)' in code
     assert '今使うシーン = "登校（専用）"' in code
     assert "force_t2v=FORCE_T2V" in src
     assert "作り方はテキストから。専用フォルダの写真は使いません。" in src
@@ -7236,7 +7237,13 @@ def test_notebook_story_play_flow():
     cell3 = "".join(nb["cells"][6]["source"])
     cell2 = "".join(nb["cells"][4]["source"])
     md0 = "".join(nb["cells"][0]["source"])
-    assert 'やりたいシーン = "登校（専用）"' in cell3
+    assert 'やりたいシーン = compose_scene_choice(シーン, 物語, 再生)' in cell3
+    assert '物語 = "登校"' in cell3
+    assert '再生 = "専用"' in cell3
+    assert 'シーン = "なし"' in cell3
+    assert 'ThumbInButt = "なし"' in cell3
+    assert "parse_thumb_in_butt(ThumbInButt)" in cell3
+    assert "thumb_in_butt=THUMB_IN_BUTT" in cell3
     assert '今使うシーン = "登校（専用）"' in cell2
     for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
         assert f'"登校{suffix}"' in cell3
@@ -7245,8 +7252,9 @@ def test_notebook_story_play_flow():
             assert f'"{pack}{suffix}"' in cell3, pack + suffix
     # legacy long pack labels are aliases only, not dropdown rows
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
-    # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
-    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"山小屋（専用）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    # シーン4欄: なし→SFW→三択→生成し直し→短編集→行為。作り直しの物語は旧×5のまま後段。
+    assert cell3.index('"なし"') < cell3.index('"普通（エロなし）"') < cell3.index('"①口内で終わる"') < cell3.index('"生成し直し"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"短編集（参照）"') < cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"山小屋（専用）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"')
     assert cell3.index('"飲尿（どの構図）"') < cell3.index('"放尿（性器から）"') < cell3.index('"脱糞（どの構図）"')
     assert '体位 = "立ち"' in cell3
     assert "apply_phone_act_locks" in cell3
@@ -7286,13 +7294,43 @@ def test_notebook_story_play_flow():
     assert "pose=POSE" in src
     assert "作り直しの物語" in cell3 and "作り直し開始の本" in cell3
     assert "is_redo" in src and "apply_redo_play" in src and "stock_completed_clips" in src
-    from h3_lora_studio import CHAIN_PACK_ORDER, STORY_ORDER  # noqa: E402
+    from h3_lora_studio import (  # noqa: E402
+        CHAIN_PACK_ORDER,
+        NONE_LABEL,
+        STORY_KEEP_LABEL,
+        STORY_ORDER,
+        TIB_ON_LABEL,
+        compose_scene_choice,
+        parse_thumb_in_butt,
+        story_play_label,
+    )
 
-    m = re.search(r'やりたいシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
-    opts = json.loads(m.group(1))
-    assert len(opts) == 4 + 3 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 26
-    assert len(set(opts)) == len(opts)
-    for opt in opts:
+    m_scene = re.search(r'\nシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    scene_opts = json.loads(m_scene.group(1))
+    assert scene_opts[0] == NONE_LABEL
+    assert "登校（専用）" not in scene_opts
+    assert "アナルセックス（女体）" in scene_opts
+    assert "短編集（参照）" in scene_opts
+    assert len(scene_opts) == 1 + 4 + 3 + 1 + 1 + 26
+    assert len(set(scene_opts)) == len(scene_opts)
+    m_story = re.search(r'\n物語 = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    story_opts = json.loads(m_story.group(1))
+    assert story_opts[0] == STORY_KEEP_LABEL
+    assert "登校" in story_opts and "ハチコウ" in story_opts
+    assert all("（専用）" not in row for row in story_opts)
+    assert len(story_opts) == 1 + len(STORY_ORDER) + len(CHAIN_PACK_ORDER)
+    m_play = re.search(r'\n再生 = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    play_opts = json.loads(m_play.group(1))
+    assert play_opts == ["専用", "つなぐ", "つなぐ修", "参照つなぐ", "参照つなぐ修"]
+    m_tib = re.search(r'\nThumbInButt = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    tib_opts = json.loads(m_tib.group(1))
+    assert tib_opts == [NONE_LABEL, TIB_ON_LABEL]
+    assert compose_scene_choice(NONE_LABEL, "登校", "専用") == story_play_label("commute-120s", "dedicated")
+    assert parse_thumb_in_butt(NONE_LABEL) is False
+    assert parse_thumb_in_butt(TIB_ON_LABEL) is True
+    for opt in scene_opts:
+        if opt == NONE_LABEL:
+            continue
         resolve_situation(opt)
     assert "resolve_story_play" in src and "apply_story_play" in src
     assert "STORY_PLAY = resolve_story_play(やりたいシーン)" in src
@@ -7374,7 +7412,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-10" in cell2
+    assert "h3-20260913-anal-12" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

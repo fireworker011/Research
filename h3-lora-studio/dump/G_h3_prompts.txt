@@ -1,5 +1,5 @@
 H3 erotic lane — all GitHub prompts for Grok.
-rev=h3-20260913-anal-10 branch=cursor/h3-anal-stories-f112
+rev=h3-20260913-anal-12 branch=cursor/h3-anal-stories-f112
 Independent H3. Do not open HQ dumps. Do not restore Threads schedules.
 Regenerate: python h3-lora-studio/scripts/dump_grok_prompts.py --write
 

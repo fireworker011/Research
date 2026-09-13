@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-10"
+STUDIO_REV = "h3-20260913-anal-12"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -7629,6 +7629,7 @@ def prepare_story_clip(
     force_t2v: bool = False,
     fit_scene: bool = False,
     cast_dir: Path | str | None = None,
+    thumb_in_butt: bool = False,
 ) -> dict[str, Any]:
     """One story clip. Matching LoRA per act.
 
@@ -7792,10 +7793,13 @@ def prepare_story_clip(
             turbo_override=turbo_override,
         )
     stack = drop_speech_face_killers(list(cfg.get("stack") or []), speaks=speaks, mode=mode)
+    want_tib = clip_wants_thumbinbutt(story, index, thumb_in_butt=thumb_in_butt, mode=mode)
+    stack = apply_thumbinbutt_stack(stack, on=want_tib)
     if isinstance(cfg, dict):
         cfg = dict(cfg)
         cfg["stack"] = stack
     prompt = prepend_triggers(str(cfg.get("prompt") or prompt), stack)
+    prompt = strip_thumb_in_butt_trigger(prompt)
     prompt = lock_spoken_japanese(prompt, spoken_lines(raw_prompt))
     if prev_stack is not None:
         stack_changed = stack_signature(prev_stack) != stack_signature(stack)

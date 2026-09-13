@@ -139,3 +139,21 @@ def test_prepare_default_off_keeps_anal_stack(tmp_path):
     ids = [r["id"] for r in planned["stack"]]
     assert ids == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert TIB_TRIGGER not in planned["prompt"]
+
+
+def test_prepare_thumb_in_butt_on_adds_helper(tmp_path):
+    story = load_story("dishes-90s")
+    planned = prepare_story_clip(
+        story, 9, last_frame="x.png", stills_dir=tmp_path, thumb_in_butt=True
+    )
+    ids = [r["id"] for r in planned["stack"]]
+    assert ids[:3] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert TIB_LORA_ID in ids
+    tib = next(r for r in planned["stack"] if r["id"] == TIB_LORA_ID)
+    assert not str(tib.get("trigger") or "").strip()
+    assert TIB_TRIGGER not in planned["prompt"]
+    oral_end = load_story("last-stop-40s")
+    skip = prepare_story_clip(
+        oral_end, 1, last_frame="x.png", stills_dir=tmp_path, thumb_in_butt=True
+    )
+    assert TIB_LORA_ID not in [r["id"] for r in skip["stack"]]
