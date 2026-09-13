@@ -543,8 +543,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-mystic-daily-2"' in src
-    assert 'BRANCH = "cursor/h3-mystic-daily-f112"' in src
+    assert 'FETCH_REV = "h3-20260913-cabin-1"' in src
+    assert 'BRANCH = "cursor/h3-cabin-anal-f112"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -612,7 +612,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-mystic-daily-2" in blob
+    assert "h3-20260913-cabin-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -653,6 +653,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_oral_in_mouth" in src
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert "lock_penis_inside" in src
+    assert "lock_anal_creampie" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
@@ -3398,6 +3399,7 @@ def test_story_play_labels_resolve_to_story_and_play():
     assert "ハイスイコウ（専用）" in pack_labels
     assert "川原のゴミ（参照つなぐ修）" in pack_labels
     assert "ハチコウ（専用）" in pack_labels
+    assert "山小屋（専用）" in pack_labels
     assert is_chain_pack("ハイスイコウ（専用）")
     assert resolve_situation("ハイスイコウ") == "manhole-30s"
     assert resolve_situation("川原のゴミ（つなぐ）") == "riverbank-30s"
@@ -3884,6 +3886,78 @@ def test_fireworks_pack_standing_from_behind(tmp_path):
         assert "sky" in clip["prompt"].lower()
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"]
+
+
+def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
+    from h3_lora_studio import (
+        ANAL_CREAMPIE_LINE,
+        lock_anal_creampie,
+        prepare_story_clip,
+        resolve_situation,
+        story_cast_present,
+    )
+
+    story = _check_pretext_pack(
+        "cabin-40s", tmp_path, n_clips=4,
+        situations=["futa_visible", "futa_visible", "futa_anal", "futa_anal"],
+        lines=[["だれかいる？"], ["はいって", "うん"], [], []],
+        cast_defs=["Aya", "Rei"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
+    )
+    assert resolve_situation("山小屋") == "cabin-40s"
+    assert resolve_situation("山小屋（専用）") == "cabin-40s"
+    assert resolve_situation("山小屋（つなぐ）") == "cabin-40s"
+    banned = ("cowgirl-position-h3", "final-thrust-h3", "hmnsfw-aio-v25", "thumbinbutt-h3")
+    for lid in banned:
+        assert lid not in story["download"]
+    c1 = story["clips"][0]["prompt"]
+    assert "Rei = NOT IN FRAME" in c1
+    assert "Rei: Adult" not in c1
+    assert "HIDDEN at the start" not in c1
+    assert "START CAST:" not in c1
+    assert story_cast_present(c1) == ["Aya"]
+    cam = c1.split("CAMERA:", 1)[1].split("\n", 1)[0]
+    assert "medium two-shot" not in cam.lower()
+    assert "Aya alone" in cam
+    assert "One woman only" in c1
+    assert "No kiss yet" in c1
+    c2 = story["clips"][1]["prompt"]
+    assert "hand's width" in c2
+    assert "NOT in" in c2
+    assert "anus" in c2.lower()
+    assert "already straddling" in c2.lower()
+    assert "Faces never swap" in c2
+    c3 = story["clips"][2]["prompt"]
+    assert "INSERTION ON CAMERA" in c3
+    assert "twintails" in c3.lower()
+    assert "Faces never swap" in c3
+    assert "Do not remount" in c3
+    assert "WHITE goo" not in c3
+    c4 = story["clips"][3]["prompt"]
+    assert "OUT OF THE ANUS" in c4
+    assert "unused pussy does NOT leak" in c4
+    assert "Not a vaginal creampie" in c4
+    planned4 = prepare_story_clip(
+        story, 3, last_frame="h3_chain_2.png", stills_dir=tmp_path, prev_situation="futa_anal"
+    )
+    assert ANAL_CREAMPIE_LINE in planned4["prompt"]
+    assert "unused pussy does NOT leak" in planned4["prompt"]
+    assert {row["id"] for row in planned4["stack"]} <= set(story["download"])
+    assert "cowgirl-position-h3" not in {row["id"] for row in planned4["stack"]}
+    assert "final-thrust-h3" not in {row["id"] for row in planned4["stack"]}
+    insert_only = lock_anal_creampie(
+        "INSERTION ON CAMERA into Aya's anus. Then it stays in.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert "ANAL CREAMPIE:" not in insert_only
+    vaginal = lock_anal_creampie("She cums inside. WHITE goo floods the pussy.", situation="futa_sex")
+    assert "ANAL CREAMPIE:" not in vaginal
+    anal = lock_anal_creampie(
+        "Already in. She ejaculates INTO the ANUS. WHITE goo overflows.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_CREAMPIE_LINE in anal
+    assert lock_anal_creampie(anal, situation="futa_anal") == anal
 
 
 def test_addon_packs_10s_talk_then_silent_act(tmp_path):
@@ -6622,13 +6696,13 @@ def test_notebook_story_play_flow():
     assert '今使うシーン = "登校（専用）"' in cell2
     for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
         assert f'"登校{suffix}"' in cell3
-    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "ニクカベ", "ニクカベ肥溜め", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ", "ハチコウ"):
+    for pack in ("訪問販売", "定期検診", "ケンシン", "終点", "終電", "ザーメン風呂", "ニクカベ", "ニクカベ肥溜め", "カフェ", "車内販売", "赤信号", "ヨガ", "背中流し", "カラオケ", "ランドリー", "講義机", "キャンプ", "花火", "山小屋", "ハイスイコウ", "屋上クーラー", "ハマのテトラ", "廃校ロッカー", "ドウロのど真ん中", "ガケの展望台", "コウジョウあと", "ガソリンスタンド跡", "トンネル非常電話", "川原のゴミ", "ハチコウ"):
         for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
             assert f'"{pack}{suffix}"' in cell3, pack + suffix
     # legacy long pack labels are aliases only, not dropdown rows
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
     # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
-    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"山小屋（専用）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
     assert cell3.index('"飲尿（どの構図）"') < cell3.index('"放尿（性器から）"') < cell3.index('"脱糞（どの構図）"')
     assert '体位 = "立ち"' in cell3
     assert "apply_phone_act_locks" in cell3
@@ -6690,6 +6764,7 @@ def test_notebook_story_play_flow():
     assert '"meat-wall-cesspit-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
+    assert '"cabin-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set())' in src
     assert '"manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
     assert '"hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set())' in src
@@ -6707,6 +6782,8 @@ def test_notebook_story_play_flow():
     assert '"ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "")' in src
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
+    assert 'getattr(_h3_studio, "lock_anal_creampie", None)' in src
+    assert '"ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "")' in src
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert '"INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "")' in src
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
@@ -6724,7 +6801,7 @@ def test_notebook_story_play_flow():
     assert CHAIN_PACK_ORDER[4:7] == ("last-train-120s", "semen-bath-70s", "meat-wall-85s")
     assert CHAIN_PACK_ORDER[7] == "meat-wall-cesspit-70s"
     assert src.find("stories/sales-visit-60s.json") < src.find("stories/checkup-100s.json") < src.find("stories/clinic-75s.json") < src.find("stories/last-stop-40s.json") < src.find("stories/last-train-120s.json") < src.find("stories/semen-bath-70s.json") < src.find("stories/meat-wall-85s.json") < src.find("stories/meat-wall-cesspit-70s.json")
-    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"ニクカベ（専用）"' in cell2 and '"ニクカベ肥溜め（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2 and '"ハチコウ（専用）"' in cell2
+    assert '"カフェ（専用）"' in cell2 and '"ケンシン（専用）"' in cell2 and '"終電（専用）"' in cell2 and '"ザーメン風呂（専用）"' in cell2 and '"ニクカベ（専用）"' in cell2 and '"ニクカベ肥溜め（専用）"' in cell2 and '"花火（専用）"' in cell2 and '"山小屋（専用）"' in cell2 and '"ハイスイコウ（専用）"' in cell2 and '"川原のゴミ（専用）"' in cell2 and '"ハチコウ（専用）"' in cell2
     assert "専用（専用）" in md0 and "専用（つなぐ）" in md0 and "専用（つなぐ修）" in md0
     assert "名前付きパック（専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修）" in md0
     assert "旧名「訪問販売60秒（つなぐ）」" in md0
@@ -6732,7 +6809,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-mystic-daily-2" in cell2
+    assert "h3-20260913-cabin-1" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
@@ -6765,6 +6842,7 @@ def test_notebook_story_play_flow():
     assert "lock_oral_in_mouth" in src
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert "lock_penis_inside" in src
+    assert "lock_anal_creampie" in src
     assert "lock_semen_share_kiss" in src
     assert "who_hidden_at_start" in src
     assert "lock_start_cast" in src
@@ -6783,6 +6861,8 @@ def test_notebook_story_play_flow():
     assert "def lock_oral_easy_shaft" in helper_src
     assert "def lock_clip_timeline" in helper_src
     assert "def lock_penis_inside" in helper_src
+    assert "def lock_anal_creampie" in helper_src
+    assert "ANAL CREAMPIE:" in helper_src
     assert "Deep jupo to the BASE" in helper_src
     assert "INSIDE LOCK:" in helper_src
     assert "SHAFT LOOK:" in helper_src
