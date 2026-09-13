@@ -4833,7 +4833,7 @@ _WRITTEN_LEFTOVER_ACT_RE = re.compile(
 LEFTOVER_KISS_BEAT = (
     "mouths closed. No more quoted speech. No replay. "
     "Leftover: a wet tongue kiss plus skinship "
-    "(kisses on the mouth and/or breasts; knead breasts, pump the erect 20cm and the hairless pussy, rub bodies together). "
+    "(kisses on the mouth and/or breasts; knead breasts, stroke whatever the women already have between their legs, rub bodies together). "
     "Do not say the same line again. Do not freeze. NOT oral. NOT insertion."
 )
 
