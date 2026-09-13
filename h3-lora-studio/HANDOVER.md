@@ -16,11 +16,11 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260913-anal-6`
+設定の版: `h3-20260913-anal-7`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
-直近: ③会って即アナルは10-20で挿入開始（20-30が中出し）。脱糞は ThumbInButt。GitHub から開き直す。
+直近: アナル挿入を1シーン早め、空いた枠はパコパコ（根本まで出し入れ）。挿入中は恍惚・声・よだれ。ジュボの秒数とセリフは残す。GitHub から開き直す。
 ```
 
 ## いまの枝
@@ -30,7 +30,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-6` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-7` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -40,8 +40,8 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 アナルセックスを既存の物語パターンに入れる。3パターン。会話とタイムラインも直す。
 
 1. **①口内で終わる** … 根元ジュボ → 口内射精。口移しあり
-2. **②フェラのあとアナル** … 根元ジュボで**出さない** → 抜く → アナル挿入オンカメラ → アナル中出し
-3. **③会って即アナル** … 短いベロチュー → 10-20でアナル挿入オンカメラ（まだ出さない） → 20-30アナル中出し
+2. **②フェラのあとアナル** … 根元ジュボで**出さない** → 抜く → アナル挿入オンカメラ（まだ出さない） → パコパコ根本まで出し入れ → アナル中出し
+3. **③会って即アナル** … 会話＋短いベロチュー → 0-10でアナル挿入オンカメラ（まだ出さない） → 10-20パコパコ → 20-30アナル中出し
 
 体位は場面で変える（正常位・後背・立ち後背・騎乗・後輩騎乗・座位・後背座位）。結合部が見える後背／立ち後背を多めにするが無理はしない。
 
@@ -142,4 +142,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-③会って即アナルは10-20で挿入スタート。脱糞は ThumbInButt。GitHub の Colab から開き直す。版 `h3-20260913-anal-6`。
+③会って即アナルは0-10で挿入、10-20パコパコ、20-30中出し。全物語のアナル挿入は1シーン早め、空いた枠はパコパコ。GitHub の Colab から開き直す。版 `h3-20260913-anal-7`。

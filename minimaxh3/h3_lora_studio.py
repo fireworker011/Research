@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-6"
+STUDIO_REV = "h3-20260913-anal-7"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -726,8 +726,8 @@ SITUATION_HELP = {
     "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で騎乗位アナル挿入オンカメラ→アナル中出し（騎乗 LoRA は積まない）。ジュボ・口内・口移しはなし。hmmotion なし。",
     "hachiko-30s": "物語の追加。ハチコウ。10秒×2＝20秒（15秒禁止）。9:16。夜の渋谷ハチコウ前。レイ24・20cmが画面左手で立ってフルボッキをシコシコ。アヤ22ミニ・竿なしが右から現れてキス→口を開けて先端から手の幅。2本目は無言で根元まで濃厚ジュボ→口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "anal-p1-oral": "①口内で終わる。汎用40秒。10秒×4本。9:16。アヤ22ミニ・竿なしが口、レイ24・20cm。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は使わない。既存の帰宅〜縁側とは別（こちらが三択そのもの）。",
-    "anal-p2-bj-anal": "②フェラのあとアナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→根元ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。口内 CUMOUF なし。体位欄がアナル本に効く（既定は立ち後背）。",
-    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→短いベロチューですぐ受け入れる姿勢→10-20でアナル挿入オンカメラ（まだ出さない）→20-30アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
+    "anal-p2-bj-anal": "②フェラのあとアナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→根元ジュボで射精せず抜き→アナル挿入オンカメラ（まだ出さない）→パコパコ根本まで出し入れのあとアナル中出し。口内 CUMOUF なし。体位欄がアナル本に効く（既定は立ち後背）。",
+    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話＋短いベロチューのあと0-10でアナル挿入オンカメラ（まだ出さない）→10-20パコパコ根本まで出し入れ→20-30アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
     "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
@@ -3862,6 +3862,26 @@ INSIDE_ENTRY_LINE = (
     "glans parts the lips (or the anus), shaft sinks to the base. After it is in, keep it inside "
     "and thrust. Not beside. Not between the thighs. Not a soft penis. Not a miss."
 )
+INSIDE_PACO_LINE = (
+    "INSIDE LOCK: The erect 20cm pistons the anus. Pull out until only the glans sits at the rim, "
+    "then slam in to the BASE. Repeat that in-and-out the whole take. Joining point visible: "
+    "penis in anus, not in the pussy, not beside the hole. Not out of the hole completely. "
+    "Not a soft penis. Not a miss."
+)
+TALK_THEN_INSERT_MARK = "TALK THEN INSERT:"
+KISS_THEN_INSERT_MARK = "KISS THEN INSERT:"
+PACO_MARK = "PACO-PACO:"
+AFTER_ACT_TALK_MARK = "AFTER ACT TALK:"
+ANAL_PACO_LINE = (
+    "PACO-PACO: Erect 20cm pistons the anus. Pull out until only the glans remains at the rim, "
+    "then slam in to the BASE. Repeat that in-and-out the whole 10-second take. "
+    "Not out of the hole completely. Not a shallow rub. Not vaginal. Not oral."
+)
+ANAL_ECSTASY_LINE = (
+    "ANAL ECSTASY: Both women look extremely good, wrecked ecstasy, not blank. "
+    "Flushed, eyes half-closed, mouths open, brows knit. A little saliva drools from both mouths "
+    "because it feels too good. Loud leaked female moans from both, not words. Not a work mask."
+)
 _SEX_ENTRY_RE = re.compile(r"INSERTION ON CAMERA|Show the entry", re.I)
 _SEX_PULL_OUT_RE = re.compile(
     r"then pulls OUT|Starts inside, then pulls|pulls OUT\.|Sex ends\.|comes apart",
@@ -3892,6 +3912,15 @@ def sex_inside_hole(text: str, *, situation: str = "") -> str:
     return "pussy"
 
 
+def talks_then_insert(text: str) -> bool:
+    raw = str(text or "")
+    return TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw or AFTER_ACT_TALK_MARK in raw
+
+
+def has_paco(text: str) -> bool:
+    return PACO_MARK in str(text or "")
+
+
 def lock_penis_inside(text: str, *, situation: str = "") -> str:
     """Stop H3 from showing sex beside / rubbing / not in / soft."""
     raw = str(text or "")
@@ -3900,9 +3929,11 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     sit = str(situation or "").strip()
     if sit not in SEX_INSIDE_SITUATIONS:
         return raw
-    if _SEX_PULL_OUT_RE.search(raw):
+    if _SEX_PULL_OUT_RE.search(raw) and PACO_MARK not in raw:
         return raw
-    if _SEX_ENTRY_RE.search(raw):
+    if PACO_MARK in raw:
+        line = INSIDE_PACO_LINE
+    elif _SEX_ENTRY_RE.search(raw):
         line = INSIDE_ENTRY_LINE
     elif sex_inside_hole(raw, situation=sit) == "anus":
         line = INSIDE_ANAL_LINE
@@ -4565,6 +4596,10 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
         if "PLEASURE FACE:" in raw:
             return raw
         return _inject_before_soundscape(raw, PLEASURE_JUPO_LINE)
+    if sit in {"futa_anal", "anal_penetration"}:
+        if "ANAL ECSTASY:" in raw:
+            return raw
+        return _inject_before_soundscape(raw, ANAL_ECSTASY_LINE)
     if sit in {"futa_sex", "doggy", "riding", "cunnilingus_futa"}:
         if "PLEASURE FACE:" in raw:
             return raw
@@ -4924,6 +4959,18 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
     """Silent leftover window after unique 「」. Kiss + skinship unless the written leftover is already an act."""
     sit = str(situation or "").strip()
     raw = str(text or "")
+    if AFTER_ACT_TALK_MARK in raw:
+        return (
+            "After the last unique quoted line: afterglow. Stay joined if still in. "
+            "No new insertion. No more quoted speech. No replay. Do not freeze."
+        )
+    if TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw:
+        return (
+            "After the last unique quoted line: the written remaining beat first "
+            "(kiss / fondle / pose if written), then INSERTION ON CAMERA into the anus "
+            "to the BASE. Both wrecked-ecstatic, loud moans, a little drool. No climax. "
+            "Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze."
+        )
     if sit in ACT_SITUATIONS:
         return "Do the written remaining beat. Bodies keep moving. Do not freeze."
     if _KISS_FORBID_RE.search(raw) or _OPEN_MOUTH_WAIT_RE.search(raw):
@@ -4949,7 +4996,7 @@ def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str 
         dur = 10.0
     sit = str(situation or "").strip()
     lines = unique_spoken_lines(text)
-    if sit in ACT_SITUATIONS or not lines:
+    if (sit in ACT_SITUATIONS and not talks_then_insert(text)) or not lines:
         return (
             f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
             "No quoted speech. No lip-sync words. No replay. Do not freeze."
@@ -5173,7 +5220,7 @@ CUNNI_ACT_SFX = (
     "Wet tongue licks on the pussy, saliva slurp, leaked female moans, hitching breath."
 )
 SEX_ACT_SFX = (
-    "Wet filthy thrusting, leaked female moans, hitching breath."
+    "Wet filthy thrusting, loud leaked female moans from both, hitching breath, a little drool."
 )
 URINE_ACT_SFX = (
     "Hiss of a yellow urine stream leaving the urethral opening at the glans tip. "
@@ -5203,6 +5250,8 @@ def lock_act_silent(text: str, *, situation: str = "") -> str:
     raw = str(text or "")
     sit = str(situation or "").strip()
     if not raw or sit not in ACT_SITUATIONS:
+        return raw
+    if talks_then_insert(raw):
         return raw
     out = _SPOKEN_RE.sub("", raw)
     out = strip_lipsync_speech_meta(out)
@@ -6096,9 +6145,9 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         if situation not in HMMOTION_SITUATIONS and has_hmmotion:
             errors.append(f"clip {n}: hmmotion is only for the AIO sex clip, not {situation}")
         if situation in ACT_SITUATIONS:
-            if lines:
+            if lines and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: act situation {situation} must not speak")
-            if "LIP SYNC" in prompt:
+            if "LIP SYNC" in prompt and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: act situation {situation} must not lip-sync")
             if situation in {"oral", "oral_creampie", "cunnilingus_futa"} and "Full bodies from head to feet" in prompt:
                 errors.append(f"clip {n}: oral/cunni clip must not be a full-body wide")
@@ -6130,7 +6179,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                     if "ORAL LOCK:" in oral and "to the BASE" not in oral and "at the BASE" not in oral:
                         errors.append(f"clip {n}: jupo / 口内 must be deep to the BASE, not a tip suck")
         if lines:
-            if situation != "futa_visible":
+            if situation != "futa_visible" and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
             if "LIP SYNC" not in prompt:
                 errors.append(f"clip {n}: spoken line needs LIP SYNC on a visible mouth")
@@ -6165,6 +6214,8 @@ def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
         p = prompt.lower()
         n = i + 1
         if nxt in {"futa_sex", "doggy", "futa_anal", "riding"}:
+            if talks_then_insert(prompt) or "INSERTION ON CAMERA" in prompt:
+                continue
             if "already in" in p or "already inside" in p:
                 errors.append(f"clip {n}: sex setup clip must not already be inside")
             if "hand's width" not in p:
@@ -6314,8 +6365,8 @@ def generate_anal_pattern(
     )
     cam_talk = (
         "medium two-shot on both faces and shoulders while they speak. After the two lines, "
-        "follow into the pose. End on the 20cm a hand's width from Aya's anus. Not a full-body wide. "
-        "Not a crotch shot. Not inside."
+        "a short kiss, then follow to the joining point for INSERTION ON CAMERA. "
+        "End on the penis in Aya's anus. Not a full-body wide."
         if sid == "anal-p3-meet-anal"
         else (
             "medium two-shot on both faces and shoulders while they speak. After the two lines, "
@@ -6522,90 +6573,13 @@ def generate_anal_pattern(
         )
         add_clip(
             cid="c3",
-            label="20-30 アナル中出し",
-            situation="futa_anal",
-            prefix="INSERTION ON CAMERA. Show the entry into the anus.",
-            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
-            lock=(
-                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. Then it stays in. {spec['lock']} "
-                "Joining point visible. Not oral. No speech. Do not remount. She ejaculates INTO the ANUS. "
-                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
-                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie.\n"
-                f"{spec['face']}"
-            ),
-            camera=spec["camera"],
-            action=(
-                f"INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
-                "She ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, "
-                "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
-                "End: still in the anus, WHITE goo overflowing out of the anus."
-            ),
-            sound="Wet anal insertion, thrusting, a thick gush, two women moaning. No spoken words.",
-            start="continue",
-        )
-        add_clip(
-            cid="c4",
-            label="30-40 アナルあつい",
-            situation="futa_visible",
-            prefix="After the anal creampie. Still together.",
-            who=(
-                "Aya = RECEIVER after, wet thighs, SPEAKS first. Mini breasts. NO penis.\n"
-                "Rei = GIVER after, wet 20cm readable, answers."
-            ),
-            lock=(
-                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new insertion. "
-                "No mouth-to-mouth semen share.\n"
-                f"{_ANAL_LIP}"
-            ),
-            camera="medium two-shot on both faces and shoulders. Not a full-body wide. Not a crotch shot.",
-            action=(
-                "Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」. Remaining seconds, "
-                "silence: they stay close. WHITE goo at the anus. Do not freeze."
-            ),
-            sound=(
-                "Room tone, under two close adult female voices. Aya speaks, lip-synced: "
-                "「アナルあつくて、だされちゃった、、、」. Rei answers, lip-synced: 「おくまでだした」. No other speech."
-            ),
-            start="continue",
-        )
-    else:
-        add_clip(
-            cid="c1",
-            label="0-10 キスして",
-            situation="futa_visible",
-            prefix="Talk, a short wet tongue kiss, then the anal pose at once.",
-            who=(
-                "Aya = SPEAKS first. Then a short wet tongue kiss and fondling, then the pose. Mini breasts. NO penis.\n"
-                "Rei = answers. Then the kiss and the pose. Erect 20cm."
-            ),
-            lock=(
-                "Clip 1 of 4. Immediate. Two short lines, a brief wet tongue kiss plus fondling, then the anal pose. "
-                "Lip-sync. One line each. Do not spend the take kissing. Insertion imminent. "
-                "Tip a hand's width from the anus, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
-                f"{_ANAL_LIP}"
-            ),
-            camera=cam_talk,
-            action=(
-                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds, silence: a SHORT sloppy wet tongue kiss, "
-                "tongues visible, she kneads a breast and pumps the 20cm once, then AT ONCE they take the "
-                "accepting pose. NOT oral. NOT insertion. "
-                f"{pose_end} Do not freeze."
-            ),
-            sound=(
-                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「キスして」. "
-                "Rei answers, lip-synced: 「んっ」. Then a short wet kiss, no spoken words."
-            ),
-            start="still_or_t2v",
-        )
-        add_clip(
-            cid="c2",
-            label="10-20 アナル挿入",
+            label="20-30 アナル挿入",
             situation="futa_anal",
             prefix="INSERTION ON CAMERA. Show the entry into the anus. Start of anal. Nothing has come out yet.",
             who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
             lock=(
-                f"Clip 2 of 4. INSERTION ON CAMERA into Aya's anus. START of anal. Then it stays in and thrusts. "
-                f"{spec['lock']} Joining point visible. Not oral. No speech. Do not remount. "
+                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. START of anal. Then it stays in. {spec['lock']} "
+                "Joining point visible. Not oral. No speech. Do not remount. "
                 "No climax this clip. Nothing has come out yet.\n"
                 f"{spec['face']}"
             ),
@@ -6615,7 +6589,97 @@ def generate_anal_pattern(
                 "START of anal now. No climax. Joining point visible: penis in anus. "
                 "End: still in the anus, thrusting, nothing has come out yet."
             ),
-            sound="Wet anal insertion, thrusting, two women moaning. No spoken words.",
+            sound="Wet anal insertion, thrusting, two women moaning, a little drool. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 パコパコ中出し",
+            situation="futa_anal",
+            prefix=(
+                f"{PACO_MARK} Already in. {AFTER_ACT_TALK_MARK} Piston to the BASE, then the creampie, "
+                "then two afterglow lines."
+            ),
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
+            lock=(
+                f"Clip 4 of 4. {PACO_MARK} Already in. Erect 20cm pistons Aya's anus: glans at the rim, "
+                f"then slam to the BASE, repeat. {spec['lock']} Joining point visible. Not oral. "
+                "Do not remount. After the piston she ejaculates INTO the ANUS. "
+                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie. "
+                f"{AFTER_ACT_TALK_MARK} After the last pulse, two short lines. Lip-sync then.\n"
+                f"{spec['face']}\n{_ANAL_LIP}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"{PACO_MARK} Already in. Rei's 20cm pistons Aya's anus: pull out to the glans at the rim, "
+                "slam to the BASE, repeat. Then she ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo "
+                "overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
+                "After the last pulse: Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」."
+            ),
+            sound=(
+                "Wet anal piston in-and-out to the base, a thick gush, two women moaning, a little drool. "
+                "Then Aya speaks, lip-synced: 「アナルあつくて、だされちゃった、、、」. "
+                "Rei answers, lip-synced: 「おくまでだした」. No other speech."
+            ),
+            start="continue",
+        )
+    else:
+        add_clip(
+            cid="c1",
+            label="0-10 キスして挿入",
+            situation="futa_anal",
+            prefix=(
+                f"{TALK_THEN_INSERT_MARK} Talk, a short wet tongue kiss, then INSERTION ON CAMERA. "
+                "Start of anal. Nothing has come out yet."
+            ),
+            who=(
+                "Aya = SPEAKS first. Then a short wet tongue kiss, then RECEIVER. Mini breasts. NO penis.\n"
+                "Rei = answers. Then the kiss, then GIVER. Erect 20cm."
+            ),
+            lock=(
+                f"Clip 1 of 4. {TALK_THEN_INSERT_MARK} Immediate. Two short lines, a brief wet tongue kiss, "
+                "then INSERTION ON CAMERA into Aya's anus. Lip-sync on the two lines only. "
+                "Do not spend the take kissing. After the kiss: glans then shaft. START of anal. "
+                f"{spec['lock']} Joining point visible. No oral. No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}\n{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds: a SHORT sloppy wet tongue kiss, "
+                "tongues visible, she kneads a breast and pumps the 20cm once, then AT ONCE "
+                "INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft. "
+                "NOT oral. START of anal now. No climax. End: still in the anus, thrusting, "
+                "nothing has come out yet."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「キスして」. "
+                "Rei answers, lip-synced: 「んっ」. Then a short wet kiss, then wet anal insertion, "
+                "two women moaning, a little drool. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 パコパコ",
+            situation="futa_anal",
+            prefix=f"{PACO_MARK} Already in. Piston to the BASE. Nothing has come out yet.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
+            lock=(
+                f"Clip 2 of 4. {PACO_MARK} Already in. Already joined. Erect 20cm pistons Aya's anus: "
+                f"glans at the rim, then slam to the BASE, repeat. {spec['lock']} Joining point visible. "
+                "Not oral. No speech. Do not remount. Do not show the entry again. "
+                "No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"{PACO_MARK} Already in. Rei's 20cm pistons Aya's anus: pull out to the glans at the rim, "
+                "slam to the BASE, repeat the whole 10-second take. No climax. "
+                "Joining point visible: penis in anus. End: still in the anus, thrusting, nothing has come out yet."
+            ),
+            sound="Wet anal piston in-and-out to the base, two women moaning, a little drool. No spoken words.",
             start="continue",
         )
         add_clip(
@@ -6639,7 +6703,7 @@ def generate_anal_pattern(
                 "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
                 "End: still in the anus, WHITE goo overflowing out of the anus."
             ),
-            sound="Wet anal thrusting, a thick gush, two women moaning. No spoken words.",
+            sound="Wet anal thrusting, a thick gush, two women moaning, a little drool. No spoken words.",
             start="continue",
         )
         add_clip(
@@ -6670,8 +6734,8 @@ def generate_anal_pattern(
 
     comment = {
         "anal-p1-oral": "①口内で終わる。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は無視。",
-        "anal-p2-bj-anal": "②フェラのあとアナル。ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。体位欄がアナル本に効く。",
-        "anal-p3-meet-anal": "③会って即アナル。短いベロチュー→10-20でアナル挿入オンカメラ（まだ出さない）→20-30アナル中出し。体位欄がアナル本に効く。",
+        "anal-p2-bj-anal": "②フェラのあとアナル。ジュボで射精せず抜き→アナル挿入オンカメラ→パコパコ根本まで出し入れ→アナル中出し。体位欄がアナル本に効く。",
+        "anal-p3-meet-anal": "③会って即アナル。短いベロチュー→0-10でアナル挿入オンカメラ（まだ出さない）→10-20パコパコ→20-30アナル中出し。体位欄がアナル本に効く。",
     }[sid]
     return {
         "schema": "h3-lora-studio-story/v1",
@@ -6691,6 +6755,332 @@ def generate_anal_pattern(
         "download": list(SITUATION_DOWNLOAD[sid]),
         "clips": clips,
     }
+
+
+_CREAMPIE_IN_PROMPT_RE = re.compile(r"ejaculates INTO the ANUS|ANAL CREAMPIE:", re.I)
+_KEEP_ACT_BEFORE_ANAL = frozenset(
+    {
+        "oral",
+        "oral_creampie",
+        "cunnilingus_futa",
+        "riding",
+        "doggy",
+        "futa_sex",
+        "futa_masturbation",
+    }
+)
+_SILENT_KEEP_RE = re.compile(
+    r"yellow stream|pees a |defecat|feces leaving|formed (log|stool)|urine stream|"
+    r"yellow urine|\bpeeing\b|urethral opening",
+    re.I,
+)
+_WALK_SILENT_RE = re.compile(
+    r"\bwalks?\b|walking|corridor|hallway|platform|street|doorway|stairs|"
+    r"already in this place|ホームへ|廊下|歩道|路地|門|タイル",
+    re.I,
+)
+_KISS_CLIP_RE = re.compile(r"tongue kiss|French kiss|wet tongue kiss|濃厚キス", re.I)
+
+
+def _clip_has_creampie(prompt: str) -> bool:
+    return bool(_CREAMPIE_IN_PROMPT_RE.search(str(prompt or "")))
+
+
+def _story_already_anal_shifted(clips: list[dict[str, Any]]) -> bool:
+    blob = " ".join(str(c.get("prompt") or "") for c in clips)
+    return PACO_MARK in blob or TALK_THEN_INSERT_MARK in blob or KISS_THEN_INSERT_MARK in blob
+
+
+def _pick_silent_visible_to_cut(clips: list[dict[str, Any]], anal_idx: int) -> int | None:
+    """Cut a silent lead-in before the act-block that precedes first anal. Keep jupo length.
+
+    Prefer a walk/place beat over a kiss. Never drop urine/scat. Do not take the story
+    opening if a later silent lead-in exists.
+    """
+    j = anal_idx - 1
+    while j >= 0 and str(clips[j].get("situation") or "") in _KEEP_ACT_BEFORE_ANAL:
+        j -= 1
+    act_start = j + 1
+    cands: list[int] = []
+    for i, clip in enumerate(clips[:act_start]):
+        if str(clip.get("situation") or "") != "futa_visible":
+            continue
+        prompt = str(clip.get("prompt") or "")
+        if unique_spoken_lines(prompt):
+            continue
+        if _SILENT_KEEP_RE.search(prompt):
+            continue
+        cands.append(i)
+    if not cands:
+        return None
+    non_kiss = [
+        i
+        for i in cands
+        if not _KISS_CLIP_RE.search(str(clips[i].get("prompt") or "") + " " + str(clips[i].get("label") or ""))
+    ]
+    pick = non_kiss[-1] if non_kiss else cands[-1]
+    if pick == 0 and len(cands) > 1:
+        pick = cands[-1]
+    return pick
+
+
+def _fold_deleted_clip(deleted: dict[str, Any], nxt_prompt: str) -> str:
+    deleted_p = str(deleted.get("prompt") or "")
+    if _KISS_CLIP_RE.search(deleted_p):
+        fold = (
+            "They are already in a wet tongue kiss from the previous seconds. "
+            "Then continue the written beat. "
+        )
+    else:
+        fold = "They are already in this place. The previous walk already happened. "
+    if fold in nxt_prompt:
+        return nxt_prompt
+    if "integrated_multimodal_description:\n" in nxt_prompt:
+        return nxt_prompt.replace(
+            "integrated_multimodal_description:\n",
+            "integrated_multimodal_description:\n" + fold,
+            1,
+        )
+    return fold + nxt_prompt
+
+
+def _sync_story_duration_copy(story: dict[str, Any]) -> None:
+    clips = list(story.get("clips") or [])
+    n = len(clips)
+    dur = int(round(sum(float(c.get("duration_s") or 10) for c in clips)))
+    story["duration_s"] = dur
+    title = str(story.get("title_ja") or "")
+    if re.search(r"\d+秒", title):
+        story["title_ja"] = re.sub(r"\d+秒", f"{dur}秒", title, count=1)
+    comment = str(story.get("comment_ja") or "")
+    comment = re.sub(r"\d+本＝\d+秒", f"{n}本＝{dur}秒", comment)
+    comment = re.sub(r"10秒×\d+本", f"10秒×{n}本", comment)
+    if "パコパコ" not in comment and any(str(c.get("situation") or "") == "futa_anal" for c in clips):
+        comment = comment.replace("アナル中出し", "アナル挿入→パコパコ根本まで出し入れ→アナル中出し", 1)
+        comment = comment.replace("挿入オンカメラ→アナル中出し", "挿入オンカメラ→パコパコ根本まで出し入れ→アナル中出し", 1)
+    story["comment_ja"] = comment
+
+
+def _relabel_story_clips(clips: list[dict[str, Any]]) -> None:
+    n = len(clips)
+    for i, clip in enumerate(clips):
+        clip["id"] = f"c{i + 1}"
+        old = str(clip.get("label") or "")
+        rest = re.sub(r"^\d+\s*[-–]\s*\d+\s*", "", old).strip() or old
+        clip["label"] = f"{10 * i}-{10 * (i + 1)} {rest}"
+        prompt = str(clip.get("prompt") or "")
+        prompt = re.sub(r"Clip \d+ of \d+", f"Clip {i + 1} of {n}", prompt)
+        clip["prompt"] = prompt
+        if i and str(clip.get("start") or "") == "still_or_t2v":
+            pass
+
+
+def convert_visible_prompt_to_insert(prompt: str, *, has_speech: bool) -> str:
+    """Keep quotes/kiss, then INSERTION ON CAMERA. No climax."""
+    raw = str(prompt or "")
+    mark = TALK_THEN_INSERT_MARK if has_speech else KISS_THEN_INSERT_MARK
+    if mark not in raw:
+        raw = mark + "\n" + raw
+    raw = re.sub(
+        r"No insertion this clip\.?",
+        "After the written lines/kiss: INSERTION ON CAMERA.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"Nobody has sex yet\.?", "After the written lines/kiss they have anal.", raw, flags=re.I)
+    raw = re.sub(
+        r"[^.]*does NOT enter in this clip\.?",
+        "After the written lines: INSERTION ON CAMERA.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"Nobody sucks\. No insertion\.", "Nobody sucks.", raw, flags=re.I)
+    insert_beat = (
+        " After the last unique quoted line and after any written kiss/fondle/pose: "
+        "INSERTION ON CAMERA into the receiver's anus, glans then shaft to the BASE. "
+        "START of anal. Close on the joining point. No climax this clip. Nothing has come out yet. "
+        "Both look wrecked-ecstatic, loud moans, a little drool from both mouths. "
+        "End: still in the anus, thrusting, nothing has come out yet. "
+        "Joining point visible: penis in anus. Not vaginal."
+    )
+    if "START of anal" not in raw:
+        if "\n\noverall_soundscape:" in raw:
+            raw = raw.replace("\n\noverall_soundscape:", insert_beat + "\n\noverall_soundscape:", 1)
+        else:
+            raw = raw + insert_beat
+    if "No climax this clip" not in raw:
+        raw = raw.replace("INSERTION ON CAMERA", "INSERTION ON CAMERA. No climax this clip.", 1)
+    raw = re.sub(
+        r"End: [^.\n]*NOT in[^.\n]*\.",
+        "End: still in the anus, thrusting, nothing has come out yet.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"The 20cm tip a hand's width from [^.\n]*(NOT in|not in)[^.]*\.",
+        "Then INSERTION ON CAMERA into the anus to the BASE. End: still in the anus, thrusting.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"Remaining seconds: silence, but bodies keep moving\.",
+        "Remaining seconds: written leftover beat, then INSERTION ON CAMERA into the anus.",
+        raw,
+        flags=re.I,
+    )
+    return raw
+
+
+def convert_anal_prompt_to_paco(prompt: str, *, keep_creampie: bool) -> str:
+    """First anal slot becomes piston in-and-out to the base. Creampie stays only on the last climax clip."""
+    raw = str(prompt or "")
+    if PACO_MARK not in raw:
+        raw = PACO_MARK + " " + raw
+    raw = re.sub(
+        r"INSERTION ON CAMERA\.?\s*Show the entry into the anus\.?",
+        f"{PACO_MARK} Already in. Piston to the BASE.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"INSERTION ON CAMERA:[^.]*\.",
+        f"{PACO_MARK} Already in. Erect 20cm pistons the anus: glans at the rim, then slam to the BASE, repeat.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"INSERTION ON CAMERA into [^.]+\.", f"{PACO_MARK} Already in. Piston to the BASE. ", raw, flags=re.I)
+    raw = raw.replace("INSERTION ON CAMERA", f"{PACO_MARK} Already in piston")
+    if "pistons" not in raw.lower() and "piston" not in raw.lower():
+        raw = raw.replace(
+            "\n\noverall_soundscape:",
+            " PACO-PACO piston: pull out to the glans at the rim, slam to the BASE, repeat. "
+            "Both look wrecked-ecstatic, loud moans, a little drool from both mouths.\n\noverall_soundscape:",
+            1,
+        )
+    if ANAL_PACO_LINE not in raw:
+        raw = _inject_before_soundscape(raw, ANAL_PACO_LINE)
+    if "wrecked-ecstatic" not in raw and "ANAL ECSTASY:" not in raw:
+        raw = _inject_before_soundscape(
+            raw,
+            "Both look wrecked-ecstatic, loud moans, a little drool from both mouths.",
+        )
+    if keep_creampie:
+        return raw
+    raw = re.sub(r"She ejaculates INTO the ANUS\.[^.]*\.", "No climax this clip. Nothing has come out yet.", raw)
+    raw = re.sub(
+        r"Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS[^.]*\.",
+        "Nothing has come out yet.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"WHITE goo overflowing out of the anus\.", "still thrusting, nothing has come out yet.", raw)
+    raw = re.sub(r"a thick gush, ", "", raw)
+    if "No climax this clip" not in raw:
+        raw = raw.replace("Already in.", "Already in. No climax this clip. Nothing has come out yet.", 1)
+    return raw
+
+
+def make_insert_clip_from_anal(anal_clip: dict[str, Any]) -> dict[str, Any]:
+    """Silent insertion-only clip copied from an anal clip's blocking."""
+    src = {k: v for k, v in anal_clip.items() if k != "still"}
+    prompt = str(anal_clip.get("prompt") or "")
+    prompt = re.sub(r"[^.]*ejaculat[^.]*\.", "No climax this clip. Nothing has come out yet.", prompt, flags=re.I)
+    prompt = re.sub(
+        r"Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS[^.]*\.",
+        "Nothing has come out yet.",
+        prompt,
+        flags=re.I,
+    )
+    prompt = re.sub(r"WHITE goo overflowing out of the anus\.", "still thrusting, nothing has come out yet.", prompt)
+    prompt = re.sub(r"WHITE goo overflows[^.]+\.", "Nothing has come out yet.", prompt, flags=re.I)
+    prompt = re.sub(r", a thick gush,", ",", prompt)
+    prompt = re.sub(r"Then WHITE goo overflowing[^.]+\.", "", prompt, flags=re.I)
+    if "INSERTION ON CAMERA" not in prompt:
+        prompt = (
+            "INSERTION ON CAMERA. Show the entry into the anus. Start of anal. Close on the joining point. "
+            "Nothing has come out yet. Both look wrecked-ecstatic, loud moans, a little drool from both mouths.\n"
+            + prompt
+        )
+    if "No climax this clip" not in prompt:
+        prompt += " No climax this clip. Nothing has come out yet. No spoken words."
+    src["situation"] = "futa_anal"
+    src["label"] = "アナル挿入"
+    src["start"] = str(anal_clip.get("start") or "continue")
+    src["prompt"] = prompt
+    return src
+
+
+def shift_story_anal_earlier(story: dict[str, Any]) -> dict[str, Any]:
+    """Move first anal insertion one clip earlier; that slot becomes PACO. Do not cut oral length."""
+    clips = list(story.get("clips") or [])
+    if _story_already_anal_shifted(clips):
+        return story
+    anal_idxs = [i for i, c in enumerate(clips) if str(c.get("situation") or "") == "futa_anal"]
+    if not anal_idxs:
+        return story
+    A = anal_idxs[0]
+    later_creampie = any(_clip_has_creampie(str(clips[i].get("prompt") or "")) for i in anal_idxs if i > A)
+    first_has_cum = _clip_has_creampie(str(clips[A].get("prompt") or ""))
+    prev = A - 1
+    if prev >= 0 and str(clips[prev].get("situation") or "") == "futa_visible":
+        lines = unique_spoken_lines(str(clips[prev].get("prompt") or ""))
+        clips[prev]["situation"] = "futa_anal"
+        clips[prev]["prompt"] = convert_visible_prompt_to_insert(
+            str(clips[prev].get("prompt") or ""),
+            has_speech=bool(lines),
+        )
+        old_lab = str(clips[prev].get("label") or "")
+        rest = re.sub(r"^\d+\s*[-–]\s*\d+\s*", "", old_lab).strip()
+        clips[prev]["label"] = (rest + " 挿入").strip() if rest else "アナル挿入"
+        clips[A]["prompt"] = convert_anal_prompt_to_paco(
+            str(clips[A].get("prompt") or ""),
+            keep_creampie=first_has_cum and not later_creampie,
+        )
+        if not (first_has_cum and not later_creampie):
+            clips[A]["label"] = re.sub(
+                r"アナル中出し|もう入っている|アナル挿入",
+                "パコパコ",
+                str(clips[A].get("label") or "パコパコ"),
+            )
+        for i in anal_idxs[1:]:
+            if not _clip_has_creampie(str(clips[i].get("prompt") or "")):
+                clips[i]["prompt"] = convert_anal_prompt_to_paco(
+                    str(clips[i].get("prompt") or ""),
+                    keep_creampie=False,
+                )
+    elif prev >= 0 and str(clips[prev].get("situation") or "") in _KEEP_ACT_BEFORE_ANAL:
+        silent = _pick_silent_visible_to_cut(clips, A)
+        if silent is not None:
+            nxt = silent + 1
+            if nxt < len(clips):
+                nxt_p = str(clips[nxt].get("prompt") or "")
+                if not _SILENT_KEEP_RE.search(nxt_p):
+                    clips[nxt]["prompt"] = _fold_deleted_clip(clips[silent], nxt_p)
+            del clips[silent]
+            if silent < A:
+                A -= 1
+        insert_clip = make_insert_clip_from_anal(clips[A])
+        clips.insert(A, insert_clip)
+        A += 1
+        later_creampie = any(
+            _clip_has_creampie(str(clips[i].get("prompt") or ""))
+            for i, c in enumerate(clips)
+            if str(c.get("situation") or "") == "futa_anal" and i > A
+        )
+        first_has_cum = _clip_has_creampie(str(clips[A].get("prompt") or ""))
+        clips[A]["prompt"] = convert_anal_prompt_to_paco(
+            str(clips[A].get("prompt") or ""),
+            keep_creampie=first_has_cum and not later_creampie,
+        )
+        clips[A]["label"] = re.sub(
+            r"アナル中出し|アナル挿入",
+            "パコパコ",
+            str(clips[A].get("label") or "パコパコ"),
+        )
+    _relabel_story_clips(clips)
+    story["clips"] = clips
+    _sync_story_duration_copy(story)
+    return story
 
 
 def load_story(
@@ -6908,7 +7298,8 @@ def prepare_story_clip(
     missing_still = None
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
-        missing_still = str(clip.get("still") or "") or None
+        # Insert clips may have no still filename; still report that a photo is missing.
+        missing_still = str(clip.get("still") or "") or "(needed)"
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:
