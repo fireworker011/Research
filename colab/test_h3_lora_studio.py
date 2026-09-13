@@ -451,10 +451,10 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     assert is_studio_story_rel("h3-lora-studio/stories/cabin-40s.json")
     assert not is_studio_story_rel("h3-lora-studio/stories/nested/x.json")
     helper = tmp_path / "rev.py"
-    helper.write_text('STUDIO_REV = "h3-20260913-fetch-1"\n', encoding="utf-8")
-    assert read_studio_rev(helper) == "h3-20260913-fetch-1"
+    helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
+    assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-fetch-1"
+    assert STUDIO_REV == "h3-20260913-scat-1"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-mystic-daily-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -559,7 +559,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-fetch-1"' in src
+    assert 'FETCH_REV = "h3-20260913-scat-1"' in src
     assert 'BRANCH = "cursor/h3-mystic-daily-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -631,7 +631,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-fetch-1" in blob
+    assert "h3-20260913-scat-1" in blob
+    assert "h3-20260913-fetch-1" not in blob
     assert "h3-20260913-cabin-1" not in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
@@ -679,6 +680,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
     assert "lock_urine_look" in src
+    assert "lock_scat_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
     assert "lock_act_silent" in src
@@ -912,9 +914,12 @@ def test_apply_pose_situation_and_phone_act_locks():
         pose="しゃがみ",
     )
     assert "SCAT ACT:" in scat
-    assert "coming out of the anus" in scat
+    assert "leaving the anus" in scat
     assert "INSIDE LOCK:" not in scat
-    assert "feces leaving the anus" in scat.lower()
+    assert "FECES LOOK:" in scat
+    assert "Not bouncing jelly" in scat
+    assert "formed" in scat.lower()
+    assert "clay" in scat.lower()
     assert "Squat" in scat
 
     bj_src = (
@@ -5540,6 +5545,7 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "EROTIC WAIT:" in p_walk["prompt"]
     assert "FUTA LOCK:" in p_walk["prompt"]
     assert "BROWN SLIME:" in p_walk["prompt"]
+    assert "FECES LOOK:" not in p_walk["prompt"]
     assert "BATH LOOK:" in p_walk["prompt"]
     assert "glue" in p_walk["prompt"].lower() or "paste-thick" in p_walk["prompt"].lower()
     assert "heavy-oil" in p_walk["prompt"].lower()
@@ -5675,7 +5681,7 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
             assert "HEAD TO TOE" in prompt
             assert "WHITE" in prompt
         else:
-            assert "fecal" in prompt.lower()
+            assert "feces" in prompt.lower() or "fecal" in prompt.lower()
             assert "HEAD TO TOE" in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
@@ -5699,11 +5705,14 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
         assert "FUTA LOCK:" in planned["prompt"]
         leftover_p = jp_outside_quotes(planned["prompt"])
         assert leftover_p == "", leftover_p[:80]
+        assert "FECES LOOK:" in planned["prompt"]
+        assert "Not bouncing jelly" in planned["prompt"]
         if i == 0:
             assert "SEMEN COAT:" in planned["prompt"]
             assert "CESSPIT LOOK:" not in planned["prompt"]
         else:
             assert "CESSPIT LOOK:" in planned["prompt"]
+            assert "slime pool" in planned["prompt"].lower()
         if clip["situation"] in ACT_SITUATIONS:
             assert "JUPO DEPTH:" in planned["prompt"]
             assert "Ignore how deep" in planned["prompt"]
@@ -5992,6 +6001,7 @@ def test_lock_speech_urine_pleasure_and_heat_face():
     from h3_lora_studio import (
         lock_pleasure_face,
         lock_scat_act,
+        lock_scat_look,
         lock_spoken_emotion,
         lock_urine_look,
     )
@@ -6027,8 +6037,20 @@ def test_lock_speech_urine_pleasure_and_heat_face():
         situation="scat_act",
     )
     assert "SCAT ACT:" in scat
-    assert "coming out of the anus" in scat
+    assert "leaving the anus" in scat
+    assert "FECES LOOK:" in scat
+    assert "Not bouncing jelly" in scat
+    assert "sausage" in scat.lower()
+    assert "slime" in scat.lower()
     assert lock_scat_act(scat, situation="scat_act") == scat
+    skip = lock_scat_look("Door and talk only. No feces. No oral yet.")
+    assert "FECES LOOK:" not in skip
+    pit = lock_scat_look(
+        "Shoulder-deep in the cesspit of real human feces.\n\noverall_soundscape:\nWet.\n"
+    )
+    assert "FECES LOOK:" in pit
+    assert "Not bouncing jelly" in pit
+    assert lock_scat_look(pit) == pit
 
     jupo = lock_pleasure_face(
         "Already oral. Mouth already on.\nDeep jupo-jupo.\n\noverall_soundscape:\nWet.\n",
@@ -6803,6 +6825,8 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
     assert 'getattr(_h3_studio, "lock_anal_creampie", None)' in src
+    assert 'getattr(_h3_studio, "lock_scat_look", None)' in src
+    assert '"Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "")' in src
     assert '"ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "")' in src
     assert '"to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "")' in src
     assert '"INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "")' in src
@@ -6829,7 +6853,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-fetch-1" in cell2
+    assert "h3-20260913-scat-1" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
@@ -6868,6 +6892,7 @@ def test_notebook_story_play_flow():
     assert "lock_start_cast" in src
     assert "lock_spoken_emotion" in src
     assert "lock_urine_look" in src
+    assert "lock_scat_look" in src
     assert "lock_pleasure_face" in src
     assert "lock_pleasure_voice_and_wait" in src
     assert "lock_act_silent" in src
@@ -6882,6 +6907,7 @@ def test_notebook_story_play_flow():
     assert "def lock_clip_timeline" in helper_src
     assert "def lock_penis_inside" in helper_src
     assert "def lock_anal_creampie" in helper_src
+    assert "def lock_scat_look" in helper_src
     assert "ANAL CREAMPIE:" in helper_src
     assert "Deep jupo to the BASE" in helper_src
     assert "INSIDE LOCK:" in helper_src
