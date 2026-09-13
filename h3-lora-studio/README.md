@@ -8,7 +8,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb)
 
-Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。長い会話の続きは [`HANDOVER.md`](HANDOVER.md)。
+Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。長い会話の続きは [`HANDOVER.md`](HANDOVER.md)。Grok にプロンプトを渡すときは [`GROK_PROMPTS.md`](GROK_PROMPTS.md) と [`dump/G_h3_prompts.txt`](dump/G_h3_prompts.txt)。
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）

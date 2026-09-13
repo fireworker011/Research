@@ -8,6 +8,8 @@
 MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャット。Naomiichi。
 
 まず読め:
+- `h3-lora-studio/GROK_PROMPTS.md`（このエロ動画の GitHub プロンプト一覧）
+- `h3-lora-studio/dump/G_h3_prompts.txt`（物語・ロック・③生成文の全文）
 - `.cursor/skills/h3-lora-studio/SKILL.md`
 - `h3-lora-studio/HANDOVER.md`
 - `h3-lora-studio/README.md` の「アナルセックスの3パターン」
@@ -98,6 +100,9 @@ Drive 保存コピーと、設定の版が **xxx** のノートは古い。開�
 | `minimaxh3/h3_lora_studio.py` | 写し。本体と同期 |
 | `colab/_write_lora_studio_nb.py` | ノート生成。`SCENE_OPTIONS_3` に三択 |
 | `h3-lora-studio/stories/*.json` | 既存話の焼き込み |
+| `h3-lora-studio/GROK_PROMPTS.md` | Grok 用の GitHub プロンプト索引 |
+| `h3-lora-studio/dump/G_h3_prompts.txt` | 物語・ロック・③生成文の全文。HQ dump ではない |
+| `h3-lora-studio/scripts/dump_grok_prompts.py` | 上の2つを再生成 |
 | `colab/test_h3_lora_studio.py` | `test_anal_pattern_three_choices` ほか |
 | `.cursor/skills/h3-lora-studio/SKILL.md` | 将来セッション用 |
 | `h3-lora-studio/README.md` | パターン表 |
@@ -107,8 +112,9 @@ Drive 保存コピーと、設定の版が **xxx** のノートは古い。開�
 ```bash
 cd /workspace
 python -c "import ast; ast.parse(open('colab/h3_lora_studio.py').read())"
+python h3-lora-studio/scripts/dump_grok_prompts.py --check
 python colab/_write_lora_studio_nb.py
-python -m pytest colab/test_h3_lora_studio.py -q
+python -m pytest colab/test_h3_lora_studio.py h3-lora-studio/tests/test_dump_grok_prompts.py -q
 # 三択がノートの③にあること:
 python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''.join(nb['cells'][6]['source']); assert '①口内で終わる' in c"
 ```
@@ -142,4 +148,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-③会って即アナルは0-10で挿入、10-20パコパコ、20-30中出し。アナルの位置は体位で変わる（後背は上、正常位・M字は下）。GitHub の Colab から開き直す。版 `h3-20260913-anal-9`。
+③会って即アナルは0-10で挿入、10-20パコパコ、20-30中出し。アナルの位置は体位で変わる（後背は上、正常位・M字は下）。GitHub の Colab から開き直す。版 `h3-20260913-anal-9`。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。
