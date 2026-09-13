@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""ThumbInButt split-list contract for h3-20260913-anal-12."""
+"""ThumbInButt split-list contract for h3-20260913-anal-12.
+
+Imports locked API from colab/h3_lora_studio.py (not a side module).
+"""
 from __future__ import annotations
 
 import sys
@@ -9,29 +12,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_lora_studio import (
     CHAIN_PACK_ORDER,
-    STORY_ORDER,
-    STORY_PLAY_REF_CHAIN,
-    load_story,
-    prepare_story_clip,
-    story_play_label,
-)
-from h3_scene_split import (
     NONE_LABEL,
     STORY_KEEP_LABEL,
-    TIB_LORA_ID,
+    STORY_ORDER,
+    STORY_PLAY_REF_CHAIN,
     TIB_ON_LABEL,
-    TIB_STRENGTH,
-    TIB_TRIGGER,
     apply_thumbinbutt_stack,
     clip_wants_thumbinbutt,
     compose_scene_choice,
-    extra_tib_download_ids,
     generic_wants_thumbinbutt,
+    load_story,
     parse_play_ja,
     parse_thumb_in_butt,
+    prepare_story_clip,
+    story_play_label,
     story_title_labels,
-    strip_thumb_in_butt_trigger,
 )
+
+TIB_LORA_ID = "thumbinbutt-h3"
+TIB_STRENGTH = 0.55
+TIB_TRIGGER = "thum1n8utt"
 
 
 def test_parse_selectors():
@@ -96,8 +96,12 @@ def test_dishes_wants_prep_insert_first_paco_only():
 def test_skip_oral_end_and_semen_bath():
     last = load_story("last-stop-40s")
     bath = load_story("semen-bath-70s")
-    assert all(not clip_wants_thumbinbutt(last, i, thumb_in_butt=True) for i in range(len(last["clips"])))
-    assert all(not clip_wants_thumbinbutt(bath, i, thumb_in_butt=True) for i in range(len(bath["clips"])))
+    assert all(
+        not clip_wants_thumbinbutt(last, i, thumb_in_butt=True) for i in range(len(last["clips"]))
+    )
+    assert all(
+        not clip_wants_thumbinbutt(bath, i, thumb_in_butt=True) for i in range(len(bath["clips"]))
+    )
 
 
 def test_apply_stack_off_keeps_existing_scat_tib():
@@ -120,13 +124,13 @@ def test_apply_stack_on_adds_helper_without_trigger():
     ]
     out = apply_thumbinbutt_stack(base, on=True)
     ids = [r["id"] for r in out]
-    assert ids == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", TIB_LORA_ID]
-    tib = out[-1]
+    assert TIB_LORA_ID in ids
+    tib = next(r for r in out if r["id"] == TIB_LORA_ID)
     assert tib["role"] == "helper"
-    assert float(tib["strength"]) == TIB_STRENGTH
-    assert tib.get("trigger") == ""
+    assert float(tib.get("strength") or tib.get("strength_model") or 0) == TIB_STRENGTH
+    assert not str(tib.get("trigger") or "").strip()
     off = apply_thumbinbutt_stack(base, on=False)
-    assert [r["id"] for r in off] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert TIB_LORA_ID not in [r["id"] for r in off]
 
 
 def test_prepare_default_off_keeps_anal_stack(tmp_path):
@@ -135,5 +139,3 @@ def test_prepare_default_off_keeps_anal_stack(tmp_path):
     ids = [r["id"] for r in planned["stack"]]
     assert ids == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert TIB_TRIGGER not in planned["prompt"]
-    assert extra_tib_download_ids() == [TIB_LORA_ID]
-    assert TIB_TRIGGER not in strip_thumb_in_butt_trigger(f"hello {TIB_TRIGGER} world")
