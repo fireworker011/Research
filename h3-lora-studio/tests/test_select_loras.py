@@ -95,6 +95,12 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert riding["sampler"]["steps"] == 12
     assert riding["turbo"] is False
     assert "hmnsfw-aio-v25" not in [r["id"] for r in riding["stack"]]
+    riding_i2v = select_loras(profile_name="riding", mode="i2v")
+    assert [r["id"] for r in riding_i2v["stack"]] == ["riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"]
+    assert riding_i2v["stack"][0]["strength_model"] == 0.6
+    assert riding_i2v["sampler"]["steps"] == 12
+    assert riding_i2v["turbo"] is False
+    assert "cowgirl-position-h3" not in [r["id"] for r in riding_i2v["stack"]]
     assert preview["sampler"]["steps"] == 4
     assert preview["stack"][-1]["strength_model"] == 1.0
     listed = list_situations()
@@ -432,6 +438,11 @@ def test_empty_adult_prompts_are_girl_next_door_no_men():
     assert "hmnsfw-aio-v25" in unload_ride
     assert "riding-pose-i2v" in unload_ride
     assert "larry-v4" in unload_ride
+    ride_i2v = select_loras(profile_name="riding", mode="i2v", prompt_arg="（シーン）")
+    assert [r["id"] for r in ride_i2v["stack"]] == ["riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"]
+    assert "riding pov" in ride_i2v["prompt"].lower()
+    assert "<Picture 1>" in ride_i2v["prompt"]
+    assert "cowgirl position" not in ride_i2v["prompt"].lower()
     oral = select_loras(profile_name="oral", mode="t2v", prompt_arg="（シーン）")
     olow = oral["prompt"].lower()
     assert "adult man" not in olow
@@ -560,6 +571,8 @@ def test_pose_aftercare_and_solo_act_stacks():
     assert facial_row["trigger"] == "cmst"
     assert facial_row["repo"] == "EllaPriest45/MinimaxH3_Actions"
     assert by_id["riding-pose-i2v"]["modes"] == ["i2v"]
+    assert by_id["riding-pose-i2v"]["default_strength"] == 0.6
+    assert by_id["riding-pose-i2v"]["civitai_model_id"] == 2446218
 
     doggy = select_loras(profile_name="doggy", mode="t2v", prompt_arg="（シーン）")
     assert [r["id"] for r in doggy["stack"]] == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
@@ -1106,18 +1119,22 @@ def test_locked_minors_stay_child_terms():
 
 def test_no_forbidden_or_unused_loras_in_any_profile_stack():
     """Transform / paid / still-only LoRAs must never appear in a live stack."""
-    forbidden = {"futa-h3-v51", "anal-penetration-coachbate", "photoreal-h3-still", "riding-pose-i2v"}
+    forbidden = {"futa-h3-v51", "anal-penetration-coachbate", "photoreal-h3-still"}
     listed = list_situations()
     for row in listed["situations"]:
         enabled = row.get("enabled") or {}
         for mode, ids in enabled.items():
             overlap = forbidden.intersection(ids)
             assert not overlap, (row["id"], mode, overlap)
+            if row["id"] != "riding" or mode != "i2v":
+                assert "riding-pose-i2v" not in ids, (row["id"], mode)
             if not ids:
                 continue
             live = select_loras(profile_name=row["id"], mode=mode, prompt_arg="（シーン）")
             live_ids = {r["id"] for r in live["stack"]}
             assert not (forbidden & live_ids), (row["id"], mode, live_ids)
+            if row["id"] != "riding" or mode != "i2v":
+                assert "riding-pose-i2v" not in live_ids, (row["id"], mode, live_ids)
             if mode == "r2v":
                 for item in live["stack"]:
                     assert item.get("arch") != "fl2va", (row["id"], item)

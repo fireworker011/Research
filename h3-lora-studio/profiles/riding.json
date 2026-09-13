@@ -23,26 +23,44 @@
     }
   },
   "stack_plan": {
-    "act": {
-      "id": "cowgirl-position-h3",
-      "strength": 0.8
-    },
-    "helper": [
-      {
-        "id": "penis-lora-h3",
-        "strength": 0.7
+    "i2v": {
+      "act": {
+        "id": "riding-pose-i2v",
+        "strength": 0.6
       },
-      {
-        "id": "synth-pussy-h3",
-        "strength": 0.55
-      }
-    ]
+      "helper": [
+        {
+          "id": "penis-lora-h3",
+          "strength": 0.7
+        },
+        {
+          "id": "synth-pussy-h3",
+          "strength": 0.55
+        }
+      ]
+    },
+    "t2v": {
+      "act": {
+        "id": "cowgirl-position-h3",
+        "strength": 0.8
+      },
+      "helper": [
+        {
+          "id": "penis-lora-h3",
+          "strength": 0.7
+        },
+        {
+          "id": "synth-pussy-h3",
+          "strength": 0.55
+        }
+      ]
+    }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 12,
-    "note": "Cowgirl act 0.8 + penis 0.7 + Synth 0.55 / 12step. AIO and riding-pose I2V stay off. Turbo off."
+    "note": "I2V riding POV 0.6 + penis 0.7 + Synth 0.55 / 12step. T2V cowgirl 0.8. AIO stays off. Turbo off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -50,7 +68,6 @@
     "pussy-spread-h3",
     "futa-h3-v51",
     "blowjob-h3",
-    "riding-pose-i2v",
     "facial-cumshot-h3",
     "thumbinbutt-h3",
     "cumouf-h3",
@@ -72,7 +89,7 @@
     "remote-orgasm-h3"
   ],
   "scenes": {
-    "i2v": "cowgirl position, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nRiding POV. Camera looks up at the rider from the partner on her back. Front view of (S1) riding. (S1) already has her erect penis inside (S2). (S1) rides up and down. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
     "t2v": "cowgirl position, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears.\n\nAll performers are consenting adult women 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, worm-like penis"

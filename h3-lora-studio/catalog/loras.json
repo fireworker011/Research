@@ -314,8 +314,16 @@
       "turbo": false,
       "adult": true,
       "trigger": "",
-      "default_strength": 0.8,
-      "note": "I2V-only riding POV (blo01). T2V uses cowgirl-position-h3 instead. Strength 0.6 less jitter."
+      "default_strength": 0.6,
+      "source": "hf",
+      "civitai_model_id": 2446218,
+      "civitai_version_id": 3203205,
+      "civitai_file_id": 3084588,
+      "strength_range": [
+        0.5,
+        1.0
+      ],
+      "note": "blo01 H3 I2V riding POV. Studio riding I2V uses this at 0.6 (less jitter). T2V uses cowgirl-position-h3. Do not stack with AIO or cowgirl. LTX 10Eros versions are not H3."
     },
     {
       "id": "deepthroat-v02",

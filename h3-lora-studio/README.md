@@ -14,7 +14,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 ノートを動かさない。ココナラ homage ノートの Turbo 既定は変えない。
 
-重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（FL2VA・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は参照シーンのときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。
+重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（H3 Eros Max TURBO-hybrid beta5 int8・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は参照シーンのときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。公式 FL2VA は普通の I2V / T2V ノート用。R2V は公式 Ref2VA。Eros TURBO-hybrid では Larry / LightX2V FL2VA を積まない（焼き込み）。
 
 ## エロなし（速い＋綺麗）
 
@@ -63,7 +63,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | アナルセックス（女体） | `futa_anal` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | euler / simple / 12。ThumbInButt なし。構図は文章欄。手は腰 |
 | 飲尿（どの構図） | `urine_drink` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。亀頭先の黄色い水。既存話のジュボには戻さない |
 | 脱糞（どの構図） | `scat_act` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。今出している動き。肥溜めの塗れとは別 |
-| 騎乗位（女体） | `riding` | cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO も riding-pose I2V も積まない |
+| 騎乗位（女体） | `riding` | I2V: POV 0.6 / T2V: cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO は積まない。I2V と T2V を混ぜない |
 | 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
 | 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
@@ -87,14 +87,14 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - エロ挿入 LoRA との併用（アナル系は Turbo 切るのが前提）
 - 体位 LoRA と総合えっち（AIO）の同時積み。体位が AIO の代わり
 - 指入れ + オナニー、指入れ + アナル指入れ、アナル指入れ + アナルセックス、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂、中出し + 後射精、中出し + 顔射、中出し + 口内、口内 + 顔射、口内 + フェラ本線
-- `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl）
+- `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl。I2V 騎乗は riding-pose 0.6）
 - シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
 - Photoreal still を動画本体に載せる
 - DY と ASTROCINEMA の同時積み
 - Fal H3 Max に LoRA を差す
 - 訓練で体位を足す（既存 FL2VA LoRA を積む）
 
-積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。LTX の 10Eros や riding の LTX 版は載せない。
 
 ### ThumbInButt（アナル系の行為 LoRA）
 

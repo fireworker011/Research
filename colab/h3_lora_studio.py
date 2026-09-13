@@ -5,6 +5,7 @@ Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/dog
 Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
+Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official.
 """
 
 from __future__ import annotations
@@ -80,6 +81,13 @@ except ImportError:
             str(prompt or ""),
         )
 
+try:
+    from h3_i2v_phone import i2v_download_jobs
+except ImportError:
+    def i2v_download_jobs(drive_models: Path | str) -> list[tuple[str, Path]]:
+        del drive_models
+        return []
+
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
     "tiddies-realism-slider": 1.2,
@@ -109,7 +117,7 @@ SITUATION_DOWNLOAD = {
     "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "preview": ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
-    "riding": ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "riding": ["cowgirl-position-h3", "riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"],
     "doggy": ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"],
     "missionary_pov": ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
@@ -534,7 +542,7 @@ SITUATION_HELP = {
     "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。AIO 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。AIO 0.7 + 穴の見え方 0.55 + LightX2V 4step。ふたなり＋女。男なし。",
-    "riding": "騎乗位（女体）。騎乗 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
+    "riding": "騎乗位（女体）。写真から（I2V）は騎乗POV 0.6。テキストから（T2V）は cowgirl 0.8。竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
     "doggy": "後背位（女体）。後背位 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。男なし。",
     "missionary_pov": "正常位POV（女体）。POV挿入 0.85 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。横はセックス（女体）。",
     "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
@@ -601,7 +609,7 @@ LORA_JA = {
     "futa-h3-v51": "ふたなり",
     "penis-lora-h3": "竿",
     "blowjob-h3": "フェラ",
-    "riding-pose-i2v": "騎乗のポーズ（I2V専用・未使用）",
+    "riding-pose-i2v": "騎乗POV（I2V）",
     "cowgirl-position-h3": "騎乗",
     "doggy-h3": "後背位",
     "missionary-pov-h3": "正常位POV",
@@ -1497,19 +1505,104 @@ def already_have_weight(path: Path, *, min_bytes: int = 1_000_000) -> bool:
     return looks_like_safetensors(path, min_bytes=min_bytes)
 
 
-def has_fl2va_weight(root: Path | str) -> bool:
-    """True if a FL2VA safetensors sits in this folder. Name only — do not open GB files."""
+# Studio T2V/I2V unet. Author default: TURBO-hybrid int8. HF name keeps "turbo" so we can skip Larry/LightX2V.
+EROS_HF_REPO = "TenStrip/10Eros-Max"
+EROS_FL2VA_NAME = "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+EROS_FL2VA_URL = f"https://huggingface.co/{EROS_HF_REPO}/resolve/main/{EROS_FL2VA_NAME}"
+OFFICIAL_FL2VA_NAME = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+BAKED_TURBO_LORA_IDS = frozenset(
+    {
+        "larry-v4",
+        "minimax-h3-turbo-fl2v-4step",
+        "minimax-h3-turbo-fl2v-8step",
+    }
+)
+
+
+def is_eros_unet(name: str) -> bool:
+    """True for H3 Eros Max diffusion UNets. Not Ref2VA. Not LTX 10Eros."""
+    n = str(name or "").lower().replace("-", "_")
+    if "ref2va" in n or "ref2v" in n or "ltx" in n:
+        return False
+    if "h3" not in n:
+        return False
+    return "10eros" in n or "h3erosmax" in n or "eros_max" in n
+
+
+def is_eros_turbo_hybrid_unet(name: str) -> bool:
+    """TURBO-hybrid has distilled turbo baked in. Do not stack Larry / LightX2V FL2VA.
+
+    HF TURBO-hybrid names include ``turbo``. Civitai ``h3ErosMax_beta5_*`` omits it;
+    studio default is still TURBO-hybrid. The non-turbo HF sibling is ``..._h3_hybrid_...``.
+    """
+    n = str(name or "").lower().replace("-", "_")
+    if not is_eros_unet(name):
+        return False
+    if "turbo" in n:
+        return True
+    if "_hybrid_" in n or n.endswith("_hybrid") or "_hybrid." in n:
+        return False
+    return True
+
+
+def is_official_h3_fl2va_name(name: str) -> bool:
+    n = str(name or "").lower()
+    if not n.endswith(".safetensors") or n.endswith(".part"):
+        return False
+    if is_eros_unet(name) or is_ref2v_weight(name):
+        return False
+    return "fl2va" in n
+
+
+def is_studio_fl2va_unet(name: str) -> bool:
+    """Official FL2VA or Eros Max FL-compatible UNet. Name only."""
+    n = str(name or "").lower()
+    if not n.endswith(".safetensors") or n.endswith(".part"):
+        return False
+    if is_ref2v_weight(name):
+        return False
+    return "fl2va" in n or is_eros_unet(name)
+
+
+def iter_studio_unets(root: Path | str) -> list[Path]:
     folder = Path(root)
     if not folder.is_dir():
-        return False
+        return []
+    out: list[Path] = []
     try:
         for path in folder.iterdir():
-            name = path.name.lower()
-            if "fl2va" in name and name.endswith(".safetensors") and not name.endswith(".part"):
-                return True
+            if not path.is_file():
+                continue
+            if is_studio_fl2va_unet(path.name):
+                out.append(path)
     except OSError:
-        return False
-    return False
+        return []
+    out.sort(key=lambda p: p.name.lower())
+    return out
+
+
+def pick_studio_unet(root: Path | str, *, default: str = EROS_FL2VA_NAME) -> str:
+    """Prefer Eros TURBO-hybrid, then any Eros, then official FL2VA."""
+    files = iter_studio_unets(root)
+    turbo = [p for p in files if is_eros_turbo_hybrid_unet(p.name)]
+    if turbo:
+        return turbo[0].name
+    eros = [p for p in files if is_eros_unet(p.name)]
+    if eros:
+        return eros[0].name
+    if files:
+        return files[0].name
+    return str(default or EROS_FL2VA_NAME)
+
+
+def has_fl2va_weight(root: Path | str) -> bool:
+    """True if a studio T2V/I2V UNet sits in this folder. Name only — do not open GB files."""
+    return bool(iter_studio_unets(root))
+
+
+def has_eros_unet(root: Path | str) -> bool:
+    """True if an H3 Eros Max UNet is in this folder. Official FL2VA does not count."""
+    return any(is_eros_unet(p.name) for p in iter_studio_unets(root))
 
 
 def studio_colab_dest(rel: str, *, content_root: Path | str = "/content") -> Path:
@@ -1804,6 +1897,12 @@ def _iter_drive_weights(
             if not path.is_file():
                 continue
             if sub == "diffusion_models" and not include_ref2v and is_ref2v_weight(path.name):
+                continue
+            if (
+                sub == "diffusion_models"
+                and any(is_eros_unet(p.name) and not is_ref2v_weight(p.name) for p in paths)
+                and is_official_h3_fl2va_name(path.name)
+            ):
                 continue
             if sub == "loras":
                 if cores_only and want_loras and path.name not in want_loras:
@@ -2158,6 +2257,19 @@ def download_jobs_for(
     return jobs
 
 
+def studio_engine_download_jobs(drive_models: Path | str) -> list[tuple[str, Path]]:
+    """Studio T2V/I2V: Eros Max UNet + shared text/VAE/turbo LoRA. Not official FL2VA. Not Ref2VA."""
+    root = Path(drive_models)
+    jobs: list[tuple[str, Path]] = [
+        (EROS_FL2VA_URL, root / "diffusion_models" / EROS_FL2VA_NAME),
+    ]
+    for url, dest in i2v_download_jobs(root):
+        if dest.parent.name == "diffusion_models" and is_official_h3_fl2va_name(dest.name):
+            continue
+        jobs.append((url, dest))
+    return jobs
+
+
 def fetch_weight(
     url: str,
     dest: Path,
@@ -2307,6 +2419,7 @@ def comfy_missing_loras(stack: list[dict[str, Any]], obj: dict[str, Any] | None)
 ACT_FALLBACK_TO_AIO = {
     "anal-penetration-coachbate",
     "cowgirl-position-h3",
+    "riding-pose-i2v",
     "doggy-h3",
     "missionary-pov-h3",
 }
@@ -4596,6 +4709,17 @@ def stack_signature(stack: list[dict[str, Any]] | None) -> tuple[tuple[str, floa
             val = 0.0
         out.append((rid, val))
     return tuple(out)
+
+
+def drop_baked_turbo_loras(
+    stack: list[dict[str, Any]] | None,
+    unet: str,
+) -> list[dict[str, Any]]:
+    """Eros TURBO-hybrid already has FL2VA turbo. Larry / LightX2V FL2VA would double-distill."""
+    rows = [dict(x) for x in (stack or [])]
+    if not is_eros_turbo_hybrid_unet(unet):
+        return rows
+    return [row for row in rows if str(row.get("id") or "") not in BAKED_TURBO_LORA_IDS]
 
 
 def drop_speech_face_killers(
