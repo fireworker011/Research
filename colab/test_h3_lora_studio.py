@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-8"
+    assert STUDIO_REV == "h3-20260913-anal-9"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-8"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-9"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,10 +753,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-8" in blob
+    assert "h3-20260913-anal-9" in blob
     assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-8" not in blob
     assert "h3-20260913-anal-7" not in blob
     assert "h3-20260913-anal-6" not in blob
     assert "h3-20260913-anal-5" not in blob
@@ -6760,10 +6761,13 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
 
 def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     from h3_lora_studio import (
+        ANAL_ANATOMY_LINE,
+        ANAL_FRONT_LOCK_LINE,
         ANAL_HOLE_IDLE_LINE,
         ANAL_HOLE_LOCK_LINE,
         ANAL_PULLOUT_LEAK_LINE,
         ANAL_REAR_LOCK_LINE,
+        ANAL_SIDE_LOCK_LINE,
         load_story,
         lock_anal_hole,
         prepare_story_clip,
@@ -6774,6 +6778,9 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     assert "マンコを開かない" in body
     assert "開いたアナル" in body
     assert "立ちバック" in body
+    assert "正常位" in body
+    assert "M字" in body
+    assert "下の穴 = アナル" in body
 
     walk = lock_anal_hole("Walking only. No sex.\n\noverall_soundscape:\nSteps.\n", situation="futa_visible")
     assert "ANAL HOLE LOCK:" not in walk
@@ -6790,8 +6797,9 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     )
     rear = lock_anal_hole(rear_raw, situation="futa_anal")
     assert ANAL_HOLE_LOCK_LINE in rear
+    assert ANAL_ANATOMY_LINE in rear
     assert ANAL_REAR_LOCK_LINE in rear
-    assert "UPPER hole is the anus" in rear
+    assert "UPPER hole toward the tailbone is the anus" in rear
     assert "not gaping" in rear
     assert lock_anal_hole(rear, situation="futa_anal") == rear
 
@@ -6800,7 +6808,25 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
         situation="futa_anal",
     )
     assert ANAL_HOLE_LOCK_LINE in missionary
+    assert ANAL_ANATOMY_LINE in missionary
+    assert ANAL_FRONT_LOCK_LINE in missionary
+    assert "LOWER hole toward the tailbone" in missionary
     assert "REAR ANAL LOCK:" not in missionary
+
+    m_spread = lock_anal_hole(
+        "M-spread. On her back. Anal only.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_FRONT_LOCK_LINE in m_spread
+    assert "REAR ANAL LOCK:" not in m_spread
+
+    side = lock_anal_hole(
+        "Both on their sides. Anal only. Not vaginal.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_SIDE_LOCK_LINE in side
+    assert "REAR ANAL LOCK:" not in side
+    assert "FRONT ANAL LOCK:" not in side
 
     pulled = lock_anal_hole(
         "Instructor pulled out just before this clip. No new insertion. Afterglow.\n"
@@ -6833,7 +6859,15 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     anal = prepare_story_clip(cabin, 7, last_frame="x.png", stills_dir=tmp_path)
     assert anal["situation"] == "futa_anal"
     assert "ANAL HOLE LOCK:" in anal["prompt"]
+    assert "ANAL ANATOMY:" in anal["prompt"]
     assert "REAR ANAL LOCK:" in anal["prompt"]
+
+    check = load_story("checkup-100s")
+    insert_i = next(i for i, c in enumerate(check["clips"]) if c["situation"] == "futa_anal")
+    planned = prepare_story_clip(check, insert_i, last_frame="x.png", stills_dir=tmp_path)
+    assert "FRONT ANAL LOCK:" in planned["prompt"]
+    assert "LOWER hole toward the tailbone" in planned["prompt"]
+    assert "REAR ANAL LOCK:" not in planned["prompt"]
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -7226,6 +7260,7 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "lock_anal_creampie", None)' in src
     assert 'getattr(_h3_studio, "lock_anal_hole", None)' in src
     assert '"ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "")' in src
+    assert '"FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "")' in src
     assert 'getattr(_h3_studio, "lock_scat_look", None)' in src
     assert '"Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "")' in src
     assert '"ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "")' in src
@@ -7254,7 +7289,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-8" in cell2
+    assert "h3-20260913-anal-9" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
@@ -7309,6 +7344,9 @@ def test_notebook_story_play_flow():
     assert "def lock_penis_inside" in helper_src
     assert "def lock_anal_creampie" in helper_src
     assert "def lock_anal_hole" in helper_src
+    assert "def anal_anatomy_view" in helper_src
+    assert "FRONT ANAL LOCK:" in helper_src
+    assert "ANAL ANATOMY:" in helper_src
     assert "ANAL HOLE LOCK:" in helper_src
     assert "def lock_scat_look" in helper_src
     assert "ANAL CREAMPIE:" in helper_src

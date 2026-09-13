@@ -1,9 +1,9 @@
 # H3 body lock（アナル）
 
 アナルセックス本に必ず効く。マンコ挿入・マンコ開き・マンコから精液は禁止。
-立ちバック位・四つん這い・バックは特に注意（下の穴＝マンコに入りやすい）。
+**肛門の位置は体位で変わる。** 人体の構造（尾骨側が肛門、恥骨・お腹側がマンコ）に従う。
 
-英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` / `INSIDE_ENTRY_ANAL_LINE` と同期する。
+英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_ANATOMY_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_FRONT_LOCK_LINE` / `ANAL_SIDE_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` と同期する。
 
 ## 絶対
 
@@ -12,18 +12,26 @@
 - **マンコから精子を出さない。** 白精液はアナルからだけ。
 - アナルからチンチンを抜いたら、**開いたアナル** から精子が漏れる。マンコからは漏れない。
 
-## 立ちバック・四つん這い・バック
+## 人体
 
-後ろから穴は二つ。
+肛門は **尾骨（お尻の割れ目の奥）側** の穴。マンコは **恥骨・お腹側** の穴。入れ替えない。
 
-- **上の穴 = アナル。** 20cm はここだけ、根本まで。
-- **下の穴 = マンコ。** 閉じたまま。開かない。狙わない。唇を割らない。
-- 結合点は「閉じたマンコの上の、アナルに入っている竿」。
+## 体位で見た目が変わる
+
+- **立ちバック・四つん這い・バック・後輩騎乗（後ろ向き）**: 後ろから穴は二つ。**上の穴 = アナル**（尾骨側）。下の穴 = マンコ（閉じる）。
+- **正常位・仰向け・M字開脚**: 開いた太ももの間。**下の穴 = アナル**（尾骨・お尻側、ベッド側）。上／お腹側の穴 = マンコ（閉じる）。
+- **横向き**: 背中・尾骨側がアナル。お腹側がマンコ。
 
 ## English (injected)
 
 ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. The unused pussy stays shut: labia closed, not spread, not gaping, not entered. WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. Not a vaginal creampie. Not pussy-spread.
 
-REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. The UPPER hole is the anus — the 20cm enters THAT hole only, to the BASE. The LOWER hole is the unused pussy: keep it closed, not opened, not spread, not gaping. Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus above the closed pussy.
+ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). The unused pussy is the hole toward the pubic bone and the belly. Never swap those two holes. Enter the anus only.
+
+REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. The UPPER hole toward the tailbone is the anus — the 20cm enters THAT hole only, to the BASE. The LOWER hole toward the belly is the unused pussy: keep it closed, not opened, not spread, not gaping. Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus above the closed pussy.
+
+FRONT ANAL LOCK: Missionary, on her back, or M-spread: two holes between the open thighs. The LOWER hole toward the tailbone / buttocks is the anus — the 20cm enters THAT hole only, to the BASE. The UPPER hole toward the belly / pubic bone is the unused pussy: keep it closed, not opened, not spread, not gaping. Do not aim at the front hole. Joining point is penis-in-anus below the closed pussy.
+
+SIDE ANAL LOCK: Both on their sides. The hole toward the back / tailbone is the anus — enter THAT only, to the BASE. The hole toward the belly / pubic bone is the unused pussy: closed, not opened, not spread, not gaping.
 
 ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen.

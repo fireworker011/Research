@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-8"
+STUDIO_REV = "h3-20260913-anal-9"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -3882,12 +3882,29 @@ ANAL_HOLE_LOCK_LINE = (
     "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
     "Not a vaginal creampie. Not pussy-spread."
 )
+ANAL_ANATOMY_LINE = (
+    "ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). "
+    "The unused pussy is the hole toward the pubic bone and the belly. "
+    "Never swap those two holes. Enter the anus only."
+)
 ANAL_REAR_LOCK_LINE = (
     "REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. "
-    "The UPPER hole is the anus — the 20cm enters THAT hole only, to the BASE. "
-    "The LOWER hole is the unused pussy: keep it closed, not opened, not spread, not gaping. "
+    "The UPPER hole toward the tailbone is the anus — the 20cm enters THAT hole only, to the BASE. "
+    "The LOWER hole toward the belly is the unused pussy: keep it closed, not opened, not spread, not gaping. "
     "Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus "
     "above the closed pussy."
+)
+ANAL_FRONT_LOCK_LINE = (
+    "FRONT ANAL LOCK: Missionary, on her back, or M-spread: two holes between the open thighs. "
+    "The LOWER hole toward the tailbone / buttocks is the anus — the 20cm enters THAT hole only, "
+    "to the BASE. The UPPER hole toward the belly / pubic bone is the unused pussy: keep it closed, "
+    "not opened, not spread, not gaping. Do not aim at the front hole. Joining point is "
+    "penis-in-anus below the closed pussy."
+)
+ANAL_SIDE_LOCK_LINE = (
+    "SIDE ANAL LOCK: Both on their sides. The hole toward the back / tailbone is the anus — "
+    "enter THAT only, to the BASE. The hole toward the belly / pubic bone is the unused pussy: "
+    "closed, not opened, not spread, not gaping."
 )
 ANAL_PULLOUT_LEAK_LINE = (
     "ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks "
@@ -3900,8 +3917,18 @@ ANAL_HOLE_IDLE_LINE = (
 )
 _REAR_ANAL_POSE_RE = re.compile(
     r"standing anal|STANDING anal|bent forward|all fours|on all fours|"
-    r"from behind|kneeling behind|hips back|doggy|accepting standing pose|"
-    r"facing away|reverse (sitting|cowgirl)",
+    r"from behind|kneeling behind|accepting standing pose|"
+    r"facing away|reverse (sitting|cowgirl)|giver from behind",
+    re.I,
+)
+_FRONT_ANAL_POSE_RE = re.compile(
+    r"on her back|on the back|missionary|M-shape|M-spread|M字|"
+    r"between the open thighs|face to face|facing the giver|"
+    r"sitting on the lap facing",
+    re.I,
+)
+_SIDE_ANAL_POSE_RE = re.compile(
+    r"on her side|on their sides|both on their sides",
     re.I,
 )
 _ANAL_ALREADY_OUT_RE = re.compile(
@@ -4023,14 +4050,36 @@ def lock_anal_creampie(text: str, *, situation: str = "") -> str:
     return _inject_before_soundscape(raw, ANAL_CREAMPIE_LINE)
 
 
+def anal_anatomy_view(text: str) -> str:
+    """Where the anus sits in this camera: rear (upper), front/M-spread (lower), or side."""
+    raw = str(text or "")
+    if not raw:
+        return ""
+    rear_hard = bool(
+        re.search(
+            r"all fours|bent forward|STANDING anal|from behind|facing away",
+            raw,
+            re.I,
+        )
+    )
+    if _FRONT_ANAL_POSE_RE.search(raw) and not rear_hard:
+        return "front"
+    if _SIDE_ANAL_POSE_RE.search(raw) and not rear_hard:
+        return "side"
+    if _REAR_ANAL_POSE_RE.search(raw) or re.search(r"\bdoggy\b", raw, re.I):
+        return "rear"
+    return ""
+
+
 def lock_anal_hole(
     text: str,
     *,
     situation: str = "",
     prev_situation: str | None = None,
 ) -> str:
-    """Anal clips: penis in anus only. Unused pussy closed. Rear poses use the upper hole.
+    """Anal clips: penis in anus only. Unused pussy closed. Hole order follows the pose.
 
+    Rear: upper hole is anus. Missionary / M-spread: lower hole is anus.
     After the penis leaves, WHITE goo leaks from the open anus, never the pussy.
     """
     raw = str(text or "")
@@ -4049,8 +4098,16 @@ def lock_anal_hole(
     hole_line = ANAL_HOLE_LOCK_LINE if is_anal_act else ANAL_HOLE_IDLE_LINE
     if "ANAL HOLE LOCK:" not in out:
         out = _inject_before_soundscape(out, hole_line)
-    if is_anal_act and _REAR_ANAL_POSE_RE.search(out) and "REAR ANAL LOCK:" not in out:
-        out = _inject_before_soundscape(out, ANAL_REAR_LOCK_LINE)
+    if is_anal_act and "ANAL ANATOMY:" not in out:
+        out = _inject_before_soundscape(out, ANAL_ANATOMY_LINE)
+    if is_anal_act:
+        view = anal_anatomy_view(out)
+        if view == "rear" and "REAR ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_REAR_LOCK_LINE)
+        elif view == "front" and "FRONT ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_FRONT_LOCK_LINE)
+        elif view == "side" and "SIDE ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_SIDE_LOCK_LINE)
     pulled = bool(_ANAL_ALREADY_OUT_RE.search(out)) or (
         afterglow and "No new insertion" in out
     )
@@ -6363,7 +6420,7 @@ _ANAL_POSE_SPEC = {
         "face": "FACE LOCK: On top facing away is Aya. Seated under is Rei. Faces never swap.",
     },
     "missionary": {
-        "lock": "On her back, knees apart. Anal only. Not vaginal.",
+        "lock": "On her back, knees apart. Anal only. Not vaginal. The LOWER hole toward the tailbone is the anus.",
         "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
         "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
         "accepting": "on her back, knees apart, accepting",
@@ -6371,7 +6428,7 @@ _ANAL_POSE_SPEC = {
         "face": "FACE LOCK: On her back is Aya. Between the thighs is Rei. Faces never swap.",
     },
     "side": {
-        "lock": "Both on their sides. Anal only. Not vaginal.",
+        "lock": "Both on their sides. Anal only. Not vaginal. The hole toward the back / tailbone is the anus.",
         "recv": "Aya = on her side, hips back, accepting, RECEIVER. Mini breasts. NO penis.",
         "give": "Rei = on her side behind, GIVER. Erect 20cm. Hands on the waist.",
         "accepting": "on her side, hips back, accepting",
@@ -6379,7 +6436,7 @@ _ANAL_POSE_SPEC = {
         "face": "FACE LOCK: In front is Aya. Behind is Rei. Faces never swap.",
     },
     "sitting": {
-        "lock": "Sitting on the lap, face to face. Anal only. Not vaginal.",
+        "lock": "Sitting on the lap, face to face. Anal only. Not vaginal. The hole toward the tailbone is the anus.",
         "recv": "Aya = sitting on the lap facing the giver, RECEIVER. Mini breasts. NO penis.",
         "give": "Rei = seated, GIVER. Erect 20cm. Hands on the waist.",
         "accepting": "sitting on the lap, knees apart, accepting",
@@ -6403,7 +6460,7 @@ _ANAL_POSE_SPEC = {
         "face": "FACE LOCK: Kneeling in front is Aya. Behind is Rei. Faces never swap.",
     },
     "pov": {
-        "lock": "On her back, knees apart. Anal only. Not vaginal.",
+        "lock": "On her back, knees apart. Anal only. Not vaginal. The LOWER hole toward the tailbone is the anus.",
         "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
         "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
         "accepting": "on her back, knees apart, accepting",
