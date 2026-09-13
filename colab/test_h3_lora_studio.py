@@ -169,6 +169,13 @@ def test_japanese_form_labels():
     assert resolve_mode("写真から（1枚必要）") == "i2v"
     assert resolve_situation("フェラ") == "oral"
     assert resolve_situation("フェラ（女体）") == "oral"
+    assert resolve_situation("ふたなりフェラ") == "futa_blowjob"
+    assert resolve_situation("ふたなりフェラ（どの構図）") == "futa_blowjob"
+    futa_bj = explain_choice("ふたなりフェラ", "テキストから（写真なし）")
+    assert "汎用" in futa_bj
+    assert "POV" in futa_bj
+    assert "文章" in futa_bj
+    assert "blowjob-h3" not in futa_bj
     text = explain_choice("フェラ（女体）", "テキストから（写真なし）")
     assert "写真は使いません" in text
     assert "フェラ" in text
@@ -509,7 +516,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260912-shaft-kiss-wait-1"' in src
+    assert 'FETCH_REV = "h3-20260913-futa-bj-generic-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -529,7 +536,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     helper_text = helper.read_text(encoding="utf-8")
     assert "except ImportError:" in helper_text
     assert "r2v_finalize_prompt = None" in helper_text
+    assert "wrap_phone_oral_prompt" in helper_text
+    assert "ORAL CAMERA:" in helper_text
     assert "**ふたなりの既定:**" in src
+    assert "ふたなりフェラ（汎用）" in src
     assert "竿＋マンコ、金玉なし" in src
     assert "「」の中は話し言葉" in src
     assert "漢字のまま" not in src
@@ -574,7 +584,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260912-shaft-kiss-wait-1" in blob
+    assert "h3-20260913-futa-bj-generic-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -852,6 +862,77 @@ def test_apply_pose_situation_and_phone_act_locks():
     assert "INSIDE LOCK:" not in scat
     assert "feces leaving the anus" in scat.lower()
     assert "Squat" in scat
+
+    bj_src = (
+        "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\n"
+        "subject_definitions:\n"
+        "<Subject 1> Young adult woman, fully nude, futanari: erect 20cm, "
+        "hairless female pussy at the base of the shaft, no testicles, no scrotum. "
+        "Penis plus vagina, never balls. Not a man.\n"
+        "<Subject 2> Young adult woman, fully nude. No penis. Not a man.\n\n"
+        "Already a blow job.\n\noverall_soundscape:\nWet.\n"
+    )
+    bj = apply_phone_act_locks(bj_src, situation="futa_blowjob", pose="立ち")
+    assert "POSE LOCK:" not in bj
+    assert "Standing on their feet" not in bj
+    assert "Point-of-view from the shaft" not in bj
+    assert "USER SCENE:" not in bj
+    assert "ORAL CAMERA:" in bj
+    assert "Not POV" in bj
+    assert "ORAL SEAT:" in bj
+    assert "ORAL LOCK:" in bj
+    assert "to the BASE" in bj or "at the BASE" in bj
+    assert "PLEASURE FACE:" in bj
+    assert "SHAFT LOOK:" in bj
+
+    bj_pov = apply_phone_act_locks(bj_src, situation="futa_blowjob", pose="POV")
+    assert "Point-of-view from the shaft" not in bj_pov
+    assert "ORAL CAMERA:" in bj_pov
+
+    short = apply_phone_act_locks(
+        "bl0w_j0b, PENISLORA\nハチ公前のベンチ。昼。座ったままジュボ。",
+        situation="futa_blowjob",
+        pose="立ち",
+    )
+    assert "subject_definitions:" in short
+    assert "USER SCENE:" in short
+    assert "Hachiko" in short
+    assert "bench" in short.lower()
+    assert "POSE LOCK:" not in short
+    assert "Do not invent" in short
+    assert resolve_situation("ふたなりフェラ（どの構図）") == "futa_blowjob"
+
+
+def test_wrap_phone_oral_keeps_full_prompt():
+    from h3_lora_studio import wrap_phone_oral_prompt
+
+    full = (
+        "bl0w_j0b, PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\n"
+        "subject_definitions:\n<Subject 1> Aya. No penis.\n<Subject 2> Rei. Clear futanari.\n\n"
+        "Already oral on a bench.\n"
+    )
+    assert wrap_phone_oral_prompt(full, situation="futa_blowjob") == full
+
+
+def test_futa_blowjob_profile_is_generic_third_person():
+    import json as _json
+
+    profile = _json.loads(
+        (Path(__file__).resolve().parents[1] / "h3-lora-studio/profiles/futa_blowjob.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    t2v = profile["scenes"]["t2v"]
+    assert "Already a blow job" in t2v
+    assert "Already at the BASE" in t2v
+    assert "Third-person" in t2v
+    assert "Not POV" in t2v
+    assert "Hachiko" in t2v and "Do not invent Hachiko" in t2v
+    assert "plain indoor room" in t2v
+    assert "Picture 1" not in t2v
+    i2v = profile["scenes"]["i2v"]
+    assert "Picture 1" in i2v
+    assert "Identity of (S1)" in i2v
 
 
 def test_facial_download_job_uses_hf_and_clean_filename(tmp_path):
@@ -6404,6 +6485,8 @@ def test_notebook_story_play_flow():
     assert cell3.index('"飲尿（どの構図）"') < cell3.index('"放尿（性器から）"') < cell3.index('"脱糞（どの構図）"')
     assert '体位 = "立ち"' in cell3
     assert "apply_phone_act_locks" in cell3
+    assert "ORAL_SUCK_SITUATIONS" in cell3
+    assert "フェラは文章欄" in cell3
     assert "apply_pose_situation" in cell3
     assert "input/phone" in cell3
     cell1 = "".join(nb["cells"][2]["source"])
@@ -6498,7 +6581,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260912-shaft-kiss-wait-1" in cell2
+    assert "h3-20260913-futa-bj-generic-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
