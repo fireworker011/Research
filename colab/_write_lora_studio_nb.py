@@ -62,7 +62,9 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-cabin-anal-f112/minimax_h3_lora_studio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
+
+Drive に保存したコピーや、設定の版が **xxx** のノートは古いです。②をしても GitHub は取り直しません。上のバッジから開き直して①→②。
 
 ## やること（生成は3つ。学習するなら④）
 
@@ -333,8 +335,8 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/h3-cabin-anal-f112"
-FETCH_REV = "h3-20260913-cabin-1"
+BRANCH = "cursor/h3-mystic-daily-f112"
+FETCH_REV = "h3-20260913-fetch-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -344,7 +346,7 @@ def sh(cmd, **kw):
 def fetch_text(url: str, dest: Path) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
     req = urllib.request.Request(
-        f"{url}?rev={FETCH_REV}",
+        f"{url}?rev={FETCH_REV}-{int(time.time())}",
         headers={"Cache-Control": "no-cache", "Pragma": "no-cache"},
     )
     try:
@@ -484,7 +486,6 @@ if not sel.is_file() or "MAX_HELPERS" not in sel.read_text(encoding="utf-8"):
     raise SystemExit("設定の取り直しに失敗しました。②をもう一度実行してください。")
 shutil.copy2(sel, Path("/content/select_loras.py"))
 shutil.copy2(sel, DRIVE_ROOT / "select_loras.py")
-print("設定の版:", FETCH_REV)
 
 sys.path.insert(0, "/content")
 sys.path.insert(0, "/content/h3-lora-studio/scripts")
@@ -500,6 +501,10 @@ from h3_lora_studio import (
     clear_warmup_stamp, ensure_comfy_r2v_node, has_fl2va_weight, has_eros_unet,
     studio_engine_download_jobs, pick_studio_unet,
 )
+import h3_lora_studio as _h3_cell2
+print("設定の版:", getattr(_h3_cell2, "STUDIO_REV", FETCH_REV))
+print("ノートの版:", FETCH_REV)
+print("取得ブランチ:", BRANCH)
 apply_drive_cache_env(DRIVE_ROOT)
 
 print("今のシーン:", 今使うシーン)

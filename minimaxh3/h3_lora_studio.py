@@ -88,6 +88,9 @@ except ImportError:
         del drive_models
         return []
 
+STUDIO_REV = "h3-20260913-fetch-1"
+STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
+
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
     "tiddies-realism-slider": 1.2,
@@ -1659,12 +1662,35 @@ def github_member_rel(name: str) -> str:
     return text.split("/", 1)[1]
 
 
+def is_studio_story_rel(rel: str) -> bool:
+    """True for h3-lora-studio/stories/<id>.json (no nested paths)."""
+    text = str(rel or "").replace("\\", "/").lstrip("/")
+    prefix = "h3-lora-studio/stories/"
+    if not text.startswith(prefix) or not text.endswith(".json"):
+        return False
+    rest = text[len(prefix) :]
+    return bool(rest) and "/" not in rest and not rest.startswith(".")
+
+
+def read_studio_rev(path: Path | str) -> str:
+    """Read STUDIO_REV from a downloaded helper. Empty if the file is old or missing."""
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    match = re.search(r'^STUDIO_REV = "([^"]+)"', text, re.M)
+    return str(match.group(1) or "").strip() if match else ""
+
+
 def unpack_github_archive(
     src: Path | str,
     rels: list[str],
     dest_for_rel,
 ) -> list[str]:
-    """Copy listed paths out of a GitHub branch tarball. Returns rels that were missing."""
+    """Copy listed paths out of a GitHub branch tarball. Returns rels that were missing.
+
+    Stories JSON are always extracted, even when an old Colab cell omitted the new pack.
+    """
     wanted = [str(r).replace("\\", "/") for r in rels]
     wanted_set = set(wanted)
     found: set[str] = set()
@@ -1673,7 +1699,7 @@ def unpack_github_archive(
             if not member.isfile():
                 continue
             rel = github_member_rel(member.name)
-            if rel not in wanted_set:
+            if rel not in wanted_set and not is_studio_story_rel(rel):
                 continue
             extracted = tar.extractfile(member)
             if extracted is None:
@@ -1795,8 +1821,9 @@ def fetch_github_tree(
     timeout: int = 180,
 ) -> list[str]:
     """One GitHub tarball instead of N sequential raw GETs. Falls back to threaded GETs."""
+    fetch_branch = str(branch or STUDIO_FETCH_BRANCH).strip() or STUDIO_FETCH_BRANCH
     wanted = [str(r).replace("\\", "/") for r in rels]
-    url = f"https://codeload.github.com/{repo}/tar.gz/refs/heads/{branch}"
+    url = f"https://codeload.github.com/{repo}/tar.gz/refs/heads/{fetch_branch}"
     tmp = Path("/tmp") / f"h3-studio-{os.getpid()}.tgz"
     missing = list(wanted)
     try:
@@ -1805,6 +1832,9 @@ def fetch_github_tree(
         with urllib.request.urlopen(req, timeout=timeout) as resp, open(tmp, "wb") as out:
             shutil.copyfileobj(resp, out, length=1024 * 1024)
         missing = unpack_github_archive(tmp, wanted, dest_for_rel)
+        rev = read_studio_rev(dest_for_rel("colab/h3_lora_studio.py"))
+        if rev:
+            print("githubの版:", rev, "ブランチ:", fetch_branch)
     except Exception as exc:
         print("一括取得に失敗。1ファイルずつ取ります:", str(exc)[:160])
         missing = list(wanted)
@@ -1814,7 +1844,7 @@ def fetch_github_tree(
         print("説明書:", len(wanted), "ファイル")
         return []
     print("残り", len(missing), "ファイルを個別に取ります…")
-    return fetch_github_files_raw(branch, missing, dest_for_rel, repo=repo)
+    return fetch_github_files_raw(fetch_branch, missing, dest_for_rel, repo=repo)
 
 
 HOT_MODEL_SUBS = ("diffusion_models", "text_encoders", "vae", "loras")

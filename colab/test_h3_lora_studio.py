@@ -394,10 +394,14 @@ def test_looks_like_safetensors(tmp_path):
 def test_unpack_github_archive_and_studio_dest(tmp_path):
     import tarfile
     from h3_lora_studio import (
+        STUDIO_FETCH_BRANCH,
+        STUDIO_REV,
         fetch_github_files_raw,
         github_member_rel,
         has_eros_unet,
         has_fl2va_weight,
+        is_studio_story_rel,
+        read_studio_rev,
         studio_colab_dest,
         unpack_github_archive,
     )
@@ -425,8 +429,11 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
         py.write_text("# studio helper\n" + "x" * 40, encoding="utf-8")
         story = tmp_path / "src.json"
         story.write_text('{"id":"manhole-30s"}\n' + "y" * 40, encoding="utf-8")
+        extra = tmp_path / "cabin.json"
+        extra.write_text('{"id":"cabin-40s"}\n' + "z" * 40, encoding="utf-8")
         tar.add(py, arcname="Research-branch/colab/h3_lora_studio.py")
         tar.add(story, arcname="Research-branch/h3-lora-studio/stories/manhole-30s.json")
+        tar.add(extra, arcname="Research-branch/h3-lora-studio/stories/cabin-40s.json")
     out = tmp_path / "out"
     missing = unpack_github_archive(
         tar_path,
@@ -440,6 +447,15 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     assert missing == ["missing.json"]
     assert (out / "h3_lora_studio.py").read_text(encoding="utf-8").startswith("# studio helper")
     assert (out / "h3-lora-studio/stories/manhole-30s.json").is_file()
+    assert (out / "h3-lora-studio/stories/cabin-40s.json").is_file()
+    assert is_studio_story_rel("h3-lora-studio/stories/cabin-40s.json")
+    assert not is_studio_story_rel("h3-lora-studio/stories/nested/x.json")
+    helper = tmp_path / "rev.py"
+    helper.write_text('STUDIO_REV = "h3-20260913-fetch-1"\n', encoding="utf-8")
+    assert read_studio_rev(helper) == "h3-20260913-fetch-1"
+    assert read_studio_rev(tmp_path / "nope.py") == ""
+    assert STUDIO_REV == "h3-20260913-fetch-1"
+    assert STUDIO_FETCH_BRANCH == "cursor/h3-mystic-daily-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
 
@@ -543,8 +559,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-cabin-1"' in src
-    assert 'BRANCH = "cursor/h3-cabin-anal-f112"' in src
+    assert 'FETCH_REV = "h3-20260913-fetch-1"' in src
+    assert 'BRANCH = "cursor/h3-mystic-daily-f112"' in src
+    assert "FETCH_REV}-{int(time.time())}" in src
+    assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
+    assert "Drive に保存したコピー" in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -612,7 +631,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-cabin-1" in blob
+    assert "h3-20260913-fetch-1" in blob
+    assert "h3-20260913-cabin-1" not in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -6809,7 +6829,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-cabin-1" in cell2
+    assert "h3-20260913-fetch-1" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
