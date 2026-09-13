@@ -16,11 +16,11 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260913-anal-3`
+設定の版: `h3-20260913-anal-4`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
-直近: ③の解説表が口内終わりのままだったので焼き込みどおりに直した。脱糞のデフォルト以外は③「脱糞（どの構図）」＋体位＋文章欄。GitHub から開き直す。
+直近: 訪問販売の「キャップ」は蓋ではなく頭の帽子（ハット）。ミルクは持たない。③の解説表は焼き込みどおり。脱糞のデフォルト以外は③「脱糞（どの構図）」＋体位＋文章欄。GitHub から開き直す。
 ```
 
 ## いまの枝
@@ -30,7 +30,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-3` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-4` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -142,4 +142,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-三択は③「やりたいシーン」の上付近。`普通（エロなし）` の直後。物語の締めは解説表が焼き込みどおり。脱糞の別場所は「脱糞（どの構図）」＋体位＋文章欄。GitHub の Colab から開き直す。版 `h3-20260913-anal-3`。
+訪問販売は蓋のキャップではなく頭のハット。三択は③「やりたいシーン」の上付近。物語の締めは解説表が焼き込みどおり。脱糞の別場所は「脱糞（どの構図）」＋体位＋文章欄。GitHub の Colab から開き直す。版 `h3-20260913-anal-4`。
