@@ -1,0 +1,247 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "kogane-timecard",
+  "title": "こがね厨房",
+  "subtitle": "架空オープンワールド ショート",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "mundane",
+  "render": {
+    "preset": "daily",
+    "fallback_preset": "fast",
+    "seed": 42
+  },
+  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, no anime, no illustration",
+  "violence": "none",
+  "world": {
+    "name": "Kogane kitchen alley",
+    "lock": "Fictional back-alley izakaya kitchen called Kogane: wet cobblestone service lane at dawn, stacked empty plastic bottle crates, a stainless steel back door with a small round window, steam from a roof vent, warm tungsten bulbs, no readable letters on any surface",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "rena": {
+      "name_ja": "青葉 レナ",
+      "name_en": "Rena",
+      "age": 26,
+      "lock": "26-year-old Japanese woman, adult face, long black hair in a low ponytail with a matte clip, charcoal short-sleeve cook jacket over a black tee, black work trousers, white kitchen sneakers, a canvas tote on one shoulder, calm tired morning expression, natural makeup, no uniform",
+      "voice": "clear young adult female voice"
+    },
+    "oka": {
+      "name_ja": "店主 岡",
+      "name_en": "Oka",
+      "age": 54,
+      "lock": "Japanese man in his mid-50s, short salt-and-pepper hair, round glasses, white cook coat, navy waist apron, black kitchen shoes, checks a wristwatch, unhurried",
+      "voice": "low middle-aged male voice"
+    }
+  },
+  "props": {
+    "tote": "a beige canvas tote bag holding a folded paper delivery slip",
+    "crates": "a waist-high stack of empty green plastic bottle crates",
+    "timecard": "a blank paper time card held in two fingers"
+  },
+  "homage": {
+    "borrowed": [
+      "third-person game camera",
+      "cover used as a mundane hiding place",
+      "mission subtitle grammar with the object noun in colour",
+      "HUD hidden in dialogue cutscenes, subtitles only",
+      "a pause-menu inventory gag over a frozen frame",
+      "an errand played dead straight that ends on a mission-failed card"
+    ],
+    "never": [
+      "classroom",
+      "schoolgirl",
+      "school uniform",
+      "sailor",
+      "seifuku",
+      "セーラー",
+      "制服",
+      "教室",
+      "Class 2-B",
+      "2-B",
+      "homeroom",
+      "student",
+      "principal",
+      "janitor",
+      "hedge",
+      "cardboard box",
+      "cardboard",
+      "takedown",
+      "Flova",
+      "Seedance",
+      "Pollo"
+    ]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "こがね Dist.",
+    "icons": ["伝", "札", "飯"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "end": true,
+    "end_seconds": 3.0,
+    "end_image": "stills/05-clock.jpg",
+    "end_title": "こがね厨房",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル",
+      "オマージュは三人称カメラとミッション字幕の見せ方だけ"
+    ],
+    "fail": {
+      "text": "ミッション失敗",
+      "reason": "タイムカードを裏向きに挿した",
+      "seconds": 2.8,
+      "image": "last-frame"
+    }
+  },
+  "stitch": {
+    "transition": "xfade",
+    "xfade_s": 0.35,
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-crates",
+      "source": "still",
+      "still": "stills/01-crates.jpg",
+      "trim": {"start": 0, "seconds": 3.0},
+      "cast": ["rena", "oka"],
+      "face_visible": false,
+      "props": ["crates", "tote"],
+      "place": "Wet cobblestone service alley at dawn, waist-high crate stack in the foreground, stainless back door in the background",
+      "camera": "Over-the-shoulder third-person camera behind Rena at shoulder height, holding still with a slight breathing bob",
+      "action": "Rena stays low behind the crate stack with the tote on her shoulder while Oka stands at the back door and looks at his wristwatch; nobody else is in frame",
+      "sfx": "Distant kitchen extractor, a bottle crate ticking as it settles, quiet alley drip",
+      "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
+      "hud": {
+        "mission": "伝票を厨房へ渡せ",
+        "mission_keyword": "伝票",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥1,860",
+        "heat": 0,
+        "objective_bearing": 20,
+        "objective_distance": 0.75,
+        "icons_active": ["伝"],
+        "complete": false
+      }
+    },
+    {
+      "id": "02-alley",
+      "source": "still",
+      "still": "stills/02-alley.jpg",
+      "trim": {"start": 0, "seconds": 5.0},
+      "cast": ["rena"],
+      "face_visible": false,
+      "props": ["tote"],
+      "place": "The same wet service alley, camera facing the open stainless back door, morning steam from a roof vent",
+      "camera": "Third-person camera behind and slightly above Rena, tracking forward smoothly at walking pace",
+      "action": "Rena walks at a calm pace down the alley toward the open back door, tote on her shoulder, keeping to the wall; the door stays open and empty",
+      "sfx": "Kitchen sneakers on wet stone, extractor hum, a distant dish clink",
+      "music": "Low pulsing synth bass, a little faster; a rhythmic hi-hat joins",
+      "hud": {
+        "mission": "伝票を厨房へ渡せ",
+        "mission_keyword": "伝票",
+        "hint": "L 長押しで早歩き",
+        "health": 0.9,
+        "stamina": 0.62,
+        "money": "¥1,860",
+        "heat": 0,
+        "objective_bearing": 8,
+        "objective_distance": 0.4,
+        "icons_active": ["伝"],
+        "complete": false
+      }
+    },
+    {
+      "id": "03-kitchen",
+      "source": "still",
+      "still": "stills/03-kitchen.jpg",
+      "trim": {"start": 0, "seconds": 6.0},
+      "cast": ["rena", "oka"],
+      "face_visible": true,
+      "props": ["tote"],
+      "place": "Inside a small stainless izakaya kitchen: prep table, rice cooker, hanging ladles, one round wall clock with no numerals readable, the whole room stays the kitchen",
+      "camera": "Static medium two-shot at eye level, a very slow push-in",
+      "action": "Rena takes the folded paper slip from the tote and hands it to Oka across the prep table; he takes it with both hands and nods; both stay standing in the same spot",
+      "speech": [
+        {"who": "rena", "line": "でんぴょう、とどけました", "text": "伝票、届けました"},
+        {"who": "oka", "line": "おお、たすかる。カードも たのむよ", "text": "おお、助かる。タイムカードも頼むよ"}
+      ],
+      "sfx": "Quiet kitchen, a fridge motor, paper rustle",
+      "music": "Soft warm pad, the bass rests",
+      "hud": {
+        "visible": false,
+        "mission": "伝票を厨房へ渡せ",
+        "mission_keyword": "伝票",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.68,
+        "money": "¥1,860",
+        "heat": 0,
+        "objective_bearing": 0,
+        "objective_distance": 0.12,
+        "icons_active": ["伝"],
+        "complete": true
+      }
+    },
+    {
+      "id": "04-tools",
+      "source": "ui",
+      "seconds": 2.2,
+      "cast": ["rena"],
+      "menu": {
+        "title": "厨房の道具",
+        "items": ["伝票", "前掛け", "軍手", "タイムカード", "菜箸"],
+        "selected": 3
+      },
+      "hud": {
+        "mission": "タイムカードを押せ",
+        "mission_keyword": "タイムカード",
+        "hint": "Tab 道具",
+        "health": 0.9,
+        "stamina": 0.68,
+        "money": "¥1,860",
+        "heat": 0,
+        "objective_bearing": 270,
+        "objective_distance": 0.35,
+        "icons_active": ["札"],
+        "complete": false
+      }
+    },
+    {
+      "id": "05-clock",
+      "source": "still",
+      "still": "stills/05-clock.jpg",
+      "trim": {"start": 0, "seconds": 4.8},
+      "cast": ["rena"],
+      "face_visible": false,
+      "props": ["timecard"],
+      "place": "The same kitchen, beside a wall-mounted analogue time-clock box with a slot, morning light from a high window",
+      "camera": "Third-person camera over Rena's right shoulder at the time-clock, holding still",
+      "action": "Rena slides the paper time card into the wall slot with two fingers and leaves it there; she stands still; the clock box stays on the same wall",
+      "sfx": "Soft paper scrape in a metal slot, fridge motor, a kettle click",
+      "music": "Bass returns with a slow taiko pattern",
+      "hud": {
+        "mission": "タイムカードを押せ",
+        "mission_keyword": "タイムカード",
+        "hint": "F 打刻",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥1,860",
+        "heat": 1,
+        "objective_bearing": 270,
+        "objective_distance": 0.2,
+        "icons_active": ["札"],
+        "complete": false
+      }
+    }
+  ]
+}

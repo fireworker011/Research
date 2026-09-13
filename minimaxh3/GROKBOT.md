@@ -96,6 +96,16 @@ I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそ�
 
 Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
 
+### こがね厨房（25秒・ミッション失敗。学校・原クリップは使わない）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode kogane-timecard
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/kogane-timecard/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
 ### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる。次はこれ）
 
 `bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、GPU で描くのは理容室 1 本だけ（約 7 分）。
