@@ -3,7 +3,7 @@
 アナルセックス本に必ず効く。マンコ挿入・マンコ開き・マンコから精液は禁止。
 **肛門の位置は体位で変わる。** 人体の構造（尾骨側が肛門、恥骨・お腹側がマンコ）に従う。
 
-英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_ANATOMY_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_FRONT_LOCK_LINE` / `ANAL_SIDE_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` と同期する。
+英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_ANATOMY_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_FRONT_LOCK_LINE` / `ANAL_SIDE_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` / `ANAL_PREP_LINE` と同期する。
 
 ## 絶対
 
@@ -11,6 +11,7 @@
 - **マンコを開かない。** 使っていないマンコは閉じたまま。labia を割らない。gaping 禁止。pussy-spread 禁止。
 - **マンコから精子を出さない。** 白精液はアナルからだけ。
 - アナルからチンチンを抜いたら、**開いたアナル** から精子が漏れる。マンコからは漏れない。
+- **挿入の直前は ANAL PREP。** 挿入の前の本の余り秒（または会って即のセリフのあと）で、二人で受け入れる姿勢を揃え、チンチンはアナルから手の幅、未挿入。この拍では入れない。パコパコ本には足さない。
 
 ## 人体
 
@@ -35,3 +36,5 @@ FRONT ANAL LOCK: Missionary, on her back, or M-spread: two holes between the ope
 SIDE ANAL LOCK: Both on their sides. The hole toward the back / tailbone is the anus — enter THAT only, to the BASE. The hole toward the belly / pubic bone is the unused pussy: closed, not opened, not spread, not gaping.
 
 ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen.
+
+ANAL PREP: After the written act, BOTH women settle the next anal pose together. Receiver takes the accepting pose written for the coming insertion. Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. No extra walk. No solo heat. Do not start insertion in this prep beat.

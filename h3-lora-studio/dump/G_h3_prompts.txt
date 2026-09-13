@@ -1,5 +1,5 @@
 H3 erotic lane — all GitHub prompts for Grok.
-rev=h3-20260913-anal-9 branch=cursor/h3-anal-stories-f112
+rev=h3-20260913-anal-10 branch=cursor/h3-anal-stories-f112
 Independent H3. Do not open HQ dumps. Do not restore Threads schedules.
 Regenerate: python h3-lora-studio/scripts/dump_grok_prompts.py --write
 
@@ -14,7 +14,7 @@ Open h3-lora-studio/GROK_PROMPTS.md for URLs.
 アナルセックス本に必ず効く。マンコ挿入・マンコ開き・マンコから精液は禁止。
 **肛門の位置は体位で変わる。** 人体の構造（尾骨側が肛門、恥骨・お腹側がマンコ）に従う。
 
-英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_ANATOMY_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_FRONT_LOCK_LINE` / `ANAL_SIDE_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` と同期する。
+英語ロック文は `colab/h3_lora_studio.py` の `ANAL_HOLE_LOCK_LINE` / `ANAL_ANATOMY_LINE` / `ANAL_REAR_LOCK_LINE` / `ANAL_FRONT_LOCK_LINE` / `ANAL_SIDE_LOCK_LINE` / `ANAL_PULLOUT_LEAK_LINE` / `ANAL_PREP_LINE` と同期する。
 
 ## 絶対
 
@@ -22,6 +22,7 @@ Open h3-lora-studio/GROK_PROMPTS.md for URLs.
 - **マンコを開かない。** 使っていないマンコは閉じたまま。labia を割らない。gaping 禁止。pussy-spread 禁止。
 - **マンコから精子を出さない。** 白精液はアナルからだけ。
 - アナルからチンチンを抜いたら、**開いたアナル** から精子が漏れる。マンコからは漏れない。
+- **挿入の直前は ANAL PREP。** 挿入の前の本の余り秒（または会って即のセリフのあと）で、二人で受け入れる姿勢を揃え、チンチンはアナルから手の幅、未挿入。この拍では入れない。パコパコ本には足さない。
 
 ## 人体
 
@@ -46,6 +47,8 @@ FRONT ANAL LOCK: Missionary, on her back, or M-spread: two holes between the ope
 SIDE ANAL LOCK: Both on their sides. The hole toward the back / tailbone is the anus — enter THAT only, to the BASE. The hole toward the belly / pubic bone is the unused pussy: closed, not opened, not spread, not gaping.
 
 ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen.
+
+ANAL PREP: After the written act, BOTH women settle the next anal pose together. Receiver takes the accepting pose written for the coming insertion. Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. No extra walk. No solo heat. Do not start insertion in this prep beat.
 
 
 ================ ENGINE LOCK STRINGS colab/h3_lora_studio.py ================
@@ -79,6 +82,9 @@ ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal
 
 ----- ANAL_PACO_LINE -----
 PACO-PACO: Erect 20cm pistons the anus. Pull out until only the glans remains at the rim, then slam in to the BASE. Repeat that in-and-out the whole 10-second take. Not out of the hole completely. Not a shallow rub. Not vaginal. Not oral.
+
+----- ANAL_PREP_LINE -----
+ANAL PREP: After the written act, BOTH women settle the next anal pose together. Receiver takes the accepting pose written for the coming insertion. Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. No extra walk. No solo heat. Do not start insertion in this prep beat.
 
 ----- ANAL_PULLOUT_LEAK_LINE -----
 ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen.
@@ -238,6 +244,9 @@ PLEASURE VOICE: When it feels good, leaked female moans and wet hitching breath.
 
 ----- PLEASURE_VOICE_SFX -----
 Leaked female moans, wet hitching breath, not words.
+
+----- PREP_MARK -----
+ANAL PREP:
 
 ----- PULSE_ACT_SFX -----
 Wet pulses, leaked female moans, hitching breath.
@@ -11833,6 +11842,7 @@ INSIDE LOCK: Show the entry into the ANUS, then it STAYS in. The erect 20cm goes
 ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. The unused pussy stays shut: labia closed, not spread, not gaping, not entered. WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. Not a vaginal creampie. Not pussy-spread.
 ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). The unused pussy is the hole toward the pubic bone and the belly. Never swap those two holes. Enter the anus only.
 REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. The UPPER hole toward the tailbone is the anus — the 20cm enters THAT hole only, to the BASE. The LOWER hole toward the belly is the unused pussy: keep it closed, not opened, not spread, not gaping. Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus above the closed pussy.
+ANAL PREP: After the written act, BOTH women settle the next anal pose together. Receiver takes the accepting pose written for the coming insertion. Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. No extra walk. No solo heat. Do not start insertion in this prep beat.
 PLEASURE VOICE: When it feels good, leaked female moans and wet hitching breath. Audible. Not words. Not extra Japanese dialogue. Not a scream. Not a new spoken line.
 EROTIC WAIT: Leftover / pause seconds only. Do not freeze. Do not add, skip, or replace the written beat. Same who sits, stands, walks, lies, sucks, drinks, drives, sings, writes, or is inside. If someone is already sucking, keep that mouth on the penis to the BASE. Do not pull off a suck or pull out of a hole just to wait. If the written beat already pulls off or pulls out, do that written beat. If a mouth must stay OPEN a hand's width from the tip, keep it OPEN and off. Do not kiss that mouth. If a spoken Japanese line is still going, do not cover that mouth until the line ends. If hands are on a wheel, a microphone, chalk, a tray, a door, or this clip says hands NEVER on the shaft, those hands stay there. If this clip says No kiss yet, does not kiss, or No deep kiss, leftover is a SEDUCTIVE SMILE and light self-touch only. Do not add a kiss or a French peck. Do not add the first partner peck or the first grope. If this clip says No oral yet, do not start oral. If it says Walk only, keep walking. If this clip wants a blank / poker / expressionless / clinical face, do not add a smile. Do not start oral or insertion that is not already written. Do not squat, kneel, stand up, lie down, turn a rear pose into face-to-face, or enter a tub just to wait. Not a frozen pose. Hands keep moving on the partner's body (breasts, waist, hips, the erect 20cm, or a hairless pussy) in a way that matches who is already touching what. Leftover only, after the written beat and after the last unique quoted line, and only with a free hand or a free mouth that does not change pose: kisses on the mouth and/or breasts plus skinship so the same Japanese line is not spoken twice or three times; knead the partner's breasts; pump the erect 20cm and the hairless pussy; rub bodies together while tongue-kissing when both mouths are free and this clip does not forbid a kiss; a SEDUCTIVE SMILE if the face is allowed to change; light self-touch on her own breasts, her own hairless pussy, or her own unused erect 20cm; light partner-touch on breasts, a hairless pussy, or an unused erect 20cm when they are already close enough; a light French peck (tongue tip and lips touch a breast, a hairless pussy, or an unused 20cm, then leave at once) ONLY when both mouths are free, faces are already close enough, this clip does not forbid a kiss, and the peck does not replace a written deep kiss or mouth-to-mouth semen share. NOT oral. NOT in the mouth. NOT jupo. NOT a squat.
 

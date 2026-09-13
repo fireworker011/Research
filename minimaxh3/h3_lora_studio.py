@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-9"
+STUDIO_REV = "h3-20260913-anal-10"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -3910,6 +3910,15 @@ ANAL_PULLOUT_LEAK_LINE = (
     "ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks "
     "OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen."
 )
+ANAL_PREP_LINE = (
+    "ANAL PREP: After the written act, BOTH women settle the next anal pose together. "
+    "Receiver takes the accepting pose written for the coming insertion. "
+    "Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. "
+    "The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. "
+    "Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. "
+    "No extra walk. No solo heat. Do not start insertion in this prep beat."
+)
+PREP_MARK = "ANAL PREP:"
 ANAL_HOLE_IDLE_LINE = (
     "ANAL HOLE LOCK: Unused pussy stays shut, not spread, not gaping, not entered. "
     "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
@@ -4114,6 +4123,39 @@ def lock_anal_hole(
     if pulled and PACO_MARK not in out and "ANAL PULL-OUT:" not in out:
         out = _inject_before_soundscape(out, ANAL_PULLOUT_LEAK_LINE)
     return out
+
+
+def clip_is_anal_insert(prompt: str, situation: str = "") -> bool:
+    """True for the clip that starts anal entry. PACO / vaginal riding is not this."""
+    raw = str(prompt or "")
+    if PACO_MARK in raw or "Already in. Piston" in raw:
+        return False
+    sit = str(situation or "").strip()
+    if sit in SEX_ANAL_SITUATIONS:
+        if "INSERTION ON CAMERA" in raw:
+            return True
+        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I)) and "Already in" not in raw
+    return "INSERTION ON CAMERA" in raw and bool(
+        re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I)
+    )
+
+
+def lock_anal_prep(
+    text: str,
+    *,
+    next_is_insert: bool = False,
+    same_clip_insert: bool = False,
+    situation: str = "",
+) -> str:
+    """Prep beat: both settle the accepting pose, tip a hand's width, NOT in. No entry yet."""
+    raw = str(text or "")
+    if not raw or PREP_MARK in raw:
+        return raw
+    if not same_clip_insert:
+        same_clip_insert = TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw
+    if same_clip_insert or next_is_insert:
+        return _inject_before_soundscape(raw, ANAL_PREP_LINE)
+    return raw
 
 
 def lock_futa_shaft(text: str, *, force: bool = False) -> str:
@@ -4540,6 +4582,7 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
     out = lock_penis_inside(out, situation=situation)
     out = lock_anal_creampie(out, situation=situation)
     out = lock_anal_hole(out, situation=situation)
+    out = lock_anal_prep(out, situation=situation)
     out = lock_act_sfx(out, situation=situation)
     if sit in ORAL_SUCK_SITUATIONS:
         out = lock_oral_camera(out, situation=sit)
@@ -5108,10 +5151,19 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
         )
     if TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw:
         return (
-            "After the last unique quoted line: the written remaining beat first "
-            "(kiss / fondle / pose if written), then INSERTION ON CAMERA into the anus "
-            "to the BASE. Both wrecked-ecstatic, loud moans, a little drool. No climax. "
-            "Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze."
+            "After the last unique quoted line: kiss or fondle if written, then ANAL PREP "
+            "(both settle the accepting pose, giver hips aligned, hands on the waist, "
+            "20cm tip a hand's width from the anus, NOT in), then last seconds "
+            "INSERTION ON CAMERA into the anus to the BASE. Both wrecked-ecstatic, "
+            "loud moans, a little drool. No climax. Mouths stay closed except the act. "
+            "No more quoted speech. No replay. Do not freeze."
+        )
+    if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw:
+        return (
+            "ANAL PREP: both settle the next anal pose together. Receiver accepting pose. "
+            "Giver hips aligned, hands on the waist. 20cm tip a hand's width from the anus, "
+            "not touching, NOT in. Unused pussy shut. No entry. No extra walk. "
+            "No more quoted speech. No replay. Do not freeze."
         )
     if sit in ACT_SITUATIONS:
         return "Do the written remaining beat. Bodies keep moving. Do not freeze."
@@ -5138,6 +5190,14 @@ def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str 
         dur = 10.0
     sit = str(situation or "").strip()
     lines = unique_spoken_lines(text)
+    if PREP_MARK in text and "INSERTION ON CAMERA" not in text and not lines:
+        prep_start = max(dur - 4.0, dur * 0.6)
+        return (
+            f"TIMELINE: 0.0-{prep_start:.1f}s the written act. "
+            f"{prep_start:.1f}-{dur:.1f}s ANAL PREP: both settle the next pose, "
+            "20cm tip a hand's width from the anus, NOT in. No entry. "
+            "No quoted speech. No lip-sync words. No replay. Do not freeze."
+        )
     if (sit in ACT_SITUATIONS and not talks_then_insert(text)) or not lines:
         return (
             f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
@@ -6181,6 +6241,7 @@ def generate_immoral_shorts() -> dict[str, Any]:
         prompt = lock_penis_inside(prompt, situation=sit)
         prompt = lock_anal_creampie(prompt, situation=sit)
         prompt = lock_anal_hole(prompt, situation=sit)
+        prompt = lock_anal_prep(prompt, situation=sit)
         prompt = lock_pleasure_voice_and_wait(prompt, situation=sit)
         if sit == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
@@ -6554,6 +6615,7 @@ def generate_anal_pattern(
         prompt = lock_penis_inside(prompt, situation=situation)
         prompt = lock_anal_creampie(prompt, situation=situation)
         prompt = lock_anal_hole(prompt, situation=situation)
+        prompt = lock_anal_prep(prompt, situation=situation)
         prompt = lock_pleasure_voice_and_wait(prompt, situation=situation)
         clips.append(
             {
@@ -7418,6 +7480,19 @@ def prepare_story_clip(
         raw_prompt,
         situation=str(clip.get("situation") or situation),
         prev_situation=prev_situation,
+    )
+    nxt = clips[index + 1] if index + 1 < len(clips) else {}
+    next_is_insert = clip_is_anal_insert(
+        str(nxt.get("prompt") or ""), str(nxt.get("situation") or "")
+    )
+    this_is_insert = clip_is_anal_insert(raw_prompt, situation)
+    same_clip_insert = this_is_insert and (
+        TALK_THEN_INSERT_MARK in raw_prompt or KISS_THEN_INSERT_MARK in raw_prompt
+    )
+    raw_prompt = lock_anal_prep(
+        raw_prompt,
+        next_is_insert=next_is_insert and not this_is_insert,
+        same_clip_insert=same_clip_insert,
     )
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)

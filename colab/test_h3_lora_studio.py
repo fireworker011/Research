@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-9"
+    assert STUDIO_REV == "h3-20260913-anal-10"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-9"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-10"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,7 +753,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-9" in blob
+    assert "h3-20260913-anal-10" in blob
     assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
@@ -6842,10 +6842,12 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     p0 = prepare_story_clip(manhole, 0, stills_dir=tmp_path)
     assert "ANAL HOLE LOCK:" in p0["prompt"]
     assert "REAR ANAL LOCK:" in p0["prompt"]
+    assert "ANAL PREP:" in p0["prompt"]
     p1 = prepare_story_clip(manhole, 1, last_frame="x.png", stills_dir=tmp_path)
     assert "ANAL HOLE LOCK:" in p1["prompt"]
     assert "REAR ANAL LOCK:" in p1["prompt"]
     assert "ANAL PULL-OUT:" not in p1["prompt"]
+    assert "ANAL PREP:" not in p1["prompt"]
 
     yoga = load_story("yoga-50s")
     last = prepare_story_clip(yoga, 4, last_frame="x.png", stills_dir=tmp_path, prev_situation="futa_anal")
@@ -6861,6 +6863,10 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     assert "ANAL HOLE LOCK:" in anal["prompt"]
     assert "ANAL ANATOMY:" in anal["prompt"]
     assert "REAR ANAL LOCK:" in anal["prompt"]
+    assert "ANAL PREP:" not in anal["prompt"]
+    doggy = prepare_story_clip(cabin, 6, last_frame="x.png", stills_dir=tmp_path)
+    assert "ANAL PREP:" in doggy["prompt"]
+    assert "ANAL PREP:" not in ride["prompt"]
 
     check = load_story("checkup-100s")
     insert_i = next(i for i, c in enumerate(check["clips"]) if c["situation"] == "futa_anal")
@@ -6868,6 +6874,85 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     assert "FRONT ANAL LOCK:" in planned["prompt"]
     assert "LOWER hole toward the tailbone" in planned["prompt"]
     assert "REAR ANAL LOCK:" not in planned["prompt"]
+    assert "ANAL PREP:" not in planned["prompt"]
+    if insert_i > 0:
+        prev = prepare_story_clip(check, insert_i - 1, last_frame="x.png", stills_dir=tmp_path)
+        assert "ANAL PREP:" in prev["prompt"]
+
+
+def test_lock_anal_prep_on_entry_not_paco_or_walk(tmp_path):
+    from h3_lora_studio import (
+        ANAL_PREP_LINE,
+        STORY_IDS,
+        CHAIN_PACK_IDS,
+        load_story,
+        lock_anal_prep,
+        clip_is_anal_insert,
+        prepare_story_clip,
+        has_paco,
+        TALK_THEN_INSERT_MARK,
+        KISS_THEN_INSERT_MARK,
+    )
+
+    walk = lock_anal_prep("Walking only. No sex.\n\noverall_soundscape:\nSteps.\n")
+    assert "ANAL PREP:" not in walk
+
+    oral = lock_anal_prep(
+        "Already at the BASE. Jupo the whole take.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "ANAL PREP:" not in oral
+
+    oral_next = lock_anal_prep(
+        "Already at the BASE. Jupo the whole take.\n\noverall_soundscape:\nWet.\n",
+        next_is_insert=True,
+    )
+    assert ANAL_PREP_LINE in oral_next
+
+    paco = lock_anal_prep(
+        "PACO-PACO: Already in. Piston to the BASE.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert "ANAL PREP:" not in paco
+
+    entry = lock_anal_prep(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert "ANAL PREP:" not in entry
+
+    talk = lock_anal_prep(
+        "TALK THEN INSERT:\nAfter the lines: INSERTION ON CAMERA.\n\noverall_soundscape:\nWet.\n",
+        same_clip_insert=True,
+    )
+    assert ANAL_PREP_LINE in talk
+    assert lock_anal_prep(talk, same_clip_insert=True) == talk
+
+    missing = 0
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
+        story = load_story(sid)
+        clips = story["clips"]
+        for i, clip in enumerate(clips):
+            planned = prepare_story_clip(
+                story,
+                i,
+                last_frame=(f"h3_chain_{i-1}.png" if i else None),
+                stills_dir=tmp_path,
+                force_t2v=True,
+            )
+            raw = str(clip.get("prompt") or "")
+            nxt = clips[i + 1] if i + 1 < len(clips) else {}
+            next_is = clip_is_anal_insert(str(nxt.get("prompt") or ""), str(nxt.get("situation") or ""))
+            this_is = clip_is_anal_insert(raw, str(clip.get("situation") or ""))
+            same = this_is and (TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw)
+            want = same or (next_is and not this_is)
+            if want:
+                assert "ANAL PREP:" in planned["prompt"], (sid, i + 1, clip.get("label"))
+                missing += 1
+            elif has_paco(raw) or planned["situation"] in {"futa_visible", "riding"}:
+                if not want:
+                    assert "ANAL PREP:" not in planned["prompt"], (sid, i + 1, clip.get("label"))
+    assert missing >= 8
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -7289,7 +7374,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-9" in cell2
+    assert "h3-20260913-anal-10" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

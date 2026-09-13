@@ -350,7 +350,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-anal-stories-f112"
-FETCH_REV = "h3-20260913-anal-9"
+FETCH_REV = "h3-20260913-anal-10"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
