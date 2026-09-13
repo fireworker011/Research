@@ -3768,7 +3768,7 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
 def test_cafe_pack_pretext_water_and_milk(tmp_path):
     story = _check_pretext_pack(
         "cafe-100s", tmp_path, n_clips=10,
-        situations=["futa_visible"] * 3 + ["oral"] + ["futa_visible"] * 3 + ["oral", "oral_creampie", "futa_visible"],
+        situations=["futa_visible"] * 3 + ["oral"] + ["futa_visible"] * 3 + ["oral", "futa_anal", "futa_visible"],
         lines=[
             ["あちぃー", "あー、すずしい！いきかえるー！"],
             ["いらっしゃいませ。ごちゅうもんはいかがしますか", "アイスコーヒーで"],
@@ -3779,11 +3779,12 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
             ["かしこまりました。はい、どうぞ"],
             [],
             [],
-            ["んー、やっぱしぼりたてはおいしい！"],
+            ["んー、アナルあつくて、だされちゃった、、、"],
         ],
         cast_defs=["Aya", "Clerk"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "synth-pussy-h3"],
     )
+    assert "cumouf-h3" not in story["download"]
     # clip 1: the clerk is not in frame yet, but her definition is not written either
     c1 = story["clips"][0]["prompt"]
     assert "Clerk = NOT IN FRAME" in c1 and "Clerk: Adult" not in c1
@@ -3802,8 +3803,10 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
     assert "jupo-jupo" in story["clips"][3]["prompt"]
     assert "yellow stream" not in story["clips"][3]["prompt"]
     assert "BASE" in story["clips"][7]["prompt"]
-    assert "CUMOUF" in story["clips"][8]["prompt"]
-    assert "iced coffee" in story["clips"][9]["prompt"] and "kiss" in story["clips"][9]["prompt"].lower()
+    assert "INSERTION ON CAMERA" in story["clips"][8]["prompt"]
+    assert "ANUS" in story["clips"][8]["prompt"]
+    assert "CUMOUF" not in story["clips"][8]["prompt"]
+    assert "iced coffee" in story["clips"][9]["prompt"].lower() and "kiss" in story["clips"][9]["prompt"].lower()
     for clip in story["clips"]:
         assert "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"] and "Sayaka" not in clip["prompt"]
 
@@ -3811,7 +3814,7 @@ def test_cafe_pack_pretext_water_and_milk(tmp_path):
 def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
     story = _check_pretext_pack(
         "train-sales-80s", tmp_path, n_clips=8,
-        situations=["futa_visible", "futa_visible", "oral", "futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
+        situations=["futa_visible", "futa_visible", "oral", "futa_visible", "futa_visible", "oral", "futa_anal", "futa_visible"],
         lines=[
             ["おちゃ、コーヒー、いかがですか", "おちゃ、ください"],
             ["はい。あついのとひやし、どっち", "ひやしで"],
@@ -3823,8 +3826,9 @@ def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
             ["ん、あつい。ミルクきいてる", "ありがとうございました"],
         ],
         cast_defs=["Rei", "Seller"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "synth-pussy-h3"],
     )
+    assert "cumouf-h3" not in story["download"]
     for clip in story["clips"]:
         assert "20cm hangs unused" in clip["prompt"]
         assert "Aya" not in clip["prompt"]
@@ -3846,23 +3850,28 @@ def test_red_light_pack_hands_on_wheel(tmp_path):
 def test_yoga_pack_doggy_already_in(tmp_path):
     story = _check_pretext_pack(
         "yoga-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "doggy", "doggy", "futa_visible"],
+        situations=["futa_visible", "futa_visible", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["こし、おとして", "ここ？"], ["もうすこし、まえ", "こつばん、おとしたまま"], [], [], ["いきをととのえて", "すいぶん、とってね"]],
         cast_defs=["Aya", "Instructor"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
     )
+    assert "doggy-h3" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][2]["prompt"]
+    assert "ALREADY IN" not in story["clips"][2]["prompt"]
+    assert "ALREADY IN the anus" in story["clips"][3]["prompt"]
     for clip in story["clips"][2:4]:
-        assert ("ALREADY IN" in clip["prompt"] or "Still joined" in clip["prompt"]) and "Joining point" in clip["prompt"]
-        assert "Do not pull out" in clip["prompt"]
+        assert "Joining point visible" in clip["prompt"]
+        assert "Not vaginal" in clip["prompt"]
     assert "Not oral" in story["clips"][2]["prompt"]
     assert "NOT in" in story["clips"][1]["prompt"]
+    assert "anus" in story["clips"][1]["prompt"]
 
 
 def test_back_wash_pack_cunnilingus_then_jupo(tmp_path):
     story = _check_pretext_pack(
         "back-wash-60s", tmp_path, n_clips=6,
-        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_visible"],
-        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ"], [], ["んっ、おくまで、はいってた、、。あがっていいよ"]],
+        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_anal"],
+        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ", "あがっていいよ"], [], []],
         cast_defs=["Madoka", "Sayaka"],
         download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
     )
@@ -3870,6 +3879,8 @@ def test_back_wash_pack_cunnilingus_then_jupo(tmp_path):
     assert "close-up" in cunni.lower() and "Not oral on the penis" in cunni and "20cm unused" in cunni
     assert "jupo-jupo" in story["clips"][4]["prompt"] and "BASE" in story["clips"][4]["prompt"]
     assert "yellow stream" not in story["clips"][4]["prompt"]
+    assert "INSERTION ON CAMERA" in story["clips"][5]["prompt"]
+    assert "on the lap" in story["clips"][5]["prompt"]
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"] and "Rei" not in clip["prompt"].replace("different face from Rei", "")
 
@@ -3889,15 +3900,17 @@ def test_karaoke_pack_jupo_during_song(tmp_path):
 def test_laundromat_pack_aio_on_machine(tmp_path):
     story = _check_pretext_pack(
         "laundromat-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
+        situations=["futa_visible", "futa_visible", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["あとなんぷん", "じゅうはちふん"], ["ながいね", "すわる？"], [], [], ["おわった", "たたもう"]],
         cast_defs=["Aya", "Rei"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
     )
+    assert "hmnsfw-aio-v25" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][2]["prompt"]
+    assert "ALREADY IN the anus" in story["clips"][3]["prompt"]
     for clip in story["clips"][2:4]:
-        assert clip["prompt"].startswith("hmmotion, PENISLORA")
-        assert "ALREADY IN" in clip["prompt"] or "Still joined" in clip["prompt"]
         assert "machine" in clip["prompt"].lower()
+        assert "Joining point visible" in clip["prompt"]
 
 
 def test_lecture_desk_pack_under_the_lectern(tmp_path):
@@ -3918,29 +3931,34 @@ def test_lecture_desk_pack_under_the_lectern(tmp_path):
 def test_camp_pack_cunnilingus_only(tmp_path):
     story = _check_pretext_pack(
         "camp-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "cunnilingus_futa", "futa_visible"],
+        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_anal", "futa_visible"],
         lines=[["か、いる", "スプレー、どこ"], ["テントのなか", "ここ、やられた？"], [], [], ["スプレー、だしてくる", "ライト、もっていって"]],
         cast_defs=["Aya", "Rei"],
         download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     )
-    for clip in story["clips"]:
-        assert "20cm hangs unused" in clip["prompt"]
-    for clip in story["clips"][2:4]:
-        assert "Not oral on a penis" in clip["prompt"] and "Not insertion" in clip["prompt"]
+    for idx in (0, 1, 2):
+        assert "20cm hangs unused" in story["clips"][idx]["prompt"], idx
+    cunni = story["clips"][2]["prompt"]
+    assert "Not oral on a penis" in cunni and "Not insertion" in cunni
+    anal = story["clips"][3]["prompt"]
+    assert "INSERTION ON CAMERA" in anal and "all fours" in anal
+    assert "20cm hangs unused" not in anal
     assert "blowjob-h3" not in story["download"] and "cumouf-h3" not in story["download"]
 
 
 def test_fireworks_pack_standing_from_behind(tmp_path):
     story = _check_pretext_pack(
         "fireworks-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
+        situations=["futa_visible", "futa_visible", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["いちはつめ", "あおい"], ["うちあげ、おそいね"], [], [], ["かえろっか", "ゴミ、ひろって"]],
         cast_defs=["Madoka", "Sayaka"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
     )
+    assert "hmnsfw-aio-v25" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][2]["prompt"]
+    assert "ALREADY IN the anus" in story["clips"][3]["prompt"]
     for clip in story["clips"][2:4]:
-        assert clip["prompt"].startswith("hmmotion, PENISLORA")
-        assert "from behind" in clip["prompt"].lower() or "Still joined" in clip["prompt"]
+        assert "from behind" in clip["prompt"].lower()
         assert "sky" in clip["prompt"].lower()
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"]
