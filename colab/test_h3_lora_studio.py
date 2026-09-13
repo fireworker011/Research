@@ -454,7 +454,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-scat-1"
+    assert STUDIO_REV == "h3-20260913-cabin-2"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-mystic-daily-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -559,8 +559,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-scat-1"' in src
-    assert 'BRANCH = "cursor/h3-scat-look-f112"' in src
+    assert 'FETCH_REV = "h3-20260913-cabin-2"' in src
+    assert 'BRANCH = "cursor/h3-cabin-flow-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
     assert "Drive に保存したコピー" in src
@@ -631,7 +631,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-scat-1" in blob
+    assert "h3-20260913-cabin-2" in blob
     assert "h3-20260913-fetch-1" not in blob
     assert "h3-20260913-cabin-1" not in blob
     assert "h3-20260907-r2v-node-1" not in blob
@@ -3923,16 +3923,44 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
     )
 
     story = _check_pretext_pack(
-        "cabin-40s", tmp_path, n_clips=4,
-        situations=["futa_visible", "futa_visible", "futa_anal", "futa_anal"],
-        lines=[["だれかいる？"], ["はいって", "うん"], [], []],
+        "cabin-40s", tmp_path, n_clips=8,
+        situations=[
+            "futa_visible",
+            "futa_visible",
+            "futa_visible",
+            "oral",
+            "futa_visible",
+            "riding",
+            "doggy",
+            "futa_anal",
+        ],
+        lines=[
+            ["だれかいる？"],
+            ["はいって", "うん"],
+            ["あついね", "んっ"],
+            [],
+            ["いれて"],
+            [],
+            [],
+            [],
+        ],
         cast_defs=["Aya", "Rei"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
+        download=[
+            "mystic-xxx-h3",
+            "penis-lora-h3",
+            "cinema-dy",
+            "synth-pussy-h3",
+            "larry-v4",
+            "blowjob-h3",
+            "cowgirl-position-h3",
+            "riding-pose-i2v",
+            "doggy-h3",
+        ],
     )
     assert resolve_situation("山小屋") == "cabin-40s"
     assert resolve_situation("山小屋（専用）") == "cabin-40s"
     assert resolve_situation("山小屋（つなぐ）") == "cabin-40s"
-    banned = ("cowgirl-position-h3", "final-thrust-h3", "hmnsfw-aio-v25", "thumbinbutt-h3")
+    banned = ("final-thrust-h3", "hmnsfw-aio-v25", "thumbinbutt-h3")
     for lid in banned:
         assert lid not in story["download"]
     c1 = story["clips"][0]["prompt"]
@@ -3946,30 +3974,61 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
     assert "Aya alone" in cam
     assert "One woman only" in c1
     assert "No kiss yet" in c1
+    assert "feces" in c1.lower()
+    assert "No feces" not in c1
+    assert "HEAD TO TOE" in c1
     c2 = story["clips"][1]["prompt"]
-    assert "hand's width" in c2
-    assert "NOT in" in c2
-    assert "anus" in c2.lower()
-    assert "already straddling" in c2.lower()
+    assert "toilet" in c2.lower()
+    assert "strok" in c2.lower() or "pumping" in c2.lower()
     assert "Faces never swap" in c2
+    assert "feces" in c2.lower()
+    assert "defecat" not in c2.lower()
     c3 = story["clips"][2]["prompt"]
-    assert "INSERTION ON CAMERA" in c3
-    assert "twintails" in c3.lower()
-    assert "Faces never swap" in c3
-    assert "Do not remount" in c3
-    assert "WHITE goo" not in c3
+    assert "tongue kiss" in c3.lower()
+    assert "hand's width" in c3
+    assert "Mouth OPEN" in c3
     c4 = story["clips"][3]["prompt"]
-    assert "OUT OF THE ANUS" in c4
-    assert "unused pussy does NOT leak" in c4
-    assert "Not a vaginal creampie" in c4
-    planned4 = prepare_story_clip(
-        story, 3, last_frame="h3_chain_2.png", stills_dir=tmp_path, prev_situation="futa_anal"
+    assert "to the BASE" in c4 or "at the BASE" in c4
+    assert "jupo" in c4.lower()
+    assert "No spoken words" in c4
+    c5 = story["clips"][4]["prompt"]
+    assert "hand's width" in c5
+    assert "NOT in" in c5
+    assert "pussy" in c5.lower()
+    assert "already straddling" in c5.lower()
+    assert "Faces never swap" in c5
+    c6 = story["clips"][5]["prompt"]
+    assert "INSERTION ON CAMERA" in c6
+    assert "pussy" in c6.lower()
+    assert "twintails" in c6.lower()
+    assert "Faces never swap" in c6
+    assert "Do not remount" in c6
+    assert "WHITE goo" not in c6
+    planned6 = prepare_story_clip(
+        story, 5, last_frame="h3_chain_4.png", stills_dir=tmp_path, prev_situation="futa_visible"
     )
-    assert ANAL_CREAMPIE_LINE in planned4["prompt"]
-    assert "unused pussy does NOT leak" in planned4["prompt"]
-    assert {row["id"] for row in planned4["stack"]} <= set(story["download"])
-    assert "cowgirl-position-h3" not in {row["id"] for row in planned4["stack"]}
-    assert "final-thrust-h3" not in {row["id"] for row in planned4["stack"]}
+    ids6 = {row["id"] for row in planned6["stack"]}
+    assert "riding-pose-i2v" in ids6 or "cowgirl-position-h3" in ids6
+    assert "final-thrust-h3" not in ids6
+    c7 = story["clips"][6]["prompt"]
+    assert "Starts inside, then pulls OUT" in c7
+    assert "anus" in c7.lower()
+    assert "hand's width" in c7
+    c8 = story["clips"][7]["prompt"]
+    assert "INSERTION ON CAMERA" in c8
+    assert "OUT OF THE ANUS" in c8
+    assert "unused pussy does NOT leak" in c8
+    assert "Not a vaginal creampie" in c8
+    planned8 = prepare_story_clip(
+        story, 7, last_frame="h3_chain_6.png", stills_dir=tmp_path, prev_situation="doggy"
+    )
+    assert ANAL_CREAMPIE_LINE in planned8["prompt"]
+    assert "unused pussy does NOT leak" in planned8["prompt"]
+    ids8 = {row["id"] for row in planned8["stack"]}
+    assert ids8 <= set(story["download"])
+    assert "cowgirl-position-h3" not in ids8
+    assert "riding-pose-i2v" not in ids8
+    assert "final-thrust-h3" not in ids8
     insert_only = lock_anal_creampie(
         "INSERTION ON CAMERA into Aya's anus. Then it stays in.\n\noverall_soundscape:\nWet.\n",
         situation="futa_anal",
@@ -6853,7 +6912,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-scat-1" in cell2
+    assert "h3-20260913-cabin-2" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

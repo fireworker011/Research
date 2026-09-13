@@ -6,7 +6,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-scat-look-f112/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-cabin-flow-f112/minimax_h3_lora_studio.ipynb)
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。
 
@@ -175,7 +175,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | 講義机 | `lecture-desk-50s` | 10×5 | 板書。教卓の下でジュボ→口内 | カナ、2行まで |
 | キャンプ | `camp-50s` | 10×5 | 虫よけ。レイがアヤを舐めるだけ（cunnilingus_futa）。竿は使わない | カナ、2行まで |
 | 花火 | `fireworks-50s` | 10×5 | 上を見る。立ったまま後ろから（futa_sex）。顔は花火 | カナ、2行まで |
-| 山小屋 | `cabin-40s` | 10×4 | 扉はアヤ一人。跨ってからアナル挿入。アナル中出しはアナルから溢れる | カナ、2行まで |
+| 山小屋 | `cabin-40s` | 10×8 | 糞まみれで扉はアヤ一人。便座でシコシコ→ベロチュー→ジュボ→騎乗→後背→アナル中出しはアナルから溢れる | カナ、2行まで |
 | ハイスイコウ | `manhole-30s` | 10×2 | 物語の追加。フタの会話→口を開けて先端から手の幅→無言ジュボ口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し | カナ、1本目2行 |
 | 屋上クーラー | `roof-ac-30s` | 10×2 | 物語の追加。会話→受け入れる立ち・挿入寸前→無言でもう入っている立ち（hmmotion） | カナ、1本目2行 |
 | ハマのテトラ | `tetrapod-30s` | 10×2 | 物語の追加。風の会話→跪いて口を開けて先端から手の幅→無言ジュボ口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し | カナ、1本目2行 |
