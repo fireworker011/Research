@@ -22,22 +22,26 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "penis-lora-h3",
-      "strength": 0.7
+      "strength": 0.45
     },
     "helper": [
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ]
   },
   "sampler": {
     "sampler_name": "res_multistep",
-    "scheduler": "beta",
-    "steps": 16,
-    "note": "Any-pose anal close-up. No ThumbInButt. Penis 0.7 + Synth 0.55. res_multistep beta 16. Turbo off. Pose comes from the prompt."
+    "scheduler": "simple",
+    "steps": 8,
+    "note": "Mystic 0.5 + penis 0.45 + Synth 0.4 / res_multistep simple 8. No ThumbInButt. Turbo off. Pose from the prompt. Eros TURBO-hybrid drops Larry at inject."
   },
   "disabled": [
     "thumbinbutt-h3",
@@ -59,7 +63,8 @@
     "photoreal-h3-still",
     "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
-    "cinema-dy"
+    "cinema-dy",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nClose-up on (S1)'s anus. (S2) inserts her penis in (S1)'s anus causing (S1) to moan with pleasure. The penis goes into the anus, not the vagina. Slow steady in-and-out strokes of the penis, the anus clearly visible around it. Both hands of (S2) stay on (S1)'s hips, away from the anus. Pose and camera follow the user prompt. If none, standing, front three-quarter, close joining. Already anal. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

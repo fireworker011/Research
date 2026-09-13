@@ -22,26 +22,30 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "hmnsfw-aio-v25",
-      "strength": 0.8
+      "strength": 0.55
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ]
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "AIO 0.8 + penis 0.7 + Synth 0.55 / 12step. Two helpers, turbo off. Same futa pair as futa_sex so the non-shaft partner does not grow a penis. LightX2V off."
+    "steps": 8,
+    "note": "Mystic 0.5 + AIO 0.55 + penis 0.45 + Synth 0.4 / 8step. Two helpers, turbo off. Same futa pair as futa_sex."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -57,7 +61,8 @@
     "photoreal-h3-still",
     "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
-    "cinema-dy"
+    "cinema-dy",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "hmmotion\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready having sex. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

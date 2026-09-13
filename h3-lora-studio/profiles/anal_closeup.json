@@ -22,24 +22,24 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "synth-pussy-h3",
-      "strength": 0.7
+      "strength": 0.5
     },
     "turbo": {
       "id": "larry-v4",
       "strength": 0.5
-    },
-    "cinema": {
-      "id": "cinema-dy",
-      "strength": 0.4
     }
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Lick/finger. Larry 0.5 / 8step. Cinema 0.4. Helper off because cinema is on."
+    "note": "Mystic 0.5 + Synth 0.5 (act) + Larry 0.5 / 8step. Cinema off on Eros (look is in the unet). Helper off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -56,7 +56,9 @@
     "cumouf-h3",
     "final-thrust-h3",
     "photoreal-h3-still",
-    "minimax-h3-turbo-fl2v-4step"
+    "minimax-h3-turbo-fl2v-4step",
+    "mystic-xxx-ref2va",
+    "cinema-dy"
   ],
   "scenes": {
     "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready licking and fingering. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

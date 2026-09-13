@@ -2,11 +2,11 @@
 
 MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V / 参照は R2V）専用。
 
-成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。3 本以上の画質 LoRA は穴も竿も顔も崩れる。API キーは print しない。
+成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。Eros 成人 T2V/I2V は解剖（Mystic XXX）を足す。画質は解剖+行為+ヘルパー2が上限。API キーは print しない。
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）
@@ -29,7 +29,7 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 | 画質（エロなし） | 強さ | 効果 |
 |---|---|---|
-| Authentic cinematic texture（テンソル修正版 2908686、トリガー `DY`） | 0.7（動き多いなら 0.5）。日常は 0.65 | 光・肌・被写界深度。元 2890588 はテンソルエラーがあるので使わない |
+| Authentic cinematic texture（テンソル修正版 2908686、トリガー `DY`） | 0.7（動き多いなら 0.5）。日常は 0.5 | 光・肌・被写界深度。元 2890588 はテンソルエラーがあるので使わない |
 | Cinematic Style + Detail（トリガー `ASTROCINEMAV01K2T`） | カタログのみ | DY と同時に積まない。日常は DY を使う |
 | Photoreal Image Generator（トリガー `ph0t0r34l`） | — | 静止画・キーフレーム用。動画本体には載せない |
 
@@ -37,7 +37,7 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 | ③の名前 | situation | Turbo | 画質 | sampler |
 |---|---|---|---|---|
-| 日常（速い＋綺麗） | `sfw_daily` | Larry 1.0 | シネマ 0.65 | res_multistep / simple / 8 |
+| 日常（速い＋綺麗） | `sfw_daily` | Larry 1.0 | シネマ 0.5 | res_multistep / simple / 8 |
 | 最速プレビュー（エロなし） | `sfw_preview` | LightX2V 4step 1.0 | シネマ 0.4 | euler / simple / 4 |
 | 音も残す（エロなし） | `sfw_audio` | LightX2V 8step 1.0 | シネマ 0.4 | euler / simple / 8 |
 | 普通（エロなし） | `vanilla` | LightX2V 4step 1.0 | なし | 専用 I2V / T2V と同じ |
@@ -49,36 +49,36 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + ヘルパー 0〜2 + Turbo 0〜1**。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + 解剖 0〜1 + ヘルパー 0〜2 + Turbo 0〜1**。Eros Max の成人 T2V/I2V は **Mystic XXX v4 を 0.5**（TenStrip が上載せ必須と書いた。beta5 に混ざっていても載せる。Ref2VA 版は実験・音なしなので載せない）。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。竿・穴は Eros では薄め（0.45 / 0.4）。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
-| ③の名前 | situation | 行為 | ヘルパー | Turbo | シネマ | sampler |
-|---|---|---|---|---|---|---|
-| アナル挿入（画質） | `anal_penetration` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | res_multistep / beta / 16。ThumbInButt なし。構図は文章欄 |
-| アナル舐め・指 | `anal_closeup` | Synth 0.7 | なし | Larry 0.5 | 0.4 | euler / simple / 8。動きの本線はアナル指入れ |
-| アナル指入れ | `anal_fingering` | ThumbInButt 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
-| フェラ（女体） | `oral` | Blowjob 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | 8step。女がふたなりに。竿＋根元のマンコ。男なし |
-| 歩行・会話（専用の中で自動） | `futa_visible` | Penis 0.7 | Synth 0.55 | Larry 0.6 | **切る** | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
-| ふたなりフェラ | `futa_blowjob` | Blowjob 0.75 | Penis 0.7 + Synth 0.55 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
-| セックス（女体） | `futa_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 男にしない。12step。横クローズ。穴の強調は文章欄 |
-| アナルセックス（女体） | `futa_anal` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | euler / simple / 12。ThumbInButt なし。構図は文章欄。手は腰 |
-| 飲尿（どの構図） | `urine_drink` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。亀頭先の黄色い水。既存話のジュボには戻さない |
-| 脱糞（どの構図） | `scat_act` | Penis 0.7 | Synth 0.55 | **切る** | **切る** | 12step。今出している動き。肥溜めの塗れとは別 |
-| 騎乗位（女体） | `riding` | I2V: POV 0.6 / T2V: cowgirl 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。AIO は積まない。I2V と T2V を混ぜない |
-| 後背位（女体） | `doggy` | doggy 0.8 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。前後の突き。T2V は実験的 |
-| 正常位POV（女体） | `missionary_pov` | POV 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
-| 後射精（女体） | `after_ejaculation` | HMCumshot 0.9 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
-| 顔射（女体） | `facial` | cmst 0.8 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
-| 中出し（女体） | `creampie` | Final Thrust 0.85 | Penis 0.7 + Synth 0.55 | **切る** | **切る** | 12step。膣の中。男なし。I2V本線 |
-| 口内射精（女体） | `oral_creampie` | CUMOUF 0.5 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線。強さ 0.5 |
-| 指入れ | `fingering` | fingering 0.85 | Synth 0.55 | Larry 0.5 | **切る** | 8step。膣。オナニー LoRA は積まない。アナルはアナル指入れ |
-| オナニー | `masturbation` | HMMasturbation 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 12step。指入れ LoRA は積まない |
-| 足コキ | `footjob` | Type D 0.85 | Penis 0.7 + Synth 0.55 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
-| 絶頂 | `remote_orgasm` | Remoteorgasm 0.8 | Synth 0.55 | Larry 0.5 | **切る** | 8step。射精ではない |
-| 汎用エロ（女体） | `general_sex` | AIO 0.8 | Penis 0.7 + Synth 0.55 | **切る** | なし | ふたなり＋女。男なし。12step。セックス（女体）と同じ |
-| 試し打ち | `preview` | AIO 0.7 | Synth 0.55 | LightX2V 4step 1.0 | なし | euler / simple / 4 |
-| レズビアンクンニ | `lesbian_cunnilingus` | クンニ 0.8 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
-| 性器を広げる | `pussy_spread` | 広げる 0.75 | Synth 0.55 | Larry 0.5 | なし | euler / simple / 8 |
-| レズ＋広げる | `lesbian_spread` | クンニ 0.8 | 広げる 0.6 | Larry 0.5 | なし | euler / simple / 8 |
+| ③の名前 | situation | 解剖 | 行為 | ヘルパー | Turbo | シネマ | sampler |
+|---|---|---|---|---|---|---|---|
+| アナル挿入（画質） | `anal_penetration` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | res_multistep / simple / 8。ThumbInButt なし。構図は文章欄 |
+| アナル舐め・指 | `anal_closeup` | Mystic 0.5 | Synth 0.5 | なし | Larry 0.5 | **切る** | euler / simple / 8。動きの本線はアナル指入れ |
+| アナル指入れ | `anal_fingering` | Mystic 0.5 | ThumbInButt 0.55 | Synth 0.4 | Larry 0.5 | **切る** | 8step。自分の親指。膣の指入れ・アナルセックスとは別。I2V本線。T2Vは実験的 |
+| フェラ（女体） | `oral` | Mystic 0.5 | Blowjob 0.6 | Penis 0.45 + Synth 0.4 | Larry 0.5 | なし | 8step。女がふたなりに。竿＋根元のマンコ。男なし。R2V は Blowjob 0.8 |
+| 歩行・会話（専用の中で自動） | `futa_visible` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | Larry 0.6 | **切る** | euler / simple / 8。セリフ（「」）の本だけ Turbo を外し res_multistep 12step（`sampler_no_turbo`） |
+| ふたなりフェラ | `futa_blowjob` | Mystic 0.5 | Blowjob 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | なし | ふたなりが受け。男なし。6step |
+| セックス（女体） | `futa_sex` | Mystic 0.5 | AIO 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 男にしない。8step。横クローズ。穴の強調は文章欄 |
+| アナルセックス（女体） | `futa_anal` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | euler / simple / 8。ThumbInButt なし。構図は文章欄。手は腰 |
+| 飲尿（どの構図） | `urine_drink` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | 8step。亀頭先の黄色い水。既存話のジュボには戻さない |
+| 脱糞（どの構図） | `scat_act` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | 8step。今出している動き。肥溜めの塗れとは別 |
+| 騎乗位（女体） | `riding` | Mystic 0.5 | I2V: POV 0.45 / T2V: cowgirl 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 8step。AIO は積まない。I2V と T2V を混ぜない |
+| 後背位（女体） | `doggy` | Mystic 0.5 | doggy 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 8step。前後の突き。T2V は実験的 |
+| 正常位POV（女体） | `missionary_pov` | Mystic 0.5 | POV 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
+| 後射精（女体） | `after_ejaculation` | Mystic 0.5 | HMCumshot 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。外に出す射精。絶頂・顔射・中出しとは別 |
+| 顔射（女体） | `facial` | Mystic 0.5 | cmst 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。顔にかける。後射精・口内とは別。I2V本線。T2Vは実験的 |
+| 中出し（女体） | `creampie` | Mystic 0.5 | Final Thrust 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 8step。膣の中。男なし。I2V本線 |
+| 口内射精（女体） | `oral_creampie` | Mystic 0.5 | CUMOUF 0.4 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。口の中。顔射ではない。I2V本線 |
+| 指入れ | `fingering` | Mystic 0.5 | fingering 0.55 | Synth 0.4 | Larry 0.5 | **切る** | 8step。膣。オナニー LoRA は積まない。アナルはアナル指入れ |
+| オナニー | `masturbation` | Mystic 0.5 | HMMasturbation 0.55 | Synth 0.4 | Larry 0.5 | **切る** | 8step。指入れ LoRA は積まない |
+| 足コキ | `footjob` | Mystic 0.5 | Type D 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。Type A/B/C は積まない |
+| 絶頂 | `remote_orgasm` | Mystic 0.5 | Remoteorgasm 0.55 | Synth 0.4 | Larry 0.5 | **切る** | 8step。射精ではない |
+| 汎用エロ（女体） | `general_sex` | Mystic 0.5 | AIO 0.55 | Penis 0.45 + Synth 0.4 | **切る** | なし | ふたなり＋女。男なし。8step。セックス（女体）と同じ |
+| 試し打ち | `preview` | Mystic 0.5 | AIO 0.5 | Synth 0.4 | LightX2V 4step 1.0 | なし | euler / simple / 4 |
+| レズビアンクンニ | `lesbian_cunnilingus` | Mystic 0.5 | クンニ 0.55 | Synth 0.4 | Larry 0.5 | なし | euler / simple / 8。出会い→キス→クンニ |
+| 性器を広げる | `pussy_spread` | Mystic 0.5 | 広げる 0.5 | Synth 0.4 | Larry 0.5 | なし | euler / simple / 8 |
+| レズ＋広げる | `lesbian_spread` | Mystic 0.5 | クンニ 0.55 | 広げる 0.45 | Larry 0.5 | なし | euler / simple / 8 |
 
 ## やらないこと
 
@@ -87,14 +87,15 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - エロ挿入 LoRA との併用（アナル系は Turbo 切るのが前提）
 - 体位 LoRA と総合えっち（AIO）の同時積み。体位が AIO の代わり
 - 指入れ + オナニー、指入れ + アナル指入れ、アナル指入れ + アナルセックス、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂、中出し + 後射精、中出し + 顔射、中出し + 口内、口内 + 顔射、口内 + フェラ本線
-- `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl。I2V 騎乗は riding-pose 0.6）
+- `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl。I2V 騎乗は riding-pose 0.45）
+- mystic-xxx-h3 を R2V に載せる、mystic-xxx-ref2va を FL2VA/Eros に載せる
 - シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
 - Photoreal still を動画本体に載せる
 - DY と ASTROCINEMA の同時積み
 - Fal H3 Max に LoRA を差す
 - 訓練で体位を足す（既存 FL2VA LoRA を積む）
 
-積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。LTX の 10Eros や riding の LTX 版は載せない。
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）、`mystic-xxx-ref2va`（実験・音未学習。R2V は AfterMidnight）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。成人 T2V/I2V の解剖は [Mystic XXX v4](https://civitai.com/models/2856467?modelVersionId=3266628) を 0.5。LTX の 10Eros や riding の LTX 版は載せない。
 
 ### ThumbInButt（アナル系の行為 LoRA）
 
@@ -124,8 +125,8 @@ python3 h3-lora-studio/train/pack_dataset.py --concept anal-any-h3 --print-grid
 
 後射精（HMCumshot）は**外に出す**。顔射（cmst）は顔。中に出す動きは別 LoRA。
 
-- **中出し（女体）**: [Final Thrust 2891879](https://civitai.com/models/2891879)。深い突きのまま膣の中に出す。学習文は男なので studio は `(S2) performs powerful, intense thrusts with her penis inside (S1) and cums inside of her` に置換。空欄に `male character` / `the man` / `his` は書かない。竿 + 穴、Turbo オフ・12step。写真からが本線。後射精・顔射・口内とは積まない
-- **口内射精（女体）**: [CUMOUF 2846978](https://civitai.com/models/2846978)。口の中で痙攣しながら出す。トリガー `CUMOUF` を先頭。強さ **0.5**（0.7で精液が不自然）。I2V は口が付いた途中の写真。作者文の he/his は her に置換。顔にかける金玉ショットではない。フェラ本線・顔射・中出しとは積まない。精液はニクカベと同じ重油級の白いドロッドロ（色は白。黒・茶色のタールにしない）、肌と顔に残る、竿先から垂れてヌルヌル。口内のあとは尺を増やさず、ジュボ側が相手と同じ目線に立ち上がって、白い粘つく液体を舌で絡める濃厚キス口移し（中出し・机の下・歩行は足さない）
+- **中出し（女体）**: [Final Thrust 2891879](https://civitai.com/models/2891879)。深い突きのまま膣の中に出す。学習文は男なので studio は `(S2) performs powerful, intense thrusts with her penis inside (S1) and cums inside of her` に置換。空欄に `male character` / `the man` / `his` は書かない。解剖 + 竿 + 穴、Turbo オフ・8step。写真からが本線。後射精・顔射・口内とは積まない
+- **口内射精（女体）**: [CUMOUF 2846978](https://civitai.com/models/2846978)。口の中で痙攣しながら出す。トリガー `CUMOUF` を先頭。強さ **0.4**（Eros。0.7で精液が不自然）。I2V は口が付いた途中の写真。作者文の he/his は her に置換。顔にかける金玉ショットではない。フェラ本線・顔射・中出しとは積まない。精液はニクカベと同じ重油級の白いドロッドロ（色は白。黒・茶色のタールにしない）、肌と顔に残る、竿先から垂れてヌルヌル。口内のあとは尺を増やさず、ジュボ側が相手と同じ目線に立ち上がって、白い粘つく液体を舌で絡める濃厚キス口移し（中出し・机の下・歩行は足さない）
 
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
@@ -191,7 +192,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 - **画面に居ない人の全身描写を消す**。`X = NOT IN FRAME` / `NOT IN THIS CLIP` の人は `subject_definitions` から外し、`Not in this clip: X.` の1行にする。居ない裸の女を細かく書くのが「勝手に出てくる」最大の原因
 - **編集者向けのメタ行を消す**。`Do not copy the previous clip` / `Clip 7 of 12` / CAST LOCK の他話タイトル列挙はモデルに意味が無い。CAST LOCK は「同じ顔・髪・体」の1文に置き換える
 - **H3 の正規順に並べ直す**。`subject_definitions → environment → integrated_multimodal_description → overall_soundscape → non_diegetic_music`。WHO の配置と HARD LOCK / CAMERA / LIP SYNC は description ブロックの中に畳む。feminine_lock も soundscape の前に入る
-- **セリフの本だけフルステップ**。`「」` がある本は Larry とシネマを外して竿だけ・res_multistep 12step（口の動きと日本語の音。シネマ＋口パクで顎が溶ける）。歩く・キス・テレビの本は Larry 0.6 / 8step
+- **セリフの本だけフルステップ**。`「」` がある本は Larry とシネマを外して解剖 + 竿 + 穴・res_multistep 12step（口の動きと日本語の音。シネマ＋口パクで顎が溶ける）。歩く・キス・テレビの本は Larry 0.6 / 8step
 - **音声チャンネルは効果音と「」だけ**。`lock_spoken_japanese` が `overall_soundscape` から `lip-synced` / `No other speech` / `No spoken words` / 台詞だけ を消す。同じ「」は絵（LIP SYNC）と音で各1つ。`[AUDIO-LOCK] other_text: not_spoken` と日本語の音声ルールは撤回（H3が音読した）。③の再生グラフも同じ。`validate_story_follow` は「」内のラテン文字も落とす
 - **VRAM の /free は OOM と土台切替だけ**。②の全部入れはディスクへ保存するだけ。再生グラフは今の本の LoRA だけ繋ぐ。口パクでシネマを外しても H3 本体は載せたまま。FL2VA↔Ref2VA のときとメモリ不足の再試行だけ `/free`
 - **②の2回目は設定だけ**（既定オン）。文章・JSON を GitHub tar で一括取得。土台・LoRA の再取得と Drive の全部一覧は飛ばす。土台が無いときだけ全部入れる。欠けた部品は③で足す

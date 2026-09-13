@@ -29,18 +29,22 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "blowjob-h3",
-      "strength": 0.8
+      "strength": 0.6
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ],
     "turbo": {
@@ -66,7 +70,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Blowjob 0.8 + Penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. Penis+pussy anatomy (no balls) needs the pussy helper; blowjob is the act. Cinema off because helpers are on. Same helper pair as futa_blowjob, 8step so story BJ stays readable."
+    "note": "Mystic 0.5 + Blowjob 0.6 + Penis 0.45 + Synth 0.4 + Larry 0.5 / 8step. R2V keeps Blowjob 0.8 + Synth 0.55 + Ref turbo. Cinema off because helpers are on."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -81,7 +85,8 @@
     "final-thrust-h3",
     "photoreal-h3-still",
     "minimax-h3-turbo-fl2v-4step",
-    "cinema-dy"
+    "cinema-dy",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "bl0w_j0b, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready a blow job. Already oral. Already at the BASE. Third-person medium two-shot. Both people readable: mouth from head to knees, shaft partner from head to mid-thigh. Not POV. Not first-person. Not from the shaft. The 20cm stays in the lower third and does not fill the lens. Place from the user prompt; if none, a plain indoor room. Do not invent Hachiko, a beach toilet, or a named city. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

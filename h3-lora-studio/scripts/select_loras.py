@@ -6,6 +6,9 @@ Everything else (including Turbo / Acc / ref2va on FL2VA) is listed for unload.
 
 T2V uses scenes.t2v and 9:16. I2V uses scenes.i2v and Picture 1. Never mix them.
 
+Adult T2V/I2V on Eros Max stacks Mystic XXX (concept) at 0.5, then act + helpers.
+R2V stays official Ref2VA: do not load mystic-xxx-h3 or mystic-xxx-ref2va there.
+
 This script never reads `.env` and never prints API keys.
 """
 
@@ -24,8 +27,10 @@ PROFILES_DIR = ROOT / "profiles"
 SCHEMA = "h3-lora-studio/v1"
 SITUATIONS_SCHEMA = "h3-lora-studio-situations/v1"
 MODES = ("t2v", "i2v", "r2v")
-STACK_ROLES = ("act", "helper", "turbo", "cinema")
+STACK_ROLES = ("concept", "act", "helper", "turbo", "cinema")
 MAX_HELPERS = 2
+MAX_CONCEPT = 1
+CONCEPT_LORA_ID = "mystic-xxx-h3"
 MAX_CINEMA_NSFW = 0.6
 MAX_CINEMA_SFW = 0.7
 STILL_ONLY_IDS = {"photoreal-h3-still"}
@@ -583,8 +588,16 @@ def assert_stack_budget(
 ) -> None:
     roles = [str(s.get("role") or "") for s in specs]
     helper_n = roles.count("helper")
+    concept_n = roles.count("concept")
     if helper_n > MAX_HELPERS:
         raise SelectError("at most two helper LoRAs")
+    if concept_n > MAX_CONCEPT:
+        raise SelectError("at most one concept LoRA")
+    concept_ids = [str(s.get("id") or "") for s in specs if s.get("role") == "concept"]
+    if concept_ids and concept_ids != [CONCEPT_LORA_ID]:
+        raise SelectError("concept LoRA must be mystic-xxx-h3")
+    if CONCEPT_LORA_ID in {str(s.get("id") or "") for s in specs} and not concept_n:
+        raise SelectError("mystic-xxx-h3 must use the concept role")
     for role in STACK_ROLES:
         if role == "helper":
             continue
@@ -593,8 +606,9 @@ def assert_stack_budget(
     ids = {str(s["id"]) for s in specs}
     if STILL_ONLY_IDS & ids:
         raise SelectError("photoreal still is for keyframes, not the video body")
+    quality = [s for s in specs if s.get("role") in {"concept", "act", "helper", "cinema"}]
     if not nsfw:
-        if "act" in roles or "helper" in roles:
+        if "act" in roles or "helper" in roles or "concept" in roles:
             raise SelectError("SFW stack is turbo plus one quality LoRA only")
         if "turbo" not in roles:
             raise SelectError("SFW fast+quality needs one turbo LoRA")
@@ -602,8 +616,7 @@ def assert_stack_budget(
             row = index.get(str(spec["id"])) or {}
             if row.get("adult") is True:
                 raise SelectError(f"SFW stack cannot load adult LoRA: {spec['id']}")
-        non_turbo = [s for s in specs if s.get("role") != "turbo"]
-        if len(non_turbo) > 1:
+        if len(quality) > 1:
             raise SelectError("SFW quality is one cinematic LoRA, or none")
     else:
         if "act" not in roles:
@@ -612,11 +625,14 @@ def assert_stack_budget(
             raise SelectError("cinema replaces helper; do not stack both")
         if FULL_STACK_IDS <= ids:
             raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
-        non_turbo = [s for s in specs if s.get("role") != "turbo"]
-        if len(non_turbo) > 3:
-            raise SelectError("quality LoRAs are act + at most two helpers")
-        if helper_n <= 1 and len(non_turbo) > 2:
-            raise SelectError("quality LoRAs are act + optional helper or cinema only")
+        if concept_n:
+            if len(quality) > 4:
+                raise SelectError("quality LoRAs are act + optional concept + at most two helpers")
+        else:
+            if len(quality) > 3:
+                raise SelectError("quality LoRAs are act + at most two helpers")
+            if helper_n <= 1 and len(quality) > 2:
+                raise SelectError("quality LoRAs are act + optional helper or cinema only")
     families: set[str] = set()
     for spec in specs:
         row = index.get(str(spec["id"])) or {}

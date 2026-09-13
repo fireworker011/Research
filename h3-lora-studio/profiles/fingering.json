@@ -23,13 +23,17 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "fingering-h3",
-      "strength": 0.85
+      "strength": 0.55
     },
     "helper": {
       "id": "synth-pussy-h3",
-      "strength": 0.55
+      "strength": 0.4
     },
     "turbo": {
       "id": "larry-v4",
@@ -40,7 +44,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Fingering 0.85 + Synth 0.55 + Larry 0.5 / 8step. HMMasturbation stays off."
+    "note": "Mystic 0.5 + fingering 0.55 + Synth 0.4 + Larry 0.5 / 8step. Vagina. Not ThumbInButt."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -67,7 +71,8 @@
     "hmmasturbation-h3",
     "footjob-h3",
     "remote-orgasm-h3",
-    "penis-lora-h3"
+    "penis-lora-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nAlready fingering. No man appears. No partner. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

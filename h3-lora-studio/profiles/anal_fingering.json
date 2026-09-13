@@ -23,13 +23,17 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "thumbinbutt-h3",
-      "strength": 0.85
+      "strength": 0.55
     },
     "helper": {
       "id": "synth-pussy-h3",
-      "strength": 0.55
+      "strength": 0.4
     },
     "turbo": {
       "id": "larry-v4",
@@ -40,7 +44,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "ThumbInButt 0.85 + Synth 0.55 + Larry 0.5 / 8step. I2V recommended; Picture 1 from behind with the anus exposed. Anus above vagina in frame or the LoRA aims at the vagina. Fingering, CoachBate, AIO, and penis stay off."
+    "note": "Mystic 0.5 + ThumbInButt 0.55 + Synth 0.4 + Larry 0.5 / 8step. Right thumb. Cinema off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -67,7 +71,8 @@
     "hmmasturbation-h3",
     "footjob-h3",
     "remote-orgasm-h3",
-    "penis-lora-h3"
+    "penis-lora-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "thum1n8utt\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, kneeling on all fours with her hips raised and her back arched, seen from behind so her anus sits above her vagina in frame. Not a man.\n\nthum1n8utt. (S1) reaches back with her own right hand, uses her right thumb to rub around her anus in a circular motion then inserts her right thumb in her anus, moaning with pleasure. The thumb goes into the anus, not the vagina. Slow in-and-out motion of the thumb. No man appears. No partner. No penis. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
