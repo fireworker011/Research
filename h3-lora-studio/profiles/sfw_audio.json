@@ -3,6 +3,7 @@
   "adults_only": true,
   "min_age": 21,
   "nsfw": false,
+  "feminine_lock": true,
   "modes": [
     "i2v",
     "t2v"
@@ -23,6 +24,10 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "turbo": {
       "id": "minimax-h3-turbo-fl2v-8step",
       "strength": 1.0
@@ -36,7 +41,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "SFW keep-audio turbo. LightX2V 8step 1.0 + cinematic 0.4. Larry is stabler for song/Japanese."
+    "note": "Daily エロ汎用 keep-audio. Mystic 0.5 + LightX2V 8step 1.0 + cinematic 0.4. No act LoRA. Larry is stabler for song/Japanese."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -60,12 +65,11 @@
     "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
     "minimax-h3-turbo-ref2v-4step",
-    "mystic-xxx-ref2va",
-    "mystic-xxx-h3"
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same identity as <Picture 1>.\n\nenvironment: Matching <Picture 1>, quiet room.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) speaks a short Japanese line. Photoreal. Identity locked to <Picture 1>. No freeze frame.\noverall_soundscape: Clear speech, room tone.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",
     "t2v": "DY\nVertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese.\n\nenvironment: Quiet indoor room, soft daylight.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) speaks a short Japanese line, then smiles. Photoreal skin. No freeze frame.\noverall_soundscape: Clear speech, room tone. No loud score.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, nsfw, nude"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
 }

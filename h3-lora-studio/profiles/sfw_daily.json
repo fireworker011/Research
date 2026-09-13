@@ -3,6 +3,7 @@
   "adults_only": true,
   "min_age": 21,
   "nsfw": false,
+  "feminine_lock": true,
   "modes": [
     "i2v",
     "t2v"
@@ -23,6 +24,10 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "turbo": {
       "id": "larry-v4",
       "strength": 1.0
@@ -38,7 +43,7 @@
     "steps": 8,
     "video_shift": 6,
     "audio_shift": 3,
-    "note": "SFW daily. Larry v4 1.0 + cinematic 0.5. 8step. Eros TURBO-hybrid drops Larry at inject. Shift is a note."
+    "note": "Daily エロ汎用. Mystic 0.5 + Larry v4 1.0 + cinematic 0.5. 8step. No act LoRA. Eros TURBO-hybrid drops Larry at inject. Shift is a note."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -62,12 +67,11 @@
     "minimax-h3-turbo-fl2v-4step",
     "minimax-h3-turbo-fl2v-8step",
     "minimax-h3-turbo-ref2v-4step",
-    "mystic-xxx-ref2va",
-    "mystic-xxx-h3"
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>.\n\nenvironment: Quiet indoor space matching <Picture 1>, soft daylight, natural depth of field.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) talks naturally to someone off-camera. Photoreal skin, cinematic lighting, no plastic look. Identity stays locked to <Picture 1>. No freeze frame. No cartoon.\noverall_soundscape: Room tone and quiet speech.\nending: Motion continues; (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",
     "t2v": "DY\nVertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, dark navy zip-up hoodie.\n\nenvironment: Desk, laptop, soft daylight, shallow depth of field, natural skin texture.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) sits at the desk, looks toward the lens, blinks, and speaks a short everyday line. Cinematic lighting, film texture, no plastic AI look. No freeze frame.\noverall_soundscape: Quiet room tone, faint keyboard tick, natural voice.\nending: Motion continues; (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, nsfw, nude"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
 }

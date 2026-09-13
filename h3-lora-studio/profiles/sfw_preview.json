@@ -3,6 +3,7 @@
   "adults_only": true,
   "min_age": 21,
   "nsfw": false,
+  "feminine_lock": true,
   "modes": [
     "i2v",
     "t2v"
@@ -23,6 +24,10 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "turbo": {
       "id": "minimax-h3-turbo-fl2v-4step",
       "strength": 1.0
@@ -36,7 +41,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 4,
-    "note": "SFW fastest preview. LightX2V 4step 768p 1.0 + cinematic 0.4. Rebake hits on sfw_daily 8step."
+    "note": "Daily エロ汎用 preview. Mystic 0.5 + LightX2V 4step 768p 1.0 + cinematic 0.4. No act LoRA. Rebake hits on sfw_daily 8step."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -60,12 +65,11 @@
     "larry-v4",
     "minimax-h3-turbo-fl2v-8step",
     "minimax-h3-turbo-ref2v-4step",
-    "mystic-xxx-ref2va",
-    "mystic-xxx-h3"
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same identity as <Picture 1>.\n\nenvironment: Matching <Picture 1>.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of a live-action everyday moment. Photoreal. Identity locked to <Picture 1>.\noverall_soundscape: Room tone.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",
     "t2v": "DY\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n\nenvironment: Desk, soft daylight.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of an everyday conversation. Photoreal.\noverall_soundscape: Room tone.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older."
   },
-  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, nsfw, nude"
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
 }

@@ -150,7 +150,7 @@ def test_situations_switch_loras_by_profile_and_mode():
     assert anal["turbo"] is False
     daily = next(row for row in listed["situations"] if row["id"] == "sfw_daily")
     assert daily["nsfw"] is False
-    assert daily["enabled"]["t2v"] == ["larry-v4", "cinema-dy"]
+    assert daily["enabled"]["t2v"] == ["mystic-xxx-h3", "larry-v4", "cinema-dy"]
 
 
 def test_lesbian_and_spread_stacks():
@@ -943,20 +943,33 @@ def test_sfw_daily_splits_turbo_and_quality():
     data = select_loras(profile_name="sfw_daily", mode="t2v", prompt_arg="（シーン）")
     assert data["nsfw"] is False
     assert data["turbo"] is True
-    assert [row["id"] for row in data["stack"]] == ["larry-v4", "cinema-dy"]
-    assert [row["role"] for row in data["stack"]] == ["turbo", "cinema"]
-    assert data["stack"][0]["strength_model"] == 1.0
-    assert data["stack"][1]["strength_model"] == 0.5
+    assert [row["id"] for row in data["stack"]] == ["mystic-xxx-h3", "larry-v4", "cinema-dy"]
+    assert [row["role"] for row in data["stack"]] == ["concept", "turbo", "cinema"]
+    assert data["stack"][0]["strength_model"] == 0.5
+    assert data["stack"][1]["strength_model"] == 1.0
+    assert data["stack"][2]["strength_model"] == 0.5
     assert data["sampler"]["sampler_name"] == "res_multistep"
     assert data["sampler"]["scheduler"] == "simple"
     assert data["sampler"]["steps"] == 8
     assert "Picture 1" not in data["prompt"]
-    assert all(row.get("adult") is False for row in data["stack"])
+    assert "feminine_lock:" in data["prompt"].lower()
+    neg = str(data.get("negative") or "").lower()
+    assert "nsfw" not in neg
+    assert "nude" not in neg
+    assert all(row.get("adult") is False for row in data["stack"] if row["id"] != "mystic-xxx-h3")
     preview = select_loras(profile_name="sfw_preview", mode="t2v")
-    assert [row["id"] for row in preview["stack"]] == ["minimax-h3-turbo-fl2v-4step", "cinema-dy"]
+    assert [row["id"] for row in preview["stack"]] == [
+        "mystic-xxx-h3",
+        "minimax-h3-turbo-fl2v-4step",
+        "cinema-dy",
+    ]
     assert preview["sampler"]["steps"] == 4
     audio = select_loras(profile_name="sfw_audio", mode="t2v")
-    assert [row["id"] for row in audio["stack"]] == ["minimax-h3-turbo-fl2v-8step", "cinema-dy"]
+    assert [row["id"] for row in audio["stack"]] == [
+        "mystic-xxx-h3",
+        "minimax-h3-turbo-fl2v-8step",
+        "cinema-dy",
+    ]
     r2v = select_loras(profile_name="sfw_r2v", mode="r2v")
     assert [row["id"] for row in r2v["stack"]] == ["minimax-h3-turbo-ref2v-4step", "cinema-dy"]
     assert r2v["stack"][1]["strength_model"] == 0.5
@@ -1047,7 +1060,9 @@ def test_sfw_allows_cinema_point_seven(tmp_path: Path):
     profile["stack_plan"]["cinema"] = {"id": "cinema-dy", "strength": 0.7}
     (tmp_path / "sfw_daily.json").write_text(json.dumps(profile), encoding="utf-8")
     data = select_loras(profile_name="sfw_daily", mode="t2v", catalog_path=cat_path, profiles_dir=tmp_path)
-    assert data["stack"][1]["strength_model"] == 0.7
+    cinema = next(row for row in data["stack"] if row["id"] == "cinema-dy")
+    assert cinema["strength_model"] == 0.7
+    assert [row["id"] for row in data["stack"]] == ["mystic-xxx-h3", "larry-v4", "cinema-dy"]
 
 
 def test_sfw_r2v_refuses_fl2va_turbo(tmp_path: Path):
@@ -1177,7 +1192,7 @@ def test_every_futa_situation_stacks_synth_pussy():
             if mode == "r2v":
                 assert all(row.get("arch") != "fl2va" for row in live["stack"]), (name, ids)
 
-def test_mystic_xxx_on_adult_fl2va_not_r2v_or_sfw():
+def test_mystic_xxx_on_fl2va_not_r2v():
     catalog = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     by_id = {row["id"]: row for row in catalog["loras"]}
     mystic = by_id["mystic-xxx-h3"]
@@ -1192,8 +1207,10 @@ def test_mystic_xxx_on_adult_fl2va_not_r2v_or_sfw():
     assert ref["modes"] == ["r2v"]
     assert ref["arch"] == "ref2va"
     listed = list_situations()
+    listed_ids = {row["id"] for row in listed["situations"]}
+    assert "vanilla" not in listed_ids
+    assert "sfw_daily" in listed_ids
     for row in listed["situations"]:
-        nsfw = row.get("nsfw") is not False
         for mode, ids in (row.get("enabled") or {}).items():
             assert "mystic-xxx-ref2va" not in ids, (row["id"], mode)
             live = select_loras(profile_name=row["id"], mode=mode, prompt_arg="（シーン）")
@@ -1201,7 +1218,7 @@ def test_mystic_xxx_on_adult_fl2va_not_r2v_or_sfw():
             assert "mystic-xxx-ref2va" not in live_ids, (row["id"], mode)
             if mode == "r2v":
                 assert "mystic-xxx-h3" not in live_ids, (row["id"], mode, live_ids)
-            elif nsfw and mode in {"t2v", "i2v"}:
+            elif mode in {"t2v", "i2v"}:
                 assert live_ids[0] == "mystic-xxx-h3", (row["id"], mode, live_ids)
                 assert live["stack"][0]["role"] == "concept"
                 assert live["stack"][0]["strength_model"] == 0.5
@@ -1210,7 +1227,7 @@ def test_mystic_xxx_on_adult_fl2va_not_r2v_or_sfw():
                     r["role"] for r in live["stack"]
                 }
             else:
-                assert "mystic-xxx-h3" not in live_ids, (row["id"], mode, live_ids)
+                raise AssertionError((row["id"], mode))
             arches = {r.get("arch") for r in live["stack"]}
             assert not ({"fl2va", "ref2va"} <= arches), (row["id"], mode, live_ids)
     oral_r2v = select_loras(profile_name="oral", mode="r2v")

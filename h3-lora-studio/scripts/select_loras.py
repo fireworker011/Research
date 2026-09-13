@@ -7,7 +7,9 @@ Everything else (including Turbo / Acc / ref2va on FL2VA) is listed for unload.
 T2V uses scenes.t2v and 9:16. I2V uses scenes.i2v and Picture 1. Never mix them.
 
 Adult T2V/I2V on Eros Max stacks Mystic XXX (concept) at 0.5, then act + helpers.
+Daily FL2VA (sfw_daily / sfw_preview / sfw_audio) also loads mystic 0.5 as anatomy-only エロ汎用.
 R2V stays official Ref2VA: do not load mystic-xxx-h3 or mystic-xxx-ref2va there.
+Vanilla and phone I2V/T2V stay without mystic.
 
 This script never reads `.env` and never prints API keys.
 """
@@ -608,15 +610,19 @@ def assert_stack_budget(
         raise SelectError("photoreal still is for keyframes, not the video body")
     quality = [s for s in specs if s.get("role") in {"concept", "act", "helper", "cinema"}]
     if not nsfw:
-        if "act" in roles or "helper" in roles or "concept" in roles:
-            raise SelectError("SFW stack is turbo plus one quality LoRA only")
+        if "act" in roles or "helper" in roles:
+            raise SelectError("SFW stack is turbo plus optional mystic plus one cinematic LoRA")
         if "turbo" not in roles:
             raise SelectError("SFW fast+quality needs one turbo LoRA")
         for spec in specs:
             row = index.get(str(spec["id"])) or {}
-            if row.get("adult") is True:
+            sid = str(spec.get("id") or "")
+            if row.get("adult") is True and sid != CONCEPT_LORA_ID:
                 raise SelectError(f"SFW stack cannot load adult LoRA: {spec['id']}")
-        if len(quality) > 1:
+        if concept_n:
+            if len(quality) > 2:
+                raise SelectError("SFW with mystic is concept + one cinematic LoRA")
+        elif len(quality) > 1:
             raise SelectError("SFW quality is one cinematic LoRA, or none")
     else:
         if "act" not in roles:

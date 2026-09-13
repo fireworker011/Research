@@ -98,9 +98,9 @@ OPTIONAL_IDS = {
 SITUATION_DOWNLOAD = {
     "redo": [],
     "vanilla": [],
-    "sfw_daily": ["larry-v4", "cinema-dy"],
-    "sfw_preview": ["minimax-h3-turbo-fl2v-4step", "cinema-dy"],
-    "sfw_audio": ["minimax-h3-turbo-fl2v-8step", "cinema-dy"],
+    "sfw_daily": ["mystic-xxx-h3", "larry-v4", "cinema-dy"],
+    "sfw_preview": ["mystic-xxx-h3", "minimax-h3-turbo-fl2v-4step", "cinema-dy"],
+    "sfw_audio": ["mystic-xxx-h3", "minimax-h3-turbo-fl2v-8step", "cinema-dy"],
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["mystic-xxx-h3", "synth-pussy-h3", "larry-v4"],
     "anal_fingering": ["mystic-xxx-h3", "thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
@@ -340,9 +340,14 @@ SITUATION_DOWNLOAD = {
 
 SITUATION_JA = {
     "普通（エロなし）": "vanilla",
+    "日常（エロ汎用）": "sfw_daily",
     "日常（速い＋綺麗）": "sfw_daily",
+    "最速プレビュー（エロ汎用）": "sfw_preview",
     "最速プレビュー（エロなし）": "sfw_preview",
+    "最速プレビュー": "sfw_preview",
+    "音も残す（エロ汎用）": "sfw_audio",
     "音も残す（エロなし）": "sfw_audio",
+    "音も残す": "sfw_audio",
     "アナル挿入（画質）": "anal_penetration",
     "アナル挿入": "anal_penetration",
     "アナル舐め・指": "anal_closeup",
@@ -541,11 +546,11 @@ MODE_JA = {
 }
 
 SITUATION_HELP = {
-    "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。",
-    "sfw_daily": "日常・会話・商品・風景。Larry v4 1.0 + シネマ 0.5 / 8step。エロ用は入れない。",
-    "sfw_preview": "エロなしの最速プレビュー。LightX2V 4step 1.0 + シネマ 0.4。当たりは日常で焼き直す。",
-    "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
-    "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
+    "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。Mystic なし。",
+    "sfw_daily": "日常エロ汎用。解剖 Mystic 0.5 + Larry v4 1.0 + シネマ 0.5 / 8step。行為 LoRA は載せない。竿・フェラ・AIO は別シーン。",
+    "sfw_preview": "日常エロ汎用の最速プレビュー。解剖 Mystic 0.5 + LightX2V 4step 1.0 + シネマ 0.4。行為 LoRA なし。当たりは日常で焼き直す。",
+    "sfw_audio": "日常エロ汎用で音を残して速く。解剖 Mystic 0.5 + LightX2V 8step 1.0 + シネマ 0.4。行為 LoRA なし。歌・日本語は日常（Larry）の方が安定。",
+    "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。Mystic なし。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
     "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。",
@@ -1327,9 +1332,13 @@ def explain_choice(situation: str, mode: str) -> str:
         )
     parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
     cap = (
-        "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
-        if sid in SFW_SITUATIONS
-        else "重ね上限は 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
+        "重ね上限は Turbo1 + 解剖(Mystic 0.5) + シネマ1。行為 LoRA は載せない。"
+        if sid in {"sfw_daily", "sfw_preview", "sfw_audio"}
+        else (
+            "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
+            if sid in SFW_SITUATIONS
+            else "重ね上限は 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
+        )
     )
     play_line = ""
     if sid in STORY_IDS:

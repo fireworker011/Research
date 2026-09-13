@@ -29,7 +29,7 @@ OUTS = [
 ]
 
 # ③ の並び: SFW → 専用11話×5再生 → 名前付きパック×5再生 → 短編集（参照） → 行為シーン
-SFW_LABELS = ["日常（速い＋綺麗）", "最速プレビュー（エロなし）", "音も残す（エロなし）", "普通（エロなし）"]
+SFW_LABELS = ["日常（エロ汎用）", "最速プレビュー（エロ汎用）", "音も残す（エロ汎用）", "普通（エロなし）"]
 ACT_LABELS = [
     "アナル挿入（画質）", "アナル舐め・指", "アナル指入れ", "フェラ（女体）", "ふたなりフェラ", "セックス（女体）",
     "アナルセックス（女体）", "飲尿（どの構図）", "放尿（性器から）", "脱糞（どの構図）", "騎乗位（女体）", "後背位（女体）", "正常位POV（女体）", "後射精（女体）", "顔射（女体）",
@@ -62,7 +62,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
 
 ## やること（生成は3つ。学習するなら④）
 
@@ -137,10 +137,10 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 | ③で選ぶ名前 | どんな動画 | 自動で入る部品 |
 |---|---|---|
-| 日常（速い＋綺麗） | 会話・商品・風景 | Larry v4 1.0 + シネマ 0.5 / 8step |
-| 最速プレビュー（エロなし） | 量産プレビュー | LightX2V 4step 1.0 + シネマ 0.4 |
-| 音も残す（エロなし） | 音を残して速く | LightX2V 8step 1.0 + シネマ 0.4 |
-| 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。画質 LoRA なし |
+| 日常（エロ汎用） | 会話・商品・風景 | 解剖 Mystic 0.5 + Larry v4 1.0 + シネマ 0.5 / 8step。行為 LoRA なし。旧名「日常（速い＋綺麗）」 |
+| 最速プレビュー（エロ汎用） | 量産プレビュー | 解剖 Mystic 0.5 + LightX2V 4step 1.0 + シネマ 0.4。行為 LoRA なし。旧名「最速プレビュー（エロなし）」 |
+| 音も残す（エロ汎用） | 音を残して速く | 解剖 Mystic 0.5 + LightX2V 8step 1.0 + シネマ 0.4。行為 LoRA なし。旧名「音も残す（エロなし）」 |
+| 普通（エロなし） | 専用 I2V / T2V と同じ | LightX2V 4step だけ。Mystic も行為 LoRA もなし |
 | 帰宅（専用 / つなぐ / つなぐ修） | 玄関フェラ→トイレクンニ寄り→口内。10×12 | クンニ LoRA は寄り1本。入室・退出は歩行部品。576×1024 |
 | 洗い物（専用 / つなぐ / つなぐ修） | シンク洗い物＋プリン。アヤが床で口。10×12 | サヤカはシンク固定。レイは椅子で竿。入室と着席は別本。フェラは60秒以降。口内は CUMOUF |
 | 登校（専用 / つなぐ / つなぐ修） | 朝〜大学正門。10秒×12本。16:9。**今はテキストから** | 1本1場所。セリフは口元3本。フェラは玄関と路地の寄り。授業は授業。写真は任意 |
@@ -203,8 +203,8 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 **台詞:** 「」の中は話し言葉（ひらがな。漢字は使わない。おチンチン・おミズ・ムク等の符丁はカタカナ）。1本1人1行。行為クリップ（ジュボ・口内・挿入・クンニ）はセリフを足さない。無言のまま。チンチンのジュボジュボ、チュー、唾液を舐める音、自然に漏れた喘ぎはちゃんと出す。精液は全話ヘドロ重油級の白いドロドロで、口が半分も保てないくらい溢れる。口パク後は無言のまま肌が動く。シーンごとに WHO で誰が出て何をするかを書く。余り役は NOT IN FRAME。常時2人以上ではない。
 **速さ:** 本線は Larry 8step。試し打ち・最速プレビューだけ LightX2V 4step。秒数は 4〜10（1本）。15秒はメモリ不足で画面が小さくなるので使わない。20〜120秒の「つなぐ」は同じカットを最後のコマで繋ぐ（10秒ずつ。1本で伸ばさない）。20秒は 10×2、120秒は 10×12。2〜12本目の文は③のつなぎ欄。空なら前の続き。「登校（専用）」などはカット割りで、つなぐとは別。「登校（つなぐ）」「登校（つなぐ修）」は同じ JSON を最後のコマで繋ぐ再生。
 **最終シーン合わせ（③のチェック）:** 普通のつなぐと「つなぐ修」は**最後の本だけ**を選んだシーンに合わせて直す（最初の T2V→I2V のつなぎは触らない）。専用（カット）は**写真から**の本だけ「この本の静止画・独立カット・前の最後のコマから続けない」の1行を足す（JSON の部品はそのまま）。「つなぐ」（文そのまま）ではチェックしても何もしない。
-**エロなしの重ね:** Turbo1 + 画質1。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。
-**エロの重ね:** 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。Eros Max の成人 T2V/I2V は Mystic XXX v4 を 0.5 で載せる（Ref2VA 版は実験・音なしなので載せない）。
+**エロ汎用の日常:** Turbo1 + 解剖(Mystic 0.5) + シネマ1。行為 LoRA は載せない。速さ用と画質用を分ける。Larry と LightX2V は同時に積まない。普通（エロなし）と R2V は Mystic なし。
+**エロの重ね:** 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入ショットに Turbo は切る。Fal には載せない。Eros Max の成人 T2V/I2V と日常エロ汎用は Mystic XXX v4 を 0.5。Mystic は解剖であり、フェラ／騎乗／中出し／竿ロックの代わりにはならない（Ref2VA 版は実験・音なしなので載せない）。
 **エロの空欄:** 全員 21歳以上の全裸のごく普通の若い成人女性（女かふたなり）。男は出さない。行為の細かい描写は③の文章欄で足す。
 **アナル／飲尿／脱糞（どの構図）:** ThumbInButt は四つん這いに固定するのでアナルセックスには積まない。竿＋穴＋文章だけ。立ち・騎乗・後背・横は文章欄に書く。手は腰。飲尿は亀頭先の黄色い水。脱糞は今出している動き。指入れだけ ThumbInButt（四つん這い・穴が膣より上）。男・his は書かない。
 **ふたなりフェラ（汎用）:** 空欄は第三者の2ショットで根元まで。場所・誰が座るかは文章欄だけ。体位欄は使わない（立ちロックで座った人が立つ）。POVにしない。短いメモ（ハチ公前のベンチ、など）でも足りる。
@@ -332,8 +332,8 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/h3-mystic-xxx-f112"
-FETCH_REV = "h3-20260913-mystic-xxx-2"
+BRANCH = "cursor/h3-mystic-daily-f112"
+FETCH_REV = "h3-20260913-mystic-daily-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -685,10 +685,10 @@ MD3 = r"""## ③ 動画を作る
 
 おすすめ文の例（空欄のときに自動で近い内容になります）:
 
-- **日常（速い＋綺麗）** … Larry + シネマ。8step
-- **最速プレビュー（エロなし）** … LightX2V 4step。当たりは日常で焼き直し
-- **音も残す（エロなし）** … LightX2V 8step
-- **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文
+- **日常（エロ汎用）** … Mystic 0.5 + Larry + シネマ。8step。行為 LoRA なし。旧名「日常（速い＋綺麗）」
+- **最速プレビュー（エロ汎用）** … Mystic 0.5 + LightX2V 4step。当たりは日常で焼き直し。旧名「最速プレビュー（エロなし）」
+- **音も残す（エロ汎用）** … Mystic 0.5 + LightX2V 8step。旧名「音も残す（エロなし）」
+- **普通（エロなし）** … 専用 I2V / T2V ノートと同じおすすめ文。Mystic なし
 - **帰宅（専用 / つなぐ / つなぐ修）** … 10秒×12本。1本1場所。セリフは口元の1本だけ（リップシンク）。クンニ LoRA は寄り1本。行為は口元・舌・竿の寄り。写真は `input/homecoming-90s/` の 01〜12（`11-lick.jpg` は舌と穴の寄り）
 - **洗い物（専用 / つなぐ / つなぐ修）** … 10秒×12本。1本1場所。サヤカはシンク固定。セリフは口元の2本だけ。フェラは口元の寄り。口内は CUMOUF。写真は `input/dishes-90s/` の 01〜12（任意。01〜09は従来のまま）
 - **登校（専用 / つなぐ / つなぐ修）** … 第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉）。フェラは玄関と路地の寄り。授業は授業。**今の準備はテキストから。** `input/commute-120s/` の試験jpgは③がテキストからなら使わない。Imagine 後に写真からへ。旧名「登校120秒（専用）」も専用
@@ -807,7 +807,7 @@ if Path("/content/h3_paths.env").is_file():
     _sel_drive = _sel_env.get("DRIVE_ROOT")
 _ensure = getattr(sys.modules.get("h3_lora_studio"), "ensure_select_loras_on_path", None)
 if callable(_ensure):
-    _ensure(drive_root=_sel_drive, branch="cursor/h3-mystic-xxx-f112")
+    _ensure(drive_root=_sel_drive, branch="cursor/h3-mystic-daily-f112")
 else:
     if (not _sel.is_file()) and _sel_scripts.is_file():
         shutil.copy2(_sel_scripts, _sel)
@@ -818,7 +818,7 @@ else:
     if not _sel.is_file():
         try:
             _req = urllib.request.Request(
-                "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-mystic-xxx-f112/h3-lora-studio/scripts/select_loras.py",
+                "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-mystic-daily-f112/h3-lora-studio/scripts/select_loras.py",
                 headers={"Cache-Control": "no-cache", "Pragma": "no-cache", "User-Agent": "h3-lora-studio"},
             )
             with urllib.request.urlopen(_req, timeout=60) as _resp:

@@ -2,11 +2,11 @@
 
 MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V / 参照は R2V）専用。
 
-成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。Eros 成人 T2V/I2V は解剖（Mystic XXX）を足す。画質は解剖+行為+ヘルパー2が上限。API キーは print しない。
+成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。Eros の全 FL2VA T2V/I2V（日常エロ汎用含む）は解剖（Mystic XXX）を 0.5。Mystic は行為 LoRA の代わりにならない。画質は解剖+行為+ヘルパー2が上限。API キーは print しない。
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）
@@ -16,9 +16,9 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（H3 Eros Max TURBO-hybrid beta5 int8・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は参照シーンのときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。公式 FL2VA は普通の I2V / T2V ノート用。R2V は公式 Ref2VA。Eros TURBO-hybrid では Larry / LightX2V FL2VA を積まない（焼き込み）。
 
-## エロなし（速い＋綺麗）
+## 日常（エロ汎用）と普通（エロなし）
 
-速さ LoRA と画質 LoRA を分ける。同時オンは **Turbo 1 + 画質 0〜1**。
+速さ LoRA と画質 LoRA を分ける。日常／最速／音残しは **Turbo 1 + 解剖 Mystic 0.5 + シネマ 1**。行為 LoRA は載せない。普通（エロなし）と R2V は Mystic なし。
 
 | 速さ | LoRA | step | メモ |
 |---|---|---|---|
@@ -35,13 +35,13 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 比較の目安: 20step 基準に対し 8step で約半分、4step で約 1/3。8step 同士なら Larry と LightX2V の画質は近い。音は ベース ＞ Larry 8step ＞ LightX2V。
 
-| ③の名前 | situation | Turbo | 画質 | sampler |
-|---|---|---|---|---|
-| 日常（速い＋綺麗） | `sfw_daily` | Larry 1.0 | シネマ 0.5 | res_multistep / simple / 8 |
-| 最速プレビュー（エロなし） | `sfw_preview` | LightX2V 4step 1.0 | シネマ 0.4 | euler / simple / 4 |
-| 音も残す（エロなし） | `sfw_audio` | LightX2V 8step 1.0 | シネマ 0.4 | euler / simple / 8 |
-| 普通（エロなし） | `vanilla` | LightX2V 4step 1.0 | なし | 専用 I2V / T2V と同じ |
-| （R2V・CLI） | `sfw_r2v` | Ref2VA 4step 1.0 | シネマ 0.5 | FL2VA 用 Turbo は積まない |
+| ③の名前 | situation | 解剖 | Turbo | 画質 | sampler |
+|---|---|---|---|---|---|
+| 日常（エロ汎用） | `sfw_daily` | Mystic 0.5 | Larry 1.0 | シネマ 0.5 | res_multistep / simple / 8。旧名「日常（速い＋綺麗）」 |
+| 最速プレビュー（エロ汎用） | `sfw_preview` | Mystic 0.5 | LightX2V 4step 1.0 | シネマ 0.4 | euler / simple / 4 |
+| 音も残す（エロ汎用） | `sfw_audio` | Mystic 0.5 | LightX2V 8step 1.0 | シネマ 0.4 | euler / simple / 8 |
+| 普通（エロなし） | `vanilla` | なし | LightX2V 4step 1.0 | なし | 専用 I2V / T2V と同じ |
+| （R2V・CLI） | `sfw_r2v` | なし | Ref2VA 4step 1.0 | シネマ 0.5 | FL2VA 用 Turbo は積まない。Mystic なし |
 
 Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora)。Colab は LoraLoader 用の [DarkRomeo88 Comfy 変換](https://huggingface.co/DarkRomeo88/MiniMax-H3-turbo-lora-comfyui) を使う。LightX2V は [lightx2v/Minimax-h3-Turbo](https://huggingface.co/lightx2v/Minimax-h3-Turbo)。まとめ: [Civitai 1063735](https://civitai.com/models/1063735)。
 
@@ -49,7 +49,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + 解剖 0〜1 + ヘルパー 0〜2 + Turbo 0〜1**。Eros Max の成人 T2V/I2V は **Mystic XXX v4 を 0.5**（TenStrip が上載せ必須と書いた。beta5 に混ざっていても載せる。Ref2VA 版は実験・音なしなので載せない）。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。竿・穴は Eros では薄め（0.45 / 0.4）。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + 解剖 0〜1 + ヘルパー 0〜2 + Turbo 0〜1**。Eros Max の成人 T2V/I2V は **Mystic XXX v4 を 0.5**（TenStrip が上載せ必須と書いた。beta5 に混ざっていても載せる。日常エロ汎用も同じ 0.5。行為 LoRA の代わりにはならない。Ref2VA 版は実験・音なしなので載せない）。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。竿・穴は Eros では薄め（0.45 / 0.4）。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 解剖 | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|---|
@@ -95,7 +95,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - Fal H3 Max に LoRA を差す
 - 訓練で体位を足す（既存 FL2VA LoRA を積む）
 
-積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）、`mystic-xxx-ref2va`（実験・音未学習。R2V は AfterMidnight）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。成人 T2V/I2V の解剖は [Mystic XXX v4](https://civitai.com/models/2856467?modelVersionId=3266628) を 0.5。LTX の 10Eros や riding の LTX 版は載せない。
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）、`mystic-xxx-ref2va`（実験・音未学習。R2V は AfterMidnight）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。全 FL2VA T2V/I2V（日常エロ汎用含む）の解剖は [Mystic XXX v4](https://civitai.com/models/2856467?modelVersionId=3266628) を 0.5。行為 LoRA（フェラ／騎乗／CUMOUF／竿ロック／穴）の代わりにはならない。普通（エロなし）・R2V・電話 I2V/T2V には載せない。LTX の 10Eros や riding の LTX 版は載せない。
 
 ### ThumbInButt（アナル系の行為 LoRA）
 
