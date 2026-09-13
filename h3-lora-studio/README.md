@@ -6,7 +6,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）

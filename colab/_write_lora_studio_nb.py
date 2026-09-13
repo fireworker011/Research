@@ -62,7 +62,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_lora_studio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
 
 ## やること（生成は3つ。学習するなら④）
 
