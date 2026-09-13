@@ -4115,16 +4115,16 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
     )
 
     expect = {
-        "manhole-30s": (["futa_visible", "oral_creampie"], ["このフタ、ズレてる", "いまなおす"], ["Aya", "Rei"]),
-        "roof-ac-30s": (["futa_visible", "futa_sex"], ["クーラーしんでる", "フィルタ、みて"], ["Sayaka", "Madoka"]),
-        "tetrapod-30s": (["futa_visible", "oral_creampie"], ["カゼ、ヤバい", "カゲ、こっち"], ["Aya", "Rei"]),
-        "locker-30s": (["futa_visible", "oral_creampie"], ["カギ、ない", "ウチのバンゴウ"], ["Aya", "Madoka"]),
-        "crossing-30s": (["futa_visible", "oral_creampie"], ["シンゴウ、きえてる", "マツ"], ["Sayaka", "Rei"]),
-        "lookout-30s": (["futa_visible", "cunnilingus_futa"], ["ナニモみえない", "シバラク、いよ"], ["Aya", "Rei"]),
-        "factory-30s": (["futa_visible", "futa_sex"], ["サビ、ふむな", "キをつけて"], ["Sayaka", "Madoka"]),
+        "manhole-30s": (["futa_visible", "futa_anal"], ["このフタ、ズレてる", "いまなおす"], ["Aya", "Rei"]),
+        "roof-ac-30s": (["futa_visible", "futa_anal"], ["クーラーしんでる", "フィルタ、みて"], ["Sayaka", "Madoka"]),
+        "tetrapod-30s": (["futa_visible", "futa_anal"], ["カゼ、ヤバい", "カゲ、こっち"], ["Aya", "Rei"]),
+        "locker-30s": (["futa_visible", "futa_anal"], ["カギ、ない", "ウチのバンゴウ"], ["Aya", "Madoka"]),
+        "crossing-30s": (["futa_visible", "futa_anal"], ["シンゴウ、きえてる", "マツ"], ["Sayaka", "Rei"]),
+        "lookout-30s": (["futa_visible", "futa_anal"], ["ナニモみえない", "シバラク、いよ"], ["Aya", "Rei"]),
+        "factory-30s": (["futa_visible", "futa_anal"], ["サビ、ふむな", "キをつけて"], ["Sayaka", "Madoka"]),
         "gas-station-30s": (["futa_visible", "oral_creampie"], ["おチンチン、ミズ、ちょうだい、、、", "はい、おくち、あけて"], ["Aya", "Rei"]),
         "tunnel-phone-30s": (["futa_visible", "oral_creampie"], ["ツウじてる？", "ダセない"], ["Aya", "Rei"]),
-        "riverbank-30s": (["futa_visible", "oral_creampie"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
+        "riverbank-30s": (["futa_visible", "futa_anal"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
         "hachiko-30s": (["futa_visible", "oral_creampie"], ["またシコシコしてる", "がまんできない"], ["Aya", "Rei"]),
     }
     assert tuple(ADDON_PACK_ORDER) == tuple(expect)
@@ -4183,6 +4183,15 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
                         or "opens her mouth" in c1
                     ), sid
                     assert "already oral" not in c1, sid
+                elif sit2 == "futa_anal":
+                    assert "hand's width" in c1, sid
+                    assert "not in" in c1, sid
+                    assert "anus" in c1, sid
+                    assert any(
+                        k in c1
+                        for k in ("accepting", "hips back", "knees apart", "all fours", "on the lap", "straddl")
+                    ), sid
+                    assert "already in" not in c1, sid
                 elif sit2 == "cunnilingus_futa":
                     assert "knees open" in c1, sid
                     assert "not licking" in c1, sid
@@ -4228,6 +4237,17 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
                 assert "joining" in prompt.lower() or "already in" in prompt.lower()
                 assert "口移し" not in planned["prompt"]
                 assert "INSIDE LOCK:" in planned["prompt"]
+            if clip["situation"] == "futa_anal":
+                assert "INSERTION ON CAMERA" in prompt, sid
+                assert "Joining point visible" in prompt, sid
+                assert "口移し" not in planned["prompt"]
+                assert "SEMEN SHARE:" not in planned["prompt"], sid
+                assert "ANAL CREAMPIE:" in planned["prompt"], sid
+                assert [row["id"] for row in planned["stack"]] == [
+                    "mystic-xxx-h3",
+                    "penis-lora-h3",
+                    "synth-pussy-h3",
+                ], sid
         assert all(name in " ".join(c["prompt"] for c in story["clips"]) for name in cast)
 
     gas = load_story("gas-station-30s")
@@ -4247,8 +4267,8 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
     tunnel = load_story("tunnel-phone-30s")
     assert "receiver" in tunnel["clips"][1]["prompt"].lower()
     look = load_story("lookout-30s")
-    assert "20cm hangs unused" in look["clips"][1]["prompt"]
-    assert "Not oral on a penis" in look["clips"][1]["prompt"]
+    assert "INSERTION ON CAMERA" in look["clips"][1]["prompt"]
+    assert "20cm hangs unused" not in look["clips"][1]["prompt"]
     hachiko = load_story("hachiko-30s")
     h1 = hachiko["clips"][0]["prompt"]
     h2 = hachiko["clips"][1]["prompt"]
@@ -6585,22 +6605,26 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "lecture-desk-50s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("lecture-desk-50s")) == []
     assert semen_share_plan(load_story("commute-120s")) == []
-    assert semen_share_plan(load_story("bath-120s")) == [(10, "silent_next")]
+    # アナル中出しで終わる本は口移しなし。①のまま口内で終わる本だけ残す。
+    assert semen_share_plan(load_story("bath-120s")) == []
+    assert "bath-120s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("last-stop-40s")) == [(2, "on_cumouf")]
-    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf"), (9, "silent_next")]
+    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf")]
     assert semen_share_plan(load_story("semen-bath-70s")) == []
     assert "semen-bath-70s" in SEMEN_SHARE_SKIP
-    assert semen_share_plan(load_story("meat-wall-85s")) == [(6, "after_speech")]
-    assert "meat-wall-85s" not in SEMEN_SHARE_SKIP
-    assert semen_share_plan(load_story("meat-wall-cesspit-70s")) == [(6, "after_speech")]
-    assert "meat-wall-cesspit-70s" not in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("meat-wall-85s")) == []
+    assert "meat-wall-85s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("meat-wall-cesspit-70s")) == []
+    assert "meat-wall-cesspit-70s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("red-light-50s")) == [(3, "on_cumouf")]
-    assert semen_share_plan(load_story("manhole-30s")) == [(1, "on_cumouf")]
+    assert semen_share_plan(load_story("manhole-30s")) == []
     assert semen_share_plan(load_story("roof-ac-30s")) == []
     assert semen_share_plan(load_story("lookout-30s")) == []
     assert semen_share_plan(load_story("engawa-120s")) == [(10, "on_cumouf")]
-    assert semen_share_plan(load_story("cafe-100s")) == [(9, "after_speech")]
-    assert semen_share_plan(load_story("clinic-75s")) == [(8, "on_back")]
+    assert semen_share_plan(load_story("cafe-100s")) == []
+    assert "cafe-100s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("clinic-75s")) == []
+    assert "clinic-75s" in SEMEN_SHARE_SKIP
     shorts = load_story("shorts-immoral")
     assert semen_share_plan(shorts) == [(1, "on_cumouf"), (6, "on_cumouf")]
     for i, mode in semen_share_plan(shorts):
@@ -6652,19 +6676,14 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     share_clip = prepare_story_clip(bath, 10, last_frame="x.png", stills_dir=tmp_path)
     assert share_clip["situation"] == "futa_visible"
     assert share_clip["duration_s"] == 10
-    assert "mouth-to-mouth" in share_clip["prompt"].lower()
-    assert "HOLD STILL" in share_clip["prompt"]
-    assert "SEMEN SHARE:" in share_clip["prompt"]
-    assert "STANDS UP" in share_clip["prompt"]
-    assert "SAME EYE LEVEL" in share_clip["prompt"]
-    assert "tongues wrap" in share_clip["prompt"].lower()
-    assert "clingy" in share_clip["prompt"].lower()
-    assert "they lean in" not in share_clip["prompt"].lower()
+    assert "SEMEN SHARE:" not in share_clip["prompt"]
+    assert "No mouth-to-mouth semen share" in share_clip["prompt"]
     assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
     assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
-    cumouf = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
-    assert cumouf["situation"] == "oral_creampie"
-    assert "SEMEN SHARE:" not in cumouf["prompt"]
+    anal = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
+    assert anal["situation"] == "futa_anal"
+    assert "ANAL CREAMPIE:" in anal["prompt"]
+    assert "SEMEN SHARE:" not in anal["prompt"]
 
     stop = load_story("last-stop-40s")
     assert sum(float(c["duration_s"]) for c in stop["clips"]) == 40
