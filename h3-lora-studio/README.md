@@ -160,6 +160,12 @@ python3 h3-lora-studio/train/pack_dataset.py --concept anal-any-h3 --print-grid
 - アナルで終わった本は口移しをしない（`SEMEN_SHARE_SKIP`）。締めの本は「アナルあつい」系の話し言葉＋アナルの白いドロドロ
 - 行為クリップは無言（`ACT_SITUATIONS`）
 
+### 脱糞の出し方
+
+デフォルトの1本クリップは③「**脱糞（どの構図）**」。体位欄でしゃがみ／立ち／後背／正常位／座り／横。場所が違うときは**文章欄**に書く（カフェの便座、縁側、など）。帰宅やカフェなどの物語ドロップダウンは選ばない（物語に糞は足さない。医院・終電の `No feces.` は外さない）。
+
+山小屋は扉の外の**塗れ**。ニクカベ肥溜めは最初から塗れている肥溜め。どちらも「今、肛門から出している」動きではない。人間の糞はソーセージ状の固形（ゼリー／スライムではない）。ThumbInButt は積まない。既存話の飲尿はジュボのまま戻さない。
+
 ```bash
 python h3-lora-studio/scripts/select_loras.py --list
 python h3-lora-studio/scripts/select_loras.py --situation sfw_daily --mode t2v --prompt '（シーン）'

@@ -325,6 +325,13 @@ def test_japanese_form_labels():
     scat_help = explain_choice("脱糞（どの構図）", "テキストから（写真なし）")
     assert "肛門" in scat_help
     assert "肥溜め" in scat_help
+    assert "文章欄" in scat_help
+    assert "ゼリー" in scat_help
+    sunday_help = explain_choice("休日（専用）", "テキストから（写真なし）")
+    assert "アナル中出し" in sunday_help
+    assert "ハードカット" in sunday_help
+    assert "中出し後に抜いて" not in sunday_help
+    assert "AIO 横クローズ" not in sunday_help
     stream_help = explain_choice("放尿（性器から）", "テキストから（写真なし）")
     assert "尿道" in stream_help
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
@@ -538,8 +545,8 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-2"
-    assert STUDIO_FETCH_BRANCH == "cursor/h3-mystic-daily-f112"
+    assert STUDIO_REV == "h3-20260913-anal-3"
+    assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
 
@@ -643,7 +650,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-2"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-3"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -715,7 +722,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-2" in blob
+    assert "h3-20260913-anal-3" in blob
+    assert "h3-20260913-anal-2" not in blob
     assert "h3-20260913-cabin-2" not in blob
     assert "h3-20260913-fetch-1" not in blob
     assert "h3-20260913-cabin-1" not in blob
@@ -6973,6 +6981,19 @@ def test_notebook_story_play_flow():
     assert "スマホだけの人" in md0
     assert "放尿（性器から）" in md0
     assert "亀頭先" in md0
+    assert "既存話は差し替えない" in md0
+    assert "ミルク＝ジュボのあと射精せず立ち後背位アナル中出し" in md0
+    assert "ミルク＝ジュボと口内" not in md0
+    assert "セックスは AIO 横クローズ" not in md0
+    assert "アナルは入れない" not in md0
+    assert "おくちにだされすぎ" not in md0
+    assert "文章欄に場所" in md0 or "文章欄（カフェの便座" in md0
+    assert "再生が5パターン" in cell3
+    assert "再生が3パターン" not in cell3
+    assert "h3-scat-look-f112" not in cell3
+    assert "h3-mystic-daily-f112" not in cell3
+    assert "cursor/h3-anal-stories-f112" in cell3
+    assert "三択を選んでも帰宅や訪問販売の文は差し替わらない" in cell3
     assert len(nb["cells"]) == 9
     assert cell3.index('"普通（エロなし）"') < cell3.index('"①口内で終わる"') < cell3.index('"②フェラのあとアナル"') < cell3.index('"③会って即アナル"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
@@ -7066,7 +7087,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-2" in cell2
+    assert "h3-20260913-anal-3" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

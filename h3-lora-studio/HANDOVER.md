@@ -16,21 +16,21 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260913-anal-2`
+設定の版: `h3-20260913-anal-3`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
-直近: 既存話に①口内／②フェラあとアナル／③会って即アナルを焼き込み、③ドロップダウンにも三択を出した。ユーザーが「選択肢にない」と言ったのは Drive/xxx の古いノート。GitHub から開き直す。作業ツリーは clean。次の指示を待つ。
+直近: ③の解説表が口内終わりのままだったので焼き込みどおりに直した。脱糞のデフォルト以外は③「脱糞（どの構図）」＋体位＋文章欄。GitHub から開き直す。
 ```
 
 ## いまの枝
 
 | 項目 | 値 |
 |---|---|
-| 作業 | `cursor/h3-anal-stories-f112`（最新 `d6932be`） |
+| 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-2` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260913-anal-3` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -127,6 +127,12 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 - 男性キャラ・未成年。出演は 21+
 - 作業ブランチ以外への勝手なマージ。YAML cron だけデフォルトブランチが必要（この PR では不要）
 
+## 脱糞（コードに入っている注意）
+
+コード側: `lock_scat_act` / `lock_scat_look`（ソーセージ状の固形。ゼリー／スライムではない。今出している。塗れではない）。ThumbInButt なし。医院・終電は `No feces.` のまま。既存話の飲尿はジュボのまま戻さない。
+
+デフォルト以外の場所: ③「脱糞（どの構図）」＋体位＋文章欄。物語を選ぶな。山小屋／ニクカベ肥溜めは塗れパック。
+
 ## 未着手・次に来そうなこと
 
 - 既存の帰宅などを、③の三択で上書きする（今は焼き込み固定。三択は汎用40秒）
@@ -136,4 +142,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-三択は③「やりたいシーン」の上付近。`普通（エロなし）` の直後。GitHub の Colab から開き直す。版 `h3-20260913-anal-2`。
+三択は③「やりたいシーン」の上付近。`普通（エロなし）` の直後。物語の締めは解説表が焼き込みどおり。脱糞の別場所は「脱糞（どの構図）」＋体位＋文章欄。GitHub の Colab から開き直す。版 `h3-20260913-anal-3`。
