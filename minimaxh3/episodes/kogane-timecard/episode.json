@@ -5,14 +5,14 @@
   "subtitle": "架空オープンワールド ショート",
   "canvas": "16:9",
   "clip_seconds": 10,
-  "tone": "mundane",
+  "tone": "action",
   "render": {
     "preset": "daily",
     "fallback_preset": "fast",
     "seed": 42
   },
   "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, no anime, no illustration",
-  "violence": "none",
+  "violence": "game",
   "world": {
     "name": "Kogane kitchen alley",
     "lock": "Fictional back-alley izakaya kitchen called Kogane: wet cobblestone service lane at dawn, stacked empty plastic bottle crates, a stainless steel back door with a small round window, steam from a roof vent, warm tungsten bulbs, no readable letters on any surface",
@@ -42,11 +42,12 @@
   "homage": {
     "borrowed": [
       "third-person game camera",
-      "cover used as a mundane hiding place",
+      "cover used as a hiding place",
+      "one low shin trip that sits an adult down like a ragdoll, unhurt",
       "mission subtitle grammar with the object noun in colour",
       "HUD hidden in dialogue cutscenes, subtitles only",
       "a pause-menu inventory gag over a frozen frame",
-      "an errand played dead straight that ends on a mission-failed card"
+      "chaos in the middle, then a deadpan mission-failed card"
     ],
     "never": [
       "classroom",
@@ -134,28 +135,29 @@
       }
     },
     {
-      "id": "02-alley",
+      "id": "02-shin",
       "source": "still",
-      "still": "stills/02-alley.jpg",
+      "still": "stills/02-shin.jpg",
       "trim": {"start": 0, "seconds": 5.0},
-      "cast": ["rena"],
+      "cast": ["rena", "oka"],
       "face_visible": false,
+      "physics": true,
       "props": ["tote"],
-      "place": "The same wet service alley, camera facing the open stainless back door, morning steam from a roof vent",
-      "camera": "Third-person camera behind and slightly above Rena, tracking forward smoothly at walking pace",
-      "action": "Rena walks at a calm pace down the alley toward the open back door, tote on her shoulder, keeping to the wall; the door stays open and empty",
-      "sfx": "Kitchen sneakers on wet stone, extractor hum, a distant dish clink",
-      "music": "Low pulsing synth bass, a little faster; a rhythmic hi-hat joins",
+      "place": "The stainless back doorway of the same alley at dawn, wet cobblestone, the doorframe filling the background",
+      "camera": "Third-person camera behind Rena at hip height, holding still with a slight walking bob",
+      "action": "Rena stays crouched and hooks Oka's shin once with her right foot as she steps through the doorway; Oka sits down against the doorframe like a ragdoll, glasses on, unhurt; Rena freezes in a small bow; both stay in the doorway",
+      "sfx": "A sneaker tap on a shin, fabric sit-down, extractor hum, a distant dish clink",
+      "music": "Bass stinger then a held low note",
       "hud": {
         "mission": "伝票を厨房へ渡せ",
         "mission_keyword": "伝票",
-        "hint": "L 長押しで早歩き",
+        "hint": "△ 足払い",
         "health": 0.9,
-        "stamina": 0.62,
+        "stamina": 0.55,
         "money": "¥1,860",
-        "heat": 0,
-        "objective_bearing": 8,
-        "objective_distance": 0.4,
+        "heat": 4,
+        "objective_bearing": 5,
+        "objective_distance": 0.25,
         "icons_active": ["伝"],
         "complete": false
       }
