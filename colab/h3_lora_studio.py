@@ -317,6 +317,7 @@ SITUATION_DOWNLOAD = {
     "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
     # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
     "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -463,6 +464,8 @@ SITUATION_JA = {
     "lecture-desk-50s": "lecture-desk-50s",
     "camp-50s": "camp-50s",
     "fireworks-50s": "fireworks-50s",
+    "山小屋": "cabin-40s",
+    "cabin-40s": "cabin-40s",
     "ハイスイコウ": "manhole-30s",
     "屋上クーラー": "roof-ac-30s",
     "ハマのテトラ": "tetrapod-30s",
@@ -609,6 +612,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "cabin-40s": "山小屋40秒。10秒×4本。9:16。0-10は扉の外のアヤ一人（中の人体は描かない）。10-20は中で2人。会話のあとアヤは既に跨っている（先端がアナルに手の幅、未挿入）。20-30は挿入オンカメラでアナルへ。顔は入れ替えない。30-40はアナル中出し。白いドロドロはアナルから溢れる。マンコからは出さない。騎乗LoRA・中出しLoRA・AIOなし。台詞は話し言葉（漢字なし）。",
     "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
     "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
@@ -697,6 +701,7 @@ CHAIN_PACK_ORDER = (
     "lecture-desk-50s",
     "camp-50s",
     "fireworks-50s",
+    "cabin-40s",
     "manhole-30s",
     "roof-ac-30s",
     "tetrapod-30s",
@@ -787,6 +792,7 @@ STORY_TITLE_JA = {
     "lecture-desk-50s": "講義机",
     "camp-50s": "キャンプ",
     "fireworks-50s": "花火",
+    "cabin-40s": "山小屋",
     "manhole-30s": "ハイスイコウ",
     "roof-ac-30s": "屋上クーラー",
     "tetrapod-30s": "ハマのテトラ",
@@ -3743,6 +3749,32 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     return _inject_before_soundscape(raw, line)
 
 
+ANAL_CREAMPIE_LINE = (
+    "ANAL CREAMPIE: Rei's erect 20cm stays in Aya's ANUS. "
+    "She ejaculates INTO the ANUS. WHITE goo overflows OUT OF THE ANUS around the shaft. "
+    "Aya's unused pussy does NOT leak semen. Semen does not come out of the vagina. "
+    "Not a vaginal creampie."
+)
+_ANAL_CREAMPIE_CUE_RE = re.compile(
+    r"ejaculat|cums inside|cums into|pumps WHITE|WHITE goo|"
+    r"anal creampie|overflows OUT OF THE ANUS|overflows out of the anus",
+    re.I,
+)
+
+
+def lock_anal_creampie(text: str, *, situation: str = "") -> str:
+    """futa_anal climax stays in the anus. Do not let semen leak from the unused pussy."""
+    raw = str(text or "")
+    if not raw or "ANAL CREAMPIE:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS:
+        return raw
+    if not _ANAL_CREAMPIE_CUE_RE.search(raw):
+        return raw
+    return _inject_before_soundscape(raw, ANAL_CREAMPIE_LINE)
+
+
 def lock_futa_shaft(text: str, *, force: bool = False) -> str:
     """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
     raw = str(text or "")
@@ -4417,6 +4449,7 @@ SEMEN_SHARE_SKIP = frozenset({
     "yoga-50s",
     "laundromat-50s",
     "fireworks-50s",
+    "cabin-40s",
     "camp-50s",
     "back-wash-60s",
     "lecture-desk-50s",
@@ -6116,6 +6149,7 @@ def prepare_story_clip(
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
+    raw_prompt = lock_anal_creampie(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
