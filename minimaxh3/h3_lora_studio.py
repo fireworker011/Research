@@ -328,6 +328,7 @@ SITUATION_JA = {
     "フェラ": "oral",
     "フェラ（女体）": "oral",
     "ふたなりフェラ": "futa_blowjob",
+    "ふたなりフェラ（どの構図）": "futa_blowjob",
     "セックス（女体）": "futa_sex",
     "ふたなりセックス": "futa_sex",
     "アナルセックス（女体）": "futa_anal",
@@ -524,7 +525,7 @@ SITUATION_HELP = {
     "lesbian_cunnilingus": "レズクンニ。女同士。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。クンニ 0.8 + 広げる 0.6 + Larry 0.5。男なし。",
-    "futa_blowjob": "ふたなりフェラ。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は全裸のごく普通の若い成人女性。男なし。変身 LoRA は足さない。",
+    "futa_blowjob": "ふたなりフェラ（汎用）。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
     "futa_anal": "アナルセックス（女体）。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・12step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
     "urine_drink": "飲尿（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
@@ -3802,6 +3803,125 @@ def apply_pose_situation(situation: str, pose: str) -> str:
     return POSE_SITUATION_MAP.get((sit, pose_key), sit)
 
 
+ORAL_CAMERA_LINE = (
+    "ORAL CAMERA: Third-person medium two-shot. Both people stay readable: the mouth "
+    "from head to knees and the shaft partner from head to mid-thigh in the same frame. "
+    "Face, breasts, hips, and the 20cm in the mouth all readable. Not first-person. "
+    "Not from the shaft. Not from the lap. Not POV. Not a GoPro. Not a mouth-only crop. "
+    "The 20cm stays small in the lower third and must NEVER fill the lens. "
+    "Place, sit vs stand, and who is on a seat come from the prompt. "
+    "Do not invent a toilet, a beach, Hachiko, or a named city unless the prompt names them. "
+    "If no place is named, a plain indoor room."
+)
+ORAL_SEAT_LINE = (
+    "ORAL SEAT: If the shaft partner is sitting (bench, chair, sofa, toilet, stool), they "
+    "STAY seated the whole take. Hips glued to the seat. They never stand for a kiss or for jupo. "
+    "The mouth comes to them. During jupo, a pleasure face is OK; hips stay on the seat. "
+    "If nobody is sitting, ignore this."
+)
+PHONE_ORAL_WOMAN = (
+    "Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, "
+    "ordinary everyday look, feminine body. No penis. Not a man."
+)
+PHONE_ORAL_FUTA = (
+    "Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, "
+    "ordinary everyday look, feminine body, futanari: erect 20cm, pale human shaft, "
+    "distinct pink glans, almost-horizontal with a slight upward curve, hairless female "
+    "pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. "
+    "Not a man."
+)
+_ORAL_FULL_PROMPT_RE = re.compile(
+    r"subject_definitions:|integrated_multimodal_description:|ORAL CAMERA:",
+    re.I,
+)
+
+
+def lock_oral_camera(text: str, *, situation: str = "") -> str:
+    """Phone ③ BJ: third-person two-shot. Blowjob LoRA otherwise falls into shaft-POV."""
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw or sit not in ORAL_SUCK_SITUATIONS or "ORAL CAMERA:" in raw:
+        return raw
+    return _inject_before_soundscape(raw, ORAL_CAMERA_LINE)
+
+
+def lock_oral_seat(text: str, *, situation: str = "") -> str:
+    """If the prompt sits the shaft partner, keep them on that seat."""
+    raw = str(text or "")
+    sit = str(situation or "").strip()
+    if not raw or sit not in ORAL_SUCK_SITUATIONS or "ORAL SEAT:" in raw:
+        return raw
+    return _inject_before_soundscape(raw, ORAL_SEAT_LINE)
+
+
+def _split_leading_triggers(text: str) -> tuple[str, str]:
+    lines = str(text or "").split("\n")
+    i = 0
+    while i < len(lines) and not str(lines[i]).strip():
+        i += 1
+    lead: list[str] = []
+    while i < len(lines) and _CHAIN_TRIGGER_LINE_RE.match(str(lines[i]).strip() or ""):
+        lead.append(str(lines[i]).strip())
+        i += 1
+        while i < len(lines) and not str(lines[i]).strip():
+            i += 1
+    rest = "\n".join(lines[i:]).strip()
+    header = "\n".join(lead).strip()
+    return header, rest
+
+
+def wrap_phone_oral_prompt(text: str, *, situation: str = "") -> str:
+    """Short 文章 becomes place/action on a generic futa BJ. Full H3 prompts stay as written."""
+    original = str(text or "")
+    raw = original.strip()
+    sit = str(situation or "").strip()
+    if not raw or sit not in ORAL_SUCK_SITUATIONS:
+        return original
+    if _ORAL_FULL_PROMPT_RE.search(raw):
+        return original
+    if _URINE_CUE_RE.search(raw) and sit in {"oral", "futa_blowjob"}:
+        return original
+    header, rest = _split_leading_triggers(raw)
+    if not rest:
+        return original
+    if _ORAL_FULL_PROMPT_RE.search(rest):
+        return original
+    user = english_except_speech(rest)
+    if sit in {"oral", "oral_creampie"}:
+        s1, s2 = PHONE_ORAL_WOMAN, PHONE_ORAL_FUTA
+    else:
+        s1, s2 = PHONE_ORAL_FUTA, PHONE_ORAL_WOMAN
+    if sit == "oral_creampie":
+        action = (
+            "CUMOUF. Already oral. Already at the BASE. Thick opaque WHITE goo pulses in the mouth. "
+            "Not a facial."
+        )
+    else:
+        action = (
+            "Already a blow job. Already oral. Already at the BASE. Deep jupo-jupo the whole take."
+        )
+    body = (
+        "Vertical 9:16 live-action photorealism, no anime.\n\n"
+        "subject_definitions:\n"
+        f"<Subject 1> {s1}\n"
+        f"<Subject 2> {s2}\n\n"
+        "environment: Use the place named in USER SCENE. If none, a plain indoor room. "
+        "Do not invent a toilet, a beach, Hachiko, or a named city unless USER SCENE names them.\n\n"
+        f"USER SCENE:\n{user}\n\n"
+        "integrated_multimodal_description:\n"
+        f"{action} Third-person medium two-shot of both people. Follow USER SCENE for place, "
+        "who sits, who kneels, who arrives, and quoted speech. If USER SCENE already has a seat, "
+        "the shaft partner stays on that seat. Hands of the mouth on thighs or own knees, "
+        "NEVER on the shaft.\n\n"
+        "overall_soundscape:\n"
+        "Wet jupo-jupo. Pleasure breath, not words, unless USER SCENE has quoted speech.\n\n"
+        "All performers are consenting adult women 21 years or older. No man appears."
+    )
+    if header:
+        return header + "\n" + body
+    return body
+
+
 def apply_pose_lock(text: str, pose: str) -> str:
     raw = str(text or "")
     pose_key = resolve_pose(pose) if pose else str(pose or "").strip()
@@ -3832,14 +3952,30 @@ def lock_genital_pee(text: str, *, situation: str = "") -> str:
 
 
 def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> str:
-    """Phone ③: pose + AV look + genital pee / anal inside / scat from the anus."""
-    out = apply_pose_lock(text, pose)
+    """Phone ③: pose + AV look + genital pee / anal inside / scat from the anus.
+
+    Futa BJ / フェラ / 口内: pose field is ignored (place and sit/stand come from 文章).
+    Short notes wrap onto a generic third-person two-shot already at the BASE.
+    """
+    sit = str(situation or "").strip()
+    out = str(text or "")
+    if sit in ORAL_SUCK_SITUATIONS:
+        out = wrap_phone_oral_prompt(out, situation=sit)
+    else:
+        out = apply_pose_lock(out, pose)
     out = lock_av_look(out, situation=situation)
     out = lock_urine_look(out, situation=situation)
     out = lock_genital_pee(out, situation=situation)
     out = lock_scat_act(out, situation=situation)
     out = lock_penis_inside(out, situation=situation)
     out = lock_act_sfx(out, situation=situation)
+    if sit in ORAL_SUCK_SITUATIONS:
+        out = lock_oral_camera(out, situation=sit)
+        out = lock_oral_seat(out, situation=sit)
+        out = lock_oral_in_mouth(out, situation=sit)
+        out = lock_futa_anatomy(out)
+        out = lock_futa_shaft(out)
+        out = lock_pleasure_face(out, situation=sit)
     return out
 
 
@@ -4497,7 +4633,10 @@ _JP_PROMPT_GLOSSARY = (
     ("ドロドロの白い液体", "heavy-oil-thick gooey sticky opaque white liquid"),
     ("ドロッドロ", "heavy-oil-thick gooey"),
     ("身を胸につける", "presses her body flush against the chest"),
+    ("ジュボフェラ", "deep jupo blowjob"),
     ("シコシコオナニー", "stroking the erect penis"),
+    ("ハチコウ前", "in front of Hachiko"),
+    ("ハチ公前", "in front of Hachiko"),
     ("黄色い水", "yellow urine"),
     ("濃厚キス", "deep filthy wet kiss"),
     ("口移し", "mouth-to-mouth semen share"),
@@ -4506,6 +4645,18 @@ _JP_PROMPT_GLOSSARY = (
     ("イキ顔", "climax face"),
     ("画面右手", "camera right"),
     ("シコシコ", "stroking"),
+    ("ハチコウ", "Hachiko"),
+    ("ハチ公", "Hachiko"),
+    ("洋式便座", "western toilet"),
+    ("便座", "toilet seat"),
+    ("ジュボ", "jupo"),
+    ("昼間", "daytime"),
+    ("座ったまま", "staying seated"),
+    ("昼", "daytime"),
+    ("全裸の女性", "nude adult women"),
+    ("全裸", "fully nude"),
+    ("観客", "audience"),
+    ("ベンチ", "bench"),
     ("ネットリ", "clingy sticky"),
     ("ヌルヌル", "slick and slimy"),
     ("ドロドロ", "heavy-oil-thick gooey"),
