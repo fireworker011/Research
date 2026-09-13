@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-cabin-2"
+STUDIO_REV = "h3-20260913-anal-1"
 STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
 
 OPTIONAL_IDS = {
@@ -143,7 +143,6 @@ SITUATION_DOWNLOAD = {
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
         "hmmasturbation-h3",
-        "cumouf-h3",
     ],
     "dishes-90s": [
         "mystic-xxx-h3",
@@ -151,7 +150,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "commute-120s": [
@@ -171,14 +169,12 @@ SITUATION_DOWNLOAD = {
         "hmmasturbation-h3",
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
-        "cumouf-h3",
     ],
     "rooftop-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "larry-v4",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ],
     "okaeri-120s": [
@@ -187,7 +183,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "bath-120s": [
@@ -196,7 +191,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "dinner-120s": [
@@ -205,7 +199,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "futon-120s": [
@@ -214,14 +207,12 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "sunday-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -231,7 +222,6 @@ SITUATION_DOWNLOAD = {
         "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -243,7 +233,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "checkup-100s": [
@@ -252,7 +241,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "clinic-75s": [
@@ -261,7 +249,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "last-stop-40s": [
@@ -296,7 +283,6 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "meat-wall-cesspit-70s": [
@@ -305,34 +291,113 @@ SITUATION_DOWNLOAD = {
         "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
-    # cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy. 飲尿は使わない（ジュボ）。
-    "cafe-100s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "train-sales-80s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    # cunnilingus = cunnilingus_futa, anal = futa_anal. 飲尿は使わない（ジュボ）。
+    "cafe-100s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "train-sales-80s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "blowjob-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
     "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "yoga-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
+    "yoga-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
     "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
     "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "laundromat-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "laundromat-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
     "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "fireworks-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
     "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
-    # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
-    "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "roof-ac-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "tetrapod-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "locker-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "crossing-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "lookout-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "factory-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    # anal = futa_anal. gas/tunnel/hachiko stay oral_creampie.
+    "manhole-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "roof-ac-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "tetrapod-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "locker-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "crossing-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "lookout-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "factory-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
     "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "riverbank-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "riverbank-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "cinema-dy",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
     "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "shorts-immoral": [
         "blowjob-h3",
@@ -586,17 +651,17 @@ SITUATION_HELP = {
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は解剖 0.5 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。解剖 0.5 + 潮吹き LoRA + 竿 + 穴の見え方 + Larry 8step。根元のマンコが見える寄り。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。解剖 0.5 + クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
-    "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
-    "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉、漢字なし）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
-    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「まだひるだよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
-    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
-    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／てあらって。デザートいれておいたよ。話し言葉、漢字なし）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
-    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（さきにあらってて／おふろだとよけいムクってる／あがったらごはんね。話し言葉、漢字なし）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
-    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。非日常はテーブルの下で根元まで。セリフは口元3本（たべなさい／ごはんのとちゅうなのに／うえもちゃんとたべなさい。話し言葉、漢字なし）。フェラはテーブル下の寄り。口内は CUMOUF。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
-    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
-    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
+    "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。玄関ジュボは抜く。リビングでジュボのあと射精せず、後背位アナル中出し。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
+    "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床でジュボのあと射精せず、後背位アナル中出し。セリフは口元の本だけ。口内 CUMOUF なし。写真は input/dishes-90s の 01〜12。",
+    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉、漢字なし）。玄関ジュボは抜くだけ。路地でジュボのあと射精せず、立ち後背位アナル中出し。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
+    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。ジュボのあと射精せず、個室で後背位アナル中出し。口内 CUMOUF なし。セリフは口元の「まだひるだよ」だけ。セックスの続きは屋上。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
+    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。屋上は立ち後背位アナル中出し（AIOなし・hmmotionなし）。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
+    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／てあらって。デザートいれておいたよ。話し言葉、漢字なし）。玄関ジュボのあと射精せず、立ち後背位アナル中出し。口内 CUMOUF なし。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
+    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。洗い場でジュボのあと射精せず、座位アナル中出し。口内 CUMOUF なし。セリフは口元3本（さきにあらってて／おふろだとよけいムクってる／あがったらごはんね。話し言葉、漢字なし）。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
+    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。テーブル下ジュボのあと射精せず、座位アナル中出し。口内 CUMOUF なし。セリフは口元3本（たべなさい／ごはんのとちゅうなのに／うえもちゃんとたべなさい。話し言葉、漢字なし）。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
+    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。横になったままジュボのあと射精せず、正常位アナル中出し。口内 CUMOUF なし。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。ソファは後輩騎乗位のアナル（AIOなし）。中出し後に抜いて床でジュボ→口内 CUMOUF。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。アナル本に騎乗LoRAなし。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
+    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。縁側は後背位座位のアナル（AIOなし）。中出し後に抜いてアヤがマドカを根元まで→口内 CUMOUF。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。レイは入れない。アナル本に騎乗LoRAなし。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。ミルク売り。キャップのみ。ミルクは持たない。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。ハンバイにきましたのあとアヤが笑顔で20cmを軽く扱きながらあ、おっきいオチンチン。10-20は扱きながらおそかったねー／シコシコしてたらおそく。20-30はカチカチ／まちくたびれのあと扱きながら熱烈ベロチュー。30-40はキスをやめてあつい／サービス（恍惚）。40-50はえーありがとうー／じゃあ、いっただきまーすで跪いてジュボ。50-60は無言ジュボ。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。口内は粘る白液を残して見せる。台詞は1本2行まで。行為は無言・寄り。hmmotion なし。",
     "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。最後はモンダイありすぎ、おくちにだされすぎのあと立ち上がって精液口移し濃厚ディープキス。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
     "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで超気持ちよさそう）、仰向けのままジュボしまくる→口内→仰向けのまま口移し→ゲンキ。セックスなし。騎乗なし。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
@@ -3783,9 +3848,9 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
 
 
 ANAL_CREAMPIE_LINE = (
-    "ANAL CREAMPIE: Rei's erect 20cm stays in Aya's ANUS. "
+    "ANAL CREAMPIE: The erect 20cm stays in the receiver's ANUS. "
     "She ejaculates INTO the ANUS. WHITE goo overflows OUT OF THE ANUS around the shaft. "
-    "Aya's unused pussy does NOT leak semen. Semen does not come out of the vagina. "
+    "The unused pussy does NOT leak semen. Semen does not come out of the vagina. "
     "Not a vaginal creampie."
 )
 _ANAL_CREAMPIE_CUE_RE = re.compile(
@@ -4312,6 +4377,8 @@ EROTIC_WAIT_LINE = (
     "Leftover only, after the written beat and after the last unique quoted line, "
     "and only with a free hand or a free mouth that does not change pose: "
     "kisses on the mouth and/or breasts plus skinship so the same Japanese line is not spoken twice or three times; "
+    "knead the partner's breasts; pump the erect 20cm and the hairless pussy; "
+    "rub bodies together while tongue-kissing when both mouths are free and this clip does not forbid a kiss; "
     "a SEDUCTIVE SMILE if the face is allowed to change; "
     "light self-touch on her own breasts, her own hairless pussy, or her own unused erect 20cm; "
     "light partner-touch on breasts, a hairless pussy, or an unused erect 20cm when they are already close enough; "
@@ -4516,30 +4583,30 @@ SEMEN_SHARE_SKIP = frozenset({
     "back-wash-60s",
     "lecture-desk-50s",
     "semen-bath-70s",
+    "bath-120s",
+    "dinner-120s",
+    "futon-120s",
+    "okaeri-120s",
+    "lecture-120s",
+    "dishes-90s",
+    "cafe-100s",
+    "checkup-100s",
+    "clinic-75s",
+    "meat-wall-85s",
+    "meat-wall-cesspit-70s",
+    "homecoming-90s",
+    "sales-visit-60s",
+    "train-sales-80s",
 })
 # story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
 # on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
 # on_back = 口移し while the partner STAYS LYING ON THEIR BACK (do not stand them).
 SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
-    "bath-120s": [(10, "silent_next")],
-    "dinner-120s": [(10, "silent_next")],
-    "futon-120s": [(10, "silent_next")],
-    "okaeri-120s": [(8, "silent_next")],
-    "lecture-120s": [(7, "silent_next")],
-    "dishes-90s": [(11, "silent_next")],
-    "cafe-100s": [(9, "after_speech")],
-    "checkup-100s": [(8, "after_speech")],
-    "clinic-75s": [(8, "on_back")],
-    "meat-wall-85s": [(6, "after_speech")],
-    "meat-wall-cesspit-70s": [(6, "after_speech")],
-    "homecoming-90s": [(10, "after_speech")],
     "karaoke-50s": [(4, "after_speech")],
-    "sales-visit-60s": [(7, "after_speech")],
-    "train-sales-80s": [(7, "after_speech")],
     "engawa-120s": [(10, "on_cumouf")],
     "sunday-120s": [(10, "on_cumouf")],
     "last-stop-40s": [(2, "on_cumouf")],
-    "last-train-120s": [(3, "on_cumouf"), (9, "silent_next")],
+    "last-train-120s": [(3, "on_cumouf")],
     "red-light-50s": [(3, "on_cumouf")],
 }
 _REMAINING_SILENCE_RE = re.compile(
@@ -4759,13 +4826,15 @@ _OPEN_MOUTH_WAIT_RE = re.compile(
 _WRITTEN_LEFTOVER_ACT_RE = re.compile(
     r"Remaining seconds[^.]*?(drops to her knees|takes the 20cm|jupo|"
     r"French kiss|SEPARATE|STANDS UP|mouth-to-mouth|light peck|light kiss|"
-    r"filthy wet|kisses on the mouth|kisses on the breasts)",
+    r"filthy wet|kisses on the mouth|kisses on the breasts|knead|tongue kiss|"
+    r"stroke the erect|pump the erect|rub bodies)",
     re.I,
 )
 LEFTOVER_KISS_BEAT = (
     "mouths closed. No more quoted speech. No replay. "
-    "Leftover: kisses on the mouth and/or breasts plus skinship "
-    "(hands on breasts, waist, hips). Do not say the same line again. Do not freeze."
+    "Leftover: a wet tongue kiss plus skinship "
+    "(kisses on the mouth and/or breasts; knead breasts, pump the erect 20cm and the hairless pussy, rub bodies together). "
+    "Do not say the same line again. Do not freeze. NOT oral. NOT insertion."
 )
 
 
@@ -6013,14 +6082,14 @@ def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
         prompt = str(clips[i].get("prompt") or "")
         p = prompt.lower()
         n = i + 1
-        if nxt in {"futa_sex", "doggy"}:
+        if nxt in {"futa_sex", "doggy", "futa_anal", "riding"}:
             if "already in" in p or "already inside" in p:
                 errors.append(f"clip {n}: sex setup clip must not already be inside")
             if "hand's width" not in p:
                 errors.append(f"clip {n}: sex setup clip must end a hand's width from insertion")
             if "not in" not in p:
                 errors.append(f"clip {n}: sex setup clip must say NOT in")
-            if not any(k in p for k in ("accepting", "hips back", "knees apart")):
+            if not any(k in p for k in ("accepting", "hips back", "knees apart", "all fours", "bent forward", "on her back", "straddling", "on the lap")):
                 errors.append(f"clip {n}: sex setup clip must end in an accepting pose")
         elif nxt in {"oral", "oral_creampie"}:
             if "already oral" in p or "already at the base" in p:
