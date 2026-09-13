@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-fetch-1"
+STUDIO_REV = "h3-20260913-scat-1"
 STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
 
 OPTIONAL_IDS = {
@@ -568,7 +568,7 @@ SITUATION_HELP = {
     "futa_anal": "アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
     "urine_drink": "飲尿（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
     "urine_pee": "放尿（性器から）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
-    "scat_act": "脱糞（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。今、肛門から出している動き。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
+    "scat_act": "脱糞（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。今、肛門から出している動き。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
     "oral": "フェラ（女体）。解剖 0.5 + フェラ 0.6 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。解剖 0.5 + AIO 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。解剖 0.5 + AIO 0.5 + 穴の見え方 0.4 + LightX2V 4step。ふたなり＋女。男なし。",
@@ -3527,11 +3527,14 @@ MEAT_SLIME_LINE = (
     "Rei's erect 20cm, and Rei's pussy at the base. It STAYS. It does not fade."
 )
 MEAT_CESSPIT_LINE = (
-    "CESSPIT LOOK: A huge living cesspit of dense dark-brown fecal sludge, like manure paste, "
-    "shoulder-deep. Thick brown feces already coats BOTH whole bodies HEAD TO TOE: face, hair, "
+    "CESSPIT LOOK: A huge living cesspit of packed real adult human feces, shoulder-deep. "
+    "Formed brown stool logs, broken sausage segments, and clay-thick opaque paste of the same feces. "
+    "Not a slime pool. Not jelly. Not translucent gel. Not bouncing rubber. "
+    "Thick real human feces already coats BOTH whole bodies HEAD TO TOE: face, hair, "
     "eyebrows, lips, neck, breasts, belly, back, ass, thighs, feet, Aya's hairless pussy, "
-    "Rei's erect 20cm, and Rei's pussy. It STAYS. It does not fade. Not water. Not the white semen. "
-    "White semen coating from before mixes with the brown and stays. Both colors remain."
+    "Rei's erect 20cm, and Rei's pussy. It smears in lumpy clumps. It STAYS. It does not fade. "
+    "Not water. Not the white semen. White semen coating from before mixes with the brown and stays. "
+    "Both colors remain."
 )
 MEAT_SEMEN_COAT_LINE = (
     "SEMEN COAT: Both bodies are already coated HEAD TO TOE in that same WHITE waste-oil sludge semen: "
@@ -3901,25 +3904,54 @@ def lock_urine_look(text: str, *, situation: str = "") -> str:
 
 
 SCAT_ACT_LINE = (
-    "SCAT ACT: Brown feces coming out of the anus in this clip. This is the act of "
-    "defecating now, not a body already coated from before. It leaves through the anus, "
-    "not the vagina, not from off-screen."
+    "SCAT ACT: Real adult human feces leaving the anus in this clip. A formed opaque brown "
+    "stool log, sausage-shaped and lightly segmented, is pushed out of the anus now. "
+    "Soft-solid like clay: it sags, breaks, and piles. It does not bounce. It does not stretch "
+    "like slime. This is the act of defecating now, not a body already coated from before. "
+    "It leaves through the anus, not the vagina, not from off-screen."
+)
+FECES_LOOK_LINE = (
+    "FECES LOOK: Real adult human feces. Opaque dull-matte medium-dark brown, the color of "
+    "human stool, not chocolate syrup, not translucent, not amber gel. Soft-solid like clay "
+    "or putty: formed cylindrical logs and sausage segments that break, pile, and sag under "
+    "their own weight. Slightly moist on the surface, dense, heavy. It smears as lumpy paste "
+    "on skin but the mass stays formed and clumpy. "
+    "Not bouncing jelly. Not rubbery slime. Not stretchy gel strands. Not a glossy blob. "
+    "Not a cartoon swirl. Not a uniform slime sheet. Not watery diarrhea spray unless asked."
 )
 _SCAT_CUE_RE = re.compile(
     r"act of defecating|feces coming out|coming out of .+ anus|defecat",
     re.I,
 )
+_FECES_LOOK_CUE_RE = re.compile(
+    r"\bfeces\b|fecal|cesspit|defecat|human stool|stool log",
+    re.I,
+)
+_FECES_NEG_RE = re.compile(r"No feces", re.I)
+
+
+def lock_scat_look(text: str, *, situation: str = "") -> str:
+    """Keep feces as formed human stool, not brown jelly or slime."""
+    raw = str(text or "")
+    if not raw or "FECES LOOK:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit == "scat_act" or _SCAT_CUE_RE.search(raw) or _FECES_LOOK_CUE_RE.search(raw):
+        if _FECES_NEG_RE.search(raw) and sit != "scat_act" and not _SCAT_CUE_RE.search(raw):
+            return raw
+        return _inject_before_soundscape(raw, FECES_LOOK_LINE)
+    return raw
 
 
 def lock_scat_act(text: str, *, situation: str = "") -> str:
     """Keep scat as the act of passing, not a pre-coated cesspit look."""
     raw = str(text or "")
-    if not raw or "SCAT ACT:" in raw:
-        return raw
     sit = str(situation or "").strip()
-    if sit != "scat_act" and not _SCAT_CUE_RE.search(raw):
+    if not raw:
         return raw
-    return _inject_before_soundscape(raw, SCAT_ACT_LINE)
+    if "SCAT ACT:" not in raw and (sit == "scat_act" or _SCAT_CUE_RE.search(raw)):
+        raw = _inject_before_soundscape(raw, SCAT_ACT_LINE)
+    return lock_scat_look(raw, situation=situation)
 
 
 POSE_JA = {
@@ -4997,7 +5029,8 @@ URINE_ACT_SFX = (
     "Wet splash. Not words."
 )
 SCAT_ACT_SFX = (
-    "Wet sounds of feces leaving the anus now. Not a pre-coated body. Not words."
+    "Soft-solid stool sounds leaving the anus now: a heavy formed log, wet clay, not a slime splat. "
+    "Not a pre-coated body. Not words."
 )
 KISS_ACT_SFX = (
     "Wet chu kisses, saliva slurp, leaked female moans, hitching breath."

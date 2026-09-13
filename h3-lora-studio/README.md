@@ -6,7 +6,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-daily-f112/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-scat-look-f112/minimax_h3_lora_studio.ipynb)
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。
 
@@ -64,7 +64,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 | セックス（女体） | `futa_sex` | Mystic 0.5 | AIO 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 男にしない。8step。横クローズ。穴の強調は文章欄 |
 | アナルセックス（女体） | `futa_anal` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | euler / simple / 8。ThumbInButt なし。構図は文章欄。手は腰 |
 | 飲尿（どの構図） | `urine_drink` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | 8step。亀頭先の黄色い水。既存話のジュボには戻さない |
-| 脱糞（どの構図） | `scat_act` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | 8step。今出している動き。肥溜めの塗れとは別 |
+| 脱糞（どの構図） | `scat_act` | Mystic 0.5 | Penis 0.45 | Synth 0.4 | **切る** | **切る** | 8step。人間の糞（固形。ゼリーやスライムではない）。肥溜めの塗れとは別 |
 | 騎乗位（女体） | `riding` | Mystic 0.5 | I2V: POV 0.45 / T2V: cowgirl 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 8step。AIO は積まない。I2V と T2V を混ぜない |
 | 後背位（女体） | `doggy` | Mystic 0.5 | doggy 0.55 | Penis 0.45 + Synth 0.4 | **切る** | **切る** | 8step。前後の突き。T2V は実験的 |
 | 正常位POV（女体） | `missionary_pov` | Mystic 0.5 | POV 0.55 | Penis 0.45 + Synth 0.4 | Larry 0.5 | **切る** | 8step。横はセックス（女体） |
