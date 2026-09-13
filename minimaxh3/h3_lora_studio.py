@@ -98,9 +98,9 @@ OPTIONAL_IDS = {
 SITUATION_DOWNLOAD = {
     "redo": [],
     "vanilla": [],
-    "sfw_daily": ["mystic-xxx-h3", "larry-v4", "cinema-dy"],
-    "sfw_preview": ["mystic-xxx-h3", "minimax-h3-turbo-fl2v-4step", "cinema-dy"],
-    "sfw_audio": ["mystic-xxx-h3", "minimax-h3-turbo-fl2v-8step", "cinema-dy"],
+    "sfw_daily": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "sfw_preview": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
+    "sfw_audio": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "minimax-h3-turbo-fl2v-8step"],
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["mystic-xxx-h3", "synth-pussy-h3", "larry-v4"],
     "anal_fingering": ["mystic-xxx-h3", "thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
@@ -547,9 +547,9 @@ MODE_JA = {
 
 SITUATION_HELP = {
     "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。Mystic なし。",
-    "sfw_daily": "日常エロ汎用。解剖 Mystic 0.5 + Larry v4 1.0 + シネマ 0.5 / 8step。行為 LoRA は載せない。竿・フェラ・AIO は別シーン。",
-    "sfw_preview": "日常エロ汎用の最速プレビュー。解剖 Mystic 0.5 + LightX2V 4step 1.0 + シネマ 0.4。行為 LoRA なし。当たりは日常で焼き直す。",
-    "sfw_audio": "日常エロ汎用で音を残して速く。解剖 Mystic 0.5 + LightX2V 8step 1.0 + シネマ 0.4。行為 LoRA なし。歌・日本語は日常（Larry）の方が安定。",
+    "sfw_daily": "日常エロ汎用。解剖 Mystic 0.5 + 竿 0.45 + 穴の見え方 0.4 + Larry 1.0 / 8step。玉なし＋マンコあり。シネマなし。フェラ／騎乗などの行為 LoRA は載せない。",
+    "sfw_preview": "日常エロ汎用の最速プレビュー。解剖 Mystic 0.5 + 竿 0.45 + 穴 0.4 + LightX2V 4step。玉なし＋マンコあり。行為 LoRA なし。当たりは日常で焼き直す。",
+    "sfw_audio": "日常エロ汎用で音を残して速く。解剖 Mystic 0.5 + 竿 0.45 + 穴 0.4 + LightX2V 8step。玉なし＋マンコあり。行為 LoRA なし。歌・日本語は日常（Larry）の方が安定。",
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。Mystic なし。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
@@ -1332,7 +1332,7 @@ def explain_choice(situation: str, mode: str) -> str:
         )
     parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
     cap = (
-        "重ね上限は Turbo1 + 解剖(Mystic 0.5) + シネマ1。行為 LoRA は載せない。"
+        "重ね上限は 解剖(Mystic 0.5) + 竿 + 穴 + Turbo。シネマなし。体位・フェラなどの行為 LoRA は載せない。玉なし＋マンコあり。"
         if sid in {"sfw_daily", "sfw_preview", "sfw_audio"}
         else (
             "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
@@ -3413,6 +3413,21 @@ _FUTA_ANATOMY_TAIL = (
     "no testicles, no scrotum. Hairless female pussy at the base of the shaft "
     "where a scrotum would be. Penis plus vagina, never balls."
 )
+FUTA_ANATOMY_MARK = "FUTA ANATOMY:"
+FUTA_ANATOMY_LOCK_LINE = (
+    "FUTA ANATOMY: Every futanari is penis plus vagina, never balls. "
+    "Erect penis, hairless female pussy at the base of the shaft where a scrotum would be. "
+    "NO testicles. NO scrotum. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+_NEVER_FUTA_RE = re.compile(r"(?i)never\s+futanari")
+_FUTA_WORD_RE = re.compile(r"ふたなり|フタナリ|futanari", re.I)
+
+
+def prompt_mentions_futa(text: str) -> bool:
+    """True if the prompt asks for a futanari. Ignore NEVER-futanari markings."""
+    cleaned = _NEVER_FUTA_RE.sub(" ", str(text or ""))
+    return bool(_FUTA_WORD_RE.search(cleaned))
 
 
 def lock_futa_anatomy(text: str) -> str:
@@ -3636,10 +3651,19 @@ def lock_start_cast(text: str) -> str:
 
 def _inject_before_soundscape(raw: str, line: str) -> str:
     text = str(raw or "")
+    if not line or line in text:
+        return text
     cut = text.find("\noverall_soundscape:")
     if cut > 0:
         return text[:cut].rstrip() + "\n" + line + "\n" + text[cut:]
     return text.rstrip() + "\n" + line
+
+
+def ensure_futa_anatomy_line(text: str) -> str:
+    raw = str(text or "")
+    if not raw or FUTA_ANATOMY_MARK in raw:
+        return raw
+    return _inject_before_soundscape(raw, FUTA_ANATOMY_LOCK_LINE)
 
 
 SEX_INSIDE_SITUATIONS = frozenset({
@@ -3719,16 +3743,17 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     return _inject_before_soundscape(raw, line)
 
 
-def lock_futa_shaft(text: str) -> str:
+def lock_futa_shaft(text: str, *, force: bool = False) -> str:
     """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
     raw = str(text or "")
     if not raw or "SHAFT LOOK:" in raw:
         return raw
-    has_futa = (
+    has_futa = force or (
         "Clear futanari" in raw
         or "Erect 20cm" in raw
         or "erect 20cm" in raw
         or "futanari: erect" in raw.lower()
+        or prompt_mentions_futa(raw)
     )
     if not has_futa:
         return raw
@@ -4116,9 +4141,12 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
         out = lock_oral_camera(out, situation=sit)
         out = lock_oral_seat(out, situation=sit)
         out = lock_oral_in_mouth(out, situation=sit)
-        out = lock_futa_anatomy(out)
-        out = lock_futa_shaft(out)
         out = lock_pleasure_face(out, situation=sit)
+    out = lock_futa_anatomy(out)
+    force_futa = sit in {"sfw_daily", "sfw_preview", "sfw_audio"} or prompt_mentions_futa(out)
+    if force_futa:
+        out = ensure_futa_anatomy_line(out)
+    out = lock_futa_shaft(out, force=force_futa)
     return out
 
 

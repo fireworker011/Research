@@ -2,7 +2,7 @@
   "id": "sfw_daily",
   "adults_only": true,
   "min_age": 21,
-  "nsfw": false,
+  "nsfw": true,
   "feminine_lock": true,
   "modes": [
     "i2v",
@@ -28,13 +28,17 @@
       "id": "mystic-xxx-h3",
       "strength": 0.5
     },
+    "act": {
+      "id": "penis-lora-h3",
+      "strength": 0.45
+    },
+    "helper": {
+      "id": "synth-pussy-h3",
+      "strength": 0.4
+    },
     "turbo": {
       "id": "larry-v4",
       "strength": 1.0
-    },
-    "cinema": {
-      "id": "cinema-dy",
-      "strength": 0.5
     }
   },
   "sampler": {
@@ -43,17 +47,15 @@
     "steps": 8,
     "video_shift": 6,
     "audio_shift": 3,
-    "note": "Daily エロ汎用. Mystic 0.5 + Larry v4 1.0 + cinematic 0.5. 8step. No act LoRA. Eros TURBO-hybrid drops Larry at inject. Shift is a note."
+    "note": "Daily エロ汎用. Mystic 0.5 + penis 0.45 + Synth 0.4 + Larry 1.0 / 8step. Penis plus vagina, never balls. Cinema off (XOR helper). No sex-act LoRA."
   },
   "disabled": [
     "anal-penetration-coachbate",
-    "synth-pussy-h3",
     "lesbian-cunnilingus-h3",
     "pussy-spread-h3",
     "hmnsfw-aio-v25",
     "hmnsfw-aio-v2",
     "futa-h3-v51",
-    "penis-lora-h3",
     "blowjob-h3",
     "astro-nsfw-h3",
     "tiddies-realism-slider",
@@ -63,6 +65,7 @@
     "final-thrust-h3",
     "cumouf-h3",
     "photoreal-h3-still",
+    "cinema-dy",
     "astro-cinema-h3",
     "minimax-h3-turbo-fl2v-4step",
     "minimax-h3-turbo-fl2v-8step",
@@ -70,8 +73,8 @@
     "mystic-xxx-ref2va"
   ],
   "scenes": {
-    "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>.\n\nenvironment: Quiet indoor space matching <Picture 1>, soft daylight, natural depth of field.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) talks naturally to someone off-camera. Photoreal skin, cinematic lighting, no plastic look. Identity stays locked to <Picture 1>. No freeze frame. No cartoon.\noverall_soundscape: Room tone and quiet speech.\nending: Motion continues; (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",
-    "t2v": "DY\nVertical 9:16 live-action cinematic photorealism, no anime, no illustration.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, dark navy zip-up hoodie.\n\nenvironment: Desk, laptop, soft daylight, shallow depth of field, natural skin texture.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) sits at the desk, looks toward the lens, blinks, and speaks a short everyday line. Cinematic lighting, film texture, no plastic AI look. No freeze frame.\noverall_soundscape: Quiet room tone, faint keyboard tick, natural voice.\nending: Motion continues; (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older."
+    "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nenvironment: Quiet indoor space matching <Picture 1>, soft daylight, natural depth of field.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) talks naturally to someone off-camera. Erect 20cm readable. Photoreal skin, cinematic lighting, no plastic look. Identity stays locked to <Picture 1>. No freeze frame. No cartoon. No man.\noverall_soundscape: Room tone and quiet speech.\nending: Motion continues; (S1) remains an adult woman over 21, penis plus vagina, never balls.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "PENISLORA\nVertical 9:16 live-action cinematic photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21, Japanese, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nenvironment: Desk, laptop, soft daylight, shallow depth of field, natural skin texture.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) sits at the desk, looks toward the lens, blinks, and speaks a short everyday line. Her erect 20cm is readable in frame. Cinematic lighting, film texture, no plastic AI look. No freeze frame. No man.\noverall_soundscape: Quiet room tone, faint keyboard tick, natural voice.\nending: Motion continues; (S1) remains an adult woman over 21, penis plus vagina, never balls.\n\nAll performers are consenting adults 21 years or older."
   },
   "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration"
 }

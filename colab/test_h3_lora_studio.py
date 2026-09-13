@@ -241,13 +241,14 @@ def test_japanese_form_labels():
     assert "Larry" in sfw
     assert "行為 LoRA は載せない" in sfw
     assert "Mystic" in sfw or "解剖" in sfw
+    assert "玉なし" in sfw or "マンコ" in sfw
     assert "エロ用は入れません" not in sfw
     assert "blowjob-h3" not in sfw
     sfw_old = explain_choice("日常（速い＋綺麗）", "テキストから（写真なし）")
     assert "行為 LoRA は載せない" in sfw_old
     vanilla = explain_choice("普通（エロなし）", "テキストから（写真なし）")
     assert "Mystic なし" in vanilla
-    assert situation_ids("sfw_daily") == ["mystic-xxx-h3", "larry-v4", "cinema-dy"]
+    assert situation_ids("sfw_daily") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert "mystic-xxx-h3" not in situation_ids("vanilla")
     assert "mystic-xxx-h3" not in situation_ids("sfw_r2v")
     general = explain_choice("汎用エロ（女体）", "テキストから（写真なし）")
@@ -542,7 +543,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-mystic-daily-1"' in src
+    assert 'FETCH_REV = "h3-20260913-mystic-daily-2"' in src
     assert 'BRANCH = "cursor/h3-mystic-daily-f112"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
@@ -611,7 +612,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-mystic-daily-1" in blob
+    assert "h3-20260913-mystic-daily-2" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -916,6 +917,21 @@ def test_apply_pose_situation_and_phone_act_locks():
     assert "to the BASE" in bj or "at the BASE" in bj
     assert "PLEASURE FACE:" in bj
     assert "SHAFT LOOK:" in bj
+    jp_daily = apply_phone_act_locks(
+        "Adult woman over 21 talks at a desk.\n\noverall_soundscape:\nRoom tone.\n",
+        situation="sfw_daily",
+        pose="立ち",
+    )
+    assert "FUTA ANATOMY:" in jp_daily
+    assert "never balls" in jp_daily.lower()
+    assert "SHAFT LOOK:" in jp_daily
+    jp_word = apply_phone_act_locks(
+        "ふたなりの女が机で話す。Adult, clearly over 21.\n\noverall_soundscape:\nRoom tone.\n",
+        situation="sfw_daily",
+        pose="立ち",
+    )
+    assert "FUTA ANATOMY:" in jp_word
+    assert "SHAFT LOOK:" in jp_word
 
     bj_pov = apply_phone_act_locks(bj_src, situation="futa_blowjob", pose="POV")
     assert "Point-of-view from the shaft" not in bj_pov
@@ -5667,6 +5683,10 @@ def test_lock_futa_anatomy_default_and_never_futanari():
     hanging = lock_futa_anatomy("futanari with a penis that hangs unused")
     assert "Her penis hangs unused" in hanging
     assert "never balls that" not in hanging
+    jp = lock_futa_anatomy("ふたなりの女が机で話す。")
+    assert jp == "ふたなりの女が机で話す。"
+    never_only = "Aya: Adult Japanese woman, 22, fully nude, hairless, NO penis, NEVER futanari."
+    assert "FUTA ANATOMY:" not in lock_futa_anatomy(never_only)
 
 
 def test_lock_futa_shaft_pins_20cm_and_skips_never_futanari(tmp_path):
@@ -6712,11 +6732,14 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-mystic-daily-1" in cell2
+    assert "h3-20260913-mystic-daily-2" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
     assert "エロ汎用の日常" in md0
+    assert "竿 0.45" in md0
+    assert "穴 0.4" in md0
+    assert "シネマなし" in md0
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
