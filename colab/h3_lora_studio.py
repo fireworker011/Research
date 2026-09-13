@@ -98,9 +98,9 @@ OPTIONAL_IDS = {
 SITUATION_DOWNLOAD = {
     "redo": [],
     "vanilla": [],
-    "sfw_daily": ["larry-v4", "cinema-dy"],
-    "sfw_preview": ["minimax-h3-turbo-fl2v-4step", "cinema-dy"],
-    "sfw_audio": ["minimax-h3-turbo-fl2v-8step", "cinema-dy"],
+    "sfw_daily": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "sfw_preview": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
+    "sfw_audio": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "minimax-h3-turbo-fl2v-8step"],
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
     "anal_closeup": ["mystic-xxx-h3", "synth-pussy-h3", "larry-v4"],
     "anal_fingering": ["mystic-xxx-h3", "thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
@@ -317,6 +317,7 @@ SITUATION_DOWNLOAD = {
     "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
     # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
     "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -340,9 +341,14 @@ SITUATION_DOWNLOAD = {
 
 SITUATION_JA = {
     "普通（エロなし）": "vanilla",
+    "日常（エロ汎用）": "sfw_daily",
     "日常（速い＋綺麗）": "sfw_daily",
+    "最速プレビュー（エロ汎用）": "sfw_preview",
     "最速プレビュー（エロなし）": "sfw_preview",
+    "最速プレビュー": "sfw_preview",
+    "音も残す（エロ汎用）": "sfw_audio",
     "音も残す（エロなし）": "sfw_audio",
+    "音も残す": "sfw_audio",
     "アナル挿入（画質）": "anal_penetration",
     "アナル挿入": "anal_penetration",
     "アナル舐め・指": "anal_closeup",
@@ -458,6 +464,8 @@ SITUATION_JA = {
     "lecture-desk-50s": "lecture-desk-50s",
     "camp-50s": "camp-50s",
     "fireworks-50s": "fireworks-50s",
+    "山小屋": "cabin-40s",
+    "cabin-40s": "cabin-40s",
     "ハイスイコウ": "manhole-30s",
     "屋上クーラー": "roof-ac-30s",
     "ハマのテトラ": "tetrapod-30s",
@@ -541,11 +549,11 @@ MODE_JA = {
 }
 
 SITUATION_HELP = {
-    "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。",
-    "sfw_daily": "日常・会話・商品・風景。Larry v4 1.0 + シネマ 0.5 / 8step。エロ用は入れない。",
-    "sfw_preview": "エロなしの最速プレビュー。LightX2V 4step 1.0 + シネマ 0.4。当たりは日常で焼き直す。",
-    "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
-    "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
+    "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。Mystic なし。",
+    "sfw_daily": "日常エロ汎用。解剖 Mystic 0.5 + 竿 0.45 + 穴の見え方 0.4 + Larry 1.0 / 8step。玉なし＋マンコあり。シネマなし。フェラ／騎乗などの行為 LoRA は載せない。",
+    "sfw_preview": "日常エロ汎用の最速プレビュー。解剖 Mystic 0.5 + 竿 0.45 + 穴 0.4 + LightX2V 4step。玉なし＋マンコあり。行為 LoRA なし。当たりは日常で焼き直す。",
+    "sfw_audio": "日常エロ汎用で音を残して速く。解剖 Mystic 0.5 + 竿 0.45 + 穴 0.4 + LightX2V 8step。玉なし＋マンコあり。行為 LoRA なし。歌・日本語は日常（Larry）の方が安定。",
+    "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。Mystic なし。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
     "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。",
@@ -604,6 +612,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "cabin-40s": "山小屋40秒。10秒×4本。9:16。0-10は扉の外のアヤ一人（中の人体は描かない）。10-20は中で2人。会話のあとアヤは既に跨っている（先端がアナルに手の幅、未挿入）。20-30は挿入オンカメラでアナルへ。顔は入れ替えない。30-40はアナル中出し。白いドロドロはアナルから溢れる。マンコからは出さない。騎乗LoRA・中出しLoRA・AIOなし。台詞は話し言葉（漢字なし）。",
     "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
     "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
@@ -692,6 +701,7 @@ CHAIN_PACK_ORDER = (
     "lecture-desk-50s",
     "camp-50s",
     "fireworks-50s",
+    "cabin-40s",
     "manhole-30s",
     "roof-ac-30s",
     "tetrapod-30s",
@@ -782,6 +792,7 @@ STORY_TITLE_JA = {
     "lecture-desk-50s": "講義机",
     "camp-50s": "キャンプ",
     "fireworks-50s": "花火",
+    "cabin-40s": "山小屋",
     "manhole-30s": "ハイスイコウ",
     "roof-ac-30s": "屋上クーラー",
     "tetrapod-30s": "ハマのテトラ",
@@ -1327,9 +1338,13 @@ def explain_choice(situation: str, mode: str) -> str:
         )
     parts = "、".join(friendly_lora(x) for x in SITUATION_DOWNLOAD[sid])
     cap = (
-        "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
-        if sid in SFW_SITUATIONS
-        else "重ね上限は 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
+        "重ね上限は 解剖(Mystic 0.5) + 竿 + 穴 + Turbo。シネマなし。体位・フェラなどの行為 LoRA は載せない。玉なし＋マンコあり。"
+        if sid in {"sfw_daily", "sfw_preview", "sfw_audio"}
+        else (
+            "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
+            if sid in SFW_SITUATIONS
+            else "重ね上限は 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
+        )
     )
     play_line = ""
     if sid in STORY_IDS:
@@ -3404,6 +3419,21 @@ _FUTA_ANATOMY_TAIL = (
     "no testicles, no scrotum. Hairless female pussy at the base of the shaft "
     "where a scrotum would be. Penis plus vagina, never balls."
 )
+FUTA_ANATOMY_MARK = "FUTA ANATOMY:"
+FUTA_ANATOMY_LOCK_LINE = (
+    "FUTA ANATOMY: Every futanari is penis plus vagina, never balls. "
+    "Erect penis, hairless female pussy at the base of the shaft where a scrotum would be. "
+    "NO testicles. NO scrotum. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+_NEVER_FUTA_RE = re.compile(r"(?i)never\s+futanari")
+_FUTA_WORD_RE = re.compile(r"ふたなり|フタナリ|futanari", re.I)
+
+
+def prompt_mentions_futa(text: str) -> bool:
+    """True if the prompt asks for a futanari. Ignore NEVER-futanari markings."""
+    cleaned = _NEVER_FUTA_RE.sub(" ", str(text or ""))
+    return bool(_FUTA_WORD_RE.search(cleaned))
 
 
 def lock_futa_anatomy(text: str) -> str:
@@ -3627,10 +3657,19 @@ def lock_start_cast(text: str) -> str:
 
 def _inject_before_soundscape(raw: str, line: str) -> str:
     text = str(raw or "")
+    if not line or line in text:
+        return text
     cut = text.find("\noverall_soundscape:")
     if cut > 0:
         return text[:cut].rstrip() + "\n" + line + "\n" + text[cut:]
     return text.rstrip() + "\n" + line
+
+
+def ensure_futa_anatomy_line(text: str) -> str:
+    raw = str(text or "")
+    if not raw or FUTA_ANATOMY_MARK in raw:
+        return raw
+    return _inject_before_soundscape(raw, FUTA_ANATOMY_LOCK_LINE)
 
 
 SEX_INSIDE_SITUATIONS = frozenset({
@@ -3710,16 +3749,43 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     return _inject_before_soundscape(raw, line)
 
 
-def lock_futa_shaft(text: str) -> str:
+ANAL_CREAMPIE_LINE = (
+    "ANAL CREAMPIE: Rei's erect 20cm stays in Aya's ANUS. "
+    "She ejaculates INTO the ANUS. WHITE goo overflows OUT OF THE ANUS around the shaft. "
+    "Aya's unused pussy does NOT leak semen. Semen does not come out of the vagina. "
+    "Not a vaginal creampie."
+)
+_ANAL_CREAMPIE_CUE_RE = re.compile(
+    r"ejaculat|cums inside|cums into|pumps WHITE|WHITE goo|"
+    r"anal creampie|overflows OUT OF THE ANUS|overflows out of the anus",
+    re.I,
+)
+
+
+def lock_anal_creampie(text: str, *, situation: str = "") -> str:
+    """futa_anal climax stays in the anus. Do not let semen leak from the unused pussy."""
+    raw = str(text or "")
+    if not raw or "ANAL CREAMPIE:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS:
+        return raw
+    if not _ANAL_CREAMPIE_CUE_RE.search(raw):
+        return raw
+    return _inject_before_soundscape(raw, ANAL_CREAMPIE_LINE)
+
+
+def lock_futa_shaft(text: str, *, force: bool = False) -> str:
     """Pin futa penis to erect 20cm, same shape. Still 玉なし＋マンコあり. Never add a penis to NEVER-futanari."""
     raw = str(text or "")
     if not raw or "SHAFT LOOK:" in raw:
         return raw
-    has_futa = (
+    has_futa = force or (
         "Clear futanari" in raw
         or "Erect 20cm" in raw
         or "erect 20cm" in raw
         or "futanari: erect" in raw.lower()
+        or prompt_mentions_futa(raw)
     )
     if not has_futa:
         return raw
@@ -4107,9 +4173,12 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
         out = lock_oral_camera(out, situation=sit)
         out = lock_oral_seat(out, situation=sit)
         out = lock_oral_in_mouth(out, situation=sit)
-        out = lock_futa_anatomy(out)
-        out = lock_futa_shaft(out)
         out = lock_pleasure_face(out, situation=sit)
+    out = lock_futa_anatomy(out)
+    force_futa = sit in {"sfw_daily", "sfw_preview", "sfw_audio"} or prompt_mentions_futa(out)
+    if force_futa:
+        out = ensure_futa_anatomy_line(out)
+    out = lock_futa_shaft(out, force=force_futa)
     return out
 
 
@@ -4380,6 +4449,7 @@ SEMEN_SHARE_SKIP = frozenset({
     "yoga-50s",
     "laundromat-50s",
     "fireworks-50s",
+    "cabin-40s",
     "camp-50s",
     "back-wash-60s",
     "lecture-desk-50s",
@@ -6079,6 +6149,7 @@ def prepare_story_clip(
         raw_prompt = lock_oral_in_mouth(raw_prompt, situation=situation)
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
+    raw_prompt = lock_anal_creampie(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)

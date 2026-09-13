@@ -7,7 +7,10 @@ Everything else (including Turbo / Acc / ref2va on FL2VA) is listed for unload.
 T2V uses scenes.t2v and 9:16. I2V uses scenes.i2v and Picture 1. Never mix them.
 
 Adult T2V/I2V on Eros Max stacks Mystic XXX (concept) at 0.5, then act + helpers.
+Daily エロ汎用 (sfw_daily / sfw_preview / sfw_audio) loads mystic 0.5 + penis + synth
+(玉なし＋マンコあり). Mystic alone paints balls. Cinema off (cinema XOR helper).
 R2V stays official Ref2VA: do not load mystic-xxx-h3 or mystic-xxx-ref2va there.
+Vanilla and phone I2V/T2V stay without mystic.
 
 This script never reads `.env` and never prints API keys.
 """
@@ -66,6 +69,9 @@ FUTA_SITUATIONS = frozenset(
         "urine_drink",
         "urine_pee",
         "scat_act",
+        "sfw_daily",
+        "sfw_preview",
+        "sfw_audio",
     }
 )
 SCENE_ALIASES = {"", "シーン", "（シーン）", "(シーン)", "scene"}
@@ -135,6 +141,38 @@ _FUTA_ANATOMY_TAIL = (
     "no testicles, no scrotum. Hairless female pussy at the base of the shaft "
     "where a scrotum would be. Penis plus vagina, never balls."
 )
+FUTA_ANATOMY_MARK = "FUTA ANATOMY:"
+FUTA_ANATOMY_LOCK_LINE = (
+    "FUTA ANATOMY: Every futanari is penis plus vagina, never balls. "
+    "Erect penis, hairless female pussy at the base of the shaft where a scrotum would be. "
+    "NO testicles. NO scrotum. Do not grow balls. "
+    "Women marked NEVER futanari stay NO penis."
+)
+_NEVER_FUTA_RE = re.compile(r"(?i)never\s+futanari")
+_FUTA_WORD_RE = re.compile(r"ふたなり|フタナリ|futanari", re.I)
+
+
+def prompt_mentions_futa(text: str) -> bool:
+    """True if the prompt asks for a futanari. Ignore NEVER-futanari markings."""
+    cleaned = _NEVER_FUTA_RE.sub(" ", str(text or ""))
+    return bool(_FUTA_WORD_RE.search(cleaned))
+
+
+def _inject_before_soundscape(raw: str, line: str) -> str:
+    text = str(raw or "")
+    if not line or line in text:
+        return text
+    cut = text.find("\noverall_soundscape:")
+    if cut > 0:
+        return text[:cut].rstrip() + "\n" + line + "\n" + text[cut:]
+    return text.rstrip() + "\n" + line
+
+
+def ensure_futa_anatomy_line(text: str) -> str:
+    raw = str(text or "")
+    if not raw or FUTA_ANATOMY_MARK in raw:
+        return raw
+    return _inject_before_soundscape(raw, FUTA_ANATOMY_LOCK_LINE)
 
 
 def lock_futa_anatomy(text: str) -> str:
@@ -176,23 +214,21 @@ SHAFT_LOOK_LINE = (
 )
 
 
-def lock_futa_shaft(text: str) -> str:
+def lock_futa_shaft(text: str, *, force: bool = False) -> str:
     """Pin futa penis to erect 20cm, same shape. Keep in sync with h3_lora_studio.lock_futa_shaft."""
     raw = str(text or "")
     if not raw or "SHAFT LOOK:" in raw:
         return raw
-    has_futa = (
+    has_futa = force or (
         "Clear futanari" in raw
         or "Erect 20cm" in raw
         or "erect 20cm" in raw
         or "futanari: erect" in raw.lower()
+        or prompt_mentions_futa(raw)
     )
     if not has_futa:
         return raw
-    cut = raw.find("\noverall_soundscape:")
-    if cut > 0:
-        return raw[:cut].rstrip() + "\n" + SHAFT_LOOK_LINE + "\n" + raw[cut:]
-    return raw.rstrip() + "\n" + SHAFT_LOOK_LINE
+    return _inject_before_soundscape(raw, SHAFT_LOOK_LINE)
 
 
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
@@ -608,15 +644,19 @@ def assert_stack_budget(
         raise SelectError("photoreal still is for keyframes, not the video body")
     quality = [s for s in specs if s.get("role") in {"concept", "act", "helper", "cinema"}]
     if not nsfw:
-        if "act" in roles or "helper" in roles or "concept" in roles:
-            raise SelectError("SFW stack is turbo plus one quality LoRA only")
+        if "act" in roles or "helper" in roles:
+            raise SelectError("SFW stack is turbo plus optional mystic plus one cinematic LoRA")
         if "turbo" not in roles:
             raise SelectError("SFW fast+quality needs one turbo LoRA")
         for spec in specs:
             row = index.get(str(spec["id"])) or {}
-            if row.get("adult") is True:
+            sid = str(spec.get("id") or "")
+            if row.get("adult") is True and sid != CONCEPT_LORA_ID:
                 raise SelectError(f"SFW stack cannot load adult LoRA: {spec['id']}")
-        if len(quality) > 1:
+        if concept_n:
+            if len(quality) > 2:
+                raise SelectError("SFW with mystic is concept + one cinematic LoRA")
+        elif len(quality) > 1:
             raise SelectError("SFW quality is one cinematic LoRA, or none")
     else:
         if "act" not in roles:
@@ -684,7 +724,14 @@ def apply_feminine_lock(prompt: str, negative: str, profile: dict[str, Any]) -> 
         return str(prompt or ""), str(negative or "")
     prompt = strip_male_subjects(prompt)
     prompt = lock_futa_anatomy(prompt)
-    prompt = lock_futa_shaft(prompt)
+    force_futa = str(profile.get("id") or "") in {
+        "sfw_daily",
+        "sfw_preview",
+        "sfw_audio",
+    } or prompt_mentions_futa(prompt)
+    if force_futa:
+        prompt = ensure_futa_anatomy_line(prompt)
+    prompt = lock_futa_shaft(prompt, force=force_futa)
     prompt = lock_semen_look(prompt, situation=str(profile.get("id") or ""))
     low = prompt.lower()
     if FEMININE_LOCK_MARK not in low:

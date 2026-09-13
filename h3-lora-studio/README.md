@@ -2,11 +2,11 @@
 
 MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fal H3 Max には LoRA を差せない。Colab Comfy（T2V / I2V / 参照は R2V）専用。
 
-成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。Eros 成人 T2V/I2V は解剖（Mystic XXX）を足す。画質は解剖+行為+ヘルパー2が上限。API キーは print しない。
+成人のみ（21+）。速さ用と画質用を分けて積む。エロ本体は 1 系統だけ。Eros の全 FL2VA T2V/I2V（日常エロ汎用含む）は解剖（Mystic XXX）を 0.5。Mystic は行為 LoRA の代わりにならない。画質は解剖+行為+ヘルパー2が上限。API キーは print しない。
 
 ## Colab（初心者はここだけ）
 
-[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-mystic-xxx-f112/minimax_h3_lora_studio.ipynb)
+[minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-cabin-anal-f112/minimax_h3_lora_studio.ipynb)
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）
@@ -16,9 +16,9 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（H3 Eros Max TURBO-hybrid beta5 int8・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は参照シーンのときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。公式 FL2VA は普通の I2V / T2V ノート用。R2V は公式 Ref2VA。Eros TURBO-hybrid では Larry / LightX2V FL2VA を積まない（焼き込み）。
 
-## エロなし（速い＋綺麗）
+## 日常（エロ汎用）と普通（エロなし）
 
-速さ LoRA と画質 LoRA を分ける。同時オンは **Turbo 1 + 画質 0〜1**。
+速さ LoRA と画質 LoRA を分ける。日常／最速／音残しは **Mystic 0.5 + 竿 0.45 + 穴 0.4 + Turbo**。シネマはオフ（cinema XOR helper）。Mystic 単体は玉がつく。玉なし＋マンコあり。フェラ／騎乗などの行為 LoRA は載せない。普通（エロなし）と R2V は Mystic なし。
 
 | 速さ | LoRA | step | メモ |
 |---|---|---|---|
@@ -35,13 +35,13 @@ Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 
 
 比較の目安: 20step 基準に対し 8step で約半分、4step で約 1/3。8step 同士なら Larry と LightX2V の画質は近い。音は ベース ＞ Larry 8step ＞ LightX2V。
 
-| ③の名前 | situation | Turbo | 画質 | sampler |
-|---|---|---|---|---|
-| 日常（速い＋綺麗） | `sfw_daily` | Larry 1.0 | シネマ 0.5 | res_multistep / simple / 8 |
-| 最速プレビュー（エロなし） | `sfw_preview` | LightX2V 4step 1.0 | シネマ 0.4 | euler / simple / 4 |
-| 音も残す（エロなし） | `sfw_audio` | LightX2V 8step 1.0 | シネマ 0.4 | euler / simple / 8 |
-| 普通（エロなし） | `vanilla` | LightX2V 4step 1.0 | なし | 専用 I2V / T2V と同じ |
-| （R2V・CLI） | `sfw_r2v` | Ref2VA 4step 1.0 | シネマ 0.5 | FL2VA 用 Turbo は積まない |
+| ③の名前 | situation | 解剖 | Turbo | 竿＋穴 | sampler |
+|---|---|---|---|---|---|
+| 日常（エロ汎用） | `sfw_daily` | Mystic 0.5 | Larry 1.0 | 竿 0.45 + 穴 0.4 | res_multistep / simple / 8。シネマなし。玉なし＋マンコあり。旧名「日常（速い＋綺麗）」 |
+| 最速プレビュー（エロ汎用） | `sfw_preview` | Mystic 0.5 | LightX2V 4step 1.0 | 竿 0.45 + 穴 0.4 | euler / simple / 4 |
+| 音も残す（エロ汎用） | `sfw_audio` | Mystic 0.5 | LightX2V 8step 1.0 | 竿 0.45 + 穴 0.4 | euler / simple / 8 |
+| 普通（エロなし） | `vanilla` | なし | LightX2V 4step 1.0 | なし | 専用 I2V / T2V と同じ |
+| （R2V・CLI） | `sfw_r2v` | なし | Ref2VA 4step 1.0 | シネマ 0.5 | FL2VA 用 Turbo は積まない。Mystic なし |
 
 Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co/larryvrh/MiniMax-H3-Turbo-Lora)。Colab は LoraLoader 用の [DarkRomeo88 Comfy 変換](https://huggingface.co/DarkRomeo88/MiniMax-H3-turbo-lora-comfyui) を使う。LightX2V は [lightx2v/Minimax-h3-Turbo](https://huggingface.co/lightx2v/Minimax-h3-Turbo)。まとめ: [Civitai 1063735](https://civitai.com/models/1063735)。
 
@@ -49,7 +49,7 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 
 ## エロ
 
-同時オンは **行為 1 + 解剖 0〜1 + ヘルパー 0〜2 + Turbo 0〜1**。Eros Max の成人 T2V/I2V は **Mystic XXX v4 を 0.5**（TenStrip が上載せ必須と書いた。beta5 に混ざっていても載せる。Ref2VA 版は実験・音なしなので載せない）。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。竿・穴は Eros では薄め（0.45 / 0.4）。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
+同時オンは **行為 1 + 解剖 0〜1 + ヘルパー 0〜2 + Turbo 0〜1**。Eros Max の成人 T2V/I2V は **Mystic XXX v4 を 0.5**（TenStrip が上載せ必須と書いた。beta5 に混ざっていても載せる。日常エロ汎用も同じ 0.5。Mystic 単体は玉がつく。玉なし＋マンコありは竿＋穴も積む。行為 LoRA の代わりにはならない。Ref2VA 版は実験・音なしなので載せない）。**ふたなりフェラはヘルパー2（竿＋穴）+ Larry 6step。** セックス（女体）/ アナル / 騎乗 / 後背位はヘルパー2で Turbo オフ。**ふたなりシーンは必ず穴 LoRA（`synth-pussy-h3`）をセット。** 竿だけだとハメ役にも竿が付く。竿・穴は Eros では薄め（0.45 / 0.4）。体位 LoRA は総合えっちの代わり（同時に積まない）。シネマを足すならヘルパーを落とす。挿入 LoRA と SFW の速い＋綺麗は併用しない。アナルセックスは **ThumbInButt を積まない**（四つん這い固定で使い物にならない）。竿 + 穴、構図は文章欄。飲尿／脱糞も同じ積み。指入れだけ ThumbInButt。穴の見え方 LoRA は積むが、空欄文は全裸のごく普通の若い成人女性（21+）だけ。行為の細かい描写は③の文章欄。男は出さない（女かふたなりのみ）。
 
 | ③の名前 | situation | 解剖 | 行為 | ヘルパー | Turbo | シネマ | sampler |
 |---|---|---|---|---|---|---|---|
@@ -89,13 +89,15 @@ Larry の公式重みは [larryvrh/MiniMax-H3-Turbo-Lora](https://huggingface.co
 - 指入れ + オナニー、指入れ + アナル指入れ、アナル指入れ + アナルセックス、射精 + 絶頂、後射精 + 顔射、顔射 + 絶頂、中出し + 後射精、中出し + 顔射、中出し + 口内、口内 + 顔射、口内 + フェラ本線
 - `riding-pose-i2v` を T2V に載せる（I2V専用。T2V の騎乗は cowgirl。I2V 騎乗は riding-pose 0.45）
 - mystic-xxx-h3 を R2V に載せる、mystic-xxx-ref2va を FL2VA/Eros に載せる
-- シネマ DY を 0.7 以上で挿入ショット（SFW 日常は 0.6–0.7）
+- Mystic 単体でふたなりを出す（玉がつく。日常エロ汎用は竿＋穴も積む）
+- 日常エロ汎用にシネマを足す（cinema XOR helper。歩行 `futa_visible` と同じ）
+- シネマ DY を 0.7 以上で挿入ショット（R2V / 普通の画質は 0.6–0.7）
 - Photoreal still を動画本体に載せる
 - DY と ASTROCINEMA の同時積み
 - Fal H3 Max に LoRA を差す
 - 訓練で体位を足す（既存 FL2VA LoRA を積む）
 
-積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）、`mystic-xxx-ref2va`（実験・音未学習。R2V は AfterMidnight）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。成人 T2V/I2V の解剖は [Mystic XXX v4](https://civitai.com/models/2856467?modelVersionId=3266628) を 0.5。LTX の 10Eros や riding の LTX 版は載せない。
+積まない（意味がない / 別系統）: PinkCherry チェックポイント、Motion Booster、Blackedraw Doggy（Ref2VA）、Wan iGoon、`futa-h3-v51` を体位シーンに足す、HMPussy / HMPenis / HMBreasts（竿・穴と重複）、gay packs、Astro NSFW、胸スライダー、deepthroat-v02（フェラ本線で足りる）、`mystic-xxx-ref2va`（実験・音未学習。R2V は AfterMidnight）。スタジオの T2V/I2V 土台は [H3 Eros Max](https://civitai.com/models/2851079)（TenStrip TURBO-hybrid beta5 int8）。全 FL2VA T2V/I2V（日常エロ汎用含む）の解剖は [Mystic XXX v4](https://civitai.com/models/2856467?modelVersionId=3266628) を 0.5。単体は玉がつく。日常エロ汎用は竿 0.45 + 穴 0.4 も積む。行為 LoRA（フェラ／騎乗／CUMOUF）の代わりにはならない。普通（エロなし）・R2V・電話 I2V/T2V には載せない。LTX の 10Eros や riding の LTX 版は載せない。
 
 ### ThumbInButt（アナル系の行為 LoRA）
 
@@ -171,6 +173,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | 講義机 | `lecture-desk-50s` | 10×5 | 板書。教卓の下でジュボ→口内 | カナ、2行まで |
 | キャンプ | `camp-50s` | 10×5 | 虫よけ。レイがアヤを舐めるだけ（cunnilingus_futa）。竿は使わない | カナ、2行まで |
 | 花火 | `fireworks-50s` | 10×5 | 上を見る。立ったまま後ろから（futa_sex）。顔は花火 | カナ、2行まで |
+| 山小屋 | `cabin-40s` | 10×4 | 扉はアヤ一人。跨ってからアナル挿入。アナル中出しはアナルから溢れる | カナ、2行まで |
 | ハイスイコウ | `manhole-30s` | 10×2 | 物語の追加。フタの会話→口を開けて先端から手の幅→無言ジュボ口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し | カナ、1本目2行 |
 | 屋上クーラー | `roof-ac-30s` | 10×2 | 物語の追加。会話→受け入れる立ち・挿入寸前→無言でもう入っている立ち（hmmotion） | カナ、1本目2行 |
 | ハマのテトラ | `tetrapod-30s` | 10×2 | 物語の追加。風の会話→跪いて口を開けて先端から手の幅→無言ジュボ口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し | カナ、1本目2行 |
@@ -183,7 +186,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 | 川原のゴミ | `riverbank-30s` | 10×2 | 物語の追加。フクロの会話→跪いて口を開けて先端から手の幅→無言ジュボ口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し | カナ、1本目2行 |
 | ハチコウ | `hachiko-30s` | 10×2 | 物語の追加。夜の渋谷ハチコウ前。レイ左手でシコシコ→アヤ右からキス→口を開けて先端から手の幅→無言ジュボ口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。15秒禁止 | カナ、1本目2行 |
 
-建前パック（カフェ〜花火）のユーザー原稿は 15秒×N。H3 追従（10秒・1本1動作・行為中は無言）に合わせて 10秒×N に割り直し、行為中の台詞は前後の口元の本へ移した。セックス／口／クンニの直前の本は挿入寸前・受け入れる姿勢（先端から手の幅、未挿入／口を開けて先端から手の幅／膝を開いて舐め寸前）で終わる。物語の追加は1本目の余り尺でその姿勢にする（3本目は足さない）。`spoken_max: 2` で口元の本に1往復（2行）まで（上限2。無いパックは1）。`hmmotion` は AIO の本だけ先頭（ランドリー・花火・屋上クーラー・コウジョウあと）。アナル舐め・アナル指入れの建前パックは作らない（アナル舐め LoRA が無い）。全シーンのふたなりは **玉なし＋マンコあり**（竿の付け根に無毛の女陰。`lock_futa_anatomy` / `Penis plus vagina, never balls`。ボッキ時は約20cm・太い人間の綺麗な竿で形固定 `lock_futa_shaft`。ほぼ水平の軽い上反り。訪問販売と定期検診は咥えやすい角度 `lock_oral_easy_shaft`。アヤとサヤカは竿なしのまま）。口にする台詞は話し言葉（漢字禁止。おチンチン・おミズ・ムク等の符丁はカタカナ。`validate_story_follow` が「」内の漢字を落とす）。シーンごとに WHO で誰が出て何をするかを書く。余り役は NOT IN FRAME。常時2人以上ではない。行為以外の余り秒は口／胸キス＋スキンシップ（`lock_clip_timeline`。同じ「」を反復しない）。訪問（献身・水販売）は最初一人（閉扉・チャイム）→ドアが開いてからメインが入る。カフェ1本目は店員なし。台詞は棒読み禁止（感情＋表情。あちぃーは真夏の暑そうな顔）。飲尿は使わない（おミズ／おチャ／アガリユ／ミズはジュボの建前。授業のトイレ放尿は見るだけ）。ジュボ中は気持ちよさ、射精はイキ顔。セリフは口元が見える本だけ（リップシンク）。行為クリップ（ジュボ・口内・挿入・クンニ）は**全物語共通**でセリフを足さない（無言のまま）。チンチンのジュボジュボ、チュー、唾液を舐める音、自然に漏れた喘ぎはちゃんと出す。専用の会話本は短い一言＋待ちにせず、「」を長くして口を埋める（ユニーク上限2のまま）。行為は LoRA のカメラ（口元／舌／接合点／膝元）。歩く本に行為部品を載せない。体位とカメラが合わない行為は捩じ込まない。登校・おかえり・風呂・食卓・布団・休日・縁側は 10秒×12本・16:9。授業と屋上は 10秒×10本・16:9。
+建前パック（カフェ〜山小屋）のユーザー原稿は 15秒×N。H3 追従（10秒・1本1動作・行為中は無言）に合わせて 10秒×N に割り直し、行為中の台詞は前後の口元の本へ移した。セックス／口／クンニの直前の本は挿入寸前・受け入れる姿勢（先端から手の幅、未挿入／口を開けて先端から手の幅／膝を開いて舐め寸前）で終わる。物語の追加は1本目の余り尺でその姿勢にする（3本目は足さない）。`spoken_max: 2` で口元の本に1往復（2行）まで（上限2。無いパックは1）。`hmmotion` は AIO の本だけ先頭（ランドリー・花火・屋上クーラー・コウジョウあと）。アナル舐め・アナル指入れの建前パックは作らない（アナル舐め LoRA が無い）。全シーンのふたなりは **玉なし＋マンコあり**（竿の付け根に無毛の女陰。`lock_futa_anatomy` / `Penis plus vagina, never balls`。ボッキ時は約20cm・太い人間の綺麗な竿で形固定 `lock_futa_shaft`。ほぼ水平の軽い上反り。訪問販売と定期検診は咥えやすい角度 `lock_oral_easy_shaft`。アヤとサヤカは竿なしのまま）。口にする台詞は話し言葉（漢字禁止。おチンチン・おミズ・ムク等の符丁はカタカナ。`validate_story_follow` が「」内の漢字を落とす）。シーンごとに WHO で誰が出て何をするかを書く。余り役は NOT IN FRAME。常時2人以上ではない。行為以外の余り秒は口／胸キス＋スキンシップ（`lock_clip_timeline`。同じ「」を反復しない）。訪問（献身・水販売）は最初一人（閉扉・チャイム）→ドアが開いてからメインが入る。カフェ1本目は店員なし。台詞は棒読み禁止（感情＋表情。あちぃーは真夏の暑そうな顔）。飲尿は使わない（おミズ／おチャ／アガリユ／ミズはジュボの建前。授業のトイレ放尿は見るだけ）。ジュボ中は気持ちよさ、射精はイキ顔。セリフは口元が見える本だけ（リップシンク）。行為クリップ（ジュボ・口内・挿入・クンニ）は**全物語共通**でセリフを足さない（無言のまま）。チンチンのジュボジュボ、チュー、唾液を舐める音、自然に漏れた喘ぎはちゃんと出す。専用の会話本は短い一言＋待ちにせず、「」を長くして口を埋める（ユニーク上限2のまま）。行為は LoRA のカメラ（口元／舌／接合点／膝元）。歩く本に行為部品を載せない。体位とカメラが合わない行為は捩じ込まない。登校・おかえり・風呂・食卓・布団・休日・縁側は 10秒×12本・16:9。授業と屋上は 10秒×10本・16:9。
 
 ### 専用ストーリーの追従最適化（速度と再現の両立）
 
