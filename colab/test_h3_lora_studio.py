@@ -246,6 +246,10 @@ def test_japanese_form_labels():
     assert "AIO は積まない" in riding
     assert "ヘルパー0〜2" in riding
     assert "cowgirl-position-h3" not in riding
+    assert "騎乗POV" in riding
+    riding_i2v = explain_choice("騎乗位（女体）", "写真から（1枚必要）")
+    assert "騎乗POV" in riding_i2v
+    assert "写真から" in riding_i2v
     after = explain_choice("後射精（女体）", "テキストから（写真なし）")
     assert "射精" in after
     assert "絶頂" in after
@@ -271,6 +275,7 @@ def test_japanese_form_labels():
     assert friendly_lora("final-thrust-h3") == "中出し"
     assert friendly_lora("cumouf-h3") == "口内射精"
     assert friendly_lora("cowgirl-position-h3") == "騎乗"
+    assert friendly_lora("riding-pose-i2v") == "騎乗POV（I2V）"
     assert friendly_lora("doggy-h3") == "後背位"
     assert friendly_lora("hmcumshot-v2") == "射精"
     assert friendly_lora("facial-cumshot-h3") == "顔射"
@@ -376,6 +381,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     from h3_lora_studio import (
         fetch_github_files_raw,
         github_member_rel,
+        has_eros_unet,
         has_fl2va_weight,
         studio_colab_dest,
         unpack_github_archive,
@@ -391,6 +397,12 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     assert has_fl2va_weight(empty) is False
     (empty / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_text("x", encoding="utf-8")
     assert has_fl2va_weight(empty) is True
+    assert has_eros_unet(empty) is False
+    eros_dir = tmp_path / "eros"
+    eros_dir.mkdir()
+    (eros_dir / "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors").write_text("x", encoding="utf-8")
+    assert has_fl2va_weight(eros_dir) is True
+    assert has_eros_unet(eros_dir) is True
 
     tar_path = tmp_path / "repo.tgz"
     with tarfile.open(tar_path, "w:gz") as tar:
@@ -516,7 +528,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-futa-bj-generic-1"' in src
+    assert 'FETCH_REV = "h3-20260913-eros-max-1"' in src
     assert "ensure_select_loras_on_path" in src
     assert 'shutil.copy2(sel, Path("/content/select_loras.py"))' in src
     assert "部品 select_loras がありません" in src
@@ -584,7 +596,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-futa-bj-generic-1" in blob
+    assert "h3-20260913-eros-max-1" in blob
     assert "h3-20260907-r2v-node-1" not in blob
     assert "h3-20260907-pussy-1" not in blob
     assert "h3-20260907-shorts-1" not in blob
@@ -654,11 +666,16 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "設定だけ更新する = True" in src
     assert "fetch_github_tree" in src
     assert "has_fl2va_weight" in src
+    assert "has_eros_unet" in src
+    assert "have_local = has_eros_unet" in src
+    assert "studio_engine_download_jobs" in src
+    assert "pick_studio_unet" in src
+    assert "H3 Eros Max" in src
     assert "update=not fast" in src
     assert "ローカルに土台あり。Drive からのコピーは飛ばします。" in src
-    assert "土台がまだ無いので、設定だけではなく全部入れます。" in src
+    assert "スタジオ土台（H3 Eros Max）がまだ無いので、設定だけではなく全部入れます。" in src
     assert "LoRA は Drive のまま" in src
-    assert "土台だけローカル（FL2VA・文字・VAE）。LoRA は Drive のまま。" in src
+    assert "土台だけローカル（Eros Max・文字・VAE）。LoRA は Drive のまま。" in src
     assert "include_ref2v=need_r2v" in src
     assert "cores_only=True" in src
     assert 'link_dir(COMFY_DIR / "models" / "loras", DRIVE_MODELS / "loras")' in src
@@ -782,7 +799,7 @@ def test_clamp_studio_duration_is_four_to_ten():
         "ONE UNBROKEN 10-second take. the whole 10-second take."
     )
     assert situation_ids("general_sex") == ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("riding") == ["cowgirl-position-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("riding") == ["cowgirl-position-h3", "riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("doggy") == ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("missionary_pov") == ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
     assert situation_ids("after_ejaculation") == ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
@@ -1529,7 +1546,75 @@ def test_is_ref2v_weight_matches_ref2va_only():
     assert is_ref2v_weight("minimax_h3_ref2va_pruned_int8.safetensors")
     assert is_ref2v_weight("minimax_h3_ref2v_turbo.safetensors")
     assert not is_ref2v_weight("minimax_h3_fl2va_pruned_int8_convrot.safetensors")
+    assert not is_ref2v_weight("10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors")
     assert not is_ref2v_weight("qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors")
+
+
+def test_pick_studio_unet_prefers_eros_turbo_hybrid(tmp_path):
+    from h3_lora_studio import (
+        EROS_FL2VA_NAME,
+        drop_baked_turbo_loras,
+        has_eros_unet,
+        has_fl2va_weight,
+        is_eros_turbo_hybrid_unet,
+        is_eros_unet,
+        pick_studio_unet,
+        studio_engine_download_jobs,
+    )
+
+    folder = tmp_path / "diffusion_models"
+    folder.mkdir()
+    assert pick_studio_unet(folder) == EROS_FL2VA_NAME
+    (folder / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_text("o", encoding="utf-8")
+    assert pick_studio_unet(folder) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    (folder / EROS_FL2VA_NAME).write_text("e", encoding="utf-8")
+    assert pick_studio_unet(folder) == EROS_FL2VA_NAME
+    assert is_eros_unet(EROS_FL2VA_NAME) is True
+    assert is_eros_unet("h3ErosMax_beta5_123.safetensors") is True
+    assert is_eros_unet("10Eros_Max_ltx2_hybrid.safetensors") is False
+    assert is_eros_turbo_hybrid_unet(EROS_FL2VA_NAME) is True
+    assert is_eros_turbo_hybrid_unet("10Eros_Max_h3_hybrid_beta5_int8.safetensors") is False
+    assert is_eros_turbo_hybrid_unet("h3ErosMax_beta5_123.safetensors") is True
+    assert has_fl2va_weight(folder) is True
+    assert has_eros_unet(folder) is True
+    official_only = tmp_path / "official"
+    official_only.mkdir()
+    (official_only / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_text("o", encoding="utf-8")
+    assert has_fl2va_weight(official_only) is True
+    assert has_eros_unet(official_only) is False
+
+    stack = [
+        {"id": "blowjob-h3", "role": "act"},
+        {"id": "larry-v4", "role": "turbo"},
+        {"id": "minimax-h3-turbo-fl2v-4step", "role": "turbo"},
+    ]
+    dropped = drop_baked_turbo_loras(stack, EROS_FL2VA_NAME)
+    assert [row["id"] for row in dropped] == ["blowjob-h3"]
+    kept = drop_baked_turbo_loras(stack, "minimax_h3_fl2va_pruned_int8_convrot.safetensors")
+    assert [row["id"] for row in kept] == ["blowjob-h3", "larry-v4", "minimax-h3-turbo-fl2v-4step"]
+
+    jobs = studio_engine_download_jobs(tmp_path / "models")
+    names = [dest.name for _url, dest in jobs]
+    assert EROS_FL2VA_NAME in names
+    assert "minimax_h3_fl2va_pruned_int8_convrot.safetensors" not in names
+    assert any("qwen3vl" in dest.name or "text" in str(dest) for _url, dest in jobs)
+
+
+def test_stage_models_skips_official_fl2va_when_eros_is_present(tmp_path):
+    from h3_lora_studio import EROS_FL2VA_NAME, stage_models_to_local
+
+    drive = tmp_path / "drive" / "models"
+    local = tmp_path / "local" / "models"
+    (drive / "diffusion_models").mkdir(parents=True)
+    (drive / "text_encoders").mkdir()
+    (drive / "vae").mkdir()
+    (drive / "diffusion_models" / EROS_FL2VA_NAME).write_bytes(b"e" * 4000)
+    (drive / "diffusion_models" / "minimax_h3_fl2va.safetensors").write_bytes(b"f" * 4000)
+    (drive / "text_encoders" / "qwen.safetensors").write_bytes(b"t" * 2000)
+    (drive / "vae" / "vae.safetensors").write_bytes(b"v" * 500)
+    stage_models_to_local(drive, local, min_free_bytes=0)
+    assert (local / "diffusion_models" / EROS_FL2VA_NAME).is_file()
+    assert not (local / "diffusion_models" / "minimax_h3_fl2va.safetensors").exists()
 
 
 def test_stage_models_cores_only_skips_loras_and_ref2va(tmp_path):
@@ -6565,6 +6650,10 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "fetch_github_tree", None)' in src
     assert 'getattr(_h3_studio, "ensure_select_loras_on_path", None)' in src
     assert 'getattr(_h3_studio, "has_fl2va_weight", None)' in src
+    assert 'getattr(_h3_studio, "pick_studio_unet", None)' in src
+    assert 'getattr(_h3_studio, "studio_engine_download_jobs", None)' in src
+    assert 'getattr(_h3_studio, "drop_baked_turbo_loras", None)' in src
+    assert 'getattr(_h3_studio, "has_eros_unet", None)' in src
     assert 'getattr(_h3_studio, "is_ref2v_weight", None)' in src
     for pid in CHAIN_PACK_ORDER:
         assert f"h3-lora-studio/stories/{pid}.json" in src, pid
@@ -6581,7 +6670,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-futa-bj-generic-1" in cell2
+    assert "h3-20260913-eros-max-1" in cell2
     assert "h3-20260907-r2v-node-1" not in cell2
     assert "h3-20260907-pussy-1" not in cell2
     assert "本ごとの秒:" in src
