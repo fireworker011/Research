@@ -3,15 +3,34 @@
   "adults_only": true,
   "min_age": 21,
   "nsfw": false,
-  "modes": ["i2v", "t2v"],
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
   "allow_turbo": true,
   "canvas": {
-    "i2v": { "width": 768, "height": 864, "duration_s": 10.0, "aspect": "8:9" },
-    "t2v": { "width": 576, "height": 1024, "duration_s": 10.0, "aspect": "9:16" }
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
   },
   "stack_plan": {
-    "turbo": { "id": "larry-v4", "strength": 1.0 },
-    "cinema": { "id": "cinema-dy", "strength": 0.65 }
+    "turbo": {
+      "id": "larry-v4",
+      "strength": 1.0
+    },
+    "cinema": {
+      "id": "cinema-dy",
+      "strength": 0.5
+    }
   },
   "sampler": {
     "sampler_name": "res_multistep",
@@ -19,7 +38,7 @@
     "steps": 8,
     "video_shift": 6,
     "audio_shift": 3,
-    "note": "SFW daily. Larry v4 600 EMA 1.0 + cinematic 0.65. 8step. Shift is a note; the graph has no ModelSamplingAV node."
+    "note": "SFW daily. Larry v4 1.0 + cinematic 0.5. 8step. Eros TURBO-hybrid drops Larry at inject. Shift is a note."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -42,7 +61,9 @@
     "astro-cinema-h3",
     "minimax-h3-turbo-fl2v-4step",
     "minimax-h3-turbo-fl2v-8step",
-    "minimax-h3-turbo-ref2v-4step"
+    "minimax-h3-turbo-ref2v-4step",
+    "mystic-xxx-ref2va",
+    "mystic-xxx-h3"
   ],
   "scenes": {
     "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>.\n\nenvironment: Quiet indoor space matching <Picture 1>, soft daylight, natural depth of field.\ncamera: Medium shot, then a slow small-amplitude push-in.\nintegrated_multimodal_description: (S1) talks naturally to someone off-camera. Photoreal skin, cinematic lighting, no plastic look. Identity stays locked to <Picture 1>. No freeze frame. No cartoon.\noverall_soundscape: Room tone and quiet speech.\nending: Motion continues; (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",

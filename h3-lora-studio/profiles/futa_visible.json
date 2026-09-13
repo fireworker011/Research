@@ -31,13 +31,17 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "penis-lora-h3",
-      "strength": 0.7
+      "strength": 0.45
     },
     "helper": {
       "id": "synth-pussy-h3",
-      "strength": 0.55
+      "strength": 0.4
     },
     "turbo": {
       "id": "larry-v4",
@@ -62,13 +66,13 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Penis visible, no sex act. Walk / door / kiss / TV clips: penis 0.7 + Synth 0.55 + thin Larry 0.6 / 8step. Pussy helper so the non-shaft partner does not grow a penis. Cinema off (cinema XOR helper)."
+    "note": "Mystic 0.5 + penis 0.45 + Synth 0.4 + thin Larry 0.6 / 8step. Walk/talk, no sex act. Cinema off (cinema XOR helper). R2V is cinema + Synth + Ref turbo."
   },
   "sampler_no_turbo": {
     "sampler_name": "res_multistep",
     "scheduler": "beta",
     "steps": 12,
-    "note": "Lip-sync clips (a spoken 「line」): the story planner strips Larry (and cinema-dy if present; cinema melts the talking jaw) and keeps penis + synth. Full-step plan so mouth timing and the Japanese line stay clean."
+    "note": "Lip-sync clips (a spoken 「line」): the story planner strips Larry (and cinema-dy if present; cinema melts the talking jaw) and keeps mystic + penis + synth. Full-step plan so mouth timing and the Japanese line stay clean."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -88,7 +92,8 @@
     "fingering-h3",
     "astro-nsfw-h3",
     "tiddies-realism-slider",
-    "aftermidnight-ref2va"
+    "aftermidnight-ref2va",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nWalking, standing, or talking. No sex act. No blowjob. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

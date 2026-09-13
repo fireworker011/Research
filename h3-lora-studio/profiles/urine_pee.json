@@ -23,22 +23,26 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "penis-lora-h3",
-      "strength": 0.7
+      "strength": 0.45
     },
     "helper": [
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ]
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "Any-pose genital pee. Stream leaves the urethral opening on camera. Penis 0.7 + Synth 0.55 / 12step. Turbo off. Pose comes from the prompt."
+    "steps": 8,
+    "note": "Mystic 0.5 + penis 0.45 + Synth 0.4 / 8step. No act LoRA. Turbo off. Yellow from the glans-tip urethra, not drinking."
   },
   "disabled": [
     "thumbinbutt-h3",
@@ -60,7 +64,8 @@
     "photoreal-h3-still",
     "larry-v4",
     "minimax-h3-turbo-fl2v-4step",
-    "cinema-dy"
+    "cinema-dy",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\n(S2) pees a continuous opaque yellow stream from the urethral opening at the glans tip of the erect 20cm, the same hole semen would pulse from, not from the pussy at the base, not from the anus, not from off-screen. The stream is visible leaving the genitals for the whole take. Pose and camera follow the user prompt. If none, standing, front, medium two-shot. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

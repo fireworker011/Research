@@ -13,35 +13,39 @@
     "i2v": {
       "width": 768,
       "height": 864,
-      "duration_s": 12.0,
+      "duration_s": 10.0,
       "aspect": "8:9"
     },
     "t2v": {
       "width": 576,
       "height": 1024,
-      "duration_s": 12.0,
+      "duration_s": 10.0,
       "aspect": "9:16"
     },
     "r2v": {
       "width": 576,
       "height": 1024,
-      "duration_s": 12.0,
+      "duration_s": 10.0,
       "aspect": "9:16"
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "cumouf-h3",
-      "strength": 0.5
+      "strength": 0.4
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ],
     "turbo": {
@@ -63,7 +67,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "CUMOUF 0.5 + penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. Oral creampie inside the mouth. Pussy helper so the futa base stays a vagina, never balls. Not a facial. Insertor is a woman, never a man. I2V mid-action recommended. Strength stays 0.5."
+    "note": "Mystic 0.5 + CUMOUF 0.4 + Penis 0.45 + Synth 0.4 + Larry 0.5 / 8step. In-mouth, not a facial. R2V stays thicker."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -88,7 +92,8 @@
     "fingering-h3",
     "hmmasturbation-h3",
     "footjob-h3",
-    "remote-orgasm-h3"
+    "remote-orgasm-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "CUMOUF, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lips already wrapped around a penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nCUMOUF. Close side view of (S2)'s penis in (S1)'s mouth, (S1)'s lips wrapped tight around the shaft. (S2) pumps slowly into (S1)'s mouth, then holds deep as she starts to cum. Her penis twitches and spasms over and over, pulsing as it pumps into (S1)'s mouth. Thick viscous sticky white liquid (ドロドロの白い液体) fills (S1)'s mouth and runs out the side of her mouth and down the shaft. Opaque white gooey strands. Visible white liquid, not clear. It happens inside the mouth, still in her mouth. Not a facial. No cum aimed at the face from outside. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

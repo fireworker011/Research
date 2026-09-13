@@ -31,18 +31,22 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "hmmasturbation-h3",
-      "strength": 0.8
+      "strength": 0.55
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ],
     "turbo": {
@@ -63,8 +67,8 @@
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "Futa masturbation. HMMasturbation 0.8 + penis 0.7 + Synth 0.55 + Larry 0.5 / 12step. Crotch-close: penis plus hairless pussy, never balls. Solo stroking a futanari penis."
+    "steps": 8,
+    "note": "Mystic 0.5 + HMMasturbation 0.55 + penis 0.45 + Synth 0.4 + Larry 0.5 / 8step. Close on the pussy at the base."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -83,7 +87,8 @@
     "cinema-dy",
     "fingering-h3",
     "astro-nsfw-h3",
-    "tiddies-realism-slider"
+    "tiddies-realism-slider",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "hmmasturbation, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\nAlready stroking her own penis. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

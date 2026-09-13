@@ -31,14 +31,18 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "lesbian-cunnilingus-h3",
-      "strength": 0.8
+      "strength": 0.55
     },
     "helper": [
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       },
       {
         "id": "penis-lora-h3",
@@ -64,7 +68,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Cunnilingus while a futanari penis hangs unused. Lesbian 0.8 + synth 0.55 + penis 0.45 + Larry 0.5. Not a blowjob."
+    "note": "Mystic 0.5 + cunnilingus 0.55 + Synth 0.4 + thin penis 0.45 + Larry 0.5. Blowjob LoRA off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -82,7 +86,8 @@
     "cinema-dy",
     "hmmasturbation-h3",
     "astro-nsfw-h3",
-    "tiddies-realism-slider"
+    "tiddies-realism-slider",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, feminine body, NO penis. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Her penis hangs unused. Not a man.\n\nAlready cunnilingus. Tongue on (S1)'s pussy. (S2)'s penis is unused, not in a mouth. No blowjob. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

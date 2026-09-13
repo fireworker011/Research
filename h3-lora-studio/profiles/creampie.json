@@ -23,26 +23,30 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "final-thrust-h3",
-      "strength": 0.85
+      "strength": 0.55
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ]
   },
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "Final Thrust 0.85 + penis 0.7 + Synth 0.55 / 12step. Turbo off. Vaginal creampie during thrusts. Insertor is a woman, never a man. I2V recommended."
+    "steps": 8,
+    "note": "Mystic 0.5 + Final Thrust 0.55 + penis 0.45 + Synth 0.4 / 8step. Turbo off. Inside the vagina."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -69,7 +73,8 @@
     "fingering-h3",
     "hmmasturbation-h3",
     "footjob-h3",
-    "remote-orgasm-h3"
+    "remote-orgasm-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, lying on her back with her legs open. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, soft feminine hips and breasts, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls, between (S1)'s legs. Not a man.\n\nThis video depicts part of sexual intercourse climax. (S2) performs powerful, intense thrusts with her penis inside (S1) and cums inside of her. Viscous sticky white liquid (ドロドロの白い液体) semen stays in the vagina. Opaque white liquid, not clear. No pulling out. No facial. No cum on the face. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

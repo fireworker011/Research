@@ -1,11 +1,11 @@
 """Colab helper for stacking MiniMax H3 LoRAs.
 
-SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
+SFW: turbo + one quality LoRA. Adult T2V/I2V: concept (Mystic XXX) + act + helpers 0-2 + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
 Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
-Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official.
+Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official. Mystic XXX v4 is FL2VA-only; do not load the Ref2VA file.
 """
 
 from __future__ import annotations
@@ -102,36 +102,37 @@ SITUATION_DOWNLOAD = {
     "sfw_preview": ["minimax-h3-turbo-fl2v-4step", "cinema-dy"],
     "sfw_audio": ["minimax-h3-turbo-fl2v-8step", "cinema-dy"],
     "sfw_r2v": ["minimax-h3-turbo-ref2v-4step", "cinema-dy"],
-    "anal_closeup": ["synth-pussy-h3", "larry-v4", "cinema-dy"],
-    "anal_fingering": ["thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
-    "anal_penetration": ["penis-lora-h3", "synth-pussy-h3"],
-    "lesbian_cunnilingus": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "pussy_spread": ["pussy-spread-h3", "synth-pussy-h3", "larry-v4"],
-    "lesbian_spread": ["lesbian-cunnilingus-h3", "pussy-spread-h3", "larry-v4"],
-    "futa_blowjob": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
-    "futa_anal": ["penis-lora-h3", "synth-pussy-h3"],
-    "urine_drink": ["penis-lora-h3", "synth-pussy-h3"],
-    "urine_pee": ["penis-lora-h3", "synth-pussy-h3"],
-    "scat_act": ["penis-lora-h3", "synth-pussy-h3"],
-    "oral": ["blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "general_sex": ["hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
-    "preview": ["hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
-    "riding": ["cowgirl-position-h3", "riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"],
-    "doggy": ["doggy-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "missionary_pov": ["missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "after_ejaculation": ["hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "facial": ["facial-cumshot-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "creampie": ["final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "oral_creampie": ["cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "fingering": ["fingering-h3", "synth-pussy-h3", "larry-v4"],
-    "masturbation": ["hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
-    "footjob": ["footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "remote_orgasm": ["remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_visible": ["penis-lora-h3", "synth-pussy-h3", "larry-v4", "cinema-dy"],
-    "futa_masturbation": ["hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
-    "cunnilingus_futa": ["lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
+    "anal_closeup": ["mystic-xxx-h3", "synth-pussy-h3", "larry-v4"],
+    "anal_fingering": ["mystic-xxx-h3", "thumbinbutt-h3", "synth-pussy-h3", "larry-v4"],
+    "anal_penetration": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "lesbian_cunnilingus": ["mystic-xxx-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "pussy_spread": ["mystic-xxx-h3", "pussy-spread-h3", "synth-pussy-h3", "larry-v4"],
+    "lesbian_spread": ["mystic-xxx-h3", "lesbian-cunnilingus-h3", "pussy-spread-h3", "larry-v4"],
+    "futa_blowjob": ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "futa_sex": ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
+    "futa_anal": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "urine_drink": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "urine_pee": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "scat_act": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "oral": ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "general_sex": ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
+    "preview": ["mystic-xxx-h3", "hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
+    "riding": ["mystic-xxx-h3", "cowgirl-position-h3", "riding-pose-i2v", "penis-lora-h3", "synth-pussy-h3"],
+    "doggy": ["mystic-xxx-h3", "doggy-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "missionary_pov": ["mystic-xxx-h3", "missionary-pov-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "after_ejaculation": ["mystic-xxx-h3", "hmcumshot-v2", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "facial": ["mystic-xxx-h3", "facial-cumshot-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "creampie": ["mystic-xxx-h3", "final-thrust-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "oral_creampie": ["mystic-xxx-h3", "cumouf-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "fingering": ["mystic-xxx-h3", "fingering-h3", "synth-pussy-h3", "larry-v4"],
+    "masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
+    "footjob": ["mystic-xxx-h3", "footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "remote_orgasm": ["mystic-xxx-h3", "remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
+    "futa_visible": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4", "cinema-dy"],
+    "futa_masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
+    "cunnilingus_futa": ["mystic-xxx-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -142,6 +143,7 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
     ],
     "dishes-90s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -150,6 +152,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "commute-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -157,6 +160,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "lecture-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -167,6 +171,7 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
     ],
     "rooftop-100s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "larry-v4",
@@ -174,6 +179,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "okaeri-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -182,6 +188,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "bath-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -190,6 +197,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "dinner-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -198,6 +206,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "futon-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -206,6 +215,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "sunday-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "hmnsfw-aio-v25",
@@ -215,6 +225,7 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
     ],
     "engawa-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "hmnsfw-aio-v25",
@@ -224,6 +235,7 @@ SITUATION_DOWNLOAD = {
         "cumouf-h3",
     ],
     "sales-visit-60s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -232,6 +244,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "checkup-100s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -240,6 +253,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "clinic-75s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -248,6 +262,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "last-stop-40s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -256,6 +271,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "last-train-120s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -264,6 +280,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "semen-bath-70s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "larry-v4",
@@ -271,6 +288,7 @@ SITUATION_DOWNLOAD = {
         "hmcumshot-v2",
     ],
     "meat-wall-85s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -279,6 +297,7 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "meat-wall-cesspit-70s": [
+        "mystic-xxx-h3",
         "penis-lora-h3",
         "cinema-dy",
         "blowjob-h3",
@@ -288,29 +307,29 @@ SITUATION_DOWNLOAD = {
     ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
     # cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy. 飲尿は使わない（ジュボ）。
-    "cafe-100s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "train-sales-80s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "red-light-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "yoga-50s": ["penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
-    "back-wash-60s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
-    "karaoke-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "laundromat-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "lecture-desk-50s": ["penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "camp-50s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "fireworks-50s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    # 物語の追加 (15s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
+    "cafe-100s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "train-sales-80s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "yoga-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
+    "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
+    "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "laundromat-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
     # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
-    "manhole-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "roof-ac-30s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "tetrapod-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "locker-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "crossing-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "lookout-30s": ["penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "factory-30s": ["penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "gas-station-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "tunnel-phone-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "riverbank-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "hachiko-30s": ["penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "roof-ac-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "tetrapod-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "locker-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "crossing-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "lookout-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "factory-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+    "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "riverbank-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "shorts-immoral": [
         "blowjob-h3",
         "synth-pussy-h3",
@@ -523,39 +542,39 @@ MODE_JA = {
 
 SITUATION_HELP = {
     "vanilla": "専用 I2V / T2V ノートと同じ。LightX2V 4step だけ。画質 LoRA なし。",
-    "sfw_daily": "日常・会話・商品・風景。Larry v4 1.0 + シネマ 0.65 / 8step。エロ用は入れない。",
+    "sfw_daily": "日常・会話・商品・風景。Larry v4 1.0 + シネマ 0.5 / 8step。エロ用は入れない。",
     "sfw_preview": "エロなしの最速プレビュー。LightX2V 4step 1.0 + シネマ 0.4。当たりは日常で焼き直す。",
     "sfw_audio": "音を残して速く。LightX2V 8step 1.0 + シネマ 0.4。歌・日本語は日常（Larry）の方が安定。",
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
-    "anal_closeup": "アナル舐め・指（女体）。穴の見え方 0.7 + Larry 0.5 + シネマ 0.4。女同士。男なし。動きの本線はアナル指入れ。",
-    "anal_fingering": "アナル指入れ。女1人。ThumbInButt 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（画質）。穴のアップ。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・16step。挿入側はふたなり。男なし。体位欄で構図。",
-    "lesbian_cunnilingus": "レズクンニ。女同士。クンニ 0.8 + 穴の見え方 0.55 + Larry 0.5。男なし。",
-    "pussy_spread": "性器を広げる。女1人。広げる 0.75 + 穴の見え方 0.55 + Larry 0.5。男なし。",
-    "lesbian_spread": "レズ＋広げる。女同士。クンニ 0.8 + 広げる 0.6 + Larry 0.5。男なし。",
-    "futa_blowjob": "ふたなりフェラ（汎用）。フェラ + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。",
-    "futa_sex": "セックス（女体）。総合えっち 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
-    "futa_anal": "アナルセックス（女体）。竿 0.7 + 穴の見え方 0.55。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・12step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
-    "urine_drink": "飲尿（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
-    "urine_pee": "放尿（性器から）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
-    "scat_act": "脱糞（どの構図）。竿 0.7 + 穴の見え方 0.55。行為 LoRA なし。Turbo なし・12step。今、肛門から出している動き。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
-    "oral": "フェラ（女体）。フェラ 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
-    "general_sex": "汎用エロ（女体）。AIO 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。ふたなり＋女。男なし。",
-    "preview": "試し打ち（女体）。AIO 0.7 + 穴の見え方 0.55 + LightX2V 4step。ふたなり＋女。男なし。",
-    "riding": "騎乗位（女体）。写真から（I2V）は騎乗POV 0.6。テキストから（T2V）は cowgirl 0.8。竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。AIO は積まない。男なし。",
-    "doggy": "後背位（女体）。後背位 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。男なし。",
-    "missionary_pov": "正常位POV（女体）。POV挿入 0.85 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。横はセックス（女体）。",
-    "after_ejaculation": "後射精（女体）。射精 LoRA 0.9 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
-    "facial": "顔射（女体）。顔射 LoRA 0.8 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり＋女。男なし。後射精・絶頂・口内とは別。写真からが本線。",
-    "creampie": "中出し（女体）。Final Thrust 0.85 + 竿 0.7 + 穴の見え方 0.55 / 12step。Turbo なし。膣の中に出す。ふたなり＋女。男なし。後射精・顔射・口内とは別。写真からが本線。",
-    "oral_creampie": "口内射精（女体）。CUMOUF 0.5 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。口の中で出す。ふたなり（竿＋根元のマンコ）＋女。男なし。顔射・フェラ本線とは別。写真からが本線（口が付いた途中の写真）。",
-    "fingering": "指入れ。女1人。指 LoRA 0.85 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。膣。アナルはアナル指入れ。",
-    "masturbation": "オナニー。女1人。潮吹き 0.8 + 穴の見え方 0.55 + Larry 0.5 / 12step。男なし。",
-    "footjob": "足コキ（女体）。Type D 0.85 + 竿 0.7 + 穴の見え方 0.55 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
-    "remote_orgasm": "絶頂。女1人。反応 LoRA 0.8 + 穴の見え方 0.55 + Larry 0.5 / 8step。男なし。射精ではない。",
-    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は竿 0.7 + 穴の見え方 0.55 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
-    "futa_masturbation": "ふたなりオナニー。潮吹き LoRA + 竿 + 穴の見え方 + Larry 12step。根元のマンコが見える寄り。男なし。",
-    "cunnilingus_futa": "クンニ。竿は使わず垂らす。クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
+    "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
+    "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。",
+    "lesbian_cunnilingus": "レズクンニ。女同士。解剖 0.5 + クンニ 0.55 + 穴の見え方 0.4 + Larry 0.5。男なし。",
+    "pussy_spread": "性器を広げる。女1人。解剖 0.5 + 広げる 0.5 + 穴の見え方 0.4 + Larry 0.5。男なし。",
+    "lesbian_spread": "レズ＋広げる。女同士。解剖 0.5 + クンニ 0.55 + 広げる 0.45 + Larry 0.5。男なし。",
+    "futa_blowjob": "ふたなりフェラ（汎用）。解剖 0.5 + フェラ 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。",
+    "futa_sex": "セックス（女体）。解剖 0.5 + 総合えっち 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
+    "futa_anal": "アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
+    "urine_drink": "飲尿（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
+    "urine_pee": "放尿（性器から）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
+    "scat_act": "脱糞（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。今、肛門から出している動き。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
+    "oral": "フェラ（女体）。解剖 0.5 + フェラ 0.6 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
+    "general_sex": "汎用エロ（女体）。解剖 0.5 + AIO 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。",
+    "preview": "試し打ち（女体）。解剖 0.5 + AIO 0.5 + 穴の見え方 0.4 + LightX2V 4step。ふたなり＋女。男なし。",
+    "riding": "騎乗位（女体）。解剖 0.5。写真から（I2V）は騎乗POV 0.45。テキストから（T2V）は cowgirl 0.55。竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。AIO は積まない。男なし。",
+    "doggy": "後背位（女体）。解剖 0.5 + 後背位 LoRA 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。男なし。",
+    "missionary_pov": "正常位POV（女体）。解剖 0.5 + POV挿入 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。横はセックス（女体）。",
+    "after_ejaculation": "後射精（女体）。解剖 0.5 + 射精 LoRA 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。ふたなり。男なし。絶頂・顔射・中出しとは別。",
+    "facial": "顔射（女体）。解剖 0.5 + 顔射 LoRA 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。ふたなり＋女。男なし。後射精・絶頂・口内とは別。写真からが本線。",
+    "creampie": "中出し（女体）。解剖 0.5 + Final Thrust 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。膣の中に出す。ふたなり＋女。男なし。後射精・顔射・口内とは別。写真からが本線。",
+    "oral_creampie": "口内射精（女体）。解剖 0.5 + CUMOUF 0.4 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。口の中で出す。ふたなり（竿＋根元のマンコ）＋女。男なし。顔射・フェラ本線とは別。写真からが本線（口が付いた途中の写真）。",
+    "fingering": "指入れ。女1人。解剖 0.5 + 指 LoRA 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。膣。アナルはアナル指入れ。",
+    "masturbation": "オナニー。女1人。解剖 0.5 + 潮吹き 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。",
+    "footjob": "足コキ（女体）。解剖 0.5 + Type D 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。ふたなり＋女。男なし。",
+    "remote_orgasm": "絶頂。女1人。解剖 0.5 + 反応 LoRA 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。射精ではない。",
+    "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は解剖 0.5 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
+    "futa_masturbation": "ふたなりオナニー。解剖 0.5 + 潮吹き LoRA + 竿 + 穴の見え方 + Larry 8step。根元のマンコが見える寄り。男なし。",
+    "cunnilingus_futa": "クンニ。竿は使わず垂らす。解剖 0.5 + クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
     "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
     "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
     "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉、漢字なし）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
@@ -601,6 +620,7 @@ SITUATION_HELP = {
 }
 
 LORA_JA = {
+    "mystic-xxx-h3": "解剖（Mystic）",
     "synth-pussy-h3": "穴の見え方",
     "lesbian-cunnilingus-h3": "レズクンニ",
     "pussy-spread-h3": "性器を広げる",
@@ -1309,7 +1329,7 @@ def explain_choice(situation: str, mode: str) -> str:
     cap = (
         "重ね上限は Turbo1 + 画質1。エロ用は入れません。"
         if sid in SFW_SITUATIONS
-        else "重ね上限は 行為1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
+        else "重ね上限は 行為1 + 解剖0〜1 + ヘルパー0〜2 + Turbo0〜1。Fal には載せません。"
     )
     play_line = ""
     if sid in STORY_IDS:
@@ -1720,6 +1740,7 @@ def ensure_select_loras_on_path(
                 path.is_file()
                 and path.stat().st_size > 20
                 and "MAX_HELPERS" in path.read_text(encoding="utf-8")
+                and "CONCEPT_LORA_ID" in path.read_text(encoding="utf-8")
             )
         except OSError:
             return False

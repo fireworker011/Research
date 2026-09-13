@@ -24,34 +24,42 @@
   },
   "stack_plan": {
     "i2v": {
+      "concept": {
+        "id": "mystic-xxx-h3",
+        "strength": 0.5
+      },
       "act": {
         "id": "riding-pose-i2v",
-        "strength": 0.6
+        "strength": 0.45
       },
       "helper": [
         {
           "id": "penis-lora-h3",
-          "strength": 0.7
+          "strength": 0.45
         },
         {
           "id": "synth-pussy-h3",
-          "strength": 0.55
+          "strength": 0.4
         }
       ]
     },
     "t2v": {
+      "concept": {
+        "id": "mystic-xxx-h3",
+        "strength": 0.5
+      },
       "act": {
         "id": "cowgirl-position-h3",
-        "strength": 0.8
+        "strength": 0.55
       },
       "helper": [
         {
           "id": "penis-lora-h3",
-          "strength": 0.7
+          "strength": 0.45
         },
         {
           "id": "synth-pussy-h3",
-          "strength": 0.55
+          "strength": 0.4
         }
       ]
     }
@@ -59,8 +67,8 @@
   "sampler": {
     "sampler_name": "euler",
     "scheduler": "simple",
-    "steps": 12,
-    "note": "I2V riding POV 0.6 + penis 0.7 + Synth 0.55 / 12step. T2V cowgirl 0.8. AIO stays off. Turbo off."
+    "steps": 8,
+    "note": "Mystic 0.5. I2V riding POV 0.45 + penis 0.45 + Synth 0.4 / 8step. T2V cowgirl 0.55. AIO stays off. Turbo off."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -86,7 +94,8 @@
     "fingering-h3",
     "hmmasturbation-h3",
     "footjob-h3",
-    "remote-orgasm-h3"
+    "remote-orgasm-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n\nRiding POV. Camera looks up at the rider from the partner on her back. Front view of (S1) riding. (S1) already has her erect penis inside (S2). (S1) rides up and down. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",

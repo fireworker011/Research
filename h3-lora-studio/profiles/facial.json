@@ -23,18 +23,22 @@
     }
   },
   "stack_plan": {
+    "concept": {
+      "id": "mystic-xxx-h3",
+      "strength": 0.5
+    },
     "act": {
       "id": "facial-cumshot-h3",
-      "strength": 0.8
+      "strength": 0.55
     },
     "helper": [
       {
         "id": "penis-lora-h3",
-        "strength": 0.7
+        "strength": 0.45
       },
       {
         "id": "synth-pussy-h3",
-        "strength": 0.55
+        "strength": 0.4
       }
     ],
     "turbo": {
@@ -46,7 +50,7 @@
     "sampler_name": "euler",
     "scheduler": "simple",
     "steps": 8,
-    "note": "Facial 0.8 + penis 0.7 + Synth 0.55 + Larry 0.5 / 8step. AIO off. Pussy helper so the non-shaft partner does not grow a penis. Not stacked with HMCumshot or Remoteorgasm. I2V recommended."
+    "note": "Mystic 0.5 + cmst 0.55 + penis 0.45 + Synth 0.4 + Larry 0.5 / 8step. Face, not in-mouth."
   },
   "disabled": [
     "anal-penetration-coachbate",
@@ -72,7 +76,8 @@
     "fingering-h3",
     "hmmasturbation-h3",
     "footjob-h3",
-    "remote-orgasm-h3"
+    "remote-orgasm-h3",
+    "mystic-xxx-ref2va"
   ],
   "scenes": {
     "i2v": "cmst, PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, looking up into the camera. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Penis in the foreground. Not a man.\n\nAlready a facial. Viscous sticky white liquid (ドロドロの白い液体) on her face. Opaque white gooey strands. Visible white liquid, not clear. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
