@@ -539,12 +539,24 @@ def test_urine_drink_and_scat_act_are_helpers_only():
     assert "thumbinbutt-h3" in unload_pee
     assert "hmnsfw-aio-v25" in unload_pee
     scat = select_loras(profile_name="scat_act", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in scat["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["id"] for r in scat["stack"]] == [
+        "mystic-xxx-h3",
+        "thumbinbutt-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+    ]
+    assert scat["turbo"] is False
+    assert scat["sampler"]["steps"] == 8
+    assert scat["stack"][1]["trigger"] == "thum1n8utt"
     slow = scat["prompt"].lower()
     assert "act of defecating" in slow
     assert "coming out of (s1)'s anus" in slow
     assert "already coated" in slow
+    assert "not the vagina" in slow
     assert "thum1n8utt" not in slow
+    unload_scat = {r["id"] for r in scat["unload"]}
+    assert "thumbinbutt-h3" not in unload_scat
+    assert "hmnsfw-aio-v25" in unload_scat
 
 
 def test_urine_pee_is_glans_stream_not_drink():

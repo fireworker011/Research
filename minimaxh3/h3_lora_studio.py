@@ -2,7 +2,7 @@
 
 SFW: turbo + one quality LoRA. Adult T2V/I2V: concept (Mystic XXX) + act + helpers 0-2 + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
-Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
+Cinema replaces helper. Anal sex / urine drink (penis + synth, no ThumbInButt) stay turbo off. Scat act stacks ThumbInButt so feces leaves the anus, not the vagina. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official. Mystic XXX v4 is FL2VA-only; do not load the Ref2VA file.
@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-4"
+STUDIO_REV = "h3-20260913-anal-5"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -116,7 +116,7 @@ SITUATION_DOWNLOAD = {
     "futa_anal": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
     "urine_drink": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
     "urine_pee": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "scat_act": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "scat_act": ["mystic-xxx-h3", "thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
     "oral": ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "preview": ["mystic-xxx-h3", "hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
@@ -666,7 +666,7 @@ SITUATION_HELP = {
     "futa_anal": "アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
     "urine_drink": "飲尿（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
     "urine_pee": "放尿（性器から）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
-    "scat_act": "脱糞（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。今、肛門から出している動き。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図（しゃがみ／立ち／後背／正常位／座り／横）。デフォルト以外の場所は文章欄（カフェの便座、縁側、など）。物語ドロップダウンは選ばない（帰宅〜縁側・医院・終電に糞は足さない）。山小屋＝扉の外の塗れ。ニクカベ肥溜め＝最初から塗れている。どちらも今出している動きではない。ThumbInButt なし。",
+    "scat_act": "脱糞（どの構図）。解剖 0.5 + ThumbInButt 0.55 + 竿 0.45 + 穴の見え方 0.4。Turbo なし・8step。今、肛門から出している動き。ThumbInButt を積まないとマンコから出る。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図（しゃがみ／立ち／後背／正常位／座り／横）。デフォルト以外の場所は文章欄（カフェの便座、縁側、など）。物語ドロップダウンは選ばない（帰宅〜縁側・医院・終電に糞は足さない）。山小屋＝扉の外の塗れ。ニクカベ肥溜め＝最初から塗れている。どちらも今出している動きではない。アナルセックスには積まない。",
     "oral": "フェラ（女体）。解剖 0.5 + フェラ 0.6 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。解剖 0.5 + AIO 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。解剖 0.5 + AIO 0.5 + 穴の見え方 0.4 + LightX2V 4step。ふたなり＋女。男なし。",

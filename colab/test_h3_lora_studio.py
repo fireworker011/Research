@@ -324,6 +324,9 @@ def test_japanese_form_labels():
     assert "Turbo なし" in pee_help
     scat_help = explain_choice("脱糞（どの構図）", "テキストから（写真なし）")
     assert "肛門" in scat_help
+    assert "ThumbInButt" in scat_help
+    assert "ThumbInButt なし" not in scat_help
+    assert "マンコから出る" in scat_help
     assert "肥溜め" in scat_help
     assert "文章欄" in scat_help
     assert "ゼリー" in scat_help
@@ -545,7 +548,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-4"
+    assert STUDIO_REV == "h3-20260913-anal-5"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -650,7 +653,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-4"' in src
+    assert 'FETCH_REV = "h3-20260913-anal-5"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -722,9 +725,10 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-4" in blob
+    assert "h3-20260913-anal-5" in blob
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-4" not in blob
     assert "h3-20260913-anal-3" not in blob
     assert "h3-20260913-anal-2" not in blob
     assert "h3-20260913-cabin-2" not in blob
@@ -953,7 +957,7 @@ def test_clamp_studio_duration_is_four_to_ten():
     assert situation_ids("anal_penetration") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("urine_drink") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("urine_pee") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("scat_act") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("scat_act") == ["mystic-xxx-h3", "thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
 
 
@@ -7098,7 +7102,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-4" in cell2
+    assert "h3-20260913-anal-5" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
