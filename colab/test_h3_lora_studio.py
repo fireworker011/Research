@@ -1975,8 +1975,13 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
         assert "Sayaka never leaves the sink" in clip["prompt"]
-        assert "Rei is the seated penis" in clip["prompt"]
-        assert "Aya is the mouth on the floor" in clip["prompt"]
+        if clip["situation"] == "futa_anal":
+            # 尻を出す本ではアヤの口は竿に付いていない。
+            assert "Rei is the penis. Aya is the receiver." in clip["prompt"]
+            assert "Aya is the mouth on the floor" not in clip["prompt"]
+        else:
+            assert "Rei is the seated penis" in clip["prompt"]
+            assert "Aya is the mouth on the floor" in clip["prompt"]
         if i >= 1:
             assert "Adult 22" in clip["prompt"]
             assert "mini breasts" in clip["prompt"].lower() or "Mini breasts" in clip["prompt"]
