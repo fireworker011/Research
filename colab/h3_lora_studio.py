@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-1"
+STUDIO_REV = "h3-20260913-anal-2"
 STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
 
 OPTIONAL_IDS = {
@@ -399,6 +399,30 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
     ],
     "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "anal-p1-oral": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+        "cinema-dy",
+    ],
+    "anal-p2-bj-anal": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "cinema-dy",
+    ],
+    "anal-p3-meet-anal": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+        "cinema-dy",
+    ],
     "shorts-immoral": [
         "blowjob-h3",
         "synth-pussy-h3",
@@ -569,6 +593,15 @@ SITUATION_JA = {
     "futon-120s": "futon-120s",
     "sunday-120s": "sunday-120s",
     "engawa-120s": "engawa-120s",
+    "①口内で終わる": "anal-p1-oral",
+    "口内で終わる": "anal-p1-oral",
+    "anal-p1-oral": "anal-p1-oral",
+    "②フェラのあとアナル": "anal-p2-bj-anal",
+    "フェラのあとアナル": "anal-p2-bj-anal",
+    "anal-p2-bj-anal": "anal-p2-bj-anal",
+    "③会って即アナル": "anal-p3-meet-anal",
+    "会って即アナル": "anal-p3-meet-anal",
+    "anal-p3-meet-anal": "anal-p3-meet-anal",
     "短編集（参照）": "shorts-immoral",
     "shorts-immoral": "shorts-immoral",
     "生成し直し": "redo",
@@ -692,6 +725,9 @@ SITUATION_HELP = {
     "tunnel-phone-30s": "物語の追加。トンネル非常電話。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で騎乗位アナル挿入オンカメラ→アナル中出し（騎乗 LoRA は積まない）。ジュボ・口内・口移しはなし。hmmotion なし。",
     "hachiko-30s": "物語の追加。ハチコウ。10秒×2＝20秒（15秒禁止）。9:16。夜の渋谷ハチコウ前。レイ24・20cmが画面左手で立ってフルボッキをシコシコ。アヤ22ミニ・竿なしが右から現れてキス→口を開けて先端から手の幅。2本目は無言で根元まで濃厚ジュボ→口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "anal-p1-oral": "①口内で終わる。汎用40秒。10秒×4本。9:16。アヤ22ミニ・竿なしが口、レイ24・20cm。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は使わない。既存の帰宅〜縁側とは別（こちらが三択そのもの）。",
+    "anal-p2-bj-anal": "②フェラのあとアナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→根元ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。口内 CUMOUF なし。体位欄がアナル本に効く（既定は立ち後背）。",
+    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→即濃厚ベロチュー＋胸揉み＋チンチン／マンコシコシコ→アナル挿入オンカメラ→アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
     "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
@@ -803,6 +839,14 @@ ANTHOLOGY_IDS = ("shorts-immoral",)
 ANTHOLOGY_ID_SET = set(ANTHOLOGY_IDS)
 ANTHOLOGY_LABEL = "短編集（参照）"
 REDO_LABEL = "生成し直し"
+# ③の三択。既存話に焼き込んだパターンとは別。汎用40秒。ドロップダウンは3行だけ（専用×5は付けない）。
+ANAL_PATTERN_ORDER = ("anal-p1-oral", "anal-p2-bj-anal", "anal-p3-meet-anal")
+ANAL_PATTERN_IDS = frozenset(ANAL_PATTERN_ORDER)
+ANAL_PATTERN_JA = {
+    "anal-p1-oral": "①口内で終わる",
+    "anal-p2-bj-anal": "②フェラのあとアナル",
+    "anal-p3-meet-anal": "③会って即アナル",
+}
 # Legacy long labels of the first three packs. They keep the old behaviour
 # (last-frame chain, clip 1 rewritten as a long take) = つなぐ修.
 CHAIN_PACK_TITLE_JA = {
@@ -912,6 +956,11 @@ def chain_pack_labels() -> list[str]:
     return out
 
 
+def anal_pattern_labels() -> list[str]:
+    """③ dropdown: the three anal endings, one row each. Not ×5 plays."""
+    return [ANAL_PATTERN_JA[sid] for sid in ANAL_PATTERN_ORDER]
+
+
 def chain_pack_legacy_labels() -> list[str]:
     return [CHAIN_PACK_TITLE_JA[pid] for pid in CHAIN_PACK_ORDER if pid in CHAIN_PACK_TITLE_JA]
 
@@ -972,11 +1021,21 @@ def is_story(situation: str) -> bool:
 
 
 def is_chain_pack(situation: str) -> bool:
-    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 終電 / ザーメン風呂 / ニクカベ / 建前 / 物語の追加). Not a story."""
+    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 終電 / ザーメン風呂 / ニクカベ / 建前 / 物語の追加 / アナル三択). Not a story."""
     try:
-        return resolve_situation(situation) in CHAIN_PACK_IDS
+        sid = resolve_situation(situation)
+        return sid in CHAIN_PACK_IDS or sid in ANAL_PATTERN_IDS
     except SystemExit:
-        return str(situation or "").strip() in CHAIN_PACK_IDS
+        key = str(situation or "").strip()
+        return key in CHAIN_PACK_IDS or key in ANAL_PATTERN_IDS
+
+
+def is_anal_pattern(situation: str) -> bool:
+    """③のアナル三択（汎用40秒）。既存話に焼き込んだパターンとは別。"""
+    try:
+        return resolve_situation(situation) in ANAL_PATTERN_IDS
+    except SystemExit:
+        return str(situation or "").strip() in ANAL_PATTERN_IDS
 
 
 def is_anthology(situation: str) -> bool:
@@ -990,6 +1049,9 @@ def is_anthology(situation: str) -> bool:
 def resolve_story_play(situation: str) -> str:
     """dedicated | chain | chain_rewrite | ref_chain | ref_chain_rewrite."""
     key = str(situation or "").strip()
+    if is_anal_pattern(key):
+        # 三択そのものは最後のコマでつなぐ。専用カットにしない。
+        return STORY_PLAY_CHAIN
     hit = _STORY_PLAY_LABELS.get(key)
     if hit is not None:
         return hit[1]
@@ -1423,6 +1485,8 @@ def explain_choice(situation: str, mode: str) -> str:
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
     elif sid in ANTHOLOGY_ID_SET:
         play_line = "再生: 短編集（参照）。10秒完結×複数。つなぎなし。人物写真を R2V 参照\n"
+    elif sid in ANAL_PATTERN_IDS:
+        play_line = "再生: つなぐ（最後のコマから I2V）。アナルの三択そのもの。既存話とは別\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -4597,6 +4661,8 @@ SEMEN_SHARE_SKIP = frozenset({
     "homecoming-90s",
     "sales-visit-60s",
     "train-sales-80s",
+    "anal-p2-bj-anal",
+    "anal-p3-meet-anal",
 })
 # story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
 # on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
@@ -4622,6 +4688,14 @@ def semen_share_plan(story: dict[str, Any] | None) -> list[tuple[int, str]]:
     data = story or {}
     sid = str(data.get("id") or "").strip()
     if sid in SEMEN_SHARE_SKIP:
+        return []
+    if sid in ANAL_PATTERN_IDS:
+        if sid == "anal-p1-oral":
+            return [
+                (i, "on_cumouf")
+                for i, clip in enumerate(data.get("clips") or [])
+                if str(clip.get("situation") or "") == "oral_creampie"
+            ]
         return []
     if str(data.get("kind") or "") == "anthology":
         return [
@@ -6108,10 +6182,528 @@ def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
     return errors
 
 
-def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[str, Any]:
+_ANAL_POSE_SPEC = {
+    "standing": {
+        "lock": "STANDING anal from behind. Bent forward. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = STANDING, bent forward, both hands on a hold, hips back, knees soft, "
+            "accepting standing pose, RECEIVER. Mini breasts. NO penis."
+        ),
+        "give": "Rei = STANDING behind, GIVER from behind. Hands on the waist. Erect 20cm.",
+        "accepting": "bent forward, hips back, accepting standing pose",
+        "camera": "close-up on the joining point from behind and the side, standing, bent forward. Not a full-body wide.",
+        "face": "FACE LOCK: Bent forward is Aya. Behind is Rei. Faces never swap.",
+    },
+    "doggy": {
+        "lock": "Already on all fours. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = already on all fours, RECEIVER. Hands on the floor. Mini breasts. NO penis. "
+            "Do not remount. Do not climb on. Do not turn to cowgirl."
+        ),
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "on all fours, hips back, accepting",
+        "camera": "close-up side view on the joining point, all fours from the side. Not a full-body wide.",
+        "face": "FACE LOCK: On all fours is Aya. Behind is Rei. Faces never swap.",
+    },
+    "cowgirl": {
+        "lock": "Receiver on top, reverse sitting on the lap, facing away. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = already straddling, RECEIVER on top, facing away. Mini breasts. NO penis. "
+            "Do not remount. Do not climb on again. Do not turn to cowgirl LoRA."
+        ),
+        "give": "Rei = seated, GIVER. Erect 20cm. Hands on the waist. STAYS seated.",
+        "accepting": "already straddling, hips hovering, accepting",
+        "camera": "close-up on the joining point, reverse sitting on the lap. Not a full-body wide.",
+        "face": "FACE LOCK: On top facing away is Aya. Seated under is Rei. Faces never swap.",
+    },
+    "missionary": {
+        "lock": "On her back, knees apart. Anal only. Not vaginal.",
+        "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
+        "accepting": "on her back, knees apart, accepting",
+        "camera": "close-up on the joining point, receiver on her back, knees apart. Not a full-body wide.",
+        "face": "FACE LOCK: On her back is Aya. Between the thighs is Rei. Faces never swap.",
+    },
+    "side": {
+        "lock": "Both on their sides. Anal only. Not vaginal.",
+        "recv": "Aya = on her side, hips back, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = on her side behind, GIVER. Erect 20cm. Hands on the waist.",
+        "accepting": "on her side, hips back, accepting",
+        "camera": "close-up on the joining point, both on their sides. Not a full-body wide.",
+        "face": "FACE LOCK: In front is Aya. Behind is Rei. Faces never swap.",
+    },
+    "sitting": {
+        "lock": "Sitting on the lap, face to face. Anal only. Not vaginal.",
+        "recv": "Aya = sitting on the lap facing the giver, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = seated, GIVER. Erect 20cm. Hands on the waist.",
+        "accepting": "sitting on the lap, knees apart, accepting",
+        "camera": "close-up on the joining point, sitting on the lap. Not a full-body wide.",
+        "face": "FACE LOCK: On the lap is Aya. Seated under is Rei. Faces never swap.",
+    },
+    "squat": {
+        "lock": "Receiver squatting, giver behind. Anal only. Not vaginal.",
+        "recv": "Aya = squatting, hips down, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "squatting, hips down, accepting",
+        "camera": "close-up on the joining point from behind, squat. Not a full-body wide.",
+        "face": "FACE LOCK: Squatting is Aya. Behind is Rei. Faces never swap.",
+    },
+    "kneeling": {
+        "lock": "Receiver kneeling, giver behind. Anal only. Not vaginal.",
+        "recv": "Aya = kneeling, hips back, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "kneeling, hips back, accepting",
+        "camera": "close-up on the joining point from behind, kneeling. Not a full-body wide.",
+        "face": "FACE LOCK: Kneeling in front is Aya. Behind is Rei. Faces never swap.",
+    },
+    "pov": {
+        "lock": "On her back, knees apart. Anal only. Not vaginal.",
+        "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
+        "accepting": "on her back, knees apart, accepting",
+        "camera": "close-up on the joining point, receiver on her back, knees apart. Not a full-body wide.",
+        "face": "FACE LOCK: On her back is Aya. Between the thighs is Rei. Faces never swap.",
+    },
+}
+
+_ANAL_LIP = (
+    "LIP SYNC: Faces large in the frame. Lips, jaw, and teeth stay visible and keep matching the quotes. "
+    "Aya speaks her Japanese line first, then Rei answers. Each mouth moves only on its own words. "
+    "Each line is conversational, not recited. After both lines: mouths close. Remaining seconds: "
+    "silence, but bodies keep moving. Do not freeze. Do not cover either mouth."
+)
+
+
+def _anal_pose_spec(pose: str) -> dict[str, str]:
+    key = str(pose or "").strip() or "standing"
+    if key not in _ANAL_POSE_SPEC:
+        key = "standing"
+    return _ANAL_POSE_SPEC[key]
+
+
+def generate_anal_pattern(
+    pattern_id: str,
+    *,
+    pose: str = "",
+    scene: str = "",
+) -> dict[str, Any]:
+    """③のアナル三択。JSON ではなくここで組む。体位欄は②③のアナル本だけに効く。"""
+    sid = str(pattern_id or "").strip()
+    if sid in SITUATION_JA:
+        sid = SITUATION_JA[sid]
+    if sid not in ANAL_PATTERN_IDS:
+        raise SystemExit(f"アナルの三択ではありません: {pattern_id}")
+    spec = _anal_pose_spec(pose)
+    env = str(scene or "").strip()
+    if is_blank_prompt(env):
+        env = "A quiet everyday Japanese room. Indoor. Soft daylight. No extra people."
+    else:
+        env = f"Place the two women in: {env}. Everyday adult setting."
+    title = ANAL_PATTERN_JA[sid]
+    pose_end = (
+        f"Then Aya takes the accepting pose: {spec['accepting']}. Rei stays with her. "
+        f"End pose: {spec['accepting']}. The 20cm tip a hand's width from Aya's anus, NOT in, not touching the hole."
+    )
+    cam_talk = (
+        "medium two-shot on both faces and shoulders while they speak. After the two lines, "
+        "follow into the pose. End on the 20cm a hand's width from Aya's anus. Not a full-body wide. "
+        "Not a crotch shot. Not inside."
+        if sid == "anal-p3-meet-anal"
+        else (
+            "medium two-shot on both faces and shoulders while they speak. After the two lines, "
+            "Aya kneels. End on Aya's open mouth a hand's width from Rei's glans. Not a full-body wide. "
+            "Not a crotch shot. Not already oral."
+        )
+    )
+    clips: list[dict[str, Any]] = []
+
+    def add_clip(
+        *,
+        cid: str,
+        label: str,
+        situation: str,
+        prefix: str,
+        who: str,
+        lock: str,
+        camera: str,
+        action: str,
+        sound: str,
+        start: str,
+    ) -> None:
+        prompt = _anthology_prompt(
+            prefix=prefix,
+            who=who,
+            present=("Aya", "Rei"),
+            environment=env,
+            lock=lock,
+            camera=camera,
+            action=action,
+            sound=sound,
+            canvas=CANVAS_9_16,
+        )
+        prompt = lock_scat_act(prompt, situation=situation)
+        prompt = lock_oral_in_mouth(
+            prompt,
+            situation=situation,
+            ending="share" if situation == "oral_creampie" else "",
+        )
+        prompt = lock_pleasure_face(prompt, situation=situation)
+        prompt = lock_penis_inside(prompt, situation=situation)
+        prompt = lock_anal_creampie(prompt, situation=situation)
+        prompt = lock_pleasure_voice_and_wait(prompt, situation=situation)
+        clips.append(
+            {
+                "id": cid,
+                "label": label,
+                "situation": situation,
+                "names": ["aya", "rei"],
+                "canvas": dict(CANVAS_9_16),
+                "start": start,
+                "duration_s": 10,
+                "prompt": prompt,
+            }
+        )
+
+    if sid == "anal-p1-oral":
+        add_clip(
+            cid="c1",
+            label="0-10 おくち、あけて",
+            situation="futa_visible",
+            prefix="Talk then mouth open. Insertion imminent for oral, not anal.",
+            who=(
+                "Aya = SPEAKS first, then kneels. Mini breasts. NO penis. Mouth opens toward the glans.\n"
+                "Rei = answers, STANDS. Erect 20cm readable. Receiver of oral, not yet in the mouth."
+            ),
+            lock=(
+                "Clip 1 of 4. Talk then kneel. Lip-sync. One line each. Mouth open. "
+                "Tip a hand's width from the lips, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「おくち、あけて」. Rei: 「んっ、はい」. Remaining seconds, silence: Aya kneels. "
+                "Mouth open. The 20cm tip a hand's width from Aya's lips, NOT in. Nobody sucks yet. "
+                "No insertion. End: open mouth a hand's width from the glans. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「おくち、あけて」. "
+                "Rei answers, lip-synced: 「んっ、はい」. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 根元まで",
+            situation="oral",
+            prefix="Already oral. Mouth already on. Already kneeling.",
+            who=(
+                "Aya = already kneeling. Giver, REI only. Mini breasts. NO penis. Hands on Rei's thighs, "
+                "NEVER on the shaft. Mouth already on the glans then to the BASE.\n"
+                "Rei = STANDS, receiver."
+            ),
+            lock=(
+                "Clip 2 of 4. Already on. Aya takes Rei to the BASE the whole 10-second take. "
+                "Filthy sloppy jupo. No climax. No ejaculation. No speech. Do not pull off. Mouth stays on."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Already on. Aya's mouth is already a ring around Rei's shaft at the BASE, deep filthy "
+                "jupo-jupo the whole 10-second take. No climax. End: mouth still at the base."
+            ),
+            sound="Deep filthy jupo-jupo, wet saliva, Rei's shaky breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 口内",
+            situation="oral_creampie",
+            prefix="Already oral. Mouth already wrapped around the shaft. Already kneeling.",
+            who=(
+                "Aya = kneeling. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
+                "Rei = STANDS. Holds deep and cums inside Aya's mouth. イキ顔."
+            ),
+            lock=(
+                "Clip 3 of 4. CUMOUF. She ejaculates INTO the MOUTH. Heavy-oil-thick WHITE goo floods. "
+                "Inside the mouth. Not a facial. No speech."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Aya's lips stay wrapped around Rei's 20cm. Rei cums hard inside Aya's mouth. "
+                "Heavy-oil-thick WHITE goo floods the mouth, overflows. TOO MUCH. molasses-slow. "
+                "After the last pulse: mouth off. HOLD STILL a fat overflowing mouthful. "
+                "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL."
+            ),
+            sound="Wet swallows, a pulse, cum overflow, Rei's shaky breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 口移し",
+            situation="futa_visible",
+            prefix="After the mouthful. Standing at the same eye level.",
+            who=(
+                "Aya = STANDS at Rei's SAME EYE LEVEL, white on her lips, SPEAKS first. Mini breasts. NO penis.\n"
+                "Rei = STANDS, answers. Wet 20cm readable."
+            ),
+            lock=(
+                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new oral. No insertion.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera="medium two-shot on both faces and shoulders, standing at the SAME EYE LEVEL. Not a full-body wide.",
+            action=(
+                "Aya: 「ん、おくちあつい、、、」. Rei: 「だされすぎ」. Remaining seconds, silence: they stay "
+                "standing at the SAME EYE LEVEL. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「ん、おくちあつい、、、」. "
+                "Rei answers, lip-synced: 「だされすぎ」. No other speech."
+            ),
+            start="continue",
+        )
+    elif sid == "anal-p2-bj-anal":
+        add_clip(
+            cid="c1",
+            label="0-10 おくち、つかうね",
+            situation="futa_visible",
+            prefix="Talk then mouth open. Oral setup, not anal yet.",
+            who=(
+                "Aya = SPEAKS first, then kneels. Mini breasts. NO penis. Mouth opens toward the glans.\n"
+                "Rei = answers, STANDS. Erect 20cm readable. Not yet in the mouth."
+            ),
+            lock=(
+                "Clip 1 of 4. Talk then kneel. Lip-sync. One line each. Mouth open. "
+                "Tip a hand's width from the lips, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「おくち、つかうね」. Rei: 「んっ」. Remaining seconds, silence: Aya kneels. "
+                "Mouth open. The 20cm tip a hand's width from Aya's lips, NOT in. Nobody sucks yet. "
+                "End: open mouth a hand's width from the glans. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「おくち、つかうね」. "
+                "Rei answers, lip-synced: 「んっ」. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 ジュボのあと抜く",
+            situation="oral",
+            prefix="Already oral. Mouth already on. Already kneeling.",
+            who=(
+                "Aya = already kneeling. Giver, REI only. Mini breasts. NO penis. Hands on Rei's thighs, "
+                "NEVER on the shaft. Mouth already on the glans then to the BASE.\n"
+                "Rei = STANDS, receiver."
+            ),
+            lock=(
+                "Clip 2 of 4. Start deep at the BASE. Then Aya pulls OFF at the end. No ejaculation. "
+                "No climax. No speech. Once off, she takes the accepting anal pose. "
+                f"{spec['accepting']}. Tip a hand's width from the anus, NOT in."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Already on. Aya's mouth is already at Rei's BASE, deep filthy jupo. No climax. "
+                "Then she pulls OFF. No ejaculation. Then she takes the accepting pose: "
+                f"{spec['accepting']}. End: {spec['accepting']}. The 20cm tip a hand's width from "
+                "Aya's anus, NOT in, not touching the hole."
+            ),
+            sound="Deep filthy jupo-jupo, then a wet pull-off, breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 アナル中出し",
+            situation="futa_anal",
+            prefix="INSERTION ON CAMERA. Show the entry into the anus.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
+            lock=(
+                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. Then it stays in. {spec['lock']} "
+                "Joining point visible. Not oral. No speech. Do not remount. She ejaculates INTO the ANUS. "
+                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
+                "She ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, "
+                "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
+                "End: still in the anus, WHITE goo overflowing out of the anus."
+            ),
+            sound="Wet anal insertion, thrusting, a thick gush, two women moaning. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 アナルあつい",
+            situation="futa_visible",
+            prefix="After the anal creampie. Still together.",
+            who=(
+                "Aya = RECEIVER after, wet thighs, SPEAKS first. Mini breasts. NO penis.\n"
+                "Rei = GIVER after, wet 20cm readable, answers."
+            ),
+            lock=(
+                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new insertion. "
+                "No mouth-to-mouth semen share.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera="medium two-shot on both faces and shoulders. Not a full-body wide. Not a crotch shot.",
+            action=(
+                "Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」. Remaining seconds, "
+                "silence: they stay close. WHITE goo at the anus. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: "
+                "「アナルあつくて、だされちゃった、、、」. Rei answers, lip-synced: 「おくまでだした」. No other speech."
+            ),
+            start="continue",
+        )
+    else:
+        add_clip(
+            cid="c1",
+            label="0-10 キスして",
+            situation="futa_visible",
+            prefix="Talk then wet tongue kiss plus fondling, then anal pose.",
+            who=(
+                "Aya = SPEAKS first. Then the wet tongue kiss and fondling. Mini breasts. NO penis.\n"
+                "Rei = answers. Then the kiss and fondling. Erect 20cm."
+            ),
+            lock=(
+                "Clip 1 of 4. Talk then wet tongue kiss plus fondling, then anal pose. Lip-sync. One line each. "
+                "Talk then kiss then pose. Insertion imminent. Tip a hand's width from the anus, NOT in. "
+                "Not sucking this clip. No oral. No insertion this clip.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds, silence: they fall into a sloppy wet tongue "
+                "kiss at once, tongues visible. She kneads the partner's breasts, pumps the erect 20cm with a "
+                "closed fist, and rubs the hairless pussy while they kiss. Bodies grind. NOT oral. NOT insertion. "
+                f"{pose_end} Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「キスして」. "
+                "Rei answers, lip-synced: 「んっ」. Then wet kissing, no spoken words."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 ベロチューとこすり",
+            situation="futa_visible",
+            prefix="Already kissing. Already fondling. Still not oral. Not insertion.",
+            who=(
+                "Aya = still in the wet tongue kiss and fondling, then the accepting pose. Mini breasts. NO penis.\n"
+                "Rei = still kissing and fondling, then stays with her. Erect 20cm."
+            ),
+            lock=(
+                "Clip 2 of 4. Keep the wet tongue kiss and fondling, then the anal pose. No speech. "
+                "NOT oral. NOT insertion. Insertion imminent. Tip a hand's width from the anus, NOT in."
+            ),
+            camera=(
+                "medium two-shot on both faces and shoulders while they kiss. Follow into the pose. "
+                "End on the 20cm a hand's width from Aya's anus. Not a full-body wide. Not inside."
+            ),
+            action=(
+                "They keep a sloppy wet tongue kiss, tongues visible. She kneads the partner's breasts, "
+                "pumps the erect 20cm with a closed fist, and rubs the hairless pussy while they kiss. "
+                f"Bodies grind. NOT oral. NOT insertion. {pose_end} Do not freeze."
+            ),
+            sound="Wet kissing, hands on skin, breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 アナル中出し",
+            situation="futa_anal",
+            prefix="INSERTION ON CAMERA. Show the entry into the anus.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
+            lock=(
+                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. Then it stays in. {spec['lock']} "
+                "Joining point visible. Not oral. No speech. Do not remount. She ejaculates INTO the ANUS. "
+                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
+                "She ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, "
+                "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
+                "End: still in the anus, WHITE goo overflowing out of the anus."
+            ),
+            sound="Wet anal insertion, thrusting, a thick gush, two women moaning. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 アナルあつい",
+            situation="futa_visible",
+            prefix="After the anal creampie. Still together.",
+            who=(
+                "Aya = RECEIVER after, wet thighs, SPEAKS first. Mini breasts. NO penis.\n"
+                "Rei = GIVER after, wet 20cm readable, answers."
+            ),
+            lock=(
+                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new insertion. "
+                "No mouth-to-mouth semen share.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera="medium two-shot on both faces and shoulders. Not a full-body wide. Not a crotch shot.",
+            action=(
+                "Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」. Remaining seconds, "
+                "silence: they stay close. WHITE goo at the anus. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: "
+                "「アナルあつくて、だされちゃった、、、」. Rei answers, lip-synced: 「おくまでだした」. No other speech."
+            ),
+            start="continue",
+        )
+
+    comment = {
+        "anal-p1-oral": "①口内で終わる。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は無視。",
+        "anal-p2-bj-anal": "②フェラのあとアナル。ジュボで射精せず抜き→アナル挿入オンカメラ→アナル中出し。体位欄がアナル本に効く。",
+        "anal-p3-meet-anal": "③会って即アナル。ベロチュー＋胸揉み＋シコシコ→アナル挿入オンカメラ→アナル中出し。体位欄がアナル本に効く。",
+    }[sid]
+    return {
+        "schema": "h3-lora-studio-story/v1",
+        "id": sid,
+        "kind": "chain",
+        "title_ja": title,
+        "adults_only": True,
+        "min_age": 22,
+        "duration_s": 40,
+        "clip_s": 10,
+        "seamless": True,
+        "spoken_no_kanji": True,
+        "spoken_max": 2,
+        "canvas": dict(CANVAS_9_16),
+        "stills_dir": sid,
+        "comment_ja": comment,
+        "download": list(SITUATION_DOWNLOAD[sid]),
+        "clips": clips,
+    }
+
+
+def load_story(
+    story_id: str,
+    *,
+    studio_root: Path | str | None = None,
+    pose: str = "",
+    scene: str = "",
+) -> dict[str, Any]:
     sid = str(story_id or "").strip()
     if sid in SITUATION_JA:
         sid = SITUATION_JA[sid]
+    if sid in ANAL_PATTERN_IDS:
+        data = generate_anal_pattern(sid, pose=pose, scene=scene)
+        follow_errors = validate_story_follow(data)
+        if follow_errors:
+            raise SystemExit("アナル三択の追従ルール: " + " / ".join(follow_errors))
+        return data
     if sid in ANTHOLOGY_ID_SET:
         data = generate_immoral_shorts()
         n = len(data.get("clips") or [])
