@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-scat-1"
+STUDIO_REV = "h3-20260913-cabin-2"
 STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
 
 OPTIONAL_IDS = {
@@ -320,7 +320,7 @@ SITUATION_DOWNLOAD = {
     "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4"],
+    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
     # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
     "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
@@ -615,7 +615,7 @@ SITUATION_HELP = {
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
     "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
     "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "cabin-40s": "山小屋40秒。10秒×4本。9:16。0-10は扉の外のアヤ一人（中の人体は描かない）。10-20は中で2人。会話のあとアヤは既に跨っている（先端がアナルに手の幅、未挿入）。20-30は挿入オンカメラでアナルへ。顔は入れ替えない。30-40はアナル中出し。白いドロドロはアナルから溢れる。マンコからは出さない。騎乗LoRA・中出しLoRA・AIOなし。台詞は話し言葉（漢字なし）。",
+    "cabin-40s": "山小屋80秒。10秒×8本。9:16。糞まみれで扉の外のアヤ一人（中の人体は描かない）。10-20は洋式便座でレイが既にシコシコ。20-30はベロチューのあと口を開けて先端から手の幅。30-40は無言ジュボ。40-50は跨ってマンコに手の幅・未挿入。50-60は騎乗でマンコへ。60-70は後背、終わりはアナルに手の幅。70-80はアナル挿入オンカメラ→アナル中出し（マンコから出さない）。アナル本に騎乗LoRAは載せない。顔は入れ替えない。台詞は話し言葉（漢字なし）。",
     "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
     "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
