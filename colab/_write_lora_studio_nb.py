@@ -62,7 +62,7 @@ MD0 = r"""# MiniMax H3 で動画を作る（速い＋綺麗 / えっち）
 
 このノートは Google Colab の画面の中で完結します。難しいソフトの画面は開きません。
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-scat-look-f112/minimax_h3_lora_studio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb)
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古いです。②をしても GitHub は取り直しません。上のバッジから開き直して①→②。
 
@@ -335,8 +335,8 @@ DRIVE_ROOT = Path(env["DRIVE_ROOT"])
 DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
-BRANCH = "cursor/h3-cabin-flow-f112"
-FETCH_REV = "h3-20260913-cabin-2"
+BRANCH = "cursor/h3-anal-stories-f112"
+FETCH_REV = "h3-20260913-anal-1"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
