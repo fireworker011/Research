@@ -24,7 +24,7 @@ const { buildProfileDraft } = require('./profile-draft');
 const ledger = require('./ledger');
 const { funnel } = require('./funnel');
 const { parseCommand, isNotifyComment, COMMAND_TYPES, ISSUE_TITLE, defaultCommander } = require('./commander');
-const { deskLines } = require('./desk');
+const { deskLines, nextGrokAction } = require('./desk');
 const { renderMarkdown } = require('./report');
 const { handleComment, CHEAT_SHEET } = require('./apply-commander-comment');
 
@@ -300,7 +300,12 @@ async function testDispatcher() {
   assert(!/https?:\/\/crowdworks/.test(today), 'today has no job urls');
   const md = renderMarkdown({ commander: defaultCommander(), queue: queueMod.defaultQueue(), capability: loadCapability(), ledgerYen: 0, now });
   assert(/キュー空/.test(md), 'empty queue text');
-  const desk = deskLines({ commander: defaultCommander(), queue: queueMod.defaultQueue(), capability: loadCapability(), funnel: funnel(queueMod.defaultQueue(), {}), now });
+  const cap = loadCapability();
+  const grokEmpty = nextGrokAction(queueMod.defaultQueue(), cap, defaultCommander());
+  assert(/最大 8 件/.test(grokEmpty), `grok volume ${grokEmpty}`);
+  const grokSent = nextGrokAction({ jobs: [{ id: '1', status: 'sent' }] }, cap, defaultCommander());
+  assert(/JOB/.test(grokSent) && /MSG/.test(grokSent), 'grok still applies while sent under cap');
+  const desk = deskLines({ commander: defaultCommander(), queue: queueMod.defaultQueue(), capability: cap, funnel: funnel(queueMod.defaultQueue(), {}), now });
   assert(desk[0] === 'cw-desk: paper' && desk.some((l) => l.startsWith('auto_send: grok')), 'desk lines');
   assert(desk.some((l) => l.startsWith('next_grok:')), 'desk next_grok');
   assert(/CW: JOB/.test(CHEAT_SHEET) && !/RESUME/.test(CHEAT_SHEET), 'cheat sheet');
@@ -318,6 +323,7 @@ function testDocsAndSideline() {
   assert(!/CW: RESUME/.test(dump.replace(/`CW: RESUME` は出すな/g, '')), 'dump resume forbidden');
   assert(/HQ clone|HQ の clone|別の会話/.test(dump), 'dump separate from HQ clone');
   assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(dump), 'dump names existing bot');
+  assert(/最大 8 件/.test(dump) && /12 件/.test(dump), 'dump volume');
   assert(/契約ボタン/.test(dump) && /納品ボタン/.test(dump) && /案内/.test(dump), 'dump human-only three');
   assert(/月100万稼ぐまで帰れま10/.test(dump) && /帰すな/.test(dump), 'dump does not report to HQ');
   const watch = readText(path.join(ROOT, 'docs/grok-bots/G_cw_watch.txt'));

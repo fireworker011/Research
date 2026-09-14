@@ -159,6 +159,11 @@ function waitingHumanOverflow(queue, capability) {
   return counts(queue).drafted >= max;
 }
 
+function waitingSentOverflow(queue, capability) {
+  const max = Number(capability?.max_sent_waiting || 12);
+  return counts(queue).sent >= max;
+}
+
 function catalogYenBlocked(job) {
   return job?.public_price_yen != null && job?.confirmed_yen == null;
 }
@@ -177,5 +182,6 @@ module.exports = {
   transition,
   counts,
   waitingHumanOverflow,
+  waitingSentOverflow,
   catalogYenBlocked
 };

@@ -2,9 +2,11 @@
   "account": "fireworker12",
   "max_concurrent_contracts": 3,
   "max_drafts_waiting_human": 3,
+  "max_applies_per_run": 8,
+  "max_sent_waiting": 12,
   "public_fetch": {
     "enabled": true,
-    "max_per_run": 3,
+    "max_per_run": 8,
     "note": "ログインなしの公開ページを1件1回だけ読む。応募は送らない。失敗したら人間が本文を貼る。"
   },
   "categories": [

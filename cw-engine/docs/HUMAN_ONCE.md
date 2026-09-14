@@ -9,11 +9,10 @@
 
 ## 今（未了）
 
-1. **CW受注** の「指示」をこれに差し替える  
-   https://github.com/fireworker011/Research/blob/cursor/cw-auto-commander-c1fb/cw-engine/docs/grok-bots/G_cw.txt
-2. ルーチン **CW採用連絡チェック** をこれに差し替える  
+1. **CW受注** と **CW採用連絡チェック** の「指示」を最新に差し替える（1回8件・sent上限12。1件で止まるな）  
+   https://github.com/fireworker011/Research/blob/cursor/cw-auto-commander-c1fb/cw-engine/docs/grok-bots/G_cw.txt  
    https://github.com/fireworker011/Research/blob/cursor/cw-auto-commander-c1fb/cw-engine/docs/grok-bots/G_cw_watch.txt
-3. 契約待ち・納品待ちだけ人間が押す。案内・誘導が要るときも人間
+2. 契約待ち・納品待ちだけ人間が押す。案内・誘導が要るときも人間
 
 ## 役割
 

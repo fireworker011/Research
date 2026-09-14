@@ -1,6 +1,6 @@
 'use strict';
 
-const { counts, waitingHumanOverflow } = require('./queue');
+const { counts, waitingHumanOverflow, waitingSentOverflow } = require('./queue');
 
 function nextHumanAction(queue, capability, commander) {
   const jobs = queue?.jobs || [];
@@ -16,31 +16,47 @@ function nextHumanAction(queue, capability, commander) {
   return 'なし。人間は案件の契約・外部サイトの案内誘導・納品だけ';
 }
 
+function applyQuota(capability) {
+  return {
+    perRun: Number(capability?.max_applies_per_run || 8),
+    maxSent: Number(capability?.max_sent_waiting || 12)
+  };
+}
+
 function nextGrokAction(queue, capability, commander) {
   const jobs = queue?.jobs || [];
+  const { perRun, maxSent } = applyQuota(capability);
   if (commander?.command === 'HALT') return 'HALT。新規 JOB と応募をするな';
+  const parts = [];
   const qaFailed = jobs.filter((j) => j.status === 'qa_failed');
   if (qaFailed.length) {
-    return `QA 不合格 ${qaFailed.length} 件（${qaFailed.map((j) => j.id).join(', ')}）。直して CW: DRAFT <id>`;
+    parts.push(`QA 不合格 ${qaFailed.length} 件（${qaFailed.map((j) => j.id).join(', ')}）。直して CW: DRAFT <id>`);
   }
   const making = jobs.filter((j) => j.status === 'making');
   if (making.length) {
-    return `完成品 ${making.length} 件（${making.map((j) => j.id).join(', ')}）。本文を書いて CW: DRAFT <id>`;
+    parts.push(`完成品 ${making.length} 件（${making.map((j) => j.id).join(', ')}）。本文を書いて CW: DRAFT <id>`);
   }
   const contracted = jobs.filter((j) => j.status === 'contracted');
   if (contracted.length) {
-    return `素材待ち ${contracted.length} 件（${contracted.map((j) => j.id).join(', ')}）。CW内の素材を CW: MAKE <id>。契約ボタン・納品ボタン・外部誘導はするな`;
+    parts.push(`素材待ち ${contracted.length} 件（${contracted.map((j) => j.id).join(', ')}）。CW内の素材を CW: MAKE <id>。契約ボタン・納品ボタン・外部誘導はするな`);
   }
   const drafted = jobs.filter((j) => j.status === 'drafted');
   if (drafted.length) {
     const full = waitingHumanOverflow(queue, capability);
-    return `下書き ${drafted.length} 件（${drafted.map((j) => j.id).join(', ')}）。CWで応募して CW: SENT <id>。落ちたら SKIP${full ? '。下書き満杯。新しい JOB は増やすな' : ''}`;
+    parts.push(`未送信の下書き ${drafted.length} 件（${drafted.map((j) => j.id).join(', ')}）。先に CW で応募して CW: SENT <id>${full ? '。下書き満杯。SENT してから JOB' : ''}`);
   }
   const sent = jobs.filter((j) => j.status === 'sent');
   if (sent.length) {
-    return `返事待ち ${sent.length} 件。CW内の相手文を CW: MSG <id>。返信下書きをCW内に貼る。契約・外部誘導・納品はするな`;
+    parts.push(`返事待ち ${sent.length} 件は CW: MSG。契約・外部誘導・納品はするな`);
   }
-  return 'キュー空。公開の文章系を1件 CW: JOB <id> + 公開文';
+  const sentFull = waitingSentOverflow(queue, capability);
+  if (sentFull) {
+    parts.push(`sent ${sent.length} が上限 ${maxSent}。新しい応募はするな`);
+  } else if (!waitingHumanOverflow(queue, capability)) {
+    const room = Math.max(1, Math.min(perRun, maxSent - sent.length));
+    parts.push(`文章系を最大 ${room} 件 CW: JOB + 公開文 → すぐ応募 SENT。remain/n10 禁止。顔出し・口コミ・アカウント作成は捨てる`);
+  }
+  return parts.join('。');
 }
 
 function deskLines({ commander, queue, capability, funnel, ledgerYen = 0, now }) {
@@ -58,7 +74,7 @@ function deskLines({ commander, queue, capability, funnel, ledgerYen = 0, now })
     `gate: ${funnel ? funnel.gate : 'intake'}`,
     `next_human: ${nextHumanAction(queue, capability, commander)}`,
     `next_grok: ${nextGrokAction(queue, capability, commander)}`,
-    'auto_send: grok（応募は Grok。契約・外部案内誘導・納品は人間）'
+    'auto_send: grok（応募は Grok。1回最大8・sent上限12。契約・外部案内誘導・納品は人間）'
   ];
 }
 
