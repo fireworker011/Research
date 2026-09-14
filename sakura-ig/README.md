@@ -16,7 +16,7 @@ Grok Bot A                        日曜 07:00 JST  Insights の数字を data/r
 GitHub Actions                    CSV が push されたら src/judge.js が Issue「サクラ判定」に切り分けを書く
 ```
 
-- 受け渡し口は **`keys/<YYYY-MM-DD>.md` の raw URL 一本**。Issue「サクラ起動キー」は起動文と初日の掲示板（鏡）
+- 受け渡し口は **`keys/<YYYY-MM-DD>.md` の raw URL 一本**。Issue「サクラ起動キー」は起動文と **今日のキー** の掲示板（鏡）
 - 顔・紅い和服・両肩の露出は固定。**髪型だけ**日で変わる。他の着は無い
 - 型は曜日で決まる: 月 question / 火 turn / 水 micro / 木 push-pull（CTA）/ 金 detail / 土 season / 日 loop
 - キーは日付だけから決まる。作り直しても同じ日は同じキー（`node src/build-keys.js --from ... --days ...`）
@@ -45,6 +45,7 @@ node src/build-keys.js --from 2026-09-13 --days 200   # 銀行を作る／延ば
 node src/dry-run.js --date 2026-10-01                 # A の1日を模擬（raw URL → IMAGINE_THROW 切り出し → 参照2枚）
 node src/validate-keys.js                             # 検品（重複・ロック語・木曜CTA・時刻）
 node src/judge.js --self-test && node src/judge.js    # 台帳の切り分け
+node src/set-current.js                               # CURRENT.json を JST 今日へ
 node src/handoff.js --local                           # Issue 掲示文の確認
 ```
 

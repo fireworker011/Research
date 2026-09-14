@@ -102,7 +102,11 @@ function main() {
   }
 
   const current = JSON.parse(fs.readFileSync(path.join(KEYS, 'CURRENT.json'), 'utf8'));
-  if (keys.length && current.id !== keys[0].id) errors.push('CURRENT.json が初日と一致しない');
+  const currentHit = keys.find((k) => k.id === current.id);
+  if (!currentHit) errors.push('CURRENT.json の id が銀行に無い');
+  if (current.bank_from !== keys[0].date) errors.push('CURRENT.json bank_from が初日と違う');
+  if (current.bank_to !== keys[keys.length - 1].date) errors.push('CURRENT.json bank_to が最終日と違う');
+
   if (!fs.existsSync(path.join(KEYS, 'INDEX.md'))) errors.push('INDEX.md が無い');
   if (!fs.existsSync(path.join(ROOT, 'refs', 'sakura-face.jpg'))) errors.push('refs/sakura-face.jpg が無い');
 

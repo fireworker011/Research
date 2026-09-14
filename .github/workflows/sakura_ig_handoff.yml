@@ -1,12 +1,14 @@
-name: サクラ起動キー銀行を Issue に掲示
+name: サクラ起動キーを Issue に掲示
 
-# 本線は Grok Bot A が毎朝 raw URL で keys/<date>.md を読む。cron は要らない。
-# ここは銀行を更新した時に Issue「サクラ起動キー」へ案内を書くだけ。
+# 本線は Grok Bot A が毎朝 raw URL で keys/<date>.md を読む。
+# CURRENT.json を JST 今日に写すと、Issue「サクラ起動キー」へ今日のキーを書く。
+# GitHub cron はデフォルトブランチ専用なので付けない（側線。円の席を壊さない）。
 on:
   workflow_dispatch:
   push:
     paths:
       - 'sakura-ig/keys/CURRENT.json'
+      - 'sakura-ig/src/handoff.js'
       - '.github/workflows/sakura_ig_handoff.yml'
 
 concurrency:

@@ -29,7 +29,7 @@ B サクラImagine             渡された文と参照画像だけで動画を�
 A:
 
 ```
-今日（JST）の日付で https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig-manager-7fd3/sakura-ig/keys/<YYYY-MM-DD>.md を読め。IMAGINE_THROW を B サクラImagine に参照画像2枚を添えてそのまま渡せ。文を足すな。返った mp4 を確認し、06:00 JST にキャプションそのまま投稿。役割カード: https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig-manager-7fd3/sakura-ig/bots/A-サクラ専属自動投稿.md
+今日（JST）の日付で https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig-manager-7fd3/sakura-ig/keys/<YYYY-MM-DD>.md を読め。404 なら今日は何もしない。IMAGINE_THROW を B サクラImagine に参照画像2枚を添えてそのまま渡せ。文を足すな。返った mp4 を確認し、06:00 JST にキャプションそのまま投稿。05:00 を過ぎて起きて 08:00 前なら今すぐ作れ。06:00 過ぎならでき次第出せ。役割カード: https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig-manager-7fd3/sakura-ig/bots/A-サクラ専属自動投稿.md
 ```
 
 B:

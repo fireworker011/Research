@@ -9,10 +9,10 @@
 | 1 | 投稿ボットがいない | Grok 2体（`4efdf8ca…`=A 投稿、`913a8b14…`=B Imagine）に役割カードと起動文を用意 | `bots/ROSTER.md` `bots/A-サクラ専属自動投稿.md` `bots/B-サクラImagine.md`。raw URL 200 |
 | 2 | 参照顔がリポジトリに無い | 自アカの公開リール表紙（08-09, 07-27）を `refs/sakura-face.jpg` `refs/sakura-face-2.jpg` に置き、gitignore を外した | `refs/README.md`。raw で 184132B / 46308B の JPEG が落ちる（`src/dry-run.js`） |
 | 3 | バイオに有料リンクが見えない | `config/links.json` の `fanvue` を A が初回設定でバイオに置く。URL は空 | `ig/first-run.md` §2。**席: Fanvue URL を1本入れる** |
-| 4 | cron がデフォルトブランチ依存 | 時計を Grok Bot A のルーチンに移した。Actions は push トリガだけ（ブランチで動く） | `schedule.md`。`sakura_ig_handoff.yml` `sakura_ig_judge.yml` に `schedule:` なし。両方 push で success（run 34699742101 / 34699742129） |
+| 4 | cron がデフォルトブランチ依存 | 投稿の時計は Grok Bot A。Issue の鏡はマネージャーが毎朝 CURRENT.json を今日に写して push。Actions に GitHub cron は付けない | `schedule.md` `src/set-current.js`。`sakura_ig_handoff.yml` は push / workflow_dispatch のみ |
 | 5 | IG ログイン未確認 | A が 06:00 前にログインを確認。切れていれば止まり `席: IGログイン` を1行 | `bots/A-…md` ルーチン2 / 止まる条件 |
 | 6 | 台帳が空 | 列を定義し、A が日曜に Insights を7行足す。push で `judge.js` が切り分けを Issue に書く | `data/reel_log.csv` ヘッダ。`node src/judge.js --self-test` 7分岐 OK。Issue #126「サクラ判定」が Actions から生成 |
-| 7 | 8/9 以降 投稿停止 | 2026-09-13 06:00 JST から毎日1本のキーが200日分ある | `keys/INDEX.md` 2026-09-13〜2027-03-31。`validate-keys.js` OK |
+| 7 | 8/9 以降 投稿停止 | キーは 2026-09-13〜2027-03-31。再開日は A が今すぐ作り、06:00 前なら 06:00、過ぎて 08:00 前ならでき次第出す | `bots/A-サクラ専属自動投稿.md` 再開・遅れ。`handoff.js` は JST 今日を掲示 |
 | 8 | マネージャー→ボットに直接メンション不可 | 受け渡しを `keys/<date>.md` の raw URL 一本にした。Issue #54 は起動文の掲示板 | `dry-run.js` が明日分を raw で取得し IMAGINE_THROW / CAPTION を切り出せる |
 
 ## 未決
@@ -45,7 +45,7 @@
 | raw URL 取得（キー・INDEX・参照2枚・カード3枚・初回設定・links.json） | すべて 200。銀行の翌日は 404（A は何もしない、が仕様） |
 | 模擬1日（`dry-run.js` 09-13 / 10-17 / 銀行外） | OK / OK / 404 正常 |
 | 古い参照（launch-keys, imagine-run, wardrobe, post-gate 等） | 本文から消えた。残りは検品の禁止語だけ |
-| Issue 掲示 | #54 に銀行案内（起動文A/B・場所・初日キー）。#126 サクラ判定 stage 0 |
+| Issue 掲示 | #54 に **JST 今日** の IMAGINE_THROW（起動文A/B・場所）。初日固定はやめた |
 
 ## 残る席（仕組みでは埋まらない）
 

@@ -253,8 +253,11 @@ function main() {
   ].join('\n');
   fs.writeFileSync(path.join(KEYS, 'INDEX.md'), index);
 
+  const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const todayFile = path.join(KEYS, `${today}.json`);
+  const pointer = fs.existsSync(todayFile) ? JSON.parse(fs.readFileSync(todayFile, 'utf8')) : first;
   const current = {
-    ...first,
+    ...pointer,
     bank_from: from,
     bank_to: last,
     bank_days: days,
