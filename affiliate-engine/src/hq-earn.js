@@ -93,6 +93,8 @@ function selfTest() {
   if (!command.includes(ADMIN_ID)) throw new Error('command admin id');
   if (!command.includes('G_hq_admin.txt')) throw new Error('command admin dump');
   if (!command.includes('担当者への直接采配')) throw new Error('command no direct staff');
+  if (!command.includes('プレイン')) throw new Error('command brain');
+  if (!command.includes('Bot 司令塔')) throw new Error('command grok hq');
   if (!roster.includes(ADMIN_ID)) throw new Error('roster admin id');
   if (!roster.includes('G_hq_admin.txt')) throw new Error('roster admin dump');
   const admin = assertDump(ADMIN_POINTER);
@@ -105,9 +107,13 @@ function selfTest() {
   if (!admin.includes('独立2体')) throw new Error('admin independent');
   if (!admin.includes('HQ_COMMAND')) throw new Error('admin no hq command');
   if (!admin.includes('コードはするな')) throw new Error('admin no code');
+  if (!admin.includes('司令塔')) throw new Error('admin commander');
+  if (!admin.includes('動くまくれ')) throw new Error('admin keep moving');
+  if (!admin.includes('プレイン')) throw new Error('admin brain');
   const boot = fs.readFileSync(path.join(root, 'dump/G_hq_boot.txt'), 'utf8');
   if (!boot.includes(ADMIN_ID)) throw new Error('boot admin id');
   if (!boot.includes('担当者')) throw new Error('boot staff');
+  if (!boot.includes('司令塔')) throw new Error('boot commander');
   for (const picked of [
     pickDump({}),
     pickDump({ overlayCount: 1, approvedYen: 0 }),

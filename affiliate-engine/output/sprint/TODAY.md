@@ -17,7 +17,7 @@
 
 円が動かない理由は席不足ではない。GitHub Repository secrets の `AFFILIATE_LINKS_JSON` が空。置いた鍵の JSON をそこへ入れる。URL はチャットに貼るな。席のやり直しをするな。
 
-管理者は Secret 投入を担当者へ出せ。[#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
+司令塔 `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4` は Secret 投入を担当者へ出せ。動くまくれ。席のやり直しを出すな。[#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
 
 ## 明日
 
