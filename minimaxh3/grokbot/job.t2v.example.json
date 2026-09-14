@@ -1,0 +1,24 @@
+{
+  "schema": "h3-i2v-job/v1",
+  "id": "example-t2v-10s",
+  "mode": "t2v",
+  "status": "ready",
+  "created_by": "video-agent",
+  "source_image": "",
+  "source_video": "",
+  "picture1": "",
+  "prompt": "",
+  "width": 576,
+  "height": 1024,
+  "duration_s": 10,
+  "seed": 42,
+  "steps": 4,
+  "use_lora": true,
+  "lora_strength": 1.0,
+  "filename_prefix": "video/h3_t2v_job",
+  "imagine": {
+    "enabled": false
+  },
+  "output_mp4": "",
+  "error": ""
+}

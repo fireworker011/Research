@@ -1,0 +1,108 @@
+{
+  "schema": "h3-lora-studio-train/v1",
+  "note_ja": "行為 LoRA は概念ごとに1本。アナル＋飲尿＋脱糞を1ファイルに混ぜない。重みが Drive に無いあいだは③とカタログに足さない。",
+  "defaults": {
+    "fps": 24,
+    "clip_seconds": { "min": 5, "max": 10, "hard_max": 15 },
+    "target_clips": { "min": 80, "max": 160, "fal_min": 10 },
+    "pose_max_share": 0.25,
+    "rank": 16,
+    "train_mode": "i2v",
+    "trainer": "minimax/h3/i2v/trainer",
+    "trigger_strategy": "baked_in_captions",
+    "cameras": ["front", "behind", "side", "above"],
+    "shots": ["close", "medium"],
+    "aspects": ["9:16", "16:9"],
+    "aspects_optional": ["8:9"],
+    "min_age": 22,
+    "performers": "consenting adult women or futanari, 22+, no men, no minors"
+  },
+  "skipped": [
+    {
+      "id": "sex-any-h3",
+      "title_ja": "膣セックス（どの構図）",
+      "reason_ja": "hmnsfw-aio-v25 がどの構図でも膣セックスを出す。4本目は作らない。"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "anal-any-h3",
+      "title_ja": "アナル（どの構図でも）",
+      "filename": "anal-any-h3.safetensors",
+      "trigger": "AN4LIN",
+      "why_ja": "今の ThumbInButt は四つん這い・後ろから・穴が膣より上、に固定される。どの体位でもアナルに入っている状態を出す。",
+      "not_this": [
+        "vaginal sex",
+        "thumb in anus",
+        "already-coated feces",
+        "urine drinking"
+      ],
+      "poses": ["standing", "doggy", "missionary", "cowgirl", "side", "pov"],
+      "must_show": [
+        "fully erect 20cm human penis already fully inside the anus, not the vagina",
+        "both hands of the penetrating partner stay on the hips, not near the anus as thumbs",
+        "anus is the penetrated hole in every pose"
+      ],
+      "never_show": [
+        "vaginal penetration",
+        "thumb or fingers in the anus",
+        "men or male bodies",
+        "minors"
+      ],
+      "caption": "{trigger}, two consenting adult women 22+, futa allowed, a fully erect 20cm human penis already fully inside the anus not the vagina, hands on the hips not used as thumbs, slow in-and-out strokes staying in the anus. No vaginal penetration. No thumb in the anus. No men. {pose} pose. {camera} camera, {shot} shot, {aspect}."
+    },
+    {
+      "id": "urine-drink-h3",
+      "title_ja": "飲尿（どの構図でも）",
+      "filename": "urine-drink-h3.safetensors",
+      "trigger": "URNKISS",
+      "why_ja": "黄色い水の見た目ロックはある。飲む行為そのものをどの体位でも出す LoRA は無い。既存ストーリーの飲尿はジュボのまま。この LoRA は新規シーン用。",
+      "not_this": [
+        "semen",
+        "clear water",
+        "pee from the pussy at the base",
+        "off-screen stream",
+        "defecation"
+      ],
+      "poses": ["standing", "kneeling", "sitting", "cowgirl", "side", "pov"],
+      "must_show": [
+        "opaque yellow urine",
+        "stream from the urethral opening at the glans tip of the erect 20cm, the same hole semen would pulse from, not from the pussy at the base",
+        "the other adult woman drinks the yellow stream"
+      ],
+      "never_show": [
+        "white liquid",
+        "clear water",
+        "urine from off-screen",
+        "urine from the pussy",
+        "men or male bodies",
+        "minors"
+      ],
+      "caption": "{trigger}, two consenting adult women 22+, futa allowed, opaque yellow urine streams from the urethral opening at the glans tip of the erect 20cm (the same hole semen would pulse from, not from the pussy at the base), the other adult woman drinks the yellow stream from the tip. Not white, not clear, not off-screen. No men. {pose} pose. {camera} camera, {shot} shot, {aspect}."
+    },
+    {
+      "id": "scat-act-h3",
+      "title_ja": "脱糞（出す行為・どの構図でも）",
+      "filename": "scat-act-h3.safetensors",
+      "trigger": "DFCTH3",
+      "why_ja": "ニクカベ肥溜めはすでに塗れている見た目。出す行為そのものでは無い。どの体位でも今出している動きを覚える。医院・終電には足さない。",
+      "not_this": [
+        "body already coated from before",
+        "urine drinking",
+        "anal sex",
+        "semen"
+      ],
+      "poses": ["standing", "squat", "doggy", "missionary", "sitting", "side"],
+      "must_show": [
+        "the act of defecating now: brown feces coming out of the anus in this clip",
+        "motion of passing, not a still already-coated body"
+      ],
+      "never_show": [
+        "already-coated cesspit look with no act",
+        "men or male bodies",
+        "minors"
+      ],
+      "caption": "{trigger}, two consenting adult women 22+, futa allowed, the act of defecating now: brown feces coming out of the anus in this clip, not a body already coated from before. Any residue is from this act. No men. {pose} pose. {camera} camera, {shot} shot, {aspect}."
+    }
+  ]
+}
