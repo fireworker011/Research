@@ -7,8 +7,8 @@
 | 誰 | 仕事 |
 |---|---|
 | Cursor マネージャー | キー銀行とこの docs。Imagine を呼ばない。投稿しない |
-| Grok Bot A | 05:00 JST に今日のキーを読む → B に渡す → 06:00 投稿。日曜に台帳 |
-| Grok Bot B | 渡された文と参照2枚だけで STEP 1 → STEP 2。投稿しない |
+| Grok Bot A `913a8b14-a575-41ba-b0ad-c68a2dfb5b47` | 05:00 JST に今日のキーを読む → B に渡す → 06:00 投稿。日曜に台帳。ルーチン「起動キー 05:00」「投稿ゲート 06:00」 |
+| Grok Bot B `4efdf8ca-6648-46c7-9843-e1f4febe4325` | 渡された文と参照2枚だけで STEP 1 → STEP 2。投稿しない |
 | 人間 | Fanvue URL、2体への起動文、IG ログイン、`席:` のとき。Fanvue の DM は人がやる（Bot を足さない） |
 
 YouTube レーン（`video-cash-loop`）では Grok を投稿の実行者にしない。ここの Grok 2体は **サクラ IG 専用**。混ぜない。

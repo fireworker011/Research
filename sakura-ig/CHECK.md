@@ -6,7 +6,7 @@
 
 | # | 問題 | 解決 | 証拠 |
 |---|---|---|---|
-| 1 | 投稿ボットがいない | Grok 2体（`4efdf8ca…`=A 投稿、`913a8b14…`=B Imagine）に役割カードと起動文を用意 | `bots/ROSTER.md` `bots/A-サクラ専属自動投稿.md` `bots/B-サクラImagine.md`。raw URL 200 |
+| 1 | 投稿ボットがいない | Grok 2体（`913a8b14…`=A 投稿、`4efdf8ca…`=B Imagine）に役割カードと起動文を用意 | `bots/ROSTER.md`。A は 2026-09-15 実機（05:00 / 06:00 ルーチン） |
 | 2 | 参照顔がリポジトリに無い | 自アカの公開リール表紙（08-09, 07-27）を `refs/sakura-face.jpg` `refs/sakura-face-2.jpg` に置き、gitignore を外した | `refs/README.md`。raw で 184132B / 46308B の JPEG が落ちる（`src/dry-run.js`） |
 | 3 | バイオに有料リンクが見えない | `config/links.json` の `fanvue` を A が初回設定でバイオに置く。URL は空 | `ig/first-run.md` §2。**席: Fanvue URL を1本入れる** |
 | 4 | cron がデフォルトブランチ依存 | 投稿の時計は Grok Bot A。Issue の鏡はマネージャーが毎朝 CURRENT.json を今日に写して push。Actions に GitHub cron は付けない | `schedule.md` `src/set-current.js`。`sakura_ig_handoff.yml` は push / workflow_dispatch のみ |
@@ -19,7 +19,7 @@
 
 | # | 未決 | 決めたこと |
 |---|---|---|
-| 1 | 2 ID の役割 | 先に書かれた `4efdf8ca…` を A、`913a8b14…` を B と仮置き。逆ならカードを入れ替えて貼るだけ（`bots/ROSTER.md`） |
+| 1 | 2 ID の役割 | **確定:** `913a8b14…`＝A 投稿、`4efdf8ca…`＝B Imagine（`bots/ROSTER.md`） |
 | 2 | 受け渡し口 | `keys/<YYYY-MM-DD>.md` 一本。Issue は鏡 |
 | 3 | 投稿ボットの IG 接続 | 仕組み側からは確認できない。A の自己チェックと `席: IGログイン` で止める |
 

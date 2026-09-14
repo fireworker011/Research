@@ -14,7 +14,7 @@ BASE = https://raw.githubusercontent.com/fireworker011/Research/cursor/sakura-ig
 初回   BASE/ig/first-run.md
 ```
 
-相手: **B サクラImagine**（Grok Bot。`@` で渡す）。
+相手: **B サクラImagine**（`4efdf8ca-6648-46c7-9843-e1f4febe4325`。表示名で `@` して渡す）。
 
 ---
 
