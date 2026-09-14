@@ -98,7 +98,9 @@ function selfTest() {
   const admin = assertDump(ADMIN_POINTER);
   if (!admin.includes(ADMIN_ID)) throw new Error('admin id');
   if (!admin.includes('担当者')) throw new Error('admin staff');
-  if (!admin.includes('席1回') && !admin.includes('席を1回')) throw new Error('admin sitting');
+  if (!admin.includes('overlay-secret')) throw new Error('admin secret line');
+  if (!admin.includes('AFFILIATE_LINKS_JSON')) throw new Error('admin secret name');
+  if (admin.includes('今日の本線は席1回')) throw new Error('admin still sitting');
   if (!admin.includes('@comback_nao6')) throw new Error('admin x');
   if (!admin.includes('独立2体')) throw new Error('admin independent');
   if (!admin.includes('HQ_COMMAND')) throw new Error('admin no hq command');

@@ -15,7 +15,7 @@
 ## アフィ（席は1回。GO は不要）
 
 1. Grok 管理者が出した席（指示役の `G_hq_human_sitting.txt`）を同じログインでやれ。A8 は N高 → アイズ → neo → チケット。教育 Threads（『はな｜小学生の習い事メモ』）を先。転職 Threads が無ければ neo / チケットは置くな。新造するな
-2. 置いた広告リンクだけ GitHub Secret `AFFILIATE_LINKS_JSON` の既存 JSON に足せ。追加であり置換ではない。`申込_auひかり` は足すな。`links.json` は空のまま
+2. GitHub の Repository secrets に `AFFILIATE_LINKS_JSON` を入れろ（指示役が `overlay-secret: empty` なら Secret 自体が空）。置いた広告リンクの鍵だけ。追加であり置換ではない。`申込_auひかり` は足すな。`links.json` は空のまま
 3. 席が終わったら Issue `Grok Bot — 指示` に `完了` だけ。`未提携` などの1語は返すな。承認待ちなら申請し直すな
 4. 指示役 Issue の `overlay-filled:` で鍵名だけ見る。URL は出さない。1以上なら次の日常は計測だけ
 5. 投稿 cron は戻すな（別判断）。CW 司令塔（PR #122）は開くな。XM の VPS 実発注は今夜やるな
