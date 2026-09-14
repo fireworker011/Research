@@ -1,24 +1,24 @@
-# TODAY 2026-09-12（JST）
+# TODAY 2026-09-15（JST）
 
-目標 2026-09-30 確定 ¥1,000,000。実測 ¥0。残日 19。
+目標 2026-09-30 確定 ¥1,000,000。実測 ¥0。残日 16。スコアは確定円だけ。
 
 | 確認 | 値 |
 |---|---|
-| 指示役 dump | `G_hq_human_sitting.txt`（#115 マージ済み） |
+| 指示役 dump | `G_hq_human_sitting.txt` |
 | hq-gate | sitting |
 | overlay-filled | 0 |
 | overlay-keys | (none) |
+| overlay-secret | empty（Actions の `AFFILIATE_LINKS_JSON` が空。`***` ですらない） |
 | approved-yen | 0 |
 | Issue 109 `A8_YEN:` | 無し |
+| 席の印 | Issue 110 `完了`（2026-09-12） |
 
 ## 今日のゲート
 
-席1回。教育 Threads（『はな｜小学生の習い事メモ』）に N高またはアイズを置けるなら置く。1語は返すな。終わったら `完了`。
+円が動かない理由は席不足ではない。GitHub Repository secrets の `AFFILIATE_LINKS_JSON` が空。置いた鍵の JSON をそこへ入れる。URL はチャットに貼るな。席のやり直しをするな。
 
-Grok 管理者 `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4` が席を担当者へ出せ。独立2体（専用ストーリー再生 / `bc-bca5f77f-…`）は指揮外。CW 司令塔 [#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
+司令塔 `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4` は Secret 投入を担当者へ出せ。動くまくれ。席のやり直しを出すな。[#122](https://github.com/fireworker011/Research/pull/122) はマージするな。
 
-## 明日（ゲート未達なら同じ）
+## 明日
 
-overlay が 0 なら同じ席。FANZA・CW・XM・H3 に逃げない。
-
-正: `HQ_CALENDAR.md`。統括: `HQ_COMMAND.md`。台帳: `HQ_ROSTER.md`（Bot は開けるな）
+`overlay-secret: set` かつ overlay ≥ 1 なら計測。まだ empty なら同じ Secret。FANZA・CW・XM・H3 に逃げない。

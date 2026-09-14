@@ -22,7 +22,7 @@ const YEN_BODY =
 
 function extraFor(picked) {
   if (picked.mode === 'sitting') {
-    return '1語分岐で次ファイルへ進むな。席が終わったら人間は `完了` だけ。overlay が空なら次に進まない。ENTRY は出すな。';
+    return '1語分岐で次ファイルへ進むな。席が終わったら人間は `完了` だけ。overlay-secret が empty なら Repository secrets に置いた鍵の JSON を入れろ。overlay が空なら次に進まない。ENTRY は出すな。';
   }
   if (picked.mode === 'measure' || picked.mode === 'done') {
     return '人間の仕事は A8 を開いた日の A8_YEN だけ。プロフィールのリンクを外すな。ENTRY は出すな。';
@@ -245,6 +245,8 @@ async function run() {
 }
 
 function selfTest() {
+  const prevOverlay = process.env.AFFILIATE_LINKS_JSON;
+  delete process.env.AFFILIATE_LINKS_JSON;
   const body = commentBody(false);
   if (!body.startsWith(`hq-instruct: ${SITTING_POINTER}`)) throw new Error('pointer');
   if (!body.includes(RAW)) throw new Error('raw');
@@ -280,14 +282,15 @@ function selfTest() {
   if (/crowdworks|a8\.net|AFFILIATE_LINKS/i.test(body)) throw new Error('leak');
   if (/https?:\/\/example/i.test(body)) throw new Error('example url');
   if (!body.includes('overlay-filled:')) throw new Error('overlay line');
+  if (!body.includes('overlay-secret: empty')) throw new Error('secret empty');
   if (!body.includes('approved-yen: 0')) throw new Error('yen line');
-  const prevOverlay = process.env.AFFILIATE_LINKS_JSON;
   process.env.AFFILIATE_LINKS_JSON = JSON.stringify({
     転職_neo: 'https://example.invalid/neo',
     申込_auひかり: 'https://example.invalid/au'
   });
   const filled = commentBody(false);
   if (!filled.includes('overlay-filled: 1')) throw new Error('secret overlay count');
+  if (!filled.includes('overlay-secret: set')) throw new Error('secret set');
   if (!filled.includes('転職_neo')) throw new Error('secret overlay neo');
   if (!filled.includes(CSV_POINTER)) throw new Error('secret routes csv');
   if (filled.includes(SITTING_POINTER) && filled.includes(`hq-instruct: ${SITTING_POINTER}`)) {

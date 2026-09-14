@@ -93,19 +93,27 @@ function selfTest() {
   if (!command.includes(ADMIN_ID)) throw new Error('command admin id');
   if (!command.includes('G_hq_admin.txt')) throw new Error('command admin dump');
   if (!command.includes('担当者への直接采配')) throw new Error('command no direct staff');
+  if (!command.includes('プレイン')) throw new Error('command brain');
+  if (!command.includes('Bot 司令塔')) throw new Error('command grok hq');
   if (!roster.includes(ADMIN_ID)) throw new Error('roster admin id');
   if (!roster.includes('G_hq_admin.txt')) throw new Error('roster admin dump');
   const admin = assertDump(ADMIN_POINTER);
   if (!admin.includes(ADMIN_ID)) throw new Error('admin id');
   if (!admin.includes('担当者')) throw new Error('admin staff');
-  if (!admin.includes('席1回') && !admin.includes('席を1回')) throw new Error('admin sitting');
+  if (!admin.includes('overlay-secret')) throw new Error('admin secret line');
+  if (!admin.includes('AFFILIATE_LINKS_JSON')) throw new Error('admin secret name');
+  if (admin.includes('今日の本線は席1回')) throw new Error('admin still sitting');
   if (!admin.includes('@comback_nao6')) throw new Error('admin x');
   if (!admin.includes('独立2体')) throw new Error('admin independent');
   if (!admin.includes('HQ_COMMAND')) throw new Error('admin no hq command');
   if (!admin.includes('コードはするな')) throw new Error('admin no code');
+  if (!admin.includes('司令塔')) throw new Error('admin commander');
+  if (!admin.includes('動くまくれ')) throw new Error('admin keep moving');
+  if (!admin.includes('プレイン')) throw new Error('admin brain');
   const boot = fs.readFileSync(path.join(root, 'dump/G_hq_boot.txt'), 'utf8');
   if (!boot.includes(ADMIN_ID)) throw new Error('boot admin id');
   if (!boot.includes('担当者')) throw new Error('boot staff');
+  if (!boot.includes('司令塔')) throw new Error('boot commander');
   for (const picked of [
     pickDump({}),
     pickDump({ overlayCount: 1, approvedYen: 0 }),

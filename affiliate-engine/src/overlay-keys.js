@@ -23,25 +23,45 @@ function resolveLinks(links) {
   return links === undefined ? loadLinks() : links;
 }
 
+function overlaySecretState(raw = process.env.AFFILIATE_LINKS_JSON) {
+  const s = String(raw || '').trim();
+  if (!s) return 'empty';
+  try {
+    const parsed = JSON.parse(s);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return 'bad';
+    return 'set';
+  } catch (_) {
+    return 'bad';
+  }
+}
+
 function overlayStatusText(links) {
   const names = filledNames(resolveLinks(links));
-  const text = `overlay-filled: ${names.length}\noverlay-keys: ${names.join(',') || '(none)'}\n`;
+  const secret = overlaySecretState();
+  const text =
+    `overlay-filled: ${names.length}\noverlay-keys: ${names.join(',') || '(none)'}\noverlay-secret: ${secret}\n`;
   assertNoUrl(text, names);
-  return { names, text };
+  return { names, secret, text };
 }
 
 function overlayLogText(links) {
   const names = filledNames(resolveLinks(links));
-  const text = `filled ${names.length}\nkeys ${names.join(',') || '(none)'}\n`;
+  const secret = overlaySecretState();
+  const text = `filled ${names.length}\nkeys ${names.join(',') || '(none)'}\nsecret ${secret}\n`;
   assertNoUrl(text, names);
-  return { names, text };
+  return { names, secret, text };
 }
 
 function selfTest() {
+  const prev = process.env.AFFILIATE_LINKS_JSON;
+  delete process.env.AFFILIATE_LINKS_JSON;
   const empty = overlayStatusText({ 転職_neo: '', 教育_N高: '' });
   if (empty.names.length !== 0) throw new Error('empty filled');
   if (!empty.text.includes('overlay-filled: 0')) throw new Error('empty line');
-  const prev = process.env.AFFILIATE_LINKS_JSON;
+  if (!empty.text.includes('overlay-secret: empty')) throw new Error('empty secret');
+  if (overlaySecretState('') !== 'empty') throw new Error('state empty');
+  if (overlaySecretState('[]') !== 'bad') throw new Error('state bad array');
+  if (overlaySecretState('{') !== 'bad') throw new Error('state bad json');
   process.env.AFFILIATE_LINKS_JSON = JSON.stringify({
     転職_neo: 'https://example.invalid/neo',
     申込_auひかり: 'https://example.invalid/au',
@@ -58,6 +78,8 @@ function selfTest() {
   if (!implicit.text.includes('overlay-filled: 2')) throw new Error('implicit filled');
   const log = overlayLogText(loaded);
   if (!log.text.startsWith('filled 2\n')) throw new Error('log filled');
+  if (!log.text.includes('secret set')) throw new Error('log secret');
+  if (status.secret !== 'set') throw new Error('status secret set');
   if (/https?:\/\//i.test(log.text)) throw new Error('log url');
   if (prev === undefined) delete process.env.AFFILIATE_LINKS_JSON;
   else process.env.AFFILIATE_LINKS_JSON = prev;
@@ -72,6 +94,6 @@ function main() {
   process.stdout.write(overlayLogText(loadLinks()).text);
 }
 
-module.exports = { filledNames, overlayStatusText, overlayLogText };
+module.exports = { filledNames, overlaySecretState, overlayStatusText, overlayLogText };
 
 if (require.main === module) main();
