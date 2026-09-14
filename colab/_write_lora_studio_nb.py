@@ -373,7 +373,7 @@ DRIVE_MODELS = Path(env["DRIVE_MODELS"])
 COMFY_DIR = Path(env["COMFY_DIR"])
 PORT = 8188
 BRANCH = "cursor/h3-anal-stories-f112"
-FETCH_REV = "h3-20260913-anal-13"
+FETCH_REV = "h3-20260914-anal-14"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 STUDIO = Path("/content/h3-lora-studio")
 
@@ -1854,3 +1854,5 @@ for out in OUTS:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(blob, encoding="utf-8")
     print("wrote", out, "bytes", out.stat().st_size)
+    assert out.stat().st_size > 50_000, out
+    assert not out.read_text(encoding="utf-8").startswith("PLACEHOLDER")

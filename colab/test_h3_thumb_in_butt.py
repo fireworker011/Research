@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ThumbInButt split-list contract for h3-20260913-anal-13.
+"""ThumbInButt split-list contract for h3-20260914-anal-14.
 
 Imports locked API from colab/h3_lora_studio.py (not a side module).
 """
@@ -16,6 +16,8 @@ from h3_lora_studio import (
     STORY_KEEP_LABEL,
     STORY_ORDER,
     STORY_PLAY_REF_CHAIN,
+    TIB_FILE,
+    TIB_LORA_ID,
     TIB_ON_LABEL,
     apply_thumbinbutt_stack,
     clip_wants_thumbinbutt,
@@ -29,7 +31,6 @@ from h3_lora_studio import (
     story_title_labels,
 )
 
-TIB_LORA_ID = "thumbinbutt-h3"
 TIB_STRENGTH = 0.55
 TIB_TRIGGER = "thum1n8utt"
 
@@ -129,6 +130,8 @@ def test_apply_stack_on_adds_helper_without_trigger():
     assert tib["role"] == "helper"
     assert float(tib.get("strength") or tib.get("strength_model") or 0) == TIB_STRENGTH
     assert not str(tib.get("trigger") or "").strip()
+    assert tib.get("filename") == TIB_FILE
+    assert tib.get("lora_name") == TIB_FILE
     off = apply_thumbinbutt_stack(base, on=False)
     assert TIB_LORA_ID not in [r["id"] for r in off]
 
@@ -151,6 +154,7 @@ def test_prepare_thumb_in_butt_on_adds_helper(tmp_path):
     assert TIB_LORA_ID in ids
     tib = next(r for r in planned["stack"] if r["id"] == TIB_LORA_ID)
     assert not str(tib.get("trigger") or "").strip()
+    assert tib.get("filename") == TIB_FILE
     assert TIB_TRIGGER not in planned["prompt"]
     oral_end = load_story("last-stop-40s")
     skip = prepare_story_clip(

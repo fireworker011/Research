@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-anal-13"
+    assert STUDIO_REV == "h3-20260914-anal-14"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-anal-13"' in src
+    assert 'FETCH_REV = "h3-20260914-anal-14"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,10 +753,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-anal-13" in blob
+    assert "h3-20260914-anal-14" in blob
     assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
     assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-13" not in blob
     assert "h3-20260913-anal-12" not in blob
     assert "h3-20260913-anal-10" not in blob
     assert "h3-20260913-anal-8" not in blob
@@ -7416,7 +7417,7 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-anal-13" in cell2
+    assert "h3-20260914-anal-14" in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3

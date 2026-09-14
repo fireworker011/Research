@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-anal-13"
+STUDIO_REV = "h3-20260914-anal-14"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -938,6 +938,7 @@ STORY_KEEP_LABEL = "（シーンのまま）"
 TIB_ON_LABEL = "あり（挿入前後）"
 TIB_OFF_LABEL = "なし"
 TIB_LORA_ID = "thumbinbutt-h3"
+TIB_FILE = "H3_ThumbInButt.safetensors"
 TIB_STRENGTH = 0.55
 TIB_TRIGGER = "thum1n8utt"
 TIB_MAX_HELPERS = 2
@@ -4335,6 +4336,8 @@ def apply_thumbinbutt_stack(
                 row["trigger"] = ""
                 row.setdefault("strength", TIB_STRENGTH)
                 row.setdefault("strength_model", TIB_STRENGTH)
+                row["filename"] = TIB_FILE
+                row["lora_name"] = TIB_FILE
         return rows
     helper_n = sum(1 for r in rows if str(r.get("role") or "") == "helper")
     if helper_n >= TIB_MAX_HELPERS:
@@ -4346,6 +4349,8 @@ def apply_thumbinbutt_stack(
             "strength": TIB_STRENGTH,
             "strength_model": TIB_STRENGTH,
             "trigger": "",
+            "filename": TIB_FILE,
+            "lora_name": TIB_FILE,
         }
     )
     return rows
