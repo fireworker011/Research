@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-08-22T08:04:18.519Z",
+  "summary": {
+    "today": "2026-08-22",
+    "rowCount": 0,
+    "lastDate": null,
+    "channels": [],
+    "wrongChannel": false,
+    "last7": {
+      "start": "2026-08-16",
+      "end": "2026-08-22",
+      "posts": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reward_jpy": 0
+    },
+    "prev7Clicks": 0,
+    "cumulative": {
+      "posts": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reward_jpy": 0
+    },
+    "experiment": {
+      "start": "2026-08-22",
+      "day": 0,
+      "posts": 0,
+      "clicks": 0,
+      "conversions": 0
+    },
+    "weekClicks": [
+      {
+        "start": "2026-08-16",
+        "end": "2026-08-22",
+        "clicks": 0
+      },
+      {
+        "start": "2026-08-09",
+        "end": "2026-08-15",
+        "clicks": 0
+      },
+      {
+        "start": "2026-08-02",
+        "end": "2026-08-08",
+        "clicks": 0
+      }
+    ]
+  },
+  "verdict": {
+    "code": "RECORD_MISSING",
+    "title": "記録が無い。改善できない",
+    "improve": "CSVに数字を書け。記録が無い改善は妄想",
+    "action": "人間だけ: DMMアフィ登録 → 新規Xを審査に出す → 投稿1本（#PR必須）→ adult_cash_log.csv に1行。リンクはコミットするな",
+    "canTalk1M": false,
+    "inExperiment": false,
+    "payoutReady": false
+  }
+}
