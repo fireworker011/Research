@@ -2,7 +2,7 @@
 
 SFW: turbo + one quality LoRA. Adult T2V/I2V: concept (Mystic XXX) + act + helpers 0-2 + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
-Cinema replaces helper. Anal sex / urine drink (penis + synth, no ThumbInButt) stay turbo off. Scat act stacks ThumbInButt so feces leaves the anus, not the vagina. Pose LoRAs replace AIO; do not stack both.
+Cinema replaces helper. Anal sex uses anal-any-h3 as act when that Drive weight exists, else penis + synth, no ThumbInButt. Urine drink stays penis + synth. Scat act stacks ThumbInButt so feces leaves the anus, not the vagina. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official. Mystic XXX v4 is FL2VA-only; do not load the Ref2VA file.
@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260914-anal-16"
+STUDIO_REV = "h3-20260914-anal-17"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -657,13 +657,13 @@ SITUATION_HELP = {
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。Mystic なし。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。挿入側はふたなり。男なし。体位欄で構図。",
     "lesbian_cunnilingus": "レズクンニ。女同士。解剖 0.5 + クンニ 0.55 + 穴の見え方 0.4 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。解剖 0.5 + 広げる 0.5 + 穴の見え方 0.4 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。解剖 0.5 + クンニ 0.55 + 広げる 0.45 + Larry 0.5。男なし。",
     "futa_blowjob": "ふたなりフェラ（汎用）。解剖 0.5 + フェラ 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。解剖 0.5 + 総合えっち 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
-    "futa_anal": "アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
+    "futa_anal": "アナルセックス（女体）。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
     "urine_drink": "飲尿（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
     "urine_pee": "放尿（性器から）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
     "scat_act": "脱糞（どの構図）。解剖 0.5 + ThumbInButt 0.55 + 竿 0.45 + 穴の見え方 0.4。Turbo なし・8step。今、肛門から出している動き。ThumbInButt を積まないとマンコから出る。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図（しゃがみ／立ち／後背／正常位／座り／横）。デフォルト以外の場所は文章欄（カフェの便座、縁側、など）。物語ドロップダウンは選ばない（帰宅〜縁側・医院・終電に糞は足さない）。山小屋＝扉の外の塗れ。ニクカベ肥溜め＝最初から塗れている。どちらも今出している動きではない。アナルセックスには積まない。",
@@ -738,6 +738,7 @@ LORA_JA = {
     "lesbian-cunnilingus-h3": "レズクンニ",
     "pussy-spread-h3": "性器を広げる",
     "anal-penetration-coachbate": "アナル挿入（CoachBate・有料・未使用）",
+    "anal-any-h3": "アナル行為（どの構図）",
     "hmnsfw-aio-v25": "総合えっち",
     "futa-h3-v51": "ふたなり",
     "penis-lora-h3": "竿",
@@ -946,6 +947,11 @@ TIB_FILE_ALIASES = (
 )
 TIB_STRENGTH = 0.55
 TIB_TRIGGER = "thum1n8utt"
+ANAL_ANY_LORA_ID = "anal-any-h3"
+ANAL_ANY_FILE = "anal-any-h3.safetensors"
+ANAL_ANY_FILE_ALIASES = (ANAL_ANY_FILE,)
+ANAL_ANY_STRENGTH = 0.55
+ANAL_ANY_TRIGGER = "AN4LIN"
 # Default stacks stay helper 0-2. Optional ③ ThumbInButt may be a third helper
 # on oral / cunni / doggy prep clips that already have penis + synth.
 TIB_MAX_HELPERS = 3
@@ -1075,6 +1081,11 @@ def lora_filename_keys(filename: str, lora_id: str = "") -> set[str]:
     tib.add(TIB_LORA_ID.lower())
     if (name and name.lower() in tib) or rid == TIB_LORA_ID.lower():
         keys |= tib
+    anal = {a.lower() for a in ANAL_ANY_FILE_ALIASES}
+    anal.add(ANAL_ANY_FILE.lower())
+    anal.add(ANAL_ANY_LORA_ID.lower())
+    if (name and name.lower() in anal) or rid == ANAL_ANY_LORA_ID.lower():
+        keys |= anal
     return {k for k in keys if k}
 
 
@@ -2577,6 +2588,8 @@ def download_jobs_for(
             raise SystemExit(f"unknown LoRA id: {lid}")
         dest = dest_dir / str(row["filename"])
         source = str(row.get("source") or "hf")
+        if source == "local":
+            continue
         if source == "civitai":
             url = civitai_download_url(row)
         elif row.get("repo") and not str(row["repo"]).startswith("civitai:"):
@@ -2704,6 +2717,11 @@ def resolve_lora_relname(lora_dir: Path | str, filename: str) -> str | None:
         return name.replace("\\", "/")
     if TIB_FILE.lower() in keys:
         for alias in TIB_FILE_ALIASES:
+            alt = root / alias
+            if already_have_weight(alt):
+                return alias.replace("\\", "/")
+    if ANAL_ANY_FILE.lower() in keys:
+        for alias in ANAL_ANY_FILE_ALIASES:
             alt = root / alias
             if already_have_weight(alt):
                 return alias.replace("\\", "/")
@@ -4079,15 +4097,26 @@ I2V_FROM_ORAL_INSERT_LINE = (
     "Same people, same place, same lighting. Natural motion into ANAL PREP then INSERTION ON CAMERA. "
     "Not a continued blowjob. Not a mouth crop at the end."
 )
+I2V_JOIN_CAM_LINE = (
+    "I2V JOIN CAMERA: Picture 1 may be a face, mouth crop, or two-shot. Do not keep that camera. "
+    "PULL BACK or ORBIT to a close joining-point angle on penis-in-anus. "
+    "Same people, same place, same lighting. Natural motion into this clip's anal joining-point action. "
+    "Not a continued blowjob. Not a mouth crop. Not a face two-shot at the end."
+)
+JOIN_CAM_LINE = (
+    "JOIN CAMERA: Close on the joining point — the erect 20cm inside the anus, "
+    "rim and shaft readable in frame. Not a face two-shot. Not a mouth crop. "
+    "Not a medium full-body. Not a crotch-avoiding wide. "
+    "If the starting frame is a face or mouth, PULL BACK or ORBIT to the join. "
+    "Stay on the join for the take."
+)
 SAME_CLIP_INSERT_LINE = (
-    "TIMELINE: 0.0-3.0s unique quoted speech, one time only, conversational pace. "
+    "TIMELINE: 0.0-1.5s unique quoted speech, one time only, conversational pace. "
     "The written kiss or quoted lines only (mouths visible only while speaking). "
-    "Do not repeat. Do not restart. Do not stretch the words to fill time. "
-    "3.0-6.0s ANAL PREP: both settle the accepting pose for this clip, "
-    "giver hips aligned, hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
-    "PULL BACK or ORBIT off the face/mouth crop so both bodies and the gap are readable. "
-    "6.0-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
-    "Close on the joining point. No climax. Mouths stay closed except the act. "
+    "Brief hip align at the anus. Do not repeat. Do not restart. Do not stretch the words to fill time. "
+    "1.5-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+    "Close on the joining point for the rest of the take. "
+    "Not a face two-shot. Not a mouth crop. No climax. Mouths stay closed except the act. "
     "No more quoted speech. No replay. Do not freeze."
 )
 ANAL_HOLE_IDLE_LINE = (
@@ -4424,6 +4453,76 @@ inject_thumb_in_butt = apply_thumbinbutt_stack
 clip_wants_thumb_in_butt = clip_wants_thumbinbutt
 
 
+def default_lora_dir(*hints: Path | str | None) -> Path | None:
+    """Drive or Comfy models/loras. Missing dirs are skipped so tests stay file-less."""
+    for raw in hints:
+        if not raw:
+            continue
+        path = Path(raw)
+        if path.is_dir():
+            return path
+    for cand in (
+        Path("/content/ComfyUI/models/loras"),
+        Path("/content/drive/MyDrive/minimax-h3-comfyui/models/loras"),
+    ):
+        if cand.is_dir():
+            return cand
+    return None
+
+
+def apply_anal_any_stack(
+    stack: list[dict[str, Any]] | None,
+    *,
+    situation: str = "",
+    lora_dir: Path | str | None = None,
+    prompt: str = "",
+) -> list[dict[str, Any]]:
+    """If Drive has anal-any-h3, it becomes the anal act. Penis stays a helper. Missing = no-op."""
+    rows = [dict(r) for r in (stack or [])]
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS and not clip_is_anal_insert(prompt, sit):
+        return rows
+    if any(str(r.get("id") or "") == ANAL_ANY_LORA_ID for r in rows):
+        for row in rows:
+            if str(row.get("id") or "") != ANAL_ANY_LORA_ID:
+                continue
+            row["role"] = "act"
+            row["trigger"] = ANAL_ANY_TRIGGER
+            row.setdefault("strength", ANAL_ANY_STRENGTH)
+            row.setdefault("strength_model", ANAL_ANY_STRENGTH)
+            row["filename"] = str(row.get("filename") or ANAL_ANY_FILE)
+            row["lora_name"] = str(row.get("lora_name") or row["filename"])
+        return rows
+    root = default_lora_dir(lora_dir)
+    if root is None:
+        return rows
+    rel = resolve_lora_relname(root, ANAL_ANY_FILE)
+    if not rel:
+        return rows
+    for row in rows:
+        if str(row.get("id") or "") == "penis-lora-h3" and str(row.get("role") or "") == "act":
+            row["role"] = "helper"
+    insert_at = 0
+    for i, row in enumerate(rows):
+        if str(row.get("role") or "") == "concept":
+            insert_at = i + 1
+            break
+    rows.insert(
+        insert_at,
+        {
+            "id": ANAL_ANY_LORA_ID,
+            "role": "act",
+            "strength": ANAL_ANY_STRENGTH,
+            "strength_model": ANAL_ANY_STRENGTH,
+            "trigger": ANAL_ANY_TRIGGER,
+            "filename": rel,
+            "lora_name": rel,
+            "turbo": False,
+        },
+    )
+    return rows
+
+
 def lock_anal_prep(
     text: str,
     *,
@@ -4439,7 +4538,10 @@ def lock_anal_prep(
         return raw
     if not same_clip_insert:
         same_clip_insert = TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw
-    if same_clip_insert or next_is_insert:
+    # Same-clip kiss/talk insert: joining-point wins. PREP stays on the previous clip.
+    if same_clip_insert:
+        return raw
+    if next_is_insert:
         return _inject_before_soundscape(raw, ANAL_PREP_LINE)
     return raw
 
@@ -4452,8 +4554,29 @@ def lock_i2v_from_oral_insert(text: str) -> str:
     return _inject_before_soundscape(raw, I2V_FROM_ORAL_INSERT_LINE)
 
 
+def lock_i2v_join_camera(text: str) -> str:
+    """Last-frame I2V into anal sex must not keep a face/mouth/two-shot camera."""
+    raw = str(text or "")
+    if not raw or I2V_JOIN_CAM_LINE in raw:
+        return raw
+    return _inject_before_soundscape(raw, I2V_JOIN_CAM_LINE)
+
+
+def lock_join_camera(text: str, *, situation: str = "") -> str:
+    """Insert and already-in anal clips stay close on penis-in-anus."""
+    raw = str(text or "")
+    if not raw or "JOIN CAMERA:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS and not clip_is_anal_insert(raw, sit):
+        return raw
+    if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw and PACO_MARK not in raw:
+        return raw
+    return _inject_before_soundscape(raw, JOIN_CAM_LINE)
+
+
 def same_clip_insert_timeline(duration_s: float = 10.0) -> str:
-    """Kiss/talk + PREP + entry in one 10s take: 0-3 / 3-6 / 6-10."""
+    """Kiss/talk then entry in one 10s take: 0-1.5 speech, 1.5-10 joining-point insertion."""
     try:
         dur = float(duration_s or 10.0)
     except (TypeError, ValueError):
@@ -4462,17 +4585,14 @@ def same_clip_insert_timeline(duration_s: float = 10.0) -> str:
         dur = 10.0
     if abs(dur - 10.0) < 0.01:
         return SAME_CLIP_INSERT_LINE
-    speak_end = min(3.0, max(1.0, dur * 0.3))
-    prep_end = min(max(speak_end + 1.5, dur * 0.6), max(speak_end + 0.5, dur - 1.0))
+    speak_end = min(1.5, max(0.8, dur * 0.15))
     return (
         f"TIMELINE: 0.0-{speak_end:.1f}s unique quoted speech, one time only, conversational pace. "
         "The written kiss or quoted lines only (mouths visible only while speaking). "
-        "Do not repeat. Do not restart. Do not stretch the words to fill time. "
-        f"{speak_end:.1f}-{prep_end:.1f}s ANAL PREP: both settle the accepting pose for this clip, "
-        "giver hips aligned, hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
-        "PULL BACK or ORBIT off the face/mouth crop so both bodies and the gap are readable. "
-        f"{prep_end:.1f}-{dur:.1f}s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
-        "Close on the joining point. No climax. Mouths stay closed except the act. "
+        "Brief hip align at the anus. Do not repeat. Do not restart. Do not stretch the words to fill time. "
+        f"{speak_end:.1f}-{dur:.1f}s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+        "Close on the joining point for the rest of the take. "
+        "Not a face two-shot. Not a mouth crop. No climax. Mouths stay closed except the act. "
         "No more quoted speech. No replay. Do not freeze."
     )
 
@@ -4902,6 +5022,7 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
     out = lock_anal_creampie(out, situation=situation)
     out = lock_anal_hole(out, situation=situation)
     out = lock_anal_prep(out, situation=situation)
+    out = lock_join_camera(out, situation=situation)
     out = lock_act_sfx(out, situation=situation)
     if sit in ORAL_SUCK_SITUATIONS:
         out = lock_oral_camera(out, situation=sit)
@@ -5470,11 +5591,9 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
         )
     if TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw:
         return (
-            "0-3s written kiss or lines, 3-6s ANAL PREP (accepting pose, giver hips aligned, "
-            "hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
-            "PULL BACK or ORBIT off the mouth crop so both bodies and the gap are readable), "
-            "6-10s INSERTION ON CAMERA into the anus to the BASE, close on the joining point. "
-            "Both wrecked-ecstatic, loud moans, a little drool. No climax. "
+            "0-1.5s written kiss or lines, brief hip align, "
+            "1.5-10s INSERTION ON CAMERA into the anus to the BASE, "
+            "close on the joining point. Both wrecked-ecstatic, loud moans, a little drool. No climax. "
             "Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze."
         )
     if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw:
@@ -7742,6 +7861,7 @@ def prepare_story_clip(
     fit_scene: bool = False,
     cast_dir: Path | str | None = None,
     thumb_in_butt: bool = False,
+    lora_dir: Path | str | None = None,
 ) -> dict[str, Any]:
     """One story clip. Matching LoRA per act.
 
@@ -7820,6 +7940,7 @@ def prepare_story_clip(
         next_is_insert=next_is_insert and not this_is_insert,
         same_clip_insert=same_clip_insert,
     )
+    raw_prompt = lock_join_camera(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
@@ -7859,6 +7980,9 @@ def prepare_story_clip(
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
         if this_is_insert and str(prev_situation or "") in ORAL_FROM_INSERT_SITS:
             prompt = lock_i2v_from_oral_insert(prompt)
+        anal_sit = str(clip.get("situation") or situation)
+        if this_is_insert or anal_sit in SEX_ANAL_SITUATIONS:
+            prompt = lock_i2v_join_camera(prompt)
         first_kind = "last_frame"
     elif first_kind_cast:
         mode = "r2v"
@@ -7910,6 +8034,12 @@ def prepare_story_clip(
     stack = drop_speech_face_killers(list(cfg.get("stack") or []), speaks=speaks, mode=mode)
     want_tib = clip_wants_thumbinbutt(story, index, thumb_in_butt=thumb_in_butt, mode=mode)
     stack = apply_thumbinbutt_stack(stack, on=want_tib)
+    stack = apply_anal_any_stack(
+        stack,
+        situation=str(clip.get("situation") or situation),
+        lora_dir=lora_dir,
+        prompt=raw_prompt,
+    )
     if isinstance(cfg, dict):
         cfg = dict(cfg)
         cfg["stack"] = stack

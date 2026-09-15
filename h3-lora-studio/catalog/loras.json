@@ -43,7 +43,29 @@
         0.7,
         1.0
       ],
-      "note": "No trigger. Hole-visible close-up. Turbo off. Civitai paidAccess, so no ③ scene uses it; anal scenes run on thumbinbutt-h3. Kept for manual stacks; falls back to AIO if the file is missing."
+      "note": "No trigger. Hole-visible close-up. Turbo off. Civitai paidAccess, so no ③ scene uses it. Anal sex uses anal-any-h3 when Drive has the file, else penis + synth. No ThumbInButt on anal sex. Kept for manual stacks; falls back to AIO if the file is missing."
+    },
+    {
+      "id": "anal-any-h3",
+      "filename": "anal-any-h3.safetensors",
+      "repo": "",
+      "file": "anal-any-h3.safetensors",
+      "modes": [
+        "t2v",
+        "i2v",
+        "r2v"
+      ],
+      "arch": "shared",
+      "turbo": false,
+      "adult": true,
+      "trigger": "AN4LIN",
+      "default_strength": 0.55,
+      "source": "local",
+      "strength_range": [
+        0.45,
+        0.7
+      ],
+      "note": "Drive-only anal act. ② does not download. When models/loras has this file, futa_anal / anal_penetration swap act to anal-any-h3 and keep penis + synth as helpers. Missing file: penis stays act. No ThumbInButt. No CoachBate."
     },
     {
       "id": "synth-pussy-h3",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ThumbInButt split-list contract for h3-20260914-anal-16.
+"""ThumbInButt split-list contract for h3-20260914-anal-17.
 
 Imports locked API from colab/h3_lora_studio.py (not a side module).
 """

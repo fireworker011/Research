@@ -1,5 +1,5 @@
 H3 erotic lane — all GitHub prompts for Grok.
-rev=h3-20260914-anal-16 branch=cursor/h3-anal-stories-f112
+rev=h3-20260914-anal-17 branch=cursor/h3-anal-stories-f112
 Independent H3. Do not open HQ dumps. Do not restore Threads schedules.
 Regenerate: python h3-lora-studio/scripts/dump_grok_prompts.py --write
 
@@ -166,6 +166,9 @@ subject_definitions:
 ----- I2V_FROM_ORAL_INSERT_LINE -----
 I2V FROM ORAL: Picture 1 may be a mouth crop. Do not keep that camera. PULL BACK or ORBIT off the mouth to this clip's anal joining-point angle. Same people, same place, same lighting. Natural motion into ANAL PREP then INSERTION ON CAMERA. Not a continued blowjob. Not a mouth crop at the end.
 
+----- I2V_JOIN_CAM_LINE -----
+I2V JOIN CAMERA: Picture 1 may be a face, mouth crop, or two-shot. Do not keep that camera. PULL BACK or ORBIT to a close joining-point angle on penis-in-anus. Same people, same place, same lighting. Natural motion into this clip's anal joining-point action. Not a continued blowjob. Not a mouth crop. Not a face two-shot at the end.
+
 ----- I2V_PICTURE1_HEADER -----
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
@@ -183,6 +186,9 @@ INSIDE LOCK: The erect 20cm pistons the anus. Pull out until only the glans sits
 
 ----- INSIDE_PUSSY_LINE -----
 INSIDE LOCK: The erect 20cm is already inside the pussy. The shaft is buried in the vaginal canal. The glans is in, not outside. Joining point visible: penis in pussy, not beside the labia, not between the thighs, not rubbing the slit from outside. Not a soft penis. Not a miss. Keep thrusting while it stays in. Do not pull out for this clip.
+
+----- JOIN_CAM_LINE -----
+JOIN CAMERA: Close on the joining point — the erect 20cm inside the anus, rim and shaft readable in frame. Not a face two-shot. Not a mouth crop. Not a medium full-body. Not a crotch-avoiding wide. If the starting frame is a face or mouth, PULL BACK or ORBIT to the join. Stay on the join for the take.
 
 ----- KISS_ACT_SFX -----
 Wet chu kisses, saliva slurp, leaked female moans, hitching breath.
@@ -257,7 +263,7 @@ ANAL PREP:
 Wet pulses, leaked female moans, hitching breath.
 
 ----- SAME_CLIP_INSERT_LINE -----
-TIMELINE: 0.0-3.0s unique quoted speech, one time only, conversational pace. The written kiss or quoted lines only (mouths visible only while speaking). Do not repeat. Do not restart. Do not stretch the words to fill time. 3.0-6.0s ANAL PREP: both settle the accepting pose for this clip, giver hips aligned, hands on the waist, 20cm tip a hand's width from the anus, NOT in; PULL BACK or ORBIT off the face/mouth crop so both bodies and the gap are readable. 6.0-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. Close on the joining point. No climax. Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze.
+TIMELINE: 0.0-1.5s unique quoted speech, one time only, conversational pace. The written kiss or quoted lines only (mouths visible only while speaking). Brief hip align at the anus. Do not repeat. Do not restart. Do not stretch the words to fill time. 1.5-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. Close on the joining point for the rest of the take. Not a face two-shot. Not a mouth crop. No climax. Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze.
 
 ----- SCAT_ACT_LINE -----
 SCAT ACT: Real adult human feces leaving the anus in this clip. A formed opaque brown stool log, sausage-shaped and lightly segmented, is pushed out of the anus now. Soft-solid like clay: it sags, breaks, and piles. It does not bounce. It does not stretch like slime. This is the act of defecating now, not a body already coated from before. It leaves through the anus, not the vagina, not from off-screen.
@@ -361,7 +367,7 @@ POSE LOCK: Standing on their feet, front three-quarter, medium two-shot. Hips at
 アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。
 
 [SITUATION_HELP.anal_penetration]
-アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。
+アナル挿入（画質）。穴のアップ。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。挿入側はふたなり。男なし。体位欄で構図。
 
 [SITUATION_HELP.back-wash-60s]
 背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝ジュボ（根元まで）のあと射精せず、座位アナル中出し。行為は無言。台詞は話し言葉（漢字なし）。
@@ -424,7 +430,7 @@ POSE LOCK: Standing on their feet, front three-quarter, medium two-shot. Hips at
 足コキ（女体）。解剖 0.5 + Type D 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。ふたなり＋女。男なし。
 
 [SITUATION_HELP.futa_anal]
-アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。
+アナルセックス（女体）。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。
 
 [SITUATION_HELP.futa_blowjob]
 ふたなりフェラ（汎用）。解剖 0.5 + フェラ 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。
@@ -11850,7 +11856,6 @@ INSIDE LOCK: Show the entry into the ANUS, then it STAYS in. The erect 20cm goes
 ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. The unused pussy stays shut: labia closed, not spread, not gaping, not entered. WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. Not a vaginal creampie. Not pussy-spread.
 ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). The unused pussy is the hole toward the pubic bone and the belly. Never swap those two holes. Enter the anus only.
 REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. The UPPER hole toward the tailbone is the anus — the 20cm enters THAT hole only, to the BASE. The LOWER hole toward the belly is the unused pussy: keep it closed, not opened, not spread, not gaping. Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus above the closed pussy.
-ANAL PREP: After the written act, BOTH women settle the next anal pose together. Receiver takes the accepting pose written for the coming insertion. Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. No extra walk. No solo heat. Do not start insertion in this prep beat. CAMERA: After the written act, PULL BACK or ORBIT to a medium rear-side (or the angle written for the coming insertion). Last seconds: BOTH bodies readable and the joining point readable — the 20cm tip a hand's width from the anus, the GAP visible, NOT in. Not a mouth crop at the end. Zoom and angle change inside this one take are OK. No hard cut. Do not start insertion.
 PLEASURE VOICE: When it feels good, leaked female moans and wet hitching breath. Audible. Not words. Not extra Japanese dialogue. Not a scream. Not a new spoken line.
 EROTIC WAIT: Leftover / pause seconds only. Do not freeze. Do not add, skip, or replace the written beat. Same who sits, stands, walks, lies, sucks, drinks, drives, sings, writes, or is inside. If someone is already sucking, keep that mouth on the penis to the BASE. Do not pull off a suck or pull out of a hole just to wait. If the written beat already pulls off or pulls out, do that written beat. If a mouth must stay OPEN a hand's width from the tip, keep it OPEN and off. Do not kiss that mouth. If a spoken Japanese line is still going, do not cover that mouth until the line ends. If hands are on a wheel, a microphone, chalk, a tray, a door, or this clip says hands NEVER on the shaft, those hands stay there. If this clip says No kiss yet, does not kiss, or No deep kiss, leftover is a SEDUCTIVE SMILE and light self-touch only. Do not add a kiss or a French peck. Do not add the first partner peck or the first grope. If this clip says No oral yet, do not start oral. If it says Walk only, keep walking. If this clip wants a blank / poker / expressionless / clinical face, do not add a smile. Do not start oral or insertion that is not already written. Do not squat, kneel, stand up, lie down, turn a rear pose into face-to-face, or enter a tub just to wait. Not a frozen pose. Hands keep moving on the partner's body (breasts, waist, hips, the erect 20cm, or a hairless pussy) in a way that matches who is already touching what. Leftover only, after the written beat and after the last unique quoted line, and only with a free hand or a free mouth that does not change pose: kisses on the mouth and/or breasts plus skinship so the same Japanese line is not spoken twice or three times; knead the partner's breasts; pump the erect 20cm and the hairless pussy; rub bodies together while tongue-kissing when both mouths are free and this clip does not forbid a kiss; a SEDUCTIVE SMILE if the face is allowed to change; light self-touch on her own breasts, her own hairless pussy, or her own unused erect 20cm; light partner-touch on breasts, a hairless pussy, or an unused erect 20cm when they are already close enough; a light French peck (tongue tip and lips touch a breast, a hairless pussy, or an unused 20cm, then leave at once) ONLY when both mouths are free, faces are already close enough, this clip does not forbid a kiss, and the peck does not replace a written deep kiss or mouth-to-mouth semen share. NOT oral. NOT in the mouth. NOT jupo. NOT a squat.
 

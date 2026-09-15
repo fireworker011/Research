@@ -8,6 +8,8 @@ SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
 from select_loras import (  # noqa: E402
+    ANAL_ANY_FULL_STACK_IDS,
+    FULL_STACK_IDS,
     FUTA_SITUATIONS,
     SelectError,
     apply_feminine_lock,
@@ -1205,6 +1207,12 @@ def test_locked_minors_stay_child_terms():
     loras = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     coach = next(row for row in loras["loras"] if row["id"] == "anal-penetration-coachbate")
     assert coach.get("paid") is True
+    anal_any = next(row for row in loras["loras"] if row["id"] == "anal-any-h3")
+    assert anal_any["source"] == "local"
+    assert anal_any["trigger"] == "AN4LIN"
+    assert anal_any.get("paid") is not True
+    assert "anal-any-h3" not in FULL_STACK_IDS
+    assert "anal-any-h3" in ANAL_ANY_FULL_STACK_IDS
 
 
 def test_no_forbidden_or_unused_loras_in_any_profile_stack():

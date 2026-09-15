@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260914-anal-16"
+    assert STUDIO_REV == "h3-20260914-anal-17"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260914-anal-16"' in src
+    assert 'FETCH_REV = "h3-20260914-anal-17"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,7 +753,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260914-anal-16" in blob
+    assert "h3-20260914-anal-17" in blob
+    assert "h3-20260914-anal-16" not in blob
     assert "h3-20260914-anal-15" not in blob
     assert "h3-20260914-anal-14" not in blob
     assert "prompts/h3-body-lock.md" in src
@@ -6847,7 +6848,8 @@ def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
     p0 = prepare_story_clip(manhole, 0, stills_dir=tmp_path)
     assert "ANAL HOLE LOCK:" in p0["prompt"]
     assert "REAR ANAL LOCK:" in p0["prompt"]
-    assert "ANAL PREP:" in p0["prompt"]
+    assert "JOIN CAMERA:" in p0["prompt"]
+    assert "ANAL PREP:" not in p0["prompt"]
     p1 = prepare_story_clip(manhole, 1, last_frame="x.png", stills_dir=tmp_path)
     assert "ANAL HOLE LOCK:" in p1["prompt"]
     assert "REAR ANAL LOCK:" in p1["prompt"]
@@ -6933,7 +6935,7 @@ def test_lock_anal_prep_on_entry_not_paco_or_walk(tmp_path):
         "TALK THEN INSERT:\nAfter the lines: INSERTION ON CAMERA.\n\noverall_soundscape:\nWet.\n",
         same_clip_insert=True,
     )
-    assert ANAL_PREP_LINE in talk
+    assert ANAL_PREP_LINE not in talk
     assert lock_anal_prep(talk, same_clip_insert=True) == talk
 
     missing = 0
@@ -6953,11 +6955,11 @@ def test_lock_anal_prep_on_entry_not_paco_or_walk(tmp_path):
             next_is = clip_is_anal_insert(str(nxt.get("prompt") or ""), str(nxt.get("situation") or ""))
             this_is = clip_is_anal_insert(raw, str(clip.get("situation") or ""))
             same = this_is and (TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw)
-            want = same or (next_is and not this_is)
+            want = next_is and not this_is
             if want:
                 assert "ANAL PREP:" in planned["prompt"], (sid, i + 1, clip.get("label"))
                 missing += 1
-            elif has_paco(raw) or planned["situation"] in {"futa_visible", "riding"}:
+            elif same or has_paco(raw) or planned["situation"] in {"futa_visible", "riding"}:
                 if not want:
                     assert "ANAL PREP:" not in planned["prompt"], (sid, i + 1, clip.get("label"))
     assert missing >= 8
@@ -6969,6 +6971,8 @@ def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
         ANAL_REAR_LOCK_LINE,
         CHAIN_CONTINUE_LINE,
         I2V_FROM_ORAL_INSERT_LINE,
+        I2V_JOIN_CAM_LINE,
+        JOIN_CAM_LINE,
         SAME_CLIP_INSERT_LINE,
         anal_anatomy_view,
         generate_anal_pattern,
@@ -7021,7 +7025,9 @@ def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
         )
         prompt = planned["prompt"]
         assert SAME_CLIP_INSERT_LINE in prompt, sid
-        assert "0.0-3.0s" in prompt and "3.0-6.0s" in prompt and "6.0-10.0s" in prompt, sid
+        assert "0.0-1.5s" in prompt and "1.5-10.0s" in prompt, sid
+        assert "3.0-6.0s" not in prompt, sid
+        assert JOIN_CAM_LINE in prompt, sid
         if view == "rear":
             assert ANAL_REAR_LOCK_LINE in prompt, sid
             assert ANAL_FRONT_LOCK_LINE not in prompt, sid
@@ -7061,6 +7067,7 @@ def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
     )
     assert CHAIN_CONTINUE_LINE in from_oral["prompt"]
     assert I2V_FROM_ORAL_INSERT_LINE in from_oral["prompt"]
+    assert I2V_JOIN_CAM_LINE in from_oral["prompt"]
     dedicated = prepare_story_clip(
         load_story("rooftop-100s"),
         3,
@@ -7069,6 +7076,115 @@ def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
         prev_situation="oral",
     )
     assert I2V_FROM_ORAL_INSERT_LINE not in dedicated["prompt"]
+    assert I2V_JOIN_CAM_LINE not in dedicated["prompt"]
+    assert JOIN_CAM_LINE in dedicated["prompt"]
+
+
+def test_anal_any_stack_and_join_i2v_without_oral(tmp_path):
+    from h3_lora_studio import (
+        ANAL_ANY_LORA_ID,
+        ANAL_ANY_TRIGGER,
+        CHAIN_CONTINUE_LINE,
+        I2V_FROM_ORAL_INSERT_LINE,
+        I2V_JOIN_CAM_LINE,
+        JOIN_CAM_LINE,
+        SAME_CLIP_INSERT_LINE,
+        TIB_LORA_ID,
+        apply_anal_any_stack,
+        download_jobs_for,
+        load_catalog,
+        load_story,
+        lock_join_camera,
+        prepare_story_clip,
+        prepend_triggers,
+    )
+
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    assert download_jobs_for(["anal-any-h3"], tmp_path, catalog=catalog) == []
+    assert "INSERTION ON CAMERA" not in I2V_JOIN_CAM_LINE
+    assert "Picture 1" not in JOIN_CAM_LINE
+    assert "0.0-1.5s" in SAME_CLIP_INSERT_LINE
+    assert "1.5-10.0s" in SAME_CLIP_INSERT_LINE
+    row = next(r for r in catalog["loras"] if r["id"] == "anal-any-h3")
+    assert row["source"] == "local"
+    assert row["trigger"] == "AN4LIN"
+    assert row["filename"] == "anal-any-h3.safetensors"
+
+    base = [
+        {"id": "mystic-xxx-h3", "role": "concept", "strength_model": 0.5, "trigger": "xxx"},
+        {"id": "penis-lora-h3", "role": "act", "strength_model": 0.45, "trigger": "PENISLORA"},
+        {"id": "synth-pussy-h3", "role": "helper", "strength_model": 0.4, "trigger": ""},
+    ]
+    missing = apply_anal_any_stack(base, situation="futa_anal", lora_dir=tmp_path)
+    assert [r["id"] for r in missing] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in missing] == ["concept", "act", "helper"]
+
+    empty = tmp_path / "empty_loras"
+    empty.mkdir()
+    still_missing = apply_anal_any_stack(base, situation="futa_anal", lora_dir=empty)
+    assert [r["id"] for r in still_missing] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+
+    weights = tmp_path / "loras"
+    weights.mkdir()
+    (weights / "anal-any-h3.safetensors").write_bytes(b"x" * 6_000_000)
+    swapped = apply_anal_any_stack(base, situation="futa_anal", lora_dir=weights)
+    assert [r["id"] for r in swapped] == [
+        "mystic-xxx-h3",
+        ANAL_ANY_LORA_ID,
+        "penis-lora-h3",
+        "synth-pussy-h3",
+    ]
+    assert [r["role"] for r in swapped] == ["concept", "act", "helper", "helper"]
+    assert swapped[1]["strength_model"] == 0.55
+    assert swapped[1]["trigger"] == ANAL_ANY_TRIGGER
+    assert TIB_LORA_ID not in [r["id"] for r in swapped]
+    prompted = prepend_triggers("PENISLORA\nInside the anus.\n", swapped)
+    assert ANAL_ANY_TRIGGER in prompted.split("\n", 1)[0]
+    again = apply_anal_any_stack(swapped, situation="futa_anal", lora_dir=weights)
+    assert [r["id"] for r in again] == [r["id"] for r in swapped]
+    oral = apply_anal_any_stack(base, situation="oral", lora_dir=weights)
+    assert [r["id"] for r in oral] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+
+    join = lock_join_camera(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert JOIN_CAM_LINE in join
+    prep_only = lock_join_camera(
+        "ANAL PREP: tip a hand's width, NOT in.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "JOIN CAMERA:" not in prep_only
+
+    manhole = load_story("manhole-30s")
+    from_walk = prepare_story_clip(
+        manhole,
+        1,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="futa_visible",
+        lora_dir=weights,
+    )
+    assert CHAIN_CONTINUE_LINE in from_walk["prompt"]
+    assert I2V_JOIN_CAM_LINE in from_walk["prompt"]
+    assert I2V_FROM_ORAL_INSERT_LINE not in from_walk["prompt"]
+    assert JOIN_CAM_LINE in from_walk["prompt"]
+    assert "Do not keep that camera" in from_walk["prompt"]
+    ids = [r["id"] for r in from_walk["stack"]]
+    assert ANAL_ANY_LORA_ID in ids
+    assert ids.count("penis-lora-h3") == 1
+    assert TIB_LORA_ID not in ids
+    no_weight = prepare_story_clip(
+        manhole,
+        1,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="futa_visible",
+        lora_dir=empty,
+    )
+    no_ids = [r["id"] for r in no_weight["stack"]]
+    assert ANAL_ANY_LORA_ID not in no_ids
+    assert "penis-lora-h3" in no_ids
 
 
 def test_semen_share_plan_hold_then_kiss(tmp_path):
@@ -7527,7 +7643,8 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260914-anal-16" in cell2
+    assert "h3-20260914-anal-17" in cell2
+    assert "h3-20260914-anal-16" not in cell2
     assert "h3-20260914-anal-15" not in cell2
     assert "h3-20260914-anal-14" not in cell2
     assert "日常（エロ汎用）" in cell3
@@ -7586,7 +7703,12 @@ def test_notebook_story_play_flow():
     assert "def lock_anal_hole" in helper_src
     assert "def anal_anatomy_view" in helper_src
     assert "def lock_i2v_from_oral_insert" in helper_src
+    assert "def lock_i2v_join_camera" in helper_src
+    assert "def lock_join_camera" in helper_src
+    assert "def apply_anal_any_stack" in helper_src
     assert "I2V FROM ORAL:" in helper_src
+    assert "I2V JOIN CAMERA:" in helper_src
+    assert "JOIN CAMERA:" in helper_src
     assert "SAME_CLIP_INSERT_LINE" in helper_src
     assert "FRONT ANAL LOCK:" in helper_src
     assert "ANAL ANATOMY:" in helper_src
