@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ThumbInButt split-list contract for h3-20260914-anal-14.
+"""ThumbInButt split-list contract for h3-20260914-anal-15.
 
 Imports locked API from colab/h3_lora_studio.py (not a side module).
 """
@@ -20,8 +20,10 @@ from h3_lora_studio import (
     TIB_LORA_ID,
     TIB_ON_LABEL,
     apply_thumbinbutt_stack,
+    clip_is_anal_insert,
     clip_wants_thumbinbutt,
     compose_scene_choice,
+    generate_anal_pattern,
     generic_wants_thumbinbutt,
     load_story,
     parse_play_ja,
@@ -136,6 +138,39 @@ def test_apply_stack_on_adds_helper_without_trigger():
     assert TIB_LORA_ID not in [r["id"] for r in off]
 
 
+def test_apply_stack_on_adds_third_helper_when_oral_full():
+    oral = [
+        {"id": "mystic-xxx-h3", "role": "concept"},
+        {"id": "blowjob-h3", "role": "act"},
+        {"id": "penis-lora-h3", "role": "helper"},
+        {"id": "synth-pussy-h3", "role": "helper"},
+        {"id": "larry-v4", "role": "turbo"},
+    ]
+    out = apply_thumbinbutt_stack(oral, on=True)
+    assert TIB_LORA_ID in [r["id"] for r in out]
+    helpers = [r for r in out if r.get("role") == "helper"]
+    assert len(helpers) == 3
+
+
+def test_creampie_into_anus_is_not_insert():
+    roof = load_story("rooftop-100s")
+    kiss = roof["clips"][3]
+    paco_waist = roof["clips"][5]
+    cream = roof["clips"][6]
+    assert kiss["label"] == "30-40 キス 挿入"
+    assert paco_waist["label"] == "50-60 腰"
+    assert cream["label"] == "60-70 アナル中出し"
+    assert clip_is_anal_insert(kiss["prompt"], kiss["situation"]) is True
+    assert clip_is_anal_insert(paco_waist["prompt"], paco_waist["situation"]) is False
+    assert clip_is_anal_insert(cream["prompt"], cream["situation"]) is False
+    assert clip_wants_thumbinbutt(roof, 5, thumb_in_butt=True) is False
+    assert clip_wants_thumbinbutt(roof, 6, thumb_in_butt=True) is False
+    p3 = generate_anal_pattern("anal-p3-meet-anal")
+    assert clip_is_anal_insert(p3["clips"][0]["prompt"], p3["clips"][0]["situation"]) is True
+    assert clip_is_anal_insert(p3["clips"][1]["prompt"], p3["clips"][1]["situation"]) is False
+    assert clip_is_anal_insert(p3["clips"][2]["prompt"], p3["clips"][2]["situation"]) is False
+
+
 def test_prepare_default_off_keeps_anal_stack(tmp_path):
     story = load_story("dishes-90s")
     planned = prepare_story_clip(story, 9, last_frame="x.png", stills_dir=tmp_path)
@@ -156,8 +191,33 @@ def test_prepare_thumb_in_butt_on_adds_helper(tmp_path):
     assert not str(tib.get("trigger") or "").strip()
     assert tib.get("filename") == TIB_FILE
     assert TIB_TRIGGER not in planned["prompt"]
+    oral_prep = prepare_story_clip(
+        story, 8, last_frame="x.png", stills_dir=tmp_path, thumb_in_butt=True
+    )
+    oral_ids = [r["id"] for r in oral_prep["stack"]]
+    assert oral_prep["situation"] == "oral"
+    assert TIB_LORA_ID in oral_ids
     oral_end = load_story("last-stop-40s")
     skip = prepare_story_clip(
         oral_end, 1, last_frame="x.png", stills_dir=tmp_path, thumb_in_butt=True
     )
     assert TIB_LORA_ID not in [r["id"] for r in skip["stack"]]
+
+
+def test_tib_civitai_alias_counts_as_present(tmp_path):
+    from h3_lora_studio import comfy_missing_loras, missing_stack_files, resolve_lora_relname
+
+    lora_dir = tmp_path / "loras"
+    lora_dir.mkdir()
+    alias = lora_dir / "MiniMax H3 - ThumbInButt.safetensors"
+    alias.write_bytes(b"x" * 6_000_000)
+    assert resolve_lora_relname(lora_dir, TIB_FILE) == "MiniMax H3 - ThumbInButt.safetensors"
+    stack = [{"id": TIB_LORA_ID, "filename": TIB_FILE}]
+    assert missing_stack_files(stack, lora_dir) == []
+    obj = {"LoraLoaderModelOnly": {"lora_name": ["MiniMax H3 - ThumbInButt.safetensors"]}}
+    assert comfy_missing_loras(stack, obj) == []
+
+
+def test_no_side_tib_bind_module():
+    bind = Path(__file__).resolve().parent / "h3_tib_bind.py"
+    assert not bind.is_file()

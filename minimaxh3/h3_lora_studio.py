@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260914-anal-14"
+STUDIO_REV = "h3-20260914-anal-15"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -939,9 +939,16 @@ TIB_ON_LABEL = "あり（挿入前後）"
 TIB_OFF_LABEL = "なし"
 TIB_LORA_ID = "thumbinbutt-h3"
 TIB_FILE = "H3_ThumbInButt.safetensors"
+TIB_FILE_ALIASES = (
+    TIB_FILE,
+    "MiniMax H3 - ThumbInButt.safetensors",
+    "MiniMax_H3_-_ThumbInButt.safetensors",
+)
 TIB_STRENGTH = 0.55
 TIB_TRIGGER = "thum1n8utt"
-TIB_MAX_HELPERS = 2
+# Default stacks stay helper 0-2. Optional ③ ThumbInButt may be a third helper
+# on oral / cunni / doggy prep clips that already have penis + synth.
+TIB_MAX_HELPERS = 3
 TIB_SKIP_SITUATIONS = frozenset(
     {
         "scat_act",
@@ -1054,6 +1061,21 @@ def strip_thumb_in_butt_trigger(prompt: str | None) -> str:
 
 def extra_tib_download_ids() -> list[str]:
     return [TIB_LORA_ID]
+
+
+def lora_filename_keys(filename: str, lora_id: str = "") -> set[str]:
+    """Basenames that count as the same LoRA file. TIB Civitai name aliases to TIB_FILE."""
+    name = Path(str(filename or "")).name.strip()
+    keys: set[str] = set()
+    if name:
+        keys.add(name.lower())
+    rid = str(lora_id or "").strip().lower()
+    tib = {a.lower() for a in TIB_FILE_ALIASES}
+    tib.add(TIB_FILE.lower())
+    tib.add(TIB_LORA_ID.lower())
+    if (name and name.lower() in tib) or rid == TIB_LORA_ID.lower():
+        keys |= tib
+    return {k for k in keys if k}
 
 
 def story_play_labels() -> list[str]:
@@ -2676,14 +2698,19 @@ def resolve_lora_relname(lora_dir: Path | str, filename: str) -> str | None:
     name = str(filename or "").strip()
     if not name:
         return None
+    keys = lora_filename_keys(name)
     direct = root / name
     if already_have_weight(direct):
         return name.replace("\\", "/")
-    target = Path(name).name.lower()
+    if TIB_FILE.lower() in keys:
+        for alias in TIB_FILE_ALIASES:
+            alt = root / alias
+            if already_have_weight(alt):
+                return alias.replace("\\", "/")
     if not root.is_dir():
         return None
     for hit in root.rglob("*.safetensors"):
-        if hit.name.lower() == target and already_have_weight(hit):
+        if hit.name.lower() in keys and already_have_weight(hit):
             return str(hit.relative_to(root)).replace("\\", "/")
     return None
 
@@ -2724,7 +2751,8 @@ def comfy_missing_loras(stack: list[dict[str, Any]], obj: dict[str, Any] | None)
     missing: list[str] = []
     for item in stack:
         name = Path(str(item.get("filename") or "")).name
-        if name and name.lower() not in known:
+        keys = lora_filename_keys(name, str(item.get("id") or ""))
+        if name and not (keys & known):
             missing.append(name)
     return missing
 
@@ -4249,18 +4277,28 @@ def lock_anal_hole(
 
 
 def clip_is_anal_insert(prompt: str, situation: str = "") -> bool:
-    """True for the clip that starts anal entry. PACO / vaginal riding is not this."""
+    """True for the clip that starts anal entry. PACO / creampie / already-in is not this."""
     raw = str(prompt or "")
-    if PACO_MARK in raw or "Already in. Piston" in raw:
+    if not raw:
+        return False
+    if PACO_MARK in raw or has_paco(raw) or "Already in. Piston" in raw:
         return False
     sit = str(situation or "").strip()
-    if sit in SEX_ANAL_SITUATIONS:
-        if "INSERTION ON CAMERA" in raw:
+    marked = "INSERTION ON CAMERA" in raw
+    if not marked and re.search(r"Show the entry", raw, re.I):
+        marked = not re.search(r"do not show the entry|don't show the entry", raw, re.I)
+    if marked:
+        if sit in SEX_ANAL_SITUATIONS:
             return True
-        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I)) and "Already in" not in raw
-    return "INSERTION ON CAMERA" in raw and bool(
-        re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I)
-    )
+        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I))
+    # Creampie JSON says "ejaculates INTO the ANUS" — that is climax, not entry.
+    if _ANAL_CREAMPIE_CUE_RE.search(raw):
+        return False
+    if re.search(r"already in|already inside|still already in", raw, re.I):
+        return False
+    if sit in SEX_ANAL_SITUATIONS:
+        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I))
+    return False
 
 
 def _first_paco_index(clips: list[dict[str, Any]]) -> int | None:
@@ -4372,6 +4410,8 @@ def lock_anal_prep(
     """Prep beat: both settle the accepting pose, tip a hand's width, NOT in. No entry yet."""
     raw = str(text or "")
     if not raw or PREP_MARK in raw:
+        return raw
+    if has_paco(raw):
         return raw
     if not same_clip_insert:
         same_clip_insert = TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw
