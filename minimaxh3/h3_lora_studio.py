@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260914-anal-15"
+STUDIO_REV = "h3-20260914-anal-16"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -4070,6 +4070,26 @@ ANAL_PREP_LINE = (
     "No hard cut. Do not start insertion."
 )
 PREP_MARK = "ANAL PREP:"
+ORAL_FROM_INSERT_SITS = frozenset(
+    {"oral", "oral_creampie", "futa_blowjob", "cunnilingus_futa"}
+)
+I2V_FROM_ORAL_INSERT_LINE = (
+    "I2V FROM ORAL: Picture 1 may be a mouth crop. Do not keep that camera. "
+    "PULL BACK or ORBIT off the mouth to this clip's anal joining-point angle. "
+    "Same people, same place, same lighting. Natural motion into ANAL PREP then INSERTION ON CAMERA. "
+    "Not a continued blowjob. Not a mouth crop at the end."
+)
+SAME_CLIP_INSERT_LINE = (
+    "TIMELINE: 0.0-3.0s unique quoted speech, one time only, conversational pace. "
+    "The written kiss or quoted lines only (mouths visible only while speaking). "
+    "Do not repeat. Do not restart. Do not stretch the words to fill time. "
+    "3.0-6.0s ANAL PREP: both settle the accepting pose for this clip, "
+    "giver hips aligned, hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
+    "PULL BACK or ORBIT off the face/mouth crop so both bodies and the gap are readable. "
+    "6.0-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+    "Close on the joining point. No climax. Mouths stay closed except the act. "
+    "No more quoted speech. No replay. Do not freeze."
+)
 ANAL_HOLE_IDLE_LINE = (
     "ANAL HOLE LOCK: Unused pussy stays shut, not spread, not gaping, not entered. "
     "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
@@ -4236,11 +4256,13 @@ def lock_anal_hole(
     *,
     situation: str = "",
     prev_situation: str | None = None,
+    next_prompt: str | None = None,
 ) -> str:
     """Anal clips: penis in anus only. Unused pussy closed. Hole order follows the pose.
 
     Rear: upper hole is anus. Missionary / M-spread: lower hole is anus.
     After the penis leaves, WHITE goo leaks from the open anus, never the pussy.
+    Kiss/talk-then-insert clips often omit the pose; inherit the view from the next PACO.
     """
     raw = str(text or "")
     if not raw:
@@ -4262,6 +4284,8 @@ def lock_anal_hole(
         out = _inject_before_soundscape(out, ANAL_ANATOMY_LINE)
     if is_anal_act:
         view = anal_anatomy_view(out)
+        if not view:
+            view = anal_anatomy_view(str(next_prompt or ""))
         if view == "rear" and "REAR ANAL LOCK:" not in out:
             out = _inject_before_soundscape(out, ANAL_REAR_LOCK_LINE)
         elif view == "front" and "FRONT ANAL LOCK:" not in out:
@@ -4418,6 +4442,39 @@ def lock_anal_prep(
     if same_clip_insert or next_is_insert:
         return _inject_before_soundscape(raw, ANAL_PREP_LINE)
     return raw
+
+
+def lock_i2v_from_oral_insert(text: str) -> str:
+    """Last-frame I2V after a mouth crop must orbit to the anal joining point."""
+    raw = str(text or "")
+    if not raw or I2V_FROM_ORAL_INSERT_LINE in raw:
+        return raw
+    return _inject_before_soundscape(raw, I2V_FROM_ORAL_INSERT_LINE)
+
+
+def same_clip_insert_timeline(duration_s: float = 10.0) -> str:
+    """Kiss/talk + PREP + entry in one 10s take: 0-3 / 3-6 / 6-10."""
+    try:
+        dur = float(duration_s or 10.0)
+    except (TypeError, ValueError):
+        dur = 10.0
+    if dur <= 0:
+        dur = 10.0
+    if abs(dur - 10.0) < 0.01:
+        return SAME_CLIP_INSERT_LINE
+    speak_end = min(3.0, max(1.0, dur * 0.3))
+    prep_end = min(max(speak_end + 1.5, dur * 0.6), max(speak_end + 0.5, dur - 1.0))
+    return (
+        f"TIMELINE: 0.0-{speak_end:.1f}s unique quoted speech, one time only, conversational pace. "
+        "The written kiss or quoted lines only (mouths visible only while speaking). "
+        "Do not repeat. Do not restart. Do not stretch the words to fill time. "
+        f"{speak_end:.1f}-{prep_end:.1f}s ANAL PREP: both settle the accepting pose for this clip, "
+        "giver hips aligned, hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
+        "PULL BACK or ORBIT off the face/mouth crop so both bodies and the gap are readable. "
+        f"{prep_end:.1f}-{dur:.1f}s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+        "Close on the joining point. No climax. Mouths stay closed except the act. "
+        "No more quoted speech. No replay. Do not freeze."
+    )
 
 
 def lock_futa_shaft(text: str, *, force: bool = False) -> str:
@@ -5413,13 +5470,12 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
         )
     if TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw:
         return (
-            "After the last unique quoted line: kiss or fondle if written, then ANAL PREP "
-            "(both settle the accepting pose, giver hips aligned, hands on the waist, "
-            "20cm tip a hand's width from the anus, NOT in; PULL BACK or ORBIT off the mouth crop "
-            "so both bodies and the gap are readable), then last seconds "
-            "INSERTION ON CAMERA into the anus to the BASE. Both wrecked-ecstatic, "
-            "loud moans, a little drool. No climax. Mouths stay closed except the act. "
-            "No more quoted speech. No replay. Do not freeze."
+            "0-3s written kiss or lines, 3-6s ANAL PREP (accepting pose, giver hips aligned, "
+            "hands on the waist, 20cm tip a hand's width from the anus, NOT in; "
+            "PULL BACK or ORBIT off the mouth crop so both bodies and the gap are readable), "
+            "6-10s INSERTION ON CAMERA into the anus to the BASE, close on the joining point. "
+            "Both wrecked-ecstatic, loud moans, a little drool. No climax. "
+            "Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze."
         )
     if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw:
         return (
@@ -5454,6 +5510,8 @@ def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str 
         dur = 10.0
     sit = str(situation or "").strip()
     lines = unique_spoken_lines(text)
+    if talks_then_insert(text) and AFTER_ACT_TALK_MARK not in text:
+        return same_clip_insert_timeline(dur)
     if PREP_MARK in text and "INSERTION ON CAMERA" not in text and not lines:
         prep_start = max(dur - 4.0, dur * 0.6)
         return (
@@ -7107,8 +7165,9 @@ def generate_anal_pattern(
                 "Start of anal. Nothing has come out yet."
             ),
             who=(
-                "Aya = SPEAKS first. Then a short wet tongue kiss, then RECEIVER. Mini breasts. NO penis.\n"
-                "Rei = answers. Then the kiss, then GIVER. Erect 20cm."
+                "Aya = SPEAKS first. Then a short wet tongue kiss, then takes the accepting pose: "
+                f"{spec['accepting']}. RECEIVER. Mini breasts. NO penis.\n"
+                f"Rei = answers. Then the kiss, then {spec['give']}"
             ),
             lock=(
                 f"Clip 1 of 4. {TALK_THEN_INSERT_MARK} Immediate. Two short lines, a brief wet tongue kiss, "
@@ -7742,12 +7801,13 @@ def prepare_story_clip(
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_anal_creampie(raw_prompt, situation=situation)
+    nxt = clips[index + 1] if index + 1 < len(clips) else {}
     raw_prompt = lock_anal_hole(
         raw_prompt,
         situation=str(clip.get("situation") or situation),
         prev_situation=prev_situation,
+        next_prompt=str(nxt.get("prompt") or ""),
     )
-    nxt = clips[index + 1] if index + 1 < len(clips) else {}
     next_is_insert = clip_is_anal_insert(
         str(nxt.get("prompt") or ""), str(nxt.get("situation") or "")
     )
@@ -7797,6 +7857,8 @@ def prepare_story_clip(
             prompt = rewrite_final_scene_i2v_prompt(raw_prompt)
         else:
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
+        if this_is_insert and str(prev_situation or "") in ORAL_FROM_INSERT_SITS:
+            prompt = lock_i2v_from_oral_insert(prompt)
         first_kind = "last_frame"
     elif first_kind_cast:
         mode = "r2v"

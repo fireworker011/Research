@@ -576,7 +576,7 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260914-anal-15"
+    assert STUDIO_REV == "h3-20260914-anal-16"
     assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
@@ -681,7 +681,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260914-anal-15"' in src
+    assert 'FETCH_REV = "h3-20260914-anal-16"' in src
     assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
@@ -753,7 +753,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260914-anal-15" in blob
+    assert "h3-20260914-anal-16" in blob
+    assert "h3-20260914-anal-15" not in blob
     assert "h3-20260914-anal-14" not in blob
     assert "prompts/h3-body-lock.md" in src
     assert "帽子（ハット）のみ" in blob
@@ -6962,6 +6963,114 @@ def test_lock_anal_prep_on_entry_not_paco_or_walk(tmp_path):
     assert missing >= 8
 
 
+def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
+    from h3_lora_studio import (
+        ANAL_FRONT_LOCK_LINE,
+        ANAL_REAR_LOCK_LINE,
+        CHAIN_CONTINUE_LINE,
+        I2V_FROM_ORAL_INSERT_LINE,
+        SAME_CLIP_INSERT_LINE,
+        anal_anatomy_view,
+        generate_anal_pattern,
+        load_story,
+        lock_anal_hole,
+        prepare_story_clip,
+        speech_timeline_line,
+    )
+
+    inherit_rear = lock_anal_hole(
+        "INSERTION ON CAMERA into the anus. Short kiss first.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Already having sex. Standing anal from behind. Already in.\n",
+    )
+    assert ANAL_REAR_LOCK_LINE in inherit_rear
+    inherit_front = lock_anal_hole(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Sitting on the lap facing the giver. Already in.\n",
+    )
+    assert ANAL_FRONT_LOCK_LINE in inherit_front
+    keep_rear = lock_anal_hole(
+        "STANDING anal from behind. INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Sitting on the lap facing the giver. Already in.\n",
+    )
+    assert ANAL_REAR_LOCK_LINE in keep_rear
+    assert ANAL_FRONT_LOCK_LINE not in keep_rear
+
+    expect = {
+        "rooftop-100s": (3, "rear", "standing anal from behind"),
+        "sunday-120s": (4, "rear", "reverse cowgirl"),
+        "engawa-120s": (3, "rear", "reverse sitting"),
+        "laundromat-50s": (1, "front", "sitting on the lap facing"),
+        "fireworks-50s": (1, "rear", "STANDING anal from behind"),
+    }
+    for sid, (idx, view, pose) in expect.items():
+        story = load_story(sid)
+        raw = story["clips"][idx]["prompt"]
+        assert "Kiss only" not in raw, sid
+        assert "No insertion yet" not in raw, sid
+        assert pose.lower() in raw.lower(), sid
+        assert anal_anatomy_view(raw) == view, (sid, anal_anatomy_view(raw))
+        planned = prepare_story_clip(
+            story,
+            idx,
+            last_frame="h3_chain_0.png",
+            stills_dir=tmp_path,
+            force_t2v=True,
+        )
+        prompt = planned["prompt"]
+        assert SAME_CLIP_INSERT_LINE in prompt, sid
+        assert "0.0-3.0s" in prompt and "3.0-6.0s" in prompt and "6.0-10.0s" in prompt, sid
+        if view == "rear":
+            assert ANAL_REAR_LOCK_LINE in prompt, sid
+            assert ANAL_FRONT_LOCK_LINE not in prompt, sid
+        else:
+            assert ANAL_FRONT_LOCK_LINE in prompt, sid
+            assert ANAL_REAR_LOCK_LINE not in prompt, sid
+        assert "I2V FROM ORAL:" not in prompt, sid
+
+    engawa_paco = load_story("engawa-120s")["clips"][4]["prompt"]
+    assert "hairless pussy on the engawa" not in engawa_paco
+    assert "already inside Aya's anus" in engawa_paco
+    assert "outer lips around it" not in engawa_paco
+
+    p3 = generate_anal_pattern("anal-p3-meet-anal", pose="standing")
+    who0 = p3["clips"][0]["prompt"]
+    assert "accepting standing pose" in who0
+    assert "STANDING behind" in who0 or "from behind" in who0.lower()
+    assert anal_anatomy_view(who0) == "rear"
+    miss = generate_anal_pattern("anal-p3-meet-anal", pose="missionary")
+    assert anal_anatomy_view(miss["clips"][0]["prompt"]) == "front"
+
+    talk = (
+        "TALK THEN INSERT:\nAfter the lines: INSERTION ON CAMERA.\n"
+        "\noverall_soundscape:\nWet.\n"
+    )
+    assert speech_timeline_line(talk, duration_s=10, situation="futa_anal") == SAME_CLIP_INSERT_LINE
+
+    sales = load_story("sales-visit-60s")
+    insert_i = next(i for i, c in enumerate(sales["clips"]) if "INSERTION ON CAMERA" in c["prompt"])
+    assert sales["clips"][insert_i - 1]["situation"] == "oral"
+    from_oral = prepare_story_clip(
+        sales,
+        insert_i,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="oral",
+    )
+    assert CHAIN_CONTINUE_LINE in from_oral["prompt"]
+    assert I2V_FROM_ORAL_INSERT_LINE in from_oral["prompt"]
+    dedicated = prepare_story_clip(
+        load_story("rooftop-100s"),
+        3,
+        stills_dir=tmp_path,
+        force_t2v=True,
+        prev_situation="oral",
+    )
+    assert I2V_FROM_ORAL_INSERT_LINE not in dedicated["prompt"]
+
+
 def test_semen_share_plan_hold_then_kiss(tmp_path):
     from h3_lora_studio import (
         SEMEN_SHARE_SKIP,
@@ -7418,7 +7527,8 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260914-anal-15" in cell2
+    assert "h3-20260914-anal-16" in cell2
+    assert "h3-20260914-anal-15" not in cell2
     assert "h3-20260914-anal-14" not in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
@@ -7475,6 +7585,9 @@ def test_notebook_story_play_flow():
     assert "def lock_anal_creampie" in helper_src
     assert "def lock_anal_hole" in helper_src
     assert "def anal_anatomy_view" in helper_src
+    assert "def lock_i2v_from_oral_insert" in helper_src
+    assert "I2V FROM ORAL:" in helper_src
+    assert "SAME_CLIP_INSERT_LINE" in helper_src
     assert "FRONT ANAL LOCK:" in helper_src
     assert "ANAL ANATOMY:" in helper_src
     assert "ANAL HOLE LOCK:" in helper_src
