@@ -4912,7 +4912,7 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤ受け＋医師竿。9本＝90秒。16:9。こんにちは→椅子座りジュボ→起立キスなし→ゴホウビ＋yellow urine→おしっこあったかい→30度四つん這い接触→挿入→パコ→中出し。"""
+    """医院ケンシン: アヤ受け＋医師竿。9本＝90秒。16:9。こんにちは→椅子座りジュボ→10秒ずっとジュボ→口を外すゴホウビ小便→まみれベロチュー→30度四つん這い接触→挿入→パコ→中出し。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
         SITUATION_HELP,
@@ -5080,11 +5080,15 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "ベロチュー" not in c2p
     assert "tongue kiss" not in c2p.lower()
     assert "does not kiss this clip" in c2p
+    assert "Mouth NEVER off" in c2p or "mouth NEVER off" in c2p
+    assert "STANDS UP" not in c2p
     assert "yellow urine" in story["clips"][2]["prompt"].lower()
     assert "ありがとう！ゴホウビです" in story["clips"][2]["prompt"]
     assert "おしっこ、あったかーい！ありがとー！" in story["clips"][3]["prompt"]
+    assert "French" in story["clips"][3]["prompt"] or "ベロチュー" in story["clips"][3]["prompt"]
     for wet in story["clips"][4:9]:
         assert "yellow urine" in wet["prompt"].lower(), wet["id"]
+        assert "Not washed off" in wet["prompt"] or "not washed off" in wet["prompt"]
     assert re.search(r"\brim\b", raw_all, re.I) is None
     assert "縁" not in raw_all
     assert "the outer ring of the anus entrance" in story["clips"][4]["prompt"]
@@ -5102,21 +5106,27 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "opening of one continuous long take" in p0["prompt"]
     assert "EROTIC WAIT:" not in p0["prompt"]
     pull = story["clips"][1]["prompt"]
-    assert "STANDS UP" in pull
+    assert "STANDS UP" not in pull
     assert "saliva" in pull.lower()
+    assert "jupo" in pull.lower()
     hug = story["clips"][2]["prompt"]
     assert "yellow urine" in hug.lower()
     assert "ゴホウビ" in hug
+    assert "mouth OFF" in hug or "mouth off" in hug.lower()
     pee_talk = story["clips"][3]["prompt"]
     assert "おしっこ、あったかーい！ありがとー！" in pee_talk
     assert "ダイジョウブですよー" not in pee_talk
+    assert "French" in pee_talk
     help_ja = SITUATION_HELP["clinic-75s"]
     assert "SEATED" in help_ja and "pipe chair" in help_ja
     assert "30 degrees" in help_ja and "SAME DIRECTION" in help_ja
     assert "outer ring of the anus entrance" in help_ja
+    assert "ずっとジュボ" in help_ja or "口を外すな" in help_ja
     prep = story["clips"][4]["prompt"]
     assert "all fours" in prep.lower() or "on all fours" in prep.lower()
     assert "BOTH HANDS" in prep and "BOTH KNEES" in prep
+    assert "LOOKBACK" in prep or "lookback" in prep.lower()
+    assert "own ass" in prep.lower()
     assert "CONTACT" in prep or "contact" in prep.lower()
     assert "NOT in" in prep
     assert "ANAL PREP" in prep
@@ -6428,8 +6438,9 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "EROTIC WAIT:" in sorry["prompt"]
     assert "おしっこ、あったかーい！ありがとー！" in sorry["prompt"]
     kiss = prepare_story_clip(clinic, 1, last_frame="x.png", stills_dir=tmp_path)
-    assert "STANDS UP" in kiss["prompt"]
+    assert "STANDS UP" not in kiss["prompt"]
     assert "tongue kiss" not in kiss["prompt"].lower()
+    assert "jupo" in kiss["prompt"].lower()
     opening = prepare_story_clip(clinic, 0, stills_dir=tmp_path)
     assert "EROTIC WAIT:" not in opening["prompt"]
     assert "PLEASURE VOICE:" not in opening["prompt"]

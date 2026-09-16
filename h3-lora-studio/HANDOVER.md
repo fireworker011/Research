@@ -23,7 +23,7 @@ clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f1
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。
 
-直近: clinic-75s は 9本＝90秒 16:9。アヤ受け＋医師竿。c1 椅子座りジュボ。c2 起立・kissなし。c3 ありがとう！ゴホウビです＋yellow urine。c4 おしっこ、あったかーい！ありがとー！。c5-c9 yellow urine が残る。c5-c8 は 30 degrees・SAME DIRECTION・NO KISS。語は `outer ring of the anus entrance`。JPGをリポジトリに入れるな。
+直近: clinic-75s は 9本＝90秒 16:9。アヤ受け＋医師竿。c1 椅子座りジュボ。c2 10秒ずっとジュボ（口を外すな・立つな・キスなし）。c3 口を外す・ありがとう！ゴホウビです→黄色い小便を顔へ。c4 おしっこ、あったかーい！ありがとー！→濃厚ベロチュー。c5-c9 黄色い小便まみれを落とさない。c5 lookback＋自分で尻を開く。c5-c8 は 30 degrees・SAME DIRECTION・行為中 NO KISS。語は `outer ring of the anus entrance`。JPGをリポジトリに入れるな。
 ```
 
 ## いまの枝
@@ -157,14 +157,14 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ビート:
 - 0-10 c1 SEATED on pipe chair。しゃがみジュボ。PULLED BACK 16:9。ジュボ中も医師の顔がフレームに残る。lip-sync なので `Full bodies from head to feet` を書くな
-- 10-20 c2 ジュボやめ+涎。Aya STANDS UP。kissなし
-- 20-30 c3 ゴホウビ＋yellow urine（亀頭先。Ayaが飲む）
-- 30-40 c4 おしっこ、あったかーい！ありがとー！
-- 40-50 c5 向き転換→両手床→両膝→尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触。未挿入。yellow urine が残る
-- 50-60 c6 同じ姿勢のままその輪から根元まで挿入。yellow urine が残る
-- 60-70 c7 パコパコ。yellow urine が残る
-- 70-80 c8 アナル中出し→抜いて垂れ。yellow urine が残る
-- 80-90 c9 ゲンキ／スッキリ。yellow urine が残る
+- 10-20 c2 10秒ずっとジュボ。竿は涎でテカる。口の端から涎。医師メチャクチャ気持ちよさそう。口を外すな。立つな。キスするな。無言
+- 20-30 c3 口を外す。医師笑顔 `ありがとう！ゴホウビです` → 先っぽから黄色い小便をアヤの顔へ。目を閉じ口を開け笑顔で顔と口で受ける。白禁止。精液禁止。カメラは医師の顔＋小便の線＋アヤの顔
+- 30-40 c4 小便終わり。顔・髪・体が黄色い小便まみれ。`おしっこ、あったかーい！ありがとー！` → 濃厚ベロチュー
+- 40-50 c5 向き転換→LOOKBACK→両手床→両膝→自分で尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触。未挿入。まみれを落とすな
+- 50-60 c6 同じ姿勢のままその輪から根元まで挿入。まみれを落とすな
+- 60-70 c7 パコパコ。行為中キスなし。まみれを落とすな
+- 70-80 c8 アナル中出し（白）→抜いて垂れ。まみれを落とすな
+- 80-90 c9 ゲンキ／スッキリ。まだまみれ
 
 c5–c8: `30 degrees` + `SAME DIRECTION` + `NO KISS` + `PULLED BACK`。語 `rim` / `縁` はファイル全体でゼロ。使え: `the outer ring of the anus entrance`。
 
@@ -188,4 +188,4 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 
 ## このチャットの最後の返答（ユーザー向け）
 
-clinic-75s は 9本90秒 16:9。c2 kissなし。c3 ゴホウビ＋yellow urine。c4 おしっこ、あったかーい！ありがとー！。c5-c9 yellow urine が残る。JPGをリポジトリに入れるな。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。
+clinic-75s は 9本90秒 16:9。c2 ずっとジュボ。c3 ゴホウビ小便を顔へ。c4 まみれベロチュー。c5-c9 まみれ残し。JPGをリポジトリに入れるな。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。
