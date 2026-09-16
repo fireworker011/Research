@@ -4912,9 +4912,10 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤ受け＋医師竿。9本＝90秒。16:9。こんにちは→即しゃがみジュボ→起立ベロチュー→四つん這い接触→挿入→パコ→中出し。騎乗なし。女医は仰向けにしない。"""
+    """医院ケンシン: アヤ受け＋医師竿。9本＝90秒。16:9。こんにちは→椅子座りジュボ（顔残し）→起立ベロチュー→対面立ちごめん／ダイジョウブ→30度四つん這い接触→挿入→パコ→中出し。騎乗なし。女医は仰向けにしない。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
+        SITUATION_HELP,
         _KANJI_RE,
         apply_story_play,
         clip_cast_people,
@@ -5062,6 +5063,28 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "こんにちは" in c1
     assert "RIGHT" in c1
     assert "jupo" in c1.lower()
+    assert "SEATED" in c1
+    assert "pipe chair" in c1
+    assert "PULLED BACK" in c1
+    assert "face stays in frame" in c1.lower() or "FACE STILL IN FRAME" in c1
+    assert "Full bodies from head to feet" not in c1
+    sorry = story["clips"][3]["prompt"]
+    assert "FACE TO FACE" in sorry
+    assert "Hands NEVER on the floor" in sorry or "Hands do not go to the floor" in sorry
+    assert "does NOT turn her back" in sorry or "does not turn her back" in sorry
+    assert "Full bodies from head to feet" not in sorry
+    last_prompt = story["clips"][8]["prompt"]
+    assert "Full bodies from head to feet" not in last_prompt
+    assert re.search(r"\brim\b", raw_all, re.I) is None
+    assert "縁" not in raw_all
+    assert "the outer ring of the anus entrance" in story["clips"][4]["prompt"]
+    assert "the outer ring of the anus entrance" in story["clips"][5]["prompt"]
+    for act in story["clips"][4:8]:
+        ap = act["prompt"]
+        assert "30 degrees" in ap, act["id"]
+        assert "SAME DIRECTION" in ap, act["id"]
+        assert "NO KISS" in ap, act["id"]
+        assert "PULLED BACK" in ap, act["id"]
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     assert "START CAST:" in p0["prompt"]
@@ -5076,13 +5099,19 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     sorry = story["clips"][3]["prompt"]
     assert "ごめんなさい" in sorry
     assert "ダイジョウブですよー" in sorry
+    help_ja = SITUATION_HELP["clinic-75s"]
+    assert "SEATED" in help_ja and "pipe chair" in help_ja
+    assert "30 degrees" in help_ja and "SAME DIRECTION" in help_ja
+    assert "outer ring of the anus entrance" in help_ja
     prep = story["clips"][4]["prompt"]
     assert "all fours" in prep.lower() or "on all fours" in prep.lower()
+    assert "BOTH HANDS" in prep and "BOTH KNEES" in prep
     assert "CONTACT" in prep or "contact" in prep.lower()
     assert "NOT in" in prep
     assert "ANAL PREP" in prep
     anal = story["clips"][5]["prompt"]
     assert "INSERTION ON CAMERA" in anal
+    assert "SAME pose" in anal
     assert "CUMOUF" not in anal
     assert "No cowgirl LoRA" in anal or "NOT cowgirl" in anal
     anal_p = planned_by_i[5]
