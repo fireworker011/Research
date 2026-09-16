@@ -14,15 +14,16 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 - `h3-lora-studio/HANDOVER.md`
 - `h3-lora-studio/README.md` の「アナルセックスの3パターン」
 
-作業ブランチ: `cursor/h3-anal-stories-f112`
-ベース: `cursor/h3-cabin-flow-f112`
-PR: https://github.com/fireworker011/Research/pull/138 （draft）
+作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
+ベース: `cursor/h3-cabin-flow-f112`（anal-17 = `41867d0` を残す）
+HEAD: `d2ea768`
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
+clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f112/h3-lora-studio/stories/clinic-75s.json
 設定の版: `h3-20260914-anal-18`
 
-Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
+Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。
 
-直近: Drive に `anal-any-h3.safetensors` があれば③がアナル行為に差す（竿＋穴はヘルパー）。無ければ竿のまま。挿入本は 0-1.5秒キス／台詞、残りは結合部。つなぐ I2V は前カメラを捨てて結合部へ。PREP は直前の本。GitHub から開き直す。
+直近: clinic-75s は 9本＝90秒 16:9。アヤ受け＋医師竿。c1 は pipe chair に SEATED ジュボ（医師の顔はフレームに残る）。c5-c8 は 30 degrees・SAME DIRECTION・NO KISS。語は `outer ring of the anus entrance`（rim / 縁 禁止）。Drive に `anal-any-h3.safetensors` があれば③がアナル行為に差す。挿入本は 0-1.5秒キス／台詞、残りは結合部。物語チェーンの各本は10秒。ワンショットだけ最大15秒。GitHub バッジから開き直す。
 ```
 
 ## いまの枝
@@ -33,6 +34,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
 | 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-18` |
+| HEAD | `d2ea768` clinic 16:9引き + 椅子座りジュボ + 30度四つん這い |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -140,13 +142,49 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 デフォルト以外の場所: ③「脱糞（どの構図）」＋体位＋文章欄。物語を選ぶな。山小屋／ニクカベ肥溜めは塗れパック。
 
+## clinic-75s（正。スタブ禁止）
+
+ファイル: `h3-lora-studio/stories/clinic-75s.json`。HEAD blob 約 35250 bytes。9 clips / duration_s 90 / canvas 1024x576 16:9。
+
+キャスト: Doctor = 竿20cm。Aya = 口と穴・竿なし。Rei なし。騎乗なし。女医は仰向けにしない。download に cinema-dy なし。
+
+台詞（変えるな）:
+- c1 `こんにちは`
+- c4 `ごめんなさい` / `ダイジョウブですよー`
+- c9 `ゲンキになりましたか` / `はい、スッキリしました`
+- c2 c3 c5–c8 は無言
+
+ビート:
+- 0-10 c1 SEATED on pipe chair。しゃがみジュボ。PULLED BACK 16:9。ジュボ中も医師の顔がフレームに残る。lip-sync なので `Full bodies from head to feet` を書くな
+- 10-20 c2 ジュボやめ+涎。Aya STANDS UP。起立ベロチュー
+- 20-30 c3 ベロチュー抱擁コシコシ
+- 30-40 c4 対面立ちのままごめん／ダイジョウブ。床に手をつかない。背を向けない
+- 40-50 c5 向き転換→両手床→両膝→尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触。未挿入
+- 50-60 c6 同じ姿勢のままその輪から根元まで挿入
+- 60-70 c7 パコパコ
+- 70-80 c8 アナル中出し→抜いて垂れ
+- 80-90 c9 ゲンキ／スッキリ
+
+c5–c8: `30 degrees` + `SAME DIRECTION` + `NO KISS` + `PULLED BACK`。語 `rim` / `縁` はファイル全体でゼロ。使え: `the outer ring of the anus entrance`。
+
+origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。全文を残して force-with-lease。artifacts の anal-14 helper を origin にコピーするな。
+
+## checkup-100s
+
+キャストは変えるな。レイ竿20cm + 医師竿なし・玄関。canvas と CAMERA だけ 16:9。アヤ受けに戻すな。
+
+## 秒数
+
+物語チェーンの各本は10秒。ワンショット生成だけ最大15秒。チェーンを15秒にするな。helper の `FL2VA_MAX_CLIP_S` はワンショット経路だけ15。`STORY_CLIP_S` は10。
+
 ## 未着手・次に来そうなこと
 
 - 既存の帰宅などを、③の三択で上書きする（今は焼き込み固定。三択は汎用40秒）
 - Drive 上の古いノートがまだ開かれている（コードでは直せない。リンクから開き直す）
 - 休日／縁側の2回戦を他の話にも足す、と頼まれたら例外が増えるので安易に広げない
-- PR は draft のまま。ユーザーがレビューしてと言うまで ready にしない
+- PR #138 は draft のまま。マージするな。ユーザーがレビューしてと言うまで ready にしない
+- Grok dump（`GROK_PROMPTS.md` / `G_h3_prompts.txt`）は clinic の椅子座り・30度のあとにまだ再生成していない。頼まれたら `python3 h3-lora-studio/scripts/dump_grok_prompts.py --write`
 
 ## このチャットの最後の返答（ユーザー向け）
 
-屋上／休日／縁側／ランドリー／花火の挿入本は次のパコと同じ体位でロック。同じ10秒は 0-1.5キス／台詞、1.5-10 INSERTION（結合部寄り）。PREP は直前の本。つなぐ I2V は前カメラを捨てて結合部へ。Drive に anal-any-h3 があれば行為スロットへ。アナルの位置は体位で変わる（後背は上、正常位・M字は下）。③はシーン／物語／再生／ThumbInButt の4欄（TIB 既定オフ）。GitHub の Colab から開き直す。版 `h3-20260914-anal-18`。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。root の `minimax_h3_lora_studio.ipynb` は Colab バッジ先。PLACEHOLDER にするな。ノートは `python colab/_write_lora_studio_nb.py` で3箇所同時に書く。
+clinic-75s は 9本90秒 16:9。c1 椅子座りジュボ（顔残し）。c5-c8 は30度・同方向・キスなし。rim 禁止。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。Colab は GitHub バッジから開き直す。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。PLACEHOLDER にするな。ノートは `python colab/_write_lora_studio_nb.py` で3箇所同時に書く。
