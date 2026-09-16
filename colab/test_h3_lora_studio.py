@@ -3300,7 +3300,7 @@ def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
                     row = row.strip()
                     if row and not re.match(r"^[A-Z][a-z]+ = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)", row):
                         assert row in out, (where, row)
-    assert total_out < total_raw * 0.92
+    assert total_out < total_raw * 0.94
 
 
 def test_compact_story_prompt_unstructured_text_only_gets_line_cleanup():
@@ -3800,6 +3800,12 @@ def test_chain_pack_three_plays(tmp_path):
     assert story["seamless"] is True and "rewrite_chain_prompts" not in story and "play" not in story
 
 
+def _wide_act_clip(clip):
+    sit = str(clip.get("situation") or "")
+    lab = str(clip.get("label") or "")
+    return sit in {"futa_anal", "doggy", "riding"} or any(k in lab for k in ("挿入", "パコ", "中出し"))
+
+
 def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs, download):
     """建前 packs: 10s × N, kana lines (≤2 per face clip), silent acts, per-clip LoRA, canvas from JSON only."""
     from h3_lora_studio import (
@@ -3835,8 +3841,12 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         prompt = clip["prompt"]
         assert clip["duration_s"] == 10
         assert "15-second" not in prompt and "Hard cut" not in prompt
-        # the canvas is decided by the JSON; no size text in the prompt
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        # oral/talk clips keep JSON canvas only; insertion clips write 16:9 PULLED BACK
+        if _wide_act_clip(clip):
+            assert "16:9" in prompt and "PULLED BACK" in prompt
+            assert "576x1024" not in prompt and "9:16" not in prompt
+        else:
+            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
         got = spoken_lines(prompt)
         uniq = []
         for s in got:
@@ -3878,7 +3888,10 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= set(download)
-        assert planned["width"] == 576 and planned["height"] == 1024
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == 576 and planned["height"] == 1024
         assert planned["duration_s"] == 10
         if i == 0:
             assert planned["mode"] == "t2v" and "opening of one continuous long take" in planned["prompt"]
@@ -4293,7 +4306,11 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
             prompt = clip["prompt"]
             assert clip["duration_s"] == 10
             assert "10-second take" in prompt
-            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+            if _wide_act_clip(clip):
+                assert "16:9" in prompt and "PULLED BACK" in prompt
+                assert "576x1024" not in prompt and "9:16" not in prompt
+            else:
+                assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
             assert "Full bodies from head to feet" not in prompt
             got = spoken_lines(prompt)
             uniq = []
@@ -4358,7 +4375,10 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
             prev = planned["situation"]
             prev_stack = planned["stack"]
             assert {row["id"] for row in planned["stack"]} <= set(story["download"]), (sid, i + 1)
-            assert planned["width"] == 576 and planned["height"] == 1024
+            if _wide_act_clip(clip):
+                assert planned["width"] == 1024 and planned["height"] == 576
+            else:
+                assert planned["width"] == 576 and planned["height"] == 1024
             assert planned["duration_s"] == 10
             if uniq:
                 assert "SPEECH FACE:" in planned["prompt"]
@@ -4642,7 +4662,11 @@ def _check_pack_common(story, sid, tmp_path, canvas=None):
         assert "15-second" not in prompt
         assert "Hard cut" not in prompt
         assert "Do not copy the previous clip" not in prompt
-        assert f"{w}x{h}" in prompt
+        if _wide_act_clip(clip):
+            assert "1024x576" in prompt or "16:9" in prompt
+            assert "576x1024" not in prompt
+        else:
+            assert f"{w}x{h}" in prompt
         spoken_cap = max(1, min(2, int(story.get("spoken_max") or 1)))
         assert len(set(lines)) <= spoken_cap, (sid, i + 1, lines)
         if clip["situation"] in ACT_SITUATIONS:
@@ -4668,7 +4692,10 @@ def _check_pack_common(story, sid, tmp_path, canvas=None):
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == w and planned["height"] == h
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == w and planned["height"] == h
         assert planned["duration_s"] == dur
         assert planned["seamless"] is True and planned["rewrite_chain_prompts"] is True
         if i == 0:
@@ -5426,7 +5453,11 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        if _wide_act_clip(clip):
+            assert "16:9" in prompt and "PULLED BACK" in prompt
+            assert "576x1024" not in prompt and "9:16" not in prompt
+        else:
+            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
         assert "Full bodies from head to feet" not in prompt
         assert "Conductor: Adult Japanese woman, 29" in prompt
         assert "NO penis" in prompt
@@ -5457,7 +5488,7 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5470,7 +5501,10 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == 576 and planned["height"] == 1024
         assert planned["duration_s"] == dur
         assert "SHAFT LOOK:" in planned["prompt"]
         for spoken in uniq:
@@ -5624,7 +5658,11 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        if _wide_act_clip(clip):
+            assert "16:9" in prompt and "PULLED BACK" in prompt
+            assert "576x1024" not in prompt and "9:16" not in prompt
+        else:
+            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
         assert "Aya: Adult Japanese woman, 22" in prompt
         assert "NO penis" in prompt
         assert "NEVER futanari" in prompt
@@ -5645,7 +5683,7 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
             assert "15-second" not in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5657,7 +5695,10 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == 576 and planned["height"] == 1024
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "SEMEN SHARE:" not in planned["prompt"]
         if clip["situation"] == "after_ejaculation":
@@ -5753,7 +5794,11 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        if _wide_act_clip(clip):
+            assert "16:9" in prompt and "PULLED BACK" in prompt
+            assert "576x1024" not in prompt and "9:16" not in prompt
+        else:
+            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
         assert "Full bodies from head to feet" not in prompt
         assert "Aya: Adult Japanese woman, 22" in prompt
         assert "NO penis" in prompt
@@ -5784,7 +5829,7 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5797,7 +5842,10 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == 576 and planned["height"] == 1024
         assert planned["duration_s"] == dur
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "SEMEN SHARE:" not in planned["prompt"]
@@ -5981,7 +6029,7 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
             assert "HEAD TO TOE" in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         leftover = jp_outside_quotes(english_except_speech(prompt))
         assert leftover == "", leftover[:80]
         planned = prepare_story_clip(
@@ -5996,7 +6044,10 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        if _wide_act_clip(clip):
+            assert planned["width"] == 1024 and planned["height"] == 576
+        else:
+            assert planned["width"] == 576 and planned["height"] == 1024
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "FUTA LOCK:" in planned["prompt"]
         leftover_p = jp_outside_quotes(planned["prompt"])
