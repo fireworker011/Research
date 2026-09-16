@@ -49,7 +49,7 @@ try:
     )
 except ImportError:
     r2v_finalize_prompt = None
-    FL2VA_MAX_CLIP_S = 10.0
+    FL2VA_MAX_CLIP_S = 15.0
 
     def cap_duration_for_vram(
         duration_s: float,
@@ -88,7 +88,7 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260914-anal-17"
+STUDIO_REV = "h3-20260914-anal-18"
 STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
@@ -131,13 +131,12 @@ SITUATION_DOWNLOAD = {
     "masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
     "footjob": ["mystic-xxx-h3", "footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "remote_orgasm": ["mystic-xxx-h3", "remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_visible": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4", "cinema-dy"],
+    "futa_visible": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "futa_masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "cunnilingus_futa": ["mystic-xxx-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "lesbian-cunnilingus-h3",
@@ -147,7 +146,6 @@ SITUATION_DOWNLOAD = {
     "dishes-90s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -155,7 +153,6 @@ SITUATION_DOWNLOAD = {
     "commute-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -163,7 +160,6 @@ SITUATION_DOWNLOAD = {
     "lecture-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "hmmasturbation-h3",
@@ -173,14 +169,12 @@ SITUATION_DOWNLOAD = {
     "rooftop-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "okaeri-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -188,7 +182,6 @@ SITUATION_DOWNLOAD = {
     "bath-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -196,7 +189,6 @@ SITUATION_DOWNLOAD = {
     "dinner-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -204,7 +196,6 @@ SITUATION_DOWNLOAD = {
     "futon-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -212,7 +203,6 @@ SITUATION_DOWNLOAD = {
     "sunday-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -221,7 +211,6 @@ SITUATION_DOWNLOAD = {
     "engawa-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -230,7 +219,6 @@ SITUATION_DOWNLOAD = {
     "sales-visit-60s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -238,7 +226,6 @@ SITUATION_DOWNLOAD = {
     "checkup-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -246,7 +233,6 @@ SITUATION_DOWNLOAD = {
     "clinic-75s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -254,7 +240,6 @@ SITUATION_DOWNLOAD = {
     "last-stop-40s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
@@ -263,7 +248,6 @@ SITUATION_DOWNLOAD = {
     "last-train-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
@@ -272,7 +256,6 @@ SITUATION_DOWNLOAD = {
     "semen-bath-70s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
         "hmcumshot-v2",
@@ -280,7 +263,6 @@ SITUATION_DOWNLOAD = {
     "meat-wall-85s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -288,7 +270,6 @@ SITUATION_DOWNLOAD = {
     "meat-wall-cesspit-70s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -298,7 +279,6 @@ SITUATION_DOWNLOAD = {
     "cafe-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -306,99 +286,87 @@ SITUATION_DOWNLOAD = {
     "train-sales-80s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
     ],
-    "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "yoga-50s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "larry-v4",
     ],
-    "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
-    "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
+    "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "laundromat-50s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "larry-v4",
     ],
-    "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     "fireworks-50s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "larry-v4",
     ],
-    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
+    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
     # anal = futa_anal. gas/tunnel/hachiko stay oral_creampie.
     "manhole-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "roof-ac-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "larry-v4",
     ],
     "tetrapod-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "locker-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "crossing-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "lookout-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
     "factory-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "synth-pussy-h3",
         "larry-v4",
     ],
-    "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "riverbank-30s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
     ],
-    "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     "anal-p1-oral": [
         "mystic-xxx-h3",
         "penis-lora-h3",
@@ -406,7 +374,6 @@ SITUATION_DOWNLOAD = {
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
-        "cinema-dy",
     ],
     "anal-p2-bj-anal": [
         "mystic-xxx-h3",
@@ -414,14 +381,12 @@ SITUATION_DOWNLOAD = {
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
-        "cinema-dy",
     ],
     "anal-p3-meet-anal": [
         "mystic-xxx-h3",
         "penis-lora-h3",
         "synth-pussy-h3",
         "larry-v4",
-        "cinema-dy",
     ],
     "shorts-immoral": [
         "blowjob-h3",
@@ -696,8 +661,8 @@ SITUATION_HELP = {
     "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。ソファは後輩騎乗位のアナル中出し（AIOなし。アナル本では抜かない）。ハードカットで床ジュボ→口内 CUMOUF＋口移し（2回戦）。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。アナル本に騎乗LoRAなし。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
     "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。縁側は後背位座位のアナル中出し（AIOなし。アナル本では抜かない）。ハードカットでアヤがマドカを根元まで→口内 CUMOUF＋口移し。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。レイは入れない。アナル本に騎乗LoRAなし。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
     "sales-visit-60s": "訪問販売。ミルク売り。帽子（ハット）のみ。ミルクは持たない。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。ハンバイにきましたのあとアヤが笑顔で20cmを軽く扱きながらあ、おっきいオチンチン。10-20は扱きながらおそかったねー／シコシコしてたらおそく。20-30はカチカチ／まちくたびれのあと扱きながら熱烈ベロチュー。30-40はキスをやめてあつい／サービス（恍惚）。40-50はえーありがとうー／じゃあ、いっただきまーすで跪いてジュボ。50-60は無言で根元まで。60-70は射精せず、立ち後背位アナル挿入オンカメラ→アナル中出し。70-80はありがとうございました。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。口内 CUMOUF なし（出すのはアナルの中）。台詞は1本2行まで。行為は無言・寄り。hmmotion なし。",
-    "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。60-70は無言で根元まで。70-80は射精せず、畳で正常位アナル挿入オンカメラ→アナル中出し。80-90はモンダイありすぎ、アナルにだされすぎ。口内 CUMOUF と精液口移しはなし。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで超気持ちよさそう）、仰向けのままジュボしまくる→射精せず、アヤが上の騎乗アナル中出し→あとしまつ→ゲンキ。騎乗 LoRA は積まない。口内 CUMOUF と口移しはなし。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
+    "checkup-100s": "定期検診。対面30秒。9本＝90秒。16:9。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。60-70は無言で根元まで。70-80は射精せず、畳で正常位アナル挿入オンカメラ→アナル中出し。80-90はモンダイありすぎ、アナルにだされすぎ。口内 CUMOUF と精液口移しはなし。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。9本＝90秒。16:9 1024x576。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口と穴はアヤ22ミニ・竿なし。レイなし。1本目: こんにちは→即しゃがみジュボ。10-20はジュボやめ+涎+起立ベロチュー。20-30はベロチュー抱擁コシコシ。30-40はごめんなさい／ダイジョウブですよー。40-50は四つん這い・先端が肛門に接触（未挿入）。50-60は挿入オンカメラ。60-70はパコパコ。70-80はアナル中出し→抜いて垂れ。80-90はゲンキになりましたか／はい、スッキリしました。騎乗なし。女医は仰向けにしない。口内 CUMOUF と口移しはなし。hmmotion なし。台詞: こんにちは／ごめんなさい／ダイジョウブですよー／ゲンキになりましたか／はい、スッキリしました。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
     "last-train-120s": "終電。終点の延長。10本＝100秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は車内では座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移しで起こす。起きてから2人で電車の外の空の駅ホームへ。ホームで濃厚キス→ピロートーク→レイ立ち・車掌ひざまづきジュボ→射精せず、立ち後背位アナル中出し→抱擁。車内の口内 CUMOUF は残す。ホームの口内と口移しはなし。騎乗なし。台詞: しゅうてんです、おきてください／んっ、おくちにだしてもらって、からだがあつい、、、／おくち、あったかい、、、もっとして、、、。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
@@ -759,7 +724,6 @@ LORA_JA = {
     "h3-realism-people": "肌のリアルさ",
     "tiddies-realism-slider": "胸の大きさ",
     "larry-v4": "Larry v4",
-    "cinema-dy": "シネマ質感",
     "astro-cinema-h3": "映画レンズ",
     "minimax-h3-turbo-fl2v-4step": "LightX2V 4step",
     "minimax-h3-turbo-fl2v-8step": "LightX2V 8step",
@@ -955,6 +919,8 @@ ANAL_ANY_TRIGGER = "AN4LIN"
 # Default stacks stay helper 0-2. Optional ③ ThumbInButt may be a third helper
 # on oral / cunni / doggy prep clips that already have penis + synth.
 TIB_MAX_HELPERS = 3
+# Helpers that may be dropped to seat ThumbInButt. cinema-dy is not a candidate.
+TIB_EVICT_IDS = frozenset()
 TIB_SKIP_SITUATIONS = frozenset(
     {
         "scat_act",
@@ -3279,8 +3245,11 @@ CHAIN_PRESETS = {
 }
 
 
+STORY_CLIP_S = 10.0
+
+
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
-    """One shot is 4–10s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
+    """One shot is 4–15s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
@@ -3291,8 +3260,8 @@ def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
         if n < CHAIN_MIN_S:
             return float(CHAIN_MIN_S)
         return float(n)
-    if n > 10:
-        return 10.0
+    if n > 15:
+        return 15.0
     if n < 4:
         return 4.0
     return float(n)
@@ -3321,15 +3290,16 @@ def chain_preset_seconds(label: str | bool) -> float | None:
 
 
 def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
-    """Native H3 clips. Do not generate 11s+ in one MiniMaxH3ImageToVideo pass (15s OOMs and shrinks the canvas)."""
+    """One-shot may be up to 15s. Story-chain pieces stay 10s. Do not make the chain 15s."""
     total = clamp_studio_duration(total_s, chain=chain)
     if not chain:
         return [total]
     clips: list[float] = []
     left = int(total)
-    while left > 10:
-        clips.append(10.0)
-        left -= 10
+    piece = int(STORY_CLIP_S)
+    while left > piece:
+        clips.append(float(piece))
+        left -= piece
     if left >= 4:
         clips.append(float(left))
     elif left > 0 and clips:
@@ -3694,7 +3664,7 @@ _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
 _LATIN_IN_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af]")
 _JP_SCRIPT_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
-SPEECH_FACE_KILLER_IDS = frozenset({"cinema-dy"})
+SPEECH_FACE_KILLER_IDS = frozenset()
 # Kept so old notebooks / cached prompts can still be stripped. Do not inject a
 # new lock: H3 TTS'd both the JP 音声ルール and the ASCII "only say the line" flags.
 AUDIO_LOCK_MARK = "[AUDIO-LOCK]"
@@ -4432,7 +4402,10 @@ def apply_thumbinbutt_stack(
         return rows
     helper_n = sum(1 for r in rows if str(r.get("role") or "") == "helper")
     if helper_n >= TIB_MAX_HELPERS:
-        return rows
+        rows = [r for r in rows if str(r.get("id") or "") not in TIB_EVICT_IDS]
+        helper_n = sum(1 for r in rows if str(r.get("role") or "") == "helper")
+        if helper_n >= TIB_MAX_HELPERS:
+            return rows
     rows.append(
         {
             "id": TIB_LORA_ID,
@@ -5754,6 +5727,8 @@ _JP_PROMPT_GLOSSARY = (
     ("身を胸につける", "presses her body flush against the chest"),
     ("ジュボフェラ", "deep jupo blowjob"),
     ("シコシコオナニー", "stroking the erect penis"),
+    ("シコシコ", "stroking"),
+    ("コシコシ", "hip grinding"),
     ("ハチコウ前", "in front of Hachiko"),
     ("ハチ公前", "in front of Hachiko"),
     ("黄色い水", "yellow urine"),
@@ -5763,7 +5738,6 @@ _JP_PROMPT_GLOSSARY = (
     ("ジュボ側", "woman who was sucking"),
     ("イキ顔", "climax face"),
     ("画面右手", "camera right"),
-    ("シコシコ", "stroking"),
     ("ハチコウ", "Hachiko"),
     ("ハチ公", "Hachiko"),
     ("洋式便座", "western toilet"),

@@ -18,7 +18,7 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 ベース: `cursor/h3-cabin-flow-f112`
 PR: https://github.com/fireworker011/Research/pull/138 （draft）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
-設定の版: `h3-20260914-anal-17`
+設定の版: `h3-20260914-anal-18`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。
 
@@ -32,7 +32,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | 作業 | `cursor/h3-anal-stories-f112` |
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
-| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-17` |
+| 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-18` |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -130,7 +130,7 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 - 数字を発明する（動画判定は `video-judge.js`、insight.js を YouTube に使わない）
 - ジャンル転換
 - いいね／フォロー自動、人間を装う返信
-- 15秒クリップ（VRAM で画面が小さくなる）
+- 物語チェーンの各本は10秒。ワンショット生成だけ最大15秒。チェーンを15秒にするな
 - 男性キャラ・未成年。出演は 21+
 - 作業ブランチ以外への勝手なマージ。YAML cron だけデフォルトブランチが必要（この PR では不要）
 
@@ -149,4 +149,4 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## このチャットの最後の返答（ユーザー向け）
 
-屋上／休日／縁側／ランドリー／花火の挿入本は次のパコと同じ体位でロック。同じ10秒は 0-1.5キス／台詞、1.5-10 INSERTION（結合部寄り）。PREP は直前の本。つなぐ I2V は前カメラを捨てて結合部へ。Drive に anal-any-h3 があれば行為スロットへ。アナルの位置は体位で変わる（後背は上、正常位・M字は下）。③はシーン／物語／再生／ThumbInButt の4欄（TIB 既定オフ）。GitHub の Colab から開き直す。版 `h3-20260914-anal-17`。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。root の `minimax_h3_lora_studio.ipynb` は Colab バッジ先。PLACEHOLDER にするな。ノートは `python colab/_write_lora_studio_nb.py` で3箇所同時に書く。
+屋上／休日／縁側／ランドリー／花火の挿入本は次のパコと同じ体位でロック。同じ10秒は 0-1.5キス／台詞、1.5-10 INSERTION（結合部寄り）。PREP は直前の本。つなぐ I2V は前カメラを捨てて結合部へ。Drive に anal-any-h3 があれば行為スロットへ。アナルの位置は体位で変わる（後背は上、正常位・M字は下）。③はシーン／物語／再生／ThumbInButt の4欄（TIB 既定オフ）。GitHub の Colab から開き直す。版 `h3-20260914-anal-18`。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。root の `minimax_h3_lora_studio.ipynb` は Colab バッジ先。PLACEHOLDER にするな。ノートは `python colab/_write_lora_studio_nb.py` で3箇所同時に書く。

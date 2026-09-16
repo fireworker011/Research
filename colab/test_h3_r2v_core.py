@@ -229,9 +229,9 @@ def test_fixed_notebook_cell8_compiles():
     compile(cell10, "cell10.py", "exec")
 
 
-def test_stills_r2v_caps_at_ten():
-    assert FL2VA_MAX_CLIP_S == 10.0
-    assert cap_fl2va_clip_s(15) == 10.0
+def test_stills_r2v_caps_at_fifteen():
+    assert FL2VA_MAX_CLIP_S == 15.0
+    assert cap_fl2va_clip_s(15) == 15.0
     assert cap_fl2va_clip_s(8) == 8.0
     assert cap_duration_for_vram(
         15,
@@ -239,14 +239,14 @@ def test_stills_r2v_caps_at_ten():
         n_images=2,
         has_video=False,
         ref_image_size="max",
-    ) == 10.0
+    ) == 15.0
     assert cap_duration_for_vram(
         15,
         vram_gb=80.0,
         n_images=2,
         has_video=False,
         ref_image_size="max",
-    ) == 10.0
+    ) == 15.0
     rewritten = rewrite_take_seconds(
         "ONE UNBROKEN 15-second take. the whole 15-second take.",
         10,
