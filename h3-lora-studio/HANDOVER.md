@@ -23,7 +23,7 @@ clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f1
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。
 
-直近: clinic-75s は 9本＝90秒 16:9。アヤ受け＋医師竿。c1 は pipe chair に SEATED ジュボ（医師の顔はフレームに残る）。c5-c8 は 30 degrees・SAME DIRECTION・NO KISS。語は `outer ring of the anus entrance`（rim / 縁 禁止）。Grok dump は椅子座り・30度に同期済み。Drive に `anal-any-h3.safetensors` があれば③がアナル行為に差す。挿入本は 0-1.5秒キス／台詞、残りは結合部。物語チェーンの各本は10秒。ワンショットだけ最大15秒。GitHub バッジから開き直す。
+直近: clinic-75s は 9本＝90秒 16:9。アヤ受け＋医師竿。c1 椅子座りジュボ。c2 起立・kissなし。c3 ありがとう！ゴホウビです＋yellow urine。c4 おしっこ、あったかーい！ありがとー！。c5-c9 yellow urine が残る。c5-c8 は 30 degrees・SAME DIRECTION・NO KISS。語は `outer ring of the anus entrance`。JPGをリポジトリに入れるな。
 ```
 
 ## いまの枝
@@ -144,26 +144,27 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 ## clinic-75s（正。スタブ禁止）
 
-ファイル: `h3-lora-studio/stories/clinic-75s.json`。HEAD blob 約 35250 bytes。9 clips / duration_s 90 / canvas 1024x576 16:9。
+ファイル: `h3-lora-studio/stories/clinic-75s.json`。9 clips / duration_s 90 / canvas 1024x576 16:9。
 
-キャスト: Doctor = 竿20cm。Aya = 口と穴・竿なし。Rei なし。騎乗なし。女医は仰向けにしない。download に cinema-dy なし。
+キャスト: Doctor = 竿20cm。Aya = 口と穴・竿なし。Rei なし。騎乗なし。女医は仰向けにしない。download に cinema-dy なし。JPGをリポジトリに入れるな。
 
-台詞（変えるな）:
+台詞（漢字はカナ。`validate_story_follow`）:
 - c1 `こんにちは`
-- c4 `ごめんなさい` / `ダイジョウブですよー`
+- c3 `ありがとう！ゴホウビです`
+- c4 `おしっこ、あったかーい！ありがとー！`
 - c9 `ゲンキになりましたか` / `はい、スッキリしました`
-- c2 c3 c5–c8 は無言
+- c2 c5–c8 は無言
 
 ビート:
 - 0-10 c1 SEATED on pipe chair。しゃがみジュボ。PULLED BACK 16:9。ジュボ中も医師の顔がフレームに残る。lip-sync なので `Full bodies from head to feet` を書くな
-- 10-20 c2 ジュボやめ+涎。Aya STANDS UP。起立ベロチュー
-- 20-30 c3 ベロチュー抱擁コシコシ
-- 30-40 c4 対面立ちのままごめん／ダイジョウブ。床に手をつかない。背を向けない
-- 40-50 c5 向き転換→両手床→両膝→尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触。未挿入
-- 50-60 c6 同じ姿勢のままその輪から根元まで挿入
-- 60-70 c7 パコパコ
-- 70-80 c8 アナル中出し→抜いて垂れ
-- 80-90 c9 ゲンキ／スッキリ
+- 10-20 c2 ジュボやめ+涎。Aya STANDS UP。kissなし
+- 20-30 c3 ゴホウビ＋yellow urine（亀頭先。Ayaが飲む）
+- 30-40 c4 おしっこ、あったかーい！ありがとー！
+- 40-50 c5 向き転換→両手床→両膝→尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触。未挿入。yellow urine が残る
+- 50-60 c6 同じ姿勢のままその輪から根元まで挿入。yellow urine が残る
+- 60-70 c7 パコパコ。yellow urine が残る
+- 70-80 c8 アナル中出し→抜いて垂れ。yellow urine が残る
+- 80-90 c9 ゲンキ／スッキリ。yellow urine が残る
 
 c5–c8: `30 degrees` + `SAME DIRECTION` + `NO KISS` + `PULLED BACK`。語 `rim` / `縁` はファイル全体でゼロ。使え: `the outer ring of the anus entrance`。
 
@@ -183,8 +184,8 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 - Drive 上の古いノートがまだ開かれている（コードでは直せない。リンクから開き直す）
 - 休日／縁側の2回戦を他の話にも足す、と頼まれたら例外が増えるので安易に広げない
 - PR #138 は draft のまま。マージするな。ユーザーがレビューしてと言うまで ready にしない
-- Grok dump（`GROK_PROMPTS.md` / `G_h3_prompts.txt`）は clinic の椅子座り・30度＋ヘルプ同期のあと `--write` 済み。再生成は JSON / ロックを変えたときだけ `python3 h3-lora-studio/scripts/dump_grok_prompts.py --write`
+- Grok dump（`GROK_PROMPTS.md` / `G_h3_prompts.txt`）は JSON を変えたら `python3 h3-lora-studio/scripts/dump_grok_prompts.py --write`
 
 ## このチャットの最後の返答（ユーザー向け）
 
-clinic-75s は 9本90秒 16:9。c1 椅子座りジュボ（顔残し）。c5-c8 は30度・同方向・キスなし。rim 禁止。Grok dump は椅子座り・30度に同期済み。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。Colab は GitHub バッジから開き直す。Grok は `h3-lora-studio/GROK_PROMPTS.md` と `dump/G_h3_prompts.txt` を読む。PLACEHOLDER にするな。ノートは `python colab/_write_lora_studio_nb.py` で3箇所同時に書く。
+clinic-75s は 9本90秒 16:9。c2 kissなし。c3 ゴホウビ＋yellow urine。c4 おしっこ、あったかーい！ありがとー！。c5-c9 yellow urine が残る。JPGをリポジトリに入れるな。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。
