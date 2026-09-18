@@ -12,11 +12,11 @@ Drive に保存したコピーや、設定の版が **xxx** のノートは古�
 
 1. Open in Colab → GPU を **A100**
 2. [Civitai の API Keys](https://civitai.com/user/account) でキーを作り、**②の「CivitaiのAPIキー」欄に貼る**（シネマ質感とえっち用。専用ノートと同じ「普通」だけなら不要）
-3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行。**プロンプトは任意**（空ならおすすめ文。写真からで Picture 1 が無いときは自動で足す）。この版の③初期値は **登校（専用）** ＋ **テキストから（写真なし）**。専用フォルダに試験jpgがあっても「テキストから」なら使わない。
+3. **①** Drive 許可 → **②** 部品ダウンロード（初回は待つ）→ **③** シーンを日本語で選んで実行。**プロンプトは任意**（空ならおすすめ文。写真からで Picture 1 が無いときは自動で足す）。この版の③初期値は **物語＝登校／再生＝つなぐ** ＋ **テキストから（写真なし）**。専用フォルダに試験jpgがあっても「テキストから」なら使わない。
 
 Drive `minimax-h3-comfyui` は専用 I2V / T2V ノートと共用。同時に 2 ノートを動かさない。ココナラ homage ノートの Turbo 既定は変えない。
 
-重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（H3 Eros Max TURBO-hybrid beta5 int8・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は参照シーンのときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。公式 FL2VA は普通の I2V / T2V ノート用。R2V は公式 Ref2VA。Eros TURBO-hybrid では Larry / LightX2V FL2VA を積まない（焼き込み）。
+重み・LoRA・pip / torch / Triton キャッシュは **全部 Drive**（`models/` と `cache/`）。生成時は Drive を mmap しない。②が **土台だけ**（H3 Eros Max TURBO-hybrid beta5 int8・文字・VAE）をローカル SSD に載せる。LoRA は Drive のまま。参照用 unet（ref2va、約21GB）は②「参照土台も入れる」（既定オフ）または今使うシーンに「参照」があるときだけ。コピーは `.part` で途中再開。空きが足りないときだけ Drive 直読みに戻す。公式 FL2VA は普通の I2V / T2V ノート用。R2V は公式 Ref2VA。Eros TURBO-hybrid では Larry / LightX2V FL2VA を積まない（焼き込み）。
 
 ## 日常（エロ汎用）と普通（エロなし）
 
@@ -235,7 +235,7 @@ T2V は 9:16・first_frame なし。I2V は 8:9・Picture 1 必須。Colab の�
 - **セリフの本だけフルステップ**。`「」` がある本は Larry とシネマを外して解剖 + 竿 + 穴・res_multistep 12step（口の動きと日本語の音。シネマ＋口パクで顎が溶ける）。歩く・キス・テレビの本は Larry 0.6 / 8step
 - **音声チャンネルは効果音と「」だけ**。`lock_spoken_japanese` が `overall_soundscape` から `lip-synced` / `No other speech` / `No spoken words` / 台詞だけ を消す。同じ「」は絵（LIP SYNC）と音で各1つ。`[AUDIO-LOCK] other_text: not_spoken` と日本語の音声ルールは撤回（H3が音読した）。③の再生グラフも同じ。`validate_story_follow` は「」内のラテン文字も落とす
 - **VRAM の /free は OOM と土台切替だけ**。②の全部入れはディスクへ保存するだけ。再生グラフは今の本の LoRA だけ繋ぐ。口パクでシネマを外しても H3 本体は載せたまま。FL2VA↔Ref2VA のときとメモリ不足の再試行だけ `/free`
-- **②の2回目は設定だけ**（既定オン）。文章・JSON を GitHub tar で一括取得。土台・LoRA の再取得と Drive の全部一覧は飛ばす。土台が無いときだけ全部入れる。欠けた部品は③で足す
+- **②の2回目は設定だけ**（既定オン）。文章・JSON を GitHub tar で一括取得。土台・LoRA の再取得と Drive の全部一覧は飛ばす。土台が無いときだけ全部入れる。欠けた部品は③で足す。参照土台（R2V / ref2va 約21GB）は既定オフ。オフのまま「全部入れる」でも ref2va は入れない
 - **トリガーは単語一致**。`DY` が `body` の中に見つかって落ちていた。今は `PENISLORA, DY` が歩く本の先頭に付く
 - **`negative` は文書用**。公式グラフは BasicGuider（CFG なし）で負の文を送る配線が無い。除外したいものは正の文に `No men. No feces.` のように書く（専用文はそうしている）。CFG を足すと NFE が倍になるので入れない
 - `validate_story_follow()` は **全話10秒（15秒禁止）**／行為中は無言（`lock_act_silent`。ジュボ・口内・挿入・クンニに「」を足さない。ジュボジュボ・チュー・唾液・漏れ喘ぎは `lock_act_sfx` で出す）／口元の寄り／接合点（セックス本）に加えて **hmmotion は AIO セックス本だけ・先頭**、ユニーク「」は1本に `spoken_max`（既定1、上限2）まで、**「」内に漢字なし**、Clear futanari は玉なし＋マンコあり、物語の追加は行為の前の本が挿入寸前／口を開けて先端から手の幅／膝を開いて舐め寸前 を検査する。生成時のセックス本は `lock_penis_inside`（勃起20cmがマンコまたはアナルの中）。精液は全話 `lock_semen_look`（ニクカベと同じ重油級の白いドロッドロ。色は白。量は口が半分も保てないくらい溢れる。カーテン状に顎と胸へ。粘度は廃油／ヘドロ級）。ジュボと口内は `lock_oral_in_mouth`（奥まで根元。先端咥え禁止。抜く本も frame 1 は根元から一気に抜く）。余った秒は `lock_pleasure_voice_and_wait`（全物語共通。既存ビートは変えない。空いた手で胸・マンコ・使っていない20cm、妖艶な微笑、禁止されていなければ軽いフレンチキス。会話だけの本は微笑と自己タッチまで。専用の会話本は短い一言＋待ちにせず「」を長くして口を埋める。行為クリップの無言も全物語共通。歩行だけ・入場・一人の暑さは足さない。③「生成し直し」は壊れた本から last-frame I2V し直し、前の本は stock して連結）。ザーメン風呂に湯は無い（白い粘液だけ）。精液を thin と書かない。`title_ja` の秒数は実際の合計（id は変えない）

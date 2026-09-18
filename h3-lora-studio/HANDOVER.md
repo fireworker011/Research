@@ -16,14 +16,14 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
 ベース: `cursor/h3-cabin-flow-f112`（anal-17 = `41867d0` を残す）
-HEAD: 全話CAMERA引き（clinic以外）。cafe店員1人。訪問は正常位膣＋サービスおしっこ
+HEAD: ②でR2V既定スキップ。自由文はLoRA手選択
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
 clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f112/h3-lora-studio/stories/clinic-75s.json
 設定の版: `h3-20260914-anal-18`
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。
 
-直近: clinic-75s はこの作業で触るな（9本＝90秒 16:9のまま）。clinic以外の全クリップ CAMERA は 16:9 PULLED BACK。膝上から両方の顔。顔が見えない寄り禁止。接合だけ寄り禁止。cafe-100s は clips==11、店員常時1人（クローン・トレイ二つ禁止）。sales-visit-60s は 8本80秒。こんにちは→アヤ不出→おじゃましまーす右へ→玄関M字アナニー→覆い被さりベロチュー→正常位膣→パコ（んっ あっ はぁー。英語喘ぎ禁止）→膣中出し→抜きカエル→サービスでーす黄色いおしっこ。販売員1人。帽子維持。JPGをリポジトリに入れるな。
+直近: ノートだけ。JSON物語は触るな。②の「参照土台（R2V / ref2va 約21GB）も入れる」は既定オフ。オフなら r2v_download しない・stage include_ref2v=False・全部入れても ref2va は入れない。③再生既定はつなぐ。参照つなぐ＋ref2va無しは SystemExit。フリー文の部品は物語JSONでは無視。
 ```
 
 ## いまの枝
@@ -34,7 +34,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
 | 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-18` |
-| HEAD | 全話CAMERA 16:9 PULLED BACK（clinic以外）。cafe店員1人。訪問8本80秒 正常位膣＋サービスおしっこ |
+| HEAD | ②でR2V既定スキップ。自由文はLoRA手選択（JSON物語は未変更） |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -189,4 +189,4 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 
 ## このチャットの最後の返答（ユーザー向け）
 
-clinic-75s はこの作業で未変更。clinic以外は全クリップ CAMERA 16:9 PULLED BACK。cafe 店員1人・11本。訪問は8本80秒の正常位膣＋サービスおしっこ。JPG禁止。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。
+clinic-75s / cafe / sales-visit の JSON はこの作業で未変更。ノートだけ。②の参照土台は既定オフ（約21GBスキップ）。③再生既定はつなぐ。フリー文の部品は物語JSONでは無視。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。

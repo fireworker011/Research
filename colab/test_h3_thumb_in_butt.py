@@ -15,6 +15,7 @@ from h3_lora_studio import (
     NONE_LABEL,
     STORY_KEEP_LABEL,
     STORY_ORDER,
+    STORY_PLAY_CHAIN,
     STORY_PLAY_REF_CHAIN,
     TIB_FILE,
     TIB_LORA_ID,
@@ -61,7 +62,7 @@ def test_compose_scene_choice_story_wins():
     )
     assert compose_scene_choice("アナルセックス（女体）", STORY_KEEP_LABEL, "専用") == "アナルセックス（女体）"
     assert compose_scene_choice(NONE_LABEL, STORY_KEEP_LABEL, "") == story_play_label(
-        "commute-120s", STORY_PLAY_REF_CHAIN
+        "commute-120s", STORY_PLAY_CHAIN
     )
     assert compose_scene_choice("①口内で終わる", "洗い物", "つなぐ") == story_play_label(
         "dishes-90s", "chain"

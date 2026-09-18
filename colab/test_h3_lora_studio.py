@@ -842,6 +842,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "warmup_h3_engine" not in swap_chunk
     assert "よく使う部品を全部ディスクへ入れます" in src
     assert "設定だけ更新する = True" in src
+    assert "参照土台も入れる = False" in src
+    assert "want_r2v_engine" in src
+    assert "drop_ref2va_ids" in src
+    assert "参照土台（R2V / ref2va・約21GB）は飛ばします" in src
+    assert "if not need_r2v:\n        ids = drop_ref2va_ids(ids)" in src
     assert "fetch_github_tree" in src
     assert "has_fl2va_weight" in src
     assert "has_eros_unet" in src
@@ -1859,6 +1864,117 @@ def test_stage_models_cores_only_skips_loras_and_ref2va(tmp_path):
     all_files = stage_models_to_local(drive, local, min_free_bytes=0, cores_only=False, include_ref2v=True)
     assert (local / "loras" / "larry.safetensors").is_file()
     assert "larry.safetensors" in all_files["copied"]
+
+
+def test_r2v_skip_default_and_freeform_lora_picks(tmp_path):
+    import pytest
+
+    from h3_lora_studio import (
+        FREEFORM_ACT_EXIT,
+        FREEFORM_MISSING_HINT,
+        R2V_NEED_EXIT,
+        R2V_SKIP_LOG,
+        drop_ref2va_ids,
+        filter_freeform_lora_stack,
+        find_ref2va_files,
+        is_turbo_lora_id,
+        needs_ref2va_weight,
+        picked_freeform_lora_ids,
+        require_ref2va_or_exit,
+        should_apply_freeform_lora_picks,
+        stage_models_to_local,
+        want_r2v_engine,
+    )
+
+    assert want_r2v_engine(include_r2v=False, scene="登校（専用）") is False
+    assert want_r2v_engine(include_r2v=True, scene="登校（専用）") is True
+    assert want_r2v_engine(include_r2v=False, scene="短編集（参照）") is True
+    assert want_r2v_engine(include_r2v=False, scene="登校（参照つなぐ）") is True
+    assert "飛ばします" in R2V_SKIP_LOG
+    assert drop_ref2va_ids(
+        ["mystic-xxx-h3", "aftermidnight-ref2va", "minimax-h3-turbo-ref2v-4step", "larry-v4"]
+    ) == ["mystic-xxx-h3", "larry-v4"]
+
+    drive = tmp_path / "drive" / "models"
+    local = tmp_path / "local" / "models"
+    (drive / "diffusion_models").mkdir(parents=True)
+    (drive / "text_encoders").mkdir()
+    (drive / "vae").mkdir()
+    (drive / "loras").mkdir()
+    (drive / "diffusion_models" / "minimax_h3_fl2va.safetensors").write_bytes(b"f" * 4000)
+    (drive / "diffusion_models" / "minimax_h3_ref2va.safetensors").write_bytes(b"r" * 8000)
+    (drive / "text_encoders" / "qwen.safetensors").write_bytes(b"t" * 2000)
+    (drive / "vae" / "vae.safetensors").write_bytes(b"v" * 500)
+    skipped = stage_models_to_local(drive, local, min_free_bytes=0, include_ref2v=False)
+    assert "minimax_h3_ref2va.safetensors" not in skipped["copied"]
+    assert not (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").exists()
+    included = stage_models_to_local(drive, local, min_free_bytes=0, include_ref2v=True)
+    assert "minimax_h3_ref2va.safetensors" in included["copied"]
+    assert (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").is_file()
+    assert find_ref2va_files(local)
+
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    with pytest.raises(SystemExit, match="②で参照土台をオンにしてから再実行"):
+        require_ref2va_or_exit(local_models=empty, drive_models=empty, needed=True)
+    assert R2V_NEED_EXIT.startswith("②で参照土台をオンにしてから再実行")
+    assert needs_ref2va_weight(play="参照つなぐ", scene="なし") is True
+    assert needs_ref2va_weight(play="参照つなぐ修", scene="登校") is True
+    assert needs_ref2va_weight(play="つなぐ", scene="日常（エロ汎用）") is False
+    assert needs_ref2va_weight(play="つなぐ", scene="短編集（参照）") is True
+    assert needs_ref2va_weight(
+        play="つなぐ", scene="生成し直し", redo_story="登校（参照つなぐ）"
+    ) is True
+
+    stack = [
+        {"id": "mystic-xxx-h3", "strength_model": 0.5},
+        {"id": "penis-lora-h3", "strength_model": 0.45},
+        {"id": "synth-pussy-h3", "strength_model": 0.4},
+        {"id": "blowjob-h3", "strength_model": 0.6},
+        {"id": "doggy-h3", "strength_model": 0.55},
+        {"id": "larry-v4", "strength_model": 0.5},
+    ]
+    keep, missing = filter_freeform_lora_stack(stack, mode="シーンのまま")
+    assert [row["id"] for row in keep] == [row["id"] for row in stack]
+    assert missing == []
+    turbo, missing = filter_freeform_lora_stack(stack, mode="Turboだけ")
+    assert [row["id"] for row in turbo] == ["larry-v4"]
+    assert missing == []
+    assert is_turbo_lora_id("minimax-h3-turbo-fl2v-4step")
+    assert is_turbo_lora_id("lightx2v-whatever")
+    with pytest.raises(SystemExit, match="行為LoRAはフェラ"):
+        filter_freeform_lora_stack(
+            stack,
+            mode="手で選ぶ",
+            picked_ids=["blowjob-h3", "doggy-h3"],
+        )
+    assert FREEFORM_ACT_EXIT
+    picked = picked_freeform_lora_ids(
+        mystic=True, penis=True, pussy=True, blowjob=True, doggy=True, missionary=False,
+    )
+    assert "blowjob-h3" in picked and "doggy-h3" in picked
+    hand, missing = filter_freeform_lora_stack(
+        stack,
+        mode="手で選ぶ",
+        picked_ids=["mystic-xxx-h3", "missionary-pov-h3"],
+    )
+    assert missing == ["missionary-pov-h3"]
+    assert FREEFORM_MISSING_HINT == "②でその部品を入れる"
+    hand_ids = [row["id"] for row in hand]
+    assert "larry-v4" in hand_ids
+    assert "mystic-xxx-h3" in hand_ids
+    assert "blowjob-h3" not in hand_ids
+    assert "doggy-h3" not in hand_ids
+    assert "penis-lora-h3" not in hand_ids
+    assert should_apply_freeform_lora_picks("hello", using_story=True) is False
+    assert should_apply_freeform_lora_picks("hello", using_story=False) is True
+    assert should_apply_freeform_lora_picks("", using_story=False) is False
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    src = writer.read_text(encoding="utf-8")
+    apply_at = src.find("if should_apply_freeform_lora_picks(文章, using_story=bool(STORY)):")
+    vanilla_at = src.find("elif VANILLA:")
+    assert apply_at != -1 and vanilla_at != -1
+    assert vanilla_at < apply_at
 
 
 def test_stage_weight_file_resumes_partial_copy(tmp_path):
@@ -7537,7 +7653,14 @@ def test_notebook_story_play_flow():
     md0 = "".join(nb["cells"][0]["source"])
     assert 'やりたいシーン = compose_scene_choice(シーン, 物語, 再生)' in cell3
     assert '物語 = "登校"' in cell3
-    assert '再生 = "専用"' in cell3
+    assert '再生 = "つなぐ"' in cell3
+    assert 'フリー文の部品 = "シーンのまま"' in cell3
+    assert "肌mystic = True" in cell3
+    assert "フェラLoRA = False" in cell3
+    assert "四つん這いandgs = False" in cell3
+    assert "should_apply_freeform_lora_picks(文章, using_story=bool(STORY))" in cell3
+    assert "require_ref2va_or_exit" in cell3
+    assert "R2V_NEED_EXIT" in cell3
     assert 'シーン = "なし"' in cell3
     assert 'ThumbInButt = "なし"' in cell3
     assert "parse_thumb_in_butt(ThumbInButt)" in cell3
@@ -7625,7 +7748,7 @@ def test_notebook_story_play_flow():
     m_tib = re.search(r'\nThumbInButt = "[^"]+"  #@param (\[.*?\])\n', cell3)
     tib_opts = json.loads(m_tib.group(1))
     assert tib_opts == [NONE_LABEL, TIB_ON_LABEL]
-    assert compose_scene_choice(NONE_LABEL, "登校", "専用") == story_play_label("commute-120s", "dedicated")
+    assert compose_scene_choice(NONE_LABEL, "登校", "つなぐ") == story_play_label("commute-120s", "chain")
     assert parse_thumb_in_butt(NONE_LABEL) is False
     assert parse_thumb_in_butt(TIB_ON_LABEL) is True
     for opt in scene_opts:

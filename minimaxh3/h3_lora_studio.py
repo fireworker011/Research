@@ -1019,7 +1019,7 @@ def compose_scene_choice(scene: str | None, story: str | None, play: str | None)
     raw_scene = str(scene or "").strip()
     if raw_scene not in _KEEP_SCENE:
         return raw_scene
-    return story_play_label("commute-120s", STORY_PLAY_REF_CHAIN)
+    return story_play_label("commute-120s", STORY_PLAY_CHAIN)
 
 
 def generic_wants_thumbinbutt(situation: str | None) -> bool:
@@ -2177,6 +2177,90 @@ def prepare_local_model_roots(comfy_dir: Path | str) -> bool:
 def is_ref2v_weight(name: str) -> bool:
     n = str(name or "").lower()
     return "ref2va" in n or "ref2v" in n
+
+
+R2V_SKIP_LOG = (
+    "参照土台（R2V / ref2va・約21GB）は飛ばします。"
+    "短編集や参照つなぐの日は「参照土台も入れる」をオン。"
+)
+R2V_NEED_EXIT = (
+    "②で参照土台をオンにしてから再実行。普段のつなぐは再生＝つなぐのまま。"
+)
+
+
+def want_r2v_engine(*, include_r2v: bool = False, scene: str | None = None) -> bool:
+    """②: 参照土台チェック、または今使うシーンに「参照」があるときだけ R2V を取る。"""
+    if bool(include_r2v):
+        return True
+    return "参照" in str(scene or "")
+
+
+def drop_ref2va_ids(ids: list[str] | None) -> list[str]:
+    """よく使う部品を全部入れても ref2va / ref2v LoRA は載せない。"""
+    return [str(lid) for lid in (ids or []) if not is_ref2v_weight(str(lid))]
+
+
+def find_ref2va_files(*roots: Path | str | None) -> list[Path]:
+    found: list[Path] = []
+    seen: set[str] = set()
+    for raw in roots:
+        if not raw:
+            continue
+        root = Path(raw)
+        bases = [root]
+        if root.name != "diffusion_models":
+            bases.append(root / "diffusion_models")
+            bases.append(root / "models" / "diffusion_models")
+        for base in bases:
+            if not base.is_dir():
+                continue
+            try:
+                paths = sorted(base.glob("*ref2va*"))
+            except OSError:
+                continue
+            for path in paths:
+                if not path.is_file():
+                    continue
+                try:
+                    key = str(path.resolve())
+                except OSError:
+                    key = str(path)
+                if key in seen:
+                    continue
+                seen.add(key)
+                found.append(path)
+    return found
+
+
+def needs_ref2va_weight(
+    *,
+    play: str | None = None,
+    scene: str | None = None,
+    redo_story: str | None = None,
+) -> bool:
+    """③: 参照つなぐ／短編集（参照）／作り直しの物語に「参照」がある。"""
+    if is_anthology(scene):
+        return True
+    blob = f"{play or ''} {scene or ''} {redo_story or ''}"
+    return "参照" in blob
+
+
+def require_ref2va_or_exit(
+    *,
+    local_models: Path | str | None = None,
+    drive_models: Path | str | None = None,
+    needed: bool = True,
+) -> list[Path]:
+    """ローカルにも Drive models にも *ref2va* が無い参照再生は②を先に。"""
+    if not needed:
+        return []
+    local = find_ref2va_files(local_models)
+    if local:
+        return local
+    drive = find_ref2va_files(drive_models)
+    if drive:
+        return drive
+    raise SystemExit(R2V_NEED_EXIT)
 
 
 def _iter_drive_weights(
@@ -4426,6 +4510,87 @@ resolve_thumb_in_butt = parse_thumb_in_butt
 resolve_split_scene = compose_scene_choice
 inject_thumb_in_butt = apply_thumbinbutt_stack
 clip_wants_thumb_in_butt = clip_wants_thumbinbutt
+
+FREEFORM_LORA_KEEP = "シーンのまま"
+FREEFORM_LORA_PICK = "手で選ぶ"
+FREEFORM_LORA_TURBO = "Turboだけ"
+FREEFORM_ACT_LORA_IDS = ("blowjob-h3", "doggy-h3", "missionary-pov-h3")
+FREEFORM_PICK_MAP = {
+    "mystic": "mystic-xxx-h3",
+    "penis": "penis-lora-h3",
+    "pussy": "synth-pussy-h3",
+    "blowjob": "blowjob-h3",
+    "doggy": "doggy-h3",
+    "missionary": "missionary-pov-h3",
+}
+FREEFORM_ACT_EXIT = "行為LoRAはフェラ／四つん這いandgs／正常位から1つまで。"
+FREEFORM_MISSING_HINT = "②でその部品を入れる"
+
+
+def is_turbo_lora_id(lora_id: str | None) -> bool:
+    n = str(lora_id or "").lower()
+    return "turbo" in n or "lightx2v" in n or "larry" in n
+
+
+def should_apply_freeform_lora_picks(
+    prompt: str | None,
+    *,
+    using_story: bool = False,
+) -> bool:
+    """文章あり、かつ物語パック／STORY JSON を使っていないときだけフリー文の部品を当てる。"""
+    if using_story:
+        return False
+    return not is_blank_prompt(prompt)
+
+
+def picked_freeform_lora_ids(
+    *,
+    mystic: bool = True,
+    penis: bool = True,
+    pussy: bool = True,
+    blowjob: bool = False,
+    doggy: bool = False,
+    missionary: bool = False,
+) -> list[str]:
+    flags = (
+        ("mystic", mystic),
+        ("penis", penis),
+        ("pussy", pussy),
+        ("blowjob", blowjob),
+        ("doggy", doggy),
+        ("missionary", missionary),
+    )
+    return [FREEFORM_PICK_MAP[key] for key, on in flags if on]
+
+
+def filter_freeform_lora_stack(
+    stack: list[dict[str, Any]] | None,
+    *,
+    mode: str | None = None,
+    picked_ids: list[str] | None = None,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """フリー文の部品。シーンのまま／Turboだけ／手で選ぶ。Turbo は手で選ぶでも残す。"""
+    rows = [dict(r) for r in (stack or [])]
+    raw_mode = str(mode or FREEFORM_LORA_KEEP).strip() or FREEFORM_LORA_KEEP
+    if raw_mode == FREEFORM_LORA_KEEP:
+        return rows, []
+    if raw_mode == FREEFORM_LORA_TURBO:
+        return [r for r in rows if is_turbo_lora_id(str(r.get("id") or ""))], []
+    if raw_mode != FREEFORM_LORA_PICK:
+        return rows, []
+    picked = [str(x).strip() for x in (picked_ids or []) if str(x).strip()]
+    acts = [lid for lid in picked if lid in FREEFORM_ACT_LORA_IDS]
+    if len(set(acts)) > 1:
+        raise SystemExit(FREEFORM_ACT_EXIT)
+    present = {str(r.get("id") or "") for r in rows}
+    missing = [lid for lid in picked if lid not in present]
+    keep = set(picked)
+    out = [
+        r
+        for r in rows
+        if is_turbo_lora_id(str(r.get("id") or "")) or str(r.get("id") or "") in keep
+    ]
+    return out, missing
 
 
 def default_lora_dir(*hints: Path | str | None) -> Path | None:

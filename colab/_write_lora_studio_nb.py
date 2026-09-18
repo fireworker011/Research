@@ -48,7 +48,7 @@ ACT_LABELS = [
 DEFAULT_SCENE = story_play_label("commute-120s", STORY_PLAY_DEDICATED)  # 登校（専用）＝②の初期値
 DEFAULT_SCENE_SPLIT = NONE_LABEL
 DEFAULT_STORY_TITLE = "登校"
-DEFAULT_PLAY_JA = STORY_PLAY_JA[STORY_PLAY_DEDICATED]
+DEFAULT_PLAY_JA = STORY_PLAY_JA[STORY_PLAY_CHAIN]
 DEFAULT_TIB = NONE_LABEL
 DEFAULT_REDO_STORY = story_play_label("meat-wall-85s", STORY_PLAY_CHAIN)  # ニクカベ（つなぐ）
 REDO_STORY_OPTIONS = redo_story_labels()
@@ -126,7 +126,7 @@ Drive に保存したコピーや、設定の版が **xxx** のノートは古�
 学習用の動画は  
 `… / train / raw / anal-any-h3 / standing` のように **体位フォルダ** へ入れる。リネーム不要。**④** が 24fps にして zip にする。その zip を fal の `minimax/h3/i2v/trainer` に上げる（先に debug_dataset）。
 
-③の初期値はこの版の準備どおり **登校（専用）** ＋ **テキストから（写真なし）**。シネマ質感とえっち部品を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。
+③の初期値はこの版の準備どおり **物語＝登校／再生＝つなぐ** ＋ **テキストから（写真なし）**。シネマ質感とえっち部品を取るので **②の「CivitaiのAPIキー」を貼って**、上から順に ▶ を押す。**普通（エロなし）だけ**（専用ノートと同じ LightX2V）ならキーは空でOK。②の今使うシーンは **登校（専用）** のまま（ダウンロード用）。
 
 ## 今の準備（この版）
 
@@ -336,6 +336,7 @@ MD2 = r"""## ② 部品を用意する（初回だけ長い。2回目は短い�
 - **ランタイム切断後** … Drive の土台は飛ばす（40GB の再取得はしない）。ローカルへコピー＋GPU 載せ＋Comfy 起動で数分。設定だけはオンのまま
 - pip / torch / Triton のキャッシュも Drive の `cache/`。Colab の消えるディスクには置かない
 - 初めてなら「よく使う部品を全部入れる」は **オンのまま**（ディスクへ保存。再生中に全部を同時積みはしない）
+- **参照土台（R2V / ref2va 約21GB）は既定オフ。** 短編集や参照つなぐの日だけオン。オフのまま「全部入れる」でも ref2va は入れない。FL2VA（Eros）・文字エンコーダ・VAE は今どおり
 - 土台と速いモード（Turbo）は必ず入れます。えっち用ノートと普通ノートで共用します
 
 **Civitai の API キー** は、えっち用の部品を取るときだけ。**普通（エロなし）だけなら空でOK。** 左の鍵（シークレット）は使わなくて大丈夫です。
@@ -357,6 +358,8 @@ CivitaiのAPIキー = ""  #@param {type:"string"}
 設定だけ更新する = True  #@param {type:"boolean"}
 #@markdown **よく使う部品を全部入れる（初めてならオンのまま）**
 よく使う部品を全部入れる = True  #@param {type:"boolean"}
+#@markdown **参照土台（R2V / ref2va 約21GB）も入れる**（短編集・参照つなぐの日だけ。普段はオフ）
+参照土台も入れる = False  #@param {type:"boolean"}
 #@markdown 全部オフにするなら、今使うシーンだけ（専用は話ごとに1つ。ダウンロードは話単位）:
 今使うシーン = "__DEFAULT_SCENE__"  #@param __SCENE_OPTIONS_2__
 
@@ -537,7 +540,8 @@ from h3_lora_studio import (
     apply_drive_cache_env, prepare_local_model_roots, stage_models_to_local,
     model_dir_is_drive_link, link_model_dirs_to_drive, warmup_h3_engine,
     clear_warmup_stamp, ensure_comfy_r2v_node, has_fl2va_weight, has_eros_unet,
-    studio_engine_download_jobs, pick_studio_unet,
+    studio_engine_download_jobs, pick_studio_unet, want_r2v_engine, drop_ref2va_ids,
+    find_ref2va_files,
 )
 import h3_lora_studio as _h3_cell2
 print("設定の版:", getattr(_h3_cell2, "STUDIO_REV", FETCH_REV))
@@ -600,7 +604,15 @@ if broke_link:
     print("モデルフォルダをローカル SSD に切り替えました。")
 link_dir(COMFY_DIR / "models" / "loras", DRIVE_MODELS / "loras")
 print("LoRA は Drive のまま（コピーしない）")
-need_r2v = "参照" in str(今使うシーン)
+need_r2v = want_r2v_engine(include_r2v=参照土台も入れる, scene=今使うシーン)
+if not need_r2v:
+    print("参照土台（R2V / ref2va・約21GB）は飛ばします。短編集や参照つなぐの日は「参照土台も入れる」をオン。")
+
+def _fetch_r2v():
+    print("参照用の土台（R2V / ref2va）も入れます。FL2VA とは混ぜません…")
+    for url, dest in r2v_download_jobs(DRIVE_MODELS):
+        print("  参照:", dest.name)
+        fetch_weight(url, dest)
 
 if fast:
     print("土台と LoRA の再取得は飛ばします。")
@@ -608,6 +620,8 @@ if fast:
     if token:
         os.environ["CIVITAI_API_TOKEN"] = token
     print("Civitai API:", "読み込み済み（値は出しません）" if token else "空")
+    if need_r2v and not find_ref2va_files(DRIVE_MODELS):
+        _fetch_r2v()
 else:
     print("大きな土台を入れています（すでにあれば飛ばします）…")
     print("T2V/I2V の土台は H3 Eros Max（TURBO-hybrid beta5 int8）。公式 FL2VA は入れません。")
@@ -615,10 +629,8 @@ else:
         if "turbo" in dest.name.lower() and "eros" not in dest.name.lower():
             print("  速いモード（Turbo）も入れます。Eros 焼き込み Turbo のときは③で積みません:", dest.name)
         fetch_weight(url, dest)
-    print("参照用の土台（R2V / ref2va）も入れます。FL2VA とは混ぜません…")
-    for url, dest in r2v_download_jobs(DRIVE_MODELS):
-        print("  参照:", dest.name)
-        fetch_weight(url, dest)
+    if need_r2v:
+        _fetch_r2v()
 
     sid = resolve_situation(今使うシーン)
     ids = situation_ids(sid)
@@ -629,6 +641,8 @@ else:
         print("よく使う部品を全部ディスクへ入れます。再生は今の本の LoRA だけ載せます。")
     else:
         print("今のシーン用だけ入れます:", 今使うシーン)
+    if not need_r2v:
+        ids = drop_ref2va_ids(ids)
 
     catalog = load_catalog(STUDIO)
     # Civitai API をここで読む。名前は CIVITAI_API_TOKEN。値は print しない。
@@ -652,14 +666,12 @@ else:
         print("一部スキップ:", ", ".join(skipped))
         print("今のシーンに不要なら③へ。必要なら Drive の models/loras に置いてください。②をもう一度回すだけでは取れないことがあります。")
 
-if fast and have_local:
+if fast and have_local and not need_r2v:
     print("ローカルに土台あり。Drive からのコピーは飛ばします。")
 else:
     print("土台だけローカル（Eros Max・文字・VAE）。LoRA は Drive のまま。")
     if need_r2v:
         print("このシーンは参照用の土台（約21GB）も載せます。")
-    else:
-        print("参照用の土台（約21GB）はこのシーンでは飛ばします。③で参照を選んだときだけ載せます。")
     print("Drive の重みをローカル SSD に載せます（FUSE mmap だと初回の GPU が遊ります）…")
     staged = stage_models_to_local(
         DRIVE_MODELS, COMFY_DIR / "models", cores_only=True, include_ref2v=need_r2v,
@@ -722,7 +734,7 @@ MD3 = r"""## ③ 動画を作る
 
 自分の文を書くときは、出演者は「21歳以上の成人」と書いてください。未成年の表現は拒否されます。写真からのときに Picture 1 を書かなくても、顔ロックは自動で足します。
 
-**専用の5パターン（同じ話・同じ JSON）:** `登校（専用）` ＝ カット（最後のコマから続けない）。`登校（つなぐ）` ＝ 文を直さず最後のコマから I2V（Picture 1 ロックだけ）。`登校（つなぐ修）` ＝ 最後のコマから I2V ＋ 1本目を長回しに直す。`登校（参照つなぐ）` ＝ 1本目 R2V。`登校（参照つなぐ修）` ＝ 参照つなぐ＋1本目を直す。初期値は `登校（専用）`。旧名 `登校120秒（専用）` も専用。アナルの三択（①②③）は汎用40秒で、帰宅や訪問販売の文は差し替えない。
+**専用の5パターン（同じ話・同じ JSON）:** `登校（専用）` ＝ カット（最後のコマから続けない）。`登校（つなぐ）` ＝ 文を直さず最後のコマから I2V（Picture 1 ロックだけ）。`登校（つなぐ修）` ＝ 最後のコマから I2V ＋ 1本目を長回しに直す。`登校（参照つなぐ）` ＝ 1本目 R2V。`登校（参照つなぐ修）` ＝ 参照つなぐ＋1本目を直す。初期値は物語＝登校／再生＝つなぐ。旧名 `登校120秒（専用）` も専用。アナルの三択（①②③）は汎用40秒で、帰宅や訪問販売の文は差し替えない。
 
 **最終シーン合わせ（チェック）:** 普通のつなぐと「つなぐ修」は最後の本だけ選んだシーンに合わせる（最初の T2V→I2V のつなぎは触らない）。専用（カット）は写真からの本だけ「この本の静止画・独立カット」の1行を足す。「つなぐ」（文そのまま）では何もしない。
 
@@ -789,7 +801,7 @@ MD3 = r"""## ③ 動画を作る
 
 CELL3 = r'''#@title ③ 動画を作る（ここだけ選ぶ）
 #@markdown ### まずここ（4欄）
-#@markdown **シーン / 物語 / 再生 / ThumbInButt**。物語を選ぶと物語が勝つ。行為・三択・生成し直し・短編集は物語を「（シーンのまま）」にしてからシーン欄を選ぶ。初期値は登校＋専用＋ThumbInButtなし。
+#@markdown **シーン / 物語 / 再生 / ThumbInButt**。物語を選ぶと物語が勝つ。行為・三択・生成し直し・短編集は物語を「（シーンのまま）」にしてからシーン欄を選ぶ。初期値は登校＋つなぐ＋ThumbInButtなし。
 #@markdown **アナルの三択**（シーン欄）: ①口内で終わる／②フェラのあとアナル／③会って即アナル。汎用40秒。③は10-20で挿入開始、20-30が中出し。体位欄は②③のアナル本に効く。**三択を選んでも帰宅や訪問販売の文は差し替わらない。** 既存話は各話にどれかが既に入っている。
 #@markdown **再生が5パターン:** 専用＝カット、つなぐ＝文そのまま最後のコマから I2V、つなぐ修＝最後のコマから I2V＋1本目を長回しに直す、参照つなぐ＝1本目 R2V、参照つなぐ修＝参照＋1本目を直す。パック（訪問販売〜ハチコウ）は専用ストーリーではないが再生は同じ。物語の追加は10秒×2＝20秒（台詞は1本目だけ）。プロンプト・秒数・長さの作り方は不要。
 #@markdown **ThumbInButt** は既定オフ。あり＝挿入直前・挿入本・最初のパコパコだけ積む（トリガーは書かない）。脱糞シーン自体の ThumbInButt はこの欄と別。①口内終わりのパックには積まない。
@@ -811,6 +823,15 @@ ThumbInButt = "__DEFAULT_TIB__"  #@param __TIB_OPTIONS__
 #@markdown ### プロンプト（任意）
 #@markdown 空ならシーンのおすすめ文。ふたなりフェラは場所・座りだけ書けばよい（空欄は第三者の根元ジュボ）。自分の文を貼ってよい。写真からで Picture 1 が無いときは自動で足します。テキストからに切り替えたとき、写真用の文が残っていても外します。
 文章 = ""  #@param {type:"string"}
+#@markdown **フリー文の部品**（物語JSONでは無視。文章が空のときも無視）
+フリー文の部品 = "シーンのまま"  #@param ["シーンのまま", "手で選ぶ", "Turboだけ"]
+肌mystic = True  #@param {type:"boolean"}
+竿 = True  #@param {type:"boolean"}
+穴 = True  #@param {type:"boolean"}
+フェラLoRA = False  #@param {type:"boolean"}
+四つん這いandgs = False  #@param {type:"boolean"}
+正常位LoRA = False  #@param {type:"boolean"}
+TIB親指 = False  #@param {type:"boolean"}
 #@markdown 写真からのときだけ。`auto` か空なら `input/phone` の一番新しい jpg。テキストからでは使いません。
 写真ファイル = "auto"  #@param {type:"string"}
 #@markdown 秒数。ワンショットは 4〜15。物語チェーンの各本は10秒。同じカットを長くするなら下の「つなぐ」。専用120秒では無視。
@@ -854,7 +875,7 @@ from h3_r2v_core import REF2VA_NAME, FL2VA_MAX_CLIP_S, assert_graph_identity_mot
 from h3_i2v_phone import DEFAULT_FIRST_IMAGE, collect_output_videos, newest_mp4, newest_image, stage_image_into_input, is_auto_image_name, ref_image_url
 from h3_t2v import CANVAS_9_16, assert_t2v_graph, build_t2v_graph, canvas_for_aspect, resolve_t2v_prompt, t2v_retry_plans, validate_t2v_prompt
 from h3_motion_graphics import CANVAS_8_9, assert_i2va_graph, build_i2va_graph, i2va_retry_plans, prefer_fl2v_lora, resolve_motion_prompt, validate_motion_ad_prompt, validate_studio_i2v_prompt
-from h3_lora_studio import apply_user_prompt, apply_phone_act_locks, ORAL_SUCK_SITUATIONS, apply_pose_situation, resolve_pose, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, is_anal_pattern, is_redo, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, apply_anal_any_stack, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, ensure_r2v_in_object_info, R2V_NODE, R2V_NODE_MISSING, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, clear_warmup_stamp, resolve_story_play, apply_story_play, apply_redo_play, parse_redo_start, redo_start_frame_name, find_existing_story_clip, stock_completed_clips, ensure_redo_start_frame, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, lock_spoken_japanese, STORY_PLAY_JA, STORY_PLAY_DEDICATED, pick_studio_unet, drop_baked_turbo_loras, is_eros_turbo_hybrid_unet, EROS_FL2VA_NAME, compose_scene_choice, parse_thumb_in_butt, generic_wants_thumbinbutt, apply_thumbinbutt_stack, extra_tib_download_ids, strip_thumb_in_butt_trigger
+from h3_lora_studio import apply_user_prompt, apply_phone_act_locks, ORAL_SUCK_SITUATIONS, apply_pose_situation, resolve_pose, explain_choice, format_job_fail, format_prompt_http_fail, friendly_lora, friendly_select_error, inject_lora_stack, is_blank_prompt, is_vanilla, is_story, is_chain_pack, is_anthology, is_anal_pattern, is_redo, load_story, prepare_story_clip, story_stills_dir, prepend_triggers, resolve_mode, resolve_situation, clamp_studio_duration, resolve_studio_length, apply_stack_fallbacks, apply_anal_any_stack, missing_stack_files, comfy_missing_loras, download_jobs_for, fetch_weight, load_catalog, civitai_token, civitai_download_fallbacks, restart_studio_comfy, fetch_comfy_object_info, ensure_r2v_in_object_info, R2V_NODE, R2V_NODE_MISSING, continue_chain_prompt, next_chain_prompt, rewrite_chain_opening_prompt, extract_last_frame, concat_studio_clips, has_i2v_lock, comfy_free, situation_ids, apply_drive_cache_env, stage_models_to_local, warmup_h3_engine, clear_warmup_stamp, resolve_story_play, apply_story_play, apply_redo_play, parse_redo_start, redo_start_frame_name, find_existing_story_clip, stock_completed_clips, ensure_redo_start_frame, should_fit_scene_image_prompt, rewrite_final_scene_i2v_prompt, lock_spoken_japanese, STORY_PLAY_JA, STORY_PLAY_DEDICATED, pick_studio_unet, drop_baked_turbo_loras, is_eros_turbo_hybrid_unet, EROS_FL2VA_NAME, compose_scene_choice, parse_thumb_in_butt, generic_wants_thumbinbutt, apply_thumbinbutt_stack, extra_tib_download_ids, strip_thumb_in_butt_trigger, find_ref2va_files, require_ref2va_or_exit, needs_ref2va_weight, filter_freeform_lora_stack, picked_freeform_lora_ids, should_apply_freeform_lora_picks, R2V_NEED_EXIT, FREEFORM_MISSING_HINT
 _sel = Path("/content/select_loras.py")
 _sel_scripts = Path("/content/h3-lora-studio/scripts/select_loras.py")
 _sel_drive = None
@@ -886,7 +907,7 @@ else:
 from select_loras import forbidden_hits, load_forbidden, select_loras
 import select_loras as _select_loras
 import h3_lora_studio as _h3_studio
-if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-cesspit-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "cabin-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or "to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "") or "slides all the way OFF" not in getattr(_h3_studio, "ORAL_PULL_OFF_LINE", "") or not getattr(_h3_studio, "lock_penis_inside", None) or not getattr(_h3_studio, "lock_anal_creampie", None) or not getattr(_h3_studio, "lock_anal_hole", None) or "ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "") or "FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "") or "ANAL ANATOMY:" not in getattr(_h3_studio, "ANAL_ANATOMY_LINE", "") or "REAR ANAL LOCK:" not in getattr(_h3_studio, "ANAL_REAR_LOCK_LINE", "") or "ANAL PULL-OUT:" not in getattr(_h3_studio, "ANAL_PULLOUT_LEAK_LINE", "") or not getattr(_h3_studio, "lock_scat_look", None) or "Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "") or "ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "") or "INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "") or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or not getattr(_h3_studio, "lock_pleasure_voice_and_wait", None) or not getattr(_h3_studio, "lock_act_silent", None) or not getattr(_h3_studio, "lock_act_sfx", None) or not getattr(_h3_studio, "lock_clip_timeline", None) or not getattr(_h3_studio, "lock_oral_easy_shaft", None) or "gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "") or "ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "") or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "ensure_select_loras_on_path", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "overflow" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None) or float(getattr(_h3_studio, "FL2VA_MAX_CLIP_S", 0) or 0) < 10 or not getattr(_h3_studio, "cap_fl2va_clip_s", None) or not getattr(_h3_studio, "rewrite_take_seconds", None) or not getattr(_h3_studio, "cap_duration_for_vram", None) or not getattr(_h3_studio, "is_redo", None) or not getattr(_h3_studio, "parse_redo_start", None) or not getattr(_h3_studio, "stock_completed_clips", None) or not getattr(_h3_studio, "apply_redo_play", None) or not getattr(_h3_studio, "ensure_redo_start_frame", None) or not getattr(_h3_studio, "apply_phone_act_locks", None) or not getattr(_h3_studio, "wrap_phone_oral_prompt", None) or "ORAL CAMERA:" not in getattr(_h3_studio, "ORAL_CAMERA_LINE", "") or not getattr(_h3_studio, "lock_oral_camera", None) or not getattr(_h3_studio, "pick_studio_unet", None) or not getattr(_h3_studio, "studio_engine_download_jobs", None) or not getattr(_h3_studio, "drop_baked_turbo_loras", None) or not getattr(_h3_studio, "has_eros_unet", None) or "10Eros_Max" not in getattr(_h3_studio, "EROS_FL2VA_NAME", "") or "concept" not in getattr(_select_loras, "STACK_ROLES", ()) or not getattr(_h3_studio, "generate_anal_pattern", None) or "anal-p3-meet-anal" not in getattr(_h3_studio, "ANAL_PATTERN_IDS", set()) or getattr(_select_loras, "CONCEPT_LORA_ID", "") != "mystic-xxx-h3" or not getattr(_h3_studio, "compose_scene_choice", None) or not getattr(_h3_studio, "parse_thumb_in_butt", None) or not getattr(_h3_studio, "apply_thumbinbutt_stack", None) or not getattr(_h3_studio, "clip_wants_thumbinbutt", None) or "thumb_in_butt" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "lora_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "apply_anal_any_stack", None) or not getattr(_h3_studio, "lock_join_camera", None) or "JOIN CAMERA:" not in getattr(_h3_studio, "JOIN_CAM_LINE", "") or getattr(_h3_studio, "TIB_ON_LABEL", "") != "あり（挿入前後）":
+if not getattr(_select_loras, "MAX_HELPERS", None) or int(getattr(_h3_studio, "CHAIN_MAX_S", 0) or 0) < 120 or not getattr(_h3_studio, "fetch_comfy_object_info", None) or not getattr(_h3_studio, "has_i2v_lock", None) or not getattr(_h3_studio, "comfy_free", None) or not getattr(_h3_studio, "prepare_story_clip", None) or "fit_scene" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "cast_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "prev_stack" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "validate_story_follow", None) or not getattr(_h3_studio, "lock_spoken_japanese", None) or not getattr(_h3_studio, "sanitize_story_soundscape", None) or getattr(_h3_studio, "AUDIO_LOCK_MARK", "") != "[AUDIO-LOCK]" or not getattr(_h3_studio, "drop_speech_face_killers", None) or not getattr(_h3_studio, "stage_models_to_local", None) or not getattr(_h3_studio, "warmup_h3_engine", None) or not getattr(_h3_studio, "rewrite_chain_opening_prompt", None) or not getattr(_h3_studio, "resolve_story_play", None) or not getattr(_h3_studio, "apply_story_play", None) or not getattr(_h3_studio, "should_fit_scene_image_prompt", None) or not getattr(_h3_studio, "rewrite_dedicated_scene_i2v_prompt", None) or not getattr(_h3_studio, "pick_cast_still", None) or not getattr(_h3_studio, "pick_cast_stills", None) or not getattr(_h3_studio, "lock_r2v_cast_prompt", None) or not getattr(_h3_studio, "STORY_PLAY_REF_CHAIN", None) or "engawa-120s" not in getattr(_h3_studio, "STORY_IDS", set()) or "last-stop-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "last-train-120s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "semen-bath-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-85s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "meat-wall-cesspit-70s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "clinic-75s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "fireworks-50s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "cabin-40s" not in getattr(_h3_studio, "CHAIN_PACK_IDS", set()) or "shorts-immoral" not in getattr(_h3_studio, "ANTHOLOGY_ID_SET", set()) or not getattr(_h3_studio, "chain_pack_legacy_labels", None) or "MiniMaxH3ReferenceToVideo" not in getattr(_h3_studio, "STUDIO_OBJECT_INFO_NODES", ()) or not getattr(_h3_studio, "ensure_r2v_in_object_info", None) or not getattr(_h3_studio, "lock_oral_in_mouth", None) or "to the BASE" not in getattr(_h3_studio, "ORAL_IN_MOUTH_LINE", "") or "slides all the way OFF" not in getattr(_h3_studio, "ORAL_PULL_OFF_LINE", "") or not getattr(_h3_studio, "lock_penis_inside", None) or not getattr(_h3_studio, "lock_anal_creampie", None) or not getattr(_h3_studio, "lock_anal_hole", None) or "ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "") or "FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "") or "ANAL ANATOMY:" not in getattr(_h3_studio, "ANAL_ANATOMY_LINE", "") or "REAR ANAL LOCK:" not in getattr(_h3_studio, "ANAL_REAR_LOCK_LINE", "") or "ANAL PULL-OUT:" not in getattr(_h3_studio, "ANAL_PULLOUT_LEAK_LINE", "") or not getattr(_h3_studio, "lock_scat_look", None) or "Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "") or "ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "") or "INSIDE LOCK:" not in getattr(_h3_studio, "INSIDE_PUSSY_LINE", "") or not getattr(_h3_studio, "lock_semen_share_kiss", None) or not getattr(_h3_studio, "semen_share_plan", None) or not getattr(_h3_studio, "who_hidden_at_start", None) or not getattr(_h3_studio, "lock_start_cast", None) or not getattr(_h3_studio, "lock_spoken_emotion", None) or not getattr(_h3_studio, "lock_urine_look", None) or not getattr(_h3_studio, "lock_pleasure_face", None) or not getattr(_h3_studio, "lock_pleasure_voice_and_wait", None) or not getattr(_h3_studio, "lock_act_silent", None) or not getattr(_h3_studio, "lock_act_sfx", None) or not getattr(_h3_studio, "lock_clip_timeline", None) or not getattr(_h3_studio, "lock_oral_easy_shaft", None) or "gentle slight upward" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "kisses on the mouth and/or breasts" not in getattr(_h3_studio, "EROTIC_WAIT_LINE", "") or "ORAL EASY SHAFT:" not in getattr(_h3_studio, "ORAL_EASY_SHAFT_LINE", "") or "manhole-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "riverbank-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or "hachiko-30s" not in getattr(_h3_studio, "ADDON_PACK_IDS", set()) or not getattr(_h3_studio, "addon_pose_prep_errors", None) or not getattr(_h3_studio, "fetch_github_tree", None) or not getattr(_h3_studio, "ensure_select_loras_on_path", None) or not getattr(_h3_studio, "has_fl2va_weight", None) or not getattr(_h3_studio, "is_ref2v_weight", None) or "cores_only" not in getattr(_h3_studio.stage_models_to_local, "__code__").co_varnames or "SHAFT LOOK:" not in getattr(_h3_studio, "SHAFT_LOOK_LINE", "") or "SAME EYE LEVEL" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "") or "clingy" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "heavy-oil" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "TOO MUCH" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "overflow" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "floods" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "molasses" not in getattr(_h3_studio, "SEMEN_LOOK_LINE", "") or "tongues wrap" not in getattr(_h3_studio, "SEMEN_SHARE_LINE", "").lower() or not getattr(_h3_studio, "english_except_speech", None) or not getattr(_h3_studio, "lock_meat_wall_look", None) or float(getattr(_h3_studio, "FL2VA_MAX_CLIP_S", 0) or 0) < 10 or not getattr(_h3_studio, "cap_fl2va_clip_s", None) or not getattr(_h3_studio, "rewrite_take_seconds", None) or not getattr(_h3_studio, "cap_duration_for_vram", None) or not getattr(_h3_studio, "is_redo", None) or not getattr(_h3_studio, "parse_redo_start", None) or not getattr(_h3_studio, "stock_completed_clips", None) or not getattr(_h3_studio, "apply_redo_play", None) or not getattr(_h3_studio, "ensure_redo_start_frame", None) or not getattr(_h3_studio, "apply_phone_act_locks", None) or not getattr(_h3_studio, "wrap_phone_oral_prompt", None) or "ORAL CAMERA:" not in getattr(_h3_studio, "ORAL_CAMERA_LINE", "") or not getattr(_h3_studio, "lock_oral_camera", None) or not getattr(_h3_studio, "pick_studio_unet", None) or not getattr(_h3_studio, "studio_engine_download_jobs", None) or not getattr(_h3_studio, "drop_baked_turbo_loras", None) or not getattr(_h3_studio, "has_eros_unet", None) or "10Eros_Max" not in getattr(_h3_studio, "EROS_FL2VA_NAME", "") or "concept" not in getattr(_select_loras, "STACK_ROLES", ()) or not getattr(_h3_studio, "generate_anal_pattern", None) or "anal-p3-meet-anal" not in getattr(_h3_studio, "ANAL_PATTERN_IDS", set()) or getattr(_select_loras, "CONCEPT_LORA_ID", "") != "mystic-xxx-h3" or not getattr(_h3_studio, "compose_scene_choice", None) or not getattr(_h3_studio, "parse_thumb_in_butt", None) or not getattr(_h3_studio, "apply_thumbinbutt_stack", None) or not getattr(_h3_studio, "clip_wants_thumbinbutt", None) or "thumb_in_butt" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or "lora_dir" not in getattr(_h3_studio.prepare_story_clip, "__code__").co_varnames or not getattr(_h3_studio, "apply_anal_any_stack", None) or not getattr(_h3_studio, "lock_join_camera", None) or "JOIN CAMERA:" not in getattr(_h3_studio, "JOIN_CAM_LINE", "") or getattr(_h3_studio, "TIB_ON_LABEL", "") != "あり（挿入前後）" or not getattr(_h3_studio, "filter_freeform_lora_stack", None) or not getattr(_h3_studio, "want_r2v_engine", None) or not getattr(_h3_studio, "require_ref2va_or_exit", None) or not getattr(_h3_studio, "needs_ref2va_weight", None) or not getattr(_h3_studio, "should_apply_freeform_lora_picks", None):
     raise SystemExit("部品の読み込みが古いです。ランタイムを再起動して①→②→③、または②をもう一度実行してから③。")
 
 やりたいシーン = compose_scene_choice(シーン, 物語, 再生)
@@ -1136,6 +1157,23 @@ else:
         print("上級の追加部品は無視します。ふたなりの竿と穴はシーン側で既に併用しています。")
     stack = cfg["stack"]
     prompt = prepend_triggers(cfg["prompt"], stack)
+    if should_apply_freeform_lora_picks(文章, using_story=bool(STORY)):
+        picked = picked_freeform_lora_ids(
+            mystic=肌mystic,
+            penis=竿,
+            pussy=穴,
+            blowjob=フェラLoRA,
+            doggy=四つん這いandgs,
+            missionary=正常位LoRA,
+        )
+        stack, missing_free = filter_freeform_lora_stack(
+            stack, mode=フリー文の部品, picked_ids=picked,
+        )
+        for lid in missing_free:
+            print(FREEFORM_MISSING_HINT + ":", lid)
+        if TIB親指:
+            stack = apply_thumbinbutt_stack(stack, on=True)
+        cfg["stack"] = stack
     if THUMB_IN_BUTT and generic_wants_thumbinbutt(SITUATION):
         stack = apply_thumbinbutt_stack(stack, on=True)
         cfg["stack"] = stack
@@ -1153,6 +1191,9 @@ else:
     for x in stack:
         role = x.get("role") or ""
         print(" -", friendly_lora(x["id"]), "強さ", x.get("strength_model"), role)
+    print("積んだ id:")
+    for x in stack:
+        print(" -", x.get("id"), "強度", x.get("strength_model") if x.get("strength_model") is not None else x.get("strength"))
     w, h = int(cfg["canvas"]["width"]), int(cfg["canvas"]["height"])
     if MODE == "i2v":
         errs = validate_studio_i2v_prompt(prompt, forbidden_path=FORBIDDEN_FILE)
@@ -1198,6 +1239,13 @@ if hits:
 obj = {}
 need_r2v = bool(STORY) and (STORY.get("use_cast_ref") or str(STORY.get("kind") or "") == "anthology")
 need_i2v = not (STORY and str(STORY.get("kind") or "") == "anthology")
+want_ref_weight = needs_ref2va_weight(
+    play=再生,
+    scene=やりたいシーン,
+    redo_story=作り直しの物語 if REDO else "",
+)
+if need_r2v or str(MODE) == "r2v":
+    want_ref_weight = True
 if not 試し打ちだけ:
     print("エンジンの部品表を確認しています…")
     obj = fetch_comfy_object_info(PORT)
@@ -1208,18 +1256,25 @@ if not 試し打ちだけ:
         if R2V_NODE not in obj:
             raise SystemExit(R2V_NODE_MISSING)
 
-ref2va_files = list((COMFY_DIR / "models/diffusion_models").glob("*ref2va*"))
-if (need_r2v or str(MODE) == "r2v") and not ref2va_files and not 試し打ちだけ:
+ref2va_files = find_ref2va_files(COMFY_DIR / "models")
+if want_ref_weight and not ref2va_files and not 試し打ちだけ:
+    drive_ref = require_ref2va_or_exit(
+        local_models=COMFY_DIR / "models",
+        drive_models=DRIVE_MODELS,
+        needed=True,
+    )
     print("参照用の土台（約21GB）をローカルへ載せます。途中で止まっても③をもう一度で続きから。")
     stage_models_to_local(
         DRIVE_MODELS, COMFY_DIR / "models", cores_only=True, include_ref2v=True,
     )
-    ref2va_files = list((COMFY_DIR / "models/diffusion_models").glob("*ref2va*"))
+    ref2va_files = find_ref2va_files(COMFY_DIR / "models")
+    if not ref2va_files:
+        ref2va_files = list(drive_ref)
 
 def unet_for(mode):
     if mode == "r2v":
         if not ref2va_files and not 試し打ちだけ:
-            raise SystemExit("参照用の土台（ref2va）がありません。②をもう一度実行してください。")
+            raise SystemExit(R2V_NEED_EXIT)
         return ref2va_files[0].name if ref2va_files else REF2VA_NAME
     name = pick_studio_unet(COMFY_DIR / "models/diffusion_models", default=EROS_FL2VA_NAME)
     if not (COMFY_DIR / "models/diffusion_models" / name).is_file() and not 試し打ちだけ:
@@ -1823,8 +1878,16 @@ def fill_scene_options(text: str) -> str:
 CELL2 = fill_scene_options(CELL2)
 CELL3 = fill_scene_options(CELL3)
 assert '今使うシーン = "登校（専用）"' in CELL2
+assert '参照土台も入れる = False' in CELL2
+assert "want_r2v_engine(include_r2v=参照土台も入れる" in CELL2
+assert "drop_ref2va_ids(ids)" in CELL2
+assert "R2V / ref2va・約21GB）は飛ばします" in CELL2
 assert '物語 = "登校"' in CELL3
-assert '再生 = "専用"' in CELL3
+assert '再生 = "つなぐ"' in CELL3
+assert 'フリー文の部品 = "シーンのまま"' in CELL3
+assert "should_apply_freeform_lora_picks(文章, using_story=bool(STORY))" in CELL3
+assert "filter_freeform_lora_stack(" in CELL3
+assert "require_ref2va_or_exit(" in CELL3
 assert 'シーン = "なし"' in CELL3
 assert 'ThumbInButt = "なし"' in CELL3
 assert "やりたいシーン = compose_scene_choice(シーン, 物語, 再生)" in CELL3
