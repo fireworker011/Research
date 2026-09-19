@@ -13,8 +13,6 @@ from qwen_image_edit_nsfw import (
     DEFAULT_EDIT_PROMPT,
     DRIVE_FREE_GIB,
     FUTA_LOCK,
-    I2I_REF,
-    I2I_SINGLE,
     KEEP_LOCK,
     LORA_FILES,
     DEFAULT_HEIGHT,
@@ -97,16 +95,18 @@ def test_stack_is_mk1227_class():
 
 def test_compose_empty_adds_futa_undress():
     out = compose_edit_prompt("")
-    assert "Change clothing only" in out or "change clothing or nudity only" in out.lower()
+    assert "Change clothing only" in out
     assert "Remove only the clothes" in out
     assert "20cm" in out
     assert "no testicles" in out
-    assert "IDENTITY LOCK" in out
-    assert "identical face" in out.lower()
+    assert "same face" in out.lower()
+    assert "do not swap" in out.lower()
+    assert "MANDATORY IDENTITY LOCK" not in out
+    assert "EDIT SCOPE" not in out
+    assert "not text-to-image" not in out
     assert "you may change clothing, pose" not in out.lower()
-    assert I2I_SINGLE in out
-    assert "image-to-image" in out
     assert "Picture 2" not in out
+    assert len(out) < 900
 
 
 def test_compose_keeps_user_and_still_locks():
@@ -114,13 +114,14 @@ def test_compose_keeps_user_and_still_locks():
     assert "same green dress stairs" in out
     assert "Remove only the clothes" in out
     assert "20cm" in out
-    assert "IDENTITY LOCK" in out
-    assert "you may change clothing, pose" in out.lower()
+    assert "do not swap" in out.lower()
+    assert "MANDATORY IDENTITY LOCK" not in out
+    assert "you may change clothing, pose" not in out.lower()
 
 
 def test_lora_stack_undress_futa():
     names = [row[0] for row in lora_stack(True, True)]
-    assert names == ["remove_clothing", "qwen_uncensor", "CockQwen_v3"]
+    assert names == ["remove_clothing"]
     assert lora_stack(False, False) == []
 
 
@@ -225,7 +226,7 @@ def test_disable_safety_and_infer_kwargs():
     assert kw["height"] == DEFAULT_HEIGHT
     assert kw["width"] == DEFAULT_WIDTH
     assert "negative_prompt" not in kw
-    assert "guidance_scale" not in kw
+    assert kw["guidance_scale"] == 1.0
     assert kw["generator"] is None
     guided = infer_kwargs("hello", true_cfg=4.0, guidance=1.5, negative="bad")
     assert guided["negative_prompt"] == "bad"
@@ -375,8 +376,8 @@ def test_clamp_edit_vae_area_patches_loaded_module():
 
     sys.modules["diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus"] = FakeMod
     try:
-        assert clamp_edit_vae_area(None, 576, 1024) == 576 * 1024
-        assert FakeMod.VAE_IMAGE_SIZE == 576 * 1024
+        assert clamp_edit_vae_area(None, 576, 1024) == 1024 * 1024
+        assert FakeMod.VAE_IMAGE_SIZE == 1024 * 1024
     finally:
         del sys.modules["diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus"]
     free_cuda()
@@ -477,7 +478,7 @@ def test_urine_and_scat_are_detailed_and_keep_face():
         assert is_urine_preset(label)
         assert is_excrete_preset(label)
         out = compose_edit_prompt("", preset=label, futa=True)
-        assert "IDENTITY LOCK" in out
+        assert "do not swap" in out.lower()
         assert "identical face" in out.lower()
         assert URINE_DETAIL in out
         assert "urethral opening" in out.lower()
@@ -494,7 +495,7 @@ def test_urine_and_scat_are_detailed_and_keep_face():
     for label in SCAT_LABELS:
         assert is_scat_preset(label)
         out = compose_edit_prompt("", preset=label, futa=True)
-        assert "IDENTITY LOCK" in out
+        assert "do not swap" in out.lower()
         assert SCAT_DETAIL in out
         assert "anus" in out.lower()
         assert "stool log" in out.lower() or "sausage" in out.lower()
@@ -512,7 +513,7 @@ def test_lora_stack_sex_uses_qwen4play():
     assert names == ["qwen_uncensor", "Qwen4Play_v2"]
     assert lora_stack(True, True, preset="ビキニ") == []
     names = [row[0] for row in lora_stack(True, True)]
-    assert names == ["remove_clothing", "qwen_uncensor", "CockQwen_v3"]
+    assert names == ["remove_clothing"]
 
 
 def test_style_presets_lock_medium():
@@ -520,17 +521,16 @@ def test_style_presets_lock_medium():
     assert STYLE_LABELS == ("アニメ絵", "リアル", "3D", "漫画")
     assert "アニメ絵" in STYLE_PRESETS
     keep = compose_edit_prompt("")
-    assert "keep the exact same art medium" in keep
+    assert "keep the exact same art medium" in keep.lower()
     anime = compose_edit_prompt("", preset="服を脱ぐ", style="アニメ絵")
     assert "2D Japanese anime" in anime
     assert "Do not convert" in anime
     assert "Realistic nude body" not in anime
     undress_keep = compose_edit_prompt("", preset="服を脱ぐ")
     assert "Realistic nude body" not in undress_keep
-    assert "IDENTITY LOCK" in undress_keep
+    assert "do not swap" in undress_keep.lower()
     doggy = compose_edit_prompt("", preset="アナルバック")
-    assert "IDENTITY LOCK" in doggy
-    assert "you may change clothing, pose" in doggy.lower()
+    assert "do not swap" in doggy.lower()
     assert "identical face" in doggy.lower()
     real = compose_edit_prompt("", style="リアル")
     assert "photorealistic" in real.lower()
@@ -561,16 +561,15 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert input_source_form_options()[0] == "Drive input"
     assert REF_SOURCE_DEFAULT in ref_source_form_options()
     single = compose_edit_prompt("")
-    assert I2I_SINGLE in single
-    assert "text-to-image" in single
+    assert "do not swap" in single.lower()
+    assert "not text-to-image" not in single
     refed = compose_edit_prompt("", has_ref=True)
-    assert I2I_REF in refed
     assert "Picture 2" in refed
-    assert "Picture 1" in refed
+    assert "face and art-medium lock" in refed
     assert not has_leftover_man(refed)
     doggy = compose_edit_prompt("", preset="アナルバック", has_ref=True)
-    assert I2I_REF in doggy
-    assert "IDENTITY LOCK" in doggy
+    assert "Picture 2" in doggy
+    assert "do not swap" in doggy.lower()
     assert is_photoreal_path("08-indoor-photoreal.jpg")
     assert is_photoreal_path("実写-shirt.png")
     assert not is_photoreal_path("01-stairs-harbor.jpg")

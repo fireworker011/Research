@@ -91,6 +91,14 @@ I2I_REF = (
     "identical art medium as Picture 2. Keep Picture 2's person. "
     "Do not copy Picture 2's pose or clothes unless asked. Adult 21+."
 )
+FACE_KEEP = (
+    "Keep the exact same face, hair, and person as the input image. "
+    "Do not swap to a different person. Adult 21+."
+)
+REF_FACE = (
+    "Picture 2 is the face and art-medium lock. Keep Picture 2's person. "
+    "Do not copy Picture 2's pose or clothes unless asked."
+)
 FUTA_LOCK = (
     "Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
     "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
@@ -106,28 +114,15 @@ DEFAULT_NEGATIVE = (
 STYLE_PRESET_DEFAULT = "入力のまま"
 STYLE_LABELS = ("アニメ絵", "リアル", "3D", "漫画")
 STYLE_PRESETS = {
-    STYLE_PRESET_DEFAULT: (
-        "CRITICAL STYLE LOCK: keep the exact same art medium as the input image. "
-        "If the input is 2D anime, stay 2D anime. If it is a photoreal photo, stay photoreal. "
-        "If it is 3D CGI, stay 3D CGI. If it is manga or comic, stay manga. "
-        "Do not convert to a different medium."
-    ),
+    STYLE_PRESET_DEFAULT: "Keep the exact same art medium as the input image.",
     "アニメ絵": (
-        "CRITICAL STYLE LOCK: the input is 2D Japanese anime. Stay 2D anime illustration "
-        "with the same cel shading, lineart, and palette. Do not convert to photoreal, 3D CGI, "
-        "or live action."
+        "Stay 2D Japanese anime. Do not convert to photoreal, 3D CGI, or live action."
     ),
-    "リアル": (
-        "CRITICAL STYLE LOCK: the input is a photoreal photograph. Stay photorealistic live-action. "
-        "Do not convert to anime, manga, or 3D CGI."
-    ),
-    "3D": (
-        "CRITICAL STYLE LOCK: the input is 3D CGI. Stay 3D CGI / game-engine render with the same "
-        "shader and lighting. Do not convert to 2D anime, manga, or a real photograph."
-    ),
+    "リアル": "Stay photorealistic live-action. Do not convert to anime, manga, or 3D CGI.",
+    "3D": "Stay 3D CGI. Do not convert to 2D anime, manga, or a real photograph.",
     "漫画": (
-        "CRITICAL STYLE LOCK: the input is 2D manga / comic. Stay manga with the same ink, "
-        "screentones, and color (monochrome or limited). Do not convert to photoreal or 3D CGI."
+        "Stay 2D manga / comic with the same ink and screentones. "
+        "Do not convert to photoreal or 3D CGI."
     ),
 }
 STYLE_NEGATIVES = {
@@ -628,7 +623,9 @@ def apply_style(prompt: str, style: str = "") -> str:
             "Amateur phone-camera snapshot, natural indoor lighting",
             "Indoor lighting",
         )
-    return f"{lock} {out}".strip()
+    if lock.lower() in out.lower():
+        return out.strip()
+    return f"{out} {lock}".strip()
 
 
 def is_sex_act_preset(label: str) -> bool:
@@ -721,22 +718,28 @@ def compose_edit_prompt(
             parts.append("Remove only the clothes. Do not tie the hair.")
         if futa and "20cm" not in " ".join(parts).lower():
             parts.append(FUTA_LOCK)
-    joined = " ".join(parts)
-    for trig in extra_triggers or []:
-        t = (trig or "").strip()
-        if t and t.lower() not in joined.lower():
-            parts.append(t)
-            joined = " ".join(parts)
     pose_ok = (
         bool(extra)
         or is_sex_act_preset(label)
         or is_excrete_preset(label)
         or label in {"ウェットシャワー", "セルフタッチ"}
     )
-    scope = ACT_SCOPE if pose_ok else CLOTHING_SCOPE
-    i2i = I2I_REF if has_ref else I2I_SINGLE
-    locked = f"{IDENTITY_LOCK} {i2i} {scope} {joined}"
-    return apply_style(locked, style)
+    # Rapid-AIO's VL template already says "generate a new image". A wall of
+    # IDENTITY/I2I/SCOPE meta makes it obey the text and drop the source face.
+    # Mk1227 Space keeps identity with a short edit + keep-face line.
+    if FACE_KEEP.lower() not in " ".join(parts).lower():
+        parts.append(FACE_KEEP)
+    if not pose_ok and "change clothing only" not in " ".join(parts).lower():
+        parts.append("Change clothing only. Keep the exact same pose, camera, crop, lighting, and background.")
+    if has_ref:
+        parts.append(REF_FACE)
+    joined = " ".join(parts)
+    for trig in extra_triggers or []:
+        t = (trig or "").strip()
+        if t and t.lower() not in joined.lower():
+            parts.append(t)
+            joined = " ".join(parts)
+    return apply_style(" ".join(parts), style)
 
 
 def lora_stack(
@@ -795,21 +798,6 @@ def lora_stack(
                 "remove_clothing",
                 LORA_WEIGHTS["remove_clothing"],
                 LORA_TRIGGERS["remove_clothing"],
-            )
-        )
-        rows.append(
-            (
-                "qwen_uncensor",
-                LORA_WEIGHTS["qwen_uncensor"],
-                LORA_TRIGGERS["qwen_uncensor"],
-            )
-        )
-    if futa:
-        rows.append(
-            (
-                "CockQwen_v3",
-                LORA_WEIGHTS["CockQwen_v3"],
-                LORA_TRIGGERS["CockQwen_v3"],
             )
         )
     return rows
@@ -875,13 +863,17 @@ def free_cuda(torch_module: Any = None) -> None:
             pass
 
 
+EDIT_VAE_AREA = 1024 * 1024
+
+
 def clamp_edit_vae_area(
     pipe: Any = None,
     width: int = DEFAULT_WIDTH,
     height: int = DEFAULT_HEIGHT,
 ) -> int:
-    """Edit-plus still encodes VAE at 1024² unless this module constant is lowered."""
-    area = max(32 * 32, int(width) * int(height))
+    """Keep official 1024² VAE encode. Canvas shrink drops face latents."""
+    del width, height
+    area = EDIT_VAE_AREA
     names = [
         "diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus",
         "diffusers.pipelines.qwenimage.pipeline_qwenimage_edit",
@@ -989,11 +981,10 @@ def infer_kwargs(
         "generator": gen,
         "height": int(height),
         "width": int(width),
+        "guidance_scale": float(guidance),
     }
     if float(true_cfg) > 1.0:
         out["negative_prompt"] = negative
-    if float(guidance) > 1.0:
-        out["guidance_scale"] = float(guidance)
     return out
 
 
