@@ -60,10 +60,13 @@ def test_stack_is_mk1227_class():
 
 def test_compose_empty_adds_futa_undress():
     out = compose_edit_prompt("")
-    assert "Change clothing only" in out
+    assert "Change clothing only" in out or "change clothing or nudity only" in out.lower()
     assert "Remove only the clothes" in out
     assert "20cm" in out
     assert "no testicles" in out
+    assert "IDENTITY LOCK" in out
+    assert "identical face" in out.lower()
+    assert "you may change clothing, pose" not in out.lower()
 
 
 def test_compose_keeps_user_and_still_locks():
@@ -71,6 +74,8 @@ def test_compose_keeps_user_and_still_locks():
     assert "same green dress stairs" in out
     assert "Remove only the clothes" in out
     assert "20cm" in out
+    assert "IDENTITY LOCK" in out
+    assert "you may change clothing, pose" in out.lower()
 
 
 def test_lora_stack_undress_futa():
@@ -218,8 +223,15 @@ def test_style_presets_lock_medium():
     assert "keep the exact same art medium" in keep
     anime = compose_edit_prompt("", preset="服を脱ぐ", style="アニメ絵")
     assert "2D Japanese anime" in anime
-    assert "cel shading" in anime.lower() or "Cel shading" in anime
+    assert "Do not convert" in anime
     assert "Realistic nude body" not in anime
+    undress_keep = compose_edit_prompt("", preset="服を脱ぐ")
+    assert "Realistic nude body" not in undress_keep
+    assert "IDENTITY LOCK" in undress_keep
+    doggy = compose_edit_prompt("", preset="アナルバック")
+    assert "IDENTITY LOCK" in doggy
+    assert "you may change clothing, pose" in doggy.lower()
+    assert "identical face" in doggy.lower()
     real = compose_edit_prompt("", style="リアル")
     assert "photorealistic" in real.lower()
     cgi = compose_edit_prompt("", preset="アナルバック", style="3D")
@@ -261,6 +273,8 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src
     assert "画風" in src
+    assert "画風は変換しない" in src
     assert "画風" in joined
+    assert "顔と画風は変えない" in joined
     for label in (*SPACE_SEX_PRESET_LABELS, *ANAL_POSE_LABELS, *STYLE_LABELS, "クイックプロンプト", "Qwen4Play", "入力のまま"):
         assert label in joined

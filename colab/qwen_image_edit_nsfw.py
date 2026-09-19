@@ -42,6 +42,20 @@ KEEP_LOCK = (
     "Keep the exact same person, exact same face, exact same hair length and style, "
     "exact same pose, exact same background, exact same lighting. Change clothing only."
 )
+IDENTITY_LOCK = (
+    "IDENTITY LOCK: the output person is the exact same character as the input. "
+    "Identical face, identical facial features, identical eyes, nose and mouth, "
+    "identical hair length, color and hairstyle. Do not beautify, do not restyle the hair, "
+    "do not swap to a different person. Zero changes to the face."
+)
+CLOTHING_SCOPE = (
+    "EDIT SCOPE: change clothing or nudity only. Keep the exact same pose, camera, crop, "
+    "background and lighting."
+)
+ACT_SCOPE = (
+    "EDIT SCOPE: you may change clothing, pose, camera, location/background, and the sex act. "
+    "You must not change who the person is, their face, their hair, or the art medium of the input."
+)
 FUTA_LOCK = (
     "Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
     "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
@@ -64,24 +78,21 @@ STYLE_PRESETS = {
         "Do not convert to a different medium."
     ),
     "アニメ絵": (
-        "CRITICAL STYLE LOCK: 2D Japanese anime illustration. Cel shading, clean lineart, "
-        "anime eyes and proportions, flat-to-soft colored skin. Not photorealistic, not a "
-        "live-action photo, not a 3D CGI render, not western cartoon. Keep the same character."
+        "CRITICAL STYLE LOCK: the input is 2D Japanese anime. Stay 2D anime illustration "
+        "with the same cel shading, lineart, and palette. Do not convert to photoreal, 3D CGI, "
+        "or live action."
     ),
     "リアル": (
-        "CRITICAL STYLE LOCK: photorealistic live-action photography. Real skin texture, "
-        "real pores, realistic camera and lighting. Not anime, not manga, not 3D CGI, "
-        "not illustration, not lineart."
+        "CRITICAL STYLE LOCK: the input is a photoreal photograph. Stay photorealistic live-action. "
+        "Do not convert to anime, manga, or 3D CGI."
     ),
     "3D": (
-        "CRITICAL STYLE LOCK: 3D CGI / game-engine render. Modeled 3D body, subsurface "
-        "scattering skin, render lighting, 3D hair cards or sculpted hair. Not 2D anime, "
-        "not manga lineart, not a real photograph."
+        "CRITICAL STYLE LOCK: the input is 3D CGI. Stay 3D CGI / game-engine render with the same "
+        "shader and lighting. Do not convert to 2D anime, manga, or a real photograph."
     ),
     "漫画": (
-        "CRITICAL STYLE LOCK: 2D manga / comic drawing. Ink lineart, screentones, manga "
-        "panel look. Match the input's color (monochrome or limited color). Not photorealistic, "
-        "not 3D CGI, not live action, not painterly western comic."
+        "CRITICAL STYLE LOCK: the input is 2D manga / comic. Stay manga with the same ink, "
+        "screentones, and color (monochrome or limited). Do not convert to photoreal or 3D CGI."
     ),
 }
 STYLE_NEGATIVES = {
@@ -129,7 +140,7 @@ SEX_PRESETS = {
     "服を脱ぐ": (
         "Remove all clothing from the person. Keep the exact same camera angle, framing, crop, pose, "
         "and IDENTICAL FACE as the input image — same facial features, same expression, same person, "
-        "zero changes to face. Realistic nude body, natural skin."
+        "zero changes to face."
     ),
     "ウェットシャワー": (
         "Medium shot, front-facing camera. THE SAME WOMAN from the input photo with the IDENTICAL FACE — "
@@ -335,8 +346,8 @@ def apply_style(prompt: str, style: str = "") -> str:
     if not lock:
         raise SystemExit(f"unknown style: {label}")
     out = prompt or ""
+    out = out.replace("Realistic nude body, natural skin.", "")
     if label in {"アニメ絵", "漫画", "3D"}:
-        out = out.replace("Realistic nude body, natural skin.", "")
         out = out.replace(
             "Amateur phone-camera snapshot, natural indoor lighting",
             "Indoor lighting",
@@ -421,7 +432,14 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    return apply_style(joined, style)
+    pose_ok = (
+        bool(extra)
+        or is_sex_act_preset(label)
+        or label in {"ウェットシャワー", "セルフタッチ"}
+    )
+    scope = ACT_SCOPE if pose_ok else CLOTHING_SCOPE
+    locked = f"{IDENTITY_LOCK} {scope} {joined}"
+    return apply_style(locked, style)
 
 
 def lora_stack(
