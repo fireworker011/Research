@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +27,9 @@ INPUT_SOURCE_DEFAULT = "Drive input"
 INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, "アップロード")
 REF_SOURCE_DEFAULT = "なし（元画像の顔）"
 REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, "Drive から", "アップロード")
+# Pillow 12.0.0 is missing PIL._typing._Ink. Colab then fails on
+# torchvision → QwenImageEditPlusPipeline. 12.1.0 fixed it.
+PILLOW_COLAB_SPEC = "pillow>=12.1.0"
 
 # Optional extra adapters on top of the NSFW merge. Names match jt65 Fast2-nsfw.
 LORA_FILES = {
@@ -390,6 +394,40 @@ def require_l4_or_exit(vram_gib: float, name: str = "") -> None:
         raise SystemExit(
             f"{label} の VRAM が {vram_gib:.1f} GiB。L4（約24GB）を選んで①からやり直してください。"
         )
+
+
+def drop_stale_pil_modules() -> None:
+    """Drop cached PIL/torchvision after a Pillow reinstall on Colab."""
+    for name in list(sys.modules):
+        if (
+            name == "PIL"
+            or name.startswith("PIL.")
+            or name == "torchvision"
+            or name.startswith("torchvision.")
+        ):
+            del sys.modules[name]
+
+
+def pillow_major_minor(version: str) -> tuple[int, int]:
+    bits = [p for p in (version or "0").split(".") if p.isdigit()]
+    major = int(bits[0]) if bits else 0
+    minor = int(bits[1]) if len(bits) > 1 else 0
+    return major, minor
+
+
+def require_pillow_colab(version: str | None = None) -> str:
+    """Pillow 12.0.0 is missing _Ink. Colab Qwen Edit import then dies."""
+    ver = version
+    if ver is None:
+        import PIL
+
+        ver = str(getattr(PIL, "__version__", "0"))
+    if pillow_major_minor(ver) == (12, 0):
+        raise SystemExit(
+            f"Pillow {ver} は Colab で壊れます（_Ink）。"
+            f"{PILLOW_COLAB_SPEC} を入れて②をやり直してください。"
+        )
+    return ver
 
 
 def snapped_size(width: int, height: int, multiple: int = 32) -> tuple[int, int]:

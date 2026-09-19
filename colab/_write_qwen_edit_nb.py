@@ -11,6 +11,7 @@ COLAB_DIR = Path(__file__).resolve().parent
 if str(COLAB_DIR) not in sys.path:
     sys.path.insert(0, str(COLAB_DIR))
 from qwen_image_edit_nsfw import (
+    PILLOW_COLAB_SPEC,
     input_source_form_options,
     ref_source_form_options,
     sex_preset_form_options,
@@ -48,7 +49,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 1. Open in Colab → ランタイムのタイプ → GPU **L4**
 2. すべてのセルを実行
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
-4. ② 初回は重みダウンロード（待つ）。Drive には載せない
+4. ② 初回は重みダウンロード（待つ）。Drive には載せない。Pillow 12.0 の `_Ink` エラーは 12.1 以上で直る。②をもう一度実行
 5. ③ クイックプロンプトと **画風**。入力は Drive input かアップロード。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
@@ -111,10 +112,22 @@ def sh(cmd):
 
 sh([sys.executable, "-m", "pip", "install", "-q", "-U",
     "diffusers", "transformers", "accelerate", "safetensors",
-    "huggingface_hub", "pillow", "sentencepiece"])
+    "huggingface_hub", "sentencepiece", "__PILLOW_SPEC__"])
+sh([sys.executable, "-m", "pip", "install", "-q", "--force-reinstall", "__PILLOW_SPEC__"])
 
 if "/content" not in sys.path:
     sys.path.insert(0, "/content")
+
+import urllib.request
+BRANCH = "cursor/h3-anal-stories-f112"
+RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}/colab/qwen_image_edit_nsfw.py"
+urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
+if "qwen_image_edit_nsfw" in sys.modules:
+    del sys.modules["qwen_image_edit_nsfw"]
+
+from qwen_image_edit_nsfw import drop_stale_pil_modules, require_pillow_colab
+drop_stale_pil_modules()
+print("pillow", require_pillow_colab())
 
 from google.colab import userdata
 tok = ""
@@ -181,6 +194,8 @@ globals()["QWEN_EDIT_LORAS"] = LOADED
 print("safety_checker", getattr(pipe, "safety_checker", "n/a"))
 print("OK → 次は③")
 '''
+
+CELL2 = CELL2.replace("__PILLOW_SPEC__", PILLOW_COLAB_SPEC)
 
 CELL3 = r'''#@title ③ クイックプロンプト（i2i・参照画像）
 print("=" * 60)

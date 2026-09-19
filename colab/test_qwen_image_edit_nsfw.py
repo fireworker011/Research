@@ -1,6 +1,7 @@
 import ast
 import json
 import re
+import sys
 from pathlib import Path
 
 from PIL import Image
@@ -16,6 +17,7 @@ from qwen_image_edit_nsfw import (
     I2I_SINGLE,
     KEEP_LOCK,
     LORA_FILES,
+    PILLOW_COLAB_SPEC,
     PIPE_ID,
     REF_SOURCE_DEFAULT,
     SCAT_DETAIL,
@@ -37,6 +39,7 @@ from qwen_image_edit_nsfw import (
     apply_style,
     compose_edit_prompt,
     disable_safety,
+    drop_stale_pil_modules,
     drive_space_lines,
     has_leftover_man,
     infer_kwargs,
@@ -53,6 +56,7 @@ from qwen_image_edit_nsfw import (
     ref_source_form_options,
     refuse_photoreal,
     require_l4_or_exit,
+    require_pillow_colab,
     resize_rgb,
     save_jpeg,
     sex_preset_form_options,
@@ -115,6 +119,31 @@ def test_require_l4_rejects_t4():
     else:
         raise AssertionError("T4 must exit")
     require_l4_or_exit(22.5, "L4")
+
+
+def test_pillow_12_0_is_rejected_on_colab():
+    assert PILLOW_COLAB_SPEC == "pillow>=12.1.0"
+    assert require_pillow_colab("11.3.0") == "11.3.0"
+    assert require_pillow_colab("12.1.0") == "12.1.0"
+    try:
+        require_pillow_colab("12.0.0")
+    except SystemExit as e:
+        assert "_Ink" in str(e)
+        assert PILLOW_COLAB_SPEC in str(e)
+    else:
+        raise AssertionError("Pillow 12.0 must exit")
+    saved = {
+        name: mod
+        for name, mod in sys.modules.items()
+        if name == "PIL"
+        or name.startswith("PIL.")
+        or name == "torchvision"
+        or name.startswith("torchvision.")
+    }
+    sys.modules["PIL._fake_qwen_edit"] = object()
+    drop_stale_pil_modules()
+    assert "PIL._fake_qwen_edit" not in sys.modules
+    sys.modules.update(saved)
 
 
 def test_resize_and_jpeg(tmp_path):
@@ -386,6 +415,12 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "これは i2i" in joined
     assert "2GB" in joined
     assert "drive_space_lines" in src
+    assert "PILLOW_COLAB_SPEC" in src
+    assert "__PILLOW_SPEC__" in src
+    assert "force-reinstall" in src
+    assert "drop_stale_pil_modules" in src
+    assert '"huggingface_hub", "pillow"' not in src
+    assert "pillow>=12.1.0" in joined
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src
     assert "画風" in src
