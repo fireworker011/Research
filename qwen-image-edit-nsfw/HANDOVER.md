@@ -168,6 +168,8 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。大きく姿勢を変えるときは **参照画像（Picture 2）** に顔のよく出た同じ人物を足す。参照なしでも Picture 1 の上を Picture 2 に自動。プロンプトrewriteはオフのまま。フタナリ勃起オンなら体（竿・マンコ）は足す。別の人になるときは rewrite がオンか、プロンプトが長すぎるか、②で追加LoRAを載せている。オフのまま開き直して③。
 
+絵に `Blocked unsafe content` が出るのは、安全文を編集プロンプトに足していたせい。Qwen Edit が警告を描いてしまう。その文は入れない。成人21+と実写スキップは残す。
+
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
 ②で `cannot import name 'FqnToConfig'` は Space の `torchao==0.11.0` を今の git+diffusers と一緒に入れたせい。ノートを GitHub から開き直して②（`torchao>=0.16.0`。uninstall してから）。まだならランタイム再起動→①②。

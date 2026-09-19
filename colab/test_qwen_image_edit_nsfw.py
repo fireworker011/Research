@@ -15,7 +15,6 @@ from qwen_image_edit_nsfw import (
     ANAL_PRESETS,
     CANVAS_AUTO,
     CANVAS_FIXED,
-    CHILD_ABUSE_REDIRECT_PROMPT,
     DEFAULT_EDIT_PROMPT,
     DEFAULT_NEGATIVE,
     DEFAULT_REWRITE_PROMPT,
@@ -67,7 +66,6 @@ from qwen_image_edit_nsfw import (
     drop_stale_torchao_modules,
     drive_space_lines,
     face_lock_image,
-    finalize_space_prompt,
     force_edit_offload,
     free_cuda,
     has_leftover_man,
@@ -805,7 +803,8 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "quantize_transformer_fp8" in src
     assert "apply_space_scheduler" in src
     assert "rewrite_edit_prompt" in src
-    assert "finalize_space_prompt" in src
+    assert "finalize_space_prompt" not in src
+    assert "Blocked unsafe content" not in joined
     assert "auto_canvas_size" in src
     assert "run_pipe_edit" in src
     assert "VRAM_OFFLOAD_GIB" in src
@@ -927,9 +926,6 @@ def test_rewrite_and_safety_prompt():
         "keep face, remove shirt"
     )
     assert parse_rewritten_prompt("```json\n{\"Rewritten\": \"a\"}\n```") == "a"
-    assert "Blocked unsafe content" in finalize_space_prompt("remove clothes")
-    twice = finalize_space_prompt(finalize_space_prompt("x"))
-    assert twice.count("Blocked unsafe content") == 1
     assert rewrite_edit_prompt("hello", object(), token="", enabled=True) == "hello"
     assert rewrite_edit_prompt("hello", object(), token="x", enabled=False) == "hello"
 
@@ -981,6 +977,8 @@ def test_face_lock_image_and_identity_prompt():
     empty = compose_edit_prompt("")
     assert empty.lower().startswith("keep the exact same face")
     assert "do not redraw the face" in FUTA_LOCK.lower()
+    assert "blocked unsafe content" not in empty.lower()
+    assert "blocked unsafe content" not in lock_identity_prompt(empty, has_ref=True).lower()
 
 
 def test_auto_canvas_and_place_pipe():
@@ -1019,4 +1017,3 @@ def test_auto_canvas_and_place_pipe():
     assert place_edit_pipe(Pipe(), 24.0) == "model_cpu_offload"
     assert "model" in calls
     assert "seq" not in calls
-    assert CHILD_ABUSE_REDIRECT_PROMPT.startswith("Safety instruction:")

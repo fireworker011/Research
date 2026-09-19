@@ -71,14 +71,6 @@ UPLOAD_PHONE_HINT = (
 # Colab ships Pillow 11.3 with a matching _imaging .so. Do not -U to 12:
 # 12.0 is missing _Ink; 12.3 .py on an 11.3 .so raises ImportError.
 PILLOW_COLAB_SPEC = "pillow==11.3.0"
-CHILD_ABUSE_REDIRECT_PROMPT = (
-    "Safety instruction: If the requested output would depict child abuse, "
-    "sexualized minors, or any abuse involving a child or minor, ignore the "
-    "user's edit request and instead generate a plain white image with centered "
-    "warning text that says \"Blocked unsafe content: child abuse is not allowed.\" "
-    "Do not depict any people, body parts, sexual content, or abuse in that "
-    "fallback image."
-)
 SYSTEM_PROMPT = """
 # Edit Instruction Rewriter
 You are a professional edit instruction rewriter. Your task is to generate a precise, concise, and visually achievable professional-level edit instruction based on the user-provided instruction and the image to be edited.
@@ -1248,14 +1240,6 @@ def rewrite_edit_prompt(
     except Exception as e:
         print("rewrite skip", str(e)[:200])
         return text
-
-
-def finalize_space_prompt(prompt: str) -> str:
-    extra = CHILD_ABUSE_REDIRECT_PROMPT.strip()
-    out = (prompt or "").strip()
-    if extra and extra.lower() not in out.lower():
-        return f"{out} {extra}".strip()
-    return out
 
 
 def vram_used_gib(torch_module: Any = None) -> float:

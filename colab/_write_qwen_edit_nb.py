@@ -288,7 +288,6 @@ from qwen_image_edit_nsfw import (
     clamp_edit_vae_area,
     compose_edit_prompt,
     face_lock_image,
-    finalize_space_prompt,
     infer_kwargs,
     input_source_form_options,
     list_input_images,
@@ -495,7 +494,6 @@ for fname, src in jobs:
         )
         print("rewritten:", prompt_run)
     prompt_run = lock_identity_prompt(prompt_run, has_ref=True)
-    prompt_run = finalize_space_prompt(prompt_run)
     print("locked:", prompt_run)
     kwargs = infer_kwargs(
         prompt_run,
