@@ -10,10 +10,13 @@ from PIL import Image
 from qwen_image_edit_nsfw import (
     AIO_FILENAME,
     AIO_REPO_ID,
+    ANAL_ANATOMY,
+    ANAL_CLOSE,
     ANAL_DETAIL,
     ANAL_FRONT_LOCK,
     ANAL_FRONT_PRESETS,
     ANAL_HOLE_LOCK,
+    ANAL_JOIN,
     ANAL_POSE_LABELS,
     ANAL_PRESETS,
     ANAL_REAR_LOCK,
@@ -36,9 +39,14 @@ from qwen_image_edit_nsfw import (
     PIPE_ID,
     REF_SOURCE_DEFAULT,
     REWRITE_MODEL,
+    FECES_LOOK,
+    SCAT_ACT,
     SCAT_DETAIL,
     SCAT_HOLE_LOCK,
     SCAT_LABELS,
+    UNCENSOR_ANAL_TRIGGER,
+    UNCENSOR_SCAT_TRIGGER,
+    UNCENSOR_TRIGGER,
     SCHED_BASE_SHIFT,
     SCHED_MAX_IMAGE_SEQ_LEN,
     SEX_ACT_PRESETS,
@@ -86,8 +94,11 @@ from qwen_image_edit_nsfw import (
     is_sex_act_preset,
     is_urine_preset,
     list_input_images,
+    wants_anal_lock,
+    wants_scat_lock,
     lock_identity_prompt,
     lora_files_for_gpu,
+    lora_trigger,
     lora_skip_summary,
     lora_stack,
     parse_rewritten_prompt,
@@ -564,13 +575,15 @@ def test_anal_pose_presets_are_futa_detailed():
         "アナルバック": ("doggy", "all fours"),
         "アナル立ちバック": ("standing",),
         "アナル正常位": ("missionary", "anus"),
-        "アナル騎乗位": ("cowgirl",),
+        "アナル騎乗位": ("anal riding",),
         "アナル座位": ("lap", "seated"),
     }
     assert ANAL_REAR_PRESETS | ANAL_FRONT_PRESETS == ANAL_PRESETS
+    assert ANAL_DETAIL == f"{ANAL_HOLE_LOCK} {ANAL_ANATOMY} {ANAL_JOIN}"
     for label, needles in pose.items():
         assert is_anal_preset(label)
         assert is_sex_act_preset(label)
+        assert wants_anal_lock("", label)
         out = compose_edit_prompt("", preset=label, futa=True)
         assert not has_leftover_man(out), label
         assert "20cm" in out
@@ -581,27 +594,41 @@ def test_anal_pose_presets_are_futa_detailed():
         assert "ANAL HOLE LOCK" in out
         assert "never vaginal" in out.lower()
         assert "unused pussy" in out.lower()
-        assert ANAL_DETAIL in out
         assert ANAL_HOLE_LOCK in out
+        assert ANAL_ANATOMY in out
+        assert ANAL_JOIN in out
+        assert ANAL_CLOSE in out
+        assert out.lower().index("keep the exact same face") < out.index("ANAL HOLE LOCK")
         blob = out.lower()
         assert any(n in blob for n in needles), (label, out)
+        assert out.index("ANAL HOLE LOCK") < blob.index(needles[0])
         names = [row[0] for row in lora_stack(True, True, preset=label)]
         assert names == ["qwen_uncensor", "CockQwen_v3"], label
         assert "Qwen4Play_v2" not in names
+        trig = lora_stack(True, True, preset=label)[0][2]
+        assert trig == UNCENSOR_ANAL_TRIGGER
+        assert "vagina" not in trig
         if label in ANAL_REAR_PRESETS:
             assert ANAL_REAR_LOCK in out
             assert "UPPER hole" in out
         if label in ANAL_FRONT_PRESETS:
             assert ANAL_FRONT_LOCK in out
             assert "LOWER hole" in out
+        assert "cowgirl" not in blob
     miss = compose_edit_prompt("", preset="アナル正常位")
     assert "not vaginal" in miss.lower() or "anal missionary" in miss.lower()
     lift = compose_edit_prompt("", preset="肛門リフト", futa=True)
-    assert ANAL_DETAIL in lift
+    assert ANAL_HOLE_LOCK in lift
     assert ANAL_FRONT_LOCK in lift
     assert not has_leftover_man(lift)
     lift_names = [row[0] for row in lora_stack(True, True, preset="肛門リフト")]
     assert lift_names == ["qwen_uncensor", "CockQwen_v3"]
+    custom = compose_edit_prompt("アナルでバックして", futa=True)
+    assert ANAL_HOLE_LOCK in custom
+    assert ANAL_JOIN in custom
+    assert FUTA_LOCK not in custom
+    cow_anal = [row[0] for row in lora_stack(True, True, preset="カウガール", extra="アナル")]
+    assert "Qwen4Play_v2" not in cow_anal
 
 
 def test_urine_and_scat_are_detailed_and_keep_face():
@@ -623,24 +650,42 @@ def test_urine_and_scat_are_detailed_and_keep_face():
     reward = compose_edit_prompt("", preset="ご褒美小便")
     assert "face" in reward.lower()
     assert "semen" in reward.lower()
+    assert SCAT_DETAIL == f"{SCAT_HOLE_LOCK} {SCAT_ACT} {FECES_LOOK}"
     for label in SCAT_LABELS:
         assert is_scat_preset(label)
+        assert wants_scat_lock("", label)
         out = compose_edit_prompt("", preset=label, futa=True)
         assert "do not swap" in out.lower()
-        assert SCAT_DETAIL in out
         assert SCAT_HOLE_LOCK in out
+        assert SCAT_ACT in out
+        assert FECES_LOOK in out
         assert "SCAT HOLE LOCK" in out
         assert "anus" in out.lower()
-        assert "stool log" in out.lower() or "sausage" in out.lower()
-        assert "not the vagina" in out.lower() or "not from the vagina" in out.lower()
-        assert "unused" in out.lower()
+        assert "stool log" in out.lower() or "sausage" in out.lower() or "turd" in out.lower()
+        assert "front hole" in out.lower()
+        assert "unused" in out.lower() or "front hole" in out.lower()
         assert "chocolate" in out.lower()
         assert "FECES LOOK" in out
         assert "cylindrical" in out.lower()
         assert "jelly" in out.lower()
+        assert "turd" in out.lower()
+        assert "coffee" in out.lower() or "soil" in out.lower()
+        assert "two finger" in out.lower()
+        assert out.index("SCAT HOLE LOCK") < out.lower().index("turd")
         assert not has_leftover_man(out), label
         names = [row[0] for row in lora_stack(True, True, preset=label)]
         assert names == ["qwen_uncensor", "CockQwen_v3"]
+        trig = lora_stack(True, True, preset=label)[0][2]
+        assert trig == UNCENSOR_SCAT_TRIGGER
+        assert "vagina" not in trig
+    cow_trig = lora_stack(True, True, preset="カウガール")[0][2]
+    assert cow_trig == UNCENSOR_TRIGGER
+    assert "vagina" in cow_trig
+    assert lora_trigger("qwen_uncensor", "アナルバック") == UNCENSOR_ANAL_TRIGGER
+    custom_scat = compose_edit_prompt("脱糞して", futa=True)
+    assert SCAT_HOLE_LOCK in custom_scat
+    assert FECES_LOOK in custom_scat
+    assert FUTA_LOCK not in custom_scat
 
 
 def test_lora_stack_sex_uses_qwen4play():
@@ -803,6 +848,7 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert 0 <= ao_at < pipe_at
     assert "git+https://github.com/huggingface/diffusers.git" in joined
     assert "preset=クイックプロンプト" in src
+    assert "extra=PROMPT" in src
     assert "style_form_options" in src
     assert "画風" in src
     assert "画風は変換しない" in src

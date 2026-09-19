@@ -142,10 +142,13 @@ LORA_WEIGHTS = {
     "qwen_uncensor": 0.4,
     "Qwen4Play_v2": 0.6,
 }
+UNCENSOR_TRIGGER = "nsfw, penis, vagina, nipples"
+UNCENSOR_ANAL_TRIGGER = "nsfw, penis, anus, anal, nipples"
+UNCENSOR_SCAT_TRIGGER = "nsfw, penis, anus, feces, nipples"
 LORA_TRIGGERS = {
     "remove_clothing": "remove her clothing",
     "CockQwen_v3": "Erect Penis",
-    "qwen_uncensor": "nsfw, penis, vagina, nipples",
+    "qwen_uncensor": UNCENSOR_TRIGGER,
     "Qwen4Play_v2": "bl0wj0b, c0wg1rl, m15510n4ry, penis",
 }
 # Rapid-AIO V23 is already NSFW. qwen_uncensor is ~2.4GB and does not fit L4 24GB.
@@ -225,36 +228,39 @@ STYLE_NEGATIVES = {
     "漫画": "photorealistic, 3d render, live action, painterly, photograph, cgi",
 }
 ANAL_HOLE_LOCK = (
-    "ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. "
-    "Never the front hole. The unused pussy stays shut: labia closed, empty, not spread, "
-    "not gaping, not entered. The shaft does not go into the vagina."
+    "ANAL HOLE LOCK: The erect 20cm is in the ANUS. The wet pink anal ring stretches "
+    "around the shaft. The sphincter grips it. This is anal sex. Never vaginal. "
+    "Never the front hole."
 )
 ANAL_ANATOMY = (
-    "ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). "
-    "The unused pussy is the hole toward the pubic bone and the belly. "
-    "Never swap those two holes. Enter the anus only."
+    "ANAL ANATOMY: The anus is the rear hole toward the tailbone (coccyx). "
+    "Enter that rear hole only. The front hole toward the belly stays closed and unused."
 )
 ANAL_JOIN = (
-    "ANAL JOIN: Both adults are futanari women, not a man. Each has female breasts, "
-    "a fully erect 20cm human penis, a hairless unused pussy at the base of her own shaft, "
-    "and a pink anus. No testicles. The partner's 20cm glans and shaft are inside the "
-    "receiver's stretched wet anal ring only. The sphincter grips the shaft. "
-    "The perineum is visible between the shut unused pussy and the anal ring. "
-    "The receiver's own 20cm and shut pussy stay unobstructed and empty of any penis. "
-    "No clothes. Adult 21+."
+    "ANAL JOIN: Two adult futanari women, not a man. Female breasts, erect 20cm each, "
+    "no testicles. The partner's 20cm glans and shaft are inside the receiver's stretched "
+    "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. "
+    "The receiver's own 20cm hangs free in front, empty of any penis. "
+    "Unused pussy stays shut and is not the joining point. No clothes. Adult 21+."
 )
 ANAL_DETAIL = f"{ANAL_HOLE_LOCK} {ANAL_ANATOMY} {ANAL_JOIN}"
+ANAL_CLOSE = "JOIN CLOSE: The penis entering in this image is in the anus."
 ANAL_REAR_LOCK = (
-    "REAR ANAL LOCK: From behind, all fours, or standing doggy: two holes. "
+    "REAR ANAL LOCK: From behind, all fours, or standing doggy: camera on the buttocks. "
     "The UPPER hole toward the tailbone is the anus — the 20cm is in THAT hole only. "
-    "The LOWER hole toward the belly is the unused shut pussy. Do not aim at the pussy. "
-    "Joining point is penis-in-anus above the closed pussy."
+    "The LOWER front hole toward the belly stays closed. "
+    "Joining point is penis-in-anus, the upper hole. Not a front-crotch crop."
 )
 ANAL_FRONT_LOCK = (
-    "FRONT ANAL LOCK: Missionary, cowgirl, lap, or M-spread facing camera: two holes. "
-    "The LOWER hole toward the tailbone / buttocks is the anus — the 20cm is in THAT hole only. "
-    "The UPPER hole toward the belly is the unused shut pussy. Do not aim at the front hole. "
-    "Joining point is penis-in-anus below the closed pussy."
+    "FRONT ANAL LOCK: Facing camera, on her back, lap, or sitting down: hips tilted so "
+    "the rear hole is reachable. The LOWER hole toward the buttocks is the anus — the 20cm "
+    "is in THAT hole only. The UPPER front hole toward the belly stays closed. "
+    "Joining point is penis-in-anus below the closed front hole. Not a vaginal crop."
+)
+_ANAL_CUE_RE = re.compile(r"アナル|肛門|\banal\b|\banus\b", re.I)
+_SCAT_CUE_RE = re.compile(
+    r"脱糞|うんこ|糞|\bscat\b|\bfeces\b|\bdefecat|\bstool\b|\bturd\b",
+    re.I,
 )
 ANAL_REAR_PRESETS = frozenset({"アナルバック", "アナル立ちバック"})
 ANAL_FRONT_PRESETS = frozenset({"アナル正常位", "アナル騎乗位", "アナル座位", "肛門リフト"})
@@ -297,28 +303,31 @@ URINE_DETAIL = (
     "hairless pussy at the base of the shaft. Not a man. Adult 21+."
 )
 SCAT_HOLE_LOCK = (
-    "SCAT HOLE LOCK: Feces leaves the ANUS only. The unused pussy stays shut and empty. "
-    "Nothing comes out of the vagina, the urethra, or the penis. Not from the front hole. "
-    "Not from off-screen. The log is still attached to the stretched anal opening."
+    "SCAT HOLE LOCK: Feces leaves the ANUS only — the rear hole between the buttocks, "
+    "toward the tailbone. The log is still attached to the stretched anal opening. "
+    "Nothing comes out of the front hole, the urethra, or the penis. Not from off-screen."
 )
 SCAT_ACT = (
-    "SCAT ACT: Real adult human feces leaving the anus in this image. A formed opaque brown "
-    "stool log, sausage-shaped and lightly segmented, is pushed out of the anus now. "
-    "Soft-solid like clay: it sags, breaks, and piles. It does not bounce. It does not stretch "
-    "like slime. This is the act of defecating now, not a body already coated from before."
+    "SCAT ACT: She is defecating from the anus now. Camera on the buttocks. "
+    "A thick formed opaque brown human turd is being pushed out of the dilated anus. "
+    "Sausage-shaped, two fingers thick, ring-segmented. Soft-solid like clay: it hangs, "
+    "sags, breaks, and piles. It does not bounce. It does not stretch like slime. "
+    "This is the act of passing stool now, not a body already coated from before."
 )
 FECES_LOOK = (
-    "FECES LOOK: Real adult human feces. Opaque dull-matte medium-dark brown, the color of "
-    "human stool, not chocolate syrup, not translucent, not amber gel. Soft-solid like clay "
-    "or putty: formed cylindrical logs and sausage segments that break, pile, and sag under "
-    "their own weight. Slightly moist on the surface, dense, heavy. It smears as lumpy paste "
-    "on skin but the mass stays formed and clumpy. "
+    "FECES LOOK: A real thick human turd. Opaque dull-matte medium-dark brown like wet "
+    "garden soil or used coffee grounds — the color of adult human stool. Cylindrical, "
+    "sausage-thick (about two fingers wide), with visible ring-segments. The tapered tip "
+    "comes out of the dilated anus first; the rest of the log stays connected to the anal "
+    "opening and hangs by gravity. Soft-solid like clay or putty: it sags, folds, and piles "
+    "on itself. Surface slightly moist, interior dense. Smears as lumpy paste, not a sheet. "
+    "Not chocolate syrup. Not caramel. Not ice cream. Not translucent amber gel. "
     "Not bouncing jelly. Not rubbery slime. Not stretchy gel strands. Not a glossy blob. "
     "Not a cartoon swirl. Not a uniform slime sheet. Not watery diarrhea. "
     "Keep the identical face and the input art medium. Adult futanari: 20cm penis, unused "
-    "shut pussy at the base, no testicles. Not a man. Adult 21+."
+    "front hole shut, no testicles. Not a man. Adult 21+."
 )
-SCAT_DETAIL = f"{SCAT_ACT} {SCAT_HOLE_LOCK} {FECES_LOOK}"
+SCAT_DETAIL = f"{SCAT_HOLE_LOCK} {SCAT_ACT} {FECES_LOOK}"
 
 # ayooo123 / Mk1227 のクイックプロンプトと同じ12個。行為の竿はフタナリに差し替える。
 SEX_PRESET_DEFAULT = "服抜きフタナリ（既定）"
@@ -401,57 +410,52 @@ SEX_PRESETS = {
         "Amateur phone-camera snapshot, natural indoor lighting, same environment as the original photo. "
         "THE SAME WOMAN with the IDENTICAL FACE — absolutely unchanged facial features, same person, same "
         "expression — is held up in the air with her legs raised wide in an M shape, her body facing the "
-        "camera, completely nude. An adult futanari holds her up from behind. The partner's erect 20cm "
-        "enters the LOWER hole toward the buttocks — the ANUS — from below, not the upper front hole. "
-        "The unused pussy toward the belly stays shut and empty. Bare breasts visible. Partner mostly "
+        "camera, completely nude. An adult futanari holds her up from behind. Camera shows the joining: "
+        "the partner's erect 20cm enters from below into the ANUS, the LOWER hole toward the buttocks, "
+        "not the upper front hole. Anal ring around the shaft. Bare breasts visible. Partner mostly "
         "out of view behind her. Face shows intense pleasure. Not vaginal. Face must remain exactly as "
         "in the input image."
     ),
     "アナルバック": (
-        "Rear three-quarter view, slightly low, medium-full shot. THE SAME PERSON from the input photo "
-        "with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, absolutely unchanged — "
-        "looks back over her shoulder so her face is fully visible. She is on all fours in doggy position, "
-        "completely nude, back arched, knees apart. An adult futanari partner kneels behind her; partner's "
-        "face out of frame. The partner's erect 20cm futanari penis is thrusting into the receiver's ANUS "
-        "from behind, not the pussy. From the rear the UPPER hole toward the tailbone is the anus with "
-        "the shaft in it; the LOWER hole toward the belly is the unused shut pussy with nothing in it. "
-        "Show the hanging receiver cock, the empty closed pussy at the base of that shaft, and the "
-        "stretched anus around the penetrating shaft. Not vaginal. Same environment. Not a man."
+        "Rear three-quarter view, slightly low, camera on the buttocks and the joining. THE SAME PERSON "
+        "from the input photo with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, "
+        "absolutely unchanged — looks back over her shoulder so her face is fully visible. She is on all "
+        "fours in doggy position, completely nude, back arched, knees apart. An adult futanari partner "
+        "kneels behind her; partner's face out of frame. The partner's erect 20cm is thrusting into the "
+        "receiver's ANUS — the UPPER rear hole toward the tailbone. The anal ring stretches around the "
+        "shaft. The receiver's own 20cm hangs in front. Same environment. Not a man. Not vaginal."
     ),
     "アナル立ちバック": (
-        "Full-body three-quarter rear view. THE SAME PERSON from the input photo with the IDENTICAL FACE — "
-        "same facial features, unchanged — is standing, bent forward at the waist in standing doggy, hands "
-        "braced on a wall or bed, looking back so her face is visible. Completely nude. An adult futanari "
-        "partner stands behind her, face out of frame, hips flush against her ass. The partner's erect 20cm "
-        "futanari penis is buried in the receiver's ANUS, not the pussy. The UPPER rear hole is the anus "
-        "gripping the shaft; the LOWER hole toward the belly is the unused shut pussy. The receiver's own "
-        "erect 20cm hangs between her thighs. Not vaginal. Same environment. Not a man."
+        "Full-body three-quarter rear view, camera on the buttocks. THE SAME PERSON from the input photo "
+        "with the IDENTICAL FACE — same facial features, unchanged — is standing, bent forward at the waist "
+        "in standing doggy, hands braced on a wall or bed, looking back so her face is visible. Completely "
+        "nude. An adult futanari partner stands behind her, face out of frame, hips flush against her ass. "
+        "The partner's erect 20cm is buried in the receiver's ANUS — the UPPER rear hole gripping the shaft. "
+        "The receiver's own erect 20cm hangs between her thighs. Same environment. Not a man. Not vaginal."
     ),
     "アナル正常位": (
         "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input photo with "
-        "the IDENTICAL FACE — same facial features, unchanged — lies on her back in missionary, legs folded "
-        "toward her chest or spread in an M, looking at the camera. Completely nude. This is anal missionary, "
-        "not vaginal: the partner's erect 20cm futanari penis is inserted in the LOWER hole toward the "
-        "buttocks — the ANUS — not the upper front hole. Her own erect 20cm lies on her belly. The unused "
-        "pussy toward the pubic bone stays shut and empty at the base of her shaft. Anus below the perineum "
-        "taking the partner. Partner between her legs, face out of frame. Same environment. Not a man."
+        "the IDENTICAL FACE — same facial features, unchanged — lies on her back in anal missionary, hips "
+        "tilted up, legs folded toward her chest or spread in an M, looking at the camera. Completely nude. "
+        "The partner's erect 20cm is inserted in the LOWER hole toward the buttocks — the ANUS. Anal ring "
+        "around the shaft. Her own erect 20cm lies on her belly. Partner between her legs, face out of "
+        "frame. Same environment. Not a man. Not vaginal."
     ),
     "アナル騎乗位": (
         "Eye-level medium shot, front. THE SAME PERSON from the input photo with the IDENTICAL FACE — same "
-        "facial features, unchanged — sits in cowgirl, facing the camera, completely nude, straddling an "
-        "adult futanari partner who lies on her back below. Partner's face out of frame. The partner's erect "
-        "20cm futanari penis is in the receiver's ANUS from below, not in the pussy. The LOWER hole toward "
-        "the buttocks sits down on the shaft; the UPPER hole toward the belly is the unused shut pussy. "
-        "The receiver's own erect 20cm stands in front. Hands on her own thighs. Not vaginal. Same "
-        "environment. Not a man."
+        "facial features, unchanged — is anal riding: sitting down onto the partner's 20cm with her ANUS, "
+        "facing the camera, completely nude, straddling an adult futanari partner who lies on her back below. "
+        "Partner's face out of frame. The buttocks sit down on the shaft; the penis is in the anus from below. "
+        "The receiver's own erect 20cm stands in front. Hands on her own thighs. Same environment. Not a man. "
+        "Not vaginal."
     ),
     "アナル座位": (
         "Eye-level medium shot. THE SAME PERSON from the input photo with the IDENTICAL FACE — same facial "
         "features, unchanged — sits in an adult futanari partner's lap in seated anal sex, more upright than "
-        "cowgirl, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, face "
-        "out of frame. The partner's erect 20cm futanari penis is in the receiver's ANUS, not the pussy. "
-        "The LOWER hole toward the buttocks takes the full shaft; the UPPER unused pussy stays shut. "
-        "The receiver's own erect 20cm is visible in front. Not vaginal. Same environment. Not a man."
+        "anal riding, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, "
+        "face out of frame. The partner's erect 20cm is in the receiver's ANUS — the LOWER hole toward the "
+        "buttocks takes the full shaft. The receiver's own erect 20cm is visible in front. Same environment. "
+        "Not a man. Not vaginal."
     ),
     "放尿（立ち）": (
         "Full-body front or three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — "
@@ -476,22 +480,20 @@ SEX_PRESETS = {
         "Not a man."
     ),
     "脱糞（しゃがみ）": (
-        "Medium-full three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — same "
-        "facial features, unchanged, face readable. She squats fully nude, knees apart. Her 20cm futanari "
-        "penis hangs in front. The unused pussy at the base of that shaft stays shut: nothing comes out "
-        "of it. Behind the shut pussy, the anus is the focus: a formed opaque brown sausage-shaped human "
-        "stool log is being pushed out of the anus now, still attached to the stretched anal opening, "
-        "sagging like clay. Not jelly, not slime, not chocolate syrup, not from the vagina. No testicles. "
-        "Not a man."
+        "Rear three-quarter from behind and slightly below. Camera on the buttocks. THE SAME PERSON from "
+        "the input with the IDENTICAL FACE — same facial features, unchanged, looking back so her face is "
+        "readable. She squats fully nude, knees apart. Between the buttocks the ANUS is dilated. A thick "
+        "formed opaque brown human turd, sausage-shaped and two fingers thick, is being pushed out of that "
+        "anus now, still attached to the stretched anal opening, hanging and sagging like clay. Her 20cm "
+        "futanari penis hangs in front, unused. No testicles. Not a man. Not from the front hole."
     ),
     "脱糞（後背）": (
-        "Rear three-quarter view, slightly low. THE SAME PERSON from the input with the IDENTICAL FACE — "
-        "same facial features, unchanged — looks back over her shoulder so her face is readable. She is on "
-        "all fours, fully nude. Her 20cm futanari penis hangs between her thighs. From the rear the LOWER "
-        "hole toward the belly is the unused shut pussy with nothing coming out. The UPPER hole toward the "
-        "tailbone is the anus: a formed opaque brown sausage-shaped human stool log is leaving that anus "
-        "now, still attached to the opening, sagging like clay. Not jelly, not slime, not chocolate syrup, "
-        "not from the vagina. No testicles. Not a man."
+        "Rear three-quarter view, slightly low, camera on the buttocks. THE SAME PERSON from the input with "
+        "the IDENTICAL FACE — same facial features, unchanged — looks back over her shoulder so her face is "
+        "readable. She is on all fours, fully nude. Her 20cm futanari penis hangs between her thighs. The "
+        "UPPER hole toward the tailbone is the anus: a thick formed opaque brown human turd is leaving that "
+        "anus now, still attached to the opening, hanging and sagging like clay, two fingers thick, "
+        "ring-segmented. The LOWER front hole stays closed with nothing coming out. No testicles. Not a man."
     ),
 }
 SEX_ACT_PRESETS = frozenset(
@@ -865,6 +867,12 @@ def is_anal_preset(label: str) -> bool:
     return (label or "").strip() in ANAL_PRESETS
 
 
+def wants_anal_lock(text: str = "", preset: str = "") -> bool:
+    if is_anal_preset(preset):
+        return True
+    return bool(_ANAL_CUE_RE.search(text or ""))
+
+
 def is_excrete_preset(label: str) -> bool:
     return (label or "").strip() in EXCRETE_PRESETS
 
@@ -875,6 +883,12 @@ def is_urine_preset(label: str) -> bool:
 
 def is_scat_preset(label: str) -> bool:
     return (label or "").strip() in SCAT_PRESETS
+
+
+def wants_scat_lock(text: str = "", preset: str = "") -> bool:
+    if is_scat_preset(preset):
+        return True
+    return bool(_SCAT_CUE_RE.search(text or ""))
 
 
 def has_leftover_man(text: str) -> bool:
@@ -909,25 +923,37 @@ def compose_edit_prompt(
     label = (preset or "").strip()
     extra = (user_prompt or "").strip()
     parts: list[str] = []
+    anal = wants_anal_lock(extra, label)
+    scat = wants_scat_lock(extra, label)
     if label and label != SEX_PRESET_DEFAULT:
         base = SEX_PRESETS.get(label)
         if not base:
             raise SystemExit(f"unknown quick prompt: {label}")
         if is_excrete_preset(label):
-            parts.append(base)
-            if is_urine_preset(label) and URINE_DETAIL not in parts:
-                parts.append(URINE_DETAIL)
-            if is_scat_preset(label) and SCAT_DETAIL not in parts:
-                parts.append(SCAT_DETAIL)
+            if is_scat_preset(label):
+                parts.append(SCAT_HOLE_LOCK)
+                parts.append(base)
+                parts.append(SCAT_ACT)
+                parts.append(FECES_LOOK)
+            else:
+                parts.append(base)
+                if URINE_DETAIL not in parts:
+                    parts.append(URINE_DETAIL)
         elif is_sex_act_preset(label):
-            parts.append(apply_futa_partner(base) if futa else base)
-            if futa and is_anal_preset(label) and ANAL_DETAIL not in parts:
-                parts.append(ANAL_DETAIL)
+            pose = apply_futa_partner(base) if futa else base
             if is_anal_preset(label):
-                if label in ANAL_REAR_PRESETS and ANAL_REAR_LOCK not in parts:
+                parts.append(ANAL_HOLE_LOCK)
+                if label in ANAL_REAR_PRESETS:
                     parts.append(ANAL_REAR_LOCK)
-                elif label in ANAL_FRONT_PRESETS and ANAL_FRONT_LOCK not in parts:
+                elif label in ANAL_FRONT_PRESETS:
                     parts.append(ANAL_FRONT_LOCK)
+                parts.append(pose)
+                if futa:
+                    parts.append(ANAL_ANATOMY)
+                    parts.append(ANAL_JOIN)
+                parts.append(ANAL_CLOSE)
+            else:
+                parts.append(pose)
         else:
             parts.append(base)
             blob = base.lower()
@@ -937,7 +963,7 @@ def compose_edit_prompt(
                     pass
                 elif undress and "remove all clothing" not in blob and "completely nude" not in blob:
                     parts.append("Remove only the clothes. Do not tie the hair.")
-                if futa and "20cm" not in " ".join(parts).lower():
+                if futa and "20cm" not in " ".join(parts).lower() and not anal:
                     parts.append(FUTA_LOCK)
         if extra:
             parts.append(extra)
@@ -948,9 +974,24 @@ def compose_edit_prompt(
         else:
             parts.append(KEEP_LOCK)
             blob = KEEP_LOCK.lower()
-        if undress and "remove only the clothes" not in blob:
+        if scat:
+            if SCAT_HOLE_LOCK not in parts:
+                parts.insert(0, SCAT_HOLE_LOCK)
+            if SCAT_ACT not in parts:
+                parts.append(SCAT_ACT)
+            if FECES_LOOK not in parts:
+                parts.append(FECES_LOOK)
+        elif anal:
+            if ANAL_HOLE_LOCK not in parts:
+                parts.insert(0, ANAL_HOLE_LOCK)
+            if futa and ANAL_JOIN not in parts:
+                parts.append(ANAL_ANATOMY)
+                parts.append(ANAL_JOIN)
+            if ANAL_CLOSE not in parts:
+                parts.append(ANAL_CLOSE)
+        if undress and "remove only the clothes" not in blob and not anal and not scat:
             parts.append("Remove only the clothes. Do not tie the hair.")
-        if futa and "20cm" not in " ".join(parts).lower():
+        if futa and "20cm" not in " ".join(parts).lower() and not anal and not scat:
             parts.append(FUTA_LOCK)
     pose_ok = (
         bool(extra)
@@ -963,6 +1004,12 @@ def compose_edit_prompt(
     # Lead with a short keep-face line. Proven Space /infer also keeps rewrite off.
     if not " ".join(parts).lower().startswith(FACE_KEEP.lower()):
         parts.insert(0, FACE_KEEP)
+    if anal and ANAL_HOLE_LOCK in parts:
+        parts = [p for p in parts if p != ANAL_HOLE_LOCK]
+        parts.insert(1, ANAL_HOLE_LOCK)
+    if scat and SCAT_HOLE_LOCK in parts:
+        parts = [p for p in parts if p != SCAT_HOLE_LOCK]
+        parts.insert(1, SCAT_HOLE_LOCK)
     if not pose_ok and "change clothing only" not in " ".join(parts).lower():
         parts.append("Change clothing only. Keep the exact same pose, camera, crop, lighting, and background.")
     if has_ref:
@@ -976,65 +1023,43 @@ def compose_edit_prompt(
     return apply_style(" ".join(parts), style)
 
 
+def lora_trigger(name: str, preset: str = "", extra: str = "") -> str:
+    if name == "qwen_uncensor":
+        if wants_anal_lock(extra, preset):
+            return UNCENSOR_ANAL_TRIGGER
+        if wants_scat_lock(extra, preset):
+            return UNCENSOR_SCAT_TRIGGER
+    return LORA_TRIGGERS[name]
+
+
 def lora_stack(
     undress: bool,
     futa: bool,
     preset: str = "",
+    extra: str = "",
 ) -> list[tuple[str, float, str]]:
     rows: list[tuple[str, float, str]] = []
     label = (preset or "").strip()
+
+    def add(name: str) -> None:
+        rows.append((name, LORA_WEIGHTS[name], lora_trigger(name, label, extra)))
+
     if label in OUTFIT_PRESETS:
         return rows
     if is_excrete_preset(label):
-        rows.append(
-            (
-                "qwen_uncensor",
-                LORA_WEIGHTS["qwen_uncensor"],
-                LORA_TRIGGERS["qwen_uncensor"],
-            )
-        )
+        add("qwen_uncensor")
         if futa:
-            rows.append(
-                (
-                    "CockQwen_v3",
-                    LORA_WEIGHTS["CockQwen_v3"],
-                    LORA_TRIGGERS["CockQwen_v3"],
-                )
-            )
+            add("CockQwen_v3")
         return rows
     if is_sex_act_preset(label):
-        rows.append(
-            (
-                "qwen_uncensor",
-                LORA_WEIGHTS["qwen_uncensor"],
-                LORA_TRIGGERS["qwen_uncensor"],
-            )
-        )
-        if not is_anal_preset(label):
-            rows.append(
-                (
-                    "Qwen4Play_v2",
-                    LORA_WEIGHTS["Qwen4Play_v2"],
-                    LORA_TRIGGERS["Qwen4Play_v2"],
-                )
-            )
+        add("qwen_uncensor")
+        if not wants_anal_lock(extra, label):
+            add("Qwen4Play_v2")
         if futa:
-            rows.append(
-                (
-                    "CockQwen_v3",
-                    LORA_WEIGHTS["CockQwen_v3"],
-                    LORA_TRIGGERS["CockQwen_v3"],
-                )
-            )
+            add("CockQwen_v3")
         return rows
     if undress:
-        rows.append(
-            (
-                "remove_clothing",
-                LORA_WEIGHTS["remove_clothing"],
-                LORA_TRIGGERS["remove_clothing"],
-            )
-        )
+        add("remove_clothing")
     return rows
 
 
