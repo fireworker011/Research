@@ -197,8 +197,8 @@ I2I_SINGLE = (
 I2I_REF = (
     "This is multi-image I2I. Picture 1 is the source to edit "
     "(clothing, pose, location, sex act). "
-    "Picture 2 is the face and art-medium lock: identical face, identical hair, "
-    "identical art medium as Picture 2. Keep Picture 2's person. "
+    "Picture 2 is the face lock: identical face, identical hair. "
+    "Copy Picture 1's look, rendering, colors, and shading method. Keep Picture 1's person. "
     "Do not copy Picture 2's pose or clothes unless asked. Adult 21+."
 )
 FACE_KEEP = (
@@ -206,7 +206,8 @@ FACE_KEEP = (
     "Keep the exact same art medium. Do not swap to a different person. Adult 21+."
 )
 REF_FACE = (
-    "Picture 2 is the face lock of the same person. Copy face, hair, and art medium from Picture 2. "
+    "Picture 2 is the face lock of the same person. Copy face and hair from Picture 2. "
+    "Copy Picture 1's look, rendering, colors, and shading method. "
     "Edit Picture 1. Do not copy Picture 2's crop or clothes unless asked."
 )
 UNDRESS_LOCK = (
@@ -245,20 +246,17 @@ DEFAULT_EDIT_PROMPT = (
 DEFAULT_NEGATIVE = ""
 STYLE_PRESET_DEFAULT = "入力のまま"
 STYLE_LABELS = ("アニメ絵", "リアル", "3D", "漫画")
+# CFG1 attends to every token. "line work" / "manga" / "Do not convert to manga"
+# restyles Rapid-AIO to manga. 入力のまま must never name those media.
 STYLE_PRESETS = {
     STYLE_PRESET_DEFAULT: (
-        "Keep the exact same art medium as the input image: same line work, coloring, "
-        "shading, and texture. This is an edit of that picture, not a restyle."
+        "Copy Picture 1's look: same rendering, same colors, same shading method "
+        "as the source pixels. Not a restyle."
     ),
-    "アニメ絵": (
-        "Stay 2D Japanese anime. Do not convert to photoreal, 3D CGI, or live action."
-    ),
-    "リアル": "Stay photorealistic live-action. Do not convert to anime, manga, or 3D CGI.",
-    "3D": "Stay 3D CGI. Do not convert to 2D anime, manga, or a real photograph.",
-    "漫画": (
-        "Stay 2D manga / comic with the same ink and screentones. "
-        "Do not convert to photoreal or 3D CGI."
-    ),
+    "アニメ絵": "Stay 2D Japanese anime. Same anime coloring and faces.",
+    "リアル": "Stay photorealistic live-action with real skin.",
+    "3D": "Stay 3D CGI with the same 3D rendering.",
+    "漫画": "Stay 2D manga with the same ink and screentones.",
 }
 STYLE_NEGATIVES = {
     "アニメ絵": "photorealistic, photograph, 3d render, real skin pores, live action",
@@ -360,14 +358,14 @@ URINE_DETAIL = (
     "the stream comes out of the urethral opening at the glans tip (the small hole at the tip "
     "of the 20cm), the same hole semen would pulse from, not from the pussy at the base, not "
     "from the anus, not from off-screen. Continuous physically realistic yellow arc, splash and "
-    "puddle. Keep the identical face and the input art medium. Adult futanari girl: no testicles, "
+    "puddle. Keep the identical face. Copy Picture 1's look. Adult futanari girl: no testicles, "
     "hairless pussy at the base of the shaft. Adult woman only. Adult 21+."
 )
 URINE_DETAIL_MAN_GIVER = (
     "URINE LOOK: Opaque yellow urine, not clear, not white, not semen. The stream comes out of "
     "the urethral opening at the glans tip of the adult man's penis, the same hole semen would "
     "pulse from, not from off-screen. Continuous physically realistic yellow arc, splash and puddle. "
-    "Keep the identical face and the input art medium. Adult 21+."
+    "Keep the identical face. Copy Picture 1's look. Adult 21+."
 )
 SCAT_HOLE_LOCK = (
     "SCAT HOLE LOCK: Feces leaves the ANUS only — the rear hole between the buttocks, "
@@ -390,8 +388,8 @@ FECES_LOOK = (
     "on itself. Surface slightly moist, interior dense. Smears as lumpy paste, not a sheet. "
     "Not chocolate syrup. Not caramel. Not ice cream. Not translucent amber gel. "
     "Not bouncing jelly. Not rubbery slime. Not stretchy gel strands. Not a glossy blob. "
-    "Not a cartoon swirl. Not a uniform slime sheet. Not watery diarrhea. "
-    "Keep the identical face and the input art medium. Adult futanari girl: 20cm penis, unused "
+    "Not a spiral ice-cream swirl. Not a uniform slime sheet. Not watery diarrhea. "
+    "Keep the identical face. Copy Picture 1's look. Adult futanari girl: 20cm penis, unused "
     "front hole shut, no testicles. Adult woman only. Adult 21+."
 )
 SCAT_DETAIL = f"{SCAT_HOLE_LOCK} {SCAT_ACT} {FECES_LOOK}"
@@ -532,7 +530,7 @@ SEX_PRESETS = {
         "same facial features, unchanged. She stands fully nude, feet apart. Her 20cm futanari penis is "
         "visible; a thick opaque yellow urine stream shoots from the urethral opening at the glans tip "
         "and arcs into a puddle. Hairless pussy at the base of the shaft. No urine from the pussy or anus. "
-        "No testicles. Face fully readable. Same environment art medium. Adult woman only."
+        "No testicles. Face fully readable. Same environment. Copy Picture 1's look. Adult woman only."
     ),
     "放尿（しゃがみ）": (
         "Medium-full shot. THE SAME PERSON from the input with the IDENTICAL FACE — same facial features, "
@@ -1027,7 +1025,7 @@ def lock_identity_prompt(
     *,
     has_ref: bool = False,
     style: str = "",
-    pin_ends: bool = False,
+    pin_ends: bool = True,
 ) -> str:
     """Rewrite/VL often drops the face. Re-lead with FACE_KEEP. Strip t2i phrasing."""
     out = T2I_REWRITE_RE.sub(" ", prompt or "")
@@ -1063,6 +1061,17 @@ _PHOTO_STYLE_PULL = (
     (re.compile(r"\bfrom the photo\b", re.I), "from the image"),
     (re.compile(r"\bthe photo\b", re.I), "the image"),
 )
+_MANGA_STYLE_PULL = (
+    (re.compile(r"\b2D manga(?:\s*/\s*comic)?\b", re.I), ""),
+    (re.compile(r"\bmanga\b", re.I), ""),
+    (re.compile(r"\bcomics?\b", re.I), ""),
+    (re.compile(r"\bscreentones?\b", re.I), ""),
+    (re.compile(r"\bline\s*works?\b", re.I), ""),
+    (re.compile(r"\blineart\b", re.I), ""),
+    (re.compile(r"\bcel shading\b", re.I), ""),
+    (re.compile(r"\bcartoon\b", re.I), ""),
+    (re.compile(r"\bdo not convert to (?:anime|manga|photoreal|3D CGI)(?:(?:,| or) (?:anime|manga|photoreal|3D CGI|live action))*\b", re.I), ""),
+)
 
 
 def strip_photo_style_pull(text: str) -> str:
@@ -1071,6 +1080,18 @@ def strip_photo_style_pull(text: str) -> str:
     for cre, repl in _PHOTO_STYLE_PULL:
         out = cre.sub(repl, out)
     return re.sub(r" {2,}", " ", out).strip()
+
+
+def strip_manga_style_pull(text: str) -> str:
+    """Keep-style must not name manga. CFG1 paints those tokens."""
+    out = text or ""
+    for cre, repl in _MANGA_STYLE_PULL:
+        out = cre.sub(repl, out)
+    return re.sub(r" {2,}", " ", out).strip()
+
+
+def is_keep_style(style: str = "") -> bool:
+    return ((style or "").strip() or STYLE_PRESET_DEFAULT) == STYLE_PRESET_DEFAULT
 
 
 def apply_style(prompt: str, style: str = "", *, pin_ends: bool = False) -> str:
@@ -1082,6 +1103,8 @@ def apply_style(prompt: str, style: str = "", *, pin_ends: bool = False) -> str:
     out = out.replace("Realistic nude body, natural skin.", "")
     if label != "リアル":
         out = strip_photo_style_pull(out)
+    if is_keep_style(label):
+        out = strip_manga_style_pull(out)
     if pin_ends and out.lower().startswith(FACE_KEEP.lower()):
         rest = out[len(FACE_KEEP) :].lstrip()
         if not rest.lower().startswith(lock.lower()):
@@ -1131,17 +1154,9 @@ def wants_urine_lock(text: str = "", preset: str = "") -> bool:
     return bool(_URINE_CUE_RE.search(text or ""))
 
 
-def pins_style_lock(preset: str = "", extra: str = "") -> bool:
-    """Sex/excrete/pose-change restyle to photoreal unless the medium is pinned both ends."""
-    label = (preset or "").strip()
-    return (
-        is_sex_act_preset(label)
-        or is_excrete_preset(label)
-        or wants_anal_lock(extra, label)
-        or wants_scat_lock(extra, label)
-        or wants_urine_lock(extra, label)
-        or label in STYLE_PIN_LABELS
-    )
+def pins_style_lock(preset: str = "", extra: str = "", style: str = "") -> bool:
+    """Rapid-AIO restyles unless the keep-look lock sits both ends."""
+    return True
 
 
 def has_leftover_man(text: str) -> bool:
@@ -1396,7 +1411,7 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    styled = apply_style(joined, style, pin_ends=pins_style_lock(label, extra))
+    styled = apply_style(joined, style, pin_ends=True)
     if is_futa_giver(giver):
         return strip_man_mentions(styled)
     return styled

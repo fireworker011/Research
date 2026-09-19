@@ -36,6 +36,7 @@ from qwen_image_edit_nsfw import (
     FUTA_BODY,
     UNDRESS_LOCK,
     FACE_KEEP,
+    REF_FACE,
     GIVER_DEFAULT,
     GIVER_FUTA,
     GIVER_FUTA_LOCK,
@@ -126,6 +127,8 @@ from qwen_image_edit_nsfw import (
     wants_scat_lock,
     wants_urine_lock,
     pins_style_lock,
+    is_keep_style,
+    strip_manga_style_pull,
     lock_identity_prompt,
     lora_files_for_gpu,
     lora_trigger,
@@ -207,7 +210,7 @@ def test_compose_empty_adds_futa_undress():
     assert "not text-to-image" not in out
     assert "you may change clothing, pose" not in out.lower()
     assert "Picture 2" not in out
-    assert len(out) < 900
+    assert len(out) < 1100
 
 
 def test_compose_keeps_user_and_still_locks():
@@ -1104,11 +1107,14 @@ def test_style_presets_lock_medium():
     assert "keep the exact same art medium" in keep.lower()
     anime = compose_edit_prompt("", preset="服を脱ぐ", style="アニメ絵")
     assert "2D Japanese anime" in anime
-    assert "Do not convert" in anime
     assert "Realistic nude body" not in anime
+    assert "manga" not in anime.lower()
     undress_keep = compose_edit_prompt("", preset="服を脱ぐ")
     assert "Realistic nude body" not in undress_keep
     assert "do not swap" in undress_keep.lower()
+    assert "line work" not in undress_keep.lower()
+    assert "manga" not in undress_keep.lower()
+    assert "screentone" not in undress_keep.lower()
     doggy = compose_edit_prompt("", preset="アナルバック")
     assert "do not swap" in doggy.lower()
     assert "identical face" in doggy.lower()
@@ -1116,6 +1122,8 @@ def test_style_presets_lock_medium():
     assert "input photo" not in doggy.lower()
     assert "phone-camera" not in doggy.lower()
     assert "original photo" not in doggy.lower()
+    assert "manga" not in doggy.lower()
+    assert "line work" not in doggy.lower()
     medium = STYLE_PRESETS[STYLE_PRESET_DEFAULT]
     assert doggy.lower().index("keep the exact same face") < doggy.lower().index(medium.lower())
     assert doggy.lower().index(medium.lower()) < doggy.index("ANAL HOLE LOCK")
@@ -1131,9 +1139,12 @@ def test_style_presets_lock_medium():
     assert "input photo" not in anime_anal.lower()
     real = compose_edit_prompt("", style="リアル")
     assert "photorealistic" in real.lower()
+    assert "manga" not in real.lower()
+    assert "anime" not in real.lower()
     cgi = compose_edit_prompt("", preset="アナルバック", style="3D")
     assert "3D CGI" in cgi
     assert "20cm" in cgi
+    assert "manga" not in cgi.lower()
     manga = compose_edit_prompt("", style="漫画")
     assert "manga" in manga.lower()
     assert "screentone" in manga.lower()
@@ -1145,12 +1156,37 @@ def test_style_presets_lock_medium():
         assert "unknown style" in str(e)
     else:
         raise AssertionError("bad style must exit")
+    assert is_keep_style("")
+    assert is_keep_style("入力のまま")
+    assert not is_keep_style("漫画")
+    assert "manga" not in strip_manga_style_pull("same line work manga comic screentone")
+
+
+def test_keep_style_never_names_manga():
+    leak = re.compile(
+        r"\b(?:manga|comics?|screentones?|line\s*works?|lineart|cel shading|cartoon)\b",
+        re.I,
+    )
+    assert "line work" not in STYLE_PRESETS[STYLE_PRESET_DEFAULT].lower()
+    assert leak.search(STYLE_PRESETS[STYLE_PRESET_DEFAULT]) is None
+    assert leak.search(FACE_KEEP) is None
+    assert leak.search(REF_FACE) is None
+    locked = lock_identity_prompt(compose_edit_prompt("", has_ref=True), has_ref=True)
+    assert leak.search(locked) is None
+    assert locked.lower().endswith(STYLE_PRESETS[STYLE_PRESET_DEFAULT].lower())
+    scat = compose_edit_prompt("", preset="脱糞（しゃがみ）")
+    assert leak.search(scat) is None
+    assert "Copy Picture 1's look" in scat
 
 
 def test_every_act_pose_excrete_keeps_medium():
     medium = STYLE_PRESETS[STYLE_PRESET_DEFAULT]
     photo = re.compile(
         r"\b(?:input photo|original photo|this photo|the photo|phone-camera)\b",
+        re.I,
+    )
+    leak = re.compile(
+        r"\b(?:manga|comics?|screentones?|line\s*works?|lineart|cel shading|cartoon)\b",
         re.I,
     )
     labels = [
@@ -1164,11 +1200,11 @@ def test_every_act_pose_excrete_keeps_medium():
         assert photo.search(out) is None, (label, photo.search(out))
         assert "keep the exact same art medium" in out.lower(), label
         assert "phone-camera" not in out.lower(), label
-        if pins_style_lock(label):
-            assert out.lower().index("keep the exact same face") < out.lower().index(
-                medium.lower()
-            ), label
-            assert out.lower().endswith(medium.lower()), label
+        assert leak.search(out) is None, (label, leak.search(out), out)
+        assert out.lower().index("keep the exact same face") < out.lower().index(
+            medium.lower()
+        ), label
+        assert out.lower().endswith(medium.lower()), label
     assert pins_style_lock("フェラチオの視点")
     assert pins_style_lock("宣教師")
     assert pins_style_lock("カウガール")
@@ -1178,8 +1214,8 @@ def test_every_act_pose_excrete_keeps_medium():
     assert pins_style_lock("脱糞（後背）")
     assert pins_style_lock("ウェットシャワー")
     assert pins_style_lock("セルフタッチ")
-    assert not pins_style_lock("ビキニ")
-    assert not pins_style_lock("服を脱ぐ")
+    assert pins_style_lock("ビキニ")
+    assert pins_style_lock("服を脱ぐ")
     pee = compose_edit_prompt("放尿して", futa=True)
     assert URINE_DETAIL in pee
     assert pins_style_lock("", "放尿して")
@@ -1209,6 +1245,9 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert "Picture 2" in refed
     assert "face lock of the same person" in refed
     assert "art medium" in refed.lower()
+    assert "art medium from Picture 2" not in refed
+    assert "Copy Picture 1's look" in refed
+    assert "manga" not in refed.lower()
     assert not has_leftover_man(refed)
     doggy = compose_edit_prompt("", preset="アナルバック", has_ref=True)
     assert "Picture 2" in doggy
@@ -1336,6 +1375,7 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert GIVER_FUTA in src
     assert "画風" in src
     assert "画風は変換しない" in src
+    assert "漫画にしない" in src
     assert "顔と画風の固定は必須" in src
     for label in (
         *SPACE_SEX_PRESET_LABELS,
@@ -1543,6 +1583,9 @@ def test_face_lock_image_and_identity_prompt():
     assert out.lower().startswith("keep the exact same face")
     assert "Picture 2" in out
     assert "do not swap" in out.lower()
+    assert "manga" not in out.lower()
+    assert "line work" not in out.lower()
+    assert "Copy Picture 1's look" in out
     already = lock_identity_prompt(FACE_KEEP + " Remove only the clothes.")
     assert already.lower().startswith("keep the exact same face")
     assert already.count("Do not swap to a different person") == 1
