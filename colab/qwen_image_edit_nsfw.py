@@ -187,10 +187,10 @@ I2I_REF = (
 )
 FACE_KEEP = (
     "Keep the exact same face, hair, and person as the input image. "
-    "Do not swap to a different person. Adult 21+."
+    "Keep the exact same art medium. Do not swap to a different person. Adult 21+."
 )
 REF_FACE = (
-    "Picture 2 is the face lock of the same person. Copy face and hair from Picture 2. "
+    "Picture 2 is the face lock of the same person. Copy face, hair, and art medium from Picture 2. "
     "Edit Picture 1. Do not copy Picture 2's crop or clothes unless asked."
 )
 FUTA_LOCK = (
@@ -210,7 +210,10 @@ DEFAULT_NEGATIVE = ""
 STYLE_PRESET_DEFAULT = "入力のまま"
 STYLE_LABELS = ("アニメ絵", "リアル", "3D", "漫画")
 STYLE_PRESETS = {
-    STYLE_PRESET_DEFAULT: "Keep the exact same art medium as the input image.",
+    STYLE_PRESET_DEFAULT: (
+        "Keep the exact same art medium as the input image: same line work, coloring, "
+        "shading, and texture. This is an edit of that picture, not a restyle."
+    ),
     "アニメ絵": (
         "Stay 2D Japanese anime. Do not convert to photoreal, 3D CGI, or live action."
     ),
@@ -338,7 +341,7 @@ SEX_PRESETS = {
         "zero changes to face."
     ),
     "ウェットシャワー": (
-        "Medium shot, front-facing camera. THE SAME WOMAN from the input photo with the IDENTICAL FACE — "
+        "Medium shot, front-facing camera. THE SAME WOMAN from the input image with the IDENTICAL FACE — "
         "same facial features, same eyes, nose, mouth, expression, absolutely unchanged. She stands in a "
         "tiled shower, completely nude — all clothing removed, fully naked. Her wet skin glistens with water "
         "running down her body and water mist in the air. She looks at the camera. Change only the setting "
@@ -361,12 +364,12 @@ SEX_PRESETS = {
         "to source."
     ),
     "フェラチオの視点": (
-        "POV close-up from the man's perspective looking down. THE SAME WOMAN from this photo with the "
+        "POV close-up from the man's perspective looking down. THE SAME WOMAN from this image with the "
         "IDENTICAL FACE — same facial features, same eyes, nose, mouth, absolutely unchanged, fully nude "
         "with bare breasts exposed, performing oral sex on a large thick erect penis. Her face fills most "
         "of the frame, lips wrapped around the shaft. One hand grips the base. She keeps eye contact with "
         "the camera. The penis enters from the bottom of the frame — only the shaft visible. Same "
-        "environment and lighting as the original photo. Face must remain exactly as in the input image."
+        "environment and lighting as the input image. Face must remain exactly as in the input image."
     ),
     "セルフタッチ": (
         "Front view eye-level shot, medium shot. THE SAME WOMAN with the IDENTICAL FACE — same facial "
@@ -386,15 +389,15 @@ SEX_PRESETS = {
     ),
     "カウガール": (
         "First-person male POV looking up from below, eye-level, medium shot. Cowgirl sex from the man's "
-        "POV — he lies on his back below, THE SAME WOMAN from the photo with the IDENTICAL FACE — same "
+        "POV — he lies on his back below, THE SAME WOMAN from the image with the IDENTICAL FACE — same "
         "facial features, unchanged, same expression — straddles him facing the camera with a satisfied "
         "look, hands on her own hips. She is topless with bare breasts exposed, lower body fully nude, "
         "sitting on his erect penis inserted into her from below. The man's bare chest is visible at the "
-        "bottom edge; his head, face and arms are completely out of view. Same environment as the original "
-        "photo. Face must remain exactly as in the source image."
+        "bottom edge; his head, face and arms are completely out of view. Same environment as the input "
+        "image. Face must remain exactly as in the source image."
     ),
     "乳房プレイ": (
-        "THE SAME WOMAN from this photo with the IDENTICAL FACE — absolutely unchanged facial features, "
+        "THE SAME WOMAN from this image with the IDENTICAL FACE — absolutely unchanged facial features, "
         "same person, same expression — fully nude with bare breasts exposed, sitting on a bed in a bedroom. "
         "A man is suckling her right nipple. She has her eyes closed in pleasure. Preserve the exact same "
         "face from the input image."
@@ -407,7 +410,7 @@ SEX_PRESETS = {
         "her chin. Face must be exactly as in the source image."
     ),
     "肛門リフト": (
-        "Amateur phone-camera snapshot, natural indoor lighting, same environment as the original photo. "
+        "Same environment and lighting as the input image. "
         "THE SAME WOMAN with the IDENTICAL FACE — absolutely unchanged facial features, same person, same "
         "expression — is held up in the air with her legs raised wide in an M shape, her body facing the "
         "camera, completely nude. An adult futanari holds her up from behind. Camera shows the joining: "
@@ -418,7 +421,7 @@ SEX_PRESETS = {
     ),
     "アナルバック": (
         "Rear three-quarter view, slightly low, camera on the buttocks and the joining. THE SAME PERSON "
-        "from the input photo with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, "
+        "from the input image with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, "
         "absolutely unchanged — looks back over her shoulder so her face is fully visible. She is on all "
         "fours in doggy position, completely nude, back arched, knees apart. An adult futanari partner "
         "kneels behind her; partner's face out of frame. The partner's erect 20cm is thrusting into the "
@@ -426,7 +429,7 @@ SEX_PRESETS = {
         "shaft. The receiver's own 20cm hangs in front. Same environment. Not a man. Not vaginal."
     ),
     "アナル立ちバック": (
-        "Full-body three-quarter rear view, camera on the buttocks. THE SAME PERSON from the input photo "
+        "Full-body three-quarter rear view, camera on the buttocks. THE SAME PERSON from the input image "
         "with the IDENTICAL FACE — same facial features, unchanged — is standing, bent forward at the waist "
         "in standing doggy, hands braced on a wall or bed, looking back so her face is visible. Completely "
         "nude. An adult futanari partner stands behind her, face out of frame, hips flush against her ass. "
@@ -434,7 +437,7 @@ SEX_PRESETS = {
         "The receiver's own erect 20cm hangs between her thighs. Same environment. Not a man. Not vaginal."
     ),
     "アナル正常位": (
-        "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input photo with "
+        "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input image with "
         "the IDENTICAL FACE — same facial features, unchanged — lies on her back in anal missionary, hips "
         "tilted up, legs folded toward her chest or spread in an M, looking at the camera. Completely nude. "
         "The partner's erect 20cm is inserted in the LOWER hole toward the buttocks — the ANUS. Anal ring "
@@ -442,7 +445,7 @@ SEX_PRESETS = {
         "frame. Same environment. Not a man. Not vaginal."
     ),
     "アナル騎乗位": (
-        "Eye-level medium shot, front. THE SAME PERSON from the input photo with the IDENTICAL FACE — same "
+        "Eye-level medium shot, front. THE SAME PERSON from the input image with the IDENTICAL FACE — same "
         "facial features, unchanged — is anal riding: sitting down onto the partner's 20cm with her ANUS, "
         "facing the camera, completely nude, straddling an adult futanari partner who lies on her back below. "
         "Partner's face out of frame. The buttocks sit down on the shaft; the penis is in the anus from below. "
@@ -450,7 +453,7 @@ SEX_PRESETS = {
         "Not vaginal."
     ),
     "アナル座位": (
-        "Eye-level medium shot. THE SAME PERSON from the input photo with the IDENTICAL FACE — same facial "
+        "Eye-level medium shot. THE SAME PERSON from the input image with the IDENTICAL FACE — same facial "
         "features, unchanged — sits in an adult futanari partner's lap in seated anal sex, more upright than "
         "anal riding, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, "
         "face out of frame. The partner's erect 20cm is in the receiver's ANUS — the LOWER hole toward the "
@@ -816,7 +819,13 @@ def face_lock_image(image: Any) -> Any:
     return snapped_rgb(rgb)
 
 
-def lock_identity_prompt(prompt: str, *, has_ref: bool = False) -> str:
+def lock_identity_prompt(
+    prompt: str,
+    *,
+    has_ref: bool = False,
+    style: str = "",
+    pin_ends: bool = False,
+) -> str:
     """Rewrite/VL often drops the face. Re-lead with FACE_KEEP. Strip t2i phrasing."""
     out = T2I_REWRITE_RE.sub(" ", prompt or "")
     out = re.sub(r" +", " ", out).strip()
@@ -824,7 +833,7 @@ def lock_identity_prompt(prompt: str, *, has_ref: bool = False) -> str:
         out = f"{FACE_KEEP} {out}".strip()
     if has_ref and REF_FACE.lower() not in out.lower():
         out = f"{out} {REF_FACE}".strip()
-    return out
+    return apply_style(out, style, pin_ends=pin_ends)
 
 
 def pipe_images(source: Any, ref: Any | None = None) -> list[Any]:
@@ -842,21 +851,43 @@ def style_negative(style: str = "", base: str = DEFAULT_NEGATIVE) -> str:
     return f"{base}, {extra}"
 
 
-def apply_style(prompt: str, style: str = "") -> str:
+_PHOTO_STYLE_PULL = (
+    (re.compile(r"Amateur phone-camera snapshot,?\s*", re.I), ""),
+    (re.compile(r"natural indoor lighting,?\s*", re.I), ""),
+    (re.compile(r"\bthe original photo\b", re.I), "the input image"),
+    (re.compile(r"\binput photo\b", re.I), "input image"),
+    (re.compile(r"\bthis photo\b", re.I), "this image"),
+    (re.compile(r"\bfrom the photo\b", re.I), "from the image"),
+    (re.compile(r"\bthe photo\b", re.I), "the image"),
+)
+
+
+def strip_photo_style_pull(text: str) -> str:
+    """Sex presets from the Space say photo. That restyles anime/3D inputs."""
+    out = text or ""
+    for cre, repl in _PHOTO_STYLE_PULL:
+        out = cre.sub(repl, out)
+    return re.sub(r" {2,}", " ", out).strip()
+
+
+def apply_style(prompt: str, style: str = "", *, pin_ends: bool = False) -> str:
     label = (style or "").strip() or STYLE_PRESET_DEFAULT
     lock = STYLE_PRESETS.get(label)
     if not lock:
         raise SystemExit(f"unknown style: {label}")
     out = prompt or ""
     out = out.replace("Realistic nude body, natural skin.", "")
-    if label in {"アニメ絵", "漫画", "3D"}:
-        out = out.replace(
-            "Amateur phone-camera snapshot, natural indoor lighting",
-            "Indoor lighting",
-        )
-    if lock.lower() in out.lower():
-        return out.strip()
-    return f"{out} {lock}".strip()
+    if label != "リアル":
+        out = strip_photo_style_pull(out)
+    if pin_ends and out.lower().startswith(FACE_KEEP.lower()):
+        rest = out[len(FACE_KEEP) :].lstrip()
+        if not rest.lower().startswith(lock.lower()):
+            out = f"{FACE_KEEP} {lock} {rest}".strip()
+    if lock.lower() not in out.lower():
+        out = f"{out} {lock}".strip()
+    elif pin_ends and not out.lower().endswith(lock.lower()):
+        out = f"{out} {lock}".strip()
+    return out.strip()
 
 
 def is_sex_act_preset(label: str) -> bool:
@@ -1020,7 +1051,13 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    return apply_style(" ".join(parts), style)
+    pin = (
+        is_sex_act_preset(label)
+        or is_excrete_preset(label)
+        or anal
+        or scat
+    )
+    return apply_style(joined, style, pin_ends=pin)
 
 
 def lora_trigger(name: str, preset: str = "", extra: str = "") -> str:

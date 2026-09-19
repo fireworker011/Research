@@ -714,6 +714,23 @@ def test_style_presets_lock_medium():
     doggy = compose_edit_prompt("", preset="アナルバック")
     assert "do not swap" in doggy.lower()
     assert "identical face" in doggy.lower()
+    assert "keep the exact same art medium" in doggy.lower()
+    assert "input photo" not in doggy.lower()
+    assert "phone-camera" not in doggy.lower()
+    assert "original photo" not in doggy.lower()
+    medium = STYLE_PRESETS[STYLE_PRESET_DEFAULT]
+    assert doggy.lower().index("keep the exact same face") < doggy.lower().index(medium.lower())
+    assert doggy.lower().index(medium.lower()) < doggy.index("ANAL HOLE LOCK")
+    assert doggy.lower().endswith(medium.lower())
+    lift = compose_edit_prompt("", preset="肛門リフト")
+    assert "phone-camera" not in lift.lower()
+    assert "natural indoor lighting" not in lift.lower()
+    cow = compose_edit_prompt("", preset="カウガール")
+    assert "input photo" not in cow.lower()
+    assert "the photo" not in cow.lower()
+    anime_anal = compose_edit_prompt("", preset="アナルバック", style="アニメ絵")
+    assert "2D Japanese anime" in anime_anal
+    assert "input photo" not in anime_anal.lower()
     real = compose_edit_prompt("", style="リアル")
     assert "photorealistic" in real.lower()
     cgi = compose_edit_prompt("", preset="アナルバック", style="3D")
@@ -750,6 +767,7 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     refed = compose_edit_prompt("", has_ref=True)
     assert "Picture 2" in refed
     assert "face lock of the same person" in refed
+    assert "art medium" in refed.lower()
     assert not has_leftover_man(refed)
     doggy = compose_edit_prompt("", preset="アナルバック", has_ref=True)
     assert "Picture 2" in doggy
@@ -904,6 +922,8 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "追加LoRA" in src
     assert "プロンプトrewrite = False" in src
     assert "lock_identity_prompt" in src
+    assert "style=画風" in src
+    assert "pin_ends=True" in src
     assert "face_lock_image" in src
     assert "アナルは **肛門だけ**" in src or "肛門だけ" in joined
     assert "require_space_gpu_or_exit" in src
