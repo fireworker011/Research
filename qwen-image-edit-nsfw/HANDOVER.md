@@ -13,7 +13,7 @@ Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャ
 - `colab/_write_qwen_edit_nb.py`
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
-HEAD: 70b57ba h3: Qwen Edit の顔消えは長いロック文と CockQwen
+HEAD: 90e5fd1 h3: Qwen Edit Colab は Mk1227 Space の完全クローンではない
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
@@ -44,13 +44,27 @@ JSON物語（clinic/cafe/sales含む）は触るな。HQ dump / hq-instruct / Th
 
 起点の静止画を **Qwen Image Edit** で直す。H3 動画ノート（`minimax_h3_lora_studio.ipynb`）とは別ランタイム。
 
-Mk1227 / ayooo123 Space と同系統:
+Mk1227 / ayooo123 Space と **同じ系統だが完全クローンではない**。
+
+Space 本体（`Mk1227/Qwen-Image-Edit-NSFW` `.env.example`）:
 
 - 土台 `Qwen/Qwen-Image-Edit-2511`
-- NSFW マージ `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23`
-- 4step / CFG1 / guidance 1.0 / 576×1024
-- `safety_checker` なし
-- GPU は **L4**（T4 は②で落とす。VRAM 20GiB 未満は拒否）
+- AIO 単一ファイル `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors` を載せる
+- FP8 quant オン、tensor offload、ZeroGPU A10G
+- 4step / guidance 1.0 / サイズ **auto** / rewrite **既定オン**（72B VL）
+- 追加 LoRA なし（NSFW は AIO に焼き込み）
+- クイック12個は服抜きに `Realistic nude body, natural skin`
+
+この Colab:
+
+- 同じ 2511 土台 + `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23`（上の AIO から **transformer だけ**抽出）
+- 公式 2511 の VAE / text encoder / FlowMatch（Space の SCHED_* は未コピー）
+- bf16、FP8 なし、sequential CPU offload、キャンバス **576×1024 固定**
+- rewrite なし
+- 服だけは `remove_clothing`。行為だけ Qwen4Play / CockQwen（jt65 Fast2 由来。Space には無い）
+- クイックはフタナリに差し替え。`Realistic nude body` は消す
+
+顔を Space と同じにしたいなら Colab ではなく `h3-lora-studio/scripts/qwen_edit_nsfw.py` の Mk1227 `/infer`（steps=4、rewrite=False、576×1024）。
 
 保存先は Drive `qwen-image-edit-nsfw/output`。Git に JPG を入れない。
 
@@ -69,13 +83,13 @@ HF ZeroGPU 経由の別経路は `h3-lora-studio/scripts/qwen_edit_nsfw.py`（�
 
 ## 必須ロック
 
-毎回のプロンプトに入る。外すな。
+毎回のプロンプトに短い keep-face は入る。長い IDENTITY LOCK 文は載せるな（t2i になる）。
 
 | 固定 | 内容 |
 |---|---|
-| 顔 | `IDENTITY_LOCK`。同一人物・同一顔・髪。美化禁止 |
-| 画風 | `STYLE_PRESETS`。変換しない。既定 **入力のまま**。欄の アニメ絵／リアル／3D／漫画 は「元がどれか」の固定 |
-| i2i | `I2I_SINGLE`。元画像が Picture 1。参照ありなら `I2I_REF` で Picture 2 が顔・画風 |
+| 顔 | `FACE_KEEP`。同一人物・同一顔・髪。入れ替え禁止 |
+| 画風 | `STYLE_PRESETS`。短い1文。変換しない。既定 **入力のまま** |
+| 参照 | 任意。`REF_FACE`。Picture 2 が顔と画風 |
 | フタナリ | 玉なし・マンコあり・竿20cm。男禁止 |
 | 服抜き既定 | 姿勢・場所も維持。服だけ |
 | 行為 | 姿勢・場所・行為は変えてよい。顔と画風は維持 |
