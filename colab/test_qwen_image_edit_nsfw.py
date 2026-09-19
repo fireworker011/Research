@@ -122,9 +122,8 @@ def test_require_l4_rejects_t4():
 
 
 def test_pillow_12_0_is_rejected_on_colab():
-    assert PILLOW_COLAB_SPEC == "pillow>=12.1.0"
+    assert PILLOW_COLAB_SPEC == "pillow==11.3.0"
     assert require_pillow_colab("11.3.0") == "11.3.0"
-    assert require_pillow_colab("12.1.0") == "12.1.0"
     try:
         require_pillow_colab("12.0.0")
     except SystemExit as e:
@@ -132,6 +131,13 @@ def test_pillow_12_0_is_rejected_on_colab():
         assert PILLOW_COLAB_SPEC in str(e)
     else:
         raise AssertionError("Pillow 12.0 must exit")
+    try:
+        require_pillow_colab("12.3.0")
+    except SystemExit as e:
+        assert "_imaging" in str(e)
+        assert PILLOW_COLAB_SPEC in str(e)
+    else:
+        raise AssertionError("Pillow 12.3 must exit")
     saved = {
         name: mod
         for name, mod in sys.modules.items()
@@ -417,10 +423,13 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "drive_space_lines" in src
     assert "PILLOW_COLAB_SPEC" in src
     assert "__PILLOW_SPEC__" in src
-    assert "force-reinstall" in src
+    assert "--no-cache-dir" in src
+    assert "uninstall" in src
+    assert "force-reinstall" not in src
     assert "drop_stale_pil_modules" in src
     assert '"huggingface_hub", "pillow"' not in src
-    assert "pillow>=12.1.0" in joined
+    assert "pillow==11.3.0" in joined
+    assert "pillow>=12.1.0" not in joined
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src
     assert "画風" in src

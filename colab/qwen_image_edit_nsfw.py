@@ -27,9 +27,9 @@ INPUT_SOURCE_DEFAULT = "Drive input"
 INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, "アップロード")
 REF_SOURCE_DEFAULT = "なし（元画像の顔）"
 REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, "Drive から", "アップロード")
-# Pillow 12.0.0 is missing PIL._typing._Ink. Colab then fails on
-# torchvision → QwenImageEditPlusPipeline. 12.1.0 fixed it.
-PILLOW_COLAB_SPEC = "pillow>=12.1.0"
+# Colab ships Pillow 11.3 with a matching _imaging .so. Do not -U to 12:
+# 12.0 is missing _Ink; 12.3 .py on an 11.3 .so raises ImportError.
+PILLOW_COLAB_SPEC = "pillow==11.3.0"
 
 # Optional extra adapters on top of the NSFW merge. Names match jt65 Fast2-nsfw.
 LORA_FILES = {
@@ -416,16 +416,29 @@ def pillow_major_minor(version: str) -> tuple[int, int]:
 
 
 def require_pillow_colab(version: str | None = None) -> str:
-    """Pillow 12.0.0 is missing _Ink. Colab Qwen Edit import then dies."""
+    """Keep Colab's Pillow 11.3. 12.0 lacks _Ink; 12.x .py vs 11.3 .so dies."""
     ver = version
     if ver is None:
-        import PIL
+        try:
+            import PIL
+            from PIL import Image  # noqa: F401
 
-        ver = str(getattr(PIL, "__version__", "0"))
-    if pillow_major_minor(ver) == (12, 0):
+            ver = str(getattr(PIL, "__version__", "0"))
+        except Exception as e:
+            raise SystemExit(
+                f"Pillow が壊れています（{e}）。"
+                f"{PILLOW_COLAB_SPEC} に戻すか、ランタイムを再起動して①②。"
+            ) from e
+    major, minor = pillow_major_minor(ver)
+    if (major, minor) == (12, 0):
         raise SystemExit(
             f"Pillow {ver} は Colab で壊れます（_Ink）。"
-            f"{PILLOW_COLAB_SPEC} を入れて②をやり直してください。"
+            f"{PILLOW_COLAB_SPEC} に戻して②をやり直してください。"
+        )
+    if major >= 12:
+        raise SystemExit(
+            f"Pillow {ver} は Colab の _imaging（11.3）と食い違う。"
+            f"{PILLOW_COLAB_SPEC} に戻して②をやり直す。まだならランタイム再起動→①②。"
         )
     return ver
 
