@@ -10,10 +10,14 @@ from qwen_image_edit_nsfw import (
     ANAL_POSE_LABELS,
     ANAL_PRESETS,
     DEFAULT_EDIT_PROMPT,
+    DRIVE_FREE_GIB,
     FUTA_LOCK,
+    I2I_REF,
+    I2I_SINGLE,
     KEEP_LOCK,
     LORA_FILES,
     PIPE_ID,
+    REF_SOURCE_DEFAULT,
     SCAT_DETAIL,
     SCAT_LABELS,
     SEX_ACT_PRESETS,
@@ -28,23 +32,32 @@ from qwen_image_edit_nsfw import (
     STYLE_PRESETS,
     URINE_DETAIL,
     URINE_LABELS,
+    WEIGHTS_CACHE_GIB,
     apply_futa_partner,
     apply_style,
     compose_edit_prompt,
     disable_safety,
+    drive_space_lines,
     has_leftover_man,
     infer_kwargs,
+    input_source_form_options,
     is_anal_preset,
     is_excrete_preset,
+    is_photoreal_path,
     is_scat_preset,
     is_sex_act_preset,
     is_urine_preset,
+    list_input_images,
     lora_stack,
+    pipe_images,
+    ref_source_form_options,
+    refuse_photoreal,
     require_l4_or_exit,
     resize_rgb,
     save_jpeg,
     sex_preset_form_options,
     sex_preset_labels,
+    snapped_rgb,
     snapped_size,
     style_form_options,
     style_negative,
@@ -74,6 +87,9 @@ def test_compose_empty_adds_futa_undress():
     assert "IDENTITY LOCK" in out
     assert "identical face" in out.lower()
     assert "you may change clothing, pose" not in out.lower()
+    assert I2I_SINGLE in out
+    assert "image-to-image" in out
+    assert "Picture 2" not in out
 
 
 def test_compose_keeps_user_and_still_locks():
@@ -292,6 +308,56 @@ def test_style_presets_lock_medium():
         raise AssertionError("bad style must exit")
 
 
+def test_i2i_ref_and_drive_inputs(tmp_path):
+    assert DRIVE_FREE_GIB == 2
+    assert WEIGHTS_CACHE_GIB == 40
+    blob = "\n".join(drive_space_lines())
+    assert "i2i" in blob
+    assert "2GB" in blob
+    assert "21GB" in blob
+    assert "Drive には載せない" in blob
+    assert input_source_form_options()[0] == "Drive input"
+    assert REF_SOURCE_DEFAULT in ref_source_form_options()
+    single = compose_edit_prompt("")
+    assert I2I_SINGLE in single
+    assert "text-to-image" in single
+    refed = compose_edit_prompt("", has_ref=True)
+    assert I2I_REF in refed
+    assert "Picture 2" in refed
+    assert "Picture 1" in refed
+    assert not has_leftover_man(refed)
+    doggy = compose_edit_prompt("", preset="アナルバック", has_ref=True)
+    assert I2I_REF in doggy
+    assert "IDENTITY LOCK" in doggy
+    assert is_photoreal_path("08-indoor-photoreal.jpg")
+    assert is_photoreal_path("実写-shirt.png")
+    assert not is_photoreal_path("01-stairs-harbor.jpg")
+    try:
+        refuse_photoreal("08-indoor-photoreal.jpg")
+    except SystemExit as e:
+        assert "実写の他人は入れるな" in str(e)
+    else:
+        raise AssertionError("photoreal must exit")
+    ok = tmp_path / "01-stairs.png"
+    ref = tmp_path / "face-lock.png"
+    bad = tmp_path / "08-indoor-photoreal.jpg"
+    Image.new("RGB", (64, 64), (1, 2, 3)).save(ok)
+    Image.new("RGB", (80, 120), (4, 5, 6)).save(ref)
+    Image.new("RGB", (32, 32), (7, 8, 9)).save(bad)
+    (tmp_path / "notes.txt").write_text("nope", encoding="utf-8")
+    kept, skipped = list_input_images(tmp_path, skip_name="face-lock.png")
+    assert kept == [ok]
+    assert skipped == [bad]
+    src = Image.new("RGB", (1008, 1792), (10, 20, 30))
+    face = Image.new("RGB", (640, 640), (40, 50, 60))
+    canvas = resize_rgb(src, 576, 1024)
+    locked = snapped_rgb(face)
+    assert canvas.size == (576, 1024)
+    assert locked.size == (640, 640)
+    assert pipe_images(canvas) == [canvas]
+    assert pipe_images(canvas, locked) == [canvas, locked]
+
+
 def test_writer_notebook_is_separate_l4_nsfw():
     ast.parse(WRITER.read_text(encoding="utf-8"))
     src = WRITER.read_text(encoding="utf-8")
@@ -312,6 +378,14 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined
     assert "files.upload" in joined
+    assert "Drive input" in joined
+    assert "参照画像" in joined
+    assert "Picture 2" in joined
+    assert "has_ref=" in src
+    assert "pipe_images" in src
+    assert "これは i2i" in joined
+    assert "2GB" in joined
+    assert "drive_space_lines" in src
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src
     assert "画風" in src
@@ -327,5 +401,8 @@ def test_writer_notebook_is_separate_l4_nsfw():
         "Qwen4Play",
         "入力のまま",
         "顔と画風の固定は必須",
+        "Drive input",
+        "参照画像",
+        "i2i",
     ):
         assert label in joined

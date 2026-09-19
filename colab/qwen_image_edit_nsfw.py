@@ -17,6 +17,15 @@ GUIDANCE = 1.0
 DEFAULT_WIDTH = 576
 DEFAULT_HEIGHT = 1024
 L4_MIN_VRAM_GIB = 20.0
+# Weights stay on the Colab VM HuggingFace cache. Drive only holds JPGs.
+DRIVE_FREE_GIB = 2
+WEIGHTS_CACHE_GIB = 40
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+PHOTOREAL_NAME_MARKS = ("photoreal", "realperson", "real-person", "実写")
+INPUT_SOURCE_DEFAULT = "Drive input"
+INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, "アップロード")
+REF_SOURCE_DEFAULT = "なし（元画像の顔）"
+REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, "Drive から", "アップロード")
 
 # Optional extra adapters on top of the NSFW merge. Names match jt65 Fast2-nsfw.
 LORA_FILES = {
@@ -55,6 +64,17 @@ CLOTHING_SCOPE = (
 ACT_SCOPE = (
     "EDIT SCOPE: you may change clothing, pose, camera, location/background, and the sex act. "
     "You must not change who the person is, their face, their hair, or the art medium of the input."
+)
+I2I_SINGLE = (
+    "This is image-to-image of Picture 1, not text-to-image. "
+    "Edit the uploaded source. Do not invent a new person from text alone."
+)
+I2I_REF = (
+    "This is multi-image I2I. Picture 1 is the source to edit "
+    "(clothing, pose, location, sex act). "
+    "Picture 2 is the face and art-medium lock: identical face, identical hair, "
+    "identical art medium as Picture 2. Keep Picture 2's person. "
+    "Do not copy Picture 2's pose or clothes unless asked. Adult 21+."
 )
 FUTA_LOCK = (
     "Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
@@ -399,6 +419,74 @@ def style_form_options() -> list[str]:
     return [STYLE_PRESET_DEFAULT, *STYLE_LABELS]
 
 
+def input_source_form_options() -> list[str]:
+    return list(INPUT_SOURCE_OPTIONS)
+
+
+def ref_source_form_options() -> list[str]:
+    return list(REF_SOURCE_OPTIONS)
+
+
+def drive_space_lines() -> list[str]:
+    return [
+        "これは i2i（元画像を編集）。t2i ではない。",
+        "Drive に置くのは input/ と output/ の JPG だけ。",
+        f"Drive の空きは {DRIVE_FREE_GIB}GB あれば足りる。H3 の参照土台 21GB は不要。",
+        f"重みは Colab ディスク（HuggingFace キャッシュ 約{WEIGHTS_CACHE_GIB}GB）。Drive には載せない。",
+    ]
+
+
+def is_photoreal_path(path: str | Path) -> bool:
+    name = Path(path).name.lower()
+    return any(mark in name for mark in PHOTOREAL_NAME_MARKS)
+
+
+def refuse_photoreal(path: str | Path) -> None:
+    if is_photoreal_path(path):
+        raise SystemExit(f"実写の他人は入れるな: {Path(path).name}")
+
+
+def list_input_images(
+    folder: str | Path,
+    *,
+    skip_name: str = "",
+) -> tuple[list[Path], list[Path]]:
+    root = Path(folder)
+    kept: list[Path] = []
+    skipped: list[Path] = []
+    skip = (skip_name or "").strip().lower()
+    if not root.is_dir():
+        return kept, skipped
+    for path in sorted(root.iterdir()):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() not in IMAGE_SUFFIXES:
+            continue
+        if skip and path.name.lower() == skip:
+            continue
+        if is_photoreal_path(path):
+            skipped.append(path)
+            continue
+        kept.append(path)
+    return kept, skipped
+
+
+def snapped_rgb(image: Any) -> Any:
+    """Keep aspect. Snap to 32 so a face reference is not stretched to 9:16."""
+    rgb = image.convert("RGB")
+    w, h = snapped_size(*rgb.size)
+    if rgb.size == (w, h):
+        return rgb
+    return rgb.resize((w, h))
+
+
+def pipe_images(source: Any, ref: Any | None = None) -> list[Any]:
+    images = [source]
+    if ref is not None:
+        images.append(ref)
+    return images
+
+
 def style_negative(style: str = "", base: str = DEFAULT_NEGATIVE) -> str:
     label = (style or "").strip() or STYLE_PRESET_DEFAULT
     extra = STYLE_NEGATIVES.get(label, "")
@@ -469,6 +557,7 @@ def compose_edit_prompt(
     extra_triggers: list[str] | None = None,
     preset: str = "",
     style: str = "",
+    has_ref: bool = False,
 ) -> str:
     label = (preset or "").strip()
     extra = (user_prompt or "").strip()
@@ -524,7 +613,8 @@ def compose_edit_prompt(
         or label in {"ウェットシャワー", "セルフタッチ"}
     )
     scope = ACT_SCOPE if pose_ok else CLOTHING_SCOPE
-    locked = f"{IDENTITY_LOCK} {scope} {joined}"
+    i2i = I2I_REF if has_ref else I2I_SINGLE
+    locked = f"{IDENTITY_LOCK} {i2i} {scope} {joined}"
     return apply_style(locked, style)
 
 

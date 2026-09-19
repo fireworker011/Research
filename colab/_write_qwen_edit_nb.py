@@ -10,7 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 COLAB_DIR = Path(__file__).resolve().parent
 if str(COLAB_DIR) not in sys.path:
     sys.path.insert(0, str(COLAB_DIR))
-from qwen_image_edit_nsfw import sex_preset_form_options, style_form_options
+from qwen_image_edit_nsfw import (
+    input_source_form_options,
+    ref_source_form_options,
+    sex_preset_form_options,
+    style_form_options,
+)
 
 OUTS = [
     ROOT / "qwen_image_edit_nsfw.ipynb",
@@ -34,13 +39,17 @@ H3 動画ノートとは **別**。同時に動かさない。Mk1227 / ayooo123 
 
 H3 動画は [こちら]({H3_COLAB})。
 
+**これは i2i**（元画像＝Picture 1 を編集）。文章だけから描かない。任意で **顔・画風の参照**（Picture 2）。
+
+Drive の空きは **2GB** あれば足りる。置くのは `input/` と `output/` の JPG だけ。重みは Colab ディスク約40GB（HuggingFace キャッシュ）。H3 の参照土台 21GB は不要。
+
 ## 手順
 
 1. Open in Colab → ランタイムのタイプ → GPU **L4**
 2. すべてのセルを実行
-3. ① Drive 許可
-4. ② 初回は重みダウンロード（待つ）
-5. ③ クイックプロンプトと **画風** を選んで画像をアップロード。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
+4. ② 初回は重みダウンロード（待つ）。Drive には載せない
+5. ③ クイックプロンプトと **画風**。入力は Drive input かアップロード。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -81,8 +90,10 @@ urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
 import sys
 if "/content" not in sys.path:
     sys.path.insert(0, "/content")
-from qwen_image_edit_nsfw import require_l4_or_exit
+from qwen_image_edit_nsfw import drive_space_lines, require_l4_or_exit
 require_l4_or_exit(vram, name)
+for line in drive_space_lines():
+    print(line)
 print("OK → 次は②（H3 スタジオとは同時に動かさない）")
 '''
 
@@ -171,9 +182,9 @@ print("safety_checker", getattr(pipe, "safety_checker", "n/a"))
 print("OK → 次は③")
 '''
 
-CELL3 = r'''#@title ③ クイックプロンプト（服抜き・セックス）
+CELL3 = r'''#@title ③ クイックプロンプト（i2i・参照画像）
 print("=" * 60)
-print(" ③ 編集")
+print(" ③ 編集（i2i）")
 print("=" * 60)
 
 from google.colab import files
@@ -195,10 +206,16 @@ from qwen_image_edit_nsfw import (
     GUIDANCE,
     compose_edit_prompt,
     infer_kwargs,
+    input_source_form_options,
+    list_input_images,
     lora_stack,
+    pipe_images,
+    ref_source_form_options,
+    refuse_photoreal,
     resize_rgb,
     save_jpeg,
     sex_preset_form_options,
+    snapped_rgb,
     style_form_options,
     style_negative,
 )
@@ -208,11 +225,16 @@ with open("/content/qwen_edit_paths.env") as f:
     for line in f:
         k, v = line.strip().split("=", 1)
         env[k] = v
+IN = Path(env["DRIVE_ROOT"]) / "input"
 OUT = Path(env["DRIVE_ROOT"]) / "output"
+IN.mkdir(parents=True, exist_ok=True)
 OUT.mkdir(parents=True, exist_ok=True)
 
 クイックプロンプト = "服抜きフタナリ（既定）"  #@param [__QUICK_OPTS__]
 画風 = "入力のまま"  #@param [__STYLE_OPTS__]
+入力 = "Drive input"  #@param [__INPUT_OPTS__]
+参照画像 = "なし（元画像の顔）"  #@param [__REF_OPTS__]
+参照ファイル名 = ""  #@param {type:"string"}
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
@@ -230,8 +252,61 @@ if クイックプロンプト not in sex_preset_form_options():
     raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
 if 画風 not in style_form_options():
     raise SystemExit(f"unknown style: {画風}")
+if 入力 not in input_source_form_options():
+    raise SystemExit(f"unknown input: {入力}")
+if 参照画像 not in ref_source_form_options():
+    raise SystemExit(f"unknown ref: {参照画像}")
+print("i2i", True)
 print("preset", クイックプロンプト)
 print("style", 画風)
+print("input", 入力)
+print("ref", 参照画像)
+
+ref_img = None
+ref_skip = ""
+if 参照画像 == "Drive から":
+    ref_skip = 参照ファイル名.strip()
+    if not ref_skip:
+        raise SystemExit("参照ファイル名を入れてください（Drive input の中）")
+    ref_path = IN / ref_skip
+    if not ref_path.is_file():
+        raise SystemExit(f"参照が無い: {ref_path}")
+    refuse_photoreal(ref_path)
+    ref_img = Image.open(ref_path)
+    print("REF Drive", ref_path.name, ref_img.size)
+elif 参照画像 == "アップロード":
+    print("顔・画風の参照（Picture 2）を1枚")
+    uploaded_ref = files.upload()
+    if not uploaded_ref:
+        raise SystemExit("参照画像がありません。")
+    fname, blob = next(iter(uploaded_ref.items()))
+    refuse_photoreal(Path(fname))
+    raw = Path("/tmp") / f"ref-{Path(fname).name}"
+    raw.write_bytes(blob)
+    ref_img = Image.open(raw)
+    print("REF upload", fname, ref_img.size)
+
+jobs = []
+if 入力 == "Drive input":
+    kept, skipped = list_input_images(IN, skip_name=ref_skip)
+    for path in skipped:
+        print("skip photoreal", path.name)
+    if not kept:
+        raise SystemExit(
+            "Drive input に画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置くか、入力をアップロードに。"
+        )
+    for path in kept:
+        jobs.append((path.name, Image.open(path)))
+else:
+    print("編集する元画像（Picture 1・i2i）を選ぶ（複数可）")
+    uploaded = files.upload()
+    if not uploaded:
+        raise SystemExit("元画像がありません。")
+    for fname, blob in uploaded.items():
+        refuse_photoreal(Path(fname))
+        raw = Path("/tmp") / fname
+        raw.write_bytes(blob)
+        jobs.append((fname, Image.open(raw)))
 
 stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト)
 loaded = globals().get("QWEN_EDIT_LORAS") or set()
@@ -248,21 +323,14 @@ prompt = compose_edit_prompt(
     extra_triggers=trigs,
     preset=クイックプロンプト,
     style=画風,
+    has_ref=ref_img is not None,
 )
 if names and hasattr(pipe, "set_adapters"):
-    pipe.enable_lora()
-    pipe.set_adapters(names, adapter_weights=weights)
     print("adapters", list(zip(names, weights)))
-elif hasattr(pipe, "disable_lora"):
-    pipe.disable_lora()
+else:
     print("adapters: Rapid-AIO NSFW merge only")
 
 print("prompt:", prompt[:400])
-
-print("画像を選ぶ（複数可）")
-uploaded = files.upload()
-if not uploaded:
-    raise SystemExit("画像がありません。")
 
 seed = int(SEED)
 if ランダムシード:
@@ -280,19 +348,24 @@ kwargs = infer_kwargs(
     device="cuda",
 )
 w, h = int(WIDTH) or DEFAULT_WIDTH, int(HEIGHT) or DEFAULT_HEIGHT
+ref_canvas = snapped_rgb(ref_img) if ref_img is not None else None
+if ref_canvas is not None:
+    print("REF canvas", ref_canvas.size)
+    display(ref_canvas)
 
-for fname, blob in uploaded.items():
-    raw = Path("/tmp") / fname
-    raw.write_bytes(blob)
-    src = Image.open(raw)
+for fname, src in jobs:
     canvas = resize_rgb(src, w, h)
-    print("IN", fname, src.size, "→", canvas.size)
+    images = pipe_images(canvas, ref_canvas)
+    print("IN", fname, src.size, "→", canvas.size, "pictures", len(images))
     display(canvas)
     try:
+        if names and hasattr(pipe, "set_adapters"):
+            pipe.enable_lora()
+            pipe.set_adapters(names, adapter_weights=weights)
         try:
-            out = pipe(image=[canvas], **kwargs).images[0]
+            out = pipe(image=images, **kwargs).images[0]
         except TypeError:
-            out = pipe(image=canvas, **kwargs).images[0]
+            out = pipe(image=images[0], **kwargs).images[0]
     finally:
         if hasattr(pipe, "disable_lora"):
             pipe.disable_lora()
@@ -310,6 +383,12 @@ CELL3 = CELL3.replace(
 ).replace(
     "__STYLE_OPTS__",
     ", ".join(json.dumps(x, ensure_ascii=False) for x in style_form_options()),
+).replace(
+    "__INPUT_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in input_source_form_options()),
+).replace(
+    "__REF_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in ref_source_form_options()),
 )
 
 nb = {

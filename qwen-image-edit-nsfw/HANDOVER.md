@@ -17,6 +17,8 @@ HEAD: 0bfc519 h3: 画像編集 Colab だけの引き継ぎを QWEN_EDIT_HANDOVER
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
+これは i2i（Picture 1＝元画像）。t2i ではない。任意で顔・画風の参照（Picture 2）。
+Drive の空きは 2GB で足りる（JPG だけ）。重みは Colab 約40GB。H3 の 21GB 参照土台は不要。
 基本フタナリ（玉なし・マンコあり・竿20cm）。男禁止。成人21+。実写の他人は入れるな。JPGはGitに入れるな。
 ipynb は手で直すな。`python3 colab/_write_qwen_edit_nb.py`。H3 スタジオと同時に動かすな。
 JSON物語（clinic/cafe/sales含む）は触るな。HQ dump / hq-instruct / Threads cron は触るな。
@@ -52,6 +54,17 @@ Mk1227 / ayooo123 Space と同系統:
 
 保存先は Drive `qwen-image-edit-nsfw/output`。Git に JPG を入れない。
 
+**i2i。** `QwenImageEditPlusPipeline` に Picture 1（編集する元画像）を渡す。文章だけからは描かない。任意で Picture 2＝顔と画風の参照（同じ人物の別カット）。ファイル名に `photoreal` / `実写` があるとスキップ。
+
+### Drive の空き
+
+| 置くもの | 場所 | 目安 |
+|---|---|---|
+| 元画像・出力 JPG | Drive `qwen-image-edit-nsfw/input` と `output` | **2GB あれば足りる** |
+| 重み（Rapid-AIO 約20GB + text encoder 約17GB + LoRA） | **Colab ディスク** HuggingFace キャッシュ | 約40GB。Drive には載せない |
+
+H3 スタジオの参照土台（R2V 約21GB）は **不要**。このノートは Drive にモデルを置かない。
+
 HF ZeroGPU 経由の別経路は `h3-lora-studio/scripts/qwen_edit_nsfw.py`（本命 Mk1227 `/infer`）。Colab GPU 経路と混ぜない。
 
 ## 必須ロック
@@ -62,6 +75,7 @@ HF ZeroGPU 経由の別経路は `h3-lora-studio/scripts/qwen_edit_nsfw.py`（�
 |---|---|
 | 顔 | `IDENTITY_LOCK`。同一人物・同一顔・髪。美化禁止 |
 | 画風 | `STYLE_PRESETS`。変換しない。既定 **入力のまま**。欄の アニメ絵／リアル／3D／漫画 は「元がどれか」の固定 |
+| i2i | `I2I_SINGLE`。元画像が Picture 1。参照ありなら `I2I_REF` で Picture 2 が顔・画風 |
 | フタナリ | 玉なし・マンコあり・竿20cm。男禁止 |
 | 服抜き既定 | 姿勢・場所も維持。服だけ |
 | 行為 | 姿勢・場所・行為は変えてよい。顔と画風は維持 |
@@ -81,6 +95,10 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 脱糞（**肛門から今出す** ソーセージ状の固形。ゼリー／スライム禁止。マンコから出さない。肥溜めの塗れではない）: 脱糞（しゃがみ） / 脱糞（後背）
 
 画風: 入力のまま / アニメ絵 / リアル / 3D / 漫画
+
+入力: Drive input（既定） / アップロード
+
+参照画像: なし（元画像の顔） / Drive から / アップロード。Drive からのときは `参照ファイル名`（input の中）。参照はバッチの元画像から外す。
 
 ## 触るファイル（これ以外は触るな）
 
@@ -116,7 +134,7 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 
 1. 上の Colab リンク（Drive コピーではない）
 2. ランタイム → GPU **L4**
-3. ① Drive → ② 重み（初回は待つ）→ ③ クイックプロンプト＋画風＋画像
+3. ① Drive（空きは 2GB で足りる。重みは Colab）→ ② 重み（初回は待つ）→ ③ クイックプロンプト＋画風。元画像は Drive `input/` かアップロード。顔を固定したいときは参照画像（Picture 2）
 4. 出力は Drive `qwen-image-edit-nsfw/output`
 
 T4 は拒否される。H3 動画ノートと同時に動かさない。
@@ -132,4 +150,4 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ## 限界
 
-4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。フタナリ勃起オンなら体（竿・マンコ）は足す。
+4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。大きく姿勢を変えるときは **参照画像（Picture 2）** に顔のよく出た同じ人物を足す。フタナリ勃起オンなら体（竿・マンコ）は足す。
