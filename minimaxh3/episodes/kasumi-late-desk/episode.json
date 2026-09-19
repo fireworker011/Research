@@ -49,7 +49,7 @@
   "homage": {
     "borrowed": [
       "third-person game camera",
-      "a cubicle partition used as cover",
+      "walking an office aisle behind a manager who does not look back",
       "peeking a doorframe while a manager looks the other way",
       "mission subtitle grammar with the object noun in colour",
       "HUD hidden in dialogue cutscenes, subtitles only",
@@ -119,22 +119,22 @@
   },
   "beats": [
     {
-      "id": "01-cover",
+      "id": "01-aisle",
       "source": "still",
-      "still": "stills/01-cover.jpg",
+      "still": "stills/01-aisle.jpg",
       "trim": {"start": 0, "seconds": 3.0},
       "cast": ["mio", "kuroki"],
       "face_visible": false,
       "props": ["tote"],
-      "place": "Open-plan aisle at morning, a beige cubicle partition in the foreground, grey carpet running to a window wall",
-      "camera": "Third-person camera at Mio's left side at shoulder height, her body in profile to the aisle, holding still with a slight breathing bob",
-      "action": "Mio crouches in profile behind the cubicle partition, knees chest neck and face all aimed down the aisle, tote on her shoulder, while Kuroki walks slowly down the aisle away from her; nobody else is in frame",
+      "place": "Grey carpet open-plan aisle at morning, beige cubicles and light oak desks on both sides, a rubber plant, window light at the far end",
+      "camera": "Third-person camera at Mio's left side at shoulder height, her body in profile to the aisle, holding still with a slight walking bob",
+      "action": "Mio walks slowly down the aisle in profile, tote on her shoulder, knees chest neck and face all aimed down the aisle, while Kuroki walks ahead with his back to her; nobody else is in frame",
       "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
       "hud": {
         "mission": "自席につけ",
         "mission_keyword": "自席",
-        "hint": "C 隠れる",
+        "hint": "足音を抑える",
         "health": 0.88,
         "stamina": 0.62,
         "money": "¥2,140",
