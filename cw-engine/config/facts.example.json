@@ -1,0 +1,17 @@
+{
+  "handle": "fireworker12",
+  "public_profile_facts": {
+    "occupation": null,
+    "hours_per_day": null,
+    "reply_hours": null,
+    "tools": [],
+    "deliveries_completed": 0,
+    "portfolio_url": null
+  },
+  "ai_policy": {
+    "use_ai": true,
+    "disclose": true,
+    "final_check_by_human": true
+  },
+  "_note": "CW 公開プロフィールに既に書いてある事実だけ。氏名・年齢・住所・電話・家族構成はここにも Secret にも書くな（下書きでは（人間が書く）のまま）。実ファイル config/facts.json は Git に置くな。非公開リポジトリの Secret CW_FACTS_JSON に同じ形で置く。"
+}
