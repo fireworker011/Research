@@ -629,6 +629,7 @@ def test_writer_notebook_is_separate_l4_nsfw():
     nb = json.loads(nb_path.read_text(encoding="utf-8"))
     assert nb["metadata"]["colab"]["gpuType"] == "L4"
     joined = "".join("".join(c["source"]) for c in nb["cells"])
+    assert "完全クローンではない" in joined
     assert "Rapid-AIO-V23" in joined
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined

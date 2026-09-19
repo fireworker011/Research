@@ -1,4 +1,4 @@
-"""Qwen Image Edit NSFW for Colab L4. Same 4-step Rapid-AIO stack as Mk1227."""
+"""Qwen Image Edit NSFW for Colab L4. Same family as Mk1227, not a clone."""
 from __future__ import annotations
 
 import gc
@@ -7,8 +7,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# Phr00t Rapid-AIO NSFW v23, extracted for diffusers. 4 step / CFG 1. Same class as
-# Mk1227/Qwen-Image-Edit-NSFW (ZeroGPU A10G ≈ Colab L4 24GB).
+# Phr00t Rapid-AIO NSFW v23 transformer extract for diffusers. 4 step / CFG 1.
+# Mk1227 Space loads the full AIO safetensors + FP8 + rewrite-on + auto size.
+# This Colab is the same family, not a byte-identical clone.
 PIPE_ID = "Qwen/Qwen-Image-Edit-2511"
 TRANSFORMER_ID = "prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23"
 LORA_REPO = "wiikoo/Qwen-lora-nsfw"

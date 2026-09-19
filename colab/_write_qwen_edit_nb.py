@@ -34,7 +34,7 @@ H3_COLAB = (
 
 MD0 = f"""# Qwen Image Edit NSFW（起点の服抜き・セックス・L4）
 
-H3 動画ノートとは **別**。同時に動かさない。Mk1227 / ayooo123 と同じ系統: `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23` on `Qwen/Qwen-Image-Edit-2511` + 4step + CFG1。safety checker なし。行為 LoRA は `Qwen4Play_v2`。
+H3 動画ノートとは **別**。同時に動かさない。Mk1227 Space の **完全クローンではない**。近い系統: 土台 `Qwen/Qwen-Image-Edit-2511` + `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23`（Phr00t AIO NSFW v23 の transformer 抽出）+ 4step + CFG1。Space 本体は AIO の単一ファイル・FP8・rewrite 既定オン・サイズ auto・追加 LoRA なし。顔を Space と同じにしたいなら `h3-lora-studio/scripts/qwen_edit_nsfw.py` の Mk1227 `/infer`。safety checker なし。行為 LoRA は `Qwen4Play_v2`（Space には無い。行為プリセットだけ）。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})
 
@@ -101,7 +101,7 @@ print("OK → 次は②（H3 スタジオとは同時に動かさない）")
 
 CELL2 = r'''#@title ② Rapid-AIO NSFW v23 を載せる（初回は待つ）
 print("=" * 60)
-print(" ② Qwen Edit NSFW（Mk1227 と同系統・4step）")
+print(" ② Qwen Edit NSFW（2511 + Rapid-AIO v23・4step。Mk1227 の完全クローンではない）")
 print("=" * 60)
 
 import os, sys, subprocess
