@@ -25,7 +25,7 @@
 5. **日本語 UI をプロンプトに書くと読む。** 時計 17:58、働き方改革、固有名は `homage.never`。看板は無地。
 6. **カバーの黄枠・視線コーンはゲーム UI。** スチールに光らせない。ヒント文は HUD。
 7. **顔を毎カット描くと別人になる。** `tone: mundane` は `face_visible` 2 本まで。会話 1 本だけ。
-8. **このクラウド VM に Colab ADC が無い。** GPU 本番は Colab の Run all / `run_episode.py`。ここは check・stills・dry-run まで。
+8. **ワンクリックの BRANCH。** マージ前は GitHub から stills を取るため `BRANCH` / `--branch` をこの PR ブランチにする。ノートの既定を `kasumi-late-desk` にした。
 9. **inbox に jpg を置くとココナラ I2V が拾う。** Drive は `episodes/kasumi-late-desk/` だけ。
 10. **子供・制服・教室。** 前作の学校クリップ文法を混ぜない。成人オフィスのみ。
 
