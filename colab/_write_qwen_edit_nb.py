@@ -139,14 +139,17 @@ sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SP
 
 from qwen_image_edit_nsfw import (
     allow_duplicate_torchao_ops,
+    allow_duplicate_torchvision_ops,
     drop_stale_diffusers_modules,
     drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
+    import_qwen_edit_plus_pipeline,
     require_pillow_colab,
     require_torchao_for_git_diffusers,
 )
 allow_duplicate_torchao_ops()
+allow_duplicate_torchvision_ops()
 drop_stale_torchao_modules()
 drop_stale_diffusers_modules()
 drop_stale_huggingface_hub_modules()
@@ -169,8 +172,7 @@ else:
 
 import torch
 from huggingface_hub import hf_hub_download
-from diffusers import QwenImageEditPlusPipeline
-from diffusers.models import QwenImageTransformer2DModel
+QwenImageEditPlusPipeline, QwenImageTransformer2DModel = import_qwen_edit_plus_pipeline()
 
 from qwen_image_edit_nsfw import (
     AIO_FILENAME,

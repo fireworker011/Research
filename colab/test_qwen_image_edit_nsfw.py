@@ -101,8 +101,11 @@ from qwen_image_edit_nsfw import (
     drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
+    import_qwen_edit_plus_pipeline,
     is_duplicate_torchao_op_error,
+    is_duplicate_torchvision_op_error,
     live_torchao_for_git_diffusers,
+    live_torchvision_registered,
     drive_space_lines,
     edit_output_name,
     ensure_genatomy_adapter,
@@ -273,6 +276,49 @@ def test_pillow_12_0_is_rejected_on_colab():
     drop_stale_pil_modules()
     assert "PIL._fake_qwen_edit" not in sys.modules
     sys.modules.update(saved)
+
+
+def test_drop_stale_pil_keeps_live_torchvision():
+    saved = {
+        name: mod
+        for name, mod in sys.modules.items()
+        if name == "PIL"
+        or name.startswith("PIL.")
+        or name == "torchvision"
+        or name.startswith("torchvision.")
+    }
+    sys.modules["torchvision"] = types.ModuleType("torchvision")
+    sys.modules["torchvision._qwen_edit_keep"] = object()
+    sys.modules["PIL._fake_qwen_edit"] = object()
+    try:
+        assert live_torchvision_registered()
+        drop_stale_pil_modules()
+        assert "torchvision" in sys.modules
+        assert "torchvision._qwen_edit_keep" in sys.modules
+        assert "PIL._fake_qwen_edit" not in sys.modules
+    finally:
+        for name in list(sys.modules):
+            if (
+                name == "PIL"
+                or name.startswith("PIL.")
+                or name == "torchvision"
+                or name.startswith("torchvision.")
+            ):
+                del sys.modules[name]
+        sys.modules.update(saved)
+
+
+def test_duplicate_torchvision_roi_align_is_detected():
+    err = RuntimeError(
+        "This is not allowed since there's already a kernel registered from python "
+        "overriding roi_align's behavior for Meta dispatch key and torchvision namespace."
+    )
+    assert is_duplicate_torchvision_op_error(err)
+    assert not is_duplicate_torchvision_op_error(RuntimeError("cuda oom"))
+    src = (ROOT / "qwen_image_edit_nsfw.py").read_text(encoding="utf-8")
+    assert "import_qwen_edit_plus_pipeline" in src
+    assert "allow_duplicate_torchvision_ops" in src
+    assert callable(import_qwen_edit_plus_pipeline)
 
 
 def test_lora_skip_summary_prefers_torchao_over_nfaa():
@@ -1340,16 +1386,20 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "drop_stale_diffusers_modules" in src
     assert "drop_stale_huggingface_hub_modules" in src
     assert "allow_duplicate_torchao_ops" in src
+    assert "allow_duplicate_torchvision_ops" in src
+    assert "import_qwen_edit_plus_pipeline" in src
     assert "require_torchao_for_git_diffusers" in src
     assert "require_torchao_for_git_diffusers" in joined
     assert 'uninstall", "-y", "torchao"' in src
     ao_at = src.find("require_torchao_for_git_diffusers()")
     dup_at = src.find("allow_duplicate_torchao_ops()")
+    tv_at = src.find("allow_duplicate_torchvision_ops()")
     hub_at = src.find("drop_stale_huggingface_hub_modules()")
-    pipe_at = src.find("from diffusers import QwenImageEditPlusPipeline")
+    pipe_at = src.find("import_qwen_edit_plus_pipeline()")
     login_at = src.find("from huggingface_hub import login")
     hf_at = src.find("from huggingface_hub import hf_hub_download")
     assert 0 <= dup_at < ao_at < pipe_at
+    assert 0 <= tv_at < pipe_at
     assert 0 <= hub_at < pipe_at
     assert hub_at < login_at
     assert hub_at < hf_at

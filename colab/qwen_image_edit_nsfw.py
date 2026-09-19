@@ -658,15 +658,25 @@ def space_device_mode(vram_gib: float) -> str:
     return "model_cpu_offload"
 
 
+def live_torchvision_registered() -> bool:
+    """True when torchvision already ran _meta_registrations (roi_align)."""
+    return "torchvision" in sys.modules
+
+
 def drop_stale_pil_modules() -> None:
-    """Drop cached PIL/torchvision after a Pillow reinstall on Colab."""
+    """Drop cached PIL after a Pillow reinstall on Colab.
+
+    Do not drop a live torchvision. git+diffusers pulls cosmos → torchvision;
+    re-importing re-registers roi_align Meta kernels and raises.
+    """
+    keep_tv = live_torchvision_registered()
     for name in list(sys.modules):
-        if (
-            name == "PIL"
-            or name.startswith("PIL.")
-            or name == "torchvision"
-            or name.startswith("torchvision.")
-        ):
+        if name == "PIL" or name.startswith("PIL."):
+            del sys.modules[name]
+            continue
+        if keep_tv:
+            continue
+        if name == "torchvision" or name.startswith("torchvision."):
             del sys.modules[name]
 
 
@@ -704,6 +714,55 @@ def live_torchao_for_git_diffusers() -> str | None:
     if (major, minor) < TORCHAO_COLAB_MIN:
         return None
     return ver
+
+
+def is_duplicate_torchvision_op_error(exc: BaseException) -> bool:
+    msg = str(exc)
+    return "already a kernel registered from python overriding" in msg and (
+        "torchvision" in msg or "roi_align" in msg
+    )
+
+
+def allow_duplicate_torchvision_ops() -> None:
+    """Re-importing torchvision re-registers roi_align for Meta."""
+    try:
+        import torch.library as torch_library
+    except ImportError:
+        return
+    orig = torch_library.Library.impl
+    if getattr(orig, "_qwen_edit_tv_dup", False):
+        return
+
+    def impl(self, *args, **kwargs):
+        try:
+            return orig(self, *args, **{**kwargs, "allow_override": True})
+        except TypeError as e:
+            if "allow_override" not in str(e) and "unexpected keyword" not in str(e).lower():
+                raise
+        try:
+            return orig(self, *args, **kwargs)
+        except RuntimeError as e:
+            if is_duplicate_torchvision_op_error(e):
+                return None
+            raise
+
+    impl._qwen_edit_tv_dup = True  # type: ignore[attr-defined]
+    torch_library.Library.impl = impl
+
+
+def import_qwen_edit_plus_pipeline() -> tuple[Any, Any]:
+    """Import Edit Plus after torchvision Meta ops are already registered."""
+    allow_duplicate_torchvision_ops()
+    try:
+        from diffusers import QwenImageEditPlusPipeline
+        from diffusers.models import QwenImageTransformer2DModel
+    except RuntimeError as e:
+        if is_duplicate_torchvision_op_error(e):
+            raise SystemExit(
+                f"torchvision の roi_align が二重登録（{e}）。ランタイム再起動→①②。"
+            ) from e
+        raise
+    return QwenImageEditPlusPipeline, QwenImageTransformer2DModel
 
 
 def allow_duplicate_torchao_ops() -> None:

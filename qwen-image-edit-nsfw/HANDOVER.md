@@ -191,6 +191,8 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ②で `torchao::int_matmul` の Duplicate registration は、載っている torchao を sys.modules から捨てて再 import したせい（演算子は残る）。ノートを GitHub から開き直して②（0.16+ が既に載っていれば捨てない。再 import は二重定義を無視）。cutlass / mxfp8 の WARNING は無視。まだならランタイム再起動→①②。
 
+②で torchvision の `roi_align` Duplicate（Meta dispatch / torchvision namespace）は、Pillow 入れ直しのあと `drop_stale_pil_modules` が torchvision を捨て、git+diffusers の cosmos import が再登録したせい。ノートを GitHub から開き直して②（載っている torchvision は捨てない。再登録は無視。`import_qwen_edit_plus_pipeline`）。`Unable to import torchao Tensor objects` は警告だけ。まだならランタイム再起動→①②。
+
 ②で `cannot import name '_httpx_follow_hub_redirects_with_backoff'` は、①が古い `huggingface_hub.utils._http` を sys.modules に残したまま②が pip -U したせい（新しい `hf_api` が古い `_http` を読む）。ノートを GitHub から開き直して②（`drop_stale_huggingface_hub_modules`。本体は huggingface_hub を遅延 import）。まだならランタイム再起動→①②。
 
 ②のほか: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。`device_map="cuda"` は使わない。A100（35GB以上）は GPU 常駐。L4 は `model_cpu_offload`（sequential は OOM の最後だけ）。Colab の FP8 は `torchao>=0.16.0`（Space の 0.11 は今の git+diffusers で落ちる）。AIO 注入が 0 keys のときだけ prithiv 抽出に落ちる。③はサイズ **auto**（入力のアスペクト。576×1024 も選べる）。`guidance_scale=1.0`。VAE 参照は公式の 1024²。プロンプトは短い編集指示。長い IDENTITY LOCK は顔を捨てる。rewrite 既定オフ。オンにしたあとも `lock_identity_prompt` で顔を先頭に戻す。無いときは入力文のまま。③の Generator は A100 なら cuda、offload なら cpu。③は画像を置いてから。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。
