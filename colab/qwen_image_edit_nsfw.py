@@ -33,7 +33,8 @@ L4_MIN_VRAM_GIB = SPACE_GPU_MIN_VRAM_GIB
 VRAM_OFFLOAD_GIB = 8.0
 ENABLE_FP8_QUANT = True
 ENABLE_TENSOR_OFFLOADING = True
-DEFAULT_REWRITE_PROMPT = True
+# Space .env is true. Proven Mk1227 /infer that keeps faces uses False.
+DEFAULT_REWRITE_PROMPT = False
 REWRITE_MODEL = "Qwen/Qwen2.5-VL-72B-Instruct"
 REWRITE_PROVIDER = "nebius"
 REWRITE_ASSISTANT_PROMPT = (
@@ -108,6 +109,7 @@ Please strictly follow the rewriting rules below:
 - Make the smallest changes to the given user's prompt.
 - If changes to background, action, expression, camera shot, or ambient lighting are required, please list each modification individually.
 - Edits to makeup or facial features / expression must be subtle, not exaggerated, and must preserve the subject's identity consistency.
+- Never rewrite as "generate a new image" or describe a new person. Keep the same face, hair, and person as the input.
 
 ### 4. Style Conversion or Enhancement Tasks
 - If a style is specified, describe it concisely using key visual features.
@@ -193,13 +195,18 @@ FACE_KEEP = (
     "Do not swap to a different person. Adult 21+."
 )
 REF_FACE = (
-    "Picture 2 is the face and art-medium lock. Keep Picture 2's person. "
-    "Do not copy Picture 2's pose or clothes unless asked."
+    "Picture 2 is the face lock of the same person. Copy face and hair from Picture 2. "
+    "Edit Picture 1. Do not copy Picture 2's crop or clothes unless asked."
 )
 FUTA_LOCK = (
-    "Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
+    "Same person, same face. Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
     "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
-    "no testicles, no scrotum, no balls. Female breasts. Not a man."
+    "no testicles, no scrotum, no balls. Female breasts. Not a man. Do not redraw the face."
+)
+T2I_REWRITE_RE = re.compile(
+    r"\b(?:generate a new image|generate an image(?: of)?|create a new image|"
+    r"create an image of|text-to-image|from scratch)\b",
+    re.I,
 )
 DEFAULT_EDIT_PROMPT = (
     f"{KEEP_LOCK} Remove only the clothes. Do not tie the hair. {FUTA_LOCK}"
@@ -760,6 +767,30 @@ def snapped_rgb(image: Any) -> Any:
     return rgb.resize((w, h))
 
 
+def face_lock_image(image: Any) -> Any:
+    """Picture 2 for Edit Plus. Portrait → upper crop. Close-up → same frame."""
+    rgb = image.convert("RGB") if hasattr(image, "convert") else image
+    w, h = rgb.size
+    if h >= int(w * 1.25):
+        crop_h = max(64, int(h * 0.40))
+        crop_w = max(64, int(w * 0.78))
+        left = max(0, (w - crop_w) // 2)
+        top = int(h * 0.03)
+        rgb = rgb.crop((left, top, min(w, left + crop_w), min(h, top + crop_h)))
+    return snapped_rgb(rgb)
+
+
+def lock_identity_prompt(prompt: str, *, has_ref: bool = False) -> str:
+    """Rewrite/VL often drops the face. Re-lead with FACE_KEEP. Strip t2i phrasing."""
+    out = T2I_REWRITE_RE.sub(" ", prompt or "")
+    out = re.sub(r" +", " ", out).strip()
+    if not out.lower().startswith(FACE_KEEP.lower()):
+        out = f"{FACE_KEEP} {out}".strip()
+    if has_ref and REF_FACE.lower() not in out.lower():
+        out = f"{out} {REF_FACE}".strip()
+    return out
+
+
 def pipe_images(source: Any, ref: Any | None = None) -> list[Any]:
     images = [source]
     if ref is not None:
@@ -890,9 +921,9 @@ def compose_edit_prompt(
     )
     # Rapid-AIO's VL template already says "generate a new image". A wall of
     # IDENTITY/I2I/SCOPE meta makes it obey the text and drop the source face.
-    # Mk1227 Space keeps identity with a short edit + keep-face line.
-    if FACE_KEEP.lower() not in " ".join(parts).lower():
-        parts.append(FACE_KEEP)
+    # Lead with a short keep-face line. Proven Space /infer also keeps rewrite off.
+    if not " ".join(parts).lower().startswith(FACE_KEEP.lower()):
+        parts.insert(0, FACE_KEEP)
     if not pose_ok and "change clothing only" not in " ".join(parts).lower():
         parts.append("Change clothing only. Keep the exact same pose, camera, crop, lighting, and background.")
     if has_ref:

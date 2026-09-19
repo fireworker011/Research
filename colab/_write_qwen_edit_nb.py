@@ -37,7 +37,7 @@ H3_COLAB = (
 
 MD0 = f"""# Qwen Image Edit NSFW（Mk1227 Space と同じ環境・A100）
 
-H3 動画ノートとは **別**。同時に動かさない。このノートは Mk1227 Space の **公開設定どおり** に載せる: 土台 `Qwen/Qwen-Image-Edit-2511` + `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors`（単一 28.4GB）+ FP8（torchao≥0.16。Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）+ Space の FlowMatch `SCHED_*` + サイズ **auto** + rewrite 既定オン（`Qwen2.5-VL-72B`、HF_TOKEN が要る。無いときは入力文のまま）+ **追加 LoRA なし**。コンパイル済み `app.so` はコピーしない。safety checker なし。4step / CFG1。
+H3 動画ノートとは **別**。同時に動かさない。このノートは Mk1227 Space の **公開設定どおり** に載せる: 土台 `Qwen/Qwen-Image-Edit-2511` + `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors`（単一 28.4GB）+ FP8（torchao≥0.16。Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）+ Space の FlowMatch `SCHED_*` + サイズ **auto** + rewrite **既定オフ**（顔維持。オンは VL が別の人を描きやすい）+ **追加 LoRA なし**。コンパイル済み `app.so` はコピーしない。safety checker なし。4step / CFG1。顔は Picture 1 の上を Picture 2 に自動で足す。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})
 
@@ -53,7 +53,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
-5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -262,10 +262,16 @@ from google.colab import files
 from IPython.display import display
 from pathlib import Path
 from PIL import Image
-import os, random, sys, torch
+import os, random, sys, torch, urllib.request
 
 if "/content" not in sys.path:
     sys.path.insert(0, "/content")
+
+BRANCH = "cursor/h3-anal-stories-f112"
+RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}/colab/qwen_image_edit_nsfw.py"
+urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
+if "qwen_image_edit_nsfw" in sys.modules:
+    del sys.modules["qwen_image_edit_nsfw"]
 
 from qwen_image_edit_nsfw import (
     DEFAULT_EDIT_PROMPT,
@@ -281,10 +287,12 @@ from qwen_image_edit_nsfw import (
     canvas_form_options,
     clamp_edit_vae_area,
     compose_edit_prompt,
+    face_lock_image,
     finalize_space_prompt,
     infer_kwargs,
     input_source_form_options,
     list_input_images,
+    lock_identity_prompt,
     lora_stack,
     pipe_images,
     ref_source_form_options,
@@ -322,7 +330,7 @@ PCから選ぶ = False  #@param {type:"boolean"}
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
-プロンプトrewrite = True  #@param {type:"boolean"}
+プロンプトrewrite = False  #@param {type:"boolean"}
 STEPS_RUN = 4  #@param {type:"integer"}
 SEED = 0  #@param {type:"integer"}
 ランダムシード = True  #@param {type:"boolean"}
@@ -431,7 +439,7 @@ prompt = compose_edit_prompt(
     extra_triggers=trigs,
     preset=クイックプロンプト,
     style=画風,
-    has_ref=ref_img is not None,
+    has_ref=True,
 )
 if names and hasattr(pipe, "set_adapters"):
     print("adapters", list(zip(names, weights)))
@@ -471,7 +479,12 @@ for fname, src in jobs:
     else:
         w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT
     canvas = resize_rgb(src, w, h)
-    images = pipe_images(canvas, ref_canvas)
+    if ref_canvas is not None:
+        images = pipe_images(canvas, ref_canvas)
+        face_how = "user"
+    else:
+        images = pipe_images(canvas, face_lock_image(canvas))
+        face_how = "auto"
     prompt_run = prompt
     if プロンプトrewrite:
         prompt_run = rewrite_edit_prompt(
@@ -481,7 +494,9 @@ for fname, src in jobs:
             enabled=True,
         )
         print("rewritten:", prompt_run)
+    prompt_run = lock_identity_prompt(prompt_run, has_ref=True)
     prompt_run = finalize_space_prompt(prompt_run)
+    print("locked:", prompt_run)
     kwargs = infer_kwargs(
         prompt_run,
         seed=seed,
@@ -495,7 +510,7 @@ for fname, src in jobs:
         width=w,
         size_auto=False,
     )
-    print("IN", fname, src.size, "→", canvas.size, "pictures", len(images), "canvas", w, h)
+    print("IN", fname, src.size, "→", canvas.size, "pictures", len(images), "Picture 2", face_how, images[1].size, "canvas", w, h)
     display(canvas)
     try:
         if names and hasattr(pipe, "set_adapters"):

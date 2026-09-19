@@ -23,6 +23,7 @@ from qwen_image_edit_nsfw import (
     DRIVE_FREE_GIB,
     ENABLE_FP8_QUANT,
     FUTA_LOCK,
+    FACE_KEEP,
     KEEP_LOCK,
     LORA_FILES,
     DEFAULT_HEIGHT,
@@ -65,6 +66,7 @@ from qwen_image_edit_nsfw import (
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
+    face_lock_image,
     finalize_space_prompt,
     force_edit_offload,
     free_cuda,
@@ -80,6 +82,7 @@ from qwen_image_edit_nsfw import (
     is_sex_act_preset,
     is_urine_preset,
     list_input_images,
+    lock_identity_prompt,
     lora_files_for_gpu,
     lora_skip_summary,
     lora_stack,
@@ -121,7 +124,7 @@ def test_stack_is_mk1227_class():
     assert STEPS == 4
     assert TRUE_CFG == 1.0
     assert ENABLE_FP8_QUANT is True
-    assert DEFAULT_REWRITE_PROMPT is True
+    assert DEFAULT_REWRITE_PROMPT is False
     assert REWRITE_MODEL == "Qwen/Qwen2.5-VL-72B-Instruct"
     assert DEFAULT_NEGATIVE == ""
     assert TORCHAO_COLAB_SPEC == "torchao>=0.16.0"
@@ -669,7 +672,7 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert "not text-to-image" not in single
     refed = compose_edit_prompt("", has_ref=True)
     assert "Picture 2" in refed
-    assert "face and art-medium lock" in refed
+    assert "face lock of the same person" in refed
     assert not has_leftover_man(refed)
     doggy = compose_edit_prompt("", preset="アナルバック", has_ref=True)
     assert "Picture 2" in doggy
@@ -820,7 +823,9 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "WIDTH = 576" not in src
     assert "canvas" in src
     assert "追加LoRA" in src
-    assert "プロンプトrewrite" in src
+    assert "プロンプトrewrite = False" in src
+    assert "lock_identity_prompt" in src
+    assert "face_lock_image" in src
     assert "require_space_gpu_or_exit" in src
 
 
@@ -952,6 +957,30 @@ def test_rewrite_and_safety_prompt():
         client_factory=lambda token: Client(),
     )
     assert out == "short edit"
+
+
+def test_face_lock_image_and_identity_prompt():
+    portrait = Image.new("RGB", (576, 1024), (10, 20, 30))
+    crop = face_lock_image(portrait)
+    assert crop.size[0] <= portrait.size[0]
+    assert crop.size[1] < portrait.size[1]
+    assert crop.size[0] % 32 == 0
+    assert crop.size[1] % 32 == 0
+    close = Image.new("RGB", (1024, 1024), (1, 2, 3))
+    same = face_lock_image(close)
+    assert same.size == snapped_rgb(close).size
+    dirty = "Generate a new image of a woman. Remove only the clothes."
+    out = lock_identity_prompt(dirty, has_ref=True)
+    assert "generate a new image" not in out.lower()
+    assert out.lower().startswith("keep the exact same face")
+    assert "Picture 2" in out
+    assert "do not swap" in out.lower()
+    already = lock_identity_prompt(FACE_KEEP + " Remove only the clothes.")
+    assert already.lower().startswith("keep the exact same face")
+    assert already.count("Do not swap to a different person") == 1
+    empty = compose_edit_prompt("")
+    assert empty.lower().startswith("keep the exact same face")
+    assert "do not redraw the face" in FUTA_LOCK.lower()
 
 
 def test_auto_canvas_and_place_pipe():
