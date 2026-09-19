@@ -13,7 +13,7 @@ Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャ
 - `colab/_write_qwen_edit_nb.py`
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
-HEAD: c26c33a h3: Qwen Edit ②は Colab の Pillow 11.3 に戻す
+HEAD: 5c95ac6 h3: Qwen Edit ①③の落ちを塞ぐ（VAE slicing / peft / cpu generator）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
