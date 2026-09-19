@@ -7,11 +7,20 @@ from pathlib import Path
 from PIL import Image
 
 from qwen_image_edit_nsfw import (
+    AIO_FILENAME,
+    AIO_REPO_ID,
     ANAL_DETAIL,
     ANAL_POSE_LABELS,
     ANAL_PRESETS,
+    CANVAS_AUTO,
+    CANVAS_FIXED,
+    CHILD_ABUSE_REDIRECT_PROMPT,
     DEFAULT_EDIT_PROMPT,
+    DEFAULT_NEGATIVE,
+    DEFAULT_REWRITE_PROMPT,
+    DIFFUSERS_COLAB_SPEC,
     DRIVE_FREE_GIB,
+    ENABLE_FP8_QUANT,
     FUTA_LOCK,
     KEEP_LOCK,
     LORA_FILES,
@@ -20,13 +29,18 @@ from qwen_image_edit_nsfw import (
     PILLOW_COLAB_SPEC,
     PIPE_ID,
     REF_SOURCE_DEFAULT,
+    REWRITE_MODEL,
     SCAT_DETAIL,
     SCAT_LABELS,
+    SCHED_BASE_SHIFT,
+    SCHED_MAX_IMAGE_SEQ_LEN,
     SEX_ACT_PRESETS,
     SEX_PRESET_DEFAULT,
     SEX_PRESETS,
+    SPACE_GPU_RESIDENT_GIB,
     SPACE_SEX_PRESET_LABELS,
     STEPS,
+    TORCHAO_COLAB_SPEC,
     TRANSFORMER_ID,
     TRUE_CFG,
     STYLE_LABELS,
@@ -37,17 +51,23 @@ from qwen_image_edit_nsfw import (
     UPLOAD_PHONE_HINT,
     WEIGHTS_CACHE_GIB,
     apply_futa_partner,
+    apply_space_scheduler,
     apply_style,
+    auto_canvas_size,
+    canvas_form_options,
+    classify_aio_key,
     clamp_edit_vae_area,
     compose_edit_prompt,
     disable_safety,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
+    finalize_space_prompt,
     force_edit_offload,
     free_cuda,
     has_leftover_man,
     infer_kwargs,
+    inject_aio_state,
     is_cuda_oom,
     input_source_form_options,
     is_anal_preset,
@@ -60,15 +80,22 @@ from qwen_image_edit_nsfw import (
     lora_files_for_gpu,
     lora_skip_summary,
     lora_stack,
+    parse_rewritten_prompt,
     pipe_images,
+    place_edit_pipe,
     ref_source_form_options,
     refuse_photoreal,
     require_l4_or_exit,
+    require_space_gpu_or_exit,
     require_pillow_colab,
     resize_rgb,
     resolve_input_paths,
+    rewrite_edit_prompt,
     run_pipe_edit,
     save_jpeg,
+    space_device_mode,
+    space_scheduler_config,
+    split_aio_state_dict,
     tune_edit_vae,
     sex_preset_form_options,
     sex_preset_labels,
@@ -84,13 +111,22 @@ WRITER = ROOT / "_write_qwen_edit_nb.py"
 
 def test_stack_is_mk1227_class():
     assert PIPE_ID == "Qwen/Qwen-Image-Edit-2511"
+    assert AIO_REPO_ID == "Phr00t/Qwen-Image-Edit-Rapid-AIO"
+    assert AIO_FILENAME == "v23/Qwen-Rapid-AIO-NSFW-v23.safetensors"
     assert TRANSFORMER_ID == "prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23"
     assert STEPS == 4
     assert TRUE_CFG == 1.0
+    assert ENABLE_FP8_QUANT is True
+    assert DEFAULT_REWRITE_PROMPT is True
+    assert REWRITE_MODEL == "Qwen/Qwen2.5-VL-72B-Instruct"
+    assert DEFAULT_NEGATIVE == ""
+    assert TORCHAO_COLAB_SPEC == "torchao==0.11.0"
+    assert DIFFUSERS_COLAB_SPEC.startswith("git+https://github.com/huggingface/diffusers.git")
     assert "20cm" in FUTA_LOCK
     assert "no testicles" in FUTA_LOCK
     assert "Change clothing only" in KEEP_LOCK
     assert "Remove only the clothes" in DEFAULT_EDIT_PROMPT
+    assert canvas_form_options() == [CANVAS_AUTO, CANVAS_FIXED]
 
 
 def test_compose_empty_adds_futa_undress():
@@ -127,12 +163,17 @@ def test_lora_stack_undress_futa():
 
 def test_require_l4_rejects_t4():
     try:
-        require_l4_or_exit(15.0, "Tesla T4")
+        require_space_gpu_or_exit(15.0, "Tesla T4")
     except SystemExit as e:
-        assert "L4" in str(e)
+        assert "A100" in str(e)
+        assert "T4" in str(e)
     else:
         raise AssertionError("T4 must exit")
-    require_l4_or_exit(22.5, "L4")
+    require_space_gpu_or_exit(22.5, "L4")
+    require_l4_or_exit(40.0, "A100")
+    assert space_device_mode(24.0) == "model_cpu_offload"
+    assert space_device_mode(SPACE_GPU_RESIDENT_GIB) == "cuda"
+    assert space_device_mode(80.0) == "cuda"
 
 
 def test_pillow_12_0_is_rejected_on_colab():
@@ -228,6 +269,9 @@ def test_disable_safety_and_infer_kwargs():
     assert "negative_prompt" not in kw
     assert kw["guidance_scale"] == 1.0
     assert kw["generator"] is None
+    auto = infer_kwargs("hello", size_auto=True)
+    assert "height" not in auto
+    assert "width" not in auto
     guided = infer_kwargs("hello", true_cfg=4.0, guidance=1.5, negative="bad")
     assert guided["negative_prompt"] == "bad"
     assert guided["guidance_scale"] == 1.5
@@ -303,11 +347,11 @@ def test_force_edit_offload_resets_to_cpu():
         def enable_sequential_cpu_offload(self):
             calls.append("seq")
 
-    assert force_edit_offload(Pipe()) == "sequential_cpu_offload"
+    assert force_edit_offload(Pipe()) == "model_cpu_offload"
     assert "free" in calls
     assert ("to", "cpu") in calls
-    assert "seq" in calls
-    assert "model" not in calls
+    assert "model" in calls
+    assert "seq" not in calls
     calls.clear()
     assert force_edit_offload(Pipe(), sequential=False) == "model_cpu_offload"
     assert "model" in calls
@@ -552,12 +596,14 @@ def test_style_presets_lock_medium():
 
 def test_i2i_ref_and_drive_inputs(tmp_path):
     assert DRIVE_FREE_GIB == 2
-    assert WEIGHTS_CACHE_GIB == 40
+    assert WEIGHTS_CACHE_GIB == 70
     blob = "\n".join(drive_space_lines())
     assert "i2i" in blob
     assert "2GB" in blob
     assert "21GB" in blob
     assert "Drive には載せない" in blob
+    assert "A100" in blob
+    assert "Phr00t" in blob
     assert input_source_form_options()[0] == "Drive input"
     assert REF_SOURCE_DEFAULT in ref_source_form_options()
     single = compose_edit_prompt("")
@@ -612,13 +658,14 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
         raise AssertionError("missing drive file must exit")
 
 
-def test_writer_notebook_is_separate_l4_nsfw():
+def test_writer_notebook_is_separate_a100_nsfw():
     ast.parse((ROOT / "qwen_image_edit_nsfw.py").read_text(encoding="utf-8"))
     ast.parse(WRITER.read_text(encoding="utf-8"))
     src = WRITER.read_text(encoding="utf-8")
-    assert "prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23" in src
+    assert "Phr00t/Qwen-Image-Edit-Rapid-AIO" in src
+    assert "Qwen-Rapid-AIO-NSFW-v23.safetensors" in src
     assert "Qwen/Qwen-Image-Edit-2511" in src
-    assert '"gpuType": "L4"' in src
+    assert '"gpuType": "A100"' in src
     assert "disable_safety" in src
     assert "from h3_lora_studio" not in src
     assert "import h3_lora_studio" not in src
@@ -627,10 +674,10 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "qwen-image-edit-nsfw/output" in src
     nb_path = ROOT.parent / "qwen_image_edit_nsfw.ipynb"
     nb = json.loads(nb_path.read_text(encoding="utf-8"))
-    assert nb["metadata"]["colab"]["gpuType"] == "L4"
+    assert nb["metadata"]["colab"]["gpuType"] == "A100"
     joined = "".join("".join(c["source"]) for c in nb["cells"])
-    assert "完全クローンではない" in joined
-    assert "Rapid-AIO-V23" in joined
+    assert "完全クローンではない" not in joined
+    assert "Phr00t/Qwen-Image-Edit-Rapid-AIO" in joined
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined
     assert "files.upload" in joined
@@ -651,6 +698,8 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert '"huggingface_hub", "pillow"' not in src
     assert "pillow==11.3.0" in joined
     assert "pillow>=12.1.0" not in joined
+    assert "torchao==0.11.0" in joined
+    assert "git+https://github.com/huggingface/diffusers.git" in joined
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src
     assert "画風" in src
@@ -677,28 +726,201 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert 'device_map="cuda"' not in src
     assert 'device_map="cuda"' not in joined
     assert 'hasattr(pipe, "enable_lora")' in src
-    assert 'device="cpu"' in src
     assert "①と②を実行" in joined
     assert "すべてのセルを実行" not in joined
     assert "lora_skip_summary" in src
-    assert "uninstall\", \"-y\", \"torchao\"" in src or '"torchao"' in src
     assert "drop_stale_torchao_modules" in src
-    assert "force_edit_offload" in src
+    assert "place_edit_pipe" in src
+    assert "load_aio_checkpoint" in src
+    assert "quantize_transformer_fp8" in src
+    assert "apply_space_scheduler" in src
+    assert "rewrite_edit_prompt" in src
+    assert "finalize_space_prompt" in src
+    assert "auto_canvas_size" in src
     assert "run_pipe_edit" in src
     assert "VRAM_OFFLOAD_GIB" in src
-    assert src.index("pipe.load_lora_weights") < src.index("force_edit_offload(pipe")
-    assert "sequential=True" in src
+    assert "sequential=True" not in src
     assert "lora_files_for_gpu" in src
     assert "clamp_edit_vae_area" in src
     assert "height=h" in src
     assert "width=w" in src
-    assert "0/4" in src
     assert "入力ファイル名" in src
     assert "PCから選ぶ" in src
     assert "KeyboardInterrupt" in src
     assert "UPLOAD_PHONE_HINT" in src
     assert "スマホ" in joined
     assert "resolve_input_paths" in src
-    assert "w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT" in src
     assert "WIDTH = 576" not in src
     assert "canvas" in src
+    assert "追加LoRA" in src
+    assert "プロンプトrewrite" in src
+    assert "require_space_gpu_or_exit" in src
+
+
+def test_aio_key_split_matches_comfy_and_diffusers():
+    assert classify_aio_key("model.diffusion_model.img_in.weight") == (
+        "transformer",
+        "img_in.weight",
+    )
+    assert classify_aio_key("diffusion_model.img_in.weight") == (
+        "transformer",
+        "img_in.weight",
+    )
+    assert classify_aio_key("transformer.img_in.weight") == ("transformer", "img_in.weight")
+    assert classify_aio_key("first_stage_model.decoder.conv.weight") == (
+        "vae",
+        "decoder.conv.weight",
+    )
+    assert classify_aio_key("vae.decoder.conv.weight") == ("vae", "decoder.conv.weight")
+    assert classify_aio_key("conditioner.embedders.0.visual.weight") == (
+        "text_encoder",
+        "visual.weight",
+    )
+    assert classify_aio_key("text_encoder.model.norm.weight") == (
+        "text_encoder",
+        "model.norm.weight",
+    )
+    assert classify_aio_key("optimizer.step") is None
+    buckets = split_aio_state_dict(
+        {
+            "model.diffusion_model.a": 1,
+            "first_stage_model.b": 2,
+            "text_encoder.c": 3,
+            "noise": 4,
+        }
+    )
+    assert buckets["transformer"] == {"a": 1}
+    assert buckets["vae"] == {"b": 2}
+    assert buckets["text_encoder"] == {"c": 3}
+
+    class Mod:
+        def __init__(self):
+            self.loaded = None
+
+        def load_state_dict(self, weights, strict=False):
+            self.loaded = dict(weights)
+
+            class Msg:
+                missing_keys = ["x"]
+
+            return Msg()
+
+    class Pipe:
+        transformer = Mod()
+        vae = Mod()
+        text_encoder = Mod()
+
+    pipe = Pipe()
+    stats = inject_aio_state(
+        pipe,
+        {
+            "model.diffusion_model.img_in.weight": "t",
+            "vae.decoder.conv.weight": "v",
+        },
+    )
+    assert stats["transformer"] == 1
+    assert stats["vae"] == 1
+    assert pipe.transformer.loaded == {"img_in.weight": "t"}
+    assert pipe.vae.loaded == {"decoder.conv.weight": "v"}
+    assert stats["transformer_missing"] == 1
+
+
+def test_space_scheduler_config_is_log3_8192():
+    cfg = space_scheduler_config({"shift": 9})
+    assert cfg["shift"] == 1.0
+    assert cfg["base_shift"] == SCHED_BASE_SHIFT
+    assert cfg["max_shift"] == SCHED_BASE_SHIFT
+    assert cfg["max_image_seq_len"] == SCHED_MAX_IMAGE_SEQ_LEN
+    assert cfg["time_shift_type"] == "exponential"
+    assert cfg["use_dynamic_shifting"] is True
+
+    class Sched:
+        def __init__(self, config=None):
+            self.config = config or {}
+
+        @classmethod
+        def from_config(cls, config):
+            return cls(config)
+
+    class Pipe:
+        scheduler = Sched({"foo": 1})
+
+    out = apply_space_scheduler(Pipe(), scheduler_cls=Sched)
+    assert out.config["base_shift"] == SCHED_BASE_SHIFT
+    assert out.config["foo"] == 1
+
+
+def test_rewrite_and_safety_prompt():
+    assert parse_rewritten_prompt('{"Rewritten": "keep face, remove shirt"}') == (
+        "keep face, remove shirt"
+    )
+    assert parse_rewritten_prompt("```json\n{\"Rewritten\": \"a\"}\n```") == "a"
+    assert "Blocked unsafe content" in finalize_space_prompt("remove clothes")
+    twice = finalize_space_prompt(finalize_space_prompt("x"))
+    assert twice.count("Blocked unsafe content") == 1
+    assert rewrite_edit_prompt("hello", object(), token="", enabled=True) == "hello"
+    assert rewrite_edit_prompt("hello", object(), token="x", enabled=False) == "hello"
+
+    class Choice:
+        def __init__(self):
+            self.message = type("M", (), {"content": '{"Rewritten": "short edit"}'})()
+
+    class Resp:
+        choices = [Choice()]
+
+    class Client:
+        def __init__(self):
+            self.chat = type(
+                "C",
+                (),
+                {"completions": type("P", (), {"create": staticmethod(lambda **k: Resp())})()},
+            )()
+
+    img = Image.new("RGB", (32, 32), (1, 2, 3))
+    out = rewrite_edit_prompt(
+        "hello",
+        img,
+        token="hf_x",
+        enabled=True,
+        client_factory=lambda token: Client(),
+    )
+    assert out == "short edit"
+
+
+def test_auto_canvas_and_place_pipe():
+    im = Image.new("RGB", (1008, 1792), (10, 20, 30))
+    w, h = auto_canvas_size(im)
+    assert w % 32 == 0
+    assert h % 32 == 0
+    assert max(w, h) <= 2048
+    small = auto_canvas_size(Image.new("RGB", (64, 80)))
+    assert min(small) >= 256
+    huge = auto_canvas_size(Image.new("RGB", (4000, 2000)))
+    assert max(huge) <= 2048
+
+    calls: list[object] = []
+
+    class Pipe:
+        def to(self, dev):
+            calls.append(("to", dev))
+            return self
+
+        def maybe_free_model_hooks(self):
+            calls.append("free")
+
+        def enable_attention_slicing(self):
+            calls.append("slice")
+
+        def enable_model_cpu_offload(self):
+            calls.append("model")
+
+        def enable_sequential_cpu_offload(self):
+            calls.append("seq")
+
+    assert place_edit_pipe(Pipe(), 80.0) == "cuda"
+    assert ("to", "cuda") in calls
+    calls.clear()
+    assert place_edit_pipe(Pipe(), 24.0) == "model_cpu_offload"
+    assert "model" in calls
+    assert "seq" not in calls
+    assert CHILD_ABUSE_REDIRECT_PROMPT.startswith("Safety instruction:")

@@ -1,16 +1,21 @@
-"""Qwen Image Edit NSFW for Colab L4. Same family as Mk1227, not a clone."""
+"""Qwen Image Edit NSFW. Mk1227 Space runtime on Colab (A100)."""
 from __future__ import annotations
 
+import base64
 import gc
+import io
+import json
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
-# Phr00t Rapid-AIO NSFW v23 transformer extract for diffusers. 4 step / CFG 1.
-# Mk1227 Space loads the full AIO safetensors + FP8 + rewrite-on + auto size.
-# This Colab is the same family, not a byte-identical clone.
+# Mk1227/Qwen-Image-Edit-NSFW .env.example. Compiled app.so is not copied;
+# weights, scheduler, FP8, rewrite, auto size, and no extra LoRAs match.
 PIPE_ID = "Qwen/Qwen-Image-Edit-2511"
+AIO_REPO_ID = "Phr00t/Qwen-Image-Edit-Rapid-AIO"
+AIO_FILENAME = "v23/Qwen-Rapid-AIO-NSFW-v23.safetensors"
+AIO_REPO_TYPE = "model"
 TRANSFORMER_ID = "prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23"
 LORA_REPO = "wiikoo/Qwen-lora-nsfw"
 
@@ -19,11 +24,35 @@ TRUE_CFG = 1.0
 GUIDANCE = 1.0
 DEFAULT_WIDTH = 576
 DEFAULT_HEIGHT = 1024
-L4_MIN_VRAM_GIB = 20.0
+CANVAS_AUTO = "auto（入力）"
+CANVAS_FIXED = "576x1024"
+CANVAS_OPTIONS = (CANVAS_AUTO, CANVAS_FIXED)
+SPACE_GPU_MIN_VRAM_GIB = 20.0
+SPACE_GPU_RESIDENT_GIB = 35.0
+L4_MIN_VRAM_GIB = SPACE_GPU_MIN_VRAM_GIB
 VRAM_OFFLOAD_GIB = 8.0
+ENABLE_FP8_QUANT = True
+ENABLE_TENSOR_OFFLOADING = True
+DEFAULT_REWRITE_PROMPT = True
+REWRITE_MODEL = "Qwen/Qwen2.5-VL-72B-Instruct"
+REWRITE_PROVIDER = "nebius"
+REWRITE_ASSISTANT_PROMPT = (
+    "you are a helpful assistant, you should provide useful answers to users."
+)
+REWRITE_USER_TEMPLATE = "{system_prompt}\n\nUser Input: {user_prompt}\n\nRewritten Prompt:"
+SCHED_SHIFT = 1.0
+SCHED_NUM_TRAIN_TIMESTEPS = 1000
+SCHED_BASE_IMAGE_SEQ_LEN = 256
+SCHED_MAX_IMAGE_SEQ_LEN = 8192
+SCHED_TIME_SHIFT_TYPE = "exponential"
+SCHED_USE_DYNAMIC_SHIFTING = True
+SCHED_BASE_SHIFT = 1.0986122886681098
+SCHED_MAX_SHIFT = 1.0986122886681098
+TORCHAO_COLAB_SPEC = "torchao==0.11.0"
+DIFFUSERS_COLAB_SPEC = "git+https://github.com/huggingface/diffusers.git"
 # Weights stay on the Colab VM HuggingFace cache. Drive only holds JPGs.
 DRIVE_FREE_GIB = 2
-WEIGHTS_CACHE_GIB = 40
+WEIGHTS_CACHE_GIB = 70
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 PHOTOREAL_NAME_MARKS = ("photoreal", "realperson", "real-person", "実写")
 INPUT_SOURCE_DEFAULT = "Drive input"
@@ -38,6 +67,70 @@ UPLOAD_PHONE_HINT = (
 # Colab ships Pillow 11.3 with a matching _imaging .so. Do not -U to 12:
 # 12.0 is missing _Ink; 12.3 .py on an 11.3 .so raises ImportError.
 PILLOW_COLAB_SPEC = "pillow==11.3.0"
+CHILD_ABUSE_REDIRECT_PROMPT = (
+    "Safety instruction: If the requested output would depict child abuse, "
+    "sexualized minors, or any abuse involving a child or minor, ignore the "
+    "user's edit request and instead generate a plain white image with centered "
+    "warning text that says \"Blocked unsafe content: child abuse is not allowed.\" "
+    "Do not depict any people, body parts, sexual content, or abuse in that "
+    "fallback image."
+)
+SYSTEM_PROMPT = """
+# Edit Instruction Rewriter
+You are a professional edit instruction rewriter. Your task is to generate a precise, concise, and visually achievable professional-level edit instruction based on the user-provided instruction and the image to be edited.
+
+Please strictly follow the rewriting rules below:
+
+## 1. General Principles
+- Keep the rewritten prompt **concise and comprehensive**. Avoid overly long sentences and unnecessary descriptive language.
+- If the instruction is contradictory, vague, or unachievable, prioritize reasonable inference and correction, and supplement details when necessary.
+- Keep the main part of the original instruction unchanged, only enhancing its clarity, rationality, and visual feasibility.
+- All added objects or modifications must align with the logic and style of the scene in the input images.
+- If multiple sub-images are to be generated, describe the content of each sub-image individually.
+
+## 2. Task-Type Handling Rules
+
+### 1. Add, Delete, Replace Tasks
+- If the instruction is clear (already includes task type, target entity, position, quantity, attributes), preserve the original intent and only refine the grammar.
+- If the description is vague, supplement with minimal but sufficient details (category, color, size, orientation, position, etc.).
+- Remove meaningless instructions: e.g., "Add 0 objects" should be ignored or flagged as invalid.
+- For replacement tasks, specify "Replace Y with X" and briefly describe the key visual features of X.
+
+### 2. Text Editing Tasks
+- All text content must be enclosed in English double quotes. Keep the original language of the text, and keep the capitalization.
+- Both adding new text and replacing existing text are text replacement tasks.
+- Specify text position, color, and layout only if user has required.
+
+### 3. Human Editing Tasks
+- Make the smallest changes to the given user's prompt.
+- If changes to background, action, expression, camera shot, or ambient lighting are required, please list each modification individually.
+- Edits to makeup or facial features / expression must be subtle, not exaggerated, and must preserve the subject's identity consistency.
+
+### 4. Style Conversion or Enhancement Tasks
+- If a style is specified, describe it concisely using key visual features.
+- For style reference, analyze the original image and extract key characteristics, integrating them into the instruction.
+- Colorization tasks (including old photo restoration) must use the fixed template: "Restore and colorize the old photo."
+
+### 5. Material Replacement
+- Clearly specify the object and the material.
+
+### 6. Logo/Pattern Editing
+- Material replacement should preserve the original shape and structure as much as possible.
+
+### 7. Multi-Image Tasks
+- Rewritten prompts must clearly point out which image's element is being modified.
+
+## 3. Rationale and Logic Check
+- Resolve contradictory instructions.
+- Supplement missing critical information.
+
+# Output Format Example
+```json
+{
+ "Rewritten": "..."
+}
+```
+""".strip()
 
 # Optional extra adapters on top of the NSFW merge. Names match jt65 Fast2-nsfw.
 LORA_FILES = {
@@ -108,10 +201,7 @@ FUTA_LOCK = (
 DEFAULT_EDIT_PROMPT = (
     f"{KEEP_LOCK} Remove only the clothes. Do not tie the hair. {FUTA_LOCK}"
 )
-DEFAULT_NEGATIVE = (
-    "clothes, dress, fabric, underwear, testicles, scrotum, balls, male body, "
-    "blurry, extra limbs, worst quality, watermark"
-)
+DEFAULT_NEGATIVE = ""
 STYLE_PRESET_DEFAULT = "入力のまま"
 STYLE_LABELS = ("アニメ絵", "リアル", "3D", "漫画")
 STYLE_PRESETS = {
@@ -394,13 +484,25 @@ _FUTA_PARTNER_SWAPS = (
 )
 
 
-def require_l4_or_exit(vram_gib: float, name: str = "") -> None:
-    """Colab free T4 is too small. L4 / A10G 24GB is the Mk1227 class."""
+def require_space_gpu_or_exit(vram_gib: float, name: str = "") -> None:
+    """T4 is too small. A100/H100 hold the Space stack. L4 offloads."""
     label = (name or "").strip() or "GPU"
-    if vram_gib < L4_MIN_VRAM_GIB:
+    if vram_gib < SPACE_GPU_MIN_VRAM_GIB:
         raise SystemExit(
-            f"{label} の VRAM が {vram_gib:.1f} GiB。L4（約24GB）を選んで①からやり直してください。"
+            f"{label} の VRAM が {vram_gib:.1f} GiB。"
+            "A100（40GB または 80GB）か H100 を選んで①からやり直してください。T4 は不可。"
         )
+
+
+def require_l4_or_exit(vram_gib: float, name: str = "") -> None:
+    """Back-compat name. Same gate as require_space_gpu_or_exit."""
+    require_space_gpu_or_exit(vram_gib, name)
+
+
+def space_device_mode(vram_gib: float) -> str:
+    if float(vram_gib) >= SPACE_GPU_RESIDENT_GIB:
+        return "cuda"
+    return "model_cpu_offload"
 
 
 def drop_stale_pil_modules() -> None:
@@ -494,6 +596,30 @@ def snapped_size(width: int, height: int, multiple: int = 32) -> tuple[int, int]
     return w, h
 
 
+def auto_canvas_size(
+    image: Any,
+    *,
+    min_size: int = 256,
+    max_size: int = 2048,
+    multiple: int = 32,
+) -> tuple[int, int]:
+    """Space DEFAULT_HEIGHT/WIDTH=auto. Keep aspect, snap to 32, clamp 256–2048."""
+    rgb = image.convert("RGB") if hasattr(image, "convert") else image
+    w, h = rgb.size
+    scale = 1.0
+    longest = max(w, h)
+    shortest = min(w, h)
+    if longest > max_size:
+        scale = max_size / float(longest)
+    if shortest * scale < min_size:
+        scale = min_size / float(shortest)
+    w = int(round(w * scale))
+    h = int(round(h * scale))
+    w = min(max(w, min_size), max_size)
+    h = min(max(h, min_size), max_size)
+    return snapped_size(w, h, multiple)
+
+
 def resize_rgb(image: Any, width: int = DEFAULT_WIDTH, height: int = DEFAULT_HEIGHT):
     """Letterbox-free resize to edit canvas. Snap to 32 like the Space."""
     w, h = snapped_size(width, height)
@@ -526,11 +652,17 @@ def ref_source_form_options() -> list[str]:
 def drive_space_lines() -> list[str]:
     return [
         "これは i2i（元画像を編集）。t2i ではない。",
+        "Mk1227 Space と同じ載せ方: 2511 + Phr00t AIO NSFW v23 単一ファイル + FP8 + scheduler。",
         "Drive に置くのは input/ と output/ の JPG だけ。",
         f"Drive の空きは {DRIVE_FREE_GIB}GB あれば足りる。H3 の参照土台 21GB は不要。",
         f"重みは Colab ディスク（HuggingFace キャッシュ 約{WEIGHTS_CACHE_GIB}GB）。Drive には載せない。",
+        "GPU は A100 / H100。L4 は offload。T4 は不可。",
         "スマホは Drive input。アップロード（ファイル選択）は PC だけ。",
     ]
+
+
+def canvas_form_options() -> list[str]:
+    return list(CANVAS_OPTIONS)
 
 
 def is_photoreal_path(path: str | Path) -> bool:
@@ -827,6 +959,243 @@ def disable_safety(pipe: Any) -> Any:
     return pipe
 
 
+def classify_aio_key(key: str) -> tuple[str, str] | None:
+    """Map ComfyUI / diffusers AIO keys. WaifuLuna/QwenEditHot load path."""
+    if key.startswith("model.diffusion_model."):
+        return "transformer", key[len("model.diffusion_model.") :]
+    if key.startswith("diffusion_model."):
+        return "transformer", key[len("diffusion_model.") :]
+    if key.startswith("transformer."):
+        return "transformer", key[len("transformer.") :]
+    if key.startswith("first_stage_model."):
+        return "vae", key[len("first_stage_model.") :]
+    if key.startswith("vae."):
+        return "vae", key[len("vae.") :]
+    if "conditioner.embedders.0." in key:
+        return "text_encoder", key.split("conditioner.embedders.0.", 1)[1]
+    if key.startswith("text_encoder."):
+        return "text_encoder", key[len("text_encoder.") :]
+    idx = key.find("text_encoder.")
+    if idx >= 0:
+        return "text_encoder", key[idx + len("text_encoder.") :]
+    return None
+
+
+def split_aio_state_dict(state_dict: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    buckets: dict[str, dict[str, Any]] = {
+        "transformer": {},
+        "vae": {},
+        "text_encoder": {},
+    }
+    for key, value in state_dict.items():
+        hit = classify_aio_key(key)
+        if hit is None:
+            continue
+        bucket, new_key = hit
+        buckets[bucket][new_key] = value
+    return buckets
+
+
+def inject_aio_state(pipe: Any, state_dict: dict[str, Any]) -> dict[str, Any]:
+    buckets = split_aio_state_dict(state_dict)
+    first = next(iter(state_dict), "")
+    stats: dict[str, Any] = {
+        "first_key": first,
+        "transformer": len(buckets["transformer"]),
+        "vae": len(buckets["vae"]),
+        "text_encoder": len(buckets["text_encoder"]),
+        "transformer_missing": 0,
+        "vae_missing": 0,
+        "text_encoder_missing": 0,
+    }
+    for name in ("transformer", "vae", "text_encoder"):
+        weights = buckets[name]
+        module = getattr(pipe, name, None)
+        if not weights or module is None or not hasattr(module, "load_state_dict"):
+            continue
+        msg = module.load_state_dict(weights, strict=False)
+        missing = getattr(msg, "missing_keys", None) or []
+        stats[f"{name}_missing"] = len(missing)
+    return stats
+
+
+def load_aio_checkpoint(pipe: Any, path: str | Path) -> dict[str, Any]:
+    from safetensors.torch import load_file
+
+    state = load_file(str(path))
+    try:
+        return inject_aio_state(pipe, state)
+    finally:
+        del state
+        gc.collect()
+
+
+def space_scheduler_config(base: dict[str, Any] | None = None) -> dict[str, Any]:
+    cfg = dict(base or {})
+    cfg.update(
+        {
+            "shift": SCHED_SHIFT,
+            "num_train_timesteps": SCHED_NUM_TRAIN_TIMESTEPS,
+            "base_image_seq_len": SCHED_BASE_IMAGE_SEQ_LEN,
+            "max_image_seq_len": SCHED_MAX_IMAGE_SEQ_LEN,
+            "time_shift_type": SCHED_TIME_SHIFT_TYPE,
+            "use_dynamic_shifting": SCHED_USE_DYNAMIC_SHIFTING,
+            "base_shift": SCHED_BASE_SHIFT,
+            "max_shift": SCHED_MAX_SHIFT,
+        }
+    )
+    return cfg
+
+
+def apply_space_scheduler(pipe: Any, scheduler_cls: Any = None) -> Any:
+    cls = scheduler_cls
+    if cls is None:
+        from diffusers import FlowMatchEulerDiscreteScheduler
+
+        cls = FlowMatchEulerDiscreteScheduler
+    current = getattr(pipe, "scheduler", None)
+    base = dict(getattr(current, "config", {}) or {})
+    pipe.scheduler = cls.from_config(space_scheduler_config(base))
+    return pipe.scheduler
+
+
+def quantize_transformer_fp8(transformer: Any) -> str:
+    """Mk1227 ENABLE_FP8_QUANT. torchao 0.11 float8 weight-only."""
+    if transformer is None:
+        return "skip (no transformer)"
+    try:
+        from torchao.quantization import quantize_
+    except Exception as e:
+        return f"skip ({e})"
+    attempts: list[tuple[str, Any]] = []
+    try:
+        from torchao.quantization import Float8WeightOnlyConfig
+
+        attempts.append(("Float8WeightOnlyConfig", Float8WeightOnlyConfig()))
+    except Exception:
+        pass
+    try:
+        from torchao.quantization import float8_weight_only
+
+        attempts.append(("float8_weight_only", float8_weight_only()))
+    except Exception:
+        pass
+    try:
+        from torchao.quantization import Float8DynamicActivationFloat8WeightConfig
+
+        attempts.append(
+            (
+                "Float8DynamicActivationFloat8WeightConfig",
+                Float8DynamicActivationFloat8WeightConfig(),
+            )
+        )
+    except Exception:
+        pass
+    errors: list[str] = []
+    for name, cfg in attempts:
+        try:
+            quantize_(transformer, cfg)
+            return name
+        except Exception as e:
+            errors.append(f"{name}: {e}")
+    blob = "; ".join(errors)[:240] if errors else "no torchao float8 config"
+    return f"skip ({blob})"
+
+
+def parse_rewritten_prompt(raw: str) -> str:
+    text = (raw or "").strip()
+    if not text:
+        return ""
+    cleaned = text.replace("```json", "").replace("```", "").strip()
+    try:
+        data = json.loads(cleaned)
+    except Exception:
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start >= 0 and end > start:
+            try:
+                data = json.loads(cleaned[start : end + 1])
+            except Exception:
+                return text.replace("\n", " ").strip()
+        else:
+            return text.replace("\n", " ").strip()
+    if isinstance(data, dict):
+        out = data.get("Rewritten") or data.get("rewritten") or ""
+        if isinstance(out, str) and out.strip():
+            return out.strip().replace("\n", " ")
+    return text.replace("\n", " ").strip()
+
+
+def rewrite_edit_prompt(
+    prompt: str,
+    image: Any = None,
+    *,
+    token: str = "",
+    enabled: bool = True,
+    client_factory: Any = None,
+) -> str:
+    """Space DEFAULT_REWRITE_PROMPT via Qwen2.5-VL-72B. Missing token = typed prompt."""
+    text = (prompt or "").strip()
+    if not enabled:
+        return text
+    if not token:
+        print("rewrite skip: no HF_TOKEN")
+        return text
+    if image is None:
+        print("rewrite skip: no image")
+        return text
+    try:
+        if client_factory is not None:
+            client = client_factory(token)
+        else:
+            from huggingface_hub import InferenceClient
+
+            client = InferenceClient(provider=REWRITE_PROVIDER, token=token)
+        buf = io.BytesIO()
+        rgb = image.convert("RGB") if hasattr(image, "convert") else image
+        rgb.save(buf, format="PNG")
+        b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+        user = REWRITE_USER_TEMPLATE.format(
+            system_prompt=SYSTEM_PROMPT,
+            user_prompt=text,
+        )
+        resp = client.chat.completions.create(
+            model=REWRITE_MODEL,
+            messages=[
+                {"role": "system", "content": REWRITE_ASSISTANT_PROMPT},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{b64}"},
+                        },
+                        {"type": "text", "text": user},
+                    ],
+                },
+            ],
+        )
+        raw = resp.choices[0].message.content
+        if isinstance(raw, list):
+            raw = " ".join(
+                str(part.get("text", part) if isinstance(part, dict) else part)
+                for part in raw
+            )
+        out = parse_rewritten_prompt(str(raw or ""))
+        return out or text
+    except Exception as e:
+        print("rewrite skip", str(e)[:200])
+        return text
+
+
+def finalize_space_prompt(prompt: str) -> str:
+    extra = CHILD_ABUSE_REDIRECT_PROMPT.strip()
+    out = (prompt or "").strip()
+    if extra and extra.lower() not in out.lower():
+        return f"{out} {extra}".strip()
+    return out
+
+
 def vram_used_gib(torch_module: Any = None) -> float:
     if torch_module is None or not getattr(torch_module, "cuda", None):
         return 0.0
@@ -897,10 +1266,10 @@ def clamp_edit_vae_area(
 def force_edit_offload(
     pipe: Any,
     *,
-    sequential: bool = True,
+    sequential: bool = False,
     torch_module: Any = None,
 ) -> str:
-    """L4 24GB cannot hold the ~20GB transformer. Sequential is the default."""
+    """Space ENABLE_TENSOR_OFFLOADING = model_cpu_offload. Sequential is OOM fallback."""
     for name in ("maybe_free_model_hooks", "remove_all_hooks", "reset_device_map"):
         fn = getattr(pipe, name, None)
         if callable(fn):
@@ -932,6 +1301,23 @@ def force_edit_offload(
     return mode
 
 
+def place_edit_pipe(
+    pipe: Any,
+    vram_gib: float,
+    torch_module: Any = None,
+) -> str:
+    """A100 40/80: GPU resident. Under 35GiB: tensor offload like ZeroGPU."""
+    mode = space_device_mode(vram_gib)
+    if mode == "cuda":
+        try:
+            pipe.to("cuda")
+            setattr(pipe, "_qwen_edit_offload", "cuda")
+            return "cuda"
+        except Exception as e:
+            print("cuda place fail → model_cpu_offload", str(e)[:180])
+    return force_edit_offload(pipe, sequential=False, torch_module=torch_module)
+
+
 def run_pipe_edit(
     pipe: Any,
     images: list[Any],
@@ -950,8 +1336,14 @@ def run_pipe_edit(
     except Exception as e:
         if torch_module is None or not is_cuda_oom(e):
             raise
-        if getattr(pipe, "_qwen_edit_offload", None) == "sequential_cpu_offload":
+        current = getattr(pipe, "_qwen_edit_offload", None)
+        if current == "sequential_cpu_offload":
             raise
+        if current == "cuda":
+            print("VRAM OOM → model_cpu_offload でもう一度")
+            free_cuda(torch_module)
+            force_edit_offload(pipe, sequential=False, torch_module=torch_module)
+            return _call(images)
         print("VRAM OOM → sequential_cpu_offload でもう一度")
         free_cuda(torch_module)
         force_edit_offload(pipe, sequential=True, torch_module=torch_module)
@@ -968,8 +1360,9 @@ def infer_kwargs(
     negative: str = DEFAULT_NEGATIVE,
     torch_module: Any = None,
     device: str = "cpu",
-    height: int = DEFAULT_HEIGHT,
-    width: int = DEFAULT_WIDTH,
+    height: int | None = DEFAULT_HEIGHT,
+    width: int | None = DEFAULT_WIDTH,
+    size_auto: bool = False,
 ) -> dict[str, Any]:
     gen = None
     if torch_module is not None and seed is not None:
@@ -980,11 +1373,14 @@ def infer_kwargs(
         "true_cfg_scale": float(true_cfg),
         "num_images_per_prompt": 1,
         "generator": gen,
-        "height": int(height),
-        "width": int(width),
         "guidance_scale": float(guidance),
     }
-    if float(true_cfg) > 1.0:
+    if not size_auto:
+        if height is not None:
+            out["height"] = int(height)
+        if width is not None:
+            out["width"] = int(width)
+    if (negative or "").strip() and float(true_cfg) > 1.0:
         out["negative_prompt"] = negative
     return out
 

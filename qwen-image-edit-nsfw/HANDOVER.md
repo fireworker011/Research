@@ -13,12 +13,13 @@ Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャ
 - `colab/_write_qwen_edit_nb.py`
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
-HEAD: 90e5fd1 h3: Qwen Edit Colab は Mk1227 Space の完全クローンではない
+HEAD: （push 後の commit。Mk1227 Space と同じ載せ方: Phr00t AIO 単体 + FP8 + A100）
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
 これは i2i（Picture 1＝元画像）。t2i ではない。任意で顔・画風の参照（Picture 2）。
-Drive の空きは 2GB で足りる（JPG だけ）。重みは Colab 約40GB。H3 の 21GB 参照土台は不要。
+Drive の空きは 2GB で足りる（JPG だけ）。重みは Colab 約70GB（2511 + AIO 28GB）。H3 の 21GB 参照土台は不要。
+GPU は A100（40/80）か H100。L4 は offload。T4 は不可。
 基本フタナリ（玉なし・マンコあり・竿20cm）。男禁止。成人21+。実写の他人は入れるな。JPGはGitに入れるな。
 ipynb は手で直すな。`python3 colab/_write_qwen_edit_nb.py`。H3 スタジオと同時に動かすな。
 JSON物語（clinic/cafe/sales含む）は触るな。HQ dump / hq-instruct / Threads cron は触るな。
@@ -44,27 +45,25 @@ JSON物語（clinic/cafe/sales含む）は触るな。HQ dump / hq-instruct / Th
 
 起点の静止画を **Qwen Image Edit** で直す。H3 動画ノート（`minimax_h3_lora_studio.ipynb`）とは別ランタイム。
 
-Mk1227 / ayooo123 Space と **同じ系統だが完全クローンではない**。
+Mk1227 / ayooo123 Space の **公開設定どおり** に Colab へ載せる（コンパイル済み `app.so` はコピーしない）。
 
-Space 本体（`Mk1227/Qwen-Image-Edit-NSFW` `.env.example`）:
+Space 本体（`Mk1227/Qwen-Image-Edit-NSFW` `.env.example`）と同じもの:
 
 - 土台 `Qwen/Qwen-Image-Edit-2511`
-- AIO 単一ファイル `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors` を載せる
-- FP8 quant オン、tensor offload、ZeroGPU A10G
-- 4step / guidance 1.0 / サイズ **auto** / rewrite **既定オン**（72B VL）
-- 追加 LoRA なし（NSFW は AIO に焼き込み）
-- クイック12個は服抜きに `Realistic nude body, natural skin`
+- AIO 単一ファイル `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors` を注入
+- FP8 quant オン（`torchao==0.11.0`）、A100 は GPU 常駐、24GB 級は `model_cpu_offload`
+- 4step / guidance 1.0 / サイズ **auto** / rewrite **既定オン**（72B VL。HF_TOKEN が無いときは入力文のまま）
+- 追加 LoRA なし（NSFW は AIO に焼き込み）。②の追加LoRAはオフのまま
+- FlowMatch `SCHED_*`（exponential `log(3)` / 8192）
+- pip は `git+https://github.com/huggingface/diffusers.git`
 
-この Colab:
+H3 側で足しているもの（Space UI には無い）:
 
-- 同じ 2511 土台 + `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23`（上の AIO から **transformer だけ**抽出）
-- 公式 2511 の VAE / text encoder / FlowMatch（Space の SCHED_* は未コピー）
-- bf16、FP8 なし、sequential CPU offload、キャンバス **576×1024 固定**
-- rewrite なし
-- 服だけは `remove_clothing`。行為だけ Qwen4Play / CockQwen（jt65 Fast2 由来。Space には無い）
 - クイックはフタナリに差し替え。`Realistic nude body` は消す
+- 短い `FACE_KEEP`
+- ②で追加LoRAをオンにしたときだけ jt65 Fast2（顔が別の人になりやすい）
 
-顔を Space と同じにしたいなら Colab ではなく `h3-lora-studio/scripts/qwen_edit_nsfw.py` の Mk1227 `/infer`（steps=4、rewrite=False、576×1024）。
+ZeroGPU の `/infer` 経路は別: `h3-lora-studio/scripts/qwen_edit_nsfw.py`。Colab GPU 経路と混ぜない。
 
 保存先は Drive `qwen-image-edit-nsfw/output`。Git に JPG を入れない。
 
@@ -75,7 +74,7 @@ Space 本体（`Mk1227/Qwen-Image-Edit-NSFW` `.env.example`）:
 | 置くもの | 場所 | 目安 |
 |---|---|---|
 | 元画像・出力 JPG | Drive `qwen-image-edit-nsfw/input` と `output` | **2GB あれば足りる** |
-| 重み（Rapid-AIO 約20GB + text encoder 約17GB + LoRA） | **Colab ディスク** HuggingFace キャッシュ | 約40GB。Drive には載せない |
+| 重み（2511 + AIO 28.4GB + text encoder） | **Colab ディスク** HuggingFace キャッシュ | 約70GB。Drive には載せない |
 
 H3 スタジオの参照土台（R2V 約21GB）は **不要**。このノートは Drive にモデルを置かない。
 
@@ -147,8 +146,8 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 ## 使い方
 
 1. 上の Colab リンク（Drive コピーではない）
-2. ランタイム → GPU **L4**
-3. ① Drive（空きは 2GB で足りる。重みは Colab）→ ② 重み（初回は待つ。Pillow は Colab の `11.3.0` のまま。12 に上げるな）→ ③ クイックプロンプト＋画風。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。顔を固定したいときは参照画像（Picture 2）＝Drive から
+2. ランタイム → GPU **A100**（40GB でも 80GB でも。H100 可。L4 は offload。T4 は拒否）
+3. ① Drive（空きは 2GB で足りる。重みは Colab 約70GB）→ ② 重み（初回は AIO 28GB。Pillow は Colab の `11.3.0` のまま。12 に上げるな。`torchao==0.11.0`）→ ③ クイックプロンプト＋画風。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。キャンバス既定は **auto**。rewrite 既定オン（Secrets に HF_TOKEN）。顔を固定したいときは参照画像（Picture 2）＝Drive から
 4. 出力は Drive `qwen-image-edit-nsfw/output`
 
 T4 は拒否される。H3 動画ノートと同時に動かさない。
@@ -164,8 +163,8 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ## 限界
 
-4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。大きく姿勢を変えるときは **参照画像（Picture 2）** に顔のよく出た同じ人物を足す。フタナリ勃起オンなら体（竿・マンコ）は足す。別の人になるときはプロンプトが長すぎるか CockQwen が載っている。開き直して③。
+4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。大きく姿勢を変えるときは **参照画像（Picture 2）** に顔のよく出た同じ人物を足す。フタナリ勃起オンなら体（竿・マンコ）は足す。別の人になるときはプロンプトが長すぎるか、②で追加LoRAを載せている。オフのまま開き直して③。
 
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
-②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から **sequential CPU offload**（`model_cpu_offload` は transformer 約20GBを 24GB に載せて③で落ちる）。③は `pipe(height=1024, width=576)` と `guidance_scale=1.0`。VAE 参照は公式の 1024² のまま（キャンバスに落とすと顔の latent が死ぬ）。プロンプトは **短い編集指示**（Mk1227 Space と同じ）。長い IDENTITY LOCK / I2I / EDIT SCOPE を積むと Rapid-AIO の「新しい絵を描け」テンプレが文章に従い、元の顔を捨てる。服だけ／既定は `remove_clothing` のみ。CockQwen と qwen_uncensor は行為プリセットだけ。L4 では `qwen_uncensor`（約2.4GB）を載せず Rapid-AIO NSFW merge で進む。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。キャンバスは **576×1024 固定**（フォームの大きい値は使わない）。
+②のほか: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。`device_map="cuda"` は使わない。A100（35GB以上）は GPU 常駐。L4 は `model_cpu_offload`（sequential は OOM の最後だけ）。`torchao==0.11.0` で FP8。AIO 注入が 0 keys のときだけ prithiv 抽出に落ちる。③はサイズ **auto**（入力のアスペクト。576×1024 も選べる）。`guidance_scale=1.0`。VAE 参照は公式の 1024²。プロンプトは短い編集指示。長い IDENTITY LOCK は顔を捨てる。rewrite は HF_TOKEN が要る（nebius の 72B）。無いときは入力文のまま。③の Generator は A100 なら cuda、offload なら cpu。③は画像を置いてから。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。
