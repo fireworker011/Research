@@ -645,16 +645,77 @@ def drop_stale_pil_modules() -> None:
             del sys.modules[name]
 
 
-def drop_stale_torchao_modules() -> None:
-    """Drop cached torchao after a pip reinstall. peft caches availability."""
-    for name in list(sys.modules):
-        if name == "torchao" or name.startswith("torchao."):
-            del sys.modules[name]
+def _clear_peft_torchao_cache() -> None:
     peft_utils = sys.modules.get("peft.import_utils")
     fn = getattr(peft_utils, "is_torchao_available", None)
     cache_clear = getattr(fn, "cache_clear", None)
     if callable(cache_clear):
         cache_clear()
+
+
+def is_duplicate_torchao_op_error(exc: BaseException) -> bool:
+    msg = str(exc)
+    return "Duplicate registration" in msg or (
+        "multiple times" in msg and "torchao::" in msg
+    )
+
+
+def live_torchao_for_git_diffusers() -> str | None:
+    """Return version if this process already imported a usable torchao."""
+    mod = sys.modules.get("torchao")
+    if mod is None:
+        return None
+    ver = str(getattr(mod, "__version__", "0") or "0")
+    quant = sys.modules.get("torchao.quantization")
+    if quant is None:
+        return None
+    try:
+        fqn = getattr(quant, "FqnToConfig")
+    except Exception:
+        return None
+    if fqn is None:
+        return None
+    major, minor = pillow_major_minor(ver)
+    if (major, minor) < TORCHAO_COLAB_MIN:
+        return None
+    return ver
+
+
+def allow_duplicate_torchao_ops() -> None:
+    """Re-importing torchao after drop re-defines torchao::int_matmul."""
+    try:
+        import torch.library as torch_library
+    except ImportError:
+        return
+    orig = torch_library.Library.define
+    if getattr(orig, "_qwen_edit_ignore_dup", False):
+        return
+
+    def define(self, *args, **kwargs):
+        try:
+            return orig(self, *args, **kwargs)
+        except RuntimeError as e:
+            if is_duplicate_torchao_op_error(e):
+                return None
+            raise
+
+    define._qwen_edit_ignore_dup = True  # type: ignore[attr-defined]
+    torch_library.Library.define = define
+
+
+def drop_stale_torchao_modules() -> None:
+    """Drop cached torchao after pip only when the live copy cannot serve git+diffusers.
+
+    A live 0.16+ already registered torchao::int_matmul. Deleting sys.modules
+    and importing again raises Duplicate registration.
+    """
+    if live_torchao_for_git_diffusers():
+        _clear_peft_torchao_cache()
+        return
+    for name in list(sys.modules):
+        if name == "torchao" or name.startswith("torchao."):
+            del sys.modules[name]
+    _clear_peft_torchao_cache()
 
 
 def drop_stale_diffusers_modules() -> None:
@@ -679,12 +740,21 @@ def drop_stale_huggingface_hub_modules() -> None:
 
 def require_torchao_for_git_diffusers(version: str | None = None) -> str:
     """git+diffusers imports FqnToConfig. torchao 0.11 cannot."""
+    if version is None:
+        live = live_torchao_for_git_diffusers()
+        if live:
+            return live
+    allow_duplicate_torchao_ops()
     try:
         import torchao
 
         ver = version or str(getattr(torchao, "__version__", "0"))
         from torchao.quantization import FqnToConfig  # noqa: F401
     except Exception as e:
+        if is_duplicate_torchao_op_error(e):
+            raise SystemExit(
+                f"torchao の演算子が二重登録（{e}）。ランタイム再起動→①②。"
+            ) from e
         raise SystemExit(
             f"torchao が git+diffusers と食い違う（{e}）。"
             f"{TORCHAO_COLAB_SPEC} を入れて②をやり直す。まだならランタイム再起動→①②。"

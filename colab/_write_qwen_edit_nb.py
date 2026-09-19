@@ -137,6 +137,7 @@ sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
 sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
 
 from qwen_image_edit_nsfw import (
+    allow_duplicate_torchao_ops,
     drop_stale_diffusers_modules,
     drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
@@ -144,6 +145,7 @@ from qwen_image_edit_nsfw import (
     require_pillow_colab,
     require_torchao_for_git_diffusers,
 )
+allow_duplicate_torchao_ops()
 drop_stale_torchao_modules()
 drop_stale_diffusers_modules()
 drop_stale_huggingface_hub_modules()

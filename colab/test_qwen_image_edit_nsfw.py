@@ -96,6 +96,8 @@ from qwen_image_edit_nsfw import (
     drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
+    is_duplicate_torchao_op_error,
+    live_torchao_for_git_diffusers,
     drive_space_lines,
     edit_output_name,
     ensure_genatomy_adapter,
@@ -295,6 +297,92 @@ def test_drop_stale_torchao_modules_clears_peft_cache():
     assert "torchao.quantization" not in sys.modules
     assert dummy.cleared is True
     sys.modules.pop("peft.import_utils", None)
+
+
+def test_drop_stale_torchao_modules_keeps_live_0_16():
+    saved = {
+        name: sys.modules[name]
+        for name in list(sys.modules)
+        if name == "torchao" or name.startswith("torchao.")
+    }
+    for name in list(saved):
+        del sys.modules[name]
+    dummy = types.SimpleNamespace(cleared=False)
+
+    def cache_clear():
+        dummy.cleared = True
+
+    class Utils:
+        is_torchao_available = types.SimpleNamespace(cache_clear=cache_clear)
+
+    try:
+        ao = types.ModuleType("torchao")
+        ao.__version__ = "0.18.0"
+        quant = types.ModuleType("torchao.quantization")
+        quant.FqnToConfig = object
+        sys.modules["torchao"] = ao
+        sys.modules["torchao.quantization"] = quant
+        sys.modules["peft.import_utils"] = Utils()
+        drop_stale_torchao_modules()
+        assert sys.modules["torchao"] is ao
+        assert sys.modules["torchao.quantization"] is quant
+        assert dummy.cleared is True
+        assert live_torchao_for_git_diffusers() == "0.18.0"
+        assert require_torchao_for_git_diffusers() == "0.18.0"
+    finally:
+        sys.modules.pop("peft.import_utils", None)
+        for name in list(sys.modules):
+            if name == "torchao" or name.startswith("torchao."):
+                del sys.modules[name]
+        sys.modules.update(saved)
+
+
+def test_is_duplicate_torchao_op_error():
+    dup = RuntimeError(
+        "Tried to register an operator (torchao::int_matmul(Tensor a, Tensor b) "
+        "-> Tensor) with the same name and overload name multiple times. "
+        "Duplicate registration: registered at intmm_triton.py:317."
+    )
+    assert is_duplicate_torchao_op_error(dup) is True
+    assert is_duplicate_torchao_op_error(RuntimeError("FqnToConfig")) is False
+
+
+def test_require_torchao_duplicate_op_asks_restart():
+    saved = {
+        name: sys.modules[name]
+        for name in list(sys.modules)
+        if name == "torchao" or name.startswith("torchao.")
+    }
+    for name in list(saved):
+        del sys.modules[name]
+    try:
+        ao = types.ModuleType("torchao")
+        ao.__version__ = "0.18.0"
+
+        class Quant(types.ModuleType):
+            def __getattribute__(self, name):
+                if name == "FqnToConfig":
+                    raise RuntimeError(
+                        "Tried to register an operator (torchao::int_matmul"
+                        "(Tensor a, Tensor b) -> Tensor) with the same name "
+                        "and overload name multiple times. Duplicate registration."
+                    )
+                return types.ModuleType.__getattribute__(self, name)
+
+        sys.modules["torchao"] = ao
+        sys.modules["torchao.quantization"] = Quant("torchao.quantization")
+        try:
+            require_torchao_for_git_diffusers()
+        except SystemExit as e:
+            assert "二重登録" in str(e)
+            assert "ランタイム再起動" in str(e)
+        else:
+            raise AssertionError("duplicate int_matmul must exit")
+    finally:
+        for name in list(sys.modules):
+            if name == "torchao" or name.startswith("torchao."):
+                del sys.modules[name]
+        sys.modules.update(saved)
 
 
 def test_require_torchao_for_git_diffusers_rejects_0_11():
@@ -1116,15 +1204,17 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "FqnToConfig" in src
     assert "drop_stale_diffusers_modules" in src
     assert "drop_stale_huggingface_hub_modules" in src
+    assert "allow_duplicate_torchao_ops" in src
     assert "require_torchao_for_git_diffusers" in src
     assert "require_torchao_for_git_diffusers" in joined
     assert 'uninstall", "-y", "torchao"' in src
-    ao_at = src.find("require_torchao_for_git_diffusers")
+    ao_at = src.find("require_torchao_for_git_diffusers()")
+    dup_at = src.find("allow_duplicate_torchao_ops()")
     hub_at = src.find("drop_stale_huggingface_hub_modules()")
     pipe_at = src.find("from diffusers import QwenImageEditPlusPipeline")
     login_at = src.find("from huggingface_hub import login")
     hf_at = src.find("from huggingface_hub import hf_hub_download")
-    assert 0 <= ao_at < pipe_at
+    assert 0 <= dup_at < ao_at < pipe_at
     assert 0 <= hub_at < pipe_at
     assert hub_at < login_at
     assert hub_at < hf_at
