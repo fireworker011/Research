@@ -209,12 +209,17 @@ REF_FACE = (
     "Picture 2 is the face lock of the same person. Copy face, hair, and art medium from Picture 2. "
     "Edit Picture 1. Do not copy Picture 2's crop or clothes unless asked."
 )
-FUTA_LOCK = (
-    "Same person, same face. Fully nude. Adult woman. Female breasts, feminine body. "
-    "Futanari girl: a fully erect 20cm penis with pale shaft and pink glans "
-    "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
+UNDRESS_LOCK = (
+    "UNDRESS: Remove all clothing. Fully nude. No clothes, no fabric, no underwear. "
+    "Remove only the clothes. Do not tie the hair."
+)
+FUTA_BODY = (
+    "SUBJECT FUTA: Same person, same face. Adult woman. Female breasts, feminine body. "
+    "Futanari girl: a fully erect 20cm penis with pale shaft and pink glans, "
+    "hairless female pussy visible at the base of the shaft, "
     "no testicles, no scrotum, no balls. Do not redraw the face."
 )
+FUTA_LOCK = f"{FUTA_BODY} The 20cm stands in front of the crotch."
 GIVER_FUTA = "ふたなり（玉なし・男禁止）"
 GIVER_MAN = "男"
 GIVER_DEFAULT = GIVER_FUTA
@@ -1206,6 +1211,58 @@ def wants_giver_lock(preset: str = "", extra: str = "") -> bool:
     )
 
 
+def is_outfit_preset(label: str) -> bool:
+    return (label or "").strip() in OUTFIT_PRESETS
+
+
+def wants_stand_futa(preset: str = "", extra: str = "") -> bool:
+    """Standing 20cm lock fights anal / scat / sex poses. Anatomy lock still applies."""
+    label = (preset or "").strip()
+    if is_sex_act_preset(label) or is_excrete_preset(label):
+        return False
+    return not (
+        wants_anal_lock(extra, label)
+        or wants_scat_lock(extra, label)
+        or wants_urine_lock(extra, label)
+    )
+
+
+def subject_futa_lock(*, stand: bool) -> str:
+    return FUTA_LOCK if stand else FUTA_BODY
+
+
+def pin_subject_checks(
+    parts: list[str],
+    *,
+    undress: bool,
+    futa: bool,
+    outfit: bool,
+    stand_futa: bool,
+) -> list[str]:
+    """服を外す / フタナリ勃起 are independent of the quick prompt (anal / scat included)."""
+    if outfit:
+        return parts
+    extras: list[str] = []
+    if undress:
+        extras.append(UNDRESS_LOCK)
+    if futa:
+        extras.append(subject_futa_lock(stand=stand_futa))
+    if not extras:
+        return parts
+    pinned = [p for p in parts if p not in extras]
+    insert_at = 1 if pinned and pinned[0] == FACE_KEEP else 0
+    for i, item in enumerate(extras):
+        pinned.insert(insert_at + i, item)
+    return pinned
+
+
+def _after_face_and_subject(parts: list[str]) -> int:
+    idx = 1 if parts and parts[0] == FACE_KEEP else 0
+    while idx < len(parts) and parts[idx] in (UNDRESS_LOCK, FUTA_BODY, FUTA_LOCK):
+        idx += 1
+    return idx
+
+
 def compose_edit_prompt(
     user_prompt: str = "",
     *,
@@ -1256,24 +1313,13 @@ def compose_edit_prompt(
                 parts.append(pose)
         else:
             parts.append(base)
-            blob = base.lower()
-            outfit = label in OUTFIT_PRESETS
-            if not outfit:
-                if undress and label == "服を脱ぐ":
-                    pass
-                elif undress and "remove all clothing" not in blob and "completely nude" not in blob:
-                    parts.append("Remove only the clothes. Do not tie the hair.")
-                if futa and "20cm" not in " ".join(parts).lower() and not anal:
-                    parts.append(FUTA_LOCK)
         if extra:
             parts.append(extra)
     else:
-        blob = extra.lower()
         if extra:
             parts.append(extra)
         else:
             parts.append(KEEP_LOCK)
-            blob = KEEP_LOCK.lower()
         if scat:
             if SCAT_HOLE_LOCK not in parts:
                 parts.insert(0, SCAT_HOLE_LOCK)
@@ -1295,10 +1341,6 @@ def compose_edit_prompt(
             look = urine_look(giver=giver, partnered=False)
             if look not in parts:
                 parts.append(look)
-        if undress and "remove only the clothes" not in blob and not anal and not scat and not urine:
-            parts.append("Remove only the clothes. Do not tie the hair.")
-        if futa and "20cm" not in " ".join(parts).lower() and not anal and not scat and not urine:
-            parts.append(FUTA_LOCK)
     pose_ok = (
         bool(extra)
         or is_sex_act_preset(label)
@@ -1310,20 +1352,25 @@ def compose_edit_prompt(
     # Lead with a short keep-face line. Proven Space /infer also keeps rewrite off.
     if not " ".join(parts).lower().startswith(FACE_KEEP.lower()):
         parts.insert(0, FACE_KEEP)
+    parts = pin_subject_checks(
+        parts,
+        undress=undress,
+        futa=futa,
+        outfit=is_outfit_preset(label),
+        stand_futa=wants_stand_futa(label, extra),
+    )
+    insert_at = _after_face_and_subject(parts)
     if anal and ANAL_HOLE_LOCK in parts:
         parts = [p for p in parts if p != ANAL_HOLE_LOCK]
-        parts.insert(1, ANAL_HOLE_LOCK)
+        parts.insert(insert_at, ANAL_HOLE_LOCK)
+        insert_at += 1
     if scat and SCAT_HOLE_LOCK in parts:
         parts = [p for p in parts if p != SCAT_HOLE_LOCK]
-        parts.insert(1, SCAT_HOLE_LOCK)
+        parts.insert(insert_at, SCAT_HOLE_LOCK)
+        insert_at += 1
     if wants_giver_lock(label, extra):
         glock = giver_lock(giver)
         parts = [p for p in parts if p != glock]
-        insert_at = 1
-        if ANAL_HOLE_LOCK in parts:
-            insert_at = parts.index(ANAL_HOLE_LOCK) + 1
-        elif SCAT_HOLE_LOCK in parts:
-            insert_at = parts.index(SCAT_HOLE_LOCK) + 1
         parts.insert(insert_at, glock)
         parts.append(glock)
     if not pose_ok and "change clothing only" not in " ".join(parts).lower():

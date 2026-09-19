@@ -33,6 +33,8 @@ from qwen_image_edit_nsfw import (
     DRIVE_FREE_GIB,
     ENABLE_FP8_QUANT,
     FUTA_LOCK,
+    FUTA_BODY,
+    UNDRESS_LOCK,
     FACE_KEEP,
     GIVER_DEFAULT,
     GIVER_FUTA,
@@ -180,6 +182,10 @@ def test_stack_is_mk1227_class():
     assert DIFFUSERS_COLAB_SPEC.startswith("git+https://github.com/huggingface/diffusers.git")
     assert "20cm" in FUTA_LOCK
     assert "no testicles" in FUTA_LOCK
+    assert FUTA_BODY in FUTA_LOCK
+    assert "stands in front of the crotch" in FUTA_LOCK
+    assert "stands in front of the crotch" not in FUTA_BODY
+    assert "Remove only the clothes" in UNDRESS_LOCK
     assert "Change clothing only" in KEEP_LOCK
     assert "Remove only the clothes" in DEFAULT_EDIT_PROMPT
     assert canvas_form_options() == [CANVAS_AUTO, CANVAS_FIXED]
@@ -946,9 +952,40 @@ def test_anal_pose_presets_are_futa_detailed():
     custom = compose_edit_prompt("アナルでバックして", futa=True)
     assert ANAL_HOLE_LOCK in custom
     assert ANAL_JOIN in custom
-    assert FUTA_LOCK not in custom
+    assert FUTA_BODY in custom
+    assert UNDRESS_LOCK in custom
+    assert "stands in front of the crotch" not in custom
     cow_anal = [row[0] for row in lora_stack(True, True, preset="カウガール", extra="アナル")]
     assert "Qwen4Play_v2" not in cow_anal
+
+
+def test_anal_scat_honor_undress_and_futa_checks():
+    """アナル／脱糞でも服を外す・フタナリ勃起はクイックと独立。"""
+    doggy = compose_edit_prompt("", preset="アナルバック", undress=True, futa=True)
+    assert UNDRESS_LOCK in doggy
+    assert FUTA_BODY in doggy
+    assert "Fully nude" in doggy
+    assert "stands in front of the crotch" not in doggy
+    off = compose_edit_prompt("", preset="アナルバック", undress=False, futa=False)
+    assert UNDRESS_LOCK not in off
+    assert FUTA_BODY not in off
+    assert ANAL_JOIN_FUTA_ON_WOMAN in off
+    scat = compose_edit_prompt("", preset="脱糞（しゃがみ）", undress=True, futa=True)
+    assert UNDRESS_LOCK in scat
+    assert FUTA_BODY in scat
+    scat_off = compose_edit_prompt("", preset="脱糞（しゃがみ）", undress=False, futa=False)
+    assert UNDRESS_LOCK not in scat_off
+    assert FUTA_BODY not in scat_off
+    default_on = compose_edit_prompt("", undress=True, futa=True)
+    assert UNDRESS_LOCK in default_on
+    assert FUTA_LOCK in default_on
+    default_off = compose_edit_prompt("", undress=False, futa=False)
+    assert UNDRESS_LOCK not in default_off
+    assert FUTA_BODY not in default_off
+    assert "20cm" not in default_off
+    bikini = compose_edit_prompt("", preset="ビキニ", undress=True, futa=True)
+    assert UNDRESS_LOCK not in bikini
+    assert FUTA_BODY not in bikini
 
 
 def test_urine_and_scat_are_detailed_and_keep_face():
@@ -1005,7 +1042,9 @@ def test_urine_and_scat_are_detailed_and_keep_face():
     custom_scat = compose_edit_prompt("脱糞して", futa=True)
     assert SCAT_HOLE_LOCK in custom_scat
     assert FECES_LOOK in custom_scat
-    assert FUTA_LOCK not in custom_scat
+    assert FUTA_BODY in custom_scat
+    assert UNDRESS_LOCK in custom_scat
+    assert "stands in front of the crotch" not in custom_scat
 
 
 def test_lora_stack_sex_uses_qwen4play():
@@ -1106,7 +1145,9 @@ def test_every_act_pose_excrete_keeps_medium():
     assert URINE_DETAIL in pee
     assert pins_style_lock("", "放尿して")
     assert wants_urine_lock("おしっこ")
-    assert FUTA_LOCK not in pee
+    assert FUTA_BODY in pee
+    assert UNDRESS_LOCK in pee
+    assert "stands in front of the crotch" not in pee
     assert pee.lower().endswith(medium.lower())
 
 
@@ -1239,8 +1280,11 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "extra=PROMPT" in src
     assert "style_form_options" in src
     assert "giver_form_options" in src
-    assert "giver=竿役" in src
-    assert "竿役" in src
+    assert "服を外す" in src
+    assert "フタナリ勃起" in src
+    assert "クイックと独立" in src
+    assert "必須ではない" in src
+    assert "入力の人。竿役とは別" in src
     assert "解剖Fixer = False" in src
     assert "genatomy_stack" in src
     assert "edit_output_name" in src
