@@ -14,6 +14,8 @@ from qwen_image_edit_nsfw import (
     KEEP_LOCK,
     LORA_FILES,
     PIPE_ID,
+    SCAT_DETAIL,
+    SCAT_LABELS,
     SEX_ACT_PRESETS,
     SEX_PRESET_DEFAULT,
     SEX_PRESETS,
@@ -24,6 +26,8 @@ from qwen_image_edit_nsfw import (
     STYLE_LABELS,
     STYLE_PRESET_DEFAULT,
     STYLE_PRESETS,
+    URINE_DETAIL,
+    URINE_LABELS,
     apply_futa_partner,
     apply_style,
     compose_edit_prompt,
@@ -31,7 +35,10 @@ from qwen_image_edit_nsfw import (
     has_leftover_man,
     infer_kwargs,
     is_anal_preset,
+    is_excrete_preset,
+    is_scat_preset,
     is_sex_act_preset,
+    is_urine_preset,
     lora_stack,
     require_l4_or_exit,
     resize_rgb,
@@ -120,7 +127,9 @@ def test_disable_safety_and_infer_kwargs():
 def test_sex_preset_labels_match_space_ui():
     labels = sex_preset_labels()
     assert labels[:12] == list(SPACE_SEX_PRESET_LABELS)
-    assert labels[12:] == list(ANAL_POSE_LABELS)
+    assert labels[12:17] == list(ANAL_POSE_LABELS)
+    assert labels[17:20] == list(URINE_LABELS)
+    assert labels[20:] == list(SCAT_LABELS)
     opts = sex_preset_form_options()
     assert opts[0] == SEX_PRESET_DEFAULT
     assert opts[1:] == labels
@@ -205,6 +214,39 @@ def test_anal_pose_presets_are_futa_detailed():
     assert not has_leftover_man(lift)
 
 
+def test_urine_and_scat_are_detailed_and_keep_face():
+    for label in URINE_LABELS:
+        assert is_urine_preset(label)
+        assert is_excrete_preset(label)
+        out = compose_edit_prompt("", preset=label, futa=True)
+        assert "IDENTITY LOCK" in out
+        assert "identical face" in out.lower()
+        assert URINE_DETAIL in out
+        assert "urethral opening" in out.lower()
+        assert "yellow" in out.lower()
+        assert "glans tip" in out.lower()
+        assert "not from the pussy" in out.lower()
+        assert not has_leftover_man(out), label
+        names = [row[0] for row in lora_stack(True, True, preset=label)]
+        assert names == ["qwen_uncensor", "CockQwen_v3"]
+        assert "Qwen4Play_v2" not in names
+    reward = compose_edit_prompt("", preset="ご褒美小便")
+    assert "face" in reward.lower()
+    assert "semen" in reward.lower()
+    for label in SCAT_LABELS:
+        assert is_scat_preset(label)
+        out = compose_edit_prompt("", preset=label, futa=True)
+        assert "IDENTITY LOCK" in out
+        assert SCAT_DETAIL in out
+        assert "anus" in out.lower()
+        assert "stool log" in out.lower() or "sausage" in out.lower()
+        assert "not the vagina" in out.lower() or "not from the vagina" in out.lower()
+        assert "jelly" in out.lower()
+        assert not has_leftover_man(out), label
+        names = [row[0] for row in lora_stack(True, True, preset=label)]
+        assert names == ["qwen_uncensor", "CockQwen_v3"]
+
+
 def test_lora_stack_sex_uses_qwen4play():
     names = [row[0] for row in lora_stack(True, True, preset="カウガール")]
     assert names == ["qwen_uncensor", "Qwen4Play_v2", "CockQwen_v3"]
@@ -274,7 +316,16 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "style_form_options" in src
     assert "画風" in src
     assert "画風は変換しない" in src
-    assert "画風" in joined
-    assert "顔と画風は変えない" in joined
-    for label in (*SPACE_SEX_PRESET_LABELS, *ANAL_POSE_LABELS, *STYLE_LABELS, "クイックプロンプト", "Qwen4Play", "入力のまま"):
+    assert "顔と画風の固定は必須" in src
+    for label in (
+        *SPACE_SEX_PRESET_LABELS,
+        *ANAL_POSE_LABELS,
+        *URINE_LABELS,
+        *SCAT_LABELS,
+        *STYLE_LABELS,
+        "クイックプロンプト",
+        "Qwen4Play",
+        "入力のまま",
+        "顔と画風の固定は必須",
+    ):
         assert label in joined

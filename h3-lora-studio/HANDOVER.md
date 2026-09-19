@@ -24,7 +24,7 @@ clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f1
 
 Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。JPGをリポジトリに入れるな。実写の他人を全裸化するな。
 
-直近: 起点の服抜き・セックスは H3 とは別ノート `qwen_image_edit_nsfw.ipynb`（L4・Rapid-AIO NSFW v23。顔と画風は固定。変えるのは服・姿勢・場所・行為。画風欄は変換ではなく元媒体の固定。③は12個＋アナル5体位。基本フタナリ。男禁止）。H3 スタジオと同時に動かさない。HF ZeroGPU 経由は `h3-lora-studio/scripts/qwen_edit_nsfw.py`（本命 Mk1227 `/infer`・576x1024・steps=4）。台帳 `start-stills.json`。01/02/03/07 は前チャットで編集済み（Gitに無い）。04/05/06 は元から全裸なので copy。08 は室内シャツ＋ネクタイの実写なので skip。JSON物語（clinic/cafe/sales含む）は触るな。②参照土台は既定オフ。③再生既定はつなぐ。
+直近: 起点の服抜き・セックスは H3 とは別ノート `qwen_image_edit_nsfw.ipynb`（L4。顔と画風の固定は必須。変えるのは服・姿勢・場所・行為。小便は亀頭先の黄色い水。脱糞は肛門から今出す固形。基本フタナリ。男禁止）。H3 スタジオと同時に動かさない。HF ZeroGPU 経由は `h3-lora-studio/scripts/qwen_edit_nsfw.py`（本命 Mk1227 `/infer`・576x1024・steps=4）。台帳 `start-stills.json`。01/02/03/07 は前チャットで編集済み（Gitに無い）。04/05/06 は元から全裸なので copy。08 は室内シャツ＋ネクタイの実写なので skip。JSON物語（clinic/cafe/sales含む）は触るな。②参照土台は既定オフ。③再生既定はつなぐ。
 ```
 
 ## いまの枝
@@ -217,4 +217,4 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 
 ## このチャットの最後の返答（ユーザー向け）
 
-起点服抜き・セックスは別ノート `qwen_image_edit_nsfw.ipynb`（L4。顔と画風は固定。変えるのは服・姿勢・場所・行為。画風欄は変換しない）。HF Space 経由は `scripts/qwen_edit_nsfw.py`。clinic/cafe/sales の JSON は未変更。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。JPGはGitに無い。
+起点服抜き・セックスは別ノート `qwen_image_edit_nsfw.ipynb`（L4。顔と画風の固定は必須。小便は亀頭先の黄色い水。脱糞は肛門から今出す固形）。HF Space 経由は `scripts/qwen_edit_nsfw.py`。clinic/cafe/sales の JSON は未変更。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。JPGはGitに無い。

@@ -43,10 +43,10 @@ KEEP_LOCK = (
     "exact same pose, exact same background, exact same lighting. Change clothing only."
 )
 IDENTITY_LOCK = (
-    "IDENTITY LOCK: the output person is the exact same character as the input. "
+    "MANDATORY IDENTITY LOCK: the output person is the exact same character as the input. "
     "Identical face, identical facial features, identical eyes, nose and mouth, "
     "identical hair length, color and hairstyle. Do not beautify, do not restyle the hair, "
-    "do not swap to a different person. Zero changes to the face."
+    "do not swap to a different person. Zero changes to the face. This lock is required."
 )
 CLOTHING_SCOPE = (
     "EDIT SCOPE: change clothing or nudity only. Keep the exact same pose, camera, crop, "
@@ -132,6 +132,34 @@ ANAL_POSE_LABELS = (
     "アナル正常位",
     "アナル騎乗位",
     "アナル座位",
+)
+URINE_LABELS = (
+    "放尿（立ち）",
+    "放尿（しゃがみ）",
+    "ご褒美小便",
+)
+SCAT_LABELS = (
+    "脱糞（しゃがみ）",
+    "脱糞（後背）",
+)
+URINE_DETAIL = (
+    "URINE LOOK: Opaque yellow urine, not clear, not white, not semen. When the 20cm pees, "
+    "the stream comes out of the urethral opening at the glans tip (the small hole at the tip "
+    "of the 20cm), the same hole semen would pulse from, not from the pussy at the base, not "
+    "from the anus, not from off-screen. Continuous physically realistic yellow arc, splash and "
+    "puddle. Keep the identical face and the input art medium. Adult futanari: no testicles, "
+    "hairless pussy at the base of the shaft. Not a man. Adult 21+."
+)
+SCAT_DETAIL = (
+    "SCAT ACT: Real adult human feces leaving the anus in this image. A formed opaque brown "
+    "stool log, sausage-shaped and lightly segmented, is pushed out of the anus now. "
+    "Soft-solid like clay: it sags, breaks, and piles. It does not bounce. It does not stretch "
+    "like slime. This is the act of defecating now, not a body already coated from before. "
+    "It leaves through the anus, not the vagina, not from off-screen. "
+    "FECES LOOK: Opaque dull-matte medium-dark brown human stool, not chocolate syrup, not "
+    "jelly, not slime, not a cartoon swirl. Slightly moist, dense, heavy. Keep the identical "
+    "face and the input art medium. Adult futanari: 20cm penis, hairless pussy at the base, "
+    "no testicles. Not a man. Adult 21+."
 )
 
 # ayooo123 / Mk1227 のクイックプロンプトと同じ12個。行為の竿はフタナリに差し替える。
@@ -264,6 +292,42 @@ SEX_PRESETS = {
         "erect 20cm penis is visible in front; hairless pussy at the base of her shaft; anus taking the full "
         "shaft in the lap. Same environment. Not a man."
     ),
+    "放尿（立ち）": (
+        "Full-body front or three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — "
+        "same facial features, unchanged. She stands fully nude, feet apart. Her 20cm futanari penis is "
+        "visible; a thick opaque yellow urine stream shoots from the urethral opening at the glans tip "
+        "and arcs into a puddle. Hairless pussy at the base of the shaft. No urine from the pussy or anus. "
+        "No testicles. Face fully readable. Same environment art medium. Not a man."
+    ),
+    "放尿（しゃがみ）": (
+        "Medium-full shot. THE SAME PERSON from the input with the IDENTICAL FACE — same facial features, "
+        "unchanged. She squats fully nude, knees apart, heels down, looking toward the camera so her face "
+        "is readable. Her 20cm futanari penis hangs or is held between her thighs; opaque yellow urine "
+        "streams from the urethral opening at the glans tip into a puddle between her feet. Hairless pussy "
+        "at the base. No urine from the pussy or anus. No testicles. Not a man."
+    ),
+    "ご褒美小便": (
+        "Close-up of THE SAME PERSON from the input with the IDENTICAL FACE — same facial features, "
+        "absolutely unchanged. She looks up, mouth slightly open, receiving. An adult futanari 20cm penis "
+        "enters from the top or edge of the frame, partner's face out of frame. Opaque yellow urine streams "
+        "from the urethral opening at the glans tip onto her face, hair, lips and tongue. Not white, not "
+        "semen, not clear water. Wet yellow on skin. Hairless pussy at the base of that shaft, no testicles. "
+        "Not a man."
+    ),
+    "脱糞（しゃがみ）": (
+        "Medium-full three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — same "
+        "facial features, unchanged, face readable. She squats fully nude, knees apart. Her 20cm futanari "
+        "penis and hairless pussy are visible in front. The anus is clearly shown: a formed opaque brown "
+        "sausage-shaped human stool log is being pushed out of the anus now, sagging like clay. Not jelly, "
+        "not slime, not from the vagina. No testicles. Not a man."
+    ),
+    "脱糞（後背）": (
+        "Rear three-quarter view, slightly low. THE SAME PERSON from the input with the IDENTICAL FACE — "
+        "same facial features, unchanged — looks back over her shoulder so her face is readable. She is on "
+        "all fours, fully nude. Her 20cm futanari penis hangs between her thighs with hairless pussy at the "
+        "base. The anus is the focus: a formed opaque brown sausage-shaped human stool log is leaving the "
+        "anus now. Soft-solid clay, not jelly, not slime, not from the vagina. No testicles. Not a man."
+    ),
 }
 SEX_ACT_PRESETS = frozenset(
     {
@@ -277,6 +341,9 @@ SEX_ACT_PRESETS = frozenset(
     }
 )
 ANAL_PRESETS = frozenset({"肛門リフト", *ANAL_POSE_LABELS})
+URINE_PRESETS = frozenset(URINE_LABELS)
+SCAT_PRESETS = frozenset(SCAT_LABELS)
+EXCRETE_PRESETS = frozenset({*URINE_LABELS, *SCAT_LABELS})
 OUTFIT_PRESETS = frozenset({"レースランジェリー", "ビキニ", "濡れたTシャツ"})
 _LEFTOVER_MAN = re.compile(r"\b(?:male pov|man's|men|man)\b", re.I)
 _FUTA_PARTNER_SWAPS = (
@@ -363,6 +430,18 @@ def is_anal_preset(label: str) -> bool:
     return (label or "").strip() in ANAL_PRESETS
 
 
+def is_excrete_preset(label: str) -> bool:
+    return (label or "").strip() in EXCRETE_PRESETS
+
+
+def is_urine_preset(label: str) -> bool:
+    return (label or "").strip() in URINE_PRESETS
+
+
+def is_scat_preset(label: str) -> bool:
+    return (label or "").strip() in SCAT_PRESETS
+
+
 def has_leftover_man(text: str) -> bool:
     cleaned = re.sub(r"\bnot a man\b", " ", text or "", flags=re.I)
     cleaned = re.sub(r"\bnever a man\b", " ", cleaned, flags=re.I)
@@ -398,7 +477,13 @@ def compose_edit_prompt(
         base = SEX_PRESETS.get(label)
         if not base:
             raise SystemExit(f"unknown quick prompt: {label}")
-        if is_sex_act_preset(label):
+        if is_excrete_preset(label):
+            parts.append(base)
+            if is_urine_preset(label) and URINE_DETAIL not in parts:
+                parts.append(URINE_DETAIL)
+            if is_scat_preset(label) and SCAT_DETAIL not in parts:
+                parts.append(SCAT_DETAIL)
+        elif is_sex_act_preset(label):
             parts.append(apply_futa_partner(base) if futa else base)
             if futa and is_anal_preset(label) and ANAL_DETAIL not in parts:
                 parts.append(ANAL_DETAIL)
@@ -435,6 +520,7 @@ def compose_edit_prompt(
     pose_ok = (
         bool(extra)
         or is_sex_act_preset(label)
+        or is_excrete_preset(label)
         or label in {"ウェットシャワー", "セルフタッチ"}
     )
     scope = ACT_SCOPE if pose_ok else CLOTHING_SCOPE
@@ -450,6 +536,23 @@ def lora_stack(
     rows: list[tuple[str, float, str]] = []
     label = (preset or "").strip()
     if label in OUTFIT_PRESETS:
+        return rows
+    if is_excrete_preset(label):
+        rows.append(
+            (
+                "qwen_uncensor",
+                LORA_WEIGHTS["qwen_uncensor"],
+                LORA_TRIGGERS["qwen_uncensor"],
+            )
+        )
+        if futa:
+            rows.append(
+                (
+                    "CockQwen_v3",
+                    LORA_WEIGHTS["CockQwen_v3"],
+                    LORA_TRIGGERS["CockQwen_v3"],
+                )
+            )
         return rows
     if is_sex_act_preset(label):
         rows.append(
