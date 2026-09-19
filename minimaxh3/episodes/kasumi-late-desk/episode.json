@@ -127,8 +127,8 @@
       "face_visible": false,
       "props": ["tote"],
       "place": "Open-plan aisle at morning, a beige cubicle partition in the foreground, grey carpet running to a window wall",
-      "camera": "Over-the-shoulder third-person camera behind Mio at shoulder height, holding still with a slight breathing bob",
-      "action": "Mio stays crouched behind the cubicle partition with the tote on her shoulder while Kuroki walks slowly down the aisle away from her; nobody else is in frame",
+      "camera": "Third-person camera at Mio's left side at shoulder height, her body in profile to the aisle, holding still with a slight breathing bob",
+      "action": "Mio crouches in profile behind the cubicle partition, knees chest neck and face all aimed down the aisle, tote on her shoulder, while Kuroki walks slowly down the aisle away from her; nobody else is in frame",
       "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
       "hud": {
@@ -154,8 +154,8 @@
       "face_visible": false,
       "props": ["tote", "badge"],
       "place": "A plain beige corridor wall beside an open glass office doorway, grey carpet, morning fluorescent light",
-      "camera": "Third-person camera at Mio's shoulder, holding still with a slight breathing bob",
-      "action": "Mio stands with her back to the wall and leans her head a little toward the open doorway; Kuroki stays seated at the inner desk looking down at papers; both stay in these spots",
+      "camera": "Third-person camera at Mio's left side at shoulder height, her body in profile to the doorway, holding still with a slight breathing bob",
+      "action": "Mio stands in profile at the open doorway, knees chest neck and face all aimed into the inner office; Kuroki stays seated at the inner desk looking down at papers; both stay in these spots",
       "sfx": "Quiet corridor, paper rustle from the inner room, HVAC",
       "music": "Bass holds; a sparse tick on the downbeat",
       "hud": {
