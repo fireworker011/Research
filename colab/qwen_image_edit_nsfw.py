@@ -10,6 +10,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from huggingface_hub import hf_hub_download
+except ImportError:
+    hf_hub_download = None  # type: ignore[assignment]
+try:
+    from safetensors.torch import load_file as safetensors_load_file
+    from safetensors.torch import save_file as safetensors_save_file
+except ImportError:
+    safetensors_load_file = None
+    safetensors_save_file = None
+
 # Mk1227/Qwen-Image-Edit-NSFW .env.example. Compiled app.so is not copied;
 # weights, scheduler, FP8, rewrite, auto size, and no extra LoRAs match.
 PIPE_ID = "Qwen/Qwen-Image-Edit-2511"
@@ -155,6 +166,15 @@ LORA_TRIGGERS = {
 LORA_SKIP_UNDER_VRAM_GIB = {
     "qwen_uncensor": 28.0,
 }
+# ③ 解剖Fixer（既定オフ）。アナル／脱糞の穴だけ。顔・画風試験用。②の追加LoRAとは別。
+GENATOMY_REPO = "Zaytron40k/Qwen-Image-GenatomyFixer"
+GENATOMY_FILENAME = "checkpoints/epoch-7.safetensors"
+GENATOMY_ADAPTER = "genatomy"
+GENATOMY_WEIGHT = 0.25
+GENATOMY_CONVERTED = "genatomy-epoch7-diffusers.safetensors"
+GENATOMY_GATE = "n5fw"
+GENATOMY_ANUS = "z42anus anus"
+GENATOMY_ANAL_PEN = "z02apen anal penetration"
 
 KEEP_LOCK = (
     "Keep the exact same person, exact same face, exact same hair length and style, "
@@ -1244,6 +1264,100 @@ def lora_stack(
     if undress:
         add("remove_clothing")
     return rows
+
+
+def wants_genatomy_adapter(enabled: bool, preset: str = "", extra: str = "") -> bool:
+    if not enabled:
+        return False
+    return wants_anal_lock(extra, preset) or wants_scat_lock(extra, preset)
+
+
+def genatomy_trigger(preset: str = "", extra: str = "") -> str:
+    """Anus tokens only. Never the vaginal fixer tokens (z01vpen / z41vagn)."""
+    if not (wants_anal_lock(extra, preset) or wants_scat_lock(extra, preset)):
+        return ""
+    parts = [GENATOMY_GATE, GENATOMY_ANUS]
+    if wants_anal_lock(extra, preset) and not wants_scat_lock(extra, preset):
+        parts.append(GENATOMY_ANAL_PEN)
+    return " ".join(parts)
+
+
+def genatomy_stack(
+    enabled: bool,
+    preset: str = "",
+    extra: str = "",
+) -> tuple[str, float, str] | None:
+    if not wants_genatomy_adapter(enabled, preset, extra):
+        return None
+    return (GENATOMY_ADAPTER, GENATOMY_WEIGHT, genatomy_trigger(preset, extra))
+
+
+def edit_output_name(
+    stem: str,
+    *,
+    preset: str = "",
+    extra: str = "",
+    genatomy: bool = False,
+) -> str:
+    base = Path(stem).stem
+    if wants_anal_lock(extra, preset) or wants_scat_lock(extra, preset):
+        tag = "fixon" if genatomy else "fixoff"
+        return f"edit-{base}-{tag}.jpg"
+    return f"edit-{base}.jpg"
+
+
+def convert_diffsynth_qwen_lora_keys(state: dict[str, Any]) -> dict[str, Any]:
+    """DiffSynth PEFT keys → diffusers `transformer.` LoRA keys."""
+    out: dict[str, Any] = {}
+    for key, value in state.items():
+        if key == "__metadata__":
+            continue
+        new_key = str(key).replace(".default", "")
+        if not new_key.startswith("transformer."):
+            new_key = "transformer." + new_key
+        out[new_key] = value
+    return out
+
+
+def convert_diffsynth_qwen_lora_file(src: str | Path, dest: str | Path) -> Path:
+    if safetensors_load_file is None or safetensors_save_file is None:
+        raise SystemExit("safetensors が無い")
+    dest_path = Path(dest)
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    state = safetensors_load_file(str(src))
+    safetensors_save_file(convert_diffsynth_qwen_lora_keys(state), str(dest_path))
+    return dest_path
+
+
+def ensure_genatomy_adapter(
+    pipe: Any,
+    *,
+    cache_dir: str | Path = "/content",
+    token: str = "",
+) -> str:
+    """Download epoch-7 once, convert, load adapter. Idempotent on the same pipe."""
+    if getattr(pipe, "_qwen_genatomy", False):
+        return GENATOMY_ADAPTER
+    if hf_hub_download is None:
+        raise SystemExit("huggingface_hub が無い")
+    cache = Path(cache_dir)
+    converted = cache / GENATOMY_CONVERTED
+    if not converted.is_file():
+        src = hf_hub_download(
+            repo_id=GENATOMY_REPO,
+            filename=GENATOMY_FILENAME,
+            token=token or None,
+        )
+        convert_diffsynth_qwen_lora_file(src, converted)
+    if not hasattr(pipe, "load_lora_weights"):
+        raise SystemExit("この pipe は LoRA を載せられない")
+    pipe.load_lora_weights(
+        str(converted.parent),
+        weight_name=converted.name,
+        adapter_name=GENATOMY_ADAPTER,
+    )
+    pipe._qwen_genatomy = True
+    return GENATOMY_ADAPTER
 
 
 def tune_edit_vae(pipe: Any) -> None:

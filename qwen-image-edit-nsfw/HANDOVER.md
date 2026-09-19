@@ -115,6 +115,8 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 
 竿役: **ふたなり（玉なし・男禁止）**（既定） / 男。フタナリ勃起は入力の人の体。セックスとご褒美小便の竿は竿役。服抜き・一人放尿・脱糞では使わない。
 
+解剖Fixer: **オフ**（既定）。アナル／脱糞の穴試験。オンは `Zaytron40k/Qwen-Image-GenatomyFixer` epoch-7 を **0.25**（`n5fw z42anus`。アナルだけ `z02apen`。膣トークンは足さない）。②の追加LoRAとは別。出力は `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。試験はランダムシードをオフ。顔が崩れたらオフ。
+
 入力: Drive input（既定） / アップロード
 
 参照画像: なし（元画像の顔） / Drive から / アップロード。Drive からのときは `参照ファイル名`（input の中）。参照はバッチの元画像から外す。
@@ -153,7 +155,7 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 
 1. 上の Colab リンク（Drive コピーではない）
 2. ランタイム → GPU **A100**（40GB でも 80GB でも。H100 可。L4 は offload。T4 は拒否）
-3. ① Drive（空きは 2GB で足りる。重みは Colab 約70GB）→ ② 重み（初回は AIO 28GB。Pillow は Colab の `11.3.0` のまま。12 に上げるな。`torchao>=0.16.0`。0.11 は今の git+diffusers で落ちる）→ ③ クイックプロンプト＋画風＋竿役。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。キャンバス既定は **auto**。rewrite 既定オフ（オンにすると VL が顔を捨てる）。顔は Picture 1 の上を Picture 2 に自動。別カットがあれば参照画像（Picture 2）＝Drive から。竿役の既定はふたなり（玉なし・男禁止）
+3. ① Drive（空きは 2GB で足りる。重みは Colab 約70GB）→ ② 重み（初回は AIO 28GB。Pillow は Colab の `11.3.0` のまま。12 に上げるな。`torchao>=0.16.0`。0.11 は今の git+diffusers で落ちる）→ ③ クイックプロンプト＋画風＋竿役。**解剖Fixerはオフのまま**（アナル／脱糞を穴試験するときだけオン。同じSEEDでオフ→オン）。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。キャンバス既定は **auto**。rewrite 既定オフ（オンにすると VL が顔を捨てる）。顔は Picture 1 の上を Picture 2 に自動。別カットがあれば参照画像（Picture 2）＝Drive から。竿役の既定はふたなり（玉なし・男禁止）
 4. 出力は Drive `qwen-image-edit-nsfw/output`
 
 T4 は拒否される。H3 動画ノートと同時に動かさない。

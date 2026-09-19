@@ -39,6 +39,11 @@ from qwen_image_edit_nsfw import (
     GIVER_FUTA_LOCK,
     GIVER_MAN,
     GIVER_MAN_LOCK,
+    GENATOMY_ADAPTER,
+    GENATOMY_ANAL_PEN,
+    GENATOMY_ANUS,
+    GENATOMY_GATE,
+    GENATOMY_WEIGHT,
     KEEP_LOCK,
     LORA_FILES,
     DEFAULT_HEIGHT,
@@ -85,14 +90,19 @@ from qwen_image_edit_nsfw import (
     classify_aio_key,
     clamp_edit_vae_area,
     compose_edit_prompt,
+    convert_diffsynth_qwen_lora_keys,
     disable_safety,
     drop_stale_diffusers_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
+    edit_output_name,
+    ensure_genatomy_adapter,
     face_lock_image,
     force_edit_offload,
     free_cuda,
+    genatomy_stack,
+    genatomy_trigger,
     has_leftover_man,
     infer_kwargs,
     inject_aio_state,
@@ -143,6 +153,7 @@ from qwen_image_edit_nsfw import (
     is_futa_giver,
     parse_giver,
     uses_giver,
+    wants_genatomy_adapter,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -651,6 +662,69 @@ def test_giver_man_rewrites_partner_only():
     assert "CockQwen_v3" not in names_woman
 
 
+def test_genatomy_switch_is_off_and_anus_only():
+    assert GENATOMY_WEIGHT == 0.25
+    assert GENATOMY_GATE == "n5fw"
+    assert genatomy_stack(False, "アナルバック") is None
+    assert not wants_genatomy_adapter(False, "アナルバック")
+    assert wants_genatomy_adapter(True, "アナルバック")
+    row = genatomy_stack(True, "アナルバック")
+    assert row == (GENATOMY_ADAPTER, GENATOMY_WEIGHT, genatomy_trigger("アナルバック"))
+    blob = row[2]
+    assert GENATOMY_GATE in blob
+    assert GENATOMY_ANUS in blob
+    assert GENATOMY_ANAL_PEN in blob
+    assert "z01vpen" not in blob
+    assert "z41vagn" not in blob
+    assert "vulva" not in blob
+    scat = genatomy_stack(True, "脱糞（しゃがみ）")
+    assert GENATOMY_ANUS in scat[2]
+    assert GENATOMY_ANAL_PEN not in scat[2]
+    assert genatomy_stack(True, "宣教師") is None
+    assert genatomy_stack(True, "服を脱ぐ") is None
+    assert genatomy_stack(True, "放尿（立ち）") is None
+    keys = convert_diffsynth_qwen_lora_keys(
+        {
+            "transformer_blocks.0.attn.to_q.lora_A.default.weight": 1,
+            "__metadata__": {"format": "pt"},
+        }
+    )
+    assert keys == {
+        "transformer.transformer_blocks.0.attn.to_q.lora_A.weight": 1,
+    }
+    already = convert_diffsynth_qwen_lora_keys(
+        {"transformer.transformer_blocks.0.attn.to_q.lora_A.weight": 1}
+    )
+    assert list(already) == ["transformer.transformer_blocks.0.attn.to_q.lora_A.weight"]
+    assert edit_output_name("01.jpg", preset="アナルバック") == "edit-01-fixoff.jpg"
+    assert edit_output_name("01.jpg", preset="アナルバック", genatomy=True) == "edit-01-fixon.jpg"
+    assert edit_output_name("x.png", preset="脱糞（後背）", genatomy=True) == "edit-x-fixon.jpg"
+    assert edit_output_name("01.jpg", preset="服を脱ぐ") == "edit-01.jpg"
+    on_prompt = compose_edit_prompt(
+        "",
+        preset="アナルバック",
+        extra_triggers=[genatomy_trigger("アナルバック")],
+    )
+    assert "n5fw" in on_prompt
+    assert "z42anus" in on_prompt
+    assert "z01vpen" not in on_prompt
+    off_prompt = compose_edit_prompt("", preset="アナルバック")
+    assert "n5fw" not in off_prompt
+
+    class Pipe:
+        def __init__(self):
+            self.calls = []
+            self._qwen_genatomy = False
+
+        def load_lora_weights(self, *a, **k):
+            self.calls.append((a, k))
+
+    cached = Pipe()
+    cached._qwen_genatomy = True
+    assert ensure_genatomy_adapter(cached) == GENATOMY_ADAPTER
+    assert cached.calls == []
+
+
 def test_compose_sex_act_strings():
     oral = compose_edit_prompt("", preset="フェラチオの視点")
     assert "oral sex" in oral.lower()
@@ -1012,6 +1086,12 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "giver_form_options" in src
     assert "giver=竿役" in src
     assert "竿役" in src
+    assert "解剖Fixer = False" in src
+    assert "genatomy_stack" in src
+    assert "edit_output_name" in src
+    assert "fixon" in src
+    assert "fixoff" in src
+    assert "GENATOMY_WEIGHT" in src
     assert GIVER_FUTA in src
     assert "画風" in src
     assert "画風は変換しない" in src
@@ -1024,6 +1104,7 @@ def test_writer_notebook_is_separate_a100_nsfw():
         *STYLE_LABELS,
         "クイックプロンプト",
         "竿役",
+        "解剖Fixer",
         GIVER_FUTA,
         GIVER_MAN,
         "Qwen4Play",

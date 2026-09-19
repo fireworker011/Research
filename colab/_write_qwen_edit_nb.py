@@ -54,7 +54,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
-5. ③ クイックプロンプトと **画風**と **竿役**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -279,6 +279,8 @@ from qwen_image_edit_nsfw import (
     DEFAULT_NEGATIVE,
     DEFAULT_HEIGHT,
     DEFAULT_WIDTH,
+    GENATOMY_ADAPTER,
+    GENATOMY_WEIGHT,
     STEPS,
     TRUE_CFG,
     GUIDANCE,
@@ -288,7 +290,10 @@ from qwen_image_edit_nsfw import (
     canvas_form_options,
     clamp_edit_vae_area,
     compose_edit_prompt,
+    edit_output_name,
+    ensure_genatomy_adapter,
     face_lock_image,
+    genatomy_stack,
     infer_kwargs,
     input_source_form_options,
     list_input_images,
@@ -332,6 +337,7 @@ PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
 竿役 = "ふたなり（玉なし・男禁止）"  #@param [__GIVER_OPTS__]
+解剖Fixer = False  #@param {type:"boolean"}
 プロンプトrewrite = False  #@param {type:"boolean"}
 STEPS_RUN = 4  #@param {type:"integer"}
 SEED = 0  #@param {type:"integer"}
@@ -357,6 +363,7 @@ print("i2i", True)
 print("preset", クイックプロンプト)
 print("style", 画風)
 print("giver", 竿役)
+print("解剖Fixer", 解剖Fixer)
 print("input", 入力)
 print("file", 入力ファイル名 or "(Drive の全部)")
 print("ref", 参照画像)
@@ -437,6 +444,19 @@ for name, w, trig in stack:
         names.append(name)
         weights.append(w)
         trigs.append(trig)
+tok = globals().get("QWEN_EDIT_HF_TOKEN") or ""
+geo = genatomy_stack(解剖Fixer, クイックプロンプト, PROMPT)
+if 解剖Fixer and geo is None:
+    print("解剖Fixer skip（アナル／脱糞以外）")
+if geo:
+    if ランダムシード:
+        print("解剖Fixer試験はランダムシードをオフ、SEEDを固定してオフ→オンを比べる")
+    print("解剖Fixer 初回は epoch-7 約900MB（Colabディスク。Driveには置かない）")
+    ensure_genatomy_adapter(pipe, token=tok)
+    names.append(geo[0])
+    weights.append(geo[1])
+    trigs.append(geo[2])
+    print("解剖Fixer ON", GENATOMY_ADAPTER, GENATOMY_WEIGHT, geo[2])
 prompt = compose_edit_prompt(
     PROMPT,
     undress=服を外す,
@@ -460,7 +480,6 @@ if ランダムシード:
 print("seed", seed)
 
 size_auto = サイズ.startswith("auto")
-tok = globals().get("QWEN_EDIT_HF_TOKEN") or ""
 offload = getattr(pipe, "_qwen_edit_offload", None) or "cpu"
 gen_device = "cuda" if offload == "cuda" else "cpu"
 print("offload", offload)
@@ -527,7 +546,15 @@ for fname, src in jobs:
         if hasattr(pipe, "disable_lora"):
             pipe.disable_lora()
         torch.cuda.empty_cache()
-    dest = save_jpeg(out, OUT / f"edit-{Path(fname).stem}.jpg")
+    dest = save_jpeg(
+        out,
+        OUT / edit_output_name(
+            fname,
+            preset=クイックプロンプト,
+            extra=PROMPT,
+            genatomy=bool(geo),
+        ),
+    )
     print("OUT", dest)
     display(out)
 
