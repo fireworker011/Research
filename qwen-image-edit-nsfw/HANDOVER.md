@@ -13,7 +13,7 @@ Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャ
 - `colab/_write_qwen_edit_nb.py`
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
-HEAD: ffe62c3 h3: Qwen Edit は警告文を絵に描かせない
+HEAD: 9858a55 h3: Qwen Edit のアナルは肛門だけ、脱糞は肛門の固形
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
@@ -167,6 +167,8 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 ## 限界
 
 4step 編集なので、カメラが大きく変わると顔は多少ずれる。ロックは必須だが完全保証ではない。大きく姿勢を変えるときは **参照画像（Picture 2）** に顔のよく出た同じ人物を足す。参照なしでも Picture 1 の上を Picture 2 に自動。プロンプトrewriteはオフのまま。フタナリ勃起オンなら体（竿・マンコ）は足す。別の人になるときは rewrite がオンか、プロンプトが長すぎるか、②で追加LoRAを載せている。オフのまま開き直して③。
+
+アナルが膣になるのは、竿＋マンコを同じ文に書くと前の穴に逃げるせい。③のアナルは `ANAL HOLE LOCK`（肛門だけ。マンコは閉じたまま空）。後背は上の穴＝肛門、正常位／騎乗は下の穴＝肛門。追加LoRAの Qwen4Play（正常位・騎乗）はアナルに載せない。脱糞は `SCAT HOLE LOCK`＋`FECES LOOK`（肛門から今出すソーセージ状の固形。マンコから出さない。ゼリー／チョコ禁止）。
 
 絵に `Blocked unsafe content` が出るのは、安全文を編集プロンプトに足していたせい。Qwen Edit が警告を描いてしまう。その文は入れない。成人21+と実写スキップは残す。
 
