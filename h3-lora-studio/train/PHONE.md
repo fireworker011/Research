@@ -23,6 +23,8 @@
 
 ## 即生成（写真 → 動画）
 
+服ありの **AI** 起点は、Drive に入れる前に `h3-lora-studio/scripts/qwen_edit_nsfw.py` でフタナリ全裸勃起にする（Mk1227 `/infer`、576x1024、steps=4、guidance=1.0、`rewrite_prompt=False`、予約80秒）。枠切れは ayooo123 / Cengizl / metaloz。台帳は `h3-lora-studio/start-stills.json`。**実写の他人は全裸化するな。** JPGはGitに入れるな。
+
 1. スマホの **Google Drive アプリ**でフォルダを開く  
    `マイドライブ / minimax-h3-comfyui / input / phone`
 2. 全身または接合が分かる **jpg** を入れる（最新の1枚が使われる）

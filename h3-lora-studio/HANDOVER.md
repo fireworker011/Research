@@ -16,14 +16,14 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
 ベース: `cursor/h3-cabin-flow-f112`（anal-17 = `41867d0` を残す）
-HEAD: ②でR2V既定スキップ。自由文はLoRA手選択
+HEAD: 画像起点を qwen_edit_nsfw.py に固定
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
 clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f112/h3-lora-studio/stories/clinic-75s.json
 設定の版: `h3-20260914-anal-18`
 
-Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。
+Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / AIO / Final Thrust / ThumbInButt / CUMOUF / hmmotion を積むな。ipynb は手で直すな。anal-14 helper を被せるな。clinic を PLACEHOLDER にするな。checkup をアヤ受け＋医師竿に戻すな。JPGをリポジトリに入れるな。実写の他人を全裸化するな。
 
-直近: ノートだけ。JSON物語は触るな。②の「参照土台（R2V / ref2va 約21GB）も入れる」は既定オフ。オフなら r2v_download しない・stage include_ref2v=False・全部入れても ref2va は入れない。③再生既定はつなぐ。参照つなぐ＋ref2va無しは SystemExit。フリー文の部品は物語JSONでは無視。
+直近: 服ありAI起点は `h3-lora-studio/scripts/qwen_edit_nsfw.py`。本命 [Mk1227/Qwen-Image-Edit-NSFW](https://huggingface.co/spaces/Mk1227/Qwen-Image-Edit-NSFW)。576x1024、`/infer`、steps=4、guidance=1.0、rewrite_prompt=False、zerogpu_budget=80。枠切れは ayooo123 / Cengizl / metaloz。台帳 `start-stills.json`。01/02/03/07 は前チャットで編集済み（成果物は `bc-01a0a99c-da36-7a90-b440-3908bc155b07` の artifacts。Gitに無い）。04/05/06 は元から全裸なので copy。08 は室内シャツ＋ネクタイの実写なので skip。JSON物語（clinic/cafe/sales含む）は触るな。②参照土台は既定オフ。③再生既定はつなぐ。
 ```
 
 ## いまの枝
@@ -34,7 +34,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
 | 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-18` |
-| HEAD | ②でR2V既定スキップ。自由文はLoRA手選択（JSON物語は未変更） |
+| HEAD | 画像起点を `scripts/qwen_edit_nsfw.py` に固定（JSON物語は未変更） |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
@@ -110,6 +110,9 @@ Drive 保存コピーと、設定の版が **xxx** のノートは古い。開�
 | `colab/test_h3_lora_studio.py` | `test_anal_pattern_three_choices` ほか |
 | `.cursor/skills/h3-lora-studio/SKILL.md` | 将来セッション用 |
 | `h3-lora-studio/README.md` | パターン表 |
+| `h3-lora-studio/scripts/qwen_edit_nsfw.py` | 服ありAI起点 → フタナリ全裸勃起（Mk1227 `/infer`） |
+| `h3-lora-studio/start-stills.json` | 01–08 の台帳。JPG本体は置かない |
+| `h3-lora-studio/tests/test_qwen_edit_nsfw.py` | 手順ロック・実写拒否・repo JPG拒否 |
 
 ## 検証
 
@@ -117,8 +120,9 @@ Drive 保存コピーと、設定の版が **xxx** のノートは古い。開�
 cd /workspace
 python -c "import ast; ast.parse(open('colab/h3_lora_studio.py').read())"
 python h3-lora-studio/scripts/dump_grok_prompts.py --check
+python h3-lora-studio/scripts/qwen_edit_nsfw.py --check
 python colab/_write_lora_studio_nb.py
-python -m pytest colab/test_h3_lora_studio.py h3-lora-studio/tests/test_dump_grok_prompts.py -q
+python -m pytest colab/test_h3_lora_studio.py h3-lora-studio/tests/test_dump_grok_prompts.py h3-lora-studio/tests/test_qwen_edit_nsfw.py -q
 # 三択がノートの③にあること:
 python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''.join(nb['cells'][6]['source']); assert '①口内で終わる' in c"
 ```
@@ -129,6 +133,7 @@ python -c "import json; nb=json.load(open('minimax_h3_lora_studio.ipynb')); c=''
 
 - Threads / アフィ投稿の schedule を戻す（停止は故障ではない）
 - 秘密を git に書く
+- JPG / 実写の他人の全裸化を git に入れる
 - 体験談の捏造、#PR なしのリンク投稿
 - 数字を発明する（動画判定は `video-judge.js`、insight.js を YouTube に使わない）
 - ジャンル転換
@@ -179,8 +184,27 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 
 物語チェーンの各本は10秒。ワンショット生成だけ最大15秒。チェーンを15秒にするな。helper の `FL2VA_MAX_CLIP_S` はワンショット経路だけ15。`STORY_CLIP_S` は10。
 
+## 画像起点（Qwen Edit）
+
+服ありAI静止画は Cursor GenerateImage（NSFW 400）も FLUX Kontext（服が残る）も使わない。Hugging Face ZeroGPU の Qwen Image Edit NSFW。
+
+| 項目 | 値 |
+|---|---|
+| 本命 | https://huggingface.co/spaces/Mk1227/Qwen-Image-Edit-NSFW |
+| 逃がし | ayooo123 / Cengizl / metaloz の同系統クローン |
+| 呼び出し | `gradio_client` `api_name="/infer"` |
+| サイズ | 縦 576x1024 / 横 1024x576 |
+| 固定 | steps=4, guidance=1.0, rewrite_prompt=False, zerogpu_budget=80 |
+| 無料枠 | 予約秒数（80秒/回）。枠切れはクローンへ |
+| スクリプト | `python h3-lora-studio/scripts/qwen_edit_nsfw.py --check` |
+| 台帳 | `h3-lora-studio/start-stills.json` |
+
+01/02/03/07 = フタナリ全裸勃起（前チャット `bc-01a0a99c` の artifacts。Gitに無い）。04/05/06 = 元から全裸なので copy。08 = 室内シャツ＋ネクタイの実写なので skip。I2V は Drive `input/phone` へ人が置く。このVMにJPGは無い。
+
 ## 未着手・次に来そうなこと
 
+- 編集済み 01/02/03/07 を Drive `input/phone` に置いて③写真から（席1回）
+- 01 の竿が弱い。再編集するなら `qwen_edit_nsfw.py --mode crotch_only`。04/05/06 に竿を足すのは「服ありだけ」指定の外
 - 既存の帰宅などを、③の三択で上書きする（今は焼き込み固定。三択は汎用40秒）
 - Drive 上の古いノートがまだ開かれている（コードでは直せない。リンクから開き直す）
 - 休日／縁側の2回戦を他の話にも足す、と頼まれたら例外が増えるので安易に広げない
@@ -189,4 +213,4 @@ origin に PLACEHOLDER / `use local artifacts` が乗ったら pull するな。
 
 ## このチャットの最後の返答（ユーザー向け）
 
-clinic-75s / cafe / sales-visit の JSON はこの作業で未変更。ノートだけ。②の参照土台は既定オフ（約21GBスキップ）。③再生既定はつなぐ。フリー文の部品は物語JSONでは無視。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。
+画像起点の手順を `scripts/qwen_edit_nsfw.py` と `start-stills.json` に固定した。clinic/cafe/sales の JSON は未変更。ノートも未変更。版 `h3-20260914-anal-18`。枝 `cursor/h3-anal-stories-f112`。新枝禁止。PR138マージ禁止。JPGはGitに無い。
