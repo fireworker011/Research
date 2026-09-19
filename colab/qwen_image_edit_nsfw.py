@@ -408,6 +408,33 @@ def drop_stale_pil_modules() -> None:
             del sys.modules[name]
 
 
+def drop_stale_torchao_modules() -> None:
+    """Colab ships torchao 0.10. peft 0.19+ raises if it is present and < 0.16."""
+    for name in list(sys.modules):
+        if name == "torchao" or name.startswith("torchao."):
+            del sys.modules[name]
+    peft_utils = sys.modules.get("peft.import_utils")
+    fn = getattr(peft_utils, "is_torchao_available", None)
+    cache_clear = getattr(fn, "cache_clear", None)
+    if callable(cache_clear):
+        cache_clear()
+
+
+def lora_skip_summary(errors: list[str], *, has_token: bool = False) -> str:
+    """② LoRA miss is often torchao, not NFAA."""
+    blob = " ".join(errors).lower()
+    if "torchao" in blob:
+        return (
+            "LoRA なし（Colab の torchao が古い。②で uninstall してからもう一度）。"
+            "Rapid-AIO NSFW merge だけで進む"
+        )
+    if any(mark in blob for mark in ("401", "403", "gated", "restricted", "nfaa")):
+        return "LoRA なし（Colab Secrets に HF_TOKEN。NFAA）。Rapid-AIO NSFW merge だけで進む"
+    if not has_token:
+        return "LoRA なし（Colab Secrets に HF_TOKEN。NFAA）。Rapid-AIO NSFW merge だけで進む"
+    return "LoRA なし。Rapid-AIO NSFW merge だけで進む"
+
+
 def pillow_major_minor(version: str) -> tuple[int, int]:
     bits = [p for p in (version or "0").split(".") if p.isdigit()]
     major = int(bits[0]) if bits else 0

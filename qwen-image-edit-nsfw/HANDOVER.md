@@ -154,4 +154,4 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
-②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。`device_map="cuda"` は使わない。LoRA は `pipe.to` / cpu_offload の前に載せる。③の Generator は cpu（offload と両立）。③は画像を置いてから（全部実行すると input 空で落ちる）。
+②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から `cpu_offload`（transformer 約20GBを全部載せるな）。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。

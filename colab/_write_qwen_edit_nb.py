@@ -113,6 +113,8 @@ def sh(cmd, check=True):
 sh([sys.executable, "-m", "pip", "install", "-q", "-U",
     "diffusers", "transformers", "accelerate", "safetensors",
     "huggingface_hub", "sentencepiece", "peft"])
+# Colab の torchao 0.10 は peft 0.19 と食い違う。量子化は使わないので外す。
+sh([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"], check=False)
 sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
 sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
 
@@ -126,7 +128,12 @@ urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
 if "qwen_image_edit_nsfw" in sys.modules:
     del sys.modules["qwen_image_edit_nsfw"]
 
-from qwen_image_edit_nsfw import drop_stale_pil_modules, require_pillow_colab
+from qwen_image_edit_nsfw import (
+    drop_stale_pil_modules,
+    drop_stale_torchao_modules,
+    require_pillow_colab,
+)
+drop_stale_torchao_modules()
 drop_stale_pil_modules()
 print("pillow", require_pillow_colab())
 
@@ -153,11 +160,11 @@ from qwen_image_edit_nsfw import (
     LORA_REPO,
     LORA_FILES,
     disable_safety,
+    lora_skip_summary,
     tune_edit_vae,
 )
 
 dtype = torch.bfloat16
-device = torch.device("cuda")
 print("transformer", TRANSFORMER_ID)
 transformer = QwenImageTransformer2DModel.from_pretrained(
     TRANSFORMER_ID,
@@ -173,24 +180,23 @@ pipe = disable_safety(pipe)
 tune_edit_vae(pipe)
 
 LOADED = set()
+skip_errs = []
 for name, weight_name in LORA_FILES.items():
     try:
         pipe.load_lora_weights(LORA_REPO, weight_name=weight_name, adapter_name=name)
         LOADED.add(name)
         print("LoRA", name)
     except Exception as e:
+        skip_errs.append(str(e))
         print("LoRA skip", name, str(e)[:180])
 if not LOADED:
-    print("LoRA なし（Colab Secrets に HF_TOKEN。NFAA）。Rapid-AIO NSFW merge だけで進む")
+    print(lora_skip_summary(skip_errs, has_token=bool(tok)))
 if hasattr(pipe, "disable_lora"):
     pipe.disable_lora()
 
-try:
-    pipe.to(device)
-except torch.cuda.OutOfMemoryError:
-    print("VRAM 一杯 → cpu_offload")
-    torch.cuda.empty_cache()
-    pipe.enable_model_cpu_offload()
+# L4 24GB: transformer だけ約20GB。全部 cuda に載せるな。
+print("cpu_offload（L4。transformer 約20GB）")
+pipe.enable_model_cpu_offload()
 
 globals()["QWEN_EDIT_PIPE"] = pipe
 globals()["QWEN_EDIT_LORAS"] = LOADED

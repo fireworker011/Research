@@ -40,6 +40,7 @@ from qwen_image_edit_nsfw import (
     compose_edit_prompt,
     disable_safety,
     drop_stale_pil_modules,
+    drop_stale_torchao_modules,
     drive_space_lines,
     has_leftover_man,
     infer_kwargs,
@@ -51,6 +52,7 @@ from qwen_image_edit_nsfw import (
     is_sex_act_preset,
     is_urine_preset,
     list_input_images,
+    lora_skip_summary,
     lora_stack,
     pipe_images,
     ref_source_form_options,
@@ -151,6 +153,43 @@ def test_pillow_12_0_is_rejected_on_colab():
     drop_stale_pil_modules()
     assert "PIL._fake_qwen_edit" not in sys.modules
     sys.modules.update(saved)
+
+
+def test_lora_skip_summary_prefers_torchao_over_nfaa():
+    out = lora_skip_summary(
+        ["Found an incompatible version of torchao. Found version 0.10.0"],
+        has_token=False,
+    )
+    assert "torchao" in out
+    assert "HF_TOKEN" not in out
+    nfaa = lora_skip_summary(["401 Client Error gated repo NFAA"], has_token=False)
+    assert "HF_TOKEN" in nfaa
+    assert "NFAA" in nfaa
+    ok_token = lora_skip_summary(["weird"], has_token=True)
+    assert "HF_TOKEN" not in ok_token
+
+
+def test_drop_stale_torchao_modules_clears_peft_cache():
+    class Dummy:
+        def __init__(self):
+            self.cleared = False
+
+        def cache_clear(self):
+            self.cleared = True
+
+    dummy = Dummy()
+
+    class Utils:
+        is_torchao_available = dummy
+
+    sys.modules["torchao"] = object()
+    sys.modules["torchao.quantization"] = object()
+    sys.modules["peft.import_utils"] = Utils()
+    drop_stale_torchao_modules()
+    assert "torchao" not in sys.modules
+    assert "torchao.quantization" not in sys.modules
+    assert dummy.cleared is True
+    sys.modules.pop("peft.import_utils", None)
 
 
 def test_resize_and_jpeg(tmp_path):
@@ -509,5 +548,9 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert 'device="cpu"' in src
     assert "①と②を実行" in joined
     assert "すべてのセルを実行" not in joined
-    assert "LoRA なし" in joined
-    assert src.index("load_lora_weights") < src.index("pipe.to(device)")
+    assert "lora_skip_summary" in src
+    assert "uninstall\", \"-y\", \"torchao\"" in src or '"torchao"' in src
+    assert "drop_stale_torchao_modules" in src
+    assert "enable_model_cpu_offload" in src
+    assert "VRAM 一杯" not in joined
+    assert src.index("load_lora_weights") < src.index("enable_model_cpu_offload")
