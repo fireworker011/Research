@@ -2,7 +2,7 @@
 
 SFW: turbo + one quality LoRA. Adult T2V/I2V: concept (Mystic XXX) + act + helpers 0-2 + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
-Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
+Cinema replaces helper. Anal sex uses anal-any-h3 as act when that Drive weight exists, else penis + synth, no ThumbInButt. Urine drink stays penis + synth. Scat act stacks ThumbInButt so feces leaves the anus, not the vagina. Pose LoRAs replace AIO; do not stack both.
 Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 Studio T2V/I2V unet is H3 Eros Max TURBO-hybrid beta5 int8 (baked turbo). Official FL2VA stays on phone I2V/T2V. Ref2VA stays official. Mystic XXX v4 is FL2VA-only; do not load the Ref2VA file.
@@ -49,7 +49,7 @@ try:
     )
 except ImportError:
     r2v_finalize_prompt = None
-    FL2VA_MAX_CLIP_S = 10.0
+    FL2VA_MAX_CLIP_S = 15.0
 
     def cap_duration_for_vram(
         duration_s: float,
@@ -88,8 +88,8 @@ except ImportError:
         del drive_models
         return []
 
-STUDIO_REV = "h3-20260913-cabin-2"
-STUDIO_FETCH_BRANCH = "cursor/h3-mystic-daily-f112"
+STUDIO_REV = "h3-20260914-anal-18"
+STUDIO_FETCH_BRANCH = "cursor/h3-anal-stories-f112"
 
 OPTIONAL_IDS = {
     "astro-nsfw-h3": 0.35,
@@ -116,7 +116,7 @@ SITUATION_DOWNLOAD = {
     "futa_anal": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
     "urine_drink": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
     "urine_pee": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
-    "scat_act": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"],
+    "scat_act": ["mystic-xxx-h3", "thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"],
     "oral": ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "general_sex": ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"],
     "preview": ["mystic-xxx-h3", "hmnsfw-aio-v25", "synth-pussy-h3", "minimax-h3-turbo-fl2v-4step"],
@@ -131,33 +131,28 @@ SITUATION_DOWNLOAD = {
     "masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "synth-pussy-h3", "larry-v4"],
     "footjob": ["mystic-xxx-h3", "footjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "remote_orgasm": ["mystic-xxx-h3", "remote-orgasm-h3", "synth-pussy-h3", "larry-v4"],
-    "futa_visible": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4", "cinema-dy"],
+    "futa_visible": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "futa_masturbation": ["mystic-xxx-h3", "hmmasturbation-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     "cunnilingus_futa": ["mystic-xxx-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "penis-lora-h3", "larry-v4"],
     "homecoming-90s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
         "hmmasturbation-h3",
-        "cumouf-h3",
     ],
     "dishes-90s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "commute-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -165,63 +160,49 @@ SITUATION_DOWNLOAD = {
     "lecture-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "hmmasturbation-h3",
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
-        "cumouf-h3",
     ],
     "rooftop-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ],
     "okaeri-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "bath-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "dinner-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "futon-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "sunday-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -230,8 +211,6 @@ SITUATION_DOWNLOAD = {
     "engawa-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
@@ -240,34 +219,28 @@ SITUATION_DOWNLOAD = {
     "sales-visit-60s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
-        "blowjob-h3",
-        "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
+        "larry-v4",
+        "hmnsfw-aio-v25",
+        "final-thrust-h3",
     ],
     "checkup-100s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "clinic-75s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "last-stop-40s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
@@ -276,7 +249,6 @@ SITUATION_DOWNLOAD = {
     "last-train-120s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
@@ -285,7 +257,6 @@ SITUATION_DOWNLOAD = {
     "semen-bath-70s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
         "synth-pussy-h3",
         "hmcumshot-v2",
@@ -293,47 +264,132 @@ SITUATION_DOWNLOAD = {
     "meat-wall-85s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     "meat-wall-cesspit-70s": [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ],
     # 建前パック (10s × N, 9:16). Talk = futa_visible, jupo = oral, in-mouth = oral_creampie,
-    # cunnilingus = cunnilingus_futa, already-in sex = futa_sex / doggy. 飲尿は使わない（ジュボ）。
-    "cafe-100s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "train-sales-80s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "yoga-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
-    "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
-    "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "laundromat-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "fireworks-50s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
+    # cunnilingus = cunnilingus_futa, anal = futa_anal. 飲尿は使わない（ジュボ）。
+    "cafe-100s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+        "cumouf-h3",
+    ],
+    "train-sales-80s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "red-light-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "yoga-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "back-wash-60s": ["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
+    "karaoke-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "laundromat-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "lecture-desk-50s": ["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "camp-50s": ["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+    "fireworks-50s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "cabin-40s": ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4", "blowjob-h3", "cowgirl-position-h3", "riding-pose-i2v", "doggy-h3"],
     # 物語の追加 (10s × 2, 9:16). Talk = futa_visible, in-mouth = oral_creampie,
-    # already-in sex = futa_sex, cunnilingus = cunnilingus_futa.
-    "manhole-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "roof-ac-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "tetrapod-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "locker-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "crossing-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "lookout-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
-    "factory-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
-    "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "riverbank-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
-    "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    # anal = futa_anal. gas/tunnel/hachiko stay oral_creampie.
+    "manhole-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "roof-ac-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "tetrapod-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "locker-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "crossing-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "lookout-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "factory-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
+    "gas-station-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "tunnel-phone-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "riverbank-30s": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "larry-v4",
+        "synth-pussy-h3",
+    ],
+    "hachiko-30s": ["mystic-xxx-h3", "penis-lora-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    "anal-p1-oral": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "blowjob-h3",
+        "larry-v4",
+        "cumouf-h3",
+    ],
+    "anal-p2-bj-anal": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "blowjob-h3",
+        "larry-v4",
+    ],
+    "anal-p3-meet-anal": [
+        "mystic-xxx-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+        "larry-v4",
+    ],
     "shorts-immoral": [
         "blowjob-h3",
         "synth-pussy-h3",
@@ -504,6 +560,15 @@ SITUATION_JA = {
     "futon-120s": "futon-120s",
     "sunday-120s": "sunday-120s",
     "engawa-120s": "engawa-120s",
+    "①口内で終わる": "anal-p1-oral",
+    "口内で終わる": "anal-p1-oral",
+    "anal-p1-oral": "anal-p1-oral",
+    "②フェラのあとアナル": "anal-p2-bj-anal",
+    "フェラのあとアナル": "anal-p2-bj-anal",
+    "anal-p2-bj-anal": "anal-p2-bj-anal",
+    "③会って即アナル": "anal-p3-meet-anal",
+    "会って即アナル": "anal-p3-meet-anal",
+    "anal-p3-meet-anal": "anal-p3-meet-anal",
     "短編集（参照）": "shorts-immoral",
     "shorts-immoral": "shorts-immoral",
     "生成し直し": "redo",
@@ -559,16 +624,16 @@ SITUATION_HELP = {
     "sfw_r2v": "顔固定 R2V。LightX2V Ref2VA 4step + シネマ 0.5。Mystic なし。FL2VA 用 Turbo は積まない。このノートでは選ばない。",
     "anal_closeup": "アナル舐め・指（女体）。解剖 0.5 + 穴の見え方 0.5 + Larry 0.5。シネマなし。女同士。男なし。動きの本線はアナル指入れ。",
     "anal_fingering": "アナル指入れ。女1人。解剖 0.5 + ThumbInButt 0.55 + 穴の見え方 0.4 + Larry 0.5 / 8step。男なし。自分の右親指。後ろから、穴が膣より上に見える構図。指入れ（膣）・アナルセックスとは別。写真からが本線。",
-    "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。挿入側はふたなり。男なし。体位欄で構図。",
+    "anal_penetration": "アナル挿入（画質）。穴のアップ。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。挿入側はふたなり。男なし。体位欄で構図。",
     "lesbian_cunnilingus": "レズクンニ。女同士。解剖 0.5 + クンニ 0.55 + 穴の見え方 0.4 + Larry 0.5。男なし。",
     "pussy_spread": "性器を広げる。女1人。解剖 0.5 + 広げる 0.5 + 穴の見え方 0.4 + Larry 0.5。男なし。",
     "lesbian_spread": "レズ＋広げる。女同士。解剖 0.5 + クンニ 0.55 + 広げる 0.45 + Larry 0.5。男なし。",
     "futa_blowjob": "ふたなりフェラ（汎用）。解剖 0.5 + フェラ 0.55 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 6step。空欄は第三者の2ショットで根元まで。場所・座りは文章欄。体位欄は無視。POVにしない。男なし。変身 LoRA は足さない。",
     "futa_sex": "セックス（女体）。解剖 0.5 + 総合えっち 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。体位欄が騎乗／後背／POVならその LoRA に切替。空欄は全裸のごく普通の若い成人女性。",
-    "futa_anal": "アナルセックス（女体）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。ThumbInButt なし（四つん這い固定を外した）。Turbo なし・8step。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
+    "futa_anal": "アナルセックス（女体）。解剖 0.5。Drive に anal-any-h3 があれば行為 0.55＋竿ヘルパー 0.45＋穴 0.4。無ければ竿 0.45＋穴 0.4。ThumbInButt なし。Turbo なし・8step。結合部寄り。ふたなり＋女。男なし。体位欄で立ち・騎乗・後背・横。手は腰。",
     "urine_drink": "飲尿（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。亀頭先の尿道口から黄色い水を飲む。男なし。体位欄で構図。既存話のジュボには戻さない。",
     "urine_pee": "放尿（性器から）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。黄色い水が亀頭先の尿道口から画面内で出る。マンコや肛門から出さない。男なし。体位欄で構図。",
-    "scat_act": "脱糞（どの構図）。解剖 0.5 + 竿 0.45 + 穴の見え方 0.4。行為 LoRA なし。Turbo なし・8step。今、肛門から出している動き。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図。医院・終電には足さない。",
+    "scat_act": "脱糞（どの構図）。解剖 0.5 + ThumbInButt 0.55 + 竿 0.45 + 穴の見え方 0.4。Turbo なし・8step。今、肛門から出している動き。ThumbInButt を積まないとマンコから出る。人間の糞（ソーセージ状の固形。ゼリーやスライムではない）。肥溜めの塗れとは別。男なし。体位欄で構図（しゃがみ／立ち／後背／正常位／座り／横）。デフォルト以外の場所は文章欄（カフェの便座、縁側、など）。物語ドロップダウンは選ばない（帰宅〜縁側・医院・終電に糞は足さない）。山小屋＝扉の外の塗れ。ニクカベ肥溜め＝最初から塗れている。どちらも今出している動きではない。アナルセックスには積まない。",
     "oral": "フェラ（女体）。解剖 0.5 + フェラ 0.6 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.5 / 8step。受けはふたなり（竿＋根元のマンコ、玉なし）。男なし。変身 LoRA は足さない。",
     "general_sex": "汎用エロ（女体）。解剖 0.5 + AIO 0.55 + 竿 0.45 + 穴の見え方 0.4 / 8step。Turbo なし。ふたなり＋女。男なし。",
     "preview": "試し打ち（女体）。解剖 0.5 + AIO 0.5 + 穴の見え方 0.4 + LightX2V 4step。ふたなり＋女。男なし。",
@@ -586,47 +651,50 @@ SITUATION_HELP = {
     "futa_visible": "歩行・会話。竿は出す。行為 LoRA なし。歩く・キス・テレビの本は解剖 0.5 + 竿 0.45 + 穴の見え方 0.4 + Larry 0.6 / 8step。セリフ（「」）の本だけ Turbo を外して res_multistep 12step。男なし。",
     "futa_masturbation": "ふたなりオナニー。解剖 0.5 + 潮吹き LoRA + 竿 + 穴の見え方 + Larry 8step。根元のマンコが見える寄り。男なし。",
     "cunnilingus_futa": "クンニ。竿は使わず垂らす。解剖 0.5 + クンニ + 穴 + 竿薄め + Larry。フェラ LoRA は積まない。男なし。",
-    "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。行為は口元・舌・竿の寄り。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
-    "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床で口。セリフは口元の本だけ。フェラは口元の寄り。口内は CUMOUF。写真は input/dishes-90s の 01〜12。",
-    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉、漢字なし）。フェラは玄関と路地の寄り。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
-    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。口内は CUMOUF。セリフは口元の「まだひるだよ」だけ。セックスは屋上〜下校。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
-    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。セックスは AIO 横クローズ。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
-    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／てあらって。デザートいれておいたよ。話し言葉、漢字なし）。フェラは玄関の寄り。口内は CUMOUF。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
-    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。非日常は洗い場で根元まで。セリフは口元3本（さきにあらってて／おふろだとよけいムクってる／あがったらごはんね。話し言葉、漢字なし）。フェラは洗い場の寄り。口内は CUMOUF。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
-    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。非日常はテーブルの下で根元まで。セリフは口元3本（たべなさい／ごはんのとちゅうなのに／うえもちゃんとたべなさい。話し言葉、漢字なし）。フェラはテーブル下の寄り。口内は CUMOUF。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
-    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。非日常は横になったまま根元まで。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。フェラは布団の寄り。口内は CUMOUF。仰向けの口にセックスやアナルは入れない。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。非日常はソファでもう入っている、抜いたあと根元まで。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは床の寄り。口内は CUMOUF。アナルは入れない。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
-    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。非日常は縁側でもう入っている、抜いたあとアヤがマドカを根元まで。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。セックスは AIO 横クローズ。フェラは縁側の寄り。口内は CUMOUF。レイは入れない。アナルは入れない。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
-    "sales-visit-60s": "訪問販売。ミルク売り。キャップのみ。ミルクは持たない。対面20秒。8本＝80秒。9:16。玄関。1本目: 販売員が画面左手・玄関扉の前に一人で立つ→チャイム→右側の扉が開いてアヤが右から入る。ハンバイにきましたのあとアヤが笑顔で20cmを軽く扱きながらあ、おっきいオチンチン。10-20は扱きながらおそかったねー／シコシコしてたらおそく。20-30はカチカチ／まちくたびれのあと扱きながら熱烈ベロチュー。30-40はキスをやめてあつい／サービス（恍惚）。40-50はえーありがとうー／じゃあ、いっただきまーすで跪いてジュボ。50-60は無言ジュボ。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。口内は粘る白液を残して見せる。台詞は1本2行まで。行為は無言・寄り。hmmotion なし。",
-    "checkup-100s": "定期検診。対面30秒。9本＝90秒。9:16。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。最後はモンダイありすぎ、おくちにだされすぎのあと立ち上がって精液口移し濃厚ディープキス。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
-    "clinic-75s": "ケンシン。医院にアヤが来る。10本＝100秒。9:16。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口はアヤ22ミニ・竿なし。医師の椅子はパイプ椅子。1本目: 女医は画面左手・パイプ椅子でまた開いてシコシコ無表情。アヤは右から入る。「オチンチンおっきい」のあと短い立ちキス、右のパイプ椅子におすわり（女医は立つ）。10-20は問診（キョウはどうしました？／サイキンおマンコがウズウズして、、、。余りは触って待つ）。20-30はそれはタイヘンですね！じゃあ、みていきますね、と妖艶に微笑んで立ち上がり、胸を触りながらディープキス。終わりは口を開けて先端から手の幅。しゃがみジュボ（アヤはマンコをこすりながら）。ガマンできないで押し倒し（女医は仰向けで超気持ちよさそう）、仰向けのままジュボしまくる→口内→仰向けのまま口移し→ゲンキ。セックスなし。騎乗なし。押し倒したあと女医はずっと仰向け。hmmotion なし。台詞: ヨロシクオネガイします！あ、オチンチンおっきい！／どうぞおすわりください／キョウはどうしました？／サイキンおマンコがウズウズして、、、／それはタイヘンですね！じゃあ、みていきますね／もう、ガマンできない！／ゲンキになりましたね／ありがとうございます。",
+    "homecoming-90s": "帰宅120秒。10秒×12本。1本1場所1動作。セリフは口元が見える本だけ（リップシンク）。玄関ジュボは抜く。リビングでジュボのあと射精せず、後背位アナル中出し。歩く本に行為部品なし。写真は input/homecoming-90s の 01〜12。",
+    "dishes-90s": "洗い物120秒。10秒×12本。サヤカはシンク固定。レイは椅子で竿。アヤは床でジュボのあと射精せず、後背位アナル中出し。セリフは口元の本だけ。口内 CUMOUF なし。写真は input/dishes-90s の 01〜12。",
+    "commute-120s": "登校第1話。朝〜大学正門。10秒×12本＝120秒。16:9。1本1場所。セリフは口元3本（いってらっしゃい／おくれるよ／ほしい。話し言葉、漢字なし）。玄関ジュボは抜くだけ。路地でジュボのあと射精せず、立ち後背位アナル中出し。授業は授業120秒。今の準備はテキストから（写真なし）。Drive の input/commute-120s は任意。③をテキストからにすると試験jpgは使わない。",
+    "lecture-120s": "授業第2話。授業〜昼。10秒×10本＝100秒。16:9。家とサヤカなし。机のシコはオナニー寄り。クンニは寄り1本。根元はフェラ。ジュボのあと射精せず、個室で後背位アナル中出し。口内 CUMOUF なし。セリフは口元の「まだひるだよ」だけ。セックスの続きは屋上。写真は input/lecture-120s の 01〜10（16:9。無い本はテキストから）。",
+    "rooftop-100s": "屋上第3話。屋上挿入〜家の門。10秒×10本＝100秒。16:9。1本1場所。セリフは口元の2本だけ。屋上は立ち後背位アナル中出し（AIOなし・hmmotionなし）。歩く本にセックス部品なし。玄関はおかえり120秒。サヤカなし。写真は input/rooftop-100s の 01〜10（16:9）。",
+    "okaeri-120s": "おかえり第4話。家の門〜玄関ジュボ〜廊下。10秒×12本＝120秒。16:9。屋上の続き。セリフは口元3本（ただいま／おかえり／てあらって。デザートいれておいたよ。話し言葉、漢字なし）。玄関ジュボのあと射精せず、立ち後背位アナル中出し。口内 CUMOUF なし。夜風呂は風呂120秒。写真は input/okaeri-120s の 01〜12（16:9。無い本はテキストから）。",
+    "bath-120s": "風呂第5話。夜の風呂。10秒×12本＝120秒。16:9。日常は支度と洗体。洗い場でジュボのあと射精せず、座位アナル中出し。口内 CUMOUF なし。セリフは口元3本（さきにあらってて／おふろだとよけいムクってる／あがったらごはんね。話し言葉、漢字なし）。ご飯〜食卓は食卓120秒。写真は input/bath-120s の 01〜12（16:9。無い本はテキストから）。",
+    "dinner-120s": "食卓第6話。風呂上がりから食卓。10秒×12本＝120秒。16:9。日常は配膳と食事。テーブル下ジュボのあと射精せず、座位アナル中出し。口内 CUMOUF なし。セリフは口元3本（たべなさい／ごはんのとちゅうなのに／うえもちゃんとたべなさい。話し言葉、漢字なし）。夜の布団は布団120秒。写真は input/dinner-120s の 01〜12（16:9。無い本はテキストから）。",
+    "futon-120s": "布団第7話。食卓から布団。10秒×12本＝120秒。16:9。日常は片付けと布団。横になったままジュボのあと射精せず、正常位アナル中出し。口内 CUMOUF なし。セリフは口元2本（ねるまえなのに／でんき、けしたよ。話し言葉、漢字なし）。休日午前は休日120秒。写真は input/futon-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sunday-120s": "休日第8話。休日午前。家から出ない。10秒×12本＝120秒。16:9。日常は二度寝・テレビ・洗濯。ソファは後輩騎乗位のアナル中出し（AIOなし。アナル本では抜かない）。ハードカットで床ジュボ→口内 CUMOUF＋口移し（2回戦）。セリフは口元2本（やすみなのにアサからムクってる／ひるごはん、まだだよ。話し言葉、漢字なし）。アナル本に騎乗LoRAなし。午後の縁側は縁側120秒。写真は input/sunday-120s の 01〜12（16:9。無い本はテキストから）。",
+    "engawa-120s": "縁側第9話。休日午後。縁側と二回戦。竿役はマドカ。10秒×12本＝120秒。16:9。日常は昼残り・縁側・庭の風。縁側は後背位座位のアナル中出し（AIOなし。アナル本では抜かない）。ハードカットでアヤがマドカを根元まで→口内 CUMOUF＋口移し。セリフは口元2本（ひるからもムクってる／さらあらっとくから。話し言葉、漢字なし）。レイは入れない。アナル本に騎乗LoRAなし。写真は input/engawa-120s の 01〜12（16:9。無い本はテキストから）。",
+    "sales-visit-60s": "訪問販売。8本＝80秒。16:9。ミルク売り。帽子（ハット）のみ。販売員は常時1人。1本目: こんにちは→アヤ不出→あれ？トイレかな？おじゃましまーす！右へ消える。10-20は玄関仰向けM字、アヤが自分の肛門アナニー。販売員あ、オナニーしてる！キモチよさそーう＋シコシコ。20-30は覆い被さりベロチュー→正常位膣挿入（肛門に入れるな）。30-50は正常位パコ。よだれ。んっ あっ はぁー。英語喘ぎ禁止。50-60は膣中出し。イキ顔。白は接合。60-70は膣から抜き。マンコから白。カエルポーズ。70-80はサービスでーす。黄色いおしっこを顔へ。白禁止。口はアヤ22ミニ・竿なし。販売員は5人目25・短め黒髪・中乳・ふたなり20cm・金玉なし・竿の根元にマンコ。正常位LoRA having missionary sex は c3-c5 に 0.4 まで。顔が消えたら外す。口内 CUMOUF なし。台詞は1本2行まで。hmmotion なし。",
+    "checkup-100s": "定期検診。対面30秒。9本＝90秒。16:9。診察室ではない。家の玄関。1本目: 医師が画面左手・玄関扉の前に一人で立つ→チャイム＋こんにちは→右側の扉が開いてレイが右からはい。入ったあと短いフレンチキスとハグですぐ離れる。10-20はテイキケンシンにきました／あ、ヨロシクオネガイします！、そのあと恍惚の軽いキスですぐ離れる。20-30はふふ、オチンチンかたくておっきい！（妖艶に微笑んで軽くチンチンにキス）／では、シツレイして、いっぱいさわっちゃいますね！。そのあとベロチューとジュボは無言10秒。キスは両手で胸。クチとムネはぬるぬるでモンダイない。カクニンはカチカチおくまで、立ちの口パクのみ。60-70は無言で根元まで。70-80は射精せず、畳で正常位アナル挿入オンカメラ→アナル中出し。80-90はモンダイありすぎ、アナルにだされすぎ。口内 CUMOUF と精液口移しはなし。医師32・結い髪・中乳・竿なし・聴診器。レイ24・20cm 立ち。台詞は1本2行まで。hmmotion なし。",
+    "clinic-75s": "ケンシン。医院にアヤが来る。9本＝90秒。16:9 1024x576。医師32・結い髪・中乳・聴診器・ふたなり20cm玉なしマンコあり。口と穴はアヤ22ミニ・竿なし。レイなし。1本目: こんにちは→pipe chair に SEATED しゃがみジュボ（ジュボ中も医師の顔がフレームに残る。PULLED BACK。lip-sync に Full bodies from head to feet を書かない）。10-20は10秒ずっとジュボ。竿は涎でテカる。口の端から涎。医師メチャクチャ気持ちよさそう。口を外すな。立つな。キスするな。無言。20-30は口を外す。医師笑顔ありがとう！ゴホウビです→先っぽから黄色い小便をアヤの顔へ。アヤは目を閉じ口を開け笑顔で顔と口で受ける。白禁止。精液禁止。カメラは医師の顔＋小便の線＋アヤの顔が16:9に入る。30-40は小便終わり。顔・髪・体が黄色い小便まみれ。おしっこ、あったかーい！ありがとー！→濃厚ベロチュー。40-50は向き転換→LOOKBACK→両手床→両膝→自分で尻を開く→医師が後ろに膝→先端が outer ring of the anus entrance に接触（未挿入）。50-60は同じ姿勢のままその輪から根元まで挿入。60-70はパコパコ。70-80はアナル中出し（白）→抜いて垂れ。80-90はゲンキになりましたか／はい、スッキリしました。c5-c9は黄色い小便まみれを落とさない。洗うな。c5-c8は 30 degrees・SAME DIRECTION・NO KISS（行為中キスなし）。rim / 縁 禁止。騎乗なし。女医は仰向けにしない。口内 CUMOUF と口移しはなし。hmmotion なし。台詞: こんにちは／ありがとう！ゴホウビです／おしっこ、あったかーい！ありがとー！／ゲンキになりましたか／はい、スッキリしました。",
     "last-stop-40s": "終点40秒（つなぐ）。10秒×4本。9:16 576×1024。名前付きの「つなぐ」パック。最後のコマから I2V。車掌29・短髪・中乳・竿なし・ホイッスル。レイは座席で寝たまま立たない。普通の声では起きない。起こしのあと跪いて咥える（竿舐め禁止）。ジュボで起きる。口内 CUMOUF のあと車掌に戻る。台詞: しゅうてんです、おきてください／おきましたか？おきゃくさん、しゅうてんだからおりてください。hmmotion なし。",
-    "last-train-120s": "終電。終点の延長。10本＝100秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は車内では座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移しで起こす。起きてから2人で電車の外の空の駅ホームへ。ホームで濃厚キス→ピロートーク→レイ立ち・車掌ひざまづきジュボ→口内→立ち上がって抱擁と口移しベロチュー。セックスなし。騎乗なし。台詞: しゅうてんです、おきてください／んっ、おくちにだしてもらって、からだがあつい、、、／おくち、あったかい、、、もっとして、、、。行為も10秒。hmmotion なし。既存の終点はそのまま。",
+    "last-train-120s": "終電。終点の延長。10本＝100秒。15秒禁止（VRAMで画面が小さくなる）。9:16。車掌とレイの2人だけ。車掌29・短髪・中乳・竿なし・ホイッスル。レイ24は車内では座席のまま立たない。20cm玉なしマンコあり。声かけは座っているレイに身体も顔も向ける。ジュボは10+10＝20秒で奥まで（竿舐め禁止）。口内のあと同じ目線で口移しで起こす。起きてから2人で電車の外の空の駅ホームへ。ホームで濃厚キス→ピロートーク→レイ立ち・車掌ひざまづきジュボ→射精せず、立ち後背位アナル中出し→抱擁。車内の口内 CUMOUF は残す。ホームの口内と口移しはなし。騎乗なし。台詞: しゅうてんです、おきてください／んっ、おくちにだしてもらって、からだがあつい、、、／おくち、あったかい、、、もっとして、、、。行為も10秒。hmmotion なし。既存の終点はそのまま。",
     "semen-bath-70s": "ザーメン風呂。5本＝50秒。9:16。家の小さいおフロ。アヤ22ミニ・竿なしが湯船。レイ24・20cmが立って重油級の白いドロッドロを溜める。湯ではなく白い粘液がお風呂。口移しなし。挿入なし。ジュボなし。hmmotion なし。台詞: ザーメンフロにして／いっぱいだすね。",
-    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。廃油やヘドロの粘度だが色は不透明な白（茶色・黒のタールにしない）。水ではなくベトベトで肌に付く。混ざるが消えない。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、女体のみにしない）。竿は液から生えない。アヤ22ミニ・竿なし。歩行10秒はうわぁ＋手繋ぎ＋軽いフレンチキス（咥え・ジュボではない）。台詞10秒、ジュボ10・口内10は無言。ジュボは浸かり深さ判定なし（自然と根元まで）。口内のあとアヤが立ち上がって口移し。hmmotion なし。家のザーメン風呂とは別。台詞: うわぁ。。。すごいところだね。。。／あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
-    "meat-wall-cesspit-70s": "ニクカベ肥溜め。ニクカベの別バージョン。巨大生物の体内。7本＝70秒。9:16。冒頭は2人とも頭から足先まで白い廃油級ザーメンまみれ→大きな肥溜めを発見→肩までうんこの中。頭から足先まで濃い茶色の糞まみれ。アヤとレイのキス→ジュボするの→無言ジュボ→無言口内→おいしかった＋立ち上がって口移し。ジュボは浸かり深さ判定なし。レイは毎本フタナリ勃起20cm。アヤ22ミニ・竿なし。hmmotion なし。素のニクカベ（白いおフロ）とは別。台詞: うわぁ。。。あんなにおおきいコエダメだね。。。しろいのがからだじゅうについてる、、、あたままで、あしさきまで／このニオイ、、、アタマおかしくなりそう、、、こんなにこくて、うんこのニオイ、いきもできない、、、アタマおかしくなりそう、、、／んっ、キスして、、、あたまおかしくなりそう、、、こんなこえだめのなかで、あたままでうんこまみれなのに、キスして、、、／もうガマンできない！おチンチンジュボジュボするの！こんなこえだめのなかでも、れいのおチンチン、おくまでジュボジュボするの！／レイのザーメンおいしかった！こんなにこくてしろいの、おくまでだしてもらって、あたまおかしくなりそう、、、",
-    "cafe-100s": "カフェ100秒。10秒×10本。9:16。建前は最後まで落とさない: おミズ＝ジュボ、ミルク＝ジュボと口内。客はアヤ22ミニ・竿なし。店員25・低いお団子・中乳・ふたなり20cm・トレイだけ。コーヒーは本物を置いたまま終わる。台詞は話し言葉（漢字なし）（1本に2行まで）。行為は無言・寄り。最後はベロチューと抱擁。",
-    "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝ジュボ、ミルクコーヒー＝ジュボと口内。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
+    "meat-wall-85s": "ニクカベ。巨大生物の体内のザーメン風呂。コンクリートに肉を貼った部屋ではない。おフロは生体の窪み。7本＝70秒。9:16。茶色い粘液は壁から、全身・顔・髪・チンチン・マンコに付く。白は風呂。廃油やヘドロの粘度だが色は不透明な白（茶色・黒のタールにしない）。水ではなくベトベトで肌に付く。混ざるが消えない。歩行の床は弾力。足は沈まない。レイは毎本フタナリ勃起20cm（画面下段、女体のみにしない）。竿は液から生えない。アヤ22ミニ・竿なし。歩行10秒はうわぁ＋手繋ぎ＋軽いフレンチキス（咥え・ジュボではない）。台詞10秒、ジュボ10・アナル10は無言。ジュボは浸かり深さ判定なし（自然と根元まで）。ジュボのあと射精せず、立ち後背位アナル中出し。口内 CUMOUF と口移しはなし。hmmotion なし。家のザーメン風呂とは別。台詞: うわぁ。。。すごいところだね。。。／あ、おフロ。。。でもこれって／ザーメンの、、、おフロ、、、すごいニオイ、、、／ザーメンのおフロ。。。あったかーい／もうガマンできない！おチンチンジュボジュボするの！／レイのザーメンおいしかった！",
+    "meat-wall-cesspit-70s": "ニクカベ肥溜め。ニクカベの別バージョン。巨大生物の体内。7本＝70秒。9:16。冒頭は2人とも頭から足先まで白い廃油級ザーメンまみれ→大きな肥溜めを発見→肩までうんこの中。頭から足先まで濃い茶色の糞まみれ。アヤとレイのキス→ジュボするの→無言ジュボ→射精せず、無言で後背位アナル中出し→だされちゃった。ジュボは浸かり深さ判定なし。口内 CUMOUF と口移しはなし。レイは毎本フタナリ勃起20cm。アヤ22ミニ・竿なし。hmmotion なし。素のニクカベ（白いおフロ）とは別。台詞: うわぁ。。。あんなにおおきいコエダメだね。。。しろいのがからだじゅうについてる、、、あたままで、あしさきまで／このニオイ、、、アタマおかしくなりそう、、、こんなにこくて、うんこのニオイ、いきもできない、、、アタマおかしくなりそう、、、／んっ、キスして、、、あたまおかしくなりそう、、、こんなこえだめのなかで、あたままでうんこまみれなのに、キスして、、、／もうガマンできない！おチンチンジュボジュボするの！こんなこえだめのなかでも、れいのおチンチン、おくまでジュボジュボするの！／レイのザーメンおいしかった！こんなにこくてしろいの、おくまでだしてもらって、あたまおかしくなりそう、、、",
+    "cafe-100s": "カフェ。11本＝110秒。16:9。店員は常時1人。二人目の店員・クローン・トレイ二つ禁止。アヤ受け・竿なし。店員25・20cmフタナリ。着席いきかえる→おまんこ擦り→右からいらっしゃいませ／あ、オチンチン座位ジュボ→口内白→ごっくん白垂れ→したのおくちにください→かしこまりました接地→挿入→パコキスなし→アナル中出し白＋抜き→立ち上がる→おなかいっぱい立ちベロチュー。台詞は話し言葉（漢字なし）（1本に2行まで）。hmmotion なし。",
+    "train-sales-80s": "車内販売80秒。10秒×8本。9:16。建前: おチャ＝ジュボ、ミルクコーヒー＝ジュボのあと射精せず後背位座位アナル中出し（ワゴンの手は残す）。口内 CUMOUF なし。客はレイ24（受け・自分の20cmは使わない）。販売員26・短め黒髪・中乳・ふたなり20cm・ワゴンだけ。台詞は話し言葉（漢字なし）。行為は無言・寄り。",
     "red-light-50s": "赤信号50秒。10秒×5本。9:16。建前: 信号待ちとナビ。運転はレイ24（20cm・両手はハンドル）、口はアヤ22。ジュボと口内だけ。放尿なし。車は動かない。台詞は話し言葉（漢字なし）。",
-    "yoga-50s": "ヨガ50秒。10秒×5本。9:16。建前: コツバンを落とす。講師29・お団子・中乳・ふたなり20cm。生徒はアヤ22。四つん這いで最初から入っている（後背位 LoRA）。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "back-wash-60s": "背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝ジュボ（根元まで）。台詞は話し言葉（漢字なし）。",
+    "yoga-50s": "ヨガ50秒。10秒×5本。9:16。建前: コツバンを落とす。講師29・お団子・中乳・ふたなり20cm。生徒はアヤ22。四つん這いアナル（後背位 LoRA は積まない）。挿入オンカメラ→アナル中出し。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "back-wash-60s": "背中流し60秒。10秒×6本。9:16。建前: 上から下へ洗う。洗うのはサヤカ39（竿なし）。洗われるのはマドカ22（20cm）。背中→マドカのマンコ舐め（竿は使わない）→アガリユ＝ジュボ（根元まで）のあと射精せず、座位アナル中出し。行為は無言。台詞は話し言葉（漢字なし）。",
     "karaoke-50s": "カラオケ50秒。10秒×5本。9:16。建前: サビ待ちと点数。歌うのはマドカ22（20cm・マイク）。口はアヤ22。歌のあいだジュボ、最後の音で口内。放尿なし。台詞は話し言葉（漢字なし）。",
-    "laundromat-50s": "コインランドリー50秒。10秒×5本。9:16。建前: あと何分。竿はレイ24、受けはアヤ22。洗濯機の上でもう入っている（AIO 横クローズ）。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "laundromat-50s": "コインランドリー50秒。10秒×5本。9:16。建前: あと何分。竿はレイ24、受けはアヤ22。洗濯機の縁で座位アナル（AIO なし）。挿入オンカメラ→アナル中出し。ジュボなし・放尿なし。hmmotion なし。台詞は話し言葉（漢字なし）。",
     "lecture-desk-50s": "講義机50秒。10秒×5本。9:16。建前: 板書とノート。先生36・眼鏡・結い髪・中乳・ふたなり20cm・チョークだけ。アヤ22が教卓の下でジュボ→口内。上の声は授業。放尿なし。台詞は話し言葉（漢字なし）。授業120秒（専用）とは別。",
-    "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めるだけ。レイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
-    "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろから入っている。顔は花火のまま。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "camp-50s": "キャンプ50秒。10秒×5本。9:16。建前: 虫よけ。レイ24がアヤ22のマンコを舐めたあと体位転換、後背位アナル中出し。クンニ本ではレイの20cmは画面にあっても使わない。ジュボなし・放尿なし。台詞は話し言葉（漢字なし）。",
+    "fireworks-50s": "花火50秒。10秒×5本。9:16。建前: 上を見る。竿はマドカ22、受けはサヤカ39。立ったまま後ろからアナル（AIO なし）。挿入オンカメラ→アナル中出し。顔は花火のまま。ジュボなし・放尿なし。hmmotion なし。台詞は話し言葉（漢字なし）。",
     "cabin-40s": "山小屋80秒。10秒×8本。9:16。糞まみれで扉の外のアヤ一人（中の人体は描かない）。10-20は洋式便座でレイが既にシコシコ。20-30はベロチューのあと口を開けて先端から手の幅。30-40は無言ジュボ。40-50は跨ってマンコに手の幅・未挿入。50-60は騎乗でマンコへ。60-70は後背、終わりはアナルに手の幅。70-80はアナル挿入オンカメラ→アナル中出し（マンコから出さない）。アナル本に騎乗LoRAは載せない。顔は入れ替えない。台詞は話し言葉（漢字なし）。",
-    "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと、口を開けて先端から手の幅。2本目は無言で根元までジュボ→口内。口内のあとはジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち（AIO・hmmotion 先頭）→中に出して腿に残る。口移しなし。",
-    "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "locker-30s": "物語の追加。廃校ロッカー。10秒×2＝20秒。9:16。アヤ＋マドカ。1本目はカギの会話とベロチューのあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "crossing-30s": "物語の追加。ドウロのど真ん中。10秒×2＝20秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "lookout-30s": "物語の追加。ガケの展望台。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は霧の会話のあと、アヤ仰向け・膝を開いて舐め寸前。2本目は無言クンニ（竿は使わない）。ジュボなし・口移しなし。hmmotion なし。",
-    "factory-30s": "物語の追加。コウジョウあと。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと、受け入れる立ち・挿入寸前（先端から手の幅、未挿入）。2本目は無言でもう入っている立ち→中に出して腿に残る。口移しなし。hmmotion 先頭。",
+    "manhole-30s": "物語の追加。ハイスイコウ。10秒×2＝20秒。9:16。アヤ22ミニ・竿なし＋レイ24・20cm。1本目はフタの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で立ち後背位アナル挿入オンカメラ→アナル中出し。口内 CUMOUF と口移しはなし。hmmotion なし。",
+    "roof-ac-30s": "物語の追加。屋上クーラー。10秒×2＝20秒。9:16。サヤカ39・竿なし＋マドカ22・20cm。1本目はクーラーの会話のあと、立ち後背位の挿入寸前（アナルに手の幅、未挿入）。2本目は無言で立ち後背位アナル挿入オンカメラ→アナル中出し。AIO は積まない。hmmotion なし。口移しなし。",
+    "tetrapod-30s": "物語の追加。ハマのテトラ。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は風の会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で後背位アナル挿入オンカメラ→アナル中出し。ジュボ・口内・口移しはなし。hmmotion なし。",
+    "locker-30s": "物語の追加。廃校ロッカー。10秒×2＝20秒。9:16。アヤ＋マドカ。1本目はカギの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で立ち後背位アナル挿入オンカメラ→アナル中出し。ジュボ・口内・口移しはなし。hmmotion なし。",
+    "crossing-30s": "物語の追加。ドウロのど真ん中。10秒×2＝20秒。9:16。サヤカ＋レイ。1本目は信号の会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で立ち後背位アナル挿入オンカメラ→アナル中出し。ジュボ・口内・口移しはなし。hmmotion なし。",
+    "lookout-30s": "物語の追加。ガケの展望台。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は霧の会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で正常位アナル挿入オンカメラ→アナル中出し。クンニ・ジュボ・口移しはなし。hmmotion なし。",
+    "factory-30s": "物語の追加。コウジョウあと。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はサビの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、後背位座位の挿入寸前（アナルに手の幅、未挿入）。2本目は無言でアナル挿入オンカメラ→アナル中出し。AIO は積まない。hmmotion なし。口移しなし。",
     "gas-station-30s": "物語の追加。ガソリンスタンド跡。10秒×2＝20秒。9:16。アヤ＋レイ。1本目はミズの会話のあと、口を開けて先端から手の幅で止まる（飲まない）。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
     "tunnel-phone-30s": "物語の追加。トンネル非常電話。10秒×2＝20秒。9:16。アヤ＋レイ。1本目は電話の会話のあと、受話器を持ったまま跪いて口を開けて先端から手の幅。2本目は受話器を持ったまま口だけで根元まで→口内。手は竿に触れない。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
-    "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと、跪いて口を開けて先端から手の幅。2本目は無言ジュボ→口内。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "riverbank-30s": "物語の追加。川原のゴミ。10秒×2＝20秒。9:16。サヤカ＋マドカ。1本目はフクロの会話のあと即濃厚ベロチュー＋胸揉み、チンチンとマンコをこすり、終わりはアナルに手の幅・未挿入。2本目は無言で騎乗位アナル挿入オンカメラ→アナル中出し（騎乗 LoRA は積まない）。ジュボ・口内・口移しはなし。hmmotion なし。",
     "hachiko-30s": "物語の追加。ハチコウ。10秒×2＝20秒（15秒禁止）。9:16。夜の渋谷ハチコウ前。レイ24・20cmが画面左手で立ってフルボッキをシコシコ。アヤ22ミニ・竿なしが右から現れてキス→口を開けて先端から手の幅。2本目は無言で根元まで濃厚ジュボ→口内。口が半分も保てず顔にすごい量。ジュボ側が同じ目線に立ち上がって濃厚キス口移し。hmmotion なし。",
+    "anal-p1-oral": "①口内で終わる。汎用40秒。10秒×4本。9:16。アヤ22ミニ・竿なしが口、レイ24・20cm。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は使わない。既存の帰宅〜縁側とは別（こちらが三択そのもの）。",
+    "anal-p2-bj-anal": "②フェラのあとアナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話→根元ジュボで射精せず抜き→アナル挿入オンカメラ（まだ出さない）→パコパコ根本まで出し入れのあとアナル中出し。口内 CUMOUF なし。体位欄がアナル本に効く（既定は立ち後背）。",
+    "anal-p3-meet-anal": "③会って即アナル。汎用40秒。10秒×4本。9:16。アヤ＋レイ。会話＋短いベロチューのあと0-10でアナル挿入オンカメラ（まだ出さない）→10-20パコパコ根本まで出し入れ→20-30アナル中出し。ジュボなし・口内なし。体位欄がアナル本に効く（既定は立ち後背）。",
     "shorts-immoral": "短編集（参照）。10秒完結の超濃厚日常インモラルを複数本。メイン4人のうち竿役（レイ／マドカ）とハメ役（アヤ／サヤカ）の2人。つなぎなし。各本は input/cast/ の人物写真を R2V 参照（最初のコマではない）。画面は本ごと（フェラ9:16寄り、挿入は16:9または立ち9:16）。文と部品は自動。FL2VA の竿は載せない。穴（synth-pussy）は載せる（竿役以外に竿が付くのを防ぐ）。",
     "redo": "生成し直し。壊れた本から作り直す。作り直しの物語と開始の本（1始まり）を③で指定。開始より前の本は output に残っている動画をストックして連結する。開始の本は前の本の最後のコマ（起点画像）から I2V。専用で作っていても途中からならつなぐ。",
 }
@@ -637,6 +705,7 @@ LORA_JA = {
     "lesbian-cunnilingus-h3": "レズクンニ",
     "pussy-spread-h3": "性器を広げる",
     "anal-penetration-coachbate": "アナル挿入（CoachBate・有料・未使用）",
+    "anal-any-h3": "アナル行為（どの構図）",
     "hmnsfw-aio-v25": "総合えっち",
     "futa-h3-v51": "ふたなり",
     "penis-lora-h3": "竿",
@@ -657,7 +726,6 @@ LORA_JA = {
     "h3-realism-people": "肌のリアルさ",
     "tiddies-realism-slider": "胸の大きさ",
     "larry-v4": "Larry v4",
-    "cinema-dy": "シネマ質感",
     "astro-cinema-h3": "映画レンズ",
     "minimax-h3-turbo-fl2v-4step": "LightX2V 4step",
     "minimax-h3-turbo-fl2v-8step": "LightX2V 8step",
@@ -684,7 +752,7 @@ STORY_ORDER = (
 STORY_IDS = set(STORY_ORDER)
 # Named chain packs. Not stories (is_story False). Never added to STORY_IDS.
 # The JSON on disk is seamless (last-frame I2V); ③ replays each pack in the same
-# three plays as the dedicated stories (専用 / つなぐ / つなぐ修).
+# five plays as the dedicated stories (専用 / つなぐ / つなぐ修 / 参照つなぐ / 参照つなぐ修).
 CHAIN_PACK_ORDER = (
     "sales-visit-60s",
     "checkup-100s",
@@ -738,6 +806,14 @@ ANTHOLOGY_IDS = ("shorts-immoral",)
 ANTHOLOGY_ID_SET = set(ANTHOLOGY_IDS)
 ANTHOLOGY_LABEL = "短編集（参照）"
 REDO_LABEL = "生成し直し"
+# ③の三択。既存話に焼き込んだパターンとは別。汎用40秒。ドロップダウンは3行だけ（専用×5は付けない）。
+ANAL_PATTERN_ORDER = ("anal-p1-oral", "anal-p2-bj-anal", "anal-p3-meet-anal")
+ANAL_PATTERN_IDS = frozenset(ANAL_PATTERN_ORDER)
+ANAL_PATTERN_JA = {
+    "anal-p1-oral": "①口内で終わる",
+    "anal-p2-bj-anal": "②フェラのあとアナル",
+    "anal-p3-meet-anal": "③会って即アナル",
+}
 # Legacy long labels of the first three packs. They keep the old behaviour
 # (last-frame chain, clip 1 rewritten as a long take) = つなぐ修.
 CHAIN_PACK_TITLE_JA = {
@@ -824,9 +900,161 @@ STORY_PLAY_HELP_JA = {
 }
 _STORY_PLAY_LABELS: dict[str, tuple[str, str]] = {}
 
+NONE_LABEL = "なし"
+STORY_KEEP_LABEL = "（シーンのまま）"
+TIB_ON_LABEL = "あり（挿入前後）"
+TIB_OFF_LABEL = "なし"
+TIB_LORA_ID = "thumbinbutt-h3"
+TIB_FILE = "H3_ThumbInButt.safetensors"
+TIB_FILE_ALIASES = (
+    TIB_FILE,
+    "MiniMax H3 - ThumbInButt.safetensors",
+    "MiniMax_H3_-_ThumbInButt.safetensors",
+)
+TIB_STRENGTH = 0.55
+TIB_TRIGGER = "thum1n8utt"
+ANAL_ANY_LORA_ID = "anal-any-h3"
+ANAL_ANY_FILE = "anal-any-h3.safetensors"
+ANAL_ANY_FILE_ALIASES = (ANAL_ANY_FILE,)
+ANAL_ANY_STRENGTH = 0.55
+ANAL_ANY_TRIGGER = "AN4LIN"
+# Default stacks stay helper 0-2. Optional ③ ThumbInButt may be a third helper
+# on oral / cunni / doggy prep clips that already have penis + synth.
+TIB_MAX_HELPERS = 3
+# Helpers that may be dropped to seat ThumbInButt. cinema-dy is not a candidate.
+TIB_EVICT_IDS = frozenset()
+TIB_SKIP_SITUATIONS = frozenset(
+    {
+        "scat_act",
+        "anal_fingering",
+        "oral",
+        "oral_creampie",
+        "futa_blowjob",
+    }
+)
+TIB_SKIP_STORY_IDS = frozenset(
+    {
+        "semen-bath-70s",
+        "last-stop-40s",
+        "karaoke-50s",
+        "red-light-50s",
+        "lecture-desk-50s",
+        "gas-station-30s",
+        "tunnel-phone-30s",
+        "hachiko-30s",
+    }
+)
+GENERIC_TIB_SITS = frozenset(
+    {
+        "futa_anal",
+        "anal_penetration",
+        "anal-p2-bj-anal",
+        "anal-p3-meet-anal",
+    }
+)
+_KEEP_SCENE = frozenset({"", NONE_LABEL, STORY_KEEP_LABEL, "シーンのまま"})
+_PLAY_JA_TO_KEY = {ja: key for key, ja in STORY_PLAY_JA.items()}
+_TITLE_TO_ID = {title: sid for sid, title in STORY_TITLE_JA.items()}
+
 
 def story_play_label(story_id: str, play: str) -> str:
     return f"{STORY_TITLE_JA[story_id]}（{STORY_PLAY_JA[play]}）"
+
+
+def parse_thumb_in_butt(name: str | None) -> bool:
+    raw = str(name or "").strip()
+    if raw in {"", NONE_LABEL, TIB_OFF_LABEL, "off", "false", "False", "0"}:
+        return False
+    return raw == TIB_ON_LABEL or raw.startswith("あり") or raw.lower() in {"on", "true", "yes"}
+
+
+def parse_play_ja(name: str | None) -> str:
+    raw = str(name or "").strip()
+    if raw in STORY_PLAYS:
+        return raw
+    if raw in _PLAY_JA_TO_KEY:
+        return _PLAY_JA_TO_KEY[raw]
+    if raw.endswith("（参照つなぐ修）") or raw == "参照つなぐ修":
+        return STORY_PLAY_REF_CHAIN_REWRITE
+    if raw.endswith("（参照つなぐ）") or raw == "参照つなぐ":
+        return STORY_PLAY_REF_CHAIN
+    if raw.endswith("（つなぐ修）") or raw == "つなぐ修":
+        return STORY_PLAY_CHAIN_REWRITE
+    if raw.endswith("（つなぐ）") or raw == "つなぐ":
+        return STORY_PLAY_CHAIN
+    if raw.endswith("（専用）") or raw == "専用":
+        return STORY_PLAY_DEDICATED
+    return STORY_PLAY_REF_CHAIN
+
+
+def resolve_story_title(name: str | None) -> str:
+    raw = str(name or "").strip()
+    if raw in STORY_TITLE_JA:
+        return raw
+    if raw in _TITLE_TO_ID:
+        return _TITLE_TO_ID[raw]
+    for suffix in ("（参照つなぐ修）", "（参照つなぐ）", "（つなぐ修）", "（つなぐ）", "（専用）"):
+        if raw.endswith(suffix):
+            return resolve_story_title(raw[: -len(suffix)])
+    raise SystemExit(f"物語が分かりません: {name}")
+
+
+def story_title_labels() -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for sid in list(STORY_ORDER) + list(CHAIN_PACK_ORDER):
+        title = STORY_TITLE_JA[sid]
+        if title in seen:
+            raise SystemExit(f"duplicate story title: {title}")
+        seen.add(title)
+        out.append(title)
+    return out
+
+
+def compose_scene_choice(scene: str | None, story: str | None, play: str | None) -> str:
+    title = str(story or "").strip()
+    if title not in _KEEP_SCENE:
+        sid = resolve_story_title(title)
+        return story_play_label(sid, parse_play_ja(play))
+    raw_scene = str(scene or "").strip()
+    if raw_scene not in _KEEP_SCENE:
+        return raw_scene
+    return story_play_label("commute-120s", STORY_PLAY_CHAIN)
+
+
+def generic_wants_thumbinbutt(situation: str | None) -> bool:
+    return str(situation or "").strip() in GENERIC_TIB_SITS
+
+
+def strip_thumb_in_butt_trigger(prompt: str | None) -> str:
+    raw = str(prompt or "")
+    if not raw:
+        return raw
+    return raw.replace(TIB_TRIGGER, "").replace(TIB_TRIGGER.upper(), "")
+
+
+def extra_tib_download_ids() -> list[str]:
+    return [TIB_LORA_ID]
+
+
+def lora_filename_keys(filename: str, lora_id: str = "") -> set[str]:
+    """Basenames that count as the same LoRA file. TIB Civitai name aliases to TIB_FILE."""
+    name = Path(str(filename or "")).name.strip()
+    keys: set[str] = set()
+    if name:
+        keys.add(name.lower())
+    rid = str(lora_id or "").strip().lower()
+    tib = {a.lower() for a in TIB_FILE_ALIASES}
+    tib.add(TIB_FILE.lower())
+    tib.add(TIB_LORA_ID.lower())
+    if (name and name.lower() in tib) or rid == TIB_LORA_ID.lower():
+        keys |= tib
+    anal = {a.lower() for a in ANAL_ANY_FILE_ALIASES}
+    anal.add(ANAL_ANY_FILE.lower())
+    anal.add(ANAL_ANY_LORA_ID.lower())
+    if (name and name.lower() in anal) or rid == ANAL_ANY_LORA_ID.lower():
+        keys |= anal
+    return {k for k in keys if k}
 
 
 def story_play_labels() -> list[str]:
@@ -845,6 +1073,11 @@ def chain_pack_labels() -> list[str]:
         for play in STORY_PLAYS:
             out.append(story_play_label(pid, play))
     return out
+
+
+def anal_pattern_labels() -> list[str]:
+    """③ dropdown: the three anal endings, one row each. Not ×5 plays."""
+    return [ANAL_PATTERN_JA[sid] for sid in ANAL_PATTERN_ORDER]
 
 
 def chain_pack_legacy_labels() -> list[str]:
@@ -907,11 +1140,21 @@ def is_story(situation: str) -> bool:
 
 
 def is_chain_pack(situation: str) -> bool:
-    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 終電 / ザーメン風呂 / ニクカベ / 建前 / 物語の追加). Not a story."""
+    """Named last-frame chain pack (訪問販売 / 定期検診 / ケンシン / 終点 / 終電 / ザーメン風呂 / ニクカベ / 建前 / 物語の追加 / アナル三択). Not a story."""
     try:
-        return resolve_situation(situation) in CHAIN_PACK_IDS
+        sid = resolve_situation(situation)
+        return sid in CHAIN_PACK_IDS or sid in ANAL_PATTERN_IDS
     except SystemExit:
-        return str(situation or "").strip() in CHAIN_PACK_IDS
+        key = str(situation or "").strip()
+        return key in CHAIN_PACK_IDS or key in ANAL_PATTERN_IDS
+
+
+def is_anal_pattern(situation: str) -> bool:
+    """③のアナル三択（汎用40秒）。既存話に焼き込んだパターンとは別。"""
+    try:
+        return resolve_situation(situation) in ANAL_PATTERN_IDS
+    except SystemExit:
+        return str(situation or "").strip() in ANAL_PATTERN_IDS
 
 
 def is_anthology(situation: str) -> bool:
@@ -925,6 +1168,9 @@ def is_anthology(situation: str) -> bool:
 def resolve_story_play(situation: str) -> str:
     """dedicated | chain | chain_rewrite | ref_chain | ref_chain_rewrite."""
     key = str(situation or "").strip()
+    if is_anal_pattern(key):
+        # 三択そのものは最後のコマでつなぐ。専用カットにしない。
+        return STORY_PLAY_CHAIN
     hit = _STORY_PLAY_LABELS.get(key)
     if hit is not None:
         return hit[1]
@@ -1358,6 +1604,8 @@ def explain_choice(situation: str, mode: str) -> str:
         play_line = f"再生: {STORY_PLAY_JA[play]}（{STORY_PLAY_HELP_JA[play]}）。名前付きパック。専用ストーリーではありません\n"
     elif sid in ANTHOLOGY_ID_SET:
         play_line = "再生: 短編集（参照）。10秒完結×複数。つなぎなし。人物写真を R2V 参照\n"
+    elif sid in ANAL_PATTERN_IDS:
+        play_line = "再生: つなぐ（最後のコマから I2V）。アナルの三択そのもの。既存話とは別\n"
     return (
         f"シーン: {situation}\n"
         f"作り方: {how}\n"
@@ -1931,6 +2179,90 @@ def is_ref2v_weight(name: str) -> bool:
     return "ref2va" in n or "ref2v" in n
 
 
+R2V_SKIP_LOG = (
+    "参照土台（R2V / ref2va・約21GB）は飛ばします。"
+    "短編集や参照つなぐの日は「参照土台も入れる」をオン。"
+)
+R2V_NEED_EXIT = (
+    "②で参照土台をオンにしてから再実行。普段のつなぐは再生＝つなぐのまま。"
+)
+
+
+def want_r2v_engine(*, include_r2v: bool = False, scene: str | None = None) -> bool:
+    """②: 参照土台チェック、または今使うシーンに「参照」があるときだけ R2V を取る。"""
+    if bool(include_r2v):
+        return True
+    return "参照" in str(scene or "")
+
+
+def drop_ref2va_ids(ids: list[str] | None) -> list[str]:
+    """よく使う部品を全部入れても ref2va / ref2v LoRA は載せない。"""
+    return [str(lid) for lid in (ids or []) if not is_ref2v_weight(str(lid))]
+
+
+def find_ref2va_files(*roots: Path | str | None) -> list[Path]:
+    found: list[Path] = []
+    seen: set[str] = set()
+    for raw in roots:
+        if not raw:
+            continue
+        root = Path(raw)
+        bases = [root]
+        if root.name != "diffusion_models":
+            bases.append(root / "diffusion_models")
+            bases.append(root / "models" / "diffusion_models")
+        for base in bases:
+            if not base.is_dir():
+                continue
+            try:
+                paths = sorted(base.glob("*ref2va*"))
+            except OSError:
+                continue
+            for path in paths:
+                if not path.is_file():
+                    continue
+                try:
+                    key = str(path.resolve())
+                except OSError:
+                    key = str(path)
+                if key in seen:
+                    continue
+                seen.add(key)
+                found.append(path)
+    return found
+
+
+def needs_ref2va_weight(
+    *,
+    play: str | None = None,
+    scene: str | None = None,
+    redo_story: str | None = None,
+) -> bool:
+    """③: 参照つなぐ／短編集（参照）／作り直しの物語に「参照」がある。"""
+    if is_anthology(scene):
+        return True
+    blob = f"{play or ''} {scene or ''} {redo_story or ''}"
+    return "参照" in blob
+
+
+def require_ref2va_or_exit(
+    *,
+    local_models: Path | str | None = None,
+    drive_models: Path | str | None = None,
+    needed: bool = True,
+) -> list[Path]:
+    """ローカルにも Drive models にも *ref2va* が無い参照再生は②を先に。"""
+    if not needed:
+        return []
+    local = find_ref2va_files(local_models)
+    if local:
+        return local
+    drive = find_ref2va_files(drive_models)
+    if drive:
+        return drive
+    raise SystemExit(R2V_NEED_EXIT)
+
+
 def _iter_drive_weights(
     drive_models: Path,
     *,
@@ -2308,6 +2640,8 @@ def download_jobs_for(
             raise SystemExit(f"unknown LoRA id: {lid}")
         dest = dest_dir / str(row["filename"])
         source = str(row.get("source") or "hf")
+        if source == "local":
+            continue
         if source == "civitai":
             url = civitai_download_url(row)
         elif row.get("repo") and not str(row["repo"]).startswith("civitai:"):
@@ -2429,14 +2763,24 @@ def resolve_lora_relname(lora_dir: Path | str, filename: str) -> str | None:
     name = str(filename or "").strip()
     if not name:
         return None
+    keys = lora_filename_keys(name)
     direct = root / name
     if already_have_weight(direct):
         return name.replace("\\", "/")
-    target = Path(name).name.lower()
+    if TIB_FILE.lower() in keys:
+        for alias in TIB_FILE_ALIASES:
+            alt = root / alias
+            if already_have_weight(alt):
+                return alias.replace("\\", "/")
+    if ANAL_ANY_FILE.lower() in keys:
+        for alias in ANAL_ANY_FILE_ALIASES:
+            alt = root / alias
+            if already_have_weight(alt):
+                return alias.replace("\\", "/")
     if not root.is_dir():
         return None
     for hit in root.rglob("*.safetensors"):
-        if hit.name.lower() == target and already_have_weight(hit):
+        if hit.name.lower() in keys and already_have_weight(hit):
             return str(hit.relative_to(root)).replace("\\", "/")
     return None
 
@@ -2477,7 +2821,8 @@ def comfy_missing_loras(stack: list[dict[str, Any]], obj: dict[str, Any] | None)
     missing: list[str] = []
     for item in stack:
         name = Path(str(item.get("filename") or "")).name
-        if name and name.lower() not in known:
+        keys = lora_filename_keys(name, str(item.get("id") or ""))
+        if name and not (keys & known):
             missing.append(name)
     return missing
 
@@ -2986,8 +3331,11 @@ CHAIN_PRESETS = {
 }
 
 
+STORY_CLIP_S = 10.0
+
+
 def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
-    """One shot is 4–10s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
+    """One shot is 4–15s. Chain mode is 16–120s via 10s clips. Homage notebooks stay as they are."""
     try:
         n = int(round(float(seconds)))
     except (TypeError, ValueError):
@@ -2998,8 +3346,8 @@ def clamp_studio_duration(seconds: float, *, chain: bool = False) -> float:
         if n < CHAIN_MIN_S:
             return float(CHAIN_MIN_S)
         return float(n)
-    if n > 10:
-        return 10.0
+    if n > 15:
+        return 15.0
     if n < 4:
         return 4.0
     return float(n)
@@ -3028,15 +3376,16 @@ def chain_preset_seconds(label: str | bool) -> float | None:
 
 
 def studio_clip_plan(total_s: float, *, chain: bool = False) -> list[float]:
-    """Native H3 clips. Do not generate 11s+ in one MiniMaxH3ImageToVideo pass (15s OOMs and shrinks the canvas)."""
+    """One-shot may be up to 15s. Story-chain pieces stay 10s. Do not make the chain 15s."""
     total = clamp_studio_duration(total_s, chain=chain)
     if not chain:
         return [total]
     clips: list[float] = []
     left = int(total)
-    while left > 10:
-        clips.append(10.0)
-        left -= 10
+    piece = int(STORY_CLIP_S)
+    while left > piece:
+        clips.append(float(piece))
+        left -= piece
     if left >= 4:
         clips.append(float(left))
     elif left > 0 and clips:
@@ -3401,7 +3750,7 @@ _KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 _SPOKEN_RE = re.compile(r"「([^」]+)」")
 _LATIN_IN_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af]")
 _JP_SCRIPT_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
-SPEECH_FACE_KILLER_IDS = frozenset({"cinema-dy"})
+SPEECH_FACE_KILLER_IDS = frozenset()
 # Kept so old notebooks / cached prompts can still be stripped. Do not inject a
 # new lock: H3 TTS'd both the JP 音声ルール and the ASCII "only say the line" flags.
 AUDIO_LOCK_MARK = "[AUDIO-LOCK]"
@@ -3725,13 +4074,149 @@ INSIDE_PUSSY_LINE = (
 INSIDE_ANAL_LINE = (
     "INSIDE LOCK: The erect 20cm is already inside the anus. The shaft is buried in the anal canal. "
     "The glans is in, not outside. Joining point visible: penis in anus, not in the pussy this clip, "
-    "not beside the hole, not rubbing from outside. Not a soft penis. Not a miss. "
-    "Keep thrusting while it stays in. Do not pull out for this clip."
+    "not beside the hole, not rubbing from outside. The unused pussy stays shut, not spread, "
+    "not gaping. Not a soft penis. Not a miss. Keep thrusting while it stays in. "
+    "Do not pull out for this clip."
 )
 INSIDE_ENTRY_LINE = (
     "INSIDE LOCK: Show the entry, then it STAYS in. The erect 20cm goes into the hole on camera: "
     "glans parts the lips (or the anus), shaft sinks to the base. After it is in, keep it inside "
     "and thrust. Not beside. Not between the thighs. Not a soft penis. Not a miss."
+)
+INSIDE_ENTRY_ANAL_LINE = (
+    "INSIDE LOCK: Show the entry into the ANUS, then it STAYS in. The erect 20cm goes into the "
+    "anus on camera: glans parts the anus, shaft sinks to the BASE. Never into the pussy. "
+    "Never between the labia. The unused pussy stays shut, not spread, not gaping. "
+    "After it is in, keep it inside the anus and thrust. Not beside. Not a miss."
+)
+INSIDE_PACO_LINE = (
+    "INSIDE LOCK: The erect 20cm pistons the anus. Pull out until only the glans sits at the rim, "
+    "then slam in to the BASE. Repeat that in-and-out the whole take. Joining point visible: "
+    "penis in anus, not in the pussy, not beside the hole. The unused pussy stays shut, "
+    "not spread, not gaping. Not out of the hole completely. Not a soft penis. Not a miss."
+)
+# Keep in sync with prompts/h3-body-lock.md
+ANAL_HOLE_LOCK_LINE = (
+    "ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. "
+    "The unused pussy stays shut: labia closed, not spread, not gaping, not entered. "
+    "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
+    "Not a vaginal creampie. Not pussy-spread."
+)
+ANAL_ANATOMY_LINE = (
+    "ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). "
+    "The unused pussy is the hole toward the pubic bone and the belly. "
+    "Never swap those two holes. Enter the anus only."
+)
+ANAL_REAR_LOCK_LINE = (
+    "REAR ANAL LOCK: Standing-from-behind, all fours, or doggy: two holes from the rear. "
+    "The UPPER hole toward the tailbone is the anus — the 20cm enters THAT hole only, to the BASE. "
+    "The LOWER hole toward the belly is the unused pussy: keep it closed, not opened, not spread, not gaping. "
+    "Do not aim at the pussy. Do not part the labia. Joining point is penis-in-anus "
+    "above the closed pussy."
+)
+ANAL_FRONT_LOCK_LINE = (
+    "FRONT ANAL LOCK: Missionary, on her back, or M-spread: two holes between the open thighs. "
+    "The LOWER hole toward the tailbone / buttocks is the anus — the 20cm enters THAT hole only, "
+    "to the BASE. The UPPER hole toward the belly / pubic bone is the unused pussy: keep it closed, "
+    "not opened, not spread, not gaping. Do not aim at the front hole. Joining point is "
+    "penis-in-anus below the closed pussy."
+)
+ANAL_SIDE_LOCK_LINE = (
+    "SIDE ANAL LOCK: Both on their sides. The hole toward the back / tailbone is the anus — "
+    "enter THAT only, to the BASE. The hole toward the belly / pubic bone is the unused pussy: "
+    "closed, not opened, not spread, not gaping."
+)
+ANAL_PULLOUT_LEAK_LINE = (
+    "ANAL PULL-OUT: When the 20cm leaves the anus, the anus stays open and WHITE goo leaks "
+    "OUT OF THAT OPEN ANUS. The unused pussy stays closed and has no semen."
+)
+ANAL_PREP_LINE = (
+    "ANAL PREP: After the written act, BOTH women settle the next anal pose together. "
+    "Receiver takes the accepting pose written for the coming insertion. "
+    "Giver aligns hips behind or between, both hands on the waist, never on the hole, never on the shaft. "
+    "The erect 20cm tip stays a hand's width from the anus, not touching the hole, NOT in. "
+    "Unused pussy stays shut. No vaginal. No thumb. No fingers in the anus. "
+    "No extra walk. No solo heat. Do not start insertion in this prep beat. "
+    "CAMERA: After the written act, PULL BACK or ORBIT to a medium rear-side "
+    "(or the angle written for the coming insertion). Last seconds: BOTH bodies readable "
+    "and the joining point readable — the 20cm tip a hand's width from the anus, the GAP visible, NOT in. "
+    "Not a mouth crop at the end. Zoom and angle change inside this one take are OK. "
+    "No hard cut. Do not start insertion."
+)
+PREP_MARK = "ANAL PREP:"
+ORAL_FROM_INSERT_SITS = frozenset(
+    {"oral", "oral_creampie", "futa_blowjob", "cunnilingus_futa"}
+)
+I2V_FROM_ORAL_INSERT_LINE = (
+    "I2V FROM ORAL: Picture 1 may be a mouth crop. Do not keep that camera. "
+    "PULL BACK or ORBIT off the mouth to this clip's anal joining-point angle. "
+    "Same people, same place, same lighting. Natural motion into ANAL PREP then INSERTION ON CAMERA. "
+    "Not a continued blowjob. Not a mouth crop at the end."
+)
+I2V_JOIN_CAM_LINE = (
+    "I2V JOIN CAMERA: Picture 1 may be a face, mouth crop, or two-shot. Do not keep that camera. "
+    "PULL BACK or ORBIT to a close joining-point angle on penis-in-anus. "
+    "Same people, same place, same lighting. Natural motion into this clip's anal joining-point action. "
+    "Not a continued blowjob. Not a mouth crop. Not a face two-shot at the end."
+)
+JOIN_CAM_LINE = (
+    "JOIN CAMERA: Close on the joining point — the erect 20cm inside the anus, "
+    "rim and shaft readable in frame. Not a face two-shot. Not a mouth crop. "
+    "Not a medium full-body. Not a crotch-avoiding wide. "
+    "If the starting frame is a face or mouth, PULL BACK or ORBIT to the join. "
+    "Stay on the join for the take."
+)
+SAME_CLIP_INSERT_LINE = (
+    "TIMELINE: 0.0-1.5s unique quoted speech, one time only, conversational pace. "
+    "The written kiss or quoted lines only (mouths visible only while speaking). "
+    "Brief hip align at the anus. Do not repeat. Do not restart. Do not stretch the words to fill time. "
+    "1.5-10.0s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+    "Close on the joining point for the rest of the take. "
+    "Not a face two-shot. Not a mouth crop. No climax. Mouths stay closed except the act. "
+    "No more quoted speech. No replay. Do not freeze."
+)
+ANAL_HOLE_IDLE_LINE = (
+    "ANAL HOLE LOCK: Unused pussy stays shut, not spread, not gaping, not entered. "
+    "WHITE goo comes OUT OF THE ANUS only. Semen does not come out of the vagina. "
+    "Not a vaginal creampie."
+)
+_REAR_ANAL_POSE_RE = re.compile(
+    r"standing anal|STANDING anal|bent forward|all fours|on all fours|"
+    r"from behind|kneeling behind|accepting standing pose|"
+    r"facing away|reverse (sitting|cowgirl)|giver from behind",
+    re.I,
+)
+_FRONT_ANAL_POSE_RE = re.compile(
+    r"on her back|on the back|missionary|M-shape|M-spread|M字|"
+    r"between the open thighs|face to face|facing the giver|"
+    r"sitting on the lap facing",
+    re.I,
+)
+_SIDE_ANAL_POSE_RE = re.compile(
+    r"on her side|on their sides|both on their sides",
+    re.I,
+)
+_ANAL_ALREADY_OUT_RE = re.compile(
+    r"pulled out|pulls OUT|Sex ends|comes apart|pulled out just before",
+    re.I,
+)
+_ANAL_AFTERGLOW_RE = re.compile(
+    r"afterglow|WHITE goo overflowing OUT OF THE ANUS|No new insertion",
+    re.I,
+)
+TALK_THEN_INSERT_MARK = "TALK THEN INSERT:"
+KISS_THEN_INSERT_MARK = "KISS THEN INSERT:"
+PACO_MARK = "PACO-PACO:"
+AFTER_ACT_TALK_MARK = "AFTER ACT TALK:"
+ANAL_PACO_LINE = (
+    "PACO-PACO: Erect 20cm pistons the anus. Pull out until only the glans remains at the rim, "
+    "then slam in to the BASE. Repeat that in-and-out the whole 10-second take. "
+    "Not out of the hole completely. Not a shallow rub. Not vaginal. Not oral."
+)
+ANAL_ECSTASY_LINE = (
+    "ANAL ECSTASY: Both women look extremely good, wrecked ecstasy, not blank. "
+    "Flushed, eyes half-closed, mouths open, brows knit. A little saliva drools from both mouths "
+    "because it feels too good. Loud leaked female moans from both, not words. Not a work mask."
 )
 _SEX_ENTRY_RE = re.compile(r"INSERTION ON CAMERA|Show the entry", re.I)
 _SEX_PULL_OUT_RE = re.compile(
@@ -3763,6 +4248,15 @@ def sex_inside_hole(text: str, *, situation: str = "") -> str:
     return "pussy"
 
 
+def talks_then_insert(text: str) -> bool:
+    raw = str(text or "")
+    return TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw or AFTER_ACT_TALK_MARK in raw
+
+
+def has_paco(text: str) -> bool:
+    return PACO_MARK in str(text or "")
+
+
 def lock_penis_inside(text: str, *, situation: str = "") -> str:
     """Stop H3 from showing sex beside / rubbing / not in / soft."""
     raw = str(text or "")
@@ -3771,10 +4265,15 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
     sit = str(situation or "").strip()
     if sit not in SEX_INSIDE_SITUATIONS:
         return raw
-    if _SEX_PULL_OUT_RE.search(raw):
+    if _SEX_PULL_OUT_RE.search(raw) and PACO_MARK not in raw:
         return raw
-    if _SEX_ENTRY_RE.search(raw):
-        line = INSIDE_ENTRY_LINE
+    if PACO_MARK in raw:
+        line = INSIDE_PACO_LINE
+    elif _SEX_ENTRY_RE.search(raw):
+        if sit in SEX_ANAL_SITUATIONS or sex_inside_hole(raw, situation=sit) == "anus":
+            line = INSIDE_ENTRY_ANAL_LINE
+        else:
+            line = INSIDE_ENTRY_LINE
     elif sex_inside_hole(raw, situation=sit) == "anus":
         line = INSIDE_ANAL_LINE
     else:
@@ -3783,14 +4282,20 @@ def lock_penis_inside(text: str, *, situation: str = "") -> str:
 
 
 ANAL_CREAMPIE_LINE = (
-    "ANAL CREAMPIE: Rei's erect 20cm stays in Aya's ANUS. "
+    "ANAL CREAMPIE: The erect 20cm stays in the receiver's ANUS. "
     "She ejaculates INTO the ANUS. WHITE goo overflows OUT OF THE ANUS around the shaft. "
-    "Aya's unused pussy does NOT leak semen. Semen does not come out of the vagina. "
-    "Not a vaginal creampie."
+    "The unused pussy does NOT leak semen. It stays shut, not spread, not gaping. "
+    "Semen does not come out of the vagina. Not a vaginal creampie."
 )
 _ANAL_CREAMPIE_CUE_RE = re.compile(
     r"ejaculat|cums inside|cums into|pumps WHITE|WHITE goo|"
     r"anal creampie|overflows OUT OF THE ANUS|overflows out of the anus",
+    re.I,
+)
+
+
+_ANAL_NO_CLIMAX_RE = re.compile(
+    r"no ejaculation|nothing has come out yet|no climax this clip",
     re.I,
 )
 
@@ -3803,9 +4308,433 @@ def lock_anal_creampie(text: str, *, situation: str = "") -> str:
     sit = str(situation or "").strip()
     if sit not in SEX_ANAL_SITUATIONS:
         return raw
+    if _ANAL_NO_CLIMAX_RE.search(raw) and not re.search(r"ejaculates INTO", raw):
+        return raw
     if not _ANAL_CREAMPIE_CUE_RE.search(raw):
         return raw
     return _inject_before_soundscape(raw, ANAL_CREAMPIE_LINE)
+
+
+def anal_anatomy_view(text: str) -> str:
+    """Where the anus sits in this camera: rear (upper), front/M-spread (lower), or side."""
+    raw = str(text or "")
+    if not raw:
+        return ""
+    rear_hard = bool(
+        re.search(
+            r"all fours|bent forward|STANDING anal|from behind|facing away",
+            raw,
+            re.I,
+        )
+    )
+    if _FRONT_ANAL_POSE_RE.search(raw) and not rear_hard:
+        return "front"
+    if _SIDE_ANAL_POSE_RE.search(raw) and not rear_hard:
+        return "side"
+    if _REAR_ANAL_POSE_RE.search(raw) or re.search(r"\bdoggy\b", raw, re.I):
+        return "rear"
+    return ""
+
+
+def lock_anal_hole(
+    text: str,
+    *,
+    situation: str = "",
+    prev_situation: str | None = None,
+    next_prompt: str | None = None,
+) -> str:
+    """Anal clips: penis in anus only. Unused pussy closed. Hole order follows the pose.
+
+    Rear: upper hole is anus. Missionary / M-spread: lower hole is anus.
+    After the penis leaves, WHITE goo leaks from the open anus, never the pussy.
+    Kiss/talk-then-insert clips often omit the pose; inherit the view from the next PACO.
+    """
+    raw = str(text or "")
+    if not raw:
+        return raw
+    sit = str(situation or "").strip()
+    prev = str(prev_situation or "").strip()
+    is_anal_act = sit in SEX_ANAL_SITUATIONS
+    afterglow = (not is_anal_act) and (
+        bool(_ANAL_AFTERGLOW_RE.search(raw))
+        or (prev in SEX_ANAL_SITUATIONS and bool(_ANAL_ALREADY_OUT_RE.search(raw)))
+    )
+    if not is_anal_act and not afterglow:
+        return raw
+    out = raw
+    hole_line = ANAL_HOLE_LOCK_LINE if is_anal_act else ANAL_HOLE_IDLE_LINE
+    if "ANAL HOLE LOCK:" not in out:
+        out = _inject_before_soundscape(out, hole_line)
+    if is_anal_act and "ANAL ANATOMY:" not in out:
+        out = _inject_before_soundscape(out, ANAL_ANATOMY_LINE)
+    if is_anal_act:
+        view = anal_anatomy_view(out)
+        if not view:
+            view = anal_anatomy_view(str(next_prompt or ""))
+        if view == "rear" and "REAR ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_REAR_LOCK_LINE)
+        elif view == "front" and "FRONT ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_FRONT_LOCK_LINE)
+        elif view == "side" and "SIDE ANAL LOCK:" not in out:
+            out = _inject_before_soundscape(out, ANAL_SIDE_LOCK_LINE)
+    pulled = bool(_ANAL_ALREADY_OUT_RE.search(out)) or (
+        afterglow and "No new insertion" in out
+    )
+    if pulled and PACO_MARK not in out and "ANAL PULL-OUT:" not in out:
+        out = _inject_before_soundscape(out, ANAL_PULLOUT_LEAK_LINE)
+    return out
+
+
+def clip_is_anal_insert(prompt: str, situation: str = "") -> bool:
+    """True for the clip that starts anal entry. PACO / creampie / already-in is not this."""
+    raw = str(prompt or "")
+    if not raw:
+        return False
+    if PACO_MARK in raw or has_paco(raw) or "Already in. Piston" in raw:
+        return False
+    sit = str(situation or "").strip()
+    marked = "INSERTION ON CAMERA" in raw
+    if not marked and re.search(r"Show the entry", raw, re.I):
+        marked = not re.search(r"do not show the entry|don't show the entry", raw, re.I)
+    if marked:
+        if sit in SEX_ANAL_SITUATIONS:
+            return True
+        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I))
+    # Creampie JSON says "ejaculates INTO the ANUS" — that is climax, not entry.
+    if _ANAL_CREAMPIE_CUE_RE.search(raw):
+        return False
+    if re.search(r"already in|already inside|still already in", raw, re.I):
+        return False
+    if sit in SEX_ANAL_SITUATIONS:
+        return bool(re.search(r"into (the |her |[A-Za-z]+'s )?anus", raw, re.I))
+    return False
+
+
+def _first_paco_index(clips: list[dict[str, Any]]) -> int | None:
+    insert_at: int | None = None
+    for i, clip in enumerate(clips):
+        if clip_is_anal_insert(str(clip.get("prompt") or ""), str(clip.get("situation") or "")):
+            insert_at = i
+            break
+    if insert_at is None:
+        return None
+    for j in range(insert_at + 1, len(clips)):
+        sit = str(clips[j].get("situation") or "")
+        prompt = str(clips[j].get("prompt") or "")
+        if sit not in SEX_ANAL_SITUATIONS:
+            continue
+        if clip_is_anal_insert(prompt, sit):
+            continue
+        return j
+    return None
+
+
+def clip_wants_thumbinbutt(
+    story: dict[str, Any],
+    idx: int,
+    *,
+    thumb_in_butt: bool = False,
+    mode: str | None = None,
+) -> bool:
+    if not thumb_in_butt:
+        return False
+    clips = list(story.get("clips") or [])
+    if idx < 0 or idx >= len(clips):
+        return False
+    sid = str(story.get("id") or "")
+    if sid in TIB_SKIP_STORY_IDS:
+        return False
+    mode_key = str(mode or story.get("mode") or "").strip().lower()
+    if mode_key == "r2v" and idx == 0:
+        return False
+    if story.get("use_cast_ref") and idx == 0:
+        return False
+    clip = clips[idx]
+    sit = str(clip.get("situation") or "")
+    prompt = str(clip.get("prompt") or "")
+    nxt = clips[idx + 1] if idx + 1 < len(clips) else None
+    next_insert = False
+    if nxt is not None:
+        next_insert = clip_is_anal_insert(
+            str(nxt.get("prompt") or ""), str(nxt.get("situation") or "")
+        )
+    if sit in TIB_SKIP_SITUATIONS and not next_insert:
+        return False
+    if next_insert:
+        return True
+    if clip_is_anal_insert(prompt, sit):
+        return True
+    return idx == _first_paco_index(clips)
+
+
+def apply_thumbinbutt_stack(
+    stack: list[dict[str, Any]] | None,
+    on: bool = False,
+    *,
+    thumb_in_butt: bool | None = None,
+) -> list[dict[str, Any]]:
+    rows = [dict(r) for r in (stack or [])]
+    enabled = bool(on) if thumb_in_butt is None else bool(thumb_in_butt)
+    if not enabled:
+        return rows
+    if any(str(r.get("id") or "") == TIB_LORA_ID for r in rows):
+        for row in rows:
+            if str(row.get("id") or "") == TIB_LORA_ID:
+                row["trigger"] = ""
+                row.setdefault("strength", TIB_STRENGTH)
+                row.setdefault("strength_model", TIB_STRENGTH)
+                row["filename"] = TIB_FILE
+                row["lora_name"] = TIB_FILE
+        return rows
+    helper_n = sum(1 for r in rows if str(r.get("role") or "") == "helper")
+    if helper_n >= TIB_MAX_HELPERS:
+        rows = [r for r in rows if str(r.get("id") or "") not in TIB_EVICT_IDS]
+        helper_n = sum(1 for r in rows if str(r.get("role") or "") == "helper")
+        if helper_n >= TIB_MAX_HELPERS:
+            return rows
+    rows.append(
+        {
+            "id": TIB_LORA_ID,
+            "role": "helper",
+            "strength": TIB_STRENGTH,
+            "strength_model": TIB_STRENGTH,
+            "trigger": "",
+            "filename": TIB_FILE,
+            "lora_name": TIB_FILE,
+        }
+    )
+    return rows
+
+
+resolve_thumb_in_butt = parse_thumb_in_butt
+resolve_split_scene = compose_scene_choice
+inject_thumb_in_butt = apply_thumbinbutt_stack
+clip_wants_thumb_in_butt = clip_wants_thumbinbutt
+
+FREEFORM_LORA_KEEP = "シーンのまま"
+FREEFORM_LORA_PICK = "手で選ぶ"
+FREEFORM_LORA_TURBO = "Turboだけ"
+FREEFORM_ACT_LORA_IDS = ("blowjob-h3", "doggy-h3", "missionary-pov-h3")
+FREEFORM_PICK_MAP = {
+    "mystic": "mystic-xxx-h3",
+    "penis": "penis-lora-h3",
+    "pussy": "synth-pussy-h3",
+    "blowjob": "blowjob-h3",
+    "doggy": "doggy-h3",
+    "missionary": "missionary-pov-h3",
+}
+FREEFORM_ACT_EXIT = "行為LoRAはフェラ／四つん這いandgs／正常位から1つまで。"
+FREEFORM_MISSING_HINT = "②でその部品を入れる"
+
+
+def is_turbo_lora_id(lora_id: str | None) -> bool:
+    n = str(lora_id or "").lower()
+    return "turbo" in n or "lightx2v" in n or "larry" in n
+
+
+def should_apply_freeform_lora_picks(
+    prompt: str | None,
+    *,
+    using_story: bool = False,
+) -> bool:
+    """文章あり、かつ物語パック／STORY JSON を使っていないときだけフリー文の部品を当てる。"""
+    if using_story:
+        return False
+    return not is_blank_prompt(prompt)
+
+
+def picked_freeform_lora_ids(
+    *,
+    mystic: bool = True,
+    penis: bool = True,
+    pussy: bool = True,
+    blowjob: bool = False,
+    doggy: bool = False,
+    missionary: bool = False,
+) -> list[str]:
+    flags = (
+        ("mystic", mystic),
+        ("penis", penis),
+        ("pussy", pussy),
+        ("blowjob", blowjob),
+        ("doggy", doggy),
+        ("missionary", missionary),
+    )
+    return [FREEFORM_PICK_MAP[key] for key, on in flags if on]
+
+
+def filter_freeform_lora_stack(
+    stack: list[dict[str, Any]] | None,
+    *,
+    mode: str | None = None,
+    picked_ids: list[str] | None = None,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """フリー文の部品。シーンのまま／Turboだけ／手で選ぶ。Turbo は手で選ぶでも残す。"""
+    rows = [dict(r) for r in (stack or [])]
+    raw_mode = str(mode or FREEFORM_LORA_KEEP).strip() or FREEFORM_LORA_KEEP
+    if raw_mode == FREEFORM_LORA_KEEP:
+        return rows, []
+    if raw_mode == FREEFORM_LORA_TURBO:
+        return [r for r in rows if is_turbo_lora_id(str(r.get("id") or ""))], []
+    if raw_mode != FREEFORM_LORA_PICK:
+        return rows, []
+    picked = [str(x).strip() for x in (picked_ids or []) if str(x).strip()]
+    acts = [lid for lid in picked if lid in FREEFORM_ACT_LORA_IDS]
+    if len(set(acts)) > 1:
+        raise SystemExit(FREEFORM_ACT_EXIT)
+    present = {str(r.get("id") or "") for r in rows}
+    missing = [lid for lid in picked if lid not in present]
+    keep = set(picked)
+    out = [
+        r
+        for r in rows
+        if is_turbo_lora_id(str(r.get("id") or "")) or str(r.get("id") or "") in keep
+    ]
+    return out, missing
+
+
+def default_lora_dir(*hints: Path | str | None) -> Path | None:
+    """Drive or Comfy models/loras. Missing dirs are skipped so tests stay file-less."""
+    for raw in hints:
+        if not raw:
+            continue
+        path = Path(raw)
+        if path.is_dir():
+            return path
+    for cand in (
+        Path("/content/ComfyUI/models/loras"),
+        Path("/content/drive/MyDrive/minimax-h3-comfyui/models/loras"),
+    ):
+        if cand.is_dir():
+            return cand
+    return None
+
+
+def apply_anal_any_stack(
+    stack: list[dict[str, Any]] | None,
+    *,
+    situation: str = "",
+    lora_dir: Path | str | None = None,
+    prompt: str = "",
+) -> list[dict[str, Any]]:
+    """If Drive has anal-any-h3, it becomes the anal act. Penis stays a helper. Missing = no-op."""
+    rows = [dict(r) for r in (stack or [])]
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS and not clip_is_anal_insert(prompt, sit):
+        return rows
+    if any(str(r.get("id") or "") == ANAL_ANY_LORA_ID for r in rows):
+        for row in rows:
+            if str(row.get("id") or "") != ANAL_ANY_LORA_ID:
+                continue
+            row["role"] = "act"
+            row["trigger"] = ANAL_ANY_TRIGGER
+            row.setdefault("strength", ANAL_ANY_STRENGTH)
+            row.setdefault("strength_model", ANAL_ANY_STRENGTH)
+            row["filename"] = str(row.get("filename") or ANAL_ANY_FILE)
+            row["lora_name"] = str(row.get("lora_name") or row["filename"])
+        return rows
+    root = default_lora_dir(lora_dir)
+    if root is None:
+        return rows
+    rel = resolve_lora_relname(root, ANAL_ANY_FILE)
+    if not rel:
+        return rows
+    for row in rows:
+        if str(row.get("id") or "") == "penis-lora-h3" and str(row.get("role") or "") == "act":
+            row["role"] = "helper"
+    insert_at = 0
+    for i, row in enumerate(rows):
+        if str(row.get("role") or "") == "concept":
+            insert_at = i + 1
+            break
+    rows.insert(
+        insert_at,
+        {
+            "id": ANAL_ANY_LORA_ID,
+            "role": "act",
+            "strength": ANAL_ANY_STRENGTH,
+            "strength_model": ANAL_ANY_STRENGTH,
+            "trigger": ANAL_ANY_TRIGGER,
+            "filename": rel,
+            "lora_name": rel,
+            "turbo": False,
+        },
+    )
+    return rows
+
+
+def lock_anal_prep(
+    text: str,
+    *,
+    next_is_insert: bool = False,
+    same_clip_insert: bool = False,
+    situation: str = "",
+) -> str:
+    """Prep beat: both settle the accepting pose, tip a hand's width, NOT in. No entry yet."""
+    raw = str(text or "")
+    if not raw or PREP_MARK in raw:
+        return raw
+    if has_paco(raw):
+        return raw
+    if not same_clip_insert:
+        same_clip_insert = TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw
+    # Same-clip kiss/talk insert: joining-point wins. PREP stays on the previous clip.
+    if same_clip_insert:
+        return raw
+    if next_is_insert:
+        return _inject_before_soundscape(raw, ANAL_PREP_LINE)
+    return raw
+
+
+def lock_i2v_from_oral_insert(text: str) -> str:
+    """Last-frame I2V after a mouth crop must orbit to the anal joining point."""
+    raw = str(text or "")
+    if not raw or I2V_FROM_ORAL_INSERT_LINE in raw:
+        return raw
+    return _inject_before_soundscape(raw, I2V_FROM_ORAL_INSERT_LINE)
+
+
+def lock_i2v_join_camera(text: str) -> str:
+    """Last-frame I2V into anal sex must not keep a face/mouth/two-shot camera."""
+    raw = str(text or "")
+    if not raw or I2V_JOIN_CAM_LINE in raw:
+        return raw
+    return _inject_before_soundscape(raw, I2V_JOIN_CAM_LINE)
+
+
+def lock_join_camera(text: str, *, situation: str = "") -> str:
+    """Insert and already-in anal clips stay close on penis-in-anus."""
+    raw = str(text or "")
+    if not raw or "JOIN CAMERA:" in raw:
+        return raw
+    sit = str(situation or "").strip()
+    if sit not in SEX_ANAL_SITUATIONS and not clip_is_anal_insert(raw, sit):
+        return raw
+    if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw and PACO_MARK not in raw:
+        return raw
+    return _inject_before_soundscape(raw, JOIN_CAM_LINE)
+
+
+def same_clip_insert_timeline(duration_s: float = 10.0) -> str:
+    """Kiss/talk then entry in one 10s take: 0-1.5 speech, 1.5-10 joining-point insertion."""
+    try:
+        dur = float(duration_s or 10.0)
+    except (TypeError, ValueError):
+        dur = 10.0
+    if dur <= 0:
+        dur = 10.0
+    if abs(dur - 10.0) < 0.01:
+        return SAME_CLIP_INSERT_LINE
+    speak_end = min(1.5, max(0.8, dur * 0.15))
+    return (
+        f"TIMELINE: 0.0-{speak_end:.1f}s unique quoted speech, one time only, conversational pace. "
+        "The written kiss or quoted lines only (mouths visible only while speaking). "
+        "Brief hip align at the anus. Do not repeat. Do not restart. Do not stretch the words to fill time. "
+        f"{speak_end:.1f}-{dur:.1f}s INSERTION ON CAMERA into the anus, glans then shaft to the BASE. "
+        "Close on the joining point for the rest of the take. "
+        "Not a face two-shot. Not a mouth crop. No climax. Mouths stay closed except the act. "
+        "No more quoted speech. No replay. Do not freeze."
+    )
 
 
 def lock_futa_shaft(text: str, *, force: bool = False) -> str:
@@ -4230,6 +5159,10 @@ def apply_phone_act_locks(text: str, *, situation: str = "", pose: str = "") -> 
     out = lock_genital_pee(out, situation=situation)
     out = lock_scat_act(out, situation=situation)
     out = lock_penis_inside(out, situation=situation)
+    out = lock_anal_creampie(out, situation=situation)
+    out = lock_anal_hole(out, situation=situation)
+    out = lock_anal_prep(out, situation=situation)
+    out = lock_join_camera(out, situation=situation)
     out = lock_act_sfx(out, situation=situation)
     if sit in ORAL_SUCK_SITUATIONS:
         out = lock_oral_camera(out, situation=sit)
@@ -4312,6 +5245,8 @@ EROTIC_WAIT_LINE = (
     "Leftover only, after the written beat and after the last unique quoted line, "
     "and only with a free hand or a free mouth that does not change pose: "
     "kisses on the mouth and/or breasts plus skinship so the same Japanese line is not spoken twice or three times; "
+    "knead the partner's breasts; pump the erect 20cm and the hairless pussy; "
+    "rub bodies together while tongue-kissing when both mouths are free and this clip does not forbid a kiss; "
     "a SEDUCTIVE SMILE if the face is allowed to change; "
     "light self-touch on her own breasts, her own hairless pussy, or her own unused erect 20cm; "
     "light partner-touch on breasts, a hairless pussy, or an unused erect 20cm when they are already close enough; "
@@ -4426,6 +5361,10 @@ def lock_pleasure_face(text: str, *, situation: str = "") -> str:
         if "PLEASURE FACE:" in raw:
             return raw
         return _inject_before_soundscape(raw, PLEASURE_JUPO_LINE)
+    if sit in {"futa_anal", "anal_penetration"}:
+        if "ANAL ECSTASY:" in raw:
+            return raw
+        return _inject_before_soundscape(raw, ANAL_ECSTASY_LINE)
     if sit in {"futa_sex", "doggy", "riding", "cunnilingus_futa"}:
         if "PLEASURE FACE:" in raw:
             return raw
@@ -4516,30 +5455,32 @@ SEMEN_SHARE_SKIP = frozenset({
     "back-wash-60s",
     "lecture-desk-50s",
     "semen-bath-70s",
+    "bath-120s",
+    "dinner-120s",
+    "futon-120s",
+    "okaeri-120s",
+    "lecture-120s",
+    "dishes-90s",
+    "cafe-100s",
+    "checkup-100s",
+    "clinic-75s",
+    "meat-wall-85s",
+    "meat-wall-cesspit-70s",
+    "homecoming-90s",
+    "sales-visit-60s",
+    "train-sales-80s",
+    "anal-p2-bj-anal",
+    "anal-p3-meet-anal",
 })
 # story_id -> (clip_index, mode). silent_next = drop blowjob LoRA. after_speech = keep the line.
 # on_cumouf = last seconds of the CUMOUF clip (next speaker is a third person / driving / job).
 # on_back = 口移し while the partner STAYS LYING ON THEIR BACK (do not stand them).
 SEMEN_SHARE_BY_STORY: dict[str, list[tuple[int, str]]] = {
-    "bath-120s": [(10, "silent_next")],
-    "dinner-120s": [(10, "silent_next")],
-    "futon-120s": [(10, "silent_next")],
-    "okaeri-120s": [(8, "silent_next")],
-    "lecture-120s": [(7, "silent_next")],
-    "dishes-90s": [(11, "silent_next")],
-    "cafe-100s": [(9, "after_speech")],
-    "checkup-100s": [(8, "after_speech")],
-    "clinic-75s": [(8, "on_back")],
-    "meat-wall-85s": [(6, "after_speech")],
-    "meat-wall-cesspit-70s": [(6, "after_speech")],
-    "homecoming-90s": [(10, "after_speech")],
     "karaoke-50s": [(4, "after_speech")],
-    "sales-visit-60s": [(7, "after_speech")],
-    "train-sales-80s": [(7, "after_speech")],
     "engawa-120s": [(10, "on_cumouf")],
     "sunday-120s": [(10, "on_cumouf")],
     "last-stop-40s": [(2, "on_cumouf")],
-    "last-train-120s": [(3, "on_cumouf"), (9, "silent_next")],
+    "last-train-120s": [(3, "on_cumouf")],
     "red-light-50s": [(3, "on_cumouf")],
 }
 _REMAINING_SILENCE_RE = re.compile(
@@ -4555,6 +5496,14 @@ def semen_share_plan(story: dict[str, Any] | None) -> list[tuple[int, str]]:
     data = story or {}
     sid = str(data.get("id") or "").strip()
     if sid in SEMEN_SHARE_SKIP:
+        return []
+    if sid in ANAL_PATTERN_IDS:
+        if sid == "anal-p1-oral":
+            return [
+                (i, "on_cumouf")
+                for i, clip in enumerate(data.get("clips") or [])
+                if str(clip.get("situation") or "") == "oral_creampie"
+            ]
         return []
     if str(data.get("kind") or "") == "anthology":
         return [
@@ -4759,13 +5708,15 @@ _OPEN_MOUTH_WAIT_RE = re.compile(
 _WRITTEN_LEFTOVER_ACT_RE = re.compile(
     r"Remaining seconds[^.]*?(drops to her knees|takes the 20cm|jupo|"
     r"French kiss|SEPARATE|STANDS UP|mouth-to-mouth|light peck|light kiss|"
-    r"filthy wet|kisses on the mouth|kisses on the breasts)",
+    r"filthy wet|kisses on the mouth|kisses on the breasts|knead|tongue kiss|"
+    r"stroke the erect|pump the erect|rub bodies)",
     re.I,
 )
 LEFTOVER_KISS_BEAT = (
     "mouths closed. No more quoted speech. No replay. "
-    "Leftover: kisses on the mouth and/or breasts plus skinship "
-    "(hands on breasts, waist, hips). Do not say the same line again. Do not freeze."
+    "Leftover: a wet tongue kiss plus skinship "
+    "(kisses on the mouth and/or breasts; knead breasts, stroke whatever the women already have between their legs, rub bodies together). "
+    "Do not say the same line again. Do not freeze. NOT oral. NOT insertion."
 )
 
 
@@ -4773,6 +5724,26 @@ def leftover_timeline_beat(text: str, *, situation: str = "") -> str:
     """Silent leftover window after unique 「」. Kiss + skinship unless the written leftover is already an act."""
     sit = str(situation or "").strip()
     raw = str(text or "")
+    if AFTER_ACT_TALK_MARK in raw:
+        return (
+            "After the last unique quoted line: afterglow. Stay joined if still in. "
+            "No new insertion. No more quoted speech. No replay. Do not freeze."
+        )
+    if TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw:
+        return (
+            "0-1.5s written kiss or lines, brief hip align, "
+            "1.5-10s INSERTION ON CAMERA into the anus to the BASE, "
+            "close on the joining point. Both wrecked-ecstatic, loud moans, a little drool. No climax. "
+            "Mouths stay closed except the act. No more quoted speech. No replay. Do not freeze."
+        )
+    if PREP_MARK in raw and "INSERTION ON CAMERA" not in raw:
+        return (
+            "ANAL PREP: both settle the next anal pose together. Receiver accepting pose. "
+            "Giver hips aligned, hands on the waist. 20cm tip a hand's width from the anus, "
+            "not touching, NOT in. PULL BACK or ORBIT off the mouth crop so both bodies "
+            "and the gap are readable. Unused pussy shut. No entry. No extra walk. "
+            "No more quoted speech. No replay. Do not freeze."
+        )
     if sit in ACT_SITUATIONS:
         return "Do the written remaining beat. Bodies keep moving. Do not freeze."
     if _KISS_FORBID_RE.search(raw) or _OPEN_MOUTH_WAIT_RE.search(raw):
@@ -4798,7 +5769,18 @@ def speech_timeline_line(text: str, *, duration_s: float = 10.0, situation: str 
         dur = 10.0
     sit = str(situation or "").strip()
     lines = unique_spoken_lines(text)
-    if sit in ACT_SITUATIONS or not lines:
+    if talks_then_insert(text) and AFTER_ACT_TALK_MARK not in text:
+        return same_clip_insert_timeline(dur)
+    if PREP_MARK in text and "INSERTION ON CAMERA" not in text and not lines:
+        prep_start = max(dur - 4.0, dur * 0.6)
+        return (
+            f"TIMELINE: 0.0-{prep_start:.1f}s the written act. "
+            f"{prep_start:.1f}-{dur:.1f}s ANAL PREP: both settle the next pose, "
+            "20cm tip a hand's width from the anus, NOT in. PULL BACK or ORBIT off the mouth crop. "
+            "No entry. "
+            "No quoted speech. No lip-sync words. No replay. Do not freeze."
+        )
+    if (sit in ACT_SITUATIONS and not talks_then_insert(text)) or not lines:
         return (
             f"TIMELINE: 0.0-{dur:.1f}s one unbroken take. The written beat fills the whole take. "
             "No quoted speech. No lip-sync words. No replay. Do not freeze."
@@ -4900,9 +5882,15 @@ def drop_speech_face_killers(
     return out
 
 
+# Soundscape-only Japanese moans. H3 should vocalize these; they are not leftover dialogue.
+_MOAN_OUTSIDE_QUOTES_RE = re.compile(r"んっ|はぁー|はぁ|あっ")
+
+
 def jp_outside_quotes(text: str) -> str:
     """Japanese script left after stripping 「」. A lock line must return empty."""
-    return "".join(_JP_SCRIPT_RE.findall(_SPOKEN_RE.sub("", str(text or ""))))
+    stripped = _SPOKEN_RE.sub("", str(text or ""))
+    stripped = _MOAN_OUTSIDE_QUOTES_RE.sub("", stripped)
+    return "".join(_JP_SCRIPT_RE.findall(stripped))
 
 
 # Longest first. Applied only outside 「」 so spoken lines stay Japanese.
@@ -4912,6 +5900,8 @@ _JP_PROMPT_GLOSSARY = (
     ("身を胸につける", "presses her body flush against the chest"),
     ("ジュボフェラ", "deep jupo blowjob"),
     ("シコシコオナニー", "stroking the erect penis"),
+    ("シコシコ", "stroking"),
+    ("コシコシ", "hip grinding"),
     ("ハチコウ前", "in front of Hachiko"),
     ("ハチ公前", "in front of Hachiko"),
     ("黄色い水", "yellow urine"),
@@ -4921,7 +5911,6 @@ _JP_PROMPT_GLOSSARY = (
     ("ジュボ側", "woman who was sucking"),
     ("イキ顔", "climax face"),
     ("画面右手", "camera right"),
-    ("シコシコ", "stroking"),
     ("ハチコウ", "Hachiko"),
     ("ハチ公", "Hachiko"),
     ("洋式便座", "western toilet"),
@@ -5022,7 +6011,7 @@ CUNNI_ACT_SFX = (
     "Wet tongue licks on the pussy, saliva slurp, leaked female moans, hitching breath."
 )
 SEX_ACT_SFX = (
-    "Wet filthy thrusting, leaked female moans, hitching breath."
+    "Wet filthy thrusting, loud leaked female moans from both, hitching breath, a little drool."
 )
 URINE_ACT_SFX = (
     "Hiss of a yellow urine stream leaving the urethral opening at the glans tip. "
@@ -5052,6 +6041,8 @@ def lock_act_silent(text: str, *, situation: str = "") -> str:
     raw = str(text or "")
     sit = str(situation or "").strip()
     if not raw or sit not in ACT_SITUATIONS:
+        return raw
+    if talks_then_insert(raw):
         return raw
     out = _SPOKEN_RE.sub("", raw)
     out = strip_lipsync_speech_meta(out)
@@ -5403,7 +6394,7 @@ _CAST_DEF = {
     ),
     "Saleswoman": (
         "Saleswoman: Adult Japanese woman, 25, door-to-door water saleswoman, short black bob hair, "
-        "medium breasts, slim waist, fully nude except a small name badge on a neck strap. "
+        "medium breasts, slim waist, fully nude except a hat on her head and a small name badge on a neck strap. "
         "Clear futanari. Erect 20cm, pale shaft, pink glans, no testicles, no scrotum. "
         "Hairless female pussy at the base of the shaft where a scrotum would be. "
         "Penis plus vagina, never balls."
@@ -5837,6 +6828,9 @@ def generate_immoral_shorts() -> dict[str, Any]:
         )
         prompt = lock_pleasure_face(prompt, situation=sit)
         prompt = lock_penis_inside(prompt, situation=sit)
+        prompt = lock_anal_creampie(prompt, situation=sit)
+        prompt = lock_anal_hole(prompt, situation=sit)
+        prompt = lock_anal_prep(prompt, situation=sit)
         prompt = lock_pleasure_voice_and_wait(prompt, situation=sit)
         if sit == "oral_creampie":
             prompt = lock_semen_share_kiss(inject_semen_share_into_prompt(prompt, where="on_cumouf"))
@@ -5945,9 +6939,9 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
         if situation not in HMMOTION_SITUATIONS and has_hmmotion:
             errors.append(f"clip {n}: hmmotion is only for the AIO sex clip, not {situation}")
         if situation in ACT_SITUATIONS:
-            if lines:
+            if lines and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: act situation {situation} must not speak")
-            if "LIP SYNC" in prompt:
+            if "LIP SYNC" in prompt and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: act situation {situation} must not lip-sync")
             if situation in {"oral", "oral_creampie", "cunnilingus_futa"} and "Full bodies from head to feet" in prompt:
                 errors.append(f"clip {n}: oral/cunni clip must not be a full-body wide")
@@ -5979,7 +6973,7 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
                     if "ORAL LOCK:" in oral and "to the BASE" not in oral and "at the BASE" not in oral:
                         errors.append(f"clip {n}: jupo / 口内 must be deep to the BASE, not a tip suck")
         if lines:
-            if situation != "futa_visible":
+            if situation != "futa_visible" and not talks_then_insert(prompt):
                 errors.append(f"clip {n}: spoken lines only on futa_visible face clips")
             if "LIP SYNC" not in prompt:
                 errors.append(f"clip {n}: spoken line needs LIP SYNC on a visible mouth")
@@ -6013,14 +7007,16 @@ def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
         prompt = str(clips[i].get("prompt") or "")
         p = prompt.lower()
         n = i + 1
-        if nxt in {"futa_sex", "doggy"}:
+        if nxt in {"futa_sex", "doggy", "futa_anal", "riding"}:
+            if talks_then_insert(prompt) or "INSERTION ON CAMERA" in prompt:
+                continue
             if "already in" in p or "already inside" in p:
                 errors.append(f"clip {n}: sex setup clip must not already be inside")
             if "hand's width" not in p:
                 errors.append(f"clip {n}: sex setup clip must end a hand's width from insertion")
             if "not in" not in p:
                 errors.append(f"clip {n}: sex setup clip must say NOT in")
-            if not any(k in p for k in ("accepting", "hips back", "knees apart")):
+            if not any(k in p for k in ("accepting", "hips back", "knees apart", "all fours", "bent forward", "on her back", "straddling", "on the lap")):
                 errors.append(f"clip {n}: sex setup clip must end in an accepting pose")
         elif nxt in {"oral", "oral_creampie"}:
             if "already oral" in p or "already at the base" in p:
@@ -6039,10 +7035,867 @@ def addon_pose_prep_errors(story: dict[str, Any]) -> list[str]:
     return errors
 
 
-def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[str, Any]:
+_ANAL_POSE_SPEC = {
+    "standing": {
+        "lock": "STANDING anal from behind. Bent forward. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = STANDING, bent forward, both hands on a hold, hips back, knees soft, "
+            "accepting standing pose, RECEIVER. Mini breasts. NO penis."
+        ),
+        "give": "Rei = STANDING behind, GIVER from behind. Hands on the waist. Erect 20cm.",
+        "accepting": "bent forward, hips back, accepting standing pose",
+        "camera": "close-up on the joining point from behind and the side, standing, bent forward. Not a full-body wide.",
+        "face": "FACE LOCK: Bent forward is Aya. Behind is Rei. Faces never swap.",
+    },
+    "doggy": {
+        "lock": "Already on all fours. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = already on all fours, RECEIVER. Hands on the floor. Mini breasts. NO penis. "
+            "Do not remount. Do not climb on. Do not turn to cowgirl."
+        ),
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "on all fours, hips back, accepting",
+        "camera": "close-up side view on the joining point, all fours from the side. Not a full-body wide.",
+        "face": "FACE LOCK: On all fours is Aya. Behind is Rei. Faces never swap.",
+    },
+    "cowgirl": {
+        "lock": "Receiver on top, reverse sitting on the lap, facing away. Anal only. Not vaginal.",
+        "recv": (
+            "Aya = already straddling, RECEIVER on top, facing away. Mini breasts. NO penis. "
+            "Do not remount. Do not climb on again. Do not turn to cowgirl LoRA."
+        ),
+        "give": "Rei = seated, GIVER. Erect 20cm. Hands on the waist. STAYS seated.",
+        "accepting": "already straddling, hips hovering, accepting",
+        "camera": "close-up on the joining point, reverse sitting on the lap. Not a full-body wide.",
+        "face": "FACE LOCK: On top facing away is Aya. Seated under is Rei. Faces never swap.",
+    },
+    "missionary": {
+        "lock": "On her back, knees apart. Anal only. Not vaginal. The LOWER hole toward the tailbone is the anus.",
+        "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
+        "accepting": "on her back, knees apart, accepting",
+        "camera": "close-up on the joining point, receiver on her back, knees apart. Not a full-body wide.",
+        "face": "FACE LOCK: On her back is Aya. Between the thighs is Rei. Faces never swap.",
+    },
+    "side": {
+        "lock": "Both on their sides. Anal only. Not vaginal. The hole toward the back / tailbone is the anus.",
+        "recv": "Aya = on her side, hips back, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = on her side behind, GIVER. Erect 20cm. Hands on the waist.",
+        "accepting": "on her side, hips back, accepting",
+        "camera": "close-up on the joining point, both on their sides. Not a full-body wide.",
+        "face": "FACE LOCK: In front is Aya. Behind is Rei. Faces never swap.",
+    },
+    "sitting": {
+        "lock": "Sitting on the lap, face to face. Anal only. Not vaginal. The hole toward the tailbone is the anus.",
+        "recv": "Aya = sitting on the lap facing the giver, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = seated, GIVER. Erect 20cm. Hands on the waist.",
+        "accepting": "sitting on the lap, knees apart, accepting",
+        "camera": "close-up on the joining point, sitting on the lap. Not a full-body wide.",
+        "face": "FACE LOCK: On the lap is Aya. Seated under is Rei. Faces never swap.",
+    },
+    "squat": {
+        "lock": "Receiver squatting, giver behind. Anal only. Not vaginal.",
+        "recv": "Aya = squatting, hips down, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "squatting, hips down, accepting",
+        "camera": "close-up on the joining point from behind, squat. Not a full-body wide.",
+        "face": "FACE LOCK: Squatting is Aya. Behind is Rei. Faces never swap.",
+    },
+    "kneeling": {
+        "lock": "Receiver kneeling, giver behind. Anal only. Not vaginal.",
+        "recv": "Aya = kneeling, hips back, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = kneeling behind, GIVER from behind. Erect 20cm. Hands on the waist.",
+        "accepting": "kneeling, hips back, accepting",
+        "camera": "close-up on the joining point from behind, kneeling. Not a full-body wide.",
+        "face": "FACE LOCK: Kneeling in front is Aya. Behind is Rei. Faces never swap.",
+    },
+    "pov": {
+        "lock": "On her back, knees apart. Anal only. Not vaginal. The LOWER hole toward the tailbone is the anus.",
+        "recv": "Aya = on her back, knees apart, accepting, RECEIVER. Mini breasts. NO penis.",
+        "give": "Rei = between the open thighs, GIVER. Erect 20cm.",
+        "accepting": "on her back, knees apart, accepting",
+        "camera": "close-up on the joining point, receiver on her back, knees apart. Not a full-body wide.",
+        "face": "FACE LOCK: On her back is Aya. Between the thighs is Rei. Faces never swap.",
+    },
+}
+
+_ANAL_LIP = (
+    "LIP SYNC: Faces large in the frame. Lips, jaw, and teeth stay visible and keep matching the quotes. "
+    "Aya speaks her Japanese line first, then Rei answers. Each mouth moves only on its own words. "
+    "Each line is conversational, not recited. After both lines: mouths close. Remaining seconds: "
+    "silence, but bodies keep moving. Do not freeze. Do not cover either mouth."
+)
+
+
+def _anal_pose_spec(pose: str) -> dict[str, str]:
+    key = str(pose or "").strip() or "standing"
+    if key not in _ANAL_POSE_SPEC:
+        key = "standing"
+    return _ANAL_POSE_SPEC[key]
+
+
+def generate_anal_pattern(
+    pattern_id: str,
+    *,
+    pose: str = "",
+    scene: str = "",
+) -> dict[str, Any]:
+    """③のアナル三択。JSON ではなくここで組む。体位欄は②③のアナル本だけに効く。"""
+    sid = str(pattern_id or "").strip()
+    if sid in SITUATION_JA:
+        sid = SITUATION_JA[sid]
+    if sid not in ANAL_PATTERN_IDS:
+        raise SystemExit(f"アナルの三択ではありません: {pattern_id}")
+    spec = _anal_pose_spec(pose)
+    env = str(scene or "").strip()
+    if is_blank_prompt(env):
+        env = "A quiet everyday Japanese room. Indoor. Soft daylight. No extra people."
+    else:
+        env = f"Place the two women in: {env}. Everyday adult setting."
+    title = ANAL_PATTERN_JA[sid]
+    pose_end = (
+        f"Then Aya takes the accepting pose: {spec['accepting']}. Rei stays with her. "
+        f"End pose: {spec['accepting']}. The 20cm tip a hand's width from Aya's anus, NOT in, not touching the hole."
+    )
+    cam_talk = (
+        "medium two-shot on both faces and shoulders while they speak. After the two lines, "
+        "a short kiss, then follow to the joining point for INSERTION ON CAMERA. "
+        "End on the penis in Aya's anus. Not a full-body wide."
+        if sid == "anal-p3-meet-anal"
+        else (
+            "medium two-shot on both faces and shoulders while they speak. After the two lines, "
+            "Aya kneels. End on Aya's open mouth a hand's width from Rei's glans. Not a full-body wide. "
+            "Not a crotch shot. Not already oral."
+        )
+    )
+    clips: list[dict[str, Any]] = []
+
+    def add_clip(
+        *,
+        cid: str,
+        label: str,
+        situation: str,
+        prefix: str,
+        who: str,
+        lock: str,
+        camera: str,
+        action: str,
+        sound: str,
+        start: str,
+    ) -> None:
+        prompt = _anthology_prompt(
+            prefix=prefix,
+            who=who,
+            present=("Aya", "Rei"),
+            environment=env,
+            lock=lock,
+            camera=camera,
+            action=action,
+            sound=sound,
+            canvas=CANVAS_9_16,
+        )
+        prompt = lock_scat_act(prompt, situation=situation)
+        prompt = lock_oral_in_mouth(
+            prompt,
+            situation=situation,
+            ending="share" if situation == "oral_creampie" else "",
+        )
+        prompt = lock_pleasure_face(prompt, situation=situation)
+        prompt = lock_penis_inside(prompt, situation=situation)
+        prompt = lock_anal_creampie(prompt, situation=situation)
+        prompt = lock_anal_hole(prompt, situation=situation)
+        prompt = lock_anal_prep(prompt, situation=situation)
+        prompt = lock_pleasure_voice_and_wait(prompt, situation=situation)
+        clips.append(
+            {
+                "id": cid,
+                "label": label,
+                "situation": situation,
+                "names": ["aya", "rei"],
+                "canvas": dict(CANVAS_9_16),
+                "start": start,
+                "duration_s": 10,
+                "prompt": prompt,
+            }
+        )
+
+    if sid == "anal-p1-oral":
+        add_clip(
+            cid="c1",
+            label="0-10 おくち、あけて",
+            situation="futa_visible",
+            prefix="Talk then mouth open. Insertion imminent for oral, not anal.",
+            who=(
+                "Aya = SPEAKS first, then kneels. Mini breasts. NO penis. Mouth opens toward the glans.\n"
+                "Rei = answers, STANDS. Erect 20cm readable. Receiver of oral, not yet in the mouth."
+            ),
+            lock=(
+                "Clip 1 of 4. Talk then kneel. Lip-sync. One line each. Mouth open. "
+                "Tip a hand's width from the lips, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「おくち、あけて」. Rei: 「んっ、はい」. Remaining seconds, silence: Aya kneels. "
+                "Mouth open. The 20cm tip a hand's width from Aya's lips, NOT in. Nobody sucks yet. "
+                "No insertion. End: open mouth a hand's width from the glans. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「おくち、あけて」. "
+                "Rei answers, lip-synced: 「んっ、はい」. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 根元まで",
+            situation="oral",
+            prefix="Already oral. Mouth already on. Already kneeling.",
+            who=(
+                "Aya = already kneeling. Giver, REI only. Mini breasts. NO penis. Hands on Rei's thighs, "
+                "NEVER on the shaft. Mouth already on the glans then to the BASE.\n"
+                "Rei = STANDS, receiver."
+            ),
+            lock=(
+                "Clip 2 of 4. Already on. Aya takes Rei to the BASE the whole 10-second take. "
+                "Filthy sloppy jupo. No climax. No ejaculation. No speech. Do not pull off. Mouth stays on."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Already on. Aya's mouth is already a ring around Rei's shaft at the BASE, deep filthy "
+                "jupo-jupo the whole 10-second take. No climax. End: mouth still at the base."
+            ),
+            sound="Deep filthy jupo-jupo, wet saliva, Rei's shaky breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 口内",
+            situation="oral_creampie",
+            prefix="Already oral. Mouth already wrapped around the shaft. Already kneeling.",
+            who=(
+                "Aya = kneeling. Lips wrapped tight around Rei's 20cm. Mini breasts. NO penis.\n"
+                "Rei = STANDS. Holds deep and cums inside Aya's mouth. イキ顔."
+            ),
+            lock=(
+                "Clip 3 of 4. CUMOUF. She ejaculates INTO the MOUTH. Heavy-oil-thick WHITE goo floods. "
+                "Inside the mouth. Not a facial. No speech."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Aya's lips stay wrapped around Rei's 20cm. Rei cums hard inside Aya's mouth. "
+                "Heavy-oil-thick WHITE goo floods the mouth, overflows. TOO MUCH. molasses-slow. "
+                "After the last pulse: mouth off. HOLD STILL a fat overflowing mouthful. "
+                "The woman who was sucking STANDS UP to the partner's SAME EYE LEVEL."
+            ),
+            sound="Wet swallows, a pulse, cum overflow, Rei's shaky breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 口移し",
+            situation="futa_visible",
+            prefix="After the mouthful. Standing at the same eye level.",
+            who=(
+                "Aya = STANDS at Rei's SAME EYE LEVEL, white on her lips, SPEAKS first. Mini breasts. NO penis.\n"
+                "Rei = STANDS, answers. Wet 20cm readable."
+            ),
+            lock=(
+                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new oral. No insertion.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera="medium two-shot on both faces and shoulders, standing at the SAME EYE LEVEL. Not a full-body wide.",
+            action=(
+                "Aya: 「ん、おくちあつい、、、」. Rei: 「だされすぎ」. Remaining seconds, silence: they stay "
+                "standing at the SAME EYE LEVEL. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「ん、おくちあつい、、、」. "
+                "Rei answers, lip-synced: 「だされすぎ」. No other speech."
+            ),
+            start="continue",
+        )
+    elif sid == "anal-p2-bj-anal":
+        add_clip(
+            cid="c1",
+            label="0-10 おくち、つかうね",
+            situation="futa_visible",
+            prefix="Talk then mouth open. Oral setup, not anal yet.",
+            who=(
+                "Aya = SPEAKS first, then kneels. Mini breasts. NO penis. Mouth opens toward the glans.\n"
+                "Rei = answers, STANDS. Erect 20cm readable. Not yet in the mouth."
+            ),
+            lock=(
+                "Clip 1 of 4. Talk then kneel. Lip-sync. One line each. Mouth open. "
+                "Tip a hand's width from the lips, NOT in. Not sucking this clip. No oral. No insertion this clip.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「おくち、つかうね」. Rei: 「んっ」. Remaining seconds, silence: Aya kneels. "
+                "Mouth open. The 20cm tip a hand's width from Aya's lips, NOT in. Nobody sucks yet. "
+                "End: open mouth a hand's width from the glans. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「おくち、つかうね」. "
+                "Rei answers, lip-synced: 「んっ」. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 ジュボのあと抜く",
+            situation="oral",
+            prefix="Already oral. Mouth already on. Already kneeling.",
+            who=(
+                "Aya = already kneeling. Giver, REI only. Mini breasts. NO penis. Hands on Rei's thighs, "
+                "NEVER on the shaft. Mouth already on the glans then to the BASE.\n"
+                "Rei = STANDS, receiver."
+            ),
+            lock=(
+                "Clip 2 of 4. Start deep at the BASE. Then Aya pulls OFF at the end. No ejaculation. "
+                "No climax. No speech. Once off, she takes the accepting anal pose. "
+                f"{spec['accepting']}. Tip a hand's width from the anus, NOT in."
+            ),
+            camera=_SHORTS_CAM_ORAL_STAND,
+            action=(
+                "Already on. Aya's mouth is already at Rei's BASE, deep filthy jupo. No climax. "
+                "Then she pulls OFF. No ejaculation. Then she takes the accepting pose: "
+                f"{spec['accepting']}. End: {spec['accepting']}. The 20cm tip a hand's width from "
+                "Aya's anus, NOT in, not touching the hole."
+            ),
+            sound="Deep filthy jupo-jupo, then a wet pull-off, breath. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 アナル挿入",
+            situation="futa_anal",
+            prefix="INSERTION ON CAMERA. Show the entry into the anus. Start of anal. Nothing has come out yet.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act.",
+            lock=(
+                f"Clip 3 of 4. INSERTION ON CAMERA into Aya's anus. START of anal. Then it stays in. {spec['lock']} "
+                "Joining point visible. Not oral. No speech. Do not remount. "
+                "No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                "INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft, then stays in and thrusts. "
+                "START of anal now. No climax. Joining point visible: penis in anus. "
+                "End: still in the anus, thrusting, nothing has come out yet."
+            ),
+            sound="Wet anal insertion, thrusting, two women moaning, a little drool. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 パコパコ中出し",
+            situation="futa_anal",
+            prefix=(
+                f"{PACO_MARK} Already in. {AFTER_ACT_TALK_MARK} Piston to the BASE, then the creampie, "
+                "then two afterglow lines."
+            ),
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
+            lock=(
+                f"Clip 4 of 4. {PACO_MARK} Already in. Erect 20cm pistons Aya's anus: glans at the rim, "
+                f"then slam to the BASE, repeat. {spec['lock']} Joining point visible. Not oral. "
+                "Do not remount. After the piston she ejaculates INTO the ANUS. "
+                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie. "
+                f"{AFTER_ACT_TALK_MARK} After the last pulse, two short lines. Lip-sync then.\n"
+                f"{spec['face']}\n{_ANAL_LIP}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"{PACO_MARK} Already in. Rei's 20cm pistons Aya's anus: pull out to the glans at the rim, "
+                "slam to the BASE, repeat. Then she ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo "
+                "overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
+                "After the last pulse: Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」."
+            ),
+            sound=(
+                "Wet anal piston in-and-out to the base, a thick gush, two women moaning, a little drool. "
+                "Then Aya speaks, lip-synced: 「アナルあつくて、だされちゃった、、、」. "
+                "Rei answers, lip-synced: 「おくまでだした」. No other speech."
+            ),
+            start="continue",
+        )
+    else:
+        add_clip(
+            cid="c1",
+            label="0-10 キスして挿入",
+            situation="futa_anal",
+            prefix=(
+                f"{TALK_THEN_INSERT_MARK} Talk, a short wet tongue kiss, then INSERTION ON CAMERA. "
+                "Start of anal. Nothing has come out yet."
+            ),
+            who=(
+                "Aya = SPEAKS first. Then a short wet tongue kiss, then takes the accepting pose: "
+                f"{spec['accepting']}. RECEIVER. Mini breasts. NO penis.\n"
+                f"Rei = answers. Then the kiss, then {spec['give']}"
+            ),
+            lock=(
+                f"Clip 1 of 4. {TALK_THEN_INSERT_MARK} Immediate. Two short lines, a brief wet tongue kiss, "
+                "then INSERTION ON CAMERA into Aya's anus. Lip-sync on the two lines only. "
+                "Do not spend the take kissing. After the kiss: glans then shaft. START of anal. "
+                f"{spec['lock']} Joining point visible. No oral. No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}\n{_ANAL_LIP}"
+            ),
+            camera=cam_talk,
+            action=(
+                "Aya: 「キスして」. Rei: 「んっ」. Remaining seconds: a SHORT sloppy wet tongue kiss, "
+                "tongues visible, she kneads a breast and pumps the 20cm once, then AT ONCE "
+                "INSERTION ON CAMERA: Rei's 20cm goes into Aya's anus, glans then shaft. "
+                "NOT oral. START of anal now. No climax. End: still in the anus, thrusting, "
+                "nothing has come out yet."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: 「キスして」. "
+                "Rei answers, lip-synced: 「んっ」. Then a short wet kiss, then wet anal insertion, "
+                "two women moaning, a little drool. No other speech."
+            ),
+            start="still_or_t2v",
+        )
+        add_clip(
+            cid="c2",
+            label="10-20 パコパコ",
+            situation="futa_anal",
+            prefix=f"{PACO_MARK} Already in. Piston to the BASE. Nothing has come out yet.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
+            lock=(
+                f"Clip 2 of 4. {PACO_MARK} Already in. Already joined. Erect 20cm pistons Aya's anus: "
+                f"glans at the rim, then slam to the BASE, repeat. {spec['lock']} Joining point visible. "
+                "Not oral. No speech. Do not remount. Do not show the entry again. "
+                "No climax this clip. Nothing has come out yet.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                f"{PACO_MARK} Already in. Rei's 20cm pistons Aya's anus: pull out to the glans at the rim, "
+                "slam to the BASE, repeat the whole 10-second take. No climax. "
+                "Joining point visible: penis in anus. End: still in the anus, thrusting, nothing has come out yet."
+            ),
+            sound="Wet anal piston in-and-out to the base, two women moaning, a little drool. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c3",
+            label="20-30 アナル中出し",
+            situation="futa_anal",
+            prefix="Already in. Already joined. Stay in the anus. Then the creampie.",
+            who=f"{spec['recv']}\n{spec['give']}\nTWO PEOPLE in the act. Already joined.",
+            lock=(
+                f"Clip 3 of 4. Already in. Already joined. The 20cm is already in Aya's anus. Then it stays in. "
+                f"{spec['lock']} Joining point visible. Not oral. No speech. Do not remount. Do not pull out. "
+                "Do not show the entry again. She ejaculates INTO the ANUS. "
+                "Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, molasses-slow, too much. "
+                "The unused pussy does NOT leak semen. Semen does not come out of the vagina. Not a vaginal creampie.\n"
+                f"{spec['face']}"
+            ),
+            camera=spec["camera"],
+            action=(
+                "Already in. Already joined. Rei's 20cm is already in Aya's anus, then stays in and thrusts. "
+                "She ejaculates INTO the ANUS. Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS around the shaft, "
+                "molasses-slow, too much. The unused pussy does NOT leak semen. Joining point visible: penis in anus. "
+                "End: still in the anus, WHITE goo overflowing out of the anus."
+            ),
+            sound="Wet anal thrusting, a thick gush, two women moaning, a little drool. No spoken words.",
+            start="continue",
+        )
+        add_clip(
+            cid="c4",
+            label="30-40 アナルあつい",
+            situation="futa_visible",
+            prefix="After the anal creampie. Still together.",
+            who=(
+                "Aya = RECEIVER after, wet thighs, SPEAKS first. Mini breasts. NO penis.\n"
+                "Rei = GIVER after, wet 20cm readable, answers."
+            ),
+            lock=(
+                "Clip 4 of 4. Afterglow talk. Lip-sync. One line each. Sex already ended. No new insertion. "
+                "No mouth-to-mouth semen share.\n"
+                f"{_ANAL_LIP}"
+            ),
+            camera="medium two-shot on both faces and shoulders. Not a full-body wide. Not a crotch shot.",
+            action=(
+                "Aya: 「アナルあつくて、だされちゃった、、、」. Rei: 「おくまでだした」. Remaining seconds, "
+                "silence: they stay close. WHITE goo at the anus. Do not freeze."
+            ),
+            sound=(
+                "Room tone, under two close adult female voices. Aya speaks, lip-synced: "
+                "「アナルあつくて、だされちゃった、、、」. Rei answers, lip-synced: 「おくまでだした」. No other speech."
+            ),
+            start="continue",
+        )
+
+    comment = {
+        "anal-p1-oral": "①口内で終わる。会話→根元ジュボ→口内 CUMOUF→口移し。体位欄は無視。",
+        "anal-p2-bj-anal": "②フェラのあとアナル。ジュボで射精せず抜き→アナル挿入オンカメラ→パコパコ根本まで出し入れ→アナル中出し。体位欄がアナル本に効く。",
+        "anal-p3-meet-anal": "③会って即アナル。短いベロチュー→0-10でアナル挿入オンカメラ（まだ出さない）→10-20パコパコ→20-30アナル中出し。体位欄がアナル本に効く。",
+    }[sid]
+    return {
+        "schema": "h3-lora-studio-story/v1",
+        "id": sid,
+        "kind": "chain",
+        "title_ja": title,
+        "adults_only": True,
+        "min_age": 22,
+        "duration_s": 40,
+        "clip_s": 10,
+        "seamless": True,
+        "spoken_no_kanji": True,
+        "spoken_max": 2,
+        "canvas": dict(CANVAS_9_16),
+        "stills_dir": sid,
+        "comment_ja": comment,
+        "download": list(SITUATION_DOWNLOAD[sid]),
+        "clips": clips,
+    }
+
+
+_CREAMPIE_IN_PROMPT_RE = re.compile(r"ejaculates INTO the ANUS|ANAL CREAMPIE:", re.I)
+_KEEP_ACT_BEFORE_ANAL = frozenset(
+    {
+        "oral",
+        "oral_creampie",
+        "cunnilingus_futa",
+        "riding",
+        "doggy",
+        "futa_sex",
+        "futa_masturbation",
+    }
+)
+_SILENT_KEEP_RE = re.compile(
+    r"yellow stream|pees a |defecat|feces leaving|formed (log|stool)|urine stream|"
+    r"yellow urine|\bpeeing\b|urethral opening",
+    re.I,
+)
+_WALK_SILENT_RE = re.compile(
+    r"\bwalks?\b|walking|corridor|hallway|platform|street|doorway|stairs|"
+    r"already in this place|ホームへ|廊下|歩道|路地|門|タイル",
+    re.I,
+)
+_KISS_CLIP_RE = re.compile(r"tongue kiss|French kiss|wet tongue kiss|濃厚キス", re.I)
+
+
+def _clip_has_creampie(prompt: str) -> bool:
+    return bool(_CREAMPIE_IN_PROMPT_RE.search(str(prompt or "")))
+
+
+def _story_already_anal_shifted(clips: list[dict[str, Any]]) -> bool:
+    blob = " ".join(str(c.get("prompt") or "") for c in clips)
+    return PACO_MARK in blob or TALK_THEN_INSERT_MARK in blob or KISS_THEN_INSERT_MARK in blob
+
+
+def _pick_silent_visible_to_cut(clips: list[dict[str, Any]], anal_idx: int) -> int | None:
+    """Cut a silent lead-in before the act-block that precedes first anal. Keep jupo length.
+
+    Prefer a walk/place beat over a kiss. Never drop urine/scat. Do not take the story
+    opening if a later silent lead-in exists.
+    """
+    j = anal_idx - 1
+    while j >= 0 and str(clips[j].get("situation") or "") in _KEEP_ACT_BEFORE_ANAL:
+        j -= 1
+    act_start = j + 1
+    cands: list[int] = []
+    for i, clip in enumerate(clips[:act_start]):
+        if str(clip.get("situation") or "") != "futa_visible":
+            continue
+        prompt = str(clip.get("prompt") or "")
+        if unique_spoken_lines(prompt):
+            continue
+        if _SILENT_KEEP_RE.search(prompt):
+            continue
+        cands.append(i)
+    if not cands:
+        return None
+    non_kiss = [
+        i
+        for i in cands
+        if not _KISS_CLIP_RE.search(str(clips[i].get("prompt") or "") + " " + str(clips[i].get("label") or ""))
+    ]
+    pick = non_kiss[-1] if non_kiss else cands[-1]
+    if pick == 0 and len(cands) > 1:
+        pick = cands[-1]
+    return pick
+
+
+def _fold_deleted_clip(deleted: dict[str, Any], nxt_prompt: str) -> str:
+    deleted_p = str(deleted.get("prompt") or "")
+    if _KISS_CLIP_RE.search(deleted_p):
+        fold = (
+            "They are already in a wet tongue kiss from the previous seconds. "
+            "Then continue the written beat. "
+        )
+    else:
+        fold = "They are already in this place. The previous walk already happened. "
+    if fold in nxt_prompt:
+        return nxt_prompt
+    if "integrated_multimodal_description:\n" in nxt_prompt:
+        return nxt_prompt.replace(
+            "integrated_multimodal_description:\n",
+            "integrated_multimodal_description:\n" + fold,
+            1,
+        )
+    return fold + nxt_prompt
+
+
+def _sync_story_duration_copy(story: dict[str, Any]) -> None:
+    clips = list(story.get("clips") or [])
+    n = len(clips)
+    dur = int(round(sum(float(c.get("duration_s") or 10) for c in clips)))
+    story["duration_s"] = dur
+    title = str(story.get("title_ja") or "")
+    if re.search(r"\d+秒", title):
+        story["title_ja"] = re.sub(r"\d+秒", f"{dur}秒", title, count=1)
+    comment = str(story.get("comment_ja") or "")
+    comment = re.sub(r"\d+本＝\d+秒", f"{n}本＝{dur}秒", comment)
+    comment = re.sub(r"10秒×\d+本", f"10秒×{n}本", comment)
+    if "パコパコ" not in comment and any(str(c.get("situation") or "") == "futa_anal" for c in clips):
+        comment = comment.replace("アナル中出し", "アナル挿入→パコパコ根本まで出し入れ→アナル中出し", 1)
+        comment = comment.replace("挿入オンカメラ→アナル中出し", "挿入オンカメラ→パコパコ根本まで出し入れ→アナル中出し", 1)
+    story["comment_ja"] = comment
+
+
+def _relabel_story_clips(clips: list[dict[str, Any]]) -> None:
+    n = len(clips)
+    for i, clip in enumerate(clips):
+        clip["id"] = f"c{i + 1}"
+        old = str(clip.get("label") or "")
+        rest = re.sub(r"^\d+\s*[-–]\s*\d+\s*", "", old).strip() or old
+        clip["label"] = f"{10 * i}-{10 * (i + 1)} {rest}"
+        prompt = str(clip.get("prompt") or "")
+        prompt = re.sub(r"Clip \d+ of \d+", f"Clip {i + 1} of {n}", prompt)
+        clip["prompt"] = prompt
+        if i and str(clip.get("start") or "") == "still_or_t2v":
+            pass
+
+
+def convert_visible_prompt_to_insert(prompt: str, *, has_speech: bool) -> str:
+    """Keep quotes/kiss, then INSERTION ON CAMERA. No climax."""
+    raw = str(prompt or "")
+    mark = TALK_THEN_INSERT_MARK if has_speech else KISS_THEN_INSERT_MARK
+    if mark not in raw:
+        raw = mark + "\n" + raw
+    raw = re.sub(
+        r"No insertion this clip\.?",
+        "After the written lines/kiss: INSERTION ON CAMERA.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"Nobody has sex yet\.?", "After the written lines/kiss they have anal.", raw, flags=re.I)
+    raw = re.sub(
+        r"[^.]*does NOT enter in this clip\.?",
+        "After the written lines: INSERTION ON CAMERA.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"Nobody sucks\. No insertion\.", "Nobody sucks.", raw, flags=re.I)
+    insert_beat = (
+        " After the last unique quoted line and after any written kiss/fondle/pose: "
+        "INSERTION ON CAMERA into the receiver's anus, glans then shaft to the BASE. "
+        "START of anal. Close on the joining point. No climax this clip. Nothing has come out yet. "
+        "Both look wrecked-ecstatic, loud moans, a little drool from both mouths. "
+        "End: still in the anus, thrusting, nothing has come out yet. "
+        "Joining point visible: penis in anus. Not vaginal."
+    )
+    if "START of anal" not in raw:
+        if "\n\noverall_soundscape:" in raw:
+            raw = raw.replace("\n\noverall_soundscape:", insert_beat + "\n\noverall_soundscape:", 1)
+        else:
+            raw = raw + insert_beat
+    if "No climax this clip" not in raw:
+        raw = raw.replace("INSERTION ON CAMERA", "INSERTION ON CAMERA. No climax this clip.", 1)
+    raw = re.sub(
+        r"End: [^.\n]*NOT in[^.\n]*\.",
+        "End: still in the anus, thrusting, nothing has come out yet.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"The 20cm tip a hand's width from [^.\n]*(NOT in|not in)[^.]*\.",
+        "Then INSERTION ON CAMERA into the anus to the BASE. End: still in the anus, thrusting.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"Remaining seconds: silence, but bodies keep moving\.",
+        "Remaining seconds: written leftover beat, then INSERTION ON CAMERA into the anus.",
+        raw,
+        flags=re.I,
+    )
+    return raw
+
+
+def convert_anal_prompt_to_paco(prompt: str, *, keep_creampie: bool) -> str:
+    """First anal slot becomes piston in-and-out to the base. Creampie stays only on the last climax clip."""
+    raw = str(prompt or "")
+    if PACO_MARK not in raw:
+        raw = PACO_MARK + " " + raw
+    raw = re.sub(
+        r"INSERTION ON CAMERA\.?\s*Show the entry into the anus\.?",
+        f"{PACO_MARK} Already in. Piston to the BASE.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(
+        r"INSERTION ON CAMERA:[^.]*\.",
+        f"{PACO_MARK} Already in. Erect 20cm pistons the anus: glans at the rim, then slam to the BASE, repeat.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"INSERTION ON CAMERA into [^.]+\.", f"{PACO_MARK} Already in. Piston to the BASE. ", raw, flags=re.I)
+    raw = raw.replace("INSERTION ON CAMERA", f"{PACO_MARK} Already in piston")
+    if "pistons" not in raw.lower() and "piston" not in raw.lower():
+        raw = raw.replace(
+            "\n\noverall_soundscape:",
+            " PACO-PACO piston: pull out to the glans at the rim, slam to the BASE, repeat. "
+            "Both look wrecked-ecstatic, loud moans, a little drool from both mouths.\n\noverall_soundscape:",
+            1,
+        )
+    if ANAL_PACO_LINE not in raw:
+        raw = _inject_before_soundscape(raw, ANAL_PACO_LINE)
+    if "wrecked-ecstatic" not in raw and "ANAL ECSTASY:" not in raw:
+        raw = _inject_before_soundscape(
+            raw,
+            "Both look wrecked-ecstatic, loud moans, a little drool from both mouths.",
+        )
+    if keep_creampie:
+        return raw
+    raw = re.sub(r"She ejaculates INTO the ANUS\.[^.]*\.", "No climax this clip. Nothing has come out yet.", raw)
+    raw = re.sub(
+        r"Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS[^.]*\.",
+        "Nothing has come out yet.",
+        raw,
+        flags=re.I,
+    )
+    raw = re.sub(r"WHITE goo overflowing out of the anus\.", "still thrusting, nothing has come out yet.", raw)
+    raw = re.sub(r"a thick gush, ", "", raw)
+    if "No climax this clip" not in raw:
+        raw = raw.replace("Already in.", "Already in. No climax this clip. Nothing has come out yet.", 1)
+    return raw
+
+
+def make_insert_clip_from_anal(anal_clip: dict[str, Any]) -> dict[str, Any]:
+    """Silent insertion-only clip copied from an anal clip's blocking."""
+    src = {k: v for k, v in anal_clip.items() if k != "still"}
+    prompt = str(anal_clip.get("prompt") or "")
+    prompt = re.sub(r"[^.]*ejaculat[^.]*\.", "No climax this clip. Nothing has come out yet.", prompt, flags=re.I)
+    prompt = re.sub(
+        r"Heavy-oil-thick WHITE goo overflows OUT OF THE ANUS[^.]*\.",
+        "Nothing has come out yet.",
+        prompt,
+        flags=re.I,
+    )
+    prompt = re.sub(r"WHITE goo overflowing out of the anus\.", "still thrusting, nothing has come out yet.", prompt)
+    prompt = re.sub(r"WHITE goo overflows[^.]+\.", "Nothing has come out yet.", prompt, flags=re.I)
+    prompt = re.sub(r", a thick gush,", ",", prompt)
+    prompt = re.sub(r"Then WHITE goo overflowing[^.]+\.", "", prompt, flags=re.I)
+    if "INSERTION ON CAMERA" not in prompt:
+        prompt = (
+            "INSERTION ON CAMERA. Show the entry into the anus. Start of anal. Close on the joining point. "
+            "Nothing has come out yet. Both look wrecked-ecstatic, loud moans, a little drool from both mouths.\n"
+            + prompt
+        )
+    if "No climax this clip" not in prompt:
+        prompt += " No climax this clip. Nothing has come out yet. No spoken words."
+    src["situation"] = "futa_anal"
+    src["label"] = "アナル挿入"
+    src["start"] = str(anal_clip.get("start") or "continue")
+    src["prompt"] = prompt
+    return src
+
+
+def shift_story_anal_earlier(story: dict[str, Any]) -> dict[str, Any]:
+    """Move first anal insertion one clip earlier; that slot becomes PACO. Do not cut oral length."""
+    clips = list(story.get("clips") or [])
+    if _story_already_anal_shifted(clips):
+        return story
+    anal_idxs = [i for i, c in enumerate(clips) if str(c.get("situation") or "") == "futa_anal"]
+    if not anal_idxs:
+        return story
+    A = anal_idxs[0]
+    later_creampie = any(_clip_has_creampie(str(clips[i].get("prompt") or "")) for i in anal_idxs if i > A)
+    first_has_cum = _clip_has_creampie(str(clips[A].get("prompt") or ""))
+    prev = A - 1
+    if prev >= 0 and str(clips[prev].get("situation") or "") == "futa_visible":
+        lines = unique_spoken_lines(str(clips[prev].get("prompt") or ""))
+        clips[prev]["situation"] = "futa_anal"
+        clips[prev]["prompt"] = convert_visible_prompt_to_insert(
+            str(clips[prev].get("prompt") or ""),
+            has_speech=bool(lines),
+        )
+        old_lab = str(clips[prev].get("label") or "")
+        rest = re.sub(r"^\d+\s*[-–]\s*\d+\s*", "", old_lab).strip()
+        clips[prev]["label"] = (rest + " 挿入").strip() if rest else "アナル挿入"
+        clips[A]["prompt"] = convert_anal_prompt_to_paco(
+            str(clips[A].get("prompt") or ""),
+            keep_creampie=first_has_cum and not later_creampie,
+        )
+        if not (first_has_cum and not later_creampie):
+            clips[A]["label"] = re.sub(
+                r"アナル中出し|もう入っている|アナル挿入",
+                "パコパコ",
+                str(clips[A].get("label") or "パコパコ"),
+            )
+        for i in anal_idxs[1:]:
+            if not _clip_has_creampie(str(clips[i].get("prompt") or "")):
+                clips[i]["prompt"] = convert_anal_prompt_to_paco(
+                    str(clips[i].get("prompt") or ""),
+                    keep_creampie=False,
+                )
+    elif prev >= 0 and str(clips[prev].get("situation") or "") in _KEEP_ACT_BEFORE_ANAL:
+        silent = _pick_silent_visible_to_cut(clips, A)
+        if silent is not None:
+            nxt = silent + 1
+            if nxt < len(clips):
+                nxt_p = str(clips[nxt].get("prompt") or "")
+                if not _SILENT_KEEP_RE.search(nxt_p):
+                    clips[nxt]["prompt"] = _fold_deleted_clip(clips[silent], nxt_p)
+            del clips[silent]
+            if silent < A:
+                A -= 1
+        insert_clip = make_insert_clip_from_anal(clips[A])
+        clips.insert(A, insert_clip)
+        A += 1
+        later_creampie = any(
+            _clip_has_creampie(str(clips[i].get("prompt") or ""))
+            for i, c in enumerate(clips)
+            if str(c.get("situation") or "") == "futa_anal" and i > A
+        )
+        first_has_cum = _clip_has_creampie(str(clips[A].get("prompt") or ""))
+        clips[A]["prompt"] = convert_anal_prompt_to_paco(
+            str(clips[A].get("prompt") or ""),
+            keep_creampie=first_has_cum and not later_creampie,
+        )
+        clips[A]["label"] = re.sub(
+            r"アナル中出し|アナル挿入",
+            "パコパコ",
+            str(clips[A].get("label") or "パコパコ"),
+        )
+    _relabel_story_clips(clips)
+    story["clips"] = clips
+    _sync_story_duration_copy(story)
+    return story
+
+
+def load_story(
+    story_id: str,
+    *,
+    studio_root: Path | str | None = None,
+    pose: str = "",
+    scene: str = "",
+) -> dict[str, Any]:
     sid = str(story_id or "").strip()
     if sid in SITUATION_JA:
         sid = SITUATION_JA[sid]
+    if sid in ANAL_PATTERN_IDS:
+        data = generate_anal_pattern(sid, pose=pose, scene=scene)
+        follow_errors = validate_story_follow(data)
+        if follow_errors:
+            raise SystemExit("アナル三択の追従ルール: " + " / ".join(follow_errors))
+        return data
     if sid in ANTHOLOGY_ID_SET:
         data = generate_immoral_shorts()
         n = len(data.get("clips") or [])
@@ -6154,6 +8007,8 @@ def prepare_story_clip(
     force_t2v: bool = False,
     fit_scene: bool = False,
     cast_dir: Path | str | None = None,
+    thumb_in_butt: bool = False,
+    lora_dir: Path | str | None = None,
 ) -> dict[str, Any]:
     """One story clip. Matching LoRA per act.
 
@@ -6213,6 +8068,26 @@ def prepare_story_clip(
         raw_prompt = lock_pleasure_face(raw_prompt, situation=situation)
     raw_prompt = lock_penis_inside(raw_prompt, situation=situation)
     raw_prompt = lock_anal_creampie(raw_prompt, situation=situation)
+    nxt = clips[index + 1] if index + 1 < len(clips) else {}
+    raw_prompt = lock_anal_hole(
+        raw_prompt,
+        situation=str(clip.get("situation") or situation),
+        prev_situation=prev_situation,
+        next_prompt=str(nxt.get("prompt") or ""),
+    )
+    next_is_insert = clip_is_anal_insert(
+        str(nxt.get("prompt") or ""), str(nxt.get("situation") or "")
+    )
+    this_is_insert = clip_is_anal_insert(raw_prompt, situation)
+    same_clip_insert = this_is_insert and (
+        TALK_THEN_INSERT_MARK in raw_prompt or KISS_THEN_INSERT_MARK in raw_prompt
+    )
+    raw_prompt = lock_anal_prep(
+        raw_prompt,
+        next_is_insert=next_is_insert and not this_is_insert,
+        same_clip_insert=same_clip_insert,
+    )
+    raw_prompt = lock_join_camera(raw_prompt, situation=situation)
     raw_prompt = lock_pleasure_voice_and_wait(raw_prompt, situation=situation)
     raw_prompt = lock_act_sfx(raw_prompt, situation=situation)
     duration_s = float(clip.get("duration_s") or story.get("clip_s") or 10)
@@ -6242,13 +8117,19 @@ def prepare_story_clip(
     missing_still = None
     want_still = (not use_cast) and (not force_t2v) and (not use_last) and (start == "still_or_t2v" or bool(clip.get("still")))
     if want_still and still_path is None:
-        missing_still = str(clip.get("still") or "") or None
+        # Insert clips may have no still filename; still report that a photo is missing.
+        missing_still = str(clip.get("still") or "") or "(needed)"
     if use_last:
         mode = "i2v"
         if fit_scene and rewrite_chain and is_last:
             prompt = rewrite_final_scene_i2v_prompt(raw_prompt)
         else:
             prompt = lock_i2v_story_prompt(raw_prompt, continue_from_last=True)
+        if this_is_insert and str(prev_situation or "") in ORAL_FROM_INSERT_SITS:
+            prompt = lock_i2v_from_oral_insert(prompt)
+        anal_sit = str(clip.get("situation") or situation)
+        if this_is_insert or anal_sit in SEX_ANAL_SITUATIONS:
+            prompt = lock_i2v_join_camera(prompt)
         first_kind = "last_frame"
     elif first_kind_cast:
         mode = "r2v"
@@ -6298,10 +8179,19 @@ def prepare_story_clip(
             turbo_override=turbo_override,
         )
     stack = drop_speech_face_killers(list(cfg.get("stack") or []), speaks=speaks, mode=mode)
+    want_tib = clip_wants_thumbinbutt(story, index, thumb_in_butt=thumb_in_butt, mode=mode)
+    stack = apply_thumbinbutt_stack(stack, on=want_tib)
+    stack = apply_anal_any_stack(
+        stack,
+        situation=str(clip.get("situation") or situation),
+        lora_dir=lora_dir,
+        prompt=raw_prompt,
+    )
     if isinstance(cfg, dict):
         cfg = dict(cfg)
         cfg["stack"] = stack
     prompt = prepend_triggers(str(cfg.get("prompt") or prompt), stack)
+    prompt = strip_thumb_in_butt_trigger(prompt)
     prompt = lock_spoken_japanese(prompt, spoken_lines(raw_prompt))
     if prev_stack is not None:
         stack_changed = stack_signature(prev_stack) != stack_signature(stack)

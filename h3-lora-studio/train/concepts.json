@@ -1,6 +1,6 @@
 {
   "schema": "h3-lora-studio-train/v1",
-  "note_ja": "行為 LoRA は概念ごとに1本。アナル＋飲尿＋脱糞を1ファイルに混ぜない。重みが Drive に無いあいだは③とカタログに足さない。",
+  "note_ja": "行為 LoRA は概念ごとに1本。アナル＋飲尿＋脱糞を1ファイルに混ぜない。アナルはカタログ行あり（source: local）。Drive に無いあいだは③は竿のまま。飲尿・脱糞は重みが無いあいだカタログに足さない。",
   "defaults": {
     "fps": 24,
     "clip_seconds": { "min": 5, "max": 10, "hard_max": 15 },

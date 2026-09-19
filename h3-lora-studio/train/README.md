@@ -87,13 +87,13 @@ ffprobe が無いとき / ダミー確認は `--skip-probe`。10本未満の試�
 
 ## 重みができたあと（別セッション）
 
-Drive `minimax-h3-comfyui/models/loras/` に置く。カタログは `source: local`。アナルは ThumbInButt を外して `anal-any-h3` + 竿 + 穴。飲尿・脱糞は **新しい situation** だけ。既存話のジュボ置き換えは戻さない。医院・終電に糞は足さない。
+Drive `minimax-h3-comfyui/models/loras/` に置く。アナルはカタログ済み（`source: local`）。ファイルがあれば③が act に差し、無ければ竿のまま。飲尿・脱糞は **新しい situation** だけ。既存話のジュボ置き換えは戻さない。医院・終電に糞は足さない。
 
 ## やらないこと
 
 - 3行為を1 LoRA に混ぜる
 - 1体位ばかり集める
-- 重みが無い状態で③に足す
+- 重みが無い状態で③のスタックに固定する
 - 既存ストーリーへ飲尿を戻す
 - 医院・終電の `No feces.` を外す
 - 男・未成年を素材に入れる

@@ -8,6 +8,8 @@ SCRIPT = ROOT / "scripts" / "select_loras.py"
 sys.path.insert(0, str(SCRIPT.parent))
 
 from select_loras import (  # noqa: E402
+    ANAL_ANY_FULL_STACK_IDS,
+    FULL_STACK_IDS,
     FUTA_SITUATIONS,
     SelectError,
     apply_feminine_lock,
@@ -539,12 +541,24 @@ def test_urine_drink_and_scat_act_are_helpers_only():
     assert "thumbinbutt-h3" in unload_pee
     assert "hmnsfw-aio-v25" in unload_pee
     scat = select_loras(profile_name="scat_act", mode="t2v", prompt_arg="（シーン）")
-    assert [r["id"] for r in scat["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["id"] for r in scat["stack"]] == [
+        "mystic-xxx-h3",
+        "thumbinbutt-h3",
+        "penis-lora-h3",
+        "synth-pussy-h3",
+    ]
+    assert scat["turbo"] is False
+    assert scat["sampler"]["steps"] == 8
+    assert scat["stack"][1]["trigger"] == "thum1n8utt"
     slow = scat["prompt"].lower()
     assert "act of defecating" in slow
     assert "coming out of (s1)'s anus" in slow
     assert "already coated" in slow
+    assert "not the vagina" in slow
     assert "thum1n8utt" not in slow
+    unload_scat = {r["id"] for r in scat["unload"]}
+    assert "thumbinbutt-h3" not in unload_scat
+    assert "hmnsfw-aio-v25" in unload_scat
 
 
 def test_urine_pee_is_glans_stream_not_drink():
@@ -1193,6 +1207,12 @@ def test_locked_minors_stay_child_terms():
     loras = json.loads((ROOT / "catalog" / "loras.json").read_text(encoding="utf-8"))
     coach = next(row for row in loras["loras"] if row["id"] == "anal-penetration-coachbate")
     assert coach.get("paid") is True
+    anal_any = next(row for row in loras["loras"] if row["id"] == "anal-any-h3")
+    assert anal_any["source"] == "local"
+    assert anal_any["trigger"] == "AN4LIN"
+    assert anal_any.get("paid") is not True
+    assert "anal-any-h3" not in FULL_STACK_IDS
+    assert "anal-any-h3" in ANAL_ANY_FULL_STACK_IDS
 
 
 def test_no_forbidden_or_unused_loras_in_any_profile_stack():

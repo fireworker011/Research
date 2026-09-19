@@ -1,0 +1,648 @@
+#!/usr/bin/env python3
+"""Write the Qwen Image Edit NSFW Colab (H3 studio とは別ノート)."""
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+COLAB_DIR = Path(__file__).resolve().parent
+if str(COLAB_DIR) not in sys.path:
+    sys.path.insert(0, str(COLAB_DIR))
+from qwen_image_edit_nsfw import (
+    DIFFUSERS_COLAB_SPEC,
+    PILLOW_COLAB_SPEC,
+    SEX_PRESET_DEFAULT,
+    TORCHAO_COLAB_SPEC,
+    canvas_form_options,
+    giver_form_options,
+    input_source_form_options,
+    ref_source_form_options,
+    sex_preset_form_options,
+    style_form_options,
+)
+
+OUTS = [
+    ROOT / "qwen_image_edit_nsfw.ipynb",
+    ROOT / "h3-lora-studio" / "qwen_image_edit_nsfw.ipynb",
+]
+BRANCH = "cursor/h3-anal-stories-f112"
+COLAB = (
+    "https://colab.research.google.com/github/fireworker011/Research/blob/"
+    f"{BRANCH}/qwen_image_edit_nsfw.ipynb"
+)
+H3_COLAB = (
+    "https://colab.research.google.com/github/fireworker011/Research/blob/"
+    f"{BRANCH}/minimax_h3_lora_studio.ipynb"
+)
+
+MD0 = f"""# Qwen Image Edit NSFW（Mk1227 Space と同じ環境・A100）
+
+H3 動画ノートとは **別**。同時に動かさない。このノートは Mk1227 Space の **公開設定どおり** に載せる: 土台 `Qwen/Qwen-Image-Edit-2511` + `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors`（単一 28.4GB）+ FP8（torchao≥0.16。Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）+ Space の FlowMatch `SCHED_*` + サイズ **auto** + rewrite **既定オフ**（顔維持。オンは VL が別の人を描きやすい）+ **追加 LoRA なし**。コンパイル済み `app.so` はコピーしない。safety checker なし。4step / CFG1。顔は Picture 1 の上を Picture 2 に自動で足す。
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})
+
+H3 動画は [こちら]({H3_COLAB})。
+
+**これは i2i**（元画像＝Picture 1 を編集）。文章だけから描かない。任意で **顔・画風の参照**（Picture 2）。
+
+Drive の空きは **2GB** あれば足りる。置くのは `input/` と `output/` の JPG だけ。重みは Colab ディスク約70GB（2511 + AIO）。H3 の参照土台 21GB は不要。②の **追加LoRA** はオフのまま（Space と同じ。NSFW は AIO 焼き込み）。オンにすると jt65 の `Qwen4Play` などを載せる（顔が別の人になりやすい）。
+
+## 手順
+
+1. Open in Colab → ランタイムのタイプ → GPU **A100**（40GB でも 80GB でも可。H100 も可。L4 は offload。T4 は不可）
+2. ①と②を実行（③は画像を置いてから）
+3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
+4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
+5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。Picture 1 の見た目をコピー。行為でも写真や漫画にしない。CFG1 では manga / line work を書くと漫画になるので入力のままには書かない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**服を外す**と**フタナリ勃起**はクイックと別のチェック（必須ではない。アナル／脱糞でも効く。オフなら服残し／竿なし）。クイック既定「なし（服・体は下のチェック）」は行為を足さないだけ。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+
+実写の他人は入れるな。成人 21+。
+"""
+
+CELL1 = r'''#@title ① Drive + GPU（A100）
+print("=" * 60)
+print(" ① Drive + A100")
+print("=" * 60)
+
+from google.colab import drive
+from pathlib import Path
+import os
+
+DRIVE_ROOT = "/content/drive/MyDrive/qwen-image-edit-nsfw"  #@param {type:"string"}
+
+drive.mount("/content/drive")
+os.makedirs(f"{DRIVE_ROOT}/output", exist_ok=True)
+os.makedirs(f"{DRIVE_ROOT}/input", exist_ok=True)
+
+with open("/content/qwen_edit_paths.env", "w") as f:
+    f.write(f"DRIVE_ROOT={DRIVE_ROOT}\n")
+
+print("Drive:", DRIVE_ROOT)
+print("保存先:", f"{DRIVE_ROOT}/output")
+
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+import torch
+if not torch.cuda.is_available():
+    raise SystemExit("GPU がオフです。ランタイム → ランタイムのタイプを変更 → A100 を選んで、①からやり直してください。")
+props = torch.cuda.get_device_properties(0)
+vram = props.total_memory / 1024 ** 3
+name = torch.cuda.get_device_name(0)
+print("GPU:", name, "VRAM GiB:", round(vram, 1))
+
+import urllib.request
+BRANCH = "cursor/h3-anal-stories-f112"
+RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}/colab/qwen_image_edit_nsfw.py"
+urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
+import sys
+if "/content" not in sys.path:
+    sys.path.insert(0, "/content")
+from qwen_image_edit_nsfw import drive_space_lines, require_space_gpu_or_exit
+require_space_gpu_or_exit(vram, name)
+for line in drive_space_lines():
+    print(line)
+print("OK → 次は②（H3 スタジオとは同時に動かさない）")
+'''
+
+CELL2 = r'''#@title ② Mk1227 Space と同じ重みを載せる（初回は待つ）
+print("=" * 60)
+print(" ② Qwen Edit NSFW（2511 + Phr00t AIO NSFW v23 + FP8。Mk1227 Space と同じ載せ方）")
+print("=" * 60)
+
+追加LoRA = False  #@param {type:"boolean"}
+
+import os, sys, subprocess
+from pathlib import Path
+
+def sh(cmd, check=True):
+    print("+", " ".join(cmd) if isinstance(cmd, list) else cmd)
+    subprocess.run(cmd, check=check)
+
+if "/content" not in sys.path:
+    sys.path.insert(0, "/content")
+
+import urllib.request
+BRANCH = "cursor/h3-anal-stories-f112"
+RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}/colab/qwen_image_edit_nsfw.py"
+urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
+if "qwen_image_edit_nsfw" in sys.modules:
+    del sys.modules["qwen_image_edit_nsfw"]
+
+# Space pin is torchao 0.11. Today's git+diffusers needs FqnToConfig (0.16+).
+sh([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"], check=False)
+sh([sys.executable, "-m", "pip", "install", "-q", "-U",
+    "__DIFFUSERS_SPEC__", "transformers", "accelerate", "safetensors",
+    "huggingface_hub", "sentencepiece", "peft"])
+sh([sys.executable, "-m", "pip", "install", "-q", "-U", "__TORCHAO_SPEC__"])
+sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
+sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
+
+from qwen_image_edit_nsfw import (
+    allow_duplicate_torchao_ops,
+    allow_duplicate_torchvision_ops,
+    drop_stale_diffusers_modules,
+    drop_stale_huggingface_hub_modules,
+    drop_stale_pil_modules,
+    drop_stale_torchao_modules,
+    import_qwen_edit_plus_pipeline,
+    require_pillow_colab,
+    require_torchao_for_git_diffusers,
+)
+allow_duplicate_torchao_ops()
+allow_duplicate_torchvision_ops()
+drop_stale_torchao_modules()
+drop_stale_diffusers_modules()
+drop_stale_huggingface_hub_modules()
+drop_stale_pil_modules()
+print("pillow", require_pillow_colab())
+print("torchao", require_torchao_for_git_diffusers())
+
+from google.colab import userdata
+tok = ""
+try:
+    tok = userdata.get("HF_TOKEN") or ""
+except Exception:
+    tok = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN") or ""
+if tok:
+    from huggingface_hub import login
+    login(token=tok, add_to_git_credential=False)
+    print("HF login: on")
+else:
+    print("HF login: skip（rewrite と NFAA は Colab Secrets の HF_TOKEN）")
+
+import torch
+from huggingface_hub import hf_hub_download
+QwenImageEditPlusPipeline, QwenImageTransformer2DModel = import_qwen_edit_plus_pipeline()
+
+from qwen_image_edit_nsfw import (
+    AIO_FILENAME,
+    AIO_REPO_ID,
+    AIO_REPO_TYPE,
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
+    PIPE_ID,
+    TRANSFORMER_ID,
+    LORA_REPO,
+    apply_space_scheduler,
+    clamp_edit_vae_area,
+    disable_safety,
+    load_aio_checkpoint,
+    lora_files_for_gpu,
+    lora_skip_summary,
+    place_edit_pipe,
+    quantize_transformer_fp8,
+    tune_edit_vae,
+)
+
+dtype = torch.bfloat16
+print("pipeline", PIPE_ID)
+pipe = QwenImageEditPlusPipeline.from_pretrained(
+    PIPE_ID,
+    torch_dtype=dtype,
+)
+pipe = disable_safety(pipe)
+tune_edit_vae(pipe)
+print("scheduler", type(apply_space_scheduler(pipe)).__name__)
+
+print("AIO", AIO_REPO_ID, AIO_FILENAME)
+aio_path = hf_hub_download(
+    repo_id=AIO_REPO_ID,
+    filename=AIO_FILENAME,
+    repo_type=AIO_REPO_TYPE,
+)
+print("AIO path", aio_path)
+stats = load_aio_checkpoint(pipe, aio_path)
+print("AIO inject", stats)
+if int(stats.get("transformer") or 0) == 0:
+    print("AIO transformer 0 keys → fallback", TRANSFORMER_ID)
+    transformer = QwenImageTransformer2DModel.from_pretrained(
+        TRANSFORMER_ID,
+        torch_dtype=dtype,
+    )
+    pipe.transformer = transformer
+
+print("fp8", quantize_transformer_fp8(getattr(pipe, "transformer", None)))
+
+LOADED = set()
+skip_errs = []
+vram = torch.cuda.get_device_properties(0).total_memory / 1024 ** 3
+if 追加LoRA:
+    lora_files = lora_files_for_gpu(vram)
+    print("LoRA load", list(lora_files))
+    for name, weight_name in lora_files.items():
+        try:
+            pipe.load_lora_weights(LORA_REPO, weight_name=weight_name, adapter_name=name)
+            LOADED.add(name)
+            print("LoRA", name)
+        except Exception as e:
+            skip_errs.append(str(e))
+            print("LoRA skip", name, str(e)[:180])
+    if not LOADED:
+        print(lora_skip_summary(skip_errs, has_token=bool(tok)))
+    if hasattr(pipe, "disable_lora"):
+        pipe.disable_lora()
+else:
+    print("LoRA: none（Mk1227 Space と同じ。NSFW は AIO 焼き込み）")
+
+print("place", place_edit_pipe(pipe, vram, torch_module=torch))
+print("vae_area", clamp_edit_vae_area(pipe, DEFAULT_WIDTH, DEFAULT_HEIGHT))
+
+globals()["QWEN_EDIT_PIPE"] = pipe
+globals()["QWEN_EDIT_LORAS"] = LOADED
+globals()["QWEN_EDIT_HF_TOKEN"] = tok
+globals()["QWEN_EDIT_VRAM"] = vram
+print("safety_checker", getattr(pipe, "safety_checker", "n/a"))
+print("OK → 次は③")
+'''
+
+CELL2 = (
+    CELL2.replace("__PILLOW_SPEC__", PILLOW_COLAB_SPEC)
+    .replace("__TORCHAO_SPEC__", TORCHAO_COLAB_SPEC)
+    .replace("__DIFFUSERS_SPEC__", DIFFUSERS_COLAB_SPEC)
+)
+
+CELL3 = r'''#@title ③ クイックプロンプト（i2i・参照画像）
+print("=" * 60)
+print(" ③ 編集（i2i）")
+print("=" * 60)
+
+from google.colab import files
+from IPython.display import display
+from pathlib import Path
+from PIL import Image
+import os, random, sys, torch, urllib.request
+
+if "/content" not in sys.path:
+    sys.path.insert(0, "/content")
+
+BRANCH = "cursor/h3-anal-stories-f112"
+RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}/colab/qwen_image_edit_nsfw.py"
+urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
+if "qwen_image_edit_nsfw" in sys.modules:
+    del sys.modules["qwen_image_edit_nsfw"]
+
+from qwen_image_edit_nsfw import (
+    DEFAULT_EDIT_PROMPT,
+    DEFAULT_NEGATIVE,
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
+    GENATOMY_ADAPTER,
+    GENATOMY_WEIGHT,
+    STEPS,
+    TRUE_CFG,
+    GUIDANCE,
+    UPLOAD_PHONE_HINT,
+    VRAM_OFFLOAD_GIB,
+    auto_canvas_size,
+    canvas_form_options,
+    clamp_edit_vae_area,
+    compose_edit_prompt,
+    edit_output_name,
+    ensure_genatomy_adapter,
+    face_lock_image,
+    genatomy_stack,
+    infer_kwargs,
+    input_source_form_options,
+    list_input_images,
+    lock_identity_prompt,
+    lora_stack,
+    pipe_images,
+    ref_source_form_options,
+    refuse_photoreal,
+    resize_rgb,
+    resolve_input_paths,
+    rewrite_edit_prompt,
+    run_pipe_edit,
+    save_jpeg,
+    known_sex_preset,
+    snapped_rgb,
+    style_form_options,
+    style_negative,
+    giver_form_options,
+    vram_used_gib,
+)
+
+env = {}
+with open("/content/qwen_edit_paths.env") as f:
+    for line in f:
+        k, v = line.strip().split("=", 1)
+        env[k] = v
+IN = Path(env["DRIVE_ROOT"]) / "input"
+OUT = Path(env["DRIVE_ROOT"]) / "output"
+IN.mkdir(parents=True, exist_ok=True)
+OUT.mkdir(parents=True, exist_ok=True)
+
+クイックプロンプト = __DEFAULT_PRESET__  #@param [__QUICK_OPTS__]
+画風 = "入力のまま"  #@param [__STYLE_OPTS__]
+入力 = "Drive input"  #@param [__INPUT_OPTS__]
+入力ファイル名 = ""  #@param {type:"string"}
+参照画像 = "なし（元画像の顔）"  #@param [__REF_OPTS__]
+参照ファイル名 = ""  #@param {type:"string"}
+サイズ = "auto（入力）"  #@param [__CANVAS_OPTS__]
+PCから選ぶ = False  #@param {type:"boolean"}
+PROMPT = ""  #@param {type:"string"}
+#@markdown クイックは行為だけ。服とふたなりは下のチェック（必須ではない。アナル／脱糞でも効く）。
+#@markdown **服を外す** … 全裸。オフなら服は残る。クイックと別。必須ではない。
+服を外す = True  #@param {type:"boolean"}
+#@markdown **フタナリ勃起** … 入力の人に竿（玉なし20cm）。必須ではない。オフなら女体のまま。竿役は相手。
+フタナリ勃起 = True  #@param {type:"boolean"}
+竿役 = "ふたなり（玉なし・男禁止）"  #@param [__GIVER_OPTS__]
+解剖Fixer = False  #@param {type:"boolean"}
+プロンプトrewrite = False  #@param {type:"boolean"}
+STEPS_RUN = 4  #@param {type:"integer"}
+SEED = 0  #@param {type:"integer"}
+ランダムシード = True  #@param {type:"boolean"}
+
+pipe = globals().get("QWEN_EDIT_PIPE")
+if pipe is None:
+    raise SystemExit("②を先に実行してください。")
+
+if not known_sex_preset(クイックプロンプト):
+    raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
+if 画風 not in style_form_options():
+    raise SystemExit(f"unknown style: {画風}")
+if 竿役 not in giver_form_options():
+    raise SystemExit(f"unknown 竿役: {竿役}")
+if 入力 not in input_source_form_options():
+    raise SystemExit(f"unknown input: {入力}")
+if 参照画像 not in ref_source_form_options():
+    raise SystemExit(f"unknown ref: {参照画像}")
+if サイズ not in canvas_form_options():
+    raise SystemExit(f"unknown canvas: {サイズ}")
+print("i2i", True)
+print("preset", クイックプロンプト)
+print("style", 画風, "（入力のまま＝Picture 1の見た目。漫画にしない）")
+print("服を外す", 服を外す, "（必須ではない。アナル／脱糞でも効く）")
+print("フタナリ勃起", フタナリ勃起, "（必須ではない。入力の人。竿役は相手）")
+print("giver", 竿役)
+print("解剖Fixer", 解剖Fixer)
+print("input", 入力)
+print("file", 入力ファイル名 or "(Drive の全部)")
+print("ref", 参照画像)
+print("canvas", サイズ)
+print("rewrite", プロンプトrewrite)
+print("Drive input", IN)
+print(UPLOAD_PHONE_HINT)
+kept_all, _ = list_input_images(IN)
+print("あるファイル", [p.name for p in kept_all] or "なし")
+
+ref_img = None
+ref_skip = ""
+if 参照画像 == "Drive から":
+    ref_skip = 参照ファイル名.strip()
+    if not ref_skip:
+        raise SystemExit("参照ファイル名を入れてください（Drive input の中）")
+    ref_path = IN / ref_skip
+    if not ref_path.is_file():
+        raise SystemExit(f"参照が無い: {ref_path}")
+    refuse_photoreal(ref_path)
+    ref_img = Image.open(ref_path)
+    print("REF Drive", ref_path.name, ref_img.size)
+elif 参照画像 == "アップロード":
+    if not PCから選ぶ:
+        raise SystemExit("スマホは参照画像＝Drive から＋参照ファイル名。PCから選ぶは PC だけ。")
+    print("顔・画風の参照（Picture 2）を1枚")
+    uploaded_ref = {}
+    try:
+        uploaded_ref = files.upload()
+    except KeyboardInterrupt:
+        uploaded_ref = {}
+    if not uploaded_ref:
+        raise SystemExit("参照画像がありません。スマホは参照画像＝Drive から。")
+    fname, blob = next(iter(uploaded_ref.items()))
+    refuse_photoreal(Path(fname))
+    raw = Path("/tmp") / f"ref-{Path(fname).name}"
+    raw.write_bytes(blob)
+    ref_img = Image.open(raw)
+    print("REF upload", fname, ref_img.size)
+
+jobs = []
+if 入力 == "アップロード" and PCから選ぶ:
+    print("PC のファイル選択")
+    uploaded = {}
+    try:
+        uploaded = files.upload()
+    except KeyboardInterrupt:
+        uploaded = {}
+    if uploaded:
+        for fname, blob in uploaded.items():
+            refuse_photoreal(Path(fname))
+            raw = Path("/tmp") / fname
+            raw.write_bytes(blob)
+            jobs.append((fname, Image.open(raw)))
+    else:
+        print("upload なし → Drive input")
+if not jobs:
+    kept, skipped = resolve_input_paths(
+        IN,
+        want_name=入力ファイル名,
+        skip_name=ref_skip,
+    )
+    for path in skipped:
+        print("skip photoreal", path.name)
+    if not kept:
+        raise SystemExit(
+            "Drive input に画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置く。"
+            + UPLOAD_PHONE_HINT
+        )
+    for path in kept:
+        jobs.append((path.name, Image.open(path)))
+
+stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト, extra=PROMPT)
+loaded = globals().get("QWEN_EDIT_LORAS") or set()
+names, weights, trigs = [], [], []
+for name, w, trig in stack:
+    if name in loaded:
+        names.append(name)
+        weights.append(w)
+        trigs.append(trig)
+tok = globals().get("QWEN_EDIT_HF_TOKEN") or ""
+geo = genatomy_stack(解剖Fixer, クイックプロンプト, PROMPT)
+if 解剖Fixer and geo is None:
+    print("解剖Fixer skip（アナル／脱糞以外）")
+if geo:
+    if ランダムシード:
+        print("解剖Fixer試験はランダムシードをオフ、SEEDを固定してオフ→オンを比べる")
+    print("解剖Fixer 初回は epoch-7 約900MB（Colabディスク。Driveには置かない）")
+    ensure_genatomy_adapter(pipe, token=tok)
+    names.append(geo[0])
+    weights.append(geo[1])
+    trigs.append(geo[2])
+    print("解剖Fixer ON", GENATOMY_ADAPTER, GENATOMY_WEIGHT, geo[2])
+prompt = compose_edit_prompt(
+    PROMPT,
+    undress=服を外す,
+    futa=フタナリ勃起,
+    extra_triggers=trigs,
+    preset=クイックプロンプト,
+    style=画風,
+    has_ref=True,
+    giver=竿役,
+)
+if names and hasattr(pipe, "set_adapters"):
+    print("adapters", list(zip(names, weights)))
+else:
+    print("adapters: Rapid-AIO NSFW merge only")
+
+print("prompt:", prompt)
+
+seed = int(SEED)
+if ランダムシード:
+    seed = random.randint(0, 2**31 - 1)
+print("seed", seed)
+
+size_auto = サイズ.startswith("auto")
+offload = getattr(pipe, "_qwen_edit_offload", None) or "cpu"
+gen_device = "cuda" if offload == "cuda" else "cpu"
+print("offload", offload)
+print("vae_area", clamp_edit_vae_area(pipe, DEFAULT_WIDTH, DEFAULT_HEIGHT))
+ref_canvas = snapped_rgb(ref_img) if ref_img is not None else None
+if ref_canvas is not None:
+    print("REF canvas", ref_canvas.size)
+    display(ref_canvas)
+
+used = vram_used_gib(torch)
+print("VRAM used GiB", round(used, 1))
+if used >= VRAM_OFFLOAD_GIB and offload != "cuda":
+    print("VRAM after offload", round(used, 1))
+if offload == "cuda":
+    print("生成は GPU 常駐（A100）。")
+else:
+    print("生成は model_cpu_offload。0/4 はモジュール載せ。待つ。")
+
+for fname, src in jobs:
+    if size_auto:
+        w, h = auto_canvas_size(src)
+    else:
+        w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT
+    canvas = resize_rgb(src, w, h)
+    if ref_canvas is not None:
+        images = pipe_images(canvas, ref_canvas)
+        face_how = "user"
+    else:
+        images = pipe_images(canvas, face_lock_image(canvas))
+        face_how = "auto"
+    prompt_run = prompt
+    if プロンプトrewrite:
+        prompt_run = rewrite_edit_prompt(
+            prompt,
+            canvas,
+            token=tok,
+            enabled=True,
+        )
+        print("rewritten:", prompt_run)
+    prompt_run = lock_identity_prompt(prompt_run, has_ref=True, style=画風, pin_ends=True)
+    print("locked:", prompt_run)
+    kwargs = infer_kwargs(
+        prompt_run,
+        seed=seed,
+        steps=int(STEPS_RUN) or STEPS,
+        true_cfg=TRUE_CFG,
+        guidance=GUIDANCE,
+        negative=style_negative(画風, DEFAULT_NEGATIVE),
+        torch_module=torch,
+        device=gen_device,
+        height=h,
+        width=w,
+        size_auto=False,
+    )
+    print("IN", fname, src.size, "→", canvas.size, "pictures", len(images), "Picture 2", face_how, images[1].size, "canvas", w, h)
+    display(canvas)
+    try:
+        if names and hasattr(pipe, "set_adapters"):
+            if hasattr(pipe, "enable_lora"):
+                pipe.enable_lora()
+            pipe.set_adapters(names, adapter_weights=weights)
+        out = run_pipe_edit(pipe, images, kwargs, torch)
+    finally:
+        if hasattr(pipe, "disable_lora"):
+            pipe.disable_lora()
+        torch.cuda.empty_cache()
+    dest = save_jpeg(
+        out,
+        OUT / edit_output_name(
+            fname,
+            preset=クイックプロンプト,
+            extra=PROMPT,
+            genatomy=bool(geo),
+        ),
+    )
+    print("OUT", dest)
+    display(out)
+
+print("Git に JPG を入れない。Drive の output だけ。")
+'''
+
+CELL3 = CELL3.replace(
+    "__DEFAULT_PRESET__",
+    json.dumps(SEX_PRESET_DEFAULT, ensure_ascii=False),
+).replace(
+    "__QUICK_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in sex_preset_form_options()),
+).replace(
+    "__STYLE_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in style_form_options()),
+).replace(
+    "__GIVER_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in giver_form_options()),
+).replace(
+    "__INPUT_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in input_source_form_options()),
+).replace(
+    "__REF_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in ref_source_form_options()),
+).replace(
+    "__CANVAS_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in canvas_form_options()),
+)
+
+nb = {
+    "nbformat": 4,
+    "nbformat_minor": 5,
+    "metadata": {
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "language_info": {"name": "python"},
+        "accelerator": "GPU",
+        "colab": {"provenance": [], "gpuType": "A100"},
+    },
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [line + "\n" for line in MD0.strip("\n").split("\n")],
+        },
+        {
+            "cell_type": "code",
+            "metadata": {"id": "qwen_edit_1_drive"},
+            "execution_count": None,
+            "outputs": [],
+            "source": [line + "\n" for line in CELL1.strip("\n").split("\n")],
+        },
+        {
+            "cell_type": "code",
+            "metadata": {"id": "qwen_edit_2_load"},
+            "execution_count": None,
+            "outputs": [],
+            "source": [line + "\n" for line in CELL2.strip("\n").split("\n")],
+        },
+        {
+            "cell_type": "code",
+            "metadata": {"id": "qwen_edit_3_run"},
+            "execution_count": None,
+            "outputs": [],
+            "source": [line + "\n" for line in CELL3.strip("\n").split("\n")],
+        },
+    ],
+}
+
+
+def main() -> None:
+    blob = json.dumps(nb, ensure_ascii=False, indent=1)
+    for out in OUTS:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(blob, encoding="utf-8")
+        print("wrote", out, "bytes", out.stat().st_size)
+
+
+if __name__ == "__main__":
+    main()

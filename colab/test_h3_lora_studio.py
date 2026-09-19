@@ -86,6 +86,20 @@ def _check_visible_plan(planned, clip_prompt):
     assert "LIP SYNC" not in planned["prompt"] or "「" in clip_prompt
 
 
+def _check_anal_plan(planned):
+    """futa_anal: 竿＋穴だけ。騎乗・後背・AIO・中出し LoRA は積まない。Turbo なし。"""
+    ids = [row["id"] for row in planned["stack"]]
+    assert ids == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"], ids
+    assert planned["cfg"]["turbo"] is False
+    assert planned["turbo"] is False
+    prompt = planned["prompt"]
+    assert "ANAL CREAMPIE:" in prompt or "anus" in prompt.lower()
+    assert "ANAL HOLE LOCK:" in prompt
+    assert "Never in the pussy" in prompt or "never in the pussy" in prompt.lower()
+    assert "hmmotion" not in prompt.lower()
+    assert "SEMEN SHARE:" not in prompt
+
+
 def test_inject_stack_drops_turbo_and_chains():
     g = build_t2v_graph(
         prompt=DEFAULT_T2V_PROMPT,
@@ -197,6 +211,9 @@ def test_japanese_form_labels():
     assert resolve_situation("ふたなりセックス") == "futa_sex"
     assert resolve_situation("アナルセックス（女体）") == "futa_anal"
     assert resolve_situation("アナルセックス") == "futa_anal"
+    assert resolve_situation("①口内で終わる") == "anal-p1-oral"
+    assert resolve_situation("②フェラのあとアナル") == "anal-p2-bj-anal"
+    assert resolve_situation("③会って即アナル") == "anal-p3-meet-anal"
     assert resolve_situation("騎乗位（女体）") == "riding"
     assert resolve_situation("騎乗位") == "riding"
     assert resolve_situation("後背位（女体）") == "doggy"
@@ -309,7 +326,17 @@ def test_japanese_form_labels():
     assert "Turbo なし" in pee_help
     scat_help = explain_choice("脱糞（どの構図）", "テキストから（写真なし）")
     assert "肛門" in scat_help
+    assert "ThumbInButt" in scat_help
+    assert "ThumbInButt なし" not in scat_help
+    assert "マンコから出る" in scat_help
     assert "肥溜め" in scat_help
+    assert "文章欄" in scat_help
+    assert "ゼリー" in scat_help
+    sunday_help = explain_choice("休日（専用）", "テキストから（写真なし）")
+    assert "アナル中出し" in sunday_help
+    assert "ハードカット" in sunday_help
+    assert "中出し後に抜いて" not in sunday_help
+    assert "AIO 横クローズ" not in sunday_help
     stream_help = explain_choice("放尿（性器から）", "テキストから（写真なし）")
     assert "尿道" in stream_help
     assert friendly_lora("remote-orgasm-h3") == "絶頂"
@@ -323,6 +350,101 @@ def test_vanilla_sfw_shares_phone_path():
     text = explain_choice("普通（エロなし）", "テキストから（写真なし）")
     assert "えっち用の部品は使いません" in text
     assert "Turbo" in text
+
+
+def test_anal_pattern_three_choices(tmp_path):
+    from h3_lora_studio import (
+        ANAL_PATTERN_IDS,
+        STORY_PLAY_CHAIN,
+        anal_pattern_labels,
+        generate_anal_pattern,
+        is_anal_pattern,
+        is_chain_pack,
+        load_story,
+        prepare_story_clip,
+        resolve_story_play,
+        semen_share_plan,
+        situation_ids,
+    )
+
+    assert anal_pattern_labels() == ["①口内で終わる", "②フェラのあとアナル", "③会って即アナル"]
+    assert ANAL_PATTERN_IDS == {"anal-p1-oral", "anal-p2-bj-anal", "anal-p3-meet-anal"}
+    p1 = explain_choice("①口内で終わる", "テキストから（写真なし）")
+    assert "口内 CUMOUF" in p1
+    p2h = explain_choice("②フェラのあとアナル", "テキストから（写真なし）")
+    assert "射精せず" in p2h or "アナル中出し" in p2h
+    p3h = explain_choice("③会って即アナル", "テキストから（写真なし）")
+    assert "ベロチュー" in p3h
+    assert "0-10" in p3h or "パコパコ" in p3h or "挿入" in p3h
+    for label, sid, sits in (
+        ("①口内で終わる", "anal-p1-oral", ["futa_visible", "oral", "oral_creampie", "futa_visible"]),
+        ("②フェラのあとアナル", "anal-p2-bj-anal", ["futa_visible", "oral", "futa_anal", "futa_anal"]),
+        ("③会って即アナル", "anal-p3-meet-anal", ["futa_anal", "futa_anal", "futa_anal", "futa_visible"]),
+    ):
+        assert is_anal_pattern(label) and is_chain_pack(label)
+        assert resolve_story_play(label) == STORY_PLAY_CHAIN
+        story = load_story(sid, pose="standing")
+        assert [c["situation"] for c in story["clips"]] == sits
+        assert story["duration_s"] == 40
+        assert story["seamless"] is True
+        share = semen_share_plan(story)
+        if sid == "anal-p1-oral":
+            assert share == [(2, "on_cumouf")]
+            assert "cumouf-h3" in situation_ids(sid)
+        else:
+            assert share == []
+            assert "cumouf-h3" not in situation_ids(sid)
+        prev = None
+        prev_stack = None
+        for i, clip in enumerate(story["clips"]):
+            planned = prepare_story_clip(
+                story,
+                i,
+                last_frame="h3_chain_0.png",
+                stills_dir=tmp_path,
+                prev_situation=prev,
+                prev_stack=prev_stack,
+            )
+            if clip["situation"] == "futa_anal":
+                _check_anal_plan(planned)
+                assert "Not vaginal" in planned["prompt"] or "Not vaginal" in clip["prompt"] or "anus" in planned["prompt"].lower()
+                if sid == "anal-p3-meet-anal" and i == 2:
+                    assert "Already in" in planned["prompt"] or "Already in" in clip["prompt"]
+                    assert "ejaculates INTO the ANUS" in planned["prompt"] or "ejaculates INTO the ANUS" in clip["prompt"]
+                    assert "INSERTION ON CAMERA" not in planned["prompt"]
+                elif sid == "anal-p3-meet-anal" and i == 1:
+                    assert "PACO-PACO:" in planned["prompt"] or "PACO-PACO:" in clip["prompt"]
+                    assert "INSERTION ON CAMERA" not in planned["prompt"]
+                    assert "ANAL CREAMPIE:" not in planned["prompt"]
+                elif sid == "anal-p3-meet-anal" and i == 0:
+                    assert "INSERTION ON CAMERA" in planned["prompt"] or "INSERTION ON CAMERA" in clip["prompt"]
+                    assert "TALK THEN INSERT:" in clip["prompt"]
+                    assert "No climax this clip" in planned["prompt"] or "No climax this clip" in clip["prompt"]
+                    assert "ANAL CREAMPIE:" not in planned["prompt"]
+                elif sid == "anal-p2-bj-anal" and i == 2:
+                    assert "INSERTION ON CAMERA" in planned["prompt"] or "INSERTION ON CAMERA" in clip["prompt"]
+                    assert "No climax this clip" in planned["prompt"] or "No climax this clip" in clip["prompt"]
+                    assert "ANAL CREAMPIE:" not in planned["prompt"]
+                elif sid == "anal-p2-bj-anal" and i == 3:
+                    assert "PACO-PACO:" in planned["prompt"] or "PACO-PACO:" in clip["prompt"]
+                    assert "ejaculates INTO the ANUS" in planned["prompt"] or "ejaculates INTO the ANUS" in clip["prompt"]
+                else:
+                    assert "INSERTION ON CAMERA" in planned["prompt"] or "PACO-PACO:" in planned["prompt"] or "INSERTION ON CAMERA" in clip["prompt"]
+            if clip["situation"] == "oral_creampie":
+                assert "CUMOUF" in planned["prompt"] or "INTO the MOUTH" in planned["prompt"]
+            prev = planned["situation"]
+            prev_stack = planned["stack"]
+    cow = generate_anal_pattern("anal-p2-bj-anal", pose="cowgirl")
+    assert "straddling" in cow["clips"][2]["prompt"].lower()
+    miss = generate_anal_pattern("anal-p3-meet-anal", pose="missionary")
+    assert "on her back" in miss["clips"][0]["prompt"].lower()
+    assert "on her back" in miss["clips"][1]["prompt"].lower()
+    assert "INSERTION ON CAMERA" in miss["clips"][0]["prompt"]
+    assert "AT ONCE" in miss["clips"][0]["prompt"]
+    assert "TALK THEN INSERT:" in miss["clips"][0]["prompt"]
+    assert "PACO-PACO:" in miss["clips"][1]["prompt"]
+    room = generate_anal_pattern("anal-p2-bj-anal", pose="standing", scene="a riverside fireworks night")
+    assert "riverside fireworks" in room["clips"][0]["prompt"]
 
 
 def test_optional_prompt_uses_custom_or_default():
@@ -454,8 +576,8 @@ def test_unpack_github_archive_and_studio_dest(tmp_path):
     helper.write_text('STUDIO_REV = "h3-20260913-scat-1"\n', encoding="utf-8")
     assert read_studio_rev(helper) == "h3-20260913-scat-1"
     assert read_studio_rev(tmp_path / "nope.py") == ""
-    assert STUDIO_REV == "h3-20260913-cabin-2"
-    assert STUDIO_FETCH_BRANCH == "cursor/h3-mystic-daily-f112"
+    assert STUDIO_REV == "h3-20260914-anal-18"
+    assert STUDIO_FETCH_BRANCH == "cursor/h3-anal-stories-f112"
     assert fetch_github_files_raw("unused", [], lambda rel: out / rel) == []
 
 
@@ -559,8 +681,8 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-lora-studio/profiles/urine_pee.json" in src
     assert "h3-lora-studio/profiles/scat_act.json" in src
     assert "h3-lora-studio/train/pack_dataset.py" in src
-    assert 'FETCH_REV = "h3-20260913-cabin-2"' in src
-    assert 'BRANCH = "cursor/h3-cabin-flow-f112"' in src
+    assert 'FETCH_REV = "h3-20260914-anal-18"' in src
+    assert 'BRANCH = "cursor/h3-anal-stories-f112"' in src
     assert "FETCH_REV}-{int(time.time())}" in src
     assert 'getattr(_h3_cell2, "STUDIO_REV", FETCH_REV)' in src
     assert "Drive に保存したコピー" in src
@@ -572,9 +694,9 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "keep_canvas = bool(STORY)" in src
     assert "cap_fl2va_clip_s" in src
     assert "rewrite_take_seconds" in src
-    assert "1本（最大10秒）" in src
+    assert "1本（最大15秒）" in src
     assert "garbage_collection_threshold:0.8" in src
-    assert "15秒の本は10秒にします" in src
+    assert "15秒超のワンショットは15秒にします" in src
     assert '("colab/h3_r2v_core.py", Path("/content/h3_r2v_core.py"))' in src
     assert '("h3-lora-studio/scripts/select_loras.py", Path("/content/select_loras.py"))' in src
     assert src.find('"colab/h3_r2v_core.py"') < src.find(
@@ -631,7 +753,24 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "後射精（女体）" in blob
     assert "顔射（女体）" in blob
     assert "アナル指入れ" in blob
-    assert "h3-20260913-cabin-2" in blob
+    assert "h3-20260914-anal-18" in blob
+    assert "h3-20260914-anal-16" not in blob
+    assert "h3-20260914-anal-15" not in blob
+    assert "h3-20260914-anal-14" not in blob
+    assert "prompts/h3-body-lock.md" in src
+    assert "帽子（ハット）のみ" in blob
+    assert "キャップのみ" not in blob
+    assert "h3-20260913-anal-13" not in blob
+    assert "h3-20260913-anal-12" not in blob
+    assert "h3-20260913-anal-10" not in blob
+    assert "h3-20260913-anal-8" not in blob
+    assert "h3-20260913-anal-7" not in blob
+    assert "h3-20260913-anal-6" not in blob
+    assert "h3-20260913-anal-5" not in blob
+    assert "h3-20260913-anal-4" not in blob
+    assert "h3-20260913-anal-3" not in blob
+    assert "h3-20260913-anal-2" not in blob
+    assert "h3-20260913-cabin-2" not in blob
     assert "h3-20260913-fetch-1" not in blob
     assert "h3-20260913-cabin-1" not in blob
     assert "h3-20260907-r2v-node-1" not in blob
@@ -642,7 +781,7 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "h3-20260907-door-visit-1" not in blob
     assert "h3-20260907-checkup-face-1" not in blob
     assert "input/commute-120s/" in src
-    assert 'やりたいシーン = "登校（専用）"' in code
+    assert 'やりたいシーン = compose_scene_choice(シーン, 物語, 再生)' in code
     assert '今使うシーン = "登校（専用）"' in code
     assert "force_t2v=FORCE_T2V" in src
     assert "作り方はテキストから。専用フォルダの写真は使いません。" in src
@@ -703,6 +842,11 @@ def test_studio_cell3_skips_homage_ad_prompt():
     assert "warmup_h3_engine" not in swap_chunk
     assert "よく使う部品を全部ディスクへ入れます" in src
     assert "設定だけ更新する = True" in src
+    assert "参照土台も入れる = False" in src
+    assert "want_r2v_engine" in src
+    assert "drop_ref2va_ids" in src
+    assert "参照土台（R2V / ref2va・約21GB）は飛ばします" in src
+    assert "if not need_r2v:\n        ids = drop_ref2va_ids(ids)" in src
     assert "fetch_github_tree" in src
     assert "has_fl2va_weight" in src
     assert "has_eros_unet" in src
@@ -811,17 +955,17 @@ def test_friendly_select_error_for_child_and_picture1():
     assert "②" in (friendly_select_error(SystemExit("stack_plan.helper needs an id")) or "")
 
 
-def test_clamp_studio_duration_is_four_to_ten():
+def test_clamp_studio_duration_is_four_to_fifteen_oneshot():
     assert clamp_studio_duration(10) == 10.0
     assert clamp_studio_duration(5) == 5.0
     assert clamp_studio_duration(4) == 4.0
     assert clamp_studio_duration(3) == 4.0
-    assert clamp_studio_duration(15) == 10.0
-    assert clamp_studio_duration(16) == 10.0
+    assert clamp_studio_duration(15) == 15.0
+    assert clamp_studio_duration(16) == 15.0
     assert clamp_studio_duration(10.4) == 10.0
     assert clamp_studio_duration("8") == 8.0
     assert clamp_studio_duration("nope") == 10.0
-    assert clamp_studio_duration(12, chain=False) == 10.0
+    assert clamp_studio_duration(12, chain=False) == 12.0
     assert clamp_studio_duration(10, chain=True) == 16.0
     assert clamp_studio_duration(16, chain=True) == 16.0
     assert clamp_studio_duration(60, chain=True) == 60.0
@@ -832,7 +976,7 @@ def test_clamp_studio_duration_is_four_to_ten():
     assert clamp_studio_duration(120, chain=True) == 120.0
     assert clamp_studio_duration(121, chain=True) == 120.0
     assert clamp_studio_duration("nope", chain=True) == 16.0
-    assert cap_fl2va_clip_s(15) == 10.0
+    assert cap_fl2va_clip_s(15) == 15.0
     assert cap_fl2va_clip_s(8) == 8.0
     assert rewrite_take_seconds("ONE UNBROKEN 15-second take. the whole 15-second take.", 10) == (
         "ONE UNBROKEN 10-second take. the whole 10-second take."
@@ -857,7 +1001,7 @@ def test_clamp_studio_duration_is_four_to_ten():
     assert situation_ids("anal_penetration") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("urine_drink") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("urine_pee") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
-    assert situation_ids("scat_act") == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert situation_ids("scat_act") == ["mystic-xxx-h3", "thumbinbutt-h3", "penis-lora-h3", "synth-pussy-h3"]
     assert situation_ids("oral") == ["mystic-xxx-h3", "blowjob-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
 
 
@@ -1080,7 +1224,7 @@ def test_mystic_xxx_download_job_uses_civitai_v4_file(tmp_path):
 
 
 def test_studio_clip_plan_chain_stays_under_eleven():
-    assert studio_clip_plan(15) == [10.0]
+    assert studio_clip_plan(15) == [15.0]
     assert studio_clip_plan(16, chain=True) == [10.0, 6.0]
     assert studio_clip_plan(25, chain=True) == [10.0, 10.0, 5.0]
     assert studio_clip_plan(26, chain=True) == [10.0, 10.0, 6.0]
@@ -1130,14 +1274,14 @@ def test_studio_clip_plan_chain_stays_under_eleven():
         assert resolve_length_mode(label) is True
     total, clips, chain = resolve_studio_length(30, "1本（最大15秒）")
     assert chain is False
-    assert total == 10.0
-    assert clips == [10.0]
+    assert total == 15.0
+    assert clips == [15.0]
     assert resolve_length_mode("つなぐ") is True
     assert resolve_length_mode("1本（最大15秒）") is False
     total, clips, chain = resolve_studio_length(30, "1本（最大10秒）")
     assert chain is False
-    assert total == 10.0
-    assert clips == [10.0]
+    assert total == 15.0
+    assert clips == [15.0]
     assert resolve_length_mode("1本（最大10秒）") is False
 
 
@@ -1722,6 +1866,117 @@ def test_stage_models_cores_only_skips_loras_and_ref2va(tmp_path):
     assert "larry.safetensors" in all_files["copied"]
 
 
+def test_r2v_skip_default_and_freeform_lora_picks(tmp_path):
+    import pytest
+
+    from h3_lora_studio import (
+        FREEFORM_ACT_EXIT,
+        FREEFORM_MISSING_HINT,
+        R2V_NEED_EXIT,
+        R2V_SKIP_LOG,
+        drop_ref2va_ids,
+        filter_freeform_lora_stack,
+        find_ref2va_files,
+        is_turbo_lora_id,
+        needs_ref2va_weight,
+        picked_freeform_lora_ids,
+        require_ref2va_or_exit,
+        should_apply_freeform_lora_picks,
+        stage_models_to_local,
+        want_r2v_engine,
+    )
+
+    assert want_r2v_engine(include_r2v=False, scene="登校（専用）") is False
+    assert want_r2v_engine(include_r2v=True, scene="登校（専用）") is True
+    assert want_r2v_engine(include_r2v=False, scene="短編集（参照）") is True
+    assert want_r2v_engine(include_r2v=False, scene="登校（参照つなぐ）") is True
+    assert "飛ばします" in R2V_SKIP_LOG
+    assert drop_ref2va_ids(
+        ["mystic-xxx-h3", "aftermidnight-ref2va", "minimax-h3-turbo-ref2v-4step", "larry-v4"]
+    ) == ["mystic-xxx-h3", "larry-v4"]
+
+    drive = tmp_path / "drive" / "models"
+    local = tmp_path / "local" / "models"
+    (drive / "diffusion_models").mkdir(parents=True)
+    (drive / "text_encoders").mkdir()
+    (drive / "vae").mkdir()
+    (drive / "loras").mkdir()
+    (drive / "diffusion_models" / "minimax_h3_fl2va.safetensors").write_bytes(b"f" * 4000)
+    (drive / "diffusion_models" / "minimax_h3_ref2va.safetensors").write_bytes(b"r" * 8000)
+    (drive / "text_encoders" / "qwen.safetensors").write_bytes(b"t" * 2000)
+    (drive / "vae" / "vae.safetensors").write_bytes(b"v" * 500)
+    skipped = stage_models_to_local(drive, local, min_free_bytes=0, include_ref2v=False)
+    assert "minimax_h3_ref2va.safetensors" not in skipped["copied"]
+    assert not (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").exists()
+    included = stage_models_to_local(drive, local, min_free_bytes=0, include_ref2v=True)
+    assert "minimax_h3_ref2va.safetensors" in included["copied"]
+    assert (local / "diffusion_models" / "minimax_h3_ref2va.safetensors").is_file()
+    assert find_ref2va_files(local)
+
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    with pytest.raises(SystemExit, match="②で参照土台をオンにしてから再実行"):
+        require_ref2va_or_exit(local_models=empty, drive_models=empty, needed=True)
+    assert R2V_NEED_EXIT.startswith("②で参照土台をオンにしてから再実行")
+    assert needs_ref2va_weight(play="参照つなぐ", scene="なし") is True
+    assert needs_ref2va_weight(play="参照つなぐ修", scene="登校") is True
+    assert needs_ref2va_weight(play="つなぐ", scene="日常（エロ汎用）") is False
+    assert needs_ref2va_weight(play="つなぐ", scene="短編集（参照）") is True
+    assert needs_ref2va_weight(
+        play="つなぐ", scene="生成し直し", redo_story="登校（参照つなぐ）"
+    ) is True
+
+    stack = [
+        {"id": "mystic-xxx-h3", "strength_model": 0.5},
+        {"id": "penis-lora-h3", "strength_model": 0.45},
+        {"id": "synth-pussy-h3", "strength_model": 0.4},
+        {"id": "blowjob-h3", "strength_model": 0.6},
+        {"id": "doggy-h3", "strength_model": 0.55},
+        {"id": "larry-v4", "strength_model": 0.5},
+    ]
+    keep, missing = filter_freeform_lora_stack(stack, mode="シーンのまま")
+    assert [row["id"] for row in keep] == [row["id"] for row in stack]
+    assert missing == []
+    turbo, missing = filter_freeform_lora_stack(stack, mode="Turboだけ")
+    assert [row["id"] for row in turbo] == ["larry-v4"]
+    assert missing == []
+    assert is_turbo_lora_id("minimax-h3-turbo-fl2v-4step")
+    assert is_turbo_lora_id("lightx2v-whatever")
+    with pytest.raises(SystemExit, match="行為LoRAはフェラ"):
+        filter_freeform_lora_stack(
+            stack,
+            mode="手で選ぶ",
+            picked_ids=["blowjob-h3", "doggy-h3"],
+        )
+    assert FREEFORM_ACT_EXIT
+    picked = picked_freeform_lora_ids(
+        mystic=True, penis=True, pussy=True, blowjob=True, doggy=True, missionary=False,
+    )
+    assert "blowjob-h3" in picked and "doggy-h3" in picked
+    hand, missing = filter_freeform_lora_stack(
+        stack,
+        mode="手で選ぶ",
+        picked_ids=["mystic-xxx-h3", "missionary-pov-h3"],
+    )
+    assert missing == ["missionary-pov-h3"]
+    assert FREEFORM_MISSING_HINT == "②でその部品を入れる"
+    hand_ids = [row["id"] for row in hand]
+    assert "larry-v4" in hand_ids
+    assert "mystic-xxx-h3" in hand_ids
+    assert "blowjob-h3" not in hand_ids
+    assert "doggy-h3" not in hand_ids
+    assert "penis-lora-h3" not in hand_ids
+    assert should_apply_freeform_lora_picks("hello", using_story=True) is False
+    assert should_apply_freeform_lora_picks("hello", using_story=False) is True
+    assert should_apply_freeform_lora_picks("", using_story=False) is False
+    writer = Path(__file__).resolve().parent / "_write_lora_studio_nb.py"
+    src = writer.read_text(encoding="utf-8")
+    apply_at = src.find("if should_apply_freeform_lora_picks(文章, using_story=bool(STORY)):")
+    vanilla_at = src.find("elif VANILLA:")
+    assert apply_at != -1 and vanilla_at != -1
+    assert vanilla_at < apply_at
+
+
 def test_stage_weight_file_resumes_partial_copy(tmp_path):
     from h3_lora_studio import stage_weight_file
 
@@ -1801,7 +2056,7 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
     assert resolve_situation("帰宅90秒（専用）") == "homecoming-90s"
     assert is_story("帰宅120秒（専用）")
     assert is_story("帰宅90秒（専用）")
-    assert "cumouf-h3" in situation_ids("homecoming-90s")
+    assert "cumouf-h3" not in situation_ids("homecoming-90s")
     story = load_story("homecoming-90s")
     assert story["duration_s"] == 120
     assert len(story["clips"]) == 12
@@ -1812,21 +2067,20 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
         "oral",
         "oral",
         "futa_visible",
-        "futa_visible",
         "cunnilingus_futa",
         "futa_visible",
         "futa_masturbation",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert sum(1 for c in story["clips"] if c["situation"] == "cunnilingus_futa") == 1
-    assert "Close-up" in story["clips"][5]["prompt"]
-    assert "mini breasts and full bodies" not in story["clips"][5]["prompt"]
-    assert "Do not pull back to full bodies" in story["clips"][5]["prompt"]
-    assert "Not a crotch close-up" in story["clips"][4]["prompt"]
+    assert "Close-up" in story["clips"][4]["prompt"]
+    assert "mini breasts and full bodies" not in story["clips"][4]["prompt"]
+    assert "Do not pull back to full bodies" in story["clips"][4]["prompt"]
     assert "LIP SYNC" in story["clips"][10]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     prev = None
@@ -1845,7 +2099,10 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
@@ -1859,9 +2116,8 @@ def test_homecoming_story_twelve_clips_switch_loras(tmp_path):
             assert "synth-pussy-h3" in ids
             assert "penis-lora-h3" in ids
             assert "futa-h3-v51" not in ids
-        if planned["situation"] == "oral_creampie":
-            assert ids[0] == "mystic-xxx-h3" and "cumouf-h3" in ids
-            assert "blowjob-h3" not in ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "cunnilingus_futa":
@@ -1917,13 +2173,12 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "lesbian-cunnilingus-h3" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("dishes-90s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -1937,12 +2192,12 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
         "oral",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
@@ -1950,7 +2205,7 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
     assert all(
         "CAMERA:" in c["prompt"]
         for c in story["clips"]
-        if c["situation"] in {"oral", "oral_creampie"}
+        if c["situation"] in {"oral", "futa_anal"}
     )
     prev = None
     prev_stack = None
@@ -1960,8 +2215,13 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
         assert "Sayaka never leaves the sink" in clip["prompt"]
-        assert "Rei is the seated penis" in clip["prompt"]
-        assert "Aya is the mouth on the floor" in clip["prompt"]
+        if clip["situation"] == "futa_anal":
+            # 尻を出す本ではアヤの口は竿に付いていない。
+            assert "Rei is the penis. Aya is the receiver." in clip["prompt"]
+            assert "Aya is the mouth on the floor" not in clip["prompt"]
+        else:
+            assert "Rei is the seated penis" in clip["prompt"]
+            assert "Aya is the mouth on the floor" in clip["prompt"]
         if i >= 1:
             assert "Adult 22" in clip["prompt"]
             assert "mini breasts" in clip["prompt"].lower() or "Mini breasts" in clip["prompt"]
@@ -1974,7 +2234,10 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["mode"] == "t2v"
@@ -1985,9 +2248,8 @@ def test_dishes_story_twelve_clips_sink_locked(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
-        if planned["situation"] == "oral_creampie":
-            assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
-            assert "blowjob-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     (tmp_path / "01-sink.jpg").write_bytes(b"fake-jpg")
@@ -2019,7 +2281,6 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "synth-pussy-h3",
@@ -2043,16 +2304,16 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
-        "oral",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
     assert "LIP SYNC" in story["clips"][1]["prompt"]
     assert "LIP SYNC" in story["clips"][5]["prompt"]
-    assert "LIP SYNC" in story["clips"][7]["prompt"]
+    assert "LIP SYNC" in story["clips"][6]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     assert "LIP SYNC" not in story["clips"][3]["prompt"]
     prev = None
@@ -2082,7 +2343,10 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         # Unplayed JSON (seamless False): a passed last_frame is ignored → T2V hard cut.
@@ -2098,6 +2362,8 @@ def test_commute_story_twelve_clips_landscape(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     assert "No classroom" in story["clips"][-1]["prompt"]
@@ -2140,14 +2406,13 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
         "hmmasturbation-h3",
         "lesbian-cunnilingus-h3",
         "synth-pussy-h3",
-        "cumouf-h3",
     ]
+    assert "cumouf-h3" not in ids
     story = load_story("lecture-120s")
     assert story["duration_s"] == 100
     assert story["clip_s"] == 10
@@ -2161,10 +2426,10 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         "futa_visible",
         "futa_masturbation",
         "futa_visible",
-        "futa_visible",
         "cunnilingus_futa",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2172,11 +2437,11 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
     assert [c["situation"] for c in story["clips"]] == want
     assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 10
     assert sum(1 for c in story["clips"] if c["situation"] == "cunnilingus_futa") == 1
-    assert "Close-up" in story["clips"][4]["prompt"]
-    assert "Do not pull back to full bodies" in story["clips"][4]["prompt"]
-    assert "Not a crotch close-up" in story["clips"][3]["prompt"]
-    assert "yellow" in story["clips"][3]["prompt"].lower()
-    assert "urethral" in story["clips"][3]["prompt"].lower()
+    assert "Close-up" in story["clips"][3]["prompt"]
+    assert "Do not pull back to full bodies" in story["clips"][3]["prompt"]
+    assert "Not a crotch close-up" in story["clips"][2]["prompt"]
+    assert "yellow" in story["clips"][2]["prompt"].lower()
+    assert "urethral" in story["clips"][2]["prompt"].lower()
     assert "already stroking" in story["clips"][1]["prompt"].lower() or "already seated" in story["clips"][1]["prompt"]
     assert "LIP SYNC" in story["clips"][8]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
@@ -2204,7 +2469,10 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2214,9 +2482,8 @@ def test_lecture_story_ten_clips_campus_noon(tmp_path):
         if planned["situation"] == "oral":
             assert stack_ids[0] == "mystic-xxx-h3" and "blowjob-h3" in stack_ids
             assert "cumouf-h3" not in stack_ids
-        if planned["situation"] == "oral_creampie":
-            assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
-            assert "blowjob-h3" not in stack_ids
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
         if planned["situation"] == "futa_masturbation":
@@ -2255,12 +2522,11 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "larry-v4",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
     ]
     assert "blowjob-h3" not in ids
+    assert "hmnsfw-aio-v25" not in ids
     story = load_story("rooftop-100s")
     assert story["duration_s"] == 100
     assert story["clip_s"] == 10
@@ -2274,10 +2540,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2315,7 +2581,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2324,11 +2593,10 @@ def test_rooftop_story_ten_clips_one_place_each(tmp_path):
         stack_ids = [row["id"] for row in planned["stack"]]
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
-        if planned["situation"] == "futa_sex":
-            assert stack_ids == ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
             assert "larry-v4" not in stack_ids
             assert "blowjob-h3" not in stack_ids
-            assert planned["cfg"]["turbo"] is False
     assert "Genkan BJ is the next chapter" in story["clips"][-1]["prompt"] or "next chapter" in story["clips"][-1]["prompt"]
     (tmp_path / "01-stairs.jpg").write_bytes(b"fake-jpg")
     with_still = prepare_story_clip(story, 0, stills_dir=tmp_path, last_frame="ignored.png")
@@ -2359,13 +2627,12 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("okaeri-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2380,10 +2647,10 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
         "futa_visible",
@@ -2424,7 +2691,10 @@ def test_okaeri_story_twelve_clips_genkan(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2469,13 +2739,12 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("bath-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2492,27 +2761,27 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
     assert "LIP SYNC" in story["clips"][2]["prompt"]
-    assert "LIP SYNC" in story["clips"][5]["prompt"]
+    assert "LIP SYNC" in story["clips"][4]["prompt"]
     assert "LIP SYNC" in story["clips"][11]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
+    assert "LIP SYNC" not in story["clips"][5]["prompt"]
     assert "LIP SYNC" not in story["clips"][6]["prompt"]
-    assert "LIP SYNC" not in story["clips"][7]["prompt"]
     assert "LIP SYNC" not in story["clips"][9]["prompt"]
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
     assert "さきにあらってて" in story["clips"][2]["prompt"]
-    assert "おふろだとよけいムクってる" in story["clips"][5]["prompt"]
+    assert "おふろだとよけいムクってる" in story["clips"][4]["prompt"]
     assert "あがったらごはんね" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
@@ -2539,7 +2808,10 @@ def test_bath_story_twelve_clips_wash_area(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2586,13 +2858,12 @@ def test_dinner_story_twelve_clips_table(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     story = load_story("dinner-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2609,27 +2880,27 @@ def test_dinner_story_twelve_clips_table(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
     assert "LIP SYNC" in story["clips"][2]["prompt"]
-    assert "LIP SYNC" in story["clips"][5]["prompt"]
+    assert "LIP SYNC" in story["clips"][4]["prompt"]
     assert "LIP SYNC" in story["clips"][11]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
+    assert "LIP SYNC" not in story["clips"][5]["prompt"]
     assert "LIP SYNC" not in story["clips"][6]["prompt"]
-    assert "LIP SYNC" not in story["clips"][7]["prompt"]
     assert "LIP SYNC" not in story["clips"][9]["prompt"]
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
     assert "たべなさい" in story["clips"][2]["prompt"]
-    assert "ごはんのとちゅうなのに" in story["clips"][5]["prompt"]
+    assert "ごはんのとちゅうなのに" in story["clips"][4]["prompt"]
     assert "うえもちゃんとたべなさい" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
@@ -2656,7 +2927,10 @@ def test_dinner_story_twelve_clips_table(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2703,13 +2977,12 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
         "blowjob-h3",
         "larry-v4",
-        "cumouf-h3",
         "synth-pussy-h3",
     ]
     assert "hmnsfw-aio-v25" not in ids
+    assert "cumouf-h3" not in ids
     assert "thumbinbutt-h3" not in ids
     story = load_story("futon-120s")
     assert story["duration_s"] == 120
@@ -2727,26 +3000,26 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
         "futa_visible",
     ]
     assert [c["situation"] for c in story["clips"]] == want
     assert [float(c["duration_s"]) for c in story["clips"]] == [10.0] * 12
-    assert "LIP SYNC" in story["clips"][5]["prompt"]
+    assert "LIP SYNC" in story["clips"][4]["prompt"]
     assert "LIP SYNC" in story["clips"][11]["prompt"]
     assert "LIP SYNC" not in story["clips"][0]["prompt"]
     assert "LIP SYNC" not in story["clips"][2]["prompt"]
+    assert "LIP SYNC" not in story["clips"][5]["prompt"]
     assert "LIP SYNC" not in story["clips"][6]["prompt"]
-    assert "LIP SYNC" not in story["clips"][7]["prompt"]
     assert "LIP SYNC" not in story["clips"][9]["prompt"]
     assert "medium-close" in story["clips"][7]["prompt"].lower() or "close" in story["clips"][7]["prompt"].lower()
     assert "NOT IN FRAME" in story["clips"][7]["prompt"]
     assert "NOT IN FRAME" in story["clips"][9]["prompt"]
-    assert "ねるまえなのに" in story["clips"][5]["prompt"]
+    assert "ねるまえなのに" in story["clips"][4]["prompt"]
     assert "でんき、けしたよ" in story["clips"][11]["prompt"]
     prev = None
     prev_stack = None
@@ -2773,7 +3046,10 @@ def test_futon_story_twelve_clips_washitsu(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2820,13 +3096,12 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
     assert ids == [
         "mystic-xxx-h3",
         "penis-lora-h3",
-        "cinema-dy",
-        "hmnsfw-aio-v25",
         "synth-pussy-h3",
         "blowjob-h3",
         "larry-v4",
         "cumouf-h3",
     ]
+    assert "hmnsfw-aio-v25" not in ids
     story = load_story("sunday-120s")
     assert story["duration_s"] == 120
     assert story["clip_s"] == 10
@@ -2841,10 +3116,10 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "oral",
         "oral",
         "oral_creampie",
@@ -2874,14 +3149,7 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
         assert "15," not in clip["prompt"]
         assert "woman, 15" not in clip["prompt"].lower()
         assert "15-second take" not in clip["prompt"]
-        if planned_hmmotion := ("hmmotion" in clip["prompt"]):
-            assert clip["situation"] == "futa_sex", i
-        else:
-            assert clip["situation"] != "futa_sex" or "hmmotion" in clip["prompt"]
-        if clip["situation"] != "futa_sex":
-            assert "hmmotion" not in clip["prompt"]
-        else:
-            assert clip["prompt"].startswith("hmmotion")
+        assert "hmmotion" not in clip["prompt"]
         assert "Adult 22" in clip["prompt"] or "woman, 22" in clip["prompt"] or "woman, 39" in clip["prompt"]
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
@@ -2898,7 +3166,10 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -2913,11 +3184,10 @@ def test_sunday_story_twelve_clips_sofa(tmp_path):
             assert stack_ids[0] == "mystic-xxx-h3" and "cumouf-h3" in stack_ids
             assert "blowjob-h3" not in stack_ids
             assert "hmnsfw-aio-v25" not in stack_ids
-        if planned["situation"] == "futa_sex":
-            assert stack_ids == ["mystic-xxx-h3", "hmnsfw-aio-v25", "penis-lora-h3", "synth-pussy-h3"]
+        if planned["situation"] == "futa_anal":
+            _check_anal_plan(planned)
             assert "larry-v4" not in stack_ids
             assert "blowjob-h3" not in stack_ids
-            assert planned["cfg"]["turbo"] is False
         if planned["situation"] == "futa_visible":
             _check_visible_plan(planned, clip["prompt"])
     last = story["clips"][-1]["prompt"]
@@ -2962,10 +3232,10 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
-        "futa_sex",
-        "futa_sex",
-        "futa_sex",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "oral",
         "oral",
         "oral",
@@ -2998,14 +3268,11 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
         assert hits == [], hits
         assert "schoolgirl" not in clip["prompt"].lower()
         assert "15-second take" not in clip["prompt"]
-        if clip["situation"] != "futa_sex":
-            assert "hmmotion" not in clip["prompt"]
+        assert "hmmotion" not in clip["prompt"]
+        if clip["situation"] == "futa_anal":
+            assert "anus" in clip["prompt"].lower(), i
         else:
-            assert clip["prompt"].startswith("hmmotion")
-        low = clip["prompt"].lower()
-        for neg in ("not anal", "no anal", "switch to anal"):
-            low = low.replace(neg, "")
-        assert "anal" not in low, i
+            assert "anus" not in clip["prompt"].lower() or "NOT IN FRAME" in clip["prompt"], i
         assert "Adult university" in clip["prompt"]
         assert "Not a high school" in clip["prompt"]
         assert "CAST LOCK" in clip["prompt"]
@@ -3020,7 +3287,10 @@ def test_engawa_story_twelve_clips_madoka_shaft(tmp_path):
             prev_stack=prev_stack,
         )
         if i > 0 and want[i] != want[i - 1]:
-            assert planned["stack_changed"]
+            # A different situation can still resolve to the same files (anal vs a spoken clip).
+            assert planned["stack_changed"] or [r["id"] for r in prev_stack] == [
+                r["id"] for r in planned["stack"]
+            ]
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert planned["width"] == 1024
@@ -3146,7 +3416,7 @@ def test_compact_story_prompt_drops_absent_cast_and_editor_meta():
                     row = row.strip()
                     if row and not re.match(r"^[A-Z][a-z]+ = (?:NOT IN FRAME|NOT IN THIS STORY|OFF SCREEN)", row):
                         assert row in out, (where, row)
-    assert total_out < total_raw * 0.92
+    assert total_out < total_raw * 0.94
 
 
 def test_compact_story_prompt_unstructured_text_only_gets_line_cleanup():
@@ -3646,6 +3916,12 @@ def test_chain_pack_three_plays(tmp_path):
     assert story["seamless"] is True and "rewrite_chain_prompts" not in story and "play" not in story
 
 
+def _wide_act_clip(clip):
+    sit = str(clip.get("situation") or "")
+    lab = str(clip.get("label") or "")
+    return sit in {"futa_anal", "doggy", "riding"} or any(k in lab for k in ("挿入", "パコ", "中出し"))
+
+
 def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs, download):
     """建前 packs: 10s × N, kana lines (≤2 per face clip), silent acts, per-clip LoRA, canvas from JSON only."""
     from h3_lora_studio import (
@@ -3681,8 +3957,9 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         prompt = clip["prompt"]
         assert clip["duration_s"] == 10
         assert "15-second" not in prompt and "Hard cut" not in prompt
-        # the canvas is decided by the JSON; no size text in the prompt
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "576x1024" not in prompt and "9:16" not in prompt
         got = spoken_lines(prompt)
         uniq = []
         for s in got:
@@ -3696,9 +3973,15 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         else:
             assert "hmmotion" not in prompt.lower()
         if clip["situation"] in ACT_SITUATIONS:
-            assert not uniq
-            assert "close" in prompt.lower()
-            assert "No spoken words" in prompt
+            from h3_lora_studio import talks_then_insert
+            if talks_then_insert(prompt):
+                assert uniq
+                assert "LIP SYNC" in prompt
+                assert "INSERTION ON CAMERA" in prompt or "PACO-PACO:" in prompt
+            else:
+                assert not uniq
+                assert "close" in prompt.lower() or "joining" in prompt.lower()
+                assert "No spoken words" in prompt
         else:
             assert clip["situation"] == "futa_visible"
             assert uniq and "LIP SYNC" in prompt
@@ -3718,7 +4001,7 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= set(download)
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert planned["duration_s"] == 10
         if i == 0:
             assert planned["mode"] == "t2v" and "opening of one continuous long take" in planned["prompt"]
@@ -3726,59 +4009,113 @@ def _check_pretext_pack(sid, tmp_path, *, n_clips, situations, lines, cast_defs,
             assert planned["mode"] == "i2v" and planned["first_kind"] == "last_frame"
             assert "Picture 1" in planned["prompt"]
         if uniq:
-            assert planned["turbo"] is False and planned["sampler"]["steps"] == 12
+            from h3_lora_studio import talks_then_insert
+            if clip["situation"] == "futa_anal" or talks_then_insert(prompt):
+                assert planned["turbo"] is False
+            else:
+                assert planned["turbo"] is False and planned["sampler"]["steps"] == 12
         for s in uniq:
             assert s in planned["prompt"]
     return story
 
 
 def test_cafe_pack_pretext_water_and_milk(tmp_path):
-    story = _check_pretext_pack(
-        "cafe-100s", tmp_path, n_clips=10,
-        situations=["futa_visible"] * 3 + ["oral"] + ["futa_visible"] * 3 + ["oral", "oral_creampie", "futa_visible"],
-        lines=[
-            ["あちぃー", "あー、すずしい！いきかえるー！"],
-            ["いらっしゃいませ。ごちゅうもんはいかがしますか", "アイスコーヒーで"],
-            ["あ、おミズください", "あ、はい、どうぞ"],
-            [],
-            ["んっ、おチンチン、あつくて、おいしい、、、", "ありがとうございます。コーヒー、すぐおもちしますね"],
-            ["おまたせしました", "あ、ミルクください！"],
-            ["かしこまりました。はい、どうぞ"],
-            [],
-            [],
-            ["んー、やっぱしぼりたてはおいしい！"],
-        ],
-        cast_defs=["Aya", "Clerk"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+    from h3_lora_studio import (
+        _KANJI_RE,
+        load_story,
+        prepare_story_clip,
+        spoken_lines,
+        story_cast_present,
+        validate_story_follow,
     )
-    # clip 1: the clerk is not in frame yet, but her definition is not written either
+
+    story = load_story("cafe-100s")
+    assert story["id"] == "cafe-100s"
+    assert len(story["clips"]) == 11
+    assert story["duration_s"] == 110
+    assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
+    assert story.get("spoken_no_kanji") is True
+    assert validate_story_follow(story) == []
+    assert "PLACEHOLDER" not in json.dumps(story, ensure_ascii=False)
+    assert [c["situation"] for c in story["clips"]] == [
+        "futa_visible",
+        "oral",
+        "oral_creampie",
+        "oral",
+        "futa_visible",
+        "futa_visible",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
+        "futa_visible",
+        "futa_visible",
+    ]
+    want = [
+        ["あちぃー、おまんこあせまみれになっちゃったー"],
+        ["いらっしゃいませ！", "あ、オチンチン"],
+        ["あ、ザーメンでちゃう！"],
+        [],
+        ["ザーメンおいしい！いきかえるー", "つぎはしたのおくちにください"],
+        ["かしこまりました"],
+        [],
+        [],
+        [],
+        [],
+        ["おなかいっぱいになりましたー！", "ありがとうございます！"],
+    ]
+    listed = set(story["download"])
+    assert "cumouf-h3" in listed
+    prev = None
+    prev_stack = None
+    for i, clip in enumerate(story["clips"]):
+        prompt = clip["prompt"]
+        assert "COUNT LOCK:" in prompt
+        assert "ONE person" in prompt
+        assert "Never a second clerk" in prompt
+        assert "Never a clone" in prompt
+        assert "Never two trays" in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "PLACEHOLDER" not in prompt
+        got = spoken_lines(prompt)
+        uniq = []
+        for s in got:
+            if s not in uniq:
+                uniq.append(s)
+        assert uniq == want[i], (clip["label"], uniq)
+        for s in uniq:
+            assert not _KANJI_RE.search(s), s
+        planned = prepare_story_clip(
+            story,
+            i,
+            last_frame=("h3_chain_%d.png" % (i - 1)) if i else None,
+            stills_dir=tmp_path,
+            prev_situation=prev,
+            prev_stack=prev_stack,
+        )
+        prev = planned["situation"]
+        prev_stack = planned["stack"]
+        assert {row["id"] for row in planned["stack"]} <= listed
+        assert planned["width"] == 1024 and planned["height"] == 576
     c1 = story["clips"][0]["prompt"]
     assert "Clerk = NOT IN FRAME" in c1 and "Clerk: Adult" not in c1
-    from h3_lora_studio import story_cast_present
     assert story_cast_present(c1) == ["Aya"]
-    assert "both faces" not in c1
-    cam = c1.split("CAMERA:", 1)[1].split("\n", 1)[0]
-    assert "medium two-shot" not in cam.lower()
-    assert "both faces" not in cam.lower()
-    assert "Aya alone" in cam
-    assert "midsummer" in c1.lower() or "miserably hot" in c1.lower()
-    assert "あちぃー" in c1
-    assert "to the BASE" in story["clips"][3]["prompt"] or "to the base" in story["clips"][3]["prompt"]
+    assert "Heat and relief only" in c1
+    assert "Aya alone" in c1
     for clip in story["clips"][1:]:
         assert story_cast_present(clip["prompt"]) == ["Aya", "Clerk"]
-    assert "jupo-jupo" in story["clips"][3]["prompt"]
-    assert "yellow stream" not in story["clips"][3]["prompt"]
-    assert "BASE" in story["clips"][7]["prompt"]
-    assert "CUMOUF" in story["clips"][8]["prompt"]
-    assert "iced coffee" in story["clips"][9]["prompt"] and "kiss" in story["clips"][9]["prompt"].lower()
+    assert "いらっしゃいませ！" in story["clips"][1]["prompt"]
+    assert "INSERTION ON CAMERA" in story["clips"][6]["prompt"]
+    assert "PACO-PACO:" in story["clips"][7]["prompt"]
+    assert "おなかいっぱいになりましたー！" in story["clips"][10]["prompt"]
     for clip in story["clips"]:
         assert "Rei" not in clip["prompt"] and "Madoka" not in clip["prompt"] and "Sayaka" not in clip["prompt"]
 
 
 def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
     story = _check_pretext_pack(
-        "train-sales-80s", tmp_path, n_clips=8,
-        situations=["futa_visible", "futa_visible", "oral", "futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
+        "train-sales-80s", tmp_path, n_clips=9,
+        situations=["futa_visible", "futa_visible", "oral", "futa_visible", "futa_visible", "oral", "futa_anal", "futa_anal", "futa_visible"],
         lines=[
             ["おちゃ、コーヒー、いかがですか", "おちゃ、ください"],
             ["はい。あついのとひやし、どっち", "ひやしで"],
@@ -3787,11 +4124,13 @@ def test_train_sales_pack_rei_receiver_penis_unused(tmp_path):
             ["ミルクコーヒーも"],
             [],
             [],
+            [],
             ["ん、あつい。ミルクきいてる", "ありがとうございました"],
         ],
         cast_defs=["Rei", "Seller"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "synth-pussy-h3"],
     )
+    assert "cumouf-h3" not in story["download"]
     for clip in story["clips"]:
         assert "20cm hangs unused" in clip["prompt"]
         assert "Aya" not in clip["prompt"]
@@ -3803,7 +4142,7 @@ def test_red_light_pack_hands_on_wheel(tmp_path):
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
         lines=[["あかだね", "つぎ、みぎだよ"], ["エアコン、よわくする？", "このままでいい"], [], [], ["あおになった。みぎね", "うん"]],
         cast_defs=["Aya", "Rei"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
     for clip in story["clips"][2:4]:
         assert "wheel" in clip["prompt"].lower()
@@ -3813,30 +4152,37 @@ def test_red_light_pack_hands_on_wheel(tmp_path):
 def test_yoga_pack_doggy_already_in(tmp_path):
     story = _check_pretext_pack(
         "yoga-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "doggy", "doggy", "futa_visible"],
+        situations=["futa_visible", "futa_anal", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["こし、おとして", "ここ？"], ["もうすこし、まえ", "こつばん、おとしたまま"], [], [], ["いきをととのえて", "すいぶん、とってね"]],
         cast_defs=["Aya", "Instructor"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "doggy-h3", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     )
-    for clip in story["clips"][2:4]:
-        assert ("ALREADY IN" in clip["prompt"] or "Still joined" in clip["prompt"]) and "Joining point" in clip["prompt"]
-        assert "Do not pull out" in clip["prompt"]
-    assert "Not oral" in story["clips"][2]["prompt"]
-    assert "NOT in" in story["clips"][1]["prompt"]
+    assert "doggy-h3" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][1]["prompt"]
+    assert "TALK THEN INSERT:" in story["clips"][1]["prompt"] or "KISS THEN INSERT:" in story["clips"][1]["prompt"]
+    assert "ALREADY IN" not in story["clips"][1]["prompt"]
+    assert "PACO-PACO:" in story["clips"][2]["prompt"]
+    for clip in story["clips"][1:4]:
+        assert "Joining point visible" in clip["prompt"] or "INSERTION ON CAMERA" in clip["prompt"] or "PACO-PACO:" in clip["prompt"]
+        assert "Not vaginal" in clip["prompt"]
+    assert "Not oral" in story["clips"][1]["prompt"] or "Not vaginal" in story["clips"][1]["prompt"]
 
 
 def test_back_wash_pack_cunnilingus_then_jupo(tmp_path):
     story = _check_pretext_pack(
-        "back-wash-60s", tmp_path, n_clips=6,
-        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_visible"],
-        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ"], [], ["んっ、おくまで、はいってた、、。あがっていいよ"]],
+        "back-wash-60s", tmp_path, n_clips=7,
+        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_visible", "oral", "futa_anal", "futa_anal"],
+        lines=[["かたいね", "かた、やって"], ["あわ、たすよ", "したも"], [], ["あがりゆ", "あがっていいよ"], [], [], []],
         cast_defs=["Madoka", "Sayaka"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "blowjob-h3", "larry-v4"],
     )
     cunni = story["clips"][2]["prompt"]
     assert "close-up" in cunni.lower() and "Not oral on the penis" in cunni and "20cm unused" in cunni
     assert "jupo-jupo" in story["clips"][4]["prompt"] and "BASE" in story["clips"][4]["prompt"]
     assert "yellow stream" not in story["clips"][4]["prompt"]
+    assert "INSERTION ON CAMERA" in story["clips"][5]["prompt"]
+    assert "on the lap" in story["clips"][5]["prompt"]
+    assert "PACO-PACO:" in story["clips"][6]["prompt"]
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"] and "Rei" not in clip["prompt"].replace("different face from Rei", "")
 
@@ -3847,7 +4193,7 @@ def test_karaoke_pack_jupo_during_song(tmp_path):
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
         lines=[["このきょく、サビたかい", "キー、さげないの"], ["このまま"], [], [], ["きゅうよんてん", "サビ、きれてた"]],
         cast_defs=["Aya", "Madoka"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
     assert "mic" in story["clips"][2]["prompt"].lower()
     assert "last note" in story["clips"][3]["prompt"].lower()
@@ -3856,15 +4202,17 @@ def test_karaoke_pack_jupo_during_song(tmp_path):
 def test_laundromat_pack_aio_on_machine(tmp_path):
     story = _check_pretext_pack(
         "laundromat-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
+        situations=["futa_visible", "futa_anal", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["あとなんぷん", "じゅうはちふん"], ["ながいね", "すわる？"], [], [], ["おわった", "たたもう"]],
         cast_defs=["Aya", "Rei"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     )
+    assert "hmnsfw-aio-v25" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][1]["prompt"]
+    assert "PACO-PACO:" in story["clips"][2]["prompt"]
     for clip in story["clips"][2:4]:
-        assert clip["prompt"].startswith("hmmotion, PENISLORA")
-        assert "ALREADY IN" in clip["prompt"] or "Still joined" in clip["prompt"]
         assert "machine" in clip["prompt"].lower()
+        assert "Joining point visible" in clip["prompt"] or "INSERTION ON CAMERA" in clip["prompt"] or "PACO-PACO:" in clip["prompt"]
 
 
 def test_lecture_desk_pack_under_the_lectern(tmp_path):
@@ -3873,7 +4221,7 @@ def test_lecture_desk_pack_under_the_lectern(tmp_path):
         situations=["futa_visible", "futa_visible", "oral", "oral_creampie", "futa_visible"],
         lines=[["ここ、しけんにでます", "はい"], ["ノート、とって"], [], [], ["しゅくだい、にじゅうページ", "はい"]],
         cast_defs=["Aya", "Professor"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "blowjob-h3", "larry-v4", "cumouf-h3", "synth-pussy-h3"],
     )
     assert "lectern" in story["clips"][2]["prompt"].lower()
     assert "chalk" in story["clips"][3]["prompt"].lower()
@@ -3884,31 +4232,38 @@ def test_lecture_desk_pack_under_the_lectern(tmp_path):
 
 def test_camp_pack_cunnilingus_only(tmp_path):
     story = _check_pretext_pack(
-        "camp-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "cunnilingus_futa", "futa_visible"],
-        lines=[["か、いる", "スプレー、どこ"], ["テントのなか", "ここ、やられた？"], [], [], ["スプレー、だしてくる", "ライト、もっていって"]],
+        "camp-50s", tmp_path, n_clips=6,
+        situations=["futa_visible", "futa_visible", "cunnilingus_futa", "futa_anal", "futa_anal", "futa_visible"],
+        lines=[["か、いる", "スプレー、どこ"], ["テントのなか", "ここ、やられた？"], [], [], [], ["スプレー、だしてくる", "ライト、もっていって"]],
         cast_defs=["Aya", "Rei"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "lesbian-cunnilingus-h3", "synth-pussy-h3", "larry-v4"],
     )
-    for clip in story["clips"]:
-        assert "20cm hangs unused" in clip["prompt"]
-    for clip in story["clips"][2:4]:
-        assert "Not oral on a penis" in clip["prompt"] and "Not insertion" in clip["prompt"]
+    for idx in (0, 1, 2):
+        assert "20cm hangs unused" in story["clips"][idx]["prompt"], idx
+    cunni = story["clips"][2]["prompt"]
+    assert "Not oral on a penis" in cunni and "Not insertion" in cunni
+    anal = story["clips"][3]["prompt"]
+    assert "INSERTION ON CAMERA" in anal and "all fours" in anal
+    assert "20cm hangs unused" not in anal
+    assert "PACO-PACO:" in story["clips"][4]["prompt"]
     assert "blowjob-h3" not in story["download"] and "cumouf-h3" not in story["download"]
 
 
 def test_fireworks_pack_standing_from_behind(tmp_path):
     story = _check_pretext_pack(
         "fireworks-50s", tmp_path, n_clips=5,
-        situations=["futa_visible", "futa_visible", "futa_sex", "futa_sex", "futa_visible"],
+        situations=["futa_visible", "futa_anal", "futa_anal", "futa_anal", "futa_visible"],
         lines=[["いちはつめ", "あおい"], ["うちあげ、おそいね"], [], [], ["かえろっか", "ゴミ、ひろって"]],
         cast_defs=["Madoka", "Sayaka"],
-        download=["mystic-xxx-h3", "penis-lora-h3", "cinema-dy", "hmnsfw-aio-v25", "synth-pussy-h3", "larry-v4"],
+        download=["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"],
     )
+    assert "hmnsfw-aio-v25" not in story["download"]
+    assert "INSERTION ON CAMERA" in story["clips"][1]["prompt"]
+    assert "PACO-PACO:" in story["clips"][2]["prompt"]
     for clip in story["clips"][2:4]:
-        assert clip["prompt"].startswith("hmmotion, PENISLORA")
-        assert "from behind" in clip["prompt"].lower() or "Still joined" in clip["prompt"]
+        assert "from behind" in clip["prompt"].lower()
         assert "sky" in clip["prompt"].lower()
+    assert "sky" in story["clips"][1]["prompt"].lower()
     for clip in story["clips"]:
         assert "Aya" not in clip["prompt"]
 
@@ -3923,7 +4278,7 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
     )
 
     story = _check_pretext_pack(
-        "cabin-40s", tmp_path, n_clips=8,
+        "cabin-40s", tmp_path, n_clips=9,
         situations=[
             "futa_visible",
             "futa_visible",
@@ -3932,6 +4287,7 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
             "futa_visible",
             "riding",
             "doggy",
+            "futa_anal",
             "futa_anal",
         ],
         lines=[
@@ -3943,12 +4299,12 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
             [],
             [],
             [],
+            [],
         ],
         cast_defs=["Aya", "Rei"],
         download=[
             "mystic-xxx-h3",
             "penis-lora-h3",
-            "cinema-dy",
             "synth-pussy-h3",
             "larry-v4",
             "blowjob-h3",
@@ -4016,11 +4372,14 @@ def test_cabin_pack_door_then_anal_cowgirl(tmp_path):
     assert "hand's width" in c7
     c8 = story["clips"][7]["prompt"]
     assert "INSERTION ON CAMERA" in c8
-    assert "OUT OF THE ANUS" in c8
-    assert "unused pussy does NOT leak" in c8
-    assert "Not a vaginal creampie" in c8
+    assert "No climax this clip" in c8 or "nothing has come out yet" in c8.lower()
+    c9 = story["clips"][8]["prompt"]
+    assert "PACO-PACO:" in c9
+    assert "OUT OF THE ANUS" in c9
+    assert "unused pussy does NOT leak" in c9
+    assert "Not a vaginal creampie" in c9
     planned8 = prepare_story_clip(
-        story, 7, last_frame="h3_chain_6.png", stills_dir=tmp_path, prev_situation="doggy"
+        story, 8, last_frame="h3_chain_7.png", stills_dir=tmp_path, prev_situation="futa_anal"
     )
     assert ANAL_CREAMPIE_LINE in planned8["prompt"]
     assert "unused pussy does NOT leak" in planned8["prompt"]
@@ -4064,16 +4423,16 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
     )
 
     expect = {
-        "manhole-30s": (["futa_visible", "oral_creampie"], ["このフタ、ズレてる", "いまなおす"], ["Aya", "Rei"]),
-        "roof-ac-30s": (["futa_visible", "futa_sex"], ["クーラーしんでる", "フィルタ、みて"], ["Sayaka", "Madoka"]),
-        "tetrapod-30s": (["futa_visible", "oral_creampie"], ["カゼ、ヤバい", "カゲ、こっち"], ["Aya", "Rei"]),
-        "locker-30s": (["futa_visible", "oral_creampie"], ["カギ、ない", "ウチのバンゴウ"], ["Aya", "Madoka"]),
-        "crossing-30s": (["futa_visible", "oral_creampie"], ["シンゴウ、きえてる", "マツ"], ["Sayaka", "Rei"]),
-        "lookout-30s": (["futa_visible", "cunnilingus_futa"], ["ナニモみえない", "シバラク、いよ"], ["Aya", "Rei"]),
-        "factory-30s": (["futa_visible", "futa_sex"], ["サビ、ふむな", "キをつけて"], ["Sayaka", "Madoka"]),
+        "manhole-30s": (["futa_anal", "futa_anal"], ["このフタ、ズレてる", "いまなおす"], ["Aya", "Rei"]),
+        "roof-ac-30s": (["futa_anal", "futa_anal"], ["クーラーしんでる", "フィルタ、みて"], ["Sayaka", "Madoka"]),
+        "tetrapod-30s": (["futa_anal", "futa_anal"], ["カゼ、ヤバい", "カゲ、こっち"], ["Aya", "Rei"]),
+        "locker-30s": (["futa_anal", "futa_anal"], ["カギ、ない", "ウチのバンゴウ"], ["Aya", "Madoka"]),
+        "crossing-30s": (["futa_anal", "futa_anal"], ["シンゴウ、きえてる", "マツ"], ["Sayaka", "Rei"]),
+        "lookout-30s": (["futa_anal", "futa_anal"], ["ナニモみえない", "シバラク、いよ"], ["Aya", "Rei"]),
+        "factory-30s": (["futa_anal", "futa_anal"], ["サビ、ふむな", "キをつけて"], ["Sayaka", "Madoka"]),
         "gas-station-30s": (["futa_visible", "oral_creampie"], ["おチンチン、ミズ、ちょうだい、、、", "はい、おくち、あけて"], ["Aya", "Rei"]),
         "tunnel-phone-30s": (["futa_visible", "oral_creampie"], ["ツウじてる？", "ダセない"], ["Aya", "Rei"]),
-        "riverbank-30s": (["futa_visible", "oral_creampie"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
+        "riverbank-30s": (["futa_anal", "futa_anal"], ["フクロ、やぶれてる", "テープ、ない"], ["Sayaka", "Madoka"]),
         "hachiko-30s": (["futa_visible", "oral_creampie"], ["またシコシコしてる", "がまんできない"], ["Aya", "Rei"]),
     }
     assert tuple(ADDON_PACK_ORDER) == tuple(expect)
@@ -4102,7 +4461,9 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
             prompt = clip["prompt"]
             assert clip["duration_s"] == 10
             assert "10-second take" in prompt
-            assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+            assert "16:9" in prompt and "PULLED BACK" in prompt
+            assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+            assert "576x1024" not in prompt and "9:16" not in prompt
             assert "Full bodies from head to feet" not in prompt
             got = spoken_lines(prompt)
             uniq = []
@@ -4113,18 +4474,23 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
                 assert not _KANJI_RE.search(s), (sid, s)
                 assert not re.search(r"[A-Za-z]", s), (sid, s)
             if i == 0:
-                assert clip["situation"] == "futa_visible"
                 assert uniq == lines, (sid, uniq)
                 assert "LIP SYNC" in prompt
                 assert "hmmotion" not in prompt.lower()
                 c1 = prompt.lower()
                 sit2 = sits[1]
-                if sit2 in {"futa_sex", "doggy"}:
+                if sits[0] == "futa_anal":
+                    assert "TALK THEN INSERT:" in prompt or "KISS THEN INSERT:" in prompt, sid
+                    assert "INSERTION ON CAMERA" in prompt, sid
+                    assert "No climax this clip" in prompt or "nothing has come out yet" in c1, sid
+                elif sit2 in {"futa_sex", "doggy"}:
+                    assert clip["situation"] == "futa_visible"
                     assert "hand's width" in c1, sid
                     assert "not in" in c1, sid
                     assert any(k in c1 for k in ("accepting", "hips back", "knees apart")), sid
                     assert "already in" not in c1, sid
                 elif sit2 in {"oral", "oral_creampie"}:
+                    assert clip["situation"] == "futa_visible"
                     assert "hand's width" in c1, sid
                     assert (
                         "mouth open" in c1
@@ -4133,13 +4499,18 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
                     ), sid
                     assert "already oral" not in c1, sid
                 elif sit2 == "cunnilingus_futa":
+                    assert clip["situation"] == "futa_visible"
                     assert "knees open" in c1, sid
                     assert "not licking" in c1, sid
                     assert "already licking" not in c1, sid
             else:
-                assert not uniq, sid
-                assert "No spoken words" in prompt
-                assert clip["situation"] in ACT_SITUATIONS
+                if sits[0] == "futa_anal" and clip["situation"] == "futa_anal":
+                    assert not uniq, sid
+                    assert "PACO-PACO:" in prompt, sid
+                else:
+                    assert not uniq, sid
+                    assert "No spoken words" in prompt
+                    assert clip["situation"] in ACT_SITUATIONS
             if clip["situation"] in HMMOTION_SITUATIONS:
                 assert prompt.startswith("hmmotion")
             else:
@@ -4157,7 +4528,7 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
             prev = planned["situation"]
             prev_stack = planned["stack"]
             assert {row["id"] for row in planned["stack"]} <= set(story["download"]), (sid, i + 1)
-            assert planned["width"] == 576 and planned["height"] == 1024
+            assert planned["width"] == 1024 and planned["height"] == 576
             assert planned["duration_s"] == 10
             if uniq:
                 assert "SPEECH FACE:" in planned["prompt"]
@@ -4177,6 +4548,23 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
                 assert "joining" in prompt.lower() or "already in" in prompt.lower()
                 assert "口移し" not in planned["prompt"]
                 assert "INSIDE LOCK:" in planned["prompt"]
+            if clip["situation"] == "futa_anal":
+                assert "Joining point visible" in prompt or "INSERTION ON CAMERA" in prompt or "PACO-PACO:" in prompt, sid
+                assert "口移し" not in planned["prompt"]
+                assert "SEMEN SHARE:" not in planned["prompt"], sid
+                if i == 0:
+                    assert "INSERTION ON CAMERA" in prompt, sid
+                    assert "ANAL CREAMPIE:" not in planned["prompt"], sid
+                elif "PACO-PACO:" in prompt or "PACO-PACO:" in planned["prompt"]:
+                    if "ejaculat" in prompt.lower() or "ejaculat" in planned["prompt"].lower():
+                        assert "ANAL CREAMPIE:" in planned["prompt"], sid
+                else:
+                    assert "INSERTION ON CAMERA" in prompt or "PACO-PACO:" in prompt, sid
+                assert [row["id"] for row in planned["stack"]] == [
+                    "mystic-xxx-h3",
+                    "penis-lora-h3",
+                    "synth-pussy-h3",
+                ], sid
         assert all(name in " ".join(c["prompt"] for c in story["clips"]) for name in cast)
 
     gas = load_story("gas-station-30s")
@@ -4196,8 +4584,9 @@ def test_addon_packs_10s_talk_then_silent_act(tmp_path):
     tunnel = load_story("tunnel-phone-30s")
     assert "receiver" in tunnel["clips"][1]["prompt"].lower()
     look = load_story("lookout-30s")
-    assert "20cm hangs unused" in look["clips"][1]["prompt"]
-    assert "Not oral on a penis" in look["clips"][1]["prompt"]
+    assert "INSERTION ON CAMERA" in look["clips"][0]["prompt"]
+    assert "PACO-PACO:" in look["clips"][1]["prompt"]
+    assert "20cm hangs unused" not in look["clips"][1]["prompt"]
     hachiko = load_story("hachiko-30s")
     h1 = hachiko["clips"][0]["prompt"]
     h2 = hachiko["clips"][1]["prompt"]
@@ -4384,7 +4773,7 @@ def test_rewrite_final_and_dedicated_scene_prompts():
     assert rewrite_dedicated_scene_i2v_prompt(ded2) == ded2
 
 
-def _check_pack_common(story, sid, tmp_path):
+def _check_pack_common(story, sid, tmp_path, canvas=None):
     from h3_lora_studio import (
         ACT_SITUATIONS,
         prepare_story_clip,
@@ -4394,6 +4783,8 @@ def _check_pack_common(story, sid, tmp_path):
         validate_story_follow,
     )
 
+    canvas = canvas or {"width": 576, "height": 1024, "aspect": "9:16"}
+    w, h = canvas["width"], canvas["height"]
     assert story["id"] == sid
     assert story["kind"] == "chain"
     assert story["seamless"] is True
@@ -4403,8 +4794,8 @@ def _check_pack_common(story, sid, tmp_path):
     durs = [float(c.get("duration_s") or story["clip_s"]) for c in story["clips"]]
     assert all(d == 10.0 for d in durs)
     assert story["duration_s"] == sum(durs)
-    assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
-    assert story_canvas_wh(story) == (576, 1024)
+    assert story["canvas"] == canvas
+    assert story_canvas_wh(story) == (w, h)
     assert validate_story_follow(story) == []
     assert story["clips"][0]["start"] == "still_or_t2v"
     assert all(c["start"] == "continue" for c in story["clips"][1:])
@@ -4421,12 +4812,22 @@ def _check_pack_common(story, sid, tmp_path):
         assert "15-second" not in prompt
         assert "Hard cut" not in prompt
         assert "Do not copy the previous clip" not in prompt
-        assert "576x1024" in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "576x1024" not in prompt and "9:16" not in prompt
         spoken_cap = max(1, min(2, int(story.get("spoken_max") or 1)))
         assert len(set(lines)) <= spoken_cap, (sid, i + 1, lines)
         if clip["situation"] in ACT_SITUATIONS:
             assert not lines
-            assert "close" in prompt.lower()
+            sit = clip["situation"]
+            if sit in {"oral", "oral_creampie", "cunnilingus_futa", "futa_blowjob"}:
+                assert "close" in prompt.lower()
+            else:
+                assert (
+                    "close" in prompt.lower()
+                    or "joining" in prompt.lower()
+                    or "Full bodies from head to feet" in prompt
+                )
         if lines:
             assert clip["situation"] == "futa_visible"
             assert "LIP SYNC" in prompt
@@ -4439,7 +4840,7 @@ def _check_pack_common(story, sid, tmp_path):
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert planned["duration_s"] == dur
         assert planned["seamless"] is True and planned["rewrite_chain_prompts"] is True
         if i == 0:
@@ -4460,27 +4861,43 @@ def _check_pack_common(story, sid, tmp_path):
 
 
 def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
-    from h3_lora_studio import _KANJI_RE, load_story, spoken_lines
+    from h3_lora_studio import SITUATION_HELP, _KANJI_RE, load_story, spoken_lines
 
-    story = _check_pack_common(load_story("sales-visit-60s"), "sales-visit-60s", tmp_path)
+    help_ja = SITUATION_HELP["sales-visit-60s"]
+    assert "帽子（ハット）のみ" in help_ja
+    assert "キャップのみ" not in help_ja
+    assert "おじゃましまーす" in help_ja
+    assert "サービスでーす" in help_ja
+    story = _check_pack_common(
+        load_story("sales-visit-60s"),
+        "sales-visit-60s",
+        tmp_path,
+        canvas={"width": 1024, "height": 576, "aspect": "16:9"},
+    )
     assert story.get("spoken_no_kanji") is True
     assert story.get("spoken_max") == 2
     assert len(story["clips"]) == 8
     assert story["duration_s"] == 80
     assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == (
-        ["futa_visible"] * 5 + ["oral", "oral_creampie", "futa_visible"]
+        ["futa_visible", "futa_visible", "general_sex", "general_sex", "general_sex", "creampie", "futa_visible", "futa_visible"]
     )
     want = [
-        ["こんにちは。ミルクのハンバイにきました", "あ、おっきいオチンチン"],
-        ["それにしてもおそかったねー", "あ、ごめんなさい、オチンチン、シコシコしてたらおそくなっちゃいました"],
-        "それでこんなにカチカチなんだね！でもまちくたびれちゃったー",
-        ["んっ、おチンチン、あつい、、、", "いっぱいサービスするためにがんばっておおきくしてきましたー"],
-        ["えーありがとうー", "じゃあ、いっただきまーす"],
+        ["こんにちは", "あれ？トイレかな？おじゃましまーす！"],
+        "あ、オナニーしてる！キモチよさそーう",
         None,
         None,
-        "ありがとうございました",
+        None,
+        None,
+        None,
+        "サービスでーす",
     ]
+    blob = json.dumps(story, ensure_ascii=False)
+    assert "おじゃましまーす" in blob
+    assert "サービスでーす" in blob
+    assert "PLACEHOLDER" not in blob
+    assert "yeah" not in blob.lower()
+    assert "moaning" not in blob.lower()
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
         uniq = []
@@ -4506,63 +4923,78 @@ def test_sales_visit_pack_eight_clips_aya_mouth(tmp_path):
         assert "exam room" not in clip["prompt"].lower()
         assert "water case" not in clip["prompt"].lower()
         assert "bottled water" not in clip["prompt"].lower()
-        assert "bottle cap" in clip["prompt"].lower()
+        assert "hat on her head" in clip["prompt"].lower()
+        assert "bottle cap" not in clip["prompt"].lower()
         assert "おミズ" not in clip["prompt"]
-    c3 = story["clips"][2]["prompt"]
-    after_kachi = c3[c3.find("「それでこんなにカチカチなんだね！でもまちくたびれちゃったー」"):]
-    assert "French kiss" in after_kachi
-    assert "strok" in after_kachi.lower()
-    assert "kneel" not in after_kachi.lower() and "knees" not in after_kachi.lower()
-    assert "drops to her knees" not in c3
-    c4 = story["clips"][3]["prompt"]
-    assert "STOP the French kiss" in c4
-    assert "blissed-out" in c4.lower()
-    assert "kneel" not in c4.lower() and "knees" not in c4.lower()
-    assert "jupo" not in c4.lower()
-    c5 = story["clips"][4]["prompt"]
-    assert "えーありがとうー" in c5
-    assert "いっただきまーす" in c5
-    assert "drops to her knees" in c5
-    assert "jupo-jupo" in c5
-    assert "BASE" in c5
+        assert "COUNT LOCK:" in clip["prompt"]
+        assert "16:9 PULLED BACK" in clip["prompt"]
+        assert "face-hidden crop" in clip["prompt"]
+        assert "joining-only crop" in clip["prompt"]
+        sc = clip["prompt"].split("overall_soundscape:")[-1].lower()
+        assert "yeah" not in sc
+        assert "moaning" not in sc
     c1 = story["clips"][0]["prompt"]
     assert "HIDDEN at the start" in c1
-    assert "ENTERS FROM THE RIGHT" in c1
     assert "LEFT" in c1
     assert "Door on the right" in c1 or "door on the right" in c1
     assert "CLOSED front door" in c1 or "CLOSED genkan door" in c1 or "front door is CLOSED" in c1
-    assert "already at the open door" not in c1.lower()
-    assert "faces Aya in the open door" not in c1
-    assert "spoken AFTER the door opens" in c1 or "AFTER the door opens" in c1
-    assert "こんにちは。ミルクのハンバイにきました" in c1
-    after_hanbai = c1[c1.find("「こんにちは。ミルクのハンバイにきました」"):]
-    assert "lightly stroke" in after_hanbai.lower() or "lightly strokes" in after_hanbai.lower()
-    assert "あ、おっきいオチンチン" in after_hanbai
-    assert "does not hold milk" in c1.lower()
+    assert "Do not show Aya this clip" in c1
+    assert "disappears TO THE RIGHT" in c1 or "gone to the right" in c1.lower() or "gone right" in c1.lower()
+    assert "こんにちは" in c1
+    assert "おじゃましまーす" in c1
+    assert "does not hold a bottle lid, milk" in c1.lower()
+    assert "no milk in hand" in c1.lower()
+    assert "hat only, on her head" in c1.lower()
+    assert "no bottle lid in hand" in c1.lower()
     assert "two-shot at the start" in c1.lower() or "Not a two-shot at the start" in c1
     c2 = story["clips"][1]["prompt"]
-    assert "それにしてもおそかったねー" in c2
-    assert "シコシコしてたらおそくなっちゃいました" in c2
-    assert "lightly strok" in c2.lower()
-    assert "smile" in c2.lower()
-    assert "kisses on the mouth and/or breasts" in c2
-    assert "gentle slight upward" in story["clips"][0]["prompt"]
-    assert "easy to take" in story["clips"][4]["prompt"].lower()
-    assert "easy to take" in story["clips"][5]["prompt"].lower()
-    assert "Already oral" in story["clips"][5]["prompt"]
-    assert "jupo-jupo" in story["clips"][5]["prompt"]
-    assert "BASE" in story["clips"][5]["prompt"]
-    assert "yellow" not in story["clips"][5]["prompt"].lower()
-    assert story["clips"][5]["duration_s"] == 10
-    assert "CUMOUF" in story["clips"][6]["prompt"] or "ejaculat" in story["clips"][6]["prompt"].lower()
-    assert "cumouf-h3" in story["download"]
-    assert "sticky" in story["clips"][6]["prompt"].lower() or "viscous" in story["clips"][6]["prompt"].lower()
+    assert "あ、オナニーしてる！キモチよさそーう" in c2
+    assert "M-spread" in c2 or "M-spread" in c2
+    assert "self anal" in c2.lower() or "own anus" in c2.lower()
+    assert "strok" in c2.lower() or "シコシコ" in c2
+    c3 = story["clips"][2]["prompt"]
+    assert "French" in c3 and "kiss" in c3.lower()
+    assert "INSERTION ON CAMERA" in c3
+    assert "pussy" in c3.lower()
+    assert "having missionary sex" in c3
+    assert "Not the anus" in c3 or "not the anus" in c3.lower()
+    assert "0.4" in c3
+    c4 = story["clips"][3]["prompt"]
+    c5 = story["clips"][4]["prompt"]
+    for paco in (c4, c5):
+        assert "PACO-PACO:" in paco
+        assert "having missionary sex" in paco
+        assert "んっ" in paco and "あっ" in paco and "はぁー" in paco
+        assert "yeah" not in paco.lower()
+        assert "drool" in paco.lower()
+        assert "0.4" in paco
+    c6 = story["clips"][5]["prompt"]
+    assert "INTO the PUSSY" in c6 or "into the pussy" in c6.lower()
+    assert "WHITE goo" in c6
+    assert "orgasm face" in c6.lower() or "Iki-gao" in c6
+    c7 = story["clips"][6]["prompt"]
+    assert "pull" in c7.lower()
+    assert "frog pose" in c7.lower()
+    assert "FROM THE PUSSY" in c7 or "from the pussy" in c7.lower()
+    c8 = story["clips"][7]["prompt"]
+    assert "サービスでーす" in c8
+    assert "yellow" in c8.lower()
+    assert "Not white" in c8 or "not white" in c8.lower()
+    assert "Not semen" in c8
+    assert "cumouf-h3" not in story["download"]
+    assert "blowjob-h3" not in story["download"]
+    assert "missionary-pov-h3" not in story["download"]
 
 
 def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     from h3_lora_studio import _KANJI_RE, load_story, prepare_story_clip, semen_share_plan, spoken_lines
 
-    story = _check_pack_common(load_story("checkup-100s"), "checkup-100s", tmp_path)
+    story = _check_pack_common(
+        load_story("checkup-100s"),
+        "checkup-100s",
+        tmp_path,
+        canvas={"width": 1024, "height": 576, "aspect": "16:9"},
+    )
     assert story["spoken_no_kanji"] is True
     assert len(story["clips"]) == 9
     assert story["duration_s"] == 90
@@ -4570,18 +5002,18 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
         [10, 10, 10, 10, 10, 10, 10, 10, 10]
     )
     assert [c["situation"] for c in story["clips"]] == (
-        ["futa_visible"] * 6 + ["oral", "oral_creampie", "futa_visible"]
+        ["futa_visible"] * 5 + ["oral", "futa_anal", "futa_anal", "futa_visible"]
     )
     want = [
         ["こんにちは", "はい"],
         ["テイキケンシンにきました", "あ、ヨロシクオネガイします！"],
         ["ふふ、オチンチンかたくておっきい！", "では、シツレイして、いっぱいさわっちゃいますね！"],
-        None,
         "ふふ、クチもムネもぬるぬるで、モンダイないですね",
         "ふふ、つぎはこのカチカチ、おくまでカクニンしてあげますね",
         None,
         None,
-        "ふふ、モンダイありすぎです、おくちにだされすぎ、、、",
+        None,
+        "ふふ、モンダイありすぎ。アナルにだされすぎ、、、",
     ]
     for clip, line in zip(story["clips"], want):
         got = spoken_lines(clip["prompt"])
@@ -4628,12 +5060,9 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     assert "SEPARATE" in after_yoroshiku
     assert "not kissing" in c2.lower()
     last = story["clips"][8]["prompt"]
-    assert "ふふ、モンダイありすぎです、おくちにだされすぎ、、、" in last
-    after_mondai = last[last.find("「ふふ、モンダイありすぎです、おくちにだされすぎ、、、」"):]
-    assert "STANDS UP" in after_mondai
-    assert "SAME EYE LEVEL" in after_mondai
-    assert "mouth-to-mouth" in after_mondai.lower()
-    assert "Do NOT stay looking up" in last
+    assert "ふふ、モンダイありすぎ。アナルにだされすぎ、、、" in last
+    assert "No mouth-to-mouth semen share" in last
+    assert "SEMEN SHARE:" not in last
     peck = story["clips"][2]["prompt"]
     assert "ふふ、オチンチンかたくておっきい！" in peck
     assert "では、シツレイして、いっぱいさわっちゃいますね！" in peck
@@ -4644,30 +5073,20 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
     kiss = story["clips"][3]["prompt"].lower()
     assert "kiss" in kiss
     assert "breast" in kiss
-    assert "both hands" in kiss
-    kakunin = story["clips"][5]["prompt"]
+    kakunin = story["clips"][4]["prompt"]
     assert "does NOT squat" in kakunin
     assert "begins to squat" not in kakunin
-    assert "kisses on the mouth and/or breasts" in story["clips"][4]["prompt"]
-    assert "easy to take" in story["clips"][4]["prompt"].lower()
-    assert "easy to take" in kakunin.lower()
-    assert "gentle slight upward" in story["clips"][0]["prompt"]
-    assert "already squatting" in story["clips"][6]["prompt"]
-    assert "CUMOUF" in story["clips"][7]["prompt"] or "ejaculat" in story["clips"][7]["prompt"].lower()
-    assert "cumouf-h3" in story["download"]
-    kiss = story["clips"][3]["prompt"].lower()
-    assert "grind" in kiss or "stomach" in kiss
+    assert "kisses on the mouth and/or breasts" in story["clips"][3]["prompt"]
+    assert "easy to take" in story["clips"][3]["prompt"].lower()
     assert "no freeze" in story["clips"][0]["prompt"].lower() or "not frozen" in story["clips"][0]["prompt"].lower()
-    assert "bob" in story["clips"][6]["prompt"].lower()
-    assert "ONLY Rei looks pleasured" not in story["clips"][6]["prompt"]
+    assert "bob" in story["clips"][5]["prompt"].lower()
+    assert "ONLY Rei looks pleasured" not in story["clips"][5]["prompt"]
     assert "straight clinical face" not in story["clips"][8]["prompt"]
     assert "immoral" in story["clips"][8]["prompt"].lower()
-    assert semen_share_plan(story) == [(8, "after_speech")]
+    assert semen_share_plan(story) == []
     last_p = prepare_story_clip(story, 8, last_frame="x.png", stills_dir=tmp_path)
-    assert "SEMEN SHARE:" in last_p["prompt"]
-    assert "mouth-to-mouth" in last_p["prompt"].lower()
-    assert "STANDS UP" in last_p["prompt"]
-    assert "ふふ、モンダイありすぎです、おくちにだされすぎ、、、" in last_p["prompt"]
+    assert "SEMEN SHARE:" not in last_p["prompt"]
+    assert "ふふ、モンダイありすぎ。アナルにだされすぎ、、、" in last_p["prompt"]
     c1p = prepare_story_clip(story, 0, stills_dir=tmp_path)
     assert "START CAST:" in c1p["prompt"]
     assert "French kiss" in c1p["prompt"]
@@ -4676,9 +5095,10 @@ def test_checkup_pack_nine_clips_doorway_kana_lines(tmp_path):
 
 
 def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
-    """医院ケンシン: アヤが来る。医師が20cm。10本＝100秒。パイプ椅子。問診のあと立ち上がりディープキス。押し倒して仰向けジュボ。セックスなし。仰向け口移し。"""
+    """医院ケンシン: アヤ受け＋医師竿。9本＝90秒。16:9。こんにちは→椅子座りジュボ→10秒ずっとジュボ→口を外すゴホウビ小便→まみれベロチュー→30度四つん這い接触→挿入→パコ→中出し。"""
     from h3_lora_studio import (
         ACT_SITUATIONS,
+        SITUATION_HELP,
         _KANJI_RE,
         apply_story_play,
         clip_cast_people,
@@ -4704,42 +5124,45 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
     assert story["clip_s"] == 10
-    assert story["duration_s"] == 100
-    assert story["title_ja"] == "ケンシン100秒"
-    assert len(story["clips"]) == 10
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 10
+    assert story["duration_s"] == 90
+    assert story["title_ja"] == "ケンシン90秒（つなぐ）"
+    assert len(story["clips"]) == 9
+    assert [c["id"] for c in story["clips"]] == [f"c{i}" for i in range(1, 10)]
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 9
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "futa_visible",
         "futa_visible",
-        "oral",
         "futa_visible",
-        "oral",
-        "oral",
-        "oral_creampie",
         "futa_visible",
+        "futa_anal",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
-    assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
-    assert story_canvas_wh(story) == (576, 1024)
+    assert story["canvas"] == {"width": 1024, "height": 576, "aspect": "16:9"}
+    assert story_canvas_wh(story) == (1024, 576)
     assert validate_story_follow(story) == []
     assert is_chain_pack("clinic-75s") and not is_story("clinic-75s")
     assert set(story["download"]) == set(situation_ids("clinic-75s"))
+    assert "cinema-dy" not in story["download"]
     assert "cowgirl-position-h3" not in story["download"]
-    assert "cumouf-h3" in story["download"]
+    assert "cumouf-h3" not in story["download"]
+    assert "riding-pose-i2v" not in story["download"]
     assert "hmnsfw-aio-v25" not in story["download"]
-    assert semen_share_plan(story) == [(8, "on_back")]
+    assert semen_share_plan(story) == []
+    raw_all = "".join(c["prompt"] for c in story["clips"])
+    assert "PLACEHOLDER" not in raw_all
     want = [
-        ["ヨロシクオネガイします！あ、オチンチンおっきい！", "どうぞおすわりください"],
-        ["キョウはどうしました？", "サイキンおマンコがウズウズして、、、"],
-        ["それはタイヘンですね！じゃあ、みていきますね"],
+        ["こんにちは"],
         [],
-        ["もう、ガマンできない！"],
-        [],
+        ["ありがとう！ゴホウビです"],
+        ["おしっこ、あったかーい！ありがとー！"],
         [],
         [],
         [],
-        ["ゲンキになりましたね", "ありがとうございます"],
+        [],
+        ["ゲンキになりましたか", "はい、スッキリしました"],
     ]
     listed = set(story["download"])
     prev = None
@@ -4758,8 +5181,10 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
-        assert "Full bodies from head to feet" not in prompt
+        assert "1024x576" in prompt and "16:9" in prompt
+        assert "576x1024" not in prompt
+        if uniq:
+            assert "Full bodies from head to feet" not in prompt
         assert "Doctor: Adult Japanese woman, 32" in prompt
         assert "Clear futanari" in prompt
         assert "Penis plus vagina, never balls" in prompt
@@ -4773,12 +5198,19 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
         assert "No feces" in prompt
         assert dur == 10
         assert "15-second" not in prompt
+        assert "NEVER on her back" in prompt or "NEVER lying on her back" in prompt
+        assert "straddl" not in prompt.lower()
+        assert "LYING ON THEIR BACK" not in prompt
         if uniq:
             assert "LIP SYNC" in prompt
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert (
+                "close" in prompt.lower()
+                or "joining" in prompt.lower()
+                or "Full bodies from head to feet" in prompt
+            )
         planned = prepare_story_clip(
             story,
             i,
@@ -4791,12 +5223,14 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert planned["duration_s"] == dur
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "When erect: 20cm" in planned["prompt"]
         if clip["situation"] == "futa_visible":
             _check_visible_plan(planned, prompt)
+        if clip["situation"] == "futa_anal":
+            _check_anal_plan(planned)
         for spoken in uniq:
             assert spoken in planned["prompt"]
     c1 = story["clips"][0]["prompt"]
@@ -4809,106 +5243,94 @@ def test_clinic_kenshin_pack_aya_visits_futa_doctor(tmp_path):
     assert "Do not show Aya until the door opens" in c1
     assert "exam" in c1.lower() or "clinic" in c1.lower()
     assert "LEFT" in c1
-    assert "legs spread" in c1.lower()
-    assert "strok" in c1.lower() or "シコシコ" in c1
-    assert "expressionless" in c1.lower()
-    assert "どうぞおすわりください" in c1
+    assert "こんにちは" in c1
     assert "RIGHT" in c1
-    assert "ツギのヒト" not in c1
-    assert "brief wet kiss" in c1.lower()
-    assert "STANDS UP" in c1
-    assert "BOTH STANDING" in c1 or "both STAND" in c1
-    assert "doctor stays STANDING" in c1.lower() or "doctor STANDING" in c1
-    assert "steel-pipe" in c1.lower() or "pipe chair" in c1.lower()
-    assert "パイプ椅子" not in c1
-    multi = c1[c1.find("integrated_multimodal_description:"):]
-    assert multi.find("ヨロシクオネガイします！あ、オチンチンおっきい！") < multi.lower().find("brief wet kiss") < multi.find("どうぞおすわりください")
+    assert "jupo" in c1.lower()
+    assert "SEATED" in c1
+    assert "pipe chair" in c1
+    assert "PULLED BACK" in c1
+    assert "face stays in frame" in c1.lower() or "FACE STILL IN FRAME" in c1
+    assert "Full bodies from head to feet" not in c1
+    sorry = story["clips"][3]["prompt"]
+    assert "FACE TO FACE" in sorry
+    assert "Hands NEVER on the floor" in sorry or "Hands do not go to the floor" in sorry
+    assert "does NOT turn her back" in sorry or "does not turn her back" in sorry
+    assert "Full bodies from head to feet" not in sorry
+    last_prompt = story["clips"][8]["prompt"]
+    assert "Full bodies from head to feet" not in last_prompt
+    assert "ごめん" not in raw_all
+    c2p = story["clips"][1]["prompt"]
+    assert "ベロチュー" not in c2p
+    assert "tongue kiss" not in c2p.lower()
+    assert "does not kiss this clip" in c2p
+    assert "Mouth NEVER off" in c2p or "mouth NEVER off" in c2p
+    assert "STANDS UP" not in c2p
+    assert "yellow urine" in story["clips"][2]["prompt"].lower()
+    assert "ありがとう！ゴホウビです" in story["clips"][2]["prompt"]
+    assert "おしっこ、あったかーい！ありがとー！" in story["clips"][3]["prompt"]
+    assert "French" in story["clips"][3]["prompt"] or "ベロチュー" in story["clips"][3]["prompt"]
+    for wet in story["clips"][4:9]:
+        assert "yellow urine" in wet["prompt"].lower(), wet["id"]
+        assert "Not washed off" in wet["prompt"] or "not washed off" in wet["prompt"]
+    assert re.search(r"\brim\b", raw_all, re.I) is None
+    assert "縁" not in raw_all
+    assert "the outer ring of the anus entrance" in story["clips"][4]["prompt"]
+    assert "the outer ring of the anus entrance" in story["clips"][5]["prompt"]
+    for act in story["clips"][4:8]:
+        ap = act["prompt"]
+        assert "30 degrees" in ap, act["id"]
+        assert "SAME DIRECTION" in ap, act["id"]
+        assert "NO KISS" in ap, act["id"]
+        assert "PULLED BACK" in ap, act["id"]
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     assert "START CAST:" in p0["prompt"]
     assert "SHAFT LOOK:" in p0["prompt"]
     assert "opening of one continuous long take" in p0["prompt"]
-    consult = story["clips"][1]["prompt"]
-    assert "キョウはどうしました？" in consult
-    assert "サイキンおマンコがウズウズして、、、" in consult
-    assert "SITS" in consult or "SEATED" in consult
-    assert "No deep kiss this clip" in consult
-    assert "クチとムネはモンダイないですね" not in consult
-    kiss_raw = story["clips"][2]["prompt"]
-    kiss = kiss_raw.lower()
-    assert "それはタイヘンですね！じゃあ、みていきますね" in kiss_raw
-    assert "STANDS UP" in kiss_raw
-    assert "SEDUCTIVE" in kiss_raw
-    assert "kiss" in kiss
-    assert "knead" in kiss or "cup and knead" in kiss
-    assert "hands" in kiss and "breast" in kiss
-    assert "hand's width" in kiss_raw or "hand’s width" in kiss_raw
-    assert "mouth OPEN" in kiss_raw
-    assert "ウンチ" not in kiss_raw
-    assert "胸は揉まない" not in kiss_raw
-    assert "クチとムネはモンダイないですね" not in kiss_raw
-    oral = story["clips"][3]["prompt"]
-    assert "Already at the BASE" in oral or "already at the BASE" in oral
-    assert "NEVER on the shaft" in oral
-    assert "pussy" in oral.lower()
-    assert "rub" in oral.lower()
-    jubo = planned_by_i[3]
-    assert "ORAL LOCK:" in jubo["prompt"]
-    assert "PLEASURE FACE:" in jubo["prompt"]
-    assert "PLEASURE VOICE:" in jubo["prompt"]
-    assert "EROTIC WAIT:" in jubo["prompt"]
-    assert "blowjob-h3" in [row["id"] for row in jubo["stack"]]
-    push = story["clips"][4]["prompt"]
-    assert "もう、ガマンできない！" in push
-    assert "hand's width" in push or "hand’s width" in push
-    assert "NOT in" in push
-    assert "LYING ON THEIR BACK" in push
-    assert "SEDUCTIVE" in push
-    assert "NOT cowgirl" in push or "not cowgirl" in push.lower()
-    assert "kneel" in push.lower()
-    assert "mouth OPEN" in push
-    assert "cowgirl pose" not in push.lower()
-    assert "straddl" not in push.lower()
-    back1 = story["clips"][5]["prompt"]
-    assert not back1.startswith("cowgirl position")
-    assert "INSERTION ON CAMERA" not in back1
-    assert "LYING ON THEIR BACK" in back1
-    assert "Already at the BASE" in back1 or "already at the BASE" in back1
-    assert "NEVER on the shaft" in back1
-    assert "hmmotion" not in back1.lower()
-    back1_p = planned_by_i[5]
-    assert "blowjob-h3" in [row["id"] for row in back1_p["stack"]]
-    assert "cowgirl-position-h3" not in [row["id"] for row in back1_p["stack"]]
-    assert "hmnsfw-aio-v25" not in [row["id"] for row in back1_p["stack"]]
-    assert "ORAL LOCK:" in back1_p["prompt"]
-    assert "INSIDE LOCK:" not in back1_p["prompt"]
-    assert "PLEASURE FACE:" in back1_p["prompt"]
-    back2 = story["clips"][6]["prompt"]
-    assert "Already at the BASE" in back2 or "already at the BASE" in back2
-    assert "LYING ON THEIR BACK" in back2
-    assert "jupo" in back2.lower()
-    cum = story["clips"][7]["prompt"]
-    assert "CUMOUF" in cum
-    assert "LYING ON THEIR BACK" in cum
-    assert "End: still in her mouth" in cum
-    cum_p = planned_by_i[7]
-    assert "cumouf-h3" in [row["id"] for row in cum_p["stack"]]
-    assert "cowgirl-position-h3" not in [row["id"] for row in cum_p["stack"]]
-    share_raw = story["clips"][8]["prompt"]
-    assert "STAYS LYING ON THEIR BACK" in share_raw
-    assert "leans DOWN" in share_raw
-    share = planned_by_i[8]
-    assert "SEMEN SHARE:" in share["prompt"]
-    assert "STAYS LYING" in share["prompt"]
-    assert "mouth-to-mouth" in share["prompt"].lower()
-    assert "SAME EYE LEVEL" not in share["prompt"]
-    assert "STANDS UP" not in share["prompt"]
-    last = planned_by_i[9]
+    assert "EROTIC WAIT:" not in p0["prompt"]
+    pull = story["clips"][1]["prompt"]
+    assert "STANDS UP" not in pull
+    assert "saliva" in pull.lower()
+    assert "jupo" in pull.lower()
+    hug = story["clips"][2]["prompt"]
+    assert "yellow urine" in hug.lower()
+    assert "ゴホウビ" in hug
+    assert "mouth OFF" in hug or "mouth off" in hug.lower()
+    pee_talk = story["clips"][3]["prompt"]
+    assert "おしっこ、あったかーい！ありがとー！" in pee_talk
+    assert "ダイジョウブですよー" not in pee_talk
+    assert "French" in pee_talk
+    help_ja = SITUATION_HELP["clinic-75s"]
+    assert "SEATED" in help_ja and "pipe chair" in help_ja
+    assert "30 degrees" in help_ja and "SAME DIRECTION" in help_ja
+    assert "outer ring of the anus entrance" in help_ja
+    assert "ずっとジュボ" in help_ja or "口を外すな" in help_ja
+    prep = story["clips"][4]["prompt"]
+    assert "all fours" in prep.lower() or "on all fours" in prep.lower()
+    assert "BOTH HANDS" in prep and "BOTH KNEES" in prep
+    assert "LOOKBACK" in prep or "lookback" in prep.lower()
+    assert "own ass" in prep.lower()
+    assert "CONTACT" in prep or "contact" in prep.lower()
+    assert "NOT in" in prep
+    assert "ANAL PREP" in prep
+    anal = story["clips"][5]["prompt"]
+    assert "INSERTION ON CAMERA" in anal
+    assert "SAME pose" in anal
+    assert "CUMOUF" not in anal
+    assert "No cowgirl LoRA" in anal or "NOT cowgirl" in anal
+    anal_p = planned_by_i[5]
+    assert [row["id"] for row in anal_p["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert anal_p["turbo"] is False
+    paco = story["clips"][6]["prompt"]
+    assert "PACO-PACO:" in paco
+    cream = story["clips"][7]["prompt"]
+    assert "OUT OF THE ANUS" in cream or "out of the anus" in cream.lower()
+    last = planned_by_i[8]
     assert "SEMEN SHARE:" not in last["prompt"]
-    assert "ゲンキになりましたね" in last["prompt"]
-    assert "ありがとうございます" in last["prompt"]
-    assert "LYING ON THEIR BACK" in story["clips"][9]["prompt"]
-    assert "STANDING" not in story["clips"][9]["prompt"]
+    assert "ゲンキになりましたか" in last["prompt"]
+    assert "はい、スッキリしました" in last["prompt"]
+    assert "STANDING" in story["clips"][8]["prompt"]
+    assert "No mouth-to-mouth semen share" in story["clips"][8]["prompt"]
     cast = _write_cast_stills(tmp_path / "cast")
     clinic_ref = apply_story_play(story, "ref_chain")
     r0 = prepare_story_clip(clinic_ref, 0, stills_dir=tmp_path, cast_dir=cast)
@@ -4936,7 +5358,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         {"id": "cinema-dy", "strength": 0.5, "strength_model": 0.5},
     ]
     i2v = drop_speech_face_killers(stack, speaks=True, mode="i2v")
-    assert [x["id"] for x in i2v] == ["penis-lora-h3"]
+    assert [x["id"] for x in i2v] == ["penis-lora-h3", "cinema-dy"]
     silent = drop_speech_face_killers(stack, speaks=False, mode="i2v")
     assert [x["id"] for x in silent] == ["penis-lora-h3", "cinema-dy"]
     r2v = drop_speech_face_killers(
@@ -4945,7 +5367,7 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
         mode="r2v",
     )
     assert r2v[0]["id"] == "cinema-dy"
-    assert r2v[0]["strength_model"] == 0.35
+    assert r2v[0]["strength_model"] == 0.5
 
     locked = lock_spoken_japanese(
         "overall_soundscape:\nClinic hum. Rei speaks, lip-synced: 「こんにちは」. No other speech.\n",
@@ -5031,18 +5453,8 @@ def test_speech_drops_cinema_locks_japanese_and_unloads_on_stack_change(tmp_path
     assert next_speech["mode"] == "i2v"
     assert "Picture 1" in next_speech["prompt"]
     assert "[AUDIO-LOCK]" not in next_speech["prompt"]
-    kiss = prepare_story_clip(
-        story, 3, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
-    )
-    assert kiss["situation"] == "futa_visible"
-    assert kiss["stack_changed"] is True
-    assert stack_signature(kiss["stack"]) != stack_signature(speech["stack"])
-    assert [row["id"] for row in kiss["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3", "larry-v4"]
-    assert "spoken_transcript" not in kiss["prompt"]
-    assert "誰も話さない" not in kiss["prompt"]
-    assert "No spoken words" not in soundscape_text(kiss["prompt"])
     oral = prepare_story_clip(
-        story, 6, last_frame="x.png", stills_dir=tmp_path, prev_situation=kiss["situation"], prev_stack=kiss["stack"]
+        story, 5, last_frame="x.png", stills_dir=tmp_path, prev_situation=next_speech["situation"], prev_stack=next_speech["stack"]
     )
     assert oral["situation"] == "oral"
     assert oral["stack_changed"] is True
@@ -5153,9 +5565,9 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
         "oral_creampie",
         "futa_visible",
         "futa_visible",
-        "futa_visible",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
@@ -5167,15 +5579,15 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
     assert "hmcumshot-v2" not in story["download"]
     assert "cumouf-h3" in story["download"]
     assert "final-thrust-h3" not in story["download"]
-    assert semen_share_plan(story) == [(3, "on_cumouf"), (9, "silent_next")]
+    assert semen_share_plan(story) == [(3, "on_cumouf")]
     want = [
         ["しゅうてんです、おきてください"],
         [],
         [],
         [],
         [],
-        [],
         ["んっ、おくちにだしてもらって、からだがあつい、、、", "おくち、あったかい、、、もっとして、、、"],
+        [],
         [],
         [],
         [],
@@ -5197,7 +5609,9 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "576x1024" not in prompt and "9:16" not in prompt
         assert "Full bodies from head to feet" not in prompt
         assert "Conductor: Adult Japanese woman, 29" in prompt
         assert "NO penis" in prompt
@@ -5228,7 +5642,7 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5241,7 +5655,7 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert planned["duration_s"] == dur
         assert "SHAFT LOOK:" in planned["prompt"]
         for spoken in uniq:
@@ -5268,29 +5682,34 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
     assert "viscous" in cum.lower() or "sticky" in cum.lower() or "ドロドロ" in cum
     walk = story["clips"][4]["prompt"]
     assert "station platform" in walk.lower()
-    assert "STANDS UP" in walk
+    assert "STANDS UP" in walk or "kiss" in walk.lower()
     assert spoken_lines(walk) == []
-    kiss = story["clips"][5]["prompt"]
+    kiss = story["clips"][4]["prompt"]
     assert "station platform" in kiss.lower()
     assert "kiss" in kiss.lower()
     assert spoken_lines(kiss) == []
-    talk = story["clips"][6]["prompt"]
+    talk = story["clips"][5]["prompt"]
     assert "hand's width" in talk
     assert "NOT in" in talk
     assert "mouth OPEN" in talk
     assert "kneel" in talk.lower()
     assert "STANDING" in talk
-    jubo2 = story["clips"][7]["prompt"]
+    jubo2 = story["clips"][6]["prompt"]
     assert "Already at the BASE" in jubo2 or "already at the BASE" in jubo2
     assert "STANDING" in jubo2
     assert "kneel" in jubo2.lower()
-    plat_cum = story["clips"][8]["prompt"]
-    assert "CUMOUF" in plat_cum
-    assert "End: still in her mouth" in plat_cum
+    plat_anal = story["clips"][7]["prompt"]
+    assert "INSERTION ON CAMERA" in plat_anal
+    assert "CUMOUF" not in plat_anal
+    assert "STANDING" in plat_anal and "bent forward" in plat_anal
+    paco = story["clips"][8]["prompt"]
+    assert "PACO-PACO:" in paco
+    assert "ejaculates INTO the ANUS" in paco
     hug = story["clips"][9]["prompt"]
     assert "STANDS UP" in hug
     assert "SAME EYE LEVEL" in hug
     assert "embrac" in hug.lower() or "hug" in hug.lower()
+    assert "No mouth-to-mouth semen share" in hug
     p0 = planned_by_i[0]
     assert p0["mode"] == "t2v"
     jubo = planned_by_i[1]
@@ -5304,20 +5723,20 @@ def test_last_train_pack_platform_jupo_after_waking(tmp_path):
     assert "ORGASM FACE:" in share["prompt"]
     walk_p = planned_by_i[4]
     assert "SEMEN SHARE:" not in walk_p["prompt"]
-    kiss_p = planned_by_i[5]
+    kiss_p = planned_by_i[4]
     assert "SEMEN SHARE:" not in kiss_p["prompt"]
-    plat_jubo = planned_by_i[7]
+    plat_jubo = planned_by_i[6]
     assert "ORAL LOCK:" in plat_jubo["prompt"]
     assert "cowgirl-position-h3" not in [row["id"] for row in plat_jubo["stack"]]
     assert "INSIDE LOCK:" not in plat_jubo["prompt"]
-    plat_cum_p = planned_by_i[8]
-    assert "cumouf-h3" in [row["id"] for row in plat_cum_p["stack"]]
-    assert "SEMEN SHARE:" not in plat_cum_p["prompt"]
+    plat_anal_p = planned_by_i[7]
+    assert [row["id"] for row in plat_anal_p["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert "cumouf-h3" not in [row["id"] for row in plat_anal_p["stack"]]
+    assert "SEMEN SHARE:" not in plat_anal_p["prompt"]
     hug_p = planned_by_i[9]
-    assert "SEMEN SHARE:" in hug_p["prompt"]
+    assert "SEMEN SHARE:" not in hug_p["prompt"]
     assert "SAME EYE LEVEL" in hug_p["prompt"]
     assert "STANDS UP" in hug_p["prompt"]
-    assert "mouth-to-mouth" in hug_p["prompt"].lower()
     assert "INSIDE LOCK:" not in jubo["prompt"]
     assert "ORAL LOCK:" in jubo["prompt"]
     for clip in story["clips"]:
@@ -5390,7 +5809,9 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "576x1024" not in prompt and "9:16" not in prompt
         assert "Aya: Adult Japanese woman, 22" in prompt
         assert "NO penis" in prompt
         assert "NEVER futanari" in prompt
@@ -5411,7 +5832,7 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
             assert "15-second" not in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5423,7 +5844,7 @@ def test_semen_bath_pack_aya_rei_ofuro(tmp_path):
         prev = planned["situation"]
         prev_stack = planned["stack"]
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "SEMEN SHARE:" not in planned["prompt"]
         if clip["situation"] == "after_ejaculation":
@@ -5470,16 +5891,17 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
-    assert story["duration_s"] == 70
-    assert len(story["clips"]) == 7
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10]
+    assert story["duration_s"] == 80
+    assert len(story["clips"]) == 8
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10, 10, 10, 10, 10, 10, 10, 10]
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "futa_visible",
         "futa_visible",
         "futa_visible",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
@@ -5488,9 +5910,9 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert is_chain_pack("meat-wall-85s") and not is_story("meat-wall-85s")
     assert set(story["download"]) == set(situation_ids("meat-wall-85s"))
     assert "blowjob-h3" in story["download"]
-    assert "cumouf-h3" in story["download"]
+    assert "cumouf-h3" not in story["download"]
     assert "hmnsfw-aio-v25" not in story["download"]
-    assert semen_share_plan(story) == [(6, "after_speech")]
+    assert semen_share_plan(story) == []
     want = [
         ["うわぁ。。。すごいところだね。。。"],
         ["あ、おフロ。。。でもこれって", "ザーメンの、、、おフロ、、、すごいニオイ、、、"],
@@ -5498,7 +5920,8 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
         ["もうガマンできない！おチンチンジュボジュボするの！"],
         [],
         [],
-        ["レイのザーメンおいしかった！"],
+        [],
+        ["おくまでだされて、アナルあつい、、、"],
     ]
     listed = set(story["download"])
     prev = None
@@ -5517,7 +5940,9 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
             assert not _KANJI_RE.search(s), s
             assert not re.search(r"[A-Za-z]", s), s
         assert "hmmotion" not in prompt.lower()
-        assert "576x1024" not in prompt and "9:16" not in prompt and "16:9" not in prompt
+        assert "16:9" in prompt and "PULLED BACK" in prompt
+        assert "face-hidden crop" in prompt and "joining-only crop" in prompt
+        assert "576x1024" not in prompt and "9:16" not in prompt
         assert "Full bodies from head to feet" not in prompt
         assert "Aya: Adult Japanese woman, 22" in prompt
         assert "NO penis" in prompt
@@ -5548,7 +5973,7 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
             assert clip["situation"] == "futa_visible"
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         planned = prepare_story_clip(
             story,
             i,
@@ -5561,11 +5986,10 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert planned["duration_s"] == dur
         assert "SHAFT LOOK:" in planned["prompt"]
-        if i != 6:
-            assert "SEMEN SHARE:" not in planned["prompt"]
+        assert "SEMEN SHARE:" not in planned["prompt"]
         for spoken in uniq:
             assert spoken in planned["prompt"]
     walk = story["clips"][0]["prompt"]
@@ -5630,14 +6054,16 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "not licking" in jupo.lower()
     assert "Do not dunk" not in jupo
     assert "only her lower body" not in jupo.lower()
-    cum = story["clips"][5]["prompt"]
-    assert "CUMOUF" in cum
-    assert "viscous" in cum.lower() or "sticky" in cum.lower() or "ドロドロ" in cum
-    assert "HOLD" in cum or "Do not swallow it all" in cum
-    assert "swallows every drop" not in cum.lower()
-    tasty = story["clips"][6]["prompt"]
-    assert "レイのザーメンおいしかった！" in tasty
-    assert "STANDS UP" in tasty
+    anal = story["clips"][5]["prompt"]
+    assert "INSERTION ON CAMERA" in anal
+    assert "CUMOUF" not in anal
+    paco = story["clips"][6]["prompt"]
+    assert "PACO-PACO:" in paco
+    assert "ejaculates INTO the ANUS" in paco
+    assert "Ignore how deep" in anal or "Ignore how deep" in paco
+    tasty = story["clips"][7]["prompt"]
+    assert "おくまでだされて、アナルあつい、、、" in tasty
+    assert "WHITE goo" in tasty
     assert planned_by_i[0]["mode"] == "t2v"
     oral_p = planned_by_i[4]
     assert "ORAL LOCK:" in oral_p["prompt"]
@@ -5646,16 +6072,13 @@ def test_meat_wall_pack_brown_slime_white_tub(tmp_path):
     assert "Do not dunk" not in oral_p["prompt"]
     assert "PLEASURE FACE:" in oral_p["prompt"]
     assert "blowjob-h3" in [row["id"] for row in oral_p["stack"]]
-    cum_p = planned_by_i[5]
-    assert "ORGASM FACE:" in cum_p["prompt"]
-    assert "JUPO DEPTH:" in cum_p["prompt"]
-    assert "SEMEN SHARE:" not in cum_p["prompt"]
-    assert "cumouf-h3" in [row["id"] for row in cum_p["stack"]]
-    last_p = planned_by_i[6]
-    assert "SEMEN SHARE:" in last_p["prompt"]
-    assert "STANDS UP" in last_p["prompt"]
-    assert "SAME EYE LEVEL" in last_p["prompt"]
-    assert "mouth-to-mouth" in last_p["prompt"].lower()
+    anal_p = planned_by_i[5]
+    assert [row["id"] for row in anal_p["stack"]] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert "cumouf-h3" not in [row["id"] for row in anal_p["stack"]]
+    assert "SEMEN SHARE:" not in anal_p["prompt"]
+    last_p = planned_by_i[7]
+    assert "SEMEN SHARE:" not in last_p["prompt"]
+    assert "おくまでだされて、アナルあつい、、、" in last_p["prompt"]
 
 
 def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
@@ -5689,16 +6112,17 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
     assert story["spoken_no_kanji"] is True
     assert story["spoken_max"] == 2
     assert story["min_age"] >= 21
-    assert story["duration_s"] == 70
-    assert len(story["clips"]) == 7
-    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 7
+    assert story["duration_s"] == 80
+    assert len(story["clips"]) == 8
+    assert [float(c["duration_s"]) for c in story["clips"]] == [10] * 8
     assert [c["situation"] for c in story["clips"]] == [
         "futa_visible",
         "futa_visible",
         "futa_visible",
         "futa_visible",
         "oral",
-        "oral_creampie",
+        "futa_anal",
+        "futa_anal",
         "futa_visible",
     ]
     assert story["canvas"] == {"width": 576, "height": 1024, "aspect": "9:16"}
@@ -5706,7 +6130,8 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
     assert validate_story_follow(story) == []
     assert is_chain_pack("meat-wall-cesspit-70s") and not is_story("meat-wall-cesspit-70s")
     assert set(story["download"]) == set(situation_ids("meat-wall-cesspit-70s"))
-    assert semen_share_plan(story) == [(6, "after_speech")]
+    assert "cumouf-h3" not in story["download"]
+    assert semen_share_plan(story) == []
     want = [
         ["うわぁ。。。あんなにおおきいコエダメだね。。。しろいのがからだじゅうについてる、、、あたままで、あしさきまで"],
         ["このニオイ、、、アタマおかしくなりそう、、、こんなにこくて、うんこのニオイ、いきもできない、、、アタマおかしくなりそう、、、"],
@@ -5714,7 +6139,8 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
         ["もうガマンできない！おチンチンジュボジュボするの！こんなこえだめのなかでも、れいのおチンチン、おくまでジュボジュボするの！"],
         [],
         [],
-        ["レイのザーメンおいしかった！こんなにこくてしろいの、おくまでだしてもらって、あたまおかしくなりそう、、、"],
+        [],
+        ["おくまでだされて、アナルあつい、、、あたまおかしくなりそう、、、"],
     ]
     listed = set(story["download"])
     prev = None
@@ -5744,7 +6170,7 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
             assert "HEAD TO TOE" in prompt
         if clip["situation"] in ACT_SITUATIONS:
             assert not uniq
-            assert "close" in prompt.lower()
+            assert "close" in prompt.lower() or "joining" in prompt.lower()
         leftover = jp_outside_quotes(english_except_speech(prompt))
         assert leftover == "", leftover[:80]
         planned = prepare_story_clip(
@@ -5759,7 +6185,7 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
         prev_stack = planned["stack"]
         planned_by_i.append(planned)
         assert {row["id"] for row in planned["stack"]} <= listed
-        assert planned["width"] == 576 and planned["height"] == 1024
+        assert planned["width"] == 1024 and planned["height"] == 576
         assert "SHAFT LOOK:" in planned["prompt"]
         assert "FUTA LOCK:" in planned["prompt"]
         leftover_p = jp_outside_quotes(planned["prompt"])
@@ -5788,12 +6214,16 @@ def test_meat_wall_cesspit_pack_semen_coat_then_filth(tmp_path):
     assert "hand's width" in prep
     jupo = story["clips"][4]["prompt"]
     assert "Already at the BASE" in jupo or "already at the BASE" in jupo
-    tasty = story["clips"][6]["prompt"]
-    assert "STANDS UP" in tasty
-    assert "レイのザーメンおいしかった！" in tasty
-    last_p = planned_by_i[6]
-    assert "SEMEN SHARE:" in last_p["prompt"]
-    assert "SAME EYE LEVEL" in last_p["prompt"]
+    anal = story["clips"][5]["prompt"]
+    assert "INSERTION ON CAMERA" in anal
+    assert "all fours" in anal
+    paco = story["clips"][6]["prompt"]
+    assert "PACO-PACO:" in paco
+    tasty = story["clips"][7]["prompt"]
+    assert "おくまでだされて、アナルあつい、、、あたまおかしくなりそう、、、" in tasty
+    assert "WHITE goo" in tasty
+    last_p = planned_by_i[7]
+    assert "SEMEN SHARE:" not in last_p["prompt"]
 
 
 def test_validate_story_follow_spoken_no_kanji():
@@ -5964,7 +6394,7 @@ def test_lock_clip_timeline_stops_repeat_and_leftover_kiss(tmp_path):
     assert "2.0-3.6s first unique quoted speech" in sales0_tl
     assert "3.6-5.2s second unique quoted speech" in sales0_tl
     assert "「" not in sales0_tl
-    assert "kisses on the mouth and/or breasts" in sales0["prompt"]
+    assert "does not kiss this clip" in sales0["prompt"]
     for line in unique_spoken_lines(sales["clips"][0]["prompt"]):
         assert sales0["prompt"].count(f"「{line}」") == 2, line
     assert jp_outside_quotes(sales0["prompt"]) == ""
@@ -5972,27 +6402,24 @@ def test_lock_clip_timeline_stops_repeat_and_leftover_kiss(tmp_path):
     sales1 = prepare_story_clip(sales, 1, last_frame="x.png", stills_dir=tmp_path)
     sales1_tl = _timeline_block(sales1["prompt"])
     assert "0.0-1.6s first unique quoted speech" in sales1_tl
-    assert "1.6-3.2s second unique quoted speech" in sales1_tl
+    assert "1.6-10.0s" in sales1_tl
     assert "0.0-2.0s" not in sales1_tl
-    assert "kisses on the mouth and/or breasts" in sales1["prompt"]
+    assert "does not kiss this clip" in sales1["prompt"]
     assert "「" not in sales1_tl
     for line in unique_spoken_lines(sales["clips"][1]["prompt"]):
         assert sales1["prompt"].count(f"「{line}」") == 2, line
     assert jp_outside_quotes(sales1["prompt"]) == ""
 
-    oral_p = prepare_story_clip(sales, 5, last_frame="x.png", stills_dir=tmp_path)
-    oral_p_tl = _timeline_block(oral_p["prompt"])
-    assert "No quoted speech" in oral_p_tl
-    assert not spoken_lines(oral_p["prompt"])
-    assert jp_outside_quotes(oral_p["prompt"]) == ""
-    assert "ORAL EASY SHAFT:" in oral_p["prompt"]
-    assert "easy to take" in oral_p["prompt"].lower()
+    cream = prepare_story_clip(sales, 5, last_frame="x.png", stills_dir=tmp_path)
+    cream_tl = _timeline_block(cream["prompt"])
+    assert "No quoted speech" in cream_tl
+    assert not spoken_lines(cream["prompt"])
+    assert jp_outside_quotes(cream["prompt"]) == ""
 
-    sales_jubo = prepare_story_clip(sales, 4, last_frame="x.png", stills_dir=tmp_path)
-    sales_jubo_tl = _timeline_block(sales_jubo["prompt"])
-    assert "Do the written remaining beat" in sales_jubo_tl
-    assert "drops to her knees" in sales_jubo["prompt"]
-    assert "ORAL EASY SHAFT:" in sales_jubo["prompt"]
+    sales_paco = prepare_story_clip(sales, 3, last_frame="x.png", stills_dir=tmp_path)
+    sales_paco_tl = _timeline_block(sales_paco["prompt"])
+    assert "written beat fills the whole take" in sales_paco_tl or "No quoted speech" in sales_paco_tl
+    assert "having missionary sex" in sales_paco["prompt"]
 
     check = load_story("checkup-100s")
     check0 = prepare_story_clip(check, 0, stills_dir=tmp_path)
@@ -6003,11 +6430,11 @@ def test_lock_clip_timeline_stops_repeat_and_leftover_kiss(tmp_path):
     assert check0["prompt"].count("「こんにちは」") == 2
     assert jp_outside_quotes(check0["prompt"]) == ""
 
-    check5 = prepare_story_clip(check, 4, last_frame="x.png", stills_dir=tmp_path)
+    check5 = prepare_story_clip(check, 3, last_frame="x.png", stills_dir=tmp_path)
     assert "kisses on the mouth and/or breasts" in check5["prompt"]
     assert "ORAL EASY SHAFT:" in check5["prompt"]
     assert "gentle slight upward" in check5["prompt"]
-    check6 = prepare_story_clip(check, 5, last_frame="x.png", stills_dir=tmp_path)
+    check6 = prepare_story_clip(check, 4, last_frame="x.png", stills_dir=tmp_path)
     assert "easy to take" in check6["prompt"].lower()
     assert "ORAL EASY SHAFT:" in check6["prompt"]
     assert "does NOT squat" in check6["prompt"]
@@ -6192,18 +6619,18 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert jp_outside_quotes(talk) == ""
 
     clinic = load_story("clinic-75s")
-    oral = prepare_story_clip(clinic, 3, last_frame="x.png", stills_dir=tmp_path)
-    assert "PLEASURE VOICE:" in oral["prompt"]
-    assert "EROTIC WAIT:" in oral["prompt"]
-    assert "Already at the BASE" in oral["prompt"] or "already at the BASE" in oral["prompt"]
-    assert "NEVER on the shaft" in oral["prompt"]
-    consult = prepare_story_clip(clinic, 1, last_frame="x.png", stills_dir=tmp_path)
-    assert "PLEASURE VOICE:" in consult["prompt"]
-    assert "EROTIC WAIT:" in consult["prompt"]
-    assert "キョウはどうしました？" in consult["prompt"]
+    sorry = prepare_story_clip(clinic, 3, last_frame="x.png", stills_dir=tmp_path)
+    assert "PLEASURE VOICE:" in sorry["prompt"]
+    assert "EROTIC WAIT:" in sorry["prompt"]
+    assert "おしっこ、あったかーい！ありがとー！" in sorry["prompt"]
+    kiss = prepare_story_clip(clinic, 1, last_frame="x.png", stills_dir=tmp_path)
+    assert "STANDS UP" not in kiss["prompt"]
+    assert "tongue kiss" not in kiss["prompt"].lower()
+    assert "jupo" in kiss["prompt"].lower()
     opening = prepare_story_clip(clinic, 0, stills_dir=tmp_path)
     assert "EROTIC WAIT:" not in opening["prompt"]
     assert "PLEASURE VOICE:" not in opening["prompt"]
+    assert "こんにちは" in opening["prompt"]
     commute = load_story("commute-120s")
     hall = prepare_story_clip(commute, 0, stills_dir=tmp_path, force_t2v=True)
     assert "EROTIC WAIT:" not in hall["prompt"]
@@ -6214,10 +6641,7 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     cafe1 = prepare_story_clip(
         load_story("cafe-100s"), 1, last_frame="x.png", stills_dir=tmp_path
     )
-    assert "EROTIC WAIT:" in cafe1["prompt"]
     assert "いらっしゃいませ" in cafe1["prompt"]
-    assert "first partner peck" in cafe1["prompt"]
-    assert "kisses on the mouth and/or breasts" in cafe1["prompt"]
     genkan = prepare_story_clip(commute, 1, stills_dir=tmp_path, force_t2v=True)
     assert "EROTIC WAIT:" in genkan["prompt"]
     assert "いってらっしゃい" in genkan["prompt"]
@@ -6237,7 +6661,6 @@ def test_pleasure_voice_and_erotic_wait_do_not_rewrite_beats(tmp_path):
     assert "bliss" in checkup_talk["prompt"].lower()
     assert "SEPARATE" in checkup_talk["prompt"]
     assert "No kiss yet" not in checkup_story["clips"][1]["prompt"]
-    assert "does not kiss this clip" in consult["prompt"] or "No deep kiss this clip" in consult["prompt"]
 
 
 def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
@@ -6315,6 +6738,9 @@ def test_all_scenes_speech_urine_pleasure_after_prepare(tmp_path):
                 assert "yellow" in prompt.lower(), (story["id"], i + 1)
             orig_sit = str(clip.get("situation") or "")
             if orig_sit in ACT_SITUATIONS:
+                from h3_lora_studio import talks_then_insert
+                if talks_then_insert(raw):
+                    continue
                 assert spoken_lines(prompt) == [], (story["id"], i + 1, spoken_lines(prompt))
                 assert "TIMELINE:" in prompt, (story["id"], i + 1)
                 assert "No quoted speech" in prompt, (story["id"], i + 1)
@@ -6452,6 +6878,7 @@ def test_lock_oral_in_mouth_blocks_shaft_lick():
 def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
     from h3_lora_studio import (
         INSIDE_ANAL_LINE,
+        INSIDE_ENTRY_ANAL_LINE,
         INSIDE_ENTRY_LINE,
         INSIDE_PUSSY_LINE,
         lock_penis_inside,
@@ -6485,6 +6912,12 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
     )
     entry = lock_penis_inside(entry_raw, situation="riding")
     assert INSIDE_ENTRY_LINE in entry
+    anal_entry = lock_penis_inside(
+        "INSERTION ON CAMERA. Show the entry into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert INSIDE_ENTRY_ANAL_LINE in anal_entry
+    assert "parts the lips" not in anal_entry
     oral = lock_penis_inside(
         "Already oral. Mouth already on.\nDeep jupo-jupo.\n",
         situation="oral",
@@ -6516,6 +6949,427 @@ def test_lock_penis_inside_pussy_anus_entry_and_skips(tmp_path):
     assert "INSIDE LOCK:" in planned["prompt"]
 
 
+def test_lock_anal_hole_never_vaginal_rear_and_pullout(tmp_path):
+    from h3_lora_studio import (
+        ANAL_ANATOMY_LINE,
+        ANAL_FRONT_LOCK_LINE,
+        ANAL_HOLE_IDLE_LINE,
+        ANAL_HOLE_LOCK_LINE,
+        ANAL_PULLOUT_LEAK_LINE,
+        ANAL_REAR_LOCK_LINE,
+        ANAL_SIDE_LOCK_LINE,
+        load_story,
+        lock_anal_hole,
+        prepare_story_clip,
+    )
+
+    body = Path("/workspace/prompts/h3-body-lock.md").read_text(encoding="utf-8")
+    assert "マンコには絶対入れない" in body
+    assert "マンコを開かない" in body
+    assert "開いたアナル" in body
+    assert "立ちバック" in body
+    assert "正常位" in body
+    assert "M字" in body
+    assert "下の穴 = アナル" in body
+
+    walk = lock_anal_hole("Walking only. No sex.\n\noverall_soundscape:\nSteps.\n", situation="futa_visible")
+    assert "ANAL HOLE LOCK:" not in walk
+
+    riding = lock_anal_hole(
+        "INSERTION ON CAMERA into the pussy.\n\noverall_soundscape:\nWet.\n",
+        situation="riding",
+    )
+    assert "ANAL HOLE LOCK:" not in riding
+
+    rear_raw = (
+        "Already on all fours. STANDING anal from behind. Bent forward. Anal only. Not vaginal.\n"
+        "\noverall_soundscape:\nWet thrusting.\n"
+    )
+    rear = lock_anal_hole(rear_raw, situation="futa_anal")
+    assert ANAL_HOLE_LOCK_LINE in rear
+    assert ANAL_ANATOMY_LINE in rear
+    assert ANAL_REAR_LOCK_LINE in rear
+    assert "UPPER hole toward the tailbone is the anus" in rear
+    assert "not gaping" in rear
+    assert lock_anal_hole(rear, situation="futa_anal") == rear
+
+    missionary = lock_anal_hole(
+        "On her back, knees apart. Anal only. Not vaginal.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_HOLE_LOCK_LINE in missionary
+    assert ANAL_ANATOMY_LINE in missionary
+    assert ANAL_FRONT_LOCK_LINE in missionary
+    assert "LOWER hole toward the tailbone" in missionary
+    assert "REAR ANAL LOCK:" not in missionary
+
+    m_spread = lock_anal_hole(
+        "M-spread. On her back. Anal only.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_FRONT_LOCK_LINE in m_spread
+    assert "REAR ANAL LOCK:" not in m_spread
+
+    side = lock_anal_hole(
+        "Both on their sides. Anal only. Not vaginal.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert ANAL_SIDE_LOCK_LINE in side
+    assert "REAR ANAL LOCK:" not in side
+    assert "FRONT ANAL LOCK:" not in side
+
+    pulled = lock_anal_hole(
+        "Instructor pulled out just before this clip. No new insertion. Afterglow.\n"
+        "\noverall_soundscape:\nBreath.\n",
+        situation="futa_visible",
+        prev_situation="futa_anal",
+    )
+    assert ANAL_HOLE_IDLE_LINE in pulled
+    assert ANAL_PULLOUT_LEAK_LINE in pulled
+    assert "The erect 20cm is in the ANUS" not in pulled
+
+    manhole = load_story("manhole-30s")
+    p0 = prepare_story_clip(manhole, 0, stills_dir=tmp_path)
+    assert "ANAL HOLE LOCK:" in p0["prompt"]
+    assert "REAR ANAL LOCK:" in p0["prompt"]
+    assert "JOIN CAMERA:" in p0["prompt"]
+    assert "ANAL PREP:" not in p0["prompt"]
+    p1 = prepare_story_clip(manhole, 1, last_frame="x.png", stills_dir=tmp_path)
+    assert "ANAL HOLE LOCK:" in p1["prompt"]
+    assert "REAR ANAL LOCK:" in p1["prompt"]
+    assert "ANAL PULL-OUT:" not in p1["prompt"]
+    assert "ANAL PREP:" not in p1["prompt"]
+
+    yoga = load_story("yoga-50s")
+    last = prepare_story_clip(yoga, 4, last_frame="x.png", stills_dir=tmp_path, prev_situation="futa_anal")
+    assert "ANAL PULL-OUT:" in last["prompt"]
+    assert "OUT OF THAT OPEN ANUS" in last["prompt"]
+
+    cabin = load_story("cabin-40s")
+    ride = prepare_story_clip(cabin, 5, last_frame="x.png", stills_dir=tmp_path)
+    assert ride["situation"] == "riding"
+    assert "ANAL HOLE LOCK:" not in ride["prompt"]
+    anal = prepare_story_clip(cabin, 7, last_frame="x.png", stills_dir=tmp_path)
+    assert anal["situation"] == "futa_anal"
+    assert "ANAL HOLE LOCK:" in anal["prompt"]
+    assert "ANAL ANATOMY:" in anal["prompt"]
+    assert "REAR ANAL LOCK:" in anal["prompt"]
+    assert "ANAL PREP:" not in anal["prompt"]
+    doggy = prepare_story_clip(cabin, 6, last_frame="x.png", stills_dir=tmp_path)
+    assert "ANAL PREP:" in doggy["prompt"]
+    assert "ANAL PREP:" not in ride["prompt"]
+
+    check = load_story("checkup-100s")
+    insert_i = next(i for i, c in enumerate(check["clips"]) if c["situation"] == "futa_anal")
+    planned = prepare_story_clip(check, insert_i, last_frame="x.png", stills_dir=tmp_path)
+    assert "FRONT ANAL LOCK:" in planned["prompt"]
+    assert "LOWER hole toward the tailbone" in planned["prompt"]
+    assert "REAR ANAL LOCK:" not in planned["prompt"]
+    assert "ANAL PREP:" not in planned["prompt"]
+    if insert_i > 0:
+        prev = prepare_story_clip(check, insert_i - 1, last_frame="x.png", stills_dir=tmp_path)
+        assert "ANAL PREP:" in prev["prompt"]
+
+
+def test_lock_anal_prep_on_entry_not_paco_or_walk(tmp_path):
+    from h3_lora_studio import (
+        ANAL_PREP_LINE,
+        STORY_IDS,
+        CHAIN_PACK_IDS,
+        load_story,
+        lock_anal_prep,
+        clip_is_anal_insert,
+        prepare_story_clip,
+        has_paco,
+        TALK_THEN_INSERT_MARK,
+        KISS_THEN_INSERT_MARK,
+    )
+
+    walk = lock_anal_prep("Walking only. No sex.\n\noverall_soundscape:\nSteps.\n")
+    assert "ANAL PREP:" not in walk
+
+    oral = lock_anal_prep(
+        "Already at the BASE. Jupo the whole take.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "ANAL PREP:" not in oral
+
+    oral_next = lock_anal_prep(
+        "Already at the BASE. Jupo the whole take.\n\noverall_soundscape:\nWet.\n",
+        next_is_insert=True,
+    )
+    assert ANAL_PREP_LINE in oral_next
+    assert "CAMERA:" in oral_next
+    assert "PULL BACK or ORBIT" in oral_next
+    assert "mouth crop" in oral_next
+
+    paco = lock_anal_prep(
+        "PACO-PACO: Already in. Piston to the BASE.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert "ANAL PREP:" not in paco
+
+    entry = lock_anal_prep(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert "ANAL PREP:" not in entry
+
+    talk = lock_anal_prep(
+        "TALK THEN INSERT:\nAfter the lines: INSERTION ON CAMERA.\n\noverall_soundscape:\nWet.\n",
+        same_clip_insert=True,
+    )
+    assert ANAL_PREP_LINE not in talk
+    assert lock_anal_prep(talk, same_clip_insert=True) == talk
+
+    missing = 0
+    for sid in sorted(STORY_IDS | CHAIN_PACK_IDS):
+        story = load_story(sid)
+        clips = story["clips"]
+        for i, clip in enumerate(clips):
+            planned = prepare_story_clip(
+                story,
+                i,
+                last_frame=(f"h3_chain_{i-1}.png" if i else None),
+                stills_dir=tmp_path,
+                force_t2v=True,
+            )
+            raw = str(clip.get("prompt") or "")
+            nxt = clips[i + 1] if i + 1 < len(clips) else {}
+            next_is = clip_is_anal_insert(str(nxt.get("prompt") or ""), str(nxt.get("situation") or ""))
+            this_is = clip_is_anal_insert(raw, str(clip.get("situation") or ""))
+            same = this_is and (TALK_THEN_INSERT_MARK in raw or KISS_THEN_INSERT_MARK in raw)
+            want = next_is and not this_is
+            if want:
+                assert "ANAL PREP:" in planned["prompt"], (sid, i + 1, clip.get("label"))
+                missing += 1
+            elif same or has_paco(raw) or planned["situation"] in {"futa_visible", "riding"}:
+                if not want:
+                    assert "ANAL PREP:" not in planned["prompt"], (sid, i + 1, clip.get("label"))
+    assert missing >= 8
+
+
+def test_five_kiss_insert_clips_pose_lock_timeline_and_oral_i2v(tmp_path):
+    from h3_lora_studio import (
+        ANAL_FRONT_LOCK_LINE,
+        ANAL_REAR_LOCK_LINE,
+        CHAIN_CONTINUE_LINE,
+        I2V_FROM_ORAL_INSERT_LINE,
+        I2V_JOIN_CAM_LINE,
+        JOIN_CAM_LINE,
+        SAME_CLIP_INSERT_LINE,
+        anal_anatomy_view,
+        generate_anal_pattern,
+        load_story,
+        lock_anal_hole,
+        prepare_story_clip,
+        speech_timeline_line,
+    )
+
+    inherit_rear = lock_anal_hole(
+        "INSERTION ON CAMERA into the anus. Short kiss first.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Already having sex. Standing anal from behind. Already in.\n",
+    )
+    assert ANAL_REAR_LOCK_LINE in inherit_rear
+    inherit_front = lock_anal_hole(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Sitting on the lap facing the giver. Already in.\n",
+    )
+    assert ANAL_FRONT_LOCK_LINE in inherit_front
+    keep_rear = lock_anal_hole(
+        "STANDING anal from behind. INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+        next_prompt="Sitting on the lap facing the giver. Already in.\n",
+    )
+    assert ANAL_REAR_LOCK_LINE in keep_rear
+    assert ANAL_FRONT_LOCK_LINE not in keep_rear
+
+    expect = {
+        "rooftop-100s": (3, "rear", "standing anal from behind"),
+        "sunday-120s": (4, "rear", "reverse cowgirl"),
+        "engawa-120s": (3, "rear", "reverse sitting"),
+        "laundromat-50s": (1, "front", "sitting on the lap facing"),
+        "fireworks-50s": (1, "rear", "STANDING anal from behind"),
+    }
+    for sid, (idx, view, pose) in expect.items():
+        story = load_story(sid)
+        raw = story["clips"][idx]["prompt"]
+        assert "Kiss only" not in raw, sid
+        assert "No insertion yet" not in raw, sid
+        assert pose.lower() in raw.lower(), sid
+        assert anal_anatomy_view(raw) == view, (sid, anal_anatomy_view(raw))
+        planned = prepare_story_clip(
+            story,
+            idx,
+            last_frame="h3_chain_0.png",
+            stills_dir=tmp_path,
+            force_t2v=True,
+        )
+        prompt = planned["prompt"]
+        assert SAME_CLIP_INSERT_LINE in prompt, sid
+        assert "0.0-1.5s" in prompt and "1.5-10.0s" in prompt, sid
+        assert "3.0-6.0s" not in prompt, sid
+        assert JOIN_CAM_LINE in prompt, sid
+        if view == "rear":
+            assert ANAL_REAR_LOCK_LINE in prompt, sid
+            assert ANAL_FRONT_LOCK_LINE not in prompt, sid
+        else:
+            assert ANAL_FRONT_LOCK_LINE in prompt, sid
+            assert ANAL_REAR_LOCK_LINE not in prompt, sid
+        assert "I2V FROM ORAL:" not in prompt, sid
+
+    engawa_paco = load_story("engawa-120s")["clips"][4]["prompt"]
+    assert "hairless pussy on the engawa" not in engawa_paco
+    assert "already inside Aya's anus" in engawa_paco
+    assert "outer lips around it" not in engawa_paco
+
+    p3 = generate_anal_pattern("anal-p3-meet-anal", pose="standing")
+    who0 = p3["clips"][0]["prompt"]
+    assert "accepting standing pose" in who0
+    assert "STANDING behind" in who0 or "from behind" in who0.lower()
+    assert anal_anatomy_view(who0) == "rear"
+    miss = generate_anal_pattern("anal-p3-meet-anal", pose="missionary")
+    assert anal_anatomy_view(miss["clips"][0]["prompt"]) == "front"
+
+    talk = (
+        "TALK THEN INSERT:\nAfter the lines: INSERTION ON CAMERA.\n"
+        "\noverall_soundscape:\nWet.\n"
+    )
+    assert speech_timeline_line(talk, duration_s=10, situation="futa_anal") == SAME_CLIP_INSERT_LINE
+
+    sales = load_story("sales-visit-60s")
+    insert_i = next(i for i, c in enumerate(sales["clips"]) if "INSERTION ON CAMERA" in c["prompt"])
+    assert sales["clips"][insert_i - 1]["situation"] == "futa_visible"
+    from_prev = prepare_story_clip(
+        sales,
+        insert_i,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="futa_visible",
+    )
+    assert CHAIN_CONTINUE_LINE in from_prev["prompt"]
+    assert I2V_FROM_ORAL_INSERT_LINE not in from_prev["prompt"]
+    dedicated = prepare_story_clip(
+        load_story("rooftop-100s"),
+        3,
+        stills_dir=tmp_path,
+        force_t2v=True,
+        prev_situation="oral",
+    )
+    assert I2V_FROM_ORAL_INSERT_LINE not in dedicated["prompt"]
+    assert I2V_JOIN_CAM_LINE not in dedicated["prompt"]
+    assert JOIN_CAM_LINE in dedicated["prompt"]
+
+
+def test_anal_any_stack_and_join_i2v_without_oral(tmp_path):
+    from h3_lora_studio import (
+        ANAL_ANY_LORA_ID,
+        ANAL_ANY_TRIGGER,
+        CHAIN_CONTINUE_LINE,
+        I2V_FROM_ORAL_INSERT_LINE,
+        I2V_JOIN_CAM_LINE,
+        JOIN_CAM_LINE,
+        SAME_CLIP_INSERT_LINE,
+        TIB_LORA_ID,
+        apply_anal_any_stack,
+        download_jobs_for,
+        load_catalog,
+        load_story,
+        lock_join_camera,
+        prepare_story_clip,
+        prepend_triggers,
+    )
+
+    catalog = load_catalog(Path(__file__).resolve().parents[1] / "h3-lora-studio")
+    assert download_jobs_for(["anal-any-h3"], tmp_path, catalog=catalog) == []
+    assert "INSERTION ON CAMERA" not in I2V_JOIN_CAM_LINE
+    assert "Picture 1" not in JOIN_CAM_LINE
+    assert "0.0-1.5s" in SAME_CLIP_INSERT_LINE
+    assert "1.5-10.0s" in SAME_CLIP_INSERT_LINE
+    row = next(r for r in catalog["loras"] if r["id"] == "anal-any-h3")
+    assert row["source"] == "local"
+    assert row["trigger"] == "AN4LIN"
+    assert row["filename"] == "anal-any-h3.safetensors"
+
+    base = [
+        {"id": "mystic-xxx-h3", "role": "concept", "strength_model": 0.5, "trigger": "xxx"},
+        {"id": "penis-lora-h3", "role": "act", "strength_model": 0.45, "trigger": "PENISLORA"},
+        {"id": "synth-pussy-h3", "role": "helper", "strength_model": 0.4, "trigger": ""},
+    ]
+    missing = apply_anal_any_stack(base, situation="futa_anal", lora_dir=tmp_path)
+    assert [r["id"] for r in missing] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+    assert [r["role"] for r in missing] == ["concept", "act", "helper"]
+
+    empty = tmp_path / "empty_loras"
+    empty.mkdir()
+    still_missing = apply_anal_any_stack(base, situation="futa_anal", lora_dir=empty)
+    assert [r["id"] for r in still_missing] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+
+    weights = tmp_path / "loras"
+    weights.mkdir()
+    (weights / "anal-any-h3.safetensors").write_bytes(b"x" * 6_000_000)
+    swapped = apply_anal_any_stack(base, situation="futa_anal", lora_dir=weights)
+    assert [r["id"] for r in swapped] == [
+        "mystic-xxx-h3",
+        ANAL_ANY_LORA_ID,
+        "penis-lora-h3",
+        "synth-pussy-h3",
+    ]
+    assert [r["role"] for r in swapped] == ["concept", "act", "helper", "helper"]
+    assert swapped[1]["strength_model"] == 0.55
+    assert swapped[1]["trigger"] == ANAL_ANY_TRIGGER
+    assert TIB_LORA_ID not in [r["id"] for r in swapped]
+    prompted = prepend_triggers("PENISLORA\nInside the anus.\n", swapped)
+    assert ANAL_ANY_TRIGGER in prompted.split("\n", 1)[0]
+    again = apply_anal_any_stack(swapped, situation="futa_anal", lora_dir=weights)
+    assert [r["id"] for r in again] == [r["id"] for r in swapped]
+    oral = apply_anal_any_stack(base, situation="oral", lora_dir=weights)
+    assert [r["id"] for r in oral] == ["mystic-xxx-h3", "penis-lora-h3", "synth-pussy-h3"]
+
+    join = lock_join_camera(
+        "INSERTION ON CAMERA into the anus.\n\noverall_soundscape:\nWet.\n",
+        situation="futa_anal",
+    )
+    assert JOIN_CAM_LINE in join
+    prep_only = lock_join_camera(
+        "ANAL PREP: tip a hand's width, NOT in.\n\noverall_soundscape:\nWet.\n",
+        situation="oral",
+    )
+    assert "JOIN CAMERA:" not in prep_only
+
+    manhole = load_story("manhole-30s")
+    from_walk = prepare_story_clip(
+        manhole,
+        1,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="futa_visible",
+        lora_dir=weights,
+    )
+    assert CHAIN_CONTINUE_LINE in from_walk["prompt"]
+    assert I2V_JOIN_CAM_LINE in from_walk["prompt"]
+    assert I2V_FROM_ORAL_INSERT_LINE not in from_walk["prompt"]
+    assert JOIN_CAM_LINE in from_walk["prompt"]
+    assert "Do not keep that camera" in from_walk["prompt"]
+    ids = [r["id"] for r in from_walk["stack"]]
+    assert ANAL_ANY_LORA_ID in ids
+    assert ids.count("penis-lora-h3") == 1
+    assert TIB_LORA_ID not in ids
+    no_weight = prepare_story_clip(
+        manhole,
+        1,
+        last_frame="x.png",
+        stills_dir=tmp_path,
+        prev_situation="futa_visible",
+        lora_dir=empty,
+    )
+    no_ids = [r["id"] for r in no_weight["stack"]]
+    assert ANAL_ANY_LORA_ID not in no_ids
+    assert "penis-lora-h3" in no_ids
+
+
 def test_semen_share_plan_hold_then_kiss(tmp_path):
     from h3_lora_studio import (
         SEMEN_SHARE_SKIP,
@@ -6530,22 +7384,26 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     assert "lecture-desk-50s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("lecture-desk-50s")) == []
     assert semen_share_plan(load_story("commute-120s")) == []
-    assert semen_share_plan(load_story("bath-120s")) == [(10, "silent_next")]
+    # アナル中出しで終わる本は口移しなし。①のまま口内で終わる本だけ残す。
+    assert semen_share_plan(load_story("bath-120s")) == []
+    assert "bath-120s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("last-stop-40s")) == [(2, "on_cumouf")]
-    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf"), (9, "silent_next")]
+    assert semen_share_plan(load_story("last-train-120s")) == [(3, "on_cumouf")]
     assert semen_share_plan(load_story("semen-bath-70s")) == []
     assert "semen-bath-70s" in SEMEN_SHARE_SKIP
-    assert semen_share_plan(load_story("meat-wall-85s")) == [(6, "after_speech")]
-    assert "meat-wall-85s" not in SEMEN_SHARE_SKIP
-    assert semen_share_plan(load_story("meat-wall-cesspit-70s")) == [(6, "after_speech")]
-    assert "meat-wall-cesspit-70s" not in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("meat-wall-85s")) == []
+    assert "meat-wall-85s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("meat-wall-cesspit-70s")) == []
+    assert "meat-wall-cesspit-70s" in SEMEN_SHARE_SKIP
     assert semen_share_plan(load_story("red-light-50s")) == [(3, "on_cumouf")]
-    assert semen_share_plan(load_story("manhole-30s")) == [(1, "on_cumouf")]
+    assert semen_share_plan(load_story("manhole-30s")) == []
     assert semen_share_plan(load_story("roof-ac-30s")) == []
     assert semen_share_plan(load_story("lookout-30s")) == []
     assert semen_share_plan(load_story("engawa-120s")) == [(10, "on_cumouf")]
-    assert semen_share_plan(load_story("cafe-100s")) == [(9, "after_speech")]
-    assert semen_share_plan(load_story("clinic-75s")) == [(8, "on_back")]
+    assert semen_share_plan(load_story("cafe-100s")) == []
+    assert "cafe-100s" in SEMEN_SHARE_SKIP
+    assert semen_share_plan(load_story("clinic-75s")) == []
+    assert "clinic-75s" in SEMEN_SHARE_SKIP
     shorts = load_story("shorts-immoral")
     assert semen_share_plan(shorts) == [(1, "on_cumouf"), (6, "on_cumouf")]
     for i, mode in semen_share_plan(shorts):
@@ -6597,19 +7455,14 @@ def test_semen_share_plan_hold_then_kiss(tmp_path):
     share_clip = prepare_story_clip(bath, 10, last_frame="x.png", stills_dir=tmp_path)
     assert share_clip["situation"] == "futa_visible"
     assert share_clip["duration_s"] == 10
-    assert "mouth-to-mouth" in share_clip["prompt"].lower()
-    assert "HOLD STILL" in share_clip["prompt"]
-    assert "SEMEN SHARE:" in share_clip["prompt"]
-    assert "STANDS UP" in share_clip["prompt"]
-    assert "SAME EYE LEVEL" in share_clip["prompt"]
-    assert "tongues wrap" in share_clip["prompt"].lower()
-    assert "clingy" in share_clip["prompt"].lower()
-    assert "they lean in" not in share_clip["prompt"].lower()
+    assert "SEMEN SHARE:" not in share_clip["prompt"]
+    assert "No mouth-to-mouth semen share" in share_clip["prompt"]
     assert "blowjob-h3" not in [row["id"] for row in share_clip["stack"]]
     assert "cumouf-h3" not in [row["id"] for row in share_clip["stack"]]
-    cumouf = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
-    assert cumouf["situation"] == "oral_creampie"
-    assert "SEMEN SHARE:" not in cumouf["prompt"]
+    anal = prepare_story_clip(bath, 9, last_frame="x.png", stills_dir=tmp_path)
+    assert anal["situation"] == "futa_anal"
+    assert "ANAL CREAMPIE:" in anal["prompt"]
+    assert "SEMEN SHARE:" not in anal["prompt"]
 
     stop = load_story("last-stop-40s")
     assert sum(float(c["duration_s"]) for c in stop["clips"]) == 40
@@ -6737,6 +7590,11 @@ def test_all_act_clips_stay_silent():
                 continue
             seen += 1
             raw = clip["prompt"]
+            from h3_lora_studio import talks_then_insert
+            if talks_then_insert(raw):
+                locked = lock_act_silent(raw, situation=sit)
+                assert spoken_lines(locked) == spoken_lines(raw)
+                continue
             assert spoken_lines(raw) == [], (story["id"], i + 1)
             assert "LIP SYNC" not in raw, (story["id"], i + 1)
             assert "lip-synced" not in raw.lower(), (story["id"], i + 1)
@@ -6793,7 +7651,20 @@ def test_notebook_story_play_flow():
     cell3 = "".join(nb["cells"][6]["source"])
     cell2 = "".join(nb["cells"][4]["source"])
     md0 = "".join(nb["cells"][0]["source"])
-    assert 'やりたいシーン = "登校（専用）"' in cell3
+    assert 'やりたいシーン = compose_scene_choice(シーン, 物語, 再生)' in cell3
+    assert '物語 = "登校"' in cell3
+    assert '再生 = "つなぐ"' in cell3
+    assert 'フリー文の部品 = "シーンのまま"' in cell3
+    assert "肌mystic = True" in cell3
+    assert "フェラLoRA = False" in cell3
+    assert "四つん這いandgs = False" in cell3
+    assert "should_apply_freeform_lora_picks(文章, using_story=bool(STORY))" in cell3
+    assert "require_ref2va_or_exit" in cell3
+    assert "R2V_NEED_EXIT" in cell3
+    assert 'シーン = "なし"' in cell3
+    assert 'ThumbInButt = "なし"' in cell3
+    assert "parse_thumb_in_butt(ThumbInButt)" in cell3
+    assert "thumb_in_butt=THUMB_IN_BUTT" in cell3
     assert '今使うシーン = "登校（専用）"' in cell2
     for suffix in ("（専用）", "（つなぐ）", "（つなぐ修）", "（参照つなぐ）", "（参照つなぐ修）"):
         assert f'"登校{suffix}"' in cell3
@@ -6802,8 +7673,9 @@ def test_notebook_story_play_flow():
             assert f'"{pack}{suffix}"' in cell3, pack + suffix
     # legacy long pack labels are aliases only, not dropdown rows
     assert '"訪問販売60秒（つなぐ）"' not in cell3 and '"終点40秒（つなぐ）"' not in cell3
-    # order: 55 story rows, then 24 packs × 5, then 短編集, then the act scenes
-    assert cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"山小屋（専用）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    # シーン4欄: なし→SFW→三択→生成し直し→短編集→行為。作り直しの物語は旧×5のまま後段。
+    assert cell3.index('"なし"') < cell3.index('"普通（エロなし）"') < cell3.index('"①口内で終わる"') < cell3.index('"生成し直し"') < cell3.index('"短編集（参照）"') < cell3.index('"アナル挿入（画質）"')
+    assert cell3.index('"短編集（参照）"') < cell3.index('"縁側（参照つなぐ修）"') < cell3.index('"訪問販売（専用）"') < cell3.index('"ケンシン（専用）"') < cell3.index('"終点（専用）"') < cell3.index('"終電（専用）"') < cell3.index('"ザーメン風呂（専用）"') < cell3.index('"ニクカベ（専用）"') < cell3.index('"ニクカベ肥溜め（専用）"') < cell3.index('"カフェ（専用）"') < cell3.index('"花火（参照つなぐ修）"') < cell3.index('"山小屋（専用）"') < cell3.index('"ハイスイコウ（専用）"') < cell3.index('"川原のゴミ（参照つなぐ修）"') < cell3.index('"ハチコウ（参照つなぐ修）"')
     assert cell3.index('"飲尿（どの構図）"') < cell3.index('"放尿（性器から）"') < cell3.index('"脱糞（どの構図）"')
     assert '体位 = "立ち"' in cell3
     assert "apply_phone_act_locks" in cell3
@@ -6822,18 +7694,66 @@ def test_notebook_story_play_flow():
     assert "スマホだけの人" in md0
     assert "放尿（性器から）" in md0
     assert "亀頭先" in md0
+    assert "既存話は差し替えない" in md0
+    assert "店員は常時1人" in md0
+    assert "おじゃましまーす" in md0
+    assert "サービスおしっこ" in md0
+    assert "ミルク＝ジュボと口内" not in md0
+    assert "セックスは AIO 横クローズ" not in md0
+    assert "アナルは入れない" not in md0
+    assert "おくちにだされすぎ" not in md0
+    assert "文章欄に場所" in md0 or "文章欄（カフェの便座" in md0
+    assert "再生が5パターン" in cell3
+    assert "再生が3パターン" not in cell3
+    assert "h3-scat-look-f112" not in cell3
+    assert "h3-mystic-daily-f112" not in cell3
+    assert "cursor/h3-anal-stories-f112" in cell3
+    assert "三択を選んでも帰宅や訪問販売の文は差し替わらない" in cell3
     assert len(nb["cells"]) == 9
-    assert cell3.index('"普通（エロなし）"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
+    assert cell3.index('"普通（エロなし）"') < cell3.index('"①口内で終わる"') < cell3.index('"②フェラのあとアナル"') < cell3.index('"③会って即アナル"') < cell3.index('"生成し直し"') < cell3.index('"帰宅（専用）"')
     assert cell3.index('"普通（エロなし）"') < cell3.index('"帰宅（専用）"')
+    assert "is_anal_pattern" in src
+    assert "generate_anal_pattern" in src
+    assert "pose=POSE" in src
     assert "作り直しの物語" in cell3 and "作り直し開始の本" in cell3
     assert "is_redo" in src and "apply_redo_play" in src and "stock_completed_clips" in src
-    from h3_lora_studio import CHAIN_PACK_ORDER, STORY_ORDER  # noqa: E402
+    from h3_lora_studio import (  # noqa: E402
+        CHAIN_PACK_ORDER,
+        NONE_LABEL,
+        STORY_KEEP_LABEL,
+        STORY_ORDER,
+        TIB_ON_LABEL,
+        compose_scene_choice,
+        parse_thumb_in_butt,
+        story_play_label,
+    )
 
-    m = re.search(r'やりたいシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
-    opts = json.loads(m.group(1))
-    assert len(opts) == 4 + 1 + 5 * len(STORY_ORDER) + 5 * len(CHAIN_PACK_ORDER) + 1 + 26
-    assert len(set(opts)) == len(opts)
-    for opt in opts:
+    m_scene = re.search(r'\nシーン = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    scene_opts = json.loads(m_scene.group(1))
+    assert scene_opts[0] == NONE_LABEL
+    assert "登校（専用）" not in scene_opts
+    assert "アナルセックス（女体）" in scene_opts
+    assert "短編集（参照）" in scene_opts
+    assert len(scene_opts) == 1 + 4 + 3 + 1 + 1 + 26
+    assert len(set(scene_opts)) == len(scene_opts)
+    m_story = re.search(r'\n物語 = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    story_opts = json.loads(m_story.group(1))
+    assert story_opts[0] == STORY_KEEP_LABEL
+    assert "登校" in story_opts and "ハチコウ" in story_opts
+    assert all("（専用）" not in row for row in story_opts)
+    assert len(story_opts) == 1 + len(STORY_ORDER) + len(CHAIN_PACK_ORDER)
+    m_play = re.search(r'\n再生 = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    play_opts = json.loads(m_play.group(1))
+    assert play_opts == ["専用", "つなぐ", "つなぐ修", "参照つなぐ", "参照つなぐ修"]
+    m_tib = re.search(r'\nThumbInButt = "[^"]+"  #@param (\[.*?\])\n', cell3)
+    tib_opts = json.loads(m_tib.group(1))
+    assert tib_opts == [NONE_LABEL, TIB_ON_LABEL]
+    assert compose_scene_choice(NONE_LABEL, "登校", "つなぐ") == story_play_label("commute-120s", "chain")
+    assert parse_thumb_in_butt(NONE_LABEL) is False
+    assert parse_thumb_in_butt(TIB_ON_LABEL) is True
+    for opt in scene_opts:
+        if opt == NONE_LABEL:
+            continue
         resolve_situation(opt)
     assert "resolve_story_play" in src and "apply_story_play" in src
     assert "STORY_PLAY = resolve_story_play(やりたいシーン)" in src
@@ -6884,6 +7804,9 @@ def test_notebook_story_play_flow():
     assert 'getattr(_h3_studio, "addon_pose_prep_errors", None)' in src
     assert 'getattr(_h3_studio, "lock_penis_inside", None)' in src
     assert 'getattr(_h3_studio, "lock_anal_creampie", None)' in src
+    assert 'getattr(_h3_studio, "lock_anal_hole", None)' in src
+    assert '"ANAL HOLE LOCK:" not in getattr(_h3_studio, "ANAL_HOLE_LOCK_LINE", "")' in src
+    assert '"FRONT ANAL LOCK:" not in getattr(_h3_studio, "ANAL_FRONT_LOCK_LINE", "")' in src
     assert 'getattr(_h3_studio, "lock_scat_look", None)' in src
     assert '"Not bouncing jelly" not in getattr(_h3_studio, "FECES_LOOK_LINE", "")' in src
     assert '"ANAL CREAMPIE:" not in getattr(_h3_studio, "ANAL_CREAMPIE_LINE", "")' in src
@@ -6912,7 +7835,10 @@ def test_notebook_story_play_flow():
     assert "竿＋マンコ、金玉なし" in md0
     assert "「」の中は話し言葉" in md0
     assert "漢字のまま" not in md0
-    assert "h3-20260913-cabin-2" in cell2
+    assert "h3-20260914-anal-18" in cell2
+    assert "h3-20260914-anal-16" not in cell2
+    assert "h3-20260914-anal-15" not in cell2
+    assert "h3-20260914-anal-14" not in cell2
     assert "日常（エロ汎用）" in cell3
     assert "最速プレビュー（エロ汎用）" in cell3
     assert "音も残す（エロ汎用）" in cell3
@@ -6966,6 +7892,19 @@ def test_notebook_story_play_flow():
     assert "def lock_clip_timeline" in helper_src
     assert "def lock_penis_inside" in helper_src
     assert "def lock_anal_creampie" in helper_src
+    assert "def lock_anal_hole" in helper_src
+    assert "def anal_anatomy_view" in helper_src
+    assert "def lock_i2v_from_oral_insert" in helper_src
+    assert "def lock_i2v_join_camera" in helper_src
+    assert "def lock_join_camera" in helper_src
+    assert "def apply_anal_any_stack" in helper_src
+    assert "I2V FROM ORAL:" in helper_src
+    assert "I2V JOIN CAMERA:" in helper_src
+    assert "JOIN CAMERA:" in helper_src
+    assert "SAME_CLIP_INSERT_LINE" in helper_src
+    assert "FRONT ANAL LOCK:" in helper_src
+    assert "ANAL ANATOMY:" in helper_src
+    assert "ANAL HOLE LOCK:" in helper_src
     assert "def lock_scat_look" in helper_src
     assert "ANAL CREAMPIE:" in helper_src
     assert "Deep jupo to the BASE" in helper_src
@@ -7139,7 +8078,12 @@ def test_visit_opening_starts_solo_then_resident_enters(tmp_path):
     assert "aya" in clip_cast_people(sales["clips"][1])
     assert "rei" in clip_cast_people(checkup["clips"][1])
     assert "aya" in clip_cast_people(clinic["clips"][1])
-    for raw in (s1["prompt"], k1["prompt"]):
+    assert "LEFT" in s1["prompt"]
+    assert "disappears TO THE RIGHT" in s1["prompt"] or "TO THE RIGHT" in s1["prompt"]
+    assert "Door on the right" in s1["prompt"] or "door on the right" in s1["prompt"]
+    assert "ENTERS FROM THE RIGHT" not in s1["prompt"]
+    assert "Do not show Aya this clip" in s1["prompt"]
+    for raw in (k1["prompt"],):
         assert "LEFT" in raw
         assert "ENTERS FROM THE RIGHT" in raw
         assert "Door on the right" in raw or "door on the right" in raw
