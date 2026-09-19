@@ -19,7 +19,7 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 HEAD: 46508df h3: 画像起点を qwen_edit_nsfw.py に固定
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
 服抜き・セックス（H3とは別）: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
-画像編集だけの続きは `h3-lora-studio/QWEN_EDIT_HANDOVER.md`。H3 動画の引き継ぎに混ぜるな。
+画像編集だけの続きは `qwen-image-edit-nsfw/HANDOVER.md`。H3 動画の引き継ぎに混ぜるな。
 clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f112/h3-lora-studio/stories/clinic-75s.json
 設定の版: `h3-20260914-anal-18`
 
