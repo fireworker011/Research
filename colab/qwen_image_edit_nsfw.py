@@ -210,18 +210,20 @@ REF_FACE = (
     "Edit Picture 1. Do not copy Picture 2's crop or clothes unless asked."
 )
 FUTA_LOCK = (
-    "Same person, same face. Fully nude. Futanari: a fully erect 20cm human penis with pale shaft and pink glans "
+    "Same person, same face. Fully nude. Adult woman. Female breasts, feminine body. "
+    "Futanari girl: a fully erect 20cm penis with pale shaft and pink glans "
     "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
-    "no testicles, no scrotum, no balls. Female breasts. Not a man. Do not redraw the face."
+    "no testicles, no scrotum, no balls. Do not redraw the face."
 )
 GIVER_FUTA = "ふたなり（玉なし・男禁止）"
 GIVER_MAN = "男"
 GIVER_DEFAULT = GIVER_FUTA
 GIVER_OPTIONS = (GIVER_FUTA, GIVER_MAN)
 GIVER_FUTA_LOCK = (
-    "GIVER LOCK: The penis in this act belongs to an adult futanari girl, not a man. "
-    "Female breasts, fully erect 20cm, hairless pussy at the base of the shaft, "
-    "no testicles, no scrotum, no balls. Never a man."
+    "GIVER LOCK: The penis in this act belongs to an adult futanari girl. "
+    "She is a woman: female face, female breasts, feminine body. "
+    "Fully erect 20cm, hairless pussy at the base of the shaft, "
+    "no testicles, no scrotum, no balls. Two women only."
 )
 GIVER_MAN_LOCK = (
     "GIVER LOCK: The penis in this act belongs to an adult man. Male body. "
@@ -269,15 +271,15 @@ ANAL_ANATOMY = (
     "Enter that rear hole only. The front hole toward the belly stays closed and unused."
 )
 ANAL_JOIN = (
-    "ANAL JOIN: Two adult futanari women, not a man. Female breasts, erect 20cm each, "
+    "ANAL JOIN: Two adult futanari women. Female breasts, erect 20cm each, "
     "no testicles. The partner's 20cm glans and shaft are inside the receiver's stretched "
     "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. "
     "The receiver's own 20cm hangs free in front, empty of any penis. "
     "Unused pussy stays shut and is not the joining point. No clothes. Adult 21+."
 )
 ANAL_JOIN_FUTA_ON_WOMAN = (
-    "ANAL JOIN: The giver is an adult futanari girl, not a man: female breasts, erect 20cm, "
-    "hairless pussy at the base, no testicles, no balls. Never a man. "
+    "ANAL JOIN: The giver is an adult futanari girl: female breasts, erect 20cm, "
+    "hairless pussy at the base, no testicles, no balls. "
     "Her 20cm is inside the receiver's stretched anal ring only. "
     "Show penis-in-anus: the sphincter gripping the shaft. No clothes. Adult 21+."
 )
@@ -288,7 +290,7 @@ ANAL_JOIN_MAN = (
 ANAL_JOIN_MAN_FUTA = (
     "ANAL JOIN: The giver is an adult man. His erect penis is inside the receiver's stretched "
     "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. "
-    "The receiver is a futanari woman, not a man: female breasts, her own erect 20cm, no testicles. "
+    "The receiver is a futanari woman: female breasts, her own erect 20cm, no testicles. "
     "Her own 20cm hangs free in front, empty of any penis. Unused pussy stays shut "
     "and is not the joining point. No clothes. Adult 21+."
 )
@@ -353,8 +355,8 @@ URINE_DETAIL = (
     "the stream comes out of the urethral opening at the glans tip (the small hole at the tip "
     "of the 20cm), the same hole semen would pulse from, not from the pussy at the base, not "
     "from the anus, not from off-screen. Continuous physically realistic yellow arc, splash and "
-    "puddle. Keep the identical face and the input art medium. Adult futanari: no testicles, "
-    "hairless pussy at the base of the shaft. Not a man. Adult 21+."
+    "puddle. Keep the identical face and the input art medium. Adult futanari girl: no testicles, "
+    "hairless pussy at the base of the shaft. Adult woman only. Adult 21+."
 )
 URINE_DETAIL_MAN_GIVER = (
     "URINE LOOK: Opaque yellow urine, not clear, not white, not semen. The stream comes out of "
@@ -384,8 +386,8 @@ FECES_LOOK = (
     "Not chocolate syrup. Not caramel. Not ice cream. Not translucent amber gel. "
     "Not bouncing jelly. Not rubbery slime. Not stretchy gel strands. Not a glossy blob. "
     "Not a cartoon swirl. Not a uniform slime sheet. Not watery diarrhea. "
-    "Keep the identical face and the input art medium. Adult futanari: 20cm penis, unused "
-    "front hole shut, no testicles. Not a man. Adult 21+."
+    "Keep the identical face and the input art medium. Adult futanari girl: 20cm penis, unused "
+    "front hole shut, no testicles. Adult woman only. Adult 21+."
 )
 SCAT_DETAIL = f"{SCAT_HOLE_LOCK} {SCAT_ACT} {FECES_LOOK}"
 
@@ -483,7 +485,7 @@ SEX_PRESETS = {
         "fours in doggy position, completely nude, back arched, knees apart. An adult futanari partner "
         "kneels behind her; partner's face out of frame. The partner's erect 20cm is thrusting into the "
         "receiver's ANUS — the UPPER rear hole toward the tailbone. The anal ring stretches around the "
-        "shaft. The receiver's own 20cm hangs in front. Same environment. Not a man. Not vaginal."
+        "shaft. The receiver's own 20cm hangs in front. Same environment. Adult woman only. Not vaginal."
     ),
     "アナル立ちバック": (
         "Full-body three-quarter rear view, camera on the buttocks. THE SAME PERSON from the input image "
@@ -491,7 +493,7 @@ SEX_PRESETS = {
         "in standing doggy, hands braced on a wall or bed, looking back so her face is visible. Completely "
         "nude. An adult futanari partner stands behind her, face out of frame, hips flush against her ass. "
         "The partner's erect 20cm is buried in the receiver's ANUS — the UPPER rear hole gripping the shaft. "
-        "The receiver's own erect 20cm hangs between her thighs. Same environment. Not a man. Not vaginal."
+        "The receiver's own erect 20cm hangs between her thighs. Same environment. Adult woman only. Not vaginal."
     ),
     "アナル正常位": (
         "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input image with "
@@ -499,14 +501,14 @@ SEX_PRESETS = {
         "tilted up, legs folded toward her chest or spread in an M, looking at the camera. Completely nude. "
         "The partner's erect 20cm is inserted in the LOWER hole toward the buttocks — the ANUS. Anal ring "
         "around the shaft. Her own erect 20cm lies on her belly. Partner between her legs, face out of "
-        "frame. Same environment. Not a man. Not vaginal."
+        "frame. Same environment. Adult woman only. Not vaginal."
     ),
     "アナル騎乗位": (
         "Eye-level medium shot, front. THE SAME PERSON from the input image with the IDENTICAL FACE — same "
         "facial features, unchanged — is anal riding: sitting down onto the partner's 20cm with her ANUS, "
         "facing the camera, completely nude, straddling an adult futanari partner who lies on her back below. "
         "Partner's face out of frame. The buttocks sit down on the shaft; the penis is in the anus from below. "
-        "The receiver's own erect 20cm stands in front. Hands on her own thighs. Same environment. Not a man. "
+        "The receiver's own erect 20cm stands in front. Hands on her own thighs. Same environment. Adult woman only. "
         "Not vaginal."
     ),
     "アナル座位": (
@@ -515,21 +517,21 @@ SEX_PRESETS = {
         "anal riding, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, "
         "face out of frame. The partner's erect 20cm is in the receiver's ANUS — the LOWER hole toward the "
         "buttocks takes the full shaft. The receiver's own erect 20cm is visible in front. Same environment. "
-        "Not a man. Not vaginal."
+        "Adult woman only. Not vaginal."
     ),
     "放尿（立ち）": (
         "Full-body front or three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — "
         "same facial features, unchanged. She stands fully nude, feet apart. Her 20cm futanari penis is "
         "visible; a thick opaque yellow urine stream shoots from the urethral opening at the glans tip "
         "and arcs into a puddle. Hairless pussy at the base of the shaft. No urine from the pussy or anus. "
-        "No testicles. Face fully readable. Same environment art medium. Not a man."
+        "No testicles. Face fully readable. Same environment art medium. Adult woman only."
     ),
     "放尿（しゃがみ）": (
         "Medium-full shot. THE SAME PERSON from the input with the IDENTICAL FACE — same facial features, "
         "unchanged. She squats fully nude, knees apart, heels down, looking toward the camera so her face "
         "is readable. Her 20cm futanari penis hangs or is held between her thighs; opaque yellow urine "
         "streams from the urethral opening at the glans tip into a puddle between her feet. Hairless pussy "
-        "at the base. No urine from the pussy or anus. No testicles. Not a man."
+        "at the base. No urine from the pussy or anus. No testicles. Adult woman only."
     ),
     "ご褒美小便": (
         "Close-up of THE SAME PERSON from the input with the IDENTICAL FACE — same facial features, "
@@ -537,7 +539,7 @@ SEX_PRESETS = {
         "enters from the top or edge of the frame, partner's face out of frame. Opaque yellow urine streams "
         "from the urethral opening at the glans tip onto her face, hair, lips and tongue. Not white, not "
         "semen, not clear water. Wet yellow on skin. Hairless pussy at the base of that shaft, no testicles. "
-        "Not a man."
+        "Adult woman only."
     ),
     "脱糞（しゃがみ）": (
         "Rear three-quarter from behind and slightly below. Camera on the buttocks. THE SAME PERSON from "
@@ -545,7 +547,7 @@ SEX_PRESETS = {
         "readable. She squats fully nude, knees apart. Between the buttocks the ANUS is dilated. A thick "
         "formed opaque brown human turd, sausage-shaped and two fingers thick, is being pushed out of that "
         "anus now, still attached to the stretched anal opening, hanging and sagging like clay. Her 20cm "
-        "futanari penis hangs in front, unused. No testicles. Not a man. Not from the front hole."
+        "futanari penis hangs in front, unused. No testicles. Adult woman only. Not from the front hole."
     ),
     "脱糞（後背）": (
         "Rear three-quarter view, slightly low, camera on the buttocks. THE SAME PERSON from the input with "
@@ -553,7 +555,7 @@ SEX_PRESETS = {
         "readable. She is on all fours, fully nude. Her 20cm futanari penis hangs between her thighs. The "
         "UPPER hole toward the tailbone is the anus: a thick formed opaque brown human turd is leaving that "
         "anus now, still attached to the opening, hanging and sagging like clay, two fingers thick, "
-        "ring-segmented. The LOWER front hole stays closed with nothing coming out. No testicles. Not a man."
+        "ring-segmented. The LOWER front hole stays closed with nothing coming out. No testicles. Adult woman only."
     ),
 }
 SEX_ACT_PRESETS = frozenset(
@@ -572,7 +574,24 @@ URINE_PRESETS = frozenset(URINE_LABELS)
 SCAT_PRESETS = frozenset(SCAT_LABELS)
 EXCRETE_PRESETS = frozenset({*URINE_LABELS, *SCAT_LABELS})
 OUTFIT_PRESETS = frozenset({"レースランジェリー", "ビキニ", "濡れたTシャツ"})
-_LEFTOVER_MAN = re.compile(r"\b(?:male pov|man's|men|man)\b", re.I)
+# CFG1 attends to every token. "Not a man" still paints a man.
+_LEFTOVER_MAN = re.compile(r"\b(?:male(?:\s+pov)?|man's|men|man|him|his|he)\b", re.I)
+_NOT_A_MAN_RE = re.compile(r",?\s*\b(?:never|not)\s+a\s+man\b\.?", re.I)
+_MAN_MENTION_SUBS = (
+    (re.compile(r"\ba man\b", re.I), "a futanari girl"),
+    (re.compile(r"\bthe man\b", re.I), "the futanari girl"),
+    (re.compile(r"\bman's\b", re.I), "futanari girl's"),
+    (re.compile(r"\bmale pov\b", re.I), "futanari POV"),
+    (re.compile(r"\bmale\b", re.I), "female"),
+    (re.compile(r"\bmen\b", re.I), "women"),
+    (re.compile(r"\bman\b", re.I), "woman"),
+    (re.compile(r"\bhe lies\b", re.I), "she lies"),
+    (re.compile(r"\bstraddles him\b", re.I), "straddles her"),
+    (re.compile(r"\bhis erect\b", re.I), "her erect"),
+    (re.compile(r"\bhe\b", re.I), "she"),
+    (re.compile(r"\bhim\b", re.I), "her"),
+    (re.compile(r"\bhis\b", re.I), "her"),
+)
 _FUTA_PARTNER_SWAPS = (
     ("do NOT show the man's face or upper body", "do NOT show the partner's face or upper body"),
     ("from the man's perspective looking down", "from a futanari POV looking down"),
@@ -606,8 +625,8 @@ _MAN_PARTNER_SWAPS = (
     ("Partner between her legs", "The man between her legs"),
     ("Partner sits on a chair", "The man sits on a chair"),
     (
-        "Hairless pussy at the base of that shaft, no testicles. Not a man.",
-        "The peeing penis is a man's. The receiver is not a man.",
+        "Hairless pussy at the base of that shaft, no testicles. Adult woman only.",
+        "The peeing penis is a man's. The receiver stays an adult woman.",
     ),
 )
 
@@ -1108,9 +1127,16 @@ def pins_style_lock(preset: str = "", extra: str = "") -> bool:
 
 
 def has_leftover_man(text: str) -> bool:
-    cleaned = re.sub(r"\bnot a man\b", " ", text or "", flags=re.I)
-    cleaned = re.sub(r"\bnever a man\b", " ", cleaned, flags=re.I)
-    return bool(_LEFTOVER_MAN.search(cleaned))
+    """True if the prompt still has man/male tokens. CFG1 will paint them."""
+    return bool(_LEFTOVER_MAN.search(text or ""))
+
+
+def strip_man_mentions(text: str) -> str:
+    """Drop man/male tokens. CFG1 treats 'not a man' as man."""
+    out = _NOT_A_MAN_RE.sub("", text or "")
+    for pat, repl in _MAN_MENTION_SUBS:
+        out = pat.sub(repl, out)
+    return re.sub(r" {2,}", " ", out).strip()
 
 
 def apply_futa_partner(prompt: str) -> str:
@@ -1118,11 +1144,13 @@ def apply_futa_partner(prompt: str) -> str:
     out = prompt
     for old, new in _FUTA_PARTNER_SWAPS:
         out = out.replace(old, new)
+    out = strip_man_mentions(out)
     if has_leftover_man(out):
         out += (
-            " Not a man. The penis is a futanari erect 20cm human penis, no testicles, "
-            "hairless pussy at the base of the shaft."
+            " The penis is a futanari girl's erect 20cm, no testicles, "
+            "hairless pussy at the base of the shaft. Adult woman, female breasts."
         )
+        out = strip_man_mentions(out)
     return out
 
 
@@ -1290,8 +1318,14 @@ def compose_edit_prompt(
         parts.insert(1, SCAT_HOLE_LOCK)
     if wants_giver_lock(label, extra):
         glock = giver_lock(giver)
-        if glock not in parts:
-            parts.append(glock)
+        parts = [p for p in parts if p != glock]
+        insert_at = 1
+        if ANAL_HOLE_LOCK in parts:
+            insert_at = parts.index(ANAL_HOLE_LOCK) + 1
+        elif SCAT_HOLE_LOCK in parts:
+            insert_at = parts.index(SCAT_HOLE_LOCK) + 1
+        parts.insert(insert_at, glock)
+        parts.append(glock)
     if not pose_ok and "change clothing only" not in " ".join(parts).lower():
         parts.append("Change clothing only. Keep the exact same pose, camera, crop, lighting, and background.")
     if has_ref:
@@ -1302,7 +1336,10 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    return apply_style(joined, style, pin_ends=pins_style_lock(label, extra))
+    styled = apply_style(joined, style, pin_ends=pins_style_lock(label, extra))
+    if is_futa_giver(giver):
+        return strip_man_mentions(styled)
+    return styled
 
 
 def lora_trigger(name: str, preset: str = "", extra: str = "") -> str:

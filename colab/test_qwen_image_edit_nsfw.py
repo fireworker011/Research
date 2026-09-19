@@ -85,6 +85,7 @@ from qwen_image_edit_nsfw import (
     apply_man_partner,
     apply_space_scheduler,
     apply_style,
+    strip_man_mentions,
     auto_canvas_size,
     canvas_form_options,
     classify_aio_key,
@@ -709,6 +710,21 @@ def test_futa_partner_rewrites_sex_acts_and_drops_man():
     assert not has_leftover_man(lift)
     assert ANAL_FRONT_LOCK in lift
     assert GIVER_FUTA_LOCK in lift
+    assert lift.count(GIVER_FUTA_LOCK) == 2
+
+
+def test_futa_prompts_have_zero_man_tokens():
+    """CFG1 paints every token. 'Not a man' still draws a man."""
+    man = re.compile(r"\b(?:man|man's|men|male|him|his|he)\b", re.I)
+    assert man.search(GIVER_FUTA_LOCK) is None
+    assert man.search(FUTA_LOCK) is None
+    cleaned = strip_man_mentions("Not a man. Never a man. A man holds his penis.")
+    assert man.search(cleaned) is None
+    assert "futanari girl" in cleaned.lower()
+    for label in sex_preset_form_options():
+        out = compose_edit_prompt("", preset=label, futa=True)
+        hit = man.search(out)
+        assert hit is None, (label, hit.group(0) if hit else None)
 
 
 def test_giver_form_is_futa_or_man():
