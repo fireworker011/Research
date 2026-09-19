@@ -66,6 +66,7 @@ from qwen_image_edit_nsfw import (
     SCHED_MAX_IMAGE_SEQ_LEN,
     SEX_ACT_PRESETS,
     SEX_PRESET_DEFAULT,
+    SEX_PRESET_DEFAULT_OLD,
     SEX_PRESETS,
     SPACE_GPU_RESIDENT_GIB,
     SPACE_SEX_PRESET_LABELS,
@@ -148,6 +149,8 @@ from qwen_image_edit_nsfw import (
     space_scheduler_config,
     split_aio_state_dict,
     tune_edit_vae,
+    is_default_sex_preset,
+    known_sex_preset,
     sex_preset_form_options,
     sex_preset_labels,
     snapped_rgb,
@@ -677,7 +680,16 @@ def test_sex_preset_labels_match_space_ui():
     assert labels[20:] == list(SCAT_LABELS)
     opts = sex_preset_form_options()
     assert opts[0] == SEX_PRESET_DEFAULT
+    assert SEX_PRESET_DEFAULT == "なし（服・体は下のチェック）"
+    assert SEX_PRESET_DEFAULT_OLD not in opts
     assert opts[1:] == labels
+    assert is_default_sex_preset("")
+    assert is_default_sex_preset(SEX_PRESET_DEFAULT)
+    assert is_default_sex_preset(SEX_PRESET_DEFAULT_OLD)
+    assert not is_default_sex_preset("アナルバック")
+    assert known_sex_preset(SEX_PRESET_DEFAULT_OLD)
+    assert known_sex_preset("アナルバック")
+    assert not known_sex_preset("存在しない")
     assert set(SEX_ACT_PRESETS) <= set(labels)
     assert ANAL_PRESETS <= SEX_ACT_PRESETS
     assert "Qwen4Play_v2" in LORA_FILES
@@ -979,6 +991,33 @@ def test_anal_scat_honor_undress_and_futa_checks():
     default_on = compose_edit_prompt("", undress=True, futa=True)
     assert UNDRESS_LOCK in default_on
     assert FUTA_LOCK in default_on
+    named = compose_edit_prompt("", preset=SEX_PRESET_DEFAULT, undress=True, futa=True)
+    assert named == default_on
+    old_name = compose_edit_prompt(
+        "",
+        preset=SEX_PRESET_DEFAULT_OLD,
+        undress=True,
+        futa=True,
+    )
+    assert old_name == named
+    undress_only = compose_edit_prompt(
+        "",
+        preset=SEX_PRESET_DEFAULT,
+        undress=True,
+        futa=False,
+    )
+    assert UNDRESS_LOCK in undress_only
+    assert FUTA_BODY not in undress_only
+    assert FUTA_LOCK not in undress_only
+    assert "20cm" not in undress_only
+    futa_only = compose_edit_prompt(
+        "",
+        preset=SEX_PRESET_DEFAULT,
+        undress=False,
+        futa=True,
+    )
+    assert UNDRESS_LOCK not in futa_only
+    assert FUTA_LOCK in futa_only
     default_off = compose_edit_prompt("", undress=False, futa=False)
     assert UNDRESS_LOCK not in default_off
     assert FUTA_BODY not in default_off
@@ -1282,9 +1321,12 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "giver_form_options" in src
     assert "服を外す" in src
     assert "フタナリ勃起" in src
-    assert "クイックと独立" in src
     assert "必須ではない" in src
-    assert "入力の人。竿役とは別" in src
+    assert "クイックは行為だけ" in src
+    assert "入力の人。竿役は相手" in src
+    assert SEX_PRESET_DEFAULT in src
+    assert "__DEFAULT_PRESET__" in src
+    assert "known_sex_preset" in src
     assert "解剖Fixer = False" in src
     assert "genatomy_stack" in src
     assert "edit_output_name" in src
@@ -1304,6 +1346,7 @@ def test_writer_notebook_is_separate_a100_nsfw():
         "クイックプロンプト",
         "竿役",
         "解剖Fixer",
+        SEX_PRESET_DEFAULT,
         GIVER_FUTA,
         GIVER_MAN,
         "Qwen4Play",

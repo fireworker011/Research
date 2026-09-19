@@ -13,6 +13,7 @@ if str(COLAB_DIR) not in sys.path:
 from qwen_image_edit_nsfw import (
     DIFFUSERS_COLAB_SPEC,
     PILLOW_COLAB_SPEC,
+    SEX_PRESET_DEFAULT,
     TORCHAO_COLAB_SPEC,
     canvas_form_options,
     giver_form_options,
@@ -54,7 +55,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
-5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。クイックがアナル／脱糞でも、**服を外す**と**フタナリ勃起**は独立して効く（オフにすれば服残し／竿なし）。**服抜きフタナリ（既定）**は両方オンのときの名前であり、チェック必須ではない。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**服を外す**と**フタナリ勃起**はクイックと別のチェック（必須ではない。アナル／脱糞でも効く。オフなら服残し／竿なし）。クイック既定「なし（服・体は下のチェック）」は行為を足さないだけ。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -311,7 +312,7 @@ from qwen_image_edit_nsfw import (
     rewrite_edit_prompt,
     run_pipe_edit,
     save_jpeg,
-    sex_preset_form_options,
+    known_sex_preset,
     snapped_rgb,
     style_form_options,
     style_negative,
@@ -329,7 +330,7 @@ OUT = Path(env["DRIVE_ROOT"]) / "output"
 IN.mkdir(parents=True, exist_ok=True)
 OUT.mkdir(parents=True, exist_ok=True)
 
-クイックプロンプト = "服抜きフタナリ（既定）"  #@param [__QUICK_OPTS__]
+クイックプロンプト = __DEFAULT_PRESET__  #@param [__QUICK_OPTS__]
 画風 = "入力のまま"  #@param [__STYLE_OPTS__]
 入力 = "Drive input"  #@param [__INPUT_OPTS__]
 入力ファイル名 = ""  #@param {type:"string"}
@@ -338,8 +339,10 @@ OUT.mkdir(parents=True, exist_ok=True)
 サイズ = "auto（入力）"  #@param [__CANVAS_OPTS__]
 PCから選ぶ = False  #@param {type:"boolean"}
 PROMPT = ""  #@param {type:"string"}
-#@markdown 服を外す／フタナリ勃起はクイックと独立。アナル・脱糞でも効く。服抜きフタナリ（既定）は両方オンのときの名前（必須ではない）。フタナリ勃起＝入力の人の体。竿役＝相手の竿。
+#@markdown クイックは行為だけ。服とふたなりは下のチェック（必須ではない。アナル／脱糞でも効く）。
+#@markdown **服を外す** … 全裸。オフなら服は残る。クイックと別。必須ではない。
 服を外す = True  #@param {type:"boolean"}
+#@markdown **フタナリ勃起** … 入力の人に竿（玉なし20cm）。必須ではない。オフなら女体のまま。竿役は相手。
 フタナリ勃起 = True  #@param {type:"boolean"}
 竿役 = "ふたなり（玉なし・男禁止）"  #@param [__GIVER_OPTS__]
 解剖Fixer = False  #@param {type:"boolean"}
@@ -352,7 +355,7 @@ pipe = globals().get("QWEN_EDIT_PIPE")
 if pipe is None:
     raise SystemExit("②を先に実行してください。")
 
-if クイックプロンプト not in sex_preset_form_options():
+if not known_sex_preset(クイックプロンプト):
     raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
 if 画風 not in style_form_options():
     raise SystemExit(f"unknown style: {画風}")
@@ -367,8 +370,8 @@ if サイズ not in canvas_form_options():
 print("i2i", True)
 print("preset", クイックプロンプト)
 print("style", 画風)
-print("服を外す", 服を外す)
-print("フタナリ勃起", フタナリ勃起, "（入力の人。竿役とは別）")
+print("服を外す", 服を外す, "（必須ではない。アナル／脱糞でも効く）")
+print("フタナリ勃起", フタナリ勃起, "（必須ではない。入力の人。竿役は相手）")
 print("giver", 竿役)
 print("解剖Fixer", 解剖Fixer)
 print("input", 入力)
@@ -569,6 +572,9 @@ print("Git に JPG を入れない。Drive の output だけ。")
 '''
 
 CELL3 = CELL3.replace(
+    "__DEFAULT_PRESET__",
+    json.dumps(SEX_PRESET_DEFAULT, ensure_ascii=False),
+).replace(
     "__QUICK_OPTS__",
     ", ".join(json.dumps(x, ensure_ascii=False) for x in sex_preset_form_options()),
 ).replace(

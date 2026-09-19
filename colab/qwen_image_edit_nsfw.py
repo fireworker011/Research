@@ -397,7 +397,10 @@ FECES_LOOK = (
 SCAT_DETAIL = f"{SCAT_HOLE_LOCK} {SCAT_ACT} {FECES_LOOK}"
 
 # ayooo123 / Mk1227 のクイックプロンプトと同じ12個。行為の竿はフタナリに差し替える。
-SEX_PRESET_DEFAULT = "服抜きフタナリ（既定）"
+# 既定は行為なし。服抜き／ふたなりは③のチェック（必須ではない）。
+SEX_PRESET_DEFAULT = "なし（服・体は下のチェック）"
+SEX_PRESET_DEFAULT_OLD = "服抜きフタナリ（既定）"
+SEX_PRESET_DEFAULT_ALIASES = frozenset({SEX_PRESET_DEFAULT, SEX_PRESET_DEFAULT_OLD})
 SEX_PRESETS = {
     "服を脱ぐ": (
         "Remove all clothing from the person. Keep the exact same camera angle, framing, crop, pose, "
@@ -900,6 +903,16 @@ def sex_preset_form_options() -> list[str]:
     return [SEX_PRESET_DEFAULT, *sex_preset_labels()]
 
 
+def is_default_sex_preset(label: str) -> bool:
+    name = (label or "").strip()
+    return (not name) or name in SEX_PRESET_DEFAULT_ALIASES
+
+
+def known_sex_preset(label: str) -> bool:
+    name = (label or "").strip()
+    return is_default_sex_preset(name) or name in SEX_PRESETS
+
+
 def style_form_options() -> list[str]:
     return [STYLE_PRESET_DEFAULT, *STYLE_LABELS]
 
@@ -1281,7 +1294,7 @@ def compose_edit_prompt(
     anal = wants_anal_lock(extra, label)
     scat = wants_scat_lock(extra, label)
     urine = wants_urine_lock(extra, label)
-    if label and label != SEX_PRESET_DEFAULT:
+    if label and not is_default_sex_preset(label):
         base = SEX_PRESETS.get(label)
         if not base:
             raise SystemExit(f"unknown quick prompt: {label}")
