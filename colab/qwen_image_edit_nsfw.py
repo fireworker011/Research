@@ -48,7 +48,10 @@ SCHED_TIME_SHIFT_TYPE = "exponential"
 SCHED_USE_DYNAMIC_SHIFTING = True
 SCHED_BASE_SHIFT = 1.0986122886681098
 SCHED_MAX_SHIFT = 1.0986122886681098
-TORCHAO_COLAB_SPEC = "torchao==0.11.0"
+# Space .env は torchao==0.11.0。今の git+diffusers は FqnToConfig が要り 0.11 では
+# `from diffusers import QwenImageEditPlusPipeline` が落ちる。Colab は 0.16+。
+TORCHAO_COLAB_SPEC = "torchao>=0.16.0"
+TORCHAO_COLAB_MIN = (0, 16)
 DIFFUSERS_COLAB_SPEC = "git+https://github.com/huggingface/diffusers.git"
 # Weights stay on the Colab VM HuggingFace cache. Drive only holds JPGs.
 DRIVE_FREE_GIB = 2
@@ -518,7 +521,7 @@ def drop_stale_pil_modules() -> None:
 
 
 def drop_stale_torchao_modules() -> None:
-    """Colab ships torchao 0.10. peft 0.19+ raises if it is present and < 0.16."""
+    """Drop cached torchao after a pip reinstall. peft caches availability."""
     for name in list(sys.modules):
         if name == "torchao" or name.startswith("torchao."):
             del sys.modules[name]
@@ -527,6 +530,34 @@ def drop_stale_torchao_modules() -> None:
     cache_clear = getattr(fn, "cache_clear", None)
     if callable(cache_clear):
         cache_clear()
+
+
+def drop_stale_diffusers_modules() -> None:
+    """②を同じランタイムで再実行したとき、失敗した import の残骸を捨てる。"""
+    for name in list(sys.modules):
+        if name == "diffusers" or name.startswith("diffusers."):
+            del sys.modules[name]
+
+
+def require_torchao_for_git_diffusers(version: str | None = None) -> str:
+    """git+diffusers imports FqnToConfig. torchao 0.11 cannot."""
+    try:
+        import torchao
+
+        ver = version or str(getattr(torchao, "__version__", "0"))
+        from torchao.quantization import FqnToConfig  # noqa: F401
+    except Exception as e:
+        raise SystemExit(
+            f"torchao が git+diffusers と食い違う（{e}）。"
+            f"{TORCHAO_COLAB_SPEC} を入れて②をやり直す。まだならランタイム再起動→①②。"
+        ) from e
+    major, minor = pillow_major_minor(ver)
+    if (major, minor) < TORCHAO_COLAB_MIN:
+        raise SystemExit(
+            f"torchao {ver} は git+diffusers に足りない（FqnToConfig）。"
+            f"{TORCHAO_COLAB_SPEC} を入れて②をやり直す。まだならランタイム再起動→①②。"
+        )
+    return ver
 
 
 def lora_files_for_gpu(vram_gib: float | None = None) -> dict[str, str]:
@@ -1060,7 +1091,7 @@ def apply_space_scheduler(pipe: Any, scheduler_cls: Any = None) -> Any:
 
 
 def quantize_transformer_fp8(transformer: Any) -> str:
-    """Mk1227 ENABLE_FP8_QUANT. torchao 0.11 float8 weight-only."""
+    """Mk1227 ENABLE_FP8_QUANT. torchao float8 weight-only."""
     if transformer is None:
         return "skip (no transformer)"
     try:

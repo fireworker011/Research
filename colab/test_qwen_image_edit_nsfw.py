@@ -2,6 +2,7 @@ import ast
 import json
 import re
 import sys
+import types
 from pathlib import Path
 
 from PIL import Image
@@ -40,6 +41,7 @@ from qwen_image_edit_nsfw import (
     SPACE_GPU_RESIDENT_GIB,
     SPACE_SEX_PRESET_LABELS,
     STEPS,
+    TORCHAO_COLAB_MIN,
     TORCHAO_COLAB_SPEC,
     TRANSFORMER_ID,
     TRUE_CFG,
@@ -59,6 +61,7 @@ from qwen_image_edit_nsfw import (
     clamp_edit_vae_area,
     compose_edit_prompt,
     disable_safety,
+    drop_stale_diffusers_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
@@ -88,6 +91,7 @@ from qwen_image_edit_nsfw import (
     require_l4_or_exit,
     require_space_gpu_or_exit,
     require_pillow_colab,
+    require_torchao_for_git_diffusers,
     resize_rgb,
     resolve_input_paths,
     rewrite_edit_prompt,
@@ -120,7 +124,8 @@ def test_stack_is_mk1227_class():
     assert DEFAULT_REWRITE_PROMPT is True
     assert REWRITE_MODEL == "Qwen/Qwen2.5-VL-72B-Instruct"
     assert DEFAULT_NEGATIVE == ""
-    assert TORCHAO_COLAB_SPEC == "torchao==0.11.0"
+    assert TORCHAO_COLAB_SPEC == "torchao>=0.16.0"
+    assert TORCHAO_COLAB_MIN == (0, 16)
     assert DIFFUSERS_COLAB_SPEC.startswith("git+https://github.com/huggingface/diffusers.git")
     assert "20cm" in FUTA_LOCK
     assert "no testicles" in FUTA_LOCK
@@ -242,6 +247,59 @@ def test_drop_stale_torchao_modules_clears_peft_cache():
     assert "torchao.quantization" not in sys.modules
     assert dummy.cleared is True
     sys.modules.pop("peft.import_utils", None)
+
+
+def test_require_torchao_for_git_diffusers_rejects_0_11():
+    saved = {
+        name: sys.modules[name]
+        for name in list(sys.modules)
+        if name == "torchao" or name.startswith("torchao.")
+    }
+    for name in list(saved):
+        del sys.modules[name]
+    try:
+        ao = types.ModuleType("torchao")
+        ao.__version__ = "0.11.0"
+        quant = types.ModuleType("torchao.quantization")
+        sys.modules["torchao"] = ao
+        sys.modules["torchao.quantization"] = quant
+        try:
+            require_torchao_for_git_diffusers()
+        except SystemExit as e:
+            assert "FqnToConfig" in str(e) or "食い違う" in str(e)
+            assert TORCHAO_COLAB_SPEC in str(e)
+        else:
+            raise AssertionError("torchao 0.11 without FqnToConfig must exit")
+        quant.FqnToConfig = object
+        try:
+            require_torchao_for_git_diffusers("0.11.0")
+        except SystemExit as e:
+            assert "0.11.0" in str(e)
+            assert "FqnToConfig" in str(e)
+            assert TORCHAO_COLAB_SPEC in str(e)
+        else:
+            raise AssertionError("torchao 0.11 with stub FqnToConfig must exit")
+        ao.__version__ = "0.16.0"
+        assert require_torchao_for_git_diffusers() == "0.16.0"
+    finally:
+        for name in list(sys.modules):
+            if name == "torchao" or name.startswith("torchao."):
+                del sys.modules[name]
+        sys.modules.update(saved)
+
+
+def test_drop_stale_diffusers_modules_clears_pipeline_cache():
+    saved = {
+        name: sys.modules[name]
+        for name in list(sys.modules)
+        if name == "diffusers" or name.startswith("diffusers.")
+    }
+    sys.modules["diffusers"] = object()
+    sys.modules["diffusers.pipelines"] = object()
+    drop_stale_diffusers_modules()
+    assert "diffusers" not in sys.modules
+    assert "diffusers.pipelines" not in sys.modules
+    sys.modules.update(saved)
 
 
 def test_resize_and_jpeg(tmp_path):
@@ -698,7 +756,16 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert '"huggingface_hub", "pillow"' not in src
     assert "pillow==11.3.0" in joined
     assert "pillow>=12.1.0" not in joined
-    assert "torchao==0.11.0" in joined
+    assert "torchao>=0.16.0" in joined
+    assert "torchao==0.11.0" not in joined
+    assert "FqnToConfig" in src
+    assert "drop_stale_diffusers_modules" in src
+    assert "require_torchao_for_git_diffusers" in src
+    assert "require_torchao_for_git_diffusers" in joined
+    assert 'uninstall", "-y", "torchao"' in src
+    ao_at = src.find("require_torchao_for_git_diffusers")
+    pipe_at = src.find("from diffusers import QwenImageEditPlusPipeline")
+    assert 0 <= ao_at < pipe_at
     assert "git+https://github.com/huggingface/diffusers.git" in joined
     assert "preset=クイックプロンプト" in src
     assert "style_form_options" in src

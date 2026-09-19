@@ -51,7 +51,7 @@ Space 本体（`Mk1227/Qwen-Image-Edit-NSFW` `.env.example`）と同じもの:
 
 - 土台 `Qwen/Qwen-Image-Edit-2511`
 - AIO 単一ファイル `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors` を注入
-- FP8 quant オン（`torchao==0.11.0`）、A100 は GPU 常駐、24GB 級は `model_cpu_offload`
+- FP8 quant オン（Colab は `torchao>=0.16.0`。Space `.env` の `0.11.0` は今の git+diffusers で `FqnToConfig` が無く②が落ちる）、A100 は GPU 常駐、24GB 級は `model_cpu_offload`
 - 4step / guidance 1.0 / サイズ **auto** / rewrite **既定オン**（72B VL。HF_TOKEN が無いときは入力文のまま）
 - 追加 LoRA なし（NSFW は AIO に焼き込み）。②の追加LoRAはオフのまま
 - FlowMatch `SCHED_*`（exponential `log(3)` / 8192）
@@ -147,7 +147,7 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 
 1. 上の Colab リンク（Drive コピーではない）
 2. ランタイム → GPU **A100**（40GB でも 80GB でも。H100 可。L4 は offload。T4 は拒否）
-3. ① Drive（空きは 2GB で足りる。重みは Colab 約70GB）→ ② 重み（初回は AIO 28GB。Pillow は Colab の `11.3.0` のまま。12 に上げるな。`torchao==0.11.0`）→ ③ クイックプロンプト＋画風。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。キャンバス既定は **auto**。rewrite 既定オン（Secrets に HF_TOKEN）。顔を固定したいときは参照画像（Picture 2）＝Drive から
+3. ① Drive（空きは 2GB で足りる。重みは Colab 約70GB）→ ② 重み（初回は AIO 28GB。Pillow は Colab の `11.3.0` のまま。12 に上げるな。`torchao>=0.16.0`。0.11 は今の git+diffusers で落ちる）→ ③ クイックプロンプト＋画風。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。キャンバス既定は **auto**。rewrite 既定オン（Secrets に HF_TOKEN）。顔を固定したいときは参照画像（Picture 2）＝Drive から
 4. 出力は Drive `qwen-image-edit-nsfw/output`
 
 T4 は拒否される。H3 動画ノートと同時に動かさない。
@@ -167,4 +167,6 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
-②のほか: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。`device_map="cuda"` は使わない。A100（35GB以上）は GPU 常駐。L4 は `model_cpu_offload`（sequential は OOM の最後だけ）。`torchao==0.11.0` で FP8。AIO 注入が 0 keys のときだけ prithiv 抽出に落ちる。③はサイズ **auto**（入力のアスペクト。576×1024 も選べる）。`guidance_scale=1.0`。VAE 参照は公式の 1024²。プロンプトは短い編集指示。長い IDENTITY LOCK は顔を捨てる。rewrite は HF_TOKEN が要る（nebius の 72B）。無いときは入力文のまま。③の Generator は A100 なら cuda、offload なら cpu。③は画像を置いてから。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。
+②で `cannot import name 'FqnToConfig'` は Space の `torchao==0.11.0` を今の git+diffusers と一緒に入れたせい。ノートを GitHub から開き直して②（`torchao>=0.16.0`。uninstall してから）。まだならランタイム再起動→①②。
+
+②のほか: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。`device_map="cuda"` は使わない。A100（35GB以上）は GPU 常駐。L4 は `model_cpu_offload`（sequential は OOM の最後だけ）。Colab の FP8 は `torchao>=0.16.0`（Space の 0.11 は今の git+diffusers で落ちる）。AIO 注入が 0 keys のときだけ prithiv 抽出に落ちる。③はサイズ **auto**（入力のアスペクト。576×1024 も選べる）。`guidance_scale=1.0`。VAE 参照は公式の 1024²。プロンプトは短い編集指示。長い IDENTITY LOCK は顔を捨てる。rewrite は HF_TOKEN が要る（nebius の 72B）。無いときは入力文のまま。③の Generator は A100 なら cuda、offload なら cpu。③は画像を置いてから。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。

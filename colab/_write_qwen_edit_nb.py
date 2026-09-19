@@ -37,7 +37,7 @@ H3_COLAB = (
 
 MD0 = f"""# Qwen Image Edit NSFW（Mk1227 Space と同じ環境・A100）
 
-H3 動画ノートとは **別**。同時に動かさない。このノートは Mk1227 Space の **公開設定どおり** に載せる: 土台 `Qwen/Qwen-Image-Edit-2511` + `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors`（単一 28.4GB）+ FP8（torchao 0.11）+ Space の FlowMatch `SCHED_*` + サイズ **auto** + rewrite 既定オン（`Qwen2.5-VL-72B`、HF_TOKEN が要る。無いときは入力文のまま）+ **追加 LoRA なし**。コンパイル済み `app.so` はコピーしない。safety checker なし。4step / CFG1。
+H3 動画ノートとは **別**。同時に動かさない。このノートは Mk1227 Space の **公開設定どおり** に載せる: 土台 `Qwen/Qwen-Image-Edit-2511` + `Phr00t/Qwen-Image-Edit-Rapid-AIO` の `v23/Qwen-Rapid-AIO-NSFW-v23.safetensors`（単一 28.4GB）+ FP8（torchao≥0.16。Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）+ Space の FlowMatch `SCHED_*` + サイズ **auto** + rewrite 既定オン（`Qwen2.5-VL-72B`、HF_TOKEN が要る。無いときは入力文のまま）+ **追加 LoRA なし**。コンパイル済み `app.so` はコピーしない。safety checker なし。4step / CFG1。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})
 
@@ -52,7 +52,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 1. Open in Colab → ランタイムのタイプ → GPU **A100**（40GB でも 80GB でも可。H100 も可。L4 は offload。T4 は不可）
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
-4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao==0.11.0` を入れる（外すな）
+4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
 5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
@@ -116,12 +116,6 @@ def sh(cmd, check=True):
     print("+", " ".join(cmd) if isinstance(cmd, list) else cmd)
     subprocess.run(cmd, check=check)
 
-sh([sys.executable, "-m", "pip", "install", "-q", "-U",
-    "__DIFFUSERS_SPEC__", "transformers", "accelerate", "safetensors",
-    "huggingface_hub", "sentencepiece", "peft", "__TORCHAO_SPEC__"])
-sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
-sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
-
 if "/content" not in sys.path:
     sys.path.insert(0, "/content")
 
@@ -132,14 +126,27 @@ urllib.request.urlretrieve(RAW, "/content/qwen_image_edit_nsfw.py")
 if "qwen_image_edit_nsfw" in sys.modules:
     del sys.modules["qwen_image_edit_nsfw"]
 
+# Space pin is torchao 0.11. Today's git+diffusers needs FqnToConfig (0.16+).
+sh([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"], check=False)
+sh([sys.executable, "-m", "pip", "install", "-q", "-U",
+    "__DIFFUSERS_SPEC__", "transformers", "accelerate", "safetensors",
+    "huggingface_hub", "sentencepiece", "peft"])
+sh([sys.executable, "-m", "pip", "install", "-q", "-U", "__TORCHAO_SPEC__"])
+sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
+sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
+
 from qwen_image_edit_nsfw import (
+    drop_stale_diffusers_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     require_pillow_colab,
+    require_torchao_for_git_diffusers,
 )
 drop_stale_torchao_modules()
+drop_stale_diffusers_modules()
 drop_stale_pil_modules()
 print("pillow", require_pillow_colab())
+print("torchao", require_torchao_for_git_diffusers())
 
 from google.colab import userdata
 tok = ""
