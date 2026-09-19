@@ -198,6 +198,19 @@ FUTA_LOCK = (
     "standing in front of the crotch, hairless female pussy visible at the base of the shaft, "
     "no testicles, no scrotum, no balls. Female breasts. Not a man. Do not redraw the face."
 )
+GIVER_FUTA = "ふたなり（玉なし・男禁止）"
+GIVER_MAN = "男"
+GIVER_DEFAULT = GIVER_FUTA
+GIVER_OPTIONS = (GIVER_FUTA, GIVER_MAN)
+GIVER_FUTA_LOCK = (
+    "GIVER LOCK: The penis in this act belongs to an adult futanari girl, not a man. "
+    "Female breasts, fully erect 20cm, hairless pussy at the base of the shaft, "
+    "no testicles, no scrotum, no balls. Never a man."
+)
+GIVER_MAN_LOCK = (
+    "GIVER LOCK: The penis in this act belongs to an adult man. Male body. "
+    "Not a futanari girl."
+)
 T2I_REWRITE_RE = re.compile(
     r"\b(?:generate a new image|generate an image(?: of)?|create a new image|"
     r"create an image of|text-to-image|from scratch)\b",
@@ -245,6 +258,23 @@ ANAL_JOIN = (
     "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. "
     "The receiver's own 20cm hangs free in front, empty of any penis. "
     "Unused pussy stays shut and is not the joining point. No clothes. Adult 21+."
+)
+ANAL_JOIN_FUTA_ON_WOMAN = (
+    "ANAL JOIN: The giver is an adult futanari girl, not a man: female breasts, erect 20cm, "
+    "hairless pussy at the base, no testicles, no balls. Never a man. "
+    "Her 20cm is inside the receiver's stretched anal ring only. "
+    "Show penis-in-anus: the sphincter gripping the shaft. No clothes. Adult 21+."
+)
+ANAL_JOIN_MAN = (
+    "ANAL JOIN: The giver is an adult man. His erect penis is inside the receiver's stretched "
+    "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. No clothes. Adult 21+."
+)
+ANAL_JOIN_MAN_FUTA = (
+    "ANAL JOIN: The giver is an adult man. His erect penis is inside the receiver's stretched "
+    "anal ring only. Show penis-in-anus: the sphincter gripping the shaft. "
+    "The receiver is a futanari woman, not a man: female breasts, her own erect 20cm, no testicles. "
+    "Her own 20cm hangs free in front, empty of any penis. Unused pussy stays shut "
+    "and is not the joining point. No clothes. Adult 21+."
 )
 ANAL_DETAIL = f"{ANAL_HOLE_LOCK} {ANAL_ANATOMY} {ANAL_JOIN}"
 ANAL_CLOSE = "JOIN CLOSE: The penis entering in this image is in the anus."
@@ -309,6 +339,12 @@ URINE_DETAIL = (
     "from the anus, not from off-screen. Continuous physically realistic yellow arc, splash and "
     "puddle. Keep the identical face and the input art medium. Adult futanari: no testicles, "
     "hairless pussy at the base of the shaft. Not a man. Adult 21+."
+)
+URINE_DETAIL_MAN_GIVER = (
+    "URINE LOOK: Opaque yellow urine, not clear, not white, not semen. The stream comes out of "
+    "the urethral opening at the glans tip of the adult man's penis, the same hole semen would "
+    "pulse from, not from off-screen. Continuous physically realistic yellow arc, splash and puddle. "
+    "Keep the identical face and the input art medium. Adult 21+."
 )
 SCAT_HOLE_LOCK = (
     "SCAT HOLE LOCK: Feces leaves the ANUS only — the rear hole between the buttocks, "
@@ -536,6 +572,28 @@ _FUTA_PARTNER_SWAPS = (
     ("sitting on his erect penis inserted into her from below", "sitting on her erect 20cm futanari penis (no testicles, pussy at the base) inserted from below"),
     ("straddles him facing the camera", "straddles her facing the camera"),
 )
+_MAN_PARTNER_SWAPS = (
+    ("An adult futanari partner kneels behind her", "An adult man kneels behind her"),
+    ("An adult futanari partner stands behind her", "An adult man stands behind her"),
+    (
+        "straddling an adult futanari partner who lies on her back below",
+        "straddling an adult man who lies on his back below",
+    ),
+    ("sits in an adult futanari partner's lap", "sits in an adult man's lap"),
+    ("An adult futanari holds her up from behind", "An adult man holds her up from behind"),
+    ("An adult futanari 20cm penis", "An adult man's erect penis"),
+    ("the partner's erect 20cm", "the man's erect penis"),
+    ("The partner's erect 20cm", "The man's erect penis"),
+    ("onto the partner's 20cm", "onto the man's penis"),
+    ("Partner's face out of frame", "The man's face out of frame"),
+    ("partner's face out of frame", "the man's face out of frame"),
+    ("Partner between her legs", "The man between her legs"),
+    ("Partner sits on a chair", "The man sits on a chair"),
+    (
+        "Hairless pussy at the base of that shaft, no testicles. Not a man.",
+        "The peeing penis is a man's. The receiver is not a man.",
+    ),
+)
 
 
 def require_space_gpu_or_exit(vram_gib: float, name: str = "") -> None:
@@ -721,6 +779,10 @@ def sex_preset_form_options() -> list[str]:
 
 def style_form_options() -> list[str]:
     return [STYLE_PRESET_DEFAULT, *STYLE_LABELS]
+
+
+def giver_form_options() -> list[str]:
+    return list(GIVER_OPTIONS)
 
 
 def input_source_form_options() -> list[str]:
@@ -965,6 +1027,58 @@ def apply_futa_partner(prompt: str) -> str:
     return out
 
 
+def apply_man_partner(prompt: str) -> str:
+    """Anal / ご褒美小便 are written as futa. 竿役＝男 reverses the partner only."""
+    out = prompt
+    for old, new in _MAN_PARTNER_SWAPS:
+        out = out.replace(old, new)
+    return out
+
+
+def parse_giver(giver: str = "") -> str:
+    label = (giver or "").strip() or GIVER_DEFAULT
+    if label not in GIVER_OPTIONS:
+        raise SystemExit(f"unknown 竿役: {label}")
+    return label
+
+
+def is_futa_giver(giver: str = "") -> bool:
+    return parse_giver(giver) == GIVER_FUTA
+
+
+def apply_giver_prompt(prompt: str, giver: str = "") -> str:
+    if is_futa_giver(giver):
+        return apply_futa_partner(prompt)
+    return apply_man_partner(prompt)
+
+
+def anal_join_lock(*, futa: bool, giver: str = "") -> str:
+    if is_futa_giver(giver):
+        return ANAL_JOIN if futa else ANAL_JOIN_FUTA_ON_WOMAN
+    return ANAL_JOIN_MAN_FUTA if futa else ANAL_JOIN_MAN
+
+
+def uses_giver(label: str) -> bool:
+    return is_sex_act_preset(label) or (label or "").strip() == "ご褒美小便"
+
+
+def giver_lock(giver: str = "") -> str:
+    return GIVER_FUTA_LOCK if is_futa_giver(giver) else GIVER_MAN_LOCK
+
+
+def urine_look(*, giver: str = "", partnered: bool = False) -> str:
+    if partnered and not is_futa_giver(giver):
+        return URINE_DETAIL_MAN_GIVER
+    return URINE_DETAIL
+
+
+def wants_giver_lock(preset: str = "", extra: str = "") -> bool:
+    label = (preset or "").strip()
+    return uses_giver(label) or (
+        wants_anal_lock(extra, label) and not wants_scat_lock(extra, label)
+    )
+
+
 def compose_edit_prompt(
     user_prompt: str = "",
     *,
@@ -974,7 +1088,9 @@ def compose_edit_prompt(
     preset: str = "",
     style: str = "",
     has_ref: bool = False,
+    giver: str = "",
 ) -> str:
+    giver = parse_giver(giver)
     label = (preset or "").strip()
     extra = (user_prompt or "").strip()
     parts: list[str] = []
@@ -992,11 +1108,13 @@ def compose_edit_prompt(
                 parts.append(SCAT_ACT)
                 parts.append(FECES_LOOK)
             else:
-                parts.append(base)
-                if URINE_DETAIL not in parts:
-                    parts.append(URINE_DETAIL)
+                pose = apply_giver_prompt(base, giver) if uses_giver(label) else base
+                parts.append(pose)
+                look = urine_look(giver=giver, partnered=uses_giver(label))
+                if look not in parts:
+                    parts.append(look)
         elif is_sex_act_preset(label):
-            pose = apply_futa_partner(base) if futa else base
+            pose = apply_giver_prompt(base, giver)
             if is_anal_preset(label):
                 parts.append(ANAL_HOLE_LOCK)
                 if label in ANAL_REAR_PRESETS:
@@ -1004,9 +1122,8 @@ def compose_edit_prompt(
                 elif label in ANAL_FRONT_PRESETS:
                     parts.append(ANAL_FRONT_LOCK)
                 parts.append(pose)
-                if futa:
-                    parts.append(ANAL_ANATOMY)
-                    parts.append(ANAL_JOIN)
+                parts.append(ANAL_ANATOMY)
+                parts.append(anal_join_lock(futa=futa, giver=giver))
                 parts.append(ANAL_CLOSE)
             else:
                 parts.append(pose)
@@ -1038,16 +1155,19 @@ def compose_edit_prompt(
             if FECES_LOOK not in parts:
                 parts.append(FECES_LOOK)
         elif anal:
+            join = anal_join_lock(futa=futa, giver=giver)
             if ANAL_HOLE_LOCK not in parts:
                 parts.insert(0, ANAL_HOLE_LOCK)
-            if futa and ANAL_JOIN not in parts:
+            if ANAL_ANATOMY not in parts:
                 parts.append(ANAL_ANATOMY)
-                parts.append(ANAL_JOIN)
+            if join not in parts:
+                parts.append(join)
             if ANAL_CLOSE not in parts:
                 parts.append(ANAL_CLOSE)
         elif urine:
-            if URINE_DETAIL not in parts:
-                parts.append(URINE_DETAIL)
+            look = urine_look(giver=giver, partnered=False)
+            if look not in parts:
+                parts.append(look)
         if undress and "remove only the clothes" not in blob and not anal and not scat and not urine:
             parts.append("Remove only the clothes. Do not tie the hair.")
         if futa and "20cm" not in " ".join(parts).lower() and not anal and not scat and not urine:
@@ -1069,6 +1189,10 @@ def compose_edit_prompt(
     if scat and SCAT_HOLE_LOCK in parts:
         parts = [p for p in parts if p != SCAT_HOLE_LOCK]
         parts.insert(1, SCAT_HOLE_LOCK)
+    if wants_giver_lock(label, extra):
+        glock = giver_lock(giver)
+        if glock not in parts:
+            parts.append(glock)
     if not pose_ok and "change clothing only" not in " ".join(parts).lower():
         parts.append("Change clothing only. Keep the exact same pose, camera, crop, lighting, and background.")
     if has_ref:

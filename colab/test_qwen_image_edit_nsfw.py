@@ -17,6 +17,9 @@ from qwen_image_edit_nsfw import (
     ANAL_FRONT_PRESETS,
     ANAL_HOLE_LOCK,
     ANAL_JOIN,
+    ANAL_JOIN_FUTA_ON_WOMAN,
+    ANAL_JOIN_MAN,
+    ANAL_JOIN_MAN_FUTA,
     ANAL_POSE_LABELS,
     ANAL_PRESETS,
     ANAL_REAR_LOCK,
@@ -31,6 +34,11 @@ from qwen_image_edit_nsfw import (
     ENABLE_FP8_QUANT,
     FUTA_LOCK,
     FACE_KEEP,
+    GIVER_DEFAULT,
+    GIVER_FUTA,
+    GIVER_FUTA_LOCK,
+    GIVER_MAN,
+    GIVER_MAN_LOCK,
     KEEP_LOCK,
     LORA_FILES,
     DEFAULT_HEIGHT,
@@ -63,10 +71,13 @@ from qwen_image_edit_nsfw import (
     STYLE_PRESET_DEFAULT,
     STYLE_PRESETS,
     URINE_DETAIL,
+    URINE_DETAIL_MAN_GIVER,
     URINE_LABELS,
     UPLOAD_PHONE_HINT,
     WEIGHTS_CACHE_GIB,
     apply_futa_partner,
+    apply_giver_prompt,
+    apply_man_partner,
     apply_space_scheduler,
     apply_style,
     auto_canvas_size,
@@ -127,6 +138,11 @@ from qwen_image_edit_nsfw import (
     snapped_size,
     style_form_options,
     style_negative,
+    giver_form_options,
+    giver_lock,
+    is_futa_giver,
+    parse_giver,
+    uses_giver,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -551,6 +567,88 @@ def test_futa_partner_rewrites_sex_acts_and_drops_man():
     lift = compose_edit_prompt("", preset="肛門リフト", futa=True)
     assert not has_leftover_man(lift)
     assert ANAL_FRONT_LOCK in lift
+    assert GIVER_FUTA_LOCK in lift
+
+
+def test_giver_form_is_futa_or_man():
+    assert giver_form_options() == [GIVER_FUTA, GIVER_MAN]
+    assert GIVER_DEFAULT == GIVER_FUTA
+    assert parse_giver("") == GIVER_FUTA
+    assert parse_giver(GIVER_MAN) == GIVER_MAN
+    assert is_futa_giver("")
+    assert not is_futa_giver(GIVER_MAN)
+    assert uses_giver("宣教師")
+    assert uses_giver("ご褒美小便")
+    assert not uses_giver("放尿（立ち）")
+    assert not uses_giver("脱糞（しゃがみ）")
+    assert not uses_giver("服を脱ぐ")
+    try:
+        parse_giver("不明")
+    except SystemExit as e:
+        assert "unknown 竿役" in str(e)
+    else:
+        raise AssertionError("bad 竿役 must exit")
+
+
+def test_giver_man_rewrites_partner_only():
+    mission = compose_edit_prompt("", preset="宣教師", futa=True, giver=GIVER_MAN)
+    assert GIVER_MAN_LOCK in mission
+    assert GIVER_FUTA_LOCK not in mission
+    assert "A man's erect penis is inserted" in mission
+    assert "futanari erect" not in mission.lower()
+    assert "futanari POV" not in mission
+    assert giver_lock(GIVER_MAN) == GIVER_MAN_LOCK
+    oral = compose_edit_prompt("", preset="フェラチオの視点", giver=GIVER_MAN)
+    assert "from the man's perspective looking down" in oral
+    assert "futanari POV" not in oral
+    cow = compose_edit_prompt("", preset="カウガール", giver=GIVER_MAN)
+    assert "from the man's POV" in cow
+    futa_mission = compose_edit_prompt("", preset="宣教師", futa=False)
+    assert GIVER_FUTA_LOCK in futa_mission
+    assert "futanari" in futa_mission.lower()
+    assert not has_leftover_man(futa_mission)
+    reward_futa = compose_edit_prompt("", preset="ご褒美小便")
+    assert URINE_DETAIL in reward_futa
+    assert GIVER_FUTA_LOCK in reward_futa
+    assert "futanari 20cm" in reward_futa.lower() or "adult futanari" in reward_futa.lower()
+    assert not has_leftover_man(reward_futa)
+    reward_man = compose_edit_prompt("", preset="ご褒美小便", giver=GIVER_MAN)
+    assert URINE_DETAIL_MAN_GIVER in reward_man
+    assert URINE_DETAIL not in reward_man
+    assert GIVER_MAN_LOCK in reward_man
+    assert "adult man's penis" in reward_man.lower() or "man's erect penis" in reward_man.lower()
+    stand = compose_edit_prompt("", preset="放尿（立ち）", giver=GIVER_MAN)
+    assert URINE_DETAIL in stand
+    assert GIVER_MAN_LOCK not in stand
+    assert GIVER_FUTA_LOCK not in stand
+    assert "futanari penis" in stand.lower()
+    scat = compose_edit_prompt("", preset="脱糞（しゃがみ）", giver=GIVER_MAN)
+    assert GIVER_MAN_LOCK not in scat
+    assert GIVER_FUTA_LOCK not in scat
+    assert "futanari penis" in scat.lower()
+    man_anal = compose_edit_prompt("", preset="アナルバック", futa=True, giver=GIVER_MAN)
+    assert ANAL_JOIN_MAN_FUTA in man_anal
+    assert ANAL_JOIN not in man_anal
+    assert GIVER_MAN_LOCK in man_anal
+    assert "adult man" in man_anal.lower()
+    assert "never a man" not in man_anal.lower()
+    woman_anal = compose_edit_prompt("", preset="アナルバック", futa=False, giver=GIVER_MAN)
+    assert ANAL_JOIN_MAN in woman_anal
+    assert ANAL_JOIN_MAN_FUTA not in woman_anal
+    futa_on_woman = compose_edit_prompt("", preset="アナルバック", futa=False)
+    assert ANAL_JOIN_FUTA_ON_WOMAN in futa_on_woman
+    assert ANAL_JOIN not in futa_on_woman
+    assert GIVER_FUTA_LOCK in futa_on_woman
+    assert not has_leftover_man(futa_on_woman)
+    swapped = apply_man_partner(SEX_PRESETS["ご褒美小便"])
+    assert "adult man's erect penis" in swapped.lower() or "man's erect penis" in swapped.lower()
+    assert apply_giver_prompt(SEX_PRESETS["宣教師"], GIVER_FUTA) == apply_futa_partner(
+        SEX_PRESETS["宣教師"]
+    )
+    names_futa = [row[0] for row in lora_stack(True, True, preset="宣教師")]
+    names_woman = [row[0] for row in lora_stack(True, False, preset="宣教師")]
+    assert "CockQwen_v3" in names_futa
+    assert "CockQwen_v3" not in names_woman
 
 
 def test_compose_sex_act_strings():
@@ -911,6 +1009,10 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "preset=クイックプロンプト" in src
     assert "extra=PROMPT" in src
     assert "style_form_options" in src
+    assert "giver_form_options" in src
+    assert "giver=竿役" in src
+    assert "竿役" in src
+    assert GIVER_FUTA in src
     assert "画風" in src
     assert "画風は変換しない" in src
     assert "顔と画風の固定は必須" in src
@@ -921,6 +1023,9 @@ def test_writer_notebook_is_separate_a100_nsfw():
         *SCAT_LABELS,
         *STYLE_LABELS,
         "クイックプロンプト",
+        "竿役",
+        GIVER_FUTA,
+        GIVER_MAN,
         "Qwen4Play",
         "入力のまま",
         "顔と画風の固定は必須",

@@ -15,6 +15,7 @@ from qwen_image_edit_nsfw import (
     PILLOW_COLAB_SPEC,
     TORCHAO_COLAB_SPEC,
     canvas_form_options,
+    giver_form_options,
     input_source_form_options,
     ref_source_form_options,
     sex_preset_form_options,
@@ -53,7 +54,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
-5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**と **竿役**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。行為でも写真にしない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -305,6 +306,7 @@ from qwen_image_edit_nsfw import (
     snapped_rgb,
     style_form_options,
     style_negative,
+    giver_form_options,
     vram_used_gib,
 )
 
@@ -329,6 +331,7 @@ PCから選ぶ = False  #@param {type:"boolean"}
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
+竿役 = "ふたなり（玉なし・男禁止）"  #@param [__GIVER_OPTS__]
 プロンプトrewrite = False  #@param {type:"boolean"}
 STEPS_RUN = 4  #@param {type:"integer"}
 SEED = 0  #@param {type:"integer"}
@@ -342,6 +345,8 @@ if クイックプロンプト not in sex_preset_form_options():
     raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
 if 画風 not in style_form_options():
     raise SystemExit(f"unknown style: {画風}")
+if 竿役 not in giver_form_options():
+    raise SystemExit(f"unknown 竿役: {竿役}")
 if 入力 not in input_source_form_options():
     raise SystemExit(f"unknown input: {入力}")
 if 参照画像 not in ref_source_form_options():
@@ -351,6 +356,7 @@ if サイズ not in canvas_form_options():
 print("i2i", True)
 print("preset", クイックプロンプト)
 print("style", 画風)
+print("giver", 竿役)
 print("input", 入力)
 print("file", 入力ファイル名 or "(Drive の全部)")
 print("ref", 参照画像)
@@ -439,6 +445,7 @@ prompt = compose_edit_prompt(
     preset=クイックプロンプト,
     style=画風,
     has_ref=True,
+    giver=竿役,
 )
 if names and hasattr(pipe, "set_adapters"):
     print("adapters", list(zip(names, weights)))
@@ -533,6 +540,9 @@ CELL3 = CELL3.replace(
 ).replace(
     "__STYLE_OPTS__",
     ", ".join(json.dumps(x, ensure_ascii=False) for x in style_form_options()),
+).replace(
+    "__GIVER_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in giver_form_options()),
 ).replace(
     "__INPUT_OPTS__",
     ", ".join(json.dumps(x, ensure_ascii=False) for x in input_source_form_options()),
