@@ -39,7 +39,8 @@ GitHub Actions で無人運転し、判断（案件選定・ジャンル取捨�
 ＋ video-semi-auto.js（任意・手動）: 反応が良かった投稿を
   Shorts/Reels 動画化 → 確認 → 公式ツールで予約投稿
 ＋ video-judge.js（毎日・自動）: YouTubeのクリック記録だけを見て判定。投稿しない
-＋ funnel-calc.js: 目標金額から必要ビュー数を逆算
+＋ adult-judge.js（毎日・自動）: FANZA/DMMアダは別事業。X/landing の記録だけ見て判定。投稿しない。ペットに混ぜない
+＋ funnel-calc.js / adult-funnel.js: 目標金額から必要クリックを逆算。公式値と仮定を混ぜない
 ```
 
 ## 元構想（fable5 一式）から変更した点と理由
