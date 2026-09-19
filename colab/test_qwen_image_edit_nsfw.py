@@ -640,3 +640,6 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "UPLOAD_PHONE_HINT" in src
     assert "スマホ" in joined
     assert "resolve_input_paths" in src
+    assert "w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT" in src
+    assert "WIDTH = 576" not in src
+    assert "canvas" in src
