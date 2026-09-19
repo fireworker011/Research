@@ -138,6 +138,7 @@ sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SP
 
 from qwen_image_edit_nsfw import (
     drop_stale_diffusers_modules,
+    drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     require_pillow_colab,
@@ -145,6 +146,7 @@ from qwen_image_edit_nsfw import (
 )
 drop_stale_torchao_modules()
 drop_stale_diffusers_modules()
+drop_stale_huggingface_hub_modules()
 drop_stale_pil_modules()
 print("pillow", require_pillow_colab())
 print("torchao", require_torchao_for_git_diffusers())

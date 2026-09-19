@@ -11,10 +11,6 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from huggingface_hub import hf_hub_download
-except ImportError:
-    hf_hub_download = None  # type: ignore[assignment]
-try:
     from safetensors.torch import load_file as safetensors_load_file
     from safetensors.torch import save_file as safetensors_save_file
 except ImportError:
@@ -665,6 +661,19 @@ def drop_stale_diffusers_modules() -> None:
     """②を同じランタイムで再実行したとき、失敗した import の残骸を捨てる。"""
     for name in list(sys.modules):
         if name == "diffusers" or name.startswith("diffusers."):
+            del sys.modules[name]
+
+
+def drop_stale_huggingface_hub_modules() -> None:
+    """Drop cached huggingface_hub after pip -U.
+
+    ① imports this module. A top-level hub import would pin old
+    `huggingface_hub.utils._http` in sys.modules. ② then upgrades hub on
+    disk; fresh `hf_api.py` cannot import
+    `_httpx_follow_hub_redirects_with_backoff` from the stale `_http`.
+    """
+    for name in list(sys.modules):
+        if name == "huggingface_hub" or name.startswith("huggingface_hub."):
             del sys.modules[name]
 
 
@@ -1338,8 +1347,10 @@ def ensure_genatomy_adapter(
     """Download epoch-7 once, convert, load adapter. Idempotent on the same pipe."""
     if getattr(pipe, "_qwen_genatomy", False):
         return GENATOMY_ADAPTER
-    if hf_hub_download is None:
-        raise SystemExit("huggingface_hub が無い")
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError as e:
+        raise SystemExit("huggingface_hub が無い") from e
     cache = Path(cache_dir)
     converted = cache / GENATOMY_CONVERTED
     if not converted.is_file():

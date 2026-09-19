@@ -93,6 +93,7 @@ from qwen_image_edit_nsfw import (
     convert_diffsynth_qwen_lora_keys,
     disable_safety,
     drop_stale_diffusers_modules,
+    drop_stale_huggingface_hub_modules,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
@@ -347,6 +348,47 @@ def test_drop_stale_diffusers_modules_clears_pipeline_cache():
     assert "diffusers" not in sys.modules
     assert "diffusers.pipelines" not in sys.modules
     sys.modules.update(saved)
+
+
+def test_drop_stale_huggingface_hub_modules_clears_mixed_http_cache():
+    saved = {
+        name: sys.modules[name]
+        for name in list(sys.modules)
+        if name == "huggingface_hub" or name.startswith("huggingface_hub.")
+    }
+    sys.modules["huggingface_hub"] = object()
+    sys.modules["huggingface_hub.hf_api"] = object()
+    sys.modules["huggingface_hub.utils._http"] = object()
+    drop_stale_huggingface_hub_modules()
+    assert "huggingface_hub" not in sys.modules
+    assert "huggingface_hub.hf_api" not in sys.modules
+    assert "huggingface_hub.utils._http" not in sys.modules
+    sys.modules.update(saved)
+
+
+def test_qwen_module_does_not_import_huggingface_hub_at_import():
+    """CELL1 imports this module. A top-level hub import pins stale _http."""
+    src = (Path(__file__).resolve().parent / "qwen_image_edit_nsfw.py").read_text(
+        encoding="utf-8"
+    )
+    tree = ast.parse(src)
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name != "huggingface_hub"
+                assert not alias.name.startswith("huggingface_hub.")
+        if isinstance(node, ast.ImportFrom):
+            mod = node.module or ""
+            assert mod != "huggingface_hub"
+            assert not mod.startswith("huggingface_hub.")
+        if isinstance(node, ast.Try):
+            for inner in node.body:
+                if isinstance(inner, ast.ImportFrom):
+                    mod = inner.module or ""
+                    assert mod != "huggingface_hub"
+                    assert not mod.startswith("huggingface_hub.")
+    assert "drop_stale_huggingface_hub_modules" in src
+    assert "from huggingface_hub import hf_hub_download" in src
 
 
 def test_resize_and_jpeg(tmp_path):
@@ -1073,12 +1115,19 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "torchao==0.11.0" not in joined
     assert "FqnToConfig" in src
     assert "drop_stale_diffusers_modules" in src
+    assert "drop_stale_huggingface_hub_modules" in src
     assert "require_torchao_for_git_diffusers" in src
     assert "require_torchao_for_git_diffusers" in joined
     assert 'uninstall", "-y", "torchao"' in src
     ao_at = src.find("require_torchao_for_git_diffusers")
+    hub_at = src.find("drop_stale_huggingface_hub_modules()")
     pipe_at = src.find("from diffusers import QwenImageEditPlusPipeline")
+    login_at = src.find("from huggingface_hub import login")
+    hf_at = src.find("from huggingface_hub import hf_hub_download")
     assert 0 <= ao_at < pipe_at
+    assert 0 <= hub_at < pipe_at
+    assert hub_at < login_at
+    assert hub_at < hf_at
     assert "git+https://github.com/huggingface/diffusers.git" in joined
     assert "preset=クイックプロンプト" in src
     assert "extra=PROMPT" in src
