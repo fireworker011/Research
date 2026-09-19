@@ -49,7 +49,7 @@ python minimaxh3/grokbot/run_t2v.py --watch
 python minimaxh3/grokbot/run_r2v.py --watch
 ```
 
-セッション名は `h3-i2v` / `h3-t2v` / `h3-r2v`。GPU は A100（`--high-mem`）。R2V の確実な10秒は 80GB。
+セッション名は `h3-i2v` / `h3-t2v` / `h3-r2v`。GPU は A100。R2V の確実な10秒は 80GB。
 
 ## bot 専用 Colab（モードごと 1ノート）
 
@@ -96,7 +96,19 @@ I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそ�
 
 Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
 
-### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる。次はこれ）
+### 霞東フロア（25秒・遅刻して自席。ミッション失敗。次はこれ）
+
+原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk --branch cursor/h3-ol-late-desk-33d9
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/kasumi-late-desk/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる）
 
 `bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、GPU で描くのは理容室 1 本だけ（約 7 分）。
 
@@ -140,6 +152,6 @@ python minimaxh3/grokbot/run_episode.py --episode <slug>
 
 `<slug>` は `minimaxh3/episodes/<slug>/episode.json` があること。無ければ GitHub の同パスから取る。テンプレから新ネタを足す作業は skill `h3-episode-oneclick`（コードは触らない）。
 
-スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100（`--high-mem`）。
+スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100。
 
 投稿は人間。リンクはプロフィール。
