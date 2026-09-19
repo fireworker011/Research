@@ -54,6 +54,42 @@ DEFAULT_NEGATIVE = (
     "clothes, dress, fabric, underwear, testicles, scrotum, balls, male body, "
     "blurry, extra limbs, worst quality, watermark"
 )
+STYLE_PRESET_DEFAULT = "入力のまま"
+STYLE_LABELS = ("アニメ絵", "リアル", "3D", "漫画")
+STYLE_PRESETS = {
+    STYLE_PRESET_DEFAULT: (
+        "CRITICAL STYLE LOCK: keep the exact same art medium as the input image. "
+        "If the input is 2D anime, stay 2D anime. If it is a photoreal photo, stay photoreal. "
+        "If it is 3D CGI, stay 3D CGI. If it is manga or comic, stay manga. "
+        "Do not convert to a different medium."
+    ),
+    "アニメ絵": (
+        "CRITICAL STYLE LOCK: 2D Japanese anime illustration. Cel shading, clean lineart, "
+        "anime eyes and proportions, flat-to-soft colored skin. Not photorealistic, not a "
+        "live-action photo, not a 3D CGI render, not western cartoon. Keep the same character."
+    ),
+    "リアル": (
+        "CRITICAL STYLE LOCK: photorealistic live-action photography. Real skin texture, "
+        "real pores, realistic camera and lighting. Not anime, not manga, not 3D CGI, "
+        "not illustration, not lineart."
+    ),
+    "3D": (
+        "CRITICAL STYLE LOCK: 3D CGI / game-engine render. Modeled 3D body, subsurface "
+        "scattering skin, render lighting, 3D hair cards or sculpted hair. Not 2D anime, "
+        "not manga lineart, not a real photograph."
+    ),
+    "漫画": (
+        "CRITICAL STYLE LOCK: 2D manga / comic drawing. Ink lineart, screentones, manga "
+        "panel look. Match the input's color (monochrome or limited color). Not photorealistic, "
+        "not 3D CGI, not live action, not painterly western comic."
+    ),
+}
+STYLE_NEGATIVES = {
+    "アニメ絵": "photorealistic, photograph, 3d render, real skin pores, live action",
+    "リアル": "anime, manga, cartoon, 3d render, illustration, lineart, cel shading",
+    "3D": "2d anime, manga, photograph, live action, flat cel, lineart screentone",
+    "漫画": "photorealistic, 3d render, live action, painterly, photograph, cgi",
+}
 ANAL_DETAIL = (
     "Both adults are futanari women, not a man, not a male body. "
     "Each has female breasts, a feminine body, a fully erect 20cm human penis "
@@ -281,6 +317,33 @@ def sex_preset_form_options() -> list[str]:
     return [SEX_PRESET_DEFAULT, *sex_preset_labels()]
 
 
+def style_form_options() -> list[str]:
+    return [STYLE_PRESET_DEFAULT, *STYLE_LABELS]
+
+
+def style_negative(style: str = "", base: str = DEFAULT_NEGATIVE) -> str:
+    label = (style or "").strip() or STYLE_PRESET_DEFAULT
+    extra = STYLE_NEGATIVES.get(label, "")
+    if not extra:
+        return base
+    return f"{base}, {extra}"
+
+
+def apply_style(prompt: str, style: str = "") -> str:
+    label = (style or "").strip() or STYLE_PRESET_DEFAULT
+    lock = STYLE_PRESETS.get(label)
+    if not lock:
+        raise SystemExit(f"unknown style: {label}")
+    out = prompt or ""
+    if label in {"アニメ絵", "漫画", "3D"}:
+        out = out.replace("Realistic nude body, natural skin.", "")
+        out = out.replace(
+            "Amateur phone-camera snapshot, natural indoor lighting",
+            "Indoor lighting",
+        )
+    return f"{lock} {out}".strip()
+
+
 def is_sex_act_preset(label: str) -> bool:
     return (label or "").strip() in SEX_ACT_PRESETS
 
@@ -315,6 +378,7 @@ def compose_edit_prompt(
     futa: bool = True,
     extra_triggers: list[str] | None = None,
     preset: str = "",
+    style: str = "",
 ) -> str:
     label = (preset or "").strip()
     extra = (user_prompt or "").strip()
@@ -357,7 +421,7 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    return joined
+    return apply_style(joined, style)
 
 
 def lora_stack(

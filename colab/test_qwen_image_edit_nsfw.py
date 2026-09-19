@@ -21,7 +21,11 @@ from qwen_image_edit_nsfw import (
     STEPS,
     TRANSFORMER_ID,
     TRUE_CFG,
+    STYLE_LABELS,
+    STYLE_PRESET_DEFAULT,
+    STYLE_PRESETS,
     apply_futa_partner,
+    apply_style,
     compose_edit_prompt,
     disable_safety,
     has_leftover_man,
@@ -35,6 +39,8 @@ from qwen_image_edit_nsfw import (
     sex_preset_form_options,
     sex_preset_labels,
     snapped_size,
+    style_form_options,
+    style_negative,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -204,6 +210,34 @@ def test_lora_stack_sex_uses_qwen4play():
     assert names == ["remove_clothing", "qwen_uncensor", "CockQwen_v3"]
 
 
+def test_style_presets_lock_medium():
+    assert style_form_options() == [STYLE_PRESET_DEFAULT, *STYLE_LABELS]
+    assert STYLE_LABELS == ("アニメ絵", "リアル", "3D", "漫画")
+    assert "アニメ絵" in STYLE_PRESETS
+    keep = compose_edit_prompt("")
+    assert "keep the exact same art medium" in keep
+    anime = compose_edit_prompt("", preset="服を脱ぐ", style="アニメ絵")
+    assert "2D Japanese anime" in anime
+    assert "cel shading" in anime.lower() or "Cel shading" in anime
+    assert "Realistic nude body" not in anime
+    real = compose_edit_prompt("", style="リアル")
+    assert "photorealistic" in real.lower()
+    cgi = compose_edit_prompt("", preset="アナルバック", style="3D")
+    assert "3D CGI" in cgi
+    assert "20cm" in cgi
+    manga = compose_edit_prompt("", style="漫画")
+    assert "manga" in manga.lower()
+    assert "screentone" in manga.lower()
+    assert "photorealistic" in style_negative("アニメ絵")
+    assert "anime" in style_negative("リアル")
+    try:
+        apply_style("x", "油絵")
+    except SystemExit as e:
+        assert "unknown style" in str(e)
+    else:
+        raise AssertionError("bad style must exit")
+
+
 def test_writer_notebook_is_separate_l4_nsfw():
     ast.parse(WRITER.read_text(encoding="utf-8"))
     src = WRITER.read_text(encoding="utf-8")
@@ -225,7 +259,8 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "disable_safety" in joined
     assert "files.upload" in joined
     assert "preset=クイックプロンプト" in src
-    assert "sex_preset_form_options" in src
-    assert "Qwen4Play" in src
-    for label in (*SPACE_SEX_PRESET_LABELS, *ANAL_POSE_LABELS, "クイックプロンプト", "Qwen4Play"):
+    assert "style_form_options" in src
+    assert "画風" in src
+    assert "画風" in joined
+    for label in (*SPACE_SEX_PRESET_LABELS, *ANAL_POSE_LABELS, *STYLE_LABELS, "クイックプロンプト", "Qwen4Play", "入力のまま"):
         assert label in joined

@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COLAB_DIR = Path(__file__).resolve().parent
 if str(COLAB_DIR) not in sys.path:
     sys.path.insert(0, str(COLAB_DIR))
-from qwen_image_edit_nsfw import sex_preset_form_options
+from qwen_image_edit_nsfw import sex_preset_form_options, style_form_options
 
 OUTS = [
     ROOT / "qwen_image_edit_nsfw.ipynb",
@@ -40,7 +40,7 @@ H3 動画は [こちら]({H3_COLAB})。
 2. すべてのセルを実行
 3. ① Drive 許可
 4. ② 初回は重みダウンロード（待つ）
-5. ③ クイックプロンプトを選んで画像をアップロード。服を脱ぐ〜肛門リフトは Space と同じ12個。アナルファックは **アナルバック / アナル立ちバック / アナル正常位 / アナル騎乗位 / アナル座位**。基本フタナリ（玉なし・マンコあり・竿20cm）。男は出さない。竿・マンコ・肛門・行為は詳細固定。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**（アニメ絵 / リアル / 3D / 漫画。既定は入力のまま）を選んで画像をアップロード。服を脱ぐ〜肛門リフトは Space と同じ12個。アナルファックは **アナルバック / アナル立ちバック / アナル正常位 / アナル騎乗位 / アナル座位**。基本フタナリ（玉なし・マンコあり・竿20cm）。男は出さない。竿・マンコ・肛門・行為は詳細固定。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -199,6 +199,8 @@ from qwen_image_edit_nsfw import (
     resize_rgb,
     save_jpeg,
     sex_preset_form_options,
+    style_form_options,
+    style_negative,
 )
 
 env = {}
@@ -210,6 +212,7 @@ OUT = Path(env["DRIVE_ROOT"]) / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 
 クイックプロンプト = "服抜きフタナリ（既定）"  #@param [__QUICK_OPTS__]
+画風 = "入力のまま"  #@param [__STYLE_OPTS__]
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
@@ -225,7 +228,10 @@ if pipe is None:
 
 if クイックプロンプト not in sex_preset_form_options():
     raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
+if 画風 not in style_form_options():
+    raise SystemExit(f"unknown style: {画風}")
 print("preset", クイックプロンプト)
+print("style", 画風)
 
 stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト)
 loaded = globals().get("QWEN_EDIT_LORAS") or set()
@@ -241,6 +247,7 @@ prompt = compose_edit_prompt(
     futa=フタナリ勃起,
     extra_triggers=trigs,
     preset=クイックプロンプト,
+    style=画風,
 )
 if names and hasattr(pipe, "set_adapters"):
     pipe.enable_lora()
@@ -268,7 +275,7 @@ kwargs = infer_kwargs(
     steps=int(STEPS_RUN) or STEPS,
     true_cfg=TRUE_CFG,
     guidance=GUIDANCE,
-    negative=DEFAULT_NEGATIVE,
+    negative=style_negative(画風, DEFAULT_NEGATIVE),
     torch_module=torch,
     device="cuda",
 )
@@ -300,6 +307,9 @@ print("Git に JPG を入れない。Drive の output だけ。")
 CELL3 = CELL3.replace(
     "__QUICK_OPTS__",
     ", ".join(json.dumps(x, ensure_ascii=False) for x in sex_preset_form_options()),
+).replace(
+    "__STYLE_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in style_form_options()),
 )
 
 nb = {
