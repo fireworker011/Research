@@ -6,6 +6,9 @@ from pathlib import Path
 from PIL import Image
 
 from qwen_image_edit_nsfw import (
+    ANAL_DETAIL,
+    ANAL_POSE_LABELS,
+    ANAL_PRESETS,
     DEFAULT_EDIT_PROMPT,
     FUTA_LOCK,
     KEEP_LOCK,
@@ -14,13 +17,16 @@ from qwen_image_edit_nsfw import (
     SEX_ACT_PRESETS,
     SEX_PRESET_DEFAULT,
     SEX_PRESETS,
+    SPACE_SEX_PRESET_LABELS,
     STEPS,
     TRANSFORMER_ID,
     TRUE_CFG,
     apply_futa_partner,
     compose_edit_prompt,
     disable_safety,
+    has_leftover_man,
     infer_kwargs,
+    is_anal_preset,
     is_sex_act_preset,
     lora_stack,
     require_l4_or_exit,
@@ -102,24 +108,13 @@ def test_disable_safety_and_infer_kwargs():
 
 def test_sex_preset_labels_match_space_ui():
     labels = sex_preset_labels()
-    assert labels == [
-        "服を脱ぐ",
-        "ウェットシャワー",
-        "レースランジェリー",
-        "ビキニ",
-        "濡れたTシャツ",
-        "フェラチオの視点",
-        "セルフタッチ",
-        "宣教師",
-        "カウガール",
-        "乳房プレイ",
-        "フェイシャル",
-        "肛門リフト",
-    ]
+    assert labels[:12] == list(SPACE_SEX_PRESET_LABELS)
+    assert labels[12:] == list(ANAL_POSE_LABELS)
     opts = sex_preset_form_options()
     assert opts[0] == SEX_PRESET_DEFAULT
     assert opts[1:] == labels
     assert set(SEX_ACT_PRESETS) <= set(labels)
+    assert ANAL_PRESETS <= SEX_ACT_PRESETS
     assert "Qwen4Play_v2" in LORA_FILES
 
 
@@ -142,7 +137,7 @@ def test_futa_partner_rewrites_sex_acts_and_drops_man():
         assert "futanari" in out.lower()
         assert "Not a man. The penis is a futanari" not in out
         composed = compose_edit_prompt("", preset=label, futa=True)
-        assert man.search(composed) is None, label
+        assert not has_leftover_man(composed), label
         assert subject_lock not in composed
         if "penis" in raw.lower():
             assert "20cm" in composed
@@ -167,6 +162,36 @@ def test_compose_sex_act_strings():
     assert "string bikini" in bikini
     assert "Remove only the clothes" not in bikini
     assert "20cm" not in bikini
+
+
+def test_anal_pose_presets_are_futa_detailed():
+    pose = {
+        "アナルバック": ("doggy", "all fours"),
+        "アナル立ちバック": ("standing",),
+        "アナル正常位": ("missionary", "anus"),
+        "アナル騎乗位": ("cowgirl",),
+        "アナル座位": ("lap", "seated"),
+    }
+    for label, needles in pose.items():
+        assert is_anal_preset(label)
+        assert is_sex_act_preset(label)
+        out = compose_edit_prompt("", preset=label, futa=True)
+        assert not has_leftover_man(out), label
+        assert "20cm" in out
+        assert "pussy" in out.lower()
+        assert "anus" in out.lower()
+        assert "no testicles" in out.lower()
+        assert "anal ring" in out.lower()
+        assert ANAL_DETAIL in out
+        blob = out.lower()
+        assert any(n in blob for n in needles), (label, out)
+        names = [row[0] for row in lora_stack(True, True, preset=label)]
+        assert names == ["qwen_uncensor", "Qwen4Play_v2", "CockQwen_v3"]
+    miss = compose_edit_prompt("", preset="アナル正常位")
+    assert "not vaginal" in miss.lower() or "anal missionary" in miss.lower()
+    lift = compose_edit_prompt("", preset="肛門リフト", futa=True)
+    assert ANAL_DETAIL in lift
+    assert not has_leftover_man(lift)
 
 
 def test_lora_stack_sex_uses_qwen4play():
@@ -199,23 +224,8 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined
     assert "files.upload" in joined
-    for label in (
-        "クイックプロンプト",
-        "服を脱ぐ",
-        "ウェットシャワー",
-        "レースランジェリー",
-        "ビキニ",
-        "濡れたTシャツ",
-        "フェラチオの視点",
-        "セルフタッチ",
-        "宣教師",
-        "カウガール",
-        "乳房プレイ",
-        "フェイシャル",
-        "肛門リフト",
-        "preset=クイックプロンプト",
-        "Qwen4Play",
-    ):
-        assert label in src
-        if label != "preset=クイックプロンプト":
-            assert label in joined
+    assert "preset=クイックプロンプト" in src
+    assert "sex_preset_form_options" in src
+    assert "Qwen4Play" in src
+    for label in (*SPACE_SEX_PRESET_LABELS, *ANAL_POSE_LABELS, "クイックプロンプト", "Qwen4Play"):
+        assert label in joined

@@ -54,6 +54,38 @@ DEFAULT_NEGATIVE = (
     "clothes, dress, fabric, underwear, testicles, scrotum, balls, male body, "
     "blurry, extra limbs, worst quality, watermark"
 )
+ANAL_DETAIL = (
+    "Both adults are futanari women, not a man, not a male body. "
+    "Each has female breasts, a feminine body, a fully erect 20cm human penis "
+    "with a pale veined shaft and a pink glans with a visible corona, "
+    "a hairless female pussy with inner labia at the base of the shaft, "
+    "and a pink anus. No testicles, no scrotum, no balls on anyone. "
+    "Sharp clean close detail of the futanari penis, the pussy, the anus, and the anal sex: "
+    "the partner's 20cm glans and shaft are inside the receiver's stretched wet anal ring; "
+    "the sphincter grips the shaft; the perineum, the receiver's pussy, and the receiver's own erect 20cm penis "
+    "are fully visible and unobstructed. No clothes. Adult 21+."
+)
+SPACE_SEX_PRESET_LABELS = (
+    "服を脱ぐ",
+    "ウェットシャワー",
+    "レースランジェリー",
+    "ビキニ",
+    "濡れたTシャツ",
+    "フェラチオの視点",
+    "セルフタッチ",
+    "宣教師",
+    "カウガール",
+    "乳房プレイ",
+    "フェイシャル",
+    "肛門リフト",
+)
+ANAL_POSE_LABELS = (
+    "アナルバック",
+    "アナル立ちバック",
+    "アナル正常位",
+    "アナル騎乗位",
+    "アナル座位",
+)
 
 # ayooo123 / Mk1227 のクイックプロンプトと同じ12個。行為の竿はフタナリに差し替える。
 SEX_PRESET_DEFAULT = "服抜きフタナリ（既定）"
@@ -141,10 +173,63 @@ SEX_PRESETS = {
         "out of view behind her. Her face shows intense pleasure. Face must remain exactly as in the input "
         "image."
     ),
+    "アナルバック": (
+        "Rear three-quarter view, slightly low, medium-full shot. THE SAME PERSON from the input photo "
+        "with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, absolutely unchanged — "
+        "looks back over her shoulder so her face is fully visible. She is on all fours in doggy position, "
+        "completely nude, back arched, knees apart. An adult futanari partner kneels behind her; partner's "
+        "face out of frame. The partner's erect 20cm futanari penis is thrusting into the receiver's anus "
+        "from behind. Show the hanging receiver cock between her thighs, the hairless pussy at the base of "
+        "that shaft, and the stretched anus around the penetrating shaft in one clear frame. Same environment "
+        "and lighting as the original photo. Not a man."
+    ),
+    "アナル立ちバック": (
+        "Full-body three-quarter rear view. THE SAME PERSON from the input photo with the IDENTICAL FACE — "
+        "same facial features, unchanged — is standing, bent forward at the waist in standing doggy, hands "
+        "braced on a wall or bed, looking back so her face is visible. Completely nude. An adult futanari "
+        "partner stands behind her, face out of frame, hips flush against her ass. The partner's erect 20cm "
+        "futanari penis is buried in the receiver's anus. The receiver's own erect 20cm penis hangs between "
+        "her thighs; hairless pussy at the base; anus gripping the shaft. Same environment. Not a man."
+    ),
+    "アナル正常位": (
+        "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input photo with "
+        "the IDENTICAL FACE — same facial features, unchanged — lies on her back in missionary, legs folded "
+        "toward her chest or spread in an M, looking at the camera. Completely nude. This is anal missionary, "
+        "not vaginal: the partner's erect 20cm futanari penis is inserted in her anus. Her own erect 20cm "
+        "penis lies on her belly pointing toward her navel, hairless pussy visible at the base of her shaft, "
+        "anus below the perineum taking the partner. Partner is between her legs, face out of frame. Same "
+        "environment. Not a man."
+    ),
+    "アナル騎乗位": (
+        "Eye-level medium shot, front. THE SAME PERSON from the input photo with the IDENTICAL FACE — same "
+        "facial features, unchanged — sits in cowgirl, facing the camera, completely nude, straddling an "
+        "adult futanari partner who lies on her back below. Partner's face out of frame; partner's female "
+        "breasts may show at the bottom edge. The partner's erect 20cm futanari penis is in the receiver's "
+        "anus from below, not in the pussy. The receiver's own erect 20cm penis stands in front of her crotch; "
+        "hairless pussy at the base; anus sitting down on the shaft. Hands on her own thighs. Same environment. "
+        "Not a man."
+    ),
+    "アナル座位": (
+        "Eye-level medium shot. THE SAME PERSON from the input photo with the IDENTICAL FACE — same facial "
+        "features, unchanged — sits in an adult futanari partner's lap in seated anal sex, more upright than "
+        "cowgirl, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, face "
+        "out of frame. The partner's erect 20cm futanari penis is in the receiver's anus. The receiver's own "
+        "erect 20cm penis is visible in front; hairless pussy at the base of her shaft; anus taking the full "
+        "shaft in the lap. Same environment. Not a man."
+    ),
 }
 SEX_ACT_PRESETS = frozenset(
-    {"フェラチオの視点", "宣教師", "カウガール", "乳房プレイ", "フェイシャル", "肛門リフト"}
+    {
+        "フェラチオの視点",
+        "宣教師",
+        "カウガール",
+        "乳房プレイ",
+        "フェイシャル",
+        "肛門リフト",
+        *ANAL_POSE_LABELS,
+    }
 )
+ANAL_PRESETS = frozenset({"肛門リフト", *ANAL_POSE_LABELS})
 OUTFIT_PRESETS = frozenset({"レースランジェリー", "ビキニ", "濡れたTシャツ"})
 _LEFTOVER_MAN = re.compile(r"\b(?:male pov|man's|men|man)\b", re.I)
 _FUTA_PARTNER_SWAPS = (
@@ -200,12 +285,22 @@ def is_sex_act_preset(label: str) -> bool:
     return (label or "").strip() in SEX_ACT_PRESETS
 
 
+def is_anal_preset(label: str) -> bool:
+    return (label or "").strip() in ANAL_PRESETS
+
+
+def has_leftover_man(text: str) -> bool:
+    cleaned = re.sub(r"\bnot a man\b", " ", text or "", flags=re.I)
+    cleaned = re.sub(r"\bnever a man\b", " ", cleaned, flags=re.I)
+    return bool(_LEFTOVER_MAN.search(cleaned))
+
+
 def apply_futa_partner(prompt: str) -> str:
     """Sex presets from the Space use a man. H3 keeps 女体フタナリ（玉なし・20cm）."""
     out = prompt
     for old, new in _FUTA_PARTNER_SWAPS:
         out = out.replace(old, new)
-    if _LEFTOVER_MAN.search(out):
+    if has_leftover_man(out):
         out += (
             " Not a man. The penis is a futanari erect 20cm human penis, no testicles, "
             "hairless pussy at the base of the shaft."
@@ -230,6 +325,8 @@ def compose_edit_prompt(
             raise SystemExit(f"unknown quick prompt: {label}")
         if is_sex_act_preset(label):
             parts.append(apply_futa_partner(base) if futa else base)
+            if futa and is_anal_preset(label) and ANAL_DETAIL not in parts:
+                parts.append(ANAL_DETAIL)
         else:
             parts.append(base)
             blob = base.lower()

@@ -8,7 +8,7 @@ MiniMax H3 の LoRA を **シチュエーション × モード** で積む。Fa
 
 [minimax_h3_lora_studio.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb)
 
-起点の服抜き・セックス（Qwen Edit NSFW・L4・H3とは別ノート）: [qwen_image_edit_nsfw.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb)。③は ayooo123 と同じ12クイックプロンプト（行為の竿はフタナリ）。H3 スタジオと同時に動かさない。ノートは `python colab/_write_qwen_edit_nb.py`。
+起点の服抜き・セックス（Qwen Edit NSFW・L4・H3とは別ノート）: [qwen_image_edit_nsfw.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb)。③は ayooo123 と同じ12個＋アナルバック／立ちバック／正常位／騎乗位／座位（基本フタナリ・玉なしマンコあり。男禁止）。H3 スタジオと同時に動かさない。ノートは `python colab/_write_qwen_edit_nb.py`。
 
 Drive に保存したコピーや、設定の版が **xxx** のノートは古い。②をしても GitHub は取り直さない。上のリンクから開き直す。長い会話の続きは [`HANDOVER.md`](HANDOVER.md)。Grok にプロンプトを渡すときは [`GROK_PROMPTS.md`](GROK_PROMPTS.md) と [`dump/G_h3_prompts.txt`](dump/G_h3_prompts.txt)。服ありAI起点は先に [`scripts/qwen_edit_nsfw.py`](scripts/qwen_edit_nsfw.py)（[Mk1227 Qwen Image Edit NSFW](https://huggingface.co/spaces/Mk1227/Qwen-Image-Edit-NSFW)）でフタナリ全裸勃起にしてから Drive `input/phone`。台帳は [`start-stills.json`](start-stills.json)。実写の他人は全裸化するな。JPGはGitに入れるな。
 

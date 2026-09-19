@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+COLAB_DIR = Path(__file__).resolve().parent
+if str(COLAB_DIR) not in sys.path:
+    sys.path.insert(0, str(COLAB_DIR))
+from qwen_image_edit_nsfw import sex_preset_form_options
+
 OUTS = [
     ROOT / "qwen_image_edit_nsfw.ipynb",
     ROOT / "h3-lora-studio" / "qwen_image_edit_nsfw.ipynb",
@@ -34,7 +40,7 @@ H3 動画は [こちら]({H3_COLAB})。
 2. すべてのセルを実行
 3. ① Drive 許可
 4. ② 初回は重みダウンロード（待つ）
-5. ③ クイックプロンプトを選んで画像をアップロード。服を脱ぐ〜肛門リフトは Space と同じ12個。行為の竿はフタナリ（玉なし・20cm）。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトを選んで画像をアップロード。服を脱ぐ〜肛門リフトは Space と同じ12個。アナルファックは **アナルバック / アナル立ちバック / アナル正常位 / アナル騎乗位 / アナル座位**。基本フタナリ（玉なし・マンコあり・竿20cm）。男は出さない。竿・マンコ・肛門・行為は詳細固定。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -203,7 +209,7 @@ with open("/content/qwen_edit_paths.env") as f:
 OUT = Path(env["DRIVE_ROOT"]) / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 
-クイックプロンプト = "服抜きフタナリ（既定）"  #@param ["服抜きフタナリ（既定）", "服を脱ぐ", "ウェットシャワー", "レースランジェリー", "ビキニ", "濡れたTシャツ", "フェラチオの視点", "セルフタッチ", "宣教師", "カウガール", "乳房プレイ", "フェイシャル", "肛門リフト"]
+クイックプロンプト = "服抜きフタナリ（既定）"  #@param [__QUICK_OPTS__]
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
@@ -290,6 +296,11 @@ for fname, blob in uploaded.items():
 
 print("Git に JPG を入れない。Drive の output だけ。")
 '''
+
+CELL3 = CELL3.replace(
+    "__QUICK_OPTS__",
+    ", ".join(json.dumps(x, ensure_ascii=False) for x in sex_preset_form_options()),
+)
 
 nb = {
     "nbformat": 4,
