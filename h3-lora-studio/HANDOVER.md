@@ -16,7 +16,7 @@ MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャ
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
 ベース: `cursor/h3-cabin-flow-f112`（anal-17 = `41867d0` を残す）
-HEAD: 画像起点を qwen_edit_nsfw.py に固定
+HEAD: 46508df h3: 画像起点を qwen_edit_nsfw.py に固定
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/minimax_h3_lora_studio.ipynb
 clinic: https://github.com/fireworker011/Research/blob/cursor/h3-anal-stories-f112/h3-lora-studio/stories/clinic-75s.json
 設定の版: `h3-20260914-anal-18`
@@ -34,7 +34,7 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | ベース | `cursor/h3-cabin-flow-f112` |
 | PR | https://github.com/fireworker011/Research/pull/138 draft |
 | 版 | `STUDIO_REV` / `FETCH_REV` = `h3-20260914-anal-18` |
-| HEAD | 画像起点を `scripts/qwen_edit_nsfw.py` に固定（JSON物語は未変更） |
+| HEAD | `46508df` 画像起点を `scripts/qwen_edit_nsfw.py` に固定（JSON物語は未変更） |
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
