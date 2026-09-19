@@ -50,7 +50,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は重みダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）
-5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバスは **576×1024 固定**。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバスは **576×1024 固定**（`pipe()` にも渡す）。L4 は **sequential CPU offload**（0/4 は層を載せている。数分待つ。ランタイム切断ならリンクから開き直して①②③）。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -156,12 +156,15 @@ from diffusers import QwenImageEditPlusPipeline
 from diffusers.models import QwenImageTransformer2DModel
 
 from qwen_image_edit_nsfw import (
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
     PIPE_ID,
     TRANSFORMER_ID,
     LORA_REPO,
-    LORA_FILES,
+    clamp_edit_vae_area,
     disable_safety,
     force_edit_offload,
+    lora_files_for_gpu,
     lora_skip_summary,
     tune_edit_vae,
 )
@@ -183,7 +186,10 @@ tune_edit_vae(pipe)
 
 LOADED = set()
 skip_errs = []
-for name, weight_name in LORA_FILES.items():
+vram = torch.cuda.get_device_properties(0).total_memory / 1024 ** 3
+lora_files = lora_files_for_gpu(vram)
+print("LoRA load", list(lora_files))
+for name, weight_name in lora_files.items():
     try:
         pipe.load_lora_weights(LORA_REPO, weight_name=weight_name, adapter_name=name)
         LOADED.add(name)
@@ -196,7 +202,8 @@ if not LOADED:
 if hasattr(pipe, "disable_lora"):
     pipe.disable_lora()
 
-print("offload", force_edit_offload(pipe, torch_module=torch))
+print("offload", force_edit_offload(pipe, sequential=True, torch_module=torch))
+print("vae_area", clamp_edit_vae_area(pipe, DEFAULT_WIDTH, DEFAULT_HEIGHT))
 
 globals()["QWEN_EDIT_PIPE"] = pipe
 globals()["QWEN_EDIT_LORAS"] = LOADED
@@ -230,6 +237,7 @@ from qwen_image_edit_nsfw import (
     GUIDANCE,
     UPLOAD_PHONE_HINT,
     VRAM_OFFLOAD_GIB,
+    clamp_edit_vae_area,
     compose_edit_prompt,
     force_edit_offload,
     infer_kwargs,
@@ -388,6 +396,8 @@ if ランダムシード:
     seed = random.randint(0, 2**31 - 1)
 print("seed", seed)
 
+w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT
+print("canvas", w, h)
 kwargs = infer_kwargs(
     prompt,
     seed=seed,
@@ -397,9 +407,11 @@ kwargs = infer_kwargs(
     negative=style_negative(画風, DEFAULT_NEGATIVE),
     torch_module=torch,
     device="cpu",
+    height=h,
+    width=w,
 )
-w, h = DEFAULT_WIDTH, DEFAULT_HEIGHT
-print("canvas", w, h)
+print("vae_area", clamp_edit_vae_area(pipe, w, h))
+print("offload", force_edit_offload(pipe, sequential=True, torch_module=torch))
 ref_canvas = snapped_rgb(ref_img) if ref_img is not None else None
 if ref_canvas is not None:
     print("REF canvas", ref_canvas.size)
@@ -408,8 +420,8 @@ if ref_canvas is not None:
 used = vram_used_gib(torch)
 print("VRAM used GiB", round(used, 1))
 if used >= VRAM_OFFLOAD_GIB:
-    print("VRAM 多い → CPU に戻して offload")
-    print(force_edit_offload(pipe, torch_module=torch))
+    print("VRAM after sequential offload", round(used, 1))
+print("生成は sequential。0/4 は層を CPU から載せている。数分待つ。")
 
 for fname, src in jobs:
     canvas = resize_rgb(src, w, h)

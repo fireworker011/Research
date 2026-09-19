@@ -17,6 +17,8 @@ from qwen_image_edit_nsfw import (
     I2I_SINGLE,
     KEEP_LOCK,
     LORA_FILES,
+    DEFAULT_HEIGHT,
+    DEFAULT_WIDTH,
     PILLOW_COLAB_SPEC,
     PIPE_ID,
     REF_SOURCE_DEFAULT,
@@ -38,12 +40,14 @@ from qwen_image_edit_nsfw import (
     WEIGHTS_CACHE_GIB,
     apply_futa_partner,
     apply_style,
+    clamp_edit_vae_area,
     compose_edit_prompt,
     disable_safety,
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
     force_edit_offload,
+    free_cuda,
     has_leftover_man,
     infer_kwargs,
     is_cuda_oom,
@@ -55,6 +59,7 @@ from qwen_image_edit_nsfw import (
     is_sex_act_preset,
     is_urine_preset,
     list_input_images,
+    lora_files_for_gpu,
     lora_skip_summary,
     lora_stack,
     pipe_images,
@@ -217,12 +222,17 @@ def test_disable_safety_and_infer_kwargs():
     kw = infer_kwargs("hello", true_cfg=1.0)
     assert kw["num_inference_steps"] == 4
     assert kw["true_cfg_scale"] == 1.0
+    assert kw["height"] == DEFAULT_HEIGHT
+    assert kw["width"] == DEFAULT_WIDTH
     assert "negative_prompt" not in kw
     assert "guidance_scale" not in kw
     assert kw["generator"] is None
     guided = infer_kwargs("hello", true_cfg=4.0, guidance=1.5, negative="bad")
     assert guided["negative_prompt"] == "bad"
     assert guided["guidance_scale"] == 1.5
+    sized = infer_kwargs("hello", height=1024, width=576)
+    assert sized["height"] == 1024
+    assert sized["width"] == 576
 
     class FakeGen:
         def __init__(self, device=None):
@@ -292,9 +302,13 @@ def test_force_edit_offload_resets_to_cpu():
         def enable_sequential_cpu_offload(self):
             calls.append("seq")
 
-    assert force_edit_offload(Pipe()) == "model_cpu_offload"
+    assert force_edit_offload(Pipe()) == "sequential_cpu_offload"
     assert "free" in calls
     assert ("to", "cpu") in calls
+    assert "seq" in calls
+    assert "model" not in calls
+    calls.clear()
+    assert force_edit_offload(Pipe(), sequential=False) == "model_cpu_offload"
     assert "model" in calls
     calls.clear()
     assert force_edit_offload(Pipe(), sequential=True) == "sequential_cpu_offload"
@@ -327,6 +341,45 @@ def test_force_edit_offload_resets_to_cpu():
     boom = Boom()
     assert run_pipe_edit(boom, ["im"], {"prompt": "x"}, FakeTorch) == "ok"
     assert boom.n == 2
+
+    class Already:
+        _qwen_edit_offload = "sequential_cpu_offload"
+
+        def __init__(self):
+            self.n = 0
+
+        def __call__(self, **kwargs):
+            self.n += 1
+            raise RuntimeError("CUDA out of memory. Tried to allocate 108.00 MiB")
+
+    already = Already()
+    try:
+        run_pipe_edit(already, ["im"], {"prompt": "x"}, FakeTorch)
+        raise AssertionError("expected oom")
+    except RuntimeError as err:
+        assert "out of memory" in str(err).lower()
+    assert already.n == 1
+
+
+def test_lora_files_skip_uncensor_on_l4():
+    assert "qwen_uncensor" not in lora_files_for_gpu(24.0)
+    assert "remove_clothing" in lora_files_for_gpu(24.0)
+    assert "CockQwen_v3" in lora_files_for_gpu(24.0)
+    assert "qwen_uncensor" in lora_files_for_gpu(40.0)
+    assert "qwen_uncensor" in lora_files_for_gpu()
+
+
+def test_clamp_edit_vae_area_patches_loaded_module():
+    class FakeMod:
+        VAE_IMAGE_SIZE = 1024 * 1024
+
+    sys.modules["diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus"] = FakeMod
+    try:
+        assert clamp_edit_vae_area(None, 576, 1024) == 576 * 1024
+        assert FakeMod.VAE_IMAGE_SIZE == 576 * 1024
+    finally:
+        del sys.modules["diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus"]
+    free_cuda()
 
 
 def test_sex_preset_labels_match_space_ui():
@@ -634,6 +687,12 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "run_pipe_edit" in src
     assert "VRAM_OFFLOAD_GIB" in src
     assert src.index("pipe.load_lora_weights") < src.index("force_edit_offload(pipe")
+    assert "sequential=True" in src
+    assert "lora_files_for_gpu" in src
+    assert "clamp_edit_vae_area" in src
+    assert "height=h" in src
+    assert "width=w" in src
+    assert "0/4" in src
     assert "入力ファイル名" in src
     assert "PCから選ぶ" in src
     assert "KeyboardInterrupt" in src

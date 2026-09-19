@@ -1,6 +1,7 @@
 """Qwen Image Edit NSFW for Colab L4. Same 4-step Rapid-AIO stack as Mk1227."""
 from __future__ import annotations
 
+import gc
 import re
 import sys
 from pathlib import Path
@@ -55,6 +56,10 @@ LORA_TRIGGERS = {
     "CockQwen_v3": "Erect Penis",
     "qwen_uncensor": "nsfw, penis, vagina, nipples",
     "Qwen4Play_v2": "bl0wj0b, c0wg1rl, m15510n4ry, penis",
+}
+# Rapid-AIO V23 is already NSFW. qwen_uncensor is ~2.4GB and does not fit L4 24GB.
+LORA_SKIP_UNDER_VRAM_GIB = {
+    "qwen_uncensor": 28.0,
 }
 
 KEEP_LOCK = (
@@ -424,6 +429,17 @@ def drop_stale_torchao_modules() -> None:
     cache_clear = getattr(fn, "cache_clear", None)
     if callable(cache_clear):
         cache_clear()
+
+
+def lora_files_for_gpu(vram_gib: float | None = None) -> dict[str, str]:
+    """Drop adapters that cannot share L4 24GB with the Rapid-AIO transformer."""
+    files = dict(LORA_FILES)
+    if vram_gib is None:
+        return files
+    for name, need in LORA_SKIP_UNDER_VRAM_GIB.items():
+        if float(vram_gib) < need:
+            files.pop(name, None)
+    return files
 
 
 def lora_skip_summary(errors: list[str], *, has_token: bool = False) -> str:
@@ -840,13 +856,58 @@ def is_cuda_oom(err: BaseException) -> bool:
     return "out of memory" in str(err).lower()
 
 
+def free_cuda(torch_module: Any = None) -> None:
+    gc.collect()
+    if torch_module is None:
+        return
+    cuda = getattr(torch_module, "cuda", None)
+    if cuda is None:
+        return
+    try:
+        cuda.empty_cache()
+    except Exception:
+        pass
+    ipc = getattr(cuda, "ipc_collect", None)
+    if callable(ipc):
+        try:
+            ipc()
+        except Exception:
+            pass
+
+
+def clamp_edit_vae_area(
+    pipe: Any = None,
+    width: int = DEFAULT_WIDTH,
+    height: int = DEFAULT_HEIGHT,
+) -> int:
+    """Edit-plus still encodes VAE at 1024² unless this module constant is lowered."""
+    area = max(32 * 32, int(width) * int(height))
+    names = [
+        "diffusers.pipelines.qwenimage.pipeline_qwenimage_edit_plus",
+        "diffusers.pipelines.qwenimage.pipeline_qwenimage_edit",
+    ]
+    if pipe is not None:
+        names.insert(0, type(pipe).__module__)
+    patched = 0
+    seen: set[str] = set()
+    for name in names:
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        mod = sys.modules.get(name)
+        if mod is not None and hasattr(mod, "VAE_IMAGE_SIZE"):
+            setattr(mod, "VAE_IMAGE_SIZE", area)
+            patched += 1
+    return area if patched else 0
+
+
 def force_edit_offload(
     pipe: Any,
     *,
-    sequential: bool = False,
+    sequential: bool = True,
     torch_module: Any = None,
 ) -> str:
-    """pipe.to(cuda) のあとに offload しても効かない。一旦 CPU に戻す。"""
+    """L4 24GB cannot hold the ~20GB transformer. Sequential is the default."""
     for name in ("maybe_free_model_hooks", "remove_all_hooks", "reset_device_map"):
         fn = getattr(pipe, name, None)
         if callable(fn):
@@ -858,23 +919,24 @@ def force_edit_offload(
         pipe.to("cpu")
     except Exception:
         pass
-    if torch_module is not None:
-        try:
-            torch_module.cuda.empty_cache()
-        except Exception:
-            pass
+    free_cuda(torch_module)
     if hasattr(pipe, "enable_attention_slicing"):
         try:
             pipe.enable_attention_slicing()
         except Exception:
             pass
+    mode = "cpu"
     if sequential and hasattr(pipe, "enable_sequential_cpu_offload"):
         pipe.enable_sequential_cpu_offload()
-        return "sequential_cpu_offload"
-    if hasattr(pipe, "enable_model_cpu_offload"):
+        mode = "sequential_cpu_offload"
+    elif hasattr(pipe, "enable_model_cpu_offload"):
         pipe.enable_model_cpu_offload()
-        return "model_cpu_offload"
-    return "cpu"
+        mode = "model_cpu_offload"
+    try:
+        setattr(pipe, "_qwen_edit_offload", mode)
+    except Exception:
+        pass
+    return mode
 
 
 def run_pipe_edit(
@@ -895,7 +957,10 @@ def run_pipe_edit(
     except Exception as e:
         if torch_module is None or not is_cuda_oom(e):
             raise
+        if getattr(pipe, "_qwen_edit_offload", None) == "sequential_cpu_offload":
+            raise
         print("VRAM OOM → sequential_cpu_offload でもう一度")
+        free_cuda(torch_module)
         force_edit_offload(pipe, sequential=True, torch_module=torch_module)
         return _call(images)
 
@@ -910,6 +975,8 @@ def infer_kwargs(
     negative: str = DEFAULT_NEGATIVE,
     torch_module: Any = None,
     device: str = "cpu",
+    height: int = DEFAULT_HEIGHT,
+    width: int = DEFAULT_WIDTH,
 ) -> dict[str, Any]:
     gen = None
     if torch_module is not None and seed is not None:
@@ -920,6 +987,8 @@ def infer_kwargs(
         "true_cfg_scale": float(true_cfg),
         "num_images_per_prompt": 1,
         "generator": gen,
+        "height": int(height),
+        "width": int(width),
     }
     if float(true_cfg) > 1.0:
         out["negative_prompt"] = negative
