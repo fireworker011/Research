@@ -47,7 +47,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 ## 手順
 
 1. Open in Colab → ランタイムのタイプ → GPU **L4**
-2. すべてのセルを実行
+2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は重みダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）
 5. ③ クイックプロンプトと **画風**。入力は Drive input かアップロード。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
@@ -112,7 +112,7 @@ def sh(cmd, check=True):
 
 sh([sys.executable, "-m", "pip", "install", "-q", "-U",
     "diffusers", "transformers", "accelerate", "safetensors",
-    "huggingface_hub", "sentencepiece"])
+    "huggingface_hub", "sentencepiece", "peft"])
 sh([sys.executable, "-m", "pip", "uninstall", "-y", "pillow"], check=False)
 sh([sys.executable, "-m", "pip", "install", "-q", "--no-cache-dir", "__PILLOW_SPEC__"])
 
@@ -153,6 +153,7 @@ from qwen_image_edit_nsfw import (
     LORA_REPO,
     LORA_FILES,
     disable_safety,
+    tune_edit_vae,
 )
 
 dtype = torch.bfloat16
@@ -161,7 +162,6 @@ print("transformer", TRANSFORMER_ID)
 transformer = QwenImageTransformer2DModel.from_pretrained(
     TRANSFORMER_ID,
     torch_dtype=dtype,
-    device_map="cuda",
 )
 print("pipeline", PIPE_ID)
 pipe = QwenImageEditPlusPipeline.from_pretrained(
@@ -170,14 +170,7 @@ pipe = QwenImageEditPlusPipeline.from_pretrained(
     torch_dtype=dtype,
 )
 pipe = disable_safety(pipe)
-if hasattr(pipe, "vae") and pipe.vae is not None:
-    pipe.vae.enable_tiling(tile_sample_min_width=256, tile_sample_min_height=256)
-    pipe.vae.enable_slicing()
-try:
-    pipe.to(device)
-except torch.cuda.OutOfMemoryError:
-    print("VRAM 一杯 → cpu_offload")
-    pipe.enable_model_cpu_offload()
+tune_edit_vae(pipe)
 
 LOADED = set()
 for name, weight_name in LORA_FILES.items():
@@ -187,8 +180,17 @@ for name, weight_name in LORA_FILES.items():
         print("LoRA", name)
     except Exception as e:
         print("LoRA skip", name, str(e)[:180])
+if not LOADED:
+    print("LoRA なし（Colab Secrets に HF_TOKEN。NFAA）。Rapid-AIO NSFW merge だけで進む")
 if hasattr(pipe, "disable_lora"):
     pipe.disable_lora()
+
+try:
+    pipe.to(device)
+except torch.cuda.OutOfMemoryError:
+    print("VRAM 一杯 → cpu_offload")
+    torch.cuda.empty_cache()
+    pipe.enable_model_cpu_offload()
 
 globals()["QWEN_EDIT_PIPE"] = pipe
 globals()["QWEN_EDIT_LORAS"] = LOADED
@@ -361,7 +363,7 @@ kwargs = infer_kwargs(
     guidance=GUIDANCE,
     negative=style_negative(画風, DEFAULT_NEGATIVE),
     torch_module=torch,
-    device="cuda",
+    device="cpu",
 )
 w, h = int(WIDTH) or DEFAULT_WIDTH, int(HEIGHT) or DEFAULT_HEIGHT
 ref_canvas = snapped_rgb(ref_img) if ref_img is not None else None
@@ -376,7 +378,8 @@ for fname, src in jobs:
     display(canvas)
     try:
         if names and hasattr(pipe, "set_adapters"):
-            pipe.enable_lora()
+            if hasattr(pipe, "enable_lora"):
+                pipe.enable_lora()
             pipe.set_adapters(names, adapter_weights=weights)
         try:
             out = pipe(image=images, **kwargs).images[0]

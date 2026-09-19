@@ -745,6 +745,20 @@ def lora_stack(
     return rows
 
 
+def tune_edit_vae(pipe: Any) -> None:
+    """Qwen VAE has tiling. Older AutoencoderKL also has slicing. Do not crash ②."""
+    vae = getattr(pipe, "vae", None)
+    if vae is None:
+        return
+    if hasattr(vae, "enable_tiling"):
+        try:
+            vae.enable_tiling(tile_sample_min_width=256, tile_sample_min_height=256)
+        except TypeError:
+            vae.enable_tiling()
+    if hasattr(vae, "enable_slicing"):
+        vae.enable_slicing()
+
+
 def disable_safety(pipe: Any) -> Any:
     """Mk1227-class: no safety checker, no NSFW filter."""
     if hasattr(pipe, "safety_checker"):
@@ -763,7 +777,7 @@ def infer_kwargs(
     guidance: float = GUIDANCE,
     negative: str = DEFAULT_NEGATIVE,
     torch_module: Any = None,
-    device: str = "cuda",
+    device: str = "cpu",
 ) -> dict[str, Any]:
     gen = None
     if torch_module is not None and seed is not None:

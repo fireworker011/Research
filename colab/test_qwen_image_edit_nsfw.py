@@ -59,6 +59,7 @@ from qwen_image_edit_nsfw import (
     require_pillow_colab,
     resize_rgb,
     save_jpeg,
+    tune_edit_vae,
     sex_preset_form_options,
     sex_preset_labels,
     snapped_rgb,
@@ -173,6 +174,54 @@ def test_disable_safety_and_infer_kwargs():
     assert kw["num_inference_steps"] == 4
     assert kw["true_cfg_scale"] == 1.0
     assert kw["negative_prompt"] == " "
+    assert kw["generator"] is None
+
+    class FakeGen:
+        def __init__(self, device=None):
+            self.device = device
+
+        def manual_seed(self, seed):
+            self.seed = seed
+            return self
+
+    class FakeTorch:
+        Generator = FakeGen
+
+    seeded = infer_kwargs("hello", seed=7, torch_module=FakeTorch)
+    assert seeded["generator"].device == "cpu"
+    assert seeded["generator"].seed == 7
+
+
+def test_tune_edit_vae_skips_missing_slicing():
+    class TilingOnly:
+        def enable_tiling(self, **kwargs):
+            self.tiled = kwargs or True
+
+    class Both:
+        def enable_tiling(self):
+            self.tiled = True
+
+        def enable_slicing(self):
+            self.sliced = True
+
+    class Pipe:
+        def __init__(self, vae):
+            self.vae = vae
+
+    tiling = TilingOnly()
+    tune_edit_vae(Pipe(tiling))
+    assert tiling.tiled == {"tile_sample_min_width": 256, "tile_sample_min_height": 256}
+
+    both = Both()
+    tune_edit_vae(Pipe(both))
+    assert both.tiled is True
+    assert both.sliced is True
+
+    class NoVae:
+        pass
+
+    tune_edit_vae(NoVae())
+    tune_edit_vae(Pipe(None))
 
 
 def test_sex_preset_labels_match_space_ui():
@@ -394,6 +443,7 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
 
 
 def test_writer_notebook_is_separate_l4_nsfw():
+    ast.parse((ROOT / "qwen_image_edit_nsfw.py").read_text(encoding="utf-8"))
     ast.parse(WRITER.read_text(encoding="utf-8"))
     src = WRITER.read_text(encoding="utf-8")
     assert "prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23" in src
@@ -450,3 +500,14 @@ def test_writer_notebook_is_separate_l4_nsfw():
         "i2i",
     ):
         assert label in joined
+    assert "peft" in src
+    assert "tune_edit_vae" in src
+    assert "tune_edit_vae" in joined
+    assert 'device_map="cuda"' not in src
+    assert 'device_map="cuda"' not in joined
+    assert 'hasattr(pipe, "enable_lora")' in src
+    assert 'device="cpu"' in src
+    assert "①と②を実行" in joined
+    assert "すべてのセルを実行" not in joined
+    assert "LoRA なし" in joined
+    assert src.index("load_lora_weights") < src.index("pipe.to(device)")
