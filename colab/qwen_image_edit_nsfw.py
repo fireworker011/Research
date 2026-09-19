@@ -265,6 +265,11 @@ _SCAT_CUE_RE = re.compile(
     r"脱糞|うんこ|糞|\bscat\b|\bfeces\b|\bdefecat|\bstool\b|\bturd\b",
     re.I,
 )
+_URINE_CUE_RE = re.compile(
+    r"放尿|おしっこ|小便|飲尿|\burine\b|\bpee\b|\bpiss\b",
+    re.I,
+)
+STYLE_PIN_LABELS = frozenset({"ウェットシャワー", "セルフタッチ"})
 ANAL_REAR_PRESETS = frozenset({"アナルバック", "アナル立ちバック"})
 ANAL_FRONT_PRESETS = frozenset({"アナル正常位", "アナル騎乗位", "アナル座位", "肛門リフト"})
 SPACE_SEX_PRESET_LABELS = (
@@ -922,6 +927,25 @@ def wants_scat_lock(text: str = "", preset: str = "") -> bool:
     return bool(_SCAT_CUE_RE.search(text or ""))
 
 
+def wants_urine_lock(text: str = "", preset: str = "") -> bool:
+    if is_urine_preset(preset):
+        return True
+    return bool(_URINE_CUE_RE.search(text or ""))
+
+
+def pins_style_lock(preset: str = "", extra: str = "") -> bool:
+    """Sex/excrete/pose-change restyle to photoreal unless the medium is pinned both ends."""
+    label = (preset or "").strip()
+    return (
+        is_sex_act_preset(label)
+        or is_excrete_preset(label)
+        or wants_anal_lock(extra, label)
+        or wants_scat_lock(extra, label)
+        or wants_urine_lock(extra, label)
+        or label in STYLE_PIN_LABELS
+    )
+
+
 def has_leftover_man(text: str) -> bool:
     cleaned = re.sub(r"\bnot a man\b", " ", text or "", flags=re.I)
     cleaned = re.sub(r"\bnever a man\b", " ", cleaned, flags=re.I)
@@ -956,6 +980,7 @@ def compose_edit_prompt(
     parts: list[str] = []
     anal = wants_anal_lock(extra, label)
     scat = wants_scat_lock(extra, label)
+    urine = wants_urine_lock(extra, label)
     if label and label != SEX_PRESET_DEFAULT:
         base = SEX_PRESETS.get(label)
         if not base:
@@ -1020,15 +1045,18 @@ def compose_edit_prompt(
                 parts.append(ANAL_JOIN)
             if ANAL_CLOSE not in parts:
                 parts.append(ANAL_CLOSE)
-        if undress and "remove only the clothes" not in blob and not anal and not scat:
+        elif urine:
+            if URINE_DETAIL not in parts:
+                parts.append(URINE_DETAIL)
+        if undress and "remove only the clothes" not in blob and not anal and not scat and not urine:
             parts.append("Remove only the clothes. Do not tie the hair.")
-        if futa and "20cm" not in " ".join(parts).lower() and not anal and not scat:
+        if futa and "20cm" not in " ".join(parts).lower() and not anal and not scat and not urine:
             parts.append(FUTA_LOCK)
     pose_ok = (
         bool(extra)
         or is_sex_act_preset(label)
         or is_excrete_preset(label)
-        or label in {"ウェットシャワー", "セルフタッチ"}
+        or label in STYLE_PIN_LABELS
     )
     # Rapid-AIO's VL template already says "generate a new image". A wall of
     # IDENTITY/I2I/SCOPE meta makes it obey the text and drop the source face.
@@ -1051,13 +1079,7 @@ def compose_edit_prompt(
         if t and t.lower() not in joined.lower():
             parts.append(t)
             joined = " ".join(parts)
-    pin = (
-        is_sex_act_preset(label)
-        or is_excrete_preset(label)
-        or anal
-        or scat
-    )
-    return apply_style(joined, style, pin_ends=pin)
+    return apply_style(joined, style, pin_ends=pins_style_lock(label, extra))
 
 
 def lora_trigger(name: str, preset: str = "", extra: str = "") -> str:

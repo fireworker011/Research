@@ -96,6 +96,8 @@ from qwen_image_edit_nsfw import (
     list_input_images,
     wants_anal_lock,
     wants_scat_lock,
+    wants_urine_lock,
+    pins_style_lock,
     lock_identity_prompt,
     lora_files_for_gpu,
     lora_trigger,
@@ -747,6 +749,47 @@ def test_style_presets_lock_medium():
         assert "unknown style" in str(e)
     else:
         raise AssertionError("bad style must exit")
+
+
+def test_every_act_pose_excrete_keeps_medium():
+    medium = STYLE_PRESETS[STYLE_PRESET_DEFAULT]
+    photo = re.compile(
+        r"\b(?:input photo|original photo|this photo|the photo|phone-camera)\b",
+        re.I,
+    )
+    labels = [
+        *SPACE_SEX_PRESET_LABELS,
+        *ANAL_POSE_LABELS,
+        *URINE_LABELS,
+        *SCAT_LABELS,
+    ]
+    for label in labels:
+        out = compose_edit_prompt("", preset=label, futa=True)
+        assert photo.search(out) is None, (label, photo.search(out))
+        assert "keep the exact same art medium" in out.lower(), label
+        assert "phone-camera" not in out.lower(), label
+        if pins_style_lock(label):
+            assert out.lower().index("keep the exact same face") < out.lower().index(
+                medium.lower()
+            ), label
+            assert out.lower().endswith(medium.lower()), label
+    assert pins_style_lock("フェラチオの視点")
+    assert pins_style_lock("宣教師")
+    assert pins_style_lock("カウガール")
+    assert pins_style_lock("放尿（立ち）")
+    assert pins_style_lock("ご褒美小便")
+    assert pins_style_lock("脱糞（しゃがみ）")
+    assert pins_style_lock("脱糞（後背）")
+    assert pins_style_lock("ウェットシャワー")
+    assert pins_style_lock("セルフタッチ")
+    assert not pins_style_lock("ビキニ")
+    assert not pins_style_lock("服を脱ぐ")
+    pee = compose_edit_prompt("放尿して", futa=True)
+    assert URINE_DETAIL in pee
+    assert pins_style_lock("", "放尿して")
+    assert wants_urine_lock("おしっこ")
+    assert FUTA_LOCK not in pee
+    assert pee.lower().endswith(medium.lower())
 
 
 def test_i2i_ref_and_drive_inputs(tmp_path):
