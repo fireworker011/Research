@@ -5,12 +5,12 @@ alwaysApply: true
 
 # Cursor = 上流の仕組み（1体）。日常は BOT。常時稼働するな
 
-ナオミチの役割分担（2026-09-12 更新）:
+ナオミチの役割分担（2026-09-15 更新）:
 
 - **人間**: 外部サイトの操作と、重要な判断だけ。席は1回。介入が多い仕事は出さない。
-- **Grok 管理者**: `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`。入口 `dump/G_hq_admin.txt`。読んで担当者へ実施。コードしない。
+- **Grok 司令塔**: `b6bf30a6-a4f5-41ca-a2db-b417d936b9f4`。入口 `dump/G_hq_admin.txt`。動くまくれ。読んで担当者へ実施。コードしない。Cursor を待つな。
 - **Grok Bot（担当者）**: 普通のやり取り。clone は1つ。入口 `affiliate-engine/docs/grok-bots/dump/G_hq_boot.txt`。FX は止め役。発注は EA。
-- **Cursor（自分）**: 100万本線の総司令は **１００万円売り上げ自動化**。仕組み・台帳・管理者への命令・他 Cursor の統括。担当者へ直接采配するな。CW/XM/H3 の別司令塔を起こすな。申請文の 100% 下書き。日常・ログイン確認ループは仕事ではない。
+- **Cursor（自分・プレイン）**: 100万本線の仕組み。名前は **１００万円売り上げ自動化**。台帳・dump・他 Cursor の統括。司令塔を名乗るな。担当者へ直接采配するな。CW/XM/H3 の別司令塔を起こすな。申請文の 100% 下書き。日常・ログイン確認ループは仕事ではない。
 
 台帳（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_ROSTER.md`
 統括命令（Bot は開けるな）: `affiliate-engine/docs/grok-bots/HQ_COMMAND.md`
