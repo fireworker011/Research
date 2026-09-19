@@ -34,6 +34,7 @@ from qwen_image_edit_nsfw import (
     STYLE_PRESETS,
     URINE_DETAIL,
     URINE_LABELS,
+    UPLOAD_PHONE_HINT,
     WEIGHTS_CACHE_GIB,
     apply_futa_partner,
     apply_style,
@@ -60,6 +61,7 @@ from qwen_image_edit_nsfw import (
     require_l4_or_exit,
     require_pillow_colab,
     resize_rgb,
+    resolve_input_paths,
     save_jpeg,
     tune_edit_vae,
     sex_preset_form_options,
@@ -479,6 +481,19 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert locked.size == (640, 640)
     assert pipe_images(canvas) == [canvas]
     assert pipe_images(canvas, locked) == [canvas, locked]
+    assert "スマホ" in UPLOAD_PHONE_HINT
+    assert "Drive input" in UPLOAD_PHONE_HINT
+    one, _ = resolve_input_paths(tmp_path, want_name="01-stairs.png", skip_name="face-lock.png")
+    assert one == [ok]
+    by_stem, _ = resolve_input_paths(tmp_path, want_name="01-stairs")
+    assert by_stem == [ok]
+    try:
+        resolve_input_paths(tmp_path, want_name="missing.jpg")
+    except SystemExit as e:
+        assert "無い" in str(e)
+        assert "01-stairs.png" in str(e)
+    else:
+        raise AssertionError("missing drive file must exit")
 
 
 def test_writer_notebook_is_separate_l4_nsfw():
@@ -554,3 +569,9 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "enable_model_cpu_offload" in src
     assert "VRAM 一杯" not in joined
     assert src.index("load_lora_weights") < src.index("enable_model_cpu_offload")
+    assert "入力ファイル名" in src
+    assert "PCから選ぶ" in src
+    assert "KeyboardInterrupt" in src
+    assert "UPLOAD_PHONE_HINT" in src
+    assert "スマホ" in joined
+    assert "resolve_input_paths" in src

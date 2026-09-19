@@ -27,6 +27,11 @@ INPUT_SOURCE_DEFAULT = "Drive input"
 INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, "アップロード")
 REF_SOURCE_DEFAULT = "なし（元画像の顔）"
 REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, "Drive から", "アップロード")
+UPLOAD_PHONE_HINT = (
+    "スマホの Colab ではファイル選択が使えない。"
+    "入力は Drive input。JPG は Drive の qwen-image-edit-nsfw/input に置く。"
+    "1枚だけなら 入力ファイル名 にファイル名を入れる。"
+)
 # Colab ships Pillow 11.3 with a matching _imaging .so. Do not -U to 12:
 # 12.0 is missing _Ink; 12.3 .py on an 11.3 .so raises ImportError.
 PILLOW_COLAB_SPEC = "pillow==11.3.0"
@@ -511,6 +516,7 @@ def drive_space_lines() -> list[str]:
         "Drive に置くのは input/ と output/ の JPG だけ。",
         f"Drive の空きは {DRIVE_FREE_GIB}GB あれば足りる。H3 の参照土台 21GB は不要。",
         f"重みは Colab ディスク（HuggingFace キャッシュ 約{WEIGHTS_CACHE_GIB}GB）。Drive には載せない。",
+        "スマホは Drive input。アップロード（ファイル選択）は PC だけ。",
     ]
 
 
@@ -547,6 +553,26 @@ def list_input_images(
             continue
         kept.append(path)
     return kept, skipped
+
+
+def resolve_input_paths(
+    folder: str | Path,
+    *,
+    want_name: str = "",
+    skip_name: str = "",
+) -> tuple[list[Path], list[Path]]:
+    """Drive input. Optional one filename (stem ok). Phone path: no files.upload."""
+    kept, skipped = list_input_images(folder, skip_name=skip_name)
+    want = (want_name or "").strip()
+    if not want:
+        return kept, skipped
+    refuse_photoreal(want)
+    want_l = want.lower()
+    hits = [p for p in kept if p.name.lower() == want_l or p.stem.lower() == want_l]
+    if not hits:
+        names = ", ".join(p.name for p in kept) or "なし"
+        raise SystemExit(f"Drive input に無い: {want}。あるのは: {names}。{UPLOAD_PHONE_HINT}")
+    return hits, skipped
 
 
 def snapped_rgb(image: Any) -> Any:

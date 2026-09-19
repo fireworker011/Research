@@ -134,7 +134,7 @@ Space と同じ12個: 服を脱ぐ / ウェットシャワー / レースラン�
 
 1. 上の Colab リンク（Drive コピーではない）
 2. ランタイム → GPU **L4**
-3. ① Drive（空きは 2GB で足りる。重みは Colab）→ ② 重み（初回は待つ。Pillow は Colab の `11.3.0` のまま。12 に上げるな）→ ③ クイックプロンプト＋画風。元画像は Drive `input/` かアップロード。顔を固定したいときは参照画像（Picture 2）
+3. ① Drive（空きは 2GB で足りる。重みは Colab）→ ② 重み（初回は待つ。Pillow は Colab の `11.3.0` のまま。12 に上げるな）→ ③ クイックプロンプト＋画風。**スマホは Drive input**（ファイル選択は使えない）。JPG は Drive `input/`。1枚だけなら 入力ファイル名。顔を固定したいときは参照画像（Picture 2）＝Drive から
 4. 出力は Drive `qwen-image-edit-nsfw/output`
 
 T4 は拒否される。H3 動画ノートと同時に動かさない。
@@ -154,4 +154,4 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
-②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から `cpu_offload`（transformer 約20GBを全部載せるな）。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。
+②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から `cpu_offload`（transformer 約20GBを全部載せるな）。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。

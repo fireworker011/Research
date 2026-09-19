@@ -50,7 +50,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は重みダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）
-5. ③ クイックプロンプトと **画風**。入力は Drive input かアップロード。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。顔を固定したいときは参照画像を足す。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま）。変えてよいのは服・姿勢・場所・行為。アナルはバック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（肛門から今出すソーセージ状の固形。ゼリー禁止）。基本フタナリ。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -228,6 +228,7 @@ from qwen_image_edit_nsfw import (
     STEPS,
     TRUE_CFG,
     GUIDANCE,
+    UPLOAD_PHONE_HINT,
     compose_edit_prompt,
     infer_kwargs,
     input_source_form_options,
@@ -237,6 +238,7 @@ from qwen_image_edit_nsfw import (
     ref_source_form_options,
     refuse_photoreal,
     resize_rgb,
+    resolve_input_paths,
     save_jpeg,
     sex_preset_form_options,
     snapped_rgb,
@@ -257,8 +259,10 @@ OUT.mkdir(parents=True, exist_ok=True)
 クイックプロンプト = "服抜きフタナリ（既定）"  #@param [__QUICK_OPTS__]
 画風 = "入力のまま"  #@param [__STYLE_OPTS__]
 入力 = "Drive input"  #@param [__INPUT_OPTS__]
+入力ファイル名 = ""  #@param {type:"string"}
 参照画像 = "なし（元画像の顔）"  #@param [__REF_OPTS__]
 参照ファイル名 = ""  #@param {type:"string"}
+PCから選ぶ = False  #@param {type:"boolean"}
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
@@ -284,7 +288,12 @@ print("i2i", True)
 print("preset", クイックプロンプト)
 print("style", 画風)
 print("input", 入力)
+print("file", 入力ファイル名 or "(Drive の全部)")
 print("ref", 参照画像)
+print("Drive input", IN)
+print(UPLOAD_PHONE_HINT)
+kept_all, _ = list_input_images(IN)
+print("あるファイル", [p.name for p in kept_all] or "なし")
 
 ref_img = None
 ref_skip = ""
@@ -299,10 +308,16 @@ if 参照画像 == "Drive から":
     ref_img = Image.open(ref_path)
     print("REF Drive", ref_path.name, ref_img.size)
 elif 参照画像 == "アップロード":
+    if not PCから選ぶ:
+        raise SystemExit("スマホは参照画像＝Drive から＋参照ファイル名。PCから選ぶは PC だけ。")
     print("顔・画風の参照（Picture 2）を1枚")
-    uploaded_ref = files.upload()
+    uploaded_ref = {}
+    try:
+        uploaded_ref = files.upload()
+    except KeyboardInterrupt:
+        uploaded_ref = {}
     if not uploaded_ref:
-        raise SystemExit("参照画像がありません。")
+        raise SystemExit("参照画像がありません。スマホは参照画像＝Drive から。")
     fname, blob = next(iter(uploaded_ref.items()))
     refuse_photoreal(Path(fname))
     raw = Path("/tmp") / f"ref-{Path(fname).name}"
@@ -311,26 +326,36 @@ elif 参照画像 == "アップロード":
     print("REF upload", fname, ref_img.size)
 
 jobs = []
-if 入力 == "Drive input":
-    kept, skipped = list_input_images(IN, skip_name=ref_skip)
+if 入力 == "アップロード" and PCから選ぶ:
+    print("PC のファイル選択")
+    uploaded = {}
+    try:
+        uploaded = files.upload()
+    except KeyboardInterrupt:
+        uploaded = {}
+    if uploaded:
+        for fname, blob in uploaded.items():
+            refuse_photoreal(Path(fname))
+            raw = Path("/tmp") / fname
+            raw.write_bytes(blob)
+            jobs.append((fname, Image.open(raw)))
+    else:
+        print("upload なし → Drive input")
+if not jobs:
+    kept, skipped = resolve_input_paths(
+        IN,
+        want_name=入力ファイル名,
+        skip_name=ref_skip,
+    )
     for path in skipped:
         print("skip photoreal", path.name)
     if not kept:
         raise SystemExit(
-            "Drive input に画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置くか、入力をアップロードに。"
+            "Drive input に画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置く。"
+            + UPLOAD_PHONE_HINT
         )
     for path in kept:
         jobs.append((path.name, Image.open(path)))
-else:
-    print("編集する元画像（Picture 1・i2i）を選ぶ（複数可）")
-    uploaded = files.upload()
-    if not uploaded:
-        raise SystemExit("元画像がありません。")
-    for fname, blob in uploaded.items():
-        refuse_photoreal(Path(fname))
-        raw = Path("/tmp") / fname
-        raw.write_bytes(blob)
-        jobs.append((fname, Image.open(raw)))
 
 stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト)
 loaded = globals().get("QWEN_EDIT_LORAS") or set()
