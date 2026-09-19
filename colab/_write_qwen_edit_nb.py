@@ -20,9 +20,9 @@ H3_COLAB = (
     f"{BRANCH}/minimax_h3_lora_studio.ipynb"
 )
 
-MD0 = f"""# Qwen Image Edit NSFW（起点の服抜き・L4）
+MD0 = f"""# Qwen Image Edit NSFW（起点の服抜き・セックス・L4）
 
-H3 動画ノートとは **別**。同時に動かさない。Mk1227 と同じ系統: `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23` on `Qwen/Qwen-Image-Edit-2511` + 4step + CFG1。safety checker なし。
+H3 動画ノートとは **別**。同時に動かさない。Mk1227 / ayooo123 と同じ系統: `prithivMLmods/Qwen-Image-Edit-Rapid-AIO-V23` on `Qwen/Qwen-Image-Edit-2511` + 4step + CFG1。safety checker なし。行為 LoRA は `Qwen4Play_v2`。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})
 
@@ -34,7 +34,7 @@ H3 動画は [こちら]({H3_COLAB})。
 2. すべてのセルを実行
 3. ① Drive 許可
 4. ② 初回は重みダウンロード（待つ）
-5. ③ 画像をアップロードして実行。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトを選んで画像をアップロード。服を脱ぐ〜肛門リフトは Space と同じ12個。行為の竿はフタナリ（玉なし・20cm）。男は出さない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -165,7 +165,7 @@ print("safety_checker", getattr(pipe, "safety_checker", "n/a"))
 print("OK → 次は③")
 '''
 
-CELL3 = r'''#@title ③ 服を外す（フタナリ全裸勃起）
+CELL3 = r'''#@title ③ クイックプロンプト（服抜き・セックス）
 print("=" * 60)
 print(" ③ 編集")
 print("=" * 60)
@@ -192,6 +192,7 @@ from qwen_image_edit_nsfw import (
     lora_stack,
     resize_rgb,
     save_jpeg,
+    sex_preset_form_options,
 )
 
 env = {}
@@ -202,6 +203,7 @@ with open("/content/qwen_edit_paths.env") as f:
 OUT = Path(env["DRIVE_ROOT"]) / "output"
 OUT.mkdir(parents=True, exist_ok=True)
 
+クイックプロンプト = "服抜きフタナリ（既定）"  #@param ["服抜きフタナリ（既定）", "服を脱ぐ", "ウェットシャワー", "レースランジェリー", "ビキニ", "濡れたTシャツ", "フェラチオの視点", "セルフタッチ", "宣教師", "カウガール", "乳房プレイ", "フェイシャル", "肛門リフト"]
 PROMPT = ""  #@param {type:"string"}
 服を外す = True  #@param {type:"boolean"}
 フタナリ勃起 = True  #@param {type:"boolean"}
@@ -215,7 +217,11 @@ pipe = globals().get("QWEN_EDIT_PIPE")
 if pipe is None:
     raise SystemExit("②を先に実行してください。")
 
-stack = lora_stack(服を外す, フタナリ勃起)
+if クイックプロンプト not in sex_preset_form_options():
+    raise SystemExit(f"unknown quick prompt: {クイックプロンプト}")
+print("preset", クイックプロンプト)
+
+stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト)
 loaded = globals().get("QWEN_EDIT_LORAS") or set()
 names, weights, trigs = [], [], []
 for name, w, trig in stack:
@@ -224,7 +230,11 @@ for name, w, trig in stack:
         weights.append(w)
         trigs.append(trig)
 prompt = compose_edit_prompt(
-    PROMPT, undress=服を外す, futa=フタナリ勃起, extra_triggers=trigs
+    PROMPT,
+    undress=服を外す,
+    futa=フタナリ勃起,
+    extra_triggers=trigs,
+    preset=クイックプロンプト,
 )
 if names and hasattr(pipe, "set_adapters"):
     pipe.enable_lora()

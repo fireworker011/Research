@@ -1,5 +1,6 @@
 import ast
 import json
+import re
 from pathlib import Path
 
 from PIL import Image
@@ -8,17 +9,25 @@ from qwen_image_edit_nsfw import (
     DEFAULT_EDIT_PROMPT,
     FUTA_LOCK,
     KEEP_LOCK,
+    LORA_FILES,
     PIPE_ID,
+    SEX_ACT_PRESETS,
+    SEX_PRESET_DEFAULT,
+    SEX_PRESETS,
     STEPS,
     TRANSFORMER_ID,
     TRUE_CFG,
+    apply_futa_partner,
     compose_edit_prompt,
     disable_safety,
     infer_kwargs,
+    is_sex_act_preset,
     lora_stack,
     require_l4_or_exit,
     resize_rgb,
     save_jpeg,
+    sex_preset_form_options,
+    sex_preset_labels,
     snapped_size,
 )
 
@@ -91,6 +100,85 @@ def test_disable_safety_and_infer_kwargs():
     assert kw["negative_prompt"] == " "
 
 
+def test_sex_preset_labels_match_space_ui():
+    labels = sex_preset_labels()
+    assert labels == [
+        "服を脱ぐ",
+        "ウェットシャワー",
+        "レースランジェリー",
+        "ビキニ",
+        "濡れたTシャツ",
+        "フェラチオの視点",
+        "セルフタッチ",
+        "宣教師",
+        "カウガール",
+        "乳房プレイ",
+        "フェイシャル",
+        "肛門リフト",
+    ]
+    opts = sex_preset_form_options()
+    assert opts[0] == SEX_PRESET_DEFAULT
+    assert opts[1:] == labels
+    assert set(SEX_ACT_PRESETS) <= set(labels)
+    assert "Qwen4Play_v2" in LORA_FILES
+
+
+def test_futa_partner_rewrites_sex_acts_and_drops_man():
+    man = re.compile(r"\b(?:man|man's|men|male pov)\b", re.I)
+    subject_lock = "standing in front of the crotch"
+    for label in (
+        "フェラチオの視点",
+        "宣教師",
+        "カウガール",
+        "乳房プレイ",
+        "フェイシャル",
+        "肛門リフト",
+    ):
+        assert is_sex_act_preset(label)
+        raw = SEX_PRESETS[label]
+        out = apply_futa_partner(raw)
+        assert man.search(raw), label
+        assert man.search(out) is None, (label, out)
+        assert "futanari" in out.lower()
+        assert "Not a man. The penis is a futanari" not in out
+        composed = compose_edit_prompt("", preset=label, futa=True)
+        assert man.search(composed) is None, label
+        assert subject_lock not in composed
+        if "penis" in raw.lower():
+            assert "20cm" in composed
+        else:
+            assert "futanari" in composed.lower()
+
+
+def test_compose_sex_act_strings():
+    oral = compose_edit_prompt("", preset="フェラチオの視点")
+    assert "oral sex" in oral.lower()
+    assert "futanari POV" in oral
+    mission = compose_edit_prompt("", preset="宣教師")
+    assert "inserted" in mission.lower()
+    assert "vagina" in mission.lower()
+    cow = compose_edit_prompt("", preset="カウガール")
+    assert "Cowgirl" in cow
+    assert "futanari POV" in cow
+    anal = compose_edit_prompt("", preset="肛門リフト")
+    assert "anus" in anal.lower()
+    assert "futanari" in anal.lower()
+    bikini = compose_edit_prompt("", preset="ビキニ", undress=True, futa=True)
+    assert "string bikini" in bikini
+    assert "Remove only the clothes" not in bikini
+    assert "20cm" not in bikini
+
+
+def test_lora_stack_sex_uses_qwen4play():
+    names = [row[0] for row in lora_stack(True, True, preset="カウガール")]
+    assert names == ["qwen_uncensor", "Qwen4Play_v2", "CockQwen_v3"]
+    names = [row[0] for row in lora_stack(True, False, preset="フェラチオの視点")]
+    assert names == ["qwen_uncensor", "Qwen4Play_v2"]
+    assert lora_stack(True, True, preset="ビキニ") == []
+    names = [row[0] for row in lora_stack(True, True)]
+    assert names == ["remove_clothing", "qwen_uncensor", "CockQwen_v3"]
+
+
 def test_writer_notebook_is_separate_l4_nsfw():
     ast.parse(WRITER.read_text(encoding="utf-8"))
     src = WRITER.read_text(encoding="utf-8")
@@ -111,3 +199,23 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined
     assert "files.upload" in joined
+    for label in (
+        "クイックプロンプト",
+        "服を脱ぐ",
+        "ウェットシャワー",
+        "レースランジェリー",
+        "ビキニ",
+        "濡れたTシャツ",
+        "フェラチオの視点",
+        "セルフタッチ",
+        "宣教師",
+        "カウガール",
+        "乳房プレイ",
+        "フェイシャル",
+        "肛門リフト",
+        "preset=クイックプロンプト",
+        "Qwen4Play",
+    ):
+        assert label in src
+        if label != "preset=クイックプロンプト":
+            assert label in joined
