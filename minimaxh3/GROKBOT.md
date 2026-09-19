@@ -49,7 +49,7 @@ python minimaxh3/grokbot/run_t2v.py --watch
 python minimaxh3/grokbot/run_r2v.py --watch
 ```
 
-セッション名は `h3-i2v` / `h3-t2v` / `h3-r2v`。GPU は A100（`--high-mem`）。R2V の確実な10秒は 80GB。
+セッション名は `h3-i2v` / `h3-t2v` / `h3-r2v`。GPU は A100。R2V の確実な10秒は 80GB。
 
 ## bot 専用 Colab（モードごと 1ノート）
 
@@ -152,6 +152,6 @@ python minimaxh3/grokbot/run_episode.py --episode <slug>
 
 `<slug>` は `minimaxh3/episodes/<slug>/episode.json` があること。無ければ GitHub の同パスから取る。テンプレから新ネタを足す作業は skill `h3-episode-oneclick`（コードは触らない）。
 
-スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100（`--high-mem`）。
+スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100。
 
 投稿は人間。リンクはプロフィール。
