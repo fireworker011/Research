@@ -104,9 +104,15 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - LoRA スタジオ（`h3_lora_studio.py`、③、STORY）には足さない
 - 投稿しない。アフィ URL・収入主張はプロンプトに入れない（検査で落ちる）
 
+## 霞東フロア（`kasumi-late-desk`）
+
+25秒。朝に遅刻した成人 OL が上司に見つからず自席へつく。借りるのはカバー・覗き・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない（OOM でキャンバスが縮む。カットを短く並べる）。
+カバー 3.0秒 → 覗き 5.0秒 → 同僚（HUD なし・字幕・自席完了）6.0秒 → かばんメニュー 2.2秒 → 着席 4.8秒 → ミッション失敗「隣の席に座った」→ 免責。
+`tone: mundane`。爆発・キック・エレベーター・喫煙の階段は書かない。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。準備は `episodes/kasumi-late-desk/PREP.md`。
+
 ## 番台ディストリクト（2 本）
 
-**bandai-district-short（次に回すのはこれ）**: 5ビート ≈ 24.7秒、コールドオープン、`tone: mundane`。暖簾 3.0秒 → 自転車 5.0秒 → 理容室（HUD なし・字幕・完了）6.0秒 → 道具メニュー 2.2秒 → 軽トラ乗車 4.8秒 → ミッション失敗 → 免責。
+**bandai-district-short**: 5ビート ≈ 24.7秒、コールドオープン、`tone: mundane`。暖簾 3.0秒 → 自転車 5.0秒 → 理容室（HUD なし・字幕・完了）6.0秒 → 道具メニュー 2.2秒 → 軽トラ乗車 4.8秒 → ミッション失敗 → 免責。
 暖簾・自転車・軽トラは `bandai-district/raw/` の初回テイクを `reuse`（Drive に残っている）。GPU で描くのは理容室 1 本だけ（初回テイクは 1秒で室内が商店街に変わっていたので作り直す。今回は小道具が手ぬぐいだけ＋ワンテイク固定文）。Colab は `EPISODE = "bandai-district-short"`、Grokbot は `minimaxh3/GROKBOT.md` の貼り付け。
 
 **bandai-district（初回版・アクション調）**: 9ビート × 10秒 ＋ タイトル 2.6秒 ＋ エンド 3.2秒 ≈ 92秒。暖簾 → 自転車 → 理容室 → 会話 → 軽トラ → 吹き飛び走行 → 蒸気アッパー → 釜爆発 → 着地。

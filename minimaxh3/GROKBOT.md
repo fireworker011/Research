@@ -96,7 +96,19 @@ I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそ�
 
 Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
 
-### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる。次はこれ）
+### 霞東フロア（25秒・遅刻して自席。ミッション失敗。次はこれ）
+
+原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk --branch cursor/h3-ol-late-desk-33d9
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/kasumi-late-desk/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる）
 
 `bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、GPU で描くのは理容室 1 本だけ（約 7 分）。
 

@@ -1,0 +1,259 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "kasumi-late-desk",
+  "title": "霞東フロア",
+  "subtitle": "架空オープンワールド ショート",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "mundane",
+  "render": {
+    "preset": "daily",
+    "fallback_preset": "fast",
+    "seed": 42
+  },
+  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, no anime, no illustration",
+  "violence": "none",
+  "world": {
+    "name": "Kasumi East floor",
+    "lock": "Fictional open-plan office called Kasumi East: beige fabric cubicle partitions, light oak desks, grey carpet aisles, morning fluorescent tubes mixed with cool east window light, a few rubber plants, blank glass office doors, no readable letters on any surface",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "mio": {
+      "name_ja": "白石 みお",
+      "name_en": "Mio",
+      "age": 27,
+      "lock": "27-year-old Japanese woman, adult face, shoulder-length black hair with a small matte clip on the right, cream blouse, navy pencil skirt, sheer black tights, low black block heels, a beige canvas tote on one shoulder, a navy lanyard with a blank white badge, tired calm morning expression, natural makeup",
+      "voice": "clear young adult female voice"
+    },
+    "kuroki": {
+      "name_ja": "課長 黒木",
+      "name_en": "Kuroki",
+      "age": 48,
+      "lock": "Japanese man in his late 40s, short black hair, thin metal glasses, charcoal suit jacket, white shirt, no necktie, black office shoes, looks at papers, unhurried",
+      "voice": "low middle-aged male voice"
+    },
+    "nana": {
+      "name_ja": "西条 なな",
+      "name_en": "Nana",
+      "age": 29,
+      "lock": "29-year-old Japanese woman, adult face, short brown bob, pale blue blouse, grey slacks, sits at a desk with a mug, mild morning expression",
+      "voice": "soft adult female voice"
+    }
+  },
+  "props": {
+    "tote": "a beige canvas tote bag on one shoulder",
+    "badge": "a navy lanyard with a blank white plastic badge",
+    "mug": "a plain white ceramic mug on a desk"
+  },
+  "homage": {
+    "borrowed": [
+      "third-person game camera",
+      "a cubicle partition used as cover",
+      "peeking a doorframe while a manager looks the other way",
+      "mission subtitle grammar with the object noun in colour",
+      "HUD hidden in dialogue cutscenes, subtitles only",
+      "a pause-menu inventory gag over a frozen frame",
+      "a deadpan mission-failed card after sitting down"
+    ],
+    "never": [
+      "山田",
+      "Yamada",
+      "定時退社",
+      "働き方改革",
+      "5分だけ",
+      "five minutes",
+      "clocking out",
+      "17:58",
+      "18:00",
+      "19:04",
+      "elevator",
+      "stairwell",
+      "cigarette",
+      "smoking",
+      "classroom",
+      "schoolgirl",
+      "school uniform",
+      "sailor",
+      "seifuku",
+      "セーラー",
+      "制服",
+      "教室",
+      "Flova",
+      "Seedance",
+      "Pollo"
+    ]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "霞東 Dist.",
+    "icons": ["席", "隠", "札"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "end": true,
+    "end_seconds": 3.0,
+    "end_image": "stills/05-desk.jpg",
+    "end_title": "霞東フロア",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル",
+      "オマージュは三人称カメラとミッション字幕の見せ方だけ"
+    ],
+    "fail": {
+      "text": "ミッション失敗",
+      "reason": "隣の席に座った",
+      "seconds": 2.8,
+      "image": "last-frame"
+    }
+  },
+  "stitch": {
+    "transition": "xfade",
+    "xfade_s": 0.35,
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-cover",
+      "source": "still",
+      "still": "stills/01-cover.jpg",
+      "trim": {"start": 0, "seconds": 3.0},
+      "cast": ["mio", "kuroki"],
+      "face_visible": false,
+      "props": ["tote"],
+      "place": "Open-plan aisle at morning, a beige cubicle partition in the foreground, grey carpet running to a window wall",
+      "camera": "Over-the-shoulder third-person camera behind Mio at shoulder height, holding still with a slight breathing bob",
+      "action": "Mio stays crouched behind the cubicle partition with the tote on her shoulder while Kuroki walks slowly down the aisle away from her; nobody else is in frame",
+      "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
+      "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
+      "hud": {
+        "mission": "自席につけ",
+        "mission_keyword": "自席",
+        "hint": "C 隠れる",
+        "health": 0.88,
+        "stamina": 0.62,
+        "money": "¥2,140",
+        "heat": 5,
+        "objective_bearing": 25,
+        "objective_distance": 0.8,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "02-peek",
+      "source": "still",
+      "still": "stills/02-peek.jpg",
+      "trim": {"start": 0, "seconds": 5.0},
+      "cast": ["mio", "kuroki"],
+      "face_visible": false,
+      "props": ["tote", "badge"],
+      "place": "A plain beige corridor wall beside an open glass office doorway, grey carpet, morning fluorescent light",
+      "camera": "Third-person camera at Mio's shoulder, holding still with a slight breathing bob",
+      "action": "Mio stays low against the wall and leans her head a little toward the open doorway; Kuroki stays seated at the inner desk looking down at papers; both stay in these spots",
+      "sfx": "Quiet corridor, paper rustle from the inner room, HVAC",
+      "music": "Bass holds; a sparse tick on the downbeat",
+      "hud": {
+        "mission": "自席につけ",
+        "mission_keyword": "自席",
+        "hint": "視線が外れるまで",
+        "health": 0.88,
+        "stamina": 0.55,
+        "money": "¥2,140",
+        "heat": 4,
+        "objective_bearing": 8,
+        "objective_distance": 0.45,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "03-talk",
+      "source": "still",
+      "still": "stills/03-talk.jpg",
+      "trim": {"start": 0, "seconds": 6.0},
+      "cast": ["mio", "nana"],
+      "face_visible": true,
+      "props": ["mug"],
+      "place": "The same open-plan office, a light oak desk row with beige partitions, morning window light, the whole shot stays this desk row",
+      "camera": "Static medium two-shot at eye level, a very slow push-in",
+      "action": "Mio stands beside the desk and speaks to Nana; Nana looks up from the mug and answers; both stay in the same spots",
+      "speech": [
+        {"who": "nana", "line": "おはよう。はやいね", "text": "おはよう。早いね"},
+        {"who": "mio", "line": "いま ついた ばかり", "text": "いま着いたばかり"}
+      ],
+      "sfx": "Quiet office, a mug set down, distant printer",
+      "music": "Soft warm pad, the bass rests",
+      "hud": {
+        "visible": false,
+        "mission": "自席につけ",
+        "mission_keyword": "自席",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥2,140",
+        "heat": 0,
+        "objective_bearing": 0,
+        "objective_distance": 0.12,
+        "icons_active": ["席"],
+        "complete": true
+      }
+    },
+    {
+      "id": "04-bag",
+      "source": "ui",
+      "seconds": 2.2,
+      "cast": ["mio"],
+      "menu": {
+        "title": "かばんの中身",
+        "items": ["出退勤カード", "リップ", "弁当", "予備の靴下", "水筒"],
+        "selected": 0
+      },
+      "hud": {
+        "mission": "出退勤を打て",
+        "mission_keyword": "出退勤",
+        "hint": "Tab かばん",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥2,140",
+        "heat": 0,
+        "objective_bearing": 270,
+        "objective_distance": 0.3,
+        "icons_active": ["札"],
+        "complete": false
+      }
+    },
+    {
+      "id": "05-desk",
+      "source": "still",
+      "still": "stills/05-desk.jpg",
+      "trim": {"start": 0, "seconds": 4.8},
+      "cast": ["mio"],
+      "face_visible": false,
+      "props": ["tote"],
+      "place": "A light oak desk in a beige cubicle, black mesh chair, morning window light behind the monitors",
+      "camera": "Over-the-shoulder third-person camera behind Mio at the chair, holding still",
+      "action": "Mio sits in the chair, rests her right hand on the mouse, and stays still; the tote sits on the carpet; the desk stays this cubicle",
+      "sfx": "Chair wheels on carpet, a mouse click, HVAC",
+      "music": "Bass returns with a slow taiko pattern",
+      "hud": {
+        "mission": "出退勤を打て",
+        "mission_keyword": "出退勤",
+        "hint": "F 着席",
+        "health": 0.9,
+        "stamina": 0.72,
+        "money": "¥2,140",
+        "heat": 1,
+        "objective_bearing": 270,
+        "objective_distance": 0.15,
+        "icons_active": ["席"],
+        "complete": false
+      }
+    }
+  ]
+}
