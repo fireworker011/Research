@@ -224,17 +224,40 @@ STYLE_NEGATIVES = {
     "3D": "2d anime, manga, photograph, live action, flat cel, lineart screentone",
     "漫画": "photorealistic, 3d render, live action, painterly, photograph, cgi",
 }
-ANAL_DETAIL = (
-    "Both adults are futanari women, not a man, not a male body. "
-    "Each has female breasts, a feminine body, a fully erect 20cm human penis "
-    "with a pale veined shaft and a pink glans with a visible corona, "
-    "a hairless female pussy with inner labia at the base of the shaft, "
-    "and a pink anus. No testicles, no scrotum, no balls on anyone. "
-    "Sharp clean close detail of the futanari penis, the pussy, the anus, and the anal sex: "
-    "the partner's 20cm glans and shaft are inside the receiver's stretched wet anal ring; "
-    "the sphincter grips the shaft; the perineum, the receiver's pussy, and the receiver's own erect 20cm penis "
-    "are fully visible and unobstructed. No clothes. Adult 21+."
+ANAL_HOLE_LOCK = (
+    "ANAL HOLE LOCK: The erect 20cm is in the ANUS. Never in the pussy. Never vaginal. "
+    "Never the front hole. The unused pussy stays shut: labia closed, empty, not spread, "
+    "not gaping, not entered. The shaft does not go into the vagina."
 )
+ANAL_ANATOMY = (
+    "ANAL ANATOMY: The anus is the hole toward the tailbone (coccyx). "
+    "The unused pussy is the hole toward the pubic bone and the belly. "
+    "Never swap those two holes. Enter the anus only."
+)
+ANAL_JOIN = (
+    "ANAL JOIN: Both adults are futanari women, not a man. Each has female breasts, "
+    "a fully erect 20cm human penis, a hairless unused pussy at the base of her own shaft, "
+    "and a pink anus. No testicles. The partner's 20cm glans and shaft are inside the "
+    "receiver's stretched wet anal ring only. The sphincter grips the shaft. "
+    "The perineum is visible between the shut unused pussy and the anal ring. "
+    "The receiver's own 20cm and shut pussy stay unobstructed and empty of any penis. "
+    "No clothes. Adult 21+."
+)
+ANAL_DETAIL = f"{ANAL_HOLE_LOCK} {ANAL_ANATOMY} {ANAL_JOIN}"
+ANAL_REAR_LOCK = (
+    "REAR ANAL LOCK: From behind, all fours, or standing doggy: two holes. "
+    "The UPPER hole toward the tailbone is the anus — the 20cm is in THAT hole only. "
+    "The LOWER hole toward the belly is the unused shut pussy. Do not aim at the pussy. "
+    "Joining point is penis-in-anus above the closed pussy."
+)
+ANAL_FRONT_LOCK = (
+    "FRONT ANAL LOCK: Missionary, cowgirl, lap, or M-spread facing camera: two holes. "
+    "The LOWER hole toward the tailbone / buttocks is the anus — the 20cm is in THAT hole only. "
+    "The UPPER hole toward the belly is the unused shut pussy. Do not aim at the front hole. "
+    "Joining point is penis-in-anus below the closed pussy."
+)
+ANAL_REAR_PRESETS = frozenset({"アナルバック", "アナル立ちバック"})
+ANAL_FRONT_PRESETS = frozenset({"アナル正常位", "アナル騎乗位", "アナル座位", "肛門リフト"})
 SPACE_SEX_PRESET_LABELS = (
     "服を脱ぐ",
     "ウェットシャワー",
@@ -273,17 +296,29 @@ URINE_DETAIL = (
     "puddle. Keep the identical face and the input art medium. Adult futanari: no testicles, "
     "hairless pussy at the base of the shaft. Not a man. Adult 21+."
 )
-SCAT_DETAIL = (
+SCAT_HOLE_LOCK = (
+    "SCAT HOLE LOCK: Feces leaves the ANUS only. The unused pussy stays shut and empty. "
+    "Nothing comes out of the vagina, the urethra, or the penis. Not from the front hole. "
+    "Not from off-screen. The log is still attached to the stretched anal opening."
+)
+SCAT_ACT = (
     "SCAT ACT: Real adult human feces leaving the anus in this image. A formed opaque brown "
     "stool log, sausage-shaped and lightly segmented, is pushed out of the anus now. "
     "Soft-solid like clay: it sags, breaks, and piles. It does not bounce. It does not stretch "
-    "like slime. This is the act of defecating now, not a body already coated from before. "
-    "It leaves through the anus, not the vagina, not from off-screen. "
-    "FECES LOOK: Opaque dull-matte medium-dark brown human stool, not chocolate syrup, not "
-    "jelly, not slime, not a cartoon swirl. Slightly moist, dense, heavy. Keep the identical "
-    "face and the input art medium. Adult futanari: 20cm penis, hairless pussy at the base, "
-    "no testicles. Not a man. Adult 21+."
+    "like slime. This is the act of defecating now, not a body already coated from before."
 )
+FECES_LOOK = (
+    "FECES LOOK: Real adult human feces. Opaque dull-matte medium-dark brown, the color of "
+    "human stool, not chocolate syrup, not translucent, not amber gel. Soft-solid like clay "
+    "or putty: formed cylindrical logs and sausage segments that break, pile, and sag under "
+    "their own weight. Slightly moist on the surface, dense, heavy. It smears as lumpy paste "
+    "on skin but the mass stays formed and clumpy. "
+    "Not bouncing jelly. Not rubbery slime. Not stretchy gel strands. Not a glossy blob. "
+    "Not a cartoon swirl. Not a uniform slime sheet. Not watery diarrhea. "
+    "Keep the identical face and the input art medium. Adult futanari: 20cm penis, unused "
+    "shut pussy at the base, no testicles. Not a man. Adult 21+."
+)
+SCAT_DETAIL = f"{SCAT_ACT} {SCAT_HOLE_LOCK} {FECES_LOOK}"
 
 # ayooo123 / Mk1227 のクイックプロンプトと同じ12個。行為の竿はフタナリに差し替える。
 SEX_PRESET_DEFAULT = "服抜きフタナリ（既定）"
@@ -366,54 +401,57 @@ SEX_PRESETS = {
         "Amateur phone-camera snapshot, natural indoor lighting, same environment as the original photo. "
         "THE SAME WOMAN with the IDENTICAL FACE — absolutely unchanged facial features, same person, same "
         "expression — is held up in the air with her legs raised wide in an M shape, her body facing the "
-        "camera, completely nude — all clothing removed, bare breasts and pussy visible. A muscular man "
-        "holds her up from behind, his large erect penis penetrating her anus from below; the man is mostly "
-        "out of view behind her. Her face shows intense pleasure. Face must remain exactly as in the input "
-        "image."
+        "camera, completely nude. An adult futanari holds her up from behind. The partner's erect 20cm "
+        "enters the LOWER hole toward the buttocks — the ANUS — from below, not the upper front hole. "
+        "The unused pussy toward the belly stays shut and empty. Bare breasts visible. Partner mostly "
+        "out of view behind her. Face shows intense pleasure. Not vaginal. Face must remain exactly as "
+        "in the input image."
     ),
     "アナルバック": (
         "Rear three-quarter view, slightly low, medium-full shot. THE SAME PERSON from the input photo "
         "with the IDENTICAL FACE — same facial features, same eyes, nose, mouth, absolutely unchanged — "
         "looks back over her shoulder so her face is fully visible. She is on all fours in doggy position, "
         "completely nude, back arched, knees apart. An adult futanari partner kneels behind her; partner's "
-        "face out of frame. The partner's erect 20cm futanari penis is thrusting into the receiver's anus "
-        "from behind. Show the hanging receiver cock between her thighs, the hairless pussy at the base of "
-        "that shaft, and the stretched anus around the penetrating shaft in one clear frame. Same environment "
-        "and lighting as the original photo. Not a man."
+        "face out of frame. The partner's erect 20cm futanari penis is thrusting into the receiver's ANUS "
+        "from behind, not the pussy. From the rear the UPPER hole toward the tailbone is the anus with "
+        "the shaft in it; the LOWER hole toward the belly is the unused shut pussy with nothing in it. "
+        "Show the hanging receiver cock, the empty closed pussy at the base of that shaft, and the "
+        "stretched anus around the penetrating shaft. Not vaginal. Same environment. Not a man."
     ),
     "アナル立ちバック": (
         "Full-body three-quarter rear view. THE SAME PERSON from the input photo with the IDENTICAL FACE — "
         "same facial features, unchanged — is standing, bent forward at the waist in standing doggy, hands "
         "braced on a wall or bed, looking back so her face is visible. Completely nude. An adult futanari "
         "partner stands behind her, face out of frame, hips flush against her ass. The partner's erect 20cm "
-        "futanari penis is buried in the receiver's anus. The receiver's own erect 20cm penis hangs between "
-        "her thighs; hairless pussy at the base; anus gripping the shaft. Same environment. Not a man."
+        "futanari penis is buried in the receiver's ANUS, not the pussy. The UPPER rear hole is the anus "
+        "gripping the shaft; the LOWER hole toward the belly is the unused shut pussy. The receiver's own "
+        "erect 20cm hangs between her thighs. Not vaginal. Same environment. Not a man."
     ),
     "アナル正常位": (
         "Three-quarter view from above and in front, medium shot. THE SAME PERSON from the input photo with "
         "the IDENTICAL FACE — same facial features, unchanged — lies on her back in missionary, legs folded "
         "toward her chest or spread in an M, looking at the camera. Completely nude. This is anal missionary, "
-        "not vaginal: the partner's erect 20cm futanari penis is inserted in her anus. Her own erect 20cm "
-        "penis lies on her belly pointing toward her navel, hairless pussy visible at the base of her shaft, "
-        "anus below the perineum taking the partner. Partner is between her legs, face out of frame. Same "
-        "environment. Not a man."
+        "not vaginal: the partner's erect 20cm futanari penis is inserted in the LOWER hole toward the "
+        "buttocks — the ANUS — not the upper front hole. Her own erect 20cm lies on her belly. The unused "
+        "pussy toward the pubic bone stays shut and empty at the base of her shaft. Anus below the perineum "
+        "taking the partner. Partner between her legs, face out of frame. Same environment. Not a man."
     ),
     "アナル騎乗位": (
         "Eye-level medium shot, front. THE SAME PERSON from the input photo with the IDENTICAL FACE — same "
         "facial features, unchanged — sits in cowgirl, facing the camera, completely nude, straddling an "
-        "adult futanari partner who lies on her back below. Partner's face out of frame; partner's female "
-        "breasts may show at the bottom edge. The partner's erect 20cm futanari penis is in the receiver's "
-        "anus from below, not in the pussy. The receiver's own erect 20cm penis stands in front of her crotch; "
-        "hairless pussy at the base; anus sitting down on the shaft. Hands on her own thighs. Same environment. "
-        "Not a man."
+        "adult futanari partner who lies on her back below. Partner's face out of frame. The partner's erect "
+        "20cm futanari penis is in the receiver's ANUS from below, not in the pussy. The LOWER hole toward "
+        "the buttocks sits down on the shaft; the UPPER hole toward the belly is the unused shut pussy. "
+        "The receiver's own erect 20cm stands in front. Hands on her own thighs. Not vaginal. Same "
+        "environment. Not a man."
     ),
     "アナル座位": (
         "Eye-level medium shot. THE SAME PERSON from the input photo with the IDENTICAL FACE — same facial "
         "features, unchanged — sits in an adult futanari partner's lap in seated anal sex, more upright than "
         "cowgirl, feet down or hooked, completely nude. Partner sits on a chair or the edge of the bed, face "
-        "out of frame. The partner's erect 20cm futanari penis is in the receiver's anus. The receiver's own "
-        "erect 20cm penis is visible in front; hairless pussy at the base of her shaft; anus taking the full "
-        "shaft in the lap. Same environment. Not a man."
+        "out of frame. The partner's erect 20cm futanari penis is in the receiver's ANUS, not the pussy. "
+        "The LOWER hole toward the buttocks takes the full shaft; the UPPER unused pussy stays shut. "
+        "The receiver's own erect 20cm is visible in front. Not vaginal. Same environment. Not a man."
     ),
     "放尿（立ち）": (
         "Full-body front or three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — "
@@ -440,16 +478,20 @@ SEX_PRESETS = {
     "脱糞（しゃがみ）": (
         "Medium-full three-quarter view. THE SAME PERSON from the input with the IDENTICAL FACE — same "
         "facial features, unchanged, face readable. She squats fully nude, knees apart. Her 20cm futanari "
-        "penis and hairless pussy are visible in front. The anus is clearly shown: a formed opaque brown "
-        "sausage-shaped human stool log is being pushed out of the anus now, sagging like clay. Not jelly, "
-        "not slime, not from the vagina. No testicles. Not a man."
+        "penis hangs in front. The unused pussy at the base of that shaft stays shut: nothing comes out "
+        "of it. Behind the shut pussy, the anus is the focus: a formed opaque brown sausage-shaped human "
+        "stool log is being pushed out of the anus now, still attached to the stretched anal opening, "
+        "sagging like clay. Not jelly, not slime, not chocolate syrup, not from the vagina. No testicles. "
+        "Not a man."
     ),
     "脱糞（後背）": (
         "Rear three-quarter view, slightly low. THE SAME PERSON from the input with the IDENTICAL FACE — "
         "same facial features, unchanged — looks back over her shoulder so her face is readable. She is on "
-        "all fours, fully nude. Her 20cm futanari penis hangs between her thighs with hairless pussy at the "
-        "base. The anus is the focus: a formed opaque brown sausage-shaped human stool log is leaving the "
-        "anus now. Soft-solid clay, not jelly, not slime, not from the vagina. No testicles. Not a man."
+        "all fours, fully nude. Her 20cm futanari penis hangs between her thighs. From the rear the LOWER "
+        "hole toward the belly is the unused shut pussy with nothing coming out. The UPPER hole toward the "
+        "tailbone is the anus: a formed opaque brown sausage-shaped human stool log is leaving that anus "
+        "now, still attached to the opening, sagging like clay. Not jelly, not slime, not chocolate syrup, "
+        "not from the vagina. No testicles. Not a man."
     ),
 }
 SEX_ACT_PRESETS = frozenset(
@@ -881,6 +923,11 @@ def compose_edit_prompt(
             parts.append(apply_futa_partner(base) if futa else base)
             if futa and is_anal_preset(label) and ANAL_DETAIL not in parts:
                 parts.append(ANAL_DETAIL)
+            if is_anal_preset(label):
+                if label in ANAL_REAR_PRESETS and ANAL_REAR_LOCK not in parts:
+                    parts.append(ANAL_REAR_LOCK)
+                elif label in ANAL_FRONT_PRESETS and ANAL_FRONT_LOCK not in parts:
+                    parts.append(ANAL_FRONT_LOCK)
         else:
             parts.append(base)
             blob = base.lower()
@@ -963,13 +1010,14 @@ def lora_stack(
                 LORA_TRIGGERS["qwen_uncensor"],
             )
         )
-        rows.append(
-            (
-                "Qwen4Play_v2",
-                LORA_WEIGHTS["Qwen4Play_v2"],
-                LORA_TRIGGERS["Qwen4Play_v2"],
+        if not is_anal_preset(label):
+            rows.append(
+                (
+                    "Qwen4Play_v2",
+                    LORA_WEIGHTS["Qwen4Play_v2"],
+                    LORA_TRIGGERS["Qwen4Play_v2"],
+                )
             )
-        )
         if futa:
             rows.append(
                 (

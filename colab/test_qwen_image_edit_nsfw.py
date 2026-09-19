@@ -11,8 +11,13 @@ from qwen_image_edit_nsfw import (
     AIO_FILENAME,
     AIO_REPO_ID,
     ANAL_DETAIL,
+    ANAL_FRONT_LOCK,
+    ANAL_FRONT_PRESETS,
+    ANAL_HOLE_LOCK,
     ANAL_POSE_LABELS,
     ANAL_PRESETS,
+    ANAL_REAR_LOCK,
+    ANAL_REAR_PRESETS,
     CANVAS_AUTO,
     CANVAS_FIXED,
     DEFAULT_EDIT_PROMPT,
@@ -32,6 +37,7 @@ from qwen_image_edit_nsfw import (
     REF_SOURCE_DEFAULT,
     REWRITE_MODEL,
     SCAT_DETAIL,
+    SCAT_HOLE_LOCK,
     SCAT_LABELS,
     SCHED_BASE_SHIFT,
     SCHED_MAX_IMAGE_SEQ_LEN,
@@ -509,7 +515,6 @@ def test_futa_partner_rewrites_sex_acts_and_drops_man():
         "カウガール",
         "乳房プレイ",
         "フェイシャル",
-        "肛門リフト",
     ):
         assert is_sex_act_preset(label)
         raw = SEX_PRESETS[label]
@@ -525,6 +530,14 @@ def test_futa_partner_rewrites_sex_acts_and_drops_man():
             assert "20cm" in composed
         else:
             assert "futanari" in composed.lower()
+    lift_raw = SEX_PRESETS["肛門リフト"]
+    assert man.search(lift_raw) is None
+    assert "futanari" in lift_raw.lower()
+    assert "anus" in lift_raw.lower()
+    assert "not the upper front hole" in lift_raw.lower()
+    lift = compose_edit_prompt("", preset="肛門リフト", futa=True)
+    assert not has_leftover_man(lift)
+    assert ANAL_FRONT_LOCK in lift
 
 
 def test_compose_sex_act_strings():
@@ -554,6 +567,7 @@ def test_anal_pose_presets_are_futa_detailed():
         "アナル騎乗位": ("cowgirl",),
         "アナル座位": ("lap", "seated"),
     }
+    assert ANAL_REAR_PRESETS | ANAL_FRONT_PRESETS == ANAL_PRESETS
     for label, needles in pose.items():
         assert is_anal_preset(label)
         assert is_sex_act_preset(label)
@@ -564,16 +578,30 @@ def test_anal_pose_presets_are_futa_detailed():
         assert "anus" in out.lower()
         assert "no testicles" in out.lower()
         assert "anal ring" in out.lower()
+        assert "ANAL HOLE LOCK" in out
+        assert "never vaginal" in out.lower()
+        assert "unused pussy" in out.lower()
         assert ANAL_DETAIL in out
+        assert ANAL_HOLE_LOCK in out
         blob = out.lower()
         assert any(n in blob for n in needles), (label, out)
         names = [row[0] for row in lora_stack(True, True, preset=label)]
-        assert names == ["qwen_uncensor", "Qwen4Play_v2", "CockQwen_v3"]
+        assert names == ["qwen_uncensor", "CockQwen_v3"], label
+        assert "Qwen4Play_v2" not in names
+        if label in ANAL_REAR_PRESETS:
+            assert ANAL_REAR_LOCK in out
+            assert "UPPER hole" in out
+        if label in ANAL_FRONT_PRESETS:
+            assert ANAL_FRONT_LOCK in out
+            assert "LOWER hole" in out
     miss = compose_edit_prompt("", preset="アナル正常位")
     assert "not vaginal" in miss.lower() or "anal missionary" in miss.lower()
     lift = compose_edit_prompt("", preset="肛門リフト", futa=True)
     assert ANAL_DETAIL in lift
+    assert ANAL_FRONT_LOCK in lift
     assert not has_leftover_man(lift)
+    lift_names = [row[0] for row in lora_stack(True, True, preset="肛門リフト")]
+    assert lift_names == ["qwen_uncensor", "CockQwen_v3"]
 
 
 def test_urine_and_scat_are_detailed_and_keep_face():
@@ -600,9 +628,15 @@ def test_urine_and_scat_are_detailed_and_keep_face():
         out = compose_edit_prompt("", preset=label, futa=True)
         assert "do not swap" in out.lower()
         assert SCAT_DETAIL in out
+        assert SCAT_HOLE_LOCK in out
+        assert "SCAT HOLE LOCK" in out
         assert "anus" in out.lower()
         assert "stool log" in out.lower() or "sausage" in out.lower()
         assert "not the vagina" in out.lower() or "not from the vagina" in out.lower()
+        assert "unused" in out.lower()
+        assert "chocolate" in out.lower()
+        assert "FECES LOOK" in out
+        assert "cylindrical" in out.lower()
         assert "jelly" in out.lower()
         assert not has_leftover_man(out), label
         names = [row[0] for row in lora_stack(True, True, preset=label)]
@@ -825,6 +859,7 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "プロンプトrewrite = False" in src
     assert "lock_identity_prompt" in src
     assert "face_lock_image" in src
+    assert "アナルは **肛門だけ**" in src or "肛門だけ" in joined
     assert "require_space_gpu_or_exit" in src
 
 
