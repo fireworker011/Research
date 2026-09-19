@@ -43,8 +43,10 @@ from qwen_image_edit_nsfw import (
     drop_stale_pil_modules,
     drop_stale_torchao_modules,
     drive_space_lines,
+    force_edit_offload,
     has_leftover_man,
     infer_kwargs,
+    is_cuda_oom,
     input_source_form_options,
     is_anal_preset,
     is_excrete_preset,
@@ -62,6 +64,7 @@ from qwen_image_edit_nsfw import (
     require_pillow_colab,
     resize_rgb,
     resolve_input_paths,
+    run_pipe_edit,
     save_jpeg,
     tune_edit_vae,
     sex_preset_form_options,
@@ -214,8 +217,12 @@ def test_disable_safety_and_infer_kwargs():
     kw = infer_kwargs("hello", true_cfg=1.0)
     assert kw["num_inference_steps"] == 4
     assert kw["true_cfg_scale"] == 1.0
-    assert kw["negative_prompt"] == " "
+    assert "negative_prompt" not in kw
+    assert "guidance_scale" not in kw
     assert kw["generator"] is None
+    guided = infer_kwargs("hello", true_cfg=4.0, guidance=1.5, negative="bad")
+    assert guided["negative_prompt"] == "bad"
+    assert guided["guidance_scale"] == 1.5
 
     class FakeGen:
         def __init__(self, device=None):
@@ -263,6 +270,63 @@ def test_tune_edit_vae_skips_missing_slicing():
 
     tune_edit_vae(NoVae())
     tune_edit_vae(Pipe(None))
+
+
+def test_force_edit_offload_resets_to_cpu():
+    calls: list[object] = []
+
+    class Pipe:
+        def maybe_free_model_hooks(self):
+            calls.append("free")
+
+        def to(self, dev):
+            calls.append(("to", dev))
+            return self
+
+        def enable_attention_slicing(self):
+            calls.append("slice")
+
+        def enable_model_cpu_offload(self):
+            calls.append("model")
+
+        def enable_sequential_cpu_offload(self):
+            calls.append("seq")
+
+    assert force_edit_offload(Pipe()) == "model_cpu_offload"
+    assert "free" in calls
+    assert ("to", "cpu") in calls
+    assert "model" in calls
+    calls.clear()
+    assert force_edit_offload(Pipe(), sequential=True) == "sequential_cpu_offload"
+    assert "seq" in calls
+    assert is_cuda_oom(RuntimeError("CUDA out of memory. Tried to allocate"))
+    assert not is_cuda_oom(RuntimeError("nope"))
+
+    class Boom:
+        def __init__(self):
+            self.n = 0
+
+        def __call__(self, **kwargs):
+            self.n += 1
+            if self.n == 1:
+                raise RuntimeError("CUDA out of memory. Tried to allocate 108.00 MiB")
+
+            class Out:
+                images = ["ok"]
+
+            return Out()
+
+    class FakeCuda:
+        @staticmethod
+        def empty_cache():
+            return None
+
+    class FakeTorch:
+        cuda = FakeCuda
+
+    boom = Boom()
+    assert run_pipe_edit(boom, ["im"], {"prompt": "x"}, FakeTorch) == "ok"
+    assert boom.n == 2
 
 
 def test_sex_preset_labels_match_space_ui():
@@ -566,9 +630,10 @@ def test_writer_notebook_is_separate_l4_nsfw():
     assert "lora_skip_summary" in src
     assert "uninstall\", \"-y\", \"torchao\"" in src or '"torchao"' in src
     assert "drop_stale_torchao_modules" in src
-    assert "enable_model_cpu_offload" in src
-    assert "VRAM 一杯" not in joined
-    assert src.index("load_lora_weights") < src.index("enable_model_cpu_offload")
+    assert "force_edit_offload" in src
+    assert "run_pipe_edit" in src
+    assert "VRAM_OFFLOAD_GIB" in src
+    assert src.index("pipe.load_lora_weights") < src.index("force_edit_offload(pipe")
     assert "入力ファイル名" in src
     assert "PCから選ぶ" in src
     assert "KeyboardInterrupt" in src

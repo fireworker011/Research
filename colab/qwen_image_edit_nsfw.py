@@ -18,6 +18,7 @@ GUIDANCE = 1.0
 DEFAULT_WIDTH = 576
 DEFAULT_HEIGHT = 1024
 L4_MIN_VRAM_GIB = 20.0
+VRAM_OFFLOAD_GIB = 8.0
 # Weights stay on the Colab VM HuggingFace cache. Drive only holds JPGs.
 DRIVE_FREE_GIB = 2
 WEIGHTS_CACHE_GIB = 40
@@ -821,6 +822,84 @@ def disable_safety(pipe: Any) -> Any:
     return pipe
 
 
+def vram_used_gib(torch_module: Any = None) -> float:
+    if torch_module is None or not getattr(torch_module, "cuda", None):
+        return 0.0
+    try:
+        if not torch_module.cuda.is_available():
+            return 0.0
+        free, total = torch_module.cuda.mem_get_info()
+    except Exception:
+        return 0.0
+    return (total - free) / 1024 ** 3
+
+
+def is_cuda_oom(err: BaseException) -> bool:
+    if type(err).__name__ == "OutOfMemoryError":
+        return True
+    return "out of memory" in str(err).lower()
+
+
+def force_edit_offload(
+    pipe: Any,
+    *,
+    sequential: bool = False,
+    torch_module: Any = None,
+) -> str:
+    """pipe.to(cuda) のあとに offload しても効かない。一旦 CPU に戻す。"""
+    for name in ("maybe_free_model_hooks", "remove_all_hooks", "reset_device_map"):
+        fn = getattr(pipe, name, None)
+        if callable(fn):
+            try:
+                fn()
+            except Exception:
+                pass
+    try:
+        pipe.to("cpu")
+    except Exception:
+        pass
+    if torch_module is not None:
+        try:
+            torch_module.cuda.empty_cache()
+        except Exception:
+            pass
+    if hasattr(pipe, "enable_attention_slicing"):
+        try:
+            pipe.enable_attention_slicing()
+        except Exception:
+            pass
+    if sequential and hasattr(pipe, "enable_sequential_cpu_offload"):
+        pipe.enable_sequential_cpu_offload()
+        return "sequential_cpu_offload"
+    if hasattr(pipe, "enable_model_cpu_offload"):
+        pipe.enable_model_cpu_offload()
+        return "model_cpu_offload"
+    return "cpu"
+
+
+def run_pipe_edit(
+    pipe: Any,
+    images: list[Any],
+    kwargs: dict[str, Any],
+    torch_module: Any = None,
+) -> Any:
+    def _call(imgs: list[Any]) -> Any:
+        try:
+            return pipe(image=imgs, **kwargs).images[0]
+        except TypeError:
+            first = imgs[0] if imgs else imgs
+            return pipe(image=first, **kwargs).images[0]
+
+    try:
+        return _call(images)
+    except Exception as e:
+        if torch_module is None or not is_cuda_oom(e):
+            raise
+        print("VRAM OOM → sequential_cpu_offload でもう一度")
+        force_edit_offload(pipe, sequential=True, torch_module=torch_module)
+        return _call(images)
+
+
 def infer_kwargs(
     prompt: str,
     *,
@@ -835,16 +914,18 @@ def infer_kwargs(
     gen = None
     if torch_module is not None and seed is not None:
         gen = torch_module.Generator(device=device).manual_seed(int(seed))
-    neg = None if float(true_cfg) <= 1.0 else negative
-    return {
+    out: dict[str, Any] = {
         "prompt": prompt,
-        "negative_prompt": neg if neg is not None else " ",
         "num_inference_steps": int(steps),
         "true_cfg_scale": float(true_cfg),
-        "guidance_scale": float(guidance),
         "num_images_per_prompt": 1,
         "generator": gen,
     }
+    if float(true_cfg) > 1.0:
+        out["negative_prompt"] = negative
+    if float(guidance) > 1.0:
+        out["guidance_scale"] = float(guidance)
+    return out
 
 
 def save_jpeg(image: Any, dest: str | Path, quality: int = 92) -> Path:

@@ -76,6 +76,7 @@ with open("/content/qwen_edit_paths.env", "w") as f:
 print("Drive:", DRIVE_ROOT)
 print("保存先:", f"{DRIVE_ROOT}/output")
 
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import torch
 if not torch.cuda.is_available():
     raise SystemExit("GPU がオフです。ランタイム → ランタイムのタイプを変更 → L4 を選んで、①からやり直してください。")
@@ -160,6 +161,7 @@ from qwen_image_edit_nsfw import (
     LORA_REPO,
     LORA_FILES,
     disable_safety,
+    force_edit_offload,
     lora_skip_summary,
     tune_edit_vae,
 )
@@ -194,9 +196,7 @@ if not LOADED:
 if hasattr(pipe, "disable_lora"):
     pipe.disable_lora()
 
-# L4 24GB: transformer だけ約20GB。全部 cuda に載せるな。
-print("cpu_offload（L4。transformer 約20GB）")
-pipe.enable_model_cpu_offload()
+print("offload", force_edit_offload(pipe, torch_module=torch))
 
 globals()["QWEN_EDIT_PIPE"] = pipe
 globals()["QWEN_EDIT_LORAS"] = LOADED
@@ -229,7 +229,9 @@ from qwen_image_edit_nsfw import (
     TRUE_CFG,
     GUIDANCE,
     UPLOAD_PHONE_HINT,
+    VRAM_OFFLOAD_GIB,
     compose_edit_prompt,
+    force_edit_offload,
     infer_kwargs,
     input_source_form_options,
     list_input_images,
@@ -239,11 +241,13 @@ from qwen_image_edit_nsfw import (
     refuse_photoreal,
     resize_rgb,
     resolve_input_paths,
+    run_pipe_edit,
     save_jpeg,
     sex_preset_form_options,
     snapped_rgb,
     style_form_options,
     style_negative,
+    vram_used_gib,
 )
 
 env = {}
@@ -402,6 +406,12 @@ if ref_canvas is not None:
     print("REF canvas", ref_canvas.size)
     display(ref_canvas)
 
+used = vram_used_gib(torch)
+print("VRAM used GiB", round(used, 1))
+if used >= VRAM_OFFLOAD_GIB:
+    print("VRAM 多い → CPU に戻して offload")
+    print(force_edit_offload(pipe, torch_module=torch))
+
 for fname, src in jobs:
     canvas = resize_rgb(src, w, h)
     images = pipe_images(canvas, ref_canvas)
@@ -412,10 +422,7 @@ for fname, src in jobs:
             if hasattr(pipe, "enable_lora"):
                 pipe.enable_lora()
             pipe.set_adapters(names, adapter_weights=weights)
-        try:
-            out = pipe(image=images, **kwargs).images[0]
-        except TypeError:
-            out = pipe(image=images[0], **kwargs).images[0]
+        out = run_pipe_edit(pipe, images, kwargs, torch)
     finally:
         if hasattr(pipe, "disable_lora"):
             pipe.disable_lora()
