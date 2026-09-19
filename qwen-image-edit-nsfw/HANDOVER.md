@@ -13,7 +13,7 @@ Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャ
 - `colab/_write_qwen_edit_nb.py`
 
 作業ブランチ: `cursor/h3-anal-stories-f112` だけ。新枝禁止。PR #138 は draft のままマージするな。
-HEAD: 3877083 h3: Qwen Edit のキャンバスは 576x1024 固定
+HEAD: 1b7830f h3: Qwen Edit は L4 で sequential と 576x1024 を pipe に渡す
 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-anal-stories-f112/qwen_image_edit_nsfw.ipynb
 
 目的: 元画像の顔と画風は変えない。変えてよいのは服・姿勢・場所・行為。
@@ -154,4 +154,4 @@ ipynb を手で直したあとにテストが通っても、次の writer で消
 
 ②で `_Ink` や `_imaging was built for another version` は Pillow 12 を Colab の 11.3 拡張の上に載せたせい。リンクから開き直して②を再実行（`pillow==11.3.0`）。まだならランタイム再起動→①②。
 
-②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から `cpu_offload`（transformer 約20GBを全部載せるな）。③は VRAM が 8GB 以上なら一旦 CPU に戻してから offload。OOM なら sequential。`true_cfg=1` では negative / guidance を渡さない。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。キャンバスは **576×1024 固定**（フォームの大きい値は使わない）。
+②のほかの落ち: Qwen VAE に `enable_slicing` が無い（`tune_edit_vae` で hasattr）。LoRA に `peft` が要る。Colab の **torchao 0.10** は peft 0.19 と食い違うので②で uninstall（量子化は使わない。HF_TOKEN 不足ではない）。`device_map="cuda"` は使わない。L4 は最初から **sequential CPU offload**（`model_cpu_offload` は transformer 約20GBを 24GB に載せて③で落ちる）。③は `pipe(height=1024, width=576)` を明示（省略すると内部が 1024² 面積に戻る）。VAE の 1024² 定数もキャンバス面積へ落とす。L4 では `qwen_uncensor`（約2.4GB）を載せず Rapid-AIO NSFW merge で進む。0/4 は切断ではない。数分待つ。ランタイム切断なら GitHub の Colab リンクから開き直す。`true_cfg=1` では negative / guidance を渡さない。LoRA は offload の前に載せる。③の Generator は cpu。③は画像を置いてから（全部実行すると input 空で落ちる）。**スマホでファイル選択が使えない**のは `files.upload` が iPhone で落ちるせい。入力は Drive input。PCから選ぶはオフのまま。キャンバスは **576×1024 固定**（フォームの大きい値は使わない）。
