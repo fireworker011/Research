@@ -2,6 +2,7 @@ import copy
 import json
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -80,6 +81,7 @@ from h3_hud import (  # noqa: E402
     window_for,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
+from h3_i2v_runtime import comfy_argv, patch_minimax_vae_encode  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import exec_script  # noqa: E402
 
@@ -101,7 +103,7 @@ def short() -> dict:
 # ---------------------------------------------------------------- sync / files
 
 def test_colab_and_minimaxh3_copies_in_sync():
-    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_colab_main.py"):
+    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_colab_main.py", "h3_i2v_runtime.py", "h3_r2v_core.py"):
         a = (ROOT / "colab" / name).read_text(encoding="utf-8")
         b = (ROOT / "minimaxh3" / name).read_text(encoding="utf-8")
         assert a == b, f"{name} differs between colab/ and minimaxh3/ (copy after editing)"
@@ -657,6 +659,109 @@ def test_render_beat_keeps_canvas_and_shortens_on_oom(tmp_path):
     assert res["duration_s"] == 8.0 and res["canvas"] == "1024x576"
     assert [c[:2] for c in calls] == [(1024, 576), (1024, 576)]
     assert calls[0][2] > calls[1][2]
+
+
+def test_render_beat_retries_same_duration_on_vae_device_mismatch(tmp_path):
+    comfy = tmp_path / "ComfyUI"
+    (comfy / "output" / "video").mkdir(parents=True)
+    (comfy / "models" / "diffusion_models").mkdir(parents=True)
+    ep = bandai()
+    prompt = build_beat_prompt(ep, ep["beats"][0])
+    calls = []
+    mismatch = [
+        "execution_error",
+        {
+            "node_type": "MiniMaxH3ImageToVideo",
+            "exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same\n",
+        },
+    ]
+
+    def poster(graph, port):
+        calls.append(graph["20"]["inputs"]["length"])
+        return {"prompt_id": f"p{len(calls)}"}, None
+
+    def waiter(pid, port):
+        if pid == "p1":
+            return False, mismatch
+        (comfy / "output" / "video" / "h3_ep_x_00001.mp4").write_bytes(b"mp4")
+        return True, {"outputs": {"29": {"videos": [{"filename": "h3_ep_x_00001.mp4", "subfolder": "video"}]}}}
+
+    res = render_beat_comfy(
+        source="still",
+        first_image="a.jpg",
+        prompt=prompt,
+        comfy_dir=comfy,
+        canvas=(1024, 576),
+        durations=[10.0, 8.0, 6.0],
+        preset=resolve_preset("fast", None),
+        seed=1,
+        filename_prefix="video/h3_ep_x",
+        poster=poster,
+        waiter=waiter,
+    )
+    assert res["duration_s"] == 10.0 and res["canvas"] == "1024x576"
+    assert len(calls) == 2 and calls[0] == calls[1]
+
+
+def test_render_beat_does_not_treat_vae_mismatch_as_oom(tmp_path):
+    comfy = tmp_path / "ComfyUI"
+    (comfy / "output" / "video").mkdir(parents=True)
+    (comfy / "models" / "diffusion_models").mkdir(parents=True)
+    ep = bandai()
+    prompt = build_beat_prompt(ep, ep["beats"][0])
+    mismatch = [
+        "execution_error",
+        {"exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same\n"},
+    ]
+    calls = []
+
+    def poster(graph, port):
+        calls.append(graph["20"]["inputs"]["length"])
+        return {"prompt_id": f"p{len(calls)}"}, None
+
+    def waiter(pid, port):
+        return False, mismatch
+
+    with pytest.raises(EpisodeError, match="HalfTensor"):
+        render_beat_comfy(
+            source="still",
+            first_image="a.jpg",
+            prompt=prompt,
+            comfy_dir=comfy,
+            canvas=(1024, 576),
+            durations=[10.0, 8.0, 6.0],
+            preset=resolve_preset("fast", None),
+            seed=1,
+            filename_prefix="video/h3_ep_x",
+            poster=poster,
+            waiter=waiter,
+        )
+    assert len(calls) == 2 and calls[0] == calls[1]
+
+
+def test_comfy_argv_keeps_dynamic_vram():
+    argv = comfy_argv(port=8188)
+    assert "--highvram" not in argv
+    assert "--gpu-only" not in argv
+    assert "--port" in argv
+
+    with tempfile.TemporaryDirectory() as td:
+        comfy = Path(td)
+        vae = comfy / "comfy" / "ldm" / "minimax" / "vae.py"
+        vae.parent.mkdir(parents=True)
+        vae.write_text(
+            "def encode(self, x, device=None):\n"
+            "    if x.ndim == 4:\n"
+            "        x = x.unsqueeze(2)\n"
+            "    if device is None:\n"
+            "        device = x.device\n"
+            "    return x.to(device)\n",
+            encoding="utf-8",
+        )
+        assert patch_minimax_vae_encode(comfy) is True
+        text = vae.read_text(encoding="utf-8")
+        assert "next(self.parameters()).device" in text
+        assert patch_minimax_vae_encode(comfy) is False
 
 
 # ---------------------------------------------------------------- isolation

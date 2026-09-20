@@ -48,6 +48,16 @@ from h3_t2v import (
 )
 
 PORT = 8188
+# MiniMax FL2VA + Qwen + video VAE is >40GB. --highvram disables DynamicVRAM, so
+# keyframe encode puts stills on CUDA while VAE weights stay on CPU (HalfTensor crash).
+_VAE_ENCODE_DEVICE_OLD = "    if device is None:\n        device = x.device\n"
+_VAE_ENCODE_DEVICE_NEW = (
+    "    if device is None:\n"
+    "        try:\n"
+    "            device = next(self.parameters()).device\n"
+    "        except StopIteration:\n"
+    "            device = x.device\n"
+)
 COMFY_DIR_DEFAULT = "/content/ComfyUI"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 
@@ -129,12 +139,39 @@ def fetch_weight(url: str, dest: Path, min_bytes: int = 1_000_000) -> None:
     tmp.replace(dest)
 
 
+def comfy_argv(*, port: int = PORT) -> list[str]:
+    """A100 40GB cannot hold FL2VA+CLIP+VAE. Keep DynamicVRAM (do not pass --highvram)."""
+    return [
+        sys.executable, "main.py",
+        "--listen", "127.0.0.1",
+        "--port", str(port),
+        "--disable-auto-launch",
+        "--enable-cors-header",
+    ]
+
+
+def patch_minimax_vae_encode(comfy_dir: Path) -> bool:
+    """Encode keyframes on the VAE weight device. Idempotent. No-op if ComfyUI moved the snippet."""
+    path = Path(comfy_dir) / "comfy" / "ldm" / "minimax" / "vae.py"
+    if not path.is_file():
+        return False
+    text = path.read_text(encoding="utf-8")
+    if "device = next(self.parameters()).device" in text:
+        return False
+    if _VAE_ENCODE_DEVICE_OLD not in text:
+        return False
+    path.write_text(text.replace(_VAE_ENCODE_DEVICE_OLD, _VAE_ENCODE_DEVICE_NEW, 1), encoding="utf-8")
+    print("patched MiniMax VAE encode to follow weight device")
+    return True
+
+
 def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path, *, need_r2v: bool = False) -> None:
     if not (comfy_dir / "main.py").is_file():
         sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(comfy_dir)])
     req = comfy_dir / "requirements.txt"
     if req.is_file():
         sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    patch_minimax_vae_encode(comfy_dir)
     models_root = comfy_dir / "models"
     models_root.mkdir(parents=True, exist_ok=True)
     for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
@@ -170,14 +207,7 @@ def start_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
     log = Path("/content/comfyui.log")
     log.parent.mkdir(parents=True, exist_ok=True)
     log_f = open(log, "w", buffering=1)
-    cmd = [
-        sys.executable, "main.py",
-        "--listen", "127.0.0.1",
-        "--port", str(port),
-        "--highvram",
-        "--disable-auto-launch",
-        "--enable-cors-header",
-    ]
+    cmd = comfy_argv(port=port)
     subprocess.Popen(cmd, cwd=str(comfy_dir), stdout=log_f, stderr=subprocess.STDOUT, start_new_session=True)
     for _ in range(90):
         if comfy_up(port):

@@ -73,7 +73,7 @@ from h3_motion_graphics import (
     assert_i2va_graph,
     build_i2va_graph,
 )
-from h3_r2v_core import is_oom_error
+from h3_r2v_core import is_device_mismatch_error, is_oom_error
 from h3_t2v import assert_t2v_graph, build_t2v_graph
 
 SCHEMA = "h3-episode/v1"
@@ -1269,43 +1269,55 @@ def render_beat_comfy(
     before = newest_mp4(out_root)
     last_err: Any = None
     for dur in durations:
-        g = build_episode_graph(
-            source=source,
-            first_image=first_image,
-            prompt=prompt,
-            unet=unet,
-            preset=preset,
-            width=canvas[0],
-            height=canvas[1],
-            duration_s=dur,
-            seed=seed,
-            filename_prefix=filename_prefix,
-            has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
-            has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
-            last_image=last_image,
-        )
-        print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
-        res, err = poster(g, port)
-        if err:
-            last_err = err
-            if is_oom_error(err):
+        mismatch_tries = 0
+        while True:
+            g = build_episode_graph(
+                source=source,
+                first_image=first_image,
+                prompt=prompt,
+                unet=unet,
+                preset=preset,
+                width=canvas[0],
+                height=canvas[1],
+                duration_s=dur,
+                seed=seed,
+                filename_prefix=filename_prefix,
+                has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
+                has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
+                last_image=last_image,
+            )
+            print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
+            res, err = poster(g, port)
+            if err:
+                last_err = err
+                if is_device_mismatch_error(err) and mismatch_tries < 1:
+                    mismatch_tries += 1
+                    print("VAE device mismatch; unload and retry same duration")
+                    comfy_free(port)
+                    continue
+                if is_oom_error(err):
+                    comfy_free(port)
+                    break
+                raise EpisodeError(err)
+            if not (res and "prompt_id" in res):
+                raise EpisodeError(str(res))
+            ok, payload = waiter(res["prompt_id"], port)
+            if ok:
+                videos = collect_output_videos(payload, out_root)
+                fresh = newest_mp4(out_root)
+                if fresh and fresh not in videos and (before is None or fresh != before):
+                    videos.append(fresh)
+                return {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"}
+            last_err = payload
+            if is_device_mismatch_error(payload) and mismatch_tries < 1:
+                mismatch_tries += 1
+                print("VAE device mismatch; unload and retry same duration")
                 comfy_free(port)
                 continue
-            raise EpisodeError(err)
-        if not (res and "prompt_id" in res):
-            raise EpisodeError(str(res))
-        ok, payload = waiter(res["prompt_id"], port)
-        if ok:
-            videos = collect_output_videos(payload, out_root)
-            fresh = newest_mp4(out_root)
-            if fresh and fresh not in videos and (before is None or fresh != before):
-                videos.append(fresh)
-            return {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"}
-        last_err = payload
-        if is_oom_error(payload):
-            comfy_free(port)
-            continue
-        raise EpisodeError(str(payload))
+            if is_oom_error(payload):
+                comfy_free(port)
+                break
+            raise EpisodeError(str(payload))
     raise EpisodeError(f"all durations OOM: {last_err}")
 
 
