@@ -799,6 +799,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     ]
     help_txt = form_readme("connect")
     assert "プロンプトで直したい" in help_txt
+    assert "1本目は T2V" in help_txt
     assert "stills の jpg" in help_txt
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
@@ -812,7 +813,11 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     chained = apply_connect_mode(ep, "chain")
     assert validate_episode(chained, root=KASUMI_ADULT_DIR) == []
     gpu = [b for b in chained["beats"] if not is_ui_beat(b)]
-    assert beat_source(gpu[0]) == "still" and beat_still_as(gpu[0]) == "first"
+    assert beat_source(gpu[0]) == "t2v"
+    assert gpu[0].get("still_as") not in ("last", "both")
+    first_prompt = build_beat_prompt(chained, gpu[0])
+    assert "<Picture 1>" not in first_prompt
+    assert validate_beat_prompt(first_prompt, source="t2v") == []
     assert all(beat_source(b) == "chain" for b in gpu[1:])
     assert all(b.get("still_as") not in ("last", "both") for b in gpu[1:])
     chain_prompt = build_beat_prompt(chained, gpu[1])
@@ -820,6 +825,16 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "This shot continues the previous one without a cut" in chain_prompt
     assert "The camera stays in this setup" in chain_prompt
     assert "This shot:" not in chain_prompt
+
+    cuts = apply_connect_mode(ep, "カット")
+    gpu_cut = [b for b in cuts["beats"] if not is_ui_beat(b)]
+    assert beat_source(gpu_cut[0]) == "t2v"
+    assert all(beat_source(b) == "t2v" for b in gpu_cut)
+
+    hospital = apply_connect_mode(load_episode(HOSPITAL_DIR / "episode.json"), "前の最終フレームから続ける")
+    hgpu = [b for b in hospital["beats"] if not is_ui_beat(b)]
+    assert beat_source(hgpu[0]) == "t2v"
+    assert all(beat_source(b) == "chain" for b in hgpu[1:])
 
     landed = apply_connect_mode(ep, "用意した最終フレームへ着く")
     assert validate_episode(landed, root=KASUMI_ADULT_DIR) == []

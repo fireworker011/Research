@@ -76,7 +76,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - 英語で書く。日本語は声に出す中身だけ（`speech[].line` と `voices[].line`、かな限定、`「」` は自動で付く）。英語・ハングル・キリルは引用の中でも禁止（checkpoint が英語を足すのを止める）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
-- `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（本ごと独立。プロンプトで直せる）／`chain`＝前の最終フレームから続ける（2本目以降は前クリップ最終フレームから I2V）／`landing`＝用意した最終フレームへ着く（stills の jpg を Picture 2 にする。窓はクリップ尻へずらす）
+- `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（1本目から全部 T2V。プロンプトで直せる）／`chain`＝前の最終フレームから続ける（1本目は T2V、2本目以降は前クリップ最終フレームから I2V）／`landing`＝用意した最終フレームへ着く（stills の jpg を Picture 2 にする。窓はクリップ尻へずらす）
 - 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラ・速度・つなぎを増やすときだけ `h3_episode_packs.py` に1エントリ足す
 - `render.camera_pack`: `side2d`（横スク・常にサイド）／`action3d`（三人称3Dアクション）。T2V 話の既定は `side2d`。Colab の `CAMERA` と `--camera` で上書き
 - `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**。着地モードを選ぶとエンジンが last に切り替える

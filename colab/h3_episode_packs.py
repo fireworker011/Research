@@ -64,23 +64,23 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
     },
 }
 
-# t2v = each clip is independent (prompt can correct; cameras may change).
-# chain = beat 2+ I2V from the previous clip's last frame (seamless, harder to restyle).
+# t2v = every GPU beat is T2V including the first (prompt can correct; cameras may change).
+# chain = first GPU beat T2V, beat 2+ I2V from the previous clip's last frame.
 # landing = beat 2+ I2V onto an authored still as Picture 2 (needs stills/).
 CONNECT_MODES: dict[str, dict[str, Any]] = {
     "t2v": {
         "label_ja": "カット",
         "choice_ja": "カット（本ごと独立・迷ったらこれ）",
-        "when_ja": "プロンプトで直したい。カメラも変えられる",
-        "hint_ja": "迷ったらこれ。本ごとに撮り直し可。カメラを変えられる。",
+        "when_ja": "1本目から全部 T2V。プロンプトで直したい。カメラも変えられる",
+        "hint_ja": "迷ったらこれ。1本目も T2V。本ごとに撮り直し可。カメラを変えられる。",
         "recommend": True,
         "rotate_camera": True,
     },
     "chain": {
         "label_ja": "前の最終フレームから",
         "choice_ja": "前の最終フレームから続ける",
-        "when_ja": "2本目以降を前クリップの最後のコマから I2V。つながり優先",
-        "hint_ja": "2本目以降は前クリップの最終フレームから I2V。つながり優先。",
+        "when_ja": "1本目は T2V。2本目以降を前クリップの最後のコマから I2V。つながり優先",
+        "hint_ja": "1本目は T2V。2本目以降は前クリップの最終フレームから I2V。つながり優先。",
         "rotate_camera": False,
     },
     "landing": {

@@ -687,8 +687,8 @@ def _slide_trim_to_last(beat: dict[str, Any], clip_s: float) -> None:
 def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[str, Any]:
     """Rewrite GPU beat source/still_as for a connect mode. UI and reuse beats stay put.
 
-    t2v: every GPU beat is T2V (prompt-correctable, cameras may change).
-    chain: first GPU still/t2v, later I2V from the previous clip's last frame.
+    t2v: every GPU beat is T2V including the first (prompt-correctable, cameras may change).
+    chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
     """
     name = episode_connect(ep, override)
@@ -713,12 +713,8 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
             beat.pop("still_as", None)
         elif name == "chain":
             if gpu_seen == 0:
-                if beat.get("still"):
-                    beat["source"] = "still"
-                    beat["still_as"] = "first"
-                else:
-                    beat["source"] = "t2v"
-                    beat.pop("still_as", None)
+                beat["source"] = "t2v"
+                beat.pop("still_as", None)
             else:
                 beat["source"] = "chain"
                 beat.pop("still_as", None)
@@ -2725,7 +2721,7 @@ def _usage() -> str:
         "  finish   HUD + cards + stitch over existing raw/*.mp4\n"
         "  --preset speed|balance|quality（迷ったら balance）\n"
         "  --camera side2d|action3d（迷ったら side2d）\n"
-        "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
+        "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
     )
 
 
