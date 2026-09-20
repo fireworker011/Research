@@ -30,7 +30,7 @@
       "name_ja": "警備 青木",
       "name_en": "Aoki",
       "age": 44,
-      "lock": "Japanese man in his mid 40s, adult face, short black hair, navy security vest over a white shirt, dark trousers, black office shoes, a blank badge on the vest, a clipboard in one hand, bored calm morning expression",
+      "lock": "Japanese man in his mid 40s, adult face, short black hair, navy security vest over a white shirt, sometimes a dark necktie, dark trousers, black office shoes, a blank badge on the vest, a clipboard in one hand, bored calm morning expression",
       "voice": "low middle-aged male voice"
     },
     "kuroki": {
@@ -193,7 +193,7 @@
       "props": ["tote", "clipboard"],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light",
       "camera": "Third-person camera at Mio's left at shoulder height, a half-step closer on the tote swing, then holding as Aoki sits",
-      "action": "Mio rises from the squat and swings the beige canvas tote in a short arc into Aoki's left shoulder. The tote hits the shoulder square. Aoki's torso folds to his right, knees buckle, the clipboard slides onto the grey carpet, and he sits down hard unhurt, still breathing. Mio steps past him down the aisle without looking back",
+      "action": "Mio rises from the squat and swings the beige canvas tote in a short arc into Aoki's left shoulder and upper chest. The tote hits square. Aoki's torso folds to his right, knees buckle, the clipboard slides onto the grey carpet, and he sits down hard unhurt, still breathing. Mio steps past him down the aisle without looking back",
       "sfx": "Canvas thud, clipboard clack on carpet, HVAC hum",
       "music": "Bass holds; one taiko hit on the tote contact",
       "hud": {
@@ -331,8 +331,8 @@
       "face_visible": false,
       "props": ["mug", "tote"],
       "place": "The same open-plan office, a light oak desk row with beige partitions, morning window light, the whole shot stays this desk row",
-      "camera": "Third-person camera in the aisle at shoulder height, Mio's back and Nana at the nearest desk",
-      "action": "Mio walks the aisle toward Nana's desk; Nana sits with both hands on a white mug and looks up; both stay in this desk row",
+      "camera": "Third-person camera in the aisle at shoulder height, Nana seated at left, Mio walking the aisle toward the far desks",
+      "action": "Mio walks the aisle past Nana's desk row; Nana sits with both hands on a white mug and looks up; both stay in this desk row",
       "sfx": "Soft footsteps on carpet, a mug on wood, distant printer",
       "music": "Bass returns quietly",
       "hud": {
@@ -384,9 +384,9 @@
       "extra_loras": ["combat"],
       "trigger": "prfight2, prfin1",
       "props": ["tote", "mug"],
-      "place": "The same light oak desk row, Nana's chair, an empty neighboring desk to one side, morning window light",
-      "camera": "Third-person camera from Nana's rear three-quarter, tracking the mug as it slides onto the neighboring desk",
-      "action": "Mio walks past without stopping; the side of her beige tote touches Nana's white mug; the mug slides, a thin brown coffee arc follows, Nana's torso leans into the chair back, the chair rolls back, she stays seated unhurt with empty hands; the mug lands upright on the neighboring empty desk; Mio's gaze turns toward that desk",
+      "place": "The same light oak desk row, Nana seated at left, an empty neighboring desk beside her, Mio standing in the aisle, morning window light",
+      "camera": "Third-person side two-shot at desk height, Nana at left, Mio close in the aisle at right, holding then following the mug",
+      "action": "Mio steps past; the hanging beige tote swings into the white mug on Nana's desk. The mug slides onto the empty neighboring desk between them, a thin brown coffee arc follows. Nana's torso leans into the chair back, the chair rolls, she stays seated unhurt. Mio's gaze turns toward the neighboring desk",
       "sfx": "Ceramic slide, a small splash, chair casters, HVAC",
       "music": "A short synth stab on the mug contact, then the bass",
       "hud": {
