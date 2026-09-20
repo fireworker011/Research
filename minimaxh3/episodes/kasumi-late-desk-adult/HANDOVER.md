@@ -80,7 +80,8 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 - `*-adult` の省略は stock に落ちない（check が落とす）
 - 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う。HuggingFace からは取らない。途中切れの別ファイル `.part` は無視。stock には落とさない
 - inbox の `*fl2va*` は 10Eros を飛ばす
-- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。DT-sQKV は使わない
+- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry / Combat も積まない（A100 40GB で LoRA パッチが OOM）。DT-sQKV は使わない
+- Drive は symlink できない。`diffusion_models` のファイルをそのまま読む
 
 ## 次の一手
 

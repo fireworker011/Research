@@ -196,7 +196,7 @@ def comfy_up(port: int = PORT) -> bool:
         return False
 
 
-def start_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
+def start_comfy(comfy_dir: Path, *, port: int = PORT, vram: str = "highvram") -> None:
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     if comfy_up(port):
         print("ComfyUI already up")
@@ -204,11 +204,12 @@ def start_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
     log = Path("/content/comfyui.log")
     log.parent.mkdir(parents=True, exist_ok=True)
     log_f = open(log, "w", buffering=1)
+    vram_flag = f"--{vram}" if vram in ("highvram", "normalvram", "lowvram", "novram", "cpu") else "--highvram"
     cmd = [
         sys.executable, "main.py",
         "--listen", "127.0.0.1",
         "--port", str(port),
-        "--highvram",
+        vram_flag,
         "--disable-auto-launch",
         "--enable-cors-header",
     ]

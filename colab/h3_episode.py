@@ -1563,11 +1563,13 @@ def apply_extra_loras(
     preset: dict[str, Any],
     beat: dict[str, Any],
     loras_dir: Path | str | None,
+    unet: str = "",
 ) -> dict[str, Any]:
     """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
 
     When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
     Turbo fallback keeps the preset 4-step euler+simple and ignores beat.steps.
+    TURBO-hybrid UNet cannot take LoRA patches on A100 40GB (requantize OOM).
     """
     extra = extra_lora_entries(beat)
     out = dict(preset)
@@ -1577,6 +1579,7 @@ def apply_extra_loras(
     notes = list(preset.get("notes") or [])
     names = " ".join(str(s[0]).lower() for s in stack)
     turbo = "fl2v_turbo" in names
+    hybrid = is_turbo_hybrid_unet(unet)
     combat_on = False
     combat_requested = any(key == "combat" for key, _s in extra)
     for key, strength in extra:
@@ -1587,8 +1590,8 @@ def apply_extra_loras(
         if key == "cinema":
             notes.append("cinematic LoRA skipped (heavy; not a speed/quality preset)")
             continue
-        if key == "combat" and turbo:
-            notes.append("combat LoRA skipped (never with LightX2V turbo)")
+        if key == "combat" and (turbo or hybrid):
+            notes.append("combat LoRA skipped (never with LightX2V turbo or TURBO-hybrid UNet)")
             continue
         present = loras_dir is None or (Path(loras_dir) / fname).is_file()
         if not present:
@@ -1668,14 +1671,8 @@ def resolve_unet(
     if spec["erotic"]:
         min_bytes = int(spec.get("min_bytes") or 1_000_000)
         if models_root:
-            private = erotic_checkpoint_path(models_root, spec)
-            if _checkpoint_ready(private, min_bytes):
-                return str(spec["file"])
             found = locate_erotic_checkpoint(models_root, spec)
             if found is not None:
-                adopted = _adopt_erotic_checkpoint(found, private, min_bytes)
-                if _checkpoint_ready(adopted, min_bytes):
-                    return str(spec["file"])
                 return found.name
         exact = Path(diff_dir) / str(spec["file"])
         if exact.is_file() and is_erotic_unet_name(exact.name) and exact.stat().st_size >= min_bytes:
@@ -1699,16 +1696,14 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     dest = erotic_checkpoint_path(models_root, spec)
     min_bytes = int(spec.get("min_bytes") or 1_000_000)
     expected = int(spec.get("expected_bytes") or 0)
+    found = locate_erotic_checkpoint(models_root, spec)
+    if found is not None:
+        print("reuse Drive Eros Max", found, found.stat().st_size, "no HuggingFace fetch")
+        notes.append(f"reused Drive copy {found}")
+        return notes
     if _checkpoint_ready(dest, min_bytes):
         notes.append(f"checkpoint ready {spec['file']}")
         return notes
-    found = locate_erotic_checkpoint(models_root, spec)
-    if found is not None:
-        adopted = _adopt_erotic_checkpoint(found, dest, min_bytes)
-        if _checkpoint_ready(adopted, min_bytes) or _checkpoint_ready(dest, min_bytes):
-            print("reuse Drive Eros Max", found, found.stat().st_size, "no HuggingFace fetch")
-            notes.append(f"reused Drive copy {found}")
-            return notes
     url = str(spec.get("url") or "")
     if not url:
         raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
@@ -1730,51 +1725,44 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
 
 
 def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
-    """Expose the erotic UNet to Comfy via a symlink in diffusion_models. Stock globs still skip it."""
+    """Point Comfy at the erotic UNet. Drive FUSE cannot symlink (Errno 95); use the file in place."""
     spec = CHECKPOINTS[episode_checkpoint(ep)]
-    src = erotic_checkpoint_path(models_root, spec)
-    min_bytes = int(spec.get("min_bytes") or 1_000_000)
-    if spec["erotic"] and not _checkpoint_ready(src, min_bytes):
-        found = locate_erotic_checkpoint(models_root, spec)
-        if found is not None:
-            _adopt_erotic_checkpoint(found, src, min_bytes)
-    unet = resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
     if not spec["erotic"]:
-        return unet
-    dest = Path(models_root) / "diffusion_models" / str(spec["file"])
+        return resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
+    min_bytes = int(spec.get("min_bytes") or 1_000_000)
+    found = locate_erotic_checkpoint(models_root, spec)
+    if found is None:
+        raise EpisodeError(f"erotic checkpoint missing: {spec['file']} (stock fallback is forbidden)")
+    dest = Path(models_root) / "diffusion_models" / found.name
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if not _checkpoint_ready(src, min_bytes):
-        found = locate_erotic_checkpoint(models_root, spec)
-        if found is None:
-            raise EpisodeError(f"erotic checkpoint missing: {spec['file']} (stock fallback is forbidden)")
-        src = found
     try:
-        src_r = src.resolve()
+        found_r = found.resolve()
     except OSError:
-        src_r = src
-    if dest.is_symlink():
+        found_r = found
+    if dest.exists():
         try:
-            if dest.resolve() == src_r:
-                return unet
+            same = dest.resolve() == found_r
         except OSError:
-            pass
-        dest.unlink()
-    elif dest.exists():
-        size = dest.stat().st_size
-        if size >= min_bytes and is_erotic_unet_name(dest.name):
-            return unet
-        if size < min_bytes and is_erotic_unet_name(dest.name):
+            same = dest == found
+        if same and _checkpoint_ready(dest, min_bytes):
+            return found.name
+        if _checkpoint_ready(dest, min_bytes) and is_erotic_unet_name(dest.name):
+            return dest.name
+        if dest.stat().st_size < min_bytes and is_erotic_unet_name(dest.name):
             dest.unlink()
-        else:
+        elif dest.exists() and not is_erotic_unet_name(dest.name):
             raise EpisodeError(f"refusing to replace {dest.name} with the erotic checkpoint")
+    if dest.exists() or dest.is_symlink():
+        return found.name
     try:
-        dest.symlink_to(src_r)
+        dest.symlink_to(found_r)
     except OSError as e:
-        if src_r.parent.resolve() == dest.parent.resolve() and is_erotic_unet_name(src_r.name):
-            print("eros diffusion link skipped; using", src_r.name, e)
-            return src_r.name
-        raise EpisodeError(f"cannot expose {src_r} as {dest.name}") from e
-    return unet
+        if dest.parent.resolve() == found_r.parent.resolve() and is_erotic_unet_name(found_r.name):
+            print("Drive cannot symlink; using", found_r.name)
+            return found_r.name
+        print("eros symlink skipped", dest, "->", found_r, e)
+        return found.name
+    return found.name
 
 
 def beat_prompts(
@@ -2023,14 +2011,16 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
 
 
 def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]:
-    """TURBO-hybrid UNet already has turbo baked in; do not also load LightX2V turbo LoRA."""
+    """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB."""
     if not is_turbo_hybrid_unet(unet):
         return preset
+    skip_needles = ("fl2v_turbo", "turbo_v4")
     kept: list[tuple[str, float]] = []
-    dropped = False
+    dropped: list[str] = []
     for fname, strength in preset.get("stack") or []:
-        if "fl2v_turbo" in str(fname).lower():
-            dropped = True
+        low = str(fname).lower()
+        if any(needle in low for needle in skip_needles):
+            dropped.append(str(fname))
             continue
         kept.append((fname, float(strength)))
     if not dropped:
@@ -2038,7 +2028,7 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
     out = dict(preset)
     out["stack"] = kept
     notes = list(preset.get("notes") or [])
-    notes.append("LightX2V turbo LoRA skipped (UNet already TURBO-hybrid)")
+    notes.append("LoRA skipped on TURBO-hybrid UNet (VRAM; turbo is baked in): " + ", ".join(dropped))
     out["notes"] = notes
     return out
 
@@ -2541,7 +2531,9 @@ def run_episode(
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
-        start_comfy(comfy, port=port)
+        vram = "normalvram" if episode_lane(ep) == "erotic" else "highvram"
+        start_comfy(comfy, port=port, vram=vram)
+        print("comfy vram", vram)
         loras_dir = models / "loras"
         for note in ensure_episode_loras(ep, loras_dir):
             print("lora:", note)
@@ -2598,7 +2590,7 @@ def run_episode(
         (root / "logs" / f"{bid}.prompt.txt").write_text(prompt, encoding="utf-8")
         status["beats"][bid] = {"state": "running", "source": source, "started": _now()}
         save_status(root, status)
-        beat_preset = apply_extra_loras(preset, beat, loras_dir)
+        beat_preset = apply_extra_loras(preset, beat, loras_dir, unet=unet if not dry_run else str(CHECKPOINTS.get(episode_checkpoint(ep), {}).get("file") or ""))
         for note in beat_preset.get("notes") or []:
             if note not in (preset.get("notes") or []):
                 print("preset:", note)

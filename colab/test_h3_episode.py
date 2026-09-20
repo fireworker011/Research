@@ -526,7 +526,8 @@ def test_resolve_preset_fallbacks(tmp_path):
     assert speed_on_hybrid["stack"] == []
     assert any("TURBO-hybrid" in n for n in speed_on_hybrid["notes"])
     balance_on_hybrid = apply_unet_preset_rules(balance, EROS_MAX_UNET)
-    assert balance_on_hybrid["stack"] == balance["stack"]
+    assert balance_on_hybrid["stack"] == []
+    assert balance_on_hybrid["steps"] == 8 and balance_on_hybrid["sampler"] == "euler"
 
 
 def test_kasumi_late_desk_validates_and_stills_are_clean():
@@ -905,8 +906,7 @@ def test_eros_reuses_drive_copy_without_huggingface(tmp_path, monkeypatch):
     payload = _sparse_eros(tmp_path / "diffusion_models" / EROS_MAX_UNET)
     notes = ensure_episode_checkpoint(adult, tmp_path)
     assert any("reused Drive copy" in n for n in notes)
-    link = tmp_path / "erotic" / EROS_MAX_UNET
-    assert link.is_symlink() and link.resolve() == payload.resolve()
+    assert not (tmp_path / "erotic" / EROS_MAX_UNET).is_symlink()
     assert stage_erotic_unet(adult, tmp_path) == EROS_MAX_UNET
     hit = locate_erotic_checkpoint(tmp_path)
     assert hit is not None and hit.resolve() == payload.resolve()
@@ -918,9 +918,8 @@ def test_eros_reuses_alias_filename(tmp_path, monkeypatch):
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
     notes = ensure_episode_checkpoint(adult, tmp_path)
     assert any("reused Drive copy" in n for n in notes)
-    link = tmp_path / "erotic" / EROS_MAX_UNET
-    assert link.is_symlink() and link.resolve() == payload.resolve()
-    assert resolve_unet(adult, tmp_path / "diffusion_models", models_root=tmp_path) == EROS_MAX_UNET
+    assert resolve_unet(adult, tmp_path / "diffusion_models", models_root=tmp_path) == payload.name
+    assert stage_erotic_unet(adult, tmp_path) == payload.name
     assert pick_stock_fl2va(tmp_path / "diffusion_models") != payload.name
 
 
@@ -933,7 +932,7 @@ def test_eros_reuses_drive_root_and_hf_cache(tmp_path, monkeypatch):
     payload = _sparse_eros(drive / "10Eros-Max.safetensors")
     notes = ensure_episode_checkpoint(adult, models)
     assert any("reused Drive copy" in n for n in notes)
-    assert (models / "erotic" / EROS_MAX_UNET).resolve() == payload.resolve()
+    assert stage_erotic_unet(adult, models) == payload.name
 
     other = tmp_path / "other-comfy"
     other_models = other / "models"
@@ -951,7 +950,7 @@ def test_eros_reuses_drive_root_and_hf_cache(tmp_path, monkeypatch):
     )
     notes = ensure_episode_checkpoint(adult, other_models)
     assert any("reused Drive copy" in n for n in notes)
-    assert (other_models / "erotic" / EROS_MAX_UNET).resolve() == cached.resolve()
+    assert stage_erotic_unet(adult, other_models) == cached.name
 
 
 def test_eros_reuses_h3_eros_max_env(tmp_path, monkeypatch):
@@ -961,7 +960,7 @@ def test_eros_reuses_h3_eros_max_env(tmp_path, monkeypatch):
     monkeypatch.setenv("H3_EROS_MAX", str(payload))
     notes = ensure_episode_checkpoint(adult, tmp_path / "weights")
     assert any("reused Drive copy" in n for n in notes)
-    assert (tmp_path / "weights" / "erotic" / EROS_MAX_UNET).resolve() == payload.resolve()
+    assert stage_erotic_unet(adult, tmp_path / "weights") == payload.name
 
 
 def test_eros_incomplete_canonical_uses_complete_elsewhere(tmp_path, monkeypatch):
@@ -974,8 +973,9 @@ def test_eros_incomplete_canonical_uses_complete_elsewhere(tmp_path, monkeypatch
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
     notes = ensure_episode_checkpoint(adult, tmp_path)
     assert any("reused Drive copy" in n for n in notes)
-    link = tmp_path / "erotic" / EROS_MAX_UNET
-    assert link.is_symlink() and link.resolve() == payload.resolve()
+    assert stage_erotic_unet(adult, tmp_path) == payload.name
+    dest = tmp_path / "erotic" / EROS_MAX_UNET
+    assert dest.is_file() and not dest.is_symlink() and dest.stat().st_size == 5_556_846_100
 
 
 def test_eros_tiny_alias_still_fetches(tmp_path, monkeypatch):
@@ -1060,6 +1060,9 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     assert skipped["stack"] == turbo["stack"]
     assert skipped.get("steps") == 4
     assert any("never with LightX2V turbo" in n for n in skipped["notes"])
+    hybrid = apply_extra_loras(daily, beat, loras, unet=EROS_MAX_UNET)
+    assert hybrid["stack"] == daily["stack"]
+    assert any("TURBO-hybrid" in n for n in hybrid["notes"])
     ep = load_episode(KASUMI_DIR / "episode.json")
     fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
     prompt = build_beat_prompt(ep, fight, trigger=merge_trigger("DY", fight))
@@ -1137,6 +1140,25 @@ def test_graph_chains_loras_and_passes_studio_assert():
     assert not any(n.get("class_type") == "LoadImage" for n in t2v.values())
     with pytest.raises(EpisodeError):
         build_episode_graph(source="still", first_image=None, prompt=prompt, unet="u", preset=preset, width=1024, height=576, duration_s=10, seed=1, filename_prefix="x")
+    bare = apply_unet_preset_rules(resolve_preset("balance", None), EROS_MAX_UNET)
+    assert bare["stack"] == []
+    t2v_bare = build_episode_graph(
+        source="t2v",
+        first_image=None,
+        prompt=build_beat_prompt(ep, dict(ep["beats"][0], source="t2v")),
+        unet=EROS_MAX_UNET,
+        preset=bare,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/bare",
+    )
+    assert "2" not in t2v_bare
+    assert t2v_bare["1"]["inputs"]["unet_name"] == EROS_MAX_UNET
+    assert t2v_bare["22"]["inputs"]["sampler_name"] == "euler"
+    assert t2v_bare["23"]["inputs"]["steps"] == 8
+    assert t2v_bare["23"]["inputs"]["scheduler"] == "simple"
 
 
 def test_render_beat_keeps_canvas_and_shortens_on_oom(tmp_path):
