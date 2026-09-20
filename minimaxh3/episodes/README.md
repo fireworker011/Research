@@ -73,7 +73,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## episode.json の決まり
 
-- 英語で書く。日本語は台詞の中身だけ（`speech[].line`、かな限定、`「」` は自動で付く）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
+- 英語で書く。日本語は声に出す中身だけ（`speech[].line` と `voices[].line`、かな限定、`「」` は自動で付く）。英語・ハングル・キリルは引用の中でも禁止（checkpoint が英語を足すのを止める）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
 - `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（本ごと独立。プロンプトで直せる）／`chain`＝前の最終フレームから続ける（2本目以降は前クリップ最終フレームから I2V）／`landing`＝用意した最終フレームへ着く（stills の jpg を Picture 2 にする。窓はクリップ尻へずらす）
@@ -85,7 +85,9 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - `props` はビートごとに `beat.props: ["tenugui"]` で指定する。省略すると本文に名前が出た小道具だけ付く。**全小道具を全ビートに入れる経路は無い**（初回版で軽トラが全ショットに出た原因）
 - `trim: {"start": 0, "seconds": 4.0}` で 10秒素材のうち使う窓を決める（1.5秒以上、`clip_seconds` 内）。生成は 10秒のまま、切るのは合成時。`chain` は前の本の窓の終わりから続く
 - `reuse: "bandai-district/01-exit-noren"` で兄弟エピソードの `raw/` を使う。元が Drive に無ければ `still` から描く（無ければ止まる）。`check` が on disk / missing → render を表示
-- 台詞は `face_visible: true` の本だけ、1本2行まで。`speech[].text` は画面の字幕（漢字可、30字まで。省略時はかなの `line`）、`at` / `until` 秒で出す時間を指定できる（省略時は窓を等分）。`hud.subtitles: false` で字幕を止める
+- 台詞は `face_visible: true` の本だけ、1本2行まで（口が寄っているとき）。`speech[].text` は画面の字幕（漢字可、30字まで。省略時はかなの `line`）、`at` / `until` 秒で出す時間を指定できる（省略時は窓を等分）。`hud.subtitles: false` で字幕を止める
+- 喘ぎ・息は `voices[]`（引きの全身でも可。字幕は出さない）。`*-adult` / `lane: erotic` の GPU ビートは `speech` か `voices` のカナが必須。空だと H3 が英語を足す
+- `render.voice`: `japanese`（エロレーンの既定。引用はかなだけ）／`off`（検査を外す。使わない）
 - `hud.visible: false` はカットシーン（バー・ミニマップ・ミッション行を消して字幕だけ。`complete` のフラッシュは出る）。`hud.mission_keyword` はミッション行の中の目的語で、アクセント色になる
 - `cards.fail: {"text": "ミッション失敗", "reason": "…30字まで", "seconds": 2.8, "image": "last-frame"}` を入れると最後のビートの切った位置で止めて失敗カードを出す（`image` はパスでも可）。最後のビートに `complete: true` は置けない。`cards.title: false` でコールドオープン。`title_seconds` / `end_seconds` は 1.5〜6
 - `cast[].age` は成人（20以上）。子供は画面にも文にも入れない（自動で「Adults only in frame」を付け、未成年語は検査で落ちる）

@@ -10,7 +10,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 
 ## やること
 
-1. `cd minimaxh3 && python h3_episode.py check episodes/<slug>` が通るまで `episode.json` を直す（英語本文、台詞はかなだけ、`homage.never`、免責）。`check` は各ビートの窓・小道具・予定尺と、`reuse` 元が Drive/ローカルにあるかを出す
+1. `cd minimaxh3 && python h3_episode.py check episodes/<slug>` が通るまで `episode.json` を直す（英語本文、台詞・喘ぎはかなだけ、`homage.never`、免責）。`check` は各ビートの窓・小道具・予定尺と、`reuse` 元が Drive/ローカルにあるかを出す
 2. GPU なしの確認は `python h3_episode.py stills episodes/<slug> --out /tmp/ep/<slug>`（スチール予告）か `dry-run`。`--out` は slug 名で終わらせる（`reuse` は親フォルダの兄弟 `episodes/<元slug>/raw/` を見る）
 3. 本番は Colab ノート `minimax_h3_episode_bot.ipynb` の Run all、または Grokbot に `minimaxh3/GROKBOT.md` のエピソード命令をそのまま貼る（`python minimaxh3/grokbot/run_episode.py --episode <slug>`）。1ランタイムで全ビート → HUD → 連結 → 停止。回すだけのエージェントは skill `h3-episode-grokbot`
 4. 途中で落ちたら `raw/<beat>.mp4` を残したまま再実行（続きから）。作り直しは `--fresh`
@@ -35,7 +35,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 - HUD を焼いた画像を先頭フレームにする（HUD は生成後に載せる）
 - H3 に日本語 UI・字幕・ミニマップ・透かしを描かせる文
 - 参照元の物・人名・小道具、実在ゲーム／格ゲーの名前、Pollo / Seedance をプロンプトに書く
-- 子供、流血、怪我。台詞に漢字。顔が見えない本に台詞
+- 子供、流血、怪我。台詞・喘ぎに漢字や英字。顔が見えない本に `speech`（喘ぎは `voices` で可）
 - Imagine 2.0 を呼ぶ。`XAI_API_KEY` を要求する
 - Larry と LightX2V を同時に積む。OOM でキャンバスを縮める（秒数だけ落とす）
 - 1280×720 をそのまま H3 に渡す（1024×576 に正規化される。手で変えない）

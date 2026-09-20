@@ -198,7 +198,10 @@ SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
 REUSE_RE = re.compile(r"^([a-z0-9][a-z0-9-]{1,40})/([0-9]{2}-[a-z0-9-]{1,32})$")
 KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
+KANA_RE = re.compile(r"[\u3040-\u30ff\uff66-\uff9f]")
 CJK_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff\uff66-\uff9f]")
+# H3 invents English / Hangul / Cyrillic when quotes are empty or mixed. Spoken audio is kana in 「」 only.
+NON_JP_SPEECH_RE = re.compile(r"[A-Za-z\u0400-\u04FF\uac00-\ud7af\u3131-\u318e]")
 QUOTE_RE = re.compile(r"「[^」]*」")
 NEGATION_RE = re.compile(r"\b(?:no|never|without|not|nobody|none)\b[^.;\n]*", re.I)
 IP_TOKENS_RE = re.compile(
@@ -291,6 +294,16 @@ def episode_tone(ep: dict[str, Any]) -> str:
 def episode_lane(ep: dict[str, Any]) -> str:
     raw = str((ep.get("render") or {}).get("lane") or "stock").strip().lower()
     return raw if raw in LANES else "stock"
+
+
+def episode_voice(ep: dict[str, Any]) -> str:
+    """Spoken audio lock. erotic lane defaults to japanese: H3 otherwise invents English."""
+    raw = str((ep.get("render") or {}).get("voice") or "").strip().lower()
+    if raw == "off":
+        return ""
+    if raw == "japanese" or episode_lane(ep) == "erotic":
+        return "japanese"
+    return ""
 
 
 def episode_checkpoint(ep: dict[str, Any]) -> str:
@@ -612,6 +625,35 @@ def episode_assets(ep: dict[str, Any]) -> list[str]:
     return out
 
 
+def _kana_voice_errors(line: str, where: str, field: str) -> list[str]:
+    """Spoken audio is kana inside 「」. Latin/Hangul/Cyrillic in the quote becomes English (or other) TTS."""
+    errs: list[str] = []
+    if "「" in line or "」" in line:
+        errs.append(f"{where}: {field} must not contain 「」 (added automatically)")
+    if KANJI_RE.search(line):
+        errs.append(f"{where}: {field} must be kana only (H3 misreads kanji): {line}")
+    if NON_JP_SPEECH_RE.search(line):
+        errs.append(f"{where}: {field} Japanese kana only (no English/other letters): {line}")
+    if not KANA_RE.search(line):
+        errs.append(f"{where}: {field} must be Japanese kana")
+    if len(line) > 26:
+        errs.append(f"{where}: {field} too long for one breath (<= 26 chars)")
+    return errs
+
+
+def beat_vocals(beat: dict[str, Any]) -> list[dict[str, Any]]:
+    """Lip-sync speech plus pulled-back moans/breaths. Both become 「かな」 on the audio track."""
+    out: list[dict[str, Any]] = []
+    for key in ("speech", "voices"):
+        raw = beat.get(key) or []
+        if not isinstance(raw, list):
+            continue
+        for item in raw:
+            if isinstance(item, dict):
+                out.append(item)
+    return out
+
+
 def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str, *, window_s: float) -> list[str]:
     errs: list[str] = []
     speech = beat.get("speech") or []
@@ -633,16 +675,9 @@ def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str, *, wi
             errs.append(f"{where}: speaker {who} is not in this beat's cast")
         if who not in cast:
             errs.append(f"{where}: speaker {who} is not in cast")
-        if "「" in line or "」" in line:
-            errs.append(f"{where}: speech[{i}] must not contain 「」 (added automatically)")
-        if KANJI_RE.search(line):
-            errs.append(f"{where}: speech[{i}] must be kana only (H3 misreads kanji): {line}")
-        if len(line) > 26:
-            errs.append(f"{where}: speech[{i}] too long for one breath (<= 26 chars)")
-        if not CJK_RE.search(line):
-            errs.append(f"{where}: speech[{i}] must be Japanese")
+        errs.extend(_kana_voice_errors(line, where, f"speech[{i}]"))
         text = str(item.get("text") or "")
-        if text and (len(text) > 30 or not CJK_RE.search(text)):
+        if text and (len(text) > 30 or not CJK_RE.search(text) or NON_JP_SPEECH_RE.search(text)):
             errs.append(f"{where}: speech[{i}].text is the subtitle: Japanese, <= 30 chars")
         try:
             at = float(item["at"]) if "at" in item else None
@@ -653,6 +688,32 @@ def _speech_errors(beat: dict[str, Any], cast: dict[str, Any], where: str, *, wi
                 errs.append(f"{where}: speech[{i}].until must be after at and inside the beat window")
         except (TypeError, ValueError):
             errs.append(f"{where}: speech[{i}].at/until must be seconds")
+    return errs
+
+
+def _voices_errors(beat: dict[str, Any], cast: dict[str, Any], where: str) -> list[str]:
+    """Moans/breaths for pulled-back cameras. No face close-up. Still Japanese kana only."""
+    raw = beat.get("voices", [])
+    if raw in (None, []):
+        return []
+    if not isinstance(raw, list):
+        return [f"{where}: voices must be a list"]
+    errs: list[str] = []
+    if is_ui_beat(beat):
+        errs.append(f"{where}: a ui beat is a frozen frame; it cannot voice")
+    if len(raw) > 4:
+        errs.append(f"{where}: at most 4 voiced breaths per beat")
+    for i, item in enumerate(raw):
+        if not isinstance(item, dict) or not item.get("who") or not item.get("line"):
+            errs.append(f"{where}: voices[{i}] needs who + line")
+            continue
+        who = str(item["who"])
+        line = str(item["line"]).strip()
+        if who not in (beat.get("cast") or []):
+            errs.append(f"{where}: voicer {who} is not in this beat's cast")
+        if who not in cast:
+            errs.append(f"{where}: voicer {who} is not in cast")
+        errs.extend(_kana_voice_errors(line, where, f"voices[{i}]"))
     return errs
 
 
@@ -911,6 +972,13 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         if beat.get("face_visible"):
             face_beats += 1
         errs.extend(_speech_errors(beat, cast, where, window_s=window_s))
+        errs.extend(_voices_errors(beat, cast, where))
+        if episode_voice(ep) == "japanese" and source != "ui":
+            if not any(str(v.get("line") or "").strip() for v in beat_vocals(beat)):
+                errs.append(
+                    f"{where}: japanese voice needs speech or voices in kana "
+                    "(H3 otherwise invents English or other languages)"
+                )
         hud = beat.get("hud") or {}
         mission = str(hud.get("mission") or "").strip()
         if not mission:
@@ -1019,19 +1087,30 @@ def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
 def _speech_visual(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
     parts: list[str] = []
-    for item in beat.get("speech") or []:
-        name = str((cast.get(item["who"]) or {}).get("name_en") or str(item["who"]).title())
-        parts.append(f"{name} speaks with clearly visible mouth movement: 「{item['line']}」.")
+    speech_who = {str(item.get("who") or "") for item in (beat.get("speech") or []) if isinstance(item, dict)}
+    for item in beat_vocals(beat):
+        who = str(item.get("who") or "")
+        line = str(item.get("line") or "").strip()
+        if not who or not line:
+            continue
+        name = str((cast.get(who) or {}).get("name_en") or who.title())
+        if who in speech_who:
+            parts.append(f"{name} speaks with clearly visible mouth movement: 「{line}」.")
+        else:
+            parts.append(f"{name} voices 「{line}」.")
     return " ".join(parts)
 
 
 def _speech_audio(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
     parts: list[str] = []
-    for item in beat.get("speech") or []:
-        c = cast.get(item["who"]) or {}
+    for item in beat_vocals(beat):
+        line = str(item.get("line") or "").strip()
+        if not line:
+            continue
+        c = cast.get(item.get("who")) or {}
         voice = str(c.get("voice") or "natural adult voice")
-        parts.append(f"「{item['line']}」 in a {voice}.")
+        parts.append(f"「{line}」 in a {voice}.")
     return " ".join(parts)
 
 
@@ -1145,6 +1224,10 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
         errs.append("missing [Shot 1]")
     if cjk_outside_quotes(p):
         errs.append("Japanese outside 「」 (H3 reads it aloud)")
+    for m in QUOTE_RE.finditer(p):
+        inner = m.group(0)[1:-1]
+        if NON_JP_SPEECH_RE.search(inner) or not KANA_RE.search(inner):
+            errs.append(f"quoted speech must be Japanese kana only: 「{inner}」")
     hits = forbidden_hits(p, never=never)
     if hits:
         errs.append(f"forbidden in prompt: {hits}")

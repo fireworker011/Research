@@ -41,7 +41,9 @@ from h3_episode import (  # noqa: E402
     beat_props,
     beat_source,
     beat_still_as,
+    beat_vocals,
     beat_window,
+    episode_voice,
     bootstrap_episode,
     build_beat_prompt,
     build_episode_graph,
@@ -379,8 +381,40 @@ def test_speech_rules():
     ep["beats"][2]["speech"] = [{"who": "aki", "line": "手ぬぐいです"}]  # kanji
     assert any("kana only" in e for e in validate_episode(ep))
     ep = bandai()
+    ep["beats"][2]["speech"] = [{"who": "aki", "line": "hello"}]
+    assert any("Japanese kana only" in e or "no English" in e for e in validate_episode(ep))
+    ep = bandai()
     ep["beats"][2]["speech"] = [{"who": "gen", "line": "おい"}]  # not in beat cast
     assert any("not in this beat's cast" in e for e in validate_episode(ep))
+    ep = bandai()
+    ep["beats"][0]["voices"] = [{"who": "aki", "line": "んっ"}]
+    assert validate_episode(ep, root=EP_DIR) == []
+    ep["beats"][0]["voices"] = [{"who": "aki", "line": "ahhh"}]
+    assert any("Japanese kana only" in e for e in validate_episode(ep))
+
+
+def test_adult_voices_japanese_only_in_quotes():
+    for root in (KASUMI_ADULT_DIR, HOSPITAL_DIR):
+        ep = load_episode(root / "episode.json")
+        assert episode_voice(ep) == "japanese"
+        assert validate_episode(ep, root=root) == []
+        gpu = [b for b in ep["beats"] if beat_source(b) != "ui"]
+        assert gpu and all(beat_vocals(b) for b in gpu)
+        for beat, prompt, errs in beat_prompts(ep):
+            assert errs == [], (ep["slug"], beat["id"], errs)
+            assert "overall_soundscape:" in prompt
+            assert "「" in prompt
+            for item in beat_vocals(beat):
+                line = item["line"]
+                assert f"「{line}」" in prompt
+            bad = dict(beat, voices=[{"who": beat["cast"][0], "line": "yes"}])
+            p = build_beat_prompt(ep, bad)
+            assert any("Japanese kana only" in e for e in validate_beat_prompt(p, source=beat_source(beat)))
+        silent = copy.deepcopy(ep)
+        for beat in silent["beats"]:
+            beat.pop("voices", None)
+            beat.pop("speech", None)
+        assert any("japanese voice needs" in e for e in validate_episode(silent, root=root))
 
 
 def test_minor_cast_rejected_and_disclaimer_required():
