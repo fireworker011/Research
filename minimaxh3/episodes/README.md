@@ -121,7 +121,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## 病棟出口（`hospital-exit-adult`）
 
-同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。Combat は 06 と 10。UNet erotic + eros-max。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
+同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
 
 ## 番台ディストリクト（2 本）
 

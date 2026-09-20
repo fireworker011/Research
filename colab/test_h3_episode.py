@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import json
 import os
 import shutil
@@ -595,6 +596,25 @@ def test_hospital_exit_adult_escape_while_joined():
         low = prompt.lower()
         assert "corpse" not in low and "zombie" not in low
         assert "slow-motion" not in low and "slow-mo" not in low
+
+
+def test_hospital_stills_are_not_kasumi_copies():
+    kasumi = {
+        hashlib.md5(p.read_bytes()).digest()
+        for p in (KASUMI_ADULT_DIR / "stills").glob("*.jpg")
+    }
+    assert kasumi
+    for p in (HOSPITAL_DIR / "stills").glob("*.jpg"):
+        digest = hashlib.md5(p.read_bytes()).digest()
+        assert digest not in kasumi, p.name
+    stills = {b.get("still") for b in load_episode(HOSPITAL_DIR / "episode.json")["beats"] if b.get("still")}
+    assert stills <= {
+        "stills/01-cover.jpg",
+        "stills/04-peek.jpg",
+        "stills/06-fight.jpg",
+        "stills/08-door.jpg",
+        "stills/10-lose.jpg",
+    }
 
 
 def test_stock_unet_never_auto_picks_eros_max(tmp_path):

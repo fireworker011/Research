@@ -47,7 +47,7 @@ inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5�
 | 作業 | `cursor/h3-kasumi-adult-0402` |
 | ベース | `cursor/h3-ol-late-desk-33d9` |
 | PR | https://github.com/fireworker011/Research/pull/142 draft |
-| HEAD | 霞東アダルトスチールを 1280×720 で差し替え。病棟の性着地はそれを流用。ZeroGPU 切れで倒れた口内と病棟ヌードは未再生成 |
+| HEAD | 病棟スチールから霞東執務室ヌードを外した。性着地は病棟廊下。ヌード着地は未作成 |
 | パック | `minimaxh3/episodes/kasumi-late-desk-adult/` |
 | ノート | `minimax_h3_episode_bot.ipynb` |
 

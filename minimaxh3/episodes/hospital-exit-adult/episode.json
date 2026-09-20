@@ -94,7 +94,7 @@
     "title": false,
     "end": true,
     "end_seconds": 3.0,
-    "end_image": "stills/12-exit.jpg",
+    "end_image": "stills/08-door.jpg",
     "end_title": "病棟出口",
     "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
     "end_lines": [
@@ -166,7 +166,7 @@
     {
       "id": "03-kiss",
       "source": "chain",
-      "still": "stills/03-kiss.jpg",
+      "still": "stills/01-cover.jpg",
       "still_as": "last",
       "trim": {"start": 5.0, "seconds": 5.0},
       "cast": ["aya", "miki"],
@@ -279,7 +279,7 @@
     {
       "id": "07-oral",
       "source": "chain",
-      "still": "stills/07-oral.jpg",
+      "still": "stills/06-fight.jpg",
       "still_as": "last",
       "trim": {"start": 5.0, "seconds": 5.0},
       "cast": ["aya", "rei"],
@@ -391,7 +391,7 @@
     {
       "id": "11-join",
       "source": "chain",
-      "still": "stills/12-exit.jpg",
+      "still": "stills/08-door.jpg",
       "still_as": "last",
       "trim": {"start": 5.0, "seconds": 5.0},
       "cast": ["aya", "kana"],
@@ -419,7 +419,7 @@
     {
       "id": "12-exit",
       "source": "still",
-      "still": "stills/12-exit.jpg",
+      "still": "stills/08-door.jpg",
       "still_as": "last",
       "trim": {"start": 5.2, "seconds": 4.8},
       "cast": ["aya", "kana"],
