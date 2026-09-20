@@ -52,7 +52,7 @@ COMFY_DIR_DEFAULT = "/content/ComfyUI"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
 # Stock FL2VA only. 10Eros_Max filenames contain "fl2va" and must never win a glob.
 STOCK_FL2VA_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
-EROTIC_UNET_NEEDLES = ("10eros", "eros_max", "eros-max")
+EROTIC_UNET_NEEDLES = ("10eros", "eros_max", "eros-max", "eros max", "erosmax")
 
 
 def is_erotic_unet_name(name: str) -> bool:

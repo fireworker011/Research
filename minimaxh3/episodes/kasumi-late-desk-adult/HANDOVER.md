@@ -73,12 +73,12 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 ## UNet
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
-- ファイル: `models/erotic/10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`（約 22.5GB。初回だけ fetch）
+- ファイル: Drive にある 10Eros / Eros Max（約22.5GB。別名・`models/erotic` 以外でも可）を `models/erotic/10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors` にリンク。無ければ HuggingFace
 - その上に `balance`（Larry 8step。シネマ LoRA は積まない）。`speed` / `quality` に切替可。霞東あさは 06 と 10 に Combat V2
 - GPU ビートは T2V。`render.camera_pack` 既定 `side2d`（横スク）。`action3d` は Colab `CAMERA` か `--camera`
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
-- 初回の 10Eros Max（約22.5GB）は Drive `models/erotic/` へ取る。途中で切れても `.part` を残す。Run all をもう一度（stock には落とさない）
+- 10Eros Max は Drive にあればそれを使う（HuggingFace からは取らない）。canonical は `models/erotic/`。途中で切れても `.part` を残す。Run all をもう一度（stock には落とさない）
 - inbox の `*fl2va*` は 10Eros を飛ばす
 - TURBO-hybrid / DT-sQKV は使わない
 

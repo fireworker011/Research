@@ -320,6 +320,257 @@ def erotic_checkpoint_path(models_root: Path | str, spec: dict[str, Any]) -> Pat
     return Path(models_root) / EROTIC_MODELS_SUBDIR / str(spec["file"])
 
 
+_WALK_SKIP_DIRS = frozenset(
+    {
+        "episodes",
+        "inbox",
+        "queued",
+        "running",
+        "done",
+        "failed",
+        "output",
+        "input",
+        "raw",
+        "stills",
+        "hud",
+        "final",
+        "logs",
+        "loras",
+        "vae",
+        "text_encoders",
+        "clip",
+        "clip_vision",
+        "__pycache__",
+        "node_modules",
+    }
+)
+_CACHE_WALK_DIRS = frozenset({"hub", "snapshots", "blobs", "refs", "fl2va", "models"})
+_WEIGHT_SKIP_SUFFIXES = (".tmp", ".crdownload", ".aria2", ".json", ".txt", ".md", ".lock", ".jpg", ".png", ".mp4")
+
+
+def _checkpoint_ready(path: Path, min_bytes: int) -> bool:
+    try:
+        return path.is_file() and path.stat().st_size >= min_bytes
+    except OSError:
+        return False
+
+
+def is_erotic_weight_path(path: Path | str) -> bool:
+    """True for Eros Max files, including HuggingFace hub paths that only bake the id into the folder."""
+    p = Path(path)
+    name = p.name
+    if name.endswith(".part"):
+        name = name[: -len(".part")]
+    hay = p.as_posix().replace("\\", "/")
+    if hay.endswith(".part"):
+        hay = hay[: -len(".part")]
+    return is_erotic_unet_name(name) or is_erotic_unet_name(hay)
+
+
+def _erotic_search_plan(models_root: Path) -> list[tuple[Path, int, bool]]:
+    """(folder, extra_depth, cache_filter). Unit tests pass a tmp root not named models, so Drive/HF are skipped."""
+    plan: list[tuple[Path, int, bool]] = [
+        (models_root / EROTIC_MODELS_SUBDIR, 1, False),
+        (models_root / "diffusion_models", 1, False),
+        (models_root / "checkpoints", 1, False),
+        (models_root / "unet", 1, False),
+        (models_root, 1, False),
+    ]
+    if models_root.name != "models":
+        return plan
+    drive = models_root.parent
+    plan.extend(
+        [
+            (drive, 1, False),
+            (drive / "cache" / "hf", 6, True),
+            (drive / "cache" / "huggingface", 6, True),
+            (drive / "cache" / "hf" / "hub", 6, True),
+        ]
+    )
+    posix = models_root.as_posix().replace("\\", "/").lower()
+    if "/drive/" in posix or posix.startswith("/content/drive/"):
+        md = Path("/content/drive/MyDrive")
+        plan.extend(
+            [
+                (md, 0, False),
+                (md / "Downloads", 2, False),
+                (md / "models", 2, False),
+                (md / "ComfyUI" / "models", 3, False),
+            ]
+        )
+        try:
+            if md.is_dir():
+                for path in md.iterdir():
+                    if not path.is_dir() or path.is_symlink() or path.name.startswith("."):
+                        continue
+                    if is_erotic_unet_name(path.name) or "eros" in path.name.lower():
+                        plan.append((path, 4, False))
+        except OSError:
+            pass
+    comfy = Path(os.environ.get("H3_COMFY_DIR") or COMFY_DIR_DEFAULT)
+    plan.extend(
+        [
+            (comfy / "models" / "diffusion_models", 1, False),
+            (comfy / "models" / "diffusion_models.local_bak", 1, False),
+            (comfy / "models", 2, False),
+        ]
+    )
+    return plan
+
+
+def _walk_weight_files(
+    folder: Path,
+    *,
+    depth: int,
+    cache_filter: bool = False,
+    inside_eros: bool = False,
+) -> list[Path]:
+    out: list[Path] = []
+    if depth < 0:
+        return out
+    try:
+        if not folder.is_dir() or folder.is_symlink():
+            return out
+        entries = list(folder.iterdir())
+    except OSError:
+        return out
+    for path in entries:
+        name = path.name
+        if name.startswith("."):
+            continue
+        try:
+            if path.is_dir():
+                if path.is_symlink() or depth <= 0:
+                    continue
+                low = name.lower()
+                if low in _WALK_SKIP_DIRS:
+                    continue
+                eros_dir = is_erotic_unet_name(name) or "eros" in low
+                if cache_filter and not inside_eros and low not in _CACHE_WALK_DIRS and not eros_dir:
+                    continue
+                out.extend(
+                    _walk_weight_files(
+                        path,
+                        depth=depth - 1,
+                        cache_filter=cache_filter,
+                        inside_eros=inside_eros or eros_dir,
+                    )
+                )
+            elif path.is_file():
+                out.append(path)
+        except OSError:
+            continue
+    return out
+
+
+def _best_erotic_weight(paths: list[Path], want: str, spec: dict[str, Any]) -> Path:
+    expected = int(spec.get("expected_bytes") or 0)
+    uniq: list[Path] = []
+    seen: set[Path] = set()
+    for path in paths:
+        try:
+            key = path.resolve()
+        except OSError:
+            key = path
+        if key in seen:
+            continue
+        seen.add(key)
+        uniq.append(path)
+
+    def rank(path: Path) -> tuple[int, int, int]:
+        name = path.name[: -len(".part")] if path.name.endswith(".part") else path.name
+        exact = 0 if name == want else 1
+        try:
+            size = path.stat().st_size
+        except OSError:
+            size = 0
+        delta = abs(size - expected) if expected else 0
+        return (exact, delta, -size)
+
+    return sorted(uniq, key=rank)[0]
+
+
+def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | None = None) -> Path | None:
+    """Find a ready Eros Max on Drive / HF cache / Comfy. Incomplete `.part` under 20GB is ignored."""
+    spec = spec or CHECKPOINTS["eros-max"]
+    min_bytes = int(spec.get("min_bytes") or 20_000_000_000)
+    want = str(spec.get("file") or EROS_MAX_UNET)
+    candidates: list[Path] = []
+    explicit = (os.environ.get("H3_EROS_MAX") or "").strip()
+    if explicit:
+        extra = Path(explicit)
+        if extra.is_file():
+            candidates.append(extra)
+        elif extra.is_dir():
+            candidates.extend(_walk_weight_files(extra, depth=4, cache_filter=False))
+    for folder, depth, cache_filter in _erotic_search_plan(Path(models_root)):
+        exact = folder / want
+        if exact.is_file() or exact.is_symlink():
+            candidates.append(exact)
+        part = exact.with_name(exact.name + ".part")
+        if part.is_file():
+            candidates.append(part)
+        candidates.extend(_walk_weight_files(folder, depth=depth, cache_filter=cache_filter))
+    ready: list[Path] = []
+    parts: list[Path] = []
+    for path in candidates:
+        name = path.name
+        low = name.lower()
+        if any(low.endswith(suf) for suf in _WEIGHT_SKIP_SUFFIXES):
+            continue
+        if not is_erotic_weight_path(path) and name != want and name != want + ".part":
+            continue
+        if not _checkpoint_ready(path, min_bytes):
+            continue
+        if name.endswith(".part"):
+            parts.append(path)
+        else:
+            ready.append(path)
+    if ready:
+        return _best_erotic_weight(ready, want, spec)
+    if parts:
+        return _best_erotic_weight(parts, want, spec)
+    return None
+
+
+def _adopt_erotic_checkpoint(src: Path, dest: Path, min_bytes: int) -> Path:
+    """Point models/erotic/<canonical> at a Drive copy. Never copy 22GB."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        src_r = src.resolve()
+    except OSError:
+        src_r = src
+    if dest.exists() or dest.is_symlink():
+        try:
+            if dest.resolve() == src_r:
+                return dest
+        except OSError:
+            pass
+        dest_size = 0
+        try:
+            dest_size = dest.stat().st_size if dest.is_file() else 0
+        except OSError:
+            dest_size = 0
+        if dest.is_file() and not dest.is_symlink() and dest_size >= min_bytes:
+            return dest
+        if dest.is_symlink() or dest.is_file():
+            dest.unlink()
+    canonical_part = dest.with_name(dest.name + ".part")
+    try:
+        same_part = src_r == canonical_part.resolve() if canonical_part.exists() else False
+    except OSError:
+        same_part = False
+    if src.name == dest.name + ".part" and src.parent == dest.parent or same_part:
+        src.replace(dest)
+        return dest
+    try:
+        dest.symlink_to(src_r)
+        return dest
+    except OSError as e:
+        print("eros symlink failed", dest, "->", src_r, e)
+        return src
+
+
 def _checkpoint_errors(ep: dict[str, Any]) -> list[str]:
     """Stock slugs cannot load Eros Max. *-adult slugs must declare the erotic lane."""
     errs: list[str] = []
@@ -1405,8 +1656,14 @@ def resolve_unet(
         min_bytes = int(spec.get("min_bytes") or 1_000_000)
         if models_root:
             private = erotic_checkpoint_path(models_root, spec)
-            if private.is_file() and private.stat().st_size >= min_bytes:
+            if _checkpoint_ready(private, min_bytes):
                 return str(spec["file"])
+            found = locate_erotic_checkpoint(models_root, spec)
+            if found is not None:
+                adopted = _adopt_erotic_checkpoint(found, private, min_bytes)
+                if _checkpoint_ready(adopted, min_bytes):
+                    return str(spec["file"])
+                return found.name
         exact = Path(diff_dir) / str(spec["file"])
         if exact.is_file() and is_erotic_unet_name(exact.name) and exact.stat().st_size >= min_bytes:
             return exact.name
@@ -1415,9 +1672,9 @@ def resolve_unet(
 
 
 def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> list[str]:
-    """Fetch 10Eros_Max into models/erotic/ only. Never download it for a stock episode.
+    """Use a Drive copy of 10Eros_Max if one exists; otherwise fetch into models/erotic/.
 
-    Incomplete copies stay as `*.part` on Drive so the next Run all resumes.
+    Never download it for a stock episode. Incomplete copies stay as `*.part`.
     """
     notes: list[str] = []
     key = episode_checkpoint(ep)
@@ -1429,9 +1686,16 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     dest = erotic_checkpoint_path(models_root, spec)
     min_bytes = int(spec.get("min_bytes") or 1_000_000)
     expected = int(spec.get("expected_bytes") or 0)
-    if dest.is_file() and dest.stat().st_size >= min_bytes:
+    if _checkpoint_ready(dest, min_bytes):
         notes.append(f"checkpoint ready {spec['file']}")
         return notes
+    found = locate_erotic_checkpoint(models_root, spec)
+    if found is not None:
+        adopted = _adopt_erotic_checkpoint(found, dest, min_bytes)
+        if _checkpoint_ready(adopted, min_bytes) or _checkpoint_ready(dest, min_bytes):
+            print("reuse Drive Eros Max", found, found.stat().st_size, "no HuggingFace fetch")
+            notes.append(f"reused Drive copy {found}")
+            return notes
     url = str(spec.get("url") or "")
     if not url:
         raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
@@ -1454,27 +1718,49 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
 
 def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
     """Expose the erotic UNet to Comfy via a symlink in diffusion_models. Stock globs still skip it."""
-    unet = resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
     spec = CHECKPOINTS[episode_checkpoint(ep)]
+    src = erotic_checkpoint_path(models_root, spec)
+    min_bytes = int(spec.get("min_bytes") or 1_000_000)
+    if spec["erotic"] and not _checkpoint_ready(src, min_bytes):
+        found = locate_erotic_checkpoint(models_root, spec)
+        if found is not None:
+            _adopt_erotic_checkpoint(found, src, min_bytes)
+    unet = resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
     if not spec["erotic"]:
         return unet
-    src = erotic_checkpoint_path(models_root, spec)
     dest = Path(models_root) / "diffusion_models" / str(spec["file"])
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if not _checkpoint_ready(src, min_bytes):
+        found = locate_erotic_checkpoint(models_root, spec)
+        if found is None:
+            raise EpisodeError(f"erotic checkpoint missing: {spec['file']} (stock fallback is forbidden)")
+        src = found
+    try:
+        src_r = src.resolve()
+    except OSError:
+        src_r = src
     if dest.is_symlink():
-        if dest.resolve() == src.resolve():
-            return unet
+        try:
+            if dest.resolve() == src_r:
+                return unet
+        except OSError:
+            pass
         dest.unlink()
     elif dest.exists():
         size = dest.stat().st_size
-        min_bytes = int(spec.get("min_bytes") or 1_000_000)
         if size >= min_bytes and is_erotic_unet_name(dest.name):
             return unet
         if size < min_bytes and is_erotic_unet_name(dest.name):
             dest.unlink()
         else:
             raise EpisodeError(f"refusing to replace {dest.name} with the erotic checkpoint")
-    dest.symlink_to(src.resolve())
+    try:
+        dest.symlink_to(src_r)
+    except OSError as e:
+        if src_r.parent.resolve() == dest.parent.resolve() and is_erotic_unet_name(src_r.name):
+            print("eros diffusion link skipped; using", src_r.name, e)
+            return src_r.name
+        raise EpisodeError(f"cannot expose {src_r} as {dest.name}") from e
     return unet
 
 

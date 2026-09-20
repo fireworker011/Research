@@ -98,7 +98,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## レンダの決まり
 
-- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max`（`10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）は `lane: erotic` のときだけ。ファイルは Drive `models/erotic/` に取り、`diffusion_models/` へは名前付きで出す。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。TURBO-hybrid と DT-sQKV は使わない
+- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max`（`10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）は `lane: erotic` のときだけ。Drive 上の 10Eros / Eros Max（約22.5GB・別名可）を探して `models/erotic/` にリンクし、無ければ HuggingFace から取る。`diffusion_models/` へは名前付きで出す。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。TURBO-hybrid と DT-sQKV は使わない
 - LoRA プリセット（シネマ LoRA は積まない）: `speed` = LightX2V turbo4 / 4step（最速。格闘 LoRA は落とす）、`balance` = Larry v4 / 8step euler+simple、`quality` = Larry v4 / 12step euler+beta。別名 `fast`/`preview`=`speed`、`daily`=`balance`。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
 - 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。Larry の後ろにだけ積む。turbo（speed）とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない

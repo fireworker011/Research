@@ -60,6 +60,8 @@ from h3_episode import (  # noqa: E402
     episode_lane,
     episode_root,
     ensure_episode_checkpoint,
+    is_erotic_weight_path,
+    locate_erotic_checkpoint,
     expected_duration,
     finish_episode,
     forbidden_hits,
@@ -166,6 +168,7 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
     assert "kasumi-late-desk-adult" in md
+    assert "10Eros Max は Drive にあればそれを使う" in md
     assert "迷ったら" in md
     assert "用意した最終フレーム" in md
     assert "前の最終フレームから続ける" in md
@@ -824,6 +827,9 @@ def test_stock_unet_never_auto_picks_eros_max(tmp_path):
     (diff / EROS_MAX_UNET).write_bytes(b"eros")
     (diff / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_bytes(b"stock")
     assert is_erotic_unet_name(EROS_MAX_UNET)
+    assert is_erotic_unet_name("Eros Max.safetensors")
+    assert is_erotic_unet_name("ErosMax.safetensors")
+    assert is_erotic_weight_path("hub/models--x--MiniMax-H3-10Eros-Max-Quants/blobs/abc")
     assert not is_erotic_unet_name("minimax_h3_fl2va_pruned_int8_convrot.safetensors")
     assert pick_stock_fl2va(diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
     stock_ep = {"render": {"lane": "stock", "checkpoint": "stock"}}
@@ -866,6 +872,113 @@ def test_eros_checkpoint_fetch_keeps_partial(tmp_path, monkeypatch):
     part = dest.with_name(dest.name + ".part")
     assert part.is_file() and part.stat().st_size == 5_556_846_100
     assert not dest.is_file()
+
+
+def _sparse_eros(path: Path, size: int = 20_000_000_001) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"eros")
+    os.truncate(path, size)
+    return path
+
+
+def _forbid_eros_fetch(monkeypatch):
+    def boom(*_a, **_k):
+        raise AssertionError("must not fetch Eros Max when a Drive copy exists")
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", boom)
+
+
+def test_eros_reuses_drive_copy_without_huggingface(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    _forbid_eros_fetch(monkeypatch)
+    payload = _sparse_eros(tmp_path / "diffusion_models" / EROS_MAX_UNET)
+    notes = ensure_episode_checkpoint(adult, tmp_path)
+    assert any("reused Drive copy" in n for n in notes)
+    link = tmp_path / "erotic" / EROS_MAX_UNET
+    assert link.is_symlink() and link.resolve() == payload.resolve()
+    assert stage_erotic_unet(adult, tmp_path) == EROS_MAX_UNET
+    hit = locate_erotic_checkpoint(tmp_path)
+    assert hit is not None and hit.resolve() == payload.resolve()
+
+
+def test_eros_reuses_alias_filename(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    _forbid_eros_fetch(monkeypatch)
+    payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
+    notes = ensure_episode_checkpoint(adult, tmp_path)
+    assert any("reused Drive copy" in n for n in notes)
+    link = tmp_path / "erotic" / EROS_MAX_UNET
+    assert link.is_symlink() and link.resolve() == payload.resolve()
+    assert resolve_unet(adult, tmp_path / "diffusion_models", models_root=tmp_path) == EROS_MAX_UNET
+    assert pick_stock_fl2va(tmp_path / "diffusion_models") != payload.name
+
+
+def test_eros_reuses_drive_root_and_hf_cache(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    _forbid_eros_fetch(monkeypatch)
+    drive = tmp_path / "minimax-h3-comfyui"
+    models = drive / "models"
+    (models / "diffusion_models").mkdir(parents=True)
+    payload = _sparse_eros(drive / "10Eros-Max.safetensors")
+    notes = ensure_episode_checkpoint(adult, models)
+    assert any("reused Drive copy" in n for n in notes)
+    assert (models / "erotic" / EROS_MAX_UNET).resolve() == payload.resolve()
+
+    other = tmp_path / "other-comfy"
+    other_models = other / "models"
+    (other_models / "diffusion_models").mkdir(parents=True)
+    cached = _sparse_eros(
+        other
+        / "cache"
+        / "hf"
+        / "hub"
+        / "models--DmitryDB--MiniMax-H3-10Eros-Max-Quants"
+        / "snapshots"
+        / "abc123def"
+        / "FL2VA"
+        / EROS_MAX_UNET
+    )
+    notes = ensure_episode_checkpoint(adult, other_models)
+    assert any("reused Drive copy" in n for n in notes)
+    assert (other_models / "erotic" / EROS_MAX_UNET).resolve() == cached.resolve()
+
+
+def test_eros_reuses_h3_eros_max_env(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    _forbid_eros_fetch(monkeypatch)
+    payload = _sparse_eros(tmp_path / "somewhere" / "ErosMax.safetensors")
+    monkeypatch.setenv("H3_EROS_MAX", str(payload))
+    notes = ensure_episode_checkpoint(adult, tmp_path / "weights")
+    assert any("reused Drive copy" in n for n in notes)
+    assert (tmp_path / "weights" / "erotic" / EROS_MAX_UNET).resolve() == payload.resolve()
+
+
+def test_eros_incomplete_canonical_uses_complete_elsewhere(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    _forbid_eros_fetch(monkeypatch)
+    dest = tmp_path / "erotic" / EROS_MAX_UNET
+    dest.parent.mkdir()
+    dest.write_bytes(b"partial")
+    os.truncate(dest, 5_556_846_100)
+    payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
+    notes = ensure_episode_checkpoint(adult, tmp_path)
+    assert any("reused Drive copy" in n for n in notes)
+    link = tmp_path / "erotic" / EROS_MAX_UNET
+    assert link.is_symlink() and link.resolve() == payload.resolve()
+
+
+def test_eros_tiny_alias_still_fetches(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    tiny = tmp_path / "diffusion_models" / "Eros Max.safetensors"
+    tiny.parent.mkdir()
+    tiny.write_bytes(b"tiny")
+
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        return False
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
+    with pytest.raises(EpisodeError, match="fetch incomplete"):
+        ensure_episode_checkpoint(adult, tmp_path)
 
 
 def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):
