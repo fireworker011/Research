@@ -61,6 +61,7 @@
 | 16 | 03 を別スチールから描くとしゃがみのみお／青木が別人 | `03-shove` を `chain`（01 の切った位置から立ち上がって払う）。スチールは予告用に残す。06 は紙が手にあるので still のまま。10 は距離が違うので still のまま |
 | 17 | Larry 8step euler+simple で格闘がにじむ | 格闘3本だけ `steps: 12` `sampler: euler` `scheduler: beta`（作者の片側。20 と res_multistep は OOM するので上限 16）。turbo に落ちたら combat ごと落とす |
 | 18 | 青木の名札に文字が乗る | 01／03 の名札内側を無地に塗った。lock とプロンプトに「badges carry no readable letters」 |
+| 19 | 格闘がスローモーションになる | 名前を出すと描くので「slow motion」は書かない。physics に real-time cutscene speed。動作は walking-and-hit pace。01 の slowly walk と 07 の very slow push-in を外した |
 
 残るリスク: GPU 本番をまだ回していない。chain 03 は 01 の 3 秒時点の顔を引き継ぐ（01 がにじむとそのまま）。12step でも OOM したら秒数だけ 10→8→6。
 

@@ -11,7 +11,7 @@
     "fallback_preset": "fast",
     "seed": 42
   },
-  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, no anime, no illustration",
+    "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, real-time playback, no anime, no illustration",
   "violence": "game",
   "world": {
     "name": "Kasumi East floor",
@@ -139,7 +139,7 @@
       "props": ["tote"],
       "place": "Open-plan aisle at morning, a beige cubicle partition at the left, grey carpet running toward a window wall",
       "camera": "Third-person camera at Mio's left side at shoulder height, her body in profile to the aisle, holding still with a slight breathing bob",
-      "action": "Mio crouches in profile beside the cubicle partition, knees chest neck and face all aimed down the aisle, tote on her shoulder, while Aoki walks slowly toward her down the aisle with a clipboard; nobody else is in frame",
+      "action": "Mio crouches in profile beside the cubicle partition, knees chest neck and face all aimed down the aisle, tote on her shoulder, while Aoki walks toward her down the aisle with a clipboard; nobody else is in frame",
       "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
       "hud": {
@@ -196,7 +196,7 @@
       "props": ["tote", "clipboard"],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light",
       "camera": "Third-person camera at Mio's left at shoulder height, a half-step closer on the tote swing, then holding as Aoki sits",
-      "action": "Mio rises from the squat and swings the beige canvas tote in a short arc into Aoki's left shoulder and upper chest. The tote hits square. Aoki's torso folds to his right, knees buckle, the clipboard slides onto the grey carpet, and he sits down hard unhurt, still breathing. Mio steps past him down the aisle without looking back",
+      "action": "Mio rises from the squat and swings the beige canvas tote in a short arc into Aoki's left shoulder and upper chest at walking-and-hit pace. The tote hits square. Aoki's torso folds to his right, knees buckle, the clipboard slides onto the grey carpet, and he sits down hard unhurt, still breathing. Mio steps past him down the aisle without looking back",
       "sfx": "Canvas thud, clipboard clack on carpet, HVAC hum",
       "music": "Bass holds; one taiko hit on the tote contact",
       "hud": {
@@ -280,7 +280,7 @@
       "props": ["papers"],
       "place": "Inside the small inner office: a wood desk, a black rolling chair, morning window light, the doorway behind Mio",
       "camera": "Third-person camera just inside the doorway at Mio's left shoulder, holding on Kuroki's chair as it rolls back",
-      "action": "Mio steps in and swings a stack of blank copy paper in a short sideways arc into Kuroki's left forearm and shoulder. The sheets scatter upward and fall. Kuroki's torso sinks into the chair back, the chair rolls two feet on the carpet, he stays seated unhurt with glasses slightly askew, one sheet left in his hand. Mio gives a small bow and is already at the doorway",
+      "action": "Mio steps in and swings a stack of blank copy paper in a short sideways arc into Kuroki's left forearm and shoulder at walking-and-hit pace. The sheets scatter upward and fall. Kuroki's torso sinks into the chair back, the chair rolls two feet on the carpet, he stays seated unhurt with glasses slightly askew, one sheet left in his hand. Mio gives a small bow and is already at the doorway",
       "sfx": "Paper flutter, chair casters on carpet, HVAC",
       "music": "Bass holds; a taiko hit on the paper contact",
       "hud": {
@@ -305,7 +305,7 @@
       "face_visible": true,
       "props": [],
       "place": "The same inner office after the paper has settled, morning window light",
-      "camera": "Static medium two-shot at eye level, a very slow push-in",
+      "camera": "Static medium two-shot at eye level, a slight push-in",
       "action": "Kuroki sits in the rolled-back chair holding one sheet, looks at Mio in the doorway and speaks; Mio stands in the doorway and answers without turning back; both stay in these spots",
       "speech": [
         {"who": "kuroki", "line": "いま きたのか", "text": "いま来たのか"},
@@ -395,7 +395,7 @@
       "props": ["tote", "mug"],
       "place": "The same light oak desk row, Nana seated at left, an empty neighboring desk beside her, Mio standing in the aisle, morning window light",
       "camera": "Third-person side two-shot at desk height, Nana at left, Mio close in the aisle at right, holding then following the mug",
-      "action": "Mio steps past; the hanging beige tote swings into the white mug on Nana's desk. The mug slides onto the empty neighboring desk between them, a thin brown coffee arc follows. Nana's torso leans into the chair back, the chair rolls, she stays seated unhurt. Mio's gaze turns toward the neighboring desk",
+      "action": "Mio steps past; the hanging beige tote swings into the white mug on Nana's desk at walking-and-hit pace. The mug slides onto the empty neighboring desk between them, a thin brown coffee arc follows. Nana's torso leans into the chair back, the chair rolls, she stays seated unhurt. Mio's gaze turns toward the neighboring desk",
       "sfx": "Ceramic slide, a small splash, chair casters, HVAC",
       "music": "A short synth stab on the mug contact, then the bass",
       "hud": {

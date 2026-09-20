@@ -447,6 +447,9 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
     shove_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
     assert "continues the previous one without a cut" in shove_prompt
+    assert "real-time third-person game speed" in shove_prompt
+    assert "walking-and-hit pace" in shove_prompt
+    assert "slow motion" not in shove_prompt.lower() and "slow-motion" not in shove_prompt.lower()
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")

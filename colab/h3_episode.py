@@ -166,8 +166,13 @@ ACTION_TOKENS_RE = re.compile(
 )
 DEFAULT_MUSIC = "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip."
 VIOLENCE_CLAUSE = (
-    "Exaggerated video-game physics: adults tumble harmlessly like ragdolls, objects fly, "
-    "comedic tone. Nobody is hurt, no blood, no injuries, no children anywhere in frame."
+    "Exaggerated video-game physics at real-time cutscene speed: adults sit down hard like ragdolls, "
+    "objects slide, comedic tone. Nobody is hurt, no blood, no injuries, no children anywhere in frame."
+)
+# Named "slow motion" even negated still gets drawn. Physics beats stay at gameplay pace.
+REALTIME_CLAUSE = (
+    "Playback stays at real-time third-person game speed: the contact, the fold, and the sit-down "
+    "finish inside this one shot at walking-and-hit pace."
 )
 # Positive phrasing on purpose (H3 obeys "add" better than "stop"). This is the per-shot location lock the
 # first render lacked: the barbershop turned into a street with a truck within 1.5s.
@@ -758,6 +763,7 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
         desc.append("Props in this shot stay locked: " + "; ".join(f"{k} = {str(props[k]).rstrip('.')}" for k in keys) + ".")
     if str(ep.get("violence") or "none") == "game" and beat.get("physics", False):
         desc.append(VIOLENCE_CLAUSE)
+        desc.append(REALTIME_CLAUSE)
     vis = _speech_visual(ep, beat)
     if vis:
         desc.append(vis)
