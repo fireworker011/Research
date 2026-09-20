@@ -43,6 +43,12 @@ FULL_STACK_IDS = {
     "penis-lora-h3",
     "synth-pussy-h3",
 }
+ANAL_ANY_FULL_STACK_IDS = {
+    "anal-any-h3",
+    "hmnsfw-aio-v25",
+    "penis-lora-h3",
+    "synth-pussy-h3",
+}
 PENIS_HELPER_ID = "penis-lora-h3"
 PUSSY_HELPER_ID = "synth-pussy-h3"
 # Futa anatomy scenes. Without synth-pussy the non-shaft partner grows a penis.
@@ -663,7 +669,7 @@ def assert_stack_budget(
             raise SelectError("adult stack needs one act LoRA")
         if helper_n and "cinema" in roles:
             raise SelectError("cinema replaces helper; do not stack both")
-        if FULL_STACK_IDS <= ids:
+        if FULL_STACK_IDS <= ids or ANAL_ANY_FULL_STACK_IDS <= ids:
             raise SelectError("refusing Anal + AIO + Penis + Synth full stack")
         if concept_n:
             if len(quality) > 4:

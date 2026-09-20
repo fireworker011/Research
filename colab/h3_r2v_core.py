@@ -9,12 +9,12 @@ import re
 from pathlib import Path
 from typing import Any
 
-FL2VA_MAX_CLIP_S = 10.0
+FL2VA_MAX_CLIP_S = 15.0
 _TAKE_SECONDS_RE = re.compile(r"\b(\d+(?:\.\d+)?)-second(?: take)?\b")
 
 
 def cap_fl2va_clip_s(duration_s: float) -> float:
-    """FL2VA / stills R2V: never start a 15s pass. 15s OOMs then shrinks the canvas."""
+    """FL2VA / stills R2V one-shot cap. Story-chain clips stay 10s in the studio planner."""
     try:
         d = float(duration_s)
     except (TypeError, ValueError):
