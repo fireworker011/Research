@@ -96,9 +96,9 @@ I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそ�
 
 Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
 
-### 霞東フロア（25秒・遅刻して自席。ミッション失敗。次はこれ）
+### 霞東フロア（ぶっとび三戦・遅刻して自席。ミッション失敗）
 
-原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。
+原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。Combat LoRA は Drive `models/loras/H3_Combat_V2.safetensors`。無ければランナーが HF から取る。
 
 ```
 skill h3-episode-grokbot を読む。

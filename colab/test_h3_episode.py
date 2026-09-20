@@ -17,9 +17,11 @@ from h3_episode import (  # noqa: E402
     CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
     I2VA_HEADER,
+    LORA_FILES,
     MUNDANE_CLAUSE,
     PRESETS,
     EpisodeError,
+    apply_extra_loras,
     assert_not_production_root,
     beat_props,
     beat_prompts,
@@ -33,8 +35,10 @@ from h3_episode import (  # noqa: E402
     expected_duration,
     finish_episode,
     forbidden_hits,
+    is_ui_beat,
     load_episode,
     materialize_reuse,
+    merge_trigger,
     output_size_for,
     plan_lines,
     preflight,
@@ -73,6 +77,7 @@ from run_episode import exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
+KASUMI_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -107,7 +112,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert len(code) == 1
     src = "".join(code[0]["source"])
     assert "h3_episode_colab_main" in src
-    assert 'EPISODE = "bandai-district"' in src
+    assert 'EPISODE = "kasumi-late-desk"' in src
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
@@ -406,6 +411,77 @@ def test_resolve_preset_fallbacks(tmp_path):
     for name, spec in PRESETS.items():
         keys = [k for k, _s, _o in spec["stack"]]
         assert not ("larry" in keys and any(k.startswith("turbo") for k in keys)), name
+    assert "combat" in LORA_FILES and "combat" not in {k for spec in PRESETS.values() for k, _s, _o in spec["stack"]}
+
+
+def test_kasumi_late_desk_validates_and_stills_are_clean():
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    assert validate_episode(ep, root=KASUMI_DIR) == []
+    assert ep["tone"] == "action" and ep["violence"] == "game"
+    assert len(ep["beats"]) == 12
+    ids = [b["id"] for b in ep["beats"]]
+    assert ids == [
+        "01-cover",
+        "02-ui-guard",
+        "03-shove",
+        "04-peek",
+        "05-ui-boss",
+        "06-files",
+        "07-talk",
+        "08-nana",
+        "09-ui-nana",
+        "10-mug",
+        "11-bag",
+        "12-desk",
+    ]
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["03-shove", "06-files", "10-mug"]
+    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
+    assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            p = KASUMI_DIR / still
+            assert p.is_file()
+            assert "-hud" not in p.stem
+            assert Image.open(p).size == (1280, 720)
+    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+        assert errs == []
+        if "prfight2" in prompt:
+            assert prompt.startswith("DY\nprfight2, prfin1")
+
+
+def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
+    beat = {"extra_loras": ["combat"], "trigger": "prfight2, prfin1"}
+    assert merge_trigger("DY", beat) == "DY\nprfight2, prfin1"
+    daily = {"name": "daily", "stack": [("larry.safetensors", 1.0), ("cinema.safetensors", 0.65)], "steps": 8, "trigger": "DY", "notes": []}
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["combat"]).write_bytes(b"x")
+    stacked = apply_extra_loras(daily, beat, loras)
+    assert stacked["stack"][-1] == (LORA_FILES["combat"], 1.0)
+    turbo = {"name": "fast", "stack": [("minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors", 1.0)], "steps": 4, "trigger": "", "notes": []}
+    skipped = apply_extra_loras(turbo, beat, loras)
+    assert skipped["stack"] == turbo["stack"]
+    assert any("never with LightX2V turbo" in n for n in skipped["notes"])
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
+    prompt = build_beat_prompt(ep, fight, trigger=merge_trigger("DY", fight))
+    g = build_episode_graph(
+        source="still",
+        first_image="01.jpg",
+        prompt=prompt,
+        unet="fl2va.safetensors",
+        preset=stacked,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/x",
+    )
+    assert g["2c"]["inputs"]["lora_name"] == LORA_FILES["combat"]
+    assert g["23"]["inputs"]["model"] == ["2c", 0]
 
 
 def test_graph_chains_loras_and_passes_studio_assert():

@@ -120,8 +120,13 @@ LORA_FILES = {
     "turbo8": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
     "larry": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
     "cinema": "Minimax_H3_cinematic_DY.safetensors",
+    "combat": "H3_Combat_V2.safetensors",
+}
+LORA_URLS = {
+    "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). cinema is optional everywhere.
+# combat is never a preset; fight beats opt in with extra_loras: ["combat"] and never stack with turbo.
 PRESETS: dict[str, dict[str, Any]] = {
     "fast": {"stack": [("turbo4", 1.0, False)], "steps": 4, "trigger": ""},
     "preview": {"stack": [("turbo4", 1.0, False), ("cinema", 0.5, True)], "steps": 4, "trigger": "DY"},
@@ -386,7 +391,7 @@ def _ui_errors(beat: dict[str, Any], where: str) -> list[str]:
             errs.append(f"{where}: menu.selected out of range")
     except (TypeError, ValueError):
         errs.append(f"{where}: menu.selected must be an index")
-    for key in ("still", "trim", "reuse", "physics"):
+    for key in ("still", "trim", "reuse", "physics", "extra_loras", "trigger"):
         if beat.get(key):
             errs.append(f"{where}: ui beat cannot have {key}")
     return errs
@@ -550,6 +555,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 for k in beat["props"]:
                     if str(k) not in props:
                         errs.append(f"{where}: unknown prop {k}")
+        errs.extend(_extra_lora_errors(beat, where))
         for key in ("action", "camera"):
             text = str(beat.get(key) or "").strip()
             if not text and source != "ui":
@@ -769,6 +775,119 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
     return errs
 
 
+def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
+    """Per-beat optional LoRAs stacked after the preset (combat on fight shots)."""
+    raw = beat.get("extra_loras") or []
+    if not isinstance(raw, list):
+        return []
+    out: list[tuple[str, float]] = []
+    for item in raw:
+        if isinstance(item, str):
+            out.append((item, 1.0))
+            continue
+        if isinstance(item, (list, tuple)) and item:
+            try:
+                out.append((str(item[0]), float(item[1]) if len(item) > 1 else 1.0))
+            except (TypeError, ValueError):
+                out.append((str(item[0]), 1.0))
+    return out
+
+
+def merge_trigger(base: str, beat: dict[str, Any]) -> str:
+    """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop."""
+    parts = [str(base or "").strip(), str(beat.get("trigger") or "").strip()]
+    return "\n".join(p for p in parts if p)
+
+
+def _extra_lora_errors(beat: dict[str, Any], where: str) -> list[str]:
+    errs: list[str] = []
+    if beat.get("trigger") and CJK_RE.search(str(beat.get("trigger") or "")):
+        errs.append(f"{where}: trigger must be English / LoRA tokens")
+    raw = beat.get("extra_loras")
+    if raw is None:
+        return errs
+    if is_ui_beat(beat):
+        return errs
+    if not isinstance(raw, list):
+        return errs + [f"{where}: extra_loras must be a list of keys or [key, strength]"]
+    for i, item in enumerate(raw):
+        key = ""
+        if isinstance(item, str):
+            key = item
+        elif isinstance(item, (list, tuple)) and item:
+            key = str(item[0])
+            if len(item) > 1:
+                try:
+                    s = float(item[1])
+                    if s < 0 or s > 2:
+                        errs.append(f"{where}: extra_loras[{i}] strength must be 0-2")
+                except (TypeError, ValueError):
+                    errs.append(f"{where}: extra_loras[{i}] strength must be a number")
+        else:
+            errs.append(f"{where}: extra_loras[{i}] must be a key or [key, strength]")
+            continue
+        if key and key not in LORA_FILES:
+            errs.append(f"{where}: unknown extra LoRA {key}")
+    return errs
+
+
+def apply_extra_loras(
+    preset: dict[str, Any],
+    beat: dict[str, Any],
+    loras_dir: Path | str | None,
+) -> dict[str, Any]:
+    """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo."""
+    extra = extra_lora_entries(beat)
+    if not extra:
+        return preset
+    stack = list(preset.get("stack") or [])
+    notes = list(preset.get("notes") or [])
+    names = " ".join(str(s[0]).lower() for s in stack)
+    turbo = "fl2v_turbo" in names
+    for key, strength in extra:
+        fname = LORA_FILES.get(key)
+        if not fname:
+            notes.append(f"unknown extra LoRA dropped: {key}")
+            continue
+        if key == "combat" and turbo:
+            notes.append("combat LoRA skipped (never with LightX2V turbo)")
+            continue
+        present = loras_dir is None or (Path(loras_dir) / fname).is_file()
+        if not present:
+            notes.append(f"optional extra LoRA missing, dropped: {fname}")
+            continue
+        stack.append((fname, float(strength)))
+    out = dict(preset)
+    out["stack"] = stack
+    out["notes"] = notes
+    return out
+
+
+def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
+    """Fetch optional extra LoRAs (Combat V2) into Drive models/loras when a beat asks for them."""
+    root = Path(loras_dir)
+    notes: list[str] = []
+    keys: list[str] = []
+    for beat in ep.get("beats") or []:
+        for key, _s in extra_lora_entries(beat):
+            if key not in keys:
+                keys.append(key)
+    for key in keys:
+        fname = LORA_FILES.get(key)
+        url = LORA_URLS.get(key)
+        if not fname or not url:
+            continue
+        dest = root / fname
+        if dest.is_file() and dest.stat().st_size > 1_000_000:
+            continue
+        print("fetch LoRA", fname)
+        if fetch_text(url, dest, min_bytes=1_000_000):
+            notes.append(f"fetched {fname}")
+        else:
+            notes.append(f"fetch failed {fname}")
+    return notes
+
+
 def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[str, Any], str, list[str]]]:
     """Prompts for every beat that can reach the GPU (ui beats and still-less reuse beats have none)."""
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
@@ -776,7 +895,7 @@ def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[st
     for beat in ep.get("beats") or []:
         if not beat_renders(beat):
             continue
-        prompt = build_beat_prompt(ep, beat, trigger=trigger)
+        prompt = build_beat_prompt(ep, beat, trigger=merge_trigger(trigger, beat))
         errs = validate_beat_prompt(prompt, source=beat_source(beat), never=never)
         out.append((beat, prompt, errs))
     return out
@@ -1327,6 +1446,7 @@ def run_episode(
     status.update({"slug": ep.get("slug"), "canvas": f"{canvas[0]}x{canvas[1]}", "preset_requested": preset_name, "dry_run": bool(dry_run)})
     comfy = Path(comfy_dir or os.environ.get("H3_COMFY_DIR") or COMFY_DIR_DEFAULT)
     comfy_input: Path | None = None
+    loras_dir: Path | None = None
     preset: dict[str, Any]
     if dry_run:
         preset = resolve_preset(preset_name, None, fallback=fallback)
@@ -1334,7 +1454,10 @@ def run_episode(
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
         start_comfy(comfy, port=port)
-        preset = resolve_preset(preset_name, models / "loras", fallback=fallback)
+        loras_dir = models / "loras"
+        for note in ensure_episode_loras(ep, loras_dir):
+            print("lora:", note)
+        preset = resolve_preset(preset_name, loras_dir, fallback=fallback)
         comfy_input = comfy / "input"
         if object_info is None:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=60) as r:
@@ -1366,13 +1489,17 @@ def run_episode(
         source = beat_source(beat)
         if beat.get("reuse"):
             print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))
-        prompt = build_beat_prompt(ep, beat, trigger=preset.get("trigger") or "")
+        prompt = build_beat_prompt(ep, beat, trigger=merge_trigger(preset.get("trigger") or "", beat))
         perrs = validate_beat_prompt(prompt, source=source, never=never)
         if perrs:
             raise EpisodeError(f"{bid}: {perrs}")
         (root / "logs" / f"{bid}.prompt.txt").write_text(prompt, encoding="utf-8")
         status["beats"][bid] = {"state": "running", "source": source, "started": _now()}
         save_status(root, status)
+        beat_preset = apply_extra_loras(preset, beat, loras_dir)
+        for note in beat_preset.get("notes") or []:
+            if note not in (preset.get("notes") or []):
+                print("preset:", note)
         try:
             if dry_run:
                 first = _first_frame_for(beat, idx, ep, root, canvas, None)
@@ -1388,7 +1515,7 @@ def run_episode(
                     comfy_dir=comfy,
                     canvas=canvas,
                     durations=duration_ladder(ep),
-                    preset=preset,
+                    preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",
                     port=port,
