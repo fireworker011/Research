@@ -28,7 +28,7 @@
 8. **ワンクリックの BRANCH。** マージ前は GitHub から stills を取るため `BRANCH` / `--branch` をこの PR ブランチにする。ノートの既定を `kasumi-late-desk` にした。
 9. **inbox に jpg を置くとココナラ I2V が拾う。** Drive は `episodes/kasumi-late-desk/` だけ。
 10. **子供・制服・教室。** 前作の学校クリップ文法を混ぜない。成人オフィスのみ。
-11. **Drive の episode.json が初回の 5 ビートのまま。** 連結は ≈24.7 秒になる。bootstrap は GitHub から取り直す。スチールは上書きしない。
+11. **Drive の episode.json が初回の 5 ビートのまま。** 連結は ≈24.7 秒になる。bootstrap は GitHub から json と stills を取り直す。
 
 ## 15 秒以上 LoRA — 入れない
 

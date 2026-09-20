@@ -1105,7 +1105,7 @@ def _episode_beat_ids(path: Path) -> list[str]:
 
 
 def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None, repo: str = REPO) -> list[str]:
-    """Pull episode.json from GitHub each run (Drive keeps the first packing otherwise). Stills never overwrite."""
+    """Pull episode.json and stills from GitHub each run. Drive copies of either go stale (25s pack, standing fight stills)."""
     root = Path(root)
     ensure_episode_tree(root)
     br = branch or os.environ.get("H3_HELPER_BRANCH") or BRANCH
@@ -1126,10 +1126,13 @@ def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None,
     ep = load_episode(ep_path)
     for rel in episode_assets(ep):
         dest = root / rel
-        if dest.is_file():
-            continue
-        if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/{rel}", repo=repo, branch=br), dest, min_bytes=1000):
+        staging = root / "logs" / Path(rel).name
+        if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/{rel}", repo=repo, branch=br), staging, min_bytes=1000):
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(staging, dest)
             fetched.append(rel)
+        elif not dest.is_file():
+            print(f"still missing {rel}")
     return fetched
 
 

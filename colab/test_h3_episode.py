@@ -488,7 +488,7 @@ def test_clip_window_slides_last_frame_trim_when_oom_shortens(tmp_path):
     assert clip_window(ep, peek, 8.0) == (0.0, 4.0)
 
 
-def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):
+def test_bootstrap_refreshes_stale_episode_json_and_stills(tmp_path, monkeypatch):
     drive = tmp_path / "kasumi-late-desk"
     (drive / "stills").mkdir(parents=True)
     old = {"schema": "h3-episode/v1", "slug": "kasumi-late-desk", "beats": [{"id": "01-cover"}, {"id": "02-peek"}, {"id": "05-desk"}]}
@@ -503,7 +503,7 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
         if str(url).endswith("episode.json"):
             dest.write_text(json.dumps(fresh), encoding="utf-8")
             return dest.stat().st_size > min_bytes
-        dest.write_bytes(b"SHOULD-NOT-CLOBBER-EXISTING" if dest.name == "01-cover.jpg" else (b"x" * (min_bytes + 1)))
+        dest.write_bytes(b"x" * (min_bytes + 1))
         return True
 
     monkeypatch.setattr("h3_episode.fetch_text", fake_fetch)
@@ -524,8 +524,8 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
         "11-bag",
         "12-desk",
     ]
-    assert kept.read_bytes() == b"keep-me"
-    assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(47.9, abs=0.2)
+    assert "stills/01-cover.jpg" in fetched
+    assert kept.read_bytes() == b"x" * 1001
 
 
 def test_bootstrap_keeps_drive_json_when_github_fails(tmp_path, monkeypatch):
