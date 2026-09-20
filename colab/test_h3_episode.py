@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -14,17 +15,25 @@ sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
     CANVAS,
+    CHECKPOINTS,
     COMBAT_SAMPLER,
     COMBAT_SCHEDULER,
     COMBAT_STEPS,
     CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
+    EROS_MAX_UNET,
     I2VA_HEADER,
     LORA_FILES,
     MUNDANE_CLAUSE,
     PRESETS,
+    STOCK_ONLY_SLUGS,
     STILL_LAST_HEADER,
     EpisodeError,
+    episode_checkpoint,
+    episode_lane,
+    ensure_episode_checkpoint,
+    resolve_unet,
+    stage_erotic_unet,
     apply_extra_loras,
     beat_still_as,
     uses_last_still,
@@ -79,12 +88,14 @@ from h3_hud import (  # noqa: E402
     window_for,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
+from h3_i2v_runtime import is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
 KASUMI_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk"
+KASUMI_ADULT_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk-adult"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -104,6 +115,9 @@ def test_colab_and_minimaxh3_copies_in_sync():
         a = (ROOT / "colab" / name).read_text(encoding="utf-8")
         b = (ROOT / "minimaxh3" / name).read_text(encoding="utf-8")
         assert a == b, f"{name} differs between colab/ and minimaxh3/ (copy after editing)"
+    runtime_a = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
+    runtime_b = (ROOT / "minimaxh3" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
+    assert runtime_a == runtime_b, "h3_i2v_runtime.py differs between colab/ and minimaxh3/"
 
 
 def test_helpers_list_matches_files():
@@ -473,6 +487,54 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
         if "prfight2" in prompt:
             assert prompt.startswith("DY\nprfight2, prfin1")
         assert "badges carry no readable letters" in prompt
+
+
+def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    stock = load_episode(KASUMI_DIR / "episode.json")
+    assert validate_episode(adult, root=KASUMI_ADULT_DIR) == []
+    assert episode_lane(adult) == "erotic"
+    assert episode_checkpoint(adult) == "eros-max"
+    assert CHECKPOINTS["eros-max"]["erotic"] is True
+    assert CHECKPOINTS["eros-max"]["file"] == EROS_MAX_UNET
+    assert episode_lane(stock) == "stock"
+    assert episode_checkpoint(stock) == "stock"
+    assert "kasumi-late-desk" in STOCK_ONLY_SLUGS
+    leaked = dict(stock)
+    leaked["render"] = dict(stock["render"], lane="erotic", checkpoint="eros-max")
+    assert any("stock episode" in e for e in validate_episode(leaked))
+    stripped = dict(adult)
+    stripped["render"] = {k: v for k, v in adult["render"].items() if k not in ("lane", "checkpoint")}
+    assert any("render.lane erotic" in e for e in validate_episode(stripped))
+
+
+def test_stock_unet_never_auto_picks_eros_max(tmp_path):
+    diff = tmp_path / "diffusion_models"
+    diff.mkdir()
+    (diff / EROS_MAX_UNET).write_bytes(b"eros")
+    (diff / "minimax_h3_fl2va_pruned_int8_convrot.safetensors").write_bytes(b"stock")
+    assert is_erotic_unet_name(EROS_MAX_UNET)
+    assert not is_erotic_unet_name("minimax_h3_fl2va_pruned_int8_convrot.safetensors")
+    assert pick_stock_fl2va(diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    stock_ep = {"render": {"lane": "stock", "checkpoint": "stock"}}
+    assert resolve_unet(stock_ep, diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    with pytest.raises(EpisodeError, match="stock fallback is forbidden"):
+        resolve_unet(adult, diff, models_root=tmp_path)
+    erotic_root = tmp_path / "erotic"
+    erotic_root.mkdir()
+    payload = erotic_root / EROS_MAX_UNET
+    payload.touch()
+    payload.write_bytes(b"eros")
+    os.truncate(payload, 1_000_000_001)
+    assert resolve_unet(adult, diff, models_root=tmp_path) == EROS_MAX_UNET
+    assert ensure_episode_checkpoint(stock_ep, tmp_path) == []
+    with pytest.raises(EpisodeError, match="refusing to fetch"):
+        ensure_episode_checkpoint({"render": {"lane": "stock", "checkpoint": "eros-max"}}, tmp_path)
+    assert stage_erotic_unet(adult, tmp_path) == EROS_MAX_UNET
+    link = diff / EROS_MAX_UNET
+    assert link.is_symlink() and link.resolve() == (erotic_root / EROS_MAX_UNET).resolve()
+    assert pick_stock_fl2va(diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 
 
 def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):

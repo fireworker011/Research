@@ -64,7 +64,18 @@ from h3_hud import (
     synthetic_clip,
 )
 from h3_i2v_phone import BRANCH, REPO, TURBO_LORA_NAME, collect_output_videos, github_raw, newest_mp4, stage_image_into_input
-from h3_i2v_runtime import COMFY_DIR_DEFAULT, PORT, comfy_free, ensure_comfy, post_prompt, start_comfy, wait_prompt
+from h3_i2v_runtime import (
+    COMFY_DIR_DEFAULT,
+    PORT,
+    STOCK_FL2VA_UNET,
+    comfy_free,
+    ensure_comfy,
+    is_erotic_unet_name,
+    pick_stock_fl2va,
+    post_prompt,
+    start_comfy,
+    wait_prompt,
+)
 from h3_motion_graphics import (
     FORBIDDEN_IN_PROMPT,
     I2VA_HEADER,
@@ -131,6 +142,29 @@ LORA_FILES = {
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
+}
+# UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
+LANES = ("stock", "erotic")
+STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
+EROTIC_SLUG_SUFFIX = "-adult"
+EROTIC_MODELS_SUBDIR = "erotic"
+EROS_MAX_UNET = "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors"
+CHECKPOINTS: dict[str, dict[str, Any]] = {
+    "stock": {
+        "file": STOCK_FL2VA_UNET,
+        "erotic": False,
+        "url": "",
+        "min_bytes": 1_000_000,
+    },
+    "eros-max": {
+        "file": EROS_MAX_UNET,
+        "erotic": True,
+        "url": (
+            "https://huggingface.co/DmitryDB/MiniMax-H3-10Eros-Max-Quants/resolve/main/"
+            f"FL2VA/{EROS_MAX_UNET}"
+        ),
+        "min_bytes": 1_000_000_000,
+    },
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). cinema is optional everywhere.
 # combat is never a preset; fight beats opt in with extra_loras: ["combat"] and never stack with turbo.
@@ -232,6 +266,46 @@ def duration_ladder(ep: dict[str, Any]) -> list[float]:
 
 def episode_tone(ep: dict[str, Any]) -> str:
     return str(ep.get("tone") or "action")
+
+
+def episode_lane(ep: dict[str, Any]) -> str:
+    raw = str((ep.get("render") or {}).get("lane") or "stock").strip().lower()
+    return raw if raw in LANES else "stock"
+
+
+def episode_checkpoint(ep: dict[str, Any]) -> str:
+    raw = str((ep.get("render") or {}).get("checkpoint") or "stock").strip().lower()
+    return raw if raw in CHECKPOINTS else "stock"
+
+
+def erotic_checkpoint_path(models_root: Path | str, spec: dict[str, Any]) -> Path:
+    return Path(models_root) / EROTIC_MODELS_SUBDIR / str(spec["file"])
+
+
+def _checkpoint_errors(ep: dict[str, Any]) -> list[str]:
+    """Stock slugs cannot load Eros Max. *-adult slugs must declare the erotic lane."""
+    errs: list[str] = []
+    render = ep.get("render") or {}
+    slug = str(ep.get("slug") or "")
+    lane_raw = str(render.get("lane") or "stock").strip().lower()
+    ckpt_raw = str(render.get("checkpoint") or "stock").strip().lower()
+    if lane_raw not in LANES:
+        errs.append(f"render.lane must be one of {list(LANES)}")
+    if ckpt_raw not in CHECKPOINTS:
+        errs.append(f"render.checkpoint must be one of {list(CHECKPOINTS)}")
+        return errs
+    spec = CHECKPOINTS[ckpt_raw]
+    if spec["erotic"] and lane_raw != "erotic":
+        errs.append("render.checkpoint eros-max is erotic-only; set render.lane erotic")
+    if slug in STOCK_ONLY_SLUGS and lane_raw == "erotic":
+        errs.append(f"{slug} is a stock episode; render.lane erotic is forbidden")
+    if slug in STOCK_ONLY_SLUGS and spec["erotic"]:
+        errs.append(f"{slug} is a stock episode; render.checkpoint eros-max is forbidden")
+    if slug.endswith(EROTIC_SLUG_SUFFIX) and lane_raw != "erotic":
+        errs.append(f"{slug} must set render.lane erotic (stock UNet is not implied by the slug)")
+    if slug.endswith(EROTIC_SLUG_SUFFIX) and ckpt_raw != "eros-max":
+        errs.append(f"{slug} must set render.checkpoint eros-max (no silent stock fallback)")
+    return errs
 
 
 def beat_source(beat: dict[str, Any]) -> str:
@@ -524,6 +598,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
     fb = str(render.get("fallback_preset") or "fast")
     if fb not in PRESETS:
         errs.append(f"render.fallback_preset must be one of {list(PRESETS)}")
+    errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
         errs.append(f"tone must be one of {TONES}")
@@ -1001,6 +1076,84 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
     return notes
 
 
+def resolve_unet(
+    ep: dict[str, Any],
+    diff_dir: Path | str,
+    *,
+    models_root: Path | str | None = None,
+) -> str:
+    """Exact checkpoint for this episode. Erotic never falls back to stock; stock never picks Eros Max."""
+    key = episode_checkpoint(ep)
+    spec = CHECKPOINTS.get(key)
+    if not spec:
+        raise EpisodeError(f"unknown checkpoint {key}")
+    if spec["erotic"] and episode_lane(ep) != "erotic":
+        raise EpisodeError("erotic checkpoint blocked on a stock lane")
+    if spec["erotic"]:
+        min_bytes = int(spec.get("min_bytes") or 1_000_000)
+        if models_root:
+            private = erotic_checkpoint_path(models_root, spec)
+            if private.is_file() and private.stat().st_size > min_bytes:
+                return str(spec["file"])
+        exact = Path(diff_dir) / str(spec["file"])
+        if exact.is_file() and is_erotic_unet_name(exact.name) and exact.stat().st_size > min_bytes:
+            return exact.name
+        raise EpisodeError(f"erotic checkpoint missing: {spec['file']} (stock fallback is forbidden)")
+    return pick_stock_fl2va(diff_dir)
+
+
+def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> list[str]:
+    """Fetch 10Eros_Max into models/erotic/ only. Never download it for a stock episode."""
+    notes: list[str] = []
+    key = episode_checkpoint(ep)
+    spec = CHECKPOINTS[key]
+    if not spec["erotic"]:
+        return notes
+    if episode_lane(ep) != "erotic":
+        raise EpisodeError("refusing to fetch an erotic checkpoint for a stock episode")
+    dest = erotic_checkpoint_path(models_root, spec)
+    min_bytes = int(spec.get("min_bytes") or 1_000_000)
+    if dest.is_file() and dest.stat().st_size > min_bytes:
+        notes.append(f"checkpoint ready {spec['file']}")
+        return notes
+    url = str(spec.get("url") or "")
+    if not url:
+        raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
+    print("fetch checkpoint", spec["file"])
+    if fetch_text(url, dest, min_bytes=min_bytes):
+        notes.append(f"fetched {spec['file']}")
+        return notes
+    if dest.is_file():
+        dest.unlink()
+    raise EpisodeError(f"fetch failed {spec['file']} (stock fallback is forbidden)")
+
+
+def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
+    """Expose the erotic UNet to Comfy via a symlink in diffusion_models. Stock globs still skip it."""
+    unet = resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
+    spec = CHECKPOINTS[episode_checkpoint(ep)]
+    if not spec["erotic"]:
+        return unet
+    src = erotic_checkpoint_path(models_root, spec)
+    dest = Path(models_root) / "diffusion_models" / str(spec["file"])
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.is_symlink():
+        if dest.resolve() == src.resolve():
+            return unet
+        dest.unlink()
+    elif dest.exists():
+        size = dest.stat().st_size
+        min_bytes = int(spec.get("min_bytes") or 1_000_000)
+        if size > min_bytes and is_erotic_unet_name(dest.name):
+            return unet
+        if size <= min_bytes and is_erotic_unet_name(dest.name):
+            dest.unlink()
+        else:
+            raise EpisodeError(f"refusing to replace {dest.name} with the erotic checkpoint")
+    dest.symlink_to(src.resolve())
+    return unet
+
+
 def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[str, Any], str, list[str]]]:
     """Prompts for every beat that can reach the GPU (ui beats and still-less reuse beats have none)."""
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
@@ -1234,6 +1387,7 @@ def render_beat_comfy(
     seed: int,
     filename_prefix: str,
     last_image: str | None = None,
+    unet: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -1241,9 +1395,7 @@ def render_beat_comfy(
 ) -> dict[str, Any]:
     """Keep the canvas; on OOM shorten the clip (10→8→6). Never drop the first frame or last-frame still."""
     obj = object_info or {}
-    diff_dir = comfy_dir / "models/diffusion_models"
-    diff = list(diff_dir.glob("*fl2va*")) if diff_dir.exists() else []
-    unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    unet = unet or pick_stock_fl2va(comfy_dir / "models/diffusion_models")
     out_root = comfy_dir / "output"
     before = newest_mp4(out_root)
     last_err: Any = None
@@ -1603,7 +1755,14 @@ def run_episode(
     fallback = str(render_cfg.get("fallback_preset") or "fast")
     seed = int(render_cfg.get("seed") or 42)
     status = load_status(root)
-    status.update({"slug": ep.get("slug"), "canvas": f"{canvas[0]}x{canvas[1]}", "preset_requested": preset_name, "dry_run": bool(dry_run)})
+    status.update({
+        "slug": ep.get("slug"),
+        "canvas": f"{canvas[0]}x{canvas[1]}",
+        "preset_requested": preset_name,
+        "lane": episode_lane(ep),
+        "checkpoint": episode_checkpoint(ep),
+        "dry_run": bool(dry_run),
+    })
     comfy = Path(comfy_dir or os.environ.get("H3_COMFY_DIR") or COMFY_DIR_DEFAULT)
     comfy_input: Path | None = None
     loras_dir: Path | None = None
@@ -1617,6 +1776,10 @@ def run_episode(
         loras_dir = models / "loras"
         for note in ensure_episode_loras(ep, loras_dir):
             print("lora:", note)
+        for note in ensure_episode_checkpoint(ep, models):
+            print("checkpoint:", note)
+        unet = stage_erotic_unet(ep, models)
+        print("unet", unet, "lane", episode_lane(ep), "checkpoint", episode_checkpoint(ep))
         preset = resolve_preset(preset_name, loras_dir, fallback=fallback)
         comfy_input = comfy / "input"
         if object_info is None:
@@ -1627,6 +1790,8 @@ def run_episode(
     for note in preset.get("notes") or []:
         print("preset:", note)
     status["preset"] = preset["name"]
+    if not dry_run:
+        status["unet"] = unet
     save_status(root, status)
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
     beats = ep.get("beats") or []
@@ -1681,6 +1846,7 @@ def run_episode(
                     preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",
+                    unet=unet,
                     port=port,
                     object_info=object_info,
                     poster=poster,
@@ -1816,7 +1982,11 @@ def main(argv: list[str] | None = None) -> int:
         print("\n".join(plan_lines(ep, work)))
         cs = card_seconds(ep)
         cards_note = " + ".join(f"{k} {v:g}s" for k, v in cs.items() if v)
-        print(f"tone {episode_tone(ep)} | cards: {cards_note or 'none'} | expected ≈ {expected_duration(ep):.1f}s")
+        ckpt = episode_checkpoint(ep)
+        print(
+            f"lane {episode_lane(ep)} | checkpoint {ckpt} ({CHECKPOINTS[ckpt]['file']}) | "
+            f"tone {episode_tone(ep)} | cards: {cards_note or 'none'} | expected ≈ {expected_duration(ep):.1f}s"
+        )
         if errs:
             print("\n".join("ERR " + e for e in errs))
             return 1

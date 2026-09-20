@@ -23,6 +23,7 @@ Drive の 25秒 latest.mp4 は初回5カットなので見るな・reuse する�
 □口説く ×3（警備ジュボ → 課長押し倒し → 同僚密着）。△戦いは SCRIPT に残して撮らない。
 全員全裸。青木 44・黒木 48 はふたなり。みお 27・なな 29 は竿なし。年齢は lock に数字。
 Combat は 06 だけ `extra_loras: ["combat"]`、trigger 空、euler+beta 12step。03 と 10 には積まない。
+土台 UNet は `render.lane: erotic` + `render.checkpoint: eros-max`（`models/erotic/10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）。霞東本体・番台は stock。フォルダ先頭の `*fl2va*` 任せにしない。Larry + cinema はその上。TURBO-hybrid / DT-sQKV は使わない。
 
 ## やらないこと
 

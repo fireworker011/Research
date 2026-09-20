@@ -93,6 +93,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## レンダの決まり
 
+- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max`（`10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）は `lane: erotic` のときだけ。ファイルは Drive `models/erotic/` に取り、`diffusion_models/` へは名前付きで出す。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。TURBO-hybrid と DT-sQKV は使わない
 - LoRA プリセット: `daily` = Larry v4 1.0 + シネマ DY 0.65 / 8step（トリガー `DY` を先頭に付ける）、`preview` = LightX2V 4step + シネマ 0.5、`fast` = LightX2V 4step のみ。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
 - 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。daily の後ろにだけ積む。turbo とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない

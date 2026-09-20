@@ -9,7 +9,9 @@
   "render": {
     "preset": "daily",
     "fallback_preset": "fast",
-    "seed": 42
+    "seed": 42,
+    "lane": "erotic",
+    "checkpoint": "eros-max"
   },
   "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, steady game-camera motion, real-time playback, no anime, no illustration",
   "violence": "game",
