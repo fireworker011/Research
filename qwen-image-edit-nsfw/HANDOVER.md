@@ -5,7 +5,7 @@ GitHub のこのレーンのフォルダは **`qwen-image-edit-nsfw/`**。Drive 
 ## 新規チャットに貼る文
 
 ```
-Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画は別チャットで引き継ぎ済み。触るな。Naomiichi。
+Qwen Image Edit NSFW（画像編集 Colab）を続ける。H3 動画と霞東アダルト予告は別チャット。触るな。Naomiichi。
 
 まず読め:
 - `qwen-image-edit-nsfw/HANDOVER.md`

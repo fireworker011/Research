@@ -2,10 +2,13 @@
 
 新規チャット用。Naomiichi（プロダクト）。質問せず、このファイルと `.cursor/skills/h3-lora-studio/SKILL.md` を読んでから作業する。
 
+霞東アダルト予告（コンバット / `kasumi-late-desk-adult` / PR #142）は**別チャット**。このファイルは③と既存物語だけ。予告の続きは `minimaxh3/episodes/kasumi-late-desk-adult/HANDOVER.md`（枝 `cursor/h3-kasumi-adult-0402`）。
+
 ## 新規チャットに貼る文
 
 ```
 MiniMax H3 LoRA Studio を続ける。会話が長くなったので新規チャット。Naomiichi。
+霞東アダルト予告（kasumi-late-desk-adult / コンバット / PR #142）は別チャット。触るな。
 
 まず読め:
 - `h3-lora-studio/GROK_PROMPTS.md`（このエロ動画の GitHub プロンプト一覧）
@@ -40,6 +43,14 @@ Threads の schedule を戻すな。アナル本に cowgirl / riding / doggy / A
 | ノート | `minimax_h3_lora_studio.ipynb` を3箇所に同じものを書く（root / `minimaxh3/` / `h3-lora-studio/`） |
 
 `colab/h3_lora_studio.py` と `minimaxh3/h3_lora_studio.py` は同期する。ノートは `python colab/_write_lora_studio_nb.py` で再生成。手で ipynb を直さない。
+
+## チャットの分け方
+
+| チャット | 中身 | 枝 |
+|---|---|---|
+| **ここ** | ③ / STORY / アナル三択 | `cursor/h3-anal-stories-f112` / PR #138 |
+| 画像編集 | Qwen Edit NSFW | 同じ枝。`qwen-image-edit-nsfw/HANDOVER.md` |
+| 霞東アダルト予告 | コンバット 06 + Eros Max FL2VA | `cursor/h3-kasumi-adult-0402` / PR #142 |
 
 ## ユーザーが求めたもの
 
