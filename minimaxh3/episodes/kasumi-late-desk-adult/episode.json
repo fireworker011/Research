@@ -12,7 +12,8 @@
     "seed": 42,
     "lane": "erotic",
     "checkpoint": "eros-max",
-    "camera_pack": "side2d"
+    "camera_pack": "side2d",
+    "connect": "t2v"
   },
   "style": "Third-person open-world game cutscene look, live-action photoreal game footage, shallow depth of field, pulled-back full-body framing, real-time playback, no anime, no illustration",
   "violence": "game",

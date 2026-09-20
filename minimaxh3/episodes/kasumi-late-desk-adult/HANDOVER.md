@@ -83,7 +83,7 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 
 ## 次の一手
 
-本番 GPU は T2V（I2V 連鎖しない）。カメラは side2d / action3d。プリセットは speed / balance / quality。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
+本番 GPU のつなぎは Colab で選ぶ。迷ったら **カット**。前の尻から続ける／着地スチールへ着くも可。カメラは side2d / action3d。プリセットは speed / balance / quality。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
 
 ```bash
 cd minimaxh3

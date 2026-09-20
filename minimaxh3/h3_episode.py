@@ -30,6 +30,7 @@ phrases that H3 reads aloud are rejected before any GPU time is spent.
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -87,10 +88,15 @@ from h3_motion_graphics import (
 from h3_r2v_core import is_oom_error
 from h3_episode_packs import (
     CAMERA_PACKS,
+    CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
+    DEFAULT_CONNECT,
     PRESET_CANON,
     PRESET_ALIASES,
+    canonical_camera,
+    canonical_connect,
     canonical_preset,
+    describe_run,
     expand_presets,
 )
 from h3_t2v import assert_t2v_graph, build_t2v_graph
@@ -354,10 +360,119 @@ def episode_camera_pack(ep: dict[str, Any], override: str | None = None) -> str:
     """Pack name for this run. T2V episodes default to side2d so each clip can change camera."""
     raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("camera_pack") or "").strip()
     if raw:
-        return raw
+        return canonical_camera(raw)
     if any(isinstance(b, dict) and beat_source(b) == "t2v" for b in (ep.get("beats") or [])):
         return DEFAULT_CAMERA_PACK
     return ""
+
+
+def episode_connect(ep: dict[str, Any], override: str | None = None) -> str:
+    """How GPU beats are wired. Empty keeps authored source/still_as."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("connect") or "").strip()
+    if not raw:
+        return ""
+    return canonical_connect(raw)
+
+
+def connect_rotates_camera(ep: dict[str, Any], override: str | None = None) -> bool:
+    name = episode_connect(ep, override)
+    if not name:
+        return True
+    spec = CONNECT_MODES.get(name) or {}
+    return bool(spec.get("rotate_camera", True))
+
+
+def _slide_trim_to_last(beat: dict[str, Any], clip_s: float) -> None:
+    """Landing stills sit on the last generated frame; the shown window must include it."""
+    trim = beat.get("trim")
+    if not isinstance(trim, dict):
+        seconds = min(5.0, float(clip_s))
+        beat["trim"] = {"start": round(max(0.0, clip_s - seconds), 3), "seconds": seconds}
+        return
+    start = float(trim.get("start") or 0.0)
+    seconds = float(trim.get("seconds") or 0.0) or float(clip_s)
+    if start + seconds >= float(clip_s) - 0.05:
+        return
+    seconds = min(max(seconds, MIN_TRIM_S), float(clip_s))
+    beat["trim"] = {"start": round(max(0.0, float(clip_s) - seconds), 3), "seconds": seconds}
+
+
+def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[str, Any]:
+    """Rewrite GPU beat source/still_as for a connect mode. UI and reuse beats stay put.
+
+    t2v: every GPU beat is T2V (prompt-correctable, cameras may change).
+    chain: first GPU still/t2v, later I2V from the previous clip's last frame.
+    landing: first GPU still, later I2V onto the authored still as Picture 2.
+    """
+    name = episode_connect(ep, override)
+    if not name:
+        return ep
+    if name not in CONNECT_MODES:
+        raise EpisodeError(f"render.connect must be one of {list(CONNECT_MODES)} (add a mode in h3_episode_packs.py)")
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    render["connect"] = name
+    out["render"] = render
+    clip_s = clip_seconds(out)
+    gpu_seen = 0
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat):
+            continue
+        if beat.get("reuse"):
+            gpu_seen += 1
+            continue
+        if name == "t2v":
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+        elif name == "chain":
+            if gpu_seen == 0:
+                if beat.get("still"):
+                    beat["source"] = "still"
+                    beat["still_as"] = "first"
+                else:
+                    beat["source"] = "t2v"
+                    beat.pop("still_as", None)
+            else:
+                beat["source"] = "chain"
+                beat.pop("still_as", None)
+        else:  # landing
+            if gpu_seen == 0:
+                if beat.get("still"):
+                    beat["source"] = "still"
+                    beat["still_as"] = "first"
+                else:
+                    beat["source"] = "t2v"
+                    beat.pop("still_as", None)
+            elif beat.get("still"):
+                beat["source"] = "still"
+                beat["still_as"] = "last"
+                _slide_trim_to_last(beat, clip_s)
+            else:
+                beat["source"] = "chain"
+                beat.pop("still_as", None)
+        gpu_seen += 1
+    return out
+
+
+def prepare_episode(
+    ep: dict[str, Any],
+    *,
+    connect_override: str | None = None,
+    camera_pack_override: str | None = None,
+    preset_override: str | None = None,
+) -> dict[str, Any]:
+    """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
+    out = apply_connect_mode(ep, connect_override)
+    render = dict(out.get("render") or {})
+    if connect_override not in (None, ""):
+        render["connect"] = canonical_connect(connect_override)
+    if camera_pack_override not in (None, ""):
+        render["camera_pack"] = canonical_camera(camera_pack_override)
+    if preset_override not in (None, ""):
+        lookup = canonical_preset(preset_override)
+        render["preset"] = lookup if lookup in PRESETS else preset_override
+    out["render"] = render
+    return out
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -374,7 +489,7 @@ def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
 
 
 def camera_angle(pack_name: str, gpu_index: int) -> str:
-    pack = CAMERA_PACKS[pack_name]
+    pack = CAMERA_PACKS[canonical_camera(pack_name)]
     angles = pack["angles"]
     return str(angles[int(gpu_index) % len(angles)])
 
@@ -385,16 +500,22 @@ def camera_line(
     *,
     pack_name: str = "",
     gpu_index: int = 0,
+    rotate: bool = True,
 ) -> str:
-    """Pack lock + rotating angle, then the authored blocking. Empty pack keeps beat.camera."""
+    """Pack lock + rotating angle (T2V) or a held camera (I2V chain/landing). Empty pack keeps beat.camera."""
     authored = str(beat.get("camera") or "").strip().rstrip(".")
     if not pack_name:
         return authored
-    if pack_name not in CAMERA_PACKS:
+    key = canonical_camera(pack_name)
+    if key not in CAMERA_PACKS:
         raise EpisodeError(f"unknown camera_pack {pack_name}")
-    lock = str(CAMERA_PACKS[pack_name]["lock"]).strip().rstrip(".")
-    angle = camera_angle(pack_name, gpu_index).strip().rstrip(".")
-    parts = [lock + ".", "This shot: " + angle + "."]
+    lock = str(CAMERA_PACKS[key]["lock"]).strip().rstrip(".")
+    parts = [lock + "."]
+    if rotate:
+        angle = camera_angle(key, gpu_index).strip().rstrip(".")
+        parts.append("This shot: " + angle + ".")
+    else:
+        parts.append("The camera stays in this setup from the first frame to the last.")
     if authored:
         parts.append("Blocking: " + authored + ".")
     return " ".join(parts)
@@ -656,15 +777,22 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
     except (TypeError, ValueError):
         errs.append("clip_seconds must be a number")
     render = ep.get("render") or {}
-    preset = str(render.get("preset") or "fast")
+    preset = canonical_preset(str(render.get("preset") or "fast"))
     if preset not in PRESETS:
-        errs.append(f"render.preset must be one of {list(PRESETS)}")
-    fb = str(render.get("fallback_preset") or "fast")
+        errs.append(f"render.preset must be one of {list(PRESET_CANON)} (aliases: fast/preview=speed, daily=balance)")
+    fb = canonical_preset(str(render.get("fallback_preset") or "fast"))
     if fb not in PRESETS:
-        errs.append(f"render.fallback_preset must be one of {list(PRESETS)}")
+        errs.append(f"render.fallback_preset must be one of {list(PRESET_CANON)}")
     pack = str(render.get("camera_pack") or "").strip()
-    if pack and pack not in CAMERA_PACKS:
-        errs.append(f"render.camera_pack must be one of {list(CAMERA_PACKS)} (add a pack in h3_episode_packs.py)")
+    if pack:
+        pack_key = canonical_camera(pack)
+        if pack_key not in CAMERA_PACKS:
+            errs.append(f"render.camera_pack must be one of {list(CAMERA_PACKS)} (add a pack in h3_episode_packs.py)")
+    connect = str(render.get("connect") or "").strip()
+    if connect:
+        connect_key = canonical_connect(connect)
+        if connect_key not in CONNECT_MODES:
+            errs.append(f"render.connect must be one of {list(CONNECT_MODES)} (add a mode in h3_episode_packs.py)")
     errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
@@ -950,7 +1078,13 @@ def build_beat_prompt(
         desc.append(GAMEPLAY_PACE_CLAUSE)
     pack = camera_pack if camera_pack is not None else episode_camera_pack(ep)
     idx = gpu_index if gpu_index is not None else gpu_index_map(ep).get(str(beat.get("id") or ""), 0)
-    cam = camera_line(ep, beat, pack_name=pack, gpu_index=idx)
+    cam = camera_line(
+        ep,
+        beat,
+        pack_name=pack,
+        gpu_index=idx,
+        rotate=connect_rotates_camera(ep),
+    )
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
@@ -1375,9 +1509,10 @@ def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None,
 
 def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "fast") -> dict[str, Any]:
     """Preset → concrete LoRA files that exist. Missing optional → dropped; missing required → fallback."""
-    if name not in PRESETS:
+    lookup = name if name in PRESETS else canonical_preset(name)
+    if lookup not in PRESETS:
         raise EpisodeError(f"unknown preset {name}")
-    spec = PRESETS[name]
+    spec = PRESETS[lookup]
     stack: list[tuple[str, float]] = []
     notes: list[str] = []
     for key, strength, optional in spec["stack"]:
@@ -1389,9 +1524,10 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
             notes.append(f"optional LoRA missing, dropped: {fname}")
         else:
             notes.append(f"required LoRA missing: {fname} → preset {fallback}")
-            if fallback == name:
+            fb = fallback if fallback in PRESETS else canonical_preset(fallback)
+            if fb == lookup or fb not in PRESETS:
                 raise EpisodeError(f"preset {name} unusable and no fallback")
-            out = resolve_preset(fallback, loras_dir, fallback=fallback)
+            out = resolve_preset(fb, loras_dir, fallback=fb)
             out["notes"] = notes + out.get("notes", [])
             return out
     names = [s[0].lower() for s in stack]
@@ -1589,7 +1725,7 @@ def preflight(ep: dict[str, Any], root: Path | str, *, need_ffmpeg: bool = True)
         errs.append(str(e))
     if need_ffmpeg and not shutil.which("ffmpeg"):
         errs.append("ffmpeg missing")
-    preset_name = str((ep.get("render") or {}).get("preset") or "fast")
+    preset_name = canonical_preset(str((ep.get("render") or {}).get("preset") or "fast"))
     trigger = PRESETS.get(preset_name, PRESETS["fast"])["trigger"]
     for beat, _prompt, perrs in beat_prompts(ep, trigger=trigger):
         for e in perrs:
@@ -1856,6 +1992,7 @@ def run_episode(
     fresh: bool = False,
     preset_override: str | None = None,
     camera_pack_override: str | None = None,
+    connect_override: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -1864,6 +2001,20 @@ def run_episode(
     """The one click: preflight → every beat → HUD → cards → stitch. Resumes from raw/."""
     root = Path(root)
     ensure_episode_tree(root)
+    ep = prepare_episode(
+        ep,
+        connect_override=connect_override,
+        camera_pack_override=camera_pack_override,
+        preset_override=preset_override,
+    )
+    print(
+        describe_run(
+            connect=episode_connect(ep),
+            camera=episode_camera_pack(ep),
+            preset=str((ep.get("render") or {}).get("preset") or ""),
+            episode=str(ep.get("slug") or ""),
+        )
+    )
     errs = preflight(ep, root)
     if errs:
         raise EpisodeError("preflight failed:\n- " + "\n- ".join(errs))
@@ -1881,6 +2032,7 @@ def run_episode(
         "canvas": f"{canvas[0]}x{canvas[1]}",
         "preset_requested": preset_name,
         "camera_pack": pack_name,
+        "connect": episode_connect(ep),
         "lane": episode_lane(ep),
         "checkpoint": episode_checkpoint(ep),
         "dry_run": bool(dry_run),
@@ -2061,6 +2213,9 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
             flags.append(f"{beat.get('sampler') or 'euler'}+{beat.get('scheduler') or 'simple'}")
         if uses_last_still(beat):
             flags.append(f"still={beat_still_as(beat)}")
+        connect = episode_connect(ep)
+        if connect:
+            flags.append(connect)
         props = ",".join(beat_props(ep, beat)) if src != "ui" else "menu"
         lines.append(f"{beat['id']:<20} {src:<5} {start:>4.1f}s+{seconds:<4.1f} props[{props}] {' '.join(flags):<18} {hud.get('mission') or ''}{note}")
     return lines
@@ -2070,14 +2225,15 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
         "  stills   stills-only preview trailer (no GPU)\n"
         "  finish   HUD + cards + stitch over existing raw/*.mp4\n"
-        "  --preset speed|balance|quality (aliases: fast/preview=speed, daily=balance)\n"
-        "  --camera side2d|action3d (T2V stories; add packs in h3_episode_packs.py)\n"
+        "  --preset speed|balance|quality（迷ったら balance）\n"
+        "  --camera side2d|action3d（迷ったら side2d）\n"
+        "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=前の尻からI2V。landing=着地スチール）\n"
     )
 
 
@@ -2099,14 +2255,18 @@ def main(argv: list[str] | None = None) -> int:
     fresh = "--fresh" in opts
     preset = None
     camera = None
+    connect = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
         preset = opts[opts.index("--preset") + 1]
     if "--camera" in opts:
         camera = opts[opts.index("--camera") + 1]
+    if "--connect" in opts:
+        connect = opts[opts.index("--connect") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
+    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset)
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():
         ensure_episode_tree(out_dir)
@@ -2125,7 +2285,8 @@ def main(argv: list[str] | None = None) -> int:
         ckpt = episode_checkpoint(ep)
         print(
             f"lane {episode_lane(ep)} | checkpoint {ckpt} ({CHECKPOINTS[ckpt]['file']}) | "
-            f"tone {episode_tone(ep)} | camera {episode_camera_pack(ep, camera) or '-'} | "
+            f"tone {episode_tone(ep)} | connect {episode_connect(ep) or '-'} | "
+            f"camera {episode_camera_pack(ep, camera) or '-'} | "
             f"preset {preset or (ep.get('render') or {}).get('preset') or 'fast'} | "
             f"cards: {cards_note or 'none'} | expected ≈ {expected_duration(ep):.1f}s"
         )
@@ -2136,12 +2297,20 @@ def main(argv: list[str] | None = None) -> int:
         print("preflight ok:", ep.get("slug"), f"{len(ep.get('beats') or [])} beats", f"{gpu} to render", canvas_for(ep), "→", output_size_for(ep))
         return 0
     if cmd == "prompts":
-        trig = PRESETS[str(preset or (ep.get("render") or {}).get("preset") or "fast")]["trigger"]
+        trig = PRESETS[canonical_preset(str(preset or (ep.get("render") or {}).get("preset") or "fast"))]["trigger"]
         for p in write_prompts(ep, Path(work) / "logs", trigger=trig):
             print(p)
         return 0
     if cmd == "dry-run":
-        final = run_episode(ep, work, dry_run=True, fresh=fresh, preset_override=preset, camera_pack_override=camera)
+        final = run_episode(
+            ep,
+            work,
+            dry_run=True,
+            fresh=fresh,
+            preset_override=preset,
+            camera_pack_override=camera,
+            connect_override=connect,
+        )
         print(final, f"{probe_duration(final):.2f}s")
         return 0
     if cmd == "stills":

@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
 
 from h3_episode import EPISODE_HELPERS  # noqa: E402
+from h3_episode_packs import ui_choices  # noqa: E402
 
 BRANCH = "cursor/h3-kasumi-adult-0402"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
@@ -23,14 +24,19 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：episode.json → 全ビート → HUD → 連結 → episodes/<slug>/final/ → 停止
+CELL = r'''#@title 一発：上から 1・2・3 を選んで Run all（迷ったらそのまま）
 EPISODE = "__EPISODE__"  #@param {type:"string"}
-PRESET = "balance"  #@param ["speed", "balance", "quality"]
-CAMERA = "side2d"  #@param ["side2d", "action3d"]
+#@markdown ---
+#@markdown **1. つなぎ方**（迷ったら「カット」）
+CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
+#@markdown **2. カメラ**（迷ったら「横スク」）
+CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
+#@markdown **3. 画質**（迷ったら「バランス」）
+PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 print("=" * 60)
-print(" H3 episode one-click:", EPISODE, "preset", PRESET, "camera", CAMERA)
+print(" H3 episode one-click:", EPISODE)
 print("=" * 60)
 
 import os, shutil, subprocess, sys, urllib.request
@@ -48,6 +54,7 @@ os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
+os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
@@ -96,19 +103,29 @@ if rc:
 print("成功。完成動画は Drive episodes/" + EPISODE + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
 '''
 
-MD = f"""# MiniMax H3 エピソード一発（episode.json → 完成動画）
+MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 
-**コードセルは1本。Run all で終わる。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
+**コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
+
+## 上から 3 つだけ選ぶ
+
+| # | 項目 | 迷ったら | 他の選択肢 |
+|---|---|---|---|
+| 1 | つなぎ方 | **カット**（本ごとに撮り直し可。カメラを変えられる） | **前の尻から続ける**＝2本目以降を前クリップ最終フレームから I2V。**着地スチールへ着く**＝用意した jpg に着地 |
+| 2 | カメラ | **横スク**（真横・全身・2D） | **3Dアクション**（引きの三人称。カットつなぎのとき画角が回る） |
+| 3 | 画質 | **バランス** | **スピード**＝最速（格闘 LoRA なし）／**質**＝きれい・時間かかる |
+
+シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ・T2V つなぎ。カメラは `CAMERA`（side2d / action3d）。プリセットは speed / balance / quality。Combat は 06 と 10。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ。Combat は 06 と 10。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - `EPISODE = "bandai-district-short"` は 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
 
@@ -122,6 +139,12 @@ def make_nb() -> dict:
         .replace("__EPISODE__", EPISODE_DEFAULT)
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
+        .replace("__CONNECT_DEFAULT__", json.dumps(ui_choices("connect")[0], ensure_ascii=False))
+        .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
+        .replace("__CAMERA_DEFAULT__", json.dumps(ui_choices("camera")[0], ensure_ascii=False))
+        .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
+        .replace("__PRESET_DEFAULT__", json.dumps(ui_choices("preset")[1], ensure_ascii=False))
+        .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
     )
     return {
         "nbformat": 4,

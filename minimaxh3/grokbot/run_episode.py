@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Grokbot / Cursor one-shot: render a whole episode on Colab via the official colab CLI, then stop.
 
-    python minimaxh3/grokbot/run_episode.py --episode bandai-district [--preset balance] [--camera side2d] [--fresh] [--dry-run]
+    python minimaxh3/grokbot/run_episode.py --episode bandai-district [--preset balance] [--camera side2d] [--connect t2v] [--fresh] [--dry-run]
 
 Not an Automation. One explicit run = one finished mp4 under Drive episodes/<slug>/final/.
 The production T2V / I2V / R2V runners and their inbox are not involved.
@@ -21,13 +21,14 @@ for p in (HERE.parents[1], HERE.parents[2] / "colab"):
         sys.path.insert(0, str(p))
 
 from h3_colab_cli import exec_file, mount_drive, orchestrate_commands, start_session, stop_session  # noqa: E402
-from h3_episode import CAMERA_PACKS, EPISODE_HELPERS, PRESETS, SLUG_RE, EpisodeError  # noqa: E402
+from h3_episode import CAMERA_PACKS, CONNECT_MODES, EPISODE_HELPERS, PRESETS, SLUG_RE, EpisodeError  # noqa: E402
+from h3_episode_packs import CAMERA_ALIASES, CONNECT_ALIASES  # noqa: E402
 
 DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -39,6 +40,7 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE'] = {slug!r}\n"
         f"os.environ['H3_EPISODE_PRESET'] = {preset!r}\n"
         f"os.environ['H3_EPISODE_CAMERA'] = {camera!r}\n"
+        f"os.environ['H3_EPISODE_CONNECT'] = {connect!r}\n"
         f"os.environ['H3_EPISODE_FRESH'] = {('1' if fresh else '0')!r}\n"
         f"os.environ['H3_HELPER_BRANCH'] = {branch!r}\n"
         "os.environ.setdefault('H3_DRIVE_ROOT', '/content/drive/MyDrive/minimax-h3-comfyui')\n"
@@ -64,8 +66,9 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="One-click H3 episode on Colab")
     p.add_argument("--episode", required=True, help="slug under minimaxh3/episodes and Drive episodes/")
-    p.add_argument("--preset", default="", choices=["", *PRESETS], help="override episode.json render.preset (speed|balance|quality)")
-    p.add_argument("--camera", default="", choices=["", *CAMERA_PACKS], help="override episode.json render.camera_pack (side2d|action3d)")
+    p.add_argument("--preset", default="", choices=["", *PRESETS], help="画質: speed / balance / quality（迷ったら balance）")
+    p.add_argument("--camera", default="", choices=["", *CAMERA_PACKS, *CAMERA_ALIASES], help="カメラ: side2d / action3d（迷ったら side2d）")
+    p.add_argument("--connect", default="", choices=["", *CONNECT_MODES, *CONNECT_ALIASES], help="つなぎ: t2v=カット / chain=前の尻 / landing=着地スチール（迷ったら t2v）")
     p.add_argument("--fresh", action="store_true", help="re-render beats that already have raw clips")
     p.add_argument("--branch", default=os.environ.get("H3_HELPER_BRANCH") or DEFAULT_BRANCH)
     p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")
@@ -76,7 +79,15 @@ def main(argv: list[str] | None = None) -> int:
     if not SLUG_RE.match(args.episode):
         raise EpisodeError(f"bad slug {args.episode!r}")
     main_path = Path("/content/h3_episode_colab_main.py")
-    script = exec_script(args.episode, preset=args.preset, fresh=args.fresh, branch=args.branch, main_path=main_path, camera=args.camera)
+    script = exec_script(
+        args.episode,
+        preset=args.preset,
+        fresh=args.fresh,
+        branch=args.branch,
+        main_path=main_path,
+        camera=args.camera,
+        connect=args.connect,
+    )
     with tempfile.NamedTemporaryFile("w", suffix="_h3_episode.py", delete=False, encoding="utf-8") as fh:
         fh.write(script)
         local = Path(fh.name)

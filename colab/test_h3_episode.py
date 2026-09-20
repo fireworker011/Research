@@ -34,29 +34,30 @@ from h3_episode import (  # noqa: E402
     STOCK_ONLY_SLUGS,
     STILL_LAST_HEADER,
     EpisodeError,
-    camera_angle,
-    camera_line,
-    episode_camera_pack,
-    episode_checkpoint,
-    episode_lane,
-    ensure_episode_checkpoint,
-    resolve_unet,
-    stage_erotic_unet,
+    apply_connect_mode,
     apply_extra_loras,
-    beat_still_as,
-    uses_last_still,
     assert_not_production_root,
-    beat_props,
     beat_prompts,
+    beat_props,
     beat_source,
+    beat_still_as,
     beat_window,
     bootstrap_episode,
     build_beat_prompt,
     build_episode_graph,
+    camera_angle,
+    camera_line,
+    canonical_connect,
+    canonical_preset,
     canvas_for,
     duration_ladder,
     episode_assets,
+    episode_camera_pack,
+    episode_checkpoint,
+    episode_connect,
+    episode_lane,
     episode_root,
+    ensure_episode_checkpoint,
     expected_duration,
     finish_episode,
     forbidden_hits,
@@ -70,10 +71,13 @@ from h3_episode import (  # noqa: E402
     preflight,
     render_beat_comfy,
     resolve_preset,
+    resolve_unet,
     run_episode,
+    stage_erotic_unet,
     stage_still,
     stills_trailer,
     subtitle_windows,
+    uses_last_still,
     validate_beat_prompt,
     validate_episode,
 )
@@ -146,15 +150,21 @@ def test_notebook_is_one_cell_and_isolated():
     assert "h3_episode_colab_main" in src
     assert 'EPISODE = "kasumi-late-desk-adult"' in src
     assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
-    assert 'PRESET = "balance"' in src
-    assert '"speed", "balance", "quality"' in src
-    assert 'CAMERA = "side2d"' in src
-    assert '"side2d", "action3d"' in src
+    assert 'PRESET = "バランス"' in src
+    assert '"スピード", "バランス", "質"' in src or "スピード" in src
+    assert 'CAMERA = "横スク"' in src
+    assert "3Dアクション" in src
+    assert 'CONNECT = "カット"' in src
+    assert "前の尻から続ける" in src
+    assert "着地スチールへ着く" in src
     assert "H3_EPISODE_CAMERA" in src
+    assert "H3_EPISODE_CONNECT" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
     assert "kasumi-late-desk-adult" in md
+    assert "迷ったら" in md
+    assert "着地スチール" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
@@ -466,7 +476,8 @@ def test_resolve_preset_fallbacks(tmp_path):
         assert "cinema" not in keys, name
         assert not ("larry" in keys and any(k.startswith("turbo") for k in keys)), name
     assert set(PRESET_CANON) == {"speed", "balance", "quality"}
-    assert PRESET_ALIASES == {"fast": "speed", "preview": "speed", "daily": "balance"}
+    assert PRESET_ALIASES["fast"] == "speed" and PRESET_ALIASES["daily"] == "balance"
+    assert canonical_preset("スピード") == "speed" and canonical_preset("質優先") == "quality"
     assert "combat" in LORA_FILES and "combat" not in {k for spec in PRESETS.values() for k, _s, _o in spec["stack"]}
     assert "cinema" not in {k for spec in PRESET_CANON.values() for k, _s, _o in spec["stack"]}
 
@@ -578,6 +589,7 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     assert ep["cards"]["fail"]["reason"] == "正常位で動けない"
     assert all(not b.get("reuse") for b in ep["beats"])
     assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
+    assert ep["render"]["connect"] == "t2v"
     gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
     assert all(b["source"] == "t2v" for b in gpu)
     assert all(b.get("still_as") not in ("last", "both") for b in gpu)
@@ -626,6 +638,7 @@ def test_hospital_exit_adult_escape_while_joined():
     gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
     assert all(b["source"] == "t2v" for b in gpu)
     assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
+    assert ep["render"]["connect"] == "t2v"
     for beat in ep["beats"]:
         still = beat.get("still")
         if still:
@@ -698,6 +711,46 @@ def test_camera_packs_rotate_and_t2v_rejects_last_frame_lock():
     bad = dict(gpu[0], camera="slow-motion close-up")
     assert any("slow motion" in e for e in validate_episode(dict(ep, beats=[bad, *ep["beats"][1:]])))
     assert any("slow-mo" in h.lower() or "slow" in h.lower() for h in forbidden_hits("no slow-mo please"))
+
+
+def test_connect_modes_t2v_chain_landing_and_ui_labels():
+    assert canonical_connect("カット") == "t2v"
+    assert canonical_connect("前の尻から続ける") == "chain"
+    assert canonical_connect("着地スチールへ着く") == "landing"
+    assert canonical_connect("i2v_chain") == "chain"
+    ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    assert episode_connect(ep) == "t2v"
+    stock = load_episode(KASUMI_DIR / "episode.json")
+    assert apply_connect_mode(stock) is stock
+    assert [beat_source(b) for b in apply_connect_mode(stock)["beats"][:3]] == [beat_source(b) for b in stock["beats"][:3]]
+
+    chained = apply_connect_mode(ep, "chain")
+    assert validate_episode(chained, root=KASUMI_ADULT_DIR) == []
+    gpu = [b for b in chained["beats"] if not is_ui_beat(b)]
+    assert beat_source(gpu[0]) == "still" and beat_still_as(gpu[0]) == "first"
+    assert all(beat_source(b) == "chain" for b in gpu[1:])
+    assert all(b.get("still_as") not in ("last", "both") for b in gpu[1:])
+    chain_prompt = build_beat_prompt(chained, gpu[1])
+    assert "<Picture 1>" in chain_prompt
+    assert "This shot continues the previous one without a cut" in chain_prompt
+    assert "The camera stays in this setup" in chain_prompt
+    assert "This shot:" not in chain_prompt
+
+    landed = apply_connect_mode(ep, "着地スチールへ着く")
+    assert validate_episode(landed, root=KASUMI_ADULT_DIR) == []
+    gpu_l = [b for b in landed["beats"] if not is_ui_beat(b)]
+    assert beat_source(gpu_l[0]) == "still" and beat_still_as(gpu_l[0]) == "first"
+    later = [b for b in gpu_l[1:] if b.get("still")]
+    assert later and all(beat_still_as(b) == "last" for b in later)
+    aisle = next(b for b in landed["beats"] if b["id"] == "04-aisle")
+    start, seconds = beat_window(landed, aisle)
+    assert start + seconds == pytest.approx(10.0, abs=0.05)
+    land_prompt = build_beat_prompt(landed, later[0])
+    assert "<Picture 2>" in land_prompt and STILL_LAST_HEADER in land_prompt
+    assert "The camera stays in this setup" in land_prompt
+
+    cuts = apply_connect_mode(landed, "カット")
+    assert all(beat_source(b) == "t2v" for b in cuts["beats"] if not is_ui_beat(b))
 
 
 def test_apply_extra_loras_drops_cinema(tmp_path):
@@ -945,6 +998,7 @@ def test_exec_script_is_self_contained():
     assert "os.environ['H3_EPISODE'] = 'bandai-district'" in script
     assert "H3_EPISODE_FRESH'] = '1'" in script
     assert "H3_EPISODE_CAMERA" in script
+    assert "H3_EPISODE_CONNECT" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")

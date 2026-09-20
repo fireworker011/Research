@@ -21,7 +21,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 
 ## 一発の実行
 
-**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、`EPISODE` に slug、`PRESET`（speed / balance / quality）、`CAMERA`（side2d / action3d）を選んで Run all。
+**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、上から **つなぎ方・カメラ・画質** の3つを選んで Run all。迷ったらそのまま（カット / 横スク / バランス）。
 GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
@@ -76,9 +76,10 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - 英語で書く。日本語は台詞の中身だけ（`speech[].line`、かな限定、`「」` は自動で付く）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
-- 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラや速度の種類を増やすときだけ `h3_episode_packs.py` に1エントリ足す
+- `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（本ごとに撮り直し可）／`chain`＝前の尻から続ける（2本目以降は前クリップ最終フレームから I2V）／`landing`＝着地スチールへ着く（用意した jpg を Picture 2 にする。窓はクリップ尻へずらす）
+- 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラ・速度・つなぎを増やすときだけ `h3_episode_packs.py` に1エントリ足す
 - `render.camera_pack`: `side2d`（横スク・常にサイド）／`action3d`（三人称3Dアクション）。T2V 話の既定は `side2d`。Colab の `CAMERA` と `--camera` で上書き
-- `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**（Picture 2 ロックでプロンプト修正ができなくなる）
+- `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**。着地モードを選ぶとエンジンが last に切り替える
 - 格闘ビートは `extra_loras: ["combat"]` と `trigger: "prfight2, prfin1"`。`tone: action` のときだけ。turbo プリセットでは combat を落とす。にじみ対策は `steps` 4–16（省略時 12）と `sampler` `euler`/`res_multistep`、`scheduler` `simple`/`beta`（省略時 euler+beta。作者の 20step は OOM するので上限 16）
 - `tone`: `mundane`（映像は日常のまま。`violence` は `none`、`physics` 禁止、action/camera/place に爆発・ジャンプ・格闘・追跡などの語を書くと否定形でも落ちる、`face_visible` は 2 本まで。プロンプトに「平穏な日常の動作」を足す）／`action`（旧来どおり。省略時）
 - `props` はビートごとに `beat.props: ["tenugui"]` で指定する。省略すると本文に名前が出た小道具だけ付く。**全小道具を全ビートに入れる経路は無い**（初回版で軽トラが全ショットに出た原因）

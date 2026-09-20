@@ -17,7 +17,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 5. 新しいネタは `minimaxh3/episodes/_template` を複製し、slug・キャスト・ビート・スチールを差し替える。コードは触らない。カメラ／速度の種類を増やすときだけ `h3_episode_packs.py` に1エントリ
 6. `colab/h3_*.py` と `minimaxh3/h3_*.py` を直したら両方に同じ内容をコピーし、`colab/test_h3_episode.py` を通す
 
-成人アクション予告（`*-adult`）は T2V でつなぐ。`still_as: last` のシームレス連鎖はしない。カメラは `side2d` か `action3d`。プリセットは `speed` / `balance` / `quality`。シネマ LoRA は積まない。スローモーションの語は否定形でも書かない。
+成人アクション予告（`*-adult`）のつなぎは Colab で選ぶ。迷ったら **カット**。`前の尻から続ける` は 2本目以降を前クリップ最終フレームから I2V。`着地スチールへ着く` は用意した jpg を Picture 2 にする。スローモーションの語は否定形でも書かない。視点は三人称ゲーム。シネマ LoRA は積まない。
 
 ## 本家の文法（README の比較表が根拠。ここを外すと初回版の崩れ方に戻る）
 
