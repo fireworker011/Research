@@ -23,8 +23,11 @@ from h3_episode import (  # noqa: E402
     LORA_FILES,
     MUNDANE_CLAUSE,
     PRESETS,
+    STILL_LAST_HEADER,
     EpisodeError,
     apply_extra_loras,
+    beat_still_as,
+    uses_last_still,
     assert_not_production_root,
     beat_props,
     beat_prompts,
@@ -442,11 +445,16 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
     assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
     assert ep["beats"][2]["source"] == "chain" and ep["beats"][2].get("still")
-    assert ep["beats"][5]["source"] == "still"  # papers in hand; do not chain from 04
-    assert ep["beats"][9]["source"] == "still"  # close two-shot; do not chain from 08
+    assert beat_still_as(ep["beats"][0]) == "both"
+    assert all(beat_still_as(ep["beats"][i]) == "last" for i in (2, 5, 9, 11))
+    assert uses_last_still(ep["beats"][2]) and not uses_last_still(ep["beats"][3])
+    assert beat_window(ep, ep["beats"][2]) == (5.0, 5.0)
+    assert ep["beats"][5]["source"] == "still" and beat_still_as(ep["beats"][5]) == "last"
+    assert ep["beats"][9]["source"] == "still" and beat_still_as(ep["beats"][9]) == "last"
     assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
     shove_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
-    assert "continues the previous one without a cut" in shove_prompt
+    assert STILL_LAST_HEADER in shove_prompt and "<Picture 2>" in shove_prompt
+    assert "lands on <Picture 2>" in shove_prompt
     assert "real-time third-person game speed" in shove_prompt
     assert "walking-and-hit pace" in shove_prompt
     assert "slow motion" not in shove_prompt.lower() and "slow-motion" not in shove_prompt.lower()
@@ -501,6 +509,22 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     assert g["22"]["inputs"]["sampler_name"] == COMBAT_SAMPLER
     assert g["23"]["inputs"]["scheduler"] == COMBAT_SCHEDULER
     assert g["23"]["inputs"]["steps"] == COMBAT_STEPS
+    last_g = build_episode_graph(
+        source="chain",
+        first_image="from.jpg",
+        last_image="03.jpg",
+        prompt=prompt,
+        unet="fl2va.safetensors",
+        preset=stacked,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/x",
+    )
+    assert last_g["101"]["inputs"]["image"] == "03.jpg"
+    assert last_g["20"]["inputs"]["last_frame"] == ["101", 0]
+    assert last_g["20"]["inputs"]["first_frame"] == ["100", 0]
 
 
 def test_combat_steps_cap_and_author_override(tmp_path):
@@ -510,6 +534,12 @@ def test_combat_steps_cap_and_author_override(tmp_path):
     ep = load_episode(KASUMI_DIR / "episode.json")
     ep["beats"][1]["steps"] = 12
     assert any("ui beat cannot have steps" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][0]["still_as"] = "last"
+    assert any("first beat cannot be still_as last" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][2]["trim"] = {"start": 0, "seconds": 5.0}
+    assert any("trim must include the last frame" in e for e in validate_episode(ep, root=KASUMI_DIR))
     daily = {"name": "daily", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "DY", "notes": []}
     loras = tmp_path / "loras"
     loras.mkdir()
