@@ -245,11 +245,14 @@ VIOLENCE_CLAUSE = (
 # Named "slow motion" even negated still gets drawn. Physics beats stay at gameplay pace.
 REALTIME_CLAUSE = (
     "Playback stays at real-time third-person game speed: the contact, the fold, and the sit-down "
-    "finish inside this one shot at walking-and-hit pace."
+    "finish inside this one shot at brisk walking-and-hit pace. Snappy. Motion starts at frame one."
 )
-GAMEPLAY_PACE_CLAUSE = "Playback stays at real-time third-person game speed."
+GAMEPLAY_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Brisk walking stride. "
+    "Snappy hits and snappy sex. Motion starts at frame one."
+)
 GAME_THIRD_PERSON_CLAUSE = (
-    "Always a third-person gameplay camera: the adults stay fully visible in frame at walking-and-hit pace."
+    "Always a third-person gameplay camera: the adults stay fully visible in frame at brisk walking-and-hit pace."
 )
 SLOWMO_TOKENS_RE = re.compile(
     r"\b(slow[\s-]?mo(?:tion)?s?|slo-?mos?|bullet[\s-]?time|time[\s-]?dilation)\b",
@@ -1461,7 +1464,7 @@ def build_beat_prompt(
     last_still = uses_last_still(beat)
     if last_still:
         desc.append("<Picture 1> is the opening identity lock; the clip starts exactly on it.")
-        desc.append("<Picture 2> is the authored landing; the clip arrives on it at the last frame. Same faces, hair, and clothes. Arrival is at walking-and-hit pace.")
+        desc.append("<Picture 2> is the authored landing; the clip arrives on it at the last frame. Same faces, hair, and clothes. Arrival is at brisk walking-and-hit pace.")
         if beat_still_as(beat) == "last":
             desc.append("This shot continues the previous one without a cut until it lands on <Picture 2>.")
         elif beat_still_as(beat) == "both":

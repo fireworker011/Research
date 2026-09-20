@@ -16,7 +16,7 @@
     "connect": "t2v",
     "voice": "japanese"
   },
-  "style": "Third-person open-world game cutscene look, live-action photoreal game footage, shallow depth of field, pulled-back full-body framing, real-time playback, no anime, no illustration",
+  "style": "Third-person open-world game cutscene look, live-action photoreal game footage, shallow depth of field, pulled-back full-body framing, brisk real-time playback, no anime, no illustration",
   "violence": "game",
   "world": {
     "name": "Kasumi East floor morning",
@@ -27,30 +27,30 @@
     "mio": {
       "name_ja": "白石 みお",
       "name_en": "Mio",
-      "age": 27,
-      "lock": "27-year-old Japanese woman, adult face, shoulder-length black hair with a small matte clip on the right, fully nude, no clothes, no blouse, no skirt, no tights, female body, no penis, never futanari, a beige canvas tote on one shoulder, a navy lanyard with a blank white badge, tired calm morning expression, natural makeup",
+      "age": 21,
+      "lock": "21-year-old Japanese woman, adult face, slim body, C-cup breasts, shoulder-length black hair with a small matte clip on the right, fully nude, no clothes, no blouse, no skirt, no tights, female body, no penis, never futanari, a beige canvas tote on one shoulder, a navy lanyard with a blank white badge, tired calm morning expression, natural makeup",
       "voice": "clear young adult female voice"
     },
     "aoki": {
       "name_ja": "警備 青木",
       "name_en": "Aoki",
-      "age": 44,
-      "lock": "44-year-old Japanese woman, adult face, short black hair, fully nude, no clothes, no vest, no shirt, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base, a clipboard in one hand, bored calm morning expression",
-      "voice": "low middle-aged female voice"
+      "age": 27,
+      "lock": "27-year-old Japanese woman, adult face, slim body, E-cup breasts, short black hair, fully nude, no clothes, no vest, no shirt, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base, a clipboard in one hand, bored calm morning expression",
+      "voice": "young adult female voice"
     },
     "kuroki": {
       "name_ja": "課長 黒木",
       "name_en": "Kuroki",
-      "age": 48,
-      "lock": "48-year-old Japanese woman, adult face, short black hair, thin metal glasses, fully nude, no clothes, no jacket, no necktie, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base, looks at papers, unhurried",
-      "voice": "low middle-aged female voice"
+      "age": 29,
+      "lock": "29-year-old Japanese woman, adult face, slim body, E-cup breasts, short black hair, thin metal glasses, fully nude, no clothes, no jacket, no necktie, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base, looks at papers",
+      "voice": "young adult female voice"
     },
     "nana": {
       "name_ja": "西条 なな",
       "name_en": "Nana",
-      "age": 29,
-      "lock": "29-year-old Japanese woman, adult face, short brown bob, fully nude, no clothes, no blouse, no slacks, female body, no penis, never futanari, sits at a desk with a mug, mild morning expression",
-      "voice": "soft adult female voice"
+      "age": 23,
+      "lock": "23-year-old Japanese woman, adult face, slim body, D-cup breasts, short brown bob, fully nude, no clothes, no blouse, no slacks, female body, no penis, never futanari, sits at a desk with a mug, mild morning expression",
+      "voice": "soft young adult female voice"
     }
   },
   "props": {
@@ -71,7 +71,7 @@
       "a pause-menu command window over a frozen frame",
       "a deadpan mission-failed card after a missionary pin",
       "a french kiss used as a game evade",
-      "a knockdown followed at once by oral at walking-and-hit pace"
+      "a knockdown followed at once by oral at brisk walking-and-hit pace"
     ],
     "never": [
       "山田",
@@ -159,7 +159,7 @@
       ],
       "place": "Open-plan desk row at morning, light oak desks, beige partitions, grey carpet aisle",
       "camera": "Nana seated at left, Mio standing in the aisle, both adults readable",
-      "action": "Mio walks the aisle past Nana's desk row, fully nude; nude Nana sits with both hands on a white mug and looks up; both stay in this desk row and stay fully nude",
+      "action": "Mio brisk-walks the aisle past Nana's desk row at walking-and-hit pace, fully nude; nude Nana sits with both hands on a white mug and looks up; both stay in this desk row and stay fully nude. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -236,7 +236,7 @@
       ],
       "place": "The same light oak desk row, Nana seated at left, Mio standing in the aisle, morning window light",
       "camera": "Nana seated at left, Mio standing close at the desk, mouths joined",
-      "action": "Mio steps in close. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Mouths stay joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat. Mio can pass",
+      "action": "Mio steps in close at once. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at brisk walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Mouths stay joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat. Mio can pass",
       "voices": [
         {
           "who": "mio",
@@ -284,7 +284,7 @@
       ],
       "place": "Open-plan aisle at morning, a beige cubicle partition at the left, grey carpet running toward a window wall",
       "camera": "Mio crouches at left beside the partition, Aoki walks in from the right",
-      "action": "Mio crouches in profile beside the cubicle partition, fully nude, tote on her shoulder, while nude Aoki walks toward her down the aisle with a clipboard and an erect 20cm; both stay fully nude; nobody else is in frame",
+      "action": "Mio crouches in profile beside the cubicle partition, fully nude, tote on her shoulder, while nude Aoki brisk-walks toward her down the aisle at walking-and-hit pace with a clipboard and an erect 20cm; both stay fully nude; nobody else is in frame. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -369,7 +369,7 @@
       ],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light, desks in the deep background",
       "camera": "Both adults standing in the aisle, full bodies including feet",
-      "action": "A two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Aoki sits down hard on the carpet like a ragdoll. Clipboard slides. Aoki stays seated, uninjured, erect 20cm still up, eyes on the board. Mio stays standing. Both stay fully nude",
+      "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then one heavy open-hand hit. Aoki sits down hard on the carpet like a ragdoll. Clipboard slides. Aoki stays seated, uninjured, erect 20cm still up, eyes on the board. Mio stays standing. Both stay fully nude. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -415,7 +415,7 @@
       ],
       "place": "The same open-plan aisle after Aoki sits, beige cubicle partitions, grey carpet",
       "camera": "Aoki seated on the carpet at right, Mio kneeling in front",
-      "action": "Without slowing, Mio kneels to seated Aoki at walking-and-hit pace. Both hands stay on Aoki's hips, not the shaft. Mio's mouth already takes the erect 20cm to the BASE. Deep jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Aoki looks extremely good, melting with pleasure, mouth open, eyes half-closed, seated uninjured, erect 20cm still up. Aoki finishes in Mio's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips, clipboard on the floor. Real-time. Consensual adult game beat",
+      "action": "Mio drops to her knees at once at brisk walking-and-hit pace. Both hands stay on Aoki's hips, not the shaft. Mio's mouth already takes the erect 20cm to the BASE. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Aoki looks extremely good, melting with pleasure, mouth open, eyes half-closed, seated uninjured, erect 20cm still up. Aoki finishes in Mio's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips, clipboard on the floor. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "mio",
@@ -462,7 +462,7 @@
       ],
       "place": "A plain beige corridor wall beside an open office doorway, grey carpet, morning fluorescent light",
       "camera": "Mio in profile at the doorway, Kuroki at the inner desk",
-      "action": "Mio stands in profile at the open doorway, fully nude; nude Kuroki stays seated at the inner desk looking down at papers with an erect 20cm; both stay in these spots and stay fully nude",
+      "action": "Mio stands in profile at the open doorway, fully nude; nude Kuroki stays seated at the inner desk looking down at papers with an erect 20cm; both stay in these spots and stay fully nude. Brisk game-cut timing, motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -546,7 +546,7 @@
       ],
       "place": "Inside the small inner office: a wood desk, a black rolling chair, morning window light, grey carpet",
       "camera": "Both adults standing in the inner office, full bodies including feet",
-      "action": "A two-second standing flurry at walking-and-hit pace, then Kuroki lands one heavy open-hand hit. Mio sits down hard on the carpet like a ragdoll. Papers slide. Kuroki stays standing, glasses on, erect 20cm, uninjured. Mio stays seated, uninjured. Both stay fully nude. Mio loses",
+      "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then Kuroki lands one heavy open-hand hit. Mio sits down hard on the carpet like a ragdoll. Papers slide. Kuroki stays standing, glasses on, erect 20cm, uninjured. Mio stays seated, uninjured. Both stay fully nude. Mio loses. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -591,7 +591,7 @@
       ],
       "place": "The same inner office carpet after Mio sits, wood desk, morning window light",
       "camera": "Mio on her back on the carpet, Kuroki kneeling between her legs",
-      "action": "Without slowing, Kuroki kneels between Mio's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base. Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Real-time. Consensual adult game beat. Mio cannot stand up",
+      "action": "Kuroki kneels between Mio's legs at once at brisk walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base in one snappy thrust. Hips keep a brisk walking-and-hit rhythm. Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Brisk real-time. Consensual adult game beat. Mio cannot stand up",
       "voices": [
         {
           "who": "mio",
@@ -636,7 +636,7 @@
       ],
       "place": "The same inner office, Mio on her back, Kuroki joined on top, morning window light",
       "camera": "The same pin on the carpet, both full bodies",
-      "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; nobody clocks in",
+      "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; hips keep a brisk walking-and-hit rhythm; nobody clocks in",
       "voices": [
         {
           "who": "mio",

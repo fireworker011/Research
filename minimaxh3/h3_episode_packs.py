@@ -35,7 +35,7 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
         "lock": (
             "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. "
             "Both adults stay full body including feet. The camera stays in the side plane and tracks "
-            "only left and right on a straight line at real-time game speed"
+            "only left and right on a straight line at brisk walking game speed"
         ),
         "angles": (
             "locked side-on wide at hip height, both adults full body including feet, horizontal track only",
@@ -52,7 +52,7 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
         "hint_ja": "引きの三人称。カットつなぎのときショットごとに回る。",
         "lock": (
             "Pulled-back third-person 3D-action gameplay camera. Both adults stay full body including feet. "
-            "The camera stays behind or beside the player at hip-to-shoulder height at real-time game speed"
+            "The camera stays behind or beside the player at hip-to-shoulder height at brisk walking game speed"
         ),
         "angles": (
             "behind-left three-quarter at shoulder height, pulled back, both adults full body including feet",

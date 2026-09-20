@@ -631,8 +631,15 @@ def test_erotic_comfy_omits_removed_normalvram_flag():
 def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert validate_episode(ep, root=KASUMI_ADULT_DIR) == []
-    assert ep["tone"] == "action" and ep["violence"] == "game"
-    assert ep["slug"] == "kasumi-late-desk-adult"
+    assert ep["cast"]["mio"]["age"] == 21
+    assert ep["cast"]["nana"]["age"] == 23
+    assert ep["cast"]["aoki"]["age"] == 27
+    assert ep["cast"]["kuroki"]["age"] == 29
+    assert "C-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
+    assert "D-cup" in ep["cast"]["nana"]["lock"] and "slim" in ep["cast"]["nana"]["lock"]
+    assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
+    assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
+    assert "unhurried" not in ep["cast"]["kuroki"]["lock"]
     assert len(ep["beats"]) == 12
     assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
     assert [b["id"] for b in ep["beats"]] == [
@@ -696,6 +703,7 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
         assert "<Picture 1>" not in prompt
         low = prompt.lower()
         assert "slow motion" not in low and "slow-mo" not in low and "bullet time" not in low
+        assert "brisk" in low or "snappy" in low
 
 
 def test_hospital_exit_adult_escape_while_joined():
