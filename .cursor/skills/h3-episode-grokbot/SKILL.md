@@ -8,6 +8,7 @@ description: One-shot MiniMax H3 episode render. After one explicit prompt, run 
 人間の指示は **一度きり**。`run_episode.py --episode <slug>` を実行し、Drive `episodes/<slug>/final/latest.mp4` が出たら終わる。チャットで毎回呼ばない。15分スケジュールに登録しない。inbox は触らない。
 
 このエージェントは **エピソード一発**（`episode.json` → 全ビート I2V/chain/T2V → HUD → タイトル／免責エンドカード → xfade 連結）。I2V / T2V / R2V ジョブは触らない。投稿しない。アフィURLは禁止。Imagine しない。
+`kasumi-late-desk-adult` は既存エロ動画（③）と別チャット。命令は `GROKBOT.md` の「霞東フロア あさ」。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。
 
 ## このエージェントが起きたとき
 

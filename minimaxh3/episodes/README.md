@@ -114,6 +114,11 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 カバー → コマンド警備 → トート体当たり → 覗き → コマンド課長 → ファイル払い → コピーです → 席列 → コマンド同僚 → マグ → かばん → 着席 → 失敗。
 `tone: action`、`violence: game`。格闘3本だけ `extra_loras: ["combat"]` と `prfight2, prfin1`、euler+beta 12step。03/06/10/12 のスチールは last_frame（同じ場所の着地）。覗き・席列は切ってスチール先頭。Larry の後ろに積む。turbo とは同時に積まない。しゃがみカバーは横向き。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。台本は `episodes/kasumi-late-desk/SCRIPT.md`。準備は `PREP.md`。初回の 5 ビート ≈ 24.7 秒は Drive の `episode.json` に残ると連結がそこで終わる。bootstrap はブランチから取り直す。
 
+## 霞東フロア あさ（`kasumi-late-desk-adult`）
+
+霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
+約 45 秒。□口説く×3（ジュボ → 押し倒し挿入 → 密着）。Combat は 06 だけ（trigger 空）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。
+
 ## 番台ディストリクト（2 本）
 
 **bandai-district-short**: 5ビート ≈ 24.7秒、コールドオープン、`tone: mundane`。暖簾 3.0秒 → 自転車 5.0秒 → 理容室（HUD なし・字幕・完了）6.0秒 → 道具メニュー 2.2秒 → 軽トラ乗車 4.8秒 → ミッション失敗 → 免責。
