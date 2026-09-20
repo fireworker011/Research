@@ -32,6 +32,7 @@ from h3_episode import (  # noqa: E402
     beat_props,
     beat_prompts,
     beat_window,
+    bootstrap_episode,
     build_beat_prompt,
     build_episode_graph,
     canvas_for,
@@ -425,6 +426,7 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     assert validate_episode(ep, root=KASUMI_DIR) == []
     assert ep["tone"] == "action" and ep["violence"] == "game"
     assert len(ep["beats"]) == 12
+    assert expected_duration(ep) == pytest.approx(44.9, abs=0.2)
     ids = [b["id"] for b in ep["beats"]]
     assert ids == [
         "01-cover",
@@ -471,6 +473,58 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
         if "prfight2" in prompt:
             assert prompt.startswith("DY\nprfight2, prfin1")
         assert "badges carry no readable letters" in prompt
+
+
+def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):
+    drive = tmp_path / "kasumi-late-desk"
+    (drive / "stills").mkdir(parents=True)
+    old = {"schema": "h3-episode/v1", "slug": "kasumi-late-desk", "beats": [{"id": "01-cover"}, {"id": "02-peek"}, {"id": "05-desk"}]}
+    (drive / "episode.json").write_text(json.dumps(old), encoding="utf-8")
+    kept = drive / "stills" / "01-cover.jpg"
+    kept.write_bytes(b"keep-me")
+    fresh = load_episode(KASUMI_DIR / "episode.json")
+
+    def fake_fetch(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
+        dest = Path(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if str(url).endswith("episode.json"):
+            dest.write_text(json.dumps(fresh), encoding="utf-8")
+            return dest.stat().st_size > min_bytes
+        dest.write_bytes(b"SHOULD-NOT-CLOBBER-EXISTING" if dest.name == "01-cover.jpg" else (b"x" * (min_bytes + 1)))
+        return True
+
+    monkeypatch.setattr("h3_episode.fetch_text", fake_fetch)
+    fetched = bootstrap_episode("kasumi-late-desk", drive, branch="cursor/h3-ol-late-desk-33d9")
+    assert "episode.json" in fetched
+    ids = [b["id"] for b in load_episode(drive / "episode.json")["beats"]]
+    assert ids == [
+        "01-cover",
+        "02-ui-guard",
+        "03-shove",
+        "04-peek",
+        "05-ui-boss",
+        "06-files",
+        "07-talk",
+        "08-nana",
+        "09-ui-nana",
+        "10-mug",
+        "11-bag",
+        "12-desk",
+    ]
+    assert kept.read_bytes() == b"keep-me"
+    assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(44.9, abs=0.2)
+
+
+def test_bootstrap_keeps_drive_json_when_github_fails(tmp_path, monkeypatch):
+    drive = tmp_path / "kasumi-late-desk"
+    drive.mkdir()
+    (drive / "episode.json").write_text(
+        json.dumps({"schema": "h3-episode/v1", "slug": "kasumi-late-desk", "beats": [{"id": "05-desk"}]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("h3_episode.fetch_text", lambda *a, **k: False)
+    assert bootstrap_episode("kasumi-late-desk", drive) == []
+    assert [b["id"] for b in load_episode(drive / "episode.json")["beats"]] == ["05-desk"]
 
 
 def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):

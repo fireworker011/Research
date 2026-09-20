@@ -1077,17 +1077,34 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
         return False
 
 
+def _episode_beat_ids(path: Path) -> list[str]:
+    if not path.is_file():
+        return []
+    try:
+        return [str(b.get("id") or "") for b in (load_episode(path).get("beats") or [])]
+    except Exception:
+        return []
+
+
 def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None, repo: str = REPO) -> list[str]:
-    """First run on a fresh Drive: pull episode.json and its stills from GitHub. Never overwrites."""
+    """Pull episode.json from GitHub each run (Drive keeps the first packing otherwise). Stills never overwrite."""
     root = Path(root)
     ensure_episode_tree(root)
     br = branch or os.environ.get("H3_HELPER_BRANCH") or BRANCH
     fetched: list[str] = []
     ep_path = root / "episode.json"
-    if not ep_path.is_file():
-        if not fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br), ep_path):
-            raise EpisodeError(f"episode.json missing in {root} and not on GitHub ({br})")
+    prev_ids = _episode_beat_ids(ep_path)
+    staging = root / "logs" / "episode.json.fetch"
+    if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br), staging):
+        new_ids = _episode_beat_ids(staging)
+        shutil.copy2(staging, ep_path)
         fetched.append("episode.json")
+        if prev_ids and new_ids != prev_ids:
+            print(f"episode.json refreshed: {len(prev_ids)} beats → {len(new_ids)} beats")
+    elif not ep_path.is_file():
+        raise EpisodeError(f"episode.json missing in {root} and not on GitHub ({br})")
+    else:
+        print(f"episode.json fetch failed, keeping Drive copy ({len(prev_ids)} beats)")
     ep = load_episode(ep_path)
     for rel in episode_assets(ep):
         dest = root / rel

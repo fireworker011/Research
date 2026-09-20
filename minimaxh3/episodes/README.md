@@ -109,9 +109,9 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## 霞東フロア（`kasumi-late-desk`）
 
-約 50 秒。朝に遅刻した成人 OL が、警備・課長・同僚の四択を△（オフィス用品の体当たり）で抜けて自席へつく。失敗は「隣の席に座った」。借りるのはカバー・覗き・コマンド・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない。
+約 50 秒（12 ビート ≈ 44.9 秒）。朝に遅刻した成人 OL が、警備・課長・同僚の四択を△（オフィス用品の体当たり）で抜けて自席へつく。失敗は「隣の席に座った」。借りるのはカバー・覗き・コマンド・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない。
 カバー → コマンド警備 → トート体当たり → 覗き → コマンド課長 → ファイル払い → コピーです → 席列 → コマンド同僚 → マグ → かばん → 着席 → 失敗。
-`tone: action`、`violence: game`。格闘3本だけ `extra_loras: ["combat"]` と `prfight2, prfin1`、euler+beta 12step。03/06/10/12 のスチールは last_frame（同じ場所の着地）。覗き・席列は切ってスチール先頭。Larry の後ろに積む。turbo とは同時に積まない。しゃがみカバーは横向き。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。台本は `episodes/kasumi-late-desk/SCRIPT.md`。準備は `PREP.md`。
+`tone: action`、`violence: game`。格闘3本だけ `extra_loras: ["combat"]` と `prfight2, prfin1`、euler+beta 12step。03/06/10/12 のスチールは last_frame（同じ場所の着地）。覗き・席列は切ってスチール先頭。Larry の後ろに積む。turbo とは同時に積まない。しゃがみカバーは横向き。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。台本は `episodes/kasumi-late-desk/SCRIPT.md`。準備は `PREP.md`。初回の 5 ビート ≈ 24.7 秒は Drive の `episode.json` に残ると連結がそこで終わる。bootstrap はブランチから取り直す。
 
 ## 番台ディストリクト（2 本）
 

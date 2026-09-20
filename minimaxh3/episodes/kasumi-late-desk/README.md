@@ -12,6 +12,8 @@
 2. Colab ノート `minimax_h3_episode_bot.ipynb` を開き、`EPISODE = "kasumi-late-desk"`。マージ前は `BRANCH` をこの PR ブランチにする。Run all。
 3. または Grokbot に `minimaxh3/GROKBOT.md` の「霞東フロア」ブロックを貼る。
 
+初回パックは 5 ビート ≈ 24.7 秒（カバー・覗き・会話・かばん・着席）。Drive にその `episode.json` が残ると 12 ビートは走らない。Run all はブランチから `episode.json` を取り直す。スチールと既存 raw は残し、新しいビート ID だけ描く。
+
 GPU なし確認:
 
 ```bash
