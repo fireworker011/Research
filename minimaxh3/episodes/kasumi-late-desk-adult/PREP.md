@@ -12,7 +12,7 @@ Drive の 25秒 latest.mp4 は初回5カットなので見るな・reuse する�
 - エンジン上限 12ビート。ui は先頭禁止・連続禁止
 - HUD は生成後。プロンプトは英語。台詞だけかな
 - 「slow motion」「slowly」は書くな。口内も正常位も歩く速さ
-- 同じ場所の続きは `still_as: last`。場所が変わるときは切ってスチール先頭
+- GPU は T2V。隣接ショットは camera_pack で画角を変える。`still_as: last` のシームレス連鎖はしない（プロンプトで直せなくなる）
 
 ## この予告で撮るルート
 
@@ -22,7 +22,7 @@ Combat は **06-fight と 10-lose だけ**。`trigger: "prfight2, prfin1"`、eul
 
 ## スチール
 
-Kentuss Z-Image NSFW で 1280×720 を入れた。I2V の Picture 2 は今のファイルが勝つ。
+Kentuss Z-Image NSFW で 1280×720 を入れた。T2V 本番では先頭フレームにしない。カードと stills 予告用。
 - `08-nana.jpg` 席列。なな座位＋みお通路（01 の both）
 - `10-nana.jpg` ベロチュー着地（03）
 - `01-cover.jpg` みおしゃがみ＋青木ふたなり歩行（04 / 06）

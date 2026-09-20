@@ -7,13 +7,14 @@
   "clip_seconds": 10,
   "tone": "action",
   "render": {
-    "preset": "daily",
-    "fallback_preset": "fast",
+    "preset": "balance",
+    "fallback_preset": "speed",
     "seed": 42,
     "lane": "erotic",
-    "checkpoint": "eros-max"
+    "checkpoint": "eros-max",
+    "camera_pack": "side2d"
   },
-  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, shallow depth of field, pulled-back full-body framing, real-time playback, no anime, no illustration",
+  "style": "Third-person open-world game cutscene look, live-action photoreal game footage, shallow depth of field, pulled-back full-body framing, real-time playback, no anime, no illustration",
   "violence": "game",
   "world": {
     "name": "Kasumi East floor morning",
@@ -101,7 +102,11 @@
   "hud": {
     "theme": "bandai",
     "district_label": "霞東 Dist.",
-    "icons": ["席", "隠", "札"],
+    "icons": [
+      "席",
+      "隠",
+      "札"
+    ],
     "complete_text": "ミッション完了",
     "subtitles": true,
     "font": ""
@@ -135,15 +140,23 @@
   "beats": [
     {
       "id": "01-cover",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/08-nana.jpg",
-      "still_as": "both",
-      "trim": {"start": 0, "seconds": 3.0},
-      "cast": ["mio", "nana"],
+      "trim": {
+        "start": 0,
+        "seconds": 3.0
+      },
+      "cast": [
+        "mio",
+        "nana"
+      ],
       "face_visible": false,
-      "props": ["tote", "mug"],
+      "props": [
+        "tote",
+        "mug"
+      ],
       "place": "Open-plan desk row at morning, light oak desks, beige partitions, grey carpet aisle",
-      "camera": "Pulled-back third-person camera in the aisle at shoulder height, both adults full body, Nana seated at left, Mio in the aisle",
+      "camera": "Nana seated at left, Mio standing in the aisle, both adults readable",
       "action": "Mio walks the aisle past Nana's desk row, fully nude; nude Nana sits with both hands on a white mug and looks up; both stay in this desk row and stay fully nude",
       "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
@@ -157,7 +170,9 @@
         "heat": 5,
         "objective_bearing": 25,
         "objective_distance": 0.8,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
@@ -165,10 +180,17 @@
       "id": "02-ui-nana",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["mio"],
+      "cast": [
+        "mio"
+      ],
       "menu": {
         "title": "同僚",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 2
       },
       "hud": {
@@ -181,22 +203,32 @@
         "heat": 5,
         "objective_bearing": 20,
         "objective_distance": 0.55,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
     {
       "id": "03-kiss",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/10-nana.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["mio", "nana"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "mio",
+        "nana"
+      ],
       "face_visible": false,
-      "props": ["tote", "mug"],
+      "props": [
+        "tote",
+        "mug"
+      ],
       "place": "The same light oak desk row, Nana seated at left, Mio standing in the aisle, morning window light",
-      "camera": "Pulled-back third-person side two-shot at desk height, both adults readable, holding on the kiss",
-      "action": "Mio steps in close. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Arriving on Picture 2: mouths joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat. Mio can pass",
+      "camera": "Nana seated at left, Mio standing close at the desk, mouths joined",
+      "action": "Mio steps in close. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Mouths stay joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat. Mio can pass",
       "sfx": "Chair casters, a mug still on wood, a wet kiss, HVAC",
       "music": "A short synth stab on the kiss, then the bass",
       "hud": {
@@ -209,20 +241,31 @@
         "heat": 4,
         "objective_bearing": 12,
         "objective_distance": 0.5,
-        "icons_active": ["席"],
+        "icons_active": [
+          "席"
+        ],
         "complete": false
       }
     },
     {
       "id": "04-aisle",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/01-cover.jpg",
-      "trim": {"start": 0, "seconds": 4.0},
-      "cast": ["mio", "aoki"],
+      "trim": {
+        "start": 0,
+        "seconds": 4.0
+      },
+      "cast": [
+        "mio",
+        "aoki"
+      ],
       "face_visible": false,
-      "props": ["tote", "clipboard"],
+      "props": [
+        "tote",
+        "clipboard"
+      ],
       "place": "Open-plan aisle at morning, a beige cubicle partition at the left, grey carpet running toward a window wall",
-      "camera": "Pulled-back third-person camera at Mio's left at shoulder height, both adults full body in the aisle",
+      "camera": "Mio crouches at left beside the partition, Aoki walks in from the right",
       "action": "Mio crouches in profile beside the cubicle partition, fully nude, tote on her shoulder, while nude Aoki walks toward her down the aisle with a clipboard and an erect 20cm; both stay fully nude; nobody else is in frame",
       "sfx": "Quiet aisle, clipboard, HVAC",
       "music": "Bass holds; a sparse tick on the downbeat",
@@ -236,7 +279,9 @@
         "heat": 4,
         "objective_bearing": 8,
         "objective_distance": 0.45,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
@@ -244,10 +289,17 @@
       "id": "05-ui-guard",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["mio"],
+      "cast": [
+        "mio"
+      ],
       "menu": {
         "title": "警備員",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 0
       },
       "hud": {
@@ -260,26 +312,39 @@
         "heat": 4,
         "objective_bearing": 6,
         "objective_distance": 0.35,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
     {
       "id": "06-fight",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/01-cover.jpg",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["mio", "aoki"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "mio",
+        "aoki"
+      ],
       "face_visible": false,
       "physics": true,
-      "extra_loras": ["combat"],
+      "extra_loras": [
+        "combat"
+      ],
       "trigger": "prfight2, prfin1",
       "steps": 12,
       "sampler": "euler",
       "scheduler": "beta",
-      "props": ["tote", "clipboard"],
+      "props": [
+        "tote",
+        "clipboard"
+      ],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light, desks in the deep background",
-      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, office depth behind them, no orbit, no close-up",
+      "camera": "Both adults standing in the aisle, full bodies including feet",
       "action": "A two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Aoki sits down hard on the carpet like a ragdoll. Clipboard slides. Aoki stays seated, uninjured, erect 20cm still up, eyes on the board. Mio stays standing. Both stay fully nude",
       "sfx": "Palm hits, clipboard clack, a body sit on carpet, HVAC",
       "music": "Bass holds; a taiko hit on the sit-down",
@@ -299,16 +364,24 @@
     },
     {
       "id": "07-oral",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/03-oral.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["mio", "aoki"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "mio",
+        "aoki"
+      ],
       "face_visible": false,
-      "props": ["tote", "clipboard"],
+      "props": [
+        "tote",
+        "clipboard"
+      ],
       "place": "The same open-plan aisle after Aoki sits, beige cubicle partitions, grey carpet",
-      "camera": "Pulled-back third-person camera at Mio's left, both adults full body, a half-step closer only as Mio kneels, then holding",
-      "action": "Without slowing, Mio kneels to seated Aoki at walking-and-hit pace. Both hands go to Aoki's hips, not the shaft. Mio's mouth takes the erect 20cm to the base. Aoki finishes in Mio's mouth as Picture 2: lips at the base, a little semen at the lips, Aoki still seated uninjured, clipboard on the floor. Real-time. Consensual adult game beat",
+      "camera": "Aoki seated on the carpet at right, Mio kneeling in front",
+      "action": "Without slowing, Mio kneels to seated Aoki at walking-and-hit pace. Both hands go to Aoki's hips, not the shaft. Mio's mouth takes the erect 20cm to the base. Aoki finishes in Mio's mouth. Lips stay at the base, a little semen at the lips, Aoki still seated uninjured, clipboard on the floor. Real-time. Consensual adult game beat",
       "sfx": "Knees on carpet, a wet mouth sound, clipboard, HVAC",
       "music": "Bass holds; one taiko hit on the mouth contact",
       "hud": {
@@ -327,14 +400,24 @@
     },
     {
       "id": "08-peek",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/04-peek.jpg",
-      "trim": {"start": 0, "seconds": 3.0},
-      "cast": ["mio", "kuroki"],
+      "trim": {
+        "start": 0,
+        "seconds": 3.0
+      },
+      "cast": [
+        "mio",
+        "kuroki"
+      ],
       "face_visible": false,
-      "props": ["tote", "badge", "papers"],
+      "props": [
+        "tote",
+        "badge",
+        "papers"
+      ],
       "place": "A plain beige corridor wall beside an open office doorway, grey carpet, morning fluorescent light",
-      "camera": "Pulled-back third-person camera at Mio's left, both adults full body, Mio in profile at the doorway, Kuroki at the inner desk",
+      "camera": "Mio in profile at the doorway, Kuroki at the inner desk",
       "action": "Mio stands in profile at the open doorway, fully nude; nude Kuroki stays seated at the inner desk looking down at papers with an erect 20cm; both stay in these spots and stay fully nude",
       "sfx": "Quiet corridor, paper rustle from the inner room, HVAC",
       "music": "Bass returns quietly",
@@ -348,7 +431,9 @@
         "heat": 4,
         "objective_bearing": 15,
         "objective_distance": 0.2,
-        "icons_active": ["席"],
+        "icons_active": [
+          "席"
+        ],
         "complete": false
       }
     },
@@ -356,10 +441,17 @@
       "id": "09-ui-boss",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["mio"],
+      "cast": [
+        "mio"
+      ],
       "menu": {
         "title": "課長",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 0
       },
       "hud": {
@@ -372,26 +464,38 @@
         "heat": 4,
         "objective_bearing": 10,
         "objective_distance": 0.15,
-        "icons_active": ["席"],
+        "icons_active": [
+          "席"
+        ],
         "complete": false
       }
     },
     {
       "id": "10-lose",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/04-peek.jpg",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["mio", "kuroki"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "mio",
+        "kuroki"
+      ],
       "face_visible": false,
       "physics": true,
-      "extra_loras": ["combat"],
+      "extra_loras": [
+        "combat"
+      ],
       "trigger": "prfight2, prfin1",
       "steps": 12,
       "sampler": "euler",
       "scheduler": "beta",
-      "props": ["papers"],
+      "props": [
+        "papers"
+      ],
       "place": "Inside the small inner office: a wood desk, a black rolling chair, morning window light, grey carpet",
-      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, no orbit, no close-up",
+      "camera": "Both adults standing in the inner office, full bodies including feet",
       "action": "A two-second standing flurry at walking-and-hit pace, then Kuroki lands one heavy open-hand hit. Mio sits down hard on the carpet like a ragdoll. Papers slide. Kuroki stays standing, glasses on, erect 20cm, uninjured. Mio stays seated, uninjured. Both stay fully nude. Mio loses",
       "sfx": "Palm hits, paper sliding, a body sit on carpet, HVAC",
       "music": "A short synth stab on the hit, then the bass",
@@ -411,16 +515,23 @@
     },
     {
       "id": "11-missionary",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/06-pin.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["mio", "kuroki"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "mio",
+        "kuroki"
+      ],
       "face_visible": false,
-      "props": ["papers"],
+      "props": [
+        "papers"
+      ],
       "place": "The same inner office carpet after Mio sits, wood desk, morning window light",
-      "camera": "Pulled-back medium-wide third-person, both adults full body on the carpet, holding as they join",
-      "action": "Without slowing, Kuroki kneels between Mio's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base. Arriving on Picture 2: Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Real-time. Consensual adult game beat. Mio cannot stand up",
+      "camera": "Mio on her back on the carpet, Kuroki kneeling between her legs",
+      "action": "Without slowing, Kuroki kneels between Mio's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base. Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Real-time. Consensual adult game beat. Mio cannot stand up",
       "sfx": "Carpet, a wet join, paper, HVAC",
       "music": "Bass holds; a delayed taiko on the join",
       "hud": {
@@ -439,16 +550,23 @@
     },
     {
       "id": "12-hold",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/06-pin.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.2, "seconds": 4.8},
-      "cast": ["mio", "kuroki"],
+      "trim": {
+        "start": 5.2,
+        "seconds": 4.8
+      },
+      "cast": [
+        "mio",
+        "kuroki"
+      ],
       "face_visible": false,
-      "props": ["papers"],
+      "props": [
+        "papers"
+      ],
       "place": "The same inner office, Mio on her back, Kuroki joined on top, morning window light",
-      "camera": "Pulled-back medium-wide third-person behind the pair at hip height, holding still, both full bodies",
-      "action": "They stay joined in missionary on the carpet, arriving on Picture 2: the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; nobody clocks in",
+      "camera": "The same pin on the carpet, both full bodies",
+      "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; nobody clocks in",
       "sfx": "Quiet office, HVAC, one paper settling",
       "music": "Bass returns with a delayed taiko pattern",
       "hud": {
@@ -461,7 +579,9 @@
         "heat": 5,
         "objective_bearing": 270,
         "objective_distance": 0.05,
-        "icons_active": ["席"],
+        "icons_active": [
+          "席"
+        ],
         "complete": false
       }
     }

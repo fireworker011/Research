@@ -4,7 +4,7 @@
 **全ビート生成 → HUD 合成 → タイトル／免責エンドカード → 音声クロスフェード連結** まで終わり、
 Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `latest.mp4`）が出る。
 
-ネタを変えるときは `_template/` を複製して `episode.json` とスチールを差し替えるだけ。コードは触らない。
+ネタを変えるときは `_template/` を複製して `episode.json` とスチールを差し替えるだけ。コードは触らない。カメラ種類（side2d / action3d）や速度（speed / balance / quality）を増やすときだけ `minimaxh3/h3_episode_packs.py` に1エントリ足す。
 
 | 場所 | 中身 |
 |---|---|
@@ -21,7 +21,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 
 ## 一発の実行
 
-**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、`EPISODE` に slug、`PRESET` を選んで Run all。
+**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、`EPISODE` に slug、`PRESET`（speed / balance / quality）、`CAMERA`（side2d / action3d）を選んで Run all。
 GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
@@ -75,8 +75,10 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 - 英語で書く。日本語は台詞の中身だけ（`speech[].line`、かな限定、`「」` は自動で付く）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
-- `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
-- `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）
+- `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
+- 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラや速度の種類を増やすときだけ `h3_episode_packs.py` に1エントリ足す
+- `render.camera_pack`: `side2d`（横スク・常にサイド）／`action3d`（三人称3Dアクション）。T2V 話の既定は `side2d`。Colab の `CAMERA` と `--camera` で上書き
+- `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**（Picture 2 ロックでプロンプト修正ができなくなる）
 - 格闘ビートは `extra_loras: ["combat"]` と `trigger: "prfight2, prfin1"`。`tone: action` のときだけ。turbo プリセットでは combat を落とす。にじみ対策は `steps` 4–16（省略時 12）と `sampler` `euler`/`res_multistep`、`scheduler` `simple`/`beta`（省略時 euler+beta。作者の 20step は OOM するので上限 16）
 - `tone`: `mundane`（映像は日常のまま。`violence` は `none`、`physics` 禁止、action/camera/place に爆発・ジャンプ・格闘・追跡などの語を書くと否定形でも落ちる、`face_visible` は 2 本まで。プロンプトに「平穏な日常の動作」を足す）／`action`（旧来どおり。省略時）
 - `props` はビートごとに `beat.props: ["tenugui"]` で指定する。省略すると本文に名前が出た小道具だけ付く。**全小道具を全ビートに入れる経路は無い**（初回版で軽トラが全ショットに出た原因）
@@ -94,8 +96,8 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## レンダの決まり
 
 - 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max`（`10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）は `lane: erotic` のときだけ。ファイルは Drive `models/erotic/` に取り、`diffusion_models/` へは名前付きで出す。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。TURBO-hybrid と DT-sQKV は使わない
-- LoRA プリセット: `daily` = Larry v4 1.0 + シネマ DY 0.65 / 8step（トリガー `DY` を先頭に付ける）、`preview` = LightX2V 4step + シネマ 0.5、`fast` = LightX2V 4step のみ。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
-- 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。daily の後ろにだけ積む。turbo とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
+- LoRA プリセット（シネマ LoRA は積まない）: `speed` = LightX2V turbo4 / 4step（最速。格闘 LoRA は落とす）、`balance` = Larry v4 / 8step euler+simple、`quality` = Larry v4 / 12step euler+beta。別名 `fast`/`preview`=`speed`、`daily`=`balance`。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
+- 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。Larry の後ろにだけ積む。turbo（speed）とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない
 - 音は H3 のまま。連結は xfade + acrossfade 0.35秒 + loudnorm。`transition: "cut"` で直結
 
@@ -117,11 +119,11 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## 霞東フロア あさ（`kasumi-late-desk-adult`）
 
 霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
-約 45 秒。同僚□ベロチュー → 警備△横スク打倒＋じゅぼ口内 → 課長△敗北＋正常位。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）、引き・真横・全身。Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
+約 45 秒。同僚□ベロチュー → 警備△横スク打倒＋じゅぼ口内 → 課長△敗北＋正常位。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）。GPU ビートは T2V（I2V 連鎖しない。カットごとにカメラを変えてプロンプトで直す）。既定カメラは `side2d`。`action3d` に切替可。プリセット既定は `balance`。Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
 
 ## 病棟出口（`hospital-exit-adult`）
 
-同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
+同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。GPU は T2V。Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
 
 ## 番台ディストリクト（2 本）
 

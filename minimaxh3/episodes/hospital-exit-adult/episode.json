@@ -7,13 +7,14 @@
   "clip_seconds": 10,
   "tone": "action",
   "render": {
-    "preset": "daily",
-    "fallback_preset": "fast",
+    "preset": "balance",
+    "fallback_preset": "speed",
     "seed": 42,
     "lane": "erotic",
-    "checkpoint": "eros-max"
+    "checkpoint": "eros-max",
+    "camera_pack": "side2d"
   },
-  "style": "Third-person survival-game cutscene look, live-action cinematic photorealism, pulled-back full-body framing, real-time playback, no anime, no illustration",
+  "style": "Third-person survival-game cutscene look, live-action photoreal game footage, pulled-back full-body framing, real-time playback, no anime, no illustration",
   "violence": "game",
   "world": {
     "name": "Fictional night hospital",
@@ -85,7 +86,11 @@
   "hud": {
     "theme": "bandai",
     "district_label": "病棟 Dist.",
-    "icons": ["出", "隠", "扉"],
+    "icons": [
+      "出",
+      "隠",
+      "扉"
+    ],
     "complete_text": "ミッション完了",
     "subtitles": true,
     "font": ""
@@ -113,15 +118,22 @@
   "beats": [
     {
       "id": "01-cover",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/01-cover.jpg",
-      "still_as": "both",
-      "trim": {"start": 0, "seconds": 3.0},
-      "cast": ["aya", "miki"],
+      "trim": {
+        "start": 0,
+        "seconds": 3.0
+      },
+      "cast": [
+        "aya",
+        "miki"
+      ],
       "face_visible": false,
-      "props": ["rail"],
+      "props": [
+        "rail"
+      ],
       "place": "A long beige hospital corridor at night, grey linoleum, overhead tubes, a dark far end",
-      "camera": "Pulled-back third-person camera in the corridor center, both adults full body including feet, locked horizon",
+      "camera": "Aya and Miki far apart in the corridor, both full bodies including feet",
       "action": "Aya and Miki stand far apart in the corridor, fully nude, pale, vacant eyes, no wounds; nobody else is in frame; they hold still with a slight breathing bob",
       "sfx": "HVAC, distant drip, fluorescent buzz",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
@@ -135,7 +147,9 @@
         "heat": 3,
         "objective_bearing": 0,
         "objective_distance": 0.85,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
@@ -143,10 +157,17 @@
       "id": "02-ui-miki",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["aya"],
+      "cast": [
+        "aya"
+      ],
       "menu": {
         "title": "感染者",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 2
       },
       "hud": {
@@ -159,22 +180,31 @@
         "heat": 3,
         "objective_bearing": 0,
         "objective_distance": 0.7,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
     {
       "id": "03-kiss",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/01-cover.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["aya", "miki"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "aya",
+        "miki"
+      ],
       "face_visible": false,
-      "props": ["rail"],
+      "props": [
+        "rail"
+      ],
       "place": "The same hospital corridor, linoleum, overhead tubes",
-      "camera": "Pulled-back third-person side two-shot, both adults full body, holding on the kiss",
-      "action": "Aya steps in. Both hands go to Miki's shoulders. Aya gives Miki a deep wet french kiss at walking-and-hit pace. Miki's knees soften. Arriving on Picture 2: mouths joined, Miki seated against the wall, Aya can pass. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat",
+      "camera": "Aya standing close, Miki against the wall, mouths joined",
+      "action": "Aya steps in. Both hands go to Miki's shoulders. Aya gives Miki a deep wet french kiss at walking-and-hit pace. Miki's knees soften. Mouths stay joined, Miki seated against the wall, Aya can pass. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat",
       "sfx": "A wet kiss, a back against the wall, HVAC",
       "music": "A short synth stab on the kiss, then the bass",
       "hud": {
@@ -187,20 +217,30 @@
         "heat": 2,
         "objective_bearing": 0,
         "objective_distance": 0.55,
-        "icons_active": ["出"],
+        "icons_active": [
+          "出"
+        ],
         "complete": false
       }
     },
     {
       "id": "04-peek",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/04-peek.jpg",
-      "trim": {"start": 0, "seconds": 4.0},
-      "cast": ["aya"],
+      "trim": {
+        "start": 0,
+        "seconds": 4.0
+      },
+      "cast": [
+        "aya"
+      ],
       "face_visible": false,
-      "props": ["rail", "door"],
+      "props": [
+        "rail",
+        "door"
+      ],
       "place": "The same corridor looking toward a dark far end and closed brown doors, grey linoleum",
-      "camera": "Pulled-back third-person camera behind Aya at shoulder height, full body, corridor depth ahead",
+      "camera": "Aya in the corridor looking toward the dark far end, full body",
       "action": "Aya stands in the empty corridor, fully nude, looking toward the dark far end; she holds still with a slight breathing bob; nobody else is in frame yet",
       "sfx": "Quiet corridor, fluorescent buzz, one distant footstep",
       "music": "Bass holds; a sparse tick on the downbeat",
@@ -214,7 +254,9 @@
         "heat": 2,
         "objective_bearing": 0,
         "objective_distance": 0.45,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
@@ -222,10 +264,17 @@
       "id": "05-ui-rei",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["aya"],
+      "cast": [
+        "aya"
+      ],
       "menu": {
         "title": "感染者",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 0
       },
       "hud": {
@@ -238,27 +287,38 @@
         "heat": 2,
         "objective_bearing": 0,
         "objective_distance": 0.4,
-        "icons_active": ["隠"],
+        "icons_active": [
+          "隠"
+        ],
         "complete": false
       }
     },
     {
       "id": "06-fight",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/06-fight.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["aya", "rei"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "aya",
+        "rei"
+      ],
       "face_visible": false,
       "physics": true,
-      "extra_loras": ["combat"],
+      "extra_loras": [
+        "combat"
+      ],
       "trigger": "prfight2, prfin1",
       "steps": 12,
       "sampler": "euler",
       "scheduler": "beta",
-      "props": ["rail"],
+      "props": [
+        "rail"
+      ],
       "place": "The same hospital corridor, linoleum, overhead tubes, doors along the right wall",
-      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, corridor depth behind them, no orbit, no close-up",
+      "camera": "Both adults standing in the corridor, full bodies including feet",
       "action": "A two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Rei sits down hard on the linoleum like a ragdoll. Rei stays seated, uninjured, pale, vacant, erect 20cm still up. Aya stays standing. Both stay fully nude",
       "sfx": "Palm hits, a body sit on linoleum, HVAC",
       "music": "Bass holds; a taiko hit on the sit-down",
@@ -278,16 +338,23 @@
     },
     {
       "id": "07-oral",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/06-fight.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["aya", "rei"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "aya",
+        "rei"
+      ],
       "face_visible": false,
-      "props": ["rail"],
+      "props": [
+        "rail"
+      ],
       "place": "The same hospital corridor after Rei sits, grey linoleum",
-      "camera": "Pulled-back third-person camera at Aya's left, both adults full body, a half-step closer as Aya kneels, then holding",
-      "action": "Without slowing, Aya kneels to seated Rei at walking-and-hit pace. Both hands go to Rei's hips. Aya's mouth takes the erect 20cm to the base. Rei finishes in Aya's mouth as Picture 2: lips at the base, a little semen at the lips, Rei still seated uninjured. Real-time. Consensual adult game beat",
+      "camera": "Rei seated on the linoleum, Aya kneeling in front",
+      "action": "Without slowing, Aya kneels to seated Rei at walking-and-hit pace. Both hands go to Rei's hips. Aya's mouth takes the erect 20cm to the base. Rei finishes in Aya's mouth. Lips stay at the base, a little semen at the lips, Rei still seated uninjured. Real-time. Consensual adult game beat",
       "sfx": "Knees on linoleum, a wet mouth sound, HVAC",
       "music": "Bass holds; one taiko hit on the mouth contact",
       "hud": {
@@ -306,14 +373,22 @@
     },
     {
       "id": "08-door",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/08-door.jpg",
-      "trim": {"start": 0, "seconds": 3.0},
-      "cast": ["aya"],
+      "trim": {
+        "start": 0,
+        "seconds": 3.0
+      },
+      "cast": [
+        "aya"
+      ],
       "face_visible": false,
-      "props": ["door", "rail"],
+      "props": [
+        "door",
+        "rail"
+      ],
       "place": "The same corridor with a lit open doorway at the far end, grey linoleum, night walls",
-      "camera": "Pulled-back third-person camera behind Aya, full body, the lit doorway small in the distance",
+      "camera": "Aya looking toward the lit doorway, full body, corridor depth ahead",
       "action": "Aya looks down the corridor toward the lit open doorway, fully nude, holding still; the far door is the exit; nobody else is in frame",
       "sfx": "Quiet corridor, a door bump far away, HVAC",
       "music": "Bass returns quietly",
@@ -327,7 +402,9 @@
         "heat": 2,
         "objective_bearing": 0,
         "objective_distance": 0.22,
-        "icons_active": ["扉"],
+        "icons_active": [
+          "扉"
+        ],
         "complete": false
       }
     },
@@ -335,10 +412,17 @@
       "id": "09-ui-kana",
       "source": "ui",
       "seconds": 2.2,
-      "cast": ["aya"],
+      "cast": [
+        "aya"
+      ],
       "menu": {
         "title": "感染者",
-        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "items": [
+          "△ 戦い",
+          "○ 言い訳",
+          "□ 口説く",
+          "× 無視"
+        ],
         "selected": 0
       },
       "hud": {
@@ -351,26 +435,38 @@
         "heat": 2,
         "objective_bearing": 0,
         "objective_distance": 0.18,
-        "icons_active": ["扉"],
+        "icons_active": [
+          "扉"
+        ],
         "complete": false
       }
     },
     {
       "id": "10-lose",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/10-lose.jpg",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["aya", "kana"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "aya",
+        "kana"
+      ],
       "face_visible": false,
       "physics": true,
-      "extra_loras": ["combat"],
+      "extra_loras": [
+        "combat"
+      ],
       "trigger": "prfight2, prfin1",
       "steps": 12,
       "sampler": "euler",
       "scheduler": "beta",
-      "props": ["rail"],
+      "props": [
+        "rail"
+      ],
       "place": "The same hospital corridor near the lit doorway, grey linoleum",
-      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, no orbit, no close-up",
+      "camera": "Both adults standing near the lit doorway, full bodies including feet",
       "action": "A two-second standing flurry at walking-and-hit pace, then Kana lands one heavy open-hand hit. Aya sits down hard on the linoleum like a ragdoll. Kana stays standing, glasses on, erect 20cm, uninjured, pale, vacant. Aya stays seated, uninjured. Both stay fully nude. Aya loses the exchange",
       "sfx": "Palm hits, a body sit on linoleum, HVAC",
       "music": "A short synth stab on the hit, then the bass",
@@ -390,16 +486,23 @@
     },
     {
       "id": "11-join",
-      "source": "chain",
+      "source": "t2v",
       "still": "stills/08-door.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.0, "seconds": 5.0},
-      "cast": ["aya", "kana"],
+      "trim": {
+        "start": 5.0,
+        "seconds": 5.0
+      },
+      "cast": [
+        "aya",
+        "kana"
+      ],
       "face_visible": false,
-      "props": ["door"],
+      "props": [
+        "door"
+      ],
       "place": "The same corridor carpet of linoleum, Aya on her back, the lit doorway behind Kana",
-      "camera": "Pulled-back medium-wide third-person, both adults full body, holding as they join",
-      "action": "Without slowing, Kana kneels between Aya's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Aya to the base. Arriving on Picture 2: Aya on her back, Kana on top, joined at the hips, glasses on. Both stay fully nude. Real-time. Consensual adult game beat",
+      "camera": "Aya on her back on the linoleum, Kana kneeling between her legs",
+      "action": "Without slowing, Kana kneels between Aya's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Aya to the base. Aya on her back, Kana on top, joined at the hips, glasses on. Both stay fully nude. Real-time. Consensual adult game beat",
       "sfx": "Linoleum, a wet join, HVAC",
       "music": "Bass holds; a delayed taiko on the join",
       "hud": {
@@ -412,22 +515,32 @@
         "heat": 5,
         "objective_bearing": 0,
         "objective_distance": 0.08,
-        "icons_active": ["扉"],
+        "icons_active": [
+          "扉"
+        ],
         "complete": false
       }
     },
     {
       "id": "12-exit",
-      "source": "still",
+      "source": "t2v",
       "still": "stills/08-door.jpg",
-      "still_as": "last",
-      "trim": {"start": 5.2, "seconds": 4.8},
-      "cast": ["aya", "kana"],
+      "trim": {
+        "start": 5.2,
+        "seconds": 4.8
+      },
+      "cast": [
+        "aya",
+        "kana"
+      ],
       "face_visible": false,
-      "props": ["door", "rail"],
+      "props": [
+        "door",
+        "rail"
+      ],
       "place": "The same join, sliding toward the lit open doorway at the far end of the corridor",
-      "camera": "Pulled-back third-person behind the pair, both full bodies, the lit doorway readable beyond them, holding as they cross the threshold still joined",
-      "action": "They stay joined in missionary and slide toward the lit open doorway at walking-and-hit pace, arriving on Picture 2: still joined, Aya on her back, Kana on top, the open doorway behind them; Aya has left the building. Real-time",
+      "camera": "Still joined, sliding toward the lit doorway, both full bodies",
+      "action": "They stay joined in missionary and slide toward the lit open doorway at walking-and-hit pace, still joined, Aya on her back, Kana on top, the open doorway behind them; Aya has left the building. Real-time",
       "sfx": "Linoleum scrape, a door bump, outdoor air, HVAC fading",
       "music": "Bass returns with a delayed taiko pattern",
       "hud": {
@@ -440,7 +553,9 @@
         "heat": 1,
         "objective_bearing": 0,
         "objective_distance": 0.02,
-        "icons_active": ["出"],
+        "icons_active": [
+          "出"
+        ],
         "complete": true
       }
     }

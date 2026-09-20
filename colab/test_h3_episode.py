@@ -15,21 +15,28 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
+    CAMERA_PACKS,
     CANVAS,
     CHECKPOINTS,
     COMBAT_SAMPLER,
     COMBAT_SCHEDULER,
     COMBAT_STEPS,
     CONTINUITY_CLAUSE,
+    DEFAULT_CAMERA_PACK,
     EPISODE_HELPERS,
     EROS_MAX_UNET,
     I2VA_HEADER,
     LORA_FILES,
     MUNDANE_CLAUSE,
+    PRESET_ALIASES,
+    PRESET_CANON,
     PRESETS,
     STOCK_ONLY_SLUGS,
     STILL_LAST_HEADER,
     EpisodeError,
+    camera_angle,
+    camera_line,
+    episode_camera_pack,
     episode_checkpoint,
     episode_lane,
     ensure_episode_checkpoint,
@@ -41,6 +48,7 @@ from h3_episode import (  # noqa: E402
     assert_not_production_root,
     beat_props,
     beat_prompts,
+    beat_source,
     beat_window,
     bootstrap_episode,
     build_beat_prompt,
@@ -52,6 +60,7 @@ from h3_episode import (  # noqa: E402
     expected_duration,
     finish_episode,
     forbidden_hits,
+    gpu_index_map,
     is_ui_beat,
     load_episode,
     materialize_reuse,
@@ -113,7 +122,7 @@ def short() -> dict:
 # ---------------------------------------------------------------- sync / files
 
 def test_colab_and_minimaxh3_copies_in_sync():
-    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_colab_main.py"):
+    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_packs.py", "h3_episode_colab_main.py"):
         a = (ROOT / "colab" / name).read_text(encoding="utf-8")
         b = (ROOT / "minimaxh3" / name).read_text(encoding="utf-8")
         assert a == b, f"{name} differs between colab/ and minimaxh3/ (copy after editing)"
@@ -137,6 +146,11 @@ def test_notebook_is_one_cell_and_isolated():
     assert "h3_episode_colab_main" in src
     assert 'EPISODE = "kasumi-late-desk-adult"' in src
     assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
+    assert 'PRESET = "balance"' in src
+    assert '"speed", "balance", "quality"' in src
+    assert 'CAMERA = "side2d"' in src
+    assert '"side2d", "action3d"' in src
+    assert "H3_EPISODE_CAMERA" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
@@ -424,22 +438,37 @@ def test_resolve_preset_fallbacks(tmp_path):
     loras = tmp_path / "loras"
     loras.mkdir()
     with pytest.raises(EpisodeError):
-        resolve_preset("fast", loras)  # turbo LoRA not downloaded yet → nothing to fall back to
+        resolve_preset("speed", loras)  # turbo LoRA not downloaded yet → nothing to fall back to
     (loras / "minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors").write_bytes(b"x")
+    speed = resolve_preset("speed", loras)
+    assert speed["name"] == "speed" and speed["canonical"] == "speed"
+    assert [s[0] for s in speed["stack"]] == ["minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors"]
+    assert speed["steps"] == 4 and speed["sampler"] == "euler" and speed["trigger"] == ""
     fast = resolve_preset("fast", loras)
-    assert fast["name"] == "fast" and [s[0] for s in fast["stack"]] == ["minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors"]
-    daily = resolve_preset("daily", loras, fallback="fast")
-    assert daily["name"] == "fast" and any("required LoRA missing" in n for n in daily["notes"])
+    assert fast["name"] == "fast" and fast["canonical"] == "speed"
+    assert [s[0] for s in fast["stack"]] == [s[0] for s in speed["stack"]]
+    daily = resolve_preset("daily", loras, fallback="speed")
+    assert daily["name"] == "speed" and any("required LoRA missing" in n for n in daily["notes"])
     (loras / "minimax_h3_turbo_v4_step600_ema_comfy.safetensors").write_bytes(b"x")
-    daily = resolve_preset("daily", loras, fallback="fast")
-    assert daily["name"] == "daily" and len(daily["stack"]) == 1 and daily["steps"] == 8 and daily["trigger"] == "DY"
+    daily = resolve_preset("daily", loras, fallback="speed")
+    assert daily["name"] == "daily" and daily["canonical"] == "balance"
+    assert len(daily["stack"]) == 1 and daily["steps"] == 8 and daily["trigger"] == ""
+    balance = resolve_preset("balance", loras)
+    assert [s[0] for s in balance["stack"]] == [s[0] for s in daily["stack"]] and balance["steps"] == 8
+    quality = resolve_preset("quality", loras)
+    assert quality["steps"] == 12 and quality["sampler"] == "euler" and quality["scheduler"] == "beta"
+    assert len(quality["stack"]) == 1
     (loras / "Minimax_H3_cinematic_DY.safetensors").write_bytes(b"x")
-    daily = resolve_preset("daily", loras, fallback="fast")
-    assert [round(s[1], 2) for s in daily["stack"]] == [1.0, 0.65]
+    still_balance = resolve_preset("balance", loras, fallback="speed")
+    assert [round(s[1], 2) for s in still_balance["stack"]] == [1.0]
     for name, spec in PRESETS.items():
         keys = [k for k, _s, _o in spec["stack"]]
+        assert "cinema" not in keys, name
         assert not ("larry" in keys and any(k.startswith("turbo") for k in keys)), name
+    assert set(PRESET_CANON) == {"speed", "balance", "quality"}
+    assert PRESET_ALIASES == {"fast": "speed", "preview": "speed", "daily": "balance"}
     assert "combat" in LORA_FILES and "combat" not in {k for spec in PRESETS.values() for k, _s, _o in spec["stack"]}
+    assert "cinema" not in {k for spec in PRESET_CANON.values() for k, _s, _o in spec["stack"]}
 
 
 def test_kasumi_late_desk_validates_and_stills_are_clean():
@@ -548,13 +577,19 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     assert ep["beats"][8]["menu"]["selected"] == 0
     assert ep["cards"]["fail"]["reason"] == "正常位で動けない"
     assert all(not b.get("reuse") for b in ep["beats"])
-    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("DY", fights[0]))
-    assert fight_prompt.startswith("DY\nprfight2, prfin1")
+    assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
+    gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
+    assert all(b["source"] == "t2v" for b in gpu)
+    assert all(b.get("still_as") not in ("last", "both") for b in gpu)
+    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
+    assert fight_prompt.startswith("prfight2, prfin1")
     assert "walking-and-hit pace" in fight_prompt
-    assert "Pulled-back locked side-on wide shot" in fight_prompt
-    oral_prompt = build_beat_prompt(ep, ep["beats"][6], trigger=merge_trigger("DY", ep["beats"][6]))
+    assert "side-on" in fight_prompt and "This shot:" in fight_prompt
+    assert "<Picture 1>" not in fight_prompt and "<Picture 2>" not in fight_prompt
+    oral_prompt = build_beat_prompt(ep, ep["beats"][6], trigger=merge_trigger("", ep["beats"][6]))
     assert "prfight2" not in oral_prompt
     assert "walking-and-hit pace" in oral_prompt
+    assert "Picture 2" not in oral_prompt
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")
@@ -563,11 +598,14 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
             assert p.is_file()
             assert "-hud" not in p.stem
             assert Image.open(p).size == (1280, 720)
-    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+    for _b, prompt, errs in beat_prompts(ep, trigger=""):
         assert errs == []
         if "prfight2" in prompt:
-            assert prompt.startswith("DY\nprfight2, prfin1")
+            assert prompt.startswith("prfight2, prfin1")
         assert "badges carry no readable letters" in prompt
+        assert "<Picture 1>" not in prompt
+        low = prompt.lower()
+        assert "slow motion" not in low and "slow-mo" not in low and "bullet time" not in low
 
 
 def test_hospital_exit_adult_escape_while_joined():
@@ -585,17 +623,22 @@ def test_hospital_exit_adult_escape_while_joined():
     assert ep["beats"][6]["id"] == "07-oral" and not ep["beats"][6].get("extra_loras")
     assert all(not b.get("reuse") for b in ep["beats"])
     assert all(c["age"] >= 20 for c in ep["cast"].values())
+    gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
+    assert all(b["source"] == "t2v" for b in gpu)
+    assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
     for beat in ep["beats"]:
         still = beat.get("still")
         if still:
             p = HOSPITAL_DIR / still
             assert p.is_file()
             assert Image.open(p).size == (1280, 720)
-    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+    for _b, prompt, errs in beat_prompts(ep, trigger=""):
         assert errs == []
         low = prompt.lower()
         assert "corpse" not in low and "zombie" not in low
         assert "slow-motion" not in low and "slow-mo" not in low
+        assert "<Picture 1>" not in prompt and "Picture 2" not in prompt
+        assert "This shot:" in prompt
 
 
 def test_hospital_stills_are_not_kasumi_copies():
@@ -615,6 +658,56 @@ def test_hospital_stills_are_not_kasumi_copies():
         "stills/08-door.jpg",
         "stills/10-lose.jpg",
     }
+
+
+def test_camera_packs_rotate_and_t2v_rejects_last_frame_lock():
+    assert set(CAMERA_PACKS) == {"side2d", "action3d"}
+    assert DEFAULT_CAMERA_PACK == "side2d"
+    for name, pack in CAMERA_PACKS.items():
+        angles = pack["angles"]
+        assert len(angles) >= 2
+        assert len(set(angles)) == len(angles), name
+        for i in range(len(angles) * 2):
+            assert camera_angle(name, i) != camera_angle(name, i + 1), (name, i)
+            low = camera_angle(name, i).lower()
+            assert "slow" not in low and "first-person" not in low
+        lock = str(pack["lock"]).lower()
+        assert "third-person" in lock and "slow motion" not in lock
+    ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    assert episode_camera_pack(ep) == "side2d"
+    assert episode_camera_pack(ep, "action3d") == "action3d"
+    indexes = gpu_index_map(ep)
+    gpu = [b for b in ep["beats"] if beat_source(b) == "t2v"]
+    assert len(gpu) >= 4
+    prompts = []
+    for beat in gpu:
+        p = build_beat_prompt(ep, beat, camera_pack="side2d", gpu_index=indexes[beat["id"]])
+        prompts.append(p)
+        assert "This shot:" in p
+        assert "side-on" in p
+        assert validate_beat_prompt(p, source="t2v") == []
+    shots = [p.split("This shot:", 1)[1].split(".", 1)[0] for p in prompts]
+    assert shots[0] != shots[1] != shots[2]
+    side = camera_line(ep, gpu[0], pack_name="side2d", gpu_index=0)
+    three = camera_line(ep, gpu[0], pack_name="action3d", gpu_index=0)
+    assert "side-on" in side and "behind-left" in three
+    locked_beats = [dict(b) for b in ep["beats"]]
+    later = next(b for b in locked_beats if b.get("source") == "t2v" and b["id"] != locked_beats[0]["id"])
+    later["still_as"] = "last"
+    assert any("t2v cannot use still_as last" in e for e in validate_episode(dict(ep, beats=locked_beats)))
+    bad = dict(gpu[0], camera="slow-motion close-up")
+    assert any("slow motion" in e for e in validate_episode(dict(ep, beats=[bad, *ep["beats"][1:]])))
+    assert any("slow-mo" in h.lower() or "slow" in h.lower() for h in forbidden_hits("no slow-mo please"))
+
+
+def test_apply_extra_loras_drops_cinema(tmp_path):
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["cinema"]).write_bytes(b"x")
+    preset = {"name": "balance", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "", "notes": []}
+    dropped = apply_extra_loras(preset, {"extra_loras": ["cinema"]}, loras)
+    assert dropped["stack"] == preset["stack"]
+    assert any("cinematic LoRA skipped" in n for n in dropped["notes"])
 
 
 def test_stock_unet_never_auto_picks_eros_max(tmp_path):
@@ -712,7 +805,7 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     turbo = {"name": "fast", "stack": [("minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors", 1.0)], "steps": 4, "trigger": "", "notes": []}
     skipped = apply_extra_loras(turbo, beat, loras)
     assert skipped["stack"] == turbo["stack"]
-    assert skipped.get("steps") == 4 and skipped.get("sampler") is None
+    assert skipped.get("steps") == 4
     assert any("never with LightX2V turbo" in n for n in skipped["notes"])
     ep = load_episode(KASUMI_DIR / "episode.json")
     fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
@@ -851,6 +944,7 @@ def test_exec_script_is_self_contained():
     script = exec_script("bandai-district", preset="daily", fresh=True, branch="cursor/x", main_path=Path("/content/h3_episode_colab_main.py"))
     assert "os.environ['H3_EPISODE'] = 'bandai-district'" in script
     assert "H3_EPISODE_FRESH'] = '1'" in script
+    assert "H3_EPISODE_CAMERA" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")

@@ -14,8 +14,10 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 2. GPU なしの確認は `python h3_episode.py stills episodes/<slug> --out /tmp/ep/<slug>`（スチール予告）か `dry-run`。`--out` は slug 名で終わらせる（`reuse` は親フォルダの兄弟 `episodes/<元slug>/raw/` を見る）
 3. 本番は Colab ノート `minimax_h3_episode_bot.ipynb` の Run all、または Grokbot に `minimaxh3/GROKBOT.md` のエピソード命令をそのまま貼る（`python minimaxh3/grokbot/run_episode.py --episode <slug>`）。1ランタイムで全ビート → HUD → 連結 → 停止。回すだけのエージェントは skill `h3-episode-grokbot`
 4. 途中で落ちたら `raw/<beat>.mp4` を残したまま再実行（続きから）。作り直しは `--fresh`
-5. 新しいネタは `minimaxh3/episodes/_template` を複製し、slug・キャスト・ビート・スチールを差し替える。コードは触らない
+5. 新しいネタは `minimaxh3/episodes/_template` を複製し、slug・キャスト・ビート・スチールを差し替える。コードは触らない。カメラ／速度の種類を増やすときだけ `h3_episode_packs.py` に1エントリ
 6. `colab/h3_*.py` と `minimaxh3/h3_*.py` を直したら両方に同じ内容をコピーし、`colab/test_h3_episode.py` を通す
+
+成人アクション予告（`*-adult`）は T2V でつなぐ。`still_as: last` のシームレス連鎖はしない。カメラは `side2d` か `action3d`。プリセットは `speed` / `balance` / `quality`。シネマ LoRA は積まない。スローモーションの語は否定形でも書かない。
 
 ## 本家の文法（README の比較表が根拠。ここを外すと初回版の崩れ方に戻る）
 

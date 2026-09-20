@@ -110,7 +110,7 @@ python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk --branch curs
 
 ### 霞東フロア あさ（成人エロ・ベロチュー→打倒じゅぼ→正常位失敗）
 
-既存エロ動画（③ / STORY / Qwen）とは**別チャット**。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。霞東本体は上書きするな。Eros Max はエロレーンだけ。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。Combat は 06 と 10。参考 mp4 はモーションにしない。
+既存エロ動画（③ / STORY / Qwen）とは**別チャット**。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。霞東本体は上書きするな。Eros Max はエロレーンだけ。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。GPU は T2V。Combat は 06 と 10。参考 mp4 はモーションにしない。
 
 ```
 skill h3-episode-grokbot を読む。

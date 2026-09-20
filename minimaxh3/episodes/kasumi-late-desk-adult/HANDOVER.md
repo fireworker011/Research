@@ -74,7 +74,8 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
 - ファイル: `models/erotic/10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`（約 22.5GB。初回だけ fetch）
-- その上に daily（Larry + cinema）。霞東あさは 06 と 10 に Combat V2
+- その上に `balance`（Larry 8step。シネマ LoRA は積まない）。`speed` / `quality` に切替可。霞東あさは 06 と 10 に Combat V2
+- GPU ビートは T2V。`render.camera_pack` 既定 `side2d`（横スク）。`action3d` は Colab `CAMERA` か `--camera`
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
 - inbox の `*fl2va*` は 10Eros を飛ばす
@@ -82,7 +83,7 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 
 ## 次の一手
 
-本番 I2V はまだ。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
+本番 GPU は T2V（I2V 連鎖しない）。カメラは side2d / action3d。プリセットは speed / balance / quality。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
 
 ```bash
 cd minimaxh3

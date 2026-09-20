@@ -6,7 +6,8 @@ Env:
   H3_DRIVE_ROOT       Grokbot root; only its models/ is read (default /content/drive/MyDrive/minimax-h3-comfyui)
   H3_EPISODES_ROOT    override for <root>/episodes
   H3_COMFY_DIR        default /content/ComfyUI
-  H3_EPISODE_PRESET   fast | preview | daily (overrides episode.json)
+  H3_EPISODE_PRESET   speed | balance | quality (aliases: fast/preview=speed, daily=balance)
+  H3_EPISODE_CAMERA   side2d | action3d (T2V stories; overrides episode.json)
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
@@ -55,6 +56,7 @@ def main() -> int:
             dry_run=dry,
             fresh=os.environ.get("H3_EPISODE_FRESH") == "1",
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
+            camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
         )
         print("DONE", slug, final)
         return 0

@@ -25,11 +25,12 @@ def colab_url(path: str) -> str:
 
 CELL = r'''#@title 一発：episode.json → 全ビート → HUD → 連結 → episodes/<slug>/final/ → 停止
 EPISODE = "__EPISODE__"  #@param {type:"string"}
-PRESET = "daily"  #@param ["daily", "preview", "fast"]
+PRESET = "balance"  #@param ["speed", "balance", "quality"]
+CAMERA = "side2d"  #@param ["side2d", "action3d"]
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 print("=" * 60)
-print(" H3 episode one-click:", EPISODE, "preset", PRESET)
+print(" H3 episode one-click:", EPISODE, "preset", PRESET, "camera", CAMERA)
 print("=" * 60)
 
 import os, shutil, subprocess, sys, urllib.request
@@ -46,6 +47,7 @@ os.environ["H3_DRIVE_ROOT"] = DRIVE_ROOT
 os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
+os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
@@ -106,7 +108,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ・□口説く×3。Combat は 06 だけ。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ・T2V つなぎ。カメラは `CAMERA`（side2d / action3d）。プリセットは speed / balance / quality。Combat は 06 と 10。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - `EPISODE = "bandai-district-short"` は 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
 

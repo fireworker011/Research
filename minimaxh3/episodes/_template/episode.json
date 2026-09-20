@@ -7,8 +7,8 @@
   "clip_seconds": 10,
   "tone": "mundane",
   "render": {
-    "preset": "daily",
-    "fallback_preset": "fast",
+    "preset": "balance",
+    "fallback_preset": "speed",
     "seed": 42
   },
   "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, no anime, no illustration",
