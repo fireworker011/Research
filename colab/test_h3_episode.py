@@ -96,6 +96,7 @@ EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
 KASUMI_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk"
 KASUMI_ADULT_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk-adult"
+HOSPITAL_DIR = ROOT / "minimaxh3" / "episodes" / "hospital-exit-adult"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -513,53 +514,46 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert any("render.lane erotic" in e for e in validate_episode(stripped))
 
 
-def test_kasumi_adult_seduce_route_combat_only_on_06():
+def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert validate_episode(ep, root=KASUMI_ADULT_DIR) == []
     assert ep["tone"] == "action" and ep["violence"] == "game"
     assert ep["slug"] == "kasumi-late-desk-adult"
     assert len(ep["beats"]) == 12
-    assert expected_duration(ep) == pytest.approx(44.9, abs=0.2)
+    assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
-        "02-ui-guard",
-        "03-oral",
-        "04-peek",
-        "05-ui-boss",
-        "06-pin",
-        "07-talk",
-        "08-nana",
-        "09-ui-nana",
-        "10-nana",
-        "11-bag",
-        "12-desk",
+        "02-ui-nana",
+        "03-kiss",
+        "04-aisle",
+        "05-ui-guard",
+        "06-fight",
+        "07-oral",
+        "08-peek",
+        "09-ui-boss",
+        "10-lose",
+        "11-missionary",
+        "12-hold",
     ]
     fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
-    assert [b["id"] for b in fights] == ["06-pin"]
-    pin = fights[0]
-    assert pin.get("physics") is True
-    assert pin.get("trigger") == ""
-    assert pin.get("steps") == COMBAT_STEPS
-    assert pin.get("sampler") == COMBAT_SAMPLER
-    assert pin.get("scheduler") == COMBAT_SCHEDULER
-    assert ep["beats"][2]["id"] == "03-oral" and not ep["beats"][2].get("extra_loras")
-    assert ep["beats"][9]["id"] == "10-nana" and not ep["beats"][9].get("extra_loras")
+    assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
+    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
+    assert ep["beats"][2]["id"] == "03-kiss" and not ep["beats"][2].get("extra_loras")
+    assert ep["beats"][6]["id"] == "07-oral" and not ep["beats"][6].get("extra_loras")
+    assert ep["beats"][10]["id"] == "11-missionary" and not ep["beats"][10].get("extra_loras")
+    assert ep["beats"][1]["menu"]["selected"] == 2
+    assert ep["beats"][4]["menu"]["selected"] == 0
+    assert ep["beats"][8]["menu"]["selected"] == 0
+    assert ep["cards"]["fail"]["reason"] == "正常位で動けない"
     assert all(not b.get("reuse") for b in ep["beats"])
-    assert ep["beats"][2]["source"] == "chain" and ep["beats"][2].get("still")
-    assert beat_still_as(ep["beats"][0]) == "both"
-    assert all(beat_still_as(ep["beats"][i]) == "last" for i in (2, 5, 9, 11))
-    assert uses_last_still(ep["beats"][2]) and not uses_last_still(ep["beats"][3])
-    assert beat_window(ep, ep["beats"][2]) == (5.0, 5.0)
-    assert ep["beats"][5]["source"] == "still" and beat_still_as(ep["beats"][5]) == "last"
-    assert ep["beats"][9]["source"] == "still" and beat_still_as(ep["beats"][9]) == "last"
-    assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
-    assert sum(1 for b in ep["beats"] if b.get("face_visible")) == 1
-    pin_prompt = build_beat_prompt(ep, pin, trigger=merge_trigger("DY", pin))
-    assert pin_prompt.startswith("DY\n")
-    assert "prfight2" not in pin_prompt and "prfin1" not in pin_prompt
-    oral_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
-    assert STILL_LAST_HEADER in oral_prompt and "<Picture 2>" in oral_prompt
+    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("DY", fights[0]))
+    assert fight_prompt.startswith("DY\nprfight2, prfin1")
+    assert "walking-and-hit pace" in fight_prompt
+    assert "Pulled-back locked side-on wide shot" in fight_prompt
+    oral_prompt = build_beat_prompt(ep, ep["beats"][6], trigger=merge_trigger("DY", ep["beats"][6]))
     assert "prfight2" not in oral_prompt
+    assert "walking-and-hit pace" in oral_prompt
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")
@@ -570,8 +564,37 @@ def test_kasumi_adult_seduce_route_combat_only_on_06():
             assert Image.open(p).size == (1280, 720)
     for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
         assert errs == []
-        assert "prfight2" not in prompt and "prfin1" not in prompt
+        if "prfight2" in prompt:
+            assert prompt.startswith("DY\nprfight2, prfin1")
         assert "badges carry no readable letters" in prompt
+
+
+def test_hospital_exit_adult_escape_while_joined():
+    ep = load_episode(HOSPITAL_DIR / "episode.json")
+    assert validate_episode(ep, root=HOSPITAL_DIR) == []
+    assert ep["slug"] == "hospital-exit-adult"
+    assert episode_lane(ep) == "erotic"
+    assert episode_checkpoint(ep) == "eros-max"
+    assert not (ep.get("cards") or {}).get("fail")
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
+    assert all(b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert ep["beats"][2]["id"] == "03-kiss" and not ep["beats"][2].get("extra_loras")
+    assert ep["beats"][6]["id"] == "07-oral" and not ep["beats"][6].get("extra_loras")
+    assert all(not b.get("reuse") for b in ep["beats"])
+    assert all(c["age"] >= 20 for c in ep["cast"].values())
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            p = HOSPITAL_DIR / still
+            assert p.is_file()
+            assert Image.open(p).size == (1280, 720)
+    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+        assert errs == []
+        low = prompt.lower()
+        assert "corpse" not in low and "zombie" not in low
+        assert "slow-motion" not in low and "slow-mo" not in low
 
 
 def test_stock_unet_never_auto_picks_eros_max(tmp_path):

@@ -21,9 +21,11 @@ PR: #142 draft。#141（霞東本体）は上書きするな。マージする�
 slug: `kasumi-late-desk-adult`
 Colab: `minimax_h3_episode_bot.ipynb` の EPISODE=kasumi-late-desk-adult / BRANCH=cursor/h3-kasumi-adult-0402
 
-撮るのは □口説く×3。Combat は 06 だけ（trigger 空、euler+beta 12）。03 と 10 には積むな。
+撮るのは 同僚□ベロチュー → 警備△横スク打倒＋じゅぼ → 課長△敗北＋正常位。
+Combat は 06 と 10（prfight2、euler+beta 12）。03/07/11 には積むな。
+同枝に `hospital-exit-adult`（病棟脱出・最後は完了）。
 UNet は erotic + eros-max だけ。霞東本体・番台・inbox I2V は stock。③に足すな。
-inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5カット raw は reuse するな。
+inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5カット raw は reuse するな。参考バトル mp4 はモーションにしない。
 ```
 
 ## チャットの分け方
@@ -53,24 +55,26 @@ inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5�
 
 ## 何を撮るか
 
-約 45 秒（12ビート ≈ 44.9s）。遅刻した朝、全裸の成人が四択の□口説くを三回選んで自席へつく。失敗は「隣の席に座った」。
+約 45 秒。遅刻した朝。参考バトルは約12秒の真横フルボディ → **半分の 5秒**、引き、足まで、水平トラック。
 
 | 人 | 歳 | |
 |---|---|---|
 | みお | 27 | 竿なし |
-| 青木 | 44 | ふたなり 20cm |
-| 黒木 | 48 | ふたなり 20cm |
-| なな | 29 | 竿なし |
+| なな | 29 | 竿なし。最初。ベロチューで回避 |
+| 青木 | 44 | ふたなり 20cm。二番目。△で倒してじゅぼ口内 |
+| 黒木 | 48 | ふたなり 20cm。最後。みお敗北 → 正常位。失敗 |
 
-本線: カバー → コマンド警備 → ジュボ（03 chain）→ 覗き → コマンド課長 → **押し倒し＋挿入（06 Combat）** → 「コピー です」→ 席列 → コマンド同僚 → 密着 → かばん → 着席 → 失敗。
+本線: なな席列 → □ベロチュー → 青木通路 → △横スク打倒 → じゅぼ口内（スピード落とさない）→ 覗き → △横スク敗北 → 正常位 → 失敗「正常位で動けない」。
 
-Combat は 06 だけ。trigger 空。本体霞東の 03/06/10 三戦とは別。△戦いは SCRIPT に残して撮らない。
+Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12。03/07/11 には積むな。
+
+同枝に別スラッグ `hospital-exit-adult`（病棟脱出・最後は完了）。
 
 ## UNet
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
 - ファイル: `models/erotic/10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`（約 22.5GB。初回だけ fetch）
-- その上に daily（Larry + cinema）。06 だけ Combat V2
+- その上に daily（Larry + cinema）。霞東あさは 06 と 10 に Combat V2
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
 - inbox の `*fl2va*` は 10Eros を飛ばす
@@ -78,21 +82,19 @@ Combat は 06 だけ。trigger 空。本体霞東の 03/06/10 三戦とは別。
 
 ## 次の一手
 
-本番 I2V はまだ。Drive に `kasumi-late-desk-adult/` は無い。Eros Max FL2VA も Drive に無い（あるのは TURBO-hybrid。使わない）。Colab で Run all。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。スチールは上書きしない。霞東本体の raw は触るな。
-
-このブランチの `minimax_h3_episode_bot.ipynb` 既定は adult。`run_episode.py` の DEFAULT_BRANCH もこの枝。Run all のまま霞東本体へ行かない。
+本番 I2V はまだ。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
 
 ```bash
 cd minimaxh3
 python h3_episode.py check  episodes/kasumi-late-desk-adult
+python h3_episode.py check  episodes/hospital-exit-adult
 python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk-adult --branch cursor/h3-kasumi-adult-0402
 ```
-
-任意: 同じスチール・同じ seed で 03 と 06 だけ stock vs Eros を並べる。GPU A/B は未実施。
 
 ## やらないこと
 
 - 霞東本体の上書き。PR #141 マージ。5カット raw の reuse
+- 参考バトル mp4 をモーションにする
 - ③ / STORY / Qwen / inbox / Imagine / 投稿
 - Larry + LightX2V。15秒。キャンバス縮小
 - 山田・定時退社・教室・制服・セーラー

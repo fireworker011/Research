@@ -108,9 +108,9 @@ python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk --branch curs
 結果は slug と Drive episodes/kasumi-late-desk/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
 ```
 
-### 霞東フロア あさ（成人エロ・□口説く×3・Combat は 06 だけ）
+### 霞東フロア あさ（成人エロ・ベロチュー→打倒じゅぼ→正常位失敗）
 
-既存エロ動画（③ / STORY / Qwen）とは**別チャット**。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。霞東本体は上書きするな。Eros Max はエロレーンだけ。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。
+既存エロ動画（③ / STORY / Qwen）とは**別チャット**。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。霞東本体は上書きするな。Eros Max はエロレーンだけ。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。Combat は 06 と 10。参考 mp4 はモーションにしない。
 
 ```
 skill h3-episode-grokbot を読む。
@@ -118,6 +118,18 @@ skill h3-episode-grokbot を読む。
 python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk-adult --branch cursor/h3-kasumi-adult-0402
 投稿するな。Wan/Max/完全版ノート/loca.lt は使うな。終わったら colab stop。
 結果は slug と Drive episodes/kasumi-late-desk-adult/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 病棟出口（成人エロ・犯されながら脱出・ミッション完了）
+
+同じ枝。inbox は触るな。Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。LoRAスタジオは使うな。
+python minimaxh3/grokbot/run_episode.py --episode hospital-exit-adult --branch cursor/h3-kasumi-adult-0402
+投稿するな。Wan/Max/完全版ノート/loca.lt は使うな。終わったら colab stop。
+結果は slug と Drive episodes/hospital-exit-adult/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
 ```
 
 ### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる）

@@ -117,7 +117,11 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## 霞東フロア あさ（`kasumi-late-desk-adult`）
 
 霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
-約 45 秒。□口説く×3（ジュボ → 押し倒し挿入 → 密着）。Combat は 06 だけ（trigger 空）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。
+約 45 秒。同僚□ベロチュー → 警備△横スク打倒＋じゅぼ口内 → 課長△敗北＋正常位。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）、引き・真横・全身。Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
+
+## 病棟出口（`hospital-exit-adult`）
+
+同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。Combat は 06 と 10。UNet erotic + eros-max。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
 
 ## 番台ディストリクト（2 本）
 

@@ -1,0 +1,448 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "hospital-exit-adult",
+  "title": "病棟出口",
+  "subtitle": "架空サバイバル ショート",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "action",
+  "render": {
+    "preset": "daily",
+    "fallback_preset": "fast",
+    "seed": 42,
+    "lane": "erotic",
+    "checkpoint": "eros-max"
+  },
+  "style": "Third-person survival-game cutscene look, live-action cinematic photorealism, pulled-back full-body framing, real-time playback, no anime, no illustration",
+  "violence": "game",
+  "world": {
+    "name": "Fictional night hospital",
+    "lock": "Fictional empty hospital at night: long beige corridors, grey linoleum, rubber doors, overhead fluorescent tubes, a dark far end, no clocks, no readable letters on any door or screen, every adult in frame is fully nude, pale skin, vacant tired eyes, no wounds, no blood",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "aya": {
+      "name_ja": "星野 あや",
+      "name_en": "Aya",
+      "age": 28,
+      "lock": "28-year-old Japanese woman, adult face, black hair in a low ponytail, fully nude, no clothes, no gown, female body, no penis, never futanari, tired determined morning-after expression",
+      "voice": "clear young adult female voice"
+    },
+    "miki": {
+      "name_ja": "感染 みき",
+      "name_en": "Miki",
+      "age": 32,
+      "lock": "32-year-old Japanese woman, adult face, short brown bob, fully nude, no clothes, no gown, pale skin, vacant tired eyes, female body, no penis, never futanari, slow idle stance",
+      "voice": "soft low adult female voice"
+    },
+    "rei": {
+      "name_ja": "感染 れい",
+      "name_en": "Rei",
+      "age": 41,
+      "lock": "41-year-old Japanese woman, adult face, short black hair, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base",
+      "voice": "low middle-aged female voice"
+    },
+    "kana": {
+      "name_ja": "感染 かな",
+      "name_en": "Kana",
+      "age": 38,
+      "lock": "38-year-old Japanese woman, adult face, short black hair, thin metal glasses, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base",
+      "voice": "low middle-aged female voice"
+    }
+  },
+  "props": {
+    "door": "a plain brown hospital door with a blank plate",
+    "rail": "a dark corridor handrail"
+  },
+  "homage": {
+    "borrowed": [
+      "third-person game camera",
+      "pulled-back full-body side-on fight plane with a horizontal track only",
+      "mission subtitle grammar with the object noun in colour",
+      "a pause-menu command window over a frozen frame",
+      "a french kiss used as a game evade",
+      "a knockdown followed at once by oral at walking-and-hit pace",
+      "escape while still joined as the mission complete"
+    ],
+    "never": [
+      "山田",
+      "Yamada",
+      "classroom",
+      "schoolgirl",
+      "school uniform",
+      "sailor",
+      "seifuku",
+      "セーラー",
+      "制服",
+      "教室",
+      "Flova",
+      "Seedance",
+      "Pollo",
+      "COVID",
+      "coronavirus"
+    ]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "病棟 Dist.",
+    "icons": ["出", "隠", "扉"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "end": true,
+    "end_seconds": 3.0,
+    "end_image": "stills/12-exit.jpg",
+    "end_title": "病棟出口",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル",
+      "オマージュは三人称カメラとミッション字幕の見せ方だけ",
+      "成人のみ"
+    ]
+  },
+  "stitch": {
+    "transition": "xfade",
+    "xfade_s": 0.35,
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-cover",
+      "source": "still",
+      "still": "stills/01-cover.jpg",
+      "still_as": "both",
+      "trim": {"start": 0, "seconds": 3.0},
+      "cast": ["aya", "miki"],
+      "face_visible": false,
+      "props": ["rail"],
+      "place": "A long beige hospital corridor at night, grey linoleum, overhead tubes, a dark far end",
+      "camera": "Pulled-back third-person camera in the corridor center, both adults full body including feet, locked horizon",
+      "action": "Aya and Miki stand far apart in the corridor, fully nude, pale, vacant eyes, no wounds; nobody else is in frame; they hold still with a slight breathing bob",
+      "sfx": "HVAC, distant drip, fluorescent buzz",
+      "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "C 隠れる",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥0",
+        "heat": 3,
+        "objective_bearing": 0,
+        "objective_distance": 0.85,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "02-ui-miki",
+      "source": "ui",
+      "seconds": 2.2,
+      "cast": ["aya"],
+      "menu": {
+        "title": "感染者",
+        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "selected": 2
+      },
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "□ 口説く",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥0",
+        "heat": 3,
+        "objective_bearing": 0,
+        "objective_distance": 0.7,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "03-kiss",
+      "source": "chain",
+      "still": "stills/03-kiss.jpg",
+      "still_as": "last",
+      "trim": {"start": 5.0, "seconds": 5.0},
+      "cast": ["aya", "miki"],
+      "face_visible": false,
+      "props": ["rail"],
+      "place": "The same hospital corridor, linoleum, overhead tubes",
+      "camera": "Pulled-back third-person side two-shot, both adults full body, holding on the kiss",
+      "action": "Aya steps in. Both hands go to Miki's shoulders. Aya gives Miki a deep wet french kiss at walking-and-hit pace. Miki's knees soften. Arriving on Picture 2: mouths joined, Miki seated against the wall, Aya can pass. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat",
+      "sfx": "A wet kiss, a back against the wall, HVAC",
+      "music": "A short synth stab on the kiss, then the bass",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "□ 口説く",
+        "health": 0.9,
+        "stamina": 0.55,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 0,
+        "objective_distance": 0.55,
+        "icons_active": ["出"],
+        "complete": false
+      }
+    },
+    {
+      "id": "04-peek",
+      "source": "still",
+      "still": "stills/04-peek.jpg",
+      "trim": {"start": 0, "seconds": 4.0},
+      "cast": ["aya"],
+      "face_visible": false,
+      "props": ["rail", "door"],
+      "place": "The same corridor looking toward a dark far end and closed brown doors, grey linoleum",
+      "camera": "Pulled-back third-person camera behind Aya at shoulder height, full body, corridor depth ahead",
+      "action": "Aya stands in the empty corridor, fully nude, looking toward the dark far end; she holds still with a slight breathing bob; nobody else is in frame yet",
+      "sfx": "Quiet corridor, fluorescent buzz, one distant footstep",
+      "music": "Bass holds; a sparse tick on the downbeat",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "視線が外れるまで",
+        "health": 0.9,
+        "stamina": 0.5,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 0,
+        "objective_distance": 0.45,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "05-ui-rei",
+      "source": "ui",
+      "seconds": 2.2,
+      "cast": ["aya"],
+      "menu": {
+        "title": "感染者",
+        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "selected": 0
+      },
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "△ 戦い",
+        "health": 0.9,
+        "stamina": 0.5,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 0,
+        "objective_distance": 0.4,
+        "icons_active": ["隠"],
+        "complete": false
+      }
+    },
+    {
+      "id": "06-fight",
+      "source": "still",
+      "still": "stills/06-fight.jpg",
+      "still_as": "last",
+      "trim": {"start": 5.0, "seconds": 5.0},
+      "cast": ["aya", "rei"],
+      "face_visible": false,
+      "physics": true,
+      "extra_loras": ["combat"],
+      "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
+      "props": ["rail"],
+      "place": "The same hospital corridor, linoleum, overhead tubes, doors along the right wall",
+      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, corridor depth behind them, no orbit, no close-up",
+      "action": "A two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Rei sits down hard on the linoleum like a ragdoll. Rei stays seated, uninjured, pale, vacant, erect 20cm still up. Aya stays standing. Both stay fully nude",
+      "sfx": "Palm hits, a body sit on linoleum, HVAC",
+      "music": "Bass holds; a taiko hit on the sit-down",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "△ 戦い",
+        "health": 0.9,
+        "stamina": 0.32,
+        "money": "¥0",
+        "heat": 3,
+        "objective_bearing": 0,
+        "objective_distance": 0.35,
+        "icons_active": [],
+        "complete": false
+      }
+    },
+    {
+      "id": "07-oral",
+      "source": "chain",
+      "still": "stills/07-oral.jpg",
+      "still_as": "last",
+      "trim": {"start": 5.0, "seconds": 5.0},
+      "cast": ["aya", "rei"],
+      "face_visible": false,
+      "props": ["rail"],
+      "place": "The same hospital corridor after Rei sits, grey linoleum",
+      "camera": "Pulled-back third-person camera at Aya's left, both adults full body, a half-step closer as Aya kneels, then holding",
+      "action": "Without slowing, Aya kneels to seated Rei at walking-and-hit pace. Both hands go to Rei's hips. Aya's mouth takes the erect 20cm to the base. Rei finishes in Aya's mouth as Picture 2: lips at the base, a little semen at the lips, Rei still seated uninjured. Real-time. Consensual adult game beat",
+      "sfx": "Knees on linoleum, a wet mouth sound, HVAC",
+      "music": "Bass holds; one taiko hit on the mouth contact",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "□ 口説く",
+        "health": 0.9,
+        "stamina": 0.28,
+        "money": "¥0",
+        "heat": 3,
+        "objective_bearing": 0,
+        "objective_distance": 0.3,
+        "icons_active": [],
+        "complete": false
+      }
+    },
+    {
+      "id": "08-door",
+      "source": "still",
+      "still": "stills/08-door.jpg",
+      "trim": {"start": 0, "seconds": 3.0},
+      "cast": ["aya"],
+      "face_visible": false,
+      "props": ["door", "rail"],
+      "place": "The same corridor with a lit open doorway at the far end, grey linoleum, night walls",
+      "camera": "Pulled-back third-person camera behind Aya, full body, the lit doorway small in the distance",
+      "action": "Aya looks down the corridor toward the lit open doorway, fully nude, holding still; the far door is the exit; nobody else is in frame",
+      "sfx": "Quiet corridor, a door bump far away, HVAC",
+      "music": "Bass returns quietly",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.3,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 0,
+        "objective_distance": 0.22,
+        "icons_active": ["扉"],
+        "complete": false
+      }
+    },
+    {
+      "id": "09-ui-kana",
+      "source": "ui",
+      "seconds": 2.2,
+      "cast": ["aya"],
+      "menu": {
+        "title": "感染者",
+        "items": ["△ 戦い", "○ 言い訳", "□ 口説く", "× 無視"],
+        "selected": 0
+      },
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "△ 戦い",
+        "health": 0.9,
+        "stamina": 0.3,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 0,
+        "objective_distance": 0.18,
+        "icons_active": ["扉"],
+        "complete": false
+      }
+    },
+    {
+      "id": "10-lose",
+      "source": "still",
+      "still": "stills/10-lose.jpg",
+      "trim": {"start": 5.0, "seconds": 5.0},
+      "cast": ["aya", "kana"],
+      "face_visible": false,
+      "physics": true,
+      "extra_loras": ["combat"],
+      "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
+      "props": ["rail"],
+      "place": "The same hospital corridor near the lit doorway, grey linoleum",
+      "camera": "Pulled-back locked side-on wide shot at hip height, both adults full body including feet, camera tracks only left and right on a straight line, no orbit, no close-up",
+      "action": "A two-second standing flurry at walking-and-hit pace, then Kana lands one heavy open-hand hit. Aya sits down hard on the linoleum like a ragdoll. Kana stays standing, glasses on, erect 20cm, uninjured, pale, vacant. Aya stays seated, uninjured. Both stay fully nude. Aya loses the exchange",
+      "sfx": "Palm hits, a body sit on linoleum, HVAC",
+      "music": "A short synth stab on the hit, then the bass",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "△ 戦い",
+        "health": 0.88,
+        "stamina": 0.16,
+        "money": "¥0",
+        "heat": 4,
+        "objective_bearing": 0,
+        "objective_distance": 0.12,
+        "icons_active": [],
+        "complete": false
+      }
+    },
+    {
+      "id": "11-join",
+      "source": "chain",
+      "still": "stills/12-exit.jpg",
+      "still_as": "last",
+      "trim": {"start": 5.0, "seconds": 5.0},
+      "cast": ["aya", "kana"],
+      "face_visible": false,
+      "props": ["door"],
+      "place": "The same corridor carpet of linoleum, Aya on her back, the lit doorway behind Kana",
+      "camera": "Pulled-back medium-wide third-person, both adults full body, holding as they join",
+      "action": "Without slowing, Kana kneels between Aya's legs at walking-and-hit pace. Missionary. The erect 20cm goes inside Aya to the base. Arriving on Picture 2: Aya on her back, Kana on top, joined at the hips, glasses on. Both stay fully nude. Real-time. Consensual adult game beat",
+      "sfx": "Linoleum, a wet join, HVAC",
+      "music": "Bass holds; a delayed taiko on the join",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "",
+        "health": 0.88,
+        "stamina": 0.12,
+        "money": "¥0",
+        "heat": 5,
+        "objective_bearing": 0,
+        "objective_distance": 0.08,
+        "icons_active": ["扉"],
+        "complete": false
+      }
+    },
+    {
+      "id": "12-exit",
+      "source": "still",
+      "still": "stills/12-exit.jpg",
+      "still_as": "last",
+      "trim": {"start": 5.2, "seconds": 4.8},
+      "cast": ["aya", "kana"],
+      "face_visible": false,
+      "props": ["door", "rail"],
+      "place": "The same join, sliding toward the lit open doorway at the far end of the corridor",
+      "camera": "Pulled-back third-person behind the pair, both full bodies, the lit doorway readable beyond them, holding as they cross the threshold still joined",
+      "action": "They stay joined in missionary and slide toward the lit open doorway at walking-and-hit pace, arriving on Picture 2: still joined, Aya on her back, Kana on top, the open doorway behind them; Aya has left the building. Real-time",
+      "sfx": "Linoleum scrape, a door bump, outdoor air, HVAC fading",
+      "music": "Bass returns with a delayed taiko pattern",
+      "hud": {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "hint": "F 出る",
+        "health": 0.88,
+        "stamina": 0.1,
+        "money": "¥0",
+        "heat": 1,
+        "objective_bearing": 0,
+        "objective_distance": 0.02,
+        "icons_active": ["出"],
+        "complete": true
+      }
+    }
+  ]
+}
