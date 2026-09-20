@@ -6,6 +6,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 # h3-episode-oneclick
 
 質問しない。入力は `minimaxh3/episodes/<slug>/episode.json` とクリーンなスチールだけ。説明書は `minimaxh3/episodes/README.md`。
+霞東アダルト（`kasumi-late-desk-adult`）は ③ / Qwen と別チャット。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md`。
 
 ## やること
 

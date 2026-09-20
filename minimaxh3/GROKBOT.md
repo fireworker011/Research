@@ -98,7 +98,7 @@ Grokbot に話しかけるのはこのブロックをそのまま。slug だけ�
 
 ### 霞東フロア（ぶっとび三戦・遅刻して自席。ミッション失敗）
 
-原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。Combat LoRA は Drive `models/loras/H3_Combat_V2.safetensors`。無ければランナーが HF から取る。
+原クリップはモーションにしない。学校・定時退社の固有名は使わない。マージ前は `--branch` をこの PR ブランチにする（bootstrap が GitHub から stills を取る）。Combat LoRA は Drive `models/loras/H3_Combat_V2.safetensors`。無ければランナーが HF から取る。**成人エロ版とは別スラッグ・別チャット。**
 
 ```
 skill h3-episode-grokbot を読む。
@@ -106,6 +106,18 @@ skill h3-episode-grokbot を読む。
 python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk --branch cursor/h3-ol-late-desk-33d9
 投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
 結果は slug と Drive episodes/kasumi-late-desk/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 霞東フロア あさ（成人エロ・□口説く×3・Combat は 06 だけ）
+
+既存エロ動画（③ / STORY / Qwen）とは**別チャット**。引き継ぎは `episodes/kasumi-late-desk-adult/HANDOVER.md`。霞東本体は上書きするな。Eros Max はエロレーンだけ。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。LoRAスタジオは使うな。
+python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk-adult --branch cursor/h3-kasumi-adult-0402
+投稿するな。Wan/Max/完全版ノート/loca.lt は使うな。終わったら colab stop。
+結果は slug と Drive episodes/kasumi-late-desk-adult/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
 ```
 
 ### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる）

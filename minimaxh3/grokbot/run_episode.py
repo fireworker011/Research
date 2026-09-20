@@ -23,7 +23,7 @@ for p in (HERE.parents[1], HERE.parents[2] / "colab"):
 from h3_colab_cli import exec_file, mount_drive, orchestrate_commands, start_session, stop_session  # noqa: E402
 from h3_episode import EPISODE_HELPERS, PRESETS, SLUG_RE, EpisodeError  # noqa: E402
 
-DEFAULT_BRANCH = "cursor/h3-episode-oneclick-f112"
+DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 

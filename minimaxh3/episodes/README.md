@@ -93,6 +93,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## レンダの決まり
 
+- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max`（`10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors`）は `lane: erotic` のときだけ。ファイルは Drive `models/erotic/` に取り、`diffusion_models/` へは名前付きで出す。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。TURBO-hybrid と DT-sQKV は使わない
 - LoRA プリセット: `daily` = Larry v4 1.0 + シネマ DY 0.65 / 8step（トリガー `DY` を先頭に付ける）、`preview` = LightX2V 4step + シネマ 0.5、`fast` = LightX2V 4step のみ。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
 - 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。daily の後ろにだけ積む。turbo とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない
@@ -112,6 +113,11 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 約 50 秒（12 ビート ≈ 44.9 秒）。朝に遅刻した成人 OL が、警備・課長・同僚の四択を△（オフィス用品の体当たり）で抜けて自席へつく。失敗は「隣の席に座った」。借りるのはカバー・覗き・コマンド・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない。
 カバー → コマンド警備 → トート体当たり → 覗き → コマンド課長 → ファイル払い → コピーです → 席列 → コマンド同僚 → マグ → かばん → 着席 → 失敗。
 `tone: action`、`violence: game`。格闘3本だけ `extra_loras: ["combat"]` と `prfight2, prfin1`、euler+beta 12step。03/06/10/12 のスチールは last_frame（同じ場所の着地）。覗き・席列は切ってスチール先頭。Larry の後ろに積む。turbo とは同時に積まない。しゃがみカバーは横向き。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。台本は `episodes/kasumi-late-desk/SCRIPT.md`。準備は `PREP.md`。初回の 5 ビート ≈ 24.7 秒は Drive の `episode.json` に残ると連結がそこで終わる。bootstrap はブランチから取り直す。
+
+## 霞東フロア あさ（`kasumi-late-desk-adult`）
+
+霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
+約 45 秒。□口説く×3（ジュボ → 押し倒し挿入 → 密着）。Combat は 06 だけ（trigger 空）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。
 
 ## 番台ディストリクト（2 本）
 

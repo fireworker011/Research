@@ -50,6 +50,40 @@ from h3_t2v import (
 PORT = 8188
 COMFY_DIR_DEFAULT = "/content/ComfyUI"
 RAW = f"https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
+# Stock FL2VA only. 10Eros_Max filenames contain "fl2va" and must never win a glob.
+STOCK_FL2VA_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+EROTIC_UNET_NEEDLES = ("10eros", "eros_max", "eros-max")
+
+
+def is_erotic_unet_name(name: str) -> bool:
+    """True for 10Eros_Max / Eros Max weights. Inbox I2V and stock episodes must skip these."""
+    low = str(name or "").lower()
+    return any(needle in low for needle in EROTIC_UNET_NEEDLES)
+
+
+def stock_fl2va_files(diff_dir: Path | str) -> list[Path]:
+    folder = Path(diff_dir)
+    if not folder.is_dir():
+        return []
+    out: list[Path] = []
+    for path in sorted(folder.glob("*fl2va*")):
+        if not path.name.endswith(".safetensors") or path.name.endswith(".part"):
+            continue
+        if is_erotic_unet_name(path.name):
+            continue
+        out.append(path)
+    return out
+
+
+def pick_stock_fl2va(diff_dir: Path | str) -> str:
+    """First stock FL2VA in the folder. Erotic checkpoints are never auto-selected."""
+    found = stock_fl2va_files(diff_dir)
+    for path in found:
+        if path.name == STOCK_FL2VA_UNET:
+            return path.name
+    if found:
+        return found[0].name
+    return STOCK_FL2VA_UNET
 
 
 def sh(cmd: list[str]) -> subprocess.CompletedProcess[str]:
@@ -259,8 +293,7 @@ def generate_i2va(
             obj = json.loads(r.read().decode())
         if "MiniMaxH3ImageToVideo" not in obj:
             raise SystemExit("MiniMaxH3ImageToVideo missing")
-    diff = list((comfy_dir / "models/diffusion_models").glob("*fl2va*")) if (comfy_dir / "models/diffusion_models").exists() else []
-    unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    unet = pick_stock_fl2va(comfy_dir / "models/diffusion_models")
     lora_paths = list((comfy_dir / "models/loras").glob("*.safetensors")) if (comfy_dir / "models/loras").exists() else []
     lora = prefer_fl2v_lora(lora_paths, use_lora)
     plans = i2va_retry_plans(width=int(width), height=int(height))
@@ -366,8 +399,7 @@ def generate_t2v(
             obj = json.loads(r.read().decode())
         if "MiniMaxH3ImageToVideo" not in obj:
             raise SystemExit("MiniMaxH3ImageToVideo missing")
-    diff = list((comfy_dir / "models/diffusion_models").glob("*fl2va*")) if (comfy_dir / "models/diffusion_models").exists() else []
-    unet = diff[0].name if diff else "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    unet = pick_stock_fl2va(comfy_dir / "models/diffusion_models")
     lora_paths = list((comfy_dir / "models/loras").glob("*.safetensors")) if (comfy_dir / "models/loras").exists() else []
     lora = prefer_fl2v_lora(lora_paths, use_lora)
     last_err: Any = None
