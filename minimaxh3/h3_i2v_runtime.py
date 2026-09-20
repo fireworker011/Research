@@ -204,15 +204,27 @@ def start_comfy(comfy_dir: Path, *, port: int = PORT, vram: str = "highvram") ->
     log = Path("/content/comfyui.log")
     log.parent.mkdir(parents=True, exist_ok=True)
     log_f = open(log, "w", buffering=1)
-    vram_flag = f"--{vram}" if vram in ("highvram", "normalvram", "lowvram", "novram", "cpu") else "--highvram"
+    # Current Comfy CLI: --gpu-only | --highvram | --lowvram | --novram | --cpu.
+    # No --normalvram; omit the flag for default / "normal" memory.
+    vram_flags = {
+        "highvram": "--highvram",
+        "lowvram": "--lowvram",
+        "novram": "--novram",
+        "cpu": "--cpu",
+        "gpu-only": "--gpu-only",
+        "default": "",
+        "normal": "",
+        "normalvram": "",
+    }
+    vram_flag = vram_flags.get(vram, "--highvram")
     cmd = [
         sys.executable, "main.py",
         "--listen", "127.0.0.1",
         "--port", str(port),
-        vram_flag,
-        "--disable-auto-launch",
-        "--enable-cors-header",
     ]
+    if vram_flag:
+        cmd.append(vram_flag)
+    cmd += ["--disable-auto-launch", "--enable-cors-header"]
     subprocess.Popen(cmd, cwd=str(comfy_dir), stdout=log_f, stderr=subprocess.STDOUT, start_new_session=True)
     for _ in range(90):
         if comfy_up(port):

@@ -2531,7 +2531,7 @@ def run_episode(
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
-        vram = "normalvram" if episode_lane(ep) == "erotic" else "highvram"
+        vram = "default" if episode_lane(ep) == "erotic" else "highvram"
         start_comfy(comfy, port=port, vram=vram)
         print("comfy vram", vram)
         loras_dir = models / "loras"
