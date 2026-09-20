@@ -136,7 +136,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'EPISODE = "kasumi-late-desk-adult"' in src
     assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
-    md = "".join(c["source"] for c in nb["cells"] if c["cell_type"] == "markdown")
+    md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
     assert "kasumi-late-desk-adult" in md
     assert "episodes" in src and "_lib" in src
