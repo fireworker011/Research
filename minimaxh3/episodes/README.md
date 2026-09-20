@@ -77,6 +77,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
 - `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（1本目から全部 T2V。プロンプトで直せる）／`chain`＝前の最終フレームから続ける（1本目は T2V、2本目以降は前クリップ最終フレームから I2V）／`landing`＝用意した最終フレームへ着く（stills の jpg を Picture 2 にする。窓はクリップ尻へずらす）
+- `render.combat`（Colab 4 番。迷ったら **オフ**）: `off`＝Combat を積まない／`on`＝ハイメモリ専用（VRAM 70+ または RAM 60+）。TURBO-hybrid の 40GB では落ちやすい
 - 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラ・速度・つなぎを増やすときだけ `h3_episode_packs.py` に1エントリ足す
 - `render.camera_pack`: `side2d`（横スク・常にサイド）／`action3d`（三人称3Dアクション）。T2V 話の既定は `side2d`。Colab の `CAMERA` と `--camera` で上書き
 - `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**。着地モードを選ぶとエンジンが last に切り替える
@@ -100,7 +101,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 - 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max` は `lane: erotic` のときだけ。あさは Drive の `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors`（約21GB）をそのまま使う（Drive は symlink 不可）。無ければ HuggingFace `TenStrip/10Eros-Max` から取る。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。この UNet に LightX2V / Larry / Combat LoRA は積まない（turbo 焼き込み＋A100 40GB）。DT-sQKV は使わない
 - LoRA プリセット（シネマ LoRA は積まない）: `speed` = LightX2V turbo4 / 4step（最速。格闘 LoRA は落とす）、`balance` = Larry v4 / 8step euler+simple、`quality` = Larry v4 / 12step euler+beta。別名 `fast`/`preview`=`speed`、`daily`=`balance`。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
-- 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。Larry の後ろにだけ積む。turbo（speed）とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
+- 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。Colab の 4 番は既定オフ。**格闘LoRAオン（ハイメモリ専用）** のときだけ積む（VRAM 70GiB 以上か RAM 60GiB 以上）。A100 40GB では落ちやすい。LightX2V turbo（speed）とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。積めたとき格闘本は euler+beta 12step
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない
 - 音は H3 のまま。連結は xfade + acrossfade 0.35秒 + loudnorm。`transition: "cut"` で直結
 

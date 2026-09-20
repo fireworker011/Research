@@ -109,8 +109,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     "balance": {
         "label_ja": "バランス",
         "choice_ja": "バランス（迷ったらこれ）",
-        "when_ja": "普段使い。Larry 8step",
-        "hint_ja": "迷ったらこれ。Larry 8step。",
+        "when_ja": "普段使い。この UNet では LoRA なし euler 8",
+        "hint_ja": "迷ったらこれ。LoRA なし euler 8。Larry は積まない。",
         "recommend": True,
         "stack": [("larry", 1.0, False)],
         "steps": 8,
@@ -121,8 +121,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     "quality": {
         "label_ja": "質",
         "choice_ja": "質（きれい・時間かかる）",
-        "when_ja": "きれい優先。Larry 12step",
-        "hint_ja": "きれい優先。Larry 12step。時間はかかる。",
+        "when_ja": "きれい優先。この UNet では LoRA なし euler 12",
+        "hint_ja": "きれい優先。LoRA なし euler 12。時間はかかる。",
         "stack": [("larry", 1.0, False)],
         "steps": 12,
         "trigger": "",
@@ -176,6 +176,37 @@ CONNECT_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
+# Combat V2 is optional. Default off. On = High-Memory only (VRAM 70+ or RAM 60+).
+COMBAT_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "オフ",
+        "choice_ja": "格闘LoRAオフ（迷ったらこれ）",
+        "when_ja": "積まない。A100 40GB はこれ",
+        "hint_ja": "迷ったらこれ。Combat は積まない。",
+        "recommend": True,
+    },
+    "on": {
+        "label_ja": "オン",
+        "choice_ja": "格闘LoRAオン（ハイメモリ専用）",
+        "when_ja": "ハイメモリだけ。06と10に Combat V2。40GBでは落ちやすい",
+        "hint_ja": "ハイメモリ専用。06と10に Combat。足りないと自動でオフ。",
+    },
+}
+
+COMBAT_ALIASES: dict[str, str] = _label_aliases(
+    COMBAT_MODES,
+    {
+        "combat": "on",
+        "combat_on": "on",
+        "highmem": "on",
+        "ハイメモリ": "on",
+        "なし": "off",
+        "しない": "off",
+        "no-combat": "off",
+    },
+)
+
+
 PRESET_ALIASES: dict[str, str] = _label_aliases(
     PRESET_CANON,
     {
@@ -219,6 +250,15 @@ def canonical_connect(name: str) -> str:
     return CONNECT_ALIASES.get(raw, raw)
 
 
+def canonical_combat(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in COMBAT_MODES:
+        return raw
+    return COMBAT_ALIASES.get(raw, raw)
+
+
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
@@ -226,6 +266,8 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return CAMERA_PACKS
     if kind == "preset":
         return PRESET_CANON
+    if kind == "combat":
+        return COMBAT_MODES
     raise KeyError(kind)
 
 
@@ -262,19 +304,22 @@ def form_readme(kind: str) -> str:
     return "\n".join(lines)
 
 
-def describe_run(*, connect: str = "", camera: str = "", preset: str = "", episode: str = "") -> str:
+def describe_run(*, connect: str = "", camera: str = "", preset: str = "", combat: str = "", episode: str = "") -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
+    f_key = canonical_combat(combat) or "off"
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
+    f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
     head = f"一発 {episode}".strip() if episode else "一発"
     return (
         f"{head}\n"
         f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
-        "迷ったらこの3つの既定のままで Run all。"
+        f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
+        "迷ったらこの4つの既定のままで Run all。"
     )

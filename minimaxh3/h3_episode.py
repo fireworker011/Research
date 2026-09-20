@@ -73,6 +73,7 @@ from h3_i2v_runtime import (
     PORT,
     STOCK_FL2VA_UNET,
     comfy_free,
+    detect_vram_gb,
     ensure_comfy,
     is_erotic_unet_name,
     pick_stock_fl2va,
@@ -91,12 +92,14 @@ from h3_motion_graphics import (
 from h3_r2v_core import is_oom_error
 from h3_episode_packs import (
     CAMERA_PACKS,
+    COMBAT_MODES,
     CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
     PRESET_CANON,
     PRESET_ALIASES,
     canonical_camera,
+    canonical_combat,
     canonical_connect,
     canonical_preset,
     describe_run,
@@ -172,6 +175,9 @@ EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
     "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors",
 )
+# Combat LoRA on TURBO-hybrid OOMs A100 40GB. Opt-in needs High-Memory (VRAM 80GB or Colab High-RAM).
+HIGH_MEM_VRAM_GIB = 70.0
+HIGH_MEM_RAM_GIB = 60.0
 CHECKPOINTS: dict[str, dict[str, Any]] = {
     "stock": {
         "file": STOCK_FL2VA_UNET,
@@ -310,6 +316,43 @@ def episode_lane(ep: dict[str, Any]) -> str:
 def comfy_vram_for_lane(lane: str) -> str:
     """Erotic UNet uses Comfy default memory. `--normalvram` is not a current CLI flag."""
     return "default" if lane == "erotic" else "highvram"
+
+
+def detect_ram_gb() -> float:
+    try:
+        return float(os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")) / 1024 ** 3
+    except (AttributeError, OSError, ValueError):
+        return 0.0
+
+
+def is_high_mem(*, vram_gb: float = 0.0, ram_gb: float = 0.0) -> bool:
+    """Colab High-RAM (~80GB system) or an 80GB-class GPU."""
+    return float(vram_gb) >= HIGH_MEM_VRAM_GIB or float(ram_gb) >= HIGH_MEM_RAM_GIB
+
+
+def episode_combat(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / on. Empty keeps auto: stock UNet may load Combat, TURBO-hybrid does not."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("combat") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_combat(raw)
+    if name not in COMBAT_MODES:
+        raise EpisodeError(f"render.combat must be one of {list(COMBAT_MODES)}")
+    return name
+
+
+def combat_lora_allowed(*, unet: str, combat: str, high_mem: bool) -> tuple[bool, str]:
+    """Whether Combat V2 may stack. LightX2V turbo never. Hybrid needs High-Memory opt-in."""
+    hybrid = is_turbo_hybrid_unet(unet)
+    if combat == "off":
+        return False, "combat LoRA skipped (off)"
+    if combat == "on":
+        if not high_mem:
+            return False, "combat LoRA skipped (High-Memory only; this runtime is not)"
+        return True, "combat LoRA on (High-Memory)"
+    if hybrid:
+        return False, "combat LoRA skipped (never with LightX2V turbo or TURBO-hybrid UNet)"
+    return True, ""
 
 
 def episode_voice(ep: dict[str, Any]) -> str:
@@ -743,6 +786,7 @@ def prepare_episode(
     connect_override: str | None = None,
     camera_pack_override: str | None = None,
     preset_override: str | None = None,
+    combat_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = apply_connect_mode(ep, connect_override)
@@ -754,6 +798,8 @@ def prepare_episode(
     if preset_override not in (None, ""):
         lookup = canonical_preset(preset_override)
         render["preset"] = lookup if lookup in PRESETS else preset_override
+    if combat_override not in (None, ""):
+        render["combat"] = canonical_combat(combat_override) or combat_override
     out["render"] = render
     return out
 
@@ -1124,6 +1170,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         connect_key = canonical_connect(connect)
         if connect_key not in CONNECT_MODES:
             errs.append(f"render.connect must be one of {list(CONNECT_MODES)} (add a mode in h3_episode_packs.py)")
+    combat = str(render.get("combat") or "").strip()
+    if combat:
+        combat_key = canonical_combat(combat)
+        if combat_key not in COMBAT_MODES:
+            errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
     errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
@@ -1565,12 +1616,15 @@ def apply_extra_loras(
     beat: dict[str, Any],
     loras_dir: Path | str | None,
     unet: str = "",
+    *,
+    allow_combat: bool | None = None,
+    skip_note: str = "",
 ) -> dict[str, Any]:
     """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
 
     When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
     Turbo fallback keeps the preset 4-step euler+simple and ignores beat.steps.
-    TURBO-hybrid UNet cannot take LoRA patches on A100 40GB (requantize OOM).
+    TURBO-hybrid loads Combat only when High-Memory opt-in is on (A100 40GB otherwise OOM).
     """
     extra = extra_lora_entries(beat)
     out = dict(preset)
@@ -1580,7 +1634,12 @@ def apply_extra_loras(
     notes = list(preset.get("notes") or [])
     names = " ".join(str(s[0]).lower() for s in stack)
     turbo = "fl2v_turbo" in names
-    hybrid = is_turbo_hybrid_unet(unet)
+    if allow_combat is None:
+        allow_combat, auto_note = combat_lora_allowed(unet=unet, combat="", high_mem=False)
+        if auto_note and auto_note not in notes:
+            notes.append(auto_note)
+    elif skip_note and skip_note not in notes:
+        notes.append(skip_note)
     combat_on = False
     combat_requested = any(key == "combat" for key, _s in extra)
     for key, strength in extra:
@@ -1591,8 +1650,13 @@ def apply_extra_loras(
         if key == "cinema":
             notes.append("cinematic LoRA skipped (heavy; not a speed/quality preset)")
             continue
-        if key == "combat" and (turbo or hybrid):
-            notes.append("combat LoRA skipped (never with LightX2V turbo or TURBO-hybrid UNet)")
+        if key == "combat" and turbo:
+            notes.append("combat LoRA skipped (never with LightX2V turbo)")
+            continue
+        if key == "combat" and not allow_combat:
+            note = skip_note or "combat LoRA skipped (never with LightX2V turbo or TURBO-hybrid UNet)"
+            if note not in notes:
+                notes.append(note)
             continue
         present = loras_dir is None or (Path(loras_dir) / fname).is_file()
         if not present:
@@ -2477,6 +2541,7 @@ def run_episode(
     preset_override: str | None = None,
     camera_pack_override: str | None = None,
     connect_override: str | None = None,
+    combat_override: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -2490,12 +2555,14 @@ def run_episode(
         connect_override=connect_override,
         camera_pack_override=camera_pack_override,
         preset_override=preset_override,
+        combat_override=combat_override,
     )
     print(
         describe_run(
             connect=episode_connect(ep),
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
+            combat=episode_combat(ep),
             episode=str(ep.get("slug") or ""),
         )
     )
@@ -2525,10 +2592,11 @@ def run_episode(
     comfy_input: Path | None = None
     loras_dir: Path | None = None
     preset: dict[str, Any]
+    unet_name = str(CHECKPOINTS.get(episode_checkpoint(ep), {}).get("file") or "")
     if dry_run:
         preset = resolve_preset(preset_name, None, fallback=fallback)
         if episode_checkpoint(ep) == "eros-max":
-            preset = apply_unet_preset_rules(preset, str(CHECKPOINTS["eros-max"]["file"]))
+            preset = apply_unet_preset_rules(preset, unet_name)
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
@@ -2541,6 +2609,7 @@ def run_episode(
         for note in ensure_episode_checkpoint(ep, models):
             print("checkpoint:", note)
         unet = stage_erotic_unet(ep, models)
+        unet_name = unet
         print("unet", unet, "lane", episode_lane(ep), "checkpoint", episode_checkpoint(ep))
         preset = apply_unet_preset_rules(resolve_preset(preset_name, loras_dir, fallback=fallback), unet)
         comfy_input = comfy / "input"
@@ -2549,6 +2618,18 @@ def run_episode(
                 object_info = json.loads(r.read().decode())
             if "MiniMaxH3ImageToVideo" not in (object_info or {}):
                 raise EpisodeError("MiniMaxH3ImageToVideo missing in ComfyUI")
+    vram_gb = detect_vram_gb(dry_run=dry_run)
+    ram_gb = 0.0 if dry_run else detect_ram_gb()
+    high_mem = is_high_mem(vram_gb=vram_gb, ram_gb=ram_gb)
+    allow_combat, combat_note = combat_lora_allowed(
+        unet=unet_name,
+        combat=episode_combat(ep),
+        high_mem=high_mem,
+    )
+    status["combat"] = episode_combat(ep) or "auto"
+    status["high_mem"] = high_mem
+    if combat_note:
+        print("combat:", combat_note)
     for note in preset.get("notes") or []:
         print("preset:", note)
     status["preset"] = preset["name"]
@@ -2591,7 +2672,14 @@ def run_episode(
         (root / "logs" / f"{bid}.prompt.txt").write_text(prompt, encoding="utf-8")
         status["beats"][bid] = {"state": "running", "source": source, "started": _now()}
         save_status(root, status)
-        beat_preset = apply_extra_loras(preset, beat, loras_dir, unet=unet if not dry_run else str(CHECKPOINTS.get(episode_checkpoint(ep), {}).get("file") or ""))
+        beat_preset = apply_extra_loras(
+            preset,
+            beat,
+            loras_dir,
+            unet=unet_name,
+            allow_combat=allow_combat,
+            skip_note=combat_note,
+        )
         for note in beat_preset.get("notes") or []:
             if note not in (preset.get("notes") or []):
                 print("preset:", note)
@@ -2616,7 +2704,7 @@ def run_episode(
                     preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",
-                    unet=unet,
+                    unet=unet_name,
                     port=port,
                     object_info=object_info,
                     poster=poster,
@@ -2713,7 +2801,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -2722,6 +2810,7 @@ def _usage() -> str:
         "  --preset speed|balance|quality（迷ったら balance）\n"
         "  --camera side2d|action3d（迷ったら side2d）\n"
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
+        "  --combat off|on（迷ったら off。on はハイメモリ専用）\n"
     )
 
 
@@ -2744,6 +2833,7 @@ def main(argv: list[str] | None = None) -> int:
     preset = None
     camera = None
     connect = None
+    combat = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
@@ -2752,9 +2842,11 @@ def main(argv: list[str] | None = None) -> int:
         camera = opts[opts.index("--camera") + 1]
     if "--connect" in opts:
         connect = opts[opts.index("--connect") + 1]
+    if "--combat" in opts:
+        combat = opts[opts.index("--combat") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
-    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset)
+    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset, combat_override=combat)
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():
         ensure_episode_tree(out_dir)

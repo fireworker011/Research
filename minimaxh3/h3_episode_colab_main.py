@@ -9,6 +9,7 @@ Env:
     H3_EPISODE_PRESET   speed | balance | quality（日本語: スピード / バランス / 質）
   H3_EPISODE_CAMERA   side2d | action3d（日本語: 横スク / 3Dアクション）
   H3_EPISODE_CONNECT  t2v | chain | landing（日本語: カット / 前の最終フレームから続ける / 用意した最終フレームへ着く。カットとチェーンの1本目は T2V）
+  H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
@@ -59,6 +60,7 @@ def main() -> int:
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
             camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
             connect_override=(os.environ.get("H3_EPISODE_CONNECT") or "").strip() or None,
+            combat_override=(os.environ.get("H3_EPISODE_COMBAT") or "").strip() or None,
         )
         print("DONE", slug, final)
         return 0

@@ -24,7 +24,7 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：上から 1・2・3 を選んで Run all（迷ったらそのまま）
+CELL = r'''#@title 一発：上から 1・2・3・4 を選んで Run all（迷ったらそのまま）
 EPISODE = "__EPISODE__"  #@param {type:"string"}
 #@markdown ---
 __CONNECT_HELP__
@@ -33,6 +33,8 @@ __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
 __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
+__COMBAT_HELP__
+COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 print("=" * 60)
@@ -55,6 +57,7 @@ os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
+os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
@@ -111,7 +114,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
 
-## 上から 3 つだけ選ぶ（迷ったらそのまま）
+## 上から 4 つだけ選ぶ（迷ったらそのまま）
 
 **1. つなぎ方** — 動画をどう繋げるか
 
@@ -125,6 +128,10 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("preset")}
 
+**4. 格闘 LoRA** — ハイメモリ専用の任意
+
+{form_readme("combat")}
+
 シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
@@ -132,7 +139,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ。Combat は 06 と 10。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ。Combat は 06 と 10 に書いてあるが、Colab 4 でオン＋ハイメモリのときだけ積む。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - `EPISODE = "bandai-district-short"` は 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
 
@@ -155,6 +162,9 @@ def make_nb() -> dict:
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
+        .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
+        .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
+        .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
     )
     return {
         "nbformat": 4,

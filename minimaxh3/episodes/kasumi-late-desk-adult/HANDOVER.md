@@ -74,19 +74,19 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
 - ファイル: Drive `minimax-h3-comfyui/models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors`（約21GB）。無ければ HuggingFace `TenStrip/10Eros-Max`
-- その上に `balance`（LoRA なし euler 8。turbo 焼き込み済み。シネマ LoRA は積まない）。`speed` / `quality` に切替可。Combat LoRA もこの UNet では積まない
+- その上に `balance`（LoRA なし euler 8。turbo 焼き込み済み。シネマ LoRA は積まない）。`speed` / `quality` に切替可。Combat LoRA は Colab 4 番のハイメモリ任意（既定オフ）
 - GPU ビートは T2V。`render.camera_pack` 既定 `side2d`（横スク）。`action3d` は Colab `CAMERA` か `--camera`
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
 - 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う。HuggingFace からは取らない。途中切れの別ファイル `.part` は無視。stock には落とさない
 - inbox の `*fl2va*` は 10Eros を飛ばす
-- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry / Combat も積まない（A100 40GB で LoRA パッチが OOM）。DT-sQKV は使わない
+- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry も積まない。Combat はハイメモリでオンにしたときだけ。DT-sQKV は使わない
 - Drive は symlink できない。`diffusion_models` のファイルをそのまま読む
 - Comfy は成人レーンで VRAM フラグを付けない（現行 CLI に `--normalvram` は無い。付けると start failed）。stock は `--highvram`
 
 ## 次の一手
 
-本番 GPU のつなぎは Colab で選ぶ。迷ったら **カット（本ごと独立）**。カットも **前の最終フレームから続ける** も 1本目は T2V。チェーンは 2本目以降 I2V。**用意した最終フレームへ着く**（stills jpg を最後のコマ）も可。声は日本語カナだけ（`voices` の喘ぎ。英語禁止）。カメラは side2d / action3d。プリセットは speed / balance / quality。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
+本番 GPU のつなぎは Colab で選ぶ。迷ったら **カット（本ごと独立）**。カットも **前の最終フレームから続ける** も 1本目は T2V。チェーンは 2本目以降 I2V。**用意した最終フレームへ着く**（stills jpg を最後のコマ）も可。格闘 LoRA は 4 番、既定オフ、オンはハイメモリ専用。声は日本語カナだけ（`voices` の喘ぎ。英語禁止）。カメラは side2d / action3d。プリセットは speed / balance / quality。Colab は slug を切り替えて Run all。Drive は各 `episodes/<slug>/` と `models/erotic/` だけ。スチールは上書きしない。参考 mp4 はモーションにしない。
 
 ```bash
 cd minimaxh3

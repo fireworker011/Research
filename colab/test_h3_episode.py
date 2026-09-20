@@ -36,6 +36,7 @@ from h3_episode import (  # noqa: E402
     EpisodeError,
     apply_connect_mode,
     comfy_vram_for_lane,
+    combat_lora_allowed,
     apply_extra_loras,
     apply_unet_preset_rules,
     assert_not_production_root,
@@ -52,6 +53,7 @@ from h3_episode import (  # noqa: E402
     camera_angle,
     camera_line,
     canonical_connect,
+    canonical_combat,
     canonical_preset,
     canvas_for,
     duration_ladder,
@@ -59,10 +61,12 @@ from h3_episode import (  # noqa: E402
     episode_camera_pack,
     episode_checkpoint,
     episode_connect,
+    episode_combat,
     episode_lane,
     episode_root,
     ensure_episode_checkpoint,
     is_erotic_weight_path,
+    is_high_mem,
     is_turbo_hybrid_unet,
     locate_erotic_checkpoint,
     expected_duration,
@@ -165,8 +169,11 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'CONNECT = "カット（本ごと独立・迷ったらこれ）"' in src
     assert "前の最終フレームから続ける" in src
     assert "用意した最終フレームへ着く" in src
+    assert 'COMBAT = "格闘LoRAオフ（迷ったらこれ）"' in src
+    assert "格闘LoRAオン（ハイメモリ専用）" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
+    assert "H3_EPISODE_COMBAT" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
@@ -667,7 +674,12 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     oral_prompt = build_beat_prompt(ep, ep["beats"][6], trigger=merge_trigger("", ep["beats"][6]))
     assert "prfight2" not in oral_prompt
     assert "walking-and-hit pace" in oral_prompt
+    assert "jupo-jupo" in oral_prompt.lower()
+    assert "BASE" in oral_prompt
+    assert "melting with pleasure" in oral_prompt
     assert "Picture 2" not in oral_prompt
+    assert ep["beats"][6]["voices"][0]["line"] == "じゅぽっ"
+    assert ep["beats"][6]["voices"][1]["line"] == "はぁっ"
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")
@@ -718,6 +730,12 @@ def test_hospital_exit_adult_escape_while_joined():
         assert "slow-motion" not in low and "slow-mo" not in low
         assert "<Picture 1>" not in prompt and "Picture 2" not in prompt
         assert "This shot:" in prompt
+    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
+    oral_prompt = build_beat_prompt(ep, oral)
+    assert "jupo-jupo" in oral_prompt.lower()
+    assert "melting with pleasure" in oral_prompt
+    assert oral["voices"][0]["line"] == "じゅぽっ"
+    assert oral["voices"][1]["line"] == "はぁっ"
 
 
 def test_hospital_stills_are_not_kasumi_copies():
@@ -801,9 +819,15 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "プロンプトで直したい" in help_txt
     assert "1本目は T2V" in help_txt
     assert "stills の jpg" in help_txt
+    assert ui_default("combat") == "格闘LoRAオフ（迷ったらこれ）"
+    assert ui_choices("combat") == [
+        "格闘LoRAオフ（迷ったらこれ）",
+        "格闘LoRAオン（ハイメモリ専用）",
+    ]
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
-    assert "迷ったらこの3つの既定のままで Run all" in picked
+    assert "迷ったらこの4つの既定のままで Run all" in picked
+    assert "格闘LoRAオフ" in picked
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert episode_connect(ep) == "t2v"
     stock = load_episode(KASUMI_DIR / "episode.json")
@@ -1093,6 +1117,25 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     hybrid = apply_extra_loras(daily, beat, loras, unet=EROS_MAX_UNET)
     assert hybrid["stack"] == daily["stack"]
     assert any("TURBO-hybrid" in n for n in hybrid["notes"])
+    opted = apply_extra_loras(
+        daily, beat, loras, unet=EROS_MAX_UNET, allow_combat=True, skip_note="combat LoRA on (High-Memory)"
+    )
+    assert opted["stack"][-1] == (LORA_FILES["combat"], 1.0)
+    assert opted["steps"] == COMBAT_STEPS
+    offed = apply_extra_loras(
+        daily, beat, loras, unet=EROS_MAX_UNET, allow_combat=False, skip_note="combat LoRA skipped (off)"
+    )
+    assert offed["stack"] == daily["stack"]
+    assert any("off" in n for n in offed["notes"])
+    assert canonical_combat("格闘LoRAオン（ハイメモリ専用）") == "on"
+    assert canonical_combat("オフ") == "off"
+    assert not is_high_mem(vram_gb=40, ram_gb=12)
+    assert is_high_mem(vram_gb=80, ram_gb=12)
+    assert is_high_mem(vram_gb=40, ram_gb=80)
+    allowed, note = combat_lora_allowed(unet=EROS_MAX_UNET, combat="on", high_mem=True)
+    assert allowed and "High-Memory" in note
+    denied, dnote = combat_lora_allowed(unet=EROS_MAX_UNET, combat="on", high_mem=False)
+    assert not denied and "High-Memory only" in dnote
     ep = load_episode(KASUMI_DIR / "episode.json")
     fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
     prompt = build_beat_prompt(ep, fight, trigger=merge_trigger("DY", fight))
@@ -1251,6 +1294,7 @@ def test_exec_script_is_self_contained():
     assert "H3_EPISODE_FRESH'] = '1'" in script
     assert "H3_EPISODE_CAMERA" in script
     assert "H3_EPISODE_CONNECT" in script
+    assert "H3_EPISODE_COMBAT" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")
