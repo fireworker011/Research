@@ -101,6 +101,7 @@ from h3_hud import (  # noqa: E402
     synthetic_clip,
     window_for,
 )
+from h3_episode_packs import describe_run, form_readme, ui_choices, ui_default  # noqa: E402
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
 from h3_i2v_runtime import is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
 from PIL import Image  # noqa: E402
@@ -150,13 +151,13 @@ def test_notebook_is_one_cell_and_isolated():
     assert "h3_episode_colab_main" in src
     assert 'EPISODE = "kasumi-late-desk-adult"' in src
     assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
-    assert 'PRESET = "バランス"' in src
-    assert '"スピード", "バランス", "質"' in src or "スピード" in src
-    assert 'CAMERA = "横スク"' in src
-    assert "3Dアクション" in src
-    assert 'CONNECT = "カット"' in src
-    assert "前の尻から続ける" in src
-    assert "着地スチールへ着く" in src
+    assert 'PRESET = "バランス（迷ったらこれ）"' in src
+    assert "スピード（最速）" in src and "質（きれい・時間かかる）" in src
+    assert 'CAMERA = "横スク（真横・全身・迷ったらこれ）"' in src
+    assert "3Dアクション（引きの三人称）" in src
+    assert 'CONNECT = "カット（本ごと独立・迷ったらこれ）"' in src
+    assert "前の最終フレームから続ける" in src
+    assert "用意した最終フレームへ着く" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
@@ -164,7 +165,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "cursor/h3-kasumi-adult-0402" in md
     assert "kasumi-late-desk-adult" in md
     assert "迷ったら" in md
-    assert "着地スチール" in md
+    assert "用意した最終フレーム" in md
+    assert "前の最終フレームから続ける" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
@@ -715,9 +717,28 @@ def test_camera_packs_rotate_and_t2v_rejects_last_frame_lock():
 
 def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert canonical_connect("カット") == "t2v"
+    assert canonical_connect("カット（本ごと独立・迷ったらこれ）") == "t2v"
     assert canonical_connect("前の尻から続ける") == "chain"
+    assert canonical_connect("前の最終フレームから続ける") == "chain"
     assert canonical_connect("着地スチールへ着く") == "landing"
+    assert canonical_connect("用意した最終フレームへ着く") == "landing"
+    assert canonical_connect("最終フレームi2v") == "chain"
+    assert canonical_connect("最終フレーム用意") == "landing"
     assert canonical_connect("i2v_chain") == "chain"
+    assert ui_default("connect") == "カット（本ごと独立・迷ったらこれ）"
+    assert ui_default("camera") == "横スク（真横・全身・迷ったらこれ）"
+    assert ui_default("preset") == "バランス（迷ったらこれ）"
+    assert ui_choices("connect") == [
+        "カット（本ごと独立・迷ったらこれ）",
+        "前の最終フレームから続ける",
+        "用意した最終フレームへ着く",
+    ]
+    help_txt = form_readme("connect")
+    assert "プロンプトで直したい" in help_txt
+    assert "stills の jpg" in help_txt
+    picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
+    assert "カット（本ごと独立・迷ったらこれ）" in picked
+    assert "迷ったらこの3つの既定のままで Run all" in picked
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert episode_connect(ep) == "t2v"
     stock = load_episode(KASUMI_DIR / "episode.json")
@@ -736,7 +757,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "The camera stays in this setup" in chain_prompt
     assert "This shot:" not in chain_prompt
 
-    landed = apply_connect_mode(ep, "着地スチールへ着く")
+    landed = apply_connect_mode(ep, "用意した最終フレームへ着く")
     assert validate_episode(landed, root=KASUMI_ADULT_DIR) == []
     gpu_l = [b for b in landed["beats"] if not is_ui_beat(b)]
     assert beat_source(gpu_l[0]) == "still" and beat_still_as(gpu_l[0]) == "first"

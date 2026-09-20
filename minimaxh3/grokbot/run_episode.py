@@ -68,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--episode", required=True, help="slug under minimaxh3/episodes and Drive episodes/")
     p.add_argument("--preset", default="", choices=["", *PRESETS], help="画質: speed / balance / quality（迷ったら balance）")
     p.add_argument("--camera", default="", choices=["", *CAMERA_PACKS, *CAMERA_ALIASES], help="カメラ: side2d / action3d（迷ったら side2d）")
-    p.add_argument("--connect", default="", choices=["", *CONNECT_MODES, *CONNECT_ALIASES], help="つなぎ: t2v=カット / chain=前の尻 / landing=着地スチール（迷ったら t2v）")
+    p.add_argument("--connect", default="", choices=["", *CONNECT_MODES, *CONNECT_ALIASES], help="つなぎ: t2v=カット / chain=前の最終フレームからI2V / landing=用意した最終フレームへ（迷ったら t2v）")
     p.add_argument("--fresh", action="store_true", help="re-render beats that already have raw clips")
     p.add_argument("--branch", default=os.environ.get("H3_HELPER_BRANCH") or DEFAULT_BRANCH)
     p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")

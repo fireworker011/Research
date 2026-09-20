@@ -2233,7 +2233,7 @@ def _usage() -> str:
         "  finish   HUD + cards + stitch over existing raw/*.mp4\n"
         "  --preset speed|balance|quality（迷ったら balance）\n"
         "  --camera side2d|action3d（迷ったら side2d）\n"
-        "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=前の尻からI2V。landing=着地スチール）\n"
+        "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
     )
 
 

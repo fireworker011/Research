@@ -10,6 +10,10 @@ I2V / authored landing still).
 
 Cinema LoRA is not a preset (heavy, slow). Combat is never a preset; fight
 beats opt in with extra_loras: ["combat"].
+
+Colab shows `choice_ja` in the dropdown. `when_ja` is the one-line "pick this when".
+`label_ja` is the short name printed at run start. Keep those three in this file so
+the form cannot drift from the engine.
 """
 
 from __future__ import annotations
@@ -24,7 +28,10 @@ DEFAULT_CONNECT = "t2v"
 CAMERA_PACKS: dict[str, dict[str, Any]] = {
     "side2d": {
         "label_ja": "横スク",
+        "choice_ja": "横スク（真横・全身・迷ったらこれ）",
+        "when_ja": "常に真横の 2D 横スクロール",
         "hint_ja": "迷ったらこれ。常に真横・全身・2D横スクロール。",
+        "recommend": True,
         "lock": (
             "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. "
             "Both adults stay full body including feet. The camera stays in the side plane and tracks "
@@ -40,6 +47,8 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
     },
     "action3d": {
         "label_ja": "3Dアクション",
+        "choice_ja": "3Dアクション（引きの三人称）",
+        "when_ja": "引きの三人称。カットつなぎのとき画角が回る",
         "hint_ja": "引きの三人称。カットつなぎのときショットごとに回る。",
         "lock": (
             "Pulled-back third-person 3D-action gameplay camera. Both adults stay full body including feet. "
@@ -55,53 +64,32 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
     },
 }
 
-CAMERA_ALIASES: dict[str, str] = {
-    "横スク": "side2d",
-    "2D横スク": "side2d",
-    "サイド": "side2d",
-    "2d": "side2d",
-    "side-scroll": "side2d",
-    "3Dアクション": "action3d",
-    "3d": "action3d",
-    "action": "action3d",
-}
-
 # t2v = each clip is independent (prompt can correct; cameras may change).
 # chain = beat 2+ I2V from the previous clip's last frame (seamless, harder to restyle).
 # landing = beat 2+ I2V onto an authored still as Picture 2 (needs stills/).
 CONNECT_MODES: dict[str, dict[str, Any]] = {
     "t2v": {
         "label_ja": "カット",
+        "choice_ja": "カット（本ごと独立・迷ったらこれ）",
+        "when_ja": "プロンプトで直したい。カメラも変えられる",
         "hint_ja": "迷ったらこれ。本ごとに撮り直し可。カメラを変えられる。",
+        "recommend": True,
         "rotate_camera": True,
     },
     "chain": {
-        "label_ja": "前の尻から続ける",
+        "label_ja": "前の最終フレームから",
+        "choice_ja": "前の最終フレームから続ける",
+        "when_ja": "2本目以降を前クリップの最後のコマから I2V。つながり優先",
         "hint_ja": "2本目以降は前クリップの最終フレームから I2V。つながり優先。",
         "rotate_camera": False,
     },
     "landing": {
-        "label_ja": "着地スチールへ着く",
+        "label_ja": "用意した最終フレームへ",
+        "choice_ja": "用意した最終フレームへ着く",
+        "when_ja": "stills の jpg を最後のコマにする。jpg がある話だけ",
         "hint_ja": "用意した jpg を最後のコマにする I2V。スチールがある本だけ。",
         "rotate_camera": False,
     },
-}
-
-CONNECT_ALIASES: dict[str, str] = {
-    "カット": "t2v",
-    "cut": "t2v",
-    "t2v_cut": "t2v",
-    "独立": "t2v",
-    "前の尻から続ける": "chain",
-    "i2v_chain": "chain",
-    "last-frame": "chain",
-    "prev-last": "chain",
-    "連鎖": "chain",
-    "着地スチールへ着く": "landing",
-    "i2v_landing": "landing",
-    "still_as_last": "landing",
-    "landing-still": "landing",
-    "着地": "landing",
 }
 
 # User-facing names. Aliases keep older episode.json valid.
@@ -109,6 +97,8 @@ CONNECT_ALIASES: dict[str, str] = {
 PRESET_CANON: dict[str, dict[str, Any]] = {
     "speed": {
         "label_ja": "スピード",
+        "choice_ja": "スピード（最速）",
+        "when_ja": "試し打ち。turbo 4step。格闘 LoRA なし",
         "hint_ja": "最速。turbo 4step。格闘 LoRA は積まない。",
         "stack": [("turbo4", 1.0, False)],
         "steps": 4,
@@ -118,7 +108,10 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     },
     "balance": {
         "label_ja": "バランス",
+        "choice_ja": "バランス（迷ったらこれ）",
+        "when_ja": "普段使い。Larry 8step",
         "hint_ja": "迷ったらこれ。Larry 8step。",
+        "recommend": True,
         "stack": [("larry", 1.0, False)],
         "steps": 8,
         "trigger": "",
@@ -127,6 +120,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     },
     "quality": {
         "label_ja": "質",
+        "choice_ja": "質（きれい・時間かかる）",
+        "when_ja": "きれい優先。Larry 12step",
         "hint_ja": "きれい優先。Larry 12step。時間はかかる。",
         "stack": [("larry", 1.0, False)],
         "steps": 12,
@@ -136,16 +131,61 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     },
 }
 
-PRESET_ALIASES: dict[str, str] = {
-    "fast": "speed",
-    "preview": "speed",
-    "daily": "balance",
-    "スピード": "speed",
-    "スピード優先": "speed",
-    "バランス": "balance",
-    "質": "quality",
-    "質優先": "quality",
-}
+
+def _label_aliases(registry: dict[str, dict[str, Any]], extra: dict[str, str]) -> dict[str, str]:
+    """Map short names, dropdown strings, and leftover English onto canonical keys."""
+    out = dict(extra)
+    for key, spec in registry.items():
+        for name in (spec.get("label_ja"), spec.get("choice_ja")):
+            text = str(name or "").strip()
+            if text:
+                out[text] = key
+    return out
+
+
+CAMERA_ALIASES: dict[str, str] = _label_aliases(
+    CAMERA_PACKS,
+    {
+        "2D横スク": "side2d",
+        "サイド": "side2d",
+        "2d": "side2d",
+        "side-scroll": "side2d",
+        "3d": "action3d",
+        "action": "action3d",
+    },
+)
+
+CONNECT_ALIASES: dict[str, str] = _label_aliases(
+    CONNECT_MODES,
+    {
+        "cut": "t2v",
+        "t2v_cut": "t2v",
+        "独立": "t2v",
+        "i2v_chain": "chain",
+        "last-frame": "chain",
+        "prev-last": "chain",
+        "連鎖": "chain",
+        "前の尻から続ける": "chain",
+        "最終フレームi2v": "chain",
+        "i2v_landing": "landing",
+        "still_as_last": "landing",
+        "landing-still": "landing",
+        "着地": "landing",
+        "着地スチールへ着く": "landing",
+        "最終フレーム用意": "landing",
+    },
+)
+
+PRESET_ALIASES: dict[str, str] = _label_aliases(
+    PRESET_CANON,
+    {
+        "fast": "speed",
+        "preview": "speed",
+        "daily": "balance",
+        "スピード優先": "speed",
+        "質優先": "quality",
+    },
+)
 
 
 def expand_presets() -> dict[str, dict[str, Any]]:
@@ -179,19 +219,51 @@ def canonical_connect(name: str) -> str:
     return CONNECT_ALIASES.get(raw, raw)
 
 
-def ui_choices(kind: str) -> list[str]:
-    """Japanese labels for Colab dropdowns, in display order."""
+def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
-        return [str(CONNECT_MODES[k]["label_ja"]) for k in CONNECT_MODES]
+        return CONNECT_MODES
     if kind == "camera":
-        return [str(CAMERA_PACKS[k]["label_ja"]) for k in CAMERA_PACKS]
+        return CAMERA_PACKS
     if kind == "preset":
-        return [str(PRESET_CANON[k]["label_ja"]) for k in PRESET_CANON]
+        return PRESET_CANON
     raise KeyError(kind)
 
 
+def ui_choices(kind: str) -> list[str]:
+    """Japanese dropdown strings for Colab, in display order."""
+    return [str(spec.get("choice_ja") or spec["label_ja"]) for spec in _registry(kind).values()]
+
+
+def ui_default(kind: str) -> str:
+    """The recommended dropdown value (迷ったらこれ)."""
+    for spec in _registry(kind).values():
+        if spec.get("recommend"):
+            return str(spec.get("choice_ja") or spec["label_ja"])
+    return ui_choices(kind)[0]
+
+
+def form_markdown(kind: str, heading: str) -> str:
+    """Colab #@markdown bullets: each option plus when to pick it."""
+    lines = [f"#@markdown **{heading}**"]
+    for spec in _registry(kind).values():
+        choice = spec.get("choice_ja") or spec["label_ja"]
+        when = spec.get("when_ja") or spec.get("hint_ja")
+        lines.append(f"#@markdown - **{choice}** … {when}")
+    return "\n".join(lines)
+
+
+def form_readme(kind: str) -> str:
+    """Markdown bullets for the notebook intro / README (no #@markdown prefix)."""
+    lines = []
+    for spec in _registry(kind).values():
+        choice = spec.get("choice_ja") or spec["label_ja"]
+        when = spec.get("when_ja") or spec.get("hint_ja")
+        lines.append(f"- **{choice}** … {when}")
+    return "\n".join(lines)
+
+
 def describe_run(*, connect: str = "", camera: str = "", preset: str = "", episode: str = "") -> str:
-    """One short Japanese block for the Colab form: what was chosen and when to pick something else."""
+    """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
@@ -201,8 +273,8 @@ def describe_run(*, connect: str = "", camera: str = "", preset: str = "", episo
     head = f"一発 {episode}".strip() if episode else "一発"
     return (
         f"{head}\n"
-        f"  1 つなぎ  {c['label_ja']}  — {c['hint_ja']}\n"
-        f"  2 カメラ  {cam['label_ja']}  — {cam['hint_ja']}\n"
-        f"  3 画質    {p['label_ja']}  — {p['hint_ja']}\n"
+        f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
+        f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
+        f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         "迷ったらこの3つの既定のままで Run all。"
     )

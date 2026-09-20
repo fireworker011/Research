@@ -21,7 +21,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 
 ## 一発の実行
 
-**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、上から **つなぎ方・カメラ・画質** の3つを選んで Run all。迷ったらそのまま（カット / 横スク / バランス）。
+**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、上から **つなぎ方・カメラ・画質** の3つを選んで Run all。迷ったらそのまま（カット／横スク／バランス。ドロップダウンに「迷ったらこれ」と書いてある行）。
 GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
@@ -76,7 +76,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - 英語で書く。日本語は台詞の中身だけ（`speech[].line`、かな限定、`「」` は自動で付く）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし。プロンプトでカットを直す。隣接ショットは `camera_pack` で画角が変わる）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
-- `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（本ごとに撮り直し可）／`chain`＝前の尻から続ける（2本目以降は前クリップ最終フレームから I2V）／`landing`＝着地スチールへ着く（用意した jpg を Picture 2 にする。窓はクリップ尻へずらす）
+- `render.connect`（Colab は日本語。迷ったら **カット**）: `t2v`＝カット（本ごと独立。プロンプトで直せる）／`chain`＝前の最終フレームから続ける（2本目以降は前クリップ最終フレームから I2V）／`landing`＝用意した最終フレームへ着く（stills の jpg を Picture 2 にする。窓はクリップ尻へずらす）
 - 新しい話は `_template/` を `episodes/<slug>/` に複製するだけ。カメラ・速度・つなぎを増やすときだけ `h3_episode_packs.py` に1エントリ足す
 - `render.camera_pack`: `side2d`（横スク・常にサイド）／`action3d`（三人称3Dアクション）。T2V 話の既定は `side2d`。Colab の `CAMERA` と `--camera` で上書き
 - `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）。**t2v では last/both 禁止**。着地モードを選ぶとエンジンが last に切り替える
@@ -120,11 +120,11 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## 霞東フロア あさ（`kasumi-late-desk-adult`）
 
 霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
-約 45 秒。同僚□ベロチュー → 警備△横スク打倒＋じゅぼ口内 → 課長△敗北＋正常位。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）。GPU ビートは T2V（I2V 連鎖しない。カットごとにカメラを変えてプロンプトで直す）。既定カメラは `side2d`。`action3d` に切替可。プリセット既定は `balance`。Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
+約 45 秒。同僚□ベロチュー → 警備△横スク打倒＋じゅぼ口内 → 課長△敗北＋正常位。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）。GPU のつなぎは Colab で選ぶ（迷ったらカット＝T2V。前の最終フレームから続ける／用意した最終フレームへ着くも可）。既定カメラは `side2d`。`action3d` に切替可。プリセット既定は `balance`。Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
 
 ## 病棟出口（`hospital-exit-adult`）
 
-同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。GPU は T2V。Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
+同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。ベロチュー回避 → 打倒じゅぼ → 正常位のまま出口で**ミッション完了**。GPU のつなぎは Colab で選ぶ（迷ったらカット）。Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
 
 ## 番台ディストリクト（2 本）
 

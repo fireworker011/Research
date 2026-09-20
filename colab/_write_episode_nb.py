@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
 
 from h3_episode import EPISODE_HELPERS  # noqa: E402
-from h3_episode_packs import ui_choices  # noqa: E402
+from h3_episode_packs import form_markdown, form_readme, ui_choices, ui_default  # noqa: E402
 
 BRANCH = "cursor/h3-kasumi-adult-0402"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
@@ -27,11 +27,11 @@ def colab_url(path: str) -> str:
 CELL = r'''#@title 一発：上から 1・2・3 を選んで Run all（迷ったらそのまま）
 EPISODE = "__EPISODE__"  #@param {type:"string"}
 #@markdown ---
-#@markdown **1. つなぎ方**（迷ったら「カット」）
+__CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
-#@markdown **2. カメラ**（迷ったら「横スク」）
+__CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
-#@markdown **3. 画質**（迷ったら「バランス」）
+__PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
@@ -111,13 +111,19 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
 
-## 上から 3 つだけ選ぶ
+## 上から 3 つだけ選ぶ（迷ったらそのまま）
 
-| # | 項目 | 迷ったら | 他の選択肢 |
-|---|---|---|---|
-| 1 | つなぎ方 | **カット**（本ごとに撮り直し可。カメラを変えられる） | **前の尻から続ける**＝2本目以降を前クリップ最終フレームから I2V。**着地スチールへ着く**＝用意した jpg に着地 |
-| 2 | カメラ | **横スク**（真横・全身・2D） | **3Dアクション**（引きの三人称。カットつなぎのとき画角が回る） |
-| 3 | 画質 | **バランス** | **スピード**＝最速（格闘 LoRA なし）／**質**＝きれい・時間かかる |
+**1. つなぎ方** — 動画をどう繋げるか
+
+{form_readme("connect")}
+
+**2. カメラ**
+
+{form_readme("camera")}
+
+**3. 画質**
+
+{form_readme("preset")}
 
 シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
@@ -139,11 +145,14 @@ def make_nb() -> dict:
         .replace("__EPISODE__", EPISODE_DEFAULT)
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
-        .replace("__CONNECT_DEFAULT__", json.dumps(ui_choices("connect")[0], ensure_ascii=False))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか"))
+        .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
-        .replace("__CAMERA_DEFAULT__", json.dumps(ui_choices("camera")[0], ensure_ascii=False))
+        .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
+        .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
-        .replace("__PRESET_DEFAULT__", json.dumps(ui_choices("preset")[1], ensure_ascii=False))
+        .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
+        .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
     )
     return {
