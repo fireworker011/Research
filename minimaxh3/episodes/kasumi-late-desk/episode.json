@@ -15,7 +15,7 @@
   "violence": "game",
   "world": {
     "name": "Kasumi East floor",
-    "lock": "Fictional open-plan office called Kasumi East: beige fabric cubicle partitions, light oak desks, grey carpet aisles, morning fluorescent tubes mixed with cool east window light, a few rubber plants, plain office doorways, no readable letters on any surface",
+    "lock": "Fictional open-plan office called Kasumi East: beige fabric cubicle partitions, light oak desks, grey carpet aisles, morning fluorescent tubes mixed with cool east window light, a few rubber plants, plain office doorways, blank badges, no readable letters on any surface",
     "no_text_on_signs": true
   },
   "cast": {
@@ -30,7 +30,7 @@
       "name_ja": "警備 青木",
       "name_en": "Aoki",
       "age": 44,
-      "lock": "Japanese man in his mid 40s, adult face, short black hair, navy security vest over a white shirt, sometimes a dark necktie, dark trousers, black office shoes, a blank badge on the vest, a clipboard in one hand, bored calm morning expression",
+      "lock": "Japanese man in his mid 40s, adult face, short black hair, navy security vest over a white shirt, sometimes a dark necktie, dark trousers, black office shoes, a blank white name badge with no letters on the vest, a clipboard in one hand, bored calm morning expression",
       "voice": "low middle-aged male voice"
     },
     "kuroki": {
@@ -182,7 +182,7 @@
     },
     {
       "id": "03-shove",
-      "source": "still",
+      "source": "chain",
       "still": "stills/03-shove.jpg",
       "trim": {"start": 0, "seconds": 5.0},
       "cast": ["mio", "aoki"],
@@ -190,6 +190,9 @@
       "physics": true,
       "extra_loras": ["combat"],
       "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
       "props": ["tote", "clipboard"],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light",
       "camera": "Third-person camera at Mio's left at shoulder height, a half-step closer on the tote swing, then holding as Aoki sits",
@@ -271,6 +274,9 @@
       "physics": true,
       "extra_loras": ["combat"],
       "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
       "props": ["papers"],
       "place": "Inside the small inner office: a wood desk, a black rolling chair, morning window light, the doorway behind Mio",
       "camera": "Third-person camera just inside the doorway at Mio's left shoulder, holding on Kuroki's chair as it rolls back",
@@ -383,6 +389,9 @@
       "physics": true,
       "extra_loras": ["combat"],
       "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
       "props": ["tote", "mug"],
       "place": "The same light oak desk row, Nana seated at left, an empty neighboring desk beside her, Mio standing in the aisle, morning window light",
       "camera": "Third-person side two-shot at desk height, Nana at left, Mio close in the aisle at right, holding then following the mug",

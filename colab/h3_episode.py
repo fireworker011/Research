@@ -132,6 +132,14 @@ PRESETS: dict[str, dict[str, Any]] = {
     "preview": {"stack": [("turbo4", 1.0, False), ("cinema", 0.5, True)], "steps": 4, "trigger": "DY"},
     "daily": {"stack": [("larry", 1.0, False), ("cinema", 0.65, True)], "steps": 8, "trigger": "DY"},
 }
+# Combat LoRA author samples at 20 / res_multistep+simple or euler+beta. Larry daily is euler+simple 8
+# and muddies the hit. Fight beats bump to 12 euler+beta (16 cap). 20 OOMs with Larry+combat at 10s.
+COMBAT_STEPS = 12
+BEAT_STEPS_RANGE = (4, 16)
+SAMPLERS = ("euler", "res_multistep")
+SCHEDULERS = ("simple", "beta")
+COMBAT_SAMPLER = "euler"
+COMBAT_SCHEDULER = "beta"
 
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
@@ -391,9 +399,31 @@ def _ui_errors(beat: dict[str, Any], where: str) -> list[str]:
             errs.append(f"{where}: menu.selected out of range")
     except (TypeError, ValueError):
         errs.append(f"{where}: menu.selected must be an index")
-    for key in ("still", "trim", "reuse", "physics", "extra_loras", "trigger"):
+    for key in ("still", "trim", "reuse", "physics", "extra_loras", "trigger", "steps", "sampler", "scheduler"):
         if beat.get(key):
             errs.append(f"{where}: ui beat cannot have {key}")
+    return errs
+
+
+def _render_plan_errors(beat: dict[str, Any], where: str) -> list[str]:
+    """Per-beat steps/sampler (combat quality). UI beats are rejected in _ui_errors."""
+    errs: list[str] = []
+    if is_ui_beat(beat):
+        return errs
+    if beat.get("steps") is not None:
+        try:
+            s = int(beat["steps"])
+            lo, hi = BEAT_STEPS_RANGE
+            if s < lo or s > hi:
+                errs.append(f"{where}: steps must be {lo}-{hi} (20 OOMs with Larry+combat)")
+        except (TypeError, ValueError):
+            errs.append(f"{where}: steps must be an integer")
+    sampler = beat.get("sampler")
+    if sampler and str(sampler) not in SAMPLERS:
+        errs.append(f"{where}: sampler must be one of {SAMPLERS}")
+    scheduler = beat.get("scheduler")
+    if scheduler and str(scheduler) not in SCHEDULERS:
+        errs.append(f"{where}: scheduler must be one of {SCHEDULERS}")
     return errs
 
 
@@ -556,6 +586,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                     if str(k) not in props:
                         errs.append(f"{where}: unknown prop {k}")
         errs.extend(_extra_lora_errors(beat, where))
+        errs.extend(_render_plan_errors(beat, where))
         for key in ("action", "camera"):
             text = str(beat.get(key) or "").strip()
             if not text and source != "ui":
@@ -711,7 +742,7 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     place = str(beat.get("place") or "").strip().rstrip(".")
     env_line = env + (f". {place}" if place else "")
     if world.get("no_text_on_signs", True):
-        env_line += ". Signs, posters, and screens carry no readable letters"
+        env_line += ". Signs, posters, screens, and badges carry no readable letters"
     env_line += ". Adults only in frame."
     desc: list[str] = [f"[Shot 1] {orientation} {style}."]
     if source in ("still", "chain"):
@@ -836,14 +867,21 @@ def apply_extra_loras(
     beat: dict[str, Any],
     loras_dir: Path | str | None,
 ) -> dict[str, Any]:
-    """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo."""
+    """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
+
+    When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
+    Turbo fallback keeps the preset 4-step euler+simple and ignores beat.steps.
+    """
     extra = extra_lora_entries(beat)
+    out = dict(preset)
     if not extra:
-        return preset
+        return _apply_beat_sampler(out, beat, combat_on=False)
     stack = list(preset.get("stack") or [])
     notes = list(preset.get("notes") or [])
     names = " ".join(str(s[0]).lower() for s in stack)
     turbo = "fl2v_turbo" in names
+    combat_on = False
+    combat_requested = any(key == "combat" for key, _s in extra)
     for key, strength in extra:
         fname = LORA_FILES.get(key)
         if not fname:
@@ -857,9 +895,35 @@ def apply_extra_loras(
             notes.append(f"optional extra LoRA missing, dropped: {fname}")
             continue
         stack.append((fname, float(strength)))
-    out = dict(preset)
+        if key == "combat":
+            combat_on = True
     out["stack"] = stack
     out["notes"] = notes
+    if combat_requested and not combat_on:
+        return out
+    return _apply_beat_sampler(out, beat, combat_on=combat_on)
+
+
+def _apply_beat_sampler(preset: dict[str, Any], beat: dict[str, Any], *, combat_on: bool) -> dict[str, Any]:
+    """Combat defaults to 12 euler+beta. Other beats only honor an authored steps/sampler."""
+    out = dict(preset)
+    notes = list(out.get("notes") or [])
+    if combat_on:
+        steps = beat.get("steps", COMBAT_STEPS)
+        sampler = beat.get("sampler") or COMBAT_SAMPLER
+        scheduler = beat.get("scheduler") or COMBAT_SCHEDULER
+        out["steps"] = int(steps)
+        out["sampler"] = str(sampler)
+        out["scheduler"] = str(scheduler)
+        notes.append(f"combat sampler {sampler}+{scheduler} {int(steps)} steps")
+        out["notes"] = notes
+        return out
+    if beat.get("steps") is not None:
+        out["steps"] = int(beat["steps"])
+    if beat.get("sampler"):
+        out["sampler"] = str(beat["sampler"])
+    if beat.get("scheduler"):
+        out["scheduler"] = str(beat["scheduler"])
     return out
 
 
@@ -1014,6 +1078,18 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
     return {"name": name, "stack": stack, "steps": int(spec["steps"]), "trigger": str(spec["trigger"]), "notes": notes}
 
 
+def apply_sampler_plan(g: dict[str, Any], preset: dict[str, Any]) -> dict[str, Any]:
+    """Patch KSampler after the I2VA/T2V builder. Daily Larry stays euler+simple 8 unless the preset says otherwise."""
+    if "22" in g and preset.get("sampler"):
+        g["22"]["inputs"]["sampler_name"] = str(preset["sampler"])
+    if "23" in g:
+        if preset.get("scheduler"):
+            g["23"]["inputs"]["scheduler"] = str(preset["scheduler"])
+        if preset.get("steps") is not None:
+            g["23"]["inputs"]["steps"] = int(preset["steps"])
+    return g
+
+
 def chain_extra_loras(g: dict[str, Any], extra: list[tuple[str, float]]) -> dict[str, Any]:
     """Append LoraLoaderModelOnly nodes after node 2 and rewire scheduler/guider to the last one."""
     if not extra:
@@ -1072,6 +1148,7 @@ def build_episode_graph(
         g = build_i2va_graph(first_image=first_image, last_image=None, **common)
     if lora_name and has_lora_loader:
         chain_extra_loras(g, stack[1:])
+    apply_sampler_plan(g, preset)
     errs = assert_t2v_graph(g) if source == "t2v" else assert_i2va_graph(g, expect_last=False, homage=False)
     if errs:
         raise EpisodeError(f"graph invalid: {errs}")
@@ -1588,6 +1665,13 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
             flags.append("complete")
         if beat.get("speech"):
             flags.append(f"{len(beat['speech'])} lines")
+        extras = extra_lora_entries(beat)
+        if extras:
+            flags.append("+".join(k for k, _s in extras))
+        if beat.get("steps"):
+            flags.append(f"{int(beat['steps'])}step")
+        if beat.get("sampler") or beat.get("scheduler"):
+            flags.append(f"{beat.get('sampler') or 'euler'}+{beat.get('scheduler') or 'simple'}")
         props = ",".join(beat_props(ep, beat)) if src != "ui" else "menu"
         lines.append(f"{beat['id']:<20} {src:<5} {start:>4.1f}s+{seconds:<4.1f} props[{props}] {' '.join(flags):<18} {hud.get('mission') or ''}{note}")
     return lines

@@ -14,6 +14,9 @@ sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
     CANVAS,
+    COMBAT_SAMPLER,
+    COMBAT_SCHEDULER,
+    COMBAT_STEPS,
     CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
     I2VA_HEADER,
@@ -437,7 +440,13 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
     assert [b["id"] for b in fights] == ["03-shove", "06-files", "10-mug"]
     assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
+    assert ep["beats"][2]["source"] == "chain" and ep["beats"][2].get("still")
+    assert ep["beats"][5]["source"] == "still"  # papers in hand; do not chain from 04
+    assert ep["beats"][9]["source"] == "still"  # close two-shot; do not chain from 08
     assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
+    shove_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
+    assert "continues the previous one without a cut" in shove_prompt
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")
@@ -450,6 +459,7 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
         assert errs == []
         if "prfight2" in prompt:
             assert prompt.startswith("DY\nprfight2, prfin1")
+        assert "badges carry no readable letters" in prompt
 
 
 def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
@@ -461,9 +471,12 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     (loras / LORA_FILES["combat"]).write_bytes(b"x")
     stacked = apply_extra_loras(daily, beat, loras)
     assert stacked["stack"][-1] == (LORA_FILES["combat"], 1.0)
+    assert stacked["steps"] == COMBAT_STEPS
+    assert stacked["sampler"] == COMBAT_SAMPLER and stacked["scheduler"] == COMBAT_SCHEDULER
     turbo = {"name": "fast", "stack": [("minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors", 1.0)], "steps": 4, "trigger": "", "notes": []}
     skipped = apply_extra_loras(turbo, beat, loras)
     assert skipped["stack"] == turbo["stack"]
+    assert skipped.get("steps") == 4 and skipped.get("sampler") is None
     assert any("never with LightX2V turbo" in n for n in skipped["notes"])
     ep = load_episode(KASUMI_DIR / "episode.json")
     fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
@@ -482,6 +495,25 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     )
     assert g["2c"]["inputs"]["lora_name"] == LORA_FILES["combat"]
     assert g["23"]["inputs"]["model"] == ["2c", 0]
+    assert g["22"]["inputs"]["sampler_name"] == COMBAT_SAMPLER
+    assert g["23"]["inputs"]["scheduler"] == COMBAT_SCHEDULER
+    assert g["23"]["inputs"]["steps"] == COMBAT_STEPS
+
+
+def test_combat_steps_cap_and_author_override(tmp_path):
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][2]["steps"] = 20
+    assert any("steps must be 4-16" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][1]["steps"] = 12
+    assert any("ui beat cannot have steps" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    daily = {"name": "daily", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "DY", "notes": []}
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["combat"]).write_bytes(b"x")
+    authored = {"extra_loras": ["combat"], "steps": 16, "sampler": "res_multistep", "scheduler": "simple"}
+    stacked = apply_extra_loras(daily, authored, loras)
+    assert stacked["steps"] == 16 and stacked["sampler"] == "res_multistep" and stacked["scheduler"] == "simple"
 
 
 def test_graph_chains_loras_and_passes_studio_assert():
@@ -494,6 +526,8 @@ def test_graph_chains_loras_and_passes_studio_assert():
     assert g["2b"]["inputs"]["model"] == ["2", 0]
     assert g["23"]["inputs"]["model"] == ["2b", 0] and g["24"]["inputs"]["model"] == ["2b", 0]
     assert g["23"]["inputs"]["steps"] == 8
+    assert g["22"]["inputs"]["sampler_name"] == "euler"
+    assert g["23"]["inputs"]["scheduler"] == "simple"
     assert "first_frame" in g["20"]["inputs"] and "last_frame" not in g["20"]["inputs"]
     t2v = build_episode_graph(source="t2v", first_image=None, prompt=build_beat_prompt(ep, dict(ep["beats"][0], source="t2v")), unet="fl2va.safetensors", preset=preset, width=1024, height=576, duration_s=10, seed=1, filename_prefix="video/t")
     assert not any(n.get("class_type") == "LoadImage" for n in t2v.values())
