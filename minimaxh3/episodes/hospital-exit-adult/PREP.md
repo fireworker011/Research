@@ -6,7 +6,7 @@
 - Combat は 06-fight と 10-lose だけ。`prfight2, prfin1`、euler+beta 12。性的着地には積まない
 - 最後は `complete: true`。`cards.fail` は置かない（犯されながら脱出）
 - プロンプトは pale / vacant / infected / nude。blood gore corpse zombie は書かない
-- スチール: 廊下と横スクは新規。キス・じゅぼ・接合は霞東ヌードを流用（場所が執務室のまま着地する）。着衣の生成画は identity に残る
+- スチール: 廊下と横スクは着衣のまま（ZeroGPU 切れ）。キス・じゅぼ・接合は霞東の新ヌードを流用（場所が執務室のまま着地する）
 - 15秒禁止。スロー禁止。飛び蹴り禁止
 
 やらないこと: Imagine、投稿、inbox、霞東 raw の reuse、#141 マージ。
