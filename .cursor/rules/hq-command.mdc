@@ -1,30 +1,29 @@
 ---
-description: 3部隊のみ。トレード禁止。総司令クローンを作るな。
+description: 3部隊のみ。トレード廃止。総司令は人間。
 alwaysApply: true
 ---
 
-# 命令（2026-09-20）
+# Cursor 規則（2026-09-20）
 
-本線は3部隊だけ。トレード・DX-Lead・XM・Bitgetは廃止。
-新しい総司令cloneを作るな。自分を司令塔と名乗るな。
+正: 部隊は3つだけ。
+1. アフィ動画（affi-shorts-agent）
+2. CW（cw-work / PAPER_ONLY）
+3. コンテンツ倉庫（BOOTH/STEAM、今日は箱だけ）
 
-## 部隊
+人間が総括。Cursor は現場の手。新しい総司令を名乗るな。
 
-1. アフィ動画: affi-shorts-agent。Grok 6 Bot + Cursorは形チェックとつなげるだけ
-2. CW: cw-work。PAPER_ONLY。応募POSTしない
-3. コンテンツ: BOOTH/STEAMは箱だけ。今日公開しない
+## 3089る
 
-## 禁止
+- 台本JSONの欠け・尺・画面文字を点検する
+- 渡された動画ファイルを 9:16 でつなげる
+- 止まったら止まる
 
-- トレード定期実行を戻す
-- 稼種・司令塔・結合をGrokにやらせる
-- CW非公式API応募
-- YouTube自動投稿を今日オン
-- draft PR #122 をデフォルトへマージ
-- 実績提造、#PRなしリンク、円の発明
+## やるな
 
-## やれ
-
-- 台本の欠けを指摘する
-- カットを縦でつなげる
-- 終わったら止まる
+- トレード / XM / DX-Lead / Bitget / EA を起こす
+- CW の応募POST、契約ボタン、納品
+- YouTube / X の実投稿
+- 台本やネタを新しく書く（Grok Bot の仕事）
+- 100万総司令 / HQ_100MAN / 横断HQ を復活させる
+- draft PR #122 をデフォルトへマージする
+- Threads の post/insight/report cron を戻す
