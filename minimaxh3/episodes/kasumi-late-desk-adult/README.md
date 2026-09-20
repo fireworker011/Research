@@ -12,7 +12,7 @@ UNet は Eros Max FL2VA INT8（エロレーン専用）。霞東本体は stock 
 ## ワンクリック
 
 1. このブランチが GitHub にあること（`episode.json` と `stills/`）。inbox には置かない。
-2. Colab ノート `minimax_h3_episode_bot.ipynb` を開き、`EPISODE = "kasumi-late-desk-adult"`。マージ前は `BRANCH` をこの PR ブランチにする。Run all。
+2. Colab ノート `minimax_h3_episode_bot.ipynb` を開き Run all。このブランチの既定は `EPISODE = "kasumi-late-desk-adult"` / `BRANCH = "cursor/h3-kasumi-adult-0402"`。霞東本体に戻すな。
 3. Drive は `episodes/kasumi-late-desk-adult/` だけ。bootstrap は GitHub から `episode.json` を取り直す。スチールは上書きしない。霞東の 5カット raw は reuse するな。
 
 GPU なし確認:

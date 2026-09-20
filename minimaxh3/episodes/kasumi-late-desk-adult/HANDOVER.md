@@ -45,7 +45,7 @@ inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5�
 | 作業 | `cursor/h3-kasumi-adult-0402` |
 | ベース | `cursor/h3-ol-late-desk-33d9` |
 | PR | https://github.com/fireworker011/Research/pull/142 draft |
-| HEAD | `ab2b011` Eros Max をエロレーン専用 |
+| HEAD | ノート既定を adult / `cursor/h3-kasumi-adult-0402` に固定。Combat は 06 だけをテストでロック |
 | パック | `minimaxh3/episodes/kasumi-late-desk-adult/` |
 | ノート | `minimax_h3_episode_bot.ipynb` |
 
@@ -78,7 +78,9 @@ Combat は 06 だけ。trigger 空。本体霞東の 03/06/10 三戦とは別。
 
 ## 次の一手
 
-本番 I2V はまだ。Colab で Run all。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。スチールは上書きしない。
+本番 I2V はまだ。Drive に `kasumi-late-desk-adult/` は無い。Eros Max FL2VA も Drive に無い（あるのは TURBO-hybrid。使わない）。Colab で Run all。Drive は `episodes/kasumi-late-desk-adult/` と `models/erotic/` だけ。スチールは上書きしない。霞東本体の raw は触るな。
+
+このブランチの `minimax_h3_episode_bot.ipynb` 既定は adult。`run_episode.py` の DEFAULT_BRANCH もこの枝。Run all のまま霞東本体へ行かない。
 
 ```bash
 cd minimaxh3

@@ -90,7 +90,7 @@ from h3_hud import (  # noqa: E402
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
 from h3_i2v_runtime import is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
 from PIL import Image  # noqa: E402
-from run_episode import exec_script  # noqa: E402
+from run_episode import DEFAULT_BRANCH, exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
@@ -133,7 +133,12 @@ def test_notebook_is_one_cell_and_isolated():
     assert len(code) == 1
     src = "".join(code[0]["source"])
     assert "h3_episode_colab_main" in src
-    assert 'EPISODE = "kasumi-late-desk"' in src
+    assert 'EPISODE = "kasumi-late-desk-adult"' in src
+    assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
+    assert 'EPISODE = "kasumi-late-desk"' not in src
+    md = "".join(c["source"] for c in nb["cells"] if c["cell_type"] == "markdown")
+    assert "cursor/h3-kasumi-adult-0402" in md
+    assert "kasumi-late-desk-adult" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
@@ -508,6 +513,67 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert any("render.lane erotic" in e for e in validate_episode(stripped))
 
 
+def test_kasumi_adult_seduce_route_combat_only_on_06():
+    ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    assert validate_episode(ep, root=KASUMI_ADULT_DIR) == []
+    assert ep["tone"] == "action" and ep["violence"] == "game"
+    assert ep["slug"] == "kasumi-late-desk-adult"
+    assert len(ep["beats"]) == 12
+    assert expected_duration(ep) == pytest.approx(44.9, abs=0.2)
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-guard",
+        "03-oral",
+        "04-peek",
+        "05-ui-boss",
+        "06-pin",
+        "07-talk",
+        "08-nana",
+        "09-ui-nana",
+        "10-nana",
+        "11-bag",
+        "12-desk",
+    ]
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["06-pin"]
+    pin = fights[0]
+    assert pin.get("physics") is True
+    assert pin.get("trigger") == ""
+    assert pin.get("steps") == COMBAT_STEPS
+    assert pin.get("sampler") == COMBAT_SAMPLER
+    assert pin.get("scheduler") == COMBAT_SCHEDULER
+    assert ep["beats"][2]["id"] == "03-oral" and not ep["beats"][2].get("extra_loras")
+    assert ep["beats"][9]["id"] == "10-nana" and not ep["beats"][9].get("extra_loras")
+    assert all(not b.get("reuse") for b in ep["beats"])
+    assert ep["beats"][2]["source"] == "chain" and ep["beats"][2].get("still")
+    assert beat_still_as(ep["beats"][0]) == "both"
+    assert all(beat_still_as(ep["beats"][i]) == "last" for i in (2, 5, 9, 11))
+    assert uses_last_still(ep["beats"][2]) and not uses_last_still(ep["beats"][3])
+    assert beat_window(ep, ep["beats"][2]) == (5.0, 5.0)
+    assert ep["beats"][5]["source"] == "still" and beat_still_as(ep["beats"][5]) == "last"
+    assert ep["beats"][9]["source"] == "still" and beat_still_as(ep["beats"][9]) == "last"
+    assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
+    assert sum(1 for b in ep["beats"] if b.get("face_visible")) == 1
+    pin_prompt = build_beat_prompt(ep, pin, trigger=merge_trigger("DY", pin))
+    assert pin_prompt.startswith("DY\n")
+    assert "prfight2" not in pin_prompt and "prfin1" not in pin_prompt
+    oral_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
+    assert STILL_LAST_HEADER in oral_prompt and "<Picture 2>" in oral_prompt
+    assert "prfight2" not in oral_prompt
+    assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            p = KASUMI_ADULT_DIR / still
+            assert p.is_file()
+            assert "-hud" not in p.stem
+            assert Image.open(p).size == (1280, 720)
+    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+        assert errs == []
+        assert "prfight2" not in prompt and "prfin1" not in prompt
+        assert "badges carry no readable letters" in prompt
+
+
 def test_stock_unet_never_auto_picks_eros_max(tmp_path):
     diff = tmp_path / "diffusion_models"
     diff.mkdir()
@@ -738,12 +804,23 @@ def test_grokbot_i2v_never_sees_episode_clips(tmp_path):
 
 
 def test_exec_script_is_self_contained():
+    assert DEFAULT_BRANCH == "cursor/h3-kasumi-adult-0402"
     script = exec_script("bandai-district", preset="daily", fresh=True, branch="cursor/x", main_path=Path("/content/h3_episode_colab_main.py"))
     assert "os.environ['H3_EPISODE'] = 'bandai-district'" in script
     assert "H3_EPISODE_FRESH'] = '1'" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")
+    adult = exec_script(
+        "kasumi-late-desk-adult",
+        preset="daily",
+        fresh=False,
+        branch=DEFAULT_BRANCH,
+        main_path=Path("/content/h3_episode_colab_main.py"),
+    )
+    assert "os.environ['H3_EPISODE'] = 'kasumi-late-desk-adult'" in adult
+    assert f"raw.githubusercontent.com/fireworker011/Research/{DEFAULT_BRANCH}" in adult
+    compile(adult, "exec_script_adult", "exec")
 
 
 # ---------------------------------------------------------------- hud
