@@ -125,6 +125,37 @@ KASUMI_ADULT_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk-adult"
 HOSPITAL_DIR = ROOT / "minimaxh3" / "episodes" / "hospital-exit-adult"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
+_SEX_EXTRA_MOTION = (
+    "kiss",
+    "hug",
+    "peck",
+    "french",
+    "chu",
+    "semen share",
+    "mouth-to-mouth",
+    "tongue wrap",
+    "embrace",
+    "cuddle",
+    "nuzzle",
+    "caress",
+)
+
+
+def _assert_sex_beat_both_pleasure_no_extra_kiss(beat: dict, prompt: str) -> None:
+    low = prompt.lower()
+    action = str(beat.get("action") or "").lower()
+    assert "both look like it feels really good" in low
+    assert "flushed" in low
+    assert "brows knit" in low
+    if beat["id"].endswith("oral"):
+        assert "enjoying the jupo" in low
+        assert "melting with pleasure" in low
+        assert "hands stay on" in action and "hips" in action
+    else:
+        assert "hips moving" in low or "hands stay at the hips" in action
+    for tok in _SEX_EXTRA_MOTION:
+        assert tok not in low, (beat["id"], tok)
+        assert tok not in action, (beat["id"], tok)
 
 
 def bandai() -> dict:
@@ -684,9 +715,16 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     assert "jupo-jupo" in oral_prompt.lower()
     assert "BASE" in oral_prompt
     assert "melting with pleasure" in oral_prompt
+    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][6], oral_prompt)
     assert "Picture 2" not in oral_prompt
     assert ep["beats"][6]["voices"][0]["line"] == "じゅぽっ"
     assert ep["beats"][6]["voices"][1]["line"] == "はぁっ"
+    sex_prompt = build_beat_prompt(ep, ep["beats"][10], trigger=merge_trigger("", ep["beats"][10]))
+    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][10], sex_prompt)
+    hold_prompt = build_beat_prompt(ep, ep["beats"][11], trigger=merge_trigger("", ep["beats"][11]))
+    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][11], hold_prompt)
+    assert ep["beats"][11]["voices"][1]["who"] == "kuroki"
+    assert ep["beats"][11]["voices"][1]["line"] == "くっ"
     assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
     for beat in ep["beats"]:
         still = beat.get("still")
@@ -742,8 +780,17 @@ def test_hospital_exit_adult_escape_while_joined():
     oral_prompt = build_beat_prompt(ep, oral)
     assert "jupo-jupo" in oral_prompt.lower()
     assert "melting with pleasure" in oral_prompt
+    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
     assert oral["voices"][0]["line"] == "じゅぽっ"
     assert oral["voices"][1]["line"] == "はぁっ"
+    join = next(b for b in ep["beats"] if b["id"] == "11-join")
+    join_prompt = build_beat_prompt(ep, join)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(join, join_prompt)
+    exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    exit_prompt = build_beat_prompt(ep, exit_beat)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
+    assert exit_beat["voices"][1]["who"] == "kana"
+    assert exit_beat["voices"][1]["line"] == "くっ"
 
 
 def test_hospital_stills_are_not_kasumi_copies():
