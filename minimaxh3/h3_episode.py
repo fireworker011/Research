@@ -285,6 +285,24 @@ def beat_window(ep: dict[str, Any], beat: dict[str, Any]) -> tuple[float, float]
     return start, seconds
 
 
+def clip_window(ep: dict[str, Any], beat: dict[str, Any], clip_duration: float) -> tuple[float, float]:
+    """Map authored trim onto an actual raw duration.
+
+    still_as last always ends on the last frame (the still). If OOM shortened the
+    clip, slide start earlier so the window keeps its length instead of a 3s tail.
+    """
+    start, seconds = beat_window(ep, beat)
+    full = float(clip_duration)
+    if full <= 0:
+        return start, seconds
+    seconds = min(max(seconds, 0.0), full)
+    if uses_last_still(beat):
+        return max(0.0, full - seconds), seconds
+    if start > full - 0.5:
+        start = max(0.0, full - seconds)
+    return start, min(seconds, max(0.0, full - start))
+
+
 def card_seconds(ep: dict[str, Any]) -> dict[str, float]:
     cards = ep.get("cards") or {}
     fail = cards.get("fail") or {}
@@ -1419,7 +1437,7 @@ def previous_footage(ep: dict[str, Any], idx: int, root: Path, raw: Path, *, app
         clip = raw / f"{prev['id']}.mp4"
         if not clip.is_file():
             raise EpisodeError(f"{beats[idx]['id']}: needs the previous clip first: {clip}")
-        start, seconds = beat_window(ep, prev) if apply_trim else (0.0, probe_duration(clip))
+        start, seconds = clip_window(ep, prev, probe_duration(clip)) if apply_trim else (0.0, probe_duration(clip))
         return clip, start + seconds - 0.12
     raise EpisodeError(f"{beats[idx]['id']}: no footage before this beat")
 
@@ -1507,7 +1525,7 @@ def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str 
             src = raw / f"{beat['id']}.mp4"
             if not src.is_file():
                 raise EpisodeError(f"raw clip missing: {src}")
-            start, seconds = beat_window(ep, beat) if apply_trim else (0.0, probe_duration(src))
+            start, seconds = clip_window(ep, beat, probe_duration(src)) if apply_trim else (0.0, probe_duration(src))
         pngs = hud_pngs(ep, beat, out_size, png_dir, window_s=seconds)
         dest = root / "hud" / f"{beat['id']}.mp4"
         compose_beat(

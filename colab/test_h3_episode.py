@@ -41,6 +41,7 @@ from h3_episode import (  # noqa: E402
     episode_root,
     expected_duration,
     finish_episode,
+    clip_window,
     forbidden_hits,
     is_ui_beat,
     load_episode,
@@ -426,7 +427,7 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     assert validate_episode(ep, root=KASUMI_DIR) == []
     assert ep["tone"] == "action" and ep["violence"] == "game"
     assert len(ep["beats"]) == 12
-    assert expected_duration(ep) == pytest.approx(44.9, abs=0.2)
+    assert expected_duration(ep) == pytest.approx(47.9, abs=0.2)
     ids = [b["id"] for b in ep["beats"]]
     assert ids == [
         "01-cover",
@@ -450,7 +451,7 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
     assert beat_still_as(ep["beats"][0]) == "both"
     assert all(beat_still_as(ep["beats"][i]) == "last" for i in (2, 5, 9, 11))
     assert uses_last_still(ep["beats"][2]) and not uses_last_still(ep["beats"][3])
-    assert beat_window(ep, ep["beats"][2]) == (5.0, 5.0)
+    assert beat_window(ep, ep["beats"][2]) == (4.0, 6.0)
     assert ep["beats"][5]["source"] == "still" and beat_still_as(ep["beats"][5]) == "last"
     assert ep["beats"][9]["source"] == "still" and beat_still_as(ep["beats"][9]) == "last"
     assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
@@ -473,6 +474,18 @@ def test_kasumi_late_desk_validates_and_stills_are_clean():
         if "prfight2" in prompt:
             assert prompt.startswith("DY\nprfight2, prfin1")
         assert "badges carry no readable letters" in prompt
+
+
+def test_clip_window_slides_last_frame_trim_when_oom_shortens(tmp_path):
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    shove = next(b for b in ep["beats"] if b["id"] == "03-shove")
+    assert clip_window(ep, shove, 10.0) == (4.0, 6.0)
+    assert clip_window(ep, shove, 8.0) == (2.0, 6.0)
+    assert clip_window(ep, shove, 6.0) == (0.0, 6.0)
+    files = next(b for b in ep["beats"] if b["id"] == "06-files")
+    assert clip_window(ep, files, 8.0) == (2.0, 6.0)
+    peek = next(b for b in ep["beats"] if b["id"] == "04-peek")
+    assert clip_window(ep, peek, 8.0) == (0.0, 4.0)
 
 
 def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):
@@ -512,7 +525,7 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
         "12-desk",
     ]
     assert kept.read_bytes() == b"keep-me"
-    assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(44.9, abs=0.2)
+    assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(47.9, abs=0.2)
 
 
 def test_bootstrap_keeps_drive_json_when_github_fails(tmp_path, monkeypatch):
