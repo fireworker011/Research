@@ -16,6 +16,7 @@ from h3_r2v_core import (
     frames,
     gpu_vram_tier,
     is_oom_error,
+    is_device_mismatch_error,
     prefer_ref2v_lora,
     r2v_retry_plans,
     rewrite_take_seconds,
@@ -166,6 +167,14 @@ def test_retry_plans_never_drop_video():
     assert all(p["motion_max_edge"] for p in plans)
     assert any(p["ref_image_size"] == "match" for p in plans)
     assert is_oom_error(["execution_error", {"exception_message": "torch.OutOfMemoryError"}])
+    assert not is_oom_error(
+        ["execution_error", {"exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same"}]
+    )
+    assert is_device_mismatch_error(
+        ["execution_error", {"exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same"}]
+    )
+    assert is_device_mismatch_error("Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu")
+    assert not is_device_mismatch_error(["execution_error", {"exception_message": "torch.OutOfMemoryError"}])
     inputs = vhs_load_video_inputs(
         {"VHS_LoadVideo": {"input": {"required": {"file": ["COMBO", {}]}}}},
         "clip.mp4",

@@ -421,6 +421,18 @@ def is_oom_error(payload: Any) -> bool:
     return "out of memory" in text or "outofmemory" in text or "cuda oom" in text
 
 
+def is_device_mismatch_error(payload: Any) -> bool:
+    """VAE encode put pixels on CUDA while MiniMax weights stayed on CPU (not OOM)."""
+    text = str(payload).lower()
+    if "expected all tensors to be on the same device" in text:
+        return True
+    if "should be the same" in text and (
+        "halftensor" in text or "weight type" in text or "cuda.half" in text
+    ):
+        return True
+    return False
+
+
 def vhs_load_video_inputs(
     object_info: dict[str, Any] | None,
     filename: str,
