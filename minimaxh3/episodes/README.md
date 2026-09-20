@@ -108,7 +108,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 25秒。朝に遅刻した成人 OL が上司に見つからず自席へつく。借りるのはカバー・覗き・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない（OOM でキャンバスが縮む。カットを短く並べる）。
 カバー 3.0秒 → 覗き 5.0秒 → 同僚（HUD なし・字幕・自席完了）6.0秒 → かばんメニュー 2.2秒 → 着席 4.8秒 → ミッション失敗「隣の席に座った」→ 免責。
-`tone: mundane`。爆発・キック・エレベーター・喫煙の階段は書かない。しゃがみカバーは残し、首と胴が同じ方向の横向きにする。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。準備は `episodes/kasumi-late-desk/PREP.md`。コマンド四択＋Combat LoRA の次版たたきは `episodes/kasumi-late-desk/SCRIPT.md`（json はまだ変えない）。
+`tone: mundane`。爆発・キック・エレベーター・喫煙の階段は書かない。しゃがみカバーは残し、首と胴が同じ方向の横向きにする。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。準備は `episodes/kasumi-late-desk/PREP.md`。理想台本は `episodes/kasumi-late-desk/SCRIPT.md`（json はまだ変えない）。
 
 ## 番台ディストリクト（2 本）
 
