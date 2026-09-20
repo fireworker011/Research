@@ -307,6 +307,11 @@ def episode_lane(ep: dict[str, Any]) -> str:
     return raw if raw in LANES else "stock"
 
 
+def comfy_vram_for_lane(lane: str) -> str:
+    """Erotic UNet uses Comfy default memory. `--normalvram` is not a current CLI flag."""
+    return "default" if lane == "erotic" else "highvram"
+
+
 def episode_voice(ep: dict[str, Any]) -> str:
     """Spoken audio lock. erotic lane defaults to japanese: H3 otherwise invents English."""
     raw = str((ep.get("render") or {}).get("voice") or "").strip().lower()
@@ -2531,7 +2536,7 @@ def run_episode(
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
-        vram = "default" if episode_lane(ep) == "erotic" else "highvram"
+        vram = comfy_vram_for_lane(episode_lane(ep))
         start_comfy(comfy, port=port, vram=vram)
         print("comfy vram", vram)
         loras_dir = models / "loras"

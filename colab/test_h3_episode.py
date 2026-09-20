@@ -35,6 +35,7 @@ from h3_episode import (  # noqa: E402
     STILL_LAST_HEADER,
     EpisodeError,
     apply_connect_mode,
+    comfy_vram_for_lane,
     apply_extra_loras,
     apply_unet_preset_rules,
     assert_not_production_root,
@@ -109,7 +110,7 @@ from h3_hud import (  # noqa: E402
 )
 from h3_episode_packs import describe_run, form_readme, ui_choices, ui_default  # noqa: E402
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
-from h3_i2v_runtime import is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
+from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import DEFAULT_BRANCH, exec_script  # noqa: E402
 
@@ -604,6 +605,20 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     stripped = dict(adult)
     stripped["render"] = {k: v for k, v in adult["render"].items() if k not in ("lane", "checkpoint")}
     assert any("render.lane erotic" in e for e in validate_episode(stripped))
+
+
+def test_erotic_comfy_omits_removed_normalvram_flag():
+    assert comfy_vram_for_lane("erotic") == "default"
+    assert comfy_vram_for_lane("stock") == "highvram"
+    assert comfy_vram_flag("default") == ""
+    assert comfy_vram_flag("normalvram") == ""
+    cmd = comfy_launch_cmd(port=8188, vram=comfy_vram_for_lane("erotic"))
+    assert "--normalvram" not in cmd
+    assert "--highvram" not in cmd
+    assert cmd[:4] == [sys.executable, "main.py", "--listen", "127.0.0.1"]
+    stock_cmd = comfy_launch_cmd(port=8188, vram=comfy_vram_for_lane("stock"))
+    assert "--highvram" in stock_cmd
+    assert "--normalvram" not in stock_cmd
 
 
 def test_kasumi_adult_kiss_fight_oral_missionary_fail():

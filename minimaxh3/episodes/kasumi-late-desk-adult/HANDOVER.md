@@ -74,7 +74,7 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
 - ファイル: Drive `minimax-h3-comfyui/models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors`（約21GB）。無ければ HuggingFace `TenStrip/10Eros-Max`
-- その上に `balance`（Larry 8step。シネマ LoRA は積まない）。`speed` / `quality` に切替可。霞東あさは 06 と 10 に Combat V2
+- その上に `balance`（LoRA なし euler 8。turbo 焼き込み済み。シネマ LoRA は積まない）。`speed` / `quality` に切替可。Combat LoRA もこの UNet では積まない
 - GPU ビートは T2V。`render.camera_pack` 既定 `side2d`（横スク）。`action3d` は Colab `CAMERA` か `--camera`
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
@@ -82,6 +82,7 @@ Combat は **06-fight と 10-lose** だけ。`prfight2, prfin1`、euler+beta 12�
 - inbox の `*fl2va*` は 10Eros を飛ばす
 - LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry / Combat も積まない（A100 40GB で LoRA パッチが OOM）。DT-sQKV は使わない
 - Drive は symlink できない。`diffusion_models` のファイルをそのまま読む
+- Comfy は成人レーンで VRAM フラグを付けない（現行 CLI に `--normalvram` は無い。付けると start failed）。stock は `--highvram`
 
 ## 次の一手
 
