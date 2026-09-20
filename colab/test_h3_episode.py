@@ -36,6 +36,7 @@ from h3_episode import (  # noqa: E402
     EpisodeError,
     apply_connect_mode,
     apply_extra_loras,
+    apply_unet_preset_rules,
     assert_not_production_root,
     beat_prompts,
     beat_props,
@@ -61,6 +62,7 @@ from h3_episode import (  # noqa: E402
     episode_root,
     ensure_episode_checkpoint,
     is_erotic_weight_path,
+    is_turbo_hybrid_unet,
     locate_erotic_checkpoint,
     expected_duration,
     finish_episode,
@@ -168,7 +170,8 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
     assert "kasumi-late-desk-adult" in md
-    assert "10Eros Max は Drive にあればそれを使う" in md
+    assert "10Eros Max は Drive" in md
+    assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
     assert "迷ったら" in md
     assert "用意した最終フレーム" in md
     assert "前の最終フレームから続ける" in md
@@ -519,6 +522,11 @@ def test_resolve_preset_fallbacks(tmp_path):
     assert canonical_preset("スピード") == "speed" and canonical_preset("質優先") == "quality"
     assert "combat" in LORA_FILES and "combat" not in {k for spec in PRESETS.values() for k, _s, _o in spec["stack"]}
     assert "cinema" not in {k for spec in PRESET_CANON.values() for k, _s, _o in spec["stack"]}
+    speed_on_hybrid = apply_unet_preset_rules(speed, EROS_MAX_UNET)
+    assert speed_on_hybrid["stack"] == []
+    assert any("TURBO-hybrid" in n for n in speed_on_hybrid["notes"])
+    balance_on_hybrid = apply_unet_preset_rules(balance, EROS_MAX_UNET)
+    assert balance_on_hybrid["stack"] == balance["stack"]
 
 
 def test_kasumi_late_desk_validates_and_stills_are_clean():
@@ -583,6 +591,9 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert episode_checkpoint(adult) == "eros-max"
     assert CHECKPOINTS["eros-max"]["erotic"] is True
     assert CHECKPOINTS["eros-max"]["file"] == EROS_MAX_UNET
+    assert EROS_MAX_UNET == "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+    assert is_turbo_hybrid_unet(EROS_MAX_UNET)
+    assert is_erotic_unet_name(EROS_MAX_UNET)
     assert episode_lane(stock) == "stock"
     assert episode_checkpoint(stock) == "stock"
     assert "kasumi-late-desk" in STOCK_ONLY_SLUGS

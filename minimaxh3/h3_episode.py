@@ -166,7 +166,12 @@ LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
-EROS_MAX_UNET = "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors"
+# Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
+EROS_MAX_UNET = "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+EROS_MAX_ALIASES = (
+    EROS_MAX_UNET,
+    "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors",
+)
 CHECKPOINTS: dict[str, dict[str, Any]] = {
     "stock": {
         "file": STOCK_FL2VA_UNET,
@@ -176,14 +181,15 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
     },
     "eros-max": {
         "file": EROS_MAX_UNET,
+        "aliases": EROS_MAX_ALIASES,
         "erotic": True,
         "url": (
-            "https://huggingface.co/DmitryDB/MiniMax-H3-10Eros-Max-Quants/resolve/main/"
-            f"FL2VA/{EROS_MAX_UNET}"
+            "https://huggingface.co/TenStrip/10Eros-Max/resolve/main/"
+            f"{EROS_MAX_UNET}"
         ),
-        # ~22.5GB. A 5GB truncated file must not count as ready (H3 would crash later).
-        "min_bytes": 20_000_000_000,
-        "expected_bytes": 22_484_074_696,
+        # ~21GB int8. A 5GB truncated file must not count as ready.
+        "min_bytes": 15_000_000_000,
+        "expected_bytes": 21_000_000_000,
     },
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). Cinema is not a preset (heavy/slow).
@@ -490,11 +496,17 @@ def _best_erotic_weight(paths: list[Path], want: str, spec: dict[str, Any]) -> P
     return sorted(uniq, key=rank)[0]
 
 
+def is_turbo_hybrid_unet(name: str) -> bool:
+    low = str(name or "").lower()
+    return "turbo-hybrid" in low or "turbo_hybrid" in low
+
+
 def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | None = None) -> Path | None:
-    """Find a ready Eros Max on Drive / HF cache / Comfy. Incomplete `.part` under 20GB is ignored."""
+    """Find a ready Eros Max on Drive / HF cache / Comfy. Incomplete copies under min_bytes are ignored."""
     spec = spec or CHECKPOINTS["eros-max"]
-    min_bytes = int(spec.get("min_bytes") or 20_000_000_000)
+    min_bytes = int(spec.get("min_bytes") or 15_000_000_000)
     want = str(spec.get("file") or EROS_MAX_UNET)
+    aliases = tuple(spec.get("aliases") or (want,))
     candidates: list[Path] = []
     explicit = (os.environ.get("H3_EROS_MAX") or "").strip()
     if explicit:
@@ -504,12 +516,13 @@ def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | Non
         elif extra.is_dir():
             candidates.extend(_walk_weight_files(extra, depth=4, cache_filter=False))
     for folder, depth, cache_filter in _erotic_search_plan(Path(models_root)):
-        exact = folder / want
-        if exact.is_file() or exact.is_symlink():
-            candidates.append(exact)
-        part = exact.with_name(exact.name + ".part")
-        if part.is_file():
-            candidates.append(part)
+        for alias in aliases:
+            exact = folder / alias
+            if exact.is_file() or exact.is_symlink():
+                candidates.append(exact)
+            part = exact.with_name(exact.name + ".part")
+            if part.is_file():
+                candidates.append(part)
         candidates.extend(_walk_weight_files(folder, depth=depth, cache_filter=cache_filter))
     ready: list[Path] = []
     parts: list[Path] = []
@@ -518,7 +531,7 @@ def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | Non
         low = name.lower()
         if any(low.endswith(suf) for suf in _WEIGHT_SKIP_SUFFIXES):
             continue
-        if not is_erotic_weight_path(path) and name != want and name != want + ".part":
+        if not is_erotic_weight_path(path) and name != want and name != want + ".part" and name not in aliases and name not in {a + ".part" for a in aliases}:
             continue
         if not _checkpoint_ready(path, min_bytes):
             continue
@@ -1699,7 +1712,7 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     url = str(spec.get("url") or "")
     if not url:
         raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
-    print("fetch checkpoint", spec["file"], "(resume ok, ~22.5GB, keep Run all if it stops)")
+    print("fetch checkpoint", spec["file"], "(resume ok, ~21GB, keep Run all if it stops)")
     if fetch_resumable(url, dest, min_bytes=min_bytes, expected_bytes=expected):
         notes.append(f"fetched {spec['file']}")
         return notes
@@ -2006,6 +2019,27 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
         out["sampler"] = str(spec["sampler"])
     if spec.get("scheduler"):
         out["scheduler"] = str(spec["scheduler"])
+    return out
+
+
+def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]:
+    """TURBO-hybrid UNet already has turbo baked in; do not also load LightX2V turbo LoRA."""
+    if not is_turbo_hybrid_unet(unet):
+        return preset
+    kept: list[tuple[str, float]] = []
+    dropped = False
+    for fname, strength in preset.get("stack") or []:
+        if "fl2v_turbo" in str(fname).lower():
+            dropped = True
+            continue
+        kept.append((fname, float(strength)))
+    if not dropped:
+        return preset
+    out = dict(preset)
+    out["stack"] = kept
+    notes = list(preset.get("notes") or [])
+    notes.append("LightX2V turbo LoRA skipped (UNet already TURBO-hybrid)")
+    out["notes"] = notes
     return out
 
 
@@ -2502,6 +2536,8 @@ def run_episode(
     preset: dict[str, Any]
     if dry_run:
         preset = resolve_preset(preset_name, None, fallback=fallback)
+        if episode_checkpoint(ep) == "eros-max":
+            preset = apply_unet_preset_rules(preset, str(CHECKPOINTS["eros-max"]["file"]))
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
@@ -2513,7 +2549,7 @@ def run_episode(
             print("checkpoint:", note)
         unet = stage_erotic_unet(ep, models)
         print("unet", unet, "lane", episode_lane(ep), "checkpoint", episode_checkpoint(ep))
-        preset = resolve_preset(preset_name, loras_dir, fallback=fallback)
+        preset = apply_unet_preset_rules(resolve_preset(preset_name, loras_dir, fallback=fallback), unet)
         comfy_input = comfy / "input"
         if object_info is None:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=60) as r:
