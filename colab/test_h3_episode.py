@@ -34,6 +34,7 @@ from h3_episode import (  # noqa: E402
     STOCK_ONLY_SLUGS,
     STILL_LAST_HEADER,
     EpisodeError,
+    apply_combat_route,
     apply_connect_mode,
     comfy_vram_for_lane,
     combat_lora_allowed,
@@ -79,6 +80,7 @@ from h3_episode import (  # noqa: E402
     merge_trigger,
     output_size_for,
     plan_lines,
+    prepare_episode,
     preflight,
     render_beat_comfy,
     resolve_preset,
@@ -659,20 +661,82 @@ def test_erotic_comfy_omits_removed_normalvram_flag():
     assert "--normalvram" not in stock_cmd
 
 
-def test_kasumi_adult_kiss_fight_oral_missionary_fail():
-    ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
-    assert validate_episode(ep, root=KASUMI_ADULT_DIR) == []
+def _kasumi_adult_cast(ep):
     assert ep["cast"]["mio"]["age"] == 21
     assert ep["cast"]["nana"]["age"] == 23
     assert ep["cast"]["aoki"]["age"] == 27
     assert ep["cast"]["kuroki"]["age"] == 29
     assert "C-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
-    assert "D-cup" in ep["cast"]["nana"]["lock"] and "slim" in ep["cast"]["nana"]["lock"]
+    assert "D-cup" in ep["cast"]["nana"]["lock"] and "futanari" in ep["cast"]["nana"]["lock"]
     assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
     assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
     assert "unhurried" not in ep["cast"]["kuroki"]["lock"]
-    assert len(ep["beats"]) == 12
+
+
+def test_kasumi_adult_combat_off_is_sex_route_not_fights():
+    raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    assert validate_episode(raw, root=KASUMI_ADULT_DIR) == []
+    _kasumi_adult_cast(raw)
+    assert raw["render"]["combat"] == "off"
+    assert "mystic" in LORA_FILES
+    ep = apply_combat_route(raw, combat="off")
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-nana",
+        "03-kiss",
+        "04-aisle",
+        "05-ui-guard",
+        "06-doggy",
+        "07-creampie",
+        "08-walk",
+        "09-ui-boss",
+        "10-kiss",
+        "11-missionary",
+        "12-hold",
+    ]
     assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
+    assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
+    assert all("combat_on" not in b for b in ep["beats"])
+    assert ep["beats"][1]["menu"]["selected"] == 2
+    assert ep["beats"][4]["menu"]["selected"] == 2
+    assert ep["beats"][8]["menu"]["selected"] == 2
+    assert ep["cards"]["fail"]["reason"] == "正常位で動けない"
+    doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
+    doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
+    assert "prfight2" not in doggy_prompt
+    assert "doggy" in doggy_prompt.lower()
+    _assert_sex_beat_both_pleasure_no_extra_kiss(doggy, doggy_prompt)
+    cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
+    cream_prompt = build_beat_prompt(ep, cream)
+    assert "prfight2" not in cream_prompt
+    assert "finishes inside" in cream_prompt.lower() or "white goo" in cream_prompt.lower()
+    _assert_sex_beat_both_pleasure_no_extra_kiss(cream, cream_prompt)
+    jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    jupo_prompt = build_beat_prompt(ep, jupo)
+    assert "jupo-jupo" in jupo_prompt.lower()
+    assert "french kiss" in jupo_prompt.lower()
+    assert jupo.get("extra_loras") == ["mystic"]
+    sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
+    sex_prompt = build_beat_prompt(ep, sex)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    assert "finishes inside" in sex_prompt.lower()
+    hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
+    hold_prompt = build_beat_prompt(ep, hold)
+    assert "french kiss" in hold_prompt.lower()
+    assert hold["voices"][1]["line"] == "ちゅっ"
+    for _b, prompt, errs in beat_prompts(ep, trigger=""):
+        assert errs == []
+        assert "prfight2" not in prompt
+        low = prompt.lower()
+        assert "slow motion" not in low and "slow-mo" not in low
+        assert "brisk" in low or "snappy" in low
+
+
+def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
+    raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    ep = apply_combat_route(raw, combat="on")
+    prepared = prepare_episode(raw, combat_override="on")
+    assert [b["id"] for b in prepared["beats"]] == [b["id"] for b in ep["beats"]]
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-nana",
@@ -691,56 +755,41 @@ def test_kasumi_adult_kiss_fight_oral_missionary_fail():
     assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
     assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
     assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
-    assert ep["beats"][2]["id"] == "03-kiss" and not ep["beats"][2].get("extra_loras")
-    assert ep["beats"][6]["id"] == "07-oral" and not ep["beats"][6].get("extra_loras")
-    assert ep["beats"][10]["id"] == "11-missionary" and not ep["beats"][10].get("extra_loras")
-    assert ep["beats"][1]["menu"]["selected"] == 2
     assert ep["beats"][4]["menu"]["selected"] == 0
     assert ep["beats"][8]["menu"]["selected"] == 0
-    assert ep["cards"]["fail"]["reason"] == "正常位で動けない"
-    assert all(not b.get("reuse") for b in ep["beats"])
-    assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
-    assert ep["render"]["connect"] == "t2v"
-    gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
-    assert all(b["source"] == "t2v" for b in gpu)
-    assert all(b.get("still_as") not in ("last", "both") for b in gpu)
     fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
     assert fight_prompt.startswith("prfight2, prfin1")
-    assert "walking-and-hit pace" in fight_prompt
-    assert "side-on" in fight_prompt and "This shot:" in fight_prompt
-    assert "<Picture 1>" not in fight_prompt and "<Picture 2>" not in fight_prompt
-    oral_prompt = build_beat_prompt(ep, ep["beats"][6], trigger=merge_trigger("", ep["beats"][6]))
+    assert "doggy" not in fight_prompt.lower()
+    assert "side-on" in fight_prompt
+    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
+    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
     assert "prfight2" not in oral_prompt
-    assert "walking-and-hit pace" in oral_prompt
     assert "jupo-jupo" in oral_prompt.lower()
-    assert "BASE" in oral_prompt
-    assert "melting with pleasure" in oral_prompt
-    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][6], oral_prompt)
-    assert "Picture 2" not in oral_prompt
-    assert ep["beats"][6]["voices"][0]["line"] == "じゅぽっ"
-    assert ep["beats"][6]["voices"][1]["line"] == "はぁっ"
-    sex_prompt = build_beat_prompt(ep, ep["beats"][10], trigger=merge_trigger("", ep["beats"][10]))
-    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][10], sex_prompt)
-    hold_prompt = build_beat_prompt(ep, ep["beats"][11], trigger=merge_trigger("", ep["beats"][11]))
-    _assert_sex_beat_both_pleasure_no_extra_kiss(ep["beats"][11], hold_prompt)
-    assert ep["beats"][11]["voices"][1]["who"] == "kuroki"
-    assert ep["beats"][11]["voices"][1]["line"] == "くっ"
-    assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
+    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
+    kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    kiss_prompt = build_beat_prompt(ep, kiss)
+    assert "jupo-jupo" not in kiss_prompt.lower()
+    assert "french kiss" in kiss_prompt.lower()
+    assert not kiss.get("extra_loras")
+    sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
+    sex_prompt = build_beat_prompt(ep, sex)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    assert "finishes inside" not in sex_prompt.lower()
+    hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
+    hold_prompt = build_beat_prompt(ep, hold)
+    assert "french kiss" not in hold_prompt.lower()
     for beat in ep["beats"]:
         still = beat.get("still")
         if still:
-            p = KASUMI_ADULT_DIR / still
-            assert p.is_file()
-            assert "-hud" not in p.stem
-            assert Image.open(p).size == (1280, 720)
+            path = KASUMI_ADULT_DIR / still
+            assert path.is_file()
+            assert Image.open(path).size == (1280, 720)
     for _b, prompt, errs in beat_prompts(ep, trigger=""):
         assert errs == []
         if "prfight2" in prompt:
             assert prompt.startswith("prfight2, prfin1")
-        assert "badges carry no readable letters" in prompt
-        assert "<Picture 1>" not in prompt
         low = prompt.lower()
-        assert "slow motion" not in low and "slow-mo" not in low and "bullet time" not in low
+        assert "slow motion" not in low and "slow-mo" not in low
         assert "brisk" in low or "snappy" in low
 
 

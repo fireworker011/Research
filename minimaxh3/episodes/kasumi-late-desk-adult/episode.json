@@ -14,7 +14,8 @@
     "checkpoint": "eros-max",
     "camera_pack": "side2d",
     "connect": "t2v",
-    "voice": "japanese"
+    "voice": "japanese",
+    "combat": "off"
   },
   "style": "Third-person open-world game cutscene look, live-action photoreal game footage, shallow depth of field, pulled-back full-body framing, brisk real-time playback, no anime, no illustration",
   "violence": "game",
@@ -49,7 +50,7 @@
       "name_ja": "西条 なな",
       "name_en": "Nana",
       "age": 23,
-      "lock": "23-year-old Japanese woman, adult face, slim body, D-cup breasts, short brown bob, fully nude, no clothes, no blouse, no slacks, female body, no penis, never futanari, sits at a desk with a mug, mild morning expression",
+      "lock": "23-year-old Japanese woman, adult face, slim body, D-cup breasts, short brown bob, fully nude, no clothes, no blouse, no slacks, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base, sits at a desk stroking the erect 20cm, flushed pleasured morning expression",
       "voice": "soft young adult female voice"
     }
   },
@@ -70,8 +71,8 @@
       "HUD hidden in dialogue cutscenes, subtitles only",
       "a pause-menu command window over a frozen frame",
       "a deadpan mission-failed card after a missionary pin",
-      "a french kiss used as a game evade",
-      "a knockdown followed at once by oral at brisk walking-and-hit pace"
+      "a french kiss used as a greeting or as a game evade",
+      "doggy from behind with a creampie walk, or a knockdown followed by oral, depending on combat"
     ],
     "never": [
       "山田",
@@ -159,11 +160,15 @@
       ],
       "place": "Open-plan desk row at morning, light oak desks, beige partitions, grey carpet aisle",
       "camera": "Nana seated at left, Mio standing in the aisle, both adults readable",
-      "action": "Mio brisk-walks the aisle past Nana's desk row at walking-and-hit pace, fully nude; nude Nana sits with both hands on a white mug and looks up; both stay in this desk row and stay fully nude. Motion starts at frame one",
+      "action": "Mio brisk-walks the aisle past Nana's desk row at walking-and-hit pace, fully nude; nude Nana sits at the desk with an erect 20cm, one hand stroking the shaft, mug on the desk, flushed, mouth open, brows knit, looking pleasured; both stay in this desk row and stay fully nude. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
           "line": "ん"
+        },
+        {
+          "who": "nana",
+          "line": "んっ"
         }
       ],
       "sfx": "HVAC hum, distant keyboard taps, one soft footstep on carpet",
@@ -235,19 +240,23 @@
         "mug"
       ],
       "place": "The same light oak desk row, Nana seated at left, Mio standing in the aisle, morning window light",
-      "camera": "Nana seated at left, Mio standing close at the desk, mouths joined",
-      "action": "Mio steps in close at once. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at brisk walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Mouths stay joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat. Mio can pass",
+      "camera": "Nana seated at left, Mio standing close, then Mio kneeling at the desk",
+      "action": "Mio steps in close at once. Deep wet french kiss greeting at brisk walking-and-hit pace, Nana seated. Mio drops to her knees at once. Both hands stay on Nana's hips, not the shaft. Mio's mouth already takes the erect 20cm to the BASE. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Both look like it feels really good, not blank. Mio stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo, mouth a wet ring at the BASE. Nana stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, erect 20cm still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Nana finishes in Mio's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips, mug on the desk. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "mio",
-          "line": "んっ"
+          "line": "ちゅっ"
+        },
+        {
+          "who": "mio",
+          "line": "じゅぽっ"
         },
         {
           "who": "nana",
-          "line": "ちゅっ"
+          "line": "はぁっ"
         }
       ],
-      "sfx": "Chair casters, a mug still on wood, a wet kiss, HVAC",
+      "sfx": "Chair casters, a mug still on wood, a wet kiss, wet jupo-jupo mouth, HVAC",
       "music": "A short synth stab on the kiss, then the bass",
       "hud": {
         "mission": "自席につけ",
@@ -263,6 +272,25 @@
           "席"
         ],
         "complete": false
+      },
+      "extra_loras": [
+        "mystic"
+      ],
+      "combat_on": {
+        "camera": "Nana seated at left, Mio standing close at the desk, mouths joined",
+        "action": "Mio steps in close at once. Both hands go to Nana's shoulders first. Mio gives Nana a deep wet french kiss at brisk walking-and-hit pace. Nana's torso sinks into the chair back. The mug stays on Nana's desk. Mouths stay joined, Nana seated, an empty neighboring desk readable. Both stay fully nude. Nana keeps an erect 20cm. Consensual adult evade beat. Mio can pass",
+        "extra_loras": [],
+        "voices": [
+          {
+            "who": "mio",
+            "line": "んっ"
+          },
+          {
+            "who": "nana",
+            "line": "ちゅっ"
+          }
+        ],
+        "sfx": "Chair casters, a mug still on wood, a wet kiss, HVAC"
       }
     },
     {
@@ -283,8 +311,8 @@
         "clipboard"
       ],
       "place": "Open-plan aisle at morning, a beige cubicle partition at the left, grey carpet running toward a window wall",
-      "camera": "Mio crouches at left beside the partition, Aoki walks in from the right",
-      "action": "Mio crouches in profile beside the cubicle partition, fully nude, tote on her shoulder, while nude Aoki brisk-walks toward her down the aisle at walking-and-hit pace with a clipboard and an erect 20cm; both stay fully nude; nobody else is in frame. Motion starts at frame one",
+      "camera": "Mio in the aisle facing away, Aoki coming from behind her",
+      "action": "Mio stands in the aisle, fully nude, tote on her shoulder. Nude Aoki with an erect 20cm and a clipboard comes from behind her down the aisle at walking-and-hit pace. Aoki stays at Mio's back. Both stay fully nude. Nobody else is in frame. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -307,6 +335,10 @@
           "隠"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "camera": "Mio crouches at left beside the partition, Aoki walks in from the right",
+        "action": "Mio crouches in profile beside the cubicle partition, fully nude, tote on her shoulder, while nude Aoki brisk-walks toward her down the aisle at walking-and-hit pace with a clipboard and an erect 20cm; both stay fully nude; nobody else is in frame. Motion starts at frame one"
       }
     },
     {
@@ -324,12 +356,12 @@
           "□ 口説く",
           "× 無視"
         ],
-        "selected": 0
+        "selected": 2
       },
       "hud": {
         "mission": "自席につけ",
         "mission_keyword": "自席",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.88,
         "stamina": 0.48,
         "money": "¥2,140",
@@ -340,10 +372,18 @@
           "隠"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "menu": {
+          "selected": 0
+        },
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
-      "id": "06-fight",
+      "id": "06-doggy",
       "source": "t2v",
       "still": "stills/01-cover.jpg",
       "trim": {
@@ -355,32 +395,27 @@
         "aoki"
       ],
       "face_visible": false,
-      "physics": true,
       "extra_loras": [
-        "combat"
+        "mystic"
       ],
-      "trigger": "prfight2, prfin1",
-      "steps": 12,
-      "sampler": "euler",
-      "scheduler": "beta",
       "props": [
         "tote",
         "clipboard"
       ],
       "place": "The same open-plan aisle, beige cubicle partitions, grey carpet, morning fluorescent light, desks in the deep background",
-      "camera": "Both adults standing in the aisle, full bodies including feet",
-      "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then one heavy open-hand hit. Aoki sits down hard on the carpet like a ragdoll. Clipboard slides. Aoki stays seated, uninjured, erect 20cm still up, eyes on the board. Mio stays standing. Both stay fully nude. Motion starts at frame one",
+      "camera": "Mio on all fours in the aisle, Aoki kneeling behind her, full bodies",
+      "action": "Aoki pushes Mio's back at once at brisk walking-and-hit pace. Mio goes to all fours on the carpet. Aoki kneels behind her. Doggy. The erect 20cm goes inside Mio's pussy to the BASE in one snappy thrust. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at Mio's hips, not the shaft. Each face stays on its own body. Both stay fully nude. Clipboard on the floor. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "mio",
-          "line": "はっ"
+          "line": "あんっ"
         },
         {
           "who": "aoki",
-          "line": "うっ"
+          "line": "くっ"
         }
       ],
-      "sfx": "Palm hits, clipboard clack, a body sit on carpet, HVAC",
+      "sfx": "Knees on carpet, a wet join, HVAC",
       "music": "Bass holds; a taiko hit on the sit-down",
       "hud": {
         "mission": "自席につけ",
@@ -394,10 +429,34 @@
         "objective_distance": 0.4,
         "icons_active": [],
         "complete": false
+      },
+      "combat_on": {
+        "id": "06-fight",
+        "camera": "Both adults standing in the aisle, full bodies including feet",
+        "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then one heavy open-hand hit. Aoki sits down hard on the carpet like a ragdoll. Clipboard slides. Aoki stays seated, uninjured, erect 20cm still up, eyes on the board. Mio stays standing. Both stay fully nude. Motion starts at frame one",
+        "extra_loras": [
+          "combat"
+        ],
+        "trigger": "prfight2, prfin1",
+        "physics": true,
+        "steps": 12,
+        "sampler": "euler",
+        "scheduler": "beta",
+        "voices": [
+          {
+            "who": "mio",
+            "line": "はっ"
+          },
+          {
+            "who": "aoki",
+            "line": "うっ"
+          }
+        ],
+        "sfx": "Palm hits, clipboard clack, a body sit on carpet, HVAC"
       }
     },
     {
-      "id": "07-oral",
+      "id": "07-creampie",
       "source": "t2v",
       "still": "stills/03-oral.jpg",
       "trim": {
@@ -414,19 +473,19 @@
         "clipboard"
       ],
       "place": "The same open-plan aisle after Aoki sits, beige cubicle partitions, grey carpet",
-      "camera": "Aoki seated on the carpet at right, Mio kneeling in front",
-      "action": "Mio drops to her knees at once at brisk walking-and-hit pace. Both hands stay on Aoki's hips, not the shaft. Mio's mouth already takes the erect 20cm to the BASE. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Both look like it feels really good, not blank. Mio stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo, mouth a wet ring at the BASE. Aoki stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, uninjured, erect 20cm still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Aoki finishes in Mio's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips, clipboard on the floor. Brisk real-time. Consensual adult game beat",
+      "camera": "Mio on all fours, Aoki behind, then Aoki walking past her face",
+      "action": "They stay joined in doggy on the carpet, Aoki behind Mio. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank, flushed, mouths open, brows knit. Aoki finishes inside Mio. Heavy-oil-thick WHITE goo in the pussy. Aoki pulls out. Aoki walks past in front of Mio's face and leaves the aisle. Mio stays on all fours, WHITE goo dripping from the pussy. Hands stay at the hips until the pull-out. Each face stays on its own body. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "mio",
-          "line": "じゅぽっ"
+          "line": "んっ"
         },
         {
           "who": "aoki",
           "line": "はぁっ"
         }
       ],
-      "sfx": "Knees on carpet, wet jupo-jupo mouth, clipboard, HVAC",
+      "sfx": "Carpet, a wet join, footsteps leaving, HVAC",
       "music": "Bass holds; one taiko hit on the mouth contact",
       "hud": {
         "mission": "自席につけ",
@@ -440,10 +499,32 @@
         "objective_distance": 0.35,
         "icons_active": [],
         "complete": false
-      }
+      },
+      "combat_on": {
+        "id": "07-oral",
+        "camera": "Aoki seated on the carpet at right, Mio kneeling in front",
+        "action": "Mio drops to her knees at once at brisk walking-and-hit pace. Both hands stay on Aoki's hips, not the shaft. Mio's mouth already takes the erect 20cm to the BASE. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Both look like it feels really good, not blank. Mio stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo, mouth a wet ring at the BASE. Aoki stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, uninjured, erect 20cm still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Aoki finishes in Mio's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips, clipboard on the floor. Brisk real-time. Consensual adult game beat",
+        "extra_loras": [
+          "mystic"
+        ],
+        "voices": [
+          {
+            "who": "mio",
+            "line": "じゅぽっ"
+          },
+          {
+            "who": "aoki",
+            "line": "はぁっ"
+          }
+        ],
+        "sfx": "Knees on carpet, wet jupo-jupo mouth, clipboard, HVAC"
+      },
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
-      "id": "08-peek",
+      "id": "08-walk",
       "source": "t2v",
       "still": "stills/04-peek.jpg",
       "trim": {
@@ -460,9 +541,9 @@
         "badge",
         "papers"
       ],
-      "place": "A plain beige corridor wall beside an open office doorway, grey carpet, morning fluorescent light",
-      "camera": "Mio in profile at the doorway, Kuroki at the inner desk",
-      "action": "Mio stands in profile at the open doorway, fully nude; nude Kuroki stays seated at the inner desk looking down at papers with an erect 20cm; both stay in these spots and stay fully nude. Brisk game-cut timing, motion starts at frame one",
+      "place": "Open-plan aisle toward the desks, grey carpet, morning fluorescent light",
+      "camera": "Mio walking the aisle, Kuroki standing ahead full body, both readable",
+      "action": "Mio stands up dazed from all fours at brisk walking-and-hit pace, fully nude, WHITE goo dripping from her pussy, tote on her shoulder. She walks the aisle toward her desk. Nude Kuroki stands ahead in the aisle facing her, imposing stance, glasses on, erect 20cm up. Both stay fully nude. Not a doorway peek. Not a desk sit. Motion starts at frame one",
       "voices": [
         {
           "who": "mio",
@@ -485,6 +566,12 @@
           "席"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "id": "08-peek",
+        "camera": "Mio in profile at the doorway, Kuroki at the inner desk",
+        "action": "Mio stands in profile at the open doorway, fully nude; nude Kuroki stays seated at the inner desk looking down at papers with an erect 20cm; both stay in these spots and stay fully nude. Brisk game-cut timing, motion starts at frame one",
+        "place": "A plain beige corridor wall beside an open office doorway, grey carpet, morning fluorescent light"
       }
     },
     {
@@ -502,12 +589,12 @@
           "□ 口説く",
           "× 無視"
         ],
-        "selected": 0
+        "selected": 2
       },
       "hud": {
         "mission": "自席につけ",
         "mission_keyword": "自席",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.9,
         "stamina": 0.35,
         "money": "¥2,140",
@@ -518,10 +605,18 @@
           "席"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "menu": {
+          "selected": 0
+        },
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
-      "id": "10-lose",
+      "id": "10-kiss",
       "source": "t2v",
       "still": "stills/04-peek.jpg",
       "trim": {
@@ -533,31 +628,24 @@
         "kuroki"
       ],
       "face_visible": false,
-      "physics": true,
-      "extra_loras": [
-        "combat"
-      ],
-      "trigger": "prfight2, prfin1",
-      "steps": 12,
-      "sampler": "euler",
-      "scheduler": "beta",
+      "extra_loras": [],
       "props": [
         "papers"
       ],
       "place": "Inside the small inner office: a wood desk, a black rolling chair, morning window light, grey carpet",
-      "camera": "Both adults standing in the inner office, full bodies including feet",
-      "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then Kuroki lands one heavy open-hand hit. Mio sits down hard on the carpet like a ragdoll. Papers slide. Kuroki stays standing, glasses on, erect 20cm, uninjured. Mio stays seated, uninjured. Both stay fully nude. Mio loses. Motion starts at frame one",
+      "camera": "Kuroki close to Mio in the aisle, then Mio on her back on the carpet",
+      "action": "Kuroki walks in close at brisk walking-and-hit pace. Deep wet french kiss, mouths joined. Kuroki pushes Mio onto her back on the carpet at once. Mio on her back, Kuroki over her, glasses on, mouths still joined. Not inside yet. The erect 20cm stays outside. Both stay fully nude. Papers unread. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "mio",
-          "line": "うっ"
+          "line": "んっ"
         },
         {
           "who": "kuroki",
-          "line": "はっ"
+          "line": "ちゅっ"
         }
       ],
-      "sfx": "Palm hits, paper sliding, a body sit on carpet, HVAC",
+      "sfx": "A wet kiss, a body sit on carpet, HVAC",
       "music": "A short synth stab on the hit, then the bass",
       "hud": {
         "mission": "自席につけ",
@@ -571,6 +659,30 @@
         "objective_distance": 0.12,
         "icons_active": [],
         "complete": false
+      },
+      "combat_on": {
+        "id": "10-lose",
+        "camera": "Both adults standing in the inner office, full bodies including feet",
+        "action": "A snappy two-second standing flurry at brisk walking-and-hit pace, then Kuroki lands one heavy open-hand hit. Mio sits down hard on the carpet like a ragdoll. Papers slide. Kuroki stays standing, glasses on, erect 20cm, uninjured. Mio stays seated, uninjured. Both stay fully nude. Mio loses. Motion starts at frame one",
+        "extra_loras": [
+          "combat"
+        ],
+        "trigger": "prfight2, prfin1",
+        "physics": true,
+        "steps": 12,
+        "sampler": "euler",
+        "scheduler": "beta",
+        "voices": [
+          {
+            "who": "mio",
+            "line": "うっ"
+          },
+          {
+            "who": "kuroki",
+            "line": "はっ"
+          }
+        ],
+        "sfx": "Palm hits, paper sliding, a body sit on carpet, HVAC"
       }
     },
     {
@@ -591,7 +703,7 @@
       ],
       "place": "The same inner office carpet after Mio sits, wood desk, morning window light",
       "camera": "Mio on her back on the carpet, Kuroki kneeling between her legs",
-      "action": "Kuroki kneels between Mio's legs at once at brisk walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base in one snappy thrust. Hips keep a brisk walking-and-hit rhythm. Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Brisk real-time. Consensual adult game beat. Mio cannot stand up",
+      "action": "Kuroki kneels between Mio's legs at once. Missionary. Mio on her back, Kuroki on top, joined at the hips, glasses on. The erect 20cm is already inside Mio to the BASE. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Kuroki finishes inside Mio. Heavy-oil-thick WHITE goo stays in the pussy, still joined. Brisk real-time. Consensual adult game beat. Mio cannot stand up",
       "voices": [
         {
           "who": "mio",
@@ -616,7 +728,16 @@
         "objective_distance": 0.08,
         "icons_active": [],
         "complete": false
-      }
+      },
+      "combat_on": {
+        "action": "Kuroki kneels between Mio's legs at once at brisk walking-and-hit pace. Missionary. The erect 20cm goes inside Mio to the base in one snappy thrust. Hips keep a snappy real-time game rhythm. Mio on her back, Kuroki on top, joined at the hips, glasses still on, papers on the desk. Both stay fully nude. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Brisk real-time. Consensual adult game beat. Mio cannot stand up",
+        "extra_loras": [
+          "mystic"
+        ]
+      },
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
       "id": "12-hold",
@@ -636,7 +757,7 @@
       ],
       "place": "The same inner office, Mio on her back, Kuroki joined on top, morning window light",
       "camera": "The same pin on the carpet, both full bodies",
-      "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; hips keep a brisk walking-and-hit rhythm; both look like it feels really good, not blank, flushed, mouths open, brows knit; small soft female moans from both; hands stay at the hips; each face stays on its own body over the join; nobody clocks in",
+      "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on; WHITE goo stays in the pussy; they hold each other and fall into a deep wet french kiss, mouths joined; hips keep a snappy real-time game rhythm; both look like it feels really good, not blank, flushed; nobody clocks in",
       "voices": [
         {
           "who": "mio",
@@ -644,7 +765,7 @@
         },
         {
           "who": "kuroki",
-          "line": "くっ"
+          "line": "ちゅっ"
         }
       ],
       "sfx": "Quiet office, HVAC, one paper settling",
@@ -663,7 +784,26 @@
           "席"
         ],
         "complete": false
-      }
+      },
+      "combat_on": {
+        "action": "They stay joined in missionary on the carpet, the same pin, Kuroki on top, Mio on her back, glasses on, tote on the carpet; hips keep a snappy real-time game rhythm; both look like it feels really good, not blank, flushed, mouths open, brows knit; small soft female moans from both; hands stay at the hips; each face stays on its own body over the join; nobody clocks in",
+        "extra_loras": [
+          "mystic"
+        ],
+        "voices": [
+          {
+            "who": "mio",
+            "line": "んっ"
+          },
+          {
+            "who": "kuroki",
+            "line": "くっ"
+          }
+        ]
+      },
+      "extra_loras": [
+        "mystic"
+      ]
     }
   ]
 }

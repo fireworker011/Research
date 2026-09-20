@@ -181,15 +181,15 @@ COMBAT_MODES: dict[str, dict[str, Any]] = {
     "off": {
         "label_ja": "オフ",
         "choice_ja": "格闘LoRAオフ（迷ったらこれ）",
-        "when_ja": "積まない。A100 40GB はこれ",
-        "hint_ja": "迷ったらこれ。Combat は積まない。",
+        "when_ja": "行為ルート。戦いなし。後背位とベロチュー。A100 40GB はこれ",
+        "hint_ja": "迷ったらこれ。話は行為。Combat は積まない。",
         "recommend": True,
     },
     "on": {
         "label_ja": "オン",
         "choice_ja": "格闘LoRAオン（ハイメモリ専用）",
-        "when_ja": "ハイメモリだけ。06と10に Combat V2。40GBでは落ちやすい",
-        "hint_ja": "ハイメモリ専用。06と10に Combat。足りないと自動でオフ。",
+        "when_ja": "戦いルート。06と10が横スク。話も切り替わる。ハイメモリ専用",
+        "hint_ja": "ハイメモリ専用。話は戦い。06と10に Combat。足りないと LoRA だけ落ちる。",
     },
 }
 

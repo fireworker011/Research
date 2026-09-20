@@ -160,10 +160,13 @@ LORA_FILES = {
     "larry": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
     "cinema": "Minimax_H3_cinematic_DY.safetensors",
     "combat": "H3_Combat_V2.safetensors",
+    "mystic": "MysticXXX_MMH3-V4.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
+    "mystic": "https://huggingface.co/lynaNSFW/mysticxxx_MM_H3/resolve/main/MysticXXX_MMH3-V4.safetensors",
 }
+COMBAT_ROUTE_KEY = "combat_on"
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
@@ -783,6 +786,49 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     return out
 
 
+def _has_combat_overlays(ep: dict[str, Any]) -> bool:
+    return any(isinstance(b, dict) and isinstance(b.get(COMBAT_ROUTE_KEY), dict) for b in (ep.get("beats") or []))
+
+
+def _merge_combat_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    """Replace route fields. menu/hud deep-merge so the command window can retarget."""
+    out = dict(beat)
+    for key, value in overlay.items():
+        if key in ("menu", "hud") and isinstance(value, dict) and isinstance(out.get(key), dict):
+            merged = dict(out[key])
+            merged.update(value)
+            out[key] = merged
+        else:
+            out[key] = value
+    return out
+
+
+def apply_combat_route(ep: dict[str, Any], *, combat: str | None = None) -> dict[str, Any]:
+    """One story per Combat switch. On = fight prompts. Off/empty = sex prompts, no fights.
+
+    Beat JSON keeps the off-route as the body and optional combat_on overlays.
+    This strips the overlay so GPU prompts never mix both plots.
+    """
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if combat not in (None, ""):
+        render["combat"] = canonical_combat(combat) or combat
+        out["render"] = render
+    on = episode_combat(out) == "on"
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        body = dict(beat)
+        overlay = body.pop(COMBAT_ROUTE_KEY, None)
+        if on and isinstance(overlay, dict):
+            body = _merge_combat_overlay(body, overlay)
+        beats.append(body)
+    out["beats"] = beats
+    return out
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -804,7 +850,7 @@ def prepare_episode(
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
     out["render"] = render
-    return out
+    return apply_combat_route(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -1140,6 +1186,13 @@ def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
 
 
 def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> list[str]:
+    if _has_combat_overlays(ep):
+        errs: list[str] = []
+        for label, mode in (("combat-off", "off"), ("combat-on", "on")):
+            resolved = apply_combat_route(ep, combat=mode)
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"{label}: {err}")
+        return errs
     errs: list[str] = []
     if ep.get("schema") != SCHEMA:
         errs.append(f"schema must be {SCHEMA}")
