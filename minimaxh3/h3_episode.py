@@ -35,7 +35,10 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -178,7 +181,9 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
             "https://huggingface.co/DmitryDB/MiniMax-H3-10Eros-Max-Quants/resolve/main/"
             f"FL2VA/{EROS_MAX_UNET}"
         ),
-        "min_bytes": 1_000_000_000,
+        # ~22.5GB. A 5GB truncated file must not count as ready (H3 would crash later).
+        "min_bytes": 20_000_000_000,
+        "expected_bytes": 22_484_074_696,
     },
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). Cinema is not a preset (heavy/slow).
@@ -1400,17 +1405,20 @@ def resolve_unet(
         min_bytes = int(spec.get("min_bytes") or 1_000_000)
         if models_root:
             private = erotic_checkpoint_path(models_root, spec)
-            if private.is_file() and private.stat().st_size > min_bytes:
+            if private.is_file() and private.stat().st_size >= min_bytes:
                 return str(spec["file"])
         exact = Path(diff_dir) / str(spec["file"])
-        if exact.is_file() and is_erotic_unet_name(exact.name) and exact.stat().st_size > min_bytes:
+        if exact.is_file() and is_erotic_unet_name(exact.name) and exact.stat().st_size >= min_bytes:
             return exact.name
         raise EpisodeError(f"erotic checkpoint missing: {spec['file']} (stock fallback is forbidden)")
     return pick_stock_fl2va(diff_dir)
 
 
 def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> list[str]:
-    """Fetch 10Eros_Max into models/erotic/ only. Never download it for a stock episode."""
+    """Fetch 10Eros_Max into models/erotic/ only. Never download it for a stock episode.
+
+    Incomplete copies stay as `*.part` on Drive so the next Run all resumes.
+    """
     notes: list[str] = []
     key = episode_checkpoint(ep)
     spec = CHECKPOINTS[key]
@@ -1420,19 +1428,28 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
         raise EpisodeError("refusing to fetch an erotic checkpoint for a stock episode")
     dest = erotic_checkpoint_path(models_root, spec)
     min_bytes = int(spec.get("min_bytes") or 1_000_000)
-    if dest.is_file() and dest.stat().st_size > min_bytes:
+    expected = int(spec.get("expected_bytes") or 0)
+    if dest.is_file() and dest.stat().st_size >= min_bytes:
         notes.append(f"checkpoint ready {spec['file']}")
         return notes
     url = str(spec.get("url") or "")
     if not url:
         raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
-    print("fetch checkpoint", spec["file"])
-    if fetch_text(url, dest, min_bytes=min_bytes):
+    print("fetch checkpoint", spec["file"], "(resume ok, ~22.5GB, keep Run all if it stops)")
+    if fetch_resumable(url, dest, min_bytes=min_bytes, expected_bytes=expected):
         notes.append(f"fetched {spec['file']}")
         return notes
+    part = dest.with_name(dest.name + ".part")
+    have = 0
     if dest.is_file():
-        dest.unlink()
-    raise EpisodeError(f"fetch failed {spec['file']} (stock fallback is forbidden)")
+        have = dest.stat().st_size
+    elif part.is_file():
+        have = part.stat().st_size
+    need = expected or min_bytes
+    raise EpisodeError(
+        f"fetch incomplete {spec['file']}: {have} / {need} bytes kept on Drive. "
+        "stock fallback is forbidden. Run all again (same A100); it continues the .part"
+    )
 
 
 def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
@@ -1451,9 +1468,9 @@ def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
     elif dest.exists():
         size = dest.stat().st_size
         min_bytes = int(spec.get("min_bytes") or 1_000_000)
-        if size > min_bytes and is_erotic_unet_name(dest.name):
+        if size >= min_bytes and is_erotic_unet_name(dest.name):
             return unet
-        if size <= min_bytes and is_erotic_unet_name(dest.name):
+        if size < min_bytes and is_erotic_unet_name(dest.name):
             dest.unlink()
         else:
             raise EpisodeError(f"refusing to replace {dest.name} with the erotic checkpoint")
@@ -1548,6 +1565,79 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
     except Exception as e:  # network
         print("fetch fail", url, e)
         return False
+
+
+def _resume_download_once(url: str, part: Path) -> None:
+    """One pass with wget/curl Range resume. Partial file is kept on failure."""
+    part.parent.mkdir(parents=True, exist_ok=True)
+    wget = shutil.which("wget")
+    if wget:
+        r = subprocess.run(
+            [wget, "-c", "--tries=3", "--timeout=60", "-O", str(part), url],
+            check=False,
+        )
+        if r.returncode == 0:
+            return
+        raise OSError(f"wget exit {r.returncode}")
+    curl = shutil.which("curl")
+    if curl:
+        r = subprocess.run(
+            ["curl", "-fL", "-C", "-", "--retry", "3", "-o", str(part), url],
+            check=False,
+        )
+        if r.returncode == 0:
+            return
+        raise OSError(f"curl exit {r.returncode}")
+    existing = part.stat().st_size if part.is_file() else 0
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "h3-episode", "Range": f"bytes={existing}-"},
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        status = int(getattr(resp, "status", 200) or 200)
+        mode = "ab" if existing and status == 206 else "wb"
+        with open(part, mode) as out:
+            while True:
+                chunk = resp.read(1024 * 1024)
+                if not chunk:
+                    break
+                out.write(chunk)
+
+
+def fetch_resumable(
+    url: str,
+    dest: Path,
+    *,
+    min_bytes: int,
+    expected_bytes: int = 0,
+    tries: int = 4,
+) -> bool:
+    """Download a large weight to Drive, resuming `*.part` across Colab reruns."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    part = dest.with_name(dest.name + ".part")
+    need = int(expected_bytes or min_bytes)
+    if dest.is_file() and dest.stat().st_size >= min_bytes:
+        return True
+    if dest.is_file() and dest.stat().st_size > 0:
+        print("incomplete file, resume as .part", dest.name, dest.stat().st_size)
+        dest.replace(part)
+    delay = 4
+    for i in range(max(1, int(tries))):
+        have = part.stat().st_size if part.is_file() else 0
+        print(f"fetch {dest.name} try {i + 1}/{tries} have {have} need {need}")
+        try:
+            _resume_download_once(url, part)
+        except (OSError, urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as e:
+            print("fetch fail", dest.name, e)
+        have = part.stat().st_size if part.is_file() else 0
+        if have >= min_bytes and (not expected_bytes or have >= int(expected_bytes * 0.99)):
+            part.replace(dest)
+            print("fetched", dest.name, dest.stat().st_size)
+            return True
+        if i + 1 < tries:
+            time.sleep(delay)
+            delay = min(delay * 2, 32)
+    return False
 
 
 def _episode_beat_ids(path: Path) -> list[str]:

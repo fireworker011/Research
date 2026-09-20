@@ -836,7 +836,7 @@ def test_stock_unet_never_auto_picks_eros_max(tmp_path):
     payload = erotic_root / EROS_MAX_UNET
     payload.touch()
     payload.write_bytes(b"eros")
-    os.truncate(payload, 1_000_000_001)
+    os.truncate(payload, 20_000_000_001)
     assert resolve_unet(adult, diff, models_root=tmp_path) == EROS_MAX_UNET
     assert ensure_episode_checkpoint(stock_ep, tmp_path) == []
     with pytest.raises(EpisodeError, match="refusing to fetch"):
@@ -845,6 +845,27 @@ def test_stock_unet_never_auto_picks_eros_max(tmp_path):
     link = diff / EROS_MAX_UNET
     assert link.is_symlink() and link.resolve() == (erotic_root / EROS_MAX_UNET).resolve()
     assert pick_stock_fl2va(diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+
+
+def test_eros_checkpoint_fetch_keeps_partial(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    dest = tmp_path / "erotic" / EROS_MAX_UNET
+    dest.parent.mkdir()
+    dest.write_bytes(b"partial")
+    os.truncate(dest, 5_556_846_100)
+
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        part = dest_path.with_name(dest_path.name + ".part")
+        if dest_path.is_file() and dest_path.stat().st_size < min_bytes:
+            dest_path.replace(part)
+        return False
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
+    with pytest.raises(EpisodeError, match="fetch incomplete"):
+        ensure_episode_checkpoint(adult, tmp_path)
+    part = dest.with_name(dest.name + ".part")
+    assert part.is_file() and part.stat().st_size == 5_556_846_100
+    assert not dest.is_file()
 
 
 def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypatch):
