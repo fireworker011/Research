@@ -123,7 +123,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## 霞東フロア あさ（`kasumi-late-desk-adult`）
 
 霞東本体の**別スラッグ・別チャット**。③ / STORY / Qwen 編集にも足さない。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md` を新規チャットに貼る。
-約 45 秒。Colab 4 番で話が分かれる。オフ=後背位・ベロチュー（戦いなし）。オン=横スク戦い＋じゅぼ＋正常位ピン。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）。GPU のつなぎは Colab で選ぶ（迷ったらカット＝T2V。前の最終フレームから続ける／用意した最終フレームへ着くも可）。既定カメラは `side2d`。`action3d` に切替可。プリセット既定は `balance`。じゅぼは物語集 blowjob LoRA（`bl0w_j0b`）。オンのとき Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
+オフ約 53 秒・オン約 48 秒。Colab 4 番で話が分かれる。オフ=じゅぼ口内口移し・後背位中出し・挿入開始から仰向け正常位（戦いなし）。オン=横スク戦い＋じゅぼ＋正常位ピン。失敗は「正常位で動けない」。バトルは参考約12秒の半分（5秒）。オフのななじゅぼと青木中出しは 7.5 秒。竿は 24cm。GPU のつなぎは Colab で選ぶ（迷ったらカット＝T2V。前の最終フレームから続ける／用意した最終フレームへ着くも可）。既定カメラは `side2d`。`action3d` に切替可。プリセット既定は `balance`。じゅぼは物語集 blowjob LoRA（`bl0w_j0b`）。オンのとき Combat は 06 と 10（`prfight2, prfin1`）。UNet は erotic + eros-max。本体・番台は stock。Colab は `EPISODE = "kasumi-late-desk-adult"`（マージ前は `BRANCH=cursor/h3-kasumi-adult-0402`）。霞東 raw は reuse するな。参考 mp4 はモーションにしない。
 
 ## 病棟出口（`hospital-exit-adult`）
 

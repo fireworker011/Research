@@ -676,9 +676,16 @@ def _kasumi_adult_cast(ep):
     assert "C-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
     assert "tote" not in ep["cast"]["mio"]["lock"].lower()
     assert "D-cup" in ep["cast"]["nana"]["lock"] and "futanari" in ep["cast"]["nana"]["lock"]
+    assert "24cm" in ep["cast"]["nana"]["lock"] and "thick human girth" in ep["cast"]["nana"]["lock"]
     assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
+    assert "24cm" in ep["cast"]["aoki"]["lock"] and "corona" in ep["cast"]["aoki"]["lock"]
     assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
+    assert "24cm" in ep["cast"]["kuroki"]["lock"]
+    assert "frenulum" in ep["cast"]["nana"]["lock"]
+    assert "veins along the shaft" in ep["cast"]["aoki"]["lock"]
     assert "unhurried" not in ep["cast"]["kuroki"]["lock"]
+    raw_txt = (KASUMI_ADULT_DIR / "episode.json").read_text(encoding="utf-8")
+    assert "20cm" not in raw_txt
     for c in ep["cast"].values():
         lock = str(c["lock"]).lower()
         assert c["age"] >= 21
@@ -711,7 +718,7 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
         "11-missionary",
         "12-hold",
     ]
-    assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(52.7, abs=1.0)
     assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
     assert all("combat_on" not in b for b in ep["beats"])
     assert ep["beats"][1]["menu"]["selected"] == 2
@@ -728,6 +735,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert "aoki's face stays readable" in doggy_prompt.lower()
     assert "turned down" not in doggy_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(doggy, doggy_prompt)
+    assert doggy["hud"]["hint"] == "□ 口説く"
+    assert "sit-down" not in str(doggy.get("music") or "").lower()
     cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
     cream_prompt = build_beat_prompt(ep, cream)
     assert "prfight2" not in cream_prompt
@@ -735,7 +744,11 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert "full bodies" in cream_prompt.lower()
     assert "aoki's face stays readable" in cream_prompt.lower()
     assert "finishes inside" in cream_prompt.lower() or "white goo" in cream_prompt.lower()
-    _assert_sex_beat_both_pleasure_no_extra_kiss(cream, cream_prompt)
+    assert "orgasm faces" in cream_prompt.lower()
+    assert "french kiss" in cream_prompt.lower()
+    assert "drips" in cream_prompt.lower()
+    assert cream["trim"]["seconds"] == 7.5
+    assert "after aoki sits" not in str(cream.get("place") or "").lower()
     jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
     jupo_prompt = build_beat_prompt(ep, jupo, trigger=merge_trigger("", jupo))
     assert "jupo-jupo" in jupo_prompt.lower()
@@ -744,15 +757,26 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert extra_lora_entries(jupo) == [("blowjob", 0.8), ("mystic", 1.0)]
     assert jupo.get("trigger") == "bl0w_j0b"
     assert jupo_prompt.startswith("bl0w_j0b")
-    assert "keep the lips at the base" in jupo_prompt.lower()
-    assert "nobody pulls off" in jupo_prompt.lower()
+    assert "keep the lips at the base" in jupo_prompt.lower() or "climaxes in" in jupo_prompt.lower()
+    assert "saliva" in jupo_prompt.lower()
+    assert "semen share" in jupo_prompt.lower()
+    assert jupo["trim"]["seconds"] == 7.5
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
     assert "finishes inside" in sex_prompt.lower()
+    assert "stays on her back the whole take" in sex_prompt.lower()
+    assert "sits up" not in sex_prompt.lower() and "sits down" not in sex_prompt.lower()
+    ten = next(b for b in ep["beats"] if b["id"] == "10-kiss")
+    ten_prompt = build_beat_prompt(ep, ten)
+    assert "french kiss" in ten_prompt.lower()
+    assert "stays outside" not in ten_prompt.lower()
+    assert "starts inside" in ten_prompt.lower() or "going into" in ten_prompt.lower()
+    assert ten["hud"]["hint"] == "□ 口説く"
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
     hold_prompt = build_beat_prompt(ep, hold)
     assert "french kiss" in hold_prompt.lower()
+    assert "stays on her back the whole take" in hold_prompt.lower()
     assert hold["voices"][1]["line"] == "ちゅっ"
     for _b, prompt, errs in beat_prompts(ep, trigger=""):
         assert errs == []
@@ -782,11 +806,14 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
         "12-hold",
     ]
     fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
     assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
     assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
     assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
     assert ep["beats"][4]["menu"]["selected"] == 0
     assert ep["beats"][8]["menu"]["selected"] == 0
+    assert fights[0]["hud"]["hint"] == "△ 戦い"
+    assert next(b for b in ep["beats"] if b["id"] == "10-lose")["hud"]["hint"] == "△ 戦い"
     fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
     assert fight_prompt.startswith("prfight2, prfin1")
     assert "doggy" not in fight_prompt.lower()
@@ -807,13 +834,20 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     assert extra_keys(kiss) == []
     assert not kiss.get("trigger")
     assert "bl0w_j0b" not in kiss_prompt.lower()
+    assert kiss["trim"]["seconds"] == 5.0
+    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
+    assert oral["trim"]["seconds"] == 5.0
+    assert "after aoki sits" in str(oral.get("place") or "").lower()
+    assert "semen share" not in oral_prompt.lower()
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
     assert "finishes inside" not in sex_prompt.lower()
+    assert "stays on her back the whole take" in sex_prompt.lower()
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
     hold_prompt = build_beat_prompt(ep, hold)
     assert "french kiss" not in hold_prompt.lower()
+    assert "stays on her back the whole take" in hold_prompt.lower()
     for beat in ep["beats"]:
         still = beat.get("still")
         if still:
