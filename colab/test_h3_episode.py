@@ -1232,6 +1232,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert beat_clip_seconds(ep, cover) == 4.0
     assert duration_ladder(ep, cover) == [4.0]
     assert "lacerations" in cover["action"].lower()
+    assert "shambling" in cover["action"].lower()
+    assert "sways" in cover["action"].lower()
+    assert "chin over the breastbone" in cover["action"].lower()
     kana = next(b for b in ep["beats"] if b["id"] == "09-join")
     kana_prompt = build_beat_prompt(ep, kana)
     _assert_insertion_direction(kana["action"], kana_prompt)
@@ -1280,7 +1283,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(127.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(131.2, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1500,13 +1503,22 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     cover_a = next(b for b in accept["beats"] if b["id"] == "01-cover")
     cover_i = next(b for b in invite["beats"] if b["id"] == "01-cover")
     assert "walks right with her" in cover_a["action"].lower()
+    assert "shambling" in cover_a["action"].lower()
+    assert "sways" in cover_a["action"].lower()
     assert beat_clip_seconds(accept, cover_a) == 4.0
     assert duration_ladder(accept, cover_a) == [4.0]
     assert "lewd wet smiling ecstatic inviting face" in cover_i["action"].lower()
     assert "french kiss" in cover_i["action"].lower()
-    assert beat_clip_seconds(invite, cover_i) == 6.0
-    assert duration_ladder(invite, cover_i) == [6.0]
-    assert cover_i["trim"]["seconds"] == 6.0
+    assert "catches up" in cover_i["action"].lower()
+    assert "cup miki's breasts" in cover_i["action"].lower()
+    assert "stands behind miki" in cover_i["action"].lower()
+    assert "head and chest turn together" in cover_i["action"].lower()
+    assert "chin over the breastbone" in cover_i["action"].lower()
+    assert "90" not in cover_i["action"]
+    assert "180" not in cover_i["action"]
+    assert beat_clip_seconds(invite, cover_i) == 10.0
+    assert duration_ladder(invite, cover_i) == [10.0, 8.0, 6.0]
+    assert cover_i["trim"]["seconds"] == 10.0
 
     doggy = next(b for b in fours["beats"] if b["id"] == "06-doggy")
     assert "planted on the same linoleum marks" in doggy["action"].lower()
