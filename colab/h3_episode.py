@@ -106,6 +106,9 @@ from h3_episode_packs import (
     GIN_MODES,
     GIN_OVERLAY_KEYS,
     HOSPITAL_ENCOUNTERS,
+    INVITE_JUPO_MODES,
+    INVITE_KISS_MODES,
+    INVITE_PARTNER,
     INVITE_POSE_MODES,
     INVITE_POSE_OVERLAY_KEYS,
     PRESET_CANON,
@@ -121,6 +124,8 @@ from h3_episode_packs import (
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
+    canonical_invite_jupo,
+    canonical_invite_kiss,
     canonical_invite_pose,
     canonical_preset,
     canonical_story,
@@ -146,7 +151,8 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 }
 # GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
-MAX_BEATS = 40
+# Full invite composer (kiss+jupo+move+act) + toilet + gin + tsuno is 44 beats.
+MAX_BEATS = 48
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
 STILL_AS = ("first", "last", "both")
@@ -438,13 +444,35 @@ def episode_story(ep: dict[str, Any], override: str | None = None) -> str:
 
 
 def episode_invite_pose(ep: dict[str, Any], override: str | None = None) -> str:
-    """all_fours / m_open / ride. Empty keeps the recommended 四つん這い."""
+    """all_fours / m_open / ride / stand / jupo. Empty keeps the recommended 四つん這い."""
     raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("invite_pose") or "").strip()
     if not raw:
         return ""
     name = canonical_invite_pose(raw)
     if name not in INVITE_POSE_MODES:
         raise EpisodeError(f"render.invite_pose must be one of {list(INVITE_POSE_MODES)}")
+    return name
+
+
+def episode_invite_kiss(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / stand / pin. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("invite_kiss") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_invite_kiss(raw)
+    if name not in INVITE_KISS_MODES:
+        raise EpisodeError(f"render.invite_kiss must be one of {list(INVITE_KISS_MODES)}")
+    return name
+
+
+def episode_invite_jupo(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / on. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("invite_jupo") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_invite_jupo(raw)
+    if name not in INVITE_JUPO_MODES:
+        raise EpisodeError(f"render.invite_jupo must be one of {list(INVITE_JUPO_MODES)}")
     return name
 
 
@@ -1250,14 +1278,38 @@ def _pop_overlay_keys(beat: dict[str, Any], keys: tuple[str, ...]) -> dict[str, 
     return out
 
 
-def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[str, Any]:
-    """Merge invite_pose_* overlays when that encounter is □誘う. Other stories just drop the keys."""
+def apply_invite_pose(
+    ep: dict[str, Any],
+    *,
+    pose: str | None = None,
+    kiss: str | None = None,
+    jupo: str | None = None,
+) -> dict[str, Any]:
+    """Compose invite sex: optional kiss, optional jupo, optional move, then the act.
+
+    Authored invite_pose_* lists stay the act when kiss and jupo are off (default).
+    Stand / jupo-only acts are generated. Prefix clips are generated. Kasumi has no keys.
+    """
     out = copy.deepcopy(ep)
     render = dict(out.get("render") or {})
     if pose not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(pose) or pose
         out["render"] = render
+    if kiss not in (None, ""):
+        render["invite_kiss"] = canonical_invite_kiss(kiss) or kiss
+        out["render"] = render
+    if jupo not in (None, ""):
+        render["invite_jupo"] = canonical_invite_jupo(jupo) or jupo
+        out["render"] = render
     key = episode_invite_pose(out) or "all_fours"
+    kiss_key = episode_invite_kiss(out) or "off"
+    jupo_key = episode_invite_jupo(out) or "off"
+    if key not in INVITE_POSE_MODES:
+        raise EpisodeError(f"render.invite_pose must be one of {list(INVITE_POSE_MODES)}")
+    if kiss_key not in INVITE_KISS_MODES:
+        raise EpisodeError(f"render.invite_kiss must be one of {list(INVITE_KISS_MODES)}")
+    if jupo_key not in INVITE_JUPO_MODES:
+        raise EpisodeError(f"render.invite_jupo must be one of {list(INVITE_JUPO_MODES)}")
     global_story = episode_story(out) or "accept"
     stories = resolve_encounter_stories(out)
     poses = resolve_encounter_poses(out)
@@ -1269,15 +1321,436 @@ def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[st
         enc = str(beat.get("encounter") or "")
         local_story = stories.get(enc, global_story) if enc in HOSPITAL_ENCOUNTERS else global_story
         local_pose = poses.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
+        had_act = any(_is_overlay_payload(beat.get(field)) for field in INVITE_POSE_ROUTE_KEYS)
         field = INVITE_POSE_OVERLAY_KEYS.get(local_pose) if local_story == "invite" else None
         chosen = beat.get(field) if field else None
         body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
-        beats.extend(_expand_overlay(body, chosen))
+        if local_story != "invite" or not had_act:
+            beats.extend(_expand_overlay(body, chosen) if _is_overlay_payload(chosen) else [body])
+            continue
+        composed = _compose_invite_act(
+            body,
+            enc=enc,
+            pose=local_pose,
+            kiss=kiss_key,
+            jupo=jupo_key,
+            chosen=chosen if _is_overlay_payload(chosen) else None,
+        )
+        beats.extend(_expand_overlay(body, composed))
     out["beats"] = beats
     render = dict(out.get("render") or {})
     render["invite_pose"] = key
+    render["invite_kiss"] = kiss_key
+    render["invite_jupo"] = jupo_key
     out["render"] = render
     return out
+
+
+_INVITE_PROFILE = (
+    "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. "
+    "Adults move LEFT or RIGHT. Both adults full body including feet."
+)
+_INVITE_PLEASURE = (
+    "Both look like it feels really good, not blank. Flushed, mouths open, brows knit. "
+    "Small soft female moans from both."
+)
+_INVITE_END = "Both stay fully nude. Brisk real-time. Consensual adult game beat"
+
+
+def _invite_partner(enc: str) -> dict[str, str]:
+    spec = INVITE_PARTNER.get(enc) or {}
+    who = str(spec.get("who") or enc.title())
+    shaft = str(spec.get("shaft") or "24cm")
+    look = str(spec.get("look") or f"erect {shaft}")
+    return {"who": who, "shaft": shaft, "look": look, "tall": str(spec.get("tall") or "")}
+
+
+def _invite_opt_id(base: str, kind: str) -> str:
+    bid = f"{base}-{kind}"
+    if not BEAT_ID_RE.match(bid):
+        raise EpisodeError(f"invite composer id too long: {bid}")
+    return bid
+
+
+def _invite_voices(who: str, lines: tuple[tuple[str, str], ...]) -> list[dict[str, str]]:
+    return [{"who": speaker, "line": line} for speaker, line in lines]
+
+
+def _invite_skip_jupo(pose: str) -> bool:
+    spec = INVITE_POSE_MODES.get(pose) or {}
+    return bool(spec.get("has_jupo"))
+
+
+def _invite_hud() -> dict[str, Any]:
+    return {
+        "mission": "出口に出る",
+        "mission_keyword": "出口",
+        "health": 0.9,
+        "money": "¥0",
+        "objective_bearing": 0,
+        "complete": False,
+        "hint": "□ 誘う",
+        "stamina": 0.3,
+        "heat": 3,
+        "objective_distance": 0.2,
+        "icons_active": [],
+    }
+
+
+def _invite_clip(
+    *,
+    bid: str,
+    camera: str,
+    action: str,
+    voices: list[dict[str, str]],
+    seconds: float = 10.0,
+    extra: list[str] | None = None,
+    trigger: str = "",
+    cast: list[str] | None = None,
+    connect: str = "",
+    props: list[str] | None = None,
+    sfx: str = "",
+    music: str = "",
+) -> dict[str, Any]:
+    short = seconds <= 4.0
+    out: dict[str, Any] = {
+        "id": bid,
+        "trim": {"start": 0, "seconds": seconds},
+        "camera": f"{_INVITE_PROFILE} {camera}",
+        "action": action,
+        "voices": voices,
+        "hud": _invite_hud(),
+        "extra_loras": list(extra) if extra is not None else ([] if short else ["mystic"]),
+        "trigger": trigger,
+        "still": "",
+        "sfx": sfx or ("Footsteps on linoleum, HVAC" if short else "HVAC"),
+        "music": music or ("Bass holds" if short else "A short synth stab, then the bass"),
+    }
+    if cast is not None:
+        out["cast"] = cast
+    if connect:
+        out["source"] = "t2v"
+        out["connect"] = connect
+    if props is not None:
+        out["props"] = props
+    return out
+
+
+def _compose_invite_act(
+    body: dict[str, Any],
+    *,
+    enc: str,
+    pose: str,
+    kiss: str,
+    jupo: str,
+    chosen: Any,
+) -> list[dict[str, Any]]:
+    partner = _invite_partner(enc)
+    base = str(body.get("id") or f"03-{enc}")
+    aya_cast = ["aya", enc]
+    stages: list[dict[str, Any]] = []
+    from_state = "stand"
+    if kiss == "stand":
+        stages.append(_invite_kiss_stand(base, partner, aya_cast))
+        from_state = "stand_kiss"
+    elif kiss == "pin":
+        stages.append(_invite_kiss_pin(base, partner, aya_cast))
+        from_state = "pin"
+    elif kiss != "off":
+        raise EpisodeError(f"unknown invite kiss {kiss}")
+    add_jupo = jupo == "on" and not _invite_skip_jupo(pose)
+    if jupo not in INVITE_JUPO_MODES:
+        raise EpisodeError(f"unknown invite jupo {jupo}")
+    if add_jupo:
+        supine = from_state == "pin"
+        stages.append(_invite_jupo_clip(base, partner, aya_cast, supine=supine))
+        from_state = "jupo_pin" if supine else "jupo_stand"
+    if stages:
+        stages.append(_invite_move_clip(base, partner, aya_cast, frm=from_state, pose=pose))
+    if _is_overlay_payload(chosen):
+        act = list(chosen) if isinstance(chosen, list) else [chosen]
+    elif pose == "stand":
+        act = _invite_act_stand(base, partner, aya_cast)
+    elif pose == "jupo":
+        act = _invite_act_jupo(base, partner, aya_cast)
+    else:
+        raise EpisodeError(f"invite pose {pose} has no overlay on {base}")
+    return stages + act
+
+
+def _invite_kiss_stand(base: str, partner: dict[str, str], cast: list[str]) -> dict[str, Any]:
+    who, look = partner["who"], partner["look"]
+    tall = (
+        f" {who} STOOPS so her mouth is at Aya's mouth height, head ducked under the tubes."
+        if partner.get("tall")
+        else " Same eye level."
+    )
+    return _invite_clip(
+        bid=_invite_opt_id(base, "opt-kiss"),
+        cast=cast,
+        camera=f"Aya and {who} standing, mouths joined.{tall} Full bodies including feet.",
+        action=(
+            f"Aya STANDS facing {who}, fully nude, a lewd wet smiling ecstatic inviting face. "
+            f"Nude {who}, {look}, STANDS with Aya.{tall} "
+            f"Aya PUTS her mouth onto {who}'s mouth: a deep wet french kiss. Mouths stay joined. "
+            f"They stay on this same linoleum spot. They do not walk. {_INVITE_PLEASURE} {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "ん"), (who.lower(), "んっ"), ("aya", "ちゅっ"))),
+        sfx="A wet kiss, HVAC",
+    )
+
+
+def _invite_kiss_pin(base: str, partner: dict[str, str], cast: list[str]) -> dict[str, Any]:
+    who, look = partner["who"], partner["look"]
+    tall = (
+        f" {who} is much taller; Aya looks small sitting on {who}'s torso. {who}'s head STOOPS down to Aya's mouth."
+        if partner.get("tall")
+        else ""
+    )
+    return _invite_clip(
+        bid=_invite_opt_id(base, "opt-kiss"),
+        cast=cast,
+        camera=f"Aya on top of {who} on the linoleum, mouths joined. Full bodies including feet.",
+        action=(
+            f"Aya PUSHES {who} BACKWARD AND DOWN onto the cracked linoleum and STAYS ON TOP, Aya facing {who}'s face. "
+            f"Nude {who}, {look}, STAYS ON HER BACK. Aya is on top.{tall} "
+            f"Aya PUTS her mouth onto {who}'s mouth: a deep wet french kiss, same eye level. Mouths stay joined. "
+            f"They stay on this same linoleum spot. {_INVITE_PLEASURE} {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "んっ"), (who.lower(), "んっ"), ("aya", "ちゅっ"))),
+        sfx="A wet kiss, HVAC",
+    )
+
+
+def _invite_jupo_clip(base: str, partner: dict[str, str], cast: list[str], *, supine: bool) -> dict[str, Any]:
+    who, shaft, look = partner["who"], partner["shaft"], partner["look"]
+    if supine:
+        camera = (
+            f"{who} on her back, Aya kneeling between the open legs, mouth on the {shaft}. "
+            "Full bodies including feet."
+        )
+        action = (
+            f"They start with {who} already on her back on the cracked linoleum, {look}. "
+            f"Aya SLIDES DOWN between {who}'s open legs and DROPS onto her knees. "
+            f"{who} STAYS ON HER BACK. The erect {shaft} points UP. Both hands stay on {who}'s hips, not the shaft. "
+            f"Aya's head MOVES FORWARD onto the erect {shaft} until the lips reach the BASE. "
+            "Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. "
+            "Aya's head bobs: slightly AWAY then FORWARD back to the BASE. KEEP the lips at the BASE. "
+            f"{who}'s hips HOLD STILL so the {shaft} stays UP into the mouth. "
+            f"{_INVITE_PLEASURE} Last frame: Aya still kneeling, lips at the BASE. {_INVITE_END}"
+        )
+    else:
+        camera = (
+            f"{who} standing, Aya kneeling at the hips on the {shaft}. Full bodies including feet."
+        )
+        action = (
+            f"{who} STANDS, {look}. Aya DROPS DOWN onto her knees in front of {who}. "
+            f"{who} STAYS STANDING. Both hands stay on {who}'s hips, not the shaft. "
+            f"Aya's head MOVES FORWARD onto the erect {shaft} until the lips reach the BASE. "
+            "Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. "
+            "Aya's head bobs: slightly AWAY then FORWARD back to the BASE. KEEP the lips at the BASE. "
+            f"{who}'s hips PRESS FORWARD so the {shaft} stays UP into the mouth. "
+            f"{_INVITE_PLEASURE} Last frame: Aya still kneeling, lips at the BASE. {_INVITE_END}"
+        )
+    return _invite_clip(
+        bid=_invite_opt_id(base, "opt-jupo"),
+        cast=cast,
+        camera=camera,
+        action=action,
+        voices=_invite_voices(who, (("aya", "じゅぽっ"), (who.lower(), "はぁっ"), ("aya", "んっ"))),
+        extra=["blowjob", "mystic"],
+        trigger=BLOWJOB_TRIGGER,
+        sfx="Knees on linoleum, wet jupo-jupo mouth, HVAC",
+    )
+
+
+def _invite_move_clip(
+    base: str,
+    partner: dict[str, str],
+    cast: list[str],
+    *,
+    frm: str,
+    pose: str,
+) -> dict[str, Any]:
+    who, shaft, look = partner["who"], partner["shaft"], partner["look"]
+    tall = (
+        f" {who} STOOPS so hips can align at Aya's height, head ducked under the tubes, torso towers."
+        if partner.get("tall")
+        else ""
+    )
+    start = {
+        "stand_kiss": (
+            f"They start standing after the kiss, mouths leaving. Aya and nude {who}, {look}, are both still standing."
+        ),
+        "pin": (
+            f"They start with Aya still on top of {who} on the linoleum after the kiss. Nude {who}, {look}, is on her back."
+        ),
+        "jupo_stand": (
+            f"They start after the jupo. Aya is still kneeling in front of standing {who}, {look}, lips leaving the {shaft}."
+        ),
+        "jupo_pin": (
+            f"They start after the jupo. {who} is still on her back, {look}. Aya is still kneeling at the {shaft}, lips leaving."
+        ),
+    }.get(frm)
+    if start is None:
+        raise EpisodeError(f"unknown invite move from-state {frm}")
+    land, camera = _invite_move_land(pose, who, shaft, look, tall)
+    return _invite_clip(
+        bid=_invite_opt_id(base, "opt-move"),
+        cast=cast,
+        camera=camera,
+        action=(
+            f"{start}{tall} {land} No join yet. The shaft stays outside. They stay on this same linoleum spot. "
+            f"{_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "んっ"), (who.lower(), "はぁっ"), ("aya", "ん"))),
+        extra=["mystic"],
+        sfx="Bodies on linoleum, HVAC",
+    )
+
+
+def _invite_move_land(pose: str, who: str, shaft: str, look: str, tall: str) -> tuple[str, str]:
+    if pose == "all_fours":
+        return (
+            f"Aya TURNS to face RIGHT, DROPS HERSELF to all fours on the cracked linoleum, knees apart, ass toward {who}. "
+            f"{who} KNEELS behind her toward the LEFT, the erect {shaft} aimed at Aya's pussy not the air. "
+            "Palms and knees plant. Last frame: Aya on all fours, shaft aimed, not in yet.",
+            f"Aya dropping to all fours facing RIGHT, {who} moving behind her toward the LEFT. Full bodies including feet.",
+        )
+    if pose == "m_open":
+        return (
+            f"Aya LIES BACK on the cracked linoleum, knees pulled up and out in an M-shape, pussy toward {who}. "
+            f"{who} KNEELS between Aya's open legs, the erect {shaft} pointing DOWN AND FORWARD at Aya's pussy, not the belly. "
+            "Last frame: Aya on her back, shaft aimed, not in yet.",
+            f"Aya lying back M-shape, {who} kneeling between her legs. Full bodies including feet.",
+        )
+    if pose == "ride":
+        return (
+            f"{who} STANDS, {look}. Aya DROPS ONTO her knees in front of {who} if she was not already kneeling. "
+            f"Both hands go to {who}'s hips, not the shaft. Last frame: Aya kneeling at the {shaft}, not sucking yet.",
+            f"{who} standing, Aya kneeling at the hips. Full bodies including feet.",
+        )
+    if pose == "stand":
+        return (
+            f"Aya STANDS facing RIGHT, PALMS PLANT on the wall at the RIGHT edge, knees slightly bent. Aya looks back. "
+            f"{who} STANDS BEHIND Aya toward the LEFT, facing RIGHT, the erect {shaft} aimed at Aya's pussy.{tall} "
+            "Last frame: both standing, shaft aimed, not in yet.",
+            f"Aya standing facing RIGHT, palms on the wall, {who} standing behind her toward the LEFT. Full bodies including feet.",
+        )
+    if pose == "jupo":
+        return (
+            f"{who} STANDS, {look}. Aya DROPS ONTO her knees in front of {who} if she was not already kneeling. "
+            f"Both hands go to {who}'s hips, not the shaft. Last frame: Aya kneeling, mouth near the {shaft}, not on it yet.",
+            f"{who} standing, Aya kneeling at the hips. Full bodies including feet.",
+        )
+    raise EpisodeError(f"unknown invite move landing {pose}")
+
+
+def _invite_act_stand(base: str, partner: dict[str, str], cast: list[str]) -> list[dict[str, Any]]:
+    who, shaft, look = partner["who"], partner["shaft"], partner["look"]
+    tall = (
+        f" {who} STOOPS behind Aya so the hips align at Aya's standing height, head ducked under the tubes, torso towers."
+        if partner.get("tall")
+        else ""
+    )
+    insert = _invite_clip(
+        bid=base,
+        cast=cast,
+        camera=(
+            f"Aya standing facing RIGHT, palms on the wall at the RIGHT edge, {who} standing behind her toward the LEFT. "
+            "Full bodies including feet."
+        ),
+        action=(
+            f"Aya STANDS facing RIGHT, PALMS PLANTED on the wall at the RIGHT edge, knees slightly bent, fully nude, looking back, eager. "
+            f"Aya stays standing. Nude {who}, {look}, STANDS BEHIND Aya toward the LEFT, facing RIGHT, the erect {shaft} aimed at Aya's pussy.{tall} "
+            f"Aya HOLDS that standing height so the pussy stays on the incoming shaft. {who}'s hands GRIP Aya's waist. "
+            f"{who}'s hips THRUST FORWARD toward Aya's head so the flushed glans SPREADS the pussy lips and the {shaft} shaft "
+            "TRAVELS INTO the pussy until the BASE meets Aya's ass. KEEP the shaft at the BASE. They HOLD still joined at the BASE. "
+            f"This take is the seating of the shaft to the BASE. Aya stays standing, palms on the wall. {_INVITE_PLEASURE} "
+            f"{who}'s hips moving. Hands stay at Aya's hips, not the shaft. Last frame: still joined standing, shaft at the BASE inside. {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "んっ"), (who.lower(), "はぁっ"), ("aya", "あんっ"))),
+        sfx="Feet on linoleum, HVAC",
+    )
+    peak = _invite_clip(
+        bid=f"{base}-peak",
+        cast=cast,
+        camera=(
+            f"Aya standing facing RIGHT, palms on the wall, already joined at the BASE from behind. Full bodies including feet."
+        ),
+        action=(
+            f"They start already joined standing. Aya STANDS facing RIGHT, PALMS PLANTED on the wall at the RIGHT edge. Aya stays standing. "
+            f"{who} STANDS BEHIND Aya, {look}, the erect {shaft} already IN the pussy at the BASE.{tall} "
+            f"{who}'s hips KEEP that snappy real-time in-and-out: each THRUST FORWARD drives the {shaft} INTO the pussy to the BASE. "
+            f"Aya HOLDS that standing height. {_INVITE_PLEASURE} {who}'s hips moving. "
+            f"{who} finishes INSIDE Aya: hips press forward and stay; heavy-oil-thick WHITE goo fills the pussy. "
+            "Aya climaxes: wrecked pleasured orgasm face, body trembling with pleasure, drool dripping from the open mouth. "
+            f"Then {who}'s hips PULL BACK so the shaft SLIDES OUT. WHITE goo DRIPS DOWN. {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "あんっ"), (who.lower(), "くっ"), ("aya", "はぁっ"))),
+        sfx="Feet on linoleum, HVAC",
+    )
+    walk = _invite_walk(base, who)
+    return [insert, peak, walk]
+
+
+def _invite_act_jupo(base: str, partner: dict[str, str], cast: list[str]) -> list[dict[str, Any]]:
+    who, shaft, look = partner["who"], partner["shaft"], partner["look"]
+    insert = _invite_clip(
+        bid=base,
+        cast=cast,
+        camera=f"{who} standing, Aya already kneeling at the hips on the {shaft}. Full bodies including feet.",
+        action=(
+            f"{who} STANDS, {look}. Aya is already kneeling in front of {who}. Aya's face is a lewd wet smiling ecstatic inviting face. "
+            f"Both hands stay on {who}'s hips, not the shaft. Aya's head MOVES FORWARD onto the erect {shaft} until the lips reach the BASE. "
+            "Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. "
+            "Aya's head bobs: slightly AWAY then FORWARD back to the BASE. KEEP the lips at the BASE. "
+            f"{who}'s hips PRESS FORWARD so the {shaft} stays UP into the mouth. {_INVITE_PLEASURE} "
+            f"This take is the seating of the shaft to the BASE in the mouth. Last frame: lips at the BASE. {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "じゅぽっ"), (who.lower(), "はぁっ"), ("aya", "んっ"))),
+        extra=["blowjob", "mystic"],
+        trigger=BLOWJOB_TRIGGER,
+        sfx="Knees on linoleum, wet jupo-jupo mouth, HVAC",
+    )
+    peak = _invite_clip(
+        bid=f"{base}-peak",
+        cast=cast,
+        camera=f"{who} standing, Aya kneeling, lips already at the BASE on the {shaft}. Full bodies including feet.",
+        action=(
+            f"They start already at the BASE. Aya is already kneeling in front of {who}, {look}, lips a tight wet ring at the BASE. "
+            "Deep snappy jupo-jupo continues: Aya's head bobs slightly AWAY then FORWARD back to the BASE. KEEP the lips at the BASE. "
+            f"{who}'s hips PRESS FORWARD so the {shaft} stays UP into the mouth. {_INVITE_PLEASURE} "
+            f"{who} finishes IN Aya's mouth: hips press forward and stay; heavy-oil-thick extra-viscous WHITE goo fills the mouth. "
+            "Aya climaxes: wrecked pleasured orgasm face, body trembling with pleasure. "
+            f"Then Aya's head MOVES AWAY so the lips leave the {shaft}. WHITE goo stays on the tongue. {_INVITE_END}"
+        ),
+        voices=_invite_voices(who, (("aya", "じゅぽっ"), (who.lower(), "くっ"), ("aya", "んっ"))),
+        extra=["blowjob", "mystic"],
+        trigger=BLOWJOB_TRIGGER,
+        sfx="Knees on linoleum, wet jupo-jupo mouth, HVAC",
+    )
+    walk = _invite_walk(base, who)
+    return [insert, peak, walk]
+
+
+def _invite_walk(base: str, who: str) -> dict[str, Any]:
+    return _invite_clip(
+        bid=f"{base}-walk",
+        cast=["aya"],
+        seconds=4.0,
+        connect="end",
+        extra=[],
+        trigger="",
+        props=["rail"],
+        camera="Aya walking RIGHT alone, full body including feet. Nobody else in frame.",
+        action=(
+            f"Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. "
+            f"{who} is gone from frame one. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body. "
+            "Motion starts at frame one. Brisk real-time. Consensual adult game beat"
+        ),
+        voices=_invite_voices(who, (("aya", "ん"),)),
+    )
 
 
 def apply_toilet_route(ep: dict[str, Any], *, toilet: str | None = None) -> dict[str, Any]:
@@ -1409,15 +1882,17 @@ def resolve_episode_options(
     *,
     story: str | None = None,
     pose: str | None = None,
+    kiss: str | None = None,
+    jupo: str | None = None,
     toilet: str | None = None,
     gin: str | None = None,
     tsuno: str | None = None,
     appear: str | dict[str, Any] | None = None,
     scenes: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Story + invite pose + toilet + optional events + appear + per-scene, without connect/combat Colab wiring."""
+    """Story + invite composer + toilet + optional events + appear + per-scene, without connect/combat Colab wiring."""
     out = apply_story_route(ep, story=story, scenes=scenes) if _has_story_overlays(ep) else copy.deepcopy(ep)
-    out = apply_invite_pose(out, pose=pose)
+    out = apply_invite_pose(out, pose=pose, kiss=kiss, jupo=jupo)
     out = apply_toilet_route(out, toilet=toilet)
     out = apply_optional_events(out, gin=gin, tsuno=tsuno)
     return apply_appear_route(out, appear=appear)
@@ -1433,6 +1908,8 @@ def prepare_episode(
     combat_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
+    invite_kiss_override: str | None = None,
+    invite_jupo_override: str | None = None,
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
@@ -1457,6 +1934,10 @@ def prepare_episode(
         render["combat"] = canonical_combat(combat_override) or combat_override
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
+    if invite_kiss_override not in (None, ""):
+        render["invite_kiss"] = canonical_invite_kiss(invite_kiss_override) or invite_kiss_override
+    if invite_jupo_override not in (None, ""):
+        render["invite_jupo"] = canonical_invite_jupo(invite_jupo_override) or invite_jupo_override
     if toilet_override not in (None, ""):
         render["toilet"] = canonical_toilet(toilet_override) or toilet_override
     if gin_override not in (None, ""):
@@ -1472,7 +1953,12 @@ def prepare_episode(
         out = apply_story_route(out, story=story_override, scenes=scenes_override)
     else:
         out = apply_combat_route(out)
-    out = apply_invite_pose(out, pose=invite_pose_override)
+    out = apply_invite_pose(
+        out,
+        pose=invite_pose_override,
+        kiss=invite_kiss_override,
+        jupo=invite_jupo_override,
+    )
     out = apply_toilet_route(out, toilet=toilet_override)
     out = apply_optional_events(out, gin=gin_override, tsuno=tsuno_override)
     out = apply_appear_route(out, appear=appear_override)
@@ -1882,6 +2368,19 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         _check("gin-invite-doggy", story="invite", gin="invite_doggy")
         _check("tsuno-accept", story="accept", tsuno="accept_stand")
         _check("tsuno-invite", story="invite", tsuno="invite_stand")
+        _check("invite-kiss-stand", story="invite", kiss="stand")
+        _check("invite-kiss-pin", story="invite", kiss="pin")
+        _check("invite-jupo-on", story="invite", jupo="on")
+        _check(
+            "invite-full-composer",
+            story="invite",
+            pose="stand",
+            kiss="pin",
+            jupo="on",
+            toilet="tentacle",
+            gin="taken",
+            tsuno="invite_stand",
+        )
         return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
@@ -1938,6 +2437,21 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         story_key = canonical_story(story)
         if story_key not in STORY_MODES:
             errs.append(f"render.story must be one of {list(STORY_MODES)}")
+    pose = str(render.get("invite_pose") or "").strip()
+    if pose:
+        pose_key = canonical_invite_pose(pose)
+        if pose_key not in INVITE_POSE_MODES:
+            errs.append(f"render.invite_pose must be one of {list(INVITE_POSE_MODES)}")
+    kiss = str(render.get("invite_kiss") or "").strip()
+    if kiss:
+        kiss_key = canonical_invite_kiss(kiss)
+        if kiss_key not in INVITE_KISS_MODES:
+            errs.append(f"render.invite_kiss must be one of {list(INVITE_KISS_MODES)}")
+    jupo = str(render.get("invite_jupo") or "").strip()
+    if jupo:
+        jupo_key = canonical_invite_jupo(jupo)
+        if jupo_key not in INVITE_JUPO_MODES:
+            errs.append(f"render.invite_jupo must be one of {list(INVITE_JUPO_MODES)}")
     gin = str(render.get("gin") or "").strip()
     if gin:
         gin_key = canonical_gin(gin)
@@ -3376,6 +3890,8 @@ def run_episode(
     combat_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
+    invite_kiss_override: str | None = None,
+    invite_jupo_override: str | None = None,
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
@@ -3398,6 +3914,8 @@ def run_episode(
         combat_override=combat_override,
         story_override=story_override,
         invite_pose_override=invite_pose_override,
+        invite_kiss_override=invite_kiss_override,
+        invite_jupo_override=invite_jupo_override,
         toilet_override=toilet_override,
         gin_override=gin_override,
         tsuno_override=tsuno_override,
@@ -3413,6 +3931,8 @@ def run_episode(
             combat=episode_combat(ep),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
+            invite_kiss=episode_invite_kiss(ep),
+            invite_jupo=episode_invite_jupo(ep),
             toilet=episode_toilet(ep),
             gin=episode_gin(ep),
             tsuno=episode_tsuno(ep),
@@ -3657,7 +4177,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--appear LIST] [--scenes LIST]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--invite-kiss MODE] [--invite-jupo MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--appear LIST] [--scenes LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -3668,7 +4188,9 @@ def _usage() -> str:
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
         "  --combat off|on（迷ったら off。on はハイメモリ専用）\n"
         "  --story accept|invite|evade|fight_win|fight_lose（病棟の構成。迷ったら accept）\n"
-        "  --invite-pose all_fours|m_open|ride（病棟の誘うポーズ。迷ったら all_fours）\n"
+        "  --invite-pose all_fours|m_open|ride|stand|jupo（病棟の誘う行為。迷ったら all_fours）\n"
+        "  --invite-kiss off|stand|pin（病棟の誘うキス。迷ったら off）\n"
+        "  --invite-jupo off|on（病棟の誘うじゅぼ段。迷ったら off。騎乗とじゅぼのみには重ねない）\n"
         "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
         "  --gin off|taken|fuck|invite_doggy（病棟の灰色オプション。迷ったら off）\n"
         "  --tsuno off|accept_stand|invite_stand（病棟の角オプション。迷ったら off）\n"
@@ -3699,6 +4221,8 @@ def main(argv: list[str] | None = None) -> int:
     combat = None
     story = None
     invite_pose = None
+    invite_kiss = None
+    invite_jupo = None
     toilet = None
     gin = None
     tsuno = None
@@ -3718,6 +4242,10 @@ def main(argv: list[str] | None = None) -> int:
         story = opts[opts.index("--story") + 1]
     if "--invite-pose" in opts:
         invite_pose = opts[opts.index("--invite-pose") + 1]
+    if "--invite-kiss" in opts:
+        invite_kiss = opts[opts.index("--invite-kiss") + 1]
+    if "--invite-jupo" in opts:
+        invite_jupo = opts[opts.index("--invite-jupo") + 1]
     if "--toilet" in opts:
         toilet = opts[opts.index("--toilet") + 1]
     if "--gin" in opts:
@@ -3738,6 +4266,8 @@ def main(argv: list[str] | None = None) -> int:
         combat_override=combat,
         story_override=story,
         invite_pose_override=invite_pose,
+        invite_kiss_override=invite_kiss,
+        invite_jupo_override=invite_jupo,
         toilet_override=toilet,
         gin_override=gin,
         tsuno_override=tsuno,

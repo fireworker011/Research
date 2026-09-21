@@ -30,6 +30,10 @@ from h3_episode_packs import (  # noqa: E402
     END_CONNECT_MODES,
     GIN_ALIASES,
     GIN_MODES,
+    INVITE_JUPO_ALIASES,
+    INVITE_JUPO_MODES,
+    INVITE_KISS_ALIASES,
+    INVITE_KISS_MODES,
     INVITE_POSE_ALIASES,
     INVITE_POSE_MODES,
     STORY_ALIASES,
@@ -44,7 +48,7 @@ DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", end_connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", end_connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", invite_kiss: str = "", invite_jupo: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -61,6 +65,8 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE_COMBAT'] = {combat!r}\n"
         f"os.environ['H3_EPISODE_STORY'] = {story!r}\n"
         f"os.environ['H3_EPISODE_INVITE_POSE'] = {invite_pose!r}\n"
+        f"os.environ['H3_EPISODE_INVITE_KISS'] = {invite_kiss!r}\n"
+        f"os.environ['H3_EPISODE_INVITE_JUPO'] = {invite_jupo!r}\n"
         f"os.environ['H3_EPISODE_TOILET'] = {toilet!r}\n"
         f"os.environ['H3_EPISODE_GIN'] = {gin!r}\n"
         f"os.environ['H3_EPISODE_TSUNO'] = {tsuno!r}\n"
@@ -97,7 +103,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--end-connect", default="", choices=["", *END_CONNECT_MODES, *END_CONNECT_ALIASES], help="シーン終わり: t2v=カット / chain=次へ続ける / follow=1番に従う（迷ったら t2v）")
     p.add_argument("--combat", default="", choices=["", *COMBAT_MODES, *COMBAT_ALIASES], help="格闘LoRA: off / on（on はハイメモリ専用。迷ったら off）")
     p.add_argument("--story", default="", choices=["", *STORY_MODES, *STORY_ALIASES], help="構成: accept / invite / evade / fight_win / fight_lose（病棟。迷ったら accept）")
-    p.add_argument("--invite-pose", default="", choices=["", *INVITE_POSE_MODES, *INVITE_POSE_ALIASES], help="誘うポーズ: all_fours / m_open / ride（病棟。迷ったら all_fours）")
+    p.add_argument("--invite-pose", default="", choices=["", *INVITE_POSE_MODES, *INVITE_POSE_ALIASES], help="誘う行為: all_fours / m_open / ride / stand / jupo（病棟。迷ったら all_fours）")
+    p.add_argument("--invite-kiss", default="", choices=["", *INVITE_KISS_MODES, *INVITE_KISS_ALIASES], help="誘うキス: off / stand / pin（病棟。迷ったら off）")
+    p.add_argument("--invite-jupo", default="", choices=["", *INVITE_JUPO_MODES, *INVITE_JUPO_ALIASES], help="誘うじゅぼ: off / on（病棟。迷ったら off。騎乗とじゅぼのみには重ねない）")
     p.add_argument("--toilet", default="", choices=["", *TOILET_MODES, *TOILET_ALIASES], help="道中トイレ: off / pee / masturbate / tentacle（病棟。迷ったら off）")
     p.add_argument("--gin", default="", choices=["", *GIN_MODES, *GIN_ALIASES], help="灰色オプション: off / taken / fuck / invite_doggy（病棟。迷ったら off）")
     p.add_argument("--tsuno", default="", choices=["", *TSUNO_MODES, *TSUNO_ALIASES], help="角オプション: off / accept_stand / invite_stand（病棟。迷ったら off）")
@@ -125,6 +133,8 @@ def main(argv: list[str] | None = None) -> int:
         combat=args.combat,
         story=args.story,
         invite_pose=getattr(args, "invite_pose", ""),
+        invite_kiss=getattr(args, "invite_kiss", ""),
+        invite_jupo=getattr(args, "invite_jupo", ""),
         toilet=args.toilet,
         gin=args.gin,
         tsuno=args.tsuno,

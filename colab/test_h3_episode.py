@@ -251,6 +251,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_COMBAT" in src
     assert "H3_EPISODE_STORY" in src
     assert "H3_EPISODE_INVITE_POSE" in src
+    assert "H3_EPISODE_INVITE_KISS" in src
+    assert "H3_EPISODE_INVITE_JUPO" in src
     assert "H3_EPISODE_TOILET" in src
     assert "H3_EPISODE_GIN" in src
     assert "H3_EPISODE_TSUNO" in src
@@ -262,7 +264,11 @@ def test_notebook_is_one_cell_and_isolated():
     assert "□誘う（淫欲・失敗）" in src
     assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
     assert 'INVITE_POSE = "四つん這い股広げ（迷ったらこれ）"' in src
+    assert 'INVITE_KISS = "ベロチュー無し（迷ったらこれ）"' in src
+    assert 'INVITE_JUPO = "じゅぼ無し（迷ったらこれ）"' in src
     assert "ベロチュー→じゅぼ→騎乗位" in src
+    assert "壁に手（立ったまま後ろから）" in src
+    assert "じゅぼのみ" in src
     assert 'TOILET = "トイレに行かない（迷ったらこれ）"' in src
     assert 'GIN = "灰色・出ない（迷ったらこれ）"' in src
     assert 'TSUNO = "角・出ない（迷ったらこれ）"' in src
@@ -275,7 +281,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
     assert "迷ったら" in md
     assert "5. 構成" in md
-    assert "6. 誘うポーズ" in md
+    assert "6. 誘う" in md
+    assert "6. 誘うポーズ" not in md
     assert "7. トイレ" in md
     assert "8. 灰色" in md
     assert "9. 角" in md
@@ -1227,7 +1234,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(127.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(119.25, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1450,10 +1457,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert beat_clip_seconds(accept, cover_a) == 4.0
     assert duration_ladder(accept, cover_a) == [4.0]
     assert "lewd wet smiling ecstatic inviting face" in cover_i["action"].lower()
-    assert "french kiss" in cover_i["action"].lower()
-    assert beat_clip_seconds(invite, cover_i) == 6.0
-    assert duration_ladder(invite, cover_i) == [6.0]
-    assert cover_i["trim"]["seconds"] == 6.0
+    assert "french kiss" not in cover_i["action"].lower()
+    assert beat_clip_seconds(invite, cover_i) == 4.0
+    assert duration_ladder(invite, cover_i) == [4.0]
+    assert cover_i["trim"]["seconds"] == 4.0
 
     doggy = next(b for b in fours["beats"] if b["id"] == "06-doggy")
     assert "planted on the same linoleum marks" in doggy["action"].lower()
@@ -1464,16 +1471,16 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "m-shape" in nine["action"].lower()
     assert "french kiss" not in nine["action"].lower()
     seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
-    assert "french kiss" in seven["action"].lower()
+    assert "french kiss" not in seven["action"].lower()
     assert "lewd wet smiling ecstatic inviting face" in seven["action"].lower()
 
     ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
     ten_low = ten["action"].lower()
     assert "stops in front of her" in ten_low
     assert "mouth is at aya's mouth height" in ten_low
-    assert "french kiss" in ten_low
+    assert "french kiss" not in ten_low
     assert "walks forward toward shino" not in ten_low
-    assert beat_clip_seconds(invite, ten) == 6.0
+    assert beat_clip_seconds(invite, ten) == 4.0
 
     twelve = next(b for b in invite["beats"] if b["id"] == "12-exit")
     twelve_low = action_blob(invite, "12-exit")
@@ -1519,6 +1526,124 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "blood" not in [h.lower() for h in forbidden_hits(miki_p)]
     _assert_hospital_bans(accept)
     _assert_hospital_bans(invite)
+
+
+def test_hospital_invite_composer_keeps_default_and_adds_prefix():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    default = prepare_episode(raw, story_override="誘う")
+    default_ids = [b["id"] for b in default["beats"]]
+    assert default["render"]["invite_kiss"] == "off"
+    assert default["render"]["invite_jupo"] == "off"
+    assert default["render"]["invite_pose"] == "all_fours"
+    assert not any("-opt-" in bid for bid in default_ids)
+    cover = next(b for b in default["beats"] if b["id"] == "01-cover")
+    assert "french kiss" not in cover["action"].lower()
+    assert validate_episode(default, root=HOSPITAL_DIR) == []
+    _assert_hospital_bans(default)
+
+    stand_kiss = prepare_episode(raw, story_override="誘う", invite_kiss_override="立ちチュー")
+    kiss_ids = [b["id"] for b in stand_kiss["beats"]]
+    assert "03-kiss-opt-kiss" in kiss_ids
+    assert "03-kiss-opt-move" in kiss_ids
+    assert "03-kiss-opt-jupo" not in kiss_ids
+    cover_k = next(b for b in stand_kiss["beats"] if b["id"] == "01-cover")
+    kiss = next(b for b in stand_kiss["beats"] if b["id"] == "03-kiss-opt-kiss")
+    assert "french kiss" not in cover_k["action"].lower()
+    assert "french kiss" in kiss["action"].lower()
+    assert "stands" in kiss["action"].lower()
+    assert "pushes" not in kiss["action"].lower()
+    assert "jupo-jupo" not in kiss["sfx"].lower()
+    assert extra_keys(kiss) == ["mystic"]
+    shino_kiss = next(b for b in stand_kiss["beats"] if b["id"] == "12-exit-opt-kiss")
+    assert "stoops" in shino_kiss["action"].lower()
+    assert kiss_ids.index("03-kiss-opt-kiss") < kiss_ids.index("03-kiss-opt-move") < kiss_ids.index("03-kiss")
+    assert validate_episode(stand_kiss, root=HOSPITAL_DIR) == []
+    _assert_hospital_bans(stand_kiss)
+
+    fours_jupo = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_jupo_override="じゅぼする",
+        invite_pose_override="四つん這い股広げ",
+    )
+    jupo_ids = [b["id"] for b in fours_jupo["beats"]]
+    assert "03-kiss-opt-jupo" in jupo_ids
+    assert "03-kiss-opt-move" in jupo_ids
+    jupo = next(b for b in fours_jupo["beats"] if b["id"] == "03-kiss-opt-jupo")
+    assert "jupo-jupo" in jupo["action"].lower()
+    assert extra_keys(jupo) == ["blowjob", "mystic"]
+    assert jupo.get("trigger") == "bl0w_j0b"
+    assert "stands" in jupo["action"].lower()
+    assert validate_episode(fours_jupo, root=HOSPITAL_DIR) == []
+
+    ride_jupo = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_jupo_override="on",
+        invite_pose_override="騎乗位",
+    )
+    ride_ids = [b["id"] for b in ride_jupo["beats"]]
+    assert "03-kiss-opt-jupo" not in ride_ids
+    assert "03-kiss-opt-move" not in ride_ids
+    twelve = next(b for b in ride_jupo["beats"] if b["id"] == "12-exit")
+    assert "jupo-jupo" in twelve["action"].lower()
+    assert extra_keys(twelve) == ["blowjob", "mystic"]
+
+    stand_act = prepare_episode(raw, story_override="誘う", invite_pose_override="壁に手")
+    stand_ids = [b["id"] for b in stand_act["beats"]]
+    assert "03-kiss" in stand_ids and "03-kiss-peak" in stand_ids and "03-kiss-walk" in stand_ids
+    insert = next(b for b in stand_act["beats"] if b["id"] == "03-kiss")
+    peak = next(b for b in stand_act["beats"] if b["id"] == "03-kiss-peak")
+    assert "palms" in insert["action"].lower() and "palms" in peak["action"].lower()
+    assert "travels into" in insert["action"].lower()
+    assert "horn" not in insert["action"].lower()
+    _assert_no_pose_names(insert["action"], peak["action"])
+    _assert_insertion_direction(insert["action"], build_beat_prompt(stand_act, insert))
+    assert extra_keys(insert) == ["mystic"]
+    assert validate_episode(stand_act, root=HOSPITAL_DIR) == []
+    _assert_hospital_bans(stand_act)
+
+    jupo_only = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="じゅぼのみ",
+        invite_jupo_override="on",
+    )
+    only_ids = [b["id"] for b in jupo_only["beats"]]
+    assert "03-kiss-opt-jupo" not in only_ids
+    oral = next(b for b in jupo_only["beats"] if b["id"] == "03-kiss")
+    assert "jupo-jupo" in oral["action"].lower()
+    assert extra_keys(oral) == ["blowjob", "mystic"]
+    assert "03-kiss-peak" in only_ids and "03-kiss-walk" in only_ids
+
+    pin = prepare_episode(raw, story_override="誘う", invite_kiss_override="押し倒し")
+    pin_kiss = next(b for b in pin["beats"] if b["id"] == "03-kiss-opt-kiss")
+    assert "on top" in pin_kiss["action"].lower()
+    assert "pushes" in pin_kiss["action"].lower()
+    assert "on her back" in pin_kiss["action"].lower()
+
+    full = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="stand",
+        invite_kiss_override="pin",
+        invite_jupo_override="on",
+        toilet_override="tentacle",
+        gin_override="taken",
+        tsuno_override="invite_stand",
+    )
+    assert len(full["beats"]) <= MAX_BEATS
+    assert len(full["beats"]) == len({b["id"] for b in full["beats"]})
+    assert validate_episode(full, root=HOSPITAL_DIR) == []
+    _assert_hospital_bans(full)
+    supine = next(b for b in full["beats"] if b["id"] == "03-kiss-opt-jupo")
+    assert "on her back" in supine["action"].lower()
+    walk = next(b for b in full["beats"] if b["id"] == "03-kiss-walk")
+    assert extra_keys(walk) == []
+    assert walk.get("connect") == "end"
+    for beat, prompt, errs in beat_prompts(full, trigger=""):
+        assert errs == []
+        _assert_no_pose_names(beat.get("action") or "", prompt)
 
 
 def test_hospital_toilet_and_routes_stay_consistent():
@@ -1583,7 +1708,8 @@ def test_hospital_toilet_and_routes_stay_consistent():
         if story == "誘う":
             one = next(b for b in ep["beats"] if b["id"] == "01-cover")
             ten = next(b for b in ep["beats"] if b["id"] == "10-shino")
-            assert "french kiss" in one["action"].lower()
+            assert "french kiss" not in one["action"].lower()
+            assert "lewd wet smiling ecstatic inviting face" in one["action"].lower()
             assert "stops in front of her" in ten["action"].lower()
             if pose and "騎乗" in pose:
                 twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
@@ -1958,6 +2084,15 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "シーン終わりはカット（迷ったらこれ）" in picked
     assert "迷ったら既定のままで Run all" in picked
     assert "6 誘う" in picked
+    assert "ベロチュー無し" in picked
+    assert "じゅぼ無し" in picked
+    assert ui_default("invite_kiss") == "ベロチュー無し（迷ったらこれ）"
+    assert ui_default("invite_jupo") == "じゅぼ無し（迷ったらこれ）"
+    assert ui_default("invite_pose") == "四つん這い股広げ（迷ったらこれ）"
+    assert "壁に手（立ったまま後ろから）" in ui_choices("invite_pose")
+    assert "じゅぼのみ" in ui_choices("invite_pose")
+    assert "□誘う・壁に手" in ui_choices("scene")
+    assert "□誘う・じゅぼのみ" in ui_choices("scene")
     assert "7 トイレ" in picked
     assert "8 灰色" in picked
     assert "9 角" in picked
@@ -2472,6 +2607,8 @@ def test_exec_script_is_self_contained():
     assert "H3_EPISODE_COMBAT" in script
     assert "H3_EPISODE_STORY" in script
     assert "H3_EPISODE_INVITE_POSE" in script
+    assert "H3_EPISODE_INVITE_KISS" in script
+    assert "H3_EPISODE_INVITE_JUPO" in script
     assert "H3_EPISODE_TOILET" in script
     assert "H3_EPISODE_GIN" in script
     assert "H3_EPISODE_TSUNO" in script

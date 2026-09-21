@@ -12,7 +12,9 @@ Env:
   H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
-  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
+  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride | stand | jupo（日本語: 四つん這い股広げ / M字開脚仰向け / 騎乗位 / 壁に手 / じゅぼのみ。病棟の誘う行為）
+  H3_EPISODE_INVITE_KISS  off | stand | pin（日本語: ベロチュー無し / 立ちチュー / 押し倒し。病棟の誘う）
+  H3_EPISODE_INVITE_JUPO  off | on（日本語: じゅぼ無し / じゅぼする。病棟の誘う。騎乗とじゅぼのみには重ねない）
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle（日本語: 行かない / 小便 / オナニー / 触手。病棟の道中）
   H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
   H3_EPISODE_TSUNO    off | accept_stand | invite_stand（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック。病棟の追加）
@@ -74,6 +76,8 @@ def main() -> int:
             combat_override=(os.environ.get("H3_EPISODE_COMBAT") or "").strip() or None,
             story_override=(os.environ.get("H3_EPISODE_STORY") or "").strip() or None,
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,
+            invite_kiss_override=(os.environ.get("H3_EPISODE_INVITE_KISS") or "").strip() or None,
+            invite_jupo_override=(os.environ.get("H3_EPISODE_INVITE_JUPO") or "").strip() or None,
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
             gin_override=(os.environ.get("H3_EPISODE_GIN") or "").strip() or None,
             tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,
