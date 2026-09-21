@@ -38,6 +38,14 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
             "Adults move LEFT or RIGHT. Both adults stay full body including feet. The camera stays in the side plane and tracks "
             "only left and right on a straight line at brisk walking game speed"
         ),
+        # Sex / toilet holds must not inherit the walk-track + doorway bait (it spawns giant women).
+        "planted_lock": (
+            "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. "
+            "PROFILE view: the floor runs LEFT to RIGHT across the frame. "
+            "Adults stay on this same floor spot at normal adult human height, same scale as a standing adult woman. "
+            "Nobody is giant. Nobody fills a doorway. Nobody walks. Nobody relocates. "
+            "The camera HOLDS. No track, no pan, no scroll. Both adults stay full body including feet"
+        ),
         "angles": (
             "locked side-on PROFILE wide at hip height, floor LEFT to RIGHT, doorway at the RIGHT edge, both adults full body including feet, horizontal track only",
             "locked side-on PROFILE at shoulder height, a half-step closer, floor LEFT to RIGHT, doorway at the RIGHT edge, both adults full body including feet, same side plane",

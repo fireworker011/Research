@@ -22,7 +22,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 ## 一発の実行
 
 **スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、**話**（霞東あさ / 病棟出口 / 番台）と上から **つなぎ方・カメラ・画質・格闘・構成** の5つを選んで Run all。迷ったらそのまま（霞東あさ／カット／横スク／バランス／格闘オフ／受け入れる。ドロップダウンに「迷ったらこれ」と書いてある行）。病棟は 5 番の構成が全体の既定。シーンごとで誘う・受け入れる・回避を上書きできる。霞東は 4 番のオフ／オンのまま（5 番とシーンごとは無視）。
-GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
+GPU は A100（High-RAM）。終わってもランタイムは切らない。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
 

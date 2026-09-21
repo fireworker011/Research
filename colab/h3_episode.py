@@ -347,9 +347,17 @@ GAME_THIRD_PERSON_CLAUSE = (
     "Always a third-person gameplay camera: the adults stay fully visible in frame including feet."
 )
 PLANTED_CLAUSE = (
-    "Feet planted on this spot. Nobody walks, nobody runs, nobody moonwalks, nobody strides in place. "
+    "Feet planted on this same floor spot. Nobody walks, nobody runs, nobody moonwalks, "
+    "nobody strides in place, nobody relocates, nobody slides off this spot. "
+    "Normal adult human height, nobody is giant. "
     "The background does not scroll. The camera does not pan. Idle breathing only."
 )
+GONE_FROM_FRAME_RE = re.compile(
+    r"(?:Miki|Rei|Kana|Shino|Gin|Tsuno|The [^.]+?) (?:is|are) gone from frame one\.?\s*",
+    re.I,
+)
+FADE_ONLY_AYA_RE = re.compile(r"Only Aya is in the corridor\.?\s*", re.I)
+FADE_NOBODY_ELSE_RE = re.compile(r"Nobody else in frame\.?\s*", re.I)
 RUN_CLAUSE = (
     "Runner shot only: she sprints left to right. The camera tracks horizontally on a straight line. "
     "Mouth closed, tongue fully inside the mouth, not an orgasm face."
@@ -1262,8 +1270,13 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
                     f"{'fades' if len(fade_ids) == 1 else 'fade'} out of frame in the first two seconds, "
                     "no walk-away, no residual limb, wing, tail, tooth, or horn. "
                 )
+                action = GONE_FROM_FRAME_RE.sub("", action)
+                action = FADE_ONLY_AYA_RE.sub("", action)
+                action = FADE_NOBODY_ELSE_RE.sub("", action)
                 if "fade out of frame" not in action.lower():
                     item["action"] = (fade + action).strip()
+                else:
+                    item["action"] = action.strip()
         prev = intended_set
         beats.append(item)
     out["beats"] = beats
@@ -1772,6 +1785,48 @@ def resolve_episode_options(
     )
 
 
+HOSPITAL_WALK_IDS = frozenset({
+    "01-cover",
+    "04-peek",
+    "04-toilet-in",
+    "07-kana",
+    "07-run",
+    "10-shino",
+    "11-door",
+})
+HOSPITAL_WALK_ID_RE = re.compile(r"(?:-walk|-out|-run|-slip)$")
+
+
+def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
+    """Ward sex/toilet holds stay planted. Walk beats keep a walk cycle.
+
+    The side2d pack otherwise injects 'Adults move LEFT or RIGHT' into every shot,
+    so acts try to relocate down the corridor.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat):
+            continue
+        if str(beat.get("loco") or "").strip():
+            continue
+        bid = str(beat.get("id") or "")
+        action = str(beat.get("action") or "")
+        walk_words = bool(re.search(r"\bWALKS?\b|\bWALKING\b|\bRUNS?\b|\bSPRINT", action))
+        planted_pose = bool(
+            re.search(
+                r"joined at the BASE|already seated|STAYS SEATED|on all fours|palms planted",
+                action,
+                re.I,
+            )
+        )
+        if HOSPITAL_WALK_ID_RE.search(bid) or bid in HOSPITAL_WALK_IDS or (walk_words and not planted_pose):
+            beat["loco"] = "run" if re.search(r"\bRUNS?\b|\bSPRINT", action) else "walk"
+        else:
+            beat["loco"] = "planted"
+    return ep
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -1860,6 +1915,7 @@ def prepare_episode(
         oral=rei_oral_override,
         pose=rei_pose_override,
     )
+    out = apply_default_loco(out)
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
@@ -1905,6 +1961,25 @@ def resolve_beat_camera_pack(
     return episode_camera_pack(ep)
 
 
+def beat_loco(beat: dict[str, Any]) -> str:
+    return str((beat or {}).get("loco") or "").strip().lower()
+
+
+def _planted_camera_text(text: str) -> str:
+    """Drop walk-track and doorway bait that spawns giant extra women during sex/toilet."""
+    out = str(text or "")
+    out = re.sub(r"Adults move LEFT or RIGHT\.?\s*", "", out)
+    out = re.sub(
+        r"The lit doorway sits at the RIGHT edge of the frame\.?\s*",
+        "",
+        out,
+        flags=re.I,
+    )
+    out = re.sub(r"\bhorizontal track only\b", "camera holds", out, flags=re.I)
+    out = re.sub(r"\btracks? left and right\b", "holds", out, flags=re.I)
+    return re.sub(r"\s{2,}", " ", out).strip()
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -1915,14 +1990,21 @@ def camera_line(
 ) -> str:
     """Pack lock + rotating angle (T2V) or a held camera (I2V chain/landing). Empty pack keeps beat.camera."""
     authored = str(beat.get("camera") or "").strip().rstrip(".")
+    planted = beat_loco(beat) == "planted"
+    if planted:
+        authored = _planted_camera_text(authored).rstrip(".")
     if not pack_name:
         return authored
     key = canonical_camera(pack_name)
     if key not in CAMERA_PACKS:
         raise EpisodeError(f"unknown camera_pack {pack_name}")
-    lock = str(CAMERA_PACKS[key]["lock"]).strip().rstrip(".")
+    spec = CAMERA_PACKS[key]
+    if planted and spec.get("planted_lock"):
+        lock = str(spec["planted_lock"]).strip().rstrip(".")
+    else:
+        lock = str(spec["lock"]).strip().rstrip(".")
     parts = [lock + "."]
-    if rotate:
+    if rotate and not planted:
         angle = camera_angle(key, gpu_index).strip().rstrip(".")
         parts.append("This shot: " + angle + ".")
     else:
@@ -2715,7 +2797,7 @@ def build_beat_prompt(
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)
-    loco = str(beat.get("loco") or "").strip().lower()
+    loco = beat_loco(beat)
     if loco == "planted":
         desc.append(PLANTED_CLAUSE)
     elif loco == "run":

@@ -85,6 +85,7 @@ os.environ["H3_EPISODE_REI_KISS"] = REI_KISS
 os.environ["H3_EPISODE_REI_ORAL"] = REI_ORAL
 os.environ["H3_EPISODE_REI_POSE"] = REI_POSE
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
+os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
 
@@ -132,7 +133,7 @@ rc = main()
 print("episode exit", rc)
 if rc:
     raise SystemExit(rc)
-print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
+print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
 '''
 
 MD = f"""# MiniMax H3 レイ脱出一発（選んで Run all）
@@ -141,7 +142,7 @@ MD = f"""# MiniMax H3 レイ脱出一発（選んで Run all）
 
 **コードセルは1本。話は `futanari-rei-escape` 固定。迷ったらドロップダウンはそのままで Run all。**
 Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が無ければ GitHub から取ってくる。
-全ビートを1つのランタイムで描き、HUD・タイトル・免責エンドカードを載せて `final/` に書く。終わったら停止。
+全ビートを1つのランタイムで描き、HUD・タイトル・免責エンドカードを載せて `final/` に書く。終わってもランタイムは切らない。
 
 病棟・霞東のノートとは別。このノートの Run all で本体 Drive を上書きするな。
 
@@ -204,7 +205,7 @@ S00 はタイトルカード。Prompt にレイを入れない。敵1の円口�
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止
 - マージ前は `BRANCH` もこの枝（`{BRANCH}`）
-- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
+- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。正本カットは `stories/futanari-rei-escape/`。
 """

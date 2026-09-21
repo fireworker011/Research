@@ -29,7 +29,8 @@ Env:
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
-  H3_KEEP_RUNTIME=1   do not unassign the Colab runtime at the end
+  H3_KEEP_RUNTIME=1   keep the Colab runtime (default; unassign is off)
+  H3_UNASSIGN_RUNTIME=1  opt in to runtime.unassign() after the run
 
 Never touches inbox/queued/output of the Grokbot root.
 """

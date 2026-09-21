@@ -606,7 +606,12 @@ def generate_r2v(
 
 
 def maybe_unassign() -> None:
-    if os.environ.get("H3_KEEP_RUNTIME") == "1":
+    """Keep the Colab runtime unless the user opted into unassign.
+
+    H3_UNASSIGN_RUNTIME=1 is the only way to call runtime.unassign().
+    H3_KEEP_RUNTIME=1 is still honored as an explicit keep.
+    """
+    if os.environ.get("H3_UNASSIGN_RUNTIME") != "1" or os.environ.get("H3_KEEP_RUNTIME") == "1":
         print("keep runtime")
         return
     try:

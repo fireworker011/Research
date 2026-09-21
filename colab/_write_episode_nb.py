@@ -92,6 +92,7 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
     f"{name}={choice}"
     for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
 )
+os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
@@ -140,7 +141,7 @@ rc = main()
 print("episode exit", rc)
 if rc:
     raise SystemExit(rc)
-print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
+print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
@@ -149,7 +150,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 **コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
-HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
+HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わってもランタイムは切らない。
 
 ## 話 + 上から 9 つ + 病棟の追加（迷ったらそのまま）
 
@@ -208,7 +209,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
 - 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
-- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
+- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """
