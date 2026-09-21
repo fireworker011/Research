@@ -1101,12 +1101,21 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "no penis" not in raw["cast"]["miki"]["lock"]
     assert "purple" in raw["cast"]["miki"]["lock"]
     assert "lacerations" in raw["cast"]["miki"]["lock"] and "hollow empty dark eye sockets" in raw["cast"]["miki"]["lock"]
+    assert "same vivid purple" in raw["cast"]["miki"]["lock"]
+    assert "not pale-tan flesh" in raw["cast"]["miki"]["lock"]
+    assert "pale-tan skin" not in raw["cast"]["miki"]["lock"]
+    assert "groin" in raw["cast"]["miki"]["lock"] and "rotting" in raw["cast"]["miki"]["lock"]
+    assert "22cm shaft" in raw["cast"]["miki"]["lock"]
     assert "blood" not in raw["cast"]["miki"]["lock"].lower()
     assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
     assert "no blood" not in raw["world"]["lock"].lower()
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
     assert "WHITE filthy slime" in raw["cast"]["rei"]["lock"]
     assert "LEFT half of the face" in raw["cast"]["rei"]["lock"]
+    assert "same vivid purple" in raw["cast"]["rei"]["lock"]
+    assert "not pale-tan flesh" in raw["cast"]["rei"]["lock"]
+    assert "pale-tan skin" not in raw["cast"]["rei"]["lock"]
+    assert "rotting" in raw["cast"]["rei"]["lock"]
     assert "brown viscous" not in raw["cast"]["rei"]["lock"].lower()
     assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
     assert "glasses" not in raw["cast"]["kana"]["lock"].lower()
@@ -1114,6 +1123,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "fang" in raw["cast"]["kana"]["lock"].lower()
     assert "hollow empty dark eye sockets" in raw["cast"]["kana"]["lock"]
     assert "filthy slime" in raw["cast"]["kana"]["lock"]
+    assert "same vivid purple" in raw["cast"]["kana"]["lock"]
+    assert "pale-tan skin" not in raw["cast"]["kana"]["lock"]
+    assert "rotting" in raw["cast"]["kana"]["lock"]
     assert "semen-like" not in raw["cast"]["kana"]["lock"]
     assert "vivid red" not in raw["cast"]["kana"]["lock"]
     assert "24cm" not in raw["cast"]["kana"]["lock"]
@@ -1130,6 +1142,10 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "24cm" not in raw["cast"]["shino"]["lock"]
     assert "alluring" in raw["cast"]["shino"]["lock"] and "stoop" in raw["cast"]["shino"]["lock"]
     assert "reptile tongue" in raw["cast"]["shino"]["lock"]
+    assert "pale gray-white" in raw["cast"]["shino"]["lock"]
+    assert "not pale-tan flesh" in raw["cast"]["shino"]["lock"]
+    assert "pale-tan skin" not in raw["cast"]["shino"]["lock"]
+    assert "rotting" in raw["cast"]["shino"]["lock"]
     assert "nightgown" not in raw["cast"]["shino"]["lock"]
     assert "nightgown" in raw["homage"]["never"]
     menu = ["△ 戦う", "○ 受け入れる", "□ 誘う", "× 回避"]
@@ -1543,6 +1559,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     miki_p = build_beat_prompt(accept, cover_a)
     assert "lacerations" in miki_p.lower()
     assert "hollow empty dark eye sockets" in miki_p.lower()
+    assert "same vivid purple" in miki_p.lower()
+    assert "not pale-tan flesh" in miki_p.lower()
+    assert "pale-tan skin" not in miki_p.lower()
+    assert "rotting" in miki_p.lower()
     assert "blood" not in [h.lower() for h in forbidden_hits(miki_p)]
     _assert_hospital_bans(accept)
     _assert_hospital_bans(invite)
