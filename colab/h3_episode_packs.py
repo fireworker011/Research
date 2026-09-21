@@ -34,15 +34,16 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
         "recommend": True,
         "lock": (
             "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. "
-            "Both adults stay full body including feet. The camera stays in the side plane and tracks "
+            "PROFILE view: the floor runs LEFT to RIGHT across the frame. The lit doorway sits at the RIGHT edge of the frame. "
+            "Adults move LEFT or RIGHT. Both adults stay full body including feet. The camera stays in the side plane and tracks "
             "only left and right on a straight line at brisk walking game speed"
         ),
         "angles": (
-            "locked side-on wide at hip height, both adults full body including feet, horizontal track only",
-            "locked side-on at shoulder height, a half-step closer, both adults full body including feet, same side plane",
-            "locked side-on further back so more floor shows, hip height, both adults full body including feet, horizontal track only",
-            "locked side-on at desk height, both adults full body, same side plane, slight horizontal track",
-            "locked side-on wide at chest height, both adults full body including feet, camera holds then tracks left and right",
+            "locked side-on PROFILE wide at hip height, floor LEFT to RIGHT, doorway at the RIGHT edge, both adults full body including feet, horizontal track only",
+            "locked side-on PROFILE at shoulder height, a half-step closer, floor LEFT to RIGHT, doorway at the RIGHT edge, both adults full body including feet, same side plane",
+            "locked side-on PROFILE further back so more floor shows, hip height, floor LEFT to RIGHT, doorway at the RIGHT edge, both adults full body including feet, horizontal track only",
+            "locked side-on PROFILE at desk height, both adults full body, floor LEFT to RIGHT, doorway at the RIGHT edge, same side plane, slight horizontal track",
+            "locked side-on PROFILE wide at chest height, both adults full body including feet, floor LEFT to RIGHT, doorway at the RIGHT edge, camera holds then tracks left and right",
         ),
     },
     "action3d": {

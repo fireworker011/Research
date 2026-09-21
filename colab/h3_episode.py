@@ -136,6 +136,7 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
     "16:9": {720: (1280, 720), 1080: (1920, 1080)},
     "9:16": {720: (720, 1280), 1080: (1080, 1920)},
 }
+# GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
 MAX_BEATS = 12
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
@@ -155,7 +156,8 @@ CARD_TITLE_S = 2.6
 CARD_END_S = 3.2
 CARD_SECONDS = (1.5, 6.0)
 FAIL_TEXT_DEFAULT = "ミッション失敗"
-# A beat may show only a window of its 10s clip (the reference cuts every ~4s; H3 drifts after ~5s).
+# A beat may show only a window of its GPU clip (the reference cuts every ~4s; H3 drifts after ~5s).
+# Meeting beats that start at 0.00 and trim to 4–10s render that GPU length (not a discarded 10s tail).
 MIN_TRIM_S = 1.5
 UI_SECONDS = (1.5, 5.0)
 ORIGINAL_LINE = "舞台・人物・物語はオリジナル"
@@ -337,8 +339,30 @@ def clip_seconds(ep: dict[str, Any]) -> float:
     return float(ep.get("clip_seconds") or 10.0)
 
 
-def duration_ladder(ep: dict[str, Any]) -> list[float]:
+def beat_clip_seconds(ep: dict[str, Any], beat: dict[str, Any] | None = None) -> float:
+    """GPU length for this beat.
+
+    If the shown window starts at 0.00 and is already a legal 4–10s clip, render that
+    length. Mid-clip trims still generate the episode clip so the window exists.
+    """
     top = clip_seconds(ep)
+    if not beat or str(beat.get("source") or "") == "ui":
+        return top
+    trim = beat.get("trim")
+    if not isinstance(trim, dict):
+        return top
+    try:
+        start = float(trim.get("start") or 0.0)
+        seconds = float(trim.get("seconds") or 0.0)
+    except (TypeError, ValueError):
+        return top
+    if start <= 0.0 and seconds >= 4.0:
+        return min(seconds, top)
+    return top
+
+
+def duration_ladder(ep: dict[str, Any], beat: dict[str, Any] | None = None) -> list[float]:
+    top = beat_clip_seconds(ep, beat)
     out = [top]
     for d in DURATION_LADDER:
         if d < top and d not in out:
@@ -902,7 +926,6 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     render = dict(out.get("render") or {})
     render["connect"] = name
     out["render"] = render
-    clip_s = clip_seconds(out)
     gpu_seen = 0
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict) or is_ui_beat(beat):
@@ -931,7 +954,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
             elif beat.get("still"):
                 beat["source"] = "still"
                 beat["still_as"] = "last"
-                _slide_trim_to_last(beat, clip_s)
+                _slide_trim_to_last(beat, beat_clip_seconds(out, beat))
             else:
                 beat["source"] = "chain"
                 beat.pop("still_as", None)
@@ -1548,9 +1571,10 @@ def _trim_errors(ep: dict[str, Any], beat: dict[str, Any], where: str) -> list[s
         errs.append(f"{where}: trim.start must be >= 0")
     if seconds and seconds < MIN_TRIM_S:
         errs.append(f"{where}: trim.seconds must be >= {MIN_TRIM_S:g}s")
-    if start + seconds > clip_seconds(ep) + 0.01:
-        errs.append(f"{where}: trim window ends after the {clip_seconds(ep):g}s clip")
-    if beat_still_as(beat) == "last" and start + seconds < clip_seconds(ep) - 0.05:
+    gpu_s = beat_clip_seconds(ep, beat)
+    if start + seconds > gpu_s + 0.01:
+        errs.append(f"{where}: trim window ends after the {gpu_s:g}s clip")
+    if beat_still_as(beat) == "last" and start + seconds < gpu_s - 0.05:
         errs.append(f"{where}: still_as last: trim must include the last frame (the still)")
     return errs
 
@@ -3233,8 +3257,9 @@ def run_episode(
                 first = _first_frame_for(beat, idx, ep, root, canvas, None)
                 last = _last_frame_for(beat, root, canvas, None)
                 hue = (idx * 37) % 255
-                synthetic_clip(raw_out.with_suffix(".part.mp4"), seconds=clip_seconds(ep), canvas=canvas, color=f"0x{hue:02x}{(120 + idx * 13) % 255:02x}{(200 - idx * 11) % 255:02x}", tone_hz=220 + idx * 40)
-                result = {"videos": [str(raw_out.with_suffix(".part.mp4"))], "duration_s": clip_seconds(ep), "first": first, "last": last}
+                gpu_s = beat_clip_seconds(ep, beat)
+                synthetic_clip(raw_out.with_suffix(".part.mp4"), seconds=gpu_s, canvas=canvas, color=f"0x{hue:02x}{(120 + idx * 13) % 255:02x}{(200 - idx * 11) % 255:02x}", tone_hz=220 + idx * 40)
+                result = {"videos": [str(raw_out.with_suffix(".part.mp4"))], "duration_s": gpu_s, "first": first, "last": last}
             else:
                 first = _first_frame_for(beat, idx, ep, root, canvas, comfy_input)
                 last = _last_frame_for(beat, root, canvas, comfy_input)
@@ -3245,7 +3270,7 @@ def run_episode(
                     prompt=prompt,
                     comfy_dir=comfy,
                     canvas=canvas,
-                    durations=duration_ladder(ep),
+                    durations=duration_ladder(ep, beat),
                     preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",

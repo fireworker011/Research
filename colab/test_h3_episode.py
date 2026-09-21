@@ -47,6 +47,7 @@ from h3_episode import (  # noqa: E402
     assert_not_production_root,
     beat_prompts,
     beat_props,
+    beat_clip_seconds,
     beat_source,
     beat_still_as,
     beat_vocals,
@@ -1012,9 +1013,14 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "22cm" in raw["cast"]["miki"]["lock"] and "clear futanari" in raw["cast"]["miki"]["lock"]
     assert "no penis" not in raw["cast"]["miki"]["lock"]
     assert "purple" in raw["cast"]["miki"]["lock"]
+    assert "lacerations" in raw["cast"]["miki"]["lock"] and "hollow empty dark eye sockets" in raw["cast"]["miki"]["lock"]
+    assert "blood" not in raw["cast"]["miki"]["lock"].lower()
     assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
+    assert "no blood" not in raw["world"]["lock"].lower()
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
     assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
+    assert "glasses" not in raw["cast"]["kana"]["lock"].lower()
+    assert "semen-like" in raw["cast"]["kana"]["lock"]
     assert "24cm" not in raw["cast"]["kana"]["lock"]
     assert raw["cast"]["shino"]["age"] == 29
     assert "30cm" in raw["cast"]["shino"]["lock"] and "elongated" in raw["cast"]["shino"]["lock"]
@@ -1041,7 +1047,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
         "11-ui-shino",
         "12-exit",
     ]
-    assert expected_duration(ep) == pytest.approx(58.1, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(63.6, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
     assert all("on_invite" not in b for b in ep["beats"])
@@ -1058,7 +1064,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "jupo-jupo" in miki_prompt.lower()
     assert "22cm" in miki_prompt.lower()
     assert "licks upward" not in miki_prompt.lower()
-    assert miki["trim"]["seconds"] == 7.5
+    assert miki["trim"]["seconds"] == 10.0
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
     assert "prfight2" not in doggy_prompt
@@ -1074,6 +1080,13 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert kana_meet["cast"] == ["aya", "kana"]
     assert "shino is not in frame" in kana_meet["action"].lower()
     assert "stands up from all fours" not in kana_meet["action"].lower()
+    assert "glasses" not in kana_meet["action"].lower()
+    cover = next(b for b in ep["beats"] if b["id"] == "01-cover")
+    assert "walks right with her" in cover["action"].lower()
+    assert "stands in the corridor facing her" not in cover["action"].lower()
+    assert beat_clip_seconds(ep, cover) == 4.0
+    assert duration_ladder(ep, cover) == [4.0]
+    assert "lacerations" in cover["action"].lower()
     kana = next(b for b in ep["beats"] if b["id"] == "09-join")
     kana_prompt = build_beat_prompt(ep, kana)
     _assert_insertion_direction(kana["action"], kana_prompt)
@@ -1114,7 +1127,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(63.0, abs=1.5)
+    assert expected_duration(ep) == pytest.approx(74.05, abs=1.5)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for i in (1, 4, 7, 10):
@@ -1123,7 +1136,8 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
     _assert_insertion_direction(doggy["action"], build_beat_prompt(ep, doggy))
     assert "drops herself" in doggy["action"].lower()
-    assert "steps away" in doggy["action"].lower()
+    assert "steps away" in doggy["action"].lower() or "walks right" in doggy["action"].lower()
+    assert "planted on the same linoleum marks" in doggy["action"].lower()
     twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
     twelve_prompt = build_beat_prompt(ep, twelve)
     assert "do not cross the threshold" in twelve_prompt.lower() or "do not slide to the lit doorway" in twelve_prompt.lower()
@@ -1135,7 +1149,7 @@ def test_hospital_exit_adult_evade_exits_alone():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="回避")
     assert ep["render"]["combat"] == "off"
-    assert expected_duration(ep) == pytest.approx(50.4, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(52.4, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not (ep.get("cards") or {}).get("fail")
     assert [b["id"] for b in ep["beats"]] == [
@@ -1174,7 +1188,7 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="戦って勝つ")
     assert ep["render"]["combat"] == "on"
-    assert expected_duration(ep) == pytest.approx(52.4, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(53.4, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not (ep.get("cards") or {}).get("fail")
     assert [b["id"] for b in ep["beats"]] == [
@@ -1228,7 +1242,7 @@ def test_hospital_exit_adult_fight_lose_is_defeat_h():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="敗北")
     assert ep["render"]["combat"] == "on"
-    assert expected_duration(ep) == pytest.approx(54.8, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(55.85, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "感染者に倒された"
     assert [b["id"] for b in ep["beats"]] == [
@@ -1303,9 +1317,89 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert skip_shino["beats"][-1]["hud"]["complete"] is True
     miki_ride = next(b for b in ride["beats"] if b["id"] == "03-kiss")
     assert "22cm" in miki_ride["action"].lower()
+    assert "already kneeling" in miki_ride["action"].lower()
+    assert "jupo-jupo" in miki_ride["action"].lower()
+    assert "sits on" in miki_ride["action"].lower()
+    assert "hugs" not in miki_ride["action"].lower()
     _assert_insertion_direction(miki_ride["action"], build_beat_prompt(ride, miki_ride))
+    assert "steps out" not in four["action"].lower()
+    assert "profile" in four["camera"].lower()
     _assert_hospital_bans(toilet)
     _assert_hospital_bans(ride)
+
+
+def test_hospital_review_takes_camera_invite_split_and_clip_length():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    accept = prepare_episode(raw, story_override="受け入れる")
+    invite = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    toilet = prepare_episode(raw, story_override="受け入れる", toilet_override="pee")
+
+    cover_a = next(b for b in accept["beats"] if b["id"] == "01-cover")
+    cover_i = next(b for b in invite["beats"] if b["id"] == "01-cover")
+    assert "walks right with her" in cover_a["action"].lower()
+    assert beat_clip_seconds(accept, cover_a) == 4.0
+    assert duration_ladder(accept, cover_a) == [4.0]
+    assert "lewd wet smiling ecstatic inviting face" in cover_i["action"].lower()
+    assert "french kiss" in cover_i["action"].lower()
+    assert beat_clip_seconds(invite, cover_i) == 6.0
+    assert duration_ladder(invite, cover_i) == [6.0]
+    assert cover_i["trim"]["seconds"] == 6.0
+
+    doggy = next(b for b in fours["beats"] if b["id"] == "06-doggy")
+    assert "planted on the same linoleum marks" in doggy["action"].lower()
+    assert "same linoleum spot" in doggy["action"].lower()
+    assert "french kiss" not in doggy["action"].lower()
+    m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
+    nine = next(b for b in m_open["beats"] if b["id"] == "09-join")
+    assert "m-shape" in nine["action"].lower()
+    assert "french kiss" not in nine["action"].lower()
+    seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
+    assert "french kiss" in seven["action"].lower()
+    assert "lewd wet smiling ecstatic inviting face" in seven["action"].lower()
+
+    ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
+    ten_low = ten["action"].lower()
+    assert "stops in front of her" in ten_low
+    assert "mouth is at aya's mouth height" in ten_low
+    assert "french kiss" in ten_low
+    assert "walks forward toward shino" not in ten_low
+    assert beat_clip_seconds(invite, ten) == 6.0
+
+    twelve = next(b for b in invite["beats"] if b["id"] == "12-exit")
+    twelve_low = twelve["action"].lower()
+    assert "already kneeling" in twelve_low
+    assert "jupo-jupo" in twelve_low
+    assert "sits on" in twelve_low
+    assert "steps in" not in twelve_low
+    assert "hugs" not in twelve_low
+    assert extra_keys(twelve) == ["blowjob", "mystic"]
+    assert twelve.get("trigger") == "bl0w_j0b"
+    assert beat_clip_seconds(invite, twelve) == 10.0
+    _assert_insertion_direction(twelve["action"], build_beat_prompt(invite, twelve))
+
+    accept_six = next(b for b in accept["beats"] if b["id"] == "06-doggy")
+    assert "planted on the same linoleum marks" in accept_six["action"].lower()
+    assert "profile" in accept_six["camera"].lower()
+    assert "right edge" in accept_six["camera"].lower()
+    twelve_a = next(b for b in accept["beats"] if b["id"] == "12-exit")
+    assert "slide right" in twelve_a["action"].lower()
+    assert "profile" in twelve_a["camera"].lower()
+
+    stall = next(b for b in toilet["beats"] if b["id"] == "04-toilet")
+    assert "profile" in stall["camera"].lower()
+    assert "steps out" not in stall["action"].lower()
+    assert "stays seated" in stall["action"].lower()
+
+    kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
+    assert "glasses" not in kana["action"].lower()
+    assert "semen-like" in kana["action"].lower()
+    miki_p = build_beat_prompt(accept, cover_a)
+    assert "lacerations" in miki_p.lower()
+    assert "hollow empty dark eye sockets" in miki_p.lower()
+    assert "blood" not in [h.lower() for h in forbidden_hits(miki_p)]
+    _assert_hospital_bans(accept)
+    _assert_hospital_bans(invite)
 
 
 def test_hospital_per_scene_accept_invite_evade_and_ending():
@@ -1477,6 +1571,8 @@ def test_camera_packs_rotate_and_t2v_rejects_last_frame_lock():
             assert "slow" not in low and "first-person" not in low
         lock = str(pack["lock"]).lower()
         assert "third-person" in lock and "slow motion" not in lock
+    side_lock = str(CAMERA_PACKS["side2d"]["lock"]).lower()
+    assert "profile" in side_lock and "right edge" in side_lock and "left to right" in side_lock
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert episode_camera_pack(ep) == "side2d"
     assert episode_camera_pack(ep, "action3d") == "action3d"
@@ -1588,7 +1684,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert later and all(beat_still_as(b) == "last" for b in later)
     aisle = next(b for b in landed["beats"] if b["id"] == "04-aisle")
     start, seconds = beat_window(landed, aisle)
-    assert start + seconds == pytest.approx(10.0, abs=0.05)
+    assert start + seconds == pytest.approx(beat_clip_seconds(landed, aisle), abs=0.05)
     land_prompt = build_beat_prompt(landed, later[0])
     assert "<Picture 2>" in land_prompt and STILL_LAST_HEADER in land_prompt
     assert "The camera stays in this setup" in land_prompt
@@ -1934,7 +2030,7 @@ def test_combat_steps_cap_and_author_override(tmp_path):
     ep["beats"][0]["still_as"] = "last"
     assert any("first beat cannot be still_as last" in e for e in validate_episode(ep, root=KASUMI_DIR))
     ep = load_episode(KASUMI_DIR / "episode.json")
-    ep["beats"][2]["trim"] = {"start": 0, "seconds": 5.0}
+    ep["beats"][2]["trim"] = {"start": 2.0, "seconds": 5.0}
     assert any("trim must include the last frame" in e for e in validate_episode(ep, root=KASUMI_DIR))
     daily = {"name": "daily", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "DY", "notes": []}
     loras = tmp_path / "loras"
