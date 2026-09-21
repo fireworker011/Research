@@ -1611,7 +1611,11 @@ def apply_rei_escape_route(
             row = dict(item)
             if after_toilet:
                 row = _inject_rei_filth(row, filth)
-            if slot in ("attack", "kiss", "oral", "pose") or str(row.get("id") or "").startswith("21-"):
+            # Who-initiates is the S17 attack cut only. Kiss / oral / pose / S21
+            # already describe their own blocking; prefixing "pounces" onto
+            # fours-in (or "presses her to the meat wall" onto orgasm) contradicts
+            # the overlay.
+            if slot == "attack":
                 action = str(row.get("action") or "")
                 if attack_prefix and attack_prefix not in action:
                     row["action"] = attack_prefix + action

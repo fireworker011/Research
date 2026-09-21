@@ -2685,6 +2685,52 @@ def test_rei_escape_default_validates_complete_under_max():
     assert "Rei" in title_prompt_source["action"]
 
 
+def test_rei_escape_attack_prefix_stays_on_attack_slot():
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    rei_prefix = "Rei initiates:"
+    her_prefix = "The succubus initiates:"
+
+    def later_ids(ep):
+        return [
+            b
+            for b in ep["beats"]
+            if str(b.get("id") or "").startswith(("18-", "19-", "20-", "21-"))
+        ]
+
+    default = prepare_episode(raw)
+    attack = next(b for b in default["beats"] if b["id"] == "17-from-rei")
+    assert rei_prefix in attack["action"]
+    assert her_prefix not in attack["action"]
+    for beat in later_ids(default):
+        assert rei_prefix not in beat["action"], beat["id"]
+        assert her_prefix not in beat["action"], beat["id"]
+        assert "pounces" not in beat["action"], beat["id"]
+
+    her = prepare_episode(raw, rei_attack_override="her")
+    her_attack = next(b for b in her["beats"] if b["id"] == "17-from-her")
+    assert her_prefix in her_attack["action"]
+    assert rei_prefix not in her_attack["action"]
+    fours = next(b for b in her["beats"] if b["id"] == "20-fours-in")
+    assert her_prefix not in fours["action"]
+    assert "pounces" not in fours["action"]
+    orgasm = next(b for b in her["beats"] if b["id"] == "21-orgasm")
+    assert her_prefix not in orgasm["action"]
+    assert rei_prefix not in orgasm["action"]
+
+    mixed = prepare_episode(
+        raw,
+        rei_attack_override="her",
+        rei_kiss_override="on",
+        rei_oral_override="her",
+        rei_pose_override="straddle",
+    )
+    assert any(b["id"] == "17-from-her" for b in mixed["beats"])
+    for beat in later_ids(mixed):
+        assert her_prefix not in beat["action"], beat["id"]
+        assert rei_prefix not in beat["action"], beat["id"]
+        assert "pounces" not in beat["action"], beat["id"]
+
+
 def test_rei_escape_options_filth_and_oral_lora():
     raw = load_episode(REI_ESCAPE_DIR / "episode.json")
     skip = prepare_episode(raw, rei_mast_override="skip")
