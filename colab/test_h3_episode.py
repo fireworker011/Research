@@ -1124,6 +1124,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "hollow empty dark eye sockets" in raw["cast"]["kana"]["lock"]
     assert "filthy slime" in raw["cast"]["kana"]["lock"]
     assert "same vivid purple" in raw["cast"]["kana"]["lock"]
+    assert "not pale-tan flesh" in raw["cast"]["kana"]["lock"]
     assert "pale-tan skin" not in raw["cast"]["kana"]["lock"]
     assert "rotting" in raw["cast"]["kana"]["lock"]
     assert "semen-like" not in raw["cast"]["kana"]["lock"]
@@ -1199,6 +1200,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
     assert "prfight2" not in doggy_prompt
     assert "rei's face stays readable" in doggy_prompt.lower()
+    assert "same vivid purple" in doggy["action"].lower()
+    assert "rotting" in doggy["action"].lower()
+    assert "pale-tan skin" not in doggy_prompt.lower()
     _assert_insertion_direction(doggy["action"], doggy_prompt)
     assert "hold still joined at the base" in doggy["action"].lower()
     peak = next(b for b in ep["beats"] if b["id"] == "06-doggy-peak")
@@ -1234,12 +1238,18 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "pelvis stays down" in kana["action"].lower()
     assert "rock up" not in kana["action"].lower()
     assert "20cm" in kana["action"]
+    assert "same vivid purple" in kana["action"].lower()
+    assert "rotting" in kana["action"].lower()
+    assert "pale-tan skin" not in kana_prompt.lower()
     assert "penis shaft" in kana_prompt.lower()
     assert "not an arm" in kana_prompt.lower()
     shino_meet = next(b for b in ep["beats"] if b["id"] == "10-shino")
     assert shino_meet["cast"] == ["aya", "shino"]
     assert "stoop" in shino_meet["action"].lower()
     assert "30cm" in shino_meet["action"].lower()
+    assert "same pale gray-white" in shino_meet["action"].lower()
+    assert "rotting" in shino_meet["action"].lower()
+    assert "pale-tan skin" not in shino_meet["action"].lower()
     assert "alluring" in shino_meet["action"].lower()
     assert "reptile tongue" in shino_meet["action"].lower()
     assert "kana is gone" in shino_meet["action"].lower() or "kana is not in frame" in shino_meet["action"].lower()
@@ -1835,6 +1845,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert "right edge" in meet["camera"].lower()
     assert "24cm" in meet["action"]
     assert "ashen gray" in meet["action"].lower()
+    assert "rotting" in meet["action"].lower()
+    assert "rotting" in join["action"].lower()
+    assert "ashen-gray shaft" in join["action"].lower()
+    assert "pale-tan skin" not in meet["action"].lower()
     _assert_insertion_direction(join["action"], build_beat_prompt(stand, join))
     assert "drool" in peak["action"].lower()
     assert out["cast"] == ["aya"]
