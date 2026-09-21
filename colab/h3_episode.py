@@ -101,17 +101,25 @@ from h3_episode_packs import (
     CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
+    HOSPITAL_ENCOUNTERS,
+    INVITE_POSE_MODES,
+    INVITE_POSE_OVERLAY_KEYS,
     PRESET_CANON,
     PRESET_ALIASES,
     STORY_MODES,
     STORY_OVERLAY_KEYS,
+    TOILET_MODES,
+    TOILET_OVERLAY_KEYS,
     canonical_camera,
     canonical_combat,
     canonical_connect,
+    canonical_invite_pose,
     canonical_preset,
     canonical_story,
+    canonical_toilet,
     describe_run,
     expand_presets,
+    parse_appear,
 )
 from h3_t2v import assert_t2v_graph, build_t2v_graph
 
@@ -184,6 +192,9 @@ LORA_STRENGTHS = {
 BLOWJOB_TRIGGER = "bl0w_j0b"
 COMBAT_ROUTE_KEY = "combat_on"
 STORY_ROUTE_KEYS = tuple(STORY_OVERLAY_KEYS.values())
+INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())
+TOILET_ROUTE_KEYS = tuple(TOILET_OVERLAY_KEYS.values())
+ROUTE_OVERLAY_KEYS = STORY_ROUTE_KEYS + INVITE_POSE_ROUTE_KEYS + TOILET_ROUTE_KEYS
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
@@ -378,6 +389,45 @@ def episode_story(ep: dict[str, Any], override: str | None = None) -> str:
     if name not in STORY_MODES:
         raise EpisodeError(f"render.story must be one of {list(STORY_MODES)}")
     return name
+
+
+def episode_invite_pose(ep: dict[str, Any], override: str | None = None) -> str:
+    """all_fours / m_open / ride. Empty keeps the recommended 四つん這い."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("invite_pose") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_invite_pose(raw)
+    if name not in INVITE_POSE_MODES:
+        raise EpisodeError(f"render.invite_pose must be one of {list(INVITE_POSE_MODES)}")
+    return name
+
+
+def episode_toilet(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / pee / masturbate / tentacle. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("toilet") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_toilet(raw)
+    if name not in TOILET_MODES:
+        raise EpisodeError(f"render.toilet must be one of {list(TOILET_MODES)}")
+    return name
+
+
+def episode_appear(ep: dict[str, Any], override: str | dict[str, Any] | None = None) -> dict[str, bool]:
+    """Which hospital encounters to keep. Packs without encounter tags ignore this."""
+    render = ep.get("render") or {}
+    raw: str | dict[str, Any] | None
+    if override not in (None, ""):
+        raw = override
+    elif "appear" in render:
+        raw = render.get("appear")
+    else:
+        raw = None
+    shown = parse_appear(raw)
+    unknown = [name for name in shown if name not in HOSPITAL_ENCOUNTERS]
+    if unknown:
+        raise EpisodeError(f"render.appear unknown encounter {unknown}")
+    return shown
 
 
 def combat_lora_allowed(*, unet: str, combat: str, high_mem: bool) -> tuple[bool, str]:
@@ -938,7 +988,128 @@ def apply_story_route(ep: dict[str, Any], *, story: str | None = None) -> dict[s
     render["story"] = key
     render["combat"] = spec.get("combat") or "off"
     out["render"] = render
+    return out
+
+
+def _pop_overlay_keys(beat: dict[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
+    out = dict(beat)
+    for key in keys:
+        out.pop(key, None)
+    return out
+
+
+def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[str, Any]:
+    """Merge invite_pose_* overlays when story is □誘う. Other stories just drop the keys."""
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if pose not in (None, ""):
+        render["invite_pose"] = canonical_invite_pose(pose) or pose
+        out["render"] = render
+    key = episode_invite_pose(out) or "all_fours"
+    story = episode_story(out) or "accept"
+    field = INVITE_POSE_OVERLAY_KEYS.get(key) if story == "invite" else None
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
+        chosen = beat.get(field) if field else None
+        if isinstance(chosen, dict):
+            body = _merge_route_overlay(body, chosen)
+            body = _pop_overlay_keys(body, INVITE_POSE_ROUTE_KEYS)
+        beats.append(body)
+    out["beats"] = beats
+    render = dict(out.get("render") or {})
+    render["invite_pose"] = key
+    out["render"] = render
+    return out
+
+
+def apply_toilet_route(ep: dict[str, Any], *, toilet: str | None = None) -> dict[str, Any]:
+    """Replace the みき→れい walk with a toilet stall when Colab 7 is not 行かない."""
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if toilet not in (None, ""):
+        render["toilet"] = canonical_toilet(toilet) or toilet
+        out["render"] = render
+    key = episode_toilet(out) or "off"
+    field = TOILET_OVERLAY_KEYS.get(key)
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        body = _pop_overlay_keys(beat, TOILET_ROUTE_KEYS)
+        chosen = beat.get(field) if field else None
+        if isinstance(chosen, dict):
+            body = _merge_route_overlay(body, chosen)
+            body = _pop_overlay_keys(body, TOILET_ROUTE_KEYS)
+            body["encounter"] = "toilet"
+        beats.append(body)
+    out["beats"] = beats
+    render = dict(out.get("render") or {})
+    render["toilet"] = key
+    out["render"] = render
+    return out
+
+
+def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | None = None) -> dict[str, Any]:
+    """Drop tagged encounters the Colab checkboxes turned off. Toilet beats stay if 7 is on."""
+    out = copy.deepcopy(ep)
+    shown = episode_appear(out, appear)
+    tagged = any(isinstance(b, dict) and b.get("encounter") for b in (out.get("beats") or []))
+    if not tagged:
+        render = dict(out.get("render") or {})
+        render["appear"] = shown
+        out["render"] = render
+        return out
+    skipped = {name for name, on in shown.items() if not on}
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        enc = str(beat.get("encounter") or "")
+        if enc and enc != "toilet" and enc in skipped:
+            continue
+        beats.append(beat)
+    if not beats:
+        raise EpisodeError("appear: at least one encounter must stay on")
+    # Two ui beats in a row / ui first are invalid; drop a leading ui after a skip.
+    cleaned: list[Any] = []
+    for beat in beats:
+        if not isinstance(beat, dict):
+            cleaned.append(beat)
+            continue
+        if is_ui_beat(beat) and not cleaned:
+            continue
+        if is_ui_beat(beat) and cleaned and isinstance(cleaned[-1], dict) and is_ui_beat(cleaned[-1]):
+            continue
+        cleaned.append(beat)
+    if not cleaned:
+        raise EpisodeError("appear: at least one footage beat must stay")
+    out["beats"] = cleaned
+    render = dict(out.get("render") or {})
+    render["appear"] = shown
+    out["render"] = render
+    spec = STORY_MODES.get(episode_story(out) or "accept") or STORY_MODES["accept"]
     return _apply_story_ending(out, spec)
+
+
+def resolve_episode_options(
+    ep: dict[str, Any],
+    *,
+    story: str | None = None,
+    pose: str | None = None,
+    toilet: str | None = None,
+    appear: str | dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Story + invite pose + toilet + appear, without connect/combat Colab wiring."""
+    out = apply_story_route(ep, story=story) if _has_story_overlays(ep) else copy.deepcopy(ep)
+    out = apply_invite_pose(out, pose=pose)
+    out = apply_toilet_route(out, toilet=toilet)
+    return apply_appear_route(out, appear=appear)
 
 
 def prepare_episode(
@@ -949,6 +1120,9 @@ def prepare_episode(
     preset_override: str | None = None,
     combat_override: str | None = None,
     story_override: str | None = None,
+    invite_pose_override: str | None = None,
+    toilet_override: str | None = None,
+    appear_override: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = apply_connect_mode(ep, connect_override)
@@ -964,10 +1138,20 @@ def prepare_episode(
         render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
+    if invite_pose_override not in (None, ""):
+        render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
+    if toilet_override not in (None, ""):
+        render["toilet"] = canonical_toilet(toilet_override) or toilet_override
+    if appear_override not in (None, ""):
+        render["appear"] = parse_appear(appear_override)
     out["render"] = render
     if _has_story_overlays(out):
-        return apply_story_route(out, story=story_override)
-    return apply_combat_route(out)
+        out = apply_story_route(out, story=story_override)
+    else:
+        out = apply_combat_route(out)
+    out = apply_invite_pose(out, pose=invite_pose_override)
+    out = apply_toilet_route(out, toilet=toilet_override)
+    return apply_appear_route(out, appear=appear_override)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -1306,9 +1490,24 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
     if _has_story_overlays(ep):
         errs: list[str] = []
         for key in STORY_MODES:
-            resolved = apply_story_route(ep, story=key)
+            resolved = resolve_episode_options(ep, story=key)
             for err in validate_episode(resolved, root=root):
                 errs.append(f"story-{key}: {err}")
+        for pose in INVITE_POSE_MODES:
+            resolved = resolve_episode_options(ep, story="invite", pose=pose)
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"invite-pose-{pose}: {err}")
+        for toilet in TOILET_MODES:
+            if toilet == "off":
+                continue
+            resolved = resolve_episode_options(ep, story="accept", toilet=toilet)
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"toilet-{toilet}: {err}")
+        for enc in HOSPITAL_ENCOUNTERS:
+            appear = {name: name != enc for name in HOSPITAL_ENCOUNTERS}
+            resolved = resolve_episode_options(ep, story="accept", appear=appear)
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"skip-{enc}: {err}")
         return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
@@ -2760,6 +2959,9 @@ def run_episode(
     connect_override: str | None = None,
     combat_override: str | None = None,
     story_override: str | None = None,
+    invite_pose_override: str | None = None,
+    toilet_override: str | None = None,
+    appear_override: str | dict[str, Any] | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -2775,6 +2977,9 @@ def run_episode(
         preset_override=preset_override,
         combat_override=combat_override,
         story_override=story_override,
+        invite_pose_override=invite_pose_override,
+        toilet_override=toilet_override,
+        appear_override=appear_override,
     )
     print(
         describe_run(
@@ -2783,6 +2988,9 @@ def run_episode(
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
             story=episode_story(ep),
+            invite_pose=episode_invite_pose(ep),
+            toilet=episode_toilet(ep),
+            appear=episode_appear(ep),
             episode=str(ep.get("slug") or ""),
         )
     )
@@ -3021,7 +3229,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--appear LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -3032,6 +3240,9 @@ def _usage() -> str:
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
         "  --combat off|on（迷ったら off。on はハイメモリ専用）\n"
         "  --story accept|invite|evade|fight_win|fight_lose（病棟の構成。迷ったら accept）\n"
+        "  --invite-pose all_fours|m_open|ride（病棟の誘うポーズ。迷ったら all_fours）\n"
+        "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
+        "  --appear miki,rei,kana,shino（病棟の登場。外した名前はシーンごと飛ばす）\n"
     )
 
 
@@ -3056,6 +3267,9 @@ def main(argv: list[str] | None = None) -> int:
     connect = None
     combat = None
     story = None
+    invite_pose = None
+    toilet = None
+    appear = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
@@ -3068,9 +3282,25 @@ def main(argv: list[str] | None = None) -> int:
         combat = opts[opts.index("--combat") + 1]
     if "--story" in opts:
         story = opts[opts.index("--story") + 1]
+    if "--invite-pose" in opts:
+        invite_pose = opts[opts.index("--invite-pose") + 1]
+    if "--toilet" in opts:
+        toilet = opts[opts.index("--toilet") + 1]
+    if "--appear" in opts:
+        appear = opts[opts.index("--appear") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
-    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset, combat_override=combat, story_override=story)
+    ep = prepare_episode(
+        ep,
+        connect_override=connect,
+        camera_pack_override=camera,
+        preset_override=preset,
+        combat_override=combat,
+        story_override=story,
+        invite_pose_override=invite_pose,
+        toilet_override=toilet,
+        appear_override=appear,
+    )
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():
         ensure_episode_tree(out_dir)

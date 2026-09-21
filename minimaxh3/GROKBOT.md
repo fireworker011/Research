@@ -122,7 +122,7 @@ python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk-adult --branc
 
 ### 病棟出口（成人エロ・Colab 5 番で完了か失敗か）
 
-同じ枝。inbox は触るな。Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。迷ったら `--story accept`。
+同じ枝。inbox は触るな。Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。迷ったら `--story accept`。誘うポーズ・トイレ・登場スキップは病棟だけ。
 
 ```
 skill h3-episode-grokbot を読む。

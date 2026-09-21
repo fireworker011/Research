@@ -223,7 +223,7 @@ STORY_MODES: dict[str, dict[str, Any]] = {
         "label_ja": "誘う",
         "choice_ja": "□誘う（淫欲・失敗）",
         "when_ja": "こちらから攻める濃厚セックス。院内で淫欲に呑まれて失敗",
-        "hint_ja": "ノリノリ。12で出口を捨てて失敗。Combat なし",
+        "hint_ja": "ノリノリ。各シーンのあと次へ行ける。最後だけ失敗。Combat なし",
         "combat": "off",
         "complete": False,
         "fail_reason": "淫欲に呑まれた",
@@ -241,8 +241,8 @@ STORY_MODES: dict[str, dict[str, Any]] = {
     "fight_win": {
         "label_ja": "戦って勝つ",
         "choice_ja": "△戦って勝つ（完了・ハイメモリ）",
-        "when_ja": "れいとかなを倒して出口。みきは回避。ハイメモリ",
-        "hint_ja": "06と10に Combat。かなも倒す。敗北Hなし",
+        "when_ja": "れいを倒して出口。みきは回避。かなはすり抜け。しのを倒す。ハイメモリ",
+        "hint_ja": "06と10に Combat。しのを倒す。敗北Hなし",
         "combat": "on",
         "complete": True,
         "menu_selected": 0,
@@ -251,7 +251,7 @@ STORY_MODES: dict[str, dict[str, Any]] = {
         "label_ja": "戦って負ける",
         "choice_ja": "△戦って負ける（敗北H・失敗・ハイメモリ）",
         "when_ja": "かなに倒されて専用敗北H。ミッション失敗。ハイメモリ",
-        "hint_ja": "10で敗北。11-12が敗北H。出られない",
+        "hint_ja": "10でしのに敗北。12が敗北H。出られない",
         "combat": "on",
         "complete": False,
         "fail_reason": "感染者に倒された",
@@ -284,6 +284,114 @@ STORY_ALIASES: dict[str, str] = _label_aliases(
         "lose": "fight_lose",
     },
 )
+
+
+# Invite pose (hospital □誘う only). Kasumi has no invite_pose_* keys; ignored there.
+INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
+    "all_fours": {
+        "label_ja": "四つん這い",
+        "choice_ja": "四つん這い股広げ（迷ったらこれ）",
+        "when_ja": "その場で四つん這い、股を広げて誘う",
+        "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる",
+        "recommend": True,
+    },
+    "m_open": {
+        "label_ja": "M字",
+        "choice_ja": "M字開脚仰向け",
+        "when_ja": "仰向けでM字に開いて誘う",
+        "hint_ja": "あやが仰向けM字。相手が前から入る",
+    },
+    "ride": {
+        "label_ja": "騎乗位",
+        "choice_ja": "ベロチュー→じゅぼ→騎乗位",
+        "when_ja": "笑って抱きつき、ベロチュー、じゅぼ、押し倒して騎乗位",
+        "hint_ja": "濃い誘う。竿なしのみきはじゅぼの代わりにクンニ",
+    },
+}
+
+INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
+    "all_fours": "invite_pose_all_fours",
+    "m_open": "invite_pose_m_open",
+    "ride": "invite_pose_ride",
+}
+
+INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
+    INVITE_POSE_MODES,
+    {
+        "四つん這い": "all_fours",
+        "四つん這い股広げ": "all_fours",
+        "all-fours": "all_fours",
+        "doggy": "all_fours",
+        "M字": "m_open",
+        "M字開脚": "m_open",
+        "m字": "m_open",
+        "missionary": "m_open",
+        "騎乗位": "ride",
+        "cowgirl": "ride",
+        "jupo": "ride",
+    },
+)
+
+# Optional toilet between みき and れい. Any choice continues to the next scene.
+TOILET_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "行かない",
+        "choice_ja": "トイレに行かない（迷ったらこれ）",
+        "when_ja": "道中は廊下のまま。次はれい",
+        "hint_ja": "迷ったらこれ。04はれいの登場",
+        "recommend": True,
+    },
+    "pee": {
+        "label_ja": "小便",
+        "choice_ja": "トイレ・小便",
+        "when_ja": "汚い多目的トイレの洋式に座って小便。どれでも次へ",
+        "hint_ja": "洋式に座って小便。次はれい（または次の登場）",
+    },
+    "masturbate": {
+        "label_ja": "オナニー",
+        "choice_ja": "トイレ・オナニー",
+        "when_ja": "同じ便座でオナニー。どれでも次へ",
+        "hint_ja": "洋式に座ってオナニー。次へ進む",
+    },
+    "tentacle": {
+        "label_ja": "触手",
+        "choice_ja": "トイレ・触手",
+        "when_ja": "便器から出た触手がマンコと肛門。どれでも次へ",
+        "hint_ja": "触手がマンコと肛門。次へ進む",
+    },
+}
+
+TOILET_OVERLAY_KEYS: dict[str, str] = {
+    "pee": "on_toilet_pee",
+    "masturbate": "on_toilet_masturbate",
+    "tentacle": "on_toilet_tentacle",
+}
+
+TOILET_ALIASES: dict[str, str] = _label_aliases(
+    TOILET_MODES,
+    {
+        "行かない": "off",
+        "なし": "off",
+        "skip": "off",
+        "小便": "pee",
+        "おしっこ": "pee",
+        "pee": "pee",
+        "オナニー": "masturbate",
+        "onanii": "masturbate",
+        "触手": "tentacle",
+        "tentacles": "tentacle",
+    },
+)
+
+HOSPITAL_ENCOUNTERS: tuple[str, ...] = ("miki", "rei", "kana", "shino")
+DEFAULT_APPEAR: dict[str, bool] = {name: True for name in HOSPITAL_ENCOUNTERS}
+
+APPEAR_ALIASES: dict[str, str] = {
+    "みき": "miki",
+    "れい": "rei",
+    "かな": "kana",
+    "しの": "shino",
+}
 
 
 PRESET_ALIASES: dict[str, str] = _label_aliases(
@@ -347,6 +455,61 @@ def canonical_story(name: str) -> str:
     return STORY_ALIASES.get(raw, raw)
 
 
+def canonical_invite_pose(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in INVITE_POSE_MODES:
+        return raw
+    return INVITE_POSE_ALIASES.get(raw, raw)
+
+
+def canonical_toilet(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in TOILET_MODES:
+        return raw
+    return TOILET_ALIASES.get(raw, raw)
+
+
+def canonical_encounter(name: str) -> str:
+    raw = str(name or "").strip().lower()
+    if not raw:
+        return ""
+    if raw in HOSPITAL_ENCOUNTERS:
+        return raw
+    return APPEAR_ALIASES.get(raw, raw)
+
+
+def parse_appear(raw: str | dict[str, Any] | None) -> dict[str, bool]:
+    """Which hospital encounters to keep. Empty / missing = all four appear."""
+    out = dict(DEFAULT_APPEAR)
+    if raw in (None, "", True):
+        return out
+    if raw is False:
+        return {name: False for name in HOSPITAL_ENCOUNTERS}
+    if isinstance(raw, dict):
+        for key, value in raw.items():
+            enc = canonical_encounter(str(key))
+            if enc in out:
+                out[enc] = bool(value)
+        return out
+    text = str(raw).strip()
+    if not text:
+        return out
+    if text.lower() in ("all", "全員", "*"):
+        return out
+    if text.lower() in ("none", "nobody", "0", "なし"):
+        return {name: False for name in HOSPITAL_ENCOUNTERS}
+    if "," in text or " " in text.replace(",", " "):
+        wanted = {canonical_encounter(part) for part in text.replace(",", " ").split() if part.strip()}
+        wanted.discard("")
+        if wanted:
+            return {name: name in wanted for name in HOSPITAL_ENCOUNTERS}
+    return out
+
+
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
@@ -358,6 +521,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return COMBAT_MODES
     if kind == "story":
         return STORY_MODES
+    if kind == "invite_pose":
+        return INVITE_POSE_MODES
+    if kind == "toilet":
+        return TOILET_MODES
     raise KeyError(kind)
 
 
@@ -394,18 +561,35 @@ def form_readme(kind: str) -> str:
     return "\n".join(lines)
 
 
-def describe_run(*, connect: str = "", camera: str = "", preset: str = "", combat: str = "", story: str = "", episode: str = "") -> str:
+def describe_run(
+    *,
+    connect: str = "",
+    camera: str = "",
+    preset: str = "",
+    combat: str = "",
+    story: str = "",
+    invite_pose: str = "",
+    toilet: str = "",
+    appear: str | dict[str, Any] | None = None,
+    episode: str = "",
+) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
     f_key = canonical_combat(combat) or "off"
     s_key = canonical_story(story) or "accept"
+    pose_key = canonical_invite_pose(invite_pose) or "all_fours"
+    t_key = canonical_toilet(toilet) or "off"
+    shown = parse_appear(appear)
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
     s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
+    pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
+    t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
+    appear_ja = " ".join(("○" if shown[name] else "×") + name for name in HOSPITAL_ENCOUNTERS)
     head = f"一発 {episode}".strip() if episode else "一発"
     return (
         f"{head}\n"
@@ -414,5 +598,8 @@ def describe_run(*, connect: str = "", camera: str = "", preset: str = "", comba
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
-        "迷ったらこの5つの既定のままで Run all。"
+        f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
+        f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
+        f"  登場      {appear_ja}\n"
+        "迷ったらこの5つの既定のままで Run all。6・7・登場は病棟だけ。"
     )
