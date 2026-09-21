@@ -13,6 +13,7 @@ Drive の 25秒 latest.mp4 は初回5カットなので見るな・reuse する�
 - HUD は生成後。プロンプトは英語。台詞だけかな
 - 「slow motion」「slowly」は書くな。口内も正常位も歩く速さ
 - 口内・正常位はしてる側もされてる側も気持ちよさそう。後背位にキスを足すな
+- じゅぼは物語集の blowjob LoRA（`MM-H3_Blowjob_v3.safetensors` / `bl0w_j0b`）。Drive の studio loras にあればそれを使う。無ければ Civitai（`CIVITAI_API_TOKEN`）
 - 格闘LoRAオフとオンで話が違う。オフに戦いを書くな。オンに後背位を書くな
 - GPU は T2V。隣接ショットは camera_pack で画角を変える。`still_as: last` のシームレス連鎖はしない（プロンプトで直せなくなる）
 

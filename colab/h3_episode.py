@@ -44,6 +44,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+try:
+    from google.colab import userdata as _COLAB_USERDATA
+except ImportError:
+    _COLAB_USERDATA = None
+
 from PIL import Image
 
 from h3_hud import (
@@ -161,11 +166,19 @@ LORA_FILES = {
     "cinema": "Minimax_H3_cinematic_DY.safetensors",
     "combat": "H3_Combat_V2.safetensors",
     "mystic": "MysticXXX_MMH3-V4.safetensors",
+    # Story-pack oral act (h3-lora-studio catalog blowjob-h3).
+    "blowjob": "MM-H3_Blowjob_v3.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
     "mystic": "https://huggingface.co/lynaNSFW/mysticxxx_MM_H3/resolve/main/MysticXXX_MMH3-V4.safetensors",
+    "blowjob": "https://civitai.com/api/download/models/3285598?fileId=3169863",
 }
+# Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
+LORA_STRENGTHS = {
+    "blowjob": 0.8,
+}
+BLOWJOB_TRIGGER = "bl0w_j0b"
 COMBAT_ROUTE_KEY = "combat_on"
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
@@ -217,6 +230,11 @@ COMBAT_SCHEDULER = "beta"
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
 REUSE_RE = re.compile(r"^([a-z0-9][a-z0-9-]{1,40})/([0-9]{2}-[a-z0-9-]{1,32})$")
+ADULT_AGE_MIN = 21
+# "16y" / "16-year-old" in a lock. Do not match 21-year-old.
+CAST_UNDERAGE_RE = re.compile(
+    r"(?i)(?<!\d)(?:1[0-9]|[1-9])y\b|(?<!\d)(?:1[0-9]|[1-9])[\s_-]*years?"
+)
 KANJI_RE = re.compile(r"[\u4e00-\u9fff]")
 KANA_RE = re.compile(r"[\u3040-\u30ff\uff66-\uff9f]")
 CJK_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff\uff66-\uff9f]")
@@ -1257,9 +1275,13 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             errs.append(f"cast.{cid}.lock (English identity lock) missing")
         elif CJK_RE.search(str(c["lock"])):
             errs.append(f"cast.{cid}.lock must be English")
+        else:
+            lock = str(c.get("lock") or "")
+            if STUDIO_I2V_MINOR_RE.search(lock) or CAST_UNDERAGE_RE.search(lock):
+                errs.append(f"cast.{cid}.lock must describe an adult (no minor age tags)")
         try:
-            if int(c.get("age") or 0) < 20:
-                errs.append(f"cast.{cid}.age must be an adult (>= 20)")
+            if int(c.get("age") or 0) < ADULT_AGE_MIN:
+                errs.append(f"cast.{cid}.age must be an adult (>= {ADULT_AGE_MIN})")
         except (TypeError, ValueError):
             errs.append(f"cast.{cid}.age must be an integer")
     beats = ep.get("beats") or []
@@ -1619,13 +1641,15 @@ def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
     out: list[tuple[str, float]] = []
     for item in raw:
         if isinstance(item, str):
-            out.append((item, 1.0))
+            out.append((item, float(LORA_STRENGTHS.get(item, 1.0))))
             continue
         if isinstance(item, (list, tuple)) and item:
+            key = str(item[0])
             try:
-                out.append((str(item[0]), float(item[1]) if len(item) > 1 else 1.0))
+                strength = float(item[1]) if len(item) > 1 else float(LORA_STRENGTHS.get(key, 1.0))
             except (TypeError, ValueError):
-                out.append((str(item[0]), 1.0))
+                strength = float(LORA_STRENGTHS.get(key, 1.0))
+            out.append((key, strength))
     return out
 
 
@@ -1965,9 +1989,35 @@ def stage_still(src: Path | str, dest: Path | str, canvas: tuple[int, int]) -> P
     return dest
 
 
-def fetch_text(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
+def _civitai_token() -> str:
+    env = str(os.environ.get("CIVITAI_API_TOKEN") or "").strip()
+    if env:
+        return env
+    if _COLAB_USERDATA is None:
+        return ""
+    try:
+        return str(_COLAB_USERDATA.get("CIVITAI_API_TOKEN") or "").strip()
+    except Exception:
+        return ""
+
+
+def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "") -> bool:
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
+        civitai = "civitai.com" in str(url).lower()
+        tok = token or (_civitai_token() if civitai else "")
+        if tok or civitai:
+            headers = {"User-Agent": "h3-episode"}
+            if tok:
+                headers["Authorization"] = f"Bearer {tok}"
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=120) as resp, open(dest, "wb") as out:
+                while True:
+                    chunk = resp.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+            return dest.is_file() and dest.stat().st_size > min_bytes
         urllib.request.urlretrieve(url, dest)
         return dest.is_file() and dest.stat().st_size > min_bytes
     except Exception as e:  # network

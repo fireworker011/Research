@@ -27,6 +27,8 @@ from h3_episode import (  # noqa: E402
     EROS_MAX_UNET,
     I2VA_HEADER,
     LORA_FILES,
+    LORA_STRENGTHS,
+    LORA_URLS,
     MUNDANE_CLAUSE,
     PRESET_ALIASES,
     PRESET_CANON,
@@ -71,6 +73,7 @@ from h3_episode import (  # noqa: E402
     is_turbo_hybrid_unet,
     locate_erotic_checkpoint,
     expected_duration,
+    extra_lora_entries,
     finish_episode,
     forbidden_hits,
     gpu_index_map,
@@ -661,6 +664,10 @@ def test_erotic_comfy_omits_removed_normalvram_flag():
     assert "--normalvram" not in stock_cmd
 
 
+def extra_keys(beat):
+    return [k for k, _s in extra_lora_entries(beat)]
+
+
 def _kasumi_adult_cast(ep):
     assert ep["cast"]["mio"]["age"] == 21
     assert ep["cast"]["nana"]["age"] == 23
@@ -671,6 +678,11 @@ def _kasumi_adult_cast(ep):
     assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
     assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
     assert "unhurried" not in ep["cast"]["kuroki"]["lock"]
+    for c in ep["cast"].values():
+        lock = str(c["lock"]).lower()
+        assert c["age"] >= 21
+        assert "16y" not in lock and "girl" not in lock
+        assert "woman" in lock and "adult" in lock
 
 
 def test_kasumi_adult_combat_off_is_sex_route_not_fights():
@@ -679,6 +691,10 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     _kasumi_adult_cast(raw)
     assert raw["render"]["combat"] == "off"
     assert "mystic" in LORA_FILES
+    assert "blowjob" in LORA_FILES
+    assert LORA_FILES["blowjob"] == "MM-H3_Blowjob_v3.safetensors"
+    assert "civitai.com" in LORA_URLS["blowjob"]
+    assert LORA_STRENGTHS["blowjob"] == 0.8
     ep = apply_combat_route(raw, combat="off")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
@@ -712,10 +728,15 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert "finishes inside" in cream_prompt.lower() or "white goo" in cream_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(cream, cream_prompt)
     jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
-    jupo_prompt = build_beat_prompt(ep, jupo)
+    jupo_prompt = build_beat_prompt(ep, jupo, trigger=merge_trigger("", jupo))
     assert "jupo-jupo" in jupo_prompt.lower()
     assert "french kiss" in jupo_prompt.lower()
-    assert jupo.get("extra_loras") == ["mystic"]
+    assert extra_keys(jupo) == ["blowjob", "mystic"]
+    assert extra_lora_entries(jupo) == [("blowjob", 0.8), ("mystic", 1.0)]
+    assert jupo.get("trigger") == "bl0w_j0b"
+    assert jupo_prompt.startswith("bl0w_j0b")
+    assert "keep the lips at the base" in jupo_prompt.lower()
+    assert "nobody pulls off" in jupo_prompt.lower()
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
@@ -765,12 +786,18 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
     assert "prfight2" not in oral_prompt
     assert "jupo-jupo" in oral_prompt.lower()
+    assert extra_keys(oral) == ["blowjob", "mystic"]
+    assert oral.get("trigger") == "bl0w_j0b"
+    assert oral_prompt.startswith("bl0w_j0b")
+    assert "keep the lips at the base" in oral_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
     kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
-    kiss_prompt = build_beat_prompt(ep, kiss)
+    kiss_prompt = build_beat_prompt(ep, kiss, trigger=merge_trigger("", kiss))
     assert "jupo-jupo" not in kiss_prompt.lower()
     assert "french kiss" in kiss_prompt.lower()
-    assert not kiss.get("extra_loras")
+    assert extra_keys(kiss) == []
+    assert not kiss.get("trigger")
+    assert "bl0w_j0b" not in kiss_prompt.lower()
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
@@ -805,9 +832,8 @@ def test_hospital_exit_adult_escape_while_joined():
     assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
     assert all(b.get("trigger") == "prfight2, prfin1" for b in fights)
     assert ep["beats"][2]["id"] == "03-kiss" and not ep["beats"][2].get("extra_loras")
-    assert ep["beats"][6]["id"] == "07-oral" and not ep["beats"][6].get("extra_loras")
     assert all(not b.get("reuse") for b in ep["beats"])
-    assert all(c["age"] >= 20 for c in ep["cast"].values())
+    assert all(c["age"] >= 21 for c in ep["cast"].values())
     gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
     assert all(b["source"] == "t2v" for b in gpu)
     assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
@@ -826,7 +852,10 @@ def test_hospital_exit_adult_escape_while_joined():
         assert "<Picture 1>" not in prompt and "Picture 2" not in prompt
         assert "This shot:" in prompt
     oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
-    oral_prompt = build_beat_prompt(ep, oral)
+    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
+    assert extra_keys(oral) == ["blowjob"]
+    assert oral.get("trigger") == "bl0w_j0b"
+    assert oral_prompt.startswith("bl0w_j0b")
     assert "jupo-jupo" in oral_prompt.lower()
     assert "melting with pleasure" in oral_prompt
     _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
@@ -989,6 +1018,35 @@ def test_apply_extra_loras_drops_cinema(tmp_path):
     dropped = apply_extra_loras(preset, {"extra_loras": ["cinema"]}, loras)
     assert dropped["stack"] == preset["stack"]
     assert any("cinematic LoRA skipped" in n for n in dropped["notes"])
+
+
+def test_apply_extra_loras_blowjob_stacks_on_hybrid(tmp_path):
+    beat = {"extra_loras": ["blowjob", "mystic"], "trigger": "bl0w_j0b"}
+    daily = {"name": "daily", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "", "notes": []}
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["blowjob"]).write_bytes(b"x")
+    (loras / LORA_FILES["mystic"]).write_bytes(b"x")
+    stacked = apply_extra_loras(daily, beat, loras, unet=EROS_MAX_UNET)
+    assert stacked["stack"][-2:] == [(LORA_FILES["blowjob"], 0.8), (LORA_FILES["mystic"], 1.0)]
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    missing = apply_extra_loras(daily, beat, empty, unet=EROS_MAX_UNET)
+    assert missing["stack"] == daily["stack"]
+    assert any("MM-H3_Blowjob_v3.safetensors" in n for n in missing["notes"])
+
+
+def test_cast_lock_rejects_underage_tags():
+    raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    bad_age = copy.deepcopy(raw)
+    bad_age["cast"]["mio"]["age"] = 16
+    assert any("age" in e and "adult" in e for e in validate_episode(bad_age, root=KASUMI_ADULT_DIR))
+    twenty = copy.deepcopy(raw)
+    twenty["cast"]["mio"]["age"] = 20
+    assert any(">= 21" in e for e in validate_episode(twenty, root=KASUMI_ADULT_DIR))
+    bad_lock = copy.deepcopy(raw)
+    bad_lock["cast"]["mio"]["lock"] = "16y, Japanese girl, pretty face, slim body, C-cup breasts"
+    assert any("lock" in e and "adult" in e for e in validate_episode(bad_lock, root=KASUMI_ADULT_DIR))
 
 
 def test_stock_unet_never_auto_picks_eros_max(tmp_path):

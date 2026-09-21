@@ -78,7 +78,7 @@ inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5�
 - `*-adult` の省略は stock に落ちない（check が落とす）
 - 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う。HuggingFace からは取らない。途中切れの別ファイル `.part` は無視。stock には落とさない
 - inbox の `*fl2va*` は 10Eros を飛ばす
-- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry も積まない。Combat はハイメモリでオンにしたときだけ。DT-sQKV は使わない
+- LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry も積まない。Combat はハイメモリでオンにしたときだけ。じゅぼは物語集 blowjob LoRA（`bl0w_j0b`、0.8）。DT-sQKV は使わない
 - Drive は symlink できない。`diffusion_models` のファイルをそのまま読む
 - Comfy は成人レーンで VRAM フラグを付けない（現行 CLI に `--normalvram` は無い。付けると start failed）。stock は `--highvram`
 
