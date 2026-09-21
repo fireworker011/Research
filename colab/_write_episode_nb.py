@@ -30,8 +30,6 @@ EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
 __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
-__END_CONNECT_HELP__
-END_CONNECT = __END_CONNECT_DEFAULT__  #@param __END_CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
 __PRESET_HELP__
@@ -80,7 +78,7 @@ os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
-os.environ["H3_EPISODE_END_CONNECT"] = END_CONNECT
+os.environ["H3_EPISODE_END_CONNECT"] = "t2v"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
@@ -159,13 +157,9 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("episode")}
 
-**1. つなぎ方** — 動画をどう繋げるか
+**1. つなぎ方** — 動画をどう繋げるか。行為のあとの歩きは常にカット（相手と竿が次に残らない）
 
 {form_readme("connect")}
-
-**シーン終わりのつなぎ** — 行為のあとの歩きと次のシーン。連続して別シーンを出すときだけ変える
-
-{form_readme("end_connect")}
 
 **2. カメラ**
 
@@ -228,12 +222,9 @@ def make_nb() -> dict:
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
         .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
-        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか"))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。歩きは常にカット"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_HELP__", form_markdown("end_connect", "シーン終わりのつなぎ — 行為のあとの歩きと次のシーン"))
-        .replace("__END_CONNECT_DEFAULT__", json.dumps(ui_default("end_connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_CHOICES__", json.dumps(ui_choices("end_connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))

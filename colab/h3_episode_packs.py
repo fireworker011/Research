@@ -1470,7 +1470,6 @@ def describe_run(
         f"{head}\n"
         f"  話        {ep_ja}\n"
         f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
-        f"  終わり    {e['choice_ja']}  — {e['when_ja']}\n"
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
@@ -1481,5 +1480,5 @@ def describe_run(
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
-        "迷ったら既定のままで Run all。シーン終わりは連続して次を出すときだけ変える。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
+        "迷ったら既定のままで Run all。行為のあとの歩きは常にカット。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

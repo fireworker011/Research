@@ -246,10 +246,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "格闘LoRAオン（ハイメモリ専用）" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
-    assert "H3_EPISODE_END_CONNECT" in src
-    assert 'END_CONNECT = "シーン終わりはカット（迷ったらこれ）"' in src
-    assert "次のシーンへ続ける" in src
-    assert "1番のつなぎに従う" in src
+    assert 'os.environ["H3_EPISODE_END_CONNECT"] = "t2v"' in src
+    assert "END_CONNECT =" not in src
+    assert "1番のつなぎに従う" not in src
+    assert "次のシーンへ続ける" not in src
     assert "H3_EPISODE_COMBAT" in src
     assert "H3_EPISODE_STORY" in src
     assert "H3_EPISODE_INVITE_POSE" in src
@@ -285,7 +285,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "hospital-exit-adult" in md
     assert "病棟の話" in md
     assert "1. つなぎ方" in md or "つなぎ方" in md
-    assert "シーン終わりのつなぎ" in md
+    assert "シーン終わりのつなぎ" not in md
+    assert "歩きは常にカット" in md
     assert "前の最終フレームから続ける" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
@@ -1957,7 +1958,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     ]
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
-    assert "シーン終わりはカット（迷ったらこれ）" in picked
+    assert "行為のあとの歩きは常にカット" in picked
     assert "迷ったら既定のままで Run all" in picked
     assert "6 誘う" in picked
     assert "7 トイレ" in picked
