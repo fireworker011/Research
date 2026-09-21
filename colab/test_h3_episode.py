@@ -1110,13 +1110,14 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
     assert "no blood" not in raw["world"]["lock"].lower()
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
-    assert "WHITE filthy slime" in raw["cast"]["rei"]["lock"]
+    assert "dark-brown filthy sludge" in raw["cast"]["rei"]["lock"]
+    assert "WHITE filthy slime" not in raw["cast"]["rei"]["lock"]
     assert "LEFT half of the face" in raw["cast"]["rei"]["lock"]
     assert "same vivid purple" in raw["cast"]["rei"]["lock"]
     assert "not pale-tan flesh" in raw["cast"]["rei"]["lock"]
     assert "pale-tan skin" not in raw["cast"]["rei"]["lock"]
     assert "rotting" in raw["cast"]["rei"]["lock"]
-    assert "brown viscous" not in raw["cast"]["rei"]["lock"].lower()
+    assert "feces" not in raw["cast"]["rei"]["lock"].lower()
     assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
     assert "glasses" not in raw["cast"]["kana"]["lock"].lower()
     assert "purple" in raw["cast"]["kana"]["lock"]
@@ -2056,7 +2057,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert beat_source(six) == "t2v"
     assert six["cast"] == ["aya", "rei"]
     assert "kana" not in six["cast"]
-    assert "WHITE filthy slime" in invite["cast"]["rei"]["lock"]
+    assert "dark-brown filthy sludge" in invite["cast"]["rei"]["lock"]
+    assert "WHITE filthy slime" not in invite["cast"]["rei"]["lock"]
     assert "LEFT half of the face" in invite["cast"]["rei"]["lock"]
 
     ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
