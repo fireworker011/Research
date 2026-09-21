@@ -711,19 +711,29 @@ def _kasumi_adult_cast(ep):
     assert ep["cast"]["nana"]["age"] == 23
     assert ep["cast"]["aoki"]["age"] == 27
     assert ep["cast"]["kuroki"]["age"] == 29
-    assert "C-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
+    assert "A-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
+    assert "cinched waist" in ep["cast"]["mio"]["lock"]
+    assert "medium-length black hair" in ep["cast"]["mio"]["lock"]
+    assert "cute pretty adult face" in ep["cast"]["mio"]["lock"]
     assert "tote" not in ep["cast"]["mio"]["lock"].lower()
-    assert "D-cup" in ep["cast"]["nana"]["lock"] and "futanari" in ep["cast"]["nana"]["lock"]
+    assert "B-cup" in ep["cast"]["nana"]["lock"] and "futanari" in ep["cast"]["nana"]["lock"]
+    assert "brown bob" in ep["cast"]["nana"]["lock"]
     assert "24cm" in ep["cast"]["nana"]["lock"] and "thick human girth" in ep["cast"]["nana"]["lock"]
-    assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
+    assert "C-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
+    assert "long brown permed hair" in ep["cast"]["aoki"]["lock"]
     assert "24cm" in ep["cast"]["aoki"]["lock"] and "corona" in ep["cast"]["aoki"]["lock"]
-    assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
+    assert "D-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
+    assert "ponytail" in ep["cast"]["kuroki"]["lock"]
     assert "24cm" in ep["cast"]["kuroki"]["lock"]
+    assert "glasses" not in ep["cast"]["kuroki"]["lock"].lower()
     assert "frenulum" in ep["cast"]["nana"]["lock"]
     assert "veins along the shaft" in ep["cast"]["aoki"]["lock"]
     assert "unhurried" not in ep["cast"]["kuroki"]["lock"]
     raw_txt = (KASUMI_ADULT_DIR / "episode.json").read_text(encoding="utf-8")
     assert "20cm" not in raw_txt
+    assert "glasses" not in raw_txt.lower()
+    assert "E-cup" not in raw_txt
+    assert ep["cast"]["mio"]["name_ja"] == "白石 みお"
     for c in ep["cast"].values():
         lock = str(c["lock"]).lower()
         assert c["age"] >= 21
