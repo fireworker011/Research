@@ -52,3 +52,4 @@ no front-facing camera, no three-quarter cinematic shot as default, no extra cha
 
 ## Memo
 跨がる前の口の軌道。名称だけで切らない。何往復かする。
+Colab の体位ドロップダウンはこの1本を出さない。キスは S18、フェラ／クンニは S19 のドロップダウンが持つ。「キスしない」「フェラもクンニもしない」を選んだのに跨がりで勝手に出る、を防ぐため。手描きでこの順に撮るときだけ本ファイルを使う。

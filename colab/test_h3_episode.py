@@ -2799,6 +2799,12 @@ def test_rei_escape_beast_accept_invite_evade():
     assert "05-enemy1-invite" not in ids
     assert "04-enemy1" in ids and "06-fade-run-b" in ids
     assert len(evade["beats"]) == len(accept["beats"]) - 1
+    # The run after enemy1 must not claim a climax that the chosen branch skipped.
+    for ep, climaxed in ((accept, True), (invite, True), (evade, False)):
+        run_b = next(b for b in ep["beats"] if b["id"] == "06-fade-run-b")
+        assert ("after ejaculation" in run_b["action"]) is climaxed
+        assert "completely fades out of frame" in run_b["action"]
+    assert "misses" in next(b for b in evade["beats"] if b["id"] == "06-fade-run-b")["action"]
     for ep in (accept, invite, evade):
         assert validate_episode(ep) == []
         for _, prompt, perr in beat_prompts(ep):
@@ -2828,6 +2834,24 @@ def test_chain_never_starts_on_a_frame_holding_someone_it_dropped():
     assert beat_source(walk) == "t2v"
     joined = next(b for b in kasumi["beats"] if b["id"] == "07-creampie")
     assert beat_source(joined) == "chain"
+
+
+def test_rei_escape_pose_never_adds_kiss_or_oral_back():
+    """体位ドロップダウンはラベルどおりの動きだけ。キスは18、フェラ/クンニは19が持つ。"""
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    for pose in ("fours", "wall", "straddle", "supine"):
+        off = prepare_episode(raw, rei_pose_override=pose, rei_kiss_override="off", rei_oral_override="skip")
+        for beat in off["beats"]:
+            if not str(beat.get("id") or "").startswith("20-"):
+                continue
+            # POSE_BAN legitimately says "do not pack kiss-to-creampie into one clip".
+            action = beat["action"].replace("Do not pack kiss-to-creampie into one clip.", "")
+            assert "kiss" not in action, beat["id"]
+            assert "lips part over" not in action, beat["id"]
+            assert extra_lora_entries(beat) == [], beat["id"]
+    straddle = prepare_episode(raw, rei_pose_override="straddle")
+    ids = [b["id"] for b in straddle["beats"] if str(b.get("id") or "").startswith("20-")]
+    assert ids == ["20-straddle-ride", "20-straddle-out"]
 
 
 def test_rei_escape_notebook_is_isolated():

@@ -207,16 +207,13 @@ def pose_wall() -> list[dict]:
 
 
 def pose_straddle() -> list[dict]:
-    mouth = (
-        f"{POSE_BAN}. side view, open-mouth kiss first, tongues visible, then the succubus lips part "
-        "over the 24cm head, travel to the base, hold, pull back to the head, several full passes, "
-        "tongue on the underside, wings folded, Rei sitting or on her back on the meat floor, fully nude succubus"
-    )
+    # The canonical cowgirl branch opens on a kiss-then-mouth clip. Colab owns
+    # that with its own kiss (S18) and oral (S19) dropdowns, so the pose option
+    # only does what its label says: sink and ride.
     ride = (
-        f"{POSE_BAN}. side view, she rises off the mouth, straddles Rei who lies on the springy meat "
-        "floor, sinks until the 24cm is buried to the base, then her hips rise until mid-shaft shows "
-        "and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, "
-        "Rei holds still"
+        f"{POSE_BAN}. side view, the succubus straddles Rei who lies on the springy meat floor, sinks "
+        "until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop "
+        "until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still"
     )
     cream = (
         f"{POSE_BAN}. same straddle, last drops go to the hilt and hold, creampie overflow around the "
@@ -224,7 +221,6 @@ def pose_straddle() -> list[dict]:
         "24cm stays erect after she lifts off, wings still in frame"
     )
     return [
-        ov(mouth, id="20-straddle-mouth", cast=["rei", "succubus"], seconds=8.0, extra=["blowjob"], voice=("んっ", "はあ")),
         ov(ride, id="20-straddle-ride", cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ")),
         ov(cream, id="20-straddle-out", cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ")),
     ]
@@ -284,6 +280,22 @@ def build() -> dict:
         "Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once "
         "on the last pulse and hold. Do not shrink the beast to human size. Do not grow a human face. Keep the "
         "tooth-ring visible and flared. Rei stays on her back with knees open"
+    )
+    s06_after = (
+        "The giant circular-maw beast completely fades out of frame, no walk-away, no residual fin or tooth. "
+        "Rei alone in the meat corridor, still fully erect 24cm after ejaculation, then she sprints left to "
+        "right, penis bouncing, torn damp garment half-off, no extra people"
+    )
+    s06_up = (
+        "The giant circular-maw beast completely fades out of frame, no walk-away, no residual fin or tooth. "
+        "Rei alone in the meat corridor, she pushes up off her back onto her feet, still fully erect 24cm after "
+        "ejaculation, then she sprints left to right, penis bouncing, torn damp garment half-off, no extra people"
+    )
+    s06_evade = (
+        "The giant circular-maw beast lunges once and misses. Rei ducks under the limb-fins and the beast "
+        "completely fades out of frame, no walk-away, no residual fin or tooth. Rei alone in the meat corridor, "
+        "untouched and not yet climaxed, still fully erect 24cm, no slime on her, then she sprints left to right, "
+        "penis bouncing, torn damp garment half-off, no extra people"
     )
     moth_tail = (
         "Only Rei and this one moth-girl. Meat walls only. The orifice at the TIP of the moth tail is a "
@@ -368,13 +380,17 @@ def build() -> dict:
         ),
         beat(
             "06-fade-run-b",
-            "The giant circular-maw beast completely fades out of frame, no walk-away, no residual fin or tooth. "
-            "Rei alone in the meat corridor, still fully erect 24cm after ejaculation, then she sprints left to "
-            "right, penis bouncing, torn damp garment half-off, no extra people",
+            s06_after,
             seconds=6.0,
             voice=("はあ",),
+            slot="beast",
             stage="01",
             cut=True,
+            overlays={
+                "rei_beast_accept": ov(s06_after, id="06-fade-run-b", seconds=6.0, voice=("はあ",)),
+                "rei_beast_invite": ov(s06_up, id="06-fade-run-b", seconds=6.0, voice=("はあ",)),
+                "rei_beast_evade": ov(s06_evade, id="06-fade-run-b", seconds=6.0, voice=("はあ",)),
+            },
         ),
         mast_pair("07", "01"),
         beat(

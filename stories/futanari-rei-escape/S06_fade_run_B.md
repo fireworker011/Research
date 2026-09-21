@@ -45,3 +45,4 @@ no front-facing camera, no three-quarter cinematic shot as default, no extra cha
 
 ## Memo
 怪物は completely fades out of frame。レイだけ残して右へ走る。24cmは射精後も勃起。歩き去り禁止。
+S04 で「回避」を選んだときは S05 が無いので after ejaculation と書かない。怪物が一度突進して外し、レイがくぐって怪物がフェード。汚れも精液もなし。Colab は 敵1 の選択に合わせてこの本文を差し替える。

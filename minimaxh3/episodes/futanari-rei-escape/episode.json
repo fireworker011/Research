@@ -437,7 +437,50 @@
         ],
         "complete": false
       },
-      "connect": "t2v"
+      "connect": "t2v",
+      "rei_slot": "beast",
+      "rei_beast_accept": {
+        "action": "The giant circular-maw beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei alone in the meat corridor, still fully erect 24cm after ejaculation, then she sprints left to right, penis bouncing, torn damp garment half-off, no extra people",
+        "voices": [
+          {
+            "who": "rei",
+            "line": "はあ"
+          }
+        ],
+        "id": "06-fade-run-b",
+        "trim": {
+          "start": 0,
+          "seconds": 6.0
+        }
+      },
+      "rei_beast_invite": {
+        "action": "The giant circular-maw beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei alone in the meat corridor, she pushes up off her back onto her feet, still fully erect 24cm after ejaculation, then she sprints left to right, penis bouncing, torn damp garment half-off, no extra people",
+        "voices": [
+          {
+            "who": "rei",
+            "line": "はあ"
+          }
+        ],
+        "id": "06-fade-run-b",
+        "trim": {
+          "start": 0,
+          "seconds": 6.0
+        }
+      },
+      "rei_beast_evade": {
+        "action": "The giant circular-maw beast lunges once and misses. Rei ducks under the limb-fins and the beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei alone in the meat corridor, untouched and not yet climaxed, still fully erect 24cm, no slime on her, then she sprints left to right, penis bouncing, torn damp garment half-off, no extra people",
+        "voices": [
+          {
+            "who": "rei",
+            "line": "はあ"
+          }
+        ],
+        "id": "06-fade-run-b",
+        "trim": {
+          "start": 0,
+          "seconds": 6.0
+        }
+      }
     },
     {
       "id": "07-mast",
@@ -1354,32 +1397,7 @@
       ],
       "rei_pose_straddle": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. side view, open-mouth kiss first, tongues visible, then the succubus lips part over the 24cm head, travel to the base, hold, pull back to the head, several full passes, tongue on the underside, wings folded, Rei sitting or on her back on the meat floor, fully nude succubus",
-          "extra_loras": [
-            "blowjob"
-          ],
-          "voices": [
-            {
-              "who": "rei",
-              "line": "んっ"
-            },
-            {
-              "who": "rei",
-              "line": "はあ"
-            }
-          ],
-          "id": "20-straddle-mouth",
-          "cast": [
-            "rei",
-            "succubus"
-          ],
-          "trim": {
-            "start": 0,
-            "seconds": 8.0
-          }
-        },
-        {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. side view, she rises off the mouth, straddles Rei who lies on the springy meat floor, sinks until the 24cm is buried to the base, then her hips rise until mid-shaft shows and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. side view, the succubus straddles Rei who lies on the springy meat floor, sinks until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still",
           "voices": [
             {
               "who": "rei",

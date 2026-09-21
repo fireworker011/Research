@@ -12,7 +12,7 @@
 | S05 | S05_enemy1_maw_motion.md | 受け入れる。立ち円口蠕動。Shot A+B 全文。5秒で射精 |
 | S05 invite | branches/S05_invite_supine.md | 誘う。仰向け笑顔股開き。円口が上から |
 | S05 evade | （生成しない） | 回避。S05スキップ→S06 |
-| S06 | S06_fade_run_B.md | 敵1フェード→走りB |
+| S06 | S06_fade_run_B.md | 敵1フェード→走りB。回避のときは射精文言なし |
 | S07 | S07_optional_masturbate.md | 任意おな（汚れなし） |
 | S08 | S08_toilet_encounter.md | 糞の洋式トイレ |
 | S09 | S09_toilet_choice.md | 分岐のみ |
@@ -31,7 +31,7 @@
 | S17 | S17_who_attacks.md | レイから／サキュバスから |
 | S18 | S18_kiss_optional.md | キス。スキップ可 |
 | S19 | S19_mouth_optional.md | 唇と舌の軌道。スキップ可 |
-| S20 | branches/S20_* | 体位は分割。名称ではなく動き |
+| S20 | branches/S20_* | 体位は分割。名称ではなく動き。跨がりの口の1本は Colab では出さない（S18/S19 が持つ） |
 | S21 | S21_orgasm.md | 中出し絶頂を末尾に |
 | S22 | S22_succubus_fade.md | 完全フェード。残骸なし |
 | S23 | S23_run_E.md | 走りE→出口 |

@@ -628,6 +628,9 @@ REI_BEAST_MODES: dict[str, dict[str, Any]] = {
 REI_BEAST_OVERLAY_KEYS: dict[str, str] = {
     "accept": "rei_beast_accept",
     "invite": "rei_beast_invite",
+    # evade has no S05 cut, but S06 still needs its own wording: the maw never
+    # swallowed her, so the run after it must not say "after ejaculation".
+    "evade": "rei_beast_evade",
 }
 
 REI_BEAST_ALIASES: dict[str, str] = _label_aliases(
