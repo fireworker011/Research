@@ -2672,6 +2672,8 @@ def test_rei_escape_default_validates_complete_under_max():
     assert all("異形の体内から脱出" == b.get("hud", {}).get("mission") for b in ep["beats"])
     maw = next(b for b in ep["beats"] if b["id"] == "05-enemy1-maw")
     assert extra_lora_entries(maw) == [("mystic", 1.0)]
+    assert "lies on her back" not in maw["action"]
+    assert "lizard crawl" in maw["action"]
     tail = next(b for b in ep["beats"] if b["id"] == "13-tail")
     assert extra_lora_entries(tail) == [("mystic", 1.0)]
     for _, prompt, perr in beat_prompts(ep):
@@ -2773,6 +2775,34 @@ def test_rei_escape_options_filth_and_oral_lora():
     assert json.dumps(after["beats"], ensure_ascii=False) == before
 
 
+def test_rei_escape_beast_accept_invite_evade():
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    accept = prepare_episode(raw, rei_beast_override="受け入れる")
+    maw = next(b for b in accept["beats"] if b["id"] == "05-enemy1-maw")
+    assert extra_lora_entries(maw) == [("mystic", 1.0)]
+    assert "lizard crawl" in maw["action"]
+    assert "lies on her back" not in maw["action"]
+    invite = prepare_episode(raw, rei_beast_override="誘う")
+    supine = next(b for b in invite["beats"] if b["id"] == "05-enemy1-invite")
+    assert extra_lora_entries(supine) == [("mystic", 1.0)]
+    assert "lies on her back" in supine["action"]
+    assert "knees open" in supine["action"]
+    assert "smiling" in supine["action"]
+    assert "05-enemy1-maw" not in [b["id"] for b in invite["beats"]]
+    evade = prepare_episode(raw, rei_beast_override="回避")
+    ids = [b["id"] for b in evade["beats"]]
+    assert "05-enemy1-maw" not in ids
+    assert "05-enemy1-invite" not in ids
+    assert "04-enemy1" in ids and "06-fade-run-b" in ids
+    assert len(evade["beats"]) == len(accept["beats"]) - 1
+    for ep in (accept, invite, evade):
+        assert validate_episode(ep) == []
+        for _, prompt, perr in beat_prompts(ep):
+            assert perr == []
+            low = prompt.lower()
+            assert "blowjob" not in low and "fellatio" not in low
+
+
 def test_rei_escape_notebook_is_isolated():
     nb = json.loads((ROOT / "minimax_h3_rei_escape_bot.ipynb").read_text(encoding="utf-8"))
     code = [c for c in nb["cells"] if c["cell_type"] == "code"]
@@ -2786,7 +2816,12 @@ def test_rei_escape_notebook_is_isolated():
     assert "END_CONNECT" not in src
     assert "1番のつなぎに従う" not in src
     assert "H3_EPISODE_REI_MAST" in src
+    assert "H3_EPISODE_REI_BEAST" in src
     assert "H3_EPISODE_REI_POSE" in src
+    assert "サキュバスがフェラ" in src
+    assert "レイがクンニ" in src
+    assert "ベロチューする" in src
+    assert "敵1・誘う" in src
     assert 'BRANCH = "cursor/futanari-rei-escape-34e4"' in src
     assert "h3_episode_colab_main" in src
     assert "if rc:" in src
@@ -2795,6 +2830,8 @@ def test_rei_escape_notebook_is_isolated():
     assert "futanari-rei-escape" in md
     assert "cursor/futanari-rei-escape-34e4" in md
     assert "シーン終わりのつなぎ" not in md
+    assert "フェラ／クンニ" in md
+    assert "口 — 唇と舌の軌道" not in md
     assert json.loads((ROOT / "minimaxh3" / "minimax_h3_rei_escape_bot.ipynb").read_text(encoding="utf-8")) == nb
 
 
@@ -2802,6 +2839,7 @@ def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
     raw = load_episode(REI_ESCAPE_DIR / "episode.json")
     locked = {
         "04-enemy1",
+        "05-enemy1-maw",
         "06-fade-run-b",
         "08-toilet",
         "10-run-c",
@@ -2820,7 +2858,7 @@ def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
     assert beat_source(by_id["01-open-stroke"]) == "t2v"
     assert beat_source(by_id["02-run-a"]) == "chain"
     assert beat_source(by_id["04-enemy1"]) == "t2v"
-    assert beat_source(by_id["05-enemy1-maw"]) == "chain"
+    assert beat_source(by_id["05-enemy1-maw"]) == "t2v"
     assert beat_source(by_id["06-fade-run-b"]) == "t2v"
     assert beat_source(by_id["17-from-rei"]) == "chain"
     assert beat_source(by_id["20-fours-in"]) == "chain"

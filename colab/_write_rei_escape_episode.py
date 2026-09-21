@@ -267,6 +267,24 @@ def build() -> dict:
         "Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold. Do not "
         "shrink the beast to human size. Do not grow a human face. Keep the tooth-ring visible and flared"
     )
+    s05_invite = (
+        "Only Rei and this one beast. 16:9 side view. Rei lies on her back on the springy meat floor, smiling, "
+        "knees open thighs apart, 24cm erect pointing up. The beast stays on all fours in a lizard crawl over her "
+        "from the right, body twice Rei's height. The circular orange-red oral disc turns DOWN onto Rei's groin. "
+        "The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the "
+        "shaft. The wet inner red funnel slides DOWN over the 24cm penis in one continuous swallow until the "
+        "circular fleshy rim SEALS at the base. The entire shaft disappears inside the red tunnel. Outer mint-gray "
+        "snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim. Then continue "
+        "without a cut: the circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a "
+        "human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and "
+        "travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. "
+        "Travel distance of the inner rings along the shaft is about 8 to 12cm while the outer rim does not break "
+        "the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei "
+        "climaxes: tongue out, drool running from the mouth corner, runny nose, trembling, smiling through it. "
+        "Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once "
+        "on the last pulse and hold. Do not shrink the beast to human size. Do not grow a human face. Keep the "
+        "tooth-ring visible and flared. Rei stays on her back with knees open"
+    )
     moth_tail = (
         "Only Rei and this one moth-girl. Meat walls only. The orifice at the TIP of the moth tail is a "
         "SECOND MOUTH, not a human vulva and not located between human thighs. The segmented insect abdomen "
@@ -326,7 +344,27 @@ def build() -> dict:
             seconds=10.0,
             extra=["mystic"],
             voice=("んっ", "いく"),
+            slot="beast",
             stage="01",
+            cut=True,
+            overlays={
+                "rei_beast_accept": ov(
+                    s05,
+                    id="05-enemy1-maw",
+                    extra=["mystic"],
+                    seconds=10.0,
+                    voice=("んっ", "いく"),
+                    cast=["rei", "beast"],
+                ),
+                "rei_beast_invite": ov(
+                    s05_invite,
+                    id="05-enemy1-invite",
+                    extra=["mystic"],
+                    seconds=10.0,
+                    voice=("んっ", "いく"),
+                    cast=["rei", "beast"],
+                ),
+            },
         ),
         beat(
             "06-fade-run-b",
@@ -601,6 +639,7 @@ def build() -> dict:
             "combat": "off",
             "rei_mast": "skip",
             "rei_toilet": "ta",
+            "rei_beast": "accept",
             "rei_moth": "tail",
             "rei_attack": "rei",
             "rei_kiss": "off",

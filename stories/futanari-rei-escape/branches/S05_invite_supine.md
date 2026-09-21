@@ -1,4 +1,4 @@
-# S05 敵1行為（円口の蠕動吸い→5秒射精）
+# S05 誘う（仰向け・股開き・円口が上から）
 
 ## Character Lock
 JA: 21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。常時ボッキ24cm。恍惚顔が基本。絶頂は舌出し・涎・鼻水。破れ薄着が半脱げ。主人公名はレイだけ。24cmは射精後も消えない。
@@ -37,11 +37,13 @@ no front-facing camera, no three-quarter cinematic shot as default, no extra cha
 
 
 ## 動き指定（全文）
+Rei lies on her back on the springy meat floor, smiling, knees open thighs apart, 24cm erect pointing up.
+
 Shot A, 3 to 4 seconds, approach and swallow to the hilt:
-The beast stays on all fours in a lizard crawl, body twice Rei's height. From the right, the circular orange-red oral disc turns toward Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides FORWARD over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base (hilt). The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim.
+The beast stays on all fours in a lizard crawl over her from the right, body twice Rei's height. The circular orange-red oral disc turns DOWN onto Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides DOWN over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base (hilt). The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim.
 
 Shot B, 5 seconds, do not cut: peristalsis pump until climax:
-The circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8–12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold.
+The circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8–12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling, smiling through it. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold. Rei stays on her back with knees open.
 
 Allowed verbs: flare, seal, swallow, peristalsis, contract, milk, gulp, clamp.
 
@@ -51,13 +53,15 @@ photorealistic side-scrolling interior of a living creature, wet pulsating meat 
 Enemy lock: giant aberrant beast twice Rei's height, pale mint-gray wet lumpy flesh blending into a pale-gray lamprey-ray hide, circular orange-red oral disc ringed with white triangular teeth pointing inward, wet red inner funnel, purple lightning veins pulsing under the skin, lamprey-eel-ray body, membranous pectoral fins, dorsal sucker-stalk with a disc, quadruped lizard crawl on limb-fins, slime drooling from the circular maw, NO human face, NO human hands, NO human lips, NO human jaw
 Only Rei and this one beast. 16:9 side view. HUD choice box hidden during the act. Arousal bar stays MAX.
 
+Rei lies on her back on the springy meat floor, smiling, knees open thighs apart, 24cm erect pointing up.
+
 Shot A, 3 to 4 seconds, approach and swallow to the hilt:
-The beast stays on all fours in a lizard crawl, body twice Rei's height. From the right, the circular orange-red oral disc turns toward Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides FORWARD over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base (hilt). The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim.
+The beast stays on all fours in a lizard crawl over her from the right, body twice Rei's height. The circular orange-red oral disc turns DOWN onto Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides DOWN over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base (hilt). The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim.
 
 Then continue in the same clip without a cut:
 
 Shot B, 5 seconds, do not cut: peristalsis pump until climax:
-The circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8–12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold.
+The circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8–12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling, smiling through it. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold. Rei stays on her back with knees open.
 
 Allowed verbs: flare, seal, swallow, peristalsis, contract, milk, gulp, clamp.
 
@@ -67,4 +71,4 @@ Negative (append):
 no front-facing camera, no three-quarter cinematic shot as default, no extra characters, no third person entering frame, no male body replacing Rei, no disappearing penis, no ceramic toilet, no stone cave replacing meat walls, no clean skin after filth flag, no walking-away exit for enemies, no armor on succubus, no pubic hair on succubus, no human face on Enemy1, no human lips on Enemy1, no human jaw on Enemy1, no forest background on Enemy3, no human pelvis or human thighs replacing moth abdomen, no shrinking Enemy1 to human size
 
 ## Memo
-受け入れる（立ち）。セクション6.1を省略せず全文。5秒で射精するまで切らない。円口の環状歯が見える。人間の頭の上下運動にしない。行為は蠕動と密封で書く。誘うは branches/S05_invite_supine.md。回避は生成しない。
+誘う。その場で仰向け、笑顔で股を開く。円口が上から吞んで蠕動。人間の口にしない。mystic のみ（口 LoRA 禁止）。受け入れるは S05_enemy1_maw_motion.md。

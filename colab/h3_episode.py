@@ -126,6 +126,8 @@ from h3_episode_packs import (
     canonical_story,
     REI_ATTACK_MODES,
     REI_ATTACK_OVERLAY_KEYS,
+    REI_BEAST_MODES,
+    REI_BEAST_OVERLAY_KEYS,
     REI_ESCAPE_OVERLAY_KEYS,
     REI_FILTH_BODY,
     REI_FILTH_HINT,
@@ -145,6 +147,7 @@ from h3_episode_packs import (
     canonical_toilet,
     canonical_tsuno,
     canonical_rei_attack,
+    canonical_rei_beast,
     canonical_rei_kiss,
     canonical_rei_mast,
     canonical_rei_moth,
@@ -531,6 +534,10 @@ def episode_rei_mast(ep: dict[str, Any], override: str | None = None) -> str:
 
 def episode_rei_toilet(ep: dict[str, Any], override: str | None = None) -> str:
     return _rei_choice(ep, field="rei_toilet", override=override, canon=canonical_rei_toilet, modes=REI_TOILET_MODES)
+
+
+def episode_rei_beast(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_beast", override=override, canon=canonical_rei_beast, modes=REI_BEAST_MODES)
 
 
 def episode_rei_moth(ep: dict[str, Any], override: str | None = None) -> str:
@@ -1506,6 +1513,7 @@ def apply_rei_escape_route(
     *,
     mast: str | None = None,
     toilet: str | None = None,
+    beast: str | None = None,
     moth: str | None = None,
     attack: str | None = None,
     kiss: str | None = None,
@@ -1521,6 +1529,8 @@ def apply_rei_escape_route(
         render["rei_mast"] = canonical_rei_mast(mast) or mast
     if toilet not in (None, ""):
         render["rei_toilet"] = canonical_rei_toilet(toilet) or toilet
+    if beast not in (None, ""):
+        render["rei_beast"] = canonical_rei_beast(beast) or beast
     if moth not in (None, ""):
         render["rei_moth"] = canonical_rei_moth(moth) or moth
     if attack not in (None, ""):
@@ -1534,6 +1544,7 @@ def apply_rei_escape_route(
     out["render"] = render
     mast_key = episode_rei_mast(out) or "skip"
     toilet_key = episode_rei_toilet(out) or "ta"
+    beast_key = episode_rei_beast(out) or "accept"
     moth_key = episode_rei_moth(out) or "tail"
     attack_key = episode_rei_attack(out) or "rei"
     kiss_key = episode_rei_kiss(out) or "off"
@@ -1543,6 +1554,8 @@ def apply_rei_escape_route(
         raise EpisodeError(f"render.rei_mast must be one of {list(REI_MAST_MODES)}")
     if toilet_key not in REI_TOILET_MODES:
         raise EpisodeError(f"render.rei_toilet must be one of {list(REI_TOILET_MODES)}")
+    if beast_key not in REI_BEAST_MODES:
+        raise EpisodeError(f"render.rei_beast must be one of {list(REI_BEAST_MODES)}")
     if moth_key not in REI_MOTH_MODES:
         raise EpisodeError(f"render.rei_moth must be one of {list(REI_MOTH_MODES)}")
     if attack_key not in REI_ATTACK_MODES:
@@ -1579,6 +1592,10 @@ def apply_rei_escape_route(
             skip = not _is_overlay_payload(chosen)
         elif slot == "toilet":
             field = REI_TOILET_OVERLAY_KEYS.get(toilet_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "beast":
+            field = REI_BEAST_OVERLAY_KEYS.get(beast_key)
             chosen = beat.get(field) if field else None
             skip = not _is_overlay_payload(chosen)
         elif slot == "moth":
@@ -1626,6 +1643,7 @@ def apply_rei_escape_route(
     render = dict(out.get("render") or {})
     render["rei_mast"] = mast_key
     render["rei_toilet"] = toilet_key
+    render["rei_beast"] = beast_key
     render["rei_moth"] = moth_key
     render["rei_attack"] = attack_key
     render["rei_kiss"] = kiss_key
@@ -1661,6 +1679,7 @@ def resolve_episode_options(
     scenes: str | dict[str, Any] | None = None,
     rei_mast: str | None = None,
     rei_toilet: str | None = None,
+    rei_beast: str | None = None,
     rei_moth: str | None = None,
     rei_attack: str | None = None,
     rei_kiss: str | None = None,
@@ -1677,6 +1696,7 @@ def resolve_episode_options(
         out,
         mast=rei_mast,
         toilet=rei_toilet,
+        beast=rei_beast,
         moth=rei_moth,
         attack=rei_attack,
         kiss=rei_kiss,
@@ -1702,6 +1722,7 @@ def prepare_episode(
     scenes_override: str | dict[str, Any] | None = None,
     rei_mast_override: str | None = None,
     rei_toilet_override: str | None = None,
+    rei_beast_override: str | None = None,
     rei_moth_override: str | None = None,
     rei_attack_override: str | None = None,
     rei_kiss_override: str | None = None,
@@ -1740,6 +1761,8 @@ def prepare_episode(
         render["rei_mast"] = canonical_rei_mast(rei_mast_override) or rei_mast_override
     if rei_toilet_override not in (None, ""):
         render["rei_toilet"] = canonical_rei_toilet(rei_toilet_override) or rei_toilet_override
+    if rei_beast_override not in (None, ""):
+        render["rei_beast"] = canonical_rei_beast(rei_beast_override) or rei_beast_override
     if rei_moth_override not in (None, ""):
         render["rei_moth"] = canonical_rei_moth(rei_moth_override) or rei_moth_override
     if rei_attack_override not in (None, ""):
@@ -1763,6 +1786,7 @@ def prepare_episode(
         out,
         mast=rei_mast_override,
         toilet=rei_toilet_override,
+        beast=rei_beast_override,
         moth=rei_moth_override,
         attack=rei_attack_override,
         kiss=rei_kiss_override,
@@ -2145,6 +2169,8 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         _check("rei-mast-back", rei_mast="back")
         _check("rei-toilet-tb", rei_toilet="tb")
         _check("rei-toilet-tc", rei_toilet="tc")
+        _check("rei-beast-invite", rei_beast="invite")
+        _check("rei-beast-evade", rei_beast="evade")
         _check("rei-moth-mouth", rei_moth="mouth")
         _check("rei-attack-her", rei_attack="her")
         _check("rei-kiss-on", rei_kiss="on")
@@ -2157,6 +2183,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             "rei-full",
             rei_mast="stand",
             rei_toilet="tc",
+            rei_beast="invite",
             rei_moth="mouth",
             rei_attack="her",
             rei_kiss="on",
@@ -3712,6 +3739,7 @@ def run_episode(
     scenes_override: str | dict[str, Any] | None = None,
     rei_mast_override: str | None = None,
     rei_toilet_override: str | None = None,
+    rei_beast_override: str | None = None,
     rei_moth_override: str | None = None,
     rei_attack_override: str | None = None,
     rei_kiss_override: str | None = None,
@@ -3741,6 +3769,7 @@ def run_episode(
         scenes_override=scenes_override,
         rei_mast_override=rei_mast_override,
         rei_toilet_override=rei_toilet_override,
+        rei_beast_override=rei_beast_override,
         rei_moth_override=rei_moth_override,
         rei_attack_override=rei_attack_override,
         rei_kiss_override=rei_kiss_override,
@@ -3764,6 +3793,7 @@ def run_episode(
             episode=str(ep.get("slug") or ""),
             rei_mast=str((ep.get("render") or {}).get("rei_mast") or ""),
             rei_toilet=str((ep.get("render") or {}).get("rei_toilet") or ""),
+            rei_beast=str((ep.get("render") or {}).get("rei_beast") or ""),
             rei_moth=str((ep.get("render") or {}).get("rei_moth") or ""),
             rei_attack=str((ep.get("render") or {}).get("rei_attack") or ""),
             rei_kiss=str((ep.get("render") or {}).get("rei_kiss") or ""),
@@ -4026,6 +4056,7 @@ def _usage() -> str:
         "  --scenes miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）\n"
         "  --rei-mast skip|stand|back（レイ脱出の合間おな。迷ったら skip）\n"
         "  --rei-toilet ta|tb|tc（レイ脱出の糞トイレ。迷ったら ta）\n"
+        "  --rei-beast accept|invite|evade（レイ脱出の敵1。迷ったら accept）\n"
         "  --rei-moth tail|mouth（レイ脱出の蛾女。迷ったら tail）\n"
         "  --rei-attack rei|her（レイ脱出の襲う側。迷ったら rei）\n"
         "  --rei-kiss off|on（レイ脱出のキス。迷ったら off）\n"
@@ -4063,6 +4094,7 @@ def main(argv: list[str] | None = None) -> int:
     scenes = None
     rei_mast = None
     rei_toilet = None
+    rei_beast = None
     rei_moth = None
     rei_attack = None
     rei_kiss = None
@@ -4096,6 +4128,8 @@ def main(argv: list[str] | None = None) -> int:
         rei_mast = opts[opts.index("--rei-mast") + 1]
     if "--rei-toilet" in opts:
         rei_toilet = opts[opts.index("--rei-toilet") + 1]
+    if "--rei-beast" in opts:
+        rei_beast = opts[opts.index("--rei-beast") + 1]
     if "--rei-moth" in opts:
         rei_moth = opts[opts.index("--rei-moth") + 1]
     if "--rei-attack" in opts:
@@ -4123,6 +4157,7 @@ def main(argv: list[str] | None = None) -> int:
         scenes_override=scenes,
         rei_mast_override=rei_mast,
         rei_toilet_override=rei_toilet,
+        rei_beast_override=rei_beast,
         rei_moth_override=rei_moth,
         rei_attack_override=rei_attack,
         rei_kiss_override=rei_kiss,

@@ -53,4 +53,4 @@ Negative (append):
 no front-facing camera, no three-quarter cinematic shot as default, no extra characters, no third person entering frame, no male body replacing Rei, no disappearing penis, no ceramic toilet, no stone cave replacing meat walls, no clean skin after filth flag, no walking-away exit for enemies, no armor on succubus, no pubic hair on succubus, no human face on Enemy1, no human lips on Enemy1, no human jaw on Enemy1, no forest background on Enemy3, no human pelvis or human thighs replacing moth abdomen, no shrinking Enemy1 to human size
 
 ## Memo
-スキップ可。行為中はHUD選択肢を消す。
+顔のキス。フェラではない。スキップ可。行為中はHUD選択肢を消す。

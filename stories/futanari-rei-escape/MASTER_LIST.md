@@ -8,8 +8,10 @@
 | S01 | S01_opening_stand_masturbation.md | 開幕立ちシコ。未射精 |
 | S02 | S02_run_A.md | 走りA |
 | S03 | S03_optional_masturbate.md | 任意おな（汚れなし） |
-| S04 | S04_enemy1_encounter.md | 敵1出現。画像1＋2 |
-| S05 | S05_enemy1_maw_motion.md | 円口蠕動。Shot A+B 全文。5秒で射精 |
+| S04 | S04_enemy1_encounter.md | 敵1出現。画像1＋2。選択肢：受け入れる／誘う／回避 |
+| S05 | S05_enemy1_maw_motion.md | 受け入れる。立ち円口蠕動。Shot A+B 全文。5秒で射精 |
+| S05 invite | branches/S05_invite_supine.md | 誘う。仰向け笑顔股開き。円口が上から |
+| S05 evade | （生成しない） | 回避。S05スキップ→S06 |
 | S06 | S06_fade_run_B.md | 敵1フェード→走りB |
 | S07 | S07_optional_masturbate.md | 任意おな（汚れなし） |
 | S08 | S08_toilet_encounter.md | 糞の洋式トイレ |
@@ -39,8 +41,8 @@ S00 title
 S01 opening stand-stroke
 S02 run A
 S03 optional masturbate
-S04 enemy1 encounter
-S05 enemy1 circular-maw peristalsis 5-second orgasm
+S04 enemy1 encounter (accept / invite / evade)
+S05 enemy1 circular-maw peristalsis 5-second orgasm (accept) OR invite supine OR skip (evade)
 S06 fade + run B
 S07 optional masturbate
 S08 toilet encounter

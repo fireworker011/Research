@@ -18,6 +18,7 @@
     "combat": "off",
     "rei_mast": "skip",
     "rei_toilet": "ta",
+    "rei_beast": "accept",
     "rei_moth": "tail",
     "rei_attack": "rei",
     "rei_kiss": "off",
@@ -341,9 +342,61 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "extra_loras": [
         "mystic"
-      ]
+      ],
+      "rei_slot": "beast",
+      "rei_beast_accept": {
+        "action": "Only Rei and this one beast. 16:9 side view. The beast stays on all fours in a lizard crawl, body twice Rei's height. From the right, the circular orange-red oral disc turns toward Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides FORWARD over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base. The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim. Then continue without a cut: the circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8 to 12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold. Do not shrink the beast to human size. Do not grow a human face. Keep the tooth-ring visible and flared",
+        "extra_loras": [
+          "mystic"
+        ],
+        "voices": [
+          {
+            "who": "rei",
+            "line": "んっ"
+          },
+          {
+            "who": "rei",
+            "line": "いく"
+          }
+        ],
+        "id": "05-enemy1-maw",
+        "cast": [
+          "rei",
+          "beast"
+        ],
+        "trim": {
+          "start": 0,
+          "seconds": 10.0
+        }
+      },
+      "rei_beast_invite": {
+        "action": "Only Rei and this one beast. 16:9 side view. Rei lies on her back on the springy meat floor, smiling, knees open thighs apart, 24cm erect pointing up. The beast stays on all fours in a lizard crawl over her from the right, body twice Rei's height. The circular orange-red oral disc turns DOWN onto Rei's groin. The ring of white triangular teeth flares OPEN like a camera iris so the teeth do not clamp or bite the shaft. The wet inner red funnel slides DOWN over the 24cm penis in one continuous swallow until the circular fleshy rim SEALS at the base. The entire shaft disappears inside the red tunnel. Outer mint-gray snout flesh bunches. Purple lightning veins pulse. Thick slime hangs from the lower rim. Then continue without a cut: the circular lip-ring STAYS LOCKED at the base. Motion is NOT a human head bob and NOT a human jaw chew. The orange-red inner wall performs PERISTALSIS: concentric rings of flesh contract and travel from the sealed lip toward the deep gullet, then reverse, milking the shaft root-to-tip-to-root. Travel distance of the inner rings along the shaft is about 8 to 12cm while the outer rim does not break the seal. The tooth-ring twitches but stays flared open. The throat visibly gulps slime. At second 5 Rei climaxes: tongue out, drool running from the mouth corner, runny nose, trembling, smiling through it. Thick ejaculation pumps into the gullet. Overflow drips from the tooth ring. The inner rings clamp once on the last pulse and hold. Do not shrink the beast to human size. Do not grow a human face. Keep the tooth-ring visible and flared. Rei stays on her back with knees open",
+        "extra_loras": [
+          "mystic"
+        ],
+        "voices": [
+          {
+            "who": "rei",
+            "line": "んっ"
+          },
+          {
+            "who": "rei",
+            "line": "いく"
+          }
+        ],
+        "id": "05-enemy1-invite",
+        "cast": [
+          "rei",
+          "beast"
+        ],
+        "trim": {
+          "start": 0,
+          "seconds": 10.0
+        }
+      }
     },
     {
       "id": "06-fade-run-b",

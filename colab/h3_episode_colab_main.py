@@ -20,10 +20,11 @@ Env:
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
   H3_EPISODE_REI_MAST skip|stand|back（レイ脱出の合間おな）
   H3_EPISODE_REI_TOILET ta|tb|tc（レイ脱出の糞トイレ）
+  H3_EPISODE_REI_BEAST accept|invite|evade（レイ脱出の敵1。立ち円口 / 仰向け股開き / 飛ばす）
   H3_EPISODE_REI_MOTH tail|mouth（レイ脱出の蛾女）
   H3_EPISODE_REI_ATTACK rei|her（レイ脱出の襲う側）
-  H3_EPISODE_REI_KISS off|on（レイ脱出のキス）
-  H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口）
+  H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
+  H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
@@ -88,6 +89,7 @@ def main() -> int:
             scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
             rei_mast_override=(os.environ.get("H3_EPISODE_REI_MAST") or "").strip() or None,
             rei_toilet_override=(os.environ.get("H3_EPISODE_REI_TOILET") or "").strip() or None,
+            rei_beast_override=(os.environ.get("H3_EPISODE_REI_BEAST") or "").strip() or None,
             rei_moth_override=(os.environ.get("H3_EPISODE_REI_MOTH") or "").strip() or None,
             rei_attack_override=(os.environ.get("H3_EPISODE_REI_ATTACK") or "").strip() or None,
             rei_kiss_override=(os.environ.get("H3_EPISODE_REI_KISS") or "").strip() or None,

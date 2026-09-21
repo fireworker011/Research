@@ -33,7 +33,7 @@ no front-facing camera, no three-quarter cinematic shot as default, no extra cha
   状態  ボッキ24cm
   汚れ  なし
 下左:
-  操作風ラベル  [走る] [回避不可] [選択]
+  操作風ラベル  [走る] [回避] [選択]
 
 下中央:
   ENCOUNT 異形の怪物
@@ -48,4 +48,4 @@ Negative (append):
 no front-facing camera, no three-quarter cinematic shot as default, no extra characters, no third person entering frame, no male body replacing Rei, no disappearing penis, no ceramic toilet, no stone cave replacing meat walls, no clean skin after filth flag, no walking-away exit for enemies, no armor on succubus, no pubic hair on succubus, no human face on Enemy1, no human lips on Enemy1, no human jaw on Enemy1, no forest background on Enemy3, no human pelvis or human thighs replacing moth abdomen, no shrinking Enemy1 to human size
 
 ## Memo
-回避なし・固定順。人間顔を出さない。サイズはレイの2倍。画像1の円口＋画像2のエイ／ウナギ胴体は同一個体。選択肢が出るとき一瞬静止。
+Colab で受け入れる／誘う／回避。人間顔を出さない。サイズはレイの2倍。画像1の円口＋画像2のエイ／ウナギ胴体は同一個体。選択肢が出るとき一瞬静止。回避は S05 を出さず S06 へ。

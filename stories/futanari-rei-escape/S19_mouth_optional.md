@@ -40,7 +40,7 @@ DIRTY-STATE BODY (after T-c, stronger): body painted with thick dark-brown feces
 下左:
   操作風ラベル  [走る] [回避不可] [選択]
 
-下中央: 行為中は消す  [口（サキュバスが軸へ）] [口（レイが裂へ）]
+下中央: 行為中は消す  [フェラ（サキュバス）] [クンニ（レイ）]
 
 ## Prompt
 SUCCUBUS-ON-SHAFT variant:
@@ -58,4 +58,4 @@ Negative (append):
 no front-facing camera, no three-quarter cinematic shot as default, no extra characters, no third person entering frame, no male body replacing Rei, no disappearing penis, no ceramic toilet, no stone cave replacing meat walls, no clean skin after filth flag, no walking-away exit for enemies, no armor on succubus, no pubic hair on succubus, no human face on Enemy1, no human lips on Enemy1, no human jaw on Enemy1, no forest background on Enemy3, no human pelvis or human thighs replacing moth abdomen, no shrinking Enemy1 to human size
 
 ## Memo
-名称だけでなく舌と唇の軌道を書く。スキップ可。何往復かするまで切らない。
+いわゆるフェラかクンニ。Prompt には名称ではなく舌と唇の軌道を書く。スキップ可。何往復かするまで切らない。

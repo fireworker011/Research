@@ -603,6 +603,48 @@ REI_TOILET_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
+REI_BEAST_MODES: dict[str, dict[str, Any]] = {
+    "accept": {
+        "label_ja": "受け入れる",
+        "choice_ja": "敵1・受け入れる（立ち・迷ったらこれ）",
+        "when_ja": "立ったまま。円口が24cmを根元まで吞んで蠕動（いわゆるじゅぼ）",
+        "hint_ja": "迷ったらこれ。立ち。円口は mystic のみ",
+        "recommend": True,
+    },
+    "invite": {
+        "label_ja": "誘う",
+        "choice_ja": "敵1・誘う（仰向け・股開き）",
+        "when_ja": "その場で仰向け、笑顔で股を開く。円口が上から吞んで蠕動",
+        "hint_ja": "誘う。仰向け。人間の口にしない",
+    },
+    "evade": {
+        "label_ja": "回避",
+        "choice_ja": "敵1・回避（行為なし）",
+        "when_ja": "円口の行為を飛ばしてフェード→走り",
+        "hint_ja": "回避。S05なし",
+    },
+}
+
+REI_BEAST_OVERLAY_KEYS: dict[str, str] = {
+    "accept": "rei_beast_accept",
+    "invite": "rei_beast_invite",
+}
+
+REI_BEAST_ALIASES: dict[str, str] = _label_aliases(
+    REI_BEAST_MODES,
+    {
+        "受け入れる": "accept",
+        "立ち": "accept",
+        "standing": "accept",
+        "誘う": "invite",
+        "仰向け": "invite",
+        "股開き": "invite",
+        "回避": "evade",
+        "しない": "evade",
+        "skip": "evade",
+    },
+)
+
 REI_MOTH_MODES: dict[str, dict[str, Any]] = {
     "tail": {
         "label_ja": "尾の第二口",
@@ -669,16 +711,16 @@ REI_ATTACK_ALIASES: dict[str, str] = _label_aliases(
 REI_KISS_MODES: dict[str, dict[str, Any]] = {
     "off": {
         "label_ja": "しない",
-        "choice_ja": "キス・しない（迷ったらこれ）",
-        "when_ja": "キスカットをスキップ",
+        "choice_ja": "キスしない（迷ったらこれ）",
+        "when_ja": "顔のキスを飛ばす。フェラではない",
         "hint_ja": "迷ったらこれ。キスなし",
         "recommend": True,
     },
     "on": {
-        "label_ja": "する",
-        "choice_ja": "キス・口を開けて舌",
-        "when_ja": "口を開けて舌が見えるキス。羽と角は残す",
-        "hint_ja": "舌が見える。スキップしない",
+        "label_ja": "ベロチュー",
+        "choice_ja": "ベロチューする",
+        "when_ja": "口を開けて舌が見えるキス。羽と角は残す。フェラではない",
+        "hint_ja": "顔のキス。竿は使わない",
     },
 }
 
@@ -694,28 +736,30 @@ REI_KISS_ALIASES: dict[str, str] = _label_aliases(
         "skip": "off",
         "する": "on",
         "キス": "on",
+        "ベロチュー": "on",
+        "舌": "on",
     },
 )
 
 REI_ORAL_MODES: dict[str, dict[str, Any]] = {
     "skip": {
         "label_ja": "しない",
-        "choice_ja": "口・しない（迷ったらこれ）",
-        "when_ja": "口のカットをスキップして体位へ",
+        "choice_ja": "フェラもクンニもしない（迷ったらこれ）",
+        "when_ja": "口のカットを飛ばして挿入へ",
         "hint_ja": "迷ったらこれ。口なし",
         "recommend": True,
     },
     "her": {
-        "label_ja": "サキュバスが軸へ",
-        "choice_ja": "口・サキュバスが軸へ",
-        "when_ja": "唇が先から根元まで往復。名称ではなく軌道",
-        "hint_ja": "サキュバスの唇と舌。根元まで",
+        "label_ja": "サキュバスがフェラ",
+        "choice_ja": "サキュバスがフェラ",
+        "when_ja": "跪いて唇が24cmを先から根元まで往復。羽と角は残す。いわゆるフェラ",
+        "hint_ja": "サキュバスがフェラ。根元まで",
     },
     "rei": {
-        "label_ja": "レイが裂へ",
-        "choice_ja": "口・レイが裂へ",
-        "when_ja": "レイの舌が無毛の裂を下から上へ",
-        "hint_ja": "レイが裂へ。羽と爪は残す",
+        "label_ja": "レイがクンニ",
+        "choice_ja": "レイがクンニ",
+        "when_ja": "レイの舌が無毛の割れ目を下から上へ。いわゆるクンニ",
+        "hint_ja": "レイがクンニ。羽と爪は残す",
     },
 }
 
@@ -732,8 +776,12 @@ REI_ORAL_ALIASES: dict[str, str] = _label_aliases(
         "off": "skip",
         "サキュバスが軸へ": "her",
         "軸へ": "her",
+        "フェラ": "her",
+        "サキュバスがフェラ": "her",
         "レイが裂へ": "rei",
         "裂へ": "rei",
+        "クンニ": "rei",
+        "レイがクンニ": "rei",
     },
 )
 
@@ -792,6 +840,7 @@ REI_ESCAPE_OVERLAY_KEYS: tuple[str, ...] = tuple(
     {
         **REI_MAST_OVERLAY_KEYS,
         **REI_TOILET_OVERLAY_KEYS,
+        **REI_BEAST_OVERLAY_KEYS,
         **REI_MOTH_OVERLAY_KEYS,
         **REI_ATTACK_OVERLAY_KEYS,
         **REI_KISS_OVERLAY_KEYS,
@@ -1064,6 +1113,15 @@ def canonical_rei_toilet(name: str) -> str:
     return REI_TOILET_ALIASES.get(raw, raw)
 
 
+def canonical_rei_beast(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in REI_BEAST_MODES:
+        return raw
+    return REI_BEAST_ALIASES.get(raw, raw)
+
+
 def canonical_rei_moth(name: str) -> str:
     raw = str(name or "").strip()
     if not raw:
@@ -1265,6 +1323,8 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return REI_MAST_MODES
     if kind == "rei_toilet":
         return REI_TOILET_MODES
+    if kind == "rei_beast":
+        return REI_BEAST_MODES
     if kind == "rei_moth":
         return REI_MOTH_MODES
     if kind == "rei_attack":
@@ -1332,6 +1392,7 @@ def describe_run(
     episode: str = "",
     rei_mast: str = "",
     rei_toilet: str = "",
+    rei_beast: str = "",
     rei_moth: str = "",
     rei_attack: str = "",
     rei_kiss: str = "",
@@ -1382,6 +1443,7 @@ def describe_run(
     if slug == "futanari-rei-escape":
         rm = REI_MAST_MODES.get(canonical_rei_mast(rei_mast) or "skip") or REI_MAST_MODES["skip"]
         rt = REI_TOILET_MODES.get(canonical_rei_toilet(rei_toilet) or "ta") or REI_TOILET_MODES["ta"]
+        rb = REI_BEAST_MODES.get(canonical_rei_beast(rei_beast) or "accept") or REI_BEAST_MODES["accept"]
         rmo = REI_MOTH_MODES.get(canonical_rei_moth(rei_moth) or "tail") or REI_MOTH_MODES["tail"]
         ra = REI_ATTACK_MODES.get(canonical_rei_attack(rei_attack) or "rei") or REI_ATTACK_MODES["rei"]
         rk = REI_KISS_MODES.get(canonical_rei_kiss(rei_kiss) or "off") or REI_KISS_MODES["off"]
@@ -1391,18 +1453,18 @@ def describe_run(
             f"{head}\n"
             f"  話        ふたなりレイ脱出\n"
             f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
-            f"  終わり    {e['choice_ja']}  — {e['when_ja']}\n"
             f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
             f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
             f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
             f"  5 合間    {rm['choice_ja']}  — {rm['when_ja']}\n"
             f"  6 トイレ  {rt['choice_ja']}  — {rt['when_ja']}\n"
-            f"  7 蛾女    {rmo['choice_ja']}  — {rmo['when_ja']}\n"
-            f"  8 襲う    {ra['choice_ja']}  — {ra['when_ja']}\n"
-            f"  9 キス    {rk['choice_ja']}  — {rk['when_ja']}\n"
-            f"  口        {ro['choice_ja']}  — {ro['when_ja']}\n"
-            f"  体位      {rp['choice_ja']}  — {rp['when_ja']}\n"
-            "迷ったら既定のままで Run all。病棟の話ではない。カメラは各カットが真横固定。"
+            f"  7 敵1     {rb['choice_ja']}  — {rb['when_ja']}\n"
+            f"  8 蛾女    {rmo['choice_ja']}  — {rmo['when_ja']}\n"
+            f"  9 襲う    {ra['choice_ja']}  — {ra['when_ja']}\n"
+            f"  10 キス   {rk['choice_ja']}  — {rk['when_ja']}\n"
+            f"  11 口     {ro['choice_ja']}  — {ro['when_ja']}\n"
+            f"  12 挿入   {rp['choice_ja']}  — {rp['when_ja']}\n"
+            "迷ったら既定のままで Run all。病棟の話ではない。カメラは各カットが真横固定。10は顔のキス、11はフェラかクンニ。"
         )
     return (
         f"{head}\n"
