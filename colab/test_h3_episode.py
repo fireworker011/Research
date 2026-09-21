@@ -744,7 +744,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
     assert "prfight2" not in doggy_prompt
-    assert "doggy" in doggy_prompt.lower()
+    _assert_no_pose_names(doggy["action"], doggy_prompt)
+    _assert_insertion_direction(doggy["action"], doggy_prompt)
     assert "tote" not in doggy_prompt.lower()
     assert "full bodies" in doggy_prompt.lower()
     assert "including feet" in doggy_prompt.lower()
@@ -756,6 +757,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
     cream_prompt = build_beat_prompt(ep, cream)
     assert "prfight2" not in cream_prompt
+    _assert_no_pose_names(cream["action"], cream_prompt)
+    _assert_insertion_direction(cream["action"], cream_prompt)
     assert "tote" not in cream_prompt.lower()
     assert "full bodies" in cream_prompt.lower()
     assert "aoki's face stays readable" in cream_prompt.lower()
@@ -789,6 +792,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    _assert_no_pose_names(sex["action"], sex_prompt)
+    _assert_insertion_direction(sex["action"], sex_prompt)
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     assert "sits up" not in sex_prompt.lower() and "sits down" not in sex_prompt.lower()
@@ -800,6 +805,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     ten_prompt = build_beat_prompt(ep, ten)
     assert "french kiss" in ten_prompt.lower()
     assert "stays outside" not in ten_prompt.lower()
+    _assert_no_pose_names(ten["action"], ten_prompt)
+    _assert_insertion_direction(ten["action"], ten_prompt)
     assert "starts inside" in ten_prompt.lower() or "going into" in ten_prompt.lower()
     assert ten["hud"]["hint"] == "□ 口説く"
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
@@ -809,12 +816,15 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert hold["voices"][1]["line"] == "ちゅっ"
     assert "penis shaft" in hold_prompt.lower()
     assert "do not walk" in hold_prompt.lower()
+    _assert_no_pose_names(hold["action"], hold_prompt)
+    _assert_insertion_direction(hold["action"], hold_prompt)
     for _b, prompt, errs in beat_prompts(ep, trigger=""):
         assert errs == []
         assert "prfight2" not in prompt
         low = prompt.lower()
         assert "slow motion" not in low and "slow-mo" not in low
         assert "brisk" in low or "snappy" in low
+        _assert_no_pose_names(prompt)
 
 
 def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
@@ -875,6 +885,8 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     sex = next(b for b in ep["beats"] if b["id"] == "11-missionary")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    _assert_no_pose_names(sex["action"], sex_prompt)
+    _assert_insertion_direction(sex["action"], sex_prompt)
     assert "finishes inside" not in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
@@ -883,6 +895,8 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     assert "stays on her back the whole take" in hold_prompt.lower()
     assert "penis shaft" in sex_prompt.lower()
     assert "not an arm" in sex_prompt.lower()
+    _assert_no_pose_names(hold["action"], hold_prompt)
+    _assert_insertion_direction(hold["action"], hold_prompt)
     for beat in ep["beats"]:
         still = beat.get("still")
         if still:
@@ -896,6 +910,7 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
         low = prompt.lower()
         assert "slow motion" not in low and "slow-mo" not in low
         assert "brisk" in low or "snappy" in low
+        _assert_no_pose_names(prompt)
 
 
 def _assert_hospital_bans(ep):
@@ -905,6 +920,7 @@ def _assert_hospital_bans(ep):
         assert "corpse" not in low and "zombie" not in low
         assert "slow motion" not in low and "slow-mo" not in low
         assert "brisk" in low or "snappy" in low
+        _assert_no_pose_names(beat.get("action") or "", prompt)
         assert beat["hud"]["health"] == 0.9
         assert beat["hud"]["money"] == "¥0"
 
@@ -912,7 +928,19 @@ def _assert_hospital_bans(ep):
 def _assert_insertion_direction(action: str, prompt: str) -> None:
     blob = f"{action}\n{prompt}".lower()
     assert "travels into" in blob or "travels in" in blob
-    assert "thrust" in blob or "tilt up" in blob or "push back" in blob or "rock up" in blob
+    assert "thrust" in blob
+    assert (
+        "push back" in blob
+        or "rock up" in blob
+        or "rock down" in blob
+        or "tilt up" in blob
+    )
+
+
+def _assert_no_pose_names(*texts: str) -> None:
+    blob = "\n".join(texts).lower()
+    for tok in ("doggy", "missionary", "cowgirl"):
+        assert tok not in blob, tok
 
 
 def test_hospital_exit_adult_accept_is_survival_complete():
@@ -1167,6 +1195,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert ride["render"]["invite_pose"] == "ride"
     six = next(b for b in ride["beats"] if b["id"] == "06-doggy")
     assert "sits on" in six["action"].lower()
+    _assert_insertion_direction(six["action"], build_beat_prompt(ride, six))
     assert extra_keys(six) == ["blowjob", "mystic"]
     assert six.get("trigger") == "bl0w_j0b"
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
@@ -1178,6 +1207,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     four_prompt = build_beat_prompt(toilet, four)
     assert "tentacle" in four["action"].lower()
     assert "travels into" in four["action"].lower()
+    _assert_insertion_direction(four["action"], four_prompt)
     assert "anus" in four["action"].lower()
     assert "corpse" not in four_prompt.lower()
     assert four["trim"]["seconds"] == 10.0
