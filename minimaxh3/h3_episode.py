@@ -101,6 +101,7 @@ from h3_episode_packs import (
     CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
+    FIGHT_STORIES,
     HOSPITAL_ENCOUNTERS,
     INVITE_POSE_MODES,
     INVITE_POSE_OVERLAY_KEYS,
@@ -120,6 +121,8 @@ from h3_episode_packs import (
     describe_run,
     expand_presets,
     parse_appear,
+    parse_scenes,
+    scenes_to_choices,
 )
 from h3_t2v import assert_t2v_graph, build_t2v_graph
 
@@ -428,6 +431,73 @@ def episode_appear(ep: dict[str, Any], override: str | dict[str, Any] | None = N
     if unknown:
         raise EpisodeError(f"render.appear unknown encounter {unknown}")
     return shown
+
+
+def episode_scenes(
+    ep: dict[str, Any],
+    override: str | dict[str, Any] | None = None,
+) -> dict[str, tuple[str | None, str | None]]:
+    """Per-encounter (story, pose). Missing / inherit = (None, None). Fight stories ignore this."""
+    render = ep.get("render") or {}
+    if override not in (None, ""):
+        raw = override
+    elif "scenes" in render:
+        raw = render.get("scenes")
+    else:
+        raw = None
+    try:
+        return parse_scenes(raw)
+    except ValueError as e:
+        raise EpisodeError(str(e)) from e
+
+
+def resolve_encounter_stories(
+    ep: dict[str, Any],
+    *,
+    story: str | None = None,
+    scenes: str | dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Story per hospital encounter. Colab 5番 fight stories pin every scene."""
+    global_story = episode_story(ep, story) or "accept"
+    parsed = episode_scenes(ep, scenes)
+    out: dict[str, str] = {}
+    for name in HOSPITAL_ENCOUNTERS:
+        local, _pose = parsed[name]
+        if global_story in FIGHT_STORIES or local in FIGHT_STORIES:
+            out[name] = global_story
+        else:
+            out[name] = local or global_story
+    return out
+
+
+def resolve_encounter_poses(
+    ep: dict[str, Any],
+    *,
+    pose: str | None = None,
+    scenes: str | dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Invite pose per hospital encounter. Local pose, else Colab 6番."""
+    default_pose = episode_invite_pose(ep, pose) or "all_fours"
+    parsed = episode_scenes(ep, scenes)
+    out: dict[str, str] = {}
+    for name in HOSPITAL_ENCOUNTERS:
+        _story, local_pose = parsed[name]
+        out[name] = local_pose or default_pose
+    return out
+
+
+def ending_story(ep: dict[str, Any]) -> str:
+    """Complete/fail follows the last remaining hospital encounter, not skipped ones."""
+    global_story = episode_story(ep) or "accept"
+    if global_story in FIGHT_STORIES:
+        return global_story
+    last = ""
+    for beat in ep.get("beats") or []:
+        if isinstance(beat, dict) and beat.get("encounter") in HOSPITAL_ENCOUNTERS:
+            last = str(beat.get("encounter") or "")
+    if not last:
+        return global_story
+    return resolve_encounter_stories(ep).get(last, global_story)
 
 
 def combat_lora_allowed(*, unet: str, combat: str, high_mem: bool) -> tuple[bool, str]:
@@ -954,11 +1024,17 @@ def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
     return out
 
 
-def apply_story_route(ep: dict[str, Any], *, story: str | None = None) -> dict[str, Any]:
-    """One future per Colab 構成. Body = ○受け入れる. on_* overlays hold the other four.
+def apply_story_route(
+    ep: dict[str, Any],
+    *,
+    story: str | None = None,
+    scenes: str | dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """One future per Colab 構成, or per hospital encounter when シーンごと is set.
 
+    Body = ○受け入れる. on_* overlays hold the other four.
     Episodes without on_* keys are unchanged (霞東の 4 番はそのまま).
-    Fight stories also pin render.combat so Combat LoRA is allowed on 06/10.
+    Fight stories (5番) pin every scene and render.combat so Combat LoRA is allowed on 06/10.
     """
     out = copy.deepcopy(ep)
     if not _has_story_overlays(out):
@@ -967,14 +1043,20 @@ def apply_story_route(ep: dict[str, Any], *, story: str | None = None) -> dict[s
     if story not in (None, ""):
         render["story"] = canonical_story(story) or story
         out["render"] = render
+    if scenes not in (None, ""):
+        render["scenes"] = scenes_to_choices(episode_scenes(out, scenes))
+        out["render"] = render
     key = episode_story(out) or "accept"
     spec = STORY_MODES.get(key) or STORY_MODES["accept"]
-    overlay_field = STORY_OVERLAY_KEYS.get(key)
+    stories = resolve_encounter_stories(out)
     beats: list[Any] = []
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict):
             beats.append(beat)
             continue
+        enc = str(beat.get("encounter") or "")
+        local = stories.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
+        overlay_field = STORY_OVERLAY_KEYS.get(local)
         body = dict(beat)
         chosen = body.pop(overlay_field, None) if overlay_field else None
         for other in STORY_ROUTE_KEYS:
@@ -999,20 +1081,25 @@ def _pop_overlay_keys(beat: dict[str, Any], keys: tuple[str, ...]) -> dict[str, 
 
 
 def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[str, Any]:
-    """Merge invite_pose_* overlays when story is □誘う. Other stories just drop the keys."""
+    """Merge invite_pose_* overlays when that encounter is □誘う. Other stories just drop the keys."""
     out = copy.deepcopy(ep)
     render = dict(out.get("render") or {})
     if pose not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(pose) or pose
         out["render"] = render
     key = episode_invite_pose(out) or "all_fours"
-    story = episode_story(out) or "accept"
-    field = INVITE_POSE_OVERLAY_KEYS.get(key) if story == "invite" else None
+    global_story = episode_story(out) or "accept"
+    stories = resolve_encounter_stories(out)
+    poses = resolve_encounter_poses(out)
     beats: list[Any] = []
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict):
             beats.append(beat)
             continue
+        enc = str(beat.get("encounter") or "")
+        local_story = stories.get(enc, global_story) if enc in HOSPITAL_ENCOUNTERS else global_story
+        local_pose = poses.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
+        field = INVITE_POSE_OVERLAY_KEYS.get(local_pose) if local_story == "invite" else None
         body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
         chosen = beat.get(field) if field else None
         if isinstance(chosen, dict):
@@ -1095,7 +1182,7 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
     render = dict(out.get("render") or {})
     render["appear"] = shown
     out["render"] = render
-    spec = STORY_MODES.get(episode_story(out) or "accept") or STORY_MODES["accept"]
+    spec = STORY_MODES.get(ending_story(out)) or STORY_MODES["accept"]
     return _apply_story_ending(out, spec)
 
 
@@ -1106,9 +1193,10 @@ def resolve_episode_options(
     pose: str | None = None,
     toilet: str | None = None,
     appear: str | dict[str, Any] | None = None,
+    scenes: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Story + invite pose + toilet + appear, without connect/combat Colab wiring."""
-    out = apply_story_route(ep, story=story) if _has_story_overlays(ep) else copy.deepcopy(ep)
+    """Story + invite pose + toilet + appear + per-scene, without connect/combat Colab wiring."""
+    out = apply_story_route(ep, story=story, scenes=scenes) if _has_story_overlays(ep) else copy.deepcopy(ep)
     out = apply_invite_pose(out, pose=pose)
     out = apply_toilet_route(out, toilet=toilet)
     return apply_appear_route(out, appear=appear)
@@ -1125,6 +1213,7 @@ def prepare_episode(
     invite_pose_override: str | None = None,
     toilet_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
+    scenes_override: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = apply_connect_mode(ep, connect_override)
@@ -1146,9 +1235,11 @@ def prepare_episode(
         render["toilet"] = canonical_toilet(toilet_override) or toilet_override
     if appear_override not in (None, ""):
         render["appear"] = parse_appear(appear_override)
+    if scenes_override not in (None, ""):
+        render["scenes"] = scenes_to_choices(episode_scenes(out, scenes_override))
     out["render"] = render
     if _has_story_overlays(out):
-        out = apply_story_route(out, story=story_override)
+        out = apply_story_route(out, story=story_override, scenes=scenes_override)
     else:
         out = apply_combat_route(out)
     out = apply_invite_pose(out, pose=invite_pose_override)
@@ -1527,6 +1618,10 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 _check(f"story-{story}/skip-{enc}", story=story, appear=skip)
                 only = {name: name == enc for name in HOSPITAL_ENCOUNTERS}
                 _check(f"story-{story}/only-{enc}", story=story, appear=only)
+        _check("scenes-miki-evade", story="accept", scenes="miki=evade")
+        _check("scenes-shino-invite", story="accept", scenes="shino=invite_all_fours")
+        _check("scenes-mixed-ending", story="invite", scenes="shino=evade")
+        _check("scenes-fight-ignore", story="fight_win", scenes="miki=evade,rei=accept,kana=invite,shino=evade")
         return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
@@ -2981,6 +3076,7 @@ def run_episode(
     invite_pose_override: str | None = None,
     toilet_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
+    scenes_override: str | dict[str, Any] | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -2999,6 +3095,7 @@ def run_episode(
         invite_pose_override=invite_pose_override,
         toilet_override=toilet_override,
         appear_override=appear_override,
+        scenes_override=scenes_override,
     )
     print(
         describe_run(
@@ -3010,6 +3107,7 @@ def run_episode(
             invite_pose=episode_invite_pose(ep),
             toilet=episode_toilet(ep),
             appear=episode_appear(ep),
+            scenes=(ep.get("render") or {}).get("scenes"),
             episode=str(ep.get("slug") or ""),
         )
     )
@@ -3248,7 +3346,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--appear LIST]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--appear LIST] [--scenes LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -3262,6 +3360,7 @@ def _usage() -> str:
         "  --invite-pose all_fours|m_open|ride（病棟の誘うポーズ。迷ったら all_fours）\n"
         "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
         "  --appear miki,rei,kana,shino（病棟の登場。外した名前はシーンごと飛ばす）\n"
+        "  --scenes miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）\n"
     )
 
 
@@ -3289,6 +3388,7 @@ def main(argv: list[str] | None = None) -> int:
     invite_pose = None
     toilet = None
     appear = None
+    scenes = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
@@ -3307,6 +3407,8 @@ def main(argv: list[str] | None = None) -> int:
         toilet = opts[opts.index("--toilet") + 1]
     if "--appear" in opts:
         appear = opts[opts.index("--appear") + 1]
+    if "--scenes" in opts:
+        scenes = opts[opts.index("--scenes") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
     ep = prepare_episode(
@@ -3319,6 +3421,7 @@ def main(argv: list[str] | None = None) -> int:
         invite_pose_override=invite_pose,
         toilet_override=toilet,
         appear_override=appear,
+        scenes_override=scenes,
     )
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():

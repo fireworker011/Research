@@ -12,7 +12,7 @@ UNet は Eros Max。本体は stock。
 ## ワンクリック
 
 1. このブランチが GitHub にあること。inbox には置かない。
-2. Colab ノートの既定は `EPISODE = "kasumi-late-desk-adult"` / `BRANCH = "cursor/h3-kasumi-adult-0402"`。Run all。
+2. Colab ノートの話は「霞東フロア あさ（迷ったらこれ）」（スラッグ `kasumi-late-desk-adult`）。`BRANCH = "cursor/h3-kasumi-adult-0402"`。Run all。
 3. Drive は `episodes/kasumi-late-desk-adult/` だけ。スチールは上書きしない。霞東の 5カット raw は reuse するな。
 
 ```bash

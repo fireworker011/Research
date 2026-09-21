@@ -2,7 +2,7 @@
 """Headless Colab entry for one-click H3 episodes.
 
 Env:
-  H3_EPISODE          slug under Drive episodes/ (default bandai-district)
+  H3_EPISODE          slug under Drive episodes/ (default bandai-district). Japanese dropdown labels are canonicalized.
   H3_DRIVE_ROOT       Grokbot root; only its models/ is read (default /content/drive/MyDrive/minimax-h3-comfyui)
   H3_EPISODES_ROOT    override for <root>/episodes
   H3_COMFY_DIR        default /content/ComfyUI
@@ -14,6 +14,7 @@ Env:
   H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle（日本語: 行かない / 小便 / オナニー / 触手。病棟の道中）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
+  H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
@@ -40,11 +41,13 @@ from h3_episode import (
     load_episode,
     run_episode,
 )
+from h3_episode_packs import canonical_episode
 from h3_i2v_runtime import maybe_unassign
 
 
 def main() -> int:
-    slug = (os.environ.get("H3_EPISODE") or "bandai-district").strip()
+    raw_slug = (os.environ.get("H3_EPISODE") or "bandai-district").strip()
+    slug = canonical_episode(raw_slug) or raw_slug
     main_root = Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT)
     root = episode_root(slug, main_root)
     assert_not_production_root(root, main_root)
@@ -69,6 +72,7 @@ def main() -> int:
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
             appear_override=(os.environ.get("H3_EPISODE_APPEAR") or "").strip() or None,
+            scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
         )
         print("DONE", slug, final)
         return 0

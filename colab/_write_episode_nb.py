@@ -24,8 +24,9 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：上から 1〜7 と登場を選んで Run all（迷ったらそのまま）
-EPISODE = "__EPISODE__"  #@param {type:"string"}
+CELL = r'''#@title 一発：話と上から 1〜7、登場とシーンを選んで Run all（迷ったらそのまま）
+__EPISODE_HELP__
+EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
 __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
@@ -46,6 +47,11 @@ APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
 APPEAR_SHINO = True  #@param {type:"boolean"}
+#@markdown **シーンごと（病棟）。誘うは誘い方も含む。戦い構成と霞東は無視。**
+SCENE_MIKI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 print("=" * 60)
@@ -75,10 +81,13 @@ os.environ["H3_EPISODE_TOILET"] = TOILET
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
+os.environ["H3_EPISODE_SCENES"] = ",".join(
+    f"{name}={choice}"
+    for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
+)
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
-Path(DRIVE_ROOT, "episodes", EPISODE).mkdir(parents=True, exist_ok=True)
 
 import torch
 if not torch.cuda.is_available():
@@ -114,13 +123,17 @@ for rel in HELPERS:
     print("helper", name)
 
 sys.path.insert(0, "/content")
+from h3_episode_packs import canonical_episode
+slug = canonical_episode(EPISODE) or EPISODE
+os.environ["H3_EPISODE"] = slug
+Path(DRIVE_ROOT, "episodes", slug).mkdir(parents=True, exist_ok=True)
 from h3_episode_colab_main import main
 
 rc = main()
 print("episode exit", rc)
 if rc:
     raise SystemExit(rc)
-print("成功。完成動画は Drive episodes/" + EPISODE + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
+print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムは停止済みです。赤い例外は出ません。")
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
@@ -131,7 +144,11 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
 
-## 上から 5 つ + 病棟の追加（迷ったらそのまま）
+## 話 + 上から 7 つ + 病棟の追加（迷ったらそのまま）
+
+**話** — どの予告を描くか
+
+{form_readme("episode")}
 
 **1. つなぎ方** — 動画をどう繋げるか
 
@@ -163,6 +180,10 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。
 
+**シーンごと（病棟）** — 誘う（誘い方含む）・受け入れる・回避。5番が戦いのときは無視。霞東は無視。最後に残った人の構成で完了／失敗が決まる。
+
+{form_readme("scene")}
+
 シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
@@ -170,8 +191,8 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- `EPISODE = "kasumi-late-desk-adult"` は霞東あさ。Colab 4 オフは行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
-- `EPISODE = "bandai-district-short"` は 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
@@ -181,9 +202,11 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 def make_nb() -> dict:
     cell = (
         CELL.replace("__BRANCH__", BRANCH)
-        .replace("__EPISODE__", EPISODE_DEFAULT)
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
+        .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
+        .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
+        .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
         .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
@@ -205,6 +228,8 @@ def make_nb() -> dict:
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 病棟の道中。どれでも次へ"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
+        .replace("__SCENE_DEFAULT__", json.dumps(ui_default("scene"), ensure_ascii=False))
+        .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
     )
     return {
         "nbformat": 4,

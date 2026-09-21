@@ -385,6 +385,13 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
 
 HOSPITAL_ENCOUNTERS: tuple[str, ...] = ("miki", "rei", "kana", "shino")
 DEFAULT_APPEAR: dict[str, bool] = {name: True for name in HOSPITAL_ENCOUNTERS}
+FIGHT_STORIES: frozenset[str] = frozenset({"fight_win", "fight_lose"})
+ENCOUNTER_LABEL_JA: dict[str, str] = {
+    "miki": "みき",
+    "rei": "れい",
+    "kana": "かな",
+    "shino": "しの",
+}
 
 APPEAR_ALIASES: dict[str, str] = {
     "みき": "miki",
@@ -392,6 +399,119 @@ APPEAR_ALIASES: dict[str, str] = {
     "かな": "kana",
     "しの": "shino",
 }
+
+# Colab episode dropdown. Slug stays the folder name; choice_ja is what the form shows.
+EPISODE_MODES: dict[str, dict[str, Any]] = {
+    "kasumi-late-desk-adult": {
+        "label_ja": "霞東フロア あさ",
+        "choice_ja": "霞東フロア あさ（迷ったらこれ）",
+        "when_ja": "遅刻した朝。4番で行為ルートか戦いルート。5番とシーンごとは無視",
+        "recommend": True,
+    },
+    "hospital-exit-adult": {
+        "label_ja": "病棟出口",
+        "choice_ja": "病棟出口",
+        "when_ja": "感染者の病棟から出口へ。5番が全体の既定。シーンごとで誘う・受け入れる・回避を上書き",
+    },
+    "bandai-district-short": {
+        "label_ja": "番台ショート",
+        "choice_ja": "番台ショート（25秒）",
+        "when_ja": "25秒・ミッション失敗。理容室だけ新しく描く",
+    },
+    "bandai-district": {
+        "label_ja": "番台フル",
+        "choice_ja": "番台フル（92秒）",
+        "when_ja": "初回の92秒版。全部描く",
+    },
+}
+
+EPISODE_ALIASES: dict[str, str] = _label_aliases(
+    EPISODE_MODES,
+    {
+        "霞東": "kasumi-late-desk-adult",
+        "霞東あさ": "kasumi-late-desk-adult",
+        "kasumi": "kasumi-late-desk-adult",
+        "病棟": "hospital-exit-adult",
+        "hospital": "hospital-exit-adult",
+        "番台短": "bandai-district-short",
+        "番台": "bandai-district",
+    },
+)
+
+# Per-encounter hospital action. inherit = Colab 5番. Fight stories ignore this.
+# form=False rows are aliases only (not shown in the dropdown).
+SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
+    "inherit": {
+        "label_ja": "全体に従う",
+        "choice_ja": "全体に従う（迷ったらこれ）",
+        "when_ja": "5番の構成をこのシーンでも使う",
+        "hint_ja": "迷ったらこれ。戦い構成のときはシーンごとは無視",
+        "recommend": True,
+        "story": None,
+        "pose": None,
+    },
+    "accept": {
+        "label_ja": "受け入れる",
+        "choice_ja": "○受け入れる",
+        "when_ja": "この人だけ戸惑いながら身体を張る",
+        "story": "accept",
+        "pose": None,
+    },
+    "invite_all_fours": {
+        "label_ja": "誘う・四つん這い",
+        "choice_ja": "□誘う・四つん這い股広げ",
+        "when_ja": "この人を四つん這いで誘う",
+        "story": "invite",
+        "pose": "all_fours",
+    },
+    "invite_m_open": {
+        "label_ja": "誘う・M字",
+        "choice_ja": "□誘う・M字開脚仰向け",
+        "when_ja": "この人を仰向けM字で誘う",
+        "story": "invite",
+        "pose": "m_open",
+    },
+    "invite_ride": {
+        "label_ja": "誘う・騎乗",
+        "choice_ja": "□誘う・ベロチュー→じゅぼ→騎乗位",
+        "when_ja": "この人をじゅぼのあと乗せて誘う",
+        "story": "invite",
+        "pose": "ride",
+    },
+    "evade": {
+        "label_ja": "回避",
+        "choice_ja": "×回避",
+        "when_ja": "この人だけキスですり抜ける",
+        "story": "evade",
+        "pose": None,
+    },
+    "invite": {
+        "label_ja": "誘う",
+        "choice_ja": "□誘う",
+        "when_ja": "この人を誘う。ポーズは6番",
+        "story": "invite",
+        "pose": None,
+        "form": False,
+    },
+}
+
+SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
+    SCENE_ACTION_MODES,
+    {
+        "従う": "inherit",
+        "default": "inherit",
+        "same": "inherit",
+        "受け入れる": "accept",
+        "誘う": "invite",
+        "誘う四つん這い": "invite_all_fours",
+        "誘うM字": "invite_m_open",
+        "誘う騎乗": "invite_ride",
+        "回避": "evade",
+        "invite-all-fours": "invite_all_fours",
+        "invite-m-open": "invite_m_open",
+        "invite-ride": "invite_ride",
+    },
+)
 
 
 PRESET_ALIASES: dict[str, str] = _label_aliases(
@@ -482,6 +602,100 @@ def canonical_encounter(name: str) -> str:
     return APPEAR_ALIASES.get(raw, raw)
 
 
+def canonical_episode(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in EPISODE_MODES:
+        return raw
+    return EPISODE_ALIASES.get(raw, raw)
+
+
+def canonical_scene_action(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in SCENE_ACTION_MODES:
+        return raw
+    return SCENE_ACTION_ALIASES.get(raw, raw)
+
+
+def split_scene_choice(value: Any) -> tuple[str | None, str | None]:
+    """Return (story or None=inherit, pose or None=use Colab 誘うポーズ)."""
+    if value in (None, "", False, True):
+        return None, None
+    if isinstance(value, dict):
+        story_raw = str(value.get("story") or "").strip()
+        if not story_raw or canonical_scene_action(story_raw) == "inherit":
+            return None, None
+        key = canonical_scene_action(story_raw) or canonical_story(story_raw)
+        spec = SCENE_ACTION_MODES.get(key) if key in SCENE_ACTION_MODES else None
+        pose_raw = canonical_invite_pose(str(value.get("pose") or "")) or None
+        if spec:
+            story = spec.get("story")
+            if story in FIGHT_STORIES:
+                raise ValueError("scenes cannot pick a fight story")
+            return story, pose_raw or spec.get("pose")
+        if key in FIGHT_STORIES:
+            raise ValueError("scenes cannot pick a fight story")
+        if key in STORY_MODES:
+            return key, pose_raw
+        raise ValueError(f"scenes unknown story {value}")
+    key = canonical_scene_action(str(value))
+    if not key or key == "inherit":
+        return None, None
+    spec = SCENE_ACTION_MODES.get(key)
+    if not spec:
+        raise ValueError(f"scenes unknown choice {value}")
+    if spec.get("story") in FIGHT_STORIES:
+        raise ValueError("scenes cannot pick a fight story")
+    return spec.get("story"), spec.get("pose")
+
+
+def parse_scenes(raw: str | dict[str, Any] | None) -> dict[str, tuple[str | None, str | None]]:
+    """Per-encounter (story, pose). Missing / inherit = (None, None)."""
+    out: dict[str, tuple[str | None, str | None]] = {name: (None, None) for name in HOSPITAL_ENCOUNTERS}
+    if raw in (None, "", False):
+        return out
+    items: list[tuple[Any, Any]]
+    if isinstance(raw, dict):
+        items = list(raw.items())
+    else:
+        items = []
+        for part in str(raw).replace(";", ",").split(","):
+            chunk = part.strip()
+            if not chunk:
+                continue
+            if "=" not in chunk:
+                raise ValueError(f"scenes expected name=choice, got {chunk}")
+            key, value = chunk.split("=", 1)
+            items.append((key.strip(), value.strip()))
+    for key, value in items:
+        enc = canonical_encounter(str(key))
+        if enc not in HOSPITAL_ENCOUNTERS:
+            raise ValueError(f"scenes unknown encounter {key}")
+        out[enc] = split_scene_choice(value)
+    return out
+
+
+def scenes_to_choices(parsed: dict[str, tuple[str | None, str | None]]) -> dict[str, str]:
+    """Round-trip parse_scenes() into dropdown keys (inherit / accept / invite_* / evade)."""
+    out: dict[str, str] = {}
+    for name in HOSPITAL_ENCOUNTERS:
+        story, pose = parsed.get(name, (None, None))
+        if story is None:
+            out[name] = "inherit"
+            continue
+        found = None
+        for key, spec in SCENE_ACTION_MODES.items():
+            if spec.get("story") == story and spec.get("pose") == pose:
+                found = key
+                if spec.get("form", True):
+                    break
+        out[name] = found or story
+    return out
+
+
 def parse_appear(raw: str | dict[str, Any] | None) -> dict[str, bool]:
     """Which hospital encounters to keep. Empty / missing = all four appear."""
     out = dict(DEFAULT_APPEAR)
@@ -525,6 +739,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return INVITE_POSE_MODES
     if kind == "toilet":
         return TOILET_MODES
+    if kind == "episode":
+        return EPISODE_MODES
+    if kind == "scene":
+        return {key: spec for key, spec in SCENE_ACTION_MODES.items() if spec.get("form", True)}
     raise KeyError(kind)
 
 
@@ -571,6 +789,7 @@ def describe_run(
     invite_pose: str = "",
     toilet: str = "",
     appear: str | dict[str, Any] | None = None,
+    scenes: str | dict[str, Any] | None = None,
     episode: str = "",
 ) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
@@ -590,9 +809,27 @@ def describe_run(
     pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
     appear_ja = " ".join(("○" if shown[name] else "×") + name for name in HOSPITAL_ENCOUNTERS)
-    head = f"一発 {episode}".strip() if episode else "一発"
+    parsed = parse_scenes(scenes)
+    scene_bits = []
+    for name in HOSPITAL_ENCOUNTERS:
+        story_key, pose_key = parsed[name]
+        if story_key is None:
+            scene_bits.append(ENCOUNTER_LABEL_JA[name] + "従う")
+            continue
+        label = story_key
+        for spec in SCENE_ACTION_MODES.values():
+            if spec.get("story") == story_key and spec.get("pose") == pose_key and spec.get("form", True):
+                label = str(spec.get("label_ja") or story_key)
+                break
+        scene_bits.append(ENCOUNTER_LABEL_JA[name] + label)
+    scenes_ja = " ".join(scene_bits)
+    slug = canonical_episode(episode) or episode
+    ep_spec = EPISODE_MODES.get(slug)
+    ep_ja = str(ep_spec["choice_ja"]) if ep_spec else (slug or "一発")
+    head = f"一発 {ep_ja}".strip()
     return (
         f"{head}\n"
+        f"  話        {ep_ja}\n"
         f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
@@ -601,5 +838,6 @@ def describe_run(
         f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
         f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
         f"  登場      {appear_ja}\n"
-        "迷ったらこの5つの既定のままで Run all。6・7・登場は病棟だけ。"
+        f"  シーン    {scenes_ja}\n"
+        "迷ったらこの5つの既定のままで Run all。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

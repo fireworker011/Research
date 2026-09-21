@@ -38,7 +38,7 @@ DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", appear: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", appear: str = "", scenes: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -56,6 +56,7 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE_INVITE_POSE'] = {invite_pose!r}\n"
         f"os.environ['H3_EPISODE_TOILET'] = {toilet!r}\n"
         f"os.environ['H3_EPISODE_APPEAR'] = {appear!r}\n"
+        f"os.environ['H3_EPISODE_SCENES'] = {scenes!r}\n"
         f"os.environ['H3_EPISODE_FRESH'] = {('1' if fresh else '0')!r}\n"
         f"os.environ['H3_HELPER_BRANCH'] = {branch!r}\n"
         "os.environ.setdefault('H3_DRIVE_ROOT', '/content/drive/MyDrive/minimax-h3-comfyui')\n"
@@ -89,6 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--invite-pose", default="", choices=["", *INVITE_POSE_MODES, *INVITE_POSE_ALIASES], help="誘うポーズ: all_fours / m_open / ride（病棟。迷ったら all_fours）")
     p.add_argument("--toilet", default="", choices=["", *TOILET_MODES, *TOILET_ALIASES], help="道中トイレ: off / pee / masturbate / tentacle（病棟。迷ったら off）")
     p.add_argument("--appear", default="", help="登場: miki,rei,kana,shino（病棟。外すとその人を飛ばす）")
+    p.add_argument("--scenes", default="", help="シーンごと: miki=evade,rei=invite_ride,...（病棟。inherit は 5番。戦い構成は無視）")
     p.add_argument("--fresh", action="store_true", help="re-render beats that already have raw clips")
     p.add_argument("--branch", default=os.environ.get("H3_HELPER_BRANCH") or DEFAULT_BRANCH)
     p.add_argument("--gpu", default=os.environ.get("H3_COLAB_GPU") or "A100")
@@ -112,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
         invite_pose=getattr(args, "invite_pose", ""),
         toilet=args.toilet,
         appear=args.appear,
+        scenes=args.scenes,
     )
     with tempfile.NamedTemporaryFile("w", suffix="_h3_episode.py", delete=False, encoding="utf-8") as fh:
         fh.write(script)

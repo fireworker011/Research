@@ -62,6 +62,7 @@ from h3_episode import (  # noqa: E402
     canonical_preset,
     canvas_for,
     duration_ladder,
+    ending_story,
     episode_assets,
     episode_camera_pack,
     episode_checkpoint,
@@ -124,8 +125,10 @@ from h3_episode_packs import (  # noqa: E402
     INVITE_POSE_MODES,
     STORY_MODES,
     TOILET_MODES,
+    canonical_episode,
     describe_run,
     form_readme,
+    parse_scenes,
     ui_choices,
     ui_default,
 )
@@ -208,7 +211,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert len(code) == 1
     src = "".join(code[0]["source"])
     assert "h3_episode_colab_main" in src
-    assert 'EPISODE = "kasumi-late-desk-adult"' in src
+    assert 'EPISODE = "霞東フロア あさ（迷ったらこれ）"' in src
+    assert "病棟出口" in src
+    assert "番台ショート（25秒）" in src
     assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
     assert 'PRESET = "バランス（迷ったらこれ）"' in src
     assert "スピード（最速）" in src and "質（きれい・時間かかる）" in src
@@ -226,6 +231,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_INVITE_POSE" in src
     assert "H3_EPISODE_TOILET" in src
     assert "H3_EPISODE_APPEAR" in src
+    assert "H3_EPISODE_SCENES" in src
+    assert "SCENE_MIKI" in src and "SCENE_SHINO" in src
+    assert "canonical_episode" in src
     assert 'STORY = "○受け入れる（生存・完了・迷ったらこれ）"' in src
     assert "□誘う（淫欲・失敗）" in src
     assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
@@ -243,6 +251,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "5. 構成" in md
     assert "6. 誘うポーズ" in md
     assert "7. トイレ" in md
+    assert "シーンごと" in md
+    assert "hospital-exit-adult" in md
     assert "病棟の話" in md
     assert "用意した最終フレーム" in md
     assert "前の最終フレームから続ける" in md
@@ -1298,6 +1308,99 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(ride)
 
 
+def test_hospital_per_scene_accept_invite_evade_and_ending():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    mixed = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        scenes_override="miki=回避,rei=全体に従う,kana=□誘う・ベロチュー→じゅぼ→騎乗位,shino=○受け入れる",
+    )
+    assert mixed["render"]["story"] == "accept"
+    assert mixed["render"]["scenes"]["miki"] == "evade"
+    assert mixed["render"]["scenes"]["rei"] == "inherit"
+    assert mixed["render"]["scenes"]["kana"] == "invite_ride"
+    assert mixed["render"]["scenes"]["shino"] == "accept"
+    kiss = next(b for b in mixed["beats"] if b["id"] == "03-kiss")
+    kiss_prompt = build_beat_prompt(mixed, kiss, trigger=merge_trigger("", kiss))
+    assert extra_keys(kiss) == []
+    assert "jupo-jupo" not in kiss_prompt.lower()
+    doggy = next(b for b in mixed["beats"] if b["id"] == "06-doggy")
+    _assert_insertion_direction(doggy["action"], build_beat_prompt(mixed, doggy))
+    kana = next(b for b in mixed["beats"] if b["id"] == "09-join")
+    assert "sits on" in kana["action"].lower()
+    _assert_insertion_direction(kana["action"], build_beat_prompt(mixed, kana))
+    assert extra_keys(kana) == ["blowjob", "mystic"]
+    exit_beat = next(b for b in mixed["beats"] if b["id"] == "12-exit")
+    assert exit_beat["hud"]["complete"] is True
+    assert not (mixed.get("cards") or {}).get("fail")
+    assert ending_story(mixed) == "accept"
+    assert validate_episode(mixed, root=HOSPITAL_DIR) == []
+    _assert_hospital_bans(mixed)
+
+    last_invite = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        scenes_override="miki=accept,rei=accept,kana=accept,shino=□誘う・四つん這い股広げ",
+    )
+    twelve = next(b for b in last_invite["beats"] if b["id"] == "12-exit")
+    twelve_prompt = build_beat_prompt(last_invite, twelve)
+    assert twelve["hud"]["complete"] is False
+    assert last_invite["cards"]["fail"]["reason"] == "淫欲に呑まれた"
+    assert "do not cross the threshold" in twelve_prompt.lower() or "do not slide to the lit doorway" in twelve_prompt.lower()
+    miki = next(b for b in last_invite["beats"] if b["id"] == "03-kiss")
+    assert extra_keys(miki) == ["blowjob", "mystic"]
+    assert ending_story(last_invite) == "invite"
+
+    skip_last = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        appear_override="miki,rei,kana",
+        scenes_override="kana=誘う",
+    )
+    assert skip_last["beats"][-1]["id"] == "09-join"
+    assert skip_last["beats"][-1]["hud"]["complete"] is False
+    assert skip_last["cards"]["fail"]["reason"] == "淫欲に呑まれた"
+    assert ending_story(skip_last) == "invite"
+
+    last_evade = prepare_episode(
+        raw,
+        story_override="誘う",
+        scenes_override="shino=回避",
+    )
+    assert last_evade["beats"][-1]["hud"]["complete"] is True
+    assert not (last_evade.get("cards") or {}).get("fail")
+    assert ending_story(last_evade) == "evade"
+    twelve_e = next(b for b in last_evade["beats"] if b["id"] == "12-exit")
+    assert twelve_e["cast"] == ["aya"]
+
+    fight = prepare_episode(
+        raw,
+        story_override="戦って勝つ",
+        scenes_override="miki=回避,rei=○受け入れる,kana=誘う,shino=回避",
+    )
+    assert [b["id"] for b in fight["beats"] if b.get("extra_loras") == ["combat"]] == ["06-fight", "10-win"]
+    assert fight["beats"][-1]["hud"]["complete"] is True
+    assert ending_story(fight) == "fight_win"
+    assert validate_episode(fight, root=HOSPITAL_DIR) == []
+
+    kasumi = prepare_episode(
+        load_episode(KASUMI_ADULT_DIR / "episode.json"),
+        scenes_override="miki=回避,shino=誘う",
+    )
+    assert [b["id"] for b in kasumi["beats"]] == [
+        b["id"] for b in prepare_episode(load_episode(KASUMI_ADULT_DIR / "episode.json"))["beats"]
+    ]
+
+    with pytest.raises(EpisodeError, match="scenes"):
+        prepare_episode(raw, scenes_override="miki=戦って勝つ")
+    with pytest.raises(EpisodeError, match="scenes"):
+        prepare_episode(raw, scenes_override="nobody=回避")
+    parsed = parse_scenes("みき=回避,れい=□誘う・M字開脚仰向け")
+    assert parsed["miki"] == ("evade", None)
+    assert parsed["rei"] == ("invite", "m_open")
+    assert parsed["kana"] == (None, None)
+
+
 def test_hospital_appear_none_and_option_matrix():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     with pytest.raises(EpisodeError, match="at least one encounter"):
@@ -1433,6 +1536,14 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "迷ったらこの5つの既定のままで Run all" in picked
     assert "6 誘う" in picked
     assert "7 トイレ" in picked
+    assert "シーン" in picked
+    assert "話" in picked
+    assert ui_default("episode") == "霞東フロア あさ（迷ったらこれ）"
+    assert "病棟出口" in ui_choices("episode")
+    assert canonical_episode("病棟出口") == "hospital-exit-adult"
+    assert canonical_episode("霞東フロア あさ（迷ったらこれ）") == "kasumi-late-desk-adult"
+    assert ui_default("scene") == "全体に従う（迷ったらこれ）"
+    assert "□誘う・四つん這い股広げ" in ui_choices("scene")
     assert "格闘LoRAオフ" in picked
     assert "○受け入れる（生存・完了・迷ったらこれ）" in picked
     assert ui_default("story") == "○受け入れる（生存・完了・迷ったらこれ）"
@@ -1937,6 +2048,7 @@ def test_exec_script_is_self_contained():
     assert "H3_EPISODE_INVITE_POSE" in script
     assert "H3_EPISODE_TOILET" in script
     assert "H3_EPISODE_APPEAR" in script
+    assert "H3_EPISODE_SCENES" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")
