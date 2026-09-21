@@ -1248,6 +1248,15 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "stroking the erect 20cm" in kana_meet["action"].lower()
     assert "white goo" in kana_meet["action"].lower()
     assert "linoleum around her" in kana_meet["action"].lower()
+    assert "stops in front of kana" in kana_meet["action"].lower()
+    assert "feet stay planted" in kana_meet["action"].lower()
+    assert "only aya's feet walk" in kana_meet["action"].lower()
+    assert not re.search(r"\brei\b", kana_meet["action"], re.I)
+    assert kana_meet.get("camera_pack") == "none"
+    assert "adults move left or right" not in kana_meet["camera"].lower()
+    kana_prompt = build_beat_prompt(ep, kana_meet)
+    assert "adults move left or right" not in kana_prompt.lower()
+    assert "this shot:" not in kana_prompt.lower()
     peek = next(b for b in ep["beats"] if b["id"] == "04-peek")
     assert "imposing waiting stance" in peek["action"].lower()
     assert "walks right behind" not in peek["action"].lower()
@@ -1410,6 +1419,7 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     assert "semen share" not in oral_prompt.lower()
     assert oral["trim"]["seconds"] == 5.0
     assert oral["cast"] == ["aya", "rei"]
+    assert oral.get("camera_pack") == "side2d"
     _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
     twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
     assert twelve["cast"] == ["aya"]

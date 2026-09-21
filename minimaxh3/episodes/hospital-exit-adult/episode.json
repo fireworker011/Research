@@ -3400,6 +3400,7 @@
       "id": "07-kana",
       "encounter": "kana",
       "source": "t2v",
+      "camera_pack": "none",
       "still": "stills/08-door.jpg",
       "trim": {
         "start": 0,
@@ -3415,8 +3416,8 @@
         "rail"
       ],
       "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a lit open doorway at the far end",
-      "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya walking RIGHT, Kana mid-corridor facing her stroking the 20cm, WHITE goo on Kana and on the floor, both readable. Shino is not in frame",
-      "action": "Aya WALKS RIGHT along the crumbling corridor at brisk walking-and-hit pace, fully nude, standing. Rei is gone. Nude Kana already STANDS mid-corridor facing her, vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy slime covering her, wet peeling rotting patches on the shaft, erect 20cm the same vivid purple as the hips not pale-tan flesh pointing up. Kana is STROKING the erect 20cm with both hands, a continuous wet pumping that does not stop. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her, the wall, and the rail, thick WHITE puddles on the floor. Aya SEES the wet body and the WHITE-smeared erect 20cm. Aya's face becomes a lewd wet smiling ecstatic inviting face. Two adults only. Shino is not in frame. Both stay fully nude. Motion starts at frame one",
+      "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Both adults full body including feet. Only Aya walks RIGHT and stops in front of Kana. Kana stands still mid-corridor facing Aya, feet planted, stroking the 20cm. WHITE goo on Kana and on the floor, both readable. Shino is not in frame",
+      "action": "Aya WALKS RIGHT along the crumbling corridor at brisk walking-and-hit pace, fully nude, standing, and STOPS in front of Kana. Aya stays in front of Kana, face to face, a short step apart. Only Aya's feet walk. Nude Kana already STANDS mid-corridor facing Aya, feet stay planted on one linoleum spot, vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy slime covering her, wet peeling rotting patches on the shaft, erect 20cm the same vivid purple as the hips not pale-tan flesh pointing up. Kana is STROKING the erect 20cm with both hands, a continuous wet pumping that does not stop. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her, the wall, and the rail, thick WHITE puddles on the floor. Aya SEES the wet body and the WHITE-smeared erect 20cm. Aya's face becomes a lewd wet smiling ecstatic inviting face. Last frame: Aya standing in front of Kana, Kana still stroking, both fully nude. Two adults only. Shino is not in frame. Motion starts at frame one",
       "voices": [
         {
           "who": "aya",
@@ -3441,8 +3442,8 @@
         ]
       },
       "on_invite": {
-        "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya walking RIGHT, Kana mid-corridor facing her stroking the 20cm, WHITE goo on Kana and on the floor, both readable. Shino is not in frame",
-        "action": "Aya WALKS RIGHT along the crumbling corridor at brisk walking-and-hit pace, fully nude, standing. Rei is gone. Nude Kana already STANDS mid-corridor facing her, vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy slime covering her, wet peeling rotting patches on the shaft, erect 20cm the same vivid purple as the hips not pale-tan flesh pointing up. Kana is STROKING the erect 20cm with both hands, a continuous wet pumping that does not stop. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her, the wall, and the rail, thick WHITE puddles on the floor. Aya SEES the wet body and the WHITE-smeared erect 20cm. Aya's face becomes a lewd wet smiling ecstatic inviting face. Two adults only. Shino is not in frame. Both stay fully nude. Motion starts at frame one",
+        "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Both adults full body including feet. Only Aya walks RIGHT and stops in front of Kana. Kana stands still mid-corridor facing Aya, feet planted, stroking the 20cm. WHITE goo on Kana and on the floor, both readable. Shino is not in frame",
+        "action": "Aya WALKS RIGHT along the crumbling corridor at brisk walking-and-hit pace, fully nude, standing, and STOPS in front of Kana. Aya stays in front of Kana, face to face, a short step apart. Only Aya's feet walk. Nude Kana already STANDS mid-corridor facing Aya, feet stay planted on one linoleum spot, vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy slime covering her, wet peeling rotting patches on the shaft, erect 20cm the same vivid purple as the hips not pale-tan flesh pointing up. Kana is STROKING the erect 20cm with both hands, a continuous wet pumping that does not stop. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her, the wall, and the rail, thick WHITE puddles on the floor. Aya SEES the wet body and the WHITE-smeared erect 20cm. Aya's face becomes a lewd wet smiling ecstatic inviting face. Last frame: Aya standing in front of Kana, Kana still stroking, both fully nude. Two adults only. Shino is not in frame. Motion starts at frame one",
         "trim": {
           "start": 0,
           "seconds": 6.0
@@ -3457,6 +3458,7 @@
       },
       "on_evade": {
         "id": "07-run",
+        "camera_pack": "side2d",
         "cast": [
           "aya"
         ],
@@ -3483,6 +3485,7 @@
       },
       "on_fight_win": {
         "id": "07-oral",
+        "camera_pack": "side2d",
         "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
         "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Rei seated on the linoleum, Aya kneeling in front, Aya's head moving onto the shaft",
         "action": "Rei stays seated on the linoleum, uninjured, erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft pointing UP, thick extra-viscous dark-brown filthy sludge on the shaft. Aya DROPS to her knees in front of Rei at brisk walking-and-hit pace, facing Rei's hips. Aya's hands HOLD Rei's hips, not the shaft. Aya's head MOVES FORWARD onto the 24cm until the lips reach the BASE. Mouth already wrapped on the 24cm from frame 1. KEEP the lips at the BASE. The pale-tan shaft is glossy with thick saliva mixed with brown liquid, wet strings from the lips to the BASE. Deep snappy jupo-jupo: Aya's head bobs BACK a little then FORWARD to the base; lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. This is sucking (jupo). Both look like it feels really good, not blank. Aya stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo. Rei stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, erect 24cm the same vivid purple as the hips not pale-tan flesh still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Rei climaxes IN Aya's mouth at the BASE. Heavy-oil-thick extra-viscous WHITE goo floods the mouth while lips stay at the BASE. Lips stay at the base, WHITE goo at the lips. Aya does not rise to share. Brisk real-time. Consensual adult game beat",
@@ -3517,6 +3520,7 @@
       },
       "on_fight_lose": {
         "id": "07-oral",
+        "camera_pack": "side2d",
         "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
         "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Rei seated on the linoleum, Aya kneeling in front, Aya's head moving onto the shaft",
         "action": "Rei stays seated on the linoleum, uninjured, erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft pointing UP, thick extra-viscous dark-brown filthy sludge on the shaft. Aya DROPS to her knees in front of Rei at brisk walking-and-hit pace, facing Rei's hips. Aya's hands HOLD Rei's hips, not the shaft. Aya's head MOVES FORWARD onto the 24cm until the lips reach the BASE. Mouth already wrapped on the 24cm from frame 1. KEEP the lips at the BASE. The pale-tan shaft is glossy with thick saliva mixed with brown liquid, wet strings from the lips to the BASE. Deep snappy jupo-jupo: Aya's head bobs BACK a little then FORWARD to the base; lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. This is sucking (jupo). Both look like it feels really good, not blank. Aya stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo. Rei stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, erect 24cm the same vivid purple as the hips not pale-tan flesh still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Rei climaxes IN Aya's mouth at the BASE. Heavy-oil-thick extra-viscous WHITE goo floods the mouth while lips stay at the BASE. Lips stay at the base, WHITE goo at the lips. Aya does not rise to share. Brisk real-time. Consensual adult game beat",
