@@ -1095,6 +1095,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert raw["cast"]["aya"]["age"] == 21 and "A-cup" in raw["cast"]["aya"]["lock"]
     assert "no penis" in raw["cast"]["aya"]["lock"] and "never futanari" in raw["cast"]["aya"]["lock"]
     assert "hospital dirt" in raw["cast"]["aya"]["lock"] and "sweat" in raw["cast"]["aya"]["lock"]
+    assert "visible sweat beads" in raw["cast"]["aya"]["lock"]
+    assert "grimy brown hospital dirt" in raw["cast"]["aya"]["lock"]
     assert "extremely tall" not in raw["world"]["lock"]
     assert "nobody is giant" in raw["world"]["lock"]
     assert "22cm" in raw["cast"]["miki"]["lock"] and "clear futanari" in raw["cast"]["miki"]["lock"]
@@ -1113,6 +1115,13 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "dark-brown filthy sludge" in raw["cast"]["rei"]["lock"]
     assert "WHITE filthy slime" not in raw["cast"]["rei"]["lock"]
     assert "LEFT half of the face" in raw["cast"]["rei"]["lock"]
+    assert "obviously festering" in raw["cast"]["rei"]["lock"]
+    assert "raw red flesh" in raw["cast"]["rei"]["lock"]
+    assert "right half of the face and body stays vivid purple" in raw["cast"]["rei"]["lock"]
+    peek = next(b for b in raw["beats"] if b["id"] == "04-peek")
+    assert "raw red flesh" in peek["action"].lower()
+    assert "left cheek" in peek["action"].lower()
+    assert "left breast" in peek["action"].lower()
     assert "same vivid purple" in raw["cast"]["rei"]["lock"]
     assert "not pale-tan flesh" in raw["cast"]["rei"]["lock"]
     assert "pale-tan skin" not in raw["cast"]["rei"]["lock"]
@@ -1139,6 +1148,10 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "24cm" in raw["cast"]["tsuno"]["lock"] and "ashen gray" in raw["cast"]["tsuno"]["lock"]
     assert "cracked" in raw["cast"]["tsuno"]["lock"] and "horned mask" in raw["cast"]["tsuno"]["lock"]
     assert "clawed demon" in raw["cast"]["tsuno"]["lock"] or "decaying clawed" in raw["cast"]["tsuno"]["lock"]
+    assert "one large single eye" in raw["cast"]["tsuno"]["lock"]
+    assert "not two eyes" in raw["cast"]["tsuno"]["lock"]
+    assert "exactly four long fingers" in raw["cast"]["tsuno"]["lock"]
+    assert "both eyes" not in raw["cast"]["tsuno"]["lock"].lower()
     assert raw["cast"]["shino"]["age"] == 29
     assert "30cm" in raw["cast"]["shino"]["lock"] and "elongated" in raw["cast"]["shino"]["lock"]
     assert "24cm" not in raw["cast"]["shino"]["lock"]
@@ -1512,6 +1525,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
 
     cover_a = next(b for b in accept["beats"] if b["id"] == "01-cover")
     cover_i = next(b for b in invite["beats"] if b["id"] == "01-cover")
+    assert "visible sweat beads" in cover_a["action"].lower()
+    assert "grimy brown hospital dirt" in cover_a["action"].lower()
+    assert "visible sweat beads" in cover_i["action"].lower()
     assert "walks right with her" in cover_a["action"].lower()
     assert "shambling" in cover_a["action"].lower()
     assert "sways" in cover_a["action"].lower()
@@ -1613,7 +1629,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
     for mode, must in (
         ("pee", ("yellow water", "keeps streaming", "already seated")),
         ("masturbate", ("rubbing", "keeps going", "already seated")),
-        ("tentacle", ("tentacle", "travels into", "keep thrusting", "already seated")),
+        ("tentacle", ("tentacle", "travels into", "keep thrusting", "already seated", "m-shape", "only the tentacles move", "hips hold still")),
     ):
         ep = prepare_episode(raw, story_override="受け入れる", toilet_override=mode)
         four = next(b for b in ep["beats"] if b["id"] == "04-toilet")
@@ -1624,6 +1640,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
         for n in must:
             assert n in low, (mode, n)
         assert "stays seated" in low and "first frame to the last frame" in low
+        assert "rock down" not in low
         assert "does not stand" not in low
         assert not re.search(r"\bstands?\b", low)
         assert "steps out" not in low and "walk" not in low
@@ -1637,6 +1654,10 @@ def test_hospital_toilet_and_routes_stay_consistent():
         if mode == "tentacle":
             fill = next(b for b in ep["beats"] if b["id"] == "04-toilet-fill")
             assert "pump extra-viscous dirty liquid" in fill["action"].lower()
+            assert "m-shape" in fill["action"].lower()
+            assert "only the tentacles move" in fill["action"].lower()
+            assert "hips hold still" in fill["action"].lower()
+            assert "rock down" not in fill["action"].lower()
             assert fill["trim"]["seconds"] == 10.0
             assert fill.get("camera_pack") == "none"
         assert "both look" not in low
@@ -1865,7 +1886,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert extra_keys(jupo) == ["blowjob", "mystic"]
     assert "already sitting on her butt" in jupo["action"].lower()
     assert "waist bent" in jupo["action"].lower()
-    assert "leans back from the sit" in jupo["action"].lower()
+    assert "stays down" in jupo["action"].lower()
+    assert "lies back from the sit" in jupo["action"].lower()
+    assert "rises to her feet" not in jupo["action"].lower()
     _assert_hospital_bans(taken)
     assert validate_episode(taken, root=HOSPITAL_DIR) == []
 
@@ -1875,6 +1898,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "lands on her feet" in fuck_lick["action"].lower()
     assert "shocked wide-eyed" in fuck_lick["action"].lower()
     assert "already sitting on her butt" in fuck_in["action"].lower()
+    assert "rises to her feet once" in fuck_in["action"].lower()
+    assert "set the pose together" in fuck_in["action"].lower()
     assert "travels into gin's pussy to the base" in action_blob(fuck, "04-gin")
     assert next(b for b in fuck["beats"] if b["id"] == "04-gin-walk")["cast"] == ["aya"]
 
@@ -1884,7 +1909,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "lands on her feet" in dog_lick["action"].lower()
     assert "already sitting on her butt" in dog_in["action"].lower()
     assert "drops herself to all fours" in dog_in["action"].lower()
-    assert "rises from the sit" in dog_in["action"].lower()
+    assert "rises to her feet once" in dog_in["action"].lower()
+    assert "set the pose together" in dog_in["action"].lower()
     assert "can't-hold-back" in action_blob(dog, "04-gin") or "ass toward aya" in action_blob(dog, "04-gin")
 
     stand = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
@@ -1896,6 +1922,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "right edge" in meet["camera"].lower()
     assert "t-junction" in meet["action"].lower()
     assert "cup aya's breasts" in meet["action"].lower()
+    assert "one large single eye" in meet["action"].lower()
+    assert "exactly four long fingers" in meet["action"].lower()
     assert "steps in behind" in meet["action"].lower()
     assert "do not turn to face each other" in meet["action"].lower()
     assert "pushes aya forward onto the peeling wall" in meet["action"].lower()
