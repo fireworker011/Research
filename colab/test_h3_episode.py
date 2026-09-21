@@ -2781,6 +2781,10 @@ def test_rei_escape_notebook_is_isolated():
     assert 'EPISODE = "futanari-rei-escape"' in src
     assert "hospital-exit-adult" not in src
     assert "APPEAR_MIKI" not in src
+    assert "H3_EPISODE_CONNECT" in src
+    assert "H3_EPISODE_END_CONNECT" not in src
+    assert "END_CONNECT" not in src
+    assert "1番のつなぎに従う" not in src
     assert "H3_EPISODE_REI_MAST" in src
     assert "H3_EPISODE_REI_POSE" in src
     assert 'BRANCH = "cursor/futanari-rei-escape-34e4"' in src
@@ -2790,5 +2794,38 @@ def test_rei_escape_notebook_is_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "futanari-rei-escape" in md
     assert "cursor/futanari-rei-escape-34e4" in md
+    assert "シーン終わりのつなぎ" not in md
     assert json.loads((ROOT / "minimaxh3" / "minimax_h3_rei_escape_bot.ipynb").read_text(encoding="utf-8")) == nb
+
+
+def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    locked = {
+        "04-enemy1",
+        "06-fade-run-b",
+        "08-toilet",
+        "10-run-c",
+        "12-moth",
+        "14-fade-run-d",
+        "16-succ",
+        "22-succ-fade",
+    }
+    for beat in raw["beats"]:
+        if beat["id"] in locked:
+            assert beat.get("connect") == "t2v", beat["id"]
+        else:
+            assert beat.get("connect") not in ("t2v", "cut", "off"), beat["id"]
+    chained = prepare_episode(raw, connect_override="前の最終フレームから続ける")
+    by_id = {b["id"]: b for b in chained["beats"]}
+    assert beat_source(by_id["01-open-stroke"]) == "t2v"
+    assert beat_source(by_id["02-run-a"]) == "chain"
+    assert beat_source(by_id["04-enemy1"]) == "t2v"
+    assert beat_source(by_id["05-enemy1-maw"]) == "chain"
+    assert beat_source(by_id["06-fade-run-b"]) == "t2v"
+    assert beat_source(by_id["17-from-rei"]) == "chain"
+    assert beat_source(by_id["20-fours-in"]) == "chain"
+    assert beat_source(by_id["21-orgasm"]) == "chain"
+    assert beat_source(by_id["22-succ-fade"]) == "t2v"
+    cuts = prepare_episode(raw, connect_override="カット")
+    assert all(beat_source(b) == "t2v" for b in cuts["beats"])
 

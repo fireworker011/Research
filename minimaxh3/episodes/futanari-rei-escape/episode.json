@@ -118,7 +118,6 @@
     {
       "id": "01-open-stroke",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -163,7 +162,6 @@
     {
       "id": "02-run-a",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -204,7 +202,6 @@
     {
       "id": "03-mast",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -258,7 +255,6 @@
     {
       "id": "04-enemy1",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -296,6 +292,7 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "extra_loras": [
         "mystic"
       ]
@@ -303,7 +300,6 @@
     {
       "id": "05-enemy1-maw",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -352,7 +348,6 @@
     {
       "id": "06-fade-run-b",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -388,12 +383,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "07-mast",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -447,7 +442,6 @@
     {
       "id": "08-toilet",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -483,12 +477,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "09-toilet-act",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -588,7 +582,6 @@
     {
       "id": "10-run-c",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -624,12 +617,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "11-mast",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -683,7 +676,6 @@
     {
       "id": "12-moth",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -721,6 +713,7 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "extra_loras": [
         "mystic"
       ]
@@ -728,7 +721,6 @@
     {
       "id": "13-moth-act",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -828,7 +820,6 @@
     {
       "id": "14-fade-run-d",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -864,12 +855,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "15-mast",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -923,7 +914,6 @@
     {
       "id": "16-succ",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -960,12 +950,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "17-attack",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1028,7 +1018,6 @@
     {
       "id": "18-kiss",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1079,7 +1068,6 @@
     {
       "id": "19-oral",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1177,7 +1165,6 @@
     {
       "id": "20-pose",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1433,7 +1420,6 @@
     {
       "id": "21-orgasm",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1479,7 +1465,6 @@
     {
       "id": "22-succ-fade",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1515,12 +1500,12 @@
           "走"
         ],
         "complete": false
-      }
+      },
+      "connect": "t2v"
     },
     {
       "id": "23-run-e",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,
@@ -1561,7 +1546,6 @@
     {
       "id": "24-escape",
       "source": "t2v",
-      "connect": "t2v",
       "camera_pack": "none",
       "trim": {
         "start": 0,

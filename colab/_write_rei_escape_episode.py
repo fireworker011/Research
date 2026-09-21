@@ -93,11 +93,11 @@ def beat(
     slot: str | None = None,
     overlays: dict | None = None,
     stage: str = "01",
+    cut: bool = False,
 ) -> dict:
     out: dict = {
         "id": bid,
         "source": "t2v",
-        "connect": "t2v",
         "camera_pack": "none",
         "trim": {"start": 0, "seconds": seconds},
         "cast": list(cast or ["rei"]),
@@ -111,6 +111,10 @@ def beat(
         "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
         "hud": hud(stage),
     }
+    if cut:
+        # Encounter enter / vanish-run stay T2V even when CONNECT is chain,
+        # so the previous body does not leak. No second dropdown.
+        out["connect"] = "t2v"
     if extra is not None:
         out["extra_loras"] = extra
     if slot:
@@ -313,6 +317,7 @@ def build() -> dict:
             extra=["mystic"],
             voice=("はあ",),
             stage="01",
+            cut=True,
         ),
         beat(
             "05-enemy1-maw",
@@ -331,6 +336,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("はあ",),
             stage="01",
+            cut=True,
         ),
         mast_pair("07", "01"),
         beat(
@@ -341,6 +347,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("んっ",),
             stage="02",
+            cut=True,
         ),
         beat(
             "09-toilet-act",
@@ -388,6 +395,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("はあ",),
             stage="02",
+            cut=True,
         ),
         mast_pair("11", "02", filthy=True),
         beat(
@@ -402,6 +410,7 @@ def build() -> dict:
             extra=["mystic"],
             voice=("はあ",),
             stage="03",
+            cut=True,
         ),
         beat(
             "13-moth-act",
@@ -425,6 +434,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("はあ",),
             stage="03",
+            cut=True,
         ),
         mast_pair("15", "03", filthy=True),
         beat(
@@ -437,6 +447,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("はあ",),
             stage="04",
+            cut=True,
         ),
         beat(
             "17-attack",
@@ -549,6 +560,7 @@ def build() -> dict:
             seconds=6.0,
             voice=("はあ",),
             stage="04",
+            cut=True,
         ),
         beat(
             "23-run-e",

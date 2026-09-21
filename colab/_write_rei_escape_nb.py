@@ -31,8 +31,6 @@ EPISODE = "futanari-rei-escape"
 #@markdown ---
 __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
-__END_CONNECT_HELP__
-END_CONNECT = __END_CONNECT_DEFAULT__  #@param __END_CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
 __PRESET_HELP__
@@ -75,7 +73,6 @@ os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
-os.environ["H3_EPISODE_END_CONNECT"] = END_CONNECT
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_REI_MAST"] = REI_MAST
 os.environ["H3_EPISODE_REI_TOILET"] = REI_TOILET
@@ -147,13 +144,9 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 
 ## 上から（迷ったらそのまま）
 
-**1. つなぎ方**
+**1. つなぎ方** — これ1つ。遭遇の入りと消滅走りは常にカット（相手が残らない）
 
 {form_readme("connect")}
-
-**シーン終わりのつなぎ**
-
-{form_readme("end_connect")}
 
 **2. カメラ** — 各カットは真横固定（doorway を足さない）
 
@@ -213,12 +206,9 @@ def make_nb() -> dict:
         CELL.replace("__BRANCH__", BRANCH)
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
-        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか"))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。遭遇の入りと消滅は常にカット"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_HELP__", form_markdown("end_connect", "シーン終わりのつなぎ"))
-        .replace("__END_CONNECT_DEFAULT__", json.dumps(ui_default("end_connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_CHOICES__", json.dumps(ui_choices("end_connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
