@@ -1289,6 +1289,26 @@ def camera_angle(pack_name: str, gpu_index: int) -> str:
     return str(angles[int(gpu_index) % len(angles)])
 
 
+# Per-beat opt-out: keep beat.camera only. Hospital toilet must not inherit the corridor doorway.
+AUTHORED_CAMERA_PACKS = frozenset({"", "none", "off", "authored", "beat"})
+
+
+def resolve_beat_camera_pack(
+    ep: dict[str, Any],
+    beat: dict[str, Any] | None = None,
+    override: str | None = None,
+) -> str:
+    """Episode/Colab pack, unless this beat opts out (toilet stall stays on the bowl)."""
+    if isinstance(beat, dict) and "camera_pack" in beat:
+        raw = str(beat.get("camera_pack") or "").strip().lower()
+        if raw in AUTHORED_CAMERA_PACKS:
+            return ""
+        return canonical_camera(str(beat.get("camera_pack") or ""))
+    if override not in (None, ""):
+        return canonical_camera(override)
+    return episode_camera_pack(ep)
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -1805,7 +1825,16 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 errs.append(f"{where}: {key} must be English")
             elif SLOWMO_TOKENS_RE.search(text):
                 errs.append(f"{where}: {key} names slow motion (H3 draws it even when negated; leave the words out)")
-        for key in ("sfx", "music", "place"):
+        if "camera_pack" in beat:
+            raw_pack = str(beat.get("camera_pack") or "").strip().lower()
+            if raw_pack not in AUTHORED_CAMERA_PACKS:
+                try:
+                    canonical_camera(str(beat.get("camera_pack") or ""))
+                except EpisodeError:
+                    errs.append(
+                        f"{where}: camera_pack must be one of {list(CAMERA_PACKS)} or none"
+                    )
+        for key in ("sfx", "music", "place", "environment"):
             text = str(beat.get(key) or "")
             if text and CJK_RE.search(text):
                 errs.append(f"{where}: {key} must be English")
@@ -1977,7 +2006,7 @@ def build_beat_prompt(
     props = ep.get("props") or {}
     keys = beat_props(ep, beat)
     style = str(ep.get("style") or "").strip().rstrip(".")
-    env = str(world.get("lock") or "").strip().rstrip(".")
+    env = str(beat.get("environment") or world.get("lock") or "").strip().rstrip(".")
     place = str(beat.get("place") or "").strip().rstrip(".")
     env_line = env + (f". {place}" if place else "")
     if world.get("no_text_on_signs", True):
@@ -2002,7 +2031,7 @@ def build_beat_prompt(
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)
-    pack = camera_pack if camera_pack is not None else episode_camera_pack(ep)
+    pack = resolve_beat_camera_pack(ep, beat, camera_pack)
     idx = gpu_index if gpu_index is not None else gpu_index_map(ep).get(str(beat.get("id") or ""), 0)
     cam = camera_line(
         ep,
@@ -3350,7 +3379,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
             flags.append("+".join(k for k, _s in extras))
         if src == "t2v":
             flags.append("t2v")
-        pack = episode_camera_pack(ep)
+        pack = resolve_beat_camera_pack(ep, beat)
         if pack and src not in ("ui",):
             flags.append(f"{pack}#{gpu_index_map(ep).get(str(beat.get('id') or ''), 0)}")
         if beat.get("steps"):

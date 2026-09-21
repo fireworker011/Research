@@ -1306,6 +1306,11 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "anus" in four["action"].lower()
     assert "corpse" not in four_prompt.lower()
     assert four["trim"]["seconds"] == 10.0
+    assert beat_clip_seconds(toilet, four) == 10.0
+    assert "already seated" in four["action"].lower()
+    assert "keep thrusting" in four["action"].lower()
+    assert "first frame to the last frame" in four["action"].lower()
+    assert "does not stand" not in four["action"].lower()
     pee = prepare_episode(raw, story_override="accept", toilet_override="pee")
     assert next(b for b in pee["beats"] if b["id"] == "04-toilet")["action"].lower().find("yellow water") >= 0
     skip_rei = prepare_episode(raw, story_override="accept", appear_override="miki,kana,shino")
@@ -1390,6 +1395,11 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "profile" in stall["camera"].lower()
     assert "steps out" not in stall["action"].lower()
     assert "stays seated" in stall["action"].lower()
+    assert "already seated" in stall["action"].lower()
+    assert "first frame to the last frame" in stall["action"].lower()
+    assert "does not stand" not in stall["action"].lower()
+    assert stall["trim"]["seconds"] == 10.0
+    assert beat_clip_seconds(toilet, stall) == 10.0
 
     kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
     assert "glasses" not in kana["action"].lower()
@@ -1400,6 +1410,73 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "blood" not in [h.lower() for h in forbidden_hits(miki_p)]
     _assert_hospital_bans(accept)
     _assert_hospital_bans(invite)
+
+
+def test_hospital_toilet_and_routes_stay_consistent():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert not re.search(r"\bblood\b", json.dumps(raw), re.I)
+    assert "glasses" not in json.dumps(raw).lower()
+    for mode, must in (
+        ("pee", ("yellow water", "keeps streaming", "already seated")),
+        ("masturbate", ("rubbing", "keeps going", "already seated")),
+        ("tentacle", ("tentacle", "travels into", "keep thrusting", "already seated")),
+    ):
+        ep = prepare_episode(raw, story_override="受け入れる", toilet_override=mode)
+        four = next(b for b in ep["beats"] if b["id"] == "04-toilet")
+        low = four["action"].lower()
+        assert four["trim"]["start"] == 0 and four["trim"]["seconds"] == 10.0
+        assert beat_clip_seconds(ep, four) == 10.0
+        assert duration_ladder(ep, four) == [10.0, 8.0, 6.0]
+        for n in must:
+            assert n in low, (mode, n)
+        assert "stays seated" in low and "first frame to the last frame" in low
+        assert "does not stand" not in low
+        assert not re.search(r"\bstands?\b", low)
+        assert "steps out" not in low and "walk" not in low
+        assert "both look" not in low
+        assert "stall door" not in str(four.get("sfx") or "").lower()
+        assert "stall door" not in low
+        assert beat_props(ep, four) == []
+        assert four["cast"] == ["aya"]
+        assert four.get("camera_pack") == "none"
+        prompt = build_beat_prompt(ep, four, trigger=merge_trigger("", four))
+        assert validate_beat_prompt(prompt, source="t2v") == []
+        assert "profile" in prompt.lower()
+        assert "hospital door" not in prompt.lower()
+        assert "doorway" not in prompt.lower()
+        assert "this shot:" not in prompt.lower()
+        assert "tight on this one toilet stall" in four["camera"].lower()
+        assert validate_episode(ep, root=HOSPITAL_DIR) == []
+        _assert_hospital_bans(ep)
+
+    for story, pose in (("受け入れる", None), ("誘う", "騎乗位"), ("誘う", "四つん這い股広げ"), ("誘う", "M字"), ("回避", None)):
+        kw = {"story_override": story}
+        if pose:
+            kw["invite_pose_override"] = pose
+        ep = prepare_episode(raw, **kw)
+        assert validate_episode(ep, root=HOSPITAL_DIR) == []
+        assert len(ep["beats"]) <= 12
+        blob = "\n".join(str(b.get("action") or "") for b in ep["beats"]).lower()
+        assert "walks forward toward the lit" not in blob
+        assert "corridor depth ahead" not in blob
+        if story == "誘う":
+            one = next(b for b in ep["beats"] if b["id"] == "01-cover")
+            ten = next(b for b in ep["beats"] if b["id"] == "10-shino")
+            assert "french kiss" in one["action"].lower()
+            assert "stops in front of her" in ten["action"].lower()
+            if pose and "騎乗" in pose:
+                twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
+                assert "already kneeling" in twelve["action"].lower()
+                assert "hugs" not in twelve["action"].lower()
+            if pose and "四つん這い" in pose:
+                six = next(b for b in ep["beats"] if b["id"] == "06-doggy")
+                assert "planted on the same linoleum marks" in six["action"].lower()
+        for beat, prompt, errs in beat_prompts(ep, trigger=""):
+            assert errs == []
+            assert "blood" not in [h.lower() for h in forbidden_hits(prompt)]
+            for v in beat_vocals(beat):
+                assert v["who"] in (ep.get("cast") or {})
+                assert v["who"] in (beat.get("cast") or [])
 
 
 def test_hospital_per_scene_accept_invite_evade_and_ending():
