@@ -1800,6 +1800,8 @@ HOSPITAL_WALK_IDS = frozenset({
     "01-cover",
     "04-peek",
     "04-toilet-in",
+    "04-gin-lick",
+    "04-tsuno-meet",
     "07-kana",
     "07-run",
     "10-shino",

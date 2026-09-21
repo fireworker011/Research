@@ -1226,6 +1226,13 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "hollow empty dark eye sockets" in kana_meet["action"].lower()
     assert "filthy slime" in kana_meet["action"].lower()
     assert "semen-like" not in kana_meet["action"].lower()
+    assert "stroking the erect 20cm" in kana_meet["action"].lower()
+    assert "white goo" in kana_meet["action"].lower()
+    assert "linoleum around her" in kana_meet["action"].lower()
+    peek = next(b for b in ep["beats"] if b["id"] == "04-peek")
+    assert "imposing waiting stance" in peek["action"].lower()
+    assert "walks right behind" not in peek["action"].lower()
+    assert "stands ahead" in peek["action"].lower()
     cover = next(b for b in ep["beats"] if b["id"] == "01-cover")
     assert "walks right with her" in cover["action"].lower()
     assert "stands in the corridor facing her" not in cover["action"].lower()
@@ -1256,6 +1263,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "alluring" in shino_meet["action"].lower()
     assert "reptile tongue" in shino_meet["action"].lower()
     assert "kana is gone" in shino_meet["action"].lower() or "kana is not in frame" in shino_meet["action"].lower()
+    assert "eager excited expectation" in shino_meet["action"].lower()
+    assert "shaft that size is new to her" in shino_meet["action"].lower()
     exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
     exit_prompt = build_beat_prompt(ep, exit_beat)
     _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
@@ -1529,14 +1538,17 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "m-shape" in nine["action"].lower()
     assert "french kiss" not in nine["action"].lower()
     seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
-    assert "french kiss" in seven["action"].lower()
+    assert "stroking the erect 20cm" in seven["action"].lower()
+    assert "white goo" in seven["action"].lower()
     assert "lewd wet smiling ecstatic inviting face" in seven["action"].lower()
+    assert "french kiss" not in seven["action"].lower()
 
     ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
     ten_low = ten["action"].lower()
     assert "stops in front of her" in ten_low
     assert "mouth is at aya's mouth height" in ten_low
     assert "french kiss" in ten_low
+    assert "eager excited expectation" in ten_low
     assert "walks forward toward shino" not in ten_low
     assert beat_clip_seconds(invite, ten) == 6.0
 
@@ -1578,6 +1590,8 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "glasses" not in kana["action"].lower()
     assert "filthy slime" in kana["action"].lower()
     assert "semen-like" not in kana["action"].lower()
+    assert "stroking the erect 20cm" in kana["action"].lower()
+    assert "white goo" in kana["action"].lower()
     miki_p = build_beat_prompt(accept, cover_a)
     assert "lacerations" in miki_p.lower()
     assert "hollow empty dark eye sockets" in miki_p.lower()
@@ -1822,6 +1836,14 @@ def test_hospital_gin_tsuno_optional_events():
     assert "licks once" in lick["action"].lower()
     assert "clitoris grows" in lick["action"].lower()
     assert "24cm" in lick["action"]
+    assert "lands on her feet" in lick["action"].lower()
+    assert "in front of aya" in lick["action"].lower()
+    assert "not onto aya, not behind aya" in lick["action"].lower()
+    assert "falls onto her butt" in lick["action"].lower()
+    assert "thighs open" in lick["action"].lower()
+    assert "shocked wide-eyed" in lick["action"].lower()
+    assert "french kiss" not in lick["action"].lower()
+    assert lick.get("loco") == "walk"
     assert lick.get("cast_lock") and "24cm" in lick["cast_lock"]["aya"]
     assert "pale-tan" in lick["cast_lock"]["aya"]
     assert "ashen" not in lick["cast_lock"]["aya"].lower()
@@ -1832,20 +1854,35 @@ def test_hospital_gin_tsuno_optional_events():
     assert "grown shaft is gone" in walk["action"].lower()
     assert "no penis" in walk["action"].lower()
     assert "gone from frame one" in walk["action"].lower()
+    assert "t-junction" in walk["action"].lower()
     assert is_end_connect_beat(walk)
     assert beat_source(walk) == "t2v"
     assert "zombie" not in lick_prompt.lower() and "corpse" not in lick_prompt.lower()
     assert "drool" in action_blob(taken, "04-gin")
     jupo = next(b for b in taken["beats"] if b["id"] == "04-gin-jupo")
     assert extra_keys(jupo) == ["blowjob", "mystic"]
+    assert "already sitting on her butt" in jupo["action"].lower()
+    assert "waist bent" in jupo["action"].lower()
+    assert "leans back from the sit" in jupo["action"].lower()
     _assert_hospital_bans(taken)
     assert validate_episode(taken, root=HOSPITAL_DIR) == []
 
     fuck = prepare_episode(raw, gin_override="犯す")
+    fuck_lick = next(b for b in fuck["beats"] if b["id"] == "04-gin-lick")
+    fuck_in = next(b for b in fuck["beats"] if b["id"] == "04-gin-in")
+    assert "lands on her feet" in fuck_lick["action"].lower()
+    assert "shocked wide-eyed" in fuck_lick["action"].lower()
+    assert "already sitting on her butt" in fuck_in["action"].lower()
     assert "travels into gin's pussy to the base" in action_blob(fuck, "04-gin")
     assert next(b for b in fuck["beats"] if b["id"] == "04-gin-walk")["cast"] == ["aya"]
 
     dog = prepare_episode(raw, gin_override="誘う後背")
+    dog_lick = next(b for b in dog["beats"] if b["id"] == "04-gin-lick")
+    dog_in = next(b for b in dog["beats"] if b["id"] == "04-gin-in")
+    assert "lands on her feet" in dog_lick["action"].lower()
+    assert "already sitting on her butt" in dog_in["action"].lower()
+    assert "drops herself to all fours" in dog_in["action"].lower()
+    assert "rises from the sit" in dog_in["action"].lower()
     assert "can't-hold-back" in action_blob(dog, "04-gin") or "ass toward aya" in action_blob(dog, "04-gin")
 
     stand = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
@@ -1855,6 +1892,12 @@ def test_hospital_gin_tsuno_optional_events():
     out = next(b for b in stand["beats"] if b["id"] == "04-tsuno-walk")
     assert "palms planted" in meet["action"].lower()
     assert "right edge" in meet["camera"].lower()
+    assert "t-junction" in meet["action"].lower()
+    assert "cup aya's breasts" in meet["action"].lower()
+    assert "steps in behind" in meet["action"].lower()
+    assert "do not turn to face each other" in meet["action"].lower()
+    assert "pushes aya forward onto the peeling wall" in meet["action"].lower()
+    assert meet.get("loco") == "walk"
     assert "24cm" in meet["action"]
     assert "ashen gray" in meet["action"].lower()
     assert "rotting" in meet["action"].lower()
@@ -1870,7 +1913,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert "zombie" not in build_beat_prompt(stand, join).lower()
     _assert_hospital_bans(stand)
     invite = prepare_episode(raw, tsuno_override="誘う立ちバック")
+    invite_meet = next(b for b in invite["beats"] if b["id"] == "04-tsuno-meet")
     assert "looks back" in action_blob(invite, "04-tsuno")
+    assert "t-junction" in invite_meet["action"].lower()
+    assert "cup aya's breasts" in invite_meet["action"].lower()
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
 
