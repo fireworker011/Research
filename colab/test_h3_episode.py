@@ -2,6 +2,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -118,7 +119,16 @@ from h3_hud import (  # noqa: E402
     synthetic_clip,
     window_for,
 )
-from h3_episode_packs import describe_run, form_readme, ui_choices, ui_default  # noqa: E402
+from h3_episode_packs import (  # noqa: E402
+    HOSPITAL_ENCOUNTERS,
+    INVITE_POSE_MODES,
+    STORY_MODES,
+    TOILET_MODES,
+    describe_run,
+    form_readme,
+    ui_choices,
+    ui_default,
+)
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
 from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
 from PIL import Image  # noqa: E402
@@ -160,8 +170,9 @@ def _assert_sex_beat_both_pleasure_no_extra_kiss(beat: dict, prompt: str) -> Non
     else:
         assert "hips moving" in low or "hands stay at the hips" in action
     for tok in _SEX_EXTRA_MOTION:
-        assert tok not in low, (beat["id"], tok)
-        assert tok not in action, (beat["id"], tok)
+        pat = re.compile(rf"\b{re.escape(tok)}\b")
+        assert not pat.search(low), (beat["id"], tok)
+        assert not pat.search(action), (beat["id"], tok)
 
 
 def bandai() -> dict:
@@ -955,14 +966,18 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert all(c["age"] >= 21 for c in raw["cast"].values())
     assert raw["cast"]["aya"]["age"] == 21 and "A-cup" in raw["cast"]["aya"]["lock"]
     assert "no penis" in raw["cast"]["aya"]["lock"] and "never futanari" in raw["cast"]["aya"]["lock"]
-    assert "no penis" in raw["cast"]["miki"]["lock"] and "never futanari" in raw["cast"]["miki"]["lock"]
+    assert "22cm" in raw["cast"]["miki"]["lock"] and "clear futanari" in raw["cast"]["miki"]["lock"]
+    assert "no penis" not in raw["cast"]["miki"]["lock"]
     assert "purple" in raw["cast"]["miki"]["lock"]
+    assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
     assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
     assert "24cm" not in raw["cast"]["kana"]["lock"]
     assert raw["cast"]["shino"]["age"] == 29
-    assert "24cm" in raw["cast"]["shino"]["lock"] and "elongated" in raw["cast"]["shino"]["lock"]
-    assert "grin" in raw["cast"]["shino"]["lock"] and "stoop" in raw["cast"]["shino"]["lock"]
+    assert "30cm" in raw["cast"]["shino"]["lock"] and "elongated" in raw["cast"]["shino"]["lock"]
+    assert "24cm" not in raw["cast"]["shino"]["lock"]
+    assert "alluring" in raw["cast"]["shino"]["lock"] and "stoop" in raw["cast"]["shino"]["lock"]
+    assert "reptile tongue" in raw["cast"]["shino"]["lock"]
     assert "nightgown" not in raw["cast"]["shino"]["lock"]
     assert "nightgown" in raw["homage"]["never"]
     menu = ["△ 戦う", "○ 受け入れる", "□ 誘う", "× 回避"]
@@ -994,11 +1009,12 @@ def test_hospital_exit_adult_accept_is_survival_complete():
         assert ep["beats"][i]["menu"]["title"] == "感染者"
     miki = next(b for b in ep["beats"] if b["id"] == "03-kiss")
     miki_prompt = build_beat_prompt(ep, miki, trigger=merge_trigger("", miki))
-    assert extra_keys(miki) == ["mystic"]
-    assert not miki.get("trigger")
-    assert "bl0w_j0b" not in miki_prompt.lower()
-    assert "jupo-jupo" not in miki_prompt.lower()
-    assert "licks upward" in miki_prompt.lower()
+    assert extra_keys(miki) == ["blowjob", "mystic"]
+    assert miki.get("trigger") == "bl0w_j0b"
+    assert miki_prompt.startswith("bl0w_j0b")
+    assert "jupo-jupo" in miki_prompt.lower()
+    assert "22cm" in miki_prompt.lower()
+    assert "licks upward" not in miki_prompt.lower()
     assert miki["trim"]["seconds"] == 7.5
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
@@ -1014,6 +1030,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     kana_meet = next(b for b in ep["beats"] if b["id"] == "07-kana")
     assert kana_meet["cast"] == ["aya", "kana"]
     assert "shino is not in frame" in kana_meet["action"].lower()
+    assert "stands up from all fours" not in kana_meet["action"].lower()
     kana = next(b for b in ep["beats"] if b["id"] == "09-join")
     kana_prompt = build_beat_prompt(ep, kana)
     _assert_insertion_direction(kana["action"], kana_prompt)
@@ -1023,6 +1040,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     shino_meet = next(b for b in ep["beats"] if b["id"] == "10-shino")
     assert shino_meet["cast"] == ["aya", "shino"]
     assert "stoop" in shino_meet["action"].lower()
+    assert "30cm" in shino_meet["action"].lower()
+    assert "alluring" in shino_meet["action"].lower()
+    assert "reptile tongue" in shino_meet["action"].lower()
     assert "kana is gone" in shino_meet["action"].lower() or "kana is not in frame" in shino_meet["action"].lower()
     exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
     exit_prompt = build_beat_prompt(ep, exit_beat)
@@ -1030,6 +1050,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     _assert_insertion_direction(exit_beat["action"], exit_prompt)
     assert "stays on her back the whole take" in exit_prompt.lower()
     assert "through the lit open doorway" in exit_prompt.lower()
+    assert "30cm" in exit_prompt.lower()
+    assert "licks forward" in exit_prompt.lower()
     assert exit_beat["voices"][1]["who"] == "shino"
     assert exit_beat["voices"][1]["line"] == "くっ"
     _assert_hospital_bans(ep)
@@ -1220,8 +1242,55 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     skip_shino = prepare_episode(raw, story_override="accept", appear_override="miki,rei,kana")
     assert skip_shino["beats"][-1]["id"] == "09-join"
     assert skip_shino["beats"][-1]["hud"]["complete"] is True
+    miki_ride = next(b for b in ride["beats"] if b["id"] == "03-kiss")
+    assert "22cm" in miki_ride["action"].lower()
+    _assert_insertion_direction(miki_ride["action"], build_beat_prompt(ride, miki_ride))
     _assert_hospital_bans(toilet)
     _assert_hospital_bans(ride)
+
+
+def test_hospital_appear_none_and_option_matrix():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    with pytest.raises(EpisodeError, match="at least one encounter"):
+        prepare_episode(raw, appear_override="none")
+    with pytest.raises(EpisodeError, match="at least one encounter"):
+        prepare_episode(raw, toilet_override="pee", appear_override="none")
+    names = HOSPITAL_ENCOUNTERS
+    appears = [{n: True for n in names}]
+    for enc in names:
+        appears.append({n: n != enc for n in names})
+        appears.append({n: n == enc for n in names})
+    from itertools import combinations
+
+    for a, b in combinations(names, 2):
+        appears.append({n: n not in (a, b) for n in names})
+    for story in STORY_MODES:
+        toilets = TOILET_MODES if story == "accept" else {"off": TOILET_MODES["off"]}
+        poses = INVITE_POSE_MODES if story == "invite" else {"all_fours": INVITE_POSE_MODES["all_fours"]}
+        for toilet in toilets:
+            for pose in poses:
+                for shown in appears:
+                    ep = prepare_episode(
+                        raw,
+                        story_override=story,
+                        toilet_override=toilet,
+                        invite_pose_override=pose,
+                        appear_override=shown,
+                    )
+                    assert ep["beats"], (story, toilet, pose, shown)
+                    assert not is_ui_beat(ep["beats"][0]), (story, ep["beats"][0]["id"])
+                    ids = [b["id"] for b in ep["beats"]]
+                    assert ids == list(dict.fromkeys(ids)), (story, ids)
+                    assert validate_episode(ep, root=HOSPITAL_DIR) == [], (story, toilet, pose, shown, ids)
+                    for _b, prompt, errs in beat_prompts(ep, trigger=""):
+                        assert errs == []
+                        _assert_no_pose_names(prompt)
+                    spec = STORY_MODES[story]
+                    assert ep["beats"][-1]["hud"]["complete"] is bool(spec.get("complete"))
+                    if spec.get("complete"):
+                        assert not (ep.get("cards") or {}).get("fail")
+                    else:
+                        assert (ep.get("cards") or {}).get("fail")
 
 
 def test_hospital_stills_are_not_kasumi_copies():

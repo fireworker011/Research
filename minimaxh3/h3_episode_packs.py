@@ -250,7 +250,7 @@ STORY_MODES: dict[str, dict[str, Any]] = {
     "fight_lose": {
         "label_ja": "戦って負ける",
         "choice_ja": "△戦って負ける（敗北H・失敗・ハイメモリ）",
-        "when_ja": "かなに倒されて専用敗北H。ミッション失敗。ハイメモリ",
+        "when_ja": "しのに倒されて専用敗北H。ミッション失敗。ハイメモリ",
         "hint_ja": "10でしのに敗北。12が敗北H。出られない",
         "combat": "on",
         "complete": False,
@@ -305,7 +305,7 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
         "label_ja": "騎乗位",
         "choice_ja": "ベロチュー→じゅぼ→騎乗位",
         "when_ja": "笑って抱きつき、ベロチュー、じゅぼ、押し倒して騎乗位",
-        "hint_ja": "濃い誘う。竿なしのみきはじゅぼの代わりにクンニ",
+        "hint_ja": "濃い誘う。みきもふたなり。じゅぼのあと押し倒して乗る",
     },
 }
 

@@ -1065,6 +1065,8 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
         out["render"] = render
         return out
     skipped = {name for name, on in shown.items() if not on}
+    if tagged and not any(shown.get(name) for name in HOSPITAL_ENCOUNTERS):
+        raise EpisodeError("appear: at least one encounter must stay on")
     beats: list[Any] = []
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict):
@@ -1489,25 +1491,42 @@ def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
 def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> list[str]:
     if _has_story_overlays(ep):
         errs: list[str] = []
+
+        def _check(label: str, **kwargs: Any) -> None:
+            try:
+                resolved = resolve_episode_options(ep, **kwargs)
+            except EpisodeError as exc:
+                errs.append(f"{label}: {exc}")
+                return
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"{label}: {err}")
+
         for key in STORY_MODES:
-            resolved = resolve_episode_options(ep, story=key)
-            for err in validate_episode(resolved, root=root):
-                errs.append(f"story-{key}: {err}")
+            _check(f"story-{key}", story=key)
         for pose in INVITE_POSE_MODES:
-            resolved = resolve_episode_options(ep, story="invite", pose=pose)
-            for err in validate_episode(resolved, root=root):
-                errs.append(f"invite-pose-{pose}: {err}")
+            _check(f"invite-pose-{pose}", story="invite", pose=pose)
         for toilet in TOILET_MODES:
             if toilet == "off":
                 continue
-            resolved = resolve_episode_options(ep, story="accept", toilet=toilet)
-            for err in validate_episode(resolved, root=root):
-                errs.append(f"toilet-{toilet}: {err}")
-        for enc in HOSPITAL_ENCOUNTERS:
-            appear = {name: name != enc for name in HOSPITAL_ENCOUNTERS}
-            resolved = resolve_episode_options(ep, story="accept", appear=appear)
-            for err in validate_episode(resolved, root=root):
-                errs.append(f"skip-{enc}: {err}")
+            _check(f"toilet-{toilet}", story="accept", toilet=toilet)
+        try:
+            resolve_episode_options(ep, appear="none")
+            errs.append("appear-none: expected EpisodeError (at least one encounter must stay on)")
+        except EpisodeError as exc:
+            if "at least one encounter" not in str(exc):
+                errs.append(f"appear-none: {exc}")
+        try:
+            resolve_episode_options(ep, story="accept", toilet="pee", appear="none")
+            errs.append("appear-none-toilet: expected EpisodeError (at least one encounter must stay on)")
+        except EpisodeError as exc:
+            if "at least one encounter" not in str(exc):
+                errs.append(f"appear-none-toilet: {exc}")
+        for story in STORY_MODES:
+            for enc in HOSPITAL_ENCOUNTERS:
+                skip = {name: name != enc for name in HOSPITAL_ENCOUNTERS}
+                _check(f"story-{story}/skip-{enc}", story=story, appear=skip)
+                only = {name: name == enc for name in HOSPITAL_ENCOUNTERS}
+                _check(f"story-{story}/only-{enc}", story=story, appear=only)
         return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
