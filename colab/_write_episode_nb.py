@@ -24,7 +24,7 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：上から 1・2・3・4 を選んで Run all（迷ったらそのまま）
+CELL = r'''#@title 一発：上から 1・2・3・4・5 を選んで Run all（迷ったらそのまま）
 EPISODE = "__EPISODE__"  #@param {type:"string"}
 #@markdown ---
 __CONNECT_HELP__
@@ -35,6 +35,8 @@ __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
+__STORY_HELP__
+STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 print("=" * 60)
@@ -58,6 +60,7 @@ os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
+os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
@@ -114,7 +117,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
 
-## 上から 4 つだけ選ぶ（迷ったらそのまま）
+## 上から 5 つだけ選ぶ（迷ったらそのまま）
 
 **1. つなぎ方** — 動画をどう繋げるか
 
@@ -131,6 +134,10 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 **4. 格闘 LoRA** — ハイメモリ専用の任意
 
 {form_readme("combat")}
+
+**5. 構成** — 病棟の話。完了か失敗かがここで分かれる
+
+{form_readme("story")}
 
 シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
@@ -165,6 +172,9 @@ def make_nb() -> dict:
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
         .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
+        .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
+        .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
+        .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))
     )
     return {
         "nbformat": 4,

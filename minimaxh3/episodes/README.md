@@ -21,7 +21,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 
 ## 一発の実行
 
-**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、上から **つなぎ方・カメラ・画質** の3つを選んで Run all。迷ったらそのまま（カット／横スク／バランス。ドロップダウンに「迷ったらこれ」と書いてある行）。
+**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、上から **つなぎ方・カメラ・画質・格闘・構成** の5つを選んで Run all。迷ったらそのまま（カット／横スク／バランス／格闘オフ／受け入れる。ドロップダウンに「迷ったらこれ」と書いてある行）。病棟は 5 番の構成で完了か失敗かが分かれる。霞東は 4 番のオフ／オンのまま（5 番は無視）。
 GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
@@ -127,7 +127,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## 病棟出口（`hospital-exit-adult`）
 
-同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。Colab 4 番で話が分かれる。オフ=じゅぼ口内口移し・後背位中出し・挿入開始から仰向け正常位（戦いなし）。オン=ベロチュー回避 → 打倒じゅぼ → 正常位ピン。最後は接合のまま出口で**ミッション完了**。オフ約 50 秒・オン約 45 秒。竿は 24cm。GPU のつなぎは Colab で選ぶ（迷ったらカット）。オンのとき Combat は 06 と 10。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
+同じ枝の別スラッグ。感染者だらけの架空病院から出る。敵は全裸の成人女性かふたなり。血は出ない。**Colab 5 番でミッション完了／失敗が分かれる。** 受け入れる＝接合のまま出口・完了。誘う＝淫欲に呑まれた・失敗。回避＝一人で出口・完了。戦って勝つ＝倒して出口・完了。戦って負ける＝敗北H・失敗。4 番 Combat は戦い構成＋ハイメモリだけ。受け入れる約 50 秒。れい 24cm・かな 20cm・みき竿なし。セックスは誰がどの方向へ動くかを書く。GPU のつなぎは Colab で選ぶ（迷ったらカット）。UNet erotic + eros-max。スチールは病棟廊下だけ（霞東ヌードを流用しない）。Colab は `EPISODE = "hospital-exit-adult"`。続きは `episodes/hospital-exit-adult/`。
 
 ## 番台ディストリクト（2 本）
 

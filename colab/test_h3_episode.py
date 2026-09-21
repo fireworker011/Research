@@ -37,6 +37,7 @@ from h3_episode import (  # noqa: E402
     STILL_LAST_HEADER,
     EpisodeError,
     apply_combat_route,
+    apply_story_route,
     apply_connect_mode,
     comfy_vram_for_lane,
     combat_lora_allowed,
@@ -210,6 +211,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
     assert "H3_EPISODE_COMBAT" in src
+    assert "H3_EPISODE_STORY" in src
+    assert 'STORY = "○受け入れる（生存・完了・迷ったらこれ）"' in src
+    assert "□誘う（淫欲・失敗）" in src
+    assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "cursor/h3-kasumi-adult-0402" in md
@@ -217,6 +222,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "10Eros Max は Drive" in md
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
     assert "迷ったら" in md
+    assert "5. 構成" in md
+    assert "病棟の話" in md
     assert "用意した最終フレーム" in md
     assert "前の最終フレームから続ける" in md
     assert "episodes" in src and "_lib" in src
@@ -863,21 +870,46 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
         assert "brisk" in low or "snappy" in low
 
 
-def test_hospital_exit_adult_combat_off_is_sex_route_not_fights():
+def _assert_hospital_bans(ep):
+    for beat, prompt, errs in beat_prompts(ep, trigger=""):
+        assert errs == []
+        low = prompt.lower()
+        assert "corpse" not in low and "zombie" not in low
+        assert "slow motion" not in low and "slow-mo" not in low
+        assert "brisk" in low or "snappy" in low
+        assert beat["hud"]["health"] == 0.9
+        assert beat["hud"]["money"] == "¥0"
+
+
+def _assert_insertion_direction(action: str, prompt: str) -> None:
+    blob = f"{action}\n{prompt}".lower()
+    assert "travels into" in blob or "travels in" in blob
+    assert "thrust" in blob or "tilt up" in blob or "push back" in blob or "rock up" in blob
+
+
+def test_hospital_exit_adult_accept_is_survival_complete():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     assert validate_episode(raw, root=HOSPITAL_DIR) == []
     assert raw["slug"] == "hospital-exit-adult"
     assert episode_lane(raw) == "erotic"
     assert episode_checkpoint(raw) == "eros-max"
     assert raw["render"]["combat"] == "off"
-    assert not (raw.get("cards") or {}).get("fail")
+    assert raw["render"]["story"] == "accept"
+    assert raw["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     assert all(c["age"] >= 21 for c in raw["cast"].values())
-    assert "24cm" in raw["cast"]["miki"]["lock"] and "thick human girth" in raw["cast"]["miki"]["lock"]
-    assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
-    assert "24cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
-    assert "20cm" not in (HOSPITAL_DIR / "episode.json").read_text(encoding="utf-8")
+    assert raw["cast"]["aya"]["age"] == 21 and "A-cup" in raw["cast"]["aya"]["lock"]
     assert "no penis" in raw["cast"]["aya"]["lock"] and "never futanari" in raw["cast"]["aya"]["lock"]
-    ep = apply_combat_route(raw, combat="off")
+    assert "no penis" in raw["cast"]["miki"]["lock"] and "never futanari" in raw["cast"]["miki"]["lock"]
+    assert "purple" in raw["cast"]["miki"]["lock"]
+    assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
+    assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
+    assert "24cm" not in raw["cast"]["kana"]["lock"]
+    menu = ["△ 戦う", "○ 受け入れる", "□ 誘う", "× 回避"]
+    ep = apply_story_route(raw, story="accept")
+    prepared = prepare_episode(raw, story_override="受け入れる")
+    assert [b["id"] for b in prepared["beats"]] == [b["id"] for b in ep["beats"]]
+    assert ep["render"]["combat"] == "off"
+    assert not (ep.get("cards") or {}).get("fail")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-miki",
@@ -895,61 +927,174 @@ def test_hospital_exit_adult_combat_off_is_sex_route_not_fights():
     assert expected_duration(ep) == pytest.approx(50.2, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
-    assert all("combat_on" not in b for b in ep["beats"])
-    assert ep["beats"][1]["menu"]["selected"] == 2
-    assert ep["beats"][4]["menu"]["selected"] == 2
-    assert ep["beats"][8]["menu"]["selected"] == 2
-    jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
-    jupo_prompt = build_beat_prompt(ep, jupo, trigger=merge_trigger("", jupo))
-    assert extra_keys(jupo) == ["blowjob", "mystic"]
-    assert jupo.get("trigger") == "bl0w_j0b"
-    assert jupo_prompt.startswith("bl0w_j0b")
-    assert "jupo-jupo" in jupo_prompt.lower()
-    assert "saliva" in jupo_prompt.lower()
-    assert "semen share" in jupo_prompt.lower()
-    assert jupo["trim"]["seconds"] == 7.5
+    assert all("on_invite" not in b for b in ep["beats"])
+    for i in (1, 4, 8):
+        assert ep["beats"][i]["menu"]["items"] == menu
+        assert ep["beats"][i]["menu"]["selected"] == 1
+        assert ep["beats"][i]["menu"]["title"] == "感染者"
+    miki = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    miki_prompt = build_beat_prompt(ep, miki, trigger=merge_trigger("", miki))
+    assert extra_keys(miki) == ["mystic"]
+    assert not miki.get("trigger")
+    assert "bl0w_j0b" not in miki_prompt.lower()
+    assert "jupo-jupo" not in miki_prompt.lower()
+    assert "licks upward" in miki_prompt.lower()
+    assert miki["trim"]["seconds"] == 7.5
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
     assert "prfight2" not in doggy_prompt
-    assert "doggy" in doggy_prompt.lower()
     assert "rei's face stays readable" in doggy_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(doggy, doggy_prompt)
+    _assert_insertion_direction(doggy["action"], doggy_prompt)
     cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
     cream_prompt = build_beat_prompt(ep, cream)
     assert "orgasm faces" in cream_prompt.lower()
     assert "french kiss" in cream_prompt.lower()
     assert "drips" in cream_prompt.lower()
+    assert "pull back" in cream["action"].lower()
     assert cream["trim"]["seconds"] == 7.5
-    assert "after rei sits" not in str(cream.get("place") or "").lower()
     ten = next(b for b in ep["beats"] if b["id"] == "10-kiss")
     ten_prompt = build_beat_prompt(ep, ten)
     assert "stays outside" not in ten_prompt.lower()
-    assert "starts inside" in ten_prompt.lower() or "going into" in ten_prompt.lower()
+    _assert_insertion_direction(ten["action"], ten_prompt)
     sex = next(b for b in ep["beats"] if b["id"] == "11-join")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    _assert_insertion_direction(sex["action"], sex_prompt)
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
     exit_prompt = build_beat_prompt(ep, exit_beat)
     _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
     assert "stays on her back the whole take" in exit_prompt.lower()
+    assert "through the lit open doorway" in exit_prompt.lower()
     assert exit_beat["voices"][1]["who"] == "kana"
     assert exit_beat["voices"][1]["line"] == "くっ"
-    for _b, prompt, errs in beat_prompts(ep, trigger=""):
-        assert errs == []
-        assert "prfight2" not in prompt
-        low = prompt.lower()
-        assert "corpse" not in low and "zombie" not in low
-        assert "slow motion" not in low and "slow-mo" not in low
-        assert "brisk" in low or "snappy" in low
+    _assert_hospital_bans(ep)
 
 
-def test_hospital_exit_adult_combat_on_is_fight_route_not_doggy():
+def test_hospital_exit_adult_invite_fails_from_lust():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
-    ep = apply_combat_route(raw, combat="on")
-    prepared = prepare_episode(raw, combat_override="on")
+    ep = apply_story_route(raw, story="誘う")
+    assert ep["render"]["combat"] == "off"
+    assert ep["render"]["story"] == "invite"
+    assert expected_duration(ep) == pytest.approx(52.7, abs=1.0)
+    assert ep["beats"][-1]["hud"]["complete"] is False
+    assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
+    for i in (1, 4, 8):
+        assert ep["beats"][i]["menu"]["selected"] == 2
+        assert ep["beats"][i]["hud"]["hint"] == "□ 誘う"
+    doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
+    _assert_insertion_direction(doggy["action"], build_beat_prompt(ep, doggy))
+    assert "drops herself" in doggy["action"].lower()
+    twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    twelve_prompt = build_beat_prompt(ep, twelve)
+    assert "do not cross the threshold" in twelve_prompt.lower() or "do not slide to it" in twelve_prompt.lower()
+    assert "left the building" not in twelve_prompt.lower()
+    _assert_hospital_bans(ep)
+
+
+def test_hospital_exit_adult_evade_exits_alone():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = apply_story_route(raw, story="回避")
+    assert ep["render"]["combat"] == "off"
+    assert expected_duration(ep) == pytest.approx(45.2, abs=1.0)
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    assert not (ep.get("cards") or {}).get("fail")
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-miki",
+        "03-kiss",
+        "04-peek",
+        "05-ui-rei",
+        "06-slip",
+        "07-run",
+        "08-door",
+        "09-ui-kana",
+        "10-slip",
+        "11-door",
+        "12-exit",
+    ]
+    for i in (1, 4, 8):
+        assert ep["beats"][i]["menu"]["selected"] == 3
+    kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    kiss_prompt = build_beat_prompt(ep, kiss, trigger=merge_trigger("", kiss))
+    assert extra_keys(kiss) == []
+    assert "jupo-jupo" not in kiss_prompt.lower()
+    assert "licks" not in kiss_prompt.lower()
+    assert kiss["trim"]["seconds"] == 5.0
+    slip = next(b for b in ep["beats"] if b["id"] == "06-slip")
+    assert "travels into" not in slip["action"].lower()
+    assert extra_keys(slip) == []
+    twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    twelve_prompt = build_beat_prompt(ep, twelve)
+    assert twelve["cast"] == ["aya"]
+    assert "alone" in twelve_prompt.lower()
+    _assert_hospital_bans(ep)
+
+
+def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = apply_story_route(raw, story="fight_win")
+    prepared = prepare_episode(raw, story_override="戦って勝つ")
     assert [b["id"] for b in prepared["beats"]] == [b["id"] for b in ep["beats"]]
+    assert ep["render"]["combat"] == "on"
+    assert expected_duration(ep) == pytest.approx(45.2, abs=1.0)
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    assert not (ep.get("cards") or {}).get("fail")
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-miki",
+        "03-kiss",
+        "04-peek",
+        "05-ui-rei",
+        "06-fight",
+        "07-oral",
+        "08-door",
+        "09-ui-kana",
+        "10-win",
+        "11-pass",
+        "12-exit",
+    ]
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["06-fight", "10-win"]
+    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
+    assert ep["beats"][1]["menu"]["selected"] == 3
+    assert ep["beats"][4]["menu"]["selected"] == 0
+    assert ep["beats"][8]["menu"]["selected"] == 0
+    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
+    assert fight_prompt.startswith("prfight2, prfin1")
+    assert "travels into" not in fight_prompt.lower()
+    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
+    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
+    assert extra_keys(oral) == ["blowjob", "mystic"]
+    assert oral.get("trigger") == "bl0w_j0b"
+    assert oral_prompt.startswith("bl0w_j0b")
+    assert "jupo-jupo" in oral_prompt.lower()
+    assert "keep the lips at the base" in oral_prompt.lower()
+    assert "head moves forward" in oral["action"].lower()
+    assert "semen share" not in oral_prompt.lower()
+    assert oral["trim"]["seconds"] == 5.0
+    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
+    twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    assert twelve["cast"] == ["aya"]
+    _assert_hospital_bans(ep)
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            path = HOSPITAL_DIR / still
+            assert path.is_file()
+            assert Image.open(path).size == (1280, 720)
+
+
+def test_hospital_exit_adult_fight_lose_is_defeat_h():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = apply_story_route(raw, story="敗北")
+    assert ep["render"]["combat"] == "on"
+    assert expected_duration(ep) == pytest.approx(47.7, abs=1.0)
+    assert ep["beats"][-1]["hud"]["complete"] is False
+    assert ep["cards"]["fail"]["reason"] == "感染者に倒された"
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-miki",
@@ -964,61 +1109,21 @@ def test_hospital_exit_adult_combat_on_is_fight_route_not_doggy():
         "11-join",
         "12-exit",
     ]
-    assert expected_duration(ep) == pytest.approx(45.2, abs=1.0)
-    assert ep["beats"][-1]["hud"]["complete"] is True
     fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
     assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
-    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
-    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
-    assert ep["beats"][4]["menu"]["selected"] == 0
-    assert ep["beats"][8]["menu"]["selected"] == 0
-    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
-    assert fight_prompt.startswith("prfight2, prfin1")
-    assert "doggy" not in fight_prompt.lower()
-    kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
-    kiss_prompt = build_beat_prompt(ep, kiss, trigger=merge_trigger("", kiss))
-    assert "jupo-jupo" not in kiss_prompt.lower()
-    assert extra_keys(kiss) == []
-    assert not kiss.get("trigger")
-    assert kiss["trim"]["seconds"] == 5.0
-    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
-    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
-    assert extra_keys(oral) == ["blowjob", "mystic"]
-    assert oral.get("trigger") == "bl0w_j0b"
-    assert oral_prompt.startswith("bl0w_j0b")
-    assert "jupo-jupo" in oral_prompt.lower()
-    assert "keep the lips at the base" in oral_prompt.lower()
-    assert "semen share" not in oral_prompt.lower()
-    assert oral["trim"]["seconds"] == 5.0
-    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
-    assert oral["voices"][0]["line"] == "じゅぽっ"
-    assert oral["voices"][1]["line"] == "はぁっ"
+    ten = next(b for b in ep["beats"] if b["id"] == "10-lose")
+    assert "travels into" not in ten["action"].lower()
     sex = next(b for b in ep["beats"] if b["id"] == "11-join")
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
-    assert "finishes inside" not in sex_prompt.lower()
+    _assert_insertion_direction(sex["action"], sex_prompt)
+    assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
-    exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
-    exit_prompt = build_beat_prompt(ep, exit_beat)
-    _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
-    assert "stays on her back the whole take" in exit_prompt.lower()
-    assert "french kiss" not in exit_prompt.lower()
-    assert exit_beat["voices"][1]["who"] == "kana"
-    assert exit_beat["voices"][1]["line"] == "くっ"
-    for beat in ep["beats"]:
-        still = beat.get("still")
-        if still:
-            path = HOSPITAL_DIR / still
-            assert path.is_file()
-            assert Image.open(path).size == (1280, 720)
-    for _b, prompt, errs in beat_prompts(ep, trigger=""):
-        assert errs == []
-        if "prfight2" in prompt:
-            assert prompt.startswith("prfight2, prfin1")
-        low = prompt.lower()
-        assert "corpse" not in low and "zombie" not in low
-        assert "slow-motion" not in low and "slow-mo" not in low
-        assert "brisk" in low or "snappy" in low
+    twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    twelve_prompt = build_beat_prompt(ep, twelve)
+    assert "do not leave" in twelve_prompt.lower() or "do not slide to it" in twelve_prompt.lower()
+    assert "french kiss" not in twelve_prompt.lower()
+    _assert_hospital_bans(ep)
 
 
 def test_hospital_stills_are_not_kasumi_copies():
@@ -1109,8 +1214,11 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     ]
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
-    assert "迷ったらこの4つの既定のままで Run all" in picked
+    assert "迷ったらこの5つの既定のままで Run all" in picked
     assert "格闘LoRAオフ" in picked
+    assert "○受け入れる（生存・完了・迷ったらこれ）" in picked
+    assert ui_default("story") == "○受け入れる（生存・完了・迷ったらこれ）"
+    assert ui_choices("story")[0].startswith("○受け入れる")
     ep = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert episode_connect(ep) == "t2v"
     stock = load_episode(KASUMI_DIR / "episode.json")
@@ -1607,6 +1715,7 @@ def test_exec_script_is_self_contained():
     assert "H3_EPISODE_CAMERA" in script
     assert "H3_EPISODE_CONNECT" in script
     assert "H3_EPISODE_COMBAT" in script
+    assert "H3_EPISODE_STORY" in script
     assert "raw.githubusercontent.com/fireworker011/Research/cursor/x" in script
     assert "colab/h3_episode.py" in script and "runpy.run_path" in script
     compile(script, "exec_script", "exec")

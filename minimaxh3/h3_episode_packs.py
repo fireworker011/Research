@@ -206,6 +206,85 @@ COMBAT_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
+# Hospital-exit story pack. Body JSON is ○受け入れる. Other futures are on_* overlays.
+# Kasumi has no on_* keys; this dropdown is ignored there.
+STORY_MODES: dict[str, dict[str, Any]] = {
+    "accept": {
+        "label_ja": "受け入れる",
+        "choice_ja": "○受け入れる（生存・完了・迷ったらこれ）",
+        "when_ja": "戸惑いながら身体を張って出口へ。ミッション完了",
+        "hint_ja": "迷ったらこれ。生存セックス。接合のまま出口。Combat なし",
+        "recommend": True,
+        "combat": "off",
+        "complete": True,
+        "menu_selected": 1,
+    },
+    "invite": {
+        "label_ja": "誘う",
+        "choice_ja": "□誘う（淫欲・失敗）",
+        "when_ja": "こちらから攻める濃厚セックス。院内で淫欲に呑まれて失敗",
+        "hint_ja": "ノリノリ。12で出口を捨てて失敗。Combat なし",
+        "combat": "off",
+        "complete": False,
+        "fail_reason": "淫欲に呑まれた",
+        "menu_selected": 2,
+    },
+    "evade": {
+        "label_ja": "回避",
+        "choice_ja": "×回避（出口・完了）",
+        "when_ja": "エロを避けて一人で出口。ミッション完了",
+        "hint_ja": "行為なし。すり抜け。Combat なし",
+        "combat": "off",
+        "complete": True,
+        "menu_selected": 3,
+    },
+    "fight_win": {
+        "label_ja": "戦って勝つ",
+        "choice_ja": "△戦って勝つ（完了・ハイメモリ）",
+        "when_ja": "れいとかなを倒して出口。みきは回避。ハイメモリ",
+        "hint_ja": "06と10に Combat。かなも倒す。敗北Hなし",
+        "combat": "on",
+        "complete": True,
+        "menu_selected": 0,
+    },
+    "fight_lose": {
+        "label_ja": "戦って負ける",
+        "choice_ja": "△戦って負ける（敗北H・失敗・ハイメモリ）",
+        "when_ja": "かなに倒されて専用敗北H。ミッション失敗。ハイメモリ",
+        "hint_ja": "10で敗北。11-12が敗北H。出られない",
+        "combat": "on",
+        "complete": False,
+        "fail_reason": "感染者に倒された",
+        "menu_selected": 0,
+    },
+}
+
+STORY_OVERLAY_KEYS: dict[str, str] = {
+    "invite": "on_invite",
+    "evade": "on_evade",
+    "fight_win": "on_fight_win",
+    "fight_lose": "on_fight_lose",
+}
+
+STORY_ALIASES: dict[str, str] = _label_aliases(
+    STORY_MODES,
+    {
+        "受け入れる": "accept",
+        "誘う": "invite",
+        "回避": "evade",
+        "戦う": "fight_win",
+        "勝ち": "fight_win",
+        "負け": "fight_lose",
+        "敗北": "fight_lose",
+        "敗北H": "fight_lose",
+        "survival": "accept",
+        "lust": "invite",
+        "escape": "evade",
+        "win": "fight_win",
+        "lose": "fight_lose",
+    },
+)
+
 
 PRESET_ALIASES: dict[str, str] = _label_aliases(
     PRESET_CANON,
@@ -259,6 +338,15 @@ def canonical_combat(name: str) -> str:
     return COMBAT_ALIASES.get(raw, raw)
 
 
+def canonical_story(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in STORY_MODES:
+        return raw
+    return STORY_ALIASES.get(raw, raw)
+
+
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
@@ -268,6 +356,8 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return PRESET_CANON
     if kind == "combat":
         return COMBAT_MODES
+    if kind == "story":
+        return STORY_MODES
     raise KeyError(kind)
 
 
@@ -304,16 +394,18 @@ def form_readme(kind: str) -> str:
     return "\n".join(lines)
 
 
-def describe_run(*, connect: str = "", camera: str = "", preset: str = "", combat: str = "", episode: str = "") -> str:
+def describe_run(*, connect: str = "", camera: str = "", preset: str = "", combat: str = "", story: str = "", episode: str = "") -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
     f_key = canonical_combat(combat) or "off"
+    s_key = canonical_story(story) or "accept"
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
+    s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
     head = f"一発 {episode}".strip() if episode else "一発"
     return (
         f"{head}\n"
@@ -321,5 +413,6 @@ def describe_run(*, connect: str = "", camera: str = "", preset: str = "", comba
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
-        "迷ったらこの4つの既定のままで Run all。"
+        f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
+        "迷ったらこの5つの既定のままで Run all。"
     )

@@ -103,10 +103,13 @@ from h3_episode_packs import (
     DEFAULT_CONNECT,
     PRESET_CANON,
     PRESET_ALIASES,
+    STORY_MODES,
+    STORY_OVERLAY_KEYS,
     canonical_camera,
     canonical_combat,
     canonical_connect,
     canonical_preset,
+    canonical_story,
     describe_run,
     expand_presets,
 )
@@ -180,6 +183,7 @@ LORA_STRENGTHS = {
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 COMBAT_ROUTE_KEY = "combat_on"
+STORY_ROUTE_KEYS = tuple(STORY_OVERLAY_KEYS.values())
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
@@ -362,6 +366,17 @@ def episode_combat(ep: dict[str, Any], override: str | None = None) -> str:
     name = canonical_combat(raw)
     if name not in COMBAT_MODES:
         raise EpisodeError(f"render.combat must be one of {list(COMBAT_MODES)}")
+    return name
+
+
+def episode_story(ep: dict[str, Any], override: str | None = None) -> str:
+    """accept / invite / evade / fight_win / fight_lose. Empty means the JSON body as-is."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("story") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_story(raw)
+    if name not in STORY_MODES:
+        raise EpisodeError(f"render.story must be one of {list(STORY_MODES)}")
     return name
 
 
@@ -808,7 +823,14 @@ def _has_combat_overlays(ep: dict[str, Any]) -> bool:
     return any(isinstance(b, dict) and isinstance(b.get(COMBAT_ROUTE_KEY), dict) for b in (ep.get("beats") or []))
 
 
-def _merge_combat_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+def _has_story_overlays(ep: dict[str, Any]) -> bool:
+    return any(
+        isinstance(b, dict) and any(isinstance(b.get(key), dict) for key in STORY_ROUTE_KEYS)
+        for b in (ep.get("beats") or [])
+    )
+
+
+def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     """Replace route fields. menu/hud deep-merge so the command window can retarget."""
     out = dict(beat)
     for key, value in overlay.items():
@@ -819,6 +841,10 @@ def _merge_combat_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict
         else:
             out[key] = value
     return out
+
+
+def _merge_combat_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
+    return _merge_route_overlay(beat, overlay)
 
 
 def apply_combat_route(ep: dict[str, Any], *, combat: str | None = None) -> dict[str, Any]:
@@ -847,6 +873,74 @@ def apply_combat_route(ep: dict[str, Any], *, combat: str | None = None) -> dict
     return out
 
 
+def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+    """Flip last-beat complete and cards.fail so Colab story choice can succeed or fail."""
+    out = ep
+    beats = [b for b in (out.get("beats") or []) if isinstance(b, dict)]
+    if beats:
+        last = dict(beats[-1])
+        hud = dict(last.get("hud") or {})
+        hud["complete"] = bool(spec.get("complete"))
+        last["hud"] = hud
+        beats[-1] = last
+        all_beats = list(out.get("beats") or [])
+        # Replace the last dict beat in the original list.
+        for i in range(len(all_beats) - 1, -1, -1):
+            if isinstance(all_beats[i], dict):
+                all_beats[i] = last
+                break
+        out["beats"] = all_beats
+    cards = dict(out.get("cards") or {})
+    if spec.get("complete"):
+        cards.pop("fail", None)
+    else:
+        fail = dict(cards.get("fail") or {})
+        fail["text"] = str(fail.get("text") or "ミッション失敗")
+        fail["reason"] = str(spec.get("fail_reason") or fail.get("reason") or "失敗")
+        fail["seconds"] = float(fail.get("seconds") or 2.8)
+        fail["image"] = str(fail.get("image") or "last-frame")
+        cards["fail"] = fail
+    out["cards"] = cards
+    return out
+
+
+def apply_story_route(ep: dict[str, Any], *, story: str | None = None) -> dict[str, Any]:
+    """One future per Colab 構成. Body = ○受け入れる. on_* overlays hold the other four.
+
+    Episodes without on_* keys are unchanged (霞東の 4 番はそのまま).
+    Fight stories also pin render.combat so Combat LoRA is allowed on 06/10.
+    """
+    out = copy.deepcopy(ep)
+    if not _has_story_overlays(out):
+        return out
+    render = dict(out.get("render") or {})
+    if story not in (None, ""):
+        render["story"] = canonical_story(story) or story
+        out["render"] = render
+    key = episode_story(out) or "accept"
+    spec = STORY_MODES.get(key) or STORY_MODES["accept"]
+    overlay_field = STORY_OVERLAY_KEYS.get(key)
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        body = dict(beat)
+        chosen = body.pop(overlay_field, None) if overlay_field else None
+        for other in STORY_ROUTE_KEYS:
+            body.pop(other, None)
+        body.pop(COMBAT_ROUTE_KEY, None)
+        if isinstance(chosen, dict):
+            body = _merge_route_overlay(body, chosen)
+        beats.append(body)
+    out["beats"] = beats
+    render = dict(out.get("render") or {})
+    render["story"] = key
+    render["combat"] = spec.get("combat") or "off"
+    out["render"] = render
+    return _apply_story_ending(out, spec)
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -854,6 +948,7 @@ def prepare_episode(
     camera_pack_override: str | None = None,
     preset_override: str | None = None,
     combat_override: str | None = None,
+    story_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = apply_connect_mode(ep, connect_override)
@@ -865,9 +960,13 @@ def prepare_episode(
     if preset_override not in (None, ""):
         lookup = canonical_preset(preset_override)
         render["preset"] = lookup if lookup in PRESETS else preset_override
+    if story_override not in (None, ""):
+        render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
     out["render"] = render
+    if _has_story_overlays(out):
+        return apply_story_route(out, story=story_override)
     return apply_combat_route(out)
 
 
@@ -1204,6 +1303,13 @@ def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
 
 
 def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> list[str]:
+    if _has_story_overlays(ep):
+        errs: list[str] = []
+        for key in STORY_MODES:
+            resolved = apply_story_route(ep, story=key)
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"story-{key}: {err}")
+        return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
         for label, mode in (("combat-off", "off"), ("combat-on", "on")):
@@ -1249,6 +1355,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         combat_key = canonical_combat(combat)
         if combat_key not in COMBAT_MODES:
             errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
+    story = str(render.get("story") or "").strip()
+    if story:
+        story_key = canonical_story(story)
+        if story_key not in STORY_MODES:
+            errs.append(f"render.story must be one of {list(STORY_MODES)}")
     errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
@@ -2648,6 +2759,7 @@ def run_episode(
     camera_pack_override: str | None = None,
     connect_override: str | None = None,
     combat_override: str | None = None,
+    story_override: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -2662,6 +2774,7 @@ def run_episode(
         camera_pack_override=camera_pack_override,
         preset_override=preset_override,
         combat_override=combat_override,
+        story_override=story_override,
     )
     print(
         describe_run(
@@ -2669,6 +2782,7 @@ def run_episode(
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
+            story=episode_story(ep),
             episode=str(ep.get("slug") or ""),
         )
     )
@@ -2907,7 +3021,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -2917,6 +3031,7 @@ def _usage() -> str:
         "  --camera side2d|action3d（迷ったら side2d）\n"
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
         "  --combat off|on（迷ったら off。on はハイメモリ専用）\n"
+        "  --story accept|invite|evade|fight_win|fight_lose（病棟の構成。迷ったら accept）\n"
     )
 
 
@@ -2940,6 +3055,7 @@ def main(argv: list[str] | None = None) -> int:
     camera = None
     connect = None
     combat = None
+    story = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
@@ -2950,9 +3066,11 @@ def main(argv: list[str] | None = None) -> int:
         connect = opts[opts.index("--connect") + 1]
     if "--combat" in opts:
         combat = opts[opts.index("--combat") + 1]
+    if "--story" in opts:
+        story = opts[opts.index("--story") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
-    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset, combat_override=combat)
+    ep = prepare_episode(ep, connect_override=connect, camera_pack_override=camera, preset_override=preset, combat_override=combat, story_override=story)
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():
         ensure_episode_tree(out_dir)
