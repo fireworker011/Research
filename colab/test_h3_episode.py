@@ -807,6 +807,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     _assert_insertion_direction(sex["action"], sex_prompt)
     assert "pelvis stays down" in sex["action"].lower()
     assert "rock up" not in sex["action"].lower()
+    assert "kuroki's hips moving" in sex["action"].lower()
+    assert ", hips moving" not in sex["action"].lower()
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     assert "sits up" not in sex_prompt.lower() and "sits down" not in sex_prompt.lower()
@@ -902,6 +904,8 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     _assert_insertion_direction(sex["action"], sex_prompt)
     assert "pelvis stays down" in sex["action"].lower()
     assert "rock up" not in sex["action"].lower()
+    assert "kuroki's hips moving" in sex["action"].lower()
+    assert ", hips moving" not in sex["action"].lower()
     assert "finishes inside" not in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
@@ -948,18 +952,33 @@ def _assert_insertion_direction(action: str, prompt: str) -> None:
     supine = ("stays on her back" in blob or "on her back" in blob) and not riding
     if tentacle:
         assert "thrust" in blob
+        _assert_named_hip_motion(action, prompt)
         return
     if riding:
         assert "rock down" in blob or "lower onto" in blob
         assert "hold still" in blob
         assert "rock up" not in blob
+        _assert_named_hip_motion(action, prompt)
         return
     if supine:
         assert "thrust" in blob
         assert "rock up" not in blob
         assert "pelvis stays down" in blob or "pelvis stay" in blob
+        _assert_named_hip_motion(action, prompt)
         return
     assert "thrust" in blob
+    _assert_named_hip_motion(action, prompt)
+
+
+def _assert_named_hip_motion(action: str, prompt: str) -> None:
+    blob = f"{action}\n{prompt}"
+    if "hips moving" not in blob.lower():
+        return
+    assert ", hips moving" not in blob.lower(), blob[:240]
+    assert re.search(
+        r"(Mio|Aoki|Kuroki|Aya|Miki|Rei|Kana|Shino)'s hips moving",
+        blob,
+    ), blob[:240]
 
 
 def _assert_no_pose_names(*texts: str) -> None:
@@ -1068,6 +1087,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "pelvis stays down" in exit_beat["action"].lower()
     assert "rock up" not in exit_beat["action"].lower()
     assert "looming" in exit_beat["action"].lower()
+    assert "towers" in exit_beat["action"].lower()
+    assert "looks small under shino" in exit_beat["action"].lower()
     assert "pull" in exit_beat["action"].lower()
     assert "through the lit open doorway" in exit_prompt.lower()
     assert "30cm" in exit_prompt.lower()
@@ -1225,6 +1246,11 @@ def test_hospital_exit_adult_fight_lose_is_defeat_h():
     assert "pelvis stay" in sex["action"].lower()
     assert "rock up" not in sex["action"].lower()
     assert "looming" in sex["action"].lower()
+    assert "towers" in sex["action"].lower()
+    assert "looks small under shino" in sex["action"].lower()
+    assert "wrap aya's small waist" in sex["action"].lower()
+    assert "shino's hips moving" in sex["action"].lower()
+    assert ", hips moving" not in sex["action"].lower()
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
