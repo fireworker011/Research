@@ -904,6 +904,11 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
     assert "20cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
     assert "24cm" not in raw["cast"]["kana"]["lock"]
+    assert raw["cast"]["shino"]["age"] == 29
+    assert "24cm" in raw["cast"]["shino"]["lock"] and "elongated" in raw["cast"]["shino"]["lock"]
+    assert "grin" in raw["cast"]["shino"]["lock"] and "stoop" in raw["cast"]["shino"]["lock"]
+    assert "nightgown" not in raw["cast"]["shino"]["lock"]
+    assert "nightgown" in raw["homage"]["never"]
     menu = ["△ 戦う", "○ 受け入れる", "□ 誘う", "× 回避"]
     ep = apply_story_route(raw, story="accept")
     prepared = prepare_episode(raw, story_override="受け入れる")
@@ -968,8 +973,14 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
     assert "stays on her back the whole take" in exit_prompt.lower()
     assert "through the lit open doorway" in exit_prompt.lower()
-    assert exit_beat["voices"][1]["who"] == "kana"
+    assert exit_beat["voices"][1]["who"] == "shino"
     assert exit_beat["voices"][1]["line"] == "くっ"
+    door = next(b for b in ep["beats"] if b["id"] == "08-door")
+    assert "kana" in door["cast"] and "shino" in door["cast"]
+    assert "Shino" in door["action"] and "Kana" in door["action"]
+    ten = next(b for b in ep["beats"] if b["id"] == "10-kiss")
+    assert ten["cast"] == ["aya", "shino"]
+    assert "stoop" in ten["action"].lower()
     _assert_hospital_bans(ep)
 
 
