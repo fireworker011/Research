@@ -40,6 +40,10 @@ __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
 __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
+__KISS_HELP__
+INVITE_KISS = __KISS_DEFAULT__  #@param __KISS_CHOICES__
+__JUPO_HELP__
+INVITE_JUPO = __JUPO_DEFAULT__  #@param __JUPO_CHOICES__
 __POSE_HELP__
 INVITE_POSE = __POSE_DEFAULT__  #@param __POSE_CHOICES__
 __TOILET_HELP__
@@ -83,6 +87,8 @@ os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = END_CONNECT
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
+os.environ["H3_EPISODE_INVITE_KISS"] = INVITE_KISS
+os.environ["H3_EPISODE_INVITE_JUPO"] = INVITE_JUPO
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_TOILET"] = TOILET
 os.environ["H3_EPISODE_GIN"] = GIN
@@ -183,7 +189,11 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("story")}
 
-**6. 誘うポーズ** — 病棟の □誘う だけ。霞東は無視
+**6. 誘う** — 病棟の □誘う だけ。キス / じゅぼ / 行為の3つ。霞東は無視
+
+{form_readme("invite_kiss")}
+
+{form_readme("invite_jupo")}
 
 {form_readme("invite_pose")}
 
@@ -246,7 +256,13 @@ def make_nb() -> dict:
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
         .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))
-        .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘うポーズ — 病棟の□誘うだけ"))
+        .replace("__KISS_HELP__", form_markdown("invite_kiss", "6. 誘うキス — 病棟の□誘うだけ。接近は並走"))
+        .replace("__KISS_DEFAULT__", json.dumps(ui_default("invite_kiss"), ensure_ascii=False))
+        .replace("__KISS_CHOICES__", json.dumps(ui_choices("invite_kiss"), ensure_ascii=False))
+        .replace("__JUPO_HELP__", form_markdown("invite_jupo", "6. 誘うじゅぼ — 病棟の□誘うだけ。騎乗とじゅぼのみには重ねない"))
+        .replace("__JUPO_DEFAULT__", json.dumps(ui_default("invite_jupo"), ensure_ascii=False))
+        .replace("__JUPO_CHOICES__", json.dumps(ui_choices("invite_jupo"), ensure_ascii=False))
+        .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘う行為 — 病棟の□誘うだけ"))
         .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 病棟の道中。どれでも次へ"))

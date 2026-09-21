@@ -323,7 +323,48 @@ STORY_ALIASES: dict[str, str] = _label_aliases(
 )
 
 
-# Invite pose (hospital □誘う only). Kasumi has no invite_pose_* keys; ignored there.
+# Invite composer (hospital □誘う only). Kiss / jupo / act are three dropdowns.
+# Default kiss=off jupo=off act=all_fours keeps the authored 3-clip overlays.
+# Ride already bakes a jupo clip; optional jupo does not stack onto ride or jupo-only.
+INVITE_KISS_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "無し",
+        "choice_ja": "ベロチュー無し（迷ったらこれ）",
+        "when_ja": "キス段を足さない。接近は並走だけ",
+        "hint_ja": "迷ったらこれ。チューはメニュー後のこの段だけ",
+        "recommend": True,
+    },
+    "stand": {
+        "label_ja": "立ちチュー",
+        "choice_ja": "立ちチュー",
+        "when_ja": "メニュー後に立ったまま口をつける。同じ目線",
+        "hint_ja": "相手は立ち。あやも立ち。接近の6秒チューは使わない",
+    },
+    "pin": {
+        "label_ja": "押し倒し",
+        "choice_ja": "押し倒し（あやが上）",
+        "when_ja": "あやが相手を後ろへ倒して上からチュー",
+        "hint_ja": "誘うのであやが上。相手は仰向け",
+    },
+}
+
+INVITE_JUPO_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "無し",
+        "choice_ja": "じゅぼ無し（迷ったらこれ）",
+        "when_ja": "オプションのじゅぼ段を足さない",
+        "hint_ja": "迷ったらこれ。騎乗とじゅぼのみは行為側にじゅぼがある",
+        "recommend": True,
+    },
+    "on": {
+        "label_ja": "する",
+        "choice_ja": "じゅぼする",
+        "when_ja": "キスの対位で口を根元まで。行為がじゅぼのみ／騎乗のときは重ねない",
+        "hint_ja": "立ちチューのあとなら相手立ち・あや膝。押し倒しのあとは仰向けの竿",
+    },
+}
+
+# Invite act (hospital □誘う only). Kasumi has no invite_pose_* keys; ignored there.
 INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "all_fours": {
         "label_ja": "四つん這い",
@@ -340,9 +381,23 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     },
     "ride": {
         "label_ja": "騎乗位",
-        "choice_ja": "ベロチュー→じゅぼ→騎乗位",
-        "when_ja": "出会いでベロチュー。行為はじゅぼ→騎乗→中出し→歩きの4本",
-        "hint_ja": "濃い誘う。みきもふたなり。じゅぼのあと乗せて中出し。終わりはあや一人歩き",
+        "choice_ja": "騎乗位（じゅぼ込み）",
+        "when_ja": "じゅぼ→騎乗→中出し→歩きの4本。オプションじゅぼは重ねない",
+        "hint_ja": "行為側にじゅぼがある。オプションじゅぼは足さない。終わりはあや一人歩き",
+        "has_jupo": True,
+    },
+    "stand": {
+        "label_ja": "壁に手",
+        "choice_ja": "壁に手（立ったまま後ろから）",
+        "when_ja": "壁に手。根元まで入れてからパコ中出し→歩きの3本。つのとは別",
+        "hint_ja": "あやが壁に手、相手が後ろ。つのの追加イベントとは混ぜない",
+    },
+    "jupo": {
+        "label_ja": "じゅぼのみ",
+        "choice_ja": "じゅぼのみ",
+        "when_ja": "口で根元まで→口内中出し→歩きの3本。オプションじゅぼは重ねない",
+        "hint_ja": "行為が口だけ。オプションじゅぼは足さない。終わりはあや一人歩き",
+        "has_jupo": True,
     },
 }
 
@@ -364,10 +419,78 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "m字": "m_open",
         "missionary": "m_open",
         "騎乗位": "ride",
+        "ベロチュー→じゅぼ→騎乗位": "ride",
         "cowgirl": "ride",
-        "jupo": "ride",
+        "壁に手": "stand",
+        "立ちバック": "stand",
+        "stand-rear": "stand",
+        "じゅぼのみ": "jupo",
+        "jupo-only": "jupo",
+        "oral": "jupo",
     },
 )
+
+INVITE_KISS_ALIASES: dict[str, str] = _label_aliases(
+    INVITE_KISS_MODES,
+    {
+        "無し": "off",
+        "なし": "off",
+        "skip": "off",
+        "立ち": "stand",
+        "立ちチュー": "stand",
+        "standing": "stand",
+        "押し倒し": "pin",
+        "pin-down": "pin",
+    },
+)
+
+INVITE_JUPO_ALIASES: dict[str, str] = _label_aliases(
+    INVITE_JUPO_MODES,
+    {
+        "無し": "off",
+        "なし": "off",
+        "skip": "off",
+        "する": "on",
+        "じゅぼ": "on",
+        "jupo": "on",
+    },
+)
+
+# Partner look for generated invite prefix/act clips. Cast lock still goes in the prompt.
+INVITE_PARTNER: dict[str, dict[str, str]] = {
+    "miki": {
+        "who": "Miki",
+        "shaft": "22cm",
+        "look": (
+            "purple skin, hollow empty dark eye sockets, open red lacerations and torn gashes, erect 22cm"
+        ),
+    },
+    "rei": {
+        "who": "Rei",
+        "shaft": "24cm",
+        "look": (
+            "purple skin, vacant wide-open tired eyes, brown viscous liquid covering her from hair to the "
+            "24cm shaft to her feet, erect 24cm"
+        ),
+    },
+    "kana": {
+        "who": "Kana",
+        "shaft": "20cm",
+        "look": (
+            "purple skin, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy "
+            "slime covering her whole body including the 20cm shaft, erect 20cm"
+        ),
+    },
+    "shino": {
+        "who": "Shino",
+        "shaft": "30cm",
+        "look": (
+            "extremely tall pale grimy-dirty adult, long dark hair, alluring feminine face, vacant monster "
+            "eyes, a long forked reptile tongue, long arms, long fingers, erect 30cm"
+        ),
+        "tall": "1",
+    },
+}
 
 # Optional toilet between みき and れい. Any choice continues to the next scene.
 TOILET_MODES: dict[str, dict[str, Any]] = {
@@ -607,6 +730,20 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
         "story": "invite",
         "pose": "ride",
     },
+    "invite_stand": {
+        "label_ja": "誘う・壁に手",
+        "choice_ja": "□誘う・壁に手",
+        "when_ja": "この人を壁に手で誘う。つのとは別",
+        "story": "invite",
+        "pose": "stand",
+    },
+    "invite_jupo": {
+        "label_ja": "誘う・じゅぼのみ",
+        "choice_ja": "□誘う・じゅぼのみ",
+        "when_ja": "この人を口だけじゅぼで誘う",
+        "story": "invite",
+        "pose": "jupo",
+    },
     "evade": {
         "label_ja": "回避",
         "choice_ja": "×回避",
@@ -635,10 +772,14 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘う四つん這い": "invite_all_fours",
         "誘うM字": "invite_m_open",
         "誘う騎乗": "invite_ride",
+        "誘う壁に手": "invite_stand",
+        "誘うじゅぼ": "invite_jupo",
         "回避": "evade",
         "invite-all-fours": "invite_all_fours",
         "invite-m-open": "invite_m_open",
         "invite-ride": "invite_ride",
+        "invite-stand": "invite_stand",
+        "invite-jupo": "invite_jupo",
     },
 )
 
@@ -720,6 +861,24 @@ def canonical_invite_pose(name: str) -> str:
     if raw in INVITE_POSE_MODES:
         return raw
     return INVITE_POSE_ALIASES.get(raw, raw)
+
+
+def canonical_invite_kiss(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in INVITE_KISS_MODES:
+        return raw
+    return INVITE_KISS_ALIASES.get(raw, raw)
+
+
+def canonical_invite_jupo(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in INVITE_JUPO_MODES:
+        return raw
+    return INVITE_JUPO_ALIASES.get(raw, raw)
 
 
 def canonical_toilet(name: str) -> str:
@@ -895,6 +1054,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return STORY_MODES
     if kind == "invite_pose":
         return INVITE_POSE_MODES
+    if kind == "invite_kiss":
+        return INVITE_KISS_MODES
+    if kind == "invite_jupo":
+        return INVITE_JUPO_MODES
     if kind == "toilet":
         return TOILET_MODES
     if kind == "gin":
@@ -950,6 +1113,8 @@ def describe_run(
     combat: str = "",
     story: str = "",
     invite_pose: str = "",
+    invite_kiss: str = "",
+    invite_jupo: str = "",
     toilet: str = "",
     gin: str = "",
     tsuno: str = "",
@@ -965,6 +1130,8 @@ def describe_run(
     f_key = canonical_combat(combat) or "off"
     s_key = canonical_story(story) or "accept"
     pose_key = canonical_invite_pose(invite_pose) or "all_fours"
+    kiss_key = canonical_invite_kiss(invite_kiss) or "off"
+    jupo_key = canonical_invite_jupo(invite_jupo) or "off"
     t_key = canonical_toilet(toilet) or "off"
     g_key = canonical_gin(gin) or "off"
     n_key = canonical_tsuno(tsuno) or "off"
@@ -976,6 +1143,8 @@ def describe_run(
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
     s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
     pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
+    kiss = INVITE_KISS_MODES.get(kiss_key) or INVITE_KISS_MODES["off"]
+    jupo = INVITE_JUPO_MODES.get(jupo_key) or INVITE_JUPO_MODES["off"]
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
     g = GIN_MODES.get(g_key) or GIN_MODES["off"]
     n = TSUNO_MODES.get(n_key) or TSUNO_MODES["off"]
@@ -1007,7 +1176,7 @@ def describe_run(
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
-        f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
+        f"  6 誘う    キス {kiss['choice_ja']} / じゅぼ {jupo['choice_ja']} / 行為 {pose['choice_ja']}\n"
         f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
         f"  8 灰色    {g['choice_ja']}  — {g['when_ja']}\n"
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
