@@ -863,55 +863,162 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
         assert "brisk" in low or "snappy" in low
 
 
-def test_hospital_exit_adult_escape_while_joined():
-    ep = load_episode(HOSPITAL_DIR / "episode.json")
-    assert validate_episode(ep, root=HOSPITAL_DIR) == []
-    assert ep["slug"] == "hospital-exit-adult"
-    assert episode_lane(ep) == "erotic"
-    assert episode_checkpoint(ep) == "eros-max"
-    assert not (ep.get("cards") or {}).get("fail")
+def test_hospital_exit_adult_combat_off_is_sex_route_not_fights():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert validate_episode(raw, root=HOSPITAL_DIR) == []
+    assert raw["slug"] == "hospital-exit-adult"
+    assert episode_lane(raw) == "erotic"
+    assert episode_checkpoint(raw) == "eros-max"
+    assert raw["render"]["combat"] == "off"
+    assert not (raw.get("cards") or {}).get("fail")
+    assert all(c["age"] >= 21 for c in raw["cast"].values())
+    assert "24cm" in raw["cast"]["miki"]["lock"] and "thick human girth" in raw["cast"]["miki"]["lock"]
+    assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
+    assert "24cm" in raw["cast"]["kana"]["lock"] and "frenulum" in raw["cast"]["kana"]["lock"]
+    assert "20cm" not in (HOSPITAL_DIR / "episode.json").read_text(encoding="utf-8")
+    assert "no penis" in raw["cast"]["aya"]["lock"] and "never futanari" in raw["cast"]["aya"]["lock"]
+    ep = apply_combat_route(raw, combat="off")
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-miki",
+        "03-kiss",
+        "04-peek",
+        "05-ui-rei",
+        "06-doggy",
+        "07-creampie",
+        "08-door",
+        "09-ui-kana",
+        "10-kiss",
+        "11-join",
+        "12-exit",
+    ]
+    assert expected_duration(ep) == pytest.approx(50.2, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
-    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
-    assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
-    assert all(b.get("trigger") == "prfight2, prfin1" for b in fights)
-    assert ep["beats"][2]["id"] == "03-kiss" and not ep["beats"][2].get("extra_loras")
-    assert all(not b.get("reuse") for b in ep["beats"])
-    assert all(c["age"] >= 21 for c in ep["cast"].values())
-    gpu = [b for b in ep["beats"] if b.get("source") != "ui"]
-    assert all(b["source"] == "t2v" for b in gpu)
-    assert ep["render"]["preset"] == "balance" and ep["render"]["camera_pack"] == "side2d"
-    assert ep["render"]["connect"] == "t2v"
-    for beat in ep["beats"]:
-        still = beat.get("still")
-        if still:
-            p = HOSPITAL_DIR / still
-            assert p.is_file()
-            assert Image.open(p).size == (1280, 720)
-    for _b, prompt, errs in beat_prompts(ep, trigger=""):
-        assert errs == []
-        low = prompt.lower()
-        assert "corpse" not in low and "zombie" not in low
-        assert "slow-motion" not in low and "slow-mo" not in low
-        assert "<Picture 1>" not in prompt and "Picture 2" not in prompt
-        assert "This shot:" in prompt
-    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
-    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
-    assert extra_keys(oral) == ["blowjob"]
-    assert oral.get("trigger") == "bl0w_j0b"
-    assert oral_prompt.startswith("bl0w_j0b")
-    assert "jupo-jupo" in oral_prompt.lower()
-    assert "melting with pleasure" in oral_prompt
-    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
-    assert oral["voices"][0]["line"] == "じゅぽっ"
-    assert oral["voices"][1]["line"] == "はぁっ"
-    join = next(b for b in ep["beats"] if b["id"] == "11-join")
-    join_prompt = build_beat_prompt(ep, join)
-    _assert_sex_beat_both_pleasure_no_extra_kiss(join, join_prompt)
+    assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
+    assert all("combat_on" not in b for b in ep["beats"])
+    assert ep["beats"][1]["menu"]["selected"] == 2
+    assert ep["beats"][4]["menu"]["selected"] == 2
+    assert ep["beats"][8]["menu"]["selected"] == 2
+    jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    jupo_prompt = build_beat_prompt(ep, jupo, trigger=merge_trigger("", jupo))
+    assert extra_keys(jupo) == ["blowjob", "mystic"]
+    assert jupo.get("trigger") == "bl0w_j0b"
+    assert jupo_prompt.startswith("bl0w_j0b")
+    assert "jupo-jupo" in jupo_prompt.lower()
+    assert "saliva" in jupo_prompt.lower()
+    assert "semen share" in jupo_prompt.lower()
+    assert jupo["trim"]["seconds"] == 7.5
+    doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
+    doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
+    assert "prfight2" not in doggy_prompt
+    assert "doggy" in doggy_prompt.lower()
+    assert "rei's face stays readable" in doggy_prompt.lower()
+    _assert_sex_beat_both_pleasure_no_extra_kiss(doggy, doggy_prompt)
+    cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
+    cream_prompt = build_beat_prompt(ep, cream)
+    assert "orgasm faces" in cream_prompt.lower()
+    assert "french kiss" in cream_prompt.lower()
+    assert "drips" in cream_prompt.lower()
+    assert cream["trim"]["seconds"] == 7.5
+    assert "after rei sits" not in str(cream.get("place") or "").lower()
+    ten = next(b for b in ep["beats"] if b["id"] == "10-kiss")
+    ten_prompt = build_beat_prompt(ep, ten)
+    assert "stays outside" not in ten_prompt.lower()
+    assert "starts inside" in ten_prompt.lower() or "going into" in ten_prompt.lower()
+    sex = next(b for b in ep["beats"] if b["id"] == "11-join")
+    sex_prompt = build_beat_prompt(ep, sex)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    assert "finishes inside" in sex_prompt.lower()
+    assert "stays on her back the whole take" in sex_prompt.lower()
     exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
     exit_prompt = build_beat_prompt(ep, exit_beat)
     _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
+    assert "stays on her back the whole take" in exit_prompt.lower()
     assert exit_beat["voices"][1]["who"] == "kana"
     assert exit_beat["voices"][1]["line"] == "くっ"
+    for _b, prompt, errs in beat_prompts(ep, trigger=""):
+        assert errs == []
+        assert "prfight2" not in prompt
+        low = prompt.lower()
+        assert "corpse" not in low and "zombie" not in low
+        assert "slow motion" not in low and "slow-mo" not in low
+        assert "brisk" in low or "snappy" in low
+
+
+def test_hospital_exit_adult_combat_on_is_fight_route_not_doggy():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = apply_combat_route(raw, combat="on")
+    prepared = prepare_episode(raw, combat_override="on")
+    assert [b["id"] for b in prepared["beats"]] == [b["id"] for b in ep["beats"]]
+    assert [b["id"] for b in ep["beats"]] == [
+        "01-cover",
+        "02-ui-miki",
+        "03-kiss",
+        "04-peek",
+        "05-ui-rei",
+        "06-fight",
+        "07-oral",
+        "08-door",
+        "09-ui-kana",
+        "10-lose",
+        "11-join",
+        "12-exit",
+    ]
+    assert expected_duration(ep) == pytest.approx(45.2, abs=1.0)
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["06-fight", "10-lose"]
+    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
+    assert ep["beats"][4]["menu"]["selected"] == 0
+    assert ep["beats"][8]["menu"]["selected"] == 0
+    fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
+    assert fight_prompt.startswith("prfight2, prfin1")
+    assert "doggy" not in fight_prompt.lower()
+    kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
+    kiss_prompt = build_beat_prompt(ep, kiss, trigger=merge_trigger("", kiss))
+    assert "jupo-jupo" not in kiss_prompt.lower()
+    assert extra_keys(kiss) == []
+    assert not kiss.get("trigger")
+    assert kiss["trim"]["seconds"] == 5.0
+    oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
+    oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
+    assert extra_keys(oral) == ["blowjob", "mystic"]
+    assert oral.get("trigger") == "bl0w_j0b"
+    assert oral_prompt.startswith("bl0w_j0b")
+    assert "jupo-jupo" in oral_prompt.lower()
+    assert "keep the lips at the base" in oral_prompt.lower()
+    assert "semen share" not in oral_prompt.lower()
+    assert oral["trim"]["seconds"] == 5.0
+    _assert_sex_beat_both_pleasure_no_extra_kiss(oral, oral_prompt)
+    assert oral["voices"][0]["line"] == "じゅぽっ"
+    assert oral["voices"][1]["line"] == "はぁっ"
+    sex = next(b for b in ep["beats"] if b["id"] == "11-join")
+    sex_prompt = build_beat_prompt(ep, sex)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
+    assert "finishes inside" not in sex_prompt.lower()
+    assert "stays on her back the whole take" in sex_prompt.lower()
+    exit_beat = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    exit_prompt = build_beat_prompt(ep, exit_beat)
+    _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
+    assert "stays on her back the whole take" in exit_prompt.lower()
+    assert "french kiss" not in exit_prompt.lower()
+    assert exit_beat["voices"][1]["who"] == "kana"
+    assert exit_beat["voices"][1]["line"] == "くっ"
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            path = HOSPITAL_DIR / still
+            assert path.is_file()
+            assert Image.open(path).size == (1280, 720)
+    for _b, prompt, errs in beat_prompts(ep, trigger=""):
+        assert errs == []
+        if "prfight2" in prompt:
+            assert prompt.startswith("prfight2, prfin1")
+        low = prompt.lower()
+        assert "corpse" not in low and "zombie" not in low
+        assert "slow-motion" not in low and "slow-mo" not in low
+        assert "brisk" in low or "snappy" in low
 
 
 def test_hospital_stills_are_not_kasumi_copies():

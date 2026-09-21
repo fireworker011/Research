@@ -14,9 +14,10 @@
     "checkpoint": "eros-max",
     "camera_pack": "side2d",
     "connect": "t2v",
-    "voice": "japanese"
+    "voice": "japanese",
+    "combat": "off"
   },
-  "style": "Third-person survival-game cutscene look, live-action photoreal game footage, pulled-back full-body framing, real-time playback, no anime, no illustration",
+  "style": "Third-person survival-game cutscene look, live-action photoreal game footage, pulled-back full-body framing, brisk real-time playback, no anime, no illustration",
   "violence": "game",
   "world": {
     "name": "Fictional night hospital",
@@ -28,28 +29,28 @@
       "name_ja": "星野 あや",
       "name_en": "Aya",
       "age": 28,
-      "lock": "28-year-old Japanese woman, adult face, black hair in a low ponytail, fully nude, no clothes, no gown, female body, no penis, never futanari, tired determined morning-after expression",
+      "lock": "28-year-old Japanese woman, adult face, black hair in a low ponytail, slim body, fully nude, no clothes, no gown, female body, no penis, never futanari, tired determined morning-after expression",
       "voice": "clear young adult female voice"
     },
     "miki": {
       "name_ja": "感染 みき",
       "name_en": "Miki",
       "age": 32,
-      "lock": "32-year-old Japanese woman, adult face, short brown bob, fully nude, no clothes, no gown, pale skin, vacant tired eyes, female body, no penis, never futanari, slow idle stance",
+      "lock": "32-year-old Japanese woman, adult face, short brown bob, slim body, fully nude, no clothes, no gown, pale skin, vacant tired eyes, clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, pale-tan skin, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base, stands in the corridor stroking the erect 24cm, flushed pleasured vacant expression",
       "voice": "soft low adult female voice"
     },
     "rei": {
       "name_ja": "感染 れい",
       "name_en": "Rei",
       "age": 41,
-      "lock": "41-year-old Japanese woman, adult face, short black hair, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base",
+      "lock": "41-year-old Japanese woman, adult face, short black hair, slim body, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, pale-tan skin, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
       "voice": "low middle-aged female voice"
     },
     "kana": {
       "name_ja": "感染 かな",
       "name_en": "Kana",
       "age": 38,
-      "lock": "38-year-old Japanese woman, adult face, short black hair, thin metal glasses, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 20cm human penis, pale shaft, pink glans, no testicles, no scrotum, hairless female pussy at the base",
+      "lock": "38-year-old Japanese woman, adult face, short black hair, thin metal glasses, slim body, fully nude, no clothes, pale skin, vacant tired eyes, clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, pale-tan skin, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
       "voice": "low middle-aged female voice"
     }
   },
@@ -63,8 +64,8 @@
       "pulled-back full-body side-on fight plane with a horizontal track only",
       "mission subtitle grammar with the object noun in colour",
       "a pause-menu command window over a frozen frame",
-      "a french kiss used as a game evade",
-      "a knockdown followed at once by oral at walking-and-hit pace",
+      "a french kiss used as a greeting or as a game evade",
+      "doggy from behind with a creampie walk, or a knockdown followed by oral, depending on combat",
       "escape while still joined as the mission complete"
     ],
     "never": [
@@ -135,15 +136,19 @@
         "rail"
       ],
       "place": "A long beige hospital corridor at night, grey linoleum, overhead tubes, a dark far end",
-      "camera": "Aya and Miki far apart in the corridor, both full bodies including feet",
-      "action": "Aya and Miki stand far apart in the corridor, fully nude, pale, vacant eyes, no wounds; nobody else is in frame; they hold still with a slight breathing bob",
+      "camera": "Miki standing at left, Aya walking the corridor, both adults readable",
+      "action": "Aya brisk-walks the corridor toward Miki at walking-and-hit pace, fully nude; nude Miki stands in the corridor with an erect 24cm, one hand stroking the shaft, flushed, mouth open, brows knit, looking pleasured, pale vacant eyes; both stay in this corridor and stay fully nude. Motion starts at frame one",
       "voices": [
         {
           "who": "aya",
           "line": "ん"
+        },
+        {
+          "who": "miki",
+          "line": "んっ"
         }
       ],
-      "sfx": "HVAC, distant drip, fluorescent buzz",
+      "sfx": "HVAC, distant drip, fluorescent buzz, one soft footstep on linoleum",
       "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
       "hud": {
         "mission": "出口に出る",
@@ -199,8 +204,8 @@
       "source": "t2v",
       "still": "stills/01-cover.jpg",
       "trim": {
-        "start": 5.0,
-        "seconds": 5.0
+        "start": 2.5,
+        "seconds": 7.5
       },
       "cast": [
         "aya",
@@ -211,19 +216,27 @@
         "rail"
       ],
       "place": "The same hospital corridor, linoleum, overhead tubes",
-      "camera": "Aya standing close, Miki against the wall, mouths joined",
-      "action": "Aya steps in. Both hands go to Miki's shoulders. Aya gives Miki a deep wet french kiss at walking-and-hit pace. Miki's knees soften. Mouths stay joined, Miki seated against the wall, Aya can pass. Both stay fully nude. Female bodies, no penis. Consensual adult evade beat",
+      "camera": "Miki against the wall, Aya kneeling, then Aya up at Miki's face for the share",
+      "action": "Aya steps in close at once. A short deep wet french kiss greeting at brisk walking-and-hit pace, Miki against the wall. Aya drops to her knees at once. Both hands stay on Miki's hips, not the shaft. Aya's mouth takes the erect 24cm to the BASE. Long wet jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. The pale-tan shaft is glossy with thick saliva, wet strings from the lips to the BASE. This is sucking (jupo). Both look like it feels really good, not blank. Aya stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo. Miki stays against the wall, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, erect 24cm still up, pale vacant eyes. Small soft female moans from both. Miki climaxes IN Aya's mouth at the BASE. Heavy-oil-thick extra-viscous WHITE goo floods the mouth and throat while lips stay at the BASE. TOO MUCH to hold. Then the mouth slides off: a fat overflowing mouthful of opaque heavy-oil-thick WHITE goo on the tongue, spilling at the lips, saliva strings to the wet 24cm. Aya rises to Miki's face, same eye level. Mouth-to-mouth semen share, wet french kiss: tongues wrap around that same heavy WHITE goo. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "aya",
-          "line": "んっ"
+          "line": "ちゅっ"
+        },
+        {
+          "who": "aya",
+          "line": "じゅぽっ"
         },
         {
           "who": "miki",
+          "line": "はぁっ"
+        },
+        {
+          "who": "aya",
           "line": "ちゅっ"
         }
       ],
-      "sfx": "A wet kiss, a back against the wall, HVAC",
+      "sfx": "A wet kiss, wet jupo-jupo mouth, thick saliva, viscous WHITE goo, HVAC",
       "music": "A short synth stab on the kiss, then the bass",
       "hud": {
         "mission": "出口に出る",
@@ -239,6 +252,32 @@
           "出"
         ],
         "complete": false
+      },
+      "extra_loras": [
+        "blowjob",
+        "mystic"
+      ],
+      "trigger": "bl0w_j0b",
+      "combat_on": {
+        "camera": "Aya standing close, Miki against the wall, mouths joined",
+        "action": "Aya steps in close at once. Both hands go to Miki's shoulders first. Aya gives Miki a deep wet french kiss at walking-and-hit pace. Miki's knees soften. Mouths stay joined, Miki seated against the wall, Aya can pass. Both stay fully nude. Miki keeps an erect 24cm. Consensual adult evade beat. Aya can pass",
+        "extra_loras": [],
+        "trigger": "",
+        "trim": {
+          "start": 5.0,
+          "seconds": 5.0
+        },
+        "voices": [
+          {
+            "who": "aya",
+            "line": "んっ"
+          },
+          {
+            "who": "miki",
+            "line": "ちゅっ"
+          }
+        ],
+        "sfx": "A wet kiss, a back against the wall, HVAC"
       }
     },
     {
@@ -250,7 +289,8 @@
         "seconds": 4.0
       },
       "cast": [
-        "aya"
+        "aya",
+        "rei"
       ],
       "face_visible": false,
       "props": [
@@ -258,8 +298,8 @@
         "door"
       ],
       "place": "The same corridor looking toward a dark far end and closed brown doors, grey linoleum",
-      "camera": "Aya in the corridor looking toward the dark far end, full body",
-      "action": "Aya stands in the empty corridor, fully nude, looking toward the dark far end; she holds still with a slight breathing bob; nobody else is in frame yet",
+      "camera": "Aya in the corridor facing away, Rei coming from behind her",
+      "action": "Aya stands in the corridor, fully nude. Nude Rei with an erect 24cm comes from behind her down the corridor at walking-and-hit pace. Rei stays at Aya's back. Both stay fully nude. Nobody else is in frame. Motion starts at frame one",
       "voices": [
         {
           "who": "aya",
@@ -282,6 +322,13 @@
           "隠"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "cast": [
+          "aya"
+        ],
+        "camera": "Aya in the corridor looking toward the dark far end, full body",
+        "action": "Aya stands in the empty corridor, fully nude, looking toward the dark far end; she holds still with a slight breathing bob; nobody else is in frame yet. Brisk game-cut timing, motion starts at frame one"
       }
     },
     {
@@ -299,12 +346,12 @@
           "□ 口説く",
           "× 無視"
         ],
-        "selected": 0
+        "selected": 2
       },
       "hud": {
         "mission": "出口に出る",
         "mission_keyword": "出口",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.9,
         "stamina": 0.5,
         "money": "¥0",
@@ -315,10 +362,18 @@
           "隠"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "menu": {
+          "selected": 0
+        },
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
-      "id": "06-fight",
+      "id": "06-doggy",
       "source": "t2v",
       "still": "stills/06-fight.jpg",
       "trim": {
@@ -330,36 +385,31 @@
         "rei"
       ],
       "face_visible": false,
-      "physics": true,
       "extra_loras": [
-        "combat"
+        "mystic"
       ],
-      "trigger": "prfight2, prfin1",
-      "steps": 12,
-      "sampler": "euler",
-      "scheduler": "beta",
       "props": [
         "rail"
       ],
       "place": "The same hospital corridor, linoleum, overhead tubes, doors along the right wall",
-      "camera": "Both adults standing in the corridor, full bodies including feet",
-      "action": "A two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Rei sits down hard on the linoleum like a ragdoll. Rei stays seated, uninjured, pale, vacant, erect 20cm still up. Aya stays standing. Both stay fully nude",
+      "camera": "Pulled-back side-on. Both full bodies including feet, heads, and faces stay in frame. Aya on all fours, Rei kneeling behind her. Rei's face stays readable on Rei. Aya's face stays readable on Aya. The join at the hips is readable",
+      "action": "Rei pushes Aya's back at once at brisk walking-and-hit pace. Aya goes to all fours on the linoleum. Rei kneels behind her. Doggy. The erect 24cm goes inside Aya's pussy to the BASE in one snappy thrust. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at Aya's hips, not the shaft. Both full bodies including feet, heads, and faces stay in frame. Rei's face stays readable on Rei behind Aya. Aya's face stays readable on Aya. The join at the hips stays readable. Both stay fully nude. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "aya",
-          "line": "はっ"
+          "line": "あんっ"
         },
         {
           "who": "rei",
-          "line": "うっ"
+          "line": "くっ"
         }
       ],
-      "sfx": "Palm hits, a body sit on linoleum, HVAC",
-      "music": "Bass holds; a taiko hit on the sit-down",
+      "sfx": "Knees on linoleum, a wet join, HVAC",
+      "music": "Bass holds; a taiko hit on the join",
       "hud": {
         "mission": "出口に出る",
         "mission_keyword": "出口",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.9,
         "stamina": 0.32,
         "money": "¥0",
@@ -368,15 +418,43 @@
         "objective_distance": 0.35,
         "icons_active": [],
         "complete": false
+      },
+      "combat_on": {
+        "id": "06-fight",
+        "camera": "Both adults standing in the corridor, full bodies including feet",
+        "action": "A snappy two-second standing flurry at walking-and-hit pace, then one heavy open-hand hit. Rei sits down hard on the linoleum like a ragdoll. Rei stays seated, uninjured, pale, vacant, erect 24cm still up. Aya stays standing. Both stay fully nude. Motion starts at frame one",
+        "extra_loras": [
+          "combat"
+        ],
+        "trigger": "prfight2, prfin1",
+        "physics": true,
+        "steps": 12,
+        "sampler": "euler",
+        "scheduler": "beta",
+        "voices": [
+          {
+            "who": "aya",
+            "line": "はっ"
+          },
+          {
+            "who": "rei",
+            "line": "うっ"
+          }
+        ],
+        "sfx": "Palm hits, a body sit on linoleum, HVAC",
+        "music": "Bass holds; a taiko hit on the sit-down",
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
-      "id": "07-oral",
+      "id": "07-creampie",
       "source": "t2v",
       "still": "stills/06-fight.jpg",
       "trim": {
-        "start": 5.0,
-        "seconds": 5.0
+        "start": 2.5,
+        "seconds": 7.5
       },
       "cast": [
         "aya",
@@ -384,26 +462,33 @@
       ],
       "face_visible": false,
       "extra_loras": [
-        "blowjob"
+        "mystic"
       ],
-      "trigger": "bl0w_j0b",
       "props": [
         "rail"
       ],
-      "place": "The same hospital corridor after Rei sits, grey linoleum",
-      "camera": "Rei seated on the linoleum, Aya kneeling in front",
-      "action": "Aya drops to her knees at once at brisk walking-and-hit pace. Both hands stay on Rei's hips, not the shaft. Aya's mouth already takes the erect 20cm to the BASE. Mouth already wrapped on the 20cm from frame 1. KEEP the lips at the BASE the whole take. The whole erect 20cm stays swallowed; nobody pulls off. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo), not licking; do not lick the shaft. Both look like it feels really good, not blank. Aya stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo, mouth a wet ring at the BASE. Rei stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, uninjured, erect 20cm still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Rei finishes in Aya's mouth at the BASE. Lips stay at the base, heavy-oil-thick WHITE goo at the lips. Brisk real-time. Consensual adult game beat",
+      "place": "The same hospital corridor after the doggy join, grey linoleum",
+      "camera": "Pulled-back side-on. Both full bodies including feet, heads, and faces stay in frame. Aya on all fours, Rei kneeling behind her. Rei's face stays readable on Rei. Then Rei comes around to Aya's face for a kiss and leaves",
+      "action": "They stay joined in doggy on the linoleum, Rei behind Aya. Both full bodies including feet, heads, and faces stay in frame. Rei's face stays readable on Rei behind Aya. Aya's face stays readable on Aya. The join at the hips stays readable. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank, flushed, mouths open, brows knit. Rei finishes inside Aya. Heavy-oil-thick extra-viscous WHITE goo fills the pussy. Both climax: wrecked pleasured orgasm faces, mouths open. Rei pulls the glossy 24cm out. Heavy-oil-thick WHITE goo drips from Aya's pussy in fat slow ropes. Rei comes around in front of Aya's face. A wet french kiss, mouths joined, then Rei leaves the corridor. Aya stays on all fours, WHITE goo still dripping from the pussy. Hands stay at the hips until the pull-out. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "aya",
-          "line": "じゅぽっ"
+          "line": "あんっ"
         },
         {
           "who": "rei",
           "line": "はぁっ"
+        },
+        {
+          "who": "aya",
+          "line": "ちゅっ"
+        },
+        {
+          "who": "rei",
+          "line": "ちゅっ"
         }
       ],
-      "sfx": "Knees on linoleum, wet jupo-jupo mouth, HVAC",
+      "sfx": "Linoleum, a wet join, viscous WHITE goo, a wet kiss, footsteps leaving, HVAC",
       "music": "Bass holds; one taiko hit on the mouth contact",
       "hud": {
         "mission": "出口に出る",
@@ -417,6 +502,32 @@
         "objective_distance": 0.3,
         "icons_active": [],
         "complete": false
+      },
+      "combat_on": {
+        "id": "07-oral",
+        "place": "The same hospital corridor after Rei sits, grey linoleum",
+        "camera": "Rei seated on the linoleum, Aya kneeling in front",
+        "action": "Aya drops to her knees at once at brisk walking-and-hit pace. Both hands stay on Rei's hips, not the shaft. Aya's mouth already takes the erect 24cm to the BASE. Mouth already wrapped on the 24cm from frame 1. KEEP the lips at the BASE. The pale-tan shaft is glossy with thick saliva, wet strings from the lips to the BASE. Deep snappy jupo-jupo: lips a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. Head bobs fast and wet; lips stay at the base or slide a little then return to the base. This is sucking (jupo). Both look like it feels really good, not blank. Aya stays kneeling, flushed, brows knit, eyes half-closed, enjoying the jupo. Rei stays seated, melting with pleasure, head tipped back, mouth open, eyes half-closed, brows knit, a wrecked pleasured receiver face, uninjured, erect 24cm still up. Small soft female moans from both. Faces stay in those spots. Hands stay on hips. Rei climaxes IN Aya's mouth at the BASE. Heavy-oil-thick extra-viscous WHITE goo floods the mouth while lips stay at the BASE. Lips stay at the base, WHITE goo at the lips. Brisk real-time. Consensual adult game beat",
+        "extra_loras": [
+          "blowjob",
+          "mystic"
+        ],
+        "trigger": "bl0w_j0b",
+        "trim": {
+          "start": 5.0,
+          "seconds": 5.0
+        },
+        "voices": [
+          {
+            "who": "aya",
+            "line": "じゅぽっ"
+          },
+          {
+            "who": "rei",
+            "line": "はぁっ"
+          }
+        ],
+        "sfx": "Knees on linoleum, wet jupo-jupo mouth, HVAC"
       }
     },
     {
@@ -428,7 +539,8 @@
         "seconds": 3.0
       },
       "cast": [
-        "aya"
+        "aya",
+        "kana"
       ],
       "face_visible": false,
       "props": [
@@ -436,8 +548,8 @@
         "rail"
       ],
       "place": "The same corridor with a lit open doorway at the far end, grey linoleum, night walls",
-      "camera": "Aya looking toward the lit doorway, full body, corridor depth ahead",
-      "action": "Aya looks down the corridor toward the lit open doorway, fully nude, holding still; the far door is the exit; nobody else is in frame",
+      "camera": "Aya walking the corridor, Kana standing ahead full body, both readable",
+      "action": "Aya stands up dazed from all fours at brisk walking-and-hit pace, fully nude, WHITE goo dripping from her pussy. She walks the corridor toward the lit open doorway. Nude Kana stands ahead in the corridor facing her, imposing stance, glasses on, erect 24cm up. Both stay fully nude. Motion starts at frame one",
       "voices": [
         {
           "who": "aya",
@@ -460,6 +572,13 @@
           "扉"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "cast": [
+          "aya"
+        ],
+        "camera": "Aya looking toward the lit doorway, full body, corridor depth ahead",
+        "action": "Aya looks down the corridor toward the lit open doorway, fully nude, holding still; the far door is the exit; nobody else is in frame. Brisk game-cut timing, motion starts at frame one"
       }
     },
     {
@@ -477,12 +596,12 @@
           "□ 口説く",
           "× 無視"
         ],
-        "selected": 0
+        "selected": 2
       },
       "hud": {
         "mission": "出口に出る",
         "mission_keyword": "出口",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.9,
         "stamina": 0.3,
         "money": "¥0",
@@ -493,10 +612,18 @@
           "扉"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "menu": {
+          "selected": 0
+        },
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
-      "id": "10-lose",
+      "id": "10-kiss",
       "source": "t2v",
       "still": "stills/10-lose.jpg",
       "trim": {
@@ -508,36 +635,29 @@
         "kana"
       ],
       "face_visible": false,
-      "physics": true,
-      "extra_loras": [
-        "combat"
-      ],
-      "trigger": "prfight2, prfin1",
-      "steps": 12,
-      "sampler": "euler",
-      "scheduler": "beta",
+      "extra_loras": [],
       "props": [
         "rail"
       ],
       "place": "The same hospital corridor near the lit doorway, grey linoleum",
-      "camera": "Both adults standing near the lit doorway, full bodies including feet",
-      "action": "A two-second standing flurry at walking-and-hit pace, then Kana lands one heavy open-hand hit. Aya sits down hard on the linoleum like a ragdoll. Kana stays standing, glasses on, erect 20cm, uninjured, pale, vacant. Aya stays seated, uninjured. Both stay fully nude. Aya loses the exchange",
+      "camera": "Kana close to Aya, then Aya on her back on the linoleum, Kana between her legs, the 24cm starting into the pussy",
+      "action": "Kana walks in close at brisk walking-and-hit pace. Deep wet french kiss, mouths joined. Kana pushes Aya onto her back on the linoleum at once. Aya stays on her back, shoulders on the linoleum, looking up. Kana kneels between her legs, glasses on. Mouths leave. Kana lines the erect 24cm at Aya's hairless pussy. The flushed pink-red glans spreads the lips and starts inside. The take lands with the thick shaft going into the pussy, ready for the next join. Both stay fully nude. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "aya",
-          "line": "うっ"
+          "line": "んっ"
         },
         {
           "who": "kana",
-          "line": "はっ"
+          "line": "ちゅっ"
         }
       ],
-      "sfx": "Palm hits, a body sit on linoleum, HVAC",
-      "music": "A short synth stab on the hit, then the bass",
+      "sfx": "A wet kiss, a body down on linoleum, HVAC",
+      "music": "A short synth stab on the kiss, then the bass",
       "hud": {
         "mission": "出口に出る",
         "mission_keyword": "出口",
-        "hint": "△ 戦い",
+        "hint": "□ 口説く",
         "health": 0.88,
         "stamina": 0.16,
         "money": "¥0",
@@ -546,6 +666,34 @@
         "objective_distance": 0.12,
         "icons_active": [],
         "complete": false
+      },
+      "combat_on": {
+        "id": "10-lose",
+        "camera": "Both adults standing near the lit doorway, full bodies including feet",
+        "action": "A snappy two-second standing flurry at walking-and-hit pace, then Kana lands one heavy open-hand hit. Aya sits down hard on the linoleum like a ragdoll. Kana stays standing, glasses on, erect 24cm, uninjured, pale, vacant. Aya stays seated, uninjured. Both stay fully nude. Aya loses the exchange. Motion starts at frame one",
+        "extra_loras": [
+          "combat"
+        ],
+        "trigger": "prfight2, prfin1",
+        "physics": true,
+        "steps": 12,
+        "sampler": "euler",
+        "scheduler": "beta",
+        "voices": [
+          {
+            "who": "aya",
+            "line": "うっ"
+          },
+          {
+            "who": "kana",
+            "line": "はっ"
+          }
+        ],
+        "sfx": "Palm hits, a body sit on linoleum, HVAC",
+        "music": "A short synth stab on the hit, then the bass",
+        "hud": {
+          "hint": "△ 戦い"
+        }
       }
     },
     {
@@ -561,12 +709,15 @@
         "kana"
       ],
       "face_visible": false,
+      "extra_loras": [
+        "mystic"
+      ],
       "props": [
         "door"
       ],
-      "place": "The same corridor carpet of linoleum, Aya on her back, the lit doorway behind Kana",
+      "place": "The same corridor linoleum after Aya is on her back, the lit doorway behind Kana",
       "camera": "Aya on her back on the linoleum, Kana kneeling between her legs",
-      "action": "Kana kneels between Aya's legs at once at brisk walking-and-hit pace. Missionary. The erect 20cm goes inside Aya to the base in one snappy thrust. Hips keep a brisk walking-and-hit rhythm. Aya on her back, Kana on top, joined at the hips, glasses on. Both stay fully nude. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Brisk real-time. Consensual adult game beat",
+      "action": "Kana stays kneeling between Aya's legs. Missionary. Aya stays on her back the whole take, shoulders on the linoleum, looking up. Kana on top, joined at the hips, glasses on. The erect 24cm is already inside Aya to the BASE. Hips keep a snappy real-time game rhythm. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Kana finishes inside Aya. Heavy-oil-thick WHITE goo stays in the pussy, still joined. Brisk real-time. Consensual adult game beat",
       "voices": [
         {
           "who": "aya",
@@ -593,6 +744,13 @@
           "扉"
         ],
         "complete": false
+      },
+      "combat_on": {
+        "place": "The same corridor linoleum after Aya sits, the lit doorway behind Kana",
+        "action": "Kana kneels between Aya's legs at once at brisk walking-and-hit pace. Missionary. Aya stays on her back the whole take, shoulders on the linoleum, looking up. The erect 24cm goes inside Aya to the BASE in one snappy thrust. Hips keep a snappy real-time game rhythm. Kana on top, joined at the hips, glasses on. Both stay fully nude. Both look like it feels really good, not blank. Flushed, mouths open, brows knit, hips moving. Small soft female moans from both. Hands stay at the hips of the same pin. Each face stays on its own body over the join. Brisk real-time. Consensual adult game beat",
+        "extra_loras": [
+          "mystic"
+        ]
       }
     },
     {
@@ -608,13 +766,16 @@
         "kana"
       ],
       "face_visible": false,
+      "extra_loras": [
+        "mystic"
+      ],
       "props": [
         "door",
         "rail"
       ],
       "place": "The same join, sliding toward the lit open doorway at the far end of the corridor",
       "camera": "Still joined, sliding toward the lit doorway, both full bodies",
-      "action": "They stay joined in missionary and slide toward the lit open doorway at brisk walking-and-hit pace, still joined, Aya on her back, Kana on top, the open doorway behind them; both look like it feels really good, not blank, flushed, mouths open, brows knit; small soft female moans from both; hands stay at the hips; each face stays on its own body over the join; Aya has left the building. Brisk real-time",
+      "action": "They stay joined in missionary and slide toward the lit open doorway at brisk walking-and-hit pace, still joined. Aya stays on her back the whole take, shoulders on the linoleum, looking up, Kana on top, glasses on, the open doorway behind them. WHITE goo stays in the pussy. Both look like it feels really good, not blank, flushed, mouths open, brows knit; small soft female moans from both; hands stay at the hips; each face stays on its own body over the join; Aya has left the building. Brisk real-time",
       "voices": [
         {
           "who": "aya",
@@ -641,6 +802,12 @@
           "出"
         ],
         "complete": true
+      },
+      "combat_on": {
+        "action": "They stay joined in missionary and slide toward the lit open doorway at brisk walking-and-hit pace, still joined. Aya stays on her back the whole take, shoulders on the linoleum, looking up, Kana on top, glasses on, the open doorway behind them. Both look like it feels really good, not blank, flushed, mouths open, brows knit; small soft female moans from both; hands stay at the hips; each face stays on its own body over the join; Aya has left the building. Brisk real-time",
+        "extra_loras": [
+          "mystic"
+        ]
       }
     }
   ]
