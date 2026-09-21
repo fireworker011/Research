@@ -674,6 +674,7 @@ def _kasumi_adult_cast(ep):
     assert ep["cast"]["aoki"]["age"] == 27
     assert ep["cast"]["kuroki"]["age"] == 29
     assert "C-cup" in ep["cast"]["mio"]["lock"] and "slim" in ep["cast"]["mio"]["lock"]
+    assert "tote" not in ep["cast"]["mio"]["lock"].lower()
     assert "D-cup" in ep["cast"]["nana"]["lock"] and "futanari" in ep["cast"]["nana"]["lock"]
     assert "E-cup" in ep["cast"]["aoki"]["lock"] and "slim" in ep["cast"]["aoki"]["lock"]
     assert "E-cup" in ep["cast"]["kuroki"]["lock"] and "slim" in ep["cast"]["kuroki"]["lock"]
@@ -721,10 +722,16 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     doggy_prompt = build_beat_prompt(ep, doggy, trigger=merge_trigger("", doggy))
     assert "prfight2" not in doggy_prompt
     assert "doggy" in doggy_prompt.lower()
+    assert "tote" not in doggy_prompt.lower()
+    assert "full bodies" in doggy_prompt.lower()
+    assert "including feet" in doggy_prompt.lower()
+    assert "turned down" in doggy_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(doggy, doggy_prompt)
     cream = next(b for b in ep["beats"] if b["id"] == "07-creampie")
     cream_prompt = build_beat_prompt(ep, cream)
     assert "prfight2" not in cream_prompt
+    assert "tote" not in cream_prompt.lower()
+    assert "full bodies" in cream_prompt.lower()
     assert "finishes inside" in cream_prompt.lower() or "white goo" in cream_prompt.lower()
     _assert_sex_beat_both_pleasure_no_extra_kiss(cream, cream_prompt)
     jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")
