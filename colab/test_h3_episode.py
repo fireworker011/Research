@@ -1158,6 +1158,11 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "alluring" in raw["cast"]["shino"]["lock"] and "stoop" in raw["cast"]["shino"]["lock"]
     assert "reptile tongue" in raw["cast"]["shino"]["lock"]
     assert "pale gray-white" in raw["cast"]["shino"]["lock"]
+    shino_lock = raw["cast"]["shino"]["lock"].lower()
+    assert "front of the groin" in shino_lock
+    assert "pointing forward and up" in shino_lock
+    assert "buttocks stay bare" in shino_lock
+    assert "not purple" in shino_lock
     assert "not pale-tan flesh" in raw["cast"]["shino"]["lock"]
     assert "pale-tan skin" not in raw["cast"]["shino"]["lock"]
     assert "rotting" in raw["cast"]["shino"]["lock"]
@@ -1566,6 +1571,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "mouth is at aya's mouth height" in ten_low
     assert "french kiss" in ten_low
     assert "eager excited expectation" in ten_low
+    assert "front groin" in ten_low
+    assert "points forward" in ten_low
+    assert "buttocks stay bare" in ten_low
+    assert "not purple" in ten_low
     assert "walks forward toward shino" not in ten_low
     assert beat_clip_seconds(invite, ten) == 6.0
 
@@ -2024,6 +2033,30 @@ def test_hospital_chain_keeps_same_cast_acts():
     tin = next(b for b in toilet["beats"] if b["id"] == "04-toilet-in")
     assert tin.get("connect") == "t2v"
     assert beat_source(tin) == "t2v"
+
+    # Same cast stays I2V. T2V is only the first shot, a new person, or an authored room lock.
+    sweeps = [
+        dict(story_override="受け入れる"),
+        dict(story_override="誘う", invite_pose_override="騎乗位"),
+        dict(story_override="誘う", invite_pose_override="四つん這い股広げ"),
+        dict(story_override="回避"),
+        dict(story_override="戦って勝つ"),
+        dict(story_override="受け入れる", gin_override="犯す", tsuno_override="受け入れる立ちバック", toilet_override="tentacle"),
+    ]
+    for kw in sweeps:
+        ep = prepare_episode(raw, connect_override="chain", **kw)
+        prev: set[str] = set()
+        first = True
+        for beat in ep["beats"]:
+            if is_ui_beat(beat):
+                continue
+            cast = {str(c) for c in (beat.get("cast") or [])}
+            added = cast - prev
+            locked = str(beat.get("connect") or "").strip().lower() in ("t2v", "cut", "off")
+            if beat_source(beat) == "t2v" and not first and not added and not locked:
+                raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
+            first = False
+            prev = cast
 
 
 def test_hospital_end_connect_is_runtime_selectable():
