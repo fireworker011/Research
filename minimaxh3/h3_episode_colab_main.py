@@ -13,6 +13,8 @@ Env:
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
   H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle（日本語: 行かない / 小便 / オナニー / 触手。病棟の道中）
+  H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
+  H3_EPISODE_TSUNO    off | accept_stand | invite_stand（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック。病棟の追加）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
@@ -71,6 +73,8 @@ def main() -> int:
             story_override=(os.environ.get("H3_EPISODE_STORY") or "").strip() or None,
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
+            gin_override=(os.environ.get("H3_EPISODE_GIN") or "").strip() or None,
+            tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,
             appear_override=(os.environ.get("H3_EPISODE_APPEAR") or "").strip() or None,
             scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
         )

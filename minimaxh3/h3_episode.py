@@ -102,6 +102,8 @@ from h3_episode_packs import (
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
     FIGHT_STORIES,
+    GIN_MODES,
+    GIN_OVERLAY_KEYS,
     HOSPITAL_ENCOUNTERS,
     INVITE_POSE_MODES,
     INVITE_POSE_OVERLAY_KEYS,
@@ -111,13 +113,17 @@ from h3_episode_packs import (
     STORY_OVERLAY_KEYS,
     TOILET_MODES,
     TOILET_OVERLAY_KEYS,
+    TSUNO_MODES,
+    TSUNO_OVERLAY_KEYS,
     canonical_camera,
     canonical_combat,
     canonical_connect,
+    canonical_gin,
     canonical_invite_pose,
     canonical_preset,
     canonical_story,
     canonical_toilet,
+    canonical_tsuno,
     describe_run,
     expand_presets,
     parse_appear,
@@ -138,7 +144,7 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 }
 # GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
-MAX_BEATS = 12
+MAX_BEATS = 40
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
 STILL_AS = ("first", "last", "both")
@@ -199,7 +205,17 @@ COMBAT_ROUTE_KEY = "combat_on"
 STORY_ROUTE_KEYS = tuple(STORY_OVERLAY_KEYS.values())
 INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())
 TOILET_ROUTE_KEYS = tuple(TOILET_OVERLAY_KEYS.values())
-ROUTE_OVERLAY_KEYS = STORY_ROUTE_KEYS + INVITE_POSE_ROUTE_KEYS + TOILET_ROUTE_KEYS
+GIN_ROUTE_KEYS = tuple(GIN_OVERLAY_KEYS.values())
+TSUNO_ROUTE_KEYS = tuple(TSUNO_OVERLAY_KEYS.values())
+ROUTE_OVERLAY_KEYS = (
+    STORY_ROUTE_KEYS
+    + INVITE_POSE_ROUTE_KEYS
+    + TOILET_ROUTE_KEYS
+    + GIN_ROUTE_KEYS
+    + TSUNO_ROUTE_KEYS
+)
+OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
+CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
@@ -437,6 +453,28 @@ def episode_toilet(ep: dict[str, Any], override: str | None = None) -> str:
     name = canonical_toilet(raw)
     if name not in TOILET_MODES:
         raise EpisodeError(f"render.toilet must be one of {list(TOILET_MODES)}")
+    return name
+
+
+def episode_gin(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / taken / fuck / invite_doggy. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("gin") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_gin(raw)
+    if name not in GIN_MODES:
+        raise EpisodeError(f"render.gin must be one of {list(GIN_MODES)}")
+    return name
+
+
+def episode_tsuno(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / accept_stand / invite_stand. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("tsuno") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_tsuno(raw)
+    if name not in TSUNO_MODES:
+        raise EpisodeError(f"render.tsuno must be one of {list(TSUNO_MODES)}")
     return name
 
 
@@ -933,6 +971,12 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if beat.get("reuse"):
             gpu_seen += 1
             continue
+        locked = str(beat.get("connect") or "").strip().lower()
+        if locked in CONNECT_LOCKS:
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+            gpu_seen += 1
+            continue
         if name == "t2v":
             beat["source"] = "t2v"
             beat.pop("still_as", None)
@@ -968,9 +1012,39 @@ def _has_combat_overlays(ep: dict[str, Any]) -> bool:
 
 def _has_story_overlays(ep: dict[str, Any]) -> bool:
     return any(
-        isinstance(b, dict) and any(isinstance(b.get(key), dict) for key in STORY_ROUTE_KEYS)
+        isinstance(b, dict) and any(_is_overlay_payload(b.get(key)) for key in STORY_ROUTE_KEYS)
         for b in (ep.get("beats") or [])
     )
+
+
+def _is_overlay_payload(value: Any) -> bool:
+    if isinstance(value, dict):
+        return True
+    return isinstance(value, list) and any(isinstance(item, dict) for item in value)
+
+
+def _expand_overlay(body: dict[str, Any], chosen: Any) -> list[dict[str, Any]]:
+    """Dict overlay merges into one beat. List overlay replaces that beat with many."""
+    if isinstance(chosen, list):
+        out: list[dict[str, Any]] = []
+        for item in chosen:
+            if isinstance(item, dict):
+                out.append(_merge_route_overlay(body, item))
+        return out or [body]
+    if isinstance(chosen, dict):
+        return [_merge_route_overlay(body, chosen)]
+    return [body]
+
+
+def _honor_beat_connect(ep: dict[str, Any]) -> dict[str, Any]:
+    """Walk/vanish beats stay T2V even when the episode connect is chain."""
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat):
+            continue
+        if str(beat.get("connect") or "").strip().lower() in CONNECT_LOCKS:
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+    return ep
 
 
 def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
@@ -1080,14 +1154,10 @@ def apply_story_route(
         enc = str(beat.get("encounter") or "")
         local = stories.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
         overlay_field = STORY_OVERLAY_KEYS.get(local)
-        body = dict(beat)
-        chosen = body.pop(overlay_field, None) if overlay_field else None
-        for other in STORY_ROUTE_KEYS:
-            body.pop(other, None)
+        chosen = beat.get(overlay_field) if overlay_field else None
+        body = _pop_overlay_keys(beat, STORY_ROUTE_KEYS)
         body.pop(COMBAT_ROUTE_KEY, None)
-        if isinstance(chosen, dict):
-            body = _merge_route_overlay(body, chosen)
-        beats.append(body)
+        beats.extend(_expand_overlay(body, chosen))
     out["beats"] = beats
     render = dict(out.get("render") or {})
     render["story"] = key
@@ -1123,12 +1193,9 @@ def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[st
         local_story = stories.get(enc, global_story) if enc in HOSPITAL_ENCOUNTERS else global_story
         local_pose = poses.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
         field = INVITE_POSE_OVERLAY_KEYS.get(local_pose) if local_story == "invite" else None
-        body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
         chosen = beat.get(field) if field else None
-        if isinstance(chosen, dict):
-            body = _merge_route_overlay(body, chosen)
-            body = _pop_overlay_keys(body, INVITE_POSE_ROUTE_KEYS)
-        beats.append(body)
+        body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
+        beats.extend(_expand_overlay(body, chosen))
     out["beats"] = beats
     render = dict(out.get("render") or {})
     render["invite_pose"] = key
@@ -1152,14 +1219,65 @@ def apply_toilet_route(ep: dict[str, Any], *, toilet: str | None = None) -> dict
             continue
         body = _pop_overlay_keys(beat, TOILET_ROUTE_KEYS)
         chosen = beat.get(field) if field else None
-        if isinstance(chosen, dict):
-            body = _merge_route_overlay(body, chosen)
-            body = _pop_overlay_keys(body, TOILET_ROUTE_KEYS)
-            body["encounter"] = "toilet"
-        beats.append(body)
+        if _is_overlay_payload(chosen):
+            expanded = _expand_overlay(body, chosen)
+            for item in expanded:
+                item["encounter"] = "toilet"
+                item.pop("on_invite", None)
+            beats.extend(expanded)
+        else:
+            beats.append(body)
     out["beats"] = beats
     render = dict(out.get("render") or {})
     render["toilet"] = key
+    out["render"] = render
+    return out
+
+
+def apply_optional_events(
+    ep: dict[str, Any],
+    *,
+    gin: str | None = None,
+    tsuno: str | None = None,
+) -> dict[str, Any]:
+    """Insert Colab 8/9 ashen-infected beats. Off drops the marker beats."""
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if gin not in (None, ""):
+        render["gin"] = canonical_gin(gin) or gin
+        out["render"] = render
+    if tsuno not in (None, ""):
+        render["tsuno"] = canonical_tsuno(tsuno) or tsuno
+        out["render"] = render
+    gin_key = episode_gin(out) or "off"
+    tsuno_key = episode_tsuno(out) or "off"
+    gin_field = GIN_OVERLAY_KEYS.get(gin_key)
+    tsuno_field = TSUNO_OVERLAY_KEYS.get(tsuno_key)
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        enc = str(beat.get("encounter") or "")
+        if enc == "gin":
+            chosen = beat.get(gin_field) if gin_field else None
+            body = _pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS)
+            if not _is_overlay_payload(chosen):
+                continue
+            beats.extend(_expand_overlay(body, chosen))
+            continue
+        if enc == "tsuno":
+            chosen = beat.get(tsuno_field) if tsuno_field else None
+            body = _pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS)
+            if not _is_overlay_payload(chosen):
+                continue
+            beats.extend(_expand_overlay(body, chosen))
+            continue
+        beats.append(_pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS))
+    out["beats"] = beats
+    render = dict(out.get("render") or {})
+    render["gin"] = gin_key
+    render["tsuno"] = tsuno_key
     out["render"] = render
     return out
 
@@ -1183,7 +1301,7 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
             beats.append(beat)
             continue
         enc = str(beat.get("encounter") or "")
-        if enc and enc != "toilet" and enc in skipped:
+        if enc and enc not in OPTIONAL_ENCOUNTERS and enc in skipped:
             continue
         beats.append(beat)
     if not beats:
@@ -1215,13 +1333,16 @@ def resolve_episode_options(
     story: str | None = None,
     pose: str | None = None,
     toilet: str | None = None,
+    gin: str | None = None,
+    tsuno: str | None = None,
     appear: str | dict[str, Any] | None = None,
     scenes: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Story + invite pose + toilet + appear + per-scene, without connect/combat Colab wiring."""
+    """Story + invite pose + toilet + optional events + appear + per-scene, without connect/combat Colab wiring."""
     out = apply_story_route(ep, story=story, scenes=scenes) if _has_story_overlays(ep) else copy.deepcopy(ep)
     out = apply_invite_pose(out, pose=pose)
     out = apply_toilet_route(out, toilet=toilet)
+    out = apply_optional_events(out, gin=gin, tsuno=tsuno)
     return apply_appear_route(out, appear=appear)
 
 
@@ -1235,6 +1356,8 @@ def prepare_episode(
     story_override: str | None = None,
     invite_pose_override: str | None = None,
     toilet_override: str | None = None,
+    gin_override: str | None = None,
+    tsuno_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -1256,6 +1379,10 @@ def prepare_episode(
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
     if toilet_override not in (None, ""):
         render["toilet"] = canonical_toilet(toilet_override) or toilet_override
+    if gin_override not in (None, ""):
+        render["gin"] = canonical_gin(gin_override) or gin_override
+    if tsuno_override not in (None, ""):
+        render["tsuno"] = canonical_tsuno(tsuno_override) or tsuno_override
     if appear_override not in (None, ""):
         render["appear"] = parse_appear(appear_override)
     if scenes_override not in (None, ""):
@@ -1267,7 +1394,9 @@ def prepare_episode(
         out = apply_combat_route(out)
     out = apply_invite_pose(out, pose=invite_pose_override)
     out = apply_toilet_route(out, toilet=toilet_override)
-    return apply_appear_route(out, appear=appear_override)
+    out = apply_optional_events(out, gin=gin_override, tsuno=tsuno_override)
+    out = apply_appear_route(out, appear=appear_override)
+    return _honor_beat_connect(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -1666,6 +1795,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         _check("scenes-shino-invite", story="accept", scenes="shino=invite_all_fours")
         _check("scenes-mixed-ending", story="invite", scenes="shino=evade")
         _check("scenes-fight-ignore", story="fight_win", scenes="miki=evade,rei=accept,kana=invite,shino=evade")
+        _check("gin-taken", story="accept", gin="taken")
+        _check("gin-fuck", story="accept", gin="fuck")
+        _check("gin-invite-doggy", story="invite", gin="invite_doggy")
+        _check("tsuno-accept", story="accept", tsuno="accept_stand")
+        _check("tsuno-invite", story="invite", tsuno="invite_stand")
         return errs
     if _has_combat_overlays(ep):
         errs: list[str] = []
@@ -1717,6 +1851,16 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         story_key = canonical_story(story)
         if story_key not in STORY_MODES:
             errs.append(f"render.story must be one of {list(STORY_MODES)}")
+    gin = str(render.get("gin") or "").strip()
+    if gin:
+        gin_key = canonical_gin(gin)
+        if gin_key not in GIN_MODES:
+            errs.append(f"render.gin must be one of {list(GIN_MODES)}")
+    tsuno = str(render.get("tsuno") or "").strip()
+    if tsuno:
+        tsuno_key = canonical_tsuno(tsuno)
+        if tsuno_key not in TSUNO_MODES:
+            errs.append(f"render.tsuno must be one of {list(TSUNO_MODES)}")
     errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
@@ -1808,6 +1952,22 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         for cid in beat.get("cast") or []:
             if cid not in cast:
                 errs.append(f"{where}: unknown cast id {cid}")
+        beat_locks = beat.get("cast_lock")
+        if beat_locks is not None:
+            if not isinstance(beat_locks, dict):
+                errs.append(f"{where}: cast_lock must be an object")
+            else:
+                shown = {str(cid) for cid in (beat.get("cast") or [])}
+                for cid, lock in beat_locks.items():
+                    if str(cid) not in shown:
+                        errs.append(f"{where}: cast_lock.{cid} is not in this beat's cast")
+                    text = str(lock or "")
+                    if not text.strip():
+                        errs.append(f"{where}: cast_lock.{cid} missing")
+                    elif CJK_RE.search(text):
+                        errs.append(f"{where}: cast_lock.{cid} must be English")
+                    elif STUDIO_I2V_MINOR_RE.search(text) or CAST_UNDERAGE_RE.search(text):
+                        errs.append(f"{where}: cast_lock.{cid} must describe an adult")
         if "props" in beat:
             if not isinstance(beat.get("props"), list):
                 errs.append(f"{where}: props must be a list of keys from the episode props")
@@ -1951,11 +2111,12 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
 
 def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
+    beat_locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
     lines: list[str] = []
     for cid in beat.get("cast") or []:
         c = cast.get(cid) or {}
         name = str(c.get("name_en") or cid.title())
-        lock = str(c.get("lock") or "").strip().rstrip(".")
+        lock = str(beat_locks.get(cid) or c.get("lock") or "").strip().rstrip(".")
         lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
     return "\n".join(lines)
 
@@ -3128,6 +3289,8 @@ def run_episode(
     story_override: str | None = None,
     invite_pose_override: str | None = None,
     toilet_override: str | None = None,
+    gin_override: str | None = None,
+    tsuno_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
     port: int = PORT,
@@ -3147,6 +3310,8 @@ def run_episode(
         story_override=story_override,
         invite_pose_override=invite_pose_override,
         toilet_override=toilet_override,
+        gin_override=gin_override,
+        tsuno_override=tsuno_override,
         appear_override=appear_override,
         scenes_override=scenes_override,
     )
@@ -3159,6 +3324,8 @@ def run_episode(
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
             toilet=episode_toilet(ep),
+            gin=episode_gin(ep),
+            tsuno=episode_tsuno(ep),
             appear=episode_appear(ep),
             scenes=(ep.get("render") or {}).get("scenes"),
             episode=str(ep.get("slug") or ""),
@@ -3400,7 +3567,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--appear LIST] [--scenes LIST]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--appear LIST] [--scenes LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -3413,6 +3580,8 @@ def _usage() -> str:
         "  --story accept|invite|evade|fight_win|fight_lose（病棟の構成。迷ったら accept）\n"
         "  --invite-pose all_fours|m_open|ride（病棟の誘うポーズ。迷ったら all_fours）\n"
         "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
+        "  --gin off|taken|fuck|invite_doggy（病棟の灰色オプション。迷ったら off）\n"
+        "  --tsuno off|accept_stand|invite_stand（病棟の角オプション。迷ったら off）\n"
         "  --appear miki,rei,kana,shino（病棟の登場。外した名前はシーンごと飛ばす）\n"
         "  --scenes miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）\n"
     )
@@ -3441,6 +3610,8 @@ def main(argv: list[str] | None = None) -> int:
     story = None
     invite_pose = None
     toilet = None
+    gin = None
+    tsuno = None
     appear = None
     scenes = None
     if "--out" in opts:
@@ -3459,6 +3630,10 @@ def main(argv: list[str] | None = None) -> int:
         invite_pose = opts[opts.index("--invite-pose") + 1]
     if "--toilet" in opts:
         toilet = opts[opts.index("--toilet") + 1]
+    if "--gin" in opts:
+        gin = opts[opts.index("--gin") + 1]
+    if "--tsuno" in opts:
+        tsuno = opts[opts.index("--tsuno") + 1]
     if "--appear" in opts:
         appear = opts[opts.index("--appear") + 1]
     if "--scenes" in opts:
@@ -3474,6 +3649,8 @@ def main(argv: list[str] | None = None) -> int:
         story_override=story,
         invite_pose_override=invite_pose,
         toilet_override=toilet,
+        gin_override=gin,
+        tsuno_override=tsuno,
         appear_override=appear,
         scenes_override=scenes,
     )

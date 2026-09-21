@@ -26,19 +26,23 @@ from h3_episode_packs import (  # noqa: E402
     CAMERA_ALIASES,
     COMBAT_ALIASES,
     CONNECT_ALIASES,
+    GIN_ALIASES,
+    GIN_MODES,
     INVITE_POSE_ALIASES,
     INVITE_POSE_MODES,
     STORY_ALIASES,
     STORY_MODES,
     TOILET_ALIASES,
     TOILET_MODES,
+    TSUNO_ALIASES,
+    TSUNO_MODES,
 )
 
 DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", appear: str = "", scenes: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -55,6 +59,8 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE_STORY'] = {story!r}\n"
         f"os.environ['H3_EPISODE_INVITE_POSE'] = {invite_pose!r}\n"
         f"os.environ['H3_EPISODE_TOILET'] = {toilet!r}\n"
+        f"os.environ['H3_EPISODE_GIN'] = {gin!r}\n"
+        f"os.environ['H3_EPISODE_TSUNO'] = {tsuno!r}\n"
         f"os.environ['H3_EPISODE_APPEAR'] = {appear!r}\n"
         f"os.environ['H3_EPISODE_SCENES'] = {scenes!r}\n"
         f"os.environ['H3_EPISODE_FRESH'] = {('1' if fresh else '0')!r}\n"
@@ -89,6 +95,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--story", default="", choices=["", *STORY_MODES, *STORY_ALIASES], help="構成: accept / invite / evade / fight_win / fight_lose（病棟。迷ったら accept）")
     p.add_argument("--invite-pose", default="", choices=["", *INVITE_POSE_MODES, *INVITE_POSE_ALIASES], help="誘うポーズ: all_fours / m_open / ride（病棟。迷ったら all_fours）")
     p.add_argument("--toilet", default="", choices=["", *TOILET_MODES, *TOILET_ALIASES], help="道中トイレ: off / pee / masturbate / tentacle（病棟。迷ったら off）")
+    p.add_argument("--gin", default="", choices=["", *GIN_MODES, *GIN_ALIASES], help="灰色オプション: off / taken / fuck / invite_doggy（病棟。迷ったら off）")
+    p.add_argument("--tsuno", default="", choices=["", *TSUNO_MODES, *TSUNO_ALIASES], help="角オプション: off / accept_stand / invite_stand（病棟。迷ったら off）")
     p.add_argument("--appear", default="", help="登場: miki,rei,kana,shino（病棟。外すとその人を飛ばす）")
     p.add_argument("--scenes", default="", help="シーンごと: miki=evade,rei=invite_ride,...（病棟。inherit は 5番。戦い構成は無視）")
     p.add_argument("--fresh", action="store_true", help="re-render beats that already have raw clips")
@@ -113,6 +121,8 @@ def main(argv: list[str] | None = None) -> int:
         story=args.story,
         invite_pose=getattr(args, "invite_pose", ""),
         toilet=args.toilet,
+        gin=args.gin,
+        tsuno=args.tsuno,
         appear=args.appear,
         scenes=args.scenes,
     )

@@ -24,7 +24,7 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：話と上から 1〜7、登場とシーンを選んで Run all（迷ったらそのまま）
+CELL = r'''#@title 一発：話と上から 1〜9、登場とシーンを選んで Run all（迷ったらそのまま）
 __EPISODE_HELP__
 EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
@@ -42,6 +42,10 @@ __POSE_HELP__
 INVITE_POSE = __POSE_DEFAULT__  #@param __POSE_CHOICES__
 __TOILET_HELP__
 TOILET = __TOILET_DEFAULT__  #@param __TOILET_CHOICES__
+__GIN_HELP__
+GIN = __GIN_DEFAULT__  #@param __GIN_CHOICES__
+__TSUNO_HELP__
+TSUNO = __TSUNO_DEFAULT__  #@param __TSUNO_CHOICES__
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
@@ -78,6 +82,8 @@ os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_TOILET"] = TOILET
+os.environ["H3_EPISODE_GIN"] = GIN
+os.environ["H3_EPISODE_TSUNO"] = TSUNO
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -144,7 +150,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったら停止。
 
-## 話 + 上から 7 つ + 病棟の追加（迷ったらそのまま）
+## 話 + 上から 9 つ + 病棟の追加（迷ったらそのまま）
 
 **話** — どの予告を描くか
 
@@ -177,6 +183,14 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 **7. トイレ** — 病棟の道中。どれを選んでも次のシーンへ。霞東は無視
 
 {form_readme("toilet")}
+
+**8. 灰色の長い舌** — 病棟の追加オプション。出ないが既定。霞東は無視
+
+{form_readme("gin")}
+
+**9. 角の頭** — 病棟の追加オプション。立ちバックのみ。出ないが既定。霞東は無視
+
+{form_readme("tsuno")}
 
 登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。
 
@@ -228,6 +242,12 @@ def make_nb() -> dict:
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 病棟の道中。どれでも次へ"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
+        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))
+        .replace("__GIN_DEFAULT__", json.dumps(ui_default("gin"), ensure_ascii=False))
+        .replace("__GIN_CHOICES__", json.dumps(ui_choices("gin"), ensure_ascii=False))
+        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。立ちバックのみ"))
+        .replace("__TSUNO_DEFAULT__", json.dumps(ui_default("tsuno"), ensure_ascii=False))
+        .replace("__TSUNO_CHOICES__", json.dumps(ui_choices("tsuno"), ensure_ascii=False))
         .replace("__SCENE_DEFAULT__", json.dumps(ui_default("scene"), ensure_ascii=False))
         .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
     )

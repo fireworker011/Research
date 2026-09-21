@@ -261,6 +261,7 @@ STORY_MODES: dict[str, dict[str, Any]] = {
 }
 
 STORY_OVERLAY_KEYS: dict[str, str] = {
+    "accept": "on_accept",
     "invite": "on_invite",
     "evade": "on_evade",
     "fight_win": "on_fight_win",
@@ -292,21 +293,21 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "all_fours": {
         "label_ja": "四つん這い",
         "choice_ja": "四つん這い股広げ（迷ったらこれ）",
-        "when_ja": "その場で四つん這い、股を広げて誘う",
-        "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる",
+        "when_ja": "四つん這いで誘う。挿入根元→パコ中出し→歩きの3本",
+        "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる。終わりはあや一人歩き",
         "recommend": True,
     },
     "m_open": {
         "label_ja": "M字",
         "choice_ja": "M字開脚仰向け",
-        "when_ja": "仰向けでM字に開いて誘う",
-        "hint_ja": "あやが仰向けM字。相手が前から入る",
+        "when_ja": "仰向けM字。根元まで入れてからパコ中出し→歩きの3本",
+        "hint_ja": "あやが仰向けM字。先に根本まで入れてからパコ。終わりはあや一人歩き",
     },
     "ride": {
         "label_ja": "騎乗位",
         "choice_ja": "ベロチュー→じゅぼ→騎乗位",
-        "when_ja": "笑って抱きつき、ベロチュー、じゅぼ、押し倒して騎乗位",
-        "hint_ja": "濃い誘う。みきもふたなり。じゅぼのあと押し倒して乗る",
+        "when_ja": "出会いでベロチュー。行為はじゅぼ→騎乗→中出し→歩きの4本",
+        "hint_ja": "濃い誘う。みきもふたなり。じゅぼのあと乗せて中出し。終わりはあや一人歩き",
     },
 }
 
@@ -345,20 +346,20 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
     "pee": {
         "label_ja": "小便",
         "choice_ja": "トイレ・小便",
-        "when_ja": "汚い多目的トイレの洋式に座って小便。どれでも次へ",
-        "hint_ja": "洋式に座って小便。次はれい（または次の登場）",
+        "when_ja": "歩いて座り、小便、立って歩く。どれでも次へ",
+        "hint_ja": "入室して座る→小便→立って歩く。次はれい（または次の登場）",
     },
     "masturbate": {
         "label_ja": "オナニー",
         "choice_ja": "トイレ・オナニー",
-        "when_ja": "同じ便座でオナニー。どれでも次へ",
-        "hint_ja": "洋式に座ってオナニー。次へ進む",
+        "when_ja": "歩いて座り、オナニー、立って歩く。どれでも次へ",
+        "hint_ja": "入室して座る→オナニー→立って歩く。次へ進む",
     },
     "tentacle": {
         "label_ja": "触手",
         "choice_ja": "トイレ・触手",
-        "when_ja": "便器から出た触手がマンコと肛門。どれでも次へ",
-        "hint_ja": "触手がマンコと肛門。次へ進む",
+        "when_ja": "歩いて座り、触手、中出し、立って歩く。どれでも次へ",
+        "hint_ja": "入室して座る→触手→液体中出し→立って歩く",
     },
 }
 
@@ -381,6 +382,98 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "onanii": "masturbate",
         "触手": "tentacle",
         "tentacles": "tentacle",
+    },
+)
+
+# Optional ashen infected (Colab 8). Default off. Not in appear-all.
+GIN_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "出ない",
+        "choice_ja": "灰色・出ない（迷ったらこれ）",
+        "when_ja": "灰色の長い舌は出さない",
+        "hint_ja": "迷ったらこれ。追加イベントなし",
+        "recommend": True,
+    },
+    "taken": {
+        "label_ja": "犯される",
+        "choice_ja": "灰色・犯される（騎乗）",
+        "when_ja": "長い舌がクリを24cmに。ベロチュー→じゅぼ→騎乗。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "あやが24cmを生やされて騎乗される。終わりは完全消滅",
+    },
+    "fuck": {
+        "label_ja": "犯す",
+        "choice_ja": "灰色・犯す（正常位）",
+        "when_ja": "長い舌がクリを24cmに。あやが正常位で犯す。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "あやが24cmで正常位。根元まで入れてからパコ。終わりは完全消滅",
+    },
+    "invite_doggy": {
+        "label_ja": "誘う後背",
+        "choice_ja": "灰色・誘う後背",
+        "when_ja": "長い舌がクリを24cmに。四つん這いで誘われて後ろから。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "我慢できない顔で後ろから。終わりは完全消滅",
+    },
+}
+
+GIN_OVERLAY_KEYS: dict[str, str] = {
+    "taken": "on_gin_taken",
+    "fuck": "on_gin_fuck",
+    "invite_doggy": "on_gin_invite_doggy",
+}
+
+GIN_ALIASES: dict[str, str] = _label_aliases(
+    GIN_MODES,
+    {
+        "出ない": "off",
+        "なし": "off",
+        "skip": "off",
+        "犯される": "taken",
+        "騎乗": "taken",
+        "犯す": "fuck",
+        "正常位": "fuck",
+        "誘う後背": "invite_doggy",
+        "後背": "invite_doggy",
+    },
+)
+
+# Optional horned infected (Colab 9). Default off. Standing join only.
+TSUNO_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "出ない",
+        "choice_ja": "角・出ない（迷ったらこれ）",
+        "when_ja": "角の頭は出さない",
+        "hint_ja": "迷ったらこれ。追加イベントなし",
+        "recommend": True,
+    },
+    "accept_stand": {
+        "label_ja": "受け入れる立ちバック",
+        "choice_ja": "角・受け入れる立ちバック",
+        "when_ja": "壁に手をついて立ちバックだけ。終わりは相手が消えてあや一人歩き",
+        "hint_ja": "あやが壁に手。24cm灰色の竿。立ちバックのみ",
+    },
+    "invite_stand": {
+        "label_ja": "誘う立ちバック",
+        "choice_ja": "角・誘う立ちバック",
+        "when_ja": "壁に手をついて誘う立ちバックだけ。終わりは相手が消えてあや一人歩き",
+        "hint_ja": "あやが後ろへ誘う。立ちバックのみ",
+    },
+}
+
+TSUNO_OVERLAY_KEYS: dict[str, str] = {
+    "accept_stand": "on_tsuno_accept_stand",
+    "invite_stand": "on_tsuno_invite_stand",
+}
+
+TSUNO_ALIASES: dict[str, str] = _label_aliases(
+    TSUNO_MODES,
+    {
+        "出ない": "off",
+        "なし": "off",
+        "skip": "off",
+        "受け入れる": "accept_stand",
+        "受け入れる立ちバック": "accept_stand",
+        "立ちバック": "accept_stand",
+        "誘う": "invite_stand",
+        "誘う立ちバック": "invite_stand",
     },
 )
 
@@ -594,6 +687,24 @@ def canonical_toilet(name: str) -> str:
     return TOILET_ALIASES.get(raw, raw)
 
 
+def canonical_gin(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in GIN_MODES:
+        return raw
+    return GIN_ALIASES.get(raw, raw)
+
+
+def canonical_tsuno(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in TSUNO_MODES:
+        return raw
+    return TSUNO_ALIASES.get(raw, raw)
+
+
 def canonical_encounter(name: str) -> str:
     raw = str(name or "").strip().lower()
     if not raw:
@@ -740,6 +851,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return INVITE_POSE_MODES
     if kind == "toilet":
         return TOILET_MODES
+    if kind == "gin":
+        return GIN_MODES
+    if kind == "tsuno":
+        return TSUNO_MODES
     if kind == "episode":
         return EPISODE_MODES
     if kind == "scene":
@@ -789,6 +904,8 @@ def describe_run(
     story: str = "",
     invite_pose: str = "",
     toilet: str = "",
+    gin: str = "",
+    tsuno: str = "",
     appear: str | dict[str, Any] | None = None,
     scenes: str | dict[str, Any] | None = None,
     episode: str = "",
@@ -801,6 +918,8 @@ def describe_run(
     s_key = canonical_story(story) or "accept"
     pose_key = canonical_invite_pose(invite_pose) or "all_fours"
     t_key = canonical_toilet(toilet) or "off"
+    g_key = canonical_gin(gin) or "off"
+    n_key = canonical_tsuno(tsuno) or "off"
     shown = parse_appear(appear)
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
@@ -809,6 +928,8 @@ def describe_run(
     s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
     pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
+    g = GIN_MODES.get(g_key) or GIN_MODES["off"]
+    n = TSUNO_MODES.get(n_key) or TSUNO_MODES["off"]
     appear_ja = " ".join(("○" if shown[name] else "×") + name for name in HOSPITAL_ENCOUNTERS)
     parsed = parse_scenes(scenes)
     scene_bits = []
@@ -838,7 +959,9 @@ def describe_run(
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
         f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
         f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
+        f"  8 灰色    {g['choice_ja']}  — {g['when_ja']}\n"
+        f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
-        "迷ったらこの5つの既定のままで Run all。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
+        "迷ったら既定のままで Run all。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )
