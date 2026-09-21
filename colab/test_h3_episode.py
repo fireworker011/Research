@@ -33,6 +33,8 @@ from h3_episode import (  # noqa: E402
     MAX_BEATS,
     MUNDANE_CLAUSE,
     PLANTED_CLAUSE,
+    PLANTED_PACE_CLAUSE,
+    GAMEPLAY_PACE_CLAUSE,
     PRESET_ALIASES,
     PRESET_CANON,
     PRESETS,
@@ -1918,6 +1920,13 @@ def test_hospital_clip_failures_are_rewritten():
     assert "gone from frame one" not in walk["action"].lower()
     kiss_prompt = build_beat_prompt(invite, kiss)
     assert PLANTED_CLAUSE in kiss_prompt
+    assert PLANTED_PACE_CLAUSE in kiss_prompt
+    assert GAMEPLAY_PACE_CLAUSE not in kiss_prompt
+    assert "idle breathing" not in kiss_prompt.lower()
+    assert "unless the action names running or walking" not in kiss_prompt.lower()
+    assert "walks right" not in kiss["action"].lower()
+    assert "steps right" not in kiss["action"].lower()
+    assert "walking-and-hit" not in kiss["action"].lower()
     assert "Adults move LEFT or RIGHT" not in kiss_prompt
     assert "The lit doorway sits at the RIGHT edge" not in kiss_prompt
     assert "nobody is giant" in kiss_prompt.lower()
@@ -1927,6 +1936,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert beat_source(toilet) == "chain"
     toilet_prompt = build_beat_prompt(invite, toilet)
     assert PLANTED_CLAUSE in toilet_prompt
+    assert PLANTED_PACE_CLAUSE in toilet_prompt
+    assert "walks right" not in toilet["action"].lower()
     assert "Adults move LEFT or RIGHT" not in toilet_prompt
 
     gin_in = next(b for b in invite["beats"] if b["id"] == "04-gin-in")

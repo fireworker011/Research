@@ -43,6 +43,7 @@ CAMERA_PACKS: dict[str, dict[str, Any]] = {
             "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. "
             "PROFILE view: the floor runs LEFT to RIGHT across the frame. "
             "Adults stay on this same floor spot at normal adult human height, same scale as a standing adult woman. "
+            "Hip, hand, and mouth motion stay on this floor mark. A hip thrust is in place, not a step. "
             "Nobody is giant. Nobody fills a doorway. Nobody walks. Nobody relocates. "
             "The camera HOLDS. No track, no pan, no scroll. Both adults stay full body including feet"
         ),

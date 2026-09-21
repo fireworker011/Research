@@ -343,14 +343,25 @@ GAMEPLAY_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Do not invent a walk cycle. Feet stay planted unless the action names running or walking."
 )
+PLANTED_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
+)
 GAME_THIRD_PERSON_CLAUSE = (
     "Always a third-person gameplay camera: the adults stay fully visible in frame including feet."
 )
 PLANTED_CLAUSE = (
-    "Feet planted on this same floor spot. Nobody walks, nobody runs, nobody moonwalks, "
-    "nobody strides in place, nobody relocates, nobody slides off this spot. "
-    "Normal adult human height, nobody is giant. "
-    "The background does not scroll. The camera does not pan. Idle breathing only."
+    "Feet planted on this same floor spot. Hip, hand, and mouth motion stay on this mark. "
+    "Nobody walks, nobody runs, nobody moonwalks, nobody strides, nobody relocates, "
+    "nobody slides down the corridor. A hip thrust is in place, not a step. "
+    "Normal adult human height, nobody is giant. The background does not scroll. The camera holds."
+)
+PLANTED_WALK_TAIL_RE = re.compile(
+    r"\s*(?:Then\s+)?(?:Aya|She) STANDS and WALKS RIGHT[^.]*\."
+    r"|\s*Then Aya WALKS RIGHT[^.]*\."
+    r"|\s*Aya WALKS RIGHT along the corridor[^.]*\."
+    r"|\s*The other adult FADES COMPLETELY OUT OF FRAME while Aya walks[^.]*\.",
+    re.I,
 )
 GONE_FROM_FRAME_RE = re.compile(
     r"(?:Miki|Rei|Kana|Shino|Gin|Tsuno|The [^.]+?) (?:is|are) gone from frame one\.?\s*",
@@ -1797,6 +1808,39 @@ HOSPITAL_WALK_IDS = frozenset({
 HOSPITAL_WALK_ID_RE = re.compile(r"(?:-walk|-out|-run|-slip)$")
 
 
+def scrub_planted_action(action: str) -> str:
+    """Sex/toilet holds must not also walk the corridor in the same take."""
+    out = str(action or "")
+    out = PLANTED_WALK_TAIL_RE.sub("", out)
+    out = re.sub(r" at (?:brisk )?walking-and-hit pace", " at snappy real-time", out, flags=re.I)
+    out = re.sub(r"Aya STEPS RIGHT FAST,?\s*", "Aya is already close. ", out)
+    out = re.sub(
+        r"Aya STEPS RIGHT toward (?P<who>[A-Za-z]+),?\s*",
+        r"Aya is already close to \g<who>. ",
+        out,
+    )
+    out = re.sub(
+        r"(Miki|Rei|Kana|Shino|Gin|Tsuno) STEPS RIGHT(?: at snappy real-time)?,?\s*",
+        r"\1 is already in place. ",
+        out,
+    )
+    out = re.sub(
+        r"Aya STEPS IN behind (?P<who>[A-Za-z]+)(?: and STOPS on this same linoleum spot)?",
+        r"Aya is already behind \g<who> on this same linoleum spot",
+        out,
+    )
+    if re.search(r"\bWALKS?\b|\bWALKING\b", out) and re.search(
+        r"joined at the BASE|on all fours|STAYS SEATED|already seated|SQUATS|jupo",
+        out,
+        re.I,
+    ):
+        out = re.sub(r"\bWALKS?\b RIGHT", "stays", out)
+        out = re.sub(r"\bWALKING\b", "holding still", out)
+    if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
+        out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
+    return re.sub(r" {2,}", " ", out).strip()
+
+
 def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
     """Ward sex/toilet holds stay planted. Walk beats keep a walk cycle.
 
@@ -1808,22 +1852,26 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
     for beat in ep.get("beats") or []:
         if not isinstance(beat, dict) or is_ui_beat(beat):
             continue
-        if str(beat.get("loco") or "").strip():
-            continue
         bid = str(beat.get("id") or "")
         action = str(beat.get("action") or "")
-        walk_words = bool(re.search(r"\bWALKS?\b|\bWALKING\b|\bRUNS?\b|\bSPRINT", action))
-        planted_pose = bool(
-            re.search(
-                r"joined at the BASE|already seated|STAYS SEATED|on all fours|palms planted",
-                action,
-                re.I,
+        if re.search(r"STEPS SIDEWAYS|WALKS PAST|can pass", action, re.I):
+            beat["loco"] = "walk"
+            continue
+        if not str(beat.get("loco") or "").strip():
+            walk_words = bool(re.search(r"\bWALKS?\b|\bWALKING\b|\bRUNS?\b|\bSPRINT", action))
+            planted_pose = bool(
+                re.search(
+                    r"joined at the BASE|already seated|STAYS SEATED|on all fours|palms planted",
+                    action,
+                    re.I,
+                )
             )
-        )
-        if HOSPITAL_WALK_ID_RE.search(bid) or bid in HOSPITAL_WALK_IDS or (walk_words and not planted_pose):
-            beat["loco"] = "run" if re.search(r"\bRUNS?\b|\bSPRINT", action) else "walk"
-        else:
-            beat["loco"] = "planted"
+            if HOSPITAL_WALK_ID_RE.search(bid) or bid in HOSPITAL_WALK_IDS or (walk_words and not planted_pose):
+                beat["loco"] = "run" if re.search(r"\bRUNS?\b|\bSPRINT", action) else "walk"
+            else:
+                beat["loco"] = "planted"
+        if beat_loco(beat) == "planted":
+            beat["action"] = scrub_planted_action(action)
     return ep
 
 
@@ -2792,16 +2840,18 @@ def build_beat_prompt(
     if source == "chain" and not last_still:
         desc.append("This shot continues the previous one without a cut.")
     desc.append(CONTINUITY_CLAUSE)
+    loco = beat_loco(beat)
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
+    elif loco == "planted":
+        desc.append(GAME_THIRD_PERSON_CLAUSE)
+        desc.append(PLANTED_PACE_CLAUSE)
+        desc.append(PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)
-    loco = beat_loco(beat)
-    if loco == "planted":
-        desc.append(PLANTED_CLAUSE)
-    elif loco == "run":
-        desc.append(RUN_CLAUSE)
+        if loco == "run":
+            desc.append(RUN_CLAUSE)
     pack = resolve_beat_camera_pack(ep, beat, camera_pack)
     idx = gpu_index if gpu_index is not None else gpu_index_map(ep).get(str(beat.get("id") or ""), 0)
     cam = camera_line(
