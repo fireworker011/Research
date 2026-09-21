@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 from h3_episode import EPISODE_HELPERS  # noqa: E402
 from h3_episode_packs import form_markdown, form_readme, ui_choices, ui_default  # noqa: E402
 
-BRANCH = "cursor/h3-kasumi-adult-0402"
+BRANCH = "cursor/h3-hospital-ward-34e4"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
@@ -207,7 +207,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。マージ前は `BRANCH` もこの PR ブランチ（`cursor/h3-kasumi-adult-0402`）。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
 

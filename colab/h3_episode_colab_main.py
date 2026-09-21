@@ -29,8 +29,6 @@ Env:
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
-  H3_KEEP_RUNTIME=1   keep the Colab runtime (default; unassign is off)
-  H3_UNASSIGN_RUNTIME=1  opt in to runtime.unassign() after the run
 
 Never touches inbox/queued/output of the Grokbot root.
 """
@@ -54,7 +52,6 @@ from h3_episode import (
     run_episode,
 )
 from h3_episode_packs import canonical_episode
-from h3_i2v_runtime import maybe_unassign
 
 
 def main() -> int:
@@ -102,9 +99,6 @@ def main() -> int:
     except EpisodeError as e:
         print("EPISODE FAILED:", e)
         return 1
-    finally:
-        if not dry:
-            maybe_unassign()
 
 
 if __name__ == "__main__":

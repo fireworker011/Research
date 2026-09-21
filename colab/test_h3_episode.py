@@ -238,7 +238,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'EPISODE = "霞東フロア あさ（迷ったらこれ）"' in src
     assert "病棟出口" in src
     assert "番台ショート（25秒）" in src
-    assert 'BRANCH = "cursor/h3-kasumi-adult-0402"' in src
+    assert 'BRANCH = "cursor/h3-hospital-ward-34e4"' in src
     assert 'PRESET = "バランス（迷ったらこれ）"' in src
     assert "スピード（最速）" in src and "質（きれい・時間かかる）" in src
     assert 'CAMERA = "横スク（真横・全身・迷ったらこれ）"' in src
@@ -275,7 +275,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert "APPEAR_MIKI" in src and "APPEAR_SHINO" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
-    assert "cursor/h3-kasumi-adult-0402" in md
+    assert "cursor/h3-hospital-ward-34e4" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
@@ -301,6 +301,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert src.index("if rc:") < src.index("raise SystemExit(rc)")
     assert 'os.environ["H3_KEEP_RUNTIME"] = "1"' in src
     assert "ランタイムはそのまま" in src
+    main_src = (ROOT / "colab" / "h3_episode_colab_main.py").read_text(encoding="utf-8")
+    assert "maybe_unassign" not in main_src
+    assert "runtime.unassign" not in main_src
     assert json.loads((ROOT / "minimaxh3" / "minimax_h3_episode_bot.ipynb").read_text(encoding="utf-8")) == nb
 
 
