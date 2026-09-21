@@ -1,15 +1,15 @@
 # Negatives（全カット末尾）
 
-no front-facing camera, no three-quarter cinematic shot as default, no extra characters, no third person entering frame, no male body replacing Rei, no disappearing penis, no ceramic toilet, no stone cave replacing meat walls, no clean skin after filth flag, no walking-away exit for enemies, no armor on succubus, no pubic hair on succubus, no human face on Enemy1, no human lips on Enemy1, no human jaw on Enemy1, no forest background on Enemy3, no human pelvis or human thighs replacing moth abdomen, no shrinking Enemy1 to human size
+bare living flesh walls only. planted feet unless the shot is a run.
 
 事故対策:
-- 敵1が人間の口でしゃぶる → 蠕動・虹彩状の歯・唇環の密封だけ書く
-- 敵1が人間サイズ → twice Rei's height を毎カット
-- 蛾女が全裸の人間女になる → 穴の位置を tail tip に固定。下半身は節腹＋多脚
-- 蛾女の背景が森 → NO forest, meat-wall cave only
-- サキュバスが鎧を着る → fully nude, remove bodysuit。羽・角・チョーカー・爪は残す
-- 汚れが次カットで消える → S10以降必須
-- 人数バグ → fade only
-- レイが男性になる → 毎回 21yo beauty + erect 24cm
-- 腕が膣に入る → penis only, no arm in vagina
-- 根元未挿入でピストン → 挿入完了カットを分ける
+- レイが服を着る → FULLY NUDE, no fabric
+- 壁にテレビ・ポスター → bare viscera, nothing man-made attached
+- 常時舌出し → default mouth closed, tongue inside; tongue out only on jubo/climax
+- 常時歩行 → loco planted, background does not scroll
+- 敵1が大口の漏斗 → puckered hypotoco snout, cinched rim
+- 敵1が人間の口でしゃぶる → 蠕動・窄めた唇環の密封だけ書く
+- 蛾女が歩きながら触る → both STANDING STILL, tail TIP second mouth on the shaft
+- 挿入が腿を貫通 → penis INSIDE the vagina, palms flat on the wall, feet planted
+- 陶器の便器・脱糞 → 肉壁が洋式の形。小便／着座おな／触手。糞なし
+- 人数バグ → fade from last frame when CONNECT is chain; new encounter is T2V

@@ -558,24 +558,21 @@ REI_TOILET_MODES: dict[str, dict[str, Any]] = {
     "ta": {
         "label_ja": "着座おな",
         "choice_ja": "トイレ・着座おな射精（迷ったらこれ）",
-        "when_ja": "糞の洋式に座って射精。以後は着座汚れ",
-        "hint_ja": "迷ったらこれ。filth_seat。尻と太腿",
+        "when_ja": "肉壁の洋式形に座って射精。陶器も脱糞もなし",
+        "hint_ja": "迷ったらこれ。便器は肉。汚れフラグなし",
         "recommend": True,
-        "filth": "seat",
     },
     "tb": {
         "label_ja": "着座小便",
         "choice_ja": "トイレ・着座小便",
-        "when_ja": "座って小便の筋が見える。以後は着座汚れ",
-        "hint_ja": "filth_seat。陶器は出さない",
-        "filth": "seat",
+        "when_ja": "座って小便の筋が見える。陶器も脱糞もなし",
+        "hint_ja": "肉壁便器。肌に糞を塗らない",
     },
     "tc": {
-        "label_ja": "全身に塗る",
-        "choice_ja": "トイレ・全身に塗る",
-        "when_ja": "両手で全身に塗る。以後は全身汚れ",
-        "hint_ja": "filth_body。顔・胸・腹・竿・脚。敵にも移る",
-        "filth": "body",
+        "label_ja": "触手",
+        "choice_ja": "トイレ・肉壁の触手がじゅぼ",
+        "when_ja": "便器のまわりから生えた触手の円口が24cmを根元まで吞む",
+        "hint_ja": "触手。人間の口にしない。脱糞なし",
     },
 }
 
@@ -600,6 +597,12 @@ REI_TOILET_ALIASES: dict[str, str] = _label_aliases(
         "全身": "tc",
         "T-c": "tc",
         "tc": "tc",
+        "触手": "tc",
+        "触手フェラ": "tc",
+        "tentacle": "tc",
+        "オナニー": "ta",
+        "小便": "tb",
+        "pee": "tb",
     },
 )
 
@@ -1483,5 +1486,5 @@ def describe_run(
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
-        "迷ったら既定のままで Run all。行為のあとの歩きは常にカット。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
+        "迷ったら既定のままで Run all。新しい相手の入りはカット。消滅はチェーンならフェード。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

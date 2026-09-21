@@ -1,11 +1,11 @@
 # Character Lock（毎回先頭）
 
 ## レイ
-21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。常時ボッキ24cm。恍惚顔が基本。絶頂は舌出し・涎・鼻水。破れ薄着が半脱げ。主人公名はレイだけ。24cmは射精後も消えない。
+21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。**絶対全裸。** 常時ボッキ24cmは自分の肌の竿。デフォルト顔は口を閉じ舌は中。舌出しはじゅぼの快感とイキ顔のときだけ。主人公名はレイだけ。24cmは射精後も消えない。
 
-same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, fully erect 24cm penis always visible even after ejaculation, photorealistic, 16:9 side view. Default expression: flushed ecstatic face. Orgasm face: tongue out, drool, runny nose, trembling. Default clothes: torn damp thin garment half-off, breasts and erect penis exposed, game-character damaged outfit. Protagonist name is Rei only. Do not replace Rei with a male body. The 24cm penis does not disappear after climax.
+same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored. Default face: mouth closed, tongue fully inside, flushed cheeks only. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only.
 
-服装デフォルト: torn damp thin garment half-off。全裸に変えるなら nude に置換し破れ服を消す。
+服装デフォルト: 全裸。破れ服・デニム・靴は出さない。
 
 混線防止（編集者向け。プロンプト本文には他作品の名前を書かない）:
 - 主人公名はレイだけ
@@ -13,9 +13,9 @@ same character lock every shot: Rei, 21-year-old Japanese beauty, long straight 
 - このフォルダ以外の本編キャラは登場しない
 
 ## 敵1（シーン1・画像1＋2の同一個体）
-giant aberrant beast twice Rei's height, pale mint-gray wet lumpy flesh blending into a pale-gray lamprey-ray hide, circular orange-red oral disc ringed with white triangular teeth pointing inward, wet red inner funnel, purple lightning veins pulsing under the skin, lamprey-eel-ray body, membranous pectoral fins, dorsal sucker-stalk with a disc, quadruped lizard crawl on limb-fins, slime drooling from the circular maw, NO human face, NO human hands, NO human lips, NO human jaw
+giant aberrant beast twice Rei's height, pale mint-gray wet lumpy flesh, PUCKERED hypotoco-like snout: circular oral disc NARROWED and cinched like pursed fleshy lips, NOT a huge wide funnel, lamprey-eel-ray body, NO human face, NO human hands, NO human lips, NO human jaw
 
-サイズ: レイの2倍。人間顔を出さない。
+サイズ: レイの2倍。人間顔を出さない。円口はひょっとこ状に窄める。
 
 ## 敵3（シーン3・画像3。森は無視）
 moth-girl the same height as Rei: attractive flushed human female face, brown hair, curled ram-like insect antennae on the head, nude beautiful human female torso with breasts exposed, human female shoulders. Lower body stays insect: segmented moth abdomen instead of a human pelvis, many thin insect legs for locomotion (not a pair of human thighs), cream moth wings with purple-gray eyespots, a tapering stinger-like tail. The terminal tip of that tail has a wet circular orifice. Meat-wall corridor only, NO forest background, NO trees, NO dirt path, NO human hips

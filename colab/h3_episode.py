@@ -340,11 +340,19 @@ REALTIME_CLAUSE = (
     "finish inside this one shot at brisk walking-and-hit pace. Snappy. Motion starts at frame one."
 )
 GAMEPLAY_PACE_CLAUSE = (
-    "Playback stays at real-time third-person game speed. Brisk walking stride. "
-    "Snappy hits and snappy sex. Motion starts at frame one."
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Do not invent a walk cycle. Feet stay planted unless the action names running or walking."
 )
 GAME_THIRD_PERSON_CLAUSE = (
-    "Always a third-person gameplay camera: the adults stay fully visible in frame at brisk walking-and-hit pace."
+    "Always a third-person gameplay camera: the adults stay fully visible in frame including feet."
+)
+PLANTED_CLAUSE = (
+    "Feet planted on this spot. Nobody walks, nobody runs, nobody moonwalks, nobody strides in place. "
+    "The background does not scroll. The camera does not pan. Idle breathing only."
+)
+RUN_CLAUSE = (
+    "Runner shot only: she sprints left to right. The camera tracks horizontally on a straight line. "
+    "Mouth closed, tongue fully inside the mouth, not an orgasm face."
 )
 SLOWMO_TOKENS_RE = re.compile(
     r"\b(slow[\s-]?mo(?:tion)?s?|slo-?mos?|bullet[\s-]?time|time[\s-]?dilation)\b",
@@ -1205,14 +1213,27 @@ def apply_end_connect(ep: dict[str, Any], *, end_connect: str | None = None) -> 
     return out
 
 
-def cut_dropped_cast_chains(ep: dict[str, Any]) -> dict[str, Any]:
-    """I2V cannot delete a body from its own first frame.
+def _cast_english_names(ep: dict[str, Any], ids: list[str]) -> str:
+    cast = ep.get("cast") or {}
+    names: list[str] = []
+    for cid in ids:
+        row = cast.get(cid) or {}
+        names.append(str(row.get("name_en") or cid).strip() or cid)
+    if not names:
+        return "The previous partner"
+    if len(names) == 1:
+        return names[0] if names[0].lower().startswith("the ") else "The " + names[0]
+    return ", ".join(names[:-1]) + " and " + names[-1]
 
-    A beat that chains starts on the previous clip's last frame. If the previous
-    clip had someone this beat does not, that body is already in the start frame
-    and no amount of "only Rei in frame" in the prompt removes it: the partner
-    (and the erect penis) walks into the next scene. Downgrade those to T2V.
-    Growing the cast is fine; the newcomer walks in.
+
+def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
+    """I2V starts on the previous last frame. A missing body cannot be invented;
+    an extra body cannot be deleted by saying 'only X in frame'.
+
+    Grow (new person): T2V, so the newcomer is actually generated.
+    Shrink (someone left): keep them in this beat's cast, fade them in the
+    action, and KEEP the chain so 05→06 is a fade instead of a jump.
+    Grow and shrink together: T2V.
     """
     out = copy.deepcopy(ep)
     prev: set[str] = set()
@@ -1222,11 +1243,28 @@ def cut_dropped_cast_chains(ep: dict[str, Any]) -> dict[str, Any]:
             beats.append(beat)
             continue
         item = dict(beat)
-        cast = {str(c) for c in (item.get("cast") or [])}
-        if beat_source(item) == "chain" and not item.get("reuse") and prev - cast:
-            item["source"] = "t2v"
-            item.pop("still_as", None)
-        prev = cast
+        intended = [str(c) for c in (item.get("cast") or [])]
+        intended_set = set(intended)
+        dropped = prev - intended_set
+        added = intended_set - prev
+        if beat_source(item) == "chain" and not item.get("reuse"):
+            if added:
+                item["source"] = "t2v"
+                item.pop("still_as", None)
+                item.pop("fade_cast", None)
+            elif dropped:
+                fade_ids = sorted(dropped)
+                item["fade_cast"] = fade_ids
+                item["cast"] = list(dict.fromkeys(intended + fade_ids))
+                action = str(item.get("action") or "").strip()
+                fade = (
+                    f"{_cast_english_names(out, fade_ids)} completely "
+                    f"{'fades' if len(fade_ids) == 1 else 'fade'} out of frame in the first two seconds, "
+                    "no walk-away, no residual limb, wing, tail, tooth, or horn. "
+                )
+                if "fade out of frame" not in action.lower():
+                    item["action"] = (fade + action).strip()
+        prev = intended_set
         beats.append(item)
     out["beats"] = beats
     return out
@@ -1652,7 +1690,7 @@ def apply_rei_escape_route(
         expanded = _expand_overlay(body, chosen) if _is_overlay_payload(chosen) else [body]
         after_toilet = bool(filth)
         if slot == "toilet":
-            filth = str((REI_TOILET_MODES.get(toilet_key) or {}).get("filth") or "seat")
+            filth = str((REI_TOILET_MODES.get(toilet_key) or {}).get("filth") or "")
         for item in expanded:
             row = dict(item)
             if after_toilet:
@@ -1825,7 +1863,7 @@ def prepare_episode(
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
-    return cut_dropped_cast_chains(out)
+    return keep_chain_cast(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -2643,7 +2681,12 @@ def build_beat_prompt(
     env = str(beat.get("environment") or world.get("lock") or "").strip().rstrip(".")
     place = str(beat.get("place") or "").strip().rstrip(".")
     env_line = env + (f". {place}" if place else "")
-    if world.get("no_text_on_signs", True):
+    if world.get("bare_set"):
+        env_line += (
+            ". Walls are only wet pulsating living flesh and viscera. "
+            "Bare organic tissue, nothing man-made attached to the walls"
+        )
+    elif world.get("no_text_on_signs", True):
         env_line += ". Signs, posters, screens, and badges carry no readable letters"
     env_line += ". Adults only in frame."
     desc: list[str] = [f"[Shot 1] {orientation} {style}."]
@@ -2656,7 +2699,14 @@ def build_beat_prompt(
         elif beat_still_as(beat) == "both":
             desc.append("<Picture 1> and <Picture 2> are the same still; the clip holds this composition.")
     elif source in ("still", "chain"):
-        desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
+        if world.get("bare_set"):
+            desc.append(
+                "<Picture 1> is the identity lock; the clip starts exactly on it. "
+                "Same person, same hair, fully nude bare skin. Expression and pose follow this shot's action, "
+                "even if the opening frame shows a different face or a tongue out."
+            )
+        else:
+            desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
     if source == "chain" and not last_still:
         desc.append("This shot continues the previous one without a cut.")
     desc.append(CONTINUITY_CLAUSE)
@@ -2665,6 +2715,11 @@ def build_beat_prompt(
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)
+    loco = str(beat.get("loco") or "").strip().lower()
+    if loco == "planted":
+        desc.append(PLANTED_CLAUSE)
+    elif loco == "run":
+        desc.append(RUN_CLAUSE)
     pack = resolve_beat_camera_pack(ep, beat, camera_pack)
     idx = gpu_index if gpu_index is not None else gpu_index_map(ep).get(str(beat.get("id") or ""), 0)
     cam = camera_line(

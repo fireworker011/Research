@@ -147,7 +147,7 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 
 ## 上から（迷ったらそのまま）
 
-**1. つなぎ方** — これ1つ。遭遇の入りと消滅走りは常にカット（相手が残らない）
+**1. つなぎ方** — これ1つ。遭遇の入り（新しい相手）は常にカット。消滅はチェーンなら前の最終フレームからフェード
 
 {form_readme("connect")}
 
@@ -167,7 +167,7 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 
 {form_readme("rei_mast")}
 
-**6. トイレ** — 着座おなが既定。以後汚れが残る
+**6. トイレ** — 着座おなが既定。肉壁が洋式の形。陶器も脱糞もなし。以後汚れなし
 
 {form_readme("rei_toilet")}
 
@@ -215,7 +215,7 @@ def make_nb() -> dict:
         CELL.replace("__BRANCH__", BRANCH)
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
-        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。遭遇の入りと消滅は常にカット"))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。遭遇の入りはカット。消滅はチェーンならフェード"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
@@ -230,7 +230,7 @@ def make_nb() -> dict:
         .replace("__MAST_HELP__", form_markdown("rei_mast", "5. 合間おな"))
         .replace("__MAST_DEFAULT__", json.dumps(ui_default("rei_mast"), ensure_ascii=False))
         .replace("__MAST_CHOICES__", json.dumps(ui_choices("rei_mast"), ensure_ascii=False))
-        .replace("__TOILET_HELP__", form_markdown("rei_toilet", "6. トイレ — どれでも次へ。以後汚れ"))
+        .replace("__TOILET_HELP__", form_markdown("rei_toilet", "6. トイレ — どれでも次へ。肉壁便器。脱糞なし"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("rei_toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("rei_toilet"), ensure_ascii=False))
         .replace("__BEAST_HELP__", form_markdown("rei_beast", "7. 敵1 — 受け入れる／誘う／回避"))

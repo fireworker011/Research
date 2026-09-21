@@ -14,11 +14,11 @@
 | S05 evade | （生成しない） | 回避。S05スキップ→S06 |
 | S06 | S06_fade_run_B.md | 敵1フェード→走りB。回避のときは射精文言なし |
 | S07 | S07_optional_masturbate.md | 任意おな（汚れなし） |
-| S08 | S08_toilet_encounter.md | 糞の洋式トイレ |
-| S09 | S09_toilet_choice.md | 分岐のみ |
-| S09 T-a | branches/S09_T-a_masturbate.md | 着座汚れ |
-| S09 T-b | branches/S09_T-b_urinate.md | 着座汚れ |
-| S09 T-c | branches/S09_T-c_smear.md | 全身汚れ |
+| S08 | S08_toilet_encounter.md | 肉壁が洋式の形。陶器も脱糞もなし |
+| S09 | S09_toilet_choice.md | 小便／着座おな／触手。汚れフラグなし |
+| S09 T-a | branches/S09_T-a_masturbate.md | 着座おな。汚れなし |
+| S09 T-b | branches/S09_T-b_urinate.md | 着座小便。汚れなし |
+| S09 T-c | branches/S09_T-c_smear.md | Colab は触手じゅぼ。脱糞廃止 |
 | S10 | S10_run_C_filth.md | 走りC。汚れ必須 |
 | S11 | S11_optional_masturbate_filth.md | 任意おな（汚れあり） |
 | S12 | S12_mothgirl_encounter.md | 蛾女。画像3。森禁止 |

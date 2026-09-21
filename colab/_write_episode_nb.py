@@ -78,7 +78,7 @@ os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
-os.environ["H3_EPISODE_END_CONNECT"] = "t2v"
+os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
@@ -157,7 +157,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("episode")}
 
-**1. つなぎ方** — 動画をどう繋げるか。行為のあとの歩きは常にカット（相手と竿が次に残らない）
+**1. つなぎ方** — 動画をどう繋げるか。遭遇の入り（新しい相手）はカット。消滅はチェーンならフェード（飛ばない）
 
 {form_readme("connect")}
 
@@ -222,7 +222,7 @@ def make_nb() -> dict:
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
         .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
-        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。歩きは常にカット"))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。新しい相手の入りはカット。消滅はチェーンならフェード"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))

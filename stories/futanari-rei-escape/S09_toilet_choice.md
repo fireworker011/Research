@@ -36,13 +36,11 @@ no front-facing camera, no three-quarter cinematic shot as default, no extra cha
   操作風ラベル  [走る] [回避不可] [選択]
 
 
-この番号は分岐だけ。実クリップは `branches/` の T-a / T-b / T-c。終了はフェード。人が歩いて出て人数を増やさない。
+この番号は分岐だけ。実クリップは Colab が持つ。終了はフェード。人が歩いて出て人数を増やさない。
 
-- T-a → filth_seat。以降 HUD 着座汚れ
-- T-b → filth_seat。以降 HUD 着座汚れ
-- T-c → filth_body。以降 HUD 全身汚れ（より強い）
-
-この時点から全後続カットに filth 文を必須挿入。seat と body の2バージョンをファイル併記。
+- T-a → 着座おな。肉壁便器。汚れフラグなし
+- T-b → 着座小便。汚れフラグなし
+- T-c → 肉壁の触手がじゅぼ。脱糞なし
 
 ## Memo
-便器は糞の塊。陶器禁止。
+便器は肉が洋式の形をしているだけ。陶器禁止。脱糞禁止。うんこ便器禁止。

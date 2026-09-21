@@ -32,6 +32,7 @@ from h3_episode import (  # noqa: E402
     LORA_URLS,
     MAX_BEATS,
     MUNDANE_CLAUSE,
+    PLANTED_CLAUSE,
     PRESET_ALIASES,
     PRESET_CANON,
     PRESETS,
@@ -247,7 +248,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert "格闘LoRAオン（ハイメモリ専用）" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
-    assert 'os.environ["H3_EPISODE_END_CONNECT"] = "t2v"' in src
+    assert 'os.environ["H3_EPISODE_END_CONNECT"] = "follow"' in src
     assert "END_CONNECT =" not in src
     assert "1番のつなぎに従う" not in src
     assert "次のシーンへ続ける" not in src
@@ -287,7 +288,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert "病棟の話" in md
     assert "1. つなぎ方" in md or "つなぎ方" in md
     assert "シーン終わりのつなぎ" not in md
-    assert "歩きは常にカット" in md
+    assert "チェーンならフェード" in md
     assert "前の最終フレームから続ける" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
@@ -1808,11 +1809,12 @@ def test_hospital_gin_tsuno_optional_events():
 
 def test_hospital_end_connect_is_runtime_selectable():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
-    assert raw["render"]["end_connect"] == "t2v"
+    assert raw["render"]["end_connect"] == "follow"
     defaulted = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
     walk = next(b for b in defaulted["beats"] if b["id"] == "06-doggy-walk")
     assert is_end_connect_beat(walk)
-    assert beat_source(walk) == "t2v"
+    assert beat_source(walk) == "chain"
+    assert walk.get("fade_cast") == ["rei"]
     nxt = None
     seen = False
     for beat in defaulted["beats"]:
@@ -1823,7 +1825,8 @@ def test_hospital_end_connect_is_runtime_selectable():
             nxt = beat
             break
     assert nxt is not None
-    assert beat_source(nxt) == "chain"
+    # Next encounter adds Kana, so I2V cannot invent her: T2V.
+    assert beat_source(nxt) == "t2v"
 
     chained = prepare_episode(
         raw,
@@ -1831,10 +1834,10 @@ def test_hospital_end_connect_is_runtime_selectable():
         connect_override="カット",
         end_connect_override="次のシーンへ続ける",
     )
-    # CLI can still ask for a chained scene end, but the walk drops the partner,
-    # so it cannot start on a frame that still holds her. Cut wins.
+    # Scene-end chain keeps the leftover partner in-frame and fades her.
     walk_c = next(b for b in chained["beats"] if b["id"] == "06-doggy-walk")
-    assert beat_source(walk_c) == "t2v"
+    assert beat_source(walk_c) == "chain"
+    assert walk_c.get("fade_cast") == ["rei"]
     seen = False
     follow = None
     for beat in chained["beats"]:
@@ -1845,7 +1848,7 @@ def test_hospital_end_connect_is_runtime_selectable():
             follow = beat
             break
     assert follow is not None
-    assert beat_source(follow) == "chain"
+    assert beat_source(follow) == "t2v"
     assert chained["render"]["end_connect"] == "chain"
 
     followed = prepare_episode(
@@ -1855,13 +1858,14 @@ def test_hospital_end_connect_is_runtime_selectable():
         end_connect_override="1番のつなぎに従う",
     )
     walk_f = next(b for b in followed["beats"] if b["id"] == "06-doggy-walk")
-    assert beat_source(walk_f) == "t2v"
+    assert beat_source(walk_f) == "chain"
     gin_walk = next(
         b
         for b in prepare_episode(raw, gin_override="犯される", end_connect_override="follow", connect_override="chain")["beats"]
         if b["id"] == "04-gin-walk"
     )
-    assert beat_source(gin_walk) == "t2v"
+    assert beat_source(gin_walk) == "chain"
+    assert "gin" in (gin_walk.get("fade_cast") or [])
     assert validate_episode(chained, root=HOSPITAL_DIR) == []
 
 
@@ -1961,7 +1965,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     ]
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
-    assert "行為のあとの歩きは常にカット" in picked
+    assert "新しい相手の入りはカット" in picked
     assert "迷ったら既定のままで Run all" in picked
     assert "6 誘う" in picked
     assert "7 トイレ" in picked
@@ -2743,13 +2747,16 @@ def test_rei_escape_options_filth_and_oral_lora():
     stand = prepare_episode(raw, rei_mast_override="stand")
     assert len(stand["beats"]) == len(skip["beats"]) + 4
     assert any(b["id"].endswith("mast-stand") for b in stand["beats"])
-    body = prepare_episode(raw, rei_toilet_override="tc")
-    run_c = next(b for b in body["beats"] if b["id"] == "10-run-c")
-    assert "DIRTY-STATE BODY" in run_c["action"]
-    assert run_c["hud"]["hint"] == "全身汚れ"
+    tent = prepare_episode(raw, rei_toilet_override="tc")
+    tc = next(b for b in tent["beats"] if b["id"] == "09-tc")
+    assert extra_lora_entries(tc) == [("mystic", 1.0)]
+    assert "tentacle" in tc["action"].lower()
+    run_c = next(b for b in tent["beats"] if b["id"] == "10-run-c")
+    assert "DIRTY-STATE" not in run_c["action"]
+    assert "feces" not in run_c["action"].lower()
     seat = prepare_episode(raw, rei_toilet_override="ta")
     run_c_seat = next(b for b in seat["beats"] if b["id"] == "10-run-c")
-    assert "DIRTY-STATE SEAT" in run_c_seat["action"]
+    assert "DIRTY-STATE" not in run_c_seat["action"]
     mouth = prepare_episode(raw, rei_moth_override="mouth")
     moth = next(b for b in mouth["beats"] if b["id"] == "13-mouth")
     assert extra_lora_entries(moth) == [("blowjob", 0.8)]
@@ -2813,8 +2820,8 @@ def test_rei_escape_beast_accept_invite_evade():
             assert "blowjob" not in low and "fellatio" not in low
 
 
-def test_chain_never_starts_on_a_frame_holding_someone_it_dropped():
-    """チェーンでも、前の相手が写った最終フレームから次の歩きを始めない。"""
+def test_chain_keeps_leaving_bodies_in_frame_so_they_can_fade():
+    """Shrink-only I2V keeps the leftover body and fades it. A new body is T2V."""
     for slug in ("kasumi-late-desk-adult", "hospital-exit-adult", "bandai-district", "futanari-rei-escape"):
         ep = load_episode(ROOT / "minimaxh3" / "episodes" / slug / "episode.json")
         out = prepare_episode(ep, connect_override="chain")
@@ -2823,17 +2830,33 @@ def test_chain_never_starts_on_a_frame_holding_someone_it_dropped():
             if is_ui_beat(beat) or not beat_renders(beat):
                 continue
             cast = {str(c) for c in (beat.get("cast") or [])}
+            fade = {str(c) for c in (beat.get("fade_cast") or [])}
+            remaining = cast - fade
             if beat_source(beat) == "chain":
-                assert not prev - cast, f"{slug} {beat['id']} chains off {sorted(prev - cast)}"
-            prev = cast
-    # 霞東: 行為のあとの歩きは相手が消えるのでカットになる
+                assert not prev - cast, f"{slug} {beat['id']} chains off missing {sorted(prev - cast)}"
+            prev = remaining
     kasumi = prepare_episode(
         load_episode(KASUMI_ADULT_DIR / "episode.json"), connect_override="chain"
     )
     walk = next(b for b in kasumi["beats"] if b["id"] == "08-walk")
+    # Kuroki is new; I2V cannot invent her from Aoki's last frame.
     assert beat_source(walk) == "t2v"
     joined = next(b for b in kasumi["beats"] if b["id"] == "07-creampie")
     assert beat_source(joined) == "chain"
+    rei = prepare_episode(
+        load_episode(REI_ESCAPE_DIR / "episode.json"),
+        connect_override="chain",
+        rei_beast_override="誘う",
+    )
+    six = next(b for b in rei["beats"] if b["id"] == "06-fade-run-b")
+    assert beat_source(six) == "chain"
+    assert six.get("fade_cast") == ["beast"]
+    hosp = prepare_episode(
+        load_episode(HOSPITAL_DIR / "episode.json"), connect_override="chain"
+    )
+    doggy_walk = next(b for b in hosp["beats"] if b["id"] == "06-doggy-walk")
+    assert beat_source(doggy_walk) == "chain"
+    assert doggy_walk.get("fade_cast") == ["rei"]
 
 
 def test_rei_escape_pose_never_adds_kiss_or_oral_back():
@@ -2852,6 +2875,52 @@ def test_rei_escape_pose_never_adds_kiss_or_oral_back():
     straddle = prepare_episode(raw, rei_pose_override="straddle")
     ids = [b["id"] for b in straddle["beats"] if str(b.get("id") or "").startswith("20-")]
     assert ids == ["20-straddle-ride", "20-straddle-out"]
+
+
+def test_rei_escape_clip_failures_are_rewritten():
+    """Fixes from the first speed run: nude, rest face, hypotoco maw, planted sex, meat toilet, I2V fade."""
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    assert raw["world"].get("bare_set") is True
+    assert "FULLY NUDE" in raw["cast"]["rei"]["lock"]
+    assert "tongue fully inside" in raw["cast"]["rei"]["lock"]
+    assert "garment" not in raw["cast"]["rei"]["lock"]
+    assert "PUCKERED" in raw["cast"]["beast"]["lock"]
+    chained = prepare_episode(
+        raw,
+        connect_override="chain",
+        rei_beast_override="誘う",
+        rei_toilet_override="触手",
+        rei_pose_override="壁に手",
+        rei_kiss_override="on",
+        rei_oral_override="her",
+    )
+    blob = json.dumps(chained, ensure_ascii=False).lower()
+    assert "garment" not in blob
+    assert "feces" not in blob and "shit" not in blob
+    invite = next(b for b in chained["beats"] if b["id"] == "05-enemy1-invite")
+    assert invite.get("loco") == "planted"
+    assert "PUCKERED" in invite["action"] or "puckered" in invite["action"].lower() or "hypotoco" in invite["action"].lower()
+    assert "camera iris" not in invite["action"].lower()
+    six = next(b for b in chained["beats"] if b["id"] == "06-fade-run-b")
+    assert beat_source(six) == "chain"
+    assert six.get("fade_cast") == ["beast"]
+    run = next(b for b in chained["beats"] if b["id"] == "02-run-a")
+    assert run.get("loco") == "run"
+    assert "tongue fully inside" in run["action"]
+    moth = next(b for b in chained["beats"] if b["id"] == "13-tail")
+    assert moth.get("loco") == "planted"
+    assert "STANDING STILL" in moth["action"]
+    wall = next(b for b in chained["beats"] if b["id"] == "20-wall-in")
+    assert "INSIDE the vagina" in wall["action"]
+    assert "PALMS FLAT" in wall["action"]
+    assert "far side of a thigh" in wall["action"]
+    prompt = build_beat_prompt(chained, wall)
+    assert PLANTED_CLAUSE in prompt
+    assert "Brisk walking stride" not in prompt
+    assert "nothing man-made attached" in prompt
+    tc = next(b for b in chained["beats"] if b["id"] == "09-tc")
+    assert "tentacle" in tc["action"].lower()
+    assert extra_lora_entries(tc) == [("mystic", 1.0)]
 
 
 def test_rei_escape_notebook_is_isolated():
@@ -2873,6 +2942,8 @@ def test_rei_escape_notebook_is_isolated():
     assert "レイがクンニ" in src
     assert "ベロチューする" in src
     assert "敵1・誘う" in src
+    assert "トイレ・肉壁の触手がじゅぼ" in src
+    assert "全身に塗る" not in src
     assert 'BRANCH = "cursor/futanari-rei-escape-34e4"' in src
     assert "h3_episode_colab_main" in src
     assert "if rc:" in src
@@ -2888,17 +2959,7 @@ def test_rei_escape_notebook_is_isolated():
 
 def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
     raw = load_episode(REI_ESCAPE_DIR / "episode.json")
-    locked = {
-        "04-enemy1",
-        "05-enemy1-maw",
-        "06-fade-run-b",
-        "08-toilet",
-        "10-run-c",
-        "12-moth",
-        "14-fade-run-d",
-        "16-succ",
-        "22-succ-fade",
-    }
+    locked = {"04-enemy1", "08-toilet", "12-moth", "16-succ"}
     for beat in raw["beats"]:
         if beat["id"] in locked:
             assert beat.get("connect") == "t2v", beat["id"]
@@ -2909,12 +2970,14 @@ def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
     assert beat_source(by_id["01-open-stroke"]) == "t2v"
     assert beat_source(by_id["02-run-a"]) == "chain"
     assert beat_source(by_id["04-enemy1"]) == "t2v"
-    assert beat_source(by_id["05-enemy1-maw"]) == "t2v"
-    assert beat_source(by_id["06-fade-run-b"]) == "t2v"
+    assert beat_source(by_id["05-enemy1-maw"]) == "chain"
+    assert beat_source(by_id["06-fade-run-b"]) == "chain"
+    assert by_id["06-fade-run-b"].get("fade_cast") == ["beast"]
     assert beat_source(by_id["17-from-rei"]) == "chain"
     assert beat_source(by_id["20-fours-in"]) == "chain"
     assert beat_source(by_id["21-orgasm"]) == "chain"
-    assert beat_source(by_id["22-succ-fade"]) == "t2v"
+    assert beat_source(by_id["22-succ-fade"]) == "chain"
+    assert by_id["22-succ-fade"].get("fade_cast") == ["succubus"]
     cuts = prepare_episode(raw, connect_override="カット")
     assert all(beat_source(b) == "t2v" for b in cuts["beats"])
 
