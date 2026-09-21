@@ -93,6 +93,29 @@ CONNECT_MODES: dict[str, dict[str, Any]] = {
     },
 }
 
+# Scene-end walks (connect: "end" in JSON). Default keeps the vanish cut.
+END_CONNECT_MODES: dict[str, dict[str, Any]] = {
+    "t2v": {
+        "label_ja": "カット",
+        "choice_ja": "シーン終わりはカット（迷ったらこれ）",
+        "when_ja": "歩きは T2V。次のシーンは独立。相手と竿が残らない",
+        "hint_ja": "迷ったらこれ。行為のあとの歩きは撮り直し。次のシーンへ影響を残さない",
+        "recommend": True,
+    },
+    "chain": {
+        "label_ja": "次へ続ける",
+        "choice_ja": "次のシーンへ続ける",
+        "when_ja": "歩きと次の出会いを前クリップの最終フレームから I2V。連続して別シーンを出すとき",
+        "hint_ja": "連続して次のシーンを出すとき。歩きと次の出会いは最終フレームから続ける",
+    },
+    "follow": {
+        "label_ja": "1番に従う",
+        "choice_ja": "1番のつなぎに従う",
+        "when_ja": "シーン終わりも 1番どおり。1番がチェーンなら歩きもチェーン",
+        "hint_ja": "1番のつなぎを歩きにも使う",
+    },
+}
+
 # User-facing names. Aliases keep older episode.json valid.
 # stack entries are (lora_key, strength, optional). Larry never stacks with LightX2V turbo.
 PRESET_CANON: dict[str, dict[str, Any]] = {
@@ -174,6 +197,18 @@ CONNECT_ALIASES: dict[str, str] = _label_aliases(
         "着地": "landing",
         "着地スチールへ着く": "landing",
         "最終フレーム用意": "landing",
+    },
+)
+
+END_CONNECT_ALIASES: dict[str, str] = _label_aliases(
+    END_CONNECT_MODES,
+    {
+        "cut": "t2v",
+        "独立": "t2v",
+        "続ける": "chain",
+        "連続": "chain",
+        "inherit": "follow",
+        "従う": "follow",
     },
 )
 
@@ -651,6 +686,15 @@ def canonical_connect(name: str) -> str:
     return CONNECT_ALIASES.get(raw, raw)
 
 
+def canonical_end_connect(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in END_CONNECT_MODES:
+        return raw
+    return END_CONNECT_ALIASES.get(raw, raw)
+
+
 def canonical_combat(name: str) -> str:
     raw = str(name or "").strip()
     if not raw:
@@ -839,6 +883,8 @@ def parse_appear(raw: str | dict[str, Any] | None) -> dict[str, bool]:
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
+    if kind == "end_connect":
+        return END_CONNECT_MODES
     if kind == "camera":
         return CAMERA_PACKS
     if kind == "preset":
@@ -898,6 +944,7 @@ def form_readme(kind: str) -> str:
 def describe_run(
     *,
     connect: str = "",
+    end_connect: str = "",
     camera: str = "",
     preset: str = "",
     combat: str = "",
@@ -912,6 +959,7 @@ def describe_run(
 ) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
+    e_key = canonical_end_connect(end_connect) or "t2v"
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
     f_key = canonical_combat(combat) or "off"
@@ -922,6 +970,7 @@ def describe_run(
     n_key = canonical_tsuno(tsuno) or "off"
     shown = parse_appear(appear)
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
+    e = END_CONNECT_MODES.get(e_key) or END_CONNECT_MODES["t2v"]
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
@@ -953,6 +1002,7 @@ def describe_run(
         f"{head}\n"
         f"  話        {ep_ja}\n"
         f"  1 つなぎ  {c['choice_ja']}  — {c['when_ja']}\n"
+        f"  終わり    {e['choice_ja']}  — {e['when_ja']}\n"
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
@@ -963,5 +1013,5 @@ def describe_run(
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
-        "迷ったら既定のままで Run all。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
+        "迷ったら既定のままで Run all。シーン終わりは連続して次を出すときだけ変える。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

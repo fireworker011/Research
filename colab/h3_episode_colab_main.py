@@ -9,6 +9,7 @@ Env:
     H3_EPISODE_PRESET   speed | balance | quality（日本語: スピード / バランス / 質）
   H3_EPISODE_CAMERA   side2d | action3d（日本語: 横スク / 3Dアクション）
   H3_EPISODE_CONNECT  t2v | chain | landing（日本語: カット / 前の最終フレームから続ける / 用意した最終フレームへ着く。カットとチェーンの1本目は T2V）
+  H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
   H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
@@ -69,6 +70,7 @@ def main() -> int:
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
             camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
             connect_override=(os.environ.get("H3_EPISODE_CONNECT") or "").strip() or None,
+            end_connect_override=(os.environ.get("H3_EPISODE_END_CONNECT") or "").strip() or None,
             combat_override=(os.environ.get("H3_EPISODE_COMBAT") or "").strip() or None,
             story_override=(os.environ.get("H3_EPISODE_STORY") or "").strip() or None,
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,

@@ -101,6 +101,7 @@ from h3_episode_packs import (
     CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
+    END_CONNECT_MODES,
     FIGHT_STORIES,
     GIN_MODES,
     GIN_OVERLAY_KEYS,
@@ -118,6 +119,7 @@ from h3_episode_packs import (
     canonical_camera,
     canonical_combat,
     canonical_connect,
+    canonical_end_connect,
     canonical_gin,
     canonical_invite_pose,
     canonical_preset,
@@ -216,6 +218,7 @@ ROUTE_OVERLAY_KEYS = (
 )
 OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
 CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
+BEAT_CONNECT_END = "end"
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
 STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-district-short"})
@@ -918,11 +921,22 @@ def episode_camera_pack(ep: dict[str, Any], override: str | None = None) -> str:
 
 
 def episode_connect(ep: dict[str, Any], override: str | None = None) -> str:
-    """How GPU beats are wired. Empty keeps authored source/still_as."""
+    """t2v / chain / landing. Empty keeps authored source/still_as."""
     raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("connect") or "").strip()
     if not raw:
         return ""
     return canonical_connect(raw)
+
+
+def episode_end_connect(ep: dict[str, Any], override: str | None = None) -> str:
+    """t2v / chain / follow. Empty keeps the recommended vanish cut."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("end_connect") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_end_connect(raw)
+    if name not in END_CONNECT_MODES:
+        raise EpisodeError(f"render.end_connect must be one of {list(END_CONNECT_MODES)}")
+    return name
 
 
 def connect_rotates_camera(ep: dict[str, Any], override: str | None = None) -> bool:
@@ -1037,7 +1051,7 @@ def _expand_overlay(body: dict[str, Any], chosen: Any) -> list[dict[str, Any]]:
 
 
 def _honor_beat_connect(ep: dict[str, Any]) -> dict[str, Any]:
-    """Walk/vanish beats stay T2V even when the episode connect is chain."""
+    """Authored t2v locks stay T2V even when the episode connect is chain."""
     for beat in ep.get("beats") or []:
         if not isinstance(beat, dict) or is_ui_beat(beat):
             continue
@@ -1045,6 +1059,69 @@ def _honor_beat_connect(ep: dict[str, Any]) -> dict[str, Any]:
             beat["source"] = "t2v"
             beat.pop("still_as", None)
     return ep
+
+
+def is_end_connect_beat(beat: dict[str, Any]) -> bool:
+    return str(beat.get("connect") or "").strip().lower() == BEAT_CONNECT_END
+
+
+def _wire_runtime_connect(beat: dict[str, Any], *, chain: bool) -> None:
+    if beat.get("reuse") or is_ui_beat(beat):
+        return
+    beat["source"] = "chain" if chain else "t2v"
+    beat.pop("still_as", None)
+
+
+def apply_end_connect(ep: dict[str, Any], *, end_connect: str | None = None) -> dict[str, Any]:
+    """Wire scene-end walks (connect: end) from the runtime dropdown.
+
+    t2v: vanish cut, next scene independent (recommended).
+    chain: I2V the walk and the following non-ui beat from the previous last frame.
+    follow: leave whatever 1番 already wired.
+    """
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if end_connect not in (None, ""):
+        render["end_connect"] = canonical_end_connect(end_connect) or end_connect
+        out["render"] = render
+    key = episode_end_connect(out) or "t2v"
+    if key not in END_CONNECT_MODES:
+        raise EpisodeError(f"render.end_connect must be one of {list(END_CONNECT_MODES)}")
+    render = dict(out.get("render") or {})
+    render["end_connect"] = key
+    out["render"] = render
+    if key == "follow":
+        return out
+    beats = list(out.get("beats") or [])
+    chain = key == "chain"
+    gpu_seen = 0
+    follow_next = False
+    wired: list[Any] = []
+    for beat in beats:
+        if not isinstance(beat, dict):
+            wired.append(beat)
+            continue
+        item = dict(beat)
+        if is_ui_beat(item):
+            wired.append(item)
+            continue
+        if follow_next:
+            if not item.get("reuse"):
+                _wire_runtime_connect(item, chain=True)
+            follow_next = False
+            gpu_seen += 1
+            wired.append(item)
+            continue
+        if is_end_connect_beat(item):
+            _wire_runtime_connect(item, chain=bool(chain and gpu_seen))
+            follow_next = bool(chain)
+            gpu_seen += 1
+            wired.append(item)
+            continue
+        gpu_seen += 1
+        wired.append(item)
+    out["beats"] = wired
+    return out
 
 
 def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
@@ -1350,6 +1427,7 @@ def prepare_episode(
     ep: dict[str, Any],
     *,
     connect_override: str | None = None,
+    end_connect_override: str | None = None,
     camera_pack_override: str | None = None,
     preset_override: str | None = None,
     combat_override: str | None = None,
@@ -1362,10 +1440,12 @@ def prepare_episode(
     scenes_override: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
-    out = apply_connect_mode(ep, connect_override)
+    out = copy.deepcopy(ep)
     render = dict(out.get("render") or {})
     if connect_override not in (None, ""):
         render["connect"] = canonical_connect(connect_override)
+    if end_connect_override not in (None, ""):
+        render["end_connect"] = canonical_end_connect(end_connect_override)
     if camera_pack_override not in (None, ""):
         render["camera_pack"] = canonical_camera(camera_pack_override)
     if preset_override not in (None, ""):
@@ -1396,7 +1476,9 @@ def prepare_episode(
     out = apply_toilet_route(out, toilet=toilet_override)
     out = apply_optional_events(out, gin=gin_override, tsuno=tsuno_override)
     out = apply_appear_route(out, appear=appear_override)
-    return _honor_beat_connect(out)
+    out = apply_connect_mode(out)
+    out = _honor_beat_connect(out)
+    return apply_end_connect(out, end_connect=end_connect_override)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -1841,6 +1923,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         connect_key = canonical_connect(connect)
         if connect_key not in CONNECT_MODES:
             errs.append(f"render.connect must be one of {list(CONNECT_MODES)} (add a mode in h3_episode_packs.py)")
+    end_connect = str(render.get("end_connect") or "").strip()
+    if end_connect:
+        end_key = canonical_end_connect(end_connect)
+        if end_key not in END_CONNECT_MODES:
+            errs.append(f"render.end_connect must be one of {list(END_CONNECT_MODES)}")
     combat = str(render.get("combat") or "").strip()
     if combat:
         combat_key = canonical_combat(combat)
@@ -3285,6 +3372,7 @@ def run_episode(
     preset_override: str | None = None,
     camera_pack_override: str | None = None,
     connect_override: str | None = None,
+    end_connect_override: str | None = None,
     combat_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
@@ -3304,6 +3392,7 @@ def run_episode(
     ep = prepare_episode(
         ep,
         connect_override=connect_override,
+        end_connect_override=end_connect_override,
         camera_pack_override=camera_pack_override,
         preset_override=preset_override,
         combat_override=combat_override,
@@ -3318,6 +3407,7 @@ def run_episode(
     print(
         describe_run(
             connect=episode_connect(ep),
+            end_connect=episode_end_connect(ep),
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),

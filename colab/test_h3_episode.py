@@ -82,6 +82,7 @@ from h3_episode import (  # noqa: E402
     finish_episode,
     forbidden_hits,
     gpu_index_map,
+    is_end_connect_beat,
     is_ui_beat,
     load_episode,
     materialize_reuse,
@@ -243,6 +244,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "格闘LoRAオン（ハイメモリ専用）" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
+    assert "H3_EPISODE_END_CONNECT" in src
+    assert 'END_CONNECT = "シーン終わりはカット（迷ったらこれ）"' in src
+    assert "次のシーンへ続ける" in src
+    assert "1番のつなぎに従う" in src
     assert "H3_EPISODE_COMBAT" in src
     assert "H3_EPISODE_STORY" in src
     assert "H3_EPISODE_INVITE_POSE" in src
@@ -277,7 +282,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "シーンごと" in md
     assert "hospital-exit-adult" in md
     assert "病棟の話" in md
-    assert "用意した最終フレーム" in md
+    assert "1. つなぎ方" in md or "つなぎ方" in md
+    assert "シーン終わりのつなぎ" in md
     assert "前の最終フレームから続ける" in md
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
@@ -1757,7 +1763,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "grown shaft is gone" in walk["action"].lower()
     assert "no penis" in walk["action"].lower()
     assert "gone from frame one" in walk["action"].lower()
-    assert walk.get("connect") == "t2v"
+    assert is_end_connect_beat(walk)
+    assert beat_source(walk) == "t2v"
     assert "zombie" not in lick_prompt.lower() and "corpse" not in lick_prompt.lower()
     assert "drool" in action_blob(taken, "04-gin")
     jupo = next(b for b in taken["beats"] if b["id"] == "04-gin-jupo")
@@ -1793,6 +1800,63 @@ def test_hospital_gin_tsuno_optional_events():
     assert "looks back" in action_blob(invite, "04-tsuno")
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
+
+
+def test_hospital_end_connect_is_runtime_selectable():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert raw["render"]["end_connect"] == "t2v"
+    defaulted = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
+    walk = next(b for b in defaulted["beats"] if b["id"] == "06-doggy-walk")
+    assert is_end_connect_beat(walk)
+    assert beat_source(walk) == "t2v"
+    nxt = None
+    seen = False
+    for beat in defaulted["beats"]:
+        if beat["id"] == "06-doggy-walk":
+            seen = True
+            continue
+        if seen and not is_ui_beat(beat):
+            nxt = beat
+            break
+    assert nxt is not None
+    assert beat_source(nxt) == "chain"
+
+    chained = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        connect_override="カット",
+        end_connect_override="次のシーンへ続ける",
+    )
+    walk_c = next(b for b in chained["beats"] if b["id"] == "06-doggy-walk")
+    assert beat_source(walk_c) == "chain"
+    seen = False
+    follow = None
+    for beat in chained["beats"]:
+        if beat["id"] == "06-doggy-walk":
+            seen = True
+            continue
+        if seen and not is_ui_beat(beat):
+            follow = beat
+            break
+    assert follow is not None
+    assert beat_source(follow) == "chain"
+    assert chained["render"]["end_connect"] == "chain"
+
+    followed = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        connect_override="chain",
+        end_connect_override="1番のつなぎに従う",
+    )
+    walk_f = next(b for b in followed["beats"] if b["id"] == "06-doggy-walk")
+    assert beat_source(walk_f) == "chain"
+    gin_walk = next(
+        b
+        for b in prepare_episode(raw, gin_override="犯される", end_connect_override="follow", connect_override="chain")["beats"]
+        if b["id"] == "04-gin-walk"
+    )
+    assert beat_source(gin_walk) == "chain"
+    assert validate_episode(chained, root=HOSPITAL_DIR) == []
 
 
 def test_hospital_stills_are_not_kasumi_copies():
@@ -1867,6 +1931,12 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert canonical_connect("最終フレーム用意") == "landing"
     assert canonical_connect("i2v_chain") == "chain"
     assert ui_default("connect") == "カット（本ごと独立・迷ったらこれ）"
+    assert ui_default("end_connect") == "シーン終わりはカット（迷ったらこれ）"
+    assert ui_choices("end_connect") == [
+        "シーン終わりはカット（迷ったらこれ）",
+        "次のシーンへ続ける",
+        "1番のつなぎに従う",
+    ]
     assert ui_default("camera") == "横スク（真横・全身・迷ったらこれ）"
     assert ui_default("preset") == "バランス（迷ったらこれ）"
     assert ui_choices("connect") == [
@@ -1885,6 +1955,7 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     ]
     picked = describe_run(connect="カット", camera="横スク", preset="バランス", episode="demo")
     assert "カット（本ごと独立・迷ったらこれ）" in picked
+    assert "シーン終わりはカット（迷ったらこれ）" in picked
     assert "迷ったら既定のままで Run all" in picked
     assert "6 誘う" in picked
     assert "7 トイレ" in picked
@@ -2397,6 +2468,7 @@ def test_exec_script_is_self_contained():
     assert "H3_EPISODE_FRESH'] = '1'" in script
     assert "H3_EPISODE_CAMERA" in script
     assert "H3_EPISODE_CONNECT" in script
+    assert "H3_EPISODE_END_CONNECT" in script
     assert "H3_EPISODE_COMBAT" in script
     assert "H3_EPISODE_STORY" in script
     assert "H3_EPISODE_INVITE_POSE" in script

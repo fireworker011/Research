@@ -26,6 +26,8 @@ from h3_episode_packs import (  # noqa: E402
     CAMERA_ALIASES,
     COMBAT_ALIASES,
     CONNECT_ALIASES,
+    END_CONNECT_ALIASES,
+    END_CONNECT_MODES,
     GIN_ALIASES,
     GIN_MODES,
     INVITE_POSE_ALIASES,
@@ -42,7 +44,7 @@ DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", end_connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -55,6 +57,7 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE_PRESET'] = {preset!r}\n"
         f"os.environ['H3_EPISODE_CAMERA'] = {camera!r}\n"
         f"os.environ['H3_EPISODE_CONNECT'] = {connect!r}\n"
+        f"os.environ['H3_EPISODE_END_CONNECT'] = {end_connect!r}\n"
         f"os.environ['H3_EPISODE_COMBAT'] = {combat!r}\n"
         f"os.environ['H3_EPISODE_STORY'] = {story!r}\n"
         f"os.environ['H3_EPISODE_INVITE_POSE'] = {invite_pose!r}\n"
@@ -91,6 +94,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--preset", default="", choices=["", *PRESETS], help="画質: speed / balance / quality（迷ったら balance）")
     p.add_argument("--camera", default="", choices=["", *CAMERA_PACKS, *CAMERA_ALIASES], help="カメラ: side2d / action3d（迷ったら side2d）")
     p.add_argument("--connect", default="", choices=["", *CONNECT_MODES, *CONNECT_ALIASES], help="つなぎ: t2v=カット / chain=前の最終フレームからI2V / landing=用意した最終フレームへ（迷ったら t2v）")
+    p.add_argument("--end-connect", default="", choices=["", *END_CONNECT_MODES, *END_CONNECT_ALIASES], help="シーン終わり: t2v=カット / chain=次へ続ける / follow=1番に従う（迷ったら t2v）")
     p.add_argument("--combat", default="", choices=["", *COMBAT_MODES, *COMBAT_ALIASES], help="格闘LoRA: off / on（on はハイメモリ専用。迷ったら off）")
     p.add_argument("--story", default="", choices=["", *STORY_MODES, *STORY_ALIASES], help="構成: accept / invite / evade / fight_win / fight_lose（病棟。迷ったら accept）")
     p.add_argument("--invite-pose", default="", choices=["", *INVITE_POSE_MODES, *INVITE_POSE_ALIASES], help="誘うポーズ: all_fours / m_open / ride（病棟。迷ったら all_fours）")
@@ -117,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         main_path=main_path,
         camera=args.camera,
         connect=args.connect,
+        end_connect=getattr(args, "end_connect", ""),
         combat=args.combat,
         story=args.story,
         invite_pose=getattr(args, "invite_pose", ""),
