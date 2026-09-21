@@ -124,8 +124,33 @@ from h3_episode_packs import (
     canonical_invite_pose,
     canonical_preset,
     canonical_story,
+    REI_ATTACK_MODES,
+    REI_ATTACK_OVERLAY_KEYS,
+    REI_ESCAPE_OVERLAY_KEYS,
+    REI_FILTH_BODY,
+    REI_FILTH_HINT,
+    REI_FILTH_SEAT,
+    REI_KISS_MODES,
+    REI_KISS_OVERLAY_KEYS,
+    REI_MAST_MODES,
+    REI_MAST_OVERLAY_KEYS,
+    REI_MOTH_MODES,
+    REI_MOTH_OVERLAY_KEYS,
+    REI_ORAL_MODES,
+    REI_ORAL_OVERLAY_KEYS,
+    REI_POSE_MODES,
+    REI_POSE_OVERLAY_KEYS,
+    REI_TOILET_MODES,
+    REI_TOILET_OVERLAY_KEYS,
     canonical_toilet,
     canonical_tsuno,
+    canonical_rei_attack,
+    canonical_rei_kiss,
+    canonical_rei_mast,
+    canonical_rei_moth,
+    canonical_rei_oral,
+    canonical_rei_pose,
+    canonical_rei_toilet,
     describe_run,
     expand_presets,
     parse_appear,
@@ -209,12 +234,14 @@ INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())
 TOILET_ROUTE_KEYS = tuple(TOILET_OVERLAY_KEYS.values())
 GIN_ROUTE_KEYS = tuple(GIN_OVERLAY_KEYS.values())
 TSUNO_ROUTE_KEYS = tuple(TSUNO_OVERLAY_KEYS.values())
+REI_ESCAPE_ROUTE_KEYS = tuple(REI_ESCAPE_OVERLAY_KEYS)
 ROUTE_OVERLAY_KEYS = (
     STORY_ROUTE_KEYS
     + INVITE_POSE_ROUTE_KEYS
     + TOILET_ROUTE_KEYS
     + GIN_ROUTE_KEYS
     + TSUNO_ROUTE_KEYS
+    + REI_ESCAPE_ROUTE_KEYS
 )
 OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
 CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
@@ -479,6 +506,51 @@ def episode_tsuno(ep: dict[str, Any], override: str | None = None) -> str:
     if name not in TSUNO_MODES:
         raise EpisodeError(f"render.tsuno must be one of {list(TSUNO_MODES)}")
     return name
+
+
+def _rei_choice(
+    ep: dict[str, Any],
+    *,
+    field: str,
+    override: str | None,
+    canon: Callable[[str], str],
+    modes: dict[str, dict[str, Any]],
+) -> str:
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get(field) or "").strip()
+    if not raw:
+        return ""
+    name = canon(raw)
+    if name not in modes:
+        raise EpisodeError(f"render.{field} must be one of {list(modes)}")
+    return name
+
+
+def episode_rei_mast(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_mast", override=override, canon=canonical_rei_mast, modes=REI_MAST_MODES)
+
+
+def episode_rei_toilet(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_toilet", override=override, canon=canonical_rei_toilet, modes=REI_TOILET_MODES)
+
+
+def episode_rei_moth(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_moth", override=override, canon=canonical_rei_moth, modes=REI_MOTH_MODES)
+
+
+def episode_rei_attack(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_attack", override=override, canon=canonical_rei_attack, modes=REI_ATTACK_MODES)
+
+
+def episode_rei_kiss(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_kiss", override=override, canon=canonical_rei_kiss, modes=REI_KISS_MODES)
+
+
+def episode_rei_oral(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_oral", override=override, canon=canonical_rei_oral, modes=REI_ORAL_MODES)
+
+
+def episode_rei_pose(ep: dict[str, Any], override: str | None = None) -> str:
+    return _rei_choice(ep, field="rei_pose", override=override, canon=canonical_rei_pose, modes=REI_POSE_MODES)
 
 
 def episode_appear(ep: dict[str, Any], override: str | dict[str, Any] | None = None) -> dict[str, bool]:
@@ -1404,6 +1476,175 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
     return _apply_story_ending(out, spec)
 
 
+def _has_rei_escape_overlays(ep: dict[str, Any]) -> bool:
+    return any(
+        isinstance(b, dict)
+        and (
+            str(b.get("rei_slot") or "").strip()
+            or any(_is_overlay_payload(b.get(key)) for key in REI_ESCAPE_ROUTE_KEYS)
+        )
+        for b in (ep.get("beats") or [])
+    )
+
+
+def _inject_rei_filth(beat: dict[str, Any], filth: str | None) -> dict[str, Any]:
+    if filth not in ("seat", "body"):
+        return beat
+    out = dict(beat)
+    clause = REI_FILTH_BODY if filth == "body" else REI_FILTH_SEAT
+    action = str(out.get("action") or "").strip()
+    if clause not in action:
+        out["action"] = (action + " " + clause).strip()
+    hud = dict(out.get("hud") or {})
+    hud["hint"] = REI_FILTH_HINT[filth]
+    out["hud"] = hud
+    return out
+
+
+def apply_rei_escape_route(
+    ep: dict[str, Any],
+    *,
+    mast: str | None = None,
+    toilet: str | None = None,
+    moth: str | None = None,
+    attack: str | None = None,
+    kiss: str | None = None,
+    oral: str | None = None,
+    pose: str | None = None,
+) -> dict[str, Any]:
+    """Resolve futanari-rei-escape overlays. Episodes without rei_* keys are unchanged."""
+    out = copy.deepcopy(ep)
+    if not _has_rei_escape_overlays(out):
+        return out
+    render = dict(out.get("render") or {})
+    if mast not in (None, ""):
+        render["rei_mast"] = canonical_rei_mast(mast) or mast
+    if toilet not in (None, ""):
+        render["rei_toilet"] = canonical_rei_toilet(toilet) or toilet
+    if moth not in (None, ""):
+        render["rei_moth"] = canonical_rei_moth(moth) or moth
+    if attack not in (None, ""):
+        render["rei_attack"] = canonical_rei_attack(attack) or attack
+    if kiss not in (None, ""):
+        render["rei_kiss"] = canonical_rei_kiss(kiss) or kiss
+    if oral not in (None, ""):
+        render["rei_oral"] = canonical_rei_oral(oral) or oral
+    if pose not in (None, ""):
+        render["rei_pose"] = canonical_rei_pose(pose) or pose
+    out["render"] = render
+    mast_key = episode_rei_mast(out) or "skip"
+    toilet_key = episode_rei_toilet(out) or "ta"
+    moth_key = episode_rei_moth(out) or "tail"
+    attack_key = episode_rei_attack(out) or "rei"
+    kiss_key = episode_rei_kiss(out) or "off"
+    oral_key = episode_rei_oral(out) or "skip"
+    pose_key = episode_rei_pose(out) or "fours"
+    if mast_key not in REI_MAST_MODES:
+        raise EpisodeError(f"render.rei_mast must be one of {list(REI_MAST_MODES)}")
+    if toilet_key not in REI_TOILET_MODES:
+        raise EpisodeError(f"render.rei_toilet must be one of {list(REI_TOILET_MODES)}")
+    if moth_key not in REI_MOTH_MODES:
+        raise EpisodeError(f"render.rei_moth must be one of {list(REI_MOTH_MODES)}")
+    if attack_key not in REI_ATTACK_MODES:
+        raise EpisodeError(f"render.rei_attack must be one of {list(REI_ATTACK_MODES)}")
+    if kiss_key not in REI_KISS_MODES:
+        raise EpisodeError(f"render.rei_kiss must be one of {list(REI_KISS_MODES)}")
+    if oral_key not in REI_ORAL_MODES:
+        raise EpisodeError(f"render.rei_oral must be one of {list(REI_ORAL_MODES)}")
+    if pose_key not in REI_POSE_MODES:
+        raise EpisodeError(f"render.rei_pose must be one of {list(REI_POSE_MODES)}")
+    attack_prefix = ""
+    if attack_key == "her":
+        attack_prefix = (
+            "The succubus initiates: she pounces, torn wings wrap Rei, claws on Rei's hips. "
+        )
+    else:
+        attack_prefix = (
+            "Rei initiates: she grabs the succubus by the waist and presses her to the meat wall. "
+        )
+    filth: str | None = None
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        slot = str(beat.get("rei_slot") or "").strip()
+        body = _pop_overlay_keys(beat, REI_ESCAPE_ROUTE_KEYS)
+        body.pop("rei_slot", None)
+        chosen: Any = None
+        skip = False
+        if slot == "mast":
+            field = REI_MAST_OVERLAY_KEYS.get(mast_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "toilet":
+            field = REI_TOILET_OVERLAY_KEYS.get(toilet_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "moth":
+            field = REI_MOTH_OVERLAY_KEYS.get(moth_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "attack":
+            field = REI_ATTACK_OVERLAY_KEYS.get(attack_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "kiss":
+            field = REI_KISS_OVERLAY_KEYS.get(kiss_key) if kiss_key != "off" else None
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "oral":
+            field = REI_ORAL_OVERLAY_KEYS.get(oral_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        elif slot == "pose":
+            field = REI_POSE_OVERLAY_KEYS.get(pose_key)
+            chosen = beat.get(field) if field else None
+            skip = not _is_overlay_payload(chosen)
+        if skip:
+            continue
+        expanded = _expand_overlay(body, chosen) if _is_overlay_payload(chosen) else [body]
+        after_toilet = bool(filth)
+        if slot == "toilet":
+            filth = str((REI_TOILET_MODES.get(toilet_key) or {}).get("filth") or "seat")
+        for item in expanded:
+            row = dict(item)
+            if after_toilet:
+                row = _inject_rei_filth(row, filth)
+            if slot in ("attack", "kiss", "oral", "pose") or str(row.get("id") or "").startswith("21-"):
+                action = str(row.get("action") or "")
+                if attack_prefix and attack_prefix not in action:
+                    row["action"] = attack_prefix + action
+            beats.append(row)
+    if not beats:
+        raise EpisodeError("rei-escape: at least one footage beat must stay")
+    out["beats"] = beats
+    render = dict(out.get("render") or {})
+    render["rei_mast"] = mast_key
+    render["rei_toilet"] = toilet_key
+    render["rei_moth"] = moth_key
+    render["rei_attack"] = attack_key
+    render["rei_kiss"] = kiss_key
+    render["rei_oral"] = oral_key
+    render["rei_pose"] = pose_key
+    out["render"] = render
+    cards = dict(out.get("cards") or {})
+    cards.pop("fail", None)
+    out["cards"] = cards
+    last = None
+    for i in range(len(beats) - 1, -1, -1):
+        if isinstance(beats[i], dict):
+            last = dict(beats[i])
+            hud = dict(last.get("hud") or {})
+            hud["complete"] = True
+            last["hud"] = last.get("hud") and hud or hud
+            last["hud"] = hud
+            beats[i] = last
+            out["beats"] = beats
+            break
+    return out
+
+
 def resolve_episode_options(
     ep: dict[str, Any],
     *,
@@ -1414,13 +1655,30 @@ def resolve_episode_options(
     tsuno: str | None = None,
     appear: str | dict[str, Any] | None = None,
     scenes: str | dict[str, Any] | None = None,
+    rei_mast: str | None = None,
+    rei_toilet: str | None = None,
+    rei_moth: str | None = None,
+    rei_attack: str | None = None,
+    rei_kiss: str | None = None,
+    rei_oral: str | None = None,
+    rei_pose: str | None = None,
 ) -> dict[str, Any]:
-    """Story + invite pose + toilet + optional events + appear + per-scene, without connect/combat Colab wiring."""
+    """Story + invite pose + toilet + optional events + appear + per-scene + rei-escape, without connect/combat Colab wiring."""
     out = apply_story_route(ep, story=story, scenes=scenes) if _has_story_overlays(ep) else copy.deepcopy(ep)
     out = apply_invite_pose(out, pose=pose)
     out = apply_toilet_route(out, toilet=toilet)
     out = apply_optional_events(out, gin=gin, tsuno=tsuno)
-    return apply_appear_route(out, appear=appear)
+    out = apply_appear_route(out, appear=appear)
+    return apply_rei_escape_route(
+        out,
+        mast=rei_mast,
+        toilet=rei_toilet,
+        moth=rei_moth,
+        attack=rei_attack,
+        kiss=rei_kiss,
+        oral=rei_oral,
+        pose=rei_pose,
+    )
 
 
 def prepare_episode(
@@ -1438,6 +1696,13 @@ def prepare_episode(
     tsuno_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
+    rei_mast_override: str | None = None,
+    rei_toilet_override: str | None = None,
+    rei_moth_override: str | None = None,
+    rei_attack_override: str | None = None,
+    rei_kiss_override: str | None = None,
+    rei_oral_override: str | None = None,
+    rei_pose_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -1467,6 +1732,20 @@ def prepare_episode(
         render["appear"] = parse_appear(appear_override)
     if scenes_override not in (None, ""):
         render["scenes"] = scenes_to_choices(episode_scenes(out, scenes_override))
+    if rei_mast_override not in (None, ""):
+        render["rei_mast"] = canonical_rei_mast(rei_mast_override) or rei_mast_override
+    if rei_toilet_override not in (None, ""):
+        render["rei_toilet"] = canonical_rei_toilet(rei_toilet_override) or rei_toilet_override
+    if rei_moth_override not in (None, ""):
+        render["rei_moth"] = canonical_rei_moth(rei_moth_override) or rei_moth_override
+    if rei_attack_override not in (None, ""):
+        render["rei_attack"] = canonical_rei_attack(rei_attack_override) or rei_attack_override
+    if rei_kiss_override not in (None, ""):
+        render["rei_kiss"] = canonical_rei_kiss(rei_kiss_override) or rei_kiss_override
+    if rei_oral_override not in (None, ""):
+        render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
+    if rei_pose_override not in (None, ""):
+        render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
     out["render"] = render
     if _has_story_overlays(out):
         out = apply_story_route(out, story=story_override, scenes=scenes_override)
@@ -1476,6 +1755,16 @@ def prepare_episode(
     out = apply_toilet_route(out, toilet=toilet_override)
     out = apply_optional_events(out, gin=gin_override, tsuno=tsuno_override)
     out = apply_appear_route(out, appear=appear_override)
+    out = apply_rei_escape_route(
+        out,
+        mast=rei_mast_override,
+        toilet=rei_toilet_override,
+        moth=rei_moth_override,
+        attack=rei_attack_override,
+        kiss=rei_kiss_override,
+        oral=rei_oral_override,
+        pose=rei_pose_override,
+    )
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     return apply_end_connect(out, end_connect=end_connect_override)
@@ -1835,6 +2124,42 @@ def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
 
 
 def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> list[str]:
+    if _has_rei_escape_overlays(ep):
+        errs: list[str] = []
+
+        def _check(label: str, **kwargs: Any) -> None:
+            try:
+                resolved = resolve_episode_options(ep, **kwargs)
+            except EpisodeError as exc:
+                errs.append(f"{label}: {exc}")
+                return
+            for err in validate_episode(resolved, root=root):
+                errs.append(f"{label}: {err}")
+
+        _check("rei-default")
+        _check("rei-mast-stand", rei_mast="stand")
+        _check("rei-mast-back", rei_mast="back")
+        _check("rei-toilet-tb", rei_toilet="tb")
+        _check("rei-toilet-tc", rei_toilet="tc")
+        _check("rei-moth-mouth", rei_moth="mouth")
+        _check("rei-attack-her", rei_attack="her")
+        _check("rei-kiss-on", rei_kiss="on")
+        _check("rei-oral-her", rei_oral="her")
+        _check("rei-oral-rei", rei_oral="rei")
+        _check("rei-pose-wall", rei_pose="wall")
+        _check("rei-pose-straddle", rei_pose="straddle")
+        _check("rei-pose-supine", rei_pose="supine")
+        _check(
+            "rei-full",
+            rei_mast="stand",
+            rei_toilet="tc",
+            rei_moth="mouth",
+            rei_attack="her",
+            rei_kiss="on",
+            rei_oral="her",
+            rei_pose="straddle",
+        )
+        return errs
     if _has_story_overlays(ep):
         errs: list[str] = []
 
@@ -3381,6 +3706,13 @@ def run_episode(
     tsuno_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
+    rei_mast_override: str | None = None,
+    rei_toilet_override: str | None = None,
+    rei_moth_override: str | None = None,
+    rei_attack_override: str | None = None,
+    rei_kiss_override: str | None = None,
+    rei_oral_override: str | None = None,
+    rei_pose_override: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -3403,6 +3735,13 @@ def run_episode(
         tsuno_override=tsuno_override,
         appear_override=appear_override,
         scenes_override=scenes_override,
+        rei_mast_override=rei_mast_override,
+        rei_toilet_override=rei_toilet_override,
+        rei_moth_override=rei_moth_override,
+        rei_attack_override=rei_attack_override,
+        rei_kiss_override=rei_kiss_override,
+        rei_oral_override=rei_oral_override,
+        rei_pose_override=rei_pose_override,
     )
     print(
         describe_run(
@@ -3419,6 +3758,13 @@ def run_episode(
             appear=episode_appear(ep),
             scenes=(ep.get("render") or {}).get("scenes"),
             episode=str(ep.get("slug") or ""),
+            rei_mast=str((ep.get("render") or {}).get("rei_mast") or ""),
+            rei_toilet=str((ep.get("render") or {}).get("rei_toilet") or ""),
+            rei_moth=str((ep.get("render") or {}).get("rei_moth") or ""),
+            rei_attack=str((ep.get("render") or {}).get("rei_attack") or ""),
+            rei_kiss=str((ep.get("render") or {}).get("rei_kiss") or ""),
+            rei_oral=str((ep.get("render") or {}).get("rei_oral") or ""),
+            rei_pose=str((ep.get("render") or {}).get("rei_pose") or ""),
         )
     )
     errs = preflight(ep, root)
@@ -3674,6 +4020,13 @@ def _usage() -> str:
         "  --tsuno off|accept_stand|invite_stand（病棟の角オプション。迷ったら off）\n"
         "  --appear miki,rei,kana,shino（病棟の登場。外した名前はシーンごと飛ばす）\n"
         "  --scenes miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）\n"
+        "  --rei-mast skip|stand|back（レイ脱出の合間おな。迷ったら skip）\n"
+        "  --rei-toilet ta|tb|tc（レイ脱出の糞トイレ。迷ったら ta）\n"
+        "  --rei-moth tail|mouth（レイ脱出の蛾女。迷ったら tail）\n"
+        "  --rei-attack rei|her（レイ脱出の襲う側。迷ったら rei）\n"
+        "  --rei-kiss off|on（レイ脱出のキス。迷ったら off）\n"
+        "  --rei-oral skip|her|rei（レイ脱出の口。迷ったら skip）\n"
+        "  --rei-pose fours|wall|straddle|supine（レイ脱出の体位は動き。迷ったら fours）\n"
     )
 
 
@@ -3704,6 +4057,13 @@ def main(argv: list[str] | None = None) -> int:
     tsuno = None
     appear = None
     scenes = None
+    rei_mast = None
+    rei_toilet = None
+    rei_moth = None
+    rei_attack = None
+    rei_kiss = None
+    rei_oral = None
+    rei_pose = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--preset" in opts:
@@ -3728,6 +4088,20 @@ def main(argv: list[str] | None = None) -> int:
         appear = opts[opts.index("--appear") + 1]
     if "--scenes" in opts:
         scenes = opts[opts.index("--scenes") + 1]
+    if "--rei-mast" in opts:
+        rei_mast = opts[opts.index("--rei-mast") + 1]
+    if "--rei-toilet" in opts:
+        rei_toilet = opts[opts.index("--rei-toilet") + 1]
+    if "--rei-moth" in opts:
+        rei_moth = opts[opts.index("--rei-moth") + 1]
+    if "--rei-attack" in opts:
+        rei_attack = opts[opts.index("--rei-attack") + 1]
+    if "--rei-kiss" in opts:
+        rei_kiss = opts[opts.index("--rei-kiss") + 1]
+    if "--rei-oral" in opts:
+        rei_oral = opts[opts.index("--rei-oral") + 1]
+    if "--rei-pose" in opts:
+        rei_pose = opts[opts.index("--rei-pose") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
     ep = prepare_episode(
@@ -3743,6 +4117,13 @@ def main(argv: list[str] | None = None) -> int:
         tsuno_override=tsuno,
         appear_override=appear,
         scenes_override=scenes,
+        rei_mast_override=rei_mast,
+        rei_toilet_override=rei_toilet,
+        rei_moth_override=rei_moth,
+        rei_attack_override=rei_attack,
+        rei_kiss_override=rei_kiss,
+        rei_oral_override=rei_oral,
+        rei_pose_override=rei_pose,
     )
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():

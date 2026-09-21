@@ -40,6 +40,7 @@ from h3_episode import (  # noqa: E402
     EpisodeError,
     apply_combat_route,
     apply_story_route,
+    apply_rei_escape_route,
     apply_connect_mode,
     comfy_vram_for_lane,
     combat_lora_allowed,
@@ -145,6 +146,7 @@ SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
 KASUMI_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk"
 KASUMI_ADULT_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk-adult"
 HOSPITAL_DIR = ROOT / "minimaxh3" / "episodes" / "hospital-exit-adult"
+REI_ESCAPE_DIR = ROOT / "minimaxh3" / "episodes" / "futanari-rei-escape"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -2643,3 +2645,104 @@ def test_finish_materializes_reuse_and_stills_preview_ignores_trim(tmp_path):
     assert preview.name == "bandai-district-short-stills-preview.mp4"
     want = expected_stitch_duration([2.5, 2.5, 2.5, 2.2, 2.5, 2.8, 3.0], xfade_s=0.35)
     assert probe_duration(preview) == pytest.approx(want, abs=0.3)
+
+
+def test_rei_escape_default_validates_complete_under_max():
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    assert raw["slug"] == "futanari-rei-escape"
+    assert raw["render"]["lane"] == "erotic"
+    assert raw["render"]["combat"] == "off"
+    assert raw["cards"].get("title") is True
+    assert "fail" not in raw["cards"]
+    assert not any(k.startswith("on_toilet") or k.startswith("on_accept") or k.startswith("invite_pose") for b in raw["beats"] for k in b)
+    errs = validate_episode(raw)
+    assert errs == []
+    ep = prepare_episode(raw)
+    assert len(ep["beats"]) <= MAX_BEATS
+    ids = [b["id"] for b in ep["beats"]]
+    assert ids[0] == "01-open-stroke"
+    assert "03-mast" not in ids and "07-mast" not in ids
+    assert "18-kiss" not in ids and "19-oral" not in ids
+    assert "09-ta" in ids
+    assert "13-tail" in ids
+    assert "20-fours-in" in ids and "20-fours-out" in ids
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    assert "fail" not in ep["cards"]
+    assert all(b.get("hud", {}).get("mission_keyword") == "脱出" for b in ep["beats"])
+    assert all("異形の体内から脱出" == b.get("hud", {}).get("mission") for b in ep["beats"])
+    maw = next(b for b in ep["beats"] if b["id"] == "05-enemy1-maw")
+    assert extra_lora_entries(maw) == [("mystic", 1.0)]
+    tail = next(b for b in ep["beats"] if b["id"] == "13-tail")
+    assert extra_lora_entries(tail) == [("mystic", 1.0)]
+    for _, prompt, perr in beat_prompts(ep):
+        assert perr == []
+        low = prompt.lower()
+        assert "blowjob" not in low and "fellatio" not in low
+        assert "doggy" not in low and "missionary" not in low and "cowgirl" not in low
+        assert "hud" not in low
+    assert "Rei" not in json.dumps(raw["cards"])
+    title_prompt_source = next(b for b in raw["beats"] if b["id"] == "01-open-stroke")
+    assert "Rei" in title_prompt_source["action"]
+
+
+def test_rei_escape_options_filth_and_oral_lora():
+    raw = load_episode(REI_ESCAPE_DIR / "episode.json")
+    skip = prepare_episode(raw, rei_mast_override="skip")
+    stand = prepare_episode(raw, rei_mast_override="stand")
+    assert len(stand["beats"]) == len(skip["beats"]) + 4
+    assert any(b["id"].endswith("mast-stand") for b in stand["beats"])
+    body = prepare_episode(raw, rei_toilet_override="tc")
+    run_c = next(b for b in body["beats"] if b["id"] == "10-run-c")
+    assert "DIRTY-STATE BODY" in run_c["action"]
+    assert run_c["hud"]["hint"] == "全身汚れ"
+    seat = prepare_episode(raw, rei_toilet_override="ta")
+    run_c_seat = next(b for b in seat["beats"] if b["id"] == "10-run-c")
+    assert "DIRTY-STATE SEAT" in run_c_seat["action"]
+    mouth = prepare_episode(raw, rei_moth_override="mouth")
+    moth = next(b for b in mouth["beats"] if b["id"] == "13-mouth")
+    assert extra_lora_entries(moth) == [("blowjob", 0.8)]
+    oral = prepare_episode(raw, rei_oral_override="her")
+    her = next(b for b in oral["beats"] if b["id"] == "19-oral-her")
+    assert extra_lora_entries(her) == [("blowjob", 0.8)]
+    rei_mouth = prepare_episode(raw, rei_oral_override="rei")
+    only_rei = next(b for b in rei_mouth["beats"] if b["id"] == "19-oral-rei")
+    assert extra_lora_entries(only_rei) == []
+    full = prepare_episode(
+        raw,
+        rei_mast_override="stand",
+        rei_toilet_override="tc",
+        rei_moth_override="mouth",
+        rei_attack_override="her",
+        rei_kiss_override="on",
+        rei_oral_override="her",
+        rei_pose_override="straddle",
+    )
+    assert len(full["beats"]) <= MAX_BEATS
+    assert any(b["id"] == "18-kiss-on" for b in full["beats"])
+    assert any(b["id"] == "20-straddle-ride" for b in full["beats"])
+    assert validate_episode(full) == []
+    kasumi = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    before = json.dumps(kasumi["beats"], ensure_ascii=False)
+    after = apply_rei_escape_route(kasumi, mast="stand")
+    assert json.dumps(after["beats"], ensure_ascii=False) == before
+
+
+def test_rei_escape_notebook_is_isolated():
+    nb = json.loads((ROOT / "minimax_h3_rei_escape_bot.ipynb").read_text(encoding="utf-8"))
+    code = [c for c in nb["cells"] if c["cell_type"] == "code"]
+    assert len(code) == 1
+    src = "".join(code[0]["source"])
+    assert 'EPISODE = "futanari-rei-escape"' in src
+    assert "hospital-exit-adult" not in src
+    assert "APPEAR_MIKI" not in src
+    assert "H3_EPISODE_REI_MAST" in src
+    assert "H3_EPISODE_REI_POSE" in src
+    assert 'BRANCH = "cursor/futanari-rei-escape-34e4"' in src
+    assert "h3_episode_colab_main" in src
+    assert "if rc:" in src
+    assert 'raise SystemExit(rc)' in src
+    md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
+    assert "futanari-rei-escape" in md
+    assert "cursor/futanari-rei-escape-34e4" in md
+    assert json.loads((ROOT / "minimaxh3" / "minimax_h3_rei_escape_bot.ipynb").read_text(encoding="utf-8")) == nb
+
