@@ -853,6 +853,36 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
         _assert_no_pose_names(prompt)
 
 
+def test_kasumi_adult_profile_camera_starts_landscape():
+    raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    assert raw["canvas"] == "16:9"
+    assert "shallow depth of field" not in raw["style"].lower()
+    assert "left to right" in raw["world"]["lock"].lower()
+    cover = next(b for b in raw["beats"] if b["id"] == "01-cover")
+    assert "profile" in cover["camera"].lower()
+    assert "walks right" in cover["action"].lower()
+    assert "standing in the aisle" not in cover["camera"].lower()
+    for combat in ("off", "on"):
+        ep = apply_combat_route(raw, combat=combat)
+        for beat in ep["beats"]:
+            if beat_source(beat) == "ui":
+                continue
+            cam = str(beat.get("camera") or "").lower()
+            act = str(beat.get("action") or "").lower()
+            place = str(beat.get("place") or "").lower()
+            assert "profile" in cam, beat["id"]
+            assert "left to right" in cam, beat["id"]
+            assert "facing away" not in cam
+            assert "standing ahead" not in cam
+            assert "down the aisle" not in act and "down the aisle" not in cam
+            assert "toward a window wall" not in place
+            assert "deep background" not in place
+            prompt = build_beat_prompt(ep, beat)
+            assert "horizontal 16:9" in prompt.lower(), beat["id"]
+            assert "profile" in prompt.lower(), beat["id"]
+            assert validate_beat_prompt(prompt, source="t2v") == []
+
+
 def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
     ep = apply_combat_route(raw, combat="on")
