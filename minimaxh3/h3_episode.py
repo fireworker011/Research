@@ -247,6 +247,8 @@ ROUTE_OVERLAY_KEYS = (
     + REI_ESCAPE_ROUTE_KEYS
 )
 OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
+# Colab shows four 登場 checkboxes; clearing all four leaves nothing to render.
+APPEAR_NONE_MSG = "appear: at least one encounter must stay on / 登場を4人とも外すと作る場面が無い。1人は残せ"
 CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
 BEAT_CONNECT_END = "end"
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
@@ -1203,6 +1205,33 @@ def apply_end_connect(ep: dict[str, Any], *, end_connect: str | None = None) -> 
     return out
 
 
+def cut_dropped_cast_chains(ep: dict[str, Any]) -> dict[str, Any]:
+    """I2V cannot delete a body from its own first frame.
+
+    A beat that chains starts on the previous clip's last frame. If the previous
+    clip had someone this beat does not, that body is already in the start frame
+    and no amount of "only Rei in frame" in the prompt removes it: the partner
+    (and the erect penis) walks into the next scene. Downgrade those to T2V.
+    Growing the cast is fine; the newcomer walks in.
+    """
+    out = copy.deepcopy(ep)
+    prev: set[str] = set()
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat) or not beat_renders(beat):
+            beats.append(beat)
+            continue
+        item = dict(beat)
+        cast = {str(c) for c in (item.get("cast") or [])}
+        if beat_source(item) == "chain" and not item.get("reuse") and prev - cast:
+            item["source"] = "t2v"
+            item.pop("still_as", None)
+        prev = cast
+        beats.append(item)
+    out["beats"] = beats
+    return out
+
+
 def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     """Replace route fields. menu/hud deep-merge so the command window can retarget."""
     out = dict(beat)
@@ -1450,7 +1479,7 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
         return out
     skipped = {name for name, on in shown.items() if not on}
     if tagged and not any(shown.get(name) for name in HOSPITAL_ENCOUNTERS):
-        raise EpisodeError("appear: at least one encounter must stay on")
+        raise EpisodeError(APPEAR_NONE_MSG)
     beats: list[Any] = []
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict):
@@ -1461,7 +1490,7 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
             continue
         beats.append(beat)
     if not beats:
-        raise EpisodeError("appear: at least one encounter must stay on")
+        raise EpisodeError(APPEAR_NONE_MSG)
     # Two ui beats in a row / ui first are invalid; drop a leading ui after a skip.
     cleaned: list[Any] = []
     for beat in beats:
@@ -1795,7 +1824,8 @@ def prepare_episode(
     )
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
-    return apply_end_connect(out, end_connect=end_connect_override)
+    out = apply_end_connect(out, end_connect=end_connect_override)
+    return cut_dropped_cast_chains(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:

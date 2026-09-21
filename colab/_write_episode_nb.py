@@ -46,7 +46,7 @@ __GIN_HELP__
 GIN = __GIN_DEFAULT__  #@param __GIN_CHOICES__
 __TSUNO_HELP__
 TSUNO = __TSUNO_DEFAULT__  #@param __TSUNO_CHOICES__
-#@markdown **登場（病棟）。外すとその人のシーンを飛ばす。霞東は無視。**
+#@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
@@ -193,7 +193,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("tsuno")}
 
-登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。
+登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。**4人とも外すと作る場面が無くなって止まる。最低1人は残す。**
 
 **シーンごと（病棟）** — 誘う（誘い方含む）・受け入れる・回避。5番が戦いのときは無視。霞東は無視。最後に残った人の構成で完了／失敗が決まる。
 

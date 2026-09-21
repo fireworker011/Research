@@ -50,6 +50,7 @@ from h3_episode import (  # noqa: E402
     beat_prompts,
     beat_props,
     beat_clip_seconds,
+    beat_renders,
     beat_source,
     beat_still_as,
     beat_vocals,
@@ -1830,8 +1831,10 @@ def test_hospital_end_connect_is_runtime_selectable():
         connect_override="カット",
         end_connect_override="次のシーンへ続ける",
     )
+    # CLI can still ask for a chained scene end, but the walk drops the partner,
+    # so it cannot start on a frame that still holds her. Cut wins.
     walk_c = next(b for b in chained["beats"] if b["id"] == "06-doggy-walk")
-    assert beat_source(walk_c) == "chain"
+    assert beat_source(walk_c) == "t2v"
     seen = False
     follow = None
     for beat in chained["beats"]:
@@ -1852,13 +1855,13 @@ def test_hospital_end_connect_is_runtime_selectable():
         end_connect_override="1番のつなぎに従う",
     )
     walk_f = next(b for b in followed["beats"] if b["id"] == "06-doggy-walk")
-    assert beat_source(walk_f) == "chain"
+    assert beat_source(walk_f) == "t2v"
     gin_walk = next(
         b
         for b in prepare_episode(raw, gin_override="犯される", end_connect_override="follow", connect_override="chain")["beats"]
         if b["id"] == "04-gin-walk"
     )
-    assert beat_source(gin_walk) == "chain"
+    assert beat_source(gin_walk) == "t2v"
     assert validate_episode(chained, root=HOSPITAL_DIR) == []
 
 
@@ -2802,6 +2805,29 @@ def test_rei_escape_beast_accept_invite_evade():
             assert perr == []
             low = prompt.lower()
             assert "blowjob" not in low and "fellatio" not in low
+
+
+def test_chain_never_starts_on_a_frame_holding_someone_it_dropped():
+    """チェーンでも、前の相手が写った最終フレームから次の歩きを始めない。"""
+    for slug in ("kasumi-late-desk-adult", "hospital-exit-adult", "bandai-district", "futanari-rei-escape"):
+        ep = load_episode(ROOT / "minimaxh3" / "episodes" / slug / "episode.json")
+        out = prepare_episode(ep, connect_override="chain")
+        prev: set[str] = set()
+        for beat in out["beats"]:
+            if is_ui_beat(beat) or not beat_renders(beat):
+                continue
+            cast = {str(c) for c in (beat.get("cast") or [])}
+            if beat_source(beat) == "chain":
+                assert not prev - cast, f"{slug} {beat['id']} chains off {sorted(prev - cast)}"
+            prev = cast
+    # 霞東: 行為のあとの歩きは相手が消えるのでカットになる
+    kasumi = prepare_episode(
+        load_episode(KASUMI_ADULT_DIR / "episode.json"), connect_override="chain"
+    )
+    walk = next(b for b in kasumi["beats"] if b["id"] == "08-walk")
+    assert beat_source(walk) == "t2v"
+    joined = next(b for b in kasumi["beats"] if b["id"] == "07-creampie")
+    assert beat_source(joined) == "chain"
 
 
 def test_rei_escape_notebook_is_isolated():
