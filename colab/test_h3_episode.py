@@ -805,6 +805,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
     _assert_no_pose_names(sex["action"], sex_prompt)
     _assert_insertion_direction(sex["action"], sex_prompt)
+    assert "pelvis stays down" in sex["action"].lower()
+    assert "rock up" not in sex["action"].lower()
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     assert "sits up" not in sex_prompt.lower() and "sits down" not in sex_prompt.lower()
@@ -898,6 +900,8 @@ def test_kasumi_adult_combat_on_is_fight_route_not_doggy():
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
     _assert_no_pose_names(sex["action"], sex_prompt)
     _assert_insertion_direction(sex["action"], sex_prompt)
+    assert "pelvis stays down" in sex["action"].lower()
+    assert "rock up" not in sex["action"].lower()
     assert "finishes inside" not in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     hold = next(b for b in ep["beats"] if b["id"] == "12-hold")
@@ -939,13 +943,23 @@ def _assert_hospital_bans(ep):
 def _assert_insertion_direction(action: str, prompt: str) -> None:
     blob = f"{action}\n{prompt}".lower()
     assert "travels into" in blob or "travels in" in blob
+    riding = "sits on" in blob or ("rock down" in blob and "hold still" in blob)
+    tentacle = "tentacle" in blob
+    supine = ("stays on her back" in blob or "on her back" in blob) and not riding
+    if tentacle:
+        assert "thrust" in blob
+        return
+    if riding:
+        assert "rock down" in blob or "lower onto" in blob
+        assert "hold still" in blob
+        assert "rock up" not in blob
+        return
+    if supine:
+        assert "thrust" in blob
+        assert "rock up" not in blob
+        assert "pelvis stays down" in blob or "pelvis stay" in blob
+        return
     assert "thrust" in blob
-    assert (
-        "push back" in blob
-        or "rock up" in blob
-        or "rock down" in blob
-        or "tilt up" in blob
-    )
 
 
 def _assert_no_pose_names(*texts: str) -> None:
@@ -1034,6 +1048,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     kana = next(b for b in ep["beats"] if b["id"] == "09-join")
     kana_prompt = build_beat_prompt(ep, kana)
     _assert_insertion_direction(kana["action"], kana_prompt)
+    assert "pelvis stays down" in kana["action"].lower()
+    assert "rock up" not in kana["action"].lower()
     assert "20cm" in kana["action"]
     assert "penis shaft" in kana_prompt.lower()
     assert "not an arm" in kana_prompt.lower()
@@ -1049,6 +1065,10 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     _assert_sex_beat_both_pleasure_no_extra_kiss(exit_beat, exit_prompt)
     _assert_insertion_direction(exit_beat["action"], exit_prompt)
     assert "stays on her back the whole take" in exit_prompt.lower()
+    assert "pelvis stays down" in exit_beat["action"].lower()
+    assert "rock up" not in exit_beat["action"].lower()
+    assert "looming" in exit_beat["action"].lower()
+    assert "pull" in exit_beat["action"].lower()
     assert "through the lit open doorway" in exit_prompt.lower()
     assert "30cm" in exit_prompt.lower()
     assert "licks forward" in exit_prompt.lower()
@@ -1202,6 +1222,9 @@ def test_hospital_exit_adult_fight_lose_is_defeat_h():
     sex_prompt = build_beat_prompt(ep, sex)
     _assert_sex_beat_both_pleasure_no_extra_kiss(sex, sex_prompt)
     _assert_insertion_direction(sex["action"], sex_prompt)
+    assert "pelvis stay" in sex["action"].lower()
+    assert "rock up" not in sex["action"].lower()
+    assert "looming" in sex["action"].lower()
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
     twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")

@@ -23,7 +23,7 @@ Colab: `minimax_h3_episode_bot.ipynb` の EPISODE=kasumi-late-desk-adult / BRANC
 
 撮るのは Colab 4 番で分かれる。オフ=同僚□じゅぼ口内口移し → 警備□後背位中出し → 課長□挿入開始＋仰向け正常位。オン=同僚□ベロチュー回避 → 警備△横スク打倒＋じゅぼ → 課長△敗北＋正常位。
 Combat はオンの 06 と 10 だけ（prfight2、euler+beta 12）。03/07/11 には積むな。
-セックスは体位名ではなく誰がどの方向へ（病棟と同じ）。挿入は竿役の腰と受け入れ側の腰を両方書く。
+セックスは体位名ではなく誰がどの方向へ（病棟と同じ）。仰向けは竿役が前へ、受け入れ側の骨盤は床に残す。
 同枝に `hospital-exit-adult`（病棟脱出。Colab 5 番で完了／失敗が分かれる）。
 UNet は erotic + eros-max だけ。霞東本体・番台・inbox I2V は stock。③に足すな。
 inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5カット raw は reuse するな。参考バトル mp4 はモーションにしない。
