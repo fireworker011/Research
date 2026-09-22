@@ -64,7 +64,16 @@ from h3_hud import (
     synthetic_clip,
 )
 from h3_i2v_phone import BRANCH, REPO, TURBO_LORA_NAME, collect_output_videos, github_raw, newest_mp4, stage_image_into_input
-from h3_i2v_runtime import COMFY_DIR_DEFAULT, PORT, comfy_free, ensure_comfy, post_prompt, start_comfy, wait_prompt
+from h3_i2v_runtime import (
+    COMFY_DIR_DEFAULT,
+    PORT,
+    comfy_free,
+    detect_vram_gb,
+    ensure_comfy,
+    post_prompt,
+    start_comfy,
+    wait_prompt,
+)
 from h3_motion_graphics import (
     FORBIDDEN_IN_PROMPT,
     I2VA_HEADER,
@@ -120,13 +129,26 @@ LORA_FILES = {
     "turbo8": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
     "larry": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
     "cinema": "Minimax_H3_cinematic_DY.safetensors",
+    "combat": "H3_Combat_V2.safetensors",
+}
+LORA_URLS = {
+    "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). cinema is optional everywhere.
+# combat is never a preset; fight beats opt in with extra_loras: ["combat"] and never stack with turbo.
+# Combat LoRA loads only on High-Memory GPU (VRAM >= 70GB). A100 40GB skips it.
 PRESETS: dict[str, dict[str, Any]] = {
     "fast": {"stack": [("turbo4", 1.0, False)], "steps": 4, "trigger": ""},
     "preview": {"stack": [("turbo4", 1.0, False), ("cinema", 0.5, True)], "steps": 4, "trigger": "DY"},
     "daily": {"stack": [("larry", 1.0, False), ("cinema", 0.65, True)], "steps": 8, "trigger": "DY"},
 }
+HIGH_MEM_VRAM_GB = 70.0
+COMBAT_STEPS = 12
+BEAT_STEPS_RANGE = (4, 16)
+SAMPLERS = ("euler", "res_multistep")
+SCHEDULERS = ("simple", "beta")
+COMBAT_SAMPLER = "euler"
+COMBAT_SCHEDULER = "beta"
 
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
@@ -142,7 +164,10 @@ IP_TOKENS_RE = re.compile(
 )
 META_AUDIO_TOKENS = ("lip-synced", "lip synced", "no other speech", "only say", "other_text", "not_spoken", "read aloud")
 SCREEN_TOKENS_RE = re.compile(r"\b(hud|mini-?map|subtitles?|captions?|on-screen text|watermark|health bar|game ui)\b", re.I)
-HARM_TOKENS_RE = re.compile(r"\b(blood|bloody|gore|gory|dismember\w*|corpses?|dead body|dead bodies)\b", re.I)
+HARM_TOKENS_RE = re.compile(
+    r"\b(blood|bloody|gore|gory|dismember\w*|corpses?|dead body|dead bodies|zombies?|viscera|entrails)\b",
+    re.I,
+)
 # Words that make H3 stage a set piece. A mundane episode may not write them at all, not even negated:
 # H3 materializes what is named ("no explosion" still draws smoke), so the fix is to leave them out.
 ACTION_TOKENS_RE = re.compile(
@@ -163,6 +188,18 @@ CONTINUITY_CLAUSE = (
     "from the first frame to the last, and nothing new enters the frame."
 )
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
+SIDE2D_CLAUSE = (
+    "PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults in frame are full body "
+    "including feet. Camera is a locked side-on 2D side-scroller at hip-to-shoulder height. "
+    "The camera tracks horizontally only; it never orbits, never dollies as 3D action."
+)
+WALK_TRACK_CLAUSE = "The camera tracks horizontally at walking-game speed and stays side-on. Motion starts at frame one."
+FIGHT_HOLD_CLAUSE = (
+    "The camera HOLDS on this floor mark. No horizontal scroll. Feet stay planted. "
+    "The contact and the sit-down finish in this clip at walking-and-hit pace."
+)
+SLOW_RE = re.compile(r"\bslow(?:ly| motion)?\b", re.I)
+CAMERA_PACKS = ("side2d",)
 
 
 class EpisodeError(RuntimeError):
@@ -207,6 +244,38 @@ def duration_ladder(ep: dict[str, Any]) -> list[float]:
 
 def episode_tone(ep: dict[str, Any]) -> str:
     return str(ep.get("tone") or "action")
+
+
+def episode_camera_pack(ep: dict[str, Any]) -> str:
+    return str((ep.get("render") or {}).get("camera_pack") or "").strip().lower()
+
+
+def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
+    """Per-beat optional LoRAs stacked after the preset (combat on fight shots)."""
+    raw = beat.get("extra_loras") or []
+    if not isinstance(raw, list):
+        return []
+    out: list[tuple[str, float]] = []
+    for item in raw:
+        if isinstance(item, str):
+            out.append((item, 1.0))
+            continue
+        if isinstance(item, (list, tuple)) and item:
+            try:
+                out.append((str(item[0]), float(item[1]) if len(item) > 1 else 1.0))
+            except (TypeError, ValueError):
+                out.append((str(item[0]), 1.0))
+    return out
+
+
+def merge_trigger(base: str, beat: dict[str, Any]) -> str:
+    """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop."""
+    parts = [str(base or "").strip(), str(beat.get("trigger") or "").strip()]
+    return "\n".join(p for p in parts if p)
+
+
+def combat_requested(beat: dict[str, Any]) -> bool:
+    return any(key == "combat" for key, _s in extra_lora_entries(beat))
 
 
 def beat_source(beat: dict[str, Any]) -> str:
@@ -386,7 +455,7 @@ def _ui_errors(beat: dict[str, Any], where: str) -> list[str]:
             errs.append(f"{where}: menu.selected out of range")
     except (TypeError, ValueError):
         errs.append(f"{where}: menu.selected must be an index")
-    for key in ("still", "trim", "reuse", "physics"):
+    for key in ("still", "trim", "reuse", "physics", "extra_loras", "trigger", "steps", "sampler", "scheduler"):
         if beat.get(key):
             errs.append(f"{where}: ui beat cannot have {key}")
     return errs
@@ -461,6 +530,9 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
     fb = str(render.get("fallback_preset") or "fast")
     if fb not in PRESETS:
         errs.append(f"render.fallback_preset must be one of {list(PRESETS)}")
+    pack = episode_camera_pack(ep)
+    if pack and pack not in CAMERA_PACKS:
+        errs.append(f"render.camera_pack must be one of {list(CAMERA_PACKS)}")
     tone = episode_tone(ep)
     if tone not in TONES:
         errs.append(f"tone must be one of {TONES}")
@@ -556,6 +628,8 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 errs.append(f"{where}: {key} missing")
             elif CJK_RE.search(text):
                 errs.append(f"{where}: {key} must be English")
+            if pack == "side2d" and source != "ui" and SLOW_RE.search(text):
+                errs.append(f"{where}: side2d forbids the word slow (even negated; H3 draws slow motion)")
         for key in ("sfx", "music", "place"):
             text = str(beat.get(key) or "")
             if text and CJK_RE.search(text):
@@ -570,6 +644,8 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         if beat.get("face_visible"):
             face_beats += 1
         errs.extend(_speech_errors(beat, cast, where, window_s=window_s))
+        errs.extend(_extra_lora_errors(beat, where))
+        errs.extend(_beat_sampler_errors(beat, where))
         hud = beat.get("hud") or {}
         mission = str(hud.get("mission") or "").strip()
         if not mission:
@@ -715,6 +791,12 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     desc.append(CONTINUITY_CLAUSE)
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
+    if episode_camera_pack(ep) == "side2d":
+        desc.append(SIDE2D_CLAUSE)
+        if combat_requested(beat):
+            desc.append(FIGHT_HOLD_CLAUSE)
+        else:
+            desc.append(WALK_TRACK_CLAUSE)
     desc.append(str(beat.get("camera") or "").strip().rstrip(".") + ".")
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
     if keys:
@@ -776,7 +858,7 @@ def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[st
     for beat in ep.get("beats") or []:
         if not beat_renders(beat):
             continue
-        prompt = build_beat_prompt(ep, beat, trigger=trigger)
+        prompt = build_beat_prompt(ep, beat, trigger=merge_trigger(trigger, beat))
         errs = validate_beat_prompt(prompt, source=beat_source(beat), never=never)
         out.append((beat, prompt, errs))
     return out
@@ -895,6 +977,151 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
     return {"name": name, "stack": stack, "steps": int(spec["steps"]), "trigger": str(spec["trigger"]), "notes": notes}
 
 
+def _extra_lora_errors(beat: dict[str, Any], where: str) -> list[str]:
+    errs: list[str] = []
+    if beat.get("trigger") and CJK_RE.search(str(beat.get("trigger") or "")):
+        errs.append(f"{where}: trigger must be English / LoRA tokens")
+    raw = beat.get("extra_loras")
+    if raw is None:
+        return errs
+    if is_ui_beat(beat):
+        return errs
+    if not isinstance(raw, list):
+        return errs + [f"{where}: extra_loras must be a list of keys or [key, strength]"]
+    for i, item in enumerate(raw):
+        key = ""
+        if isinstance(item, str):
+            key = item
+        elif isinstance(item, (list, tuple)) and item:
+            key = str(item[0])
+            if len(item) > 1:
+                try:
+                    s = float(item[1])
+                    if s < 0 or s > 2:
+                        errs.append(f"{where}: extra_loras[{i}] strength must be 0-2")
+                except (TypeError, ValueError):
+                    errs.append(f"{where}: extra_loras[{i}] strength must be a number")
+        else:
+            errs.append(f"{where}: extra_loras[{i}] must be a key or [key, strength]")
+            continue
+        if key and key not in LORA_FILES:
+            errs.append(f"{where}: unknown extra LoRA {key}")
+    return errs
+
+
+def _beat_sampler_errors(beat: dict[str, Any], where: str) -> list[str]:
+    errs: list[str] = []
+    if beat.get("steps") is not None:
+        try:
+            steps = int(beat["steps"])
+            lo, hi = BEAT_STEPS_RANGE
+            if steps < lo or steps > hi:
+                errs.append(f"{where}: steps must be {lo}-{hi} (20 OOMs with Larry+combat)")
+        except (TypeError, ValueError):
+            errs.append(f"{where}: steps must be an integer")
+    sampler = str(beat.get("sampler") or "")
+    if sampler and sampler not in SAMPLERS:
+        errs.append(f"{where}: sampler must be one of {list(SAMPLERS)}")
+    scheduler = str(beat.get("scheduler") or "")
+    if scheduler and scheduler not in SCHEDULERS:
+        errs.append(f"{where}: scheduler must be one of {list(SCHEDULERS)}")
+    return errs
+
+
+def apply_extra_loras(
+    preset: dict[str, Any],
+    beat: dict[str, Any],
+    loras_dir: Path | str | None,
+    *,
+    high_mem: bool = False,
+) -> dict[str, Any]:
+    """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
+
+    Combat LoRA loads only on High-Memory GPU (VRAM >= 70GB).
+    """
+    extra = extra_lora_entries(beat)
+    out = dict(preset)
+    if not extra:
+        return _apply_beat_sampler(out, beat, combat_on=False)
+    stack = list(preset.get("stack") or [])
+    notes = list(preset.get("notes") or [])
+    names = " ".join(str(s[0]).lower() for s in stack)
+    turbo = "fl2v_turbo" in names
+    combat_on = False
+    wanted_combat = any(key == "combat" for key, _s in extra)
+    for key, strength in extra:
+        fname = LORA_FILES.get(key)
+        if not fname:
+            notes.append(f"unknown extra LoRA dropped: {key}")
+            continue
+        if key == "combat" and turbo:
+            notes.append("combat LoRA skipped (never with LightX2V turbo)")
+            continue
+        if key == "combat" and not high_mem:
+            notes.append("combat LoRA skipped (High-Memory GPU only)")
+            continue
+        present = loras_dir is None or (Path(loras_dir) / fname).is_file()
+        if not present:
+            notes.append(f"optional extra LoRA missing, dropped: {fname}")
+            continue
+        stack.append((fname, float(strength)))
+        if key == "combat":
+            combat_on = True
+    out["stack"] = stack
+    out["notes"] = notes
+    if wanted_combat and not combat_on:
+        return out
+    return _apply_beat_sampler(out, beat, combat_on=combat_on)
+
+
+def _apply_beat_sampler(preset: dict[str, Any], beat: dict[str, Any], *, combat_on: bool) -> dict[str, Any]:
+    """Combat defaults to 12 euler+beta. Other beats only honor an authored steps/sampler."""
+    out = dict(preset)
+    notes = list(out.get("notes") or [])
+    if combat_on:
+        steps = beat.get("steps", COMBAT_STEPS)
+        sampler = beat.get("sampler") or COMBAT_SAMPLER
+        scheduler = beat.get("scheduler") or COMBAT_SCHEDULER
+        out["steps"] = int(steps)
+        out["sampler"] = str(sampler)
+        out["scheduler"] = str(scheduler)
+        notes.append(f"combat sampler {sampler}+{scheduler} {int(steps)} steps")
+        out["notes"] = notes
+        return out
+    if beat.get("steps") is not None:
+        out["steps"] = int(beat["steps"])
+    if beat.get("sampler"):
+        out["sampler"] = str(beat["sampler"])
+    if beat.get("scheduler"):
+        out["scheduler"] = str(beat["scheduler"])
+    return out
+
+
+def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
+    """Fetch optional extra LoRAs (Combat V2) into Drive models/loras when a beat asks for them."""
+    root = Path(loras_dir)
+    notes: list[str] = []
+    keys: list[str] = []
+    for beat in ep.get("beats") or []:
+        for key, _s in extra_lora_entries(beat):
+            if key not in keys:
+                keys.append(key)
+    for key in keys:
+        fname = LORA_FILES.get(key)
+        url = LORA_URLS.get(key)
+        if not fname or not url:
+            continue
+        dest = root / fname
+        if dest.is_file() and dest.stat().st_size > 1_000_000:
+            continue
+        print("fetch LoRA", fname)
+        if fetch_text(url, dest, min_bytes=1_000_000):
+            notes.append(f"fetched {fname}")
+        else:
+            notes.append(f"fetch failed {fname}")
+    return notes
+
+
 def chain_extra_loras(g: dict[str, Any], extra: list[tuple[str, float]]) -> dict[str, Any]:
     """Append LoraLoaderModelOnly nodes after node 2 and rewire scheduler/guider to the last one."""
     if not extra:
@@ -953,6 +1180,10 @@ def build_episode_graph(
         g = build_i2va_graph(first_image=first_image, last_image=None, **common)
     if lora_name and has_lora_loader:
         chain_extra_loras(g, stack[1:])
+    if "22" in g and preset.get("sampler"):
+        g["22"]["inputs"]["sampler_name"] = str(preset["sampler"])
+    if "23" in g and preset.get("scheduler"):
+        g["23"]["inputs"]["scheduler"] = str(preset["scheduler"])
     errs = assert_t2v_graph(g) if source == "t2v" else assert_i2va_graph(g, expect_last=False, homage=False)
     if errs:
         raise EpisodeError(f"graph invalid: {errs}")
@@ -1328,12 +1559,20 @@ def run_episode(
     comfy = Path(comfy_dir or os.environ.get("H3_COMFY_DIR") or COMFY_DIR_DEFAULT)
     comfy_input: Path | None = None
     preset: dict[str, Any]
+    models: Path | None = None
+    vram = detect_vram_gb(dry_run=dry_run)
+    high_mem = vram >= HIGH_MEM_VRAM_GB
+    print("VRAM GiB:", round(vram, 1), "combat high-mem:", high_mem)
+    status["vram_gb"] = round(vram, 1)
+    status["high_mem"] = high_mem
     if dry_run:
         preset = resolve_preset(preset_name, None, fallback=fallback)
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
         start_comfy(comfy, port=port)
+        for note in ensure_episode_loras(ep, models / "loras"):
+            print("lora:", note)
         preset = resolve_preset(preset_name, models / "loras", fallback=fallback)
         comfy_input = comfy / "input"
         if object_info is None:
@@ -1351,6 +1590,7 @@ def run_episode(
     for bid, src in reused.items():
         print("reuse", bid, "←", src)
         status["beats"][bid] = {"state": "done", "source": "reuse", "reused": src, "finished": _now()}
+    loras_dir = None if models is None else models / "loras"
     for idx, beat in enumerate(beats):
         bid = beat["id"]
         raw_out = root / "raw" / f"{bid}.mp4"
@@ -1366,7 +1606,13 @@ def run_episode(
         source = beat_source(beat)
         if beat.get("reuse"):
             print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))
-        prompt = build_beat_prompt(ep, beat, trigger=preset.get("trigger") or "")
+        beat_preset = apply_extra_loras(preset, beat, loras_dir, high_mem=high_mem)
+        for note in beat_preset.get("notes") or []:
+            if note not in (preset.get("notes") or []):
+                print("beat:", bid, note)
+        combat_on = any("combat" in str(name).lower() for name, _s in beat_preset.get("stack") or [])
+        trig = merge_trigger(beat_preset.get("trigger") or "", beat) if combat_on else (beat_preset.get("trigger") or "")
+        prompt = build_beat_prompt(ep, beat, trigger=trig)
         perrs = validate_beat_prompt(prompt, source=source, never=never)
         if perrs:
             raise EpisodeError(f"{bid}: {perrs}")
@@ -1388,7 +1634,7 @@ def run_episode(
                     comfy_dir=comfy,
                     canvas=canvas,
                     durations=duration_ladder(ep),
-                    preset=preset,
+                    preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",
                     port=port,

@@ -1,0 +1,253 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "minato-ramp-clear",
+  "title": "みなと埠頭クリア",
+  "subtitle": "架空横スクロール ショート",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "action",
+  "render": {
+    "preset": "daily",
+    "fallback_preset": "fast",
+    "seed": 42,
+    "camera_pack": "side2d"
+  },
+  "style": "Third-person 2D side-scrolling action-game look, live-action cinematic photorealism, locked PROFILE, pulled-back full-body framing including feet, walking-game speed, no anime, no illustration",
+  "violence": "game",
+  "world": {
+    "name": "Fictional Minato East cargo ramp",
+    "lock": "Fictional indoor cargo dock called Minato East Ramp: smooth grey concrete floor with a yellow safety stripe running LEFT to RIGHT, corrugated metal wall, sodium overhead lamps, a lit roller-shutter exit at adult height at the RIGHT edge of the frame, no clocks, no readable letters on any door or screen, every adult in frame is fully clothed",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "nagi": {
+      "name_ja": "永井 ナギ",
+      "name_en": "Nagi",
+      "age": 28,
+      "lock": "28-year-old Japanese woman, adult face, chin-length black bob, navy zip windbreaker over a grey t-shirt, charcoal cargo pants, white sneakers, calm determined expression, natural makeup, fully clothed",
+      "voice": "clear adult female voice"
+    },
+    "kuro": {
+      "name_ja": "黒田 ケン",
+      "name_en": "Kuro",
+      "age": 34,
+      "lock": "34-year-old Japanese man, adult face, short buzzed black hair, olive canvas work jacket, dark jeans, brown work boots, bored waiting stance, fully clothed",
+      "voice": "low adult male voice"
+    }
+  },
+  "props": {
+    "shutter": "a lit open roller-shutter exit at the right edge"
+  },
+  "homage": {
+    "borrowed": [
+      "third-person 2D side-scrolling PROFILE camera, floor LEFT to RIGHT, doorway at the RIGHT edge, horizontal track only",
+      "walk shots: named adults move LEFT or RIGHT at walking-game speed; camera tracks sideways",
+      "hit shots: camera HOLDS, feet planted, one body blow, struck adult sits in place unhurt",
+      "do not name an absent adult on a solo walk or that adult walks into frame",
+      "mission subtitle grammar with the object noun in colour",
+      "a pause-menu command window over a frozen frame",
+      "a mission-complete ending"
+    ],
+    "never": [
+      "あや",
+      "みき",
+      "れい",
+      "かな",
+      "しの",
+      "ぎん",
+      "つの",
+      "Aya",
+      "Miki",
+      "Rei",
+      "Kana",
+      "Shino",
+      "Gin",
+      "Tsuno",
+      "hospital",
+      "ward",
+      "clinic",
+      "nude",
+      "naked",
+      "futanari",
+      "tentacle",
+      "infection",
+      "kiss",
+      "zombie",
+      "corpse",
+      "blood",
+      "viscera",
+      "classroom",
+      "schoolgirl",
+      "school uniform",
+      "Flova",
+      "Seedance",
+      "Pollo"
+    ]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "みなと Dist.",
+    "icons": ["出", "路", "扉"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "end": true,
+    "end_seconds": 3.0,
+    "end_image": "stills/05-exit.jpg",
+    "end_title": "みなと埠頭クリア",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル",
+      "借りたのは横スクロールのカメラと一撃の書き方だけ",
+      "全年齢・成人のみ・着衣"
+    ]
+  },
+  "stitch": {
+    "transition": "xfade",
+    "xfade_s": 0.35,
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-walk",
+      "source": "still",
+      "still": "stills/01-walk.jpg",
+      "trim": {"start": 0, "seconds": 4.0},
+      "cast": ["nagi"],
+      "face_visible": false,
+      "props": [],
+      "place": "The Minato East Ramp corridor, yellow stripe on grey concrete running LEFT to RIGHT, corrugated wall, sodium lamps, lit shutter far RIGHT",
+      "camera": "PROFILE side-on at hip height. Floor LEFT to RIGHT. Nagi full body including feet. Camera tracks RIGHT with her walk. Nobody else in frame",
+      "action": "Nagi WALKS RIGHT along the empty ramp at walking-game speed, fully clothed, a normal adult walking stride. Motion starts at frame one. She stays in this corridor. Nobody else is in frame",
+      "sfx": "Soft sneaker steps on concrete, distant forklift beep, sodium lamp hum",
+      "music": "Low pulsing synth bass with a single taiko hit at the start; holds under the whole clip",
+      "hud": {
+        "mission": "出口へ出る",
+        "mission_keyword": "出口",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.8,
+        "money": "¥0",
+        "heat": 0,
+        "objective_bearing": 90,
+        "objective_distance": 0.8,
+        "icons_active": ["出"],
+        "complete": false
+      }
+    },
+    {
+      "id": "02-command",
+      "source": "ui",
+      "seconds": 2.0,
+      "cast": ["nagi"],
+      "menu": {
+        "title": "コマンド",
+        "items": ["戦う", "話す", "逃げる", "待つ"],
+        "selected": 0
+      },
+      "hud": {
+        "mission": "出口へ出る",
+        "mission_keyword": "出口",
+        "hint": "△ 戦う",
+        "health": 0.9,
+        "stamina": 0.8,
+        "money": "¥0",
+        "heat": 0,
+        "objective_bearing": 90,
+        "objective_distance": 0.55,
+        "icons_active": ["出"],
+        "complete": false
+      }
+    },
+    {
+      "id": "03-approach",
+      "source": "still",
+      "still": "stills/03-approach.jpg",
+      "trim": {"start": 0, "seconds": 5.0},
+      "cast": ["nagi", "kuro"],
+      "face_visible": false,
+      "props": [],
+      "place": "The same ramp, yellow stripe LEFT to RIGHT, Kuro already waiting at the RIGHT, lit shutter behind him",
+      "camera": "PROFILE side-on at hip height. Floor LEFT to RIGHT. Both adults full body including feet. Camera tracks RIGHT with Nagi then HOLDS when she stops",
+      "action": "Kuro STANDS STILL on the RIGHT near the shutter, feet planted, facing LEFT. Nagi WALKS RIGHT from the LEFT at walking-game speed and STOPS in front of Kuro. Kuro does not walk. Motion starts at frame one. Both stay on this floor mark at the end",
+      "sfx": "Sneaker steps approaching, then they stop, sodium hum, a jacket rustle as Kuro waits",
+      "music": "Bass holds, one muted taiko on the stop",
+      "hud": {
+        "mission": "出口へ出る",
+        "mission_keyword": "出口",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.75,
+        "money": "¥0",
+        "heat": 1,
+        "objective_bearing": 90,
+        "objective_distance": 0.35,
+        "icons_active": ["出"],
+        "complete": false
+      }
+    },
+    {
+      "id": "04-hit",
+      "source": "chain",
+      "trim": {"start": 0, "seconds": 6.0},
+      "cast": ["nagi", "kuro"],
+      "face_visible": false,
+      "extra_loras": ["combat"],
+      "trigger": "prfight2, prfin1",
+      "steps": 12,
+      "sampler": "euler",
+      "scheduler": "beta",
+      "props": [],
+      "place": "The same ramp floor mark, both still in PROFILE, shutter at the RIGHT edge",
+      "camera": "PROFILE side-on at hip height. Floor LEFT to RIGHT. Camera HOLDS. No horizontal scroll. Both adults full body including feet",
+      "action": "Nagi's RIGHT open palm travels RIGHT into Kuro's chest. Kuro's torso folds and he SITS DOWN in place on the concrete, unhurt, an exaggerated game sit. Nagi's feet stay planted. The contact and the sit-down finish in this clip at walking-and-hit pace",
+      "sfx": "Palm on a canvas jacket, a heavy sit on concrete, sodium hum",
+      "music": "Bass stinger then a held low note",
+      "hud": {
+        "mission": "出口へ出る",
+        "mission_keyword": "出口",
+        "hint": "△ 体当たり",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥0",
+        "heat": 2,
+        "objective_bearing": 90,
+        "objective_distance": 0.2,
+        "icons_active": ["出"],
+        "complete": false
+      }
+    },
+    {
+      "id": "05-exit",
+      "source": "still",
+      "still": "stills/05-exit.jpg",
+      "trim": {"start": 0, "seconds": 5.0},
+      "cast": ["nagi"],
+      "face_visible": false,
+      "props": ["shutter"],
+      "place": "The same ramp, lit roller-shutter EXIT filling the RIGHT edge, yellow stripe LEFT to RIGHT",
+      "camera": "PROFILE side-on at hip height. Floor LEFT to RIGHT. Nagi full body including feet. Camera tracks RIGHT with her walk into the shutter. Nobody else in frame",
+      "action": "Nagi WALKS RIGHT through the lit roller-shutter at walking-game speed, fully clothed, a normal adult walking stride. Motion starts at frame one. She stays in this corridor until she reaches the shutter. Nobody else is in frame",
+      "sfx": "Sneaker steps on concrete, shutter rattle, sodium hum falling behind",
+      "music": "Bass opens into a short clear note then holds",
+      "hud": {
+        "mission": "出口へ出る",
+        "mission_keyword": "出口",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.72,
+        "money": "¥0",
+        "heat": 0,
+        "objective_bearing": 90,
+        "objective_distance": 0.08,
+        "icons_active": ["出"],
+        "complete": true
+      }
+    }
+  ]
+}
