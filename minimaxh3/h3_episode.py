@@ -228,6 +228,8 @@ LORA_FILES = {
     "cumshot": "epic_cumshots-MiniMaxH3-ALPHA-CUMSH0T.safetensors",
     # Experimental H3 kiss. Author: I2V is weak; keep strength at 0.5. No trigger word.
     "kiss": "cxy_kiss_lora_h3_v01_step1750.safetensors",
+    # az420 Side Riding Cowgirl MiniMaxH3 2. Side-view riding insertion. Do not stack with AIO.
+    "sideride": "cowgirl-side-2-mh3-e50-az420.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -237,14 +239,18 @@ LORA_URLS = {
     "mast": "https://civitai.com/api/download/models/3311155?fileId=3196458",
     "cumshot": "https://civitai.com/api/download/models/3202064?fileId=3083352",
     "kiss": "https://civitai.com/api/download/models/3208556?fileId=3090649",
+    "sideride": "https://civitai.com/api/download/models/3327446?fileId=3213328",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
+# Side-ride matches studio cowgirl strength. Trigger avoids the word cowgirl (H3 pose-name ban).
 LORA_STRENGTHS = {
     "blowjob": 0.8,
     "kiss": 0.5,
+    "sideride": 0.8,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
+SIDERIDE_TRIGGER = "side view riding sex"
 COMBAT_ROUTE_KEY = "combat_on"
 STORY_ROUTE_KEYS = tuple(STORY_OVERLAY_KEYS.values())
 INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())
@@ -369,6 +375,17 @@ PLANTED_CLAUSE = (
     "Nobody walks, nobody runs, nobody moonwalks, nobody strides, nobody relocates, "
     "nobody slides down the corridor. A hip thrust is in place, not a step. "
     "Normal adult human height, nobody is giant. The background does not scroll. The camera holds."
+)
+# Nelson lifts Aya's feet. "Feet planted" and the word walk (even negated) make H3 invent a walk cycle.
+NELSON_HOLD_RE = re.compile(
+    r"feet stay in the air|heels sit beside|held up, both thighs|forearms already hold both thighs",
+    re.I,
+)
+NELSON_PLANTED_CLAUSE = (
+    "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
+    "Aya's feet stay in the air beside the partner's hips. Only hips and arms move. "
+    "A hip thrust is in place. The camera holds. The background does not scroll. "
+    "Normal adult human height, nobody is giant."
 )
 PLANTED_WALK_TAIL_RE = re.compile(
     r"\s*(?:Then\s+)?(?:Aya|She) STANDS and WALKS RIGHT[^.]*\."
@@ -1846,7 +1863,8 @@ def scrub_planted_action(action: str) -> str:
         out,
     )
     if re.search(r"\bWALKS?\b|\bWALKING\b", out) and re.search(
-        r"joined at the BASE|on all fours|STAYS SEATED|already seated|SQUATS|jupo",
+        r"joined at the BASE|on all fours|STAYS SEATED|already seated|SQUATS|jupo|"
+        r"feet stay in the air|heels sit beside|held up, both thighs",
         out,
         re.I,
     ):
@@ -1877,7 +1895,8 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
             walk_words = bool(re.search(r"\bWALKS?\b|\bWALKING\b|\bRUNS?\b|\bSPRINT", action))
             planted_pose = bool(
                 re.search(
-                    r"joined at the BASE|already seated|STAYS SEATED|on all fours|palms planted",
+                    r"joined at the BASE|already seated|STAYS SEATED|on all fours|palms planted|"
+                    r"feet stay in the air|heels sit beside|held up, both thighs|woman facing the camera",
                     action,
                     re.I,
                 )
@@ -2866,7 +2885,8 @@ def build_beat_prompt(
     elif loco == "planted":
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(PLANTED_PACE_CLAUSE)
-        desc.append(PLANTED_CLAUSE)
+        action_txt = str(beat.get("action") or "")
+        desc.append(NELSON_PLANTED_CLAUSE if NELSON_HOLD_RE.search(action_txt) else PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)

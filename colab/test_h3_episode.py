@@ -34,7 +34,9 @@ from h3_episode import (  # noqa: E402
     MUNDANE_CLAUSE,
     PLANTED_CLAUSE,
     PLANTED_PACE_CLAUSE,
+    NELSON_PLANTED_CLAUSE,
     GAMEPLAY_PACE_CLAUSE,
+    SIDERIDE_TRIGGER,
     PRESET_ALIASES,
     PRESET_CANON,
     PRESETS,
@@ -805,6 +807,10 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert LORA_FILES["cumshot"].startswith("epic_cumshots")
     assert LORA_STRENGTHS["kiss"] == 0.5
     assert "3208556" in LORA_URLS["kiss"]
+    assert LORA_FILES["sideride"] == "cowgirl-side-2-mh3-e50-az420.safetensors"
+    assert "3327446" in LORA_URLS["sideride"]
+    assert LORA_STRENGTHS["sideride"] == 0.8
+    assert SIDERIDE_TRIGGER == "side view riding sex"
     ep = apply_combat_route(raw, combat="off")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
@@ -1566,13 +1572,28 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "kana's torso stays behind aya's back" in nel_low
     assert "travels into the anus" in nel_low
     assert "pussy" not in nel_low
-    assert "both of aya's feet leave the linoleum" in nel_low
-    _assert_insertion_direction(nel["action"], build_beat_prompt(nelson_inv, nel))
+    assert "feet stay in the air" in nel_low
+    assert "feet leave the linoleum" not in nel_low
+    assert nel.get("loco") == "planted"
+    assert nel.get("camera_pack") == "none"
+    assert nel.get("connect") == "t2v"
+    nel_prompt = build_beat_prompt(nelson_inv, nel)
+    assert NELSON_PLANTED_CLAUSE in nel_prompt
+    assert PLANTED_CLAUSE not in nel_prompt
+    assert "nobody walks" not in nel_prompt.lower()
+    assert "adults move left or right" not in nel_prompt.lower()
+    _assert_insertion_direction(nel["action"], nel_prompt)
     _assert_hospital_bans(stand)
     _assert_hospital_bans(nelson_inv)
     keys = ride["render"]["lora_prefetch"]
-    for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss"):
+    for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss", "sideride"):
         assert key in keys
+    ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
+    assert extra_lora_entries(ride_sit)[0][0] == "sideride"
+    assert ride_sit.get("trigger") == SIDERIDE_TRIGGER
+    ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
+    assert SIDERIDE_TRIGGER in ride_prompt
+    assert "cowgirl" not in ride_prompt.lower()
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():
@@ -2061,7 +2082,14 @@ def test_hospital_gin_tsuno_optional_events():
     nelson = prepare_episode(raw, tsuno_override="フルネルソン")
     nel_in = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-in")
     nel_peak = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-peak")
-    assert "both of aya's feet leave the linoleum" in nel_in["action"].lower()
+    nel_meet = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-meet")
+    assert "feet stay in the air" in nel_in["action"].lower()
+    assert "feet leave the linoleum" not in nel_in["action"].lower()
+    assert "walks right" not in nel_meet["action"].lower()
+    assert nel_meet.get("loco") == "planted"
+    assert nel_in.get("loco") == "planted"
+    assert nel_in.get("camera_pack") == "none"
+    assert nel_in.get("connect") == "t2v"
     assert "travels into the anus" in nel_in["action"].lower()
     assert "pussy" not in nel_in["action"].lower()
     assert "lowers one of aya's feet" in nel_peak["action"].lower()
