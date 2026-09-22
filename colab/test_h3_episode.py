@@ -810,6 +810,16 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert LORA_FILES["sideride"] == "cowgirl-side-2-mh3-e50-az420.safetensors"
     assert "3327446" in LORA_URLS["sideride"]
     assert LORA_STRENGTHS["sideride"] == 0.8
+    assert LORA_FILES["thrust"] == "H3_FinalThrust.safetensors"
+    assert "3269564" in LORA_URLS["thrust"]
+    assert LORA_STRENGTHS["thrust"] == 0.55
+    assert LORA_FILES["penis"].startswith("PLORA_H3")
+    assert LORA_STRENGTHS["penis"] == 0.45
+    assert LORA_FILES["synth"].startswith("SynthPussy")
+    assert LORA_STRENGTHS["synth"] == 0.4
+    assert LORA_FILES["cumouf"].startswith("CUMOUF")
+    assert "3223411" in LORA_URLS["cumouf"]
+    assert LORA_STRENGTHS["cumouf"] == 0.5
     assert SIDERIDE_TRIGGER == "side view riding sex, straddling the hips, facing the partner"
     assert "cowgirl" not in SIDERIDE_TRIGGER.lower()
     ep = apply_combat_route(raw, combat="off")
@@ -1130,6 +1140,10 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "groin" in raw["cast"]["miki"]["lock"] and "rotting" in raw["cast"]["miki"]["lock"]
     assert "22cm shaft" in raw["cast"]["miki"]["lock"]
     assert "blood" not in raw["cast"]["miki"]["lock"].lower()
+    assert "across the face, neck" in raw["cast"]["miki"]["lock"]
+    assert "hands" in raw["cast"]["miki"]["lock"] and "feet" in raw["cast"]["miki"]["lock"]
+    assert "visible sweat beads" in raw["cast"]["miki"]["lock"]
+    assert "between the open gashes" in raw["cast"]["miki"]["lock"]
     assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
     assert "no blood" not in raw["world"]["lock"].lower()
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
@@ -1433,8 +1447,10 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     assert "travels into" not in fight_prompt.lower()
     oral = next(b for b in ep["beats"] if b["id"] == "07-oral")
     oral_prompt = build_beat_prompt(ep, oral, trigger=merge_trigger("", oral))
-    assert extra_keys(oral) == ["blowjob", "mystic"]
-    assert oral.get("trigger") == "bl0w_j0b"
+    assert extra_keys(oral) == ["blowjob", "mystic", "penis", "synth", "cumouf"]
+    assert oral.get("trigger", "").startswith("bl0w_j0b")
+    assert "CUMOUF" in oral.get("trigger", "")
+    assert "thrust" not in extra_keys(oral)
     assert oral_prompt.startswith("bl0w_j0b")
     assert "glans stays inside the mouth" in oral_prompt.lower()
     assert "short strokes to the base" in oral["action"].lower()
@@ -1516,6 +1532,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_insertion_direction(ride_sit["action"], build_beat_prompt(ride, ride_sit))
     assert extra_keys(six) == ["blowjob", "mystic"]
     assert six.get("trigger") == "bl0w_j0b"
+    assert "points only a little above horizontal into the mouth" in six["action"].lower()
+    assert "stays up into the mouth" not in six["action"].lower()
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
     nine = next(b for b in m_open["beats"] if b["id"] == "09-join")
     assert "m-shape" in nine["action"].lower()
@@ -1606,7 +1624,15 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "cowgirl" not in ride_prompt.lower()
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
     assert "already straddling the hips" in ride_peak["action"].lower()
-    assert ride_peak.get("trigger") == SIDERIDE_TRIGGER
+    assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
+    assert "cums inside of her" in ride_peak.get("trigger", "").lower()
+    assert "PENISLORA" in ride_peak.get("trigger", "")
+    peak_keys = extra_keys(ride_peak)
+    assert peak_keys[0] == "sideride"
+    assert "thrust" in peak_keys and "penis" in peak_keys and "synth" in peak_keys
+    assert "cumshot" not in peak_keys and "cumouf" not in peak_keys
+    assert "leaks around the base" in ride_peak["action"].lower()
+    assert "stays inside the pussy" in ride_peak["action"].lower()
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():
@@ -1674,6 +1700,8 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert extra_lora_entries(kissb) == [("kiss", 0.5)]
     assert "french kiss" in kissb["action"].lower()
     assert "tongue kiss" in kissb["action"].lower()
+    assert "tight mutual embrace" in kissb["action"].lower()
+    assert "lick around the lips" in kissb["action"].lower()
     order = [b["id"] for b in m_open["beats"]]
     assert order.index("08-ui-kana") < order.index("09-kana-facial") < order.index("09-kana-kiss") < order.index("09-join")
 
@@ -2026,6 +2054,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "stays down" in jupo["action"].lower()
     assert "lies back from the sit" in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
+    assert "stays up into the mouth" in jupo["action"].lower()
     _assert_hospital_bans(taken)
     assert validate_episode(taken, root=HOSPITAL_DIR) == []
 

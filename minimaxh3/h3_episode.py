@@ -230,6 +230,14 @@ LORA_FILES = {
     "kiss": "cxy_kiss_lora_h3_v01_step1750.safetensors",
     # az420 Side Riding Cowgirl MiniMaxH3 2. Side-view riding insertion. Do not stack with AIO.
     "sideride": "cowgirl-side-2-mh3-e50-az420.safetensors",
+    # H3 penis helper. Trigger PENISLORA. Creampie stacks use 0.45.
+    "penis": "PLORA_H3_V2-step00006300.safetensors",
+    # H3 pussy detail. No trigger. Creampie stacks use 0.4.
+    "synth": "SynthPussy_H3_closeups_v1-step00008300.safetensors",
+    # Final Thrust V1. Vaginal internal finish only. 0.55 stays photoreal; higher goes 3D.
+    "thrust": "H3_FinalThrust.safetensors",
+    # Oral creampie only. Trigger CUMOUF. Not for vaginal, anal, or facial beats.
+    "cumouf": "CUMOUF_oral_creampie_H3_v1.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -240,6 +248,10 @@ LORA_URLS = {
     "cumshot": "https://civitai.com/api/download/models/3202064?fileId=3083352",
     "kiss": "https://civitai.com/api/download/models/3208556?fileId=3090649",
     "sideride": "https://civitai.com/api/download/models/3327446?fileId=3213328",
+    "penis": "https://civitai.com/api/download/models/3277703?fileId=3161784",
+    "synth": "https://civitai.com/api/download/models/3204862?fileId=3086301",
+    "thrust": "https://civitai.com/api/download/models/3269564?fileId=3157295",
+    "cumouf": "https://civitai.com/api/download/models/3223411?fileId=3105419",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -248,6 +260,11 @@ LORA_STRENGTHS = {
     "blowjob": 0.8,
     "kiss": 0.5,
     "sideride": 0.8,
+    # User stack for an internal finish. Catalog defaults are higher and read as 3D.
+    "penis": 0.45,
+    "synth": 0.4,
+    "thrust": 0.55,
+    "cumouf": 0.5,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"
