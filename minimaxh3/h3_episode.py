@@ -250,7 +250,7 @@ LORA_STRENGTHS = {
     "sideride": 0.8,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
-SIDERIDE_TRIGGER = "side view riding sex"
+SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"
 COMBAT_ROUTE_KEY = "combat_on"
 STORY_ROUTE_KEYS = tuple(STORY_OVERLAY_KEYS.values())
 INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())

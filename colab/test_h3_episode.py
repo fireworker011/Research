@@ -810,7 +810,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert LORA_FILES["sideride"] == "cowgirl-side-2-mh3-e50-az420.safetensors"
     assert "3327446" in LORA_URLS["sideride"]
     assert LORA_STRENGTHS["sideride"] == 0.8
-    assert SIDERIDE_TRIGGER == "side view riding sex"
+    assert SIDERIDE_TRIGGER == "side view riding sex, straddling the hips, facing the partner"
+    assert "cowgirl" not in SIDERIDE_TRIGGER.lower()
     ep = apply_combat_route(raw, combat="off")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
@@ -1591,9 +1592,15 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     assert extra_lora_entries(ride_sit)[0][0] == "sideride"
     assert ride_sit.get("trigger") == SIDERIDE_TRIGGER
+    assert "straddles the hips" in ride_sit["action"].lower()
+    assert "facing the partner" in ride_sit["action"].lower()
+    assert "leaning slightly toward the partner's face" in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
     assert SIDERIDE_TRIGGER in ride_prompt
     assert "cowgirl" not in ride_prompt.lower()
+    ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
+    assert "already straddling the hips" in ride_peak["action"].lower()
+    assert ride_peak.get("trigger") == SIDERIDE_TRIGGER
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():
@@ -1616,8 +1623,17 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "lewd wet smiling ecstatic inviting face" in cover_i["action"].lower()
     assert "french kiss" in cover_i["action"].lower()
     assert "catches up" in cover_i["action"].lower()
+    assert "walking right faster" in cover_i["action"].lower()
+    assert "snaps her body" in cover_i["action"].lower()
+    assert "press flush" in cover_i["action"].lower()
+    assert "squash and change shape" in cover_i["action"].lower()
+    assert "knead them from behind" in cover_i["action"].lower()
     assert "cup miki's breasts" in cover_i["action"].lower()
     assert "stands behind miki" in cover_i["action"].lower()
+    cover_cam = cover_i["camera"].lower()
+    assert "aya's breasts pressed into miki's back" in cover_cam
+    assert "kneading miki's breasts from behind" in cover_cam
+    assert cover_cam.find("pressed into miki's back") < cover_cam.find("turn whole-body")
     assert "head and chest turn together" in cover_i["action"].lower()
     assert "chin over the breastbone" in cover_i["action"].lower()
     assert "90" not in cover_i["action"]
@@ -2041,7 +2057,12 @@ def test_hospital_gin_tsuno_optional_events():
     assert "cup aya's breasts" in meet["action"].lower()
     assert "one large single eye" in meet["action"].lower()
     assert "exactly four long fingers" in meet["action"].lower()
-    assert "steps in behind" in meet["action"].lower()
+    assert "lunges in behind" in meet["action"].lower()
+    assert "snappy real-time" in meet["action"].lower()
+    assert "press flush" in meet["action"].lower()
+    assert "squash and change shape" in meet["action"].lower()
+    assert "knead them from behind" in meet["action"].lower()
+    assert "tsuno's breasts pressed into aya's back" in meet["camera"].lower()
     assert "do not turn to face each other" in meet["action"].lower()
     assert "pushes aya forward onto the peeling wall" in meet["action"].lower()
     assert meet.get("loco") == "walk"
@@ -2064,6 +2085,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "looks back" in action_blob(invite, "04-tsuno")
     assert "t-junction" in invite_meet["action"].lower()
     assert "cup aya's breasts" in invite_meet["action"].lower()
+    assert "lunges in behind" in invite_meet["action"].lower()
+    assert "knead them from behind" in invite_meet["action"].lower()
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
 
@@ -2072,6 +2095,9 @@ def test_hospital_gin_tsuno_optional_events():
     anal_in = next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")
     anal_peak = next(b for b in anal["beats"] if b["id"] == "04-tsuno-peak")
     assert "grab aya's breasts" in anal_meet["action"].lower()
+    assert "lunges in behind" in anal_meet["action"].lower()
+    assert "knead them from behind" in anal_meet["action"].lower()
+    assert "squash and change shape" in anal_meet["action"].lower()
     assert "exactly four long fingers" in anal_meet["action"].lower()
     assert "one large single eye" in anal_meet["action"].lower()
     assert "travels into the anus" in anal_in["action"].lower()
@@ -2086,6 +2112,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert "feet stay in the air" in nel_in["action"].lower()
     assert "feet leave the linoleum" not in nel_in["action"].lower()
     assert "walks right" not in nel_meet["action"].lower()
+    assert "snaps in behind" in nel_meet["action"].lower()
+    assert "snappy real-time" in nel_meet["action"].lower()
+    assert "press flush" in nel_meet["action"].lower()
+    assert "knead them from behind" in nel_meet["action"].lower()
     assert nel_meet.get("loco") == "planted"
     assert nel_in.get("loco") == "planted"
     assert nel_in.get("camera_pack") == "none"
@@ -2347,6 +2377,8 @@ def test_hospital_clip_failures_are_rewritten():
     ride_in = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     ride_prompt = build_beat_prompt(ride, ride_in)
     assert "squats over" in ride_in["action"].lower()
+    assert "straddles the hips" in ride_in["action"].lower()
+    assert "facing the partner" in ride_in["action"].lower()
     assert "soles stay on the linoleum" in ride_in["action"].lower()
     assert "thighs form an m" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
