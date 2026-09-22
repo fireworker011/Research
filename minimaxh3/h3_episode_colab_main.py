@@ -12,10 +12,10 @@ Env:
   H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
-  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
+  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride | stand | nelson（日本語: 四つん這い股広げ / M字開脚仰向け / 対面M字騎乗 / 壁立ちバック / フルネルソンアナル。病棟の誘う）
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle（日本語: 行かない / 小便 / オナニー / 触手。病棟の道中）
   H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
-  H3_EPISODE_TSUNO    off | accept_stand | invite_stand（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック。病棟の追加）
+  H3_EPISODE_TSUNO    off | accept_stand | invite_stand | anal_back | nelson（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック / 後ろアナル / フルネルソンアナル。病棟の追加）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
   H3_EPISODE_REI_MAST skip|stand|back（レイ脱出の合間おな）

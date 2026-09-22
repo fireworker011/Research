@@ -349,9 +349,21 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     },
     "ride": {
         "label_ja": "騎乗位",
-        "choice_ja": "ベロチュー→じゅぼ→騎乗位",
-        "when_ja": "出会いでベロチュー。行為はじゅぼ→騎乗→中出し→歩きの4本",
-        "hint_ja": "濃い誘う。みきもふたなり。じゅぼのあと乗せて中出し。終わりはあや一人歩き",
+        "choice_ja": "対面M字騎乗（口のあと）",
+        "when_ja": "出会いでベロチュー。行為は口→足裏M字の対面騎乗→中出し→歩きの4本",
+        "hint_ja": "竿役は仰向け。あやは足裏をつけて膝を開く。亀頭、半分、腰を密着。終わりはあや一人歩き",
+    },
+    "stand": {
+        "label_ja": "立ちバック",
+        "choice_ja": "壁立ちバック",
+        "when_ja": "壁に両手。斜め上から膣へ。亀頭、半分、腰を密着してから短い抽送。歩きまで",
+        "hint_ja": "角の立ちバックと同じ壁姿勢。標準の4人。膣。終わりはあや一人歩き",
+    },
+    "nelson": {
+        "label_ja": "フルネルソン",
+        "choice_ja": "フルネルソンアナル",
+        "when_ja": "あやが正面。竿役は背後。両脚を抱えて肛門だけ。顔と体は入れ替えない",
+        "hint_ja": "あやの顔が正面。竿役の顔はあやの頭の後ろ。竿は肛門だけ。終わりはあや一人歩き",
     },
 }
 
@@ -359,6 +371,8 @@ INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
     "all_fours": "invite_pose_all_fours",
     "m_open": "invite_pose_m_open",
     "ride": "invite_pose_ride",
+    "stand": "invite_pose_stand",
+    "nelson": "invite_pose_nelson",
 }
 
 INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
@@ -375,6 +389,11 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "騎乗位": "ride",
         "cowgirl": "ride",
         "jupo": "ride",
+        "ベロチュー→じゅぼ→騎乗位": "ride",
+        "壁立ちバック": "stand",
+        "立ちバック": "stand",
+        "フルネルソン": "nelson",
+        "フルネルソンアナル": "nelson",
     },
 )
 
@@ -441,7 +460,7 @@ GIN_MODES: dict[str, dict[str, Any]] = {
     "taken": {
         "label_ja": "犯される",
         "choice_ja": "灰色・犯される（騎乗）",
-        "when_ja": "長い舌がクリを24cmに。ベロチュー→じゅぼ→騎乗。終わりは竿も相手も消えてあや一人歩き",
+        "when_ja": "長い舌がクリを24cmに。口のあと対面M字で騎乗。終わりは竿も相手も消えてあや一人歩き",
         "hint_ja": "あやが24cmを生やされて騎乗される。終わりは完全消滅",
     },
     "fuck": {
@@ -982,10 +1001,24 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
     },
     "invite_ride": {
         "label_ja": "誘う・騎乗",
-        "choice_ja": "□誘う・ベロチュー→じゅぼ→騎乗位",
-        "when_ja": "この人をじゅぼのあと乗せて誘う",
+        "choice_ja": "□誘う・対面M字騎乗",
+        "when_ja": "この人を口のあと、足裏M字の対面騎乗で誘う",
         "story": "invite",
         "pose": "ride",
+    },
+    "invite_stand": {
+        "label_ja": "誘う・立ちバック",
+        "choice_ja": "□誘う・壁立ちバック",
+        "when_ja": "この人を壁に手をついた立ちバックで誘う。膣",
+        "story": "invite",
+        "pose": "stand",
+    },
+    "invite_nelson": {
+        "label_ja": "誘う・フルネルソン",
+        "choice_ja": "□誘う・フルネルソンアナル",
+        "when_ja": "この人の背後からフルネルソン。あやが正面。肛門だけ",
+        "story": "invite",
+        "pose": "nelson",
     },
     "evade": {
         "label_ja": "回避",
@@ -1015,10 +1048,15 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘う四つん這い": "invite_all_fours",
         "誘うM字": "invite_m_open",
         "誘う騎乗": "invite_ride",
+        "誘う立ちバック": "invite_stand",
+        "誘うフルネルソン": "invite_nelson",
+        "□誘う・ベロチュー→じゅぼ→騎乗位": "invite_ride",
         "回避": "evade",
         "invite-all-fours": "invite_all_fours",
         "invite-m-open": "invite_m_open",
         "invite-ride": "invite_ride",
+        "invite-stand": "invite_stand",
+        "invite-nelson": "invite_nelson",
     },
 )
 

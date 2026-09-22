@@ -204,6 +204,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
+- Civitai の LoRA は Colab のシークレット `CIVITAI_API_TOKEN` を使う。キーはノートに書かない。Drive に 1MB 超の同名ファイルがあれば再取得しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える

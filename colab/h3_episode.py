@@ -1918,6 +1918,10 @@ def prepare_episode(
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
     render = dict(out.get("render") or {})
+    prefetch: list[str] = []
+    _collect_extra_lora_keys(out, prefetch)
+    if prefetch:
+        render["lora_prefetch"] = prefetch
     if connect_override not in (None, ""):
         render["connect"] = canonical_connect(connect_override)
     if end_connect_override not in (None, ""):
@@ -3089,15 +3093,30 @@ def _apply_beat_sampler(preset: dict[str, Any], beat: dict[str, Any], *, combat_
     return out
 
 
+def _collect_extra_lora_keys(node: Any, keys: list[str]) -> None:
+    """Every extra LoRA in the raw tree, including overlays that the chosen route does not expand."""
+    if isinstance(node, dict):
+        if "extra_loras" in node:
+            for key, _strength in extra_lora_entries(node):
+                if key not in keys:
+                    keys.append(key)
+        for value in node.values():
+            _collect_extra_lora_keys(value, keys)
+    elif isinstance(node, list):
+        for value in node:
+            _collect_extra_lora_keys(value, keys)
+
+
 def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
-    """Fetch optional extra LoRAs (Combat V2) into Drive models/loras when a beat asks for them."""
+    """Fetch optional extra LoRAs into Drive models/loras. A file already over 1MB is left in place."""
     root = Path(loras_dir)
     notes: list[str] = []
     keys: list[str] = []
-    for beat in ep.get("beats") or []:
-        for key, _s in extra_lora_entries(beat):
-            if key not in keys:
-                keys.append(key)
+    for key in (ep.get("render") or {}).get("lora_prefetch") or []:
+        name = str(key)
+        if name not in keys:
+            keys.append(name)
+    _collect_extra_lora_keys(ep, keys)
     for key in keys:
         fname = LORA_FILES.get(key)
         url = LORA_URLS.get(key)
@@ -3105,6 +3124,7 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
             continue
         dest = root / fname
         if dest.is_file() and dest.stat().st_size > 1_000_000:
+            notes.append(f"skip existing {fname}")
             continue
         print("fetch LoRA", fname)
         if fetch_text(url, dest, min_bytes=1_000_000):
