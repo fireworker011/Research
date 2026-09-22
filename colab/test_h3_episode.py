@@ -1425,7 +1425,9 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     assert oral.get("trigger") == "bl0w_j0b"
     assert oral_prompt.startswith("bl0w_j0b")
     assert "glans stays inside the mouth" in oral_prompt.lower()
-    assert "jupo" not in oral_prompt.lower()
+    assert "short strokes to the base" in oral["action"].lower()
+    assert "jupo" in str(oral.get("sfx") or "").lower()
+    assert all("じゅ" not in str(v.get("line") or "") for v in oral.get("voices") or [])
     assert "keep the lips at the base" in oral_prompt.lower()
     assert "head moves forward" in oral["action"].lower()
     assert "semen share" not in oral_prompt.lower()
