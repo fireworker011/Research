@@ -12,6 +12,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 | `minimaxh3/episodes/<slug>/stills/*.jpg` | クリーンな先頭フレーム。HUD を焼き込まない。1280×720 でよい（1024×576 に自動で正規化） |
 | `minimaxh3/episodes/bandai-district/` | 9ビート・92秒の初回版（アクション調）。raw は Drive に残っている |
 | `minimaxh3/episodes/bandai-district-short/` | 25秒・ミッション失敗で落ちる版。初回版の raw を `reuse` し、新しく描くのは理容室 1 本 |
+| `minimaxh3/episodes/minato-ramp-clear/` | 全年齢・横スクロール 1 撃。ミッション完了。病棟の話は使わない |
 | `minimaxh3/h3_episode.py` | スキーマ検査・プロンプト生成と検査・ステージング・レンダ・reuse／ui ビート・HUD・連結・CLI |
 | `minimaxh3/h3_hud.py` | HUD／字幕／メニュー／カード描画と ffmpeg（compose / card / stitch / frame） |
 | `minimaxh3/h3_episode_colab_main.py` | Colab のヘッドレス入口（env で slug・preset・fresh） |
@@ -88,10 +89,13 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - `homage.never` に、参照元の固有要素（物・人名・小道具）を並べる。プロンプトに出たら落ちる。ブランド／IP 名（格ゲー・オープンワールドの実名、Pollo、Seedance）と「HUD・ミニマップ・字幕・透かし」を H3 に描かせる語も落ちる。`lip-synced` などの英語メタも落ちる（H3 が読み上げる）
 - `cards.disclaimer` は必須。エンドカードに「架空のゲームのコンセプト映像」を出す
 - `canvas`: `16:9`（1024×576）か `9:16`（576×1024）。出力は `stitch.output_height` 720 か 1080
+- `render.camera_pack: "side2d"` は 2D 横スクロール固定。床は左から右、人物は全身（足まで）、カメラは横にだけ追う。歩きは TRACK、一撃は HOLD（足は踏み出さない）。`slow` / `slow motion` は否定しても禁止（H3 がスローを描く）
+- `extra_loras: ["combat"]` は一撃ビートだけ。トリガー `prfight2, prfin1`、12 step、euler + beta。**VRAM 70GB 以上の High-Memory GPU のときだけ積む**（A100 80GB）。A100 40GB と LightX2V turbo では外す。Colab の High-RAM（CPU RAM）では積まない。`cards.fail` を書かなければ最後のビートで `complete: true` にして完了落ちにできる
 
 ## レンダの決まり
 
 - LoRA プリセット: `daily` = Larry v4 1.0 + シネマ DY 0.65 / 8step（トリガー `DY` を先頭に付ける）、`preview` = LightX2V 4step + シネマ 0.5、`fast` = LightX2V 4step のみ。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
+- 格闘 LoRA（Combat V2）はプリセットではない。ビートの `extra_loras` で opt-in。High-Memory GPU 以外と turbo ではスキップして daily のまま描く
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない
 - 音は H3 のまま。連結は xfade + acrossfade 0.35秒 + loudnorm。`transition: "cut"` で直結
 
@@ -113,3 +117,15 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 小道具はビートごとに直し、03/04 はカットシーン、ミッション行に赤字を入れた。`--fresh` で描き直せば前半の軽トラ混入は消えるが、後半の爆発ビートは H3 の得意ではない（`tone: action` のまま残す）。
 
 どちらも借りたのは三人称カメラとミッション字幕の文法、会話で HUD を消す作法、失敗で落とす間だけ。舞台・人物・物語はオリジナル。参照元の要素は `homage.never` で禁止。
+
+## こがね厨房（`kogane-timecard`）
+
+25秒。参照のシュールは「しゃがんだまま脛を引っかけて店主を座らせる」1本だけ借りる。学校・制服・段ボール箱・原クリップは使わない。
+クレート 3.0秒 → 足払い（ゲーム物理・血なし）5.0秒 → 厨房（字幕のみ・伝票完了）6.0秒 → 道具メニュー 2.2秒 → 打刻 4.8秒 → ミッション失敗「タイムカードを裏向きに挿した」→ 免責。
+爆発・飛び蹴りは書かない。`tone: action` はこの足払いのため。Colab は `EPISODE = "kogane-timecard"`。inbox には置かない。
+
+## みなと埠頭クリア（`minato-ramp-clear`）
+
+全年齢の架空横スクロール。借りるのはカメラ（真横 PROFILE・床は左から右・全身）と一撃の書き方だけ。病棟・裸体・性行為・感染・触手、あや／みき／れい／かな／しの／ぎん／つの は使わない。
+歩き 4.0秒（ナギだけ）→ コマンド「戦う」2.0秒 → 接近 5.0秒（黒田は右で静止、ナギだけ歩く）→ その場で掌を胸へ 6.0秒（カメラ HOLD、黒田は座り込む・血なし）→ 出口 5.0秒（ナギだけ）→ ミッション完了。約 23 秒。
+ノートの既定 `EPISODE` は動かさない。回すときは `EPISODE = "minato-ramp-clear"`、`BRANCH = "cursor/h3-minato-ramp-clear-33d9"`。歩きは A100 40GB で足りる。格闘 LoRA は A100 80GB（VRAM ≥70GB）のときだけ。Colab High-RAM では積まない。inbox には置かない。

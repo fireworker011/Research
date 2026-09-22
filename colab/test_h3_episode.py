@@ -16,10 +16,15 @@ from h3_episode import (  # noqa: E402
     CANVAS,
     CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
+    FIGHT_HOLD_CLAUSE,
     I2VA_HEADER,
+    LORA_FILES,
     MUNDANE_CLAUSE,
     PRESETS,
+    SIDE2D_CLAUSE,
+    WALK_TRACK_CLAUSE,
     EpisodeError,
+    apply_extra_loras,
     assert_not_production_root,
     beat_props,
     beat_prompts,
@@ -35,6 +40,7 @@ from h3_episode import (  # noqa: E402
     forbidden_hits,
     load_episode,
     materialize_reuse,
+    merge_trigger,
     output_size_for,
     plan_lines,
     preflight,
@@ -73,6 +79,7 @@ from run_episode import exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
+MINATO_DIR = ROOT / "minimaxh3" / "episodes" / "minato-ramp-clear"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -83,6 +90,10 @@ def bandai() -> dict:
 
 def short() -> dict:
     return load_episode(SHORT_DIR / "episode.json")
+
+
+def minato() -> dict:
+    return load_episode(MINATO_DIR / "episode.json")
 
 
 # ---------------------------------------------------------------- sync / files
@@ -369,6 +380,9 @@ def test_forbidden_tokens():
     assert forbidden_hits("Nobody is hurt, no blood, no injuries, no children anywhere. No HUD, no watermark.") == []
     assert forbidden_hits("visit px.a8.net for 月収") != []
     assert "loli" in [h.lower() for h in forbidden_hits("a loli character waves")]
+    harm = [h.lower() for h in forbidden_hits("zombies and viscera and entrails fill the hall")]
+    for tok in ("zombies", "viscera", "entrails"):
+        assert tok in harm, (tok, harm)
 
 
 def test_validate_beat_prompt_shapes():
@@ -638,3 +652,125 @@ def test_finish_materializes_reuse_and_stills_preview_ignores_trim(tmp_path):
     assert preview.name == "bandai-district-short-stills-preview.mp4"
     want = expected_stitch_duration([2.5, 2.5, 2.5, 2.2, 2.5, 2.8, 3.0], xfade_s=0.35)
     assert probe_duration(preview) == pytest.approx(want, abs=0.3)
+
+
+# ---------------------------------------------------------------- minato-ramp-clear (all-ages side2d)
+
+def test_minato_episode_validates_and_plans_under_25s():
+    ep = minato()
+    assert validate_episode(ep, root=MINATO_DIR) == []
+    assert preflight(ep, MINATO_DIR, need_ffmpeg=False) == []
+    assert ep["slug"] == "minato-ramp-clear"
+    assert ep["tone"] == "action" and ep["violence"] == "game"
+    assert ep["render"]["camera_pack"] == "side2d"
+    assert ep.get("cards", {}).get("fail") in (None, False, {})
+    assert ep["beats"][-1]["hud"]["complete"] is True
+    assert 20.0 <= expected_duration(ep) <= 25.0
+    ids = [b["id"] for b in ep["beats"]]
+    assert ids == ["01-walk", "02-command", "03-approach", "04-hit", "05-exit"]
+    assert [b["source"] for b in ep["beats"]] == ["still", "ui", "still", "chain", "still"]
+    assert ep["beats"][0]["cast"] == ["nagi"] and ep["beats"][4]["cast"] == ["nagi"]
+    assert ep["beats"][2]["cast"] == ["nagi", "kuro"]
+    assert ep["beats"][3]["extra_loras"] == ["combat"]
+    assert ep["beats"][3]["trigger"] == "prfight2, prfin1"
+    assert ep["beats"][3]["steps"] == 12
+    assert ep["beats"][3]["sampler"] == "euler" and ep["beats"][3]["scheduler"] == "beta"
+    assert [beat_window(ep, b) for b in ep["beats"]] == [
+        (0.0, 4.0),
+        (0.0, 2.0),
+        (0.0, 5.0),
+        (0.0, 6.0),
+        (0.0, 5.0),
+    ]
+    for beat in ep["beats"]:
+        if beat.get("still"):
+            p = MINATO_DIR / beat["still"]
+            assert p.is_file() and "-hud" not in p.stem
+            assert Image.open(p).size == (1280, 720)
+    for cid, person in ep["cast"].items():
+        assert int(person["age"]) >= 20, cid
+
+
+def test_minato_walk_omits_absent_adult_and_side2d_holds_the_hit():
+    ep = minato()
+    rows = {b["id"]: p for b, p, errs in beat_prompts(ep, trigger="DY")}
+    assert set(rows) == {"01-walk", "03-approach", "04-hit", "05-exit"}
+    walk = rows["01-walk"]
+    exit_p = rows["05-exit"]
+    approach = rows["03-approach"]
+    hit = rows["04-hit"]
+    for prompt in (walk, exit_p):
+        assert "Kuro" not in prompt
+        assert "olive canvas" not in prompt
+        assert SIDE2D_CLAUSE in prompt
+        assert WALK_TRACK_CLAUSE in prompt
+        assert FIGHT_HOLD_CLAUSE not in prompt
+        assert "slow" not in prompt.lower()
+    assert "Kuro STANDS STILL" in approach
+    assert "Nagi WALKS RIGHT" in approach
+    assert "RIGHT open palm" in hit
+    assert "chest" in hit
+    assert "SITS DOWN" in hit
+    assert FIGHT_HOLD_CLAUSE in hit
+    assert WALK_TRACK_CLAUSE not in hit
+    assert "prfight2" in hit and "prfin1" in hit
+    authored = " ".join(str(ep["beats"][3].get(k) or "") for k in ("action", "camera", "place")).lower()
+    for word in ("punch", "kick", "fight", "blood", "zombie", "slow"):
+        assert word not in authored
+    never = [str(x).lower() for x in ep["homage"]["never"]]
+    for name in ("あや", "みき", "れい", "かな", "しの", "ぎん", "つの", "aya", "miki", "hospital"):
+        assert name in never
+        for prompt in rows.values():
+            assert name not in prompt.lower()
+    assert all(errs == [] for _b, _p, errs in beat_prompts(ep, trigger="DY"))
+
+
+def test_minato_side2d_rejects_slow_even_negated():
+    ep = copy.deepcopy(minato())
+    ep["beats"][0]["action"] = ep["beats"][0]["action"] + ". Not slow motion."
+    errs = validate_episode(ep)
+    assert any("side2d forbids the word slow" in e for e in errs)
+
+
+def test_combat_lora_skips_without_high_mem_and_loads_on_high_mem(tmp_path):
+    ep = minato()
+    hit = ep["beats"][3]
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["larry"]).write_bytes(b"x")
+    (loras / LORA_FILES["cinema"]).write_bytes(b"x")
+    (loras / LORA_FILES["combat"]).write_bytes(b"x")
+    (loras / LORA_FILES["turbo4"]).write_bytes(b"x")
+    daily = resolve_preset("daily", loras)
+    skipped = apply_extra_loras(daily, hit, loras, high_mem=False)
+    assert LORA_FILES["combat"] not in [s[0] for s in skipped["stack"]]
+    assert any("High-Memory GPU only" in n for n in skipped["notes"])
+    assert skipped.get("sampler") is None
+    assert skipped["steps"] == 8
+    loaded = apply_extra_loras(daily, hit, loras, high_mem=True)
+    assert LORA_FILES["combat"] in [s[0] for s in loaded["stack"]]
+    assert loaded["steps"] == 12 and loaded["sampler"] == "euler" and loaded["scheduler"] == "beta"
+    trig = merge_trigger(loaded.get("trigger") or "", hit)
+    assert "DY" in trig and "prfight2" in trig and "prfin1" in trig
+    g = build_episode_graph(
+        source="chain",
+        first_image="03.jpg",
+        prompt=build_beat_prompt(ep, hit, trigger=trig),
+        unet="fl2va.safetensors",
+        preset=loaded,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/h3_ep_minato_hit",
+    )
+    assert g["2c"]["inputs"]["lora_name"] == LORA_FILES["combat"]
+    assert g["22"]["inputs"]["sampler_name"] == "euler"
+    assert g["23"]["inputs"]["scheduler"] == "beta"
+    assert g["23"]["inputs"]["steps"] == 12
+    turbo = resolve_preset("fast", loras)
+    turbo_out = apply_extra_loras(turbo, hit, loras, high_mem=True)
+    assert LORA_FILES["combat"] not in [s[0] for s in turbo_out["stack"]]
+    assert any("never with LightX2V turbo" in n for n in turbo_out["notes"])
+    ui = ep["beats"][1]
+    assert validate_episode(dict(ep, beats=[ep["beats"][0], dict(ui, extra_loras=["combat"])])) != []
