@@ -500,11 +500,25 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "壁に手をついて誘う立ちバックだけ。終わりは相手が消えてあや一人歩き",
         "hint_ja": "あやが後ろへ誘う。立ちバックのみ",
     },
+    "anal_back": {
+        "label_ja": "後ろアナル",
+        "choice_ja": "角・後ろアナル（結合部が見える）",
+        "when_ja": "胸を掴んだ密着から、壁に手をついた立ちのアナル。結合部が見える。膣には入れない",
+        "hint_ja": "胸を鷲掴み。壁に手。竿は肛門だけ。斜め後ろで結合部が見える",
+    },
+    "nelson": {
+        "label_ja": "フルネルソンアナル",
+        "choice_ja": "角・フルネルソンアナル",
+        "when_ja": "胸を掴んだ密着から、両脚を抱えてアナルだけ。膣には入れない",
+        "hint_ja": "胸を鷲掴み。入れたまま両脚を抱える。竿は肛門だけ",
+    },
 }
 
 TSUNO_OVERLAY_KEYS: dict[str, str] = {
     "accept_stand": "on_tsuno_accept_stand",
     "invite_stand": "on_tsuno_invite_stand",
+    "anal_back": "on_tsuno_anal_back",
+    "nelson": "on_tsuno_nelson",
 }
 
 TSUNO_ALIASES: dict[str, str] = _label_aliases(
@@ -518,6 +532,11 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
         "立ちバック": "accept_stand",
         "誘う": "invite_stand",
         "誘う立ちバック": "invite_stand",
+        "後ろアナル": "anal_back",
+        "結合部": "anal_back",
+        "アナル": "anal_back",
+        "フルネルソン": "nelson",
+        "フルネルソンアナル": "nelson",
     },
 )
 

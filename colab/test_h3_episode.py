@@ -791,6 +791,12 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert LORA_FILES["blowjob"] == "MM-H3_Blowjob_v3.safetensors"
     assert "civitai.com" in LORA_URLS["blowjob"]
     assert LORA_STRENGTHS["blowjob"] == 0.8
+    assert LORA_FILES["futatf"].endswith("V5.1.safetensors")
+    assert "3212000" in LORA_URLS["futatf"]
+    assert LORA_FILES["mast"].startswith("H3_masturbate")
+    assert LORA_FILES["cumshot"].startswith("epic_cumshots")
+    assert LORA_STRENGTHS["kiss"] == 0.5
+    assert "3208556" in LORA_URLS["kiss"]
     ep = apply_combat_route(raw, combat="off")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
@@ -1249,7 +1255,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "white goo" in kana_meet["action"].lower()
     assert "linoleum around her" in kana_meet["action"].lower()
     assert "stops in front of kana" in kana_meet["action"].lower()
-    assert "feet stay planted" in kana_meet["action"].lower()
+    assert "stands still in one spot" in kana_meet["action"].lower()
+    assert "erect penis up" in kana_meet["action"].lower()
+    assert "feet stay planted" not in kana_meet["action"].lower()
     assert "only aya's feet walk" in kana_meet["action"].lower()
     assert not re.search(r"\brei\b", kana_meet["action"], re.I)
     assert kana_meet.get("camera_pack") == "none"
@@ -1320,7 +1328,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(131.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(153.2, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1526,7 +1534,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     ride_miki = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     _assert_insertion_direction(ride_miki["action"], build_beat_prompt(ride, ride_miki))
     assert "steps out" not in four["action"].lower()
-    assert "profile" in four["camera"].lower()
+    assert "front view" in four["camera"].lower()
+    assert "facing the camera" in four["action"].lower()
     _assert_hospital_bans(toilet)
     _assert_hospital_bans(ride)
 
@@ -1574,6 +1583,21 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "white goo" in seven["action"].lower()
     assert "lewd wet smiling ecstatic inviting face" in seven["action"].lower()
     assert "french kiss" not in seven["action"].lower()
+    assert "face moves forward" in seven["action"].lower()
+    assert "short gap from the erect 20cm" in seven["action"].lower()
+    assert seven["trim"]["seconds"] == 8.0
+    facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
+    kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
+    assert extra_keys(facial) == ["cumshot"]
+    assert facial.get("trigger") == "CUMSH0T"
+    assert facial["trim"]["seconds"] == 10.0
+    assert "slow" not in facial["action"].lower()
+    assert "white goo" in facial["action"].lower()
+    assert extra_lora_entries(kissb) == [("kiss", 0.5)]
+    assert "french kiss" in kissb["action"].lower()
+    assert "tongue kiss" in kissb["action"].lower()
+    order = [b["id"] for b in m_open["beats"]]
+    assert order.index("08-ui-kana") < order.index("09-kana-facial") < order.index("09-kana-kiss") < order.index("09-join")
 
     ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
     ten_low = ten["action"].lower()
@@ -1687,7 +1711,20 @@ def test_hospital_toilet_and_routes_stay_consistent():
         assert four.get("camera_pack") == "none"
         prompt = build_beat_prompt(ep, four, trigger=merge_trigger("", four))
         assert validate_beat_prompt(prompt, source="t2v") == []
-        assert "profile" in prompt.lower()
+        if mode == "masturbate":
+            assert "m-shape" in low
+            assert "facing the camera" in low
+            assert "orgasmic contractions" in low
+            assert extra_keys(four) == ["mast"]
+            assert "profile" not in four["camera"].lower()
+            assert "facing the camera" in enter["action"].lower()
+        elif mode == "tentacle":
+            assert "facing the camera" in low
+            assert "presses on her tongue" in low
+            assert "profile" not in four["camera"].lower()
+            assert "facing the camera" in enter["action"].lower()
+        else:
+            assert "profile" in prompt.lower()
         assert "hospital door" not in prompt.lower()
         assert "doorway" not in prompt.lower()
         assert "this shot:" not in prompt.lower()
@@ -1876,6 +1913,9 @@ def test_hospital_gin_tsuno_optional_events():
     lick_prompt = build_beat_prompt(taken, lick)
     walk_prompt = build_beat_prompt(taken, walk)
     assert "licks once" in lick["action"].lower()
+    assert "grows out of the open mouth" in lick["action"].lower()
+    assert "penis growth" in lick["action"].lower()
+    assert extra_keys(lick) == ["mystic", "futatf"]
     assert "clitoris grows" in lick["action"].lower()
     assert "24cm" in lick["action"]
     assert "lands on her feet" in lick["action"].lower()
@@ -1969,11 +2009,37 @@ def test_hospital_gin_tsuno_optional_events():
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
 
+    anal = prepare_episode(raw, tsuno_override="後ろアナル")
+    anal_meet = next(b for b in anal["beats"] if b["id"] == "04-tsuno-meet")
+    anal_in = next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")
+    anal_peak = next(b for b in anal["beats"] if b["id"] == "04-tsuno-peak")
+    assert "grab aya's breasts" in anal_meet["action"].lower()
+    assert "exactly four long fingers" in anal_meet["action"].lower()
+    assert "one large single eye" in anal_meet["action"].lower()
+    assert "travels into the anus" in anal_in["action"].lower()
+    assert "pussy" not in anal_in["action"].lower()
+    assert "pussy" not in anal_peak["action"].lower()
+    assert "white goo fills the anus" in anal_peak["action"].lower()
+    _assert_insertion_direction(anal_in["action"], build_beat_prompt(anal, anal_in))
+    nelson = prepare_episode(raw, tsuno_override="フルネルソン")
+    nel_in = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-in")
+    nel_peak = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-peak")
+    assert "both of aya's feet leave the linoleum" in nel_in["action"].lower()
+    assert "travels into the anus" in nel_in["action"].lower()
+    assert "pussy" not in nel_in["action"].lower()
+    assert "lowers one of aya's feet" in nel_peak["action"].lower()
+    assert "white goo fills the anus" in nel_peak["action"].lower()
+    _assert_insertion_direction(nel_in["action"], build_beat_prompt(nelson, nel_in))
+    _assert_hospital_bans(anal)
+    _assert_hospital_bans(nelson)
+    assert validate_episode(anal, root=HOSPITAL_DIR) == []
+    assert validate_episode(nelson, root=HOSPITAL_DIR) == []
+
 
 def test_hospital_chain_keeps_same_cast_acts():
     """T2V is dead: same-cast acts must I2V from the previous last frame.
 
-    New people (gin/tsuno/peek/kana/shino) and the toilet stall stay T2V.
+    New people (gin/tsuno/peek/kana/shino) stay T2V. The toilet walk-in is the same woman, so it chains.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     accept = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
@@ -2041,8 +2107,8 @@ def test_hospital_chain_keeps_same_cast_acts():
     assert beat_source(gin_in) == "chain"
     toilet = prepare_episode(raw, story_override="受け入れる", toilet_override="pee", connect_override="chain")
     tin = next(b for b in toilet["beats"] if b["id"] == "04-toilet-in")
-    assert tin.get("connect") == "t2v"
-    assert beat_source(tin) == "t2v"
+    assert tin.get("connect") not in ("t2v", "cut", "off")
+    assert beat_source(tin) == "chain"
 
     # Same cast stays I2V. T2V is only the first shot, a new person, or an authored room lock.
     sweeps = [
