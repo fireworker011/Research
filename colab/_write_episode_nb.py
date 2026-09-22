@@ -58,6 +58,8 @@ SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 FRESH = False  #@param {type:"boolean"}
 BRANCH = "__BRANCH__"  #@param {type:"string"}
+#@markdown **CivitaiのAPIキー** — 必要な LoRA を Drive に取るときだけ貼る。空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。
+CivitaiのAPIキー = ""  #@param {type:"string"}
 print("=" * 60)
 print(" H3 episode one-click:", EPISODE)
 print("=" * 60)
@@ -95,6 +97,11 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
 os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
+_civitai = str(CivitaiのAPIキー or "").strip()
+if _civitai:
+    os.environ["CIVITAI_API_TOKEN"] = _civitai
+print("Civitai API:", "フォームから読み込み済み（値は出しません）" if _civitai else "フォームは空（シークレットがあればそれを使う）")
+del _civitai
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
 
 import torch
@@ -204,7 +211,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
-- Civitai の LoRA は Colab のシークレット `CIVITAI_API_TOKEN` を使う。キーはノートに書かない。Drive に 1MB 超の同名ファイルがあれば再取得しない
+- Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。Drive に 1MB 超の同名ファイルがあれば再取得しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える

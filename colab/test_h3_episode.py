@@ -239,6 +239,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert "病棟出口" in src
     assert "番台ショート（25秒）" in src
     assert 'BRANCH = "cursor/h3-hospital-ward-34e4"' in src
+    assert 'CivitaiのAPIキー = ""' in src
+    assert 'os.environ["CIVITAI_API_TOKEN"] = _civitai' in src
+    assert "619ea878c0bf2491f6cedd625329c5b3" not in src
     assert 'PRESET = "バランス（迷ったらこれ）"' in src
     assert "スピード（最速）" in src and "質（きれい・時間かかる）" in src
     assert 'CAMERA = "横スク（真横・全身・迷ったらこれ）"' in src
@@ -278,6 +281,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "APPEAR_MIKI" in src and "APPEAR_SHINO" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
+    assert "619ea878c0bf2491f6cedd625329c5b3" not in md
+    assert "CivitaiのAPIキー" in md
     assert "cursor/h3-hospital-ward-34e4" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
