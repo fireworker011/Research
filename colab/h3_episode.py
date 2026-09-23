@@ -2220,7 +2220,7 @@ _SPOT_POSE = {
     "rei": "Rei is already standing ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
     "kana": "Kana is already standing mid-corridor facing Aya, feet planted, full body including feet.",
     "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
-    "gin": "Gin is already standing in front of Aya toward the RIGHT, facing Aya, full body including feet, a short step apart.",
+    "gin": "Gin is already standing directly behind Aya toward the LEFT, facing RIGHT, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
     "tsuno": "Tsuno is already standing one step behind Aya, facing the same way, full body including feet.",
 }
 
@@ -2255,13 +2255,31 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 poses.append(_SPOT_POSE.get(cid) or f"{names[-1]} is already in frame with Aya, full body including feet.")
             who = " and ".join(names)
             spot_id = f"{bid}-spot"
-            action = (
-                "Aya is already in the corridor, fully nude. "
-                + " ".join(poses)
-                + " They share the frame, a short step apart. Aya takes one step closer and stops. "
-                f"Last frame: Aya and {who} both full body including feet, still a short step apart. "
-                "Motion starts at frame one. Brisk real-time."
-            )
+            if added == ["gin"]:
+                action = (
+                    "Aya is already in the corridor toward the RIGHT, facing RIGHT, fully nude, full body including feet. "
+                    "Gin is already standing directly behind Aya toward the LEFT, facing RIGHT, full body including feet, a short step behind. "
+                    "The ceiling tiles stay a closed flat ceiling. "
+                    "They stay a short step apart. Aya does not turn yet. "
+                    "Last frame: Aya toward the RIGHT facing RIGHT, Gin toward the LEFT behind her, both full body including feet. "
+                    "Motion starts at frame one. Brisk real-time."
+                )
+                camera = (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    "Aya toward the RIGHT facing RIGHT. Gin behind her toward the LEFT, facing RIGHT."
+                )
+            else:
+                action = (
+                    "Aya is already in the corridor, fully nude. "
+                    + " ".join(poses)
+                    + " They share the frame, a short step apart. Aya takes one step closer and stops. "
+                    f"Last frame: Aya and {who} both full body including feet, still a short step apart. "
+                    "Motion starts at frame one. Brisk real-time."
+                )
+                camera = (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    f"{who} already shares the frame with Aya."
+                )
             built.append({
                 "id": spot_id,
                 "source": "t2v",
@@ -2270,10 +2288,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 "cast": list(intended),
                 "encounter": beat.get("encounter") or "",
                 "place": beat.get("place") or "",
-                "camera": (
-                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    f"{who} already shares the frame with Aya."
-                ),
+                "camera": camera,
                 "action": action,
                 "voices": [{"who": "aya", "line": "ん"}],
                 "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
@@ -3206,6 +3221,7 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
 
 
 _LOOK_DROP_RE = re.compile(r"\b(?:no|never|not|without)\b", re.IGNORECASE)
+_SHAFT_IN_LOOK_RE = re.compile(r"\b(?:shaft|penis|\d+\s*cm)\b", re.IGNORECASE)
 
 
 def _positive_look(lock: str) -> str:
@@ -3226,6 +3242,7 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
     locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
     lines: list[str] = []
+    shaft_names: list[str] = []
     for cid in beat.get("cast") or []:
         row = cast.get(cid) or {}
         name = str(row.get("name_en") or cid).strip() or str(cid)
@@ -3233,12 +3250,15 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         positive = _positive_look(lock)
         if positive:
             lines.append(f"{name}: {positive}.")
+        if positive and _SHAFT_IN_LOOK_RE.search(positive):
+            shaft_names.append(name)
     if not lines:
         return ""
     action = str(beat.get("action") or "").lower()
     shaft = ""
-    if "shaft is gone" not in action and "no penis" not in action:
-        shaft = " A shaft written in that look stays erect, the same length and the same color, on the groin."
+    if shaft_names and "shaft is gone" not in action:
+        who = " and ".join(shaft_names)
+        shaft = f" {who}'s shaft written in that look stays erect, the same length and the same color, on the groin."
     return (
         "Look that stays for this whole shot: "
         + " ".join(lines)

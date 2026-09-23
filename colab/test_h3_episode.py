@@ -2117,14 +2117,16 @@ def test_hospital_gin_tsuno_optional_events():
     assert extra_keys(lick) == ["mystic", "futatf"]
     assert "clitoris grows" in lick["action"].lower()
     assert "24cm" in lick["action"]
-    assert "lands on her feet" in lick["action"].lower()
+    assert "behind aya toward the left" in lick["action"].lower()
+    assert "turns her whole body left" in lick["action"].lower()
+    assert "ceiling" not in lick["action"].lower()
+    assert "lands on her feet" not in lick["action"].lower()
     assert "in front of aya" in lick["action"].lower()
-    assert "not onto aya, not behind aya" in lick["action"].lower()
     assert "falls onto her butt" in lick["action"].lower()
     assert "thighs open" in lick["action"].lower()
     assert "shocked wide-eyed" in lick["action"].lower()
     assert "french kiss" not in lick["action"].lower()
-    assert lick.get("loco") == "walk"
+    assert lick.get("loco") == "planted"
     assert lick.get("cast_lock") and "24cm" in lick["cast_lock"]["aya"]
     assert "pale-tan" in lick["cast_lock"]["aya"]
     assert "ashen" not in lick["cast_lock"]["aya"].lower()
@@ -2160,6 +2162,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
     assert "pale-tan" in jupo_prompt
+    assert "Aya's shaft written" in jupo_prompt
+    spot = next(b for b in taken["beats"] if b["id"] == "04-gin-lick-spot")
+    spot_prompt = build_beat_prompt(taken, spot)
+    assert "behind aya toward the left" in spot["action"].lower()
+    assert "shaft written" not in spot_prompt.lower()
     assert "24cm" not in walk_prompt
     kiss = next(b for b in taken["beats"] if b["id"] == "03-kiss")
     kiss_prompt = build_beat_prompt(taken, kiss)
@@ -2178,7 +2185,8 @@ def test_hospital_gin_tsuno_optional_events():
     fuck = prepare_episode(raw, gin_override="犯す")
     fuck_lick = next(b for b in fuck["beats"] if b["id"] == "04-gin-lick")
     fuck_in = next(b for b in fuck["beats"] if b["id"] == "04-gin-in")
-    assert "lands on her feet" in fuck_lick["action"].lower()
+    assert "behind aya toward the left" in fuck_lick["action"].lower()
+    assert "lands on her feet" not in fuck_lick["action"].lower()
     assert "shocked wide-eyed" in fuck_lick["action"].lower()
     assert "already sitting on her butt" in fuck_in["action"].lower()
     assert "rises to her feet once" in fuck_in["action"].lower()
@@ -2191,7 +2199,9 @@ def test_hospital_gin_tsuno_optional_events():
     dog = prepare_episode(raw, gin_override="誘う後背")
     dog_lick = next(b for b in dog["beats"] if b["id"] == "04-gin-lick")
     dog_in = next(b for b in dog["beats"] if b["id"] == "04-gin-in")
-    assert "lands on her feet" in dog_lick["action"].lower()
+    assert "behind aya toward the left" in dog_lick["action"].lower()
+    assert "lands on her feet" not in dog_lick["action"].lower()
+    assert "aya's chest meets gin's back" in dog_in["action"].lower()
     assert "already sitting on her butt" in dog_in["action"].lower()
     assert "drops herself to all fours" in dog_in["action"].lower()
     assert "rises to her feet once" in dog_in["action"].lower()
