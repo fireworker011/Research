@@ -1942,10 +1942,17 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
         appear_override="miki,rei,kana",
         scenes_override="kana=誘う",
     )
-    assert skip_last["beats"][-1]["id"] == "09-join-walk"
-    assert skip_last["beats"][-1]["hud"]["complete"] is False
+    finale = skip_last["beats"][-1]
+    assert finale["id"] == "09-join-kiss"
+    assert "09-join-walk" not in [b["id"] for b in skip_last["beats"]]
+    assert finale["cast"] == ["aya", "kana"]
+    assert finale["hud"]["complete"] is False
     assert skip_last["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     assert ending_story(skip_last) == "invite"
+    kiss_low = finale["action"].lower()
+    assert "20cm" in kiss_low and "visible fangs" in kiss_low and "filthy slime" in kiss_low
+    assert "shino" not in kiss_low and "30cm" not in kiss_low and "forked" not in kiss_low
+    assert extra_lora_entries(finale) == [("kiss", 0.5)]
 
     last_evade = prepare_episode(
         raw,
@@ -1984,6 +1991,57 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     assert parsed["miki"] == ("evade", None)
     assert parsed["rei"] == ("invite", "m_open")
     assert parsed["kana"] == (None, None)
+
+
+def test_hospital_invite_finale_follows_the_last_partner():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    full = prepare_episode(raw, story_override="誘う")
+    assert full["beats"][-1]["id"] == "12-exit-kiss"
+    assert "03-kiss-walk" in [b["id"] for b in full["beats"]]
+    shino_kiss = full["beats"][-1]["action"].lower()
+    assert "extremely tall" in shino_kiss and "30cm" in shino_kiss and "forked reptile tongue" in shino_kiss
+    miki_peak = next(b for b in full["beats"] if b["id"] == "03-kiss-peak")
+    assert "whites show" not in miki_peak["action"].lower()
+
+    only = {"rei": False, "kana": False, "shino": False, "miki": True}
+    miki = prepare_episode(raw, story_override="誘う", appear_override=only)
+    assert miki["beats"][-1]["id"] == "03-kiss-kiss"
+    assert miki["beats"][-1]["cast"] == ["aya", "miki"]
+    low = miki["beats"][-1]["action"].lower()
+    assert "22cm" in low and "short brown bob" in low and "lacerations" in low and "sweat beads" in low
+    assert "shino" not in low and "30cm" not in low and "rei" not in low
+    assert extra_lora_entries(miki["beats"][-1]) == [("kiss", 0.5)]
+    assert "french kiss" in low and "corners of the mouth" in low
+    seat = next(b for b in miki["beats"] if b["id"] == "03-kiss")
+    peak = next(b for b in miki["beats"] if b["id"] == "03-kiss-peak")
+    drop = next(b for b in miki["beats"] if b["id"] == "03-kiss-drop")
+    assert "tongue hangs out" in seat["action"].lower()
+    assert "whites show" in peak["action"].lower()
+    assert "rolls onto her back" in drop["action"].lower()
+    assert "overflows from the pussy" in drop["action"].lower()
+
+    rei = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="フルネルソンアナル",
+        appear_override={"miki": False, "rei": True, "kana": False, "shino": False},
+    )
+    assert rei["beats"][-1]["id"] == "06-doggy-kiss"
+    rei_low = rei["beats"][-1]["action"].lower()
+    assert "24cm" in rei_low and "dark-brown filthy sludge" in rei_low and "left breast" in rei_low
+    assert "22cm" not in rei_low and "30cm" not in rei_low and "miki" not in rei_low
+    rei_drop = next(b for b in rei["beats"] if b["id"] == "06-doggy-drop")
+    assert "overflows from the anus" in rei_drop["action"].lower()
+    assert "overflows from the pussy" not in rei_drop["action"].lower()
+
+    gin = prepare_episode(
+        raw,
+        story_override="誘う",
+        appear_override=only,
+        gin_override="犯される",
+    )
+    assert gin["beats"][-1]["id"] == "04-gin-walk"
+    assert "04-gin-kiss" not in [b["id"] for b in gin["beats"]]
 
 
 def test_hospital_appear_none_and_option_matrix():

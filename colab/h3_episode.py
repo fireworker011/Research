@@ -1577,6 +1577,312 @@ def apply_optional_events(
     return out
 
 
+# Invite lust finale. Only the last partner on an invite ending. Middle walks stay.
+FINALE_LOOK: dict[str, str] = {
+    "miki": (
+        "Miki stays a slim adult with a short brown bob, vivid purple skin from face to the erect 22cm shaft, "
+        "hollow empty dark eye sockets, open red lacerations and torn gashes across the face, neck, breasts, belly, back, "
+        "arms, hands, thighs, knees, feet, hips, groin and the 22cm shaft, visible sweat beads on the intact purple skin "
+        "between the open gashes, grimy dirty stains and wet peeling rotting patches on that skin, "
+        "the 22cm shaft the same vivid purple as the hips not pale-tan flesh."
+    ),
+    "rei": (
+        "Rei stays a slim feminine adult with long brown permed hair, vivid purple skin, vacant wide-open tired eyes, "
+        "the LEFT half of her face and body stays readable as wet rotting raw red flesh on the left eye, left cheek, "
+        "left breast, left arm and left hip, the right half stays vivid purple, thick extra-viscous dark-brown filthy "
+        "sludge from hair to the erect 24cm shaft to her feet, open wounds across the torso, hips, groin and the 24cm shaft, "
+        "the 24cm shaft the same vivid purple as the hips not pale-tan flesh."
+    ),
+    "kana": (
+        "Kana stays a slim adult with long black hair, vivid purple skin, hollow empty dark eye sockets, visible fangs, "
+        "dry scratch marks on the skin including the hips and the erect 20cm shaft, grimy dirty extra-viscous filthy slime "
+        "covering her whole body including the 20cm shaft, wet peeling rotting patches on the shaft, "
+        "the 20cm shaft the same vivid purple as the hips not pale-tan flesh."
+    ),
+    "shino": (
+        "Shino stays an extremely tall elongated adult with long straight dark hair, very pale gray-white skin, "
+        "vacant wide staring monster eyes, a long forked reptile tongue, long arms with hands past mid-thigh, "
+        "grimy dirty stains from hair to the erect 30cm shaft to her feet, wet peeling rotting patches on the hips, "
+        "groin and the 30cm shaft, the 30cm shaft the same pale gray-white as the hips not pale-tan flesh."
+    ),
+    "tsuno": (
+        "Tsuno stays a slim feminine adult with long dark hair, ashen gray skin, a still-beautiful face whose LEFT half "
+        "is cracked and decaying, one large single eye in the center of the face, two small dark horns at the hairline, "
+        "each hand has exactly four long fingers, long decaying clawed feet, erect 24cm ashen-gray shaft with wet peeling "
+        "rotting patches and grimy dirty stains on the hips, groin and the shaft, the shaft stays ashen gray not pale-tan flesh."
+    ),
+}
+FINALE_NAME = {key: key[:1].upper() + key[1:] for key in FINALE_LOOK}
+_FINALE_CLIMAX_OLD = (
+    "Aya climaxes: wrecked pleasured orgasm face, body trembling with pleasure, drool dripping from the open mouth."
+)
+_FINALE_CLIMAX_NEW = (
+    "Aya climaxes: wrecked pleasured orgasm face, eyes start to roll up until the whites show, "
+    "tongue hanging out, thick saliva dripping, body trembling with pleasure."
+)
+_FINALE_FACE = (
+    "Aya's tongue hangs out of her open mouth. Thick saliva drips from the tongue. "
+    "Her face is ecstatic and lost in pleasure. "
+)
+_FINALE_PULL_RES = (
+    re.compile(
+        r" Then (?:Miki|Rei|Kana|Shino|Tsuno)'s hips PULL BACK so the shaft SLIDES OUT\. WHITE goo DRIPS DOWN\."
+    ),
+    re.compile(
+        r" Then (?:Miki|Rei|Kana|Shino|Tsuno)'s hips draw back and the shaft leaves the anus\. The tip stays in the crack of the ass\."
+    ),
+    re.compile(
+        r" They hold that join\. Then (?:Miki|Rei|Kana|Shino|Tsuno)'s hips draw back and the shaft leaves the (?:pussy|anus)\."
+        r"(?: (?:Miki|Rei|Kana|Shino|Tsuno) lowers one of Aya's feet to the linoleum, then the other foot\."
+        r" They remain standing still on this same linoleum mark\.)?"
+    ),
+)
+_FINALE_LIMP = (
+    " Aya ends flat on her back, fully limp, on this same linoleum spot. "
+    "Her head rests on the linoleum. Her back rests on the linoleum. Her waist rests on the linoleum. "
+    "Both knees lose their strength and fall outward. The inner thighs rest on the linoleum. "
+    "The heels sit right beside the buttocks. The soles face each other. "
+    "The legs stay open and spread on the linoleum. "
+    "Her arms fall limp, one beside the head and one along her side. "
+    "Her hands stay on the linoleum. Her legs rest on the linoleum with no hands on them. "
+    "She stays still. Her chest rises with hard breaths."
+)
+
+
+def _finale_partner(beat: dict[str, Any]) -> str:
+    for name in beat.get("cast") or []:
+        key = str(name).strip().lower()
+        if key in FINALE_LOOK:
+            return key
+    return ""
+
+
+def _aya_was_filled(action: str) -> bool:
+    low = action.lower()
+    if "finishes inside gin" in low or "gin's pussy" in low:
+        return False
+    return any(
+        phrase in low
+        for phrase in (
+            "finishes inside aya",
+            "finishes inside the pussy",
+            "finishes inside the anus",
+            "fills the anus",
+            "leaks around the base",
+            "fills the pussy",
+        )
+    )
+
+
+def _finale_pose(action: str) -> str:
+    low = action.lower()
+    if "held up" in low or ("forearms" in low and "anus" in low):
+        return "nelson"
+    if "sitting on" in low or "straddling" in low or "squat" in low:
+        return "ride"
+    if "palms on the wall" in low or "palms planted on the wall" in low:
+        return "stand"
+    if "all fours" in low or "palms and knees" in low:
+        return "all_fours"
+    return "m_open"
+
+
+def _finale_anal(action: str) -> bool:
+    low = action.lower()
+    anal = "fills the anus" in low or "inside the anus" in low or "leaves the anus" in low
+    vaginal = "fills the pussy" in low or "inside the pussy" in low or "leaks around the base" in low
+    if anal and vaginal:
+        return low.rfind("anus") > low.rfind("pussy")
+    return anal
+
+
+def _finale_drop_action(name: str, pose: str, anal: bool) -> str:
+    who = FINALE_NAME[name]
+    hole = "anus" if anal else "pussy"
+    if pose == "all_fours":
+        intro = (
+            f"Already joined at the BASE on this same linoleum spot. Aya is on her palms and knees, the shaft inside the {hole}. "
+            f"Her arms give out. Her chest DROPS onto the linoleum. She ROLLS onto her back. "
+            f"The shaft SLIDES OUT as she rolls. {who} stays kneeling beside her."
+        )
+    elif pose == "ride":
+        intro = (
+            f"Aya is sitting on {who}'s hips on this same linoleum spot, shaft at the BASE inside the {hole}, torso leaned forward. "
+            f"Her strength leaves the squat. She TIPS BACKWARD off the hips and FALLS onto her back on the linoleum beside {who}. "
+            f"The shaft SLIDES OUT as she falls. {who} stays on her back."
+        )
+    elif pose == "stand":
+        intro = (
+            f"Aya stands with both palms on the wall on this same linoleum spot, hips pressed to {who}, the shaft at the BASE inside the {hole}. "
+            f"Her knees buckle. She SLIDES down the wall and FALLS onto her back on the linoleum. "
+            f"The shaft SLIDES OUT as she falls. {who} stoops beside her."
+        )
+    elif pose == "nelson":
+        intro = (
+            f"Aya is held up on this same linoleum spot, both thighs in {who}'s forearms, feet in the air, the shaft inside the {hole}. "
+            f"Her body goes limp in {who}'s arms. {who} LOWERS Aya until her back meets the linoleum, then lets both thighs go. "
+            f"The shaft SLIDES OUT as she is lowered. {who} stays beside her."
+        )
+    else:
+        intro = (
+            f"Already on her back on this same linoleum spot, knees pulled up, the shaft still at the BASE inside the {hole}. "
+            f"Aya's strength leaves her. The knees FALL outward until the inner thighs meet the linoleum. "
+            f"The heels slide down to sit beside the buttocks. The shaft SLIDES OUT as the hips go slack. "
+            f"{who} stays kneeling beside her."
+        )
+    goo = f" Thick WHITE goo overflows from the {hole} and runs onto the linoleum."
+    return (
+        intro
+        + _FINALE_LIMP
+        + goo
+        + " "
+        + FINALE_LOOK[name]
+        + " They do not cross the threshold. They stay in the building. "
+        "Both stay fully nude. Brisk real-time. Consensual adult game beat"
+    )
+
+
+def _finale_kiss_action(name: str, pose: str, anal: bool) -> str:
+    who = FINALE_NAME[name]
+    hole = "anus" if anal else "pussy"
+    if pose == "ride":
+        approach = f"{who}'s torso COMES UP from the linoleum into a kneel beside Aya's head. "
+    elif name == "shino":
+        approach = "Shino is already stooping beside Aya's head so her head stays under the tubes. "
+    else:
+        approach = f"{who} is already beside Aya's head. "
+    if name == "shino":
+        tongue = (
+            "Shino's long forked reptile tongue pushes into Aya's mouth and licks around the lips and the corners of the mouth. "
+        )
+    else:
+        tongue = f"{who}'s tongue pushes into Aya's mouth and licks around the lips and the corners of the mouth. "
+    return (
+        "Aya is already flat on her back on this same linoleum spot, fully limp. "
+        "Her head rests on the linoleum. Her back and her waist rest on the linoleum. "
+        "Both knees are fallen outward. The inner thighs rest on the linoleum. "
+        "The heels sit right beside the buttocks. The soles face each other. "
+        "The legs stay open and spread on the linoleum. "
+        "Her arms lie limp, one beside the head and one along her side. "
+        "She stays still. Her chest rises with hard breaths. "
+        f"Thick WHITE goo is on the {hole} and the linoleum. "
+        + FINALE_LOOK[name]
+        + " "
+        + approach
+        + f"{who}'s face LOWERS onto Aya's mouth. "
+        "They stay joined in a deep wet french kiss, a tongue kiss. "
+        + tongue
+        + "Aya's tongue meets it, still hanging limp. "
+        "They do not walk. They do not cross the threshold. They stay in the building. "
+        "Both stay fully nude. Last frame: mouths joined, the tongue still in Aya's mouth, Aya still flat and still. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+
+
+def _patch_finale_sex(beats: list[dict[str, Any]], peak_i: int) -> None:
+    peak = beats[peak_i]
+    action = str(peak.get("action") or "")
+    if _FINALE_CLIMAX_OLD in action:
+        action = action.replace(_FINALE_CLIMAX_OLD, _FINALE_CLIMAX_NEW, 1)
+    for pattern in _FINALE_PULL_RES:
+        action = pattern.sub("", action)
+    partner = _finale_partner(peak)
+    look = FINALE_LOOK.get(partner, "")
+    if look and look not in action:
+        action = action.replace("Both stay fully nude.", look + " Both stay fully nude.", 1)
+    peak["action"] = action
+    if peak_i <= 0:
+        return
+    hilt = beats[peak_i - 1]
+    hilt_action = str(hilt.get("action") or "")
+    low = hilt_action.lower()
+    if "inside the mouth" in low or "tongue hangs out" in low or "last frame:" not in low:
+        return
+    if not any(phrase in low for phrase in ("shaft at the base inside", "shaft inside the pussy", "shaft inside the anus", "the shaft inside")):
+        return
+    hilt["action"] = hilt_action.replace("Last frame:", _FINALE_FACE + "Last frame:", 1)
+
+
+def apply_invite_lust_finale(ep: dict[str, Any]) -> dict[str, Any]:
+    """When an invite run ends, the last penetrator stays for the collapse and the kiss.
+
+    Earlier invite scenes still walk on to the next adult. The partner's body, shaft,
+    wounds and grime stay that person's, not the next name in the cast list.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    if ending_story(ep) != "invite":
+        return ep
+    beats = [b for b in (ep.get("beats") or []) if isinstance(b, dict)]
+    if not beats:
+        return ep
+    last = beats[-1]
+    last_id = str(last.get("id") or "")
+    if last_id.endswith("-kiss") or not last_id.endswith("-walk"):
+        return ep
+    peak_i = -1
+    for i in range(len(beats) - 2, -1, -1):
+        bid = str(beats[i].get("id") or "")
+        if bid.endswith("-peak"):
+            peak_i = i
+            break
+        if bid.endswith("-walk"):
+            break
+    if peak_i < 0 or not _aya_was_filled(str(beats[peak_i].get("action") or "")):
+        return ep
+    partner = _finale_partner(beats[peak_i])
+    if not partner:
+        return ep
+    action = str(beats[peak_i].get("action") or "")
+    pose = _finale_pose(action)
+    anal = _finale_anal(action) or pose == "nelson"
+    _patch_finale_sex(beats, peak_i)
+    base = last_id[: -len("-walk")]
+    hud = dict(last.get("hud") or {})
+    hud["complete"] = False
+    shared = {
+        "source": "t2v",
+        "connect": "t2v",
+        "camera_pack": "none",
+        "loco": "planted",
+        "still": "",
+        "trim": {"start": 0, "seconds": 8.0},
+        "cast": ["aya", partner],
+        "trigger": "",
+        "encounter": last.get("encounter") or beats[peak_i].get("encounter") or partner,
+        "place": beats[peak_i].get("place") or last.get("place") or "",
+        "music": last.get("music") or "Bass holds",
+        "hud": hud,
+    }
+    drop = {
+        **shared,
+        "id": f"{base}-drop",
+        "extra_loras": [],
+        "camera": (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+            f"Aya falling onto her back, then flat and limp with her legs spread, {FINALE_NAME[partner]} beside her. The camera holds."
+        ),
+        "action": _finale_drop_action(partner, pose, anal),
+        "voices": [{"who": "aya", "line": "はぁっ"}, {"who": partner, "line": "くっ"}],
+        "sfx": "A body settling on linoleum, thick goo, HVAC",
+    }
+    kiss = {
+        **shared,
+        "id": f"{base}-kiss",
+        "hud": dict(hud),
+        "extra_loras": [["kiss", 0.5]],
+        "camera": (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+            f"Aya flat on her back, limp, legs spread. {FINALE_NAME[partner]} beside her, tongue in Aya's mouth. The camera holds."
+        ),
+        "action": _finale_kiss_action(partner, pose, anal),
+        "voices": [{"who": "aya", "line": "んっ"}, {"who": partner, "line": "んっ"}],
+        "sfx": "A wet tongue kiss, HVAC",
+    }
+    ep["beats"] = beats[:-1] + [drop, kiss]
+    return ep
+
+
 def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | None = None) -> dict[str, Any]:
     """Drop tagged encounters the Colab checkboxes turned off. Toilet beats stay if 7 is on."""
     out = copy.deepcopy(ep)
@@ -1618,6 +1924,7 @@ def apply_appear_route(ep: dict[str, Any], *, appear: str | dict[str, Any] | Non
     render = dict(out.get("render") or {})
     render["appear"] = shown
     out["render"] = render
+    out = apply_invite_lust_finale(out)
     spec = STORY_MODES.get(ending_story(out)) or STORY_MODES["accept"]
     return _apply_story_ending(out, spec)
 
