@@ -387,6 +387,11 @@ PLANTED_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
 )
+NELSON_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
+    "Aya's feet stay in the air. Hips thrust in place."
+)
 GAME_THIRD_PERSON_CLAUSE = (
     "Always a third-person gameplay camera: the adults stay fully visible in frame including feet."
 )
@@ -404,8 +409,12 @@ NELSON_HOLD_RE = re.compile(
 NELSON_PLANTED_CLAUSE = (
     "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
     "Aya's feet stay in the air beside the partner's hips. Only hips and arms move. "
-    "A hip thrust is in place. The camera holds. The background does not scroll. "
+    "A hip thrust is in place. The camera holds. "
     "Normal adult human height, nobody is giant."
+)
+HOSPITAL_FRAME_HOLD = (
+    "The camera holds the opening wide full-body frame for the whole take. "
+    "Head, groin, legs, and both feet stay inside the frame together, the same size from the first frame to the last."
 )
 PLANTED_WALK_TAIL_RE = re.compile(
     r"\s*(?:Then\s+)?(?:Aya|She) STANDS and WALKS RIGHT[^.]*\."
@@ -2218,7 +2227,10 @@ def scrub_planted_action(action: str) -> str:
         out = re.sub(r"\bWALKS?\b RIGHT", "stays", out)
         out = re.sub(r"\bWALKING\b", "holding still", out)
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
-        out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
+        if NELSON_HOLD_RE.search(out):
+            out = out.rstrip(".") + ". The pair stays on this same floor spot."
+        else:
+            out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
     return re.sub(r" {2,}", " ", out).strip()
 
 
@@ -2265,7 +2277,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             if added == ["tsuno"]:
                 action = (
                     "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
-                    "grimy brown hospital dirt on her skin. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
+                    "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
                     "Tsuno ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
                     "matching Aya's stride, full body including feet. "
                     "From the viewer, that left side is directly behind Aya. "
@@ -2283,7 +2295,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             elif added == ["gin"]:
                 action = (
                     "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
-                    "grimy brown hospital dirt on her skin. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
+                    "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
                     "Gin ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
                     "matching Aya's stride, full body including feet. "
                     "From the viewer, that left side is directly behind Aya. "
@@ -2300,7 +2312,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 )
             elif added == ["kana"]:
                 action = (
-                    "Aya is already in the corridor, fully nude, grimy brown hospital dirt on her skin, facing the RIGHT. "
+                    "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, facing the RIGHT. "
                     "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm with both hands, a continuous wet pumping, erect penis up, "
                     "and STOPS mid-corridor facing Aya. "
                     "Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her. "
@@ -2317,7 +2329,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 sfx = "Quiet corridor, fluorescent buzz, a wet pumping hand, dripping goo, HVAC"
             else:
                 action = (
-                    "Aya is already in the corridor, fully nude, grimy brown hospital dirt on her skin. "
+                    "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. "
                     + " ".join(poses)
                     + " They share the frame, a short step apart. Aya takes one step closer and stops. "
                     f"Last frame: Aya and {who} both full body including feet, still a short step apart. "
@@ -3451,9 +3463,13 @@ def build_beat_prompt(
         desc.append(MUNDANE_CLAUSE)
     elif loco == "planted":
         desc.append(GAME_THIRD_PERSON_CLAUSE)
-        desc.append(PLANTED_PACE_CLAUSE)
         action_txt = str(beat.get("action") or "")
-        desc.append(NELSON_PLANTED_CLAUSE if NELSON_HOLD_RE.search(action_txt) else PLANTED_CLAUSE)
+        if NELSON_HOLD_RE.search(action_txt):
+            desc.append(NELSON_PACE_CLAUSE)
+            desc.append(NELSON_PLANTED_CLAUSE)
+        else:
+            desc.append(PLANTED_PACE_CLAUSE)
+            desc.append(PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         desc.append(GAMEPLAY_PACE_CLAUSE)
@@ -3468,12 +3484,16 @@ def build_beat_prompt(
         gpu_index=idx,
         rotate=connect_rotates_camera(ep),
     )
-    if (
-        cam
-        and str(ep.get("slug") or "") == "hospital-exit-adult"
-        and "sideride" in {key for key, _strength in extra_lora_entries(beat)}
-    ):
-        cam = re.sub(r"\s*from directly above\b", "", cam, flags=re.I)
+    if cam and str(ep.get("slug") or "") == "hospital-exit-adult":
+        if "sideride" in {key for key, _strength in extra_lora_entries(beat)}:
+            cam = re.sub(r"\s*from directly above\b", "", cam, flags=re.I)
+        cam = cam.replace(
+            "at hip-to-shoulder height",
+            "wide full-body, groin and both feet inside the frame",
+        )
+        cam = re.sub(r"a half-step closer,?\s*", "", cam, flags=re.I)
+        if "opening wide full-body frame" not in cam:
+            cam = cam.rstrip(".") + ". " + HOSPITAL_FRAME_HOLD
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
     for hold_line in _hospital_prompt_holds(ep, beat):

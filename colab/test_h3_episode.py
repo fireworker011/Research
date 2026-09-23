@@ -1697,7 +1697,15 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     nel_prompt = build_beat_prompt(nelson_inv, nel)
     assert NELSON_PLANTED_CLAUSE in nel_prompt
     assert PLANTED_CLAUSE not in nel_prompt
+    assert PLANTED_PACE_CLAUSE not in nel_prompt
+    assert "feet do not travel" not in nel["action"].lower()
+    assert "does not travel" not in nel_prompt.lower()
+    assert "does not scroll" not in nel_prompt.lower()
+    assert "feet do not take a step" not in nel_prompt.lower()
     assert "nobody walks" not in nel_prompt.lower()
+    miki_nel = next(b for b in nelson_inv["beats"] if b["id"] == "03-kiss")
+    assert "feet do not travel" not in miki_nel["action"].lower()
+    assert "the pair stays on this same floor spot" in miki_nel["action"].lower()
     assert "adults move left or right" not in nel_prompt.lower()
     _assert_insertion_direction(nel["action"], nel_prompt)
     _assert_hospital_bans(stand)
@@ -1749,6 +1757,12 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     cover_i = next(b for b in invite["beats"] if b["id"] == "01-cover")
     assert "visible sweat beads" in cover_a["action"].lower()
     assert "grimy brown hospital dirt" in cover_a["action"].lower()
+    assert "sticky grimy brown hospital dirt clinging to her whole body" in cover_a["action"].lower()
+    cover_prompt = build_beat_prompt(accept, cover_a)
+    assert "opening wide full-body frame" in cover_prompt.lower()
+    assert "22cm shaft stays inside the frame" in cover_prompt.lower()
+    assert "hip-to-shoulder" not in cover_prompt.lower()
+    assert "zoom" not in cover_prompt.lower()
     assert "visible sweat beads" in cover_i["action"].lower()
     assert "walks right with her" in cover_a["action"].lower()
     assert "shambling" in cover_a["action"].lower()
