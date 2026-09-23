@@ -1619,6 +1619,28 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "hips press together" in stand_in["action"].lower() or "press flush" in stand_in["action"].lower()
     _assert_insertion_direction(stand_in["action"], build_beat_prompt(stand, stand_in))
     assert "pussy" in stand_in["action"].lower()
+    for bid, who in (("03-kiss", "miki"), ("06-doggy", "rei"), ("09-join", "kana"), ("12-exit", "shino")):
+        beat = next(b for b in stand["beats"] if b["id"] == bid)
+        act = beat["action"].lower()
+        assert "aya does not turn" in act, bid
+        assert f"{who} leaves the gap between aya and the wall" in act, bid
+        assert "circles behind aya" in act, bid
+        assert f"{who}'s chest meets aya's back" in act, bid
+        assert f"{who}'s feet stay on the linoleum" in act, bid
+        assert "turns the same way" not in act, bid
+        assert "turns her whole body" not in act, bid
+    kiss_stand = next(b for b in stand["beats"] if b["id"] == "03-kiss")
+    assert "in front of the t-junction" in kiss_stand["action"].lower()
+    assert "mouths joined" in kiss_stand["action"].lower()
+    assert "mouths joined" in kiss_stand["camera"].lower()
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
+        act = next(b for b in fours["beats"] if b["id"] == bid)["action"].lower()
+        assert "aya does not turn" in act, bid
+        assert "circles behind aya" in act, bid
+        assert "turns the same way" not in act, bid
+    assert "after the wait" in next(b for b in fours["beats"] if b["id"] == "06-doggy")["action"].lower()
+    assert "kana still stands" in next(b for b in fours["beats"] if b["id"] == "09-join")["action"].lower()
     nelson_inv = prepare_episode(raw, story_override="誘う", invite_pose_override="フルネルソンアナル")
     assert nelson_inv["render"]["invite_pose"] == "nelson"
     nel = next(b for b in nelson_inv["beats"] if b["id"] == "09-join")
@@ -1632,6 +1654,25 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "feet leave the linoleum" not in nel_low
     assert "both forearms go under" in nel_low
     assert " and lift" in nel_low
+    assert "circles behind aya" in nel_low
+    assert nel_low.find("circles behind") < nel_low.find("both forearms go under")
+    assert "mouths joined" in nel_low
+    assert "turns the same way" not in nel_low
+    assert "palms plant on the wall" not in nel_low
+    for bid, who in (("03-kiss", "miki"), ("06-doggy", "rei"), ("09-join", "kana"), ("12-exit", "shino")):
+        act = next(b for b in nelson_inv["beats"] if b["id"] == bid)["action"].lower()
+        assert "mouths joined" in act, bid
+        assert f"{who} leaves the gap between aya and the wall" in act, bid
+        assert act.find("circles behind") < act.find("both forearms go under"), bid
+        assert "turns the same way" not in act, bid
+    nel_kiss = next(b for b in nelson_inv["beats"] if b["id"] == "03-kiss")
+    assert "in front of the t-junction" in nel_kiss["action"].lower()
+    assert "in front of the t-junction" in nel_kiss["camera"].lower()
+    tsuno_stand = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
+    for bid in ("04-tsuno-meet", "04-tsuno-in"):
+        act = next(b for b in tsuno_stand["beats"] if b["id"] == bid)["action"].lower()
+        assert "turns her whole body" not in act, bid
+        assert "turns the same way" not in act, bid
     assert nel.get("loco") == "planted"
     assert nel.get("camera_pack") == "none"
     assert nel.get("connect") == "t2v"
