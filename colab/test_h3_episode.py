@@ -1847,6 +1847,28 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "lick around the lips" in kissb["action"].lower()
     order = [b["id"] for b in m_open["beats"]]
     assert order.index("08-ui-kana") < order.index("09-kana-facial") < order.index("09-kana-kiss") < order.index("09-join")
+    goo = "sticky white goo clinging to the upper body"
+    aya_lock = raw["cast"]["aya"]["lock"].lower()
+    aya_white = raw["cast"]["aya"]["looks"]["white_upper"].lower()
+    assert goo not in aya_lock
+    assert goo in aya_white
+    assert aya_white.startswith(aya_lock)
+    assert raw["look_triggers"] == [{"after": "09-kana-facial", "who": "aya", "look": "white_upper"}]
+    assert goo not in m_open["cast"]["aya"]["lock"].lower()
+    assert "upper body" in facial["action"].lower()
+    assert "shoulders" in facial["action"].lower()
+    assert "aya" not in (facial.get("cast_lock") or {})
+    assert goo not in build_beat_prompt(m_open, facial).lower()
+    assert goo not in build_beat_prompt(m_open, seven).lower()
+    assert goo in build_beat_prompt(m_open, kissb).lower()
+    assert "already on aya's face" not in kissb["action"].lower()
+    ten_m = next(b for b in m_open["beats"] if b["id"] == "10-shino")
+    assert goo in (ten_m.get("cast_lock") or {}).get("aya", "").lower()
+    assert goo in build_beat_prompt(m_open, ten_m).lower()
+    accept_late = next(b for b in accept["beats"] if b["id"] == "10-shino")
+    assert "09-kana-facial" not in [b["id"] for b in accept["beats"]]
+    assert goo not in build_beat_prompt(accept, accept_late).lower()
+    assert "aya" not in (accept_late.get("cast_lock") or {})
 
     ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
     ten_low = ten["action"].lower()

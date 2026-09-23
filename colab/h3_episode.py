@@ -1386,6 +1386,77 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _look_clause(base: str, full: str) -> str:
+    """The extra text a saved look adds after the base lock."""
+    base_s = str(base or "").strip()
+    full_s = str(full or "").strip()
+    if base_s and full_s.startswith(base_s):
+        return full_s[len(base_s):].strip().lstrip(",").strip()
+    return full_s
+
+
+def apply_look_triggers(ep: dict[str, Any]) -> dict[str, Any]:
+    """After a named beat, later cuts load a saved cast look.
+
+    The trigger beat itself keeps the base lock. A route that never plays
+    that beat keeps the base lock. The shared cast.lock is not rewritten.
+    A beat that already has its own cast_lock keeps that text and gains the
+    extra clause when it is missing.
+    """
+    raw = ep.get("look_triggers") or []
+    if not raw:
+        return ep
+    out = copy.deepcopy(ep)
+    cast = out.get("cast") or {}
+    specs: list[tuple[str, str, str, str]] = []
+    for trig in raw:
+        if not isinstance(trig, dict):
+            continue
+        who = str(trig.get("who") or "")
+        look_name = str(trig.get("look") or "")
+        after = str(trig.get("after") or "")
+        row = cast.get(who) if isinstance(cast.get(who), dict) else {}
+        looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+        full = str(looks.get(look_name) or "").strip()
+        if not who or not after or not full:
+            continue
+        specs.append((after, who, full, _look_clause(str(row.get("lock") or ""), full)))
+    if not specs:
+        return out
+    armed: dict[str, tuple[str, str]] = {}
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        item = dict(beat)
+        shown = [str(c) for c in (item.get("cast") or [])]
+        if armed and shown:
+            locks = dict(item["cast_lock"]) if isinstance(item.get("cast_lock"), dict) else {}
+            changed = False
+            for who in shown:
+                packed = armed.get(who)
+                if not packed:
+                    continue
+                full, clause = packed
+                existing = str(locks.get(who) or "").strip()
+                if not existing:
+                    locks[who] = full
+                    changed = True
+                elif clause and clause not in existing:
+                    locks[who] = existing.rstrip(".").rstrip() + ", " + clause
+                    changed = True
+            if changed:
+                item["cast_lock"] = locks
+        bid = str(item.get("id") or "")
+        for after, who, full, clause in specs:
+            if bid == after:
+                armed[who] = (full, clause)
+        beats.append(item)
+    out["beats"] = beats
+    return out
+
+
 def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     """Replace route fields. menu/hud deep-merge so the command window can retarget."""
     out = dict(beat)
@@ -2510,7 +2581,7 @@ def prepare_episode(
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
-    return keep_chain_cast(out)
+    return apply_look_triggers(keep_chain_cast(out))
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -2892,6 +2963,40 @@ def _fail_card_errors(ep: dict[str, Any]) -> list[str]:
     return errs
 
 
+def _look_trigger_errors(ep: dict[str, Any]) -> list[str]:
+    raw = ep.get("look_triggers")
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        return ["look_triggers must be a list"]
+    cast = ep.get("cast") or {}
+    errs: list[str] = []
+    for i, trig in enumerate(raw):
+        where = f"look_triggers[{i}]"
+        if not isinstance(trig, dict):
+            errs.append(f"{where} must be an object")
+            continue
+        who = str(trig.get("who") or "")
+        look = str(trig.get("look") or "")
+        after = str(trig.get("after") or "").strip()
+        if not after:
+            errs.append(f"{where}: after missing")
+        row = cast.get(who) if isinstance(cast.get(who), dict) else None
+        if row is None:
+            errs.append(f"{where}: unknown cast id {who}")
+            continue
+        looks = row.get("looks")
+        if not isinstance(looks, dict) or look not in looks or not str(looks.get(look) or "").strip():
+            errs.append(f"{where}: cast.{who}.looks.{look} missing")
+            continue
+        text = str(looks.get(look) or "")
+        if CJK_RE.search(text):
+            errs.append(f"{where}: cast.{who}.looks.{look} must be English")
+        elif STUDIO_I2V_MINOR_RE.search(text) or CAST_UNDERAGE_RE.search(text):
+            errs.append(f"{where}: cast.{who}.looks.{look} must describe an adult")
+    return errs
+
+
 def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> list[str]:
     if _has_rei_escape_overlays(ep):
         errs: list[str] = []
@@ -3080,6 +3185,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 errs.append(f"cast.{cid}.age must be an adult (>= {ADULT_AGE_MIN})")
         except (TypeError, ValueError):
             errs.append(f"cast.{cid}.age must be an integer")
+    errs.extend(_look_trigger_errors(ep))
     beats = ep.get("beats") or []
     if not isinstance(beats, list) or not beats:
         errs.append("beats must be a non-empty list")
