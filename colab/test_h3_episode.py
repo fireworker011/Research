@@ -1626,6 +1626,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "pussy" not in nel_low
     assert "feet stay in the air" in nel_low
     assert "feet leave the linoleum" not in nel_low
+    assert "both forearms go under" in nel_low
+    assert " and lift" in nel_low
     assert nel.get("loco") == "planted"
     assert nel.get("camera_pack") == "none"
     assert nel.get("connect") == "t2v"
@@ -2277,6 +2279,8 @@ def test_hospital_gin_tsuno_optional_events():
     nel_meet = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-meet")
     assert "feet stay in the air" in nel_in["action"].lower()
     assert "feet leave the linoleum" not in nel_in["action"].lower()
+    assert "glans on the anus" in nel_in["action"].lower()
+    assert "both forearms go under" in nel_in["action"].lower()
     assert "walks right" not in nel_meet["action"].lower()
     assert "snaps in behind" in nel_meet["action"].lower()
     assert "snappy real-time" in nel_meet["action"].lower()
@@ -2366,6 +2370,8 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             assert "drops down onto her knees" in six["action"].lower()
             assert "drops down onto her knees" in nine["action"].lower()
             assert "drops down onto her knees" in twelve["action"].lower()
+            assert "pussy hanging directly above the glans" in nine["action"].lower()
+            assert "kana on her back" in nine["action"].lower()
 
     evade = prepare_episode(raw, story_override="回避", connect_override="chain")
     evade_kiss = next(b for b in evade["beats"] if b["id"] == "03-kiss")
