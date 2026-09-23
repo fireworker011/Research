@@ -27,8 +27,8 @@ Env:
   H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
-  H3_EPISODE_FREE_VRAM=1  unload Comfy models before each beat, then render (use when VRAM is tight)
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
+                      VRAM unloads only after a beat fails for lack of memory, then that same length is tried once
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
 
 Never touches inbox/queued/output of the Grokbot root.
@@ -74,7 +74,6 @@ def main() -> int:
             comfy_dir=os.environ.get("H3_COMFY_DIR") or None,
             dry_run=dry,
             fresh=os.environ.get("H3_EPISODE_FRESH") == "1",
-            free_vram=os.environ.get("H3_EPISODE_FREE_VRAM") == "1",
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
             camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
             connect_override=(os.environ.get("H3_EPISODE_CONNECT") or "").strip() or None,

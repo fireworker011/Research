@@ -2153,6 +2153,21 @@ def test_hospital_gin_tsuno_optional_events():
     assert "leaks around the base" in ride_peak["action"].lower()
     assert "thrust" in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" in jupo["action"].lower()
+    assert "standing vertically straight up from her groin" in jupo["action"].lower()
+    assert "both feet stay in frame" in jupo["action"].lower()
+    assert "one clawed hand holds the shaft" in jupo["action"].lower()
+    jupo_prompt = build_beat_prompt(taken, jupo)
+    assert "Look that stays for this whole shot" in jupo_prompt
+    assert "grimy brown hospital dirt" in jupo_prompt
+    assert "pale-tan" in jupo_prompt
+    assert "24cm" not in walk_prompt
+    kiss = next(b for b in taken["beats"] if b["id"] == "03-kiss")
+    kiss_prompt = build_beat_prompt(taken, kiss)
+    assert "Look that stays for this whole shot" in kiss_prompt
+    assert "grimy" in kiss_prompt.lower()
+    kasumi = prepare_episode(load_episode(KASUMI_ADULT_DIR / "episode.json"))
+    kasumi_beat = next(b for b in kasumi["beats"] if not is_ui_beat(b))
+    assert "Look that stays" not in build_beat_prompt(kasumi, kasumi_beat)
     assert "stays down" in jupo["action"].lower()
     assert "lies back from the sit" in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
@@ -2351,6 +2366,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert beat_source(lick) == "chain"
     gin_in = next(b for b in gin["beats"] if b["id"] == "04-gin-jupo")
     assert beat_source(gin_in) == "chain"
+    assert "follow subject_definitions" in build_beat_prompt(gin, gin_in)
     toilet = prepare_episode(raw, story_override="受け入れる", toilet_override="pee", connect_override="chain")
     tin = next(b for b in toilet["beats"] if b["id"] == "04-toilet-in")
     assert tin.get("connect") == "t2v"

@@ -57,8 +57,7 @@ SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 FRESH = False  #@param {type:"boolean"}
-#@markdown **メモリ解放** — 各カットの前に VRAM を下ろしてから描く。メモリ不足のときオン。失敗時は同じ尺でもう一度試してから短い尺に落とす。
-FREE_VRAM = False  #@param {type:"boolean"}
+#@markdown メモリ不足でそのカットが失敗したときだけ VRAM を下ろし、同じ尺をもう一度描く。それでも足りなければ短い尺に落とす。成功したカットの前には下ろさない。
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 #@markdown **CivitaiのAPIキー** — 必要な LoRA を Drive に取るときだけ貼る。空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。
 CivitaiのAPIキー = ""  #@param {type:"string"}
@@ -98,7 +97,6 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
 )
 os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
-os.environ["H3_EPISODE_FREE_VRAM"] = "1" if FREE_VRAM else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 _civitai = str(CivitaiのAPIキー or "").strip()
 if _civitai:

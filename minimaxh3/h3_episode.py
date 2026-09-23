@@ -3205,6 +3205,48 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
     return out
 
 
+_LOOK_DROP_RE = re.compile(r"\b(?:no|never|not|without)\b", re.IGNORECASE)
+
+
+def _positive_look(lock: str) -> str:
+    """Keep the authored look. Drop negated clauses so H3 does not draw the named absence."""
+    kept: list[str] = []
+    for part in str(lock or "").split(","):
+        piece = part.strip().rstrip(".")
+        if not piece or _LOOK_DROP_RE.search(piece):
+            continue
+        kept.append(piece)
+    return ", ".join(kept)
+
+
+def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    """Repeat the initial character look inside the action so dirt and a shaft do not wash off."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ""
+    cast = ep.get("cast") or {}
+    locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
+    lines: list[str] = []
+    for cid in beat.get("cast") or []:
+        row = cast.get(cid) or {}
+        name = str(row.get("name_en") or cid).strip() or str(cid)
+        lock = str(locks.get(cid) or row.get("lock") or "")
+        positive = _positive_look(lock)
+        if positive:
+            lines.append(f"{name}: {positive}.")
+    if not lines:
+        return ""
+    action = str(beat.get("action") or "").lower()
+    shaft = ""
+    if "shaft is gone" not in action and "no penis" not in action:
+        shaft = " A shaft written in that look stays erect, the same length and the same color, on the groin."
+    return (
+        "Look that stays for this whole shot: "
+        + " ".join(lines)
+        + shaft
+        + " Dirt, wounds, and slime in that look stay on the skin."
+    )
+
+
 def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
     beat_locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
@@ -3290,6 +3332,11 @@ def build_beat_prompt(
                 "Same person, same hair, fully nude bare skin. Expression and pose follow this shot's action, "
                 "even if the opening frame shows a different face or a tongue out."
             )
+        elif str(ep.get("slug") or "") == "hospital-exit-adult":
+            desc.append(
+                "<Picture 1> is the opening frame; the clip starts on it. "
+                "Pose continues from it. Skin, dirt, wounds, hair, and shaft follow subject_definitions for the whole shot."
+            )
         else:
             desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
     if source == "chain" and not last_still:
@@ -3320,6 +3367,9 @@ def build_beat_prompt(
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
+    hold = _look_hold(ep, beat)
+    if hold:
+        desc.append(hold)
     if keys:
         desc.append("Props in this shot stay locked: " + "; ".join(f"{k} = {str(props[k]).rstrip('.')}" for k in keys) + ".")
     if str(ep.get("violence") or "none") == "game" and beat.get("physics", False):
@@ -3328,7 +3378,10 @@ def build_beat_prompt(
     vis = _speech_visual(ep, beat)
     if vis:
         desc.append(vis)
-    desc.append("Identity, costume, and props stay locked for the whole clip.")
+    if str(ep.get("slug") or "") == "hospital-exit-adult":
+        desc.append("Identity and the subject_definitions look stay locked for the whole clip.")
+    else:
+        desc.append("Identity, costume, and props stay locked for the whole clip.")
     sfx = str(beat.get("sfx") or "Natural ambience of the place").strip().rstrip(".")
     audio = _speech_audio(ep, beat)
     sound = sfx + "." + (f" {audio}" if audio else "")
@@ -4070,7 +4123,8 @@ def render_beat_comfy(
     poster: Callable[..., Any] = post_prompt,
     waiter: Callable[..., Any] = wait_prompt,
 ) -> dict[str, Any]:
-    """Keep the canvas; on OOM shorten the clip (10→8→6). Never drop the first frame or last-frame still."""
+    """Keep the canvas. On OOM, unload VRAM and retry the same length once, then shorten (10→8→6).
+    A successful beat does not unload. Never drop the first frame or last-frame still."""
     obj = object_info or {}
     unet = unet or pick_stock_fl2va(comfy_dir / "models/diffusion_models")
     out_root = comfy_dir / "output"
@@ -4479,7 +4533,6 @@ def run_episode(
     rei_kiss_override: str | None = None,
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
-    free_vram: bool = False,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -4626,9 +4679,6 @@ def run_episode(
             print("skip (exists)", raw_out.name)
             status["beats"].setdefault(bid, {})["state"] = "done"
             continue
-        if free_vram and not dry_run:
-            print("free VRAM before", bid)
-            comfy_free(port)
         source = beat_source(beat)
         if beat.get("reuse"):
             print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))
