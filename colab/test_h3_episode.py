@@ -2883,6 +2883,9 @@ def test_rei_escape_clip_failures_are_rewritten():
     assert raw["world"].get("bare_set") is False
     assert "castle" in raw["world"]["lock"].lower()
     assert "FULLY NUDE" in raw["cast"]["rei"]["lock"]
+    assert "sweat beads" in raw["cast"]["rei"]["lock"]
+    assert "grimy brown dirt all over the body" in raw["cast"]["rei"]["lock"]
+    assert "fully erect 24cm penis" in raw["cast"]["rei"]["lock"]
     assert "tongue fully inside" in raw["cast"]["rei"]["lock"]
     assert "garment" not in raw["cast"]["rei"]["lock"]
     assert "PUCKERED" in raw["cast"]["beast"]["lock"]

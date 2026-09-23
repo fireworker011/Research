@@ -13,6 +13,9 @@ REI_LOCK = (
     "C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, "
     "no shoes, no socks, bare feet, fully erect 24cm penis that is her own photorealistic human flesh "
     "attached at the groin, skin-colored, not a toy, not plastic, not neon pink, always visible even after ejaculation. "
+    "Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, "
+    "thighs, legs, feet, and the fully erect 24cm penis. Damp dirty hair stuck to the forehead. "
+    "The sweat and dirt stay readable on the skin and on the shaft. "
     "Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, "
     "eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Tongue out ONLY when the action "
     "says climax or the circular snout is milking her. Protagonist name is Rei only. Do not replace Rei with a male body. "
@@ -405,7 +408,6 @@ def build() -> dict:
             f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL on the left, feet planted, NOT walking, {FACE_REST}, "
             "facing a carnivorous-plant seat grown in the castle hall: green outer rind, wet inner bowl, "
             "nectar-colored liquid in the bowl, plant flesh formed like a western seat, NOT ceramic, NOT porcelain, NOT a bathtub, "
-            "skin unstained, "
             "no other people, brief pause",
             seconds=6.0,
             voice=("んっ",),

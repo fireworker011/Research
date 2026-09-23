@@ -1,9 +1,9 @@
 # Character Lock（毎回先頭）
 
 ## レイ
-21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。**絶対全裸。** 常時ボッキ24cmは自分の肌の竿。デフォルト顔は口を閉じ舌は中。舌出しはじゅぼの快感とイキ顔のときだけ。主人公名はレイだけ。24cmは射精後も消えない。
+21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。**絶対全裸。** 常時ボッキ24cmは自分の肌の竿。汗の粒と茶色い汚れが全身に読める。顔、胸、腹、背、腕、腿、脚、足、勃起した24cmにも付く。湿った汚れた髪が額に張り付く。デフォルト顔は口を閉じ舌は中。舌出しはじゅぼの快感とイキ顔のときだけ。主人公名はレイだけ。24cmは射精後も消えない。
 
-same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored. Default face: mouth closed, tongue fully inside, flushed cheeks only. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only.
+same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the fully erect 24cm penis. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin and on the shaft. Default face: mouth closed, tongue fully inside, flushed cheeks only. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only.
 
 服装デフォルト: 全裸。破れ服・デニム・靴は出さない。
 
