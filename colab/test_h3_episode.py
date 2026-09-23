@@ -1159,6 +1159,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "hands" in raw["cast"]["miki"]["lock"] and "feet" in raw["cast"]["miki"]["lock"]
     assert "visible sweat beads" in raw["cast"]["miki"]["lock"]
     assert "between the open gashes" in raw["cast"]["miki"]["lock"]
+    assert "sticky grimy brown hospital dirt" in raw["cast"]["miki"]["lock"]
+    assert "intact purple skin" in raw["cast"]["miki"]["lock"]
     assert "crumbling" in raw["world"]["lock"] and "pandemic" in raw["world"]["lock"]
     assert "no blood" not in raw["world"]["lock"].lower()
     assert "24cm" in raw["cast"]["rei"]["lock"] and "corona" in raw["cast"]["rei"]["lock"]
@@ -1195,6 +1197,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "gums" in raw["cast"]["gin"]["lock"] and "muscle fiber" in raw["cast"]["gin"]["lock"]
     assert "sunken hollow" in raw["cast"]["gin"]["lock"]
     assert "hunched" not in raw["cast"]["gin"]["lock"]
+    assert "sticky grimy brown hospital dirt" in raw["cast"]["gin"]["lock"]
+    assert "intact ashen skin" in raw["cast"]["gin"]["lock"]
+    assert "red muscle fiber showing in the peeled patches" in raw["cast"]["gin"]["lock"]
     assert "24cm" in raw["cast"]["tsuno"]["lock"] and "ashen gray" in raw["cast"]["tsuno"]["lock"]
     assert "cracked" in raw["cast"]["tsuno"]["lock"] and "horned mask" in raw["cast"]["tsuno"]["lock"]
     assert "clawed demon" in raw["cast"]["tsuno"]["lock"] or "decaying clawed" in raw["cast"]["tsuno"]["lock"]
@@ -2275,7 +2280,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "clitoris grows" in lick["action"].lower()
     assert "24cm" in lick["action"]
     assert "behind aya toward the left" in lick["action"].lower()
-    assert "turns her whole body left" in lick["action"].lower()
+    assert "falls onto her butt toward the right" in lick["action"].lower()
+    assert "head lands on the right" in lick["action"].lower()
+    assert "toes point left" in lick["action"].lower()
     assert "hesitant and afraid" in lick["action"].lower()
     assert "ceiling" not in lick["action"].lower()
     assert "wall" not in lick["action"].lower()
@@ -2320,6 +2327,21 @@ def test_hospital_gin_tsuno_optional_events():
     assert "thrust" in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" in jupo["action"].lower()
     assert "standing vertically straight up from her groin" in jupo["action"].lower()
+    assert "head on the right" in jupo["action"].lower()
+    assert "toes pointing left" in jupo["action"].lower()
+    assert "gin's head on the left" in jupo["action"].lower()
+    ride_in = next(b for b in taken["beats"] if b["id"] == "04-gin-ride")
+    ride_act = ride_in["action"].lower()
+    assert "squats from above" in ride_act
+    assert "from directly above" in ride_act
+    assert "directly above the glans" in ride_act
+    assert "straight down" in ride_act
+    assert "travels into gin's pussy from above" in ride_act
+    assert "from aya's groin" in ride_act
+    assert "head on the right" in ride_act
+    assert "feet pointing left" in ride_act
+    assert "gin's head is on the left" in ride_act
+    assert "holds aya's shaft vertically straight up" in ride_act
     assert "both feet stay in frame" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
