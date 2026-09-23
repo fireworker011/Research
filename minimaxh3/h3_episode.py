@@ -426,8 +426,14 @@ SLIDE_PLANTED_CLAUSE = (
 )
 HOSPITAL_FRAME_HOLD = (
     "The camera holds the opening wide full-body frame for the whole take. "
-    "Head, groin, legs, and both feet stay inside the frame together, the same size from the first frame to the last."
+    "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
+    "Head, groin, legs, and both feet stay inside the frame together."
 )
+_HOSPITAL_TRACK_RE = re.compile(
+    r"The camera stays in the side plane and tracks only left and right on a straight line at brisk walking game speed\.?",
+    re.I,
+)
+_HOSPITAL_NEG_CAM_RE = re.compile(r"No track, no pan, no scroll\.?", re.I)
 PLANTED_WALK_TAIL_RE = re.compile(
     r"\s*(?:Then\s+)?(?:Aya|She) STANDS and WALKS RIGHT[^.]*\."
     r"|\s*Then Aya WALKS RIGHT[^.]*\."
@@ -2642,6 +2648,35 @@ def _planted_camera_text(text: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
+def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
+    """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss."""
+    out = cam
+    if sideride:
+        out = re.sub(r"\s*from directly above\b", "", out, flags=re.I)
+    out = out.replace(
+        "at hip-to-shoulder height",
+        "wide full-body, groin and both feet inside the frame",
+    )
+    out = re.sub(r"a half-step closer,?\s*", "", out, flags=re.I)
+    out = _HOSPITAL_TRACK_RE.sub(
+        "The camera stays in the side plane. The camera distance stays fixed. The adults stay the same size.",
+        out,
+    )
+    out = _HOSPITAL_NEG_CAM_RE.sub("The camera distance stays fixed.", out)
+    out = re.sub(r"\bhorizontal track only\b", "same camera distance", out, flags=re.I)
+    out = re.sub(r"\bslight horizontal track\b", "same camera distance", out, flags=re.I)
+    out = re.sub(
+        r"camera holds then tracks left and right",
+        "camera distance stays fixed",
+        out,
+        flags=re.I,
+    )
+    out = re.sub(r"further back so more floor shows,?\s*", "at the same distance, ", out, flags=re.I)
+    if "opening wide full-body frame" not in out:
+        out = out.rstrip(".") + ". " + HOSPITAL_FRAME_HOLD
+    return re.sub(r"\s{2,}", " ", out).strip()
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -3608,15 +3643,10 @@ def build_beat_prompt(
         rotate=connect_rotates_camera(ep),
     )
     if cam and str(ep.get("slug") or "") == "hospital-exit-adult":
-        if "sideride" in {key for key, _strength in extra_lora_entries(beat)}:
-            cam = re.sub(r"\s*from directly above\b", "", cam, flags=re.I)
-        cam = cam.replace(
-            "at hip-to-shoulder height",
-            "wide full-body, groin and both feet inside the frame",
+        cam = _hospital_camera_text(
+            cam,
+            sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
         )
-        cam = re.sub(r"a half-step closer,?\s*", "", cam, flags=re.I)
-        if "opening wide full-body frame" not in cam:
-            cam = cam.rstrip(".") + ". " + HOSPITAL_FRAME_HOLD
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
     for hold_line in _hospital_prompt_holds(ep, beat):
