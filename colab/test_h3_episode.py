@@ -2000,6 +2000,36 @@ def test_hospital_toilet_and_routes_stay_consistent():
                 assert v["who"] in (beat.get("cast") or [])
 
 
+def test_hospital_full_form_stays_under_beat_cap():
+    """Tentacle + gin + tsuno + per-scene invite used to die at the 40-beat preflight."""
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    chosen = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="フルネルソンアナル",
+        toilet_override="触手",
+        gin_override="犯される",
+        tsuno_override="後ろアナル",
+        connect_override="chain",
+        scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
+    )
+    assert validate_episode(chosen, root=HOSPITAL_DIR) == []
+    assert len(chosen["beats"]) == 42
+    fullest = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        invite_pose_override="四つん這い",
+        toilet_override="tentacle",
+        gin_override="犯される",
+        tsuno_override="受け入れる立ちバック",
+        connect_override="chain",
+        scenes_override="miki=invite_ride,rei=invite_ride,kana=invite_ride,shino=invite_ride",
+    )
+    assert validate_episode(fullest, root=HOSPITAL_DIR) == []
+    assert len(fullest["beats"]) == 44
+    assert len(fullest["beats"]) <= MAX_BEATS
+
+
 def test_hospital_per_scene_accept_invite_evade_and_ending():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     mixed = prepare_episode(

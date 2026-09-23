@@ -174,7 +174,8 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 }
 # GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
-MAX_BEATS = 40
+# Fullest ward form is 44 beats: per-scene ride, tentacle toilet, gin taken, tsuno, spots, and UI.
+MAX_BEATS = 48
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
 STILL_AS = ("first", "last", "both")
