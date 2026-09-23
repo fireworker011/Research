@@ -1790,7 +1790,7 @@ def _finale_kiss_action(name: str, pose: str, anal: bool) -> str:
         "They stay joined in a deep wet french kiss, a tongue kiss. "
         + tongue
         + "Aya's tongue meets it, still hanging limp. "
-        "They do not walk. They do not cross the threshold. They stay in the building. "
+        "They stay on this same linoleum spot. They do not cross the threshold. They stay in the building. "
         "Both stay fully nude. Last frame: mouths joined, the tongue still in Aya's mouth, Aya still flat and still. "
         "Brisk real-time. Consensual adult game beat"
     )
@@ -2216,6 +2216,80 @@ def scrub_planted_action(action: str) -> str:
     return re.sub(r" {2,}", " ", out).strip()
 
 
+_SPOT_POSE = {
+    "rei": "Rei is already standing ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
+    "kana": "Kana is already standing mid-corridor facing Aya, feet planted, full body including feet.",
+    "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
+    "gin": "Gin is already standing in front of Aya toward the RIGHT, facing Aya, full body including feet, a short step apart.",
+    "tsuno": "Tsuno is already standing one step behind Aya, facing the same way, full body including feet.",
+}
+
+
+def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
+    """Put a new person in frame before their first act so the act can be I2V.
+
+    The spot itself is the one T2V draw. Rei, Kana, Shino, Gin, and Tsuno each get one.
+    The opener stays the first clip. A beat that already ends in -spot is left alone.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    out = copy.deepcopy(ep)
+    cast_rows = out.get("cast") or {}
+    built: list[Any] = []
+    prev: set[str] = set()
+    seen_gpu = False
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat) or not beat_renders(beat):
+            built.append(beat)
+            continue
+        intended = [str(c) for c in (beat.get("cast") or [])]
+        intended_set = set(intended)
+        bid = str(beat.get("id") or "")
+        added = [c for c in intended if c not in prev and c != "aya"]
+        if seen_gpu and added and not bid.endswith("-spot"):
+            names = []
+            poses = []
+            for cid in added:
+                row = cast_rows.get(cid) or {}
+                names.append(str(row.get("name_en") or cid).strip() or cid)
+                poses.append(_SPOT_POSE.get(cid) or f"{names[-1]} is already in frame with Aya, full body including feet.")
+            who = " and ".join(names)
+            spot_id = f"{bid}-spot"
+            action = (
+                "Aya is already in the corridor, fully nude. "
+                + " ".join(poses)
+                + " They share the frame, a short step apart. Aya takes one step closer and stops. "
+                f"Last frame: Aya and {who} both full body including feet, still a short step apart. "
+                "Motion starts at frame one. Brisk real-time."
+            )
+            built.append({
+                "id": spot_id,
+                "source": "t2v",
+                "connect": "t2v",
+                "trim": {"start": 0, "seconds": 6.0},
+                "cast": list(intended),
+                "encounter": beat.get("encounter") or "",
+                "place": beat.get("place") or "",
+                "camera": (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    f"{who} already shares the frame with Aya."
+                ),
+                "action": action,
+                "voices": [{"who": "aya", "line": "ん"}],
+                "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+                "music": beat.get("music") or "Bass holds",
+                "hud": dict(beat.get("hud") or {}),
+                "loco": "walk",
+                "extra_loras": [],
+                "trigger": "",
+            })
+        built.append(beat)
+        seen_gpu = True
+        prev = intended_set
+    out["beats"] = built
+    return out
+
+
 def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
     """Ward sex/toilet holds stay planted. Walk beats keep a walk cycle.
 
@@ -2344,6 +2418,7 @@ def prepare_episode(
         pose=rei_pose_override,
     )
     out = apply_default_loco(out)
+    out = insert_presence_beats(out)
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
@@ -4002,44 +4077,89 @@ def render_beat_comfy(
     before = newest_mp4(out_root)
     last_err: Any = None
     for dur in durations:
-        g = build_episode_graph(
-            source=source,
-            first_image=first_image,
-            prompt=prompt,
-            unet=unet,
-            preset=preset,
-            width=canvas[0],
-            height=canvas[1],
-            duration_s=dur,
-            seed=seed,
-            filename_prefix=filename_prefix,
-            has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
-            has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
-            last_image=last_image,
-        )
-        print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
-        res, err = poster(g, port)
-        if err:
-            last_err = err
-            if is_oom_error(err):
+        for attempt in (1, 2):
+            result = _render_beat_once(
+                source=source,
+                first_image=first_image,
+                prompt=prompt,
+                unet=unet,
+                preset=preset,
+                canvas=canvas,
+                dur=dur,
+                seed=seed,
+                filename_prefix=filename_prefix,
+                last_image=last_image,
+                obj=obj,
+                out_root=out_root,
+                before=before,
+                port=port,
+                poster=poster,
+                waiter=waiter,
+            )
+            if result.get("ok"):
+                return result["payload"]
+            last_err = result.get("error")
+            if result.get("oom"):
                 comfy_free(port)
-                continue
-            raise EpisodeError(err)
-        if not (res and "prompt_id" in res):
-            raise EpisodeError(str(res))
-        ok, payload = waiter(res["prompt_id"], port)
-        if ok:
-            videos = collect_output_videos(payload, out_root)
-            fresh = newest_mp4(out_root)
-            if fresh and fresh not in videos and (before is None or fresh != before):
-                videos.append(fresh)
-            return {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"}
-        last_err = payload
-        if is_oom_error(payload):
-            comfy_free(port)
-            continue
-        raise EpisodeError(str(payload))
+                if attempt == 1:
+                    print("free VRAM and retry", filename_prefix, f"{dur:.0f}s")
+                    continue
+                break
+            raise EpisodeError(str(last_err))
     raise EpisodeError(f"all durations OOM: {last_err}")
+
+
+def _render_beat_once(
+    *,
+    source: str,
+    first_image: str | None,
+    prompt: str,
+    unet: str,
+    preset: dict[str, Any],
+    canvas: tuple[int, int],
+    dur: float,
+    seed: int,
+    filename_prefix: str,
+    last_image: str | None,
+    obj: dict[str, Any],
+    out_root: Path,
+    before: Path | None,
+    port: int,
+    poster: Callable[..., Any],
+    waiter: Callable[..., Any],
+) -> dict[str, Any]:
+    g = build_episode_graph(
+        source=source,
+        first_image=first_image,
+        prompt=prompt,
+        unet=unet,
+        preset=preset,
+        width=canvas[0],
+        height=canvas[1],
+        duration_s=dur,
+        seed=seed,
+        filename_prefix=filename_prefix,
+        has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
+        has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
+        last_image=last_image,
+    )
+    print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
+    res, err = poster(g, port)
+    if err:
+        return {"ok": False, "oom": is_oom_error(err), "error": err}
+    if not (res and "prompt_id" in res):
+        return {"ok": False, "oom": False, "error": str(res)}
+    ok, payload = waiter(res["prompt_id"], port)
+    if ok:
+        videos = collect_output_videos(payload, out_root)
+        fresh = newest_mp4(out_root)
+        if fresh and fresh not in videos and (before is None or fresh != before):
+            videos.append(fresh)
+        return {
+            "ok": True,
+            "payload": {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"},
+        }
+    return {"ok": False, "oom": is_oom_error(payload), "error": payload}
 
 
 # ---------------------------------------------------------------- status
@@ -4359,6 +4479,7 @@ def run_episode(
     rei_kiss_override: str | None = None,
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
+    free_vram: bool = False,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -4505,6 +4626,9 @@ def run_episode(
             print("skip (exists)", raw_out.name)
             status["beats"].setdefault(bid, {})["state"] = "done"
             continue
+        if free_vram and not dry_run:
+            print("free VRAM before", bid)
+            comfy_free(port)
         source = beat_source(beat)
         if beat.get("reuse"):
             print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))

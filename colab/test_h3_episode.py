@@ -1212,23 +1212,26 @@ def test_hospital_exit_adult_accept_is_survival_complete():
         "02-ui-miki",
         "03-kiss",
         "03-kiss-walk",
+        "04-peek-spot",
         "04-peek",
         "05-ui-rei",
         "06-doggy",
         "06-doggy-peak",
         "06-doggy-walk",
+        "07-kana-spot",
         "07-kana",
         "08-ui-kana",
         "09-join",
         "09-join-peak",
         "09-join-walk",
+        "10-shino-spot",
         "10-shino",
         "11-ui-shino",
         "12-exit",
         "12-exit-peak",
         "12-exit-out",
     ]
-    assert expected_duration(ep) == pytest.approx(107.5, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(124.1, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
     assert all("on_invite" not in b for b in ep["beats"])
@@ -1357,7 +1360,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(164.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(181.2, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1401,24 +1404,26 @@ def test_hospital_exit_adult_evade_exits_alone():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="回避")
     assert ep["render"]["combat"] == "off"
-    assert expected_duration(ep) == pytest.approx(52.4, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(63.7, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not (ep.get("cards") or {}).get("fail")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-miki",
         "03-kiss",
+        "04-peek-spot",
         "04-peek",
         "05-ui-rei",
         "06-slip",
         "07-run",
         "08-ui-kana",
+        "09-slip-spot",
         "09-slip",
         "10-shino",
         "11-door",
         "12-exit",
     ]
-    for i in (1, 4, 7):
+    for i in (1, 5, 8):
         assert ep["beats"][i]["menu"]["selected"] == 3
     kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
     kiss_prompt = build_beat_prompt(ep, kiss, trigger=merge_trigger("", kiss))
@@ -1440,19 +1445,22 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="戦って勝つ")
     assert ep["render"]["combat"] == "on"
-    assert expected_duration(ep) == pytest.approx(53.4, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(70.35, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not (ep.get("cards") or {}).get("fail")
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-miki",
         "03-kiss",
+        "04-peek-spot",
         "04-peek",
         "05-ui-rei",
         "06-fight",
         "07-oral",
         "08-ui-kana",
+        "09-pass-spot",
         "09-pass",
+        "10-win-spot",
         "10-win",
         "11-pass",
         "12-exit",
@@ -1462,8 +1470,8 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
     assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
     assert ep["beats"][1]["menu"]["selected"] == 3
-    assert ep["beats"][4]["menu"]["selected"] == 0
-    assert ep["beats"][7]["menu"]["selected"] == 3
+    assert ep["beats"][5]["menu"]["selected"] == 0
+    assert ep["beats"][8]["menu"]["selected"] == 3
     fight_prompt = build_beat_prompt(ep, fights[0], trigger=merge_trigger("", fights[0]))
     assert fight_prompt.startswith("prfight2, prfin1")
     assert "travels into" not in fight_prompt.lower()
@@ -1500,19 +1508,22 @@ def test_hospital_exit_adult_fight_lose_is_defeat_h():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     ep = prepare_episode(raw, story_override="敗北")
     assert ep["render"]["combat"] == "on"
-    assert expected_duration(ep) == pytest.approx(55.85, abs=1.0)
+    assert expected_duration(ep) == pytest.approx(72.8, abs=1.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "感染者に倒された"
     assert [b["id"] for b in ep["beats"]] == [
         "01-cover",
         "02-ui-miki",
         "03-kiss",
+        "04-peek-spot",
         "04-peek",
         "05-ui-rei",
         "06-fight",
         "07-oral",
         "08-ui-kana",
+        "09-pass-spot",
         "09-pass",
+        "10-lose-spot",
         "10-lose",
         "11-join",
         "12-exit",
@@ -2094,7 +2105,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert all(not str(b["id"]).startswith("04-gin") and not str(b["id"]).startswith("04-tsuno") for b in off["beats"])
     taken = prepare_episode(raw, story_override="受け入れる", gin_override="犯される")
     ids = [b["id"] for b in taken["beats"]]
-    assert ids.index("04-gin-lick") == ids.index("04-peek") + 1
+    assert ids.index("04-gin-lick-spot") == ids.index("04-peek") + 1
+    assert ids.index("04-gin-lick") == ids.index("04-gin-lick-spot") + 1
     lick = next(b for b in taken["beats"] if b["id"] == "04-gin-lick")
     walk = next(b for b in taken["beats"] if b["id"] == "04-gin-walk")
     lick_prompt = build_beat_prompt(taken, lick)
@@ -2132,6 +2144,15 @@ def test_hospital_gin_tsuno_optional_events():
     assert extra_keys(jupo) == ["blowjob", "mystic"]
     assert "already sitting on her butt" in jupo["action"].lower()
     assert "waist bent" in jupo["action"].lower()
+    assert "tongue pulls back into gin's mouth" in jupo["action"].lower()
+    assert "lips seal" in jupo["action"].lower()
+    assert "tongue stays inside the mouth" in jupo["action"].lower()
+    assert "wide blissful smile" in jupo["action"].lower()
+    ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
+    assert "short upward thrusts from the back" in ride_peak["action"].lower()
+    assert "leaks around the base" in ride_peak["action"].lower()
+    assert "thrust" in extra_keys(ride_peak)
+    assert "pussy hanging directly above the glans" in jupo["action"].lower()
     assert "stays down" in jupo["action"].lower()
     assert "lies back from the sit" in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
@@ -2236,6 +2257,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert nel_in.get("loco") == "planted"
     assert nel_in.get("camera_pack") == "none"
     assert nel_in.get("connect") == "t2v"
+    assert "wide blissful smile" in nel_in["action"].lower()
     assert "travels into the anus" in nel_in["action"].lower()
     assert "pussy" not in nel_in["action"].lower()
     assert "lowers one of aya's feet" in nel_peak["action"].lower()
@@ -2269,12 +2291,18 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert beat_source(nine) == "chain"
     twelve = next(b for b in accept["beats"] if b["id"] == "12-exit")
     assert beat_source(twelve) == "chain"
+    peek_spot = next(b for b in accept["beats"] if b["id"] == "04-peek-spot")
     peek = next(b for b in accept["beats"] if b["id"] == "04-peek")
-    assert beat_source(peek) == "t2v"
+    assert beat_source(peek_spot) == "t2v"
+    assert beat_source(peek) == "chain"
+    kana_spot = next(b for b in accept["beats"] if b["id"] == "07-kana-spot")
     kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
-    assert beat_source(kana) == "t2v"
+    assert beat_source(kana_spot) == "t2v"
+    assert beat_source(kana) == "chain"
+    shino_spot = next(b for b in accept["beats"] if b["id"] == "10-shino-spot")
     shino = next(b for b in accept["beats"] if b["id"] == "10-shino")
-    assert beat_source(shino) == "t2v"
+    assert beat_source(shino_spot) == "t2v"
+    assert beat_source(shino) == "chain"
 
     assert "steps right" not in nine["action"].lower()
     assert "already in place" not in nine["action"].lower()
@@ -2315,9 +2343,12 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert beat_source(evade_kiss) == "chain"
 
     gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される", connect_override="chain")
+    lick_spot = next(b for b in gin["beats"] if b["id"] == "04-gin-lick-spot")
     lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
+    assert lick_spot.get("connect") == "t2v"
+    assert beat_source(lick_spot) == "t2v"
     assert lick.get("connect") == "t2v"
-    assert beat_source(lick) == "t2v"
+    assert beat_source(lick) == "chain"
     gin_in = next(b for b in gin["beats"] if b["id"] == "04-gin-jupo")
     assert beat_source(gin_in) == "chain"
     toilet = prepare_episode(raw, story_override="受け入れる", toilet_override="pee", connect_override="chain")
@@ -2484,11 +2515,13 @@ def test_hospital_clip_failures_are_rewritten():
     assert "cracked" in invite["cast"]["tsuno"]["lock"]
     _assert_insertion_direction(tsuno_in["action"], build_beat_prompt(invite, tsuno_in))
 
+    six_spot = next(b for b in invite["beats"] if b["id"] == "06-doggy-spot")
     six = next(b for b in invite["beats"] if b["id"] == "06-doggy")
     six_peak = next(b for b in invite["beats"] if b["id"] == "06-doggy-peak")
+    assert six_spot.get("connect") == "t2v"
+    assert beat_source(six_spot) == "t2v"
     assert six.get("connect") == "t2v"
-    # Rei is new on this beat, so the entrance stays T2V. The lock does not keep the next act on T2V.
-    assert beat_source(six) == "t2v"
+    assert beat_source(six) == "chain"
     assert beat_source(six_peak) == "chain"
     assert six["cast"] == ["aya", "rei"]
     assert "kana" not in six["cast"]
@@ -3081,7 +3114,7 @@ def test_render_beat_keeps_canvas_and_shortens_on_oom(tmp_path):
 
     def poster(graph, port):
         calls.append((graph["20"]["inputs"]["width"], graph["20"]["inputs"]["height"], graph["20"]["inputs"]["length"]))
-        if len(calls) == 1:
+        if len(calls) < 3:
             return None, "HTTP 500: CUDA out of memory"
         return {"prompt_id": "p1"}, None
 
@@ -3091,8 +3124,8 @@ def test_render_beat_keeps_canvas_and_shortens_on_oom(tmp_path):
 
     res = render_beat_comfy(source="still", first_image="a.jpg", prompt=prompt, comfy_dir=comfy, canvas=(1024, 576), durations=[10.0, 8.0, 6.0], preset=resolve_preset("fast", None), seed=1, filename_prefix="video/h3_ep_x", poster=poster, waiter=waiter)
     assert res["duration_s"] == 8.0 and res["canvas"] == "1024x576"
-    assert [c[:2] for c in calls] == [(1024, 576), (1024, 576)]
-    assert calls[0][2] > calls[1][2]
+    assert [c[:2] for c in calls] == [(1024, 576), (1024, 576), (1024, 576)]
+    assert calls[0][2] == calls[1][2] > calls[2][2]
 
 
 # ---------------------------------------------------------------- isolation
