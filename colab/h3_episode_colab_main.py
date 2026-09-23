@@ -18,6 +18,14 @@ Env:
   H3_EPISODE_TSUNO    off | accept_stand | invite_stand（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック。病棟の追加）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
+  H3_EPISODE_REI_MAST skip|stand|back（未使用。03/07/11/15 は常時 T2V mystic）
+  H3_EPISODE_REI_TOILET ta|tb|tc（レイ脱出のトイレ。肉壁。脱糞なし）
+  H3_EPISODE_REI_BEAST accept|invite|evade（レイ脱出の敵1。立ち円口 / 仰向け股開き / 飛ばす）
+  H3_EPISODE_REI_MOTH tail|mouth（レイ脱出の蛾女）
+  H3_EPISODE_REI_ATTACK rei|her（未使用。17-attack は固定の変化）
+  H3_EPISODE_REI_KISS off|on（レイ脱出のキス。既定 on。正面抱擁）
+  H3_EPISODE_REI_ORAL skip|on（レイ脱出のしゃがみ往復。既定 on）
+  H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出。挿入側はサキュバス）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
@@ -79,6 +87,14 @@ def main() -> int:
             tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,
             appear_override=(os.environ.get("H3_EPISODE_APPEAR") or "").strip() or None,
             scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
+            rei_mast_override=(os.environ.get("H3_EPISODE_REI_MAST") or "").strip() or None,
+            rei_toilet_override=(os.environ.get("H3_EPISODE_REI_TOILET") or "").strip() or None,
+            rei_beast_override=(os.environ.get("H3_EPISODE_REI_BEAST") or "").strip() or None,
+            rei_moth_override=(os.environ.get("H3_EPISODE_REI_MOTH") or "").strip() or None,
+            rei_attack_override=(os.environ.get("H3_EPISODE_REI_ATTACK") or "").strip() or None,
+            rei_kiss_override=(os.environ.get("H3_EPISODE_REI_KISS") or "").strip() or None,
+            rei_oral_override=(os.environ.get("H3_EPISODE_REI_ORAL") or "").strip() or None,
+            rei_pose_override=(os.environ.get("H3_EPISODE_REI_POSE") or "").strip() or None,
         )
         print("DONE", slug, final)
         return 0

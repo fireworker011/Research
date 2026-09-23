@@ -30,8 +30,6 @@ EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
 __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
-__END_CONNECT_HELP__
-END_CONNECT = __END_CONNECT_DEFAULT__  #@param __END_CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
 __PRESET_HELP__
@@ -48,7 +46,7 @@ __GIN_HELP__
 GIN = __GIN_DEFAULT__  #@param __GIN_CHOICES__
 __TSUNO_HELP__
 TSUNO = __TSUNO_DEFAULT__  #@param __TSUNO_CHOICES__
-#@markdown **登場（病棟）。外すとその人のシーンを飛ばす。霞東は無視。**
+#@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
@@ -80,7 +78,7 @@ os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
-os.environ["H3_EPISODE_END_CONNECT"] = END_CONNECT
+os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
@@ -159,13 +157,9 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("episode")}
 
-**1. つなぎ方** — 動画をどう繋げるか
+**1. つなぎ方** — 動画をどう繋げるか。遭遇の入り（新しい相手）はカット。消滅はチェーンならフェード（飛ばない）
 
 {form_readme("connect")}
-
-**シーン終わりのつなぎ** — 行為のあとの歩きと次のシーン。連続して別シーンを出すときだけ変える
-
-{form_readme("end_connect")}
 
 **2. カメラ**
 
@@ -199,7 +193,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("tsuno")}
 
-登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。
+登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。**4人とも外すと作る場面が無くなって止まる。最低1人は残す。**
 
 **シーンごと（病棟）** — 誘う（誘い方含む）・受け入れる・回避。5番が戦いのときは無視。霞東は無視。最後に残った人の構成で完了／失敗が決まる。
 
@@ -228,12 +222,9 @@ def make_nb() -> dict:
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
         .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
-        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか"))
+        .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。新しい相手の入りはカット。消滅はチェーンならフェード"))
         .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_HELP__", form_markdown("end_connect", "シーン終わりのつなぎ — 行為のあとの歩きと次のシーン"))
-        .replace("__END_CONNECT_DEFAULT__", json.dumps(ui_default("end_connect"), ensure_ascii=False))
-        .replace("__END_CONNECT_CHOICES__", json.dumps(ui_choices("end_connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
