@@ -4,4 +4,6 @@
 
 専用ノート: [minimax_h3_rei_escape_bot.ipynb](../../../minimax_h3_rei_escape_bot.ipynb)
 
+引き継ぎ（Cursor と Grok 共通）: [HANDOFF.md](HANDOFF.md)
+
 病棟・霞東の JSON と共有ノートは触らない。話ドロップダウンにも足していない。
