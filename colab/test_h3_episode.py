@@ -1924,6 +1924,15 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "m-shape" in fill["action"].lower()
             assert "only the tentacles move" in fill["action"].lower()
             assert "hips hold still" in fill["action"].lower()
+            assert "exactly three" in low
+            assert "under the toilet seat" in low
+            assert "inside of the toilet bowl" in low
+            assert "travels into her hairless pussy" in low
+            assert "presses on her tongue" in low
+            assert "hold her thighs" not in low
+            assert "exactly three" in fill["action"].lower()
+            assert "under the toilet seat" in fill["action"].lower()
+            assert "inside of the toilet bowl" in fill["action"].lower()
             assert "rock down" not in fill["action"].lower()
             assert fill["trim"]["seconds"] == 10.0
             assert fill.get("camera_pack") == "none"
@@ -1949,6 +1958,11 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "facing the camera" in enter["action"].lower()
         else:
             assert "profile" in prompt.lower()
+            assert "hairless pussy" in low
+            assert "outside the seat" in low
+            assert "smiles" in low
+            assert "into the bowl" not in low
+            assert "urethra" not in low
         assert "hospital door" not in prompt.lower()
         assert "doorway" not in prompt.lower()
         assert "this shot:" not in prompt.lower()
