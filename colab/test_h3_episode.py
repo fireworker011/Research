@@ -2215,6 +2215,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "Look that stays for this whole shot" in spot_prompt
     assert "grimy brown hospital dirt" in spot_prompt
     assert "shaft written" not in spot_prompt.lower()
+    assert spot.get("fade_cast") in (None, [])
+    assert set(spot.get("cast") or []) == {"aya", "gin"}
     kana_spot = next(b for b in taken["beats"] if b["id"] == "07-kana-spot")
     assert "grimy brown hospital dirt" in kana_spot["action"].lower()
     assert "Look that stays for this whole shot" in build_beat_prompt(taken, kana_spot)
@@ -2336,7 +2338,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert "glans on the anus" in nel_in["action"].lower()
     assert "both forearms go under" in nel_in["action"].lower()
     assert "walks right" not in nel_meet["action"].lower()
-    assert "snaps in behind" in nel_meet["action"].lower()
+    assert "snaps" not in nel_meet["action"].lower()
+    assert "lunges" not in nel_meet["action"].lower()
+    assert "happy accepting smile" in nel_meet["action"].lower()
+    assert "embraces aya from behind" in nel_meet["action"].lower()
     assert "snappy real-time" in nel_meet["action"].lower()
     assert "press flush" in nel_meet["action"].lower()
     assert "knead them from behind" in nel_meet["action"].lower()
@@ -3630,7 +3635,8 @@ def test_chain_keeps_leaving_bodies_in_frame_so_they_can_fade():
             cast = {str(c) for c in (beat.get("cast") or [])}
             fade = {str(c) for c in (beat.get("fade_cast") or [])}
             remaining = cast - fade
-            if beat_source(beat) == "chain":
+            spot = str(beat.get("id") or "").endswith("-spot")
+            if beat_source(beat) == "chain" and not spot:
                 assert not prev - cast, f"{slug} {beat['id']} chains off missing {sorted(prev - cast)}"
             prev = remaining
     kasumi = prepare_episode(

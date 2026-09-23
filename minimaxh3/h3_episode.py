@@ -1318,7 +1318,8 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
     A -spot encounter stays chain: the newcomer walks into the previous frame.
     Shrink (someone left): keep them in this beat's cast, fade them in the
     action, and KEEP the chain so 05→06 is a fade instead of a jump.
-    Grow and shrink together: T2V, except a -spot, which stays chain.
+    Grow and shrink together: T2V, except a -spot, which stays chain
+    and does not keep the previous extra person.
     """
     out = copy.deepcopy(ep)
     prev: set[str] = set()
@@ -1334,7 +1335,9 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
         added = intended_set - prev
         if beat_source(item) == "chain" and not item.get("reuse"):
             spot = str(item.get("id") or "").endswith("-spot")
-            if added and not spot:
+            if spot:
+                item.pop("fade_cast", None)
+            elif added:
                 item["source"] = "t2v"
                 item.pop("still_as", None)
                 item.pop("fade_cast", None)
