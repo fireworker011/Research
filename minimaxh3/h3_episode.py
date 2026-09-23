@@ -2219,11 +2219,11 @@ def scrub_planted_action(action: str) -> str:
 
 
 _SPOT_POSE = {
-    "rei": "Rei is already standing ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
-    "kana": "Kana is already standing mid-corridor facing Aya, feet planted, full body including feet.",
-    "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
+    "rei": "Rei WALKS IN from the RIGHT edge and STOPS ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
+    "kana": "Kana WALKS IN from the RIGHT edge and STOPS mid-corridor facing Aya, feet planted, full body including feet.",
+    "shino": "Shino WALKS IN from the RIGHT edge and STOPS, stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
     "gin": "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
-    "tsuno": "Tsuno is already standing one step behind Aya, facing the same way, full body including feet.",
+    "tsuno": "Tsuno WALKS IN from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet.",
 }
 
 
@@ -2254,17 +2254,35 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             for cid in added:
                 row = cast_rows.get(cid) or {}
                 names.append(str(row.get("name_en") or cid).strip() or cid)
-                poses.append(_SPOT_POSE.get(cid) or f"{names[-1]} is already in frame with Aya, full body including feet.")
+                poses.append(_SPOT_POSE.get(cid) or f"{names[-1]} WALKS IN from the frame edge and STOPS with Aya, full body including feet.")
             who = " and ".join(names)
             spot_id = f"{bid}-spot"
-            if added == ["gin"]:
+            if added == ["tsuno"]:
+                action = (
+                    "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
+                    "grimy brown hospital dirt on her skin. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
+                    "Tsuno ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
+                    "matching Aya's stride, full body including feet. "
+                    "From the viewer, that left side is directly behind Aya. "
+                    "Aya stays toward the RIGHT and keeps facing RIGHT the whole take. Tsuno stays toward the LEFT. Aya does not turn yet. "
+                    "The right edge of the frame stays a dark corridor continuing on. "
+                    "Last frame: Aya toward the RIGHT, stopped, facing RIGHT. Tsuno toward the LEFT, directly behind her, both full body including feet. "
+                    "This take ends on that stop. Motion starts at frame one. Brisk real-time."
+                )
+                camera = (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    "Tsuno walks in from the LEFT edge, directly behind Aya toward the LEFT, matching her stride. "
+                    "Aya toward the RIGHT, facing RIGHT, her stride slowing to a stop. "
+                    "The right edge stays a dark corridor continuing on."
+                )
+            elif added == ["gin"]:
                 action = (
                     "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
                     "grimy brown hospital dirt on her skin. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
                     "Gin ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
                     "matching Aya's stride, full body including feet. "
                     "From the viewer, that left side is directly behind Aya. "
-                    "Aya stays toward the RIGHT. Gin stays toward the LEFT. Aya does not turn yet. "
+                    "Aya stays toward the RIGHT and keeps facing RIGHT the whole take. Gin stays toward the LEFT. Aya does not turn yet. "
                     "The right edge of the frame stays a dark corridor continuing on. "
                     "Last frame: Aya toward the RIGHT, stopped, facing RIGHT. Gin toward the LEFT, directly behind her, both full body including feet. "
                     "Motion starts at frame one. Brisk real-time."
@@ -2285,12 +2303,12 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 )
                 camera = (
                     "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    f"{who} already shares the frame with Aya."
+                    f"{who} walks into the frame with Aya."
                 )
             built.append({
                 "id": spot_id,
-                "source": "t2v",
-                "connect": "t2v",
+                "source": "chain",
+                "connect": "chain",
                 "trim": {"start": 0, "seconds": 6.0},
                 "cast": list(intended),
                 "encounter": beat.get("encounter") or "",
@@ -3250,6 +3268,7 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
     lines: list[str] = []
     shaft_names: list[str] = []
+    fade = {str(c) for c in (beat.get("fade_cast") or [])}
     for cid in beat.get("cast") or []:
         row = cast.get(cid) or {}
         name = str(row.get("name_en") or cid).strip() or str(cid)
@@ -3257,7 +3276,7 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         positive = _positive_look(lock)
         if positive:
             lines.append(f"{name}: {positive}.")
-        if positive and _SHAFT_IN_LOOK_RE.search(positive):
+        if positive and str(cid) not in fade and _SHAFT_IN_LOOK_RE.search(positive):
             shaft_names.append(name)
     if not lines:
         return ""

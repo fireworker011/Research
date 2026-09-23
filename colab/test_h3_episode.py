@@ -1656,7 +1656,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "three separate lowers" in ride_sit["action"].lower()
     assert "directly above the glans" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
-    assert "from above" in ride_sit["action"].lower()
+    assert "from above" not in ride_sit["action"].lower()
+    assert "squats from above" not in ride_sit["action"].lower()
     assert "from directly above" not in ride_sit["camera"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
     assert "profile side-on" in ride_prompt.lower()
@@ -1705,6 +1706,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "knead them from behind" in cover_i["action"].lower()
     assert "cup miki's breasts" in cover_i["action"].lower()
     assert "stands behind miki" in cover_i["action"].lower()
+    assert "the walk until they stop is short" in cover_i["action"].lower()
+    assert "t-junction wall" in cover_i["action"].lower()
+    assert "eerie smile" in cover_i["action"].lower()
+    assert "hollow empty dark eye sockets" in cover_i["action"].lower()
     cover_cam = cover_i["camera"].lower()
     assert "aya's breasts pressed into miki's back" in cover_cam
     assert "kneading miki's breasts from behind" in cover_cam
@@ -1724,7 +1729,12 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
     nine = next(b for b in m_open["beats"] if b["id"] == "09-join")
     assert "m-shape" in nine["action"].lower()
+    assert "back of her head on the linoleum" in nine["action"].lower()
+    assert "eyes narrowed" in nine["action"].lower()
     assert "french kiss" not in nine["action"].lower()
+    kiss_i = next(b for b in m_open["beats"] if b["id"] == "03-kiss")
+    assert "in front of the t-junction" in kiss_i["action"].lower()
+    assert "mouths joined" in kiss_i["action"].lower()
     seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
     assert "stroking the erect 20cm" in seven["action"].lower()
     assert "white goo" in seven["action"].lower()
@@ -2146,6 +2156,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "both knees open" in lick["action"].lower()
     assert "dark corridor continuing on" in lick["action"].lower()
     assert "falls onto her butt" in lick["action"].lower()
+    assert "futanari" not in lick["action"].lower()
     assert "thighs open" in lick["action"].lower()
     assert "shocked wide-eyed" in lick["action"].lower()
     assert "french kiss" not in lick["action"].lower()
@@ -2259,7 +2270,14 @@ def test_hospital_gin_tsuno_optional_events():
     assert "cup aya's breasts" in meet["action"].lower()
     assert "one large single eye" in meet["action"].lower()
     assert "exactly four long fingers" in meet["action"].lower()
-    assert "lunges in behind" in meet["action"].lower()
+    assert "lunges" not in meet["action"].lower()
+    assert "happy accepting smile" in meet["action"].lower()
+    assert "already stopped" in meet["action"].lower()
+    tsuno_spot = next(b for b in stand["beats"] if b["id"] == "04-tsuno-meet-spot")
+    assert tsuno_spot.get("connect") == "chain"
+    assert "enters from the left edge" in tsuno_spot["action"].lower()
+    assert "this take ends on that stop" in tsuno_spot["action"].lower()
+    assert "back of her head on the linoleum" in next(b for b in prepare_episode(raw, gin_override="犯す")["beats"] if b["id"] == "04-gin-in")["action"].lower()
     assert "snappy real-time" in meet["action"].lower()
     assert "press flush" in meet["action"].lower()
     assert "squash and change shape" in meet["action"].lower()
@@ -2287,7 +2305,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "looks back" in action_blob(invite, "04-tsuno")
     assert "t-junction" in invite_meet["action"].lower()
     assert "cup aya's breasts" in invite_meet["action"].lower()
-    assert "lunges in behind" in invite_meet["action"].lower()
+    assert "lunges" not in invite_meet["action"].lower()
+    assert "happy accepting smile" in invite_meet["action"].lower()
     assert "knead them from behind" in invite_meet["action"].lower()
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
@@ -2297,7 +2316,8 @@ def test_hospital_gin_tsuno_optional_events():
     anal_in = next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")
     anal_peak = next(b for b in anal["beats"] if b["id"] == "04-tsuno-peak")
     assert "grab aya's breasts" in anal_meet["action"].lower()
-    assert "lunges in behind" in anal_meet["action"].lower()
+    assert "lunges" not in anal_meet["action"].lower()
+    assert "happy accepting smile" in anal_meet["action"].lower()
     assert "knead them from behind" in anal_meet["action"].lower()
     assert "squash and change shape" in anal_meet["action"].lower()
     assert "exactly four long fingers" in anal_meet["action"].lower()
@@ -2422,7 +2442,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される", connect_override="chain")
     lick_spot = next(b for b in gin["beats"] if b["id"] == "04-gin-lick-spot")
     lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
-    assert lick_spot.get("connect") == "t2v"
+    assert lick_spot.get("connect") == "chain"
     assert beat_source(lick_spot) == "chain"
     measured = prepare_episode(
         raw,
@@ -2609,7 +2629,7 @@ def test_hospital_clip_failures_are_rewritten():
     six_spot = next(b for b in invite["beats"] if b["id"] == "06-doggy-spot")
     six = next(b for b in invite["beats"] if b["id"] == "06-doggy")
     six_peak = next(b for b in invite["beats"] if b["id"] == "06-doggy-peak")
-    assert six_spot.get("connect") == "t2v"
+    assert six_spot.get("connect") == "chain"
     assert beat_source(six_spot) == "chain"
     assert six.get("connect") == "t2v"
     assert beat_source(six) == "chain"
@@ -2623,7 +2643,8 @@ def test_hospital_clip_failures_are_rewritten():
     ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
     ride_in = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     ride_prompt = build_beat_prompt(ride, ride_in)
-    assert "squats over" in ride_in["action"].lower() or "squats from above over" in ride_in["action"].lower()
+    assert "squats from above" not in ride_in["action"].lower()
+    assert "from directly above" not in ride_in["action"].lower()
     assert "straddles the hips" in ride_in["action"].lower()
     assert "facing the partner" in ride_in["action"].lower()
     assert "directly above the glans" in ride_in["action"].lower()
