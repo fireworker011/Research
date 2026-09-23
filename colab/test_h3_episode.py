@@ -1357,7 +1357,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(153.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(164.2, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1372,6 +1372,28 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     twelve_blob = action_blob(ep, "12-exit")
     assert "do not cross the threshold" in twelve_blob or "do not slide to the lit doorway" in twelve_blob
     assert "left the building" not in twelve_blob
+    assert ep["beats"][-1]["id"] == "12-exit-kiss"
+    assert "12-exit-walk" not in [b["id"] for b in ep["beats"]]
+    seat = next(b for b in ep["beats"] if b["id"] == "12-exit")
+    peak = next(b for b in ep["beats"] if b["id"] == "12-exit-peak")
+    drop = next(b for b in ep["beats"] if b["id"] == "12-exit-drop")
+    kiss = ep["beats"][-1]
+    assert "tongue hangs out" in seat["action"].lower()
+    assert "lost in pleasure" in seat["action"].lower()
+    assert "whites show" in peak["action"].lower()
+    assert "leaks around the base" in peak["action"].lower()
+    assert "pull back" not in peak["action"].lower()
+    assert "rolls onto her back" in drop["action"].lower()
+    assert "inner thighs rest on the linoleum" in drop["action"].lower()
+    assert "heels sit right beside the buttocks" in drop["action"].lower()
+    assert "overflows from the pussy" in drop["action"].lower()
+    assert extra_lora_entries(kiss) == [("kiss", 0.5)]
+    assert "french kiss" in kiss["action"].lower()
+    assert "tongue kiss" in kiss["action"].lower()
+    assert "lick" in kiss["action"].lower() and "corners of the mouth" in kiss["action"].lower()
+    assert "forked reptile tongue" in kiss["action"].lower()
+    assert kiss.get("connect") == "t2v"
+    assert kiss.get("loco") == "planted"
     _assert_hospital_bans(ep)
 
 
@@ -1904,7 +1926,8 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
         story_override="受け入れる",
         scenes_override="miki=accept,rei=accept,kana=accept,shino=□誘う・四つん這い股広げ",
     )
-    twelve = next(b for b in last_invite["beats"] if b["id"] == "12-exit-walk")
+    twelve = next(b for b in last_invite["beats"] if b["id"] == "12-exit-kiss")
+    assert "12-exit-walk" not in [b["id"] for b in last_invite["beats"]]
     twelve_prompt = build_beat_prompt(last_invite, twelve)
     assert twelve["hud"]["complete"] is False
     assert last_invite["cards"]["fail"]["reason"] == "淫欲に呑まれた"
