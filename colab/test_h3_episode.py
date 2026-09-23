@@ -1140,7 +1140,11 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert raw["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     assert all(c["age"] >= 21 for c in raw["cast"].values())
     assert raw["cast"]["aya"]["age"] == 21 and "A-cup" in raw["cast"]["aya"]["lock"]
-    assert "no penis" in raw["cast"]["aya"]["lock"] and "never futanari" in raw["cast"]["aya"]["lock"]
+    assert "female body" in raw["cast"]["aya"]["lock"]
+    assert "no penis" not in raw["cast"]["aya"]["lock"]
+    assert "never futanari" not in raw["cast"]["aya"]["lock"]
+    assert "no penis" not in raw["cast"]["aya"]["looks"]["white_upper"]
+    assert "never futanari" not in raw["cast"]["aya"]["looks"]["white_upper"]
     assert "hospital dirt" in raw["cast"]["aya"]["lock"] and "sweat" in raw["cast"]["aya"]["lock"]
     assert "visible sweat beads" in raw["cast"]["aya"]["lock"]
     assert "grimy brown hospital dirt" in raw["cast"]["aya"]["lock"]
@@ -1720,7 +1724,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss", "sideride"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
-    assert extra_lora_entries(ride_sit)[0][0] == "sideride"
+    assert extra_lora_entries(ride_sit)[0] == ("sideride", 0.5)
+    assert "mystic" in extra_keys(ride_sit)
     assert ride_sit.get("trigger") == SIDERIDE_TRIGGER
     assert "straddles the hips" in ride_sit["action"].lower()
     assert "facing the partner" in ride_sit["action"].lower()
@@ -1805,10 +1810,39 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "female character" not in peak_prompt.lower()
     peak_keys = extra_keys(ride_peak)
     assert peak_keys[0] == "sideride"
+    assert extra_lora_entries(ride_peak)[0] == ("sideride", 0.8)
+    assert "mystic" not in peak_keys
     assert "thrust" in peak_keys and "penis" in peak_keys and "synth" in peak_keys
     assert "cumshot" not in peak_keys and "cumouf" not in peak_keys
     assert "leaks around the base" in ride_peak["action"].lower()
     assert "stays inside the pussy" in ride_peak["action"].lower()
+
+    def _walk_beats(node, acc):
+        if isinstance(node, dict):
+            if isinstance(node.get("extra_loras"), list) and node.get("id"):
+                acc.append(node)
+            for value in node.values():
+                _walk_beats(value, acc)
+        elif isinstance(node, list):
+            for value in node:
+                _walk_beats(value, acc)
+
+    sideride_beats = []
+    _walk_beats(raw, sideride_beats)
+    seat_n = peak_n = 0
+    for beat in sideride_beats:
+        keys = extra_keys(beat)
+        if "sideride" not in keys:
+            continue
+        if "thrust" in keys:
+            peak_n += 1
+            assert "mystic" not in keys, beat["id"]
+            assert extra_lora_entries(beat)[0] == ("sideride", 0.8), beat["id"]
+        else:
+            seat_n += 1
+            assert extra_lora_entries(beat)[0] == ("sideride", 0.5), beat["id"]
+            assert "mystic" in keys, beat["id"]
+    assert seat_n == 5 and peak_n == 5
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():

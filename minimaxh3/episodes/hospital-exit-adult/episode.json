@@ -40,9 +40,9 @@
       "name_ja": "星野 あや",
       "name_en": "Aya",
       "age": 21,
-      "lock": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, no penis, never futanari, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
+      "lock": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
       "looks": {
-        "white_upper": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, no penis, never futanari, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin, thick extra-viscous sticky WHITE goo clinging to the upper body, the face, hair, neck, breasts, shoulders, arms, hands, and belly"
+        "white_upper": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin, thick extra-viscous sticky WHITE goo clinging to the upper body, the face, hair, neck, breasts, shoulders, arms, hands, and belly"
       },
       "voice": "clear young adult female voice"
     },
@@ -781,7 +781,10 @@
             "seconds": 10.0
           },
           "extra_loras": [
-            "sideride",
+            [
+              "sideride",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "side view riding sex, straddling the hips, facing the partner",
@@ -825,10 +828,6 @@
           },
           "extra_loras": [
             "sideride",
-            [
-              "mystic",
-              0.5
-            ],
             [
               "penis",
               0.45
@@ -2000,7 +1999,10 @@
             "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
           },
           "extra_loras": [
-            "sideride",
+            [
+              "sideride",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "side view riding sex, straddling the hips, facing the partner",
@@ -2052,10 +2054,6 @@
           },
           "extra_loras": [
             "sideride",
-            [
-              "mystic",
-              0.5
-            ],
             [
               "penis",
               0.45
@@ -4010,7 +4008,10 @@
             "seconds": 10.0
           },
           "extra_loras": [
-            "sideride",
+            [
+              "sideride",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "side view riding sex, straddling the hips, facing the partner",
@@ -4054,10 +4055,6 @@
           },
           "extra_loras": [
             "sideride",
-            [
-              "mystic",
-              0.5
-            ],
             [
               "penis",
               0.45
@@ -5480,7 +5477,10 @@
             "seconds": 10.0
           },
           "extra_loras": [
-            "sideride",
+            [
+              "sideride",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "side view riding sex, straddling the hips, facing the partner",
@@ -5524,10 +5524,6 @@
           },
           "extra_loras": [
             "sideride",
-            [
-              "mystic",
-              0.5
-            ],
             [
               "penis",
               0.45
@@ -6970,7 +6966,10 @@
             "seconds": 10.0
           },
           "extra_loras": [
-            "sideride",
+            [
+              "sideride",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "side view riding sex, straddling the hips, facing the partner",
@@ -7014,10 +7013,6 @@
           },
           "extra_loras": [
             "sideride",
-            [
-              "mystic",
-              0.5
-            ],
             [
               "penis",
               0.45
