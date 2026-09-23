@@ -28,10 +28,10 @@
   "style": "Third-person side-scrolling game cutscene look, live-action photoreal game footage, pulled-back full-body PROFILE framing, brisk real-time playback, no anime, no illustration",
   "violence": "none",
   "world": {
-    "name": "Living meat-wall interior",
-    "lock": "photorealistic side-scrolling interior of a living creature, wet pulsating meat walls, glossy viscera corridor, springy biological floor that does not sink, humid erotic niku-kabe cave, rim lighting, 16:9 locked side view, floor LEFT to RIGHT, walls are ONLY living flesh, bare viscera, no objects attached",
+    "name": "Ruined gothic castle",
+    "lock": "photorealistic side-scrolling ruined gothic castle, stone hall with pointed windows and a stone staircase on the right for standing and encounters, vaulted stone corridor with holes in the ceiling for runs, aged stone, wall hangings stay attached to the stone, rim lighting, 16:9 locked side view, floor LEFT to RIGHT",
     "no_text_on_signs": true,
-    "bare_set": true
+    "bare_set": false
   },
   "cast": {
     "rei": {
@@ -45,14 +45,14 @@
       "name_ja": "異形",
       "name_en": "Beast",
       "age": 21,
-      "lock": "giant aberrant beast twice Rei's height, pale mint-gray wet lumpy flesh blending into a pale-gray lamprey-ray hide, a PUCKERED hypotoco-like snout: the circular orange-red oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched outer rim, NOT a huge wide funnel, NOT a camera-iris gape, white triangular teeth pointing inward stay tucked behind the cinched rim, wet red inner tunnel, purple lightning veins pulsing under the skin, lamprey-eel-ray body, membranous pectoral fins, dorsal sucker-stalk with a disc, quadruped lizard crawl on limb-fins, slime drooling from the puckered maw, NO human face, NO human hands, NO human lips, NO human jaw",
+      "lock": "aberrant circular maw growing from a ruined castle stone column and a dead fireplace, body mass twice Rei's height, wet stone-gray lumpy flesh, a PUCKERED hypotoco-like snout: the circular oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched outer rim, NOT a huge wide funnel, NOT a camera-iris gape, white triangular teeth pointing inward stay tucked behind the cinched rim, wet inner tunnel, slime drooling from the puckered maw, NO human face, NO human hands, NO human lips, NO human jaw",
       "voice": "wet inhuman gulp"
     },
     "moth": {
-      "name_ja": "蛾女",
-      "name_en": "Moth",
+      "name_ja": "蜘蛛女",
+      "name_en": "Spider",
       "age": 21,
-      "lock": "moth-girl the same height as Rei: attractive flushed human female face, brown hair, curled ram-like insect antennae on the head (antennae, not mammal horns), nude beautiful human female torso with breasts exposed, human female shoulders. Lower body stays insect: segmented moth abdomen instead of a human pelvis, many thin insect legs for locomotion (not a pair of human thighs), cream moth wings with purple-gray eyespots, a tapering stinger-like TAIL coming from the REAR of the insect abdomen. The terminal TIP of that tail has a wet circular second mouth. Meat-wall corridor only, NO forest background, NO trees, NO dirt path, NO human hips, NO human thighs",
+      "lock": "spider-woman the same height as Rei: attractive flushed human female face, brown hair, nude beautiful human female torso with breasts exposed, human female shoulders. Lower body stays arachnid: segmented spider abdomen instead of a human pelvis, many thin spider legs for locomotion (not a pair of human thighs), a tapering tail coming from the REAR of the spider abdomen. The terminal TIP of that tail has a wet circular second mouth. Ruined gothic castle hall only, NO forest background, NO trees, NO dirt path, NO human hips, NO human thighs",
       "voice": "soft young adult female voice"
     },
     "succubus": {
@@ -130,9 +130,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL in the living meat-wall cave, NOT running, NOT walking, feet planted, knees slightly bent, both hands sliding along her fully erect 24cm penis from base to head repeatedly, grip traveling the full 24cm, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, springy flesh floor not sinking, wet pulsating walls. Do not ejaculate in this clip. Do not start running in this clip",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL in the ruined gothic castle hall, NOT running, NOT walking, feet planted, knees slightly bent, both hands sliding along her fully erect 24cm penis from base to head repeatedly, grip traveling the full 24cm, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone floor, pointed windows, staircase on the right. Do not ejaculate in this clip. Do not start running in this clip",
       "voices": [
         {
           "who": "rei",
@@ -143,7 +143,7 @@
           "line": "んっ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -175,16 +175,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through the viscera corridor, long brown hair flowing, erect 24cm penis bouncing with each stride, no enemy in frame",
+      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through the vaulted stone corridor, long brown hair flowing, erect 24cm penis bouncing with each stride, holes in the ceiling, no enemy in frame",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -216,9 +216,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
       "voices": [
         {
           "who": "rei",
@@ -229,7 +229,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -249,12 +249,12 @@
       "loco": "planted",
       "rei_slot": "mast",
       "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
         "id": "03-mast-stand",
         "loco": "planted"
       },
       "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the elastic living floor that does not sink, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, meat ceiling above, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
         "id": "03-mast-back",
         "loco": "planted"
       }
@@ -273,16 +273,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9 encounter, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left facing right, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Giant aberrant beast twice Rei's height crawling in from the right on four limb-fins, PUCKERED hypotoco snout cinched small, slime drooling, NO human face, NO human hands, NO human lips, NO human jaw, brief pause, only Rei plus this one beast",
+      "action": "side view 16:9 encounter, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left facing right, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. An aberrant circular maw, body mass twice Rei's height, emerges from the stone column and dead fireplace on the right, PUCKERED hypotoco snout cinched small, slime drooling, NO human face, NO human hands, NO human lips, NO human jaw, brief pause, only Rei plus this one beast",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -319,9 +319,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The beast stays on all fours in a lizard crawl, body twice Rei's height. From the right the PUCKERED hypotoco-like snout turns toward Rei's groin: the circular oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched rim, NOT a huge wide funnel, NOT a camera-iris gape. The small cinched opening slides FORWARD over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Outer mint-gray snout flesh bunches around the root. Then continue without a cut: the outer rim STAYS CINCHED at the base. Motion is NOT a human head bob and NOT a jaw chew and NOT a big maw pumping. Inner wall PERISTALSIS only: concentric rings contract root-to-tip-to-root about 8 to 12cm while the outer hypotoco rim does not break the seal. While it milks her, her mouth may open and her tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the cinched rim. Do not shrink the beast. Do not grow a human face. Keep the snout puckered and small on the shaft",
+      "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left in the castle hall, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. An aberrant circular maw grows from a ruined stone column and a dead fireplace, body mass twice Rei's height. From the column the PUCKERED hypotoco-like snout turns toward Rei's groin: the circular oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched rim, NOT a huge wide funnel, NOT a camera-iris gape. The small cinched opening slides FORWARD over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Outer stone-gray snout flesh bunches around the root. Then continue without a cut: the outer rim STAYS CINCHED at the base. Motion is NOT a human head bob and NOT a jaw chew and NOT a big maw pumping. Inner wall PERISTALSIS only: concentric rings contract root-to-tip-to-root about 8 to 12cm while the outer hypotoco rim does not break the seal. While it milks her, her mouth may open and her tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the cinched rim. Do not shrink the beast. Do not grow a human face. Keep the snout puckered and small on the shaft",
       "voices": [
         {
           "who": "rei",
@@ -332,7 +332,7 @@
           "line": "いく"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -355,7 +355,7 @@
       ],
       "rei_slot": "beast",
       "rei_beast_accept": {
-        "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The beast stays on all fours in a lizard crawl, body twice Rei's height. From the right the PUCKERED hypotoco-like snout turns toward Rei's groin: the circular oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched rim, NOT a huge wide funnel, NOT a camera-iris gape. The small cinched opening slides FORWARD over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Outer mint-gray snout flesh bunches around the root. Then continue without a cut: the outer rim STAYS CINCHED at the base. Motion is NOT a human head bob and NOT a jaw chew and NOT a big maw pumping. Inner wall PERISTALSIS only: concentric rings contract root-to-tip-to-root about 8 to 12cm while the outer hypotoco rim does not break the seal. While it milks her, her mouth may open and her tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the cinched rim. Do not shrink the beast. Do not grow a human face. Keep the snout puckered and small on the shaft",
+        "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left in the castle hall, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. An aberrant circular maw grows from a ruined stone column and a dead fireplace, body mass twice Rei's height. From the column the PUCKERED hypotoco-like snout turns toward Rei's groin: the circular oral disc is NARROWED and cinched like pursed fleshy lips, wrinkled bunched rim, NOT a huge wide funnel, NOT a camera-iris gape. The small cinched opening slides FORWARD over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Outer stone-gray snout flesh bunches around the root. Then continue without a cut: the outer rim STAYS CINCHED at the base. Motion is NOT a human head bob and NOT a jaw chew and NOT a big maw pumping. Inner wall PERISTALSIS only: concentric rings contract root-to-tip-to-root about 8 to 12cm while the outer hypotoco rim does not break the seal. While it milks her, her mouth may open and her tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling. Thick ejaculation pumps into the gullet. Overflow drips from the cinched rim. Do not shrink the beast. Do not grow a human face. Keep the snout puckered and small on the shaft",
         "extra_loras": [
           "mystic"
         ],
@@ -381,7 +381,7 @@
         "loco": "planted"
       },
       "rei_beast_invite": {
-        "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei lies on her back on the springy meat floor, smiling with mouth closed, tongue inside, knees open thighs apart, 24cm erect pointing up, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The beast stays on all fours in a lizard crawl over her from the right, body twice Rei's height. The PUCKERED hypotoco-like snout turns DOWN onto Rei's groin: circular oral disc NARROWED and cinched like pursed fleshy lips, NOT a huge wide funnel. The small cinched opening slides DOWN over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Then continue without a cut: outer rim STAYS CINCHED at the base. NOT a head bob. Inner PERISTALSIS only, 8 to 12cm along the shaft. While it milks her, tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling, still on her back, still smiling through it. Thick ejaculation into the gullet. Do not shrink the beast. Do not grow a human face. Keep the snout puckered. Rei stays on her back with knees open",
+        "action": "Only Rei and this one beast. 16:9 side view. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei lies on her back on the stone hall floor, smiling with mouth closed, tongue inside, knees open thighs apart, 24cm erect pointing up, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The circular maw stays on the stone column and dead fireplace beside her, body mass twice Rei's height. The PUCKERED hypotoco-like snout turns DOWN onto Rei's groin: circular oral disc NARROWED and cinched like pursed fleshy lips, NOT a huge wide funnel. The small cinched opening slides DOWN over the 24cm penis until the puckered rim SEALS at the base. The entire shaft disappears inside. Then continue without a cut: outer rim STAYS CINCHED at the base. NOT a head bob. Inner PERISTALSIS only, 8 to 12cm along the shaft. While it milks her, tongue may come out from the pleasure. At second 5 she climaxes: Rei orgasm face: tongue out, drool, runny nose, trembling, still on her back, still smiling through it. Thick ejaculation into the gullet. Do not shrink the beast. Do not grow a human face. Keep the snout puckered. Rei stays on her back with knees open",
         "extra_loras": [
           "mystic"
         ],
@@ -420,16 +420,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "The giant puckered-snout beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei's mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right, 24cm bouncing after ejaculation, no extra people",
+      "action": "The column maw completely fades out of frame, no walk-away, no residual snout. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei's mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right through the vaulted stone corridor, 24cm bouncing after ejaculation, no extra people",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -449,7 +449,7 @@
       "loco": "run",
       "rei_slot": "beast",
       "rei_beast_accept": {
-        "action": "The giant puckered-snout beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei's mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right, 24cm bouncing after ejaculation, no extra people",
+        "action": "The column maw completely fades out of frame, no walk-away, no residual snout. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei's mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right through the vaulted stone corridor, 24cm bouncing after ejaculation, no extra people",
         "voices": [
           {
             "who": "rei",
@@ -464,7 +464,7 @@
         "loco": "run"
       },
       "rei_beast_invite": {
-        "action": "The giant puckered-snout beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei pushes up off her back onto her feet. Mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right, 24cm bouncing after ejaculation, no extra people",
+        "action": "The column maw completely fades out of frame, no walk-away, no residual snout. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei pushes up off her back onto her feet. Mouth closes, tongue retracts fully inside, not an orgasm face anymore. Then she sprints left to right through the vaulted stone corridor, 24cm bouncing after ejaculation, no extra people",
         "voices": [
           {
             "who": "rei",
@@ -479,7 +479,7 @@
         "loco": "run"
       },
       "rei_beast_evade": {
-        "action": "The giant puckered-snout beast lunges once and misses. Rei ducks under the limb-fins and the beast completely fades out of frame, no walk-away, no residual fin or tooth. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei untouched and not yet climaxed, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, then she sprints left to right, no extra people",
+        "action": "The column maw lunges once and misses. Rei ducks aside and the maw completely fades out of frame, no walk-away, no residual snout. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei untouched and not yet climaxed, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, then she sprints left to right, no extra people",
         "voices": [
           {
             "who": "rei",
@@ -507,9 +507,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
       "voices": [
         {
           "who": "rei",
@@ -520,7 +520,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -540,12 +540,12 @@
       "loco": "planted",
       "rei_slot": "mast",
       "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
         "id": "07-mast-stand",
         "loco": "planted"
       },
       "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the elastic living floor that does not sink, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, meat ceiling above, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
         "id": "07-mast-back",
         "loco": "planted"
       }
@@ -563,16 +563,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, facing a western-toilet SHAPE grown from the living meat wall: bowl and seat are wet pulsating flesh, organic viscera formed like a toilet, NOT ceramic, NOT porcelain, NOT a bathtub, clean living flesh only, skin unstained, no other people, brief pause",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, facing a carnivorous-plant seat grown in the castle hall: green outer rind, wet inner bowl, nectar-colored liquid in the bowl, plant flesh formed like a western seat, NOT ceramic, NOT porcelain, NOT a bathtub, skin unstained, no other people, brief pause",
       "voices": [
         {
           "who": "rei",
           "line": "んっ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -605,9 +605,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on a western-toilet SHAPE grown from living meat, bowl and seat are wet pulsating flesh, NOT ceramic, both hands sliding the 24cm penis base-to-head until thick ejaculation arcs, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until climax then Rei orgasm face: tongue out, drool, runny nose, trembling, only Rei in frame, then the toilet shape fades",
+      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on a carnivorous-plant seat, green outer rind, wet inner bowl, nectar-colored liquid, NOT ceramic, both hands sliding the 24cm penis base-to-head until thick ejaculation arcs, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until climax then Rei orgasm face: tongue out, drool, runny nose, trembling, only Rei in frame, then the toilet shape fades",
       "voices": [
         {
           "who": "rei",
@@ -618,7 +618,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -638,7 +638,7 @@
       "loco": "planted",
       "rei_slot": "toilet",
       "rei_toilet_ta": {
-        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on a western-toilet SHAPE grown from living meat, bowl and seat are wet pulsating flesh, NOT ceramic, both hands sliding the 24cm penis base-to-head until thick ejaculation arcs, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until climax then Rei orgasm face: tongue out, drool, runny nose, trembling, only Rei in frame, then the toilet shape fades",
+        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on a carnivorous-plant seat, green outer rind, wet inner bowl, nectar-colored liquid, NOT ceramic, both hands sliding the 24cm penis base-to-head until thick ejaculation arcs, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until climax then Rei orgasm face: tongue out, drool, runny nose, trembling, only Rei in frame, then the toilet shape fades",
         "voices": [
           {
             "who": "rei",
@@ -657,7 +657,7 @@
         "loco": "planted"
       },
       "rei_toilet_tb": {
-        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on the same living-flesh western-toilet SHAPE, NOT ceramic, a visible urine stream leaving the erect 24cm penis into the meat bowl, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, only Rei in frame, then the toilet shape fades",
+        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei SITTING STILL on the same carnivorous-plant seat, NOT ceramic, a visible urine stream leaving the erect 24cm penis into the nectar-colored bowl, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, only Rei in frame, then the plant seat fades",
         "voices": [
           {
             "who": "rei",
@@ -676,7 +676,7 @@
         "loco": "planted"
       },
       "rei_toilet_tc": {
-        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. From the living-flesh toilet shape, wet meat tentacles grow and the circular puckered mouth at a tentacle tip slides onto the 24cm penis until the rim SEALS at the base. Inner tentacle-throat PERISTALSIS milks root-to-tip. NOT a human mouth. Clean living flesh. While it milks her, tongue may come out. Then Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tentacle. Only Rei plus the tentacles. Then they fade",
+        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. From the carnivorous-plant seat, a wet tentacle grows and the circular puckered mouth at the tentacle tip slides onto the 24cm penis until the rim SEALS at the base. Inner tentacle-throat PERISTALSIS milks root-to-tip. NOT a human mouth. Green rind and nectar-colored liquid only. While it milks her, tongue may come out. Then Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tentacle. Only Rei plus the tentacles. Then they fade",
         "extra_loras": [
           "mystic"
         ],
@@ -711,16 +711,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through viscera corridor, long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, skin clean, no brown stains",
+      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through the vaulted stone corridor, long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, skin clean",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -752,9 +752,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
       "voices": [
         {
           "who": "rei",
@@ -765,7 +765,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -785,12 +785,12 @@
       "loco": "planted",
       "rei_slot": "mast",
       "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
         "id": "11-mast-stand",
         "loco": "planted"
       },
       "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the elastic living floor that does not sink, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, meat ceiling above, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
         "id": "11-mast-back",
         "loco": "planted"
       }
@@ -809,16 +809,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view encounter, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Moth-girl emerging from the meat wall on the right, same height as Rei, attractive flushed human female face, brown hair, curled ram-like insect antennae (antennae, not horns), nude beautiful human female torso, lower body stays insect: segmented moth abdomen, many thin insect legs, cream moth wings with purple-gray eyespots, tapering stinger-like TAIL from the REAR with a wet circular second mouth at the TIP, Meat-wall corridor only, only Rei plus this one moth-girl, both still, brief pause",
+      "action": "side view encounter, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Spider-woman standing in the castle hall on the right, same height as Rei, attractive flushed human female face, brown hair, nude beautiful human female torso, lower body stays arachnid: segmented spider abdomen, many thin spider legs, tapering tail from the REAR with a wet circular second mouth at the TIP, ruined gothic castle hall only, only Rei plus this one spider-woman, both still, brief pause",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -855,9 +855,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "Only Rei and this one moth-girl. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, NOT bouncing in place, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The moth-girl STANDING STILL. The orifice at the TIP of the moth TAIL (coming from the REAR of the insect abdomen) is a SECOND MOUTH, not a human vulva, not a maggot sticking out of her groin, not between human thighs. The segmented insect abdomen curls, the tail hooks under toward Rei's groin. The wet circular opening at the tail tip cinches and slides onto the 24cm shaft until the tail-mouth SEALS at the base. Inner tail-throat PERISTALSIS: rings of insect flesh contract root-to-tip along the buried shaft. Human upper body holds Rei. Wings spread. Extra insect legs brace. No human pelvis. No human thighs. While it milks her, tongue may come out. Then climax: Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tail-throat, overflow at the sealed tail-rim. 24cm stays erect after",
+      "action": "Only Rei and this one spider-woman. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, NOT bouncing in place, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The spider-woman STANDING STILL. The orifice at the TIP of the tail (coming from the REAR of the spider abdomen) is a SECOND MOUTH, not a human vulva, not between human thighs. The segmented spider abdomen curls, the tail hooks under toward Rei's groin. The wet circular opening at the tail tip cinches and slides onto the 24cm shaft until the tail-mouth SEALS at the base. Inner tail-throat PERISTALSIS: rings of flesh contract root-to-tip along the buried shaft. Human upper body holds Rei. Extra spider legs brace on the stone floor. No human pelvis. No human thighs. While it milks her, tongue may come out. Then climax: Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tail-throat, overflow at the sealed tail-rim. 24cm stays erect after",
       "voices": [
         {
           "who": "rei",
@@ -868,7 +868,7 @@
           "line": "いく"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -891,7 +891,7 @@
       ],
       "rei_slot": "moth",
       "rei_moth_tail": {
-        "action": "Only Rei and this one moth-girl. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, NOT bouncing in place, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The moth-girl STANDING STILL. The orifice at the TIP of the moth TAIL (coming from the REAR of the insect abdomen) is a SECOND MOUTH, not a human vulva, not a maggot sticking out of her groin, not between human thighs. The segmented insect abdomen curls, the tail hooks under toward Rei's groin. The wet circular opening at the tail tip cinches and slides onto the 24cm shaft until the tail-mouth SEALS at the base. Inner tail-throat PERISTALSIS: rings of insect flesh contract root-to-tip along the buried shaft. Human upper body holds Rei. Wings spread. Extra insect legs brace. No human pelvis. No human thighs. While it milks her, tongue may come out. Then climax: Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tail-throat, overflow at the sealed tail-rim. 24cm stays erect after",
+        "action": "Only Rei and this one spider-woman. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, NOT bouncing in place, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The spider-woman STANDING STILL. The orifice at the TIP of the tail (coming from the REAR of the spider abdomen) is a SECOND MOUTH, not a human vulva, not between human thighs. The segmented spider abdomen curls, the tail hooks under toward Rei's groin. The wet circular opening at the tail tip cinches and slides onto the 24cm shaft until the tail-mouth SEALS at the base. Inner tail-throat PERISTALSIS: rings of flesh contract root-to-tip along the buried shaft. Human upper body holds Rei. Extra spider legs brace on the stone floor. No human pelvis. No human thighs. While it milks her, tongue may come out. Then climax: Rei orgasm face: tongue out, drool, runny nose, trembling, thick ejaculation into the tail-throat, overflow at the sealed tail-rim. 24cm stays erect after",
         "extra_loras": [
           "mystic"
         ],
@@ -917,7 +917,7 @@
         "loco": "planted"
       },
       "rei_moth_mouth": {
-        "action": "Only Rei and this one moth-girl. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Moth-girl's HUMAN upper face leans in. Antennae (not horns) and moth wings stay in frame. Insect abdomen and extra legs remain visible behind her. She does not grow human thighs. Her human lips part and slide down the 24cm shaft until they reach the base. Tongue on the underside. The moth tail hangs unused. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last seconds, then Rei orgasm face: tongue out, drool, runny nose, trembling",
+        "action": "Only Rei and this one spider-woman. CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Spider-woman's HUMAN upper face leans in. Spider abdomen and extra legs remain visible behind her. She does not grow human thighs. Her human lips part and slide down the 24cm shaft until they reach the base. Tongue on the underside. The spider tail hangs unused. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last seconds, then Rei orgasm face: tongue out, drool, runny nose, trembling",
         "extra_loras": [
           "blowjob"
         ],
@@ -956,16 +956,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "The moth-girl completely fades out of frame, no walk-away, no residual wing, antenna, or tail. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she sprints left to right through the meat corridor, 24cm bouncing, no extra people",
+      "action": "The spider-woman completely fades out of frame, no walk-away, no residual spider leg or tail. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she sprints left to right through the vaulted stone corridor, 24cm bouncing, no extra people",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -997,9 +997,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
       "voices": [
         {
           "who": "rei",
@@ -1010,7 +1010,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1030,12 +1030,12 @@
       "loco": "planted",
       "rei_slot": "mast",
       "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the springy meat floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
         "id": "15-mast-stand",
         "loco": "planted"
       },
       "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the elastic living floor that does not sink, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, meat ceiling above, no enemy in frame",
+        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
         "id": "15-mast-back",
         "loco": "planted"
       }
@@ -1054,16 +1054,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Succubus dropping in from the right of the meat corridor, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, obsessed expression, reaching for Rei, only Rei plus this one succubus, both still, brief pause",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Succubus dropping in from the right of the castle hall, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, obsessed expression, reaching for Rei, only Rei plus this one succubus, both still, brief pause",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1097,9 +1097,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the meat wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+      "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
       "voices": [
         {
           "who": "rei",
@@ -1110,7 +1110,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1130,7 +1130,7 @@
       "loco": "planted",
       "rei_slot": "attack",
       "rei_attack_rei": {
-        "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the meat wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+        "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
         "id": "17-from-rei",
         "cast": [
           "rei",
@@ -1162,7 +1162,7 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
       "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Both tongues visible inside an open-mouth kiss, saliva string, succubus red eyes half-lidded, horns and choker in frame, torn wings behind, fully nude, only these two",
       "voices": [
@@ -1171,7 +1171,7 @@
           "line": "んっ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1214,7 +1214,7 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
       "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Succubus kneels in side view. Her lips part over the head of the 24cm penis, slide to the base, hold, then pull back to the head. Repeat. Tongue flat on the underside. Spit strings from her lower lip. Red eyes look along the shaft. Wings folded. Horns, choker, hand claws stay. Fully nude, hairless. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face on Rei until the last seconds. Do not cut the clip before several full base-to-head passes. Only these two",
       "voices": [
@@ -1227,7 +1227,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1276,7 +1276,7 @@
         "loco": "planted"
       },
       "rei_oral_rei": {
-        "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Rei kneels or bends. Tongue travels up the succubus hairless slit from bottom to top, then circles the clitoris. Succubus stands or sits on the meat floor, wings open, thighs apart, mouth falling open, horns and claws in frame, fully nude. Only these two",
+        "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Rei kneels or bends. Tongue travels up the succubus hairless slit from bottom to top, then circles the clitoris. Succubus stands or sits on the stone hall floor, wings open, thighs apart, mouth falling open, horns and claws in frame, fully nude. Only these two",
         "extra_loras": [],
         "voices": [
           {
@@ -1314,9 +1314,9 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the meat floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+      "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the stone hall floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
       "voices": [
         {
           "who": "rei",
@@ -1327,7 +1327,7 @@
           "line": "んっ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1348,7 +1348,7 @@
       "rei_slot": "pose",
       "rei_pose_fours": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the meat floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the stone hall floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1396,7 +1396,7 @@
       ],
       "rei_pose_wall": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED, background does not scroll. Succubus STANDING STILL facing right, PALMS FLAT on the living meat wall, fingers spread, knees slightly bent, wings up, clawed feet planted on the springy floor, NOT walking, NOT striding, NOT tiptoe-walking. Rei STANDING STILL behind her toward the left, feet planted, hips against her hips. The 24cm penis ENTERS her hairless slit from behind and the entire shaft slides in until the base meets her buttocks and HOLDS. The penis is INSIDE the vagina. The shaft is surrounded by the slit. The tip is not on the far side of a thigh. No piston yet. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED, background does not scroll. Succubus STANDING STILL facing right, PALMS FLAT on the stone wall, fingers spread, knees slightly bent, wings up, clawed feet planted on the stone floor, NOT walking, NOT striding, NOT tiptoe-walking. Rei STANDING STILL behind her toward the left, feet planted, hips against her hips. The 24cm penis ENTERS her hairless slit from behind and the entire shaft slides in until the base meets her buttocks and HOLDS. The penis is INSIDE the vagina. The shaft is surrounded by the slit. The tip is not on the far side of a thigh. No piston yet. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1444,7 +1444,7 @@
       ],
       "rei_pose_straddle": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. Rei lies on her back on the springy meat floor, not walking. The succubus straddles her, sinks until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last drops",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. Rei lies on her back on the stone hall floor, not walking. The succubus straddles her, sinks until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last drops",
           "voices": [
             {
               "who": "rei",
@@ -1492,7 +1492,7 @@
       ],
       "rei_pose_supine": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. succubus on her back on the springy meat floor, knees open, wings spread under her, not walking, Rei kneels still between her legs, places the 24cm head at the hairless slit then pushes until the entire shaft is buried to the base and STOPS, insertion locked, no thrusting yet, claws on Rei's shoulders, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. succubus on her back on the stone hall floor, knees open, wings spread under her, not walking, Rei kneels still between her legs, places the 24cm head at the hairless slit then pushes until the entire shaft is buried to the base and STOPS, insertion locked, no thrusting yet, claws on Rei's shoulders, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1553,7 +1553,7 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
       "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Rei orgasm face: tongue out, drool, runny nose, trembling, visible creampie overflow around the 24cm where it is still buried, succubus climax face, 24cm stays buried then stays erect after pullout, wings horns choker claws still on the nude succubus, no extra people",
       "voices": [
@@ -1566,7 +1566,7 @@
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1598,16 +1598,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she starts running right through the meat corridor",
+      "action": "succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she starts running right through the vaulted stone corridor",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1639,16 +1639,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right toward a bright tear of light at the RIGHT end of the meat corridor, erect 24cm bouncing, no enemy",
+      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right toward a bright tear of light at the RIGHT end of the vaulted stone corridor, erect 24cm bouncing, no enemy",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",
@@ -1680,16 +1680,16 @@
       ],
       "face_visible": false,
       "props": [],
-      "place": "living meat-wall viscera corridor, springy biological floor that does not sink, bare flesh walls only",
+      "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling exit, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, a bright tear of light at the right end of the meat corridor, Rei running into the light, leaving the living cave, the aphrodisiac haze breaking, she still has the 24cm erect penis, she does not wash, Outside may stop on dark rock. Do not erase the penis",
+      "action": "side-scrolling exit, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, a bright tear of light at the right end of the vaulted stone corridor, Rei running into the light, leaving the ruined castle, she still has the 24cm erect penis, she does not wash. Do not erase the penis",
       "voices": [
         {
           "who": "rei",
           "line": "はあ"
         }
       ],
-      "sfx": "Wet meat-wall pulse, footsteps on springy viscera, heavy breathing",
+      "sfx": "Stone hall ambience, footsteps on stone, heavy breathing",
       "music": "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip.",
       "hud": {
         "mission": "異形の体内から脱出",

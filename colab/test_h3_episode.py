@@ -2681,7 +2681,7 @@ def test_rei_escape_default_validates_complete_under_max():
     maw = next(b for b in ep["beats"] if b["id"] == "05-enemy1-maw")
     assert extra_lora_entries(maw) == [("mystic", 1.0)]
     assert "lies on her back" not in maw["action"]
-    assert "lizard crawl" in maw["action"]
+    assert "stone column" in maw["action"]
     tail = next(b for b in ep["beats"] if b["id"] == "13-tail")
     assert extra_lora_entries(tail) == [("mystic", 1.0)]
     for _, prompt, perr in beat_prompts(ep):
@@ -2791,7 +2791,7 @@ def test_rei_escape_beast_accept_invite_evade():
     accept = prepare_episode(raw, rei_beast_override="受け入れる")
     maw = next(b for b in accept["beats"] if b["id"] == "05-enemy1-maw")
     assert extra_lora_entries(maw) == [("mystic", 1.0)]
-    assert "lizard crawl" in maw["action"]
+    assert "stone column" in maw["action"]
     assert "lies on her back" not in maw["action"]
     invite = prepare_episode(raw, rei_beast_override="誘う")
     supine = next(b for b in invite["beats"] if b["id"] == "05-enemy1-invite")
@@ -2878,9 +2878,10 @@ def test_rei_escape_pose_never_adds_kiss_or_oral_back():
 
 
 def test_rei_escape_clip_failures_are_rewritten():
-    """Fixes from the first speed run: nude, rest face, hypotoco maw, planted sex, meat toilet, I2V fade."""
+    """Fixes from the first speed run, on the ruined-castle set: nude, rest face, hypotoco maw, planted sex, I2V fade."""
     raw = load_episode(REI_ESCAPE_DIR / "episode.json")
-    assert raw["world"].get("bare_set") is True
+    assert raw["world"].get("bare_set") is False
+    assert "castle" in raw["world"]["lock"].lower()
     assert "FULLY NUDE" in raw["cast"]["rei"]["lock"]
     assert "tongue fully inside" in raw["cast"]["rei"]["lock"]
     assert "garment" not in raw["cast"]["rei"]["lock"]
@@ -2917,7 +2918,8 @@ def test_rei_escape_clip_failures_are_rewritten():
     prompt = build_beat_prompt(chained, wall)
     assert PLANTED_CLAUSE in prompt
     assert "Brisk walking stride" not in prompt
-    assert "nothing man-made attached" in prompt
+    assert "nothing man-made attached" not in prompt
+    assert "ruined gothic castle" in prompt.lower()
     tc = next(b for b in chained["beats"] if b["id"] == "09-tc")
     assert "tentacle" in tc["action"].lower()
     assert extra_lora_entries(tc) == [("mystic", 1.0)]
