@@ -1731,7 +1731,13 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "from above" not in ride_sit["action"].lower()
     assert "squats from above" not in ride_sit["action"].lower()
     assert "from directly above" not in ride_sit["camera"].lower()
+    assert "raises her hips" in ride_sit["action"].lower()
+    assert "slides both feet right" in ride_sit["action"].lower()
+    assert "same floor line as the upright shaft" in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
+    assert "both feet slide along the linoleum" in ride_prompt.lower()
+    assert "feet do not take a step" not in ride_prompt.lower()
+    assert "feet do not travel" not in ride_prompt.lower()
     assert "profile side-on" in ride_prompt.lower()
     assert "camera distance stays fixed" in ride_prompt.lower()
     assert "hips lower in that side view" in ride_prompt.lower()
@@ -2084,6 +2090,8 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     assert "lays kana down onto her back" in kana_sit["action"].lower()
     assert "one shaft" in kana_sit["action"].lower()
     assert "three separate lowers" in kana_sit["action"].lower()
+    assert "raises her hips" in kana_sit["action"].lower()
+    assert "slides both feet right" in kana_sit["action"].lower()
     _assert_insertion_direction(kana_sit["action"], build_beat_prompt(mixed, kana_sit))
     kana_jupo = next(b for b in mixed["beats"] if b["id"] == "09-join")
     assert extra_keys(kana_jupo) == ["blowjob", "mystic"]
@@ -2342,6 +2350,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "feet pointing left" in ride_act
     assert "gin's head is on the left" in ride_act
     assert "holds aya's shaft vertically straight up" in ride_act
+    assert "slides both feet" not in ride_act
     assert "both feet stay in frame" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
@@ -2440,6 +2449,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "press flush" in meet["action"].lower()
     assert "squash and change shape" in meet["action"].lower()
     assert "knead them from behind" in meet["action"].lower()
+    assert "snaps her body against" in meet["action"].lower()
+    assert "travels into aya's anus" in meet["action"].lower()
+    assert "aya stops and tsuno stops" in meet["action"].lower()
+    assert "surprise and pleasure" in meet["action"].lower()
+    assert meet["voices"][0]["line"] == "んおおおおぉー"
     assert "tsuno's breasts pressed into aya's back" in meet["camera"].lower()
     assert "do not turn to face each other" in meet["action"].lower()
     assert "pushes aya forward onto the peeling wall" in meet["action"].lower()
@@ -2466,6 +2480,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "lunges" not in invite_meet["action"].lower()
     assert "happy accepting smile" in invite_meet["action"].lower()
     assert "knead them from behind" in invite_meet["action"].lower()
+    assert "travels into aya's anus" in invite_meet["action"].lower()
+    assert "aya stops and tsuno stops" in invite_meet["action"].lower()
+    assert invite_meet["voices"][0]["line"] == "んおおおおぉー"
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
 
@@ -2473,7 +2490,13 @@ def test_hospital_gin_tsuno_optional_events():
     anal_meet = next(b for b in anal["beats"] if b["id"] == "04-tsuno-meet")
     anal_in = next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")
     anal_peak = next(b for b in anal["beats"] if b["id"] == "04-tsuno-peak")
-    assert "grab aya's breasts" in anal_meet["action"].lower()
+    assert "cup aya's breasts" in anal_meet["action"].lower()
+    assert "snaps her body against" in anal_meet["action"].lower()
+    assert "travels into aya's anus" in anal_meet["action"].lower()
+    assert "aya stops and tsuno stops" in anal_meet["action"].lower()
+    assert "surprise and pleasure" in anal_meet["action"].lower()
+    assert "half-step to the side" not in anal_meet["action"].lower()
+    assert anal_meet["voices"][0]["line"] == "んおおおおぉー"
     assert "lunges" not in anal_meet["action"].lower()
     assert "happy accepting smile" in anal_meet["action"].lower()
     assert "knead them from behind" in anal_meet["action"].lower()
@@ -2494,7 +2517,12 @@ def test_hospital_gin_tsuno_optional_events():
     assert "glans on the anus" in nel_in["action"].lower()
     assert "both forearms go under" in nel_in["action"].lower()
     assert "walks right" not in nel_meet["action"].lower()
-    assert "snaps" not in nel_meet["action"].lower()
+    assert "snaps in behind" not in nel_meet["action"].lower()
+    assert "snaps her body against" in nel_meet["action"].lower()
+    assert "travels into aya's anus" in nel_meet["action"].lower()
+    assert "aya stops and tsuno stops" in nel_meet["action"].lower()
+    assert "surprise and pleasure" in nel_meet["action"].lower()
+    assert nel_meet["voices"][0]["line"] == "んおおおおぉー"
     assert "lunges" not in nel_meet["action"].lower()
     assert "happy accepting smile" in nel_meet["action"].lower()
     assert "wraps aya from behind" in nel_meet["action"].lower()
@@ -2817,6 +2845,12 @@ def test_hospital_clip_failures_are_rewritten():
     assert "thighs form an m" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
     assert "do not piston yet" in ride_in["action"].lower()
+    assert "slides both feet right" in ride_in["action"].lower()
+    assert "raises her hips" in ride_in["action"].lower()
+    rei_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "06-doggy-ride")
+    shino_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "12-exit-ride")
+    assert "slides both feet right" in rei_ride["action"].lower()
+    assert "slides both feet right" in shino_ride["action"].lower()
     _assert_insertion_direction(ride_in["action"], ride_prompt)
     assert ride_in.get("loco") == "planted"
     runtime_src = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")

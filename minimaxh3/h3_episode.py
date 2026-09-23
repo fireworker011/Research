@@ -412,6 +412,18 @@ NELSON_PLANTED_CLAUSE = (
     "A hip thrust is in place. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+# A seated rider lines her feet up with the shaft. Negated step/travel clauses pin the feet beside it.
+SLIDE_FEET_RE = re.compile(r"slides both feet", re.I)
+SLIDE_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Both feet slide along the linoleum on this same floor spot until they line up with the upright shaft, then the soles stay on that line. "
+    "The pair stays on this same floor spot."
+)
+SLIDE_PLANTED_CLAUSE = (
+    "Both feet slide along the linoleum on this same floor spot until they line up with the upright shaft, then the soles stay on that line. "
+    "Hips lower on this mark. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 HOSPITAL_FRAME_HOLD = (
     "The camera holds the opening wide full-body frame for the whole take. "
     "Head, groin, legs, and both feet stay inside the frame together, the same size from the first frame to the last."
@@ -2229,6 +2241,8 @@ def scrub_planted_action(action: str) -> str:
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
         if NELSON_HOLD_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
+        elif SLIDE_FEET_RE.search(out):
+            out = out.rstrip(".") + ". The pair stays on this same floor spot."
         else:
             out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
     return re.sub(r" {2,}", " ", out).strip()
@@ -3467,6 +3481,9 @@ def build_beat_prompt(
         if NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
             desc.append(NELSON_PLANTED_CLAUSE)
+        elif SLIDE_FEET_RE.search(action_txt):
+            desc.append(SLIDE_PACE_CLAUSE)
+            desc.append(SLIDE_PLANTED_CLAUSE)
         else:
             desc.append(PLANTED_PACE_CLAUSE)
             desc.append(PLANTED_CLAUSE)
