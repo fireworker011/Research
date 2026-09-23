@@ -2382,7 +2382,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "snaps" not in nel_meet["action"].lower()
     assert "lunges" not in nel_meet["action"].lower()
     assert "happy accepting smile" in nel_meet["action"].lower()
-    assert "embraces aya from behind" in nel_meet["action"].lower()
+    assert "wraps aya from behind" in nel_meet["action"].lower()
     assert "snappy real-time" in nel_meet["action"].lower()
     assert "press flush" in nel_meet["action"].lower()
     assert "knead them from behind" in nel_meet["action"].lower()
