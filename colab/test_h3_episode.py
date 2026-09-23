@@ -1116,6 +1116,21 @@ def _assert_no_pose_names(*texts: str) -> None:
 def test_hospital_exit_adult_accept_is_survival_complete():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     assert validate_episode(raw, root=HOSPITAL_DIR) == []
+
+    def _voice_lines(node, acc):
+        if isinstance(node, dict):
+            for voice in node.get("voices") or []:
+                if isinstance(voice, dict):
+                    acc.append(str(voice.get("line") or ""))
+            for value in node.values():
+                _voice_lines(value, acc)
+        elif isinstance(node, list):
+            for value in node:
+                _voice_lines(value, acc)
+
+    spoken = []
+    _voice_lines(raw["beats"], spoken)
+    assert not any("ちゅ" in line for line in spoken)
     assert raw["slug"] == "hospital-exit-adult"
     assert episode_lane(raw) == "erotic"
     assert episode_checkpoint(raw) == "eros-max"
@@ -1291,6 +1306,9 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "erect penis up" in kana_meet["action"].lower()
     assert "feet stay planted" not in kana_meet["action"].lower()
     assert "only aya's feet walk" in kana_meet["action"].lower()
+    assert "one short step" in kana_meet["action"].lower()
+    assert "the wall" not in kana_meet["action"].lower()
+    assert "rail" not in kana_meet["action"].lower()
     assert not re.search(r"\brei\b", kana_meet["action"], re.I)
     assert kana_meet.get("camera_pack") == "none"
     assert "adults move left or right" not in kana_meet["camera"].lower()
@@ -1783,6 +1801,12 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "french kiss" not in seven["action"].lower()
     assert "face moves forward" in seven["action"].lower()
     assert "short gap from the erect 20cm" in seven["action"].lower()
+    assert "the wall" not in seven["action"].lower()
+    exit_raw = next(b for b in raw["beats"] if b["id"] == "12-exit")
+    assert "shino finishes inside" in exit_raw["on_invite"]["action"].lower()
+    assert "shino finishes inside" in exit_raw["on_fight_lose"]["action"].lower()
+    exit_l = next(b for b in prepare_episode(raw, story_override="戦って負ける")["beats"] if b["id"] == "12-exit")
+    assert "shino finishes inside" in exit_l["action"].lower()
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
@@ -2260,6 +2284,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert set(spot.get("cast") or []) == {"aya", "gin"}
     kana_spot = next(b for b in taken["beats"] if b["id"] == "07-kana-spot")
     assert "grimy brown hospital dirt" in kana_spot["action"].lower()
+    assert "stroking the erect 20cm" in kana_spot["action"].lower()
+    assert "white goo" in kana_spot["action"].lower()
+    assert "enters from the right edge" in kana_spot["action"].lower()
+    assert "wall" not in kana_spot["action"].lower()
     assert "Look that stays for this whole shot" in build_beat_prompt(taken, kana_spot)
     assert "24cm" not in walk_prompt
     kiss = next(b for b in taken["beats"] if b["id"] == "03-kiss")

@@ -2223,7 +2223,7 @@ def scrub_planted_action(action: str) -> str:
 
 _SPOT_POSE = {
     "rei": "Rei WALKS IN from the RIGHT edge and STOPS ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
-    "kana": "Kana WALKS IN from the RIGHT edge and STOPS mid-corridor facing Aya, feet planted, full body including feet.",
+    "kana": "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm, erect penis up, and STOPS mid-corridor facing Aya, full body including feet. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her.",
     "shino": "Shino WALKS IN from the RIGHT edge and STOPS, stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
     "gin": "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
     "tsuno": "Tsuno WALKS IN from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet.",
@@ -2260,6 +2260,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 poses.append(_SPOT_POSE.get(cid) or f"{names[-1]} WALKS IN from the frame edge and STOPS with Aya, full body including feet.")
             who = " and ".join(names)
             spot_id = f"{bid}-spot"
+            sfx = "Quiet corridor, fluorescent buzz, one footstep, HVAC"
             if added == ["tsuno"]:
                 action = (
                     "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
@@ -2296,6 +2297,23 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                     "Aya toward the RIGHT, facing RIGHT, her stride slowing to a stop. "
                     "The right edge stays a dark corridor continuing on."
                 )
+            elif added == ["kana"]:
+                action = (
+                    "Aya is already in the corridor, fully nude, grimy brown hospital dirt on her skin, facing the RIGHT. "
+                    "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm with both hands, a continuous wet pumping, erect penis up, "
+                    "and STOPS mid-corridor facing Aya. "
+                    "Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her. "
+                    "Kana stays on that mid-corridor spot, still stroking. "
+                    "Aya's feet walk one short step and she STOPS in front of Kana, face to face, a short step apart. "
+                    "Last frame: Aya in front of Kana, Kana still stroking, WHITE goo on Kana, both full body including feet. "
+                    "Motion starts at frame one. Brisk real-time."
+                )
+                camera = (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    "Kana enters from the RIGHT edge and stops mid-corridor facing Aya, stroking the erect 20cm. "
+                    "Aya stops in front of Kana."
+                )
+                sfx = "Quiet corridor, fluorescent buzz, a wet pumping hand, dripping goo, HVAC"
             else:
                 action = (
                     "Aya is already in the corridor, fully nude, grimy brown hospital dirt on her skin. "
@@ -2319,7 +2337,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 "camera": camera,
                 "action": action,
                 "voices": [{"who": "aya", "line": "ん"}],
-                "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+                "sfx": sfx,
                 "music": beat.get("music") or "Bass holds",
                 "hud": dict(beat.get("hud") or {}),
                 "loco": "walk",
