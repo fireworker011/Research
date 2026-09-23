@@ -424,6 +424,18 @@ SLIDE_PLANTED_CLAUSE = (
     "Hips lower on this mark. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+# The adult without the shaft lies back before the shaft goes in. Negated travel clauses get drawn as steps.
+SUPINE_BEFORE_RE = re.compile(r"before the shaft enters", re.I)
+SUPINE_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The adult without the shaft lies back first, the back of the head on the linoleum, then the hips lower. "
+    "The pair stays on this same floor spot."
+)
+SUPINE_PLANTED_CLAUSE = (
+    "The back of the head stays on the linoleum through the insertion. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 HOSPITAL_FRAME_HOLD = (
     "The camera holds the opening wide full-body frame for the whole take. "
     "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
@@ -2318,7 +2330,7 @@ def scrub_planted_action(action: str) -> str:
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
         if NELSON_HOLD_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
-        elif SLIDE_FEET_RE.search(out):
+        elif SLIDE_FEET_RE.search(out) or SUPINE_BEFORE_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
         else:
             out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
@@ -3625,6 +3637,9 @@ def build_beat_prompt(
         elif SLIDE_FEET_RE.search(action_txt):
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SLIDE_PLANTED_CLAUSE)
+        elif SUPINE_BEFORE_RE.search(action_txt):
+            desc.append(SUPINE_PACE_CLAUSE)
+            desc.append(SUPINE_PLANTED_CLAUSE)
         else:
             desc.append(PLANTED_PACE_CLAUSE)
             desc.append(PLANTED_CLAUSE)
