@@ -220,15 +220,22 @@ LORA_FILES = {
     "mystic": "MysticXXX_MMH3-V4.safetensors",
     # Story-pack oral act (h3-lora-studio catalog blowjob-h3).
     "blowjob": "MM-H3_Blowjob_v3.safetensors",
+    # H3 futanari growth (Mistermango23 v5.1). Trained words: penis growth.
+    "futatf": "MiniMax-H3_Futa_Transformations_LoRA_V5.1.safetensors",
+    # Experimental H3 kiss. Author: I2V is weak; keep strength at 0.5. No trigger word.
+    "kiss": "cxy_kiss_lora_h3_v01_step1750.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
     "mystic": "https://huggingface.co/lynaNSFW/mysticxxx_MM_H3/resolve/main/MysticXXX_MMH3-V4.safetensors",
     "blowjob": "https://civitai.com/api/download/models/3285598?fileId=3169863",
+    "futatf": "https://civitai.com/api/download/models/3212000?fileId=3093723",
+    "kiss": "https://civitai.com/api/download/models/3208556?fileId=3090649",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 LORA_STRENGTHS = {
     "blowjob": 0.8,
+    "kiss": 0.5,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 COMBAT_ROUTE_KEY = "combat_on"
