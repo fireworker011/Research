@@ -1730,14 +1730,18 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "from above" not in ride_sit["action"].lower()
     assert "squats from above" not in ride_sit["action"].lower()
     assert "from directly above" not in ride_sit["camera"].lower()
-    assert "before the shaft enters, aya lies back" in ride_sit["action"].lower()
+    assert "before the shaft enters, miki lies on her back" in ride_sit["action"].lower()
     assert "the back of her head on the linoleum" in ride_sit["action"].lower()
-    assert "the erect shaft stays outside" in ride_sit["action"].lower()
+    assert "shoulders on the linoleum" in ride_sit["action"].lower()
     assert "then the insertion scene begins" in ride_sit["action"].lower()
-    assert "miki sits on aya's hips" in ride_sit["action"].lower()
-    assert "slides both feet" not in ride_sit["action"].lower()
+    assert "slides both feet right" in ride_sit["action"].lower()
+    assert "raises her hips" in ride_sit["action"].lower()
+    assert "aya on top" in ride_sit["action"].lower()
+    assert "miki sits on aya" not in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
-    assert "lies back first, the back of the head on the linoleum" in ride_prompt.lower()
+    assert "the adult with the shaft lies back first" in ride_prompt.lower()
+    assert "both feet slide along the linoleum" in ride_prompt.lower()
+    assert "keeps the back of the head on the linoleum" in ride_prompt.lower()
     assert "feet do not take a step" not in ride_prompt.lower()
     assert "feet do not travel" not in ride_prompt.lower()
     assert "profile side-on" in ride_prompt.lower()
@@ -1747,9 +1751,11 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert SIDERIDE_TRIGGER in ride_prompt
     assert "cowgirl" not in ride_prompt.lower()
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
-    assert "aya stays on her back" in ride_peak["action"].lower()
+    assert "miki stays on her back" in ride_peak["action"].lower()
     assert "the back of her head on the linoleum" in ride_peak["action"].lower()
-    assert "miki's hips thrust" in ride_peak["action"].lower()
+    assert "short upward thrusts from the back" in ride_peak["action"].lower()
+    assert "aya is already sitting on miki's hips" in ride_peak["action"].lower()
+    assert "aya's hips rock down" in ride_peak["action"].lower()
     assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
     assert "cums inside of her" in ride_peak.get("trigger", "").lower()
     assert "PENISLORA" in ride_peak.get("trigger", "")
@@ -2135,9 +2141,12 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     assert "already on her back" not in kana_sit["action"].lower()
     assert "still kneeling" in kana_sit["action"].lower()
     assert "lips at the base" in kana_sit["action"].lower()
-    assert "lays kana down" not in kana_sit["action"].lower()
-    assert "before the shaft enters, aya lies back" in kana_sit["action"].lower()
-    assert "kana sits on aya's hips" in kana_sit["action"].lower()
+    assert "lays kana down" in kana_sit["action"].lower()
+    assert "before the shaft enters, kana lies on her back" in kana_sit["action"].lower()
+    assert "the back of her head on the linoleum" in kana_sit["action"].lower()
+    assert "slides both feet right" in kana_sit["action"].lower()
+    assert "aya on top" in kana_sit["action"].lower()
+    assert "kana sits on aya" not in kana_sit["action"].lower()
     assert "one shaft" in kana_sit["action"].lower()
     assert "three separate lowers" in kana_sit["action"].lower()
     _assert_insertion_direction(kana_sit["action"], build_beat_prompt(mixed, kana_sit))
@@ -2378,9 +2387,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "tongue stays inside the mouth" in jupo["action"].lower()
     assert "wide blissful smile" in jupo["action"].lower()
     ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
-    assert "gin stays on her back" in ride_peak["action"].lower()
+    assert "aya stays on her back" in ride_peak["action"].lower()
     assert "the back of her head on the linoleum" in ride_peak["action"].lower()
-    assert "aya's hips thrust" in ride_peak["action"].lower()
+    assert "short upward thrusts from the back" in ride_peak["action"].lower()
+    assert "gin is already sitting on aya's hips" in ride_peak["action"].lower()
+    assert "gin's hips rock down" in ride_peak["action"].lower()
     assert "leaks around the base" in ride_peak["action"].lower()
     assert "thrust" in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" in jupo["action"].lower()
@@ -2390,12 +2401,14 @@ def test_hospital_gin_tsuno_optional_events():
     assert "gin's head on the left" in jupo["action"].lower()
     ride_in = next(b for b in taken["beats"] if b["id"] == "04-gin-ride")
     ride_act = ride_in["action"].lower()
-    assert "squats from above" not in ride_act
-    assert "from directly above" not in ride_act
-    assert "from above" not in ride_act
-    assert "before the shaft enters, gin lies back" in ride_act
+    assert "squats from above" in ride_act
+    assert "from directly above" in ride_act
+    assert "before the shaft enters, aya lies on her back" in ride_act
     assert "the back of her head on the linoleum" in ride_act
-    assert "aya sits on gin's hips" in ride_act
+    assert "head on the right" in ride_act
+    assert "feet pointing left" in ride_act
+    assert "gin's head is on the left" in ride_act
+    assert "gin sits on aya's hips" in ride_act
     assert "travels into gin's pussy" in ride_act
     assert "straight down" in ride_act
     assert "slides both feet" not in ride_act
@@ -2892,12 +2905,19 @@ def test_hospital_clip_failures_are_rewritten():
     assert "thighs form an m" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
     assert "do not piston yet" in ride_in["action"].lower()
-    assert "before the shaft enters, aya lies back" in ride_in["action"].lower()
+    assert "slides both feet right" in ride_in["action"].lower()
+    assert "raises her hips" in ride_in["action"].lower()
+    assert "directly above the glans" in ride_in["action"].lower()
+    assert "before the shaft enters, miki lies on her back" in ride_in["action"].lower()
     assert "the back of her head on the linoleum" in ride_in["action"].lower()
     rei_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "06-doggy-ride")
     shino_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "12-exit-ride")
-    assert "before the shaft enters, aya lies back" in rei_ride["action"].lower()
-    assert "before the shaft enters, aya lies back" in shino_ride["action"].lower()
+    assert "before the shaft enters, rei lies on her back" in rei_ride["action"].lower()
+    assert "before the shaft enters, shino lies on her back" in shino_ride["action"].lower()
+    assert "the back of her head on the linoleum" in rei_ride["action"].lower()
+    assert "the back of her head on the linoleum" in shino_ride["action"].lower()
+    assert "slides both feet right" in rei_ride["action"].lower()
+    assert "slides both feet right" in shino_ride["action"].lower()
     _assert_insertion_direction(ride_in["action"], ride_prompt)
     assert ride_in.get("loco") == "planted"
     runtime_src = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")

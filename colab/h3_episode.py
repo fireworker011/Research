@@ -424,15 +424,15 @@ SLIDE_PLANTED_CLAUSE = (
     "Hips lower on this mark. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
-# The adult without the shaft lies back before the shaft goes in. Negated travel clauses get drawn as steps.
+# The shaft adult lies back before entry. Negated travel clauses get drawn as steps.
 SUPINE_BEFORE_RE = re.compile(r"before the shaft enters", re.I)
 SUPINE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "The adult without the shaft lies back first, the back of the head on the linoleum, then the hips lower. "
+    "The adult with the shaft lies back first, the back of the head on the linoleum, then the other adult lowers. "
     "The pair stays on this same floor spot."
 )
 SUPINE_PLANTED_CLAUSE = (
-    "The back of the head stays on the linoleum through the insertion. "
+    "The adult with the shaft keeps the back of the head on the linoleum through the insertion. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -3643,6 +3643,10 @@ def build_beat_prompt(
         if NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
             desc.append(NELSON_PLANTED_CLAUSE)
+        elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
+            desc.append(SUPINE_PACE_CLAUSE)
+            desc.append(SLIDE_PACE_CLAUSE)
+            desc.append(SUPINE_PLANTED_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt):
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SLIDE_PLANTED_CLAUSE)
