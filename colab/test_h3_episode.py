@@ -1941,12 +1941,19 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "exactly three" in low
             assert "under the toilet seat" in low
             assert "inside of the toilet bowl" in low
+            assert "hole in the wall on the right" in low
+            assert "lower than the mouth hole" in low
+            assert "comes up out of the inside of the toilet bowl, from under the toilet seat, and travels into her anus" in low
+            assert "rises to her open mouth" in low
             assert "travels into her hairless pussy" in low
             assert "presses on her tongue" in low
             assert "hold her thighs" not in low
-            assert "exactly three" in fill["action"].lower()
-            assert "under the toilet seat" in fill["action"].lower()
-            assert "inside of the toilet bowl" in fill["action"].lower()
+            fill_low = fill["action"].lower()
+            assert "exactly three" in fill_low
+            assert "under the toilet seat" in fill_low
+            assert "inside of the toilet bowl" in fill_low
+            assert "hole in the wall on the right" in fill_low
+            assert "lower than the mouth hole" in fill_low
             assert "rock down" not in fill["action"].lower()
             assert fill["trim"]["seconds"] == 10.0
             assert fill.get("camera_pack") == "none"
