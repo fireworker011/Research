@@ -517,6 +517,24 @@ CONTINUITY_CLAUSE = (
     "One continuous take: the whole clip stays inside this one location with the same people in frame "
     "from the first frame to the last, and nothing new enters the frame."
 )
+# Ride clips name the pair. "nothing new enters" gets drawn as a third adult walking in.
+RIDE_CONTINUITY = (
+    "One continuous take. Aya and the partner stay the same two adults in this one place "
+    "from the first frame to the last."
+)
+RIDE_PAIR_CLAUSE = (
+    "Aya and the partner stay the same two adults on this floor spot. "
+    "The adult on her back is the one with the shaft. The rider is the one on that adult. "
+    "Two faces. The camera holds."
+)
+RIDE_PEAK_RE = re.compile(r"straight up and straight down", re.I)
+RIDE_PEAK_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya and the partner stay the same two adults on this floor spot. "
+    "The adult on her back is the one with the shaft. The rider is the one sitting on that adult. "
+    "Hips travel straight up and straight down in the frame. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
 
 
@@ -3658,6 +3676,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
         holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
     if "sideride" in keys:
         holds.append(RIDE_CAMERA_HOLD)
+        holds.append(RIDE_PAIR_CLAUSE)
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
         holds.append(OPENING_KISS_HOLD)
     elif not gin and bid == "09-kana-facial":
@@ -3672,7 +3691,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
         NELSON_HOLD_RE.search(str(beat.get("action") or ""))
     )
-    if beat_loco(beat) == "planted" and len(cast) == 2 and sex:
+    if beat_loco(beat) == "planted" and len(cast) == 2 and sex and "sideride" not in keys:
         holds.append(PAIR_FRAME_HOLD)
     return holds
 
@@ -3729,7 +3748,11 @@ def build_beat_prompt(
             desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
     if source == "chain" and not last_still:
         desc.append("This shot continues the previous one without a cut.")
-    desc.append(CONTINUITY_CLAUSE)
+    ride_pair = (
+        str(ep.get("slug") or "") == "hospital-exit-adult"
+        and "sideride" in {key for key, _strength in extra_lora_entries(beat)}
+    )
+    desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
     loco = beat_loco(beat)
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
@@ -3745,12 +3768,16 @@ def build_beat_prompt(
             desc.append(SUPINE_PACE_CLAUSE)
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SUPINE_PLANTED_CLAUSE)
+            desc.append(RIDE_PAIR_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt):
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SLIDE_PLANTED_CLAUSE)
         elif SUPINE_BEFORE_RE.search(action_txt):
             desc.append(SUPINE_PACE_CLAUSE)
             desc.append(SUPINE_PLANTED_CLAUSE)
+            desc.append(RIDE_PAIR_CLAUSE)
+        elif RIDE_PEAK_RE.search(action_txt):
+            desc.append(RIDE_PEAK_CLAUSE)
         else:
             desc.append(PLANTED_PACE_CLAUSE)
             desc.append(PLANTED_CLAUSE)

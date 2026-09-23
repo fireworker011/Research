@@ -1774,7 +1774,9 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "upright shaft stays rooted in the groin" in ride_prompt.lower()
     assert "the rider's head stays on the left" in ride_prompt.lower()
     assert "hips lower in that side view" in ride_prompt.lower()
-    assert "only two adults share this frame" in ride_prompt.lower()
+    assert "same two adults" in ride_prompt.lower()
+    assert "the adult on her back is the one with the shaft" in ride_prompt.lower()
+    assert "nothing new enters" not in ride_prompt.lower()
     assert SIDERIDE_TRIGGER in ride_prompt
     assert "cowgirl" not in ride_prompt.lower()
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
@@ -1788,7 +1790,14 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "rock up" not in ride_peak["action"].lower()
     assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
     assert "cums inside of her" in ride_peak.get("trigger", "").lower()
+    assert "female character" not in ride_peak.get("trigger", "").lower()
     assert "PENISLORA" in ride_peak.get("trigger", "")
+    peak_prompt = build_beat_prompt(ride, ride_peak, trigger=merge_trigger("", ride_peak))
+    assert "same two adults" in peak_prompt.lower()
+    assert "the adult on her back is the one with the shaft" in peak_prompt.lower()
+    assert "feet do not take a step" not in peak_prompt.lower()
+    assert "nothing new enters" not in peak_prompt.lower()
+    assert "female character" not in peak_prompt.lower()
     peak_keys = extra_keys(ride_peak)
     assert peak_keys[0] == "sideride"
     assert "thrust" in peak_keys and "penis" in peak_keys and "synth" in peak_keys
