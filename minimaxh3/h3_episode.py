@@ -287,6 +287,8 @@ OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
 # Colab shows four 登場 checkboxes; clearing all four leaves nothing to render.
 APPEAR_NONE_MSG = "appear: at least one encounter must stay on / 登場を4人とも外すと作る場面が無い。1人は残せ"
 CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
+# Ward acts are authored connect:t2v. Chain/landing on this slug follows the dropdown instead.
+DROPDOWN_WINS_T2V_LOCK = frozenset({"hospital-exit-adult"})
 BEAT_CONNECT_END = "end"
 # UNet lanes. Stock episodes never load Eros Max. Erotic episodes never silently fall back to stock.
 LANES = ("stock", "erotic")
@@ -1118,12 +1120,27 @@ def _slide_trim_to_last(beat: dict[str, Any], clip_s: float) -> None:
     beat["trim"] = {"start": round(max(0.0, float(clip_s) - seconds), 3), "seconds": seconds}
 
 
+def _connect_lock_holds(ep: dict[str, Any], beat: dict[str, Any], mode: str) -> bool:
+    """Authored t2v/cut/off force T2V. Hospital chain/landing lets the dropdown win over t2v."""
+    locked = str(beat.get("connect") or "").strip().lower()
+    if locked not in CONNECT_LOCKS:
+        return False
+    if (
+        locked == "t2v"
+        and mode in ("chain", "landing")
+        and str(ep.get("slug") or "") in DROPDOWN_WINS_T2V_LOCK
+    ):
+        return False
+    return True
+
+
 def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[str, Any]:
     """Rewrite GPU beat source/still_as for a connect mode. UI and reuse beats stay put.
 
     t2v: every GPU beat is T2V including the first (prompt-correctable, cameras may change).
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
+    Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person is still T2V later.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1141,8 +1158,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if beat.get("reuse"):
             gpu_seen += 1
             continue
-        locked = str(beat.get("connect") or "").strip().lower()
-        if locked in CONNECT_LOCKS:
+        if _connect_lock_holds(out, beat, name):
             beat["source"] = "t2v"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -1207,11 +1223,12 @@ def _expand_overlay(body: dict[str, Any], chosen: Any) -> list[dict[str, Any]]:
 
 
 def _honor_beat_connect(ep: dict[str, Any]) -> dict[str, Any]:
-    """Authored t2v locks stay T2V even when the episode connect is chain."""
+    """Authored t2v/cut/off stay T2V. Hospital chain/landing leaves t2v locks to the dropdown."""
+    mode = episode_connect(ep)
     for beat in ep.get("beats") or []:
         if not isinstance(beat, dict) or is_ui_beat(beat):
             continue
-        if str(beat.get("connect") or "").strip().lower() in CONNECT_LOCKS:
+        if _connect_lock_holds(ep, beat, mode):
             beat["source"] = "t2v"
             beat.pop("still_as", None)
     return ep

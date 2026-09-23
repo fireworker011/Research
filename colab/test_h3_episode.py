@@ -2250,25 +2250,25 @@ def test_hospital_gin_tsuno_optional_events():
     assert validate_episode(nelson, root=HOSPITAL_DIR) == []
 
 
-def test_hospital_chain_keeps_same_cast_acts():
-    """Hospital acts stay T2V even on chain. I2V from the previous last frame
-    was dragging oral poses into insertion and walking into planted holds.
+def test_hospital_chain_dropdown_overrides_t2v_locks():
+    """Chain/landing follow the dropdown over authored connect:t2v on the ward.
 
-    End walks still follow the scene-end dropdown. New people stay T2V.
+    First shot stays T2V. A newly added person stays T2V. Same-cast acts,
+    including pose, toilet, gin, tsuno, and fight, become I2V. Cut stays all T2V.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     accept = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
     kiss = next(b for b in accept["beats"] if b["id"] == "03-kiss")
-    assert beat_source(kiss) == "t2v"
+    assert beat_source(kiss) == "chain"
     assert kiss.get("connect") == "t2v"
     assert "both standing" in kiss["action"].lower()
     assert "drops down" in kiss["action"].lower()
     six = next(b for b in accept["beats"] if b["id"] == "06-doggy")
-    assert beat_source(six) == "t2v"
+    assert beat_source(six) == "chain"
     nine = next(b for b in accept["beats"] if b["id"] == "09-join")
-    assert beat_source(nine) == "t2v"
+    assert beat_source(nine) == "chain"
     twelve = next(b for b in accept["beats"] if b["id"] == "12-exit")
-    assert beat_source(twelve) == "t2v"
+    assert beat_source(twelve) == "chain"
     peek = next(b for b in accept["beats"] if b["id"] == "04-peek")
     assert beat_source(peek) == "t2v"
     kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
@@ -2289,21 +2289,21 @@ def test_hospital_chain_keeps_same_cast_acts():
             connect_override="chain",
         )
         kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
-        assert beat_source(kiss) == "t2v", pose
+        assert beat_source(kiss) == "chain", pose
         assert kiss.get("connect") == "t2v", pose
         assert "mouths joined" in kiss["action"].lower(), pose
         assert "mouths joined" in kiss["camera"].lower(), pose
         assert "already kneeling at the hips" not in kiss["camera"].lower(), pose
         six = next(b for b in ep["beats"] if b["id"] == "06-doggy")
-        assert beat_source(six) == "t2v", pose
+        assert beat_source(six) == "chain", pose
         assert "after the wait" in six["action"].lower(), pose
         assert "already kneeling in front" not in six["action"].lower(), pose
         nine = next(b for b in ep["beats"] if b["id"] == "09-join")
-        assert beat_source(nine) == "t2v", pose
+        assert beat_source(nine) == "chain", pose
         assert "kana still stands" in nine["action"].lower(), pose
         assert "already kneeling in front" not in nine["action"].lower(), pose
         twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
-        assert beat_source(twelve) == "t2v", pose
+        assert beat_source(twelve) == "chain", pose
         if pose == "騎乗位":
             assert "drops down onto her knees" in kiss["action"].lower()
             assert "drops down onto her knees" in six["action"].lower()
@@ -2312,20 +2312,20 @@ def test_hospital_chain_keeps_same_cast_acts():
 
     evade = prepare_episode(raw, story_override="回避", connect_override="chain")
     evade_kiss = next(b for b in evade["beats"] if b["id"] == "03-kiss")
-    assert beat_source(evade_kiss) == "t2v"
+    assert beat_source(evade_kiss) == "chain"
 
     gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される", connect_override="chain")
     lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
     assert lick.get("connect") == "t2v"
     assert beat_source(lick) == "t2v"
     gin_in = next(b for b in gin["beats"] if b["id"] == "04-gin-jupo")
-    assert beat_source(gin_in) == "t2v"
+    assert beat_source(gin_in) == "chain"
     toilet = prepare_episode(raw, story_override="受け入れる", toilet_override="pee", connect_override="chain")
     tin = next(b for b in toilet["beats"] if b["id"] == "04-toilet-in")
     assert tin.get("connect") == "t2v"
-    assert beat_source(tin) == "t2v"
+    assert beat_source(tin) == "chain"
 
-    # Unexpected T2V is only the first shot, a new person, or an authored lock.
+    # Unexpected T2V is only the first shot or a new person. Authored t2v no longer blocks chain.
     sweeps = [
         dict(story_override="受け入れる"),
         dict(story_override="誘う", invite_pose_override="騎乗位"),
@@ -2343,13 +2343,14 @@ def test_hospital_chain_keeps_same_cast_acts():
                 continue
             cast = {str(c) for c in (beat.get("cast") or [])}
             added = cast - prev
-            locked = str(beat.get("connect") or "").strip().lower() in ("t2v", "cut", "off")
-            if beat_source(beat) == "t2v" and not first and not added and not locked:
+            if beat_source(beat) == "t2v" and not first and not added:
                 raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
+            if beat_source(beat) == "chain" and (first or added):
+                raise AssertionError(f"chain on a new body {beat['id']} {kw}")
             first = False
             prev = cast
-        acts = [b for b in ep["beats"] if not is_ui_beat(b) and not is_end_connect_beat(b)]
-        assert acts and all(beat_source(b) == "t2v" for b in acts), kw
+        cuts = prepare_episode(raw, connect_override="カット", **kw)
+        assert all(beat_source(b) == "t2v" for b in cuts["beats"] if not is_ui_beat(b)), kw
 
 
 def test_hospital_end_connect_is_runtime_selectable():
@@ -2436,11 +2437,11 @@ def test_hospital_clip_failures_are_rewritten():
     peak = next(b for b in invite["beats"] if b["id"] == "03-kiss-peak")
     walk = next(b for b in invite["beats"] if b["id"] == "03-kiss-walk")
     assert kiss.get("connect") == "t2v"
-    assert beat_source(kiss) == "t2v"
+    assert beat_source(kiss) == "chain"
     assert "mouths joined" in kiss["action"].lower()
     assert kiss.get("loco") == "planted"
     assert peak.get("loco") == "planted"
-    assert beat_source(peak) == "t2v"
+    assert beat_source(peak) == "chain"
     assert is_end_connect_beat(walk)
     assert beat_source(walk) == "chain"
     assert "miki" in (walk.get("fade_cast") or [])
@@ -2460,7 +2461,7 @@ def test_hospital_clip_failures_are_rewritten():
 
     toilet = next(b for b in invite["beats"] if b["id"] == "04-toilet")
     assert toilet.get("loco") == "planted"
-    assert beat_source(toilet) == "t2v"
+    assert beat_source(toilet) == "chain"
     toilet_prompt = build_beat_prompt(invite, toilet)
     assert PLANTED_CLAUSE in toilet_prompt
     assert PLANTED_PACE_CLAUSE in toilet_prompt
@@ -2471,7 +2472,7 @@ def test_hospital_clip_failures_are_rewritten():
     gin_lick = next(b for b in invite["beats"] if b["id"] == "04-gin-lick")
     assert gin_lick.get("connect") == "t2v"
     assert gin_in.get("connect") == "t2v"
-    assert beat_source(gin_in) == "t2v"
+    assert beat_source(gin_in) == "chain"
     assert gin_in.get("loco") == "planted"
     assert "gums" in gin_lick["action"].lower() or "gums" in (invite["cast"]["gin"]["lock"].lower())
     assert "muscle fiber" in invite["cast"]["gin"]["lock"]
@@ -2484,8 +2485,11 @@ def test_hospital_clip_failures_are_rewritten():
     _assert_insertion_direction(tsuno_in["action"], build_beat_prompt(invite, tsuno_in))
 
     six = next(b for b in invite["beats"] if b["id"] == "06-doggy")
+    six_peak = next(b for b in invite["beats"] if b["id"] == "06-doggy-peak")
     assert six.get("connect") == "t2v"
+    # Rei is new on this beat, so the entrance stays T2V. The lock does not keep the next act on T2V.
     assert beat_source(six) == "t2v"
+    assert beat_source(six_peak) == "chain"
     assert six["cast"] == ["aya", "rei"]
     assert "kana" not in six["cast"]
     assert "dark-brown filthy sludge" in invite["cast"]["rei"]["lock"]
@@ -2658,9 +2662,11 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     hospital = apply_connect_mode(load_episode(HOSPITAL_DIR / "episode.json"), "前の最終フレームから続ける")
     hgpu = [b for b in hospital["beats"] if not is_ui_beat(b)]
     assert beat_source(hgpu[0]) == "t2v"
-    assert all(beat_source(b) == "t2v" for b in hgpu if str(b.get("connect") or "").strip().lower() in ("t2v", "cut", "off"))
-    ends = [b for b in hgpu[1:] if str(b.get("connect") or "").strip().lower() not in ("t2v", "cut", "off")]
-    assert all(beat_source(b) == "chain" for b in ends)
+    assert any(str(b.get("connect") or "").strip().lower() == "t2v" and beat_source(b) == "chain" for b in hgpu[1:])
+    assert all(beat_source(b) == "chain" for b in hgpu[1:])
+    landed_h = apply_connect_mode(load_episode(HOSPITAL_DIR / "episode.json"), "用意した最終フレームへ着く")
+    land_gpu = [b for b in landed_h["beats"] if not is_ui_beat(b) and str(b.get("connect") or "").strip().lower() == "t2v"]
+    assert land_gpu and all(beat_source(b) != "t2v" or b["id"] == land_gpu[0]["id"] for b in land_gpu)
 
     landed = apply_connect_mode(ep, "用意した最終フレームへ着く")
     assert validate_episode(landed, root=KASUMI_ADULT_DIR) == []
