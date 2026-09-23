@@ -34,6 +34,7 @@ from h3_episode import (  # noqa: E402
     MUNDANE_CLAUSE,
     PLANTED_CLAUSE,
     PLANTED_PACE_CLAUSE,
+    PEE_STILL_CLAUSE,
     NELSON_PLANTED_CLAUSE,
     GAMEPLAY_PACE_CLAUSE,
     SIDERIDE_TRIGGER,
@@ -1941,7 +1942,13 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "through the lit open doorway" in out["action"].lower()
 
     stall = next(b for b in toilet["beats"] if b["id"] == "04-toilet")
-    assert "profile" in stall["camera"].lower()
+    assert "front view" in stall["camera"].lower()
+    assert "profile" not in stall["camera"].lower()
+    assert "shoots forward" in stall["action"].lower()
+    assert "hips hold still" in stall["action"].lower()
+    assert "bowl stays still" in stall["action"].lower()
+    assert "only the yellow stream moves" in stall["action"].lower()
+    assert "breathing bob" not in stall["action"].lower()
     assert "steps out" not in stall["action"].lower()
     assert "stays seated" in stall["action"].lower()
     assert "already seated" in stall["action"].lower()
@@ -2043,12 +2050,25 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "profile" not in four["camera"].lower()
             assert "facing the camera" in enter["action"].lower()
         else:
-            assert "profile" in prompt.lower()
+            assert "front view" in four["camera"].lower()
+            assert "profile" not in four["camera"].lower()
+            assert "facing the camera" in low
+            assert "shoots forward" in low
+            assert "toward the camera" in low
+            assert "hips hold still" in low
+            assert "western toilet bowl stays still" in low
+            assert "only the yellow stream moves" in low
+            assert "only the yellow stream moves" in prompt.lower()
+            assert "only hips, hands, and mouths move" not in prompt.lower()
+            assert "feet do not take a step" not in prompt.lower()
+            assert "does not travel" not in prompt.lower()
+            assert "breathing bob" not in low
             assert "hairless pussy" in low
-            assert "outside the seat" in low
             assert "smiles" in low
             assert "into the bowl" not in low
+            assert "outside the seat" not in low
             assert "urethra" not in low
+            assert "does not move" not in low
         assert "hospital door" not in prompt.lower()
         assert "doorway" not in prompt.lower()
         assert "this shot:" not in prompt.lower()
@@ -2855,8 +2875,10 @@ def test_hospital_clip_failures_are_rewritten():
     assert toilet.get("loco") == "planted"
     assert beat_source(toilet) == "chain"
     toilet_prompt = build_beat_prompt(invite, toilet)
-    assert PLANTED_CLAUSE in toilet_prompt
-    assert PLANTED_PACE_CLAUSE in toilet_prompt
+    assert PEE_STILL_CLAUSE in toilet_prompt
+    assert PLANTED_CLAUSE not in toilet_prompt
+    assert PLANTED_PACE_CLAUSE not in toilet_prompt
+    assert "only the yellow stream moves" in toilet_prompt.lower()
     assert "walks right" not in toilet["action"].lower()
     assert "Adults move LEFT or RIGHT" not in toilet_prompt
 

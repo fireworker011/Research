@@ -387,6 +387,14 @@ PLANTED_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
 )
+# Pee holds the body and the bowl. Negated step clauses and "only hips move" get drawn as motion.
+PEE_STILL_RE = re.compile(r"only the yellow stream moves", re.I)
+PEE_STILL_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays seated on this same bowl. The western toilet bowl stays on this same floor spot. "
+    "Only the yellow stream moves. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 NELSON_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
@@ -2330,7 +2338,7 @@ def scrub_planted_action(action: str) -> str:
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
         if NELSON_HOLD_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
-        elif SLIDE_FEET_RE.search(out) or SUPINE_BEFORE_RE.search(out):
+        elif PEE_STILL_RE.search(out) or SLIDE_FEET_RE.search(out) or SUPINE_BEFORE_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
         else:
             out = out.rstrip(".") + ". They stay on this same floor spot. Feet do not travel."
@@ -3643,6 +3651,8 @@ def build_beat_prompt(
         if NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
             desc.append(NELSON_PLANTED_CLAUSE)
+        elif PEE_STILL_RE.search(action_txt):
+            desc.append(PEE_STILL_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
             desc.append(SUPINE_PACE_CLAUSE)
             desc.append(SLIDE_PACE_CLAUSE)
