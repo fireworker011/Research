@@ -392,7 +392,8 @@ PEE_STILL_RE = re.compile(r"only the yellow stream moves", re.I)
 PEE_STILL_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays seated on this same bowl. The western toilet bowl stays on this same floor spot. "
-    "Only the yellow stream moves. The camera holds. "
+    "Only the yellow stream moves. The stream is one column of transparent lemon-yellow water, "
+    "see-through and watery, the color of lemon water. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 NELSON_PACE_CLAUSE = (
@@ -3576,14 +3577,27 @@ ORAL_CAMERA_HOLD = (
     "Aya and the partner each stay in frame from the top of the head to the tips of both feet. "
     "Both heads and all four feet stay inside the frame together."
 )
+# Gin oral keeps ORAL_CAMERA_HOLD. Other oral locks a wide frame so the face stays the same person.
+ORAL_FULLBODY_HOLD = (
+    "Wide full-body. The camera sits far back for the whole take. "
+    "This wide full-body frame stays locked while the lips reach the base. "
+    "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
+    "Open floor stays past the tips of both feet. Space stays above both heads. "
+    "Aya's face and the partner's face stay in frame the whole take. "
+    "Both heads and all four feet stay inside the frame together."
+)
 
 RIDE_CAMERA_HOLD = (
     "The camera stays PROFILE side-on. "
-    "The camera distance stays fixed for the whole take. "
+    "Wide full-body. The camera sits far back for the whole take. "
+    "This wide full-body frame stays locked. "
+    "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
+    "Open floor stays past the tips of both feet. "
     "Aya's face and the partner's face stay in frame the whole take. "
-    "Aya and the partner each stay in frame from the top of the head to the tips of both feet. "
     "Both heads and all four feet stay inside the frame together. "
-    "The hips lower in that side view."
+    "The hips lower in that side view. "
+    "The upright shaft stays rooted in the groin between the thighs, glans at the top. "
+    "The shaft adult's head stays on the RIGHT. Feet keep pointing LEFT. The rider's head stays on the LEFT."
 )
 
 PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
@@ -3596,7 +3610,11 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     keys = {key for key, _strength in extra_lora_entries(beat)}
     holds: list[str] = []
     if "blowjob" in keys:
-        holds.append(ORAL_CAMERA_HOLD)
+        bid = str(beat.get("id") or "")
+        if "gin" in bid:
+            holds.append(ORAL_CAMERA_HOLD)
+        else:
+            holds.append(ORAL_FULLBODY_HOLD)
     if "sideride" in keys:
         holds.append(RIDE_CAMERA_HOLD)
     kiss_blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"

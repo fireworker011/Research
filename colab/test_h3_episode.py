@@ -1737,7 +1737,13 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "the back of her head on the linoleum" in ride_sit["action"].lower()
     assert "shoulders on the linoleum" in ride_sit["action"].lower()
     assert "then the insertion scene begins" in ride_sit["action"].lower()
-    assert "slides both feet right" in ride_sit["action"].lower()
+    assert "slides both feet along" in ride_sit["action"].lower()
+    assert "slides both feet right" not in ride_sit["action"].lower()
+    assert "head on the right" in ride_sit["action"].lower()
+    assert "aya's head stays on the left" in ride_sit["action"].lower()
+    assert "rooted in miki's groin" in ride_sit["action"].lower()
+    assert "the glans is the top end" in ride_sit["action"].lower()
+    assert "keep this same facing" in ride_sit["action"].lower()
     assert "stands up" in ride_sit["action"].lower()
     assert "aya on top" in ride_sit["action"].lower()
     assert "miki sits on aya" not in ride_sit["action"].lower()
@@ -1747,8 +1753,17 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "keeps the back of the head on the linoleum" in ride_prompt.lower()
     assert "feet do not take a step" not in ride_prompt.lower()
     assert "feet do not travel" not in ride_prompt.lower()
+    oral = next(b for b in ride["beats"] if b["id"] == "03-kiss")
+    oral_prompt = build_beat_prompt(ride, oral, trigger=merge_trigger("", oral))
+    assert "this wide full-body frame stays locked" in oral_prompt.lower()
+    assert "the camera sits far back" in oral_prompt.lower()
+    assert "the adults stay the same size" in oral_prompt.lower()
+    assert "aya's face and the partner's face stay in frame" in oral_prompt.lower()
+    assert "zoom" not in oral_prompt.lower()
     assert "profile side-on" in ride_prompt.lower()
     assert "camera distance stays fixed" in ride_prompt.lower()
+    assert "upright shaft stays rooted in the groin" in ride_prompt.lower()
+    assert "the rider's head stays on the left" in ride_prompt.lower()
     assert "hips lower in that side view" in ride_prompt.lower()
     assert "only two adults share this frame" in ride_prompt.lower()
     assert SIDERIDE_TRIGGER in ride_prompt
@@ -1958,6 +1973,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "hips hold still" in stall["action"].lower()
     assert "bowl stays still" in stall["action"].lower()
     assert "only the yellow stream moves" in stall["action"].lower()
+    assert "lemon-yellow" in stall["action"].lower()
+    assert "yellow water" in stall["action"].lower()
+    assert "see-through" in stall["action"].lower()
+    assert "urethra" not in stall["action"].lower()
     assert "breathing bob" not in stall["action"].lower()
     assert "steps out" not in stall["action"].lower()
     assert "stays seated" in stall["action"].lower()
@@ -2068,6 +2087,8 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "hips hold still" in low
             assert "western toilet bowl stays still" in low
             assert "only the yellow stream moves" in low
+            assert "lemon-yellow water" in low
+            assert "see-through" in low
             assert "only the yellow stream moves" in prompt.lower()
             assert "only hips, hands, and mouths move" not in prompt.lower()
             assert "feet do not take a step" not in prompt.lower()
@@ -2174,7 +2195,11 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     assert "lays kana down" in kana_sit["action"].lower()
     assert "before the shaft enters, kana lies fully on her back" in kana_sit["action"].lower()
     assert "the back of her head on the linoleum" in kana_sit["action"].lower()
-    assert "slides both feet right" in kana_sit["action"].lower()
+    assert "slides both feet along" in kana_sit["action"].lower()
+    assert "slides both feet right" not in kana_sit["action"].lower()
+    assert "head on the right" in kana_sit["action"].lower()
+    assert "aya's head stays on the left" in kana_sit["action"].lower()
+    assert "rooted in kana's groin" in kana_sit["action"].lower()
     assert "aya on top" in kana_sit["action"].lower()
     assert "kana sits on aya" not in kana_sit["action"].lower()
     assert "one shaft" in kana_sit["action"].lower()
@@ -2445,6 +2470,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "travels into gin's pussy" in ride_act
     assert "straight down" in ride_act
     assert "slides both feet" not in ride_act
+    assert "rooted in aya's groin between the thighs" in ride_act
+    assert "keep this same facing" in ride_act
     assert "both feet stay in frame" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
@@ -2452,6 +2479,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "zoom" not in jupo_prompt.lower()
     assert "do not push the camera in" not in jupo_prompt.lower()
     assert "aya's face and the partner's face stay in frame" in jupo_prompt.lower()
+    assert "this wide full-body frame stays locked" not in jupo_prompt.lower()
     assert "only two adults share this frame" in jupo_prompt.lower()
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
@@ -2940,7 +2968,11 @@ def test_hospital_clip_failures_are_rewritten():
     assert "soles stay on the linoleum" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
     assert "do not piston yet" in ride_in["action"].lower()
-    assert "slides both feet right" in ride_in["action"].lower()
+    assert "slides both feet along" in ride_in["action"].lower()
+    assert "slides both feet right" not in ride_in["action"].lower()
+    assert "rooted in miki's groin between the thighs" in ride_in["action"].lower()
+    assert "aya's head stays on the left" in ride_in["action"].lower()
+    assert "the shaft stays vertical from that groin" in ride_in["action"].lower()
     assert "the glans meets" in ride_in["action"].lower()
     assert "before the shaft enters, miki lies fully on her back" in ride_in["action"].lower()
     assert "the back of her head on the linoleum" in ride_in["action"].lower()
@@ -2950,8 +2982,11 @@ def test_hospital_clip_failures_are_rewritten():
     assert "before the shaft enters, shino lies fully on her back" in shino_ride["action"].lower()
     assert "the back of her head on the linoleum" in rei_ride["action"].lower()
     assert "the back of her head on the linoleum" in shino_ride["action"].lower()
-    assert "slides both feet right" in rei_ride["action"].lower()
-    assert "slides both feet right" in shino_ride["action"].lower()
+    assert "slides both feet along" in rei_ride["action"].lower()
+    assert "slides both feet along" in shino_ride["action"].lower()
+    assert "slides both feet right" not in rei_ride["action"].lower()
+    assert "rooted in rei's groin" in rei_ride["action"].lower()
+    assert "rooted in shino's groin" in shino_ride["action"].lower()
     _assert_insertion_direction(ride_in["action"], ride_prompt)
     assert ride_in.get("loco") == "planted"
     runtime_src = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
