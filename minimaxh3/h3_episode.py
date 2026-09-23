@@ -2220,7 +2220,7 @@ _SPOT_POSE = {
     "rei": "Rei is already standing ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
     "kana": "Kana is already standing mid-corridor facing Aya, feet planted, full body including feet.",
     "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
-    "gin": "Gin is already standing directly behind Aya toward the LEFT, facing RIGHT, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
+    "gin": "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
     "tsuno": "Tsuno is already standing one step behind Aya, facing the same way, full body including feet.",
 }
 
@@ -2257,20 +2257,25 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             spot_id = f"{bid}-spot"
             if added == ["gin"]:
                 action = (
-                    "Aya is already in the corridor toward the RIGHT, facing RIGHT, fully nude, full body including feet. "
-                    "Gin is already standing directly behind Aya toward the LEFT, facing RIGHT, full body including feet, a short step behind. "
-                    "The ceiling tiles stay a closed flat ceiling. "
-                    "They stay a short step apart. Aya does not turn yet. "
-                    "Last frame: Aya toward the RIGHT facing RIGHT, Gin toward the LEFT behind her, both full body including feet. "
+                    "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
+                    "grimy brown hospital dirt on her skin. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
+                    "Gin ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
+                    "matching Aya's stride, full body including feet. "
+                    "From the viewer, that left side is directly behind Aya. "
+                    "Aya stays toward the RIGHT. Gin stays toward the LEFT. Aya does not turn yet. "
+                    "The right edge of the frame stays a dark corridor continuing on. "
+                    "Last frame: Aya toward the RIGHT, stopped, facing RIGHT. Gin toward the LEFT, directly behind her, both full body including feet. "
                     "Motion starts at frame one. Brisk real-time."
                 )
                 camera = (
                     "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    "Aya toward the RIGHT facing RIGHT. Gin behind her toward the LEFT, facing RIGHT."
+                    "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching her stride. "
+                    "Aya toward the RIGHT, facing RIGHT, her stride slowing to a stop. "
+                    "The right edge stays a dark corridor continuing on."
                 )
             else:
                 action = (
-                    "Aya is already in the corridor, fully nude. "
+                    "Aya is already in the corridor, fully nude, grimy brown hospital dirt on her skin. "
                     + " ".join(poses)
                     + " They share the frame, a short step apart. Aya takes one step closer and stops. "
                     f"Last frame: Aya and {who} both full body including feet, still a short step apart. "
