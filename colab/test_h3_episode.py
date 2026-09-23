@@ -1925,7 +1925,10 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     assert "sits on" in kana_blob
     kana_sit = next(b for b in mixed["beats"] if b["id"] == "09-join-ride")
     assert "pushes kana backward" not in kana_sit["action"].lower()
-    assert "already on her back" in kana_sit["action"].lower()
+    assert "already on her back" not in kana_sit["action"].lower()
+    assert "still kneeling" in kana_sit["action"].lower()
+    assert "lips at the base" in kana_sit["action"].lower()
+    assert "lays kana down onto her back" in kana_sit["action"].lower()
     assert "one shaft" in kana_sit["action"].lower()
     assert "three separate lowers" in kana_sit["action"].lower()
     _assert_insertion_direction(kana_sit["action"], build_beat_prompt(mixed, kana_sit))
@@ -2165,6 +2168,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "both feet stay in frame" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
+    assert "camera distance stays fixed" in jupo_prompt.lower()
+    assert "zoom" not in jupo_prompt.lower()
+    assert "aya's face and the partner's face stay in frame" in jupo_prompt.lower()
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
     assert "pale-tan" in jupo_prompt
@@ -2370,8 +2376,15 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             assert "drops down onto her knees" in six["action"].lower()
             assert "drops down onto her knees" in nine["action"].lower()
             assert "drops down onto her knees" in twelve["action"].lower()
-            assert "pussy hanging directly above the glans" in nine["action"].lower()
-            assert "kana on her back" in nine["action"].lower()
+            assert "still kneeling" in nine["action"].lower()
+            assert "lips at the base" in nine["action"].lower()
+            assert "pussy hanging directly above the glans" not in nine["action"].lower()
+            assert "kana on her back" not in nine["action"].lower()
+            assert "zoom" not in (nine.get("camera") or "").lower()
+            nine_prompt = build_beat_prompt(ep, nine, trigger=merge_trigger("", nine))
+            assert "camera distance stays fixed" in nine_prompt.lower()
+            assert "zoom" not in nine_prompt.lower()
+            assert "aya's face and the partner's face stay in frame" in nine_prompt.lower()
 
     evade = prepare_episode(raw, story_override="回避", connect_override="chain")
     evade_kiss = next(b for b in evade["beats"] if b["id"] == "03-kiss")

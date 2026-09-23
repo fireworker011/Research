@@ -3309,6 +3309,24 @@ def _speech_audio(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     return " ".join(parts)
 
 
+ORAL_CAMERA_HOLD = (
+    "The camera distance stays fixed for the whole take. "
+    "Do not push the camera in. "
+    "Aya's face and the partner's face stay in frame the whole take. "
+    "Both adults stay full body, both feet in frame."
+)
+
+
+def _oral_camera_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    """Fellatio holds a wide full-body frame. Distance does not close."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ""
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    if "blowjob" not in keys:
+        return ""
+    return ORAL_CAMERA_HOLD
+
+
 def build_beat_prompt(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -3386,6 +3404,9 @@ def build_beat_prompt(
     )
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
+    oral_cam = _oral_camera_hold(ep, beat)
+    if oral_cam:
+        desc.append(oral_cam)
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
     hold = _look_hold(ep, beat)
     if hold:
