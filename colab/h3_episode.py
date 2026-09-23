@@ -525,7 +525,14 @@ RIDE_CONTINUITY = (
 RIDE_PAIR_CLAUSE = (
     "Aya and the partner stay the same two adults on this floor spot. "
     "The adult on her back is the one with the shaft. The rider is the one on that adult. "
+    "After the shaft enters, the frame holds the face on the floor and the face on top. "
     "Two faces. The camera holds."
+)
+RIDE_FOLD_RE = re.compile(r"folds down", re.I)
+RIDE_FOLD_CLAUSE = (
+    "The upright adult folds down onto her back. That same face is the face on the floor. "
+    "The kneeling adult rises into the rider. That same face is the face on top. "
+    "After the shaft enters, those two faces stay the frame."
 )
 RIDE_PEAK_RE = re.compile(r"straight up and straight down", re.I)
 RIDE_PEAK_CLAUSE = (
@@ -3769,6 +3776,8 @@ def build_beat_prompt(
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SUPINE_PLANTED_CLAUSE)
             desc.append(RIDE_PAIR_CLAUSE)
+            if RIDE_FOLD_RE.search(action_txt):
+                desc.append(RIDE_FOLD_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt):
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SLIDE_PLANTED_CLAUSE)
@@ -3838,6 +3847,8 @@ def build_beat_prompt(
         f"non_diegetic_music:\n{music}\n"
     )
     prefix = f"{trigger.strip()}\n" if trigger.strip() else ""
+    if RIDE_FOLD_RE.search(str(beat.get("action") or "")):
+        prefix += RIDE_FOLD_CLAUSE + "\n"
     return prefix + head + body
 
 

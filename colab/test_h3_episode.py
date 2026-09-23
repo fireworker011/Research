@@ -1730,7 +1730,10 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "closer to the face than to the shaft" in ride_sit["action"].lower()
     assert "brings aya's pussy onto the glans" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
-    assert "stands up" in ride_sit["action"].lower()
+    assert "stands up from that kneel" in ride_sit["action"].lower()
+    assert "the standing miki folds down" in ride_sit["action"].lower()
+    assert "that same face is the face on the floor" in ride_sit["action"].lower()
+    assert "that same face is the face on top" in ride_sit["action"].lower()
     assert "buttocks press flush" in ride_sit["action"].lower()
     assert "both hands rest" in ride_sit["action"].lower()
     assert "from above" not in ride_sit["action"].lower()
@@ -1751,7 +1754,9 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "aya on top" in ride_sit["action"].lower()
     assert "miki sits on aya" not in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
-    assert "the adult with the shaft lies back first" in ride_prompt.lower()
+    assert "folds down onto her back" in ride_prompt.lower()
+    assert "that same face is the face on the floor" in ride_prompt.lower()
+    assert "after the shaft enters, those two faces stay the frame" in ride_prompt.lower()
     assert "both feet slide along the linoleum" in ride_prompt.lower()
     assert "to the right of the penis" in ride_prompt.lower()
     assert "onto the upright shaft" in ride_prompt.lower()
@@ -2504,6 +2509,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "travels into gin's pussy" in ride_act
     assert "straight down" in ride_act
     assert "slides both feet" not in ride_act
+    assert "folds down" not in ride_act
+    assert "rises from the crouch" in ride_act
+    assert "aya stays the face on the floor" in ride_act
     assert "midpoint between the upright shaft and aya's face" in ride_act
     assert "to the right of the penis" in ride_act
     assert "brings gin's pussy onto the glans" in ride_act
