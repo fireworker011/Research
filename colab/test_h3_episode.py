@@ -1725,7 +1725,10 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "straddles the hips" in ride_sit["action"].lower()
     assert "facing the partner" in ride_sit["action"].lower()
     assert "torso leaned forward over the partner's chest" in ride_sit["action"].lower()
-    assert "beside the partner's hips" in ride_sit["action"].lower()
+    assert "midpoint between the upright shaft and the partner's face" in ride_sit["action"].lower()
+    assert "to the right of the penis" in ride_sit["action"].lower()
+    assert "closer to the face than to the shaft" in ride_sit["action"].lower()
+    assert "brings aya's pussy onto the glans" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
     assert "stands up" in ride_sit["action"].lower()
     assert "buttocks press flush" in ride_sit["action"].lower()
@@ -1750,6 +1753,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
     assert "the adult with the shaft lies back first" in ride_prompt.lower()
     assert "both feet slide along the linoleum" in ride_prompt.lower()
+    assert "to the right of the penis" in ride_prompt.lower()
+    assert "onto the upright shaft" in ride_prompt.lower()
     assert "keeps the back of the head on the linoleum" in ride_prompt.lower()
     assert "feet do not take a step" not in ride_prompt.lower()
     assert "feet do not travel" not in ride_prompt.lower()
@@ -1774,6 +1779,9 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "short upward thrusts from the back" in ride_peak["action"].lower()
     assert "aya is already sitting on miki's hips" in ride_peak["action"].lower()
     assert "aya's hips rock down" in ride_peak["action"].lower()
+    assert "straight up and straight down in the frame" in ride_peak["action"].lower()
+    assert "each stroke stays vertical on screen" in ride_peak["action"].lower()
+    assert "rock up" not in ride_peak["action"].lower()
     assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
     assert "cums inside of her" in ride_peak.get("trigger", "").lower()
     assert "PENISLORA" in ride_peak.get("trigger", "")
@@ -2470,6 +2478,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "travels into gin's pussy" in ride_act
     assert "straight down" in ride_act
     assert "slides both feet" not in ride_act
+    assert "midpoint between the upright shaft and aya's face" in ride_act
+    assert "to the right of the penis" in ride_act
+    assert "brings gin's pussy onto the glans" in ride_act
     assert "rooted in aya's groin between the thighs" in ride_act
     assert "keep this same facing" in ride_act
     assert "both feet stay in frame" in jupo["action"].lower()
@@ -2964,7 +2975,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert "stands up" in ride_in["action"].lower()
     assert "buttocks press flush" in ride_in["action"].lower()
     assert "both hands rest" in ride_in["action"].lower()
-    assert "beside the partner's hips" in ride_in["action"].lower()
+    assert "midpoint between the upright shaft and the partner's face" in ride_in["action"].lower()
+    assert "to the right of the penis" in ride_in["action"].lower()
     assert "soles stay on the linoleum" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
     assert "do not piston yet" in ride_in["action"].lower()

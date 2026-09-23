@@ -421,16 +421,17 @@ NELSON_PLANTED_CLAUSE = (
     "A hip thrust is in place. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
-# A seated rider lines her feet up with the shaft. Negated step/travel clauses pin the feet beside it.
+# A squat lands the pussy behind the feet. Soles sit toward the face so the lower meets the shaft.
 SLIDE_FEET_RE = re.compile(r"slides both feet", re.I)
 SLIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Both feet slide along the linoleum on this same floor spot until they line up with the upright shaft, then the soles stay on that line. "
+    "Both feet slide along the linoleum on this same floor spot until the soles sit at the midpoint between the upright shaft and the partner's face, to the RIGHT of the penis, closer to the face than to the shaft. Then the soles stay on that midpoint. "
+    "Hips lower straight down from that midpoint onto the upright shaft. "
     "The pair stays on this same floor spot."
 )
 SLIDE_PLANTED_CLAUSE = (
-    "Both feet slide along the linoleum on this same floor spot until they line up with the upright shaft, then the soles stay on that line. "
-    "Hips lower on this mark. The camera holds. "
+    "Both feet slide along the linoleum on this same floor spot until the soles sit at the midpoint between the upright shaft and the partner's face, to the RIGHT of the penis, closer to the face than to the shaft. Then the soles stay on that midpoint. "
+    "Hips lower straight down from that midpoint onto the upright shaft. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 # The shaft adult lies back before entry. Negated travel clauses get drawn as steps.
