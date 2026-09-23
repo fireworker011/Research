@@ -1922,6 +1922,10 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     kana_blob = action_blob(mixed, "09-join")
     assert "sits on" in kana_blob
     kana_sit = next(b for b in mixed["beats"] if b["id"] == "09-join-ride")
+    assert "pushes kana backward" not in kana_sit["action"].lower()
+    assert "already on her back" in kana_sit["action"].lower()
+    assert "one shaft" in kana_sit["action"].lower()
+    assert "three separate lowers" in kana_sit["action"].lower()
     _assert_insertion_direction(kana_sit["action"], build_beat_prompt(mixed, kana_sit))
     kana_jupo = next(b for b in mixed["beats"] if b["id"] == "09-join")
     assert extra_keys(kana_jupo) == ["blowjob", "mystic"]
