@@ -3311,20 +3311,38 @@ def _speech_audio(ep: dict[str, Any], beat: dict[str, Any]) -> str:
 
 ORAL_CAMERA_HOLD = (
     "The camera distance stays fixed for the whole take. "
-    "Do not push the camera in. "
     "Aya's face and the partner's face stay in frame the whole take. "
     "Both adults stay full body, both feet in frame."
 )
 
+RIDE_CAMERA_HOLD = (
+    "The camera stays PROFILE side-on. "
+    "The camera distance stays fixed for the whole take. "
+    "Aya's face and the partner's face stay in frame the whole take. "
+    "Both adults stay full body, both feet in frame. "
+    "The hips lower in that side view."
+)
 
-def _oral_camera_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
-    """Fellatio holds a wide full-body frame. Distance does not close."""
+PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
+
+
+def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
+    """Wide oral and side-on ride cameras, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
-        return ""
+        return []
     keys = {key for key, _strength in extra_lora_entries(beat)}
-    if "blowjob" not in keys:
-        return ""
-    return ORAL_CAMERA_HOLD
+    holds: list[str] = []
+    if "blowjob" in keys:
+        holds.append(ORAL_CAMERA_HOLD)
+    if "sideride" in keys:
+        holds.append(RIDE_CAMERA_HOLD)
+    cast = [str(c) for c in (beat.get("cast") or [])]
+    sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
+        NELSON_HOLD_RE.search(str(beat.get("action") or ""))
+    )
+    if beat_loco(beat) == "planted" and len(cast) == 2 and sex:
+        holds.append(PAIR_FRAME_HOLD)
+    return holds
 
 
 def build_beat_prompt(
@@ -3402,11 +3420,16 @@ def build_beat_prompt(
         gpu_index=idx,
         rotate=connect_rotates_camera(ep),
     )
+    if (
+        cam
+        and str(ep.get("slug") or "") == "hospital-exit-adult"
+        and "sideride" in {key for key, _strength in extra_lora_entries(beat)}
+    ):
+        cam = re.sub(r"\s*from directly above\b", "", cam, flags=re.I)
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
-    oral_cam = _oral_camera_hold(ep, beat)
-    if oral_cam:
-        desc.append(oral_cam)
+    for hold_line in _hospital_prompt_holds(ep, beat):
+        desc.append(hold_line)
     desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
     hold = _look_hold(ep, beat)
     if hold:

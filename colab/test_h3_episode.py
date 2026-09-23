@@ -1487,6 +1487,10 @@ def test_hospital_exit_adult_fight_win_exits_after_knockdowns():
     assert "jupo" in str(oral.get("sfx") or "").lower()
     assert all("じゅ" not in str(v.get("line") or "") for v in oral.get("voices") or [])
     assert "keep the lips at the base" in oral_prompt.lower()
+    assert "camera distance stays fixed" in oral_prompt.lower()
+    assert "do not push the camera in" not in oral_prompt.lower()
+    assert "zoom" not in oral_prompt.lower()
+    assert "aya's face and the partner's face stay in frame" in oral_prompt.lower()
     assert "head moves forward" in oral["action"].lower()
     assert "semen share" not in oral_prompt.lower()
     assert oral["trim"]["seconds"] == 5.0
@@ -1653,8 +1657,12 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "directly above the glans" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
     assert "from above" in ride_sit["action"].lower()
-    assert "from directly above" in ride_sit["camera"].lower()
+    assert "from directly above" not in ride_sit["camera"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
+    assert "profile side-on" in ride_prompt.lower()
+    assert "camera distance stays fixed" in ride_prompt.lower()
+    assert "hips lower in that side view" in ride_prompt.lower()
+    assert "only two adults share this frame" in ride_prompt.lower()
     assert SIDERIDE_TRIGGER in ride_prompt
     assert "cowgirl" not in ride_prompt.lower()
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
@@ -2170,7 +2178,9 @@ def test_hospital_gin_tsuno_optional_events():
     jupo_prompt = build_beat_prompt(taken, jupo)
     assert "camera distance stays fixed" in jupo_prompt.lower()
     assert "zoom" not in jupo_prompt.lower()
+    assert "do not push the camera in" not in jupo_prompt.lower()
     assert "aya's face and the partner's face stay in frame" in jupo_prompt.lower()
+    assert "only two adults share this frame" in jupo_prompt.lower()
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
     assert "pale-tan" in jupo_prompt
