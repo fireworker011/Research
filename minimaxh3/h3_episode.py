@@ -437,9 +437,9 @@ SUPINE_PLANTED_CLAUSE = (
     "Normal adult human height, nobody is giant."
 )
 HOSPITAL_FRAME_HOLD = (
-    "The camera holds the opening wide full-body frame for the whole take. "
-    "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
-    "Head, groin, legs, and both feet stay inside the frame together."
+    "Every adult in this shot stays in frame from the top of the head to the tips of both feet for the whole take. "
+    "Two adults means both heads and all four feet stay inside the frame together. "
+    "The camera distance stays fixed. The adults stay the same size from the first frame to the last."
 )
 _HOSPITAL_TRACK_RE = re.compile(
     r"The camera stays in the side plane and tracks only left and right on a straight line at brisk walking game speed\.?",
@@ -2667,7 +2667,14 @@ def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
         out = re.sub(r"\s*from directly above\b", "", out, flags=re.I)
     out = out.replace(
         "at hip-to-shoulder height",
-        "wide full-body, groin and both feet inside the frame",
+        "wide full-body, head and both feet inside the frame",
+    )
+    out = re.sub(r"\bTight on\b", "Wide on", out)
+    out = re.sub(
+        r"wide at (?:hip|chest) height|at (?:shoulder|desk|hip|chest) height",
+        "wide, head to toes",
+        out,
+        flags=re.I,
     )
     out = re.sub(r"a half-step closer,?\s*", "", out, flags=re.I)
     out = _HOSPITAL_TRACK_RE.sub(
@@ -2684,8 +2691,8 @@ def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
         flags=re.I,
     )
     out = re.sub(r"further back so more floor shows,?\s*", "at the same distance, ", out, flags=re.I)
-    if "opening wide full-body frame" not in out:
-        out = out.rstrip(".") + ". " + HOSPITAL_FRAME_HOLD
+    if "both heads and all four feet" not in out.lower():
+        out = out.rstrip(".").strip() + ". " + HOSPITAL_FRAME_HOLD
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
@@ -3539,14 +3546,16 @@ def _speech_audio(ep: dict[str, Any], beat: dict[str, Any]) -> str:
 ORAL_CAMERA_HOLD = (
     "The camera distance stays fixed for the whole take. "
     "Aya's face and the partner's face stay in frame the whole take. "
-    "Both adults stay full body, both feet in frame."
+    "Aya and the partner each stay in frame from the top of the head to the tips of both feet. "
+    "Both heads and all four feet stay inside the frame together."
 )
 
 RIDE_CAMERA_HOLD = (
     "The camera stays PROFILE side-on. "
     "The camera distance stays fixed for the whole take. "
     "Aya's face and the partner's face stay in frame the whole take. "
-    "Both adults stay full body, both feet in frame. "
+    "Aya and the partner each stay in frame from the top of the head to the tips of both feet. "
+    "Both heads and all four feet stay inside the frame together. "
     "The hips lower in that side view."
 )
 
@@ -3657,9 +3666,9 @@ def build_beat_prompt(
         gpu_index=idx,
         rotate=connect_rotates_camera(ep),
     )
-    if cam and str(ep.get("slug") or "") == "hospital-exit-adult":
+    if str(ep.get("slug") or "") == "hospital-exit-adult":
         cam = _hospital_camera_text(
-            cam,
+            cam or "",
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
         )
     if cam:
