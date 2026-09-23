@@ -1640,7 +1640,7 @@ def apply_rei_escape_route(
         )
     else:
         attack_prefix = (
-            "Rei initiates: she grabs the succubus by the waist and presses her to the meat wall. "
+            "Rei initiates: she grabs the succubus by the waist and presses her to the stone wall. "
         )
     filth: str | None = None
     beats: list[Any] = []
@@ -1697,7 +1697,7 @@ def apply_rei_escape_route(
                 row = _inject_rei_filth(row, filth)
             # Who-initiates is the S17 attack cut only. Kiss / oral / pose / S21
             # already describe their own blocking; prefixing "pounces" onto
-            # fours-in (or "presses her to the meat wall" onto orgasm) contradicts
+            # fours-in (or "presses her to the stone wall" onto orgasm) contradicts
             # the overlay.
             if slot == "attack":
                 action = str(row.get("action") or "")
