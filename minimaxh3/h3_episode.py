@@ -445,10 +445,21 @@ SUPINE_PLANTED_CLAUSE = (
     "Normal adult human height, nobody is giant."
 )
 HOSPITAL_FRAME_HOLD = (
+    "Wide full-body shot. The camera sits far back. "
     "Every adult in this shot stays in frame from the top of the head to the tips of both feet for the whole take. "
     "Two adults means both heads and all four feet stay inside the frame together. "
+    "Open floor shows past the tips of both feet. Space stays above both heads. "
     "The camera distance stays fixed. The adults stay the same size from the first frame to the last."
 )
+HOSPITAL_FAR_LEAD = (
+    "Wide full-body. The camera sits far back. Open floor shows past the tips of both feet."
+)
+KISS_FRAME_HOLD = (
+    "The camera sits far back through the kiss. Wide full-body. "
+    "Open floor stays past the tips of both feet while the mouths meet. "
+    "Both heads and all four feet stay inside the frame. The adults stay the same size."
+)
+_KISS_FRAME_RE = re.compile(r"french kiss|mouths joined|\bkiss\b", re.I)
 _HOSPITAL_TRACK_RE = re.compile(
     r"The camera stays in the side plane and tracks only left and right on a straight line at brisk walking game speed\.?",
     re.I,
@@ -2675,12 +2686,13 @@ def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
         out = re.sub(r"\s*from directly above\b", "", out, flags=re.I)
     out = out.replace(
         "at hip-to-shoulder height",
-        "wide full-body, head and both feet inside the frame",
+        "far back, wide full-body, open floor past the tips of both feet",
     )
     out = re.sub(r"\bTight on\b", "Wide on", out)
+    out = re.sub(r"\bstanding close\b", "standing full body, camera far back", out, flags=re.I)
     out = re.sub(
         r"wide at (?:hip|chest) height|at (?:shoulder|desk|hip|chest) height",
-        "wide, head to toes",
+        "far back, wide, head to toes, open floor past the feet",
         out,
         flags=re.I,
     )
@@ -2698,7 +2710,14 @@ def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
         out,
         flags=re.I,
     )
-    out = re.sub(r"further back so more floor shows,?\s*", "at the same distance, ", out, flags=re.I)
+    out = re.sub(
+        r"further back so more floor shows,?\s*",
+        "far back, open floor past the feet, ",
+        out,
+        flags=re.I,
+    )
+    if not out.lower().startswith("wide full-body"):
+        out = HOSPITAL_FAR_LEAD + " " + out
     if "both heads and all four feet" not in out.lower():
         out = out.rstrip(".").strip() + ". " + HOSPITAL_FRAME_HOLD
     return re.sub(r"\s{2,}", " ", out).strip()
@@ -3580,6 +3599,9 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
         holds.append(ORAL_CAMERA_HOLD)
     if "sideride" in keys:
         holds.append(RIDE_CAMERA_HOLD)
+    kiss_blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
+    if _KISS_FRAME_RE.search(kiss_blob):
+        holds.append(KISS_FRAME_HOLD)
     cast = [str(c) for c in (beat.get("cast") or [])]
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
         NELSON_HOLD_RE.search(str(beat.get("action") or ""))

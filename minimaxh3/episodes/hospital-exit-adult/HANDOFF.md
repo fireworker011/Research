@@ -115,7 +115,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## カメラ
 
-全シーン共通。頭の先から足先まで画面に入る。2人でも両方、頭も足も全部。距離は固定。同じ大きさ。`zoom` と `Tight` は書かない。横スク lock の `tracks only left and right` は距離固定に置き換える。冒頭のミキは 22cm もフレームに残る。
+全シーン共通。カメラは遠くに引く。頭の上に余白、足先の先に床。2人でも両方、頭も足も全部。キスのあいだも同じ引きの全身。距離は固定。同じ大きさ。`zoom` と `Tight` と `standing close` は書かない。横スク lock の `tracks only left and right` は距離固定に置き換える。`half-step closer` は消す。冒頭のミキは 22cm もフレームに残る。
 
 ## あやの汚れ
 
