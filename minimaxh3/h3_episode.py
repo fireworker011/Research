@@ -461,6 +461,29 @@ KISS_FRAME_HOLD = (
     "Open floor stays past the tips of both feet while the mouths meet. "
     "Both heads and all four feet stay inside the frame. The adults stay the same size."
 )
+# Non-gin kisses and facials keep both faces inside without a face-filling frame.
+FACE_PAIR_HOLD = (
+    "Both faces stay fully inside the frame. "
+    "The partner's whole face stays inside the frame. "
+    "The camera stays back enough that both faces stay fully inside. "
+    "Aya's face and the partner's face stay in frame. "
+    "The adults stay the same size."
+)
+BEFORE_ACT_FULLBODY = (
+    "Before the shaft enters, the camera sits far back. Wide full-body. "
+    "Both adults stay in frame from the top of the head to the tips of both feet. "
+    "Both faces stay fully inside that wide frame."
+)
+OPENING_KISS_HOLD = (
+    "They start wide full-body. The camera sits far back. "
+    "Open floor shows past the tips of both feet while they walk. "
+    "The camera distance stays fixed during the walk. "
+    "When the mouths meet, the frame holds from above both knees to both faces. "
+    "The erect shaft stays inside the frame. "
+    "Both faces stay fully inside the frame. Miki's whole face stays inside the frame. "
+    "The camera stays back enough that both faces stay fully inside. "
+    "The adults stay the same size."
+)
 _KISS_FRAME_RE = re.compile(r"french kiss|mouths joined|\bkiss\b", re.I)
 _HOSPITAL_TRACK_RE = re.compile(
     r"The camera stays in the side plane and tracks only left and right on a straight line at brisk walking game speed\.?",
@@ -2681,7 +2704,7 @@ def _planted_camera_text(text: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
-def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
+def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) -> str:
     """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss."""
     out = cam
     if sideride:
@@ -2718,10 +2741,12 @@ def _hospital_camera_text(cam: str, *, sideride: bool) -> str:
         out,
         flags=re.I,
     )
-    if not out.lower().startswith("wide full-body"):
-        out = HOSPITAL_FAR_LEAD + " " + out
-    if "both heads and all four feet" not in out.lower():
-        out = out.rstrip(".").strip() + ". " + HOSPITAL_FRAME_HOLD
+    # Face-pair shots name their own frame. A whole-take feet lock would hide the knees-up kiss.
+    if not face_pair:
+        if not out.lower().startswith("wide full-body"):
+            out = HOSPITAL_FAR_LEAD + " " + out
+        if "both heads and all four feet" not in out.lower():
+            out = out.rstrip(".").strip() + ". " + HOSPITAL_FRAME_HOLD
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
@@ -3578,14 +3603,18 @@ ORAL_CAMERA_HOLD = (
     "Aya and the partner each stay in frame from the top of the head to the tips of both feet. "
     "Both heads and all four feet stay inside the frame together."
 )
-# Gin oral keeps ORAL_CAMERA_HOLD. Other oral locks a wide frame so the face stays the same person.
-ORAL_FULLBODY_HOLD = (
-    "Wide full-body. The camera sits far back for the whole take. "
-    "This wide full-body frame stays locked while the lips reach the base. "
-    "The camera distance stays fixed. The adults stay the same size from the first frame to the last. "
-    "Open floor stays past the tips of both feet. Space stays above both heads. "
+# Gin oral keeps ORAL_CAMERA_HOLD. Other oral shows both faces, then widens again before the join.
+ORAL_FACE_HOLD = (
+    "They start wide full-body. "
+    "While the lips reach the base, both faces stay fully inside the frame. "
+    "The partner's whole face stays inside the frame. "
+    "The camera stays back enough that both faces stay fully inside. "
+    "The camera distance stays fixed. "
     "Aya's face and the partner's face stay in frame the whole take. "
-    "Both heads and all four feet stay inside the frame together."
+    "The adults stay the same size. "
+    "Before the join, the camera sits far back. Wide full-body. "
+    "Both adults stay in frame from the top of the head to the tips of both feet. "
+    "Both faces stay fully inside that wide frame."
 )
 
 RIDE_CAMERA_HOLD = (
@@ -3604,22 +3633,40 @@ RIDE_CAMERA_HOLD = (
 PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
 
 
+def _hospital_face_pair(beat: dict[str, Any]) -> bool:
+    """Non-gin oral, facial, and kiss use a face frame instead of feet for the whole take."""
+    bid = str(beat.get("id") or "")
+    if "gin" in bid:
+        return False
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
+    if "blowjob" in keys or bid == "09-kana-facial":
+        return True
+    return bool(_KISS_FRAME_RE.search(blob))
+
+
 def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
-    """Wide oral and side-on ride cameras, and a two-person lock on planted sex."""
+    """Face-safe oral and kiss cameras, side-on rides, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return []
     keys = {key for key, _strength in extra_lora_entries(beat)}
     holds: list[str] = []
+    bid = str(beat.get("id") or "")
+    gin = "gin" in bid
+    blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
     if "blowjob" in keys:
-        bid = str(beat.get("id") or "")
-        if "gin" in bid:
-            holds.append(ORAL_CAMERA_HOLD)
-        else:
-            holds.append(ORAL_FULLBODY_HOLD)
+        holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
     if "sideride" in keys:
         holds.append(RIDE_CAMERA_HOLD)
-    kiss_blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
-    if _KISS_FRAME_RE.search(kiss_blob):
+    if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
+        holds.append(OPENING_KISS_HOLD)
+    elif not gin and bid == "09-kana-facial":
+        holds.append(FACE_PAIR_HOLD)
+    elif not gin and _KISS_FRAME_RE.search(blob) and "blowjob" not in keys:
+        holds.append(FACE_PAIR_HOLD)
+        if re.search(r"travels into|before the shaft enters", blob, re.I):
+            holds.append(BEFORE_ACT_FULLBODY)
+    elif gin and _KISS_FRAME_RE.search(blob):
         holds.append(KISS_FRAME_HOLD)
     cast = [str(c) for c in (beat.get("cast") or [])]
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
@@ -3725,6 +3772,7 @@ def build_beat_prompt(
         cam = _hospital_camera_text(
             cam or "",
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
+            face_pair=_hospital_face_pair(beat),
         )
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
