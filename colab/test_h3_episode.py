@@ -2342,8 +2342,9 @@ def test_hospital_gin_tsuno_optional_events():
 def test_hospital_chain_dropdown_overrides_t2v_locks():
     """Chain/landing follow the dropdown over authored connect:t2v on the ward.
 
-    First shot stays T2V. A newly added person stays T2V. Same-cast acts,
-    including pose, toilet, gin, tsuno, and fight, become I2V. Cut stays all T2V.
+    First shot stays T2V. A -spot newcomer stays I2V. Other new people stay T2V.
+    Same-cast acts, including pose, toilet, gin, tsuno, and fight, become I2V.
+    Cut stays all T2V.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     accept = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
@@ -2360,15 +2361,15 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert beat_source(twelve) == "chain"
     peek_spot = next(b for b in accept["beats"] if b["id"] == "04-peek-spot")
     peek = next(b for b in accept["beats"] if b["id"] == "04-peek")
-    assert beat_source(peek_spot) == "t2v"
+    assert beat_source(peek_spot) == "chain"
     assert beat_source(peek) == "chain"
     kana_spot = next(b for b in accept["beats"] if b["id"] == "07-kana-spot")
     kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
-    assert beat_source(kana_spot) == "t2v"
+    assert beat_source(kana_spot) == "chain"
     assert beat_source(kana) == "chain"
     shino_spot = next(b for b in accept["beats"] if b["id"] == "10-shino-spot")
     shino = next(b for b in accept["beats"] if b["id"] == "10-shino")
-    assert beat_source(shino_spot) == "t2v"
+    assert beat_source(shino_spot) == "chain"
     assert beat_source(shino) == "chain"
 
     assert "steps right" not in nine["action"].lower()
@@ -2422,7 +2423,17 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     lick_spot = next(b for b in gin["beats"] if b["id"] == "04-gin-lick-spot")
     lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
     assert lick_spot.get("connect") == "t2v"
-    assert beat_source(lick_spot) == "t2v"
+    assert beat_source(lick_spot) == "chain"
+    measured = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        gin_override="犯される",
+        tsuno_override="受け入れる立ちバック",
+        toilet_override="pee",
+        connect_override="chain",
+    )
+    gpu = [b for b in measured["beats"] if not is_ui_beat(b) and beat_renders(b)]
+    assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover"]
     assert lick.get("connect") == "t2v"
     assert beat_source(lick) == "chain"
     gin_in = next(b for b in gin["beats"] if b["id"] == "04-gin-jupo")
@@ -2433,7 +2444,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert tin.get("connect") == "t2v"
     assert beat_source(tin) == "chain"
 
-    # Unexpected T2V is only the first shot or a new person. Authored t2v no longer blocks chain.
+    # Unexpected T2V is only the first shot or a new person outside a -spot. Authored t2v no longer blocks chain.
     sweeps = [
         dict(story_override="受け入れる"),
         dict(story_override="誘う", invite_pose_override="騎乗位"),
@@ -2453,7 +2464,8 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             added = cast - prev
             if beat_source(beat) == "t2v" and not first and not added:
                 raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
-            if beat_source(beat) == "chain" and (first or added):
+            spot = str(beat.get("id") or "").endswith("-spot")
+            if beat_source(beat) == "chain" and (first or (added and not spot)):
                 raise AssertionError(f"chain on a new body {beat['id']} {kw}")
             first = False
             prev = cast
@@ -2479,8 +2491,9 @@ def test_hospital_end_connect_is_runtime_selectable():
             nxt = beat
             break
     assert nxt is not None
-    # Next encounter adds Kana, so I2V cannot invent her: T2V.
-    assert beat_source(nxt) == "t2v"
+    # The next encounter is a -spot. Chain keeps it I2V so Kana walks into Aya's last frame.
+    assert str(nxt["id"]).endswith("-spot")
+    assert beat_source(nxt) == "chain"
 
     chained = prepare_episode(
         raw,
@@ -2502,7 +2515,8 @@ def test_hospital_end_connect_is_runtime_selectable():
             follow = beat
             break
     assert follow is not None
-    assert beat_source(follow) == "t2v"
+    assert str(follow["id"]).endswith("-spot")
+    assert beat_source(follow) == "chain"
     assert chained["render"]["end_connect"] == "chain"
 
     followed = prepare_episode(
@@ -2596,7 +2610,7 @@ def test_hospital_clip_failures_are_rewritten():
     six = next(b for b in invite["beats"] if b["id"] == "06-doggy")
     six_peak = next(b for b in invite["beats"] if b["id"] == "06-doggy-peak")
     assert six_spot.get("connect") == "t2v"
-    assert beat_source(six_spot) == "t2v"
+    assert beat_source(six_spot) == "chain"
     assert six.get("connect") == "t2v"
     assert beat_source(six) == "chain"
     assert beat_source(six_peak) == "chain"

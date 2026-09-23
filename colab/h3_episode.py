@@ -1140,7 +1140,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     t2v: every GPU beat is T2V including the first (prompt-correctable, cameras may change).
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
-    Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person is still T2V later.
+    Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1315,9 +1315,10 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
     an extra body cannot be deleted by saying 'only X in frame'.
 
     Grow (new person): T2V, so the newcomer is actually generated.
+    A -spot encounter stays chain: the newcomer walks into the previous frame.
     Shrink (someone left): keep them in this beat's cast, fade them in the
     action, and KEEP the chain so 05→06 is a fade instead of a jump.
-    Grow and shrink together: T2V.
+    Grow and shrink together: T2V, except a -spot, which stays chain.
     """
     out = copy.deepcopy(ep)
     prev: set[str] = set()
@@ -1332,7 +1333,8 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
         dropped = prev - intended_set
         added = intended_set - prev
         if beat_source(item) == "chain" and not item.get("reuse"):
-            if added:
+            spot = str(item.get("id") or "").endswith("-spot")
+            if added and not spot:
                 item["source"] = "t2v"
                 item.pop("still_as", None)
                 item.pop("fade_cast", None)
