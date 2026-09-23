@@ -220,15 +220,24 @@ LORA_FILES = {
     "mystic": "MysticXXX_MMH3-V4.safetensors",
     # Story-pack oral act (h3-lora-studio catalog blowjob-h3).
     "blowjob": "MM-H3_Blowjob_v3.safetensors",
+    # H3 futanari growth (Mistermango23 v5.1). Trained words: penis growth.
+    "futatf": "MiniMax-H3_Futa_Transformations_LoRA_V5.1.safetensors",
+    # H3 passionate kiss. Strength 1.0. Not the cxy kiss file.
+    "kiss": "MM-H3 - Passionate Kiss.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
     "mystic": "https://huggingface.co/lynaNSFW/mysticxxx_MM_H3/resolve/main/MysticXXX_MMH3-V4.safetensors",
     "blowjob": "https://civitai.com/api/download/models/3285598?fileId=3169863",
+    "futatf": "https://civitai.com/api/download/models/3212000?fileId=3093723",
+    "kiss": "https://civitai.com/api/download/models/3289478?fileId=3173897",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
+# futatf and kiss stay at the author's 1.0. Drive still saves under models/loras.
 LORA_STRENGTHS = {
     "blowjob": 0.8,
+    "futatf": 1.0,
+    "kiss": 1.0,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 COMBAT_ROUTE_KEY = "combat_on"
@@ -2242,8 +2251,9 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         _check("rei-moth-mouth", rei_moth="mouth")
         _check("rei-attack-her", rei_attack="her")
         _check("rei-kiss-on", rei_kiss="on")
-        _check("rei-oral-her", rei_oral="her")
-        _check("rei-oral-rei", rei_oral="rei")
+        _check("rei-kiss-off", rei_kiss="off")
+        _check("rei-oral-on", rei_oral="on")
+        _check("rei-oral-skip", rei_oral="skip")
         _check("rei-pose-wall", rei_pose="wall")
         _check("rei-pose-straddle", rei_pose="straddle")
         _check("rei-pose-supine", rei_pose="supine")
@@ -2255,7 +2265,7 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             rei_moth="mouth",
             rei_attack="her",
             rei_kiss="on",
-            rei_oral="her",
+            rei_oral="on",
             rei_pose="straddle",
         )
         return errs

@@ -13,10 +13,24 @@ REI_LOCK = (
     "C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, "
     "no shoes, no socks, bare feet, fully erect 24cm penis that is her own photorealistic human flesh "
     "attached at the groin, skin-colored, not a toy, not plastic, not neon pink, always visible even after ejaculation. "
+    "Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, "
+    "thighs, legs, feet, and the fully erect 24cm penis. Damp dirty hair stuck to the forehead. "
+    "The sweat and dirt stay readable on the skin and on the shaft. "
     "Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, "
     "eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Tongue out ONLY when the action "
     "says climax or the circular snout is milking her. Protagonist name is Rei only. Do not replace Rei with a male body. "
     "The 24cm penis does not disappear after climax"
+)
+REI_LOCK_GONE = (
+    "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, "
+    "C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, "
+    "no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. "
+    "Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, "
+    "thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. "
+    "The sweat and dirt stay readable on the skin. "
+    "Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, "
+    "eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. "
+    "Protagonist name is Rei only. Do not replace Rei with a male body"
 )
 BEAST_LOCK = (
     "aberrant circular maw growing from a ruined castle stone column and a dead fireplace, "
@@ -42,6 +56,11 @@ SUCC_LOCK = (
     "slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts "
     "and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, "
     "foot claws remain, photorealistic"
+)
+SUCC_GROWN = (
+    SUCC_LOCK
+    + " penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, "
+    "skin-colored, not a toy, not plastic, not neon pink"
 )
 WORLD = (
     "photorealistic side-scrolling ruined gothic castle, stone hall with pointed windows and a stone staircase "
@@ -70,6 +89,12 @@ FACE_REST = (
 )
 FACE_ORGASM = "Rei orgasm face: tongue out, drool, runny nose, trembling"
 NUDE = "Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin"
+NUDE_AFTER = (
+    "Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. "
+    "Sweat beads and grimy brown dirt stay readable on her skin"
+)
+GONE_LOCK = {"rei": REI_LOCK_GONE}
+GROWN_LOCK = {"rei": REI_LOCK_GONE, "succubus": SUCC_GROWN}
 
 
 def hud(stage: str, *, complete: bool = False, hint: str = "汚れなし") -> dict:
@@ -106,6 +131,7 @@ def beat(
     cut: bool = False,
     loco: str | None = None,
     place: str | None = None,
+    cast_lock: dict | None = None,
 ) -> dict:
     out: dict = {
         "id": bid,
@@ -129,6 +155,8 @@ def beat(
         out["connect"] = "t2v"
     if loco:
         out["loco"] = loco
+    if cast_lock:
+        out["cast_lock"] = cast_lock
     if extra is not None:
         out["extra_loras"] = extra
     if slot:
@@ -162,102 +190,92 @@ def ov(action: str, **kwargs: object) -> dict:
     return out
 
 
-def mast_pair(prefix: str, stage: str) -> dict:
-    stand = (
-        f"side view, {NUDE}, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, "
-        "one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, "
-        f"{FACE_REST}, no enemy in frame"
-    )
-    back = (
-        f"side view, {NUDE}, Rei lying on her back on the stone hall floor, knees up, "
-        f"NOT walking, one hand sliding the 24cm penis base-to-head, {FACE_REST}, stone vault above, no enemy in frame"
-    )
+def hazard(bid: str, action: str, stage: str) -> dict:
     return beat(
-        f"{prefix}-mast",
-        stand,
+        bid,
+        action,
         seconds=6.0,
+        extra=["mystic"],
         voice=("んっ", "はあ"),
-        slot="mast",
         stage=stage,
+        cut=True,
         loco="planted",
-        overlays={
-            "rei_mast_stand": ov(stand, id=f"{prefix}-mast-stand", loco="planted"),
-            "rei_mast_back": ov(back, id=f"{prefix}-mast-back", loco="planted"),
-        },
     )
+
+
+def _pair(insert: str, piston: str, in_id: str, out_id: str) -> list[dict]:
+    return [
+        ov(insert, id=in_id, cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ"), loco="planted", cast_lock=GROWN_LOCK),
+        ov(piston, id=out_id, cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ"), loco="planted", cast_lock=GROWN_LOCK),
+    ]
 
 
 def pose_fours() -> list[dict]:
     insert = (
-        f"{POSE_BAN}. {NUDE}. side view, succubus on palms and knees on the stone hall floor facing right, wings "
-        "along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the "
-        f"base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, {FACE_REST}"
+        f"{POSE_BAN}. {NUDE_AFTER}. side view, Rei on palms and knees on the stone hall floor facing right, "
+        "NOT walking, knees and feet planted. The succubus kneels still behind her, feet planted, and pushes her own "
+        "erect 24cm penis into Rei's hairless slit from behind until the base meets Rei's hips, HOLD, no piston yet. "
+        f"Clawed hands planted. Wings along the succubus back. Sweat and dirt stay on Rei. {FACE_REST}"
     )
     piston = (
-        f"{POSE_BAN}. same palms-and-knees side view, both still planted, hips slam base-to-mid-to-base only after the "
-        f"hilt is already buried, then creampie overflow, {FACE_ORGASM}, "
-        "succubus looking back, 24cm stays erect after pullout, no walk-away"
+        f"{POSE_BAN}. same palms-and-knees side view, both still planted. Only after the succubus shaft is buried "
+        f"to the base do her hips move base-to-mid-to-base, then creampie overflow inside Rei, {FACE_ORGASM}. "
+        "The grown shaft stays on the succubus. No penis on Rei. Sweat and dirt stay on Rei. No walk-away"
     )
-    return [
-        ov(insert, id="20-fours-in", cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ"), loco="planted"),
-        ov(piston, id="20-fours-out", cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ"), loco="planted"),
-    ]
+    return _pair(insert, piston, "20-fours-in", "20-fours-out")
 
 
 def pose_wall() -> list[dict]:
     insert = (
-        f"{POSE_BAN}. {NUDE}. side view, CAMERA LOCKED, background does not scroll. "
-        "Succubus STANDING STILL facing right, PALMS FLAT on the stone wall, fingers spread, knees "
-        "slightly bent, wings up, clawed feet planted on the stone floor, NOT walking, NOT striding, NOT tiptoe-walking. "
-        "Rei STANDING STILL behind her toward the left, feet planted, hips against her hips. "
-        "The 24cm penis ENTERS her hairless slit from behind and the entire shaft slides in until the base meets her buttocks and HOLDS. "
+        f"{POSE_BAN}. {NUDE_AFTER}. side view, CAMERA LOCKED, background does not scroll. "
+        "Rei STANDING STILL facing the stone wall, PALMS FLAT on the stone wall, fingers spread, knees "
+        "slightly bent, bare feet planted, NOT walking, NOT striding, NOT tiptoe-walking. "
+        "The succubus STANDING STILL behind her, clawed feet planted, wings up, hips against Rei's hips. "
+        "The succubus's erect 24cm penis ENTERS Rei's hairless slit from behind and the entire shaft slides in "
+        "until the base meets Rei's buttocks and HOLDS. "
         "The penis is INSIDE the vagina. The shaft is surrounded by the slit. The tip is not on the far side of a thigh. "
-        f"No piston yet. {FACE_REST}"
+        f"No piston yet. No penis on Rei. Sweat and dirt stay on Rei. {FACE_REST}"
     )
     piston = (
-        f"{POSE_BAN}. same standing side view, CAMERA LOCKED, palms still flat on the wall, both still planted, "
-        f"standing in-and-out to the hilt then creampie overflow down her thighs, succubus climax face, {FACE_ORGASM}, "
-        "24cm stays erect after pullout, succubus does not walk away, penis stays inside until pullout, never through the thigh"
+        f"{POSE_BAN}. same standing side view, CAMERA LOCKED, Rei's palms still flat on the wall, both still planted, "
+        f"the succubus moves in-and-out to the hilt then creampie overflow from Rei's slit down her thighs, {FACE_ORGASM}, "
+        "the succubus does not walk away, her penis stays inside until pullout, never through the thigh. "
+        "No penis on Rei. Sweat and dirt stay on Rei"
     )
-    return [
-        ov(insert, id="20-wall-in", cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ"), loco="planted"),
-        ov(piston, id="20-wall-out", cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ"), loco="planted"),
-    ]
+    return _pair(insert, piston, "20-wall-in", "20-wall-out")
 
 
-def pose_straddle() -> list[dict]:
+def pose_over() -> list[dict]:
     ride = (
-        f"{POSE_BAN}. {NUDE}. side view, CAMERA LOCKED. Rei lies on her back on the stone hall floor, not walking. "
-        "The succubus straddles her, sinks until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop "
-        f"until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still, {FACE_REST} until the last drops"
+        f"{POSE_BAN}. {NUDE_AFTER}. side view, CAMERA LOCKED. Rei lies on her back on the stone hall floor, not walking, "
+        "knees open. The succubus kneels over Rei's hips and sinks her own erect 24cm penis into Rei's hairless slit "
+        "until the base meets Rei, HOLD, then her hips rise until mid-shaft shows and drop until the base meets Rei, "
+        f"repeat. Wings open for balance. Claws on Rei's chest. Rei holds still. Sweat and dirt stay on Rei. {FACE_REST}"
     )
     cream = (
-        f"{POSE_BAN}. same straddle, last drops go to the hilt and hold, creampie overflow around the "
-        f"buried base, succubus mouth open, {FACE_ORGASM}, "
-        "24cm stays erect after she lifts off, wings still in frame"
+        f"{POSE_BAN}. same bodies, last drops go to the hilt and hold, creampie overflow from Rei's slit around the "
+        f"buried base, succubus mouth open, {FACE_ORGASM}. "
+        "The grown shaft stays on the succubus when she lifts off. No penis on Rei. Sweat and dirt stay on Rei. Wings still in frame"
     )
-    return [
-        ov(ride, id="20-straddle-ride", cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ"), loco="planted"),
-        ov(cream, id="20-straddle-out", cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ"), loco="planted"),
-    ]
+    return _pair(ride, cream, "20-straddle-ride", "20-straddle-out")
 
 
 def pose_supine() -> list[dict]:
     insert = (
-        f"{POSE_BAN}. {NUDE}. side view, CAMERA LOCKED. succubus on her back on the stone hall floor, knees "
-        "open, wings spread under her, not walking, Rei kneels still between her legs, places the 24cm head at the hairless slit then "
-        f"pushes until the entire shaft is buried to the base and STOPS, insertion locked, no thrusting yet, claws on Rei's shoulders, {FACE_REST}"
+        f"{POSE_BAN}. {NUDE_AFTER}. side view, CAMERA LOCKED. Rei on her back on the stone hall floor, knees "
+        "open, not walking. The succubus kneels still between Rei's legs, wings spread, and places the head of her own "
+        "erect 24cm penis at Rei's hairless slit, then pushes until the entire shaft is buried to the base and STOPS. "
+        f"No thrusting yet. Claws on Rei's shoulders. Sweat and dirt stay on Rei. {FACE_REST}"
     )
     piston = (
-        f"{POSE_BAN}. same bodies same side-view angle as the previous clip, only after the hilt is "
-        "already buried do the hips start an in-and-out: pull out to mid-shaft then slam back to the "
-        f"base, repeat, then creampie overflow, {FACE_ORGASM}, "
-        "succubus climax face, 24cm stays buried then stays erect after pullout"
+        f"{POSE_BAN}. same bodies, same side-view angle, only after the succubus shaft is already buried do her hips "
+        "start an in-and-out: pull out to mid-shaft then slam back to the base, repeat, then creampie overflow inside Rei, "
+        f"{FACE_ORGASM}. No penis on Rei. The grown shaft stays on the succubus. Sweat and dirt stay on Rei"
     )
-    return [
-        ov(insert, id="20-supine-in", cast=["rei", "succubus"], seconds=8.0, voice=("はあ", "んっ"), loco="planted"),
-        ov(piston, id="20-supine-out", cast=["rei", "succubus"], seconds=8.0, voice=("いく", "はあ"), loco="planted"),
-    ]
+    return _pair(insert, piston, "20-supine-in", "20-supine-out")
+
+
+pose_straddle = pose_over
 
 
 def build() -> dict:
@@ -338,7 +356,14 @@ def build() -> dict:
             loco="run",
             place=VAULT,
         ),
-        mast_pair("03", "01"),
+        hazard(
+            "03-slime",
+            f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL, feet planted, NOT walking, {FACE_REST}. "
+            "A translucent slime mass the size of her torso rises from the stone floor, no human face, no hands. "
+            "A circular mouth in the slime seals over her fully erect 24cm penis to the base and milks with slow inner pulses. "
+            "Sweat and dirt stay on her skin. Then the slime collapses and is gone. Only Rei remains",
+            "01",
+        ),
         beat(
             "04-enemy1",
             f"side view 16:9 encounter, CAMERA LOCKED. {NUDE}. Rei STANDING STILL on the left facing right, feet planted, NOT walking, "
@@ -399,13 +424,19 @@ def build() -> dict:
                 "rei_beast_evade": ov(s06_evade, id="06-fade-run-b", seconds=6.0, voice=("はあ",), loco="run"),
             },
         ),
-        mast_pair("07", "01"),
+        hazard(
+            "07-hearth",
+            f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL in front of the dead fireplace, feet planted, "
+            f"NOT walking, {FACE_REST}. The hearth mouth is a stone-gray circular opening, not a human face. "
+            "It slides over her fully erect 24cm penis to the base and the inner stone throat pulses. "
+            "Sweat and dirt stay on her skin. Then the hearth mouth releases and she is alone",
+            "01",
+        ),
         beat(
             "08-toilet",
             f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL on the left, feet planted, NOT walking, {FACE_REST}, "
             "facing a carnivorous-plant seat grown in the castle hall: green outer rind, wet inner bowl, "
             "nectar-colored liquid in the bowl, plant flesh formed like a western seat, NOT ceramic, NOT porcelain, NOT a bathtub, "
-            "skin unstained, "
             "no other people, brief pause",
             seconds=6.0,
             voice=("んっ",),
@@ -458,14 +489,20 @@ def build() -> dict:
         beat(
             "10-run-c",
             f"side-scrolling runner shot, {NUDE}, {FACE_REST}, Rei sprinting left to right through the vaulted stone corridor, "
-            "long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, skin clean",
+            "long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, sweat and dirt stay on her skin",
             seconds=6.0,
             voice=("はあ",),
             stage="02",
             loco="run",
             place=VAULT,
         ),
-        mast_pair("11", "02"),
+        hazard(
+            "11-leech",
+            f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL, feet planted, NOT walking, {FACE_REST}. "
+            "A thick leech, no face, no hands, clamps its round mouth on her fully erect 24cm penis and stays sealed "
+            "at the base while its body pulses. Sweat and dirt stay on her skin. Then the leech drops off and is gone",
+            "02",
+        ),
         beat(
             "12-moth",
             f"side view encounter, CAMERA LOCKED. {NUDE}. Rei STANDING STILL, feet planted, NOT walking, {FACE_REST}. "
@@ -508,13 +545,22 @@ def build() -> dict:
             loco="run",
             place=VAULT,
         ),
-        mast_pair("15", "03"),
+        hazard(
+            "15-tentacles",
+            f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL, feet planted, NOT walking, {FACE_REST}. "
+            "Wet tentacles rise from a crack in the stone floor, no human face. One circular mouth seals on her "
+            "fully erect 24cm penis to the base and pulses. Sweat and dirt stay on her skin. "
+            "Then the tentacles withdraw into the crack",
+            "03",
+        ),
         beat(
             "16-succ",
             f"side view 16:9, CAMERA LOCKED. {NUDE}. Rei STANDING STILL, feet planted, NOT walking, {FACE_REST}. "
-            "Succubus dropping in from the right of the castle hall, fully nude bare skin, hairless vulva, exposed breasts and slit, "
+            "Succubus stands in from the right of the castle hall, fully nude bare skin, hairless vulva, exposed breasts and slit, "
             "wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, "
-            "obsessed expression, reaching for Rei, only Rei plus this one succubus, both still, brief pause",
+            "obsessed expression, reaching toward Rei but not touching yet. The fully erect 24cm penis is still Rei's, "
+            "still attached at Rei's groin. Just before contact. Only Rei plus this one succubus, both still, brief pause. "
+            "Sweat and dirt stay on Rei",
             cast=["rei", "succubus"],
             seconds=6.0,
             voice=("はあ",),
@@ -525,61 +571,53 @@ def build() -> dict:
         beat(
             "17-attack",
             f"side view, CAMERA LOCKED, background does not scroll. {NUDE}. Both STANDING STILL, feet planted, NOT walking. "
-            f"Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, "
-            f"wings pinned back, claws visible, fully nude succubus, only these two, {FACE_REST}",
+            "They touch. Futanari transformation. penis growth. Rei's fully erect 24cm penis shrinks away until it is gone "
+            "and only a hairless slit remains. The succubus grows an erect 24cm penis of her own flesh at the groin, "
+            "penis growth, from nothing to the full 24cm. Wings, horns, choker, and claws stay. "
+            f"Sweat and dirt stay on Rei. Only these two. {FACE_REST}",
             cast=["rei", "succubus"],
-            seconds=6.0,
+            seconds=8.0,
+            extra=["futatf"],
             voice=("んっ", "はあ"),
-            slot="attack",
             stage="04",
             loco="planted",
-            overlays={
-                "rei_attack_rei": ov(
-                    f"side view, CAMERA LOCKED, background does not scroll. {NUDE}. Both STANDING STILL, feet planted, NOT walking. "
-                    f"Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, "
-                    f"wings pinned back, claws visible, fully nude succubus, only these two, {FACE_REST}",
-                    id="17-from-rei",
-                    cast=["rei", "succubus"],
-                    loco="planted",
-                ),
-                "rei_attack_her": ov(
-                    f"side view, CAMERA LOCKED, background does not scroll. {NUDE}. Both STANDING STILL, feet planted, NOT walking. "
-                    f"Succubus pounces and wraps torn pink-red wings around Rei, tongue on Rei's neck, claws on Rei's hips, "
-                    f"24cm trapped between their bellies, fully nude, only these two, {FACE_REST}",
-                    id="17-from-her",
-                    cast=["rei", "succubus"],
-                    loco="planted",
-                ),
-            },
+            cast_lock={"succubus": SUCC_GROWN},
         ),
         beat(
             "18-kiss",
-            f"side view, CAMERA LOCKED. {NUDE}. Both STANDING STILL, feet planted, NOT walking. "
-            "Both tongues visible inside an open-mouth kiss, saliva string, succubus red eyes "
-            "half-lidded, horns and choker in frame, torn wings behind, fully nude, only these two",
+            f"side view, CAMERA LOCKED. {NUDE_AFTER}. Frontal embrace. Both STANDING STILL, feet planted, NOT walking. "
+            "They kiss passionately. Both tongues visible inside the open mouths, saliva string, succubus red eyes "
+            "half-lidded, horns and choker in frame, torn wings behind. The succubus's erect 24cm stays on her. "
+            "No penis on Rei. Sweat and dirt stay on Rei. Only these two",
             cast=["rei", "succubus"],
             seconds=6.0,
+            extra=["kiss"],
             voice=("んっ",),
             slot="kiss",
             stage="04",
             loco="planted",
+            cast_lock=GROWN_LOCK,
             overlays={
                 "rei_kiss_on": ov(
-                    f"side view, CAMERA LOCKED. {NUDE}. Both STANDING STILL, feet planted, NOT walking. "
-                    "Both tongues visible inside an open-mouth kiss, saliva string, succubus red eyes "
-                    "half-lidded, horns and choker in frame, torn wings behind, fully nude, only these two",
-                    id="18-kiss-on",
+                    f"side view, CAMERA LOCKED. {NUDE_AFTER}. Frontal embrace. Both STANDING STILL, feet planted, NOT walking. "
+                    "They kiss passionately. Both tongues visible inside the open mouths, saliva string, succubus red eyes "
+                    "half-lidded, horns and choker in frame, torn wings behind. The succubus's erect 24cm stays on her. "
+                    "No penis on Rei. Sweat and dirt stay on Rei. Only these two",
+                    id="18-kiss",
+                    extra=["kiss"],
                     cast=["rei", "succubus"],
                     loco="planted",
+                    cast_lock=GROWN_LOCK,
                 ),
             },
         ),
         beat(
             "19-oral",
-            f"CAMERA LOCKED. {NUDE}. Both still, NOT walking. Succubus kneels in side view. Her lips part over the head of the 24cm penis, slide to the base, "
-            f"hold, then pull back to the head. Repeat. Tongue flat on the underside. Spit strings from her lower "
-            f"lip. Red eyes look along the shaft. Wings folded. Horns, choker, hand claws stay. Fully nude, hairless. "
-            f"{FACE_REST} on Rei until the last seconds. Do not cut the clip before several full base-to-head passes. Only these two",
+            f"CAMERA LOCKED. {NUDE_AFTER}. The succubus STANDING STILL, feet planted, her erect 24cm pointing forward, "
+            "wings folded, horns and choker stay. Rei squats with thighs spread, feet planted, NOT walking. "
+            "Rei's lips travel the succubus 24cm from the head to the base and back, several full passes. "
+            "One of Rei's hands stays on her own hairless slit. The other hand travels from the succubus thigh up to the waist. "
+            f"No penis on Rei. Sweat and dirt stay on Rei. {FACE_REST} until the last seconds. Only these two",
             cast=["rei", "succubus"],
             seconds=8.0,
             extra=["blowjob"],
@@ -587,29 +625,21 @@ def build() -> dict:
             slot="oral",
             stage="04",
             loco="planted",
+            cast_lock=GROWN_LOCK,
             overlays={
-                "rei_oral_her": ov(
-                    f"CAMERA LOCKED. {NUDE}. Both still, NOT walking. Succubus kneels in side view. Her lips part over the head of the 24cm penis, slide to the "
-                    f"base, hold, then pull back to the head. Repeat. Tongue flat on the underside. Spit strings from "
-                    f"her lower lip. Red eyes look along the shaft. Wings folded. Horns, choker, hand claws stay. "
-                    f"Fully nude, hairless. {FACE_REST} on Rei until the last seconds. Do not cut the clip before several full base-to-head passes. Only these two",
-                    id="19-oral-her",
+                "rei_oral_on": ov(
+                    f"CAMERA LOCKED. {NUDE_AFTER}. The succubus STANDING STILL, feet planted, her erect 24cm pointing forward, "
+                    "wings folded, horns and choker stay. Rei squats with thighs spread, feet planted, NOT walking. "
+                    "Rei's lips travel the succubus 24cm from the head to the base and back, several full passes. "
+                    "One of Rei's hands stays on her own hairless slit. The other hand travels from the succubus thigh up to the waist. "
+                    f"No penis on Rei. Sweat and dirt stay on Rei. {FACE_REST} until the last seconds. Only these two",
+                    id="19-oral",
                     extra=["blowjob"],
                     seconds=8.0,
                     voice=("んっ", "はあ"),
                     cast=["rei", "succubus"],
                     loco="planted",
-                ),
-                "rei_oral_rei": ov(
-                    f"CAMERA LOCKED. {NUDE}. Both still, NOT walking. Rei kneels or bends. Tongue travels up the succubus hairless slit from bottom to top, then "
-                    "circles the clitoris. Succubus stands or sits on the stone hall floor, wings open, thighs apart, mouth "
-                    "falling open, horns and claws in frame, fully nude. Only these two",
-                    id="19-oral-rei",
-                    extra=[],
-                    seconds=8.0,
-                    voice=("んっ", "はあ"),
-                    cast=["rei", "succubus"],
-                    loco="planted",
+                    cast_lock=GROWN_LOCK,
                 ),
             },
         ),
@@ -622,6 +652,7 @@ def build() -> dict:
             slot="pose",
             stage="04",
             loco="planted",
+            cast_lock=GROWN_LOCK,
             overlays={
                 "rei_pose_fours": pose_fours(),
                 "rei_pose_wall": pose_wall(),
@@ -631,45 +662,52 @@ def build() -> dict:
         ),
         beat(
             "21-orgasm",
-            f"side view, CAMERA LOCKED. {NUDE}. Both still, NOT walking. {FACE_ORGASM}, visible creampie overflow "
-            "around the 24cm where it is still buried, succubus climax face, 24cm stays buried then stays erect "
-            "after pullout, wings horns choker claws still on the nude succubus, no extra people",
+            f"side view, CAMERA LOCKED. {NUDE_AFTER}. Both still, NOT walking. {FACE_ORGASM}. "
+            "The succubus's erect 24cm is still buried in Rei's hairless slit. Visible creampie overflow from Rei's slit. "
+            "No penis on Rei. The grown shaft is gone from Rei and stays on the succubus. "
+            "Sweat and dirt stay on Rei. Wings, horns, choker, and claws stay on the succubus. No extra people",
             cast=["rei", "succubus"],
             seconds=8.0,
             voice=("いく", "はあ"),
             stage="04",
             loco="planted",
+            cast_lock=GROWN_LOCK,
         ),
         beat(
             "22-succ-fade",
-            f"succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. {NUDE}. "
+            f"succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. {NUDE_AFTER}. "
+            f"No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. "
             f"Mouth closes, tongue retracts, {FACE_REST}. Then she starts running right through the vaulted stone corridor",
             seconds=6.0,
             voice=("はあ",),
             stage="04",
             loco="run",
             place=VAULT,
+            cast_lock=GONE_LOCK,
         ),
         beat(
             "23-run-e",
-            f"side-scrolling runner shot, {NUDE}, {FACE_REST}, Rei sprinting left to right toward a bright tear of light at the RIGHT "
-            "end of the vaulted stone corridor, erect 24cm bouncing, no enemy",
+            f"side-scrolling runner shot, {NUDE_AFTER}, {FACE_REST}, Rei sprinting left to right toward a bright tear of light "
+            "at the RIGHT end of the vaulted stone corridor, no enemy. No penis. The grown shaft is gone. "
+            "Sweat beads and grimy brown dirt stay readable on her skin",
             seconds=6.0,
             voice=("はあ",),
             stage="04",
             loco="run",
             place=VAULT,
+            cast_lock=GONE_LOCK,
         ),
         beat(
             "24-escape",
-            f"side-scrolling exit, {NUDE}, {FACE_REST}, a bright tear of light at the right end of the vaulted stone corridor, Rei running into "
-            "the light, leaving the ruined castle, she still has the 24cm erect penis, "
-            "she does not wash. Do not erase the penis",
+            f"side-scrolling exit, {NUDE_AFTER}, {FACE_REST}, a bright tear of light at the right end of the vaulted stone corridor, "
+            "Rei running into the light, leaving the ruined castle. No penis. The grown shaft is gone. "
+            "Sweat beads and grimy brown dirt stay readable on her skin. She does not wash",
             seconds=6.0,
             voice=("はあ",),
             stage="EXIT",
             loco="run",
             place=VAULT,
+            cast_lock=GONE_LOCK,
         ),
     ]
     beats[-1]["hud"] = hud("EXIT", complete=True)
@@ -696,8 +734,8 @@ def build() -> dict:
             "rei_beast": "accept",
             "rei_moth": "tail",
             "rei_attack": "rei",
-            "rei_kiss": "off",
-            "rei_oral": "skip",
+            "rei_kiss": "on",
+            "rei_oral": "on",
             "rei_pose": "fours",
         },
         "style": (

@@ -37,16 +37,12 @@ __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
-__MAST_HELP__
-REI_MAST = __MAST_DEFAULT__  #@param __MAST_CHOICES__
 __TOILET_HELP__
 REI_TOILET = __TOILET_DEFAULT__  #@param __TOILET_CHOICES__
 __BEAST_HELP__
 REI_BEAST = __BEAST_DEFAULT__  #@param __BEAST_CHOICES__
 __MOTH_HELP__
 REI_MOTH = __MOTH_DEFAULT__  #@param __MOTH_CHOICES__
-__ATTACK_HELP__
-REI_ATTACK = __ATTACK_DEFAULT__  #@param __ATTACK_CHOICES__
 __KISS_HELP__
 REI_KISS = __KISS_DEFAULT__  #@param __KISS_CHOICES__
 __ORAL_HELP__
@@ -76,11 +72,9 @@ os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
-os.environ["H3_EPISODE_REI_MAST"] = REI_MAST
 os.environ["H3_EPISODE_REI_TOILET"] = REI_TOILET
 os.environ["H3_EPISODE_REI_BEAST"] = REI_BEAST
 os.environ["H3_EPISODE_REI_MOTH"] = REI_MOTH
-os.environ["H3_EPISODE_REI_ATTACK"] = REI_ATTACK
 os.environ["H3_EPISODE_REI_KISS"] = REI_KISS
 os.environ["H3_EPISODE_REI_ORAL"] = REI_ORAL
 os.environ["H3_EPISODE_REI_POSE"] = REI_POSE
@@ -163,11 +157,9 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 
 {form_readme("combat")}
 
-**5. 合間おな** — しないが既定
+**5. 合間** — ドロップダウンは無い。`03-slime` `07-hearth` `11-leech` `15-tentacles` は常時 T2V。extra は mystic
 
-{form_readme("rei_mast")}
-
-**6. トイレ** — 着座おなが既定。肉壁が洋式の形。陶器も脱糞もなし。以後汚れなし
+**6. トイレ** — 着座おなが既定。肉壁が洋式の形。陶器も脱糞もなし。汗と茶色い汚れは容姿固定のまま
 
 {form_readme("rei_toilet")}
 
@@ -179,21 +171,19 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 
 {form_readme("rei_moth")}
 
-**サキュバス（9〜12。顔のキス → フェラ／クンニ → 挿入）**
+**サキュバス（9〜12。変化 → 正面抱擁 → しゃがみ往復 → 挿入）**
 
-**9. 誰から襲う**
+**9. 変化** — ドロップダウンは無い。`17-attack` は触れて変化。レイの竿が消え切れ目だけ。サキュバスは penis growth で 24cm。extra は futatf
 
-{form_readme("rei_attack")}
-
-**10. キス（顔。フェラではない）**
+**10. キス（正面抱擁。既定オン）**
 
 {form_readme("rei_kiss")}
 
-**11. フェラ／クンニ** — いわゆるフェラかクンニ。しないなら挿入へ
+**11. しゃがみ往復（既定オン）** — サキュバスは立ち、レイは股を開いてしゃがむ。片手は自分の切れ目、片手は腿から腰
 
 {form_readme("rei_oral")}
 
-**12. 挿入の体勢** — 四つん這い後ろからが既定
+**12. 挿入の体勢** — 挿入側はサキュバス。中出しはレイ。四つん這い後ろからが既定
 
 {form_readme("rei_pose")}
 
@@ -227,9 +217,6 @@ def make_nb() -> dict:
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
         .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
-        .replace("__MAST_HELP__", form_markdown("rei_mast", "5. 合間おな"))
-        .replace("__MAST_DEFAULT__", json.dumps(ui_default("rei_mast"), ensure_ascii=False))
-        .replace("__MAST_CHOICES__", json.dumps(ui_choices("rei_mast"), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("rei_toilet", "6. トイレ — どれでも次へ。肉壁便器。脱糞なし"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("rei_toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("rei_toilet"), ensure_ascii=False))
@@ -239,13 +226,10 @@ def make_nb() -> dict:
         .replace("__MOTH_HELP__", form_markdown("rei_moth", "8. 蛾女"))
         .replace("__MOTH_DEFAULT__", json.dumps(ui_default("rei_moth"), ensure_ascii=False))
         .replace("__MOTH_CHOICES__", json.dumps(ui_choices("rei_moth"), ensure_ascii=False))
-        .replace("__ATTACK_HELP__", form_markdown("rei_attack", "9. 誰から襲う"))
-        .replace("__ATTACK_DEFAULT__", json.dumps(ui_default("rei_attack"), ensure_ascii=False))
-        .replace("__ATTACK_CHOICES__", json.dumps(ui_choices("rei_attack"), ensure_ascii=False))
-        .replace("__KISS_HELP__", form_markdown("rei_kiss", "10. キス（顔。フェラではない）"))
+        .replace("__KISS_HELP__", form_markdown("rei_kiss", "10. キス（正面抱擁。既定オン）"))
         .replace("__KISS_DEFAULT__", json.dumps(ui_default("rei_kiss"), ensure_ascii=False))
         .replace("__KISS_CHOICES__", json.dumps(ui_choices("rei_kiss"), ensure_ascii=False))
-        .replace("__ORAL_HELP__", form_markdown("rei_oral", "11. フェラ／クンニ"))
+        .replace("__ORAL_HELP__", form_markdown("rei_oral", "11. しゃがみ往復（既定オン）"))
         .replace("__ORAL_DEFAULT__", json.dumps(ui_default("rei_oral"), ensure_ascii=False))
         .replace("__ORAL_CHOICES__", json.dumps(ui_choices("rei_oral"), ensure_ascii=False))
         .replace("__POSE_HELP__", form_markdown("rei_pose", "12. 挿入の体勢"))

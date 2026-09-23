@@ -1,15 +1,15 @@
 # Character Lock（毎回先頭）
 
 ## レイ
-21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。**絶対全裸。** 常時ボッキ24cmは自分の肌の竿。デフォルト顔は口を閉じ舌は中。舌出しはじゅぼの快感とイキ顔のときだけ。主人公名はレイだけ。24cmは射精後も消えない。
+21歳美女。茶髪ロングストレート。スレンダー。くびれた腰。Cカップ。ふたなり。**絶対全裸。** 汗の粒と茶色い汚れが全身と竿に読める。16 までは常時ボッキ24cmは自分の肌の竿。17 で切れ目だけになり、24cm はサキュバスへ移る。22 以降は No penis。汗と汚れは残す。デフォルト顔は口を閉じ舌は中。舌出しはじゅぼの快感とイキ顔のときだけ。主人公名はレイだけ。
 
-same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored. Default face: mouth closed, tongue fully inside, flushed cheeks only. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only.
+same character lock every shot: Rei, 21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, bare feet. Visible sweat beads and smeared grimy brown dirt all over the body and, through 16, on the fully erect 24cm penis. From 17 the shaft is gone from Rei and only a hairless slit remains. Default face: mouth closed, tongue fully inside, flushed cheeks only. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only.
 
 服装デフォルト: 全裸。破れ服・デニム・靴は出さない。
 
 混線防止（編集者向け。プロンプト本文には他作品の名前を書かない）:
 - 主人公名はレイだけ
-- 24cmは敵イベント終了後も消えない
+- 16 までは 24cm はレイの竿。17 以降はサキュバス側。22 以降のレイは No penis
 - このフォルダ以外の本編キャラは登場しない
 
 ## 敵1（シーン1・柱と炊醬の同一円口）

@@ -21,8 +21,8 @@
     "rei_beast": "accept",
     "rei_moth": "tail",
     "rei_attack": "rei",
-    "rei_kiss": "off",
-    "rei_oral": "skip",
+    "rei_kiss": "on",
+    "rei_oral": "on",
     "rei_pose": "fours"
   },
   "style": "Third-person side-scrolling game cutscene look, live-action photoreal game footage, pulled-back full-body PROFILE framing, brisk real-time playback, no anime, no illustration",
@@ -38,7 +38,7 @@
       "name_ja": "レイ",
       "name_en": "Rei",
       "age": 21,
-      "lock": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored, not a toy, not plastic, not neon pink, always visible even after ejaculation. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only. Do not replace Rei with a male body. The 24cm penis does not disappear after climax",
+      "lock": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, futanari, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet, fully erect 24cm penis that is her own photorealistic human flesh attached at the groin, skin-colored, not a toy, not plastic, not neon pink, always visible even after ejaculation. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the fully erect 24cm penis. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin and on the shaft. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Tongue out ONLY when the action says climax or the circular snout is milking her. Protagonist name is Rei only. Do not replace Rei with a male body. The 24cm penis does not disappear after climax",
       "voice": "breathy young adult female voice"
     },
     "beast": {
@@ -204,7 +204,7 @@
       "loco": "run"
     },
     {
-      "id": "03-mast",
+      "id": "03-slime",
       "source": "t2v",
       "camera_pack": "none",
       "trim": {
@@ -218,7 +218,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. A translucent slime mass the size of her torso rises from the stone floor, no human face, no hands. A circular mouth in the slime seals over her fully erect 24cm penis to the base and milks with slow inner pulses. Sweat and dirt stay on her skin. Then the slime collapses and is gone. Only Rei remains",
       "voices": [
         {
           "who": "rei",
@@ -246,18 +246,11 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "loco": "planted",
-      "rei_slot": "mast",
-      "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
-        "id": "03-mast-stand",
-        "loco": "planted"
-      },
-      "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
-        "id": "03-mast-back",
-        "loco": "planted"
-      }
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
       "id": "04-enemy1",
@@ -495,7 +488,7 @@
       }
     },
     {
-      "id": "07-mast",
+      "id": "07-hearth",
       "source": "t2v",
       "camera_pack": "none",
       "trim": {
@@ -509,7 +502,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL in front of the dead fireplace, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. The hearth mouth is a stone-gray circular opening, not a human face. It slides over her fully erect 24cm penis to the base and the inner stone throat pulses. Sweat and dirt stay on her skin. Then the hearth mouth releases and she is alone",
       "voices": [
         {
           "who": "rei",
@@ -537,18 +530,11 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "loco": "planted",
-      "rei_slot": "mast",
-      "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
-        "id": "07-mast-stand",
-        "loco": "planted"
-      },
-      "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
-        "id": "07-mast-back",
-        "loco": "planted"
-      }
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
       "id": "08-toilet",
@@ -565,7 +551,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, facing a carnivorous-plant seat grown in the castle hall: green outer rind, wet inner bowl, nectar-colored liquid in the bowl, plant flesh formed like a western seat, NOT ceramic, NOT porcelain, NOT a bathtub, skin unstained, no other people, brief pause",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL on the left, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, facing a carnivorous-plant seat grown in the castle hall: green outer rind, wet inner bowl, nectar-colored liquid in the bowl, plant flesh formed like a western seat, NOT ceramic, NOT porcelain, NOT a bathtub, no other people, brief pause",
       "voices": [
         {
           "who": "rei",
@@ -713,7 +699,7 @@
       "props": [],
       "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through the vaulted stone corridor, long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, skin clean",
+      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right through the vaulted stone corridor, long brown hair flowing, erect 24cm penis bouncing, no enemy in frame, sweat and dirt stay on her skin",
       "voices": [
         {
           "who": "rei",
@@ -740,7 +726,7 @@
       "loco": "run"
     },
     {
-      "id": "11-mast",
+      "id": "11-leech",
       "source": "t2v",
       "camera_pack": "none",
       "trim": {
@@ -754,7 +740,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. A thick leech, no face, no hands, clamps its round mouth on her fully erect 24cm penis and stays sealed at the base while its body pulses. Sweat and dirt stay on her skin. Then the leech drops off and is gone",
       "voices": [
         {
           "who": "rei",
@@ -782,18 +768,11 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "loco": "planted",
-      "rei_slot": "mast",
-      "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
-        "id": "11-mast-stand",
-        "loco": "planted"
-      },
-      "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
-        "id": "11-mast-back",
-        "loco": "planted"
-      }
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
       "id": "12-moth",
@@ -985,7 +964,7 @@
       "loco": "run"
     },
     {
-      "id": "15-mast",
+      "id": "15-tentacles",
       "source": "t2v",
       "camera_pack": "none",
       "trim": {
@@ -999,7 +978,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Wet tentacles rise from a crack in the stone floor, no human face. One circular mouth seals on her fully erect 24cm penis to the base and pulses. Sweat and dirt stay on her skin. Then the tentacles withdraw into the crack",
       "voices": [
         {
           "who": "rei",
@@ -1027,18 +1006,11 @@
         ],
         "complete": false
       },
+      "connect": "t2v",
       "loco": "planted",
-      "rei_slot": "mast",
-      "rei_mast_stand": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei STANDING STILL on the stone hall floor, NOT running, NOT walking, feet planted, one or both hands sliding the fully erect 24cm penis from base to head, grip traveling the full 24cm, hips twitching, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, no enemy in frame",
-        "id": "15-mast-stand",
-        "loco": "planted"
-      },
-      "rei_mast_back": {
-        "action": "side view, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei lying on her back on the stone hall floor, knees up, NOT walking, one hand sliding the 24cm penis base-to-head, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, stone vault above, no enemy in frame",
-        "id": "15-mast-back",
-        "loco": "planted"
-      }
+      "extra_loras": [
+        "mystic"
+      ]
     },
     {
       "id": "16-succ",
@@ -1056,7 +1028,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Succubus dropping in from the right of the castle hall, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, obsessed expression, reaching for Rei, only Rei plus this one succubus, both still, brief pause",
+      "action": "side view 16:9, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Rei STANDING STILL, feet planted, NOT walking, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Succubus stands in from the right of the castle hall, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, obsessed expression, reaching toward Rei but not touching yet. The fully erect 24cm penis is still Rei's, still attached at Rei's groin. Just before contact. Only Rei plus this one succubus, both still, brief pause. Sweat and dirt stay on Rei",
       "voices": [
         {
           "who": "rei",
@@ -1089,7 +1061,7 @@
       "camera_pack": "none",
       "trim": {
         "start": 0,
-        "seconds": 6.0
+        "seconds": 8.0
       },
       "cast": [
         "rei",
@@ -1099,7 +1071,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+      "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. They touch. Futanari transformation. penis growth. Rei's fully erect 24cm penis shrinks away until it is gone and only a hairless slit remains. The succubus grows an erect 24cm penis of her own flesh at the groin, penis growth, from nothing to the full 24cm. Wings, horns, choker, and claws stay. Sweat and dirt stay on Rei. Only these two. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
       "voices": [
         {
           "who": "rei",
@@ -1128,25 +1100,12 @@
         "complete": false
       },
       "loco": "planted",
-      "rei_slot": "attack",
-      "rei_attack_rei": {
-        "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Rei grabs the succubus by the waist and presses her to the stone wall, dominant, 24cm erect against the succubus belly, wings pinned back, claws visible, fully nude succubus, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
-        "id": "17-from-rei",
-        "cast": [
-          "rei",
-          "succubus"
-        ],
-        "loco": "planted"
+      "cast_lock": {
+        "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
       },
-      "rei_attack_her": {
-        "action": "side view, CAMERA LOCKED, background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Succubus pounces and wraps torn pink-red wings around Rei, tongue on Rei's neck, claws on Rei's hips, 24cm trapped between their bellies, fully nude, only these two, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
-        "id": "17-from-her",
-        "cast": [
-          "rei",
-          "succubus"
-        ],
-        "loco": "planted"
-      }
+      "extra_loras": [
+        "futatf"
+      ]
     },
     {
       "id": "18-kiss",
@@ -1164,7 +1123,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Both tongues visible inside an open-mouth kiss, saliva string, succubus red eyes half-lidded, horns and choker in frame, torn wings behind, fully nude, only these two",
+      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. Frontal embrace. Both STANDING STILL, feet planted, NOT walking. They kiss passionately. Both tongues visible inside the open mouths, saliva string, succubus red eyes half-lidded, horns and choker in frame, torn wings behind. The succubus's erect 24cm stays on her. No penis on Rei. Sweat and dirt stay on Rei. Only these two",
       "voices": [
         {
           "who": "rei",
@@ -1189,15 +1148,29 @@
         "complete": false
       },
       "loco": "planted",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+        "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+      },
+      "extra_loras": [
+        "kiss"
+      ],
       "rei_slot": "kiss",
       "rei_kiss_on": {
-        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both STANDING STILL, feet planted, NOT walking. Both tongues visible inside an open-mouth kiss, saliva string, succubus red eyes half-lidded, horns and choker in frame, torn wings behind, fully nude, only these two",
-        "id": "18-kiss-on",
+        "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. Frontal embrace. Both STANDING STILL, feet planted, NOT walking. They kiss passionately. Both tongues visible inside the open mouths, saliva string, succubus red eyes half-lidded, horns and choker in frame, torn wings behind. The succubus's erect 24cm stays on her. No penis on Rei. Sweat and dirt stay on Rei. Only these two",
+        "extra_loras": [
+          "kiss"
+        ],
+        "id": "18-kiss",
         "cast": [
           "rei",
           "succubus"
         ],
-        "loco": "planted"
+        "loco": "planted",
+        "cast_lock": {
+          "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+          "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+        }
       }
     },
     {
@@ -1216,7 +1189,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Succubus kneels in side view. Her lips part over the head of the 24cm penis, slide to the base, hold, then pull back to the head. Repeat. Tongue flat on the underside. Spit strings from her lower lip. Red eyes look along the shaft. Wings folded. Horns, choker, hand claws stay. Fully nude, hairless. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face on Rei until the last seconds. Do not cut the clip before several full base-to-head passes. Only these two",
+      "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. The succubus STANDING STILL, feet planted, her erect 24cm pointing forward, wings folded, horns and choker stay. Rei squats with thighs spread, feet planted, NOT walking. Rei's lips travel the succubus 24cm from the head to the base and back, several full passes. One of Rei's hands stays on her own hairless slit. The other hand travels from the succubus thigh up to the waist. No penis on Rei. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last seconds. Only these two",
       "voices": [
         {
           "who": "rei",
@@ -1245,12 +1218,16 @@
         "complete": false
       },
       "loco": "planted",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+        "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+      },
       "extra_loras": [
         "blowjob"
       ],
       "rei_slot": "oral",
-      "rei_oral_her": {
-        "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Succubus kneels in side view. Her lips part over the head of the 24cm penis, slide to the base, hold, then pull back to the head. Repeat. Tongue flat on the underside. Spit strings from her lower lip. Red eyes look along the shaft. Wings folded. Horns, choker, hand claws stay. Fully nude, hairless. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face on Rei until the last seconds. Do not cut the clip before several full base-to-head passes. Only these two",
+      "rei_oral_on": {
+        "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. The succubus STANDING STILL, feet planted, her erect 24cm pointing forward, wings folded, horns and choker stay. Rei squats with thighs spread, feet planted, NOT walking. Rei's lips travel the succubus 24cm from the head to the base and back, several full passes. One of Rei's hands stays on her own hairless slit. The other hand travels from the succubus thigh up to the waist. No penis on Rei. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last seconds. Only these two",
         "extra_loras": [
           "blowjob"
         ],
@@ -1264,7 +1241,7 @@
             "line": "はあ"
           }
         ],
-        "id": "19-oral-her",
+        "id": "19-oral",
         "cast": [
           "rei",
           "succubus"
@@ -1273,31 +1250,11 @@
           "start": 0,
           "seconds": 8.0
         },
-        "loco": "planted"
-      },
-      "rei_oral_rei": {
-        "action": "CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Rei kneels or bends. Tongue travels up the succubus hairless slit from bottom to top, then circles the clitoris. Succubus stands or sits on the stone hall floor, wings open, thighs apart, mouth falling open, horns and claws in frame, fully nude. Only these two",
-        "extra_loras": [],
-        "voices": [
-          {
-            "who": "rei",
-            "line": "んっ"
-          },
-          {
-            "who": "rei",
-            "line": "はあ"
-          }
-        ],
-        "id": "19-oral-rei",
-        "cast": [
-          "rei",
-          "succubus"
-        ],
-        "trim": {
-          "start": 0,
-          "seconds": 8.0
-        },
-        "loco": "planted"
+        "loco": "planted",
+        "cast_lock": {
+          "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+          "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+        }
       }
     },
     {
@@ -1316,7 +1273,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the stone hall floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+      "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. side view, Rei on palms and knees on the stone hall floor facing right, NOT walking, knees and feet planted. The succubus kneels still behind her, feet planted, and pushes her own erect 24cm penis into Rei's hairless slit from behind until the base meets Rei's hips, HOLD, no piston yet. Clawed hands planted. Wings along the succubus back. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
       "voices": [
         {
           "who": "rei",
@@ -1345,10 +1302,14 @@
         "complete": false
       },
       "loco": "planted",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+        "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+      },
       "rei_slot": "pose",
       "rei_pose_fours": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, succubus on palms and knees on the stone hall floor facing right, wings along her back, NOT walking, Rei standing still behind her toward the left, feet planted, pushes the 24cm in from behind until the base meets her hips, HOLD, no piston yet, clawed hands planted, clawed feet visible, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. side view, Rei on palms and knees on the stone hall floor facing right, NOT walking, knees and feet planted. The succubus kneels still behind her, feet planted, and pushes her own erect 24cm penis into Rei's hairless slit from behind until the base meets Rei's hips, HOLD, no piston yet. Clawed hands planted. Wings along the succubus back. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1368,10 +1329,14 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         },
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same palms-and-knees side view, both still planted, hips slam base-to-mid-to-base only after the hilt is already buried, then creampie overflow, Rei orgasm face: tongue out, drool, runny nose, trembling, succubus looking back, 24cm stays erect after pullout, no walk-away",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same palms-and-knees side view, both still planted. Only after the succubus shaft is buried to the base do her hips move base-to-mid-to-base, then creampie overflow inside Rei, Rei orgasm face: tongue out, drool, runny nose, trembling. The grown shaft stays on the succubus. No penis on Rei. Sweat and dirt stay on Rei. No walk-away",
           "voices": [
             {
               "who": "rei",
@@ -1391,12 +1356,16 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         }
       ],
       "rei_pose_wall": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED, background does not scroll. Succubus STANDING STILL facing right, PALMS FLAT on the stone wall, fingers spread, knees slightly bent, wings up, clawed feet planted on the stone floor, NOT walking, NOT striding, NOT tiptoe-walking. Rei STANDING STILL behind her toward the left, feet planted, hips against her hips. The 24cm penis ENTERS her hairless slit from behind and the entire shaft slides in until the base meets her buttocks and HOLDS. The penis is INSIDE the vagina. The shaft is surrounded by the slit. The tip is not on the far side of a thigh. No piston yet. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. side view, CAMERA LOCKED, background does not scroll. Rei STANDING STILL facing the stone wall, PALMS FLAT on the stone wall, fingers spread, knees slightly bent, bare feet planted, NOT walking, NOT striding, NOT tiptoe-walking. The succubus STANDING STILL behind her, clawed feet planted, wings up, hips against Rei's hips. The succubus's erect 24cm penis ENTERS Rei's hairless slit from behind and the entire shaft slides in until the base meets Rei's buttocks and HOLDS. The penis is INSIDE the vagina. The shaft is surrounded by the slit. The tip is not on the far side of a thigh. No piston yet. No penis on Rei. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1416,10 +1385,14 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         },
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same standing side view, CAMERA LOCKED, palms still flat on the wall, both still planted, standing in-and-out to the hilt then creampie overflow down her thighs, succubus climax face, Rei orgasm face: tongue out, drool, runny nose, trembling, 24cm stays erect after pullout, succubus does not walk away, penis stays inside until pullout, never through the thigh",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same standing side view, CAMERA LOCKED, Rei's palms still flat on the wall, both still planted, the succubus moves in-and-out to the hilt then creampie overflow from Rei's slit down her thighs, Rei orgasm face: tongue out, drool, runny nose, trembling, the succubus does not walk away, her penis stays inside until pullout, never through the thigh. No penis on Rei. Sweat and dirt stay on Rei",
           "voices": [
             {
               "who": "rei",
@@ -1439,12 +1412,16 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         }
       ],
       "rei_pose_straddle": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. Rei lies on her back on the stone hall floor, not walking. The succubus straddles her, sinks until the 24cm is buried to the base, HOLD, then her hips rise until mid-shaft shows and drop until the base meets her, repeat, wings open for balance, claws on Rei's chest, Rei holds still, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face until the last drops",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. side view, CAMERA LOCKED. Rei lies on her back on the stone hall floor, not walking, knees open. The succubus kneels over Rei's hips and sinks her own erect 24cm penis into Rei's hairless slit until the base meets Rei, HOLD, then her hips rise until mid-shaft shows and drop until the base meets Rei, repeat. Wings open for balance. Claws on Rei's chest. Rei holds still. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1464,10 +1441,14 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         },
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same straddle, last drops go to the hilt and hold, creampie overflow around the buried base, succubus mouth open, Rei orgasm face: tongue out, drool, runny nose, trembling, 24cm stays erect after she lifts off, wings still in frame",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same bodies, last drops go to the hilt and hold, creampie overflow from Rei's slit around the buried base, succubus mouth open, Rei orgasm face: tongue out, drool, runny nose, trembling. The grown shaft stays on the succubus when she lifts off. No penis on Rei. Sweat and dirt stay on Rei. Wings still in frame",
           "voices": [
             {
               "who": "rei",
@@ -1487,12 +1468,16 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         }
       ],
       "rei_pose_supine": [
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. side view, CAMERA LOCKED. succubus on her back on the stone hall floor, knees open, wings spread under her, not walking, Rei kneels still between her legs, places the 24cm head at the hairless slit then pushes until the entire shaft is buried to the base and STOPS, insertion locked, no thrusting yet, claws on Rei's shoulders, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. side view, CAMERA LOCKED. Rei on her back on the stone hall floor, knees open, not walking. The succubus kneels still between Rei's legs, wings spread, and places the head of her own erect 24cm penis at Rei's hairless slit, then pushes until the entire shaft is buried to the base and STOPS. No thrusting yet. Claws on Rei's shoulders. Sweat and dirt stay on Rei. Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face",
           "voices": [
             {
               "who": "rei",
@@ -1512,10 +1497,14 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         },
         {
-          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same bodies same side-view angle as the previous clip, only after the hilt is already buried do the hips start an in-and-out: pull out to mid-shaft then slam back to the base, repeat, then creampie overflow, Rei orgasm face: tongue out, drool, runny nose, trembling, succubus climax face, 24cm stays buried then stays erect after pullout",
+          "action": "no arm, elbow, or hand entering the vagina; the only thing inside is the 24cm penis. Do not start the in-and-out until the shaft is buried to the base. The succubus does not walk away. Do not pack kiss-to-creampie into one clip. Fully nude succubus, keep wings, horns, choker, and claws. Only these two. Feet planted. Background does not scroll. same bodies, same side-view angle, only after the succubus shaft is already buried do her hips start an in-and-out: pull out to mid-shaft then slam back to the base, repeat, then creampie overflow inside Rei, Rei orgasm face: tongue out, drool, runny nose, trembling. No penis on Rei. The grown shaft stays on the succubus. Sweat and dirt stay on Rei",
           "voices": [
             {
               "who": "rei",
@@ -1535,7 +1524,11 @@
             "start": 0,
             "seconds": 8.0
           },
-          "loco": "planted"
+          "loco": "planted",
+          "cast_lock": {
+            "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+            "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+          }
         }
       ]
     },
@@ -1555,7 +1548,7 @@
       "props": [],
       "place": "ruined gothic castle hall, pointed stone windows, stone staircase on the right, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Both still, NOT walking. Rei orgasm face: tongue out, drool, runny nose, trembling, visible creampie overflow around the 24cm where it is still buried, succubus climax face, 24cm stays buried then stays erect after pullout, wings horns choker claws still on the nude succubus, no extra people",
+      "action": "side view, CAMERA LOCKED. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. Both still, NOT walking. Rei orgasm face: tongue out, drool, runny nose, trembling. The succubus's erect 24cm is still buried in Rei's hairless slit. Visible creampie overflow from Rei's slit. No penis on Rei. The grown shaft is gone from Rei and stays on the succubus. Sweat and dirt stay on Rei. Wings, horns, choker, and claws stay on the succubus. No extra people",
       "voices": [
         {
           "who": "rei",
@@ -1583,7 +1576,11 @@
         ],
         "complete": false
       },
-      "loco": "planted"
+      "loco": "planted",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body",
+        "succubus": "succubus, long black hair, glowing red eyes, two black curved horns, crimson facial markings, black choker and thin chain necklace, huge tattered bat wings with pink-red cracked membranes and black torn edges with holes, long thin tail, dark organic markings on the arms as skin, long claws on the fingers, clawed feet, dark spiked scale texture on the lower legs as skin, slender waist, modest-to-full breasts, fully nude bare skin, hairless vulva, exposed breasts and slit, wings remain, horns remain, choker remains, face marks remain, hand claws remain, foot claws remain, photorealistic penis growth, an erect 24cm penis of her own photorealistic human flesh at the groin, skin-colored, not a toy, not plastic, not neon pink"
+      }
     },
     {
       "id": "22-succ-fade",
@@ -1600,7 +1597,7 @@
       "props": [],
       "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she starts running right through the vaulted stone corridor",
+      "action": "succubus fades completely out of frame, no walk-away, no residual wing or tail or horn. Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. Mouth closes, tongue retracts, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face. Then she starts running right through the vaulted stone corridor",
       "voices": [
         {
           "who": "rei",
@@ -1624,7 +1621,10 @@
         ],
         "complete": false
       },
-      "loco": "run"
+      "loco": "run",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body"
+      }
     },
     {
       "id": "23-run-e",
@@ -1641,7 +1641,7 @@
       "props": [],
       "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right toward a bright tear of light at the RIGHT end of the vaulted stone corridor, erect 24cm bouncing, no enemy",
+      "action": "side-scrolling runner shot, Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, Rei sprinting left to right toward a bright tear of light at the RIGHT end of the vaulted stone corridor, no enemy. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin",
       "voices": [
         {
           "who": "rei",
@@ -1665,7 +1665,10 @@
         ],
         "complete": false
       },
-      "loco": "run"
+      "loco": "run",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body"
+      }
     },
     {
       "id": "24-escape",
@@ -1682,7 +1685,7 @@
       "props": [],
       "place": "vaulted stone corridor in the ruined gothic castle, holes in the ceiling, wall hangings on the stone",
       "camera": "Locked side-on 2D side-scroller third-person gameplay camera at hip-to-shoulder height. PROFILE view: the floor runs LEFT to RIGHT across the frame. Adults move LEFT or RIGHT. Everyone in frame stays full body including feet. The camera stays in the side plane",
-      "action": "side-scrolling exit, Rei fully nude bare skin, no fabric anywhere, bare feet, 24cm penis is her own human flesh attached at the groin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, a bright tear of light at the right end of the vaulted stone corridor, Rei running into the light, leaving the ruined castle, she still has the 24cm erect penis, she does not wash. Do not erase the penis",
+      "action": "side-scrolling exit, Rei fully nude bare skin, no fabric anywhere, bare feet. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin, Rei's mouth closed or barely open, tongue fully inside the mouth and hidden, eyes open, flushed cheeks only, not an orgasm face, a bright tear of light at the right end of the vaulted stone corridor, Rei running into the light, leaving the ruined castle. No penis. The grown shaft is gone. Sweat beads and grimy brown dirt stay readable on her skin. She does not wash",
       "voices": [
         {
           "who": "rei",
@@ -1706,7 +1709,10 @@
         ],
         "complete": true
       },
-      "loco": "run"
+      "loco": "run",
+      "cast_lock": {
+        "rei": "21-year-old Japanese beauty, long straight brown hair, slender body, narrow waist, C-cup breasts, FULLY NUDE bare skin, no fabric, no denim, no jacket, no skirt, no shoes, no socks, bare feet. No penis. The grown shaft is gone. Only a hairless slit at the groin. Visible sweat beads and smeared grimy brown dirt all over the body, on the face, breasts, belly, back, arms, thighs, legs, feet, and the hairless slit. Damp dirty hair stuck to the forehead. The sweat and dirt stay readable on the skin. Default face: mouth closed or barely open, lips together, tongue fully inside the mouth and hidden, eyes open looking forward, flushed cheeks only. NOT an orgasm face. NOT ahegao. Protagonist name is Rei only. Do not replace Rei with a male body"
+      }
     }
   ]
 }
