@@ -1738,7 +1738,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "straddles the hips" in ride_sit["action"].lower()
     assert "facing the partner" in ride_sit["action"].lower()
     assert "the pussy stays directly above the glans" in ride_sit["action"].lower()
-    assert "one sole on each side of the upright shaft" in ride_sit["action"].lower()
+    assert "outside the shaft adult's legs, directly beside the buttocks" in ride_sit["action"].lower()
     assert "the glans is directly under the pussy" in ride_sit["action"].lower()
     assert "one vertical line runs from the groin through the glans into the pussy" in ride_sit["action"].lower()
     assert "the glans spreads aya's lips and travels into aya's pussy" in ride_sit["action"].lower()
@@ -2566,7 +2566,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "folds down" not in ride_act
     assert "rises from the crouch" in ride_act
     assert "aya stays the face on the floor" in ride_act
-    assert "one sole on each side of the upright shaft" in ride_act
+    assert "outside the shaft adult's legs, directly beside the buttocks" in ride_act
     assert "the glans is directly under gin's pussy" in ride_act
     assert "the glans spreads gin's lips and travels into gin's pussy" in ride_act
     assert "rooted in aya's groin between the thighs" in ride_act
@@ -3067,7 +3067,7 @@ def test_hospital_clip_failures_are_rewritten():
     assert "stands up" in ride_in["action"].lower()
     assert "buttocks press flush" in ride_in["action"].lower()
     assert "both hands rest" in ride_in["action"].lower()
-    assert "one sole on each side of the upright shaft" in ride_in["action"].lower()
+    assert "outside the shaft adult's legs, directly beside the buttocks" in ride_in["action"].lower()
     assert "the glans is directly under the pussy" in ride_in["action"].lower()
     assert "soles stay on the linoleum" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()

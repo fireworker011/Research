@@ -457,17 +457,21 @@ NELSON_PLANTED_CLAUSE = (
     "A hip thrust is in place. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
-# The pussy and the glans share one vertical line. Soles sit beside the hips.
+# The pussy and the glans share one vertical line. Soles sit outside the legs, beside the buttocks.
 SLIDE_FEET_RE = re.compile(r"slides both feet", re.I)
 SLIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Both feet slide along the linoleum on this same floor spot until the soles sit beside the hips, one sole on each side of the upright shaft. "
+    "Both feet slide along the linoleum on this same floor spot until the soles sit outside the shaft adult's legs, directly beside the buttocks. "
+    "From the viewer, the near sole is in front of the shaft adult's near leg, and the far sole is behind the shaft adult's far leg. "
+    "The hips lower further toward the shaft adult's face. Both hands stay on the chest. "
     "The pussy stops directly above the glans. The glans is directly under the pussy. "
     "Hips lower straight down that vertical line. The glans spreads the lips and travels into the pussy. "
     "The pair stays on this same floor spot."
 )
 SLIDE_PLANTED_CLAUSE = (
-    "Both feet slide along the linoleum on this same floor spot until the soles sit beside the hips, one sole on each side of the upright shaft. "
+    "Both feet slide along the linoleum on this same floor spot until the soles sit outside the shaft adult's legs, directly beside the buttocks. "
+    "From the viewer, the near sole is in front of the shaft adult's near leg, and the far sole is behind the shaft adult's far leg. "
+    "The hips lower further toward the shaft adult's face. Both hands stay on the chest. "
     "The pussy stops directly above the glans. The glans is directly under the pussy. "
     "Hips lower straight down that vertical line. The glans spreads the lips and travels into the pussy. The camera holds. "
     "Normal adult human height, nobody is giant."
