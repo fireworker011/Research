@@ -4327,6 +4327,16 @@ def test_hospital_dog_and_species_slots():
     assert full_ids.index("04-gin-walk") < full_ids.index("04-tsuno-meet-spot") < full_ids.index("05-ui-rei")
     assert full["beats"][-1]["id"] == "12-exit-kiss"
     assert all(not (b.get("hud") or {}).get("complete") for b in full["beats"])
+    tsuno_i = full_ids.index("04-tsuno-walk")
+    assert full_ids[tsuno_i + 1] == "04-dog-spot"
+    assert full_ids.index("04-dog-walk") < full_ids.index("04-slime-spot")
+    tsuno_walk = full["beats"][tsuno_i]
+    assert "t-junction" in tsuno_walk["action"].lower()
+    tsuno_prompt = build_beat_prompt(full, tsuno_walk)
+    assert "as the exit" not in tsuno_prompt.lower()
+    assert "lit open doorway" not in tsuno_prompt.lower()
+    last_prompt = build_beat_prompt(full, full["beats"][-1])
+    assert "as the exit" in last_prompt.lower()
 
 
 def test_hospital_invite_sit_is_face_to_face():

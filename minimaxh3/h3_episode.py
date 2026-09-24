@@ -2876,6 +2876,10 @@ def _is_final_footage_beat(ep: dict[str, Any], beat: dict[str, Any]) -> bool:
 
 def _strip_exit_doorway(text: str) -> str:
     out = str(text or "")
+    out = out.replace(
+        "a lit open doorway at adult height as the exit",
+        "the corridor continues past the right edge",
+    )
     out = out.replace("The lit doorway sits at the RIGHT edge of the frame. ", "The corridor continues past the RIGHT edge. ")
     out = out.replace("doorway at the RIGHT edge, ", "corridor continuing past the RIGHT edge, ")
     out = out.replace("doorway at the RIGHT edge", "corridor continuing past the RIGHT edge")
@@ -3843,6 +3847,9 @@ def build_beat_prompt(
     style = str(ep.get("style") or "").strip().rstrip(".")
     env = str(beat.get("environment") or world.get("lock") or "").strip().rstrip(".")
     place = str(beat.get("place") or "").strip().rstrip(".")
+    if str(ep.get("slug") or "") == "hospital-exit-adult" and not _is_final_footage_beat(ep, beat):
+        env = _strip_exit_doorway(env)
+        place = _strip_exit_doorway(place)
     env_line = env + (f". {place}" if place else "")
     if world.get("bare_set"):
         env_line += (
