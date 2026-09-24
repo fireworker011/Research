@@ -1286,31 +1286,35 @@
       "connect": "t2v",
       "invite_pose_sit": [
         {
-          "id": "03-kiss",
+          "id": "03-kiss-zai1",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "miki"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Miki sits on the linoleum, head on the RIGHT, feet pointing LEFT, the shaft standing vertically straight UP. Aya faces Miki, head on the LEFT, both hands on the chest, then lowers her hips straight down until the buttocks meet the lap.",
-          "action": "They start already on this same linoleum spot. Miki SITS on the linoleum, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 22cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Miki, head on the LEFT, and straddles Miki's lap. Both of Aya's soles stand on the linoleum outside Miki's thighs. Both hands rest on Miki's chest. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Miki's lap and the shaft sits at the BASE inside Aya's pussy. They HOLD still joined at the BASE. This take is the seating of the shaft to the BASE. Miki's hips HOLD STILL. Aya's hips hold still on that join. Both stay fully nude. Full body including feet. Last frame: Aya on Miki's lap, facing Miki, both hands on the chest, shaft at the BASE, head of Miki on the RIGHT, Aya's head on the LEFT. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Miki sits on the linoleum, head on the RIGHT. Aya faces Miki, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "They start on this same linoleum spot. Miki SITS down on the floor where she stands, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 22cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Miki, head on the LEFT, and straddles the lap. Both of Aya's soles stay on the linoleum outside Miki's thighs. Miki and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Miki's lap and the shaft sits at the BASE inside Aya's pussy. The shaft is inside before the hips start to stroke. THEN Aya's hips move straight UP and straight DOWN while the shaft stays inside. Mouths stay joined through that movement. Miki's hips HOLD STILL. Both stay fully nude. Last frame: still joined at the BASE, mouths joined, arms around each other's backs, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "んっ"
-            },
-            {
-              "who": "miki",
-              "line": "はぁっ"
-            },
-            {
-              "who": "aya",
-              "line": "あんっ"
             }
           ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
@@ -1320,20 +1324,74 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "loco": "planted",
-          "connect": "t2v"
+          "loco": "planted"
         },
         {
-          "id": "03-kiss-peak",
+          "id": "03-kiss-zai2",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "miki"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            "mystic"
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Miki sits on the linoleum, head on the RIGHT. Aya faces Miki, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "Already joined at the BASE on this same linoleum spot. Miki stays sitting, head on the RIGHT, both soles on the linoleum. Aya stays astride the lap, head on the LEFT, both soles on those same marks. the erect 22cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Miki and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Aya's hips keep moving straight UP and straight DOWN. The shaft stays inside. Miki's hips HOLD STILL. Both stay fully nude. Last frame: still joined, mouths joined, arms around each other's backs. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "03-kiss-peak",
+          "source": "t2v",
+          "connect": "t2v",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             [
               "mystic",
               0.5
@@ -1351,64 +1409,16 @@
               0.55
             ]
           ],
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Miki stays sitting, head on the RIGHT, feet pointing LEFT. Aya stays astride the lap, head on the LEFT. Both hands stay on the chest. Both pairs of soles stay on the linoleum.",
-          "action": "Already seated at the BASE on this same linoleum spot. Miki stays sitting, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT. Aya stays astride Miki's lap, facing Miki, head on the LEFT, both soles on those same linoleum marks outside Miki's thighs. Both hands stay on Miki's chest. the erect 22cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Short strokes go straight UP and straight DOWN while the shaft stays inside. Miki's hips HOLD STILL. Aya's hips move. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Miki finishes INSIDE Aya: the hips stay flush. A little thick WHITE goo leaks around the base and stays inside Aya's pussy. Both stay fully nude. Full body including feet. Last frame: still joined at the BASE, both hands on the chest, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
+          "trigger": "This video depicts part of sexual intercourse climax. The sitting adult keeps the shaft inside Aya and cums inside of her. Their mouths stay joined.\nPENISLORA",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Miki sits on the linoleum, head on the RIGHT. Aya faces Miki, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "The finish starts at frame one on this same linoleum spot. Miki stays sitting. Aya stays astride the lap. the erect 22cm the same vivid purple as the hips not pale-tan flesh stays at the BASE inside Aya's pussy. Miki and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Miki finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside. Mouths stay joined through the finish. Then the mouths slowly part. A saliva string stretches from Aya's lips to Miki's lips. Both smile. Arms stay around each other's backs. Both stay fully nude. Full body including feet. Last frame: lips apart, saliva string between them, both smiling, shaft still at the BASE. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "あんっ"
-            },
-            {
-              "who": "miki",
-              "line": "くっ"
-            },
-            {
-              "who": "aya",
-              "line": "はぁっ"
             }
           ],
-          "hud": {
-            "mission": "出口に出る",
-            "mission_keyword": "出口",
-            "health": 0.9,
-            "money": "¥0",
-            "objective_bearing": 0,
-            "complete": false,
-            "hint": "□ 誘う",
-            "stamina": 0.3,
-            "heat": 3,
-            "objective_distance": 0.2,
-            "icons_active": []
-          },
-          "loco": "planted",
-          "connect": "t2v"
-        },
-        {
-          "id": "03-kiss-walk",
-          "source": "t2v",
-          "connect": "end",
-          "trim": {
-            "start": 0,
-            "seconds": 4.0
-          },
-          "cast": [
-            "aya"
-          ],
-          "extra_loras": [],
-          "trigger": "",
-          "props": [
-            "rail"
-          ],
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. Miki is gone from frame one. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
-          "voices": [
-            {
-              "who": "aya",
-              "line": "ん"
-            }
-          ],
-          "sfx": "Footsteps on linoleum, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -1419,11 +1429,53 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "still": "",
+          "loco": "planted"
+        },
+        {
+          "id": "03-kiss-walk",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The last frames are only Aya walking RIGHT, full body including both feet.",
+          "action": "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling, mouths joined, tongues intertwine, arms around each other's backs, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 5 seconds Miki steps out of the frame to the RIGHT and is gone. From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body, nobody else in frame. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
           "loco": "walk"
         }
       ]
@@ -6878,31 +6930,35 @@
       "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
       "invite_pose_sit": [
         {
-          "id": "06-doggy",
+          "id": "06-doggy-zai1",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "rei"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Rei sits on the linoleum, head on the RIGHT, feet pointing LEFT, the shaft standing vertically straight UP. Aya faces Rei, head on the LEFT, both hands on the chest, then lowers her hips straight down until the buttocks meet the lap.",
-          "action": "They start already on this same linoleum spot. Rei SITS on the linoleum, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 24cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Rei, head on the LEFT, and straddles Rei's lap. Both of Aya's soles stand on the linoleum outside Rei's thighs. Both hands rest on Rei's chest. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Rei's lap and the shaft sits at the BASE inside Aya's pussy. They HOLD still joined at the BASE. This take is the seating of the shaft to the BASE. Rei's hips HOLD STILL. Aya's hips hold still on that join. Both stay fully nude. Full body including feet. Last frame: Aya on Rei's lap, facing Rei, both hands on the chest, shaft at the BASE, head of Rei on the RIGHT, Aya's head on the LEFT. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Rei sits on the linoleum, head on the RIGHT. Aya faces Rei, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "They start on this same linoleum spot. Rei SITS down on the floor where she stands, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 24cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Rei, head on the LEFT, and straddles the lap. Both of Aya's soles stay on the linoleum outside Rei's thighs. Rei and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Rei's lap and the shaft sits at the BASE inside Aya's pussy. The shaft is inside before the hips start to stroke. THEN Aya's hips move straight UP and straight DOWN while the shaft stays inside. Mouths stay joined through that movement. Rei's hips HOLD STILL. Both stay fully nude. Last frame: still joined at the BASE, mouths joined, arms around each other's backs, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "んっ"
-            },
-            {
-              "who": "rei",
-              "line": "はぁっ"
-            },
-            {
-              "who": "aya",
-              "line": "あんっ"
             }
           ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
@@ -6912,20 +6968,74 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "loco": "planted",
-          "connect": "t2v"
+          "loco": "planted"
         },
         {
-          "id": "06-doggy-peak",
+          "id": "06-doggy-zai2",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "rei"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            "mystic"
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Rei sits on the linoleum, head on the RIGHT. Aya faces Rei, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "Already joined at the BASE on this same linoleum spot. Rei stays sitting, head on the RIGHT, both soles on the linoleum. Aya stays astride the lap, head on the LEFT, both soles on those same marks. the erect 24cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Rei and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Aya's hips keep moving straight UP and straight DOWN. The shaft stays inside. Rei's hips HOLD STILL. Both stay fully nude. Last frame: still joined, mouths joined, arms around each other's backs. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "06-doggy-peak",
+          "source": "t2v",
+          "connect": "t2v",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             [
               "mystic",
               0.5
@@ -6943,64 +7053,16 @@
               0.55
             ]
           ],
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Rei stays sitting, head on the RIGHT, feet pointing LEFT. Aya stays astride the lap, head on the LEFT. Both hands stay on the chest. Both pairs of soles stay on the linoleum.",
-          "action": "Already seated at the BASE on this same linoleum spot. Rei stays sitting, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT. Aya stays astride Rei's lap, facing Rei, head on the LEFT, both soles on those same linoleum marks outside Rei's thighs. Both hands stay on Rei's chest. the erect 24cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Short strokes go straight UP and straight DOWN while the shaft stays inside. Rei's hips HOLD STILL. Aya's hips move. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Rei finishes INSIDE Aya: the hips stay flush. A little thick WHITE goo leaks around the base and stays inside Aya's pussy. Both stay fully nude. Full body including feet. Last frame: still joined at the BASE, both hands on the chest, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
+          "trigger": "This video depicts part of sexual intercourse climax. The sitting adult keeps the shaft inside Aya and cums inside of her. Their mouths stay joined.\nPENISLORA",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Rei sits on the linoleum, head on the RIGHT. Aya faces Rei, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "The finish starts at frame one on this same linoleum spot. Rei stays sitting. Aya stays astride the lap. the erect 24cm the same vivid purple as the hips not pale-tan flesh stays at the BASE inside Aya's pussy. Rei and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Rei finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside. Mouths stay joined through the finish. Then the mouths slowly part. A saliva string stretches from Aya's lips to Rei's lips. Both smile. Arms stay around each other's backs. Both stay fully nude. Full body including feet. Last frame: lips apart, saliva string between them, both smiling, shaft still at the BASE. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "あんっ"
-            },
-            {
-              "who": "rei",
-              "line": "くっ"
-            },
-            {
-              "who": "aya",
-              "line": "はぁっ"
             }
           ],
-          "hud": {
-            "mission": "出口に出る",
-            "mission_keyword": "出口",
-            "health": 0.9,
-            "money": "¥0",
-            "objective_bearing": 0,
-            "complete": false,
-            "hint": "□ 誘う",
-            "stamina": 0.3,
-            "heat": 3,
-            "objective_distance": 0.2,
-            "icons_active": []
-          },
-          "loco": "planted",
-          "connect": "t2v"
-        },
-        {
-          "id": "06-doggy-walk",
-          "source": "t2v",
-          "connect": "end",
-          "trim": {
-            "start": 0,
-            "seconds": 4.0
-          },
-          "cast": [
-            "aya"
-          ],
-          "extra_loras": [],
-          "trigger": "",
-          "props": [
-            "rail"
-          ],
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. Rei is gone from frame one. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
-          "voices": [
-            {
-              "who": "aya",
-              "line": "ん"
-            }
-          ],
-          "sfx": "Footsteps on linoleum, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -7011,11 +7073,53 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "still": "",
+          "loco": "planted"
+        },
+        {
+          "id": "06-doggy-walk",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The last frames are only Aya walking RIGHT, full body including both feet.",
+          "action": "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling, mouths joined, tongues intertwine, arms around each other's backs, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 5 seconds Rei steps out of the frame to the RIGHT and is gone. From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body, nobody else in frame. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
           "loco": "walk"
         }
       ]
@@ -8623,57 +8727,35 @@
           "connect": "t2v"
         },
         {
-          "id": "09-kana-kiss",
-          "camera_pack": "none",
-          "loco": "planted",
+          "id": "09-join-zai1",
+          "source": "t2v",
+          "connect": "t2v",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
           "extra_loras": [
             [
               "kiss",
               0.5
-            ]
-          ],
-          "trigger": "",
-          "trim": {
-            "start": 0,
-            "seconds": 10.0
-          },
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. They start wide full-body. While the mouths stay joined, both faces stay fully inside the frame. Kana's whole face stays inside the frame. The camera stays back enough that both faces stay fully inside. Before the join, the camera sits far back. Wide full-body. Both heads and all four feet stay inside the frame.",
-          "action": "Aya and Kana stand still face to face and WRAP both arms around each other in a tight mutual embrace, chests pressed together. Their mouths MOVE FORWARD and stay joined in a deep wet french kiss, a tongue kiss, tongues push into each other's mouths and lick around the lips and the corners of the mouth. Kana STANDS STILL, erect 20cm the same vivid purple as the hips stays up between them. Thick extra-viscous sticky WHITE goo already clings to Aya's upper body, the face, hair, neck, breasts, shoulders, arms, hands, and belly. They do not walk. Both stay fully nude. Brisk real-time. Motion starts at frame one. Consensual adult game beat",
-          "voices": [
-            {
-              "who": "kana",
-              "line": "んっ"
-            }
-          ],
-          "sfx": "A lip-contact kiss smack when the mouths meet, HVAC",
-          "connect": "t2v"
-        },
-        {
-          "id": "09-join",
-          "trim": {
-            "start": 0,
-            "seconds": 10.0
-          },
-          "extra_loras": [
+            ],
             "mystic"
           ],
           "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Kana sits on the linoleum, head on the RIGHT, feet pointing LEFT, the shaft standing vertically straight UP. Aya faces Kana, head on the LEFT, both hands on the chest, then lowers her hips straight down until the buttocks meet the lap.",
-          "action": "They start already on this same linoleum spot. Kana SITS on the linoleum, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 20cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Kana, head on the LEFT, and straddles Kana's lap. Both of Aya's soles stand on the linoleum outside Kana's thighs. Both hands rest on Kana's chest. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Kana's lap and the shaft sits at the BASE inside Aya's pussy. They HOLD still joined at the BASE. This take is the seating of the shaft to the BASE. Kana's hips HOLD STILL. Aya's hips hold still on that join. Both stay fully nude. Full body including feet. Last frame: Aya on Kana's lap, facing Kana, both hands on the chest, shaft at the BASE, head of Kana on the RIGHT, Aya's head on the LEFT. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Kana sits on the linoleum, head on the RIGHT. Aya faces Kana, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "They start on this same linoleum spot. Kana SITS down on the floor where she stands, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 20cm the same vivid purple as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Kana, head on the LEFT, and straddles the lap. Both of Aya's soles stay on the linoleum outside Kana's thighs. Kana and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Kana's lap and the shaft sits at the BASE inside Aya's pussy. The shaft is inside before the hips start to stroke. THEN Aya's hips move straight UP and straight DOWN while the shaft stays inside. Mouths stay joined through that movement. Kana's hips HOLD STILL. Both stay fully nude. Last frame: still joined at the BASE, mouths joined, arms around each other's backs, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "んっ"
-            },
-            {
-              "who": "kana",
-              "line": "はぁっ"
-            },
-            {
-              "who": "aya",
-              "line": "あんっ"
             }
           ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
@@ -8683,20 +8765,74 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "loco": "planted",
-          "connect": "t2v"
+          "loco": "planted"
         },
         {
-          "id": "09-join-peak",
+          "id": "09-join-zai2",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "kana"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            "mystic"
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Kana sits on the linoleum, head on the RIGHT. Aya faces Kana, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "Already joined at the BASE on this same linoleum spot. Kana stays sitting, head on the RIGHT, both soles on the linoleum. Aya stays astride the lap, head on the LEFT, both soles on those same marks. the erect 20cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Kana and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Aya's hips keep moving straight UP and straight DOWN. The shaft stays inside. Kana's hips HOLD STILL. Both stay fully nude. Last frame: still joined, mouths joined, arms around each other's backs. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "09-join-peak",
+          "source": "t2v",
+          "connect": "t2v",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             [
               "mystic",
               0.5
@@ -8714,64 +8850,16 @@
               0.55
             ]
           ],
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Kana stays sitting, head on the RIGHT, feet pointing LEFT. Aya stays astride the lap, head on the LEFT. Both hands stay on the chest. Both pairs of soles stay on the linoleum.",
-          "action": "Already seated at the BASE on this same linoleum spot. Kana stays sitting, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT. Aya stays astride Kana's lap, facing Kana, head on the LEFT, both soles on those same linoleum marks outside Kana's thighs. Both hands stay on Kana's chest. the erect 20cm the same vivid purple as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Short strokes go straight UP and straight DOWN while the shaft stays inside. Kana's hips HOLD STILL. Aya's hips move. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Kana finishes INSIDE Aya: the hips stay flush. A little thick WHITE goo leaks around the base and stays inside Aya's pussy. Both stay fully nude. Full body including feet. Last frame: still joined at the BASE, both hands on the chest, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
+          "trigger": "This video depicts part of sexual intercourse climax. The sitting adult keeps the shaft inside Aya and cums inside of her. Their mouths stay joined.\nPENISLORA",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Kana sits on the linoleum, head on the RIGHT. Aya faces Kana, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "The finish starts at frame one on this same linoleum spot. Kana stays sitting. Aya stays astride the lap. the erect 20cm the same vivid purple as the hips not pale-tan flesh stays at the BASE inside Aya's pussy. Kana and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Kana finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside. Mouths stay joined through the finish. Then the mouths slowly part. A saliva string stretches from Aya's lips to Kana's lips. Both smile. Arms stay around each other's backs. Both stay fully nude. Full body including feet. Last frame: lips apart, saliva string between them, both smiling, shaft still at the BASE. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "あんっ"
-            },
-            {
-              "who": "kana",
-              "line": "くっ"
-            },
-            {
-              "who": "aya",
-              "line": "はぁっ"
             }
           ],
-          "hud": {
-            "mission": "出口に出る",
-            "mission_keyword": "出口",
-            "health": 0.9,
-            "money": "¥0",
-            "objective_bearing": 0,
-            "complete": false,
-            "hint": "□ 誘う",
-            "stamina": 0.3,
-            "heat": 3,
-            "objective_distance": 0.2,
-            "icons_active": []
-          },
-          "loco": "planted",
-          "connect": "t2v"
-        },
-        {
-          "id": "09-join-walk",
-          "source": "t2v",
-          "connect": "end",
-          "trim": {
-            "start": 0,
-            "seconds": 4.0
-          },
-          "cast": [
-            "aya"
-          ],
-          "extra_loras": [],
-          "trigger": "",
-          "props": [
-            "rail"
-          ],
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. Kana is gone from frame one. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
-          "voices": [
-            {
-              "who": "aya",
-              "line": "ん"
-            }
-          ],
-          "sfx": "Footsteps on linoleum, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -8782,11 +8870,53 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "still": "",
+          "loco": "planted"
+        },
+        {
+          "id": "09-join-walk",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The last frames are only Aya walking RIGHT, full body including both feet.",
+          "action": "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling, mouths joined, tongues intertwine, arms around each other's backs, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 5 seconds Kana steps out of the frame to the RIGHT and is gone. From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body, nobody else in frame. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
           "loco": "walk"
         }
       ]
@@ -10323,31 +10453,35 @@
       "connect": "t2v",
       "invite_pose_sit": [
         {
-          "id": "12-exit",
+          "id": "12-exit-zai1",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "shino"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             "mystic"
           ],
           "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Shino sits on the linoleum, head on the RIGHT, feet pointing LEFT, the shaft standing vertically straight UP. Aya faces Shino, head on the LEFT, both hands on the chest, then lowers her hips straight down until the buttocks meet the lap.",
-          "action": "They start already on this same linoleum spot. Shino SITS on the linoleum, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 30cm the same pale gray-white as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Shino, head on the LEFT, and straddles Shino's lap. Both of Aya's soles stand on the linoleum outside Shino's thighs. Both hands rest on Shino's chest. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Shino's lap and the shaft sits at the BASE inside Aya's pussy. They HOLD still joined at the BASE. This take is the seating of the shaft to the BASE. Shino's hips HOLD STILL. Aya's hips hold still on that join. Both stay fully nude. Full body including feet. Last frame: Aya on Shino's lap, facing Shino, both hands on the chest, shaft at the BASE, head of Shino on the RIGHT, Aya's head on the LEFT. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Shino sits on the linoleum, head on the RIGHT. Aya faces Shino, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "They start on this same linoleum spot. Shino SITS down on the floor where she stands, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT, the erect 30cm the same pale gray-white as the hips not pale-tan flesh standing vertically straight UP from the groin between the thighs. Aya faces Shino, head on the LEFT, and straddles the lap. Both of Aya's soles stay on the linoleum outside Shino's thighs. Shino and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. THEN Aya LOWERS her hips straight down in one continuous press until her buttocks meet Shino's lap and the shaft sits at the BASE inside Aya's pussy. The shaft is inside before the hips start to stroke. THEN Aya's hips move straight UP and straight DOWN while the shaft stays inside. Mouths stay joined through that movement. Shino's hips HOLD STILL. Both stay fully nude. Last frame: still joined at the BASE, mouths joined, arms around each other's backs, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "んっ"
-            },
-            {
-              "who": "shino",
-              "line": "はぁっ"
-            },
-            {
-              "who": "aya",
-              "line": "あんっ"
             }
           ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
@@ -10357,20 +10491,74 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "loco": "planted",
-          "connect": "t2v"
+          "loco": "planted"
         },
         {
-          "id": "12-exit-peak",
+          "id": "12-exit-zai2",
+          "source": "t2v",
+          "connect": "t2v",
           "trim": {
             "start": 0,
             "seconds": 10.0
           },
+          "cast": [
+            "aya",
+            "shino"
+          ],
           "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            "mystic"
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Shino sits on the linoleum, head on the RIGHT. Aya faces Shino, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "Already joined at the BASE on this same linoleum spot. Shino stays sitting, head on the RIGHT, both soles on the linoleum. Aya stays astride the lap, head on the LEFT, both soles on those same marks. the erect 30cm the same pale gray-white as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Shino and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Aya's hips keep moving straight UP and straight DOWN. The shaft stays inside. Shino's hips HOLD STILL. Both stay fully nude. Last frame: still joined, mouths joined, arms around each other's backs. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "12-exit-peak",
+          "source": "t2v",
+          "connect": "t2v",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
             [
               "mystic",
               0.5
@@ -10388,23 +10576,17 @@
               0.55
             ]
           ],
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Shino stays sitting, head on the RIGHT, feet pointing LEFT. Aya stays astride the lap, head on the LEFT. Both hands stay on the chest. Both pairs of soles stay on the linoleum.",
-          "action": "Already seated at the BASE on this same linoleum spot. Shino stays sitting, knees bent, both soles on the linoleum, torso upright, head on the RIGHT, feet pointing LEFT. Aya stays astride Shino's lap, facing Shino, head on the LEFT, both soles on those same linoleum marks outside Shino's thighs. Both hands stay on Shino's chest. the erect 30cm the same pale gray-white as the hips not pale-tan flesh stays inside Aya's pussy at the BASE. Short strokes go straight UP and straight DOWN while the shaft stays inside. Shino's hips HOLD STILL. Aya's hips move. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Shino finishes INSIDE Aya: the hips stay flush. A little thick WHITE goo leaks around the base and stays inside Aya's pussy. Both stay fully nude. Full body including feet. Last frame: still joined at the BASE, both hands on the chest, both pairs of feet on the linoleum. Brisk real-time. Consensual adult game beat",
+          "trigger": "This video depicts part of sexual intercourse climax. The sitting adult keeps the shaft inside Aya and cums inside of her. Their mouths stay joined.\nPENISLORA",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including feet. Shino sits on the linoleum, head on the RIGHT. Aya faces Shino, head on the LEFT. Both pairs of arms wrap the other's back. Mouths stay joined. The camera sits far back.",
+          "action": "The finish starts at frame one on this same linoleum spot. Shino stays sitting. Aya stays astride the lap. the erect 30cm the same pale gray-white as the hips not pale-tan flesh stays at the BASE inside Aya's pussy. Shino and Aya wrap both arms around each other's backs. Chests and bellies press flush. Mouths stay joined. Tongues intertwine and lick around each other's lips. Shino finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside. Mouths stay joined through the finish. Then the mouths slowly part. A saliva string stretches from Aya's lips to Shino's lips. Both smile. Arms stay around each other's backs. Both stay fully nude. Full body including feet. Last frame: lips apart, saliva string between them, both smiling, shaft still at the BASE. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "あんっ"
-            },
-            {
-              "who": "shino",
-              "line": "くっ"
-            },
-            {
-              "who": "aya",
-              "line": "はぁっ"
             }
           ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
+          "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
@@ -10414,72 +10596,22 @@
             "complete": false,
             "hint": "□ 誘う",
             "stamina": 0.3,
-            "heat": 3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
           },
-          "loco": "planted",
-          "connect": "t2v"
+          "loco": "planted"
         },
         {
-          "id": "12-exit-drop",
+          "id": "12-exit-walk",
           "source": "t2v",
-          "connect": "t2v",
-          "camera_pack": "none",
-          "loco": "planted",
-          "still": "",
+          "connect": "end",
           "trim": {
             "start": 0,
             "seconds": 8.0
           },
           "cast": [
-            "aya",
-            "shino"
-          ],
-          "extra_loras": [],
-          "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya falling onto her back, then flat and limp with her legs spread, Shino beside her. The camera holds.",
-          "action": "Already on her back on this same linoleum spot, knees pulled up, the shaft still at the BASE inside the pussy. Aya's strength leaves her. The knees FALL outward until the inner thighs meet the linoleum. The heels slide down to sit beside the buttocks. The shaft SLIDES OUT as the hips go slack. Shino stays kneeling beside her. Aya ends flat on her back, fully limp, on this same linoleum spot. Her head rests on the linoleum. Her back rests on the linoleum. Her waist rests on the linoleum. Both knees lose their strength and fall outward. The inner thighs rest on the linoleum. The heels sit right beside the buttocks. The soles face each other. The legs stay open and spread on the linoleum. Her arms fall limp, one beside the head and one along her side. Her hands stay on the linoleum. Her legs rest on the linoleum with no hands on them. She stays still. Her chest rises with hard breaths. Thick WHITE goo overflows from the pussy and runs onto the linoleum. They do not cross the threshold. They stay in the building. Shino stays an extremely tall elongated adult with long straight dark hair, very pale gray-white skin, vacant wide staring monster eyes, a long forked reptile tongue, long arms with hands past mid-thigh, grimy dirty stains from hair to the erect 30cm shaft to her feet, wet peeling rotting patches on the hips, groin and the 30cm shaft, the 30cm shaft the same pale gray-white as the hips not pale-tan flesh. Both stay fully nude. Brisk real-time. Consensual adult game beat",
-          "voices": [
-            {
-              "who": "aya",
-              "line": "はぁっ"
-            },
-            {
-              "who": "shino",
-              "line": "くっ"
-            }
-          ],
-          "sfx": "A body settling on linoleum, thick goo, HVAC",
-          "music": "Bass holds",
-          "hud": {
-            "mission": "出口に出る",
-            "mission_keyword": "出口",
-            "health": 0.9,
-            "money": "¥0",
-            "objective_bearing": 0,
-            "complete": false,
-            "hint": "□ 誘う",
-            "stamina": 0.1,
-            "heat": 3,
-            "objective_distance": 0.2,
-            "icons_active": []
-          }
-        },
-        {
-          "id": "12-exit-kiss",
-          "source": "t2v",
-          "connect": "t2v",
-          "camera_pack": "none",
-          "loco": "planted",
-          "still": "",
-          "trim": {
-            "start": 0,
-            "seconds": 8.0
-          },
-          "cast": [
-            "aya",
-            "shino"
+            "aya"
           ],
           "extra_loras": [
             [
@@ -10488,19 +10620,15 @@
             ]
           ],
           "trigger": "",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya flat on her back, limp, legs spread. Shino stooping, her long tongue in Aya's mouth. The camera holds.",
-          "action": "Aya is already flat on her back on this same linoleum spot, fully limp. Her head rests on the linoleum. Her back and her waist rest on the linoleum. Both knees are fallen outward. The inner thighs rest on the linoleum. The heels sit right beside the buttocks. The soles face each other. The legs stay open and spread on the linoleum. Her arms lie limp, one beside the head and one along her side. She stays still. Her chest rises with hard breaths. Thick WHITE goo is on the pussy and the linoleum. Shino is already stooping beside Aya's head so her head stays under the tubes. Shino's face LOWERS onto Aya's mouth. They stay joined in a deep wet french kiss, a tongue kiss. Shino's long forked reptile tongue pushes into Aya's mouth and licks around the lips and the corners of the mouth. Aya's tongue meets it, still hanging limp. They stay on this same linoleum spot. They do not cross the threshold. They stay in the building. Shino stays an extremely tall elongated adult with long straight dark hair, very pale gray-white skin, vacant wide staring monster eyes, a long forked reptile tongue, long arms with hands past mid-thigh, grimy dirty stains from hair to the erect 30cm shaft to her feet, wet peeling rotting patches on the hips, groin and the 30cm shaft, the 30cm shaft the same pale gray-white as the hips not pale-tan flesh. Both stay fully nude. Last frame: mouths joined, the long tongue still in Aya's mouth, Aya still flat and still. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The last frames are only Aya walking RIGHT, full body including both feet.",
+          "action": "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling, mouths joined, tongues intertwine, arms around each other's backs, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 5 seconds Shino steps out of the frame to the RIGHT and is gone. From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body, nobody else in frame. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "んっ"
-            },
-            {
-              "who": "shino",
-              "line": "んっ"
+              "line": "ん"
             }
           ],
-          "sfx": "A wet tongue kiss, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet, wet hips, HVAC",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -10508,13 +10636,14 @@
             "health": 0.9,
             "money": "¥0",
             "objective_bearing": 0,
-            "complete": false,
+            "complete": true,
             "hint": "□ 誘う",
-            "stamina": 0.1,
-            "heat": 3,
+            "stamina": 0.3,
+            "heat": 4,
             "objective_distance": 0.2,
             "icons_active": []
-          }
+          },
+          "loco": "walk"
         }
       ]
     }

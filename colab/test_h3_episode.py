@@ -4280,9 +4280,14 @@ def test_hospital_invite_sit_is_face_to_face():
     sat = prepare_episode(raw, story_override="誘う", invite_pose_override="対面座位")
     assert validate_episode(sat, root=HOSPITAL_DIR) == []
     assert len(sat["beats"]) <= MAX_BEATS
-    for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
+    for bid in ("03-kiss-zai1", "06-doggy-zai1", "09-join-zai1", "12-exit-zai1"):
         act = next(b for b in sat["beats"] if b["id"] == bid)["action"]
-        assert "SITS" in act
-        assert "both hands rest on" in act.lower()
+        assert "SITS down on the floor" in act
+        assert "arms around each other's backs" in act.lower()
+        assert "mouths stay joined" in act.lower()
         assert "lowers her hips straight down" in act.lower()
+    walk = next(b for b in sat["beats"] if b["id"] == "03-kiss-walk")
+    assert walk["trim"]["seconds"] == 8.0
+    assert "only aya walks right" in walk["action"].lower()
+    assert "kiss" in [x[0] if isinstance(x, list) else x for x in walk["extra_loras"]]
 
