@@ -2572,11 +2572,15 @@ def test_hospital_gin_tsuno_optional_events():
     assert "wide blissful smile" in jupo["action"].lower()
     ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
     assert "already sitting on aya" in ride_peak["action"].lower()
+    assert "right third of the floor" in ride_peak["action"].lower()
     assert "hands rest on aya's breasts" in ride_peak["action"].lower()
     assert "lowers and lifts her hips" in ride_peak["action"].lower()
-    assert "one sole on each side" in ride_peak["action"].lower()
+    assert "glans stays inside" in ride_peak["action"].lower()
+    assert "24cm still inside to the root" in ride_peak["action"].lower()
+    assert "one sole on each side" not in ride_peak["action"].lower()
     assert "squat" not in ride_peak["action"].lower()
-    assert "leaks around the base" in ride_peak["action"].lower()
+    assert "leaks around the base" not in ride_peak["action"].lower()
+    assert "cums inside" not in ride_peak.get("trigger", "").lower()
     assert "thrust" in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" in jupo["action"].lower()
     assert "standing vertically straight up from her groin" in jupo["action"].lower()
@@ -2586,14 +2590,17 @@ def test_hospital_gin_tsuno_optional_events():
     ride_in = next(b for b in taken["beats"] if b["id"] == "04-gin-ride")
     ride_act = ride_in["action"].lower()
     assert "stands up" in ride_act
-    assert "steps right until" in ride_act
+    assert "steps right" in ride_act
+    assert "steps right until" not in ride_act
+    assert "right third of the floor" in ride_act
+    assert "buttocks meet aya's hips" in ride_act
+    assert "both hands leaving the shaft" in ride_act
     assert "lowers her hips straight down" in ride_act
     assert "they stop on the insert" in ride_act
     assert "one sole on each side" in ride_act
     assert "squat" not in ride_act
     assert "from above" not in ride_act
     assert "from directly above" not in ride_act
-    assert "toward the left" in ride_act
     assert "toward the right" in ride_act
     assert "straight down" in ride_act
     assert "slides both feet" not in ride_act
@@ -4295,6 +4302,31 @@ def test_hospital_dog_and_species_slots():
     )
     assert stacked["render"]["gin"] == "taken"
     assert stacked["render"]["dog"] == "invite_oral"
+    gin_i = ids.index("04-gin-walk")
+    assert ids[gin_i + 1] == "04-tsuno-meet-spot"
+    assert stacked["beats"][gin_i]["hud"]["complete"] is False
+    assert stacked["beats"][-1]["id"] != "04-gin-walk"
+    full = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="対面座位",
+        toilet_override="アナル指",
+        gin_override="犯される",
+        tsuno_override="フルネルソンアナル",
+        dog_override="誘う口",
+        species_override="スライム",
+        connect_override="前の最終フレームから続ける",
+        scenes_override="miki=inherit,rei=invite_ride,kana=invite_all_fours,shino=invite_m_open",
+    )
+    assert validate_episode(full, root=HOSPITAL_DIR) == []
+    full_ids = [b["id"] for b in full["beats"]]
+    assert len(full_ids) <= 80
+    gin_i = full_ids.index("04-gin-walk")
+    assert full_ids[gin_i + 1] == "04-tsuno-meet-spot"
+    assert "04-dog-spot" in full_ids and "04-slime-spot" in full_ids
+    assert full_ids.index("04-gin-walk") < full_ids.index("04-tsuno-meet-spot") < full_ids.index("05-ui-rei")
+    assert full["beats"][-1]["id"] == "12-exit-kiss"
+    assert all(not (b.get("hud") or {}).get("complete") for b in full["beats"])
 
 
 def test_hospital_invite_sit_is_face_to_face():
@@ -4306,7 +4338,16 @@ def test_hospital_invite_sit_is_face_to_face():
     sat = prepare_episode(raw, story_override="誘う", invite_pose_override="対面座位")
     assert validate_episode(sat, root=HOSPITAL_DIR) == []
     assert len(sat["beats"]) <= MAX_BEATS
-    for bid in ("03-kiss-zai1", "06-doggy-zai1", "09-join-zai1", "12-exit-zai1"):
+    miki_zai = next(b for b in sat["beats"] if b["id"] == "03-kiss-zai1")["action"]
+    assert "toward the LEFT" in miki_zai
+    assert "toward the RIGHT" in miki_zai
+    assert "SITS DOWN onto the linoleum" in miki_zai
+    assert "legs WRAP around Miki's waist" in miki_zai
+    assert "HOLD still joined" in miki_zai
+    assert "22cm" in miki_zai
+    assert "hips move straight up" not in miki_zai.lower()
+    assert "ankles cross" not in miki_zai.lower()
+    for bid in ("06-doggy-zai1", "09-join-zai1", "12-exit-zai1"):
         act = next(b for b in sat["beats"] if b["id"] == bid)["action"]
         assert "SITS down on the floor" in act
         assert "arms around each other's backs" in act.lower()
