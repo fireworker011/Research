@@ -198,7 +198,7 @@ def _assert_sex_beat_both_pleasure_no_extra_kiss(beat: dict, prompt: str) -> Non
         assert "melting with pleasure" in low
         assert "hands stay on" in action and "hips" in action
     else:
-        assert "hips moving" in low or "hands stay at the hips" in action
+        assert "hips moving" in low or "hands stay at the hips" in action or "hips hold still" in action
     for tok in _SEX_EXTRA_MOTION:
         pat = re.compile(rf"\b{re.escape(tok)}\b")
         assert not pat.search(low), (beat["id"], tok)
@@ -1088,12 +1088,14 @@ def _assert_insertion_direction(action: str, prompt: str) -> None:
         _assert_named_hip_motion(action, prompt)
         return
     if supine:
-        assert "thrust" in blob
+        if "one continuous press" not in blob:
+            assert "thrust" in blob
         assert "rock up" not in blob
         assert "pelvis stays down" in blob or "pelvis stay" in blob
         _assert_named_hip_motion(action, prompt)
         return
-    assert "thrust" in blob
+    if "one continuous press" not in blob:
+        assert "thrust" in blob
     _assert_named_hip_motion(action, prompt)
 
 
@@ -1574,7 +1576,7 @@ def test_hospital_exit_adult_fight_lose_is_defeat_h():
     assert "towers" in sex["action"].lower()
     assert "looks small under shino" in sex["action"].lower()
     assert "wrap aya's small waist" in sex["action"].lower()
-    assert "shino's hips moving" in sex["action"].lower()
+    assert "shino's hips hold still" in sex["action"].lower()
     assert ", hips moving" not in sex["action"].lower()
     assert "finishes inside" in sex_prompt.lower()
     assert "stays on her back the whole take" in sex_prompt.lower()
@@ -1775,6 +1777,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "the partner's whole face stays inside the frame" in oral_prompt.lower()
     assert "the camera stays back enough that both faces stay fully inside" in oral_prompt.lower()
     assert "before the join, the camera sits far back" in oral_prompt.lower()
+    assert "miki's whole face stays inside the frame beside the shaft" in oral_prompt.lower()
+    assert "short brown bob" in oral_prompt.lower()
     assert "the camera sits far back" in oral_prompt.lower()
     assert "the adults stay the same size" in oral_prompt.lower()
     assert "aya's face and the partner's face stay in frame" in oral_prompt.lower()
@@ -2613,7 +2617,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "rises to her feet once" in fuck_in["action"].lower()
     assert "set the pose together" in fuck_in["action"].lower()
     gin_sex = action_blob(fuck, "04-gin")
-    assert "travels into the pussy, glans only" in gin_sex
+    assert "one continuous press" in gin_sex
+    assert "hips and the buttocks meet flush" in gin_sex
     assert "hips press together" in gin_sex
     assert next(b for b in fuck["beats"] if b["id"] == "04-gin-walk")["cast"] == ["aya"]
 
@@ -3013,7 +3018,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert "gums" in gin_lick["action"].lower() or "gums" in (invite["cast"]["gin"]["lock"].lower())
     assert "muscle fiber" in invite["cast"]["gin"]["lock"]
     _assert_insertion_direction(gin_in["action"], build_beat_prompt(invite, gin_in))
-    assert "do not piston yet" in gin_in["action"].lower()
+    assert "the hips hold still on that join" in gin_in["action"].lower()
+    assert "one continuous press" in gin_in["action"].lower()
 
     tsuno_in = next(b for b in invite["beats"] if b["id"] == "04-tsuno-in")
     assert "hips from the sides" in tsuno_in["action"].lower()
