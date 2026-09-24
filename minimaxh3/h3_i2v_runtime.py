@@ -275,10 +275,19 @@ def post_prompt(graph: dict[str, Any], port: int = PORT) -> tuple[dict[str, Any]
 
 
 def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, Any]:
+    """Poll Comfy until the prompt finishes. A busy GPU often misses the 60s history read; keep waiting."""
     t0 = time.time()
+    stalls = 0
     while time.time() - t0 < timeout:
-        with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
-            hist = json.loads(r.read().decode())
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
+                hist = json.loads(r.read().decode())
+        except (TimeoutError, urllib.error.URLError, OSError) as exc:
+            stalls += 1
+            if stalls == 1 or stalls % 5 == 0:
+                print("comfy busy, still waiting", pid, type(exc).__name__)
+            time.sleep(2)
+            continue
         entry = hist.get(pid) or {}
         status = entry.get("status") or {}
         if status.get("completed") or entry.get("outputs"):

@@ -145,7 +145,7 @@ from h3_episode_packs import (  # noqa: E402
     ui_default,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
-from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va  # noqa: E402
+from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va, wait_prompt  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import DEFAULT_BRANCH, exec_script  # noqa: E402
 
@@ -215,6 +215,35 @@ def short() -> dict:
 
 
 # ---------------------------------------------------------------- sync / files
+
+def test_wait_prompt_keeps_polling_when_comfy_is_busy(monkeypatch):
+    import h3_i2v_runtime
+
+    calls = {"n": 0}
+
+    class Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return json.dumps({"pid": {"status": {"completed": True}, "outputs": {"1": {}}}}).encode()
+
+    def fake_urlopen(url, timeout=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise TimeoutError("timed out")
+        return Resp()
+
+    monkeypatch.setattr(h3_i2v_runtime.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(h3_i2v_runtime.time, "sleep", lambda _s: None)
+    ok, payload = wait_prompt("pid", port=8188, timeout=30)
+    assert ok is True
+    assert payload["status"]["completed"] is True
+    assert calls["n"] == 2
+
 
 def test_colab_and_minimaxh3_copies_in_sync():
     for name in ("h3_hud.py", "h3_episode.py", "h3_episode_packs.py", "h3_episode_colab_main.py"):
