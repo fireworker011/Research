@@ -1729,11 +1729,11 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert ride_sit.get("trigger") == SIDERIDE_TRIGGER
     assert "straddles the hips" in ride_sit["action"].lower()
     assert "facing the partner" in ride_sit["action"].lower()
-    assert "torso leaned forward over the partner's chest" in ride_sit["action"].lower()
-    assert "midpoint between the upright shaft and the partner's face" in ride_sit["action"].lower()
-    assert "to the right of the penis" in ride_sit["action"].lower()
-    assert "closer to the face than to the shaft" in ride_sit["action"].lower()
-    assert "brings aya's pussy onto the glans" in ride_sit["action"].lower()
+    assert "the pussy stays directly above the glans" in ride_sit["action"].lower()
+    assert "one sole on each side of the upright shaft" in ride_sit["action"].lower()
+    assert "the glans is directly under the pussy" in ride_sit["action"].lower()
+    assert "one vertical line runs from the groin through the glans into the pussy" in ride_sit["action"].lower()
+    assert "the glans spreads aya's lips and travels into aya's pussy" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
     assert "stands up from that kneel" in ride_sit["action"].lower()
     assert "the standing miki folds down" in ride_sit["action"].lower()
@@ -1763,8 +1763,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "that same face is the face on the floor" in ride_prompt.lower()
     assert "after the shaft enters, those two faces stay the frame" in ride_prompt.lower()
     assert "both feet slide along the linoleum" in ride_prompt.lower()
-    assert "to the right of the penis" in ride_prompt.lower()
-    assert "onto the upright shaft" in ride_prompt.lower()
+    assert "the glans is directly under the pussy" in ride_prompt.lower()
+    assert "the glans spreads the lips and travels into the pussy" in ride_prompt.lower()
     assert "keeps the back of the head on the linoleum" in ride_prompt.lower()
     assert "feet do not take a step" not in ride_prompt.lower()
     assert "feet do not travel" not in ride_prompt.lower()
@@ -2546,9 +2546,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "folds down" not in ride_act
     assert "rises from the crouch" in ride_act
     assert "aya stays the face on the floor" in ride_act
-    assert "midpoint between the upright shaft and aya's face" in ride_act
-    assert "to the right of the penis" in ride_act
-    assert "brings gin's pussy onto the glans" in ride_act
+    assert "one sole on each side of the upright shaft" in ride_act
+    assert "the glans is directly under gin's pussy" in ride_act
+    assert "the glans spreads gin's lips and travels into gin's pussy" in ride_act
     assert "rooted in aya's groin between the thighs" in ride_act
     assert "keep this same facing" in ride_act
     assert "both feet stay in frame" in jupo["action"].lower()
@@ -3045,8 +3045,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert "stands up" in ride_in["action"].lower()
     assert "buttocks press flush" in ride_in["action"].lower()
     assert "both hands rest" in ride_in["action"].lower()
-    assert "midpoint between the upright shaft and the partner's face" in ride_in["action"].lower()
-    assert "to the right of the penis" in ride_in["action"].lower()
+    assert "one sole on each side of the upright shaft" in ride_in["action"].lower()
+    assert "the glans is directly under the pussy" in ride_in["action"].lower()
     assert "soles stay on the linoleum" in ride_in["action"].lower()
     assert "press flush" in ride_in["action"].lower()
     assert "do not piston yet" in ride_in["action"].lower()
