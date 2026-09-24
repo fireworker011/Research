@@ -16,6 +16,8 @@ Env:
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle | finger（日本語: 行かない / 小便 / オナニー / 触手 / アナル指。病棟の道中）
   H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
   H3_EPISODE_TSUNO    off | accept_stand | invite_stand | anal_back | nelson（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック / 後ろアナル / フルネルソンアナル。病棟の追加）
+  H3_EPISODE_DOG      off | evade | accept | invite_rear | invite_oral（日本語: 犬・出ない / 回避 / 受け入れる / 誘う伏せ / 誘う口。灰色はオフにしない）
+  H3_EPISODE_SPECIES  off | slime | anthro（日本語: 異種・出ない / スライム / ケモノ。両方は出ない）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
   H3_EPISODE_REI_MAST skip|stand|back（レイ脱出の合間おな）
@@ -84,6 +86,8 @@ def main() -> int:
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
             gin_override=(os.environ.get("H3_EPISODE_GIN") or "").strip() or None,
             tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,
+            dog_override=(os.environ.get("H3_EPISODE_DOG") or "").strip() or None,
+            species_override=(os.environ.get("H3_EPISODE_SPECIES") or "").strip() or None,
             appear_override=(os.environ.get("H3_EPISODE_APPEAR") or "").strip() or None,
             scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
             rei_mast_override=(os.environ.get("H3_EPISODE_REI_MAST") or "").strip() or None,

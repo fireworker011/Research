@@ -569,6 +569,103 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
+# Optional quadruped (Colab 10). Default off. Not in appear-all. May stack with gin/tsuno/species.
+DOG_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "出ない",
+        "choice_ja": "犬・出ない（迷ったらこれ）",
+        "when_ja": "四つ足は出さない",
+        "hint_ja": "迷ったらこれ。追加イベントなし",
+        "recommend": True,
+    },
+    "evade": {
+        "label_ja": "回避",
+        "choice_ja": "犬・回避",
+        "when_ja": "右から飛び込んだ四つ足を残して、あやが左へ走る。終わりはあや一人歩き",
+        "hint_ja": "あやは左へ。四つ足は右に残る",
+    },
+    "accept": {
+        "label_ja": "受け入れる",
+        "choice_ja": "犬・受け入れる",
+        "when_ja": "右の壁で後脚立ち。24cmがマンコへ。終わりはあや一人歩き",
+        "hint_ja": "手は壁。足は床。短い突きのあと WHITE goo",
+    },
+    "invite_rear": {
+        "label_ja": "誘う伏せ",
+        "choice_ja": "犬・誘う伏せ",
+        "when_ja": "その場で仰向けに開いて舌、それから背中へ。終わりはあや一人歩き",
+        "hint_ja": "舌のあと伏せ。24cmは根元まで。抜けない",
+    },
+    "invite_oral": {
+        "label_ja": "誘う口",
+        "choice_ja": "犬・誘う口",
+        "when_ja": "舌のあと口。平らな床で仰向け。終わりはあや一人歩き",
+        "hint_ja": "口から溢れて、抜いて見せて、胴を抱える",
+    },
+}
+
+DOG_OVERLAY_KEYS: dict[str, str] = {
+    "evade": "on_dog_evade",
+    "accept": "on_dog_accept",
+    "invite_rear": "on_dog_invite_rear",
+    "invite_oral": "on_dog_invite_oral",
+}
+
+DOG_ALIASES: dict[str, str] = _label_aliases(
+    DOG_MODES,
+    {
+        "出ない": "off",
+        "なし": "off",
+        "skip": "off",
+        "回避": "evade",
+        "受け入れる": "accept",
+        "誘う伏せ": "invite_rear",
+        "伏せ": "invite_rear",
+        "誘う口": "invite_oral",
+        "口": "invite_oral",
+    },
+)
+
+# Optional non-human partner (Colab 11). Slime and anthro are one dropdown, so they never both expand.
+SPECIES_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "出ない",
+        "choice_ja": "異種・出ない（迷ったらこれ）",
+        "when_ja": "スライムもケモノも出さない",
+        "hint_ja": "迷ったらこれ。追加イベントなし",
+        "recommend": True,
+    },
+    "slime": {
+        "label_ja": "スライム",
+        "choice_ja": "異種・スライム",
+        "when_ja": "左から真後ろ。密着したまま24cmがマンコへ。ケモノは出ない",
+        "hint_ja": "スライムだけ。ケモノとは同時に出さない",
+    },
+    "anthro": {
+        "label_ja": "ケモノ",
+        "choice_ja": "異種・ケモノ",
+        "when_ja": "左から真後ろの二足。密着したまま24cmがマンコへ。スライムは出ない",
+        "hint_ja": "ケモノだけ。スライムとは同時に出さない",
+    },
+}
+
+SPECIES_OVERLAY_KEYS: dict[str, str] = {
+    "slime": "on_species_slime",
+    "anthro": "on_species_anthro",
+}
+
+SPECIES_ALIASES: dict[str, str] = _label_aliases(
+    SPECIES_MODES,
+    {
+        "出ない": "off",
+        "なし": "off",
+        "skip": "off",
+        "スライム": "slime",
+        "ケモノ": "anthro",
+        "獣": "anthro",
+    },
+)
+
 # Futanari Rei escape (dedicated Colab). Keys are rei_* so hospital toilet/invite never fire.
 REI_MAST_MODES: dict[str, dict[str, Any]] = {
     "skip": {
@@ -1177,6 +1274,24 @@ def canonical_tsuno(name: str) -> str:
     return TSUNO_ALIASES.get(raw, raw)
 
 
+def canonical_dog(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in DOG_MODES:
+        return raw
+    return DOG_ALIASES.get(raw, raw)
+
+
+def canonical_species(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in SPECIES_MODES:
+        return raw
+    return SPECIES_ALIASES.get(raw, raw)
+
+
 def canonical_rei_mast(name: str) -> str:
     raw = str(name or "").strip()
     if not raw:
@@ -1401,6 +1516,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return GIN_MODES
     if kind == "tsuno":
         return TSUNO_MODES
+    if kind == "dog":
+        return DOG_MODES
+    if kind == "species":
+        return SPECIES_MODES
     if kind == "rei_mast":
         return REI_MAST_MODES
     if kind == "rei_toilet":
@@ -1469,6 +1588,8 @@ def describe_run(
     toilet: str = "",
     gin: str = "",
     tsuno: str = "",
+    dog: str = "",
+    species: str = "",
     appear: str | dict[str, Any] | None = None,
     scenes: str | dict[str, Any] | None = None,
     episode: str = "",
@@ -1492,6 +1613,8 @@ def describe_run(
     t_key = canonical_toilet(toilet) or "off"
     g_key = canonical_gin(gin) or "off"
     n_key = canonical_tsuno(tsuno) or "off"
+    d_key = canonical_dog(dog) or "off"
+    sp_key = canonical_species(species) or "off"
     shown = parse_appear(appear)
     c = CONNECT_MODES.get(c_key) or CONNECT_MODES[DEFAULT_CONNECT]
     e = END_CONNECT_MODES.get(e_key) or END_CONNECT_MODES["t2v"]
@@ -1503,6 +1626,8 @@ def describe_run(
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
     g = GIN_MODES.get(g_key) or GIN_MODES["off"]
     n = TSUNO_MODES.get(n_key) or TSUNO_MODES["off"]
+    d = DOG_MODES.get(d_key) or DOG_MODES["off"]
+    sp = SPECIES_MODES.get(sp_key) or SPECIES_MODES["off"]
     appear_ja = " ".join(("○" if shown[name] else "×") + name for name in HOSPITAL_ENCOUNTERS)
     parsed = parse_scenes(scenes)
     scene_bits = []
@@ -1560,7 +1685,9 @@ def describe_run(
         f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
         f"  8 灰色    {g['choice_ja']}  — {g['when_ja']}\n"
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"
+        f"  10 犬     {d['choice_ja']}  — {d['when_ja']}\n"
+        f"  11 異種   {sp['choice_ja']}  — {sp['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
-        "迷ったら既定のままで Run all。新しい相手の入りはカット。消滅はチェーンならフェード。8と9は病棟の追加オプション。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
+        "迷ったら既定のままで Run all。新しい相手の入りはカット。消滅はチェーンならフェード。8から11は病棟の追加オプション。スライムとケモノは同時に出ない。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

@@ -145,18 +145,41 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 `Look that stays` の竿文は、lock に shaft / penis / Ncm がある人の名前だけ付ける。ギンの遭遇に竿文を足さない。
 
-## 異種（まだ cast は足さない）
+## 4枠
 
-スライムとケモノは片方だけ。両方同時は出さない。種 LoRA は 0.35–0.50。作者上限まで上げない。実写は I2V の前フレームで守る。あやの lock は触らない。action に anime / cel / chibi は書かない。
+ドロップダウンの既定は全部「出ない」。灰色・角・犬・異種は同時にオンしてよい。犬をオンにしても灰色はオフにしない。1カットの追加相手は一人。各枠の最後はあや一人歩き（`No penis` `The grown shaft is gone`）。次の `-spot` へ渡す。
 
-- スライム: https://civitai.com/models/2533949 ファイル `slime_girls-MMH3-v1.0.safetensors` トリガー `slime_girls`
-- ケモノ: https://civitai.com/models/2945034/eleptors-furry-anthro-lora-minimax-h3 トリガー `(anthro wolf:1.4)`
+順番（オンのものだけ）: トイレのあと → 灰色 → 角 → 犬 → 異種 → れい。
+
+`HOSPITAL_ENCOUNTERS` には入れない。`OPTIONAL_ENCOUNTERS` に `dog` と `species` がある。
+
+## 犬
+
+`04-dog-spot` は I2V 6秒。あやは右向きで歩く。大きい四つ足が右端から飛び込み、あやの前（画面右）に四足着地する。肩はあやの腰より高い。あやは左、四つ足は右。天井から落ちない。左から歩いて来ない。extra は mystic 0.5 + furryenh 0.55。人間後背の Doggy LoRA と Eleptor は犬に積まない。
+
+- 回避: あやは左へ走る。四つ足は右に残る
+- 受け入れる: あやは右の壁。手は壁。足は床。後脚立ち。24cm がマンコへ
+- 誘う伏せ: その場で仰向け、舌、伏せ、背中に覆い、根元まで
+- 誘う口: 同じ舌のあと口。平らな床。段差なし
+
+## 異種
+
+スライムとケモノは XOR。両方オンにしない。歩きはギンと同じ。左端から真後ろ。あやが恐る恐る止まる。spot はそこで終わる。天井から落ちない。LUNGES は書かない。種 LoRA は調味だけ。あやの肌・汚れ・蛍光灯は I2V の前フレーム。action に anime / cel は書かない。あやの lock は触らない。
+
+- スライム: https://civitai.com/models/2533949 ファイル `slime_girls-MMH3-v1.0.safetensors` トリガー `slime_girls` 強度 0.45
+- ケモノ: https://civitai.com/models/2945034 トリガー `(anthro wolf:1.4)` 強度 0.45。amateur 0.35、penis 0.45、synth 0.4
+- 四つ足: https://civitai.com/models/1782485/furry-enhancer-video 強度 0.55
+- 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
 - アナル指: https://civitai.com/models/2904444
 
+## 禁止語
+
+`blood` `zombie` `corpse` は書かない。ウジ・蛆・虫の語も書かない。ライセンス名も書かない。体位名は書かない。犬と異種の action に `futanari` も書かない。画面の数字は 24cm / 22cm / 20cm / 30cm だけ。
+
 ## 本数
 
-誘う・触手・灰色の騎乗・角の後ろアナル・シーンごと（みきM字、れいフルネルソン、かな騎乗、しの騎乗）は cunny を含めて 45 本。`MAX_BEATS` の上限は 56。
+誘う・触手・灰色の騎乗・角の後ろアナル・シーンごと（みきM字、れいフルネルソン、かな騎乗、しの騎乗）は cunny を含めて 45 本。犬と異種を足した枠の上限は `MAX_BEATS` 80。
 
 ## メモリ
 

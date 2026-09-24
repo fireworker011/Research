@@ -103,8 +103,12 @@ from h3_episode_packs import (
     DEFAULT_CONNECT,
     END_CONNECT_MODES,
     FIGHT_STORIES,
+    DOG_MODES,
+    DOG_OVERLAY_KEYS,
     GIN_MODES,
     GIN_OVERLAY_KEYS,
+    SPECIES_MODES,
+    SPECIES_OVERLAY_KEYS,
     HOSPITAL_ENCOUNTERS,
     INVITE_POSE_MODES,
     INVITE_POSE_OVERLAY_KEYS,
@@ -117,12 +121,14 @@ from h3_episode_packs import (
     TSUNO_MODES,
     TSUNO_OVERLAY_KEYS,
     canonical_camera,
+    canonical_dog,
     canonical_combat,
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
     canonical_invite_pose,
     canonical_preset,
+    canonical_species,
     canonical_story,
     REI_ATTACK_MODES,
     REI_ATTACK_OVERLAY_KEYS,
@@ -174,8 +180,8 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 }
 # GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
-# Fullest ward form is 44 beats: per-scene ride, tentacle toilet, gin taken, tsuno, spots, and UI.
-MAX_BEATS = 56
+# Ward options stack: toilet, gin, tsuno, dog, species, then Rei. Cap covers the fullest stack.
+MAX_BEATS = 80
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
 STILL_AS = ("first", "last", "both")
@@ -243,6 +249,15 @@ LORA_FILES = {
     "cunny": "cunny-mh3-e62-az420.safetensors",
     # Thumb in anus. Trigger thum1n8utt. Strength 0.55 on the toilet finger beat.
     "thumbinbutt": "H3_ThumbInButt.safetensors",
+    # Quadruped helper. Page only; no file id invented.
+    "furryenh": "furry-enhancer-video.safetensors",
+    # Spread helper. Filename from the ward spec. No download id.
+    "spread": "minimax_h3_pussy_spread_v0.2.safetensors",
+    "slime": "slime_girls-MMH3-v1.0.safetensors",
+    # Biped anthro only. Page only; do not stack this on the quadruped dog.
+    "anthro": "eleptors-furry-anthro-lora-minimax-h3.safetensors",
+    # Photoreal seasoning when the anthro reads as a drawing. No page was given, so it is not fetched.
+    "amateur": "amateur-photoreal-h3.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -259,6 +274,9 @@ LORA_URLS = {
     "cumouf": "https://civitai.com/api/download/models/3223411?fileId=3105419",
     "cunny": "https://civitai.com/api/download/models/3318405",
     "thumbinbutt": "https://civitai.com/api/download/models/3284492?fileId=3168734",
+    "furryenh": "https://civitai.com/models/1782485/furry-enhancer-video",
+    "slime": "https://civitai.com/models/2533949",
+    "anthro": "https://civitai.com/models/2945034",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -274,6 +292,11 @@ LORA_STRENGTHS = {
     "cumouf": 0.5,
     "cunny": 0.8,
     "thumbinbutt": 0.55,
+    "furryenh": 0.55,
+    "spread": 0.50,
+    "slime": 0.45,
+    "anthro": 0.45,
+    "amateur": 0.35,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"
@@ -283,6 +306,8 @@ INVITE_POSE_ROUTE_KEYS = tuple(INVITE_POSE_OVERLAY_KEYS.values())
 TOILET_ROUTE_KEYS = tuple(TOILET_OVERLAY_KEYS.values())
 GIN_ROUTE_KEYS = tuple(GIN_OVERLAY_KEYS.values())
 TSUNO_ROUTE_KEYS = tuple(TSUNO_OVERLAY_KEYS.values())
+DOG_ROUTE_KEYS = tuple(DOG_OVERLAY_KEYS.values())
+SPECIES_ROUTE_KEYS = tuple(SPECIES_OVERLAY_KEYS.values())
 REI_ESCAPE_ROUTE_KEYS = tuple(REI_ESCAPE_OVERLAY_KEYS)
 ROUTE_OVERLAY_KEYS = (
     STORY_ROUTE_KEYS
@@ -290,9 +315,12 @@ ROUTE_OVERLAY_KEYS = (
     + TOILET_ROUTE_KEYS
     + GIN_ROUTE_KEYS
     + TSUNO_ROUTE_KEYS
+    + DOG_ROUTE_KEYS
+    + SPECIES_ROUTE_KEYS
     + REI_ESCAPE_ROUTE_KEYS
 )
-OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet"})
+OPTIONAL_ENCOUNTERS = frozenset({"gin", "tsuno", "toilet", "dog", "species"})
+_OPTIONAL_ROUTE_KEYS = GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS + DOG_ROUTE_KEYS + SPECIES_ROUTE_KEYS
 # Colab shows four 登場 checkboxes; clearing all four leaves nothing to render.
 APPEAR_NONE_MSG = "appear: at least one encounter must stay on / 登場を4人とも外すと作る場面が無い。1人は残せ"
 CONNECT_LOCKS = frozenset({"t2v", "cut", "off"})
@@ -706,6 +734,28 @@ def episode_tsuno(ep: dict[str, Any], override: str | None = None) -> str:
     name = canonical_tsuno(raw)
     if name not in TSUNO_MODES:
         raise EpisodeError(f"render.tsuno must be one of {list(TSUNO_MODES)}")
+    return name
+
+
+def episode_dog(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / evade / accept / invite_rear / invite_oral. Empty keeps off."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("dog") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_dog(raw)
+    if name not in DOG_MODES:
+        raise EpisodeError(f"render.dog must be one of {list(DOG_MODES)}")
+    return name
+
+
+def episode_species(ep: dict[str, Any], override: str | None = None) -> str:
+    """off / slime / anthro. Empty keeps off. Slime and anthro are one choice."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("species") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_species(raw)
+    if name not in SPECIES_MODES:
+        raise EpisodeError(f"render.species must be one of {list(SPECIES_MODES)}")
     return name
 
 
@@ -1746,8 +1796,10 @@ def apply_optional_events(
     *,
     gin: str | None = None,
     tsuno: str | None = None,
+    dog: str | None = None,
+    species: str | None = None,
 ) -> dict[str, Any]:
-    """Insert Colab 8/9 ashen-infected beats. Off drops the marker beats."""
+    """Insert ward options after the toilet. Off drops that marker. Dog does not clear gin."""
     out = copy.deepcopy(ep)
     render = dict(out.get("render") or {})
     if gin not in (None, ""):
@@ -1756,35 +1808,43 @@ def apply_optional_events(
     if tsuno not in (None, ""):
         render["tsuno"] = canonical_tsuno(tsuno) or tsuno
         out["render"] = render
+    if dog not in (None, ""):
+        render["dog"] = canonical_dog(dog) or dog
+        out["render"] = render
+    if species not in (None, ""):
+        render["species"] = canonical_species(species) or species
+        out["render"] = render
     gin_key = episode_gin(out) or "off"
     tsuno_key = episode_tsuno(out) or "off"
-    gin_field = GIN_OVERLAY_KEYS.get(gin_key)
-    tsuno_field = TSUNO_OVERLAY_KEYS.get(tsuno_key)
+    dog_key = episode_dog(out) or "off"
+    species_key = episode_species(out) or "off"
+    fields = {
+        "gin": GIN_OVERLAY_KEYS.get(gin_key),
+        "tsuno": TSUNO_OVERLAY_KEYS.get(tsuno_key),
+        "dog": DOG_OVERLAY_KEYS.get(dog_key),
+        "species": SPECIES_OVERLAY_KEYS.get(species_key),
+    }
     beats: list[Any] = []
     for beat in out.get("beats") or []:
         if not isinstance(beat, dict):
             beats.append(beat)
             continue
         enc = str(beat.get("encounter") or "")
-        if enc == "gin":
-            chosen = beat.get(gin_field) if gin_field else None
-            body = _pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS)
+        if enc in fields:
+            field = fields[enc]
+            chosen = beat.get(field) if field else None
+            body = _pop_overlay_keys(beat, _OPTIONAL_ROUTE_KEYS)
             if not _is_overlay_payload(chosen):
                 continue
             beats.extend(_expand_overlay(body, chosen))
             continue
-        if enc == "tsuno":
-            chosen = beat.get(tsuno_field) if tsuno_field else None
-            body = _pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS)
-            if not _is_overlay_payload(chosen):
-                continue
-            beats.extend(_expand_overlay(body, chosen))
-            continue
-        beats.append(_pop_overlay_keys(beat, GIN_ROUTE_KEYS + TSUNO_ROUTE_KEYS))
+        beats.append(_pop_overlay_keys(beat, _OPTIONAL_ROUTE_KEYS))
     out["beats"] = beats
     render = dict(out.get("render") or {})
     render["gin"] = gin_key
     render["tsuno"] = tsuno_key
+    render["dog"] = dog_key
+    render["species"] = species_key
     out["render"] = render
     return out
 
@@ -2594,6 +2654,8 @@ def prepare_episode(
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
+    dog_override: str | None = None,
+    species_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
     rei_mast_override: str | None = None,
@@ -2633,6 +2695,10 @@ def prepare_episode(
         render["gin"] = canonical_gin(gin_override) or gin_override
     if tsuno_override not in (None, ""):
         render["tsuno"] = canonical_tsuno(tsuno_override) or tsuno_override
+    if dog_override not in (None, ""):
+        render["dog"] = canonical_dog(dog_override) or dog_override
+    if species_override not in (None, ""):
+        render["species"] = canonical_species(species_override) or species_override
     if appear_override not in (None, ""):
         render["appear"] = parse_appear(appear_override)
     if scenes_override not in (None, ""):
@@ -2660,7 +2726,13 @@ def prepare_episode(
         out = apply_combat_route(out)
     out = apply_invite_pose(out, pose=invite_pose_override)
     out = apply_toilet_route(out, toilet=toilet_override)
-    out = apply_optional_events(out, gin=gin_override, tsuno=tsuno_override)
+    out = apply_optional_events(
+        out,
+        gin=gin_override,
+        tsuno=tsuno_override,
+        dog=dog_override,
+        species=species_override,
+    )
     out = apply_appear_route(out, appear=appear_override)
     out = apply_rei_escape_route(
         out,
@@ -3293,6 +3365,16 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         tsuno_key = canonical_tsuno(tsuno)
         if tsuno_key not in TSUNO_MODES:
             errs.append(f"render.tsuno must be one of {list(TSUNO_MODES)}")
+    dog = str(render.get("dog") or "").strip()
+    if dog:
+        dog_key = canonical_dog(dog)
+        if dog_key not in DOG_MODES:
+            errs.append(f"render.dog must be one of {list(DOG_MODES)}")
+    species = str(render.get("species") or "").strip()
+    if species:
+        species_key = canonical_species(species)
+        if species_key not in SPECIES_MODES:
+            errs.append(f"render.species must be one of {list(SPECIES_MODES)}")
     errs.extend(_checkpoint_errors(ep))
     tone = episode_tone(ep)
     if tone not in TONES:
@@ -4983,6 +5065,8 @@ def run_episode(
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
+    dog_override: str | None = None,
+    species_override: str | None = None,
     appear_override: str | dict[str, Any] | None = None,
     scenes_override: str | dict[str, Any] | None = None,
     rei_mast_override: str | None = None,
@@ -5013,6 +5097,8 @@ def run_episode(
         toilet_override=toilet_override,
         gin_override=gin_override,
         tsuno_override=tsuno_override,
+        dog_override=dog_override,
+        species_override=species_override,
         appear_override=appear_override,
         scenes_override=scenes_override,
         rei_mast_override=rei_mast_override,
@@ -5036,6 +5122,8 @@ def run_episode(
             toilet=episode_toilet(ep),
             gin=episode_gin(ep),
             tsuno=episode_tsuno(ep),
+            dog=episode_dog(ep),
+            species=episode_species(ep),
             appear=episode_appear(ep),
             scenes=(ep.get("render") or {}).get("scenes"),
             episode=str(ep.get("slug") or ""),
@@ -5285,7 +5373,7 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--appear LIST] [--scenes LIST]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--dog MODE] [--species MODE] [--appear LIST] [--scenes LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
@@ -5300,6 +5388,8 @@ def _usage() -> str:
         "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
         "  --gin off|taken|fuck|invite_doggy（病棟の灰色オプション。迷ったら off）\n"
         "  --tsuno off|accept_stand|invite_stand（病棟の角オプション。迷ったら off）\n"
+        "  --dog off|evade|accept|invite_rear|invite_oral（病棟の四つ足。迷ったら off。灰色はオフにしない）\n"
+        "  --species off|slime|anthro（病棟の異種。迷ったら off。スライムとケモノは同時に出ない）\n"
         "  --appear miki,rei,kana,shino（病棟の登場。外した名前はシーンごと飛ばす）\n"
         "  --scenes miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）\n"
         "  --rei-mast skip|stand|back（レイ脱出の合間おな。迷ったら skip）\n"
@@ -5338,6 +5428,8 @@ def main(argv: list[str] | None = None) -> int:
     toilet = None
     gin = None
     tsuno = None
+    dog = None
+    species = None
     appear = None
     scenes = None
     rei_mast = None
@@ -5368,6 +5460,10 @@ def main(argv: list[str] | None = None) -> int:
         gin = opts[opts.index("--gin") + 1]
     if "--tsuno" in opts:
         tsuno = opts[opts.index("--tsuno") + 1]
+    if "--dog" in opts:
+        dog = opts[opts.index("--dog") + 1]
+    if "--species" in opts:
+        species = opts[opts.index("--species") + 1]
     if "--appear" in opts:
         appear = opts[opts.index("--appear") + 1]
     if "--scenes" in opts:
@@ -5401,6 +5497,8 @@ def main(argv: list[str] | None = None) -> int:
         toilet_override=toilet,
         gin_override=gin,
         tsuno_override=tsuno,
+        dog_override=dog,
+        species_override=species,
         appear_override=appear,
         scenes_override=scenes,
         rei_mast_override=rei_mast,

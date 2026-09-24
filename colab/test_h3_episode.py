@@ -266,6 +266,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_TOILET" in src
     assert "H3_EPISODE_GIN" in src
     assert "H3_EPISODE_TSUNO" in src
+    assert "H3_EPISODE_DOG" in src
+    assert "H3_EPISODE_SPECIES" in src
     assert "H3_EPISODE_APPEAR" in src
     assert "H3_EPISODE_SCENES" in src
     assert "SCENE_MIKI" in src and "SCENE_SHINO" in src
@@ -281,6 +283,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'TOILET = "トイレに行かない（迷ったらこれ）"' in src
     assert 'GIN = "灰色・出ない（迷ったらこれ）"' in src
     assert 'TSUNO = "角・出ない（迷ったらこれ）"' in src
+    assert 'DOG = "犬・出ない（迷ったらこれ）"' in src
+    assert 'SPECIES = "異種・出ない（迷ったらこれ）"' in src
     assert "APPEAR_MIKI" in src and "APPEAR_SHINO" in src
     assert 'EPISODE = "kasumi-late-desk"' not in src
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
@@ -296,6 +300,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "7. トイレ" in md
     assert "8. 灰色" in md
     assert "9. 角" in md
+    assert "10. 犬" in md
+    assert "11. 異種" in md
     assert "シーンごと" in md
     assert "hospital-exit-adult" in md
     assert "病棟の話" in md
@@ -3194,6 +3200,8 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "7 トイレ" in picked
     assert "8 灰色" in picked
     assert "9 角" in picked
+    assert "10 犬" in picked
+    assert "11 異種" in picked
     assert "シーン" in picked
     assert "話" in picked
     assert ui_default("episode") == "霞東フロア あさ（迷ったらこれ）"
@@ -4208,4 +4216,55 @@ def test_rei_escape_connect_is_one_dropdown_and_cut_locks():
     assert by_id["22-succ-fade"].get("fade_cast") == ["succubus"]
     cuts = prepare_episode(raw, connect_override="カット")
     assert all(beat_source(b) == "t2v" for b in cuts["beats"])
+
+
+def test_hospital_dog_and_species_slots():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert MAX_BEATS == 80
+    off = prepare_episode(raw, story_override="受け入れる")
+    assert not any(str(b["id"]).startswith("04-dog") for b in off["beats"])
+    assert not any("slime" in str(b["id"]) or "anthro" in str(b["id"]) for b in off["beats"])
+    assert not any(c in ("slime", "anthro", "dog") for b in off["beats"] for c in (b.get("cast") or []))
+    stacked = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        gin_override="犯される",
+        tsuno_override="立ちバック",
+        dog_override="誘う口",
+        species_override="スライム",
+        connect_override="chain",
+    )
+    assert validate_episode(stacked, root=HOSPITAL_DIR) == []
+    assert len(stacked["beats"]) <= 80
+    ids = [b["id"] for b in stacked["beats"]]
+    assert ids.index("04-gin-lick") < ids.index("04-dog-spot") < ids.index("04-slime-spot")
+    assert not any("anthro" in bid for bid in ids)
+    for beat in stacked["beats"]:
+        extra = [c for c in (beat.get("cast") or []) if c != "aya"]
+        assert len(extra) <= 1
+    slime_only = prepare_episode(raw, species_override="slime")
+    anthro_only = prepare_episode(raw, species_override="anthro")
+    assert any(b["id"].startswith("04-slime") for b in slime_only["beats"])
+    assert not any("anthro" in b["id"] for b in slime_only["beats"])
+    assert any(b["id"].startswith("04-anthro") for b in anthro_only["beats"])
+    assert not any("slime" in b["id"] for b in anthro_only["beats"])
+    banned = ("zombie", "blood", "corpse", "futanari")
+    for ep in (stacked, anthro_only, prepare_episode(raw, dog_override="invite_rear")):
+        for beat in ep["beats"]:
+            if not str(beat["id"]).startswith(("04-dog", "04-slime", "04-anthro")):
+                continue
+            blob = str(beat.get("action") or "").lower()
+            for word in banned:
+                assert word not in blob
+    spot = next(b for b in stacked["beats"] if b["id"] == "04-dog-spot")
+    spot_action = spot["action"]
+    assert "LEAPS in from the RIGHT" in spot_action
+    assert "Aya toward the LEFT" in spot_action
+    assert "toward the RIGHT" in spot_action
+    assert spot["cast"] == ["aya", "dog"]
+    assert "gin" in {b.get("encounter") or "" for b in stacked["beats"] if str(b["id"]).startswith("04-gin")} or any(
+        str(b["id"]).startswith("04-gin") for b in stacked["beats"]
+    )
+    assert stacked["render"]["gin"] == "taken"
+    assert stacked["render"]["dog"] == "invite_oral"
 
