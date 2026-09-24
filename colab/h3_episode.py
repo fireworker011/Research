@@ -1660,6 +1660,10 @@ def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
         hud = dict(last.get("hud") or {})
         hud["complete"] = bool(spec.get("complete"))
         last["hud"] = hud
+        for earlier in beats[:-1]:
+            earlier_hud = earlier.get("hud")
+            if isinstance(earlier_hud, dict) and earlier_hud.get("complete"):
+                earlier_hud["complete"] = False
         beats[-1] = last
         all_beats = list(out.get("beats") or [])
         # Replace the last dict beat in the original list.
@@ -2453,7 +2457,7 @@ def scrub_planted_action(action: str) -> str:
         out,
     )
     out = re.sub(
-        r"(Miki|Rei|Kana|Shino|Gin|Tsuno) STEPS RIGHT(?: at snappy real-time)?,?\s*",
+        r"(Miki|Rei|Kana|Shino|Gin|Tsuno) STEPS RIGHT(?! until)(?: at snappy real-time)?,?\s*",
         r"\1 is already in place. ",
         out,
     )
@@ -2861,6 +2865,23 @@ def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) 
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
+def _is_final_footage_beat(ep: dict[str, Any], beat: dict[str, Any]) -> bool:
+    """True only for the last non-ui beat. Mid walks must not wear the exit doorway."""
+    last_id = ""
+    for item in ep.get("beats") or []:
+        if isinstance(item, dict) and not is_ui_beat(item):
+            last_id = str(item.get("id") or "")
+    return bool(last_id) and last_id == str(beat.get("id") or "")
+
+
+def _strip_exit_doorway(text: str) -> str:
+    out = str(text or "")
+    out = out.replace("The lit doorway sits at the RIGHT edge of the frame. ", "The corridor continues past the RIGHT edge. ")
+    out = out.replace("doorway at the RIGHT edge, ", "corridor continuing past the RIGHT edge, ")
+    out = out.replace("doorway at the RIGHT edge", "corridor continuing past the RIGHT edge")
+    return out
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -2884,9 +2905,14 @@ def camera_line(
         lock = str(spec["planted_lock"]).strip().rstrip(".")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
+    # The exit doorway on a mid-episode walk reads as the mission end, so the next scene cannot continue.
+    if not planted and not _is_final_footage_beat(ep, beat):
+        lock = _strip_exit_doorway(lock)
     parts = [lock + "."]
     if rotate and not planted:
         angle = camera_angle(key, gpu_index).strip().rstrip(".")
+        if not _is_final_footage_beat(ep, beat):
+            angle = _strip_exit_doorway(angle)
         parts.append("This shot: " + angle + ".")
     else:
         parts.append("The camera stays in this setup from the first frame to the last.")
