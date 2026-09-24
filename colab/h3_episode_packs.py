@@ -365,6 +365,12 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "あやが正面。竿役は背後。両脚を抱えて肛門だけ。顔と体は入れ替えない",
         "hint_ja": "あやの顔が正面。竿役の顔はあやの頭の後ろ。竿は肛門だけ。終わりはあや一人歩き",
     },
+    "sit": {
+        "label_ja": "対面座位",
+        "choice_ja": "対面座位",
+        "when_ja": "竿役が床に座る。あやが対面で跨り、一回の押しで根元まで。終わりはあや一人歩き",
+        "hint_ja": "竿役は座って竿を真上。あやは胸に手を置いて腰を下ろす",
+    },
 }
 
 INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
@@ -373,6 +379,7 @@ INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
     "ride": "invite_pose_ride",
     "stand": "invite_pose_stand",
     "nelson": "invite_pose_nelson",
+    "sit": "invite_pose_sit",
 }
 
 INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
@@ -394,6 +401,8 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "立ちバック": "stand",
         "フルネルソン": "nelson",
         "フルネルソンアナル": "nelson",
+        "対面座位": "sit",
+        "座位": "sit",
     },
 )
 

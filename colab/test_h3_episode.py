@@ -134,6 +134,7 @@ from h3_hud import (  # noqa: E402
 from h3_episode_packs import (  # noqa: E402
     HOSPITAL_ENCOUNTERS,
     INVITE_POSE_MODES,
+    INVITE_POSE_OVERLAY_KEYS,
     STORY_MODES,
     TOILET_MODES,
     canonical_episode,
@@ -2566,7 +2567,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "folds down" not in ride_act
     assert "rises from the crouch" in ride_act
     assert "aya stays the face on the floor" in ride_act
-    assert "outside the shaft adult's legs, directly beside the buttocks" in ride_act
+    assert "immediately to the right of aya's knees" in ride_act
+    assert "straight up and straight down" in jupo["action"].lower()
     assert "the glans is directly under gin's pussy" in ride_act
     assert "the glans spreads gin's lips and travels into gin's pussy" in ride_act
     assert "rooted in aya's groin between the thighs" in ride_act
@@ -4267,4 +4269,20 @@ def test_hospital_dog_and_species_slots():
     )
     assert stacked["render"]["gin"] == "taken"
     assert stacked["render"]["dog"] == "invite_oral"
+
+
+def test_hospital_invite_sit_is_face_to_face():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert INVITE_POSE_OVERLAY_KEYS["sit"] == "invite_pose_sit"
+    for beat in raw["beats"]:
+        if beat.get("id") in ("03-kiss", "06-doggy", "09-join", "12-exit"):
+            assert "invite_pose_sit" in beat
+    sat = prepare_episode(raw, story_override="誘う", invite_pose_override="対面座位")
+    assert validate_episode(sat, root=HOSPITAL_DIR) == []
+    assert len(sat["beats"]) <= MAX_BEATS
+    for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
+        act = next(b for b in sat["beats"] if b["id"] == bid)["action"]
+        assert "SITS" in act
+        assert "both hands rest on" in act.lower()
+        assert "lowers her hips straight down" in act.lower()
 
