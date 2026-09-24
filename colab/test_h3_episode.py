@@ -3302,6 +3302,18 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert all(beat_source(b) == "t2v" for b in cuts["beats"] if not is_ui_beat(b))
 
 
+def test_apply_extra_loras_drops_a_saved_model_page(tmp_path):
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    page = loras / LORA_FILES["furryenh"]
+    page.write_bytes(b"<!DOCTYPE html><html>civitai model page</html>")
+    preset = {"name": "balance", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "", "notes": []}
+    dropped = apply_extra_loras(preset, {"extra_loras": [["furryenh", 0.55]]}, loras)
+    assert dropped["stack"] == preset["stack"]
+    assert not page.is_file()
+    assert any("furry-enhancer-video.safetensors" in n for n in dropped["notes"])
+
+
 def test_apply_extra_loras_drops_cinema(tmp_path):
     loras = tmp_path / "loras"
     loras.mkdir()

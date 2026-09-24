@@ -4124,7 +4124,10 @@ def apply_extra_loras(
             if note not in notes:
                 notes.append(note)
             continue
-        present = loras_dir is None or (Path(loras_dir) / fname).is_file()
+        path = Path(loras_dir) / fname if loras_dir is not None else None
+        if path is not None and path.is_file() and not _lora_file_loadable(path):
+            path.unlink()
+        present = loras_dir is None or (path is not None and path.is_file())
         if not present:
             notes.append(f"optional extra LoRA missing, dropped: {fname}")
             continue
@@ -4191,6 +4194,8 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
         if not fname or not url:
             continue
         dest = root / fname
+        if dest.is_file() and not _lora_file_loadable(dest):
+            dest.unlink()
         if dest.is_file() and dest.stat().st_size > 1_000_000:
             notes.append(f"skip existing {fname}")
             continue
@@ -4198,6 +4203,8 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
         if fetch_text(url, dest, min_bytes=1_000_000):
             notes.append(f"fetched {fname}")
         else:
+            if dest.is_file():
+                dest.unlink()
             notes.append(f"fetch failed {fname}")
     return notes
 
@@ -4403,6 +4410,15 @@ def _civitai_token() -> str:
         return ""
 
 
+def _lora_file_loadable(path: Path) -> bool:
+    """A real weight. A saved model page starts with HTML or JSON and must not enter Comfy."""
+    if not path.is_file() or path.stat().st_size <= 0:
+        return False
+    with path.open("rb") as handle:
+        head = handle.read(32).lstrip().lower()
+    return not (head.startswith(b"<") or head.startswith(b"{"))
+
+
 def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "") -> bool:
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -4419,11 +4435,16 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "") -
                     if not chunk:
                         break
                     out.write(chunk)
-            return dest.is_file() and dest.stat().st_size > min_bytes
-        urllib.request.urlretrieve(url, dest)
-        return dest.is_file() and dest.stat().st_size > min_bytes
+        else:
+            urllib.request.urlretrieve(url, dest)
+        ok = dest.is_file() and dest.stat().st_size > min_bytes and _lora_file_loadable(dest)
+        if not ok and dest.is_file():
+            dest.unlink()
+        return ok
     except Exception as e:  # network
         print("fetch fail", url, e)
+        if dest.is_file() and not _lora_file_loadable(dest):
+            dest.unlink()
         return False
 
 
