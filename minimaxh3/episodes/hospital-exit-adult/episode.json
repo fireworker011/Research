@@ -1827,7 +1827,160 @@
           "loco": "walk"
         }
       ],
-      "connect": "t2v"
+      "connect": "t2v",
+      "on_toilet_finger": [
+        {
+          "id": "04-toilet-in",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 4.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "extra_loras": [
+            "mystic"
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the western bowl in an M-shape, full body including feet. Only the western bowl, the tiles, and Aya fill the frame. The camera stays in front the whole take",
+          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the western toilet bowl facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "walk"
+        },
+        {
+          "id": "04-toilet",
+          "source": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "extra_loras": [
+            [
+              "thumbinbutt",
+              0.55
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet thumb, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FRONT view. Tight on this one toilet stall. Aya faces the camera, already seated on the western bowl in an M-shape, knees up and out, full body including feet. Her right thumb is at her anus. Only the western bowl, the tiles, and seated Aya fill the frame. The camera stays in front the whole take",
+          "action": "Aya is already seated on the filthy western toilet bowl from frame one, fully nude, facing the camera, knees up and out in an M-shape, soles toward the camera, a smile. Her hairless pussy stays empty. Her right thumb TRAVELS INTO her anus and stays inside. The thumb holds still inside the anus. Her hips hold still. The bowl stays still. Aya looks like it feels really good, not blank. Flushed, mouth open, brows knit. Aya STAYS SEATED on this same bowl from the first frame to the last frame. Nobody else in frame. Last frame: Aya still seated facing the camera in an M-shape, right thumb inside the anus, pussy empty. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "t2v",
+          "trigger": "thum1n8utt"
+        },
+        {
+          "id": "04-toilet-out",
+          "source": "t2v",
+          "connect": "end",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 4.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "extra_loras": [],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A stand, footsteps on linoleum, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The lit doorway sits at the RIGHT edge of the frame. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
+          "action": "Aya STANDS from the western bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        }
+      ]
     },
     {
       "id": "04-gin",
@@ -1886,19 +2039,19 @@
             "gin"
           ],
           "cast_lock": {
-            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, hairless pussy, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
           },
           "face_visible": false,
           "extra_loras": [
             "mystic",
-            "futatf"
+            "cunny"
           ],
           "props": [
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
-          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip LICKS ONCE across the clitoris, a wet stroke that stays on the pussy. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Gin crouches toward the LEFT, tongue out. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip KEEPS licking Aya's hairless pussy and clitoris from below, wet strokes that stay on the pussy. Aya stays a female body with a hairless pussy. Gin stays a female body. Last frame: Gin crouches toward the LEFT, tongue on Aya's pussy. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -1930,7 +2083,69 @@
               "隠"
             ]
           },
-          "loco": "planted"
+          "loco": "planted",
+          "trigger": "performing cunnilingus"
+        },
+        {
+          "id": "04-gin-cunny",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "stills/04-peek.jpg",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          },
+          "face_visible": false,
+          "extra_loras": [
+            "mystic",
+            "futatf"
+          ],
+          "props": [
+            "rail"
+          ],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
+          "action": "They start already in this pose on this same linoleum spot. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. Gin crouches toward the LEFT. The long wet tongue KEEPS licking Aya's hairless pussy and clitoris from below. Then the tongue pulls back into Gin's mouth. Gin's mouth closes. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. Gin crouches toward the LEFT, mouth closed. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "gin",
+              "line": "れろっ"
+            },
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "A wet lick, then a growth, HVAC",
+          "music": "A short synth stab, then the bass",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.42,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "loco": "planted",
+          "trigger": "penis growth"
         },
         {
           "id": "04-gin-jupo",
@@ -2159,19 +2374,19 @@
             "gin"
           ],
           "cast_lock": {
-            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, hairless pussy, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
           },
           "face_visible": false,
           "extra_loras": [
             "mystic",
-            "futatf"
+            "cunny"
           ],
           "props": [
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
-          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip LICKS ONCE across the clitoris, a wet stroke that stays on the pussy. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Gin crouches toward the LEFT, tongue out. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip KEEPS licking Aya's hairless pussy and clitoris from below, wet strokes that stay on the pussy. Aya stays a female body with a hairless pussy. Gin stays a female body. Last frame: Gin crouches toward the LEFT, tongue on Aya's pussy. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -2203,7 +2418,69 @@
               "隠"
             ]
           },
-          "loco": "planted"
+          "loco": "planted",
+          "trigger": "performing cunnilingus"
+        },
+        {
+          "id": "04-gin-cunny",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "stills/04-peek.jpg",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          },
+          "face_visible": false,
+          "extra_loras": [
+            "mystic",
+            "futatf"
+          ],
+          "props": [
+            "rail"
+          ],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
+          "action": "They start already in this pose on this same linoleum spot. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. Gin crouches toward the LEFT. The long wet tongue KEEPS licking Aya's hairless pussy and clitoris from below. Then the tongue pulls back into Gin's mouth. Gin's mouth closes. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. Gin crouches toward the LEFT, mouth closed. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "gin",
+              "line": "れろっ"
+            },
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "A wet lick, then a growth, HVAC",
+          "music": "A short synth stab, then the bass",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.42,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "loco": "planted",
+          "trigger": "penis growth"
         },
         {
           "id": "04-gin-in",
@@ -2378,19 +2655,19 @@
             "gin"
           ],
           "cast_lock": {
-            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body, hairless pussy, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
           },
           "face_visible": false,
           "extra_loras": [
             "mystic",
-            "futatf"
+            "cunny"
           ],
           "props": [
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
-          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip LICKS ONCE across the clitoris, a wet stroke that stays on the pussy. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Gin crouches toward the LEFT, tongue out. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already in this pose on this same linoleum spot. Aya is already toward the RIGHT, facing RIGHT, fully nude. Nude ashen-gray Gin is already standing directly BEHIND Aya toward the LEFT, facing RIGHT, a short step behind, full body including feet. long messy gray-white hair, slim feminine alluring body, ashen gray skin that stays ashen gray, sunken hollow dark eye sockets, gums exposed, peeling skin with red muscle fiber showing in the peeled patches, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin, long clawed fingers, a long wet gray tongue hanging out. Gin has a female body, no penis. Aya TURNS toward Gin, hesitant and afraid, a shocked wide-eyed astonished face, then FALLS ONTO her butt toward the RIGHT, a startled sit, both knees open, thighs OPEN, hairless pussy toward Gin. Her head lands on the RIGHT side of the frame. Her toes point LEFT. Aya stays toward the RIGHT. Gin CROUCHES toward the LEFT, tongue hanging out. Gin's mouth OPENS wide. A long thick wet tongue GROWS OUT of the open mouth, stretching in one long curve DOWN and FORWARD until the tip TOUCHES Aya's hairless pussy and presses on the clitoris. The tongue tip KEEPS licking Aya's hairless pussy and clitoris from below, wet strokes that stay on the pussy. Aya stays a female body with a hairless pussy. Gin stays a female body. Last frame: Gin crouches toward the LEFT, tongue on Aya's pussy. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -2422,7 +2699,69 @@
               "隠"
             ]
           },
-          "loco": "planted"
+          "loco": "planted",
+          "trigger": "performing cunnilingus"
+        },
+        {
+          "id": "04-gin-cunny",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "stills/04-peek.jpg",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          },
+          "face_visible": false,
+          "extra_loras": [
+            "mystic",
+            "futatf"
+          ],
+          "props": [
+            "rail"
+          ],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Aya toward the RIGHT facing RIGHT, Gin toward the LEFT. Aya FALLS ONTO her butt toward the RIGHT, head on the RIGHT, toes pointing LEFT, hesitant and afraid, both knees open. Gin crouches toward the LEFT, tongue out. The right edge stays a dark corridor continuing on. Full bodies including feet.",
+          "action": "They start already in this pose on this same linoleum spot. Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, hairless pussy toward Gin. Gin crouches toward the LEFT. The long wet tongue KEEPS licking Aya's hairless pussy and clitoris from below. Then the tongue pulls back into Gin's mouth. Gin's mouth closes. Penis growth. A penis growing out of her clitoris. Aya's clitoris GROWS into a clear erect 24cm human penis, flushed glans, veins along the shaft, pale-tan human shaft. The grown shaft stays up. Aya's face is a shocked wide-eyed astonished face. Last frame: Aya sits toward the RIGHT, head on the RIGHT, toes pointing LEFT, both knees open, the grown 24cm standing vertically straight UP from Aya's groin. Gin crouches toward the LEFT, mouth closed. The right edge of the frame stays a dark corridor continuing on. Both stay fully nude. Ashen gray skin stays ashen gray. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "gin",
+              "line": "れろっ"
+            },
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "A wet lick, then a growth, HVAC",
+          "music": "A short synth stab, then the bass",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.42,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "loco": "planted",
+          "trigger": "penis growth"
         },
         {
           "id": "04-gin-in",

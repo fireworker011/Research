@@ -175,7 +175,7 @@ OUTPUT_SIZE: dict[str, dict[int, tuple[int, int]]] = {
 # GPU length tries the beat's clip first, then these shorter fallbacks (OOM).
 DURATION_LADDER = (10.0, 8.0, 6.0)
 # Fullest ward form is 44 beats: per-scene ride, tentacle toilet, gin taken, tsuno, spots, and UI.
-MAX_BEATS = 48
+MAX_BEATS = 56
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
 STILL_AS = ("first", "last", "both")
@@ -239,6 +239,10 @@ LORA_FILES = {
     "thrust": "H3_FinalThrust.safetensors",
     # Oral creampie only. Trigger CUMOUF. Not for vaginal, anal, or facial beats.
     "cumouf": "CUMOUF_oral_creampie_H3_v1.safetensors",
+    # az420 cunnilingus. Trigger performing cunnilingus.
+    "cunny": "cunny-mh3-e62-az420.safetensors",
+    # Thumb in anus. Trigger thum1n8utt. Strength 0.55 on the toilet finger beat.
+    "thumbinbutt": "H3_ThumbInButt.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -253,6 +257,8 @@ LORA_URLS = {
     "synth": "https://civitai.com/api/download/models/3204862?fileId=3086301",
     "thrust": "https://civitai.com/api/download/models/3269564?fileId=3157295",
     "cumouf": "https://civitai.com/api/download/models/3223411?fileId=3105419",
+    "cunny": "https://civitai.com/api/download/models/3318405",
+    "thumbinbutt": "https://civitai.com/api/download/models/3284492?fileId=3168734",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -266,6 +272,8 @@ LORA_STRENGTHS = {
     "synth": 0.4,
     "thrust": 0.55,
     "cumouf": 0.5,
+    "cunny": 0.8,
+    "thumbinbutt": 0.55,
 }
 BLOWJOB_TRIGGER = "bl0w_j0b"
 SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"

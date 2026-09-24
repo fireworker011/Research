@@ -424,12 +424,19 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "歩いて座り、触手、中出し、立って歩く。どれでも次へ",
         "hint_ja": "入室して座る→触手→液体中出し→立って歩く",
     },
+    "finger": {
+        "label_ja": "アナル指",
+        "choice_ja": "トイレ・アナル指",
+        "when_ja": "歩いて座り、右親指が肛門、立って歩く。どれでも次へ",
+        "hint_ja": "入室して座る→右親指が肛門→立って歩く。マンコは空",
+    },
 }
 
 TOILET_OVERLAY_KEYS: dict[str, str] = {
     "pee": "on_toilet_pee",
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
+    "finger": "on_toilet_finger",
 }
 
 TOILET_ALIASES: dict[str, str] = _label_aliases(
@@ -445,6 +452,9 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "onanii": "masturbate",
         "触手": "tentacle",
         "tentacles": "tentacle",
+        "アナル指": "finger",
+        "指": "finger",
+        "finger": "finger",
     },
 )
 

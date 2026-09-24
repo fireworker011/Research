@@ -2228,7 +2228,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 42
+    assert len(chosen["beats"]) == 43
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -2240,7 +2240,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_ride,rei=invite_ride,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(fullest, root=HOSPITAL_DIR) == []
-    assert len(fullest["beats"]) == 44
+    assert len(fullest["beats"]) == 45
     assert len(fullest["beats"]) <= MAX_BEATS
 
 
@@ -2467,16 +2467,23 @@ def test_hospital_gin_tsuno_optional_events():
     ids = [b["id"] for b in taken["beats"]]
     assert ids.index("04-gin-lick-spot") == ids.index("04-peek") + 1
     assert ids.index("04-gin-lick") == ids.index("04-gin-lick-spot") + 1
+    assert ids.index("04-gin-cunny") == ids.index("04-gin-lick") + 1
     lick = next(b for b in taken["beats"] if b["id"] == "04-gin-lick")
+    cunny = next(b for b in taken["beats"] if b["id"] == "04-gin-cunny")
     walk = next(b for b in taken["beats"] if b["id"] == "04-gin-walk")
     lick_prompt = build_beat_prompt(taken, lick)
     walk_prompt = build_beat_prompt(taken, walk)
-    assert "licks once" in lick["action"].lower()
+    assert "keeps licking" in lick["action"].lower()
     assert "grows out of the open mouth" in lick["action"].lower()
-    assert "penis growth" in lick["action"].lower()
-    assert extra_keys(lick) == ["mystic", "futatf"]
-    assert "clitoris grows" in lick["action"].lower()
-    assert "24cm" in lick["action"]
+    assert "penis growth" not in lick["action"].lower()
+    assert extra_keys(lick) == ["mystic", "cunny"]
+    assert lick.get("trigger") == "performing cunnilingus"
+    assert "hairless pussy" in lick["action"].lower()
+    assert "24cm" not in lick["action"]
+    assert "penis growth" in cunny["action"].lower()
+    assert "clitoris grows" in cunny["action"].lower()
+    assert extra_keys(cunny) == ["mystic", "futatf"]
+    assert "mouth closed" in cunny["action"].lower()
     assert "behind aya toward the left" in lick["action"].lower()
     assert "falls onto her butt toward the right" in lick["action"].lower()
     assert "head lands on the right" in lick["action"].lower()
@@ -2496,12 +2503,15 @@ def test_hospital_gin_tsuno_optional_events():
     assert "shocked wide-eyed" in lick["action"].lower()
     assert "french kiss" not in lick["action"].lower()
     assert lick.get("loco") == "planted"
-    assert lick.get("cast_lock") and "24cm" in lick["cast_lock"]["aya"]
-    assert "pale-tan" in lick["cast_lock"]["aya"]
+    assert lick.get("cast_lock") and "24cm" not in lick["cast_lock"]["aya"]
+    assert "hairless pussy" in lick["cast_lock"]["aya"]
+    assert cunny.get("cast_lock") and "24cm" in cunny["cast_lock"]["aya"]
+    assert "pale-tan" in cunny["cast_lock"]["aya"]
     assert "ashen" not in lick["cast_lock"]["aya"].lower()
     assert "pale-tan human shaft" in action_blob(taken, "04-gin")
     assert "the shaft stays ashen gray" not in action_blob(taken, "04-gin")
-    assert "24cm" in lick_prompt
+    assert "24cm" not in lick_prompt
+    assert "24cm" in build_beat_prompt(taken, cunny)
     assert walk["cast"] == ["aya"]
     assert "grown shaft is gone" in walk["action"].lower()
     assert "no penis" in walk["action"].lower()
