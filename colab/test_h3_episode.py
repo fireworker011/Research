@@ -2577,7 +2577,10 @@ def test_hospital_gin_tsuno_optional_events():
     ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
     assert "already sitting on aya" in ride_peak["action"].lower()
     assert "right third of the floor" in ride_peak["action"].lower()
-    assert "hands rest on aya's breasts" in ride_peak["action"].lower()
+    assert "free hand rests on aya's breast" in ride_peak["action"].lower()
+    assert "holding her raised knee up" in ride_peak["action"].lower()
+    assert "aya keeps this same pose the whole take" in ride_peak["action"].lower()
+    assert "leaning back on both straight arms" in ride_peak["action"].lower()
     assert "lowers and lifts her hips" in ride_peak["action"].lower()
     assert "glans stays inside" in ride_peak["action"].lower()
     assert "24cm still inside to the root" in ride_peak["action"].lower()
@@ -2601,7 +2604,13 @@ def test_hospital_gin_tsuno_optional_events():
     assert "both hands leaving the shaft" in ride_act
     assert "lowers her hips straight down" in ride_act
     assert "they stop on the insert" in ride_act
-    assert "one sole on each side" in ride_act
+    assert "one sole on each side" not in ride_act
+    assert "own hand holds that raised knee up" in ride_act
+    assert "other sole plants on the linoleum beside aya's hip" in ride_act
+    assert "aya keeps this same pose the whole take" in ride_act
+    assert "leaning back on both straight arms" in ride_act
+    assert "travels into the pussy until it is inside to the root" in ride_act
+    assert "hips stay still" in ride_act
     assert "squat" not in ride_act
     assert "from above" not in ride_act
     assert "from directly above" not in ride_act
@@ -2659,6 +2668,15 @@ def test_hospital_gin_tsuno_optional_events():
     assert "lies back from the sit" in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
     assert "stays up into the mouth" in jupo["action"].lower()
+    assert "lips touch aya's groin at the base" in jupo["action"].lower()
+    assert "whole 24cm is inside gin's mouth" in jupo["action"].lower()
+    assert "leaning back on both straight arms" in jupo["action"].lower()
+    for bid in ("04-gin-jupo", "04-gin-ride", "04-gin-peak"):
+        b = next(x for x in taken["beats"] if x["id"] == bid)
+        gin_lock = b["cast_lock"]["gin"].lower()
+        assert "tongue hanging out" not in gin_lock
+        assert "tongue kept inside the mouth" in gin_lock
+        assert "tongue hanging out" not in build_beat_prompt(taken, b).lower()
     _assert_hospital_bans(taken)
     assert validate_episode(taken, root=HOSPITAL_DIR) == []
 
