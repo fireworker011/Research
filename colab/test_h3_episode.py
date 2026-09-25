@@ -2590,7 +2590,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "leaks around the base" not in ride_peak["action"].lower()
     assert "cums inside" not in ride_peak.get("trigger", "").lower()
     assert "thrust" in extra_keys(ride_peak)
-    assert "pussy hanging directly above the glans" in jupo["action"].lower()
+    assert "pussy hanging directly above the glans" not in jupo["action"].lower()
+    assert "on her back" not in (ride_peak.get("trigger") or "").lower()
     assert "standing vertically straight up from her groin" in jupo["action"].lower()
     assert "head on the right" in jupo["action"].lower()
     assert "toes pointing left" in jupo["action"].lower()
@@ -2624,7 +2625,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "folds down" not in ride_act
     assert "straight up and straight down" in jupo["action"].lower()
     assert "both feet stay in frame" in jupo["action"].lower()
-    assert "one clawed hand holds the shaft" in jupo["action"].lower()
+    assert "one clawed hand holds the shaft" not in jupo["action"].lower()
+    assert "only the sealed lips show around the shaft" in jupo["action"].lower()
+    assert "glans stays inside the mouth" in jupo["action"].lower()
+    assert "closed lips leave the shaft" in ride_act
+    assert "pussy stays directly above the glans" in ride_act
     jupo_prompt = build_beat_prompt(taken, jupo)
     assert "camera distance stays fixed" in jupo_prompt.lower()
     assert "zoom" not in jupo_prompt.lower()
@@ -2634,6 +2639,26 @@ def test_hospital_gin_tsuno_optional_events():
     assert "from above both knees" not in jupo_prompt.lower()
     assert "the camera stays back enough that both faces stay fully inside" not in jupo_prompt.lower()
     assert "only two adults share this frame" in jupo_prompt.lower()
+    assert "the adult on her back" not in jupo_prompt.lower()
+    assert "the rider is the one sitting" not in jupo_prompt.lower()
+    assert "hips travel straight up and straight down" not in jupo_prompt.lower()
+    assert "feet do not take a step" not in jupo_prompt.lower()
+    assert "nobody walks" not in jupo_prompt.lower()
+    assert "does not scroll" not in jupo_prompt.lower()
+    ride_prompt = build_beat_prompt(taken, ride_in)
+    peak_prompt = build_beat_prompt(taken, ride_peak)
+    for gin_prompt in (ride_prompt, peak_prompt):
+        low = gin_prompt.lower()
+        assert "the adult on her back" not in low
+        assert "the rider's head stays on the left" not in low
+        assert "feet do not take a step" not in low
+        assert "nobody walks" not in low
+        assert "does not scroll" not in low
+        assert "leaning back on both straight arms" in low
+        assert "one hand on each breast" in low
+    assert "stands up and steps right once" in ride_prompt.lower()
+    assert "closed lips leave the shaft" in ride_prompt.lower()
+    assert "short strokes" in peak_prompt.lower()
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
     assert "pale-tan" in jupo_prompt
@@ -2669,7 +2694,8 @@ def test_hospital_gin_tsuno_optional_events():
     kasumi_beat = next(b for b in kasumi["beats"] if not is_ui_beat(b))
     assert "Look that stays" not in build_beat_prompt(kasumi, kasumi_beat)
     assert "stays down" in jupo["action"].lower()
-    assert "lies back from the sit" in jupo["action"].lower()
+    assert "leans back from the sit" in jupo["action"].lower()
+    assert "lies back" not in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
     assert "stays up into the mouth" in jupo["action"].lower()
     assert "lips touch aya's groin at the base" in jupo["action"].lower()

@@ -576,12 +576,42 @@ RIDE_FOLD_CLAUSE = (
     "The kneeling adult rises into the rider. That same face is the face on top. "
     "After the shaft enters, those two faces stay the frame."
 )
-RIDE_PEAK_RE = re.compile(r"straight up and straight down", re.I)
+# Oral strokes say "straight up and straight down" too. Only hip travel is a ride peak.
+RIDE_PEAK_RE = re.compile(
+    r"hips[^.]*straight up and straight down|straight up and straight down in the frame",
+    re.I,
+)
 RIDE_PEAK_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya and the partner stay the same two adults on this floor spot. "
     "The adult on her back is the one with the shaft. The rider is the one sitting on that adult. "
     "Hips travel straight up and straight down in the frame. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+# Gin's oral and seat are not the supine side-ride. Negated steps get drawn as steps.
+GIN_STILL_IDS = frozenset({"04-gin-jupo", "04-gin-ride", "04-gin-peak"})
+GIN_ORAL_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays leaning back on both straight arms, both heels on the linoleum, head on the RIGHT. "
+    "Gin kneels beside Aya's hips, head on the LEFT. "
+    "The closed lips stroke the upright 24cm. Each down stroke reaches the base. The glans stays inside the mouth. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_RIDE_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays leaning back on both straight arms, palms and heels on the same linoleum marks, head on the RIGHT. "
+    "Gin stands up and steps right once over Aya's hips, facing Aya, then lowers once until the root. "
+    "Both hands stay on Aya's two breasts. "
+    "The pair stays on this floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_PEAK_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays leaning back on both straight arms, palms and heels on the same linoleum marks, head on the RIGHT. "
+    "Gin stays seated on Aya's hips, one knee raised, the other sole on the linoleum, both hands on Aya's two breasts. "
+    "The hips move in short strokes. The glans stays inside. "
+    "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
@@ -3092,6 +3122,11 @@ def camera_line(
     spec = CAMERA_PACKS[key]
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
+        if str(beat.get("id") or "") in GIN_STILL_IDS:
+            # "Nobody walks" and "not a step" get drawn as a walk. Gin names her own step.
+            lock = lock.replace("Nobody walks. Nobody relocates. ", "")
+            lock = lock.replace("A hip thrust is in place, not a step. ", "")
+            lock = lock.replace("No track, no pan, no scroll. ", "")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
     # The exit doorway on a mid-episode walk reads as the mission end, so the next scene cannot continue.
@@ -3992,7 +4027,8 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
     if "blowjob" in keys:
         holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
-    if "sideride" in keys:
+    # Gin's seat keeps her leaned back on both hands. The supine rider-head-left lock flattens that pose.
+    if "sideride" in keys and not gin:
         holds.append(RIDE_CAMERA_HOLD)
         holds.append(RIDE_PAIR_CLAUSE)
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
@@ -4080,7 +4116,14 @@ def build_beat_prompt(
     elif loco == "planted":
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
-        if NELSON_HOLD_RE.search(action_txt):
+        bid_now = str(beat.get("id") or "")
+        if bid_now == "04-gin-jupo":
+            desc.append(GIN_ORAL_PACE_CLAUSE)
+        elif bid_now == "04-gin-ride":
+            desc.append(GIN_RIDE_PACE_CLAUSE)
+        elif bid_now == "04-gin-peak":
+            desc.append(GIN_PEAK_PACE_CLAUSE)
+        elif NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
             desc.append(NELSON_PLANTED_CLAUSE)
         elif PEE_STILL_RE.search(action_txt):
