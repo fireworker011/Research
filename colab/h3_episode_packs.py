@@ -371,6 +371,12 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "竿役が床に座る。あやが対面で跨り、一回の押しで根元まで。終わりはあや一人歩き",
         "hint_ja": "竿役は座って竿を真上。あやは胸に手を置いて腰を下ろす",
     },
+    "embrace": {
+        "label_ja": "抱擁",
+        "choice_ja": "抱擁ベロチュー→壁片足→クンニ→両足抱え",
+        "when_ja": "spotの次から。抱きついて背中に手を回しベロチュー。壁に背、片足は床。しゃがんでクンニ。両足を抱える。犬・スライム・獣・ギンは除く",
+        "hint_ja": "角だけ背後ハグから振り向きベロチュー。キスLoRA必須",
+    },
 }
 
 INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
@@ -380,6 +386,7 @@ INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
     "stand": "invite_pose_stand",
     "nelson": "invite_pose_nelson",
     "sit": "invite_pose_sit",
+    "embrace": "invite_pose_embrace",
 }
 
 INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
@@ -403,6 +410,9 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "フルネルソンアナル": "nelson",
         "対面座位": "sit",
         "座位": "sit",
+        "抱擁": "embrace",
+        "抱擁ベロチュー": "embrace",
+        "両足抱え": "embrace",
     },
 )
 
@@ -1136,6 +1146,13 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
         "story": "invite",
         "pose": "nelson",
     },
+    "invite_embrace": {
+        "label_ja": "誘う・抱擁",
+        "choice_ja": "□誘う・抱擁ベロチュー→壁片足→クンニ→両足抱え",
+        "when_ja": "spotの次から抱擁ベロチュー、壁の片足、クンニ、両足抱え",
+        "story": "invite",
+        "pose": "embrace",
+    },
     "evade": {
         "label_ja": "回避",
         "choice_ja": "×回避",
@@ -1166,6 +1183,8 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘う騎乗": "invite_ride",
         "誘う立ちバック": "invite_stand",
         "誘うフルネルソン": "invite_nelson",
+        "誘う抱擁": "invite_embrace",
+        "invite-embrace": "invite_embrace",
         "□誘う・ベロチュー→じゅぼ→騎乗位": "invite_ride",
         "回避": "evade",
         "invite-all-fours": "invite_all_fours",

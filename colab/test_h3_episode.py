@@ -1942,8 +1942,11 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "walking right faster" in cover_i["action"].lower()
     assert "snaps her body" in cover_i["action"].lower()
     assert "press flush" in cover_i["action"].lower()
-    assert "squash and change shape" in cover_i["action"].lower()
-    assert "knead them from behind" in cover_i["action"].lower()
+    assert "squash flat" in cover_i["action"].lower()
+    assert "kneads it from behind" in cover_i["action"].lower()
+    assert "strokes the erect 24cm" in cover_i["action"].lower()
+    assert "both hands leave the shaft" in cover_i["action"].lower()
+    assert "22cm" not in cover_i["action"].lower()
     assert "cup miki's breasts" in cover_i["action"].lower()
     assert "stands behind miki" in cover_i["action"].lower()
     assert "the walk until the hug is short" in cover_i["action"].lower()
@@ -1957,7 +1960,8 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "hollow empty dark eye sockets" in cover_i["action"].lower()
     cover_cam = cover_i["camera"].lower()
     assert "aya's breasts pressed into miki's back" in cover_cam
-    assert "kneading miki's breasts from behind" in cover_cam
+    assert "stroking the erect 24cm" in cover_cam
+    assert "leaving the shaft" in cover_cam
     assert cover_cam.find("pressed into miki's back") < cover_cam.find("turn whole-body")
     assert "head and chest turn together" in cover_i["action"].lower()
     assert "chin over the breastbone" in cover_i["action"].lower()
@@ -4382,4 +4386,62 @@ def test_hospital_invite_sit_is_face_to_face():
     assert walk["trim"]["seconds"] == 8.0
     assert "only aya walks right" in walk["action"].lower()
     assert "kiss" in [x[0] if isinstance(x, list) else x for x in walk["extra_loras"]]
+
+
+def test_hospital_invite_embrace_starts_after_the_spot():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="抱擁ベロチュー→壁片足→クンニ→両足抱え",
+        tsuno_override="フルネルソンアナル",
+        gin_override="犯される",
+        dog_override="誘う口",
+        species_override="スライム",
+    )
+    assert validate_episode(ep, root=HOSPITAL_DIR) == []
+    assert len(ep["beats"]) <= MAX_BEATS
+    ids = [b["id"] for b in ep["beats"]]
+    assert "01-cover" in ids
+    assert "03-kiss" not in ids
+    hug = next(b for b in ep["beats"] if b["id"] == "03-kiss-hug")
+    assert hug["id"].endswith("-hug")
+    assert ids.index("03-kiss-hug") > ids.index("01-cover")
+    assert "wrap behind aya's back" in hug["action"].lower()
+    assert "french kiss" in hug["action"].lower()
+    assert "kiss" in [x[0] if isinstance(x, list) else x for x in hug["extra_loras"]]
+    wall = next(b for b in ep["beats"] if b["id"] == "03-kiss-wall")["action"].lower()
+    assert "back is against the peeling wall" in wall
+    assert "one foot" in wall or "other foot stays planted" in wall
+    cunny = next(b for b in ep["beats"] if b["id"] == "03-kiss-cunny")
+    assert "squats" in cunny["action"].lower()
+    assert "tongue licks" in cunny["action"].lower()
+    assert cunny["trigger"] == "performing cunnilingus"
+    hold = next(b for b in ep["beats"] if b["id"] == "03-kiss-hold")["action"].lower()
+    assert "hold both legs up" in hold
+    assert "travels into the pussy to the root" in hold
+    for beat in ep["beats"]:
+        if beat["id"].startswith("03-kiss-"):
+            assert "駅弁" not in beat["action"]
+            assert "cowgirl" not in beat["action"].lower()
+    spot = next(b for b in ep["beats"] if b["id"] == "06-doggy-hug-spot")
+    rei_hug = next(b for b in ep["beats"] if b["id"] == "06-doggy-hug")
+    assert ids.index(spot["id"]) < ids.index(rei_hug["id"])
+    tsuno = next(b for b in ep["beats"] if b["id"] == "04-tsuno-hug")
+    assert "stands directly behind aya" in tsuno["action"].lower()
+    assert "leave the shaft" in tsuno["action"].lower()
+    assert "04-tsuno-meet" not in ids
+    assert "04-tsuno-in" not in ids
+    gin_ids = [i for i in ids if i.startswith("04-gin-")]
+    assert gin_ids
+    assert not any(i.endswith("-hug") for i in gin_ids)
+    assert not any(i.startswith("04-dog-hug") or i.startswith("04-slime-hug") for i in ids)
+    off = prepare_episode(raw, story_override="誘う", invite_pose_override="embrace", tsuno_override="off")
+    off_ids = [b["id"] for b in off["beats"]]
+    assert "04-tsuno-hug" not in off_ids
+    cover = next(b for b in ep["beats"] if b["id"] == "01-cover")
+    assert "strokes the erect 24cm" in cover["action"].lower()
+    prompt = build_beat_prompt(ep, cover)
+    assert "24cm" in prompt
+    assert "22cm" not in prompt
 

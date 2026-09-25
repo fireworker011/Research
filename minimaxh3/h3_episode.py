@@ -1738,6 +1738,159 @@ def _pop_overlay_keys(beat: dict[str, Any], keys: tuple[str, ...]) -> dict[str, 
     return out
 
 
+_EMBRACE_SHAFT = {
+    "miki": ("Miki", "22cm", "the same vivid purple as the hips not pale-tan flesh"),
+    "rei": ("Rei", "24cm", "the same vivid purple as the hips not pale-tan flesh"),
+    "kana": ("Kana", "20cm", "the same vivid purple as the hips not pale-tan flesh"),
+    "shino": ("Shino", "30cm", "the same pale gray-white as the hips not pale-tan flesh"),
+    "tsuno": ("Tsuno", "24cm", "an ashen-gray shaft that stays ashen gray not pale-tan flesh"),
+}
+
+
+def _embrace_beat(
+    base: str,
+    suffix: str,
+    who: str,
+    action: str,
+    *,
+    loras: list[Any],
+    loco: str = "planted",
+    trigger: str = "",
+) -> dict[str, Any]:
+    if suffix == "walk":
+        camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. "
+            "Aya full body including feet. Only Aya."
+        )
+    else:
+        camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. "
+            "Both adults full body including feet. Both faces stay in frame."
+        )
+    return {
+        "id": f"{base}-{suffix}",
+        "source": "t2v",
+        "connect": "end" if suffix == "walk" else "t2v",
+        "trim": {"start": 0, "seconds": 4.0 if suffix == "walk" else 10.0},
+        "cast": ["aya"] if suffix == "walk" else ["aya", who],
+        "extra_loras": loras,
+        "trigger": trigger,
+        "camera": camera,
+        "action": action,
+        "voices": [{"who": "aya", "line": "んっ"}],
+        "sfx": "a lip-contact kiss smack when the mouths meet, HVAC" if suffix == "hug" else "HVAC",
+        "music": "Bass holds",
+        "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": False,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 4,
+            "objective_distance": 0.3,
+            "icons_active": [],
+        },
+        "loco": "walk" if suffix == "walk" else loco,
+    }
+
+
+def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
+    """Spot stays. These beats are the next scenes. Dog, slime, anthro, and gin are not in this map."""
+    name, cm, color = _EMBRACE_SHAFT[enc]
+    who = enc
+    shaft = f"the erect {cm} {color}"
+    if enc == "tsuno":
+        hug = (
+            f"They start already on this same linoleum spot. {name} STANDS directly behind Aya, both facing RIGHT. "
+            f"{name}'s breasts PRESS FLUSH into Aya's back with no gap. Both hands KNEAD Aya's breasts from behind. "
+            f"One hand also STROKES {shaft} up and down while the bodies stay pressed flush. "
+            f"Then Aya TURNS her whole body to face {name}. As she turns, both hands LEAVE the shaft. "
+            "Mouths meet in a deep wet french kiss. Tongues intertwine. Both faces stay in frame. Full body including feet. "
+            "Last frame: face to face, mouths joined, hands off the shaft. Brisk real-time. Consensual adult game beat"
+        )
+    else:
+        hug = (
+            f"They start already on this same linoleum spot. {name} STEPS toward Aya. "
+            f"Both of {name}'s hands WRAP behind Aya's back. Chests, bellies, and hips PRESS FLUSH with no gap. "
+            "Mouths meet in a deep wet french kiss. Tongues intertwine. Both faces stay in frame. Full body including feet. "
+            "Last frame: arms around Aya's back, chests flush, mouths joined. Brisk real-time. Consensual adult game beat"
+        )
+    wall = (
+        f"They start already face to face on this same linoleum spot, mouths just parted. "
+        f"{name} PUSHES Aya until Aya's back is against the peeling wall. Aya smiles. "
+        "One of Aya's legs lifts and the knee opens outward. The other foot stays planted on the linoleum. "
+        f"{shaft} stays in front of the hips. Both faces stay in frame. Full body including feet. "
+        "Last frame: Aya's back on the wall, one foot on the linoleum, one knee open, both smiling. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+    cunny = (
+        f"They start already at the wall on this same linoleum spot. Aya's back stays on the wall. One foot stays on the linoleum. "
+        f"{name} SQUATS in front of Aya. {name}'s mouth meets Aya's hairless pussy. The tongue licks. "
+        "Both faces stay in frame. Full body including feet. "
+        "Last frame: the partner squatting, mouth on the pussy, one of Aya's feet on the linoleum. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+    hold = (
+        f"They start already at the wall on this same linoleum spot. {name} stands. "
+        f"Both arms wrap under Aya's thighs and HOLD both legs up off the linoleum. "
+        f"{shaft} TRAVELS INTO the pussy to the root. Hips meet flush. They HOLD both legs up. "
+        "Both faces stay in frame. Full body including the held feet. "
+        "Last frame: both legs held up, hips flush, the shaft buried to the root. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+    walk = (
+        "Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. "
+        f"The other adult is gone from frame one. Only Aya is in the corridor. "
+        "Ahead a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. "
+        "Last frame: only Aya walking RIGHT, fully nude, female body. Motion starts at frame one. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+    return [
+        _embrace_beat(base, "hug", who, hug, loras=[["kiss", 0.5], "mystic"]),
+        _embrace_beat(base, "wall", who, wall, loras=["mystic"]),
+        _embrace_beat(
+            base,
+            "cunny",
+            who,
+            cunny,
+            loras=[["cunny", 0.8], "mystic"],
+            trigger="performing cunnilingus",
+        ),
+        _embrace_beat(base, "hold", who, hold, loras=["mystic"]),
+        _embrace_beat(base, "walk", who, walk, loras=[]),
+    ]
+
+
+def _apply_embrace_tsuno(ep: dict[str, Any]) -> dict[str, Any]:
+    """When 誘う uses the embrace choice, the horn act after the spot uses the behind-hug sequence."""
+    if (episode_invite_pose(ep) or "") != "embrace":
+        return ep
+    if (episode_story(ep) or "") != "invite":
+        return ep
+    if (episode_tsuno(ep) or "off") == "off":
+        return ep
+    beats: list[Any] = []
+    swapped = False
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        bid = str(beat.get("id") or "")
+        if bid == "04-tsuno-meet" and not swapped:
+            beats.extend(embrace_sequence("04-tsuno", "tsuno"))
+            swapped = True
+            continue
+        if swapped and bid in ("04-tsuno-in", "04-tsuno-peak", "04-tsuno-walk", "04-tsuno-meet"):
+            continue
+        beats.append(beat)
+    ep = dict(ep)
+    ep["beats"] = beats
+    return ep
+
+
 def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[str, Any]:
     """Merge invite_pose_* overlays when that encounter is □誘う. Other stories just drop the keys."""
     out = copy.deepcopy(ep)
@@ -1759,7 +1912,17 @@ def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[st
         local_pose = poses.get(enc, key) if enc in HOSPITAL_ENCOUNTERS else key
         field = INVITE_POSE_OVERLAY_KEYS.get(local_pose) if local_story == "invite" else None
         chosen = beat.get(field) if field else None
+        has_invite_pose = any(key in beat for key in INVITE_POSE_ROUTE_KEYS)
         body = _pop_overlay_keys(beat, INVITE_POSE_ROUTE_KEYS)
+        if (
+            local_story == "invite"
+            and local_pose == "embrace"
+            and enc in _EMBRACE_SHAFT
+            and enc != "tsuno"
+            and has_invite_pose
+        ):
+            beats.extend(embrace_sequence(str(body.get("id") or enc), enc))
+            continue
         beats.extend(_expand_overlay(body, chosen))
     out["beats"] = beats
     render = dict(out.get("render") or {})
@@ -2741,6 +2904,7 @@ def prepare_episode(
         dog=dog_override,
         species=species_override,
     )
+    out = _apply_embrace_tsuno(out)
     out = apply_appear_route(out, appear=appear_override)
     out = apply_rei_escape_route(
         out,
