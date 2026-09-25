@@ -1739,7 +1739,7 @@ def _pop_overlay_keys(beat: dict[str, Any], keys: tuple[str, ...]) -> dict[str, 
 
 
 _EMBRACE_SHAFT = {
-    "miki": ("Miki", "22cm", "the same vivid purple as the hips not pale-tan flesh"),
+    "miki": ("Miki", "24cm", "the same vivid purple as the hips not pale-tan flesh"),
     "rei": ("Rei", "24cm", "the same vivid purple as the hips not pale-tan flesh"),
     "kana": ("Kana", "20cm", "the same vivid purple as the hips not pale-tan flesh"),
     "shino": ("Shino", "30cm", "the same pale gray-white as the hips not pale-tan flesh"),
@@ -1771,14 +1771,14 @@ def _embrace_beat(
         "id": f"{base}-{suffix}",
         "source": "t2v",
         "connect": "end" if suffix == "walk" else "t2v",
-        "trim": {"start": 0, "seconds": 4.0 if suffix == "walk" else 10.0},
+        "trim": {"start": 0, "seconds": 8.0 if suffix == "walk" else 10.0},
         "cast": ["aya"] if suffix == "walk" else ["aya", who],
         "extra_loras": loras,
         "trigger": trigger,
         "camera": camera,
         "action": action,
         "voices": [{"who": "aya", "line": "んっ"}],
-        "sfx": "a lip-contact kiss smack when the mouths meet, HVAC" if suffix == "hug" else "HVAC",
+        "sfx": "a lip-contact kiss smack when the mouths meet, HVAC" if suffix in ("hug", "hold", "peak", "walk") else "HVAC",
         "music": "Bass holds",
         "hud": {
             "mission": "出口に出る",
@@ -1835,21 +1835,41 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
     )
     hold = (
         f"They start already at the wall on this same linoleum spot. {name} stands. "
-        f"Both arms wrap under Aya's thighs and HOLD both legs up off the linoleum. "
-        f"{shaft} TRAVELS INTO the pussy to the root. Hips meet flush. They HOLD both legs up. "
+        f"Both of {name}'s arms wrap under Aya's thighs and HOLD both knees up off the linoleum. "
+        "Aya's knees are pulled up and open. "
+        f"Aya's arms WRAP behind {name}'s back. "
+        "Mouths meet in a deep wet french kiss. Tongues intertwine and lick around each other's lips. "
+        "Thick saliva coats both mouths, drips in strings from both chins, and keeps dripping. "
+        f"{shaft} TRAVELS INTO the pussy to the root. Hips meet flush. They HOLD both knees up. Mouths stay joined. "
         "Both faces stay in frame. Full body including the held feet. "
-        "Last frame: both legs held up, hips flush, the shaft buried to the root. "
+        "Last frame: both knees held up and open, arms around the back, mouths joined, saliva dripping, hips flush, the shaft buried to the root. "
+        "Brisk real-time. Consensual adult game beat"
+    )
+    peak = (
+        f"They start already joined on this same linoleum spot. Both knees stay held up and open. "
+        f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. "
+        "Tongues lick around each other's lips. Thick saliva coats both mouths and drips from both chins. "
+        f"{shaft} stays buried to the root. {name} finishes INSIDE Aya. "
+        "A little thick WHITE goo leaks around the base and stays inside the pussy. "
+        "Both climax: wrecked pleasured orgasm faces, mouths open, brows knit, bodies trembling with pleasure. "
+        "Mouths stay joined through the finish. Both faces stay in frame. Full body including the held feet. "
+        "Last frame: orgasm faces, mouths joined, saliva dripping, hips flush, the shaft still buried to the root. "
         "Brisk real-time. Consensual adult game beat"
     )
     walk = (
-        "Aya STANDS and WALKS RIGHT along the crumbling corridor at walking-and-hit pace, fully nude. "
-        f"The other adult is gone from frame one. Only Aya is in the corridor. "
+        "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling, "
+        f"mouths joined, tongues intertwine, arms around each other's backs, thick saliva dripping, "
+        f"and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. "
+        f"From 3 to 5 seconds {name} steps out of the frame to the RIGHT and is gone. "
+        "From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. "
+        "No penis. The grown shaft is gone. Only Aya is in the corridor. "
         "Ahead a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. "
-        "Last frame: only Aya walking RIGHT, fully nude, female body. Motion starts at frame one. "
+        "Last frame: only Aya walking RIGHT, fully nude, female body. "
         "Brisk real-time. Consensual adult game beat"
     )
+    kiss = [["kiss", 0.5], "mystic"]
     return [
-        _embrace_beat(base, "hug", who, hug, loras=[["kiss", 0.5], "mystic"]),
+        _embrace_beat(base, "hug", who, hug, loras=kiss),
         _embrace_beat(base, "wall", who, wall, loras=["mystic"]),
         _embrace_beat(
             base,
@@ -1859,8 +1879,9 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
             loras=[["cunny", 0.8], "mystic"],
             trigger="performing cunnilingus",
         ),
-        _embrace_beat(base, "hold", who, hold, loras=["mystic"]),
-        _embrace_beat(base, "walk", who, walk, loras=[]),
+        _embrace_beat(base, "hold", who, hold, loras=kiss),
+        _embrace_beat(base, "peak", who, peak, loras=kiss),
+        _embrace_beat(base, "walk", who, walk, loras=kiss),
     ]
 
 
@@ -2023,11 +2044,11 @@ def apply_optional_events(
 # Invite lust finale. Only the last partner on an invite ending. Middle walks stay.
 FINALE_LOOK: dict[str, str] = {
     "miki": (
-        "Miki stays a slim adult with a short brown bob, vivid purple skin from face to the erect 22cm shaft, "
+        "Miki stays a slim adult with a short brown bob, vivid purple skin from face to the erect 24cm shaft, "
         "hollow empty dark eye sockets, open red lacerations and torn gashes across the face, neck, breasts, belly, back, "
-        "arms, hands, thighs, knees, feet, hips, groin and the 22cm shaft, visible sweat beads on the intact purple skin "
+        "arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft, visible sweat beads on the intact purple skin "
         "between the open gashes, grimy dirty stains and wet peeling rotting patches on that skin, "
-        "the 22cm shaft the same vivid purple as the hips not pale-tan flesh."
+        "the 24cm shaft the same vivid purple as the hips not pale-tan flesh."
     ),
     "rei": (
         "Rei stays a slim feminine adult with long brown permed hair, vivid purple skin, vacant wide-open tired eyes, "

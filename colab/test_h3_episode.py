@@ -1188,7 +1188,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "grimy brown hospital dirt" in raw["cast"]["aya"]["lock"]
     assert "extremely tall" not in raw["world"]["lock"]
     assert "nobody is giant" in raw["world"]["lock"]
-    assert "22cm" in raw["cast"]["miki"]["lock"] and "clear futanari" in raw["cast"]["miki"]["lock"]
+    assert "24cm" in raw["cast"]["miki"]["lock"] and "clear futanari" in raw["cast"]["miki"]["lock"]
     assert "no penis" not in raw["cast"]["miki"]["lock"]
     assert "purple" in raw["cast"]["miki"]["lock"]
     assert "lacerations" in raw["cast"]["miki"]["lock"] and "hollow empty dark eye sockets" in raw["cast"]["miki"]["lock"]
@@ -1196,7 +1196,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "not pale-tan flesh" in raw["cast"]["miki"]["lock"]
     assert "pale-tan skin" not in raw["cast"]["miki"]["lock"]
     assert "groin" in raw["cast"]["miki"]["lock"] and "rotting" in raw["cast"]["miki"]["lock"]
-    assert "22cm shaft" in raw["cast"]["miki"]["lock"]
+    assert "24cm shaft" in raw["cast"]["miki"]["lock"]
     assert "blood" not in raw["cast"]["miki"]["lock"].lower()
     assert "across the face, neck" in raw["cast"]["miki"]["lock"]
     assert "hands" in raw["cast"]["miki"]["lock"] and "feet" in raw["cast"]["miki"]["lock"]
@@ -1313,7 +1313,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert miki.get("trigger") == "bl0w_j0b"
     assert miki_prompt.startswith("bl0w_j0b")
     assert "glans stays inside the mouth" in miki_prompt.lower()
-    assert "22cm" in miki_prompt.lower()
+    assert "24cm" in miki_prompt.lower()
     assert "licks upward" not in miki_prompt.lower()
     assert miki["trim"]["seconds"] == 10.0
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
@@ -1665,7 +1665,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert skip_shino["beats"][-1]["id"] == "09-join-walk"
     assert skip_shino["beats"][-1]["hud"]["complete"] is True
     miki_ride = action_blob(ride, "03-kiss")
-    assert "22cm" in miki_ride
+    assert "24cm" in miki_ride
     assert "drops down onto her knees" in miki_ride
     assert "glans stays inside the mouth" in miki_ride
     assert "stands up" in miki_ride
@@ -1914,7 +1914,7 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     ride_beat = next(b for b in invite["beats"] if b["id"] == "03-kiss-ride")
     ride_wide = build_beat_prompt(invite, ride_beat)
     assert "both heads and all four feet" in ride_wide.lower()
-    assert "22cm shaft stays visible in front of the hips, outside any other body" in cover_prompt.lower()
+    assert "24cm shaft stays visible in front of the hips, outside any other body" in cover_prompt.lower()
     assert "hip-to-shoulder" not in cover_prompt.lower()
     assert "zoom" not in cover_prompt.lower()
     invite_prompt = build_beat_prompt(invite, cover_i)
@@ -2419,7 +2419,7 @@ def test_hospital_invite_finale_follows_the_last_partner():
     assert miki["beats"][-1]["id"] == "03-kiss-kiss"
     assert miki["beats"][-1]["cast"] == ["aya", "miki"]
     low = miki["beats"][-1]["action"].lower()
-    assert "22cm" in low and "short brown bob" in low and "lacerations" in low and "sweat beads" in low
+    assert "24cm" in low and "short brown bob" in low and "lacerations" in low and "sweat beads" in low
     assert "shino" not in low and "30cm" not in low and "rei" not in low
     assert extra_lora_entries(miki["beats"][-1]) == [("kiss", 0.5)]
     assert "french kiss" in low and "corners of the mouth" in low
@@ -4370,7 +4370,7 @@ def test_hospital_invite_sit_is_face_to_face():
     assert "SITS DOWN onto the linoleum" in miki_zai
     assert "legs WRAP around Miki's waist" in miki_zai
     assert "HOLD still joined" in miki_zai
-    assert "22cm" in miki_zai
+    assert "24cm" in miki_zai
     assert "hips move straight up" not in miki_zai.lower()
     assert "ankles cross" not in miki_zai.lower()
     for bid in ("06-doggy-zai1", "09-join-zai1", "12-exit-zai1"):
@@ -4417,9 +4417,21 @@ def test_hospital_invite_embrace_starts_after_the_spot():
     assert "squats" in cunny["action"].lower()
     assert "tongue licks" in cunny["action"].lower()
     assert cunny["trigger"] == "performing cunnilingus"
-    hold = next(b for b in ep["beats"] if b["id"] == "03-kiss-hold")["action"].lower()
-    assert "hold both legs up" in hold
+    hold_beat = next(b for b in ep["beats"] if b["id"] == "03-kiss-hold")
+    hold = hold_beat["action"].lower()
+    assert "hold both knees up" in hold
+    assert "wrap behind miki's back" in hold
+    assert "french kiss" in hold
+    assert "saliva" in hold
     assert "travels into the pussy to the root" in hold
+    assert "kiss" in [x[0] if isinstance(x, list) else x for x in hold_beat["extra_loras"]]
+    peak = next(b for b in ep["beats"] if b["id"] == "03-kiss-peak")["action"].lower()
+    assert "finishes inside" in peak
+    assert "orgasm faces" in peak
+    walk = next(b for b in ep["beats"] if b["id"] == "03-kiss-walk")
+    assert walk["trim"]["seconds"] == 8.0
+    assert "saliva string" in walk["action"].lower()
+    assert "shaft pulls out" in walk["action"].lower()
     for beat in ep["beats"]:
         if beat["id"].startswith("03-kiss-"):
             assert "駅弁" not in beat["action"]
