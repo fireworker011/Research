@@ -2577,8 +2577,9 @@ def test_hospital_gin_tsuno_optional_events():
     ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
     assert "already sitting on aya" in ride_peak["action"].lower()
     assert "right third of the floor" in ride_peak["action"].lower()
-    assert "free hand rests on aya's breast" in ride_peak["action"].lower()
-    assert "holding her raised knee up" in ride_peak["action"].lower()
+    assert "both of gin's hands rest on aya's two breasts" in ride_peak["action"].lower()
+    assert "one hand on each breast" in ride_peak["action"].lower()
+    assert "holding her raised knee" not in ride_peak["action"].lower()
     assert "aya keeps this same pose the whole take" in ride_peak["action"].lower()
     assert "leaning back on both straight arms" in ride_peak["action"].lower()
     assert "lowers and lifts her hips" in ride_peak["action"].lower()
@@ -2601,11 +2602,14 @@ def test_hospital_gin_tsuno_optional_events():
     assert "steps right until" not in ride_act
     assert "right third of the floor" in ride_act
     assert "buttocks meet aya's hips" in ride_act
-    assert "both hands leaving the shaft" in ride_act
+    assert "both hands stay on the breasts" in ride_act
+    assert "one hand on each breast" in ride_act
+    assert "both hands on aya's two breasts" in ride_act
+    assert "holds the 24cm" not in ride_act
+    assert "holds that raised knee" not in ride_act
     assert "lowers her hips straight down" in ride_act
     assert "they stop on the insert" in ride_act
     assert "one sole on each side" not in ride_act
-    assert "own hand holds that raised knee up" in ride_act
     assert "other sole plants on the linoleum beside aya's hip" in ride_act
     assert "aya keeps this same pose the whole take" in ride_act
     assert "leaning back on both straight arms" in ride_act
