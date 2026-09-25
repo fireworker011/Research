@@ -600,17 +600,18 @@ GIN_ORAL_PACE_CLAUSE = (
 )
 GIN_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning back on both straight arms, palms and heels on the same linoleum marks, head on the RIGHT. "
-    "Gin stands up and steps right once over Aya's hips, facing Aya, then lowers once until the root. "
-    "Both hands stay on Aya's two breasts. "
-    "The pair stays on this floor spot. The camera holds. "
-    "Normal adult human height, nobody is giant."
+    "Aya stays on her back toward the RIGHT, head on the linoleum, both palms and both heels on the same marks. "
+    "Aya HOLD STILL. "
+    "Gin stands up and steps over Aya. Both soles plant on the linoleum astride Aya's ribs, one sole on each side of the chest. "
+    "Both hands rest on Aya's chest, one hand on each breast. Gin lowers her hips once until the root. "
+    "They HOLD still joined at the BASE until the last frame. "
+    "The camera holds. Normal adult human height, nobody is giant."
 )
 GIN_PEAK_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning back on both straight arms, palms and heels on the same linoleum marks, head on the RIGHT. "
-    "Gin stays seated on Aya's hips, one knee raised, the other sole on the linoleum, both hands on Aya's two breasts. "
-    "The hips move in short strokes. The glans stays inside. "
+    "Aya stays on her back, head on the linoleum, palms and heels on the same marks. Aya HOLD STILL. "
+    "Gin keeps this squat over Aya, knees bent, both hands on Aya's chest. "
+    "Gin lowers and lifts her hips in short moves. The glans stays inside. "
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -4107,7 +4108,10 @@ def build_beat_prompt(
         desc.append("This shot continues the previous one without a cut.")
     ride_pair = (
         str(ep.get("slug") or "") == "hospital-exit-adult"
-        and "sideride" in {key for key, _strength in extra_lora_entries(beat)}
+        and (
+            "sideride" in {key for key, _strength in extra_lora_entries(beat)}
+            or str(beat.get("id") or "") == "04-gin-ride"
+        )
     )
     desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
     loco = beat_loco(beat)
