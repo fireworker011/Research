@@ -446,8 +446,20 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
     "finger": {
         "label_ja": "アナル指",
         "choice_ja": "トイレ・アナル指",
-        "when_ja": "歩いて座り、右親指が肛門、立って歩く。どれでも次へ",
-        "hint_ja": "入室して座る→右親指が肛門→立って歩く。マンコは空",
+        "when_ja": "タンク側を向いて座り、右親指が肛門、立って歩く。どれでも次へ",
+        "hint_ja": "入室してタンク側を向いて座る→右親指が肛門→立って歩く",
+    },
+    "wash": {
+        "label_ja": "和式排出",
+        "choice_ja": "トイレ・和式排出",
+        "when_ja": "和式に入ってしゃがみ、排出して立つ。次へ",
+        "hint_ja": "和式に入る→しゃがむ→排出→立って歩く。既定にはしない",
+    },
+    "wash_miki": {
+        "label_ja": "和式ミキ",
+        "choice_ja": "トイレ・和式ミキ",
+        "when_ja": "和式にしゃがんだあと、ミキが後ろから入り、根元まで入れて中に出す。キスして次へ",
+        "hint_ja": "しゃがみのあとミキが入る→掌と膝→根元→中→キスして歩く。既定にはしない",
     },
 }
 
@@ -456,6 +468,8 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
+    "wash": "on_toilet_wash",
+    "wash_miki": "on_toilet_wash_miki",
 }
 
 TOILET_ALIASES: dict[str, str] = _label_aliases(
@@ -474,6 +488,13 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "アナル指": "finger",
         "指": "finger",
         "finger": "finger",
+        "和式": "wash",
+        "和式排出": "wash",
+        "wash": "wash",
+        "squat pan": "wash",
+        "和式ミキ": "wash_miki",
+        "wash miki": "wash_miki",
+        "squat miki": "wash_miki",
     },
 )
 

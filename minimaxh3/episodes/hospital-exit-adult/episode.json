@@ -2075,10 +2075,13 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl, a closed stall partition, a flickering tube, no readable letters",
           "extra_loras": [
-            "mystic"
+            [
+              "mystic",
+              0.5
+            ]
           ],
           "hud": {
             "mission": "出口に出る",
@@ -2097,8 +2100,8 @@
           },
           "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the western bowl in an M-shape, full body including feet. Only the western bowl, the tiles, and Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the western toilet bowl facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "camera": "FROM THE STALL DOOR looking toward the tank on the FAR wall. Aya walks in and sits on the western toilet bowl facing the tank. Her back stays toward the camera. Both soles plant on the tiles beside the bowl. The anus faces the camera. Full body including both feet. Distance stays the same.",
+          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She SITS on the western toilet bowl facing the tank on the FAR wall. Her back stays toward the camera. Both soles plant on the tiles beside the bowl. Knees stay open. The torso folds toward the tank. The anus faces the camera. The right thumb rests at the anus. Last frame: Aya seated on the western bowl facing the tank, back toward the camera, anus toward the camera, the right thumb at the anus, both soles on the tiles. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2109,7 +2112,7 @@
         },
         {
           "id": "04-toilet",
-          "source": "t2v",
+          "source": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -2121,20 +2124,16 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl, a closed stall partition, a flickering tube, no readable letters",
           "extra_loras": [
-            [
-              "thumbinbutt",
-              0.55
-            ],
             [
               "mystic",
               0.5
             ],
             [
-              "synth",
-              0.4
+              "thumbinbutt",
+              0.55
             ]
           ],
           "hud": {
@@ -2154,8 +2153,8 @@
           },
           "sfx": "A wet thumb, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya faces the camera, already seated on the western bowl in an M-shape, knees up and out, full body including feet. Her right thumb is at her anus. Only the western bowl, the tiles, and seated Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya is already seated on the filthy western toilet bowl from frame one, fully nude, facing the camera, knees up and out in an M-shape, soles toward the camera, a smile. Her hairless pussy stays empty. Her right thumb TRAVELS INTO her anus and stays inside. The thumb holds still inside the anus. Her hips hold still. The bowl stays still. Aya looks like it feels really good, not blank. Flushed, mouth open, brows knit. Aya STAYS SEATED on this same bowl from the first frame to the last frame. Nobody else in frame. Last frame: Aya still seated facing the camera in an M-shape, right thumb inside the anus, pussy empty. Brisk real-time. Consensual adult game beat",
+          "camera": "FROM THE STALL DOOR looking toward the tank on the FAR wall. Aya stays seated on the western toilet bowl facing the tank, back toward the camera. The anus faces the camera. The right thumb is at the anus. Full body including both feet. Distance stays the same.",
+          "action": "They stay in this same stall. Aya stays seated on the western toilet bowl facing the tank, back toward the camera, both soles on the tiles beside the bowl, knees open, torso folded toward the tank, the anus toward the camera. Aya uses her right thumb to rub around her anus in a small circle. Then the right thumb TRAVELS INTO the anus. The right thumb stays inside the anus with short wet strokes. A narrowed smile. Last frame: Aya still seated facing the tank, back toward the camera, the right thumb still inside the anus. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2163,7 +2162,7 @@
             }
           ],
           "loco": "planted",
-          "connect": "t2v",
+          "connect": "chain",
           "trigger": "thum1n8utt"
         },
         {
@@ -2203,6 +2202,591 @@
           "music": "Bass holds",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
           "action": "Aya STANDS from the western bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        }
+      ],
+      "on_toilet_wash": [
+        {
+          "id": "04-toilet-in",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 4.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Footsteps on tile, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the beige platform in front of the squat pan, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the platform, back toward the camera, face toward the hood, both feet on the platform. The squat pan and the hood stay in frame. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        },
+        {
+          "id": "04-toilet-squat",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A knee bend, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They stay in this same stall. Aya BENDS her knees and FOLDS her torso toward the hood. Both soles plant on the beige platform, one sole on each side of the pan. Heels turn inward. Knees stay open. The anus sits over the pan hole. Hands rest on the platform toward the hood. Aya's face stays toward the hood. The back of the head stays toward the camera. Last frame: Aya folded over the pan, both soles on the platform beside the pan, anus over the hole, face toward the hood. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "thumbinbutt",
+              0.55
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet slide, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They stay in this same stall. Aya stays folded over the pan, both soles on the platform beside the pan, anus over the hole, face toward the hood, the back of the head toward the camera. A thick extra-viscous grimy brown log SLIDES from the stretched anus and hangs toward the pan hole, still joined at the anus. The log stays joined until the last frame. Last frame: Aya still folded over the pan, the brown log still joined from the anus toward the hole. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": "thum1n8utt"
+        },
+        {
+          "id": "04-toilet-out",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 4.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "extra_loras": [],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A stand, footsteps on linoleum, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
+          "action": "Aya STANDS on the platform and WALKS out the stall door into the corridor toward the RIGHT, fully nude, full body including both feet. Last frame: only Aya walking RIGHT in the corridor. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        }
+      ],
+      "on_toilet_wash_miki": [
+        {
+          "id": "04-toilet-in",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 4.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Footsteps on tile, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the beige platform in front of the squat pan, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the platform, back toward the camera, face toward the hood, both feet on the platform. The squat pan and the hood stay in frame. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        },
+        {
+          "id": "04-toilet-squat",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A knee bend, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They stay in this same stall. Aya BENDS her knees and FOLDS her torso toward the hood. Both soles plant on the beige platform, one sole on each side of the pan. Heels turn inward. Knees stay open. The anus sits over the pan hole. Hands rest on the platform toward the hood. Aya's face stays toward the hood. The back of the head stays toward the camera. Last frame: Aya folded over the pan, both soles on the platform beside the pan, anus over the hole, face toward the hood. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet-spot",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "One footstep, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Miki stays behind Aya, between the camera and Aya. Full body including both feet and the hood. Both adults stay in frame. Distance stays the same.",
+          "action": "They stay in this same stall. Aya stays folded over the pan, both soles on the platform beside the pan, anus over the hole, face toward the hood, the back of the head toward the camera. Miki STEPS IN from the stall door behind Aya, fully nude, vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft, hollow empty dark eye sockets, open red lacerations across the body, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact purple skin, erect 24cm the same vivid purple as the hips not pale-tan flesh. Miki STANDS behind Aya on the platform. The 24cm hangs in front of Aya's buttocks. Last frame: Aya folded over the pan, face toward the hood. Miki standing behind Aya. The 24cm in front of the buttocks. Four feet on the platform.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet-push",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Palms on the platform, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Miki stays behind Aya, between the camera and Aya. Full body including both feet and the hood. Both adults stay in frame. Distance stays the same.",
+          "action": "They stay in this same stall. Miki's palms PRESS Aya's back toward the platform. Aya's palms plant on the platform toward the hood. Aya's knees plant on the platform, one knee on each side of the pan. Aya's face stays toward the hood. The back of the head stays toward the camera. The spine stays aimed at the hood. A narrowed smile. Miki stays behind Aya. The erect 24cm hangs in front of Aya's buttocks over the anus. Last frame: Aya on palms and knees over the pan, face toward the hood, smile. Miki behind her. The 24cm in front of the anus. Hips not flush.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet join, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Miki stays behind Aya, between the camera and Aya. Full body including both feet and the hood. Both adults stay in frame. Distance stays the same.",
+          "action": "They stay in this same stall. Aya stays on palms and knees over the pan, face toward the hood, the back of the head toward the camera, a narrowed smile. Miki stays behind Aya. The erect 24cm the same vivid purple as the hips TRAVELS INTO Aya's anus until the hips meet the buttocks at the BASE. HOLD still joined at the BASE until the last frame. Last frame: hips flush, the 24cm buried to the root in the anus, Aya's face toward the hood. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet-cum",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ],
+            [
+              "thrust",
+              0.55
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet pulse, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Miki stays behind Aya, between the camera and Aya. Full body including both feet and the hood. Both adults stay in frame. Distance stays the same.",
+          "action": "They stay in this same stall in the same join. Aya stays on palms and knees, face toward the hood. Miki stays behind Aya. The erect 24cm stays buried to the root in the anus. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the anus. Last frame: hips flush, the shaft still buried to the root, WHITE goo at the base, Aya's face toward the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
+        },
+        {
+          "id": "04-toilet-out",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A lip-contact kiss smack when the mouths meet, footsteps on linoleum, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Full body including both feet. Aya and Miki stay on the platform while the mouths meet. Then Aya walks RIGHT into the corridor. Last frame: only Aya walking RIGHT in the corridor.",
+          "action": "The 24cm SLIDES OUT. Aya TURNS on the platform to face Miki. Mouths JOIN. Tongues intertwine. Then the mouths part. Aya WALKS out the stall door into the corridor toward the RIGHT, fully nude. Last frame: only Aya walking RIGHT in the corridor. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",

@@ -141,7 +141,13 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 小便は、座りが正面の M 字になってから。あやは笑顔のまま、腰は止めたまま、便器も止めたまま。液体は透明なレモン色の黄色い水。見透ける水で、一本の明るい黄色の柱。マンコからその黄色い水をカメラの正面へ飛ばす。動くのは黄色い流れだけ。便器の中へ流す文は書かない。否定の「動かない」は書かない。
 
-アナル指は小便と同じ 3 本（`04-toilet-in` / `04-toilet` / `04-toilet-out`）。座り正面 M 字のあと、右親指が肛門へ入る。マンコは空。`feces` は書かない。extra_loras は thumbinbutt 0.55 + mystic 0.5 + synth 0.4。トリガー `thum1n8utt`。ファイルは `MiniMax H3 - ThumbInButt.safetensors`
+洋式指は小便とは別の入り。タンク側を向いて座る。尻と肛門がカメラ。マンコが肛門より上の構図は使わない。行為は chain I2V。right thumb rubs around the anus then TRAVELS INTO the anus。thumbinbutt 0.55 + mystic 0.5。synth と Fingering Pussy は積まない。`feces` は書かない。トリガー `thum1n8utt` は action に書かない。ファイルは `MiniMax H3 - ThumbInButt.safetensors`（Civitai fileId 3168734。ページ URL は重みにしない）。
+
+和式は洋式と別 overlay。便器は奥にフードのある細長いパン。足はパンの左右の台。顔はフード。小物は病棟。和式パン専用の H3 LoRA は市場に無い。Illustrious の squat toilet LoRA は積まない。
+
+排出はしゃがみの次。棒が肛門から穴へ繋がったまま。ThumbInButt 0.55。
+
+ミキ枝はしゃがみのあとミキがドアから入る。押して掌と膝。一度入れて根元。HOLD。絶頂は keep the glans inside。竿はミキ 24cm。あやに竿は生やさない。挿入に ThumbInButt を積まない。挿入は Turbo オフ。挿入 extra は mystic 0.5 + penis 0.45 + synth 0.4。絶頂はそこに thrust 0.55。キス歩きは kiss 0.5。
 
 ## かなの顔射のあと
 
@@ -201,7 +207,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 四つ足: https://civitai.com/models/1782485/furry-enhancer-video 強度 0.55
 - 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
-- アナル指: https://civitai.com/models/2904444
+- アナル指: ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734。ページ URL は重みにしない
 
 ## 禁止語
 

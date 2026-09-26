@@ -247,8 +247,9 @@ LORA_FILES = {
     "cumouf": "CUMOUF_oral_creampie_H3_v1.safetensors",
     # az420 cunnilingus. Trigger performing cunnilingus.
     "cunny": "cunny-mh3-e62-az420.safetensors",
-    # Thumb in anus. Trigger thum1n8utt. Strength 0.55 on the toilet finger beat.
-    "thumbinbutt": "H3_ThumbInButt.safetensors",
+    # Thumb in anus. Civitai 2904444 fileId 3168734. Trigger thum1n8utt stays on the beat.
+    # Strength 0.55. The page URL is not the weight.
+    "thumbinbutt": "MiniMax H3 - ThumbInButt.safetensors",
     # Quadruped helper. Page only; no file id invented.
     "furryenh": "furry-enhancer-video.safetensors",
     # Spread helper. Filename from the ward spec. No download id.
@@ -431,6 +432,13 @@ PLANTED_PACE_CLAUSE = (
 )
 # Pee holds the body and the bowl. Negated step clauses and "only hips move" get drawn as motion.
 PEE_STILL_RE = re.compile(r"only the yellow stream moves", re.I)
+# Stall holds already name the place. A negated step clause gets drawn as a step.
+TOILET_STALL_RE = re.compile(r"this same stall", re.I)
+TOILET_STALL_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The adults stay inside this same stall. The camera holds. "
+    "Normal adult human height."
+)
 PEE_STILL_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays seated on this same bowl. The western toilet bowl stays on this same floor spot. "
@@ -1340,6 +1348,13 @@ def _slide_trim_to_last(beat: dict[str, Any], clip_s: float) -> None:
     beat["trim"] = {"start": round(max(0.0, float(clip_s) - seconds), 3), "seconds": seconds}
 
 
+def _toilet_chain_authored(beat: dict[str, Any]) -> bool:
+    """Finger and squat acts are I2V. A t2v dropdown must not turn ThumbInButt back into T2V."""
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    return str(beat.get("id") or "").startswith("04-toilet")
+
+
 def _connect_lock_holds(ep: dict[str, Any], beat: dict[str, Any], mode: str) -> bool:
     """Authored t2v/cut/off force T2V. Hospital chain/landing lets the dropdown win over t2v."""
     locked = str(beat.get("connect") or "").strip().lower()
@@ -1361,6 +1376,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
     Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
+    Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1376,6 +1392,11 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if not isinstance(beat, dict) or is_ui_beat(beat):
             continue
         if beat.get("reuse"):
+            gpu_seen += 1
+            continue
+        if _toilet_chain_authored(beat):
+            beat["source"] = "chain"
+            beat.pop("still_as", None)
             gpu_seen += 1
             continue
         if _connect_lock_holds(out, beat, name):
@@ -2733,6 +2754,8 @@ def scrub_planted_action(action: str) -> str:
     ):
         out = re.sub(r"\bWALKS?\b RIGHT", "stays", out)
         out = re.sub(r"\bWALKING\b", "holding still", out)
+    if TOILET_STALL_RE.search(out):
+        return re.sub(r" {2,}", " ", out).strip()
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
         if NELSON_HOLD_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
@@ -4205,6 +4228,8 @@ def build_beat_prompt(
             desc.append(RIDE_PAIR_CLAUSE)
         elif RIDE_PEAK_RE.search(action_txt):
             desc.append(RIDE_PEAK_CLAUSE)
+        elif TOILET_STALL_RE.search(action_txt):
+            desc.append(TOILET_STALL_CLAUSE)
         else:
             desc.append(PLANTED_PACE_CLAUSE)
             desc.append(PLANTED_CLAUSE)

@@ -2247,6 +2247,100 @@ def test_hospital_toilet_and_routes_stay_consistent():
                 assert v["who"] in (beat.get("cast") or [])
 
 
+def test_hospital_finger_pose_and_squat_toilet_modes():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert TOILET_MODES["off"].get("recommend") is True
+    assert ui_default("toilet").startswith("トイレに行かない")
+    assert "wash" in TOILET_MODES and "wash_miki" in TOILET_MODES
+    assert "トイレ・和式排出" in ui_choices("toilet")
+    assert "トイレ・和式ミキ" in ui_choices("toilet")
+    assert LORA_FILES["thumbinbutt"] == "MiniMax H3 - ThumbInButt.safetensors"
+    assert "fileId=3168734" in LORA_URLS["thumbinbutt"]
+    assert "api/download/models/" in LORA_URLS["thumbinbutt"]
+    assert "/models/2904444" not in LORA_URLS["thumbinbutt"]
+    assert LORA_STRENGTHS["thumbinbutt"] == 0.55
+    off = prepare_episode(raw, story_override="accept")
+    assert off["render"]["toilet"] == "off"
+    assert not any(b["id"] == "04-toilet" for b in off["beats"])
+
+    finger = prepare_episode(raw, story_override="accept", toilet_override="finger", connect_override="t2v")
+    assert validate_episode(finger, root=HOSPITAL_DIR) == []
+    fin = next(b for b in finger["beats"] if b["id"] == "04-toilet-in")
+    fact = next(b for b in finger["beats"] if b["id"] == "04-toilet")
+    low = fact["action"].lower()
+    assert "facing the camera" not in low
+    assert "pussy and the anus face the camera" not in low
+    assert "m-shape" not in low and "soles toward the camera" not in low
+    assert "TRAVELS INTO the anus" in fact["action"]
+    assert "rub around her anus" in fact["action"]
+    assert "thumbinbutt" in extra_keys(fact) and "synth" not in extra_keys(fact)
+    assert fact.get("connect") == "chain" and fact.get("source") == "chain"
+    assert fin.get("source") == "t2v"
+    finger_blob = "\n".join(b["action"] for b in finger["beats"] if str(b["id"]).startswith("04-toilet")).lower()
+    assert "brown log" not in finger_blob
+    assert "feces" not in finger_blob
+    assert "thum1n8utt" not in fact["action"]
+    assert fact.get("trigger") == "thum1n8utt"
+    prompt = build_beat_prompt(finger, fact, trigger=merge_trigger("", fact))
+    assert "feet do not take a step" not in prompt.lower()
+    assert "feet do not travel" not in low
+    for word in ("zombie", "blood", "corpse", "doggy", "missionary", "cowgirl"):
+        assert word not in low
+    _assert_hospital_bans(finger)
+
+    wash = prepare_episode(raw, story_override="accept", toilet_override="和式", connect_override="t2v")
+    miki = prepare_episode(raw, story_override="accept", toilet_override="和式ミキ", connect_override="t2v")
+    assert validate_episode(wash, root=HOSPITAL_DIR) == []
+    assert validate_episode(miki, root=HOSPITAL_DIR) == []
+    assert any(b["id"] == "04-toilet-squat" for b in wash["beats"])
+    for ep in (wash, miki):
+        stall = [b for b in ep["beats"] if str(b["id"]).startswith("04-toilet")]
+        blob = "\n".join(
+            " ".join(str(b.get(k) or "") for k in ("action", "camera", "place", "environment"))
+            for b in stall
+        )
+        assert "western toilet bowl" not in blob
+        assert "SITS DOWN facing the camera" not in blob
+        assert "hood" in blob and "beige platform" in blob
+        for beat in stall:
+            act = beat["action"]
+            assert "thum1n8utt" not in act
+            for word in ("zombie", "blood", "corpse", "doggy", "missionary", "cowgirl"):
+                assert word not in act.lower()
+    expel = next(b for b in wash["beats"] if b["id"] == "04-toilet")
+    assert "brown log" in expel["action"]
+    assert "thumbinbutt" in extra_keys(expel)
+    assert next(b for b in wash["beats"] if b["id"] == "04-toilet-in")["source"] == "t2v"
+    insert = next(b for b in miki["beats"] if b["id"] == "04-toilet")
+    assert "TRAVELS INTO Aya's anus" in insert["action"]
+    assert "HOLD still joined at the BASE" in insert["action"]
+    assert "thumbinbutt" not in extra_keys(insert)
+    assert "thrust" not in extra_keys(insert)
+    assert insert["source"] == "chain"
+    cum = next(b for b in miki["beats"] if b["id"] == "04-toilet-cum")
+    assert "LIFTS" not in cum["action"]
+    assert "SLIDES OUT" not in cum["action"]
+    assert len([b for b in miki["beats"] if str(b["id"]).startswith("04-toilet")]) == 7
+    full = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="対面座位",
+        toilet_override="wash_miki",
+        gin_override="犯される",
+        tsuno_override="フルネルソンアナル",
+        dog_override="誘う口",
+        species_override="スライム",
+        connect_override="前の最終フレームから続ける",
+        scenes_override="miki=inherit,rei=invite_ride,kana=invite_all_fours,shino=invite_m_open",
+    )
+    assert validate_episode(full, root=HOSPITAL_DIR) == []
+    assert len(full["beats"]) <= MAX_BEATS
+    pee = prepare_episode(raw, story_override="accept", toilet_override="pee", connect_override="t2v")
+    pee_act = next(b for b in pee["beats"] if b["id"] == "04-toilet")
+    assert "facing the camera" in pee_act["action"].lower()
+    assert pee_act["source"] == "t2v"
+
+
 def test_hospital_full_form_stays_under_beat_cap():
     """Tentacle + gin + tsuno + per-scene invite used to die at the 40-beat preflight."""
     raw = load_episode(HOSPITAL_DIR / "episode.json")
