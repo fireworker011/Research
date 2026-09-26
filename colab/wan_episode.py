@@ -55,6 +55,12 @@ WAN_SLOTS = (
     "cunny",
     "thumbinbutt",
     "cumshot",
+    "anal",
+    "nelson",
+    "doggy",
+    "missionary",
+    "pee",
+    "scat",
 )
 
 _COMFY_ORG = "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files"
@@ -86,12 +92,19 @@ def _tian(name: str) -> str:
 
 
 def _pair(slot: str, high_remote: str, low_remote: str) -> dict[str, str]:
-    return {
+    return _url_pair(slot, _tian(high_remote), _tian(low_remote))
+
+
+def _url_pair(slot: str, high_url: str, low_url: str, *, trigger: str = "") -> dict[str, str]:
+    row = {
         "high_name": f"wan-{slot}-high.safetensors",
         "low_name": f"wan-{slot}-low.safetensors",
-        "high_url": _tian(high_remote),
-        "low_url": _tian(low_remote),
+        "high_url": high_url,
+        "low_url": low_url,
     }
+    if trigger:
+        row["trigger"] = trigger
+    return row
 
 
 # Each H3 slot name maps to a Wan 2.2 14B high-noise file and a low-noise file.
@@ -130,6 +143,39 @@ WAN_SLOT_LORAS: dict[str, dict[str, str]] = {
         "cumshot",
         "23High noise-Cumshot Aesthetics.safetensors",
         "56Low noise-Cumshot Aesthetics.safetensors",
+    ),
+    # pikenrover Wan 2.2 I2V anal. High 2161023, low 2161067. Trigger stays on the Wan prompt.
+    "anal": _url_pair(
+        "anal",
+        "https://huggingface.co/jinksa77/analsex/resolve/main/wan22_i2v_anal_v1_high_noise.safetensors",
+        "https://huggingface.co/jinksa77/analsex/resolve/main/wan22_i2v_anal_v1_low_noise.safetensors",
+        trigger="anal sex",
+    ),
+    "nelson": _url_pair(
+        "nelson",
+        "https://civitai.com/api/download/models/2332735",
+        "https://civitai.com/api/download/models/2332853",
+        trigger="FU11N31S0N",
+    ),
+    "doggy": _url_pair(
+        "doggy",
+        "https://civitai.com/api/download/models/2306421",
+        "https://civitai.com/api/download/models/2306425",
+    ),
+    "missionary": _url_pair(
+        "missionary",
+        "https://civitai.com/api/download/models/2098405",
+        "https://civitai.com/api/download/models/2098396",
+    ),
+    "pee": _url_pair(
+        "pee",
+        "https://huggingface.co/obsxrver/wan2.2-i2v-piss/resolve/main/WAN2.2-I2V_HighNoise_I2Pee-V4.safetensors",
+        "https://huggingface.co/obsxrver/wan2.2-i2v-piss/resolve/main/WAN2.2-I2V_LowNoise_I2Pee-V4.safetensors",
+    ),
+    "scat": _url_pair(
+        "scat",
+        "https://huggingface.co/obsxrver/wan2.2-i2v-scat/resolve/main/WAN2.2-I2V-HighNoise_scat-xxi-i2v.safetensors",
+        "https://huggingface.co/obsxrver/wan2.2-i2v-scat/resolve/main/WAN2.2-I2V-LowNoise_scat-xxi-i2v.safetensors",
     ),
 }
 
@@ -199,13 +245,73 @@ def wan_weight_jobs() -> list[tuple[str, str]]:
     return jobs
 
 
+def _action_text(beat: dict[str, Any]) -> str:
+    return str(beat.get("action") or "").lower()
+
+
+def scene_slot_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
+    """Wan-only LoRAs for acts the prepared beat already performs.
+
+    H3 extra_loras and the episode text stay as authored. Thumb-only and the
+    exit walk do not take the shaft anal pair.
+    """
+    act = _action_text(beat)
+    bid = str(beat.get("id") or "")
+    if bid.endswith("-walk") or bid.endswith("-spot"):
+        return []
+    rows: list[tuple[str, float]] = []
+    shaft_anal = "thumb" not in act and "brown log" not in act and any(
+        phrase in act
+        for phrase in (
+            "into the anus",
+            "into aya's anus",
+            "inside the anus",
+            "travels into the anus",
+            "fills the anus",
+        )
+    )
+    if shaft_anal:
+        rows.append(("anal", 0.8))
+    if shaft_anal and "held up" in act and "thighs" in act:
+        rows.append(("nelson", 0.75))
+    if "all fours" in act:
+        rows.append(("doggy", 0.8))
+    if "stays on her back" in act and "straddl" not in act and (
+        "between" in act or "into the pussy" in act
+    ):
+        rows.append(("missionary", 0.8))
+    if "lemon-yellow water" in act and "streaming" in act:
+        rows.append(("pee", 0.8))
+    if "brown log" in act and "slides" in act:
+        rows.append(("scat", 0.75))
+    return rows
+
+
+def wan_beat_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    """H3 prompt, plus the Wan LoRA trigger when that scene slot is on."""
+    prompt = build_beat_prompt(ep, beat)
+    extra: list[str] = []
+    for name, _strength in scene_slot_entries(beat):
+        trigger = str(WAN_SLOT_LORAS.get(name, {}).get("trigger") or "").strip()
+        if trigger and trigger.lower() not in prompt.lower():
+            extra.append(trigger)
+    if not extra:
+        return prompt
+    return prompt.rstrip() + "\n" + ", ".join(extra)
+
+
 def wan_slot_plan(beat: dict[str, Any], loras_dir: Path | None = None) -> list[dict[str, Any]]:
     """Keep extra_loras names. Each slot uses its Wan 2.2 high and low files.
 
-    A slot whose Wan files are not on disk is strength 0 and omitted. H3 weights are never substituted.
+    Scene slots are added beside those names. A slot whose Wan files are not on
+    disk is strength 0 and omitted. H3 weights are never substituted.
     """
     plan: list[dict[str, Any]] = []
-    for name, strength in extra_lora_entries(beat):
+    entries = list(extra_lora_entries(beat))
+    for name, strength in scene_slot_entries(beat):
+        if name not in {key for key, _strength in entries}:
+            entries.append((name, strength))
+    for name, strength in entries:
         spec = WAN_SLOT_LORAS.get(name)
         if spec is None or float(strength) <= 0:
             continue
@@ -486,7 +592,7 @@ def run_wan_episode(
             frame = root / "input" / f"{bid}-last.jpg"
             extract_frame(prev_clip, frame, at_s=at)
             start_name = frame.name
-        prompt = build_beat_prompt(ep, beat)
+        prompt = wan_beat_prompt(ep, beat)
         (root / "logs" / f"{bid}.prompt.txt").write_text(prompt, encoding="utf-8")
         status.setdefault("beats", {})[bid] = {"state": "running", "source": source, "renderer": "wan2.2"}
         save_status(root, status)

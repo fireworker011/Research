@@ -18,6 +18,7 @@ from wan_episode import (  # noqa: E402
     WAN_SLOT_LORAS,
     build_wan_graph,
     plan_wan_shots,
+    wan_beat_prompt,
     wan_needs_start_image,
     wan_weight_jobs,
 )
@@ -161,6 +162,57 @@ def test_invite_ride_order_and_sources():
     chain = _prepare("角・騎乗", "前の最終フレームから続ける")
     _assert_sources(cut, RIDE_IDS, RIDE_CUT)
     _assert_sources(chain, RIDE_IDS, RIDE_CHAIN)
+
+
+def _slots(ep, beat_id):
+    shot = next(s for s in plan_wan_shots(ep) if s["id"] == beat_id)
+    return [row["slot"] for row in shot["slots"]]
+
+
+def _with_toilet(toilet: str):
+    raw = load_episode(HOSPITAL)
+    return prepare_episode(raw, story_override="受け入れる", toilet_override=toilet, connect_override="カット")
+
+
+def test_scene_loras_follow_the_prepared_act():
+    anal = _prepare("anal_back", "カット")
+    assert "anal" in _slots(anal, "04-tsuno-in")
+    assert "anal" in _slots(anal, "04-tsuno-peak")
+    assert "anal" not in _slots(anal, "04-tsuno-walk")
+    assert "anal sex" in wan_beat_prompt(anal, next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")).lower()
+
+    stand = _prepare("accept_stand", "カット")
+    assert "anal" not in _slots(stand, "04-tsuno-in")
+
+    nelson = _prepare("nelson", "カット")
+    nelson_in = _slots(nelson, "04-tsuno-in")
+    assert "anal" in nelson_in and "nelson" in nelson_in
+    assert "FU11N31S0N" in wan_beat_prompt(nelson, next(b for b in nelson["beats"] if b["id"] == "04-tsuno-in"))
+
+    wash = _prepare("角・個室", "カット")
+    assert "anal" in _slots(wash, "04-tsuno-anal")
+    assert "anal" in _slots(wash, "04-tsuno-cum")
+    assert "anal" not in _slots(wash, "04-tsuno-stall")
+    assert "anal" not in _slots(wash, "04-tsuno-gape")
+
+    ride = _prepare("角・騎乗", "カット")
+    assert "anal" not in _slots(ride, "04-tsuno-peak")
+    assert "missionary" not in _slots(ride, "04-tsuno-peak")
+    assert "doggy" in _slots(ride, "06-doggy")
+    assert "doggy" in _slots(ride, "06-doggy-peak")
+    assert "missionary" in _slots(ride, "09-join")
+    assert "missionary" in _slots(ride, "09-join-peak")
+
+    pee = _with_toilet("pee")
+    assert "pee" in _slots(pee, "04-toilet")
+    assert "anal" not in _slots(pee, "04-toilet")
+
+    finger = _with_toilet("finger")
+    assert "anal" not in _slots(finger, "04-toilet")
+
+    scat = _with_toilet("wash")
+    assert "scat" in _slots(scat, "04-toilet")
+    assert "anal" not in _slots(scat, "04-toilet")
 
 
 def test_wash_carry_order_sources_and_stall_has_no_previous_frame():

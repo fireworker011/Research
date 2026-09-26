@@ -29,6 +29,7 @@
 - 保存先: OneDrive（`WAN_ONEDRIVE_ROOT`、既定はこの PC の `OneDrive/wan-hospital`）。Google Drive には書かない
 - `source` が t2v のビートは Wan T2V。開始画像なし。chain と still だけ、前のビートの最終フレームを開始画像にする
 - `extra_loras` の名前は残す。中身は Wan 2.2 の high / low 組（`wan-<名前>-high.safetensors` と `wan-<名前>-low.safetensors`）。high は high expert、low は low expert にだけ付ける。一覧は `WAN_SLOT_LORAS`。ファイルが無いスロットは強度 0 で飛ばす。H3 の重みと `pose_motion_lock.py` は読まない
+- 用意された動作に合う LoRA だけ Wan が足す。肛門への挿入は `anal`（high 2161023 / low 2161067、トリガー `anal sex`）。抱え上げたフルネルソンは `nelson`。四つん這いは `doggy`。仰向けの相手の間は `missionary`。黄色の放尿は `pee`。和式の排出は `scat`。親指だけの肛門、歩き、角・騎乗の跨ぎには肛門 LoRA を付けない。台本の文は変えない
 - Colab: `wan_hospital_episode_bot.ipynb`。1枚目のセルが ComfyUI と fp8 重みを OneDrive に取る。2枚目が生成。人間が実行する
 - テキストエンコーダは umt5
 - テスト: `python3 -m pytest colab/test_wan_episode.py -q`。H3 の `colab/test_h3_episode.py -q -k hospital` は壊さない
