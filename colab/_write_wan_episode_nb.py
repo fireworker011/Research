@@ -128,7 +128,12 @@ if _ready:
         urllib.request.urlretrieve(f"{{RAW}}/{{rel}}", dest)
         print("fetched", rel)
     sys.path.insert(0, "/content")
-    from wan_episode_colab_main import main
+    import importlib
+    import wan_episode
+    import wan_episode_colab_main
+    importlib.reload(wan_episode)
+    importlib.reload(wan_episode_colab_main)
+    main = wan_episode_colab_main.main
     try:
         _code = main()
     finally:
@@ -269,8 +274,12 @@ else:
         print("fetched", rel)
     sys.path.insert(0, "/content")
     os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
-    from wan_colab_setup import setup
-    setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
+    import importlib
+    import wan_colab_setup
+    import wan_episode
+    importlib.reload(wan_episode)
+    importlib.reload(wan_colab_setup)
+    wan_colab_setup.setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
     print("OneDrive へ送っています。")
     subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
     print("OneDrive へ送りました:", ONEDRIVE)
