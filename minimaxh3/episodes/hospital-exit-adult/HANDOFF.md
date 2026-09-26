@@ -168,7 +168,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## 騎乗のカメラ
 
-ギン以外。横からの距離固定。全身、両足。同じ大きさ。竿役は仰向け、頭は RIGHT、足先は LEFT。勃起は股間から真上。あやの頭は LEFT。両足裏は肋骨の左右の床。マンコは亀頭の真上。一度まっすぐ下ろして根元。`HOLD still joined at the BASE until the last frame`。片腿上げと、片足を腰横の床、は書かない。着座に sideride と thrust は積まない。着座の trigger に `side view riding sex` は付けない。倒す工程は着座に書かない。`folds down` と `rises into the rider` は着座と絶頂の wrap に足さない。口の最終コマだけ、相手はすでに仰向け、あやは股の上に立っている。跪きの最終は書かない。フェラ本文は残す。着座と絶頂の connect は chain。カットでも source を t2v に戻さない。絶頂だけ sideride 0.8 と thrust 0.55。短い上下は `Short vertical moves keep the glans inside`。最終も根元。`LIFTS` は書かない。着座も絶頂も、画面の二人はあやと相手だけ。`nothing new enters` は書かない。ギンの騎乗節は別。この構図にしない。
+ギン以外。横からの距離固定。全身、両足。同じ大きさ。竿役は仰向け、後頭部と肩はリノリウム、頭は RIGHT、足先は LEFT。勃起は股間から真上。あやの頭は LEFT。両足裏は肋骨の左右、胸の左右に一枚ずつ。マンコは亀頭の真上。一度まっすぐ下ろして根元。`HOLD still joined at the BASE until the last frame`。片腿上げと、片足を腰横の床、は書かない。着座に sideride と thrust は積まない。着座の trigger に `side view riding sex` は付けない。親ビートの `kiss smack` と `wet jupo` は着座と絶頂の sfx に残さない。倒す工程は着座に書かない。`folds down` と `rises into the rider` は着座と絶頂の wrap に足さない。跪きから立つ工程も wrap が戻さない。口の最終コマだけ、相手はすでに仰向け、あやは股の上に立っている。跪きの最終は書かない。フェラ本文は残す。着座と絶頂の connect は chain。カットでも source を t2v に戻さない。絶頂だけ sideride 0.8 と thrust 0.55。短い上下は `Short vertical moves keep the glans inside`。最終も根元。`LIFTS` は書かない。着座も絶頂も、画面の二人はあやと相手だけ。`nothing new enters` は書かない。ギンの騎乗節は別。この構図にしない。再生成は FRESH。口の最終から着座、着座の根元密着だけを絶頂の首にする。今の Drive の着座と絶頂は使わない。
 
 ## キス音
 

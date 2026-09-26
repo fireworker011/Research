@@ -680,6 +680,28 @@ def _strip_dog_spot_entry(text: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
+_RIB_SEAT_LEGACY_RE = re.compile(
+    r"(?i)(?:side view riding sex, straddling the hips, facing the partner\s*"
+    r"|[^.]*\b(?:folds down|rises into the rider|do not piston|kiss smack|wet jupo|"
+    r"still kneeling|stands up from that kneel|slides both feet|squats and lowers|"
+    r"aya's hips moving|a hip thrust is in place)\b[^.]*\.?)\s*"
+)
+_RIB_PEAK_LEGACY_RE = re.compile(
+    r"(?i)[^.]*\b(?:folds down|rises into the rider|still kneeling|"
+    r"stands up from that kneel|soles planted beside the hips|lifts|"
+    r"kiss smack|wet jupo)\b[^.]*\.?\s*"
+)
+
+
+def _strip_rib_legacy(prompt: str, *, peak: bool) -> str:
+    """Drop kneel-to-seat steps the parent beat still carries. Do not add a second fold clause."""
+    pat = _RIB_PEAK_LEGACY_RE if peak else _RIB_SEAT_LEGACY_RE
+    out = pat.sub(" ", prompt)
+    out = re.sub(r"[ \t]{2,}", " ", out)
+    out = re.sub(r" *\n *", "\n", out)
+    return out
+
+
 def _skip_ride_fold(beat: dict[str, Any]) -> bool:
     """Seats that already stand over a partner must not be folded down or risen from a kneel."""
     bid = str(beat.get("id") or "")
@@ -3260,10 +3282,11 @@ def camera_line(
     spec = CAMERA_PACKS[key]
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
-        if str(beat.get("id") or "") in GIN_STILL_IDS:
-            # "Nobody walks" and "not a step" get drawn as a walk. Gin names her own hold.
-            lock = lock.replace("Nobody walks. Nobody relocates. ", "")
+        if str(beat.get("id") or "") in GIN_STILL_IDS or _nongin_rib_ride(beat):
+            # "Nobody walks" and "not a step" get drawn as a walk. Rib seats name their own hold.
             lock = lock.replace("A hip thrust is in place, not a step. ", "")
+        if str(beat.get("id") or "") in GIN_STILL_IDS:
+            lock = lock.replace("Nobody walks. Nobody relocates. ", "")
             lock = lock.replace("No track, no pan, no scroll. ", "")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
@@ -4368,7 +4391,12 @@ def build_beat_prompt(
     prefix = f"{trigger.strip()}\n" if trigger.strip() else ""
     if RIDE_FOLD_RE.search(str(beat.get("action") or "")) and not _skip_ride_fold(beat):
         prefix += RIDE_FOLD_CLAUSE + "\n"
-    return prefix + head + body
+    text = prefix + head + body
+    if _nongin_rib_ride(beat):
+        text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
+        if str(beat.get("id") or "").startswith("03-kiss"):
+            text = text.replace("22cm", "24cm")
+    return text
 
 
 def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None, still_as: str = "first") -> list[str]:
