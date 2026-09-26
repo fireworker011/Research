@@ -127,9 +127,11 @@ def test_wan_slot_files_are_wan22_pairs_not_h3():
     jobs = wan_weight_jobs()
     assert jobs
     for url, rel in jobs:
-        assert url.startswith("https://huggingface.co/")
+        assert url.startswith("https://huggingface.co/") or url.startswith("https://civitai.com/api/download/models/")
         low = rel.lower()
         assert "minimax" not in low and "mh3" not in low and "10eros" not in low
+    assert any(rel.endswith("Q8H.gguf") for _url, rel in jobs)
+    assert any(rel.endswith("Q8L.gguf") for _url, rel in jobs)
     for slot, spec in WAN_SLOT_LORAS.items():
         assert spec["high_name"].startswith(f"wan-{slot}-")
         assert spec["low_name"].startswith(f"wan-{slot}-")
@@ -149,6 +151,9 @@ def test_wan_slot_files_are_wan22_pairs_not_h3():
     lows = [graph[key]["inputs"]["lora_name"] for key in graph if key.startswith("l")]
     assert highs == ["wan-kiss-high.safetensors"]
     assert lows == ["wan-kiss-low.safetensors"]
+    assert graph["4"]["class_type"] == "UnetLoaderGGUF"
+    assert graph["4"]["inputs"]["unet_name"].endswith("Q8H.gguf")
+    assert graph["5"]["inputs"]["unet_name"].endswith("Q8L.gguf")
 
 
 def test_invite_ride_order_and_sources():

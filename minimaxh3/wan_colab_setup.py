@@ -32,6 +32,10 @@ def ensure_comfy(comfy_dir: Path) -> None:
     req = comfy_dir / "requirements.txt"
     if req.is_file():
         _sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    gguf = comfy_dir / "custom_nodes" / "ComfyUI-GGUF"
+    if not (gguf / "__init__.py").is_file() and not (gguf / "nodes.py").is_file():
+        _sh(["git", "clone", "--depth", "1", "https://github.com/city96/ComfyUI-GGUF.git", str(gguf)])
+    _sh([sys.executable, "-m", "pip", "install", "-q", "gguf"])
 
 
 def _fetch(url: str, dest: Path) -> None:
@@ -39,6 +43,9 @@ def _fetch(url: str, dest: Path) -> None:
     if dest.is_file() and dest.stat().st_size > 1_000_000:
         print("skip", dest.name)
         return
+    token = (os.environ.get("CIVITAI_API_TOKEN") or "").strip()
+    if "civitai.com/api/download" in url and token and "token=" not in url:
+        url = url + ("&" if "?" in url else "?") + "token=" + token
     part = dest.with_suffix(dest.suffix + ".part")
     print("get", dest.name)
     _sh(["wget", "-c", "-O", str(part), url])

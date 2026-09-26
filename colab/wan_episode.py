@@ -63,20 +63,22 @@ _TIAN = "https://huggingface.co/tianbugao/wan_i2v/resolve/main/loras"
 WAN_TEXT_ENCODER = "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
 WAN_TEXT_ENCODER_TYPE = "wan"
 WAN_VAE = "wan_2.1_vae.safetensors"
-WAN_T2V_HIGH = "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors"
-WAN_T2V_LOW = "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors"
-WAN_I2V_HIGH = "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors"
-WAN_I2V_LOW = "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors"
-WAN_T2V_LIGHT_HIGH = "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors"
-WAN_T2V_LIGHT_LOW = "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"
-WAN_I2V_LIGHT_HIGH = "wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors"
-WAN_I2V_LIGHT_LOW = "wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors"
+# NSFW Fast Move V2 Q8. Lightning is already inside these GGUFs.
+# The linked page is the high half (2540892). Wan still needs the matching low (2540896).
+WAN_CKPT_HIGH = "wan22EnhancedNSFWSVICamera_nsfwFASTMOVEV2Q8H.gguf"
+WAN_CKPT_LOW = "wan22EnhancedNSFWSVICamera_nsfwFASTMOVEV2Q8L.gguf"
+WAN_CKPT_HIGH_URL = "https://civitai.com/api/download/models/2540892"
+WAN_CKPT_LOW_URL = "https://civitai.com/api/download/models/2540896"
+WAN_T2V_HIGH = WAN_CKPT_HIGH
+WAN_T2V_LOW = WAN_CKPT_LOW
+WAN_I2V_HIGH = WAN_CKPT_HIGH
+WAN_I2V_LOW = WAN_CKPT_LOW
 
 # Wan's own latent grid. Story length stays beat trim.seconds / clip_seconds.
-# 4 steps is the official Lightx2v schedule, used only when those Wan speed LoRAs are on disk.
+# This checkpoint wants 2 high steps + 2 low steps, CFG 1. Do not stack another Lightning LoRA.
 WAN_FPS = 16
-WAN_SAMPLE_STEPS = 20
-WAN_LIGHTX2V_STEPS = 4
+WAN_SAMPLE_STEPS = 4
+WAN_SAMPLE_CFG = 1.0
 
 
 def _tian(name: str) -> str:
@@ -181,16 +183,10 @@ def _h3_weight(name: str) -> bool:
 def wan_weight_jobs() -> list[tuple[str, str]]:
     """(url, path under the OneDrive models directory). Base Wan 2.2 files plus slot LoRAs."""
     jobs = [
-        (f"{_COMFY_ORG}/diffusion_models/{WAN_T2V_HIGH}", f"diffusion_models/{WAN_T2V_HIGH}"),
-        (f"{_COMFY_ORG}/diffusion_models/{WAN_T2V_LOW}", f"diffusion_models/{WAN_T2V_LOW}"),
-        (f"{_COMFY_ORG}/diffusion_models/{WAN_I2V_HIGH}", f"diffusion_models/{WAN_I2V_HIGH}"),
-        (f"{_COMFY_ORG}/diffusion_models/{WAN_I2V_LOW}", f"diffusion_models/{WAN_I2V_LOW}"),
+        (WAN_CKPT_HIGH_URL, f"diffusion_models/{WAN_CKPT_HIGH}"),
+        (WAN_CKPT_LOW_URL, f"diffusion_models/{WAN_CKPT_LOW}"),
         (f"{_COMFY_ORG}/text_encoders/{WAN_TEXT_ENCODER}", f"text_encoders/{WAN_TEXT_ENCODER}"),
         (f"{_COMFY_ORG}/vae/{WAN_VAE}", f"vae/{WAN_VAE}"),
-        (f"{_COMFY_ORG}/loras/{WAN_T2V_LIGHT_HIGH}", f"loras/{WAN_T2V_LIGHT_HIGH}"),
-        (f"{_COMFY_ORG}/loras/{WAN_T2V_LIGHT_LOW}", f"loras/{WAN_T2V_LIGHT_LOW}"),
-        (f"{_COMFY_ORG}/loras/{WAN_I2V_LIGHT_HIGH}", f"loras/{WAN_I2V_LIGHT_HIGH}"),
-        (f"{_COMFY_ORG}/loras/{WAN_I2V_LIGHT_LOW}", f"loras/{WAN_I2V_LIGHT_LOW}"),
     ]
     seen: set[str] = set()
     for spec in WAN_SLOT_LORAS.values():
@@ -283,7 +279,7 @@ def build_wan_graph(
     filename_prefix: str,
     start_image: str | None = None,
     slots: list[dict[str, Any]] | None = None,
-    use_lightx2v: bool = True,
+    use_lightx2v: bool = False,
 ) -> dict[str, Any]:
     """ComfyUI API graph. T2V has no LoadImage. I2V has exactly one start image.
 
@@ -293,32 +289,30 @@ def build_wan_graph(
         if start_image:
             raise EpisodeError("Wan T2V does not take a start image")
         high, low = WAN_T2V_HIGH, WAN_T2V_LOW
-        light_high, light_low = WAN_T2V_LIGHT_HIGH, WAN_T2V_LIGHT_LOW
     elif source in ("chain", "still"):
         if not start_image:
             raise EpisodeError("Wan I2V needs the previous beat's last frame")
         high, low = WAN_I2V_HIGH, WAN_I2V_LOW
-        light_high, light_low = WAN_I2V_LIGHT_HIGH, WAN_I2V_LIGHT_LOW
     else:
         raise EpisodeError(f"Wan graph does not draw source {source}")
     for row in slots or []:
         for key in ("high", "low"):
             if _h3_weight(str(row.get(key) or "")):
                 raise EpisodeError(f"refusing H3 weight in a Wan graph: {row.get(key)}")
-    steps = WAN_LIGHTX2V_STEPS if use_lightx2v else WAN_SAMPLE_STEPS
-    cfg = 1.0 if use_lightx2v else 5.0
+    if use_lightx2v:
+        raise EpisodeError("NSFW Fast Move V2 already contains Lightning. Do not stack another Lightning LoRA.")
+    steps = WAN_SAMPLE_STEPS
+    cfg = WAN_SAMPLE_CFG
     g: dict[str, Any] = {
         "1": _loader("CLIPLoader", clip_name=WAN_TEXT_ENCODER, type=WAN_TEXT_ENCODER_TYPE),
         "2": _loader("CLIPTextEncode", text=prompt, clip=["1", 0]),
         "3": _loader("CLIPTextEncode", text="", clip=["1", 0]),
-        "4": _loader("UNETLoader", unet_name=high, weight_dtype="default"),
-        "5": _loader("UNETLoader", unet_name=low, weight_dtype="default"),
+        "4": _loader("UnetLoaderGGUF", unet_name=high),
+        "5": _loader("UnetLoaderGGUF", unet_name=low),
         "6": _loader("VAELoader", vae_name=WAN_VAE),
     }
     model_high, model_low = "4", "5"
     chain: list[tuple[str, str, float]] = []
-    if use_lightx2v:
-        chain.append((light_high, light_low, 1.0))
     for row in slots or []:
         chain.append((str(row["high"]), str(row["low"]), float(row["strength"])))
     for i, (high_name, low_name, strength) in enumerate(chain):
@@ -505,11 +499,6 @@ def run_wan_episode(
                 color=f"0x{hue:02x}{(120 + idx * 13) % 255:02x}{(80 + idx * 17) % 255:02x}",
             )
         else:
-            if source == "t2v":
-                light = (WAN_T2V_LIGHT_HIGH, WAN_T2V_LIGHT_LOW)
-            else:
-                light = (WAN_I2V_LIGHT_HIGH, WAN_I2V_LIGHT_LOW)
-            use_light = bool(loras) and all((loras / name).is_file() for name in light)
             graph = build_wan_graph(
                 source=source,
                 prompt=prompt,
@@ -520,7 +509,7 @@ def run_wan_episode(
                 filename_prefix=f"video/wan_ep_{_now_status_id(ep)}_{bid}",
                 start_image=start_name,
                 slots=shot["slots"],
-                use_lightx2v=use_light,
+                use_lightx2v=False,
             )
             (root / "logs" / f"{bid}.wan.json").write_text(
                 __import__("json").dumps(graph, ensure_ascii=False, indent=2),
