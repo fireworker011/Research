@@ -21,8 +21,19 @@ COMFY_DIR_DEFAULT = Path("/content/ComfyUI")
 PORT = 8188
 
 
+def _shown(cmd: list[str]) -> str:
+    shown: list[str] = []
+    for part in cmd:
+        if "token=" in part:
+            head, _, _tail = part.partition("token=")
+            shown.append(head + "token=(hidden)")
+        else:
+            shown.append(part)
+    return " ".join(shown)
+
+
 def _sh(cmd: list[str]) -> None:
-    print("+", " ".join(cmd))
+    print("+", _shown(cmd))
     subprocess.check_call(cmd)
 
 
@@ -38,7 +49,7 @@ def ensure_comfy(comfy_dir: Path) -> None:
     _sh([sys.executable, "-m", "pip", "install", "-q", "gguf"])
 
 
-def _fetch(url: str, dest: Path) -> None:
+def _fetch(url: str, dest: Path, *, required: bool) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.is_file() and dest.stat().st_size > 1_000_000:
         print("skip", dest.name)
@@ -47,8 +58,18 @@ def _fetch(url: str, dest: Path) -> None:
     if "civitai.com/api/download" in url and token and "token=" not in url:
         url = url + ("&" if "?" in url else "?") + "token=" + token
     part = dest.with_suffix(dest.suffix + ".part")
+    if part.is_file() and part.stat().st_size < 1_000_000:
+        part.unlink()
     print("get", dest.name)
-    _sh(["wget", "-c", "-O", str(part), url])
+    try:
+        subprocess.check_call(["wget", "-c", "-O", str(part), url])
+    except subprocess.CalledProcessError:
+        if part.is_file() and part.stat().st_size < 1_000_000:
+            part.unlink()
+        if required:
+            raise
+        print("skip failed", dest.name)
+        return
     part.replace(dest)
 
 
@@ -67,7 +88,7 @@ def link_tree(src: Path, dest: Path) -> None:
 
 def download_weights(models_root: Path) -> None:
     for url, rel in wan_weight_jobs():
-        _fetch(url, models_root / rel)
+        _fetch(url, models_root / rel, required=not rel.startswith("loras/"))
 
 
 def wire_comfy(models_root: Path, comfy_dir: Path, work_root: Path) -> None:
