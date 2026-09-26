@@ -1107,6 +1107,13 @@ def _assert_hospital_bans(ep):
 def _assert_insertion_direction(action: str, prompt: str) -> None:
     blob = f"{action}\n{prompt}".lower()
     assert "travels into" in blob or "travels in" in blob
+    if (
+        "on either side" in blob
+        and "ribs" in blob
+        and "straight down" in blob
+        and "hold still joined at the base" in blob
+    ):
+        return
     riding = (
         "sits on" in blob
         or "squats over" in blob
@@ -1629,7 +1636,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
     assert ride["render"]["invite_pose"] == "ride"
     six_blob = action_blob(ride, "06-doggy")
-    assert "sits on" in six_blob
+    assert "hangs directly above the glans" in six_blob
     six = next(b for b in ride["beats"] if b["id"] == "06-doggy")
     assert "glans stays inside the mouth" in six["action"].lower()
     ride_sit = next(b for b in ride["beats"] if b["id"] == "06-doggy-ride")
@@ -1669,8 +1676,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "24cm" in miki_ride
     assert "drops down onto her knees" in miki_ride
     assert "glans stays inside the mouth" in miki_ride
-    assert "stands up" in miki_ride
-    assert "sits on" in miki_ride
+    assert "hangs directly above the glans" in miki_ride
+    assert "hold still joined at the base" in miki_ride
     assert "hugs" not in miki_ride
     ride_miki = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     _assert_insertion_direction(ride_miki["action"], build_beat_prompt(ride, ride_miki))
@@ -1763,50 +1770,37 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss", "sideride"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
-    assert extra_lora_entries(ride_sit)[0] == ("sideride", 0.5)
-    assert "mystic" in extra_keys(ride_sit)
-    assert ride_sit.get("trigger") == SIDERIDE_TRIGGER
-    assert "straddles the hips" in ride_sit["action"].lower()
-    assert "facing the partner" in ride_sit["action"].lower()
-    assert "the pussy stays directly above the glans" in ride_sit["action"].lower()
-    assert "hand holds that raised thigh" in ride_sit["action"].lower()
-    assert "the glans is directly under the pussy" in ride_sit["action"].lower()
-    assert "one vertical line runs from the groin through the glans into the pussy" in ride_sit["action"].lower()
-    assert "the glans spreads aya's lips and travels into aya's pussy" in ride_sit["action"].lower()
+    assert extra_keys(ride_sit)[:3] == ["mystic", "penis", "synth"]
+    assert "sideride" not in extra_keys(ride_sit)
+    assert "thrust" not in extra_keys(ride_sit)
+    assert not ride_sit.get("trigger")
+    assert "hangs directly above the glans" in ride_sit["action"].lower()
     assert "straight down" in ride_sit["action"].lower()
-    assert "stands up from that kneel" in ride_sit["action"].lower()
-    assert "the standing miki folds down" in ride_sit["action"].lower()
-    assert "that same face is the face on the floor" in ride_sit["action"].lower()
-    assert "that same face is the face on top" in ride_sit["action"].lower()
-    assert "buttocks press flush" in ride_sit["action"].lower()
-    assert "one thigh held up" in ride_sit["action"].lower()
+    assert "hold still joined at the base" in ride_sit["action"].lower()
+    assert "either side of miki's ribs" in ride_sit["action"].lower()
+    assert "one sole on each side of the chest" in ride_sit["action"].lower()
+    assert "stands up from that kneel" not in ride_sit["action"].lower()
+    assert "folds down" not in ride_sit["action"].lower()
+    assert "squats" not in ride_sit["action"].lower()
+    assert "thigh lifts" not in ride_sit["action"].lower()
+    assert "one thigh" not in ride_sit["action"].lower()
     assert "from above" not in ride_sit["action"].lower()
-    assert "squats from above" not in ride_sit["action"].lower()
     assert "from directly above" not in ride_sit["camera"].lower()
-    assert "before the shaft enters, miki lies fully on her back" in ride_sit["action"].lower()
     assert "the back of her head on the linoleum" in ride_sit["action"].lower()
     assert "shoulders on the linoleum" in ride_sit["action"].lower()
-    assert "then the insertion scene begins" in ride_sit["action"].lower()
-    assert "steps over the hips" in ride_sit["action"].lower()
+    assert "steps over the hips" not in ride_sit["action"].lower()
     assert "slides both feet" not in ride_sit["action"].lower()
     assert "head on the right" in ride_sit["action"].lower()
-    assert "aya's head stays on the left" in ride_sit["action"].lower()
-    assert "rooted in miki's groin" in ride_sit["action"].lower()
-    assert "the glans is the top end" in ride_sit["action"].lower()
-    assert "keep this same facing" in ride_sit["action"].lower()
-    assert "stands up" in ride_sit["action"].lower()
-    assert "aya on top" in ride_sit["action"].lower()
+    assert "head on the left" in ride_sit["action"].lower()
     assert "miki sits on aya" not in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
-    assert "folds down onto her back" in ride_prompt.lower()
-    assert "that same face is the face on the floor" in ride_prompt.lower()
-    assert "after the shaft enters, those two faces stay the frame" in ride_prompt.lower()
-    assert "holds that raised thigh" in ride_prompt.lower()
-    assert "the glans is directly under the pussy" in ride_prompt.lower()
-    assert "travels into aya's pussy" in ride_prompt.lower()
-    assert "keeps the back of the head on the linoleum" in ride_prompt.lower()
+    assert "folds down onto her back" not in ride_prompt.lower()
+    assert "holds that raised thigh" not in ride_prompt.lower()
+    assert "travels into the pussy" in ride_prompt.lower()
+    assert "either side of the ribs" in ride_prompt.lower()
     assert "feet do not take a step" not in ride_prompt.lower()
     assert "feet do not travel" not in ride_prompt.lower()
+    assert "nothing new enters" not in ride_prompt.lower()
     oral = next(b for b in ride["beats"] if b["id"] == "03-kiss")
     oral_prompt = build_beat_prompt(ride, oral, trigger=merge_trigger("", oral))
     assert "this wide full-body frame stays locked" not in oral_prompt.lower()
@@ -1828,16 +1822,14 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "same two adults" in ride_prompt.lower()
     assert "the adult on her back is the one with the shaft" in ride_prompt.lower()
     assert "nothing new enters" not in ride_prompt.lower()
-    assert SIDERIDE_TRIGGER in ride_prompt
+    assert SIDERIDE_TRIGGER not in ride_prompt
     assert "cowgirl" not in ride_prompt.lower()
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
     assert "miki stays on her back" in ride_peak["action"].lower()
-    assert "the back of her head on the linoleum" in ride_peak["action"].lower()
-    assert "short upward thrusts from the back" in ride_peak["action"].lower()
-    assert "aya is already sitting on miki's hips" in ride_peak["action"].lower()
-    assert "aya's hips rock down" in ride_peak["action"].lower()
-    assert "straight up and straight down in the frame" in ride_peak["action"].lower()
-    assert "each stroke stays vertical on screen" in ride_peak["action"].lower()
+    assert "keep the glans inside" in ride_peak["action"].lower()
+    assert "buried to the root" in ride_peak["action"].lower()
+    assert "both soles beside the ribs" in ride_peak["action"].lower()
+    assert "lifts" not in ride_peak["action"].lower()
     assert "rock up" not in ride_peak["action"].lower()
     assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
     assert "cums inside of her" in ride_peak.get("trigger", "").lower()
@@ -1883,7 +1875,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
             seat_n += 1
             assert extra_lora_entries(beat)[0] == ("sideride", 0.5), beat["id"]
             assert "mystic" in keys, beat["id"]
-    assert seat_n == 4 and peak_n == 5
+    assert seat_n == 0 and peak_n == 5
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():
@@ -2064,7 +2056,7 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "drops down onto her knees" in twelve["action"].lower()
     assert "mouths joined" in twelve["action"].lower()
     assert "glans stays inside the mouth" in twelve["action"].lower()
-    assert "sits on" in twelve_low
+    assert "hangs directly above the glans" in twelve_low
     assert "steps in" not in twelve_low
     assert "hugs" not in twelve_low
     assert extra_keys(twelve) == ["blowjob", "mystic"]
@@ -2304,25 +2296,20 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     doggy = next(b for b in mixed["beats"] if b["id"] == "06-doggy")
     _assert_insertion_direction(doggy["action"], build_beat_prompt(mixed, doggy))
     kana_blob = action_blob(mixed, "09-join")
-    assert "sits on" in kana_blob
+    assert "hangs directly above the glans" in kana_blob
     kana_sit = next(b for b in mixed["beats"] if b["id"] == "09-join-ride")
     assert "pushes kana backward" not in kana_sit["action"].lower()
-    assert "already on her back" not in kana_sit["action"].lower()
-    assert "still kneeling" in kana_sit["action"].lower()
-    assert "lips at the base" in kana_sit["action"].lower()
-    assert "lays kana down" in kana_sit["action"].lower()
-    assert "before the shaft enters, kana lies fully on her back" in kana_sit["action"].lower()
+    assert "already lies fully on her back" in kana_sit["action"].lower()
     assert "the back of her head on the linoleum" in kana_sit["action"].lower()
-    assert "hand holds that raised thigh" in kana_sit["action"].lower()
+    assert "either side of kana's ribs" in kana_sit["action"].lower()
+    assert "hand holds that raised thigh" not in kana_sit["action"].lower()
     assert "slides both feet" not in kana_sit["action"].lower()
     assert "head on the right" in kana_sit["action"].lower()
-    assert "aya's head stays on the left" in kana_sit["action"].lower()
-    assert "rooted in kana's groin" in kana_sit["action"].lower()
-    assert "aya on top" in kana_sit["action"].lower()
+    assert "head on the left" in kana_sit["action"].lower()
     assert "kana sits on aya" not in kana_sit["action"].lower()
-    assert "one shaft" in kana_sit["action"].lower()
-    assert "stands up" in kana_sit["action"].lower()
-    assert "buttocks press flush" in kana_sit["action"].lower()
+    assert "squats" not in kana_sit["action"].lower()
+    assert "hold still joined at the base" in kana_sit["action"].lower()
+    assert "buttocks meet the hips" in kana_sit["action"].lower()
     _assert_insertion_direction(kana_sit["action"], build_beat_prompt(mixed, kana_sit))
     kana_jupo = next(b for b in mixed["beats"] if b["id"] == "09-join")
     assert extra_keys(kana_jupo) == ["blowjob", "mystic"]
@@ -3150,35 +3137,30 @@ def test_hospital_clip_failures_are_rewritten():
     ride_prompt = build_beat_prompt(ride, ride_in)
     assert "squats from above" not in ride_in["action"].lower()
     assert "from directly above" not in ride_in["action"].lower()
-    assert "straddles the hips" in ride_in["action"].lower()
-    assert "facing the partner" in ride_in["action"].lower()
     assert "straight down" in ride_in["action"].lower()
-    assert "stands up" in ride_in["action"].lower()
-    assert "buttocks press flush" in ride_in["action"].lower()
-    assert "shaft is inside to the root" in ride_in["action"].lower()
-    assert "hand holds that raised thigh" in ride_in["action"].lower()
-    assert "the glans is directly under the pussy" in ride_in["action"].lower()
-    assert "planted foot stays on the linoleum" in ride_in["action"].lower()
-    assert "press flush" in ride_in["action"].lower()
-    assert "hips stay still" in ride_in["action"].lower()
+    assert "hangs directly above the glans" in ride_in["action"].lower()
+    assert "hold still joined at the base" in ride_in["action"].lower()
+    assert "either side of miki's ribs" in ride_in["action"].lower()
+    assert "stands up from that kneel" not in ride_in["action"].lower()
+    assert "squats" not in ride_in["action"].lower()
+    assert "folds down" not in ride_in["action"].lower()
+    assert "hand holds that raised thigh" not in ride_in["action"].lower()
+    assert "sideride" not in extra_keys(ride_in)
+    assert "thrust" not in extra_keys(ride_in)
     assert "slides both feet" not in ride_in["action"].lower()
-    assert "rooted in miki's groin between the thighs" in ride_in["action"].lower()
-    assert "aya's head stays on the left" in ride_in["action"].lower()
-    assert "the shaft stays vertical from that groin" in ride_in["action"].lower()
-    assert "the glans meets" in ride_in["action"].lower()
-    assert "before the shaft enters, miki lies fully on her back" in ride_in["action"].lower()
+    assert "head on the left" in ride_in["action"].lower()
     assert "the back of her head on the linoleum" in ride_in["action"].lower()
-    rei_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "06-doggy-ride")
-    shino_ride = next(b for b in prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")["beats"] if b["id"] == "12-exit-ride")
-    assert "before the shaft enters, rei lies fully on her back" in rei_ride["action"].lower()
-    assert "before the shaft enters, shino lies fully on her back" in shino_ride["action"].lower()
+    rei_ride = next(b for b in ride["beats"] if b["id"] == "06-doggy-ride")
+    shino_ride = next(b for b in ride["beats"] if b["id"] == "12-exit-ride")
+    assert "either side of rei's ribs" in rei_ride["action"].lower()
+    assert "either side of shino's ribs" in shino_ride["action"].lower()
     assert "the back of her head on the linoleum" in rei_ride["action"].lower()
     assert "the back of her head on the linoleum" in shino_ride["action"].lower()
-    assert "hand holds that raised thigh" in rei_ride["action"].lower()
-    assert "hand holds that raised thigh" in shino_ride["action"].lower()
+    assert "hand holds that raised thigh" not in rei_ride["action"].lower()
+    assert "hand holds that raised thigh" not in shino_ride["action"].lower()
     assert "slides both feet" not in rei_ride["action"].lower()
-    assert "rooted in rei's groin" in rei_ride["action"].lower()
-    assert "rooted in shino's groin" in shino_ride["action"].lower()
+    assert "20cm" in next(b for b in ride["beats"] if b["id"] == "09-join-ride")["action"]
+    assert "30cm" in shino_ride["action"]
     _assert_insertion_direction(ride_in["action"], ride_prompt)
     assert ride_in.get("loco") == "planted"
     runtime_src = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
@@ -4608,4 +4590,63 @@ def test_hospital_dog_orientation_and_embrace_lift():
         assert beat_loco(beat) != "planted"
         assert "thrust" in extra_keys(beat)
         assert "short vertical moves" in beat["action"].lower()
+
+
+def test_hospital_nongin_ride_seats_beside_the_ribs():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
+    pairs = (
+        ("03-kiss", "Miki", "24cm"),
+        ("06-doggy", "Rei", "24cm"),
+        ("09-join", "Kana", "20cm"),
+        ("12-exit", "Shino", "30cm"),
+    )
+    pose_ban = ("zombie", "blood", "corpse", "doggy", "missionary", "cowgirl")
+    for base, partner, cm in pairs:
+        oral = next(b for b in ride["beats"] if b["id"] == base)
+        assert "lips leaving the shaft" in oral["action"]
+        assert "still standing" in oral["action"].lower()
+        assert "the camera sits far back" in oral["action"].lower()
+        assert "drops down onto her knees" in oral["action"].lower()
+        seat = next(b for b in ride["beats"] if b["id"] == f"{base}-ride")
+        peak = next(b for b in ride["beats"] if b["id"] == f"{base}-peak")
+        act = seat["action"]
+        low = act.lower()
+        for banned in (
+            "thighs lifts",
+            "thigh lifts",
+            "folds down",
+            "stands up from that kneel",
+            "squats",
+            "one of aya's thighs",
+        ):
+            assert banned not in low, base
+        assert "hangs directly above the glans" in low
+        assert "straight down" in low
+        assert "hold still joined at the base" in low
+        assert f"either side of {partner.lower()}'s ribs" in low
+        assert cm in act
+        assert "pale-tan" not in low
+        assert "sideride" not in extra_keys(seat)
+        assert "thrust" not in extra_keys(seat)
+        assert not seat.get("trigger")
+        plow = peak["action"].lower()
+        assert "buried to the root" in plow
+        assert "keep the glans inside" in plow
+        assert "lifts" not in plow
+        assert "slides out" not in plow
+        assert extra_lora_entries(peak)[0] == ("sideride", 0.8)
+        assert "thrust" in extra_keys(peak)
+        assert "mystic" not in extra_keys(peak)
+        for word in pose_ban:
+            assert word not in low and word not in plow
+        assert "駅弁" not in act and "駅弁" not in peak["action"]
+    gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される")
+    gin_ride = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
+    assert "astride aya's ribs" in gin_ride["action"].lower()
+    assert "steps over aya" in gin_ride["action"].lower()
+    assert "either side of" not in gin_ride["action"].lower()
+    assert "sideride" not in extra_keys(gin_ride)
+    drop = next(b for b in ride["beats"] if b["id"] == "12-exit-drop")
+    assert "slides out" in drop["action"].lower()
 

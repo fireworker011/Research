@@ -621,6 +621,16 @@ GIN_PEAK_PACE_CLAUSE = (
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+# Non-gin seats plant both soles beside the ribs. The walk-lock clause draws a step.
+RIB_RIDE_RE = re.compile(r"either side of(?: the)? ribs|either side of [A-Za-z]+'s ribs", re.I)
+RIB_RIDE_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The shaft adult stays on her back, head on the RIGHT, feet pointing LEFT. "
+    "Aya stays over the hips, head on the LEFT. "
+    "Both of Aya's soles stay on the linoleum on either side of the ribs. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
 
 
@@ -4070,7 +4080,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     if "blowjob" in keys:
         holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
     # Gin's seat keeps her leaned back on both hands. The supine rider-head-left lock flattens that pose.
-    if "sideride" in keys and not gin:
+    if not gin and ("sideride" in keys or RIB_RIDE_RE.search(blob)):
         holds.append(RIDE_CAMERA_HOLD)
         holds.append(RIDE_PAIR_CLAUSE)
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
@@ -4152,6 +4162,10 @@ def build_beat_prompt(
         and (
             "sideride" in {key for key, _strength in extra_lora_entries(beat)}
             or str(beat.get("id") or "") == "04-gin-ride"
+            or (
+                "gin" not in str(beat.get("id") or "")
+                and bool(RIB_RIDE_RE.search(str(beat.get("action") or "")))
+            )
         )
     )
     desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
@@ -4168,6 +4182,8 @@ def build_beat_prompt(
             desc.append(GIN_RIDE_PACE_CLAUSE)
         elif bid_now == "04-gin-peak":
             desc.append(GIN_PEAK_PACE_CLAUSE)
+        elif "gin" not in bid_now and RIB_RIDE_RE.search(action_txt):
+            desc.append(RIB_RIDE_PACE_CLAUSE)
         elif NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
             desc.append(NELSON_PLANTED_CLAUSE)
