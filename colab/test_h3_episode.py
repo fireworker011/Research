@@ -53,6 +53,7 @@ from h3_episode import (  # noqa: E402
     apply_extra_loras,
     apply_unet_preset_rules,
     assert_not_production_root,
+    beat_loco,
     beat_prompts,
     beat_props,
     beat_clip_seconds,
@@ -4357,9 +4358,10 @@ def test_hospital_dog_and_species_slots():
                 assert word not in blob
     spot = next(b for b in stacked["beats"] if b["id"] == "04-dog-spot")
     spot_action = spot["action"]
-    assert "LEAPS in from the RIGHT" in spot_action
-    assert "Aya toward the LEFT" in spot_action
-    assert "toward the RIGHT" in spot_action
+    assert "LEAPS" not in spot_action
+    assert "head points LEFT" in spot_action
+    assert "tail points to the RIGHT" in spot_action
+    assert "WALKS toward the RIGHT" in spot_action
     assert spot["cast"] == ["aya", "dog"]
     assert "gin" in {b.get("encounter") or "" for b in stacked["beats"] if str(b["id"]).startswith("04-gin")} or any(
         str(b["id"]).startswith("04-gin") for b in stacked["beats"]
@@ -4481,15 +4483,25 @@ def test_hospital_invite_embrace_starts_after_the_spot():
     assert cunny["trigger"] == "performing cunnilingus"
     hold_beat = next(b for b in ep["beats"] if b["id"] == "03-kiss-hold")
     hold = hold_beat["action"].lower()
-    assert "hold both knees up" in hold
+    assert "miki stands." not in hold
+    assert "knees come up" in hold
     assert "wrap behind miki's back" in hold
-    assert "french kiss" in hold
-    assert "saliva" in hold
-    assert "travels into the pussy to the root" in hold
-    assert "kiss" in [x[0] if isinstance(x, list) else x for x in hold_beat["extra_loras"]]
-    peak = next(b for b in ep["beats"] if b["id"] == "03-kiss-peak")["action"].lower()
+    assert "mouths stay joined" in hold
+    assert "travels into the hairless pussy" in hold
+    assert "hold still joined at the base" in hold
+    assert "buried to the root" in hold
+    assert "knees held up" in hold
+    assert "thrust" not in extra_keys(hold_beat)
+    assert beat_loco(hold_beat) != "planted"
+    assert "kiss" in extra_keys(hold_beat)
+    peak_beat = next(b for b in ep["beats"] if b["id"] == "03-kiss-peak")
+    peak = peak_beat["action"].lower()
     assert "finishes inside" in peak
     assert "orgasm faces" in peak
+    assert "both knees held up" in peak
+    assert beat_loco(peak_beat) != "planted"
+    cunny_act = cunny["action"]
+    assert "stands in front of Aya on both feet" in cunny_act
     walk = next(b for b in ep["beats"] if b["id"] == "03-kiss-walk")
     assert walk["trim"]["seconds"] == 8.0
     assert "saliva string" in walk["action"].lower()
@@ -4518,4 +4530,82 @@ def test_hospital_invite_embrace_starts_after_the_spot():
     prompt = build_beat_prompt(ep, cover)
     assert "24cm" in prompt
     assert "22cm" not in prompt
+
+
+def test_hospital_dog_orientation_and_embrace_lift():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    marker = next(b for b in raw["beats"] if b["id"] == "04-dog")
+    spots = []
+    for key in ("on_dog_evade", "on_dog_accept", "on_dog_invite_rear", "on_dog_invite_oral"):
+        spot = next(x for x in marker[key] if x["id"] == "04-dog-spot")
+        spots.append(spot["action"])
+        assert "LEAPS" not in spot["action"]
+        assert "head points LEFT" in spot["action"]
+        assert "tail points to the RIGHT" in spot["action"]
+        assert spot["source"] == "chain" and spot["connect"] == "chain"
+    assert len(set(spots)) == 1
+    accept = next(x for x in marker["on_dog_accept"] if x["id"] == "04-dog-accept")
+    assert "rises onto its hind paws" in accept["action"]
+    oral = prepare_episode(raw, dog_override="invite_oral")
+    wait = next(b for b in oral["beats"] if b["id"] == "04-dog-wait")
+    assert "turns prone" not in wait["action"].lower()
+    assert "on her back" in wait["action"].lower()
+    jupo = next(b for b in oral["beats"] if b["id"] == "04-dog-jupo")
+    assert "under the belly" in jupo["action"]
+    assert "hind paws" in jupo["action"].lower()
+    assert "long wet dark tongue" not in jupo["action"].lower()
+    seated = next(b for b in oral["beats"] if b["id"] == "04-dog-in")
+    assert "thrust" not in extra_keys(seated)
+    assert "HOLD still joined at the BASE" in seated["action"]
+    rear = prepare_episode(raw, dog_override="invite_rear")
+    mount = next(b for b in rear["beats"] if b["id"] == "04-dog-mount")
+    assert "thrust" not in extra_keys(mount)
+    assert "chest and cheek" in mount["action"]
+    rear_wait = next(b for b in rear["beats"] if b["id"] == "04-dog-wait")
+    assert "chest and one cheek" in rear_wait["action"]
+    pose_ban = ("zombie", "blood", "corpse", "doggy", "missionary", "cowgirl")
+    for ep in (oral, rear):
+        for beat in ep["beats"]:
+            if not str(beat["id"]).startswith("04-dog"):
+                continue
+            blob = str(beat.get("action") or "").lower()
+            for word in pose_ban:
+                assert word not in blob, beat["id"]
+            assert "駅弁" not in beat["action"]
+            assert "anthro" not in extra_keys(beat)
+    emb = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="embrace",
+        tsuno_override="フルネルソンアナル",
+    )
+    holds = [b for b in emb["beats"] if "knees come up" in str(b.get("action") or "")]
+    names = []
+    for beat in holds:
+        assert beat["id"].endswith("-hold")
+        assert beat_loco(beat) != "planted"
+        assert "loco" not in beat
+        act = beat["action"]
+        low = act.lower()
+        assert " stands." not in low
+        assert "buried to the root" in low
+        assert "knees held up" in low
+        assert "hold still joined at the base" in low
+        assert "thrust" not in extra_keys(beat)
+        assert " not " not in f" {low} "
+        for word in pose_ban:
+            assert word not in low
+        assert "駅弁" not in act
+        names.append(act.split("'")[0].split()[-1] if "'" in act else "")
+        prompt = build_beat_prompt(emb, beat)
+        assert "feet stay planted" not in prompt.lower()
+        assert "do not invent a walk cycle" not in prompt.lower()
+        assert "snappy" in prompt.lower()
+    assert set(names) >= {"Miki", "Rei", "Kana", "Shino", "Tsuno"}
+    peaks = [b for b in emb["beats"] if b["id"].endswith("-peak") and "both knees held up" in b["action"].lower()]
+    assert len(peaks) == len(holds)
+    for beat in peaks:
+        assert beat_loco(beat) != "planted"
+        assert "thrust" in extra_keys(beat)
+        assert "short vertical moves" in beat["action"].lower()
 

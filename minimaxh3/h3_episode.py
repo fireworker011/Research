@@ -419,6 +419,12 @@ GAMEPLAY_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Do not invent a walk cycle. Feet stay planted unless the action names running or walking."
 )
+# Held-leg lift keeps the feet in the air. The walk-cycle clause draws a planted stand.
+EMBRACE_LIFT_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya's feet stay in the air beside the partner's hips. The partner's feet stay on the linoleum. "
+    "The camera holds."
+)
 PLANTED_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
@@ -1793,12 +1799,19 @@ def _embrace_beat(
             "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. "
             "Aya full body including feet. Only Aya."
         )
+    elif suffix in ("hold", "peak"):
+        camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Full body. "
+            "Aya's feet stay in the air beside the partner's hips and stay inside the frame. "
+            "The partner's soles stay on the linoleum and stay inside the frame. "
+            "Both faces stay in frame. Distance stays the same."
+        )
     else:
         camera = (
             "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. "
             "Both adults full body including feet. Both faces stay in frame."
         )
-    return {
+    beat: dict[str, Any] = {
         "id": f"{base}-{suffix}",
         "source": "t2v",
         "connect": "end" if suffix == "walk" else "t2v",
@@ -1824,8 +1837,14 @@ def _embrace_beat(
             "objective_distance": 0.3,
             "icons_active": [],
         },
-        "loco": "walk" if suffix == "walk" else loco,
     }
+    if suffix == "walk":
+        beat["loco"] = "walk"
+    elif suffix in ("hold", "peak"):
+        beat["camera_pack"] = "none"
+    else:
+        beat["loco"] = loco
+    return beat
 
 
 def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
@@ -1861,30 +1880,33 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         f"They start already at the wall on this same linoleum spot. Aya's back stays on the wall. One foot stays on the linoleum. "
         f"{name} SQUATS in front of Aya. {name}'s mouth meets Aya's hairless pussy. The tongue licks. "
         "Both faces stay in frame. Full body including feet. "
-        "Last frame: the partner squatting, mouth on the pussy, one of Aya's feet on the linoleum. "
+        f"Last frame: {name} stands in front of Aya on both feet on the linoleum. Aya's back stays on the wall. "
+        f"One of Aya's feet stays on the linoleum. The erect {cm} stays in front of the hips. "
         "Brisk real-time. Consensual adult game beat"
     )
+    lift = f"the erect {cm} {color.replace(' not pale-tan flesh', '')}"
     hold = (
-        f"They start already at the wall on this same linoleum spot. {name} stands. "
-        f"Both of {name}'s arms wrap under Aya's thighs and HOLD both knees up off the linoleum. "
-        "Aya's knees are pulled up and open. "
-        f"Aya's arms WRAP behind {name}'s back. "
-        "Mouths meet in a deep wet french kiss. Tongues intertwine and lick around each other's lips. "
-        "Thick saliva coats both mouths, drips in strings from both chins, and keeps dripping. "
-        f"{shaft} TRAVELS INTO the pussy to the root. Hips meet flush. They HOLD both knees up. Mouths stay joined. "
+        "They start already at the wall on this same linoleum spot, face to face. "
+        f"{name}'s both feet stay on the linoleum. Both of {name}'s arms wrap under Aya's thighs. "
+        "Both of Aya's knees come up and open. "
+        f"Both of Aya's feet stay in the air beside {name}'s hips. "
+        f"Aya's arms WRAP behind {name}'s back. Chests press flush. Mouths stay joined. Tongues intertwine. "
+        f"The hairless pussy hangs in front of the glans. Then {lift} TRAVELS INTO the hairless pussy "
+        "until the hips meet at the BASE. HOLD still joined at the BASE until the last frame. "
         "Both faces stay in frame. Full body including the held feet. "
-        "Last frame: both knees held up and open, arms around the back, mouths joined, saliva dripping, hips flush, the shaft buried to the root. "
+        "Last frame: both knees held up and open, "
+        f"Aya's feet in the air beside {name}'s hips, {name}'s feet on the linoleum, "
+        "hips flush, the shaft buried to the root, mouths joined. "
         "Brisk real-time. Consensual adult game beat"
     )
     peak = (
-        f"They start already joined on this same linoleum spot. Both knees stay held up and open. "
+        "They start already joined on this same linoleum spot. Both knees stay held up and open. "
+        f"Aya's feet stay in the air beside {name}'s hips. {name}'s feet stay on the linoleum. "
         f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. "
-        "Tongues lick around each other's lips. Thick saliva coats both mouths and drips from both chins. "
-        f"{shaft} stays buried to the root. {name} finishes INSIDE Aya. "
-        "A little thick WHITE goo leaks around the base and stays inside the pussy. "
-        "Both climax: wrecked pleasured orgasm faces, mouths open, brows knit, bodies trembling with pleasure. "
-        "Mouths stay joined through the finish. Both faces stay in frame. Full body including the held feet. "
-        "Last frame: orgasm faces, mouths joined, saliva dripping, hips flush, the shaft still buried to the root. "
+        f"{lift} stays buried to the root. Short vertical moves keep the glans inside. "
+        f"{name} finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. "
+        "Both climax. Mouths stay joined through the finish. "
+        "Last frame: orgasm faces, mouths joined, hips flush, the shaft still buried to the root, both knees held up. "
         "Brisk real-time. Consensual adult game beat"
     )
     walk = (
@@ -1910,8 +1932,20 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
             loras=[["cunny", 0.8], "mystic"],
             trigger="performing cunnilingus",
         ),
-        _embrace_beat(base, "hold", who, hold, loras=kiss),
-        _embrace_beat(base, "peak", who, peak, loras=kiss),
+        _embrace_beat(
+            base,
+            "hold",
+            who,
+            hold,
+            loras=[["kiss", 0.5], ["mystic", 0.5], ["penis", 0.45], ["synth", 0.4]],
+        ),
+        _embrace_beat(
+            base,
+            "peak",
+            who,
+            peak,
+            loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55]],
+        ),
         _embrace_beat(base, "walk", who, walk, loras=kiss),
     ]
 
@@ -2844,6 +2878,13 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
         action = str(beat.get("action") or "")
         if re.search(r"STEPS SIDEWAYS|WALKS PAST|can pass", action, re.I):
             beat["loco"] = "walk"
+            continue
+        # Embrace hold/peak omit loco. "feet stay in the air" would otherwise become planted.
+        if (
+            not str(beat.get("loco") or "").strip()
+            and (bid.endswith("-hold") or bid.endswith("-peak"))
+            and re.search(r"feet stay in the air", action, re.I)
+        ):
             continue
         if not str(beat.get("loco") or "").strip():
             walk_words = bool(re.search(r"\bWALKS?\b|\bWALKING\b|\bRUNS?\b|\bSPRINT", action))
@@ -4153,7 +4194,11 @@ def build_beat_prompt(
             desc.append(PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
-        desc.append(GAMEPLAY_PACE_CLAUSE)
+        action_txt = str(beat.get("action") or "")
+        if loco not in ("walk", "run") and re.search(r"feet stay in the air", action_txt, re.I):
+            desc.append(EMBRACE_LIFT_PACE_CLAUSE)
+        else:
+            desc.append(GAMEPLAY_PACE_CLAUSE)
         if loco == "run":
             desc.append(RUN_CLAUSE)
     pack = resolve_beat_camera_pack(ep, beat, camera_pack)
