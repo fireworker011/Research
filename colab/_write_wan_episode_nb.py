@@ -153,7 +153,7 @@ H3 のノートはそのまま残す。このノートは描画だけ Wan 2.2 T2
 
 生成は下のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
 
-1. 最初のコードセルで OneDrive のトークンを貼る。Colab ではマウントが固まるので、フォルダを用意してコピーする。
+1. 最初のコードセルで OneDrive のトークンを貼る。受け取るのは動画だけ。モデルは OneDrive から取らない。
 2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。取るのはチェックポイント2つとテキストエンコーダとVAEだけ。LoRA は最後のセルで、選んだシーンの分だけ取る。
 3. 最後のセルを人間が実行する。開いただけでは描かない。
 """
@@ -219,10 +219,14 @@ else:
             print("ドライブを確認した:", drive_type)
             del parsed, token, raw
             project.mkdir(parents=True, exist_ok=True)
-            print("既存のファイルを受け取っています。")
-            subprocess.run(["rclone", "copy", "onedrive:wan-hospital", str(project), "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+            print("動画だけ受け取ります。モデルは OneDrive から取りません。")
+            subprocess.run([
+                "rclone", "copy", "onedrive:wan-hospital", str(project),
+                "--exclude", "/models/**",
+                "--size-only", "--transfers", "8", "--stats", "15s", "--stats-log-level", "NOTICE",
+            ])
             print("用意した:", project)
-            print("次は 1 番のセル。終わると OneDrive の wan-hospital へ送る。")
+            print("次は 1 番のセル。モデルは配布元から取る。")
     elif parsed is not None:
         print("access_token と refresh_token がある JSON を貼る。")
         del parsed
