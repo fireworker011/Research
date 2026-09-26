@@ -97,34 +97,39 @@ os.environ["WAN_COMFY_DIR"] = "/content/ComfyUI"
 
 if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
     raise SystemExit("OneDrive 以外には書かない: " + ONEDRIVE)
-if not Path(ONEDRIVE).exists():
-    raise SystemExit("OneDrive がまだ見えない: " + ONEDRIVE + " — rclone でマウントしてから、もう一度このセルを実行する")
+_root = Path(ONEDRIVE)
+if not _root.exists() and _root.parent.exists():
+    _root.mkdir(parents=True, exist_ok=True)
+_ready = _root.exists()
+if not _ready:
+    print("OneDrive がまだ見えない。上の「0. OneDrive をマウント」を先に実行する: " + ONEDRIVE)
 
-RAW = "https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
-NEEDED = [
-    "colab/h3_episode.py",
-    "colab/h3_episode_packs.py",
-    "colab/h3_hud.py",
-    "colab/h3_t2v.py",
-    "colab/h3_i2v_phone.py",
-    "colab/h3_i2v_runtime.py",
-    "colab/h3_i2v_job.py",
-    "colab/h3_motion_graphics.py",
-    "colab/h3_r2v_core.py",
-    "colab/wan_episode.py",
-    "colab/wan_episode_colab_main.py",
-    "colab/wan_colab_setup.py",
-    "minimaxh3/episodes/hospital-exit-adult/episode.json",
-]
-import urllib.request
-for rel in NEEDED:
-    dest = Path("/content") / Path(rel).name if rel.startswith("colab/") else Path("/content") / rel
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    urllib.request.urlretrieve(f"{{RAW}}/{{rel}}", dest)
-    print("fetched", rel)
-sys.path.insert(0, "/content")
-from wan_episode_colab_main import main
-raise SystemExit(main())
+if _ready:
+    RAW = "https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
+    NEEDED = [
+        "colab/h3_episode.py",
+        "colab/h3_episode_packs.py",
+        "colab/h3_hud.py",
+        "colab/h3_t2v.py",
+        "colab/h3_i2v_phone.py",
+        "colab/h3_i2v_runtime.py",
+        "colab/h3_i2v_job.py",
+        "colab/h3_motion_graphics.py",
+        "colab/h3_r2v_core.py",
+        "colab/wan_episode.py",
+        "colab/wan_episode_colab_main.py",
+        "colab/wan_colab_setup.py",
+        "minimaxh3/episodes/hospital-exit-adult/episode.json",
+    ]
+    import urllib.request
+    for rel in NEEDED:
+        dest = Path("/content") / Path(rel).name if rel.startswith("colab/") else Path("/content") / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        urllib.request.urlretrieve(f"{{RAW}}/{{rel}}", dest)
+        print("fetched", rel)
+    sys.path.insert(0, "/content")
+    from wan_episode_colab_main import main
+    raise SystemExit(main())
 '''
 
 
@@ -136,45 +141,134 @@ H3 のノートはそのまま残す。このノートは描画だけ Wan 2.2 T2
 
 生成は下のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
 
-1. Colab では rclone で OneDrive を `/content/onedrive` にマウントする。
-2. 次のセルで ComfyUI と Wan 2.2 の fp8 重み、スロット LoRA（high / low）を OneDrive に取る。H3 の重みは取らない。
-3. アナル、小便、脱糞、四つん這い、正常位の追加 LoRA は `colab/WAN_CIVITAI_LINKS.md`。Civitai API で自分で取る。このノートは落とさない。
-4. 最後のセルを人間が実行する。開いただけでは描かない。
+1. 最初のコードセルで OneDrive を `/content/onedrive` にマウントする。使いたい Microsoft アカウントのトークンを貼る。
+2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。ComfyUI、チェックポイント、シーン LoRA の high / low をその OneDrive に取る。H3 の重みは取らない。キーは空のまま保存する。
+3. 最後のセルを人間が実行する。開いただけでは描かない。
 """
 
 
+MOUNT = r'''#@title 0. OneDrive をマウント（描画はしない）
+#@markdown 使いたい Microsoft アカウントのトークンを貼る。ノートは空のまま保存する。値は表示しない。
+#@markdown トークンは自分の PC の PowerShell で一度だけ取る。`winget install --id Rclone.Rclone -e` のあと、新しい PowerShell で `rclone authorize "onedrive"`。ブラウザでそのアカウントにログインし、矢印の間の JSON を下へ貼る。
+ONEDRIVE_TOKEN = ""  #@param {type:"string"}
+
+import json, shutil, subprocess, time
+from pathlib import Path
+
+def _run(args):
+    return subprocess.run(args, capture_output=True, text=True)
+
+if shutil.which("rclone") is None:
+    subprocess.check_call(["bash", "-lc", "curl -fsSL https://rclone.org/install.sh | bash"])
+if shutil.which("fusermount3") is None and shutil.which("fusermount") is None:
+    subprocess.check_call(["bash", "-lc", "apt-get update -qq && apt-get install -y -qq fuse3"])
+
+raw = str(ONEDRIVE_TOKEN or "").strip()
+start = raw.find("{")
+end = raw.rfind("}")
+token = raw[start:end + 1] if start >= 0 and end > start else ""
+mount_point = Path("/content/onedrive")
+project = mount_point / "wan-hospital"
+if mount_point.is_mount():
+    project.mkdir(parents=True, exist_ok=True)
+    print("すでにマウント済み:", project)
+elif not token:
+    print('トークンが空です。PowerShell で rclone authorize "onedrive" を実行し、出た JSON を上の欄に貼ってから、このセルをもう一度実行する。')
+else:
+    try:
+        parsed = json.loads(token)
+    except json.JSONDecodeError:
+        parsed = None
+        print("JSON として読めません。矢印の間だけを貼る。値は表示しません。")
+    if isinstance(parsed, dict) and parsed.get("access_token") and parsed.get("refresh_token"):
+        conf = Path.home() / ".config" / "rclone" / "rclone.conf"
+        conf.parent.mkdir(parents=True, exist_ok=True)
+        conf.write_text(
+            "[onedrive]\n"
+            "type = onedrive\n"
+            "drive_type = personal\n"
+            "token = " + json.dumps(parsed, separators=(",", ":")) + "\n",
+            encoding="utf-8",
+        )
+        del parsed, token, raw
+        mount_point.mkdir(parents=True, exist_ok=True)
+        proc = _run([
+            "rclone", "mount", "onedrive:", str(mount_point),
+            "--daemon",
+            "--vfs-cache-mode", "writes",
+            "--dir-cache-time", "5s",
+            "--log-file", "/tmp/rclone-mount.log",
+            "--log-level", "NOTICE",
+        ])
+        for _ in range(30):
+            if mount_point.is_mount():
+                break
+            time.sleep(1)
+        if mount_point.is_mount():
+            project.mkdir(parents=True, exist_ok=True)
+            print("マウントした:", project)
+        else:
+            print("マウントできませんでした。")
+            log = Path("/tmp/rclone-mount.log")
+            if log.is_file():
+                tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-20:]
+                print("\n".join(tail))
+            elif proc.stderr:
+                print(proc.stderr[-500:])
+    elif parsed is not None:
+        print("access_token と refresh_token がある JSON を貼る。")
+        del parsed
+'''
+
 SETUP = '''#@title 1. OneDrive へ Wan 2.2 の重みを取る（描画はしない）
 ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {type:"string"}
+#@markdown **CivitaiのAPIキー** — このセルを実行する前に貼る。空のままノートを保存する。値は表示しない。空なら Colab のシークレット `CIVITAI_API_TOKEN`。
+CivitaiのAPIキー = ""  #@param {type:"string"}
 
 import os, sys, urllib.request
 from pathlib import Path
 
 if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
     raise SystemExit("OneDrive 以外には書かない: " + ONEDRIVE)
-if not Path(ONEDRIVE).exists():
-    raise SystemExit("OneDrive がまだ見えない: " + ONEDRIVE + " — rclone で /content/onedrive にマウントしてから、このセルをもう一度実行する")
+_root = Path(ONEDRIVE)
+if not _root.exists() and _root.parent.exists():
+    _root.mkdir(parents=True, exist_ok=True)
+if not _root.exists():
+    print("OneDrive がまだ見えない。上の「0. OneDrive をマウント」を先に実行する: " + ONEDRIVE)
+else:
+    _civitai = str(CivitaiのAPIキー or "").strip()
+    if not _civitai:
+        try:
+            from google.colab import userdata
+            _civitai = str(userdata.get("CIVITAI_API_TOKEN") or "").strip()
+        except Exception:
+            _civitai = ""
+    if _civitai:
+        os.environ["CIVITAI_API_TOKEN"] = _civitai
+    print("Civitai API:", "読み込み済み（値は出しません）" if _civitai else "空。Civitai のファイルは取れません")
+    del _civitai
 
-RAW = "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-hospital-ward-34e4"
-for rel in (
-    "colab/wan_episode.py",
-    "colab/wan_colab_setup.py",
-    "colab/h3_episode.py",
-    "colab/h3_episode_packs.py",
-    "colab/h3_hud.py",
-    "colab/h3_t2v.py",
-    "colab/h3_i2v_phone.py",
-    "colab/h3_i2v_runtime.py",
-    "colab/h3_i2v_job.py",
-    "colab/h3_motion_graphics.py",
-    "colab/h3_r2v_core.py",
-):
-    dest = Path("/content") / Path(rel).name
-    urllib.request.urlretrieve(f"{RAW}/{rel}", dest)
-    print("fetched", rel)
-sys.path.insert(0, "/content")
-os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
-from wan_colab_setup import setup
-setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
+    RAW = "https://raw.githubusercontent.com/fireworker011/Research/cursor/h3-hospital-ward-34e4"
+    for rel in (
+        "colab/wan_episode.py",
+        "colab/wan_colab_setup.py",
+        "colab/h3_episode.py",
+        "colab/h3_episode_packs.py",
+        "colab/h3_hud.py",
+        "colab/h3_t2v.py",
+        "colab/h3_i2v_phone.py",
+        "colab/h3_i2v_runtime.py",
+        "colab/h3_i2v_job.py",
+        "colab/h3_motion_graphics.py",
+        "colab/h3_r2v_core.py",
+    ):
+        dest = Path("/content") / Path(rel).name
+        urllib.request.urlretrieve(f"{RAW}/{rel}", dest)
+        print("fetched", rel)
+    sys.path.insert(0, "/content")
+    os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
+    from wan_colab_setup import setup
+    setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
 '''
 
 
@@ -193,6 +287,7 @@ def notebook() -> dict:
         },
         "cells": [
             {"cell_type": "markdown", "metadata": {}, "source": _lines(MARKDOWN)},
+            {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": _lines(MOUNT)},
             {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": _lines(SETUP)},
             {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": _lines(code)},
         ],

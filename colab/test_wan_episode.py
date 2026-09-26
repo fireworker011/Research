@@ -124,6 +124,21 @@ def _assert_sources(ep, ids, expected):
         assert shot["start_image"] is wan_needs_start_image(source)
 
 
+def test_notebook_has_empty_civitai_and_onedrive_fields():
+    import ast
+    from _write_wan_episode_nb import notebook
+
+    nb = notebook()
+    sources = ["".join(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code"]
+    assert len(sources) == 3
+    for src in sources:
+        ast.parse(src)
+    assert 'CivitaiのAPIキー = ""' in sources[1]
+    assert 'ONEDRIVE_TOKEN = ""' in sources[0]
+    assert "OneDrive がまだ見えない" in sources[1]
+    assert "raise SystemExit(\"OneDrive がまだ見えない" not in sources[1]
+
+
 def test_wan_slot_files_are_wan22_pairs_not_h3():
     jobs = wan_weight_jobs()
     assert jobs
