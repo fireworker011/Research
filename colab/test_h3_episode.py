@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import sys
 from pathlib import Path
 
@@ -149,7 +150,7 @@ from h3_episode_packs import (  # noqa: E402
     ui_default,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
-from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va, wait_prompt  # noqa: E402
+from h3_i2v_runtime import comfy_launch_cmd, comfy_vram_flag, is_erotic_unet_name, pick_stock_fl2va, stop_comfy, wait_prompt  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import DEFAULT_BRANCH, exec_script  # noqa: E402
 
@@ -791,6 +792,21 @@ def test_erotic_comfy_omits_removed_normalvram_flag():
     stock_cmd = comfy_launch_cmd(port=8188, vram=comfy_vram_for_lane("stock"))
     assert "--highvram" in stock_cmd
     assert "--normalvram" not in stock_cmd
+
+
+def test_stop_comfy_signals_the_listener(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        "h3_i2v_runtime.comfy_up",
+        lambda port=8188: calls.append(port) or len(calls) == 1,
+    )
+    monkeypatch.setattr("h3_i2v_runtime._listener_pids", lambda _port: [4242])
+    killed = []
+    monkeypatch.setattr("h3_i2v_runtime.os.kill", lambda pid, sig: killed.append((pid, sig)))
+    monkeypatch.setattr("h3_i2v_runtime.time.sleep", lambda _s: None)
+    stop_comfy(8188)
+    assert killed and killed[0][0] == 4242
+    assert killed[0][1] == signal.SIGTERM
 
 
 def extra_keys(beat):

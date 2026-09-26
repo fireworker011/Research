@@ -78,12 +78,14 @@ from h3_i2v_runtime import (
     PORT,
     STOCK_FL2VA_UNET,
     comfy_free,
+    comfy_up,
     detect_vram_gb,
     ensure_comfy,
     is_erotic_unet_name,
     pick_stock_fl2va,
     post_prompt,
     start_comfy,
+    stop_comfy,
     wait_prompt,
 )
 from h3_motion_graphics import (
@@ -5674,14 +5676,18 @@ def run_episode(
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
         vram = comfy_vram_for_lane(episode_lane(ep))
-        start_comfy(comfy, port=port, vram=vram)
-        print("comfy vram", vram)
+        # object_info caches the UNet list. Place Eros Max, then start (or restart).
+        comfy_was_up = comfy_up(port)
         loras_dir = models / "loras"
         for note in ensure_episode_loras(ep, loras_dir):
             print("lora:", note)
         for note in ensure_episode_checkpoint(ep, models):
             print("checkpoint:", note)
         unet = stage_erotic_unet(ep, models)
+        if comfy_was_up:
+            stop_comfy(port)
+        start_comfy(comfy, port=port, vram=vram)
+        print("comfy vram", vram)
         unet_name = unet
         print("unet", unet, "lane", episode_lane(ep), "checkpoint", episode_checkpoint(ep))
         preset = apply_unet_preset_rules(resolve_preset(preset_name, loras_dir, fallback=fallback), unet)

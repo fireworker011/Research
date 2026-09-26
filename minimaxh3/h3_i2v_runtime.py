@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -225,6 +227,57 @@ def comfy_launch_cmd(*, port: int, vram: str = "highvram") -> list[str]:
         cmd.append(flag)
     cmd += ["--disable-auto-launch", "--enable-cors-header"]
     return cmd
+
+
+def _listener_pids(port: int) -> list[int]:
+    """PIDs listening on port. Comfy caches the UNet list, so a new file needs a new process."""
+    pids: list[int] = []
+    try:
+        out = subprocess.check_output(["ss", "-ltnp"], text=True, errors="replace")
+    except (OSError, subprocess.CalledProcessError):
+        return pids
+    needle = f":{port}"
+    for line in out.splitlines():
+        if needle not in line:
+            continue
+        for match in re.finditer(r"pid=(\d+)", line):
+            pid = int(match.group(1))
+            if pid not in pids:
+                pids.append(pid)
+    return pids
+
+
+def stop_comfy(port: int = PORT) -> None:
+    """Stop Comfy so the next start rebuilds the diffusion_models file list."""
+    if not comfy_up(port):
+        return
+    pids = _listener_pids(port)
+    if not pids:
+        subprocess.run(
+            ["pkill", "-f", f"main.py --listen 127.0.0.1 --port {port}"],
+            check=False,
+        )
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            pass
+    for _ in range(20):
+        if not comfy_up(port):
+            print("ComfyUI stopped")
+            return
+        time.sleep(0.5)
+    for pid in _listener_pids(port) or pids:
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except OSError:
+            pass
+    for _ in range(10):
+        if not comfy_up(port):
+            print("ComfyUI stopped")
+            return
+        time.sleep(0.5)
+    print("ComfyUI still up on", port)
 
 
 def start_comfy(comfy_dir: Path, *, port: int = PORT, vram: str = "highvram") -> None:
