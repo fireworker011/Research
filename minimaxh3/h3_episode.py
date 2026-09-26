@@ -612,12 +612,13 @@ RIDE_PEAK_CLAUSE = (
     "Hips travel straight up and straight down in the frame. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
-# Gin's oral and seat are not the supine side-ride. Negated steps get drawn as steps.
+# Gin's oral, seat, and peak stay supine. A palm lean and a fold get drawn as a second pose.
 GIN_STILL_IDS = frozenset({"04-gin-jupo", "04-gin-ride", "04-gin-peak"})
 GIN_ORAL_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning on both palms, head on the RIGHT, feet pointing LEFT. "
-    "Gin kneels beside Aya's hips, head on the LEFT. "
+    "Aya stays fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
+    "head on the RIGHT, feet pointing LEFT. "
+    "Gin kneels toward the LEFT at the hips. "
     "Closed lips slide down the upright 24cm until the lips meet the groin at the base. "
     "The 24cm stays inside the mouth. "
     "The pair stays on this same floor spot. The camera holds. "
@@ -625,18 +626,18 @@ GIN_ORAL_PACE_CLAUSE = (
 )
 GIN_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning on both palms, head on the RIGHT, feet pointing LEFT. "
-    "Aya HOLD STILL. "
-    "Gin stays standing over Aya's ribs, facing Aya. "
-    "Both soles plant on the linoleum, one sole on each side of the ribs. "
+    "Aya stays fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
+    "head on the RIGHT, feet pointing LEFT. "
+    "Gin stays standing over the hips facing Aya, head on the LEFT. "
+    "Both soles plant on the linoleum, one sole on each side of the chest. "
     "Both hands rest on Aya's breasts, one hand on each breast. Gin lowers her hips once until the root. "
     "They HOLD still joined at the BASE until the last frame. "
     "The camera holds. Normal adult human height, nobody is giant."
 )
 GIN_PEAK_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning on both palms, head on the RIGHT. Aya HOLD STILL. "
-    "Gin stays over the ribs. Both of Gin's soles stay on the linoleum on either side of the ribs. "
+    "Aya stays fully on her back, head on the RIGHT, feet pointing LEFT. "
+    "Gin stays over the hips facing Aya. Both of Gin's soles stay on the linoleum on either side of the ribs. "
     "Short vertical moves keep the glans inside. Hips return flush. "
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
@@ -727,6 +728,24 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
     if bid.endswith("-ride"):
         return "already lies" in low and "already stands over" in low
     return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
+
+
+def _gin_supine_chain_authored(beat: dict[str, Any]) -> bool:
+    """Jupo, the gin seat, and its peak inherit the previous last frame even on a cut.
+
+    Cunny stays connect:cut so the sit before the shaft is not the opening frame.
+    """
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    bid = str(beat.get("id") or "")
+    if bid not in GIN_STILL_IDS:
+        return False
+    low = str(beat.get("action") or "").lower()
+    if bid == "04-gin-jupo":
+        return "already lies" in low and "closed lips" in low
+    if bid == "04-gin-ride":
+        return "already lies" in low and "already stands over" in low
+    return "already joined" in low and "keep the glans inside" in low
 
 
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
@@ -1468,6 +1487,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
+    Gin's jupo, seat, and peak authored connect:chain stay I2V even when the dropdown is a cut.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1485,7 +1505,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if beat.get("reuse"):
             gpu_seen += 1
             continue
-        if _toilet_chain_authored(beat) or _rib_ride_chain_authored(beat):
+        if _toilet_chain_authored(beat) or _rib_ride_chain_authored(beat) or _gin_supine_chain_authored(beat):
             beat["source"] = "chain"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -4076,7 +4096,8 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         return ""
     action = str(beat.get("action") or "").lower()
     shaft = ""
-    if shaft_names and "shaft is gone" not in action:
+    # Cunny frame 0 is a hairless pussy. The grown shaft is written only after jupo.
+    if shaft_names and "shaft is gone" not in action and str(beat.get("id") or "") != "04-gin-cunny":
         who = " and ".join(shaft_names)
         shaft = f" {who}'s shaft written in that look stays erect, the same length and the same color, on the groin."
     return (
@@ -4188,7 +4209,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
     if "blowjob" in keys:
         holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
-    # Gin's seat keeps her leaned back on both hands. The supine rider-head-left lock flattens that pose.
+    # Gin's peak carries sideride and keeps its own supine pace. The rider-head-left lock is the other seats.
     if not gin and ("sideride" in keys or _nongin_rib_ride(beat)):
         holds.append(RIDE_CAMERA_HOLD)
         holds.append(RIDE_PAIR_CLAUSE)
@@ -4392,7 +4413,7 @@ def build_beat_prompt(
     if RIDE_FOLD_RE.search(str(beat.get("action") or "")) and not _skip_ride_fold(beat):
         prefix += RIDE_FOLD_CLAUSE + "\n"
     text = prefix + head + body
-    if _nongin_rib_ride(beat):
+    if _nongin_rib_ride(beat) or str(beat.get("id") or "") in ("04-gin-ride", "04-gin-peak"):
         text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
         if str(beat.get("id") or "").startswith("03-kiss"):
             text = text.replace("22cm", "24cm")
