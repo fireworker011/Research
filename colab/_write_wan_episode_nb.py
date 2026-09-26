@@ -21,21 +21,48 @@ def _param(kind: str) -> str:
     return choices
 
 
+def _field(name: str, kind: str) -> str:
+    return (
+        f"{name} = {json.dumps(ui_default(kind), ensure_ascii=False)}"
+        f"  #@param {_param(kind)}"
+    )
+
+
 def code_cell() -> str:
-    connect = _param("connect")
-    tsuno = _param("tsuno")
-    toilet = _param("toilet")
-    gin = _param("gin")
-    connect_default = ui_default("connect")
-    tsuno_default = ui_default("tsuno")
-    toilet_default = ui_default("toilet")
-    gin_default = ui_default("gin")
     return f'''#@title 病棟出口を Wan 2.2 で描く（人間がこのセルを実行する）
 EPISODE = "hospital-exit-adult"
-CONNECT = {json.dumps(connect_default, ensure_ascii=False)}  #@param {connect}
-TSUNO = {json.dumps(tsuno_default, ensure_ascii=False)}  #@param {tsuno}
-TOILET = {json.dumps(toilet_default, ensure_ascii=False)}  #@param {toilet}
-GIN = {json.dumps(gin_default, ensure_ascii=False)}  #@param {gin}
+#@markdown **1. つなぎ方**
+{_field("CONNECT", "connect")}
+#@markdown **2. カメラ**
+{_field("CAMERA", "camera")}
+#@markdown **3. 速さ**
+{_field("PRESET", "preset")}
+#@markdown **4. 格闘**
+{_field("COMBAT", "combat")}
+#@markdown **5. 構成（病棟全体。シーンごとの指定が「従う」のとき使う）**
+{_field("STORY", "story")}
+#@markdown **6. 誘うときの体**
+{_field("INVITE_POSE", "invite_pose")}
+#@markdown **7. トイレ**
+{_field("TOILET", "toilet")}
+#@markdown **8. 灰色**
+{_field("GIN", "gin")}
+#@markdown **9. 角**
+{_field("TSUNO", "tsuno")}
+#@markdown **10. 犬**
+{_field("DOG", "dog")}
+#@markdown **11. 異種**
+{_field("SPECIES", "species")}
+#@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。**
+APPEAR_MIKI = True  #@param {{type:"boolean"}}
+APPEAR_REI = True  #@param {{type:"boolean"}}
+APPEAR_KANA = True  #@param {{type:"boolean"}}
+APPEAR_SHINO = True  #@param {{type:"boolean"}}
+#@markdown **シーンごと。誘うは誘い方も含む。戦い構成は無視。**
+{_field("SCENE_MIKI", "scene")}
+{_field("SCENE_REI", "scene")}
+{_field("SCENE_KANA", "scene")}
+{_field("SCENE_SHINO", "scene")}
 FRESH = False  #@param {{type:"boolean"}}
 DRY_RUN = False  #@param {{type:"boolean"}}
 ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {{type:"string"}}
@@ -45,11 +72,25 @@ from pathlib import Path
 
 os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
 os.environ["WAN_EPISODE"] = EPISODE
+os.environ["WAN_EPISODE_JSON"] = "/content/minimaxh3/episodes/hospital-exit-adult/episode.json"
 os.environ["WAN_EPISODE_CONNECT"] = CONNECT
-os.environ["WAN_EPISODE_TSUNO"] = TSUNO
+os.environ["WAN_EPISODE_CAMERA"] = CAMERA
+os.environ["WAN_EPISODE_PRESET"] = PRESET
+os.environ["WAN_EPISODE_COMBAT"] = COMBAT
+os.environ["WAN_EPISODE_STORY"] = STORY
+os.environ["WAN_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["WAN_EPISODE_TOILET"] = TOILET
 os.environ["WAN_EPISODE_GIN"] = GIN
-os.environ["WAN_EPISODE_STORY"] = "受け入れる"
+os.environ["WAN_EPISODE_TSUNO"] = TSUNO
+os.environ["WAN_EPISODE_DOG"] = DOG
+os.environ["WAN_EPISODE_SPECIES"] = SPECIES
+os.environ["WAN_EPISODE_APPEAR"] = ",".join(
+    name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
+) or "none"
+os.environ["WAN_EPISODE_SCENES"] = ",".join(
+    f"{{name}}={{choice}}"
+    for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
+)
 os.environ["WAN_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["WAN_DRY_RUN"] = "1" if DRY_RUN else "0"
 os.environ["WAN_COMFY_DIR"] = "/content/ComfyUI"

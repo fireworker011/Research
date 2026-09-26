@@ -46,6 +46,7 @@ def main() -> int:
             camera_pack_override=(os.environ.get("WAN_EPISODE_CAMERA") or "").strip() or None,
             connect_override=(os.environ.get("WAN_EPISODE_CONNECT") or "").strip() or None,
             end_connect_override=(os.environ.get("WAN_EPISODE_END_CONNECT") or "").strip() or None,
+            combat_override=(os.environ.get("WAN_EPISODE_COMBAT") or "").strip() or None,
             story_override=(os.environ.get("WAN_EPISODE_STORY") or "").strip() or None,
             invite_pose_override=(os.environ.get("WAN_EPISODE_INVITE_POSE") or "").strip() or None,
             toilet_override=(os.environ.get("WAN_EPISODE_TOILET") or "").strip() or None,
