@@ -93,6 +93,7 @@ os.environ["WAN_EPISODE_SCENES"] = ",".join(
 )
 os.environ["WAN_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["WAN_DRY_RUN"] = "1" if DRY_RUN else "0"
+os.environ["WAN_FETCH_LORAS"] = "0" if DRY_RUN else "1"
 os.environ["WAN_COMFY_DIR"] = "/content/ComfyUI"
 
 if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
@@ -138,7 +139,7 @@ if _ready:
         _code = main()
     finally:
         print("OneDrive へ送っています。")
-        subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+        subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
         print("OneDrive へ送りました:", ONEDRIVE)
     raise SystemExit(_code)
 '''
@@ -153,7 +154,7 @@ H3 のノートはそのまま残す。このノートは描画だけ Wan 2.2 T2
 生成は下のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
 
 1. 最初のコードセルで OneDrive のトークンを貼る。Colab ではマウントが固まるので、フォルダを用意してコピーする。
-2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。ComfyUI、チェックポイント、シーン LoRA の high / low をその OneDrive に取る。H3 の重みは取らない。キーは空のまま保存する。
+2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。取るのはチェックポイント2つとテキストエンコーダとVAEだけ。LoRA は最後のセルで、選んだシーンの分だけ取る。
 3. 最後のセルを人間が実行する。開いただけでは描かない。
 """
 
@@ -219,7 +220,7 @@ else:
             del parsed, token, raw
             project.mkdir(parents=True, exist_ok=True)
             print("既存のファイルを受け取っています。")
-            subprocess.run(["rclone", "copy", "onedrive:wan-hospital", str(project), "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+            subprocess.run(["rclone", "copy", "onedrive:wan-hospital", str(project), "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
             print("用意した:", project)
             print("次は 1 番のセル。終わると OneDrive の wan-hospital へ送る。")
     elif parsed is not None:
@@ -281,7 +282,7 @@ else:
     importlib.reload(wan_colab_setup)
     wan_colab_setup.setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
     print("OneDrive へ送っています。")
-    subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+    subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
     print("OneDrive へ送りました:", ONEDRIVE)
 '''
 

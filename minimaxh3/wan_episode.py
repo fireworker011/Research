@@ -226,16 +226,23 @@ def _h3_weight(name: str) -> bool:
     return any(marker in low for marker in H3_WEIGHT_MARKERS)
 
 
-def wan_weight_jobs() -> list[tuple[str, str]]:
-    """(url, path under the OneDrive models directory). Base Wan 2.2 files plus slot LoRAs."""
-    jobs = [
+def wan_base_jobs() -> list[tuple[str, str]]:
+    """Checkpoint pair, text encoder, and VAE. These are the slow files."""
+    return [
         (WAN_CKPT_HIGH_URL, f"diffusion_models/{WAN_CKPT_HIGH}"),
         (WAN_CKPT_LOW_URL, f"diffusion_models/{WAN_CKPT_LOW}"),
         (f"{_COMFY_ORG}/text_encoders/{WAN_TEXT_ENCODER}", f"text_encoders/{WAN_TEXT_ENCODER}"),
         (f"{_COMFY_ORG}/vae/{WAN_VAE}", f"vae/{WAN_VAE}"),
     ]
+
+
+def wan_lora_jobs(names: set[str] | None = None) -> list[tuple[str, str]]:
+    """Slot LoRAs. names limits the set to the prepared episode."""
+    jobs: list[tuple[str, str]] = []
     seen: set[str] = set()
-    for spec in WAN_SLOT_LORAS.values():
+    for slot, spec in WAN_SLOT_LORAS.items():
+        if names is not None and slot not in names:
+            continue
         for url, name in ((spec["high_url"], spec["high_name"]), (spec["low_url"], spec["low_name"])):
             rel = f"loras/{name}"
             if rel in seen:
@@ -243,6 +250,20 @@ def wan_weight_jobs() -> list[tuple[str, str]]:
             seen.add(rel)
             jobs.append((url, rel))
     return jobs
+
+
+def wan_weight_jobs() -> list[tuple[str, str]]:
+    """(url, path under the OneDrive models directory). Base Wan 2.2 files plus slot LoRAs."""
+    return wan_base_jobs() + wan_lora_jobs()
+
+
+def lora_names_in(ep: dict[str, Any]) -> set[str]:
+    """Slots the prepared episode would load, including files not on disk yet."""
+    names: set[str] = set()
+    for row in plan_wan_shots(ep, None):
+        for slot in row["slots"]:
+            names.add(str(slot["slot"]))
+    return names
 
 
 def _action_text(beat: dict[str, Any]) -> str:
@@ -565,6 +586,9 @@ def run_wan_episode(
     ep = prepare_episode(ep, **prepare_kwargs)
     canvas = canvas_for(ep)
     loras = Path(loras_dir) if loras_dir else None
+    if os.environ.get("WAN_FETCH_LORAS") == "1" and not dry_run and loras is not None:
+        from wan_colab_setup import download_loras
+        download_loras(loras.parent, lora_names_in(ep))
     shots = {row["id"]: row for row in plan_wan_shots(ep, loras)}
     status = load_status(root)
     status.update({

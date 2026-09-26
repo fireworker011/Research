@@ -13,9 +13,10 @@ import subprocess
 import sys
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from wan_episode import onedrive_root, wan_weight_jobs
+from wan_episode import onedrive_root, wan_base_jobs, wan_lora_jobs
 
 COMFY_DIR_DEFAULT = Path("/content/ComfyUI")
 PORT = 8188
@@ -86,9 +87,24 @@ def link_tree(src: Path, dest: Path) -> None:
         link.symlink_to(item)
 
 
+def _download_jobs(models_root: Path, jobs: list[tuple[str, str]], *, required: bool) -> None:
+    if not jobs:
+        return
+    workers = min(4, len(jobs))
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(lambda job: _fetch(job[0], models_root / job[1], required=required), jobs))
+
+
 def download_weights(models_root: Path) -> None:
-    for url, rel in wan_weight_jobs():
-        _fetch(url, models_root / rel, required=not rel.startswith("loras/"))
+    """Checkpoint, text encoder, and VAE. LoRAs wait until the chosen scenes are known."""
+    _download_jobs(models_root, wan_base_jobs(), required=True)
+
+
+def download_loras(models_root: Path, names: set[str]) -> None:
+    """Only the high/low pairs for slots this episode actually uses."""
+    jobs = wan_lora_jobs(names)
+    print("scene LoRAs", len(jobs))
+    _download_jobs(models_root, jobs, required=False)
 
 
 def wire_comfy(models_root: Path, comfy_dir: Path, work_root: Path) -> None:
