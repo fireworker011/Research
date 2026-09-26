@@ -4572,6 +4572,961 @@
           "loco": "walk"
         }
       ],
+      "on_tsuno_invite_ride": [
+        {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, stiff knees, trailing foot sliding. Aya toward the RIGHT, facing RIGHT, then stopped on the RIGHT half. Tsuno stopped a short step behind toward the LEFT. The right edge stays a dark corridor continuing on.",
+          "action": "Aya WALKS toward the RIGHT, facing RIGHT, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Nude ashen-gray Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT. Each of Tsuno's knees stays stiff. Each step lands late. The trailing foot slides on the linoleum. Both arms hang and swing late. The head tips a little to one side. Tsuno KEEPS that short gap behind Aya. Aya SLOWS and STOPS. Last frame: Aya stopped on the RIGHT half, facing RIGHT, both feet on the linoleum. Tsuno stopped a short step behind toward the LEFT, facing RIGHT, stiff knees, trailing foot on the linoleum.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-kiss",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in frame. Tsuno wraps Aya from behind, then Aya turns to face Tsuno. Mouths joined, a drool strand between the lips.",
+          "action": "They start already stopped on this same linoleum spot. Aya faces RIGHT. Tsuno stands a short step behind toward the LEFT, facing RIGHT. Tsuno WRAPS Aya from behind. Both palms CUP Aya's breasts and KNEAD them. Aya TURNS her whole body LEFT to FACE Tsuno. Aya's mouth MEETS Tsuno's mouth. A deep wet kiss, tongues licking into each other's mouths. A wet strand of drool hangs between the lips. Aya's face is a happy accepting smile. They HOLD the kiss. Last frame: face to face, mouths joined, a drool strand between the lips. Both faces stay in frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-oral",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in the wide frame. Tsuno stands on the RIGHT. Aya kneels on the LEFT. Closed lips meet the erect ashen-gray 24cm.",
+          "action": "They start already face to face on this same linoleum spot. Tsuno STANDS on the RIGHT, the erect ashen-gray 24cm standing straight UP. Aya KNEELS on the LEFT. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN the 24cm until the lips meet the groin at the BASE. The 24cm stays inside the mouth. Closed lips return to the glans and SLIDE DOWN to the BASE again. Last frame: Aya kneeling on the LEFT, closed lips at the BASE. Tsuno standing on the RIGHT. The ashen-gray 24cm inside the mouth. Both faces stay in the wide frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "A wet mouth, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-wait",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno lies on her back, head on the RIGHT, feet pointing LEFT. The erect ashen-gray 24cm stands straight UP. Aya stands over the ribs facing Tsuno, head on the LEFT. Both soles plant on either side of the ribs. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Tsuno already lies on her back, head RIGHT, feet LEFT, the back of the head on the linoleum, the erect ashen-gray 24cm standing straight UP. Aya already STANDS over the ribs facing Tsuno, head LEFT. Both of Aya's soles plant on the linoleum on either side of the ribs. The hairless pussy hangs DIRECTLY ABOVE the glans. They HOLD that line. Last frame: same pose, unjoined. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A breath, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-ride",
+          "source": "t2v",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno stays on her back, head on the RIGHT, feet pointing LEFT. Aya stays over the ribs facing Tsuno, head on the LEFT. Both soles beside the ribs. Hips lower once until the hips meet flush.",
+          "action": "They start already on this same linoleum spot after the mouth. Tsuno already lies on her back, head RIGHT, feet LEFT, the erect ashen-gray 24cm standing straight UP. Aya already STANDS over the ribs facing Tsuno, head LEFT. Both of Aya's soles plant on the linoleum on either side of the ribs. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the ashen-gray 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. Tsuno's hands REST on Aya's breasts, one hand on each breast. HOLD still joined at the BASE until the last frame. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あんっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "One wet join, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-peak",
+          "source": "t2v",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "sideride",
+              0.8
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ],
+            [
+              "thrust",
+              0.55
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno stays on her back, head on the RIGHT, feet pointing LEFT. Aya stays over the ribs, head on the LEFT. Both soles beside the ribs. Short vertical moves, then hips flush.",
+          "action": "They start already joined on this same linoleum spot. Tsuno stays on her back, head RIGHT, feet LEFT. Aya stays over the ribs facing Tsuno, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs. The erect ashen-gray 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んおおっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "くっ"
+            }
+          ],
+          "sfx": "Wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-ride-kiss",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in frame. Hips stay flush. Mouths together, a drool strand between the lips.",
+          "action": "They start already joined on this same linoleum spot. Hips stay flush. The erect ashen-gray 24cm stays buried to the root. Aya LEANS her chest forward. Aya's mouth MEETS Tsuno's mouth. A wet strand of drool hangs between the lips. Aya's face is a narrowed smile. Last frame: mouths together, a drool strand between the lips, hips flush, the shaft buried to the root. Both faces stay in frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-walk",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Aya walking RIGHT alone, full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya STANDS on the linoleum facing RIGHT. Aya WALKS toward the RIGHT alone. Last frame: Aya alone in the corridor walking RIGHT. No penis. The grown shaft is gone. Full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Footsteps on linoleum, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk",
+          "trigger": ""
+        }
+      ],
+      "on_tsuno_wash_carry": [
+        {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, stiff knees, trailing foot sliding. Aya toward the RIGHT, facing RIGHT, then stopped on the RIGHT half. Tsuno stopped a short step behind toward the LEFT. The right edge stays a dark corridor continuing on.",
+          "action": "Aya WALKS toward the RIGHT, facing RIGHT, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Nude ashen-gray Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT. Each of Tsuno's knees stays stiff. Each step lands late. The trailing foot slides on the linoleum. Both arms hang and swing late. The head tips a little to one side. Tsuno KEEPS that short gap behind Aya. Aya SLOWS and STOPS. Last frame: Aya stopped on the RIGHT half, facing RIGHT, both feet on the linoleum. Tsuno stopped a short step behind toward the LEFT, facing RIGHT, stiff knees, trailing foot on the linoleum.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-carry",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno stands on this same linoleum spot facing RIGHT. Aya is held against Tsuno's chest.",
+          "action": "They start already stopped on this same linoleum spot. Tsuno stands behind Aya toward the LEFT, facing RIGHT. Tsuno SLIDES one forearm under Aya's knees and the other forearm behind Aya's back and LIFTS Aya against Tsuno's chest. Aya's arms wrap Tsuno's shoulders. Aya's face is a happy accepting smile. They HOLD that lift on this same linoleum spot. Last frame: Aya off the linoleum in Tsuno's arms, Tsuno standing on the same spot, facing RIGHT. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A lift, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": ""
+        },
+        {
+          "id": "04-tsuno-stall",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already inside this same stall. Aya is already in Tsuno's arms. Aya's face stays toward the hood. The back of Aya's head stays toward the camera. Tsuno STANDS on the beige platform behind Aya toward the stall door. Last frame: both on the platform, Aya still in the arms, face toward the hood, the squat pan hood at the FAR wall. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-set",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already inside this same stall, Aya in Tsuno's arms. Tsuno LOWERS Aya onto the beige platform. Aya's palms plant on the platform. Aya's knees plant on either side of the pan. Aya's anus hangs over the hole. Aya's face stays toward the hood. The back of the head stays toward the camera. The erect ashen-gray 24cm hangs behind the cleft. Last frame: Aya on palms and knees on the platform, face toward the hood. Tsuno standing behind on the platform. Unjoined. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A body set down, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-anal",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already on this same platform inside this same stall. Aya stays on palms and knees, face toward the hood. Tsuno stays behind. The erect ashen-gray 24cm hangs at the cleft. Tsuno MOVES the hips FORWARD once until the ashen-gray 24cm TRAVELS INTO the anus to the root and the hips meet the buttocks. HOLD still joined at the BASE until the last frame. Last frame: hips flush, the shaft buried in the anus to the root, Aya's face toward the hood. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んおおっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "One wet join, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-cum",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ],
+            [
+              "thrust",
+              0.55
+            ]
+          ],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already joined on this same platform inside this same stall. The erect ashen-gray 24cm stays buried in the anus to the root. Short forward moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE. A little thick WHITE goo leaks around the base and stays inside the anus. Last frame: hips flush, the shaft still buried to the root, face toward the hood. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あんっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "くっ"
+            }
+          ],
+          "sfx": "Wet hips, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-gape",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already joined on this same platform inside this same stall. Tsuno MOVES the hips BACK once until the erect ashen-gray 24cm leaves the anus. The anus stays open in a wide ring. WHITE goo sits in the open ring. Aya stays on palms and knees, face toward the hood. Last frame: Aya on palms and knees, the open ring visible, Tsuno standing behind on the platform. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A wet leave, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-rise",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already on this same platform inside this same stall. Aya RISES onto both feet on the beige platform. Aya TURNS her whole body to FACE Tsuno. Tsuno stands on the platform toward the stall door. Both stand face to face on the platform. The hood stays at the FAR wall. Last frame: both standing face to face on the platform, full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Two feet on the platform, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-stall-kiss",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "props": [],
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on inside the stall. The hood stays at the FAR wall. Both adults full body including both feet. Both faces stay in frame. Distance stays the same.",
+          "action": "They start already standing face to face on the beige platform inside this same stall. Aya's mouth MEETS Tsuno's mouth. A deep wet kiss. A wet strand of drool hangs between the lips. Aya's face is a narrowed smile. They HOLD the kiss. Last frame: mouths together, a drool strand between the lips, both standing on the platform, the hood at the FAR wall. Both faces stay in frame. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "trigger": "",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera_pack": "none"
+        },
+        {
+          "id": "04-tsuno-walk",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Aya walking RIGHT alone, full body including both feet.",
+          "action": "They start already in the corridor outside the stall. Aya WALKS toward the RIGHT alone. Last frame: Aya alone in the corridor walking RIGHT. No penis. The grown shaft is gone. Full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Footsteps on linoleum, HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk",
+          "trigger": ""
+        }
+      ],
       "connect": "t2v"
     },
     {

@@ -36,7 +36,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 遭遇カット（id が `-spot`）も I2V。前の最終フレームのあやに、新しい人が入る
 - それ以外の GPU カットも、前の最終フレームからの I2V
 - 同じ相手の次の行為、ポーズ、トイレ、灰色、角、戦いも I2V。台本の `connect: t2v` は、この病棟でチェーンを選んだときは効かない
-- 「カット」を選ぶと全部 T2V
+- 「カット」を選ぶと全部 T2V。ただし着座と絶頂で connect が chain の肋骨騎乗は、カットでも I2V のまま
+- 角・騎乗の wait と walk、角・個室の stall と stall-kiss と walk は connect が cut。チェーンを選んでも T2V。通路の最終フレームを個室の首にしない。個室のキスはドア正面の続きにしない
 - 受け入れる＋灰色の騎乗＋角の立ちバック＋トイレ＋4人登場で測ると、T2V は `01-cover` だけ。遭遇も I2V
 
 遭遇を足す関数は `insert_presence_beats`。spot は最初から `source: chain` `connect: chain` で作る。`keep_chain_cast` は `-spot` の新人を T2V に戻さない。遭遇を消さず、遭遇自体を chain のままにする。遭遇カットでは前のカットの余分な人を残さない。
@@ -63,8 +64,44 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## 角の遭遇（`角`）
 
-- 遭遇 `04-tsuno-meet-spot` は I2V。ギンと同じ歩き。角は画面左端から入り、視聴者左＝あやの真後ろを歩調合わせて歩く。あやは徐々遅くなり恐る恐る立ち止まる。spot はそこで終わる
-- `04-tsuno-meet`: ミキへの背後抱きと同じ。体を背中に押しつけ、胸が潰れるまで密着し、両手で胸を揉む。その密着のまま竿が肛門へ入る。入った瞬間、あやも角も止まる。顔は驚きと快楽。声は「んおおおおぉー」。結合部を見せる横ずれは書かない。壁へ移る動きのあとに止まる。LUNGES は使わない。フルネルソンの meet も同じ抱擁から入り、文は `wraps Aya from behind`
+- 遭遇 `04-tsuno-meet-spot` とギンの `04-gin-lick-spot` は同じ遅れ足。新人は `ENTERS from the LEFT edge`。膝は硬い。一歩が遅れる。後ろ足はリノリウムを滑る。両腕は遅れて揺れる。頭は少し傾く。短い間隔を保つ。あやは右へ歩き、遅くなって止まる。あやの他の歩様は変えない。`zombie` `corpse` `blood` `undead` `shambling` `match stride` は書かない。spot はそこで終わる。異種の spot 本文は変えない
+- `04-tsuno-meet`: ミキへの背後抱きと同じ。体を背中に押しつけ、胸が潰れるまで密着し、両手で胸を揉む。その密着のまま竿が肛門へ入る。入った瞬間、あやも角も止まる。顔は驚きと快楽。声は「んおおおおぉー」。結合部を見せる横ずれは書かない。壁へ移る動きのあとに止まる。LUNGES は使わない。フルネルソンの meet も同じ抱擁から入り、文は `wraps Aya from behind`。立ちバック・後ろアナル・フルネルソンの本文は残す
+
+## 角・騎乗（新話 `invite_ride`）
+
+これは新しい話。既存の `off / accept_stand / invite_stand / anal_back / nelson` は残る。立ちバックの `04-tsuno-meet` は流用しない。お姫様抱っこではない。`invite_pose=embrace` には載せない。RIDE_FOLD は付けない。
+
+順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。角が仰向け、あやが跨ぐ。ギン型にしない。
+
+- kiss 8秒: 背後ハグ、胸を揉む、体ごと振り向いてべろちゅー。extra は kiss 0.5 + mystic 0.5
+- oral 8秒: 跪き口。最終も跪き、唇は根元。extra は mystic 0.5 + penis 0.45
+- wait 6秒: すでに仰向けで跨ぐ。未結合。`DIRECTLY ABOVE the glans`。connect は cut。跪きの最終を着座の首にしない
+- ride 8秒: 一度下ろして `HOLD still joined at the BASE until the last frame`。sideride と thrust は積まない。connect は chain
+- peak 8秒: 短い上下。中出し。sideride 0.8。mystic は積まない。penis 0.45、synth 0.4、thrust 0.55。connect は chain
+- ride-kiss 6秒: 結合のまま涎キス。extra は kiss 0.5
+- walk 8秒: あや一人。`No penis` `The grown shaft is gone`。connect は cut
+
+竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。
+
+## 角・個室（新話 `wash_carry`）
+
+これは新しい話。トイレ枠は消さない。角を「出ない」にしてもトイレは残る。id は `04-tsuno-*` だけ。`04-toilet-*` はコピーしない。ThumbInButt は積まない。和式の Look（個室、ベージュの台、フードが奥）だけ使う。通路から個室へは歩かない。通路クリップを個室の首に使わない。`04-tsuno-stall` の connect は cut。
+
+お姫様抱っこは駅弁でもネルソンでもない。`LIFTS` はこの抱き上げだけ。腰の上下には使わない。
+
+順番: `04-tsuno-meet-spot` → `04-tsuno-carry` → `04-tsuno-stall` → `04-tsuno-set` → `04-tsuno-anal` → `04-tsuno-cum` → `04-tsuno-gape` → `04-tsuno-rise` → `04-tsuno-stall-kiss` → `04-tsuno-walk`。
+
+- carry 6秒: その場で抱き上げて HOLD
+- stall 6秒: すでに個室。connect は cut
+- set 6秒: 下ろして四つん這い。未挿入
+- anal 10秒: 一度寄せて根元 HOLD。mystic 0.5 + penis 0.45 + synth 0.4
+- cum 8秒: 中出し。thrust 0.55 を足す
+- gape 6秒: 抜いて輪が開く
+- rise 6秒: 台上で向かい合う
+- stall-kiss 8秒: rise のあと。横スク `PROFILE`。ドア正面のままにしない。connect は cut。kiss 0.5
+- walk 8秒: 通路を一人。connect は cut。`No penis` `The grown shaft is gone`
+
+各枝の最後はあや一人。
 
 ## 正常位
 
@@ -229,4 +266,4 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH をオン。raw が既にあるカットは、FRESH がオフだと作り直さない
+5. 人間へ Colab リンクを返す。再生成は FRESH をオン。raw が既にあるカットは、FRESH がオフだと作り直さない。遅れ足にした `04-gin-lick-spot` と `04-tsuno-meet-spot` は、古い raw が残っていると作り直されない。角・騎乗は kiss→oral→wait→ride。角・個室は carry→stall。通路クリップを個室の首に使わない

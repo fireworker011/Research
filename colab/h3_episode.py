@@ -430,6 +430,14 @@ PLANTED_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
 )
+# A chest carry is not a planted stand and not a held-leg lift. "Feet planted" draws the feet down.
+CARRY_LIFT_RE = re.compile(r"LIFTS Aya against", re.I)
+CARRY_LIFT_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The standing adult's feet stay on this same linoleum spot. "
+    "Aya is held against that chest, off the linoleum. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
 # Pee holds the body and the bowl. Negated step clauses and "only hips move" get drawn as motion.
 PEE_STILL_RE = re.compile(r"only the yellow stream moves", re.I)
 # Stall holds already name the place. A negated step clause gets drawn as a step.
@@ -844,7 +852,7 @@ def episode_gin(ep: dict[str, Any], override: str | None = None) -> str:
 
 
 def episode_tsuno(ep: dict[str, Any], override: str | None = None) -> str:
-    """off / accept_stand / invite_stand. Empty keeps off."""
+    """off / accept_stand / invite_stand / anal_back / nelson / invite_ride / wash_carry. Empty keeps off."""
     raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("tsuno") or "").strip()
     if not raw:
         return ""
@@ -2825,12 +2833,36 @@ def scrub_planted_action(action: str) -> str:
     return re.sub(r" {2,}", " ", out).strip()
 
 
+def _delayed_gap_walk(name: str) -> str:
+    """Stiff late steps. The newcomer enters from the left, a short step behind Aya."""
+    return (
+        "Aya WALKS toward the RIGHT, facing RIGHT, fully nude, full body including both feet, "
+        "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. "
+        f"Nude ashen-gray {name} ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT. "
+        f"Each of {name}'s knees stays stiff. Each step lands late. The trailing foot slides on the linoleum. "
+        "Both arms hang and swing late. The head tips a little to one side. "
+        f"{name} KEEPS that short gap behind Aya. Aya SLOWS and STOPS. "
+        "Last frame: Aya stopped on the RIGHT half, facing RIGHT, both feet on the linoleum. "
+        f"{name} stopped a short step behind toward the LEFT, facing RIGHT, stiff knees, trailing foot on the linoleum."
+    )
+
+
+def _delayed_gap_camera(name: str) -> str:
+    return (
+        "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. "
+        f"{name} ENTERS from the LEFT edge on the linoleum, a short step behind Aya, stiff knees, trailing foot sliding. "
+        "Aya toward the RIGHT, facing RIGHT, then stopped on the RIGHT half. "
+        f"{name} stopped a short step behind toward the LEFT. "
+        "The right edge stays a dark corridor continuing on."
+    )
+
+
 _SPOT_POSE = {
     "rei": "Rei WALKS IN from the RIGHT edge and STOPS ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
     "kana": "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm, erect penis up, and STOPS mid-corridor facing Aya, full body including feet. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her.",
     "shino": "Shino WALKS IN from the RIGHT edge and STOPS, stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
-    "gin": "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet. Aya is toward the RIGHT, facing RIGHT.",
-    "tsuno": "Tsuno WALKS IN from the LEFT edge, directly behind Aya toward the LEFT, matching Aya's stride, full body including feet.",
+    "gin": "Gin ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
+    "tsuno": "Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
 }
 
 
@@ -2866,41 +2898,11 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             spot_id = f"{bid}-spot"
             sfx = "Quiet corridor, fluorescent buzz, one footstep, HVAC"
             if added == ["tsuno"]:
-                action = (
-                    "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
-                    "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
-                    "Tsuno ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
-                    "matching Aya's stride, full body including feet. "
-                    "From the viewer, that left side is directly behind Aya. "
-                    "Aya stays toward the RIGHT and keeps facing RIGHT the whole take. Tsuno stays toward the LEFT. Aya does not turn yet. "
-                    "The right edge of the frame stays a dark corridor continuing on. "
-                    "Last frame: Aya toward the RIGHT, stopped, facing RIGHT. Tsuno toward the LEFT, directly behind her, both full body including feet. "
-                    "This take ends on that stop. Motion starts at frame one. Brisk real-time."
-                )
-                camera = (
-                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    "Tsuno walks in from the LEFT edge, directly behind Aya toward the LEFT, matching her stride. "
-                    "Aya toward the RIGHT, facing RIGHT, her stride slowing to a stop. "
-                    "The right edge stays a dark corridor continuing on."
-                )
+                action = _delayed_gap_walk("Tsuno")
+                camera = _delayed_gap_camera("Tsuno")
             elif added == ["gin"]:
-                action = (
-                    "Aya WALKS toward the RIGHT side of the frame, facing RIGHT, fully nude, full body including feet, "
-                    "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Her walking stride gradually slows, then she STOPS, hesitant and afraid. "
-                    "Gin ENTERS from the LEFT edge of the frame and WALKS directly behind Aya toward the LEFT, facing RIGHT, "
-                    "matching Aya's stride, full body including feet. "
-                    "From the viewer, that left side is directly behind Aya. "
-                    "Aya stays toward the RIGHT and keeps facing RIGHT the whole take. Gin stays toward the LEFT. Aya does not turn yet. "
-                    "The right edge of the frame stays a dark corridor continuing on. "
-                    "Last frame: Aya toward the RIGHT, stopped, facing RIGHT. Gin toward the LEFT, directly behind her, both full body including feet. "
-                    "Motion starts at frame one. Brisk real-time."
-                )
-                camera = (
-                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    "Gin walks in from the LEFT edge, directly behind Aya toward the LEFT, matching her stride. "
-                    "Aya toward the RIGHT, facing RIGHT, her stride slowing to a stop. "
-                    "The right edge stays a dark corridor continuing on."
-                )
+                action = _delayed_gap_walk("Gin")
+                camera = _delayed_gap_camera("Gin")
             elif added == ["kana"]:
                 action = (
                     "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, facing the RIGHT. "
@@ -4291,6 +4293,8 @@ def build_beat_prompt(
             desc.append(RIDE_PEAK_CLAUSE)
         elif TOILET_STALL_RE.search(action_txt):
             desc.append(TOILET_STALL_CLAUSE)
+        elif CARRY_LIFT_RE.search(action_txt):
+            desc.append(CARRY_LIFT_PACE_CLAUSE)
         else:
             desc.append(PLANTED_PACE_CLAUSE)
             desc.append(PLANTED_CLAUSE)

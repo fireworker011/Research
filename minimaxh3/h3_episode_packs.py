@@ -548,7 +548,7 @@ GIN_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
-# Optional horned infected (Colab 9). Default off. Standing join only.
+# Optional horned infected (Colab 9). Default off. Standing joins stay. Ride and stall are separate stories.
 TSUNO_MODES: dict[str, dict[str, Any]] = {
     "off": {
         "label_ja": "出ない",
@@ -581,6 +581,18 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "胸を掴んだ密着から、両脚を抱えてアナルだけ。膣には入れない",
         "hint_ja": "胸を鷲掴み。入れたまま両脚を抱える。竿は肛門だけ",
     },
+    "invite_ride": {
+        "label_ja": "騎乗",
+        "choice_ja": "角・騎乗",
+        "when_ja": "新話。べロチュー、口、跨ぎ、着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
+        "hint_ja": "角が仰向け。あやが跨ぐ。立ちバックの meet は使わない",
+    },
+    "wash_carry": {
+        "label_ja": "個室",
+        "choice_ja": "角・個室",
+        "when_ja": "新話。通路で抱えて個室のアナル。終わりはあや一人。トイレ枠は消さない",
+        "hint_ja": "お姫様抱っこから個室。04-toilet はコピーしない",
+    },
 }
 
 TSUNO_OVERLAY_KEYS: dict[str, str] = {
@@ -588,6 +600,8 @@ TSUNO_OVERLAY_KEYS: dict[str, str] = {
     "invite_stand": "on_tsuno_invite_stand",
     "anal_back": "on_tsuno_anal_back",
     "nelson": "on_tsuno_nelson",
+    "invite_ride": "on_tsuno_invite_ride",
+    "wash_carry": "on_tsuno_wash_carry",
 }
 
 TSUNO_ALIASES: dict[str, str] = _label_aliases(
@@ -606,6 +620,11 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
         "アナル": "anal_back",
         "フルネルソン": "nelson",
         "フルネルソンアナル": "nelson",
+        "角・騎乗": "invite_ride",
+        "騎乗": "invite_ride",
+        "角・個室": "wash_carry",
+        "個室": "wash_carry",
+        "個室アナル": "wash_carry",
     },
 )
 

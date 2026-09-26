@@ -204,7 +204,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("gin")}
 
-**9. 角の頭** — 病棟の追加オプション。立ちバックのみ。出ないが既定。霞東は無視
+**9. 角の頭** — 病棟の追加オプション。出ないが既定。騎乗と個室は新しい話。霞東は無視
 
 {form_readme("tsuno")}
 
@@ -270,7 +270,7 @@ def make_nb() -> dict:
         .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))
         .replace("__GIN_DEFAULT__", json.dumps(ui_default("gin"), ensure_ascii=False))
         .replace("__GIN_CHOICES__", json.dumps(ui_choices("gin"), ensure_ascii=False))
-        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。立ちバックのみ"))
+        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。出ないが既定"))
         .replace("__TSUNO_DEFAULT__", json.dumps(ui_default("tsuno"), ensure_ascii=False))
         .replace("__TSUNO_CHOICES__", json.dumps(ui_choices("tsuno"), ensure_ascii=False))
         .replace("__DOG_HELP__", form_markdown("dog", "10. 犬 — 病棟の追加。出ないが既定。灰色はオフにしない"))
