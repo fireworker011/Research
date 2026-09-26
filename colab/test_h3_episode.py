@@ -2648,56 +2648,51 @@ def test_hospital_gin_tsuno_optional_events():
     walk_prompt = build_beat_prompt(taken, walk)
     assert "The lit doorway sits at the RIGHT edge" not in walk_prompt
     assert "zombie" not in lick_prompt.lower() and "corpse" not in lick_prompt.lower()
-    assert "drool" in action_blob(taken, "04-gin")
+    assert "tongue hanging out" in action_blob(taken, "04-gin")
     jupo = next(b for b in taken["beats"] if b["id"] == "04-gin-jupo")
     assert extra_keys(jupo) == ["blowjob", "mystic"]
     assert "already sitting on her butt" in jupo["action"].lower()
-    assert "waist bent" in jupo["action"].lower()
-    assert "tongue pulls back into gin's mouth" in jupo["action"].lower()
-    assert "lips seal" in jupo["action"].lower()
-    assert "tongue stays inside the mouth" in jupo["action"].lower()
-    assert "wide blissful smile" in jupo["action"].lower()
+    assert "closed lips" in jupo["action"].lower()
+    assert "base" in jupo["action"].lower()
+    assert "tongue stays inside" not in jupo["action"].lower()
+    assert "hanging out" not in jupo["action"].lower()
     ride_peak = next(b for b in taken["beats"] if b["id"] == "04-gin-peak")
-    assert "squat over aya" in ride_peak["action"].lower()
-    assert "both hands on aya's chest" in ride_peak["action"].lower()
+    assert "leaning on both palms" in ride_peak["action"].lower()
+    assert "keep the glans inside" in ride_peak["action"].lower()
+    assert "lifts" not in ride_peak["action"].lower()
     assert "holding her raised knee" not in ride_peak["action"].lower()
-    assert "aya hold still" in ride_peak["action"].lower()
-    assert "stays on her back" in ride_peak["action"].lower()
-    assert "lowers and lifts her hips" in ride_peak["action"].lower()
-    assert "glans stays inside" in ride_peak["action"].lower()
-    assert "24cm still inside to the root" in ride_peak["action"].lower()
+    assert "buried to the root" in ride_peak["action"].lower()
     assert "beside aya's hip" not in ride_peak["action"].lower()
     assert "knee up" not in ride_peak["action"].lower()
     assert "leaks around the base" not in ride_peak["action"].lower()
     assert "cums inside" not in ride_peak.get("trigger", "").lower()
+    assert "lifts" not in (ride_peak.get("trigger") or "").lower()
     assert "thrust" in extra_keys(ride_peak)
     assert "sideride" in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" not in jupo["action"].lower()
     assert "cums" not in (ride_peak.get("trigger") or "").lower()
-    assert "stays on her back" in (ride_peak.get("trigger") or "").lower()
-    assert "standing vertically straight up from her groin" in jupo["action"].lower()
+    assert "leaning on both palms" in (ride_peak.get("trigger") or "").lower()
+    assert "stands vertically straight up from the groin" in jupo["action"].lower()
     assert "head on the right" in jupo["action"].lower()
-    assert "toes pointing left" in jupo["action"].lower()
-    assert "gin's head on the left" in jupo["action"].lower()
+    assert "feet pointing left" in jupo["action"].lower()
+    assert "head on the left" in jupo["action"].lower()
     ride_in = next(b for b in taken["beats"] if b["id"] == "04-gin-ride")
     ride_act = ride_in["action"].lower()
-    assert "stands up" in ride_act
-    assert "steps over aya" in ride_act
-    assert "astride aya's ribs" in ride_act
-    assert "one sole on each side of the chest" in ride_act
-    assert "buttocks meet aya's hips" in ride_act
+    assert "stands up" not in ride_act
+    assert "steps" not in ride_act
+    assert "one sole on each side of the ribs" in ride_act
+    assert "buttocks meet the hips" in ride_act
     assert "one hand on each breast" in ride_act
-    assert "rest on aya's chest" in ride_act
+    assert "rest on aya's breasts" in ride_act
     assert "holds the 24cm" not in ride_act
     assert "holds that raised knee" not in ride_act
-    assert "lowers her hips once" in ride_act
+    assert "lowers her hips straight down once" in ride_act
     assert "hold still joined at the base until the last frame" in ride_act
     assert "beside aya's hip" not in ride_act
     assert "knee rises" not in ride_act
-    assert "aya hold still" in ride_act
-    assert "stays on her back" in ride_act
+    assert "aya hold still" not in ride_act or "hold still joined" in ride_act
+    assert "already stands over" in ride_act
     assert "travels into the pussy to the root" in ride_act
-    assert "this take is the seating only" in ride_act
     assert "from above" not in ride_act
     assert "from directly above" not in ride_act
     assert "slides both feet" not in ride_act
@@ -2705,11 +2700,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "sideride" not in extra_keys(ride_in)
     assert "thrust" not in extra_keys(ride_in)
     assert "mystic" in extra_keys(ride_in)
-    assert "straight up and straight down" in jupo["action"].lower()
-    assert "both feet stay in frame" in jupo["action"].lower()
+    assert "slide down" in jupo["action"].lower()
+    assert "full body including both feet" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" not in jupo["action"].lower()
-    assert "only the sealed lips show around the shaft" in jupo["action"].lower()
-    assert "glans stays inside the mouth" in jupo["action"].lower()
+    assert "closed lips" in jupo["action"].lower()
+    assert "24cm stays inside the mouth" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
     assert "camera distance stays fixed" in jupo_prompt.lower()
     assert "zoom" not in jupo_prompt.lower()
@@ -2734,15 +2729,18 @@ def test_hospital_gin_tsuno_optional_events():
         assert "feet do not take a step" not in low
         assert "nobody walks" not in low
         assert "does not scroll" not in low
-        assert "stays on her back" in low
+        assert "leaning on both palms" in low
+        assert "folds down" not in low
+        assert "rises into the rider" not in low
         assert "knee rises" not in low
         assert "beside aya's hip" not in low
-    assert "astride aya's ribs" in ride_prompt.lower()
+    assert "stands up" not in ride_prompt.lower()
+    assert "steps over" not in ride_prompt.lower()
     assert "one hand on each breast" in ride_prompt.lower()
     assert "hold still joined at the base" in ride_prompt.lower()
     assert "sideride" not in ride_prompt.lower()
-    assert "short moves" in peak_prompt.lower()
-    assert "both hands on aya's chest" in peak_prompt.lower()
+    assert "keep the glans inside" in peak_prompt.lower()
+    assert "lifts" not in peak_prompt.lower()
     assert "Look that stays for this whole shot" in jupo_prompt
     assert "grimy brown hospital dirt" in jupo_prompt
     assert "pale-tan" in jupo_prompt
@@ -2778,19 +2776,21 @@ def test_hospital_gin_tsuno_optional_events():
     kasumi_beat = next(b for b in kasumi["beats"] if not is_ui_beat(b))
     assert "Look that stays" not in build_beat_prompt(kasumi, kasumi_beat)
     assert "stays down" in jupo["action"].lower()
-    assert "leans back from the sit" in jupo["action"].lower()
+    assert "leans back onto both palms" in jupo["action"].lower()
     assert "lies back" not in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
-    assert "stays up into the mouth" in jupo["action"].lower()
-    assert "lips touch aya's groin at the base" in jupo["action"].lower()
-    assert "whole 24cm is inside gin's mouth" in jupo["action"].lower()
-    assert "leaning back on both straight arms" in jupo["action"].lower()
+    assert "lips meet the groin at the base" in jupo["action"].lower()
+    assert "leaning on both palms" in jupo["action"].lower()
+    lick = next(b for b in taken["beats"] if b["id"] == "04-gin-lick")
+    assert "tongue hanging out" in lick["action"].lower() or "long wet gray tongue" in lick["action"].lower()
     for bid in ("04-gin-jupo", "04-gin-ride", "04-gin-peak"):
         b = next(x for x in taken["beats"] if x["id"] == bid)
         gin_lock = b["cast_lock"]["gin"].lower()
-        assert "tongue hanging out" not in gin_lock
-        assert "tongue kept inside the mouth" in gin_lock
-        assert "tongue hanging out" not in build_beat_prompt(taken, b).lower()
+        assert "hanging out" not in gin_lock
+        assert "lips pulled back" not in gin_lock
+        assert "closed lips" in gin_lock
+        assert "tongue inside the mouth" in gin_lock
+        assert "hanging out" not in build_beat_prompt(taken, b).lower()
     _assert_hospital_bans(taken)
     assert validate_episode(taken, root=HOSPITAL_DIR) == []
 
@@ -4642,11 +4642,27 @@ def test_hospital_dog_orientation_and_embrace_lift():
     for key in ("on_dog_evade", "on_dog_accept", "on_dog_invite_rear", "on_dog_invite_oral"):
         spot = next(x for x in marker[key] if x["id"] == "04-dog-spot")
         spots.append(spot["action"])
-        assert "LEAPS" not in spot["action"]
-        assert "head points LEFT" in spot["action"]
-        assert "tail points to the RIGHT" in spot["action"]
+        assert "LEAPS" not in spot["action"].upper()
+        assert "ENTERS from the RIGHT" not in spot["action"]
+        assert "head points LEFT toward Aya" in spot["action"]
+        assert "tail points to the RIGHT wall" in spot["action"]
         assert spot["source"] == "chain" and spot["connect"] == "chain"
     assert len(set(spots)) == 1
+    faced = prepare_episode(raw, dog_override="誘う口")
+    spot_beat = next(b for b in faced["beats"] if b["id"] == "04-dog-spot")
+    spot_prompt = build_beat_prompt(faced, spot_beat).lower()
+    assert "leaps" not in spot_prompt and "leap" not in spot_prompt
+    assert "nothing new enters" not in spot_prompt
+    assert "enters from the right" not in spot_prompt
+    leaped = dict(spot_beat)
+    leaped["action"] = spot_beat["action"] + " The quadruped LEAPS in from the RIGHT edge and lands on the RIGHT."
+    leaped_prompt = build_beat_prompt(faced, leaped).lower()
+    assert "leap" not in leaped_prompt
+    assert "lands on the right" not in leaped_prompt
+    pee = prepare_episode(raw, story_override="受け入れる", toilet_override="pee", tsuno_override="off")
+    assert "on_toilet_pee" in next(b for b in raw["beats"] if b["id"] == "04-peek")
+    assert any(str(b["id"]).startswith("04-toilet") for b in pee["beats"])
+    assert not any(str(b["id"]).startswith("04-tsuno") for b in pee["beats"])
     accept = next(x for x in marker["on_dog_accept"] if x["id"] == "04-dog-accept")
     assert "rises onto its hind paws" in accept["action"]
     oral = prepare_episode(raw, dog_override="invite_oral")
@@ -4794,8 +4810,10 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert cut_peak.get("connect") == "chain"
     gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される")
     gin_ride = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
-    assert "astride aya's ribs" in gin_ride["action"].lower()
-    assert "steps over aya" in gin_ride["action"].lower()
+    assert "already stands over" in gin_ride["action"].lower()
+    assert "stands up" not in gin_ride["action"].lower()
+    assert "steps" not in gin_ride["action"].lower()
+    assert "folds down" not in build_beat_prompt(gin, gin_ride).lower()
     assert "either side of" not in gin_ride["action"].lower()
     assert "sideride" not in extra_keys(gin_ride)
     gin_cut = prepare_episode(

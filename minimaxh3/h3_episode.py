@@ -606,28 +606,42 @@ RIDE_PEAK_CLAUSE = (
 GIN_STILL_IDS = frozenset({"04-gin-jupo", "04-gin-ride", "04-gin-peak"})
 GIN_ORAL_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays leaning back on both straight arms, both heels on the linoleum, head on the RIGHT. "
+    "Aya stays leaning on both palms, head on the RIGHT, feet pointing LEFT. "
     "Gin kneels beside Aya's hips, head on the LEFT. "
-    "The closed lips stroke the upright 24cm. Each down stroke reaches the base. The glans stays inside the mouth. "
+    "Closed lips slide down the upright 24cm until the lips meet the groin at the base. "
+    "The 24cm stays inside the mouth. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 GIN_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays on her back toward the RIGHT, head on the linoleum, both palms and both heels on the same marks. "
+    "Aya stays leaning on both palms, head on the RIGHT, feet pointing LEFT. "
     "Aya HOLD STILL. "
-    "Gin stands up and steps over Aya. Both soles plant on the linoleum astride Aya's ribs, one sole on each side of the chest. "
-    "Both hands rest on Aya's chest, one hand on each breast. Gin lowers her hips once until the root. "
+    "Gin stays standing over Aya's ribs, facing Aya. "
+    "Both soles plant on the linoleum, one sole on each side of the ribs. "
+    "Both hands rest on Aya's breasts, one hand on each breast. Gin lowers her hips once until the root. "
     "They HOLD still joined at the BASE until the last frame. "
     "The camera holds. Normal adult human height, nobody is giant."
 )
 GIN_PEAK_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays on her back, head on the linoleum, palms and heels on the same marks. Aya HOLD STILL. "
-    "Gin keeps this squat over Aya, knees bent, both hands on Aya's chest. "
-    "Gin lowers and lifts her hips in short moves. The glans stays inside. "
+    "Aya stays leaning on both palms, head on the RIGHT. Aya HOLD STILL. "
+    "Gin stays over the ribs. Both of Gin's soles stay on the linoleum on either side of the ribs. "
+    "Short vertical moves keep the glans inside. Hips return flush. "
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
+)
+# Dog-spot already has both bodies in frame. "nothing new enters" drops the quadruped.
+DOG_SPOT_CONTINUITY = (
+    "One continuous take. Aya stays on the LEFT side of the frame, body facing RIGHT. "
+    "The quadruped stays on the RIGHT side of the frame on four paws, head toward Aya, "
+    "tail toward the RIGHT wall. Both stay in this one corridor from the first frame to the last."
+)
+_DOG_SPOT_ENTRY_RE = re.compile(
+    r"(?i)\b(?:leaps?|leaping)\b[^.]*(?:\.|$)?"
+    r"|lands on the right(?: edge)?[^.]*(?:\.|$)?"
+    r"|enters from the right(?: edge)?[^.]*(?:\.|$)?"
+    r"|steps in front of aya[^.]*(?:\.|$)?"
 )
 # Non-gin seats plant both soles beside the ribs. The walk-lock clause draws a step.
 RIB_RIDE_RE = re.compile(r"either side of(?: the)? ribs|either side of [A-Za-z]+'s ribs", re.I)
@@ -650,9 +664,17 @@ def _nongin_rib_ride(beat: dict[str, Any]) -> bool:
     return bool(RIB_RIDE_RE.search(blob))
 
 
+def _strip_dog_spot_entry(text: str) -> str:
+    """A leap or a right-edge entrance draws the quadruped running beside Aya."""
+    out = _DOG_SPOT_ENTRY_RE.sub(" ", str(text or ""))
+    return re.sub(r"\s{2,}", " ", out).strip()
+
+
 def _skip_ride_fold(beat: dict[str, Any]) -> bool:
-    """Seats that already stand over a supine partner must not be folded down or risen from a kneel."""
+    """Seats that already stand over a partner must not be folded down or risen from a kneel."""
     bid = str(beat.get("id") or "")
+    if bid in ("04-gin-ride", "04-gin-peak"):
+        return True
     if "gin" in bid:
         return False
     action = str(beat.get("action") or "").lower()
@@ -3235,7 +3257,7 @@ def camera_line(
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
         if str(beat.get("id") or "") in GIN_STILL_IDS:
-            # "Nobody walks" and "not a step" get drawn as a walk. Gin names her own step.
+            # "Nobody walks" and "not a step" get drawn as a walk. Gin names her own hold.
             lock = lock.replace("Nobody walks. Nobody relocates. ", "")
             lock = lock.replace("A hip thrust is in place, not a step. ", "")
             lock = lock.replace("No track, no pan, no scroll. ", "")
@@ -4217,15 +4239,20 @@ def build_beat_prompt(
             desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
     if source == "chain" and not last_still:
         desc.append("This shot continues the previous one without a cut.")
+    bid_prompt = str(beat.get("id") or "")
+    dog_spot = bid_prompt == "04-dog-spot"
     ride_pair = (
         str(ep.get("slug") or "") == "hospital-exit-adult"
         and (
             "sideride" in {key for key, _strength in extra_lora_entries(beat)}
-            or str(beat.get("id") or "") == "04-gin-ride"
+            or bid_prompt == "04-gin-ride"
             or _nongin_rib_ride(beat)
         )
     )
-    desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
+    if dog_spot:
+        desc.append(DOG_SPOT_CONTINUITY)
+    else:
+        desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
     loco = beat_loco(beat)
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
@@ -4291,11 +4318,16 @@ def build_beat_prompt(
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
             face_pair=_hospital_face_pair(beat),
         )
+    if cam and str(beat.get("id") or "") == "04-dog-spot":
+        cam = _strip_dog_spot_entry(cam)
     if cam:
         desc.append(cam if cam.endswith(".") else cam + ".")
     for hold_line in _hospital_prompt_holds(ep, beat):
         desc.append(hold_line)
-    desc.append(str(beat.get("action") or "").strip().rstrip(".") + ".")
+    action_line = str(beat.get("action") or "").strip().rstrip(".")
+    if str(beat.get("id") or "") == "04-dog-spot":
+        action_line = _strip_dog_spot_entry(action_line).rstrip(".")
+    desc.append(action_line + ".")
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
