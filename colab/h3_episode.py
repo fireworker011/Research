@@ -685,11 +685,11 @@ _RIB_SEAT_LEGACY_RE = re.compile(
     r"(?i)(?:side view riding sex, straddling the hips, facing the partner\s*"
     r"|[^.]*\b(?:folds down|rises into the rider|do not piston|kiss smack|wet jupo|"
     r"still kneeling|stands up from that kneel|slides both feet|squats and lowers|"
-    r"aya's hips moving|a hip thrust is in place)\b[^.]*\.?)\s*"
+    r"aya's hips moving|a hip thrust is in place|pull back|slides off)\b[^.]*\.?)\s*"
 )
 _RIB_PEAK_LEGACY_RE = re.compile(
     r"(?i)[^.]*\b(?:folds down|rises into the rider|still kneeling|"
-    r"stands up from that kneel|soles planted beside the hips|lifts|"
+    r"stands up from that kneel|soles planted beside the hips|lifts|pull back|slides off|"
     r"kiss smack|wet jupo)\b[^.]*\.?\s*"
 )
 
@@ -733,7 +733,8 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
 def _gin_supine_chain_authored(beat: dict[str, Any]) -> bool:
     """Jupo, the gin seat, and its peak inherit the previous last frame even on a cut.
 
-    Cunny stays connect:cut so the sit before the shaft is not the opening frame.
+    Cunny is connect:chain. A cut dropdown may still redraw it. The chain dropdown
+    starts it on the lick's last frame.
     """
     if str(beat.get("connect") or "").strip().lower() != "chain":
         return False
@@ -2026,28 +2027,35 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         f"One of Aya's feet stays on the linoleum. The erect {cm} stays in front of the hips. "
         "Brisk real-time. Consensual adult game beat"
     )
-    lift = f"the erect {cm} {color.replace(' not pale-tan flesh', '')}"
     hold = (
         "They start already at the wall on this same linoleum spot, face to face. "
-        f"{name}'s both feet stay on the linoleum. Both of {name}'s arms wrap under Aya's thighs. "
-        "Both of Aya's knees come up and open. "
+        f"{name} already STANDS with both soles on the linoleum. "
+        f"Both of {name}'s arms wrap under Aya's thighs. "
+        "Both of Aya's knees stay up and open. "
         f"Both of Aya's feet stay in the air beside {name}'s hips. "
-        f"Aya's arms WRAP behind {name}'s back. Chests press flush. Mouths stay joined. Tongues intertwine. "
-        f"The hairless pussy hangs in front of the glans. Then {lift} TRAVELS INTO the hairless pussy "
-        "until the hips meet at the BASE. HOLD still joined at the BASE until the last frame. "
-        "Both faces stay in frame. Full body including the held feet. "
+        f"Aya's arms WRAP behind {name}'s back. Chests press flush. Mouths stay joined. Tongues slide together. "
+        "The hairless pussy hangs DIRECTLY in front of the glans. "
+        f"Then the erect {cm} TRAVELS INTO the hairless pussy until the hips meet at the BASE. "
+        "HOLD still joined at the BASE until the last frame. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
+        "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
+        f"{name}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
         "Last frame: both knees held up and open, "
-        f"Aya's feet in the air beside {name}'s hips, {name}'s feet on the linoleum, "
+        f"Aya's feet in the air beside {name}'s hips, {name}'s soles on the linoleum, "
         "hips flush, the shaft buried to the root, mouths joined. "
-        "Brisk real-time. Consensual adult game beat"
+        "Both adults full body including the held feet."
     )
     peak = (
         "They start already joined on this same linoleum spot. Both knees stay held up and open. "
         f"Aya's feet stay in the air beside {name}'s hips. {name}'s feet stay on the linoleum. "
         f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. "
-        f"{lift} stays buried to the root. Short vertical moves keep the glans inside. "
+        f"The erect {cm} stays buried to the root. Short vertical moves keep the glans inside. "
+        "HOLD still joined at the BASE until the last frame. "
         f"{name} finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. "
         "Both climax. Mouths stay joined through the finish. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
+        "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
+        f"{name}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
         "Last frame: orgasm faces, mouths joined, hips flush, the shaft still buried to the root, both knees held up. "
         "Brisk real-time. Consensual adult game beat"
     )
@@ -2504,11 +2512,15 @@ def apply_invite_lust_finale(ep: dict[str, Any]) -> dict[str, Any]:
     partner = _finale_partner(beats[peak_i])
     if not partner:
         return ep
+    base = last_id[: -len("-walk")]
+    ids = {str(b.get("id") or "") for b in beats}
+    # Authored collapse and kiss already end this scene. Keep the goodbye walk.
+    if f"{base}-drop" in ids and f"{base}-kiss" in ids:
+        return ep
     action = str(beats[peak_i].get("action") or "")
     pose = _finale_pose(action)
     anal = _finale_anal(action) or pose == "nelson"
     _patch_finale_sex(beats, peak_i)
-    base = last_id[: -len("-walk")]
     hud = dict(last.get("hud") or {})
     hud["complete"] = False
     shared = {
@@ -4088,6 +4100,11 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         name = str(row.get("name_en") or cid).strip() or str(cid)
         lock = str(locks.get(cid) or row.get("lock") or "")
         positive = _positive_look(lock)
+        if positive and "pleasure-drunk" in str(beat.get("action") or "").lower():
+            positive = positive.replace(
+                "tired determined expression",
+                "a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth",
+            )
         if positive:
             lines.append(f"{name}: {positive}.")
         if positive and str(cid) not in fade and _SHAFT_IN_LOOK_RE.search(positive):
