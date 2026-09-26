@@ -3552,6 +3552,60 @@ def test_stock_unet_never_auto_picks_eros_max(tmp_path):
     assert pick_stock_fl2va(diff) == "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 
 
+def _refuse_symlink(self, _target):
+    raise OSError(95, "Operation not supported")
+
+
+def test_stage_erotic_unet_moves_when_drive_refuses_symlink(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    (tmp_path / "diffusion_models").mkdir()
+    payload = _sparse_eros(tmp_path / "erotic" / EROS_MAX_UNET)
+    size = payload.stat().st_size
+    monkeypatch.setattr(Path, "symlink_to", _refuse_symlink)
+    assert stage_erotic_unet(adult, tmp_path) == EROS_MAX_UNET
+    placed = tmp_path / "diffusion_models" / EROS_MAX_UNET
+    assert placed.is_file() and not placed.is_symlink()
+    assert placed.stat().st_size == size
+    assert not payload.exists()
+
+
+def test_stage_erotic_unet_hardlinks_when_move_fails(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    (tmp_path / "diffusion_models").mkdir()
+    payload = _sparse_eros(tmp_path / "erotic" / EROS_MAX_UNET)
+    monkeypatch.setattr(Path, "symlink_to", _refuse_symlink)
+
+    def refuse_replace(self, _target):
+        raise OSError(18, "Invalid cross-device link")
+
+    monkeypatch.setattr(Path, "replace", refuse_replace)
+    assert stage_erotic_unet(adult, tmp_path) == EROS_MAX_UNET
+    placed = tmp_path / "diffusion_models" / EROS_MAX_UNET
+    assert placed.is_file() and not placed.is_symlink()
+    assert payload.is_file()
+    assert os.path.samefile(placed, payload)
+
+
+def test_stage_erotic_unet_errors_when_drive_cannot_place(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    (tmp_path / "diffusion_models").mkdir()
+    payload = _sparse_eros(tmp_path / "erotic" / EROS_MAX_UNET)
+    monkeypatch.setattr(Path, "symlink_to", _refuse_symlink)
+
+    def refuse_replace(self, _target):
+        raise OSError(18, "Invalid cross-device link")
+
+    def refuse_link(*_a, **_k):
+        raise OSError(95, "Operation not supported")
+
+    monkeypatch.setattr(Path, "replace", refuse_replace)
+    monkeypatch.setattr(os, "link", refuse_link)
+    with pytest.raises(EpisodeError, match="diffusion_models"):
+        stage_erotic_unet(adult, tmp_path)
+    assert payload.is_file()
+    assert not (tmp_path / "diffusion_models" / EROS_MAX_UNET).exists()
+
+
 def test_eros_checkpoint_fetch_keeps_partial(tmp_path, monkeypatch):
     adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
     dest = tmp_path / "erotic" / EROS_MAX_UNET

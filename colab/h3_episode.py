@@ -4666,8 +4666,47 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     )
 
 
+def _stage_erotic_unet_no_symlink(
+    found: Path,
+    found_r: Path,
+    dest: Path,
+    min_bytes: int,
+    err: OSError,
+) -> str:
+    """UNETLoader only lists diffusion_models. Drive FUSE (Errno 95) cannot symlink into it."""
+    try:
+        same_dir = dest.parent.resolve() == found_r.parent.resolve()
+    except OSError:
+        same_dir = dest.parent == found.parent
+    if same_dir and is_erotic_unet_name(found_r.name):
+        print("Drive cannot symlink; using", found_r.name)
+        return found_r.name
+    try:
+        found.replace(dest)
+    except OSError as move_err:
+        try:
+            os.link(os.fspath(found_r), os.fspath(dest))
+        except OSError as link_err:
+            raise EpisodeError(
+                "Drive cannot place "
+                f"{found.name} into {dest.parent} "
+                f"(symlink: {err}; move: {move_err}; hardlink: {link_err}). "
+                "Comfy UNETLoader only sees diffusion_models."
+            ) from link_err
+        if not _checkpoint_ready(dest, min_bytes):
+            raise EpisodeError(
+                f"hardlink {dest} is not a ready checkpoint after Drive refused the symlink"
+            )
+        print("Drive cannot symlink; hardlinked", dest.name)
+        return dest.name
+    if not _checkpoint_ready(dest, min_bytes):
+        raise EpisodeError(f"moved {found.name} to {dest} but it is not a ready checkpoint")
+    print("Drive cannot symlink; moved", found.name, "into", dest.parent)
+    return dest.name
+
+
 def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
-    """Point Comfy at the erotic UNet. Drive FUSE cannot symlink (Errno 95); use the file in place."""
+    """Point Comfy at the erotic UNet. If Drive cannot symlink, move the file into diffusion_models."""
     spec = CHECKPOINTS[episode_checkpoint(ep)]
     if not spec["erotic"]:
         return resolve_unet(ep, Path(models_root) / "diffusion_models", models_root=models_root)
@@ -4699,11 +4738,7 @@ def stage_erotic_unet(ep: dict[str, Any], models_root: Path | str) -> str:
     try:
         dest.symlink_to(found_r)
     except OSError as e:
-        if dest.parent.resolve() == found_r.parent.resolve() and is_erotic_unet_name(found_r.name):
-            print("Drive cannot symlink; using", found_r.name)
-            return found_r.name
-        print("eros symlink skipped", dest, "->", found_r, e)
-        return found.name
+        return _stage_erotic_unet_no_symlink(found, found_r, dest, min_bytes, e)
     return found.name
 
 
