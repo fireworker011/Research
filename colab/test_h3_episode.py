@@ -88,6 +88,7 @@ from h3_episode import (  # noqa: E402
     locate_erotic_checkpoint,
     expected_duration,
     extra_lora_entries,
+    fetch_text,
     finish_episode,
     forbidden_hits,
     gpu_index_map,
@@ -3687,7 +3688,7 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
     kept.write_bytes(b"keep-me")
     fresh = load_episode(KASUMI_DIR / "episode.json")
 
-    def fake_fetch(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
+    def fake_fetch(url: str, dest: Path, *, min_bytes: int = 100, **_kwargs) -> bool:
         dest = Path(dest)
         dest.parent.mkdir(parents=True, exist_ok=True)
         if str(url).endswith("episode.json"):
@@ -3716,6 +3717,21 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
     ]
     assert kept.read_bytes() == b"keep-me"
     assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(44.9, abs=0.2)
+
+
+def test_fetch_text_keeps_episode_json_and_drops_a_json_error_page(tmp_path, monkeypatch):
+    body = b'{\n  "schema": "h3-episode/v1"\n}' + (b" " * 120)
+
+    def fake_retrieve(url: str, dest) -> None:
+        Path(dest).write_bytes(body)
+
+    monkeypatch.setattr("h3_episode.urllib.request.urlretrieve", fake_retrieve)
+    script = tmp_path / "episode.json"
+    assert fetch_text("https://example.invalid/episode.json", script, allow_json=True)
+    assert script.read_bytes().startswith(b"{")
+    weight = tmp_path / "page.safetensors"
+    assert not fetch_text("https://example.invalid/page.safetensors", weight)
+    assert not weight.exists()
 
 
 def test_bootstrap_keeps_drive_json_when_github_fails(tmp_path, monkeypatch):

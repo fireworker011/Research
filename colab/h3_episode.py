@@ -4807,7 +4807,23 @@ def _lora_file_loadable(path: Path) -> bool:
     return not (head.startswith(b"<") or head.startswith(b"{"))
 
 
-def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "") -> bool:
+def _download_head_ok(path: Path, *, allow_json: bool) -> bool:
+    """Reject an HTML or JSON error page saved in place of a weight.
+
+    episode.json is itself JSON, so the script fetch opts in with allow_json.
+    """
+    if not path.is_file() or path.stat().st_size <= 0:
+        return False
+    with path.open("rb") as handle:
+        head = handle.read(32).lstrip().lower()
+    if head.startswith(b"<"):
+        return False
+    if head.startswith(b"{") and not allow_json:
+        return False
+    return True
+
+
+def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", allow_json: bool = False) -> bool:
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
         civitai = "civitai.com" in str(url).lower()
@@ -4825,13 +4841,14 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "") -
                     out.write(chunk)
         else:
             urllib.request.urlretrieve(url, dest)
-        ok = dest.is_file() and dest.stat().st_size > min_bytes and _lora_file_loadable(dest)
+        ok = dest.is_file() and dest.stat().st_size > min_bytes and _download_head_ok(dest, allow_json=allow_json)
         if not ok and dest.is_file():
+            print("fetch rejected", dest.name, dest.stat().st_size)
             dest.unlink()
         return ok
     except Exception as e:  # network
         print("fetch fail", url, e)
-        if dest.is_file() and not _lora_file_loadable(dest):
+        if dest.is_file() and not _download_head_ok(dest, allow_json=allow_json):
             dest.unlink()
         return False
 
@@ -4927,7 +4944,11 @@ def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None,
     ep_path = root / "episode.json"
     prev_ids = _episode_beat_ids(ep_path)
     staging = root / "logs" / "episode.json.fetch"
-    if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br), staging):
+    if fetch_text(
+        github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br),
+        staging,
+        allow_json=True,
+    ):
         new_ids = _episode_beat_ids(staging)
         shutil.copy2(staging, ep_path)
         fetched.append("episode.json")
