@@ -67,7 +67,7 @@ FRESH = False  #@param {{type:"boolean"}}
 DRY_RUN = False  #@param {{type:"boolean"}}
 ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {{type:"string"}}
 
-import os, sys
+import os, subprocess, sys
 from pathlib import Path
 
 os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
@@ -129,7 +129,13 @@ if _ready:
         print("fetched", rel)
     sys.path.insert(0, "/content")
     from wan_episode_colab_main import main
-    raise SystemExit(main())
+    try:
+        _code = main()
+    finally:
+        print("OneDrive へ送っています。")
+        subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+        print("OneDrive へ送りました:", ONEDRIVE)
+    raise SystemExit(_code)
 '''
 
 
@@ -141,7 +147,7 @@ H3 のノートはそのまま残す。このノートは描画だけ Wan 2.2 T2
 
 生成は下のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
 
-1. 最初のコードセルで OneDrive を `/content/onedrive` にマウントする。使いたい Microsoft アカウントのトークンを貼る。
+1. 最初のコードセルで OneDrive のトークンを貼る。Colab ではマウントが固まるので、フォルダを用意してコピーする。
 2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。ComfyUI、チェックポイント、シーン LoRA の high / low をその OneDrive に取る。H3 の重みは取らない。キーは空のまま保存する。
 3. 最後のセルを人間が実行する。開いただけでは描かない。
 """
@@ -152,20 +158,11 @@ MOUNT = r'''#@title 0. OneDrive をマウント（描画はしない）
 #@markdown トークンは自分の PC の PowerShell で一度だけ取る。`winget install --id Rclone.Rclone -e` のあと、新しい PowerShell で `rclone authorize "onedrive"`。ブラウザでそのアカウントにログインし、矢印の間の JSON を下へ貼る。
 ONEDRIVE_TOKEN = ""  #@param {type:"string"}
 
-import json, os, shutil, subprocess, time, urllib.error, urllib.request
+import json, shutil, subprocess, urllib.error, urllib.request
 from pathlib import Path
-
-def _run(args):
-    env = dict(os.environ)
-    env["PATH"] = "/usr/bin:/bin:" + env.get("PATH", "")
-    return subprocess.run(args, capture_output=True, text=True, env=env)
 
 if shutil.which("rclone") is None:
     subprocess.check_call(["bash", "-lc", "curl -fsSL https://rclone.org/install.sh | bash"])
-if shutil.which("fusermount3") is None:
-    subprocess.check_call(["bash", "-lc", "apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fuse3"])
-if shutil.which("fusermount3") is None and Path("/bin/fusermount3").is_file():
-    os.environ["PATH"] = "/bin:/usr/bin:" + os.environ.get("PATH", "")
 
 raw = str(ONEDRIVE_TOKEN or "").strip()
 start = raw.find("{")
@@ -215,30 +212,11 @@ else:
             )
             print("ドライブを確認した:", drive_type)
             del parsed, token, raw
-            mount_point.mkdir(parents=True, exist_ok=True)
-            proc = _run([
-                "rclone", "mount", "onedrive:", str(mount_point),
-                "--daemon",
-                "--vfs-cache-mode", "writes",
-                "--dir-cache-time", "5s",
-                "--log-file", "/tmp/rclone-mount.log",
-                "--log-level", "NOTICE",
-            ])
-            for _ in range(30):
-                if mount_point.is_mount():
-                    break
-                time.sleep(1)
-            if mount_point.is_mount():
-                project.mkdir(parents=True, exist_ok=True)
-                print("マウントした:", project)
-            else:
-                print("マウントできませんでした。")
-                log = Path("/tmp/rclone-mount.log")
-                if log.is_file():
-                    tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-20:]
-                    print("\n".join(tail))
-                elif proc.stderr:
-                    print(proc.stderr[-500:])
+            project.mkdir(parents=True, exist_ok=True)
+            print("既存のファイルを受け取っています。")
+            subprocess.run(["rclone", "copy", "onedrive:wan-hospital", str(project), "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+            print("用意した:", project)
+            print("次は 1 番のセル。終わると OneDrive の wan-hospital へ送る。")
     elif parsed is not None:
         print("access_token と refresh_token がある JSON を貼る。")
         del parsed
@@ -249,7 +227,7 @@ ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {type:"string"}
 #@markdown **CivitaiのAPIキー** — このセルを実行する前に貼る。空のままノートを保存する。値は表示しない。空なら Colab のシークレット `CIVITAI_API_TOKEN`。
 CivitaiのAPIキー = ""  #@param {type:"string"}
 
-import os, sys, urllib.request
+import os, subprocess, sys, urllib.request
 from pathlib import Path
 
 if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
@@ -293,6 +271,9 @@ else:
     os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
     from wan_colab_setup import setup
     setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
+    print("OneDrive へ送っています。")
+    subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
+    print("OneDrive へ送りました:", ONEDRIVE)
 '''
 
 
