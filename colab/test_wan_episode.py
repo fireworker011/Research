@@ -136,6 +136,8 @@ def test_notebook_has_empty_civitai_and_onedrive_fields():
     assert 'CivitaiのAPIキー = ""' in sources[1]
     assert 'ONEDRIVE_TOKEN = ""' in sources[0]
     assert "graph.microsoft.com/v1.0/me/drive" in sources[0]
+    assert 'shutil.which("fusermount3") is None:' in sources[0]
+    assert "fuse3" in sources[0]
     assert "drive_id = " in sources[0]
     assert "OneDrive がまだ見えない" in sources[1]
     assert "raise SystemExit(\"OneDrive がまだ見えない" not in sources[1]

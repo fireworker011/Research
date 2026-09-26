@@ -152,16 +152,20 @@ MOUNT = r'''#@title 0. OneDrive をマウント（描画はしない）
 #@markdown トークンは自分の PC の PowerShell で一度だけ取る。`winget install --id Rclone.Rclone -e` のあと、新しい PowerShell で `rclone authorize "onedrive"`。ブラウザでそのアカウントにログインし、矢印の間の JSON を下へ貼る。
 ONEDRIVE_TOKEN = ""  #@param {type:"string"}
 
-import json, shutil, subprocess, time, urllib.error, urllib.request
+import json, os, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
 
 def _run(args):
-    return subprocess.run(args, capture_output=True, text=True)
+    env = dict(os.environ)
+    env["PATH"] = "/usr/bin:/bin:" + env.get("PATH", "")
+    return subprocess.run(args, capture_output=True, text=True, env=env)
 
 if shutil.which("rclone") is None:
     subprocess.check_call(["bash", "-lc", "curl -fsSL https://rclone.org/install.sh | bash"])
-if shutil.which("fusermount3") is None and shutil.which("fusermount") is None:
-    subprocess.check_call(["bash", "-lc", "apt-get update -qq && apt-get install -y -qq fuse3"])
+if shutil.which("fusermount3") is None:
+    subprocess.check_call(["bash", "-lc", "apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fuse3"])
+if shutil.which("fusermount3") is None and Path("/bin/fusermount3").is_file():
+    os.environ["PATH"] = "/bin:/usr/bin:" + os.environ.get("PATH", "")
 
 raw = str(ONEDRIVE_TOKEN or "").strip()
 start = raw.find("{")
