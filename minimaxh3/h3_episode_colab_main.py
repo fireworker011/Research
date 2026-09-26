@@ -12,16 +12,26 @@ Env:
   H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
-  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride（日本語: 四つん這い股広げ / M字開脚仰向け / ベロチュー→じゅぼ→騎乗位。病棟の誘う）
-  H3_EPISODE_TOILET   off | pee | masturbate | tentacle（日本語: 行かない / 小便 / オナニー / 触手。病棟の道中）
+  H3_EPISODE_INVITE_POSE  all_fours | m_open | ride | stand | nelson（日本語: 四つん這い股広げ / M字開脚仰向け / 対面M字騎乗 / 壁立ちバック / フルネルソンアナル。病棟の誘う）
+  H3_EPISODE_TOILET   off | pee | masturbate | tentacle | finger（日本語: 行かない / 小便 / オナニー / 触手 / アナル指。病棟の道中）
   H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
-  H3_EPISODE_TSUNO    off | accept_stand | invite_stand（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック。病棟の追加）
+  H3_EPISODE_TSUNO    off | accept_stand | invite_stand | anal_back | nelson（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック / 後ろアナル / フルネルソンアナル。病棟の追加）
+  H3_EPISODE_DOG      off | evade | accept | invite_rear | invite_oral（日本語: 犬・出ない / 回避 / 受け入れる / 誘う伏せ / 誘う口。灰色はオフにしない）
+  H3_EPISODE_SPECIES  off | slime | anthro（日本語: 異種・出ない / スライム / ケモノ。両方は出ない）
   H3_EPISODE_APPEAR   miki,rei,kana,shino（病棟の登場。外すとその人のシーンを飛ばす）
   H3_EPISODE_SCENES   miki=evade,rei=invite_ride,...（病棟のシーンごと。inherit は 5番に従う。戦い構成は無視）
+  H3_EPISODE_REI_MAST skip|stand|back（レイ脱出の合間おな）
+  H3_EPISODE_REI_TOILET ta|tb|tc（レイ脱出の糞トイレ）
+  H3_EPISODE_REI_BEAST accept|invite|evade（レイ脱出の敵1。立ち円口 / 仰向け股開き / 飛ばす）
+  H3_EPISODE_REI_MOTH tail|mouth（レイ脱出の蛾女）
+  H3_EPISODE_REI_ATTACK rei|her（レイ脱出の襲う側）
+  H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
+  H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
+  H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
+                      VRAM unloads only after a beat fails for lack of memory, then that same length is tried once
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
-  H3_KEEP_RUNTIME=1   do not unassign the Colab runtime at the end
 
 Never touches inbox/queued/output of the Grokbot root.
 """
@@ -45,7 +55,6 @@ from h3_episode import (
     run_episode,
 )
 from h3_episode_packs import canonical_episode
-from h3_i2v_runtime import maybe_unassign
 
 
 def main() -> int:
@@ -77,17 +86,24 @@ def main() -> int:
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
             gin_override=(os.environ.get("H3_EPISODE_GIN") or "").strip() or None,
             tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,
+            dog_override=(os.environ.get("H3_EPISODE_DOG") or "").strip() or None,
+            species_override=(os.environ.get("H3_EPISODE_SPECIES") or "").strip() or None,
             appear_override=(os.environ.get("H3_EPISODE_APPEAR") or "").strip() or None,
             scenes_override=(os.environ.get("H3_EPISODE_SCENES") or "").strip() or None,
+            rei_mast_override=(os.environ.get("H3_EPISODE_REI_MAST") or "").strip() or None,
+            rei_toilet_override=(os.environ.get("H3_EPISODE_REI_TOILET") or "").strip() or None,
+            rei_beast_override=(os.environ.get("H3_EPISODE_REI_BEAST") or "").strip() or None,
+            rei_moth_override=(os.environ.get("H3_EPISODE_REI_MOTH") or "").strip() or None,
+            rei_attack_override=(os.environ.get("H3_EPISODE_REI_ATTACK") or "").strip() or None,
+            rei_kiss_override=(os.environ.get("H3_EPISODE_REI_KISS") or "").strip() or None,
+            rei_oral_override=(os.environ.get("H3_EPISODE_REI_ORAL") or "").strip() or None,
+            rei_pose_override=(os.environ.get("H3_EPISODE_REI_POSE") or "").strip() or None,
         )
         print("DONE", slug, final)
         return 0
     except EpisodeError as e:
         print("EPISODE FAILED:", e)
         return 1
-    finally:
-        if not dry:
-            maybe_unassign()
 
 
 if __name__ == "__main__":

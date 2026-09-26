@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -227,6 +229,57 @@ def comfy_launch_cmd(*, port: int, vram: str = "highvram") -> list[str]:
     return cmd
 
 
+def _listener_pids(port: int) -> list[int]:
+    """PIDs listening on port. Comfy caches the UNet list, so a new file needs a new process."""
+    pids: list[int] = []
+    try:
+        out = subprocess.check_output(["ss", "-ltnp"], text=True, errors="replace")
+    except (OSError, subprocess.CalledProcessError):
+        return pids
+    needle = f":{port}"
+    for line in out.splitlines():
+        if needle not in line:
+            continue
+        for match in re.finditer(r"pid=(\d+)", line):
+            pid = int(match.group(1))
+            if pid not in pids:
+                pids.append(pid)
+    return pids
+
+
+def stop_comfy(port: int = PORT) -> None:
+    """Stop Comfy so the next start rebuilds the diffusion_models file list."""
+    if not comfy_up(port):
+        return
+    pids = _listener_pids(port)
+    if not pids:
+        subprocess.run(
+            ["pkill", "-f", f"main.py --listen 127.0.0.1 --port {port}"],
+            check=False,
+        )
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            pass
+    for _ in range(20):
+        if not comfy_up(port):
+            print("ComfyUI stopped")
+            return
+        time.sleep(0.5)
+    for pid in _listener_pids(port) or pids:
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except OSError:
+            pass
+    for _ in range(10):
+        if not comfy_up(port):
+            print("ComfyUI stopped")
+            return
+        time.sleep(0.5)
+    print("ComfyUI still up on", port)
+
+
 def start_comfy(comfy_dir: Path, *, port: int = PORT, vram: str = "highvram") -> None:
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     if comfy_up(port):
@@ -275,10 +328,19 @@ def post_prompt(graph: dict[str, Any], port: int = PORT) -> tuple[dict[str, Any]
 
 
 def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, Any]:
+    """Poll Comfy until the prompt finishes. A busy GPU often misses the 60s history read; keep waiting."""
     t0 = time.time()
+    stalls = 0
     while time.time() - t0 < timeout:
-        with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
-            hist = json.loads(r.read().decode())
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
+                hist = json.loads(r.read().decode())
+        except (TimeoutError, urllib.error.URLError, OSError) as exc:
+            stalls += 1
+            if stalls == 1 or stalls % 5 == 0:
+                print("comfy busy, still waiting", pid, type(exc).__name__)
+            time.sleep(2)
+            continue
         entry = hist.get(pid) or {}
         status = entry.get("status") or {}
         if status.get("completed") or entry.get("outputs"):
@@ -606,7 +668,12 @@ def generate_r2v(
 
 
 def maybe_unassign() -> None:
-    if os.environ.get("H3_KEEP_RUNTIME") == "1":
+    """Keep the Colab runtime unless the user opted into unassign.
+
+    H3_UNASSIGN_RUNTIME=1 is the only way to call runtime.unassign().
+    H3_KEEP_RUNTIME=1 is still honored as an explicit keep.
+    """
+    if os.environ.get("H3_UNASSIGN_RUNTIME") != "1" or os.environ.get("H3_KEEP_RUNTIME") == "1":
         print("keep runtime")
         return
     try:
