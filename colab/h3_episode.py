@@ -628,8 +628,9 @@ GIN_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
     "head on the RIGHT, feet pointing LEFT. "
-    "Gin stays standing over the hips facing Aya, head on the LEFT. "
-    "Both soles plant on the linoleum, one sole on each side of the chest. "
+    "Gin faces Aya, head on the LEFT. "
+    "Both soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. "
+    "Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
     "Both hands rest on Aya's breasts, one hand on each breast. Gin lowers her hips once until the root. "
     "They HOLD still joined at the BASE until the last frame. "
     "The camera holds. Normal adult human height, nobody is giant."
@@ -637,7 +638,9 @@ GIN_RIDE_PACE_CLAUSE = (
 GIN_PEAK_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays fully on her back, head on the RIGHT, feet pointing LEFT. "
-    "Gin stays over the hips facing Aya. Both of Gin's soles stay on the linoleum on either side of the ribs. "
+    "Gin stays over the hips facing Aya. Both of Gin's soles stay on the linoleum on either side of the ribs, "
+    "one sole beside each side of the chest. "
+    "Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
     "Short vertical moves keep the glans inside. Hips return flush. "
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
@@ -660,7 +663,8 @@ RIB_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The shaft adult stays on her back, head on the RIGHT, feet pointing LEFT. "
     "Aya stays over the hips, head on the LEFT. "
-    "Both of Aya's soles stay on the linoleum on either side of the ribs. "
+    "Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. "
+    "Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -685,11 +689,13 @@ _RIB_SEAT_LEGACY_RE = re.compile(
     r"(?i)(?:side view riding sex, straddling the hips, facing the partner\s*"
     r"|[^.]*\b(?:folds down|rises into the rider|do not piston|kiss smack|wet jupo|"
     r"still kneeling|stands up from that kneel|slides both feet|squats and lowers|"
-    r"aya's hips moving|a hip thrust is in place|pull back|slides off)\b[^.]*\.?)\s*"
+    r"aya's hips moving|a hip thrust is in place|pull back|slides off|"
+    r"squats|sits beside|knees on the linoleum|three separate lowers)\b[^.]*\.?)\s*"
 )
 _RIB_PEAK_LEGACY_RE = re.compile(
     r"(?i)[^.]*\b(?:folds down|rises into the rider|still kneeling|"
     r"stands up from that kneel|soles planted beside the hips|lifts|pull back|slides off|"
+    r"squats|sits beside|knees on the linoleum|three separate lowers|"
     r"kiss smack|wet jupo)\b[^.]*\.?\s*"
 )
 
@@ -726,7 +732,9 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
     action = str(beat.get("action") or "")
     low = action.lower()
     if bid.endswith("-ride"):
-        return "already lies" in low and "already stands over" in low
+        return "already lies" in low and (
+            "already stands over" in low or "both knees stay bent" in low
+        )
     return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
 
 
@@ -745,7 +753,9 @@ def _gin_supine_chain_authored(beat: dict[str, Any]) -> bool:
     if bid == "04-gin-jupo":
         return "already lies" in low and "closed lips" in low
     if bid == "04-gin-ride":
-        return "already lies" in low and "already stands over" in low
+        return "already lies" in low and (
+            "already stands over" in low or "both knees stay bent" in low
+        )
     return "already joined" in low and "keep the glans inside" in low
 
 

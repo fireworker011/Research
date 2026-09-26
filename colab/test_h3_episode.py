@@ -1797,7 +1797,10 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "straight down" in ride_sit["action"].lower()
     assert "hold still joined at the base" in ride_sit["action"].lower()
     assert "either side of miki's ribs" in ride_sit["action"].lower()
-    assert "one sole on each side of the chest" in ride_sit["action"].lower()
+    assert "one sole beside each side of the chest" in ride_sit["action"].lower()
+    assert "both knees stay bent" in ride_sit["action"].lower()
+    assert "hips stay over the groin" in ride_sit["action"].lower()
+    assert "weight stays on the soles" in ride_sit["action"].lower()
     assert "stands up from that kneel" not in ride_sit["action"].lower()
     assert "folds down" not in ride_sit["action"].lower()
     assert "squats" not in ride_sit["action"].lower()
@@ -2737,7 +2740,10 @@ def test_hospital_gin_tsuno_optional_events():
     ride_act = ride_in["action"].lower()
     assert "stands up" not in ride_act
     assert "steps" not in ride_act
-    assert "one sole on each side of the chest" in ride_act
+    assert "one sole beside each side of the chest" in ride_act
+    assert "both knees stay bent" in ride_act
+    assert "hips stay over the groin" in ride_act
+    assert "weight stays on the soles" in ride_act
     assert "either side of aya's ribs" in ride_act
     assert "on her back" in ride_act
     assert "sits on" not in ride_act
@@ -2757,7 +2763,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "beside aya's hip" not in ride_act
     assert "knee rises" not in ride_act
     assert "aya hold still" not in ride_act or "hold still joined" in ride_act
-    assert "already stands over" in ride_act
+    assert "both knees stay bent" in ride_act
+    assert "already stands over" not in ride_act
     assert "travels into gin's pussy to the root" in ride_act
     assert "from above" not in ride_act
     assert "from directly above" not in ride_act
@@ -3092,7 +3099,9 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             assert "drops down onto her knees" in nine["action"].lower()
             assert "drops down onto her knees" in twelve["action"].lower()
             assert "still kneeling" not in nine["action"].lower()
-            assert "already stands over the hips" in nine["action"].lower()
+            assert "both knees stay bent" in nine["action"].lower()
+            assert "hips stay over the groin" in nine["action"].lower()
+            assert "weight stays on the soles" in nine["action"].lower()
             assert "either side of kana's ribs" in nine["action"].lower()
             assert "lips at the base" in nine["action"].lower()
             assert "pussy hanging directly above the glans" not in nine["action"].lower()
@@ -3177,7 +3186,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
                     (
                         bid.endswith("-ride")
                         and "already lies" in low
-                        and "already stands over" in low
+                        and ("already stands over" in low or "both knees stay bent" in low)
                     )
                     or (
                         bid.endswith("-peak")
@@ -4912,7 +4921,10 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "lips leaving the shaft" not in oral["action"]
         assert "still kneeling" not in oral["action"].lower()
         assert "already lies on her back" in oral["action"].lower()
-        assert "already stands over the hips" in oral["action"].lower()
+        assert "both knees stay bent" in oral["action"].lower()
+        assert "hips stay over the groin" in oral["action"].lower()
+        assert "weight stays on the soles" in oral["action"].lower()
+        assert "already stands over" not in oral["action"].lower()
         assert f"either side of {partner.lower()}'s ribs" in oral["action"].lower()
         assert "the camera sits far back" in oral["action"].lower()
         assert "drops down onto her knees" in oral["action"].lower()
@@ -4961,7 +4973,14 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "directly above the glans" in seat_prompt.lower()
         assert "straight down" in seat_prompt.lower()
         assert "hold still joined at the base" in seat_prompt.lower()
-        assert "one sole on each side of the chest" in seat_prompt.lower()
+        assert "one sole beside each side of the chest" in seat_prompt.lower()
+        assert "both knees stay bent" in seat_prompt.lower()
+        assert "hips stay over the groin" in seat_prompt.lower()
+        assert "weight stays on the soles" in seat_prompt.lower()
+        assert "squats" not in low
+        assert "sits beside" not in low
+        assert "knees on the linoleum" not in low
+        assert "three separate lowers" not in low
         peak_prompt = build_beat_prompt(ride, peak, trigger=merge_trigger("", peak), camera_pack="side2d")
         for banned in (
             "folds down",
@@ -5018,12 +5037,14 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
     gin_ride = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
     raw_gin = next(x for x in next(b for b in raw["beats"] if b["id"] == "04-gin")["on_gin_taken"] if x["id"] == "04-gin-ride")
     assert gin_ride["action"] == raw_gin["action"]
-    assert "already stands over" in gin_ride["action"].lower()
+    assert "both knees stay bent" in gin_ride["action"].lower()
+    assert "hips stay over the groin" in gin_ride["action"].lower()
+    assert "already stands over" not in gin_ride["action"].lower()
     assert "stands up" not in gin_ride["action"].lower()
     assert "steps" not in gin_ride["action"].lower()
     assert "folds down" not in build_beat_prompt(gin, gin_ride).lower()
     assert "either side of aya's ribs" in gin_ride["action"].lower()
-    assert "one sole on each side of the chest" in gin_ride["action"].lower()
+    assert "one sole beside each side of the chest" in gin_ride["action"].lower()
     assert "sideride" not in extra_keys(gin_ride)
     gin_cut = prepare_episode(
         raw,
