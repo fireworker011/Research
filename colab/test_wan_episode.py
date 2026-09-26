@@ -124,6 +124,14 @@ def _assert_sources(ep, ids, expected):
         assert shot["start_image"] is wan_needs_start_image(source)
 
 
+def test_wget_log_hides_civitai_token():
+    from wan_colab_setup import _shown
+
+    shown = _shown(["wget", "https://civitai.com/api/download/models/1?token=secret"])
+    assert "secret" not in shown
+    assert "token=(hidden)" in shown
+
+
 def test_notebook_has_empty_civitai_and_onedrive_fields():
     import ast
     from _write_wan_episode_nb import notebook

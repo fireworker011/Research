@@ -159,8 +159,8 @@ WAN_SLOT_LORAS: dict[str, dict[str, str]] = {
     ),
     "doggy": _url_pair(
         "doggy",
-        "https://civitai.com/api/download/models/2306421",
-        "https://civitai.com/api/download/models/2306425",
+        "https://huggingface.co/rahul7star/wan2.2Lora/resolve/main/Wan2.2-Doggy_high_noise.safetensors",
+        "https://huggingface.co/rahul7star/wan2.2Lora/resolve/main/Wan2.2-Doggy_low_noise.safetensors",
     ),
     "missionary": _url_pair(
         "missionary",

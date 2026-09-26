@@ -51,9 +51,11 @@ Civitai には残っていない。Hugging Face に I2V の high / low がある
 
 ## 四つん這い
 
-- high: https://civitai.com/api/download/models/2306421
-- low: https://civitai.com/api/download/models/2306425
-- page: https://civitai.com/models/1741501
+Civitai の 2306421 はサーバが拒否することがある。同じ I2V の high / low が Hugging Face にある。
+
+- high: https://huggingface.co/rahul7star/wan2.2Lora/resolve/main/Wan2.2-Doggy_high_noise.safetensors
+- low: https://huggingface.co/rahul7star/wan2.2Lora/resolve/main/Wan2.2-Doggy_low_noise.safetensors
+- page: https://civitai.com/models/1741501?modelVersionId=2306421
 
 ## 正常位（I2V）
 
