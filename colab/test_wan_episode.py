@@ -145,7 +145,7 @@ def test_notebook_has_empty_civitai_and_onedrive_fields():
     assert 'ONEDRIVE_TOKEN = ""' in sources[0]
     assert "graph.microsoft.com/v1.0/me/drive" in sources[0]
     assert "drive_id = " in sources[0]
-    assert '["rclone", "copy", "onedrive:wan-hospital"' in sources[0]
+    assert '"rclone", "copy", "onedrive:wan-hospital"' in sources[0]
     assert '"/models/**"' in sources[0]
     assert "rclone\", \"mount\"" not in sources[0]
     assert "onedrive:wan-hospital" in sources[1]
