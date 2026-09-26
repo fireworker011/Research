@@ -19,6 +19,20 @@
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
 
+## Wan 2.2（H3 の横。H3 ノートは置き換えない）
+
+描画だけ Wan 2.2。台本・ドロップダウン・HUD 結合は H3 の `prepare_episode` と `finish_episode` のまま。
+
+- コード: `colab/wan_episode.py`（`minimaxh3/wan_episode.py` と同じ）
+- 入口: `colab/wan_episode_colab_main.py`
+- ノート: `wan_hospital_episode_bot.ipynb`。生成セルは人間が実行する
+- 保存先: OneDrive（`WAN_ONEDRIVE_ROOT`、既定はこの PC の `OneDrive/wan-hospital`）。Google Drive には書かない
+- `source` が t2v のビートは Wan T2V。開始画像なし。chain と still だけ、前のビートの最終フレームを開始画像にする
+- `extra_loras` の名前は残す。中身は Wan 2.2 の high / low 組（`wan-<名前>-high.safetensors` と `wan-<名前>-low.safetensors`）。high は high expert、low は low expert にだけ付ける。一覧は `WAN_SLOT_LORAS`。ファイルが無いスロットは強度 0 で飛ばす。H3 の重みと `pose_motion_lock.py` は読まない
+- Colab: `wan_hospital_episode_bot.ipynb`。1枚目のセルが ComfyUI と fp8 重みを OneDrive に取る。2枚目が生成。人間が実行する
+- テキストエンコーダは umt5
+- テスト: `python3 -m pytest colab/test_wan_episode.py -q`。H3 の `colab/test_h3_episode.py -q -k hospital` は壊さない
+
 ## プロンプトの書き方
 
 - 英語の動作文。日本語は「」のセリフだけ
