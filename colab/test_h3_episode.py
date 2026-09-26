@@ -1778,7 +1778,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "straight down" in ride_sit["action"].lower()
     assert "hold still joined at the base" in ride_sit["action"].lower()
     assert "either side of miki's ribs" in ride_sit["action"].lower()
-    assert "one sole on each side of the chest" in ride_sit["action"].lower()
+    assert "one sole on each side of the chest" not in ride_sit["action"].lower()
     assert "stands up from that kneel" not in ride_sit["action"].lower()
     assert "folds down" not in ride_sit["action"].lower()
     assert "squats" not in ride_sit["action"].lower()
@@ -1786,8 +1786,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "one thigh" not in ride_sit["action"].lower()
     assert "from above" not in ride_sit["action"].lower()
     assert "from directly above" not in ride_sit["camera"].lower()
-    assert "the back of her head on the linoleum" in ride_sit["action"].lower()
-    assert "shoulders on the linoleum" in ride_sit["action"].lower()
+    assert "the back of her head on the linoleum" not in ride_sit["action"].lower()
+    assert "shoulders on the linoleum" not in ride_sit["action"].lower()
     assert "steps over the hips" not in ride_sit["action"].lower()
     assert "slides both feet" not in ride_sit["action"].lower()
     assert "head on the right" in ride_sit["action"].lower()
@@ -1795,6 +1795,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "miki sits on aya" not in ride_sit["action"].lower()
     ride_prompt = build_beat_prompt(ride, ride_sit, trigger=merge_trigger("", ride_sit))
     assert "folds down onto her back" not in ride_prompt.lower()
+    assert "rises into the rider" not in ride_prompt.lower()
     assert "holds that raised thigh" not in ride_prompt.lower()
     assert "travels into the pussy" in ride_prompt.lower()
     assert "either side of the ribs" in ride_prompt.lower()
@@ -2394,7 +2395,7 @@ def test_hospital_per_scene_accept_invite_evade_and_ending():
     kana_sit = next(b for b in mixed["beats"] if b["id"] == "09-join-ride")
     assert "pushes kana backward" not in kana_sit["action"].lower()
     assert "already lies fully on her back" in kana_sit["action"].lower()
-    assert "the back of her head on the linoleum" in kana_sit["action"].lower()
+    assert "the back of her head on the linoleum" not in kana_sit["action"].lower()
     assert "either side of kana's ribs" in kana_sit["action"].lower()
     assert "hand holds that raised thigh" not in kana_sit["action"].lower()
     assert "slides both feet" not in kana_sit["action"].lower()
@@ -2947,7 +2948,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
 
     First shot stays T2V. A -spot newcomer stays I2V. Other new people stay T2V.
     Same-cast acts, including pose, toilet, gin, tsuno, and fight, become I2V.
-    Cut stays all T2V.
+    Cut stays T2V except non-gin rib ride seats and peaks authored connect:chain.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     accept = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
@@ -3008,7 +3009,9 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             assert "drops down onto her knees" in six["action"].lower()
             assert "drops down onto her knees" in nine["action"].lower()
             assert "drops down onto her knees" in twelve["action"].lower()
-            assert "still kneeling" in nine["action"].lower()
+            assert "still kneeling" not in nine["action"].lower()
+            assert "already stands over the hips" in nine["action"].lower()
+            assert "either side of kana's ribs" in nine["action"].lower()
             assert "lips at the base" in nine["action"].lower()
             assert "pussy hanging directly above the glans" not in nine["action"].lower()
             assert "kana on her back" not in nine["action"].lower()
@@ -3073,7 +3076,31 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             first = False
             prev = cast
         cuts = prepare_episode(raw, connect_override="カット", **kw)
-        assert all(beat_source(b) == "t2v" for b in cuts["beats"] if not is_ui_beat(b)), kw
+        for beat in cuts["beats"]:
+            if is_ui_beat(beat):
+                continue
+            if beat_source(beat) == "t2v":
+                continue
+            bid = str(beat.get("id") or "")
+            low = str(beat.get("action") or "").lower()
+            kept = (
+                str(beat.get("connect") or "") == "chain"
+                and "gin" not in bid
+                and (
+                    (
+                        bid.endswith("-ride")
+                        and "already lies" in low
+                        and "already stands over" in low
+                    )
+                    or (
+                        bid.endswith("-peak")
+                        and "keep the glans inside" in low
+                        and "either side of" in low
+                        and "ribs" in low
+                    )
+                )
+            )
+            assert kept and beat_source(beat) == "chain", (beat["id"], kw)
 
 
 def test_hospital_end_connect_is_runtime_selectable():
@@ -3243,13 +3270,13 @@ def test_hospital_clip_failures_are_rewritten():
     assert "thrust" not in extra_keys(ride_in)
     assert "slides both feet" not in ride_in["action"].lower()
     assert "head on the left" in ride_in["action"].lower()
-    assert "the back of her head on the linoleum" in ride_in["action"].lower()
+    assert "the back of her head on the linoleum" not in ride_in["action"].lower()
     rei_ride = next(b for b in ride["beats"] if b["id"] == "06-doggy-ride")
     shino_ride = next(b for b in ride["beats"] if b["id"] == "12-exit-ride")
     assert "either side of rei's ribs" in rei_ride["action"].lower()
     assert "either side of shino's ribs" in shino_ride["action"].lower()
-    assert "the back of her head on the linoleum" in rei_ride["action"].lower()
-    assert "the back of her head on the linoleum" in shino_ride["action"].lower()
+    assert "the back of her head on the linoleum" not in rei_ride["action"].lower()
+    assert "the back of her head on the linoleum" not in shino_ride["action"].lower()
     assert "hand holds that raised thigh" not in rei_ride["action"].lower()
     assert "hand holds that raised thigh" not in shino_ride["action"].lower()
     assert "slides both feet" not in rei_ride["action"].lower()
@@ -4696,12 +4723,22 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         ("12-exit", "Shino", "30cm"),
     )
     pose_ban = ("zombie", "blood", "corpse", "doggy", "missionary", "cowgirl")
+    cut = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="騎乗位",
+        connect_override="t2v",
+    )
     for base, partner, cm in pairs:
         oral = next(b for b in ride["beats"] if b["id"] == base)
-        assert "lips leaving the shaft" in oral["action"]
-        assert "still standing" in oral["action"].lower()
+        assert "lips leaving the shaft" not in oral["action"]
+        assert "still kneeling" not in oral["action"].lower()
+        assert "already lies on her back" in oral["action"].lower()
+        assert "already stands over the hips" in oral["action"].lower()
+        assert f"either side of {partner.lower()}'s ribs" in oral["action"].lower()
         assert "the camera sits far back" in oral["action"].lower()
         assert "drops down onto her knees" in oral["action"].lower()
+        assert "lips at the base" in oral["action"].lower()
         seat = next(b for b in ride["beats"] if b["id"] == f"{base}-ride")
         peak = next(b for b in ride["beats"] if b["id"] == f"{base}-peak")
         act = seat["action"]
@@ -4713,6 +4750,7 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
             "stands up from that kneel",
             "squats",
             "one of aya's thighs",
+            "steps over",
         ):
             assert banned not in low, base
         assert "hangs directly above the glans" in low
@@ -4724,6 +4762,18 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "sideride" not in extra_keys(seat)
         assert "thrust" not in extra_keys(seat)
         assert not seat.get("trigger")
+        assert seat.get("connect") == "chain"
+        seat_prompt = build_beat_prompt(ride, seat, trigger=merge_trigger("", seat))
+        assert "folds down" not in seat_prompt.lower()
+        assert "rises into the rider" not in seat_prompt.lower()
+        assert SIDERIDE_TRIGGER not in seat_prompt
+        oral_prompt = build_beat_prompt(ride, oral, trigger=merge_trigger("", oral))
+        assert "this wide full-body frame stays locked" not in oral_prompt.lower()
+        assert "rises into the rider" not in oral_prompt.lower()
+        folded = dict(seat)
+        folded["action"] = seat["action"] + " The upright adult folds down onto her back."
+        folded_prompt = build_beat_prompt(ride, folded, trigger=merge_trigger("", folded))
+        assert "rises into the rider" not in folded_prompt.lower()
         plow = peak["action"].lower()
         assert "buried to the root" in plow
         assert "keep the glans inside" in plow
@@ -4732,15 +4782,37 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert extra_lora_entries(peak)[0] == ("sideride", 0.8)
         assert "thrust" in extra_keys(peak)
         assert "mystic" not in extra_keys(peak)
+        assert peak.get("connect") == "chain"
         for word in pose_ban:
             assert word not in low and word not in plow
         assert "駅弁" not in act and "駅弁" not in peak["action"]
+        cut_seat = next(b for b in cut["beats"] if b["id"] == f"{base}-ride")
+        cut_peak = next(b for b in cut["beats"] if b["id"] == f"{base}-peak")
+        assert beat_source(cut_seat) == "chain"
+        assert beat_source(cut_peak) == "chain"
+        assert cut_seat.get("connect") == "chain"
+        assert cut_peak.get("connect") == "chain"
     gin = prepare_episode(raw, story_override="受け入れる", gin_override="犯される")
     gin_ride = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
     assert "astride aya's ribs" in gin_ride["action"].lower()
     assert "steps over aya" in gin_ride["action"].lower()
     assert "either side of" not in gin_ride["action"].lower()
     assert "sideride" not in extra_keys(gin_ride)
+    gin_cut = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        gin_override="犯される",
+        connect_override="t2v",
+    )
+    assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-ride")) == "t2v"
+    assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-peak")) == "t2v"
+    probe = {
+        "id": "03-probe",
+        "action": "The upright adult folds down onto her back.",
+        "cast": ["aya", "miki"],
+        "loco": "planted",
+    }
+    assert "rises into the rider" in build_beat_prompt(ride, probe).lower()
     drop = next(b for b in ride["beats"] if b["id"] == "12-exit-drop")
     assert "slides out" in drop["action"].lower()
 

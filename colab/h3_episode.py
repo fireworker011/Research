@@ -639,6 +639,42 @@ RIB_RIDE_PACE_CLAUSE = (
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+
+
+def _nongin_rib_ride(beat: dict[str, Any]) -> bool:
+    """Supine rib seat or peak. An oral last frame can name the same ribs and must not inherit this wrap."""
+    bid = str(beat.get("id") or "")
+    if "gin" in bid or not (bid.endswith("-ride") or bid.endswith("-peak")):
+        return False
+    blob = f"{beat.get('action') or ''} {beat.get('camera') or ''}"
+    return bool(RIB_RIDE_RE.search(blob))
+
+
+def _skip_ride_fold(beat: dict[str, Any]) -> bool:
+    """Seats that already stand over a supine partner must not be folded down or risen from a kneel."""
+    bid = str(beat.get("id") or "")
+    if "gin" in bid:
+        return False
+    action = str(beat.get("action") or "").lower()
+    if "already lies" in action and "already stands over" in action:
+        return True
+    return bid.endswith("-ride") or bid.endswith("-peak")
+
+
+def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
+    """Non-gin rib seats and peaks stay I2V. A cut dropdown must not redraw them as T2V."""
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    bid = str(beat.get("id") or "")
+    if "gin" in bid or not (bid.endswith("-ride") or bid.endswith("-peak")):
+        return False
+    action = str(beat.get("action") or "")
+    low = action.lower()
+    if bid.endswith("-ride"):
+        return "already lies" in low and "already stands over" in low
+    return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
+
+
 MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable errand."
 
 
@@ -1377,6 +1413,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     landing: first GPU still, later I2V onto the authored still as Picture 2.
     Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
+    Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1394,7 +1431,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if beat.get("reuse"):
             gpu_seen += 1
             continue
-        if _toilet_chain_authored(beat):
+        if _toilet_chain_authored(beat) or _rib_ride_chain_authored(beat):
             beat["source"] = "chain"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -4103,7 +4140,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     if "blowjob" in keys:
         holds.append(ORAL_CAMERA_HOLD if gin else ORAL_FACE_HOLD)
     # Gin's seat keeps her leaned back on both hands. The supine rider-head-left lock flattens that pose.
-    if not gin and ("sideride" in keys or RIB_RIDE_RE.search(blob)):
+    if not gin and ("sideride" in keys or _nongin_rib_ride(beat)):
         holds.append(RIDE_CAMERA_HOLD)
         holds.append(RIDE_PAIR_CLAUSE)
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
@@ -4185,10 +4222,7 @@ def build_beat_prompt(
         and (
             "sideride" in {key for key, _strength in extra_lora_entries(beat)}
             or str(beat.get("id") or "") == "04-gin-ride"
-            or (
-                "gin" not in str(beat.get("id") or "")
-                and bool(RIB_RIDE_RE.search(str(beat.get("action") or "")))
-            )
+            or _nongin_rib_ride(beat)
         )
     )
     desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
@@ -4205,7 +4239,7 @@ def build_beat_prompt(
             desc.append(GIN_RIDE_PACE_CLAUSE)
         elif bid_now == "04-gin-peak":
             desc.append(GIN_PEAK_PACE_CLAUSE)
-        elif "gin" not in bid_now and RIB_RIDE_RE.search(action_txt):
+        elif _nongin_rib_ride(beat):
             desc.append(RIB_RIDE_PACE_CLAUSE)
         elif NELSON_HOLD_RE.search(action_txt):
             desc.append(NELSON_PACE_CLAUSE)
@@ -4217,7 +4251,7 @@ def build_beat_prompt(
             desc.append(SLIDE_PACE_CLAUSE)
             desc.append(SUPINE_PLANTED_CLAUSE)
             desc.append(RIDE_PAIR_CLAUSE)
-            if RIDE_FOLD_RE.search(action_txt):
+            if RIDE_FOLD_RE.search(action_txt) and not _skip_ride_fold(beat):
                 desc.append(RIDE_FOLD_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt):
             desc.append(SLIDE_PACE_CLAUSE)
@@ -4294,7 +4328,7 @@ def build_beat_prompt(
         f"non_diegetic_music:\n{music}\n"
     )
     prefix = f"{trigger.strip()}\n" if trigger.strip() else ""
-    if RIDE_FOLD_RE.search(str(beat.get("action") or "")):
+    if RIDE_FOLD_RE.search(str(beat.get("action") or "")) and not _skip_ride_fold(beat):
         prefix += RIDE_FOLD_CLAUSE + "\n"
     return prefix + head + body
 
