@@ -152,7 +152,7 @@ MOUNT = r'''#@title 0. OneDrive をマウント（描画はしない）
 #@markdown トークンは自分の PC の PowerShell で一度だけ取る。`winget install --id Rclone.Rclone -e` のあと、新しい PowerShell で `rclone authorize "onedrive"`。ブラウザでそのアカウントにログインし、矢印の間の JSON を下へ貼る。
 ONEDRIVE_TOKEN = ""  #@param {type:"string"}
 
-import json, shutil, subprocess, time
+import json, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
 
 def _run(args):
@@ -176,45 +176,65 @@ elif not token:
     print('トークンが空です。PowerShell で rclone authorize "onedrive" を実行し、出た JSON を上の欄に貼ってから、このセルをもう一度実行する。')
 else:
     try:
-        parsed = json.loads(token)
+        parsed, _end = json.JSONDecoder().raw_decode(token)
     except json.JSONDecodeError:
         parsed = None
-        print("JSON として読めません。矢印の間だけを貼る。値は表示しません。")
+        print("JSON として読めません。{ から } までを1回だけ貼る。値は表示しません。")
     if isinstance(parsed, dict) and parsed.get("access_token") and parsed.get("refresh_token"):
-        conf = Path.home() / ".config" / "rclone" / "rclone.conf"
-        conf.parent.mkdir(parents=True, exist_ok=True)
-        conf.write_text(
-            "[onedrive]\n"
-            "type = onedrive\n"
-            "drive_type = personal\n"
-            "token = " + json.dumps(parsed, separators=(",", ":")) + "\n",
-            encoding="utf-8",
+        drive = None
+        req = urllib.request.Request(
+            "https://graph.microsoft.com/v1.0/me/drive",
+            headers={"Authorization": "Bearer " + str(parsed["access_token"])},
         )
-        del parsed, token, raw
-        mount_point.mkdir(parents=True, exist_ok=True)
-        proc = _run([
-            "rclone", "mount", "onedrive:", str(mount_point),
-            "--daemon",
-            "--vfs-cache-mode", "writes",
-            "--dir-cache-time", "5s",
-            "--log-file", "/tmp/rclone-mount.log",
-            "--log-level", "NOTICE",
-        ])
-        for _ in range(30):
-            if mount_point.is_mount():
-                break
-            time.sleep(1)
-        if mount_point.is_mount():
-            project.mkdir(parents=True, exist_ok=True)
-            print("マウントした:", project)
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                drive = json.loads(resp.read().decode())
+        except urllib.error.HTTPError as exc:
+            print("ドライブの確認に失敗しました。HTTP", exc.code)
+            print('rclone authorize "onedrive" をやり直して、{ から } までを1回だけ貼る。')
+        except Exception:
+            print("ドライブの確認に失敗しました。通信を確認して、このセルをもう一度実行する。")
+        drive_id = str((drive or {}).get("id") or "")
+        drive_type = str((drive or {}).get("driveType") or "")
+        if not drive_id or not drive_type:
+            print("drive_id が取れませんでした。{ から } までを1回だけ貼って、もう一度実行する。")
         else:
-            print("マウントできませんでした。")
-            log = Path("/tmp/rclone-mount.log")
-            if log.is_file():
-                tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-20:]
-                print("\n".join(tail))
-            elif proc.stderr:
-                print(proc.stderr[-500:])
+            conf = Path.home() / ".config" / "rclone" / "rclone.conf"
+            conf.parent.mkdir(parents=True, exist_ok=True)
+            conf.write_text(
+                "[onedrive]\n"
+                "type = onedrive\n"
+                "drive_id = " + drive_id + "\n"
+                "drive_type = " + drive_type + "\n"
+                "token = " + json.dumps(parsed, separators=(",", ":")) + "\n",
+                encoding="utf-8",
+            )
+            print("ドライブを確認した:", drive_type)
+            del parsed, token, raw
+            mount_point.mkdir(parents=True, exist_ok=True)
+            proc = _run([
+                "rclone", "mount", "onedrive:", str(mount_point),
+                "--daemon",
+                "--vfs-cache-mode", "writes",
+                "--dir-cache-time", "5s",
+                "--log-file", "/tmp/rclone-mount.log",
+                "--log-level", "NOTICE",
+            ])
+            for _ in range(30):
+                if mount_point.is_mount():
+                    break
+                time.sleep(1)
+            if mount_point.is_mount():
+                project.mkdir(parents=True, exist_ok=True)
+                print("マウントした:", project)
+            else:
+                print("マウントできませんでした。")
+                log = Path("/tmp/rclone-mount.log")
+                if log.is_file():
+                    tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-20:]
+                    print("\n".join(tail))
+                elif proc.stderr:
+                    print(proc.stderr[-500:])
     elif parsed is not None:
         print("access_token と refresh_token がある JSON を貼る。")
         del parsed
