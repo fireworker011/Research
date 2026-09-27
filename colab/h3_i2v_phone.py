@@ -123,12 +123,14 @@ def collect_output_videos(entry: dict[str, Any] | None, output_root: Path | str)
     for node in ((entry or {}).get("outputs") or {}).values():
         if not isinstance(node, dict):
             continue
-        for key in ("videos", "gifs"):
+        for key in ("videos", "gifs", "images"):
             for item in node.get(key) or []:
                 if not isinstance(item, dict):
                     continue
                 fn = item.get("filename")
                 if not fn:
+                    continue
+                if key == "images" and Path(str(fn)).suffix.lower() not in {".mp4", ".webm", ".mkv", ".mov"}:
                     continue
                 sub = item.get("subfolder") or ""
                 path = (root / sub / fn) if sub else (root / fn)

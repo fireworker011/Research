@@ -343,11 +343,13 @@ def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, 
             continue
         entry = hist.get(pid) or {}
         status = entry.get("status") or {}
-        if status.get("completed") or entry.get("outputs"):
-            return True, entry
         for m in status.get("messages") or []:
             if isinstance(m, list) and m and m[0] == "execution_error":
                 return False, m
+        if str(status.get("status_str") or "") == "error":
+            return False, status
+        if status.get("completed") or entry.get("outputs"):
+            return True, entry
         time.sleep(2)
     return False, "timeout"
 

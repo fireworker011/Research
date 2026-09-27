@@ -130,8 +130,12 @@ if _ready:
         print("fetched", rel)
     sys.path.insert(0, "/content")
     import importlib
+    import h3_i2v_phone
+    import h3_i2v_runtime
     import wan_episode
     import wan_episode_colab_main
+    importlib.reload(h3_i2v_phone)
+    importlib.reload(h3_i2v_runtime)
     importlib.reload(wan_episode)
     importlib.reload(wan_episode_colab_main)
     main = wan_episode_colab_main.main

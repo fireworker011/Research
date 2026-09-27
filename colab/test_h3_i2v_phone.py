@@ -95,6 +95,17 @@ def test_collect_output_videos_and_newest_mp4(tmp_path):
     }
     paths = collect_output_videos(entry, out)
     assert paths == [mp4]
+    save_video = {
+        "outputs": {
+            "14": {
+                "images": [
+                    {"filename": mp4.name, "subfolder": "video", "type": "output"},
+                ],
+                "animated": [True],
+            }
+        }
+    }
+    assert collect_output_videos(save_video, out) == [mp4]
     assert newest_mp4(out) == mp4
 
 

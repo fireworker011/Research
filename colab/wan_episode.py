@@ -518,7 +518,7 @@ def build_wan_graph(
         video=["13", 0],
         filename_prefix=filename_prefix,
         format="mp4",
-        codec="h264",
+        codec={"codec": "auto"},
     )
     assert_wan_graph(g, source=source)
     return g
@@ -646,7 +646,8 @@ def run_wan_episode(
                 raise EpisodeError(f"{bid}: Wan failed: {payload}")
             videos = collect_output_videos(payload, Path(comfy_dir) / "output")
             if not videos:
-                raise EpisodeError(f"{bid}: Wan produced no mp4")
+                keys = sorted({key for node in ((payload or {}).get("outputs") or {}).values() if isinstance(node, dict) for key in node})
+                raise EpisodeError(f"{bid}: Wan produced no mp4 (output keys: {keys or 'none'})")
             shutil.copy2(videos[-1], raw_out)
         status["beats"][bid].update({"state": "done", "raw": str(raw_out), "start_image": bool(start_name)})
         save_status(root, status)
