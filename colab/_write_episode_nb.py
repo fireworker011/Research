@@ -60,6 +60,8 @@ SCENE_MIKI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+#@markdown **開始シーン** — 空なら最初から。beat id（例 `04-toilet`）を書くと、そのカットから先を今のドロップダウンどおりに作り直す。前のカットは残す。この設定の並びに無い id は止まる。
+START = ""  #@param {type:"string"}
 FRESH = False  #@param {type:"boolean"}
 #@markdown メモリ不足でそのカットが失敗したときだけ VRAM を下ろし、同じ尺をもう一度描く。それでも足りなければ短い尺に落とす。成功したカットの前には下ろさない。
 BRANCH = "__BRANCH__"  #@param {type:"string"}
@@ -102,6 +104,7 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
     for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
 )
 os.environ["H3_KEEP_RUNTIME"] = "1"
+os.environ["H3_EPISODE_START"] = str(START or "").strip()
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
 _civitai = str(CivitaiのAPIキー or "").strip()
@@ -228,6 +231,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
 - Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。Drive に 1MB 超の同名ファイルがあれば再取得しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
+- **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
 - 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな

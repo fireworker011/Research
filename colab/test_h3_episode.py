@@ -58,6 +58,8 @@ from h3_episode import (  # noqa: E402
     beat_prompts,
     beat_props,
     beat_clip_seconds,
+    beat_content_sig,
+    beat_needs_previous,
     beat_renders,
     beat_source,
     beat_still_as,
@@ -103,6 +105,7 @@ from h3_episode import (  # noqa: E402
     prepare_episode,
     preflight,
     render_beat_comfy,
+    render_start_index,
     resolve_preset,
     resolve_unet,
     run_episode,
@@ -4123,6 +4126,7 @@ def test_exec_script_is_self_contained():
     script = exec_script("bandai-district", preset="daily", fresh=True, branch="cursor/x", main_path=Path("/content/h3_episode_colab_main.py"))
     assert "os.environ['H3_EPISODE'] = 'bandai-district'" in script
     assert "H3_EPISODE_FRESH'] = '1'" in script
+    assert "H3_EPISODE_START'] = ''" in script
     assert "H3_EPISODE_CAMERA" in script
     assert "H3_EPISODE_CONNECT" in script
     assert "H3_EPISODE_END_CONNECT" in script
@@ -4207,6 +4211,67 @@ def test_dry_run_pipeline_end_to_end(tmp_path):
     assert (root / "raw" / "01-exit-noren.mp4").stat().st_mtime == before
     again = finish_episode(ep, root, out_name="again.mp4")
     assert again.is_file()
+
+
+def test_render_start_follows_the_prepared_route(tmp_path):
+    beats = [
+        {"id": "a", "source": "t2v", "action": "A walks."},
+        {"id": "b", "source": "chain", "action": "B stays."},
+        {"id": "c", "source": "chain", "action": "C stays."},
+    ]
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    for beat in beats:
+        (raw / f"{beat['id']}.mp4").write_bytes(b"x")
+    status = {"beats": {beat["id"]: {"sig": beat_content_sig(beat)} for beat in beats}}
+    assert render_start_index(beats, "", raw, status) == 0
+    assert render_start_index(beats, "最初から", raw, status) == 0
+    assert render_start_index(beats, "c", raw, status) == 2
+    status["beats"]["b"]["sig"] = "stale"
+    assert render_start_index(beats, "c", raw, status) == 1
+    status["beats"]["b"]["sig"] = beat_content_sig(beats[1])
+    (raw / "b.mp4").unlink()
+    assert render_start_index(beats, "c", raw, status) == 1
+    (raw / "a.mp4").unlink()
+    assert render_start_index(beats, "c", raw, status) == 0
+    with pytest.raises(EpisodeError, match="今の話"):
+        render_start_index(beats, "04-toilet", raw, status)
+    assert beat_needs_previous(beats[2])
+    assert not beat_needs_previous(beats[0])
+
+
+def test_hospital_start_scene_uses_the_colab_route(tmp_path):
+    raw_ep = load_episode(HOSPITAL_DIR / "episode.json")
+    off = prepare_episode(
+        raw_ep,
+        story_override="accept",
+        gin_override="off",
+        toilet_override="tentacle",
+        connect_override="chain",
+    )
+    with pytest.raises(EpisodeError, match="04-gin-cunny"):
+        render_start_index(off["beats"], "04-gin-cunny", tmp_path, {"beats": {}})
+    on = prepare_episode(
+        raw_ep,
+        story_override="accept",
+        gin_override="taken",
+        toilet_override="tentacle",
+        connect_override="chain",
+    )
+    ids = [b["id"] for b in on["beats"]]
+    assert ids.index("04-toilet") < ids.index("04-gin-cunny")
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    saved = {"beats": {}}
+    for beat in on["beats"]:
+        (raw / f"{beat['id']}.mp4").write_bytes(b"x")
+        saved["beats"][beat["id"]] = {"sig": beat_content_sig(beat)}
+    toilet_at = render_start_index(on["beats"], "04-toilet", raw, saved)
+    assert on["beats"][toilet_at]["id"] == "04-toilet"
+    assert "left nipple" in on["beats"][toilet_at]["action"]
+    cunny_at = render_start_index(on["beats"], "04-gin-cunny", raw, saved)
+    assert on["beats"][cunny_at]["id"] == "04-gin-cunny"
+    assert "clitoris GROWS" in on["beats"][cunny_at]["action"]
 
 
 @pytest.mark.skipif(not HAS_FFMPEG, reason="ffmpeg missing")

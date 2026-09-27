@@ -31,6 +31,7 @@ phrases that H3 reads aloud are rejected before any GPU time is spent.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 import re
@@ -5494,16 +5495,23 @@ def reuse_source(ep: dict[str, Any], beat: dict[str, Any], root: Path) -> Path |
     return Path(root).parent / m.group(1) / "raw" / f"{m.group(2)}.mp4"
 
 
-def materialize_reuse(ep: dict[str, Any], root: Path | str, *, fresh: bool = False) -> dict[str, str]:
+def materialize_reuse(
+    ep: dict[str, Any],
+    root: Path | str,
+    *,
+    fresh: bool = False,
+    force_ids: set[str] | None = None,
+) -> dict[str, str]:
     """Copy reusable takes into raw/ so the rest of the pipeline sees plain raw clips. Returns beat id → source."""
     root = Path(root)
+    force = force_ids or set()
     copied: dict[str, str] = {}
     for beat in ep.get("beats") or []:
         src = reuse_source(ep, beat, root)
         if src is None:
             continue
         dest = root / "raw" / f"{beat['id']}.mp4"
-        if dest.is_file() and not fresh:
+        if dest.is_file() and not fresh and str(beat.get("id") or "") not in force:
             continue
         if not src.is_file():
             continue
@@ -5654,6 +5662,107 @@ def _stage_frame(src: Path, dest: Path, canvas: tuple[int, int], comfy_input: Pa
     return stage_image_into_input(dest, comfy_input)
 
 
+_START_FROM_BEGINNING = frozenset({"", "最初から", "はじめから", "最初", "start", "first", "beginning"})
+_BEAT_SIG_KEYS = (
+    "id",
+    "source",
+    "connect",
+    "still_as",
+    "action",
+    "camera",
+    "extra_loras",
+    "trigger",
+    "cast",
+    "trim",
+    "steps",
+    "turbo",
+    "voices",
+    "sfx",
+)
+
+
+def normalize_start_label(start_at: str | None) -> str:
+    """Empty means render from the first beat. A beat id redraws that beat and everything after it."""
+    label = str(start_at or "").strip()
+    if label.casefold() in _START_FROM_BEGINNING or label in _START_FROM_BEGINNING:
+        return ""
+    return label
+
+
+def beat_content_sig(beat: dict[str, Any]) -> str:
+    """Identity of the prepared beat. A mismatch means the clip on disk was filmed for different settings."""
+    payload = {key: beat.get(key) for key in _BEAT_SIG_KEYS if key in beat}
+    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
+
+
+def beat_needs_previous(beat: dict[str, Any]) -> bool:
+    """Chain and last-frame landings take Picture 1 from the previous footage beat."""
+    if is_ui_beat(beat):
+        return True
+    source = beat_source(beat)
+    if source == "chain":
+        return True
+    return source == "still" and beat_still_as(beat) == "last"
+
+
+def _previous_footage_index(beats: list[dict[str, Any]], idx: int) -> int | None:
+    for j in range(idx - 1, -1, -1):
+        if not is_ui_beat(beats[j]):
+            return j
+    return None
+
+
+def render_start_index(
+    beats: list[dict[str, Any]],
+    start_at: str | None,
+    raw_dir: Path | str,
+    status: dict[str, Any] | None = None,
+) -> int:
+    """Index of the first beat to draw for this run.
+
+    The beat list is already the story from the current Colab settings. An id that is not in
+    that list stops the run. A chain start walks backward when the previous clip is missing or
+    was filmed for a different prepared beat, so the continuation still follows this route.
+    """
+    label = normalize_start_label(start_at)
+    if not label:
+        return 0
+    ids = [str(b.get("id") or "") for b in beats]
+    matches = [i for i, bid in enumerate(ids) if bid == label]
+    if not matches:
+        route = " → ".join(ids)
+        raise EpisodeError(
+            f"開始シーン {label} は今の Colab 設定の並びには無い。空欄なら最初から。今の話: {route}"
+        )
+    if len(matches) > 1:
+        raise EpisodeError(f"開始シーン {label} がこの並びで {len(matches)} 回ある")
+    idx = matches[0]
+    raw = Path(raw_dir)
+    saved_beats = (status or {}).get("beats") or {}
+    seen: set[int] = set()
+    while idx > 0 and beat_needs_previous(beats[idx]) and idx not in seen:
+        seen.add(idx)
+        prev = _previous_footage_index(beats, idx)
+        if prev is None:
+            break
+        prev_beat = beats[prev]
+        prev_id = str(prev_beat.get("id") or "")
+        clip = raw / f"{prev_id}.mp4"
+        saved = str((saved_beats.get(prev_id) or {}).get("sig") or "")
+        current = beat_content_sig(prev_beat)
+        if not clip.is_file():
+            print("start earlier, previous clip missing:", prev_id)
+            idx = prev
+            continue
+        if saved and saved != current:
+            print("start earlier, previous clip is from different settings:", prev_id)
+            idx = prev
+            continue
+        break
+    return idx
+
+
 def _first_frame_for(beat: dict[str, Any], idx: int, ep: dict[str, Any], root: Path, canvas: tuple[int, int], comfy_input: Path | None) -> str | None:
     source = beat_source(beat)
     if source == "t2v":
@@ -5711,6 +5820,7 @@ def run_episode(
     rei_kiss_override: str | None = None,
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
+    start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
@@ -5849,19 +5959,41 @@ def run_episode(
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
     beats = ep.get("beats") or []
     gpu_indexes = gpu_index_map(ep)
-    reused = materialize_reuse(ep, root, fresh=fresh)
+    start_label = normalize_start_label(start_at)
+    redraw_from = render_start_index(beats, start_label, root / "raw", status)
+    redo_all = fresh and not start_label
+    if start_label:
+        route_ids = [str(b.get("id") or "") for b in beats]
+        print(
+            "start:",
+            beats[redraw_from]["id"],
+            f"({redraw_from + 1}/{len(beats)})",
+            "→",
+            " → ".join(route_ids[redraw_from:]),
+        )
+    force_ids = {
+        str(b.get("id") or "")
+        for i, b in enumerate(beats)
+        if redo_all or (bool(start_label) and i >= redraw_from)
+    }
+    reused = materialize_reuse(ep, root, fresh=redo_all, force_ids=force_ids)
+    by_id = {str(b.get("id") or ""): b for b in beats}
     for bid, src in reused.items():
         print("reuse", bid, "←", src)
-        status["beats"][bid] = {"state": "done", "source": "reuse", "reused": src, "finished": _now()}
+        row: dict[str, Any] = {"state": "done", "source": "reuse", "reused": src, "finished": _now()}
+        if bid in by_id:
+            row["sig"] = beat_content_sig(by_id[bid])
+        status["beats"][bid] = row
     for idx, beat in enumerate(beats):
         bid = beat["id"]
         raw_out = root / "raw" / f"{bid}.mp4"
+        redo = redo_all or (bool(start_label) and idx >= redraw_from)
         if is_ui_beat(beat):
             status["beats"][bid] = {"state": "done", "source": "ui"}
             continue
         if bid in reused and raw_out.is_file():
             continue
-        if raw_out.is_file() and not fresh:
+        if raw_out.is_file() and not redo:
             print("skip (exists)", raw_out.name)
             status["beats"].setdefault(bid, {})["state"] = "done"
             continue
@@ -5928,7 +6060,13 @@ def run_episode(
                 shutil.copy2(src, raw_out)
                 if src.name.endswith(".part.mp4"):
                     src.unlink(missing_ok=True)
-            status["beats"][bid].update({"state": "done", "raw": str(raw_out), "duration_s": result.get("duration_s"), "finished": _now()})
+            status["beats"][bid].update({
+                "state": "done",
+                "raw": str(raw_out),
+                "duration_s": result.get("duration_s"),
+                "finished": _now(),
+                "sig": beat_content_sig(beat),
+            })
         except Exception as e:
             status["beats"][bid].update({"state": "failed", "error": str(e)[:2000]})
             save_status(root, status)
@@ -6011,12 +6149,13 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
 
 def _usage() -> str:
     return (
-        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--dog MODE] [--species MODE] [--appear LIST] [--scenes LIST]\n"
+        "usage: h3_episode.py <check|prompts|dry-run|stills|finish> <episode.json|dir> [--out DIR] [--fresh] [--start BEAT] [--preset NAME] [--camera PACK] [--connect MODE] [--combat off|on] [--story MODE] [--invite-pose MODE] [--toilet MODE] [--gin MODE] [--tsuno MODE] [--dog MODE] [--species MODE] [--appear LIST] [--scenes LIST]\n"
         "  check    validate + preflight, print prompts summary\n"
         "  prompts  write logs/<beat>.prompt.txt\n"
         "  dry-run  synthetic clips → HUD → stitch (no GPU)\n"
         "  stills   stills-only preview trailer (no GPU)\n"
         "  finish   HUD + cards + stitch over existing raw/*.mp4\n"
+        "  --start BEAT  そのカットから先を今の設定で作り直す。空なら最初から。並びに無い id は止まる\n"
         "  --preset speed|balance|quality（迷ったら balance）\n"
         "  --camera side2d|action3d（迷ったら side2d）\n"
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
@@ -6057,6 +6196,7 @@ def main(argv: list[str] | None = None) -> int:
     opts = args[2:]
     out_dir = None
     fresh = "--fresh" in opts
+    start_at = None
     preset = None
     camera = None
     connect = None
@@ -6080,6 +6220,8 @@ def main(argv: list[str] | None = None) -> int:
     rei_pose = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
+    if "--start" in opts:
+        start_at = opts[opts.index("--start") + 1]
     if "--preset" in opts:
         preset = opts[opts.index("--preset") + 1]
     if "--camera" in opts:
@@ -6188,6 +6330,7 @@ def main(argv: list[str] | None = None) -> int:
             work,
             dry_run=True,
             fresh=fresh,
+            start_at=start_at,
             preset_override=preset,
             camera_pack_override=camera,
             connect_override=connect,
