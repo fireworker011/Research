@@ -1141,7 +1141,8 @@ def _assert_insertion_direction(action: str, prompt: str) -> None:
     tentacle = "tentacle" in blob
     supine = ("stays on her back" in blob or "on her back" in blob) and not riding
     if tentacle:
-        assert "thrust" in blob
+        assert "hold still joined" in blob
+        assert "keep thrusting" not in blob
         _assert_named_hip_motion(action, prompt)
         return
     if riding:
@@ -1674,13 +1675,16 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "tentacle" in four["action"].lower()
     assert "travels into" in four["action"].lower()
     _assert_insertion_direction(four["action"], four_prompt)
-    assert "anus" in four["action"].lower()
+    assert "left nipple" in four["action"].lower()
+    assert "right nipple" in four["action"].lower()
+    assert "open mouth" in four["action"].lower()
+    assert "hairless pussy" in four["action"].lower()
     assert "corpse" not in four_prompt.lower()
     assert four["trim"]["seconds"] == 10.0
     assert beat_clip_seconds(toilet, four) == 10.0
-    assert "already seated" in four["action"].lower()
-    assert "keep thrusting" in four["action"].lower()
-    assert "first frame to the last frame" in four["action"].lower()
+    assert "already sits" in four["action"].lower()
+    assert "keep thrusting" not in four["action"].lower()
+    assert "hold still joined at those four places" in four["action"].lower()
     assert "does not stand" not in four["action"].lower()
     pee = prepare_episode(raw, story_override="accept", toilet_override="pee")
     assert next(b for b in pee["beats"] if b["id"] == "04-toilet")["action"].lower().find("yellow water") >= 0
@@ -1786,7 +1790,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(stand)
     _assert_hospital_bans(nelson_inv)
     keys = ride["render"]["lora_prefetch"]
-    for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss", "sideride"):
+    for key in ("blowjob", "mystic", "futatf", "mast", "cmst", "kiss", "sideride"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     assert extra_keys(ride_sit)[:3] == ["mystic", "penis", "synth"]
@@ -2016,18 +2020,18 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
-    assert extra_keys(facial) == ["cumshot"]
-    assert facial.get("trigger") == "CUMSH0T"
+    assert extra_keys(facial) == ["cmst", "penis", "jpnmoans"]
+    assert facial.get("trigger") == "cmst\njpnMoans"
     assert facial["trim"]["seconds"] == 10.0
     assert "slow" not in facial["action"].lower()
     assert "white goo" in facial["action"].lower()
     assert extra_lora_entries(kissb) == [("kiss", 0.5)]
     facial_prompt = build_beat_prompt(m_open, facial)
     kiss_prompt = build_beat_prompt(m_open, kissb)
-    assert "kana's whole face stays inside the frame" in facial_prompt.lower()
-    assert "both faces stay fully inside the frame" in facial_prompt.lower()
-    assert "the camera stays back enough that both faces stay fully inside" in facial_prompt.lower()
-    assert "before the next join, the camera sits far back" in facial_prompt.lower()
+    assert "looks up toward the lens" in facial_prompt.lower()
+    assert "white rope" in facial_prompt.lower()
+    assert "kana's whole face stays inside the frame" not in facial_prompt.lower()
+    assert "both faces stay fully inside the frame" not in facial_prompt.lower()
     assert "zoom" not in facial_prompt.lower()
     assert "kana's whole face stays inside the frame" in kiss_prompt.lower()
     assert "before the join, the camera sits far back" in kiss_prompt.lower()
@@ -2046,8 +2050,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert aya_white.startswith(aya_lock)
     assert raw["look_triggers"] == [{"after": "09-kana-facial", "who": "aya", "look": "white_upper"}]
     assert goo not in m_open["cast"]["aya"]["lock"].lower()
-    assert "upper body" in facial["action"].lower()
-    assert "shoulders" in facial["action"].lower()
+    assert "white rope" in facial["action"].lower()
+    assert "white goo on aya's face" in facial["action"].lower()
+    assert "semen" not in facial["action"].lower()
     assert "aya" not in (facial.get("cast_lock") or {})
     assert goo not in build_beat_prompt(m_open, facial).lower()
     assert goo not in build_beat_prompt(m_open, seven).lower()
@@ -2144,7 +2149,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
     for mode, must in (
         ("pee", ("yellow water", "keeps streaming", "already seated")),
         ("masturbate", ("rubbing", "keeps going", "already seated")),
-        ("tentacle", ("tentacle", "travels into", "keep thrusting", "already seated", "m-shape", "only the tentacles move", "hips hold still")),
+        ("tentacle", ("tentacle", "travels into", "left nipple", "right nipple", "open mouth", "hairless pussy", "hold still joined")),
     ):
         ep = prepare_episode(raw, story_override="受け入れる", toilet_override=mode)
         four = next(b for b in ep["beats"] if b["id"] == "04-toilet")
@@ -2154,7 +2159,11 @@ def test_hospital_toilet_and_routes_stay_consistent():
         assert duration_ladder(ep, four) == [10.0, 8.0, 6.0]
         for n in must:
             assert n in low, (mode, n)
-        assert "stays seated" in low and "first frame to the last frame" in low
+        if mode == "tentacle":
+            assert "keep thrusting" not in low
+            assert "already sits" in low
+        else:
+            assert "stays seated" in low and "first frame to the last frame" in low
         assert "rock down" not in low
         assert "does not stand" not in low
         assert not re.search(r"\bstands?\b", low)
@@ -2169,25 +2178,17 @@ def test_hospital_toilet_and_routes_stay_consistent():
         if mode == "tentacle":
             fill = next(b for b in ep["beats"] if b["id"] == "04-toilet-fill")
             assert "pump extra-viscous dirty liquid" in fill["action"].lower()
-            assert "m-shape" in fill["action"].lower()
-            assert "only the tentacles move" in fill["action"].lower()
-            assert "hips hold still" in fill["action"].lower()
-            assert "exactly three" in low
-            assert "under the toilet seat" in low
-            assert "inside of the toilet bowl" in low
-            assert "hole in the wall on the right" in low
-            assert "lower than the mouth hole" in low
-            assert "comes up out of the inside of the toilet bowl, from under the toilet seat, and travels into her anus" in low
-            assert "rises to her open mouth" in low
-            assert "travels into her hairless pussy" in low
-            assert "presses on her tongue" in low
+            assert "left nipple" in low and "right nipple" in low
+            assert "keep thrusting" not in low and "keep thrusting" not in fill["action"].lower()
+            assert "exactly three" not in low and "exactly three" not in fill["action"].lower()
+            assert "under the toilet seat" not in low
             assert "hold her thighs" not in low
+            assert "tentacles3d" in extra_keys(four)
+            assert "2d" not in json.dumps(four.get("extra_loras")).lower()
+            assert "3293041" not in LORA_URLS["tentacles3d"]
             fill_low = fill["action"].lower()
-            assert "exactly three" in fill_low
-            assert "under the toilet seat" in fill_low
-            assert "inside of the toilet bowl" in fill_low
-            assert "hole in the wall on the right" in fill_low
-            assert "lower than the mouth hole" in fill_low
+            assert "left nipple" in fill_low and "right nipple" in fill_low
+            assert "open mouth" in fill_low
             assert "rock down" not in fill["action"].lower()
             assert fill["trim"]["seconds"] == 10.0
             assert fill.get("camera_pack") == "none"
@@ -2208,7 +2209,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "facing the camera" in enter["action"].lower()
         elif mode == "tentacle":
             assert "facing the camera" in low
-            assert "presses on her tongue" in low
+            assert "left nipple" in low and "open mouth" in low
             assert "profile" not in four["camera"].lower()
             assert "facing the camera" in enter["action"].lower()
         else:
@@ -2282,6 +2283,22 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "api/download/models/" in LORA_URLS["thumbinbutt"]
     assert "/models/2904444" not in LORA_URLS["thumbinbutt"]
     assert LORA_STRENGTHS["thumbinbutt"] == 0.55
+    assert LORA_FILES["tentacles3d"].startswith("Tentacles-3D")
+    assert "fileId=3234017" in LORA_URLS["tentacles3d"]
+    assert "3293041" not in LORA_URLS["tentacles3d"]
+    assert LORA_STRENGTHS["tentacles3d"] == 0.45
+    assert LORA_FILES["cmst"].startswith("face_cum")
+    assert "fileId=3175377" in LORA_URLS["cmst"]
+    assert LORA_STRENGTHS["cmst"] == 0.65
+    assert LORA_FILES["jacko"].startswith("jackoPose")
+    assert "fileId=3244536" in LORA_URLS["jacko"]
+    assert LORA_STRENGTHS["jacko"] == 0.8
+    assert LORA_FILES["jpnmoans"] == "minimax-jav-voice.safetensors"
+    assert "fileId=3166743" in LORA_URLS["jpnmoans"]
+    assert LORA_STRENGTHS["jpnmoans"] == 0.55
+    assert LORA_FILES["doggy"].startswith("MM-H3 - Doggy Style")
+    assert "fileId=3202556" in LORA_URLS["doggy"]
+    assert LORA_STRENGTHS["doggy"] == 0.5
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
     assert not any(b["id"] == "04-toilet" for b in off["beats"])
@@ -2335,7 +2352,15 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "thumbinbutt" in extra_keys(expel)
     assert next(b for b in wash["beats"] if b["id"] == "04-toilet-in")["source"] == "t2v"
     insert = next(b for b in miki["beats"] if b["id"] == "04-toilet")
-    assert "TRAVELS INTO Aya's anus" in insert["action"]
+    assert "TRAVELS INTO the anus" in insert["action"]
+    push = next(b for b in miki["beats"] if b["id"] == "04-toilet-push")
+    assert "jacko" in extra_keys(push)
+    assert "doggy" not in extra_keys(push)
+    assert "Doggy style" not in push["action"]
+    assert "jacko" not in extra_keys(insert)
+    assert "doggy" not in extra_keys(insert)
+    assert "thumbinbutt" not in extra_keys(insert)
+    assert "synth" not in extra_keys(insert)
     assert "HOLD still joined at the BASE" in insert["action"]
     assert "thumbinbutt" not in extra_keys(insert)
     assert "thrust" not in extra_keys(insert)
@@ -2621,13 +2646,32 @@ def test_hospital_gin_tsuno_optional_events():
     assert "keeps licking" in lick["action"].lower()
     assert "grows out of the open mouth" in lick["action"].lower()
     assert "penis growth" not in lick["action"].lower()
-    assert extra_keys(lick) == ["mystic", "cunny"]
-    assert lick.get("trigger") == "performing cunnilingus"
+    assert extra_keys(lick) == ["mystic", "cunny", "jpnmoans"]
+    assert lick.get("trigger") == "performing cunnilingus\njpnMoans"
     assert "hairless pussy" in lick["action"].lower()
     assert "24cm" not in lick["action"]
     assert "penis growth" not in cunny["action"].lower()
     assert "clitoris grows" in cunny["action"].lower()
-    assert extra_lora_entries(cunny) == [("cunny", 0.8), ("mystic", 0.5)]
+    assert extra_lora_entries(cunny) == [("cunny", 0.8), ("mystic", 0.5), ("jpnmoans", 0.55)]
+    assert cunny.get("steps") == 8
+    assert cunny.get("turbo") is False
+    assert "turbo" not in extra_keys(cunny)
+    assert "larry" not in extra_keys(cunny)
+    assert "turbo8" not in extra_keys(cunny)
+    speed = {
+        "name": "speed",
+        "stack": [
+            ("minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors", 1.0),
+            ("minimax_h3_turbo_v4_step600_ema_comfy.safetensors", 1.0),
+        ],
+        "steps": 4,
+        "notes": [],
+    }
+    dropped = apply_extra_loras(speed, cunny, None)
+    dropped_names = " ".join(str(item[0]).lower() for item in dropped["stack"])
+    assert "fl2v_turbo" not in dropped_names
+    assert "turbo_v4" not in dropped_names
+    assert dropped["steps"] == 8
     assert "futatf" not in extra_keys(cunny)
     assert "penis" not in extra_keys(cunny)
     assert "licks the new shaft once" in cunny["action"].lower()
@@ -4861,6 +4905,9 @@ def test_hospital_dog_orientation_and_embrace_lift():
                 assert word not in blob, beat["id"]
             assert "駅弁" not in beat["action"]
             assert "anthro" not in extra_keys(beat)
+            assert "doggy" not in extra_keys(beat)
+            assert "jacko" not in extra_keys(beat)
+            assert "Doggy style" not in beat["action"]
     emb = prepare_episode(
         raw,
         story_override="誘う",

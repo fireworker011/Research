@@ -261,6 +261,17 @@ LORA_FILES = {
     "anthro": "eleptors-furry-anthro-lora-minimax-h3.safetensors",
     # Photoreal seasoning when the anthro reads as a drawing. No page was given, so it is not fetched.
     "amateur": "amateur-photoreal-h3.safetensors",
+    # 3D tentacle pack only. 2D-General (version 3293041) is not registered.
+    "tentacles3d": "Tentacles-3D_minimaxh3_3344593_epoch_7.safetensors",
+    # Facial ropes. Trigger cmst stays on the beat, not in the action.
+    "cmst": "face_cum_000001000.safetensors",
+    # Jack-O pose. No trigger word. Wash push only; not on insertion.
+    "jacko": "jackoPoseMinimaxH3V1_v1.safetensors",
+    # Audio-only moans. Trigger jpnMoans stays on the beat, not in the action.
+    "jpnmoans": "minimax-jav-voice.safetensors",
+    # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
+    # Trigger "Doggy style" stays off the action.
+    "doggy": "MM-H3 - Doggy Style v1.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -280,6 +291,11 @@ LORA_URLS = {
     "furryenh": "https://civitai.com/models/1782485/furry-enhancer-video",
     "slime": "https://civitai.com/models/2533949",
     "anthro": "https://civitai.com/models/2945034",
+    "tentacles3d": "https://civitai.com/api/download/models/3347053?fileId=3234017",
+    "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
+    "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
+    "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
+    "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -300,7 +316,16 @@ LORA_STRENGTHS = {
     "slime": 0.45,
     "anthro": 0.45,
     "amateur": 0.35,
+    "tentacles3d": 0.45,
+    "cmst": 0.65,
+    "jacko": 0.8,
+    "jpnmoans": 0.55,
+    "doggy": 0.5,
 }
+# Triggers that must stay on the beat trigger, never inside action.
+CMST_TRIGGER = "cmst"
+JPNMOANS_TRIGGER = "jpnMoans"
+DOGGY_TRIGGER = "Doggy style"
 BLOWJOB_TRIGGER = "bl0w_j0b"
 SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"
 COMBAT_ROUTE_KEY = "combat_on"
@@ -527,7 +552,13 @@ KISS_FRAME_HOLD = (
     "Open floor stays past the tips of both feet while the mouths meet. "
     "Both heads and all four feet stay inside the frame. The adults stay the same size."
 )
-# Non-gin kisses and facials keep both faces inside without a face-filling frame.
+# Facial looks up at the lens. The partner's face stays out of this hold.
+FACIAL_LENS_HOLD = (
+    "Aya looks up toward the lens. Aya's face stays fully inside the frame, from the hair to the chin. "
+    "The erect shaft aims at that face from the lower edge. "
+    "The frame holds Aya's face and the shaft. The adults stay the same size."
+)
+# Non-gin kisses keep both faces inside without a face-filling frame.
 FACE_PAIR_HOLD = (
     "Both faces stay fully inside the frame. "
     "The partner's whole face stays inside the frame. "
@@ -1946,6 +1977,7 @@ def _embrace_beat(
     loras: list[Any],
     loco: str = "planted",
     trigger: str = "",
+    voices: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     if suffix == "walk":
         camera = (
@@ -1974,7 +2006,7 @@ def _embrace_beat(
         "trigger": trigger,
         "camera": camera,
         "action": action,
-        "voices": [{"who": "aya", "line": "んっ"}],
+        "voices": voices or [{"who": "aya", "line": "んっ"}],
         "sfx": "a lip-contact kiss smack when the mouths meet, HVAC" if suffix in ("hug", "hold", "peak", "walk") else "HVAC",
         "music": "Bass holds",
         "hud": {
@@ -2066,6 +2098,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
         "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
         f"{name}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
+        "Aya says 「あ、いく」. "
         "Last frame: orgasm faces, mouths joined, hips flush, the shaft still buried to the root, both knees held up. "
         "Brisk real-time. Consensual adult game beat"
     )
@@ -2104,7 +2137,9 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
             "peak",
             who,
             peak,
-            loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55]],
+            loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55], ["jpnmoans", 0.55]],
+            trigger="jpnMoans",
+            voices=[{"who": "aya", "line": "あ、いく"}],
         ),
         _embrace_beat(base, "walk", who, walk, loras=kiss),
     ]
@@ -3953,9 +3988,14 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             text = str(beat.get(key) or "").strip()
             if not text and source != "ui":
                 errs.append(f"{where}: {key} missing")
-            elif CJK_RE.search(text):
-                errs.append(f"{where}: {key} must be English")
-            elif SLOWMO_TOKENS_RE.search(text):
+            elif cjk_outside_quotes(text):
+                errs.append(f"{where}: {key} must be English (Japanese only inside 「」)")
+            else:
+                for quoted in QUOTE_RE.finditer(text):
+                    inner = quoted.group(0)[1:-1]
+                    if NON_JP_SPEECH_RE.search(inner) or not KANA_RE.search(inner):
+                        errs.append(f"{where}: {key} quoted speech must be Japanese kana only")
+            if text and SLOWMO_TOKENS_RE.search(text):
                 errs.append(f"{where}: {key} names slow motion (H3 draws it even when negated; leave the words out)")
         if "camera_pack" in beat:
             raw_pack = str(beat.get("camera_pack") or "").strip().lower()
@@ -4243,7 +4283,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
         holds.append(OPENING_KISS_HOLD)
     elif not gin and bid == "09-kana-facial":
-        holds.append(FACE_PAIR_HOLD)
+        holds.append(FACIAL_LENS_HOLD)
     elif not gin and _KISS_FRAME_RE.search(blob) and "blowjob" not in keys:
         holds.append(FACE_PAIR_HOLD)
         if re.search(r"travels into|before the shaft enters", blob, re.I):
@@ -4555,15 +4595,29 @@ def apply_extra_loras(
     """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
 
     When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
-    Turbo fallback keeps the preset 4-step euler+simple and ignores beat.steps.
+    A beat with turbo false drops LightX2V turbo, the 8-step turbo file, and Larry, then honors beat.steps.
     TURBO-hybrid loads Combat only when High-Memory opt-in is on (A100 40GB otherwise OOM).
     """
     extra = extra_lora_entries(beat)
     out = dict(preset)
-    if not extra:
-        return _apply_beat_sampler(out, beat, combat_on=False)
     stack = list(preset.get("stack") or [])
     notes = list(preset.get("notes") or [])
+    if beat.get("turbo") is False:
+        kept: list[tuple[str, float]] = []
+        dropped: list[str] = []
+        for fname, strength in stack:
+            low = str(fname).lower()
+            if "fl2v_turbo" in low or "turbo_v4" in low:
+                dropped.append(str(fname))
+                continue
+            kept.append((fname, float(strength)))
+        stack = kept
+        if dropped:
+            notes.append("turbo and Larry dropped for this beat: " + ", ".join(dropped))
+        out["stack"] = stack
+        out["notes"] = notes
+    if not extra:
+        return _apply_beat_sampler(out, beat, combat_on=False)
     names = " ".join(str(s[0]).lower() for s in stack)
     turbo = "fl2v_turbo" in names
     if allow_combat is None:
