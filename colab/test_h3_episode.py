@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
+    ANIME2REAL_TRIGGER,
     CAMERA_PACKS,
     CANVAS,
     CHECKPOINTS,
@@ -4006,6 +4007,120 @@ def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
     assert last_g["101"]["inputs"]["image"] == "03.jpg"
     assert last_g["20"]["inputs"]["last_frame"] == ["101", 0]
     assert last_g["20"]["inputs"]["first_frame"] == ["100", 0]
+
+
+def _walk_extra_lora_keys(node):
+    found = []
+    if isinstance(node, dict):
+        if "extra_loras" in node:
+            found.extend(key for key, _strength in extra_lora_entries(node))
+        for value in node.values():
+            found.extend(_walk_extra_lora_keys(value))
+    elif isinstance(node, list):
+        for value in node:
+            found.extend(_walk_extra_lora_keys(value))
+    return found
+
+
+def test_charswap_and_anime2real_register_on_ref2va_only(tmp_path):
+    assert LORA_FILES["charswap"] == "h3_character_swap_pro4500_1000.safetensors"
+    assert LORA_FILES["anime2real"] == "Anime2Realsim__H3.safetensors"
+    assert LORA_URLS["charswap"] == (
+        "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/"
+        "h3_character_swap_pro4500_1000.safetensors"
+    )
+    assert LORA_URLS["anime2real"] == (
+        "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/"
+        "Anime2Realsim__H3.safetensors"
+    )
+    assert LORA_URLS["charswap"].endswith(".safetensors")
+    assert LORA_URLS["anime2real"].endswith(".safetensors")
+    assert "/blob/" not in LORA_URLS["charswap"] and "/blob/" not in LORA_URLS["anime2real"]
+    assert LORA_STRENGTHS["charswap"] == 1.0
+    assert LORA_STRENGTHS["anime2real"] == 1.0
+    assert ANIME2REAL_TRIGGER == "LumiReal"
+    assert "charswap" not in _walk_extra_lora_keys(load_episode(HOSPITAL_DIR / "episode.json"))
+    assert "anime2real" not in _walk_extra_lora_keys(load_episode(HOSPITAL_DIR / "episode.json"))
+
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    for key in ("charswap", "anime2real", "combat", "turbo4", "turbo8", "larry", "cinema"):
+        (loras / LORA_FILES[key]).write_bytes(b"x")
+    ref2va = "minimax_h3_ref2va_pruned_int8_convrot.safetensors"
+    fl2va = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+    preset = {
+        "name": "daily",
+        "stack": [(LORA_FILES["larry"], 1.0), (LORA_FILES["cinema"], 0.65), (LORA_FILES["turbo4"], 1.0)],
+        "steps": 8,
+        "trigger": "DY",
+        "notes": [],
+    }
+    both = {"extra_loras": ["charswap", "anime2real"], "trigger": "keep"}
+    stacked = apply_extra_loras(preset, both, loras, unet=ref2va)
+    names = [item[0] for item in stacked["stack"]]
+    assert (LORA_FILES["charswap"], 1.0) in stacked["stack"]
+    assert (LORA_FILES["anime2real"], 0.5) in stacked["stack"]
+    assert LORA_FILES["larry"] not in names
+    assert LORA_FILES["turbo4"] not in names
+    assert LORA_FILES["cinema"] not in names
+    assert any("turbo4/turbo8/larry skipped" in note for note in stacked["notes"])
+    assert any("cinema skipped (anime2real)" in note for note in stacked["notes"])
+    assert merge_trigger("DY", both) == "DY\nkeep\nLumiReal"
+    assert merge_trigger("DY", {"extra_loras": ["charswap"], "trigger": "keep"}) == "DY\nkeep"
+    assert merge_trigger("", {"extra_loras": ["anime2real"], "trigger": "LumiReal"}) == "LumiReal"
+
+    half = {"extra_loras": [["charswap", 0.5], ["anime2real", 0.5]]}
+    halved = apply_extra_loras(preset, half, loras, unet=ref2va)
+    assert (LORA_FILES["charswap"], 0.5) in halved["stack"]
+    assert (LORA_FILES["anime2real"], 0.5) in halved["stack"]
+
+    only_real = apply_extra_loras(
+        {
+            "name": "speed",
+            "stack": [(LORA_FILES["turbo8"], 1.0), (LORA_FILES["cinema"], 0.65)],
+            "steps": 8,
+            "notes": [],
+        },
+        {"extra_loras": ["anime2real"]},
+        loras,
+        unet=ref2va,
+    )
+    assert (LORA_FILES["anime2real"], 1.0) in only_real["stack"]
+    assert LORA_FILES["cinema"] not in [item[0] for item in only_real["stack"]]
+    assert LORA_FILES["turbo8"] not in [item[0] for item in only_real["stack"]]
+
+    turbo8 = {
+        "name": "speed",
+        "stack": [(LORA_FILES["turbo8"], 1.0), (LORA_FILES["cinema"], 0.65)],
+        "steps": 8,
+        "notes": [],
+    }
+    only_swap = apply_extra_loras(turbo8, {"extra_loras": ["charswap"]}, loras, unet=ref2va)
+    swap_names = [item[0] for item in only_swap["stack"]]
+    assert (LORA_FILES["charswap"], 1.0) in only_swap["stack"]
+    assert LORA_FILES["turbo8"] not in swap_names
+    assert LORA_FILES["cinema"] in swap_names
+
+    fl2 = apply_extra_loras(preset, both, loras, unet=fl2va)
+    assert LORA_FILES["charswap"] not in [item[0] for item in fl2["stack"]]
+    assert LORA_FILES["anime2real"] not in [item[0] for item in fl2["stack"]]
+    assert LORA_FILES["larry"] in [item[0] for item in fl2["stack"]]
+    assert LORA_FILES["turbo4"] in [item[0] for item in fl2["stack"]]
+    assert any("Ref2VA UNet only" in note for note in fl2["notes"])
+
+    hybrid = apply_extra_loras(preset, both, loras, unet=EROS_MAX_UNET)
+    assert LORA_FILES["charswap"] not in [item[0] for item in hybrid["stack"]]
+    assert LORA_FILES["anime2real"] not in [item[0] for item in hybrid["stack"]]
+    assert any("Ref2VA UNet only" in note for note in hybrid["notes"])
+
+    bare = {"name": "daily", "stack": [(LORA_FILES["larry"], 1.0)], "steps": 8, "trigger": "DY", "notes": []}
+    fight = {"extra_loras": ["combat", "charswap", "anime2real"]}
+    fought = apply_extra_loras(bare, fight, loras, unet=ref2va)
+    assert fought["stack"][-1] == (LORA_FILES["combat"], 1.0)
+    assert LORA_FILES["charswap"] not in [item[0] for item in fought["stack"]]
+    assert LORA_FILES["anime2real"] not in [item[0] for item in fought["stack"]]
+    assert any("combat has priority" in note for note in fought["notes"])
+    assert fought["steps"] == COMBAT_STEPS
 
 
 def test_combat_steps_cap_and_author_override(tmp_path):

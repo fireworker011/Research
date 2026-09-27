@@ -273,6 +273,11 @@ LORA_FILES = {
     # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
     # Trigger "Doggy style" stays off the action.
     "doggy": "MM-H3 - Doggy Style v1.safetensors",
+    # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
+    "charswap": "h3_character_swap_pro4500_1000.safetensors",
+    # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
+    # Do not add this key to a ward beat extra. The long boilerplate stays on the job.
+    "anime2real": "Anime2Realsim__H3.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -297,6 +302,8 @@ LORA_URLS = {
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
+    "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
+    "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -322,11 +329,15 @@ LORA_STRENGTHS = {
     "jacko": 0.8,
     "jpnmoans": 0.55,
     "doggy": 0.5,
+    "charswap": 1.0,
+    "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
+ANIME2REAL_TRIGGER = "LumiReal"
+REF2VA_ONLY_LORA_KEYS = frozenset({"charswap", "anime2real"})
 BLOWJOB_TRIGGER = "bl0w_j0b"
 SIDERIDE_TRIGGER = "side view riding sex, straddling the hips, facing the partner"
 COMBAT_ROUTE_KEY = "combat_on"
@@ -4547,8 +4558,17 @@ def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
 
 
 def merge_trigger(base: str, beat: dict[str, Any]) -> str:
-    """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop."""
+    """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop.
+
+    LumiReal joins only when anime2real is in extra_loras. charswap has no trigger.
+    """
     parts = [str(base or "").strip(), str(beat.get("trigger") or "").strip()]
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    if "anime2real" in keys:
+        joined = "\n".join(p for p in parts if p)
+        tokens = re.split(r"[\s,]+", joined)
+        if ANIME2REAL_TRIGGER not in tokens:
+            parts.append(ANIME2REAL_TRIGGER)
     return "\n".join(p for p in parts if p)
 
 
@@ -4598,6 +4618,10 @@ def apply_extra_loras(
     When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
     A beat with turbo false drops LightX2V turbo, the 8-step turbo file, and Larry, then honors beat.steps.
     TURBO-hybrid loads Combat only when High-Memory opt-in is on (A100 40GB otherwise OOM).
+    charswap and anime2real load on a Ref2VA UNet only. FL2VA and TURBO-hybrid skip them.
+    Combat in the same extra wins and those two keys are skipped. A loaded pair drops
+    turbo4, turbo8, and Larry. anime2real also drops cinema. Both keys together use
+    charswap 1.0 and anime2real 0.5; an explicit 0.5 is left as called.
     """
     extra = extra_lora_entries(beat)
     out = dict(preset)
@@ -4629,6 +4653,10 @@ def apply_extra_loras(
         notes.append(skip_note)
     combat_on = False
     combat_requested = any(key == "combat" for key, _s in extra)
+    extra_keys = {key for key, _s in extra}
+    both_ref2va = REF2VA_ONLY_LORA_KEYS <= extra_keys
+    ref2va_unet = "ref2va" in str(unet or "").lower()
+    loaded_ref2va: set[str] = set()
     for key, strength in extra:
         fname = LORA_FILES.get(key)
         if not fname:
@@ -4645,6 +4673,19 @@ def apply_extra_loras(
             if note not in notes:
                 notes.append(note)
             continue
+        if key in REF2VA_ONLY_LORA_KEYS:
+            if combat_requested:
+                notes.append(f"{key} LoRA skipped (combat has priority)")
+                continue
+            if not ref2va_unet:
+                notes.append(f"{key} LoRA skipped (Ref2VA UNet only)")
+                continue
+            # Both keys: charswap 1.0 and anime2real 0.5. An explicit 0.5 stays 0.5.
+            if both_ref2va and abs(float(strength) - 0.5) > 1e-9:
+                if key == "charswap":
+                    strength = 1.0
+                elif key == "anime2real":
+                    strength = 0.5
         path = Path(loras_dir) / fname if loras_dir is not None else None
         if path is not None and path.is_file() and not _lora_file_loadable(path):
             path.unlink()
@@ -4655,6 +4696,38 @@ def apply_extra_loras(
         stack.append((fname, float(strength)))
         if key == "combat":
             combat_on = True
+        if key in REF2VA_ONLY_LORA_KEYS:
+            loaded_ref2va.add(key)
+    if loaded_ref2va:
+        speed_names = {
+            LORA_FILES["turbo4"].lower(),
+            LORA_FILES["turbo8"].lower(),
+            LORA_FILES["larry"].lower(),
+        }
+        kept_stack: list[tuple[str, float]] = []
+        dropped_turbo: list[str] = []
+        for fname, strength in stack:
+            low = str(fname).lower()
+            if low in speed_names or "fl2v_turbo" in low or "turbo_v4" in low or low.startswith("larry"):
+                dropped_turbo.append(str(fname))
+                continue
+            kept_stack.append((fname, float(strength)))
+        if dropped_turbo:
+            notes.append("turbo4/turbo8/larry skipped for charswap/anime2real: " + ", ".join(dropped_turbo))
+            stack = kept_stack
+        if "anime2real" in loaded_ref2va:
+            cinema_name = LORA_FILES["cinema"].lower()
+            kept_cinema: list[tuple[str, float]] = []
+            dropped_cinema: list[str] = []
+            for fname, strength in stack:
+                low = str(fname).lower()
+                if low == cinema_name or "cinematic" in low or low.startswith("cinema"):
+                    dropped_cinema.append(str(fname))
+                    continue
+                kept_cinema.append((fname, float(strength)))
+            if dropped_cinema:
+                notes.append("cinema skipped (anime2real): " + ", ".join(dropped_cinema))
+                stack = kept_cinema
     out["stack"] = stack
     out["notes"] = notes
     if combat_requested and not combat_on:

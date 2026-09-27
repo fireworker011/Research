@@ -783,6 +783,36 @@
         1.0
       ],
       "note": "Female climax reaction. Trigger Remoteorgasm. Not ejaculation; after-ejaculation uses hmcumshot-v2. Facial uses facial-cumshot-h3. Do not stack with cumshot."
+    },
+    {
+      "id": "charswap",
+      "filename": "h3_character_swap_pro4500_1000.safetensors",
+      "repo": "akatz-ai/MiniMax-H3-Character-Swap-LoRA",
+      "file": "h3_character_swap_pro4500_1000.safetensors",
+      "modes": [
+        "r2v"
+      ],
+      "arch": "ref2va",
+      "turbo": false,
+      "adult": false,
+      "trigger": "",
+      "default_strength": 1.0,
+      "source": "hf"
+    },
+    {
+      "id": "anime2real",
+      "filename": "Anime2Realsim__H3.safetensors",
+      "repo": "LiseTY/Minimax-H3-ref2v_Anime_2_Realism",
+      "file": "Anime2Realsim__H3.safetensors",
+      "modes": [
+        "r2v"
+      ],
+      "arch": "ref2va",
+      "turbo": false,
+      "adult": false,
+      "trigger": "LumiReal",
+      "default_strength": 1.0,
+      "source": "hf"
     }
   ]
 }
