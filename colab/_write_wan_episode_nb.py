@@ -65,12 +65,14 @@ APPEAR_SHINO = True  #@param {{type:"boolean"}}
 {_field("SCENE_SHINO", "scene")}
 FRESH = False  #@param {{type:"boolean"}}
 DRY_RUN = False  #@param {{type:"boolean"}}
-ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {{type:"string"}}
+STORE = "/content/drive/MyDrive/wan-hospital"  #@param {{type:"string"}}
 
-import os, subprocess, sys
+import os, sys
 from pathlib import Path
+from google.colab import drive
+drive.mount("/content/drive")
 
-os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
+os.environ["WAN_ONEDRIVE_ROOT"] = STORE
 os.environ["WAN_EPISODE"] = EPISODE
 os.environ["WAN_EPISODE_JSON"] = "/content/minimaxh3/episodes/hospital-exit-adult/episode.json"
 os.environ["WAN_EPISODE_CONNECT"] = CONNECT
@@ -96,14 +98,12 @@ os.environ["WAN_DRY_RUN"] = "1" if DRY_RUN else "0"
 os.environ["WAN_FETCH_LORAS"] = "0" if DRY_RUN else "1"
 os.environ["WAN_COMFY_DIR"] = "/content/ComfyUI"
 
-if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
-    raise SystemExit("OneDrive 以外には書かない: " + ONEDRIVE)
-_root = Path(ONEDRIVE)
-if not _root.exists() and _root.parent.exists():
+_root = Path(STORE)
+if Path("/content/drive/MyDrive").exists():
     _root.mkdir(parents=True, exist_ok=True)
 _ready = _root.exists()
 if not _ready:
-    print("OneDrive がまだ見えない。上の「0. OneDrive をマウント」を先に実行する: " + ONEDRIVE)
+    print("Google Drive がまだ見えない。上のセルを先に実行する: " + STORE)
 
 if _ready:
     RAW = "https://raw.githubusercontent.com/fireworker011/Research/{BRANCH}"
@@ -135,13 +135,7 @@ if _ready:
     importlib.reload(wan_episode)
     importlib.reload(wan_episode_colab_main)
     main = wan_episode_colab_main.main
-    try:
-        _code = main()
-    finally:
-        print("OneDrive へ送っています。")
-        subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
-        print("OneDrive へ送りました:", ONEDRIVE)
-    raise SystemExit(_code)
+    raise SystemExit(main())
 '''
 
 
@@ -149,105 +143,42 @@ MARKDOWN = """# 病棟出口 Wan 2.2（H3 の横）
 
 H3 のノートはそのまま残す。このノートは描画だけ Wan 2.2 T2V / I2V。
 
-データの保存先は OneDrive。Google Drive には書かない。
+保存先は Google ドライブのマイドライブ `wan-hospital`。
 
-生成は下のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
+生成は最後のセルを人間が実行したときだけ動く。このファイルを開いただけでは描かない。
 
-1. 最初のコードセルで OneDrive のトークンを貼る。受け取るのは動画だけ。モデルは OneDrive から取らない。
-2. 次のセルの **CivitaiのAPIキー** にキーを貼って実行する。取るのはチェックポイント2つとテキストエンコーダとVAEだけ。LoRA は最後のセルで、選んだシーンの分だけ取る。
-3. 最後のセルを人間が実行する。開いただけでは描かない。
+1. 最初のセルで Google ドライブを接続する。GPU は要らない。
+2. 次のセルで、まだ無い重みだけドライブへ取る。CPU ランタイムでよい。すでにあるファイルは飛ばす。Civitai のキーはここ。
+3. 最後のセルは GPU で、ドライブにある重みを使って描く。重みの取り直しはしない。
 """
 
 
-MOUNT = r'''#@title 0. OneDrive をマウント（描画はしない）
-#@markdown 使いたい Microsoft アカウントのトークンを貼る。ノートは空のまま保存する。値は表示しない。
-#@markdown トークンは自分の PC の PowerShell で一度だけ取る。`winget install --id Rclone.Rclone -e` のあと、新しい PowerShell で `rclone authorize "onedrive"`。ブラウザでそのアカウントにログインし、矢印の間の JSON を下へ貼る。
-ONEDRIVE_TOKEN = ""  #@param {type:"string"}
-
-import json, shutil, subprocess, urllib.error, urllib.request
+MOUNT = r'''#@title 0. Google Drive を接続（描画しない。GPU 不要）
+#@markdown マイドライブに wan-hospital を作る。重みは次のセル。
+from google.colab import drive
 from pathlib import Path
-
-if shutil.which("rclone") is None:
-    subprocess.check_call(["bash", "-lc", "curl -fsSL https://rclone.org/install.sh | bash"])
-
-raw = str(ONEDRIVE_TOKEN or "").strip()
-start = raw.find("{")
-end = raw.rfind("}")
-token = raw[start:end + 1] if start >= 0 and end > start else ""
-mount_point = Path("/content/onedrive")
-project = mount_point / "wan-hospital"
-if mount_point.is_mount():
-    project.mkdir(parents=True, exist_ok=True)
-    print("すでにマウント済み:", project)
-elif not token:
-    print('トークンが空です。PowerShell で rclone authorize "onedrive" を実行し、出た JSON を上の欄に貼ってから、このセルをもう一度実行する。')
-else:
-    try:
-        parsed, _end = json.JSONDecoder().raw_decode(token)
-    except json.JSONDecodeError:
-        parsed = None
-        print("JSON として読めません。{ から } までを1回だけ貼る。値は表示しません。")
-    if isinstance(parsed, dict) and parsed.get("access_token") and parsed.get("refresh_token"):
-        drive = None
-        req = urllib.request.Request(
-            "https://graph.microsoft.com/v1.0/me/drive",
-            headers={"Authorization": "Bearer " + str(parsed["access_token"])},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                drive = json.loads(resp.read().decode())
-        except urllib.error.HTTPError as exc:
-            print("ドライブの確認に失敗しました。HTTP", exc.code)
-            print('rclone authorize "onedrive" をやり直して、{ から } までを1回だけ貼る。')
-        except Exception:
-            print("ドライブの確認に失敗しました。通信を確認して、このセルをもう一度実行する。")
-        drive_id = str((drive or {}).get("id") or "")
-        drive_type = str((drive or {}).get("driveType") or "")
-        if not drive_id or not drive_type:
-            print("drive_id が取れませんでした。{ から } までを1回だけ貼って、もう一度実行する。")
-        else:
-            conf = Path.home() / ".config" / "rclone" / "rclone.conf"
-            conf.parent.mkdir(parents=True, exist_ok=True)
-            conf.write_text(
-                "[onedrive]\n"
-                "type = onedrive\n"
-                "drive_id = " + drive_id + "\n"
-                "drive_type = " + drive_type + "\n"
-                "token = " + json.dumps(parsed, separators=(",", ":")) + "\n",
-                encoding="utf-8",
-            )
-            print("ドライブを確認した:", drive_type)
-            del parsed, token, raw
-            project.mkdir(parents=True, exist_ok=True)
-            print("動画だけ受け取ります。モデルは OneDrive から取りません。")
-            subprocess.run([
-                "rclone", "copy", "onedrive:wan-hospital", str(project),
-                "--exclude", "/models/**",
-                "--size-only", "--transfers", "8", "--stats", "15s", "--stats-log-level", "NOTICE",
-            ])
-            print("用意した:", project)
-            print("次は 1 番のセル。モデルは配布元から取る。")
-    elif parsed is not None:
-        print("access_token と refresh_token がある JSON を貼る。")
-        del parsed
+drive.mount("/content/drive")
+root = Path("/content/drive/MyDrive/wan-hospital")
+(root / "models").mkdir(parents=True, exist_ok=True)
+(root / "episodes").mkdir(parents=True, exist_ok=True)
+print("保存先:", root)
 '''
 
-SETUP = '''#@title 1. OneDrive へ Wan 2.2 の重みを取る（描画はしない）
-ONEDRIVE = "/content/onedrive/wan-hospital"  #@param {type:"string"}
-#@markdown **CivitaiのAPIキー** — このセルを実行する前に貼る。空のままノートを保存する。値は表示しない。空なら Colab のシークレット `CIVITAI_API_TOKEN`。
+SETUP = '''#@title 1. 初回だけ重みを Google Drive へ（GPU 不要）
+STORE = "/content/drive/MyDrive/wan-hospital"  #@param {type:"string"}
+#@markdown **CivitaiのAPIキー** — このセルを実行する前に貼る。空のままノートを保存する。値は表示しない。空なら Colab のシークレット `CIVITAI_API_TOKEN`。すでにある重みは飛ばす。
 CivitaiのAPIキー = ""  #@param {type:"string"}
 
-import os, subprocess, sys, urllib.request
+import os, sys, urllib.request
 from pathlib import Path
+from google.colab import drive
+drive.mount("/content/drive")
 
-if "mydrive" in ONEDRIVE.lower() or "/content/drive" in ONEDRIVE.replace("\\\\", "/").lower():
-    raise SystemExit("OneDrive 以外には書かない: " + ONEDRIVE)
-_root = Path(ONEDRIVE)
-if not _root.exists() and _root.parent.exists():
-    _root.mkdir(parents=True, exist_ok=True)
-if not _root.exists():
-    print("OneDrive がまだ見えない。上の「0. OneDrive をマウント」を先に実行する: " + ONEDRIVE)
+_root = Path(STORE)
+if not Path("/content/drive/MyDrive").exists():
+    print("Google Drive がまだ見えない。上のセルを先に実行する。")
 else:
+    _root.mkdir(parents=True, exist_ok=True)
     _civitai = str(CivitaiのAPIキー or "").strip()
     if not _civitai:
         try:
@@ -278,16 +209,14 @@ else:
         urllib.request.urlretrieve(f"{RAW}/{rel}", dest)
         print("fetched", rel)
     sys.path.insert(0, "/content")
-    os.environ["WAN_ONEDRIVE_ROOT"] = ONEDRIVE
+    os.environ["WAN_ONEDRIVE_ROOT"] = STORE
     import importlib
     import wan_colab_setup
     import wan_episode
     importlib.reload(wan_episode)
     importlib.reload(wan_colab_setup)
-    wan_colab_setup.setup(Path(ONEDRIVE), Path("/content/ComfyUI"))
-    print("OneDrive へ送っています。")
-    subprocess.run(["rclone", "copy", ONEDRIVE, "onedrive:wan-hospital", "--size-only", "--transfers", "4", "--stats", "20s", "--stats-one-line"])
-    print("OneDrive へ送りました:", ONEDRIVE)
+    wan_colab_setup.setup(Path(STORE), Path("/content/ComfyUI"))
+    print("重みの場所:", STORE)
 '''
 
 

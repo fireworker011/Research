@@ -155,8 +155,18 @@ def start_wan_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
     raise SystemExit("ComfyUI start failed")
 
 
+def base_weights_ready(models: Path) -> bool:
+    """True when the checkpoint pair, text encoder, and VAE are already on disk."""
+    for _url, rel in wan_base_jobs():
+        path = models / rel
+        if not path.is_file() or path.stat().st_size < 1_000_000:
+            print("重みがありません。1番のセルを先に実行する:", path.name)
+            return False
+    return True
+
+
 def setup(onedrive: Path | None = None, comfy_dir: Path | None = None) -> Path:
-    """Download Wan 2.2 weights onto OneDrive and point ComfyUI at them. Does not render."""
+    """Download missing Wan weights onto the store and point ComfyUI at them. Does not render."""
     root = Path(onedrive) if onedrive is not None else onedrive_root()
     comfy = Path(comfy_dir) if comfy_dir is not None else COMFY_DIR_DEFAULT
     models = root / "models"

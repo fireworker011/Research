@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 from h3_episode import load_episode, prepare_episode  # noqa: E402
 from wan_episode import (  # noqa: E402
     WAN_SLOT_LORAS,
+    onedrive_root,
     build_wan_graph,
     plan_wan_shots,
     wan_beat_prompt,
@@ -132,7 +133,12 @@ def test_wget_log_hides_civitai_token():
     assert "token=(hidden)" in shown
 
 
-def test_notebook_has_empty_civitai_and_onedrive_fields():
+def test_store_root_can_be_google_drive(monkeypatch):
+    monkeypatch.setenv("WAN_ONEDRIVE_ROOT", "/content/drive/MyDrive/wan-hospital")
+    assert onedrive_root() == Path("/content/drive/MyDrive/wan-hospital")
+
+
+def test_notebook_saves_weights_on_google_drive():
     import ast
     from _write_wan_episode_nb import notebook
 
@@ -141,17 +147,13 @@ def test_notebook_has_empty_civitai_and_onedrive_fields():
     assert len(sources) == 3
     for src in sources:
         ast.parse(src)
+    assert 'drive.mount("/content/drive")' in sources[0]
     assert 'CivitaiのAPIキー = ""' in sources[1]
-    assert 'ONEDRIVE_TOKEN = ""' in sources[0]
-    assert "graph.microsoft.com/v1.0/me/drive" in sources[0]
-    assert "drive_id = " in sources[0]
-    assert '"rclone", "copy", "onedrive:wan-hospital"' in sources[0]
-    assert '"/models/**"' in sources[0]
-    assert "rclone\", \"mount\"" not in sources[0]
-    assert "onedrive:wan-hospital" in sources[1]
-    assert "onedrive:wan-hospital" in sources[2]
-    assert "OneDrive がまだ見えない" in sources[1]
-    assert "raise SystemExit(\"OneDrive がまだ見えない" not in sources[1]
+    assert "/content/drive/MyDrive/wan-hospital" in sources[1]
+    assert "/content/drive/MyDrive/wan-hospital" in sources[2]
+    assert "rclone" not in sources[0]
+    assert "rclone" not in sources[1]
+    assert "rclone" not in sources[2]
 
 
 def test_wan_slot_files_are_wan22_pairs_not_h3():

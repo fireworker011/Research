@@ -189,31 +189,23 @@ H3_WEIGHT_MARKERS = (
     "h3-",
 )
 
-_DRIVE_MARKERS = ("mydrive", "google drive", "/content/drive")
-
-
 def onedrive_root() -> Path:
-    """Runtime store. WAN_ONEDRIVE_ROOT wins. Otherwise this PC's OneDrive folder."""
-    env = (os.environ.get("WAN_ONEDRIVE_ROOT") or "").strip()
+    """Runtime store. WAN_ONEDRIVE_ROOT wins. Colab default is Google Drive."""
+    env = (os.environ.get("WAN_ONEDRIVE_ROOT") or os.environ.get("WAN_STORE_ROOT") or "").strip()
     if env:
-        root = Path(env)
-    else:
-        local = Path.home() / "OneDrive"
-        root = local / "wan-hospital" if local.is_dir() else Path("/content/onedrive/wan-hospital")
-    _reject_google_drive(root)
-    return root
+        return Path(env)
+    drive = Path("/content/drive/MyDrive/wan-hospital")
+    if Path("/content/drive/MyDrive").is_dir():
+        return drive
+    local = Path.home() / "OneDrive"
+    if local.is_dir():
+        return local / "wan-hospital"
+    return drive
 
 
 def episode_work_root(slug: str, root: Path | str | None = None) -> Path:
     base = Path(root) if root is not None else onedrive_root()
-    _reject_google_drive(base)
     return base / "episodes" / slug
-
-
-def _reject_google_drive(path: Path) -> None:
-    text = str(path).replace("\\", "/").lower()
-    if any(marker in text for marker in _DRIVE_MARKERS):
-        raise EpisodeError(f"Wan episode data must stay on OneDrive, not Google Drive: {path}")
 
 
 def wan_needs_start_image(source: str) -> bool:
@@ -581,7 +573,6 @@ def run_wan_episode(
     A real generate is the Colab cell the human runs.
     """
     root = Path(root)
-    _reject_google_drive(root)
     ensure_episode_tree(root)
     ep = prepare_episode(ep, **prepare_kwargs)
     canvas = canvas_for(ep)

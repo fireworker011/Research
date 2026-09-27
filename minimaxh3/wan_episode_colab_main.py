@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Colab entry for the Wan 2.2 hospital episode. The human runs this. It does not run on import.
 
-Output root is OneDrive (WAN_ONEDRIVE_ROOT). Google Drive is rejected.
+Output root is Google Drive (WAN_ONEDRIVE_ROOT, default /content/drive/MyDrive/wan-hospital).
 H3 notebooks stay as they are. This file only draws with Wan.
 """
 
@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_episode import EpisodeError, load_episode
 from h3_episode_packs import canonical_episode
-from wan_colab_setup import start_wan_comfy
+from wan_colab_setup import base_weights_ready, ensure_comfy, start_wan_comfy, wire_comfy
 from wan_episode import episode_work_root, onedrive_root, run_wan_episode
 
 
@@ -33,7 +33,12 @@ def main() -> int:
     try:
         ep = load_episode(script)
         comfy = os.environ.get("WAN_COMFY_DIR") or "/content/ComfyUI"
+        models = onedrive_root() / "models"
         if os.environ.get("WAN_DRY_RUN") != "1":
+            if not base_weights_ready(models):
+                return 1
+            ensure_comfy(Path(comfy))
+            wire_comfy(models, Path(comfy), onedrive_root())
             start_wan_comfy(Path(comfy))
         final = run_wan_episode(
             ep,
