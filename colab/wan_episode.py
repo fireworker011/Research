@@ -580,6 +580,13 @@ def run_wan_episode(
     if os.environ.get("WAN_FETCH_LORAS") == "1" and not dry_run and loras is not None:
         from wan_colab_setup import download_loras
         download_loras(loras.parent, lora_names_in(ep))
+    if not dry_run and comfy_dir is not None and loras is not None and str(loras).startswith("/content/drive"):
+        from wan_colab_setup import stage_models, start_wan_comfy, wire_comfy
+        drive_models = loras.parent
+        local = stage_models(drive_models)
+        loras = local / "loras"
+        wire_comfy(local, Path(comfy_dir), drive_models.parent)
+        start_wan_comfy(Path(comfy_dir))
     shots = {row["id"]: row for row in plan_wan_shots(ep, loras)}
     status = load_status(root)
     status.update({
@@ -638,6 +645,7 @@ def run_wan_episode(
             )
             if comfy_dir is None:
                 raise EpisodeError("Wan generate needs ComfyUI. The human runs that cell; this call has no comfy_dir.")
+            print("描き始め:", bid, source, f"{shot['seconds']}s", flush=True)
             res, err = poster(graph, port)
             if err or not (res and res.get("prompt_id")):
                 raise EpisodeError(f"{bid}: Wan prompt rejected: {err or res}")

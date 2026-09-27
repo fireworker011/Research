@@ -132,10 +132,12 @@ if _ready:
     import importlib
     import h3_i2v_phone
     import h3_i2v_runtime
+    import wan_colab_setup
     import wan_episode
     import wan_episode_colab_main
     importlib.reload(h3_i2v_phone)
     importlib.reload(h3_i2v_runtime)
+    importlib.reload(wan_colab_setup)
     importlib.reload(wan_episode)
     importlib.reload(wan_episode_colab_main)
     main = wan_episode_colab_main.main

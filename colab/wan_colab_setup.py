@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -82,9 +83,36 @@ def link_tree(src: Path, dest: Path) -> None:
         if not item.is_file():
             continue
         link = dest / item.name
-        if link.exists() or link.is_symlink():
+        if link.is_symlink():
+            if link.resolve() == item.resolve():
+                continue
+            link.unlink()
+        elif link.exists():
             continue
         link.symlink_to(item)
+
+
+def stage_models(src: Path, dest: Path | None = None) -> Path:
+    """Copy Drive weights onto the Colab disk. Sampling from the Drive mount stalls."""
+    dest = dest or Path("/content/wan-weights")
+    dest.mkdir(parents=True, exist_ok=True)
+    for sub in ("diffusion_models", "text_encoders", "vae", "loras"):
+        folder = src / sub
+        if not folder.is_dir():
+            continue
+        out = dest / sub
+        out.mkdir(parents=True, exist_ok=True)
+        for item in folder.iterdir():
+            if not item.is_file() or item.stat().st_size < 1_000_000:
+                continue
+            target = out / item.name
+            if target.is_file() and target.stat().st_size == item.stat().st_size:
+                continue
+            gb = item.stat().st_size / (1024 ** 3)
+            print(f"ローカルへコピー: {item.name} ({gb:.1f} GB)", flush=True)
+            shutil.copyfile(item, target)
+            print("コピー完了:", item.name, flush=True)
+    return dest
 
 
 def _download_jobs(models_root: Path, jobs: list[tuple[str, str]], *, required: bool) -> None:
@@ -131,10 +159,34 @@ def comfy_ready(port: int = PORT) -> bool:
         return False
 
 
+def clear_comfy_queue(port: int = PORT) -> None:
+    """Drop prompts left behind by extra cell runs."""
+    try:
+        urllib.request.urlopen(
+            urllib.request.Request(f"http://127.0.0.1:{port}/interrupt", data=b"{}", method="POST"),
+            timeout=5,
+        )
+    except Exception:
+        pass
+    try:
+        urllib.request.urlopen(
+            urllib.request.Request(
+                f"http://127.0.0.1:{port}/queue",
+                data=json.dumps({"clear": True}).encode(),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            ),
+            timeout=5,
+        )
+    except Exception:
+        pass
+
+
 def start_wan_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
     os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
     if comfy_ready(port):
-        print("ComfyUI already up")
+        clear_comfy_queue(port)
+        print("ComfyUI already up. 前の待ち行列は消した", flush=True)
         return
     log = Path("/content/wan-comfy.log")
     handle = open(log, "w", buffering=1)

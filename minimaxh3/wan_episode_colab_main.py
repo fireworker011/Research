@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from h3_episode import EpisodeError, load_episode
 from h3_episode_packs import canonical_episode
-from wan_colab_setup import base_weights_ready, ensure_comfy, start_wan_comfy, wire_comfy
+from wan_colab_setup import base_weights_ready, ensure_comfy
 from wan_episode import episode_work_root, onedrive_root, run_wan_episode
 
 
@@ -38,8 +38,6 @@ def main() -> int:
             if not base_weights_ready(models):
                 return 1
             ensure_comfy(Path(comfy))
-            wire_comfy(models, Path(comfy), onedrive_root())
-            start_wan_comfy(Path(comfy))
         final = run_wan_episode(
             ep,
             root,

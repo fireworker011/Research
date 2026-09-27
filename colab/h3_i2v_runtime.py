@@ -331,6 +331,7 @@ def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, 
     """Poll Comfy until the prompt finishes. A busy GPU often misses the 60s history read; keep waiting."""
     t0 = time.time()
     stalls = 0
+    last_note = t0
     while time.time() - t0 < timeout:
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
@@ -350,6 +351,10 @@ def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, 
             return False, status
         if status.get("completed") or entry.get("outputs"):
             return True, entry
+        now = time.time()
+        if now - last_note >= 30:
+            print("描画中", int(now - t0), "秒", flush=True)
+            last_note = now
         time.sleep(2)
     return False, "timeout"
 
