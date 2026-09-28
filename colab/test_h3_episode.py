@@ -1862,7 +1862,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "both soles beside the ribs" in ride_peak["action"].lower()
     assert "lifts" not in ride_peak["action"].lower()
     assert "rock up" not in ride_peak["action"].lower()
-    assert ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
+    assert not ride_peak.get("trigger", "").startswith(SIDERIDE_TRIGGER)
     assert "cums inside of her" in ride_peak.get("trigger", "").lower()
     assert "female character" not in ride_peak.get("trigger", "").lower()
     assert "PENISLORA" in ride_peak.get("trigger", "")
@@ -1873,8 +1873,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "nothing new enters" not in peak_prompt.lower()
     assert "female character" not in peak_prompt.lower()
     peak_keys = extra_keys(ride_peak)
-    assert peak_keys[0] == "sideride"
-    assert extra_lora_entries(ride_peak)[0] == ("sideride", 0.8)
+    assert "sideride" not in peak_keys
+    assert peak_keys[0] == "penis"
     assert "mystic" not in peak_keys
     assert "thrust" in peak_keys and "penis" in peak_keys and "synth" in peak_keys
     assert "cumshot" not in peak_keys and "cumouf" not in peak_keys
@@ -1906,7 +1906,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
             seat_n += 1
             assert extra_lora_entries(beat)[0] == ("sideride", 0.5), beat["id"]
             assert "mystic" in keys, beat["id"]
-    assert seat_n == 0 and peak_n == 6
+    assert seat_n == 0 and peak_n == 1
 
 
 def test_hospital_review_takes_camera_invite_split_and_clip_length():
@@ -2046,7 +2046,7 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "lick around the lips" in kissb["action"].lower()
     order = [b["id"] for b in m_open["beats"]]
     assert order.index("08-ui-kana") < order.index("09-kana-facial") < order.index("09-kana-kiss") < order.index("09-join")
-    goo = "sticky white goo clinging to the upper body"
+    goo = "sticky white goo clinging to aya's face, hair, neck, breasts, shoulders, and chest"
     aya_lock = raw["cast"]["aya"]["lock"].lower()
     aya_white = raw["cast"]["aya"]["looks"]["white_upper"].lower()
     assert goo not in aya_lock
@@ -2055,7 +2055,7 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert raw["look_triggers"] == [{"after": "09-kana-facial", "who": "aya", "look": "white_upper"}]
     assert goo not in m_open["cast"]["aya"]["lock"].lower()
     assert "white rope" in facial["action"].lower()
-    assert "white goo on aya's face" in facial["action"].lower()
+    assert "white goo clinging to aya's face and breasts" in facial["action"].lower()
     assert "semen" not in facial["action"].lower()
     assert "aya" not in (facial.get("cast_lock") or {})
     assert goo not in build_beat_prompt(m_open, facial).lower()
@@ -2771,15 +2771,17 @@ def test_hospital_gin_tsuno_optional_events():
     assert "finishes inside gin" in ride_peak["action"].lower()
     assert "cums inside" not in ride_peak.get("trigger", "").lower()
     assert "lifts" not in (ride_peak.get("trigger") or "").lower()
-    assert extra_lora_entries(ride_peak)[0] == ("sideride", 0.8)
+    assert "sideride" not in extra_keys(ride_peak)
+    assert extra_keys(ride_peak)[0] == "penis"
     assert "thrust" in extra_keys(ride_peak)
-    assert "sideride" in extra_keys(ride_peak)
     assert "mystic" not in extra_keys(ride_peak)
     assert "pussy hanging directly above the glans" not in jupo["action"].lower()
     assert "cums" not in (ride_peak.get("trigger") or "").lower()
     assert "leaning on both palms" not in (ride_peak.get("trigger") or "").lower()
     assert "on her back" in (ride_peak.get("trigger") or "").lower()
-    assert (ride_peak.get("trigger") or "").startswith(SIDERIDE_TRIGGER)
+    assert not (ride_peak.get("trigger") or "").startswith(SIDERIDE_TRIGGER)
+    assert "either side of aya's ribs" in jupo["action"].lower()
+    assert "gin stands over the hips" in jupo["action"].lower()
     assert "stands vertically straight up from the groin" in jupo["action"].lower()
     assert "head right" in jupo["action"].lower()
     assert "feet left" in jupo["action"].lower()
@@ -4910,7 +4912,7 @@ def test_hospital_invite_sit_is_face_to_face():
     miki_act = miki_zai["action"]
     assert "toward the LEFT" in miki_act
     assert "toward the RIGHT" in miki_act
-    assert "SITS DOWN onto the linoleum" in miki_act
+    assert "already SITS on the linoleum" in miki_act
     assert "WRAP OUTSIDE Miki's waist" in miki_act
     assert "calves LOCK behind Miki's back" in miki_act
     assert "feet meet behind Miki, off the linoleum" in miki_act
@@ -4924,7 +4926,7 @@ def test_hospital_invite_sit_is_face_to_face():
         beat = next(b for b in sat["beats"] if b["id"] == bid)
         act = beat["action"]
         low = act.lower()
-        assert "SITS down on the floor" in act
+        assert "already SITS on the linoleum" in act
         assert "arms around each other's backs" in low
         assert "mouths stay joined" in low
         assert "wrap outside" in low
@@ -5217,7 +5219,7 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
             "kiss smack",
         ):
             assert banned not in peak_prompt.lower(), (base, banned)
-        assert SIDERIDE_TRIGGER in peak_prompt
+        assert SIDERIDE_TRIGGER not in peak_prompt
         assert "sideride" not in extra_keys(seat)
         oral_prompt = build_beat_prompt(ride, oral, trigger=merge_trigger("", oral))
         assert "this wide full-body frame stays locked" not in oral_prompt.lower()
@@ -5247,7 +5249,8 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "pulls out of aya's pussy" in walk["action"].lower()
         assert "pleasure-drunk" in walk["action"].lower()
         assert extra_lora_entries(walk) == [("kiss", 0.5)]
-        assert extra_lora_entries(peak)[0] == ("sideride", 0.8)
+        assert "sideride" not in extra_keys(peak)
+        assert extra_keys(peak)[0] == "penis"
         assert "thrust" in extra_keys(peak)
         assert "mystic" not in extra_keys(peak)
         assert peak.get("connect") == "chain"

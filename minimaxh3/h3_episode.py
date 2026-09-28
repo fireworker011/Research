@@ -493,6 +493,17 @@ PEE_STILL_CLAUSE = (
     "see-through and watery, the color of lemon water. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+# Face-to-face seat. "Feet planted" draws Aya standing. Her feet meet behind the partner.
+SIT_LAP_RE = re.compile(r"wrap outside", re.I)
+SIT_LAP_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The partner already sits on the linoleum, torso upright, both of the partner's feet on the linoleum. "
+    "Aya faces the partner and lowers onto the lap. "
+    "Aya's thighs wrap outside the partner's waist. Aya's calves lock behind the partner's back. "
+    "Both of Aya's feet meet behind the partner, off the linoleum. "
+    "They HOLD still joined at the BASE until the last frame. "
+    "The camera holds. Normal adult human height, nobody is giant."
+)
 NELSON_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
@@ -661,9 +672,12 @@ GIN_ORAL_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
     "head on the RIGHT, feet pointing LEFT. "
-    "Gin kneels toward the LEFT at the hips. "
     "Closed lips slide down the upright 24cm until the lips meet the groin at the base. "
-    "The 24cm stays inside the mouth. "
+    "The 24cm stays inside the mouth during those strokes. "
+    "Last frame: Gin stands over the hips, head on the LEFT. "
+    "Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. "
+    "Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
+    "Gin's hairless pussy hangs directly above the glans. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -4135,6 +4149,28 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
 
 _LOOK_DROP_RE = re.compile(r"\b(?:no|never|not|without)\b", re.IGNORECASE)
 _SHAFT_IN_LOOK_RE = re.compile(r"\b(?:shaft|penis|\d+\s*cm)\b", re.IGNORECASE)
+_SEX_ACT_RE = re.compile(
+    r"pussy|anus|glans|joined at the base|white rope|white goo|lips (?:reach|meet|at) the base|inside the mouth",
+    re.IGNORECASE,
+)
+
+
+def _sex_act(beat: dict[str, Any]) -> bool:
+    """Sex holds drop the cover face. Walks and the opener keep it."""
+    bid = str(beat.get("id") or "")
+    if bid in ("01-cover",) or bid.endswith(("-walk", "-out", "-run", "-slip")):
+        return False
+    return bool(_SEX_ACT_RE.search(str(beat.get("action") or "")))
+
+
+def _drop_tired(lock: str, beat: dict[str, Any]) -> str:
+    text = str(lock or "")
+    if not _sex_act(beat):
+        return text
+    text = text.replace("tired determined expression", "")
+    text = re.sub(r",\s*,", ", ", text)
+    text = re.sub(r"\s{2,}", " ", text).strip(" ,")
+    return text
 
 
 def _positive_look(lock: str) -> str:
@@ -4167,6 +4203,7 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
                 "tired determined expression",
                 "a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth",
             )
+        positive = _drop_tired(positive, beat)
         if positive:
             lines.append(f"{name}: {positive}.")
         if positive and str(cid) not in fade and _SHAFT_IN_LOOK_RE.search(positive):
@@ -4194,7 +4231,7 @@ def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     for cid in beat.get("cast") or []:
         c = cast.get(cid) or {}
         name = str(c.get("name_en") or cid.title())
-        lock = str(beat_locks.get(cid) or c.get("lock") or "").strip().rstrip(".")
+        lock = _drop_tired(str(beat_locks.get(cid) or c.get("lock") or ""), beat).strip().rstrip(".")
         lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
     return "\n".join(lines)
 
@@ -4400,6 +4437,8 @@ def build_beat_prompt(
             desc.append(NELSON_PLANTED_CLAUSE)
         elif PEE_STILL_RE.search(action_txt):
             desc.append(PEE_STILL_CLAUSE)
+        elif SIT_LAP_RE.search(action_txt):
+            desc.append(SIT_LAP_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
             desc.append(SUPINE_PACE_CLAUSE)
             desc.append(SLIDE_PACE_CLAUSE)
