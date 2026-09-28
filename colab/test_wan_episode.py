@@ -60,17 +60,17 @@ RIDE_CUT = {
     "04-tsuno-ride-kiss": "t2v",
     "04-tsuno-walk": "t2v",
 }
-# Chain dropdown: first GPU beat of the episode is T2V. These acts are later, so spot is I2V.
-# connect:cut stays T2V (wait, walk, stall, stall-kiss).
+# Chain dropdown. Rib-ride wait and walk stay chain with the rest of the seat.
+# Stall and stall-kiss stay cut. See WASH_CHAIN.
 RIDE_CHAIN = {
     "04-tsuno-meet-spot": "chain",
     "04-tsuno-kiss": "chain",
     "04-tsuno-oral": "chain",
-    "04-tsuno-wait": "t2v",
+    "04-tsuno-wait": "chain",
     "04-tsuno-ride": "chain",
     "04-tsuno-peak": "chain",
     "04-tsuno-ride-kiss": "chain",
-    "04-tsuno-walk": "t2v",
+    "04-tsuno-walk": "chain",
 }
 WASH_CUT = {
     "04-tsuno-meet-spot": "t2v",
@@ -224,8 +224,43 @@ def test_scene_loras_follow_the_prepared_act():
     wash = _prepare("角・個室", "カット")
     assert "anal" in _slots(wash, "04-tsuno-anal")
     assert "anal" in _slots(wash, "04-tsuno-cum")
+    assert "anal sex" in wan_beat_prompt(wash, next(b for b in wash["beats"] if b["id"] == "04-tsuno-anal")).lower()
+    assert "anal sex" not in wan_beat_prompt(wash, next(b for b in wash["beats"] if b["id"] == "04-tsuno-cum")).lower()
     assert "anal" not in _slots(wash, "04-tsuno-stall")
     assert "anal" not in _slots(wash, "04-tsuno-gape")
+
+    miki = prepare_episode(
+        load_episode(HOSPITAL),
+        story_override="受け入れる",
+        toilet_override="wash_miki",
+        connect_override="カット",
+    )
+    assert "anal" in _slots(miki, "04-toilet")
+    assert "anal" in _slots(miki, "04-toilet-cum")
+    assert "anal" not in _slots(miki, "04-toilet-gape")
+    assert "anal sex" in wan_beat_prompt(miki, next(b for b in miki["beats"] if b["id"] == "04-toilet")).lower()
+    assert "anal sex" not in wan_beat_prompt(miki, next(b for b in miki["beats"] if b["id"] == "04-toilet-cum")).lower()
+
+    seated = prepare_episode(
+        load_episode(HOSPITAL),
+        story_override="invite",
+        invite_pose_override="ride",
+        connect_override="カット",
+    )
+    assert "doggy" not in _slots(seated, "06-doggy")
+    assert "missionary" not in _slots(seated, "06-doggy-wait")
+    assert "missionary" not in _slots(seated, "09-join")
+    assert "anal" not in _slots(seated, "03-kiss")
+
+    dog = prepare_episode(
+        load_episode(HOSPITAL),
+        story_override="受け入れる",
+        dog_override="invite_oral",
+        connect_override="前の最終フレームから続ける",
+    )
+    assert "missionary" not in _slots(dog, "04-dog-lick")
+    assert "missionary" not in _slots(dog, "04-dog-wait")
+    assert "missionary" not in _slots(dog, "04-dog-jupo")
 
     ride = _prepare("角・騎乗", "カット")
     assert "anal" not in _slots(ride, "04-tsuno-peak")

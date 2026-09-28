@@ -262,18 +262,11 @@ def _action_text(beat: dict[str, Any]) -> str:
     return str(beat.get("action") or "").lower()
 
 
-def scene_slot_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
-    """Wan-only LoRAs for acts the prepared beat already performs.
-
-    H3 extra_loras and the episode text stay as authored. Thumb-only and the
-    exit walk do not take the shaft anal pair.
-    """
-    act = _action_text(beat)
-    bid = str(beat.get("id") or "")
-    if bid.endswith("-walk") or bid.endswith("-spot"):
-        return []
-    rows: list[tuple[str, float]] = []
-    shaft_anal = "thumb" not in act and "brown log" not in act and any(
+def _anal_insertion(act: str) -> bool:
+    """Shaft travels into the anus. A buried hold, a gape, a thumb, and a brown log are not this."""
+    if "thumb" in act or "brown log" in act:
+        return False
+    return any(
         phrase in act
         for phrase in (
             "into the anus",
@@ -283,14 +276,37 @@ def scene_slot_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
             "fills the anus",
         )
     )
-    if shaft_anal:
+
+
+def _anal_buried(act: str) -> bool:
+    """Cum that stays joined, base buried in the anus. The open ring after withdrawal is not this."""
+    return "thumb" not in act and "brown log" not in act and "stays buried" in act and "anus" in act
+
+
+def scene_slot_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
+    """Wan-only LoRAs for acts the prepared beat already performs.
+
+    H3 extra_loras and the episode text stay as authored. Match the action,
+    not the beat id.
+    """
+    act = _action_text(beat)
+    bid = str(beat.get("id") or "")
+    if bid.endswith("-walk") or bid.endswith("-spot"):
+        return []
+    rows: list[tuple[str, float]] = []
+    insertion = _anal_insertion(act)
+    if insertion or _anal_buried(act):
         rows.append(("anal", 0.8))
-    if shaft_anal and "held up" in act and "thighs" in act:
+    if insertion and "held up" in act and "thighs" in act:
         rows.append(("nelson", 0.75))
     if "all fours" in act:
         rows.append(("doggy", 0.8))
-    if "stays on her back" in act and "straddl" not in act and (
-        "between" in act or "into the pussy" in act
+    # Supine vaginal entry. Hind-leg licks and rib seats do not say this.
+    if (
+        "stays on her back" in act
+        and "straddl" not in act
+        and "hind leg" not in act
+        and "into the pussy" in act
     ):
         rows.append(("missionary", 0.8))
     if "lemon-yellow water" in act and "streaming" in act:
@@ -304,8 +320,11 @@ def wan_beat_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     """H3 prompt, plus the Wan LoRA trigger when that scene slot is on."""
     prompt = build_beat_prompt(ep, beat)
     extra: list[str] = []
+    act = _action_text(beat)
     for name, _strength in scene_slot_entries(beat):
         trigger = str(WAN_SLOT_LORAS.get(name, {}).get("trigger") or "").strip()
+        if name == "anal" and not _anal_insertion(act):
+            continue
         if trigger and trigger.lower() not in prompt.lower():
             extra.append(trigger)
     if not extra:
