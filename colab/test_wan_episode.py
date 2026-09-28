@@ -189,6 +189,24 @@ def test_wan_slot_files_are_wan22_pairs_not_h3():
     assert graph["5"]["inputs"]["unet_name"].endswith("Q8L.gguf")
 
 
+def test_every_wan_prompt_uses_the_wan22_shape():
+    ep = _prepare("角・騎乗", "カット")
+    drawn = [b for b in ep["beats"] if isinstance(b, dict) and b.get("action")]
+    assert drawn
+    for beat in drawn:
+        text = wan_beat_prompt(ep, beat)
+        assert "subject_definitions:" not in text
+        assert "[Shot 1]" not in text
+        assert "integrated_multimodal_description:" not in text
+        assert "<Picture 1>" not in text
+        assert "Camera:" in text
+        assert "By the end, that motion has happened once" in text
+        if beat["source"] in ("chain", "still"):
+            assert "previous frame" in text
+        else:
+            assert "previous frame" not in text
+
+
 def test_invite_ride_order_and_sources():
     cut = _prepare("角・騎乗", "カット")
     chain = _prepare("角・騎乗", "前の最終フレームから続ける")

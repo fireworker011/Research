@@ -27,8 +27,10 @@ from typing import Any
 from h3_episode import (
     EpisodeError,
     beat_clip_seconds,
+    _cast_block,
+    _speech_visual,
     beat_source,
-    build_beat_prompt,
+    camera_line,
     canvas_for,
     ensure_episode_tree,
     extra_lora_entries,
@@ -316,9 +318,51 @@ def scene_slot_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
     return rows
 
 
+def _one_camera(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    """One camera instruction. The authored line wins. A pack angle is a second move."""
+    authored = str(beat.get("camera") or "").strip().rstrip(".")
+    if authored:
+        return authored
+    return camera_line(ep, beat, pack_name="", gpu_index=0, rotate=False).strip().rstrip(".")
+
+
+def wan_shot_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    """Wan 2.2 prose for every beat. The episode text stays the motion. H3 sections are not sent.
+
+    Text-to-video: subject, place, the authored motion, one camera, then the end.
+    Image-to-video: the previous frame, that same motion, one camera, then the end.
+    Four-step draws follow this shape. They do not follow the H3 section template.
+    """
+    subjects = " ".join(_cast_block(ep, beat).split())
+    place = str(beat.get("place") or "").strip().rstrip(".")
+    action = str(beat.get("action") or "").strip().rstrip(".")
+    camera = _one_camera(ep, beat) or "static, eye-level, medium shot"
+    speech = _speech_visual(ep, beat).strip()
+    end = "By the end, that motion has happened once and the pose holds."
+    camera_line_text = f"Camera: {camera}." if camera else ""
+    if beat_source(beat) in ("chain", "still"):
+        parts = [
+            "The clip starts on the previous frame. Same people, same skin, same hair, same wounds.",
+            f"{action}.",
+            camera_line_text,
+            speech,
+            end,
+        ]
+    else:
+        parts = [
+            subjects,
+            f"{place}." if place else "",
+            f"{action}.",
+            camera_line_text,
+            speech,
+            end,
+        ]
+    return " ".join(part for part in parts if part)
+
+
 def wan_beat_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
-    """H3 prompt, plus the Wan LoRA trigger when that scene slot is on."""
-    prompt = build_beat_prompt(ep, beat)
+    """Wan 2.2 shot, plus the LoRA trigger when that scene slot is an insertion."""
+    prompt = wan_shot_prompt(ep, beat)
     extra: list[str] = []
     act = _action_text(beat)
     for name, _strength in scene_slot_entries(beat):
