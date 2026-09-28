@@ -57,7 +57,7 @@ RIDE_CUT = {
     "04-tsuno-wait": "t2v",
     "04-tsuno-ride": "chain",
     "04-tsuno-peak": "chain",
-    "04-tsuno-ride-kiss": "t2v",
+    "04-tsuno-ride-kiss": "chain",
     "04-tsuno-walk": "t2v",
 }
 # Chain dropdown. Rib-ride wait and walk stay chain with the rest of the seat.
