@@ -2363,7 +2363,7 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "jacko" in extra_keys(push)
     assert "doggy" not in extra_keys(push)
     assert "Doggy style" not in push["action"]
-    assert "jacko" not in extra_keys(insert)
+    assert extra_lora_entries(insert)[0] == ("jacko", 0.7)
     assert "doggy" not in extra_keys(insert)
     assert "thumbinbutt" not in extra_keys(insert)
     assert "synth" not in extra_keys(insert)
@@ -5519,7 +5519,8 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert all(b.get("connect") == "chain" and beat_source(b) == "chain" for b in stall)
     gape = next(b for b in stall if b["id"] == "04-toilet-gape")
     assert "wide ring" in gape["action"]
-    assert "jacko" not in extra_keys(gape)
+    assert extra_lora_entries(gape) == [("jacko", 0.65)]
+    assert "doggy" not in extra_keys(gape)
     push = next(b for b in stall if b["id"] == "04-toilet-push")
     assert "chest and cheek" in push["action"]
     spot = next(b for b in stall if b["id"] == "04-toilet-spot")
@@ -5528,12 +5529,18 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
         str(b.get(k) or "") for b in stall for k in ("action", "camera", "place", "environment")
     ).lower()
     assert extra_keys(push)[0] == "jacko"
-    assert "jacko" not in extra_keys(next(b for b in stall if b["id"] == "04-toilet"))
+    inserted = next(b for b in stall if b["id"] == "04-toilet")
+    assert extra_lora_entries(inserted)[0] == ("jacko", 0.7)
+    assert "doggy" not in extra_keys(inserted)
+    cum = next(b for b in stall if b["id"] == "04-toilet-cum")
+    assert extra_lora_entries(cum)[0] == ("jacko", 0.65)
+    assert "doggy" not in extra_keys(cum)
     out = next(b for b in stall if b["id"] == "04-toilet-out")
     assert "SLIDES OUT" not in out["action"]
     assert "Tongues intertwine" in out["action"]
     expel = prepare_episode(raw, story_override="accept", toilet_override="和式", connect_override="chain")
     assert all(b["id"] != "04-toilet-gape" for b in expel["beats"])
+    assert all("jacko" not in extra_keys(b) for b in expel["beats"] if str(b["id"]).startswith("04-toilet"))
     gin = prepare_episode(raw, story_override="accept", gin_override="犯される", connect_override="chain")
     order = [b["id"] for b in gin["beats"] if str(b["id"]).startswith("04-gin")]
     assert order.index("04-gin-jupo") < order.index("04-gin-mouth") < order.index("04-gin-spitkiss")

@@ -2709,6 +2709,10 @@
           "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long white porcelain squat pan set flush into the tile floor, the porcelain rim level with the tiles. The white splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
+              "jacko",
+              0.7
+            ],
+            [
               "mystic",
               0.5
             ],
@@ -2770,6 +2774,10 @@
           "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long white porcelain squat pan set flush into the tile floor, the porcelain rim level with the tiles. The white splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long white porcelain squat pan set flush into the tile floor, the porcelain rim level with the tiles. The white splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
             [
               "mystic",
               0.5
@@ -2833,7 +2841,12 @@
           "props": [],
           "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long white porcelain squat pan set flush into the tile floor, the porcelain rim level with the tiles. The white splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long white porcelain squat pan set flush into the tile floor, the porcelain rim level with the tiles. The white splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "extra_loras": [],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
           "hud": {
             "mission": "出口に出る",
             "mission_keyword": "出口",
