@@ -694,18 +694,19 @@ GIN_MOUTH_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays fully on her back, head on the RIGHT, feet pointing LEFT. "
     "The erect 24cm stands vertically straight UP from the groin. "
-    "Gin kneels toward the LEFT at the hips. Closed lips stay at the BASE. "
-    "Gin finishes INSIDE Aya's mouth. Thick WHITE goo fills the mouth around the shaft. "
-    "Last frame: lips still at the BASE, WHITE goo at the lips, tongue out, Gin still kneeling. "
+    "Gin kneels toward the LEFT at the hips. "
+    "The 24cm slides out of Aya's mouth once. The glans stays in front of Aya's face. "
+    "One thick WHITE rope shoots from the slit of the glans onto Aya's face and tongue. "
+    "Last frame: the 24cm outside the mouth, the glans in front of the face, WHITE rope on the face and tongue, Gin still kneeling. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 GIN_SPIT_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays on her back. Gin kneels at the hips. "
-    "The 24cm slides out of Aya's mouth. Mouths join. WHITE goo passes between the mouths. "
-    "Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. "
-    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, the 24cm outside the mouth. "
+    "WHITE rope stays on Aya's face and tongue. The 24cm stays outside the mouth. "
+    "Mouths join. Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. "
+    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, WHITE rope on the face, the 24cm outside the mouth. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -840,6 +841,15 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
     return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
 
 
+def _tsuno_ride_kiss_chain_authored(beat: dict[str, Any]) -> bool:
+    """The joined kiss after the horn seat stays I2V. A cut dropdown must not redraw it as T2V."""
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    if str(beat.get("id") or "") != "04-tsuno-ride-kiss":
+        return False
+    return "already joined" in str(beat.get("action") or "").lower()
+
+
 def _rib_wait_chain_authored(beat: dict[str, Any]) -> bool:
     """The unjoined rib stand stays I2V. A cut dropdown must not redraw it as T2V."""
     if str(beat.get("connect") or "").strip().lower() != "chain":
@@ -861,7 +871,7 @@ def _gin_supine_chain_authored(beat: dict[str, Any]) -> bool:
     bid = str(beat.get("id") or "")
     low = str(beat.get("action") or "").lower()
     if bid == "04-gin-mouth":
-        return "on her back" in low and "base" in low
+        return "on her back" in low and "slit" in low
     if bid == "04-gin-spitkiss":
         return "kneel" in low
     if bid == "04-gin-wait":
@@ -1616,7 +1626,8 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
-    Gin's jupo, seat, and peak authored connect:chain stay I2V even when the dropdown is a cut.
+    The horn seat kiss authored connect:chain stays I2V even when the dropdown is a cut.
+    Gin's jupo, mouth, seat, and peak authored connect:chain stay I2V even when the dropdown is a cut.
     """
     name = episode_connect(ep, override)
     if not name:
@@ -1637,6 +1648,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if (
             _toilet_chain_authored(beat)
             or _rib_ride_chain_authored(beat)
+            or _tsuno_ride_kiss_chain_authored(beat)
             or _gin_supine_chain_authored(beat)
             or _rib_wait_chain_authored(beat)
         ):

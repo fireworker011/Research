@@ -2346,7 +2346,8 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
         )
         assert "western toilet bowl" not in blob
         assert "SITS DOWN facing the camera" not in blob
-        assert "hood" in blob and "beige platform" in blob
+        assert "hood" in blob and "platform" not in blob.lower()
+        assert "flush into the tile floor" in blob
         for beat in stall:
             act = beat["action"]
             assert "thum1n8utt" not in act
@@ -5401,8 +5402,9 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     ]
     assert "04-tsuno-meet" not in ids
     oral = next(b for b in ride["beats"] if b["id"] == "04-tsuno-oral")
-    assert "kneeling" in oral["action"].lower()
-    assert "closed lips at the base" in oral["action"].lower()
+    assert "kneels" in oral["action"].lower()
+    assert "STANDS" not in oral["action"]
+    assert "STANDS" not in build_beat_prompt(ride, oral)
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "DIRECTLY ABOVE the glans" in wait["action"]
     assert wait.get("connect") == "chain"
@@ -5433,6 +5435,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     cut = prepare_episode(raw, tsuno_override="invite_ride", connect_override="t2v")
     assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-ride")) == "chain"
     assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-peak")) == "chain"
+    kiss_joined = next(b for b in ride["beats"] if b["id"] == "04-tsuno-ride-kiss")
+    assert kiss_joined.get("connect") == "chain" and beat_source(kiss_joined) == "chain"
+    assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-ride-kiss")) == "chain"
+    assert "LOWERS" in seat["action"] and "HOLD" in seat["action"]
     embraced = prepare_episode(
         raw,
         story_override="誘う",
@@ -5515,7 +5521,12 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "wide ring" in gape["action"]
     assert "jacko" not in extra_keys(gape)
     push = next(b for b in stall if b["id"] == "04-toilet-push")
-    assert "wraps Aya from behind" in push["action"]
+    assert "chest and cheek" in push["action"]
+    spot = next(b for b in stall if b["id"] == "04-toilet-spot")
+    assert "RUBS" in spot["action"]
+    assert "platform" not in " ".join(
+        str(b.get(k) or "") for b in stall for k in ("action", "camera", "place", "environment")
+    ).lower()
     assert extra_keys(push)[0] == "jacko"
     assert "jacko" not in extra_keys(next(b for b in stall if b["id"] == "04-toilet"))
     out = next(b for b in stall if b["id"] == "04-toilet-out")
@@ -5532,12 +5543,15 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in jupo["action"].lower()
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
-    assert extra_lora_entries(mouth) == [("blowjob", 0.7), ("cumouf", 0.5)]
-    assert "cmst" not in extra_keys(mouth)
+    assert extra_lora_entries(mouth) == [("cmst", 0.55), ("mystic", 0.5)]
+    assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
+    assert "slit" in mouth["action"]
     assert "STANDS" not in mouth["action"]
     assert "STANDS" not in build_beat_prompt(gin, mouth)
     spit = next(b for b in gin["beats"] if b["id"] == "04-gin-spitkiss")
     assert extra_lora_entries(spit) == [("kiss", 0.5), ("cumouf", 0.45)]
+    assert "SLIDES OUT" not in spit["action"]
+    assert "Mouths JOIN" in spit["action"]
     assert "STANDS" not in spit["action"]
     waited = next(b for b in gin["beats"] if b["id"] == "04-gin-wait")
     assert "DIRECTLY ABOVE" in waited["action"]

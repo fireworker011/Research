@@ -52,7 +52,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 遭遇カット（id が `-spot`）も I2V。前の最終フレームのあやに、新しい人が入る
 - それ以外の GPU カットも、前の最終フレームからの I2V
 - 同じ相手の次の行為、ポーズ、トイレ、灰色、角、戦いも I2V。台本の `connect: t2v` は、この病棟でチェーンを選んだときは効かない
-- 「カット」を選ぶと全部 T2V。ただし着座と絶頂で connect が chain の肋骨騎乗は、カットでも I2V のまま。ギンの `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss` `04-gin-wait` `04-gin-ride` `04-gin-peak` も同じ。みき／れい／かな／しのの `*-wait` も同じ
+- 「カット」を選ぶと全部 T2V。ただし着座と絶頂で connect が chain の肋骨騎乗は、カットでも I2V のまま。角の `04-tsuno-ride-kiss` も同じ。ギンの `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss` `04-gin-wait` `04-gin-ride` `04-gin-peak` も同じ。みき／れい／かな／しのの `*-wait` も同じ
 - チェーンを選んだとき、T2V は `01-cover` だけ（受け入れる＋灰色・犯される＋角の立ちバック＋トイレ pee＋4人登場で測る）。遭遇も I2V。和式ミキは全拍 chain
 - `04-gin-cunny` は connect chain。首は舐めの最終（座り、マンコ、竿なし、舌がクリ）。Look の 0 秒に 24cm は書かない
 - 角・騎乗の `04-tsuno-wait` と `04-tsuno-walk` は connect chain。跪きの最終を跨ぎの首にしない
@@ -78,8 +78,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - `04-gin-lick`: あやは恐る恐る振り向いて、尻餅は右側。頭は画面右、足先は左。そこがゴール。ギンは左でしゃがみ、長い舌があやのマンコとクリを下から舐め続ける。竿は生えない。ギンもあやも竿なし。容姿・汚れ・眼窮はそのまま。`futanari` の語は書かない。右端は暗い通路が続く。壁という語は書かない。舐め本文は変えない。Aya says 「気持ちいい」。extra は mystic + cunny + jpnmoans 0.55。トリガー `performing cunnilingus` と `jpnMoans`。声はあやの `きもちいい` とギンの `れろっ`
 - `04-gin-cunny`: source も connect も chain。0秒は舐めの最終。あやは右側に座り、マンコ、竿なし、舌はクリ。Look に 24cm を書かない。舌はクリを舐め続ける。THEN クリが直立の 24cm に生える。生えた瞬間だけ wide-eyed surprised joyful excited smile。Aya says 「すごい」。背中はリノリウムへ下り、頭は RIGHT、足は LEFT。ギンは新しい竿を一度舐める。最終は jupo の首。仰向け、24cm が真上、ギンは左でしゃがむ。extra は cunny 0.8 + mystic 0.5 + jpnmoans 0.55。futatf と penis は積まない。Turbo / Eros 8step / Larry は extra に置かない。この拍は `steps` 8、`turbo` false。Comfy はこの 8 を使う。API 経路は steps 欄が無いので Turbo を切る。`Aya's shaft written in that look stays erect` は付けない。`FALLS ONTO` は書かない
 - `04-gin-jupo`: 0秒から仰向け＋24cm。cunny の最終を継承。倒れる工程は書かない。座ったまま、両腕を後ろ、LIES BACK、マンコが真上、は書かない。ギンは腰の左で跪き、閉じた唇。閉じた唇が根元まで下り、亀頭へ戻ってまた根元まで下りる。0秒も最終も跪き。最終の跨ぎ文は書かない。Look の竿文はここから付ける。connect は chain
-- `04-gin-mouth`: 唇は根元のまま。ギンはあやの口の中で終わる。extra は blowjob 0.7 + cumouf 0.5。cmst は積まない。STANDS は書かない
-- `04-gin-spitkiss`: 竿は口から出る。べろちゅーで WHITE goo がギンの口へ渡る。涎と WHITE の糸。extra は kiss 0.5 + cumouf 0.45。STANDS は書かない
+- `04-gin-mouth`: 竿は口から一度出る。亀頭は顔の前。slit から WHITE rope が顔と舌へ。extra は cmst 0.55 + mystic 0.5。トリガーは `cmst`。blowjob と cumouf は積まない。jupo は触らない。STANDS は書かない
+- `04-gin-spitkiss`: 口から抜く文は書かない。顔の WHITE のまま口が付く。涎と WHITE の糸。extra は kiss 0.5 + cumouf 0.45。STANDS は書かない
 - `04-gin-wait`: あやは仰向け、24cm は真上。ギンは股の上に立つ。両足裏は肋骨の左右、両膝は曲がったまま、マンコは亀頭の DIRECTLY ABOVE。未結合。STANDS はここだけ
 - そこから既存の分岐（騎乗 / 正常位 / 後背）。成長とジュボは別カット。犯すと誘う後背の cunny 本文は残す
 - `04-gin-ride`: 乗るのはギン。あやは仰向けのまま。参照は IMG_0718。0秒は wait の足。両足裏は肋骨の左右、胸の左右に一枚ずつ。両膝は曲がったまま。腰は股の上。体重は足裏。マンコは亀頭の真上。LOWERS 一度、根元で HOLD。`HOLD still joined at the BASE until the last frame`。最終も両膝は曲がったまま、足裏は肋骨の横、根元。両手はあやの胸。SQUATS、sits beside、knees on the linoleum、LIFTS、folds down、Three separate lowers、SITS ON、STANDS UP、steps over は書かない。STANDS は書かない。extra は mystic 0.5 + penis 0.45 + synth 0.4。sideride と thrust は積まない。connect は chain
@@ -99,11 +99,11 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。角が仰向け、あやが跨ぐ。ギン型にしない。
 
 - kiss 8秒: 背後ハグ、胸を揉む、体ごと振り向いてべろちゅー。extra は kiss 0.5 + mystic 0.5
-- oral 8秒: 跪き口。本文は `Aya KNEELS` と `closed lips at the BASE`。最終は跪き。跨ぎの足は既存の wait。connect は chain。extra は mystic 0.5 + penis 0.45
+- oral 8秒: 0秒も最終も角は仰向け、頭 RIGHT、足 LEFT、24cm は真上。あやは腰の左で跪き、閉じた唇が根元まで下り、亀頭へ戻ってまた根元まで下りる。STANDS は書かない。跨ぎの足は既存の wait。connect は chain。extra は mystic 0.5 + penis 0.45
 - wait 6秒: 0秒はすでに仰向けで跨ぐ。未結合。`DIRECTLY ABOVE the glans`。connect は chain。跪きの最終を着座の首にしない。FRESH
-- ride 8秒: 一度下ろして `HOLD still joined at the BASE until the last frame`。sideride と thrust は積まない。connect は chain
-- peak 8秒: 短い上下。中出し。sideride 0.8。mystic は積まない。penis 0.45、synth 0.4、thrust 0.55。connect は chain
-- ride-kiss 6秒: 結合のまま涎キス。extra は kiss 0.5
+- ride 8秒: すでにその足。LOWERS 一度。`HOLD still joined at the BASE until the last frame`。sideride と thrust は積まない。connect は chain。カットでも I2V
+- peak 8秒: 短い上下。中出し。sideride 0.8。mystic は積まない。penis 0.45、synth 0.4、thrust 0.55。connect は chain。カットでも I2V
+- ride-kiss 6秒: 結合のまま涎キス。extra は kiss 0.5。connect は chain。カットでも I2V
 - walk 8秒: connect chain。0–3 秒は口と口、涎の糸、ここで抜ける。3–5 秒で角が右へ。5–8 秒はあや一人。`No penis` `The grown shaft is gone`。extra は kiss 0.5。個室の walk は cut のまま
 
 竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。
@@ -209,7 +209,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 排出はしゃがみの次。棒が肛門から穴へ繋がったまま。ThumbInButt 0.55。
 
-ミキ枝は全拍 connect chain。順は in → squat → spot → push → 挿入 → cum → gape → out。排出枝に gape は足さない。spot は未接触。24cm は尻の前。あやに竿は書かない。`04-toilet-push` だけ Jack-O。extra は jacko 0.8 + mystic 0.5 + jpnmoans 0.55。futatf は積まない。竿はミキの 24cm が1本。`Miki wraps Aya from behind. Palms press the back. THEN chest down, hips high`。両掌は台、両膝はパンの左右、顔はフード。Aya says 「やばい、だめ」。最終は胸が台へ、腰は高い、顔はフード、24cm は割れ目の前。挿入カットに Jack-O / Doggy を積まない。排出に Jack-O を積まない。挿入は文章のまま肛門。`The erect 24cm TRAVELS INTO the anus to the root`。`HOLD still joined at the BASE until the last frame`。Aya says 「気持ちいい」。挿入 extra は mystic 0.5 + penis 0.45 + jpnmoans 0.55。synth / jacko / doggy / ThumbInButt / Turbo は積まない。絶頂は keep the glans inside。WHITE goo は結合から溢れる。根元は抜かない。Aya says 「あ、いく」。絶頂 extra は thrust 0.55 + mystic 0.5 + penis 0.45 + jpnmoans 0.55。声は各カットの「」1句（`きもちいい` はひらがな）。`04-toilet-gape` は 6 秒。すでに結合。胸は台、腰は高い、顔はフード。腰を一度後ろへ。24cm が肛門を出る。肛門は wide ring。WHITE goo が輪から穴へ垂れる。最終は両掌と両膝、輪、垂れた goo、ミキは後ろに立つ。out は向き直してべろちゅーして右へ。抜きは out に書かない。竿はミキ 24cm。あやに竿は生やさない。キス歩きは kiss 0.5。kiss と walk に jpnmoans は積まない。
+和式のパンは床のタイルと同じ高さ。足はタイル。汚れはタイルと縁とフードと壁。ミキ枝は全拍 connect chain。順は in → squat → spot → push → 挿入 → cum → gape → out。排出枝に gape は足さない。spot はミキの顔も体もフード向き。掌は尻を RUBS。24cm は尻の前で未接触。あやに竿は書かない。`04-toilet-push` だけ Jack-O。extra は jacko 0.8 + mystic 0.5 + jpnmoans 0.55。futatf は積まない。竿はミキの 24cm が1本。胸と頬がタイルへ。腰は高い。両脚は左右。足は縁の外。顔はカメラ。ミキは同じフード向き。24cm は割れ目の前。Aya says 「やばい、だめ」。最終は胸と頬がタイル、腰は高い、顔はカメラ、24cm は割れ目の外。挿入カットに Jack-O / Doggy を積まない。排出に Jack-O を積まない。挿入は文章のまま肛門。`The erect 24cm TRAVELS INTO the anus to the root`。`HOLD still joined at the BASE until the last frame`。Aya says 「気持ちいい」。挿入 extra は mystic 0.5 + penis 0.45 + jpnmoans 0.55。synth / jacko / doggy / ThumbInButt / Turbo は積まない。絶頂は keep the glans inside。WHITE goo は結合から溢れる。根元は抜かない。Aya says 「あ、いく」。絶頂 extra は thrust 0.55 + mystic 0.5 + penis 0.45 + jpnmoans 0.55。声は各カットの「」1句（`きもちいい` はひらがな）。`04-toilet-gape` は 6 秒。すでに結合。胸と頬はタイル、腰は高い、両脚は左右、顔はカメラ。腰を一度後ろへ。24cm が肛門を出る。肛門は wide ring。WHITE goo が輪から穴へ垂れる。最終は胸と頬がタイル、輪、垂れた goo、ミキは後ろ。out は向き直してべろちゅーして右へ。抜きは out に書かない。竿はミキ 24cm。あやに竿は生やさない。キス歩きは kiss 0.5。kiss と walk に jpnmoans は積まない。
 
 ## かなの顔射のあと
 
@@ -295,4 +295,4 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。前回に足す今回は、和式ミキの `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。ギンは `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss` `04-gin-wait` `04-gin-ride` `04-gin-peak`。騎乗は `03-kiss` `03-kiss-wait` `03-kiss-ride` `03-kiss-peak` と `06-doggy-*` `09-join-*` `12-exit-*` の口・wait・ride・peak。角の口は `04-tsuno-oral`。犬は `04-dog-lick` `04-dog-lick-peak` と invite から cum。座位の zai、抱擁、ネルソン、洋式、角の個室 stall は触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
+5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。前回に足す今回は、角の `04-tsuno-oral` `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。ThumbInButt の本文はそのまま。座位の zai、抱擁、ネルソン、洋式、角の個室 stall、jupo、Wan ノートは触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
