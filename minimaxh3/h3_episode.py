@@ -495,6 +495,7 @@ PEE_STILL_CLAUSE = (
 )
 # Face-to-face seat. "Feet planted" draws Aya standing. Her feet meet behind the partner.
 SIT_LAP_RE = re.compile(r"wrap outside", re.I)
+SIT_LAP_MOVE_RE = re.compile(r"hips keep moving straight UP|The finish starts at frame one", re.I)
 SIT_LAP_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The partner already sits on the linoleum, torso upright, both of the partner's feet on the linoleum. "
@@ -502,6 +503,15 @@ SIT_LAP_CLAUSE = (
     "Aya's thighs wrap outside the partner's waist. Aya's calves lock behind the partner's back. "
     "Both of Aya's feet meet behind the partner, off the linoleum. "
     "They HOLD still joined at the BASE until the last frame. "
+    "The camera holds. Normal adult human height, nobody is giant."
+)
+SIT_LAP_MOVE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The partner stays sitting on the linoleum, torso upright, both of the partner's feet on the linoleum. "
+    "Aya stays facing the partner, upright on the lap. "
+    "Aya's thighs wrap outside the partner's waist. Aya's calves lock behind the partner's back. "
+    "Both of Aya's feet meet behind the partner, off the linoleum. "
+    "The shaft stays at the BASE inside the pussy. "
     "The camera holds. Normal adult human height, nobody is giant."
 )
 NELSON_PACE_CLAUSE = (
@@ -2428,6 +2438,8 @@ def _finale_pose(action: str) -> str:
     low = action.lower()
     if "held up" in low or ("forearms" in low and "anus" in low):
         return "nelson"
+    if "wrap outside" in low or "astride the lap" in low:
+        return "sit"
     if "sitting on" in low or "straddling" in low or "squat" in low:
         return "ride"
     if "palms on the wall" in low or "palms planted on the wall" in low:
@@ -2472,6 +2484,14 @@ def _finale_drop_action(name: str, pose: str, anal: bool) -> str:
             f"Aya is held up on this same linoleum spot, both thighs in {who}'s forearms, feet in the air, the shaft inside the {hole}. "
             f"Her body goes limp in {who}'s arms. {who} LOWERS Aya until her back meets the linoleum, then lets both thighs go. "
             f"The shaft SLIDES OUT as she is lowered. {who} stays beside her."
+        )
+    elif pose == "sit":
+        intro = (
+            f"{who} already sits on the linoleum, torso upright, both feet on the linoleum. "
+            f"Aya faces {who}. Aya's thighs wrap outside {who}'s waist. Aya's calves lock behind {who}'s back. "
+            f"Both of Aya's feet meet behind {who}, off the linoleum. The shaft stays at the BASE inside the {hole}. "
+            f"Her strength leaves the lap. She tips backward until her back meets the linoleum. "
+            f"The shaft SLIDES OUT as she tips. {who} stays beside her."
         )
     else:
         intro = (
@@ -2608,14 +2628,23 @@ def apply_invite_lust_finale(ep: dict[str, Any]) -> dict[str, Any]:
         "music": last.get("music") or "Bass holds",
         "hud": hud,
     }
+    who = FINALE_NAME[partner]
+    if pose == "sit":
+        drop_camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+            f"{who} sits on the linoleum. Aya faces {who}, thighs outside the waist, feet behind {who}, off the linoleum. "
+            "Then Aya's back meets the linoleum. The camera holds."
+        )
+    else:
+        drop_camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+            f"Aya falling onto her back, then flat and limp with her legs spread, {who} beside her. The camera holds."
+        )
     drop = {
         **shared,
         "id": f"{base}-drop",
         "extra_loras": [],
-        "camera": (
-            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-            f"Aya falling onto her back, then flat and limp with her legs spread, {FINALE_NAME[partner]} beside her. The camera holds."
-        ),
+        "camera": drop_camera,
         "action": _finale_drop_action(partner, pose, anal),
         "voices": [{"who": "aya", "line": "はぁっ"}, {"who": partner, "line": "くっ"}],
         "sfx": "A body settling on linoleum, thick goo, HVAC",
@@ -4437,6 +4466,8 @@ def build_beat_prompt(
             desc.append(NELSON_PLANTED_CLAUSE)
         elif PEE_STILL_RE.search(action_txt):
             desc.append(PEE_STILL_CLAUSE)
+        elif SIT_LAP_RE.search(action_txt) and SIT_LAP_MOVE_RE.search(action_txt):
+            desc.append(SIT_LAP_MOVE_CLAUSE)
         elif SIT_LAP_RE.search(action_txt):
             desc.append(SIT_LAP_CLAUSE)
         elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):

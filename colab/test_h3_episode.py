@@ -4940,6 +4940,36 @@ def test_hospital_invite_sit_is_face_to_face():
         assert "thrust" not in extra_keys(beat)
         assert "sideride" not in extra_keys(beat)
         assert extra_keys(beat)[0] == "kiss"
+    for bid, name in (
+        ("03-kiss-zai2", "Miki"),
+        ("06-doggy-zai2", "Rei"),
+        ("09-join-zai2", "Kana"),
+        ("12-exit-zai2", "Shino"),
+    ):
+        beat = next(b for b in sat["beats"] if b["id"] == bid)
+        low = beat["action"].lower()
+        assert f"wrap outside {name.lower()}'s waist" in low
+        assert "calves lock behind" in low
+        assert "off the linoleum" in low
+        assert "hips keep moving straight up" in low
+        assert "ankles stayed" not in low
+        assert "thrust" not in extra_keys(beat)
+        prompt = build_beat_prompt(sat, beat)
+        assert "upright on the lap" in prompt.lower()
+        assert "feet meet behind the partner, off the linoleum" in prompt.lower()
+    for bid in ("03-kiss-peak", "06-doggy-peak", "09-join-peak", "12-exit-peak"):
+        beat = next(b for b in sat["beats"] if b["id"] == bid)
+        low = beat["action"].lower()
+        assert "astride the lap" in low
+        assert "wrap outside" in low
+        assert "off the linoleum" in low
+        assert "finishes inside" in low
+        assert "thrust" not in extra_keys(beat)
+        assert "sideride" not in extra_keys(beat)
+    drop = next(b for b in sat["beats"] if b["id"] == "12-exit-drop")
+    assert "thighs wrap outside" in drop["action"].lower()
+    assert "tips backward" in drop["action"].lower()
+    assert "slides out" in drop["action"].lower()
     walk = next(b for b in sat["beats"] if b["id"] == "03-kiss-walk")
     assert walk["trim"]["seconds"] == 8.0
     assert walk.get("connect") == "end"
@@ -5071,6 +5101,11 @@ def test_hospital_dog_orientation_and_embrace_lift():
     seated = next(b for b in oral["beats"] if b["id"] == "04-dog-in")
     assert "thrust" not in extra_keys(seated)
     assert "HOLD still joined at the BASE" in seated["action"]
+    assert "already lies fully on her back" in seated["action"].lower()
+    assert "meet her groin" in seated["action"].lower()
+    assert "buttocks" not in seated["action"].lower()
+    assert seated.get("turbo") is False
+    assert "one clear erect 24cm" in seated["action"].lower()
     rear = prepare_episode(raw, dog_override="invite_rear")
     mount = next(b for b in rear["beats"] if b["id"] == "04-dog-mount")
     assert "thrust" not in extra_keys(mount)

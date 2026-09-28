@@ -162,8 +162,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 - みきの `03-kiss-zai1` は 0 秒からミキがすでに座っている。胴は直立、膝は曲がり、床にあるのはミキの両足、頭は RIGHT。24cm は股間から上。あやは LEFT から向かい合って腰を下ろす。太ももはミキの腰の外側。ふくらはぎはミキの背中の後ろでロック。あやの両足はミキの後ろで合い、床から離れる。あやの腕は肩、ミキの腕はあやの腰。胸が密着。24cm が根元まで入ったら `They HOLD still joined at the BASE until the last frame`。このカットは着座だけ。仰向けにしない。跪きから立つ入りと、`knees plant on the linoleum` と、あやの `feet stay on the linoleum` は書かない。extra は kiss 0.5。thrust と sideride は積まない。挿入なので Turbo は切る
 - れい 24cm／かな 20cm／しの 30cm の `zai1` も同じ。相手がすでに座り、あやが向かい合って下ろす。脚は WRAP OUTSIDE / calves LOCK behind / feet meet behind, off the linoleum。`knees plant on the linoleum` は書かない。zai1 は上下しない。zai2 が上下。walk 本文は触らない。kiss 0.5 は残す。thrust と sideride は積まない
-- `zai2`: 入ったまま、足首はクロスのまま、べろちゅーのまま腰を上下する
-- `peak`: 始まりは中出し。口は付いたまま。終わったら唇をゆっくり離す。涎が糸を引く。お互い笑顔
+- `zai2`: 入ったまま、相手は座ったまま。あやは向かい合って直立。太ももは腰の外側、ふくらはぎは背中の後ろでロック、両足は相手の後ろで床から離れる。べろちゅーのまま腰は真上と真下。`ankles stayed crossed` は書かない。thrust は積まない
+- `peak`: 同じ脚のまま中出し。口は付いたまま。終わったら唇をゆっくり離す。涎が糸を引く。お互い笑顔。thrust と sideride は積まない。誘うの最後は、この跨ぎからあやが背中を床へ倒し、竿は抜ける。`12-exit-drop` は 0 秒から仰向けで始めない
 - `walk`: 8秒。最初に抜いて、笑顔で別れのべろちゅー。5秒以降はあや一人が右へ歩く。最後のコマはあやだけ
 
 ## ギンの口と騎乗
@@ -256,7 +256,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 回避: あやは左へ走る。四つ足は右に残る。spot の向きは他の枝と同じ
 - 受け入れる: spot の camera と action だけ同じ向き。あやは右の壁。手は壁。足は床。後脚立ち。24cm がマンコへ。後脚立ちの accept / cum / walk 本文は変えない
 - 誘う伏せ: その場で仰向け、舌。wait は胸と頬が床、膝を畳む。犬は同じ向きで背中に覆う。着座は根元まで HOLD。着座に thrust は積まない
-- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。`04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が口へ、犬の頭は RIGHT、唇は根元。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。受け入れる後脚立ちの accept / cum / walk 本文は変えない。着座は平らな床。段差なし。着座に thrust は積まない
+- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。`04-dog-jupo` と `04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が1本、口へ、犬の頭は RIGHT。mouth は唇が根元。`04-dog-in` はあやが仰向け、後頭部と肩は床、頭 LEFT、足 RIGHT。腹の 24cm が1本、マンコの根元まで。犬の腰は股間に合う。尻に当てる文は書かない。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。挿入なので Turbo は切る。受け入れる後脚立ちの accept / cum / walk 本文は変えない。着座は平らな床。段差なし。着座に thrust は積まない
 
 ## 異種
 
@@ -291,4 +291,4 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。`03-kiss-zai1` `06-doggy-zai1` `09-join-zai1` `12-exit-zai1`。和式は `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum`。騎乗は `04-gin-jupo` `04-gin-ride` `04-gin-peak` `03-kiss-ride` `03-kiss-peak` `06-doggy-ride` `06-doggy-peak` `06-doggy-walk` `09-join-ride` `09-join-peak` `12-exit-ride` `12-exit-peak`。犬は `04-dog-mouth` と誘う `04-dog-cum`。正常位は `12-exit`。顔射は `09-kana-facial` と、その後の `09-kana-kiss` `09-join*` `10-shino*` `12-exit*`。座位の歩き、受け入れる後脚立ち、`12-exit-kiss` は触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
+5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。前回に足す今回は、対面座位の `03-kiss-zai2` `03-kiss-peak` `06-doggy-zai2` `06-doggy-peak` `09-join-zai2` `09-join-peak` `12-exit-zai2` `12-exit-peak` と、誘う座位の `12-exit-drop` `12-exit-kiss`。犬は `04-dog-jupo` `04-dog-mouth` `04-dog-in` `04-dog-cum`。受け入れる後脚立ちは触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
