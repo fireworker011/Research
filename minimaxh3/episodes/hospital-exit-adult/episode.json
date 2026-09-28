@@ -759,8 +759,8 @@
             "mystic"
           ],
           "trigger": "bl0w_j0b",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Wide full-body the whole take. The camera sits far back. Both standing face to face, mouths joined, then Aya on her knees. Miki's whole face stays inside the frame beside the shaft, short brown bob, hollow empty dark eye sockets, open red lacerations on the vivid purple face, from the hair to the chin. Aya's face stays inside. Both heads and all four feet stay inside. Distance stays the same. Full body including both feet.",
-          "action": "They start already standing face to face in front of the T-junction, mouths joined. THEN Aya DROPS DOWN onto her knees in front of Miki. Aya's face is a lewd wet smiling ecstatic inviting face. Miki stands with vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft, hollow empty dark eye sockets, open red lacerations and torn gashes across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft, visible sweat beads on the intact purple skin between the open gashes, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact purple skin and the hair between the open gashes, wet peeling rotting patches on the shaft, erect 24cm the same vivid purple as the hips not pale-tan flesh. Both hands stay on Miki's hips, not the shaft. The frame stays wide the whole take. The camera sits far back. Miki's whole face stays inside the frame beside the shaft, from the hair to the chin: short brown bob, hollow empty dark eye sockets, open red lacerations on the vivid purple face. Aya's face stays inside that same wide frame. Aya's head MOVES FORWARD onto the erect 24cm until the lips reach the BASE. The lips wrap the glans first and stay wrapped until they reach the BASE. Then short strokes to the BASE: the head slides a short way along the shaft and returns to a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. The glans stays inside the mouth the whole take. Each return to the BASE sheds a wet saliva string. KEEP the lips at the BASE. Miki's hips PRESS FORWARD so the 24cm points only a little above horizontal into the mouth. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Small soft female moans from both. Both stay fully nude. Last frame: Miki already lies on her back, head on the RIGHT, feet pointing LEFT, the erect 24cm standing straight UP from the groin. Aya faces Miki, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Miki's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Both faces stay inside the wide frame. The camera sits far back. Full body including both feet.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Miki already lies fully on her back, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP. Aya kneels toward the LEFT at the hips, mouth on the shaft. Last frame: Miki still on her back, the 24cm straight UP. Aya still kneels at the hips, mouth on the shaft. Miki's whole face stays inside the frame beside the shaft, short brown bob, hollow empty dark eye sockets, open red lacerations on the vivid purple face, from the hair to the chin.",
+          "action": "They start already on this same linoleum spot. Miki already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Aya already kneels toward the LEFT at the hips, torso folded toward the shaft. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Miki still on her back, the 24cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -793,6 +793,61 @@
           "connect": "t2v"
         },
         {
+          "id": "03-kiss-wait",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Miki stays on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP. Aya stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Miki stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. Aya STANDS over the hips, head LEFT. Both of Aya's soles plant on the linoleum on either side of Miki's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Aya's hairless pussy hangs DIRECTLY ABOVE the glans. Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "miki",
+              "line": "ん"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "source": "chain",
+          "sfx": "A breath, HVAC",
+          "cast": [
+            "aya",
+            "miki"
+          ]
+        },
+        {
           "id": "03-kiss-ride",
           "trim": {
             "start": 0,
@@ -814,7 +869,7 @@
           ],
           "trigger": "",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Miki lies fully on her back, head on the RIGHT, feet pointing LEFT. The erect 24cm stands vertically straight UP from the groin. Aya faces Miki, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Miki's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already on this same linoleum spot after the mouth. Miki already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 24cm is rooted in the groin and stands vertically straight UP. Aya faces Miki, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Miki's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Miki's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Miki's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Miki already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 24cm is rooted in the groin and stands vertically straight UP. Aya faces Miki, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Miki's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Miki's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Miki's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -875,7 +930,7 @@
           ],
           "trigger": "This video depicts part of sexual intercourse climax. The adult already on her back keeps the shaft inside the rider and cums inside of her. Aya and the partner stay the same two adults.\nPENISLORA\njpnMoans",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Miki stays on her back, head on the RIGHT, feet pointing LEFT. The erect 24cm stays buried to the root. Aya stays over the hips facing Miki, head on the LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already joined on this same linoleum spot. Miki stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Miki, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Miki's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Aya says 「あ、いく」. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Miki stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Miki, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Miki's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -2424,8 +2479,8 @@
       "on_toilet_wash_miki": [
         {
           "id": "04-toilet-in",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -2624,7 +2679,7 @@
           "sfx": "Palms on the platform, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same. Miki stays behind Aya, between the camera and Aya. Both adults stay in frame.",
-          "action": "They stay in this same stall. Aya's chest comes down toward the platform. Hips stay high. Both of Aya's palms plant on the platform. Both knees stay on the beige sides of the pan. Face stays toward the hood. Miki stands behind Aya. Miki's erect 24cm hangs in front of the cleft. Aya's groin stays a hairless pussy. Aya says 「やばい、だめ」. Last frame: chest toward the platform, hips high, face toward the hood, Miki's erect 24cm in front of the cleft. Both adults full body including both feet.",
+          "action": "They stay in this same stall. Miki wraps Aya from behind. Palms press the back. THEN Aya's chest comes down toward the platform. Hips stay high. Both of Aya's palms plant on the platform. Both knees stay on the beige sides of the pan. Face stays toward the hood. Miki's one erect 24cm hangs in front of the cleft. Aya's groin stays a hairless pussy. Aya says 「やばい、だめ」. Last frame: chest toward the platform, hips high, face toward the hood, Miki's one erect 24cm in front of the cleft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -2750,7 +2805,7 @@
           "sfx": "A wet pulse, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same. Miki stays behind Aya, between the camera and Aya. Both adults stay in frame.",
-          "action": "They stay in this same stall in the same join. Aya stays on palms and knees, face toward the hood. Miki stays behind Aya. The erect 24cm stays buried to the root in the anus. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the anus. Aya says 「あ、いく」. Last frame: hips flush, the shaft still buried to the root, WHITE goo at the base, Aya's face toward the hood.",
+          "action": "They stay in this same stall in the same join. Aya stays on palms and knees, face toward the hood. Miki stays behind Aya. The erect 24cm stays buried to the root in the anus. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, Aya's face toward the hood.",
           "voices": [
             {
               "who": "aya",
@@ -2760,6 +2815,57 @@
           "loco": "planted",
           "connect": "chain",
           "trigger": "jpnMoans"
+        },
+        {
+          "id": "04-toilet-gape",
+          "source": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet leave, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same. Miki stays behind Aya, between the camera and Aya. Both adults stay in frame.",
+          "action": "They start already joined on this same pan in this same stall. Aya stays on palms and knees, chest toward the platform, hips high, face toward the hood. Miki MOVES the hips BACK once until the erect 24cm leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring toward the pan hole. Last frame: Aya on palms and knees, the open ring visible, WHITE goo hanging from the ring, Miki standing behind. Full body including both feet and the hood.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "miki",
+              "line": "ん"
+            }
+          ],
+          "loco": "planted",
+          "connect": "chain",
+          "trigger": ""
         },
         {
           "id": "04-toilet-out",
@@ -2803,7 +2909,7 @@
           "sfx": "A lip-contact kiss smack when the mouths meet, footsteps on linoleum, HVAC",
           "music": "Bass holds",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Full body including both feet. Aya and Miki stay on the platform while the mouths meet. Then Aya walks RIGHT into the corridor. Last frame: only Aya walking RIGHT in the corridor.",
-          "action": "The 24cm SLIDES OUT. Aya TURNS on the platform to face Miki. Mouths JOIN. Tongues intertwine. Then the mouths part. Aya WALKS out the stall door into the corridor toward the RIGHT, fully nude. Last frame: only Aya walking RIGHT in the corridor. Nobody else in frame.",
+          "action": "Aya TURNS on the platform to face Miki. Mouths JOIN. Tongues intertwine. Then the mouths part. Aya WALKS out the stall door into the corridor toward the RIGHT, fully nude. Last frame: only Aya walking RIGHT in the corridor. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -3007,8 +3113,8 @@
             "mystic"
           ],
           "trigger": "bl0w_j0b",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. Closed lips meet the groin at the BASE during the strokes. Last frame: Gin stands over the hips, head LEFT, both soles on the linoleum on either side of Aya's ribs, one sole beside each side of the chest, both knees bent, hips over the groin, Gin's hairless pussy directly above the glans.",
-          "action": "They start already on this same linoleum spot. Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Gin already kneels toward the LEFT at the hips. Gin's mouth CLOSES over the glans. Closed lips SLIDE DOWN the 24cm until the lips meet the groin at the BASE. The 24cm stays inside the mouth. Closed lips return to the glans and SLIDE DOWN to the BASE again. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Last frame: Aya stays on her back, the back of the head on the linoleum, head RIGHT, feet LEFT, the 24cm standing straight UP. Gin stands over the hips, head LEFT. Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Gin's hairless pussy hangs DIRECTLY ABOVE the glans. Both adults full body including both feet.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya already lies fully on her back, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP. Gin kneels toward the LEFT at the hips, mouth on the shaft. Last frame: Aya still on her back, the 24cm straight UP. Gin still kneels at the hips, mouth on the shaft.",
+          "action": "They start already on this same linoleum spot. Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Gin already kneels toward the LEFT at the hips, torso folded toward the shaft. Gin's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Aya still on her back, the 24cm straight UP. Gin still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -3041,6 +3147,183 @@
           "sfx": "Knees on linoleum, wet jupo saliva on each stroke to the base, HVAC"
         },
         {
+          "id": "04-gin-mouth",
+          "source": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
+            "gin": "24-year-old Japanese woman, adult face, fully nude, closed lips, the tongue inside the mouth, ashen gray skin that stays ashen gray, long messy gray-white hair, slim feminine body, sunken hollow dark eye sockets, peeling skin with red muscle fiber showing, long clawed fingers, a female groin with a hairless pussy, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin"
+          },
+          "extra_loras": [
+            [
+              "blowjob",
+              0.7
+            ],
+            [
+              "cumouf",
+              0.5
+            ]
+          ],
+          "trigger": "bl0w_j0b\nCUMOUF",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. Gin kneels toward the LEFT at the hips, lips at the BASE. Last frame: lips still at the BASE, WHITE goo at the lips, tongue out, Gin still kneeling.",
+          "action": "They start already on this same linoleum spot. Aya stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. Gin still kneels toward the LEFT at the hips. Closed lips stay at the BASE. Gin finishes INSIDE Aya's mouth. Thick WHITE goo fills the mouth around the shaft. Aya's face: eyes rolled up, mouth open around the shaft, tongue out against the shaft, drowning in climax. Last frame: lips still at the BASE, WHITE goo at the lips, tongue out, Gin still kneeling. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "gin",
+              "line": "んっ"
+            },
+            {
+              "who": "aya",
+              "line": "あんっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.35,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "sfx": "Wet mouth at the base, HVAC"
+        },
+        {
+          "id": "04-gin-spitkiss",
+          "source": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
+            "gin": "24-year-old Japanese woman, adult face, fully nude, mouth open, tongue meeting Aya's tongue, ashen gray skin that stays ashen gray, long messy gray-white hair, slim feminine body, sunken hollow dark eye sockets, peeling skin with red muscle fiber showing, long clawed fingers, a female groin with a hairless pussy, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin"
+          },
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            [
+              "cumouf",
+              0.45
+            ]
+          ],
+          "trigger": "CUMOUF",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya on her back. Gin kneeling at the hips. Last frame: mouths apart, the string visible, the 24cm outside the mouth.",
+          "action": "They start already on this same linoleum spot. Gin still kneels. The 24cm SLIDES OUT of Aya's mouth. WHITE goo stays on Aya's tongue. Gin leans down. Mouths JOIN. WHITE goo passes from Aya's mouth into Gin's mouth. Tongues slide in the WHITE goo. Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. Last frame: Aya still on her back, Gin still kneeling at the hips, mouths apart, the string visible, the 24cm outside the mouth. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "gin",
+              "line": "んっ"
+            },
+            {
+              "who": "aya",
+              "line": "あんっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.35,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "sfx": "A lip-contact kiss smack when the mouths meet, HVAC"
+        },
+        {
+          "id": "04-gin-wait",
+          "source": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, black hair in a ponytail, slim body, A-cup breasts, defined waist, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
+            "gin": "24-year-old Japanese woman, adult face, fully nude, closed lips, the tongue inside the mouth, ashen gray skin that stays ashen gray, long messy gray-white hair, slim feminine body, sunken hollow dark eye sockets, peeling skin with red muscle fiber showing, long clawed fingers, a female groin with a hairless pussy, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin"
+          },
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya stays on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP. Gin stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Aya stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. Gin STANDS over the hips, head LEFT. Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Gin's hairless pussy hangs DIRECTLY ABOVE the glans. Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "gin",
+              "line": "ん"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.32,
+            "heat": 4,
+            "objective_distance": 0.38,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "sfx": "A breath, HVAC"
+        },
+        {
           "id": "04-gin-ride",
           "source": "chain",
           "trim": {
@@ -3071,7 +3354,7 @@
           ],
           "trigger": "",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya already lies fully on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP from the groin. Gin faces Aya, head LEFT. Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already on this same linoleum spot after the mouth. Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Gin faces Aya, head LEFT. Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Gin's hairless pussy hangs DIRECTLY ABOVE the glans. Gin LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO Gin's pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Gin's soles stay on the linoleum beside the ribs. Both of Gin's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Gin's lips stay closed. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Gin faces Aya, head LEFT. Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Gin's hairless pussy hangs DIRECTLY ABOVE the glans. Gin LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO Gin's pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Gin's soles stay on the linoleum beside the ribs. Both of Gin's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Gin's lips stay closed. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -3139,7 +3422,7 @@
             ]
           ],
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Aya stays on her back, head RIGHT, feet LEFT. Gin stays over the hips facing Aya, head LEFT. Both of Gin's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root.",
-          "action": "They start already joined on this same linoleum spot. Aya stays on her back, head RIGHT, feet LEFT. Gin stays over the hips facing Aya, head LEFT. Both of Gin's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Aya finishes INSIDE Gin. A little thick WHITE goo leaks around the base and stays inside Gin's pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Gin's lips stay closed. Aya says 「あ、いく」. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya stays on her back, head RIGHT, feet LEFT. Gin stays over the hips facing Aya, head LEFT. Both of Gin's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Aya finishes INSIDE Gin. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Gin's lips stay closed. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -4732,7 +5015,7 @@
           "props": [],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in the wide frame. Tsuno stands on the RIGHT. Aya kneels on the LEFT. Closed lips meet the erect ashen-gray 24cm.",
-          "action": "They start already face to face on this same linoleum spot. Tsuno STANDS on the RIGHT, the erect ashen-gray 24cm standing straight UP. Aya KNEELS on the LEFT, kneeling, closed lips at the BASE. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN the 24cm until the lips meet the groin at the BASE. The 24cm stays inside the mouth. Closed lips return to the glans and SLIDE DOWN to the BASE again. Last frame: Tsuno already lies fully on her back, head RIGHT, feet LEFT, the erect ashen-gray 24cm standing straight UP. Both of Aya's soles plant on the linoleum on either side of Tsuno's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Both adults full body including both feet.",
+          "action": "They start already face to face on this same linoleum spot. Tsuno STANDS on the RIGHT, the erect ashen-gray 24cm standing straight UP. Aya KNEELS on the LEFT, kneeling, closed lips at the BASE. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN the 24cm until the lips meet the groin at the BASE. The 24cm stays inside the mouth. Closed lips return to the glans and SLIDE DOWN to the BASE again. Last frame: Tsuno still on her back, the erect ashen-gray 24cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -4916,7 +5199,7 @@
           "props": [],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno stays on her back, head on the RIGHT, feet pointing LEFT. Aya stays over the ribs, head on the LEFT. Both soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Short vertical moves, then hips flush.",
-          "action": "They start already joined on this same linoleum spot. Tsuno stays on her back, head RIGHT, feet LEFT. Aya stays over the ribs facing Tsuno, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect ashen-gray 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Tsuno's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Tsuno stays on her back, head RIGHT, feet LEFT. Aya stays over the ribs facing Tsuno, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect ashen-gray 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Tsuno's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -5335,7 +5618,7 @@
           "props": [],
           "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. A raised sand-beige platform with one long white porcelain squat pan set into the platform. The raised splash hood sits at the FAR end of the pan. Extra-viscous sticky grimy brown hospital dirt and brown smears on the platform, the pan rim, the hood, and the plaster. Cracked tiles at the stall mouth. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
-          "action": "They start already joined on this same platform inside this same stall. The erect ashen-gray 24cm stays buried in the anus to the root. Short forward moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE. A little thick WHITE goo leaks around the base and stays inside the anus. Last frame: hips flush, the shaft still buried to the root, face toward the hood. Full body including both feet and the hood.",
+          "action": "They start already joined on this same platform inside this same stall. The erect ashen-gray 24cm stays buried in the anus to the root. Short forward moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Last frame: still buried to the root, WHITE goo pooled at the join and running down, face toward the hood. Full body including both feet and the hood.",
           "voices": [
             {
               "who": "aya",
@@ -5872,7 +6155,7 @@
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws.",
-          "action": "They stay on this same linoleum spot. The 24cm shaft stays inside Aya's hairless pussy. WHITE goo overflows around the join. Short thrusts continue while the shaft stays inside. Full body including both feet and all four paws. Last frame: WHITE goo overflowing, the shaft still inside.",
+          "action": "They stay on this same linoleum spot. The 24cm shaft stays inside Aya's hairless pussy. WHITE goo overflows around the join. Short thrusts continue while the shaft stays inside. Full body including both feet and all four paws. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Last frame: still buried to the root, WHITE goo pooled at the join and running down, four paws on the linoleum.",
           "voices": [
             {
               "who": "aya",
@@ -6000,8 +6283,8 @@
         },
         {
           "id": "04-dog-invite",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6063,8 +6346,8 @@
         },
         {
           "id": "04-dog-lick",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6094,7 +6377,7 @@
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws. The tongue reaches in from the RIGHT.",
+          "camera": "PROFILE side-on. The frame holds the hairless pussy and Aya's face, and the quadruped's muzzle at the pussy.",
           "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws. The quadruped's head points LEFT toward Aya. The tail points to the RIGHT wall. The spine stays level. The head stays low. The muzzle lowers to the hairless pussy. A long wet dark tongue licks the hairless pussy and the clitoris from below. The 24cm pale-tan shaft stays hanging under the belly between the hind legs. Last frame: Aya on her back, knees open, hands spreading the pussy. The tongue on the pussy. Four paws on the linoleum. The quadruped's head points LEFT toward Aya. The tail points to the RIGHT wall.",
           "voices": [
             {
@@ -6122,8 +6405,8 @@
         },
         {
           "id": "04-dog-lick-peak",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6153,8 +6436,8 @@
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws.",
-          "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws, head LEFT, tail RIGHT. The long tongue stays on the hairless pussy and the clitoris. Aya climaxes in a short tremor, a narrowed smile, drool on the chin. Last frame: Aya on her back, knees open. The tongue still on the pussy. Four paws on the linoleum.",
+          "camera": "PROFILE side-on. The frame starts on the hairless pussy and Aya's face. Last frame: full-body side view, both feet and all four paws inside the frame.",
+          "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws, head LEFT, tail RIGHT. The long tongue stays on the hairless pussy and the clitoris. Aya climaxes in a short tremor, a narrowed smile, drool on the chin. Last frame: full-body side view. Aya on her back, knees open. The tongue still on the pussy. Four paws on the linoleum. The quadruped's head points LEFT. The tail points to the RIGHT.",
           "voices": [
             {
               "who": "aya",
@@ -6182,7 +6465,7 @@
         {
           "id": "04-dog-wait",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -6236,8 +6519,8 @@
         },
         {
           "id": "04-dog-mount",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6303,8 +6586,8 @@
         },
         {
           "id": "04-dog-cum",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6343,7 +6626,7 @@
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws.",
-          "action": "They start already joined at the BASE on this same linoleum spot. The 24cm shaft is already at the BASE inside Aya's hairless pussy. They HOLD still joined at the BASE until the last frame. The quadruped finishes INSIDE. WHITE goo stays inside around the base. Last frame: still joined at the BASE, the shaft inside, four paws on the linoleum.",
+          "action": "They start already joined at the BASE on this same linoleum spot. The 24cm shaft is already at the BASE inside Aya's hairless pussy. They HOLD still joined at the BASE until the last frame. The quadruped finishes INSIDE. WHITE goo stays inside around the base. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Last frame: still buried to the root, WHITE goo pooled at the join and running down, four paws on the linoleum.",
           "voices": [
             {
               "who": "aya",
@@ -6473,8 +6756,8 @@
         },
         {
           "id": "04-dog-invite",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6536,8 +6819,8 @@
         },
         {
           "id": "04-dog-lick",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6567,7 +6850,7 @@
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws. The tongue reaches in from the RIGHT.",
+          "camera": "PROFILE side-on. The frame holds the hairless pussy and Aya's face, and the quadruped's muzzle at the pussy.",
           "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws. The quadruped's head points LEFT toward Aya. The tail points to the RIGHT wall. The spine stays level. The head stays low. The muzzle lowers to the hairless pussy. A long wet dark tongue licks the hairless pussy and the clitoris from below. The 24cm pale-tan shaft stays hanging under the belly between the hind legs. Last frame: Aya on her back, knees open, hands spreading the pussy. The tongue on the pussy. Four paws on the linoleum. The quadruped's head points LEFT toward Aya. The tail points to the RIGHT wall.",
           "voices": [
             {
@@ -6595,8 +6878,8 @@
         },
         {
           "id": "04-dog-lick-peak",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6626,8 +6909,8 @@
             "rail"
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws.",
-          "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws, head LEFT, tail RIGHT. The long tongue stays on the hairless pussy and the clitoris. Aya climaxes in a short tremor, a narrowed smile, drool on the chin. Last frame: Aya on her back, knees open. The tongue still on the pussy. Four paws on the linoleum.",
+          "camera": "PROFILE side-on. The frame starts on the hairless pussy and Aya's face. Last frame: full-body side view, both feet and all four paws inside the frame.",
+          "action": "They stay on this same linoleum spot. Aya stays on her back, head LEFT, both feet RIGHT, both knees open, both hands spreading the hairless pussy. The quadruped stays on the RIGHT on four paws, head LEFT, tail RIGHT. The long tongue stays on the hairless pussy and the clitoris. Aya climaxes in a short tremor, a narrowed smile, drool on the chin. Last frame: full-body side view. Aya on her back, knees open. The tongue still on the pussy. Four paws on the linoleum. The quadruped's head points LEFT. The tail points to the RIGHT.",
           "voices": [
             {
               "who": "aya",
@@ -6655,7 +6938,7 @@
         {
           "id": "04-dog-wait",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -6717,8 +7000,8 @@
         },
         {
           "id": "04-dog-jupo",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6784,8 +7067,8 @@
         },
         {
           "id": "04-dog-mouth",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6835,8 +7118,8 @@
         },
         {
           "id": "04-dog-show",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6881,8 +7164,8 @@
         },
         {
           "id": "04-dog-in",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6950,8 +7233,8 @@
         },
         {
           "id": "04-dog-cum",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -6990,7 +7273,7 @@
           ],
           "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, hospital fluorescent light",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Full body including both feet. The quadruped shows all four paws.",
-          "action": "They start already joined at the BASE on this same linoleum spot. The 24cm shaft is already at the BASE inside Aya's hairless pussy. They HOLD still joined at the BASE until the last frame. The quadruped finishes INSIDE. WHITE goo stays inside around the base. Last frame: still joined at the BASE, the shaft inside, four paws on the linoleum.",
+          "action": "They start already joined at the BASE on this same linoleum spot. The 24cm shaft is already at the BASE inside Aya's hairless pussy. They HOLD still joined at the BASE until the last frame. The quadruped finishes INSIDE. WHITE goo stays inside around the base. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Last frame: still buried to the root, WHITE goo pooled at the join and running down, four paws on the linoleum.",
           "voices": [
             {
               "who": "aya",
@@ -8111,8 +8394,8 @@
             "mystic"
           ],
           "trigger": "bl0w_j0b",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Rei standing ahead facing LEFT, Aya facing RIGHT toward Rei after the wait, then Aya drops down onto her knees at the hips. Full bodies including feet. Distance stays the same. The camera sits far back.",
-          "action": "They start already facing each other after the wait. Rei STANDS AHEAD toward the RIGHT in an imposing waiting stance, feet planted wide, facing Aya. THEN Aya DROPS DOWN onto her knees in front of Rei. Aya's face is a lewd wet smiling ecstatic inviting face. Rei stands with purple skin, thick extra-viscous dark-brown filthy sludge from hair to shaft to feet, the LEFT half of her face and body stays readable as wet rotting raw red flesh on the left eye, left cheek, left breast, left arm and left hip, erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft. Both hands stay on Rei's hips, not the shaft. They start wide full-body. While the lips reach the base, both faces stay fully inside the frame. The partner's whole face stays inside the frame. The camera stays back enough that both faces stay fully inside. Before the join, the camera sits far back. Wide full-body. Both adults stay in frame from the top of the head to the tips of both feet. Both faces stay fully inside that wide frame. Aya's head MOVES FORWARD onto the erect 24cm the same vivid purple as the hips not pale-tan flesh until the lips reach the BASE. The lips wrap the glans first and stay wrapped until they reach the BASE. Then short strokes to the BASE: the head slides a short way along the shaft and returns to a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. The glans stays inside the mouth the whole take. Each return to the BASE sheds a wet saliva string. KEEP the lips at the BASE. Rei's hips PRESS FORWARD so the 24cm points only a little above horizontal into the mouth. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Small soft female moans from both. Both stay fully nude. Last frame: Rei already lies on her back, head on the RIGHT, feet pointing LEFT, the erect 24cm standing straight UP from the groin. Aya faces Rei, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Rei's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Both faces stay inside the wide frame. The camera sits far back. Full body including both feet.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Rei already lies fully on her back, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP. Aya kneels toward the LEFT at the hips, mouth on the shaft. Last frame: Rei still on her back, the 24cm straight UP. Aya still kneels at the hips, mouth on the shaft.",
+          "action": "They start already on this same linoleum spot. Rei already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 24cm stands vertically straight UP from the groin. Aya already kneels toward the LEFT at the hips, torso folded toward the shaft. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Rei still on her back, the 24cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -8145,6 +8428,61 @@
           "connect": "t2v"
         },
         {
+          "id": "06-doggy-wait",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Rei stays on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP. Aya stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Rei stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. Aya STANDS over the hips, head LEFT. Both of Aya's soles plant on the linoleum on either side of Rei's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Aya's hairless pussy hangs DIRECTLY ABOVE the glans. Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "rei",
+              "line": "ん"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "source": "chain",
+          "sfx": "A breath, HVAC",
+          "cast": [
+            "aya",
+            "rei"
+          ]
+        },
+        {
           "id": "06-doggy-ride",
           "trim": {
             "start": 0,
@@ -8166,7 +8504,7 @@
           ],
           "trigger": "",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Rei lies fully on her back, head on the RIGHT, feet pointing LEFT. The erect 24cm stands vertically straight UP from the groin. Aya faces Rei, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Rei's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already on this same linoleum spot after the mouth. Rei already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 24cm is rooted in the groin and stands vertically straight UP. Aya faces Rei, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Rei's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Rei's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Rei's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Rei already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 24cm is rooted in the groin and stands vertically straight UP. Aya faces Rei, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Rei's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Rei's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Rei's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -8223,7 +8561,7 @@
           ],
           "trigger": "This video depicts part of sexual intercourse climax. The adult already on her back keeps the shaft inside the rider and cums inside of her. Aya and the partner stay the same two adults.\nPENISLORA",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Rei stays on her back, head on the RIGHT, feet pointing LEFT. The erect 24cm stays buried to the root. Aya stays over the hips facing Rei, head on the LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already joined on this same linoleum spot. Rei stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Rei, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Rei finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Rei's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Rei stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Rei, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Rei finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Rei's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -9809,8 +10147,8 @@
             "mystic"
           ],
           "trigger": "bl0w_j0b",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Kana standing mid-corridor stroking, Aya facing her, then Aya drops down onto her knees at the hips. The camera distance stays fixed. Last frame: the camera sits far back, wide full-body, Kana already lies on her back, head on the RIGHT, Aya already STANDS over the hips, both soles beside the ribs, Kana's whole face inside the frame, both heads and all four feet inside the frame.",
-          "action": "They start already standing face to face after the kiss. Kana still STANDS, WHITE goo on her body and on the linoleum. Aya's face is a lewd wet smiling ecstatic inviting face. THEN Aya DROPS DOWN onto her knees in front of Kana. Aya's face is a lewd wet smiling ecstatic inviting face. Kana stands with vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft, hollow empty dark eye sockets, visible fangs, grimy dirty extra-viscous filthy slime covering her, wet peeling rotting patches on the shaft, erect 20cm the same vivid purple as the hips not pale-tan flesh. Both hands stay on Kana's hips, not the shaft. They start wide full-body. While the lips reach the base, both faces stay fully inside the frame. The partner's whole face stays inside the frame. The camera stays back enough that both faces stay fully inside. Before the join, the camera sits far back. Wide full-body. Both adults stay in frame from the top of the head to the tips of both feet. Both faces stay fully inside that wide frame. Aya's head MOVES FORWARD onto the erect 20cm the same vivid purple as the hips not pale-tan flesh until the lips reach the BASE. The lips wrap the glans first and stay wrapped until they reach the BASE. Then short strokes to the BASE: the head slides a short way along the shaft and returns to a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. The glans stays inside the mouth the whole take. Each return to the BASE sheds a wet saliva string. KEEP the lips at the BASE. Kana's hips PRESS FORWARD so the 20cm points only a little above horizontal into the mouth. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Small soft female moans from both. Both stay fully nude. Last frame: Kana already lies on her back, head on the RIGHT, feet pointing LEFT, the erect 20cm standing straight UP from the groin. Aya faces Kana, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Kana's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Both faces stay inside the wide frame. The camera sits far back. Full body including both feet.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Kana already lies fully on her back, head RIGHT, feet LEFT. The erect 20cm stands vertically straight UP. Aya kneels toward the LEFT at the hips, mouth on the shaft. Last frame: Kana still on her back, the 20cm straight UP. Aya still kneels at the hips, mouth on the shaft.",
+          "action": "They start already on this same linoleum spot. Kana already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 20cm stands vertically straight UP from the groin. Aya already kneels toward the LEFT at the hips, torso folded toward the shaft. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Kana still on her back, the 20cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -9843,6 +10181,61 @@
           "connect": "t2v"
         },
         {
+          "id": "09-join-wait",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Kana stays on her back, head RIGHT, feet LEFT. The erect 20cm stands straight UP. Aya stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Kana stays on her back, head RIGHT, feet LEFT, the erect 20cm straight UP. Aya STANDS over the hips, head LEFT. Both of Aya's soles plant on the linoleum on either side of Kana's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Aya's hairless pussy hangs DIRECTLY ABOVE the glans. Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "kana",
+              "line": "ん"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "source": "chain",
+          "sfx": "A breath, HVAC",
+          "cast": [
+            "aya",
+            "kana"
+          ]
+        },
+        {
           "id": "09-join-ride",
           "trim": {
             "start": 0,
@@ -9864,7 +10257,7 @@
           ],
           "trigger": "",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Kana lies fully on her back, head on the RIGHT, feet pointing LEFT. The erect 20cm stands vertically straight UP from the groin. Aya faces Kana, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Kana's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already on this same linoleum spot after the mouth. Kana already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 20cm is rooted in the groin and stands vertically straight UP. Aya faces Kana, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Kana's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 20cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Kana's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Kana's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Kana already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 20cm is rooted in the groin and stands vertically straight UP. Aya faces Kana, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Kana's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 20cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Kana's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Kana's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -9925,7 +10318,7 @@
           ],
           "trigger": "This video depicts part of sexual intercourse climax. The adult already on her back keeps the shaft inside the rider and cums inside of her. Aya and the partner stay the same two adults.\nPENISLORA\njpnMoans",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Kana stays on her back, head on the RIGHT, feet pointing LEFT. The erect 20cm stays buried to the root. Aya stays over the hips facing Kana, head on the LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already joined on this same linoleum spot. Kana stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Kana, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 20cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Kana finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Kana's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Aya says 「あ、いく」. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Kana stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Kana, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 20cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Kana finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Kana's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -11552,8 +11945,8 @@
             "mystic"
           ],
           "trigger": "bl0w_j0b",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. Both standing in front of Shino, mouths joined, then Aya drops down onto her knees at the hips. Full bodies including feet. Distance stays the same. The camera sits far back.",
-          "action": "They start already standing in front of Shino, mouths joined. THEN Aya DROPS DOWN onto her knees in front of Shino. Aya's face is a lewd wet smiling ecstatic inviting face. Shino stands with extremely tall pale grimy-dirty adult, alluring feminine face, vacant monster eyes, a long forked reptile tongue, long arms, erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft. Shino STOOPS so the erect 30cm human penis at the front groin, the same pale gray-white as the hips not pale-tan flesh, points FORWARD to Aya's mouth. The buttocks stay bare. Shino's head stays ducked under the tubes. Both hands stay on Shino's hips, not the shaft. They start wide full-body. While the lips reach the base, both faces stay fully inside the frame. The partner's whole face stays inside the frame. The camera stays back enough that both faces stay fully inside. Before the join, the camera sits far back. Wide full-body. Both adults stay in frame from the top of the head to the tips of both feet. Both faces stay fully inside that wide frame. Aya's head MOVES FORWARD onto the erect 30cm the same pale gray-white as the hips not pale-tan flesh until the lips reach the BASE. The lips wrap the glans first and stay wrapped until they reach the BASE. Then short strokes to the BASE: the head slides a short way along the shaft and returns to a tight wet ring at the BASE, nose at the groin, cheeks hollow, throat full. The glans stays inside the mouth the whole take. Each return to the BASE sheds a wet saliva string. KEEP the lips at the BASE. Shino's hips PRESS FORWARD so the 30cm points only a little above horizontal into the mouth. Both look like it feels really good, not blank. Flushed, mouths open, brows knit. Small soft female moans from both. Both stay fully nude. Last frame: Shino already lies on her back, head on the RIGHT, feet pointing LEFT, the erect 30cm standing straight UP from the groin. Aya faces Shino, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Shino's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Both faces stay inside the wide frame. The camera sits far back. Full body including both feet.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Shino already lies fully on her back, head RIGHT, feet LEFT. The erect 30cm stands vertically straight UP. Aya kneels toward the LEFT at the hips, mouth on the shaft. Last frame: Shino still on her back, the 30cm straight UP. Aya still kneels at the hips, mouth on the shaft.",
+          "action": "They start already on this same linoleum spot. Shino already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect 30cm stands vertically straight UP from the groin. Aya already kneels toward the LEFT at the hips, torso folded toward the shaft. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Shino still on her back, the 30cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -11586,6 +11979,61 @@
           "connect": "t2v"
         },
         {
+          "id": "12-exit-wait",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "synth",
+              0.4
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Shino stays on her back, head RIGHT, feet LEFT. The erect 30cm stands straight UP. Aya stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
+          "action": "They start already on this same linoleum spot. Shino stays on her back, head RIGHT, feet LEFT, the erect 30cm straight UP. Aya STANDS over the hips, head LEFT. Both of Aya's soles plant on the linoleum on either side of Shino's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Aya's hairless pussy hangs DIRECTLY ABOVE the glans. Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "shino",
+              "line": "ん"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "source": "chain",
+          "sfx": "A breath, HVAC",
+          "cast": [
+            "aya",
+            "shino"
+          ]
+        },
+        {
           "id": "12-exit-ride",
           "trim": {
             "start": 0,
@@ -11607,7 +12055,7 @@
           ],
           "trigger": "",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Shino lies fully on her back, head on the RIGHT, feet pointing LEFT. The erect 30cm stands vertically straight UP from the groin. Aya faces Shino, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Shino's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already on this same linoleum spot after the mouth. Shino already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 30cm is rooted in the groin and stands vertically straight UP. Aya faces Shino, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Shino's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 30cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Shino's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Shino's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Shino already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head on the RIGHT, feet pointing LEFT. The erect 30cm is rooted in the groin and stands vertically straight UP. Aya faces Shino, head on the LEFT. Both of Aya's soles plant on the linoleum on either side of Shino's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the 30cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. HOLD still joined at the BASE until the last frame. Both of Aya's soles stay on the linoleum beside the ribs. Shino's hands REST on Aya's breasts, one hand on each breast. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Shino's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -11664,7 +12112,7 @@
           ],
           "trigger": "This video depicts part of sexual intercourse climax. The adult already on her back keeps the shaft inside the rider and cums inside of her. Aya and the partner stay the same two adults.\nPENISLORA",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Shino stays on her back, head on the RIGHT, feet pointing LEFT. The erect 30cm stays buried to the root. Aya stays over the hips facing Shino, head on the LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles.",
-          "action": "They start already joined on this same linoleum spot. Shino stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Shino, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 30cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Shino finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Shino's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft still buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Shino stays on her back, head RIGHT, feet LEFT. Aya stays over the hips facing Shino, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect 30cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Shino finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Shino's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",

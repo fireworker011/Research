@@ -1662,12 +1662,13 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     six_blob = action_blob(ride, "06-doggy")
     assert "hangs directly above the glans" in six_blob
     six = next(b for b in ride["beats"] if b["id"] == "06-doggy")
-    assert "glans stays inside the mouth" in six["action"].lower()
+    assert "slide down to the base" in six["action"].lower()
+    assert "kneels" in six["action"].lower()
     ride_sit = next(b for b in ride["beats"] if b["id"] == "06-doggy-ride")
     _assert_insertion_direction(ride_sit["action"], build_beat_prompt(ride, ride_sit))
     assert extra_keys(six) == ["blowjob", "mystic"]
     assert six.get("trigger") == "bl0w_j0b"
-    assert "points only a little above horizontal into the mouth" in six["action"].lower()
+    assert "soles plant" not in six["action"].lower()
     assert "stays up into the mouth" not in six["action"].lower()
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
     nine = next(b for b in m_open["beats"] if b["id"] == "09-join")
@@ -1701,8 +1702,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert skip_shino["beats"][-1]["hud"]["complete"] is True
     miki_ride = action_blob(ride, "03-kiss")
     assert "24cm" in miki_ride
-    assert "drops down onto her knees" in miki_ride
-    assert "glans stays inside the mouth" in miki_ride
+    assert "kneels" in miki_ride
+    assert "slide down to the base" in miki_ride
     assert "hangs directly above the glans" in miki_ride
     assert "hold still joined at the base" in miki_ride
     assert "hugs" not in miki_ride
@@ -1878,8 +1879,8 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "mystic" not in peak_keys
     assert "thrust" in peak_keys and "penis" in peak_keys and "synth" in peak_keys
     assert "cumshot" not in peak_keys and "cumouf" not in peak_keys
-    assert "leaks around the base" in ride_peak["action"].lower()
-    assert "stays inside the pussy" in ride_peak["action"].lower()
+    assert "overflows" in ride_peak["action"].lower()
+    assert "still buried to the root" in ride_peak["action"].lower()
 
     def _walk_beats(node, acc):
         if isinstance(node, dict):
@@ -2085,9 +2086,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
 
     twelve = next(b for b in invite["beats"] if b["id"] == "12-exit")
     twelve_low = action_blob(invite, "12-exit")
-    assert "drops down onto her knees" in twelve["action"].lower()
-    assert "mouths joined" in twelve["action"].lower()
-    assert "glans stays inside the mouth" in twelve["action"].lower()
+    assert "kneels" in twelve["action"].lower()
+    assert "slide down to the base" in twelve["action"].lower()
+    assert "mouth on the shaft" in twelve["action"].lower()
     assert "hangs directly above the glans" in twelve_low
     assert "steps in" not in twelve_low
     assert "hugs" not in twelve_low
@@ -2262,7 +2263,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "stops in front of her" in ten["action"].lower()
             if pose and "騎乗" in pose:
                 twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
-                assert "drops down onto her knees" in twelve["action"].lower()
+                assert "kneels" in twelve["action"].lower()
                 assert "hugs" not in action_blob(ep, "12-exit")
             if pose and "四つん這い" in pose:
                 six = next(b for b in ep["beats"] if b["id"] == "06-doggy")
@@ -2372,7 +2373,7 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     cum = next(b for b in miki["beats"] if b["id"] == "04-toilet-cum")
     assert "LIFTS" not in cum["action"]
     assert "SLIDES OUT" not in cum["action"]
-    assert len([b for b in miki["beats"] if str(b["id"]).startswith("04-toilet")]) == 7
+    assert len([b for b in miki["beats"] if str(b["id"]).startswith("04-toilet")]) == 8
     full = prepare_episode(
         raw,
         story_override="誘う",
@@ -2407,7 +2408,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 44
+    assert len(chosen["beats"]) == 49
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -2419,7 +2420,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_ride,rei=invite_ride,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(fullest, root=HOSPITAL_DIR) == []
-    assert len(fullest["beats"]) == 46
+    assert len(fullest["beats"]) == 53
     assert len(fullest["beats"]) <= MAX_BEATS
 
 
@@ -2767,7 +2768,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "buried to the root" in ride_peak["action"].lower()
     assert "beside aya's hip" not in ride_peak["action"].lower()
     assert "knee up" not in ride_peak["action"].lower()
-    assert "leaks around the base" in ride_peak["action"].lower()
+    assert "overflows" in ride_peak["action"].lower()
     assert "finishes inside gin" in ride_peak["action"].lower()
     assert "cums inside" not in ride_peak.get("trigger", "").lower()
     assert "lifts" not in (ride_peak.get("trigger") or "").lower()
@@ -2780,8 +2781,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "leaning on both palms" not in (ride_peak.get("trigger") or "").lower()
     assert "on her back" in (ride_peak.get("trigger") or "").lower()
     assert not (ride_peak.get("trigger") or "").startswith(SIDERIDE_TRIGGER)
-    assert "either side of aya's ribs" in jupo["action"].lower()
-    assert "gin stands over the hips" in jupo["action"].lower()
+    assert "kneels" in jupo["action"].lower()
+    assert "soles plant" not in jupo["action"].lower()
     assert "stands vertically straight up from the groin" in jupo["action"].lower()
     assert "head right" in jupo["action"].lower()
     assert "feet left" in jupo["action"].lower()
@@ -2824,10 +2825,11 @@ def test_hospital_gin_tsuno_optional_events():
     assert "thrust" not in extra_keys(ride_in)
     assert extra_lora_entries(ride_in)[:3] == [("mystic", 0.5), ("penis", 0.45), ("synth", 0.4)]
     assert "slide down" in jupo["action"].lower()
+    assert "kneels at the hips" in jupo["action"].lower()
     assert "full body including both feet" in jupo["action"].lower()
     assert "one clawed hand holds the shaft" not in jupo["action"].lower()
     assert "closed lips" in jupo["action"].lower()
-    assert "24cm stays inside the mouth" in jupo["action"].lower()
+    assert "slide down to the base" in jupo["action"].lower()
     jupo_prompt = build_beat_prompt(taken, jupo)
     assert "camera distance stays fixed" in jupo_prompt.lower()
     assert "zoom" not in jupo_prompt.lower()
@@ -2914,9 +2916,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "leans back onto both palms" not in jupo["action"].lower()
     assert "lies back" not in jupo["action"].lower()
     assert "rises to her feet" not in jupo["action"].lower()
-    assert "lips meet the groin at the base" in jupo["action"].lower()
+    assert "slide down to the base" in jupo["action"].lower()
     assert "the back of her head on the linoleum" in jupo["action"].lower()
-    assert "pleasure-drunk happy smile" in jupo["action"].lower()
+    assert "pleasure-drunk happy smile" in jupo["cast_lock"]["aya"].lower()
     lick = next(b for b in taken["beats"] if b["id"] == "04-gin-lick")
     assert "tongue hanging out" in lick["action"].lower() or "long wet gray tongue" in lick["action"].lower()
     for bid in ("04-gin-jupo", "04-gin-ride", "04-gin-peak"):
@@ -3130,37 +3132,39 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
         kiss = next(b for b in ep["beats"] if b["id"] == "03-kiss")
         assert beat_source(kiss) == "chain", pose
         assert kiss.get("connect") == "t2v", pose
-        assert "mouths joined" in kiss["action"].lower(), pose
-        assert "mouths joined" in kiss["camera"].lower(), pose
         assert "already kneeling at the hips" not in kiss["camera"].lower(), pose
         six = next(b for b in ep["beats"] if b["id"] == "06-doggy")
         assert beat_source(six) == "chain", pose
-        assert "after the wait" in six["action"].lower(), pose
         assert "already kneeling in front" not in six["action"].lower(), pose
         nine = next(b for b in ep["beats"] if b["id"] == "09-join")
         assert beat_source(nine) == "chain", pose
-        assert "kana still stands" in nine["action"].lower(), pose
         assert "already kneeling in front" not in nine["action"].lower(), pose
         twelve = next(b for b in ep["beats"] if b["id"] == "12-exit")
         assert beat_source(twelve) == "chain", pose
         if pose == "騎乗位":
-            assert "drops down onto her knees" in kiss["action"].lower()
-            assert "drops down onto her knees" in six["action"].lower()
-            assert "drops down onto her knees" in nine["action"].lower()
-            assert "drops down onto her knees" in twelve["action"].lower()
+            for oral in (kiss, six, nine, twelve):
+                assert "kneels" in oral["action"].lower()
+                assert "slide down to the base" in oral["action"].lower()
+                assert "soles plant" not in oral["action"].lower()
             assert "still kneeling" not in nine["action"].lower()
-            assert "both knees stay bent" in nine["action"].lower()
-            assert "hips stay over the groin" in nine["action"].lower()
-            assert "weight stays on the soles" in nine["action"].lower()
-            assert "either side of kana's ribs" in nine["action"].lower()
-            assert "lips at the base" in nine["action"].lower()
+            nine_wait = next(b for b in ep["beats"] if b["id"] == "09-join-wait")
+            assert "both knees stay bent" in nine_wait["action"].lower()
+            assert "hips stay over the groin" in nine_wait["action"].lower()
+            assert "weight stays on the soles" in nine_wait["action"].lower()
+            assert "either side of kana's ribs" in nine_wait["action"].lower()
+            assert "directly above the glans" in nine_wait["action"].lower()
+            assert "travels into" not in nine_wait["action"].lower()
             assert "pussy hanging directly above the glans" not in nine["action"].lower()
-            assert "kana on her back" not in nine["action"].lower()
             assert "zoom" not in (nine.get("camera") or "").lower()
             nine_prompt = build_beat_prompt(ep, nine, trigger=merge_trigger("", nine))
             assert "camera distance stays fixed" in nine_prompt.lower()
             assert "zoom" not in nine_prompt.lower()
             assert "aya's face and the partner's face stay in frame" in nine_prompt.lower()
+        else:
+            assert "mouths joined" in kiss["action"].lower(), pose
+            assert "mouths joined" in kiss["camera"].lower(), pose
+            assert "after the wait" in six["action"].lower(), pose
+            assert "kana still stands" in nine["action"].lower(), pose
 
     evade = prepare_episode(raw, story_override="回避", connect_override="chain")
     evade_kiss = next(b for b in evade["beats"] if b["id"] == "03-kiss")
@@ -3243,6 +3247,11 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
                         and "keep the glans inside" in low
                         and "either side of" in low
                         and "ribs" in low
+                    )
+                    or (
+                        bid.endswith("-wait")
+                        and "directly above" in low
+                        and "soles plant" in low
                     )
                 )
             )
@@ -5184,15 +5193,20 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         oral = next(b for b in ride["beats"] if b["id"] == base)
         assert "lips leaving the shaft" not in oral["action"]
         assert "still kneeling" not in oral["action"].lower()
-        assert "already lies on her back" in oral["action"].lower()
-        assert "both knees stay bent" in oral["action"].lower()
-        assert "hips stay over the groin" in oral["action"].lower()
-        assert "weight stays on the soles" in oral["action"].lower()
+        assert "already lies fully on her back" in oral["action"].lower()
+        assert "kneels" in oral["action"].lower()
+        assert "soles plant" not in oral["action"].lower()
+        assert "slide down to the base" in oral["action"].lower()
         assert "already stands over" not in oral["action"].lower()
-        assert f"either side of {partner.lower()}'s ribs" in oral["action"].lower()
-        assert "the camera sits far back" in oral["action"].lower()
-        assert "drops down onto her knees" in oral["action"].lower()
-        assert "lips at the base" in oral["action"].lower()
+        waited = next(b for b in ride["beats"] if b["id"] == f"{base}-wait")
+        assert "both knees stay bent" in waited["action"].lower()
+        assert "hips stay over the groin" in waited["action"].lower()
+        assert "weight stays on the soles" in waited["action"].lower()
+        assert f"either side of {partner.lower()}'s ribs" in waited["action"].lower()
+        assert "DIRECTLY ABOVE" in waited["action"]
+        assert "TRAVELS INTO" not in waited["action"]
+        assert "LOWERS" in next(b for b in ride["beats"] if b["id"] == f"{base}-ride")["action"]
+        assert "HOLD" in next(b for b in ride["beats"] if b["id"] == f"{base}-ride")["action"]
         seat = next(b for b in ride["beats"] if b["id"] == f"{base}-ride")
         peak = next(b for b in ride["beats"] if b["id"] == f"{base}-peak")
         act = seat["action"]
@@ -5320,6 +5334,9 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
     assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-ride")) == "chain"
     assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-peak")) == "chain"
     assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-jupo")) == "chain"
+    assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-mouth")) == "chain"
+    assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-spitkiss")) == "chain"
+    assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-wait")) == "chain"
     assert beat_source(next(b for b in gin_cut["beats"] if b["id"] == "04-gin-cunny")) == "t2v"
     probe = {
         "id": "03-probe",
@@ -5472,4 +5489,84 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     _assert_hospital_bans(wash)
     assert validate_episode(wash, root=HOSPITAL_DIR) == []
     assert len(wash["beats"]) <= MAX_BEATS
+
+
+def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    miki = prepare_episode(
+        raw,
+        story_override="accept",
+        toilet_override="和式ミキ",
+        connect_override="chain",
+    )
+    stall = [b for b in miki["beats"] if str(b["id"]).startswith("04-toilet")]
+    assert [b["id"] for b in stall] == [
+        "04-toilet-in",
+        "04-toilet-squat",
+        "04-toilet-spot",
+        "04-toilet-push",
+        "04-toilet",
+        "04-toilet-cum",
+        "04-toilet-gape",
+        "04-toilet-out",
+    ]
+    assert all(b.get("connect") == "chain" and beat_source(b) == "chain" for b in stall)
+    gape = next(b for b in stall if b["id"] == "04-toilet-gape")
+    assert "wide ring" in gape["action"]
+    assert "jacko" not in extra_keys(gape)
+    push = next(b for b in stall if b["id"] == "04-toilet-push")
+    assert "wraps Aya from behind" in push["action"]
+    assert extra_keys(push)[0] == "jacko"
+    assert "jacko" not in extra_keys(next(b for b in stall if b["id"] == "04-toilet"))
+    out = next(b for b in stall if b["id"] == "04-toilet-out")
+    assert "SLIDES OUT" not in out["action"]
+    assert "Tongues intertwine" in out["action"]
+    expel = prepare_episode(raw, story_override="accept", toilet_override="和式", connect_override="chain")
+    assert all(b["id"] != "04-toilet-gape" for b in expel["beats"])
+    gin = prepare_episode(raw, story_override="accept", gin_override="犯される", connect_override="chain")
+    order = [b["id"] for b in gin["beats"] if str(b["id"]).startswith("04-gin")]
+    assert order.index("04-gin-jupo") < order.index("04-gin-mouth") < order.index("04-gin-spitkiss")
+    assert order.index("04-gin-spitkiss") < order.index("04-gin-wait") < order.index("04-gin-ride") < order.index("04-gin-peak")
+    jupo = next(b for b in gin["beats"] if b["id"] == "04-gin-jupo")
+    assert "kneels" in jupo["action"]
+    assert "soles plant" not in jupo["action"].lower()
+    assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
+    mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
+    assert extra_lora_entries(mouth) == [("blowjob", 0.7), ("cumouf", 0.5)]
+    assert "cmst" not in extra_keys(mouth)
+    assert "STANDS" not in mouth["action"]
+    assert "STANDS" not in build_beat_prompt(gin, mouth)
+    spit = next(b for b in gin["beats"] if b["id"] == "04-gin-spitkiss")
+    assert extra_lora_entries(spit) == [("kiss", 0.5), ("cumouf", 0.45)]
+    assert "STANDS" not in spit["action"]
+    waited = next(b for b in gin["beats"] if b["id"] == "04-gin-wait")
+    assert "DIRECTLY ABOVE" in waited["action"]
+    assert "TRAVELS INTO" not in waited["action"]
+    assert "STANDS" in waited["action"]
+    seat = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
+    assert "LOWERS" in seat["action"] and "HOLD" in seat["action"]
+    assert "STANDS" not in seat["action"]
+    peak = next(b for b in gin["beats"] if b["id"] == "04-gin-peak")
+    assert "OVERFLOWS" in peak["action"]
+    assert "a little" not in peak["action"].lower()
+    assert "cmst" not in extra_keys(peak)
+    cunny = next(b for b in gin["beats"] if b["id"] == "04-gin-cunny")
+    assert cunny.get("connect") == "chain" and beat_source(cunny) == "chain"
+    oral = prepare_episode(raw, dog_override="invite_oral", connect_override="chain")
+    lick = next(b for b in oral["beats"] if b["id"] == "04-dog-lick")
+    lick_peak = next(b for b in oral["beats"] if b["id"] == "04-dog-lick-peak")
+    assert lick.get("connect") == "chain" and beat_source(lick) == "chain"
+    assert lick_peak.get("connect") == "chain" and beat_source(lick_peak) == "chain"
+    assert "hairless pussy" in lick["camera"] and "face" in lick["camera"]
+    assert "full-body side view" in lick_peak["action"]
+    assert "licks the hairless pussy" in lick["action"]
+    dog_wait = next(b for b in oral["beats"] if b["id"] == "04-dog-wait")
+    assert dog_wait.get("connect") == "cut" and beat_source(dog_wait) == "t2v"
+    dog_cum = next(b for b in oral["beats"] if b["id"] == "04-dog-cum")
+    assert "OVERFLOWS" in dog_cum["action"]
+    walk = next(b for b in oral["beats"] if b["id"] == "04-dog-walk")
+    assert walk.get("connect") == "end"
+    assert len(miki["beats"]) <= MAX_BEATS
+    assert len(gin["beats"]) <= MAX_BEATS
+    assert len(oral["beats"]) <= MAX_BEATS
 

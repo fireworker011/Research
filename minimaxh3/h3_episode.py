@@ -682,12 +682,47 @@ GIN_ORAL_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
     "head on the RIGHT, feet pointing LEFT. "
+    "The erect 24cm stands vertically straight UP from the groin. "
+    "Gin kneels toward the LEFT at the hips, torso folded toward the shaft. "
     "Closed lips slide down the upright 24cm until the lips meet the groin at the base. "
     "The 24cm stays inside the mouth during those strokes. "
-    "Last frame: Gin stands over the hips, head on the LEFT. "
-    "Both of Gin's soles plant on the linoleum on either side of Aya's ribs, one sole beside each side of the chest. "
+    "Last frame: Aya still on her back, the 24cm straight UP. Gin still kneels at the hips, mouth on the shaft. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_MOUTH_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays fully on her back, head on the RIGHT, feet pointing LEFT. "
+    "The erect 24cm stands vertically straight UP from the groin. "
+    "Gin kneels toward the LEFT at the hips. Closed lips stay at the BASE. "
+    "Gin finishes INSIDE Aya's mouth. Thick WHITE goo fills the mouth around the shaft. "
+    "Last frame: lips still at the BASE, WHITE goo at the lips, tongue out, Gin still kneeling. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_SPIT_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya stays on her back. Gin kneels at the hips. "
+    "The 24cm slides out of Aya's mouth. Mouths join. WHITE goo passes between the mouths. "
+    "Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. "
+    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, the 24cm outside the mouth. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+RIB_WAIT_IDS = frozenset({
+    "03-kiss-wait",
+    "06-doggy-wait",
+    "09-join-wait",
+    "12-exit-wait",
+    "04-gin-wait",
+})
+RIB_WAIT_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The shaft adult stays on her back, head on the RIGHT, feet pointing LEFT. "
+    "The other adult stands over the hips, head on the LEFT. "
+    "Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. "
     "Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
-    "Gin's hairless pussy hangs directly above the glans. "
+    "The hairless pussy hangs directly above the glans. The shaft stays outside. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
@@ -805,18 +840,34 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
     return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
 
 
+def _rib_wait_chain_authored(beat: dict[str, Any]) -> bool:
+    """The unjoined rib stand stays I2V. A cut dropdown must not redraw it as T2V."""
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    if str(beat.get("id") or "") not in RIB_WAIT_IDS:
+        return False
+    low = str(beat.get("action") or "").lower()
+    return "directly above" in low and "soles plant" in low
+
+
 def _gin_supine_chain_authored(beat: dict[str, Any]) -> bool:
-    """Jupo, the gin seat, and its peak inherit the previous last frame even on a cut.
+    """Jupo, mouth, spit kiss, the gin seat, and its peak inherit the previous last frame even on a cut.
 
     Cunny is connect:chain. A cut dropdown may still redraw it. The chain dropdown
-    starts it on the lick's last frame.
+    starts it on the lick's last frame. The rib stand is 04-gin-wait.
     """
     if str(beat.get("connect") or "").strip().lower() != "chain":
         return False
     bid = str(beat.get("id") or "")
+    low = str(beat.get("action") or "").lower()
+    if bid == "04-gin-mouth":
+        return "on her back" in low and "base" in low
+    if bid == "04-gin-spitkiss":
+        return "kneel" in low
+    if bid == "04-gin-wait":
+        return "directly above" in low and "soles plant" in low
     if bid not in GIN_STILL_IDS:
         return False
-    low = str(beat.get("action") or "").lower()
     if bid == "04-gin-jupo":
         return "already lies" in low and "closed lips" in low
     if bid == "04-gin-ride":
@@ -1583,7 +1634,12 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
         if beat.get("reuse"):
             gpu_seen += 1
             continue
-        if _toilet_chain_authored(beat) or _rib_ride_chain_authored(beat) or _gin_supine_chain_authored(beat):
+        if (
+            _toilet_chain_authored(beat)
+            or _rib_ride_chain_authored(beat)
+            or _gin_supine_chain_authored(beat)
+            or _rib_wait_chain_authored(beat)
+        ):
             beat["source"] = "chain"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -4455,6 +4511,12 @@ def build_beat_prompt(
         bid_now = str(beat.get("id") or "")
         if bid_now == "04-gin-jupo":
             desc.append(GIN_ORAL_PACE_CLAUSE)
+        elif bid_now == "04-gin-mouth":
+            desc.append(GIN_MOUTH_PACE_CLAUSE)
+        elif bid_now == "04-gin-spitkiss":
+            desc.append(GIN_SPIT_PACE_CLAUSE)
+        elif bid_now in RIB_WAIT_IDS:
+            desc.append(RIB_WAIT_PACE_CLAUSE)
         elif bid_now == "04-gin-ride":
             desc.append(GIN_RIDE_PACE_CLAUSE)
         elif bid_now == "04-gin-peak":
