@@ -33,6 +33,7 @@
 - Colab: `wan_hospital_episode_bot.ipynb`。0 で Google ドライブ、1 で初回の重み（GPU 不要）、最後のセルで生成。人間が実行する
 - テキストエンコーダは umt5
 - テスト: `python3 -m pytest colab/test_wan_episode.py -q`。H3 の `colab/test_h3_episode.py -q -k hospital` は壊さない
+- リライト側へ貼る文は `minimaxh3/episodes/hospital-exit-adult/WAN_HANDOFF.md`。`26afb1fc` の台本に対する source とスロットの実測はそこ。`test_wan_episode.py` の期待はそれより古い
 
 ## プロンプトの書き方
 
