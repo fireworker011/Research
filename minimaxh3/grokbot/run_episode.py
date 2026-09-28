@@ -44,7 +44,7 @@ DEFAULT_BRANCH = "cursor/h3-kasumi-adult-0402"
 REPO = "fireworker011/Research"
 
 
-def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", end_connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "") -> str:
+def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: Path, repo: str = REPO, camera: str = "", connect: str = "", end_connect: str = "", combat: str = "", story: str = "", invite_pose: str = "", toilet: str = "", gin: str = "", tsuno: str = "", appear: str = "", scenes: str = "", start: str = "") -> str:
     """The file `colab exec` runs. Self-contained: fetches helpers into /content, bakes env, runs the main.
 
     Env is baked in because the CLI does not forward the local environment.
@@ -66,6 +66,7 @@ def exec_script(slug: str, *, preset: str, fresh: bool, branch: str, main_path: 
         f"os.environ['H3_EPISODE_TSUNO'] = {tsuno!r}\n"
         f"os.environ['H3_EPISODE_APPEAR'] = {appear!r}\n"
         f"os.environ['H3_EPISODE_SCENES'] = {scenes!r}\n"
+        f"os.environ['H3_EPISODE_START'] = {start!r}\n"
         f"os.environ['H3_EPISODE_FRESH'] = {('1' if fresh else '0')!r}\n"
         f"os.environ['H3_HELPER_BRANCH'] = {branch!r}\n"
         "os.environ.setdefault('H3_DRIVE_ROOT', '/content/drive/MyDrive/minimax-h3-comfyui')\n"
