@@ -709,11 +709,14 @@ GIN_MOUTH_PACE_CLAUSE = (
 )
 GIN_SPIT_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "Aya stays on her back. Gin kneels at the hips. "
-    "WHITE rope stays on Gin's face and tongue. The 24cm stays outside the mouth. "
-    "Mouths join. Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. "
-    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, WHITE rope on Gin's face, the 24cm outside Gin's mouth. "
-    "The pair stays on this same floor spot. The camera holds. "
+    "Aya stays on her back, head on the RIGHT, her open mouth toward Gin. "
+    "Gin kneels and brings her open mouth up to Aya's open mouth. "
+    "WHITE rope is in Gin's mouth and on Gin's tongue. The 24cm stays outside both mouths. "
+    "Mouths JOIN. Gin's tongue pushes the WHITE from Gin's mouth into Aya's mouth. "
+    "The WHITE arrives on Aya's tongue. Then the mouths part. "
+    "A WHITE string hangs from Gin's tongue to Aya's tongue. "
+    "Last frame: both mouths open, WHITE on both tongues, the string between them, Gin still kneeling. "
+    "The pair stays on this same floor spot. The camera holds both faces. "
     "Normal adult human height, nobody is giant."
 )
 RIB_WAIT_IDS = frozenset({

@@ -5603,6 +5603,10 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "SLIDES OUT" not in spit["action"]
     assert "Mouths JOIN" in spit["action"]
     assert "STANDS" not in spit["action"]
+    assert "pushes the white from gin's mouth into aya's mouth" in spit["action"].lower()
+    spit_prompt = build_beat_prompt(gin, spit, trigger=merge_trigger("", spit))
+    assert "into aya's mouth" in spit_prompt.lower()
+    assert "on gin's face" not in spit_prompt.lower()
     waited = next(b for b in gin["beats"] if b["id"] == "04-gin-wait")
     assert "DIRECTLY ABOVE" in waited["action"]
     assert "TRAVELS INTO" not in waited["action"]
