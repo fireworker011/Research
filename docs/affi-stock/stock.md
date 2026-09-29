@@ -27,13 +27,13 @@
 |---|---|---|---|---|---|---|---|
 | stock-01 | Day 1 | オルビスユー（化粧水） | 悩み→解決 | キャラ喋り（サクラ） | お風呂上がり、顔がつっぱる？ | 65字 | — |
 | stock-02 | Day 2 | ドッグフードおさかな | あるある共感 | キャラ喋り（サクラ・声のみ／手元） | 寝てたのに、袋の音で起きる子。 | 64字 | 6s |
-| stock-03 | Day 3 | Furbo（ペット見守りカメラ） | ストーリー（小さな1日） | キャラ喋り（サクラ） | 行ってきます。そのあとの、うちの子。 | 62字 | 9s |
+| stock-03 | Day 3 | Furbo（ペット見守りカメラ） | ストーリー（小さな1日） | キャラ喋り（サクラ） | 行ってきます。そのあとの、うちの子。 | 61字 | — |
 | stock-04 | Day 4 | オルビスユー（化粧水） | ビフォーアフター風（朝の支度の変化・効果断定なし） | キャラ喋り（サクラ） | 朝のスキンケア、並べすぎてない？ | 62字 | — |
 | stock-05 | Day 5 | ドッグフードおさかな | 比較（選び方） | キャラ喋り（サクラ・声のみ／手元） | お肉とお魚、どっちにする？ | 70字 | — |
-| stock-06 | Day 6 | Furbo（ペット見守りカメラ） | 街頭インタビュー風 | 街頭インタビュー風（顔なし・手元と後ろ姿） | 犬の留守番、何が心配ですか？ | 72字 | — |
+| stock-06 | Day 6 | Furbo（ペット見守りカメラ） | 街頭インタビュー風 | 街頭インタビュー風（顔なし・手元と後ろ姿） | 犬の留守番、何が心配ですか？ | 69字 | — |
 | stock-07 | Day 7 | オルビスユー（化粧水） | 使ってみたレビュー／開封 | キャラ喋り（サクラ） | 届いた箱、開けるところから。 | 55字 | — |
 | stock-08 | Day 8 | ドッグフードおさかな | 失敗談→気づき（よくある失敗として） | キャラ喋り（サクラ・声のみ／手元） | ごはんの切り替え、一気にやってない？ | 72字 | — |
-| stock-09 | Day 9 | Furbo（ペット見守りカメラ） | Q&A・よくある質問 | キャラ喋り（サクラ） | 見守りカメラ、よく聞かれる2つ。 | 73字 | — |
+| stock-09 | Day 9 | Furbo（ペット見守りカメラ） | Q&A・よくある質問 | キャラ喋り（サクラ） | 見守りカメラ、よく聞かれる2つ。 | 75字 | — |
 | stock-10 | Day 10 | オルビスユー（化粧水） | ランキング／3選の中の1つ | キャラ喋り（サクラ） | 秋の夜に見直したい、スキンケア3つ。 | 66字 | — |
 
 配分: オルビスユー4本（01/04/07/10）、ドッグフードおさかな3本（02/05/08）、Furbo 3本（03/06/09）。型10種を1本ずつ。
@@ -186,21 +186,20 @@ non_diegetic_music: The same pizzicato string motif with light percussion at a s
 
 ---
 ## stock-03｜Furbo（ペット見守りカメラ）｜型: ストーリー（小さな1日）
-- 想定投稿順: **Day 3** / ルート: キャラ喋り（サクラ） / 推奨LoRA: 6s: FL2V Turbo 8step 1.0 / 9s: FL2V Turbo 8step 1.0 + Combat BASE V2 0.7 + Motion Continuity Repair V2 0.6
-- **Combat LoRA 向き**（9sパート: 動きが大きい）。
+- 想定投稿順: **Day 3** / ルート: キャラ喋り（サクラ） / 推奨LoRA: 6s: FL2V Turbo 8step 1.0 / 9s: FL2V Turbo 8step 1.0
 
 ### 台詞（Achernar・音読用）と字幕
 | 秒 | 役割 | 台詞 | 字数 | 字/秒 | 字幕（2行・/ で改行） |
 |---|---|---|---|---|---|
 | 0.0-3.0 | フック | 行ってきます。そのあとの、うちの子。 | 15 | 5.00 | 行ってきます。 / そのあとの うちの子 |
 | 3.0-6.0 | 具体 | 玄関で、しばらく待ってた。 | 11 | 3.67 | 玄関で / しばらく待ってた |
-| 6.0-10.0 | 具体 | スマホから声をかけて、おやつをポン。 | 16 | 4.00 | スマホから声かけ / おやつをポン |
-| 10.0-12.5 | 誘導 | ナイスキャッチ。 | 7 | 2.80 | ナイス / キャッチ |
+| 6.0-10.0 | 具体 | スマホで様子を見て、名前を呼んでみる。 | 17 | 4.25 | スマホで様子を見て / 名前を呼んでみる |
+| 10.0-12.5 | 誘導 | 耳が、ぴくっ。 | 5 | 2.00 | 耳が / ぴくっ |
 | 12.5-15.0 | 誘導 | 見守りカメラは、プロフィールに。 | 13 | 5.20 | 見守りカメラは / プロフィールへ ▲ |
 
 ### 時間ごとの絵
 - **6sパート（0.0-6.0秒・768x1344）**: 0.0-3.0 朝の玄関。コート姿のサクラがしゃがんで犬をなで、手を振って立ち上がる → 3.0-6.0 閉まったドアの前で、犬がひとりでお座りしてドアを見つめる（床の高さ・静か）
-- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 リビング。低い棚の上にロゴなしの白い見守りカメラ。丸いベッドで寝ていた犬が耳を立てて起き、カメラの前へ走ってきてお座り → 10.0-12.5 カメラからおやつが飛び出し、犬がジャンプして空中でキャッチ（アクション） → 12.5-15.0 犬がカメラの前でおやつを噛み、しっぽを振って見上げる
+- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 リビング。低い棚の上にロゴなしの白い見守りカメラ。丸いベッドで寝ていた犬が、カメラのスピーカーからの小さな声で耳を立てて頭を上げる → 10.0-12.5 犬の顔アップ、耳がぴくっと動き首をかしげる → 12.5-15.0 犬がベッドから出てカメラの前にお座り、しっぽをゆっくり振る
 
 ### H3用プロンプト
 #### 6sパート（FL2VA・6.00秒・768x1344・302語）
@@ -218,22 +217,22 @@ overall_soundscape: Morning apartment ambience; soft coat rustle, a light pat on
 
 non_diegetic_music: A gentle acoustic guitar pattern at a moderate tempo, thinning to a few sparse notes at 00:03.000.
 ```
-#### 9sパート（FL2VA・9.00秒・640x1152・407語）
+#### 9sパート（FL2VA・9.00秒・640x1152・369語）
 最初のコマの静止画（参照画像なし（人の顔を入れない））:
 ```text
-Photoreal still, vertical 9:16, sunny living room, wide shot from knee height. On a low white shelf stands a plain white rounded tabletop pet camera with one dark round lens and a small treat opening, no logo or lettering. In the foreground a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar lies in a round grey dog bed, eyes half closed. No people, no text, no logos.
+Photoreal still, vertical 9:16, sunny living room, wide shot from knee height. On a low white shelf stands a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille, no logo or lettering. In the foreground a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar lies in a round grey dog bed, eyes half closed. No people, no text, no logos.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 pet short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: in a sunny living room, the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lies in a round grey dog bed while a plain white rounded tabletop pet camera with one dark round lens on its front and a small treat opening, completely free of any logo, label, or lettering stands on a low white shelf behind it. The dog's ears prick up, it lifts its head toward the device, jumps out of the bed, trots to the shelf and sits facing the lens, tail wagging. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] スマホから声をかけて、おやつをポン。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to a dynamic side angle at the dog's height: a small round treat pops out of the device's opening in a short arc; the dog springs up on its hind legs and catches it in mid-air with a quick snap, landing on all four paws. The camera pans left with small amplitude at fast speed to follow the treat. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] ナイスキャッチ。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a low frontal shot: the dog sits in front of the shelf chewing happily, then looks up toward the device with bright eyes, tail sweeping the floor, holding the pose until the final frame. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 見守りカメラは、プロフィールに。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 pet short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: in a sunny living room, the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lies in a round grey dog bed while a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering stands on a low white shelf behind it. A soft, muffled voice comes from the device's small speaker; the dog's ears prick up and it lifts its head toward the device. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] スマホで様子を見て、名前を呼んでみる。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to a close-up at the dog's eye level: its ears twitch once and it tilts its head slowly toward the device, eyes bright and alert. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 耳が、ぴくっ。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a low frontal shot: the dog climbs out of the bed, walks to the shelf and sits facing the device, tail sweeping the floor slowly, holding the pose until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 見守りカメラは、プロフィールに。</d> while no lips are visible on screen.
 
-overall_soundscape: Quiet living-room ambience; the dog bed rustles, paws patter on the wooden floor, a soft pop as the treat launches, a quick snap of jaws, soft landing thud and light crunchy chewing.
+overall_soundscape: Quiet living-room ambience; a soft, unintelligible voice from the device speaker, the dog bed rustles, light paw steps on the wooden floor and the soft swish of the tail.
 
 non_diegetic_music: The acoustic guitar pattern returns at a moderate tempo with a light shaker, brightening at 00:04.000 and resolving on a gentle chord at the end.
 ```
-**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic
+**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air
 
 ### タイトル
 `行ってきますのあと、うちの子は #Shorts #犬の留守番 #ペットカメラ`
@@ -242,20 +241,18 @@ non_diegetic_music: The acoustic guitar pattern returns at a moderate tempo with
 ```text
 アフィリエイト広告を含みます #PR
 行ってきます、のあとの小さな1日。
-見守りカメラなら、外からスマホで様子を見て、声をかけたり、おやつをあげたりできます。
+見守りカメラなら、外からスマホで様子を見たり、話しかけたりできます。
 紹介しているものはプロフィールのリンクからどうぞ。
 
 #PR #犬の留守番 #ペットカメラ #見守りカメラ #犬のいる暮らし
 
 映像・ナレーションはAIで生成しています。
-（Combat LoRA を使って生成した場合のみ）映像の一部に BUNNY（FourBunny）氏の LoRA「Combat BASE V2」「Motion Continuity Repair V2」を使用しています。
 ```
 
 ### 注意点（法務）
-- 機能は公式に書かれている範囲だけ（ライブ映像・双方向会話・飛び出すおやつ。出典: help.furbo.com / furbo.com/jp、2026-09-30確認）。「さみしくなくなる」「分離不安が治る」等は言わない。
-- おやつ機能は Furbo ミニカメラには無い（公式サポート記載）。アフィ先のモデルがおやつ対応か確認してから使う。
+- 機能は全機種の公式仕様にある範囲だけ（スマホでライブ映像・話しかけ）。「さみしくなくなる」「分離不安が治る」等は言わない。犬が声に反応する絵は演出（反応を保証しない）。
+- おやつ機能のない機種（Furboミニ等）があるため、おやつは台詞・字幕・絵・概要欄から全部外した。使うのは全機種共通のライブ映像とリアルタイム双方向会話だけ（furbo.com/jp/pages/comparison・help.furbo.com ミニ仕様、2026-09-30確認）。
 - カメラ本体はロゴなしの形だけのイメージ（実物のデザインとは違う）。
-- 9秒パートで Combat LoRA を使った場合は概要欄に BUNNY（FourBunny）のクレジットを入れる。
 - 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
 
 ---
@@ -409,13 +406,13 @@ non_diegetic_music: The marimba motif continues at a moderate tempo with soft cl
 |---|---|---|---|---|---|
 | 0.0-3.0 | フック | 犬の留守番、何が心配ですか？ | 12 | 4.00 | Q. 犬の留守番 / 何が心配？ |
 | 3.0-6.0 | 具体 | 何してるか分からないのが、一番。 | 14 | 4.67 | A. 何してるか / 分からないのが一番 |
-| 6.0-10.0 | 具体 | 見守りカメラなら、外から様子を見て、声かけやおやつも。 | 24 | 6.00 | 外から様子を見て / 声かけ・おやつも |
+| 6.0-10.0 | 具体 | 見守りカメラなら、外から様子を見て、話しかけも。 | 21 | 5.25 | 外から様子を見て / 話しかけも |
 | 10.0-12.5 | 誘導 | 留守番が気になる人は、 | 10 | 4.00 | 留守番が / 気になる人は |
 | 12.5-15.0 | 誘導 | プロフィールを、のぞいてみて。 | 12 | 4.80 | プロフィールを / のぞいてみて ▲ |
 
 ### 時間ごとの絵
 - **6sパート（0.0-6.0秒・768x1344）**: 0.0-3.0 夕方の商店街（背景ぼけ）。手元だけ映るマイク（ロゴなし）が、リードを持つ人の肩から下（後ろ姿寄り）へ向く。足元に犬 → 3.0-6.0 答える人の手がリードを握り直すアップ、犬が見上げる。顔は一切映さない。画面に『街頭インタビュー風の演出です』を編集で入れる
-- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 両手で持ったスマホの画面（文字なしのUI）に、広角のリビング映像。寝ていた犬が起きて画面の方へ → 10.0-12.5 実際のリビング。ロゴなしの白い見守りカメラからおやつが飛び、犬がキャッチ → 12.5-15.0 商店街に戻り、リードを持った人と犬が歩き去る後ろ姿
+- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 両手で持ったスマホの画面（文字なしのUI）に、広角のリビング映像。寝ていた犬が起きて画面の方へ → 10.0-12.5 実際のリビング。ロゴなしの白い見守りカメラのスピーカーから小さな声、犬が耳を立ててカメラの前でお座り → 12.5-15.0 商店街に戻り、リードを持った人と犬が歩き去る後ろ姿
 
 ### H3用プロンプト
 #### 6sパート（FL2VA・6.00秒・768x1344・294語）
@@ -433,7 +430,7 @@ overall_soundscape: Street ambience with distant footsteps, soft chatter that st
 
 non_diegetic_music: A soft lo-fi beat at a moderate tempo with muted electric piano chords, kept low under the voice.
 ```
-#### 9sパート（FL2VA・9.00秒・640x1152・398語）
+#### 9sパート（FL2VA・9.00秒・640x1152・412語）
 最初のコマの静止画（参照画像なし（人の顔を入れない））:
 ```text
 Photoreal still, vertical 9:16, close-up of two hands holding a smartphone in the evening street light; the phone screen shows a wide-angle pet-camera view of a sunny living room with a small cream-colored fluffy dog with a red collar asleep in a round grey bed. The screen has no text, no icons with letters, no timestamps. No faces, no logos.
@@ -442,13 +439,13 @@ H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒�
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, street-interview style vertical 9:16 short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and every person is seen only from the shoulders down or from behind. The shot begins in the composition of <Picture 1>: two hands hold a smartphone whose screen shows a wide-angle live view of a sunny living room without any text or icons, where the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sleeps in a round grey bed. On the screen, the dog lifts its head, stands up and walks toward the camera until its face fills the screen. The camera pushes in with small amplitude at slow speed toward the phone. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 見守りカメラなら、外から様子を見て、声かけやおやつも。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to the real living room at the dog's height: a plain white rounded tabletop pet camera with one dark round lens on its front and a small treat opening, completely free of any logo, label, or lettering on a low white shelf pops out a small round treat; the same dog hops and catches it in its mouth, then chews. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 留守番が気になる人は、</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts back to the evening shopping street: seen from behind, the person in the navy coat walks away with the dog on the red leash, the lowered microphone at the bottom edge, shop lights blurred ahead. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] プロフィールを、のぞいてみて。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, street-interview style vertical 9:16 short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and every person is seen only from the shoulders down or from behind. The shot begins in the composition of <Picture 1>: two hands hold a smartphone whose screen shows a wide-angle live view of a sunny living room without any text or icons, where the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sleeps in a round grey bed. On the screen, the dog lifts its head, stands up and walks toward the camera until its face fills the screen. The camera pushes in with small amplitude at slow speed toward the phone. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 見守りカメラなら、外から様子を見て、話しかけも。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to the real living room at the dog's height: a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering stands on a low white shelf; a soft, muffled voice comes from its small speaker, and the same dog pricks up its ears, walks to the shelf and sits facing the lens, tail wagging slowly. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 留守番が気になる人は、</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts back to the evening shopping street: seen from behind, the person in the navy coat walks away with the dog on the red leash, the lowered microphone at the bottom edge, shop lights blurred ahead. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] プロフィールを、のぞいてみて。</d> while no lips are visible on screen.
 
-overall_soundscape: Muted street ambience around the phone, then a quiet living room with a soft pop of the treat launch and light chewing, then street footsteps and the collar tag jingling as they walk away.
+overall_soundscape: Muted street ambience around the phone, then a quiet living room with a soft, unintelligible voice from the device speaker and light paw steps, then street footsteps and the collar tag jingling as they walk away.
 
 non_diegetic_music: The lo-fi beat with muted electric piano continues at a moderate tempo and fades out over the final second.
 ```
-**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, visible faces, face of interviewer, face of passerby, crowd faces
+**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air, visible faces, face of interviewer, face of passerby, crowd faces
 
 ### タイトル
 `犬の留守番、何が心配？（街頭インタビュー風） #Shorts #犬の留守番 #ペットカメラ`
@@ -457,7 +454,7 @@ non_diegetic_music: The lo-fi beat with muted electric piano continues at a mode
 ```text
 アフィリエイト広告を含みます #PR
 犬の留守番、何が心配？という街頭インタビュー風の演出です（登場する人物・声はAIで生成したもので、実在の人物・実際の取材ではありません）。
-見守りカメラなら、外からスマホで様子を見たり、声をかけたり、おやつをあげたりできます。
+見守りカメラなら、外からスマホで様子を見たり、話しかけたりできます。
 紹介しているものはプロフィールのリンクからどうぞ。
 
 #PR #犬の留守番 #ペットカメラ #見守りカメラ #犬のいる暮らし
@@ -468,7 +465,7 @@ non_diegetic_music: The lo-fi beat with muted electric piano continues at a mode
 ### 注意点（法務）
 - 実在の取材に見せない: 動画内に「※街頭インタビュー風の演出です（AI生成）」を0〜3秒に小さく表示＋概要欄にも明記。答えは『心配ごと』だけで、商品の感想・口コミを言わせない（架空の口コミ＝景表法・ステマのリスク）。
 - 顔は一切映さない（肩から下・後ろ姿・手元・スマホ画面のみ）。群衆の顔もぼかし／映さない。
-- 機能は公式の範囲（ライブ映像・双方向会話・おやつ）。スマホ画面は文字なしの架空UI（実際のアプリ画面に見せない）。
+- 機能は全機種の公式仕様にある範囲だけ（ライブ映像・リアルタイム双方向会話）。おやつは機種によって無いので出さない。スマホ画面は文字なしの架空UI（実際のアプリ画面に見せない）。
 - 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
 
 ---
@@ -623,12 +620,12 @@ non_diegetic_music: The ukulele pattern resolves into a warm major phrase at a m
 | 0.0-3.0 | フック | 見守りカメラ、よく聞かれる2つ。 | 14 | 4.67 | 見守りカメラ / よく聞かれる2つ |
 | 3.0-6.0 | 具体 | キュー、ワイファイはいる？ いります。 | 14 | 4.67 | Q. Wi-Fiいる？ / A. 必要（2.4GHz） |
 | 6.0-10.0 | 具体 | キュー、外から見られる？ スマホのアプリで見られます。 | 22 | 5.50 | Q. 外から見られる？ / A. スマホのアプリで |
-| 10.0-12.5 | 誘導 | おやつも、外からポンと。 | 10 | 4.00 | おやつも / 外からポン |
+| 10.0-12.5 | 誘導 | 話しかけることも、できます。 | 12 | 4.80 | 話しかけも / できます |
 | 12.5-15.0 | 誘導 | 詳しい仕様は、プロフィールから。 | 13 | 5.20 | 詳しい仕様は / プロフィールから ▲ |
 
 ### 時間ごとの絵
 - **6sパート（0.0-6.0秒・768x1344）**: 0.0-3.0 リビングのソファ。サクラ（クリーム色ニット）がスマホを持ってカメラを見る。横に犬、後ろの棚にロゴなしの白い見守りカメラ → 3.0-6.0 棚の上、ロゴなしのWi-Fiルーターのランプが点滅 → 横の見守りカメラへパン
-- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 両手のスマホ画面（文字なしUI）に広角のリビング映像、犬が寝ている → 10.0-12.5 実際のリビング、ロゴなし見守りカメラからおやつ、犬がキャッチ → 12.5-15.0 犬がカメラの横で満足そうに伏せる
+- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 両手のスマホ画面（文字なしUI）に広角のリビング映像、犬が寝ている → 10.0-12.5 実際のリビング。ロゴなし見守りカメラのスピーカーから小さな声、犬が耳を立てて首をかしげる → 12.5-15.0 犬がカメラの横で落ち着いて伏せる
 
 ### H3用プロンプト
 #### 6sパート（FL2VA・6.00秒・768x1344・318語）
@@ -640,13 +637,13 @@ H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒�
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, cozy daylight vertical 9:16 pet-tech short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a cream high-neck knit sweater, sits on a light-grey sofa holding a smartphone with the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lying beside her and a plain white rounded tabletop pet camera with one dark round lens on its front and a small treat opening, completely free of any logo, label, or lettering on a low shelf behind her. She raises the phone slightly and gives a small nod toward the camera. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 見守りカメラ、よく聞かれる2つ。</d> while her lips remain completely closed. [Shot 2] At 00:03.000, the shot cuts to a close-up of a plain white unbranded Wi-Fi router on the shelf with small green lights blinking; the camera pans right with small amplitude at slow speed to reveal the white pet camera standing next to it. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] キュー、ワイファイはいる？ いります。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, cozy daylight vertical 9:16 pet-tech short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a cream high-neck knit sweater, sits on a light-grey sofa holding a smartphone with the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lying beside her and a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering on a low shelf behind her. She raises the phone slightly and gives a small nod toward the camera. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 見守りカメラ、よく聞かれる2つ。</d> while her lips remain completely closed. [Shot 2] At 00:03.000, the shot cuts to a close-up of a plain white unbranded Wi-Fi router on the shelf with small green lights blinking; the camera pans right with small amplitude at slow speed to reveal the white pet camera standing next to it. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] キュー、ワイファイはいる？ いります。</d> while no lips are visible on screen.
 
 overall_soundscape: Soft living-room ambience; the sofa cushion creaks lightly, the dog breathes slowly, and a faint electronic hum comes from the router.
 
 non_diegetic_music: A clean, light electronic plucked motif at a moderate tempo with soft pads, adding a tick-like percussion at 00:03.000.
 ```
-#### 9sパート（FL2VA・9.00秒・640x1152・378語）
+#### 9sパート（FL2VA・9.00秒・640x1152・388語）
 最初のコマの静止画（参照画像なし（人の顔を入れない））:
 ```text
 Photoreal still, vertical 9:16, close-up of a woman's hands in cream knit sleeves holding a smartphone in an office-like setting with a blurred desk behind; the screen shows a wide-angle live view of a sunny living room with a small cream-colored fluffy dog with a red collar asleep on a rug. The screen shows no text, no letters, no timestamps. No faces, no logos.
@@ -655,13 +652,13 @@ H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒�
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, cozy daylight vertical 9:16 pet-tech short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: a woman's hands in cream knit sleeves, her face out of frame, hold a smartphone in front of a blurred office desk; the screen shows a wide-angle live view of a sunny living room without any text or icons, where the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sleeps on a rug. On the screen, the dog stretches, stands and looks toward the lens. The camera pushes in with small amplitude at slow speed toward the phone screen. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] キュー、外から見られる？ スマホのアプリで見られます。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to the real living room at the dog's height: a plain white rounded tabletop pet camera with one dark round lens on its front and a small treat opening, completely free of any logo, label, or lettering on a low white shelf pops out a small round treat in a short arc; the same dog hops forward and catches it. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] おやつも、外からポンと。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a low frontal shot: the dog lies down contentedly beside the shelf, chin on its paws, eyes on the device, until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 詳しい仕様は、プロフィールから。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, cozy daylight vertical 9:16 pet-tech short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: a woman's hands in cream knit sleeves, her face out of frame, hold a smartphone in front of a blurred office desk; the screen shows a wide-angle live view of a sunny living room without any text or icons, where the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sleeps on a rug. On the screen, the dog stretches, stands and looks toward the lens. The camera pushes in with small amplitude at slow speed toward the phone screen. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] キュー、外から見られる？ スマホのアプリで見られます。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to the real living room at the dog's height: a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering stands on a low white shelf; a soft, muffled voice comes from its small speaker, and the same dog raises its ears, turns toward the device and tilts its head. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 話しかけることも、できます。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a low frontal shot: the dog lies down calmly beside the shelf, chin on its paws, eyes on the device, until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 詳しい仕様は、プロフィールから。</d> while no lips are visible on screen.
 
-overall_soundscape: Faint office ambience around the phone, then a quiet living room with a soft pop of the treat launch, a quick snap of jaws, light chewing and a relaxed sigh.
+overall_soundscape: Faint office ambience around the phone, then a quiet living room with a soft, unintelligible voice from the device speaker, the rustle of the dog's fur as it turns, and a relaxed sigh.
 
 non_diegetic_music: The light electronic plucked motif continues at a moderate tempo and fades out over the final second.
 ```
-**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic
+**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air
 
 ### タイトル
 `見守りカメラ、よく聞かれる2つ #Shorts #ペットカメラ #犬の留守番`
@@ -671,7 +668,7 @@ non_diegetic_music: The light electronic plucked motif continues at a moderate t
 アフィリエイト広告を含みます #PR
 見守りカメラでよく聞かれる2つ。
 Q. Wi-Fiはいる？ → 必要です（Furboは2.4GHz帯のWi-Fiに接続。5GHzは非対応と公式サポートに記載）。
-Q. 外から見られる？ → スマホのアプリでライブ映像を見られます。
+Q. 外から見られる？ → スマホのアプリでライブ映像を見られます。アプリから話しかけることもできます。
 詳しい仕様・対応環境は、プロフィールのリンク先で確認してください。
 
 #PR #ペットカメラ #見守りカメラ #犬の留守番 #よくある質問
@@ -682,7 +679,7 @@ Q. 外から見られる？ → スマホのアプリでライブ映像を見ら
 ### 注意点（法務）
 - 仕様は公式サポートの記載だけ（2.4GHz Wi-Fi必須・5GHz非対応・スマホアプリでライブ映像。出典: help.furbo.com/hc/ja/articles/17499371681177 ほか、2026-09-30確認）。投稿前にもう一度公式で確認（仕様変更があり得る）。
 - 概要欄の「Furbo」表記が商品名の1回に当たる（動画内では0回）。
-- おやつ機能はミニカメラに無いので、紹介モデルを確認。スマホ画面は文字なしの架空UI。
+- おやつ機能のない機種（Furboミニ等）もあるため、おやつは台詞・字幕・絵・概要欄から全部外した。話しかけ（リアルタイム双方向会話）はミニを含む全機種の公式仕様にある（furbo.com/jp/pages/comparison・help.furbo.com ミニ仕様、2026-09-30確認）。スマホ画面は文字なしの架空UI。
 - 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
 
 ---
@@ -760,12 +757,12 @@ non_diegetic_music: The sparse piano motif with warm pads continues at a steady 
 ## 3. 出典（数字・事実）
 - Achernar の速さ 6.40 / 6.65字/秒: `/workspace/affi-h3-research-20260929/post/narration_gemini_Achernar.txt`（実測）。
 - 解像度・秒数・steps・LoRA の強さ: `fireworker011/Research` `cursor/h3-fast-fl2va-lora-6dc5` `h3-runner/README.md`（コミット 20dd89a）。
-- Furbo の機能（ライブ映像＋双方向会話・飛び出すおやつ〈ミニカメラ除く〉）: https://help.furbo.com/hc/ja/categories/16492344671513 / Wi-Fi 2.4GHz のみ: https://help.furbo.com/hc/ja/articles/17499371681177 （2026-09-30 確認）。
+- Furbo の全機種共通の機能（ライブ映像・リアルタイム双方向会話。おやつは機種により無し）: https://furbo.com/jp/pages/comparison ・ https://help.furbo.com/hc/ja/articles/6152557612569 （ミニ仕様） / Wi-Fi 2.4GHz のみ: https://help.furbo.com/hc/ja/articles/17499371681177 （2026-09-30 確認）。
 - ペットフードの原材料は多い順（公正競争規約。ペットフード安全法は順序の定めなし）: https://pffta.org/label/required_fair_competition/ ・ https://petfood.or.jp/column/column-1051/ （2026-09-30 確認）。
 - 字幕の見た目（白ボックス・白一色でない・太字）: `affi-h3-research-20260929/caption_narration_report.md`。
 
 ## 4. 人間が確認すること（生成前）
 1. H3 を回すOK（`workflow.md`: H3は人間OKまで使用禁止）。
-2. アフィ先の商品情報: おさかなの原材料の先頭が魚か（stock-05）、Furbo の紹介モデルがおやつ対応か（03/06/09）。
+2. アフィ先の商品情報: おさかなの原材料の先頭が魚か（stock-05）。Furbo はおやつ機能を使わない台本にしたので機種確認は不要（ライブ映像と話しかけは全機種の公式仕様）。
 3. 犬の最初の1枚を決める（以後の犬入り静止画の元にする）。
 4. Combat / Repair LoRA は README の比較テスト（B→C→D）の結果を見てから使う。ダメなら Turbo だけで回す（JSON の loras から外すだけ）。
