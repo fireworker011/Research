@@ -141,6 +141,7 @@ from h3_hud import (  # noqa: E402
 from h3_episode_packs import (  # noqa: E402
     HOSPITAL_ENCOUNTERS,
     INVITE_POSE_MODES,
+    RIDE_FOOT_CHOICES,
     INVITE_POSE_OVERLAY_KEYS,
     STORY_MODES,
     TOILET_MODES,
@@ -316,6 +317,13 @@ def test_notebook_is_one_cell_and_isolated():
     assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
     assert 'INVITE_POSE = "四つん這い股広げ（迷ったらこれ）"' in src
     assert "対面M字騎乗（口のあと）" in src
+    assert "騎乗・曲げ膝（口のあと）" in src
+    assert 'RIDE_BENT = "なし"' in src
+    assert 'RIDE_COLUMN = "なし"' in src
+    assert "H3_EPISODE_RIDE_BENT" in src
+    assert "H3_EPISODE_RIDE_COLUMN" in src
+    for name in ("みき", "れい", "かな", "しの", "ギン", "😈"):
+        assert name in src
     assert "壁立ちバック" in src
     assert "フルネルソンアナル" in src
     assert "ベロチュー→じゅぼ→騎乗位" not in src
@@ -5391,6 +5399,70 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
     sit_walk = next(b for b in sit["beats"] if b["id"] == "03-kiss-walk")
     assert sit_walk.get("connect") == "end"
     assert "arms around each other's backs" in sit_walk["action"]
+
+
+def test_hospital_ride_foot_fork_keeps_both_seats():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert list(RIDE_FOOT_CHOICES) == ["なし", "みき", "れい", "かな", "しの", "ギン", "😈"]
+    bent = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="騎乗位",
+        ride_bent_override="みき",
+        ride_column_override="れい",
+    )
+    miki_wait = next(b for b in bent["beats"] if b["id"] == "03-kiss-wait")
+    miki_ride = next(b for b in bent["beats"] if b["id"] == "03-kiss-ride")
+    rei_wait = next(b for b in bent["beats"] if b["id"] == "06-doggy-wait")
+    rei_ride = next(b for b in bent["beats"] if b["id"] == "06-doggy-ride")
+    assert "both knees stay bent" in miki_wait["action"].lower()
+    assert "legs drop straight down" not in miki_wait["action"].lower()
+    assert "miki's hands rest on aya's breasts" in miki_ride["action"].lower()
+    assert "legs drop straight down" not in miki_ride["action"].lower()
+    assert "rises once from the kneel" in rei_wait["action"].lower()
+    assert "hands land on rei's chest" in rei_ride["action"].lower()
+    miki_prompt = build_beat_prompt(bent, miki_ride)
+    rei_prompt = build_beat_prompt(bent, rei_ride)
+    assert "both knees stay bent" in miki_prompt.lower()
+    assert "legs drop straight down" not in miki_prompt.lower()
+    assert "legs drop straight down" in rei_prompt.lower()
+    assert "both knees stay bent" not in rei_prompt.lower()
+    assert beat_source(
+        next(b for b in prepare_episode(
+            raw,
+            story_override="誘う",
+            invite_pose_override="ride_bent",
+            connect_override="t2v",
+        )["beats"] if b["id"] == "03-kiss-ride")
+    ) == "chain"
+    same = prepare_episode(raw, ride_bent_override="かな", ride_column_override="かな")
+    kana = next(b for b in same["beats"] if b["id"] == "09-join-wait")
+    assert "legs drop straight down" in kana["action"].lower()
+    gin_bent = prepare_episode(raw, gin_override="犯される")
+    gin_raw = next(
+        x for x in next(b for b in raw["beats"] if b["id"] == "04-gin")["on_gin_taken"] if x["id"] == "04-gin-ride"
+    )
+    assert next(b for b in gin_bent["beats"] if b["id"] == "04-gin-ride")["action"] == gin_raw["action"]
+    gin_col = prepare_episode(raw, ride_column_override="ギン")
+    gin_seat = next(b for b in gin_col["beats"] if b["id"] == "04-gin-ride")
+    assert "legs drop straight down" in gin_seat["action"].lower()
+    assert "gin's hands land on aya's chest" in gin_seat["action"].lower()
+    assert "both knees stay bent" not in build_beat_prompt(gin_col, gin_seat).lower()
+    horn_bent = prepare_episode(raw, tsuno_override="角・騎乗")
+    horn_seat = next(b for b in horn_bent["beats"] if b["id"] == "04-tsuno-ride")
+    assert "both knees stay bent" in horn_seat["action"].lower()
+    assert "tsuno's hands rest on aya's breasts" in horn_seat["action"].lower()
+    assert "legs drop straight down" not in build_beat_prompt(horn_bent, horn_seat).lower()
+    horn_col = prepare_episode(raw, ride_column_override="😈")
+    horn_new = next(b for b in horn_col["beats"] if b["id"] == "04-tsuno-ride")
+    assert "legs drop straight down" in horn_new["action"].lower()
+    assert "aya's hands land on tsuno's chest" in horn_new["action"].lower()
+    assert "erect ashen-gray 24cm" in horn_new["action"]
+    assert beat_source(
+        next(b for b in prepare_episode(
+            raw, tsuno_override="角・騎乗・細い柱", connect_override="t2v",
+        )["beats"] if b["id"] == "04-tsuno-ride")
+    ) == "chain"
 
 
 def test_hospital_tsuno_ride_and_stall_are_new_stories():

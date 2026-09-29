@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
 
-from h3_episode_packs import ui_choices, ui_default  # noqa: E402
+from h3_episode_packs import RIDE_FOOT_CHOICES, ui_choices, ui_default  # noqa: E402
 
 BRANCH = "cursor/h3-hospital-ward-34e4"
 NAME = "wan_hospital_episode_bot.ipynb"
@@ -29,6 +29,7 @@ def _field(name: str, kind: str) -> str:
 
 
 def code_cell() -> str:
+    ride_choices = json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False)
     return f'''#@title 病棟出口を Wan 2.2 で描く（人間がこのセルを実行する）
 EPISODE = "hospital-exit-adult"
 #@markdown **1. つなぎ方**
@@ -43,6 +44,10 @@ EPISODE = "hospital-exit-adult"
 {_field("STORY", "story")}
 #@markdown **6. 誘うときの体**
 {_field("INVITE_POSE", "invite_pose")}
+#@markdown **騎乗・曲げ膝** — 選んだ人だけ。なしはシーンのまま。同じ人を両方で選ぶと細い柱。
+RIDE_BENT = "なし"  #@param {ride_choices}
+#@markdown **騎乗・細い柱** — 選んだ人だけ。なしはシーンのまま。
+RIDE_COLUMN = "なし"  #@param {ride_choices}
 #@markdown **7. トイレ**
 {_field("TOILET", "toilet")}
 #@markdown **8. 灰色**
@@ -81,6 +86,8 @@ os.environ["WAN_EPISODE_PRESET"] = PRESET
 os.environ["WAN_EPISODE_COMBAT"] = COMBAT
 os.environ["WAN_EPISODE_STORY"] = STORY
 os.environ["WAN_EPISODE_INVITE_POSE"] = INVITE_POSE
+os.environ["WAN_EPISODE_RIDE_BENT"] = RIDE_BENT
+os.environ["WAN_EPISODE_RIDE_COLUMN"] = RIDE_COLUMN
 os.environ["WAN_EPISODE_TOILET"] = TOILET
 os.environ["WAN_EPISODE_GIN"] = GIN
 os.environ["WAN_EPISODE_TSUNO"] = TSUNO

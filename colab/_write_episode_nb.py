@@ -10,7 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
 
 from h3_episode import EPISODE_HELPERS  # noqa: E402
-from h3_episode_packs import form_markdown, form_readme, ui_choices, ui_default  # noqa: E402
+from h3_episode_packs import (  # noqa: E402
+    RIDE_FOOT_CHOICES,
+    form_markdown,
+    form_readme,
+    ui_choices,
+    ui_default,
+)
 
 BRANCH = "cursor/h3-hospital-ward-34e4"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
@@ -40,6 +46,10 @@ __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 __POSE_HELP__
 INVITE_POSE = __POSE_DEFAULT__  #@param __POSE_CHOICES__
+#@markdown **騎乗・曲げ膝** — 姿勢の違いを聞く前の足。両膝は曲がったまま、足裏は肋骨の左右。相手の手が乗る人の胸。選んだ人だけ。なしはシーンのまま。
+RIDE_BENT = "なし"  #@param __RIDE_CHOICES__
+#@markdown **騎乗・細い柱** — 今の足。跪きから一度まっすぐ立ち、足裏は肋骨のすぐ横。それから膝を曲げ、乗る人の手が仰向けの胸へ付いて一度下ろす。選んだ人だけ。同じ人を両方で選ぶと細い柱。
+RIDE_COLUMN = "なし"  #@param __RIDE_CHOICES__
 __TOILET_HELP__
 TOILET = __TOILET_DEFAULT__  #@param __TOILET_CHOICES__
 __GIN_HELP__
@@ -91,6 +101,8 @@ os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
+os.environ["H3_EPISODE_RIDE_BENT"] = RIDE_BENT
+os.environ["H3_EPISODE_RIDE_COLUMN"] = RIDE_COLUMN
 os.environ["H3_EPISODE_TOILET"] = TOILET
 os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
@@ -268,6 +280,7 @@ def make_nb() -> dict:
         .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘うポーズ — 病棟の□誘うだけ"))
         .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
+        .replace("__RIDE_CHOICES__", json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 病棟の道中。どれでも次へ"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))

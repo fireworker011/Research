@@ -350,8 +350,14 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "ride": {
         "label_ja": "騎乗位",
         "choice_ja": "対面M字騎乗（口のあと）",
-        "when_ja": "出会いでベロチュー。行為は口→足裏M字の対面騎乗→中出し→歩きの4本",
-        "hint_ja": "竿役は仰向け。あやは足裏をつけて膝を開く。亀頭、半分、腰を密着。終わりはあや一人歩き",
+        "when_ja": "出会いでベロチュー。行為は口→細い柱の対面騎乗→中出し→歩きの4本。跪きから一度まっすぐ立ち、それから膝を曲げて下ろす",
+        "hint_ja": "竿役は仰向け。あやは足を肋骨のすぐ横に揃えて立つ。それから膝を曲げ、あやの手が竿役の胸。終わりはあや一人歩き",
+    },
+    "ride_bent": {
+        "label_ja": "騎乗・曲げ膝",
+        "choice_ja": "騎乗・曲げ膝（口のあと）",
+        "when_ja": "出会いでベロチュー。行為は口→両膝を曲げたままの対面騎乗→中出し→歩きの4本",
+        "hint_ja": "竿役は仰向け。あやは最初から両膝を曲げ、足裏を肋骨の左右に置く。相手の手が胸。一度下ろして根元。終わりはあや一人歩き",
     },
     "stand": {
         "label_ja": "立ちバック",
@@ -383,6 +389,7 @@ INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
     "all_fours": "invite_pose_all_fours",
     "m_open": "invite_pose_m_open",
     "ride": "invite_pose_ride",
+    "ride_bent": "invite_pose_ride",
     "stand": "invite_pose_stand",
     "nelson": "invite_pose_nelson",
     "sit": "invite_pose_sit",
@@ -401,7 +408,10 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "m字": "m_open",
         "missionary": "m_open",
         "騎乗位": "ride",
+        "細い柱": "ride",
         "cowgirl": "ride",
+        "曲げ膝": "ride_bent",
+        "騎乗・曲げ膝": "ride_bent",
         "jupo": "ride",
         "ベロチュー→じゅぼ→騎乗位": "ride",
         "壁立ちバック": "stand",
@@ -510,8 +520,14 @@ GIN_MODES: dict[str, dict[str, Any]] = {
     "taken": {
         "label_ja": "犯される",
         "choice_ja": "灰色・犯される（騎乗）",
-        "when_ja": "長い舌がクリを24cmに。口のあと対面M字で騎乗。終わりは竿も相手も消えてあや一人歩き",
-        "hint_ja": "あやが24cmを生やされて騎乗される。終わりは完全消滅",
+        "when_ja": "長い舌がクリを24cmに。口のあと、両膝を曲げたままギンが騎乗。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "あやが24cmを生やされて騎乗される。両膝は曲がったまま。ギンの手があやの胸。終わりは完全消滅",
+    },
+    "taken_column": {
+        "label_ja": "犯される・細い柱",
+        "choice_ja": "灰色・騎乗・細い柱",
+        "when_ja": "長い舌がクリを24cmに。口のあと、ギンが一度まっすぐ立ってから膝を曲げて騎乗。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "ギンが細い柱で跨ぎ、手をあやの胸へ置いて一度下ろす。終わりは完全消滅",
     },
     "fuck": {
         "label_ja": "犯す",
@@ -529,6 +545,7 @@ GIN_MODES: dict[str, dict[str, Any]] = {
 
 GIN_OVERLAY_KEYS: dict[str, str] = {
     "taken": "on_gin_taken",
+    "taken_column": "on_gin_taken",
     "fuck": "on_gin_fuck",
     "invite_doggy": "on_gin_invite_doggy",
 }
@@ -541,6 +558,7 @@ GIN_ALIASES: dict[str, str] = _label_aliases(
         "skip": "off",
         "犯される": "taken",
         "騎乗": "taken",
+        "灰色・騎乗・細い柱": "taken_column",
         "犯す": "fuck",
         "正常位": "fuck",
         "誘う後背": "invite_doggy",
@@ -584,8 +602,14 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
     "invite_ride": {
         "label_ja": "騎乗",
         "choice_ja": "角・騎乗",
-        "when_ja": "新話。べロチュー、口、跨ぎ、着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
-        "hint_ja": "角が仰向け。あやが跨ぐ。立ちバックの meet は使わない",
+        "when_ja": "新話。べロチュー、口、跨ぎ、両膝を曲げたまま着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
+        "hint_ja": "角が仰向け。あやは両膝を曲げたまま跨ぐ。角の手があやの胸。立ちバックの meet は使わない",
+    },
+    "invite_ride_column": {
+        "label_ja": "騎乗・細い柱",
+        "choice_ja": "角・騎乗・細い柱",
+        "when_ja": "新話。べロチュー、口、細い柱で跨ぎ、膝を曲げて着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
+        "hint_ja": "角が仰向け。あやは一度まっすぐ立ってから膝を曲げ、手を角の胸へ置いて下ろす",
     },
     "wash_carry": {
         "label_ja": "個室",
@@ -601,6 +625,7 @@ TSUNO_OVERLAY_KEYS: dict[str, str] = {
     "anal_back": "on_tsuno_anal_back",
     "nelson": "on_tsuno_nelson",
     "invite_ride": "on_tsuno_invite_ride",
+    "invite_ride_column": "on_tsuno_invite_ride",
     "wash_carry": "on_tsuno_wash_carry",
 }
 
@@ -622,6 +647,7 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
         "フルネルソンアナル": "nelson",
         "角・騎乗": "invite_ride",
         "騎乗": "invite_ride",
+        "角・騎乗・細い柱": "invite_ride_column",
         "角・個室": "wash_carry",
         "個室": "wash_carry",
         "個室アナル": "wash_carry",
@@ -1167,10 +1193,17 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
     },
     "invite_ride": {
         "label_ja": "誘う・騎乗",
-        "choice_ja": "□誘う・対面M字騎乗",
-        "when_ja": "この人を口のあと、足裏M字の対面騎乗で誘う",
+        "choice_ja": "□誘う・騎乗・細い柱",
+        "when_ja": "この人を口のあと、細い柱の対面騎乗で誘う",
         "story": "invite",
         "pose": "ride",
+    },
+    "invite_ride_bent": {
+        "label_ja": "誘う・騎乗曲げ膝",
+        "choice_ja": "□誘う・騎乗・曲げ膝",
+        "when_ja": "この人を口のあと、両膝を曲げたままの対面騎乗で誘う",
+        "story": "invite",
+        "pose": "ride_bent",
     },
     "invite_stand": {
         "label_ja": "誘う・立ちバック",
@@ -1221,6 +1254,9 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘う四つん這い": "invite_all_fours",
         "誘うM字": "invite_m_open",
         "誘う騎乗": "invite_ride",
+        "□誘う・対面M字騎乗": "invite_ride",
+        "誘う騎乗曲げ膝": "invite_ride_bent",
+        "□誘う・騎乗・曲げ膝": "invite_ride_bent",
         "誘う立ちバック": "invite_stand",
         "誘うフルネルソン": "invite_nelson",
         "誘う抱擁": "invite_embrace",
@@ -1313,6 +1349,48 @@ def canonical_invite_pose(name: str) -> str:
     if raw in INVITE_POSE_MODES:
         return raw
     return INVITE_POSE_ALIASES.get(raw, raw)
+
+
+# One person per ride-foot dropdown. Empty means leave that person's scene alone.
+RIDE_FOOT_CHOICES: tuple[str, ...] = ("なし", "みき", "れい", "かな", "しの", "ギン", "😈")
+RIDE_PERSON_ALIASES: dict[str, str] = {
+    "なし": "",
+    "none": "",
+    "off": "",
+    "みき": "miki",
+    "miki": "miki",
+    "れい": "rei",
+    "rei": "rei",
+    "かな": "kana",
+    "kana": "kana",
+    "しの": "shino",
+    "shino": "shino",
+    "ギン": "gin",
+    "gin": "gin",
+    "灰色": "gin",
+    "😈": "tsuno",
+    "角": "tsuno",
+    "tsuno": "tsuno",
+}
+RIDE_PERSON_JA: dict[str, str] = {
+    "": "なし",
+    "miki": "みき",
+    "rei": "れい",
+    "kana": "かな",
+    "shino": "しの",
+    "gin": "ギン",
+    "tsuno": "😈",
+}
+
+
+def canonical_ride_person(name: str) -> str:
+    """Hospital ride-foot dropdown. '' is なし. Unknown names raise ValueError."""
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw not in RIDE_PERSON_ALIASES:
+        raise ValueError(f"ride person must be one of {list(RIDE_FOOT_CHOICES)}")
+    return RIDE_PERSON_ALIASES[raw]
 
 
 def canonical_toilet(name: str) -> str:
@@ -1669,6 +1747,8 @@ def describe_run(
     rei_kiss: str = "",
     rei_oral: str = "",
     rei_pose: str = "",
+    ride_bent: str = "",
+    ride_column: str = "",
 ) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
@@ -1750,6 +1830,8 @@ def describe_run(
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
         f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
+        f"  騎乗曲げ  {RIDE_PERSON_JA.get(ride_bent, ride_bent or 'なし')}\n"
+        f"  騎乗柱    {RIDE_PERSON_JA.get(ride_column, ride_column or 'なし')}\n"
         f"  7 トイレ  {t['choice_ja']}  — {t['when_ja']}\n"
         f"  8 灰色    {g['choice_ja']}  — {g['when_ja']}\n"
         f"  9 角      {n['choice_ja']}  — {n['when_ja']}\n"

@@ -131,6 +131,7 @@ from h3_episode_packs import (
     canonical_gin,
     canonical_invite_pose,
     canonical_preset,
+    canonical_ride_person,
     canonical_species,
     canonical_story,
     REI_ATTACK_MODES,
@@ -793,6 +794,40 @@ GIN_PEAK_PACE_CLAUSE = (
     "The pair stays on this floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+# Gin as the rider, narrow column. Bent-knee Gin keeps GIN_RIDE_PACE_CLAUSE.
+GIN_COLUMN_WAIT_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
+    "Aya stays on her back, head RIGHT, feet LEFT. The erect shaft stands straight UP. "
+    "Gin rises once from the kneel into a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
+    "Gin's legs drop straight down, close together, almost parallel. "
+    "Each sole plants on the linoleum on either side of the ribs, immediately beside the ribcage, one sole on the near side, one sole on the far side. "
+    "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+    "Weight stays on both soles. Gin's hips stay above the ribs. "
+    "The hairless pussy hangs directly above the glans. The shaft stays outside. "
+    "She holds that stand until the last frame. "
+    "Last frame: Gin is a vertical column, legs straight and close, both soles on the linoleum beside the ribs, "
+    "the near foot crossing in front of the belly, the pussy above the glans, the shaft still outside. "
+    "The camera holds. Normal adult human height, nobody is giant."
+)
+GIN_COLUMN_RIDE_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
+    "Aya already lies fully on her back, head on the RIGHT, feet pointing LEFT. "
+    "The erect shaft stands vertically straight UP. "
+    "Gin already stands over the hips as a vertical column, head on the LEFT, face in profile looking RIGHT. "
+    "Gin's legs drop straight down, close together, almost parallel. "
+    "Each sole plants on the linoleum on either side of the ribs, immediately beside the ribcage, one sole on the near side, one sole on the far side. "
+    "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+    "Weight stays on both soles. The hairless pussy hangs directly above the glans. The shaft stays outside. "
+    "Then both knees bend. The torso leans toward Aya. "
+    "Gin's hands land on Aya's chest, one hand on each side of the chest. "
+    "Gin lowers her hips straight down once until the shaft travels into Gin's pussy to the root. "
+    "They HOLD still joined at the BASE until the last frame. "
+    "Last frame: both knees bent, torso leaned toward Aya, Gin's hands on the chest, hips flush, "
+    "the shaft buried to the root, both soles beside the ribs. "
+    "The camera holds. Normal adult human height, nobody is giant."
+)
 # Dog-spot already has both bodies in frame. "nothing new enters" drops the quadruped.
 DOG_SPOT_CONTINUITY = (
     "One continuous take. Aya stays on the LEFT side of the frame, body facing RIGHT. "
@@ -816,6 +851,11 @@ RIB_RIDE_PACE_CLAUSE = (
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
+
+
+def _column_rib_action(action: str) -> bool:
+    """Narrow-column seats name the straight drop. Bent seats keep both knees bent from frame 0."""
+    return "legs drop straight down" in str(action or "").lower()
 
 
 def _nongin_rib_ride(beat: dict[str, Any]) -> bool:
@@ -2321,6 +2361,304 @@ def _apply_embrace_tsuno(ep: dict[str, Any]) -> dict[str, Any]:
     return ep
 
 
+_AYA_RIB_FEET: dict[str, tuple[str, str]] = {
+    "03-kiss": ("Miki", "24cm"),
+    "06-doggy": ("Rei", "24cm"),
+    "09-join": ("Kana", "20cm"),
+    "12-exit": ("Shino", "30cm"),
+    "04-tsuno": ("Tsuno", "ashen-gray 24cm"),
+}
+_RIB_BASE_OF: dict[str, str] = {
+    "03-kiss-wait": "03-kiss",
+    "03-kiss-ride": "03-kiss",
+    "06-doggy-wait": "06-doggy",
+    "06-doggy-ride": "06-doggy",
+    "09-join-wait": "09-join",
+    "09-join-ride": "09-join",
+    "12-exit-wait": "12-exit",
+    "12-exit-ride": "12-exit",
+    "04-tsuno-wait": "04-tsuno",
+    "04-tsuno-ride": "04-tsuno",
+}
+
+
+def _bent_aya_feet(base: str, kind: str) -> tuple[str, str]:
+    """Pre-column seat. Knees stay bent. The shaft adult's hands rest on Aya's breasts."""
+    partner, shaft = _AYA_RIB_FEET[base]
+    if kind == "wait":
+        camera = (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. "
+            f"{partner} stays on her back, head RIGHT, feet LEFT. The erect {shaft} stands straight UP. "
+            "Aya stands over the hips, head LEFT. Both soles plant on the linoleum on either side of the ribs, "
+            "one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. "
+            "Weight stays on the soles. The hairless pussy hangs directly above the glans."
+        )
+        action = (
+            "They start already on this same linoleum spot. "
+            f"{partner} stays on her back, head RIGHT, feet LEFT, the erect {shaft} straight UP. "
+            "Aya STANDS over the hips, head LEFT. "
+            f"Both of Aya's soles plant on the linoleum on either side of {partner}'s ribs, "
+            "one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. "
+            "Weight stays on the soles. Aya's hairless pussy hangs DIRECTLY ABOVE the glans. "
+            "Last frame: both soles beside the ribs, both knees bent, the pussy above the glans, the shaft still outside. "
+            "Both adults full body including both feet."
+        )
+        return camera, action
+    camera = (
+        "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. "
+        f"{partner} lies fully on her back, head on the RIGHT, feet pointing LEFT. "
+        f"The erect {shaft} stands vertically straight UP from the groin. "
+        f"Aya faces {partner}, head on the LEFT. "
+        f"Both of Aya's soles plant on the linoleum on either side of {partner}'s ribs, "
+        "one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles."
+    )
+    action = (
+        "They start already on this same linoleum spot. "
+        f"{partner} already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
+        "head on the RIGHT, feet pointing LEFT. "
+        f"The erect {shaft} is rooted in the groin and stands vertically straight UP. "
+        f"Aya faces {partner}, head on the LEFT. "
+        f"Both of Aya's soles plant on the linoleum on either side of {partner}'s ribs, "
+        "one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. "
+        "The hairless pussy hangs DIRECTLY ABOVE the glans. "
+        f"Aya LOWERS her hips STRAIGHT DOWN once until the {shaft} TRAVELS INTO the pussy to the root and the buttocks meet the hips. "
+        "HOLD still joined at the BASE until the last frame. "
+        "Both of Aya's soles stay on the linoleum beside the ribs. "
+        f"{partner}'s hands REST on Aya's breasts, one hand on each breast. "
+        "The shaft stays buried to the root until the last frame. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, "
+        "thick saliva dripping from the open mouth, drowning in pleasure. "
+        f"{partner}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
+        "Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. "
+        "Both adults full body including both feet."
+    )
+    return camera, action
+
+
+def _column_aya_feet(base: str, kind: str) -> tuple[str, str]:
+    """Narrow column, then one bend. Aya's hands land on the shaft adult's chest."""
+    partner, shaft = _AYA_RIB_FEET[base]
+    if kind == "wait":
+        camera = (
+            "PROFILE side-on. The camera holds this one frame. Floor runs LEFT to RIGHT. "
+            "Both adults stay full body, both feet inside the frame. "
+            f"{partner} stays on her back, head RIGHT, feet LEFT. The erect {shaft} stands straight UP. "
+            "Aya is a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
+            "Aya's legs drop straight down, close together, almost parallel. "
+            f"Each sole plants on the linoleum immediately beside {partner}'s ribcage, "
+            "one sole on the near side, one sole on the far side. "
+            "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+            "Weight stays on both soles. Aya's hips stay above the ribs. The hairless pussy hangs directly above the glans."
+        )
+        action = (
+            "They start already on this same linoleum spot. "
+            f"{partner} stays on her back, head RIGHT, feet LEFT, the erect {shaft} straight UP. "
+            "Aya RISES once from the kneel into a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
+            "Aya's legs drop straight down, close together, almost parallel. "
+            f"Each sole plants on the linoleum on either side of {partner}'s ribs, immediately beside the ribcage, "
+            "one sole on the near side, one sole on the far side. "
+            "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+            "Weight stays on both soles. Aya's hips stay above the ribs. "
+            "Aya's hairless pussy hangs DIRECTLY ABOVE the glans. The shaft stays outside. "
+            "She HOLDS that stand until the last frame. "
+            "Last frame: Aya is a vertical column, legs straight and close, both soles on the linoleum beside the ribs, "
+            "the near foot crossing in front of the belly, the pussy above the glans, the shaft still outside. "
+            "Both adults full body including both feet."
+        )
+        return camera, action
+    camera = (
+        "PROFILE side-on. The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
+        "Distance stays the same. "
+        f"{partner} lies fully on her back, head on the RIGHT, feet pointing LEFT. "
+        f"The erect {shaft} stands vertically straight UP from the groin. "
+        "Aya already stands over the hips as a vertical column, head on the LEFT, face in profile looking RIGHT. "
+        "Aya's legs drop straight down, close together, almost parallel. "
+        f"Each sole plants on the linoleum immediately beside {partner}'s ribcage, "
+        "one sole on the near side, one sole on the far side. "
+        "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+        "Weight stays on both soles."
+    )
+    action = (
+        "They start already on this same linoleum spot. "
+        f"{partner} already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
+        "head on the RIGHT, feet pointing LEFT. "
+        f"The erect {shaft} is rooted in the groin and stands vertically straight UP. "
+        "Aya already stands over the hips, head on the LEFT, a vertical column, face in profile looking RIGHT. "
+        "Aya's legs drop straight down, close together, almost parallel. "
+        f"Each sole plants on the linoleum on either side of {partner}'s ribs, immediately beside the ribcage, "
+        "one sole on the near side, one sole on the far side. "
+        "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+        "Weight stays on both soles. Aya's hips stay above the ribs. "
+        "The hairless pussy hangs DIRECTLY ABOVE the glans. The shaft stays outside. "
+        f"THEN both knees bend. The torso leans toward {partner}. "
+        f"Aya's hands land on {partner}'s chest, one hand on each side of the chest. "
+        f"Aya LOWERS her hips STRAIGHT DOWN once until the {shaft} TRAVELS INTO the pussy to the root and the buttocks meet the hips. "
+        "HOLD still joined at the BASE until the last frame. "
+        "Both soles stay on the linoleum beside the ribs. The shaft stays buried to the root until the last frame. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, "
+        "thick saliva dripping from the open mouth, drowning in pleasure. "
+        f"{partner}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
+        f"Last frame: both knees bent, torso leaned toward {partner}, Aya's hands on {partner}'s chest, hips flush, "
+        "the shaft buried to the root, both soles beside the ribs. "
+        "Both adults full body including both feet."
+    )
+    return camera, action
+
+
+def _gin_column_feet(kind: str) -> tuple[str, str]:
+    """Gin rides supine Aya. Column first, then Gin's hands on Aya's chest."""
+    if kind == "wait":
+        camera = (
+            "PROFILE side-on. The camera holds this one frame. Floor runs LEFT to RIGHT. "
+            "Both adults stay full body, both feet inside the frame. "
+            "Aya stays on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP. "
+            "Gin is a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
+            "Gin's legs drop straight down, close together, almost parallel. "
+            "Each sole plants on the linoleum immediately beside Aya's ribcage, one sole on the near side, one sole on the far side. "
+            "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+            "Weight stays on both soles. Gin's hips stay above the ribs. The hairless pussy hangs directly above the glans."
+        )
+        action = (
+            "They start already on this same linoleum spot. "
+            "Aya stays on her back, head RIGHT, feet LEFT, the erect 24cm straight UP. "
+            "Gin RISES once from the kneel into a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
+            "Gin's legs drop straight down, close together, almost parallel. "
+            "Each sole plants on the linoleum on either side of Aya's ribs, immediately beside the ribcage, "
+            "one sole on the near side, one sole on the far side. "
+            "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+            "Weight stays on both soles. Gin's hips stay above the ribs. "
+            "Gin's hairless pussy hangs DIRECTLY ABOVE the glans. The shaft stays outside. "
+            "She HOLDS that stand until the last frame. "
+            "Last frame: Gin is a vertical column, legs straight and close, both soles on the linoleum beside the ribs, "
+            "the near foot crossing in front of the belly, the pussy above the glans, the shaft still outside. "
+            "Both adults full body including both feet."
+        )
+        return camera, action
+    camera = (
+        "PROFILE side-on. The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
+        "Distance stays the same. Aya already lies fully on her back, head RIGHT, feet LEFT. "
+        "The erect 24cm stands straight UP from the groin. "
+        "Gin already stands over the hips as a vertical column, head LEFT, face in profile looking RIGHT. "
+        "Gin's legs drop straight down, close together, almost parallel. "
+        "Each sole plants on the linoleum immediately beside Aya's ribcage, one sole on the near side, one sole on the far side. "
+        "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+        "Weight stays on both soles."
+    )
+    action = (
+        "They start already on this same linoleum spot. "
+        "Aya already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, "
+        "head on the RIGHT, feet pointing LEFT. "
+        "The erect 24cm is rooted in the groin and stands vertically straight UP. "
+        "Gin already stands over the hips, head on the LEFT, a vertical column, face in profile looking RIGHT. "
+        "Gin's legs drop straight down, close together, almost parallel. "
+        "Each sole plants on the linoleum on either side of Aya's ribs, immediately beside the ribcage, "
+        "one sole on the near side, one sole on the far side. "
+        "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
+        "Weight stays on both soles. Gin's hips stay above the ribs. "
+        "Gin's hairless pussy hangs DIRECTLY ABOVE the glans. The shaft stays outside. "
+        "Then both knees bend. The torso leans toward Aya. "
+        "Gin's hands land on Aya's chest, one hand on each side of the chest. "
+        "Gin LOWERS her hips STRAIGHT DOWN once until the 24cm TRAVELS INTO Gin's pussy to the root and the buttocks meet the hips. "
+        "HOLD still joined at the BASE until the last frame. "
+        "Both soles stay on the linoleum beside the ribs. The shaft stays buried to the root until the last frame. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, "
+        "thick saliva dripping from the open mouth, drowning in pleasure. Gin's lips stay closed. "
+        "Last frame: both knees bent, torso leaned toward Aya, Gin's hands on Aya's chest, hips flush, "
+        "the shaft buried to the root, both soles beside the ribs. "
+        "Both adults full body including both feet."
+    )
+    return camera, action
+
+
+def apply_ride_foot_style(ep: dict[str, Any]) -> dict[str, Any]:
+    """Swap wait/ride feet after the overlay merge. Peaks stay joined with bent knees.
+
+    Column JSON for the four partners stays as authored. Bent pose rewrites those four.
+    Gin and the horn stay on their authored bent seat unless that mode asks for the column.
+    """
+    poses = resolve_encounter_poses(ep)
+    stories = resolve_encounter_stories(ep)
+    gin_key = episode_gin(ep) or "off"
+    tsuno_key = episode_tsuno(ep) or "off"
+    beats: list[Any] = []
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            beats.append(beat)
+            continue
+        bid = str(beat.get("id") or "")
+        kind = "wait" if bid.endswith("-wait") else "ride" if bid.endswith("-ride") else ""
+        base = _RIB_BASE_OF.get(bid, "")
+        camera_action: tuple[str, str] | None = None
+        if base in ("03-kiss", "06-doggy", "09-join", "12-exit") and kind:
+            enc = str(beat.get("encounter") or "") or {
+                "03-kiss": "miki",
+                "06-doggy": "rei",
+                "09-join": "kana",
+                "12-exit": "shino",
+            }[base]
+            if stories.get(enc) == "invite" and poses.get(enc) == "ride_bent":
+                camera_action = _bent_aya_feet(base, kind)
+        elif bid in ("04-gin-wait", "04-gin-ride") and gin_key == "taken_column":
+            camera_action = _gin_column_feet("wait" if bid.endswith("-wait") else "ride")
+        elif base == "04-tsuno" and kind and tsuno_key == "invite_ride_column":
+            camera_action = _column_aya_feet(base, kind)
+        if camera_action is None:
+            beats.append(beat)
+            continue
+        item = dict(beat)
+        item["camera"], item["action"] = camera_action
+        beats.append(item)
+    out = dict(ep)
+    out["beats"] = beats
+    return out
+
+
+def _pin_ride_person(
+    render: dict[str, Any],
+    parsed: dict[str, tuple[str | None, str | None]],
+    shown: dict[str, bool],
+    who: str,
+    style: str,
+) -> None:
+    pose = "ride_bent" if style == "bent" else "ride"
+    if who in HOSPITAL_ENCOUNTERS:
+        parsed[who] = ("invite", pose)
+        shown[who] = True
+        return
+    if who == "gin":
+        render["gin"] = "taken" if style == "bent" else "taken_column"
+        return
+    if who == "tsuno":
+        render["tsuno"] = "invite_ride" if style == "bent" else "invite_ride_column"
+        return
+    raise EpisodeError(f"ride person {who}")
+
+
+def _merge_ride_fork(render: dict[str, Any], *, bent: str | None, column: str | None) -> None:
+    """Pin one person onto each ride foot. The same person on both lists keeps the column."""
+    if bent in (None, "") and column in (None, ""):
+        return
+    try:
+        bent_who = canonical_ride_person(bent or "")
+        column_who = canonical_ride_person(column or "")
+    except ValueError as exc:
+        raise EpisodeError(str(exc)) from exc
+    if bent_who and bent_who == column_who:
+        bent_who = ""
+    render["ride_bent"] = bent_who
+    render["ride_column"] = column_who
+    if not bent_who and not column_who:
+        return
+    parsed = parse_scenes(render.get("scenes"))
+    shown = parse_appear(render.get("appear") if "appear" in render else None)
+    if bent_who:
+        _pin_ride_person(render, parsed, shown, bent_who, "bent")
+    if column_who:
+        _pin_ride_person(render, parsed, shown, column_who, "column")
+    render["scenes"] = scenes_to_choices(parsed)
+    render["appear"] = shown
+
+
 def apply_invite_pose(ep: dict[str, Any], *, pose: str | None = None) -> dict[str, Any]:
     """Merge invite_pose_* overlays when that encounter is □誘う. Other stories just drop the keys."""
     out = copy.deepcopy(ep)
@@ -3033,6 +3371,7 @@ def resolve_episode_options(
     out = apply_invite_pose(out, pose=pose)
     out = apply_toilet_route(out, toilet=toilet)
     out = apply_optional_events(out, gin=gin, tsuno=tsuno)
+    out = apply_ride_foot_style(out)
     out = apply_appear_route(out, appear=appear)
     return apply_rei_escape_route(
         out,
@@ -3278,6 +3617,8 @@ def prepare_episode(
     combat_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
+    ride_bent_override: str | None = None,
+    ride_column_override: str | None = None,
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
@@ -3346,22 +3687,24 @@ def prepare_episode(
         render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
     if rei_pose_override not in (None, ""):
         render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
+    _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
-        out = apply_story_route(out, story=story_override, scenes=scenes_override)
+        out = apply_story_route(out, story=story_override, scenes=None)
     else:
         out = apply_combat_route(out)
     out = apply_invite_pose(out, pose=invite_pose_override)
     out = apply_toilet_route(out, toilet=toilet_override)
     out = apply_optional_events(
         out,
-        gin=gin_override,
-        tsuno=tsuno_override,
+        gin=None,
+        tsuno=None,
         dog=dog_override,
         species=species_override,
     )
     out = _apply_embrace_tsuno(out)
-    out = apply_appear_route(out, appear=appear_override)
+    out = apply_ride_foot_style(out)
+    out = apply_appear_route(out, appear=None)
     out = apply_rei_escape_route(
         out,
         mast=rei_mast_override,
@@ -4573,15 +4916,25 @@ def build_beat_prompt(
         elif bid_now == "04-gin-spitkiss":
             desc.append(GIN_SPIT_PACE_CLAUSE)
         elif bid_now == "04-gin-wait":
-            desc.append(RIB_WAIT_PACE_CLAUSE)
-        elif bid_now in RIB_WAIT_IDS:
-            desc.append(KISS_WAIT_PACE_CLAUSE)
+            desc.append(
+                GIN_COLUMN_WAIT_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_WAIT_PACE_CLAUSE
+            )
+        elif bid_now in RIB_WAIT_IDS or bid_now == "04-tsuno-wait":
+            if _column_rib_action(action_txt):
+                desc.append(KISS_WAIT_PACE_CLAUSE)
+            elif "both knees stay bent" in action_txt.lower() and "soles plant" in action_txt.lower():
+                desc.append(RIB_WAIT_PACE_CLAUSE)
+            else:
+                desc.append(PLANTED_PACE_CLAUSE)
+                desc.append(PLANTED_CLAUSE)
         elif bid_now == "04-gin-ride":
-            desc.append(GIN_RIDE_PACE_CLAUSE)
+            desc.append(
+                GIN_COLUMN_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else GIN_RIDE_PACE_CLAUSE
+            )
         elif bid_now == "04-gin-peak":
             desc.append(GIN_PEAK_PACE_CLAUSE)
         elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
-            desc.append(KISS_RIDE_PACE_CLAUSE)
+            desc.append(KISS_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_RIDE_PACE_CLAUSE)
         elif _nongin_rib_ride(beat):
             desc.append(RIB_RIDE_PACE_CLAUSE)
         elif NELSON_HOLD_RE.search(action_txt):
@@ -6071,6 +6424,8 @@ def run_episode(
     combat_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
+    ride_bent_override: str | None = None,
+    ride_column_override: str | None = None,
     toilet_override: str | None = None,
     gin_override: str | None = None,
     tsuno_override: str | None = None,
@@ -6104,6 +6459,8 @@ def run_episode(
         combat_override=combat_override,
         story_override=story_override,
         invite_pose_override=invite_pose_override,
+        ride_bent_override=ride_bent_override,
+        ride_column_override=ride_column_override,
         toilet_override=toilet_override,
         gin_override=gin_override,
         tsuno_override=tsuno_override,
@@ -6129,6 +6486,8 @@ def run_episode(
             combat=episode_combat(ep),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
+            ride_bent=str((ep.get("render") or {}).get("ride_bent") or ""),
+            ride_column=str((ep.get("render") or {}).get("ride_column") or ""),
             toilet=episode_toilet(ep),
             gin=episode_gin(ep),
             tsuno=episode_tsuno(ep),
