@@ -733,15 +733,15 @@ RIB_WAIT_PACE_CLAUSE = (
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
-# 03-kiss-wait only. The shared bent-knee clause draws a wide inverted V.
-# This clip rises once from the kneel and holds the narrow column.
+# Nongin rib waits. The bent-knee clause draws a wide inverted V.
+# Each rises once from the kneel and holds the narrow column. Gin keeps the bent-knee clause.
 KISS_WAIT_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
-    "Miki stays on her back, head RIGHT, feet LEFT. The erect 24cm stands straight UP. "
+    "The shaft adult stays on her back, head RIGHT, feet LEFT. The erect shaft stands straight UP. "
     "Aya rises once from the kneel into a vertical column over the hips, head LEFT, face in profile looking RIGHT. "
     "Aya's legs drop straight down, close together, almost parallel. "
-    "Each sole plants on the linoleum on either side of the ribs, immediately beside Miki's ribcage, one sole on the near side, one sole on the far side. "
+    "Each sole plants on the linoleum on either side of the ribs, immediately beside the ribcage, one sole on the near side, one sole on the far side. "
     "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
     "Weight stays on both soles. Aya's hips stay above the ribs. "
     "The hairless pussy hangs directly above the glans. The shaft stays outside. "
@@ -750,22 +750,22 @@ KISS_WAIT_PACE_CLAUSE = (
     "the near foot crossing in front of the belly, the pussy above the glans, the shaft still outside. "
     "The camera holds. Normal adult human height, nobody is giant."
 )
-# 03-kiss-ride only. Frame 0 is the straight column. One bend, then the shaft travels in.
+# Nongin rib seats. Frame 0 is the straight column. One bend, then the shaft travels in.
 KISS_RIDE_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The camera holds. Floor runs LEFT to RIGHT. Both adults stay full body, both feet inside the frame. "
-    "Miki already lies fully on her back, head on the RIGHT, feet pointing LEFT. "
-    "The erect 24cm stands vertically straight UP. "
+    "The shaft adult already lies fully on her back, head on the RIGHT, feet pointing LEFT. "
+    "The erect shaft stands vertically straight UP. "
     "Aya already stands over the hips as a vertical column, head on the LEFT, face in profile looking RIGHT. "
     "Aya's legs drop straight down, close together, almost parallel. "
-    "Each sole plants on the linoleum on either side of the ribs, immediately beside Miki's ribcage, one sole on the near side, one sole on the far side. "
+    "Each sole plants on the linoleum on either side of the ribs, immediately beside the ribcage, one sole on the near side, one sole on the far side. "
     "The ankles stay close. In this side view the near foot crosses in front of the belly. That sole stays on the linoleum. "
     "Weight stays on both soles. The hairless pussy hangs directly above the glans. The shaft stays outside. "
-    "Then both knees bend. The torso leans toward Miki. "
-    "Aya's hands land on Miki's chest, one hand on each side of the chest. "
-    "Aya lowers her hips straight down once until the 24cm travels into the pussy to the root. "
+    "Then both knees bend. The torso leans toward the shaft adult. "
+    "Aya's hands land on the shaft adult's chest, one hand on each side of the chest. "
+    "Aya lowers her hips straight down once until the shaft travels into the pussy to the root. "
     "They HOLD still joined at the BASE until the last frame. "
-    "Last frame: both knees bent, torso leaned toward Miki, Aya's hands on Miki's chest, hips flush, "
+    "Last frame: both knees bent, torso leaned toward the shaft adult, Aya's hands on the chest, hips flush, "
     "the shaft buried to the root, both soles beside the ribs. "
     "The camera holds. Normal adult human height, nobody is giant."
 )
@@ -4569,15 +4569,15 @@ def build_beat_prompt(
             desc.append(GIN_MOUTH_PACE_CLAUSE)
         elif bid_now == "04-gin-spitkiss":
             desc.append(GIN_SPIT_PACE_CLAUSE)
-        elif bid_now == "03-kiss-wait":
-            desc.append(KISS_WAIT_PACE_CLAUSE)
-        elif bid_now in RIB_WAIT_IDS:
+        elif bid_now == "04-gin-wait":
             desc.append(RIB_WAIT_PACE_CLAUSE)
+        elif bid_now in RIB_WAIT_IDS:
+            desc.append(KISS_WAIT_PACE_CLAUSE)
         elif bid_now == "04-gin-ride":
             desc.append(GIN_RIDE_PACE_CLAUSE)
         elif bid_now == "04-gin-peak":
             desc.append(GIN_PEAK_PACE_CLAUSE)
-        elif bid_now == "03-kiss-ride":
+        elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
             desc.append(KISS_RIDE_PACE_CLAUSE)
         elif _nongin_rib_ride(beat):
             desc.append(RIB_RIDE_PACE_CLAUSE)

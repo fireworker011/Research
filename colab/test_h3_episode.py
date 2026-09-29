@@ -3162,9 +3162,9 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
                 assert "soles plant" not in oral["action"].lower()
             assert "still kneeling" not in nine["action"].lower()
             nine_wait = next(b for b in ep["beats"] if b["id"] == "09-join-wait")
-            assert "both knees stay bent" in nine_wait["action"].lower()
-            assert "hips stay over the groin" in nine_wait["action"].lower()
-            assert "weight stays on the soles" in nine_wait["action"].lower()
+            assert "legs drop straight down" in nine_wait["action"].lower()
+            assert "both knees stay bent" not in nine_wait["action"].lower()
+            assert "weight stays on both soles" in nine_wait["action"].lower()
             assert "either side of kana's ribs" in nine_wait["action"].lower()
             assert "directly above the glans" in nine_wait["action"].lower()
             assert "travels into" not in nine_wait["action"].lower()
@@ -5220,16 +5220,11 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "slide down to the base" in oral["action"].lower()
         assert "already stands over" not in oral["action"].lower()
         waited = next(b for b in ride["beats"] if b["id"] == f"{base}-wait")
-        if base == "03-kiss":
-            assert "rises once from the kneel" in waited["action"].lower()
-            assert "legs drop straight down" in waited["action"].lower()
-            assert "near foot crosses in front of the belly" in waited["action"].lower()
-            assert "both knees stay bent" not in waited["action"].lower()
-            assert "weight stays on both soles" in waited["action"].lower()
-        else:
-            assert "both knees stay bent" in waited["action"].lower()
-            assert "hips stay over the groin" in waited["action"].lower()
-            assert "weight stays on the soles" in waited["action"].lower()
+        assert "rises once from the kneel" in waited["action"].lower()
+        assert "legs drop straight down" in waited["action"].lower()
+        assert "near foot crosses in front of the belly" in waited["action"].lower()
+        assert "both knees stay bent" not in waited["action"].lower()
+        assert "weight stays on both soles" in waited["action"].lower()
         assert f"either side of {partner.lower()}'s ribs" in waited["action"].lower()
         assert "DIRECTLY ABOVE" in waited["action"]
         assert "TRAVELS INTO" not in waited["action"]
@@ -5279,21 +5274,15 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "directly above the glans" in seat_prompt.lower()
         assert "straight down" in seat_prompt.lower()
         assert "hold still joined at the base" in seat_prompt.lower()
-        if base == "03-kiss":
-            assert "legs drop straight down" in seat_prompt.lower()
-            assert "both knees bend" in seat_prompt.lower()
-            assert "both knees stay bent" not in seat_prompt.lower()
-            assert "hands land on miki's chest" in low
-            assert "already stands over" in low
-            wait_prompt = build_beat_prompt(ride, waited, trigger=merge_trigger("", waited), camera_pack="side2d")
-            assert "legs drop straight down" in wait_prompt.lower()
-            assert "both knees stay bent" not in wait_prompt.lower()
-            assert "rises once from the kneel" in wait_prompt.lower()
-        else:
-            assert "one sole beside each side of the chest" in seat_prompt.lower()
-            assert "both knees stay bent" in seat_prompt.lower()
-            assert "hips stay over the groin" in seat_prompt.lower()
-            assert "weight stays on the soles" in seat_prompt.lower()
+        assert "legs drop straight down" in seat_prompt.lower()
+        assert "both knees bend" in seat_prompt.lower()
+        assert "both knees stay bent" not in seat_prompt.lower()
+        assert f"hands land on {partner.lower()}'s chest" in low
+        assert "already stands over" in low
+        wait_prompt = build_beat_prompt(ride, waited, trigger=merge_trigger("", waited), camera_pack="side2d")
+        assert "legs drop straight down" in wait_prompt.lower()
+        assert "both knees stay bent" not in wait_prompt.lower()
+        assert "rises once from the kneel" in wait_prompt.lower()
         assert "squats" not in low
         assert "sits beside" not in low
         assert "knees on the linoleum" not in low
@@ -5560,7 +5549,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert extra_lora_entries(gape) == [("jacko", 0.65)]
     assert "doggy" not in extra_keys(gape)
     push = next(b for b in stall if b["id"] == "04-toilet-push")
-    assert "chest and one cheek" in push["action"]
+    assert "forearms" in push["action"] and "head" in push["action"].lower()
     spot = next(b for b in stall if b["id"] == "04-toilet-spot")
     assert "RUBS" in spot["action"]
     assert "platform" not in " ".join(
@@ -5575,11 +5564,11 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "doggy" not in extra_keys(cum)
     for beat in (push, inserted, cum, gape):
         blob = f"{beat['action']} {beat['camera']}".lower()
-        assert "crown of the head points at the hood" in blob or "crown toward the hood" in blob
-        assert "eyes" in blob and "back at the camera" in blob
-        assert "buttocks" in blob and "camera" in blob
+        assert "head rests on the forearms" in blob or "head on the forearms" in blob
+        assert "face looks at the camera" in blob or "face at the camera" in blob
+        assert "legs stay straight" in blob or "legs straight" in blob
+        assert "crown of the head" not in blob
         assert "face toward the hood" not in blob
-        assert "face stays toward the camera" not in blob
     out = next(b for b in stall if b["id"] == "04-toilet-out")
     assert "SLIDES OUT" not in out["action"]
     assert "Tongues intertwine" in out["action"]
