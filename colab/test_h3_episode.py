@@ -5572,6 +5572,9 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     out = next(b for b in stall if b["id"] == "04-toilet-out")
     assert "SLIDES OUT" not in out["action"]
     assert "Tongues intertwine" in out["action"]
+    assert "both stand up" in out["action"].lower()
+    assert "walks out to the right" in out["action"].lower()
+    assert "jacko" not in extra_keys(out)
     expel = prepare_episode(raw, story_override="accept", toilet_override="和式", connect_override="chain")
     assert all(b["id"] != "04-toilet-gape" for b in expel["beats"])
     assert all("jacko" not in extra_keys(b) for b in expel["beats"] if str(b["id"]).startswith("04-toilet"))
