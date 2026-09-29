@@ -21,11 +21,21 @@ names (``hub_utils.py``). The index still stores the hub id
 
 ``huggingface_hub`` 0.36 ``snapshot_download(local_dir=)`` does not also fill
 ``cache_dir``. Files live once under ``local_dir``.
+
+Colab's ``/content/drive`` is drivefs. ``statvfs`` there reports the VM disk,
+not the Google Drive quota, so a free-space check on that mount must not stop
+the prepare. Writes are cached on the VM disk (``/``, including the DriveFS
+cache) and uploaded after. Prepare therefore downloads one file at a time into
+``/content/tmp_hf``, moves it onto Drive, deletes the local copy, and calls
+``os.sync``. It does not call ``drive.flush_and_unmount``.
 """
 
 from __future__ import annotations
 
+import os
 import shutil
+import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -44,6 +54,13 @@ FOLDER_BYTES: dict[str, int] = {
 # Largest needed shard (vae/diffusion_pytorch_model-00001-of-00003.safetensors).
 # huggingface_hub writes that as ``*.incomplete`` beside the finished file.
 LARGEST_SHARD_BYTES = 5_061_033_024
+# `/` free below this means the DriveFS write-back cache is still on the VM disk.
+LOCAL_FREE_FLOOR_BYTES = 30_000_000_000
+# Worst case while one shard is in flight: hub cache, staging copy, DriveFS cache.
+LOCAL_COPIES_DURING_SHARD = 3
+WAIT_SECONDS = 20
+ROOT_FILES = ("modular_model_index.json", "model_index.json")
+EXTRA_DIRS = ("scheduler", "audio_scheduler")
 
 SHARED = ["text_encoder", "vae", "audio_vae", "tokenizer", "processor"]
 DENOISER = {"t2va": "transformer", "ref2va": "transformer_ref"}
@@ -137,6 +154,95 @@ def disk_anchor(path: Path) -> Path:
     return current
 
 
+def is_colab_drive(path: Path) -> bool:
+    """True for ``/content/drive/...``. statvfs there is the VM disk, not Drive quota."""
+    return Path(path).parts[:3] == ("/", "content", "drive")
+
+
+def staging_dir() -> Path:
+    """Local scratch for one shard. Colab uses ``/content/tmp_hf``."""
+    if Path("/content").is_dir():
+        return Path("/content/tmp_hf")
+    return Path(tempfile.gettempdir()) / "h3_tmp_hf"
+
+
+def local_free_bytes() -> int:
+    """Free bytes on ``/``. DriveFS caches uploads on this disk."""
+    return int(shutil.disk_usage("/").free)
+
+
+def bytes_needed(floor: int, shard_bytes: int, copies: int) -> int:
+    return int(floor) + max(0, int(shard_bytes)) * int(copies)
+
+
+def shard_is_current(path: Path, size: int) -> bool:
+    """True when Drive already has this file at the repo size."""
+    if size < 0 or not path.is_file() or path.is_symlink():
+        return False
+    try:
+        return path.stat().st_size == size
+    except OSError:
+        return False
+
+
+def select_repo_files(entries, tasks: list[str]) -> list[tuple[str, int]]:
+    """Files to store. ``FL2VA/`` and ``Ref2VA/`` are never included."""
+    folders = [*folders_for_tasks(tasks), *EXTRA_DIRS]
+    prefixes = tuple(f"{name}/" for name in folders)
+    selected: list[tuple[str, int]] = []
+    for entry in entries:
+        path = getattr(entry, "path", None)
+        if path is None and isinstance(entry, dict):
+            path = entry.get("path")
+        if not path or path.endswith("/"):
+            continue
+        if path.startswith(FORBIDDEN) or path.split("/", 1)[0] in FORBIDDEN:
+            continue
+        head = path.split("/", 1)[0]
+        if head in {"assets", "docs", "scripts"}:
+            continue
+        if path not in ROOT_FILES and not path.startswith(prefixes):
+            continue
+        size = getattr(entry, "size", None)
+        if size is None and isinstance(entry, dict):
+            size = entry.get("size")
+        if size is None:
+            continue
+        selected.append((str(path), int(size)))
+    selected.sort()
+    return selected
+
+
+def wait_for_local_free(
+    need: int,
+    *,
+    free_fn=local_free_bytes,
+    sleeper=time.sleep,
+    sync_fn=None,
+    wait_seconds: float = WAIT_SECONDS,
+) -> int:
+    """Block until ``/`` has ``need`` bytes free. DriveFS upload cache lives there."""
+    if sync_fn is None:
+        sync_fn = getattr(os, "sync", lambda: None)
+    while True:
+        sync_fn()
+        free = int(free_fn())
+        if free >= need:
+            return free
+        print(
+            f"待つ: ローカル空き {free / 1e9:.1f} GB。"
+            f"{need / 1e9:.1f} GB になるまで drivefs のキャッシュが上がるのを待つ。",
+            flush=True,
+        )
+        sleeper(wait_seconds)
+
+
+def sync_disk() -> None:
+    sync = getattr(os, "sync", None)
+    if sync is not None:
+        sync()
+
+
 @dataclass
 class DiskPreview:
     text: str
@@ -173,6 +279,17 @@ def disk_preview(
     shard = LARGEST_SHARD_BYTES if incomplete else 0
     need = gap + shard
     lines.append(f"両方置いた合計: {total / 1e9:.1f} GB。未完了分 {need / 1e9:.1f} GB（未完了シャード最大 {LARGEST_SHARD_BYTES / 1e9:.1f} GB を含む）。")
+    if is_colab_drive(local):
+        lines.append(
+            f"参考: ディスク {anchor} の空き {free / 1e9:.1f} GB。"
+            "Colab のマウントは VM ディスクの値を返すので Drive 実容量ではない。この数字では止めない。"
+        )
+        lines.append(
+            "シャードを1本ずつローカルへ落として Drive へ移す。"
+            f"`/` の空きが {LOCAL_FREE_FLOOR_BYTES / 1e9:.0f} GB を切ったら、"
+            "drivefs のキャッシュが上がるまで待つ。"
+        )
+        return DiskPreview("\n".join(lines), True)
     if free < need:
         short = need - free
         lines.append(
@@ -223,33 +340,106 @@ def require_present(local: Path, tasks: list[str]) -> None:
     )
 
 
+def _point_hub_cache(staging: Path) -> None:
+    home = staging / "hf-home"
+    home.mkdir(parents=True, exist_ok=True)
+    os.environ["HF_HOME"] = str(home)
+    os.environ["HUGGINGFACE_HUB_CACHE"] = str(home / "hub")
+    os.environ["HF_HUB_CACHE"] = str(home / "hub")
+
+
+def _wipe_dir(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True, exist_ok=True)
+
+
+def _publish_shard(src: Path, dest: Path) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    partial = dest.with_name(dest.name + ".partial")
+    if partial.exists():
+        partial.unlink()
+    shutil.copyfile(src, partial)
+    os.replace(partial, dest)
+
+
+def _progress(index: int, total: int, done: int, total_bytes: int, verb: str, rel: str) -> None:
+    print(
+        f"{index}/{total}  {done / 1e9:.2f}/{total_bytes / 1e9:.2f} GB  {verb}  {rel}",
+        flush=True,
+    )
+
+
+def _clear_partials(local: Path) -> None:
+    if not local.exists():
+        return
+    for item in local.rglob("*"):
+        if item.is_file() and item.suffix in {".incomplete", ".partial"}:
+            item.unlink()
+
+
 def prepare_all(local: Path, tasks: list[str]) -> Path:
-    """Download every folder the tasks need. Keep both denoisers. No GPU."""
+    """Download every needed file, one at a time. Keep both denoisers. No GPU.
+
+    ``drive.flush_and_unmount`` is not used. Each shard is synced with ``os.sync``.
+    """
     local.mkdir(parents=True, exist_ok=True)
+    _clear_partials(local)
     _reject_forbidden(local)
     sizes = {name: on_disk_bytes(local, name) for name in FOLDER_BYTES}
     preview = disk_preview(local, tasks, sizes=sizes)
     print(preview.text, flush=True)
     if not preview.ok:
         raise SystemExit(preview.text)
-    if missing_folders(local, tasks):
-        # Deferred so disk checks and unit tests do not require huggingface_hub.
-        from huggingface_hub import snapshot_download
-
-        folders = folders_for_tasks(tasks)
-        kwargs = snapshot_kwargs_for(folders)
-        print(
-            f"download {MODEL_ID} local_dir={local} folders={', '.join(folders)}",
-            flush=True,
-        )
-        snapshot_download(
-            MODEL_ID,
-            local_dir=str(local),
-            allow_patterns=kwargs["allow_patterns"],
-            ignore_patterns=kwargs["ignore_patterns"],
-        )
-    else:
+    if not missing_folders(local, tasks):
         print("既に揃っている。ダウンロードしない。", flush=True)
+        print(f"重み準備完了: {local}", flush=True)
+        return local
+
+    staging = staging_dir()
+    if local.resolve() == staging or staging in local.resolve().parents or local.resolve() in staging.parents:
+        raise SystemExit(f"一時ディレクトリが保存先と重なる: {staging} / {local}")
+    _wipe_dir(staging)
+    _point_hub_cache(staging)
+    # Deferred so disk checks and unit tests do not require huggingface_hub.
+    from huggingface_hub import HfApi, hf_hub_download
+
+    files = select_repo_files(HfApi().list_repo_tree(MODEL_ID, recursive=True), tasks)
+    if not files:
+        raise SystemExit("リポジトリ一覧から落とすファイルが0件。")
+    total_n = len(files)
+    total_bytes = sum(max(0, size) for _, size in files)
+    print(
+        f"シャード {total_n} 本、合計 {total_bytes / 1e9:.2f} GB。1本ずつ {local} へ。一時先 {staging}。",
+        flush=True,
+    )
+    done = 0
+    for index, (rel, size) in enumerate(files, start=1):
+        dest = local / rel
+        if shard_is_current(dest, size):
+            done += max(0, size)
+            _progress(index, total_n, done, total_bytes, "飛ばす", rel)
+            continue
+        room = bytes_needed(LOCAL_FREE_FLOOR_BYTES, max(0, size), LOCAL_COPIES_DURING_SHARD)
+        wait_for_local_free(room)
+        _wipe_dir(staging)
+        _point_hub_cache(staging)
+        got = Path(
+            hf_hub_download(
+                MODEL_ID,
+                rel,
+                local_dir=str(staging),
+                cache_dir=str(staging / "hf-home" / "hub"),
+            )
+        )
+        wait_for_local_free(bytes_needed(LOCAL_FREE_FLOOR_BYTES, max(0, size), 1))
+        _publish_shard(got, dest)
+        _wipe_dir(staging)
+        sync_disk()
+        wait_for_local_free(LOCAL_FREE_FLOOR_BYTES)
+        wrote = dest.stat().st_size if dest.is_file() else max(0, size)
+        done += wrote
+        _progress(index, total_n, done, total_bytes, "書いた", rel)
     _reject_forbidden(local)
     still = missing_folders(local, tasks)
     if still:

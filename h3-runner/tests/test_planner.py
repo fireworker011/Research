@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -22,12 +24,18 @@ from h3_runner.official import (  # noqa: E402
 )
 from h3_runner.planner import orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
 from h3_runner.weights import (  # noqa: E402
+    LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
+    bytes_needed,
     disk_preview,
     folders_for,
     folders_for_tasks,
+    prepare_all,
+    select_repo_files,
+    shard_is_current,
     snapshot_kwargs_for,
     stored_bytes,
+    wait_for_local_free,
 )
 
 
@@ -272,6 +280,87 @@ class WeightsTest(unittest.TestCase):
         self.assertFalse(tight.ok)
         self.assertIn("止める", tight.text)
         self.assertIn("ゴミ箱", tight.text)
+
+    def test_colab_drive_statvfs_does_not_stop(self) -> None:
+        tasks = ["t2va", "ref2va"]
+        preview = disk_preview(
+            Path("/content/drive/MyDrive/h3-weights/MiniMax-H3"),
+            tasks,
+            free_bytes=209_400_000_000,
+            sizes={},
+        )
+        self.assertTrue(preview.ok)
+        self.assertIn("Colab のマウントは VM ディスクの値を返すので Drive 実容量ではない", preview.text)
+        self.assertNotIn("止める", preview.text)
+
+    def test_select_repo_files_skips_comfy_trees(self) -> None:
+        class Entry:
+            def __init__(self, path: str, size: int | None) -> None:
+                self.path = path
+                self.size = size
+
+        entries = [
+            Entry("FL2VA/model.safetensors", 100),
+            Entry("Ref2VA/model.safetensors", 100),
+            Entry("assets/pic.png", 9),
+            Entry("README.md", 9),
+            Entry("text_encoder", None),
+            Entry("transformer/a.safetensors", 10),
+            Entry("transformer_ref/b.safetensors", 20),
+            Entry("text_encoder/c.safetensors", 30),
+            Entry("vae/d.safetensors", 40),
+            Entry("audio_vae/e.safetensors", 5),
+            Entry("tokenizer/tokenizer.json", 1),
+            Entry("processor/preprocessor_config.json", 1),
+            Entry("scheduler/scheduler_config.json", 2),
+            Entry("audio_scheduler/scheduler_config.json", 2),
+            Entry("modular_model_index.json", 3),
+            Entry("model_index.json", 4),
+        ]
+        picked = dict(select_repo_files(entries, ["t2va", "ref2va"]))
+        self.assertNotIn("FL2VA/model.safetensors", picked)
+        self.assertNotIn("Ref2VA/model.safetensors", picked)
+        self.assertNotIn("README.md", picked)
+        self.assertEqual(picked["transformer/a.safetensors"], 10)
+        self.assertEqual(picked["transformer_ref/b.safetensors"], 20)
+        self.assertEqual(picked["modular_model_index.json"], 3)
+
+    def test_shard_skip_matches_size(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "shard.safetensors"
+            path.write_bytes(b"abcd")
+            self.assertTrue(shard_is_current(path, 4))
+            self.assertFalse(shard_is_current(path, 5))
+            self.assertFalse(shard_is_current(Path(tmp) / "missing.safetensors", 4))
+
+    def test_wait_until_local_free_recovers(self) -> None:
+        seen = {"n": 0}
+
+        def free() -> int:
+            seen["n"] += 1
+            if seen["n"] < 3:
+                return 10_000_000_000
+            return 40_000_000_000
+
+        sleeps: list[float] = []
+        got = wait_for_local_free(
+            LOCAL_FREE_FLOOR_BYTES,
+            free_fn=free,
+            sleeper=lambda seconds: sleeps.append(seconds),
+            sync_fn=lambda: None,
+        )
+        self.assertEqual(got, 40_000_000_000)
+        self.assertEqual(len(sleeps), 2)
+        self.assertEqual(bytes_needed(LOCAL_FREE_FLOOR_BYTES, 5_000_000_000, 3), LOCAL_FREE_FLOOR_BYTES + 15_000_000_000)
+
+    def test_prepare_downloads_one_shard_at_a_time(self) -> None:
+        text = inspect.getsource(prepare_all)
+        self.assertIn("hf_hub_download", text)
+        self.assertNotIn("snapshot_download", text)
+        self.assertNotIn("flush_and_unmount()", text)
+        self.assertIn("sync_disk()", text)
+        module = (ROOT / "h3_runner" / "weights.py").read_text(encoding="utf-8")
+        self.assertNotIn("flush_and_unmount()", module)
 
     def test_loader_stays_on_the_local_snapshot(self) -> None:
         text = (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8")

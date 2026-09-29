@@ -37,15 +37,15 @@ Drive は **fireworker06@gmail.com** でマウントする。重みは `マイ�
 
 [MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分のアカウントで開く。401 のときだけ Colab のシークレット `HF_TOKEN` を入れる。ノートは値を表示しない。
 
-Hugging Face の tree API で、T2VA と Ref2VA を両方置いた合計は **210.3GB**（text_encoder 66.73 + transformer 66.28 + transformer_ref 66.28 + vae 10.42 + audio_vae 0.61 + tokenizer/processor）。ダウンロード中は未完了シャード最大 5.1GB が足されて約 215.4GB。`FL2VA/` と `Ref2VA/`（各 144.1GB）は落とさない。空きが足りなければ準備セルが不足分を出して止まる。ゴミ箱を空にするか、大きなファイルを移してからやり直す。G4 では落とさない。
+Hugging Face の tree API で、T2VA と Ref2VA を両方置いた合計は **210.3GB**（text_encoder 66.73 + transformer 66.28 + transformer_ref 66.28 + vae 10.42 + audio_vae 0.61 + tokenizer/processor）。`FL2VA/` と `Ref2VA/`（各 144.1GB）は落とさない。Colab の `/content/drive` に `statvfs` を当てると VM ディスクの数字が返るので、その空きでは止めない。シャードは1本ずつ `/content/tmp_hf` に落として Drive へ移し、`os.sync()` する。`/` の空きが 30GB を切ったら drivefs のキャッシュが上がるまで待つ。サイズが一致するファイルは飛ばす。G4 では落とさない。
 
 ### A. CPU ランタイム（GPU なし）
 
 1. ランタイムのタイプを **CPU** にする。
-2. 「A. Drive」セル。空き容量が出る。
+2. 「A. Drive」セル。空きの数字は参考（VM ディスク）。
 3. 「A. リポジトリ」セル。パスは `/content/Research/h3-runner/run_h3.py`。
 4. 「A. パッケージ」セル。`huggingface_hub` だけ。
-5. 「A. 重み準備」セル。無ければ Drive に一度落とす。揃っていれば落とさない。
+5. 「A. 重み準備」セル。無ければシャードを1本ずつ Drive に落とす。揃っているファイルは飛ばす。
 
 ### B. G4（RTX PRO 6000）
 
