@@ -5560,7 +5560,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert extra_lora_entries(gape) == [("jacko", 0.65)]
     assert "doggy" not in extra_keys(gape)
     push = next(b for b in stall if b["id"] == "04-toilet-push")
-    assert "chest and cheek" in push["action"]
+    assert "chest and one cheek" in push["action"]
     spot = next(b for b in stall if b["id"] == "04-toilet-spot")
     assert "RUBS" in spot["action"]
     assert "platform" not in " ".join(
@@ -5573,6 +5573,13 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     cum = next(b for b in stall if b["id"] == "04-toilet-cum")
     assert extra_lora_entries(cum)[0] == ("jacko", 0.65)
     assert "doggy" not in extra_keys(cum)
+    for beat in (push, inserted, cum, gape):
+        blob = f"{beat['action']} {beat['camera']}".lower()
+        assert "crown of the head points at the hood" in blob or "crown toward the hood" in blob
+        assert "eyes" in blob and "back at the camera" in blob
+        assert "buttocks" in blob and "camera" in blob
+        assert "face toward the hood" not in blob
+        assert "face stays toward the camera" not in blob
     out = next(b for b in stall if b["id"] == "04-toilet-out")
     assert "SLIDES OUT" not in out["action"]
     assert "Tongues intertwine" in out["action"]
