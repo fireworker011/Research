@@ -47,6 +47,9 @@ REF2VA_FIT_FRAMES = 124
 BF16_HOST_RAM_GB = 140.0
 INT8_HOST_RAM_GB = 70.0
 A100_80_VRAM_GB = 70.0
+# Diffusers Memory: "On a consumer card (24 to 32 GB)" uses the int8 recipe.
+# 12–16 GB adds VAE leaf offload, which this runner does not implement.
+CONSUMER_VRAM_GB = 24.0
 # 124-frame 768p T2VA is the shape the single-80GB docs say works. 6 seconds is
 # 158 frames, about 1.27× the latent frames of that example. Past 1.35×, step
 # the canvas down. This slack is not an official limit.
@@ -278,11 +281,25 @@ def one_shot_refusal(task: str, duration_s: float, aspect: str) -> str | None:
     return None
 
 
-def check_machine(vram_gb: float, host_ram_gb: float, offload: str) -> str | None:
-    if vram_gb < A100_80_VRAM_GB:
+def hardware_note(vram_gb: float) -> str:
+    if vram_gb >= A100_80_VRAM_GB:
         return (
-            f"GPU メモリ {vram_gb:.1f} GB。このランナーは A100 80GB 向け。"
-            "40GB では公式の Ref2VA（参照画像は短辺 2048）は通らない。"
+            f"GPU {vram_gb:.1f} GB。80GB クラス。"
+            "transformer 61.7GB とテキストエンコーダ 62.1GB は同時に載らないので offload は残す。"
+        )
+    return (
+        f"GPU {vram_gb:.1f} GB。公式 Memory 節の int8 + group offload は 24〜32GB のカード向けで、"
+        "この GPU はその範囲以上。80GB への変更は要らない。"
+    )
+
+
+def check_machine(vram_gb: float, host_ram_gb: float, offload: str) -> str | None:
+    if vram_gb < CONSUMER_VRAM_GB:
+        return (
+            f"GPU メモリ {vram_gb:.1f} GB。"
+            "公式の int8 + group offload は 24〜32GB のカード向け。"
+            "12〜16GB は同じ文書が VAE の leaf offload と小さいキャンバス（960x544）を追加で求めており、"
+            "このランナーはその経路を持たない。"
         )
     try:
         offload_mode(host_ram_gb, offload)
@@ -320,6 +337,7 @@ def orbis01_plan(
     mode = "int8"
     if blocked is None:
         mode = offload_mode(host_ram_gb, offload)
+        notes.append(hardware_note(vram_gb))
     if force_one_shot:
         raw = frames_for_seconds(15)
         frames = largest_legal_frames(raw)
@@ -425,6 +443,8 @@ def single_plan(
     notes = [f"モデル: {MODEL_ID}。追加 LoRA は無し。"]
     blocked = check_machine(vram_gb, host_ram_gb, offload)
     mode = offload_mode(host_ram_gb, offload) if blocked is None else "int8"
+    if blocked is None:
+        notes.append(hardware_note(vram_gb))
     raw = frames_for_seconds(duration_s)
     legal = diffusers_accepts(raw)
     if task == "ref2va" and image_path is None:

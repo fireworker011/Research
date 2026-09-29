@@ -33,7 +33,7 @@ LoRA は要らない。公式の推論スクリプトは CFG 蒸留済みの BF1
 
 1. Colab でノートを開く。  
    https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-still-to-video-7cb8/h3-runner/minimax_h3_still.ipynb
-2. ランタイムのタイプを **A100 GPU** にする。40GB では止まる。ホスト RAM はハイメモリ（80GB 級）でよい。140GB 以上あるマシンなら自動で BF16 offload になる。
+2. ランタイムのタイプを **A100 GPU** にする。40GB（表示は 39.5GB 前後）でよい。公式の int8 + group offload は 24〜32GB のカード向けで、40GB はその上。ホスト RAM はハイメモリ（約 75GB 以上。83GB 前後で足りる）。140GB 以上あるマシンなら自動で BF16 offload になる。24GB 未満は止まる。
 3. [MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分の Hugging Face アカウントで開く。ダウンロードが 401 になるときは、Colab のシークレットに `HF_TOKEN` を入れる。ノートは値を表示しない。Git には書かない。
 4. ノートを上から順に実行する。プロンプトも静止画もノートがリポジトリから取る。
 5. 完成ファイルは Google Drive の `マイドライブ/h3-runner/output/orbis01.mp4`。

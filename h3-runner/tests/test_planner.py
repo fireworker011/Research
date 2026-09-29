@@ -94,8 +94,15 @@ class PresetTest(unittest.TestCase):
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=80, host_ram_gb=160)
         self.assertEqual(plan.offload, "bf16")
 
-    def test_40gb_is_blocked(self) -> None:
-        plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=40, host_ram_gb=83)
+    def test_40gb_uses_the_official_int8_recipe(self) -> None:
+        plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=39.5, host_ram_gb=83.5)
+        self.assertIsNone(plan.blocked)
+        self.assertEqual(plan.offload, "int8")
+        self.assertEqual(plan.jobs[0].short_edges[0], 768)
+        self.assertIn("24〜32GB", "\n".join(plan.notes))
+
+    def test_below_consumer_card_is_blocked(self) -> None:
+        plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=16, host_ram_gb=83)
         self.assertIsNotNone(plan.blocked)
 
     def test_force_one_shot_uses_legal_ceiling(self) -> None:
