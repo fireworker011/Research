@@ -2306,6 +2306,10 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert LORA_FILES["doggy"].startswith("MM-H3 - Doggy Style")
     assert "fileId=3202556" in LORA_URLS["doggy"]
     assert LORA_STRENGTHS["doggy"] == 0.5
+    assert LORA_FILES["siderear"].startswith("MMH3_NSFW_Doggystyle_Sex")
+    assert "models/3362792" in LORA_URLS["siderear"]
+    assert "fileId=3250615" in LORA_URLS["siderear"]
+    assert LORA_STRENGTHS["siderear"] == 0.8
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
     assert not any(b["id"] == "04-toilet" for b in off["beats"])
@@ -5599,4 +5603,36 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert len(miki["beats"]) <= MAX_BEATS
     assert len(gin["beats"]) <= MAX_BEATS
     assert len(oral["beats"]) <= MAX_BEATS
+
+
+def test_hospital_siderear_keeps_the_join_visible():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い")
+    seat = next(b for b in fours["beats"] if b["id"] == "06-doggy")
+    peak = next(b for b in fours["beats"] if b["id"] == "06-doggy-peak")
+    walk = next(b for b in fours["beats"] if b["id"] == "06-doggy-walk")
+    assert extra_lora_entries(seat)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(peak)[0] == ("siderear", 0.8)
+    assert "siderear" not in extra_keys(walk)
+    assert "clear view of the shaft where it meets the pussy" in seat["camera"]
+    assert "breasts swing" in peak["camera"]
+    assert "doggy" not in seat["action"].lower()
+    stand = prepare_episode(raw, story_override="誘う", invite_pose_override="立ちバック")
+    wall = next(b for b in stand["beats"] if b["id"] == "03-kiss")
+    assert extra_lora_entries(wall)[0] == ("siderear", 0.8)
+    assert "siderear" not in extra_keys(next(b for b in stand["beats"] if b["id"] == "09-kana-facial"))
+    m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
+    assert "siderear" not in extra_keys(next(b for b in m_open["beats"] if b["id"] == "06-doggy"))
+    ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
+    assert "siderear" not in extra_keys(next(b for b in ride["beats"] if b["id"] == "03-kiss-ride"))
+    gin = prepare_episode(raw, gin_override="誘う後背")
+    assert extra_lora_entries(next(b for b in gin["beats"] if b["id"] == "04-gin-in"))[0] == ("siderear", 0.8)
+    assert "siderear" not in extra_keys(next(b for b in gin["beats"] if b["id"] == "04-gin-lick"))
+    tsuno = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
+    assert extra_lora_entries(next(b for b in tsuno["beats"] if b["id"] == "04-tsuno-in"))[0] == ("siderear", 0.8)
+    assert "siderear" not in extra_keys(next(b for b in tsuno["beats"] if b["id"] == "04-tsuno-meet"))
+    anal = prepare_episode(raw, tsuno_override="後ろアナル")
+    assert "siderear" not in extra_keys(next(b for b in anal["beats"] if b["id"] == "04-tsuno-in"))
+    dog = prepare_episode(raw, dog_override="invite_oral")
+    assert "siderear" not in extra_keys(next(b for b in dog["beats"] if b["id"] == "04-dog-in"))
 

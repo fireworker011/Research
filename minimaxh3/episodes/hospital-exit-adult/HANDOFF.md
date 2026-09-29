@@ -191,6 +191,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## 正常位と後背位の挿入
 
+四つん這いと壁立ちバック、灰色の誘う後背、角の立ちバック（膣の in と peak）は `siderear` 0.8。ファイルは `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。カメラは `SIDE-REAR view. The frame holds a clear view of the shaft where it meets the pussy.` 絶頂は胸が前後に揺れる。歩き、顔射、キス、騎乗、M字、後ろアナル、ネルソン、犬には積まない。古い `doggy`（fileId 3202556）は登録のまま、extra には積まない。action に `Doggy style` は書かない。
+
 着座は一回の押し。腰と尻が密着し、竿が根元まで入ったところで止める。先だけ、半分、往復は書かない。ピストンは次の絶頂。`12-exit` の正常位は 0 秒からあやが仰向け、しのは腿の間、30cm は根元、`HOLD still joined at the BASE until the last frame`。立ちキスにしない。立ちキスは `12-exit-kiss` だけ。
 
 ## 中出し

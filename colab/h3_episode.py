@@ -273,6 +273,9 @@ LORA_FILES = {
     # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
     # Trigger "Doggy style" stays off the action.
     "doggy": "MM-H3 - Doggy Style v1.safetensors",
+    # Side/rear view so the shaft stays readable where it meets the pussy.
+    # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
+    "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -302,6 +305,7 @@ LORA_URLS = {
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
+    "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -329,6 +333,7 @@ LORA_STRENGTHS = {
     "jacko": 0.8,
     "jpnmoans": 0.55,
     "doggy": 0.5,
+    "siderear": 0.8,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
