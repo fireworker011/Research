@@ -1209,7 +1209,12 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert raw["render"]["story"] == "accept"
     assert raw["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     assert all(c["age"] >= 21 for c in raw["cast"].values())
-    assert raw["cast"]["aya"]["age"] == 21 and "A-cup" in raw["cast"]["aya"]["lock"]
+    assert raw["cast"]["aya"]["age"] == 21 and "C-cup" in raw["cast"]["aya"]["lock"]
+    assert "A-cup" not in raw["cast"]["aya"]["lock"] and "ponytail" not in raw["cast"]["aya"]["lock"]
+    assert "long straight dark hair past the shoulders" in raw["cast"]["aya"]["lock"]
+    assert "small dark mole on the left cheek" in raw["cast"]["aya"]["lock"]
+    assert "slender thin body" in raw["cast"]["aya"]["lock"]
+    assert "hairless pussy" in raw["cast"]["aya"]["lock"]
     assert "female body" in raw["cast"]["aya"]["lock"]
     assert "no penis" not in raw["cast"]["aya"]["lock"]
     assert "never futanari" not in raw["cast"]["aya"]["lock"]

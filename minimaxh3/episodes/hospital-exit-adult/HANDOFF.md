@@ -66,6 +66,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 初期の見た目は `cast` の `lock`。そのカットだけ違うときは `cast_lock`。汚れ、傷、粘液、髪、肌の色、竿の長さと色はここに書く。
 
+あやは 21 歳のまま。顔は肩より下まで落ちる長いストレートの暗い髪、額を横切る直線の前髪、左頬の小さいほくろ、柔らかい卵型、暗い茶色の目、細い眉、薄いピンクの唇。体は細身のスレンダー、Cカップ、細い腰、細い腕。パイパンは `hairless pussy` のまま。汗と `grimy brown hospital dirt` の文は変えない。帽子は書かない。`cast.lock` と `looks.white_upper` とギンの `cast_lock.aya` を同じ顔に揃える。
+
 各病棟カットのプロンプトには `Look that stays for this whole shot` が付く。否定の句（`no` `never` `not` `without`）はそこから落とす。竿を消す歩きだけ、action に `No penis` と `The grown shaft is gone` と書く。その歩きには竿を戻さない。
 
 チェーンの I2V は、前フレームが汚れや竿を落としていても、`subject_definitions` の見た目に戻す。
