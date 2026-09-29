@@ -701,18 +701,18 @@ GIN_MOUTH_PACE_CLAUSE = (
     "Aya stays fully on her back, head on the RIGHT, feet pointing LEFT. "
     "The erect 24cm stands vertically straight UP from the groin. "
     "Gin kneels toward the LEFT at the hips. "
-    "The 24cm slides out of Aya's mouth once. The glans stays in front of Aya's face. "
-    "One thick WHITE rope shoots from the slit of the glans onto Aya's face and tongue. "
-    "Last frame: the 24cm outside the mouth, the glans in front of the face, WHITE rope on the face and tongue, Gin still kneeling. "
+    "The 24cm slides out of Gin's mouth once. The glans stays in front of Gin's face. "
+    "One thick WHITE rope shoots from the slit of the glans onto Gin's face and tongue. "
+    "Last frame: the 24cm outside the mouth, the glans in front of Gin's face, WHITE rope on Gin's face and tongue, Gin still kneeling. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )
 GIN_SPIT_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Aya stays on her back. Gin kneels at the hips. "
-    "WHITE rope stays on Aya's face and tongue. The 24cm stays outside the mouth. "
+    "WHITE rope stays on Gin's face and tongue. The 24cm stays outside the mouth. "
     "Mouths join. Then the mouths part. A saliva-and-WHITE string hangs between the open mouths. "
-    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, WHITE rope on the face, the 24cm outside the mouth. "
+    "Last frame: Gin still kneeling at the hips, mouths apart, the string visible, WHITE rope on Gin's face, the 24cm outside Gin's mouth. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
 )

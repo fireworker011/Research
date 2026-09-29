@@ -5587,8 +5587,14 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in jupo["action"].lower()
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
-    assert extra_lora_entries(mouth) == [("cmst", 0.55), ("mystic", 0.5)]
+    assert extra_lora_entries(mouth) == [("cumshot", 1.0), ("cmst", 0.55), ("mystic", 0.5)]
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
+    assert "onto gin's face and tongue" in mouth["action"].lower()
+    assert "onto aya's face" not in mouth["action"].lower()
+    assert "slides out of gin's mouth" in mouth["action"].lower()
+    mouth_prompt = build_beat_prompt(gin, mouth, trigger=merge_trigger("", mouth))
+    assert "onto gin's face and tongue" in mouth_prompt.lower()
+    assert "onto aya's face" not in mouth_prompt.lower()
     assert "slit" in mouth["action"]
     assert "STANDS" not in mouth["action"]
     assert "STANDS" not in build_beat_prompt(gin, mouth)

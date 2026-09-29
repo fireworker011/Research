@@ -80,7 +80,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - `04-gin-lick`: あやは恐る恐る振り向いて、尻餅は右側。頭は画面右、足先は左。そこがゴール。ギンは左でしゃがみ、長い舌があやのマンコとクリを下から舐め続ける。竿は生えない。ギンもあやも竿なし。容姿・汚れ・眼窮はそのまま。`futanari` の語は書かない。右端は暗い通路が続く。壁という語は書かない。舐め本文は変えない。Aya says 「気持ちいい」。extra は mystic + cunny + jpnmoans 0.55。トリガー `performing cunnilingus` と `jpnMoans`。声はあやの `きもちいい` とギンの `れろっ`
 - `04-gin-cunny`: source も connect も chain。0秒は舐めの最終。あやは右側に座り、マンコ、竿なし、舌はクリ。Look に 24cm を書かない。舌はクリを舐め続ける。THEN クリが直立の 24cm に生える。生えた瞬間だけ wide-eyed surprised joyful excited smile。Aya says 「すごい」。背中はリノリウムへ下り、頭は RIGHT、足は LEFT。ギンは新しい竿を一度舐める。最終は jupo の首。仰向け、24cm が真上、ギンは左でしゃがむ。extra は cunny 0.8 + mystic 0.5 + jpnmoans 0.55。futatf と penis は積まない。Turbo / Eros 8step / Larry は extra に置かない。この拍は `steps` 8、`turbo` false。Comfy はこの 8 を使う。API 経路は steps 欄が無いので Turbo を切る。`Aya's shaft written in that look stays erect` は付けない。`FALLS ONTO` は書かない
 - `04-gin-jupo`: 0秒から仰向け＋24cm。cunny の最終を継承。倒れる工程は書かない。座ったまま、両腕を後ろ、LIES BACK、マンコが真上、は書かない。ギンは腰の左で跪き、閉じた唇。閉じた唇が根元まで下り、亀頭へ戻ってまた根元まで下りる。0秒も最終も跪き。最終の跨ぎ文は書かない。Look の竿文はここから付ける。connect は chain
-- `04-gin-mouth`: 竿は口から一度出る。亀頭は顔の前。slit から WHITE rope が顔と舌へ。extra は cmst 0.55 + mystic 0.5。トリガーは `cmst`。blowjob と cumouf は積まない。jupo は触らない。STANDS は書かない
+- `04-gin-mouth`: あやの 24cm がギンの口から一度出る。亀頭はギンの顔の前。slit から WHITE rope がギンの顔と舌へ。あやの顔には掛けない。extra は cumshot 1.0 + cmst 0.55 + mystic 0.5。トリガーは `CUMSH0T` と `cmst`。cumshot は 1.0 未満だと絵の具になる。blowjob と cumouf は積まない。jupo は触らない。STANDS は書かない。次の spitkiss も WHITE はギンの顔
 - `04-gin-spitkiss`: 口から抜く文は書かない。顔の WHITE のまま口が付く。涎と WHITE の糸。extra は kiss 0.5 + cumouf 0.45。STANDS は書かない
 - `04-gin-wait`: あやは仰向け、24cm は真上。ギンは股の上に立つ。両足裏は肋骨の左右、両膝は曲がったまま、マンコは亀頭の DIRECTLY ABOVE。未結合。STANDS はここだけ
 - そこから既存の分岐（騎乗 / 正常位 / 後背）。成長とジュボは別カット。犯すと誘う後背の cunny 本文は残す
