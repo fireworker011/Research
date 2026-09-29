@@ -703,7 +703,9 @@ GIN_MOUTH_PACE_CLAUSE = (
     "The erect 24cm stands vertically straight UP from the groin. "
     "Gin kneels toward the LEFT at the hips. "
     "The 24cm slides out of Gin's mouth once. The glans stays in front of Gin's face. "
+    "Gin's open mouth and tongue sit under the slit. Gin's cheek faces the slit. "
     "One thick WHITE rope shoots from the slit of the glans onto Gin's face and tongue. "
+    "Aya's face stays at the RIGHT end. "
     "Last frame: the 24cm outside the mouth, the glans in front of Gin's face, WHITE rope on Gin's face and tongue, Gin still kneeling. "
     "The pair stays on this same floor spot. The camera holds. "
     "Normal adult human height, nobody is giant."
@@ -1930,9 +1932,9 @@ def keep_chain_cast(ep: dict[str, Any]) -> dict[str, Any]:
                 item["cast"] = list(dict.fromkeys(intended + fade_ids))
                 action = str(item.get("action") or "").strip()
                 fade = (
-                    f"{_cast_english_names(out, fade_ids)} completely "
-                    f"{'fades' if len(fade_ids) == 1 else 'fade'} out of frame in the first two seconds, "
-                    "no walk-away, no residual limb, wing, tail, tooth, or horn. "
+                    f"{_cast_english_names(out, fade_ids)} "
+                    f"{'dissolves' if len(fade_ids) == 1 else 'dissolve'} out through the far end of the corridor "
+                    "during the first two seconds. From the third second the frame holds the adults who remain in this shot. "
                 )
                 action = GONE_FROM_FRAME_RE.sub("", action)
                 action = FADE_ONLY_AYA_RE.sub("", action)
@@ -4902,6 +4904,13 @@ def build_beat_prompt(
         desc.append(DOG_SPOT_CONTINUITY)
     else:
         desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
+    pair_ids = [str(c) for c in (beat.get("cast") or [])]
+    fade_ids = {str(c) for c in (beat.get("fade_cast") or [])}
+    staying = [c for c in pair_ids if c not in fade_ids]
+    if str(ep.get("slug") or "") == "hospital-exit-adult" and "dog" in pair_ids:
+        desc.append("The second body is the quadruped on four paws, black short hide, tan muzzle.")
+    elif str(ep.get("slug") or "") == "hospital-exit-adult" and len(staying) == 2:
+        desc.append("The frame holds these two adults.")
     loco = beat_loco(beat)
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)

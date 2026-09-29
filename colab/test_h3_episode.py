@@ -1289,10 +1289,12 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "intact ashen skin" in raw["cast"]["gin"]["lock"]
     assert "red muscle fiber showing in the peeled patches" in raw["cast"]["gin"]["lock"]
     assert "24cm" in raw["cast"]["tsuno"]["lock"] and "ashen gray" in raw["cast"]["tsuno"]["lock"]
-    assert "cracked" in raw["cast"]["tsuno"]["lock"] and "horned mask" in raw["cast"]["tsuno"]["lock"]
+    assert "cracked" in raw["cast"]["tsuno"]["lock"]
+    assert "two small dark horns stand at the hairline" in raw["cast"]["tsuno"]["lock"].lower()
+    assert "horned mask" not in raw["cast"]["tsuno"]["lock"]
     assert "clawed demon" in raw["cast"]["tsuno"]["lock"] or "decaying clawed" in raw["cast"]["tsuno"]["lock"]
     assert "one large single eye" in raw["cast"]["tsuno"]["lock"]
-    assert "not two eyes" in raw["cast"]["tsuno"]["lock"]
+    assert "not two eyes" not in raw["cast"]["tsuno"]["lock"]
     assert "exactly four long fingers" in raw["cast"]["tsuno"]["lock"]
     assert "both eyes" not in raw["cast"]["tsuno"]["lock"].lower()
     assert raw["cast"]["shino"]["age"] == 29
@@ -3094,7 +3096,9 @@ def test_hospital_gin_tsuno_optional_events():
     assert "wide blissful smile" in nel_in["action"].lower()
     assert "travels into the anus" in nel_in["action"].lower()
     assert "pussy" not in nel_in["action"].lower()
-    assert "lowers one of aya's feet" in nel_peak["action"].lower()
+    assert "hold still joined at the base" in nel_peak["action"].lower()
+    assert "shaft leaves the anus" not in nel_peak["action"].lower()
+    assert "lowers one of aya's feet" not in nel_peak["action"].lower()
     assert "white goo fills the anus" in nel_peak["action"].lower()
     assert "woman facing the camera" in nel_in["action"].lower()
     assert "tsuno's face stays behind aya's head" in nel_in["action"].lower()
@@ -5639,6 +5643,8 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
         assert "head rests on the forearms" in blob or "head on the forearms" in blob
         assert "face looks at the camera" in blob or "face at the camera" in blob
         assert "legs stay straight" in blob or "legs straight" in blob
+        assert "thighs lie along the tiles" in blob
+        assert "head stays at the left end" in blob
         assert "crown of the head" not in blob
         assert "face toward the hood" not in blob
     out = next(b for b in stall if b["id"] == "04-toilet-out")
@@ -5663,6 +5669,17 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
     assert "onto gin's face and tongue" in mouth["action"].lower()
     assert "onto aya's face" not in mouth["action"].lower()
+    assert "tongue extended under the glans" in mouth["cast_lock"]["gin"].lower()
+    assert "cheek faces the slit" in mouth["action"].lower()
+    horn = prepare_episode(raw, tsuno_override="フルネルソンアナル", connect_override="chain")
+    horn_peak = next(b for b in horn["beats"] if b["id"] == "04-tsuno-peak")
+    assert "hold still joined at the base" in horn_peak["action"].lower()
+    assert "shaft leaves the anus" not in horn_peak["action"].lower()
+    assert "two small dark horns stay at the hairline" in horn_peak["action"].lower()
+    miki_nel = prepare_episode(raw, story_override="誘う", invite_pose_override="フルネルソンアナル")
+    miki_peak = next(b for b in miki_nel["beats"] if b["id"] == "03-kiss-peak")
+    assert "hold still joined at the base" in miki_peak["action"].lower()
+    assert "lowers one of" not in miki_peak["action"].lower()
     assert "slides out of gin's mouth" in mouth["action"].lower()
     mouth_prompt = build_beat_prompt(gin, mouth, trigger=merge_trigger("", mouth))
     assert "onto gin's face and tongue" in mouth_prompt.lower()
