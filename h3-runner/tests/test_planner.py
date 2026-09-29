@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from h3_runner.cli import main, resolve_vram_gb  # noqa: E402
-from h3_runner.ffmpeg_join import join_command  # noqa: E402
+from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done  # noqa: E402
 from h3_runner.official import (  # noqa: E402
     align_num_frames,
     build_video_request,
@@ -25,7 +25,9 @@ from h3_runner.weights import (  # noqa: E402
     allow_patterns,
     disk_preview,
     folders_for,
-    snapshot_kwargs,
+    folders_for_tasks,
+    snapshot_kwargs_for,
+    stored_bytes,
 )
 
 
@@ -232,38 +234,52 @@ class FfmpegTest(unittest.TestCase):
         self.assertIn("[v0][a0][v1][a1]concat=n=2", script)
         self.assertIn("-ar 32000", script)
 
+    def test_resume_probe_requires_video_and_duration(self) -> None:
+        text = "codec_type=video\ncodec_type=audio\nduration=6.583\n"
+        self.assertTrue(probe_text_is_done(text, 6.0))
+        self.assertFalse(probe_text_is_done("codec_type=audio\nduration=6.583\n", 6.0))
+        self.assertFalse(probe_text_is_done(text, 9.0))
+        self.assertFalse(clip_is_done(Path("/tmp/h3-missing-clip.mp4"), min_seconds=6.0))
+
 
 class WeightsTest(unittest.TestCase):
     def test_patterns_skip_the_comfy_trees_and_the_other_denoiser(self) -> None:
         t2va = allow_patterns(folders_for("t2va"))
         ref = allow_patterns(folders_for("ref2va"))
+        both = allow_patterns(folders_for_tasks(["t2va", "ref2va"]))
         self.assertTrue(any(item.startswith("transformer/") for item in t2va))
         self.assertFalse(any(item.startswith("transformer_ref/") for item in t2va))
         self.assertTrue(any(item.startswith("transformer_ref/") for item in ref))
-        self.assertFalse(any("FL2VA" in item or "Ref2VA" in item for item in t2va + ref))
-        ignored = " ".join(snapshot_kwargs("ref2va")["ignore_patterns"])
+        self.assertTrue(any(item.startswith("transformer/") for item in both))
+        self.assertTrue(any(item.startswith("transformer_ref/") for item in both))
+        self.assertFalse(any("FL2VA" in item or "Ref2VA" in item for item in t2va + ref + both))
+        ignored = " ".join(snapshot_kwargs_for(folders_for_tasks(["t2va", "ref2va"]))["ignore_patterns"])
         self.assertIn("FL2VA/**", ignored)
         self.assertIn("Ref2VA/**", ignored)
+        self.assertAlmostEqual(stored_bytes(["t2va", "ref2va"]) / 1e9, 210.3, places=1)
 
     def test_tiny_torch_vram_is_not_a_real_card(self) -> None:
         self.assertEqual(resolve_vram_gb(0.0, 95.0), 95.0)
         self.assertIsNone(resolve_vram_gb(0.0, None))
         self.assertEqual(resolve_vram_gb(95.0, 40.0), 95.0)
 
-    def test_sequential_download_fits_in_160gb_and_not_in_100gb(self) -> None:
+    def test_both_weights_need_about_210gb(self) -> None:
         tasks = ["t2va", "ref2va"]
         self.assertTrue(
-            disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=160_000_000_000, sizes={}).ok
+            disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=220_000_000_000, sizes={}).ok
         )
-        tight = disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=100_000_000_000, sizes={})
+        tight = disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=180_000_000_000, sizes={})
         self.assertFalse(tight.ok)
         self.assertIn("止める", tight.text)
+        self.assertIn("ゴミ箱", tight.text)
 
     def test_loader_stays_on_the_local_snapshot(self) -> None:
         text = (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8")
         self.assertIn("local_files_only=True", text)
         self.assertNotIn("from_pretrained(\n        MODEL_ID", text)
         self.assertNotIn("from_pretrained(MODEL_ID", text)
+        self.assertNotIn("snapshot_download", text)
+        self.assertNotIn("prepare_all", text)
 
 
 class SecretScanTest(unittest.TestCase):

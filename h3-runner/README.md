@@ -31,21 +31,51 @@ LoRA は要らない。公式の推論スクリプトは CFG 蒸留済みの BF1
 
 ## 人間がやること
 
-1. Colab でノートを開く。  
-   https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-still-to-video-7cb8/h3-runner/minimax_h3_still.ipynb
-2. ランタイムは GPU ならよい。A100 40GB（表示 39.5GB 前後）は公式の int8 + group offload（24〜32GB 向け）。RTX PRO 6000 Blackwell（表示 95GB、ホスト RAM 176GB 前後）はホスト RAM が約 140GB 以上なので BF16 offload。24GB 未満は止まる。
-3. [MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分の Hugging Face アカウントで開く。ダウンロードが 401 になるときは、Colab のシークレットに `HF_TOKEN` を入れる。ノートは値を表示しない。Git には書かない。
-4. ノートを上から順に実行する。プロンプトも静止画もノートがリポジトリから取る。
-5. 完成ファイルは Google Drive の `マイドライブ/h3-runner/output/orbis01.mp4`。重みは Drive に置かない。`/content/hf-cache/MiniMax-H3` に、T2VA 用の `transformer/` を使ったあと消し、それから `transformer_ref/` を落とす。`FL2VA/` と `Ref2VA/` は落とさない。Hugging Face の tree API で測った必要分は text_encoder 66.7GB + transformer 66.3GB + vae 10.4GB + audio_vae 0.6GB で、未完了シャード 1 本（最大 5.1GB）を足すと最初の段は約 149GB。ローカルの空きがそれ未満なら、計画のセルが理由を出して止まる。
+ノート: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-still-to-video-7cb8/h3-runner/minimax_h3_still.ipynb
 
-所要時間の公式実測は、A100 1枚にも RTX PRO 6000 1枚にも無い。重みは T2VA 用と Ref2VA 用で transformer が各 61.7GiB（ファイルサイズは API で 66.3GB）、テキストエンコーダが 62.1GiB（ファイル 66.7GB）。同時には置かず、ローカルの `/content/hf-cache` に片方ずつ落とす。初回はこのダウンロードが大半になる。生成は 50 step × 2本で、offload がステップごとに重みを出し入れする。SGLang が 4×H200・5秒・50 step・offload なしで出している 75秒より長くなる。1本が数分で終わる前提にはしない。2回目以降、残っているファイルは落とさない。
+Drive は **fireworker06@gmail.com** でマウントする。重みは `マイドライブ/h3-weights/MiniMax-H3`。完成 mp4 は `マイドライブ/h3-runner/output/orbis01.mp4`。
+
+[MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分のアカウントで開く。401 のときだけ Colab のシークレット `HF_TOKEN` を入れる。ノートは値を表示しない。
+
+Hugging Face の tree API で、T2VA と Ref2VA を両方置いた合計は **210.3GB**（text_encoder 66.73 + transformer 66.28 + transformer_ref 66.28 + vae 10.42 + audio_vae 0.61 + tokenizer/processor）。ダウンロード中は未完了シャード最大 5.1GB が足されて約 215.4GB。`FL2VA/` と `Ref2VA/`（各 144.1GB）は落とさない。空きが足りなければ準備セルが不足分を出して止まる。ゴミ箱を空にするか、大きなファイルを移してからやり直す。G4 では落とさない。
+
+### A. CPU ランタイム（GPU なし）
+
+1. ランタイムのタイプを **CPU** にする。
+2. 「A. Drive」セル。空き容量が出る。
+3. 「A. リポジトリ」セル。パスは `/content/Research/h3-runner/run_h3.py`。
+4. 「A. パッケージ」セル。`huggingface_hub` だけ。
+5. 「A. 重み準備」セル。無ければ Drive に一度落とす。揃っていれば落とさない。
+
+### B. G4（RTX PRO 6000）
+
+1. ランタイムのタイプを **G4 GPU** にする。CPU とは別の VM なので、Drive とリポジトリはここでも取る。
+2. 「B. 準備」セル。Drive、`torchao==0.18.0`（Colab の torch は置き換えない）、リポジトリ。
+3. 「B. 生成」セルだけが生成する。最初から結合までこの1セル。Drive から直接読み、ダウンロードしない。`orbis01_6s.mp4` が Drive にあれば T2VA をスキップして Ref2VA から続ける。
+
+切れたときは B の2セルを上からやり直す。6秒が保存済みならそこは走らない。
+
+所要時間の公式実測は、この GPU には無い。生成は 50 step × 最大2本で、offload がステップごとに重みを出し入れする。SGLang が 4×H200・5秒・50 step・offload なしで出している 75秒より長くなる。1本が数分で終わる前提にはしない。重みの初回ダウンロードは CPU 側で、G4 の時間には入れない。
+
+生成は Drive のスナップショットを直接読む。CPU と G4 は別 VM なので、G4 のローカルディスクへ先に置いておくことはできない。G4 上でローカルへコピーしてから読むと、Drive からの読みに書き込みと再読みが足される。読み込み後の offload はホスト RAM（G4 実測 176.9GB。bf16 の公式目安は約 140GB）に置く。
 
 ## コマンド
 
-ノートと同じ2本:
+重みの準備（CPU。GPU 不要）:
 
 ```bash
-python h3-runner/run_h3.py --preset orbis01 --out-dir /content/drive/MyDrive/h3-runner/output --seed 0
+python h3-runner/run_h3.py --preset orbis01 \
+  --cache-dir /content/drive/MyDrive/h3-weights \
+  --out-dir /content/drive/MyDrive/h3-runner/output \
+  --prepare-weights --vram-gb 95 --host-ram-gb 176.9
+```
+
+生成（ダウンロードしない）:
+
+```bash
+python h3-runner/run_h3.py --preset orbis01 \
+  --cache-dir /content/drive/MyDrive/h3-weights \
+  --out-dir /content/drive/MyDrive/h3-runner/output --seed 0
 ```
 
 同じ入口で1本だけ。秒数は 4〜15。4秒と、切り上げが 15秒を超える 15秒は diffusers が拒否する。縦横比の既定は 9:16。`--width` と `--height` は 32 の倍数で両方指定する。

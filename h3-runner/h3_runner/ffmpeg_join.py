@@ -8,8 +8,57 @@ cuts each clip back to the seconds the prompt was written for, then scales to
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
+
+# A finished H3 clip is many megabytes. Smaller than this is not a resume point.
+MIN_CLIP_BYTES = 1_000_000
+
+
+def probe_text_is_done(text: str, min_seconds: float | None) -> bool:
+    if "codec_type=video" not in text:
+        return False
+    if min_seconds is None:
+        return True
+    duration = None
+    for line in text.splitlines():
+        if line.startswith("duration="):
+            try:
+                duration = float(line.split("=", 1)[1])
+            except ValueError:
+                return False
+    if duration is None:
+        return False
+    return duration + 0.05 >= min_seconds
+
+
+def clip_is_done(path: Path, *, min_seconds: float | None = None) -> bool:
+    """True when Drive already has a clip worth resuming from."""
+    if not path.is_file() or path.stat().st_size < MIN_CLIP_BYTES:
+        return False
+    probe = shutil.which("ffprobe")
+    if probe is None:
+        return True
+    try:
+        text = subprocess.check_output(
+            [
+                probe,
+                "-v",
+                "error",
+                "-show_entries",
+                "format=duration:stream=codec_type",
+                "-of",
+                "default=nw=1",
+                str(path),
+            ],
+            text=True,
+            stderr=subprocess.STDOUT,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return probe_text_is_done(text, min_seconds)
 
 
 def join_command(

@@ -5,6 +5,9 @@
 #
 # torchao is not in that requirements file. It is imported by the official int8
 # offload snippet in the diffusers MiniMax-H3 memory section.
+# Colab's preinstalled torchao can fail with
+# `cannot import name 'FqnToConfig' from torchao.quantization`.
+# torch 2.11.0+cu128 with torchao 0.18.0 imports. Do not replace Colab's torch.
 
 torch>=2.4.0
 diffusers @ git+https://github.com/huggingface/diffusers.git@5ff8e59ff9fe81c6e2df4fb4c6ea0d97a5df5ab2
@@ -18,4 +21,4 @@ soundfile>=0.12.0
 imageio>=2.34.0
 imageio-ffmpeg>=0.5.0
 av>=11.0.0
-torchao
+torchao==0.18.0

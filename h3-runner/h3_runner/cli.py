@@ -10,7 +10,7 @@ from pathlib import Path
 
 from h3_runner.official import DEFAULT_STEPS, README_MAX_DURATION_S, README_MIN_DURATION_S
 from h3_runner.planner import orbis01_plan, single_plan
-from h3_runner.weights import disk_preview, model_dir_name
+from h3_runner.weights import disk_preview, model_dir_name, prepare_all
 
 # diffusers and torch are imported inside the generate step. A dry run only
 # prints the official request plan and must not require a CUDA install.
@@ -93,8 +93,9 @@ def default_cache_root() -> Path:
     raw = os.environ.get("H3_HF_CACHE")
     if raw:
         return Path(raw)
-    if Path("/content").is_dir():
-        return Path("/content/hf-cache")
+    drive = Path("/content/drive/MyDrive/h3-weights")
+    if drive.parent.is_dir():
+        return drive
     return Path("hf-cache")
 
 
@@ -122,7 +123,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--vram-gb", type=float)
     parser.add_argument("--host-ram-gb", type=float)
-    parser.add_argument("--cache-dir", type=Path, help="local weight dir. Colab default is /content/hf-cache")
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        help="weight root. Colab uses /content/drive/MyDrive/h3-weights",
+    )
+    parser.add_argument(
+        "--prepare-weights",
+        action="store_true",
+        help="CPU-only. Download missing folders into --cache-dir and exit.",
+    )
     parser.add_argument("--split-t2va-prompt", type=Path)
     parser.add_argument("--split-ref2va-prompt", type=Path)
     parser.add_argument("--split-image", type=Path)
@@ -209,18 +219,23 @@ def main(argv: list[str] | None = None) -> int:
         print(str(exc), file=sys.stderr, flush=True)
         raise SystemExit(str(exc)) from exc
     print(plan.report(), flush=True)
-    if plan.blocked:
-        print(plan.blocked, file=sys.stderr, flush=True)
-        raise SystemExit(plan.blocked)
     cache = model_dir(args.cache_dir or default_cache_root())
-    preview = disk_preview(cache, [job.task for job in plan.jobs])
+    tasks = [job.task for job in plan.jobs]
+    preview = disk_preview(cache, tasks)
     print(preview.text, flush=True)
     if not preview.ok:
         print(preview.text, file=sys.stderr, flush=True)
         raise SystemExit(preview.text)
     if args.dry_run:
         return 0
-    # Optional CUDA stack. Dry-run and unit tests do not import it.
+    if args.prepare_weights:
+        prepare_all(cache, tasks)
+        return 0
+    if plan.blocked:
+        print(plan.blocked, file=sys.stderr, flush=True)
+        raise SystemExit(plan.blocked)
+    # Optional CUDA stack. Dry-run and weight prep do not import it.
+    # run_plan reads the snapshot and does not download.
     from h3_runner.generate import run_plan
 
     return run_plan(plan, cache)

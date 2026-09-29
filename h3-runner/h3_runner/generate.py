@@ -26,10 +26,10 @@ from torchao.quantization import Int8WeightOnlyConfig
 from transformers import Qwen3VLForConditionalGeneration
 from transformers import TorchAoConfig as TransformersTorchAoConfig
 
-from h3_runner.ffmpeg_join import join_clips
+from h3_runner.ffmpeg_join import clip_is_done, join_clips
 from h3_runner.official import FPS
 from h3_runner.planner import ClipJob, Plan
-from h3_runner.weights import prepare
+from h3_runner.weights import require_present
 
 _TRANSFORMER_SKIP = [
     "proj_in",
@@ -238,17 +238,36 @@ def generate_clip(job: ClipJob, *, offload: str, model_dir: Path) -> Path:
 def run_plan(plan: Plan, model_dir: Path) -> int:
     if plan.blocked:
         raise SystemExit(plan.blocked)
+    # Reads the Drive snapshot. Does not download.
+    require_present(model_dir, [job.task for job in plan.jobs])
     written: list[Path] = []
-    for job in plan.jobs:
-        # T2VA first. prepare() deletes transformer_ref/ or transformer/ before the next download.
-        local = prepare(model_dir, job.task)
-        written.append(generate_clip(job, offload=plan.offload, model_dir=local))
+    made_new = False
+    total = len(plan.jobs)
+    for index, job in enumerate(plan.jobs, start=1):
+        minimum = job.trim_s if job.trim_s is not None else job.requested_s
+        print(f"進捗 {index}/{total} {job.task} → {job.out_path}", flush=True)
+        if clip_is_done(job.out_path, min_seconds=minimum):
+            print(f"スキップ: {job.out_path} は Drive にある", flush=True)
+            written.append(job.out_path)
+            continue
+        print(f"生成開始 {index}/{total} {job.task}", flush=True)
+        written.append(generate_clip(job, offload=plan.offload, model_dir=model_dir))
+        made_new = True
+        print(
+            f"Drive に保存 {index}/{total}: {job.out_path} bytes {job.out_path.stat().st_size}",
+            flush=True,
+        )
     if plan.trim and len(plan.jobs) > 1:
+        delivery_min = sum(job.trim_s or 0 for job in plan.jobs)
+        if clip_is_done(plan.delivery_path, min_seconds=delivery_min) and not made_new:
+            print(f"スキップ: {plan.delivery_path} は Drive にある", flush=True)
+            return 0
         parts = []
         for job, path in zip(plan.jobs, written):
             if job.trim_s is None:
                 raise ValueError(f"{job.out_path.name} に trim 秒が無い")
             parts.append((path, job.trim_s))
+        print(f"進捗 結合 → {plan.delivery_path}", flush=True)
         join_clips(parts, plan.delivery_path)
-        print(f"joined {plan.delivery_path}", flush=True)
+        print(f"Drive に保存: {plan.delivery_path}", flush=True)
     return 0
