@@ -1811,10 +1811,12 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "straight down" in ride_sit["action"].lower()
     assert "hold still joined at the base" in ride_sit["action"].lower()
     assert "either side of miki's ribs" in ride_sit["action"].lower()
-    assert "one sole beside each side of the chest" in ride_sit["action"].lower()
-    assert "both knees stay bent" in ride_sit["action"].lower()
-    assert "hips stay over the groin" in ride_sit["action"].lower()
-    assert "weight stays on the soles" in ride_sit["action"].lower()
+    assert "legs drop straight down" in ride_sit["action"].lower()
+    assert "both knees bend" in ride_sit["action"].lower()
+    assert "both knees stay bent" not in ride_sit["action"].lower()
+    assert "already stands over" in ride_sit["action"].lower()
+    assert "hands land on miki's chest" in ride_sit["action"].lower()
+    assert "weight stays on both soles" in ride_sit["action"].lower()
     assert "stands up from that kneel" not in ride_sit["action"].lower()
     assert "folds down" not in ride_sit["action"].lower()
     assert "squats" not in ride_sit["action"].lower()
@@ -5218,9 +5220,16 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "slide down to the base" in oral["action"].lower()
         assert "already stands over" not in oral["action"].lower()
         waited = next(b for b in ride["beats"] if b["id"] == f"{base}-wait")
-        assert "both knees stay bent" in waited["action"].lower()
-        assert "hips stay over the groin" in waited["action"].lower()
-        assert "weight stays on the soles" in waited["action"].lower()
+        if base == "03-kiss":
+            assert "rises once from the kneel" in waited["action"].lower()
+            assert "legs drop straight down" in waited["action"].lower()
+            assert "near foot crosses in front of the belly" in waited["action"].lower()
+            assert "both knees stay bent" not in waited["action"].lower()
+            assert "weight stays on both soles" in waited["action"].lower()
+        else:
+            assert "both knees stay bent" in waited["action"].lower()
+            assert "hips stay over the groin" in waited["action"].lower()
+            assert "weight stays on the soles" in waited["action"].lower()
         assert f"either side of {partner.lower()}'s ribs" in waited["action"].lower()
         assert "DIRECTLY ABOVE" in waited["action"]
         assert "TRAVELS INTO" not in waited["action"]
@@ -5270,10 +5279,21 @@ def test_hospital_nongin_ride_seats_beside_the_ribs():
         assert "directly above the glans" in seat_prompt.lower()
         assert "straight down" in seat_prompt.lower()
         assert "hold still joined at the base" in seat_prompt.lower()
-        assert "one sole beside each side of the chest" in seat_prompt.lower()
-        assert "both knees stay bent" in seat_prompt.lower()
-        assert "hips stay over the groin" in seat_prompt.lower()
-        assert "weight stays on the soles" in seat_prompt.lower()
+        if base == "03-kiss":
+            assert "legs drop straight down" in seat_prompt.lower()
+            assert "both knees bend" in seat_prompt.lower()
+            assert "both knees stay bent" not in seat_prompt.lower()
+            assert "hands land on miki's chest" in low
+            assert "already stands over" in low
+            wait_prompt = build_beat_prompt(ride, waited, trigger=merge_trigger("", waited), camera_pack="side2d")
+            assert "legs drop straight down" in wait_prompt.lower()
+            assert "both knees stay bent" not in wait_prompt.lower()
+            assert "rises once from the kneel" in wait_prompt.lower()
+        else:
+            assert "one sole beside each side of the chest" in seat_prompt.lower()
+            assert "both knees stay bent" in seat_prompt.lower()
+            assert "hips stay over the groin" in seat_prompt.lower()
+            assert "weight stays on the soles" in seat_prompt.lower()
         assert "squats" not in low
         assert "sits beside" not in low
         assert "knees on the linoleum" not in low
