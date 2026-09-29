@@ -281,10 +281,20 @@ def one_shot_refusal(task: str, duration_s: float, aspect: str) -> str | None:
     return None
 
 
+def ref_canvas_note(vram_gb: float) -> str:
+    """Why 9s Ref2VA stays at short edge 352 even on a 96 GB card."""
+    return (
+        f"Ref2VA のキャンバスは据え置き（9秒・9:16 で短辺 352、352x640）。GPU は {vram_gb:.1f} GB。"
+        "公式が参照画像つきで通せたと書いているのは diffusers PR 14371 の 512x896・124フレームだけ。"
+        "9秒は 226 フレームで、そのトークン予算に入る縦の最大がこのサイズ。"
+        "VRAM が大きいときにキャンバスを広げる式は公式に無い。"
+    )
+
+
 def hardware_note(vram_gb: float) -> str:
     if vram_gb >= A100_80_VRAM_GB:
         return (
-            f"GPU {vram_gb:.1f} GB。80GB クラス。"
+            f"GPU {vram_gb:.1f} GB。80GB 以上。"
             "transformer 61.7GB とテキストエンコーダ 62.1GB は同時に載らないので offload は残す。"
         )
     return (
@@ -378,6 +388,7 @@ def orbis01_plan(
         "参照画像つき Ref2VA の既定キャンバスが 80GB で OOM し、通した比較は "
         "512x896・124フレーム（約5.2秒）だと書いている。15秒の列はその約2.8倍。"
     )
+    notes.append(ref_canvas_note(vram_gb))
     notes.append(
         "代わりに予備プロンプトを 2 本出す。T2VA 6秒（顔なし）と Ref2VA 9秒（サクラの静止画）。"
         "各本は 17*n+5 に切り上がる（6秒→158フレーム=6.583秒、9秒→226フレーム=9.417秒）。"

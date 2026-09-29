@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from h3_runner.cli import main  # noqa: E402
+from h3_runner.cli import main, resolve_vram_gb  # noqa: E402
 from h3_runner.ffmpeg_join import join_command  # noqa: E402
 from h3_runner.official import (  # noqa: E402
     align_num_frames,
@@ -21,6 +21,12 @@ from h3_runner.official import (  # noqa: E402
     resolve_canvas_size,
 )
 from h3_runner.planner import orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
+from h3_runner.weights import (  # noqa: E402
+    allow_patterns,
+    disk_preview,
+    folders_for,
+    snapshot_kwargs,
+)
 
 
 class OfficialMathTest(unittest.TestCase):
@@ -94,6 +100,14 @@ class PresetTest(unittest.TestCase):
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=80, host_ram_gb=160)
         self.assertEqual(plan.offload, "bf16")
 
+    def test_96gb_keeps_ref_canvas_and_uses_bf16(self) -> None:
+        plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=95.0, host_ram_gb=176.9)
+        self.assertIsNone(plan.blocked)
+        self.assertEqual(plan.offload, "bf16")
+        self.assertEqual(plan.jobs[1].short_edges[0], 352)
+        self.assertEqual((plan.jobs[1].width, plan.jobs[1].height), (352, 640))
+        self.assertIn("据え置き", "\n".join(plan.notes))
+
     def test_40gb_uses_the_official_int8_recipe(self) -> None:
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=39.5, host_ram_gb=83.5)
         self.assertIsNone(plan.blocked)
@@ -138,9 +152,26 @@ class PresetTest(unittest.TestCase):
 class CliTest(unittest.TestCase):
     def test_dry_run_preset(self) -> None:
         code = main(
-            ["--preset", "orbis01", "--out-dir", "/tmp/h3-out", "--dry-run", "--vram-gb", "80", "--host-ram-gb", "83"]
+            [
+                "--preset",
+                "orbis01",
+                "--out-dir",
+                "/tmp/h3-out",
+                "--dry-run",
+                "--vram-gb",
+                "95",
+                "--host-ram-gb",
+                "176.9",
+                "--cache-dir",
+                "/tmp/h3-cache",
+            ]
         )
         self.assertEqual(code, 0)
+
+    def test_unknown_flag_is_argparse_exit_2(self) -> None:
+        with self.assertRaises(SystemExit) as caught:
+            main(["--not-a-real-flag"])
+        self.assertEqual(caught.exception.code, 2)
 
     def test_four_seconds_is_refused(self) -> None:
         with self.assertRaises(SystemExit) as caught:
@@ -200,6 +231,39 @@ class FfmpegTest(unittest.TestCase):
         self.assertIn("scale=1080:1920", script)
         self.assertIn("[v0][a0][v1][a1]concat=n=2", script)
         self.assertIn("-ar 32000", script)
+
+
+class WeightsTest(unittest.TestCase):
+    def test_patterns_skip_the_comfy_trees_and_the_other_denoiser(self) -> None:
+        t2va = allow_patterns(folders_for("t2va"))
+        ref = allow_patterns(folders_for("ref2va"))
+        self.assertTrue(any(item.startswith("transformer/") for item in t2va))
+        self.assertFalse(any(item.startswith("transformer_ref/") for item in t2va))
+        self.assertTrue(any(item.startswith("transformer_ref/") for item in ref))
+        self.assertFalse(any("FL2VA" in item or "Ref2VA" in item for item in t2va + ref))
+        ignored = " ".join(snapshot_kwargs("ref2va")["ignore_patterns"])
+        self.assertIn("FL2VA/**", ignored)
+        self.assertIn("Ref2VA/**", ignored)
+
+    def test_tiny_torch_vram_is_not_a_real_card(self) -> None:
+        self.assertEqual(resolve_vram_gb(0.0, 95.0), 95.0)
+        self.assertIsNone(resolve_vram_gb(0.0, None))
+        self.assertEqual(resolve_vram_gb(95.0, 40.0), 95.0)
+
+    def test_sequential_download_fits_in_160gb_and_not_in_100gb(self) -> None:
+        tasks = ["t2va", "ref2va"]
+        self.assertTrue(
+            disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=160_000_000_000, sizes={}).ok
+        )
+        tight = disk_preview(Path("/tmp/h3-cache-missing"), tasks, free_bytes=100_000_000_000, sizes={})
+        self.assertFalse(tight.ok)
+        self.assertIn("止める", tight.text)
+
+    def test_loader_stays_on_the_local_snapshot(self) -> None:
+        text = (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8")
+        self.assertIn("local_files_only=True", text)
+        self.assertNotIn("from_pretrained(\n        MODEL_ID", text)
+        self.assertNotIn("from_pretrained(MODEL_ID", text)
 
 
 class SecretScanTest(unittest.TestCase):

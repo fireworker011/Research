@@ -25,7 +25,7 @@ LoRA は要らない。公式の推論スクリプトは CFG 蒸留済みの BF1
 | 前半 | T2VA | なし | 6.00秒 | 158（6.583秒） | 768×1344（短辺 768） |
 | 後半 | Ref2VA | サクラ静止画1枚 | 9.00秒 | 226（9.417秒） | 352×640（短辺 352） |
 
-9秒の画が小さいのは、上の「80GB で通った」トークン数に収めるため。ffmpeg が各クリップを 6.00秒と 9.00秒で切り、1080×1920 に伸ばして `orbis01.mp4`（15.00秒）にする。切る前の mp4 も同じフォルダに残る。
+9秒の画が小さいのは、上の「80GB で通った」トークン数に収めるため。95GB 級でも広げない。VRAM 比でキャンバスを上げる式は公式に無い。計画のセルがその理由を出す。ffmpeg が各クリップを 6.00秒と 9.00秒で切り、1080×1920 に伸ばして `orbis01.mp4`（15.00秒）にする。切る前の mp4 も同じフォルダに残る。
 
 `--force-one-shot` は 345 フレーム（14.375秒）を 288×512 で試す経路。ノートはこれを使わない。
 
@@ -33,12 +33,12 @@ LoRA は要らない。公式の推論スクリプトは CFG 蒸留済みの BF1
 
 1. Colab でノートを開く。  
    https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-still-to-video-7cb8/h3-runner/minimax_h3_still.ipynb
-2. ランタイムのタイプを **A100 GPU** にする。40GB（表示は 39.5GB 前後）でよい。公式の int8 + group offload は 24〜32GB のカード向けで、40GB はその上。ホスト RAM はハイメモリ（約 75GB 以上。83GB 前後で足りる）。140GB 以上あるマシンなら自動で BF16 offload になる。24GB 未満は止まる。
+2. ランタイムは GPU ならよい。A100 40GB（表示 39.5GB 前後）は公式の int8 + group offload（24〜32GB 向け）。RTX PRO 6000 Blackwell（表示 95GB、ホスト RAM 176GB 前後）はホスト RAM が約 140GB 以上なので BF16 offload。24GB 未満は止まる。
 3. [MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分の Hugging Face アカウントで開く。ダウンロードが 401 になるときは、Colab のシークレットに `HF_TOKEN` を入れる。ノートは値を表示しない。Git には書かない。
 4. ノートを上から順に実行する。プロンプトも静止画もノートがリポジトリから取る。
-5. 完成ファイルは Google Drive の `マイドライブ/h3-runner/output/orbis01.mp4`。
+5. 完成ファイルは Google Drive の `マイドライブ/h3-runner/output/orbis01.mp4`。重みは Drive に置かない。`/content/hf-cache/MiniMax-H3` に、T2VA 用の `transformer/` を使ったあと消し、それから `transformer_ref/` を落とす。`FL2VA/` と `Ref2VA/` は落とさない。Hugging Face の tree API で測った必要分は text_encoder 66.7GB + transformer 66.3GB + vae 10.4GB + audio_vae 0.6GB で、未完了シャード 1 本（最大 5.1GB）を足すと最初の段は約 149GB。ローカルの空きがそれ未満なら、計画のセルが理由を出して止まる。
 
-所要時間の公式実測は、A100 1枚には無い。重みは T2VA 用と Ref2VA 用で transformer が各 61.7GB、テキストエンコーダが 62.1GB。初回は Drive の `h3-runner/hf-cache` へこのダウンロードが大半になる。生成は 50 step × 2本で、offload がステップごとに重みを出し入れする。SGLang が 4×H200・5秒・50 step・offload なしで出している 75秒より長くなる。1本が数分で終わる前提にはしない。2回目以降はキャッシュを使うのでダウンロードは無い。
+所要時間の公式実測は、A100 1枚にも RTX PRO 6000 1枚にも無い。重みは T2VA 用と Ref2VA 用で transformer が各 61.7GiB（ファイルサイズは API で 66.3GB）、テキストエンコーダが 62.1GiB（ファイル 66.7GB）。同時には置かず、ローカルの `/content/hf-cache` に片方ずつ落とす。初回はこのダウンロードが大半になる。生成は 50 step × 2本で、offload がステップごとに重みを出し入れする。SGLang が 4×H200・5秒・50 step・offload なしで出している 75秒より長くなる。1本が数分で終わる前提にはしない。2回目以降、残っているファイルは落とさない。
 
 ## コマンド
 

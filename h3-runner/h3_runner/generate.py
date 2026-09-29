@@ -27,8 +27,9 @@ from transformers import Qwen3VLForConditionalGeneration
 from transformers import TorchAoConfig as TransformersTorchAoConfig
 
 from h3_runner.ffmpeg_join import join_clips
-from h3_runner.official import FPS, MODEL_ID
+from h3_runner.official import FPS
 from h3_runner.planner import ClipJob, Plan
+from h3_runner.weights import prepare
 
 _TRANSFORMER_SKIP = [
     "proj_in",
@@ -70,26 +71,33 @@ def _denoiser(pipe: ModularPipeline, task: str):
     raise ValueError(task)
 
 
-def _load_bf16(task: str) -> tuple[ModularPipeline, ComponentsManager]:
+def _load_bf16(task: str, model_dir: Path) -> tuple[ModularPipeline, ComponentsManager]:
+    # local_files_only plus the local directory: the index's hub id must not fetch FL2VA/ or Ref2VA/.
     manager = ComponentsManager()
     pipe = ModularPipeline.from_pretrained(
-        MODEL_ID,
+        str(model_dir),
         workflow=task,
         components_manager=manager,
+        local_files_only=True,
     )
-    pipe.load_components(dtype=torch.bfloat16)
+    pipe.load_components(
+        dtype=torch.bfloat16,
+        pretrained_model_name_or_path=str(model_dir),
+        local_files_only=True,
+    )
     manager.enable_auto_cpu_offload(device="cuda", memory_reserve_margin="12GB")
-    # _flash_3_hub is the Hopper kernel in the official docs. A100 is not Hopper.
+    # _flash_3_hub is the Hopper kernel in the official docs (compute capability 9).
+    # A100 is 8. Blackwell (RTX PRO 6000) is 10, so leave its default attention.
     major, _minor = torch.cuda.get_device_capability()
     denoiser = _denoiser(pipe, task)
-    if major >= 9 and hasattr(denoiser, "set_attention_backend"):
+    if major == 9 and hasattr(denoiser, "set_attention_backend"):
         denoiser.set_attention_backend("_flash_3_hub")
     return pipe, manager
 
 
-def _quantized_transformer(subfolder: str) -> MiniMaxH3Transformer3DModel:
+def _quantized_transformer(model_dir: Path, subfolder: str) -> MiniMaxH3Transformer3DModel:
     return MiniMaxH3Transformer3DModel.from_pretrained(
-        MODEL_ID,
+        str(model_dir),
         subfolder=subfolder,
         dtype=torch.bfloat16,
         quantization_config=TorchAoConfig(
@@ -97,33 +105,46 @@ def _quantized_transformer(subfolder: str) -> MiniMaxH3Transformer3DModel:
             modules_to_not_convert=list(_TRANSFORMER_SKIP),
         ),
         low_cpu_mem_usage=False,
+        local_files_only=True,
     )
 
 
-def _quantized_text_encoder() -> Qwen3VLForConditionalGeneration:
+def _quantized_text_encoder(model_dir: Path) -> Qwen3VLForConditionalGeneration:
     return Qwen3VLForConditionalGeneration.from_pretrained(
-        MODEL_ID,
+        str(model_dir),
         subfolder="text_encoder",
         dtype=torch.bfloat16,
         quantization_config=TransformersTorchAoConfig(
             Int8WeightOnlyConfig(version=2),
             modules_to_not_convert=list(_TEXT_SKIP),
         ),
+        local_files_only=True,
     )
 
 
-def _load_int8(task: str) -> tuple[ModularPipeline, None]:
+def _load_int8(task: str, model_dir: Path) -> tuple[ModularPipeline, None]:
     # Official snippet: build the pipeline, replace the two large modules, then
     # load_components(workflow=) so the other transformer partition stays unloaded.
-    pipe = ModularPipeline.from_pretrained(MODEL_ID)
-    text_encoder = _quantized_text_encoder()
+    pipe = ModularPipeline.from_pretrained(str(model_dir), local_files_only=True)
+    text_encoder = _quantized_text_encoder(model_dir)
     if task == "ref2va":
-        pipe.update_components(transformer_ref=_quantized_transformer("transformer_ref"), text_encoder=text_encoder)
+        pipe.update_components(
+            transformer_ref=_quantized_transformer(model_dir, "transformer_ref"),
+            text_encoder=text_encoder,
+        )
     elif task == "t2va":
-        pipe.update_components(transformer=_quantized_transformer("transformer"), text_encoder=text_encoder)
+        pipe.update_components(
+            transformer=_quantized_transformer(model_dir, "transformer"),
+            text_encoder=text_encoder,
+        )
     else:
         raise ValueError(task)
-    pipe.load_components(workflow=task, dtype=torch.bfloat16)
+    pipe.load_components(
+        workflow=task,
+        dtype=torch.bfloat16,
+        pretrained_model_name_or_path=str(model_dir),
+        local_files_only=True,
+    )
     denoiser = _denoiser(pipe, task)
     denoiser.requires_grad_(False)
     pipe.text_encoder.requires_grad_(False)
@@ -135,12 +156,12 @@ def _load_int8(task: str) -> tuple[ModularPipeline, None]:
     return pipe, None
 
 
-def load_pipeline(task: str, offload: str) -> ModularPipeline:
+def load_pipeline(task: str, offload: str, model_dir: Path) -> ModularPipeline:
     if offload == "bf16":
-        pipe, _manager = _load_bf16(task)
+        pipe, _manager = _load_bf16(task, model_dir)
         return pipe
     if offload == "int8":
-        pipe, _manager = _load_int8(task)
+        pipe, _manager = _load_int8(task, model_dir)
         return pipe
     raise ValueError(offload)
 
@@ -170,7 +191,7 @@ def _call_pipe(
     return pipe(**kwargs)
 
 
-def generate_clip(job: ClipJob, *, offload: str) -> Path:
+def generate_clip(job: ClipJob, *, offload: str, model_dir: Path) -> Path:
     job.out_path.parent.mkdir(parents=True, exist_ok=True)
     last_error: BaseException | None = None
     for height, width, edge in job.canvases():
@@ -178,7 +199,7 @@ def generate_clip(job: ClipJob, *, offload: str) -> Path:
         results = None
         try:
             print(f"load {job.task} offload={offload} canvas={width}x{height} frames={job.num_frames}", flush=True)
-            pipe = load_pipeline(job.task, offload)
+            pipe = load_pipeline(job.task, offload, model_dir)
             image_uri = None
             if job.image_path is not None:
                 image_uri = job.image_path.resolve().as_uri()
@@ -214,12 +235,14 @@ def generate_clip(job: ClipJob, *, offload: str) -> Path:
     raise RuntimeError(f"OOM が続き、{job.out_path.name} は出なかった") from last_error
 
 
-def run_plan(plan: Plan) -> int:
+def run_plan(plan: Plan, model_dir: Path) -> int:
     if plan.blocked:
         raise SystemExit(plan.blocked)
     written: list[Path] = []
     for job in plan.jobs:
-        written.append(generate_clip(job, offload=plan.offload))
+        # T2VA first. prepare() deletes transformer_ref/ or transformer/ before the next download.
+        local = prepare(model_dir, job.task)
+        written.append(generate_clip(job, offload=plan.offload, model_dir=local))
     if plan.trim and len(plan.jobs) > 1:
         parts = []
         for job, path in zip(plan.jobs, written):
