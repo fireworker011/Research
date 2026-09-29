@@ -587,8 +587,9 @@ KISS_FRAME_HOLD = (
 )
 # Facial looks up at the lens. The partner's face stays out of this hold.
 FACIAL_LENS_HOLD = (
-    "Aya looks up toward the lens. Aya's face stays fully inside the frame, from the hair to the chin. "
-    "The erect shaft aims at that face from the lower edge. "
+    "The camera holds this one frame from the first frame to the last. The same door stays behind Aya. "
+    "Aya looks up toward the lens. Aya's face stays in the same place, fully inside the frame, from the hair to the chin. "
+    "The erect shaft stays at the lower edge aimed at that face. "
     "The frame holds Aya's face and the shaft. The adults stay the same size."
 )
 # Non-gin kisses keep both faces inside without a face-filling frame.

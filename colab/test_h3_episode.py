@@ -2033,6 +2033,8 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert extra_lora_entries(kissb) == [("kiss", 0.5)]
     facial_prompt = build_beat_prompt(m_open, facial)
     kiss_prompt = build_beat_prompt(m_open, kissb)
+    assert facial.get("connect") == "cut" and beat_source(facial) == "t2v"
+    assert "the camera holds this one frame" in facial["action"].lower()
     assert "looks up toward the lens" in facial_prompt.lower()
     assert "white rope" in facial_prompt.lower()
     assert "kana's whole face stays inside the frame" not in facial_prompt.lower()
@@ -3220,7 +3222,12 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             cast = {str(c) for c in (beat.get("cast") or [])}
             added = cast - prev
             if beat_source(beat) == "t2v" and not first and not added:
-                raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
+                facial_cut = (
+                    str(beat.get("id") or "") == "09-kana-facial"
+                    and str(beat.get("connect") or "") == "cut"
+                )
+                if not facial_cut:
+                    raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
             spot = str(beat.get("id") or "").endswith("-spot")
             if beat_source(beat) == "chain" and (first or (added and not spot)):
                 raise AssertionError(f"chain on a new body {beat['id']} {kw}")
@@ -5116,6 +5123,8 @@ def test_hospital_dog_orientation_and_embrace_lift():
     assert "buttocks" not in seated["action"].lower()
     assert seated.get("turbo") is False
     assert "one clear erect 24cm" in seated["action"].lower()
+    assert "MOVE FORWARD once" in seated["action"]
+    assert "the glans meets the pussy" in seated["action"].lower()
     rear = prepare_episode(raw, dog_override="invite_rear")
     mount = next(b for b in rear["beats"] if b["id"] == "04-dog-mount")
     assert "thrust" not in extra_keys(mount)
@@ -5582,7 +5591,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "full-body side view" in lick_peak["action"]
     assert "licks the hairless pussy" in lick["action"]
     dog_wait = next(b for b in oral["beats"] if b["id"] == "04-dog-wait")
-    assert dog_wait.get("connect") == "cut" and beat_source(dog_wait) == "t2v"
+    assert dog_wait.get("connect") == "chain" and beat_source(dog_wait) == "chain"
     dog_cum = next(b for b in oral["beats"] if b["id"] == "04-dog-cum")
     assert "OVERFLOWS" in dog_cum["action"]
     walk = next(b for b in oral["beats"] if b["id"] == "04-dog-walk")

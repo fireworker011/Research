@@ -58,7 +58,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 角・騎乗の `04-tsuno-wait` と `04-tsuno-walk` は connect chain。跪きの最終を跨ぎの首にしない
 - 騎乗枝の歩き `04-gin-walk` `03-kiss-walk` `06-doggy-walk` `09-join-walk` `12-exit-walk` も connect chain。抜くのはこの歩きの 0–3 秒だけ。しのの `12-exit-walk` は `12-exit-kiss` のあと。drop と kiss が既にあるので、結末はもう一組足さない。peak と drop のあいだに歩きを置くと、次の拍でしのが戻り遭遇スポットが足される
 - 角・個室の stall と stall-kiss と walk は connect cut のまま。チェーンを選んでも T2V。通路の最終フレームを個室の首にしない。個室のキスはドア正面の続きにしない
-- 犬の wait は connect cut のまま。和式ミキは全拍 connect chain。排出の和式に gape は無い
+- 犬の wait は connect chain。和式ミキは全拍 connect chain。排出の和式に gape は無い
 
 遭遇を足す関数は `insert_presence_beats`。spot は最初から `source: chain` `connect: chain` で作る。`keep_chain_cast` は `-spot` の新人を T2V に戻さない。遭遇を消さず、遭遇自体を chain のままにする。遭遇カットでは前のカットの余分な人を残さない。
 
@@ -213,7 +213,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## かなの顔射のあと
 
-`cast.aya.looks.white_upper` の追加文は `thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest`。`09-kana-facial` の 0 秒 Look には goo を書かない。着地は action。最終は顔と胸。`09-kana-kiss` `09-join*` `10-shino*` `12-exit*` のあや Look にその文が残る。顔射を通らない話は基本 lock のまま。semen / cum / 精液 は書かない。顔射は既存 id のまま。あやはレンズを見上げる。かなの 20cm から WHITE rope が顔と胸へ落ちて留まる。Aya says 「いっちゃった」。声も `いっちゃった` の1句。sfx は肌に当たる音。キスの music は継がない。かなの顔は画面に出さない。extra は cmst 0.65 + penis 0.45 + jpnmoans 0.55。sideride / thrust / Turbo は積まない。8–12 秒、1 工程。`09-join-peak` は中出しのまま。顔射に置き換えない。
+`cast.aya.looks.white_upper` の追加文は `thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest`。`09-kana-facial` の 0 秒 Look には goo を書かない。着地は action。最終は顔と胸。`09-kana-kiss` `09-join*` `10-shino*` `12-exit*` のあや Look にその文が残る。顔射を通らない話は基本 lock のまま。semen / cum / 精液 は書かない。顔射は既存 id のまま。connect は cut。前の横画面から正面へ飛ばさない。0 秒からその正面を保持する。同じドアがあやの後ろに残る。あやはレンズを見上げる。かなの 20cm は下端から顔へ向く。WHITE rope が顔と胸へ落ちて留まる。Aya says 「いっちゃった」。声も `いっちゃった` の1句。sfx は肌に当たる音。キスの music は継がない。かなの顔は画面に出さない。extra は cmst 0.65 + penis 0.45 + jpnmoans 0.55。sideride / thrust / Turbo は積まない。8–12 秒、1 工程。`09-join-peak` は中出しのまま。顔射に置き換えない。
 
 ## かなの着座（`09-join-ride`）
 
@@ -260,7 +260,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 回避: あやは左へ走る。四つ足は右に残る。spot の向きは他の枝と同じ
 - 受け入れる: spot の camera と action だけ同じ向き。あやは右の壁。手は壁。足は床。後脚立ち。24cm がマンコへ。後脚立ちの accept / cum / walk 本文は変えない
 - 誘う伏せ: その場で仰向け、舌。wait は胸と頬が床、膝を畳む。犬は同じ向きで背中に覆う。着座は根元まで HOLD。着座に thrust は積まない
-- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。wait は connect cut。`04-dog-lick` と `04-dog-lick-peak` は connect chain。invite から cum まで chain。walk の end はそのまま。lick のカメラはマンコと顔。lick-peak の最終は全身の横。向き文と舐め動詞は変えない。`04-dog-jupo` と `04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が1本、口へ、犬の頭は RIGHT。mouth は唇が根元。`04-dog-in` はあやが仰向け、後頭部と肩は床、頭 LEFT、足 RIGHT。腹の 24cm が1本、マンコの根元まで。犬の腰は股間に合う。尻に当てる文は書かない。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。WHITE goo は結合から溢れる。根元は抜かない。挿入なので Turbo は切る。受け入れる後脚立ちの accept / cum / walk 本文は変えない。着座は平らな床。段差なし。着座に thrust は積まない
+- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。wait は connect chain。`04-dog-lick` と `04-dog-lick-peak` は connect chain。invite から cum まで chain。walk の end はそのまま。lick のカメラはマンコと顔。lick-peak の最終は全身の横。向き文と舐め動詞は変えない。`04-dog-jupo` と `04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が1本、口へ、犬の頭は RIGHT。mouth は唇が根元。`04-dog-in` はあやが仰向け、後頭部と肩は床、頭 LEFT、足 RIGHT。四つ足はすでに股の上、頭 LEFT、尾 RIGHT、四本の足は床に着いたまま。腹の 24cm は亀頭がマンコへ向く。腰が一度前へ出て、亀頭がマンコに付き、根元まで入る。HOLD。カメラは同じドアを保持する。尻に当てる文は書かない。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。WHITE goo は結合から溢れる。根元は抜かない。挿入なので Turbo は切る。受け入れる後脚立ちの accept / cum / walk 本文は変えない。着座は平らな床。段差なし。着座に thrust は積まない
 
 ## 異種
 
