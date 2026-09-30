@@ -5527,10 +5527,19 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     ]
     assert "04-tsuno-meet" not in ids
     oral = next(b for b in ride["beats"] if b["id"] == "04-tsuno-oral")
+    assert extra_lora_entries(oral)[:3] == [("blowjob", 0.8), ("mystic", 0.5), ("penis", 0.45)]
+    assert oral.get("trigger") == "bl0w_j0b"
+    oral_prompt = build_beat_prompt(ride, oral, trigger=merge_trigger("", oral))
+    assert "bl0w_j0b" in oral_prompt
     assert "deep knee bend" in oral["action"].lower()
     assert "on her back" not in oral["action"].lower()
     assert "STANDS" not in oral["action"]
-    assert "STANDS" not in build_beat_prompt(ride, oral)
+    assert "STANDS" not in oral_prompt
+    jacko_bed = prepare_episode(raw, tsuno_override="角・寝室アナル", connect_override="chain")
+    jacko_oral = next(b for b in jacko_bed["beats"] if b["id"] == "04-tsuno-oral")
+    assert extra_lora_entries(jacko_oral) == extra_lora_entries(oral)
+    assert jacko_oral.get("trigger") == "bl0w_j0b"
+    assert jacko_oral.get("connect") == "chain"
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
     assert extra_lora_entries(wait)[0] == ("cumshot", 1.0)
