@@ -602,14 +602,20 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
     "invite_ride": {
         "label_ja": "騎乗",
         "choice_ja": "角・騎乗",
-        "when_ja": "新話。べロチュー、口、跨ぎ、両膝を曲げたまま着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
-        "hint_ja": "角が仰向け。あやは両膝を曲げたまま跨ぐ。角の手があやの胸。立ちバックの meet は使わない",
+        "when_ja": "廃病室。座り、キス、しゃがみ口、顔射、横になって一度入れて HOLD、円腰の中出し、キス、入り口のあや一人",
+        "hint_ja": "角はベッドの縁に座る。個室へ行かない。終わりはあや一人",
     },
     "invite_ride_column": {
         "label_ja": "騎乗・細い柱",
         "choice_ja": "角・騎乗・細い柱",
-        "when_ja": "新話。べロチュー、口、細い柱で跨ぎ、膝を曲げて着座、絶頂、結合のままキス。終わりはあや一人。トイレは別",
-        "hint_ja": "角が仰向け。あやは一度まっすぐ立ってから膝を曲げ、手を角の胸へ置いて下ろす",
+        "when_ja": "寝室の角・騎乗と同じ並び。細い柱の足はもう使わない",
+        "hint_ja": "角・騎乗と同じ寝室の並び",
+    },
+    "invite_jacko": {
+        "label_ja": "寝室アナル",
+        "choice_ja": "角・寝室アナル",
+        "when_ja": "顔射のあと別枝。寝室のまま後ろから肛門。個室へ行かない。終わりはあや一人",
+        "hint_ja": "病室のベッド。胸と頬がマット。一度入れて根元。中出し、開き、口、歩き",
     },
     "wash_carry": {
         "label_ja": "個室",
@@ -626,6 +632,7 @@ TSUNO_OVERLAY_KEYS: dict[str, str] = {
     "nelson": "on_tsuno_nelson",
     "invite_ride": "on_tsuno_invite_ride",
     "invite_ride_column": "on_tsuno_invite_ride",
+    "invite_jacko": "on_tsuno_invite_jacko",
     "wash_carry": "on_tsuno_wash_carry",
 }
 
@@ -648,6 +655,8 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
         "角・騎乗": "invite_ride",
         "騎乗": "invite_ride",
         "角・騎乗・細い柱": "invite_ride_column",
+        "角・寝室アナル": "invite_jacko",
+        "寝室アナル": "invite_jacko",
         "角・個室": "wash_carry",
         "個室": "wash_carry",
         "個室アナル": "wash_carry",

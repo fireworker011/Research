@@ -1938,8 +1938,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             "mystic"
           ],
@@ -1958,10 +1958,10 @@
               "隠"
             ]
           },
-          "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
+          "sfx": "Footsteps on tile, a sit on the vine bowl, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the western bowl in an M-shape, full body including feet. Only the western bowl, the tiles, and Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the western toilet bowl facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT view. Tight on this one toilet stall. The bowl is a wide wet mass of green vines and broad leaves. Aya walks in, turns to face the camera, and sits on that bowl, full body including feet. The camera stays in front the whole take.",
+          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the wide wet vine bowl facing the camera. Knees come up and out, soles toward the camera, hairless pussy toward the camera. Aya STAYS SEATED by the last frame. Last frame: Aya seated facing the camera on the vine bowl. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -1969,6 +1969,66 @@
             }
           ],
           "loco": "walk"
+        },
+        {
+          "id": "04-toilet-fill",
+          "source": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "tentacles3d",
+              0.45
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Wet vines, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya already sits on the vine bowl, facing the camera, full body including both feet. Green vines close around both wrists and both ankles. The camera stays in front the whole take.",
+          "action": "Aya already sits on this same vine bowl, fully nude, facing the camera. Green vines CLOSE around both wrists and both ankles and HOLD there. Aya STAYS SEATED. Last frame: Aya seated, vines closed around both wrists and both ankles. Both feet in frame. They stay inside this same stall.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あんっ"
+            },
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "loco": "planted",
+          "connect": "t2v",
+          "trigger": "",
+          "turbo": false
         },
         {
           "id": "04-toilet",
@@ -1984,8 +2044,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a wide wet mass of green vines and broad leaves. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "tentacles3d",
@@ -2017,8 +2077,8 @@
           },
           "sfx": "Wet suckers, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya already sits on the western bowl, facing the camera, both knees open, full body including both feet. Four thick wet tentacles already hold her. One sucker mouth seals over the left nipple. One sucker mouth seals over the right nipple. One tentacle stays in the hairless pussy. One tentacle stays in the open mouth. The camera stays in front the whole take.",
-          "action": "Aya already sits on this same western bowl, fully nude, facing the camera, both knees open. Four thick wet tentacles already hold her. One sucker mouth seals over the left nipple. One sucker mouth seals over the right nipple. One tentacle TRAVELS INTO the hairless pussy to the root. One tentacle TRAVELS INTO the open mouth. HOLD still joined at those four places until the last frame. Aya says 「気持ちいい」. Last frame: four tentacles still on left nipple, right nipple, pussy, mouth. Both feet in frame.",
+          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya already sits on the vine bowl, facing the camera, both knees open, full body including both feet. From 0 to 3 seconds four thick wet tentacles take their places. The camera stays in front the whole take.",
+          "action": "Aya already sits on this same vine bowl, fully nude, facing the camera, both knees open, vines closed around both wrists and both ankles. From 0 to 3 seconds four thick wet tentacles take their places. One sucker mouth seals over the left nipple. One sucker mouth seals over the right nipple. One tentacle TRAVELS INTO the hairless pussy to the root. One tentacle TRAVELS INTO the open mouth. HOLD still joined at those four places until the last frame. Aya says 「気持ちいい」. Last frame: four tentacles still on left nipple, right nipple, pussy, mouth. Both feet in frame. They stay inside this same stall.",
           "voices": [
             {
               "who": "aya",
@@ -2031,69 +2091,9 @@
           "turbo": false
         },
         {
-          "id": "04-toilet-fill",
-          "source": "t2v",
-          "still": "",
-          "trim": {
-            "start": 0,
-            "seconds": 10.0
-          },
-          "cast": [
-            "aya"
-          ],
-          "face_visible": false,
-          "camera_pack": "none",
-          "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one western toilet bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
-          "extra_loras": [
-            [
-              "tentacles3d",
-              0.45
-            ],
-            [
-              "mystic",
-              0.5
-            ]
-          ],
-          "hud": {
-            "mission": "出口に出る",
-            "mission_keyword": "出口",
-            "health": 0.9,
-            "money": "¥0",
-            "objective_bearing": 0,
-            "complete": false,
-            "hint": "次へ",
-            "stamina": 0.45,
-            "heat": 3,
-            "objective_distance": 0.5,
-            "icons_active": [
-              "隠"
-            ]
-          },
-          "sfx": "Wet suckers, a thick liquid fill, fluorescent buzz, HVAC",
-          "music": "Bass holds",
-          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya already sits on the western bowl, facing the camera, both knees open, full body including both feet. Four thick wet tentacles already hold her. One sucker mouth seals over the left nipple. One sucker mouth seals over the right nipple. One tentacle stays in the hairless pussy. One tentacle stays in the open mouth. The camera stays in front the whole take.",
-          "action": "Aya already sits on this same western bowl, fully nude, facing the camera, both knees open. Four thick wet tentacles already hold her. One sucker mouth stays sealed over the left nipple. One sucker mouth stays sealed over the right nipple. One tentacle stays in the hairless pussy to the root. One tentacle stays in the open mouth. The tentacles PUMP extra-viscous dirty liquid INTO the pussy and INTO the mouth, a thick fill that stays in. HOLD still joined at those four places until the last frame. Last frame: four tentacles still on left nipple, right nipple, pussy, mouth, dirty liquid filling the pussy and the mouth. Both feet in frame.",
-          "voices": [
-            {
-              "who": "aya",
-              "line": "あんっ"
-            },
-            {
-              "who": "aya",
-              "line": "はぁっ"
-            }
-          ],
-          "loco": "planted",
-          "connect": "t2v",
-          "trigger": "",
-          "turbo": false
-        },
-        {
           "id": "04-toilet-out",
           "source": "t2v",
-          "connect": "end",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -2125,8 +2125,8 @@
           },
           "sfx": "A stand, footsteps on linoleum, HVAC",
           "music": "Bass holds",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS from the western bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. The tentacles are gone. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Aya standing up then walking RIGHT alone, full body including feet.",
+          "action": "The tentacles peel off Aya. Aya STANDS from the vine bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4136,9 +4136,109 @@
       },
       "on_tsuno_accept_stand": [
         {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-stand",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno rises from the mattress edge onto both soles.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno already SITS on the mattress edge facing the doorway, soles on the dark wood floor, right hand on the erect ashen-gray 24cm. Aya stands in front of the bed. Tsuno RISES from the mattress edge onto both soles. Last frame: Tsuno standing on the dark wood floor in front of the bed, facing the doorway, the erect ashen-gray 24cm at the groin. Aya standing in front of the bed. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
           "id": "04-tsuno-meet",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "stills/04-peek.jpg",
           "trim": {
             "start": 0,
@@ -4155,9 +4255,9 @@
           "props": [
             "rail"
           ],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a T-junction fork ahead with a LEFT corridor and a RIGHT corridor and a peeling wall dead ahead",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. A T-junction wall at the RIGHT edge. Aya stopped facing RIGHT, then palms on the wall at the RIGHT edge facing RIGHT. Tsuno behind her toward the LEFT, Tsuno's breasts pressed into Aya's back, both hands kneading Aya's breasts from behind. Full bodies including feet.",
-          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. Ahead is a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's mouth comes around from behind to Aya's mouth: a wet kiss. They do not turn to face each other. Tsuno PUSHES Aya FORWARD onto the peeling wall dead ahead at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED, knees slightly bent, standing, facing RIGHT. Tsuno STAYS BEHIND Aya toward the LEFT, facing RIGHT, hips pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya standing at the wall, palms planted, Tsuno behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. The iron bed stays in the middle of the sickroom. The sash window stays on the FAR wall. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's mouth comes around from behind to Aya's mouth: a wet kiss. They do not turn to face each other. Tsuno PUSHES Aya FORWARD onto the peeling wall dead ahead at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED, knees slightly bent, standing, facing RIGHT. Tsuno STAYS BEHIND Aya toward the LEFT, facing RIGHT, hips pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya standing at the wall, palms planted, Tsuno behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4235,7 +4335,8 @@
             "icons_active": []
           },
           "loco": "planted",
-          "connect": "t2v"
+          "connect": "cut",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-peak",
@@ -4301,7 +4402,8 @@
           },
           "loco": "planted",
           "connect": "t2v",
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA"
+          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-walk",
@@ -4348,9 +4450,109 @@
       ],
       "on_tsuno_invite_stand": [
         {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-stand",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno rises from the mattress edge onto both soles.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno already SITS on the mattress edge facing the doorway, soles on the dark wood floor, right hand on the erect ashen-gray 24cm. Aya stands in front of the bed. Tsuno RISES from the mattress edge onto both soles. Last frame: Tsuno standing on the dark wood floor in front of the bed, facing the doorway, the erect ashen-gray 24cm at the groin. Aya standing in front of the bed. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
           "id": "04-tsuno-meet",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "stills/04-peek.jpg",
           "trim": {
             "start": 0,
@@ -4367,9 +4569,9 @@
           "props": [
             "rail"
           ],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a T-junction fork ahead with a LEFT corridor and a RIGHT corridor and a peeling wall dead ahead",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. A T-junction wall at the RIGHT edge. Aya stopped facing RIGHT, then palms on the wall at the RIGHT edge facing RIGHT. Tsuno behind her toward the LEFT, Tsuno's breasts pressed into Aya's back, both hands kneading Aya's breasts from behind. Full bodies including feet.",
-          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. Ahead is a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's mouth comes around from behind to Aya's mouth: a wet kiss. They do not turn to face each other. Tsuno PUSHES Aya FORWARD onto the peeling wall dead ahead at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED, knees slightly bent, standing, facing RIGHT. Tsuno STAYS BEHIND Aya toward the LEFT, facing RIGHT, hips pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Aya's face is a lewd wet smiling ecstatic inviting face. Aya LOOKS BACK toward Tsuno, eager, palms planted. Last frame: Aya standing at the wall, palms planted, looking back, Tsuno behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. The iron bed stays in the middle of the sickroom. The sash window stays on the FAR wall. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's mouth comes around from behind to Aya's mouth: a wet kiss. They do not turn to face each other. Tsuno PUSHES Aya FORWARD onto the peeling wall dead ahead at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED, knees slightly bent, standing, facing RIGHT. Tsuno STAYS BEHIND Aya toward the LEFT, facing RIGHT, hips pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Aya's face is a lewd wet smiling ecstatic inviting face. Aya LOOKS BACK toward Tsuno, eager, palms planted. Last frame: Aya standing at the wall, palms planted, looking back, Tsuno behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4447,7 +4649,8 @@
             "icons_active": []
           },
           "loco": "planted",
-          "connect": "t2v"
+          "connect": "cut",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-peak",
@@ -4513,7 +4716,8 @@
           },
           "loco": "planted",
           "connect": "t2v",
-          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA"
+          "trigger": "This video depicts part of sexual intercourse climax, the female character performs powerful, intense thrusts with her penis inside her partner and cums inside of her\nPENISLORA",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-walk",
@@ -4560,9 +4764,109 @@
       ],
       "on_tsuno_anal_back": [
         {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-stand",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno rises from the mattress edge onto both soles.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno already SITS on the mattress edge facing the doorway, soles on the dark wood floor, right hand on the erect ashen-gray 24cm. Aya stands in front of the bed. Tsuno RISES from the mattress edge onto both soles. Last frame: Tsuno standing on the dark wood floor in front of the bed, facing the doorway, the erect ashen-gray 24cm at the groin. Aya standing in front of the bed. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
           "id": "04-tsuno-meet",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "stills/04-peek.jpg",
           "trim": {
             "start": 0,
@@ -4579,9 +4883,9 @@
           "props": [
             "rail"
           ],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a T-junction fork ahead with a LEFT corridor and a RIGHT corridor and a peeling wall dead ahead",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. A T-junction wall at the RIGHT edge. Tsuno behind Aya, Tsuno's breasts pressed into Aya's back, both hands kneading Aya's breasts from behind, then Aya's palms on the wall, Tsuno's hips pressed flush into Aya, both stopped.",
-          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. Ahead is a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's face stays at Aya's ear and neck. THEN Tsuno walks Aya FORWARD to the peeling wall at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED. Tsuno's hips stay pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya's palms on the wall, Tsuno pressed flush behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "They start already stopped. Aya faces RIGHT, fully nude. Tsuno is directly behind Aya toward the LEFT, facing RIGHT. The iron bed stays in the middle of the sickroom. The sash window stays on the FAR wall. THEN Tsuno embraces Aya from behind at snappy real-time, a passionate embrace, both facing RIGHT. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Aya's head, chest and hips stay facing RIGHT, chin over the breastbone. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. Tsuno's face stays at Aya's ear and neck. THEN Tsuno walks Aya FORWARD to the peeling wall at the RIGHT edge. Aya's PALMS HIT the wall and STAY PLANTED. Tsuno's hips stay pressed flush against Aya. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS on this same floor spot. Aya's face is surprise and pleasure together. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya's palms on the wall, Tsuno pressed flush behind her, both stopped, the shaft inside the anus. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4653,9 +4957,10 @@
             "icons_active": []
           },
           "loco": "planted",
-          "connect": "t2v",
+          "connect": "cut",
           "sfx": "A wet join, HVAC",
-          "music": "Bass holds"
+          "music": "Bass holds",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-peak",
@@ -4703,7 +5008,8 @@
           "loco": "planted",
           "connect": "t2v",
           "sfx": "Wet thrusts, HVAC",
-          "music": "Bass holds"
+          "music": "Bass holds",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-walk",
@@ -4750,9 +5056,109 @@
       ],
       "on_tsuno_nelson": [
         {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-stand",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno rises from the mattress edge onto both soles.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno already SITS on the mattress edge facing the doorway, soles on the dark wood floor, right hand on the erect ashen-gray 24cm. Aya stands in front of the bed. Tsuno RISES from the mattress edge onto both soles. Last frame: Tsuno standing on the dark wood floor in front of the bed, facing the doorway, the erect ashen-gray 24cm at the groin. Aya standing in front of the bed. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
           "id": "04-tsuno-meet",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "stills/04-peek.jpg",
           "trim": {
             "start": 0,
@@ -4769,9 +5175,9 @@
           "props": [
             "rail"
           ],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a T-junction fork ahead with a LEFT corridor and a RIGHT corridor and a peeling wall dead ahead",
-          "camera": "FRONT three-quarter. The camera HOLDS. Aya and Tsuno already stand still on this linoleum spot. Tsuno stays behind Aya. Tsuno's breasts pressed into Aya's back, both hands kneading Aya's breasts from behind. Both adults full body. Tsuno's feet stay on the linoleum. Aya's feet stay on the linoleum.",
-          "action": "They start already together on this same linoleum spot. Aya STANDS STILL, already stopped. THEN Tsuno wraps Aya from behind at snappy real-time, a passionate embrace, and STAYS behind Aya. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Tsuno's chest stays on Aya's back. Tsuno's face stays at Aya's ear and neck. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS. Aya's face is surprise and pleasure together. They HOLD still standing. Tsuno's feet stay on the same linoleum marks. Aya's feet stay on the same linoleum marks. They stay on this same floor spot. Both stay fully nude. Last frame: standing still, Tsuno behind Aya, both stopped, the shaft inside the anus. Brisk real-time. Consensual adult game beat",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT three-quarter. The camera HOLDS. Aya and Tsuno already stand still on this dark wood floor spot. Tsuno stays behind Aya. Tsuno's breasts pressed into Aya's back, both hands kneading Aya's breasts from behind. Both adults full body. Tsuno's feet stay on the dark wood floor. Aya's feet stay on the dark wood floor.",
+          "action": "They start already together on this same dark wood floor spot. Aya STANDS STILL, already stopped. THEN Tsuno wraps Aya from behind at snappy real-time, a passionate embrace, and STAYS behind Aya. Tsuno SNAPS her body against Aya's back. The moment of the embrace, Aya's face is a happy accepting smile. Nude ashen-gray Tsuno: a still-beautiful cracked adult face with two small dark horns at the hairline, slim feminine body, one large single eye in the center of the face, each hand exactly four long fingers with sharp claws, ashen gray skin that stays ashen gray, erect 24cm ashen-gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches on the shaft. Tsuno's chest stays on Aya's back. Tsuno's face stays at Aya's ear and neck. Tsuno's breasts PRESS FLUSH into Aya's back so Tsuno's breasts squash and change shape against the back. Tsuno's belly and hips PRESS against Aya. Tsuno's arms wrap around from behind. Both palms CUP Aya's breasts and KNEAD them from behind: fingers sink in, squeeze, and keep kneading so the breasts deform. While the hips stay pressed flush, the erect 24cm TRAVELS INTO Aya's anus, the shaft between the pressed bodies. The moment the shaft travels into the anus, Aya STOPS and Tsuno STOPS. Aya's face is surprise and pleasure together. They HOLD still standing. Tsuno's feet stay on the same dark wood floor marks. Aya's feet stay on the same dark wood floor marks. They stay on this same floor spot. Both stay fully nude. Last frame: standing still, Tsuno behind Aya, both stopped, the shaft inside the anus. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4814,8 +5220,8 @@
           "extra_loras": [
             "mystic"
           ],
-          "camera": "FRONT three-quarter. The camera HOLDS. Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same linoleum marks. The pair stays on this same floor spot. The shaft enters the anus from behind.",
-          "action": "Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya the whole take. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. The erect shaft comes from behind Aya into the anus. Aya and Tsuno already stand together, the erect 24cm ashen-gray shaft with wet peeling rotting patches on the shaft, the glans on the anus. Tsuno's chest stays on Aya's back. Tsuno's face stays at Aya's ear. Ashen gray skin that stays ashen gray, one large single eye, each hand exactly four long fingers. They start standing, Tsuno already behind Aya, the glans on the anus. Both forearms go under Aya's thighs and LIFT. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same linoleum marks. Tsuno's forearms hold both thighs from underneath. Knees open outward. Heels sit beside Tsuno's hips. Tsuno's forearms hold the thighs from underneath. Aya's torso comes up, face toward the camera, mouth open. The 24cm stays in the anus. Tsuno's hips THRUST FORWARD in short strokes so the shaft TRAVELS INTO the anus and stays inside. Aya's face is a wide blissful smile, eyes half-closed, cheeks flushed, drowning in pleasure, drool at the corner of the smiling mouth. Tsuno's face is lost in the same pleasure. Tsuno's hips moving. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya held up, both thighs in Tsuno's arms, shaft inside the anus. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT three-quarter. The camera HOLDS. Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same dark wood floor marks. The pair stays on this same floor spot. The shaft enters the anus from behind.",
+          "action": "Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya the whole take. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. The erect shaft comes from behind Aya into the anus. Aya and Tsuno already stand together, the erect 24cm ashen-gray shaft with wet peeling rotting patches on the shaft, the glans on the anus. Tsuno's chest stays on Aya's back. Tsuno's face stays at Aya's ear. Ashen gray skin that stays ashen gray, one large single eye, each hand exactly four long fingers. They start standing, Tsuno already behind Aya, the glans on the anus. Both forearms go under Aya's thighs and LIFT. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same dark wood floor marks. Tsuno's forearms hold both thighs from underneath. Knees open outward. Heels sit beside Tsuno's hips. Tsuno's forearms hold the thighs from underneath. Aya's torso comes up, face toward the camera, mouth open. The 24cm stays in the anus. Tsuno's hips THRUST FORWARD in short strokes so the shaft TRAVELS INTO the anus and stays inside. Aya's face is a wide blissful smile, eyes half-closed, cheeks flushed, drowning in pleasure, drool at the corner of the smiling mouth. Tsuno's face is lost in the same pleasure. Tsuno's hips moving. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Last frame: Aya held up, both thighs in Tsuno's arms, shaft inside the anus. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
@@ -4844,10 +5250,11 @@
             "icons_active": []
           },
           "loco": "planted",
-          "connect": "t2v",
+          "connect": "cut",
           "sfx": "A lift, wet thrusts, HVAC",
           "music": "Bass holds",
-          "camera_pack": "none"
+          "camera_pack": "none",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-peak",
@@ -4863,7 +5270,7 @@
           "extra_loras": [
             "mystic"
           ],
-          "camera": "FRONT three-quarter. The camera HOLDS. Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same linoleum marks. The pair stays on this same floor spot. The shaft enters the anus from behind.",
+          "camera": "FRONT three-quarter. The camera HOLDS. Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. Aya's feet stay in the air beside Tsuno's hips. Tsuno's feet stay on the same dark wood floor marks. The pair stays on this same floor spot. The shaft enters the anus from behind.",
           "action": "Aya is the woman facing the camera, her face and breasts in front. Tsuno stays behind Aya the whole take. Tsuno's face stays behind Aya's head. Tsuno's torso stays behind Aya's back. The erect shaft comes from behind Aya into the anus. Aya is held up, both thighs in Tsuno's forearms, knees open, heels beside Tsuno's hips, face toward the camera, mouth open. The erect 24cm ashen-gray shaft with wet peeling rotting patches on the shaft is already IN the anus. Tsuno's hips KEEP a short snappy in-and-out. Each THRUST FORWARD drives the 24cm INTO the anus. The tip stays inside the anus. Tsuno's forearms keep the same height. Aya's face is a wide blissful smile, eyes half-closed, cheeks flushed, drowning in pleasure, drool at the corner of the smiling mouth. Tsuno's face is lost in the same pleasure. Tsuno's hips moving. Tsuno finishes INSIDE the anus: hips press forward and stay; heavy-oil-thick WHITE goo fills the anus. Aya climaxes: wrecked pleasured orgasm face, body trembling with pleasure, drool dripping from the open mouth. They hold that join. They HOLD still joined at the BASE until the last frame. The shaft stays buried in the anus to the root. Aya's feet stay in the air beside Tsuno's hips. Tsuno's forearms keep both thighs up. Two small dark horns stay at the hairline. One large single eye stays in the center of the face. Ashen gray skin stays ashen gray. The shaft stays ashen gray, not pale-tan flesh. Both stay fully nude. Brisk real-time. Consensual adult game beat. They stay on this same floor spot.",
           "voices": [
             {
@@ -4896,7 +5303,8 @@
           "connect": "t2v",
           "sfx": "Wet thrusts, feet back on linoleum, HVAC",
           "music": "Bass holds",
-          "camera_pack": "none"
+          "camera_pack": "none",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude."
         },
         {
           "id": "04-tsuno-walk",
@@ -4945,7 +5353,7 @@
         {
           "id": "04-tsuno-meet-spot",
           "source": "t2v",
-          "connect": "chain",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -4956,11 +5364,17 @@
             "tsuno"
           ],
           "face_visible": false,
-          "extra_loras": [],
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, stiff knees, trailing foot sliding. Aya toward the RIGHT, facing RIGHT, then stopped on the RIGHT half. Tsuno stopped a short step behind toward the LEFT. The right edge stays a dark corridor continuing on.",
-          "action": "Aya WALKS toward the RIGHT, facing RIGHT, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Nude ashen-gray Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT. Each of Tsuno's knees stays stiff. Each step lands late. The trailing foot slides on the linoleum. Both arms hang and swing late. The head tips a little to one side. Tsuno KEEPS that short gap behind Aya. Aya SLOWS and STOPS. Last frame: Aya stopped on the RIGHT half, facing RIGHT, both feet on the linoleum. Tsuno stopped a short step behind toward the LEFT, facing RIGHT, stiff knees, trailing foot on the linoleum.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -4971,7 +5385,7 @@
               "line": "ん"
             }
           ],
-          "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -4986,13 +5400,12 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "walk",
-          "trigger": ""
+          "loco": "walk"
         },
         {
           "id": "04-tsuno-kiss",
-          "source": "t2v",
-          "connect": "t2v",
+          "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -5013,10 +5426,11 @@
               0.5
             ]
           ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in frame. Tsuno wraps Aya from behind, then Aya turns to face Tsuno. Mouths joined, a drool strand between the lips.",
-          "action": "They start already stopped on this same linoleum spot. Aya faces RIGHT. Tsuno stands a short step behind toward the LEFT, facing RIGHT. Tsuno WRAPS Aya from behind. Both palms CUP Aya's breasts and KNEAD them. Aya TURNS her whole body LEFT to FACE Tsuno. Aya's mouth MEETS Tsuno's mouth. A deep wet kiss, tongues licking into each other's mouths. A wet strand of drool hangs between the lips. Aya's face is a happy accepting smile. They HOLD the kiss. Last frame: face to face, mouths joined, a drool strand between the lips. Both faces stay in frame. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Tsuno stays seated on the mattress edge. Aya stands between Tsuno's open knees. Both faces stay in frame. Mouths joined, a drool strand between the lips. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge, knees open, soles on the dark wood floor. Aya stands between Tsuno's open knees. Aya's mouth MEETS Tsuno's mouth. Tongues lick into each other's mouths. A wet strand of drool hangs between the lips. They HOLD the kiss. Last frame: mouths joined, a drool strand between the lips, Tsuno still seated. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -5027,7 +5441,7 @@
               "line": "んっ"
             }
           ],
-          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5042,8 +5456,7 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "planted",
-          "trigger": ""
+          "loco": "planted"
         },
         {
           "id": "04-tsuno-oral",
@@ -5069,10 +5482,11 @@
               0.45
             ]
           ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno lies fully on her back, head RIGHT, feet LEFT. The erect ashen-gray 24cm stands vertically straight UP. Aya kneels toward the LEFT at the hips, mouth on the shaft.",
-          "action": "They start already on this same linoleum spot. Tsuno already lies fully on her back, the back of her head on the linoleum, shoulders on the linoleum, head RIGHT, feet LEFT. The erect ashen-gray 24cm stands vertically straight UP from the groin. Aya already kneels toward the LEFT at the hips, torso folded toward the shaft. Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Tsuno still on her back, the 24cm straight UP. Aya still kneels at the hips, mouth on the shaft. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Tsuno stays seated on the mattress edge. Aya is in a deep knee bend between Tsuno's open knees, mouth on the shaft. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge, knees open, soles on the dark wood floor. The erect ashen-gray 24cm stands up from the groin. Aya lowers into a deep knee bend between Tsuno's open knees. THEN Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Tsuno still seated, Aya still in that deep knee bend, mouth on the shaft. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -5083,7 +5497,7 @@
               "line": "はぁっ"
             }
           ],
-          "sfx": "A wet mouth, HVAC",
+          "sfx": "A wet mouth",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5098,13 +5512,68 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "planted",
-          "trigger": ""
+          "loco": "planted"
         },
         {
           "id": "04-tsuno-wait",
           "source": "chain",
           "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "cmst",
+              0.55
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "cmst",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "CLOSE on Aya's face and the glans. Tsuno stays seated. The glans stays in front of Aya's face. The bed and the window stay behind them.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge. Aya stays in a deep knee bend between Tsuno's open knees. The erect ashen-gray 24cm SLIDES OUT of Aya's mouth once. The glans stays in front of Aya's face. One thick WHITE rope shoots from the slit of the glans onto Aya's face and tongue. Last frame: the 24cm outside the mouth, the glans in front of Aya's face, WHITE rope on Aya's face and tongue, Tsuno still seated. Both faces stay in the frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "A wet rope from the slit onto the face",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-lie",
+          "source": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -5123,27 +5592,20 @@
             [
               "penis",
               0.45
-            ],
-            [
-              "synth",
-              0.4
             ]
           ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno lies on her back, head on the RIGHT, feet pointing LEFT. The erect ashen-gray 24cm stands straight UP. Aya faces Tsuno, head on the LEFT. Both soles plant on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs directly above the glans.",
-          "action": "They start already on this same linoleum spot. Tsuno already lies on her back, head RIGHT, feet LEFT, the back of the head on the linoleum, the erect ashen-gray 24cm standing straight UP. Aya faces Tsuno, head LEFT. Both of Aya's soles plant on the linoleum on either side of Tsuno's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. They HOLD that line. Last frame: same pose, unjoined. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress, faces toward the window. The shaft rests outside along Aya's thigh. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno lies on her side on the mattress, face toward the window. Aya lies on her side in front of Tsuno, her back toward Tsuno's chest, face toward the window. The erect ashen-gray 24cm rests outside along Aya's thigh. They stay unjoined. Last frame: both on their sides on the mattress, the shaft outside along the thigh. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
               "line": "ん"
-            },
-            {
-              "who": "tsuno",
-              "line": "ん"
             }
           ],
-          "sfx": "A breath, HVAC",
+          "sfx": "HVAC",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5158,17 +5620,16 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "planted",
-          "trigger": ""
+          "loco": "planted"
         },
         {
           "id": "04-tsuno-ride",
-          "source": "chain",
-          "connect": "chain",
+          "source": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 8.0
+            "seconds": 10.0
           },
           "cast": [
             "aya",
@@ -5177,22 +5638,19 @@
           "face_visible": false,
           "extra_loras": [
             [
-              "mystic",
-              0.5
+              "spoonlg",
+              1.0
             ],
             [
               "penis",
-              0.45
-            ],
-            [
-              "synth",
-              0.4
+              0.6
             ]
           ],
+          "trigger": "SPOONLG.",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno stays on her back, head on the RIGHT, feet pointing LEFT. Aya faces Tsuno, head on the LEFT. Both soles plant on the linoleum on either side of Tsuno's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Hips lower once until the hips meet flush.",
-          "action": "They start already on this same linoleum spot. Tsuno already lies on her back, head RIGHT, feet LEFT, the erect ashen-gray 24cm standing straight UP. Aya faces Tsuno, head LEFT. Both of Aya's soles plant on the linoleum on either side of Tsuno's ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The hairless pussy hangs DIRECTLY ABOVE the glans. Aya LOWERS her hips STRAIGHT DOWN once until the ashen-gray 24cm TRAVELS INTO the pussy to the root and the buttocks meet the hips. Tsuno's hands REST on Aya's breasts, one hand on each breast. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Tsuno's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: hips flush, the shaft buried to the root, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress. The shaft travels into the pussy once. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already on their sides on this same mattress in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno lies on her side behind Aya. Aya lies on her side in front of Tsuno, her back toward Tsuno's chest. The erect ashen-gray 24cm rests outside along Aya's thigh. The shaft TRAVELS INTO Aya's pussy to the root once. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, mouth open, thick saliva dripping. Tsuno's face is the same pleasure-drunk happy smile. Last frame: still on their sides, hips flush, the shaft buried to the root. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -5203,7 +5661,7 @@
               "line": "んっ"
             }
           ],
-          "sfx": "One wet join, HVAC",
+          "sfx": "One wet join",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5219,7 +5677,8 @@
             "icons_active": []
           },
           "loco": "planted",
-          "trigger": ""
+          "turbo": false,
+          "steps": 8
         },
         {
           "id": "04-tsuno-peak",
@@ -5237,37 +5696,30 @@
           "face_visible": false,
           "extra_loras": [
             [
-              "sideride",
-              0.8
+              "spoonlg",
+              1.0
             ],
             [
               "penis",
-              0.45
+              0.6
             ],
             [
-              "synth",
-              0.4
-            ],
-            [
-              "thrust",
+              "jpnmoans",
               0.55
             ]
           ],
+          "trigger": "SPOONLG.\njpnMoans",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Distance stays the same. Tsuno stays on her back, head on the RIGHT, feet pointing LEFT. Aya stays over the ribs, head on the LEFT. Both soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. Short vertical moves, then hips flush.",
-          "action": "They start already joined on this same linoleum spot. Tsuno stays on her back, head RIGHT, feet LEFT. Aya stays over the ribs facing Tsuno, head LEFT. Both of Aya's soles stay on the linoleum on either side of the ribs, one sole beside each side of the chest. Both knees stay bent. Hips stay over the groin. Weight stays on the soles. The erect ashen-gray 24cm stays buried to the root. Short vertical moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth, drowning in pleasure. Tsuno's face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. Last frame: still buried to the root, WHITE goo pooled at the join and running down, both soles beside the ribs, both knees bent. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Both adults stay on their sides, hips flush, the shaft buried. Hips trace one slow circle. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already joined on their sides on this same mattress. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. The erect ashen-gray 24cm stays buried to the root in Aya's pussy. Tsuno's hips trace one slow circle against Aya. Hips return flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya says 「あ、いく」. Last frame: still on their sides, still buried to the root, WHITE goo pooled at the join and running down. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
-              "line": "んおおっ"
-            },
-            {
-              "who": "tsuno",
-              "line": "くっ"
+              "line": "あ、いく"
             }
           ],
-          "sfx": "Wet hips, HVAC",
+          "sfx": "Wet hips",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5283,7 +5735,7 @@
             "icons_active": []
           },
           "loco": "planted",
-          "trigger": ""
+          "turbo": false
         },
         {
           "id": "04-tsuno-ride-kiss",
@@ -5305,10 +5757,11 @@
               0.5
             ]
           ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Both faces stay in frame. Hips stay flush. Mouths together, a drool strand between the lips.",
-          "action": "They start already joined on this same linoleum spot. Hips stay flush. The erect ashen-gray 24cm stays buried to the root. Aya LEANS her chest forward. Aya's mouth MEETS Tsuno's mouth. A wet strand of drool hangs between the lips. Aya's face is a narrowed smile. Last frame: mouths together, a drool strand between the lips, hips flush, the shaft buried to the root. Both faces stay in frame. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Both faces stay in frame. Hips stay flush. Mouths together, a drool strand between the lips.",
+          "action": "They start already joined on their sides on this same mattress. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Hips stay flush. The erect ashen-gray 24cm stays buried to the root. Aya turns her face back. Aya's mouth MEETS Tsuno's mouth. A wet strand of drool hangs between the lips. Last frame: mouths together, a drool strand between the lips, hips flush, the shaft buried to the root. Both faces stay in frame. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -5319,7 +5772,7 @@
               "line": "ん"
             }
           ],
-          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5334,13 +5787,12 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "planted",
-          "trigger": ""
+          "loco": "planted"
         },
         {
           "id": "04-tsuno-walk",
-          "source": "chain",
-          "connect": "chain",
+          "source": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -5356,17 +5808,18 @@
               0.5
             ]
           ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The last frames are only Aya walking RIGHT, full body including both feet.",
-          "action": "Strict timeline on this same linoleum spot. From 0 to 3 seconds they stay close, both smiling with a pleasure-drunk happy smile, mouths joined, tongues intertwine, thick saliva dripping from the open mouths, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 5 seconds Tsuno steps out of the frame to the RIGHT and is gone. From 5 to 8 seconds only Aya WALKS RIGHT along the corridor, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body. Brisk real-time. Consensual adult game beat",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. From 0 to 3 seconds both adults stay on the bed, mouths together. The last frames are only Aya at the doorway, full body including both feet.",
+          "action": "Strict timeline in this sickroom. From 0 to 3 seconds they stay on the bed, both smiling with a pleasure-drunk happy smile, mouths joined, tongues intertwine, thick saliva dripping from the open mouths, and the shaft pulls out of Aya's pussy. A saliva string stretches between the parting lips. From 3 to 8 seconds only Aya stands at the doorway, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the doorway. Last frame: only Aya at the doorway, fully nude, female body. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
               "line": "ん"
             }
           ],
-          "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+          "sfx": "a lip-contact kiss smack when the mouths meet, footsteps",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5381,15 +5834,14 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "walk",
-          "trigger": ""
+          "loco": "walk"
         }
       ],
       "on_tsuno_wash_carry": [
         {
           "id": "04-tsuno-meet-spot",
           "source": "t2v",
-          "connect": "chain",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -5400,11 +5852,17 @@
             "tsuno"
           ],
           "face_visible": false,
-          "extra_loras": [],
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, stiff knees, trailing foot sliding. Aya toward the RIGHT, facing RIGHT, then stopped on the RIGHT half. Tsuno stopped a short step behind toward the LEFT. The right edge stays a dark corridor continuing on.",
-          "action": "Aya WALKS toward the RIGHT, facing RIGHT, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. Nude ashen-gray Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT. Each of Tsuno's knees stays stiff. Each step lands late. The trailing foot slides on the linoleum. Both arms hang and swing late. The head tips a little to one side. Tsuno KEEPS that short gap behind Aya. Aya SLOWS and STOPS. Last frame: Aya stopped on the RIGHT half, facing RIGHT, both feet on the linoleum. Tsuno stopped a short step behind toward the LEFT, facing RIGHT, stiff knees, trailing foot on the linoleum.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -5415,7 +5873,7 @@
               "line": "ん"
             }
           ],
-          "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -5430,13 +5888,12 @@
             "objective_distance": 0.4,
             "icons_active": []
           },
-          "loco": "walk",
-          "trigger": ""
+          "loco": "walk"
         },
         {
           "id": "04-tsuno-carry",
           "source": "t2v",
-          "connect": "t2v",
+          "connect": "cut",
           "still": "",
           "trim": {
             "start": 0,
@@ -5449,9 +5906,9 @@
           "face_visible": false,
           "extra_loras": [],
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
-          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno stands on this same linoleum spot facing RIGHT. Aya is held against Tsuno's chest.",
-          "action": "They start already stopped on this same linoleum spot. Tsuno stands behind Aya toward the LEFT, facing RIGHT. Tsuno SLIDES one forearm under Aya's knees and the other forearm behind Aya's back and LIFTS Aya against Tsuno's chest. Aya's arms wrap Tsuno's shoulders. Aya's face is a happy accepting smile. They HOLD that lift on this same linoleum spot. Last frame: Aya off the linoleum in Tsuno's arms, Tsuno standing on the same spot, facing RIGHT. Both adults full body including both feet.",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Tsuno stands on this same dark wood floor spot facing RIGHT. Aya is held against Tsuno's chest.",
+          "action": "They start already stopped on this same dark wood floor spot. Tsuno stands behind Aya toward the LEFT, facing RIGHT. Tsuno SLIDES one forearm under Aya's knees and the other forearm behind Aya's back and LIFTS Aya against Tsuno's chest. Aya's arms wrap Tsuno's shoulders. Aya's face is a happy accepting smile. They HOLD that lift on this same dark wood floor spot. Last frame: Aya off the dark wood floor in Tsuno's arms, Tsuno standing on the same spot, facing RIGHT. Both adults full body including both feet.",
           "voices": [
             {
               "who": "aya",
@@ -5901,7 +6358,605 @@
           "trigger": ""
         }
       ],
-      "connect": "t2v"
+      "connect": "t2v",
+      "on_tsuno_invite_jacko": [
+        {
+          "id": "04-tsuno-meet-spot",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Tsuno sits on the mattress edge facing the doorway. Aya stands in front of the bed.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Nude ashen-gray Tsuno already SITS on the mattress edge facing the doorway, knees open, soles on the dark wood floor. Tsuno's right hand STROKES the erect ashen-gray 24cm up and down the shaft the whole take. Aya ENTERS from the doorway in the FOREGROUND, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, and STEPS toward the bed. Last frame: Tsuno still seated on the mattress edge facing the doorway, right hand on the shaft. Aya standing in front of the bed toward the doorway. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Quiet sickroom, one footstep, a wet hand on the shaft",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-kiss",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Tsuno stays seated on the mattress edge. Aya stands between Tsuno's open knees. Both faces stay in frame. Mouths joined, a drool strand between the lips. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge, knees open, soles on the dark wood floor. Aya stands between Tsuno's open knees. Aya's mouth MEETS Tsuno's mouth. Tongues lick into each other's mouths. A wet strand of drool hangs between the lips. They HOLD the kiss. Last frame: mouths joined, a drool strand between the lips, Tsuno still seated. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-oral",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Tsuno stays seated on the mattress edge. Aya is in a deep knee bend between Tsuno's open knees, mouth on the shaft. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge, knees open, soles on the dark wood floor. The erect ashen-gray 24cm stands up from the groin. Aya lowers into a deep knee bend between Tsuno's open knees. THEN Aya's mouth CLOSES over the glans. Closed lips SLIDE DOWN to the BASE and return to the glans and SLIDE DOWN to the BASE again. Last frame: Tsuno still seated, Aya still in that deep knee bend, mouth on the shaft. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "A wet mouth",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-wait",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "cmst",
+              0.55
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "cmst",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "CLOSE on Aya's face and the glans. Tsuno stays seated. The glans stays in front of Aya's face. The bed and the window stay behind them.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge. Aya stays in a deep knee bend between Tsuno's open knees. The erect ashen-gray 24cm SLIDES OUT of Aya's mouth once. The glans stays in front of Aya's face. One thick WHITE rope shoots from the slit of the glans onto Aya's face and tongue. Last frame: the 24cm outside the mouth, the glans in front of Aya's face, WHITE rope on Aya's face and tongue, Tsuno still seated. Both faces stay in the frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "A wet rope from the slit onto the face",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-jo",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Aya's face points toward the doorway. Her hips point toward the window. Chest and one cheek rest on the mattress. Hips stay high. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's chest comes down onto the mattress. One cheek comes down onto the mattress. Both forearms rest on the mattress. The face points toward the doorway. The hips point toward the window. The hips stay high. Both thighs lie along the mattress toward the window. The face and the hips stay at opposite ends of her body. The erect ashen-gray 24cm stays outside, in Tsuno's hand behind Aya. Last frame: chest and one cheek on the mattress, face toward the doorway, hips high toward the window, the shaft outside. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-behind",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Aya's face points toward the doorway. Tsuno is behind Aya, facing the same doorway. Both palms rest on Aya's buttocks. The shaft stays outside the anus.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya stays with her chest and one cheek on the mattress, face toward the doorway, hips high toward the window. Tsuno moves in behind Aya, facing the same doorway. Both palms rest on Aya's buttocks, one palm on each side. The erect ashen-gray 24cm stays outside the anus. Last frame: Tsuno behind Aya, same facing, palms on the buttocks, the shaft outside the anus. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Aya's face points toward the doorway. Tsuno stays behind her. The shaft travels into the anus once.",
+          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya stays with her chest and one cheek on the mattress, face toward the doorway, hips high toward the window. Tsuno stays behind Aya, facing the same doorway, palms on Aya's buttocks. The erect ashen-gray 24cm TRAVELS INTO the anus to the root once. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's groin stays a hairless pussy. Last frame: still buried in the anus to the root, face toward the doorway, hips high. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あんっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "One wet join",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "04-tsuno-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Aya's face points toward the doorway. Tsuno stays behind her. The shaft stays buried. WHITE goo overflows from the join.",
+          "action": "They start already joined in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya stays with her chest and one cheek on the mattress, face toward the doorway, hips high toward the window. Tsuno stays behind Aya. The erect ashen-gray 24cm stays buried to the root in the anus. Short vertical moves keep the glans inside. Hips return flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, face toward the doorway, hips high. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "A wet pulse",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Aya's face points toward the doorway. Hips stay high. The shaft is outside. The anus stays open in a wide ring. WHITE goo hangs from the ring.",
+          "action": "They start already joined in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya stays with her chest and one cheek on the mattress, face toward the doorway, hips high toward the window. Tsuno stays behind Aya. Tsuno MOVES the hips BACK once until the erect ashen-gray 24cm leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring toward the mattress. Last frame: face toward the doorway, hips high, the open ring visible, WHITE goo hanging from the ring, the 24cm outside the anus, Tsuno still behind Aya. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A wet leave",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-jo-kiss",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Both adults stand and face each other. Mouths joined, a drool strand between the lips. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame.",
+          "action": "They start already in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Both STAND up from the mattress. They turn until they face each other. Aya's mouth MEETS Tsuno's mouth. A wet strand of drool hangs between the lips. Last frame: both standing, mouths joined, a drool strand between the lips. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "ん"
+            }
+          ],
+          "sfx": "a lip-contact kiss smack when the mouths meet",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        },
+        {
+          "id": "04-tsuno-jo-walk",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "extra_loras": [],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Only Aya stands at the doorway, full body including both feet.",
+          "action": "Aya stands at the doorway of this sickroom, fully nude, female body. No penis. The grown shaft is gone. Only Aya is in the doorway. Last frame: only Aya at the doorway, fully nude, female body. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "Footsteps",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "walk"
+        }
+      ]
     },
     {
       "id": "04-dog",

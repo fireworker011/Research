@@ -94,25 +94,50 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 遭遇 `04-tsuno-meet-spot` とギンの `04-gin-lick-spot` は同じ遅れ足。新人は `ENTERS from the LEFT edge`。膝は硬い。一歩が遅れる。後ろ足はリノリウムを滑る。両腕は遅れて揺れる。頭は少し傾く。短い間隔を保つ。あやは右へ歩き、遅くなって止まる。あやの他の歩様は変えない。`zombie` `corpse` `blood` `undead` `shambling` `match stride` は書かない。spot はそこで終わる。異種の spot 本文は変えない
 - `04-tsuno-meet`: ミキへの背後抱きと同じ。体を背中に押しつけ、胸が潰れるまで密着し、両手で胸を揉む。その密着のまま竿が肛門へ入る。入った瞬間、あやも角も止まる。顔は驚きと快楽。声は「んおおおおぉー」。結合部を見せる横ずれは書かない。壁へ移る動きのあとに止まる。LUNGES は使わない。フルネルソンの meet も同じ抱擁から入り、文は `wraps Aya from behind`。立ちバック・後ろアナル・フルネルソンの本文は残す
 
-## 角・騎乗（新話 `invite_ride`）
+## 角・廃病室
 
-これは新しい話。既存の `off / accept_stand / invite_stand / anal_back / nelson` は残る。立ちバックの `04-tsuno-meet` は流用しない。お姫様抱っこではない。`invite_pose=embrace` には載せない。RIDE_FOLD は付けない。
+全枝の `04-tsuno-meet-spot` は廃病室、connect は cut。角はマットレスの縁に座り、右手が `erect ashen-gray 24cm` を上下。あやが扉から入る。extra は mystic 0.5。通路の遅れ足は角の spot に書かない。
 
-順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。角が仰向け、あやが跨ぐ。ギン型にしない。
+立ちバック、誘う立ちバック、後ろアナル、フルネルソンは、spot の次に `04-tsuno-stand`（縁から立つ、cut）。その次の meet / in / carry は cut。密着・挿入・抱き上げの本文は残す。場所の語は病室。`04-tsuno-stall` 以降の個室 cut はそのまま。
 
-- kiss 8秒: 背後ハグ、胸を揉む、体ごと振り向いてべろちゅー。extra は kiss 0.5 + mystic 0.5
-- oral 8秒: 0秒も最終も角は仰向け、頭 RIGHT、足 LEFT、24cm は真上。あやは腰の左で跪き、閉じた唇が根元まで下り、亀頭へ戻ってまた根元まで下りる。STANDS は書かない。跨ぎの足は既存の wait。connect は chain。extra は mystic 0.5 + penis 0.45
-- wait 6秒: 0秒はすでに仰向けで跨ぐ。未結合。`DIRECTLY ABOVE the glans`。connect は chain。跪きの最終を着座の首にしない。FRESH
-- ride 8秒: すでにその足。LOWERS 一度。`HOLD still joined at the BASE until the last frame`。sideride と thrust は積まない。connect は chain。カットでも I2V
-- peak 8秒: 短い上下。中出し。sideride 0.8。mystic は積まない。penis 0.45、synth 0.4、thrust 0.55。connect は chain。カットでも I2V
-- ride-kiss 6秒: 結合のまま涎キス。extra は kiss 0.5。connect は chain。カットでも I2V
-- walk 8秒: connect chain。0–3 秒は口と口、涎の糸、ここで抜ける。3–5 秒で角が右へ。5–8 秒はあや一人。`No penis` `The grown shaft is gone`。extra は kiss 0.5。個室の walk は cut のまま
+## 角・騎乗（`invite_ride`）
 
-竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。
+順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-lie` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。仰向けにしない。action に SPOONLG と体位名は書かない。
+
+- kiss chain: 角は座ったまま。あやが膝の間。口と口。涎の糸。kiss 0.5 + mystic 0.5
+- oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。mystic 0.5 + penis 0.45。STANDS は書かない
+- wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。cmst 0.55 + mystic 0.5
+- lie cut: 横。未結合。竿は腿の外
+- ride 10秒 cut: 横のまま一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る
+- peak chain: 腰が円を一つ。溢れ。`HOLD still joined at the BASE until the last frame`。spoonlg 1.0 + penis 0.6。あやは「あ、いく」
+- ride-kiss chain: 結合のまま口。kiss 0.5
+- walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
+
+竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。寝室の walk の次の `04-dog-spot` は通路の T2V。寝室最終を犬に chain しない。
+
+## 角・寝室アナル（`invite_jacko`、UI「角・寝室アナル」）
+
+顔射のあと別枝。個室 id は使わない。`04-toilet-*` はコピーしない。
+
+順番: spot → kiss → oral → wait → `04-tsuno-jo` cut → `04-tsuno-behind` chain → `04-tsuno-jo-anal` chain → `04-tsuno-jo-cum` chain → `04-tsuno-jo-gape` chain → `04-tsuno-jo-kiss` cut → `04-tsuno-jo-walk` cut。
+
+- jo: 胸と片頬がマット。尻は高い。顔は扉。jacko 0.8
+- behind: 角が後ろ。同じ向き。掌は尻。未挿入。jacko 0.8
+- jo-anal: 一度肛門へ根元。`HOLD still joined at the BASE until the last frame`。jacko 0.7。Turbo は切る
+- jo-cum: 中出しの溢れ。jacko 0.65 + thrust 0.55。あやは「あ、いく」
+- jo-gape: 抜いて輪が開く。白が垂れる。jacko 0.65
+- jo-kiss: 立って向き直し、口
+- jo-walk: 入り口のあや一人
+
+action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に積まない。
+
+## 洋式
+
+pee と finger は磁器のまま。動作は変えない。触手だけ植物のボウル。順番は in で座る → fill で両手首と両足首 → toilet の 0–3 秒で 4 本が付いて HOLD → out は cut、触手が外れて立つ。tentacles3d 0.45 は 4 本の拍。和式に pitcher も beige platform も戻さない。
 
 ## 角・個室（新話 `wash_carry`）
 
-これは新しい話。トイレ枠は消さない。角を「出ない」にしてもトイレは残る。id は `04-tsuno-*` だけ。`04-toilet-*` はコピーしない。ThumbInButt は積まない。和式の Look（個室、ベージュの台、フードが奥）だけ使う。通路から個室へは歩かない。通路クリップを個室の首に使わない。`04-tsuno-stall` の connect は cut。
+これは新しい話。トイレ枠は消さない。角を「出ない」にしてもトイレは残る。id は `04-tsuno-*` だけ。`04-toilet-*` はコピーしない。ThumbInButt は積まない。spot と抱き上げは廃病室。`04-tsuno-stall` 以降は今の個室 cut。通路クリップを個室の首に使わない。`04-tsuno-stall` の connect は cut。
 
 お姫様抱っこは駅弁でもネルソンでもない。`LIFTS` はこの抱き上げだけ。腰の上下には使わない。
 

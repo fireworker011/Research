@@ -31,6 +31,7 @@ RIDE_IDS = (
     "04-tsuno-kiss",
     "04-tsuno-oral",
     "04-tsuno-wait",
+    "04-tsuno-lie",
     "04-tsuno-ride",
     "04-tsuno-peak",
     "04-tsuno-ride-kiss",
@@ -52,25 +53,26 @@ WASH_IDS = (
 # Cut dropdown: every Tsuno beat is T2V, except rib seats and peaks that stay I2V.
 RIDE_CUT = {
     "04-tsuno-meet-spot": "t2v",
-    "04-tsuno-kiss": "t2v",
-    "04-tsuno-oral": "t2v",
-    "04-tsuno-wait": "t2v",
-    "04-tsuno-ride": "chain",
+    "04-tsuno-kiss": "chain",
+    "04-tsuno-oral": "chain",
+    "04-tsuno-wait": "chain",
+    "04-tsuno-lie": "t2v",
+    "04-tsuno-ride": "t2v",
     "04-tsuno-peak": "chain",
     "04-tsuno-ride-kiss": "chain",
     "04-tsuno-walk": "t2v",
 }
-# Chain dropdown. Rib-ride wait and walk stay chain with the rest of the seat.
-# Stall and stall-kiss stay cut. See WASH_CHAIN.
+# Chain dropdown. Sickroom spot, the side move, the seat, and the doorway walk stay cut.
 RIDE_CHAIN = {
-    "04-tsuno-meet-spot": "chain",
+    "04-tsuno-meet-spot": "t2v",
     "04-tsuno-kiss": "chain",
     "04-tsuno-oral": "chain",
     "04-tsuno-wait": "chain",
-    "04-tsuno-ride": "chain",
+    "04-tsuno-lie": "t2v",
+    "04-tsuno-ride": "t2v",
     "04-tsuno-peak": "chain",
     "04-tsuno-ride-kiss": "chain",
-    "04-tsuno-walk": "chain",
+    "04-tsuno-walk": "t2v",
 }
 WASH_CUT = {
     "04-tsuno-meet-spot": "t2v",
@@ -85,8 +87,8 @@ WASH_CUT = {
     "04-tsuno-walk": "t2v",
 }
 WASH_CHAIN = {
-    "04-tsuno-meet-spot": "chain",
-    "04-tsuno-carry": "chain",
+    "04-tsuno-meet-spot": "t2v",
+    "04-tsuno-carry": "t2v",
     "04-tsuno-stall": "t2v",
     "04-tsuno-set": "chain",
     "04-tsuno-anal": "chain",

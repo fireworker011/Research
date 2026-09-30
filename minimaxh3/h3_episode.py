@@ -267,8 +267,11 @@ LORA_FILES = {
     "tentacles3d": "Tentacles-3D_minimaxh3_3344593_epoch_7.safetensors",
     # Facial ropes. Trigger cmst stays on the beat, not in the action.
     "cmst": "face_cum_000001000.safetensors",
-    # Jack-O pose. No trigger word. Wash push only; not on insertion.
+    # Jack-O pose. No trigger word. Wash push and the horn bedroom anal. Not stacked with doggy.
     "jacko": "jackoPoseMinimaxH3V1_v1.safetensors",
+    # Cuddle Cup. Trigger SPOONLG stays on the beat trigger, not in the action.
+    # Model 2968559 version 3363705 fileId 3251540. The page URL is not the weight.
+    "spoonlg": "SPOONLG_CUDDLECUP_v1.safetensors",
     # Audio-only moans. Trigger jpnMoans stays on the beat, not in the action.
     "jpnmoans": "minimax-jav-voice.safetensors",
     # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
@@ -304,6 +307,7 @@ LORA_URLS = {
     "tentacles3d": "https://civitai.com/api/download/models/3347053?fileId=3234017",
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
+    "spoonlg": "https://civitai.com/api/download/models/3363705?fileId=3251540",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
@@ -332,6 +336,7 @@ LORA_STRENGTHS = {
     "tentacles3d": 0.45,
     "cmst": 0.65,
     "jacko": 0.8,
+    "spoonlg": 1.0,
     "jpnmoans": 0.55,
     "doggy": 0.5,
     "siderear": 0.8,
@@ -926,6 +931,26 @@ def _rib_ride_chain_authored(beat: dict[str, Any]) -> bool:
             "already stands over" in low or "both knees stay bent" in low
         )
     return "keep the glans inside" in low and bool(RIB_RIDE_RE.search(action))
+
+
+_TSUNO_BED_CHAIN_IDS = frozenset({
+    "04-tsuno-kiss",
+    "04-tsuno-oral",
+    "04-tsuno-wait",
+    "04-tsuno-peak",
+    "04-tsuno-ride-kiss",
+    "04-tsuno-behind",
+    "04-tsuno-jo-anal",
+    "04-tsuno-jo-cum",
+    "04-tsuno-jo-gape",
+})
+
+
+def _tsuno_bed_chain_authored(beat: dict[str, Any]) -> bool:
+    """Bedroom chains stay I2V. A cut dropdown must not redraw them as T2V."""
+    if str(beat.get("connect") or "").strip().lower() != "chain":
+        return False
+    return str(beat.get("id") or "") in _TSUNO_BED_CHAIN_IDS
 
 
 def _tsuno_ride_kiss_chain_authored(beat: dict[str, Any]) -> bool:
@@ -1736,6 +1761,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
             _toilet_chain_authored(beat)
             or _rib_ride_chain_authored(beat)
             or _tsuno_ride_kiss_chain_authored(beat)
+            or _tsuno_bed_chain_authored(beat)
             or _gin_supine_chain_authored(beat)
             or _rib_wait_chain_authored(beat)
         ):
@@ -1774,6 +1800,15 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
                 beat["source"] = "chain"
                 beat.pop("still_as", None)
         gpu_seen += 1
+    prev_id = ""
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat) or not beat_renders(beat):
+            continue
+        bid = str(beat.get("id") or "")
+        if bid == "04-dog-spot" and prev_id in {"04-tsuno-walk", "04-tsuno-jo-walk"}:
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+        prev_id = bid
     return out
 
 
@@ -2581,7 +2616,6 @@ def apply_ride_foot_style(ep: dict[str, Any]) -> dict[str, Any]:
     poses = resolve_encounter_poses(ep)
     stories = resolve_encounter_stories(ep)
     gin_key = episode_gin(ep) or "off"
-    tsuno_key = episode_tsuno(ep) or "off"
     beats: list[Any] = []
     for beat in ep.get("beats") or []:
         if not isinstance(beat, dict):
@@ -2602,8 +2636,6 @@ def apply_ride_foot_style(ep: dict[str, Any]) -> dict[str, Any]:
                 camera_action = _bent_aya_feet(base, kind)
         elif bid in ("04-gin-wait", "04-gin-ride") and gin_key == "taken_column":
             camera_action = _gin_column_feet("wait" if bid.endswith("-wait") else "ride")
-        elif base == "04-tsuno" and kind and tsuno_key == "invite_ride_column":
-            camera_action = _column_aya_feet(base, kind)
         if camera_action is None:
             beats.append(beat)
             continue
