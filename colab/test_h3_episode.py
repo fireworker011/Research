@@ -309,6 +309,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_DOG" in src
     assert "H3_EPISODE_SPECIES" in src
     assert "H3_EPISODE_APPEAR" in src
+    assert "H3_EPISODE_AYA_HAIR" in src
+    assert 'AYA_SHAFT = "今のまま"' in src
+    assert 'ENEMY_LOOK = ""' in src
     assert "H3_EPISODE_SCENES" in src
     assert "SCENE_MIKI" in src and "SCENE_SHINO" in src
     assert "canonical_episode" in src
@@ -5833,4 +5836,87 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "siderear" not in extra_keys(next(b for b in anal["beats"] if b["id"] == "04-tsuno-in"))
     dog = prepare_episode(raw, dog_override="invite_oral")
     assert "siderear" not in extra_keys(next(b for b in dog["beats"] if b["id"] == "04-dog-in"))
+
+
+def test_appearance_blank_matches_authored_and_custom_stays_on_one_person():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    plain = prepare_episode(raw, story_override="受け入れる", connect_override="chain")
+    blank = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        connect_override="chain",
+        appearance_override={
+            "aya": {
+                "hair": "",
+                "color": "今のまま",
+                "face": "",
+                "dirt": "",
+                "sweat": "",
+                "clothes": "",
+                "shaft": "今のまま",
+            },
+            "enemies": "",
+        },
+    )
+    assert plain["cast"]["aya"]["lock"] == blank["cast"]["aya"]["lock"]
+    assert [(b.get("id"), b.get("action"), b.get("connect"), b.get("source")) for b in plain["beats"]] == [
+        (b.get("id"), b.get("action"), b.get("connect"), b.get("source")) for b in blank["beats"]
+    ]
+
+    silver = prepare_episode(raw, story_override="受け入れる", appearance_override={"aya": {"color": "silver"}})
+    assert "long straight silver hair past the shoulders, blunt bangs across the forehead" in silver["cast"]["aya"]["lock"]
+    assert "long straight dark hair past the shoulders" in silver["cast"]["shino"]["lock"]
+    assert "short brown bob that sways with each step" in silver["cast"]["miki"]["lock"]
+    cover = next(b for b in silver["beats"] if b["id"] == "01-cover")
+    cover_prompt = build_beat_prompt(silver, cover)
+    assert "long straight silver hair past the shoulders, blunt bangs across the forehead" in cover_prompt
+    assert "long straight dark hair past the shoulders, blunt bangs across the forehead" not in cover_prompt
+
+    bob = prepare_episode(
+        raw,
+        appearance_override={"aya": {"hair": "a blunt pink bob", "color": "silver"}},
+    )
+    assert "a blunt pink bob" in bob["cast"]["aya"]["lock"]
+    assert "silver" not in bob["cast"]["aya"]["lock"]
+    assert "blunt bangs" not in bob["cast"]["aya"]["lock"]
+
+    dressed = prepare_episode(raw, appearance_override={"aya": {"clothes": "an open white shirt"}})
+    assert "an open white shirt" in dressed["cast"]["aya"]["lock"]
+    assert "no gown" not in dressed["cast"]["aya"]["lock"]
+    assert "fully nude, no clothes, no gown" in dressed["cast"]["miki"]["lock"]
+    assert "fully nude, no clothes, no gown" in dressed["cast"]["gin"]["lock"]
+    assert dressed["cast"]["aya"]["lock"].count("an open white shirt") == 1
+
+    clean = prepare_episode(raw, appearance_override={"aya": {"dirt": "clean dry skin"}})
+    assert "clean dry skin" in clean["cast"]["aya"]["lock"]
+    assert "grimy brown hospital dirt clinging to the whole body" not in clean["cast"]["aya"]["lock"]
+    assert "clinging to the intact ashen skin" in clean["cast"]["gin"]["lock"]
+    cover_clean = next(b for b in clean["beats"] if b["id"] == "01-cover")
+    assert "clean dry skin" in cover_clean["action"]
+    assert "grimy brown hospital dirt clinging to her whole body" not in cover_clean["action"]
+
+    enemy = prepare_episode(raw, appearance_override={"enemies": "miki; hair=a shaved head; shaft=なし"})
+    assert "a shaved head" in enemy["cast"]["miki"]["lock"]
+    assert "short brown bob" not in enemy["cast"]["miki"]["lock"]
+    assert "erect 24cm human penis" not in enemy["cast"]["miki"]["lock"]
+    assert "a bare hairless groin" in enemy["cast"]["miki"]["lock"]
+    assert "erect 24cm human penis" in enemy["cast"]["rei"]["lock"]
+    assert "long straight dark hair past the shoulders, blunt bangs across the forehead" in enemy["cast"]["aya"]["lock"]
+
+    shino = prepare_episode(raw, appearance_override={"enemies": "shino; hair=a tight bun"})
+    assert "a tight bun" in shino["cast"]["shino"]["lock"]
+    assert "long straight dark hair past the shoulders, blunt bangs across the forehead" in shino["cast"]["aya"]["lock"]
+
+    shaft = prepare_episode(raw, appearance_override={"aya": {"shaft": "あり"}})
+    assert "erect 24cm human penis" in shaft["cast"]["aya"]["lock"]
+    assert shaft["cast"]["aya"]["lock"].count("erect 24cm human penis") == 1
+    assert "no penis, never futanari" in shaft["cast"]["gin"]["lock"]
+    assert validate_episode(shaft, root=HOSPITAL_DIR) == []
+    assert validate_episode(dressed, root=HOSPITAL_DIR) == []
+    assert validate_episode(enemy, root=HOSPITAL_DIR) == []
+
+    with pytest.raises(EpisodeError):
+        prepare_episode(raw, appearance_override={"aya": {"hair": "ピンクのボブ"}})
+    with pytest.raises(EpisodeError):
+        prepare_episode(raw, appearance_override={"enemies": "nobody; hair=a bob"})
 

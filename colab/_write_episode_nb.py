@@ -60,6 +60,18 @@ __DOG_HELP__
 DOG = __DOG_DEFAULT__  #@param __DOG_CHOICES__
 __SPECIES_HELP__
 SPECIES = __SPECIES_DEFAULT__  #@param __SPECIES_CHOICES__
+#@markdown ---
+#@markdown **あやの容姿。空なら今のまま。英語。髪型を書くと髪色は使わない。竿は今のまま / あり / なし。**
+AYA_HAIR = ""  #@param {type:"string"}
+AYA_HAIR_COLOR = ""  #@param {type:"string"}
+AYA_FACE = ""  #@param {type:"string"}
+AYA_DIRT = ""  #@param {type:"string"}
+AYA_SWEAT = ""  #@param {type:"string"}
+AYA_CLOTHES = ""  #@param {type:"string"}
+AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
+#@markdown **敵の容姿。空なら今のまま。1行に1人。** `miki; hair=a short blonde bob; clothes=a torn white shirt; shaft=今のまま`
+#@markdown id は miki / rei / kana / shino / gin / tsuno / dog / slime / anthro。key は hair color face dirt sweat clothes shaft。
+ENEMY_LOOK = ""  #@param {type:"string"}
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
@@ -108,6 +120,14 @@ os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
 os.environ["H3_EPISODE_DOG"] = DOG
 os.environ["H3_EPISODE_SPECIES"] = SPECIES
+os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
+os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
+os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
+os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
+os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
+os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
+os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip()
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -230,6 +250,8 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 **11. 異種** — 病棟の追加オプション。スライムとケモノは同時に出ない。出ないが既定。霞東は無視
 
 {form_readme("species")}
+
+**容姿** — 空なら今の見た目のまま。あやは髪型、髪色、顔、肌の汚れ、汗、服装、竿。敵は1行に1人。英語だけ。`no` `never` `not` `without` `blood` は書かない。
 
 登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。**4人とも外すと作る場面が無くなって止まる。最低1人は残す。**
 

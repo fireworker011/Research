@@ -28,6 +28,9 @@ Env:
   H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
   H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
+  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _DIRT / _SWEAT / _CLOTHES  blank keeps Aya's authored look. English only.
+  H3_EPISODE_AYA_SHAFT  今のまま | あり | なし
+  H3_EPISODE_ENEMY_LOOK  one enemy per line: miki; hair=...; color=...; face=...; dirt=...; sweat=...; clothes=...; shaft=今のまま
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_EPISODE_START    beat id to redraw from. Empty starts at the first beat. The beat list is the current form. An id outside that list stops the run.
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
@@ -102,6 +105,18 @@ def main() -> int:
             rei_kiss_override=(os.environ.get("H3_EPISODE_REI_KISS") or "").strip() or None,
             rei_oral_override=(os.environ.get("H3_EPISODE_REI_ORAL") or "").strip() or None,
             rei_pose_override=(os.environ.get("H3_EPISODE_REI_POSE") or "").strip() or None,
+            appearance_override={
+                "aya": {
+                    "hair": os.environ.get("H3_EPISODE_AYA_HAIR") or "",
+                    "color": os.environ.get("H3_EPISODE_AYA_COLOR") or "",
+                    "face": os.environ.get("H3_EPISODE_AYA_FACE") or "",
+                    "dirt": os.environ.get("H3_EPISODE_AYA_DIRT") or "",
+                    "sweat": os.environ.get("H3_EPISODE_AYA_SWEAT") or "",
+                    "clothes": os.environ.get("H3_EPISODE_AYA_CLOTHES") or "",
+                    "shaft": os.environ.get("H3_EPISODE_AYA_SHAFT") or "",
+                },
+                "enemies": os.environ.get("H3_EPISODE_ENEMY_LOOK") or "",
+            },
         )
         print("DONE", slug, final)
         return 0

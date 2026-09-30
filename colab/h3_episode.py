@@ -3632,6 +3632,505 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
     return ep
 
 
+# Blank appearance fields keep the authored look. A set field replaces that person's clause.
+_APPEARANCE_KEYS = ("hair", "color", "face", "dirt", "sweat", "clothes", "shaft")
+_SHAFT_KEEP = frozenset({"", "今のまま", "default"})
+_SHAFT_ON_WORDS = frozenset({"あり", "on"})
+_SHAFT_OFF_WORDS = frozenset({"なし", "off"})
+_AYA_SHAFT = (
+    "clear futanari, erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, "
+    "hairless female pussy at the base of the shaft"
+)
+_SHAFT_OFF_LOOK = "a bare hairless groin"
+# hair, color token inside the hair clause, face, dirt phrases longest-first, sweat, clothes, shaft clause or None.
+_APPEARANCE: dict[str, dict[str, Any]] = {
+    "aya": {
+        "name": "Aya",
+        "hair": "long straight dark hair past the shoulders, blunt bangs across the forehead",
+        "color": "dark hair",
+        "face": "a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips",
+        "dirt": (
+            "thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy",
+            "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, her face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy",
+            "thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body",
+        ),
+        "sweat": (
+            "visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt",
+            "damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin",
+            "damp dirty bangs stuck to her forehead",
+        ),
+        "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "shaft": None,
+    },
+    "miki": {
+        "name": "Miki",
+        "hair": "short brown bob that sways with each step",
+        "color": "brown bob",
+        "face": "hollow empty dark eye sockets with no eyeballs",
+        "dirt": ("thick extra-viscous sticky grimy brown hospital dirt clinging to the intact purple skin and the hair between the open gashes",),
+        "sweat": ("visible sweat beads on the intact purple skin between the open gashes",),
+        "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, the 24cm shaft is the same vivid purple as the hips and torso not pale-tan flesh, flushed dusky-purple glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+    },
+    "rei": {
+        "name": "Rei",
+        "hair": "long brown permed hair",
+        "color": "brown permed",
+        "face": "vacant wide-open tired eyes",
+        "dirt": ("thick extra-viscous dark-brown filthy sludge covering her from hair to the 24cm shaft to her feet",),
+        "sweat": (),
+        "clothes": ("fully nude, no clothes", "fully nude"),
+        "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, the 24cm shaft is the same vivid purple as the hips and torso not pale-tan flesh, flushed dusky-purple glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+    },
+    "kana": {
+        "name": "Kana",
+        "hair": "long black hair",
+        "color": "black hair",
+        "face": "hollow empty dark eye sockets with no eyeballs, visible fangs",
+        "dirt": ("grimy dirty extra-viscous filthy slime covering her whole body including the 20cm shaft",),
+        "sweat": (),
+        "clothes": ("fully nude, no clothes", "fully nude"),
+        "shaft": "clear futanari, erect 20cm human penis, thick human girth, straight heavy shaft, the 20cm shaft is the same vivid purple as the hips and torso not pale-tan flesh, flushed dusky-purple glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+    },
+    "shino": {
+        "name": "Shino",
+        "hair": "long straight dark hair past the shoulders",
+        "color": "dark hair",
+        "face": "vacant wide staring monster eyes, seductive feminine face with an alluring slight smile",
+        "dirt": ("filmed with grimy dirty stains from hair to the 30cm shaft to her feet",),
+        "sweat": (),
+        "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "shaft": "one erect 30cm human penis attached at the front of the groin between the thighs, the base on the front of the pelvis, the shaft pointing FORWARD and UP from the crotch, huge thick human girth, straight heavy shaft, the 30cm shaft is the same pale gray-white as the hips and torso not pale-tan flesh and not purple, gray-white shaft and gray-white glans, the buttocks stay bare, the penis stays on the front groin while she stoops, flushed dusky-gray glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+    },
+    "gin": {
+        "name": "Gin",
+        "hair": "long messy gray-white hair past the shoulders",
+        "color": "gray-white hair",
+        "face": "sunken hollow dark eye sockets, a long wet gray tongue hanging out past the chin, lips pulled back so the gums show",
+        "dirt": ("thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin on the face, the long messy gray-white hair, neck, breasts, back, belly, arms, hands, hips, thighs, legs and feet",),
+        "sweat": (),
+        "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "shaft": "no penis, never futanari",
+    },
+    "tsuno": {
+        "name": "Tsuno",
+        "hair": "long dark hair past the shoulders",
+        "color": "dark hair",
+        "face": "A still-beautiful adult woman's face whose LEFT half is cracked and decaying: deep dry fissures across the left cheek and left brow, the right half still pretty, one large single eye in the center of the face, bigger than a normal eye, a single red tear line under that eye. Two small dark horns stand at the hairline.",
+        "dirt": ("wet peeling rotting patches and grimy dirty stains on the hips, groin and the 24cm shaft",),
+        "sweat": (),
+        "clothes": ("fully nude, no clothes", "fully nude"),
+        "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight heavy shaft, ashen gray shaft that stays ashen gray not pale-tan flesh, wet peeling rotting patches and grimy dirty stains on the hips, groin and the 24cm shaft, flushed dusky glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+    },
+    "dog": {
+        "name": "Dog",
+        "hair": "",
+        "color": "",
+        "face": "cloudy white eyes",
+        "dirt": ("thick extra-viscous sticky grimy brown hospital dirt clinging to the intact black hide",),
+        "sweat": (),
+        "clothes": (),
+        "shaft": "a clear erect 24cm misshapen heavy pale-tan shaft hanging under the belly",
+    },
+    "slime": {
+        "name": "Slime",
+        "hair": "",
+        "color": "",
+        "face": "",
+        "dirt": ("grimy brown hospital dirt clinging to the gel",),
+        "sweat": (),
+        "clothes": ("fully nude",),
+        "shaft": "a clear erect 24cm shaft the same translucent green as the hips",
+    },
+    "anthro": {
+        "name": "Anthro",
+        "hair": "photographed short gray fur on a human-scale body",
+        "color": "gray fur",
+        "face": "modest wolf muzzle",
+        "dirt": ("grimy brown hospital dirt clinging to the fur",),
+        "sweat": (),
+        "clothes": ("fully nude",),
+        "shaft": "a clear erect 24cm pale-tan shaft from the groin",
+    },
+}
+_APPEARANCE_FORBIDDEN_RE = re.compile(r"\b(?:blood|zombie|corpse|no|never|not|without)\b", re.IGNORECASE)
+
+
+def _appearance_text(value: Any, where: str) -> str:
+    text = str(value or "").strip()
+    if not text or text in _SHAFT_KEEP:
+        return ""
+    if CJK_RE.search(text):
+        raise EpisodeError(f"appearance {where} must be English")
+    if _APPEARANCE_FORBIDDEN_RE.search(text):
+        raise EpisodeError(f"appearance {where} must not use blood, zombie, corpse, no, never, not, or without")
+    if len(text) > 240:
+        raise EpisodeError(f"appearance {where} is too long")
+    return text
+
+
+def _shaft_mode(value: Any) -> str:
+    raw = str(value or "").strip().lower()
+    if raw in _SHAFT_KEEP:
+        return ""
+    if raw in _SHAFT_ON_WORDS:
+        return "on"
+    if raw in _SHAFT_OFF_WORDS:
+        return "off"
+    raise EpisodeError("appearance shaft must be 今のまま, あり, or なし")
+
+
+def _parse_enemy_look(text: str) -> dict[str, dict[str, str]]:
+    out: dict[str, dict[str, str]] = {}
+    for raw_line in str(text or "").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [part.strip() for part in line.split(";") if part.strip()]
+        cid = parts[0].lower()
+        if cid not in _APPEARANCE or cid == "aya":
+            raise EpisodeError(f"appearance enemy must be one of {', '.join(k for k in _APPEARANCE if k != 'aya')}")
+        spec: dict[str, str] = {}
+        for item in parts[1:]:
+            if "=" not in item:
+                raise EpisodeError(f"appearance {cid} entry must be key=value")
+            key, val = item.split("=", 1)
+            key = key.strip().lower()
+            if key not in _APPEARANCE_KEYS:
+                raise EpisodeError(f"appearance {cid} key must be one of {', '.join(_APPEARANCE_KEYS)}")
+            if key == "shaft":
+                mode = _shaft_mode(val)
+                if mode:
+                    spec["shaft"] = mode
+            else:
+                cleaned = _appearance_text(val, f"{cid}.{key}")
+                if cleaned:
+                    spec[key] = cleaned
+        if spec:
+            out[cid] = spec
+    return out
+
+
+def parse_appearance(raw: str | dict[str, Any] | None) -> dict[str, dict[str, str]]:
+    """Blank fields and 今のまま drop out. An empty result leaves the episode unchanged."""
+    if raw in (None, "", {}):
+        return {}
+    data: dict[str, Any]
+    if isinstance(raw, str):
+        text = raw.strip()
+        if not text:
+            return {}
+        if text.startswith("{"):
+            try:
+                loaded = json.loads(text)
+            except json.JSONDecodeError as exc:
+                raise EpisodeError("appearance JSON is invalid") from exc
+            if not isinstance(loaded, dict):
+                raise EpisodeError("appearance JSON must be an object")
+            data = loaded
+        else:
+            data = {"enemies": text}
+    elif isinstance(raw, dict):
+        data = raw
+    else:
+        raise EpisodeError("appearance must be a dict or text")
+    out: dict[str, dict[str, str]] = {}
+    aya_raw = data.get("aya") if isinstance(data.get("aya"), dict) else {}
+    aya: dict[str, str] = {}
+    for key in _APPEARANCE_KEYS:
+        if key == "shaft":
+            mode = _shaft_mode(aya_raw.get(key) if isinstance(aya_raw, dict) else "")
+            if mode:
+                aya["shaft"] = mode
+        else:
+            cleaned = _appearance_text(aya_raw.get(key) if isinstance(aya_raw, dict) else "", f"aya.{key}")
+            if cleaned:
+                aya[key] = cleaned
+    if aya:
+        out["aya"] = aya
+    enemies = data.get("enemies")
+    if isinstance(enemies, str):
+        out.update(_parse_enemy_look(enemies))
+    elif isinstance(enemies, dict):
+        for cid, spec in enemies.items():
+            if cid not in _APPEARANCE or cid == "aya" or not isinstance(spec, dict):
+                raise EpisodeError(f"appearance enemy {cid} is unknown")
+            built: dict[str, str] = {}
+            for key in _APPEARANCE_KEYS:
+                if key == "shaft":
+                    mode = _shaft_mode(spec.get(key))
+                    if mode:
+                        built["shaft"] = mode
+                else:
+                    cleaned = _appearance_text(spec.get(key), f"{cid}.{key}")
+                    if cleaned:
+                        built[key] = cleaned
+            if built:
+                out[str(cid)] = built
+    elif enemies not in (None, ""):
+        raise EpisodeError("appearance enemies must be text or an object")
+    return out
+
+
+def _paint_color(token: str, color: str) -> str:
+    last = token.split()[-1]
+    if last.lower() in color.lower():
+        return color
+    return f"{color} {last}"
+
+
+def _phrase_unique(old: str, owner: str) -> bool:
+    if not old:
+        return False
+    for cid, spec in _APPEARANCE.items():
+        if cid == owner:
+            continue
+        blob = " ".join(str(spec.get(key) or "") for key in ("hair", "face", "shaft"))
+        for key in ("dirt", "sweat", "clothes"):
+            values = spec.get(key) or ()
+            if isinstance(values, str):
+                blob += " " + values
+            else:
+                blob += " " + " ".join(values)
+        if old in blob:
+            return False
+    return True
+
+
+def _replace_tree(node: Any, old: str, new: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in ("id", "appearance"):
+                continue
+            if isinstance(value, str):
+                if old in value:
+                    node[key] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            if isinstance(value, str):
+                if old in value:
+                    node[index] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+
+
+def _map_named_sentences(text: str, name: str, old: str, new: str) -> str:
+    if not old or old not in text:
+        return text
+    parts = re.split(r"(?<=\.)\s+", text)
+    out: list[str] = []
+    for part in parts:
+        if old in part and name in part and (name == "Gin" or "Gin" not in part):
+            out.append(part.replace(old, new))
+        else:
+            out.append(part)
+    return " ".join(out)
+
+
+def _replace_phrase(ep: dict[str, Any], owner: str, old: str, new: str) -> None:
+    if not old or old == new:
+        return
+    spec = _APPEARANCE[owner]
+    name = str(spec["name"])
+    if _phrase_unique(old, owner):
+        _replace_tree(ep, old, new)
+        return
+    row = (ep.get("cast") or {}).get(owner) or {}
+    if isinstance(row.get("lock"), str):
+        row["lock"] = row["lock"].replace(old, new)
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str):
+            looks[key] = value.replace(old, new)
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str):
+            locks[owner] = locks[owner].replace(old, new)
+        for field in ("action", "camera", "place", "environment"):
+            value = beat.get(field)
+            if isinstance(value, str) and old in value:
+                beat[field] = _map_named_sentences(value, name, old, new)
+
+
+def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
+    row = (ep.get("cast") or {}).get(owner) or {}
+    lock = str(row.get("lock") or "")
+    if clause not in lock:
+        row["lock"] = (lock.rstrip(" .") + ", " + clause).strip()
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str) and clause not in value:
+            looks[key] = value.rstrip(" .") + ", " + clause
+    name = str(_APPEARANCE[owner]["name"])
+    line = f"{name}'s look for this shot: {clause}."
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        cast = {str(c) for c in (beat.get("cast") or [])}
+        if owner not in cast:
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str) and clause not in locks[owner]:
+            locks[owner] = locks[owner].rstrip(" .") + ", " + clause
+        action = str(beat.get("action") or "")
+        if line not in action:
+            beat["action"] = (action.rstrip() + " " + line).strip()
+
+
+def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
+    """Rewrite look clauses for set fields. No set field leaves every string as authored."""
+    specs = (ep.get("render") or {}).get("appearance") or {}
+    if not isinstance(specs, dict) or not specs:
+        return ep
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        raise EpisodeError("appearance custom is only for hospital-exit-adult")
+    out = ep
+    for cid, fields in specs.items():
+        if cid not in _APPEARANCE or not isinstance(fields, dict):
+            raise EpisodeError(f"appearance {cid} is unknown")
+        spec = _APPEARANCE[cid]
+        hair = str(spec.get("hair") or "")
+        if fields.get("hair"):
+            if hair:
+                _replace_phrase(out, cid, hair, fields["hair"])
+            else:
+                _append_look(out, cid, fields["hair"])
+        elif fields.get("color"):
+            if not hair or not spec.get("color"):
+                _append_look(out, cid, f"hair color {fields['color']}")
+            else:
+                painted = hair.replace(str(spec["color"]), _paint_color(str(spec["color"]), fields["color"]), 1)
+                _replace_phrase(out, cid, hair, painted)
+        if fields.get("face"):
+            face = str(spec.get("face") or "")
+            if face:
+                _replace_phrase(out, cid, face, fields["face"])
+            else:
+                _append_look(out, cid, fields["face"])
+        if fields.get("sweat"):
+            sweat_phrases = spec.get("sweat") or ()
+            if sweat_phrases:
+                for phrase in sweat_phrases:
+                    if phrase.startswith("visible sweat beads and thick"):
+                        _replace_phrase(out, cid, phrase, f"{fields['sweat']} and thick extra-viscous sticky grimy brown hospital dirt")
+                    elif phrase.startswith("damp dirty bangs"):
+                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                    else:
+                        _replace_phrase(out, cid, phrase, fields["sweat"])
+            else:
+                _append_look(out, cid, fields["sweat"])
+        if fields.get("dirt"):
+            for phrase in spec.get("dirt") or ():
+                _replace_phrase(out, cid, phrase, fields["dirt"])
+            if not spec.get("dirt"):
+                _append_look(out, cid, fields["dirt"])
+        if fields.get("clothes"):
+            clothes = str(fields["clothes"])
+            phrases = spec.get("clothes") or ()
+            if phrases:
+                for phrase in phrases:
+                    _replace_phrase(out, cid, phrase, clothes)
+            else:
+                _append_look(out, cid, clothes)
+            name = str(spec["name"])
+            for beat in out.get("beats") or []:
+                if not isinstance(beat, dict):
+                    continue
+                cast = [str(c) for c in (beat.get("cast") or [])]
+                if cid not in cast or "Both stay fully nude" not in str(beat.get("action") or ""):
+                    continue
+                clothed = [c for c in cast if (specs.get(c) or {}).get("clothes")]
+                if len(clothed) == 1:
+                    other_ids = [c for c in cast if c != cid]
+                    other = _APPEARANCE.get(other_ids[0], {}).get("name", "The other adult") if len(other_ids) == 1 else "The other adult"
+                    beat["action"] = str(beat["action"]).replace(
+                        "Both stay fully nude",
+                        f"{name} wears {clothes}. {other} stays fully nude",
+                    )
+                elif cid == clothed[0]:
+                    beat["action"] = str(beat["action"]).replace(
+                        "Both stay fully nude",
+                        "Both wear the clothes written in the look",
+                    )
+        shaft = fields.get("shaft") or ""
+        if shaft == "on":
+            if cid == "aya":
+                _replace_phrase(
+                    out,
+                    "aya",
+                    "female body, tired determined expression",
+                    f"female body, {_AYA_SHAFT}, tired determined expression",
+                )
+                row = (out.get("cast") or {}).get("aya") or {}
+                if isinstance(row.get("lock"), str) and _AYA_SHAFT not in row["lock"] and "female body" in row["lock"]:
+                    row["lock"] = row["lock"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                for beat in out.get("beats") or []:
+                    if not isinstance(beat, dict):
+                        continue
+                    locks = beat.get("cast_lock")
+                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and _AYA_SHAFT not in locks["aya"] and "female body" in locks["aya"]:
+                        locks["aya"] = locks["aya"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                    for field in ("action", "camera"):
+                        value = beat.get(field)
+                        if not isinstance(value, str) or "female body" not in value:
+                            continue
+                        parts = re.split(r"(?<=\.)\s+", value)
+                        built: list[str] = []
+                        for part in parts:
+                            if "Aya" in part and "Gin" not in part and "female body" in part and _AYA_SHAFT not in part:
+                                built.append(part.replace("female body", f"female body, {_AYA_SHAFT}", 1))
+                            else:
+                                built.append(part)
+                        beat[field] = " ".join(built)
+            elif spec.get("shaft") == "no penis, never futanari":
+                _replace_phrase(out, cid, "no penis, never futanari", _AYA_SHAFT)
+            elif not spec.get("shaft"):
+                _append_look(out, cid, _AYA_SHAFT)
+        elif shaft == "off":
+            clause = spec.get("shaft")
+            if clause and clause != "no penis, never futanari":
+                _replace_phrase(out, cid, str(clause), _SHAFT_OFF_LOOK)
+                token = ""
+                for piece in ("erect 20cm", "erect 30cm", "erect ashen-gray 24cm", "erect 24cm"):
+                    if piece in str(clause) or (cid == "tsuno" and piece == "erect ashen-gray 24cm"):
+                        token = piece
+                        break
+                if cid == "tsuno":
+                    token = "erect ashen-gray 24cm"
+                name = str(spec["name"])
+                others = [
+                    str(_APPEARANCE[other]["name"])
+                    for other, row in _APPEARANCE.items()
+                    if other != cid and row.get("shaft") and other != "aya"
+                ]
+                if token:
+                    for beat in out.get("beats") or []:
+                        if not isinstance(beat, dict):
+                            continue
+                        for field in ("action", "camera"):
+                            value = beat.get(field)
+                            if not isinstance(value, str) or token not in value:
+                                continue
+                            parts = re.split(r"(?<=\.)\s+", value)
+                            built: list[str] = []
+                            for part in parts:
+                                if token in part and name in part and not any(other in part for other in others):
+                                    swapped = part
+                                    for prefix in (f"The {token}", f"the {token}", token):
+                                        if prefix in swapped:
+                                            swapped = swapped.replace(prefix, _SHAFT_OFF_LOOK)
+                                            break
+                                    built.append(swapped)
+                                else:
+                                    built.append(part)
+                            beat[field] = " ".join(built)
+    return out
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -3659,6 +4158,7 @@ def prepare_episode(
     rei_kiss_override: str | None = None,
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
+    appearance_override: str | dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -3712,6 +4212,9 @@ def prepare_episode(
         render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
     if rei_pose_override not in (None, ""):
         render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
+    appearance = parse_appearance(appearance_override)
+    if appearance:
+        render["appearance"] = appearance
     _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
@@ -3746,7 +4249,8 @@ def prepare_episode(
     out = apply_connect_mode(out)
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
-    return apply_look_triggers(keep_chain_cast(out))
+    out = apply_look_triggers(keep_chain_cast(out))
+    return apply_appearance(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -6540,6 +7044,7 @@ def run_episode(
     rei_kiss_override: str | None = None,
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
+    appearance_override: str | dict[str, Any] | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -6575,6 +7080,7 @@ def run_episode(
         rei_kiss_override=rei_kiss_override,
         rei_oral_override=rei_oral_override,
         rei_pose_override=rei_pose_override,
+        appearance_override=appearance_override,
     )
     print(
         describe_run(
@@ -6942,6 +7448,7 @@ def main(argv: list[str] | None = None) -> int:
     rei_kiss = None
     rei_oral = None
     rei_pose = None
+    appearance = None
     if "--out" in opts:
         out_dir = Path(opts[opts.index("--out") + 1])
     if "--start" in opts:
@@ -6988,6 +7495,8 @@ def main(argv: list[str] | None = None) -> int:
         rei_oral = opts[opts.index("--rei-oral") + 1]
     if "--rei-pose" in opts:
         rei_pose = opts[opts.index("--rei-pose") + 1]
+    if "--appearance" in opts:
+        appearance = opts[opts.index("--appearance") + 1]
     ep_path, src_root = _resolve_paths(target)
     ep = load_episode(ep_path)
     ep = prepare_episode(
@@ -7013,6 +7522,7 @@ def main(argv: list[str] | None = None) -> int:
         rei_kiss_override=rei_kiss,
         rei_oral_override=rei_oral,
         rei_pose_override=rei_pose,
+        appearance_override=appearance,
     )
     work = out_dir or src_root
     if out_dir and out_dir.resolve() != src_root.resolve():

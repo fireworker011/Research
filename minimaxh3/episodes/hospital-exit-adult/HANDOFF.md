@@ -35,6 +35,8 @@
 
 角の二人の顔。あやと角が同じ画面にいる拍は `lewd pleasure-drunk happy smile`。頬は赤く、涎が垂れ、快感に酔って、互いを慕う。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きは変えていない。connect 欄は変えていない。
 
+容姿。Colab のあやの欄と敵の1行が空なら、今の lock のまま。書いた項目だけ、その人の Look と、同じ句が本文にあるところを置き換える。髪型を書くと髪色は使わない。竿の「今のまま」は台本どおり。「あり」はあやの lock に 24cm を足す。ギンの `no penis` は、ギンを「あり」にしたときだけ置き換える。「なし」は、その敵の竿の句を `a bare hairless groin` に置き換える。英語だけ。`no` `never` `not` `without` `blood` は書かない。connect 欄は変えない。
+
 人間が FRESH するもの。トイレの個室。`04-tsuno-oral` `04-tsuno-wait` `04-tsuno-peak` `04-tsuno-jo-cum`。かなの `09-kana-facial`。角を出すときは `04-tsuno-meet-spot` からその枝の最後。顔を足したので、その枝は最後まで FRESH。
 
 触らない。Wan ノート。`WAN_HANDOFF.md`。pee と finger の動作本文。ギンの口の本文。角の connect 欄。新しい話。
