@@ -1,4 +1,4 @@
-# アフィShorts 台本ストック 10本（MiniMax H3 一括生成用）
+# アフィShorts 台本ストック 12本（MiniMax H3 一括生成用）
 作成: 2026-09-30（JST） / 保存先: `/workspace/affi-stock-20260930/`（この `stock.md` と `h3_batch.json`。生成元 `stock_data.py`→`build.py`）
 
 > **H3の生成・投稿はしていない。** `orbis01_h3_prompts.md` の注記どおり、H3は人間のOKが出てから回す。
@@ -8,7 +8,7 @@
 - GitHub `fireworker011/Research`: ブランチ `cursor/h3-fast-fl2va-lora-6dc5` の `h3-runner/README.md`（FL2VA 6秒+9秒・Turbo・Combat/Repair LoRA）、`.cursor/skills/h3-prompt-writing/`（`references/base-en.txt`）、`.cursor/skills/h3-lora-studio/SKILL.md`。
 - 「research フォルダ」: main にも FL2VA ブランチにも `research/` は無かった。全111ブランチを調べて `research/` があったのは `cursor/tomo-shorts-edit-memo-66cf` だけで、中身は tomo（CW案件）の編集手順1本（アフィの勝ち型ではない）。勝ち型は箱の `affi-h3-research-20260929/report.md`・`channels_report.md` を使った。
 
-## 1. 工場ルールの当てはめ方（全10本共通）
+## 1. 工場ルールの当てはめ方（全12本共通）
 - 15秒 = **6秒パート（0.0-6.0）＋9秒パート（6.0-15.0）**。0-3秒フック / 3-10秒具体1つ / 10-15秒プロフィール誘導。
 - H3 は **FL2VA**（最初のコマ＝静止画）。最後のコマは渡さない運用なので、プロンプト1行目は `base-en.txt` の I2VA の指示文（最初のコマだけ固定）にした。
 - **サクラの顔が出るパートは、最初のコマにサクラの顔を入れる**（最初のコマ以外では顔を固定できない。途中から顔が出るとサクラと別人になりうる）。顔が要らないパートは手元・物・犬だけの静止画から始める。
@@ -35,11 +35,14 @@
 | stock-08 | Day 8 | ドッグフードおさかな | 失敗談→気づき（よくある失敗として） | キャラ喋り（サクラ・声のみ／手元） | ごはんの切り替え、一気にやってない？ | 72字 | — |
 | stock-09 | Day 9 | Furbo（ペット見守りカメラ） | 静かなケア日常観察 | キャラ喋り（サクラ）＋見守りカメラ映像風 | お風呂のあと、大人しく拭かせてくれる子。 | 74字 | — |
 | stock-10 | Day 10 | オルビスユー（化粧水） | 時短比較（朝の工程を1本にまとめる・分割画面） | キャラ喋り（サクラ） | いつもの朝と、1本の朝。工程を比べる。 | 75字 | — |
+| stock-11 | Day 11 | オルビスユー（化粧水） | あるある共感（番号付きで並べる） | 手元・物だけ＋字幕＋ナレーション（サクラは出さない） | スキンケア好きの、あるある。 | 68字 | — |
+| stock-12 | Day 12 | Furbo（ペット見守りカメラ） | あるある共感（番号付きで並べる） | 手元・犬だけ＋字幕＋ナレーション（サクラは出さない）＋見守りカメラ映像風 | 犬と暮らす人の、お出かけあるある。 | 67字 | — |
 
-配分: オルビスユー4本（01/04/07/10）、ドッグフードおさかな3本（02/05/08）、Furbo 3本（03/06/09）。
+配分: オルビスユー5本（01/04/07/10/11）、ドッグフードおさかな3本（02/05/08）、Furbo 4本（03/06/09/12）。
 2026-09-30 の実測監査（`/workspace/buzz-research-affi-stock-audit-20260930.md`）を受けて、stock-03（ストーリー：2本・倍率中央値0.3）と stock-09（Q&A：4本・0.9、2025-26年の動画なし）を入れ替えた。新しい型は『留守番カメラの一瞬1カット』（参考 Swt-8_hj_pc 44.0倍）と『静かなケア日常観察』（参考 biBzOuRiAGY 83.6倍）。ふつうの留守番の様子は34本で中央値0.2倍なので、stock-03 は一瞬の出来事1つに絞った。どちらも強い1本が引っぱっている型で、同じ型のほかの動画は伸びていない（監査の注意どおり、型を変えれば伸びるとは言い切れない）。
 同じ監査で、開封・使ってみたレビューは中央値0.8倍、3選は強いのが2021年の1本だけだったので、stock-07（開封）と stock-10（3選）も入れ替えた。stock-07 は『悩み→解決』の別の切り口（お悩みカード返信型。参考 Ir0VlXFSjyk 22.5倍・2026-08。stock-01 とは場面も悩みも別）、stock-10 は『朝の工程を1本にまとめる時短比較』（参考 iVCAQLUhCdo 300.2倍）。**iVCAQLUhCdo は2023年の動画なので、この形式が今も伸びる証拠はない。** stock-10 で変わるのは工程の数と時間（手数）だけで、肌の比較・効能・実測していない時間の数字は出さない。
-投稿順は美容→ペット→ペットの順に回す。`channels_report.md` の『やること7』は美容とペットでアカウントを分けるのが望ましいとしている。分ける場合、美容は Day1・4・7・10、ペットは残りの日の順で使う。
+市場リサーチの実測（2026-09-30）で、90日以内に勝ちが確認できたのは『あるある型』だけだった（BCImVTwkuQI 猫の気持ちいいところ・29秒・16.5倍 / ftudRJGeVwc 7.0倍 / 46mQHJsnbYI くせ毛の共感もの・3.6倍）。ストックのあるある型は stock-02 だけだったので、stock-11（美容のあるある）と stock-12（犬のお出かけあるある・見守りカメラ）を足した。キャラ喋りは広告以外で勝った例が見つかっていないので、この2本はサクラを出さず、手元・物・犬だけの映像に字幕とナレーションを乗せる。
+投稿順は美容→ペット→ペットの順に回す。`channels_report.md` の『やること7』は美容とペットでアカウントを分けるのが望ましいとしている。分ける場合、美容は Day1・4・7・10・11、ペットは残りの日の順で使う。
 
 ---
 ## stock-01｜オルビスユー（化粧水）｜型: 悩み→解決
@@ -787,6 +790,163 @@ non_diegetic_music: The pizzicato-strings pattern relaxes into a warm, airy melo
 - 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
 
 ---
+## stock-11｜オルビスユー（化粧水）｜型: あるある共感（番号付きで並べる）
+- 想定投稿順: **Day 11** / ルート: 手元・物だけ＋字幕＋ナレーション（サクラは出さない） / 推奨LoRA: 6s: FL2V Turbo 8step 1.0 / 9s: FL2V Turbo 8step 1.0
+
+### 参考動画（型だけ借りる・映像は新規）
+- https://www.youtube.com/shorts/46mQHJsnbYI 「くせ毛の人共感できるものあった？#あるある #shorts」（明瀬(あかせ)りあ）: 再生 28,605 / 登録者 11,000 / 3.6倍 / 投稿 2026-09-28 / 30秒。数字は yt-dlp で取得（2026-09-30）。
+- 最初の3秒の見せ方（確認方法は「3. 出典」）: 0〜3秒は白い大きな箱のタイトル『くせ毛の人 / の特徴』だけを見せる（本人が頭を押さえる動き）。3秒目から画面上部の黄色い帯に番号付きのあるある『①ノーセットで外出られる人羨ましい』→『②…』と約3秒ごとに次の番号へ進み、30秒で⑨まで並べる。1項目＝1動作で、説明や前置きはない。
+- 借りたもの: ①0〜3秒はタイトル箱『〇〇の、あるある』だけ ②3秒目から番号付きのあるあるを約3秒に1つ（15秒に合わせて①②③の3つ） ③1項目＝1動作・前置きなし。本人出演（キャラ喋り）は借りず、手元と物だけの新しい映像にする。手元だけで日常の作業を見せる撮り方は BCImVTwkuQI（腕だけの人＋短い一言字幕）から。
+
+### 台詞（Achernar・音読用）と字幕
+| 秒 | 役割 | 台詞 | 字数 | 字/秒 | 字幕（2行・/ で改行） |
+|---|---|---|---|---|---|
+| 0.0-3.0 | フック | スキンケア好きの、あるある。 | 12 | 4.00 | スキンケア好きの / あるある |
+| 3.0-6.0 | 具体 | 新しいのを買うと、前のがまだ残ってる。 | 17 | 5.67 | ① 新しいのを買うと / 前のがまだ残ってる |
+| 6.0-10.0 | 具体 | 出しすぎた化粧水、首まで塗りがち。 | 15 | 3.75 | ② 出しすぎた化粧水 / 首まで塗りがち |
+| 10.0-12.5 | 誘導 | 結局、毎日の1本に戻る。 | 10 | 4.00 | ③ 結局 / 毎日の1本に戻る |
+| 12.5-15.0 | 誘導 | 紹介してる1本は、プロフィールに。 | 14 | 5.60 | 紹介してる1本は / プロフィールへ ▲ |
+
+### 時間ごとの絵
+- **6sパート（0.0-6.0秒・768x1344）**: 0.0-3.0 洗面所の白い棚、ロゴなしのボトルがぎっしり。手（オートミール色のニットの袖）が新しいボトルを押し込もうとして、隙間がない。上に白い大きなタイトル箱『スキンケア好きの / あるある』（編集） → 3.0-6.0 手が奥の古いボトルを取って軽く振る。中身がまだ半分ちゃぷん。上に黄色い帯『①』（編集）。顔は映さない
+- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 手元のアップ。ロゴなしのボトルから手のひらへ化粧水を出しすぎて、手のひらいっぱい。そのまま首すじ〜鎖骨に手を当てる（あごより上は映さない）。黄色い帯『②』 → 10.0-12.5 また混んだ棚。手が何本かの上を迷ってから、すりガラスのボトル1本を取る。黄色い帯『③』 → 12.5-15.0 洗面台に置いたそのボトルの横で、人差し指が上を指す（顔なし）
+
+### H3用プロンプト
+#### 6sパート（FL2VA・6.00秒・768x1344・261語）
+最初のコマの静止画（参照画像なし（人の顔を入れない））:
+```text
+Photoreal still, vertical 9:16, eye-level close-up of a small white bathroom shelf crowded with many unbranded bottles and jars of different shapes in soft morning light; a hand in an oatmeal knit sleeve enters from the right holding one new plain white bottle, looking for space. No face, no people other than the hand, no text, no logos, no labels.
+```
+H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
+```text
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Photoreal, bright soft-lit vertical 9:16 relatable skincare short shot only on hands and objects; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: a hand in an oatmeal knit sleeve holds a new plain white bottle in front of a small white bathroom shelf crowded with unbranded bottles and jars. The hand tries to push the new bottle into a gap, nudges the neighboring bottles, finds no room and pauses. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] スキンケア好きの、あるある。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a close-up of the same shelf: the hand reaches to the back row, pulls out an older unlabeled bottle and gives it a light shake, the liquid inside still half full and sloshing visibly. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 新しいのを買うと、前のがまだ残ってる。</d> while no lips are visible on screen.
+
+overall_soundscape: Quiet bathroom room tone; glass bottles clink and scrape as they are nudged on the shelf, then a clear liquid slosh inside the shaken bottle.
+
+non_diegetic_music: A light, playful marimba pattern at a brisk moderate tempo, with a small comic pluck at 00:03.000.
+```
+#### 9sパート（FL2VA・9.00秒・640x1152・372語）
+最初のコマの静止画（参照画像なし（人の顔を入れない））:
+```text
+Photoreal still, vertical 9:16, close-up at chest height of two hands in oatmeal knit sleeves above a white bathroom counter, no face in frame; the left hand holds a slim frosted-white glass bottle with a plain white cap and no label, tilted over the cupped right palm. Soft morning light. No text, no logos.
+```
+H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
+```text
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Photoreal, bright soft-lit vertical 9:16 relatable skincare short shot only on hands and objects; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and nothing above the chin is ever shown. The shot begins in the composition of <Picture 1>: two hands in oatmeal knit sleeves hold a slim frosted-white glass bottle with a plain white cap, completely free of any logo, label, or lettering over a cupped palm. Too much clear liquid pours out and fills the palm to the brim; the hands freeze for a beat, then the view follows the hand as it presses the extra liquid onto the side of the neck and the collarbone, framed from the shoulders to just below the chin. The camera tilts with small amplitude at slow speed to follow the hand. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 出しすぎた化粧水、首まで塗りがち。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts back to the crowded white shelf of unbranded bottles: a hand hovers over several of them, hesitates, then picks up the same frosted bottle. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 結局、毎日の1本に戻る。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a close-up of the frosted bottle standing alone on the white counter: a hand enters beside it and raises the index finger toward the top of the frame, holding the gesture until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してる1本は、プロフィールに。</d> while no lips are visible on screen.
+
+overall_soundscape: Quiet bathroom room tone; a liquid trickle that runs a little too long, soft pats on the skin, glass clinks on the shelf and one clean tap of the bottle on the counter.
+
+non_diegetic_music: The playful marimba pattern continues at a brisk moderate tempo and ends on a bright two-note tag.
+```
+**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, skin redness, acne close-up, before-after skin comparison, medical setting, syringe, pills, face, lips, mouth, eyes, chin, person's head, spilled liquid on floor
+
+### タイトル
+`スキンケア好きのあるある #Shorts #あるある #スキンケア`
+
+### 概要欄（全文）
+```text
+アフィリエイト広告を含みます #PR
+スキンケア好きの、あるある。
+①新しいのを買うと、前のがまだ残ってる ②出しすぎた化粧水、首まで塗りがち ③結局、毎日の1本に戻る
+※映像のボトルはAIによるイメージで、実際の商品とは異なります。
+紹介している化粧水はプロフィールのリンクからどうぞ。
+
+#PR #あるある #スキンケア #化粧水 #スキンケア好き
+
+映像・ナレーションはAIで生成しています。
+```
+
+### 注意点（法務）
+- あるあるは一般的な『ありがち』として言う（誰かの体験談・口コミに見せない）。『③毎日の1本に戻る』は好みの話で、他より優れている・効くとは言わない（比較・効能の暗示を避ける）。
+- 『首まで塗る』は出しすぎた分の使い道のあるあるで、首に効く等は言わない（薬機法）。棚のボトルは全部ロゴなしで他社製品を思わせない。
+- サクラは出さない（キャラ喋りは広告以外で勝った例が見つかっていないため）。人は手・袖・首すじ〜鎖骨だけで、あごより上は映さない。
+- 参考動画（46mQHJsnbYI / BCImVTwkuQI）から借りたのはタイトル箱→番号付きあるあるを約3秒ごとに並べるテンポと、手元だけの撮り方。映像は新規。
+- 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
+
+---
+## stock-12｜Furbo（ペット見守りカメラ）｜型: あるある共感（番号付きで並べる）
+- 想定投稿順: **Day 12** / ルート: 手元・犬だけ＋字幕＋ナレーション（サクラは出さない）＋見守りカメラ映像風 / 推奨LoRA: 6s: FL2V Turbo 8step 1.0 / 9s: FL2V Turbo 8step 1.0
+
+### 参考動画（型だけ借りる・映像は新規）
+- https://www.youtube.com/shorts/BCImVTwkuQI 「猫の気持ちいいところ🤣 # #猫 #ねこ #cat #猫動画」（ねこある-猫との暮らしあるある）: 再生 454,495 / 登録者 89,600 / 16.5倍 / 投稿 2026-08-30 / 29秒。数字は yt-dlp で取得（2026-09-30）。
+- 最初の3秒の見せ方（確認方法は「3. 出典」）: 0秒から画面上に黒帯のタイトル（ロゴ『ネ』と伏せ字の予告『猫の性◯帯について』）を最後まで固定。下は腕だけの人がこたつ布団をテーブルに広げる日常の作業の最中で、すぐ横で猫がじっと見ている。小さな一言字幕『こたつ出すか』。以後も約3秒ごとに短いつっこみ字幕（『直ぐ乗るやん』『ちょ邪魔やな…』）で状況が進む。人の顔は出ない。
+- 借りたもの: ①0秒から『人の日常の作業（手元だけ）＋それを見ている動物』 ②タイトルを最初から上に出す ③約3秒ごとに短い一言で状況が進むテンポ。番号付きで並べる形は 46mQHJsnbYI、同じチャンネルの ftudRJGeVwc（7.0倍・14秒、0秒から左上に白箱の2行タイトル『猫の飼い主が / 一度はやること』）からタイトル箱の出し方。猫→犬、こたつ→お出かけに替え、映像は新規。
+
+### 台詞（Achernar・音読用）と字幕
+| 秒 | 役割 | 台詞 | 字数 | 字/秒 | 字幕（2行・/ で改行） |
+|---|---|---|---|---|---|
+| 0.0-3.0 | フック | 犬と暮らす人の、お出かけあるある。 | 15 | 5.00 | 犬と暮らす人の / お出かけあるある |
+| 3.0-6.0 | 具体 | カギを持った瞬間、察される。 | 12 | 4.00 | ① カギを持った瞬間 / 察される |
+| 6.0-10.0 | 具体 | 玄関で、この顔。出かけにくい。 | 12 | 3.00 | ② 玄関で この顔 / 出かけにくい |
+| 10.0-12.5 | 誘導 | 見守りカメラだと、もう寝てる。 | 13 | 5.20 | ③ 見守りカメラで見ると / もう寝てる |
+| 12.5-15.0 | 誘導 | 紹介してるカメラは、プロフィールに。 | 15 | 6.00 | 紹介してるカメラは / プロフィールへ ▲ |
+
+### 時間ごとの絵
+- **6sパート（0.0-6.0秒・768x1344）**: 0.0-3.0 朝の廊下。靴箱の上の小皿に向かって手（ネイビーの袖）が伸びる。床では犬がくつろいで寝そべっている。上に白い箱のタイトル『犬と暮らす人の / お出かけあるある』（編集） → 3.0-6.0 手がカギ（ロゴなし）を持ち上げてチャリッと鳴る。犬が一瞬で顔を上げ、起き上がってじっと見る。黄色い帯『①』。人の顔は映さない
+- **9sパート（6.0-15.0秒・640x1152）**: 6.0-10.0 玄関。スニーカーの足元（脚だけ）と、上がりかまちにお座りして見上げる犬。耳を少し下げ、首をかしげる。手が小さくバイバイ（黄色い帯『②』） → 10.0-12.5 見守りカメラ映像風（少し魚眼・高い位置・少し色あせ）。誰もいないリビングで、犬がソファの飼い主の場所（たたんだベージュのカーディガンの上）でもう丸くなって寝ている（黄色い帯『③』） → 12.5-15.0 実景。棚の上のロゴなしの白い見守りカメラと、カーディガンの上で眠る犬
+
+### H3用プロンプト
+#### 6sパート（FL2VA・6.00秒・768x1344・295語）
+最初のコマの静止画（参照画像なし（人の顔を入れない））:
+```text
+Photoreal still, vertical 9:16, a bright Japanese home hallway in the morning seen from low height; on a light wooden shoe cabinet sits a small white dish with a plain key ring (no logos), and a hand in a navy sleeve reaches toward it from the top edge. On the floor in front of the cabinet, a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar lies relaxed with its chin on its paws. No faces, no text, no logos.
+```
+H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
+```text
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 relatable pet short shot only on hands and the dog; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and people appear only as hands, sleeves and legs. The shot begins in the composition of <Picture 1>: in a bright hallway, a hand in a navy sleeve reaches toward a plain key ring in a small dish on a wooden shoe cabinet, while the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lies relaxed on the floor with its chin on its paws. The hand moves slowly closer to the dish. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 犬と暮らす人の、お出かけあるある。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a closer low angle: the hand lifts the keys with a jingle, and the dog's head snaps up instantly; it springs to its feet and stares up at the keys with ears perked. The camera pushes in with small amplitude at slow speed toward the dog. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] カギを持った瞬間、察される。</d> while no lips are visible on screen.
+
+overall_soundscape: Quiet morning hallway ambience; a soft ceramic clink and a bright jingle of keys, then quick paw scrabbles on the wooden floor and the collar tag jingling.
+
+non_diegetic_music: A light, playful ukulele pattern at a brisk moderate tempo, with a comic pluck at 00:03.000.
+```
+#### 9sパート（FL2VA・9.00秒・640x1152・424語）
+最初のコマの静止画（参照画像なし（人の顔を入れない））:
+```text
+Photoreal still, vertical 9:16, a bright Japanese genkan entrance seen from inside at dog height: a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar sits on the raised wooden step looking up, and a person's legs in jeans and white sneakers stand on the lower tiled floor by the door, cut off at the knees. No faces, no text, no logos.
+```
+H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
+```text
+For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
+
+integrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 relatable pet short shot only on legs, hands and the dog; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: in a bright genkan, the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sits on the raised wooden step and looks up at a person whose legs in jeans and white sneakers stand by the door, cut off at the knees. The dog lowers its ears slightly and tilts its head with big round eyes; a hand dips into the top of the frame and gives a small wave. The camera pushes in with small amplitude at slow speed toward the dog's face. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 玄関で、この顔。出かけにくい。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the view switches to footage in the look of a home pet-camera feed, slightly fisheye from a high shelf, mildly desaturated with soft compression and no overlay graphics: in an empty sunlit living room, the same dog is already curled up asleep on a folded beige cardigan in the corner of a light-grey sofa. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 見守りカメラだと、もう寝てる。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a real, full-color low-angle shot of the living room: a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering stands on a low white shelf, and below it the dog sleeps soundly on the beige cardigan until the final frame. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるカメラは、プロフィールに。</d> while no lips are visible on screen.
+
+overall_soundscape: A small whine and the collar tag jingling in the entrance, the door latch clicking softly, then a very quiet living room with the faint hiss of a camera feed and slow, deep sleeping breaths.
+
+non_diegetic_music: The playful ukulele pattern softens into a slow, dozy phrase and fades out over the final second.
+```
+**ネガティブ（メモ用）**: text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air, visible faces, person's head, timestamp overlay, camera UI text, dog in distress, barking dog, dog scratching the door
+
+### タイトル
+`犬と暮らす人のお出かけあるある #Shorts #犬のいる暮らし #あるある`
+
+### 概要欄（全文）
+```text
+アフィリエイト広告を含みます #PR
+犬と暮らす人の、お出かけあるある。
+①カギを持った瞬間、察される ②玄関で、この顔 ③見守りカメラで見ると、もう寝てる
+見守りカメラなら、外からスマホで様子を見たり、話しかけたりできます。
+※映像はAIで生成したイメージです。
+紹介しているものはプロフィールのリンクからどうぞ。
+
+#PR #犬のいる暮らし #あるある #見守りカメラ #犬の留守番
+
+映像・ナレーションはAIで生成しています。
+```
+
+### 注意点（法務）
+- 機能は全機種の公式仕様にある範囲だけ（スマホでライブ映像・リアルタイム双方向会話）。おやつは使わない・映さない。『もう寝てる』はあるあるの演出で、留守番中の様子や反応を保証しない。「分離不安が治る」「安心」等は言わない。
+- 見守りカメラ映像風の場面はAI生成（実際の録画・アプリ画面に見せない）。概要欄に明記。玄関の犬は悲しそうでも苦しそうにしない（吠える・ドアをかく絵にしない）。
+- サクラは出さない（キャラ喋りは広告以外で勝った例が見つかっていないため）。人は手・袖・ひざ下だけ。stock-09 とは場面（お出かけ前の玄関→飼い主の場所で寝る）が別。
+- 参考動画（BCImVTwkuQI / ftudRJGeVwc / 46mQHJsnbYI）から借りたのは冒頭3秒の見せ方とあるあるを並べるテンポだけ。映像は新規。
+- 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
+
+---
 ## 3. 出典（数字・事実）
 - Achernar の速さ 6.40 / 6.65字/秒: `/workspace/affi-h3-research-20260929/post/narration_gemini_Achernar.txt`（実測）。
 - 解像度・秒数・steps・LoRA の強さ: `fireworker011/Research` `cursor/h3-fast-fl2va-lora-6dc5` `h3-runner/README.md`（コミット 20dd89a）。
@@ -795,6 +955,7 @@ non_diegetic_music: The pizzicato-strings pattern relaxes into a warm, airy melo
 - 参考動画 Swt-8_hj_pc / biBzOuRiAGY: yt-dlp で info.json と動画を取得し、0.5秒ごとのコマを確認（`/workspace/affi-stock-20260930/ref/`。分析だけに使い、再配布しない）。型ごとの倍率は `/workspace/buzz-research-affi-stock-audit-20260930.md`。
 - 参考動画 Ir0VlXFSjyk: 動画ファイル（`ref/Ir0VlXFSjyk.mp4`）と info.json から最初の6秒のコマを確認（`ref/ir0_first6.jpg`, `ref/ir0_sheet.jpg`）。iVCAQLUhCdo: 動画本体は YouTube の bot 確認で取得できず、info.json とストーリーボード画像（`ref/ivc_sb_1.jpg`, `ref/ivc_sb_2.jpg`）で確認。どちらも分析だけに使い、再配布しない。
 - オルビスユーは ウォッシュ→ローション→モイスチャー の3ステップ設計（公式）: https://www.orbis.co.jp/special/orbis_u/4_simplestep/ ・ https://www.orbis.co.jp/mid/910/ （2026-09-30 確認）。stock-10 は『1本で完結』とは言わず、化粧水まわりの工程だけを比べる。
+- 参考動画 BCImVTwkuQI / ftudRJGeVwc / 46mQHJsnbYI: yt-dlp で info.json と動画（360x640）を取得し、最初の6秒を0.5秒ごと・全体を1秒ごとのコマで確認（`ref/<id>_first6.jpg`, `ref/<id>_sheet.jpg`。分析だけに使い、再配布しない）。倍率は市場リサーチの実測（2026-09-30）、再生数・登録者数は yt-dlp（2026-09-30）。
 - 字幕の見た目（白ボックス・白一色でない・太字）: `affi-h3-research-20260929/caption_narration_report.md`。
 
 ## 4. 人間が確認すること（生成前）
