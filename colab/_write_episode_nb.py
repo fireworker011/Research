@@ -46,9 +46,9 @@ __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 __POSE_HELP__
 INVITE_POSE = __POSE_DEFAULT__  #@param __POSE_CHOICES__
-#@markdown **騎乗・曲げ膝** — 姿勢の違いを聞く前の足。両膝は曲がったまま、足裏は肋骨の左右。相手の手が乗る人の胸。選んだ人だけ。なしはシーンのまま。
+#@markdown **騎乗・最初から膝曲げ** — 足裏は肋骨の左右。両膝は最初から曲がったまま下ろす。相手の手が乗る人の胸。選んだ人だけ。なしはシーンのまま。
 RIDE_BENT = "なし"  #@param __RIDE_CHOICES__
-#@markdown **騎乗・細い柱** — 今の足。跪きから一度まっすぐ立ち、足裏は肋骨のすぐ横。それから膝を曲げ、乗る人の手が仰向けの胸へ付いて一度下ろす。選んだ人だけ。同じ人を両方で選ぶと細い柱。
+#@markdown **騎乗・足を揃えて立ってから下ろす** — 跪きから一度まっすぐ立ち、足裏は肋骨のすぐ横。それから膝を曲げて下ろす。乗る人の手が仰向けの胸。選んだ人だけ。同じ人を両方で選ぶと、足を揃えて立ってから下ろす。
 RIDE_COLUMN = "なし"  #@param __RIDE_CHOICES__
 __TOILET_HELP__
 TOILET = __TOILET_DEFAULT__  #@param __TOILET_CHOICES__

@@ -100,6 +100,10 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 立ちバック、誘う立ちバック、後ろアナル、フルネルソンは、spot の次に `04-tsuno-stand`（縁から立つ、cut）。その次の meet / in / carry は cut。密着・挿入・抱き上げの本文は残す。場所の語は病室。`04-tsuno-stall` 以降の個室 cut はそのまま。
 
+## 選択肢の名前
+
+6番とシーンごと。足を揃えて立ってから下ろすのが今の跨ぎ。最初から膝を曲げて下ろすのが、姿勢の違いを聞く前の跨ぎ。角の一覧では「角・病室で横になって挿入」が寝室の横並び、「角・病室でベッドの後ろアナル」がベッドのままの後ろアナル。「角・騎乗・細い柱」は一覧に出さない。中身は横になって挿入と同じ。
+
 ## 角・騎乗（`invite_ride`）
 
 順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-lie` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。仰向けにしない。action に SPOONLG と体位名は書かない。

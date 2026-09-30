@@ -316,8 +316,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "□誘う（淫欲・失敗）" in src
     assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
     assert 'INVITE_POSE = "四つん這い股広げ（迷ったらこれ）"' in src
-    assert "対面M字騎乗（口のあと）" in src
-    assert "騎乗・曲げ膝（口のあと）" in src
+    assert "騎乗・足を揃えて立ってから下ろす" in src
+    assert "騎乗・最初から膝を曲げて下ろす" in src
     assert 'RIDE_BENT = "なし"' in src
     assert 'RIDE_COLUMN = "なし"' in src
     assert "H3_EPISODE_RIDE_BENT" in src
@@ -5488,7 +5488,9 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         "wash_carry",
     }
     assert TSUNO_MODES["off"]["choice_ja"].startswith("角・")
-    assert TSUNO_MODES["invite_ride"]["choice_ja"] == "角・騎乗"
+    assert TSUNO_MODES["invite_ride"]["choice_ja"] == "角・病室で横になって挿入"
+    assert TSUNO_MODES["invite_jacko"]["choice_ja"] == "角・病室でベッドの後ろアナル"
+    assert "角・騎乗・細い柱" not in ui_choices("tsuno")
     assert TSUNO_MODES["wash_carry"]["choice_ja"] == "角・個室"
     assert TSUNO_OVERLAY_KEYS["invite_ride"] == "on_tsuno_invite_ride"
     assert TSUNO_OVERLAY_KEYS["wash_carry"] == "on_tsuno_wash_carry"

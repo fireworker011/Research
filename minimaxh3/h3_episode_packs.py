@@ -349,13 +349,13 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     },
     "ride": {
         "label_ja": "騎乗位",
-        "choice_ja": "対面M字騎乗（口のあと）",
+        "choice_ja": "騎乗・足を揃えて立ってから下ろす",
         "when_ja": "出会いでベロチュー。行為は口→細い柱の対面騎乗→中出し→歩きの4本。跪きから一度まっすぐ立ち、それから膝を曲げて下ろす",
         "hint_ja": "竿役は仰向け。あやは足を肋骨のすぐ横に揃えて立つ。それから膝を曲げ、あやの手が竿役の胸。終わりはあや一人歩き",
     },
     "ride_bent": {
-        "label_ja": "騎乗・曲げ膝",
-        "choice_ja": "騎乗・曲げ膝（口のあと）",
+        "label_ja": "騎乗・最初から膝曲げ",
+        "choice_ja": "騎乗・最初から膝を曲げて下ろす",
         "when_ja": "出会いでベロチュー。行為は口→両膝を曲げたままの対面騎乗→中出し→歩きの4本",
         "hint_ja": "竿役は仰向け。あやは最初から両膝を曲げ、足裏を肋骨の左右に置く。相手の手が胸。一度下ろして根元。終わりはあや一人歩き",
     },
@@ -409,9 +409,13 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "missionary": "m_open",
         "騎乗位": "ride",
         "細い柱": "ride",
+        "対面M字騎乗（口のあと）": "ride",
+        "騎乗・足を揃えて立ってから下ろす": "ride",
         "cowgirl": "ride",
         "曲げ膝": "ride_bent",
         "騎乗・曲げ膝": "ride_bent",
+        "騎乗・曲げ膝（口のあと）": "ride_bent",
+        "騎乗・最初から膝を曲げて下ろす": "ride_bent",
         "jupo": "ride",
         "ベロチュー→じゅぼ→騎乗位": "ride",
         "壁立ちバック": "stand",
@@ -519,13 +523,13 @@ GIN_MODES: dict[str, dict[str, Any]] = {
     },
     "taken": {
         "label_ja": "犯される",
-        "choice_ja": "灰色・犯される（騎乗）",
-        "when_ja": "長い舌がクリを24cmに。口のあと、両膝を曲げたままギンが騎乗。終わりは竿も相手も消えてあや一人歩き",
-        "hint_ja": "あやが24cmを生やされて騎乗される。両膝は曲がったまま。ギンの手があやの胸。終わりは完全消滅",
+        "choice_ja": "灰色・騎乗・最初から膝曲げ",
+        "when_ja": "長い舌がクリを24cmに。口のあと、両膝を曲げたままギンが跨ぐ。終わりは竿も相手も消えてあや一人歩き",
+        "hint_ja": "あやが24cmを生やされて跨がれる。両膝は最初から曲がったまま。ギンの手があやの胸。終わりは完全消滅",
     },
     "taken_column": {
         "label_ja": "犯される・細い柱",
-        "choice_ja": "灰色・騎乗・細い柱",
+        "choice_ja": "灰色・騎乗・足を揃えて立つ",
         "when_ja": "長い舌がクリを24cmに。口のあと、ギンが一度まっすぐ立ってから膝を曲げて騎乗。終わりは竿も相手も消えてあや一人歩き",
         "hint_ja": "ギンが細い柱で跨ぎ、手をあやの胸へ置いて一度下ろす。終わりは完全消滅",
     },
@@ -558,7 +562,9 @@ GIN_ALIASES: dict[str, str] = _label_aliases(
         "skip": "off",
         "犯される": "taken",
         "騎乗": "taken",
+        "灰色・犯される（騎乗）": "taken",
         "灰色・騎乗・細い柱": "taken_column",
+        "灰色・騎乗・足を揃えて立つ": "taken_column",
         "犯す": "fuck",
         "正常位": "fuck",
         "誘う後背": "invite_doggy",
@@ -600,20 +606,21 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
         "hint_ja": "胸を鷲掴み。入れたまま両脚を抱える。竿は肛門だけ",
     },
     "invite_ride": {
-        "label_ja": "騎乗",
-        "choice_ja": "角・騎乗",
+        "label_ja": "病室で横になって挿入",
+        "choice_ja": "角・病室で横になって挿入",
         "when_ja": "廃病室。座り、キス、しゃがみ口、顔射、横になって一度入れて HOLD、円腰の中出し、キス、入り口のあや一人",
         "hint_ja": "角はベッドの縁に座る。個室へ行かない。終わりはあや一人",
     },
     "invite_ride_column": {
-        "label_ja": "騎乗・細い柱",
+        "label_ja": "病室で横になって挿入と同じ",
         "choice_ja": "角・騎乗・細い柱",
-        "when_ja": "寝室の角・騎乗と同じ並び。細い柱の足はもう使わない",
-        "hint_ja": "角・騎乗と同じ寝室の並び",
+        "when_ja": "角・病室で横になって挿入と同じ並び。一覧には出さない",
+        "hint_ja": "同じ寝室の並び",
+        "form": False,
     },
     "invite_jacko": {
-        "label_ja": "寝室アナル",
-        "choice_ja": "角・寝室アナル",
+        "label_ja": "病室でベッドの後ろアナル",
+        "choice_ja": "角・病室でベッドの後ろアナル",
         "when_ja": "顔射のあと別枝。寝室のまま後ろから肛門。個室へ行かない。終わりはあや一人",
         "hint_ja": "病室のベッド。胸と頬がマット。一度入れて根元。中出し、開き、口、歩き",
     },
@@ -657,6 +664,8 @@ TSUNO_ALIASES: dict[str, str] = _label_aliases(
         "角・騎乗・細い柱": "invite_ride_column",
         "角・寝室アナル": "invite_jacko",
         "寝室アナル": "invite_jacko",
+        "角・病室で横になって挿入": "invite_ride",
+        "角・病室でベッドの後ろアナル": "invite_jacko",
         "角・個室": "wash_carry",
         "個室": "wash_carry",
         "個室アナル": "wash_carry",
@@ -1202,15 +1211,15 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
     },
     "invite_ride": {
         "label_ja": "誘う・騎乗",
-        "choice_ja": "□誘う・騎乗・細い柱",
-        "when_ja": "この人を口のあと、細い柱の対面騎乗で誘う",
+        "choice_ja": "□誘う・騎乗・足を揃えて立つ",
+        "when_ja": "この人を口のあと、足を揃えて立ってから下ろす対面の跨ぎで誘う",
         "story": "invite",
         "pose": "ride",
     },
     "invite_ride_bent": {
         "label_ja": "誘う・騎乗曲げ膝",
-        "choice_ja": "□誘う・騎乗・曲げ膝",
-        "when_ja": "この人を口のあと、両膝を曲げたままの対面騎乗で誘う",
+        "choice_ja": "□誘う・騎乗・最初から膝曲げ",
+        "when_ja": "この人を口のあと、最初から両膝を曲げて下ろす対面の跨ぎで誘う",
         "story": "invite",
         "pose": "ride_bent",
     },
@@ -1264,8 +1273,11 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘うM字": "invite_m_open",
         "誘う騎乗": "invite_ride",
         "□誘う・対面M字騎乗": "invite_ride",
+        "□誘う・騎乗・細い柱": "invite_ride",
+        "□誘う・騎乗・足を揃えて立つ": "invite_ride",
         "誘う騎乗曲げ膝": "invite_ride_bent",
         "□誘う・騎乗・曲げ膝": "invite_ride_bent",
+        "□誘う・騎乗・最初から膝曲げ": "invite_ride_bent",
         "誘う立ちバック": "invite_stand",
         "誘うフルネルソン": "invite_nelson",
         "誘う抱擁": "invite_embrace",
@@ -1698,14 +1710,19 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
     raise KeyError(kind)
 
 
+def _shown_specs(kind: str):
+    """Dropdown rows. form=False stays as an alias and stays off the list."""
+    return [spec for spec in _registry(kind).values() if spec.get("form", True)]
+
+
 def ui_choices(kind: str) -> list[str]:
     """Japanese dropdown strings for Colab, in display order."""
-    return [str(spec.get("choice_ja") or spec["label_ja"]) for spec in _registry(kind).values()]
+    return [str(spec.get("choice_ja") or spec["label_ja"]) for spec in _shown_specs(kind)]
 
 
 def ui_default(kind: str) -> str:
     """The recommended dropdown value (迷ったらこれ)."""
-    for spec in _registry(kind).values():
+    for spec in _shown_specs(kind):
         if spec.get("recommend"):
             return str(spec.get("choice_ja") or spec["label_ja"])
     return ui_choices(kind)[0]
@@ -1714,7 +1731,7 @@ def ui_default(kind: str) -> str:
 def form_markdown(kind: str, heading: str) -> str:
     """Colab #@markdown bullets: each option plus when to pick it."""
     lines = [f"#@markdown **{heading}**"]
-    for spec in _registry(kind).values():
+    for spec in _shown_specs(kind):
         choice = spec.get("choice_ja") or spec["label_ja"]
         when = spec.get("when_ja") or spec.get("hint_ja")
         lines.append(f"#@markdown - **{choice}** … {when}")
@@ -1724,7 +1741,7 @@ def form_markdown(kind: str, heading: str) -> str:
 def form_readme(kind: str) -> str:
     """Markdown bullets for the notebook intro / README (no #@markdown prefix)."""
     lines = []
-    for spec in _registry(kind).values():
+    for spec in _shown_specs(kind):
         choice = spec.get("choice_ja") or spec["label_ja"]
         when = spec.get("when_ja") or spec.get("hint_ja")
         lines.append(f"- **{choice}** … {when}")
