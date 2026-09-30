@@ -19,6 +19,22 @@
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
 
+## いま（2026-09-30）
+
+HEAD は `ec8371ba`。ブランチと PR は上のまま。`python3 -m pytest colab/test_h3_episode.py colab/test_wan_episode.py -q` は 109 通過。生成はまだ人間。新しい話も新しい id も足していない。
+
+動画 `1fqfA6jJdQygxKev67RMgZL27V3L4cETj`（5:31）は、この台本より前の生成である。角・病室の横挿入は入っていない。便器は白い磁器。灰色は通路のギンで、一つの目と生え際の角が無い。白い筋はあやの顔に落ちている。
+
+直したあと、まだ動画になっていないもの。
+
+- `05608320`。「前の最終フレームから続ける」と着地は、台本の `connect: cut` も I2V。カットを選ぶと cut は T2V。connect 欄は書き換えていない。チェーンの T2V は `01-cover` だけ。
+- `ec8371ba`。洋式・和式・触手の便器は有機物。緑の外皮、赤い肉の口、琥珀の液、根。和式は床と同じ高さの長い植物の口で、遠端は葉のフード。磁器は消した。和式の軸（フード左、扉右、頭は左端の前腕）は残す。
+- `ec8371ba`。顔射は cumshot 1.0 と `CUMSH0T`。寝室の中出し `04-tsuno-peak` は thrust 0.55、synth 0.4、`PENISLORA`。`merge_trigger` は、積んだ cumshot / cmst / cumouf / penis / spoonlg / thrust の語が空ならプロンプトに足す。
+
+人間が FRESH するもの。トイレの個室。`04-tsuno-wait` `04-tsuno-peak` `04-tsuno-jo-cum`。かなの `09-kana-facial`。角を出すときは `04-tsuno-meet-spot` からその枝の最後。
+
+触らない。Wan ノート。`WAN_HANDOFF.md`。pee と finger の動作本文。ギンの口の本文。角の connect 欄。新しい話。
+
 ## Wan 2.2（H3 の横。H3 ノートは置き換えない）
 
 描画だけ Wan 2.2。台本・ドロップダウン・HUD 結合は H3 の `prepare_episode` と `finish_episode` のまま。
