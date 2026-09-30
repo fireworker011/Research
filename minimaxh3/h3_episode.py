@@ -4694,6 +4694,36 @@ def _positive_look(lock: str) -> str:
     return ", ".join(kept)
 
 
+_HORN_AYA_FACE = (
+    "a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
+    "mouth open, thick saliva dripping from the open mouth, affectionate and drowning in pleasure"
+)
+_HORN_TSUNO_FACE = (
+    "a lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, "
+    "thick saliva dripping, affectionate and drowning in pleasure"
+)
+
+
+def _horn_face_beat(beat: dict[str, Any]) -> bool:
+    """Horn shots that ask both adults for the lewd pleasure face."""
+    if "lewd pleasure-drunk" not in str(beat.get("action") or "").lower():
+        return False
+    cast = {str(c) for c in (beat.get("cast") or [])}
+    return "aya" in cast and "tsuno" in cast
+
+
+def _paint_horn_lock(lock: str, beat: dict[str, Any], who: str) -> str:
+    """Keep the horn pair from resetting to a blank face. Aya loses the cover expression. Tsuno gains the smile."""
+    text = str(lock or "")
+    if not _horn_face_beat(beat):
+        return text
+    if who == "aya":
+        return text.replace("tired determined expression", _HORN_AYA_FACE)
+    if who == "tsuno" and "lewd pleasure-drunk" not in text.lower():
+        return text.rstrip(" .") + ", " + _HORN_TSUNO_FACE
+    return text
+
+
 def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     """Repeat the initial character look inside the action so dirt and a shaft do not wash off."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
@@ -4706,9 +4736,9 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     for cid in beat.get("cast") or []:
         row = cast.get(cid) or {}
         name = str(row.get("name_en") or cid).strip() or str(cid)
-        lock = str(locks.get(cid) or row.get("lock") or "")
+        lock = _paint_horn_lock(str(locks.get(cid) or row.get("lock") or ""), beat, str(cid))
         positive = _positive_look(lock)
-        if positive and "pleasure-drunk" in str(beat.get("action") or "").lower():
+        if positive and "pleasure-drunk" in str(beat.get("action") or "").lower() and "lewd pleasure-drunk" not in positive.lower():
             positive = positive.replace(
                 "tired determined expression",
                 "a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping from the open mouth",
@@ -4741,7 +4771,8 @@ def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     for cid in beat.get("cast") or []:
         c = cast.get(cid) or {}
         name = str(c.get("name_en") or cid.title())
-        lock = _drop_tired(str(beat_locks.get(cid) or c.get("lock") or ""), beat).strip().rstrip(".")
+        lock = _paint_horn_lock(str(beat_locks.get(cid) or c.get("lock") or ""), beat, str(cid))
+        lock = _drop_tired(lock, beat).strip().rstrip(".")
         lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
     return "\n".join(lines)
 

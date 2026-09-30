@@ -33,7 +33,9 @@
 
 角の口 `04-tsuno-oral` は blowjob 0.8 と `bl0w_j0b`。mystic 0.5 と penis 0.45 は残す。動作文と connect 欄は変えていない。横挿入と寝室アナルの両方。
 
-人間が FRESH するもの。トイレの個室。`04-tsuno-oral` `04-tsuno-wait` `04-tsuno-peak` `04-tsuno-jo-cum`。かなの `09-kana-facial`。角を出すときは `04-tsuno-meet-spot` からその枝の最後。
+角の二人の顔。あやと角が同じ画面にいる拍は `lewd pleasure-drunk happy smile`。頬は赤く、涎が垂れ、快感に酔って、互いを慕う。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きは変えていない。connect 欄は変えていない。
+
+人間が FRESH するもの。トイレの個室。`04-tsuno-oral` `04-tsuno-wait` `04-tsuno-peak` `04-tsuno-jo-cum`。かなの `09-kana-facial`。角を出すときは `04-tsuno-meet-spot` からその枝の最後。顔を足したので、その枝は最後まで FRESH。
 
 触らない。Wan ノート。`WAN_HANDOFF.md`。pee と finger の動作本文。ギンの口の本文。角の connect 欄。新しい話。
 
@@ -111,6 +113,8 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 - 遭遇 `04-tsuno-meet-spot` とギンの `04-gin-lick-spot` は同じ遅れ足。新人は `ENTERS from the LEFT edge`。膝は硬い。一歩が遅れる。後ろ足はリノリウムを滑る。両腕は遅れて揺れる。頭は少し傾く。短い間隔を保つ。あやは右へ歩き、遅くなって止まる。あやの他の歩様は変えない。`zombie` `corpse` `blood` `undead` `shambling` `match stride` は書かない。spot はそこで終わる。異種の spot 本文は変えない
 - `04-tsuno-meet`: ミキへの背後抱きと同じ。体を背中に押しつけ、胸が潰れるまで密着し、両手で胸を揉む。その密着のまま竿が肛門へ入る。入った瞬間、あやも角も止まる。顔は驚きと快楽。声は「んおおおおぉー」。結合部を見せる横ずれは書かない。壁へ移る動きのあとに止まる。LUNGES は使わない。フルネルソンの meet も同じ抱擁から入り、文は `wraps Aya from behind`。立ちバック・後ろアナル・フルネルソンの本文は残す
+
+角の二人は、あやと角が同じ画面にいる拍で `lewd pleasure-drunk happy smile`。頬は赤く、涎が垂れ、快感に酔って、互いを慕う。口が竿や相手の口に付いている拍は、その口を開け直さない。`do not turn to face each other` の拍と、顔の向きが既にある拍は、その姿勢のまま笑う。あや一人の歩きには足さない。Look は無表情の lock に戻さない。
 
 ## 角・廃病室
 
@@ -365,4 +369,4 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。動作文と connect 欄は変えていない。FRESH は両方の `04-tsuno-oral`。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。ThumbInButt の本文はそのまま。座位の zai、抱擁、ネルソン、洋式、角の個室 stall、jupo、Wan ノートは触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
+5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。角の二人は、同じ画面にいる拍で lewd pleasure-drunk happy smile。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きと connect 欄は変えていない。FRESH は角を出す枝の `04-tsuno-meet-spot` から最後まで。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。ThumbInButt の本文はそのまま。座位の zai、抱擁、ネルソン、洋式、角の個室 stall、jupo、Wan ノートは触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`

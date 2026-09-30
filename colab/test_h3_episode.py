@@ -3003,6 +3003,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "exactly four long fingers" in meet["action"].lower()
     assert "lunges" not in meet["action"].lower()
     assert "happy accepting smile" in meet["action"].lower()
+    assert "lewd pleasure-drunk happy smile" in meet["action"].lower()
+    assert "in the pose they already hold" in meet["action"].lower()
     assert "already stopped" in meet["action"].lower()
     tsuno_spot = next(b for b in stand["beats"] if b["id"] == "04-tsuno-meet-spot")
     assert tsuno_spot.get("connect") == "cut"
@@ -5535,11 +5537,31 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "on her back" not in oral["action"].lower()
     assert "STANDS" not in oral["action"]
     assert "STANDS" not in oral_prompt
+    assert "lewd pleasure-drunk happy smile" in oral["action"].lower()
+    assert "lips stay on the shaft" in oral["action"].lower()
+    for bid in (
+        "04-tsuno-kiss",
+        "04-tsuno-oral",
+        "04-tsuno-wait",
+        "04-tsuno-lie",
+        "04-tsuno-ride",
+        "04-tsuno-peak",
+        "04-tsuno-ride-kiss",
+    ):
+        faced = next(b for b in ride["beats"] if b["id"] == bid)
+        assert "lewd pleasure-drunk happy smile" in faced["action"].lower(), bid
+        assert "affectionate" in faced["action"].lower(), bid
+        faced_prompt = build_beat_prompt(ride, faced, trigger=merge_trigger("", faced))
+        assert "lewd pleasure-drunk happy smile" in faced_prompt.lower(), bid
+        assert "single eye half-lidded" in faced_prompt.lower(), bid
+        assert "tired determined" not in faced_prompt.lower(), bid
     jacko_bed = prepare_episode(raw, tsuno_override="角・寝室アナル", connect_override="chain")
     jacko_oral = next(b for b in jacko_bed["beats"] if b["id"] == "04-tsuno-oral")
     assert extra_lora_entries(jacko_oral) == extra_lora_entries(oral)
     assert jacko_oral.get("trigger") == "bl0w_j0b"
     assert jacko_oral.get("connect") == "chain"
+    assert "lewd pleasure-drunk happy smile" in jacko_oral["action"].lower()
+    assert "lips stay on the shaft" in jacko_oral["action"].lower()
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
     assert extra_lora_entries(wait)[0] == ("cumshot", 1.0)
