@@ -22,13 +22,21 @@ from h3_runner.weights import staging_dir
 TURBO_REPO = "lightx2v/Minimax-h3-Turbo"
 TURBO_FILENAME = "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
 
-# Civitai model version ids. Names are the files this runner writes.
+# Civitai is only Combat. Repair is the Hugging Face file below.
 CIVITAI_COMBAT_VERSION = 3246572
-CIVITAI_REPAIR_VERSION = 3366092
-CIVITAI_FILES = (
-    (CIVITAI_COMBAT_VERSION, "combat_base_v2.safetensors", "Combat BASE V2"),
-    (CIVITAI_REPAIR_VERSION, "motion_continuity_repair_v2.safetensors", "Motion Continuity Repair V2"),
-)
+COMBAT_FILENAME = "combat_base_v2.safetensors"
+COMBAT_LABEL = "Combat BASE V2"
+
+# JOKER141/MiniMax-H3-General-Motion-Continuity-Repair listing (2026-09-28).
+# Motion_Repair.safetensors is V1. The card's BUNNY Motion Repair V2 is this file.
+REPAIR_REPO = "JOKER141/MiniMax-H3-General-Motion-Continuity-Repair"
+REPAIR_FILENAME = "Motion_Repair_V2.safetensors"
+
+# Header of Motion_Repair_V2.safetensors (416 tensors, no AdaLN keys):
+# diffusion_model.blocks.{i}.attn.qkv_proj|attn.out_proj|mlp.fc1|mlp.fc2 .lora_{A,B}.weight
+# __metadata__.software is ai-toolkit. Not ComfyUI (no .alpha, no lora_down).
+# diffusers 5ff8e59 lora_state_dict sees the diffusion_model. prefix and calls
+# _convert_non_diffusers_minimax_h3_lora_to_diffusers. The file is not rewritten.
 
 PRUNED_ADALN_IN = 8
 # Released MiniMax-H3 AdaLN projection input. Documented by diffusers PR 14408.
@@ -119,6 +127,71 @@ def adaln_input_width(name: str, shape: list[int] | tuple[int, ...]) -> int | No
     if "lora_a" in low or "lora_down" in low or low.endswith(".weight"):
         return int(shape[-1])
     return None
+
+
+_NATIVE_PREFIXES = (
+    "diffusion_model.",
+    "blocks.",
+    "token_refiner.",
+    "final_layer.",
+    "lora_unet_",
+    "video_patch_proj",
+    "audio_patch_proj",
+    "condition_proj",
+    "time_embedder.",
+)
+
+
+def classify_lora_header(header: dict) -> str:
+    """``native`` when diffusers converts the keys, ``diffusers`` when they already match.
+
+    ``native`` covers ai-toolkit (``diffusion_model.`` + ``lora_A``/``lora_B``) and ComfyUI
+    (the same prefix, often with ``.alpha`` or ``lora_down``). Both go through
+    ``MiniMaxH3LoraLoaderMixin.lora_state_dict`` at ``load_lora_weights``. This runner
+    does not write a second file.
+    """
+    keys = [key for key in header if key != "__metadata__"]
+    if not keys:
+        raise ValueError("LoRA のテンソルが無い")
+    if any(key.startswith(("transformer.", "transformer_ref.")) for key in keys):
+        return "diffusers"
+    if any(key.startswith(_NATIVE_PREFIXES) for key in keys):
+        return "native"
+    if any(".default.weight" in key for key in keys):
+        return "diffusers"
+    sample = ", ".join(keys[:3])
+    raise ValueError(
+        "LoRA のキーが diffusers の load_lora_weights が変換する形ではない。"
+        f"diffusion_model. / blocks. / lora_unet_ / transformer. のどれでもない。例: {sample}"
+    )
+
+
+def inspect_lora_file(path: Path) -> str:
+    """Refuse pruned AdaLN, then say whether ``load_lora_weights`` converts the keys."""
+    path = Path(path)
+    reject_pruned_adaln(path)
+    header = read_safetensors_header(path)
+    layout = classify_lora_header(header)
+    meta = header.get("__metadata__")
+    software = ""
+    if isinstance(meta, dict):
+        software = str(meta.get("software") or meta.get("target_format") or "")
+    keys = [key for key in header if key != "__metadata__"]
+    kind = "ai-toolkit / ComfyUI などの非 diffusers"
+    if layout == "diffusers":
+        kind = "diffusers"
+    elif any(key.endswith(".lora_down.weight") or key.endswith(".alpha") for key in keys):
+        kind = "ComfyUI（lora_down または .alpha）"
+    elif software and "ai-toolkit" in software:
+        kind = "ai-toolkit（diffusion_model. + lora_A/lora_B）"
+    note = (
+        "diffusers の load_lora_weights がキーを変換する。ファイルは書き換えない。"
+        if layout == "native"
+        else "load_lora_weights がそのまま読める。変換ファイルは作らない。"
+    )
+    extra = f" metadata={software[:80]}" if software else ""
+    print(f"LoRA {path.name}: {kind}。キー {len(keys)}。{note}{extra}", flush=True)
+    return layout
 
 
 def reject_pruned_adaln(path: Path) -> None:
@@ -229,9 +302,11 @@ def prepare_fast_loras(
     hub_download=None,
     opener=None,
 ) -> list[Path]:
-    """Put the turbo LoRA and the two BUNNY LoRAs under ``dest_dir``. Skip files already there.
+    """Put Turbo, Repair, and Combat under ``dest_dir``. Skip files already there.
 
-    ``token`` defaults to ``CIVITAI_TOKEN``. A missing token is fine until Civitai returns 403.
+    Turbo and Repair come from Hugging Face. Combat stays on Civitai. With no
+    ``CIVITAI_TOKEN`` and no Combat file, Combat is skipped and the other two stay.
+    A token that Civitai rejects with 403 still stops the cell.
     """
     dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -249,10 +324,24 @@ def prepare_fast_loras(
     turbo = dest_dir / TURBO_FILENAME
     _download_hf(TURBO_REPO, TURBO_FILENAME, turbo, hub_download)
     written.append(turbo)
-    for version_id, filename, label in CIVITAI_FILES:
-        path = dest_dir / filename
-        _download_civitai(version_id, path, label, token, opener)
-        written.append(path)
+    repair = dest_dir / REPAIR_FILENAME
+    _download_hf(REPAIR_REPO, REPAIR_FILENAME, repair, hub_download)
+    written.append(repair)
+    combat = dest_dir / COMBAT_FILENAME
+    if _already(combat):
+        print(f"飛ばす: {combat.name} は既にある ({combat.stat().st_size} bytes)", flush=True)
+        written.append(combat)
+    elif not token:
+        print(
+            f"CIVITAI_TOKEN が無いので {COMBAT_LABEL}（modelVersionId {CIVITAI_COMBAT_VERSION}）だけ飛ばす。"
+            "Turbo と Motion Repair V2 は Hugging Face なのでこのトークンは要らない。",
+            flush=True,
+        )
+    else:
+        _download_civitai(CIVITAI_COMBAT_VERSION, combat, COMBAT_LABEL, token, opener)
+        written.append(combat)
+    for path in written:
+        inspect_lora_file(path)
     print(
         "LoRA 準備完了: "
         + ", ".join(f"{path.name}={path.stat().st_size}" for path in written),

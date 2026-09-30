@@ -32,9 +32,14 @@ Turbo は [lightx2v/Minimax-h3-Turbo](https://huggingface.co/lightx2v/Minimax-h3
 | A | 既存の `orbis01_6s.mp4`（作り直さない） | — |
 | B | FL2VA + Turbo | 1.0 |
 | C | B + Combat BASE V2（Civitai modelVersionId 3246572） | 0.7 |
-| D | C + Motion Continuity Repair V2（Civitai modelVersionId 3366092） | 0.6 |
+| D | C + Motion Continuity Repair V2 | 0.6 |
+| D' | B + Motion Continuity Repair V2（Combat 無し） | 0.6 |
 
-Combat BASE V2 と Motion Continuity Repair V2 は **BUNNY（作者 FourBunny）** の LoRA。この2つを使った動画には BUNNY / FourBunny のクレジットを書く。
+Combat BASE V2 は **BUNNY（作者 FourBunny）**。Civitai modelVersionId 3246572 のまま。`CIVITAI_TOKEN` が無いときはこの1本だけ飛ばす。
+
+Motion Continuity Repair V2 の取得元は [JOKER141/MiniMax-H3-General-Motion-Continuity-Repair](https://huggingface.co/JOKER141/MiniMax-H3-General-Motion-Continuity-Repair) の `Motion_Repair_V2.safetensors`（base_model `MiniMaxAI/MiniMax-H3`、lora、2026-09-28 更新）。カードの名前は BUNNY Motion Repair V2。V1 の `Motion_Repair.safetensors` は置かない。Civitai 3366092 は使わない。Repair を使った動画には BUNNY と、配布の JOKER141 を書く。
+
+ヘッダ（テンソル本体は読んでいない）: 416 キー、すべて `diffusion_model.blocks.*` の `lora_A` / `lora_B`。AdaLN キーは無く、入力幅 8 ではない。`__metadata__.software` は ai-toolkit。ComfyUI の `.alpha` も `lora_down` も無い。diffusers `5ff8e59` の `load_lora_weights` は `diffusion_model.` で始まるキーを `_convert_non_diffusers_minimax_h3_lora_to_diffusers` に渡すので、事前の変換ファイルは作らない。準備セルは同じ拒否（AdaLN 入力幅 8）と、このキー形の確認を、置いたファイルに対して行う。
 
 AdaLN の入力幅が 8 の safetensors（Pruned 学習）は読む前に拒否する。公開 BF16 の AdaLN 入力は 2688。ヘッダのキーと shape だけを見て、テンソル本体は読まない。
 
@@ -74,15 +79,15 @@ Drive は **fireworker06@gmail.com** でマウントする。重みは `マイ�
 3. 「A. リポジトリ」セル。ブランチは `cursor/h3-fast-fl2va-lora-6dc5`。
 4. 「A. パッケージ」セル。`huggingface_hub` だけ。
 5. 「A. 重み準備」セル（ノートの index 9）。ベースのシャードに続けて、LoRA を `h3-weights/loras/` に置く。既にあるファイルは飛ばす。
-   - Hugging Face: Turbo の ComfyUI bf16。`HF_TOKEN` はライセンスで 401 のときだけ。
-   - Civitai: `https://civitai.com/api/download/models/<id>`。環境変数 `CIVITAI_TOKEN`（または Colab の同名シークレット）があれば Bearer で付ける。ファイルが無く、応答が 403 なら、トークンが無い旨を出して止まる。Turbo には Civitai は要らない。
+   - Hugging Face: Turbo の ComfyUI bf16 と、Repair の `Motion_Repair_V2.safetensors`。`HF_TOKEN` はライセンスで 401 のときだけ。Repair に `CIVITAI_TOKEN` は要らない。
+   - Civitai: Combat だけ。`https://civitai.com/api/download/models/3246572`。環境変数 `CIVITAI_TOKEN`（または Colab の同名シークレット）があれば Bearer で付ける。トークンが無いときは Combat だけ飛ばす。トークンがあるのに 403 なら止まる。
 
 ### B. G4（RTX PRO 6000）
 
 1. ランタイムのタイプを **G4 GPU** にする。
 2. 「B. 準備」セル。Drive、`torchao==0.18.0`、リポジトリ。
 3. 「B. 生成」セル。FL2VA 6秒+9秒、steps 9、video shift 6、Turbo 強さ 1.0。`orbis01_fl2va_6s.mp4` が Drive にあればその本はスキップする。
-4. 質の比較は **「B. 比較テスト」** の1セル。6秒、768×1344、seed 0、同じ 6秒プロンプトと `sakura-ref.jpg` で B → C → D を順に作り、`マイドライブ/h3-runner/output/test_*.mp4` に保存する。A は既存の `orbis01_6s.mp4`。各段（読み込み、テキストエンコード、ノイズ除去、VAE）の秒数を表にする。1本が落ちても次へ進む。Colab の GPU 実行はこのリポジトリ側ではしない。
+4. 質の比較は **「B. 比較テスト」** の1セル。6秒、768×1344、seed 0、同じ 6秒プロンプトと `sakura-ref.jpg`。B（Turbo）のあと、Combat のファイルがあれば C と D。D' は B + Repair 0.6 で、Combat が無くても回す。保存先は `マイドライブ/h3-runner/output/test_*.mp4`。A は既存の `orbis01_6s.mp4`。各段（読み込み、テキストエンコード、ノイズ除去、VAE）の秒数を表にする。1本が落ちても次へ進む。Colab の GPU 実行はこのリポジトリ側ではしない。
 
 ## コマンド
 

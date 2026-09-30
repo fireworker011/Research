@@ -18,10 +18,15 @@ from h3_runner.cli import build_from_args, main, parse_args, resolve_vram_gb  # 
 from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done  # noqa: E402
 from h3_runner.loras import (  # noqa: E402
     CIVITAI_COMBAT_VERSION,
-    CIVITAI_REPAIR_VERSION,
+    COMBAT_FILENAME,
+    REPAIR_FILENAME,
+    REPAIR_REPO,
     TURBO_FILENAME,
     TURBO_REPO,
+    classify_lora_header,
+    inspect_lora_file,
     parse_lora_args,
+    read_safetensors_header,
     prepare_fast_loras,
     reject_pruned_adaln,
 )
@@ -492,17 +497,23 @@ class LoraHeaderTest(unittest.TestCase):
             reject_pruned_adaln(path)
 
 
+def _native_lora(path: Path) -> None:
+    _pack_safetensors(
+        path,
+        {
+            "diffusion_model.blocks.0.attn.qkv_proj.lora_A.weight": (2, 4),
+            "diffusion_model.blocks.0.attn.qkv_proj.lora_B.weight": (6, 2),
+        },
+    )
+
+
 class LoraPrepareTest(unittest.TestCase):
     def test_existing_files_are_skipped(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            names = [
-                TURBO_FILENAME,
-                "combat_base_v2.safetensors",
-                "motion_continuity_repair_v2.safetensors",
-            ]
+            names = [TURBO_FILENAME, REPAIR_FILENAME, COMBAT_FILENAME]
             for name in names:
-                (root / name).write_bytes(b"already")
+                _native_lora(root / name)
 
             def boom(*_args, **_kwargs):
                 raise AssertionError("download was called")
@@ -510,20 +521,71 @@ class LoraPrepareTest(unittest.TestCase):
             written = prepare_fast_loras(root, token="", hub_download=boom, opener=boom)
             self.assertEqual([path.name for path in written], names)
 
-    def test_civitai_403_without_token_stops(self) -> None:
+    def test_combat_is_skipped_when_the_token_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / TURBO_FILENAME).write_bytes(b"turbo")
+            calls: list[tuple[str, str]] = []
+
+            def hub(repo, filename, local_dir):
+                calls.append((repo, filename))
+                dest = Path(local_dir) / filename
+                _native_lora(dest)
+                return dest
+
+            def opener(_request):
+                raise AssertionError("Civitai was called without a token")
+
+            written = prepare_fast_loras(root, token="", hub_download=hub, opener=opener)
+            self.assertEqual([path.name for path in written], [TURBO_FILENAME, REPAIR_FILENAME])
+            self.assertEqual(calls, [(TURBO_REPO, TURBO_FILENAME), (REPAIR_REPO, REPAIR_FILENAME)])
+            self.assertFalse((root / COMBAT_FILENAME).exists())
+
+    def test_civitai_403_with_token_stops(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def hub(_repo, filename, local_dir):
+                dest = Path(local_dir) / filename
+                _native_lora(dest)
+                return dest
 
             def opener(request):
                 raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", None, None)
 
             with self.assertRaises(SystemExit) as caught:
-                prepare_fast_loras(root, token="", hub_download=lambda *_a, **_k: None, opener=opener)
+                prepare_fast_loras(root, token="present", hub_download=hub, opener=opener)
             message = str(caught.exception)
             self.assertIn("CIVITAI_TOKEN", message)
             self.assertIn(str(CIVITAI_COMBAT_VERSION), message)
-            self.assertNotIn(str(CIVITAI_REPAIR_VERSION), message)
+            self.assertTrue((root / REPAIR_FILENAME).is_file())
+
+    def test_repair_v2_key_pattern_is_native_and_not_pruned(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / REPAIR_FILENAME
+            # Live Motion_Repair_V2.safetensors uses these module names (ai-toolkit, no AdaLN).
+            _pack_safetensors(
+                path,
+                {
+                    "diffusion_model.blocks.0.attn.out_proj.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.attn.out_proj.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.attn.qkv_proj.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.attn.qkv_proj.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.mlp.fc1.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.mlp.fc1.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.mlp.fc2.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.mlp.fc2.lora_B.weight": (4, 2),
+                },
+            )
+            self.assertEqual(classify_lora_header(read_safetensors_header(path)), "native")
+            self.assertEqual(inspect_lora_file(path), "native")
+
+    def test_unknown_lora_keys_are_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "odd.safetensors"
+            _pack_safetensors(path, {"not_a_lora.weight": (2, 2)})
+            with self.assertRaises(ValueError) as caught:
+                inspect_lora_file(path)
+            self.assertIn("load_lora_weights", str(caught.exception))
 
     def test_parse_repeated_lora_args(self) -> None:
         specs = parse_lora_args(
@@ -629,13 +691,17 @@ class FastCliTest(unittest.TestCase):
         weight = blobs[9]
         self.assertIn("prepare_fast_loras", weight)
         self.assertIn("CIVITAI_TOKEN", weight)
-        self.assertIn("minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors", "".join(blobs))
+        self.assertIn("だけ飛ばす", weight)
+        joined = "".join(blobs)
+        self.assertIn("minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors", joined)
         self.assertIn("3246572", blobs[8])
-        self.assertIn("3366092", blobs[8])
+        self.assertIn("JOKER141/MiniMax-H3-General-Motion-Continuity-Repair", blobs[8])
+        self.assertIn("Motion_Repair_V2.safetensors", joined)
+        self.assertNotIn("3366092", joined)
         test = blobs[16]
         self.assertIn("test_b_fl2va_turbo.mp4", test)
         self.assertIn("test_c_turbo_combat.mp4", test)
-        self.assertIn("test_d_turbo_combat_repair.mp4", test)
+        self.assertIn("test_dp_turbo_repair.mp4", test)
         self.assertIn("次へ進む", test)
         self.assertIn("768", test)
         self.assertIn("1344", test)
