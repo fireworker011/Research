@@ -3113,10 +3113,9 @@ def test_hospital_gin_tsuno_optional_events():
 
 
 def test_hospital_chain_dropdown_overrides_t2v_locks():
-    """Chain/landing follow the dropdown over authored connect:t2v on the ward.
+    """Chain/landing follow the dropdown over authored connect:t2v and connect:cut on the ward.
 
-    First shot stays T2V. A -spot newcomer stays I2V. Other new people stay T2V.
-    Same-cast acts, including pose, toilet, gin, tsuno, and fight, become I2V.
+    First shot stays T2V. Every later GPU beat, including -spot newcomers and authored cuts, is I2V.
     Cut stays T2V except non-gin rib ride seats and peaks authored connect:chain.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
@@ -3212,13 +3211,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
         connect_override="chain",
     )
     gpu = [b for b in measured["beats"] if not is_ui_beat(b) and beat_renders(b)]
-    assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == [
-        "01-cover",
-        "04-tsuno-meet-spot",
-        "04-tsuno-stand",
-        "04-tsuno-meet",
-        "04-tsuno-in",
-    ]
+    assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover"]
     cunny_chain = next(b for b in gin["beats"] if b["id"] == "04-gin-cunny")
     assert beat_source(cunny_chain) == "chain"
     assert cunny_chain.get("connect") == "chain"
@@ -3234,8 +3227,21 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     assert tin.get("connect") == "t2v"
     assert beat_source(tin) == "chain"
 
-    # Unexpected T2V is only the first shot or a new person outside a -spot. Authored t2v no longer blocks chain.
+    # Chain/landing: only the first GPU beat stays T2V. Authored t2v and cut do not block it.
     sweeps = [
+        dict(story_override="受け入れる"),
+        dict(story_override="誘う", invite_pose_override="騎乗位"),
+        dict(story_override="誘う", invite_pose_override="四つん這い股広げ"),
+        dict(story_override="誘う", invite_pose_override="M字"),
+        dict(story_override="回避"),
+        dict(story_override="戦って勝つ"),
+        dict(story_override="受け入れる", gin_override="犯す", tsuno_override="受け入れる立ちバック", toilet_override="tentacle"),
+        dict(story_override="受け入れる", tsuno_override="角・病室で横になって挿入", dog_override="犬・受け入れる"),
+        dict(story_override="受け入れる", tsuno_override="角・病室でベッドの後ろアナル"),
+        dict(story_override="受け入れる", tsuno_override="角・個室", toilet_override="pee"),
+        dict(story_override="受け入れる", toilet_override="和式ミキ"),
+    ]
+    cut_sweeps = [
         dict(story_override="受け入れる"),
         dict(story_override="誘う", invite_pose_override="騎乗位"),
         dict(story_override="誘う", invite_pose_override="四つん這い股広げ"),
@@ -3252,14 +3258,14 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
                 continue
             cast = {str(c) for c in (beat.get("cast") or [])}
             added = cast - prev
-            if beat_source(beat) == "t2v" and not first and not added:
-                if str(beat.get("connect") or "") != "cut":
-                    raise AssertionError(f"same-cast T2V {beat['id']} {kw}")
+            if beat_source(beat) == "t2v" and not first:
+                raise AssertionError(f"chain left T2V {beat['id']} connect={beat.get('connect')} {kw}")
             spot = str(beat.get("id") or "").endswith("-spot")
             if beat_source(beat) == "chain" and (first or (added and not spot)):
                 raise AssertionError(f"chain on a new body {beat['id']} {kw}")
             first = False
             prev = cast
+    for kw in cut_sweeps:
         cuts = prepare_episode(raw, connect_override="カット", **kw)
         for beat in cuts["beats"]:
             if is_ui_beat(beat):
@@ -5536,14 +5542,14 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "thrust" not in extra_keys(seat)
     assert "hold still joined at the base" in seat["action"].lower()
     assert seat.get("connect") == "cut"
-    assert beat_source(seat) == "t2v"
+    assert beat_source(seat) == "chain"
     walk = next(b for b in ride["beats"] if b["id"] == "04-tsuno-walk")
-    assert "aya" in walk["cast"]
-    assert walk["cast"] == ["aya"]
+    assert walk["cast"] == ["aya", "tsuno"]
+    assert walk.get("fade_cast") == ["tsuno"]
     assert "No penis" in walk["action"]
     assert "The grown shaft is gone" in walk["action"]
     assert walk.get("connect") == "cut"
-    assert beat_source(walk) == "t2v"
+    assert beat_source(walk) == "chain"
     assert "pulls out of aya's pussy" in walk["action"].lower()
     spot = next(b for b in ride["beats"] if b["id"] == "04-tsuno-meet-spot")
     assert "sickroom" in spot["action"].lower()
@@ -5597,9 +5603,11 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert wids.index("04-tsuno-stall-kiss") == wids.index("04-tsuno-rise") + 1
     kiss = next(b for b in wash["beats"] if b["id"] == "04-tsuno-stall-kiss")
     assert kiss["camera"].startswith("PROFILE")
-    assert beat_source(kiss) == "t2v"
+    assert kiss.get("connect") == "cut"
+    assert beat_source(kiss) == "chain"
     stall = next(b for b in wash["beats"] if b["id"] == "04-tsuno-stall")
-    assert beat_source(stall) == "t2v"
+    assert stall.get("connect") == "cut"
+    assert beat_source(stall) == "chain"
     carry = next(b for b in wash["beats"] if b["id"] == "04-tsuno-carry")
     assert "LIFTS Aya against" in carry["action"]
     carry_prompt = build_beat_prompt(wash, carry)
@@ -5610,8 +5618,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "hold still joined at the base" in anal["action"].lower()
     wwalk = next(b for b in wash["beats"] if b["id"] == "04-tsuno-walk")
     assert "No penis" in wwalk["action"]
-    assert wwalk["cast"] == ["aya"]
-    assert beat_source(wwalk) == "t2v"
+    assert wwalk["cast"] == ["aya", "tsuno"]
+    assert wwalk.get("fade_cast") == ["tsuno"]
+    assert wwalk.get("connect") == "cut"
+    assert beat_source(wwalk) == "chain"
     _assert_hospital_bans(wash)
     assert validate_episode(wash, root=HOSPITAL_DIR) == []
     assert len(wash["beats"]) <= MAX_BEATS

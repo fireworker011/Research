@@ -1716,12 +1716,12 @@ def _toilet_chain_authored(beat: dict[str, Any]) -> bool:
 
 
 def _connect_lock_holds(ep: dict[str, Any], beat: dict[str, Any], mode: str) -> bool:
-    """Authored t2v/cut/off force T2V. Hospital chain/landing lets the dropdown win over t2v."""
+    """Authored t2v/cut/off force T2V. Hospital chain/landing lets the dropdown win over t2v and cut."""
     locked = str(beat.get("connect") or "").strip().lower()
     if locked not in CONNECT_LOCKS:
         return False
     if (
-        locked == "t2v"
+        locked in ("t2v", "cut")
         and mode in ("chain", "landing")
         and str(ep.get("slug") or "") in DROPDOWN_WINS_T2V_LOCK
     ):
@@ -1735,7 +1735,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     t2v: every GPU beat is T2V including the first (prompt-correctable, cameras may change).
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
-    Hospital connect:t2v yields to chain and landing. cut/off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
+    Hospital connect:t2v and connect:cut yield to chain and landing, so 前の最終フレームから続ける makes those shots I2V. off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
     The horn seat kiss authored connect:chain stays I2V even when the dropdown is a cut.
@@ -1800,15 +1800,6 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
                 beat["source"] = "chain"
                 beat.pop("still_as", None)
         gpu_seen += 1
-    prev_id = ""
-    for beat in out.get("beats") or []:
-        if not isinstance(beat, dict) or is_ui_beat(beat) or not beat_renders(beat):
-            continue
-        bid = str(beat.get("id") or "")
-        if bid == "04-dog-spot" and prev_id in {"04-tsuno-walk", "04-tsuno-jo-walk"}:
-            beat["source"] = "t2v"
-            beat.pop("still_as", None)
-        prev_id = bid
     return out
 
 
@@ -1843,7 +1834,7 @@ def _expand_overlay(body: dict[str, Any], chosen: Any) -> list[dict[str, Any]]:
 
 
 def _honor_beat_connect(ep: dict[str, Any]) -> dict[str, Any]:
-    """Authored t2v/cut/off stay T2V. Hospital chain/landing leaves t2v locks to the dropdown."""
+    """Authored t2v/cut/off stay T2V. Hospital chain/landing leaves t2v and cut locks to the dropdown."""
     mode = episode_connect(ep)
     for beat in ep.get("beats") or []:
         if not isinstance(beat, dict) or is_ui_beat(beat):

@@ -1,4 +1,6 @@
-"""Wan plan for hospital-exit-adult. Checks id order, source, and that stall takes no previous frame.
+"""Wan plan for hospital-exit-adult. Checks id order and source.
+
+Chain starts the stall from the previous frame. Cut redraws a connect:cut stall with no start image.
 
 Video pixels are for a human to watch. This file does not render.
 """
@@ -62,17 +64,17 @@ RIDE_CUT = {
     "04-tsuno-ride-kiss": "chain",
     "04-tsuno-walk": "t2v",
 }
-# Chain dropdown. Sickroom spot, the side move, the seat, and the doorway walk stay cut.
+# Chain dropdown. Authored connect:cut yields, so every Tsuno beat here is I2V.
 RIDE_CHAIN = {
-    "04-tsuno-meet-spot": "t2v",
+    "04-tsuno-meet-spot": "chain",
     "04-tsuno-kiss": "chain",
     "04-tsuno-oral": "chain",
     "04-tsuno-wait": "chain",
-    "04-tsuno-lie": "t2v",
-    "04-tsuno-ride": "t2v",
+    "04-tsuno-lie": "chain",
+    "04-tsuno-ride": "chain",
     "04-tsuno-peak": "chain",
     "04-tsuno-ride-kiss": "chain",
-    "04-tsuno-walk": "t2v",
+    "04-tsuno-walk": "chain",
 }
 WASH_CUT = {
     "04-tsuno-meet-spot": "t2v",
@@ -87,16 +89,16 @@ WASH_CUT = {
     "04-tsuno-walk": "t2v",
 }
 WASH_CHAIN = {
-    "04-tsuno-meet-spot": "t2v",
-    "04-tsuno-carry": "t2v",
-    "04-tsuno-stall": "t2v",
+    "04-tsuno-meet-spot": "chain",
+    "04-tsuno-carry": "chain",
+    "04-tsuno-stall": "chain",
     "04-tsuno-set": "chain",
     "04-tsuno-anal": "chain",
     "04-tsuno-cum": "chain",
     "04-tsuno-gape": "chain",
     "04-tsuno-rise": "chain",
-    "04-tsuno-stall-kiss": "t2v",
-    "04-tsuno-walk": "t2v",
+    "04-tsuno-stall-kiss": "chain",
+    "04-tsuno-walk": "chain",
 }
 
 
@@ -302,13 +304,13 @@ def test_scene_loras_follow_the_prepared_act():
     assert "anal" not in _slots(scat, "04-toilet")
 
 
-def test_wash_carry_order_sources_and_stall_has_no_previous_frame():
+def test_wash_carry_order_and_chain_starts_stall_from_previous_frame():
     cut = _prepare("角・個室", "カット")
     chain = _prepare("角・個室", "前の最終フレームから続ける")
     _assert_sources(cut, WASH_IDS, WASH_CUT)
     _assert_sources(chain, WASH_IDS, WASH_CHAIN)
     stall = next(b for b in chain["beats"] if b["id"] == "04-tsuno-stall")
-    assert stall["source"] == "t2v"
+    assert stall["source"] == "chain"
     shot = next(s for s in plan_wan_shots(chain) if s["id"] == "04-tsuno-stall")
-    assert shot["start_image"] is False
-    assert wan_needs_start_image(stall["source"]) is False
+    assert shot["start_image"] is True
+    assert wan_needs_start_image(stall["source"]) is True

@@ -51,13 +51,13 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - 最初の GPU カットだけ T2V
 - 遭遇カット（id が `-spot`）も I2V。前の最終フレームのあやに、新しい人が入る
 - それ以外の GPU カットも、前の最終フレームからの I2V
-- 同じ相手の次の行為、ポーズ、トイレ、灰色、角、戦いも I2V。台本の `connect: t2v` は、この病棟でチェーンを選んだときは効かない
-- 「カット」を選ぶと全部 T2V。ただし着座と絶頂で connect が chain の肋骨騎乗は、カットでも I2V のまま。角の `04-tsuno-ride-kiss` も同じ。ギンの `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss` `04-gin-wait` `04-gin-ride` `04-gin-peak` も同じ。みき／れい／かな／しのの `*-wait` も同じ
-- チェーンを選んだとき、T2V は `01-cover` だけ（受け入れる＋灰色・犯される＋角の立ちバック＋トイレ pee＋4人登場で測る）。遭遇も I2V。和式ミキは全拍 chain
+- 同じ相手の次の行為、ポーズ、トイレ、灰色、角、戦いも I2V。台本の `connect: t2v` と `connect: cut` は、この病棟でチェーンか着地を選んだときは効かない
+- 「カット」を選ぶと、台本の `connect: cut` と `connect: t2v` は T2V。ただし connect が chain の肋骨騎乗の着座と絶頂、角の寝室 chain（kiss、oral、wait、peak、ride-kiss、behind、jo-anal、jo-cum、jo-gape）、ギンの `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss` `04-gin-wait` `04-gin-ride` `04-gin-peak`、みき／れい／かな／しのの `*-wait` はカットでも I2V のまま
+- チェーンを選んだとき、T2V は `01-cover` だけ。立ちバック、寝室、個室、顔射、触手の出、犬の spot も I2V。台本の connect 欄は書き換えない。和式ミキは全拍 chain
 - `04-gin-cunny` は connect chain。首は舐めの最終（座り、マンコ、竿なし、舌がクリ）。Look の 0 秒に 24cm は書かない
-- 角・騎乗の `04-tsuno-wait` と `04-tsuno-walk` は connect chain。跪きの最終を跨ぎの首にしない
+- 角・病室の wait は connect chain。lie、ride、walk の connect は cut。カットを選ぶとこの3つは T2V。チェーンと着地では I2V。跪きの最終を跨ぎの首にしないのは、カットを選んだとき
 - 騎乗枝の歩き `04-gin-walk` `03-kiss-walk` `06-doggy-walk` `09-join-walk` `12-exit-walk` も connect chain。抜くのはこの歩きの 0–3 秒だけ。しのの `12-exit-walk` は `12-exit-kiss` のあと。drop と kiss が既にあるので、結末はもう一組足さない。peak と drop のあいだに歩きを置くと、次の拍でしのが戻り遭遇スポットが足される
-- 角・個室の stall と stall-kiss と walk は connect cut のまま。チェーンを選んでも T2V。通路の最終フレームを個室の首にしない。個室のキスはドア正面の続きにしない
+- 角・個室の stall と stall-kiss と walk の connect は cut のまま。カットを選ぶと T2V。チェーンと着地では I2V。台本の connect 欄は chain に書き換えない
 - 犬の wait は connect chain。和式ミキは全拍 connect chain。排出の和式に gape は無い
 
 遭遇を足す関数は `insert_presence_beats`。spot は最初から `source: chain` `connect: chain` で作る。`keep_chain_cast` は `-spot` の新人を T2V に戻さない。遭遇を消さず、遭遇自体を chain のままにする。遭遇カットでは前のカットの余分な人を残さない。
@@ -98,7 +98,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 全枝の `04-tsuno-meet-spot` は廃病室、connect は cut。角はマットレスの縁に座り、右手が `erect ashen-gray 24cm` を上下。あやが扉から入る。extra は mystic 0.5。通路の遅れ足は角の spot に書かない。
 
-立ちバック、誘う立ちバック、後ろアナル、フルネルソンは、spot の次に `04-tsuno-stand`（縁から立つ、cut）。その次の meet / in / carry は cut。密着・挿入・抱き上げの本文は残す。場所の語は病室。`04-tsuno-stall` 以降の個室 cut はそのまま。
+立ちバック、誘う立ちバック、後ろアナル、フルネルソンは、spot の次に `04-tsuno-stand`（縁から立つ）。spot、stand、meet、in、carry の connect は cut。カットを選ぶと T2V。チェーンと着地では I2V。密着・挿入・抱き上げの本文は残す。場所の語は病室。`04-tsuno-stall` 以降の connect 欄も cut のまま。カットでは T2V。チェーンと着地では I2V。
 
 ## 選択肢の名前
 
@@ -117,13 +117,13 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
-竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。寝室の walk の次の `04-dog-spot` は通路の T2V。寝室最終を犬に chain しない。
+竿を書くカットは `erect ashen-gray 24cm`。あやに竿は生やさない。寝室の walk の次の `04-dog-spot` も、チェーンと着地では I2V。犬の spot を T2V に戻さない。
 
 ## 角・寝室アナル（`invite_jacko`、UI「角・寝室アナル」）
 
 顔射のあと別枝。個室 id は使わない。`04-toilet-*` はコピーしない。
 
-順番: spot → kiss → oral → wait → `04-tsuno-jo` cut → `04-tsuno-behind` chain → `04-tsuno-jo-anal` chain → `04-tsuno-jo-cum` chain → `04-tsuno-jo-gape` chain → `04-tsuno-jo-kiss` cut → `04-tsuno-jo-walk` cut。
+順番: spot → kiss → oral → wait → `04-tsuno-jo` → `04-tsuno-behind` → `04-tsuno-jo-anal` → `04-tsuno-jo-cum` → `04-tsuno-jo-gape` → `04-tsuno-jo-kiss` → `04-tsuno-jo-walk`。spot、jo、jo-kiss、jo-walk の connect は cut。カットを選ぶと T2V。チェーンと着地では I2V。behind、jo-anal、jo-cum、jo-gape の connect は chain。カットでも I2V。
 
 - jo: 胸と片頬がマット。尻は高い。顔は扉。jacko 0.8
 - behind: 角が後ろ。同じ向き。掌は尻。未挿入。jacko 0.8
@@ -141,7 +141,7 @@ pee と finger は磁器のまま。動作は変えない。触手だけ植物�
 
 ## 角・個室（新話 `wash_carry`）
 
-これは新しい話。トイレ枠は消さない。角を「出ない」にしてもトイレは残る。id は `04-tsuno-*` だけ。`04-toilet-*` はコピーしない。ThumbInButt は積まない。spot と抱き上げは廃病室。`04-tsuno-stall` 以降は今の個室 cut。通路クリップを個室の首に使わない。`04-tsuno-stall` の connect は cut。
+これは新しい話。トイレ枠は消さない。角を「出ない」にしてもトイレは残る。id は `04-tsuno-*` だけ。`04-toilet-*` はコピーしない。ThumbInButt は積まない。spot と抱き上げは廃病室。`04-tsuno-stall` 以降の connect 欄は cut。カットを選ぶと個室は独立の T2V。チェーンと着地では前の最終フレームから I2V。connect 欄は chain に書き換えない。
 
 お姫様抱っこは駅弁でもネルソンでもない。`LIFTS` はこの抱き上げだけ。腰の上下には使わない。
 
@@ -265,7 +265,7 @@ pee と finger は磁器のまま。動作は変えない。触手だけ植物�
 
 ## かなの顔射のあと
 
-`cast.aya.looks.white_upper` の追加文は `thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest`。`09-kana-facial` の 0 秒 Look には goo を書かない。着地は action。最終は顔と胸。`09-kana-kiss` `09-join*` `10-shino*` `12-exit*` のあや Look にその文が残る。顔射を通らない話は基本 lock のまま。semen / cum / 精液 は書かない。顔射は既存 id のまま。connect は cut。前の横画面から正面へ飛ばさない。0 秒からその正面を保持する。同じドアがあやの後ろに残る。あやはレンズを見上げる。かなの 20cm は下端から顔へ向く。WHITE rope が顔と胸へ落ちて留まる。Aya says 「いっちゃった」。声も `いっちゃった` の1句。sfx は肌に当たる音。キスの music は継がない。かなの顔は画面に出さない。extra は cmst 0.65 + penis 0.45 + jpnmoans 0.55。sideride / thrust / Turbo は積まない。8–12 秒、1 工程。`09-join-peak` は中出しのまま。顔射に置き換えない。
+`cast.aya.looks.white_upper` の追加文は `thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest`。`09-kana-facial` の 0 秒 Look には goo を書かない。着地は action。最終は顔と胸。`09-kana-kiss` `09-join*` `10-shino*` `12-exit*` のあや Look にその文が残る。顔射を通らない話は基本 lock のまま。semen / cum / 精液 は書かない。顔射は既存 id のまま。connect 欄は cut。カットを選ぶと正面を独立に描く。チェーンと着地では前の最終フレームから I2V。0 秒からその正面を保持する。同じドアがあやの後ろに残る。あやはレンズを見上げる。かなの 20cm は下端から顔へ向く。WHITE rope が顔と胸へ落ちて留まる。Aya says 「いっちゃった」。声も `いっちゃった` の1句。sfx は肌に当たる音。キスの music は継がない。かなの顔は画面に出さない。extra は cmst 0.65 + penis 0.45 + jpnmoans 0.55。sideride / thrust / Turbo は積まない。8–12 秒、1 工程。`09-join-peak` は中出しのまま。顔射に置き換えない。
 
 ## かなの着座（`09-join-ride`）
 
