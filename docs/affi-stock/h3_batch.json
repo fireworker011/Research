@@ -516,6 +516,102 @@
    "combat_lora_recommended": false,
    "negative": "text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, skin redness, acne close-up, before-after skin comparison, medical setting, syringe, pills, split screen generated in video, clock numerals, stopwatch digits, timer numbers, skin close-up comparison, glowing skin effect",
    "out": "stock-10_9s.mp4"
+  },
+  {
+   "id": "stock-11",
+   "part": "6s",
+   "duration": 6.0,
+   "resolution": "768x1344",
+   "width": 768,
+   "height": 1344,
+   "task": "fl2va",
+   "product": "オルビスユー（化粧水）",
+   "type": "あるある共感（番号付きで並べる）",
+   "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Photoreal, bright soft-lit vertical 9:16 relatable skincare short shot only on hands and objects; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: a hand in an oatmeal knit sleeve holds a new plain white bottle in front of a small white bathroom shelf crowded with unbranded bottles and jars. The hand tries to push the new bottle into a gap, nudges the neighboring bottles, finds no room and pauses. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] スキンケア好きの、あるある。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a close-up of the same shelf: the hand reaches to the back row, pulls out an older unlabeled bottle and gives it a light shake, the liquid inside still half full and sloshing visibly. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 新しいのを買うと、前のがまだ残ってる。</d> while no lips are visible on screen.\n\noverall_soundscape: Quiet bathroom room tone; glass bottles clink and scrape as they are nudged on the shelf, then a clear liquid slosh inside the shaken bottle.\n\nnon_diegetic_music: A light, playful marimba pattern at a brisk moderate tempo, with a small comic pluck at 00:03.000.",
+   "first_frame_prompt": "Photoreal still, vertical 9:16, eye-level close-up of a small white bathroom shelf crowded with many unbranded bottles and jars of different shapes in soft morning light; a hand in an oatmeal knit sleeve enters from the right holding one new plain white bottle, looking for space. No face, no people other than the hand, no text, no logos, no labels.",
+   "first_frame_ref": null,
+   "loras": [
+    {
+     "name": "FL2V Turbo 8step (lightx2v)",
+     "path": "/content/drive/MyDrive/h3-weights/loras/minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+     "strength": 1.0
+    }
+   ],
+   "combat_lora_recommended": false,
+   "negative": "text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, skin redness, acne close-up, before-after skin comparison, medical setting, syringe, pills, face, lips, mouth, eyes, chin, person's head, spilled liquid on floor",
+   "out": "stock-11_6s.mp4"
+  },
+  {
+   "id": "stock-11",
+   "part": "9s",
+   "duration": 9.0,
+   "resolution": "640x1152",
+   "width": 640,
+   "height": 1152,
+   "task": "fl2va",
+   "product": "オルビスユー（化粧水）",
+   "type": "あるある共感（番号付きで並べる）",
+   "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Photoreal, bright soft-lit vertical 9:16 relatable skincare short shot only on hands and objects; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and nothing above the chin is ever shown. The shot begins in the composition of <Picture 1>: two hands in oatmeal knit sleeves hold a slim frosted-white glass bottle with a plain white cap, completely free of any logo, label, or lettering over a cupped palm. Too much clear liquid pours out and fills the palm to the brim; the hands freeze for a beat, then the view follows the hand as it presses the extra liquid onto the side of the neck and the collarbone, framed from the shoulders to just below the chin. The camera tilts with small amplitude at slow speed to follow the hand. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 出しすぎた化粧水、首まで塗りがち。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts back to the crowded white shelf of unbranded bottles: a hand hovers over several of them, hesitates, then picks up the same frosted bottle. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 結局、毎日の1本に戻る。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a close-up of the frosted bottle standing alone on the white counter: a hand enters beside it and raises the index finger toward the top of the frame, holding the gesture until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してる1本は、プロフィールに。</d> while no lips are visible on screen.\n\noverall_soundscape: Quiet bathroom room tone; a liquid trickle that runs a little too long, soft pats on the skin, glass clinks on the shelf and one clean tap of the bottle on the counter.\n\nnon_diegetic_music: The playful marimba pattern continues at a brisk moderate tempo and ends on a bright two-note tag.",
+   "first_frame_prompt": "Photoreal still, vertical 9:16, close-up at chest height of two hands in oatmeal knit sleeves above a white bathroom counter, no face in frame; the left hand holds a slim frosted-white glass bottle with a plain white cap and no label, tilted over the cupped right palm. Soft morning light. No text, no logos.",
+   "first_frame_ref": null,
+   "loras": [
+    {
+     "name": "FL2V Turbo 8step (lightx2v)",
+     "path": "/content/drive/MyDrive/h3-weights/loras/minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+     "strength": 1.0
+    }
+   ],
+   "combat_lora_recommended": false,
+   "negative": "text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, skin redness, acne close-up, before-after skin comparison, medical setting, syringe, pills, face, lips, mouth, eyes, chin, person's head, spilled liquid on floor",
+   "out": "stock-11_9s.mp4"
+  },
+  {
+   "id": "stock-12",
+   "part": "6s",
+   "duration": 6.0,
+   "resolution": "768x1344",
+   "width": 768,
+   "height": 1344,
+   "task": "fl2va",
+   "product": "Furbo（ペット見守りカメラ）",
+   "type": "あるある共感（番号付きで並べる）",
+   "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 relatable pet short shot only on hands and the dog; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point, and people appear only as hands, sleeves and legs. The shot begins in the composition of <Picture 1>: in a bright hallway, a hand in a navy sleeve reaches toward a plain key ring in a small dish on a wooden shoe cabinet, while the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar lies relaxed on the floor with its chin on its paws. The hand moves slowly closer to the dish. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 犬と暮らす人の、お出かけあるある。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a closer low angle: the hand lifts the keys with a jingle, and the dog's head snaps up instantly; it springs to its feet and stares up at the keys with ears perked. The camera pushes in with small amplitude at slow speed toward the dog. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] カギを持った瞬間、察される。</d> while no lips are visible on screen.\n\noverall_soundscape: Quiet morning hallway ambience; a soft ceramic clink and a bright jingle of keys, then quick paw scrabbles on the wooden floor and the collar tag jingling.\n\nnon_diegetic_music: A light, playful ukulele pattern at a brisk moderate tempo, with a comic pluck at 00:03.000.",
+   "first_frame_prompt": "Photoreal still, vertical 9:16, a bright Japanese home hallway in the morning seen from low height; on a light wooden shoe cabinet sits a small white dish with a plain key ring (no logos), and a hand in a navy sleeve reaches toward it from the top edge. On the floor in front of the cabinet, a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar lies relaxed with its chin on its paws. No faces, no text, no logos.",
+   "first_frame_ref": null,
+   "loras": [
+    {
+     "name": "FL2V Turbo 8step (lightx2v)",
+     "path": "/content/drive/MyDrive/h3-weights/loras/minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+     "strength": 1.0
+    }
+   ],
+   "combat_lora_recommended": false,
+   "negative": "text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air, visible faces, person's head, timestamp overlay, camera UI text, dog in distress, barking dog, dog scratching the door",
+   "out": "stock-12_6s.mp4"
+  },
+  {
+   "id": "stock-12",
+   "part": "9s",
+   "duration": 9.0,
+   "resolution": "640x1152",
+   "width": 640,
+   "height": 1152,
+   "task": "fl2va",
+   "product": "Furbo（ペット見守りカメラ）",
+   "type": "あるある共感（番号付きで並べる）",
+   "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Photoreal, bright natural-light vertical 9:16 relatable pet short shot only on legs, hands and the dog; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>: in a bright genkan, the same small cream-colored fluffy mixed-breed dog with round dark eyes, a short muzzle and a plain red collar sits on the raised wooden step and looks up at a person whose legs in jeans and white sneakers stand by the door, cut off at the knees. The dog lowers its ears slightly and tilts its head with big round eyes; a hand dips into the top of the frame and gives a small wave. The camera pushes in with small amplitude at slow speed toward the dog's face. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 玄関で、この顔。出かけにくい。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the view switches to footage in the look of a home pet-camera feed, slightly fisheye from a high shelf, mildly desaturated with soft compression and no overlay graphics: in an empty sunlit living room, the same dog is already curled up asleep on a folded beige cardigan in the corner of a light-grey sofa. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 見守りカメラだと、もう寝てる。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a real, full-color low-angle shot of the living room: a plain white rounded tabletop pet camera with one dark round lens and a small speaker grille on its front, completely free of any logo, label, or lettering stands on a low white shelf, and below it the dog sleeps soundly on the beige cardigan until the final frame. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるカメラは、プロフィールに。</d> while no lips are visible on screen.\n\noverall_soundscape: A small whine and the collar tag jingling in the entrance, the door latch clicking softly, then a very quiet living room with the faint hiss of a camera feed and slow, deep sleeping breaths.\n\nnon_diegetic_music: The playful ukulele pattern softens into a slow, dozy phrase and fades out over the final second.",
+   "first_frame_prompt": "Photoreal still, vertical 9:16, a bright Japanese genkan entrance seen from inside at dog height: a small cream-colored fluffy mixed-breed dog with round dark eyes and a plain red collar sits on the raised wooden step looking up, and a person's legs in jeans and white sneakers stand on the lower tiled floor by the door, cut off at the knees. No faces, no text, no logos.",
+   "first_frame_ref": null,
+   "loras": [
+    {
+     "name": "FL2V Turbo 8step (lightx2v)",
+     "path": "/content/drive/MyDrive/h3-weights/loras/minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+     "strength": 1.0
+    }
+   ],
+   "combat_lora_recommended": false,
+   "negative": "text, subtitles, captions, letters, numbers, logo, brand name, watermark, product label, real product packaging, celebrity, real person likeness, extra people, new human faces, distorted hands, extra fingers, melting face, lip-sync mouth movement, horizontal video, black bars, slideshow, flicker, dog changing breed or color between shots, extra dogs, dog with human expression, vomiting, sick animal, vet clinic, treats, snacks, food flying out of the device, treat dispenser, dog catching food in mid-air, visible faces, person's head, timestamp overlay, camera UI text, dog in distress, barking dog, dog scratching the door",
+   "out": "stock-12_9s.mp4"
   }
  ]
 }
