@@ -110,10 +110,10 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 - kiss chain: 角は座ったまま。あやが膝の間。口と口。涎の糸。kiss 0.5 + mystic 0.5
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。mystic 0.5 + penis 0.45。STANDS は書かない
-- wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。cmst 0.55 + mystic 0.5
+- wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
 - lie cut: 横。未結合。竿は腿の外
 - ride 10秒 cut: 横のまま一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る
-- peak chain: 腰が円を一つ。溢れ。`HOLD still joined at the BASE until the last frame`。spoonlg 1.0 + penis 0.6。あやは「あ、いく」
+- peak chain: 腰が円を一つ。溢れ。`HOLD still joined at the BASE until the last frame`。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
@@ -137,7 +137,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 ## 洋式
 
-pee と finger は磁器のまま。動作は変えない。触手だけ植物のボウル。順番は in で座る → fill で両手首と両足首 → toilet の 0–3 秒で 4 本が付いて HOLD → out は cut、触手が外れて立つ。tentacles3d 0.45 は 4 本の拍。和式に pitcher も beige platform も戻さない。
+便器は有機物だけ。洋式は緑の外皮、赤い肉の口がボウル、植物の唇、琥珀の液、根、後ろにもう一本のウツボカズラ。磁器もタンクも便座も書かない。動作は変えない。触手も同じ植物便器に座る。順番は in で座る → fill で両手首と両足首 → toilet の 0–3 秒で 4 本が付いて HOLD → out は cut、触手が外れて立つ。tentacles3d 0.45 は 4 本の拍。和式は床と同じ高さの長い植物の口。フードは遠端のウツボカズラの葉。beige platform は戻さない。
 
 ## 角・個室（新話 `wash_carry`）
 
@@ -257,7 +257,7 @@ pee と finger は磁器のまま。動作は変えない。触手だけ植物�
 
 洋式指は小便とは別の入り。タンク側を向いて座る。尻と肛門がカメラ。マンコが肛門より上の構図は使わない。行為は chain I2V。right thumb rubs around the anus then TRAVELS INTO the anus。thumbinbutt 0.55 + mystic 0.5。synth と Fingering Pussy は積まない。`feces` は書かない。トリガー `thum1n8utt` は action に書かない。ファイルは `MiniMax H3 - ThumbInButt.safetensors`（Civitai fileId 3168734。ページ URL は重みにしない）。
 
-和式は洋式個室。洋式便座は出さない。便器は和式パン。カメラは洋式アナルと同じ低い後ろ下。あやの背中がカメラ。顔はフード。赤い靴は書かない。squat と spot の 0 秒は `Aya already SQUATS deep over the squat pan, heels on the tiles, both feet planted OUTSIDE the porcelain rim of the pan, knees open, anus over the CENTER of the hole, face toward the hood.` `folded over the pan` は書かない。和式パン専用の H3 LoRA は市場に無い。Illustrious の squat toilet LoRA は積まない。
+和式は洋式個室。洋式便座は出さない。便器は和式パン。カメラは洋式アナルと同じ低い後ろ下。あやの背中がカメラ。顔はフード。赤い靴は書かない。squat と spot の 0 秒は `Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood.` `folded over the pan` は書かない。和式パン専用の H3 LoRA は市場に無い。Illustrious の squat toilet LoRA は積まない。
 
 排出はしゃがみの次。棒が肛門から穴へ繋がったまま。ThumbInButt 0.55。
 

@@ -5135,19 +5135,55 @@ def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
     return out
 
 
+# Loaded LoRA keys whose prompt must contain the trained token. Missing tokens leave the file idle.
+_LORA_TRIGGER_TOKENS = (
+    ("cumshot", "CUMSH0T"),
+    ("cmst", "cmst"),
+    ("cumouf", "CUMOUF"),
+    ("penis", "PENISLORA"),
+    ("spoonlg", "SPOONLG."),
+    ("jpnmoans", "jpnMoans"),
+    ("blowjob", "bl0w_j0b"),
+    ("cunny", "performing cunnilingus"),
+    ("thumbinbutt", "thum1n8utt"),
+)
+# Final Thrust fires on this caption. It does not say male, and it does not say a thrust verb.
+_THRUST_CAPTION = (
+    "This video depicts part of sexual intercourse climax. "
+    "The adult who holds the shaft keeps it inside the partner and cums inside of her. "
+    "The same two adults stay in the frame."
+)
+
+
 def merge_trigger(base: str, beat: dict[str, Any]) -> str:
     """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop.
 
     LumiReal joins only when anime2real is in extra_loras. charswap has no trigger.
+    A loaded facial, penis, oral-creampie, or spoon key adds its token when the beat omitted it.
+    A loaded thrust key adds the inside-finish caption when the beat omitted it.
     """
     parts = [str(base or "").strip(), str(beat.get("trigger") or "").strip()]
     keys = {key for key, _strength in extra_lora_entries(beat)}
-    if "anime2real" in keys:
-        joined = "\n".join(p for p in parts if p)
-        tokens = re.split(r"[\s,]+", joined)
-        if ANIME2REAL_TRIGGER not in tokens:
-            parts.append(ANIME2REAL_TRIGGER)
-    return "\n".join(p for p in parts if p)
+
+    def joined() -> str:
+        return "\n".join(p for p in parts if p)
+
+    def tokens() -> set[str]:
+        return set(re.split(r"[\s,]+", joined()))
+
+    if "anime2real" in keys and ANIME2REAL_TRIGGER not in tokens():
+        parts.append(ANIME2REAL_TRIGGER)
+    for key, token in _LORA_TRIGGER_TOKENS:
+        if key not in keys:
+            continue
+        if " " in token:
+            if token not in joined():
+                parts.append(token)
+        elif token not in tokens():
+            parts.append(token)
+    if "thrust" in keys and "cums inside" not in joined().lower():
+        parts.append(_THRUST_CAPTION)
+    return joined()
 
 
 def _extra_lora_errors(beat: dict[str, Any], where: str) -> list[str]:

@@ -2042,8 +2042,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
-    assert extra_keys(facial) == ["cmst", "penis", "jpnmoans"]
-    assert facial.get("trigger") == "cmst\njpnMoans"
+    assert extra_keys(facial) == ["cumshot", "cmst", "penis", "jpnmoans"]
+    assert facial.get("trigger") == "CUMSH0T\ncmst\nPENISLORA\njpnMoans"
+    assert extra_lora_entries(facial)[0] == ("cumshot", 1.0)
     assert facial["trim"]["seconds"] == 10.0
     assert "slow" not in facial["action"].lower()
     assert "white goo" in facial["action"].lower()
@@ -2244,7 +2245,9 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "shoots forward" in low
             assert "toward the camera" in low
             assert "hips hold still" in low
-            assert "western toilet bowl stays still" in low
+            assert "plant-flesh toilet bowl stays still" in low
+            assert "red fleshy mouth" in (four.get("place") or "").lower()
+            assert "porcelain" not in low
             assert "only the yellow stream moves" in low
             assert "lemon-yellow water" in low
             assert "see-through" in low
@@ -2369,6 +2372,9 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
             for b in stall
         )
         assert "western toilet bowl" not in blob
+        assert "porcelain" not in blob.lower()
+        assert "red wet flesh" in blob.lower()
+        assert "fleshy plant rim" in blob.lower()
         assert "SITS DOWN facing the camera" not in blob
         assert "hood" in blob and "platform" not in blob.lower()
         assert "flush into the tile floor" in blob
@@ -5527,7 +5533,11 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "STANDS" not in build_beat_prompt(ride, oral)
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
+    assert extra_lora_entries(wait)[0] == ("cumshot", 1.0)
     assert "cmst" in extra_keys(wait)
+    assert "penis" in extra_keys(wait)
+    assert "CUMSH0T" in wait.get("trigger", "")
+    assert "PENISLORA" in wait.get("trigger", "")
     assert wait.get("connect") == "chain"
     assert beat_source(wait) == "chain"
     seat = next(b for b in ride["beats"] if b["id"] == "04-tsuno-ride")
@@ -5543,6 +5553,13 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "hold still joined at the base" in seat["action"].lower()
     assert seat.get("connect") == "cut"
     assert beat_source(seat) == "chain"
+    peak = next(b for b in ride["beats"] if b["id"] == "04-tsuno-peak")
+    assert extra_lora_entries(peak)[0] == ("spoonlg", 1.0)
+    assert ("thrust", 0.55) in extra_lora_entries(peak)
+    assert ("synth", 0.4) in extra_lora_entries(peak)
+    assert "PENISLORA" in peak.get("trigger", "")
+    assert "cums inside" in peak.get("trigger", "").lower()
+    assert "female character" not in peak.get("trigger", "").lower()
     walk = next(b for b in ride["beats"] if b["id"] == "04-tsuno-walk")
     assert walk["cast"] == ["aya", "tsuno"]
     assert walk.get("fade_cast") == ["tsuno"]
