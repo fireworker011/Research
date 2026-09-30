@@ -4071,6 +4071,17 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                 for beat in out.get("beats") or []:
                     if not isinstance(beat, dict):
                         continue
+                    action = str(beat.get("action") or "")
+                    # Walks that remove the grown shaft stay removed. The look must not put it back.
+                    if "No penis" in action or "The grown shaft is gone" in action:
+                        beat["action"] = action.replace(f", {_AYA_SHAFT}", "")
+                        locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
+                        base = str(locks.get("aya") or (out.get("cast") or {}).get("aya", {}).get("lock") or "")
+                        if _AYA_SHAFT in base:
+                            locks = dict(locks)
+                            locks["aya"] = base.replace(f", {_AYA_SHAFT}", "")
+                            beat["cast_lock"] = locks
+                        continue
                     locks = beat.get("cast_lock")
                     if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and _AYA_SHAFT not in locks["aya"] and "female body" in locks["aya"]:
                         locks["aya"] = locks["aya"].replace("female body", f"female body, {_AYA_SHAFT}", 1)

@@ -5911,6 +5911,15 @@ def test_appearance_blank_matches_authored_and_custom_stays_on_one_person():
     assert "erect 24cm human penis" in shaft["cast"]["aya"]["lock"]
     assert shaft["cast"]["aya"]["lock"].count("erect 24cm human penis") == 1
     assert "no penis, never futanari" in shaft["cast"]["gin"]["lock"]
+    gin_walk = next(
+        b
+        for b in prepare_episode(raw, gin_override="犯される", appearance_override={"aya": {"shaft": "あり"}})["beats"]
+        if b["id"] == "04-gin-walk"
+    )
+    assert "No penis" in gin_walk["action"]
+    assert "The grown shaft is gone" in gin_walk["action"]
+    assert "erect 24cm human penis" not in gin_walk["action"]
+    assert "erect 24cm human penis" not in (gin_walk.get("cast_lock") or {}).get("aya", shaft["cast"]["aya"]["lock"])
     assert validate_episode(shaft, root=HOSPITAL_DIR) == []
     assert validate_episode(dressed, root=HOSPITAL_DIR) == []
     assert validate_episode(enemy, root=HOSPITAL_DIR) == []
