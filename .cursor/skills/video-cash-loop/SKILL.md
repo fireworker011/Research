@@ -71,3 +71,9 @@ GitHub Actions `affiliate_engine_video_judge.yml` が毎日同じ判定を書く
 - 実投稿
 - 媒体追加
 - 量産開始
+
+## いまの試験（2026-09-09 人間が A）
+
+FUNNEL_WEAK の次はカメラ以外を1本。着地はペット保険の資料請求。
+台本は `affiliate-engine/docs/youtube-offer-trial-1.md`。2本目を創るな。媒体を足すな。
+新しい案件の採用（どのA8プログラムか）と実投稿は、まだ人間。

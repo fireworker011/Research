@@ -39,6 +39,7 @@ GitHub Actions で無人運転し、判断（案件選定・ジャンル取捨�
 ＋ video-semi-auto.js（任意・手動）: 反応が良かった投稿を
   Shorts/Reels 動画化 → 確認 → 公式ツールで予約投稿
 ＋ video-judge.js（毎日・自動）: YouTubeのクリック記録だけを見て判定。投稿しない
+＋ youtube-offer-trial.js: FUNNEL_WEAK の次（人間がAを選んだとき）申込型1本の台本。投稿しない
 ＋ funnel-calc.js: 目標金額から必要ビュー数を逆算
 ```
 
@@ -204,6 +205,7 @@ affiliate-engine/
 │   ├── engage.js            # 返信・コメント下書きの自動生成（毎朝のコピペ10分用）
 │   ├── funnel-calc.js       # 目標→必要数値の逆算
 │   ├── video-semi-auto.js   # Shorts/Reels 動画生成（要 ffmpeg + Noto CJK）
+│   ├── youtube-offer-trial.js # 申込型1本の台本（FUNNEL_WEAK の次。投稿しない）
 │   ├── compliance.js        # #PR付与・NG表現ブロック
 │   ├── claude-client.js     # Claude API（リトライ・JSON抽出）
 │   └── util.js              # CSV/JSON/日付ユーティリティ
