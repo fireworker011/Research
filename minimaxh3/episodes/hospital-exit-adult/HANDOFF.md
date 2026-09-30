@@ -21,7 +21,7 @@
 
 ## いま（2026-09-30）
 
-HEAD は `ec8371ba`。ブランチと PR は上のまま。`python3 -m pytest colab/test_h3_episode.py colab/test_wan_episode.py -q` は 109 通過。生成はまだ人間。新しい話も新しい id も足していない。
+仕様の差分は `05608320` と `ec8371ba`。ブランチと PR は上のまま。`python3 -m pytest colab/test_h3_episode.py colab/test_wan_episode.py -q` は 109 通過。生成はまだ人間。新しい話も新しい id も足していない。
 
 動画 `1fqfA6jJdQygxKev67RMgZL27V3L4cETj`（5:31）は、この台本より前の生成である。角・病室の横挿入は入っていない。便器は白い磁器。灰色は通路のギンで、一つの目と生え際の角が無い。白い筋はあやの顔に落ちている。
 
