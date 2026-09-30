@@ -63,7 +63,7 @@ ROOT_FILES = ("modular_model_index.json", "model_index.json")
 EXTRA_DIRS = ("scheduler", "audio_scheduler")
 
 SHARED = ["text_encoder", "vae", "audio_vae", "tokenizer", "processor"]
-DENOISER = {"t2va": "transformer", "ref2va": "transformer_ref"}
+DENOISER = {"t2va": "transformer", "fl2va": "transformer", "ref2va": "transformer_ref"}
 FORBIDDEN = ("FL2VA", "Ref2VA")
 
 
@@ -267,7 +267,8 @@ def disk_preview(
     lines = [
         f"キャッシュ: {local}",
         f"ディスク {anchor}: 空き {free / 1e9:.1f} GB（10^9 バイト）。",
-        "T2VA と Ref2VA の両方を残す。FL2VA/ と Ref2VA/ は落とさない（各約 144.1GB）。",
+        f"置く denoiser: {', '.join(dict.fromkeys(DENOISER[task] for task in tasks))}。"
+        "FL2VA/ と Ref2VA/ は落とさない（各約 144.1GB）。",
     ]
     for name in folders:
         want = FOLDER_BYTES[name]
@@ -278,7 +279,7 @@ def disk_preview(
             incomplete = True
     shard = LARGEST_SHARD_BYTES if incomplete else 0
     need = gap + shard
-    lines.append(f"両方置いた合計: {total / 1e9:.1f} GB。未完了分 {need / 1e9:.1f} GB（未完了シャード最大 {LARGEST_SHARD_BYTES / 1e9:.1f} GB を含む）。")
+    lines.append(f"置く合計: {total / 1e9:.1f} GB。未完了分 {need / 1e9:.1f} GB（未完了シャード最大 {LARGEST_SHARD_BYTES / 1e9:.1f} GB を含む）。")
     if is_colab_drive(local):
         lines.append(
             f"参考: ディスク {anchor} の空き {free / 1e9:.1f} GB。"

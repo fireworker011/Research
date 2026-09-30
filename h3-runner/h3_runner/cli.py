@@ -1,4 +1,4 @@
-"""One entry for T2VA (no image) and Ref2VA (one still, no reference video)."""
+"""One entry for T2VA (no image), FL2VA (still as the first frame), and Ref2VA (one still, no reference video)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from h3_runner.official import DEFAULT_STEPS, README_MAX_DURATION_S, README_MIN_DURATION_S
+from h3_runner.loras import parse_lora_args
+from h3_runner.official import DEFAULT_STEPS, DEFAULT_VIDEO_SHIFT, ORBIS_STEPS, README_MAX_DURATION_S, README_MIN_DURATION_S
 from h3_runner.planner import orbis01_plan, single_plan
 from h3_runner.weights import disk_preview, model_dir_name, prepare_all
 
@@ -105,17 +106,35 @@ def model_dir(cache_root: Path) -> Path:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="MiniMax H3 still or text to a 9:16 mp4")
-    parser.add_argument("--preset", choices=["orbis01"], help="bundled Sakura 6s+9s job")
-    parser.add_argument("--task", choices=["t2va", "ref2va"])
+    parser.add_argument("--preset", choices=["orbis01"], help="bundled Sakura FL2VA 6s+9s job")
+    parser.add_argument("--task", choices=["t2va", "fl2va", "ref2va"])
     parser.add_argument("--prompt-file", type=Path)
-    parser.add_argument("--image", type=Path, help="Ref2VA still. Omit for T2VA.")
+    parser.add_argument("--image", type=Path, help="FL2VA first frame, or Ref2VA still. Omit for T2VA.")
     parser.add_argument("--duration", type=float, help=f"{README_MIN_DURATION_S:g} to {README_MAX_DURATION_S:g} seconds")
     parser.add_argument("--aspect", default="9:16")
     parser.add_argument("--short-edge", type=int, help="default 768, lowered when the 80GB budget says so")
     parser.add_argument("--width", type=int)
     parser.add_argument("--height", type=int)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--steps", type=int, default=DEFAULT_STEPS)
+    parser.add_argument(
+        "--steps",
+        type=int,
+        default=None,
+        help=f"default {ORBIS_STEPS} for --preset orbis01 (8 evaluations; the terminal 0 is included), else {DEFAULT_STEPS}",
+    )
+    parser.add_argument(
+        "--lora",
+        action="append",
+        default=None,
+        metavar="PATH:SCALE",
+        help="LoRA path and strength. Repeat for a stack. Ignored on the int8 path.",
+    )
+    parser.add_argument(
+        "--video-shift",
+        type=float,
+        default=DEFAULT_VIDEO_SHIFT,
+        help=f"scheduler video shift (default {DEFAULT_VIDEO_SHIFT:g}; audio shift stays {3:g})",
+    )
     parser.add_argument("--out", type=Path)
     parser.add_argument("--out-dir", type=Path)
     parser.add_argument("--offload", choices=["auto", "bf16", "int8"], default="auto")
@@ -165,7 +184,11 @@ def _resources(args: argparse.Namespace) -> tuple[float, float]:
 def build_from_args(args: argparse.Namespace):
     vram, host = _resources(args)
     root = package_root()
+    loras = parse_lora_args(args.lora)
+    steps = args.steps
     if args.preset == "orbis01":
+        if steps is None:
+            steps = ORBIS_STEPS
         out_dir = args.out_dir or args.out or Path(os.environ.get("H3_OUT_DIR", "output"))
         if args.out and args.out.suffix == ".mp4" and args.out_dir is None:
             out_dir = args.out.parent
@@ -173,13 +196,17 @@ def build_from_args(args: argparse.Namespace):
             root,
             Path(out_dir),
             seed=args.seed,
-            steps=args.steps,
+            steps=steps,
             aspect=args.aspect,
             vram_gb=vram,
             host_ram_gb=host,
             offload=args.offload,
             force_one_shot=args.force_one_shot,
+            video_shift=args.video_shift,
+            loras=loras,
         )
+    if steps is None:
+        steps = DEFAULT_STEPS
     if not args.task or not args.prompt_file or args.duration is None or not args.out:
         raise SystemExit("preset 以外は --task --prompt-file --duration --out が要る")
     return single_plan(
@@ -189,7 +216,7 @@ def build_from_args(args: argparse.Namespace):
         duration_s=float(args.duration),
         aspect=args.aspect,
         seed=args.seed,
-        steps=args.steps,
+        steps=steps,
         out_path=args.out,
         short_edge=args.short_edge,
         width=args.width,
@@ -201,6 +228,8 @@ def build_from_args(args: argparse.Namespace):
         split_t2va=args.split_t2va_prompt,
         split_ref2va=args.split_ref2va_prompt,
         split_image=args.split_image,
+        video_shift=args.video_shift,
+        loras=loras,
     )
 
 

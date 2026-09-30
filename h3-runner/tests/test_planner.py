@@ -8,13 +8,28 @@ import re
 import sys
 import tempfile
 import unittest
+import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from h3_runner.cli import main, resolve_vram_gb  # noqa: E402
+from h3_runner.cli import build_from_args, main, parse_args, resolve_vram_gb  # noqa: E402
 from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done  # noqa: E402
+from h3_runner.loras import (  # noqa: E402
+    CIVITAI_COMBAT_VERSION,
+    COMBAT_FILENAME,
+    REPAIR_FILENAME,
+    REPAIR_REPO,
+    TURBO_FILENAME,
+    TURBO_REPO,
+    classify_lora_header,
+    inspect_lora_file,
+    parse_lora_args,
+    read_safetensors_header,
+    prepare_fast_loras,
+    reject_pruned_adaln,
+)
 from h3_runner.official import (  # noqa: E402
     align_num_frames,
     build_video_request,
@@ -22,7 +37,7 @@ from h3_runner.official import (  # noqa: E402
     frames_for_seconds,
     resolve_canvas_size,
 )
-from h3_runner.planner import orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
+from h3_runner.planner import choose_short_edges, orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
 from h3_runner.weights import (  # noqa: E402
     LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
@@ -81,6 +96,24 @@ class OfficialMathTest(unittest.TestCase):
         self.assertEqual(text["conditions"], [])
         self.assertEqual(text["flow_shift"], 12.0)
         self.assertEqual(text["audio_flow_shift"], 3.0)
+        fl2 = build_video_request(
+            task="fl2va",
+            prompt="integrated_multimodal_description: [Shot 1] water\n",
+            duration_s=6,
+            aspect_ratio="9:16",
+            short_edge=768,
+            seed=0,
+            steps=9,
+            image_uri="file:///tmp/sakura-ref.jpg",
+            flow_shift=6.0,
+        )
+        self.assertEqual(fl2["task"], "fl2va")
+        self.assertEqual(
+            fl2["conditions"],
+            [{"type": "image", "uri": "file:///tmp/sakura-ref.jpg", "role": "keyframe", "frame_index": 0}],
+        )
+        self.assertEqual(fl2["num_inference_steps"], 9)
+        self.assertEqual(fl2["flow_shift"], 6.0)
 
 
 class PresetTest(unittest.TestCase):
@@ -88,21 +121,28 @@ class PresetTest(unittest.TestCase):
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=80, host_ram_gb=83)
         self.assertIsNone(plan.blocked)
         self.assertEqual(plan.offload, "int8")
-        self.assertEqual([job.task for job in plan.jobs], ["t2va", "ref2va"])
+        self.assertEqual([job.task for job in plan.jobs], ["fl2va", "fl2va"])
         self.assertEqual([job.requested_s for job in plan.jobs], [6.0, 9.0])
-        self.assertIsNone(plan.jobs[0].image_path)
+        self.assertEqual([job.steps for job in plan.jobs], [9, 9])
+        self.assertTrue(str(plan.jobs[0].image_path).endswith("sakura-ref.jpg"))
         self.assertTrue(str(plan.jobs[1].image_path).endswith("sakura-ref.jpg"))
         self.assertEqual(plan.jobs[0].num_frames, 158)
         self.assertEqual(plan.jobs[1].num_frames, 226)
         self.assertEqual(plan.jobs[0].short_edges[0], 768)
         self.assertEqual((plan.jobs[0].height, plan.jobs[0].width), (1344, 768))
+        self.assertEqual(plan.jobs[1].short_edges[0], 656)
+        self.assertEqual((plan.jobs[1].width, plan.jobs[1].height), (640, 1152))
+        self.assertEqual(plan.jobs[0].out_path.name, "orbis01_fl2va_6s.mp4")
+        self.assertEqual(plan.jobs[1].out_path.name, "orbis01_fl2va_9s.mp4")
         for job in plan.jobs:
             self.assertTrue(within_fit_budget(job.task, job.num_frames, job.height, job.width))
-        self.assertLess(
-            sequence_proxy("ref2va", 226, plan.jobs[1].height, plan.jobs[1].width),
-            sequence_proxy("ref2va", 124, 512, 896) + 1,
-        )
-        self.assertIn("LoRA は使わない", "\n".join(plan.notes))
+            body = job.request_json(job.short_edges[0], "file:///tmp/sakura-ref.jpg")
+            self.assertEqual(body["conditions"][0]["role"], "keyframe")
+            self.assertEqual(body["conditions"][0]["frame_index"], 0)
+            self.assertEqual(body["flow_shift"], 6.0)
+        self.assertEqual(plan.video_shift, 6.0)
+        self.assertNotIn("LoRA は使わない", "\n".join(plan.notes))
+        self.assertIn("モデル評価は 8 回", "\n".join(plan.notes))
         self.assertTrue(plan.trim)
         self.assertEqual(plan.delivery_path.name, "orbis01.mp4")
 
@@ -110,13 +150,21 @@ class PresetTest(unittest.TestCase):
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=80, host_ram_gb=160)
         self.assertEqual(plan.offload, "bf16")
 
-    def test_96gb_keeps_ref_canvas_and_uses_bf16(self) -> None:
+    def test_96gb_uses_bf16_and_the_fl2va_canvases(self) -> None:
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=95.0, host_ram_gb=176.9)
         self.assertIsNone(plan.blocked)
         self.assertEqual(plan.offload, "bf16")
-        self.assertEqual(plan.jobs[1].short_edges[0], 352)
-        self.assertEqual((plan.jobs[1].width, plan.jobs[1].height), (352, 640))
-        self.assertIn("据え置き", "\n".join(plan.notes))
+        self.assertEqual(plan.jobs[0].short_edges[0], 768)
+        self.assertEqual(plan.jobs[1].short_edges[0], 656)
+        self.assertEqual((plan.jobs[1].width, plan.jobs[1].height), (640, 1152))
+        self.assertIn("トークン予算", "\n".join(plan.notes))
+
+    def test_ref2va_nine_seconds_stays_on_the_published_canvas(self) -> None:
+        self.assertEqual(choose_short_edges("ref2va", 226, "9:16")[0], 352)
+        self.assertLess(
+            sequence_proxy("ref2va", 226, 640, 352),
+            sequence_proxy("ref2va", 124, 512, 896) + 1,
+        )
 
     def test_40gb_uses_the_official_int8_recipe(self) -> None:
         plan = orbis01_plan(ROOT, Path("/tmp/h3-out"), vram_gb=39.5, host_ram_gb=83.5)
@@ -257,6 +305,7 @@ class WeightsTest(unittest.TestCase):
         both = allow_patterns(folders_for_tasks(["t2va", "ref2va"]))
         self.assertTrue(any(item.startswith("transformer/") for item in t2va))
         self.assertFalse(any(item.startswith("transformer_ref/") for item in t2va))
+        self.assertEqual(folders_for("fl2va"), folders_for("t2va"))
         self.assertTrue(any(item.startswith("transformer_ref/") for item in ref))
         self.assertTrue(any(item.startswith("transformer/") for item in both))
         self.assertTrue(any(item.startswith("transformer_ref/") for item in both))
@@ -369,6 +418,20 @@ class WeightsTest(unittest.TestCase):
         self.assertNotIn("from_pretrained(MODEL_ID", text)
         self.assertNotIn("snapshot_download", text)
         self.assertNotIn("prepare_all", text)
+        self.assertIn('kwargs["image"]', text)
+        fuse = text[text.index("def _fuse_loras"): text.index("def _load_bf16")]
+        self.assertIn("load_into_transformer_ref=into_ref", fuse)
+        self.assertIn('task == "ref2va"', fuse)
+        self.assertIn("scale={spec.scale:g}", fuse)
+        self.assertLess(fuse.index("load_lora_weights"), fuse.index("set_adapters"))
+        self.assertLess(fuse.index("set_adapters"), fuse.index("fuse_lora()"))
+        self.assertLess(fuse.index("fuse_lora()"), fuse.index("unload_lora_weights()"))
+        load = text[text.index("def _load_bf16"): text.index("def _quantized_transformer")]
+        self.assertLess(load.index("load_components"), load.index("_fuse_loras("))
+        self.assertLess(load.index("_fuse_loras("), load.index("enable_auto_cpu_offload"))
+        self.assertLess(load.index("enable_auto_cpu_offload"), load.index("_apply_shifts("))
+        self.assertIn("set_shift", text)
+        self.assertIn("int8 経路では LoRA を無効にする", text)
 
 
 class SecretScanTest(unittest.TestCase):
@@ -381,6 +444,269 @@ class SecretScanTest(unittest.TestCase):
                 continue
             text = path.read_text(encoding="utf-8", errors="ignore")
             self.assertIsNone(pattern.search(text), f"{path} looks like it contains a token")
+
+
+def _pack_safetensors(path: Path, tensors: dict[str, tuple[int, ...]]) -> None:
+    header: dict[str, dict] = {}
+    offset = 0
+    blobs: list[bytes] = []
+    for name, shape in tensors.items():
+        count = 1
+        for dim in shape:
+            count *= dim
+        nbytes = count * 4
+        header[name] = {"dtype": "F32", "shape": list(shape), "data_offsets": [offset, offset + nbytes]}
+        offset += nbytes
+        blobs.append(b"\x00" * nbytes)
+    raw = json.dumps(header).encode()
+    path.write_bytes(len(raw).to_bytes(8, "little") + raw + b"".join(blobs))
+
+
+class LoraHeaderTest(unittest.TestCase):
+    def test_pruned_adaln_width_8_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "pruned.safetensors"
+            _pack_safetensors(
+                path,
+                {
+                    "diffusion_model.blocks.0.adaln_proj.linear.lora_A.weight": (16, 8),
+                    "diffusion_model.blocks.0.attn.qkv_proj.lora_A.weight": (16, 2688),
+                },
+            )
+            with self.assertRaises(ValueError) as caught:
+                reject_pruned_adaln(path)
+            self.assertIn("Pruned", str(caught.exception))
+            self.assertIn("8", str(caught.exception))
+
+    def test_release_adaln_width_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "release.safetensors"
+            _pack_safetensors(
+                path,
+                {"blocks.0.adaln_proj.linear.lora_A.weight": (16, 2688)},
+            )
+            reject_pruned_adaln(path)
+
+    def test_lora_b_does_not_count_as_the_input_width(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "up_only.safetensors"
+            _pack_safetensors(
+                path,
+                {"blocks.0.adaln_proj.linear.lora_B.weight": (16, 8)},
+            )
+            reject_pruned_adaln(path)
+
+
+def _native_lora(path: Path) -> None:
+    _pack_safetensors(
+        path,
+        {
+            "diffusion_model.blocks.0.attn.qkv_proj.lora_A.weight": (2, 4),
+            "diffusion_model.blocks.0.attn.qkv_proj.lora_B.weight": (6, 2),
+        },
+    )
+
+
+class LoraPrepareTest(unittest.TestCase):
+    def test_existing_files_are_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            names = [TURBO_FILENAME, REPAIR_FILENAME, COMBAT_FILENAME]
+            for name in names:
+                _native_lora(root / name)
+
+            def boom(*_args, **_kwargs):
+                raise AssertionError("download was called")
+
+            written = prepare_fast_loras(root, token="", hub_download=boom, opener=boom)
+            self.assertEqual([path.name for path in written], names)
+
+    def test_combat_is_skipped_when_the_token_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            calls: list[tuple[str, str]] = []
+
+            def hub(repo, filename, local_dir):
+                calls.append((repo, filename))
+                dest = Path(local_dir) / filename
+                _native_lora(dest)
+                return dest
+
+            def opener(_request):
+                raise AssertionError("Civitai was called without a token")
+
+            written = prepare_fast_loras(root, token="", hub_download=hub, opener=opener)
+            self.assertEqual([path.name for path in written], [TURBO_FILENAME, REPAIR_FILENAME])
+            self.assertEqual(calls, [(TURBO_REPO, TURBO_FILENAME), (REPAIR_REPO, REPAIR_FILENAME)])
+            self.assertFalse((root / COMBAT_FILENAME).exists())
+
+    def test_civitai_403_with_token_stops(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def hub(_repo, filename, local_dir):
+                dest = Path(local_dir) / filename
+                _native_lora(dest)
+                return dest
+
+            def opener(request):
+                raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", None, None)
+
+            with self.assertRaises(SystemExit) as caught:
+                prepare_fast_loras(root, token="present", hub_download=hub, opener=opener)
+            message = str(caught.exception)
+            self.assertIn("CIVITAI_TOKEN", message)
+            self.assertIn(str(CIVITAI_COMBAT_VERSION), message)
+            self.assertTrue((root / REPAIR_FILENAME).is_file())
+
+    def test_repair_v2_key_pattern_is_native_and_not_pruned(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / REPAIR_FILENAME
+            # Live Motion_Repair_V2.safetensors uses these module names (ai-toolkit, no AdaLN).
+            _pack_safetensors(
+                path,
+                {
+                    "diffusion_model.blocks.0.attn.out_proj.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.attn.out_proj.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.attn.qkv_proj.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.attn.qkv_proj.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.mlp.fc1.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.mlp.fc1.lora_B.weight": (4, 2),
+                    "diffusion_model.blocks.0.mlp.fc2.lora_A.weight": (2, 4),
+                    "diffusion_model.blocks.0.mlp.fc2.lora_B.weight": (4, 2),
+                },
+            )
+            self.assertEqual(classify_lora_header(read_safetensors_header(path)), "native")
+            self.assertEqual(inspect_lora_file(path), "native")
+
+    def test_unknown_lora_keys_are_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "odd.safetensors"
+            _pack_safetensors(path, {"not_a_lora.weight": (2, 2)})
+            with self.assertRaises(ValueError) as caught:
+                inspect_lora_file(path)
+            self.assertIn("load_lora_weights", str(caught.exception))
+
+    def test_parse_repeated_lora_args(self) -> None:
+        specs = parse_lora_args(
+            [
+                "/content/drive/MyDrive/h3-weights/loras/turbo.safetensors:1.0",
+                "/content/drive/MyDrive/h3-weights/loras/combat_base_v2.safetensors:0.7",
+            ]
+        )
+        self.assertEqual([item.scale for item in specs], [1.0, 0.7])
+        self.assertEqual(specs[0].name, "turbo")
+        self.assertEqual(specs[1].name, "combat_base_v2")
+
+
+class FastCliTest(unittest.TestCase):
+    def test_preset_defaults_to_fl2va_and_keeps_lora_on_bf16(self) -> None:
+        args = parse_args(
+            [
+                "--preset",
+                "orbis01",
+                "--out-dir",
+                "/tmp/h3-out",
+                "--dry-run",
+                "--vram-gb",
+                "95",
+                "--host-ram-gb",
+                "176.9",
+                "--cache-dir",
+                "/tmp/h3-cache",
+                "--offload",
+                "bf16",
+                "--lora",
+                "/tmp/turbo.safetensors:1",
+                "--lora",
+                "/tmp/combat.safetensors:0.7",
+                "--video-shift",
+                "6",
+            ]
+        )
+        plan = build_from_args(args)
+        self.assertEqual([job.task for job in plan.jobs], ["fl2va", "fl2va"])
+        self.assertEqual([job.steps for job in plan.jobs], [9, 9])
+        self.assertEqual([(item.name, item.scale) for item in plan.loras], [("turbo", 1.0), ("combat", 0.7)])
+        self.assertEqual(plan.video_shift, 6.0)
+
+    def test_int8_disables_lora(self) -> None:
+        args = parse_args(
+            [
+                "--preset",
+                "orbis01",
+                "--out-dir",
+                "/tmp/h3-out",
+                "--vram-gb",
+                "40",
+                "--host-ram-gb",
+                "83",
+                "--offload",
+                "int8",
+                "--lora",
+                "/tmp/turbo.safetensors:1.0",
+            ]
+        )
+        plan = build_from_args(args)
+        self.assertEqual(plan.offload, "int8")
+        self.assertEqual(plan.loras, [])
+        self.assertIn("無効", plan.report())
+
+    def test_fl2va_explicit_canvas_dry_run(self) -> None:
+        code = main(
+            [
+                "--task",
+                "fl2va",
+                "--prompt-file",
+                str(ROOT / "prompts" / "orbis01_t2va_6s.txt"),
+                "--image",
+                str(ROOT / "assets" / "sakura-ref.jpg"),
+                "--duration",
+                "6",
+                "--width",
+                "768",
+                "--height",
+                "1344",
+                "--steps",
+                "9",
+                "--seed",
+                "0",
+                "--out",
+                "/tmp/h3-out/test_b.mp4",
+                "--dry-run",
+                "--vram-gb",
+                "95",
+                "--host-ram-gb",
+                "176.9",
+                "--cache-dir",
+                "/tmp/h3-cache",
+            ]
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(TURBO_REPO, "lightx2v/Minimax-h3-Turbo")
+
+    def test_notebook_has_the_fast_cells(self) -> None:
+        notebook = json.loads((ROOT / "minimax_h3_still.ipynb").read_text(encoding="utf-8"))
+        blobs = ["".join(cell["source"]) for cell in notebook["cells"]]
+        weight = blobs[9]
+        self.assertIn("prepare_fast_loras", weight)
+        self.assertIn("CIVITAI_TOKEN", weight)
+        self.assertIn("だけ飛ばす", weight)
+        joined = "".join(blobs)
+        self.assertIn("minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors", joined)
+        self.assertIn("3246572", blobs[8])
+        self.assertIn("JOKER141/MiniMax-H3-General-Motion-Continuity-Repair", blobs[8])
+        self.assertIn("Motion_Repair_V2.safetensors", joined)
+        self.assertNotIn("3366092", joined)
+        test = blobs[16]
+        self.assertIn("test_b_fl2va_turbo.mp4", test)
+        self.assertIn("test_c_turbo_combat.mp4", test)
+        self.assertIn("test_dp_turbo_repair.mp4", test)
+        self.assertIn("次へ進む", test)
+        self.assertIn("768", test)
+        self.assertIn("1344", test)
+        self.assertIn('"--steps", "9"', test)
+        self.assertIn("orbis01_6s.mp4", test)
 
 
 if __name__ == "__main__":

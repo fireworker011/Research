@@ -19,14 +19,18 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from h3_runner.loras import LoraSpec
 from h3_runner.official import (
+    AUDIO_FLOW_SHIFT,
     CANVAS_MULTIPLE,
     CANVAS_SHORT_EDGE,
-    DEFAULT_STEPS,
+    DEFAULT_VIDEO_SHIFT,
     FPS,
     MODEL_ID,
+    ORBIS_STEPS,
     README_MAX_DURATION_S,
     README_MIN_DURATION_S,
+    TASKS,
     align_num_frames,
     aligned_duration_s,
     build_video_request,
@@ -62,7 +66,9 @@ def _fit_proxy(task: str) -> float:
     if task == "ref2va":
         latent = video_latent_num_frames(REF2VA_FIT_FRAMES)
         return float(latent * spatial_tokens(REF2VA_FIT_HEIGHT, REF2VA_FIT_WIDTH))
-    if task == "t2va":
+    # FL2VA uses the transformer partition and stretches the still onto the canvas.
+    # It does not encode a 2048-short-edge reference, so it shares the T2VA budget.
+    if task in ("t2va", "fl2va"):
         height, width = resolve_canvas_size(16, 9)
         latent = video_latent_num_frames(REF2VA_FIT_FRAMES)
         return float(latent * spatial_tokens(height, width) * T2VA_EXAMPLE_SLACK)
@@ -70,7 +76,7 @@ def _fit_proxy(task: str) -> float:
 
 
 def sequence_proxy(task: str, num_frames: int, height: int, width: int) -> float:
-    if task not in ("t2va", "ref2va"):
+    if task not in TASKS:
         raise ValueError(task)
     return float(video_latent_num_frames(num_frames) * spatial_tokens(height, width))
 
@@ -153,6 +159,7 @@ class ClipJob:
     steps: int
     out_path: Path
     trim_s: float | None = None
+    video_shift: float = DEFAULT_VIDEO_SHIFT
 
     def canvases(self) -> list[tuple[int, int, int]]:
         """``(height, width, short_edge)`` largest first. ``short_edge`` 0 means width/height were explicit."""
@@ -173,7 +180,8 @@ class ClipJob:
             short_edge=short_edge,
             seed=self.seed,
             steps=self.steps,
-            image_uri=image_uri if self.task == "ref2va" else None,
+            image_uri=image_uri if self.task in ("fl2va", "ref2va") else None,
+            flow_shift=self.video_shift,
         )
 
 
@@ -185,19 +193,25 @@ class Plan:
     trim: bool
     notes: list[str] = field(default_factory=list)
     blocked: str | None = None
+    loras: list[LoraSpec] = field(default_factory=list)
+    video_shift: float = DEFAULT_VIDEO_SHIFT
 
     def report(self) -> str:
         lines = list(self.notes)
         if self.blocked:
             lines.append("止める: " + self.blocked)
             return "\n".join(lines)
-        lines.append(f"offload: {self.offload}")
+        lines.append(f"offload: {self.offload}  video_shift: {self.video_shift:g}  audio_shift: {AUDIO_FLOW_SHIFT:g}")
+        if self.loras:
+            lines.append(
+                "LoRA: " + ", ".join(f"{item.name}={item.scale:g} ({item.path.name})" for item in self.loras)
+            )
         for job in self.jobs:
             _height, width, edge = job.canvases()[0]
             lines.append(
                 f"{job.task} {job.requested_s:g}s → {job.num_frames} frames "
                 f"({job.aligned_s:.3f}s) canvas {width}x{_height} "
-                f"short_edge {edge} seed {job.seed}"
+                f"short_edge {edge} seed {job.seed} steps {job.steps}"
             )
         lines.append(f"書き出し: {self.delivery_path}")
         return "\n".join(lines)
@@ -218,6 +232,7 @@ def _clip(
     height: int | None,
     num_frames: int | None = None,
     trim_s: float | None = None,
+    video_shift: float = DEFAULT_VIDEO_SHIFT,
 ) -> ClipJob:
     if num_frames is None:
         raw = frames_for_seconds(requested_s)
@@ -253,6 +268,7 @@ def _clip(
         steps=int(steps),
         out_path=out_path,
         trim_s=trim_s,
+        video_shift=float(video_shift),
     )
 
 
@@ -318,19 +334,38 @@ def check_machine(vram_gb: float, host_ram_gb: float, offload: str) -> str | Non
     return None
 
 
+def _apply_loras(notes: list[str], offload: str, loras: list[LoraSpec] | None) -> list[LoraSpec]:
+    requested = list(loras or [])
+    if not requested:
+        notes.append("LoRA は未指定。Turbo を使うときは --lora で パス:強さ を繰り返す。")
+        return []
+    if offload == "int8":
+        names = ", ".join(f"{item.name}={item.scale:g}" for item in requested)
+        notes.append(f"int8 経路では LoRA を無効にする。渡された LoRA は読まない: {names}")
+        return []
+    names = ", ".join(f"{item.name}={item.scale:g}" for item in requested)
+    notes.append(
+        f"LoRA は bf16 で融合する（set_adapters → fuse_lora → unload）: {names}。"
+        "FL2V の LoRA は transformer に載せる。ref2va のときだけ transformer_ref。"
+    )
+    return requested
+
+
 def orbis01_plan(
     root: Path,
     out_dir: Path,
     *,
     seed: int = 0,
-    steps: int = DEFAULT_STEPS,
+    steps: int = ORBIS_STEPS,
     aspect: str = "9:16",
     vram_gb: float = 80.0,
     host_ram_gb: float = 83.0,
     offload: str = "auto",
     force_one_shot: bool = False,
+    video_shift: float = DEFAULT_VIDEO_SHIFT,
+    loras: list[LoraSpec] | None = None,
 ) -> Plan:
-    """Sakura still + the bundled prompts. Default is 6s T2VA + 9s Ref2VA."""
+    """Sakura still as the first frame of two FL2VA clips. Ref2VA stays available via --task."""
     root = Path(root)
     out_dir = Path(out_dir)
     image = root / "assets" / "sakura-ref.jpg"
@@ -339,15 +374,18 @@ def orbis01_plan(
     prompt_9 = root / "prompts" / "orbis01_ref2va_9s.txt"
     delivery = out_dir / "orbis01.mp4"
     notes = [
-        f"モデル: {MODEL_ID}。LoRA は使わない（公式の推論スクリプトはベースの BF16 のみ）。",
-        "H3-Context-IR と H3-Regenerate-2K はオープンソースに無い。プロンプトは既に Context-IR の形。",
-        "参照動画は渡さない。Ref2VA の conditions は静止画 1 枚、role=reference。",
+        f"モデル: {MODEL_ID}。既定は FL2VA が2本。Ref2VA は --task ref2va で残している。",
+        "静止画は image= の最初のコマ。公式の conditions は role=keyframe, frame_index=0。参照動画は渡さない。",
+        f"steps={int(steps)}。スケジューラは終点 0 を含むので、モデル評価は {max(int(steps) - 1, 0)} 回。",
+        f"video shift {float(video_shift):g}、audio shift {AUDIO_FLOW_SHIFT:g}。",
+        "H3-Context-IR と H3-Regenerate-2K はオープンソースに無い。",
     ]
     blocked = check_machine(vram_gb, host_ram_gb, offload)
     mode = "int8"
     if blocked is None:
         mode = offload_mode(host_ram_gb, offload)
         notes.append(hardware_note(vram_gb))
+    applied = _apply_loras(notes, mode, loras)
     if force_one_shot:
         raw = frames_for_seconds(15)
         frames = largest_legal_frames(raw)
@@ -355,7 +393,7 @@ def orbis01_plan(
         notes.append(
             "force-one-shot: 15秒の snap は 362 フレームで diffusers が拒否するため、"
             f"合法な {frames} フレーム ({frames / FPS:.3f}秒) にする。"
-            "画は予算に入る短辺まで落とす。ノートの既定ではない。"
+            "画は予算に入る短辺まで落とす。ノートの既定ではない。タスクは Ref2VA のまま。"
         )
         job = _clip(
             task="ref2va",
@@ -371,6 +409,7 @@ def orbis01_plan(
             height=None,
             num_frames=frames,
             trim_s=None,
+            video_shift=video_shift,
         )
         return Plan(
             jobs=[job],
@@ -379,53 +418,71 @@ def orbis01_plan(
             trim=False,
             notes=notes,
             blocked=blocked,
+            loras=applied,
+            video_shift=float(video_shift),
         )
-    refusal = one_shot_refusal("ref2va", 15, aspect)
+    refusal = one_shot_refusal("fl2va", 15, aspect)
     notes.append("15秒 1本にはしない。理由: " + (refusal or ""))
     notes.append(
         "メモリ: 公式は transformer 61.7GB + テキストエンコーダ 62.1GB で、80GB 1枚は "
-        "CPU offload（margin 12GB）か int8 group offload。diffusers PR 14371 は、"
-        "参照画像つき Ref2VA の既定キャンバスが 80GB で OOM し、通した比較は "
-        "512x896・124フレーム（約5.2秒）だと書いている。15秒の列はその約2.8倍。"
-    )
-    notes.append(ref_canvas_note(vram_gb))
-    notes.append(
-        "代わりに予備プロンプトを 2 本出す。T2VA 6秒（顔なし）と Ref2VA 9秒（サクラの静止画）。"
-        "各本は 17*n+5 に切り上がる（6秒→158フレーム=6.583秒、9秒→226フレーム=9.417秒）。"
-        "つなぎの完成ファイルだけ、指定の 6.00秒と 9.00秒で切って 15.00秒にし、1080x1920 にする。"
-        "切る前の mp4 も同じフォルダに残す。"
+        "CPU offload（margin 12GB）か int8 group offload。"
+        "FL2VA は transformer/ を使い、静止画を目標キャンバスへ伸ばす。"
+        "Ref2VA の参照画像（短辺 2048）は使わない。"
     )
     jobs = [
         _clip(
-            task="t2va",
+            task="fl2va",
             prompt_path=prompt_6,
-            image_path=None,
+            image_path=image,
             requested_s=6,
             aspect=aspect,
             seed=seed,
             steps=steps,
-            out_path=out_dir / "orbis01_6s.mp4",
+            out_path=out_dir / "orbis01_fl2va_6s.mp4",
             short_edge=None,
             width=None,
             height=None,
             trim_s=6.0,
+            video_shift=video_shift,
         ),
         _clip(
-            task="ref2va",
+            task="fl2va",
             prompt_path=prompt_9,
             image_path=image,
             requested_s=9,
             aspect=aspect,
             seed=seed,
             steps=steps,
-            out_path=out_dir / "orbis01_9s.mp4",
+            out_path=out_dir / "orbis01_fl2va_9s.mp4",
             short_edge=None,
             width=None,
             height=None,
             trim_s=9.0,
+            video_shift=video_shift,
         ),
     ]
-    return Plan(jobs=jobs, offload=mode, delivery_path=delivery, trim=True, notes=notes, blocked=blocked)
+    six, nine = jobs
+    notes.append(
+        "FL2VA のキャンバスは T2VA と同じトークン予算（124フレーム・768p の 1.35 倍まで）。"
+        f"6秒は {six.width}x{six.height}（短辺 {six.short_edges[0]}）、"
+        f"9秒は {nine.width}x{nine.height}（短辺 {nine.short_edges[0]}）。"
+        "既存の orbis01_6s.mp4 は上書きしない。"
+    )
+    notes.append(
+        "前半 6秒と後半 9秒。各本は 17*n+5 に切り上がる（6秒→158フレーム=6.583秒、9秒→226フレーム=9.417秒）。"
+        "つなぎの完成ファイルだけ、指定の 6.00秒と 9.00秒で切って 15.00秒にし、1080x1920 にする。"
+        "切る前の mp4 も同じフォルダに残す。"
+    )
+    return Plan(
+        jobs=jobs,
+        offload=mode,
+        delivery_path=delivery,
+        trim=True,
+        notes=notes,
+        blocked=blocked,
+        loras=applied,
+        video_shift=float(video_shift),
+    )
 
 
 def single_plan(
@@ -448,18 +505,23 @@ def single_plan(
     split_t2va: Path | None = None,
     split_ref2va: Path | None = None,
     split_image: Path | None = None,
+    video_shift: float = DEFAULT_VIDEO_SHIFT,
+    loras: list[LoraSpec] | None = None,
 ) -> Plan:
+    if task not in TASKS:
+        raise ValueError(f"task must be t2va, fl2va, or ref2va, got {task!r}")
     if not README_MIN_DURATION_S <= duration_s <= README_MAX_DURATION_S:
         raise ValueError(f"duration は {README_MIN_DURATION_S:g}〜{README_MAX_DURATION_S:g}")
-    notes = [f"モデル: {MODEL_ID}。追加 LoRA は無し。"]
+    notes = [f"モデル: {MODEL_ID}。"]
     blocked = check_machine(vram_gb, host_ram_gb, offload)
     mode = offload_mode(host_ram_gb, offload) if blocked is None else "int8"
     if blocked is None:
         notes.append(hardware_note(vram_gb))
+    applied = _apply_loras(notes, mode, loras)
     raw = frames_for_seconds(duration_s)
     legal = diffusers_accepts(raw)
-    if task == "ref2va" and image_path is None:
-        raise ValueError("ref2va には --image が要る")
+    if task in ("ref2va", "fl2va") and image_path is None:
+        raise ValueError(f"{task} には --image が要る")
     if task == "t2va" and image_path is not None:
         raise ValueError("t2va に参照画像は渡さない")
     use_split = (
@@ -486,6 +548,7 @@ def single_plan(
                 width=width,
                 height=height,
                 trim_s=6.0,
+                video_shift=video_shift,
             ),
             _clip(
                 task="ref2va",
@@ -500,21 +563,33 @@ def single_plan(
                 width=width,
                 height=height,
                 trim_s=9.0,
+                video_shift=video_shift,
             ),
         ]
-        return Plan(jobs=jobs, offload=mode, delivery_path=out_path, trim=True, notes=notes, blocked=blocked)
+        return Plan(
+            jobs=jobs,
+            offload=mode,
+            delivery_path=out_path,
+            trim=True,
+            notes=notes,
+            blocked=blocked,
+            loras=applied,
+            video_shift=float(video_shift),
+        )
     if not legal and not force:
         aligned = align_num_frames(raw)
         raise ValueError(
             f"{duration_s:g}秒は {aligned} フレーム ({aligned / FPS:.3f}秒) に切り上がり、"
             "diffusers の 5–15 秒チェックを通らない。"
-            "15秒の完成尺は --preset orbis01（6秒+9秒）を使う。"
+            "15秒の完成尺は --preset orbis01（FL2VA 6秒+9秒）を使う。"
         )
     frames = align_num_frames(raw) if legal else largest_legal_frames(raw)
     if frames is None:
         raise ValueError(f"{duration_s:g}秒は生成できない")
     if not legal:
         notes.append(f"force: {frames} フレーム ({frames / FPS:.3f}秒) に縮める。")
+    if task == "fl2va":
+        notes.append("FL2VA の静止画は image= の最初のコマ。references には渡さない。")
     job = _clip(
         task=task,
         prompt_path=prompt_path,
@@ -529,5 +604,17 @@ def single_plan(
         height=height,
         num_frames=frames,
         trim_s=None,
+        video_shift=video_shift,
     )
-    return Plan(jobs=[job], offload=mode, delivery_path=out_path, trim=False, notes=notes, blocked=blocked)
+    if task == "ref2va" and job.short_edges[0] == 352:
+        notes.append(ref_canvas_note(vram_gb))
+    return Plan(
+        jobs=[job],
+        offload=mode,
+        delivery_path=out_path,
+        trim=False,
+        notes=notes,
+        blocked=blocked,
+        loras=applied,
+        video_shift=float(video_shift),
+    )

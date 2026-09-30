@@ -38,6 +38,12 @@ VIDEO_FLOW_SHIFT = 12.0
 AUDIO_FLOW_SHIFT = 3.0
 # diffusers InputParam template default for num_inference_steps.
 DEFAULT_STEPS = 50
+# Turbo 8-step file. MiniMaxH3Scheduler.set_timesteps builds linspace(1, 0, steps)
+# and evaluates the model steps-1 times, because the terminal sigma 0 is included.
+ORBIS_STEPS = 9
+# FL2VA Turbo 8-step v1.0 768p trains at video shift 6. The checkpoint default stays 12.
+DEFAULT_VIDEO_SHIFT = 6.0
+TASKS = ("t2va", "fl2va", "ref2va")
 
 # README.ja.md lists 4–15 seconds. The diffusers pipeline that the same README
 # names for local runs enforces 5–15 on the aligned frame count.
@@ -157,10 +163,16 @@ def build_video_request(
     seed: int,
     steps: int = DEFAULT_STEPS,
     image_uri: str | None = None,
+    flow_shift: float = VIDEO_FLOW_SHIFT,
 ) -> dict:
-    """Official ``/v1/videos`` body. Image Ref2VA uses one reference condition and no video."""
-    if task not in ("t2va", "ref2va"):
-        raise ValueError(f"task must be t2va or ref2va, got {task!r}")
+    """Official ``/v1/videos`` body.
+
+    Ref2VA uses one reference condition and no video. FL2VA uses one keyframe at
+    frame 0 (``scripts/readme/reproducible-768p-fl2va-request.sh``). The local
+    pipeline passes that still as ``image=``, not as a reference.
+    """
+    if task not in TASKS:
+        raise ValueError(f"task must be t2va, fl2va, or ref2va, got {task!r}")
     text = (prompt or "").strip()
     if not text:
         raise ValueError("prompt is empty")
@@ -168,6 +180,10 @@ def build_video_request(
         if not image_uri:
             raise ValueError("ref2va needs one image uri")
         conditions = [{"type": "image", "uri": image_uri, "role": "reference"}]
+    elif task == "fl2va":
+        if not image_uri:
+            raise ValueError("fl2va needs one image uri")
+        conditions = [{"type": "image", "uri": image_uri, "role": "keyframe", "frame_index": 0}]
     else:
         if image_uri:
             raise ValueError("t2va takes no reference image")
@@ -189,7 +205,7 @@ def build_video_request(
         },
         "num_outputs_per_prompt": 1,
         "num_inference_steps": int(steps),
-        "flow_shift": VIDEO_FLOW_SHIFT,
+        "flow_shift": float(flow_shift),
         "audio_flow_shift": AUDIO_FLOW_SHIFT,
         "seed": int(seed),
     }

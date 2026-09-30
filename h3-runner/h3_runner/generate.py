@@ -1,20 +1,20 @@
 """Run one H3 clip with the diffusers calls the MiniMax README points at.
 
 bf16 path: the "one 80 GB card" recipe in the diffusers MiniMax-H3 docs
-(``ComponentsManager.enable_auto_cpu_offload``, margin ``"12GB"``).
+(``ComponentsManager.enable_auto_cpu_offload``, margin ``"12GB"``). LoRA weights
+are loaded and fused before that offload. Leaving them unfused costs about
+9–13% per still. An FL2V LoRA is not loaded into ``transformer_ref``.
 
 int8 path: the same docs' consumer-card recipe (``TorchAoConfig`` int8 weight
 only, block offload on the transformer, leaf offload on the text encoder).
-Colab high-RAM is about 83 GB of host RAM, which is the int8 note ("around
-75 GB"), not the 61.7+62.1 GB bf16 pair.
-
-No LoRA is loaded. The released checkpoints are the CFG-distilled bf16 weights.
+LoRA is not applied on this path.
 """
 
 from __future__ import annotations
 
 import gc
 import json
+import time
 from pathlib import Path
 
 import torch
@@ -22,12 +22,14 @@ from diffusers import ComponentsManager, MiniMaxH3Transformer3DModel, ModularPip
 from diffusers.hooks import apply_group_offloading
 from diffusers.modular_pipelines.minimax_h3 import MiniMaxH3ImageReference
 from diffusers.utils.export_utils import encode_video
+from PIL import Image
 from torchao.quantization import Int8WeightOnlyConfig
 from transformers import Qwen3VLForConditionalGeneration
 from transformers import TorchAoConfig as TransformersTorchAoConfig
 
 from h3_runner.ffmpeg_join import clip_is_done, join_clips
-from h3_runner.official import FPS
+from h3_runner.loras import LoraSpec, reject_pruned_adaln
+from h3_runner.official import AUDIO_FLOW_SHIFT, FPS
 from h3_runner.planner import ClipJob, Plan
 from h3_runner.weights import require_present
 
@@ -66,12 +68,46 @@ def _release() -> None:
 def _denoiser(pipe: ModularPipeline, task: str):
     if task == "ref2va":
         return pipe.transformer_ref
-    if task == "t2va":
+    if task in ("t2va", "fl2va"):
         return pipe.transformer
     raise ValueError(task)
 
 
-def _load_bf16(task: str, model_dir: Path) -> tuple[ModularPipeline, ComponentsManager]:
+def _apply_shifts(pipe: ModularPipeline, video_shift: float) -> None:
+    pipe.scheduler.set_shift(float(video_shift))
+    audio = getattr(pipe, "audio_scheduler", None)
+    if audio is not None and hasattr(audio, "set_shift"):
+        audio.set_shift(float(AUDIO_FLOW_SHIFT))
+    print(f"shift video={float(video_shift):g} audio={AUDIO_FLOW_SHIFT:g}", flush=True)
+
+
+def _fuse_loras(pipe: ModularPipeline, task: str, loras: list[LoraSpec]) -> None:
+    if not loras:
+        return
+    for spec in loras:
+        reject_pruned_adaln(spec.path)
+    into_ref = task == "ref2va"
+    for spec in loras:
+        print(
+            f"lora {spec.name} scale={spec.scale:g} into_transformer_ref={into_ref} path={spec.path}",
+            flush=True,
+        )
+        pipe.load_lora_weights(
+            str(spec.path),
+            adapter_name=spec.name,
+            load_into_transformer_ref=into_ref,
+        )
+    pipe.set_adapters([spec.name for spec in loras], [spec.scale for spec in loras])
+    pipe.fuse_lora()
+    pipe.unload_lora_weights()
+
+
+def _load_bf16(
+    task: str,
+    model_dir: Path,
+    loras: list[LoraSpec],
+    video_shift: float,
+) -> tuple[ModularPipeline, ComponentsManager]:
     # local_files_only plus the local directory: the index's hub id must not fetch FL2VA/ or Ref2VA/.
     manager = ComponentsManager()
     pipe = ModularPipeline.from_pretrained(
@@ -85,7 +121,10 @@ def _load_bf16(task: str, model_dir: Path) -> tuple[ModularPipeline, ComponentsM
         pretrained_model_name_or_path=str(model_dir),
         local_files_only=True,
     )
+    # Fuse before offload. An unfused LoRA adds about 9–13% per still.
+    _fuse_loras(pipe, task, loras)
     manager.enable_auto_cpu_offload(device="cuda", memory_reserve_margin="12GB")
+    _apply_shifts(pipe, video_shift)
     # _flash_3_hub is the Hopper kernel in the official docs (compute capability 9).
     # A100 is 8. Blackwell (RTX PRO 6000) is 10, so leave its default attention.
     major, _minor = torch.cuda.get_device_capability()
@@ -122,7 +161,7 @@ def _quantized_text_encoder(model_dir: Path) -> Qwen3VLForConditionalGeneration:
     )
 
 
-def _load_int8(task: str, model_dir: Path) -> tuple[ModularPipeline, None]:
+def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularPipeline, None]:
     # Official snippet: build the pipeline, replace the two large modules, then
     # load_components(workflow=) so the other transformer partition stays unloaded.
     pipe = ModularPipeline.from_pretrained(str(model_dir), local_files_only=True)
@@ -132,7 +171,7 @@ def _load_int8(task: str, model_dir: Path) -> tuple[ModularPipeline, None]:
             transformer_ref=_quantized_transformer(model_dir, "transformer_ref"),
             text_encoder=text_encoder,
         )
-    elif task == "t2va":
+    elif task in ("t2va", "fl2va"):
         pipe.update_components(
             transformer=_quantized_transformer(model_dir, "transformer"),
             text_encoder=text_encoder,
@@ -153,15 +192,24 @@ def _load_int8(task: str, model_dir: Path) -> tuple[ModularPipeline, None]:
     apply_group_offloading(pipe.text_encoder.model, offload_type="leaf_level", **offload)
     pipe.vae.to("cuda")
     pipe.audio_vae.to("cuda")
+    _apply_shifts(pipe, video_shift)
     return pipe, None
 
 
-def load_pipeline(task: str, offload: str, model_dir: Path) -> ModularPipeline:
+def load_pipeline(
+    task: str,
+    offload: str,
+    model_dir: Path,
+    loras: list[LoraSpec],
+    video_shift: float,
+) -> ModularPipeline:
     if offload == "bf16":
-        pipe, _manager = _load_bf16(task, model_dir)
+        pipe, _manager = _load_bf16(task, model_dir, loras, video_shift)
         return pipe
     if offload == "int8":
-        pipe, _manager = _load_int8(task, model_dir)
+        if loras:
+            print("int8 経路では LoRA を無効にする。", flush=True)
+        pipe, _manager = _load_int8(task, model_dir, video_shift)
         return pipe
     raise ValueError(offload)
 
@@ -188,18 +236,75 @@ def _call_pipe(
         if job.image_path is None:
             raise ValueError("ref2va clip has no image")
         kwargs["references"] = [MiniMaxH3ImageReference.from_file(str(job.image_path))]
+    elif job.task == "fl2va":
+        if job.image_path is None:
+            raise ValueError("fl2va clip has no image")
+        still = Image.open(job.image_path)
+        try:
+            frame = still.convert("RGB")
+            if frame is still:
+                frame = still.copy()
+            frame.load()
+        finally:
+            still.close()
+        kwargs["image"] = frame
+    elif job.task != "t2va":
+        raise ValueError(job.task)
     return pipe(**kwargs)
 
 
-def generate_clip(job: ClipJob, *, offload: str, model_dir: Path) -> Path:
+def _attach_stage_timers(pipe: ModularPipeline, task: str) -> dict[str, float]:
+    """Wall time of text-encoder, denoiser, and VAE forwards, after CUDA sync."""
+    totals = {"text": 0.0, "denoise": 0.0, "vae": 0.0}
+
+    def wrap(module, key: str) -> None:
+        original = module.forward
+
+        def wrapped(*args, **kwargs):
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            start = time.perf_counter()
+            try:
+                return original(*args, **kwargs)
+            finally:
+                if torch.cuda.is_available():
+                    torch.cuda.synchronize()
+                totals[key] += time.perf_counter() - start
+
+        module.forward = wrapped
+
+    text = getattr(pipe, "text_encoder", None)
+    if text is not None:
+        wrap(text, "text")
+    wrap(_denoiser(pipe, task), "denoise")
+    for name in ("vae", "audio_vae"):
+        module = getattr(pipe, name, None)
+        if module is not None:
+            wrap(module, "vae")
+    return totals
+
+
+def generate_clip(
+    job: ClipJob,
+    *,
+    offload: str,
+    model_dir: Path,
+    loras: list[LoraSpec] | None = None,
+    video_shift: float | None = None,
+) -> Path:
     job.out_path.parent.mkdir(parents=True, exist_ok=True)
+    applied = list(loras or [])
+    shift = float(job.video_shift if video_shift is None else video_shift)
     last_error: BaseException | None = None
     for height, width, edge in job.canvases():
         pipe = None
         results = None
         try:
             print(f"load {job.task} offload={offload} canvas={width}x{height} frames={job.num_frames}", flush=True)
-            pipe = load_pipeline(job.task, offload, model_dir)
+            started = time.perf_counter()
+            pipe = load_pipeline(job.task, offload, model_dir, applied, shift)
+            load_s = time.perf_counter() - started
+            totals = _attach_stage_timers(pipe, job.task)
             image_uri = None
             if job.image_path is not None:
                 image_uri = job.image_path.resolve().as_uri()
@@ -219,6 +324,11 @@ def generate_clip(job: ClipJob, *, offload: str, model_dir: Path) -> Path:
                 output_path=str(job.out_path),
                 audio=results["audio"][0],
                 audio_sample_rate=results["sampling_rate"],
+            )
+            print(
+                f"TIMING load={load_s:.3f} text={totals['text']:.3f} "
+                f"denoise={totals['denoise']:.3f} vae={totals['vae']:.3f}",
+                flush=True,
             )
             print(f"wrote {job.out_path}", flush=True)
             return job.out_path
@@ -251,7 +361,15 @@ def run_plan(plan: Plan, model_dir: Path) -> int:
             written.append(job.out_path)
             continue
         print(f"生成開始 {index}/{total} {job.task}", flush=True)
-        written.append(generate_clip(job, offload=plan.offload, model_dir=model_dir))
+        written.append(
+            generate_clip(
+                job,
+                offload=plan.offload,
+                model_dir=model_dir,
+                loras=plan.loras,
+                video_shift=plan.video_shift,
+            )
+        )
         made_new = True
         print(
             f"Drive に保存 {index}/{total}: {job.out_path} bytes {job.out_path.stat().st_size}",
