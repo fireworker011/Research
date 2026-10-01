@@ -2201,7 +2201,7 @@ def _embrace_beat(
             "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. "
             "Aya full body including feet. Only Aya."
         )
-    elif suffix in ("hold", "peak"):
+    elif suffix in ("hold", "in", "peak"):
         camera = (
             "PROFILE side-on. Floor runs LEFT to RIGHT. Full body. "
             "Aya's feet stay in the air beside the partner's hips and stay inside the frame. "
@@ -2242,7 +2242,7 @@ def _embrace_beat(
     }
     if suffix == "walk":
         beat["loco"] = "walk"
-    elif suffix in ("hold", "peak"):
+    elif suffix in ("hold", "in", "peak"):
         beat["camera_pack"] = "none"
     else:
         beat["loco"] = loco
@@ -2286,7 +2286,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         f"One of Aya's feet stays on the linoleum. The erect {cm} stays in front of the hips. "
         "Brisk real-time. Consensual adult game beat"
     )
-    hold = (
+    hold_joined = (
         "They start already at the wall on this same linoleum spot, face to face. "
         f"{name} already STANDS with both soles on the linoleum. "
         f"Both of {name}'s arms wrap under Aya's thighs. "
@@ -2304,6 +2304,37 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         "hips flush, the shaft buried to the root, mouths joined. "
         "Both adults full body including the held feet."
     )
+    hold_lift = (
+        "They start already at the wall on this same linoleum spot, face to face, both soles on the linoleum. "
+        f"{name} already STANDS with both soles on the linoleum. "
+        f"Both of {name}'s arms go under Aya's thighs and LIFT until the feet leave the linoleum. "
+        "Both of Aya's knees come up and open. "
+        f"Both of Aya's feet leave the linoleum. Both of Aya's feet stay in the air beside {name}'s hips. "
+        f"Aya's arms WRAP behind {name}'s back. Chests press flush. Mouths stay joined. Tongues slide together. "
+        "The hairless pussy hangs DIRECTLY in front of the glans. The shaft stays outside. "
+        "Last frame: both knees up and open, "
+        f"Aya's feet in the air beside {name}'s hips, {name}'s soles on the linoleum, "
+        "the shaft still outside, mouths joined. "
+        "Both adults full body including the held feet."
+    )
+    hold_in = (
+        "They start already lifted on this same linoleum spot. "
+        f"Both of {name}'s arms stay under Aya's thighs. "
+        "Both knees stay up and open. "
+        f"Aya's feet stay in the air beside {name}'s hips. {name}'s soles stay on the linoleum. "
+        f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. Tongues slide together. "
+        "The hairless pussy hangs DIRECTLY in front of the glans. "
+        f"Then the erect {cm} TRAVELS INTO the hairless pussy in one continuous press until the hips meet at the BASE. "
+        "HOLD still joined at the BASE until the last frame. "
+        "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
+        "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
+        f"{name}'s face is the same pleasure-drunk happy smile, mouth open, thick saliva dripping. "
+        "Last frame: both knees held up and open, "
+        f"Aya's feet in the air beside {name}'s hips, {name}'s soles on the linoleum, "
+        "hips flush, the shaft at the BASE inside, buried to the root, mouths joined. "
+        "Both adults full body including the held feet."
+    )
+    hold = hold_joined if enc == "tsuno" else hold_lift
     peak = (
         "They start already joined on this same linoleum spot. Both knees stay held up and open. "
         f"Aya's feet stay in the air beside {name}'s hips. {name}'s feet stay on the linoleum. "
@@ -2331,7 +2362,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         "Brisk real-time. Consensual adult game beat"
     )
     kiss = [["kiss", 0.5], "mystic"]
-    return [
+    seq = [
         _embrace_beat(base, "hug", who, hug, loras=kiss),
         _embrace_beat(base, "wall", who, wall, loras=["mystic"]),
         _embrace_beat(
@@ -2349,17 +2380,32 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
             hold,
             loras=[["kiss", 0.5], ["mystic", 0.5], ["penis", 0.45], ["synth", 0.4]],
         ),
-        _embrace_beat(
-            base,
-            "peak",
-            who,
-            peak,
-            loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55], ["jpnmoans", 0.55]],
-            trigger="jpnMoans",
-            voices=[{"who": "aya", "line": "あ、いく"}],
-        ),
-        _embrace_beat(base, "walk", who, walk, loras=kiss),
     ]
+    if enc != "tsuno":
+        seq.append(
+            _embrace_beat(
+                base,
+                "in",
+                who,
+                hold_in,
+                loras=[["kiss", 0.5], ["mystic", 0.5], ["penis", 0.45], ["synth", 0.4]],
+            )
+        )
+    seq.extend(
+        [
+            _embrace_beat(
+                base,
+                "peak",
+                who,
+                peak,
+                loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55], ["jpnmoans", 0.55]],
+                trigger="jpnMoans",
+                voices=[{"who": "aya", "line": "あ、いく"}],
+            ),
+            _embrace_beat(base, "walk", who, walk, loras=kiss),
+        ]
+    )
+    return seq
 
 
 def _apply_embrace_tsuno(ep: dict[str, Any]) -> dict[str, Any]:
@@ -3619,7 +3665,11 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
         # Embrace hold/peak omit loco. "feet stay in the air" would otherwise become planted.
         if (
             not str(beat.get("loco") or "").strip()
-            and (bid.endswith("-hold") or bid.endswith("-peak"))
+            and (
+                bid.endswith("-hold")
+                or bid.endswith("-peak")
+                or bid in {"03-kiss-in", "06-doggy-in", "09-join-in", "12-exit-in"}
+            )
             and re.search(r"feet stay in the air", action, re.I)
         ):
             continue

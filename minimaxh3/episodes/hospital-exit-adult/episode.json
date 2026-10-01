@@ -1551,6 +1551,234 @@
           },
           "loco": "walk"
         }
+      ],
+      "invite_pose_jacko": [
+        {
+          "id": "03-kiss-jo-set",
+          "source": "t2v",
+          "connect": "cut",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already standing in this same corridor on this same linoleum spot. Aya BENDS her knees. Her face and chest LOWER onto the linoleum. Her hips RISE. Both legs STRAIGHTEN and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Miki stays standing to the side. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Miki still standing to the side. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "03-kiss-jo-behind",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Miki STEPS over the raised hips and STANDS there. Both of Miki's feet land on the linoleum outside Aya's calves. Miki's buttocks turn toward the camera. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above. The glans comes to rest against the anus. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Miki standing over the hips, buttocks toward the camera, the shaft outside against the anus. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "03-kiss-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Miki stays standing over the raised hips, buttocks toward the camera, both feet on the linoleum outside Aya's calves. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above, the glans against the anus. Miki MOVES the hips DOWN once. The hips LOWER once. The shaft TRAVELS INTO the anus along the center line from above in one continuous press until the hips meet and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, hips flush, the shaft at the BASE inside the anus, buried to the root, the shaft line still visible from above. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "きもちいい"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "03-kiss-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Miki stays standing over the raised hips, buttocks toward the camera. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays buried to the root in the anus, the shaft line still visible from above. Short vertical moves keep the glans inside. Hips return flush. Miki finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「あ、いく」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, hips flush, the shaft buried to the root, WHITE goo on the join, the join at the center of the frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "03-kiss-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. The cleft faces UP. Miki stays standing over the raised hips, buttocks toward the camera. Miki MOVES the hips UP once. Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, the wide ring open, Miki's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft outside the anus, Miki still over the hips, buttocks toward the camera. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "03-kiss-jo-kiss",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "miki"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Then only Aya walking RIGHT.",
+          "action": "They start already on this same linoleum spot. Both adults RISE to their feet. Mouths meet in a deep wet french kiss. Tongues intertwine. Then Miki steps out of the frame to the RIGHT and is gone. Aya WALKS RIGHT along the corridor, fully nude, female body. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "loco": "walk",
+          "fade_cast": [
+            "miki"
+          ]
+        }
       ]
     },
     {
@@ -2139,13 +2367,13 @@
       "connect": "t2v",
       "on_toilet_finger": [
         {
-          "id": "04-toilet-in",
+          "id": "04-toilet-toy",
           "source": "t2v",
           "connect": "t2v",
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 4.0
+            "seconds": 6.0
           },
           "cast": [
             "aya"
@@ -2159,6 +2387,10 @@
             [
               "mystic",
               0.5
+            ],
+            [
+              "penis",
+              0.45
             ]
           ],
           "hud": {
@@ -2176,21 +2408,23 @@
               "隠"
             ]
           },
-          "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
+          "sfx": "A squat on tile, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the pitcher plant behind the bowl on the FAR wall. Aya walks in and sits on the plant-flesh toilet bowl facing the pitcher plant behind the bowl. Her back stays toward the camera. Both soles plant on the tiles beside the bowl. The anus faces the camera. Full body including both feet. Distance stays the same.",
-          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She SITS on the plant-flesh toilet bowl facing the pitcher plant behind the bowl on the FAR wall. Her back stays toward the camera. Both soles plant on the tiles beside the bowl. Knees stay open. The torso folds toward the pitcher plant behind the bowl. The anus faces the camera. The right thumb rests at the anus. Last frame: Aya seated on the plant-flesh toilet bowl facing the pitcher plant behind the bowl, back toward the camera, anus toward the camera, the right thumb at the anus, both soles on the tiles. Nobody else in frame.",
+          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "action": "Aya is already in this stall, fully nude, full body including both feet. She SQUATS over the plant-flesh hole. Both feet plant OUTSIDE the fleshy plant rim. Heels stay on the tiles. Knees stay open. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup stuck to the floor in the center of the hole. The toy points UP. The glans rests against the anus. The toy stays outside the anus. Last frame: Aya still squats, both feet outside the fleshy plant rim, the anus over the center of the hole, the penis-shaped toy standing on the suction cup, the glans against the anus, the toy outside. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
               "line": "んっ"
             }
           ],
-          "loco": "walk"
+          "loco": "planted",
+          "trigger": ""
         },
         {
           "id": "04-toilet",
           "source": "chain",
+          "connect": "chain",
           "still": "",
           "trim": {
             "start": 0,
@@ -2210,7 +2444,68 @@
               0.5
             ],
             [
-              "thumbinbutt",
+              "penis",
+              0.45
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet join, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "action": "They stay in this same stall. Aya already SQUATS over the plant-flesh hole, both feet planted OUTSIDE the fleshy plant rim, heels on the tiles, knees open, the anus over the CENTER of the hole. The thick penis-shaped toy already stands on the suction cup, the glans against the anus. Aya LOWERS her hips once. The toy TRAVELS INTO the anus in one continuous press until the hips meet the base of the toy and the toy reaches the BASE. HOLD still joined at the BASE until the last frame. Aya says 「気持ちいい」. Last frame: Aya still squats, both feet outside the fleshy plant rim, the anus over the center of the hole, the toy buried to the root. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "きもちいい"
+            }
+          ],
+          "loco": "planted",
+          "trigger": "",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "04-toilet-pump",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl, a closed stall partition, a flickering tube, no readable letters",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
               0.55
             ]
           ],
@@ -2229,19 +2524,69 @@
               "隠"
             ]
           },
-          "sfx": "A wet thumb, fluorescent buzz, HVAC",
+          "sfx": "A wet pulse, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the pitcher plant behind the bowl on the FAR wall. Aya stays seated on the plant-flesh toilet bowl facing the pitcher plant behind the bowl, back toward the camera. The anus faces the camera. The right thumb is at the anus. Full body including both feet. Distance stays the same.",
-          "action": "They stay in this same stall. Aya stays seated on the plant-flesh toilet bowl facing the pitcher plant behind the bowl, back toward the camera, both soles on the tiles beside the bowl, knees open, torso folded toward the pitcher plant behind the bowl, the anus toward the camera. Aya uses her right thumb to rub around her anus in a small circle. Then the right thumb TRAVELS INTO the anus. The right thumb stays inside the anus with short wet strokes. A narrowed smile. Last frame: Aya still seated facing the pitcher plant behind the bowl, back toward the camera, the right thumb still inside the anus. Nobody else in frame.",
+          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "action": "They start already joined in this same stall. Aya stays squatting, both feet outside the fleshy plant rim, the anus over the CENTER of the hole, the penis-shaped toy buried to the root on the suction cup. Short vertical moves keep the glans inside. Hips return flush. Aya climaxes. Thick WHITE goo OVERFLOWS from the join down the toy. HOLD still joined at the BASE until the last frame. Aya says 「あ、いく」. Last frame: still squatting, both feet outside the rim, the toy buried to the root, WHITE goo on the join. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
-              "line": "んっ"
+              "line": "あ、いく"
             }
           ],
           "loco": "planted",
+          "trigger": "jpnMoans"
+        },
+        {
+          "id": "04-toilet-gape",
+          "source": "chain",
           "connect": "chain",
-          "trigger": "thum1n8utt"
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
+          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl, a closed stall partition, a flickering tube, no readable letters",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet leave, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "action": "They start already joined in this same stall. Aya stays squatting, both feet outside the fleshy plant rim, the anus over the CENTER of the hole, the penis-shaped toy buried to the root. Aya MOVES her hips UP once. The toy leaves the anus and FALLS onto the floor of the hole. The suction cup stays on the floor. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Last frame: Aya still squats, both feet outside the fleshy plant rim, the wide ring open, the penis-shaped toy on the floor of the hole, off the anus. Nobody else in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "loco": "planted",
+          "trigger": ""
         },
         {
           "id": "04-toilet-out",
@@ -4090,7 +4435,251 @@
           "loco": "walk"
         }
       ],
-      "connect": "t2v"
+      "connect": "t2v",
+      "on_gin_jacko": [
+        {
+          "id": "04-gin-jo-set",
+          "source": "t2v",
+          "connect": "cut",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already standing in this same corridor on this same linoleum spot. Gin BENDS her knees. Her face and chest LOWER onto the linoleum. Her hips RISE. Both legs STRAIGHTEN and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Aya stays standing to the side. Aya's grown erect 24cm stays outside. Gin's groin stays a hairless pussy. Last frame: Gin's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Aya still standing to the side. Aya's grown erect 24cm stays outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, long straight dark hair past the shoulders, blunt bangs across the forehead, a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips, slender thin body, C-cup breasts, narrow waist, thin arms, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          }
+        },
+        {
+          "id": "04-gin-jo-behind",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Gin's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Aya STEPS over the raised hips and STANDS there. Both of Aya's feet land on the linoleum outside Gin's calves. Aya's buttocks turn toward the camera. Aya's grown erect 24cm hangs DOWN from above. The glans comes to rest against the anus. Gin's groin stays a hairless pussy. Last frame: Gin's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Aya standing over the hips, buttocks toward the camera, the shaft outside against the anus. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, long straight dark hair past the shoulders, blunt bangs across the forehead, a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips, slender thin body, C-cup breasts, narrow waist, thin arms, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          }
+        },
+        {
+          "id": "04-gin-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Gin's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Aya stays standing over the raised hips, buttocks toward the camera, both feet on the linoleum outside Gin's calves. Aya's grown erect 24cm hangs DOWN from above, the glans against the anus. Aya MOVES the hips DOWN once. The hips LOWER once. The shaft TRAVELS INTO the anus along the center line from above in one continuous press until the hips meet and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Gin's groin stays a hairless pussy. Gin says 「気持ちいい」. Last frame: Gin's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, hips flush, the shaft at the BASE inside the anus, buried to the root, the shaft line still visible from above. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "きもちいい"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "turbo": false,
+          "steps": 8,
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, long straight dark hair past the shoulders, blunt bangs across the forehead, a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips, slender thin body, C-cup breasts, narrow waist, thin arms, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          }
+        },
+        {
+          "id": "04-gin-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Gin's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Aya stays standing over the raised hips, buttocks toward the camera. Aya's grown erect 24cm stays buried to the root in the anus, the shaft line still visible from above. Short vertical moves keep the glans inside. Hips return flush. Aya finishes INSIDE Gin. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. Gin's groin stays a hairless pussy. Gin says 「あ、いく」. Last frame: Gin's face and chest on the linoleum, hips high, both legs straight and open, hips flush, the shaft buried to the root, WHITE goo on the join, the join at the center of the frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, long straight dark hair past the shoulders, blunt bangs across the forehead, a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips, slender thin body, C-cup breasts, narrow waist, thin arms, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          }
+        },
+        {
+          "id": "04-gin-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Gin's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. The cleft faces UP. Aya stays standing over the raised hips, buttocks toward the camera. Aya MOVES the hips UP once. Aya's grown erect 24cm leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Gin's groin stays a hairless pussy. Last frame: Gin's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, the wide ring open, Aya's grown erect 24cm outside the anus, Aya still over the hips, buttocks toward the camera. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "cast_lock": {
+            "aya": "21-year-old Japanese woman, adult face, long straight dark hair past the shoulders, blunt bangs across the forehead, a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips, slender thin body, C-cup breasts, narrow waist, thin arms, fully nude, no clothes, no gown, female body with an enlarged clitoris grown into a clear erect 24cm human penis, thick human girth, straight heavy pale-tan shaft, flushed pink-red glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base of the grown shaft, tired determined expression, visible sweat beads and thick extra-viscous sticky grimy brown hospital dirt clinging to the whole body, the face, hair, neck, breasts, back, belly, arms, hands, hips, inner thighs, legs, feet, and hairless pussy, damp dirty bangs stuck to the forehead, the sweat and dirt stay readable on the skin"
+          }
+        },
+        {
+          "id": "04-gin-jo-kiss",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Then only Aya walking RIGHT.",
+          "action": "They start already on this same linoleum spot. Both adults RISE to their feet. Mouths meet in a deep wet french kiss. Tongues intertwine. Then Aya's mouth leaves Gin's mouth. Gin steps out of the frame to the RIGHT and is gone. Aya WALKS RIGHT along the corridor, fully nude, female body. Aya's groin is a hairless female pussy. No penis. The grown shaft is gone. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "loco": "walk",
+          "fade_cast": [
+            "gin"
+          ],
+          "cast_lock": {}
+        }
+      ]
     },
     {
       "id": "04-tsuno",
@@ -10414,6 +11003,234 @@
           },
           "loco": "walk"
         }
+      ],
+      "invite_pose_jacko": [
+        {
+          "id": "06-doggy-jo-set",
+          "source": "t2v",
+          "connect": "cut",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already standing in this same corridor on this same linoleum spot. Aya BENDS her knees. Her face and chest LOWER onto the linoleum. Her hips RISE. Both legs STRAIGHTEN and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Rei stays standing to the side. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Rei still standing to the side. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "06-doggy-jo-behind",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Rei STEPS over the raised hips and STANDS there. Both of Rei's feet land on the linoleum outside Aya's calves. Rei's buttocks turn toward the camera. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above. The glans comes to rest against the anus. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Rei standing over the hips, buttocks toward the camera, the shaft outside against the anus. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "06-doggy-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Rei stays standing over the raised hips, buttocks toward the camera, both feet on the linoleum outside Aya's calves. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above, the glans against the anus. Rei MOVES the hips DOWN once. The hips LOWER once. The shaft TRAVELS INTO the anus along the center line from above in one continuous press until the hips meet and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, hips flush, the shaft at the BASE inside the anus, buried to the root, the shaft line still visible from above. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "きもちいい"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "06-doggy-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Rei stays standing over the raised hips, buttocks toward the camera. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays buried to the root in the anus, the shaft line still visible from above. Short vertical moves keep the glans inside. Hips return flush. Rei finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「あ、いく」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, hips flush, the shaft buried to the root, WHITE goo on the join, the join at the center of the frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "06-doggy-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. The cleft faces UP. Rei stays standing over the raised hips, buttocks toward the camera. Rei MOVES the hips UP once. Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, the wide ring open, Rei's erect 24cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft outside the anus, Rei still over the hips, buttocks toward the camera. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "06-doggy-jo-kiss",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "rei"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Then only Aya walking RIGHT.",
+          "action": "They start already on this same linoleum spot. Both adults RISE to their feet. Mouths meet in a deep wet french kiss. Tongues intertwine. Then Rei steps out of the frame to the RIGHT and is gone. Aya WALKS RIGHT along the corridor, fully nude, female body. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "loco": "walk",
+          "fade_cast": [
+            "rei"
+          ]
+        }
       ]
     },
     {
@@ -12367,6 +13184,302 @@
           },
           "loco": "walk"
         }
+      ],
+      "invite_pose_jacko": [
+        {
+          "id": "09-kana-facial",
+          "camera_pack": "none",
+          "loco": "planted",
+          "extra_loras": [
+            [
+              "cumshot",
+              1.0
+            ],
+            [
+              "cmst",
+              0.65
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "CUMSH0T\ncmst\nPENISLORA\njpnMoans",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "camera": "FRONT view. The camera holds this one frame from the first frame to the last. The same door stays behind Aya. Aya already looks up toward the lens. Aya's face stays in the same place, fully inside the frame, from the hair to the chin. The erect 20cm stays at the lower edge aimed at that face. One thick WHITE rope leaves the tip toward the face. The frame holds Aya's face and the shaft.",
+          "action": "The camera holds this one frame. The same door stays behind Aya. Aya already looks up toward the lens. Kana's erect 20cm already aims at Aya's face from the lower edge. One thick WHITE rope LEAVES the tip and LANDS on Aya's face and breasts and stays there. Aya says 「いっちゃった」. Last frame: the same door behind Aya, WHITE goo clinging to Aya's face and breasts, the 20cm still at the lower edge.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "いっちゃった"
+            }
+          ],
+          "sfx": "Thick goo hitting skin, HVAC",
+          "connect": "cut",
+          "turbo": false,
+          "music": "Bass holds",
+          "source": "t2v",
+          "place": "The same crumbling hospital wall stays behind Aya. The same door stays in the same place. Cracked stained linoleum under her. A flickering broken fluorescent tube."
+        },
+        {
+          "id": "09-kana-kiss",
+          "camera_pack": "none",
+          "loco": "planted",
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. They start wide full-body. While the mouths stay joined, both faces stay fully inside the frame. Kana's whole face stays inside the frame. The camera stays back enough that both faces stay fully inside. Before the join, the camera sits far back. Wide full-body. Both heads and all four feet stay inside the frame.",
+          "action": "Aya and Kana stand still face to face and WRAP both arms around each other in a tight mutual embrace, chests pressed together. Their mouths MOVE FORWARD and stay joined in a deep wet french kiss, a tongue kiss, tongues push into each other's mouths and lick around the lips and the corners of the mouth. Kana STANDS STILL, erect 20cm the same vivid purple as the hips stays up between them. thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest. They do not walk. Both stay fully nude. Brisk real-time. Motion starts at frame one. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "kana",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "A lip-contact kiss smack when the mouths meet, HVAC",
+          "connect": "t2v"
+        },
+        {
+          "id": "09-join-jo-set",
+          "source": "t2v",
+          "connect": "cut",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already standing in this same corridor on this same linoleum spot. Aya BENDS her knees. Her face and chest LOWER onto the linoleum. Her hips RISE. Both legs STRAIGHTEN and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Kana stays standing to the side. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Kana still standing to the side. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "09-join-jo-behind",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Kana STEPS over the raised hips and STANDS there. Both of Kana's feet land on the linoleum outside Aya's calves. Kana's buttocks turn toward the camera. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above. The glans comes to rest against the anus. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Kana standing over the hips, buttocks toward the camera, the shaft outside against the anus. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "09-join-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Kana stays standing over the raised hips, buttocks toward the camera, both feet on the linoleum outside Aya's calves. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above, the glans against the anus. Kana MOVES the hips DOWN once. The hips LOWER once. The shaft TRAVELS INTO the anus along the center line from above in one continuous press until the hips meet and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, hips flush, the shaft at the BASE inside the anus, buried to the root, the shaft line still visible from above. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "きもちいい"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "09-join-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Kana stays standing over the raised hips, buttocks toward the camera. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays buried to the root in the anus, the shaft line still visible from above. Short vertical moves keep the glans inside. Hips return flush. Kana finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「あ、いく」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, hips flush, the shaft buried to the root, WHITE goo on the join, the join at the center of the frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "09-join-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. The cleft faces UP. Kana stays standing over the raised hips, buttocks toward the camera. Kana MOVES the hips UP once. Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, the wide ring open, Kana's erect 20cm the same vivid purple as the hips not pale-tan flesh, wet peeling rotting patches on the shaft outside the anus, Kana still over the hips, buttocks toward the camera. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "09-join-jo-kiss",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "kana"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Then only Aya walking RIGHT.",
+          "action": "They start already on this same linoleum spot. Both adults RISE to their feet. Mouths meet in a deep wet french kiss. Tongues intertwine. Then Kana steps out of the frame to the RIGHT and is gone. Aya WALKS RIGHT along the corridor, fully nude, female body. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "loco": "walk",
+          "fade_cast": [
+            "kana"
+          ]
+        }
       ]
     },
     {
@@ -14223,7 +15336,235 @@
         }
       ],
       "turbo": false,
-      "steps": 8
+      "steps": 8,
+      "invite_pose_jacko": [
+        {
+          "id": "12-exit-jo-set",
+          "source": "t2v",
+          "connect": "cut",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already standing in this same corridor on this same linoleum spot. Aya BENDS her knees. Her face and chest LOWER onto the linoleum. Her hips RISE. Both legs STRAIGHTEN and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Shino stays standing to the side. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Shino still standing to the side. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays outside. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "12-exit-jo-behind",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.8
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Shino STEPS over the raised hips and STANDS there. Both of Shino's feet land on the linoleum outside Aya's calves. Shino's buttocks turn toward the camera. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above. The glans comes to rest against the anus. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up. Shino standing over the hips, buttocks toward the camera, the shaft outside against the anus. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "12-exit-jo-anal",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.7
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Shino stays standing over the raised hips, buttocks toward the camera, both feet on the linoleum outside Aya's calves. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft hangs DOWN from above, the glans against the anus. Shino MOVES the hips DOWN once. The hips LOWER once. The shaft TRAVELS INTO the anus along the center line from above in one continuous press until the hips meet and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, hips flush, the shaft at the BASE inside the anus, buried to the root, the shaft line still visible from above. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "きもちいい"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "turbo": false,
+          "steps": 8
+        },
+        {
+          "id": "12-exit-jo-cum",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "thrust",
+              0.55
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. Both soles stay on the linoleum. The cleft faces UP. Shino stays standing over the raised hips, buttocks toward the camera. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft stays buried to the root in the anus, the shaft line still visible from above. Short vertical moves keep the glans inside. Hips return flush. Shino finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「あ、いく」. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, hips flush, the shaft buried to the root, WHITE goo on the join, the join at the center of the frame. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "12-exit-jo-gape",
+          "source": "chain",
+          "connect": "chain",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "jacko",
+              0.65
+            ]
+          ],
+          "trigger": "",
+          "camera": "Fixed distance. The camera sits low behind the raised hips and looks slightly up. The buttocks face the camera. The cleft stays up at the center of the frame. The shaft line stays visible coming down from above. Both adults full body including both feet.",
+          "action": "They start already joined on this same linoleum spot. Aya's face and chest stay on the linoleum. Hips stay high. Both legs stay straight and open wide to the LEFT and RIGHT. The cleft faces UP. Shino stays standing over the raised hips, buttocks toward the camera. Shino MOVES the hips UP once. Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft leaves the anus. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring. Aya's groin stays a hairless pussy. Last frame: Aya's face and chest on the linoleum, hips high, both legs straight and open, the cleft up, the wide ring open, Shino's erect 30cm the same pale gray-white as the hips not pale-tan flesh, wet peeling rotting patches on the shaft outside the anus, Shino still over the hips, buttocks toward the camera. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds"
+        },
+        {
+          "id": "12-exit-jo-kiss",
+          "source": "t2v",
+          "connect": "end",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "shino"
+          ],
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Then only Aya walking RIGHT.",
+          "action": "They start already on this same linoleum spot. Both adults RISE to their feet. Mouths meet in a deep wet french kiss. Tongues intertwine. Then Shino steps out of the frame to the RIGHT and is gone. Aya WALKS RIGHT along the corridor, fully nude, female body. Only Aya is in the corridor. Last frame: only Aya walking RIGHT, fully nude, female body.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "HVAC",
+          "music": "Bass holds",
+          "loco": "walk",
+          "fade_cast": [
+            "shino"
+          ]
+        }
+      ]
     }
   ]
 }

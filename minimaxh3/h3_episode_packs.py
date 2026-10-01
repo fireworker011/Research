@@ -383,6 +383,12 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "spotの次から。抱きついて背中に手を回しベロチュー。壁に背、片足は床。しゃがんでクンニ。両足を抱える。犬・スライム・獣・ギンは除く",
         "hint_ja": "角だけ背後ハグから振り向きベロチュー。キスLoRA必須",
     },
+    "jacko": {
+        "label_ja": "後ろアナル",
+        "choice_ja": "後ろアナル",
+        "when_ja": "顔と胸が床、腰は高い、両脚は左右。竿役が腰の上。尻がカメラ。竿は上から肛門。今の行為は残す",
+        "hint_ja": "あやが受け。set は未挿入の cut。behind も未挿入。anal で一度下ろして根元。中出し、開き、口",
+    },
 }
 
 INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
@@ -394,6 +400,7 @@ INVITE_POSE_OVERLAY_KEYS: dict[str, str] = {
     "nelson": "invite_pose_nelson",
     "sit": "invite_pose_sit",
     "embrace": "invite_pose_embrace",
+    "jacko": "invite_pose_jacko",
 }
 
 INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
@@ -427,6 +434,7 @@ INVITE_POSE_ALIASES: dict[str, str] = _label_aliases(
         "抱擁": "embrace",
         "抱擁ベロチュー": "embrace",
         "両足抱え": "embrace",
+        "後ろアナル": "jacko",
     },
 )
 
@@ -460,8 +468,8 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
     "finger": {
         "label_ja": "アナル指",
         "choice_ja": "トイレ・アナル指",
-        "when_ja": "タンク側を向いて座り、右親指が肛門、立って歩く。どれでも次へ",
-        "hint_ja": "入室してタンク側を向いて座る→右親指が肛門→立って歩く",
+        "when_ja": "しゃがんで足は便器の外。床の吸盤に立った極太のペニス形。一度下ろして根元、上下で絶頂、抜けて落ち、輪が開く",
+        "hint_ja": "04-toilet-toy でしゃがむ。次で根元。pump で絶頂。gape で落ちて輪。小便は別",
     },
     "wash": {
         "label_ja": "和式排出",
@@ -545,6 +553,12 @@ GIN_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "長い舌がクリを24cmに。四つん這いで誘われて後ろから。終わりは竿も相手も消えてあや一人歩き",
         "hint_ja": "我慢できない顔で後ろから。終わりは完全消滅",
     },
+    "jacko": {
+        "label_ja": "後ろアナル",
+        "choice_ja": "灰色・後ろアナル",
+        "when_ja": "ギンが受け。顔と胸が床、腰は高い。あやの grown erect 24cm が上から肛門。犯す枝は残す",
+        "hint_ja": "尻がカメラ。set と behind は未挿入。anal で根元。中出し、開き、口。犯すは別",
+    },
 }
 
 GIN_OVERLAY_KEYS: dict[str, str] = {
@@ -552,6 +566,7 @@ GIN_OVERLAY_KEYS: dict[str, str] = {
     "taken_column": "on_gin_taken",
     "fuck": "on_gin_fuck",
     "invite_doggy": "on_gin_invite_doggy",
+    "jacko": "on_gin_jacko",
 }
 
 GIN_ALIASES: dict[str, str] = _label_aliases(
@@ -569,6 +584,8 @@ GIN_ALIASES: dict[str, str] = _label_aliases(
         "正常位": "fuck",
         "誘う後背": "invite_doggy",
         "後背": "invite_doggy",
+        "灰色・後ろアナル": "jacko",
+        "後ろアナル": "jacko",
     },
 )
 
@@ -1244,6 +1261,13 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
         "story": "invite",
         "pose": "embrace",
     },
+    "invite_jacko": {
+        "label_ja": "誘う・後ろアナル",
+        "choice_ja": "□誘う・後ろアナル",
+        "when_ja": "この人の後ろアナル。顔と胸が床。竿は上から肛門。今の行為は残す",
+        "story": "invite",
+        "pose": "jacko",
+    },
     "evade": {
         "label_ja": "回避",
         "choice_ja": "×回避",
@@ -1282,6 +1306,9 @@ SCENE_ACTION_ALIASES: dict[str, str] = _label_aliases(
         "誘うフルネルソン": "invite_nelson",
         "誘う抱擁": "invite_embrace",
         "invite-embrace": "invite_embrace",
+        "誘う後ろアナル": "invite_jacko",
+        "□誘う・後ろアナル": "invite_jacko",
+        "invite-jacko": "invite_jacko",
         "□誘う・ベロチュー→じゅぼ→騎乗位": "invite_ride",
         "回避": "evade",
         "invite-all-fours": "invite_all_fours",

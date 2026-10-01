@@ -199,7 +199,8 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 - 角: 冒頭と同じ背後ハグ。胸を揉み、勃起した 24cm を上下。あやが振り向くとき手は竿から離れてべろちゅー
 - 次: 竿役があやを壁まで押す。あやは背中を壁に、笑顔。片足は膝を外へ開き、もう片足は床
 - 次: 竿役がしゃがみ、舌。トリガー `performing cunnilingus`。cunny 0.8。クンニの最終で相手は両足で立つ。しゃがんだ最終のまま hold に渡さない
-- 次の hold: すでに壁の同じ場所で向かい合う。相手はすでに両足で立つ。`{name} stands.` は工程にしない。両腕はあやの腿の下。両膝は上がったまま。あやの両足は空中、相手の腰の横。腕は背中。胸は密着。口は付いたまま。舌は滑る。マンコは亀頭の DIRECTLY 前。一度入れて根元。`HOLD still joined at the BASE until the last frame`。最終も根元、膝は上がったまま、足は空中。loco は planted にしない。extra は kiss 0.5 + mystic 0.5 + penis 0.45 + synth 0.4。thrust は積まない。新しい id は足さない。体位名は書かない。駅弁という語は action に書かない
+- 次の hold: みき・れい・かな・しのだけ。すでに壁の同じ場所で向かい合い、両足は床。`{name} stands.` は工程にしない。両腕が腿の下に入り、抱き上げて足が床から離れるまで。両膝は上がる。足は空中、相手の腰の横。腕は背中。口は付いたまま。マンコは亀頭の DIRECTLY 前。竿は外。挿入は書かない。loco は planted にしない。extra は kiss 0.5 + mystic 0.5 + penis 0.45 + synth 0.4。thrust は積まない
+- 次の in: 同じ4人。id は `03-kiss-in` `06-doggy-in` `09-join-in` `12-exit-in`。すでに足は空中。一度入れて根元。`HOLD still joined at the BASE until the last frame`。`one continuous press`。loco は planted にしない。extra は hold と同じ。角の抱擁 hold はこれまでどおり、抱き上げと挿入が同じ hold。`04-tsuno-in` は足さない
 - 次の絶頂: 入ったまま、両膝は上がったまま。`keep the glans inside`。`HOLD still joined at the BASE until the last frame`。口は付いたまま。快楽の顔。Aya says 「あ、いく」。extra は kiss + mystic + thrust + jpnmoans 0.55。声は `あ、いく`。hold と歩きに jpnmoans は積まない
 - 歩きは 8 秒。0–3 秒は笑顔のべろちゅーと涎の糸、竿は抜ける。3–5 秒で相手が右へ消える。5–8 秒はあや一人が右へ歩く
 
@@ -269,7 +270,15 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 四つん這いの in / peak と、膣の立ちバックの in / peak（壁立ちバックと角の立ちバック）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。立ちは脹脛のあいだ、低い、少し見上げる。結合部は画面中央。竿の線が見える。距離は固定。in はすでにその姿勢で、一度前へ入れて根元で HOLD。peak はすでに根元、短い寄せ、中出しの溢れ、HOLD。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。
 
-灰色の誘う後背は、これまでどおり `SIDE-REAR view. The frame holds a clear view of the shaft where it meets the pussy.` 歩き、顔射、キス、騎乗、M字、後ろアナル、ネルソン、背後抱きの meet、寝室スプーン、犬、和式、洋式 pee / finger、寝室 Jack-O にはこのカメラを足さない。古い `doggy`（fileId 3202556）は登録のまま、extra には積まない。action に `Doggy style` は書かない。
+灰色の誘う後背は、これまでどおり `SIDE-REAR view. The frame holds a clear view of the shaft where it meets the pussy.` 歩き、顔射、キス、騎乗、M字、角の後ろアナル、ネルソン、背後抱きの meet、寝室スプーン、犬、和式、洋式 pee、寝室 Jack-O にはこのカメラを足さない。古い `doggy`（fileId 3202556）は登録のまま、extra には積まない。action に `Doggy style` は書かない。
+
+## 後ろアナル（Jack-O）
+
+6番とシーンごとは「後ろアナル」。灰色は「灰色・後ろアナル」。今の行為は残す。別枝。角の寝室 Jack-O、和式、犬、pee、立ちバック、スプーン、ネルソン、ギンの犯す枝は触らない。参照は Civitai 143781618。Drive `1tyXGve` には寄せない。
+
+受けは顔と胸が床。腰は高い。割れは上。両脚はまっすぐ左右。竿役は腰の上。尻がカメラ。竿は上から肛門。距離は固定。結合部は画面中央。みき・れい・かな・しのはあやが受け。あやの股間は hairless pussy。長さはみき 24、れい 24、かな 20、しの 30。ギンはギンが受け。あやの grown erect 24cm。ギンの犯す本文は残す。
+
+id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` `04-gin-jo` に `-set` `-behind` `-anal` `-cum` `-gape` `-kiss`。かなは顔射とキスのあとに続ける。set は connect cut。jacko は set と behind が 0.8、anal が 0.7、cum と gape が 0.65。doggy は積まない。set と behind の最終は未挿入。anal は腰が一度下り、根元 HOLD、「気持ちいい」。cum は短い上下、溢れ、「あ、いく」。gape は腰を一度上げ、竿が出て輪。kiss で立って口が付き、相手が右へ消え、あや一人が歩く。
 
 着座は一回の押し。腰と尻が密着し、竿が根元まで入ったところで止める。先だけ、半分、往復は書かない。ピストンは次の絶頂。`12-exit` の正常位は 0 秒からあやが仰向け、しのは腿の間、30cm は根元、`HOLD still joined at the BASE until the last frame`。立ちキスにしない。立ちキスは `12-exit-kiss` だけ。
 
@@ -283,7 +292,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 小便は、座りが正面の M 字になってから。あやは笑顔のまま、腰は止めたまま、便器も止めたまま。液体は透明なレモン色の黄色い水。見透ける水で、一本の明るい黄色の柱。マンコからその黄色い水をカメラの正面へ飛ばす。動くのは黄色い流れだけ。便器の中へ流す文は書かない。否定の「動かない」は書かない。
 
-洋式指は小便とは別の入り。タンク側を向いて座る。尻と肛門がカメラ。マンコが肛門より上の構図は使わない。行為は chain I2V。right thumb rubs around the anus then TRAVELS INTO the anus。thumbinbutt 0.55 + mystic 0.5。synth と Fingering Pussy は積まない。`feces` は書かない。トリガー `thum1n8utt` は action に書かない。ファイルは `MiniMax H3 - ThumbInButt.safetensors`（Civitai fileId 3168734。ページ URL は重みにしない）。
+洋式の指枝は、床の吸盤に立った極太のペニス形。小便は触らない。ThumbInButt はこの枝から外す。和式の排出は ThumbInButt のまま。順番は `04-toilet-toy` でしゃがみ、両足は植物の縁の外、肛門は穴の中央、玩具は外。次の `04-toilet` で腰を一度下ろし、根元まで HOLD。「気持ちいい」。`04-toilet-pump` は短い上下で絶頂、溢れ、「あ、いく」。`04-toilet-gape` で腰を一度上げ、玩具が抜けて落ち、輪が開く。`04-toilet-out` で立って歩く。extra は mystic 0.5 + penis 0.45。pump は jpnmoans 0.55 を足す。一人の拍に thrust は積まない。jacko と doggy と ThumbInButt は積まない。
 
 和式は洋式個室。洋式便座は出さない。便器は和式パン。カメラは洋式アナルと同じ低い後ろ下。あやの背中がカメラ。顔はフード。赤い靴は書かない。squat と spot の 0 秒は `Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood.` `folded over the pan` は書かない。和式パン専用の H3 LoRA は市場に無い。Illustrious の squat toilet LoRA は積まない。
 
@@ -351,7 +360,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 - 四つ足: https://civitai.com/models/1782485/furry-enhancer-video 強度 0.55
 - 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
-- アナル指: ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734。ページ URL は重みにしない
+- アナル指: 洋式の指枝は吸盤のペニス形。ThumbInButt は積まない。ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734 は和式排出に残る。ページ URL は重みにしない
 
 ## 禁止語
 
@@ -375,4 +384,4 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。四つん這いと膣の立ちバックの in / peak は、低い結合カメラに差し替えた。FRESH は誘うの四つん這いと壁立ちバックの `03-kiss` `03-kiss-peak` `06-doggy` `06-doggy-peak` `09-join` `09-join-peak` `12-exit` `12-exit-peak`。角は受け入れる立ちバックと誘う立ちバックの `04-tsuno-in` `04-tsuno-peak`。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。角の二人は、同じ画面にいる拍で lewd pleasure-drunk happy smile。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きと connect 欄は変えていない。FRESH は角を出す枝の `04-tsuno-meet-spot` から最後まで。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。ThumbInButt の本文はそのまま。座位の zai、抱擁、ネルソン、洋式、角の個室 stall、jupo、Wan ノートは触っていない。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
+5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。後ろアナルは `03-kiss-jo-set` から `03-kiss-jo-kiss`、同じ並びの `06-doggy-jo` `09-join-jo` `12-exit-jo`、灰色は `04-gin-jo-set` から `04-gin-jo-kiss`。抱擁の抱き上げは `03-kiss-hold` `06-doggy-hold` `09-join-hold` `12-exit-hold`、挿入は同じ親の `-in`。洋式ディルドは `04-toilet-toy` `04-toilet` `04-toilet-pump` `04-toilet-gape` `04-toilet-out`。四つん這いと膣の立ちバックの in / peak は、低い結合カメラに差し替えた。FRESH は誘うの四つん這いと壁立ちバックの `03-kiss` `03-kiss-peak` `06-doggy` `06-doggy-peak` `09-join` `09-join-peak` `12-exit` `12-exit-peak`。角は受け入れる立ちバックと誘う立ちバックの `04-tsuno-in` `04-tsuno-peak`。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。角の二人は、同じ画面にいる拍で lewd pleasure-drunk happy smile。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きと connect 欄は変えていない。FRESH は角を出す枝の `04-tsuno-meet-spot` から最後まで。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。和式排出の ThumbInButt 本文はそのまま。座位の zai、ネルソン、洋式の小便、角の寝室 Jack-O、角の個室 stall、犬、立ちバック、スプーン、ギンの犯す、jupo、Wan ノートは触っていない。抱擁は4人の hold を抱き上げだけにし、挿入を `-in` に分けた。洋式の指枝は吸盤のペニス形にした。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`

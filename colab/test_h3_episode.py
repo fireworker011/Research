@@ -2351,22 +2351,35 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
 
     finger = prepare_episode(raw, story_override="accept", toilet_override="finger", connect_override="t2v")
     assert validate_episode(finger, root=HOSPITAL_DIR) == []
-    fin = next(b for b in finger["beats"] if b["id"] == "04-toilet-in")
+    toy = next(b for b in finger["beats"] if b["id"] == "04-toilet-toy")
     fact = next(b for b in finger["beats"] if b["id"] == "04-toilet")
+    pump = next(b for b in finger["beats"] if b["id"] == "04-toilet-pump")
+    gaped = next(b for b in finger["beats"] if b["id"] == "04-toilet-gape")
     low = fact["action"].lower()
-    assert "facing the camera" not in low
-    assert "pussy and the anus face the camera" not in low
-    assert "m-shape" not in low and "soles toward the camera" not in low
+    assert "squats" in toy["action"].lower()
+    assert "outside the fleshy plant rim" in toy["action"].lower()
+    assert "center of the hole" in toy["action"].lower()
+    assert "suction cup" in toy["action"].lower()
+    assert "penis-shaped toy" in toy["action"].lower()
+    assert "outside the anus" in toy["action"].lower()
     assert "TRAVELS INTO the anus" in fact["action"]
-    assert "rub around her anus" in fact["action"]
-    assert "thumbinbutt" in extra_keys(fact) and "synth" not in extra_keys(fact)
+    assert "one continuous press" in fact["action"].lower()
+    assert "hold still joined at the base" in low
+    assert "buried to the root" in low
+    assert "short vertical moves" in pump["action"].lower()
+    assert "あ、いく" in pump["action"]
+    assert "falls" in gaped["action"].lower()
+    assert "wide ring" in gaped["action"].lower()
+    assert "thumb" not in "\n".join(b["action"].lower() for b in (toy, fact, pump, gaped))
+    assert all("thumbinbutt" not in extra_keys(b) for b in (toy, fact, pump, gaped))
+    assert "jacko" not in extra_keys(fact)
     assert fact.get("connect") == "chain" and fact.get("source") == "chain"
-    assert fin.get("source") == "t2v"
+    assert toy.get("source") == "t2v"
     finger_blob = "\n".join(b["action"] for b in finger["beats"] if str(b["id"]).startswith("04-toilet")).lower()
     assert "brown log" not in finger_blob
     assert "feces" not in finger_blob
     assert "thum1n8utt" not in fact["action"]
-    assert fact.get("trigger") == "thum1n8utt"
+    assert fact.get("trigger") != "thum1n8utt"
     prompt = build_beat_prompt(finger, fact, trigger=merge_trigger("", fact))
     assert "feet do not take a step" not in prompt.lower()
     assert "feet do not travel" not in low
@@ -5095,18 +5108,28 @@ def test_hospital_invite_embrace_starts_after_the_spot():
     hold_beat = next(b for b in ep["beats"] if b["id"] == "03-kiss-hold")
     hold = hold_beat["action"].lower()
     assert "miki stands." not in hold
-    assert "knees stay up" in hold
+    assert "knees come up" in hold
+    assert "feet leave the linoleum" in hold
     assert "feet stay in the air" in hold
-    assert "knees come up" not in hold
+    assert "shaft stays outside" in hold
+    assert "travels into" not in hold
     assert "wrap behind miki's back" in hold
     assert "mouths stay joined" in hold
-    assert "travels into the hairless pussy" in hold
-    assert "hold still joined at the base" in hold
-    assert "buried to the root" in hold
-    assert "knees held up" in hold
     assert "thrust" not in extra_keys(hold_beat)
     assert beat_loco(hold_beat) != "planted"
     assert "kiss" in extra_keys(hold_beat)
+    entered = next(b for b in ep["beats"] if b["id"] == "03-kiss-in")
+    entered_low = entered["action"].lower()
+    assert "travels into the hairless pussy" in entered_low
+    assert "one continuous press" in entered_low
+    assert "hold still joined at the base" in entered_low
+    assert "buried to the root" in entered_low
+    assert "knees stay up" in entered_low
+    assert beat_loco(entered) != "planted"
+    assert "04-tsuno-in" not in ids
+    tsuno_hold = next(b for b in ep["beats"] if b["id"] == "04-tsuno-hold")["action"].lower()
+    assert "travels into the hairless pussy" in tsuno_hold
+    assert "feet leave the linoleum" not in tsuno_hold
     peak_beat = next(b for b in ep["beats"] if b["id"] == "03-kiss-peak")
     peak = peak_beat["action"].lower()
     assert "finishes inside" in peak
@@ -5218,20 +5241,20 @@ def test_hospital_dog_orientation_and_embrace_lift():
         invite_pose_override="embrace",
         tsuno_override="フルネルソンアナル",
     )
-    holds = [b for b in emb["beats"] if "knees stay up" in str(b.get("action") or "")]
+    lifts = [b for b in emb["beats"] if "feet leave the linoleum" in str(b.get("action") or "")]
+    assert [b["id"] for b in lifts] == ["03-kiss-hold", "06-doggy-hold", "09-join-hold", "12-exit-hold"]
     names = []
-    for beat in holds:
+    for beat in lifts:
         assert beat["id"].endswith("-hold")
         assert beat_loco(beat) != "planted"
         assert "loco" not in beat
         act = beat["action"]
         low = act.lower()
         assert " stands." not in low
-        assert "knees stay up" in low
+        assert "knees come up" in low
         assert "feet stay in the air" in low
-        assert "buried to the root" in low
-        assert "knees held up" in low
-        assert "hold still joined at the base" in low
+        assert "shaft stays outside" in low
+        assert "travels into" not in low
         assert "thrust" not in extra_keys(beat)
         assert " not " not in f" {low} "
         for word in pose_ban:
@@ -5242,7 +5265,13 @@ def test_hospital_dog_orientation_and_embrace_lift():
         assert "feet stay planted" not in prompt.lower()
         assert "do not invent a walk cycle" not in prompt.lower()
         assert "snappy" in prompt.lower()
+    tsuno_hold_beat = next(b for b in emb["beats"] if b["id"] == "04-tsuno-hold")
+    tsuno_act = tsuno_hold_beat["action"]
+    names.append(tsuno_act.split("'")[0].split()[-1] if "'" in tsuno_act else "")
+    assert "travels into the hairless pussy" in tsuno_act.lower()
+    assert "feet leave the linoleum" not in tsuno_act.lower()
     assert set(names) >= {"Miki", "Rei", "Kana", "Shino", "Tsuno"}
+    holds = lifts + [tsuno_hold_beat]
     peaks = [b for b in emb["beats"] if b["id"].endswith("-peak") and "both knees held up" in b["action"].lower()]
     assert len(peaks) == len(holds)
     for beat in peaks:
@@ -5955,4 +5984,62 @@ def test_appearance_blank_matches_authored_and_custom_stays_on_one_person():
         prepare_episode(raw, appearance_override={"aya": {"hair": "ピンクのボブ"}})
     with pytest.raises(EpisodeError):
         prepare_episode(raw, appearance_override={"enemies": "nobody; hair=a bob"})
+
+
+def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert "後ろアナル" in ui_choices("invite_pose")
+    assert "□誘う・後ろアナル" in ui_choices("scene")
+    assert "灰色・後ろアナル" in ui_choices("gin")
+    jo = prepare_episode(raw, story_override="誘う", invite_pose_override="後ろアナル")
+    assert validate_episode(jo, root=HOSPITAL_DIR) == []
+    for base, cm in (("03-kiss", "24cm"), ("06-doggy", "24cm"), ("09-join", "20cm"), ("12-exit", "30cm")):
+        set_b = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-set")
+        behind = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-behind")
+        anal = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-anal")
+        assert set_b.get("connect") == "cut"
+        assert extra_lora_entries(set_b)[0] == ("jacko", 0.8)
+        assert extra_lora_entries(behind)[0] == ("jacko", 0.8)
+        assert extra_lora_entries(anal)[0] == ("jacko", 0.7)
+        assert "doggy" not in extra_keys(set_b) and "doggy" not in extra_keys(anal)
+        for beat in (set_b, behind):
+            last = beat["action"].lower().split("last frame:", 1)[1]
+            assert "buried" not in last
+            assert "base inside" not in last
+            assert "outside" in last
+        assert "hangs down from above" in behind["action"].lower()
+        assert "travels into the anus" in anal["action"].lower()
+        assert "from above" in anal["action"].lower()
+        assert "hairless pussy" in set_b["action"].lower()
+        assert "grown erect" not in set_b["action"].lower()
+        assert cm in anal["action"]
+        assert "気持ちいい" in anal["action"]
+        cum = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-cum")
+        assert extra_lora_entries(cum)[0] == ("jacko", 0.65)
+        assert "あ、いく" in cum["action"]
+        assert "wide ring" in next(b for b in jo["beats"] if b["id"] == f"{base}-jo-gape")["action"].lower()
+    gin = prepare_episode(raw, gin_override="灰色・後ろアナル")
+    gin_set = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-set")
+    assert "gin bends" in gin_set["action"].lower()
+    assert "aya's grown erect 24cm" in gin_set["action"].lower()
+    assert "gin's groin stays a hairless pussy" in gin_set["action"].lower()
+    gin_kiss = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-kiss")
+    assert "No penis" in gin_kiss["action"]
+    assert "The grown shaft is gone" in gin_kiss["action"]
+    fuck = prepare_episode(raw, gin_override="犯す")
+    assert "04-gin-in" in [b["id"] for b in fuck["beats"]]
+    assert "04-gin-jo-set" not in [b["id"] for b in fuck["beats"]]
+    pee = prepare_episode(raw, toilet_override="pee")
+    pee_act = next(b for b in pee["beats"] if b["id"] == "04-toilet")["action"].lower()
+    assert "lemon-yellow" in pee_act or "yellow water" in pee_act
+    assert "penis-shaped toy" not in pee_act
+    horn = prepare_episode(raw, tsuno_override="角・病室でベッドの後ろアナル")
+    assert [b["id"] for b in horn["beats"] if str(b["id"]).startswith("04-tsuno-jo")] == [
+        "04-tsuno-jo",
+        "04-tsuno-jo-anal",
+        "04-tsuno-jo-cum",
+        "04-tsuno-jo-gape",
+        "04-tsuno-jo-kiss",
+        "04-tsuno-jo-walk",
+    ]
 
