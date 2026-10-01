@@ -350,16 +350,16 @@ id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` `04-gin-jo` に `-se
 `04-dog-spot` は I2V 6秒。あやは画面 LEFT、体は RIGHT 向き。四つ足は RIGHT にすでに立ち、頭は LEFT、尾は RIGHT。右端から飛び込まない。並走しない。背中は水平、頭は低い。肩はあやの腰より高い。竿は腹の下、後肢のあいだ。extra は mystic 0.5 + furryenh 0.55。人間後背の Doggy LoRA は `LORA_FILES["doggy"]` に fileId 3202556 を登録するだけ。今の extra にも犬 overlay にも Jack-O の push にも積まない。action に `Doggy style` は書かない。Eleptor は犬に積まない。spot から lick まで、頭 LEFT と尾 RIGHT を毎カット繰り返す。回す文は jupo だけ。
 
 - 回避: あやは左へ走る。四つ足は右に残る。spot の向きは他の枝と同じ
-- 受け入れる: spot の camera と action だけ同じ向き。あやは右の壁。手は壁。足は床。後脚立ち。24cm がマンコへ。後脚立ちの accept / cum / walk 本文は変えない
+- 受け入れる: spot の camera と action だけ同じ向き。あやは右の壁。手は壁。足は床。後脚立ち。腰が一度前へ出て、24cm が尻に当たるまでマンコへ入る。そのあと短い前送りで亀頭は中。向きと後脚立ちは残す
 - 誘う伏せ: その場で仰向け、舌。wait は胸と頬が床、膝を畳む。犬は同じ向きで背中に覆う。着座は根元まで HOLD。着座に thrust は積まない
-- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。wait は connect chain。`04-dog-lick` と `04-dog-lick-peak` は connect chain。invite から cum まで chain。walk の end はそのまま。lick のカメラはマンコと顔。lick-peak の最終は全身の横。向き文と舐め動詞は変えない。`04-dog-jupo` と `04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が1本、口へ、犬の頭は RIGHT。mouth は唇が根元。`04-dog-in` はあやが仰向け、後頭部と肩は床、頭 LEFT、足 RIGHT。四つ足はすでに股の上、頭 LEFT、尾 RIGHT、四本の足は床に着いたまま。腹の 24cm は亀頭がマンコへ向く。腰が一度前へ出て、亀頭がマンコに付き、根元まで入る。HOLD。カメラは同じドアを保持する。尻に当てる文は書かない。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。WHITE goo は結合から溢れる。根元は抜かない。挿入なので Turbo は切る。受け入れる後脚立ちの accept / cum / walk 本文は変えない。着座は平らな床。段差なし。着座に thrust は積まない
+- 誘う口: 同じ舌のあと、wait は仰向け M字 のまま。うつ伏せにしない。wait は connect chain。`04-dog-lick` と `04-dog-lick-peak` は connect chain。invite から cum まで chain。walk の end はそのまま。lick のカメラはマンコと顔。lick-peak の最終は全身の横。向き文と舐め動詞は変えない。`04-dog-jupo` と `04-dog-mouth` は後肢があやの頭 LEFT、腹側の竿が1本、口へ、犬の頭は RIGHT。mouth は唇が根元。`04-dog-in` はあやが仰向け、後頭部と肩は床、頭 LEFT、足 RIGHT。四つ足はすでに股の上、頭 LEFT、尾 RIGHT、四本の足は床に着いたまま。腹の 24cm は亀頭がマンコへ向く。腰が一度前へ出て、亀頭がマンコに付き、根元まで入る。HOLD。カメラは同じドアを保持する。尻に当てる文は書かない。`04-dog-cum` は 0 秒からすでに根元。`HOLD still joined at the BASE until the last frame`。`finishes INSIDE`。WHITE goo は結合から溢れる。根元は抜かない。挿入なので Turbo は切る。着座は平らな床。段差なし。着座に thrust は積まない
 
 ## 異種
 
 スライムとケモノは XOR。両方オンにしない。歩きはギンと同じ。左端から真後ろ。あやが恐る恐る止まる。spot はそこで終わる。天井から落ちない。LUNGES は書かない。種 LoRA は調味だけ。あやの肌・汚れ・蛍光灯は I2V の前フレーム。action に anime / cel は書かない。あやの lock は触らない。
 
-- スライム: https://civitai.com/models/2533949 ファイル `slime_girls-MMH3-v1.0.safetensors` トリガー `slime_girls` 強度 0.45
-- ケモノ: https://civitai.com/models/2945034 トリガー `(anthro wolf:1.4)` 強度 0.45。amateur 0.35、penis 0.45、synth 0.4
+- スライム: https://civitai.com/models/2533949 ファイル `slime_girls-MMH3-v1.0.safetensors` トリガー `slime_girls` 強度 0.45。meet は背後から密着したまま、腰が一度前へ出て亀頭が入った瞬間に止まる。peak は短い前送り、亀頭は中、腰は戻る
+- ケモノ: https://civitai.com/models/2945034 トリガー `(anthro wolf:1.4)` 強度 0.45。amateur 0.35、penis 0.45、synth 0.4。meet と peak の腰はスライムと同じ。毛と口先は今の lock のまま
 - 四つ足: https://civitai.com/models/1782485/furry-enhancer-video 強度 0.55
 - 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
