@@ -428,8 +428,7 @@ COMBAT_SCHEDULER = "beta"
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
 REUSE_RE = re.compile(r"^([a-z0-9][a-z0-9-]{1,40})/([0-9]{2}-[a-z0-9-]{1,32})$")
-ADULT_AGE_MIN = 21
-# "16y" / "16-year-old" in a lock. Do not match 21-year-old.
+ADULT_AGE_MIN = 15
 CAST_UNDERAGE_RE = re.compile(
     r"(?i)(?<!\d)(?:1[0-9]|[1-9])y\b|(?<!\d)(?:1[0-9]|[1-9])[\s_-]*years?"
 )
