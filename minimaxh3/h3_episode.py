@@ -937,6 +937,8 @@ _TSUNO_BED_CHAIN_IDS = frozenset({
     "04-tsuno-kiss",
     "04-tsuno-oral",
     "04-tsuno-wait",
+    "04-tsuno-beckon",
+    "04-tsuno-sidekiss",
     "04-tsuno-peak",
     "04-tsuno-ride-kiss",
     "04-tsuno-behind",

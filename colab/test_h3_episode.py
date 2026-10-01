@@ -5529,7 +5529,10 @@ def test_hospital_ride_foot_fork_keeps_both_seats():
     horn_bent = prepare_episode(raw, tsuno_override="角・騎乗")
     horn_seat = next(b for b in horn_bent["beats"] if b["id"] == "04-tsuno-ride")
     assert "on their sides" in horn_seat["action"].lower()
-    assert "travels into aya's pussy" in horn_seat["action"].lower()
+    assert "travels into the pussy" in horn_seat["action"].lower()
+    assert "lifts" not in horn_seat["action"].lower()
+    assert "forearms" not in horn_seat["action"].lower()
+    assert "feet in the air" not in horn_seat["action"].lower()
     assert "spoonlg" not in horn_seat["action"].lower()
     assert "erect ashen-gray 24cm" in horn_seat["action"]
     jacko = prepare_episode(raw, tsuno_override="角・寝室アナル")
@@ -5577,7 +5580,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         "04-tsuno-kiss",
         "04-tsuno-oral",
         "04-tsuno-wait",
+        "04-tsuno-spit",
+        "04-tsuno-beckon",
         "04-tsuno-lie",
+        "04-tsuno-sidekiss",
         "04-tsuno-ride",
         "04-tsuno-peak",
         "04-tsuno-ride-kiss",
@@ -5599,7 +5605,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         "04-tsuno-kiss",
         "04-tsuno-oral",
         "04-tsuno-wait",
+        "04-tsuno-spit",
+        "04-tsuno-beckon",
         "04-tsuno-lie",
+        "04-tsuno-sidekiss",
         "04-tsuno-ride",
         "04-tsuno-peak",
         "04-tsuno-ride-kiss",
@@ -5664,11 +5673,48 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         assert "erect ashen-gray 24cm" in act
     cut = prepare_episode(raw, tsuno_override="invite_ride", connect_override="t2v")
     assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-ride")) == "t2v"
+    assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-spit")) == "t2v"
+    assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-lie")) == "t2v"
+    assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-beckon")) == "chain"
+    assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-sidekiss")) == "chain"
     assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-peak")) == "chain"
     kiss_joined = next(b for b in ride["beats"] if b["id"] == "04-tsuno-ride-kiss")
     assert kiss_joined.get("connect") == "chain" and beat_source(kiss_joined) == "chain"
     assert beat_source(next(b for b in cut["beats"] if b["id"] == "04-tsuno-ride-kiss")) == "chain"
     assert "TRAVELS INTO" in seat["action"] and "HOLD" in seat["action"]
+    assert "front from the doorway" not in seat["camera"].lower()
+    assert "front from the doorway" not in peak["camera"].lower()
+    assert "beside the thigh" in seat["camera"].lower()
+    assert "beside the thigh" in peak["camera"].lower()
+    assert "lifts" not in seat["action"].lower()
+    lie = next(b for b in ride["beats"] if b["id"] == "04-tsuno-lie")
+    assert "front from the doorway" not in lie["camera"].lower()
+    assert "lowers her hip onto the mattress" in lie["action"].lower()
+    assert "outside along aya's thigh" in lie["action"].lower()
+    spit = next(b for b in ride["beats"] if b["id"] == "04-tsuno-spit")
+    assert spit.get("connect") == "cut"
+    assert extra_lora_entries(spit)[:2] == [("kiss", 0.5), ("cumouf", 0.5)]
+    assert "front from the doorway" in spit["camera"].lower()
+    assert "rises from the squat" in spit["action"].lower()
+    beckon = next(b for b in ride["beats"] if b["id"] == "04-tsuno-beckon")
+    assert beckon.get("connect") == "chain"
+    assert "profile side-on" in beckon["camera"].lower()
+    sidekiss = next(b for b in ride["beats"] if b["id"] == "04-tsuno-sidekiss")
+    assert sidekiss.get("connect") == "chain"
+    assert "front from the doorway" not in sidekiss["camera"].lower()
+    assert "chin turns back" in sidekiss["action"].lower()
+    assert "shaft outside" in sidekiss["action"].lower() or "outside along" in sidekiss["action"].lower()
+    jacko_order = [b["id"] for b in jacko_bed["beats"] if str(b["id"]).startswith("04-tsuno")]
+    assert "04-tsuno-spit" not in jacko_order
+    assert jacko_order[jacko_order.index("04-tsuno-wait") + 1] == "04-tsuno-jo"
+    emb_hold = next(
+        b
+        for b in prepare_episode(raw, story_override="誘う", invite_pose_override="embrace")["beats"]
+        if b["id"] == "03-kiss-hold"
+    )
+    assert "feet leave the linoleum" in emb_hold["action"].lower()
+    assert "lift until the feet leave" in emb_hold["action"].lower()
+    assert "on their sides" not in emb_hold["action"].lower()
     embraced = prepare_episode(
         raw,
         story_override="誘う",
@@ -5696,6 +5742,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         "04-tsuno-stall-kiss",
         "04-tsuno-walk",
     ]
+    assert "04-tsuno-spit" not in wids
+    stall_anal = next(b for b in wash["beats"] if b["id"] == "04-tsuno-anal")
+    assert "hold still joined at the base" in stall_anal["action"].lower()
+    assert "lifts" not in stall_anal["action"].lower()
     assert any(str(b["id"]).startswith("04-toilet") for b in wash["beats"])
     assert all(not str(i).startswith("04-toilet") for i in wids)
     tsuno_beats = [b for b in wash["beats"] if str(b["id"]).startswith("04-tsuno")]

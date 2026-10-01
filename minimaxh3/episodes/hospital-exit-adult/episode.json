@@ -6172,6 +6172,110 @@
           "loco": "planted"
         },
         {
+          "id": "04-tsuno-spit",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            [
+              "cumouf",
+              0.5
+            ]
+          ],
+          "trigger": "CUMOUF",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "FRONT from the doorway. Tsuno stays seated on the mattress edge. Aya stands between Tsuno's knees. Mouths stay joined. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Both adults full body including both feet and the bed frame. Both faces stay in frame.",
+          "action": "They start already in this same sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno stays seated on the mattress edge, knees open, soles on the dark wood floor. Aya RISES from the squat onto both feet between Tsuno's knees. Aya leans in. Mouths MEET. Tongues lick into each other's mouths. Aya's tongue pushes the WHITE goo across onto Tsuno's tongue. A wet strand hangs between the lips. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: Tsuno still seated, Aya standing between the knees, mouths joined, WHITE goo on both tongues, a strand between the lips. Both faces stay in frame. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "A wet mouth",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-beckon",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Tsuno lies on her side on the mattress. Aya stands on the dark wood floor beside the bed. Distance stays the same. Both adults full body including both feet and the bed frame.",
+          "action": "They start already in this same sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno SLIDES her hips back from the mattress edge onto the stained mattress. Tsuno LIES on her side, chest toward the window, knees softly bent, one arm folded under the head. The free hand lifts and the fingers curl toward the bed, beckoning. Aya stays standing on the dark wood floor beside the bed, facing the mattress. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: Tsuno on her side on the mattress, fingers still curled toward Aya, Aya standing beside the bed. Both adults full body including both feet and the bed frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "sfx": "A wet mouth",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
           "id": "04-tsuno-lie",
           "source": "t2v",
           "connect": "cut",
@@ -6198,8 +6302,8 @@
           "trigger": "",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress, faces toward the window. The shaft rests outside along Aya's thigh. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Both faces stay a lewd pleasure-drunk happy smile for the whole take.",
-          "action": "They start already in this sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno lies on her side on the mattress, face toward the window. Aya lies on her side in front of Tsuno, her back toward Tsuno's chest, face toward the window. The erect ashen-gray 24cm rests outside along Aya's thigh. They stay unjoined. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both on their sides on the mattress, the shaft outside along the thigh. Both adults full body including both feet and the bed frame. Both faces stay that lewd pleasure-drunk expression until the last frame.",
+          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress, faces toward the window. The shaft rests outside along Aya's thigh. Distance stays the same. Both adults full body including both feet and the bed frame.",
+          "action": "They start already in this same sickroom on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya sets one knee on the stained mattress, then the other knee, and lowers her hip onto the mattress. Aya LIES on her side in front of Tsuno, back against Tsuno's chest, face toward the window, knees softly bent. Aya's face is a happy accepting smile. The erect ashen-gray 24cm rests outside along Aya's thigh. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both on their sides, faces toward the window, Aya's back against Tsuno's chest, the shaft outside along the thigh. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -6207,6 +6311,62 @@
             }
           ],
           "sfx": "HVAC",
+          "music": "Bass holds",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.4,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted"
+        },
+        {
+          "id": "04-tsuno-sidekiss",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "face_visible": false,
+          "extra_loras": [
+            [
+              "kiss",
+              0.5
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "props": [],
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "camera": "PROFILE side-on beside the bed. Both adults stay on their sides, faces toward the window. Mouths stay joined. The shaft stays outside along the thigh. Distance stays the same. Both faces stay in frame. Both adults full body including both feet and the bed frame.",
+          "action": "They start already on their sides on this same mattress on this same floor spot, faces toward the window. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's chest stays toward the window. Aya's chin turns back over the near shoulder. Her mouth MEETS Tsuno's mouth. Tongues lick. A wet strand hangs between the lips. The erect ashen-gray 24cm stays outside along Aya's thigh. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both still on their sides, faces toward the window, mouths joined, a strand between the lips, the shaft outside. Both faces stay in frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            },
+            {
+              "who": "tsuno",
+              "line": "んっ"
+            }
+          ],
+          "sfx": "A wet mouth",
           "music": "Bass holds",
           "hud": {
             "mission": "出口に出る",
@@ -6250,8 +6410,8 @@
           "trigger": "SPOONLG.",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress. The shaft travels into the pussy once. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Both faces stay a lewd pleasure-drunk happy smile for the whole take.",
-          "action": "They start already on their sides on this same mattress in this sickroom. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Tsuno lies on her side behind Aya. Aya lies on her side in front of Tsuno, her back toward Tsuno's chest. The erect ashen-gray 24cm rests outside along Aya's thigh. The shaft TRAVELS INTO Aya's pussy to the root once. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya's face is a lewd pleasure-drunk happy smile, cheeks flushed, affectionate, drowning in the pleasure together, eyes half-closed, mouth open, thick saliva dripping. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate and drowning in the pleasure together. Last frame: still on their sides, hips flush, the shaft buried to the root. Both adults full body including both feet and the bed frame. Both faces stay that lewd pleasure-drunk expression until the last frame.",
+          "camera": "PROFILE side-on beside the bed. Both adults lie on their sides on the mattress. The join stays beside the thigh at the center of the frame. Distance stays the same. Both adults full body including both feet and the bed frame.",
+          "action": "They start already on their sides on this same mattress on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's back stays against Tsuno's chest. Faces stay toward the window. The erect ashen-gray 24cm rests outside along Aya's thigh, glans against the hairless pussy. Tsuno MOVES the hips FORWARD once. The shaft TRAVELS INTO the pussy along the thigh line until the hips meet Aya's buttocks and the shaft reaches the BASE. HOLD still joined at the BASE until the last frame. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both still on their sides, hips flush, the shaft buried to the root, the join visible beside the thigh. Both adults full body including both feet and the bed frame.",
           "voices": [
             {
               "who": "aya",
@@ -6320,7 +6480,7 @@
           "trigger": "SPOONLG.\nThis video depicts part of sexual intercourse climax. The adult already lying on her side keeps the shaft inside Aya and cums inside of her. Aya and Tsuno stay the same two adults.\nPENISLORA\njpnMoans",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both adults stay on their sides, hips flush, the shaft buried. Hips trace one slow circle. FRONT from the doorway. The iron bed fills the middle. The window stays on the FAR wall behind the bed. Distance stays the same. Full body including both feet and the bed frame. Both faces stay a lewd pleasure-drunk happy smile for the whole take.",
+          "camera": "PROFILE side-on beside the bed. Both adults stay on their sides, hips flush, the shaft buried. The join stays beside the thigh at the center of the frame. Hips trace one slow circle. Distance stays the same. Both adults full body including both feet and the bed frame.",
           "action": "They start already joined on their sides on this same mattress. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. The erect ashen-gray 24cm stays buried to the root in Aya's pussy. Tsuno's hips trace one slow circle against Aya. Hips return flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya says 「あ、いく」. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: still on their sides, still buried to the root, WHITE goo pooled at the join and running down. Both adults full body including both feet and the bed frame. Both faces stay that lewd pleasure-drunk expression until the last frame.",
           "voices": [
             {

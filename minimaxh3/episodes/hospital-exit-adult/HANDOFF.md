@@ -130,14 +130,17 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## 角・騎乗（`invite_ride`）
 
-順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-lie` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。仰向けにしない。action に SPOONLG と体位名は書かない。
+順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-spit` → `04-tsuno-beckon` → `04-tsuno-lie` → `04-tsuno-sidekiss` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。仰向けにしない。action に SPOONLG と体位名は書かない。否定は書かない。首の角度の禁止は書かない。
 
 - kiss chain: 角は座ったまま。あやが膝の間。口と口。涎の糸。kiss 0.5 + mystic 0.5
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。blowjob 0.8 + mystic 0.5 + penis 0.45。トリガーは `bl0w_j0b`。横挿入と寝室アナルの両方。STANDS は書かない
 - wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
-- lie cut: 横。未結合。竿は腿の外
-- ride 10秒 cut: 横のまま一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る
-- peak chain: 腰が円を一つ。溢れ。`HOLD still joined at the BASE until the last frame`。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
+- spit cut: あやがしゃがみから両足で立つ。角はマットレスの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない
+- beckon chain: 角が先に縁からマットレスへ滑って横になる。空いた手がベッドへ手招き。あやはベッド横の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
+- lie cut: あやが膝をマットレスに上げ、腰を下ろして角の前で同じ向きに横になる。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
+- sidekiss chain: 胸は窓のまま、顎だけ肩越しに戻して口が付く。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
+- ride 10秒 cut: 横のまま、太ももの線に沿って一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
+- peak chain: 腰が円を一つ。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
@@ -384,4 +387,4 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 2. `colab/` と `minimaxh3/` の対応ファイルが同じ
 3. このブランチへコミットして push
 4. PR #147 の説明を、変わった事実だけ直す
-5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。後ろアナルは `03-kiss-jo-set` から `03-kiss-jo-kiss`、同じ並びの `06-doggy-jo` `09-join-jo` `12-exit-jo`、灰色は `04-gin-jo-set` から `04-gin-jo-kiss`。抱擁の抱き上げは `03-kiss-hold` `06-doggy-hold` `09-join-hold` `12-exit-hold`、挿入は同じ親の `-in`。洋式ディルドは `04-toilet-toy` `04-toilet` `04-toilet-pump` `04-toilet-gape` `04-toilet-out`。四つん這いと膣の立ちバックの in / peak は、低い結合カメラに差し替えた。FRESH は誘うの四つん這いと壁立ちバックの `03-kiss` `03-kiss-peak` `06-doggy` `06-doggy-peak` `09-join` `09-join-peak` `12-exit` `12-exit-peak`。角は受け入れる立ちバックと誘う立ちバックの `04-tsuno-in` `04-tsuno-peak`。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。角の二人は、同じ画面にいる拍で lewd pleasure-drunk happy smile。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きと connect 欄は変えていない。FRESH は角を出す枝の `04-tsuno-meet-spot` から最後まで。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。和式排出の ThumbInButt 本文はそのまま。座位の zai、ネルソン、洋式の小便、角の寝室 Jack-O、角の個室 stall、犬、立ちバック、スプーン、ギンの犯す、jupo、Wan ノートは触っていない。抱擁は4人の hold を抱き上げだけにし、挿入を `-in` に分けた。洋式の指枝は吸盤のペニス形にした。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
+5. 人間へ Colab リンクを返す。再生成は FRESH。直した拍だけ。角の横挿入は `04-tsuno-spit` `04-tsuno-beckon` `04-tsuno-lie` `04-tsuno-sidekiss` `04-tsuno-ride` `04-tsuno-peak`。寝室 Jack-O に spit は付けない。駅弁の hold は抱き上げのまま。後ろアナルは `03-kiss-jo-set` から `03-kiss-jo-kiss`、同じ並びの `06-doggy-jo` `09-join-jo` `12-exit-jo`、灰色は `04-gin-jo-set` から `04-gin-jo-kiss`。抱擁の抱き上げは `03-kiss-hold` `06-doggy-hold` `09-join-hold` `12-exit-hold`、挿入は同じ親の `-in`。洋式ディルドは `04-toilet-toy` `04-toilet` `04-toilet-pump` `04-toilet-gape` `04-toilet-out`。四つん這いと膣の立ちバックの in / peak は、低い結合カメラに差し替えた。FRESH は誘うの四つん這いと壁立ちバックの `03-kiss` `03-kiss-peak` `06-doggy` `06-doggy-peak` `09-join` `09-join-peak` `12-exit` `12-exit-peak`。角は受け入れる立ちバックと誘う立ちバックの `04-tsuno-in` `04-tsuno-peak`。角の口 `04-tsuno-oral` に blowjob 0.8 と `bl0w_j0b` を足した。横挿入と寝室アナルの両方。角の二人は、同じ画面にいる拍で lewd pleasure-drunk happy smile。口が塞がる拍と、向きを固定した拍は、その姿勢のまま。あや一人の歩きと connect 欄は変えていない。FRESH は角を出す枝の `04-tsuno-meet-spot` から最後まで。前回に足す分は、角の `04-tsuno-ride` `04-tsuno-ride-kiss`。ギンの `04-gin-mouth` `04-gin-spitkiss`。和式ミキの `04-toilet-in` `04-toilet-squat` `04-toilet-spot` `04-toilet-push` `04-toilet` `04-toilet-cum` `04-toilet-gape` `04-toilet-out`。排出の和式は個室の高さが変わった `04-toilet-in` `04-toilet-squat` `04-toilet`。和式排出の ThumbInButt 本文はそのまま。座位の zai、ネルソン、洋式の小便、角の寝室 Jack-O、角の個室 stall、犬、立ちバック、スプーン、ギンの犯す、jupo、Wan ノートは触っていない。抱擁は4人の hold を抱き上げだけにし、挿入を `-in` に分けた。洋式の指枝は吸盤のペニス形にした。raw が既にあるカットは、FRESH がオフだと作り直さない。通路クリップを個室の首に使わない。抜け 3 本（`13rHcn` `1QbWMV` `1cqrvu`）と駅弁 5 本は首にしない。`1cqrvu` は角ではない。`04-gin-peak`
