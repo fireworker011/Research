@@ -2917,9 +2917,19 @@ def _finale_pose(action: str) -> str:
         return "sit"
     if "sitting on" in low or "straddling" in low or "squat" in low:
         return "ride"
-    if "palms on the wall" in low or "palms planted on the wall" in low:
+    if (
+        "between the calves" in low
+        or "palms stay on the grey wall" in low
+        or "palms on the wall" in low
+        or "palms planted on the wall" in low
+    ):
         return "stand"
-    if "all fours" in low or "palms and knees" in low:
+    if (
+        "chest and cheek" in low
+        or "between the open thighs" in low
+        or "all fours" in low
+        or "palms and knees" in low
+    ):
         return "all_fours"
     return "m_open"
 
