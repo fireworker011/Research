@@ -3,7 +3,7 @@
 SFW: turbo + one quality LoRA. Adult: act + optional helper + optional thin turbo.
 Futa blowjob may use two helpers plus thin Larry 6step. Futa sex/anal/riding/doggy stay turbo off.
 Cinema replaces helper. Anal sex / urine drink / scat act (penis + synth, no ThumbInButt) stay turbo off. Pose LoRAs replace AIO; do not stack both.
-Larry and LightX2V never stack. Adults 15+ only. Never print API keys.
+Larry and LightX2V never stack. Adults 21+ only. Never print API keys.
 Fal H3 Max cannot take LoRAs — this is local Comfy FL2VA only.
 """
 
@@ -1332,7 +1332,7 @@ def friendly_select_error(exc: BaseException) -> str | None:
         )
     if "forbidden subject" in low:
         return (
-            "未成年の表現は作れません。出演者は 15歳以上にしてください。"
+            "未成年の表現は作れません。出演者は 21歳以上にしてください。"
             "child / teen / loli や 15 years old / 15歳 は通りません。"
             "空欄にするとおすすめ文を使います。no child のような禁止の意味は大丈夫です。"
         )
@@ -1981,7 +1981,7 @@ def build_studio_warmup_graph(
     from h3_t2v import CANVAS_9_16_MIN, build_t2v_graph
 
     g = build_t2v_graph(
-        prompt="Vertical 9:16. An adult woman over 15 blinks once. Photoreal. No speech.",
+        prompt="Vertical 9:16. An adult woman over 21 blinks once. Photoreal. No speech.",
         unet=str(unet),
         lora_name=None,
         lora_strength=0.0,
@@ -2658,7 +2658,7 @@ I2V_CUSTOM_LOCK = (
     "For the target video, at 0.00 seconds into the target video, "
     "<Picture 1> (from [Shot 1]) is fully referenced.\n\n"
     "subject_definitions:\n"
-    "<Subject 1> Adult, clearly over 15, same face body and hair as <Picture 1>.\n\n"
+    "<Subject 1> Adult, clearly over 21, same face body and hair as <Picture 1>.\n\n"
 )
 
 
@@ -2992,7 +2992,7 @@ def apply_user_prompt(user_text: str | None, *, mode: str, default_prompt: str =
             + raw
             + " Identity of (S1) stays locked to <Picture 1>. Photoreal. No freeze frame.\n"
             "overall_soundscape: Natural ambient sound.\n"
-            "All performers are consenting adults 15 years or older."
+            "All performers are consenting adults 21 years or older."
         )
         return wrapped, True
     return raw, True
@@ -5571,8 +5571,8 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
             raise SystemExit("短編集は 240秒までです。")
         if abs(duration - sum(clip_durs)) > 0.51:
             raise SystemExit("短編集の秒数と本数が合いません。")
-        if int(data.get("min_age") or 0) < 15:
-            raise SystemExit("短編集は 15歳以上のみです。")
+        if int(data.get("min_age") or 0) < 21:
+            raise SystemExit("短編集は 21歳以上のみです。")
         follow_errors = validate_story_follow(data)
         if follow_errors:
             raise SystemExit("短編集の追従ルール: " + " / ".join(follow_errors))
@@ -5608,8 +5608,8 @@ def load_story(story_id: str, *, studio_root: Path | str | None = None) -> dict[
             raise SystemExit("専用ストーリーの1本は 10秒です。")
     if addon and any(abs(d - 10.0) > 0.01 for d in clip_durs):
         raise SystemExit("物語の追加の1本は 10秒です。")
-    if int(data.get("min_age") or 0) < 15:
-        raise SystemExit("専用ストーリーは 15歳以上のみです。")
+    if int(data.get("min_age") or 0) < 21:
+        raise SystemExit("専用ストーリーは 21歳以上のみです。")
     duration = float(data.get("duration_s") or 0)
     if duration > 120:
         raise SystemExit("専用ストーリーは 120秒までです。")
