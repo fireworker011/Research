@@ -12,10 +12,35 @@ sys.path.insert(0, str(ROOT / "colab"))
 
 from h3_studio import JOB_HELP, JOBS, STUDIO_HELPERS  # noqa: E402
 
-BRANCH = "cursor/h3-studio-lane-ec31"
+BRANCH = "cursor/h3-studio-text-scenes-6dc5"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_studio_bot.ipynb"
 SESSION = "h3-studio"
+
+SCENES_CELL = r'''#@title text_scene を7本書く（生成はしない）
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, "/content")
+from h3_studio import GENERATE_MSG, build_text_scenes
+
+plan = build_text_scenes()
+if plan.get("generate"):
+    raise SystemExit(GENERATE_MSG)
+dest = Path("h3_studio_text_scenes.json")
+try:
+    from google.colab import drive
+    drive.mount("/content/drive")
+    dest = Path("/content/drive/MyDrive/minimax-h3-comfyui/studio/text-scenes.json")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+except ImportError:
+    print("Colab の外。プランは h3_studio_text_scenes.json に書く。")
+dest.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+print("WROTE", dest)
+print("clips", [clip["scene_id"] for clip in plan["clips"]])
+print(GENERATE_MSG)
+'''
 
 
 def colab_url(path: str) -> str:
@@ -138,6 +163,9 @@ runtime が api で Combat / Swap / real を選ぶと止まる。
 
 Combat / Swap は Turbo を切る。本体は Comfy High-Mem。
 Weapon / GunFu / Continuity は無い。orbit の LoRA ファイル名は未確定。
+
+下の2つ目のコードセルは `text_scene` を7本書く。公式 Hailuo の T2VA。LoRA なし。Combat も charswap も切る。各本6秒、16:9、768P、24fps、1ショット。ポスターは静止画。顔固定はこの7本に載せない。生成ボタンは押さない。
+並び: `hana-gate`、`host-live`、`hana-cart`、`hana-shelf`、`host-drop`、`hana-box`、`hana-exit`。
 セッション名 `{SESSION}`。
 """
 
@@ -170,6 +198,13 @@ def make_nb() -> dict:
                 "execution_count": None,
                 "outputs": [],
                 "source": [line + "\n" for line in cell.strip("\n").split("\n")],
+            },
+            {
+                "cell_type": "code",
+                "metadata": {"id": "studio_scenes"},
+                "execution_count": None,
+                "outputs": [],
+                "source": [line + "\n" for line in SCENES_CELL.strip("\n").split("\n")],
             },
         ],
     }

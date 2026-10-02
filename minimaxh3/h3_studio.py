@@ -65,6 +65,12 @@ FPS = 24
 WIDTH = 768
 HEIGHT = 1344
 RESOLUTION = "768P"
+# The seven text scenes are official Hailuo T2VA at 6s, 16:9, 768P.
+# 16:9 uses the same two edges as the stock 9:16 frame, swapped.
+TEXT_SCENE_SECONDS = 6.0
+TEXT_SCENE_WIDTH = HEIGHT
+TEXT_SCENE_HEIGHT = WIDTH
+TEXT_SCENE_ASPECT = "16:9"
 
 STUDIO_HELPERS = (
     "colab/h3_studio.py",
@@ -135,6 +141,46 @@ MUSIC = "non_diegetic_music: N/A"
 LOCK_FULL = "Picture 1 locks the full body. The motion follows Video 1."
 LOCK_FACE = "Picture 1 locks the face and hair only. The clothes follow Video 1."
 LOCK_OUTFIT = "Picture 1 locks the clothes only. The face follows Video 1."
+
+# Seven T2VA shots. Action is one English line. Japanese stays inside 「」.
+# Sound is physical only. The engine adds the three official fields.
+TEXT_SCENES = (
+    (
+        "hana-gate",
+        "Behind a 68-year-old Japanese woman, Hana, gray bun, mint-green shop apron, brown cross-body strap. She walks away through a night station ticket gate under cool fluorescent tubes. A staffer stands far ahead, head down. Camera follows at shoulder height. She keeps walking through the gate.",
+        "A low electrical hum from cool fluorescent tubes sits over night-station room tone. Footsteps continue across the ticket-gate floor, and the gate latch clicks once.",
+    ),
+    (
+        "host-live",
+        "A 28-year-old man in a gray hoodie and glasses leans toward a ring light and a laptop, mouth open, saying 「よし…金曜だけどライブ、いける…」. Hana mops softly in the background. Camera stays on his profile.",
+        "A laptop fan and a small ring-light buzz sit under quiet room tone. A mop moves softly across the floor behind him.",
+    ),
+    (
+        "hana-cart",
+        "Behind Hana as she pushes a steel hot-food cart through a narrow door into a cold prep aisle of steel shelves. Yellow gloves on the handle. Camera follows at her back.",
+        "Steel cart wheels roll through a narrow door onto the hard prep-aisle floor. The door shifts, and a shelf gives a light metal tick as the cart passes.",
+    ),
+    (
+        "hana-shelf",
+        "Hana bends over the cart between blue-lit steel shelves, kettle and sample bento boxes on the top shelf. Camera stays behind her as she reaches to the shelf.",
+        "The cart frame creaks once. A kettle shifts on the top shelf, and a sample box taps the steel.",
+    ),
+    (
+        "host-drop",
+        "The same host under red ceiling light, both hands in his hair, mouth wide, shouting 「ライブが落ちたあああ！」. Camera holds on his face and shoulders.",
+        "Room tone continues under a low electrical hum. Both hands drag through his hair.",
+    ),
+    (
+        "hana-box",
+        "Hana stands in the red-lit aisle, one yellow glove holding a clear sample bento box, the other a white teacup. She looks down at the box. Camera at her chest.",
+        "Quiet aisle tone. The clear plastic box and the ceramic cup tap once in her gloves.",
+    ),
+    (
+        "hana-exit",
+        "Hana walks toward the camera through open station glass doors at night, mint apron, yellow gloves, small smile. She stops and raises the sample bento box, saying 「ふう…温め直しゃ直るだろ。」",
+        "Night air and an open glass door stay in the station entrance. Footsteps come across the floor and stop.",
+    ),
+)
 
 FL2VA_HEADER = (
     "How the reference pictures align with the target video — "
@@ -550,22 +596,29 @@ def _build_orbit(req: StudioRequest) -> dict[str, Any]:
     )
 
 
-def _build_text(req: StudioRequest) -> dict[str, Any]:
-    action, dialogue = _speech(req)
+def _build_text(
+    req: StudioRequest,
+    *,
+    framing: str = "vertical 9:16",
+    sound: str | None = None,
+    onscreen: bool = False,
+) -> dict[str, Any]:
+    action, dialogue = _speech(req, onscreen=onscreen)
     look = _look_clause(req.hero, req.enemy)
     camera = "" if "camera" in action.lower() else "The camera holds a static shot."
     body = _sentences(
-        "[Shot 1] Live-action, vertical 9:16.",
+        f"[Shot 1] Live-action, {framing}.",
         NO_TEXT,
         look,
         action,
         dialogue,
         camera,
     )
+    sound_line = SOUND if sound is None else f"overall_soundscape: {sound}"
     prompt = "\n\n".join(
         (
             f"integrated_multimodal_description: {body}",
-            SOUND,
+            sound_line,
             MUSIC,
         )
     ) + "\n"
@@ -579,6 +632,60 @@ def _build_text(req: StudioRequest) -> dict[str, Any]:
         notes=["text_scene は LoRA なし。"],
         inputs={"hero_sheet": "", "video": "", "first_still": "", "last_still": ""},
     )
+
+
+def build_text_scenes() -> dict[str, Any]:
+    """Seven official Hailuo T2VA shots. No LoRA, no stills, no generate call."""
+    clips = []
+    for scene_id, action, sound in TEXT_SCENES:
+        req = StudioRequest(
+            job="text_scene",
+            runtime="api",
+            high_mem=False,
+            action=action,
+            duration=TEXT_SCENE_SECONDS,
+            turbo=False,
+        )
+        _scan_request(req)
+        _gate(req)
+        clip = _build_text(req, framing=f"horizontal {TEXT_SCENE_ASPECT}", sound=sound, onscreen=True)
+        clip["scene_id"] = scene_id
+        clip["width"] = TEXT_SCENE_WIDTH
+        clip["height"] = TEXT_SCENE_HEIGHT
+        clip["aspect"] = TEXT_SCENE_ASPECT
+        clip["shots"] = 1
+        clip["output_mp4"] = f"{scene_id}.mp4"
+        clip["notes"] = [
+            "公式 Hailuo の T2VA。LoRA なし。Combat も charswap も切る。",
+            "顔固定は後段の Ref2VA。この本には載せない。",
+            "1本1ショット。",
+        ]
+        clips.append(clip)
+    return {
+        "schema": SCHEMA,
+        "job": "text_scene",
+        "batch": "text_scene_x7",
+        "runtime": "api",
+        "task": "t2va",
+        "duration": TEXT_SCENE_SECONDS,
+        "fps": FPS,
+        "width": TEXT_SCENE_WIDTH,
+        "height": TEXT_SCENE_HEIGHT,
+        "aspect": TEXT_SCENE_ASPECT,
+        "resolution": RESOLUTION,
+        "loras": [],
+        "turbo": False,
+        "clips": clips,
+        "poster": {"kind": "still", "video": False},
+        "face_lock": "later_ref2va",
+        "generate": False,
+        "notes": [
+            "7本とも公式 Hailuo の T2VA。Combat と charswap は切る。",
+            "ポスターは静止画。このバッチの動画にはしない。",
+            "顔固定は後段の Ref2VA。この7本には載せない。",
+            GENERATE_MSG,
+        ],
+    }
 
 
 def _build_two_pass(req: StudioRequest) -> dict[str, Any]:
@@ -738,16 +845,21 @@ def _scan_request(req: StudioRequest) -> None:
         _scan_request(child)
 
 
-def _speech(req: StudioRequest) -> tuple[str, str]:
+def _speech(req: StudioRequest, *, onscreen: bool = False) -> tuple[str, str]:
     action, line = _take_dialogue(req.action, req.dialogue)
     _scan_blocked(action)
     _scan_blocked(line)
-    spoken = ""
-    if line:
-        spoken = (
-            "An adult voice (S1) says in an off-screen voiceover: "
-            f"<d>[Japanese] {line}</d> while the on-screen lips remain completely closed."
-        )
+    if not line:
+        return action, ""
+    tag = f"<d>[Japanese] {line}</d>"
+    if onscreen and "「" in req.action:
+        return QUOTE_RE.sub(f"(S1): {tag}", req.action.strip(), count=1), ""
+    if onscreen:
+        return f"{action} (S1) says: {tag}", ""
+    spoken = (
+        "An adult voice (S1) says in an off-screen voiceover: "
+        f"{tag} while the on-screen lips remain completely closed."
+    )
     return action, spoken
 
 
@@ -917,9 +1029,19 @@ def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
     if not args or args[0] in {"-h", "--help"}:
         print("usage: h3_studio.py plan  < request.json", file=sys.stderr)
+        print("       h3_studio.py scenes", file=sys.stderr)
         return 0 if args else 2
+    if args[0] == "scenes":
+        plan = build_text_scenes()
+        if plan.get("generate"):
+            print("STUDIO STOP:", GENERATE_MSG)
+            return 1
+        json.dump(plan, sys.stdout, ensure_ascii=False, indent=2)
+        print()
+        return 0
     if args[0] != "plan":
         print("usage: h3_studio.py plan  < request.json", file=sys.stderr)
+        print("       h3_studio.py scenes", file=sys.stderr)
         return 2
     try:
         raw = json.loads(sys.stdin.read())
