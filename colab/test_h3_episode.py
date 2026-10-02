@@ -1890,6 +1890,9 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "miki stays on her back" in ride_peak["action"].lower()
     assert "keep the glans inside" in ride_peak["action"].lower()
     assert "buried to the root" in ride_peak["action"].lower()
+    assert "hips stay down on the groin the whole take" in ride_peak["action"].lower()
+    assert "from the first frame to the last frame" in ride_peak["action"].lower()
+    assert "already fully formed on the groin at the first frame" in oral["action"].lower()
     assert "both soles beside the ribs" in ride_peak["action"].lower()
     assert "lifts" not in ride_peak["action"].lower()
     assert "rock up" not in ride_peak["action"].lower()
@@ -6081,6 +6084,24 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         assert "あ、いく" in cum["action"]
         assert "wide ring" in next(b for b in jo["beats"] if b["id"] == f"{base}-jo-gape")["action"].lower()
     gin = prepare_episode(raw, gin_override="灰色・後ろアナル")
+    gin_ids = [b["id"] for b in gin["beats"] if str(b["id"]).startswith("04-gin")]
+    assert gin_ids[:6] == [
+        "04-gin-lick-spot",
+        "04-gin-lick",
+        "04-gin-cunny",
+        "04-gin-jupo",
+        "04-gin-mouth",
+        "04-gin-spitkiss",
+    ]
+    assert gin_ids[6:9] == ["04-gin-jo-set", "04-gin-jo-behind", "04-gin-jo-anal"]
+    gin_mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
+    assert "inside gin's mouth" in gin_mouth["action"].lower()
+    assert "cumouf" in extra_keys(gin_mouth)
+    assert "onto gin's face" not in gin_mouth["action"].lower()
+    gin_cum = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-cum")
+    assert "inside gin's anus" in gin_cum["action"].lower()
+    assert "bare closed slit" in gin_cum["action"].lower()
+    assert "from the first frame to the last frame" in gin_cum["action"].lower()
     gin_set = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-set")
     assert "gin bends" in gin_set["action"].lower()
     assert "aya's grown erect 24cm" in gin_set["action"].lower()

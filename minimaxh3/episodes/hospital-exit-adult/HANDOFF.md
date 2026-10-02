@@ -281,7 +281,9 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 受けは顔と胸が床。腰は高い。割れは上。両脚はまっすぐ左右。竿役は腰の上。尻がカメラ。竿は上から肛門。距離は固定。結合部は画面中央。みき・れい・かな・しのはあやが受け。あやの股間は hairless pussy。長さはみき 24、れい 24、かな 20、しの 30。ギンはギンが受け。あやの grown erect 24cm。ギンの犯す本文は残す。
 
-id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` `04-gin-jo` に `-set` `-behind` `-anal` `-cum` `-gape` `-kiss`。かなは顔射とキスのあとに続ける。set は connect cut。jacko は set と behind が 0.8、anal が 0.7、cum と gape が 0.65。doggy は積まない。set と behind の最終は未挿入。anal は腰が一度下り、根元 HOLD、「気持ちいい」。cum は短い上下、溢れ、「あ、いく」。gape は腰を一度上げ、竿が出て輪。kiss で立って口が付き、相手が右へ消え、あや一人が歩く。
+id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` に `-set` `-behind` `-anal` `-cum` `-gape` `-kiss`。かなは顔射とキスのあとに続ける。灰色の Jack-O は、先に `04-gin-lick` `04-gin-cunny` `04-gin-jupo` `04-gin-mouth` `04-gin-spitkiss`。ふたなり化、じゅぼ、口の中への WHITE、口移し。そのあと `04-gin-jo-set` でギンが姿勢を作り、`04-gin-jo-behind` であやが腰の上に立つ。それから肛門へ。口の中の WHITE は口に留まる。肛門の WHITE は肛門の結合に留まる。ギンのマンコも、あやの竿の付け根のマンコも、閉じた割れ目のまま。set は connect cut。jacko は set と behind が 0.8、anal が 0.7、cum と gape が 0.65。doggy は積まない。set と behind の最終は未挿入。anal は腰が一度下り、根元 HOLD、「気持ちいい」。cum は短い寄せ、肛門から溢れ、「あ、いく」。竿は肛門に入ったまま。gape は腰を一度上げ、竿が出て輪。kiss で立って口が付き、相手が右へ消え、あや一人が歩く。
+
+騎乗の口 `03-kiss` `06-doggy` `09-join` `12-exit` は、最初のフレームから竿が既に全長で立っている。途中で生やさない。騎乗の peak は腰を股に下ろしたまま、竿は最初から最後まで根元。短い寄せは亀頭を中に残す。
 
 着座は一回の押し。腰と尻が密着し、竿が根元まで入ったところで止める。先だけ、半分、往復は書かない。ピストンは次の絶頂。`12-exit` の正常位は 0 秒からあやが仰向け、しのは腿の間、30cm は根元、`HOLD still joined at the BASE until the last frame`。立ちキスにしない。立ちキスは `12-exit-kiss` だけ。
 
