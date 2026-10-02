@@ -43,7 +43,9 @@
 | `two_pass` | A のあと B | パスごとに 1 系統 | B の Video 1 = `pass-a.mp4`。B は swap か real |
 | `text_scene` | T2VA | なし | 文章だけ |
 
-既定は 5 秒（受け付けるのは 4 秒以上 5 秒以下）、`768x1344`（768P、9:16）、24fps。Combat と Swap で Turbo をオンにしてもプランではオフになる。
+既定の1本は 5 秒（受け付けるのは 4 秒以上 5 秒以下）、`768x1344`（768P、9:16）、24fps。Combat と Swap で Turbo をオンにしてもプランではオフになる。
+
+`h3_studio.py scenes` は `text_scene` を7本書く。公式 Hailuo の T2VA（`runtime=api`）。LoRA は空。Combat と charswap は切る。各本は1ショット、6秒、16:9、768P（`1344x768`。在庫の 9:16 と同じ二辺を入れ替えたもの）、24fps。action は英語1行で、日本語は「」だけ。3欄はエンジンが包む。sound は物理音だけ。配楽は `N/A`。ポスターは静止画で、この7本の動画にはしない。顔固定は後段の Ref2VA で、この7本には載せない。`generate` は false。並びは `hana-gate`、`host-live`、`hana-cart`、`hana-shelf`、`host-drop`、`hana-box`、`hana-exit`。
 
 ## フォーム
 

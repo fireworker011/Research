@@ -293,6 +293,81 @@ def test_refused_lanes_and_unknown_job():
         studio.request_from({"job": "ward", "action": ACTION})
 
 
+def test_seven_text_scenes_are_official_t2va_without_lora():
+    batch = studio.build_text_scenes()
+    assert batch["generate"] is False
+    assert batch["runtime"] == "api"
+    assert batch["task"] == "t2va"
+    assert batch["loras"] == []
+    assert batch["poster"] == {"kind": "still", "video": False}
+    assert batch["face_lock"] == "later_ref2va"
+    assert batch["duration"] == 6.0
+    assert batch["fps"] == 24
+    assert batch["width"] == 1344
+    assert batch["height"] == 768
+    assert batch["aspect"] == "16:9"
+    assert batch["resolution"] == "768P"
+    ids = [clip["scene_id"] for clip in batch["clips"]]
+    assert ids == [
+        "hana-gate",
+        "host-live",
+        "hana-cart",
+        "hana-shelf",
+        "host-drop",
+        "hana-box",
+        "hana-exit",
+    ]
+    spoken = {
+        "host-live": "よし…金曜だけどライブ、いける…",
+        "host-drop": "ライブが落ちたあああ！",
+        "hana-exit": "ふう…温め直しゃ直るだろ。",
+    }
+    banned = ("HUD", "minimap", "MISSION PASSED", "GTA")
+    for clip in batch["clips"]:
+        assert clip["job"] == "text_scene"
+        assert clip["task"] == "t2va"
+        assert clip["runtime"] == "api"
+        assert clip["loras"] == []
+        assert clip["turbo"] is False
+        assert clip["generate"] is False
+        assert clip["duration"] == 6.0
+        assert clip["fps"] == 24
+        assert clip["width"] == 1344
+        assert clip["height"] == 768
+        assert clip["aspect"] == "16:9"
+        assert clip["shots"] == 1
+        assert clip["inputs"] == {"hero_sheet": "", "video": "", "first_still": "", "last_still": ""}
+        prompt = clip["prompt"]
+        assert prompt.startswith("integrated_multimodal_description: [Shot 1] Live-action, horizontal 16:9.")
+        assert prompt.count("[Shot 1]") == 1
+        assert "[Shot 2]" not in prompt
+        assert "overall_soundscape:" in prompt
+        assert prompt.index("integrated_multimodal_description:") < prompt.index("overall_soundscape:")
+        assert prompt.index("overall_soundscape:") < prompt.index("non_diegetic_music:")
+        assert "non_diegetic_music: N/A" in prompt
+        assert "Picture" not in prompt
+        assert "Video" not in prompt
+        assert "charswap" not in prompt.lower()
+        assert "combat" not in prompt.lower()
+        assert "vertical 9:16" not in prompt
+        outside = studio.DIALOGUE_BLOCK_RE.sub("", prompt)
+        assert studio.CJK_RE.search(outside) is None
+        for word in banned:
+            assert word not in prompt
+        line = spoken.get(clip["scene_id"])
+        if line:
+            assert f"<d>[Japanese] {line}</d>" in prompt
+            assert "off-screen voiceover" not in prompt
+            assert "lips remain completely closed" not in prompt
+            sound = prompt.split("overall_soundscape:", 1)[1].split("non_diegetic_music:", 1)[0]
+            assert line not in sound
+            assert studio.CJK_RE.search(sound) is None
+        else:
+            assert "<d>" not in prompt
+    code = studio.main(["scenes"])
+    assert code == 0
+
+
 def test_notebook_does_not_fetch_the_ward():
     nb = make_nb()
     blob = json.dumps(nb, ensure_ascii=False)
