@@ -132,7 +132,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 順番: `04-tsuno-meet-spot` → `04-tsuno-kiss` → `04-tsuno-oral` → `04-tsuno-wait` → `04-tsuno-spit` → `04-tsuno-beckon` → `04-tsuno-lie` → `04-tsuno-sidekiss` → `04-tsuno-ride` → `04-tsuno-peak` → `04-tsuno-ride-kiss` → `04-tsuno-walk`。仰向けにしない。action に SPOONLG と体位名は書かない。否定は書かない。首の角度の禁止は書かない。
 
-- kiss chain: 角は座ったまま。あやが膝の間。口と口。涎の糸。kiss 0.5 + mystic 0.5
+- kiss chain: 角は座ったまま。同じあや一人が膝の間に立ったまま、胴を前へ倒して口が付く。涎の糸。カメラはドア正面の広い全身のまま、距離は固定。顔の寄りは足さない。`nothing new enters` と `Two faces` はこの拍に足さない。kiss 0.5 + mystic 0.5。寝室の同じ `04-tsuno-kiss` も同じ文
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。blowjob 0.8 + mystic 0.5 + penis 0.45。トリガーは `bl0w_j0b`。横挿入と寝室アナルの両方。STANDS は書かない
 - wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
 - spit cut: あやがしゃがみから両足で立つ。角はマットレスの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない

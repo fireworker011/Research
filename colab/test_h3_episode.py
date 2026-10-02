@@ -5639,6 +5639,13 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         assert "lewd pleasure-drunk happy smile" in faced_prompt.lower(), bid
         assert "single eye half-lidded" in faced_prompt.lower(), bid
         assert "tired determined" not in faced_prompt.lower(), bid
+        if bid == "04-tsuno-kiss":
+            assert "the same aya" in faced["action"].lower()
+            assert "single eye half-lidded" in faced["action"].lower()
+            assert "same two adults" in faced_prompt.lower()
+            assert "the standing woman is the same aya" in faced_prompt.lower()
+            assert "nothing new enters" not in faced_prompt.lower()
+            assert "two faces" not in faced_prompt.lower()
     jacko_bed = prepare_episode(raw, tsuno_override="角・寝室アナル", connect_override="chain")
     jacko_oral = next(b for b in jacko_bed["beats"] if b["id"] == "04-tsuno-oral")
     assert extra_lora_entries(jacko_oral) == extra_lora_entries(oral)

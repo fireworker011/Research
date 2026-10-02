@@ -5427,8 +5427,14 @@ PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
 
 
 def _hospital_face_pair(beat: dict[str, Any]) -> bool:
-    """Non-gin oral, facial, and kiss use a face frame instead of feet for the whole take."""
+    """Non-gin oral, facial, and kiss use a face frame instead of feet for the whole take.
+
+    The horn opening kiss stays a wide two-body frame. A face crop there draws a second Aya
+    in front of the woman who is already standing between the knees.
+    """
     bid = str(beat.get("id") or "")
+    if bid == "04-tsuno-kiss":
+        return False
     if "gin" in bid:
         return False
     keys = {key for key, _strength in extra_lora_entries(beat)}
@@ -5457,7 +5463,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
         holds.append(OPENING_KISS_HOLD)
     elif not gin and bid == "09-kana-facial":
         holds.append(FACIAL_LENS_HOLD)
-    elif not gin and _KISS_FRAME_RE.search(blob) and "blowjob" not in keys:
+    elif not gin and bid != "04-tsuno-kiss" and _KISS_FRAME_RE.search(blob) and "blowjob" not in keys:
         holds.append(FACE_PAIR_HOLD)
         if re.search(r"travels into|before the shaft enters", blob, re.I):
             holds.append(BEFORE_ACT_FULLBODY)
@@ -5467,7 +5473,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
         NELSON_HOLD_RE.search(str(beat.get("action") or ""))
     )
-    if beat_loco(beat) == "planted" and len(cast) == 2 and sex and "sideride" not in keys:
+    if beat_loco(beat) == "planted" and len(cast) == 2 and sex and "sideride" not in keys and bid != "04-tsuno-kiss":
         holds.append(PAIR_FRAME_HOLD)
     return holds
 
@@ -5539,6 +5545,12 @@ def build_beat_prompt(
     )
     if dog_spot:
         desc.append(DOG_SPOT_CONTINUITY)
+    elif bid_prompt == "04-tsuno-kiss":
+        # "nothing new enters" is drawn as a second woman walking into the kiss.
+        desc.append(
+            "One continuous take. Aya and Tsuno stay the same two adults in this one place "
+            "from the first frame to the last. The standing woman is the same Aya."
+        )
     else:
         desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
     pair_ids = [str(c) for c in (beat.get("cast") or [])]
