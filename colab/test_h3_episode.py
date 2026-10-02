@@ -2427,7 +2427,7 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "jacko" in extra_keys(push)
     assert "doggy" not in extra_keys(push)
     assert "Doggy style" not in push["action"]
-    assert extra_lora_entries(insert)[0] == ("jacko", 0.7)
+    assert extra_lora_entries(insert)[0] == ("jacko", 0.4)
     assert "doggy" not in extra_keys(insert)
     assert "thumbinbutt" not in extra_keys(insert)
     assert "synth" not in extra_keys(insert)
@@ -5829,7 +5829,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert all(b.get("connect") == "chain" and beat_source(b) == "chain" for b in stall)
     gape = next(b for b in stall if b["id"] == "04-toilet-gape")
     assert "wide ring" in gape["action"]
-    assert extra_lora_entries(gape) == [("jacko", 0.65)]
+    assert extra_lora_entries(gape) == [("jacko", 0.35)]
     assert "doggy" not in extra_keys(gape)
     push = next(b for b in stall if b["id"] == "04-toilet-push")
     assert "forearms" in push["action"] and "head" in push["action"].lower()
@@ -5840,17 +5840,19 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     ).lower()
     assert extra_keys(push)[0] == "jacko"
     inserted = next(b for b in stall if b["id"] == "04-toilet")
-    assert extra_lora_entries(inserted)[0] == ("jacko", 0.7)
+    assert extra_lora_entries(inserted)[0] == ("jacko", 0.4)
     assert "doggy" not in extra_keys(inserted)
     cum = next(b for b in stall if b["id"] == "04-toilet-cum")
-    assert extra_lora_entries(cum)[0] == ("jacko", 0.65)
+    assert extra_lora_entries(cum)[0] == ("jacko", 0.35)
     assert "doggy" not in extra_keys(cum)
     for beat in (push, inserted, cum, gape):
         blob = f"{beat['action']} {beat['camera']}".lower()
         assert "head rests on the forearms" in blob or "head on the forearms" in blob
         assert "face looks at the camera" in blob or "face at the camera" in blob
-        assert "legs stay straight" in blob or "legs straight" in blob
-        assert "thighs lie along the tiles" in blob
+        assert "knees rest on the tiles" in blob or "knees on the tiles" in blob
+        assert "hip joint" in blob
+        assert "miki's back faces the camera" in blob or "miki's back and both buttocks face the camera" in blob
+        assert "one neck" in blob
         assert "head stays at the left end" in blob
         assert "crown of the head" not in blob
         assert "face toward the hood" not in blob
