@@ -6098,6 +6098,9 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         assert "hangs down from above" in behind["action"].lower()
         assert "travels into the anus" in anal["action"].lower()
         assert "from above" in anal["action"].lower()
+        assert "hip joint" in anal["action"].lower()
+        assert "chest faces down" in anal["action"].lower()
+        assert "one neck" in anal["action"].lower()
         assert "hairless pussy" in set_b["action"].lower()
         assert "grown erect" not in set_b["action"].lower()
         assert cm in anal["action"]
