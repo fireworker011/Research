@@ -280,6 +280,10 @@ LORA_FILES = {
     # Side/rear view so the shaft stays readable where it meets the pussy.
     # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
     "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
+    # Anus and vagina as two holes. Anime stills. Card range 0.9-1.2 reads as illustration.
+    # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
+    # Civitai 2974434 version 3371009 fileId 3259145.
+    "anuspussy": "anus_pussy_v2.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -311,6 +315,7 @@ LORA_URLS = {
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
+    "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -340,6 +345,7 @@ LORA_STRENGTHS = {
     "jpnmoans": 0.55,
     "doggy": 0.5,
     "siderear": 0.8,
+    "anuspussy": 0.4,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
@@ -5754,6 +5760,8 @@ _LORA_TRIGGER_TOKENS = (
     ("blowjob", "bl0w_j0b"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
+    ("anuspussy", "zxqanus"),
+    ("anuspussy", "zxqvagina"),
 )
 # Final Thrust fires on this caption. It does not say male, and it does not say a thrust verb.
 _THRUST_CAPTION = (

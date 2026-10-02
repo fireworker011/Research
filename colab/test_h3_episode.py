@@ -1505,7 +1505,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert "rolls onto her back" in drop["action"].lower()
     assert "inner thighs rest on the linoleum" in drop["action"].lower()
     assert "heels sit right beside the buttocks" in drop["action"].lower()
-    assert "overflows from the pussy" in drop["action"].lower()
+    assert "overflows from the anus" in drop["action"].lower()
     assert extra_lora_entries(kiss) == [("kiss", 0.5)]
     assert "french kiss" in kiss["action"].lower()
     assert "tongue kiss" in kiss["action"].lower()
@@ -2348,6 +2348,10 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "models/3362792" in LORA_URLS["siderear"]
     assert "fileId=3250615" in LORA_URLS["siderear"]
     assert LORA_STRENGTHS["siderear"] == 0.8
+    assert LORA_FILES["anuspussy"] == "anus_pussy_v2.safetensors"
+    assert "models/3371009" in LORA_URLS["anuspussy"]
+    assert "fileId=3259145" in LORA_URLS["anuspussy"]
+    assert LORA_STRENGTHS["anuspussy"] == 0.4
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
     assert not any(b["id"] == "04-toilet" for b in off["beats"])
@@ -2625,7 +2629,7 @@ def test_hospital_invite_finale_follows_the_last_partner():
     assert "tongue hangs out" in seat["action"].lower()
     assert "whites show" in peak["action"].lower()
     assert "rolls onto her back" in drop["action"].lower()
-    assert "overflows from the pussy" in drop["action"].lower()
+    assert "overflows from the anus" in drop["action"].lower()
 
     rei = prepare_episode(
         raw,
@@ -5931,8 +5935,14 @@ def test_hospital_siderear_keeps_the_join_visible():
     peak = next(b for b in fours["beats"] if b["id"] == "06-doggy-peak")
     walk = next(b for b in fours["beats"] if b["id"] == "06-doggy-walk")
     assert extra_lora_entries(seat)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(seat)[1] == ("anuspussy", 0.4)
     assert extra_lora_entries(peak)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(peak)[1] == ("anuspussy", 0.4)
+    assert "travels into the anus" in seat["action"].lower()
+    assert "walks in from the left" in seat["action"].lower()
+    assert "right hand" in seat["action"].lower()
     assert "siderear" not in extra_keys(walk)
+    assert "anuspussy" not in extra_keys(walk)
     assert "low between the open thighs" in seat["camera"].lower()
     assert "center of the frame" in seat["camera"].lower()
     assert "low between the open thighs" in peak["camera"].lower()
@@ -5942,6 +5952,10 @@ def test_hospital_siderear_keeps_the_join_visible():
     stand = prepare_episode(raw, story_override="誘う", invite_pose_override="立ちバック")
     wall = next(b for b in stand["beats"] if b["id"] == "03-kiss")
     assert extra_lora_entries(wall)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(wall)[1] == ("anuspussy", 0.4)
+    assert "balls of both feet" in wall["action"].lower()
+    assert "left hand rests flat" in wall["action"].lower()
+    assert "travels into the pussy" in wall["action"].lower()
     assert "siderear" not in extra_keys(next(b for b in stand["beats"] if b["id"] == "09-kana-facial"))
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
     assert "siderear" not in extra_keys(next(b for b in m_open["beats"] if b["id"] == "06-doggy"))
