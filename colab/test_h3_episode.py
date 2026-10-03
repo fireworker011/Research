@@ -6,6 +6,9 @@ import re
 import shutil
 import signal
 import sys
+import threading
+import urllib.parse
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
@@ -92,6 +95,7 @@ from h3_episode import (  # noqa: E402
     locate_erotic_checkpoint,
     expected_duration,
     extra_lora_entries,
+    ensure_episode_loras,
     fetch_text,
     finish_episode,
     forbidden_hits,
@@ -265,6 +269,32 @@ def test_colab_and_minimaxh3_copies_in_sync():
     runtime_a = (ROOT / "colab" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
     runtime_b = (ROOT / "minimaxh3" / "h3_i2v_runtime.py").read_text(encoding="utf-8")
     assert runtime_a == runtime_b, "h3_i2v_runtime.py differs between colab/ and minimaxh3/"
+
+
+def test_cpu_runtime_stops_only_when_a_rendered_lora_is_missing(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    monkeypatch.setattr(mod, "preflight", lambda *_a, **_k: [])
+    monkeypatch.setattr(mod, "ensure_episode_checkpoint", lambda *_a, **_k: ["checkpoint ready x"])
+    monkeypatch.setattr(mod, "download_base_weights", lambda *_a, **_k: ["skip existing unet"])
+    monkeypatch.setattr(mod, "ensure_comfy", lambda *_a, **_k: (_ for _ in ()).throw(AssertionError("comfy")))
+    monkeypatch.setenv("H3_WEIGHTS_ONLY", "1")
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    prepared = prepare_episode(raw)
+    needed = next(iter(mod._rendered_lora_filenames(prepared)))
+    monkeypatch.setattr(mod, "ensure_episode_loras", lambda *_a, **_k: [f"fetch failed {needed}"])
+    with pytest.raises(EpisodeError, match="LoRA の取得が止まりました"):
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
+    monkeypatch.setattr(
+        mod,
+        "ensure_episode_loras",
+        lambda *_a, **_k: [
+            "fetch failed slime_girls-MMH3-v1.0.safetensors",
+            "skip page furry-enhancer-video.safetensors",
+        ],
+    )
+    with pytest.raises(WeightsReady):
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
 
 
 def test_cpu_runtime_downloads_weights_and_does_not_start_comfy(tmp_path, monkeypatch):
@@ -4150,6 +4180,117 @@ def test_bootstrap_refreshes_stale_episode_json_keeps_stills(tmp_path, monkeypat
     ]
     assert kept.read_bytes() == b"keep-me"
     assert expected_duration(load_episode(drive / "episode.json")) == pytest.approx(44.9, abs=0.2)
+
+
+def test_page_only_loras_are_not_fetched(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    calls: list[str] = []
+    monkeypatch.setattr(mod, "fetch_text", lambda *a, **_k: calls.append(a[0]) or False)
+    notes = ensure_episode_loras(
+        {"render": {"lora_prefetch": ["furryenh", "slime", "anthro", "blowjob"]}},
+        tmp_path,
+    )
+    assert calls == [LORA_URLS["blowjob"]]
+    assert notes == [
+        "skip page furry-enhancer-video.safetensors",
+        "skip page slime_girls-MMH3-v1.0.safetensors",
+        "skip page eleptors-furry-anthro-lora-minimax-h3.safetensors",
+        "fetch failed MM-H3_Blowjob_v3.safetensors",
+    ]
+
+
+def test_civitai_redirect_drops_authorization_before_the_weight_host(monkeypatch):
+    import h3_episode as mod
+
+    header = b'{"a":1}'
+    body = len(header).to_bytes(8, "little") + header
+    seen: dict[str, str | None] = {}
+
+    class CDN(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):  # noqa: N802
+            seen["cdn_auth"] = self.headers.get("Authorization")
+            payload = b"no" if self.headers.get("Authorization") else body
+            self.send_response(400 if self.headers.get("Authorization") else 200)
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def log_message(self, fmt, *args):  # noqa: ANN001
+            return
+
+    class Hub(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):  # noqa: N802
+            seen["hub_auth"] = self.headers.get("Authorization")
+            loc = f"http://127.0.0.1:{cdn.server_address[1]}/w.safetensors"
+            self.send_response(307)
+            self.send_header("Location", loc)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        def log_message(self, fmt, *args):  # noqa: ANN001
+            return
+
+    cdn = ThreadingHTTPServer(("127.0.0.1", 0), CDN)
+    hub = ThreadingHTTPServer(("127.0.0.1", 0), Hub)
+    for srv in (cdn, hub):
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(mod, "_civitai_host", lambda netloc: str(netloc).startswith("localhost"))
+    try:
+        url = f"http://localhost:{hub.server_address[1]}/api/download/models/1"
+        resp = mod._open_civitai(
+            url,
+            {"User-Agent": "h3-episode", "Authorization": "Bearer secret-token"},
+            timeout=5,
+        )
+        got = resp.read()
+        resp.close()
+    finally:
+        hub.shutdown()
+        cdn.shutdown()
+        hub.server_close()
+        cdn.server_close()
+    assert seen["hub_auth"] == "Bearer secret-token"
+    assert seen["cdn_auth"] is None
+    assert got == body
+    quoted = mod._quote_http_url("https://cdn.example/Minimax H3.safetensors")
+    assert " " not in urllib.parse.urlsplit(quoted).path
+
+
+def test_fetch_text_sends_civitai_token_only_to_the_opener(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    class Resp:
+        def __enter__(self):
+            self._sent = False
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self, _n):
+            if self._sent:
+                return b""
+            self._sent = True
+            return b"x" * 200
+
+    seen: dict[str, str] = {}
+
+    def fake_open(url, headers, timeout=120):
+        seen["url"] = url
+        seen["auth"] = headers.get("Authorization")
+        return Resp()
+
+    monkeypatch.setattr(mod, "_open_civitai", fake_open)
+    monkeypatch.setattr(mod, "_civitai_token", lambda: "secret-token")
+    dest = tmp_path / "a.safetensors"
+    assert fetch_text("https://civitai.com/api/download/models/1?fileId=2", dest, min_bytes=10)
+    assert seen["auth"] == "Bearer secret-token"
+    assert b"secret-token" not in dest.read_bytes()
 
 
 def test_fetch_text_keeps_episode_json_and_drops_a_json_error_page(tmp_path, monkeypatch):

@@ -40,6 +40,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -270,7 +271,7 @@ LORA_FILES = {
     # Thumb in anus. Civitai 2904444 fileId 3168734. Trigger thum1n8utt stays on the beat.
     # Strength 0.55. The page URL is not the weight.
     "thumbinbutt": "MiniMax H3 - ThumbInButt.safetensors",
-    # Quadruped helper. Page only; no file id invented.
+    # Quadruped helper. Page only; no file id invented. The page URL is not fetched.
     "furryenh": "furry-enhancer-video.safetensors",
     # Spread helper. Filename from the ward spec. No download id.
     "spread": "minimax_h3_pussy_spread_v0.2.safetensors",
@@ -325,6 +326,7 @@ LORA_URLS = {
     "cumouf": "https://civitai.com/api/download/models/3223411?fileId=3105419",
     "cunny": "https://civitai.com/api/download/models/3318405",
     "thumbinbutt": "https://civitai.com/api/download/models/3284492?fileId=3168734",
+    # Model pages, not /api/download. ensure_episode_loras skips these.
     "furryenh": "https://civitai.com/models/1782485/furry-enhancer-video",
     "slime": "https://civitai.com/models/2533949",
     "anthro": "https://civitai.com/models/2945034",
@@ -6090,6 +6092,29 @@ def download_episode_weights(ep: dict[str, Any], models_root: Path | str) -> lis
     return notes
 
 
+def _lora_download_url(url: str) -> bool:
+    """True when the URL is a weight. A Civitai model page is not a weight."""
+    text = str(url or "").strip()
+    if not text:
+        return False
+    if "civitai.com" in text.lower() and "/api/download/" not in text.lower():
+        return False
+    return True
+
+
+def _rendered_lora_filenames(ep: dict[str, Any]) -> set[str]:
+    """Filenames stacked on beats this run will draw. Unused overlays stay out."""
+    names: set[str] = set()
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        for key, _strength in extra_lora_entries(beat):
+            fname = LORA_FILES.get(key)
+            if fname:
+                names.add(fname)
+    return names
+
+
 def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
     """Fetch optional extra LoRAs into Drive models/loras. A file already over 1MB is left in place."""
     root = Path(loras_dir)
@@ -6104,6 +6129,9 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
         fname = LORA_FILES.get(key)
         url = LORA_URLS.get(key)
         if not fname or not url:
+            continue
+        if not _lora_download_url(url):
+            notes.append(f"skip page {fname}")
             continue
         dest = root / fname
         if dest.is_file() and not _lora_file_loadable(dest):
@@ -6382,6 +6410,58 @@ def _download_head_ok(path: Path, *, allow_json: bool) -> bool:
     return True
 
 
+def _civitai_host(netloc: str) -> bool:
+    host = (netloc or "").lower().split(":")[0]
+    return host == "civitai.com" or host.endswith(".civitai.com")
+
+
+def _quote_http_url(url: str) -> str:
+    """Encode non-ASCII redirect paths. Civitai 400s on raw filenames otherwise."""
+    parts = urllib.parse.urlsplit(url)
+    path = urllib.parse.quote(urllib.parse.unquote(parts.path), safe="/")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, path, parts.query, parts.fragment))
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+        return None
+
+
+_DOWNLOAD_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
+def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
+    """Follow Civitai redirects. Drop Authorization off civitai.com.
+
+    R2 rejects a Bearer header on the signed URL with HTTP 400
+    (Missing x-amz-content-sha256) or HTTP 403. The key stays on the first hop only.
+    """
+    current = _quote_http_url(url)
+    hdrs = dict(headers)
+    last_exc: urllib.error.HTTPError | None = None
+    for _ in range(8):
+        req = urllib.request.Request(current, headers=hdrs)
+        try:
+            return _DOWNLOAD_OPENER.open(req, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            if exc.code not in {301, 302, 303, 307, 308}:
+                raise
+            loc = exc.headers.get("Location") or exc.headers.get("location")
+            try:
+                exc.read()
+            finally:
+                exc.close()
+            if not loc:
+                raise
+            current = _quote_http_url(urllib.parse.urljoin(current, loc))
+            if not _civitai_host(urllib.parse.urlsplit(current).netloc):
+                hdrs.pop("Authorization", None)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("download redirect failed")
+
+
 def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", allow_json: bool = False) -> bool:
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -6391,8 +6471,11 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", a
             headers = {"User-Agent": "h3-episode"}
             if tok:
                 headers["Authorization"] = f"Bearer {tok}"
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=120) as resp, open(dest, "wb") as out:
+            if civitai:
+                resp_cm = _open_civitai(url, headers, timeout=120)
+            else:
+                resp_cm = urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=120)
+            with resp_cm as resp, open(dest, "wb") as out:
                 while True:
                     chunk = resp.read(1024 * 1024)
                     if not chunk:
@@ -7319,7 +7402,19 @@ def run_episode(
         weight_notes = download_episode_weights(ep, models)
         weights_only = os.environ.get("H3_WEIGHTS_ONLY") == "1" or not cuda_available()
         if weights_only:
-            failed = [note for note in weight_notes if note.startswith("fetch failed")]
+            needed = _rendered_lora_filenames(ep)
+            failed = [
+                note
+                for note in weight_notes
+                if note.startswith("fetch failed ") and note[len("fetch failed ") :] in needed
+            ]
+            unused = [
+                note
+                for note in weight_notes
+                if note.startswith("fetch failed ") and note not in failed
+            ]
+            if unused:
+                print("この並びでは使わないので止めていません:", ", ".join(unused))
             if failed:
                 raise EpisodeError("LoRA の取得が止まりました: " + ", ".join(failed))
             raise WeightsReady(
