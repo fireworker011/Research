@@ -62,6 +62,7 @@ def test_answer_is_only_at_the_end_of_the_post() -> None:
     assert POST.strip().endswith(ANSWER)
     assert POST.count("無香料") == 1
     assert "プロフィール" in SLIDES[-1]["caption"][1]
+    assert "買う前" in "".join(SLIDES[0]["caption"])
     assert "100円硬貨" in POST
     assert "パール1～2粒" in POST
     assert "5つ目: 不明" not in POST

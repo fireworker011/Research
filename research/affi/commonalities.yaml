@@ -1,11 +1,14 @@
 # 共通点レポートの正本。2026-10-03 の3プラットフォーム調査。
 # 件数は実測のまま。50に満たないセルも繰り上げない（伸び悩みが一桁なら、その件数が確かさ）。
 # ペットのレポートはフードとカメラを分けていない。pet_food と pet_camera は同じペット全体の値。
-# 説明文・キャプションからの分類は「推定」。pattern_id は introduce / buy_before / missing_on_camera をこの調査は測っていないので不明。
+# 説明文・キャプションからの分類は「推定」。
+# 冒頭3型（2026-10-03-opening-types.md、説明文からの推定）: A=商品名の紹介 B=悩み・不一致の先出し C=後から見つける。
+# 美容TikTok・Instagramは B。YouTube美容は B が伸び悩み側の方が高いので不明。
+# ペットは A/B/C に入らない。その他（日常・同じ子）を daily_same にした。
 schema: affi-commonalities/v1
 measured_on: "2026-10-03"
-source: "research/affi/2026-10-03-youtube.md, research/affi/2026-10-03-tiktok.md, research/affi/2026-10-03-instagram.md"
-note: "ジャンルを1本の中で混ぜない。pattern_id が 不明 のセルからは台本を作らない。2026-09-29 のチャンネル調査は正本ではない。"
+source: "research/affi/2026-10-03-youtube.md, research/affi/2026-10-03-tiktok.md, research/affi/2026-10-03-instagram.md, research/affi/2026-10-03-opening-types.md"
+note: "ジャンルを1本の中で混ぜない。pattern_id が 不明 のセルからは台本を作らない。冒頭の型は説明文からの推定。2026-09-29 のチャンネル調査は正本ではない。"
 genres:
   - beauty_skincare
   - pet_food
@@ -31,7 +34,8 @@ cells:
       - "タイトルがハッシュタグだけ"
       - "概要欄を長い売り込みとリンクで埋める"
     pattern_id: "不明"
-    certainty: "伸び悩みは11件。レポートは差を仮説と明記。サムネと1コマ目は目視していない。"
+    opening_note: "推定。伸びてる38は A6 B11 C0 その他13 不明8。伸び悩み11は A1 B5 C0 その他5 不明0。Bは伸び悩み側の方が高い（5/11対11/38）ので不明のまま。"
+    certainty: "伸び悩みは11件。冒頭の型は説明文・タイトルからの推定。Bの向きが逆なので pattern_id は不明。"
   - genre: beauty_skincare
     platform: tiktok
     growing_n: 50
@@ -44,8 +48,9 @@ cells:
     do_not:
       - "主役を手元だけにする（伸び悩み6/7、伸びてる7/49）"
       - "使用・実演だけを見せ方にする（伸び悩みは判定可能4件中4件）"
-    pattern_id: "不明"
-    certainty: "伸び悩みは7件。比率は少数で不安定。1コマ目・顔出し・商品の見せ方は説明文からの推定を含む。"
+    pattern_id: buy_before
+    opening_note: "推定。伸びてる50は A9 B11 C0 その他29 不明1。伸び悩み7は A2 B0 C0 その他5 不明0。その他が過半。Bは伸びてる側にあり伸び悩み側は0。伸び悩み側はAが多い。型はB。"
+    certainty: "伸び悩みは7件。冒頭の型は説明文からの推定。その他が過半なのでBの確かさは低い。"
   - genre: beauty_skincare
     platform: instagram
     growing_n: 50
@@ -58,8 +63,9 @@ cells:
     do_not:
       - "主役を手元だけにする（伸び悩み3/7、伸びてる3/50）"
       - "30日に4〜5本だけの頻度（伸び悩み6/7、伸びてる6/50）"
-    pattern_id: "不明"
-    certainty: "伸び悩みは7件。尺と音はほぼ不明。再生は公開embedで見えた本だけ。"
+    pattern_id: buy_before
+    opening_note: "推定。伸びてる50は A10 B9 C1 その他30 不明0。伸び悩み7は A5 B1 C0 その他1 不明0。伸びてる側のBはAを1件下回る。伸び悩み側のAは5/7。型はB。"
+    certainty: "伸び悩みは7件。冒頭の型は説明文からの推定。その他が伸びてる側の過半。BはAより1件少ない。"
   - genre: pet_food
     platform: youtube
     growing_n: 189
@@ -73,8 +79,9 @@ cells:
       - "ハッシュタグや絵文字を大量に並べる（絵文字は伸びてる29%・伸び悩み68%）"
       - "商品紹介だけのタイトル（伸びてる側は3%）"
       - "他人の動画のまとめ・転載（189件中45件は伸びているがレポートはやらないと明記）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。伸び悩みは4件だけ。差は仮説。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる189は A1 B1 C4 その他174 不明9。伸び悩み4は A1 B0 C0 その他3 不明0。その他は伸びてる174/189。伸び悩みは3/4で九割未満。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。伸び悩みは4件だけ。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"
   - genre: pet_food
     platform: tiktok
@@ -87,8 +94,9 @@ cells:
     product_show: "商品見せなし/未確認は伸びてる39/50・伸び悩み32/41。差は小さい。"
     do_not:
       - "主役を手元にする（伸びてる0/50、伸び悩み8/41）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。1コマ目・顔出しは説明文からの推定を含む。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる50は A0 B0 C0 その他49 不明1。伸び悩み41は A2 B1 C0 その他38 不明0。その他は49/50と38/41。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"
   - genre: pet_food
     platform: instagram
@@ -102,8 +110,9 @@ cells:
     do_not:
       - "ハッシュタグを4個以上並べる（伸び悩み14/16、伸びてる22/40）"
       - "商品を前に出す型はこの表では伸びてる側にほぼ無い（商品が主役は0/45）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。尺と音は不明。再生は見えたリールだけ。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる45はその他45。伸び悩み20はその他20。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。尺と音は不明。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"
   - genre: pet_camera
     platform: youtube
@@ -118,8 +127,9 @@ cells:
       - "ハッシュタグや絵文字を大量に並べる（絵文字は伸びてる29%・伸び悩み68%）"
       - "商品紹介だけのタイトル（伸びてる側は3%）"
       - "他人の動画のまとめ・転載（189件中45件は伸びているがレポートはやらないと明記）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。伸び悩みは4件だけ。差は仮説。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる189は A1 B1 C4 その他174 不明9。伸び悩み4は A1 B0 C0 その他3 不明0。その他は伸びてる174/189。伸び悩みは3/4で九割未満。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。伸び悩みは4件だけ。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"
   - genre: pet_camera
     platform: tiktok
@@ -132,8 +142,9 @@ cells:
     product_show: "商品見せなし/未確認は伸びてる39/50・伸び悩み32/41。差は小さい。"
     do_not:
       - "主役を手元にする（伸びてる0/50、伸び悩み8/41）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。1コマ目・顔出しは説明文からの推定を含む。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる50は A0 B0 C0 その他49 不明1。伸び悩み41は A2 B1 C0 その他38 不明0。その他は49/50と38/41。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"
   - genre: pet_camera
     platform: instagram
@@ -147,6 +158,7 @@ cells:
     do_not:
       - "ハッシュタグを4個以上並べる（伸び悩み14/16、伸びてる22/40）"
       - "商品を前に出す型はこの表では伸びてる側にほぼ無い（商品が主役は0/45）"
-    pattern_id: "不明"
-    certainty: "ペット全体の値。フードとカメラは分けていない。尺と音は不明。再生は見えたリールだけ。"
+    pattern_id: daily_same
+    opening_note: "推定。ペット全体の値。伸びてる45はその他45。伸び悩み20はその他20。型は日常・同じ子（daily_same）。"
+    certainty: "ペット全体の値。フードとカメラは分けていない。尺と音は不明。冒頭の型は説明文からの推定。"
     scope: "ペット全体の値"

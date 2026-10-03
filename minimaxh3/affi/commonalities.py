@@ -11,7 +11,7 @@ from minimaxh3.affi.products import GENRES, PLATFORMS
 
 SCHEMA = "affi-commonalities/v1"
 UNKNOWN = "不明"
-PATTERN_IDS = ("introduce", "buy_before", "missing_on_camera", UNKNOWN)
+PATTERN_IDS = ("introduce", "buy_before", "missing_on_camera", "daily_same", UNKNOWN)
 CELL_KEYS = (
     "genre",
     "platform",
@@ -49,7 +49,7 @@ def load_commonalities(path: Path | str) -> dict[str, Any]:
             raise ValueError(f"セルが重複: {genre} {platform}")
         seen.add((genre, platform))
         if str(cell["pattern_id"]) not in PATTERN_IDS:
-            raise ValueError("pattern_id は introduce / buy_before / missing_on_camera / 不明")
+            raise ValueError("pattern_id は introduce / buy_before / missing_on_camera / daily_same / 不明")
         if not isinstance(cell["do_not"], list) or not cell["do_not"]:
             raise ValueError("do_not は1件以上")
     if seen != {(g, p) for g in GENRES for p in PLATFORMS}:

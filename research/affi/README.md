@@ -6,15 +6,19 @@
 
 2026-10-03 の調査は `2026-10-03-youtube.md`（司令部）、`2026-10-03-tiktok.md` と `2026-10-03-instagram.md`（Researchy）。ペットのレポートはフードとカメラを分けていないので、`pet_food` と `pet_camera` は同じペット全体の値。説明文からの分類はセル内に「推定」と書いてある。
 
-`pattern_id` が `introduce` / `buy_before` / `missing_on_camera` のときだけ、2026-10-03 の run01〜03 を台本にする。この調査はその3つの型を測っていないので、9セルとも `pattern_id` は `不明`。plan は台本を inbox に入れない。
+冒頭3型は `2026-10-03-opening-types.md` と `2026-10-03-opening-types-rows.csv`（Researchy、説明文からの推定）。A は商品名の紹介、B は悩み・不一致の先出し、C は後から見つける。
 
-run01〜03 の冒頭は、この共通点に合わせて直してある。ペットは同じ犬を0秒から主役にし、商品と原材料は6秒以降。run02 と orbis-dot-01 はサクラ（既存の顔）を0秒から語り手にし、手元だけのカットは無い。尺は15秒のまま。新しい顔は作らない。
+美容の TikTok と Instagram は B なので `buy_before`。YouTube 美容は B が伸び悩み側の方が高い（5/11 対 11/38）ので `pattern_id` は `不明`。ペットは A/B/C にほぼ入らず、その他が伸びてる側の九割以上なので `daily_same`（日常・同じ子のふつうの場面）。YouTube ペットの伸び悩みはその他 3/4 で、九割未満（4件）。
+
+`daily_same` は run01 と run03。冒頭が「この子」で、商品は 6 秒以降のときだけ使える。`buy_before` は run02。冒頭に「買う前」がある。orbis-dot-01 の1枚目も「買う前に見て」。YouTube 美容が不明のあいだ、オルビスの YouTube は inbox に入らない。
+
+run01〜03 の冒頭は、同じ犬かサクラを 0 秒から出す。手元だけのカットは無い。尺は 15 秒のまま。新しい顔は作らない。
 
 2026-09-29 のチャンネル調査は正本ではない。YouTube のみ、成功・直接は 18、TikTok は 0、Instagram は未測定。
 
 ## コマンド
 
-`pattern_id` が `不明` のあいだは inbox に入らない。
+`pattern_id` が `不明` のセルは inbox に入らない。YouTube 美容は不明のまま。
 
 ```bash
 python -m minimaxh3.affi plan --product kanetora --commonalities research/affi/commonalities.yaml

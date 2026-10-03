@@ -46,28 +46,47 @@ def test_repo_refs_resolve_without_a_new_face() -> None:
     assert sakura.name in {"sakura-ref.jpg", "sakura_916.jpg"}
 
 
-def test_measured_counts_stay_small_and_do_not_enqueue(tmp_path: Path) -> None:
+def test_measured_counts_and_opening_patterns(tmp_path: Path) -> None:
     doc = load_commonalities(BLANK)
     assert len(doc["cells"]) == 9
-    assert all(cell["pattern_id"] == "不明" for cell in doc["cells"])
     by_key = {(cell["genre"], cell["platform"]): cell for cell in doc["cells"]}
     assert by_key[("beauty_skincare", "youtube")]["growing_n"] == 38
     assert by_key[("beauty_skincare", "youtube")]["struggling_n"] == 11
+    assert by_key[("beauty_skincare", "youtube")]["pattern_id"] == "不明"
+    assert by_key[("beauty_skincare", "tiktok")]["pattern_id"] == "buy_before"
+    assert by_key[("beauty_skincare", "tiktok")]["struggling_n"] == 7
+    assert by_key[("beauty_skincare", "instagram")]["pattern_id"] == "buy_before"
+    assert by_key[("beauty_skincare", "instagram")]["duration_s"].startswith("不明")
     assert by_key[("pet_food", "youtube")]["growing_n"] == 189
     assert by_key[("pet_food", "youtube")]["struggling_n"] == 4
+    assert by_key[("pet_food", "youtube")]["pattern_id"] == "daily_same"
+    assert by_key[("pet_camera", "youtube")]["pattern_id"] == "daily_same"
     assert by_key[("pet_camera", "youtube")]["growing_n"] == by_key[("pet_food", "youtube")]["growing_n"]
-    assert by_key[("pet_camera", "youtube")]["struggling_n"] == by_key[("pet_food", "youtube")]["struggling_n"]
+    assert by_key[("pet_camera", "tiktok")]["pattern_id"] == "daily_same"
+    assert by_key[("pet_food", "instagram")]["pattern_id"] == "daily_same"
     assert "ペット全体の値" in by_key[("pet_food", "tiktok")]["certainty"]
-    assert by_key[("beauty_skincare", "tiktok")]["struggling_n"] == 7
-    assert by_key[("beauty_skincare", "instagram")]["duration_s"].startswith("不明")
+    assert "推定" in by_key[("beauty_skincare", "tiktok")]["opening_note"]
     refs = _refs(tmp_path)
-    plan = plan_one(BLANK, "kanetora", "youtube", ref_dir=refs, extra_roots=[])
-    assert plan["verdict"] == "直す"
-    assert plan["reason"] == "共通点が不明"
-    assert plan["growing_n"] == 189
+    kanetora = plan_one(BLANK, "kanetora", "youtube", ref_dir=refs, extra_roots=[])
+    furbo = plan_one(BLANK, "furbo", "instagram", ref_dir=refs, extra_roots=[])
+    orbis_yt = plan_one(BLANK, "orbis", "youtube", ref_dir=refs, extra_roots=[])
+    orbis_tt = plan_one(BLANK, "orbis", "tiktok", ref_dir=refs, extra_roots=[])
+    assert kanetora["verdict"] == "使える"
+    assert kanetora["pattern_id"] == "daily_same"
+    assert kanetora["growing_n"] == 189
+    assert kanetora["landing_url"] == "不明"
+    assert furbo["verdict"] == "使える"
+    assert furbo["pattern_id"] == "daily_same"
+    assert orbis_yt["verdict"] == "直す"
+    assert orbis_yt["reason"] == "共通点が不明"
+    assert orbis_tt["verdict"] == "使える"
+    assert orbis_tt["pattern_id"] == "buy_before"
+    assert "買う前" in orbis_tt["script"]["hook"]
     result = run_batch(BLANK, "all", "youtube", 3, tmp_path / "drive", ref_dir=refs, extra_roots=[])
-    assert result["inbox"] is None
-    assert not list((tmp_path / "drive" / "inbox").glob("*")) if (tmp_path / "drive" / "inbox").exists() else True
+    assert [item["verdict"] for item in result["plans"]] == ["使える", "直す", "使える"]
+    assert result["inbox"]["enqueued"] is True
+    side = json.loads((Path(result["inbox"]["folder"]) / "affi.json").read_text(encoding="utf-8"))
+    assert side["product"] == "kanetora"
 
 
 def test_three_runs_score_usable_and_one_inbox_job(tmp_path: Path) -> None:

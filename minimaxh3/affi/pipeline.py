@@ -13,6 +13,48 @@ from minimaxh3.affi.score import score_script
 from minimaxh3.affi.script import PATTERNS, load_pattern
 
 QUEUE_NAME = "affi-queue.json"
+DAILY_SAME = "daily_same"
+# The survey's「その他」is one pattern for both pet products. Each keeps its own script.
+DAILY_SCRIPT = {"kanetora": "introduce", "furbo": "missing_on_camera"}
+# Words that put the product or the ingredient list in the first 6 seconds.
+_EARLY_PRODUCT = ("原材料", "お魚", "まぐろ", "かつお", "ごはん", "一周", "無香料")
+
+
+def opening_is_daily_same(script: dict[str, Any]) -> bool:
+    """Same animal from 0s, ordinary moment, product facts only after 6s."""
+    beats = list(script.get("beats") or [])
+    if not beats or beats[0]["start"] != 0.0 or beats[0]["end"] != 3.0:
+        return False
+    if not str(beats[0]["spoken"]).startswith("この子"):
+        return False
+    early = "".join(str(b["spoken"]) for b in beats if float(b["start"]) < 6.0)
+    if any(word in early for word in _EARLY_PRODUCT):
+        return False
+    parts = list(script.get("parts") or [])
+    return bool(parts) and parts[0].get("ref") == "dog"
+
+
+def opening_is_buy_before(script: dict[str, Any]) -> bool:
+    """B: the first line names a mismatch or a reason to look before buying."""
+    beats = list(script.get("beats") or [])
+    if not beats or beats[0]["start"] != 0.0 or beats[0]["end"] != 3.0:
+        return False
+    return "買う前" in str(beats[0]["spoken"])
+
+
+def _script_id(pattern_id: str, product_id: str) -> tuple[str | None, str | None]:
+    product = PRODUCTS[product_id]
+    if pattern_id == DAILY_SAME:
+        script_id = DAILY_SCRIPT.get(product_id)
+        if script_id is None:
+            return None, "日常の型はペットだけ"
+        return script_id, None
+    if pattern_id not in PATTERNS:
+        return None, "型が不明"
+    spec = PATTERNS[pattern_id]
+    if spec["genre"] != product["genre"] or spec["product"] != product_id:
+        return None, "ジャンルが一致しない"
+    return pattern_id, None
 
 
 def plan_one(
@@ -38,12 +80,14 @@ def plan_one(
     }
     if pattern_id == UNKNOWN:
         return {**base, "verdict": "直す", "reason": "共通点が不明", "script": None}
-    if pattern_id not in PATTERNS:
-        return {**base, "verdict": "直す", "reason": "型が不明", "script": None}
-    spec = PATTERNS[pattern_id]
-    if spec["genre"] != product["genre"] or spec["product"] != product_id:
-        return {**base, "verdict": "直す", "reason": "ジャンルが一致しない", "script": None}
-    script = load_pattern(pattern_id)
+    script_id, why = _script_id(pattern_id, product_id)
+    if script_id is None:
+        return {**base, "verdict": "直す", "reason": why, "script": None}
+    script = load_pattern(script_id)
+    if pattern_id == DAILY_SAME and not opening_is_daily_same(script):
+        return {**base, "verdict": "直す", "reason": "冒頭が日常の同じ子ではない", "script": None}
+    if pattern_id == "buy_before" and not opening_is_buy_before(script):
+        return {**base, "verdict": "直す", "reason": "冒頭が買う前の不一致ではない", "script": None}
     scored = score_script(script, product)
     missing = []
     for part in script["parts"]:
