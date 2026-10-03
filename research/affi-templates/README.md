@@ -6,7 +6,9 @@
 
 https://colab.research.google.com/github/fireworker011/Research/blob/cursor/affi-genre-templates-6dc5/research/affi-templates/affi_genre_templates.ipynb
 
-上から順に実行する。リポジトリを開いているときはその場の CSV を読む。Colab だけ開いたときは、同じブランチの raw URL から CSV とモジュールを取る。
+開いたら、上の **ランタイム → すべてのセルを実行**。許可を聞かれたらそのまま実行。下に4ジャンルの表が出る。コードは読まない。日付以外は触らない。
+
+表の「冒頭」は最初の3秒、「主役」は画面の中心。強い＝両方10件以上、弱い＝件数が少ない、比較不能＝片方が3件未満。ドッグフードと見守りは、表の次の「オマージュ」を先に使う。動画は作らない。
 
 ## データを差し替える
 
