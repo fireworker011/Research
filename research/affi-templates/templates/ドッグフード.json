@@ -59,7 +59,28 @@
           "evidence": "キャプション「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」（推定。日常動画はお風呂等でその他）",
           "first_frame_text": "なし（stickersOnItem空）。説明文は「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」型"
         }
-      ]
+      ],
+      "homage": {
+        "handle": "cat-yu-chan",
+        "platform": "YouTube",
+        "channel_title": "すず丸と暮らしてます",
+        "url": "https://www.youtube.com/@cat-yu-chan/shorts",
+        "in_count": false,
+        "measured": false,
+        "borrow": [
+          "同じ子を最初から出す",
+          "最初の一言は小さな不一致",
+          "商品は後",
+          "同じ子でシリーズにする"
+        ],
+        "do_not_copy": [
+          "映像",
+          "すず丸本人",
+          "タイトルの文"
+        ],
+        "fit": "集計の既定は商品名から入る・主役は手元。作るときは、その既定よりこの型を先に使う。",
+        "first_3_seconds": "同じ子のふつうの食いしん坊。ごはん、袋、商品名は後ろ。"
+      }
     },
     "middle_pattern": [
       "データ不足"

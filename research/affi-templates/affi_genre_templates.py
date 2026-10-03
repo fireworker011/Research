@@ -33,6 +33,36 @@ REFERENCE_HANDLES = {
     "婚活": "yako.shiawasekon",
 }
 
+# Structural homage only. Not in the 266-account count. No view or follower figures.
+# Footage, the named cat, and the channel's titles are not for reuse.
+SUZUMARU_HOMAGE = {
+    "handle": "cat-yu-chan",
+    "platform": "YouTube",
+    "channel_title": "すず丸と暮らしてます",
+    "url": "https://www.youtube.com/@cat-yu-chan/shorts",
+    "in_count": False,
+    "measured": False,
+    "borrow": [
+        "同じ子を最初から出す",
+        "最初の一言は小さな不一致",
+        "商品は後",
+        "同じ子でシリーズにする",
+    ],
+    "do_not_copy": ["映像", "すず丸本人", "タイトルの文"],
+}
+HOMAGE_BY_GENRE = {
+    "ドッグフード": {
+        **SUZUMARU_HOMAGE,
+        "fit": "集計の既定は商品名から入る・主役は手元。作るときは、その既定よりこの型を先に使う。",
+        "first_3_seconds": "同じ子のふつうの食いしん坊。ごはん、袋、商品名は後ろ。",
+    },
+    "見守りカメラ": {
+        **SUZUMARU_HOMAGE,
+        "fit": "集計の「動物が主役」には合う。このチャンネルは飼い主が話に入るので、カメラ映像だけの型ではない。顔なしの既定は変えない。",
+        "first_3_seconds": "同じ子のふつうの不一致。カメラ本体は後ろ。飼い主を話の中心にしない。",
+    },
+}
+
 # Single-value fields. product_display is multi-valued and handled apart.
 CATEGORICAL = (
     ("opening_type", "冒頭タイプ"),
@@ -661,6 +691,33 @@ def _clip(text: str, limit: int = 80) -> str:
     return flat[: limit - 1] + "…"
 
 
+def homage_for(genre: str) -> dict[str, Any] | None:
+    found = HOMAGE_BY_GENRE.get(genre)
+    if found is None:
+        return None
+    return dict(found)
+
+
+def _render_homage(genre: str) -> list[str]:
+    homage = homage_for(genre)
+    if homage is None:
+        return []
+    lines = [
+        "## オマージュ（集計外）",
+        "",
+        (
+            f"{homage['platform']} @{homage['handle']}「{homage['channel_title']}」。"
+            "再生数とフォロワーは未計測。266件には入れない。"
+        ),
+        homage["fit"],
+        f"作るときの最初の3秒: {homage['first_3_seconds']}",
+        "借りるもの: " + "、".join(homage["borrow"]) + "。",
+        "使わないもの: " + "、".join(homage["do_not_copy"]) + "。",
+        "",
+    ]
+    return lines
+
+
 def render_genre(item: GenreTemplate) -> str:
     if item.basis == "伸びてる群の傾向":
         lead = (
@@ -682,9 +739,12 @@ def render_genre(item: GenreTemplate) -> str:
             "冒頭・顔出し・音・商品の見せ方の多くはキャプションと説明文からの推定で、動画は見ていない。"
         ),
         "",
+    ]
+    lines.extend(_render_homage(item.genre))
+    lines.extend([
         "## このジャンルで作るとき",
         "",
-    ]
+    ])
     avoid = actionable_avoid(item)
     for key, _label in CATEGORICAL:
         lines.append(f"- {_choice_line(item.choice(key), avoid)}")
@@ -841,6 +901,7 @@ def genre_json(item: GenreTemplate, thresholds: Thresholds) -> dict[str, Any]:
                 "growing": _share_json(opening.growing),
                 "struggling": _share_json(opening.struggling),
                 "examples": item.examples,
+                "homage": homage_for(item.genre),
             },
             "middle_pattern": middle or ["データ不足"],
             "on_screen": {

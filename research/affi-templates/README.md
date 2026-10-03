@@ -51,6 +51,7 @@ python3 research/affi-templates/affi_genre_templates.py \
 | `account_confidence` | アカウント数での信頼度。強い / 弱い / 比較不能 |
 | `script_brief.first_3_seconds.opening_type` | 最初の3秒の型。具体文は入っていない |
 | `script_brief.first_3_seconds.examples` | 参考引用。`platform` `handle` `evidence` `first_frame_text` |
+| `script_brief.first_3_seconds.homage` | ペット2ジャンルだけ。YouTube @cat-yu-chan の型。集計外。再生数は無い。映像・すず丸・タイトル文は使わない |
 | `script_brief.middle_pattern` | 真ん中で、伸びてる側に寄っている商品の見せ方。無ければ `["データ不足"]` |
 | `script_brief.on_screen` | `main_subject` と `face_shown` |
 | `script_brief.duration_band` | 尺の帯。同数なら `同数（…）` |
@@ -68,6 +69,7 @@ python3 research/affi-templates/affi_genre_templates.py \
 - 伸び悩みは件数が少ない。3件未満と比べない。見守りカメラとドッグフードは薄い。
 - 同じ handle がプラットフォーム違いで2行ある。参考から外すのは notes が「ユーザー参考アカウント」で始まる行だけ。婚活の `@yako.shiawasekon` は TikTok 行が参考、Instagram 行は伸びてる群に残っている。
 - `videos.csv` はアカウント集計に混ぜない。プラットフォーム名が accounts と揃っておらず、ある分だけの動画だから。
+- ドッグフードと見守りカメラには、YouTube @cat-yu-chan（すず丸と暮らしてます）の型をオマージュとして足してある。集計の266件には入っていない。再生数は書いていない。借りるのは「同じ子、最初の不一致、商品は後、シリーズ」だけ。ドッグフードを作るときは、集計の「商品名から入る・手元」よりこの型を先に使う。
 - 前回の `opening-types.md`（美容・ペットをプラットフォーム別に見た別調査）では、美容の伸びてる側は冒頭Bが多め、という書き方だった。今回の `accounts.csv` では美容の伸びてる最頻は「その他」（132件中73件、55%）。Bは伸び悩みの方が割合が高い（30件中12件、40% 対 132件中33件、25%）。テンプレートは今回の CSV に従う。
 
 ## テスト

@@ -151,6 +151,22 @@ def test_snapshot_matches_the_report_counts() -> None:
     assert food.choice("main_subject").choice == "手元"
     assert food.choice("duration_band").choice == "31〜60秒"
     assert food.gaps == []
+    food_homage = agt.homage_for("ドッグフード")
+    camera_homage = agt.homage_for("見守りカメラ")
+    assert food_homage is not None and camera_homage is not None
+    assert food_homage["in_count"] is False and food_homage["measured"] is False
+    assert "median_views" not in food_homage
+    assert "同じ子" in "".join(food_homage["borrow"])
+    assert "商品は後" in "".join(food_homage["borrow"])
+    assert "ごはん" in food_homage["first_3_seconds"]
+    assert "飼い主" in camera_homage["fit"]
+    assert agt.homage_for("美容スキンケア") is None
+    assert agt.homage_for("婚活") is None
+    food_md = agt.render_genre(food)
+    assert "オマージュ（集計外）" in food_md
+    assert "@cat-yu-chan" in food_md
+    assert "浮気がバレ" not in food_md
+    assert "オマージュ" not in agt.render_genre(beauty)
 
     handles = {item.reference["handle"] for item in built.genres}
     assert handles == {"the.care.logic", "nuts0629", "junjun_ranran", "yako.shiawasekon"}

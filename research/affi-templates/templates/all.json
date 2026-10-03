@@ -66,7 +66,8 @@
               "evidence": "紹介したコスメはキャプション",
               "first_frame_text": "あり推定（紹介したコスメはキャプション）"
             }
-          ]
+          ],
+          "homage": null
         },
         "middle_pattern": [
           "価格表示",
@@ -831,7 +832,28 @@
               "evidence": "キャプション「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」（推定。日常動画はお風呂等でその他）",
               "first_frame_text": "なし（stickersOnItem空）。説明文は「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」型"
             }
-          ]
+          ],
+          "homage": {
+            "handle": "cat-yu-chan",
+            "platform": "YouTube",
+            "channel_title": "すず丸と暮らしてます",
+            "url": "https://www.youtube.com/@cat-yu-chan/shorts",
+            "in_count": false,
+            "measured": false,
+            "borrow": [
+              "同じ子を最初から出す",
+              "最初の一言は小さな不一致",
+              "商品は後",
+              "同じ子でシリーズにする"
+            ],
+            "do_not_copy": [
+              "映像",
+              "すず丸本人",
+              "タイトルの文"
+            ],
+            "fit": "集計の既定は商品名から入る・主役は手元。作るときは、その既定よりこの型を先に使う。",
+            "first_3_seconds": "同じ子のふつうの食いしん坊。ごはん、袋、商品名は後ろ。"
+          }
         },
         "middle_pattern": [
           "データ不足"
@@ -1206,7 +1228,28 @@
               "evidence": "船員に志願した猫の乗船方法",
               "first_frame_text": "（タイトル）船員に志願した猫の乗船方法ｗ"
             }
-          ]
+          ],
+          "homage": {
+            "handle": "cat-yu-chan",
+            "platform": "YouTube",
+            "channel_title": "すず丸と暮らしてます",
+            "url": "https://www.youtube.com/@cat-yu-chan/shorts",
+            "in_count": false,
+            "measured": false,
+            "borrow": [
+              "同じ子を最初から出す",
+              "最初の一言は小さな不一致",
+              "商品は後",
+              "同じ子でシリーズにする"
+            ],
+            "do_not_copy": [
+              "映像",
+              "すず丸本人",
+              "タイトルの文"
+            ],
+            "fit": "集計の「動物が主役」には合う。このチャンネルは飼い主が話に入るので、カメラ映像だけの型ではない。顔なしの既定は変えない。",
+            "first_3_seconds": "同じ子のふつうの不一致。カメラ本体は後ろ。飼い主を話の中心にしない。"
+          }
         },
         "middle_pattern": [
           "データ不足"
@@ -1741,7 +1784,8 @@
               "evidence": "1コマ目「韓国人と結婚」。別本キャプション「39歳、婚活の残酷な現実。」はB寄り",
               "first_frame_text": "あり。直近「韓国人と結婚」（サムネ確認）"
             }
-          ]
+          ],
+          "homage": null
         },
         "middle_pattern": [
           "データ不足"
