@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "colab"))
 
 from h3_studio import JOB_HELP, JOBS, STUDIO_HELPERS  # noqa: E402
 
-BRANCH = "cursor/h3-studio-text-scenes-6dc5"
+BRANCH = "cursor/h3-sfw-colab-6dc5"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_studio_bot.ipynb"
 SESSION = "h3-studio"
@@ -55,6 +55,11 @@ HIGH_MEM = True  #@param {type:"boolean"}
 FINISH = False  #@param {type:"boolean"}
 TURBO = False  #@param {type:"boolean"}
 DURATION = "5"  #@param ["5", "4"]
+FAST_SECONDS = "6"  #@param ["6", "9"]
+WITH_ACTION = False  #@param {type:"boolean"}
+WITH_COMBAT = False  #@param {type:"boolean"}
+TEMPLATE = "buy_before"  #@param ["buy_before", "daily_food", "daily_camera"]
+PARTS = "6,9"  #@param {type:"string"}
 ACTION = ""  #@param {type:"string"}
 DIALOGUE = ""  #@param {type:"string"}
 #@markdown **Hero。空欄は Look に書かない。**
@@ -119,6 +124,11 @@ os.environ["H3_STUDIO_HIGH_MEM"] = "1" if HIGH_MEM else "0"
 os.environ["H3_STUDIO_FINISH"] = "1" if FINISH else "0"
 os.environ["H3_STUDIO_TURBO"] = "1" if TURBO else "0"
 os.environ["H3_STUDIO_DURATION"] = DURATION
+os.environ["H3_STUDIO_FAST_SECONDS"] = FAST_SECONDS
+os.environ["H3_STUDIO_WITH_ACTION"] = "1" if WITH_ACTION else "0"
+os.environ["H3_STUDIO_WITH_COMBAT"] = "1" if WITH_COMBAT else "0"
+os.environ["H3_STUDIO_TEMPLATE"] = TEMPLATE
+os.environ["H3_STUDIO_PARTS"] = PARTS
 os.environ["H3_STUDIO_ACTION"] = ACTION
 os.environ["H3_STUDIO_DIALOGUE"] = DIALOGUE
 os.environ["H3_STUDIO_HERO_SHEET"] = HERO_SHEET
@@ -161,8 +171,13 @@ runtime が api で Combat / Swap / real を選ぶと止まる。
 
 {lines}
 
-Combat / Swap は Turbo を切る。本体は Comfy High-Mem。
-Weapon / GunFu / Continuity は無い。orbit の LoRA ファイル名は未確定。
+`fast_motion` はスピード LoRA（Turbo 8step、steps 9、video shift 6）。アクション 0.6 とコンバット 0.7 はチェックで足す。格闘の `prfight2` は `combat_motion` だけ。
+キャラは Hero の項目と `swap_character`。場所は Hero / Enemy の place。空欄は Look に出ない。シーンは `text_scene`。
+`join` は 6 秒と 9 秒を足して 15 秒以上にする。1 本の 15 秒生成はしない。ffmpeg は実行しない。
+`affi_template` は既存のバズ型台本を指す。台本は書き換えない。
+Combat の格闘と Swap は Turbo を切る。本体は Comfy High-Mem。
+Weapon / GunFu / Continuity は無い。orbit の LoRA ファイル名は未確定。アダルト用ノートはこのブランチに無い。
+生成ノートは `h3-runner/minimax_h3_still.ipynb`。
 
 下の2つ目のコードセルは `text_scene` を7本書く。公式 Hailuo の T2VA。LoRA なし。Combat も charswap も切る。各本6秒、16:9、768P、24fps、1ショット。ポスターは静止画。顔固定はこの7本に載せない。生成ボタンは押さない。
 並び: `hana-gate`、`host-live`、`hana-cart`、`hana-shelf`、`host-drop`、`hana-box`、`hana-exit`。
