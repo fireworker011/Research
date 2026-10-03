@@ -328,7 +328,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'EPISODE = "霞東フロア あさ（迷ったらこれ）"' in src
     assert "病棟出口" in src
     assert "番台ショート（25秒）" in src
-    assert 'BRANCH = "cursor/h3-hospital-ward-34e4"' in src
+    assert 'BRANCH = "cursor/rehearsal-room-adult-d736"' in src
+    assert "稽古室" in src
     assert 'CivitaiのAPIキー = ""' in src
     assert 'os.environ["CIVITAI_API_TOKEN"] = _civitai' in src
     assert "619ea878c0bf2491f6cedd625329c5b3" not in src
@@ -387,7 +388,8 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "619ea878c0bf2491f6cedd625329c5b3" not in md
     assert "CivitaiのAPIキー" in md
-    assert "cursor/h3-hospital-ward-34e4" in md
+    assert "cursor/rehearsal-room-adult-d736" in md
+    assert "rehearsal-room-adult" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
@@ -3813,7 +3815,9 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert "話" in picked
     assert ui_default("episode") == "霞東フロア あさ（迷ったらこれ）"
     assert "病棟出口" in ui_choices("episode")
+    assert "稽古室" in ui_choices("episode")
     assert canonical_episode("病棟出口") == "hospital-exit-adult"
+    assert canonical_episode("稽古室") == "rehearsal-room-adult"
     assert canonical_episode("霞東フロア あさ（迷ったらこれ）") == "kasumi-late-desk-adult"
     assert ui_default("scene") == "全体に従う（迷ったらこれ）"
     assert "□誘う・四つん這い股広げ" in ui_choices("scene")

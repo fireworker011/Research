@@ -1168,6 +1168,11 @@ EPISODE_MODES: dict[str, dict[str, Any]] = {
         "choice_ja": "病棟出口",
         "when_ja": "感染者の病棟から出口へ。5番が全体の既定。シーンごとで誘う・受け入れる・回避を上書き",
     },
+    "rehearsal-room-adult": {
+        "label_ja": "稽古室",
+        "choice_ja": "稽古室",
+        "when_ja": "16:9 の 01 と 04。5番以降の病棟オプションは無視",
+    },
     "bandai-district-short": {
         "label_ja": "番台ショート",
         "choice_ja": "番台ショート（25秒）",
@@ -1188,6 +1193,8 @@ EPISODE_ALIASES: dict[str, str] = _label_aliases(
         "kasumi": "kasumi-late-desk-adult",
         "病棟": "hospital-exit-adult",
         "hospital": "hospital-exit-adult",
+        "稽古室": "rehearsal-room-adult",
+        "rehearsal": "rehearsal-room-adult",
         "番台短": "bandai-district-short",
         "番台": "bandai-district",
     },
