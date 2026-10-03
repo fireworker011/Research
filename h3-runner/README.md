@@ -68,7 +68,7 @@ AdaLN の入力幅が 8 の safetensors（Pruned 学習）は読む前に拒否�
 
 ノート: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-sfw-colab-6dc5/h3-runner/minimax_h3_still.ipynb
 
-Drive は **fireworker06@gmail.com** でマウントする。重みは `マイドライブ/h3-weights/MiniMax-H3`。LoRA は `マイドライブ/h3-weights/loras/`。完成 mp4 は `マイドライブ/h3-runner/output/orbis01.mp4`。
+Drive のアカウントは毎回選ぶ。ノートの Drive セルに、その回のマイドライブの中のフォルダ名を書く。既定は重み `h3-weights`、完成 mp4 `h3-runner/output`。前回のマウントは次の VM に残らない。
 
 [MiniMaxAI/MiniMax-H3](https://huggingface.co/MiniMaxAI/MiniMax-H3) のライセンスを自分のアカウントで開く。401 のときだけ Colab のシークレット `HF_TOKEN` を入れる。ノートは値を表示しない。
 

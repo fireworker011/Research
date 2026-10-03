@@ -91,6 +91,7 @@ def detect_host_ram_gb() -> float:
 
 
 def default_cache_root() -> Path:
+    """Weight root for this run. Colab sets ``H3_HF_CACHE`` after the Drive mount."""
     raw = os.environ.get("H3_HF_CACHE")
     if raw:
         return Path(raw)
@@ -145,7 +146,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--cache-dir",
         type=Path,
-        help="weight root. Colab uses /content/drive/MyDrive/h3-weights",
+        help="weight root for this run. The notebook sets H3_HF_CACHE from the Drive mounted this time.",
     )
     parser.add_argument(
         "--prepare-weights",
