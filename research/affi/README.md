@@ -2,15 +2,17 @@
 
 正本は `research/affi/commonalities.yaml`（schema `affi-commonalities/v1`）。
 
-ジャンルは `beauty_skincare`（美容スキンケア）、`pet_food`（ペットフード）、`pet_camera`（見守りカメラ）。プラットフォームは `youtube` / `tiktok` / `instagram`。9セルすべてを置く。無い調査はキーを消さず、値を `不明` にする。件数を 50 に繰り上げない。
+ジャンルは `beauty_skincare`（美容スキンケア）、`pet_food`（ペットフード）、`pet_camera`（見守りカメラ）。プラットフォームは `youtube` / `tiktok` / `instagram`。9セルすべてを置く。無い項目はキーを消さず、値を `不明` にする。件数を 50 に繰り上げない。少ない件数も、その数のまま入れる。
 
-`pattern_id` が `introduce` / `buy_before` / `missing_on_camera` のときだけ、2026-10-03 の run01〜03 を台本にする。それ以外は台本を作らない。
+2026-10-03 の調査は `2026-10-03-youtube.md`（司令部）、`2026-10-03-tiktok.md` と `2026-10-03-instagram.md`（Researchy）。ペットのレポートはフードとカメラを分けていないので、`pet_food` と `pet_camera` は同じペット全体の値。説明文からの分類はセル内に「推定」と書いてある。
+
+`pattern_id` が `introduce` / `buy_before` / `missing_on_camera` のときだけ、2026-10-03 の run01〜03 を台本にする。この調査はその3つの型を測っていないので、9セルとも `pattern_id` は `不明`。台本は作らない。
 
 2026-09-29 のチャンネル調査は正本ではない。YouTube のみ、成功・直接は 18、TikTok は 0、Instagram は未測定。
 
 ## コマンド
 
-共通点が `不明` のあいだは inbox に入らない。
+`pattern_id` が `不明` のあいだは inbox に入らない。
 
 ```bash
 python -m minimaxh3.affi plan --product kanetora --commonalities research/affi/commonalities.yaml

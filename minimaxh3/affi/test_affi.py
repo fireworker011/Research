@@ -46,16 +46,25 @@ def test_repo_refs_resolve_without_a_new_face() -> None:
     assert sakura.name in {"sakura-ref.jpg", "sakura_916.jpg"}
 
 
-def test_blank_report_stays_unknown_and_does_not_enqueue(tmp_path: Path) -> None:
+def test_measured_counts_stay_small_and_do_not_enqueue(tmp_path: Path) -> None:
     doc = load_commonalities(BLANK)
-    assert all(cell["pattern_id"] == "不明" for cell in doc["cells"])
-    assert all(cell["growing_n"] == "不明" for cell in doc["cells"])
     assert len(doc["cells"]) == 9
+    assert all(cell["pattern_id"] == "不明" for cell in doc["cells"])
+    by_key = {(cell["genre"], cell["platform"]): cell for cell in doc["cells"]}
+    assert by_key[("beauty_skincare", "youtube")]["growing_n"] == 38
+    assert by_key[("beauty_skincare", "youtube")]["struggling_n"] == 11
+    assert by_key[("pet_food", "youtube")]["growing_n"] == 189
+    assert by_key[("pet_food", "youtube")]["struggling_n"] == 4
+    assert by_key[("pet_camera", "youtube")]["growing_n"] == by_key[("pet_food", "youtube")]["growing_n"]
+    assert by_key[("pet_camera", "youtube")]["struggling_n"] == by_key[("pet_food", "youtube")]["struggling_n"]
+    assert "ペット全体の値" in by_key[("pet_food", "tiktok")]["certainty"]
+    assert by_key[("beauty_skincare", "tiktok")]["struggling_n"] == 7
+    assert by_key[("beauty_skincare", "instagram")]["duration_s"].startswith("不明")
     refs = _refs(tmp_path)
     plan = plan_one(BLANK, "kanetora", "youtube", ref_dir=refs, extra_roots=[])
     assert plan["verdict"] == "直す"
     assert plan["reason"] == "共通点が不明"
-    assert plan["growing_n"] == "不明"
+    assert plan["growing_n"] == 189
     result = run_batch(BLANK, "all", "youtube", 3, tmp_path / "drive", ref_dir=refs, extra_roots=[])
     assert result["inbox"] is None
     assert not list((tmp_path / "drive" / "inbox").glob("*")) if (tmp_path / "drive" / "inbox").exists() else True
