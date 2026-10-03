@@ -1,0 +1,115 @@
+# 共通点レポートの正本。司令部は調査が終わったらこのファイルを上書きする。
+# 50に届かないセルは件数を埋めず「不明」のままにする。
+# 2026-09-29 の channels 調査は正本ではない（YouTubeのみ、成功・直接は18、TikTokは0、Instagramは未測定）。
+schema: affi-commonalities/v1
+measured_on: "不明"
+source: "不明"
+note: "ジャンルを1本の中で混ぜない。pattern_id が 不明 のセルからは台本を作らない。"
+genres:
+  - beauty_skincare
+  - pet_food
+  - pet_camera
+platforms:
+  - youtube
+  - tiktok
+  - instagram
+cells:
+  - genre: beauty_skincare
+    platform: youtube
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: beauty_skincare
+    platform: tiktok
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: beauty_skincare
+    platform: instagram
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_food
+    platform: youtube
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_food
+    platform: tiktok
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_food
+    platform: instagram
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_camera
+    platform: youtube
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_camera
+    platform: tiktok
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"
+  - genre: pet_camera
+    platform: instagram
+    growing_n: "不明"
+    struggling_n: "不明"
+    hook_type: "不明"
+    duration_s: "不明"
+    caption_placement: "不明"
+    lead: "不明"
+    product_show: "不明"
+    do_not: ["不明"]
+    pattern_id: "不明"

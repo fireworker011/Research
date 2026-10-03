@@ -1,0 +1,17 @@
+# テスト用。件数は不明のまま。YouTube の pattern_id だけ run01〜03 を指す。
+schema: affi-commonalities/v1
+measured_on: "不明"
+source: "不明"
+note: "50件の比較はまだ無い。型の選択だけをテストする。"
+genres: [beauty_skincare, pet_food, pet_camera]
+platforms: [youtube, tiktok, instagram]
+cells:
+  - {genre: beauty_skincare, platform: youtube, growing_n: "不明", struggling_n: "不明", hook_type: "買う前に", duration_s: 15, caption_placement: top, lead: sakura, product_show: "無香料のボトル。塗らない。", do_not: ["治る", "美白"], pattern_id: buy_before}
+  - {genre: beauty_skincare, platform: tiktok, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
+  - {genre: beauty_skincare, platform: instagram, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
+  - {genre: pet_food, platform: youtube, growing_n: "不明", struggling_n: "不明", hook_type: "紹介", duration_s: 15, caption_placement: top, lead: dog, product_show: "食べさせない。原材料の先頭だけ。", do_not: ["食べた", "治る"], pattern_id: introduce}
+  - {genre: pet_food, platform: tiktok, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
+  - {genre: pet_food, platform: instagram, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
+  - {genre: pet_camera, platform: youtube, growing_n: "不明", struggling_n: "不明", hook_type: "映ってない", duration_s: 15, caption_placement: top, lead: dog, product_show: "回して見つける。結果の言い切りはしない。", do_not: ["死角ゼロ", "おやつ"], pattern_id: missing_on_camera}
+  - {genre: pet_camera, platform: tiktok, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
+  - {genre: pet_camera, platform: instagram, growing_n: "不明", struggling_n: "不明", hook_type: "不明", duration_s: "不明", caption_placement: "不明", lead: "不明", product_show: "不明", do_not: ["不明"], pattern_id: "不明"}
