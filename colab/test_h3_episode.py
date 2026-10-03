@@ -3149,6 +3149,16 @@ def test_hospital_gin_tsuno_optional_events():
     assert "travels into aya's anus" in invite_meet["action"].lower()
     assert "aya stops and tsuno stops" in invite_meet["action"].lower()
     assert invite_meet["voices"][0]["line"] == "んおおおおぉー"
+    invite_in = next(b for b in invite["beats"] if b["id"] == "04-tsuno-in")
+    invite_peak = next(b for b in invite["beats"] if b["id"] == "04-tsuno-peak")
+    assert "balls of both feet" in invite_in["action"].lower()
+    assert "travels into the anus" in invite_in["action"].lower()
+    assert "palms stay on the grey wall" in invite_in["action"].lower()
+    assert extra_lora_entries(invite_in)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(invite_in)[1] == ("anuspussy", 0.4)
+    assert "lies on one side" not in invite_peak["action"].lower()
+    assert "buried in the anus" in invite_peak["action"].lower()
+    assert next(b for b in invite["beats"] if b["id"] == "04-tsuno-walk")["cast"] == ["aya"]
     assert validate_episode(stand, root=HOSPITAL_DIR) == []
     assert validate_episode(invite, root=HOSPITAL_DIR) == []
 
@@ -3170,9 +3180,15 @@ def test_hospital_gin_tsuno_optional_events():
     assert "exactly four long fingers" in anal_meet["action"].lower()
     assert "one large single eye" in anal_meet["action"].lower()
     assert "travels into the anus" in anal_in["action"].lower()
-    assert "pussy" not in anal_in["action"].lower()
-    assert "pussy" not in anal_peak["action"].lower()
-    assert "white goo fills the anus" in anal_peak["action"].lower()
+    assert "chest and cheek" in anal_in["action"].lower()
+    assert "open wide" in anal_in["action"].lower()
+    assert "closed slit" in anal_in["action"].lower()
+    assert "into the pussy" not in anal_in["action"].lower()
+    assert "into the pussy" not in anal_peak["action"].lower()
+    assert "lies on one side" not in anal_peak["action"].lower()
+    assert extra_lora_entries(anal_in)[0] == ("siderear", 0.8)
+    assert extra_lora_entries(anal_in)[1] == ("anuspussy", 0.4)
+    assert "overflows" in anal_peak["action"].lower()
     _assert_insertion_direction(anal_in["action"], build_beat_prompt(anal, anal_in))
     nelson = prepare_episode(raw, tsuno_override="フルネルソン")
     nel_in = next(b for b in nelson["beats"] if b["id"] == "04-tsuno-in")
@@ -6033,7 +6049,7 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert extra_lora_entries(next(b for b in tsuno["beats"] if b["id"] == "04-tsuno-in"))[0] == ("siderear", 0.8)
     assert "siderear" not in extra_keys(next(b for b in tsuno["beats"] if b["id"] == "04-tsuno-meet"))
     anal = prepare_episode(raw, tsuno_override="後ろアナル")
-    assert "siderear" not in extra_keys(next(b for b in anal["beats"] if b["id"] == "04-tsuno-in"))
+    assert extra_lora_entries(next(b for b in anal["beats"] if b["id"] == "04-tsuno-in"))[0] == ("siderear", 0.8)
     dog = prepare_episode(raw, dog_override="invite_oral")
     assert "siderear" not in extra_keys(next(b for b in dog["beats"] if b["id"] == "04-dog-in"))
 
