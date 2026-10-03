@@ -269,9 +269,9 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 ## 正常位と後背位の挿入
 
-四つん這いと壁立ちバック、灰色の誘う後背、角の立ちバック（膣の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_v2.safetensors`。Civitai 2974434、version 3371009、fileId 3259145。カードの推奨はアニメ静止画で 0.9–1.2。参照動画は 1.0 で絵になる。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
+四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_v2.safetensors`。Civitai 2974434、version 3371009、fileId 3259145。カードの推奨はアニメ静止画で 0.9–1.2。参照動画は 1.0 で絵になる。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
 
-四つん這いの in / peak と、膣の立ちバックの in / peak（壁立ちバックと角の立ちバック）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は画面左から一歩ずつ入り、右手で亀頭を肛門へ運び、手を離してから腰を一度前へ。根元で HOLD。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）は膣。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭をマンコへ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
+四つん這いの in / peak と、壁立ちバックの in / peak（角の立ちバックも含む）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は画面左から一歩ずつ入り、右手で亀頭を肛門へ運び、手を離してから腰を一度前へ。根元で HOLD。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）の映像は膣。台本の壁立ちは肛門。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭を肛門へ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。肛門は埋まったまま。マンコは下の閉じた割れ目。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
 
 灰色の誘う後背は、これまでどおり `SIDE-REAR view. The frame holds a clear view of the shaft where it meets the pussy.` 歩き、顔射、キス、騎乗、M字、角の後ろアナル、ネルソン、背後抱きの meet、寝室スプーン、犬、和式、洋式 pee、寝室 Jack-O にはこのカメラを足さない。古い `doggy`（fileId 3202556）は登録のまま、extra には積まない。action に `Doggy style` は書かない。
 
@@ -399,7 +399,7 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 チェックポイントは `eros-max` と `dasiwa`。既定は 10Eros Max。DaSiWa は Hybrid v2 int8、fileId 3203130。
 
-□誘うの壁立ちバックと四つん這い股広げは、横からのアナル。siderear 0.8、anuspussy 0.40。竿は肛門。終わりはあや一人。角・誘う立ちバックの `04-tsuno-in` `04-tsuno-peak` は壁立ちバックと同じ動き。角・後ろアナルの `04-tsuno-in` `04-tsuno-peak` は四つん這い股広げと同じ動き。どちらも終わりは角が消えてあや一人が歩く。
+□誘うの壁立ちバックと四つん這い股広げは、横からのアナル。siderear 0.8、anuspussy 0.40。竿は肛門。終わりはあや一人。角・誘う立ちバックの `04-tsuno-in` `04-tsuno-peak` は壁立ちバックと同じ動き。角・後ろアナルの `04-tsuno-in` `04-tsuno-peak` は四つん這い股広げと同じ動き。どちらも終わりは角が消えてあや一人が歩く。受け入れる立ちバックとフルネルソンの peak から、横寝の文は外した。横寝は病室の横挿入だけ。
 
 チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のとき、ノートは `H3_WEIGHTS_ONLY=1` を置き、Drive へ取って止まる。Comfy は起動しない。動画は A100 でもう一度 Run all。1MB を超える同名ファイルは取り直さない。
 

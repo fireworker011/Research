@@ -155,7 +155,8 @@ if torch.cuda.is_available():
     vram = torch.cuda.get_device_properties(0).total_memory / 1024 ** 3
     print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
     if vram < 20:
-        raise SystemExit("VRAM が足りません。A100 を選んでください。")
+        os.environ["H3_WEIGHTS_ONLY"] = "1"
+        print("VRAM が 20GiB 未満です。チェックポイントと LoRA だけ取ります。動画は A100 でもう一度 Run all。")
 else:
     os.environ["H3_WEIGHTS_ONLY"] = "1"
     print("GPU はオフです。チェックポイントと LoRA を Drive に取ります。動画は描きません。終わったらランタイムを A100 にして、もう一度 Run all。")

@@ -3130,6 +3130,7 @@ def test_hospital_gin_tsuno_optional_events():
     _assert_insertion_direction(join["action"], build_beat_prompt(stand, join))
     assert "overflows" in peak["action"].lower()
     assert "between the calves" in peak["action"].lower()
+    assert "lies on one side" not in peak["action"].lower()
     assert "lewd pleasure-drunk" in peak["action"].lower()
     assert "erect ashen-gray 24cm" in peak["action"].lower()
     assert out["cast"] == ["aya"]
@@ -3218,6 +3219,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "wide blissful smile" in nel_in["action"].lower()
     assert "travels into the anus" in nel_in["action"].lower()
     assert "pussy" not in nel_in["action"].lower()
+    assert "lies on one side" not in nel_peak["action"].lower()
     assert "hold still joined at the base" in nel_peak["action"].lower()
     assert "shaft leaves the anus" not in nel_peak["action"].lower()
     assert "lowers one of aya's feet" not in nel_peak["action"].lower()
