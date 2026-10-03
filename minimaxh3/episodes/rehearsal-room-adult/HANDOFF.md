@@ -1,0 +1,67 @@
+# 稽古室 rehearsal-room-adult
+
+新規はこのフォルダだけ。病棟と霞東のファイルは開いていない。
+
+生成は人間。生成ボタンは押さない。
+
+- `H3_EPISODE=rehearsal-room-adult`
+- `H3_EPISODE_FRESH=1`
+- Colab の話ドロップダウンには出ない。スラッグを手で入れる。`connect=cut` の 04 は、ドロップダウンが「前の最終フレームから」でも T2V のまま。
+- raw があり FRESH がオフなら作り直さない。この話の raw はまだ無い。
+
+## 画
+
+- 指定は 16:9、768P。
+- `episode.json` の `canvas` は `16:9`。プロンプト先頭は `Horizontal 16:9`。
+- エンジンの `canvas_for` は 16:9 を 1024×576 にする。`h3_t2v.py` の 768 級は 1344×768 だが、話の canvas からは選ばれない。このフォルダの外は変えていない。
+- 結合の `output_height` は 720（1280×720）。768 ではない。
+
+## 秒
+
+指示は「何秒で」と求めた。区切りの秒は渡されていない。下の 0–3、3–8、8–10、0–4、4–10 は 10 秒クリップの割りであり、計測値ではない。`clip_seconds` は 10。
+
+## 指示に無いので、こう読んだ
+
+- 年齢は無い。下限の 21。
+- 長さの cm は無い。書かない。
+- 02 と 03 は無い。作らない。
+- 01 に名前があるのは座った Nao だけ。先から根元まで被せる相手の軸が要る。04 で仰向けなのは Yui で、Kei が腰を下ろして BASE でつながる。軸は Yui の鼠径にある、と読んだ。Yui は 01 で立ったまま動かない。Kei は 01 に出ない。Nao は 04 に出ない。
+- Nao は木の椅子に座る。両足は床。全身と両足を残すため。
+- 「Yui は仰向け、足裏は肋骨の横」は、文の主が Yui なので、Yui の両足の裏が Yui の肋骨の横にある、と読んだ。Kei の両足は床に置き、動くのは腰だけ。
+- セリフは無い。かなの「んっ」だけ。01 は Nao、04 は Kei。口の寄りの `speech` にはせず、引きの `voices`。同じ文を action にも書くとプロンプトで二回読まれるので、action には置かず `voices` から入る。
+- 鏡は置かない。映り込みがもう一人に読まれる。
+
+## 01-seat-lips の補足
+
+- 動く部位: 座った Nao の顔と唇だけ。体は椅子に座ったまま。Yui は立ったまま動かない。
+- 0–3 秒: Nao の顔が、左端を向いた位置から Yui の方へ向き、唇が軸の先に届く。
+- 3–8 秒: Nao の唇が、先から根元まで一回被せる。
+- 8–10 秒: 唇は根元を被せたまま止まり、最後のフレームまでそこにある。
+- 16:9。カメラは腰の高さ、真横、PROFILE。10 秒のあいだ距離は固定。全身と両足。四人分の足ではなく、このカットは Nao と Yui の四本。
+- 秒: 10。`connect`: `t2v`（最初のカット）。
+- Look: Nao は 21 歳、短い黒いボブ、茶色の目、素肌、素足。Yui は 21 歳、長い暗褐色の髪、鼠径に立った軸、素肌、素足。
+- セリフ: Nao「んっ」。
+- LoRA: `blowjob` 0.8（`MM-H3_Blowjob_v3.safetensors`）。トリガー `bl0w_j0b` はエンジンが足す。action には書かない。`turbo` は外さない。
+
+## 04-lower-hold の補足
+
+- 既にそうなっている: Yui は仰向け（face up）。両膝は曲がっている。Yui の両足の裏は、Yui の肋骨の左右にある。軸は Yui の鼠径で立っている。Kei は Yui の上にいる。Kei の両足は床、Yui の腰の左右に一本ずつ。
+- 0–4 秒: Kei の腰が、上からまっすぐ、一回だけ下り、BASE でつながる。
+- 4–10 秒: `HOLD still joined at the BASE until the last frame`。
+- 16:9。カメラは腰の高さ、真横、PROFILE。10 秒のあいだ距離は固定。全身と両足。Yui と Kei の四本。
+- 秒: 10。`connect`: `cut`。
+- Look: Yui は 01 と同じ。Kei は 21 歳、肩までの黒い髪、鼠径は素のまま、素肌、素足。
+- セリフ: Kei「んっ」。
+- LoRA: `mystic` 0.5、`penis` 0.45、`synth` 0.4。`turbo`: false。`penis` のトリガー `PENISLORA` はエンジンが足す。`sideride` と `thrust` は積まない。前者のトリガーと後者のキャプションが、禁止した語をプロンプトへ足す。
+
+## カメラパック
+
+各カットの `camera_pack` は `none`。話の既定は side2d で、「Adults move LEFT or RIGHT」と横移動が入る。`none` なら beat.camera だけが残る。
+
+エンジンが action 拍へ足す文は残る。`nothing new enters the frame` と、`Do not invent a walk cycle`。loco を planted にすると、代わりに `A hip thrust is in place` が入り、04 の HOLD とぶつかる。planted にはしていない。
+
+## 禁止
+
+action、camera、place、lock、セリフに置かない: fellatio、kiss、sex、insert、騎乗、正常位、バック、フェラ。
+
+ラベル（行為名だけ）を action に置かない。action は上の補足の動き。

@@ -1,0 +1,141 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "rehearsal-room-adult",
+  "title": "稽古室",
+  "subtitle": "架空ゲーム",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "action",
+  "render": {
+    "preset": "balance",
+    "fallback_preset": "speed",
+    "lane": "erotic",
+    "checkpoint": "eros-max"
+  },
+  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism",
+  "violence": "none",
+  "world": {
+    "name": "Rehearsal Room",
+    "lock": "A fictional indoor rehearsal room. Plain walls, a wood floor, and daylight from one high window. The same room in every shot",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "nao": {
+      "name_ja": "なお",
+      "name_en": "Nao",
+      "age": 21,
+      "lock": "21-year-old adult with a short black bob, brown eyes, bare skin, and bare feet",
+      "voice": "quiet adult voice"
+    },
+    "yui": {
+      "name_ja": "ゆい",
+      "name_en": "Yui",
+      "age": 21,
+      "lock": "21-year-old adult with long dark-brown hair, brown eyes, an erect shaft on the groin, bare skin, and bare feet",
+      "voice": "low adult voice"
+    },
+    "kei": {
+      "name_ja": "けい",
+      "name_en": "Kei",
+      "age": 21,
+      "lock": "21-year-old adult with shoulder-length black hair, dark eyes, a bare groin, bare skin, and bare feet",
+      "voice": "breathy adult voice"
+    }
+  },
+  "homage": {
+    "borrowed": ["third-person game camera", "mission subtitle grammar"],
+    "never": ["street fighter", "gta"]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "稽古室",
+    "icons": ["一", "四"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "kicker": "舞台・人物・物語はオリジナル",
+    "end": true,
+    "end_seconds": 3.0,
+    "end_title": "稽古室",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル"
+    ]
+  },
+  "stitch": {
+    "transition": "cut",
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-seat-lips",
+      "source": "t2v",
+      "connect": "t2v",
+      "camera_pack": "none",
+      "trim": {"start": 0, "seconds": 10},
+      "cast": ["nao", "yui"],
+      "face_visible": false,
+      "props": [],
+      "place": "The fictional rehearsal room, wood floor, daylight from the high window, Nao seated at the left and Yui standing at the right",
+      "camera": "Horizontal 16:9. PROFILE side view at waist height for the whole 10 seconds. The camera holds. Camera distance stays fixed. Both adults stay full body, all four feet inside the frame, open floor past the feet",
+      "action": "Nao, already seated on a plain wooden chair at the left, keeps both bare feet on the wood floor for the whole 10 seconds. Yui already stands at the right with both bare feet on the wood floor and stays still for the whole 10 seconds. Yui's erect shaft is already in front of Nao's face. From 0 seconds to 3 seconds, Nao's face turns from the left edge to Yui until Nao's lips meet the tip. From 3 seconds to 8 seconds, Nao's lips travel once from that tip to the base and cover the shaft. From 8 seconds to 10 seconds, the lips stay covering the base and hold until the last frame. Both adults stay full body inside the frame, all four feet on the wood floor. Look that stays for this whole shot: Nao is a 21-year-old adult with a short black bob, brown eyes, bare skin, and bare feet. Yui is a 21-year-old adult with long dark-brown hair, an erect shaft on the groin, bare skin, and bare feet.",
+      "voices": [
+        {"who": "nao", "line": "んっ"}
+      ],
+      "extra_loras": [["blowjob", 0.8]],
+      "sfx": "Room tone and a quiet breath",
+      "music": "A low held bass note under the clip",
+      "hud": {
+        "visible": false,
+        "mission": "稽古を終える",
+        "mission_keyword": "稽古",
+        "hint": "",
+        "health": 1.0,
+        "stamina": 1.0,
+        "heat": 0,
+        "objective_bearing": 0,
+        "objective_distance": 0.4,
+        "icons_active": ["一"],
+        "complete": false
+      }
+    },
+    {
+      "id": "04-lower-hold",
+      "source": "t2v",
+      "connect": "cut",
+      "camera_pack": "none",
+      "turbo": false,
+      "trim": {"start": 0, "seconds": 10},
+      "cast": ["yui", "kei"],
+      "face_visible": false,
+      "props": [],
+      "place": "The same fictional rehearsal room, wood floor, daylight from the high window, Yui face up and Kei above",
+      "camera": "Horizontal 16:9. PROFILE side view at waist height for the whole 10 seconds. The camera holds. Camera distance stays fixed. Both adults stay full body, all four feet inside the frame, open floor past the feet",
+      "action": "Yui already lies face up on the wood floor, head toward the left, both knees bent, both soles already beside Yui's ribs, one sole on each side of the ribcage. Yui's erect shaft is already upright on the groin. Kei is already above Yui. Kei's left foot and right foot already rest on the wood floor, one on each side of Yui's hips, and those feet stay on those marks. From 0 seconds to 4 seconds, Kei's hips lower once, straight down, until the two adults are joined at the BASE. From 4 seconds to 10 seconds, HOLD still joined at the BASE until the last frame. Both adults stay full body inside the frame, all four feet inside the frame, for the whole 10 seconds. Look that stays for this whole shot: Yui is a 21-year-old adult with long dark-brown hair, an erect shaft on the groin, bare skin, and bare feet. Kei is a 21-year-old adult with shoulder-length black hair, a bare groin, bare skin, and bare feet.",
+      "voices": [
+        {"who": "kei", "line": "んっ"}
+      ],
+      "extra_loras": [["mystic", 0.5], ["penis", 0.45], ["synth", 0.4]],
+      "sfx": "Room tone and a quiet breath",
+      "music": "A low held bass note under the clip",
+      "hud": {
+        "visible": false,
+        "mission": "稽古を終える",
+        "mission_keyword": "稽古",
+        "hint": "",
+        "health": 1.0,
+        "stamina": 1.0,
+        "heat": 0,
+        "objective_bearing": 0,
+        "objective_distance": 0.2,
+        "icons_active": ["四"],
+        "complete": false
+      }
+    }
+  ]
+}
