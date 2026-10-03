@@ -30,8 +30,8 @@
 ---
 
 ## フック1行
-**あれ、カメラに犬が映ってない。**
-（0秒から、見守りカメラ映像風の誰もいないリビング。犬がいないことそのものを謎にして、答えを9sパートまで伏せる＝F1の「結果を伏せる」）
+**この子、ソファの陰からこっち見てた。**
+（0秒から、同じ犬が主役。カメラ本体は後半に小さく出す。商品の機能は6秒以降。手元は出さない。2026-10-03の共通点に合わせて直した。尺は15秒のまま。）
 
 ---
 
@@ -40,52 +40,52 @@
 
 | 秒 | 役割 | 台詞 | 字数 | 字/秒 | 字幕（2行・/ で改行） |
 |---|---|---|---|---|---|
-| 0.0-3.0 | フック | あれ、カメラに犬が映ってない。 | 13 | 4.33 | あれ？ / カメラに犬が映ってない |
-| 3.0-6.0 | 具体 | このカメラは、ぐるっと一周見渡せる。 | 16 | 5.33 | このカメラは / 360°見渡せる |
-| 6.0-10.0 | 具体 | 向きを変えたら、ソファの裏からこっち見てた。 | 20 | 5.00 | 向きを変えたら / ソファの裏から… |
-| 10.0-12.5 | 誘導 | 向きを変えれば、そこも見える。 | 13 | 5.20 | 向きを変えれば / そこも見える |
-| 12.5-15.0 | 誘導 | 紹介してるカメラは、プロフィールに。 | 16 | 6.40 | 紹介してるカメラは / プロフィールへ ▲ |
+| 0.0-3.0 | フック | この子、ソファの陰からこっち見てた。 | 16 | 5.33 | この子 / ソファの陰からこっち見てた |
+| 3.0-6.0 | 具体 | 顔だけ出して、止まってる。 | 11 | 3.67 | 顔だけ出して / 止まってる |
+| 6.0-10.0 | 具体 | 奥に小さなカメラが、ゆっくり向く。 | 15 | 3.75 | 奥に小さなカメラが / ゆっくり向く |
+| 10.0-12.5 | 誘導 | ぐるっと一周、見渡せる。 | 10 | 4.00 | ぐるっと一周 / 見渡せる |
+| 12.5-15.0 | 誘導 | 紹介してるのは、プロフィールに。 | 14 | 5.60 | 紹介してるのは / プロフィールへ ▲ |
 
 - 具体1つ＝「カメラが回って360°見渡せる」。出典: Furbo公式 商品ページ「Furboドッグカメラ 360°ビュー」（https://shopjp.furbo.com/products/furbo-dog-camera ＝ A8のリンク先 https://shopjp.furbo.com/ と同じドメイン）の『外出中も愛犬を360°見守り』と機能比較表の「カメラ単体：回転360°ビュー」。2026-10-03 09:56 JST 取得（`work03/src/`）。
-- 「360度」はTTSで長く読まれるので、台詞は「ぐるっと一周」、字幕は「360°」にした。
+- 「360度」はTTSで長く読まれるので、10秒以降の台詞は「ぐるっと一周」、字幕も「ぐるっと一周」。冒頭ではカメラを名前にしない。
 - アプリで向きを変えるのか、自動追尾で向くのかは台詞で言わない（自動追尾は比較表で「ライブビュー中」、録画ありの追尾はFurboシッター（有料）の機能なので、条件の説明が要る言い方を避けた）。
 - 字幕: 上部・白ボックス＋黒太字・差し色1語（0-3秒は「映ってない」、3-6秒は「360°」、6-10秒は「ソファの裏」）。右上に小さく「PR」を全尺。0-15秒の下に小さく『※AIで作ったイメージ映像です』（stock-04と同じ）。
 
 ### 時間ごとの絵
-- **6sパート（0.0-6.0秒・768x1344・犬なし）**: 0.0-3.0 見守りカメラ映像風（カラー・少し魚眼・高い棚から・固定）。昼のリビング、ラグと丸い犬用ベッドは空っぽ、窓からの光だけ。画面の右端にソファの背もたれが半分だけ切れて映っている → 3.0-6.0 実景の寄り。棚の上のロゴなしの白い丸いペットカメラ（ドーム型の頭）が、静かに右へ回っていく。小さなランプがほのかに光る
-- **9sパート（6.0-15.0秒・640x1152・犬あり）**: 6.0-10.0 見守りカメラ映像風・右を向いた画。ソファの横の、壁とソファのすき間。最初のコマから犬がソファの陰に伏せていて、顔だけ出してカメラを見上げている → デジタルズームでゆっくり寄る → 10.0-12.5 犬が立ち上がって、すき間からとことこ出てくる → 12.5-15.0 カメラの真下のラグまで来て、カメラを見上げたまま伏せて、しっぽをゆっくり2回振って止まる（**締めは犬のカメラ目線。サクラも、指で上を指す動きも出さない**）
+- **6sパート（0.0-6.0秒・768x1344・同じ犬）**: 0.0-3.0 同じ犬がソファと壁のすき間から顔を出して、こちらを見ている。カメラ本体は映さない。人の手も出さない → 3.0-6.0 同じ犬の顔の寄り。口を閉じて止まっている
+- **9sパート（6.0-15.0秒・640x1152・同じ犬）**: 6.0-10.0 同じ犬が手前の主役のまま、すき間から出てくる。奥の高い棚に、ロゴなしの白い丸いカメラが小さく映り、ゆっくり右を向く → 10.0-12.5 犬がラグに出て、カメラ本体は小さく奥のまま → 12.5-15.0 犬がカメラ目線で伏せて、しっぽをゆっくり2回振って止まる（**締めは犬。サクラも、指で上を指す動きも、手元も出さない**）
 
 ---
 
 ## 縦動画プロンプト
-共通: 9:16、FL2VA（最初のコマ＝静止画、I2VAの指示文）、画面の文字なし（字幕・PR・『AIで作ったイメージ映像です』は編集で入れる）、H3の声は捨ててAchernarを乗せる。LoRAは両パートとも FL2V Turbo 8step 1.0 だけ（大きな動きがないのでCombatは使わない＝BUNNYのクレジットは不要）。人は出さない（顔・手とも無し）。犬は stock.md §1 と同じ生成犬1匹で、犬が出る9sパートは最初のコマを必ず `dog-ref.jpg`（`/workspace/affi-stock-20260930/dog-ref.jpg`）から作る。6sパートは犬が出ないので参照なし。
+共通: 9:16、FL2VA（最初のコマ＝静止画、I2VAの指示文）、画面の文字なし（字幕・PR・『AIで作ったイメージ映像です』は編集で入れる）、H3の声は捨ててAchernarを乗せる。LoRAは両パートとも FL2V Turbo 8step 1.0 だけ（大きな動きがないのでCombatは使わない＝BUNNYのクレジットは不要）。人は出さない（顔・手とも無し）。犬は stock.md §1 と同じ1匹。6sも9sも最初のコマを `dog-ref.jpg` から作る。新しい犬は作らない。
 
 ### H3用プロンプト
-#### 6sパート（FL2VA・6.00秒・768x1344・311語）
-最初のコマの静止画（参照なし・犬も人も出さない）:
+#### 6sパート（FL2VA・6.00秒・768x1344・同じ犬）
+最初のコマの静止画（`dog-ref.jpg` を元に作る）:
 ```text
-Photoreal still, vertical 9:16, home pet-camera footage look: slightly fisheye, slightly soft and muted colors, viewed from a high shelf looking down. A quiet, empty living room in daytime with window light: a beige rug, an empty round grey dog bed, a low wooden table. At the far right edge of the frame, the back of a grey fabric sofa is cut off by the frame. No animals, no people, no text, no timestamp, no logos.
+Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Vertical 9:16, daytime living room, soft window light. The same dog lies in the narrow gap between a grey sofa and a white wall, head and chest large in frame, looking into the camera, mouth closed. No pet-camera device, no people, no hands, no text, no timestamp, no logos.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal vertical 9:16 pet camera short; no on-screen text, subtitles, captions, timestamps, camera UI, logos, brand marks, or watermarks appear at any point, and no person or human face appears at any point. The shot begins in the composition of <Picture 1>, a home pet-camera view from a high shelf, slightly fisheye with soft, muted colors: a quiet, empty living room in daylight with a beige rug, an empty round grey dog bed and a low wooden table, the back of a grey sofa cut off at the far right edge. Nothing moves except a thin curtain swaying gently in the window light and faint dust drifting in the sunbeam. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] あれ、カメラに犬が映ってない。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a clean, natural-color close-up at eye level of a white wooden shelf: a small round white pet camera with a dome-shaped head, completely free of any logo, label, or lettering, with one tiny soft light glowing on its front, slowly and smoothly rotates its head to the right on its base, a quarter turn, then stops. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] このカメラは、ぐるっと一周見渡せる。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal vertical 9:16 pet short; no on-screen text, subtitles, captions, timestamps, logos, brand marks, or watermarks appear at any point, and no person, no human face, and no hands appear at any point. The shot begins in the composition of <Picture 1>: the same medium-sized adult Japanese-style dog from <Picture 1>, with a short reddish-fawn coat, cream-white muzzle and chest, upright triangular ears, a tail curled over its back and a plain red collar, lies in the gap between a grey sofa and a white wall, head large in frame, looking straight into the camera, mouth closed. No camera device is visible. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] この子、ソファの陰からこっち見てた。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the same dog's face fills more of the frame, ears up, mouth closed, holding still. Still no camera device. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 顔だけ出して、止まってる。</d> while no lips are visible on screen.
 
-overall_soundscape: Quiet daytime living-room ambience with a faint ticking wall clock and distant birds outside, then a very soft, smooth mechanical whir as the small camera head turns.
+overall_soundscape: Quiet daytime living-room ambience and the dog's calm breathing.
 
-non_diegetic_music: A light, curious pizzicato-string motif at a slow-moderate tempo with soft marimba, pausing on a questioning note at 00:02.800 and continuing as the camera turns.
+non_diegetic_music: A light, curious pizzicato-string motif at a slow-moderate tempo with soft marimba, holding a gentle note at 00:03.000.
 ```
 #### 9sパート（FL2VA・9.00秒・640x1152・380語）
 最初のコマの静止画（`dog-ref.jpg` を元に作る）:
 ```text
-Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Vertical 9:16, home pet-camera footage look: slightly fisheye, slightly soft and muted colors, viewed from a high shelf looking down. The narrow gap between the side of a grey fabric sofa and a white wall in a daytime living room; the same dog lies in the shadow of the sofa with only its head and front paws out, looking up at the camera, mouth closed. A beige rug in the foreground. No people, no text, no timestamp, no logos.
+Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Vertical 9:16, daytime living room. The same dog stands large on a beige rug, just out of the gap beside a grey sofa, looking toward the lens. Far behind, small on a high white shelf, a plain round white dome camera with no logo. No people, no hands, no text, no timestamp, no logos.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal vertical 9:16 pet camera short; no on-screen text, subtitles, captions, timestamps, camera UI, logos, brand marks, or watermarks appear at any point, and no person or human face appears at any point. The shot begins in the composition of <Picture 1>, a home pet-camera view from a high shelf, slightly fisheye with soft, muted colors: in the narrow gap between a grey sofa and a white wall, the same medium-sized adult Japanese-style dog from <Picture 1>, with a short reddish-fawn coat, cream-white muzzle and chest, upright triangular ears, a tail curled over its back and a plain red collar, lies in the sofa's shadow with only its head and front paws out, looking straight up at the camera and blinking slowly. The camera pushes in with small amplitude at slow speed, like a digital zoom. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 向きを変えたら、ソファの裏からこっち見てた。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts back to a wider pet-camera view from the same high shelf: the dog stands up, steps out of the gap and trots calmly across the beige rug toward the bottom of the frame, ears up. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 向きを変えれば、そこも見える。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a closer high-angle pet-camera view straight down at the rug below the shelf: the dog lies down in the center, looks straight up into the lens and slowly wags its tail twice, then stays still, holding the pose until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるカメラは、プロフィールに。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal vertical 9:16 pet short; no on-screen text, subtitles, captions, timestamps, camera UI, logos, brand marks, or watermarks appear at any point, and no person, no human face, and no hands appear at any point. The shot begins in the composition of <Picture 1>: the same dog stands and steps out of the sofa gap onto a beige rug, still the largest subject. Far behind, small on a high white shelf, a round white pet camera with a dome-shaped head, free of any logo, label, or lettering, and one tiny soft light, slowly turns its head a little to the right. The filming camera stays on the dog. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 奥に小さなカメラが、ゆっくり向く。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the dog trots a few steps across the rug and pauses, ears up. The round white camera stays small in the background and stops turning. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] ぐるっと一周、見渡せる。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the dog lies down in the center of the rug, looks straight up into the lens and slowly wags its tail twice, then stays still. The device on the shelf remains small. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるのは、プロフィールに。</d> while no lips are visible on screen.
 
 overall_soundscape: Quiet daytime living-room ambience, the soft pad of paws on the rug, a light jingle of the collar tag and the dog's calm breathing.
 
@@ -95,15 +95,15 @@ non_diegetic_music: The same light pizzicato-string motif with soft marimba reso
 
 ### Imagine用（短い1本・9:16・10秒）
 ```text
-Vertical 9:16, 10 seconds, photoreal, home pet-camera footage look (slightly fisheye, soft muted colors, from a high shelf). Reference: dog-ref.jpg (keep the exact same dog). In a daytime living room, the same dog lies in the narrow gap between a grey sofa and a white wall with only its head out, looking up at the camera; slow digital-zoom push-in; the dog stands, trots out onto a beige rug below the camera, lies down, looks straight up into the lens and slowly wags its tail. No people, no treats, no text, no timestamp, no logos.
+Vertical 9:16, 10 seconds, photoreal. Reference: dog-ref.jpg (keep the exact same dog). The same dog is large in frame, lying in the gap between a grey sofa and a white wall and looking into the lens, then steps onto a beige rug and wags its tail. Only late, and small on a high shelf behind the dog, a plain white round camera turns a little. No people, no hands, no treats, no text, no timestamp, no logos.
 ```
 （9sパートの場面を1本にした差し替え用。セリフは入れない＝Achernarを後乗せ）
 
 ---
 
 ## タイトル
-`カメラに犬が映ってない…と思ったら。Furbo 360°ビュー #Shorts #ペットカメラ #犬のいる暮らし`
-- 商品名はタイトルだけ（動画内0回）。run01・02と同じ扱い。
+`この子、ソファの陰からこっち見てた #Shorts #犬のいる暮らし`
+- 商品名はタイトルにも動画内にも入れない。カメラの機能は6秒以降。概要欄の事実は残す。
 
 ## 概要欄
 ```text
@@ -135,7 +135,7 @@ Vertical 9:16, 10 seconds, photoreal, home pet-camera footage look (slightly fis
 
 | 項目 | 点 | 理由 |
 |---|---|---|
-| 最初3秒 | 15 | 「映ってない」で答えを知りたくさせる。ただし0秒の画が「誰もいない部屋」で、ペットの顔が出ない（弱くなりうる）。直近で同じ型が伸びた例は未確認 |
+| 最初3秒 | 15 | 0秒から同じ犬。カメラ本体は後半に小さく出す。直近で同じ型が伸びた例は未確認 |
 | テンポ | 16 | 切り替えは3.0／6.0／10.0／12.5秒。謎→カメラが回る→見つかる→出てくる、と1本の流れで、間延びしにくい。12.5-15秒は6.40字/秒で上限に近い |
 | 見やすさ | 15 | 字幕は2行・短い・上部固定、画面の文字なし。カメラ映像風の少しぼやけた画で、犬がソファの陰にいるのが小さい画面で分かるかは不明（動画は未生成） |
 | プロフィール誘導 | 15 | 「向きを変えれば、そこも見える→紹介してるカメラはプロフィールに」とつながる。ただしリンク先トップに360°の説明が見当たらない点が誘導の弱み |

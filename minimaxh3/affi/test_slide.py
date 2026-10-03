@@ -44,7 +44,10 @@ def test_eight_images_cover_cover_to_close() -> None:
         assert len(item["caption"]) <= 2
         assert item["caption"]
         assert "9:16" in item["imagine"]
-        assert "no people" in item["imagine"].lower()
+        assert "sakura-ref.jpg" in item["imagine"]
+        assert "no other people" in item["imagine"].lower()
+        assert "no hands" in item["imagine"].lower()
+        assert "no new face" in item["imagine"].lower()
 
 
 def test_answer_is_only_at_the_end_of_the_post() -> None:

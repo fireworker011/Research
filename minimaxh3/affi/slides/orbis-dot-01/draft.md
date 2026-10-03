@@ -5,6 +5,7 @@
 ## 割り当て
 8枚。並びは表紙、問題提起、確認できた5つ、締め。
 1枚目は表紙、2枚目は問題提起、3枚目から7枚目が5つ、8枚目は締め。
+語り手はサクラ。顔は既存の sakura-ref.jpg だけ。新しい顔は作らない。手元だけの絵は使わない。
 5つは、無着色、アルコールフリー、パラベンフリー、朝晩とメイク前、使う量。出典はメーカー公式ショップのよくある質問（2026年10月3日）。
 使う量は、ウォッシュ1cm程度、ローションは手のひらに100円硬貨程度、モイスチャライザーはパール1～2粒程度。
 無油分はシリーズのよくある質問には無い。着地URLも不明なので使わない。
@@ -15,56 +16,56 @@
 字幕: 香りが好きな人ほど / 買う前に見て
 この枚に載せる点: なし
 ```text
-Photoreal still, vertical 9:16, a quiet room at dusk, warm lamp light, softly blurred beige wall. On a light wooden table: a small lit candle in a clear unlabeled glass jar, and a slim frosted-white bottle with a plain white cap and no logo, no label, and no letters. No people, no hands, no faces, no skin, no text, no watermark.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Medium close-up from the chest up, vertical 9:16, a quiet room at dusk, warm lamp light, softly blurred beige wall. Sakura in a plain oatmeal knit sweater looks into the camera with a calm closed-lip smile. A small lit candle in a clear unlabeled jar and a slim frosted-white unbranded bottle sit small on the table behind her. Hands out of frame. No other people, no hands, no new face, no text, no watermark.
 ```
 
 ### 2. 02.png（問題提起）
 字幕: 香りで選びたい人は / 先に見て
 この枚に載せる点: なし
 ```text
-Photoreal still, vertical 9:16, the same dusk room and wooden table. The unlabeled candle is closer to the camera and still lit. The same frosted-white unbranded bottle sits just behind it. No people, no hands, no faces, no skin, no text, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. The same chest-up framing, vertical 9:16, dusk room. Sakura looks into the camera with slightly lowered brows and a closed-lip smile. The unlabeled candle and the frosted-white unbranded bottle stay small behind her. Hands out of frame. No other people, no hands, no new face, no text, no logo.
 ```
 
 ### 3. 03.png（本文）
 字幕: 無着色
 この枚に載せる点: 無着色
 ```text
-Photoreal still, vertical 9:16, high angle on the same light wooden table. Only the slim frosted-white unbranded bottle, standing, cap on. No candle, no people, no hands, no faces, no skin, no text, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16, soft daylight. Sakura looks into the camera, closed-lip smile. The slim frosted-white unbranded bottle stands small beside her, cap on. Hands out of frame. No other people, no hands, no new face, no text, no logo.
 ```
 
 ### 4. 04.png（本文）
 字幕: アルコールフリー
 この枚に載せる点: アルコールフリー
 ```text
-Photoreal still, vertical 9:16, the same unbranded frosted-white bottle beside a clear glass of water on a white tray. The bottle is closed. No people, no hands, no faces, no skin, no text, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16. Sakura looks into the camera. Small behind her, the closed unbranded frosted-white bottle beside a clear glass of water. Hands out of frame. No other people, no hands, no new face, no text, no logo.
 ```
 
 ### 5. 05.png（本文）
 字幕: パラベンフリー
 この枚に載せる点: パラベンフリー
 ```text
-Photoreal still, vertical 9:16, the same closed unbranded bottle on a white tray, seen from a low three-quarter angle. Soft daylight from a window. No people, no hands, no faces, no skin, no text, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16, soft window light. Sakura looks into the camera. The closed unbranded bottle is small on a white tray behind her. Hands out of frame. No other people, no hands, no new face, no text, no logo.
 ```
 
 ### 6. 06.png（本文）
 字幕: 朝晩使える / メイク前にも
 この枚に載せる点: 朝晩使える、メイク前にも
 ```text
-Photoreal still, vertical 9:16, the same closed unbranded frosted-white bottle on a pale windowsill in quiet morning light. The window is out of focus. No clock, no people, no hands, no faces, no skin, no text, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16, quiet morning light. Sakura looks into the camera. The closed unbranded bottle is small on a pale windowsill behind her. The window is out of focus. No clock. Hands out of frame. No other people, no hands, no new face, no text, no logo.
 ```
 
 ### 7. 07.png（本文）
 字幕: ウォッシュ1cm、ローションは硬貨 / モイスチャライザーはパール1～2粒
 この枚に載せる点: ウォッシュ1cm程度、ローションは100円硬貨程度、モイスチャライザーはパール1～2粒程度
 ```text
-Photoreal still, vertical 9:16, the same closed unbranded bottle on a white tray next to a plain metal coin and two small clear gel droplets. No numbers, no letters, no people, no hands, no faces, no skin, no logo.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16. Sakura looks into the camera. Small on a white tray behind her: the closed unbranded bottle, a plain metal coin, and two small clear gel droplets. No numbers, no letters. Hands out of frame. No other people, no hands, no new face, no logo.
 ```
 
 ### 8. 08.png（締め）
 字幕: 紹介してるのは / プロフィールへ
 この枚に載せる点: なし
 ```text
-Photoreal still, vertical 9:16, the same unbranded frosted-white bottle on a white tray, lower third of the frame. The upper half of the frame is only the softly blurred beige wall. No pointing hand, no people, no faces, no skin, no text, no logo, no arrow.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Chest-up, vertical 9:16, softly blurred beige wall. Sakura looks into the camera with a calm closed-lip smile and does not point. The unbranded bottle is small in the lower background. Hands out of frame. No other people, no hands, no new face, no text, no logo, no arrow.
 ```
 
 ## 秒数
@@ -85,7 +86,7 @@ Photoreal still, vertical 9:16, the same unbranded frosted-white bottle on a whi
 
 #PR #スキンケア #化粧水
 
-画像はAIで生成しています。ボトルはAIで作ったイメージで、実際の商品やパッケージとは異なります。人物は出していません。
+画像はAIで生成しています。ボトルはAIで作ったイメージで、実際の商品やパッケージとは異なります。人物は既存のキャラクター（サクラ）だけです。新しい顔は作っていません。
 
 一番の答え: このシリーズは無香料です。出典はメーカー公式ショップのよくある質問（2026年10月3日時点）。
 ```

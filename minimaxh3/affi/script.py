@@ -19,7 +19,7 @@ PATTERNS: dict[str, dict[str, Any]] = {
         "genre": "pet_food",
         "product": "kanetora",
         "parts": (
-            {"key": "6s", "duration_s": 6.0, "mode": "t2v", "ref": "", "template_canvas": "768x1344"},
+            {"key": "6s", "duration_s": 6.0, "mode": "i2v", "ref": "dog", "template_canvas": "768x1344"},
             {"key": "9s", "duration_s": 9.0, "mode": "i2v", "ref": "dog", "template_canvas": "640x1152"},
         ),
     },
@@ -37,7 +37,7 @@ PATTERNS: dict[str, dict[str, Any]] = {
         "genre": "pet_camera",
         "product": "furbo",
         "parts": (
-            {"key": "6s", "duration_s": 6.0, "mode": "t2v", "ref": "", "template_canvas": "768x1344"},
+            {"key": "6s", "duration_s": 6.0, "mode": "i2v", "ref": "dog", "template_canvas": "768x1344"},
             {"key": "9s", "duration_s": 9.0, "mode": "i2v", "ref": "dog", "template_canvas": "640x1152"},
         ),
     },

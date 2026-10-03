@@ -36,7 +36,7 @@
 
 ## フック1行
 **香りが好きな人ほど、買う前に見て。**
-（0秒から、サクラがアロマキャンドルの香りを楽しむ寄り。「買う前に」で型を出し、「香りが好きな人」と対象を名指しする＝stock-01の『〇〇な人、全員これ見て』の形を、効能なしで使った）
+（0秒から、サクラ本人が語り手。顔は sakura-ref.jpg だけ。新しい顔は作らない。手元だけのカットは無い。2026-10-03の共通点に合わせて直した。尺は15秒のまま。）
 
 ---
 
@@ -57,8 +57,8 @@
 - 字幕: 上部・白ボックス＋黒太字・差し色1語（0-3秒は「香り」、3-6秒は「無香料」、10-12.5秒は「うるおい」）。右上に小さく「PR」を全尺。字幕と台詞の差は12.5-15.0秒だけ（行き先をはっきりさせる）。
 
 ### 時間ごとの絵
-- **6sパート（0.0-6.0秒・768x1344・サクラあり）**: 0.0-3.0 夕方の部屋。サクラ（オートミール色のニット）が胸の高さで火のついた小さなアロマキャンドル（ガラス容器・ラベルなし）を両手で持ち、目を閉じて香りを楽しむ → 3.0-6.0 テーブルの手元アップ（顔は映らない）。手がキャンドルの横にロゴなしのすりガラスのボトルを置き、金属のふた（スナッファー）をキャンドルにかぶせる。炎が消えて、細い煙がひとすじ
-- **9sパート（6.0-15.0秒・640x1152・サクラあり）**: 6.0-10.0 同じ部屋。サクラがボトルを胸の高さで持ち、少し眉を下げて、申し訳なさそうに小さく首をかしげ、肩をすくめる（口は閉じたまま） → 10.0-12.5 白いトレーの上、ボトルの横に水の入ったグラス。グラスの水面に小さな波紋が広がる（肌のアップ・塗る場面は出さない） → 12.5-15.0 正面でサクラがほほえみ、人差し指で画面の上を指して止まる
+- **6sパート（0.0-6.0秒・768x1344・サクラの顔）**: 0.0-3.0 夕方の部屋。サクラ（オートミール色のニット）が胸から上でカメラを見て話す。火のついた小さなアロマキャンドルは後ろのテーブルで小さく、手は枠の外 → 3.0-6.0 同じ顔のまま。眉を少し下げて首をかしげる。手元アップには切らない。ボトルは後ろのテーブルに小さく立っている
+- **9sパート（6.0-15.0秒・640x1152・サクラの顔）**: 6.0-10.0 同じ顔。申し訳なさそうに小さく首をかしげる。ボトルは持たない。手は枠の外 → 10.0-12.5 同じ顔のまま。奥に水の入ったグラスが小さく見える。手は出さない。肌のアップも塗る場面も出さない → 12.5-15.0 正面でサクラがほほえんで止まる。指さしはしない
 
 ---
 
@@ -69,30 +69,30 @@
 #### 6sパート（FL2VA・6.00秒・768x1344・335語）
 最初のコマの静止画（`sakura-ref.jpg` を元に作る）:
 ```text
-Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Medium close-up from the chest up, vertical 9:16, a cozy room at dusk with warm lamp light and a softly blurred beige wall. Sakura wears a plain oatmeal-colored crew-neck knit sweater and holds a small lit candle in a clear, unlabeled glass jar at chest height with both hands, eyes gently closed, a calm, content closed-lip smile. Shallow depth of field. No other people, no text, no letters, no logos, no labels.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Medium close-up from the chest up, vertical 9:16, a cozy room at dusk with warm lamp light and a softly blurred beige wall. Sakura wears a plain oatmeal-colored crew-neck knit sweater and looks into the camera, eyes gently closed, a calm closed-lip smile. A small lit candle in a clear unlabeled glass jar sits small on the table behind her. Hands out of frame. No other people, no hands, no new face, no text, no letters, no logos, no labels.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, warm dusk-lit vertical 9:16 skincare short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a plain oatmeal knit sweater, holds a small lit candle in a clear unlabeled glass jar at chest height, eyes closed. She raises the candle slightly toward her chin and lets her shoulders relax as the small flame flickers softly. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 香りが好きな人ほど、買う前に見て。</d> while her lips remain completely closed. [Shot 2] At 00:03.000, the shot cuts to a high-angle close-up of a light wooden table, her face out of frame: the lit candle in its clear jar stands on the table. Her hand in an oatmeal knit sleeve sets a slim frosted-white glass bottle with a plain white cap, completely free of any logo, label, or lettering beside the candle, then lowers a small round brass candle snuffer over the flame; the flame goes out and a single thin wisp of smoke rises and fades. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] このシリーズは、無香料。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, warm dusk-lit vertical 9:16 skincare short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears, and no hands appear. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a plain oatmeal knit sweater, looks into the camera from the chest up, eyes closed, hands out of frame. A small lit candle in a clear unlabeled jar flickers on the table behind her, small in the frame. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 香りが好きな人ほど、買う前に見て。</d> while her lips remain completely closed. [Shot 2] At 00:03.000, the shot stays on Sakura's face. She opens her eyes, looks into the camera, lowers her brows a little and tilts her head. A slim frosted-white glass bottle with a plain white cap, completely free of any logo, label, or lettering, stands small on the table behind her. No hand enters. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] このシリーズは、無香料。</d> while her lips remain completely closed.
 
-overall_soundscape: Quiet indoor room tone at dusk with the faint crackle of a small candle flame, the soft clink of glass set down on wood and the light metallic tap of the snuffer.
+overall_soundscape: Quiet indoor room tone at dusk with the faint crackle of a small candle flame behind Sakura.
 
 non_diegetic_music: A gentle, slow felt-piano motif with soft warm pads, thinning to a single sustained note as the flame goes out at about 00:04.500.
 ```
 #### 9sパート（FL2VA・9.00秒・640x1152・397語）
 最初のコマの静止画（`sakura-ref.jpg` を元に作る）:
 ```text
-Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Frontal medium close-up, vertical 9:16, the same cozy room at dusk with warm lamp light and a softly blurred beige wall. Sakura in a plain oatmeal-colored crew-neck knit sweater holds a slim frosted-white unbranded glass bottle with a white cap at chest height in both hands, looking into the camera with slightly lowered brows and an apologetic closed-lip smile. No other people, no text, no logos, no label on the bottle.
+Photoreal edit of sakura-ref.jpg: keep only Sakura's face, long straight dark-brown hair and bangs. Frontal medium close-up, vertical 9:16, the same cozy room at dusk with warm lamp light and a softly blurred beige wall. Sakura in a plain oatmeal-colored crew-neck knit sweater looks into the camera with slightly lowered brows and an apologetic closed-lip smile. Hands out of frame. A slim frosted-white unbranded bottle stands small on the table behind her. No other people, no hands, no new face, no text, no logos, no label on the bottle.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, warm dusk-lit vertical 9:16 skincare short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a plain oatmeal knit sweater, holds a slim frosted-white glass bottle with a plain white cap, completely free of any logo, label, or lettering at chest height. Her brows lower a little, she tilts her head slightly to one side and gives a small, apologetic shrug, never opening the bottle and never touching her face with it. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 香りで癒されたい人には、物足りないかも。</d> while her lips remain completely closed. [Shot 2] At 00:04.000, the shot cuts to a slightly high-angle close-up of a white tray on a light wooden table, her face out of frame: her hand in an oatmeal knit sleeve sets the same unlabeled frosted bottle beside a clear glass of water and withdraws; a single drop falls into the glass and small, clean ripples spread across the water surface. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 香りより、うるおい重視の人に。</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a frontal medium close-up against the softly blurred beige wall: Sakura looks directly into the camera with a gentle closed-lip smile and raises her right index finger toward the top of the frame, holding the pose until the final frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるのは、プロフィールに。</d> while her lips remain completely closed.
+integrated_multimodal_description: [Shot 1] Photoreal, warm dusk-lit vertical 9:16 skincare short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face other than Sakura's appears, and no hands appear. The shot begins in the composition of <Picture 1>: the young Japanese woman shown in <Picture 1>, Sakura, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin and a gentle closed-lip smile, in a plain oatmeal knit sweater, looks into the camera from the chest up, hands out of frame. Her brows lower a little and she tilts her head slightly, never touching her face. A slim frosted-white bottle with a plain white cap, free of any logo or lettering, stays small on the table behind her. The camera holds a static shot. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 香りで癒されたい人には、物足りないかも。</d> while her lips remain completely closed. [Shot 2] At 00:04.000, the shot stays on Sakura's face. A clear glass of water sits small and soft behind her. No hand enters. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 香りより、うるおい重視の人に。</d> while her lips remain completely closed. [Shot 3] At 00:06.500, Sakura looks directly into the camera with a gentle closed-lip smile and holds still until the final frame. She does not point. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるのは、プロフィールに。</d> while her lips remain completely closed.
 
-overall_soundscape: Quiet indoor room tone at dusk, the soft rustle of a knit sleeve, a light tap of glass on the tray and a delicate drip into the water.
+overall_soundscape: Quiet indoor room tone at dusk. No object handling.
 
 non_diegetic_music: The same slow felt-piano motif with soft warm pads at a steady tempo, ending on a gentle two-note tag in the final second.
 ```
@@ -100,7 +100,7 @@ non_diegetic_music: The same slow felt-piano motif with soft warm pads at a stea
 
 ### Imagine用（短い1本・9:16・10秒）
 ```text
-Vertical 9:16, 10 seconds, photoreal. Reference: sakura-ref.jpg (keep only Sakura's exact face, long straight dark-brown hair and bangs; change clothes and place). In a cozy room at dusk with warm lamp light, Sakura in a plain oatmeal knit sweater holds a small lit candle in a clear unlabeled glass jar, eyes closed, calm smile. A slim frosted-white unbranded bottle with a white cap stands on the wooden table beside her; she gently covers the candle with a small brass snuffer, the flame goes out with a thin wisp of smoke, and she looks into the camera with a soft closed-lip smile. Slow push-in. No other people, no text, no logos, no labels.
+Vertical 9:16, 10 seconds, photoreal. Reference: sakura-ref.jpg (keep only Sakura's exact face, long straight dark-brown hair and bangs; change clothes and place). In a cozy room at dusk with warm lamp light, Sakura in a plain oatmeal knit sweater looks into the camera from the chest up, eyes closed, then opens them with a soft closed-lip smile. A small unlabeled candle and a slim frosted-white unbranded bottle stay small on the table behind her. Hands stay out of frame. Slow push-in. No other people, no hands, no new face, no text, no logos, no labels.
 ```
 （6sパートと9sパート頭の場面を1本にした差し替え用。セリフは入れない＝Achernarを後乗せ）
 
@@ -127,7 +127,7 @@ Vertical 9:16, 10 seconds, photoreal. Reference: sakura-ref.jpg (keep only Sakur
 ### 注意点（法務・投稿前の確認）
 - この商品は医薬部外品（公式表示）。台詞・字幕・概要欄で、美白・シミ・ハリ・エイジングケア・浸透・有効成分の話はしない（承認の範囲や注記の付け方を間違えやすいので、今回は使わない）。言うのは「無香料」という表示の事実と、「うるおい重視の人に」という選ぶ人の話だけ。
 - 「治る」「必ず」「改善」「肌が変わる」は書いていない。逆向きの断定（「合わない」「荒れる」）も書かない。「物足りないかも」は香りの好みの話にとどめた。
-- サクラは塗らない・においをかがない・肌のアップを出さない（体験の偽装と、効果に見える映像を避ける）。キャンドルは「香り」のイメージで、商品の香りではない。
+- サクラは塗らない・においをかがない・肌のアップを出さない。手元だけのカットも指さしもしない。キャンドルは「香り」のイメージで、商品の香りではない。顔は sakura-ref.jpg だけ。新しい顔は作らない。
 - ボトルはロゴなしのすりガラス。実物の容器や他社製品に似せない。
 - ストックとのかぶり: stock-01（つっぱり・夜の洗面所）、06（選び方の街頭）、07（何から始める）、10（朝の時短）、11（あるある）とはテーマが別。サクラ＋すりガラスのボトル＋人差し指で上を指す締めは01/07と同じ絵なので、続けて投稿しないほうがいい。
 - ジャンル: 美容だけ（ペット・婚活の要素なし）。美容とペットでアカウントを分ける場合は美容側。

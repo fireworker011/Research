@@ -33,63 +33,63 @@
 ---
 
 ## フック1行
-**鰹節屋さんが、犬のごはんを作ったら。**
-（0秒から、鰹節を削る手元のアップ。「誰が作ったか」を一言で出す型＝D3の「メーカー名を一言添える」を、名前を出さずに使った）
+**この子、カメラを見て首をかしげた。**
+（0秒から、同じ犬が主役。手元だけのカットは無い。商品も原材料も6秒以降。2026-10-03の共通点に合わせて直した。）
 
 ---
 
 ## 15秒台本
-ナレーションは Gemini TTS Achernar を後から乗せる。字数は句読点なし、各行6.5字/秒以下（stock.md §1と同じ基準）。商品名は台詞・字幕とも0回。
+ナレーションは Gemini TTS Achernar を後から乗せる。字数は句読点なし、各行6.5字/秒以下（stock.md §1と同じ基準）。商品名は台詞・字幕とも0回。尺は15秒のまま。
 
 | 秒 | 役割 | 台詞 | 字数 | 字/秒 | 字幕（2行・/ で改行） |
 |---|---|---|---|---|---|
-| 0.0-3.0 | フック | 鰹節屋さんが、犬のごはんを作ったら。 | 16 | 5.33 | 鰹節屋さんが / 犬のごはんを作ったら |
-| 3.0-6.0 | 具体 | 原材料の先頭は、お魚。 | 9 | 3.00 | 原材料の先頭は / お魚 |
-| 6.0-10.0 | 具体 | お魚は、まぐろ、かつお、かつお節など。 | 15 | 3.75 | まぐろ・かつお / かつお節など |
-| 10.0-12.5 | 誘導 | 紹介してるごはんの原材料は、 | 13 | 5.20 | 紹介してるごはんの / 原材料は |
+| 0.0-3.0 | フック | この子、カメラを見て首をかしげた。 | 15 | 5.00 | この子 / カメラを見て首をかしげた |
+| 3.0-6.0 | 具体 | 耳を立てて、こっちを見てる。 | 12 | 4.00 | 耳を立てて / こっちを見てる |
+| 6.0-10.0 | 具体 | 先頭はお魚。まぐろ、かつお、かつお節など。 | 17 | 4.25 | 先頭はお魚 / まぐろ・かつお・かつお節など |
+| 10.0-12.5 | 誘導 | 紹介してるごはんは、 | 9 | 3.60 | 紹介してるごはんは / 原材料を見て |
 | 12.5-15.0 | 誘導 | プロフィールから、どうぞ。 | 11 | 4.40 | 紹介ページは / プロフィールへ ▲ |
 
-- 具体1つ＝「原材料の先頭が魚介類（まぐろ、かつお、かつお節…）」。出典: 金虎ショップ（メーカー公式通販）の商品ページとLP、2026-09-30 11:03 JST 取得（`/workspace/affi-stock-20260930/src/`）。原材料欄は『魚介類（まぐろ、かつお、かつお節、かつおエキス）、でん粉類…』。「鰹節屋さん」は同ページの『大正二年創業の老舗鰹節メーカー』から。
+- 具体1つ＝「原材料の先頭が魚介類（まぐろ、かつお、かつお節…）」。出典: 金虎ショップ（メーカー公式通販）の商品ページとLP、2026-09-30 11:03 JST 取得（`/workspace/affi-stock-20260930/src/`）。原材料欄は『魚介類（まぐろ、かつお、かつお節、かつおエキス）、でん粉類…』。「鰹節屋さん」は同ページの『大正二年創業の老舗鰹節メーカー』から。台詞では6秒以降にだけ言う。
 - 「など」を付けたのは、魚介類の中に「かつおエキス」もあり、全部は言っていないため。
-- 字幕: 上部・白ボックス＋黒太字・差し色1語（0-3秒は「鰹節屋さん」、3-6秒は「お魚」）。右上に小さく「PR」を全尺。字幕と台詞の差は12.5-15.0秒だけ（字幕で行き先をはっきりさせる）。
+- 字幕: 上部・白ボックス＋黒太字・差し色1語（0-3秒は「この子」、6-10秒は「お魚」）。右上に小さく「PR」を全尺。字幕と台詞の差は10.0-15.0秒（字幕で行き先をはっきりさせる）。
 
 ### 時間ごとの絵
-- **6sパート（0.0-6.0秒・768x1344・犬なし）**: 0.0-3.0 マクロ。白い作業着の袖の手が、木の削り箱で鰹節を削る。薄い削り節がくるっと丸まって落ちる（顔は映らない） → 3.0-6.0 真上からの手元アップ。クリーム色ニットの袖の手が、ロゴなしのクラフト紙パウチ（青い魚のシルエットだけ）を裏返し、ぼかした読めない表示の「いちばん上の行」を人差し指で指す
-- **9sパート（6.0-15.0秒・640x1152・犬あり）**: 6.0-10.0 少し上から。木の床に白いトレー、小皿3つ（加熱したまぐろの角切り／加熱したかつおの切り身／削り節）と、金色の粒が入った白い器。後ろに同じ犬が落ち着いて座っている。カメラは小皿の上を左から右へゆっくり動く → 10.0-12.5 手がパウチを器の横に置き、引っ込む。犬は座ったまま → 12.5-15.0 犬がカメラを見上げて首をかしげ、そのまま止まる。ごはんには最後まで口をつけない
+- **6sパート（0.0-6.0秒・768x1344・同じ犬）**: 0.0-3.0 同じ犬が木の床に座ってカメラを見て、首をかしげる。人の手も顔も、ごはんも袋も出さない → 3.0-6.0 同じ犬の寄り。耳を立てたまま、口を閉じてカメラを見ている
+- **9sパート（6.0-15.0秒・640x1152・同じ犬）**: 6.0-10.0 同じ犬が手前に座ったまま。奥に白いトレーと小皿3つ（加熱したまぐろ／加熱したかつお／削り節）と、金色の粒の入った白い器。犬は食べない → 10.0-12.5 犬はそのまま。ロゴなしのクラフト紙パウチが器の横に最初から立っている。手は出さない → 12.5-15.0 犬がカメラを見上げて首をかしげ、止まる
 
 ---
 
 ## 縦動画プロンプト
-共通: 9:16、FL2VA（最初のコマ＝静止画、I2VAの指示文）、画面の文字なし（字幕・PRは編集で入れる）、H3の声は捨ててAchernarを乗せる。LoRAは両パートとも FL2V Turbo 8step 1.0 だけ（大きな動きがないのでCombatは使わない＝BUNNYのクレジットは不要）。犬は stock.md §1 と同じ生成犬1匹で、犬が出る9sパートは最初のコマを必ず `dog-ref.jpg` から作る。6sパートは犬が出ないので参照なし（stock-06/11と同じZ-Image-Turbo扱い）。
+共通: 9:16、FL2VA（最初のコマ＝静止画、I2VAの指示文）、画面の文字なし（字幕・PRは編集で入れる）、H3の声は捨ててAchernarを乗せる。LoRAは両パートとも FL2V Turbo 8step 1.0 だけ（大きな動きがないのでCombatは使わない＝BUNNYのクレジットは不要）。犬は stock.md §1 と同じ1匹。6sも9sも最初のコマを `dog-ref.jpg` から作る。新しい犬は作らない。人の手は出さない。
 
 ### H3用プロンプト
-#### 6sパート（FL2VA・6.00秒・768x1344・307語）
-最初のコマの静止画（参照なし・犬も人の顔も出さない）:
+#### 6sパート（FL2VA・6.00秒・768x1344・同じ犬）
+最初のコマの静止画（`dog-ref.jpg` を元に作る）:
 ```text
-Photoreal still, vertical 9:16, macro close-up on a wooden workbench in a small traditional workshop. Two hands in plain white work-coat sleeves, face out of frame, push a dark, hard dried bonito block (katsuobushi) across the blade of a traditional wooden shaving box; thin translucent pale-pink flakes curl up from the blade. Warm side light, fine dust in the air, shallow depth of field. No people's faces, no text, no letters, no logos.
+Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Photoreal still, vertical 9:16, the dog sits on a light wooden floor in soft window light, looking into the camera, mouth closed, head slightly tilted. No people, no hands, no food, no package, no text, no letters, no logos.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, warm natural-light vertical 9:16 pet food short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>, a macro close-up on a wooden workbench: two hands in plain white work-coat sleeves push a dark, hard dried bonito block across the blade of a traditional wooden shaving box in two slow, steady strokes, and thin translucent pale-pink flakes curl up and tumble onto the wood. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 鰹節屋さんが、犬のごはんを作ったら。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the shot cuts to a high-angle close-up on a light wooden kitchen table, the person's face out of frame: a woman's hands in cream knit sleeves turn a plain matte kraft-paper stand-up pouch printed only with a simple blue fish silhouette, with no letters, numbers, or logos over to its back panel, which shows only soft blurred, unreadable grey lines; her index finger comes to rest on the very first line at the top. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 原材料の先頭は、お魚。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, soft window-light vertical 9:16 pet short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face and no hands appear at any point. The shot begins in the composition of <Picture 1>: the same medium-sized adult Japanese-style dog from <Picture 1>, with a short reddish-fawn coat, cream-white muzzle and chest, upright triangular ears, a tail curled over its back and a plain red collar, sits on a light wooden floor and looks straight into the camera, mouth closed. It slowly tilts its head to one side. The camera pushes in with small amplitude at slow speed. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] この子、カメラを見て首をかしげた。</d> while no lips are visible on screen. [Shot 2] At 00:03.000, the same dog is still the only subject, a little closer, ears fully upright, mouth closed, looking at the camera. No food and no package enter the frame. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 耳を立てて、こっちを見てる。</d> while no lips are visible on screen.
 
-overall_soundscape: Quiet workshop room tone with the dry, rhythmic rasp of the shaving blade and flakes rustling onto the wood, then a soft kitchen ambience and the crinkle of the paper pouch being turned over.
+overall_soundscape: Quiet room ambience with soft daylight and the dog's calm breathing.
 
-non_diegetic_music: A light koto-like plucked motif at a slow-moderate tempo with soft hand percussion, opening into a brighter chord at 00:03.000.
+non_diegetic_music: A light koto-like plucked motif at a slow-moderate tempo with soft percussion, opening into a brighter chord at 00:03.000.
 ```
 #### 9sパート（FL2VA・9.00秒・640x1152・420語）
 最初のコマの静止画（`dog-ref.jpg` を元に作る）:
 ```text
-Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Photoreal still, vertical 9:16, slightly high angle over a light wooden floor, soft window light. In the foreground a white rectangular tray holds three small white dishes in a row: a cube of cooked tuna, a slice of cooked bonito, and a small mound of pale bonito flakes; beside the tray a white ceramic bowl of small round golden kibble. The same dog sits calmly behind them, looking at the camera, mouth closed. No people, no text, no letters, no logos.
+Photoreal edit using dog-ref.jpg: keep exactly the same dog (the same medium-sized adult Japanese-style dog with a short reddish-fawn coat and cream-white markings, upright triangular ears, curled tail, face and plain red collar) and change only its pose and the scene. Photoreal still, vertical 9:16, soft window light. The same dog sits large in the foreground on a light wooden floor, looking at the camera, mouth closed. Smaller behind the dog: a white tray with three small dishes, cooked tuna, cooked bonito, pale bonito flakes, and a white bowl of golden kibble. No people, no hands, no text, no letters, no logos.
 ```
 H3プロンプト（`<Picture 1>` = 上の静止画。秒はパート内の秒）:
 ```text
 For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
 
-integrated_multimodal_description: [Shot 1] Photoreal, soft natural-light vertical 9:16 pet food short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face appears at any point. The shot begins in the composition of <Picture 1>, a slightly high angle over a light wooden floor: a white tray with three small white dishes in a row, a cube of cooked tuna, a slice of cooked bonito and a small mound of pale bonito flakes, beside a white ceramic bowl of small round golden kibble. The same medium-sized adult Japanese-style dog from <Picture 1>, with a short reddish-fawn coat, cream-white muzzle and chest, upright triangular ears, a tail curled over its back and a plain red collar sits calmly behind them with its mouth closed and does not move toward the food. The camera glides slowly from left to right along the three dishes. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] お魚は、まぐろ、かつお、かつお節など。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the shot cuts to a closer high angle on the bowl: a woman's hand in a cream knit sleeve, her face out of frame, sets a plain matte kraft-paper stand-up pouch printed only with a simple blue fish silhouette, with no letters, numbers, or logos upright beside the bowl and withdraws out of frame; the dog stays seated in the soft background. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるごはんの原材料は、</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot cuts to a slightly high angle on the dog: it looks straight up into the camera and slowly tilts its head to one side, the bowl and dishes untouched in front of it, holding the pose until the final frame. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] プロフィールから、どうぞ。</d> while no lips are visible on screen.
+integrated_multimodal_description: [Shot 1] Photoreal, soft natural-light vertical 9:16 pet short; no on-screen text, subtitles, captions, logos, brand marks, or watermarks appear at any point, and no human face and no hands appear at any point. The shot begins in the composition of <Picture 1>: the same medium-sized adult Japanese-style dog from <Picture 1> sits large in the foreground, mouth closed, and does not move toward the food. Behind the dog, smaller in the frame, a white tray holds three small white dishes, a cube of cooked tuna, a slice of cooked bonito and a small mound of pale bonito flakes, beside a white ceramic bowl of small round golden kibble. The camera holds on the dog. A calm, composed adult Japanese woman with a soft, low-mid-pitched voice and an unhurried pace (S1) says in an off-screen voiceover: <d>[Japanese] 先頭はお魚。まぐろ、かつお、かつお節など。</d> while no lips are visible on screen. [Shot 2] At 00:04.000, the same dog stays seated in the foreground. A plain matte kraft-paper stand-up pouch printed only with a simple blue fish silhouette, with no letters, numbers, or logos, is already standing beside the bowl. No hand enters. The camera holds a static shot. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] 紹介してるごはんは、</d> while no lips are visible on screen. [Shot 3] At 00:06.500, the shot stays on the dog: it looks straight up into the camera and slowly tilts its head to one side, the bowl and dishes untouched, holding the pose until the final frame. The camera pushes in with small amplitude at slow speed. The same calm voice (S1) continues in an off-screen voiceover: <d>[Japanese] プロフィールから、どうぞ。</d> while no lips are visible on screen.
 
-overall_soundscape: Quiet room ambience with soft daylight, a faint tap as the pouch is set down on the wooden floor, a light rustle of the knit sleeve and the dog's calm breathing.
+overall_soundscape: Quiet room ambience with soft daylight and the dog's calm breathing.
 
 non_diegetic_music: The same koto-like plucked motif with soft hand percussion at a steady tempo, ending on a gentle two-note tag in the final second.
 ```
@@ -97,15 +97,15 @@ non_diegetic_music: The same koto-like plucked motif with soft hand percussion a
 
 ### Imagine用（短い1本・9:16・10秒）
 ```text
-Vertical 9:16, 10 seconds, photoreal. Reference: dog-ref.jpg (keep the exact same dog). The dog sits calmly on a light wooden floor behind a white tray with three small dishes — a cooked tuna cube, a cooked bonito slice, pale bonito flakes — and a white bowl of golden kibble. The dog does not eat or sniff; it looks up at the camera and slowly tilts its head. Slow push-in, soft window light. No people, no text, no logos.
+Vertical 9:16, 10 seconds, photoreal. Reference: dog-ref.jpg (keep the exact same dog). The dog sits large in frame on a light wooden floor, looks into the camera and slowly tilts its head. Only after that, smaller behind the dog, a white tray with three small dishes — a cooked tuna cube, a cooked bonito slice, pale bonito flakes — and a white bowl of golden kibble. The dog does not eat or sniff. No people, no hands, no text, no logos.
 ```
 （9sパートの絵と同じ場面。H3が使えないときの差し替え用。セリフは入れない＝Achernarを後乗せ）
 
 ---
 
 ## タイトル
-`鰹節屋さんのドッグフード「おさかな」 #Shorts #ドッグフード #犬のごはん`
-- 商品名はここだけ（動画内0回・概要欄にも入れない）。理由は「0. 直す点3」のとおり。
+`この子、カメラを見て首をかしげた #Shorts #犬のいる暮らし`
+- 商品名はタイトルにも動画内にも概要欄にも入れない。冒頭で商品を前に出さないため。原材料の事実は6秒以降の台詞と、この概要欄の魚介類の列挙だけ。
 
 ## 概要欄
 ```text
@@ -123,7 +123,7 @@ Vertical 9:16, 10 seconds, photoreal. Reference: dog-ref.jpg (keep the exact sam
 - **A8の提携先が金虎の「おさかな」かどうか: 不明。** /workspace 内にA8のおさかなのリンク記録が見つからなかった（stock.md 9/30時点と同じ）。台本の具体（鰹節屋さん・原材料）は金虎の公式ページの事実なので、提携先が別の商品なら3-10秒とタイトルは使えない。投稿前に人間が照合する。
 - 健康効果・アレルギー・食いつき・好き嫌いは言わない（「アレルギーに配慮」「食物アレルギー対策」「よく食べる」は書かない。公式ページにある「小麦・卵・乳・肉を入れないライン」の話も、アレルギーの訴求に読めるので使わない）。
 - 映像の小皿（まぐろ・かつお・削り節）は「原材料の魚」を見せるイメージで、商品の中身そのものではない → 概要欄にAIのイメージと明記した。犬は食べない・においをかがない（ネガティブにも入れた）。
-- 鰹節を削る手元は「鰹節屋さん」のイメージ。メーカーの工場や職人の映像ではない（実在の工場・人に似せない）。
+- 手元だけのカットは使わない。0秒から同じ犬。人の手は出さない。
 - stock-05（比較・選び方の一般論「先頭がお魚ならお魚が主役」）と、テーマの「原材料の先頭」が近い。続けて投稿しないほうがいい（間を空けるか、どちらか一方にする）。
 - 共通: PR表記（動画右上＋概要欄先頭）、AI生成の明記、商品名は動画内0回、アフィURLは動画内に入れずプロフィール（A8）だけ。
 
@@ -135,7 +135,7 @@ Vertical 9:16, 10 seconds, photoreal. Reference: dog-ref.jpg (keep the exact sam
 
 | 項目 | 点 | 理由 |
 |---|---|---|
-| 最初3秒 | 15 | 「鰹節屋さんが犬のごはんを？」で意外性はある。ただし0秒に犬の顔が無い（ペットのShortsでは弱くなりうる）。直近で伸びた同じ型の例は未確認 |
+| 最初3秒 | 15 | 0秒から同じ犬。商品と原材料は6秒以降。直近で伸びた同じ型の例は未確認 |
 | テンポ | 15 | 切り替えは3.0／6.0／10.0／12.5秒。3-10秒の台詞が3.0〜3.75字/秒とゆっくりで、間延びしやすい |
 | 見やすさ | 15 | 字幕は2行・短い名詞・上部固定。画面の文字なし。動画は未生成なので、実際の見え方（犬の一致・手の崩れ）は不明 |
 | プロフィール誘導 | 16 | 10-15秒で「紹介してるごはんの原材料は→プロフィールから」と行き先と理由がつながっている。字幕に▲ |
