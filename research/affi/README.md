@@ -17,6 +17,7 @@ python -m minimaxh3.affi plan --product kanetora --commonalities research/affi/c
 python -m minimaxh3.affi run --one --product kanetora --platform youtube --commonalities research/affi/commonalities.yaml --drive "$H3_DRIVE_ROOT" --ref-dir assets/character
 python -m minimaxh3.affi run --count 3 --product all --platform youtube --commonalities research/affi/commonalities.yaml --drive "$H3_DRIVE_ROOT" --ref-dir assets/character
 python -m minimaxh3.affi package --drive "$H3_DRIVE_ROOT" --waiting affi-waiting
+python -m minimaxh3.affi cutlist render --csv affi-waiting/<id>/cuts.csv --out affi-waiting/<id>/final.mp4 --purpose h3
 ```
 
 `--one` は使える台本の次の1パートだけを inbox に置く。`--count N` は N 本を待ち行列に積み、inbox に出すのはそのうち1件。サクラは `assets/character/sakura-ref.jpg`（無いときは同じ顔の `docs/affi-stock/first_frames/_ref/sakura_916.jpg`）。犬は `docs/affi-stock/dog-ref.jpg`。Imagine は切る。新しい顔は作らない。
@@ -32,7 +33,18 @@ python -m minimaxh3.affi slide --id orbis-dot-01
 bash minimaxh3/affi/slides/orbis-dot-01/build_slide.sh
 ```
 
-`slide` は初稿のパスと採点を出す。画像は作らない。`build_slide.sh` は `images/01.png` から `05.png` が揃ってから、各3秒・1080×1920・字幕焼き込みで mp4 にする。BGMは `bgm/slide.m4a` があるときだけ付ける。無いときは音なし。投稿はしない。
+`slide` は初稿のパスと採点を出す。画像は作らない。8枚（表紙、問題提起、5つ、締め）。各3秒。`build_slide.sh` は cut-list-ffmpeg を呼ぶだけ。
+
+```bash
+python -m minimaxh3.affi cutlist render \
+  --csv minimaxh3/affi/slides/orbis-dot-01/cuts.csv \
+  --out minimaxh3/affi/slides/orbis-dot-01/orbis-dot-01.mp4 \
+  --purpose slide
+```
+
+カット表の列は `index,src,in,out,subtitle`。字幕が空の行があると `final.mp4` を作らず終了コード 1。書き出しは ffmpeg だけ。1080×1920、30fps。色補正もズーム・パン・フェードも入れない。BGMは `bgm/slide.m4a` があるときだけ。無いときは音なし。終わると mp4 とカット表のパスを出す。投稿はしない。会話動画のフィラー除去は対象外で、`--purpose` が `h3` でも `slide` でもなければ終了コード 2。
+
+`package` は H3 の 6秒と 9秒が揃ったとき `cuts.csv` を書く。mp4 の連結は上の `cutlist render --purpose h3`。
 
 ## 人間が押すところ
 

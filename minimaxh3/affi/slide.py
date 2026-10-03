@@ -1,13 +1,15 @@
 """H3 fallback: one vertical still-image slide. Does not generate images or post.
 
-The spec asks for 5 images and also for 表紙→問題提起→5つ→締め.
-This module keeps 5 images and records the assignment.
+Eight stills: 表紙 → 問題提起 → five checked facts → 締め.
+The biggest answer stays off the picture and at the end of the post.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+
+from minimaxh3.affi.cutlist import write_cuts
 
 SLIDE_DIR = Path(__file__).resolve().parent / "slides" / "orbis-dot-01"
 SLIDE_ID = "orbis-dot-01"
@@ -47,8 +49,8 @@ SLIDES: tuple[dict[str, Any], ...] = (
     {
         "file": "03.png",
         "role": "本文",
-        "points": ("無着色", "アルコールフリー"),
-        "caption": ("無着色", "アルコールフリー"),
+        "points": ("無着色",),
+        "caption": ("無着色",),
         "imagine": (
             "Photoreal still, vertical 9:16, high angle on the same light wooden "
             "table. Only the slim frosted-white unbranded bottle, standing, cap on. "
@@ -58,17 +60,49 @@ SLIDES: tuple[dict[str, Any], ...] = (
     {
         "file": "04.png",
         "role": "本文",
-        "points": ("パラベンフリー",),
-        "caption": ("パラベンフリー",),
+        "points": ("アルコールフリー",),
+        "caption": ("アルコールフリー",),
         "imagine": (
             "Photoreal still, vertical 9:16, the same unbranded frosted-white bottle "
-            "beside a clear glass of water on a white tray. A single drop has just "
-            "fallen and small ripples sit on the water. The bottle is not open and "
-            "touches nobody. No people, no hands, no faces, no skin, no text, no logo."
+            "beside a clear glass of water on a white tray. The bottle is closed. "
+            "No people, no hands, no faces, no skin, no text, no logo."
         ),
     },
     {
         "file": "05.png",
+        "role": "本文",
+        "points": ("パラベンフリー",),
+        "caption": ("パラベンフリー",),
+        "imagine": (
+            "Photoreal still, vertical 9:16, the same closed unbranded bottle on a "
+            "white tray, seen from a low three-quarter angle. Soft daylight from a "
+            "window. No people, no hands, no faces, no skin, no text, no logo."
+        ),
+    },
+    {
+        "file": "06.png",
+        "role": "本文",
+        "points": ("朝晩使える", "メイク前にも"),
+        "caption": ("朝晩使える", "メイク前にも"),
+        "imagine": (
+            "Photoreal still, vertical 9:16, the same closed unbranded frosted-white "
+            "bottle on a pale windowsill in quiet morning light. The window is out "
+            "of focus. No clock, no people, no hands, no faces, no skin, no text, no logo."
+        ),
+    },
+    {
+        "file": "07.png",
+        "role": "本文",
+        "points": ("ウォッシュ1cm程度", "ローションは100円硬貨程度", "モイスチャライザーはパール1～2粒程度"),
+        "caption": ("ウォッシュ1cm、ローションは硬貨", "モイスチャライザーはパール1～2粒"),
+        "imagine": (
+            "Photoreal still, vertical 9:16, the same closed unbranded bottle on a "
+            "white tray next to a plain metal coin and two small clear gel droplets. "
+            "No numbers, no letters, no people, no hands, no faces, no skin, no logo."
+        ),
+    },
+    {
+        "file": "08.png",
         "role": "締め",
         "points": (),
         "caption": ("紹介してるのは", "プロフィールへ"),
@@ -85,8 +119,10 @@ POST = """アフィリエイト広告を含みます #PR
 香りが好きな人ほど、買う前に。オルビスユー ドット
 
 買う前に知っておきたい表示です。使った感想ではありません。肌に合うかどうかには個人差があります。
-無着色、アルコールフリー、パラベンフリーは、メーカー公式ショップのよくある質問で確認しました（2026年10月3日時点）。最新の表示は販売ページでご確認ください。
-5つ目: 不明
+メーカー公式ショップのよくある質問で確認しました（2026年10月3日時点）。
+無着色。アルコールフリー。パラベンフリー。朝晩お使いいただけます。メイク前にもお使いいただけます。
+ウォッシュは1cm程度。ローションは手のひらに100円硬貨程度。モイスチャライザーはパール1～2粒程度。
+最新の表示は販売ページでご確認ください。
 紹介しているものはプロフィールのリンクからどうぞ。
 
 #PR #スキンケア #化粧水
@@ -96,10 +132,12 @@ POST = """アフィリエイト広告を含みます #PR
 一番の答え: このシリーズは無香料です。出典はメーカー公式ショップのよくある質問（2026年10月3日時点）。
 """
 
-ASSIGNMENT = """仕様は「画像5枚」と「表紙→問題提起→5つ→締め」が食い違う。初稿は画像5枚に固定した。
-1枚目は表紙、2枚目は問題提起、3枚目と4枚目は本文、5枚目は締め。
-5つの内訳は、画面に出す無着色・アルコールフリー・パラベンフリー、画面に出さない一番の答え（無香料）、確認できない5つ目（不明）。
-8枚には分けない。一番の答えは字幕にもImagine指示にも書かない。
+ASSIGNMENT = """8枚。並びは表紙、問題提起、確認できた5つ、締め。
+1枚目は表紙、2枚目は問題提起、3枚目から7枚目が5つ、8枚目は締め。
+5つは、無着色、アルコールフリー、パラベンフリー、朝晩とメイク前、使う量。出典はメーカー公式ショップのよくある質問（2026年10月3日）。
+使う量は、ウォッシュ1cm程度、ローションは手のひらに100円硬貨程度、モイスチャライザーはパール1～2粒程度。
+無油分はシリーズのよくある質問には無い。着地URLも不明なので使わない。
+一番の答え（無香料）は画面に出さない。字幕にもImagine指示にも書かない。投稿文の末尾に置く。
 """
 
 
@@ -116,13 +154,28 @@ def on_screen_text() -> str:
 
 
 def score() -> dict[str, Any]:
-    """直す: a required point is 不明, so this draft is not scheduled."""
+    """直す: the landing URL and the recent-Shorts check are still 不明."""
     return {
         "verdict": "直す",
         "schedule": False,
-        "reason": "5つ目が不明。A8の着地URLは不明。直近Shortsで普段の3倍は不明（未確認）。予約しない。",
+        "reason": "A8の着地URLは不明。直近Shortsで普段の3倍は不明（未確認）。予約しない。",
         "h3_gate": "不明",
     }
+
+
+def cut_rows() -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for index, slide in enumerate(SLIDES, start=1):
+        rows.append(
+            {
+                "index": index,
+                "src": f"images/{slide['file']}",
+                "in": 0.0,
+                "out": SECONDS_EACH,
+                "subtitle": " / ".join(slide["caption"]),
+            }
+        )
+    return rows
 
 
 def srt() -> str:
@@ -144,7 +197,7 @@ def render_draft() -> str:
         "## 割り当て",
         ASSIGNMENT.strip(),
         "",
-        "## 画像5枚（Grok Imagine、9:16。画面の文字は入れない。字幕はあとから焼く）",
+        "## 画像8枚（Grok Imagine、9:16。画面の文字は入れない。字幕はあとから焼く）",
     ]
     for index, slide in enumerate(SLIDES, start=1):
         lines = " / ".join(slide["caption"])
@@ -159,7 +212,8 @@ def render_draft() -> str:
     parts.extend(
         [
             "## 秒数",
-            "各画像 3.0 秒。5枚で 15.0 秒。1080×1920（9:16）。音声は無し。BGMを置くなら bgm/slide.m4a。",
+            "各画像 3.0 秒。8枚で 24.0 秒。1080×1920（9:16）。音声は無し。BGMを置くなら bgm/slide.m4a。",
+            "書き出しは cut-list-ffmpeg。タイムラインは作らず、cuts.csv（列は index,src,in,out,subtitle）を読む。",
             "",
             "## 投稿文",
             "```text",
@@ -179,53 +233,28 @@ def render_draft() -> str:
 
 def ffmpeg_script() -> str:
     return f"""#!/usr/bin/env bash
-# Vertical 9:16 still slide. Does not post. Does not call Imagine.
+# cut-list-ffmpeg wrapper. Does not post. Does not call Imagine.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-IMAGES="${{1:-$ROOT/images}}"
-OUT="${{2:-$ROOT/{SLIDE_ID}.mp4}}"
-BGM="${{3:-$ROOT/bgm/slide.m4a}}"
-SRT="$ROOT/captions.srt"
-FONT=""
-for c in \\
-  /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc \\
-  /usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc \\
-  /usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc
-do
-  if [[ -f "$c" ]]; then FONT="$c"; break; fi
-done
-if [[ -z "$FONT" ]]; then
-  echo "日本語フォントが無い。Noto Sans CJK を入れてから実行する。" >&2
-  exit 1
-fi
-FONTDIR="$(dirname "$FONT")"
-inputs=()
-for name in 01.png 02.png 03.png 04.png 05.png; do
-  if [[ ! -f "$IMAGES/$name" ]]; then
-    echo "画像が無い: $IMAGES/$name" >&2
-    exit 1
-  fi
-  inputs+=(-loop 1 -t {SECONDS_EACH:.1f} -i "$IMAGES/$name")
-done
-filter=""
-for i in 0 1 2 3 4; do
-  filter+="[$i:v]scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,crop={WIDTH}:{HEIGHT},fps=30,setsar=1[v$i];"
-done
-filter+="[v0][v1][v2][v3][v4]concat=n=5:v=1:a=0[cat];"
-filter+="[cat]subtitles=$SRT:fontsdir=$FONTDIR:force_style='FontName=Noto Sans CJK JP\\,FontSize=64\\,Alignment=8\\,BorderStyle=3\\,Outline=0\\,BackColour=&H00FFFFFF&\\,PrimaryColour=&H00000000&\\,MarginV=160'[cap];"
-filter+="[cap]drawtext=text='PR':fontsize=36:fontcolor=black:box=1:boxcolor=white:boxborderw=8:x=w-tw-48:y=48[vout]"
-mkdir -p "$(dirname "$OUT")"
-if [[ -f "$BGM" ]]; then
-  ffmpeg -y "${{inputs[@]}}" -i "$BGM" \\
-    -filter_complex "$filter" -map "[vout]" -map 5:a \\
-    -t 15 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "$OUT"
-else
-  ffmpeg -y "${{inputs[@]}}" \\
-    -filter_complex "$filter" -map "[vout]" \\
-    -t 15 -c:v libx264 -pix_fmt yuv420p -an "$OUT"
-fi
-echo "$OUT"
+REPO="$(cd "$ROOT/../../../.." && pwd)"
+OUT="${{1:-$ROOT/{SLIDE_ID}.mp4}}"
+cd "$REPO"
+exec python -m minimaxh3.affi cutlist render \\
+  --csv "$ROOT/cuts.csv" \\
+  --out "$OUT" \\
+  --purpose slide \\
+  --bgm "$ROOT/bgm/slide.m4a"
 """
+
+
+def write_artifacts() -> None:
+    SLIDE_DIR.mkdir(parents=True, exist_ok=True)
+    (SLIDE_DIR / "draft.md").write_text(render_draft(), encoding="utf-8")
+    (SLIDE_DIR / "captions.srt").write_text(srt(), encoding="utf-8")
+    write_cuts(SLIDE_DIR / "cuts.csv", cut_rows())
+    script = SLIDE_DIR / "build_slide.sh"
+    script.write_text(ffmpeg_script(), encoding="utf-8")
+    script.chmod(0o755)
 
 
 def _ts(seconds: float) -> str:

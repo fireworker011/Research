@@ -154,6 +154,11 @@ def test_package_writes_disclosure_and_does_not_post(tmp_path: Path) -> None:
     assert (wrote[0] / "POST.txt").read_text(encoding="utf-8").startswith("投稿は人間が押す")
     assert (wrote[0] / "part-6s.mp4").is_file()
     assert (wrote[0] / "part-9s.mp4").is_file()
+    cuts = (wrote[0] / "cuts.csv").read_text(encoding="utf-8")
+    assert cuts.startswith("index,src,in,out,subtitle\n")
+    assert "part-6s.mp4" in cuts
+    assert "part-9s.mp4" in cuts
+    assert not (wrote[0] / "final.mp4").exists()
 
 
 def _finish(folder: Path, mp4: Path) -> None:

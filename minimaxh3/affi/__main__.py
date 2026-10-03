@@ -1,4 +1,4 @@
-"""Commands: plan, run --one, run --count N, package. Does not generate or post."""
+"""Commands: plan, run, package, slide, cutlist render. Does not generate or post."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 
+from minimaxh3.affi.cutlist import render_cutlist
 from minimaxh3.affi.package import write_waiting
 from minimaxh3.affi.pipeline import plan_one, run_batch
 from minimaxh3.affi.products import PLATFORMS, PRODUCTS
@@ -23,6 +24,13 @@ def main(argv: list[str] | None = None) -> int:
     package = sub.add_parser("package")
     slide = sub.add_parser("slide")
     slide.add_argument("--id", default="orbis-dot-01")
+    cutlist = sub.add_parser("cutlist")
+    cut_sub = cutlist.add_subparsers(dest="cut_cmd", required=True)
+    render = cut_sub.add_parser("render")
+    render.add_argument("--csv", required=True)
+    render.add_argument("--out", required=True)
+    render.add_argument("--purpose", required=True)
+    render.add_argument("--bgm", default="")
     for cmd in (plan, run):
         cmd.add_argument("--product", required=True, choices=[*PRODUCTS, "all"])
         cmd.add_argument("--platform", default="youtube", choices=PLATFORMS)
@@ -35,14 +43,25 @@ def main(argv: list[str] | None = None) -> int:
     package.add_argument("--waiting", default="affi-waiting")
     args = parser.parse_args(argv)
 
+    if args.cmd == "cutlist":
+        bgm = Path(args.bgm) if args.bgm else None
+        return render_cutlist(Path(args.csv), Path(args.out), args.purpose, bgm)
+
     if args.cmd == "slide":
         if args.id != "orbis-dot-01":
             print("初稿は orbis-dot-01 だけ", file=sys.stderr)
             return 2
         result = slide_score()
         print(SLIDE_DIR / "draft.md")
+        print(SLIDE_DIR / "cuts.csv")
         print(json.dumps(result, ensure_ascii=False))
-        print("ffmpeg: bash", SLIDE_DIR / "build_slide.sh")
+        print(
+            "ffmpeg: python -m minimaxh3.affi cutlist render --csv",
+            SLIDE_DIR / "cuts.csv",
+            "--out",
+            SLIDE_DIR / "orbis-dot-01.mp4",
+            "--purpose slide",
+        )
         return 0 if result["verdict"] != "捨てる" else 1
 
     if args.cmd == "plan":
@@ -65,6 +84,13 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         for path in wrote:
             print(path)
+            print(
+                "ffmpeg: python -m minimaxh3.affi cutlist render --csv",
+                path / "cuts.csv",
+                "--out",
+                path / "final.mp4",
+                "--purpose h3",
+            )
         return 0
 
     count = 1 if args.one else args.count

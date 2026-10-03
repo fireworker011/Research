@@ -7,6 +7,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from minimaxh3.affi.cutlist import h3_cut_rows, write_cuts
+
 
 def write_waiting(drive: Path, waiting: Path) -> list[Path]:
     groups: dict[str, list[tuple[Path, dict[str, Any]]]] = {}
@@ -43,6 +45,10 @@ def write_waiting(drive: Path, waiting: Path) -> list[Path]:
         (dest / "POST.txt").write_text("投稿は人間が押す。このフォルダからは投稿しない。\n", encoding="utf-8")
         for key, src in clips:
             shutil.copy2(src, dest / f"part-{key}.mp4")
+        write_cuts(
+            dest / "cuts.csv",
+            h3_cut_rows(list(side0["beats"]), {"6s": "part-6s.mp4", "9s": "part-9s.mp4"}),
+        )
         wrote.append(dest)
     return wrote
 
