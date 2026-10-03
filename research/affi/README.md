@@ -23,6 +23,17 @@ python -m minimaxh3.affi package --drive "$H3_DRIVE_ROOT" --waiting affi-waiting
 
 参照が必要なパートは `run_i2v.py`、顔も犬も出さないパートは `run_t2v.py`。R2V は自分で生成した動きの動画が無いので使わない。inbox の画角は 768×1344（9:16）。10/3 の台本の 9 秒パートは 640×1152 だが、grokbot の i2v はそのサイズを受けないので、プロンプトの縦 9:16 はそのまま、ジョブのキャンバスだけ 768×1344 にする。
 
+## H3の代わり（画像スライド）
+
+H3動画が直近で完了条件を満たせないときだけ使う。初稿は1本。
+
+```bash
+python -m minimaxh3.affi slide --id orbis-dot-01
+bash minimaxh3/affi/slides/orbis-dot-01/build_slide.sh
+```
+
+`slide` は初稿のパスと採点を出す。画像は作らない。`build_slide.sh` は `images/01.png` から `05.png` が揃ってから、各3秒・1080×1920・字幕焼き込みで mp4 にする。BGMは `bgm/slide.m4a` があるときだけ付ける。無いときは音なし。投稿はしない。
+
 ## 人間が押すところ
 
 1. Colab の G4 で、inbox の1件を生成する。重みは Google ドライブから読む。例: `python minimaxh3/grokbot/run_i2v.py --drive "$H3_DRIVE_ROOT" --gpu G4`（顔も犬も無いパートは `run_t2v.py`）。終わるとランタイムは止まる。

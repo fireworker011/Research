@@ -11,6 +11,7 @@ from pathlib import Path
 from minimaxh3.affi.package import write_waiting
 from minimaxh3.affi.pipeline import plan_one, run_batch
 from minimaxh3.affi.products import PLATFORMS, PRODUCTS
+from minimaxh3.affi.slide import SLIDE_DIR, score as slide_score
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -20,6 +21,8 @@ def main(argv: list[str] | None = None) -> int:
     plan = sub.add_parser("plan")
     run = sub.add_parser("run")
     package = sub.add_parser("package")
+    slide = sub.add_parser("slide")
+    slide.add_argument("--id", default="orbis-dot-01")
     for cmd in (plan, run):
         cmd.add_argument("--product", required=True, choices=[*PRODUCTS, "all"])
         cmd.add_argument("--platform", default="youtube", choices=PLATFORMS)
@@ -31,6 +34,16 @@ def main(argv: list[str] | None = None) -> int:
     package.add_argument("--drive", required=True)
     package.add_argument("--waiting", default="affi-waiting")
     args = parser.parse_args(argv)
+
+    if args.cmd == "slide":
+        if args.id != "orbis-dot-01":
+            print("初稿は orbis-dot-01 だけ", file=sys.stderr)
+            return 2
+        result = slide_score()
+        print(SLIDE_DIR / "draft.md")
+        print(json.dumps(result, ensure_ascii=False))
+        print("ffmpeg: bash", SLIDE_DIR / "build_slide.sh")
+        return 0 if result["verdict"] != "捨てる" else 1
 
     if args.cmd == "plan":
         if args.product == "all":
