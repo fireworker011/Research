@@ -22,12 +22,14 @@ BRANCH = "cursor/rehearsal-room-adult-d736"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
-SESSION = "h3-episode"
+SESSION = "h3-rehearsal-room"
 HELPERS = list(EPISODE_HELPERS)
 
 
 def colab_url(path: str) -> str:
-    return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
+    # Branch names contain a slash. An unescaped slash makes Colab open another notebook.
+    branch = BRANCH.replace("/", "%2F")
+    return f"https://colab.research.google.com/github/{REPO}/blob/{branch}/{path}"
 
 
 CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（迷ったらそのまま）
@@ -204,6 +206,8 @@ else:
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
+
+**このノートの話に「稽古室」がある。** 候補が霞東・病棟出口・番台だけの4つなら、開いているのは病棟の古いノート。閉じる。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 

@@ -6,7 +6,8 @@
 
 - `H3_EPISODE=rehearsal-room-adult`
 - `H3_EPISODE_FRESH=1`
-- Colab の話ドロップダウンには出ない。スラッグを手で入れる。`connect=cut` の 04 は、ドロップダウンが「前の最終フレームから」でも T2V のまま。
+- 話のドロップダウンで「稽古室」を選ぶ。候補が4つだけなら、開いているのは病棟ノート `cursor/h3-hospital-ward-34e4` の方。稽古室はそちらには無い。
+- `connect=cut` の 04 は、ドロップダウンが「前の最終フレームから」でも T2V のまま。
 - raw があり FRESH がオフなら作り直さない。この話の raw はまだ無い。
 
 ## 画
