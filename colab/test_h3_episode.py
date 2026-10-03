@@ -2262,9 +2262,12 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "shoots forward" in low
             assert "toward the camera" in low
             assert "hips hold still" in low
-            assert "plant-flesh toilet bowl stays still" in low
-            assert "red fleshy mouth" in (four.get("place") or "").lower()
-            assert "porcelain" not in low
+            assert "toilet bowl stays still" in low
+            assert "porcelain western toilet" in low
+            assert "porcelain" in (four.get("place") or "").lower()
+            assert "brown" in (four.get("place") or "").lower()
+            assert "plant-flesh" not in low
+            assert "tentacle" not in low
             assert "only the yellow stream moves" in low
             assert "lemon-yellow water" in low
             assert "see-through" in low
@@ -2409,8 +2412,11 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
         )
         assert "western toilet bowl" not in blob
         assert "porcelain" not in blob.lower()
-        assert "red wet flesh" in blob.lower()
-        assert "fleshy plant rim" in blob.lower()
+        assert "squat pan" in blob.lower()
+        assert "stained squat rim" in blob.lower()
+        assert "brown hospital dirt" in blob.lower()
+        assert "plant-flesh" not in blob.lower()
+        assert "tentacle" not in blob.lower()
         assert "SITS DOWN facing the camera" not in blob
         assert "hood" in blob and "platform" not in blob.lower()
         assert "flush into the tile floor" in blob

@@ -309,7 +309,7 @@ def make_nb() -> dict:
         .replace("__CHECKPOINT_HELP__", form_markdown("checkpoint", "チェックポイント — 10Eros Max か DaSiWa"))
         .replace("__CHECKPOINT_DEFAULT__", json.dumps(ui_default("checkpoint"), ensure_ascii=False))
         .replace("__CHECKPOINT_CHOICES__", json.dumps(ui_choices("checkpoint"), ensure_ascii=False))
-        .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 触手便器か普通の便器。和式は別"))
+        .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 洋式汚物、和式汚物、有機物植物の三択。触手は有機物だけ"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
         .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))

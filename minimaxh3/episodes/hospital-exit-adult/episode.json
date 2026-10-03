@@ -1892,7 +1892,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 4.0
+            "seconds": 4.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -1900,8 +1901,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             "mystic"
           ],
@@ -1918,16 +1919,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the plant-flesh toilet bowl in an M-shape, full body including feet. Only the plant-flesh toilet bowl, the tiles, and Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the plant-flesh toilet bowl facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the filthy porcelain western toilet in an M-shape, full body including feet. Only the filthy porcelain western toilet, the tiles, and Aya fill the frame. The camera stays in front the whole take",
+          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the filthy porcelain western toilet facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "んっ"
+              "line": "んっ",
+              "action": ""
             }
           ],
           "loco": "walk"
@@ -1938,7 +1941,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 10.0
+            "seconds": 10.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -1946,8 +1950,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             "mystic"
           ],
@@ -1964,16 +1968,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "Drip, transparent lemon-yellow water shooting forward as one yellow column, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya faces the camera, already seated on the plant-flesh toilet bowl in an M-shape, knees up and out, full body including feet. Aya and the bowl stay still. Only the plant-flesh toilet bowl, the tiles, and seated Aya fill the frame. Transparent lemon-yellow water, one see-through bright yellow column, shoots forward from her hairless pussy toward the camera. Aya smiles. The camera stays in front the whole take",
-          "action": "Aya is already seated on the filthy plant-flesh toilet bowl from frame one, fully nude, facing the camera. Brown feces stains smear the bowl rim and the tiles. Aya's knees stay up and out in an M-shape, soles toward the camera, so the hairless pussy faces the camera. Transparent lemon-yellow water SHOOTS FORWARD from her hairless pussy toward the camera from frame one and KEEPS streaming forward the whole take. The liquid is yellow water, see-through and watery, one continuous bright yellow column, the color of lemon water. Aya smiles the whole take. Aya's hips HOLD STILL. The plant-flesh toilet bowl stays still. Only the yellow stream moves. Aya STAYS SEATED on this same bowl from the first frame to the last frame. They stay on this same floor spot. Nobody else in frame. Last frame: Aya still seated facing the camera, smiling, hips still, the bowl still, transparent lemon-yellow water still shooting forward toward the camera, one see-through yellow column. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT view facing Aya. Tight on this one toilet stall. Aya faces the camera, already seated on the filthy porcelain western toilet in an M-shape, knees up and out, full body including feet. Aya and the bowl stay still. Only the filthy porcelain western toilet, the tiles, and seated Aya fill the frame. Transparent lemon-yellow water, one see-through bright yellow column, shoots forward from her hairless pussy toward the camera. Aya smiles. The camera stays in front the whole take",
+          "action": "Aya is already seated on the filthy porcelain western toilet from frame one, fully nude, facing the camera. Brown feces stains smear the bowl rim and the tiles. Aya's knees stay up and out in an M-shape, soles toward the camera, so the hairless pussy faces the camera. Transparent lemon-yellow water SHOOTS FORWARD from her hairless pussy toward the camera from frame one and KEEPS streaming forward the whole take. The liquid is yellow water, see-through and watery, one continuous bright yellow column, the color of lemon water. Aya smiles the whole take. Aya's hips HOLD STILL. The filthy porcelain western toilet bowl stays still. Only the yellow stream moves. Aya STAYS SEATED on this same bowl from the first frame to the last frame. They stay on this same floor spot. Nobody else in frame. Last frame: Aya still seated facing the camera, smiling, hips still, the bowl still, transparent lemon-yellow water still shooting forward toward the camera, one see-through yellow column. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "んっ"
+              "line": "んっ",
+              "action": ""
             }
           ],
           "loco": "planted",
@@ -1986,7 +1992,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 4.0
+            "seconds": 4.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -1994,7 +2001,7 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [],
           "trigger": "",
           "hud": {
@@ -2010,16 +2017,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "A stand, footsteps on linoleum, HVAC",
           "music": "Bass holds",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS from the plant-flesh toilet bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "Aya STANDS from the filthy porcelain western toilet and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "ん"
+              "line": "ん",
+              "action": ""
             }
           ],
           "loco": "walk"
@@ -2033,7 +2042,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 4.0
+            "seconds": 4.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -2041,8 +2051,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             "mystic"
           ],
@@ -2059,16 +2069,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "Footsteps on tile, a sit on the bowl, drip, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the plant-flesh toilet bowl in an M-shape, full body including feet. Only the plant-flesh toilet bowl, the tiles, and Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the plant-flesh toilet bowl facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT view. Tight on this one toilet stall. Aya walks in, turns to face the camera, and sits on the filthy porcelain western toilet in an M-shape, full body including feet. Only the filthy porcelain western toilet, the tiles, and Aya fill the frame. The camera stays in front the whole take",
+          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS to face the camera, and SITS DOWN on the filthy porcelain western toilet facing the camera. Knees come up and out into an M-shape, soles toward the camera, hairless pussy toward the camera. Brown feces stains smear the bowl rim and the tiles. Aya STAYS SEATED by the last frame. Nobody else in frame. Last frame: Aya seated facing the camera in an M-shape. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "んっ"
+              "line": "んっ",
+              "action": ""
             }
           ],
           "loco": "walk"
@@ -2079,7 +2091,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 10.0
+            "seconds": 10.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -2087,8 +2100,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "Fictional derelict old hospital toilet stall at night, worn down by a fictional pandemic: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering broken fluorescent tube, water stains, no clocks, no readable letters, every adult in frame is fully nude",
-          "place": "A filthy crumbling wide multipurpose hospital toilet at night: cracked grey tiles, peeling walls, one plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl smeared with brown feces stains, a closed stall partition, a flickering tube, no readable letters",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             "mast"
           ],
@@ -2105,16 +2118,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "Drip, wet rubbing, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FRONT view. Tight on this one toilet stall. Aya faces the camera, already seated on the plant-flesh toilet bowl in an M-shape, knees up and out, hand at her clit, full body including feet. Only the plant-flesh toilet bowl, the tiles, and seated Aya fill the frame. The camera stays in front the whole take",
-          "action": "Aya is already seated on the filthy plant-flesh toilet bowl from frame one, fully nude, facing the camera, knees up and out in an M-shape, soles toward the camera. She is sitting with open legs while masturbating with her hand. Her hand rubs her clit in short snappy strokes from frame one and the rubbing KEEPS going the whole take. She has an orgasm: teeth grit, head tips back, thighs and lower belly flex, her pussy and anus have strong orgasmic contractions visibly tightening and releasing rhythmically. Then she eases, catching her breath. Aya looks like it feels really good, not blank. Flushed, mouth open, brows knit. Small soft female moans. Background audio is her breathing and sighing only. Aya STAYS SEATED on this same bowl from the first frame to the last frame. Nobody else in frame. Last frame: Aya still seated facing the camera in an M-shape, hand still rubbing. Brisk real-time. Consensual adult game beat",
+          "camera": "FRONT view. Tight on this one toilet stall. Aya faces the camera, already seated on the filthy porcelain western toilet in an M-shape, knees up and out, hand at her clit, full body including feet. Only the filthy porcelain western toilet, the tiles, and seated Aya fill the frame. The camera stays in front the whole take",
+          "action": "Aya is already seated on the filthy porcelain western toilet from frame one, fully nude, facing the camera, knees up and out in an M-shape, soles toward the camera. She is sitting with open legs while masturbating with her hand. Her hand rubs her clit in short snappy strokes from frame one and the rubbing KEEPS going the whole take. She has an orgasm: teeth grit, head tips back, thighs and lower belly flex, her pussy and anus have strong orgasmic contractions visibly tightening and releasing rhythmically. Then she eases, catching her breath. Aya looks like it feels really good, not blank. Flushed, mouth open, brows knit. Small soft female moans. Background audio is her breathing and sighing only. Aya STAYS SEATED on this same bowl from the first frame to the last frame. Nobody else in frame. Last frame: Aya still seated facing the camera in an M-shape, hand still rubbing. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "あんっ"
+              "line": "あんっ",
+              "action": ""
             }
           ],
           "loco": "planted",
@@ -2127,7 +2142,8 @@
           "still": "",
           "trim": {
             "start": 0,
-            "seconds": 4.0
+            "seconds": 4.0,
+            "action": ""
           },
           "cast": [
             "aya"
@@ -2135,7 +2151,7 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [],
           "trigger": "",
           "hud": {
@@ -2151,16 +2167,18 @@
             "objective_distance": 0.5,
             "icons_active": [
               "隠"
-            ]
+            ],
+            "action": ""
           },
           "sfx": "A stand, footsteps on linoleum, HVAC",
           "music": "Bass holds",
           "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. The corridor continues past the RIGHT edge. Adults move LEFT or RIGHT. Both adults full body including feet. Aya standing up then walking RIGHT alone, full body including feet. Nobody else in frame.",
-          "action": "Aya STANDS from the plant-flesh toilet bowl and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "action": "Aya STANDS from the filthy porcelain western toilet and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Nobody else in frame. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
           "voices": [
             {
               "who": "aya",
-              "line": "ん"
+              "line": "ん",
+              "action": ""
             }
           ],
           "loco": "walk"
@@ -2182,8 +2200,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
           "extra_loras": [
             "mystic"
           ],
@@ -2228,8 +2246,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
           "extra_loras": [
             [
               "tentacles3d",
@@ -2288,8 +2306,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
+          "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
           "extra_loras": [
             [
               "tentacles3d",
@@ -2349,7 +2367,7 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
           "extra_loras": [],
           "trigger": "",
           "hud": {
@@ -2397,8 +2415,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "solodildo",
@@ -2430,7 +2448,7 @@
           },
           "sfx": "A squat on tile, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "camera": "FROM THE STALL DOOR looking toward the filthy porcelain seat. Aya sits on the seat, back toward the camera, both feet on the tiles. The thick penis-shaped dildo is in her right hand beside the seat. Full body including both feet. Distance stays the same.",
           "action": "Aya is already in this stall, fully nude, full body including both feet, both arms, and both hands. She SITS on the porcelain seat. Both feet plant on the tiles in front of the bowl. Knees stay open. A thick penis-shaped dildo lies on the tiles beside the seat. Aya's right hand reaches beside the seat, lifts the dildo, and holds it. The glans stays outside the anus. The hairless pussy stays a closed slit beside the anus. Last frame: Aya seated on the porcelain seat, right hand holding the dildo, glans outside the anus, both feet on the tiles.",
           "voices": [
             {
@@ -2456,8 +2474,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "solodildo",
@@ -2489,7 +2507,7 @@
           },
           "sfx": "A wet join, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "camera": "FROM THE STALL DOOR looking toward the filthy porcelain seat. Aya sits on the seat, back toward the camera, both feet on the tiles. The thick penis-shaped dildo is in her right hand beside the seat. Full body including both feet. Distance stays the same.",
           "action": "They stay in this same stall. Aya stays seated on the porcelain seat, both feet on the tiles, knees open, both arms in frame. Her right hand holds the thick penis-shaped dildo. The glans meets the anus. The right hand presses the dildo forward. The dildo TRAVELS INTO the anus in one continuous press until the base meets the buttocks. HOLD still joined at the BASE until the last frame. The hairless pussy stays a closed slit beside the anus. Aya says 「気持ちいい」. Last frame: seated, the dildo buried to the root in the anus, the right hand still on the dildo.",
           "voices": [
             {
@@ -2517,8 +2535,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "solodildo",
@@ -2554,7 +2572,7 @@
           },
           "sfx": "A wet pulse, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "camera": "FROM THE STALL DOOR looking toward the filthy porcelain seat. Aya sits on the seat, back toward the camera, both feet on the tiles. The thick penis-shaped dildo is in her right hand beside the seat. Full body including both feet. Distance stays the same.",
           "action": "They start already joined in this same stall. Aya stays seated on the porcelain seat, both feet on the tiles. The right hand keeps hold of the penis-shaped dildo buried in the anus. Short vertical moves of the hand keep the glans inside the anus. Aya climaxes. Thick WHITE goo OVERFLOWS around the dildo. Aya says 「あ、いく」. Last frame: seated, the dildo still inside, WHITE goo on the join, the right hand still holding the dildo.",
           "voices": [
             {
@@ -2580,8 +2598,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A thick penis-shaped dildo lies on the tiles beside the seat. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2605,7 +2623,7 @@
           },
           "sfx": "A wet leave, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the plant-flesh hole. Aya's back stays toward the camera. Both feet stay outside the fleshy plant rim. The anus stays over the CENTER of the hole. A thick penis-shaped toy stands on a suction cup in the center of the hole. Full body including both feet. Distance stays the same.",
+          "camera": "FROM THE STALL DOOR looking toward the filthy porcelain seat. Aya sits on the seat, back toward the camera, both feet on the tiles. The thick penis-shaped dildo is in her right hand beside the seat. Full body including both feet. Distance stays the same.",
           "action": "They start already joined in this same stall. Aya stays seated on the porcelain seat. The right hand pulls the penis-shaped dildo out. The dildo leaves the anus and FALLS onto the tiles beside the seat. The anus stays open in a wide ring. Thick WHITE goo hangs from the ring. Last frame: the dildo on the tiles beside the seat, the wide ring open, Aya still seated.",
           "voices": [
             {
@@ -2678,8 +2696,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2703,8 +2721,8 @@
           },
           "sfx": "Footsteps on tile, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the plant mouth sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
-          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the tiles in front of the plant mouth, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the tiles, back toward the camera, face toward the hood, both feet on the tiles. The plant mouth and the hood stay in frame. Nobody else in frame.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the tiles in front of the squat pan, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the tiles, back toward the camera, face toward the hood, both feet on the tiles. The squat pan and the hood stay in frame. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2727,8 +2745,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2753,7 +2771,7 @@
           "sfx": "A knee bend, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same.",
-          "action": "They stay in this same stall. Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood. Last frame: Aya still squats deep over the plant mouth, heels on the tiles, both feet outside the fleshy plant rim, anus over the center of the hole, face toward the hood. Nobody else in frame.",
+          "action": "They stay in this same stall. Aya already SQUATS deep over the squat pan, heels on the tiles, both feet planted OUTSIDE the stained squat rim of the squat pan, knees open, anus over the CENTER of the hole, face toward the hood. Last frame: Aya still squats deep over the squat pan, heels on the tiles, both feet outside the stained squat rim, anus over the center of the hole, face toward the hood. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2778,8 +2796,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2808,7 +2826,7 @@
           "sfx": "A wet slide, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same.",
-          "action": "They stay in this same stall. Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood. A thick extra-viscous grimy brown log SLIDES from the stretched anus and hangs toward the plant mouth, still joined at the anus. The log stays joined until the last frame. Last frame: Aya still squats deep over the plant mouth, the brown log still joined from the anus toward the hole. Nobody else in frame.",
+          "action": "They stay in this same stall. Aya already SQUATS deep over the squat pan, heels on the tiles, both feet planted OUTSIDE the stained squat rim of the squat pan, knees open, anus over the CENTER of the hole, face toward the hood. A thick extra-viscous grimy brown log SLIDES from the stretched anus and hangs toward the squat pan, still joined at the anus. The log stays joined until the last frame. Last frame: Aya still squats deep over the squat pan, the brown log still joined from the anus toward the hole. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2834,7 +2852,7 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [],
           "trigger": "",
           "hud": {
@@ -2881,8 +2899,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2906,8 +2924,8 @@
           },
           "sfx": "Footsteps on tile, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the plant mouth sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
-          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the tiles in front of the plant mouth, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the tiles, back toward the camera, face toward the hood, both feet on the tiles. The plant mouth and the hood stay in frame. Nobody else in frame.",
+          "camera": "FROM THE STALL DOOR looking toward the FAR wall. The hood of the squat pan sits at the FAR end. Aya's back stays toward the camera. Aya's face stays toward the hood. The spine stays aimed at the hood. Full body including both feet and the hood. Distance stays the same.",
+          "action": "Aya WALKS into this stall from the door behind the camera, fully nude, full body including both feet, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body. She STOPS on the tiles in front of the squat pan, still standing, back toward the camera, face toward the hood. Last frame: Aya standing on the tiles, back toward the camera, face toward the hood, both feet on the tiles. The squat pan and the hood stay in frame. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2930,8 +2948,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -2956,7 +2974,7 @@
           "sfx": "A knee bend, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same.",
-          "action": "They stay in this same stall. Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood. Last frame: Aya still squats deep over the plant mouth, heels on the tiles, both feet outside the fleshy plant rim, anus over the center of the hole, face toward the hood. Nobody else in frame.",
+          "action": "They stay in this same stall. Aya already SQUATS deep over the squat pan, heels on the tiles, both feet planted OUTSIDE the stained squat rim of the squat pan, knees open, anus over the CENTER of the hole, face toward the hood. Last frame: Aya still squats deep over the squat pan, heels on the tiles, both feet outside the stained squat rim, anus over the center of the hole, face toward the hood. Nobody else in frame.",
           "voices": [
             {
               "who": "aya",
@@ -2982,8 +3000,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "mystic",
@@ -3008,7 +3026,7 @@
           "sfx": "One footstep, fluorescent buzz, HVAC",
           "music": "Bass holds",
           "camera": "LOW camera behind Aya, below the buttocks, looking toward the hood. Aya's back stays toward the camera. Aya's face stays toward the hood. Miki stays behind Aya, face toward the same hood, body toward the same hood. Miki RUBS the buttocks with both palms. The anus stays over the center of the hole. Full body including both feet and the hood. Distance stays the same. Both adults stay in frame.",
-          "action": "They stay in this same stall. Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood. Miki STEPS IN from the stall door and stays behind Aya, face toward the same hood, body toward the same hood, fully nude, vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft, hollow empty dark eye sockets, open red lacerations across the body, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact purple skin, erect 24cm the same vivid purple as the hips not pale-tan flesh. Miki RUBS Aya's buttocks with both palms. Miki's erect 24cm hangs in front of Aya's buttocks, a gap of open air between the glans and the skin. Aya's groin stays a hairless pussy. Last frame: Aya still squats deep over the plant mouth, face toward the hood, heels on the tiles, both feet outside the fleshy plant rim. Miki stays behind Aya, face toward the hood, body toward the hood, both palms on the buttocks. The 24cm hangs in front of the buttocks.",
+          "action": "They stay in this same stall. Aya already SQUATS deep over the squat pan, heels on the tiles, both feet planted OUTSIDE the stained squat rim of the squat pan, knees open, anus over the CENTER of the hole, face toward the hood. Miki STEPS IN from the stall door and stays behind Aya, face toward the same hood, body toward the same hood, fully nude, vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft, hollow empty dark eye sockets, open red lacerations across the body, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact purple skin, erect 24cm the same vivid purple as the hips not pale-tan flesh. Miki RUBS Aya's buttocks with both palms. Miki's erect 24cm hangs in front of Aya's buttocks, a gap of open air between the glans and the skin. Aya's groin stays a hairless pussy. Last frame: Aya still squats deep over the squat pan, face toward the hood, heels on the tiles, both feet outside the stained squat rim. Miki stays behind Aya, face toward the hood, body toward the hood, both palms on the buttocks. The 24cm hangs in front of the buttocks.",
           "voices": [
             {
               "who": "aya",
@@ -3034,8 +3052,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "jacko",
@@ -3067,8 +3085,8 @@
           },
           "sfx": "Chest on tile, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
-          "action": "They stay in this same stall. Aya folds forward from the squat. Her hands walk forward on the tiles toward the hood. Her elbows meet the tiles. Aya's chest comes down onto the tiles over the plant mouth. Miki steps in from behind and kneels over the raised hips. Both of Miki's knees land on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both feet land on the tiles behind those knees. Miki's chest faces down toward Aya's back. Miki's back faces the camera. Both forearms come down onto the tiles. The head comes down and rests on the forearms. The face looks at the camera with a pleasure-drunk open-mouth smile. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The erect 24cm hangs in front of the cleft, still outside. Aya's groin stays a hairless pussy. Aya says 「やばい、だめ」. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, Miki over the raised hips, the 24cm outside the cleft. Both adults full body including both feet and the hood.",
+          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
+          "action": "They stay in this same stall. Aya folds forward from the squat. Her hands walk forward on the tiles toward the hood. Her elbows meet the tiles. Aya's chest comes down onto the tiles over the squat pan. Miki steps in from behind and kneels over the raised hips. Both of Miki's knees land on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both feet land on the tiles behind those knees. Miki's chest faces down toward Aya's back. Miki's back faces the camera. Both forearms come down onto the tiles. The head comes down and rests on the forearms. The face looks at the camera with a pleasure-drunk open-mouth smile. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The erect 24cm hangs in front of the cleft, still outside. Aya's groin stays a hairless pussy. Aya says 「やばい、だめ」. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, Miki over the raised hips, the 24cm outside the cleft. Both adults full body including both feet and the hood.",
           "voices": [
             {
               "who": "aya",
@@ -3094,8 +3112,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "jacko",
@@ -3131,8 +3149,8 @@
           },
           "sfx": "A wet join, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
-          "action": "They start already in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera with a pleasure-drunk open-mouth smile. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. Miki's knees bend. Miki's hips move DOWN once from above the raised hips. Miki's chest stays toward Aya's back. Aya's cheek stays on her forearms. Aya's mouth opens. Aya's two knees stay on the tiles. Each thigh stays joined at its hip joint. Aya's feet stay planted outside the rim. The erect 24cm TRAVELS INTO the anus to the root once from above. The hairless pussy stays a closed slit under the anus. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, the shaft buried in the anus to the root. Both adults full body including both feet and the hood.",
+          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera with a pleasure-drunk open-mouth smile. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. Miki's knees bend. Miki's hips move DOWN once from above the raised hips. Miki's chest stays toward Aya's back. Aya's cheek stays on her forearms. Aya's mouth opens. Aya's two knees stay on the tiles. Each thigh stays joined at its hip joint. Aya's feet stay planted outside the rim. The erect 24cm TRAVELS INTO the anus to the root once from above. The hairless pussy stays a closed slit under the anus. HOLD still joined at the BASE until the last frame. Aya's groin stays a hairless pussy. Aya says 「気持ちいい」. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, the shaft buried in the anus to the root. Both adults full body including both feet and the hood.",
           "voices": [
             {
               "who": "aya",
@@ -3160,8 +3178,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "jacko",
@@ -3201,8 +3219,8 @@
           },
           "sfx": "A wet pulse, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
-          "action": "They start already joined in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The erect 24cm stays buried to the root in the anus. Miki's knees bend a short way and the hips drop toward Aya's buttocks, then the knees open back a short way and the hips rise a short distance. Short vertical moves keep the glans inside. The hairless pussy stays a closed slit under the anus. Hips return flush. Miki finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip. Both adults full body including both feet and the hood.",
+          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already joined in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The erect 24cm stays buried to the root in the anus. Miki's knees bend a short way and the hips drop toward Aya's buttocks, then the knees open back a short way and the hips rise a short distance. Short vertical moves keep the glans inside. The hairless pussy stays a closed slit under the anus. Hips return flush. Miki finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. Aya says 「あ、いく」. Last frame: still buried to the root, WHITE goo pooled at the join and running down, forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip. Both adults full body including both feet and the hood.",
           "voices": [
             {
               "who": "aya",
@@ -3228,8 +3246,8 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Extra-viscous sticky grimy brown hospital dirt and brown smears on the tiles, the pan rim, the hood, and the plaster. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "environment": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "jacko",
@@ -3253,8 +3271,8 @@
           },
           "sfx": "A wet leave, fluorescent buzz, HVAC",
           "music": "Bass holds",
-          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
-          "action": "They start already joined on this same plant mouth in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the fleshy plant rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. Both of Miki's knees stay on the tiles. Miki MOVES the hips BACK once, up off the buttocks, until the erect 24cm leaves the anus. Aya's chest stays on the tiles. Aya's two knees stay on the tiles. Each thigh stays joined at its hip joint. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring toward the plant mouth. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, the open ring visible, WHITE goo hanging from the ring, the 24cm outside the anus, Miki still over the raised hips. Both adults full body including both feet and the hood.",
+          "camera": "LOW three-quarter from behind the hips. Aya's head points toward the hood. Her buttocks point toward the door. Both forearms rest on the tiles. Her head rests on her forearms. Her face looks at the camera with a smile. Her chest stays on the tiles. Her hips stay high. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. The hood stays beyond Aya's head. Both adults full body including both feet and the hood. Distance stays the same.",
+          "action": "They start already joined on this same squat pan in this same stall. Both forearms rest on the tiles. The head rests on the forearms. The face looks at the camera. The chest stays on the tiles. The hips stay high. The buttocks point toward the door. Both elbows sit under the shoulders. One neck joins the head to the two shoulders. The head stays in front of the shoulders. The lower back arches. Both hip joints stay in the pelvis. Each thigh leaves its hip joint and slopes down to a knee. Both knees rest on the tiles, apart, outside the width of the hips. Both shins rest on the tiles. Both feet rest on the tiles, toes toward the door, outside the stained squat rim. The lens sits low behind the hips. The hood is on the LEFT and the door is on the RIGHT. The head stays at the LEFT end beside the hood. Both feet stay at the RIGHT end. The two thighs stay connected at the two hip joints. The face stays on the forearms at the left end. The anus stays up at the hips. Miki kneels over the raised hips. Both of Miki's knees rest on the tiles, one knee outside each of Aya's thighs. Both of Miki's shins and both of Miki's feet rest on the tiles behind those knees. Miki's pelvis stays above Aya's buttocks. Miki's chest faces down toward Aya's back. Miki's back and both buttocks face the camera. One neck joins Miki's one head to Miki's two shoulders. That head stays past Aya's shoulders toward the hood. Both of Miki's hands rest on Aya's waist. Two arms join those hands to the shoulders. Both of Miki's knees stay on the tiles. Miki MOVES the hips BACK once, up off the buttocks, until the erect 24cm leaves the anus. Aya's chest stays on the tiles. Aya's two knees stay on the tiles. Each thigh stays joined at its hip joint. The anus stays open in a wide ring. Thick WHITE goo hangs from the open ring toward the squat pan. Last frame: forearms on the tiles, head on the forearms, face at the camera, hips high, both knees on the tiles, each thigh joined at its hip, the open ring visible, WHITE goo hanging from the ring, the 24cm outside the anus, Miki still over the raised hips. Both adults full body including both feet and the hood.",
           "voices": [
             {
               "who": "aya",
@@ -3285,7 +3303,7 @@
           "face_visible": false,
           "camera_pack": "none",
           "props": [],
-          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long open plant mouth set flush into the tile floor, the fleshy plant rim level with the tiles. Green rind on the outside, red wet flesh inside the mouth. Amber sap drips from the rim. Brown roots grip the tiles. A green pitcher-leaf hood sits at the FAR end of the mouth. Then the corridor outside the stall door.",
+          "place": "A filthy crumbling hospital stall at night. Peeling grey plaster walls. Cracked stained tiles on the floor. One long squat pan set flush into the tile floor, the stained squat rim level with the tiles. Extra-viscous sticky grimy brown hospital dirt and brown smears cover the pan, the rim, the tiles, and the plaster. A tiled hood wall sits at the FAR end of the pan. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
           "extra_loras": [
             [
               "kiss",
