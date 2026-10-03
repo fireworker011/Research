@@ -2225,7 +2225,7 @@ _EMBRACE_SHAFT = {
     "miki": ("Miki", "24cm", "the same vivid purple as the hips not pale-tan flesh"),
     "rei": ("Rei", "24cm", "the same vivid purple as the hips not pale-tan flesh"),
     "kana": ("Kana", "20cm", "the same vivid purple as the hips not pale-tan flesh"),
-    "shino": ("Shino", "30cm", "the same pale gray-white as the hips not pale-tan flesh"),
+    "shino": ("Shino", "35cm", "the same pale gray-white as the hips not pale-tan flesh"),
     "tsuno": ("Tsuno", "24cm", "an ashen-gray shaft that stays ashen gray not pale-tan flesh"),
 }
 
@@ -2484,7 +2484,7 @@ _AYA_RIB_FEET: dict[str, tuple[str, str]] = {
     "03-kiss": ("Miki", "24cm"),
     "06-doggy": ("Rei", "24cm"),
     "09-join": ("Kana", "20cm"),
-    "12-exit": ("Shino", "30cm"),
+    "12-exit": ("Shino", "35cm"),
     "04-tsuno": ("Tsuno", "ashen-gray 24cm"),
 }
 _RIB_BASE_OF: dict[str, str] = {
@@ -2929,8 +2929,8 @@ FINALE_LOOK: dict[str, str] = {
     "shino": (
         "Shino stays an extremely tall elongated adult with long straight dark hair, very pale gray-white skin, "
         "vacant wide staring monster eyes, a long forked reptile tongue, long arms with hands past mid-thigh, "
-        "grimy dirty stains from hair to the erect 30cm shaft to her feet, wet peeling rotting patches on the hips, "
-        "groin and the 30cm shaft, the 30cm shaft the same pale gray-white as the hips not pale-tan flesh."
+        "grimy dirty stains from hair to the erect 35cm shaft to her feet, wet peeling rotting patches on the hips, "
+        "groin and the 35cm shaft, the 35cm shaft the same pale gray-white as the hips not pale-tan flesh."
     ),
     "tsuno": (
         "Tsuno stays a slim feminine adult with long dark hair, ashen gray skin, a still-beautiful face whose LEFT half "
@@ -3802,10 +3802,10 @@ _APPEARANCE: dict[str, dict[str, Any]] = {
         "hair": "long straight dark hair past the shoulders",
         "color": "dark hair",
         "face": "vacant wide staring monster eyes, seductive feminine face with an alluring slight smile",
-        "dirt": ("filmed with grimy dirty stains from hair to the 30cm shaft to her feet",),
+        "dirt": ("filmed with grimy dirty stains from hair to the 35cm shaft to her feet",),
         "sweat": (),
         "clothes": ("fully nude, no clothes, no gown", "fully nude"),
-        "shaft": "one erect 30cm human penis attached at the front of the groin between the thighs, the base on the front of the pelvis, the shaft pointing FORWARD and UP from the crotch, huge thick human girth, straight heavy shaft, the 30cm shaft is the same pale gray-white as the hips and torso not pale-tan flesh and not purple, gray-white shaft and gray-white glans, the buttocks stay bare, the penis stays on the front groin while she stoops, flushed dusky-gray glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
+        "shaft": "one erect 35cm human penis attached at the front of the groin between the thighs, the base on the front of the pelvis, the shaft pointing FORWARD and UP from the crotch, huge thick human girth, straight heavy shaft, the 35cm shaft is the same pale gray-white as the hips and torso not pale-tan flesh and not purple, gray-white shaft and gray-white glans, the buttocks stay bare, the penis stays on the front groin while she stoops, flushed dusky-gray glans with a clear corona and visible frenulum, veins along the shaft, no testicles, no scrotum, hairless female pussy at the base",
     },
     "gin": {
         "name": "Gin",
@@ -4211,7 +4211,7 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
             if clause and clause != "no penis, never futanari":
                 _replace_phrase(out, cid, str(clause), _SHAFT_OFF_LOOK)
                 token = ""
-                for piece in ("erect 20cm", "erect 30cm", "erect ashen-gray 24cm", "erect 24cm"):
+                for piece in ("erect 20cm", "erect 35cm", "erect ashen-gray 24cm", "erect 24cm"):
                     if piece in str(clause) or (cid == "tsuno" and piece == "erect ashen-gray 24cm"):
                         token = piece
                         break

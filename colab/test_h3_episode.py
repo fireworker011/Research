@@ -144,6 +144,7 @@ from h3_episode_packs import (  # noqa: E402
     INVITE_POSE_MODES,
     RIDE_FOOT_CHOICES,
     INVITE_POSE_OVERLAY_KEYS,
+    SCENE_ACTION_MODES,
     STORY_MODES,
     TOILET_MODES,
     TSUNO_MODES,
@@ -2718,6 +2719,59 @@ def test_hospital_invite_finale_follows_the_last_partner():
     )
     assert gin["beats"][-1]["id"] == "04-gin-walk"
     assert "04-gin-kiss" not in [b["id"] for b in gin["beats"]]
+
+
+def test_hospital_shino_stays_35cm_and_horn_prefix_beats_stay():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert "30cm" not in raw["cast"]["shino"]["lock"]
+    assert "35cm" in raw["cast"]["shino"]["lock"]
+    handoff = (HOSPITAL_DIR / "HANDOFF.md").read_text(encoding="utf-8")
+    assert "膣の立ちバック" not in handoff
+    assert "30cm" not in handoff
+    assert "35cm" in handoff
+    assert "肛門" in SCENE_ACTION_MODES["invite_stand"]["when_ja"]
+    assert "膣" not in SCENE_ACTION_MODES["invite_stand"]["when_ja"]
+    assert "抱きながら肛門" in TSUNO_MODES["invite_stand"]["when_ja"]
+    assert "壁で胸を掴んで" in TSUNO_MODES["anal_back"]["when_ja"]
+
+    bent = prepare_episode(raw, story_override="誘う", ride_bent_override="しの")
+    seat = next(b for b in bent["beats"] if b["id"] == "12-exit-ride")
+    assert "35cm" in seat["action"]
+    assert "30cm" not in seat["action"]
+    emb = prepare_episode(raw, story_override="誘う", invite_pose_override="embrace")
+    entered = next(b for b in emb["beats"] if b["id"] == "12-exit-in")
+    assert "35cm" in entered["action"]
+    assert "30cm" not in entered["action"]
+    finale = prepare_episode(raw, story_override="誘う")
+    kiss = finale["beats"][-1]["action"]
+    assert finale["beats"][-1]["id"] == "12-exit-kiss"
+    assert "35cm" in kiss
+    assert "30cm" not in kiss
+    bare = prepare_episode(raw, appearance_override={"enemies": "shino; shaft=なし"})
+    assert "erect 35cm" not in bare["cast"]["shino"]["lock"]
+    assert "a bare hairless groin" in bare["cast"]["shino"]["lock"]
+
+    invite = prepare_episode(raw, tsuno_override="誘う立ちバック")
+    invite_ids = [b["id"] for b in invite["beats"]]
+    assert invite_ids.index("04-tsuno-meet") < invite_ids.index("04-tsuno-in")
+    invite_meet = next(b for b in invite["beats"] if b["id"] == "04-tsuno-meet")
+    invite_in = next(b for b in invite["beats"] if b["id"] == "04-tsuno-in")
+    assert "knead them from behind" in invite_meet["action"].lower()
+    assert "travels into aya's anus" in invite_meet["action"].lower()
+    assert "balls of both feet" in invite_in["action"].lower()
+    assert "travels into the anus" in invite_in["action"].lower()
+
+    anal = prepare_episode(raw, tsuno_override="後ろアナル")
+    anal_ids = [b["id"] for b in anal["beats"]]
+    assert anal_ids.index("04-tsuno-meet") < anal_ids.index("04-tsuno-in")
+    anal_meet = next(b for b in anal["beats"] if b["id"] == "04-tsuno-meet")
+    anal_in = next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")
+    assert "cup aya's breasts" in anal_meet["action"].lower()
+    assert "palms hit the wall" in anal_meet["action"].lower()
+    assert "travels into aya's anus" in anal_meet["action"].lower()
+    assert "chest and cheek" in anal_in["action"].lower()
+    assert "open wide" in anal_in["action"].lower()
+    assert "travels into the anus" in anal_in["action"].lower()
 
 
 def test_hospital_appear_none_and_option_matrix():
