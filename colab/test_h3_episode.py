@@ -1391,7 +1391,7 @@ def test_hospital_exit_adult_accept_is_survival_complete():
         "12-exit-peak",
         "12-exit-out",
     ]
-    assert expected_duration(ep) == pytest.approx(124.1, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(140.1, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is True
     assert not any(b.get("extra_loras") == ["combat"] for b in ep["beats"])
     assert all("on_invite" not in b for b in ep["beats"])
@@ -1405,7 +1405,16 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     miki_prompt = build_beat_prompt(ep, miki, trigger=merge_trigger("", miki))
     miki_walk = next(b for b in ep["beats"] if b["id"] == "03-kiss-walk")
     assert miki_walk["cast"] == ["aya"]
-    assert "miki is gone from frame one" in miki_walk["action"].lower()
+    assert "tongues intertwine" in miki_walk["action"].lower()
+    assert "miki steps out" in miki_walk["action"].lower()
+    assert extra_lora_entries(miki_walk)[0] == ("kiss", 0.5)
+    for mode in ("小便", "オナニー", "触手", "アナル指", "和式"):
+        solo = prepare_episode(raw, story_override="受け入れる", toilet_override=mode, appear_override={"miki": True, "rei": False, "kana": False, "shino": False})
+        out = next(b for b in solo["beats"] if b["id"] == "04-toilet-out")
+        assert "tongues intertwine" not in out["action"].lower(), mode
+    dog = prepare_episode(raw, story_override="受け入れる", dog_override="受け入れる", appear_override={"miki": True, "rei": False, "kana": False, "shino": False})
+    dog_walk = next(b for b in dog["beats"] if b["id"] == "04-dog-walk")
+    assert "tongues intertwine" not in dog_walk["action"].lower()
     assert extra_keys(miki) == ["blowjob", "mystic"]
     assert miki.get("trigger") == "bl0w_j0b"
     assert miki_prompt.startswith("bl0w_j0b")
@@ -1432,7 +1441,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     walk = next(b for b in ep["beats"] if b["id"] == "06-doggy-walk")
     assert walk["cast"] == ["aya"]
     assert "walks right" in walk["action"].lower()
-    assert "gone from frame one" in walk["action"].lower()
+    assert "tongues intertwine" in walk["action"].lower()
+    assert "rei steps out" in walk["action"].lower()
     kana_meet = next(b for b in ep["beats"] if b["id"] == "07-kana")
     assert kana_meet["cast"] == ["aya", "kana"]
     assert "shino is not in frame" in kana_meet["action"].lower()
@@ -1523,7 +1533,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(181.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(193.2, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -3134,7 +3144,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "lewd pleasure-drunk" in peak["action"].lower()
     assert "erect ashen-gray 24cm" in peak["action"].lower()
     assert out["cast"] == ["aya"]
-    assert "gone from frame one" in out["action"].lower()
+    assert "tongues intertwine" in out["action"].lower()
+    assert "tsuno steps out" in out["action"].lower()
     blob = action_blob(stand, "04-tsuno")
     assert "doggy" not in blob and "missionary" not in blob
     assert "zombie" not in build_beat_prompt(stand, join).lower()
