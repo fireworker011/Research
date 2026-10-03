@@ -50,6 +50,8 @@ INVITE_POSE = __POSE_DEFAULT__  #@param __POSE_CHOICES__
 RIDE_BENT = "なし"  #@param __RIDE_CHOICES__
 #@markdown **騎乗・足を揃えて立ってから下ろす** — 跪きから一度まっすぐ立ち、足裏は肋骨のすぐ横。それから膝を曲げて下ろす。乗る人の手が仰向けの胸。選んだ人だけ。同じ人を両方で選ぶと、足を揃えて立ってから下ろす。
 RIDE_COLUMN = "なし"  #@param __RIDE_CHOICES__
+__CHECKPOINT_HELP__
+CHECKPOINT = __CHECKPOINT_DEFAULT__  #@param __CHECKPOINT_CHOICES__
 __TOILET_HELP__
 TOILET = __TOILET_DEFAULT__  #@param __TOILET_CHOICES__
 __GIN_HELP__
@@ -115,6 +117,7 @@ os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_RIDE_BENT"] = RIDE_BENT
 os.environ["H3_EPISODE_RIDE_COLUMN"] = RIDE_COLUMN
+os.environ["H3_EPISODE_CHECKPOINT"] = CHECKPOINT
 os.environ["H3_EPISODE_TOILET"] = TOILET
 os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
@@ -303,7 +306,10 @@ def make_nb() -> dict:
         .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
         .replace("__RIDE_CHOICES__", json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False))
-        .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 病棟の道中。どれでも次へ"))
+        .replace("__CHECKPOINT_HELP__", form_markdown("checkpoint", "チェックポイント — 10Eros Max か DaSiWa"))
+        .replace("__CHECKPOINT_DEFAULT__", json.dumps(ui_default("checkpoint"), ensure_ascii=False))
+        .replace("__CHECKPOINT_CHOICES__", json.dumps(ui_choices("checkpoint"), ensure_ascii=False))
+        .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 触手便器か普通の便器。和式は別"))
         .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
         .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))

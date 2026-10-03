@@ -462,14 +462,14 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
     "tentacle": {
         "label_ja": "触手",
         "choice_ja": "トイレ・触手",
-        "when_ja": "歩いて座り、触手、中出し、立って歩く。どれでも次へ",
-        "hint_ja": "入室して座る→触手→液体中出し→立って歩く",
+        "when_ja": "触手便器だけ。100%有機物の洋式。普通の洋式・和式・ディルドは別",
+        "hint_ja": "有機物の便器に座って触手。小便・オナニー・ディルドは汚れた洋式。和式は別",
     },
     "finger": {
         "label_ja": "アナル指",
         "choice_ja": "トイレ・アナル指",
-        "when_ja": "しゃがんで足は便器の外。床の吸盤に立った極太のペニス形。一度下ろして根元、上下で絶頂、抜けて落ち、輪が開く",
-        "hint_ja": "04-toilet-toy でしゃがむ。次で根元。pump で絶頂。gape で落ちて輪。小便は別",
+        "when_ja": "普通の洋式便器。便座の横の極太ディルドを手で持つ。触手便器ではない。一度入れて根元、上下で絶頂、抜いて輪",
+        "hint_ja": "便座の横のディルド。手で肛門へ。pump で絶頂。gape で抜く。触手便器は別。和式は別",
     },
     "wash": {
         "label_ja": "和式排出",
@@ -1441,6 +1441,39 @@ def canonical_ride_person(name: str) -> str:
     return RIDE_PERSON_ALIASES[raw]
 
 
+CHECKPOINT_MODES: dict[str, dict[str, Any]] = {
+    "eros-max": {
+        "label_ja": "10Eros Max",
+        "choice_ja": "10Eros Max（既定）",
+        "when_ja": "今のエロチェックポイント。迷ったらこれ",
+        "recommend": True,
+    },
+    "dasiwa": {
+        "label_ja": "DaSiWa",
+        "choice_ja": "DaSiWa Hybrid v2",
+        "when_ja": "DaSiWa Hybrid v2。FL2VA と REF2VA。約20GB",
+    },
+}
+CHECKPOINT_ALIASES = {
+    "10Eros Max（既定）": "eros-max",
+    "10Eros Max": "eros-max",
+    "eros": "eros-max",
+    "eros-max": "eros-max",
+    "DaSiWa Hybrid v2": "dasiwa",
+    "DaSiWa": "dasiwa",
+    "dasiwa": "dasiwa",
+}
+
+
+def canonical_checkpoint(name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in CHECKPOINT_MODES:
+        return raw
+    return CHECKPOINT_ALIASES.get(raw, raw)
+
+
 def canonical_toilet(name: str) -> str:
     raw = str(name or "").strip()
     if not raw:
@@ -1704,6 +1737,8 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return STORY_MODES
     if kind == "invite_pose":
         return INVITE_POSE_MODES
+    if kind == "checkpoint":
+        return CHECKPOINT_MODES
     if kind == "toilet":
         return TOILET_MODES
     if kind == "gin":

@@ -90,6 +90,7 @@ def main() -> int:
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,
             ride_bent_override=(os.environ.get("H3_EPISODE_RIDE_BENT") or "").strip() or None,
             ride_column_override=(os.environ.get("H3_EPISODE_RIDE_COLUMN") or "").strip() or None,
+            checkpoint_override=(os.environ.get("H3_EPISODE_CHECKPOINT") or "").strip() or None,
             toilet_override=(os.environ.get("H3_EPISODE_TOILET") or "").strip() or None,
             gin_override=(os.environ.get("H3_EPISODE_GIN") or "").strip() or None,
             tsuno_override=(os.environ.get("H3_EPISODE_TSUNO") or "").strip() or None,

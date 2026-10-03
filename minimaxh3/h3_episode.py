@@ -154,6 +154,7 @@ from h3_episode_packs import (
     REI_POSE_OVERLAY_KEYS,
     REI_TOILET_MODES,
     REI_TOILET_OVERLAY_KEYS,
+    canonical_checkpoint,
     canonical_toilet,
     canonical_tsuno,
     canonical_rei_attack,
@@ -284,6 +285,10 @@ LORA_FILES = {
     # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
     # Civitai 2974434 version 3371009 fileId 3259145.
     "anuspussy": "anus_pussy_v2.safetensors",
+    # Facial ropes from the urethral slit onto the face. Civitai 2909163 version 3290361 fileId 3174815.
+    "cumfacial": "cum_facial_000005400.safetensors",
+    # Handheld toy. Civitai 1707303 version 3378450 fileId 3266906. No trigger word.
+    "solodildo": "h3_base_dildo_v1.0_9250.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -316,6 +321,8 @@ LORA_URLS = {
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
+    "cumfacial": "https://civitai.com/api/download/models/3290361?fileId=3174815",
+    "solodildo": "https://civitai.com/api/download/models/3378450?fileId=3266906",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -346,6 +353,8 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
+    "cumfacial": 1.0,
+    "solodildo": 0.7,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
@@ -414,6 +423,14 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
             f"{EROS_MAX_UNET}"
         ),
         # ~21GB int8. A 5GB truncated file must not count as ready.
+        "min_bytes": 15_000_000_000,
+        "expected_bytes": 21_000_000_000,
+    },
+    # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
+    "dasiwa": {
+        "file": "DasiwaMinimaxH3_dasiwaHybridV2_3203130.safetensors",
+        "erotic": True,
+        "url": "https://civitai.com/api/download/models/3314675?fileId=3203130",
         "min_bytes": 15_000_000_000,
         "expected_bytes": 21_000_000_000,
     },
@@ -1631,8 +1648,8 @@ def _checkpoint_errors(ep: dict[str, Any]) -> list[str]:
         errs.append(f"{slug} is a stock episode; render.checkpoint eros-max is forbidden")
     if slug.endswith(EROTIC_SLUG_SUFFIX) and lane_raw != "erotic":
         errs.append(f"{slug} must set render.lane erotic (stock UNet is not implied by the slug)")
-    if slug.endswith(EROTIC_SLUG_SUFFIX) and ckpt_raw != "eros-max":
-        errs.append(f"{slug} must set render.checkpoint eros-max (no silent stock fallback)")
+    if slug.endswith(EROTIC_SLUG_SUFFIX) and not spec.get("erotic"):
+        errs.append(f"{slug} must set an erotic checkpoint (eros-max or dasiwa)")
     return errs
 
 
@@ -4238,6 +4255,7 @@ def prepare_episode(
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
+    checkpoint_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4261,6 +4279,8 @@ def prepare_episode(
         render["combat"] = canonical_combat(combat_override) or combat_override
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
+    if checkpoint_override not in (None, ""):
+        render["checkpoint"] = canonical_checkpoint(checkpoint_override) or checkpoint_override
     if toilet_override not in (None, ""):
         render["toilet"] = canonical_toilet(toilet_override) or toilet_override
     if gin_override not in (None, ""):
@@ -7138,6 +7158,7 @@ def run_episode(
     rei_oral_override: str | None = None,
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
+    checkpoint_override: str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7174,6 +7195,7 @@ def run_episode(
         rei_oral_override=rei_oral_override,
         rei_pose_override=rei_pose_override,
         appearance_override=appearance_override,
+        checkpoint_override=checkpoint_override,
     )
     print(
         describe_run(
