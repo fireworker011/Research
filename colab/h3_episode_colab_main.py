@@ -34,6 +34,7 @@ Env:
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_EPISODE_START    beat id to redraw from. Empty starts at the first beat. The beat list is the current form. An id outside that list stops the run.
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
+  H3_WEIGHTS_ONLY=1   download the checkpoint and LoRAs, then stop. No GPU, no Comfy.
                       VRAM unloads only after a beat fails for lack of memory, then that same length is tried once
   H3_HELPER_BRANCH    GitHub branch for episode.json / stills bootstrap
 
@@ -52,6 +53,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from h3_episode import (
     DRIVE_ROOT_DEFAULT,
     EpisodeError,
+    WeightsReady,
     assert_not_production_root,
     bootstrap_episode,
     episode_root,
@@ -120,6 +122,9 @@ def main() -> int:
             },
         )
         print("DONE", slug, final)
+        return 0
+    except WeightsReady as e:
+        print(e)
         return 0
     except EpisodeError as e:
         print("EPISODE FAILED:", e)

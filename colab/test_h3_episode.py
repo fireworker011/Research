@@ -109,6 +109,7 @@ from h3_episode import (  # noqa: E402
     render_start_index,
     resolve_preset,
     resolve_unet,
+    WeightsReady,
     run_episode,
     stage_erotic_unet,
     stage_still,
@@ -265,6 +266,49 @@ def test_colab_and_minimaxh3_copies_in_sync():
     assert runtime_a == runtime_b, "h3_i2v_runtime.py differs between colab/ and minimaxh3/"
 
 
+def test_cpu_runtime_downloads_weights_and_does_not_start_comfy(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    calls: list[str] = []
+    monkeypatch.setattr(mod, "preflight", lambda *_a, **_k: [])
+    monkeypatch.setattr(mod, "ensure_episode_loras", lambda *_a, **_k: calls.append("lora") or ["skip existing a.safetensors"])
+    monkeypatch.setattr(mod, "ensure_episode_checkpoint", lambda *_a, **_k: calls.append("ckpt") or ["checkpoint ready x"])
+    monkeypatch.setattr(mod, "download_base_weights", lambda *_a, **_k: calls.append("base") or ["skip existing unet"])
+    monkeypatch.setattr(mod, "ensure_comfy", lambda *_a, **_k: calls.append("comfy"))
+    monkeypatch.setattr(mod, "start_comfy", lambda *_a, **_k: calls.append("start"))
+    monkeypatch.setenv("H3_WEIGHTS_ONLY", "1")
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    with pytest.raises(WeightsReady):
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
+    assert calls == ["lora", "ckpt", "base"]
+
+
+def test_gpu_run_downloads_before_comfy_starts(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    calls: list[str] = []
+    monkeypatch.setattr(mod, "preflight", lambda *_a, **_k: [])
+    monkeypatch.setattr(mod, "cuda_available", lambda: True)
+    monkeypatch.setattr(mod, "ensure_episode_loras", lambda *_a, **_k: calls.append("lora") or [])
+    monkeypatch.setattr(mod, "ensure_episode_checkpoint", lambda *_a, **_k: calls.append("ckpt") or [])
+    monkeypatch.setattr(mod, "download_base_weights", lambda *_a, **_k: calls.append("base") or [])
+    monkeypatch.setattr(mod, "ensure_comfy", lambda *_a, **_k: calls.append("comfy"))
+    monkeypatch.setattr(mod, "comfy_up", lambda *_a, **_k: False)
+    monkeypatch.setattr(mod, "stage_erotic_unet", lambda *_a, **_k: calls.append("stage") or "unet.safetensors")
+
+    def _start(*_a, **_k):
+        calls.append("start")
+        raise RuntimeError("stop after start")
+
+    monkeypatch.setattr(mod, "start_comfy", _start)
+    monkeypatch.setenv("H3_WEIGHTS_ONLY", "0")
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    with pytest.raises(RuntimeError, match="stop after start"):
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
+    assert calls.index("lora") < calls.index("ckpt") < calls.index("base")
+    assert calls.index("base") < calls.index("comfy") < calls.index("start")
+
+
 def test_helpers_list_matches_files():
     for rel in EPISODE_HELPERS:
         assert (ROOT / rel).is_file(), rel
@@ -348,6 +392,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert "5. 構成" in md
     assert "6. 誘うポーズ" in md
     assert "7. トイレ" in md
+    assert 'os.environ["H3_WEIGHTS_ONLY"] = "1"' in src
+    assert "GPU がオフです。ランタイムのタイプを A100 にしてやり直してください。" not in src
+    assert "チェックポイントと LoRA を Drive に取ります" in src
     assert "8. 灰色" in md
     assert "9. 角" in md
     assert "10. 犬" in md

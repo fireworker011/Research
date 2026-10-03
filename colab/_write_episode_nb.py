@@ -150,12 +150,15 @@ del _civitai
 Path(DRIVE_ROOT, "models").mkdir(parents=True, exist_ok=True)
 
 import torch
-if not torch.cuda.is_available():
-    raise SystemExit("GPU がオフです。ランタイムのタイプを A100 にしてやり直してください。")
-vram = torch.cuda.get_device_properties(0).total_memory / 1024 ** 3
-print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
-if vram < 20:
-    raise SystemExit("VRAM が足りません。A100 を選んでください。")
+if torch.cuda.is_available():
+    os.environ["H3_WEIGHTS_ONLY"] = "0"
+    vram = torch.cuda.get_device_properties(0).total_memory / 1024 ** 3
+    print("GPU:", torch.cuda.get_device_name(0), "VRAM GiB:", round(vram, 1))
+    if vram < 20:
+        raise SystemExit("VRAM が足りません。A100 を選んでください。")
+else:
+    os.environ["H3_WEIGHTS_ONLY"] = "1"
+    print("GPU はオフです。チェックポイントと LoRA を Drive に取ります。動画は描きません。終わったらランタイムを A100 にして、もう一度 Run all。")
 
 subprocess.run(["apt-get", "install", "-y", "-qq", "fonts-noto-cjk", "ffmpeg"], check=False, capture_output=True)
 
@@ -193,7 +196,10 @@ rc = main()
 print("episode exit", rc)
 if rc:
     raise SystemExit(rc)
-print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
+if os.environ.get("H3_WEIGHTS_ONLY") == "1":
+    print("取得だけ終わりました。ランタイムを A100 にして、もう一度 Run all すると動画を描きます。")
+else:
+    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
@@ -265,6 +271,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 シネマ LoRA は積まない。スローモーションの語は書かない。視点は三人称ゲームのまま。
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
+- チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のときは Drive へ置いて止まり、Comfy は起動しない。動画を描くときだけ A100
 - あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
 - Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。Drive に 1MB 超の同名ファイルがあれば再取得しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）

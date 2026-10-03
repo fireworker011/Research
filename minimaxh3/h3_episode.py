@@ -50,6 +50,11 @@ try:
 except ImportError:
     _COLAB_USERDATA = None
 
+try:
+    import torch
+except ImportError:
+    torch = None  # type: ignore[assignment]
+
 from PIL import Image
 
 from h3_hud import (
@@ -73,7 +78,16 @@ from h3_hud import (
     stitch,
     synthetic_clip,
 )
-from h3_i2v_phone import BRANCH, REPO, TURBO_LORA_NAME, collect_output_videos, github_raw, newest_mp4, stage_image_into_input
+from h3_i2v_phone import (
+    BRANCH,
+    REPO,
+    TURBO_LORA_NAME,
+    collect_output_videos,
+    github_raw,
+    i2v_download_jobs,
+    newest_mp4,
+    stage_image_into_input,
+)
 from h3_i2v_runtime import (
     COMFY_DIR_DEFAULT,
     PORT,
@@ -82,6 +96,7 @@ from h3_i2v_runtime import (
     comfy_up,
     detect_vram_gb,
     ensure_comfy,
+    fetch_weight,
     is_erotic_unet_name,
     pick_stock_fl2va,
     post_prompt,
@@ -1028,6 +1043,11 @@ MUNDANE_CLAUSE = "Calm everyday pace, ordinary small movements, an unremarkable 
 
 
 class EpisodeError(RuntimeError):
+    pass
+
+
+class WeightsReady(Exception):
+    """Checkpoint and LoRA files are on disk. Video generation was not started."""
     pass
 
 
@@ -6034,6 +6054,42 @@ def _collect_extra_lora_keys(node: Any, keys: list[str]) -> None:
             _collect_extra_lora_keys(value, keys)
 
 
+def cuda_available() -> bool:
+    """True only when this process can see a CUDA device. Downloads do not need one."""
+    if torch is None:
+        return False
+    try:
+        return bool(torch.cuda.is_available())
+    except Exception:
+        return False
+
+
+def download_base_weights(models_root: Path | str) -> list[str]:
+    """Stock UNet, VAE, text encoder, and the turbo LoRA. Skip a file already over 1MB."""
+    notes: list[str] = []
+    for url, dest in i2v_download_jobs(models_root):
+        before = dest.is_file() and dest.stat().st_size > 1_000_000
+        fetch_weight(url, dest)
+        notes.append(f"skip existing {dest.name}" if before else f"fetched {dest.name}")
+    return notes
+
+
+def download_episode_weights(ep: dict[str, Any], models_root: Path | str) -> list[str]:
+    """Checkpoint and LoRAs onto Drive. No Comfy process and no GPU."""
+    models = Path(models_root)
+    notes: list[str] = []
+    for note in ensure_episode_loras(ep, models / "loras"):
+        print("lora:", note)
+        notes.append(note)
+    for note in ensure_episode_checkpoint(ep, models):
+        print("checkpoint:", note)
+        notes.append(note)
+    for note in download_base_weights(models):
+        print("weight:", note)
+        notes.append(note)
+    return notes
+
+
 def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
     """Fetch optional extra LoRAs into Drive models/loras. A file already over 1MB is left in place."""
     root = Path(loras_dir)
@@ -7259,15 +7315,21 @@ def run_episode(
             preset = apply_unet_preset_rules(preset, unet_name)
     else:
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
+        loras_dir = models / "loras"
+        weight_notes = download_episode_weights(ep, models)
+        weights_only = os.environ.get("H3_WEIGHTS_ONLY") == "1" or not cuda_available()
+        if weights_only:
+            failed = [note for note in weight_notes if note.startswith("fetch failed")]
+            if failed:
+                raise EpisodeError("LoRA の取得が止まりました: " + ", ".join(failed))
+            raise WeightsReady(
+                "取得だけ終わりました。チェックポイントと LoRA は Drive にあります。"
+                "動画はランタイムを A100 にして、もう一度 Run all。"
+            )
         ensure_comfy(comfy, root, models, need_r2v=False)
         vram = comfy_vram_for_lane(episode_lane(ep))
         # object_info caches the UNet list. Place Eros Max, then start (or restart).
         comfy_was_up = comfy_up(port)
-        loras_dir = models / "loras"
-        for note in ensure_episode_loras(ep, loras_dir):
-            print("lora:", note)
-        for note in ensure_episode_checkpoint(ep, models):
-            print("checkpoint:", note)
         unet = stage_erotic_unet(ep, models)
         if comfy_was_up:
             stop_comfy(port)

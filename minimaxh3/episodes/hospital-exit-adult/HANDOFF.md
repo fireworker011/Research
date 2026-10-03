@@ -399,6 +399,8 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 チェックポイントは `eros-max` と `dasiwa`。既定は 10Eros Max。DaSiWa は Hybrid v2 int8、fileId 3203130。
 
+チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のとき、ノートは `H3_WEIGHTS_ONLY=1` を置き、Drive へ取って止まる。Comfy は起動しない。動画は A100 でもう一度 Run all。1MB を超える同名ファイルは取り直さない。
+
 「前の最終フレームから続ける」は、1本目だけ T2V。2本目以降は I2V。新しい人は -spot が先に入る。
 
 ## 作業の終わり
