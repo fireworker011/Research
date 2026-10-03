@@ -1940,7 +1940,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(stand)
     _assert_hospital_bans(nelson_inv)
     keys = ride["render"]["lora_prefetch"]
-    for key in ("blowjob", "mystic", "futatf", "mast", "cmst", "kiss"):
+    for key in ("blowjob", "mystic", "futatf", "mast", "cumfacial", "kiss"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     assert extra_keys(ride_sit)[:3] == ["mystic", "penis", "synth"]
@@ -2175,9 +2175,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
-    assert extra_keys(facial) == ["cumfacial", "cmst", "penis", "jpnmoans"]
-    assert facial.get("trigger") == "CUMSH0T\ncmst\nPENISLORA\njpnMoans"
-    assert extra_lora_entries(facial)[0] == ("cumfacial", 1.0)
+    assert extra_keys(facial) == ["cumfacial", "penis", "jpnmoans"]
+    assert facial.get("trigger") == "cmst\nPENISLORA\njpnMoans"
+    assert extra_lora_entries(facial)[0] == ("cumfacial", 0.8)
     assert facial["trim"]["seconds"] == 10.0
     assert "slow" not in facial["action"].lower()
     assert "white goo" in facial["action"].lower()
@@ -2443,6 +2443,14 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "wash" in TOILET_MODES and "wash_miki" in TOILET_MODES
     assert "トイレ・和式排出" in ui_choices("toilet")
     assert "トイレ・和式ミキ" in ui_choices("toilet")
+    assert LORA_FILES["solodildo"] == "dildoing-mh3-e60-az420.safetensors"
+    assert "models/3282820" in LORA_URLS["solodildo"]
+    assert "fileId=3167066" in LORA_URLS["solodildo"]
+    assert LORA_STRENGTHS["solodildo"] == 0.7
+    assert LORA_FILES["cumfacial"] == "cum_facial_000005400.safetensors"
+    assert "models/3290895" in LORA_URLS["cumfacial"]
+    assert "fileId=3175377" in LORA_URLS["cumfacial"]
+    assert LORA_STRENGTHS["cumfacial"] == 0.8
     assert LORA_FILES["thumbinbutt"] == "MiniMax H3 - ThumbInButt.safetensors"
     assert "fileId=3168734" in LORA_URLS["thumbinbutt"]
     assert "api/download/models/" in LORA_URLS["thumbinbutt"]
@@ -2489,8 +2497,9 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "penis-shaped dildo" in toy["action"].lower()
     assert "plant-flesh" not in toy["action"].lower()
     assert "tentacle" not in toy["action"].lower()
-    assert "outside the anus" in toy["action"].lower()
-    assert "TRAVELS INTO the anus" in fact["action"]
+    assert "outside the vagina" in toy["action"].lower()
+    assert "pumps the dildo into the vagina" in fact["action"]
+    assert "pumping a dildo insider her vagina" in build_beat_prompt(finger, fact, trigger=merge_trigger("", fact))
     assert "one continuous press" in fact["action"].lower()
     assert "hold still joined at the base" in low
     assert "buried to the root" in low
@@ -5965,10 +5974,11 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "lips stay on the shaft" in jacko_oral["action"].lower()
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
-    assert extra_lora_entries(wait)[0] == ("cumfacial", 1.0)
-    assert "cmst" in extra_keys(wait)
+    assert extra_lora_entries(wait)[0] == ("cumfacial", 0.8)
+    assert "cmst" not in extra_keys(wait)
     assert "penis" in extra_keys(wait)
-    assert "CUMSH0T" in wait.get("trigger", "")
+    assert wait.get("trigger", "").startswith("cmst")
+    assert "CUMSH0T" not in wait.get("trigger", "")
     assert "PENISLORA" in wait.get("trigger", "")
     assert wait.get("connect") == "chain"
     assert beat_source(wait) == "chain"
@@ -6184,7 +6194,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in jupo["action"].lower()
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
-    assert extra_lora_entries(mouth) == [("cumfacial", 1.0), ("cmst", 0.55), ("mystic", 0.5)]
+    assert extra_lora_entries(mouth) == [("cumfacial", 0.8), ("mystic", 0.5)]
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
     assert "onto gin's face and tongue" in mouth["action"].lower()
     assert "onto aya's face" not in mouth["action"].lower()

@@ -301,10 +301,11 @@ LORA_FILES = {
     # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
     # Civitai 2974434 version 3371009 fileId 3259145.
     "anuspussy": "anus_pussy_v2.safetensors",
-    # Facial ropes from the urethral slit onto the face. Civitai 2909163 version 3290361 fileId 3174815.
+    # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
+    # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
-    # Handheld toy. Civitai 1707303 version 3378450 fileId 3266906. No trigger word.
-    "solodildo": "h3_base_dildo_v1.0_9250.safetensors",
+    # az420 dildo. Version 3282820 fileId 3167066. Trigger stays off the action.
+    "solodildo": "dildoing-mh3-e60-az420.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -338,8 +339,8 @@ LORA_URLS = {
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
-    "cumfacial": "https://civitai.com/api/download/models/3290361?fileId=3174815",
-    "solodildo": "https://civitai.com/api/download/models/3378450?fileId=3266906",
+    "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
+    "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -370,13 +371,16 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
-    "cumfacial": 1.0,
+    # FunPhantom says start at 0.75-0.85.
+    "cumfacial": 0.8,
+    # The dildo card lists no strength. Ward beats keep 0.7.
     "solodildo": 0.7,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
+DILDO_TRIGGER = "pumping a dildo insider her vagina"
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -5827,6 +5831,8 @@ _LORA_TRIGGER_TOKENS = (
     ("blowjob", "bl0w_j0b"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
+    ("solodildo", DILDO_TRIGGER),
+    ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
 )
