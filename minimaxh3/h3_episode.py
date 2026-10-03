@@ -301,10 +301,11 @@ LORA_FILES = {
     # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
     # Civitai 2974434 version 3371009 fileId 3259145.
     "anuspussy": "anus_pussy_v2.safetensors",
-    # Facial ropes from the urethral slit onto the face. Civitai 2909163 version 3290361 fileId 3174815.
+    # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
+    # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
-    # Handheld toy. Civitai 1707303 version 3378450 fileId 3266906. No trigger word.
-    "solodildo": "h3_base_dildo_v1.0_9250.safetensors",
+    # az420 dildo. Version 3282820 fileId 3167066. Trigger stays off the action.
+    "solodildo": "dildoing-mh3-e60-az420.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -338,8 +339,8 @@ LORA_URLS = {
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
-    "cumfacial": "https://civitai.com/api/download/models/3290361?fileId=3174815",
-    "solodildo": "https://civitai.com/api/download/models/3378450?fileId=3266906",
+    "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
+    "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -370,13 +371,16 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
-    "cumfacial": 1.0,
+    # FunPhantom says start at 0.75-0.85.
+    "cumfacial": 0.8,
+    # The dildo card lists no strength. Ward beats keep 0.7.
     "solodildo": 0.7,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
+DILDO_TRIGGER = "pumping a dildo insider her vagina"
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -2388,7 +2392,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. "
         f"The erect {cm} stays buried to the root. Short vertical moves keep the glans inside. "
         "HOLD still joined at the BASE until the last frame. "
-        f"{name} finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. "
+        f"{name} finishes INSIDE Aya. {CREAMPIE_DRIP_CLAUSE} "
         "Both climax. Mouths stay joined through the finish. "
         "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
         "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
@@ -5703,6 +5707,8 @@ def build_beat_prompt(
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
     desc.append(action_line + ".")
+    if _creampie_drip_beat(beat) and "Creampie fluid appears with the internal finish" not in action_line:
+        desc.append(CREAMPIE_DRIP_CLAUSE)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
@@ -5783,6 +5789,17 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
     return errs
 
 
+def _creampie_drip_beat(beat: dict[str, Any]) -> bool:
+    """Internal finish only. Oral and facial stacks keep their own fluid."""
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    if keys & {"cumouf", "cumfacial", "cumshot", "cmst"}:
+        return False
+    if "thrust" in keys or "creampie" in str(beat.get("id") or "").lower():
+        return True
+    blob = f"{beat.get('action') or ''} {beat.get('trigger') or ''}".lower()
+    return "finishes inside" in blob or "cums inside" in blob
+
+
 def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
     """Per-beat optional LoRAs stacked after the preset (combat on fight shots)."""
     raw = beat.get("extra_loras") or []
@@ -5814,9 +5831,24 @@ _LORA_TRIGGER_TOKENS = (
     ("blowjob", "bl0w_j0b"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
+    ("solodildo", DILDO_TRIGGER),
+    ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
 )
+# Internal finish fluid. One hanging strand, skin-stuck trails, a small pool.
+# Shared by every adult creampie beat. Face, clothes, and place stay out of this line.
+CREAMPIE_DRIP_CLAUSE = (
+    "Creampie fluid appears with the internal finish and then stays through the last frame. "
+    "The semen is whitish, viscous, and sticky, glossy and opaque as cream, with a translucent edge on the thinner strands. "
+    "One thick stream oozes from the opening around the shaft and hangs as a single heavy strand, then runs slowly downward. "
+    "Thinner strands stay stuck to the skin and trail down the body. "
+    "A glossy film clings on the skin the semen touches. "
+    "The hanging strand drops into a small pool on the surface below, and that pool stays. "
+    "The same sticky fluid keeps oozing and clinging for the rest of the shot."
+)
+
+
 # Final Thrust fires on this caption. It does not say male, and it does not say a thrust verb.
 _THRUST_CAPTION = (
     "This video depicts part of sexual intercourse climax. "

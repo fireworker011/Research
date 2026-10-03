@@ -5625,6 +5625,11 @@ def test_lock_semen_look_names_white_liquid():
     assert "molasses" in face.lower()
     after = lock_semen_look("Already after ejaculation. The semen stays.", situation="after_ejaculation")
     assert "stays on the face" in after.lower()
+    cream = lock_semen_look("Already joined. The shaft stays in.", situation="creampie")
+    assert "heavy strand" in cream.lower()
+    assert "stuck to the skin" in cream.lower()
+    assert "floods the mouth" not in cream.lower()
+    assert "heavy-oil" not in cream.lower()
 
 
 def test_lock_speech_urine_pleasure_and_heat_face():
