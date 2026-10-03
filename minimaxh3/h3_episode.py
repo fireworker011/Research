@@ -2386,7 +2386,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         f"Aya's arms stay wrapped behind {name}'s back. Mouths stay joined. "
         f"The erect {cm} stays buried to the root. Short vertical moves keep the glans inside. "
         "HOLD still joined at the BASE until the last frame. "
-        f"{name} finishes INSIDE Aya. A little thick WHITE goo leaks around the base and stays inside the pussy. "
+        f"{name} finishes INSIDE Aya. {CREAMPIE_DRIP_CLAUSE} "
         "Both climax. Mouths stay joined through the finish. "
         "Aya's face is a pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, "
         "mouth open, thick saliva dripping from the open mouth, drowning in pleasure. "
@@ -5701,6 +5701,8 @@ def build_beat_prompt(
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
     desc.append(action_line + ".")
+    if _creampie_drip_beat(beat) and "Creampie fluid appears with the internal finish" not in action_line:
+        desc.append(CREAMPIE_DRIP_CLAUSE)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
@@ -5781,6 +5783,17 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
     return errs
 
 
+def _creampie_drip_beat(beat: dict[str, Any]) -> bool:
+    """Internal finish only. Oral and facial stacks keep their own fluid."""
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    if keys & {"cumouf", "cumfacial", "cumshot", "cmst"}:
+        return False
+    if "thrust" in keys or "creampie" in str(beat.get("id") or "").lower():
+        return True
+    blob = f"{beat.get('action') or ''} {beat.get('trigger') or ''}".lower()
+    return "finishes inside" in blob or "cums inside" in blob
+
+
 def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
     """Per-beat optional LoRAs stacked after the preset (combat on fight shots)."""
     raw = beat.get("extra_loras") or []
@@ -5815,6 +5828,19 @@ _LORA_TRIGGER_TOKENS = (
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
 )
+# Internal finish fluid. One hanging strand, skin-stuck trails, a small pool.
+# Shared by every adult creampie beat. Face, clothes, and place stay out of this line.
+CREAMPIE_DRIP_CLAUSE = (
+    "Creampie fluid appears with the internal finish and then stays through the last frame. "
+    "The semen is whitish, viscous, and sticky, glossy and opaque as cream, with a translucent edge on the thinner strands. "
+    "One thick stream oozes from the opening around the shaft and hangs as a single heavy strand, then runs slowly downward. "
+    "Thinner strands stay stuck to the skin and trail down the body. "
+    "A glossy film clings on the skin the semen touches. "
+    "The hanging strand drops into a small pool on the surface below, and that pool stays. "
+    "The same sticky fluid keeps oozing and clinging for the rest of the shot."
+)
+
+
 # Final Thrust fires on this caption. It does not say male, and it does not say a thrust verb.
 _THRUST_CAPTION = (
     "This video depicts part of sexual intercourse climax. "

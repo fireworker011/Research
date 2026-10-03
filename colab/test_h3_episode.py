@@ -20,6 +20,7 @@ from h3_episode import (  # noqa: E402
     ANIME2REAL_TRIGGER,
     CAMERA_PACKS,
     CANVAS,
+    CREAMPIE_DRIP_CLAUSE,
     CHECKPOINTS,
     COMBAT_SAMPLER,
     COMBAT_SCHEDULER,
@@ -119,6 +120,7 @@ from h3_episode import (  # noqa: E402
     validate_beat_prompt,
     validate_episode,
 )
+from h3_lora_studio import CREAMPIE_DRIP_LINE  # noqa: E402
 from h3_hud import (  # noqa: E402
     compose_beat,
     expected_stitch_duration,
@@ -911,6 +913,28 @@ def _kasumi_adult_cast(ep):
         assert "woman" in lock and "adult" in lock
 
 
+def test_creampie_drip_is_shared_and_skips_oral_and_rehearsal():
+    assert CREAMPIE_DRIP_LINE == CREAMPIE_DRIP_CLAUSE
+    ep = bandai()
+    beat = copy.deepcopy(ep["beats"][0])
+    beat["extra_loras"] = [["thrust", 0.55]]
+    beat["action"] = "They stay joined on the floor and she finishes inside."
+    prompt = build_beat_prompt(ep, beat, trigger=merge_trigger("", beat))
+    assert "heavy strand" in prompt.lower()
+    assert "stuck to the skin" in prompt.lower()
+    assert "small pool" in prompt.lower()
+    oral = copy.deepcopy(ep["beats"][0])
+    oral["extra_loras"] = [["blowjob", 0.8], ["cumouf", 0.5]]
+    oral["trigger"] = "cums inside the mouth"
+    oral["action"] = "Lips stay at the base."
+    assert "heavy strand" not in build_beat_prompt(ep, oral).lower()
+    room = load_episode(ROOT / "minimaxh3" / "episodes" / "rehearsal-room-adult" / "episode.json")
+    assert validate_episode(room) == []
+    for _beat, room_prompt, errs in beat_prompts(room):
+        assert errs == []
+        assert "heavy strand" not in room_prompt.lower()
+
+
 def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     raw = load_episode(KASUMI_ADULT_DIR / "episode.json")
     assert validate_episode(raw, root=KASUMI_ADULT_DIR) == []
@@ -989,6 +1013,8 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert "orgasm faces" in cream_prompt.lower()
     assert "french kiss" in cream_prompt.lower()
     assert "drips" in cream_prompt.lower()
+    assert "heavy strand" in cream_prompt.lower()
+    assert "stuck to the skin" in cream_prompt.lower()
     assert cream["trim"]["seconds"] == 7.5
     assert "after aoki sits" not in str(cream.get("place") or "").lower()
     jupo = next(b for b in ep["beats"] if b["id"] == "03-kiss")

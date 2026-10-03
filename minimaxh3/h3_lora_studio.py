@@ -3360,6 +3360,16 @@ BATH_LOOK_LINE = (
 )
 
 
+# Same sentence as h3_episode.CREAMPIE_DRIP_CLAUSE. Internal finish only.
+CREAMPIE_DRIP_LINE = (
+    "Creampie fluid appears with the internal finish and then stays through the last frame. "
+    "The semen is whitish, viscous, and sticky, glossy and opaque as cream, with a translucent edge on the thinner strands. "
+    "One thick stream oozes from the opening around the shaft and hangs as a single heavy strand, then runs slowly downward. "
+    "Thinner strands stay stuck to the skin and trail down the body. "
+    "A glossy film clings on the skin the semen touches. "
+    "The hanging strand drops into a small pool on the surface below, and that pool stays. "
+    "The same sticky fluid keeps oozing and clinging for the rest of the shot."
+)
 SEMEN_SITUATIONS = frozenset({"oral_creampie", "creampie", "facial", "after_ejaculation"})
 SEMEN_LOOK_LINE = (
     "SEMEN LOOK: The semen is always that same heavy-oil-thick WHITE goo: "
@@ -3390,6 +3400,8 @@ def lock_semen_look(text: str, *, situation: str = "") -> str:
     sit = str(situation or "").strip()
     if sit not in SEMEN_SITUATIONS and not _SEMEN_CUE_RE.search(raw):
         return raw
+    if sit == "creampie":
+        return _inject_before_soundscape(raw, CREAMPIE_DRIP_LINE)
     return _inject_before_soundscape(raw, SEMEN_LOOK_LINE)
 
 
@@ -5476,16 +5488,22 @@ def validate_story_follow(story: dict[str, Any]) -> list[str]:
             if situation in SEMEN_SITUATIONS:
                 look = lock_semen_look(prompt, situation=situation)
                 look_l = look.lower()
-                if "white liquid" not in look_l and "white goo" not in look_l:
-                    errors.append(f"clip {n}: ejaculation must name a white liquid")
-                if "viscous" not in look_l and "sticky" not in look_l and "ドロドロ" not in look:
-                    errors.append(f"clip {n}: ejaculation must be viscous / ドロドロ")
-                if "heavy-oil" not in look_l:
-                    errors.append(f"clip {n}: semen must be heavy-oil thick, same as the meat-wall bath")
-                if "floods" not in look_l:
-                    errors.append(f"clip {n}: semen must flood / overflow, not a teaspoon")
-                if "molasses" not in look_l:
-                    errors.append(f"clip {n}: semen must be molasses-slow extra-viscous ドロドロ")
+                if situation == "creampie":
+                    if "heavy strand" not in look_l or "stuck to the skin" not in look_l:
+                        errors.append(f"clip {n}: creampie fluid must hang as a strand and stick to the skin")
+                    if "viscous" not in look_l or "sticky" not in look_l:
+                        errors.append(f"clip {n}: creampie fluid must stay viscous and sticky")
+                else:
+                    if "white liquid" not in look_l and "white goo" not in look_l:
+                        errors.append(f"clip {n}: ejaculation must name a white liquid")
+                    if "viscous" not in look_l and "sticky" not in look_l and "ドロドロ" not in look:
+                        errors.append(f"clip {n}: ejaculation must be viscous / ドロドロ")
+                    if "heavy-oil" not in look_l:
+                        errors.append(f"clip {n}: semen must be heavy-oil thick, same as the meat-wall bath")
+                    if "floods" not in look_l:
+                        errors.append(f"clip {n}: semen must flood / overflow, not a teaspoon")
+                    if "molasses" not in look_l:
+                        errors.append(f"clip {n}: semen must be molasses-slow extra-viscous ドロドロ")
             if situation in {"oral", "oral_creampie", "futa_blowjob"}:
                 urine = bool(re.search(r"urine|yellow stream|pees a |drinks the yellow", prompt, re.I))
                 if not urine:

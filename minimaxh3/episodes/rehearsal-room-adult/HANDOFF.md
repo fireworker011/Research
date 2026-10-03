@@ -60,6 +60,10 @@
 
 エンジンが action 拍へ足す文は残る。`nothing new enters the frame` と、`Do not invent a walk cycle`。loco を planted にすると、代わりに `A hip thrust is in place` が入り、04 の HOLD とぶつかる。planted にはしていない。
 
+## 中出しの液
+
+全アダルト共通。中出しの拍だけ、エンジンが同じ文を足す。見え方は、白く粘る液が開口のまわりから一本の太い筋で垂れ、細い筋は肌に貼り付いたまま下り、光った膜が残り、下に小さな溜まりが残る。顔、服、場所は写さない。口と顔へ出す拍には付けない。この話の 01 と 04 は中出しではないので付かない。
+
 ## 禁止
 
 action、camera、place、lock、セリフに置かない: fellatio、kiss、sex、insert、騎乗、正常位、バック、フェラ。
