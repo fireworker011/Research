@@ -1,0 +1,375 @@
+{
+  "schema": "affi-genre-template/v1",
+  "data_date": "2026-10-03",
+  "genre": "ドッグフード",
+  "basis": "伸びてる群の傾向",
+  "account_confidence": "比較不能",
+  "n_growing": 16,
+  "n_struggling": 2,
+  "thresholds": {
+    "strong_min": 10,
+    "compare_min": 3,
+    "thin_below": 10,
+    "min_gap_pt": 10
+  },
+  "caution": "冒頭・顔出し・音・商品の見せ方の多くは説明文からの推定。動画は未視聴。不明は分母に入れていない。参考アカウントは集計に入れていない。",
+  "feature_source": {
+    "推定（説明文）": 18,
+    "確認済": 0
+  },
+  "script_brief": {
+    "first_3_seconds": {
+      "opening_type": "A商品名紹介",
+      "instruction": "最初の3秒は「A商品名紹介」で入る。具体文は人間が書く。examples は参考で、コピーしない。",
+      "confidence": "比較不能",
+      "growing": {
+        "value": "A商品名紹介",
+        "m": 8,
+        "n": 15,
+        "pct": 53
+      },
+      "struggling": {
+        "value": "A商品名紹介",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      },
+      "examples": [
+        {
+          "handle": "samoyed_rintaro.kanon",
+          "opening_type": "その他",
+          "platform": "TikTok",
+          "median_views": "729050",
+          "evidence": "キャプション「冬瓜のそぼろ煮つくったら爆食してくれました！」「巨大パスタでミートソース煮つくったら爆食してくれました！」（推定）",
+          "first_frame_text": "なし（stickersOnItem空）。キャプションは「冬瓜のそぼろ煮つくったら爆食してくれました！」型"
+        },
+        {
+          "handle": "umi_tabe",
+          "opening_type": "その他",
+          "platform": "TikTok",
+          "median_views": "296100",
+          "evidence": "キャプションは状況短文",
+          "first_frame_text": "見た3本のstickersOnItemは空。キャプションは状況短文"
+        },
+        {
+          "handle": "moalana2",
+          "opening_type": "A商品名紹介",
+          "platform": "TikTok",
+          "median_views": "140550",
+          "evidence": "キャプション「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」（推定。日常動画はお風呂等でその他）",
+          "first_frame_text": "なし（stickersOnItem空）。説明文は「♡もあらなまぅハートの炊飯器ご飯🍚 〜本日のmenu〜」型"
+        }
+      ]
+    },
+    "middle_pattern": [
+      "データ不足"
+    ],
+    "on_screen": {
+      "main_subject": "手元",
+      "face_shown": "データ不足"
+    },
+    "duration_band": "31〜60秒",
+    "duration_median_sec": 54.5,
+    "audio": "オリジナル"
+  },
+  "production": {
+    "hashtag_band": "4個以上",
+    "pr_label": "なし",
+    "post_frequency": "30日4〜9本",
+    "template_fixed": "あり"
+  },
+  "avoid": [],
+  "favor": [],
+  "platforms": [
+    {
+      "platform": "TikTok",
+      "n_growing": 9,
+      "n_struggling": 0,
+      "changes": [
+        {
+          "field": "冒頭タイプ",
+          "genre": "A商品名紹介",
+          "platform": "その他",
+          "growing": "9件中5件（56%）",
+          "confidence": "比較不能"
+        },
+        {
+          "field": "主役",
+          "genre": "手元",
+          "platform": "動物",
+          "growing": "9件中5件（56%）",
+          "confidence": "比較不能"
+        },
+        {
+          "field": "尺",
+          "genre": "31〜60秒",
+          "platform": "61秒以上",
+          "growing": "9件中5件（56%）",
+          "confidence": "比較不能"
+        }
+      ]
+    },
+    {
+      "platform": "Instagram",
+      "n_growing": 4,
+      "n_struggling": 2,
+      "changes": []
+    },
+    {
+      "platform": "YouTube",
+      "n_growing": 3,
+      "n_struggling": 0,
+      "changes": [
+        {
+          "field": "主役",
+          "genre": "手元",
+          "platform": "動物",
+          "growing": "3件中2件（67%）",
+          "confidence": "比較不能"
+        }
+      ]
+    }
+  ],
+  "reference": {
+    "handle": "nuts0629",
+    "present": true,
+    "platform": "TikTok",
+    "bucket": "参考（区分外・投稿停止）",
+    "followers": 3695.0,
+    "median_views": 1660.0,
+    "product_tokens": [
+      "なし/未確認"
+    ],
+    "feature_source": "推定（説明文）",
+    "same": [
+      {
+        "field": "ハッシュタグ数",
+        "reference": "4個以上",
+        "template": "4個以上",
+        "growing": "12件中8件（67%）"
+      },
+      {
+        "field": "PR表記",
+        "reference": "なし",
+        "template": "なし",
+        "growing": "13件中12件（92%）"
+      },
+      {
+        "field": "テンプレ固定",
+        "reference": "あり",
+        "template": "あり",
+        "growing": "11件中11件（100%）"
+      }
+    ],
+    "different": [
+      {
+        "field": "冒頭タイプ",
+        "reference": "その他",
+        "template": "A商品名紹介",
+        "growing": "15件中6件（40%）"
+      },
+      {
+        "field": "顔出し",
+        "reference": "なし",
+        "template": "データ不足",
+        "growing": "判定可能0件"
+      },
+      {
+        "field": "主役",
+        "reference": "動物",
+        "template": "手元",
+        "growing": "16件中7件（44%）"
+      },
+      {
+        "field": "尺",
+        "reference": "16〜30秒",
+        "template": "31〜60秒",
+        "growing": "12件中1件（8%）"
+      },
+      {
+        "field": "音",
+        "reference": "不明",
+        "template": "オリジナル",
+        "growing": "判定可能0件"
+      },
+      {
+        "field": "投稿頻度",
+        "reference": "30日3本以下（見えた範囲）",
+        "template": "30日4〜9本",
+        "growing": "14件中3件（21%）"
+      }
+    ]
+  },
+  "fields": {
+    "opening_type": {
+      "label": "冒頭タイプ",
+      "choice": "A商品名紹介",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 15,
+      "struggling_n": 2,
+      "growing": {
+        "value": "A商品名紹介",
+        "m": 8,
+        "n": 15,
+        "pct": 53
+      },
+      "struggling": {
+        "value": "A商品名紹介",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    },
+    "face_shown": {
+      "label": "顔出し",
+      "choice": null,
+      "reason": "データ不足",
+      "confidence": "比較不能",
+      "growing_n": 0,
+      "struggling_n": 0,
+      "growing": null,
+      "struggling": null
+    },
+    "main_subject": {
+      "label": "主役",
+      "choice": "手元",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 16,
+      "struggling_n": 2,
+      "growing": {
+        "value": "手元",
+        "m": 9,
+        "n": 16,
+        "pct": 56
+      },
+      "struggling": {
+        "value": "手元",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    },
+    "duration_band": {
+      "label": "尺",
+      "choice": "31〜60秒",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 12,
+      "struggling_n": 0,
+      "growing": {
+        "value": "31〜60秒",
+        "m": 6,
+        "n": 12,
+        "pct": 50
+      },
+      "struggling": {
+        "value": "31〜60秒",
+        "m": 0,
+        "n": 0,
+        "pct": null
+      }
+    },
+    "audio": {
+      "label": "音",
+      "choice": "オリジナル",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 10,
+      "struggling_n": 0,
+      "growing": {
+        "value": "オリジナル",
+        "m": 4,
+        "n": 10,
+        "pct": 40
+      },
+      "struggling": {
+        "value": "オリジナル",
+        "m": 0,
+        "n": 0,
+        "pct": null
+      }
+    },
+    "hashtag_band": {
+      "label": "ハッシュタグ数",
+      "choice": "4個以上",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 12,
+      "struggling_n": 2,
+      "growing": {
+        "value": "4個以上",
+        "m": 8,
+        "n": 12,
+        "pct": 67
+      },
+      "struggling": {
+        "value": "4個以上",
+        "m": 1,
+        "n": 2,
+        "pct": 50
+      }
+    },
+    "pr_label": {
+      "label": "PR表記",
+      "choice": "なし",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 13,
+      "struggling_n": 2,
+      "growing": {
+        "value": "なし",
+        "m": 12,
+        "n": 13,
+        "pct": 92
+      },
+      "struggling": {
+        "value": "なし",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    },
+    "post_band": {
+      "label": "投稿頻度",
+      "choice": "30日4〜9本",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 14,
+      "struggling_n": 2,
+      "growing": {
+        "value": "30日4〜9本",
+        "m": 8,
+        "n": 14,
+        "pct": 57
+      },
+      "struggling": {
+        "value": "30日4〜9本",
+        "m": 1,
+        "n": 2,
+        "pct": 50
+      }
+    },
+    "template_fixed": {
+      "label": "テンプレ固定",
+      "choice": "あり",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 11,
+      "struggling_n": 2,
+      "growing": {
+        "value": "あり",
+        "m": 11,
+        "n": 11,
+        "pct": 100
+      },
+      "struggling": {
+        "value": "あり",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    }
+  }
+}
