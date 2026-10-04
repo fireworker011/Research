@@ -483,6 +483,28 @@ def native_load_video_inputs(filename: str) -> dict[str, Any]:
     return {"file": name, "video": name}
 
 
+def ref_video_frames_link(
+    object_info: dict[str, Any] | None,
+    loader_id: str,
+    loader_class: str,
+    split_id: str,
+) -> tuple[list[Any], dict[str, Any] | None]:
+    """MiniMax ref_videos wants IMAGE frames. Core LoadVideo outputs VIDEO."""
+    node = ((object_info or {}).get(loader_class) or {})
+    outputs = [str(item).upper() for item in (node.get("output") or [])]
+    for index, kind in enumerate(outputs):
+        if kind == "IMAGE":
+            return [loader_id, index], None
+    if loader_class == "VHS_LoadVideo" and not outputs:
+        return [loader_id, 0], None
+    if outputs and "VIDEO" not in outputs:
+        return [loader_id, 0], None
+    return [split_id, 0], {
+        "class_type": "GetVideoComponents",
+        "inputs": {"video": [loader_id, 0]},
+    }
+
+
 def build_r2v_graph(
     *,
     img_names: list[str],
@@ -572,7 +594,15 @@ def build_r2v_graph(
                     "class_type": "LoadVideo",
                     "inputs": native_load_video_inputs(vname),
                 }
-            r_inputs[video_ref_key(vi)] = [node_id, 0]
+            link, split = ref_video_frames_link(
+                object_info,
+                node_id,
+                g[node_id]["class_type"],
+                str(290 + vi),
+            )
+            if split is not None:
+                g[str(290 + vi)] = split
+            r_inputs[video_ref_key(vi)] = link
 
     for bad in ("ref_videos", "ref_images", "ref_audios", "ref_video_audios"):
         r_inputs.pop(bad, None)

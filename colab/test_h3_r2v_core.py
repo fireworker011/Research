@@ -76,6 +76,7 @@ def test_graph_wires_relative_video_and_picture_tags():
     assert g["190"]["inputs"]["force_rate"] == 24
     assert g["20"]["inputs"]["ref_images.ref_image_0"] == ["100", 0]
     assert g["20"]["inputs"]["ref_videos.ref_video_0"] == ["190", 0]
+    assert "290" not in g
     assert "ref_videos" not in g["20"]["inputs"]
     errs = assert_graph_identity_motion(
         g, expect_images=2, expect_videos=1, prompt=prompt
@@ -84,6 +85,30 @@ def test_graph_wires_relative_video_and_picture_tags():
     assert "<Picture 1>" in prompt
     assert "<Video 1>" in prompt
     assert "MOTION ONLY" in prompt.upper()
+
+
+def test_core_load_video_is_split_into_image_frames():
+    prompt = finalize_prompt("keep the still face", ["sheet.jpg"], ["motion.mp4"], 10)
+    g = build_r2v_graph(
+        img_names=["sheet.jpg"],
+        vid_names=["motion.mp4"],
+        prompt=prompt,
+        unet="minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        lora_name=None,
+        lora_strength=1.0,
+        width=768,
+        height=864,
+        duration_s=10,
+        seed=1,
+        steps=4,
+        filename_prefix="video/h3_r2v",
+        has_vhs=False,
+        object_info={"LoadVideo": {"output": ["VIDEO"]}},
+    )
+    assert g["190"]["class_type"] == "LoadVideo"
+    assert g["290"]["class_type"] == "GetVideoComponents"
+    assert g["290"]["inputs"]["video"] == ["190", 0]
+    assert g["20"]["inputs"]["ref_videos.ref_video_0"] == ["290", 0]
 
 
 def test_graph_rejects_non_multiple_of_32():
