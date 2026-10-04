@@ -4,3 +4,12 @@ __pycache__/
 .env
 **/.env
 *.safetensors
+# episode render work dirs (only episode.json + stills/ are versioned)
+minimaxh3/episodes/*/raw/
+minimaxh3/episodes/*/raw-stills/
+minimaxh3/episodes/*/hud/
+minimaxh3/episodes/*/final/
+minimaxh3/episodes/*/input/
+minimaxh3/episodes/*/output/
+minimaxh3/episodes/*/logs/
+minimaxh3/episodes/*/status.json
