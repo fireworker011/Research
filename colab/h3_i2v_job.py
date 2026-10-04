@@ -286,7 +286,11 @@ def next_bot_job(root: Path | str, mode: str | None = None) -> Path | None:
     stuck = [p for p in running if p.parent.name != "running"]
     if stuck:
         return stuck[0]
-    return running[0] if running else None
+    if running:
+        return running[0]
+    failed = [p for p in find_jobs(root, status="failed") if matches(p)]
+    failed.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    return failed[0] if failed else None
 
 
 def _park_existing(dest_dir: Path) -> Path | None:

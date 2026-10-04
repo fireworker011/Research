@@ -658,8 +658,7 @@ def build_r2v_graph(
         "inputs": {
             "video": ["28", 0],
             "filename_prefix": filename_prefix,
-            "format": "auto",
-            "codec": "auto",
+            "format": "mp4",
         },
     }
     return g

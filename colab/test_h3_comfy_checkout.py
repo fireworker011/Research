@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from h3_i2v_runtime import clone_comfy, comfy_checkout_ok, discard_broken_comfy
+from h3_i2v_runtime import clone_comfy, comfy_checkout_ok, discard_broken_comfy, execution_error_text
 
 
 def test_broken_folder_is_removed(tmp_path: Path) -> None:
@@ -43,6 +43,18 @@ def test_failed_clone_stops(tmp_path: Path) -> None:
     else:
         raise AssertionError("clone failure did not stop")
     assert not comfy.exists()
+
+
+def test_execution_error_is_visible_even_when_marked_completed() -> None:
+    text = execution_error_text(
+        {
+            "status": {
+                "completed": True,
+                "messages": [["execution_error", {"exception_message": "codec"}]],
+            }
+        }
+    )
+    assert "codec" in text
 
 
 def test_clone_that_writes_main_py_passes(tmp_path: Path) -> None:

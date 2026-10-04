@@ -126,6 +126,7 @@ def _finish(job: dict, folder: Path, drive_root: Path, result: dict, dry: bool) 
             break
     if dest is None and not dry:
         job["error"] = "mp4 missing"
+        print("mp4 が無い。出力フォルダに動画が残っていない。")
         set_status(job, "failed")
         save_job(folder, job)
         move_job(folder, "failed", drive_root)
@@ -163,6 +164,11 @@ def main() -> int:
         save_job(folder, job)
         raise SystemExit(errs)
 
+    if job.get("status") == "failed":
+        print("失敗したジョブをやり直す", folder.name)
+        set_status(job, "ready")
+        set_status(job, "queued")
+        save_job(folder, job)
     if job.get("status") == "queued":
         set_status(job, "running")
         save_job(folder, job)

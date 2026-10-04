@@ -109,6 +109,8 @@ def test_core_load_video_is_split_into_image_frames():
     assert g["290"]["class_type"] == "GetVideoComponents"
     assert g["290"]["inputs"]["video"] == ["190", 0]
     assert g["20"]["inputs"]["ref_videos.ref_video_0"] == ["290", 0]
+    assert g["29"]["inputs"]["format"] == "mp4"
+    assert "codec" not in g["29"]["inputs"]
 
 
 def test_graph_rejects_non_multiple_of_32():

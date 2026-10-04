@@ -240,18 +240,30 @@ def post_prompt(graph: dict[str, Any], port: int = PORT) -> tuple[dict[str, Any]
         return None, f"HTTP {e.code}: {e.read().decode('utf-8', errors='replace')[:4000]}"
 
 
+def execution_error_text(entry: Any) -> str:
+    if not isinstance(entry, dict):
+        return ""
+    status = entry.get("status") or {}
+    for message in status.get("messages") or []:
+        if isinstance(message, list) and message and message[0] == "execution_error":
+            return str(message[1] if len(message) > 1 else message)[:2000]
+    if status.get("status_str") == "error":
+        return str(status)[:2000]
+    return ""
+
+
 def wait_prompt(pid: str, port: int = PORT, timeout: int = 3600) -> tuple[bool, Any]:
     t0 = time.time()
     while time.time() - t0 < timeout:
         with urllib.request.urlopen(f"http://127.0.0.1:{port}/history/{pid}", timeout=60) as r:
             hist = json.loads(r.read().decode())
         entry = hist.get(pid) or {}
+        err = execution_error_text(entry)
+        if err:
+            return False, err
         status = entry.get("status") or {}
         if status.get("completed") or entry.get("outputs"):
             return True, entry
-        for m in status.get("messages") or []:
-            if isinstance(m, list) and m and m[0] == "execution_error":
-                return False, m
         time.sleep(2)
     return False, "timeout"
 

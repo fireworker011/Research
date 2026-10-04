@@ -95,6 +95,17 @@ def test_stuck_running_job_in_queued_is_picked(tmp_path):
     assert next_bot_job(root, "r2v") == stuck
 
 
+def test_newest_failed_job_is_retried(tmp_path):
+    root = ensure_drive_tree(tmp_path / "drive")
+    folder = root / "failed" / "dance-01"
+    folder.mkdir(parents=True)
+    job = default_job(id="dance-01", mode="r2v")
+    job["status"] = "failed"
+    job["error"] = "mp4 missing"
+    save_job(folder, job)
+    assert next_bot_job(root, "r2v") == folder
+
+
 def test_stage_picture1_and_8_9(tmp_path):
     folder = tmp_path / "job"
     inp = tmp_path / "input"
