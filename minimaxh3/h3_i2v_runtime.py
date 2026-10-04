@@ -134,7 +134,8 @@ COMFY_REPO = "https://github.com/Comfy-Org/ComfyUI.git"
 
 
 def comfy_checkout_ok(comfy_dir: Path) -> bool:
-    return (comfy_dir / "main.py").is_file()
+    """main.py alone is not enough. comfy/ldm/models is code, not the weight folder."""
+    return (comfy_dir / "main.py").is_file() and (comfy_dir / "comfy" / "ldm" / "models").is_dir()
 
 
 def discard_broken_comfy(comfy_dir: Path) -> bool:
@@ -145,13 +146,22 @@ def discard_broken_comfy(comfy_dir: Path) -> bool:
     return True
 
 
-_COPY_IGNORE = shutil.ignore_patterns("models", "output", "input", ".git", "__pycache__")
+def _ignore_weight_dirs(root: Path):
+    root_resolved = root.resolve()
+
+    def ignore(directory: str, names: list[str]) -> set[str]:
+        skipped = {"__pycache__"}
+        if Path(directory).resolve() == root_resolved:
+            skipped |= {"models", "output", "input", ".git"}
+        return {name for name in names if name in skipped}
+
+    return ignore
 
 
 def _copy_checkout(src: Path, dest: Path) -> None:
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(src, dest, symlinks=True, ignore=_COPY_IGNORE)
+    shutil.copytree(src, dest, symlinks=True, ignore=_ignore_weight_dirs(src))
 
 
 def clone_comfy(comfy_dir: Path, run=sh, *, cache_dir: Path | None = None) -> None:
