@@ -74,8 +74,43 @@ python3 research/affi-templates/affi_genre_templates.py \
 - ドッグフードと見守りカメラには、YouTube @cat-yu-chan（すず丸と暮らしてます）の型をオマージュとして足してある。集計の266件には入っていない。再生数は書いていない。借りるのは「同じ子、最初の不一致、商品は後、シリーズ」だけ。ドッグフードを作るときは、集計の「商品名から入る・手元」よりこの型を先に使う。
 - 前回の `opening-types.md`（美容・ペットをプラットフォーム別に見た別調査）では、美容の伸びてる側は冒頭Bが多め、という書き方だった。今回の `accounts.csv` では美容の伸びてる最頻は「その他」（132件中73件、55%）。Bは伸び悩みの方が割合が高い（30件中12件、40% 対 132件中33件、25%）。テンプレートは今回の CSV に従う。
 
+## 参考4アカウントの再現（2026-10-04）
+
+設計書は `reference-accounts/source/`。機械が読む型は `reference-accounts/templates/`。元の台詞とキャラはコピーしない。仕様の「推定」「不明」はそのまま。
+
+制作シート:
+
+```bash
+python3 research/affi-templates/affi_reference.py feasibility
+python3 research/affi-templates/affi_reference.py ab --id H1-1 --theme 髪の悩み
+python3 research/affi-templates/affi_reference.py judge
+```
+
+判定用のColab:
+
+https://colab.research.google.com/github/fireworker011/Research/blob/cursor/affi-genre-templates-6dc5/research/affi-templates/reference_check.ipynb
+
+投稿後の数字は `reference-accounts/results.csv` に手で入れる。空欄は0にしない。72時間後の値。1回に変える要素は1つ。
+
+### 最初にやること
+
+仮説の本投稿の前に、Grok Imagineで制作可否を見る。
+
+1. F1 日本語の口パクが1文できるか
+2. F2 同じ参照画像で、場所を変えても顔が同じか
+3. F3 衣装を着た同じ動物が全身で踊れるか（元はKling。できるかは未確認）
+
+その次は H1-1（美容の表紙）、H2-1（犬がしゃべるか）、H3-1（最初の一言が対立か）。
+
+### ジャンル別テンプレとの食い違い
+
+- 見守りカメラの参考 @junjun_ranran は、ペットカメラ映像ではない。写実のAIで、猫2匹が口を動かして掛け合うコント。ジャンル集計の「顔なし・動物が主役」とは違う。
+- ドッグフードの参考 @nuts0629 は、商品名から入る手元の型ではない。しゃべる犬のインタビューと、着ぐるみのダンス。最終投稿は2026-01-31。
+- 美容の参考 @the.care.logic は、人の顔出しとナレーションの型ではない。ピクサー風の3Dキャラが10秒×3。字幕なし。台詞はミャンマー語で不明。
+- 婚活の参考 @yako.shiawasekon は、説明の短編より、会話だけのドラマが伸びている。教訓とCTAを本編に入れた回は落ちている。
+
 ## テスト
 
 ```bash
-python3 -m pytest research/affi-templates/test_affi_genre_templates.py -q
+python3 -m pytest research/affi-templates/test_affi_genre_templates.py research/affi-templates/test_affi_reference.py -q
 ```

@@ -1,0 +1,88 @@
+schema: affi-repro-template/v1
+handle: yako.shiawasekon
+genre: 婚活
+platform: TikTok
+source: reference-accounts/source/spec_yako.shiawasekon.md
+reproduce: 型だけ。元の人物・店名・台詞はコピーしない。本人は出さない。
+canvas: "1080x1920"
+duration_s: 60
+duration_note: "伸びた短尺は56〜60秒。179秒で伸びた回と落ちた回が両方ある。尺は決め手ではない、と仕様。"
+characters:
+  - id: woman
+    role: 20〜30代の女性。1本の中では同じ顔と服。
+    look: 写実。暖色。参照画像で固定。元動画の顔は使わない。
+    voice: 落ち着いた女声。約200〜250Hz。推定。
+    certainty: 推定
+  - id: man
+    role: 20〜30代の男性。1本の中では同じ顔と服。
+    look: 写実。場面が変わると顔がずれることがある、と仕様。
+    voice: 落ち着いた男声。約110〜130Hz。推定。
+    certainty: 推定
+timeline:
+  - id: open
+    start_s: 0
+    end_s: 3
+    picture: 男女が歩くか向き合う。街か店。夜、暖色、浅いボケ。
+    speech: すぐ会話。ナレーションにしない。具体は入力。
+    camera: 後ろ姿か中近景。1セリフ1ショット。
+    on_screen_text: 題帯を約3秒。関係が変わる瞬間を予告する文。結末の台詞そのものは題にしない。
+    certainty: 仕様どおり
+  - id: middle
+    start_s: 3
+    end_s: 45
+    picture: すれ違いから、関係が動く場所へ。1セリフ1ショット。2〜8秒。
+    speech: 会話だけ。具体は入力。
+    camera: 固定に近い。
+    certainty: 推定（秒は59.7秒の例）
+  - id: turn
+    start_s: 45
+    end_s: 60
+    picture: 最後の1〜2セリフで関係が変わる。手をつなぐなどで終わる。
+    speech: 関係が変わる台詞。具体は入力。
+    camera: 寄り。
+    certainty: 仕様どおり（伸びた型）
+subtitle:
+  enabled: true
+  font: 白の太めゴシック
+  edge: 黒い縁取り
+  place: 画面の下から約30〜35%。1行。
+  content: 台詞は全部字幕にする。
+  certainty: 仕様どおり
+title_band:
+  enabled: true
+  when: 0〜3秒だけ
+  style: 半透明の濃いグレーの角丸。白い細めの文字。上から15〜22%。
+  short_form: 題1行
+  long_form: 「ショートドラマ」と題の2行
+  hit_pattern: 結末を予告する。結末の台詞そのままは伸びた型ではない。
+  certainty: 仕様どおり
+name_label:
+  place: 右上
+  style: 白文字と黒いぼかし縁。2行。自分の名前と業種。元の名前はコピーしない。
+  note: PR回だけ無し、と仕様。
+audio:
+  voice: 口の動きと合う。生成内か後付けかは不明。
+  bgm: ピアノ系としっとり。推定。124k回は Emotional piano solo。
+  sfx: 不明
+  certainty: 推定
+hashtags:
+  fixed: ["#恋愛ドラマ", "#恋愛", "#婚活", "#婚活相談"]
+  caption: タグだけ
+  certainty: 仕様どおり
+cta:
+  hit_pattern: 本編にもキャプションにも入れない。誘導はプロフィールのみ。
+  lesson_card: 伸びなかった回だけ。黒背景に白文字。再現の既定では使わない。
+  certainty: 仕様どおり
+cuts:
+  rule: 1セリフ＝1ショット
+  shot_s: "2〜8秒。50〜60秒の回で6〜17カット。"
+edit:
+  - 生成クリップを切ってつなぐ
+  - 0〜3秒だけ題帯
+  - 右上の名前
+  - 白縁取り字幕
+  - ピアノBGM
+unknowns:
+  - 効果音
+  - 生成ツール
+  - AIラベルを出しているか
