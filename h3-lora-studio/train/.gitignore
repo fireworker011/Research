@@ -1,0 +1,4 @@
+work/
+*.zip
+*-pack-report.json
+pack-report.json
