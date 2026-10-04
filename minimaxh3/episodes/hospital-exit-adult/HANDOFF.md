@@ -25,13 +25,17 @@
 ノートの `BRANCH` 初期値は上のブランチ。生成は人間。新しい話は足していない。
 
 - トイレのディルドは Solo Dildo H3（`h3_base_dildo_v1.0_9250.safetensors`、1.0、トリガー無し）。Colab の名前は「トイレ・ディルド」
-- 壁立ちバックは set → `-in` → `-peak` → `-close`。角は `04-tsuno-hold` → `04-tsuno-in`
-- 四つん這いの下ろす拍と `-press` は LoRA を積まない。入れる `-in` と peak から siderear。`-close` は penis も外す。腰は冒頭に一度だけ後ろへ出て、そのあと止まる
+- 四つん這いも壁立ちバックも、受けの姿勢 → `-press`（竿が真後ろの同じ向きで、閉じた輪に亀頭を当てて HOLD。LoRA なし）→ `-in`（そこで siderear。腰は一度だけ前。体の向きは受けと同じ）→ peak → `-close`
+- 壁立ちの set と角の `04-tsuno-hold` は受けの姿勢だけ。LoRA は積まない。押し当ては `-press`。角の立ちバックは `hold` → `press` → `in`
+- `-press` の足は脹脛の横に開かない。竿役の胸・腰・膝は受けと同じ方向。背骨は平行。膝は受けの踵の後ろの中心線
+- `-close` は penis も外す。腰は冒頭に一度だけ中心線を後ろへ出て、そのあと止まる。輪は一度開いて、入る前の小さい閉じた輪に戻る。参照の左右は逆なので、竿役は RIGHT、受けは LEFT のまま
+- ギンの誘う後背は膣のまま。`04-gin-set`（受けの四つん這い、LoRA なし）→ `04-gin-press`（あやが同じ向きの中心線で亀頭をマンコに当てる、LoRA なし）→ `04-gin-in`（siderear）。向きは RIGHT
+- 角の口 `04-tsuno-oral` は、唇が根元まで下りたあと亀頭は口の中に留まる。亀頭まで戻る往復は書かない
 - 角の横寝は、あやの上の膝がカメラへ上がり、太ももが開いてマンコが竿に向く。lie から peak まで
 - 角の横寝は窓側の奥の長辺。あやは手前、少し左。亀頭がマンコに当たってから ride で入れる
 - 個室へ歩いて座る `04-toilet-toy` は植え付けの足止めを外す
 
-FRESH の候補。トイレ・ディルドは `04-toilet-toy` から `04-toilet-gape`。壁立ちは誘う各人の set から `-close`、しのは `12-exit-drop` まで。角の立ちバックは `04-tsuno-hold` から `04-tsuno-close`。後ろアナルは各人の `-jo-set` から `-jo-gape`。角の横寝は `04-tsuno-beckon` から `04-tsuno-peak`。四つん這いは各人の最初の拍と `-press`。
+FRESH の候補。トイレ・ディルドは `04-toilet-toy` から `04-toilet-gape`。壁立ちは誘う各人の set と `-press` と `-close`、しのは `12-exit-drop` まで。角の立ちバックは `04-tsuno-hold` から `04-tsuno-close`。後ろアナルは各人の `-jo-set` から `-jo-gape`。角の横寝は `04-tsuno-beckon` から `04-tsuno-peak`。四つん這いは各人の最初の拍と `-press` と `-close`。ギンの誘う後背は `04-gin-set` から `04-gin-peak`。角の口は `04-tsuno-oral`。
 
 ## 前回（2026-09-30）
 

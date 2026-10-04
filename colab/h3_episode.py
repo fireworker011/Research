@@ -535,6 +535,7 @@ LOWER_TO_FLOOR_CLAUSE = (
 HIPS_BACK_ONCE_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "The hips travel backward once at the opening of the shot and then stay still on that mark. "
+    "The shaft stays outside after that backward travel. "
     "The hands stay where they are. The feet stay on the floor. "
     "The pair stays on this same floor spot. The camera holds."
 )

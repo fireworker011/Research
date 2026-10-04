@@ -1838,13 +1838,13 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "pussy" in stand_in["action"].lower()
     for bid, who in (("03-kiss", "miki"), ("06-doggy", "rei"), ("09-join", "kana"), ("12-exit", "shino")):
         beat = next(b for b in stand["beats"] if b["id"] == bid)
+        aimed = next(b for b in stand["beats"] if b["id"] == f"{bid}-press")
         entered = next(b for b in stand["beats"] if b["id"] == f"{bid}-in")
         act = beat["action"].lower()
         cam = beat["camera"].lower()
         assert "bends forward" in act or "bent forward" in act, bid
-        assert f"{who} already stands behind aya" in act, bid
         assert "between the calves" in act, bid
-        assert "glans stays pressed on that closed ring" in act, bid
+        assert "glans stays pressed" not in act, bid
         assert "travels into" not in act, bid
         assert "spreads her left buttock aside" in act, bid
         assert "over her left shoulder" in act, bid
@@ -1853,13 +1853,22 @@ def test_hospital_invite_pose_and_toilet_and_skip():
         assert "side-rear" not in cam, bid
         assert "turns the same way" not in act, bid
         assert "turns her whole body" not in act, bid
+        assert extra_lora_entries(beat) == []
         assert "siderear" not in extra_keys(beat)
         assert beat.get("steps") == 8 and beat.get("turbo") is False
+        aim = aimed["action"].lower()
+        assert f"{who} steps onto the same centerline" in aim, bid
+        assert "glans stays pressed on that closed ring" in aim, bid
+        assert "travels into" not in aim, bid
+        assert extra_lora_entries(aimed) == []
+        assert aimed.get("steps") == 8 and aimed.get("turbo") is False
         assert extra_lora_entries(entered)[0] == ("siderear", 0.8)
+        assert "already stands on the same centerline" in entered["action"].lower(), bid
         assert entered.get("connect") == "chain"
         assert entered.get("steps") == 8 and entered.get("turbo") is False
         assert "doggy" not in extra_keys(beat)
-        assert stand["beats"].index(beat) + 1 == stand["beats"].index(entered)
+        assert stand["beats"].index(beat) + 1 == stand["beats"].index(aimed)
+        assert stand["beats"].index(aimed) + 1 == stand["beats"].index(entered)
         peak = next(b for b in stand["beats"] if b["id"] == f"{bid}-peak")
         assert "heels down" not in peak["action"].lower(), bid
     kiss_stand = next(b for b in stand["beats"] if b["id"] == "03-kiss")
@@ -2665,7 +2674,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_ride,rei=invite_ride,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(fullest, root=HOSPITAL_DIR) == []
-    assert len(fullest["beats"]) == 56
+    assert len(fullest["beats"]) == 57
     assert len(fullest["beats"]) <= MAX_BEATS
 
 
@@ -3247,14 +3256,24 @@ def test_hospital_gin_tsuno_optional_events():
 
     dog = prepare_episode(raw, gin_override="誘う後背")
     dog_lick = next(b for b in dog["beats"] if b["id"] == "04-gin-lick")
+    dog_set = next(b for b in dog["beats"] if b["id"] == "04-gin-set")
+    dog_aim = next(b for b in dog["beats"] if b["id"] == "04-gin-press")
     dog_in = next(b for b in dog["beats"] if b["id"] == "04-gin-in")
     assert "behind aya toward the left" in dog_lick["action"].lower()
     assert "lands on her feet" not in dog_lick["action"].lower()
-    assert "aya's chest meets gin's back" in dog_in["action"].lower()
-    assert "already sitting on her butt" in dog_in["action"].lower()
-    assert "drops herself to all fours" in dog_in["action"].lower()
-    assert "rises to her feet once" in dog_in["action"].lower()
-    assert "set the pose together" in dog_in["action"].lower()
+    assert "aya's chest meets gin's back" in dog_set["action"].lower()
+    assert "already sitting on her butt" in dog_set["action"].lower()
+    assert "drops herself to all fours" in dog_set["action"].lower()
+    assert "rises to her feet once" in dog_set["action"].lower()
+    assert "set the pose together" in dog_set["action"].lower()
+    assert extra_lora_entries(dog_set) == []
+    assert extra_lora_entries(dog_aim) == []
+    assert "steps onto the same centerline" in dog_aim["action"].lower()
+    assert "glans stays pressed on the pussy" in dog_aim["action"].lower()
+    assert "travels into" not in dog_aim["action"].lower()
+    assert "same centerline" in dog_in["action"].lower()
+    assert "one continuous press" in dog_in["action"].lower()
+    assert extra_lora_entries(dog_in)[0] == ("siderear", 0.8)
     assert "can't-hold-back" in action_blob(dog, "04-gin") or "ass toward aya" in action_blob(dog, "04-gin")
 
     stand = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
@@ -3335,10 +3354,16 @@ def test_hospital_gin_tsuno_optional_events():
     assert "travels into the anus" in invite_in["action"].lower()
     assert "right palm stay on the grey wall" in invite_in["action"].lower()
     invite_ids = [b["id"] for b in invite["beats"]]
-    assert invite_ids.index("04-tsuno-hold") + 1 == invite_ids.index("04-tsuno-in")
+    assert invite_ids.index("04-tsuno-hold") + 1 == invite_ids.index("04-tsuno-press")
+    assert invite_ids.index("04-tsuno-press") + 1 == invite_ids.index("04-tsuno-in")
     invite_hold = next(b for b in invite["beats"] if b["id"] == "04-tsuno-hold")
+    invite_aim = next(b for b in invite["beats"] if b["id"] == "04-tsuno-press")
     assert "siderear" not in extra_keys(invite_hold)
     assert "shaft leaves the anus" in invite_hold["action"].lower()
+    assert extra_lora_entries(invite_hold) == []
+    assert extra_lora_entries(invite_aim) == []
+    assert "steps onto the same centerline" in invite_aim["action"].lower()
+    assert "glans stays pressed" in invite_aim["action"].lower()
     assert extra_lora_entries(invite_in)[0] == ("siderear", 0.8)
     assert extra_lora_entries(invite_in)[1] == ("anuspussy", 0.4)
     assert "lies on one side" not in invite_peak["action"].lower()
@@ -6381,7 +6406,10 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "left hand stays on aya's shoulder" in wall["action"].lower()
     assert "travels into the anus" in wall["action"].lower()
     wall_set = next(b for b in stand["beats"] if b["id"] == "03-kiss")
-    assert extra_lora_entries(wall_set) == [("anuspussy", 0.4), ("mystic", 0.5), ("penis", 0.45)]
+    assert extra_lora_entries(wall_set) == []
+    wall_aim = next(b for b in stand["beats"] if b["id"] == "03-kiss-press")
+    assert extra_lora_entries(wall_aim) == []
+    assert "steps onto the same centerline" in wall_aim["action"].lower()
     assert "siderear" not in extra_keys(next(b for b in stand["beats"] if b["id"] == "09-kana-facial"))
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
     assert "siderear" not in extra_keys(next(b for b in m_open["beats"] if b["id"] == "06-doggy"))
