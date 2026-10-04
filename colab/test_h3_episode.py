@@ -6020,6 +6020,11 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     beckon = next(b for b in ride["beats"] if b["id"] == "04-tsuno-beckon")
     assert beckon.get("connect") == "chain"
     assert "profile side-on" in beckon["camera"].lower()
+    assert "right half of the mattress" in beckon["action"].lower()
+    assert "head points to the left" in beckon["action"].lower()
+    assert "near half" in lie["action"].lower()
+    assert "far half" in lie["action"].lower()
+    assert "toward the camera" in lie["action"].lower()
     sidekiss = next(b for b in ride["beats"] if b["id"] == "04-tsuno-sidekiss")
     assert sidekiss.get("connect") == "chain"
     assert "front from the doorway" not in sidekiss["camera"].lower()
