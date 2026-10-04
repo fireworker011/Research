@@ -138,11 +138,11 @@ def test_generate_r2v_dry_run_keeps_video_and_tries_10s(tmp_path):
     assert g["20"]["class_type"] == "MiniMaxH3ReferenceToVideo"
     assert "ref_videos.ref_video_0" in g["20"]["inputs"]
     assert g["190"]["class_type"] == "VHS_LoadVideo"
-    assert result["plan"]["duration_s"] == 10
+    assert result["plan"]["duration_s"] == 6
     plans = grokbot_r2v_retry_plans(
         duration_s=10, width=768, height=864, n_images=1, vram_gb=39.5
     )
-    assert plans[0]["duration_s"] == 10
+    assert plans[0]["duration_s"] == 6
     names = " ".join(p.name.lower() for _u, p in r2v_download_jobs("/tmp/r2v-models"))
     assert "ref2va" in names
     assert "ref2v_turbo" in names or "ref2v" in names

@@ -14,6 +14,7 @@ from h3_i2v_runtime import (
     comfy_launch_cmd,
     discard_broken_comfy,
     execution_error_text,
+    install_requirements,
 )
 
 
@@ -49,6 +50,20 @@ def test_failed_clone_stops(tmp_path: Path) -> None:
     else:
         raise AssertionError("clone failure did not stop")
     assert not comfy.exists()
+
+
+def test_requirements_install_once(tmp_path: Path) -> None:
+    req = tmp_path / "requirements.txt"
+    req.write_text("pip\n", encoding="utf-8")
+    calls: list[list[str]] = []
+
+    def run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0)
+
+    install_requirements(req, run)
+    install_requirements(req, run)
+    assert len(calls) == 1
 
 
 def test_40gb_launch_does_not_pin_all_weights() -> None:

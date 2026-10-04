@@ -270,8 +270,8 @@ def cap_duration_for_vram(
     elif tier == "24":
         cap = 5.0
     elif tier == "40":
-        # A100 40GB: 14s + max + 2 stills + motion clip requested 18.5GiB extra and died
-        cap = 6.0 if (ref_image_size == "max" and n_images >= 2) else 8.0
+        # A100 40GB: 10s then 8s then 6s each loaded the weights and died in the sampler.
+        cap = 6.0
     else:
         # A100 80GB High Memory: peak request was ~18.5GiB extra; keep full length
         cap = 15.0
@@ -393,7 +393,7 @@ def grokbot_r2v_retry_plans(
     size = ref_image_size if ref_image_size in ("match", "max") else "max"
     tier = gpu_vram_tier(vram_gb)
     head: list[dict[str, Any]] = []
-    if requested >= 10 and tier != "80plus":
+    if requested >= 10 and tier == "80plus":
         head.append(
             {
                 "duration_s": requested,

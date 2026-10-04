@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -144,21 +145,50 @@ def discard_broken_comfy(comfy_dir: Path) -> bool:
     return True
 
 
-def clone_comfy(comfy_dir: Path, run=sh) -> None:
+_COPY_IGNORE = shutil.ignore_patterns("models", "output", "input", ".git", "__pycache__")
+
+
+def _copy_checkout(src: Path, dest: Path) -> None:
+    if dest.exists():
+        shutil.rmtree(dest)
+    shutil.copytree(src, dest, symlinks=True, ignore=_COPY_IGNORE)
+
+
+def clone_comfy(comfy_dir: Path, run=sh, *, cache_dir: Path | None = None) -> None:
     if comfy_checkout_ok(comfy_dir):
         return
+    if cache_dir is not None and comfy_checkout_ok(cache_dir):
+        print("Drive にある ComfyUI を使う", cache_dir)
+        _copy_checkout(cache_dir, comfy_dir)
+        if comfy_checkout_ok(comfy_dir):
+            return
     if discard_broken_comfy(comfy_dir):
         print("ComfyUI のフォルダが壊れていたので消して取り直す", comfy_dir)
     result = run(["git", "clone", "--depth", "1", COMFY_REPO, str(comfy_dir)])
     if result.returncode != 0 or not comfy_checkout_ok(comfy_dir):
         raise SystemExit("ComfyUI の取得に失敗した。ランタイムを再起動して、このセルをもう一度実行する。")
+    if cache_dir is not None and not comfy_checkout_ok(cache_dir):
+        cache_dir.parent.mkdir(parents=True, exist_ok=True)
+        _copy_checkout(comfy_dir, cache_dir)
+
+
+def install_requirements(req: Path, run=sh) -> None:
+    if not req.is_file():
+        return
+    digest = hashlib.sha256(req.read_bytes()).hexdigest()
+    stamp = req.parent / ".h3-pip-ok"
+    if stamp.is_file() and stamp.read_text(encoding="utf-8").strip() == digest:
+        print("道具は入っているので飛ばす")
+        return
+    result = run([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    if result.returncode != 0:
+        raise SystemExit("道具のインストールに失敗した")
+    stamp.write_text(digest + "\n", encoding="utf-8")
 
 
 def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path, *, need_r2v: bool = False) -> None:
-    clone_comfy(comfy_dir)
-    req = comfy_dir / "requirements.txt"
-    if req.is_file():
-        sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    clone_comfy(comfy_dir, cache_dir=Path(drive_root) / "comfyui-src")
+    install_requirements(comfy_dir / "requirements.txt")
     models_root = comfy_dir / "models"
     models_root.mkdir(parents=True, exist_ok=True)
     for sub in ["diffusion_models", "text_encoders", "vae", "loras"]:
