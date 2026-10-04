@@ -12,6 +12,8 @@ from __future__ import annotations
 import io
 import json
 import re
+import shutil
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -452,14 +454,50 @@ def stage_picture1(folder: Path, src: Path, job: dict[str, Any], input_dir: Path
     return name
 
 
+def resample_motion_24(src: Path, dst: Path) -> bool:
+    """H3 reads reference frames as 24 fps. A 30 fps clip sampled as 24 fps jitters."""
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        return False
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        [
+            ffmpeg,
+            "-y",
+            "-i",
+            str(src),
+            "-an",
+            "-vf",
+            "fps=24,scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2",
+            "-r",
+            "24",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            str(dst),
+        ],
+        check=False,
+        capture_output=True,
+    )
+    return result.returncode == 0 and dst.is_file() and dst.stat().st_size > 1000
+
+
 def stage_motion(folder: Path, src: Path, job: dict[str, Any], input_dir: Path) -> str:
     name = f"{job['id']}.mp4"
     dest_job = folder / "motion.mp4"
     dest_in = input_dir / name
-    data = Path(src).read_bytes()
-    dest_job.write_bytes(data)
     input_dir.mkdir(parents=True, exist_ok=True)
-    dest_in.write_bytes(data)
+    src = Path(src)
+    work = folder / ".motion-24.mp4"
+    if resample_motion_24(src, work):
+        data = work.read_bytes()
+        work.unlink(missing_ok=True)
+    else:
+        data = src.read_bytes()
+    dest_job.write_bytes(data)
+    if dest_in.resolve() != dest_job.resolve():
+        dest_in.write_bytes(data)
     job["source_video"] = "motion.mp4"
     job["staged_motion"] = name
     return name

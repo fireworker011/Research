@@ -18,6 +18,7 @@ from h3_i2v_job import (
     SCHEMA,
     default_job,
     identity_still_bytes,
+    resample_motion_24,
     vertical_r2v_canvas,
     ensure_drive_tree,
     forbidden_hits,
@@ -27,6 +28,7 @@ from h3_i2v_job import (
     next_ready_job,
     save_job,
     set_status,
+    stage_motion,
     stage_picture1,
     validate_job,
 )
@@ -252,6 +254,18 @@ def test_square_still_is_not_cropped() -> None:
     image.save(buf, format="PNG")
     raw = buf.getvalue()
     assert identity_still_bytes(raw) == raw
+
+
+def test_stage_motion_keeps_bytes_when_resample_fails(tmp_path: Path) -> None:
+    folder = tmp_path / "job"
+    folder.mkdir()
+    src = folder / "clip.mov"
+    src.write_bytes(b"not-a-video")
+    job = {"id": "dance-01"}
+    name = stage_motion(folder, src, job, tmp_path / "input")
+    assert name == "dance-01.mp4"
+    assert (folder / "motion.mp4").read_bytes() == b"not-a-video"
+    assert (tmp_path / "input" / name).read_bytes() == b"not-a-video"
 
 
 def test_old_square_r2v_canvas_becomes_vertical() -> None:

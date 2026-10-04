@@ -141,6 +141,8 @@ def camera_lock_text() -> str:
     return (
         "CAMERA LOCK (mandatory): Copy the camera from <Video 1> exactly. "
         "If that camera is fixed, the output camera stays fixed. "
+        "The subject stays horizontally centered in the frame for the whole clip. "
+        "Do not add handheld shake, bob, or drift. "
         "Do not orbit, circle, dolly around, or cut to a side view or a back view. "
         "A character sheet with front, side, and back views is identity only, not a shot list. "
         "Framing changes only when the body in <Video 1> changes distance, "
