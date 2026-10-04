@@ -104,6 +104,9 @@ for rel in HELPERS:
     print("helper", name)
 
 sys.path.insert(0, "/content")
+for _name in list(sys.modules):
+    if _name.startswith("h3_"):
+        del sys.modules[_name]
 from h3_colab_main import bot_prepare, main
 
 bot_prepare(MODE, Path(DRIVE_ROOT))

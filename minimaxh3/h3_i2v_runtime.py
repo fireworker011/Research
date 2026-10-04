@@ -135,7 +135,8 @@ COMFY_REPO = "https://github.com/Comfy-Org/ComfyUI.git"
 
 def comfy_checkout_ok(comfy_dir: Path) -> bool:
     """main.py alone is not enough. comfy/ldm/models is code, not the weight folder."""
-    return (comfy_dir / "main.py").is_file() and (comfy_dir / "comfy" / "ldm" / "models").is_dir()
+    code = comfy_dir / "comfy" / "ldm" / "models" / "autoencoder.py"
+    return (comfy_dir / "main.py").is_file() and code.is_file()
 
 
 def discard_broken_comfy(comfy_dir: Path) -> bool:
@@ -167,6 +168,7 @@ def _copy_checkout(src: Path, dest: Path) -> None:
 def clone_comfy(comfy_dir: Path, run=sh, *, cache_dir: Path | None = None) -> None:
     if comfy_checkout_ok(comfy_dir):
         return
+    print("ComfyUI のコードが欠けているので取り直す", comfy_dir)
     if cache_dir is not None and comfy_checkout_ok(cache_dir):
         print("Drive にある ComfyUI を使う", cache_dir)
         _copy_checkout(cache_dir, comfy_dir)

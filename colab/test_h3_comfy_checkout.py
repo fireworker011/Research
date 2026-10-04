@@ -31,7 +31,15 @@ def test_broken_folder_is_removed(tmp_path: Path) -> None:
 def _plant_checkout(comfy: Path) -> None:
     (comfy / "comfy" / "ldm" / "models").mkdir(parents=True)
     (comfy / "comfy" / "ldm" / "models" / "__init__.py").write_text("", encoding="utf-8")
+    (comfy / "comfy" / "ldm" / "models" / "autoencoder.py").write_text("", encoding="utf-8")
     (comfy / "main.py").write_text("print(1)\n", encoding="utf-8")
+
+
+def test_checkout_without_autoencoder_is_not_usable(tmp_path: Path) -> None:
+    comfy = tmp_path / "ComfyUI"
+    (comfy / "comfy" / "ldm" / "models").mkdir(parents=True)
+    (comfy / "main.py").write_text("print(1)\n", encoding="utf-8")
+    assert comfy_checkout_ok(comfy) is False
 
 
 def test_good_checkout_is_kept(tmp_path: Path) -> None:
