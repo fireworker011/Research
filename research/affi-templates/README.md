@@ -92,6 +92,10 @@ https://colab.research.google.com/github/fireworker011/Research/blob/cursor/affi
 
 投稿後の数字は `reference-accounts/results.csv` に手で入れる。空欄は0にしない。72時間後の値。1回に変える要素は1つ。
 
+見た目は `reference-accounts/looks.yaml` の選択肢か、同じ形のYAML（例: `look.example.yaml`）。Colabのドロップダウンでも選ぶ。
+「その他（直接入力）」の文章と参照画像の欄は、そのまま全カット・全話のプロンプトに入る。空欄は既定（元アカウントとは違う見た目）。
+秒数・カット・字幕は型のまま。A/Bの見た目は両版で同じ。人物は成人のみ。実在の人や元アカウントに似せる指定は止まる。
+
 ### 最初にやること
 
 仮説の本投稿の前に、Grok Imagineで制作可否を見る。

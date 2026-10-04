@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 import statistics
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -18,6 +19,73 @@ ROOT = Path(__file__).resolve().parent
 TEMPLATES = ROOT / "reference-accounts" / "templates"
 HYPOTHESES = ROOT / "reference-accounts" / "hypotheses.yaml"
 RESULTS = ROOT / "reference-accounts" / "results.csv"
+LOOKS = ROOT / "reference-accounts" / "looks.yaml"
+
+_BANNED = (
+    "ジュンジュン",
+    "ランラン",
+    "紫藤",
+    "乃やこ",
+    "すず丸",
+    "the.care.logic",
+    "pinonuts",
+    "おいもナッツ",
+    "そっくり",
+    "本人",
+    "実在",
+    "有名人",
+    "未成年",
+    "子供",
+    "子ども",
+    "10代",
+    "十代",
+    "小学生",
+    "中学生",
+    "高校生",
+    "幼児",
+    "赤ちゃん",
+    "乳児",
+    "少年",
+    "少女",
+    "child",
+    "teen",
+    "toddler",
+    "infant",
+    "minor",
+    "baby",
+)
+_AGE = re.compile(r"(\d+)\s*(?:歳|才)")
+_PARTS = {
+    "the.care.logic": ("mascot", "place", "speech"),
+    "nuts0629": ("animal", "place", "speech"),
+    "junjun_ranran": ("animal", "animal2", "person", "place", "speech"),
+    "yako.shiawasekon": ("person", "person2", "place", "speech"),
+}
+_PREFIX = {
+    "animal": "animal_",
+    "animal2": "animal2_",
+    "person": "person_",
+    "person2": "person2_",
+    "place": "place_",
+    "mascot": "mascot_",
+}
+_KEYS = {
+    "animal": ("species", "breed", "coat", "build", "outfit"),
+    "animal2": ("species", "breed", "coat", "build", "outfit"),
+    "person": ("gender", "age", "hair", "hair_color", "clothes", "build", "makeup"),
+    "person2": ("gender", "age", "hair", "hair_color", "clothes", "build", "makeup"),
+    "place": ("room", "style", "palette", "light"),
+    "mascot": ("subject", "style", "color"),
+}
+_NAME = {
+    "animal": "動物",
+    "animal2": "動物2",
+    "person": "人物",
+    "person2": "人物2",
+    "place": "場所",
+    "mascot": "キャラ",
+    "speech": "口調",
+}
 
 REQUIRED = (
     "schema",
@@ -79,6 +147,124 @@ def _mode_block(item: Mapping[str, Any], mode: str | None) -> dict[str, Any]:
     return {"timeline": block["timeline"], "subtitle_mode": block.get("subtitle"), "audio_mode": block.get("audio"), "mode": key}
 
 
+def catalog() -> dict[str, Any]:
+    data = load_yaml(LOOKS)
+    if data.get("schema") != "affi-look-choices/v1":
+        raise ValueError("looks の schema が違う")
+    return data
+
+
+def load_look(path: Path) -> dict[str, Any]:
+    data = load_yaml(path)
+    if data.get("schema") == "affi-look-choices/v1":
+        raise ValueError("これは選択肢の一覧。選んだ結果のYAMLを渡す")
+    picked = data["look"] if isinstance(data.get("look"), dict) else data
+    return {key: value for key, value in picked.items() if key not in {"schema", "note"}}
+
+
+def reject_likeness(text: str) -> None:
+    raw = str(text or "")
+    if not raw.strip():
+        return
+    folded = raw.casefold()
+    for word in _BANNED:
+        if word.casefold() in folded:
+            raise ValueError(f"実在の人物や元アカウントに似せる指定はできない: {word}")
+    widened = raw.translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+    for match in _AGE.finditer(widened):
+        if int(match.group(1)) < 21:
+            raise ValueError("人物は成人のみ。21歳未満の指定はできない")
+
+
+def _field_id(choice_key: str) -> str:
+    if choice_key.startswith("animal2_"):
+        return "animal_" + choice_key[len("animal2_") :]
+    if choice_key.startswith("person2_"):
+        return "person_" + choice_key[len("person2_") :]
+    return choice_key
+
+
+def _find_option(field: Mapping[str, Any], choice: str) -> dict[str, Any] | None:
+    for opt in field["options"]:
+        if opt["id"] == choice or opt["label"] == choice:
+            return opt
+    return None
+
+
+def _phrase(cat: Mapping[str, Any], choice_key: str, choices: Mapping[str, Any], custom: Mapping[str, str]) -> tuple[str, str]:
+    field = cat["fields"][_field_id(choice_key)]
+    choice = str(choices.get(choice_key) or "").strip()
+    if not choice:
+        raise ValueError(f"{field['label']} が空")
+    opt = _find_option(field, choice)
+    if opt is None:
+        raise ValueError(f"選択肢が無い: {field['label']} / {choice}")
+    if opt["id"] == "other":
+        text = str(custom.get(choice_key) or "").strip()
+        if not text:
+            raise ValueError(f"{field['label']} のその他は文章が要る")
+        reject_likeness(text)
+        return text, text
+    return str(opt["ja"]), str(opt["en"])
+
+
+def normalize_look(look: Mapping[str, Any] | None) -> dict[str, Any]:
+    cat = catalog()
+    choices = dict(cat["defaults"])
+    custom: dict[str, str] = {}
+    ref_image = ""
+    if look:
+        ref_image = str(look.get("ref_image") or "").strip()
+        extra = look.get("custom")
+        if isinstance(extra, Mapping):
+            custom.update({str(key): str(value).strip() for key, value in extra.items()})
+        for key, value in look.items():
+            if key in {"ref_image", "custom", "schema", "note"}:
+                continue
+            if str(key).endswith("_text"):
+                custom[str(key)[: -len("_text")]] = str(value).strip()
+                continue
+            choices[str(key)] = value
+    known = set(cat["defaults"])
+    for key in choices:
+        if key not in known:
+            raise ValueError(f"見た目の欄が無い: {key}")
+    reject_likeness(ref_image)
+    for text in custom.values():
+        reject_likeness(text)
+    for key in choices:
+        _phrase(cat, key, choices, custom)
+    return {"choices": choices, "custom": custom, "ref_image": ref_image}
+
+
+def look_block(handle: str, look: Mapping[str, Any] | None = None) -> dict[str, str]:
+    cat = catalog()
+    spec = normalize_look(look)
+    parts = _PARTS.get(handle)
+    if not parts:
+        raise KeyError(handle)
+    ja_parts: list[str] = []
+    en_parts: list[str] = []
+    for part in parts:
+        if part == "speech":
+            ja, en = _phrase(cat, "speech", spec["choices"], spec["custom"])
+            ja_parts.append(f"口調は{ja}")
+            en_parts.append(f"speech style: {en}")
+            continue
+        bits_ja: list[str] = []
+        bits_en: list[str] = []
+        for key in _KEYS[part]:
+            ja, en = _phrase(cat, _PREFIX[part] + key, spec["choices"], spec["custom"])
+            bits_ja.append(ja)
+            bits_en.append(en)
+        ja_parts.append(f"{_NAME[part]}: " + "、".join(bits_ja))
+        en_parts.append(f"{_NAME[part]}: " + ", ".join(bits_en))
+    ref = spec["ref_image"] or "なし"
+    ja = "。".join(ja_parts) + f"。参照画像: {ref}。人物は成人のみ。実在の人物や元アカウントには似せない。"
+    en = ". ".join(en_parts) + f". reference image: {spec['ref_image'] or 'none'}. Adults only. Do not resemble a real person or the source account."
+    return {"ja": ja, "en": en, "line": f"{ja} / {en}", "ref_image": spec["ref_image"]}
+
+
 def sheet(
     item: Mapping[str, Any],
     theme: str,
@@ -86,9 +272,11 @@ def sheet(
     *,
     mode: str | None = None,
     variables: Mapping[str, str] | None = None,
+    look: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """One video plan. Theme and lines replace the content. The pattern stays."""
     block = _mode_block(item, mode)
+    locked = look_block(str(item["handle"]), look)
     spoken = list(lines or [])
     scenes = []
     for index, beat in enumerate(block["timeline"]):
@@ -98,7 +286,8 @@ def sheet(
                 "id": beat["id"],
                 "start_s": beat.get("start_s"),
                 "end_s": beat.get("end_s"),
-                "imagine": _imagine(item, beat, theme, line),
+                "imagine": _imagine(beat, theme, line, locked["line"]),
+                "look": locked["line"],
                 "line": line,
                 "subtitle": _subtitle_line(item, block["subtitle_mode"]),
                 "edit": f"{beat.get('start_s')}秒から{beat.get('end_s')}秒。{beat.get('camera') or 'カメラは仕様どおり。'}",
@@ -134,14 +323,15 @@ def sheet(
         "cta": item["cta"],
         "unknowns": item["unknowns"],
         "reproduce": item["reproduce"],
+        "look": locked,
     }
 
 
-def _imagine(item: Mapping[str, Any], beat: Mapping[str, Any], theme: str, line: str) -> str:
-    look = "。".join(str(c["look"]) for c in item["characters"])
+def _imagine(beat: Mapping[str, Any], theme: str, line: str, locked: str) -> str:
     return (
         f"縦動画の1カット。テーマは「{theme}」。{beat.get('picture')} "
-        f"見た目の固定: {look} カメラ: {beat.get('camera') or '仕様にないので不明'}。"
+        f"見た目の固定（全カット同じ）: {locked} "
+        f"カメラ: {beat.get('camera') or '仕様にないので不明'}。"
         f"このカットの言葉の役割: {line}。元のアカウントの顔、動物、台詞文は使わない。"
         "画面の文字は、字幕欄で別に焼くもの以外は出さない。"
     )
@@ -181,6 +371,14 @@ def render_markdown(plan: Mapping[str, Any], title: str) -> str:
         "",
         plan["reproduce"],
         f"テーマ: {plan['theme']}",
+        "",
+        "## 見た目（全カット・全話で同じ）",
+        "",
+        plan["look"]["ja"],
+        "",
+        plan["look"]["en"],
+        "",
+        "A/Bではこの見た目の文を両版で同じにする。",
         "",
         "## シーン",
         "",
@@ -230,11 +428,16 @@ def hypothesis(hid: str) -> dict[str, Any]:
     raise KeyError(hid)
 
 
-def ab_sheets(hid: str, theme: str, lines: Sequence[str] | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
+def ab_sheets(
+    hid: str,
+    theme: str,
+    lines: Sequence[str] | None = None,
+    look: Mapping[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     spec = hypothesis(hid)
     base = template_for(spec["handle"])
-    left = sheet(base, theme, lines, variables={spec["change_key"]: spec["a_value"]})
-    right = sheet(base, theme, lines, variables={spec["change_key"]: spec["b_value"]})
+    left = sheet(base, theme, lines, variables={spec["change_key"]: spec["a_value"]}, look=look)
+    right = sheet(base, theme, lines, variables={spec["change_key"]: spec["b_value"]}, look=look)
     left["variant"] = "A"
     right["variant"] = "B"
     left["variant_label"] = spec["a_label"]
@@ -251,19 +454,19 @@ def feasibility() -> list[dict[str, str]]:
     return list(load_yaml(HYPOTHESES)["feasibility"])
 
 
-def feasibility_sheet(fid: str) -> str:
+def feasibility_sheet(fid: str, look: Mapping[str, Any] | None = None) -> str:
     item = next(row for row in feasibility() if row["id"] == fid)
     if fid == "F1":
         body = template_for("yako.shiawasekon")
-        plan = sheet(body, "制作可否", ["こんにちは。今日はここまで。"])
+        plan = sheet(body, "制作可否", ["こんにちは。今日はここまで。"], look=look)
         title = "F1 日本語の口パク"
     elif fid == "F2":
         body = template_for("junjun_ranran")
-        plan = sheet(body, "同じ顔の確認", ["いち", "に"])
+        plan = sheet(body, "同じ顔の確認", ["いち", "に"], look=look)
         title = "F2 毎回同じ顔"
     elif fid == "F3":
         body = template_for("nuts0629")
-        plan = sheet(body, "ダンスの可否", mode="dance")
+        plan = sheet(body, "ダンスの可否", mode="dance", look=look)
         title = "F3 ダンスの動き"
     else:
         raise KeyError(fid)
@@ -363,14 +566,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--id", default="")
     parser.add_argument("--theme", default="テーマは入力")
     parser.add_argument("--results", default=str(RESULTS))
+    parser.add_argument("--look", default="")
     args = parser.parse_args(argv)
+    picked = load_look(Path(args.look)) if args.look else None
     if args.cmd == "feasibility":
         for item in feasibility():
-            print(feasibility_sheet(item["id"]))
+            print(feasibility_sheet(item["id"], picked))
             print("---")
         return 0
     if args.cmd == "ab":
-        left, right = ab_sheets(args.id, args.theme)
+        left, right = ab_sheets(args.id, args.theme, look=picked)
         print(render_markdown(left, f"{args.id} A {left['variant_label']}"))
         print(render_markdown(right, f"{args.id} B {right['variant_label']}"))
         return 0
