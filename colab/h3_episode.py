@@ -304,8 +304,9 @@ LORA_FILES = {
     # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
     # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
-    # az420 dildo. Version 3282820 fileId 3167066. Trigger stays off the action.
-    "solodildo": "dildoing-mh3-e60-az420.safetensors",
+    # Solo Dildo H3. Civitai 1707303 version 3378450 fileId 3266906. No trigger word.
+    # A toy drawn with a penis head gets stroked like a shaft, so beats call it a sex toy.
+    "solodildo": "h3_base_dildo_v1.0_9250.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -340,7 +341,7 @@ LORA_URLS = {
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
-    "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
+    "solodildo": "https://civitai.com/api/download/models/3378450?fileId=3266906",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -373,14 +374,13 @@ LORA_STRENGTHS = {
     "anuspussy": 0.4,
     # FunPhantom says start at 0.75-0.85.
     "cumfacial": 0.8,
-    # The dildo card lists no strength. Ward beats keep 0.7.
-    "solodildo": 0.7,
+    # The card used 1.0 for every test and showcase.
+    "solodildo": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
-DILDO_TRIGGER = "pumping a dildo insider her vagina"
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -530,6 +530,12 @@ LOWER_TO_FLOOR_CLAUSE = (
     "Both feet stay on the floor. The pair stays on this same floor spot."
 )
 # Side-lie on the sickroom bed. Planted pace freezes the pair on the opening spot.
+# Wall stand set. Planted pace forbids the turn to the wall.
+WALL_SET_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "Aya turns from the opening pose to the grey wall in one continuous move and settles into the pose there. "
+    "The pair stays on this same floor spot. The camera holds."
+)
 SIDE_LIE_SETTLE_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "Tsuno rolls from the opening pose onto her side on the far long edge of the mattress in one continuous move. "
@@ -557,6 +563,14 @@ TOILET_STALL_RE = re.compile(r"this same stall", re.I)
 TOILET_STALL_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "The adults stay inside this same stall. The camera holds. "
+    "Normal adult human height."
+)
+# Corridor-to-seat entry. The planted clauses forbid the walk into the stall.
+TOILET_SIT_RE = re.compile(r"turns into the filthy western stall and SITS", re.I)
+TOILET_SIT_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "Aya walks from the corridor into the stall and sits on the seat in one continuous move. "
+    "The porcelain bowl, the seat, and the tank stay bolted in one place. The camera holds. "
     "Normal adult human height."
 )
 PEE_STILL_CLAUSE = (
@@ -5688,6 +5702,10 @@ def build_beat_prompt(
         bid_now = str(beat.get("id") or "")
         if "lowers her chest and cheek" in action_txt.lower():
             desc.append(LOWER_TO_FLOOR_CLAUSE)
+        elif "turns to the grey wall in one continuous move" in action_txt.lower():
+            desc.append(WALL_SET_CLAUSE)
+        elif TOILET_SIT_RE.search(action_txt):
+            desc.append(TOILET_SIT_CLAUSE)
         elif (
             "far long edge nearest the window" in action_txt.lower()
             and "lowers her hip onto the mattress" in action_txt.lower()
@@ -5902,7 +5920,6 @@ _LORA_TRIGGER_TOKENS = (
     ("blowjob", "bl0w_j0b"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
-    ("solodildo", DILDO_TRIGGER),
     ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),

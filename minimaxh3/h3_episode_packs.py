@@ -362,8 +362,8 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "stand": {
         "label_ja": "立ちバック",
         "choice_ja": "壁立ちバック",
-        "when_ja": "壁に両手。横から肛門へ一度入れて根元、短い抽送で中。歩きまで",
-        "hint_ja": "あやが壁に手。横から結合部。肛門。終わりはあや一人歩き",
+        "when_ja": "壁に右腕、左手で尻を開いて振り返る。先を当てる→肛門へ根元→パコ中出し→抜いて輪が狭まる→歩きの5本",
+        "hint_ja": "あやが壁に右腕。左手で尻を開く。肛門が画面中央。終わりはあや一人歩き",
     },
     "nelson": {
         "label_ja": "フルネルソン",
@@ -466,10 +466,10 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "hint_ja": "植物の洋式に座って触手。洋式汚物と和式汚物には触手を出さない",
     },
     "finger": {
-        "label_ja": "アナル指",
-        "choice_ja": "トイレ・アナル指",
-        "when_ja": "洋式汚物まみれ。便座の横の極太ディルド。触手はこの便器に出ない",
-        "hint_ja": "汚れた白い洋式。便座の横のディルドを右手で肛門へ",
+        "label_ja": "ディルド",
+        "choice_ja": "トイレ・ディルド",
+        "when_ja": "洋式汚物まみれ。座る→緑の細長いディルドを持つ→膣へ出し入れ→絶頂→抜く。触手はこの便器に出ない",
+        "hint_ja": "汚れた白い洋式にカメラ向きで座り、脚を開く。右手で緑のディルドを膣へ出し入れ",
     },
     "wash": {
         "label_ja": "和式排出",
@@ -508,6 +508,7 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "触手": "tentacle",
         "tentacles": "tentacle",
         "アナル指": "finger",
+        "トイレ・アナル指": "finger",
         "指": "finger",
         "finger": "finger",
         "和式": "wash",
