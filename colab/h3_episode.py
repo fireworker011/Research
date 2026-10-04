@@ -553,7 +553,10 @@ SIDE_LIE_SETTLE_CLAUSE = (
 SIDE_LIE_JOIN_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "Aya lowers from standing onto her side on the near half of the mattress in one continuous move. "
-    "Both of Aya's feet end on the mattress. Tsuno stays on the far long edge. "
+    "Aya's hips land on the same line as Tsuno's hips. "
+    "The hairless pussy lands directly in front of the glans. "
+    "The glans stays pressed on the hairless pussy. The shaft stays outside, in the gap between the thighs. "
+    "Tsuno stays on her side on the far long edge, chest against Aya's back. "
     "The pair stays in this same sickroom."
 )
 # A chest carry is not a planted stand and not a held-leg lift. "Feet planted" draws the feet down.

@@ -6139,6 +6139,10 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "toward the camera" in lie["action"].lower()
     assert "upper knee rises toward the camera" in lie["action"].lower()
     assert "upper thigh opens wide" in lie["action"].lower()
+    assert "hips on the same line as tsuno's hips" in lie["action"].lower()
+    assert "glans stays pressed on that pussy" in lie["action"].lower()
+    assert "from tsuno's hips" not in lie["action"].lower()
+    assert "in the gap between the thighs" in lie_prompt.lower()
     sidekiss = next(b for b in ride["beats"] if b["id"] == "04-tsuno-sidekiss")
     assert sidekiss.get("connect") == "chain"
     assert "front from the doorway" not in sidekiss["camera"].lower()
