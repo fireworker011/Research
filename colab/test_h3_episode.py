@@ -1564,7 +1564,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(207.8, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(238.4, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -2589,7 +2589,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 51
+    assert len(chosen["beats"]) == 52
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -6265,6 +6265,11 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "travels into the anus" in entered["action"].lower()
     assert "rim stretches tight" in entered["action"].lower()
     assert "walks in from the left" not in entered["action"].lower()
+    closed = next(b for b in fours["beats"] if b["id"] == "06-doggy-close")
+    assert closed.get("steps") == 8 and closed.get("turbo") is False
+    assert "ring finishes small and closed" in closed["action"].lower()
+    assert "shaft stays outside" in closed["action"].lower()
+    assert "thrust" not in extra_keys(closed)
     assert "right hand" in seat["action"].lower()
     assert "siderear" not in extra_keys(walk)
     assert "anuspussy" not in extra_keys(walk)

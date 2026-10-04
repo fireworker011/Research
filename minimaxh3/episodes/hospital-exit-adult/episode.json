@@ -638,6 +638,57 @@
           "turbo": false
         },
         {
+          "id": "03-kiss-close",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "extra_loras": [
+            [
+              "siderear",
+              0.8
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "PENISLORA",
+          "camera": "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. Miki already stands on the RIGHT behind her, chest toward her back, one hand on her hip. Both face LEFT. The anus stays at the center of the frame. The shaft leaves and stays outside. The ring draws inward until it is small and closed. Both adults full body including both feet.",
+          "action": "They start already joined at the BASE on this same floor spot. Aya's chest and cheek stay down on the tiles. Both palms stay flat on the tiles beside the shoulders. The spine stays long. Hips stay high. Both knees stay planted, open wide to the LEFT and RIGHT. Both soles stay on the tiles, heels out. Aya turns her face back over her left shoulder so both eyes look toward Miki. The anus faces the camera at the top of the cleft. The hairless pussy stays a closed slit directly under the anus. Both holes stay visible between the open thighs. Miki already stands behind Aya, both feet outside Aya's calves, chest toward the same wall Aya faces. The shaft is already buried to the root inside the anus. WHITE goo is on the join. Miki MOVES the hips BACK once until the shaft leaves the anus. The shaft stays outside. The rim is left open in a wide ring. Then the rim pulses and draws inward. The opening grows smaller with each pulse. The ring finishes small and closed. A thin trace of WHITE fluid stays at the center of that ring. The hips stay back. Each adult keeps one head, two arms, and two legs. Aya's two knees stay on the floor. Miki's two feet stay on the floor. Last frame: chest and cheek on the tiles, hips high, both knees open, the shaft outside, the anus a small closed ring, a thin trace of WHITE fluid at the center. Both adults full body including both feet.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "steps": 8,
+          "turbo": false
+        },
+        {
           "id": "03-kiss-walk",
           "source": "t2v",
           "connect": "end",
@@ -6164,6 +6215,64 @@
           "turbo": false
         },
         {
+          "id": "04-tsuno-close",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya",
+            "tsuno"
+          ],
+          "extra_loras": [
+            [
+              "siderear",
+              0.8
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "camera": "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. Tsuno already stands on the RIGHT behind her, chest toward her back, one hand on her hip. Both face LEFT. The anus stays at the center of the frame. The shaft leaves and stays outside. The ring draws inward until it is small and closed. Both adults full body including both feet.",
+          "action": "They start already joined at the BASE on this same floor spot. Aya's chest and cheek stay down on the tiles. Both palms stay flat on the tiles beside the shoulders. The spine stays long. Hips stay high. Both knees stay planted, open wide to the LEFT and RIGHT. Both soles stay on the tiles, heels out. Aya turns her face back over her left shoulder so both eyes look toward Tsuno. The anus faces the camera at the top of the cleft. The hairless pussy stays a closed slit directly under the anus. Both holes stay visible between the open thighs. Tsuno already stands behind Aya, both feet outside Aya's calves, chest toward the same wall Aya faces. The shaft is already buried to the root inside the anus. WHITE goo is on the join. Tsuno MOVES the hips BACK once until the shaft leaves the anus. The shaft stays outside. The rim is left open in a wide ring. Then the rim pulses and draws inward. The opening grows smaller with each pulse. The ring finishes small and closed. A thin trace of WHITE fluid stays at the center of that ring. The hips stay back. Each adult keeps one head, two arms, and two legs. Aya's two knees stay on the floor. Tsuno's two feet stay on the floor. Last frame: chest and cheek on the tiles, hips high, both knees open, the shaft outside, the anus a small closed ring, a thin trace of WHITE fluid at the center. Both adults full body including both feet. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Both faces stay that lewd pleasure-drunk expression until the last frame.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.35,
+            "heat": 4,
+            "objective_distance": 0.4,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "sfx": "Wet thrusts, HVAC",
+          "music": "Bass holds",
+          "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One rusted iron single bed with a stained grey mattress. An eye-chart sheet lies on the mattress. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "trigger": "PENISLORA",
+          "steps": 8,
+          "turbo": false
+        },
+        {
           "id": "04-tsuno-walk",
           "source": "t2v",
           "connect": "end",
@@ -10738,6 +10847,57 @@
           "turbo": false
         },
         {
+          "id": "06-doggy-close",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "extra_loras": [
+            [
+              "siderear",
+              0.8
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "PENISLORA",
+          "camera": "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. Rei already stands on the RIGHT behind her, chest toward her back, one hand on her hip. Both face LEFT. The anus stays at the center of the frame. The shaft leaves and stays outside. The ring draws inward until it is small and closed. Both adults full body including both feet.",
+          "action": "They start already joined at the BASE on this same floor spot. Aya's chest and cheek stay down on the tiles. Both palms stay flat on the tiles beside the shoulders. The spine stays long. Hips stay high. Both knees stay planted, open wide to the LEFT and RIGHT. Both soles stay on the tiles, heels out. Aya turns her face back over her left shoulder so both eyes look toward Rei. The anus faces the camera at the top of the cleft. The hairless pussy stays a closed slit directly under the anus. Both holes stay visible between the open thighs. Rei already stands behind Aya, both feet outside Aya's calves, chest toward the same wall Aya faces. The shaft is already buried to the root inside the anus. WHITE goo is on the join. Rei MOVES the hips BACK once until the shaft leaves the anus. The shaft stays outside. The rim is left open in a wide ring. Then the rim pulses and draws inward. The opening grows smaller with each pulse. The ring finishes small and closed. A thin trace of WHITE fluid stays at the center of that ring. The hips stay back. Each adult keeps one head, two arms, and two legs. Aya's two knees stay on the floor. Rei's two feet stay on the floor. Last frame: chest and cheek on the tiles, hips high, both knees open, the shaft outside, the anus a small closed ring, a thin trace of WHITE fluid at the center. Both adults full body including both feet. Thick extra-viscous dark-brown filthy sludge coats the shaft. The LEFT half of Rei's face and body stays wet rotting raw red flesh.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
+          "steps": 8,
+          "turbo": false
+        },
+        {
           "id": "06-doggy-walk",
           "source": "t2v",
           "connect": "end",
@@ -12710,6 +12870,57 @@
           },
           "loco": "planted",
           "connect": "t2v",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "09-join-close",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "extra_loras": [
+            [
+              "siderear",
+              0.8
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "PENISLORA",
+          "camera": "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. Kana already stands on the RIGHT behind her, chest toward her back, one hand on her hip. Both face LEFT. The anus stays at the center of the frame. The shaft leaves and stays outside. The ring draws inward until it is small and closed. Both adults full body including both feet.",
+          "action": "They start already joined at the BASE on this same floor spot. Aya's chest and cheek stay down on the tiles. Both palms stay flat on the tiles beside the shoulders. The spine stays long. Hips stay high. Both knees stay planted, open wide to the LEFT and RIGHT. Both soles stay on the tiles, heels out. Aya turns her face back over her left shoulder so both eyes look toward Kana. The anus faces the camera at the top of the cleft. The hairless pussy stays a closed slit directly under the anus. Both holes stay visible between the open thighs. Kana already stands behind Aya, both feet outside Aya's calves, chest toward the same wall Aya faces. The shaft is already buried to the root inside the anus. WHITE goo is on the join. Kana MOVES the hips BACK once until the shaft leaves the anus. The shaft stays outside. The rim is left open in a wide ring. Then the rim pulses and draws inward. The opening grows smaller with each pulse. The ring finishes small and closed. A thin trace of WHITE fluid stays at the center of that ring. The hips stay back. Each adult keeps one head, two arms, and two legs. Aya's two knees stay on the floor. Kana's two feet stay on the floor. Last frame: chest and cheek on the tiles, hips high, both knees open, the shaft outside, the anus a small closed ring, a thin trace of WHITE fluid at the center. Both adults full body including both feet. Thick extra-viscous sticky WHITE goo clinging to Aya's face, hair, neck, breasts, shoulders, and chest stays on the skin. Grimy dirty extra-viscous filthy slime stays on Kana's skin.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
           "steps": 8,
           "turbo": false
         },
@@ -14936,6 +15147,57 @@
           },
           "loco": "planted",
           "connect": "t2v",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "12-exit-close",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "extra_loras": [
+            [
+              "siderear",
+              0.8
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "penis",
+              0.45
+            ]
+          ],
+          "trigger": "PENISLORA",
+          "camera": "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. Shino already stands on the RIGHT behind her, chest toward her back, one hand on her hip. Both face LEFT. The anus stays at the center of the frame. The shaft leaves and stays outside. The ring draws inward until it is small and closed. Both adults full body including both feet.",
+          "action": "They start already joined at the BASE on this same floor spot. Aya's chest and cheek stay down on the tiles. Both palms stay flat on the tiles beside the shoulders. The spine stays long. Hips stay high. Both knees stay planted, open wide to the LEFT and RIGHT. Both soles stay on the tiles, heels out. Aya turns her face back over her left shoulder so both eyes look toward Shino. The anus faces the camera at the top of the cleft. The hairless pussy stays a closed slit directly under the anus. Both holes stay visible between the open thighs. Shino already stands behind Aya, both feet outside Aya's calves, chest toward the same wall Aya faces. The shaft is already buried to the root inside the anus. WHITE goo is on the join. Shino MOVES the hips BACK once until the shaft leaves the anus. The shaft stays outside. The rim is left open in a wide ring. Then the rim pulses and draws inward. The opening grows smaller with each pulse. The ring finishes small and closed. A thin trace of WHITE fluid stays at the center of that ring. The hips stay back. Each adult keeps one head, two arms, and two legs. Aya's two knees stay on the floor. Shino's two feet stay on the floor. Last frame: chest and cheek on the tiles, hips high, both knees open, the shaft outside, the anus a small closed ring, a thin trace of WHITE fluid at the center. Both adults full body including both feet. Shino's long forked reptile tongue stays on Shino.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "□ 誘う",
+            "stamina": 0.3,
+            "heat": 3,
+            "objective_distance": 0.2,
+            "icons_active": []
+          },
+          "loco": "planted",
+          "connect": "chain",
           "steps": 8,
           "turbo": false
         },
