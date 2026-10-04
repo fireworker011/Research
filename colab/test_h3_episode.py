@@ -6193,6 +6193,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
     assert extra_lora_entries(mouth) == [("cumfacial", 0.8), ("penis", 0.45), ("mystic", 0.5)]
+    assert mouth.get("steps") == 8 and mouth.get("turbo") is False
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
     assert "onto gin's face and tongue" in mouth["action"].lower()
     assert "onto aya's face" not in mouth["action"].lower()

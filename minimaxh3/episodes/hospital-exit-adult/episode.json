@@ -3844,6 +3844,8 @@
           },
           "loco": "planted",
           "connect": "chain",
+          "steps": 8,
+          "turbo": false,
           "sfx": "A wet rope from the slit onto the face, HVAC"
         },
         {
