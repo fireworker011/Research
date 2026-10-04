@@ -22,7 +22,7 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 ## 一発の実行
 
 **スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、`EPISODE` に slug、`PRESET` を選んで Run all。
-GPU は A100（High-RAM）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
+GPU は A100 40GB（VRAM GiB: 40 前後）。80GB は不要。`--highvram` は使わない（MiniMax 一式が 40GB を超えるため。スチールを GPU、VAE を CPU に分けると HalfTensor で落ちる）。終わるとランタイムを自分で手放す。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。ランタイム切断は予定どおり。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
 
@@ -76,6 +76,8 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - 英語で書く。日本語は台詞の中身だけ（`speech[].line`、かな限定、`「」` は自動で付く）。HUD の文言（`hud.mission` など）は日本語でよい（画面に後載せするだけで H3 には渡さない）
 - 1ビート = 1場所 1動作 10秒。`clip_seconds` は 4〜10。15秒は使わない（OOM でキャンバスが縮む）
 - `source`: `still`（クリーンな先頭フレーム）／`chain`（前の本の**切った位置**のコマから続ける。先頭の本では使えない）／`t2v`（先頭フレームなし）／`ui`（前の本を止めてメニューを重ねる。`seconds` 1.5〜5、`menu {title, items 2〜8, selected}`。GPU もプロンプトも無し。先頭と連続は不可）
+- `still_as`: `first`（既定。スチールが先頭）／`last`（スチールは last_frame。先頭は前の切った位置。同じ場所の続き向き。trim は 10 秒の尻を含む）／`both`（同じスチールを先頭と着地。ホールド）
+- 格闘ビートは `extra_loras: ["combat"]` と `trigger: "prfight2, prfin1"`。`tone: action` のときだけ。turbo プリセットでは combat を落とす。にじみ対策は `steps` 4–16（省略時 12）と `sampler` `euler`/`res_multistep`、`scheduler` `simple`/`beta`（省略時 euler+beta。作者の 20step は OOM するので上限 16）
 - `tone`: `mundane`（映像は日常のまま。`violence` は `none`、`physics` 禁止、action/camera/place に爆発・ジャンプ・格闘・追跡などの語を書くと否定形でも落ちる、`face_visible` は 2 本まで。プロンプトに「平穏な日常の動作」を足す）／`action`（旧来どおり。省略時）
 - `props` はビートごとに `beat.props: ["tenugui"]` で指定する。省略すると本文に名前が出た小道具だけ付く。**全小道具を全ビートに入れる経路は無い**（初回版で軽トラが全ショットに出た原因）
 - `trim: {"start": 0, "seconds": 4.0}` で 10秒素材のうち使う窓を決める（1.5秒以上、`clip_seconds` 内）。生成は 10秒のまま、切るのは合成時。`chain` は前の本の窓の終わりから続く
@@ -92,6 +94,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 ## レンダの決まり
 
 - LoRA プリセット: `daily` = Larry v4 1.0 + シネマ DY 0.65 / 8step（トリガー `DY` を先頭に付ける）、`preview` = LightX2V 4step + シネマ 0.5、`fast` = LightX2V 4step のみ。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
+- 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。daily の後ろにだけ積む。turbo とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。Larry 8step のまま積むとにじむので、格闘本は euler+beta 12step（`beat.steps` / `sampler` / `scheduler`）
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない
 - 音は H3 のまま。連結は xfade + acrossfade 0.35秒 + loudnorm。`transition: "cut"` で直結
 
@@ -104,9 +107,15 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 - LoRA スタジオ（`h3_lora_studio.py`、③、STORY）には足さない
 - 投稿しない。アフィ URL・収入主張はプロンプトに入れない（検査で落ちる）
 
+## 霞東フロア（`kasumi-late-desk`）
+
+約 50 秒（12 ビート ≈ 47.9 秒）。朝に遅刻した成人 OL が、警備・課長・同僚の四択を△（オフィス用品の体当たり）で抜けて自席へつく。失敗は「隣の席に座った」。借りるのはカバー・覗き・コマンド・失敗カードの文法だけ。参照の mp4 は使わない。15秒 LoRA は足さない。
+カバー → コマンド警備 → トート体当たり → 覗き → コマンド課長 → ファイル払い → コピーです → 席列 → コマンド同僚 → マグ → かばん → 着席 → 失敗。
+`tone: action`、`violence: game`。格闘3本だけ `extra_loras: ["combat"]` と `prfight2, prfin1`、euler+beta 12step。03/06/10/12 のスチールは last_frame（同じ場所の着地）。覗き・席列は切ってスチール先頭。Larry の後ろに積む。turbo とは同時に積まない。しゃがみカバーは横向き。Colab は `EPISODE = "kasumi-late-desk"`（マージ前は `BRANCH` をこの PR ブランチ）。inbox には置かない。台本は `episodes/kasumi-late-desk/SCRIPT.md`。準備は `PREP.md`。初回の 5 ビート ≈ 24.7 秒は Drive の `episode.json` に残ると連結がそこで終わる。bootstrap はブランチから取り直す。
+
 ## 番台ディストリクト（2 本）
 
-**bandai-district-short（次に回すのはこれ）**: 5ビート ≈ 24.7秒、コールドオープン、`tone: mundane`。暖簾 3.0秒 → 自転車 5.0秒 → 理容室（HUD なし・字幕・完了）6.0秒 → 道具メニュー 2.2秒 → 軽トラ乗車 4.8秒 → ミッション失敗 → 免責。
+**bandai-district-short**: 5ビート ≈ 24.7秒、コールドオープン、`tone: mundane`。暖簾 3.0秒 → 自転車 5.0秒 → 理容室（HUD なし・字幕・完了）6.0秒 → 道具メニュー 2.2秒 → 軽トラ乗車 4.8秒 → ミッション失敗 → 免責。
 暖簾・自転車・軽トラは `bandai-district/raw/` の初回テイクを `reuse`（Drive に残っている）。GPU で描くのは理容室 1 本だけ（初回テイクは 1秒で室内が商店街に変わっていたので作り直す。今回は小道具が手ぬぐいだけ＋ワンテイク固定文）。Colab は `EPISODE = "bandai-district-short"`、Grokbot は `minimaxh3/GROKBOT.md` の貼り付け。
 
 **bandai-district（初回版・アクション調）**: 9ビート × 10秒 ＋ タイトル 2.6秒 ＋ エンド 3.2秒 ≈ 92秒。暖簾 → 自転車 → 理容室 → 会話 → 軽トラ → 吹き飛び走行 → 蒸気アッパー → 釜爆発 → 着地。

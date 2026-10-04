@@ -73,7 +73,7 @@ from h3_motion_graphics import (
     assert_i2va_graph,
     build_i2va_graph,
 )
-from h3_r2v_core import is_oom_error
+from h3_r2v_core import is_device_mismatch_error, is_oom_error
 from h3_t2v import assert_t2v_graph, build_t2v_graph
 
 SCHEMA = "h3-episode/v1"
@@ -90,6 +90,13 @@ DURATION_LADDER = (10.0, 8.0, 6.0)
 MAX_BEATS = 12
 # ui = a frozen frame of the previous beat with a pause-menu drawn on it (no GPU, no prompt)
 SOURCES = ("still", "chain", "t2v", "ui")
+STILL_AS = ("first", "last", "both")
+# Last-frame lock: Picture 2 is the end of the clip, not a 10.00s timestamp (OOM may shorten 10→8→6).
+STILL_LAST_HEADER = (
+    "How the reference pictures align with the target video — "
+    "Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; "
+    "Picture 2 (from Shot 10) aligns with the last frame of the target video."
+)
 # mundane = the reference's comedy: the footage stays ordinary, only the HUD text is a crime game.
 # action = the old default (game physics allowed). tone is opt-in so existing episodes keep validating.
 TONES = ("mundane", "action")
@@ -120,13 +127,26 @@ LORA_FILES = {
     "turbo8": "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
     "larry": "minimax_h3_turbo_v4_step600_ema_comfy.safetensors",
     "cinema": "Minimax_H3_cinematic_DY.safetensors",
+    "combat": "H3_Combat_V2.safetensors",
+}
+LORA_URLS = {
+    "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
 }
 # Larry and LightX2V turbo never stack (h3-lora-studio rule). cinema is optional everywhere.
+# combat is never a preset; fight beats opt in with extra_loras: ["combat"] and never stack with turbo.
 PRESETS: dict[str, dict[str, Any]] = {
     "fast": {"stack": [("turbo4", 1.0, False)], "steps": 4, "trigger": ""},
     "preview": {"stack": [("turbo4", 1.0, False), ("cinema", 0.5, True)], "steps": 4, "trigger": "DY"},
     "daily": {"stack": [("larry", 1.0, False), ("cinema", 0.65, True)], "steps": 8, "trigger": "DY"},
 }
+# Combat LoRA author samples at 20 / res_multistep+simple or euler+beta. Larry daily is euler+simple 8
+# and muddies the hit. Fight beats bump to 12 euler+beta (16 cap). 20 OOMs with Larry+combat at 10s.
+COMBAT_STEPS = 12
+BEAT_STEPS_RANGE = (4, 16)
+SAMPLERS = ("euler", "res_multistep")
+SCHEDULERS = ("simple", "beta")
+COMBAT_SAMPLER = "euler"
+COMBAT_SCHEDULER = "beta"
 
 SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,40}$")
 BEAT_ID_RE = re.compile(r"^[0-9]{2}-[a-z0-9-]{1,32}$")
@@ -153,8 +173,13 @@ ACTION_TOKENS_RE = re.compile(
 )
 DEFAULT_MUSIC = "Low pulsing synth bass with a sparse taiko hit at the start; holds under the whole clip."
 VIOLENCE_CLAUSE = (
-    "Exaggerated video-game physics: adults tumble harmlessly like ragdolls, objects fly, "
-    "comedic tone. Nobody is hurt, no blood, no injuries, no children anywhere in frame."
+    "Exaggerated video-game physics at real-time cutscene speed: adults sit down hard like ragdolls, "
+    "objects slide, comedic tone. Nobody is hurt, no blood, no injuries, no children anywhere in frame."
+)
+# Named "slow motion" even negated still gets drawn. Physics beats stay at gameplay pace.
+REALTIME_CLAUSE = (
+    "Playback stays at real-time third-person game speed: the contact, the fold, and the sit-down "
+    "finish inside this one shot at walking-and-hit pace."
 )
 # Positive phrasing on purpose (H3 obeys "add" better than "stop"). This is the per-shot location lock the
 # first render lacked: the barbershop turned into a street with a truck within 1.5s.
@@ -217,6 +242,16 @@ def is_ui_beat(beat: dict[str, Any]) -> bool:
     return beat_source(beat) == "ui"
 
 
+def beat_still_as(beat: dict[str, Any]) -> str:
+    """Where the authored still sits: opening frame (default), landing frame, or both."""
+    raw = str(beat.get("still_as") or "first").strip() or "first"
+    return raw
+
+
+def uses_last_still(beat: dict[str, Any]) -> bool:
+    return bool(beat.get("still")) and beat_still_as(beat) in ("last", "both")
+
+
 def beat_renders(beat: dict[str, Any]) -> bool:
     """True when this beat can go to the GPU (a ui beat never does; a reuse beat only as fallback with a still)."""
     source = beat_source(beat)
@@ -248,6 +283,24 @@ def beat_window(ep: dict[str, Any], beat: dict[str, Any]) -> tuple[float, float]
     start = float(trim.get("start") or 0.0)
     seconds = float(trim.get("seconds") or 0.0) or max(0.0, clip_seconds(ep) - start)
     return start, seconds
+
+
+def clip_window(ep: dict[str, Any], beat: dict[str, Any], clip_duration: float) -> tuple[float, float]:
+    """Map authored trim onto an actual raw duration.
+
+    still_as last always ends on the last frame (the still). If OOM shortened the
+    clip, slide start earlier so the window keeps its length instead of a 3s tail.
+    """
+    start, seconds = beat_window(ep, beat)
+    full = float(clip_duration)
+    if full <= 0:
+        return start, seconds
+    seconds = min(max(seconds, 0.0), full)
+    if uses_last_still(beat):
+        return max(0.0, full - seconds), seconds
+    if start > full - 0.5:
+        start = max(0.0, full - seconds)
+    return start, min(seconds, max(0.0, full - start))
 
 
 def card_seconds(ep: dict[str, Any]) -> dict[str, float]:
@@ -386,9 +439,35 @@ def _ui_errors(beat: dict[str, Any], where: str) -> list[str]:
             errs.append(f"{where}: menu.selected out of range")
     except (TypeError, ValueError):
         errs.append(f"{where}: menu.selected must be an index")
-    for key in ("still", "trim", "reuse", "physics"):
+    for key in ("still", "trim", "reuse", "physics", "extra_loras", "trigger", "steps", "sampler", "scheduler", "still_as"):
         if beat.get(key):
             errs.append(f"{where}: ui beat cannot have {key}")
+    return errs
+
+
+def _render_plan_errors(beat: dict[str, Any], where: str) -> list[str]:
+    """Per-beat steps/sampler (combat quality). UI beats are rejected in _ui_errors."""
+    errs: list[str] = []
+    if is_ui_beat(beat):
+        return errs
+    if beat.get("steps") is not None:
+        try:
+            s = int(beat["steps"])
+            lo, hi = BEAT_STEPS_RANGE
+            if s < lo or s > hi:
+                errs.append(f"{where}: steps must be {lo}-{hi} (20 OOMs with Larry+combat)")
+        except (TypeError, ValueError):
+            errs.append(f"{where}: steps must be an integer")
+    sampler = beat.get("sampler")
+    if sampler and str(sampler) not in SAMPLERS:
+        errs.append(f"{where}: sampler must be one of {SAMPLERS}")
+    scheduler = beat.get("scheduler")
+    if scheduler and str(scheduler) not in SCHEDULERS:
+        errs.append(f"{where}: scheduler must be one of {SCHEDULERS}")
+    if beat.get("still_as") is not None and str(beat.get("still_as")) not in STILL_AS:
+        errs.append(f"{where}: still_as must be one of {STILL_AS}")
+    if beat_still_as(beat) in ("last", "both") and not beat.get("still"):
+        errs.append(f"{where}: still_as {beat_still_as(beat)} needs a still path")
     return errs
 
 
@@ -410,6 +489,8 @@ def _trim_errors(ep: dict[str, Any], beat: dict[str, Any], where: str) -> list[s
         errs.append(f"{where}: trim.seconds must be >= {MIN_TRIM_S:g}s")
     if start + seconds > clip_seconds(ep) + 0.01:
         errs.append(f"{where}: trim window ends after the {clip_seconds(ep):g}s clip")
+    if beat_still_as(beat) == "last" and start + seconds < clip_seconds(ep) - 0.05:
+        errs.append(f"{where}: still_as last: trim must include the last frame (the still)")
     return errs
 
 
@@ -517,6 +598,8 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
             errs.append(f"{where}: source must be one of {SOURCES}")
         if source in ("chain", "ui") and i == 0:
             errs.append(f"{where}: first beat cannot be {source} (nothing before it)")
+        if beat_still_as(beat) == "last" and i == 0:
+            errs.append(f"{where}: first beat cannot be still_as last (nothing to start from; use first or both)")
         if source == "ui" and i > 0 and isinstance(beats[i - 1], dict) and is_ui_beat(beats[i - 1]):
             errs.append(f"{where}: two ui beats in a row (the menu needs footage under it)")
         reuse = str(beat.get("reuse") or "")
@@ -550,6 +633,8 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
                 for k in beat["props"]:
                     if str(k) not in props:
                         errs.append(f"{where}: unknown prop {k}")
+        errs.extend(_extra_lora_errors(beat, where))
+        errs.extend(_render_plan_errors(beat, where))
         for key in ("action", "camera"):
             text = str(beat.get(key) or "").strip()
             if not text and source != "ui":
@@ -705,12 +790,20 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     place = str(beat.get("place") or "").strip().rstrip(".")
     env_line = env + (f". {place}" if place else "")
     if world.get("no_text_on_signs", True):
-        env_line += ". Signs, posters, and screens carry no readable letters"
+        env_line += ". Signs, posters, screens, and badges carry no readable letters"
     env_line += ". Adults only in frame."
     desc: list[str] = [f"[Shot 1] {orientation} {style}."]
-    if source in ("still", "chain"):
+    last_still = uses_last_still(beat)
+    if last_still:
+        desc.append("<Picture 1> is the opening identity lock; the clip starts exactly on it.")
+        desc.append("<Picture 2> is the authored landing; the clip arrives on it at the last frame. Same faces, hair, and clothes. Arrival is at walking-and-hit pace.")
+        if beat_still_as(beat) == "last":
+            desc.append("This shot continues the previous one without a cut until it lands on <Picture 2>.")
+        elif beat_still_as(beat) == "both":
+            desc.append("<Picture 1> and <Picture 2> are the same still; the clip holds this composition.")
+    elif source in ("still", "chain"):
         desc.append("<Picture 1> is the identity, costume, prop, and set lock; the clip starts exactly on it and the same person keeps this face, hair, and clothes until the end.")
-    if source == "chain":
+    if source == "chain" and not last_still:
         desc.append("This shot continues the previous one without a cut.")
     desc.append(CONTINUITY_CLAUSE)
     if episode_tone(ep) == "mundane":
@@ -721,6 +814,7 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
         desc.append("Props in this shot stay locked: " + "; ".join(f"{k} = {str(props[k]).rstrip('.')}" for k in keys) + ".")
     if str(ep.get("violence") or "none") == "game" and beat.get("physics", False):
         desc.append(VIOLENCE_CLAUSE)
+        desc.append(REALTIME_CLAUSE)
     vis = _speech_visual(ep, beat)
     if vis:
         desc.append(vis)
@@ -730,7 +824,9 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     sound = sfx + "." + (f" {audio}" if audio else "")
     music = str(beat.get("music") or DEFAULT_MUSIC).strip()
     head = ""
-    if source in ("still", "chain"):
+    if last_still:
+        head = STILL_LAST_HEADER + "\n\n"
+    elif source in ("still", "chain"):
         head = I2VA_HEADER + "\n\n"
     body = (
         f"subject_definitions:\n{_cast_block(ep, beat)}\n\n"
@@ -743,18 +839,26 @@ def build_beat_prompt(ep: dict[str, Any], beat: dict[str, Any], *, trigger: str 
     return prefix + head + body
 
 
-def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None) -> list[str]:
+def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None, still_as: str = "first") -> list[str]:
     errs: list[str] = []
     p = prompt or ""
     if not p.strip():
         return ["prompt empty"]
-    if source in ("still", "chain"):
+    last_still = still_as in ("last", "both")
+    if last_still:
+        if STILL_LAST_HEADER not in p:
+            errs.append("last-frame Picture 2 header missing")
+        if "<Picture 1>" not in p:
+            errs.append("Picture 1 tag missing")
+        if "<Picture 2>" not in p:
+            errs.append("Picture 2 tag missing")
+    elif source in ("still", "chain"):
         if I2VA_HEADER not in p:
             errs.append("I2VA 0.00s Picture 1 header missing")
         if "<Picture 1>" not in p:
             errs.append("Picture 1 tag missing")
     else:
-        if "<Picture 1>" in p or I2VA_HEADER in p:
+        if "<Picture 1>" in p or I2VA_HEADER in p or STILL_LAST_HEADER in p:
             errs.append("T2V beat must not reference Picture 1")
     for key in ("subject_definitions:", "environment:", "integrated_multimodal_description:", "overall_soundscape:", "non_diegetic_music:"):
         if key not in p:
@@ -769,6 +873,152 @@ def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = 
     return errs
 
 
+def extra_lora_entries(beat: dict[str, Any]) -> list[tuple[str, float]]:
+    """Per-beat optional LoRAs stacked after the preset (combat on fight shots)."""
+    raw = beat.get("extra_loras") or []
+    if not isinstance(raw, list):
+        return []
+    out: list[tuple[str, float]] = []
+    for item in raw:
+        if isinstance(item, str):
+            out.append((item, 1.0))
+            continue
+        if isinstance(item, (list, tuple)) and item:
+            try:
+                out.append((str(item[0]), float(item[1]) if len(item) > 1 else 1.0))
+            except (TypeError, ValueError):
+                out.append((str(item[0]), 1.0))
+    return out
+
+
+def merge_trigger(base: str, beat: dict[str, Any]) -> str:
+    """Preset trigger (DY) then the beat trigger (prfight2, prfin1). Empty parts drop."""
+    parts = [str(base or "").strip(), str(beat.get("trigger") or "").strip()]
+    return "\n".join(p for p in parts if p)
+
+
+def _extra_lora_errors(beat: dict[str, Any], where: str) -> list[str]:
+    errs: list[str] = []
+    if beat.get("trigger") and CJK_RE.search(str(beat.get("trigger") or "")):
+        errs.append(f"{where}: trigger must be English / LoRA tokens")
+    raw = beat.get("extra_loras")
+    if raw is None:
+        return errs
+    if is_ui_beat(beat):
+        return errs
+    if not isinstance(raw, list):
+        return errs + [f"{where}: extra_loras must be a list of keys or [key, strength]"]
+    for i, item in enumerate(raw):
+        key = ""
+        if isinstance(item, str):
+            key = item
+        elif isinstance(item, (list, tuple)) and item:
+            key = str(item[0])
+            if len(item) > 1:
+                try:
+                    s = float(item[1])
+                    if s < 0 or s > 2:
+                        errs.append(f"{where}: extra_loras[{i}] strength must be 0-2")
+                except (TypeError, ValueError):
+                    errs.append(f"{where}: extra_loras[{i}] strength must be a number")
+        else:
+            errs.append(f"{where}: extra_loras[{i}] must be a key or [key, strength]")
+            continue
+        if key and key not in LORA_FILES:
+            errs.append(f"{where}: unknown extra LoRA {key}")
+    return errs
+
+
+def apply_extra_loras(
+    preset: dict[str, Any],
+    beat: dict[str, Any],
+    loras_dir: Path | str | None,
+) -> dict[str, Any]:
+    """Copy a resolved preset and append beat.extra_loras. Combat never stacks with LightX2V turbo.
+
+    When combat actually loads, the sample plan becomes euler+beta at 12 (Larry 8-step muddies the hit).
+    Turbo fallback keeps the preset 4-step euler+simple and ignores beat.steps.
+    """
+    extra = extra_lora_entries(beat)
+    out = dict(preset)
+    if not extra:
+        return _apply_beat_sampler(out, beat, combat_on=False)
+    stack = list(preset.get("stack") or [])
+    notes = list(preset.get("notes") or [])
+    names = " ".join(str(s[0]).lower() for s in stack)
+    turbo = "fl2v_turbo" in names
+    combat_on = False
+    combat_requested = any(key == "combat" for key, _s in extra)
+    for key, strength in extra:
+        fname = LORA_FILES.get(key)
+        if not fname:
+            notes.append(f"unknown extra LoRA dropped: {key}")
+            continue
+        if key == "combat" and turbo:
+            notes.append("combat LoRA skipped (never with LightX2V turbo)")
+            continue
+        present = loras_dir is None or (Path(loras_dir) / fname).is_file()
+        if not present:
+            notes.append(f"optional extra LoRA missing, dropped: {fname}")
+            continue
+        stack.append((fname, float(strength)))
+        if key == "combat":
+            combat_on = True
+    out["stack"] = stack
+    out["notes"] = notes
+    if combat_requested and not combat_on:
+        return out
+    return _apply_beat_sampler(out, beat, combat_on=combat_on)
+
+
+def _apply_beat_sampler(preset: dict[str, Any], beat: dict[str, Any], *, combat_on: bool) -> dict[str, Any]:
+    """Combat defaults to 12 euler+beta. Other beats only honor an authored steps/sampler."""
+    out = dict(preset)
+    notes = list(out.get("notes") or [])
+    if combat_on:
+        steps = beat.get("steps", COMBAT_STEPS)
+        sampler = beat.get("sampler") or COMBAT_SAMPLER
+        scheduler = beat.get("scheduler") or COMBAT_SCHEDULER
+        out["steps"] = int(steps)
+        out["sampler"] = str(sampler)
+        out["scheduler"] = str(scheduler)
+        notes.append(f"combat sampler {sampler}+{scheduler} {int(steps)} steps")
+        out["notes"] = notes
+        return out
+    if beat.get("steps") is not None:
+        out["steps"] = int(beat["steps"])
+    if beat.get("sampler"):
+        out["sampler"] = str(beat["sampler"])
+    if beat.get("scheduler"):
+        out["scheduler"] = str(beat["scheduler"])
+    return out
+
+
+def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]:
+    """Fetch optional extra LoRAs (Combat V2) into Drive models/loras when a beat asks for them."""
+    root = Path(loras_dir)
+    notes: list[str] = []
+    keys: list[str] = []
+    for beat in ep.get("beats") or []:
+        for key, _s in extra_lora_entries(beat):
+            if key not in keys:
+                keys.append(key)
+    for key in keys:
+        fname = LORA_FILES.get(key)
+        url = LORA_URLS.get(key)
+        if not fname or not url:
+            continue
+        dest = root / fname
+        if dest.is_file() and dest.stat().st_size > 1_000_000:
+            continue
+        print("fetch LoRA", fname)
+        if fetch_text(url, dest, min_bytes=1_000_000):
+            notes.append(f"fetched {fname}")
+        else:
+            notes.append(f"fetch failed {fname}")
+    return notes
+
+
 def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[str, Any], str, list[str]]]:
     """Prompts for every beat that can reach the GPU (ui beats and still-less reuse beats have none)."""
     never = [str(x) for x in ((ep.get("homage") or {}).get("never") or [])]
@@ -776,8 +1026,8 @@ def beat_prompts(ep: dict[str, Any], *, trigger: str = "") -> list[tuple[dict[st
     for beat in ep.get("beats") or []:
         if not beat_renders(beat):
             continue
-        prompt = build_beat_prompt(ep, beat, trigger=trigger)
-        errs = validate_beat_prompt(prompt, source=beat_source(beat), never=never)
+        prompt = build_beat_prompt(ep, beat, trigger=merge_trigger(trigger, beat))
+        errs = validate_beat_prompt(prompt, source=beat_source(beat), still_as=beat_still_as(beat), never=never)
         out.append((beat, prompt, errs))
     return out
 
@@ -845,24 +1095,44 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
         return False
 
 
+def _episode_beat_ids(path: Path) -> list[str]:
+    if not path.is_file():
+        return []
+    try:
+        return [str(b.get("id") or "") for b in (load_episode(path).get("beats") or [])]
+    except Exception:
+        return []
+
+
 def bootstrap_episode(slug: str, root: Path | str, *, branch: str | None = None, repo: str = REPO) -> list[str]:
-    """First run on a fresh Drive: pull episode.json and its stills from GitHub. Never overwrites."""
+    """Pull episode.json and stills from GitHub each run. Drive copies of either go stale (25s pack, standing fight stills)."""
     root = Path(root)
     ensure_episode_tree(root)
     br = branch or os.environ.get("H3_HELPER_BRANCH") or BRANCH
     fetched: list[str] = []
     ep_path = root / "episode.json"
-    if not ep_path.is_file():
-        if not fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br), ep_path):
-            raise EpisodeError(f"episode.json missing in {root} and not on GitHub ({br})")
+    prev_ids = _episode_beat_ids(ep_path)
+    staging = root / "logs" / "episode.json.fetch"
+    if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/episode.json", repo=repo, branch=br), staging):
+        new_ids = _episode_beat_ids(staging)
+        shutil.copy2(staging, ep_path)
         fetched.append("episode.json")
+        if prev_ids and new_ids != prev_ids:
+            print(f"episode.json refreshed: {len(prev_ids)} beats → {len(new_ids)} beats")
+    elif not ep_path.is_file():
+        raise EpisodeError(f"episode.json missing in {root} and not on GitHub ({br})")
+    else:
+        print(f"episode.json fetch failed, keeping Drive copy ({len(prev_ids)} beats)")
     ep = load_episode(ep_path)
     for rel in episode_assets(ep):
         dest = root / rel
-        if dest.is_file():
-            continue
-        if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/{rel}", repo=repo, branch=br), dest, min_bytes=1000):
+        staging = root / "logs" / Path(rel).name
+        if fetch_text(github_raw(f"{REPO_EPISODES_DIR}/{slug}/{rel}", repo=repo, branch=br), staging, min_bytes=1000):
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(staging, dest)
             fetched.append(rel)
+        elif not dest.is_file():
+            print(f"still missing {rel}")
     return fetched
 
 
@@ -893,6 +1163,18 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
     if any("turbo_v4" in n for n in names) and any("fl2v_turbo" in n for n in names):
         raise EpisodeError("Larry and LightX2V turbo never stack")
     return {"name": name, "stack": stack, "steps": int(spec["steps"]), "trigger": str(spec["trigger"]), "notes": notes}
+
+
+def apply_sampler_plan(g: dict[str, Any], preset: dict[str, Any]) -> dict[str, Any]:
+    """Patch KSampler after the I2VA/T2V builder. Daily Larry stays euler+simple 8 unless the preset says otherwise."""
+    if "22" in g and preset.get("sampler"):
+        g["22"]["inputs"]["sampler_name"] = str(preset["sampler"])
+    if "23" in g:
+        if preset.get("scheduler"):
+            g["23"]["inputs"]["scheduler"] = str(preset["scheduler"])
+        if preset.get("steps") is not None:
+            g["23"]["inputs"]["steps"] = int(preset["steps"])
+    return g
 
 
 def chain_extra_loras(g: dict[str, Any], extra: list[tuple[str, float]]) -> dict[str, Any]:
@@ -928,6 +1210,7 @@ def build_episode_graph(
     filename_prefix: str,
     has_lora_loader: bool = True,
     has_audio_decode: bool = True,
+    last_image: str | None = None,
 ) -> dict[str, Any]:
     stack = list(preset.get("stack") or [])
     lora_name, lora_strength = (stack[0] if stack else (None, 1.0))
@@ -950,10 +1233,11 @@ def build_episode_graph(
     else:
         if not first_image:
             raise EpisodeError("I2V beat needs a first image")
-        g = build_i2va_graph(first_image=first_image, last_image=None, **common)
+        g = build_i2va_graph(first_image=first_image, last_image=last_image, **common)
     if lora_name and has_lora_loader:
         chain_extra_loras(g, stack[1:])
-    errs = assert_t2v_graph(g) if source == "t2v" else assert_i2va_graph(g, expect_last=False, homage=False)
+    apply_sampler_plan(g, preset)
+    errs = assert_t2v_graph(g) if source == "t2v" else assert_i2va_graph(g, expect_last=bool(last_image), homage=False)
     if errs:
         raise EpisodeError(f"graph invalid: {errs}")
     return g
@@ -970,12 +1254,13 @@ def render_beat_comfy(
     preset: dict[str, Any],
     seed: int,
     filename_prefix: str,
+    last_image: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
     poster: Callable[..., Any] = post_prompt,
     waiter: Callable[..., Any] = wait_prompt,
 ) -> dict[str, Any]:
-    """Keep the canvas; on OOM shorten the clip (10→8→6). Never drop the first frame."""
+    """Keep the canvas; on OOM shorten the clip (10→8→6). Never drop the first frame or last-frame still."""
     obj = object_info or {}
     diff_dir = comfy_dir / "models/diffusion_models"
     diff = list(diff_dir.glob("*fl2va*")) if diff_dir.exists() else []
@@ -984,42 +1269,55 @@ def render_beat_comfy(
     before = newest_mp4(out_root)
     last_err: Any = None
     for dur in durations:
-        g = build_episode_graph(
-            source=source,
-            first_image=first_image,
-            prompt=prompt,
-            unet=unet,
-            preset=preset,
-            width=canvas[0],
-            height=canvas[1],
-            duration_s=dur,
-            seed=seed,
-            filename_prefix=filename_prefix,
-            has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
-            has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
-        )
-        print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
-        res, err = poster(g, port)
-        if err:
-            last_err = err
-            if is_oom_error(err):
+        mismatch_tries = 0
+        while True:
+            g = build_episode_graph(
+                source=source,
+                first_image=first_image,
+                prompt=prompt,
+                unet=unet,
+                preset=preset,
+                width=canvas[0],
+                height=canvas[1],
+                duration_s=dur,
+                seed=seed,
+                filename_prefix=filename_prefix,
+                has_lora_loader=("LoraLoaderModelOnly" in obj) if obj else True,
+                has_audio_decode=("VAEDecodeAudio" in obj) if obj else True,
+                last_image=last_image,
+            )
+            print("render", filename_prefix, f"{canvas[0]}x{canvas[1]}", f"{dur:.0f}s", "steps", preset.get("steps"), "loras", [s[0] for s in preset.get("stack") or []])
+            res, err = poster(g, port)
+            if err:
+                last_err = err
+                if is_device_mismatch_error(err) and mismatch_tries < 1:
+                    mismatch_tries += 1
+                    print("VAE device mismatch; unload and retry same duration")
+                    comfy_free(port)
+                    continue
+                if is_oom_error(err):
+                    comfy_free(port)
+                    break
+                raise EpisodeError(err)
+            if not (res and "prompt_id" in res):
+                raise EpisodeError(str(res))
+            ok, payload = waiter(res["prompt_id"], port)
+            if ok:
+                videos = collect_output_videos(payload, out_root)
+                fresh = newest_mp4(out_root)
+                if fresh and fresh not in videos and (before is None or fresh != before):
+                    videos.append(fresh)
+                return {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"}
+            last_err = payload
+            if is_device_mismatch_error(payload) and mismatch_tries < 1:
+                mismatch_tries += 1
+                print("VAE device mismatch; unload and retry same duration")
                 comfy_free(port)
                 continue
-            raise EpisodeError(err)
-        if not (res and "prompt_id" in res):
-            raise EpisodeError(str(res))
-        ok, payload = waiter(res["prompt_id"], port)
-        if ok:
-            videos = collect_output_videos(payload, out_root)
-            fresh = newest_mp4(out_root)
-            if fresh and fresh not in videos and (before is None or fresh != before):
-                videos.append(fresh)
-            return {"videos": [str(v) for v in videos], "duration_s": dur, "canvas": f"{canvas[0]}x{canvas[1]}"}
-        last_err = payload
-        if is_oom_error(payload):
-            comfy_free(port)
-            continue
-        raise EpisodeError(str(payload))
+            if is_oom_error(payload):
+                comfy_free(port)
+                break
+            raise EpisodeError(str(payload))
     raise EpisodeError(f"all durations OOM: {last_err}")
 
 
@@ -1154,7 +1452,7 @@ def previous_footage(ep: dict[str, Any], idx: int, root: Path, raw: Path, *, app
         clip = raw / f"{prev['id']}.mp4"
         if not clip.is_file():
             raise EpisodeError(f"{beats[idx]['id']}: needs the previous clip first: {clip}")
-        start, seconds = beat_window(ep, prev) if apply_trim else (0.0, probe_duration(clip))
+        start, seconds = clip_window(ep, prev, probe_duration(clip)) if apply_trim else (0.0, probe_duration(clip))
         return clip, start + seconds - 0.12
     raise EpisodeError(f"{beats[idx]['id']}: no footage before this beat")
 
@@ -1242,7 +1540,7 @@ def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str 
             src = raw / f"{beat['id']}.mp4"
             if not src.is_file():
                 raise EpisodeError(f"raw clip missing: {src}")
-            start, seconds = beat_window(ep, beat) if apply_trim else (0.0, probe_duration(src))
+            start, seconds = clip_window(ep, beat, probe_duration(src)) if apply_trim else (0.0, probe_duration(src))
         pngs = hud_pngs(ep, beat, out_size, png_dir, window_s=seconds)
         dest = root / "hud" / f"{beat['id']}.mp4"
         compose_beat(
@@ -1278,24 +1576,38 @@ def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str 
     return final
 
 
+def _stage_frame(src: Path, dest: Path, canvas: tuple[int, int], comfy_input: Path | None) -> str:
+    stage_still(src, dest, canvas)
+    if comfy_input is None:
+        return dest.name
+    return stage_image_into_input(dest, comfy_input)
+
+
 def _first_frame_for(beat: dict[str, Any], idx: int, ep: dict[str, Any], root: Path, canvas: tuple[int, int], comfy_input: Path | None) -> str | None:
     source = beat_source(beat)
     if source == "t2v":
         return None
     staged = root / "input" / f"{beat['id']}.jpg"
-    if source == "still":
+    if beat_still_as(beat) == "last":
+        prev_clip, at = previous_footage(ep, idx, root, root / "raw")
+        tmp = root / "input" / f"{beat['id']}-from.jpg"
+        extract_frame(prev_clip, tmp, at_s=at)
+        return _stage_frame(tmp, staged, canvas, comfy_input)
+    if source == "still" or beat_still_as(beat) == "both":
         if not beat.get("still"):
             raise EpisodeError(f"{beat['id']}: reuse source not on disk and no still to render from")
-        stage_still(root / str(beat["still"]), staged, canvas)
-    else:
-        # chain continues from where the previous beat is cut, not from a frame the viewer never sees
-        prev_clip, at = previous_footage(ep, idx, root, root / "raw")
-        tmp = root / "input" / f"{beat['id']}-last.jpg"
-        extract_frame(prev_clip, tmp, at_s=at)
-        stage_still(tmp, staged, canvas)
-    if comfy_input is None:
-        return staged.name
-    return stage_image_into_input(staged, comfy_input)
+        return _stage_frame(root / str(beat["still"]), staged, canvas, comfy_input)
+    prev_clip, at = previous_footage(ep, idx, root, root / "raw")
+    tmp = root / "input" / f"{beat['id']}-last.jpg"
+    extract_frame(prev_clip, tmp, at_s=at)
+    return _stage_frame(tmp, staged, canvas, comfy_input)
+
+
+def _last_frame_for(beat: dict[str, Any], root: Path, canvas: tuple[int, int], comfy_input: Path | None) -> str | None:
+    if not uses_last_still(beat):
+        return None
+    staged = root / "input" / f"{beat['id']}-end.jpg"
+    return _stage_frame(root / str(beat["still"]), staged, canvas, comfy_input)
 
 
 def run_episode(
@@ -1327,6 +1639,7 @@ def run_episode(
     status.update({"slug": ep.get("slug"), "canvas": f"{canvas[0]}x{canvas[1]}", "preset_requested": preset_name, "dry_run": bool(dry_run)})
     comfy = Path(comfy_dir or os.environ.get("H3_COMFY_DIR") or COMFY_DIR_DEFAULT)
     comfy_input: Path | None = None
+    loras_dir: Path | None = None
     preset: dict[str, Any]
     if dry_run:
         preset = resolve_preset(preset_name, None, fallback=fallback)
@@ -1334,7 +1647,10 @@ def run_episode(
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         ensure_comfy(comfy, root, models, need_r2v=False)
         start_comfy(comfy, port=port)
-        preset = resolve_preset(preset_name, models / "loras", fallback=fallback)
+        loras_dir = models / "loras"
+        for note in ensure_episode_loras(ep, loras_dir):
+            print("lora:", note)
+        preset = resolve_preset(preset_name, loras_dir, fallback=fallback)
         comfy_input = comfy / "input"
         if object_info is None:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/object_info", timeout=60) as r:
@@ -1366,29 +1682,36 @@ def run_episode(
         source = beat_source(beat)
         if beat.get("reuse"):
             print("reuse source missing, rendering instead:", bid, reuse_source(ep, beat, root))
-        prompt = build_beat_prompt(ep, beat, trigger=preset.get("trigger") or "")
-        perrs = validate_beat_prompt(prompt, source=source, never=never)
+        prompt = build_beat_prompt(ep, beat, trigger=merge_trigger(preset.get("trigger") or "", beat))
+        perrs = validate_beat_prompt(prompt, source=source, still_as=beat_still_as(beat), never=never)
         if perrs:
             raise EpisodeError(f"{bid}: {perrs}")
         (root / "logs" / f"{bid}.prompt.txt").write_text(prompt, encoding="utf-8")
         status["beats"][bid] = {"state": "running", "source": source, "started": _now()}
         save_status(root, status)
+        beat_preset = apply_extra_loras(preset, beat, loras_dir)
+        for note in beat_preset.get("notes") or []:
+            if note not in (preset.get("notes") or []):
+                print("preset:", note)
         try:
             if dry_run:
                 first = _first_frame_for(beat, idx, ep, root, canvas, None)
+                last = _last_frame_for(beat, root, canvas, None)
                 hue = (idx * 37) % 255
                 synthetic_clip(raw_out.with_suffix(".part.mp4"), seconds=clip_seconds(ep), canvas=canvas, color=f"0x{hue:02x}{(120 + idx * 13) % 255:02x}{(200 - idx * 11) % 255:02x}", tone_hz=220 + idx * 40)
-                result = {"videos": [str(raw_out.with_suffix(".part.mp4"))], "duration_s": clip_seconds(ep), "first": first}
+                result = {"videos": [str(raw_out.with_suffix(".part.mp4"))], "duration_s": clip_seconds(ep), "first": first, "last": last}
             else:
                 first = _first_frame_for(beat, idx, ep, root, canvas, comfy_input)
+                last = _last_frame_for(beat, root, canvas, comfy_input)
                 result = render_beat_comfy(
                     source=source,
                     first_image=first,
+                    last_image=last,
                     prompt=prompt,
                     comfy_dir=comfy,
                     canvas=canvas,
                     durations=duration_ladder(ep),
-                    preset=preset,
+                    preset=beat_preset,
                     seed=seed + idx,
                     filename_prefix=f"video/h3_ep_{ep['slug']}_{bid}",
                     port=port,
@@ -1461,6 +1784,15 @@ def plan_lines(ep: dict[str, Any], root: Path | str | None = None) -> list[str]:
             flags.append("complete")
         if beat.get("speech"):
             flags.append(f"{len(beat['speech'])} lines")
+        extras = extra_lora_entries(beat)
+        if extras:
+            flags.append("+".join(k for k, _s in extras))
+        if beat.get("steps"):
+            flags.append(f"{int(beat['steps'])}step")
+        if beat.get("sampler") or beat.get("scheduler"):
+            flags.append(f"{beat.get('sampler') or 'euler'}+{beat.get('scheduler') or 'simple'}")
+        if uses_last_still(beat):
+            flags.append(f"still={beat_still_as(beat)}")
         props = ",".join(beat_props(ep, beat)) if src != "ui" else "menu"
         lines.append(f"{beat['id']:<20} {src:<5} {start:>4.1f}s+{seconds:<4.1f} props[{props}] {' '.join(flags):<18} {hud.get('mission') or ''}{note}")
     return lines

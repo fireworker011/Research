@@ -36,9 +36,9 @@ def run_colab(
 
 
 def start_session(*, name: str = "h3-i2v", gpu: str = "A100", high_mem: bool = True, runner: Runner | None = None) -> None:
+    # google-colab-cli 0.6 dropped --high-mem. A100 already uses a High-RAM machine.
     args = ["new", "-s", name, "--gpu", gpu]
-    if high_mem:
-        args.append("--high-mem")
+    del high_mem
     run_colab(args, runner=runner)
 
 
@@ -68,8 +68,6 @@ def orchestrate_commands(
 ) -> list[list[str]]:
     """Command lists Grokbot runs in order. Last is always stop."""
     new = ["new", "-s", name, "--gpu", gpu]
-    if high_mem:
-        new.append("--high-mem")
     return [
         new,
         ["drivemount", "-s", name],

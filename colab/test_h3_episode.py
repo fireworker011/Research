@@ -2,6 +2,7 @@ import copy
 import json
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -14,16 +15,25 @@ sys.path.insert(0, str(ROOT / "minimaxh3" / "grokbot"))
 
 from h3_episode import (  # noqa: E402
     CANVAS,
+    COMBAT_SAMPLER,
+    COMBAT_SCHEDULER,
+    COMBAT_STEPS,
     CONTINUITY_CLAUSE,
     EPISODE_HELPERS,
     I2VA_HEADER,
+    LORA_FILES,
     MUNDANE_CLAUSE,
     PRESETS,
+    STILL_LAST_HEADER,
     EpisodeError,
+    apply_extra_loras,
+    beat_still_as,
+    uses_last_still,
     assert_not_production_root,
     beat_props,
     beat_prompts,
     beat_window,
+    bootstrap_episode,
     build_beat_prompt,
     build_episode_graph,
     canvas_for,
@@ -32,9 +42,12 @@ from h3_episode import (  # noqa: E402
     episode_root,
     expected_duration,
     finish_episode,
+    clip_window,
     forbidden_hits,
+    is_ui_beat,
     load_episode,
     materialize_reuse,
+    merge_trigger,
     output_size_for,
     plan_lines,
     preflight,
@@ -68,11 +81,13 @@ from h3_hud import (  # noqa: E402
     window_for,
 )
 from h3_i2v_job import default_job, ensure_drive_tree, next_ready_job, save_job  # noqa: E402
+from h3_i2v_runtime import comfy_argv, patch_minimax_vae_encode  # noqa: E402
 from PIL import Image  # noqa: E402
 from run_episode import exec_script  # noqa: E402
 
 EP_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district"
 SHORT_DIR = ROOT / "minimaxh3" / "episodes" / "bandai-district-short"
+KASUMI_DIR = ROOT / "minimaxh3" / "episodes" / "kasumi-late-desk"
 TEMPLATE = ROOT / "minimaxh3" / "episodes" / "_template" / "episode.json"
 HAS_FFMPEG = shutil.which("ffmpeg") is not None and shutil.which("ffprobe") is not None
 
@@ -88,7 +103,7 @@ def short() -> dict:
 # ---------------------------------------------------------------- sync / files
 
 def test_colab_and_minimaxh3_copies_in_sync():
-    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_colab_main.py"):
+    for name in ("h3_hud.py", "h3_episode.py", "h3_episode_colab_main.py", "h3_i2v_runtime.py", "h3_r2v_core.py"):
         a = (ROOT / "colab" / name).read_text(encoding="utf-8")
         b = (ROOT / "minimaxh3" / name).read_text(encoding="utf-8")
         assert a == b, f"{name} differs between colab/ and minimaxh3/ (copy after editing)"
@@ -107,7 +122,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert len(code) == 1
     src = "".join(code[0]["source"])
     assert "h3_episode_colab_main" in src
-    assert 'EPISODE = "bandai-district"' in src
+    assert 'EPISODE = "kasumi-late-desk"' in src
     assert "episodes" in src and "_lib" in src
     assert "adopt_orphan" not in src and "bot_prepare" not in src
     assert "inbox" not in src
@@ -406,6 +421,201 @@ def test_resolve_preset_fallbacks(tmp_path):
     for name, spec in PRESETS.items():
         keys = [k for k, _s, _o in spec["stack"]]
         assert not ("larry" in keys and any(k.startswith("turbo") for k in keys)), name
+    assert "combat" in LORA_FILES and "combat" not in {k for spec in PRESETS.values() for k, _s, _o in spec["stack"]}
+
+
+def test_kasumi_late_desk_validates_and_stills_are_clean():
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    assert validate_episode(ep, root=KASUMI_DIR) == []
+    assert ep["tone"] == "action" and ep["violence"] == "game"
+    assert len(ep["beats"]) == 12
+    assert expected_duration(ep) == pytest.approx(47.9, abs=0.2)
+    ids = [b["id"] for b in ep["beats"]]
+    assert ids == [
+        "01-cover",
+        "02-ui-guard",
+        "03-shove",
+        "04-peek",
+        "05-ui-boss",
+        "06-files",
+        "07-talk",
+        "08-nana",
+        "09-ui-nana",
+        "10-mug",
+        "11-bag",
+        "12-desk",
+    ]
+    fights = [b for b in ep["beats"] if b.get("extra_loras") == ["combat"]]
+    assert [b["id"] for b in fights] == ["03-shove", "06-files", "10-mug"]
+    assert all(b.get("physics") and b.get("trigger") == "prfight2, prfin1" for b in fights)
+    assert all(b.get("steps") == COMBAT_STEPS and b.get("sampler") == COMBAT_SAMPLER and b.get("scheduler") == COMBAT_SCHEDULER for b in fights)
+    assert ep["beats"][2]["source"] == "chain" and ep["beats"][2].get("still")
+    assert beat_still_as(ep["beats"][0]) == "both"
+    assert all(beat_still_as(ep["beats"][i]) == "last" for i in (2, 5, 9, 11))
+    assert uses_last_still(ep["beats"][2]) and not uses_last_still(ep["beats"][3])
+    assert beat_window(ep, ep["beats"][2]) == (4.0, 6.0)
+    assert ep["beats"][5]["source"] == "still" and beat_still_as(ep["beats"][5]) == "last"
+    assert ep["beats"][9]["source"] == "still" and beat_still_as(ep["beats"][9]) == "last"
+    assert ep["beats"][6]["source"] == "chain" and ep["beats"][6].get("face_visible")
+    shove_prompt = build_beat_prompt(ep, ep["beats"][2], trigger=merge_trigger("DY", ep["beats"][2]))
+    assert STILL_LAST_HEADER in shove_prompt and "<Picture 2>" in shove_prompt
+    assert "lands on <Picture 2>" in shove_prompt
+    assert "real-time third-person game speed" in shove_prompt
+    assert "walking-and-hit pace" in shove_prompt
+    assert "slow motion" not in shove_prompt.lower() and "slow-motion" not in shove_prompt.lower()
+    assert not any(is_ui_beat(a) and is_ui_beat(b) for a, b in zip(ep["beats"], ep["beats"][1:]))
+    for beat in ep["beats"]:
+        still = beat.get("still")
+        if still:
+            p = KASUMI_DIR / still
+            assert p.is_file()
+            assert "-hud" not in p.stem
+            assert Image.open(p).size == (1280, 720)
+    for _b, prompt, errs in beat_prompts(ep, trigger="DY"):
+        assert errs == []
+        if "prfight2" in prompt:
+            assert prompt.startswith("DY\nprfight2, prfin1")
+        assert "badges carry no readable letters" in prompt
+
+
+def test_clip_window_slides_last_frame_trim_when_oom_shortens(tmp_path):
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    shove = next(b for b in ep["beats"] if b["id"] == "03-shove")
+    assert clip_window(ep, shove, 10.0) == (4.0, 6.0)
+    assert clip_window(ep, shove, 8.0) == (2.0, 6.0)
+    assert clip_window(ep, shove, 6.0) == (0.0, 6.0)
+    files = next(b for b in ep["beats"] if b["id"] == "06-files")
+    assert clip_window(ep, files, 8.0) == (2.0, 6.0)
+    peek = next(b for b in ep["beats"] if b["id"] == "04-peek")
+    assert clip_window(ep, peek, 8.0) == (0.0, 4.0)
+
+
+def test_bootstrap_refreshes_stale_episode_json_and_stills(tmp_path, monkeypatch):
+    drive = tmp_path / "kasumi-late-desk"
+    (drive / "stills").mkdir(parents=True)
+    old = {"schema": "h3-episode/v1", "slug": "kasumi-late-desk", "beats": [{"id": "01-cover"}, {"id": "02-peek"}, {"id": "05-desk"}]}
+    (drive / "episode.json").write_text(json.dumps(old), encoding="utf-8")
+    kept = drive / "stills" / "01-cover.jpg"
+    kept.write_bytes(b"keep-me")
+    fresh = load_episode(KASUMI_DIR / "episode.json")
+
+    def fake_fetch(url: str, dest: Path, *, min_bytes: int = 100) -> bool:
+        dest = Path(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if str(url).endswith("episode.json"):
+            dest.write_text(json.dumps(fresh), encoding="utf-8")
+            return dest.stat().st_size > min_bytes
+        dest.write_bytes(b"x" * (min_bytes + 1))
+        return True
+
+    monkeypatch.setattr("h3_episode.fetch_text", fake_fetch)
+    fetched = bootstrap_episode("kasumi-late-desk", drive, branch="cursor/h3-ol-late-desk-33d9")
+    assert "episode.json" in fetched
+    ids = [b["id"] for b in load_episode(drive / "episode.json")["beats"]]
+    assert ids == [
+        "01-cover",
+        "02-ui-guard",
+        "03-shove",
+        "04-peek",
+        "05-ui-boss",
+        "06-files",
+        "07-talk",
+        "08-nana",
+        "09-ui-nana",
+        "10-mug",
+        "11-bag",
+        "12-desk",
+    ]
+    assert "stills/01-cover.jpg" in fetched
+    assert kept.read_bytes() == b"x" * 1001
+
+
+def test_bootstrap_keeps_drive_json_when_github_fails(tmp_path, monkeypatch):
+    drive = tmp_path / "kasumi-late-desk"
+    drive.mkdir()
+    (drive / "episode.json").write_text(
+        json.dumps({"schema": "h3-episode/v1", "slug": "kasumi-late-desk", "beats": [{"id": "05-desk"}]}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr("h3_episode.fetch_text", lambda *a, **k: False)
+    assert bootstrap_episode("kasumi-late-desk", drive) == []
+    assert [b["id"] for b in load_episode(drive / "episode.json")["beats"]] == ["05-desk"]
+
+
+def test_apply_extra_loras_combat_skips_turbo_and_chains(tmp_path):
+    beat = {"extra_loras": ["combat"], "trigger": "prfight2, prfin1"}
+    assert merge_trigger("DY", beat) == "DY\nprfight2, prfin1"
+    daily = {"name": "daily", "stack": [("larry.safetensors", 1.0), ("cinema.safetensors", 0.65)], "steps": 8, "trigger": "DY", "notes": []}
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["combat"]).write_bytes(b"x")
+    stacked = apply_extra_loras(daily, beat, loras)
+    assert stacked["stack"][-1] == (LORA_FILES["combat"], 1.0)
+    assert stacked["steps"] == COMBAT_STEPS
+    assert stacked["sampler"] == COMBAT_SAMPLER and stacked["scheduler"] == COMBAT_SCHEDULER
+    turbo = {"name": "fast", "stack": [("minimax_h3_fl2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors", 1.0)], "steps": 4, "trigger": "", "notes": []}
+    skipped = apply_extra_loras(turbo, beat, loras)
+    assert skipped["stack"] == turbo["stack"]
+    assert skipped.get("steps") == 4 and skipped.get("sampler") is None
+    assert any("never with LightX2V turbo" in n for n in skipped["notes"])
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    fight = next(b for b in ep["beats"] if b["id"] == "03-shove")
+    prompt = build_beat_prompt(ep, fight, trigger=merge_trigger("DY", fight))
+    g = build_episode_graph(
+        source="still",
+        first_image="01.jpg",
+        prompt=prompt,
+        unet="fl2va.safetensors",
+        preset=stacked,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/x",
+    )
+    assert g["2c"]["inputs"]["lora_name"] == LORA_FILES["combat"]
+    assert g["23"]["inputs"]["model"] == ["2c", 0]
+    assert g["22"]["inputs"]["sampler_name"] == COMBAT_SAMPLER
+    assert g["23"]["inputs"]["scheduler"] == COMBAT_SCHEDULER
+    assert g["23"]["inputs"]["steps"] == COMBAT_STEPS
+    last_g = build_episode_graph(
+        source="chain",
+        first_image="from.jpg",
+        last_image="03.jpg",
+        prompt=prompt,
+        unet="fl2va.safetensors",
+        preset=stacked,
+        width=1024,
+        height=576,
+        duration_s=10,
+        seed=1,
+        filename_prefix="video/x",
+    )
+    assert last_g["101"]["inputs"]["image"] == "03.jpg"
+    assert last_g["20"]["inputs"]["last_frame"] == ["101", 0]
+    assert last_g["20"]["inputs"]["first_frame"] == ["100", 0]
+
+
+def test_combat_steps_cap_and_author_override(tmp_path):
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][2]["steps"] = 20
+    assert any("steps must be 4-16" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][1]["steps"] = 12
+    assert any("ui beat cannot have steps" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][0]["still_as"] = "last"
+    assert any("first beat cannot be still_as last" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    ep = load_episode(KASUMI_DIR / "episode.json")
+    ep["beats"][2]["trim"] = {"start": 0, "seconds": 5.0}
+    assert any("trim must include the last frame" in e for e in validate_episode(ep, root=KASUMI_DIR))
+    daily = {"name": "daily", "stack": [("larry.safetensors", 1.0)], "steps": 8, "trigger": "DY", "notes": []}
+    loras = tmp_path / "loras"
+    loras.mkdir()
+    (loras / LORA_FILES["combat"]).write_bytes(b"x")
+    authored = {"extra_loras": ["combat"], "steps": 16, "sampler": "res_multistep", "scheduler": "simple"}
+    stacked = apply_extra_loras(daily, authored, loras)
+    assert stacked["steps"] == 16 and stacked["sampler"] == "res_multistep" and stacked["scheduler"] == "simple"
 
 
 def test_graph_chains_loras_and_passes_studio_assert():
@@ -418,6 +628,8 @@ def test_graph_chains_loras_and_passes_studio_assert():
     assert g["2b"]["inputs"]["model"] == ["2", 0]
     assert g["23"]["inputs"]["model"] == ["2b", 0] and g["24"]["inputs"]["model"] == ["2b", 0]
     assert g["23"]["inputs"]["steps"] == 8
+    assert g["22"]["inputs"]["sampler_name"] == "euler"
+    assert g["23"]["inputs"]["scheduler"] == "simple"
     assert "first_frame" in g["20"]["inputs"] and "last_frame" not in g["20"]["inputs"]
     t2v = build_episode_graph(source="t2v", first_image=None, prompt=build_beat_prompt(ep, dict(ep["beats"][0], source="t2v")), unet="fl2va.safetensors", preset=preset, width=1024, height=576, duration_s=10, seed=1, filename_prefix="video/t")
     assert not any(n.get("class_type") == "LoadImage" for n in t2v.values())
@@ -447,6 +659,109 @@ def test_render_beat_keeps_canvas_and_shortens_on_oom(tmp_path):
     assert res["duration_s"] == 8.0 and res["canvas"] == "1024x576"
     assert [c[:2] for c in calls] == [(1024, 576), (1024, 576)]
     assert calls[0][2] > calls[1][2]
+
+
+def test_render_beat_retries_same_duration_on_vae_device_mismatch(tmp_path):
+    comfy = tmp_path / "ComfyUI"
+    (comfy / "output" / "video").mkdir(parents=True)
+    (comfy / "models" / "diffusion_models").mkdir(parents=True)
+    ep = bandai()
+    prompt = build_beat_prompt(ep, ep["beats"][0])
+    calls = []
+    mismatch = [
+        "execution_error",
+        {
+            "node_type": "MiniMaxH3ImageToVideo",
+            "exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same\n",
+        },
+    ]
+
+    def poster(graph, port):
+        calls.append(graph["20"]["inputs"]["length"])
+        return {"prompt_id": f"p{len(calls)}"}, None
+
+    def waiter(pid, port):
+        if pid == "p1":
+            return False, mismatch
+        (comfy / "output" / "video" / "h3_ep_x_00001.mp4").write_bytes(b"mp4")
+        return True, {"outputs": {"29": {"videos": [{"filename": "h3_ep_x_00001.mp4", "subfolder": "video"}]}}}
+
+    res = render_beat_comfy(
+        source="still",
+        first_image="a.jpg",
+        prompt=prompt,
+        comfy_dir=comfy,
+        canvas=(1024, 576),
+        durations=[10.0, 8.0, 6.0],
+        preset=resolve_preset("fast", None),
+        seed=1,
+        filename_prefix="video/h3_ep_x",
+        poster=poster,
+        waiter=waiter,
+    )
+    assert res["duration_s"] == 10.0 and res["canvas"] == "1024x576"
+    assert len(calls) == 2 and calls[0] == calls[1]
+
+
+def test_render_beat_does_not_treat_vae_mismatch_as_oom(tmp_path):
+    comfy = tmp_path / "ComfyUI"
+    (comfy / "output" / "video").mkdir(parents=True)
+    (comfy / "models" / "diffusion_models").mkdir(parents=True)
+    ep = bandai()
+    prompt = build_beat_prompt(ep, ep["beats"][0])
+    mismatch = [
+        "execution_error",
+        {"exception_message": "Input type (torch.cuda.HalfTensor) and weight type (torch.HalfTensor) should be the same\n"},
+    ]
+    calls = []
+
+    def poster(graph, port):
+        calls.append(graph["20"]["inputs"]["length"])
+        return {"prompt_id": f"p{len(calls)}"}, None
+
+    def waiter(pid, port):
+        return False, mismatch
+
+    with pytest.raises(EpisodeError, match="HalfTensor"):
+        render_beat_comfy(
+            source="still",
+            first_image="a.jpg",
+            prompt=prompt,
+            comfy_dir=comfy,
+            canvas=(1024, 576),
+            durations=[10.0, 8.0, 6.0],
+            preset=resolve_preset("fast", None),
+            seed=1,
+            filename_prefix="video/h3_ep_x",
+            poster=poster,
+            waiter=waiter,
+        )
+    assert len(calls) == 2 and calls[0] == calls[1]
+
+
+def test_comfy_argv_keeps_dynamic_vram():
+    argv = comfy_argv(port=8188)
+    assert "--highvram" not in argv
+    assert "--gpu-only" not in argv
+    assert "--port" in argv
+
+    with tempfile.TemporaryDirectory() as td:
+        comfy = Path(td)
+        vae = comfy / "comfy" / "ldm" / "minimax" / "vae.py"
+        vae.parent.mkdir(parents=True)
+        vae.write_text(
+            "def encode(self, x, device=None):\n"
+            "    if x.ndim == 4:\n"
+            "        x = x.unsqueeze(2)\n"
+            "    if device is None:\n"
+            "        device = x.device\n"
+            "    return x.to(device)\n",
+            encoding="utf-8",
+        )
+        assert patch_minimax_vae_encode(comfy) is True
+        text = vae.read_text(encoding="utf-8")
+        assert "next(self.parameters()).device" in text
+        assert patch_minimax_vae_encode(comfy) is False
 
 
 # ---------------------------------------------------------------- isolation
