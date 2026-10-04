@@ -2199,8 +2199,14 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     ten = next(b for b in invite["beats"] if b["id"] == "10-shino")
     ten_low = ten["action"].lower()
     assert "stops in front of her" in ten_low
-    assert "mouth is at aya's mouth height" in ten_low
-    assert "french kiss" in ten_low
+    assert "mouths stay apart" in ten_low
+    assert "french kiss" not in ten_low
+    assert "lit doorway stays behind shino" in ten_low
+    assert beat_loco(ten) == "planted"
+    spot = next(b for b in invite["beats"] if b["id"] == "10-shino-spot")
+    assert "already stooping" in spot["action"].lower()
+    assert "walks in from the right" not in spot["action"].lower()
+    assert beat_loco(spot) == "planted"
     assert "eager excited expectation" in ten_low
     assert "front groin" in ten_low
     assert "points forward" in ten_low
