@@ -267,13 +267,27 @@ def next_ready_job(root: Path | str, mode: str | None = None) -> Path | None:
     return hits[0]
 
 
+def _park_existing(dest_dir: Path) -> Path | None:
+    """A crashed run leaves the same folder name. Move it aside so the new job can enter."""
+    if not dest_dir.exists():
+        return None
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    parked = dest_dir.with_name(f"{dest_dir.name}.stopped-{stamp}")
+    n = 2
+    while parked.exists():
+        parked = dest_dir.with_name(f"{dest_dir.name}.stopped-{stamp}-{n}")
+        n += 1
+    dest_dir.rename(parked)
+    print("前回のフォルダをよけた", parked)
+    return parked
+
+
 def move_job(folder: Path, bucket: str, root: Path) -> Path:
     dest_dir = root / bucket / folder.name
     dest_dir.parent.mkdir(parents=True, exist_ok=True)
     if folder.resolve() == dest_dir.resolve():
         return folder
-    if dest_dir.exists():
-        raise FileExistsError(dest_dir)
+    _park_existing(dest_dir)
     folder.rename(dest_dir)
     return dest_dir
 

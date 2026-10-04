@@ -61,6 +61,22 @@ def test_status_and_inbox_queue(tmp_path):
     assert load_job(moved)["status"] == "queued"
 
 
+def test_move_job_parks_leftover_same_name(tmp_path):
+    root = ensure_drive_tree(tmp_path / "drive")
+    leftover = root / "running" / "dance-01"
+    leftover.mkdir(parents=True)
+    (leftover / "job.json").write_text("{}", encoding="utf-8")
+    folder = root / "queued" / "dance-01"
+    folder.mkdir()
+    (folder / "job.json").write_text('{"id":"dance-01"}', encoding="utf-8")
+    moved = move_job(folder, "running", root)
+    assert moved == root / "running" / "dance-01"
+    assert json.loads((moved / "job.json").read_text(encoding="utf-8"))["id"] == "dance-01"
+    parked = list((root / "running").glob("dance-01.stopped-*"))
+    assert len(parked) == 1
+    assert parked[0].is_dir()
+
+
 def test_stage_picture1_and_8_9(tmp_path):
     folder = tmp_path / "job"
     inp = tmp_path / "input"
