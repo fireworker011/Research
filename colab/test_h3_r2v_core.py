@@ -8,6 +8,7 @@ from h3_r2v_core import (
     FL2VA_MAX_CLIP_S,
     assert_graph_identity_motion,
     build_r2v_graph,
+    camera_lock_text,
     cap_duration_for_vram,
     cap_fl2va_clip_s,
     comfy_media_name,
@@ -111,6 +112,15 @@ def test_core_load_video_is_split_into_image_frames():
     assert g["20"]["inputs"]["ref_videos.ref_video_0"] == ["290", 0]
     assert g["29"]["inputs"]["format"] == "mp4"
     assert "codec" not in g["29"]["inputs"]
+
+
+def test_camera_lock_is_added_once_to_an_existing_prompt():
+    first = finalize_prompt("ROLE LOCK already here. MOTION ONLY.", ["a.jpg"], ["b.mp4"], 10)
+    assert "CAMERA LOCK" in first
+    assert "do not orbit" in first.lower()
+    second = finalize_prompt(first, ["a.jpg"], ["b.mp4"], 10)
+    assert second.count("CAMERA LOCK") == 1
+    assert "CAMERA LOCK" in camera_lock_text()
 
 
 def test_graph_rejects_non_multiple_of_32():

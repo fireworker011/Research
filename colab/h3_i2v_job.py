@@ -9,11 +9,17 @@ Grokbot duration is 10s for every mode.
 
 from __future__ import annotations
 
+import io
 import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:
+    from PIL import Image as _PillowImage
+except ImportError:
+    _PillowImage = None
 
 SCHEMA = "h3-i2v-job/v1"
 DRIVE_ROOT_DEFAULT = "/content/drive/MyDrive/minimax-h3-comfyui"
@@ -316,6 +322,33 @@ def move_job(folder: Path, bucket: str, root: Path) -> Path:
     _park_existing(dest_dir)
     folder.rename(dest_dir)
     return dest_dir
+
+
+def identity_still_bytes(data: bytes) -> bytes:
+    """A wide front/side/back sheet is not a camera move. Keep the front panel only."""
+    try:
+        if _PillowImage is None:
+            return data
+        image = _PillowImage.open(io.BytesIO(data))
+        image.load()
+    except Exception:
+        return data
+    width, height = image.size
+    if height <= 0 or width < int(height * 1.4):
+        return data
+    panel = image.crop((0, 0, max(1, width // 3), height)).convert("RGB")
+    buf = io.BytesIO()
+    panel.save(buf, format="JPEG", quality=95)
+    return buf.getvalue()
+
+
+def vertical_r2v_canvas(width: int, height: int, vram_gb: float) -> tuple[int, int]:
+    """The old R2V default is almost square. A vertical motion clip needs 9:16."""
+    if (int(width), int(height)) != (768, 864):
+        return int(width), int(height)
+    if float(vram_gb) >= 70:
+        return 768, 1344
+    return 576, 1024
 
 
 def resolve_job_image(folder: Path, job: dict[str, Any]) -> Path:

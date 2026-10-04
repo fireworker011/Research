@@ -132,7 +132,20 @@ def role_lock_preamble(img_names: list[str], vid_names: list[str]) -> str:
         "CONFLICT RULE: appearance always wins from Pictures; motion always wins from Videos. "
         "If the video actors look different from the stills, keep the still faces and only transfer motion."
     )
+    if vid_names:
+        lines.append(camera_lock_text())
     return "\n".join(lines) + "\n\n"
+
+
+def camera_lock_text() -> str:
+    return (
+        "CAMERA LOCK (mandatory): Copy the camera from <Video 1> exactly. "
+        "If that camera is fixed, the output camera stays fixed. "
+        "Do not orbit, circle, dolly around, or cut to a side view or a back view. "
+        "A character sheet with front, side, and back views is identity only, not a shot list. "
+        "Framing changes only when the body in <Video 1> changes distance, "
+        "such as stepping back from a chest-up shot to a full-body shot."
+    )
 
 
 def build_default_prompt(img_names: list[str], vid_names: list[str], duration_s: float) -> str:
@@ -196,6 +209,8 @@ def finalize_prompt(
                 "(choreography + camera + timing). Appearance comes exclusively from still Pictures.\n"
                 + out
             )
+        if vid_names and "CAMERA LOCK" not in out:
+            out = camera_lock_text() + "\n" + out
     return out
 
 

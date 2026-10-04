@@ -19,6 +19,7 @@ from h3_i2v_job import (
     adopt_orphan_stills,
     ensure_drive_tree,
     find_jobs,
+    identity_still_bytes,
     load_job,
     move_job,
     next_bot_job,
@@ -30,6 +31,7 @@ from h3_i2v_job import (
     stage_motion,
     stage_picture1,
     validate_job,
+    vertical_r2v_canvas,
 )
 from h3_i2v_phone import stage_image_into_input
 from h3_i2v_runtime import (
@@ -79,7 +81,10 @@ def _queue_ready_without_imagine(folder: Path, job: dict, drive_root: Path, mode
     else:
         still = resolve_job_image(folder, job)
         dest = folder / "picture1.jpg"
-        dest.write_bytes(still.read_bytes())
+        raw = still.read_bytes()
+        if mode == "r2v":
+            raw = identity_still_bytes(raw)
+        dest.write_bytes(raw)
         stage_picture1(folder, dest, job, drive_root / "input")
         if mode == "r2v":
             vid = resolve_job_video(folder, job)
@@ -226,6 +231,12 @@ def main() -> int:
         if not dry:
             ensure_comfy(comfy_dir, drive_root, drive_root / "models", need_r2v=True)
             start_comfy(comfy_dir, low_vram=detect_vram_gb() < 70)
+        job["width"], job["height"] = vertical_r2v_canvas(
+            int(job["width"]),
+            int(job["height"]),
+            detect_vram_gb(dry_run=dry),
+        )
+        save_job(folder, job)
         result = generate_r2v(
             img_names=[first],
             vid_names=[motion],

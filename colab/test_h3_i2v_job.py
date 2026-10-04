@@ -1,6 +1,13 @@
+import importlib.util
+import io
 import json
 import sys
 from pathlib import Path
+
+if importlib.util.find_spec("PIL") is not None:
+    from PIL import Image
+else:
+    Image = None
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "minimaxh3" / "grokbot"))
@@ -10,6 +17,8 @@ from h3_i2v_job import (
     DEFAULT_IMAGINE_PROMPT,
     SCHEMA,
     default_job,
+    identity_still_bytes,
+    vertical_r2v_canvas,
     ensure_drive_tree,
     forbidden_hits,
     load_job,
@@ -218,3 +227,34 @@ def test_example_job_file_has_no_secrets():
     assert "colab stop" in text
     assert "I2VA" in text
     assert "px.a8.net" in text or "アフィ" in text
+
+
+def test_turnaround_sheet_keeps_the_front_panel_only() -> None:
+    if Image is None:
+        return
+    image = Image.new("RGB", (300, 100), (255, 0, 0))
+    for x in range(100, 200):
+        for y in range(100):
+            image.putpixel((x, y), (0, 255, 0))
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    panel = Image.open(io.BytesIO(identity_still_bytes(buf.getvalue())))
+    assert panel.size == (100, 100)
+    red, green, _blue = panel.getpixel((10, 10))
+    assert red > green + 40
+
+
+def test_square_still_is_not_cropped() -> None:
+    if Image is None:
+        return
+    image = Image.new("RGB", (80, 100), (1, 2, 3))
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    raw = buf.getvalue()
+    assert identity_still_bytes(raw) == raw
+
+
+def test_old_square_r2v_canvas_becomes_vertical() -> None:
+    assert vertical_r2v_canvas(768, 864, 95) == (768, 1344)
+    assert vertical_r2v_canvas(768, 864, 40) == (576, 1024)
+    assert vertical_r2v_canvas(576, 1024, 95) == (576, 1024)
