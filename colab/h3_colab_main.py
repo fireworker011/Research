@@ -34,6 +34,7 @@ from h3_i2v_job import (
 from h3_i2v_phone import stage_image_into_input
 from h3_i2v_runtime import (
     COMFY_DIR_DEFAULT,
+    detect_vram_gb,
     ensure_comfy,
     fetch_helpers,
     generate_i2va,
@@ -224,7 +225,7 @@ def main() -> int:
         )
         if not dry:
             ensure_comfy(comfy_dir, drive_root, drive_root / "models", need_r2v=True)
-            start_comfy(comfy_dir)
+            start_comfy(comfy_dir, low_vram=detect_vram_gb() < 70)
         result = generate_r2v(
             img_names=[first],
             vid_names=[motion],

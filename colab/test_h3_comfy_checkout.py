@@ -8,7 +8,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from h3_i2v_runtime import clone_comfy, comfy_checkout_ok, discard_broken_comfy, execution_error_text
+from h3_i2v_runtime import (
+    clone_comfy,
+    comfy_checkout_ok,
+    comfy_launch_cmd,
+    discard_broken_comfy,
+    execution_error_text,
+)
 
 
 def test_broken_folder_is_removed(tmp_path: Path) -> None:
@@ -43,6 +49,12 @@ def test_failed_clone_stops(tmp_path: Path) -> None:
     else:
         raise AssertionError("clone failure did not stop")
     assert not comfy.exists()
+
+
+def test_40gb_launch_does_not_pin_all_weights() -> None:
+    cmd = comfy_launch_cmd(port=8188, low_vram=True)
+    assert "--highvram" not in cmd
+    assert "--highvram" in comfy_launch_cmd(port=8188, low_vram=False)
 
 
 def test_execution_error_is_visible_even_when_marked_completed() -> None:

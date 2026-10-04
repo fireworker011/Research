@@ -186,22 +186,41 @@ def comfy_up(port: int = PORT) -> bool:
         return False
 
 
-def start_comfy(comfy_dir: Path, *, port: int = PORT) -> None:
-    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
-    if comfy_up(port):
-        print("ComfyUI already up")
-        return
-    log = Path("/content/comfyui.log")
-    log.parent.mkdir(parents=True, exist_ok=True)
-    log_f = open(log, "w", buffering=1)
+def comfy_launch_cmd(*, port: int, low_vram: bool) -> list[str]:
     cmd = [
         sys.executable, "main.py",
         "--listen", "127.0.0.1",
         "--port", str(port),
-        "--highvram",
-        "--disable-auto-launch",
-        "--enable-cors-header",
     ]
+    if not low_vram:
+        cmd.append("--highvram")
+    cmd += ["--disable-auto-launch", "--enable-cors-header"]
+    return cmd
+
+
+def _stop_comfy_process(port: int) -> None:
+    subprocess.run(
+        ["pkill", "-f", f"main.py --listen 127.0.0.1 --port {port}"],
+        check=False,
+    )
+    for _ in range(20):
+        if not comfy_up(port):
+            return
+        time.sleep(0.5)
+
+
+def start_comfy(comfy_dir: Path, *, port: int = PORT, low_vram: bool = False) -> None:
+    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+    if comfy_up(port):
+        if not low_vram:
+            print("ComfyUI already up")
+            return
+        print("40GB なので、全部を GPU に載せる起動を止めて、載せ替えありで起動し直す")
+        _stop_comfy_process(port)
+    log = Path("/content/comfyui.log")
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log_f = open(log, "w", buffering=1)
+    cmd = comfy_launch_cmd(port=port, low_vram=low_vram)
     subprocess.Popen(cmd, cwd=str(comfy_dir), stdout=log_f, stderr=subprocess.STDOUT, start_new_session=True)
     for _ in range(90):
         if comfy_up(port):
