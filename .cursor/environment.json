@@ -1,0 +1,4 @@
+{
+  "name": "Affiliate Engine",
+  "install": "bash .cursor/install.sh"
+}
