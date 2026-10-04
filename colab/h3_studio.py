@@ -20,9 +20,33 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Mapping
 
+from h3_sfw import (
+    ACTION_STRENGTH,
+    ANIME2REAL_STRENGTH,
+    CHARSWAP_STRENGTH,
+    COMBAT_FIGHT_STRENGTH,
+    COMBAT_FINISH_TRIGGER,
+    COMBAT_STACK_STRENGTH,
+    COMBAT_TRIGGER,
+    FAST_SECONDS,
+    FAST_STACK,
+    I2VA_HEADER,
+    JOIN_MIN_S,
+    LORA_FILES,
+    ONE_SHOT_15_NOTE,
+    SPEED_STEPS,
+    SPEED_STRENGTH,
+    SPEED_VIDEO_SHIFT,
+    TEMPLATES,
+    fast_canvas,
+    join_ffmpeg,
+    parse_join_parts,
+)
+
 SCHEMA = "h3-studio/v1"
 
 JOBS = (
+    "fast_motion",
     "combat_motion",
     "swap_character",
     "swap_face",
@@ -31,31 +55,33 @@ JOBS = (
     "orbit360",
     "two_pass",
     "text_scene",
+    "join",
+    "affi_template",
 )
 SWAP_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit"})
 VIDEO_SINK_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit", "real"})
 # Community LoRAs. The official Hailuo API cannot load them.
-API_STOP_JOBS = frozenset({"combat_motion", "swap_character", "swap_face", "swap_outfit", "real", "two_pass"})
-HIGH_MEM_JOBS = frozenset({"combat_motion", "swap_character", "swap_face", "swap_outfit", "real"})
+API_STOP_JOBS = frozenset(
+    {
+        "fast_motion",
+        "combat_motion",
+        "swap_character",
+        "swap_face",
+        "swap_outfit",
+        "real",
+        "two_pass",
+    }
+)
+HIGH_MEM_JOBS = frozenset(
+    {"fast_motion", "combat_motion", "swap_character", "swap_face", "swap_outfit", "real"}
+)
 TURBO_OFF_JOBS = frozenset({"combat_motion", "swap_character", "swap_face", "swap_outfit"})
 
-# ``combat`` is the existing registration (H3_Combat_V2). It is not a second combat key.
-# ``charswap`` and ``anime2real`` are registered here only. No ward beat extras.
-LORA_FILES = {
-    "combat": "H3_Combat_V2.safetensors",
-    "charswap": "h3_character_swap_pro4500_1000.safetensors",
-    "anime2real": "Anime2Realsim__H3.safetensors",
-}
-COMBAT_STRENGTH = 1.0
-CHARSWAP_STRENGTH = 1.0
-ANIME2REAL_STRENGTH = 1.0
+# Re-exported so plans and tests share one registry. No second combat file.
+COMBAT_STRENGTH = COMBAT_FIGHT_STRENGTH
 # Same-sampler overlay is refused. The strength below is the refused overlay's number.
 SWAP_OVERLAY_STRENGTH = 0.5
 LUMIREAL = "LumiReal"
-
-# Combat V2 tokens from the existing episode engine tests. This lane does not edit that engine.
-COMBAT_TRIGGER = "prfight2"
-COMBAT_FINISH_TRIGGER = "prfight2, prfin1"
 
 DEFAULT_SECONDS = 5.0
 MIN_SECONDS = 4.0
@@ -73,19 +99,23 @@ TEXT_SCENE_HEIGHT = WIDTH
 TEXT_SCENE_ASPECT = "16:9"
 
 STUDIO_HELPERS = (
+    "colab/h3_sfw.py",
     "colab/h3_studio.py",
     "colab/h3_studio_colab_main.py",
 )
 
 JOB_HELP = {
-    "combat_motion": "FL2VA + combat 1.0。Turbo 切。High-Mem。finish で決め。",
-    "swap_character": "Ref2VA + charswap 1.0。Video=動き、Picture=全身。Hero シート必須。",
+    "fast_motion": "FL2VA。スピード LoRA 1.0 は常に載る。アクション 0.6 とコンバット 0.7 は任意。格闘トリガーは付けない。",
+    "combat_motion": "FL2VA + combat 1.0。Turbo 切。High-Mem。finish で決め。スピードやアクションとは積まない。",
+    "swap_character": "キャラ差し替え。Ref2VA + charswap 1.0。Video=動き、Picture=全身。Hero シート必須。",
     "swap_face": "同じ charswap。Picture は顔と髪だけ。服は Video。",
     "swap_outfit": "同じ charswap。Picture は服だけ。顔は Video。",
     "real": "anime2real 1.0。swap と同じサンプラーには積まない。",
     "orbit360": "FL2VA。同じ絵を首尾。LoRA ファイル名は未確定なので積まない。",
     "two_pass": "A の mp4 を B の Video 1。LoRA はパスごとに分ける。",
-    "text_scene": "T2VA。LoRA なし。",
+    "text_scene": "シーン。T2VA。LoRA なし。場所は Hero の place。空欄は書かない。",
+    "join": "6秒と9秒を切って足す。15秒以上。1本の15秒生成はしない。",
+    "affi_template": "バズ型の既存台本を指す。台本は書き換えない。生成しない。",
 }
 
 LOOK_KEYS = ("hair", "color", "race", "age", "height", "weight", "clothes", "place")
@@ -118,6 +148,10 @@ REQUEST_KEYS = frozenset(
         "turbo",
         "passes",
         "lumireal",
+        "with_action",
+        "with_combat",
+        "template",
+        "parts",
     }
 )
 REFUSED_NOW = {
@@ -236,6 +270,10 @@ class StudioRequest:
     turbo: bool = False
     passes: tuple[StudioRequest, ...] = ()
     lumireal: bool = False
+    with_action: bool = False
+    with_combat: bool = False
+    template: str = ""
+    parts: tuple[float, ...] = ()
 
 
 def request_from(raw: Mapping[str, Any]) -> StudioRequest:
@@ -274,10 +312,14 @@ def request_from(raw: Mapping[str, Any]) -> StudioRequest:
         first_still=str(raw.get("first_still") or "").strip(),
         last_still=str(raw.get("last_still") or "").strip(),
         finish=_as_bool(raw.get("finish", False), default=False),
-        duration=_duration(raw.get("duration", DEFAULT_SECONDS)),
+        duration=_duration_for(job, raw.get("duration", None if job in {"fast_motion", "join", "affi_template"} else DEFAULT_SECONDS)),
         turbo=_as_bool(raw.get("turbo", False), default=False),
         passes=passes,
         lumireal=_as_bool(raw.get("lumireal", False), default=False),
+        with_action=_as_bool(raw.get("with_action", False), default=False),
+        with_combat=_as_bool(raw.get("with_combat", False), default=False),
+        template=str(raw.get("template") or "").strip(),
+        parts=_parts_for(job, raw.get("parts")),
     )
 
 
@@ -307,9 +349,18 @@ def request_from_env(environ: Mapping[str, str] | None = None) -> StudioRequest:
         "first_still": env.get("H3_STUDIO_FIRST") or "",
         "last_still": env.get("H3_STUDIO_LAST") or "",
         "finish": env.get("H3_STUDIO_FINISH", "0"),
-        "duration": env.get("H3_STUDIO_DURATION") or DEFAULT_SECONDS,
+        "duration": (
+            env.get("H3_STUDIO_FAST_SECONDS") or "6"
+            if job == "fast_motion"
+            else env.get("H3_STUDIO_DURATION") or DEFAULT_SECONDS
+        ),
         "turbo": env.get("H3_STUDIO_TURBO", "0"),
+        "with_action": env.get("H3_STUDIO_WITH_ACTION", "0"),
+        "with_combat": env.get("H3_STUDIO_WITH_COMBAT", "0"),
+        "template": env.get("H3_STUDIO_TEMPLATE") or "",
     }
+    if job == "join":
+        mapping["parts"] = env.get("H3_STUDIO_PARTS") or ""
     if job == "two_pass":
         pass_a = str(env.get("H3_STUDIO_PASS_A") or "").strip()
         pass_b = str(env.get("H3_STUDIO_PASS_B") or "").strip()
@@ -340,15 +391,25 @@ def build_plan(req: StudioRequest) -> dict[str, Any]:
         return _build_orbit(req)
     if req.job == "text_scene":
         return _build_text(req)
+    if req.job == "fast_motion":
+        return _build_fast(req)
+    if req.job == "join":
+        return _build_join(req)
+    if req.job == "affi_template":
+        return _build_template(req)
     raise StudioError(f"ジョブが違う: {req.job}")
 
 
 def assert_loras_exclusive(keys: set[str]) -> None:
-    """Combat, charswap, and anime2real do not share one sampler."""
-    if "combat" in keys and keys - {"combat"}:
-        raise StudioError("Combat は同じ UNet に他の LoRA を積まない")
+    """charswap and anime2real stay alone. Combat may sit with speed and action only."""
     if "charswap" in keys and "anime2real" in keys:
         raise StudioError(OVERLAY_MSG)
+    if "charswap" in keys and keys - {"charswap"}:
+        raise StudioError("charswap は同じサンプラーに他の LoRA を積まない")
+    if "anime2real" in keys and keys - {"anime2real"}:
+        raise StudioError("anime2real は同じサンプラーに他の LoRA を積まない")
+    if "combat" in keys and not keys <= FAST_STACK:
+        raise StudioError("Combat は speed と action 以外とは同じサンプラーに積まない")
 
 
 def prompts_of(plan: Mapping[str, Any]) -> list[str]:
@@ -360,6 +421,120 @@ def prompts_of(plan: Mapping[str, Any]) -> list[str]:
         return found
     text = str(plan.get("prompt") or "")
     return [text] if text else []
+
+
+def _build_fast(req: StudioRequest) -> dict[str, Any]:
+    if not req.first_still:
+        raise StudioError("fast_motion は最初の絵が要る")
+    if req.last_still:
+        raise StudioError("fast_motion は最初の絵だけ。最後の絵は combat_motion")
+    action, dialogue = _speech(req)
+    look = _look_clause(req.hero, req.enemy)
+    body = _sentences(
+        NO_TEXT,
+        look,
+        "The shot begins in the composition of <Picture 1>.",
+        action,
+        dialogue,
+        "The camera pushes in with small amplitude at slow speed.",
+    )
+    loras: list[dict[str, Any]] = [_lora("speed", SPEED_STRENGTH)]
+    if req.with_combat:
+        loras.append(_lora("combat", COMBAT_STACK_STRENGTH))
+    if req.with_action:
+        loras.append(_lora("action", ACTION_STRENGTH))
+    notes = [
+        f"steps {SPEED_STEPS}。video shift {SPEED_VIDEO_SHIFT:g}。スピード LoRA が Turbo。",
+        "格闘の prfight2 は付けない。決めは combat_motion。",
+    ]
+    if req.with_action or req.with_combat:
+        notes.append("アクションとコンバットはスピードの上に足す。charswap とは混ぜない。")
+    built = _leaf(
+        req,
+        task="fl2va",
+        prompt=_i2va_prompt(body=body),
+        loras=tuple(loras),
+        trigger="",
+        turbo=True,
+        notes=notes,
+        inputs={
+            "first_still": req.first_still,
+            "last_still": "",
+            "hero_sheet": req.hero_sheet,
+            "video": "",
+        },
+    )
+    width, height, frames = fast_canvas(req.duration)
+    built["width"] = width
+    built["height"] = height
+    built["frames"] = frames
+    built["steps"] = SPEED_STEPS
+    built["video_shift"] = SPEED_VIDEO_SHIFT
+    return built
+
+
+def _build_join(req: StudioRequest) -> dict[str, Any]:
+    parts = req.parts
+    total = float(sum(parts))
+    return {
+        "schema": SCHEMA,
+        "job": "join",
+        "task": "join",
+        "runtime": req.runtime,
+        "high_mem": False,
+        "turbo": False,
+        "duration": total,
+        "fps": FPS,
+        "width": 1080,
+        "height": 1920,
+        "resolution": "1080P",
+        "loras": [],
+        "trigger": "",
+        "sampler_id": "join:ffmpeg",
+        "look": "",
+        "prompt": "",
+        "inputs": {},
+        "passes": [{"seconds": seconds} for seconds in parts],
+        "notes": [ONE_SHOT_15_NOTE, "ffmpeg はここでは実行しない。"],
+        "generate": False,
+        "ffmpeg": join_ffmpeg(parts),
+    }
+
+
+def _build_template(req: StudioRequest) -> dict[str, Any]:
+    key = req.template or "buy_before"
+    if key not in TEMPLATES:
+        raise StudioError("テンプレが違う")
+    item = TEMPLATES[key]
+    return {
+        "schema": SCHEMA,
+        "job": "affi_template",
+        "task": "affi",
+        "runtime": req.runtime,
+        "high_mem": False,
+        "turbo": False,
+        "duration": JOIN_MIN_S,
+        "fps": FPS,
+        "width": WIDTH,
+        "height": HEIGHT,
+        "resolution": RESOLUTION,
+        "loras": [],
+        "trigger": "",
+        "sampler_id": "affi:template",
+        "look": "",
+        "prompt": "",
+        "inputs": {},
+        "passes": [],
+        "notes": [
+            str(item["label"]),
+            "台本は fixtures の既存。ここでは書き換えない。",
+            "採点は python -m minimaxh3.affi plan。生成と投稿はしない。",
+        ],
+        "generate": False,
+        "template": key,
+        "pattern_id": item["pattern_id"],
+        "script": item["script"],
+    }
 
 
 def _build_combat(req: StudioRequest) -> dict[str, Any]:
@@ -783,6 +958,16 @@ def _leaf(
     }
 
 
+def _i2va_prompt(*, body: str) -> str:
+    chunks = [
+        I2VA_HEADER,
+        f"integrated_multimodal_description: [Shot 1] Live-action, vertical 9:16. {body}",
+        SOUND,
+        MUSIC,
+    ]
+    return "\n\n".join(chunks) + "\n"
+
+
 def _fl2va_prompt(*, trigger: str, end: str, body: str) -> str:
     chunks = []
     if trigger:
@@ -986,6 +1171,35 @@ def _as_bool(value: Any, *, default: bool) -> bool:
     if text in {"0", "false", "no", "off", ""}:
         return False if text else default
     raise StudioError("真偽が読めない")
+
+
+def _duration_for(job: str, value: Any) -> float:
+    if job == "fast_motion":
+        if value is None or value == "":
+            return 6.0
+        try:
+            seconds = float(value)
+        except (TypeError, ValueError) as exc:
+            raise StudioError("fast_motion の尺は 6 か 9 秒") from exc
+        if seconds not in FAST_SECONDS:
+            raise StudioError("fast_motion の尺は 6 か 9 秒")
+        return seconds
+    if job in {"join", "affi_template"}:
+        return JOIN_MIN_S
+    if value is None:
+        value = DEFAULT_SECONDS
+    return _duration(value)
+
+
+def _parts_for(job: str, value: Any) -> tuple[float, ...]:
+    if job != "join":
+        if value not in (None, "", [], ()):
+            raise StudioError("parts は join だけ")
+        return ()
+    try:
+        return parse_join_parts(value)
+    except ValueError as exc:
+        raise StudioError(str(exc)) from exc
 
 
 def _duration(value: Any) -> float:

@@ -18,8 +18,13 @@ Env:
   H3_STUDIO_FIRST      FL2VA first still
   H3_STUDIO_LAST       FL2VA last still
   H3_STUDIO_FINISH     1 puts the combat finish trigger on the prompt
-  H3_STUDIO_DURATION   4 to 5 seconds (default 5)
-  H3_STUDIO_TURBO      ignored for Combat and Swap (forced off)
+  H3_STUDIO_DURATION   4 to 5 seconds (default 5). fast_motion uses H3_STUDIO_FAST_SECONDS (6 or 9)
+  H3_STUDIO_FAST_SECONDS  6 or 9 for fast_motion
+  H3_STUDIO_WITH_ACTION   1 adds Motion Repair V2 at 0.6 on fast_motion
+  H3_STUDIO_WITH_COMBAT   1 adds combat at 0.7 on fast_motion (no fight trigger)
+  H3_STUDIO_TEMPLATE   buy_before, daily_food, or daily_camera
+  H3_STUDIO_PARTS      join clips, comma-separated 6 and 9, sum at least 15
+  H3_STUDIO_TURBO      ignored for fight Combat and Swap (forced off). fast_motion forces it on
   H3_STUDIO_PASS_A     two_pass job A
   H3_STUDIO_PASS_B     two_pass job B (Video 1 becomes A's mp4)
   H3_STUDIO_OUT        plan path (default h3_studio_plan.json)

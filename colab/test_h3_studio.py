@@ -40,23 +40,29 @@ def plan(job: str, **overrides):
     return studio.build_plan(studio.request_from(raw))
 
 
-def test_lora_registry_adds_only_swap_and_real():
-    assert set(studio.LORA_FILES) == {"combat", "charswap", "anime2real"}
+def test_lora_registry_is_one_file_per_key():
+    assert set(studio.LORA_FILES) == {"speed", "action", "combat", "charswap", "anime2real"}
+    assert studio.LORA_FILES["speed"].startswith("minimax_h3_fl2v_turbo_8step")
+    assert studio.LORA_FILES["action"] == "Motion_Repair_V2.safetensors"
     assert studio.LORA_FILES["combat"] == "H3_Combat_V2.safetensors"
     assert studio.LORA_FILES["charswap"] == "h3_character_swap_pro4500_1000.safetensors"
     assert studio.LORA_FILES["anime2real"] == "Anime2Realsim__H3.safetensors"
     assert list(studio.LORA_FILES).count("combat") == 1
+    catalog = (ROOT / "colab" / "h3_sfw.py").read_text(encoding="utf-8")
     source = (ROOT / "colab" / "h3_studio.py").read_text(encoding="utf-8")
-    assert "prfight1" not in source
-    assert "prfight2" in source
+    assert "prfight1" not in catalog
+    assert "prfight2" in catalog
+    assert "combat_base_v2" not in studio.LORA_FILES.values()
     assert "import h3_episode" not in source
     assert "from h3_episode" not in source
     for banned in ("kasumi", "HANDOFF", "episode.json"):
         assert banned not in source
+        assert banned not in catalog
 
 
 def test_helpers_are_the_studio_pair():
     assert studio.STUDIO_HELPERS == (
+        "colab/h3_sfw.py",
         "colab/h3_studio.py",
         "colab/h3_studio_colab_main.py",
     )
@@ -403,6 +409,8 @@ def test_colab_main_writes_a_plan_and_refuses_generate(tmp_path, monkeypatch):
     monkeypatch.setenv("H3_STUDIO_HERO_HAIR", "black bob")
     monkeypatch.setenv("H3_STUDIO_HERO_COLOR", "")
     monkeypatch.setenv("H3_STUDIO_DURATION", "5")
+    monkeypatch.setenv("H3_STUDIO_PARTS", "6,9")
+    monkeypatch.setenv("H3_STUDIO_TEMPLATE", "buy_before")
     monkeypatch.setenv("H3_STUDIO_GENERATE", "0")
     monkeypatch.setenv("H3_STUDIO_OUT", str(out))
     monkeypatch.setenv("H3_STUDIO_RUNTIME", "comfy")
@@ -417,3 +425,70 @@ def test_colab_main_writes_a_plan_and_refuses_generate(tmp_path, monkeypatch):
     monkeypatch.setenv("H3_STUDIO_OUT", str(blocked))
     assert main() == 1
     assert not blocked.exists()
+
+
+def test_fast_motion_stacks_speed_and_optional_action_combat():
+    with pytest.raises(studio.StudioError, match="最初の絵"):
+        plan("fast_motion")
+    speed = plan("fast_motion", first_still="sakura.png", duration=6)
+    assert speed["turbo"] is True
+    assert [item["key"] for item in speed["loras"]] == ["speed"]
+    assert speed["loras"][0]["strength"] == 1.0
+    assert speed["steps"] == 9
+    assert speed["video_shift"] == 6
+    assert speed["width"] == 768
+    assert speed["height"] == 1344
+    assert speed["frames"] == 158
+    assert speed["trigger"] == ""
+    assert "prfight2" not in speed["prompt"]
+    assert speed["prompt"].startswith("For the target video, at 0.00 seconds")
+    assert "place night kitchen" in speed["look"]
+    stacked = plan(
+        "fast_motion",
+        first_still="dog.png",
+        duration=9,
+        with_action=True,
+        with_combat=True,
+        turbo=False,
+    )
+    assert stacked["turbo"] is True
+    assert [item["key"] for item in stacked["loras"]] == ["speed", "combat", "action"]
+    assert stacked["loras"][1]["strength"] == 0.7
+    assert stacked["loras"][2]["strength"] == 0.6
+    assert stacked["width"] == 640
+    assert stacked["frames"] == 226
+    assert "charswap" not in {item["key"] for item in stacked["loras"]}
+    with pytest.raises(studio.StudioError, match="6 か 9"):
+        plan("fast_motion", first_still="a.png", duration=5)
+    with pytest.raises(studio.StudioError, match="speed と action"):
+        studio.assert_loras_exclusive({"combat", "custom"})
+
+
+def test_join_is_at_least_15_seconds_and_does_not_render():
+    built = plan("join", action="")
+    assert built["duration"] == 15.0
+    assert [part["seconds"] for part in built["passes"]] == [6.0, 9.0]
+    assert built["ffmpeg"][0] == "ffmpeg"
+    assert "1080:1920" in built["ffmpeg"][built["ffmpeg"].index("-filter_complex") + 1]
+    assert built["generate"] is False
+    longer = plan("join", action="", parts=[6, 6, 6])
+    assert longer["duration"] == 18.0
+    with pytest.raises(studio.StudioError, match="15 秒以上"):
+        plan("join", action="", parts=[6, 6])
+    with pytest.raises(studio.StudioError, match="6 秒か 9 秒"):
+        plan("join", action="", parts=[15])
+
+
+def test_affi_template_points_at_existing_scripts():
+    worry = plan("affi_template", action="", template="buy_before")
+    assert worry["pattern_id"] == "buy_before"
+    assert worry["script"].endswith("run02.md")
+    assert worry["generate"] is False
+    assert worry["loras"] == []
+    food = plan("affi_template", action="", template="daily_food")
+    camera = plan("affi_template", action="", template="daily_camera")
+    assert food["pattern_id"] == camera["pattern_id"] == "daily_same"
+    assert food["script"].endswith("run01.md")
+    assert camera["script"].endswith("run03.md")
+    with pytest.raises(studio.StudioError, match="テンプレが違う"):
+        plan("affi_template", action="", template="ward")

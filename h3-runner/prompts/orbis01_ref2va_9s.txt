@@ -1,0 +1,20 @@
+subject_definitions:
+<Subject 1> is Sakura, the young Japanese woman in <Picture 1>, with long straight dark-brown hair, soft wispy bangs, warm brown eyes, fair skin, and a gentle closed-lip smile; only her face, hairstyle, and overall identity are referenced, and in the target video she wears a plain cream-colored high-neck knit sweater with no accessories.
+
+summary:
+[reference generation] A 9-second vertical 9:16 skincare short that continues a water-texture sequence: a slow-motion droplet spreads over a soft skin-like surface, <Subject 1> presses her palms gently to her cheeks by a bright morning window, and then smiles at the camera and points upward, with a calm off-screen female voiceover.
+
+retention_analysis:
+<Subject 1> (appears in [Shot 2], [Shot 3]): partially_preserved - her face, long dark-brown hair, bangs, eye shape, and gentle smile follow <Picture 1>, while the kimono, night garden, and hair ornament are replaced by a cream high-neck knit sweater in a bright morning room.
+
+detailed_description:
+The target video is a photoreal, soft-lit vertical 9:16 skincare commercial with a clean white-and-pale-blue palette, shallow depth of field, and no on-screen text, subtitles, logos, or brand marks at any point.
+[Shot 1] An extreme slow-motion macro shows a single clear water droplet falling onto a soft, pale, skin-like surface under diffuse morning light. It lands, flattens, and spreads outward in a thin glossy film that is quickly absorbed, leaving tiny bright highlights that glint and fade. The camera holds a static shot. A calm, soft-spoken young Japanese woman with a gentle mid-pitched voice, <Subject 1> (S1), says in an off-screen voiceover: <d>[Japanese] すっとなじむ感じが、好き。</d> while no lips are visible on screen.
+[Shot 2] At 00:03.000, the shot cuts to a medium close-up of <Subject 1> standing beside a bright window in a white morning room, soft backlight rimming her long dark-brown hair and the shoulders of her cream knit sweater. She closes her eyes and gently presses both palms against her cheeks, holding them there with a calm, relaxed expression while her shoulders drop slightly. The camera pushes in with small amplitude at slow speed. <Subject 1> (S1) says in an off-screen voiceover: <d>[Japanese] 朝は、これ1本から。</d> while her lips remain completely closed.
+[Shot 3] At 00:06.500, the shot cuts to a medium shot of <Subject 1> in the same room, the window light behind her. She lowers her hands, opens her eyes, looks directly into the camera with a gentle closed-lip smile, and raises her right index finger to point toward the top of the frame, holding the pose steadily until the final frame. The camera holds a static shot. <Subject 1> (S1) says in an off-screen voiceover: <d>[Japanese] 使ってるものは、プロフィールに。</d> while her lips remain completely closed.
+
+overall_soundscape:
+Quiet morning room tone continues throughout. The droplet lands with a small clear tap, followed by the light rustle of knit fabric as her hands move to her cheeks and back down.
+
+non_diegetic_music:
+A light, sparse piano motif at a moderate tempo with soft high synth pads, holding a steady volume and fading out gently over the final second.

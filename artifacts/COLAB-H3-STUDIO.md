@@ -1,4 +1,10 @@
-# H3 Studio（アフィ用・病棟とは別レーン）
+# H3 Studio（ノンアダルト。病棟・アダルト LoRA とは別）
+
+このブランチの Colab はノンアダルトだけ。アダルトの LoRA スタジオと病棟ノートは置いていない。生成ノートは `h3-runner/minimax_h3_still.ipynb`。プランは `minimax_h3_studio_bot.ipynb`。
+
+LoRA は1キー1ファイル。スピードは LightX2V の Turbo 8step（強さ 1.0、steps 9、video shift 6）。アクションは `Motion_Repair_V2.safetensors`（0.6）。コンバットは `H3_Combat_V2.safetensors`（格闘は 1.0 で Turbo 切、`prfight2`。fast に足すときは 0.7 でトリガーなし）。キャラスワップは `h3_character_swap_pro4500_1000.safetensors`。`combat_base_v2.safetensors` は別名なので登録しない。
+
+`fast_motion` は最初の絵だけ。`join` は 6 秒と 9 秒を足して 15 秒以上。1本の 15 秒生成はしない。`affi_template` は run01〜03 の既存台本を指す。キャラは Hero、場所は place、シーンは `text_scene`。空欄は Look に出ない。
 
 作成: 2026-09-30
 
@@ -16,7 +22,7 @@
 - ジョブは 1 回に 1 つ。`two_pass` だけが A のあとに B を置く。同時オンはしない。
 - 公式 Hailuo API は Combat / Swap / real の LoRA を読めない。`runtime=api` でこれら（`two_pass` を含む）が来たら止まる。`text_scene` と `orbit360` は LoRA が無いので api を通す。
 - 本体は Comfy High-Mem。High-Mem がオフの Combat / Swap / real は止まる。VRAM の閾値はこのレーンでは測っていないので、数字は置いていない。
-- Swap は Ref2VA、Combat は FL2VA。同じサンプラーに Combat と他 LoRA、または charswap と anime2real を積まない。
+- Swap は Ref2VA。格闘の Combat は FL2VA で単体。fast_motion だけがスピード + アクション + コンバット（0.7、トリガーなし）を同じサンプラーに載せる。charswap と anime2real は他と混ぜない。
 - 顔 / 衣装 / 全身はファイル `h3_character_swap_pro4500_1000.safetensors` の 1 本。プロンプトのロックだけが違う。
 - 空欄の髪・色・人種・年齢・身長・体重・服・場所は Look に書かない。
 - real 単体は `Anime2Realsim__H3.safetensors` 強さ 1.0。動画があれば Ref2VA、無ければ同じ絵を首尾にした FL2VA。
@@ -25,7 +31,7 @@
 - Weapon / GunFu / Continuity は登録しない。
 - Combat は再登録しない。キー `combat` は既存ファイル名のまま 1 つ。
 - charswap と anime2real は `LORA_FILES` にファイル名だけ。URL は置かない。病棟ビートの extra には足さない。
-- ステップ数とサンプラー名は書かない。既存エンジンの 12 step / euler+beta は、この 4–5 秒では未確認なので写さない。
+- fast_motion だけ steps 9 と video shift 6 をプランに書く。4–5 秒のジョブに 12 step は書かない。
 - 生成ボタンは人間。ノートも `h3_studio_colab_main.py` も Comfy を起動しない。`H3_STUDIO_GENERATE=1` は止まる。
 - 負のプロンプト欄は無い。除外は本文の「画面に文字を出さない」文。
 - 公式ガイドの 350–500 語には合わせない。頼んでいない動作や空欄を埋めて語数を稼がない。
@@ -34,6 +40,9 @@
 
 | ジョブ | タスク | LoRA | ロック |
 |---|---|---|---|
+| `fast_motion` | FL2VA（最初の絵） | speed 1.0。任意で action 0.6 と combat 0.7 | 6 秒は 768×1344、9 秒は 640×1152。格闘トリガーは付けない |
+| `join` | ffmpeg | なし | 6 秒と 9 秒を足して 15 秒以上。実行しない |
+| `affi_template` | 台本の参照 | なし | buy_before / daily_food / daily_camera。既存 fixtures |
 | `combat_motion` | FL2VA | combat 1.0。Turbo は切る | 最初の絵と最後の絵。トリガー `prfight2`。`finish` で `prfight2, prfin1` |
 | `swap_character` | Ref2VA | charswap 1.0。Turbo は切る | Video=動き、Picture=全身。Hero シート必須 |
 | `swap_face` | Ref2VA | 同じファイル 1.0 | Picture は顔と髪。服は Video |
