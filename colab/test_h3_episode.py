@@ -2182,6 +2182,12 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     kiss_i = next(b for b in m_open["beats"] if b["id"] == "03-kiss")
     assert "in front of the t-junction" in kiss_i["action"].lower()
     assert "mouths joined" in kiss_i["action"].lower()
+    assert extra_lora_entries(kiss_i) == []
+    assert "glans stays pressed" in kiss_i["action"].lower()
+    assert "travels into" not in kiss_i["action"].lower()
+    kiss_in = next(b for b in m_open["beats"] if b["id"] == "03-kiss-in")
+    assert extra_lora_entries(kiss_in) == [("mystic", 1.0)] or extra_keys(kiss_in) == ["mystic"]
+    assert "travels into the pussy" in kiss_in["action"].lower()
     seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
     assert "stroking the erect 20cm" in seven["action"].lower()
     assert "white goo" in seven["action"].lower()
@@ -2662,7 +2668,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 53
+    assert len(chosen["beats"]) == 54
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -3320,7 +3326,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "rotting" in join["action"].lower()
     assert "erect ashen-gray 24cm" in join["action"].lower()
     assert "between the calves" in join["action"].lower()
-    assert "profile side view" in join["camera"].lower()
+    assert "low view between the calves" in join["camera"].lower()
     assert "faces left" in join["camera"].lower()
     assert "side-rear" not in join["camera"].lower()
     assert "pale-tan skin" not in meet["action"].lower()
@@ -6562,6 +6568,9 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         gape = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-gape")
         assert "wide ring" in gape["action"].lower()
         assert "drips toward the floor" in gape["action"].lower()
+        assert "from inside the open anus" in gape["action"].lower()
+        assert "hips stay up" in gape["action"].lower()
+        assert "pulls back" in set_b["action"].lower()
         assert "jacko" not in extra_keys(gape)
         assert ("anuspussy", 0.4) in extra_lora_entries(gape)
         assert gape.get("steps") == 8 and gape.get("turbo") is False
