@@ -1,0 +1,99 @@
+schema: affi-repro-template/v1
+handle: nuts0629
+genre: ドッグフード
+platform: TikTok
+source: reference-accounts/source/spec_nuts0629.md
+reproduce: 型だけ。実在の犬の顔と、元動画の台詞・曲名はコピーしない。
+default_mode: interview
+modes:
+  interview:
+    duration_s: 8
+    canvas: "1280x720"
+    cuts: 0
+    timeline:
+      - id: ask
+        start_s: 0
+        end_s: 4
+        picture: 明るい室内。人がマイクを犬に向ける引き。
+        speech: 質問。具体は入力。
+        camera: 引きから寄りへ、1本の生成の中で切り替わる。
+      - id: answer
+        start_s: 4
+        end_s: 8
+        picture: 同じ犬の寄り。口が動く。
+        speech: 犬役の短い返事。具体は入力。
+        camera: 寄り
+    subtitle: なし
+    audio: 人の質問と、犬役の高い声。生成音声と推定。曲は無し。
+  asmr:
+    duration_s: 32
+    canvas: "1280x720"
+    cuts: "8秒ごと"
+    timeline:
+      - id: bite
+        start_s: 0
+        end_s: 8
+        picture: 帽子や食べ物が変わる。手で差し出し、犬がかじる。中身は入力。
+        speech: なし
+        camera: 固定に近い
+    repeat: 4
+    subtitle: なし
+    audio: トレンド音源。咀嚼音が入っているかは不明。
+  dance:
+    duration_s: 10
+    canvas: "720x1280"
+    cuts: 0
+    timeline:
+      - id: dance
+        start_s: 0
+        end_s: 10
+        picture: 衣装を着た同じ犬が全身で踊る。背景はぼけ。衣装は入力。
+        speech: なし
+        camera: 固定。カットなし。
+    subtitle: なし
+    audio: 曲のみ。曲名は入力。元動画の曲はコピーしない。
+  talk:
+    duration_s: 37
+    canvas: "720x1272"
+    cuts: 1
+    timeline:
+      - id: bubbles
+        start_s: 0
+        end_s: 19
+        picture: 2匹が並ぶ。ほぼ静止。
+        speech: 短い掛け合い。具体は入力。
+        camera: 固定
+    subtitle: CapCut風の吹き出し。青・ピンク・黄色の太字、白縁。中央から上。1〜2秒で切り替え。
+    audio: BGMと2匹の声。生成元は不明。
+characters:
+  - id: dog
+    role: 同じ犬。衣装だけ変える。
+    look: 参照写真の犬。テキストだけだと似なくなる、と仕様にある。元の飼い犬の写真は使わない。自分の参照を渡す。
+    voice: インタビューの犬役は高い声。推定。
+    certainty: 推定（顔は実犬に近い、と仕様）
+subtitle:
+  interview: なし
+  dance: なし
+  asmr: なし
+  talk: 吹き出しのみ
+logo:
+  place: なし
+  watermark_note: 元動画はVeoまたはKling AIの透かしが残っている。再現では他社の透かしを付けない。
+title_band:
+  enabled: false
+audio:
+  certainty: 推定（インタビューの声。ダンスの曲名は推定）
+hashtags:
+  pattern: 絵文字の語りかけと、#AI と犬種タグ。シリーズ名を【】で頭に付ける。
+  certainty: 仕様どおり
+cta:
+  in_video: なし
+  in_caption: 過去作への言及はある。LINEスタンプの宣伝が音源名にある回がある。
+series_prefix: ["【AIインタビュー】", "【咀嚼音ASMR】", "【ダンス】"]
+edit:
+  - インタビューとダンスは生成1本のまま
+  - 会話回だけ吹き出しを足す
+unknowns:
+  - 咀嚼音が実際に入っているか
+  - 会話劇の生成元
+  - ダンス曲の正式な利用可否

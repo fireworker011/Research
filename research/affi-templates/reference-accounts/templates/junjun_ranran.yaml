@@ -1,0 +1,84 @@
+schema: affi-repro-template/v1
+handle: junjun_ranran
+genre: 見守りカメラ
+platform: TikTok
+source: reference-accounts/source/spec_junjun_ranran.md
+reproduce: 型だけ。元の猫・人・台詞はコピーしない。見守りカメラ映像ではない。
+canvas: "1080x1920"
+duration_s: 45
+duration_note: "伸びた回は25〜72秒。125秒超は再生が落ちた。中央値65.5秒は一覧の値。"
+characters:
+  - id: tsukkomi
+    role: ツッコミ役の猫。関西弁。低い声。
+    look: 柄と体型を全ショットで固定。参照画像を使う。元の猫は使わない。
+    voice: 低い声。約100〜130Hz。推定。
+    certainty: 推定
+  - id: polite
+    role: 丁寧語の猫。
+    look: 別の柄。全ショットで固定。
+    voice: 落ち着いた声。約110〜130Hz。推定。
+    certainty: 推定
+  - id: human
+    role: 飼い主。オチで短く出る。話の中心にしない。
+    look: 髪と服を固定。顔は参照画像。元の人物は使わない。
+    voice: 女性の声。約250〜330Hz。推定。
+    certainty: 推定
+timeline:
+  - id: hook
+    start_s: 0
+    end_s: 3
+    picture: 寄り。対立か異常が絵で分かる。題字なし。黒画面にしない。
+    speech: 対立の一言。具体は入力。
+    camera: 低い位置からの寄り。動きは少ない。
+    certainty: 仕様どおり（伸びた回の共通）
+  - id: argument
+    start_s: 3
+    end_s: 30
+    picture: 1セリフ1ショット。室内の1場面。
+    speech: 掛け合い。具体は入力。
+    camera: 寄り、肩越し。2〜6秒。
+    certainty: 推定（秒の区切りは825k回の例）
+  - id: punch
+    start_s: 30
+    end_s: 45
+    picture: オチ。態度が急に変わる。笑顔で終わる。
+    speech: 短いオチ。具体は入力。
+    camera: 固定に近い。
+    certainty: 推定
+subtitle:
+  enabled: true
+  font: 白ゴシック
+  edge: 細い影
+  place: 画面の下から約30%。中央やや下。1行。
+  content: そのショットの台詞をそのまま。元動画の文は使わない。
+  certainty: 仕様どおり
+title_band:
+  enabled: false
+watermark:
+  text: 自分のアカウント名
+  places: 上約9%と中段約68%の2か所。半透明。
+  note: 元の＠はコピーしない。
+audio:
+  voice: 口の動きと声が合う。生成モデル内の音声と推定。
+  bgm: 不明
+  sfx: 環境音あり。曲としては確認できず。
+  sound_name: 原声
+  certainty: 推定
+hashtags:
+  pattern: 一言の題と、猫の暮らしタグ。
+  examples_are_not_to_copy: ["#猫のいる生活", "#猫", "#猫のいる暮らし", "#ペット", "#猫好きさんと繋がりたい"]
+  certainty: 仕様どおり
+cta:
+  in_video: なし
+  in_caption: なし
+cuts:
+  rule: 1セリフ＝1ショット
+  shot_s: "2〜6秒"
+edit:
+  - ショットをつなぐ
+  - 白字幕を下30%に焼く
+  - 透かしを2か所
+unknowns:
+  - BGM
+  - 生成ツール（透かしは見えない）
+  - 口パクが生成内か後付けか
