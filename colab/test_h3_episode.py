@@ -41,6 +41,7 @@ from h3_episode import (  # noqa: E402
     PLANTED_PACE_CLAUSE,
     LOWER_TO_FLOOR_CLAUSE,
     WALL_SET_CLAUSE,
+    HIPS_BACK_ONCE_CLAUSE,
     TOILET_SIT_CLAUSE,
     SIDE_LIE_JOIN_CLAUSE,
     SIDE_LIE_SETTLE_CLAUSE,
@@ -1889,8 +1890,11 @@ def test_hospital_invite_pose_and_toilet_and_skip():
         assert "profile side view" in cam, bid
         assert "side-rear" not in cam, bid
         assert "turns the same way" not in act, bid
+        assert extra_lora_entries(beat) == []
+        press_b = next(b for b in fours["beats"] if b["id"] == f"{bid}-press")
+        assert extra_lora_entries(press_b) == []
         assert "siderear" not in extra_keys(beat)
-        assert "siderear" not in extra_keys(next(b for b in fours["beats"] if b["id"] == f"{bid}-press"))
+        assert "siderear" not in extra_keys(press_b)
         assert extra_lora_entries(next(b for b in fours["beats"] if b["id"] == f"{bid}-in"))[0] == ("siderear", 0.8)
         assert "doggy" not in extra_keys(beat)
     fours_drop = next(b for b in fours["beats"] if b["id"] == "12-exit-drop")
@@ -6108,6 +6112,8 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "near half" in lie["action"].lower()
     assert "far half" in lie["action"].lower()
     assert "toward the camera" in lie["action"].lower()
+    assert "upper knee rises toward the camera" in lie["action"].lower()
+    assert "upper thigh opens wide" in lie["action"].lower()
     sidekiss = next(b for b in ride["beats"] if b["id"] == "04-tsuno-sidekiss")
     assert sidekiss.get("connect") == "chain"
     assert "front from the doorway" not in sidekiss["camera"].lower()
@@ -6333,7 +6339,11 @@ def test_hospital_siderear_keeps_the_join_visible():
     seat = next(b for b in fours["beats"] if b["id"] == "06-doggy")
     peak = next(b for b in fours["beats"] if b["id"] == "06-doggy-peak")
     walk = next(b for b in fours["beats"] if b["id"] == "06-doggy-walk")
-    assert extra_lora_entries(seat) == [("anuspussy", 0.4), ("mystic", 0.5)]
+    assert extra_lora_entries(seat) == []
+    closed = next(b for b in fours["beats"] if b["id"] == "06-doggy-close")
+    assert "penis" not in extra_keys(closed)
+    assert HIPS_BACK_ONCE_CLAUSE in build_beat_prompt(fours, closed)
+    assert PLANTED_PACE_CLAUSE not in build_beat_prompt(fours, closed)
     assert extra_lora_entries(peak)[0] == ("siderear", 0.8)
     assert extra_lora_entries(peak)[1] == ("anuspussy", 0.4)
     entered = next(b for b in fours["beats"] if b["id"] == "06-doggy-in")
@@ -6342,6 +6352,7 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert entered.get("steps") == 8 and entered.get("turbo") is False
     assert "lowers her chest and cheek" in seat["action"].lower()
     press = next(b for b in fours["beats"] if b["id"] == "06-doggy-press")
+    assert extra_lora_entries(press) == []
     assert "glans stays pressed" in press["action"].lower()
     assert "walks in from the left" not in seat["action"].lower()
     assert "travels into the anus" in entered["action"].lower()

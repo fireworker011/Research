@@ -26,7 +26,8 @@
 
 - トイレのディルドは Solo Dildo H3（`h3_base_dildo_v1.0_9250.safetensors`、1.0、トリガー無し）。Colab の名前は「トイレ・ディルド」
 - 壁立ちバックは set → `-in` → `-peak` → `-close`。角は `04-tsuno-hold` → `04-tsuno-in`
-- 四つん這いの下ろす拍と `-press`、壁立ちの set、後ろアナルの set と behind と gape は、行為の LoRA（siderear / jacko）を積まない
+- 四つん這いの下ろす拍と `-press` は LoRA を積まない。入れる `-in` と peak から siderear。`-close` は penis も外す。腰は冒頭に一度だけ後ろへ出て、そのあと止まる
+- 角の横寝は、あやの上の膝がカメラへ上がり、太ももが開いてマンコが竿に向く。lie から peak まで
 - 角の横寝は窓側の奥の長辺。あやは手前、少し左。亀頭がマンコに当たってから ride で入れる
 - 個室へ歩いて座る `04-toilet-toy` は植え付けの足止めを外す
 

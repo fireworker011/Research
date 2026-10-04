@@ -531,6 +531,13 @@ LOWER_TO_FLOOR_CLAUSE = (
 )
 # Side-lie on the sickroom bed. Planted pace freezes the pair on the opening spot.
 # Wall stand set. Planted pace forbids the turn to the wall.
+# One backward leave, then the hips stay. "Only hips move" keeps a thrust going.
+HIPS_BACK_ONCE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "The hips travel backward once at the opening of the shot and then stay still on that mark. "
+    "The hands stay where they are. The feet stay on the floor. "
+    "The pair stays on this same floor spot. The camera holds."
+)
 WALL_SET_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "Aya turns from the opening pose to the grey wall in one continuous move and settles into the pose there. "
@@ -5704,6 +5711,8 @@ def build_beat_prompt(
             desc.append(LOWER_TO_FLOOR_CLAUSE)
         elif "turns to the grey wall in one continuous move" in action_txt.lower():
             desc.append(WALL_SET_CLAUSE)
+        elif "moves the hips back once" in action_txt.lower() and "hips stay back" in action_txt.lower():
+            desc.append(HIPS_BACK_ONCE_CLAUSE)
         elif TOILET_SIT_RE.search(action_txt):
             desc.append(TOILET_SIT_CLAUSE)
         elif (
