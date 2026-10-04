@@ -3526,7 +3526,6 @@ HOSPITAL_WALK_IDS = frozenset({
     "04-tsuno-meet",
     "07-kana",
     "07-run",
-    "10-shino",
     "11-door",
 })
 HOSPITAL_WALK_ID_RE = re.compile(r"(?:-walk|-out|-run|-slip)$")
@@ -3600,7 +3599,7 @@ def _delayed_gap_camera(name: str) -> str:
 _SPOT_POSE = {
     "rei": "Rei WALKS IN from the RIGHT edge and STOPS ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
     "kana": "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm, erect penis up, and STOPS mid-corridor facing Aya, full body including feet. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her.",
-    "shino": "Shino WALKS IN from the RIGHT edge and STOPS, stooping at the lit doorway at the RIGHT edge, full body including feet, the shaft at the front of the groin.",
+    "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, head ducked under the tubes, full body including feet, the shaft at the front of the groin.",
     "gin": "Gin ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
     "tsuno": "Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
 }
@@ -3637,12 +3636,30 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             who = " and ".join(names)
             spot_id = f"{bid}-spot"
             sfx = "Quiet corridor, fluorescent buzz, one footstep, HVAC"
+            spot_loco = "walk"
             if added == ["tsuno"]:
                 action = _delayed_gap_walk("Tsuno")
                 camera = _delayed_gap_camera("Tsuno")
             elif added == ["gin"]:
                 action = _delayed_gap_walk("Gin")
                 camera = _delayed_gap_camera("Gin")
+            elif added == ["shino"]:
+                action = (
+                    "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, "
+                    "a short step in front of the lit doorway. "
+                    "Shino is already stooping at the lit doorway at the RIGHT edge, head ducked under the tubes, full body including feet. "
+                    "The erect 35cm stays at the front of the groin, pointing FORWARD. The buttocks stay bare. "
+                    "Aya stays on this same linoleum spot, a short step in front of Shino. Mouths stay apart. "
+                    "Last frame: Shino still stooping at the doorway, Aya still a short step in front, both full body including feet. "
+                    "Motion starts at frame one. Brisk real-time."
+                )
+                camera = (
+                    "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
+                    "Shino is already stooping at the lit doorway at the RIGHT edge, head under the tubes. "
+                    "Aya stays a short step in front of Shino. The doorway stays behind Shino."
+                )
+                sfx = "Quiet corridor, fluorescent buzz, HVAC"
+                spot_loco = "planted"
             elif added == ["kana"]:
                 action = (
                     "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, facing the RIGHT. "
@@ -3686,7 +3703,7 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
                 "sfx": sfx,
                 "music": beat.get("music") or "Bass holds",
                 "hud": dict(beat.get("hud") or {}),
-                "loco": "walk",
+                "loco": spot_loco,
                 "extra_loras": [],
                 "trigger": "",
             })
@@ -5490,6 +5507,44 @@ def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     return bool(_KISS_FRAME_RE.search(blob))
 
 
+AYA_NEW_PLEASURE_FACE = (
+    "At the moment the shaft seats, Aya's face shows overwhelmed joy at a new pleasure. "
+    "Eyes half-closed, brows knit, cheeks flushed, mouth wide open. "
+    "A continuous string of saliva keeps dripping from the tongue."
+)
+
+
+def _aya_new_pleasure_seat(ep: dict[str, Any], beat: dict[str, Any]) -> bool:
+    """First pussy seating. Aya receiving, or Gin taking Aya's shaft. Peaks stay as written."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return False
+    low = str(beat.get("action") or "").lower()
+    if "overwhelmed joy at a new pleasure" in low:
+        return False
+    if "hold still joined at the base" not in low:
+        return False
+    if "already joined" in low or "already buried" in low or "each inward" in low:
+        return False
+    seat = (
+        "travels into the pussy" in low
+        or "travels into gin's pussy" in low
+        or "travels into aya's pussy" in low
+        or "travels into the hairless pussy" in low
+    )
+    if not seat:
+        return False
+    cast = {str(c) for c in (beat.get("cast") or [])}
+    blob = low + " " + " ".join(sorted(cast))
+    if "aya" not in blob:
+        return False
+    if "gin" in blob and ("gin's pussy" in low or "into gin" in low or "grown" in low):
+        return True
+    named_other = ("miki's pussy", "rei's pussy", "kana's pussy", "shino's pussy", "tsuno's pussy")
+    if any(part in low for part in named_other):
+        return False
+    return "travels into the pussy" in low or "travels into the hairless pussy" in low
+
+
 def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
     """Face-safe oral and kiss cameras, side-on rides, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
@@ -5707,6 +5762,8 @@ def build_beat_prompt(
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
     desc.append(action_line + ".")
+    if _aya_new_pleasure_seat(ep, beat):
+        desc.append(AYA_NEW_PLEASURE_FACE)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)

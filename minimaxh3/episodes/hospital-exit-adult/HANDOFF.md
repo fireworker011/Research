@@ -136,11 +136,11 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。blowjob 0.8 + mystic 0.5 + penis 0.45。トリガーは `bl0w_j0b`。横挿入と寝室アナルの両方。STANDS は書かない
 - wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
 - spit cut: あやがしゃがみから両足で立つ。角はマットレスの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない
-- beckon chain: 角が先に縁からマットレスへ滑って横になる。空いた手がベッドへ手招き。あやはベッド横の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
-- lie cut: あやが膝をマットレスに上げ、腰を下ろして角の前で同じ向きに横になる。上の膝は窓へ上がる。下の脚はマットレス。胸は窓。角の近い腕はあやの首の下。もう一方の手は上がった腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない。参照は Drive `1QLLFwFEMCtXvnghJaXiRp6DadqzdaluM`
+- beckon chain: 角はベッドの右半分のマットレスの上で横になる。縁のそばには置かない。頭は画面の左、足は右。胸は窓。空いた手がベッドへ手招き。あやは手前の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
+- lie cut: あやは手前（カメラ側）、角は奥（窓側）。頭は二人とも画面の左、足は右。背中は角の胸に密着。膝をマットレスに上げ、腰を下ろして角の前で同じ向きに横になる。上の膝は窓へ上がる。下の脚はマットレス。角の近い腕はあやの首の下。もう一方の手は上がった腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない。参照は Drive `1QLLFwFEMCtXvnghJaXiRp6DadqzdaluM`
 - sidekiss chain: 胸は窓のまま、顎だけ肩越しに戻して口が付く。上の膝は窓へ上がったまま。角の手はその腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
 - ride 10秒 cut: 横のまま。上の膝は窓。下の脚はマットレス。角の近い手がその腿を持つ。角の腰がマットレスに沿って一度前へ。太ももの線に沿って一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。口は上がった腿の横で近い。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
-- peak chain: 同じ膝と手のまま、口は付いたまま。角の腰がマットレスに沿って後ろへ戻り、竿は上がった腿の外側、亀頭はマンコに当たる。それから前へ戻して根元。その抜き差しをもう二回。腰は密着に戻る。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
+- peak chain: 同じ膝と手のまま。あやは窓向きのまま、腰は角の腹へ押し戻したまま。角の腰はマットレスに沿って前後。戻るときは竿の一部が腿の横に出て、亀頭はマンコの中。前へは根元まで。腿の上に竿を置いて休まない。そのあと密着のまま中。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
@@ -271,7 +271,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_v2.safetensors`。Civitai 2974434、version 3371009、fileId 3259145。カードの推奨はアニメ静止画で 0.9–1.2。参照動画は 1.0 で絵になる。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
 
-四つん這いの in / peak と、壁立ちバックの in / peak（角の立ちバックも含む）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は画面左から一歩ずつ入り、右手で亀頭を肛門へ運び、手を離してから腰を一度前へ。根元で HOLD。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）の映像は膣。台本の壁立ちは肛門。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭を肛門へ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。肛門は埋まったまま。マンコは下の閉じた割れ目。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
+四つん這いの in / peak と、壁立ちバックの in / peak（角の立ちバックも含む）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は最初から RIGHT に立っている。左から歩いて入らない。挿入前の拍は閉じた肛門に亀頭を押し当てて HOLD。steps 8、turbo false。次の拍で腰が一度前へ出て、閉じた輪が竿に沿って開き、根元まで入って HOLD。steps 8、turbo false。id は `03-kiss` と `03-kiss-in`、`06-doggy` と `06-doggy-in`、`09-join` と `09-join-in`、`12-exit` と `12-exit-in`。角の四つん這いは `04-tsuno-press` のあと `04-tsuno-in`。挿入の拍は結合が画面中央、開いた太もものあいだに竿の線。中出しの peak は steps 8、turbo false。その次の `-close` で竿が一度抜け、開いた輪が脈打って小さく閉じる。thrust は積まない。頭は一つ、腕は二本、脚は二本。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）の映像は膣。台本の壁立ちは肛門。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭を肛門へ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。肛門は埋まったまま。マンコは下の閉じた割れ目。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
 
 灰色の誘う後背は、これまでどおり `SIDE-REAR view. The frame holds a clear view of the shaft where it meets the pussy.` 歩き、顔射、キス、騎乗、M字、角の後ろアナル、ネルソン、背後抱きの meet、寝室スプーン、犬、和式、洋式 pee、寝室 Jack-O にはこのカメラを足さない。古い `doggy`（fileId 3202556）は登録のまま、extra には積まない。action に `Doggy style` は書かない。
 
@@ -385,9 +385,9 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 ## 便器の定義と 2026-10-03 の直し
 
-便器は三択。洋式汚物まみれは小便・オナニー・ディルド。白い磁器に茶色の汚れ。和式汚物まみれは和式排出と和式ミキ。床と同じ高さの和式パンに茶色の汚れ。有機物植物の洋式は触手だけ。植物のボウルに粘液。触手は有機物便器以外に出さない。ディルドは洋式汚物の便座の横。右手で持つ。吸盤も植物の口も使わない。extra は `solodildo` 0.7。ファイル `dildoing-mh3-e60-az420.safetensors`。Civitai 2903074、version 3282820、fileId 3167066。カードに強度の数字は無いので 0.7 のまま。トリガーは `pumping a dildo insider her vagina`。洋式のディルドは膣をポンプする。
+便器は三択。洋式汚物まみれは小便・オナニー・ディルド。白い磁器に茶色の汚れ。和式汚物まみれは和式排出と和式ミキ。床と同じ高さの和式パンに茶色の汚れ。有機物植物の洋式は触手だけ。植物のボウルに粘液。触手は有機物便器以外に出さない。ディルドは洋式汚物の便座の横。右手で持つ。吸盤も植物の口も使わない。extra は `solodildo` 0.7 と mystic。penis は積まない。ファイル `dildoing-mh3-e60-az420.safetensors`。Civitai 2903074、version 3282820、fileId 3167066。カードに強度の数字は無いので 0.7 のまま。トリガーは `pumping a dildo insider her vagina`。洋式のディルドは膣をポンプする。入れる拍 `04-toilet` と上下の拍 `04-toilet-pump` は steps 8、turbo false。ディルドは同じ太い竿形のまま、右手は付け根を持つ。1拍に拾う・入れる・上下・絶頂を重ねない。便器のボウル、座面、タンクは床に固定。あやは肩越しに快楽の顔を見せる。小便の `04-toilet` も同じ固定と、酔った喜びの顔。
 
-顔射は `cumfacial` 0.8。ファイル `cum_facial_000005400.safetensors`。FunPhantom version 3290895、fileId 3175377。公開名は `face_cum_000001000.safetensors`。トリガーは `cmst` を先に置く。ページの開始帯は 0.75–0.85。ギンの口は先に竿が口の外へ出て、白い筋は亀頭の先の尿道から顔と舌へ。かなの顔射と角の顔射も同じ LoRA。
+顔射は `cumfacial` 0.8。ファイル `cum_facial_000005400.safetensors`。FunPhantom version 3290895、fileId 3175377。公開名は `face_cum_000001000.safetensors`。トリガーは `cmst` を先に置く。ページの開始帯は 0.75–0.85。ギンの口は先に竿が口の外へ出て、白い筋はギンの顔と舌だけ。あやの口は閉じ、あやの顔はきれいなまま RIGHT の端。かなの顔射と角の顔射も同じ LoRA。あやの顔へかける顔射はかなと角のまま。`10-shino-spot` は角ではなく、しのが入口で最初から前かがみ。頭は管の下。右から歩いて入らない。`10-shino` の誘うはキスしない。あやはしのの一歩手前に留まる。扉はしのの後ろ。歩き拍から外したので、廊下の先へ進まない。マンコへ入る着座と、ギンがあやの竿を入れる着座は、着いた瞬間のあやの顔を足す。目は半目、頬は赤い、口は開く、涎が舌から切れずに垂れる。未知の快楽の喜び。肛門の四つん這いには足さない。
 
 ギンの Jack-O の set は、あやが先にゆっくり立ち、それからギンが姿勢を作る。挿入はしない。behind は尻の後ろへ回り、同じ方向を向いてから立つ。腕は2本。anal で入れる。床の Jack-O も、竿役は尻の後ろへ回ってから同じ方向を向く。
 
