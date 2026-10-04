@@ -524,6 +524,11 @@ PLANTED_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
     "Only hips, hands, and mouths move. The feet do not take a step. The pair does not travel."
 )
+LOWER_TO_FLOOR_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "The body lowers from the opening pose onto the floor in one continuous move. "
+    "Both feet stay on the floor. The pair stays on this same floor spot."
+)
 # A chest carry is not a planted stand and not a held-leg lift. "Feet planted" draws the feet down.
 CARRY_LIFT_RE = re.compile(r"LIFTS Aya against", re.I)
 CARRY_LIFT_PACE_CLAUSE = (
@@ -5668,7 +5673,9 @@ def build_beat_prompt(
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
         bid_now = str(beat.get("id") or "")
-        if bid_now == "04-gin-jupo":
+        if "lowers her chest and cheek" in action_txt.lower():
+            desc.append(LOWER_TO_FLOOR_CLAUSE)
+        elif bid_now == "04-gin-jupo":
             desc.append(GIN_ORAL_PACE_CLAUSE)
         elif bid_now == "04-gin-mouth":
             desc.append(GIN_MOUTH_PACE_CLAUSE)

@@ -39,6 +39,7 @@ from h3_episode import (  # noqa: E402
     MUNDANE_CLAUSE,
     PLANTED_CLAUSE,
     PLANTED_PACE_CLAUSE,
+    LOWER_TO_FLOOR_CLAUSE,
     PEE_STILL_CLAUSE,
     NELSON_PLANTED_CLAUSE,
     GAMEPLAY_PACE_CLAUSE,
@@ -1564,7 +1565,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(238.4, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(269.0, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -2589,7 +2590,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 52
+    assert len(chosen["beats"]) == 53
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -2739,7 +2740,7 @@ def test_hospital_invite_finale_follows_the_last_partner():
     assert "shino" not in low and "35cm" not in low and "rei" not in low
     assert extra_lora_entries(miki["beats"][-1]) == [("kiss", 0.5)]
     assert "french kiss" in low and "corners of the mouth" in low
-    seat = next(b for b in miki["beats"] if b["id"] == "03-kiss")
+    seat = next(b for b in miki["beats"] if b["id"] == "03-kiss-press")
     peak = next(b for b in miki["beats"] if b["id"] == "03-kiss-peak")
     drop = next(b for b in miki["beats"] if b["id"] == "03-kiss-drop")
     assert "tongue hangs out" in seat["action"].lower()
@@ -3638,8 +3639,8 @@ def test_hospital_clip_failures_are_rewritten():
     assert "miki" in (walk.get("fade_cast") or [])
     assert "gone from frame one" not in walk["action"].lower()
     kiss_prompt = build_beat_prompt(invite, kiss)
-    assert PLANTED_CLAUSE in kiss_prompt
-    assert PLANTED_PACE_CLAUSE in kiss_prompt
+    assert LOWER_TO_FLOOR_CLAUSE in kiss_prompt
+    assert PLANTED_PACE_CLAUSE not in kiss_prompt
     assert GAMEPLAY_PACE_CLAUSE not in kiss_prompt
     assert "idle breathing" not in kiss_prompt.lower()
     assert "unless the action names running or walking" not in kiss_prompt.lower()
@@ -6263,17 +6264,20 @@ def test_hospital_siderear_keeps_the_join_visible():
     entered = next(b for b in fours["beats"] if b["id"] == "06-doggy-in")
     assert seat.get("steps") == 8 and seat.get("turbo") is False
     assert entered.get("steps") == 8 and entered.get("turbo") is False
-    assert "glans stays pressed" in seat["action"].lower()
+    assert "lowers her chest and cheek" in seat["action"].lower()
+    press = next(b for b in fours["beats"] if b["id"] == "06-doggy-press")
+    assert "glans stays pressed" in press["action"].lower()
     assert "walks in from the left" not in seat["action"].lower()
     assert "travels into the anus" in entered["action"].lower()
     assert "rim stretches tight" in entered["action"].lower()
+    assert "rim stays sealed" in entered["action"].lower()
     assert "walks in from the left" not in entered["action"].lower()
     closed = next(b for b in fours["beats"] if b["id"] == "06-doggy-close")
     assert closed.get("steps") == 8 and closed.get("turbo") is False
     assert "ring finishes small and closed" in closed["action"].lower()
     assert "shaft stays outside" in closed["action"].lower()
     assert "thrust" not in extra_keys(closed)
-    assert "right hand" in seat["action"].lower()
+    assert "right hand" in press["action"].lower()
     assert "siderear" not in extra_keys(walk)
     assert "anuspussy" not in extra_keys(walk)
     assert "profile side view" in seat["camera"].lower()
