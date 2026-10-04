@@ -267,6 +267,28 @@ def next_ready_job(root: Path | str, mode: str | None = None) -> Path | None:
     return hits[0]
 
 
+def next_bot_job(root: Path | str, mode: str | None = None) -> Path | None:
+    """Queued work, then a job marked running that never left its old folder."""
+    root = Path(root)
+    want = normalize_mode(mode) if mode else None
+
+    def matches(folder: Path) -> bool:
+        try:
+            job = load_job(folder)
+        except Exception:
+            return False
+        return not want or normalize_mode(job.get("mode")) == want
+
+    queued = [p for p in find_jobs(root, status="queued") if matches(p)]
+    if queued:
+        return queued[0]
+    running = [p for p in find_jobs(root, status="running") if matches(p)]
+    stuck = [p for p in running if p.parent.name != "running"]
+    if stuck:
+        return stuck[0]
+    return running[0] if running else None
+
+
 def _park_existing(dest_dir: Path) -> Path | None:
     """A crashed run leaves the same folder name. Move it aside so the new job can enter."""
     if not dest_dir.exists():

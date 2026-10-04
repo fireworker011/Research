@@ -14,6 +14,7 @@ from h3_i2v_job import (
     forbidden_hits,
     load_job,
     move_job,
+    next_bot_job,
     next_ready_job,
     save_job,
     set_status,
@@ -75,6 +76,23 @@ def test_move_job_parks_leftover_same_name(tmp_path):
     parked = list((root / "running").glob("dance-01.stopped-*"))
     assert len(parked) == 1
     assert parked[0].is_dir()
+
+
+def test_stuck_running_job_in_queued_is_picked(tmp_path):
+    root = ensure_drive_tree(tmp_path / "drive")
+    leftover = root / "running" / "dance-01"
+    leftover.mkdir(parents=True)
+    old = default_job(id="dance-01", mode="r2v")
+    old["status"] = "running"
+    save_job(leftover, old)
+    stuck = root / "queued" / "dance-01"
+    stuck.mkdir()
+    (stuck / "source.jpg").write_bytes(b"fake-jpeg")
+    (stuck / "motion.mp4").write_bytes(b"fake-mp4")
+    job = default_job(id="dance-01", mode="r2v")
+    job["status"] = "running"
+    save_job(stuck, job)
+    assert next_bot_job(root, "r2v") == stuck
 
 
 def test_stage_picture1_and_8_9(tmp_path):

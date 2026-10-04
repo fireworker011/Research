@@ -21,6 +21,7 @@ from h3_i2v_job import (
     find_jobs,
     load_job,
     move_job,
+    next_bot_job,
     normalize_mode,
     resolve_job_image,
     resolve_job_video,
@@ -56,11 +57,7 @@ def _pick_folder(drive_root: Path) -> Path | None:
                 break
     if folder is None:
         want = (os.environ.get("H3_JOB_MODE") or "").strip()
-        queued = find_jobs(drive_root, status="queued")
-        if want:
-            want = normalize_mode(want)
-            queued = [p for p in queued if normalize_mode(load_job(p).get("mode")) == want]
-        folder = queued[0] if queued else None
+        folder = next_bot_job(drive_root, want or None)
     if folder is None:
         if os.environ.get("H3_BOT_IDLE_OK") == "1":
             return None
@@ -169,10 +166,11 @@ def main() -> int:
     if job.get("status") == "queued":
         set_status(job, "running")
         save_job(folder, job)
-        folder = move_job(folder, "running", drive_root)
-        job = load_job(folder)
     elif job.get("status") != "running":
         raise SystemExit(f"job status must be queued/running, got {job.get('status')}")
+    if folder.parent.name != "running":
+        folder = move_job(folder, "running", drive_root)
+        job = load_job(folder)
 
     mode = normalize_mode(job.get("mode"))
 
