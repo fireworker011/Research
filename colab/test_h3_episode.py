@@ -1564,14 +1564,14 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(193.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(207.8, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
         ui = next(b for b in ep["beats"] if b["id"] == bid)
         assert ui["menu"]["selected"] == 2
         assert ui["hud"]["hint"] == "□ 誘う"
-    doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
+    doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy-in")
     _assert_insertion_direction(doggy["action"], build_beat_prompt(ep, doggy))
     assert "chest and cheek stay down" in doggy["action"].lower()
     assert "between the open thighs" in doggy["action"].lower()
@@ -2476,6 +2476,11 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "hold still joined at the base" in low
     assert "buried to the root" in low
     assert "short vertical moves" in pump["action"].lower()
+    assert "one thick rigid penis shape" in pump["action"].lower()
+    assert fact.get("steps") == 8 and fact.get("turbo") is False
+    assert pump.get("steps") == 8 and pump.get("turbo") is False
+    assert "penis" not in extra_keys(fact)
+    assert "penis" not in extra_keys(pump)
     assert "あ、いく" in pump["action"]
     assert "falls" in gaped["action"].lower()
     assert "wide ring" in gaped["action"].lower()
@@ -2578,7 +2583,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_m_open,rei=invite_nelson,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(chosen, root=HOSPITAL_DIR) == []
-    assert len(chosen["beats"]) == 50
+    assert len(chosen["beats"]) == 51
     fullest = prepare_episode(
         raw,
         story_override="受け入れる",
@@ -6183,6 +6188,10 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     mouth_prompt = build_beat_prompt(gin, mouth, trigger=merge_trigger("", mouth))
     assert "onto gin's face and tongue" in mouth_prompt.lower()
     assert "onto aya's face" not in mouth_prompt.lower()
+    assert "aya's face stays clean" in mouth["action"].lower()
+    assert "drowning in climax" not in mouth["cast_lock"]["aya"].lower()
+    ride = next(b for b in gin["beats"] if b["id"] == "04-gin-ride")
+    assert "overwhelmed joy at a new pleasure" in build_beat_prompt(gin, ride).lower()
     assert "slit" in mouth["action"]
     assert "STANDS" not in mouth["action"]
     assert "STANDS" not in build_beat_prompt(gin, mouth)
@@ -6237,8 +6246,14 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert extra_lora_entries(seat)[1] == ("anuspussy", 0.4)
     assert extra_lora_entries(peak)[0] == ("siderear", 0.8)
     assert extra_lora_entries(peak)[1] == ("anuspussy", 0.4)
-    assert "travels into the anus" in seat["action"].lower()
-    assert "walks in from the left" in seat["action"].lower()
+    entered = next(b for b in fours["beats"] if b["id"] == "06-doggy-in")
+    assert seat.get("steps") == 8 and seat.get("turbo") is False
+    assert entered.get("steps") == 8 and entered.get("turbo") is False
+    assert "glans stays pressed" in seat["action"].lower()
+    assert "walks in from the left" not in seat["action"].lower()
+    assert "travels into the anus" in entered["action"].lower()
+    assert "rim stretches tight" in entered["action"].lower()
+    assert "walks in from the left" not in entered["action"].lower()
     assert "right hand" in seat["action"].lower()
     assert "siderear" not in extra_keys(walk)
     assert "anuspussy" not in extra_keys(walk)

@@ -337,7 +337,7 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "all_fours": {
         "label_ja": "四つん這い",
         "choice_ja": "四つん這い股広げ（迷ったらこれ）",
-        "when_ja": "四つん這いで誘う。挿入根元→パコ中出し→歩きの3本",
+        "when_ja": "四つん這いで誘う。挿入前→挿入根元→パコ中出し→歩きの4本",
         "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる。終わりはあや一人歩き",
         "recommend": True,
     },

@@ -5490,6 +5490,44 @@ def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     return bool(_KISS_FRAME_RE.search(blob))
 
 
+AYA_NEW_PLEASURE_FACE = (
+    "At the moment the shaft seats, Aya's face shows overwhelmed joy at a new pleasure. "
+    "Eyes half-closed, brows knit, cheeks flushed, mouth wide open. "
+    "A continuous string of saliva keeps dripping from the tongue."
+)
+
+
+def _aya_new_pleasure_seat(ep: dict[str, Any], beat: dict[str, Any]) -> bool:
+    """First pussy seating. Aya receiving, or Gin taking Aya's shaft. Peaks stay as written."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return False
+    low = str(beat.get("action") or "").lower()
+    if "overwhelmed joy at a new pleasure" in low:
+        return False
+    if "hold still joined at the base" not in low:
+        return False
+    if "already joined" in low or "already buried" in low or "each inward" in low:
+        return False
+    seat = (
+        "travels into the pussy" in low
+        or "travels into gin's pussy" in low
+        or "travels into aya's pussy" in low
+        or "travels into the hairless pussy" in low
+    )
+    if not seat:
+        return False
+    cast = {str(c) for c in (beat.get("cast") or [])}
+    blob = low + " " + " ".join(sorted(cast))
+    if "aya" not in blob:
+        return False
+    if "gin" in blob and ("gin's pussy" in low or "into gin" in low or "grown" in low):
+        return True
+    named_other = ("miki's pussy", "rei's pussy", "kana's pussy", "shino's pussy", "tsuno's pussy")
+    if any(part in low for part in named_other):
+        return False
+    return "travels into the pussy" in low or "travels into the hairless pussy" in low
+
+
 def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
     """Face-safe oral and kiss cameras, side-on rides, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
@@ -5707,6 +5745,8 @@ def build_beat_prompt(
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
     desc.append(action_line + ".")
+    if _aya_new_pleasure_seat(ep, beat):
+        desc.append(AYA_NEW_PLEASURE_FACE)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
