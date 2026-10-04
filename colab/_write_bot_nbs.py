@@ -109,7 +109,8 @@ from h3_colab_main import bot_prepare, main
 bot_prepare(MODE, Path(DRIVE_ROOT))
 rc = main()
 print("bot exit", rc)
-raise SystemExit(rc)
+if rc:
+    raise SystemExit(rc)
 '''
 
 
@@ -118,7 +119,7 @@ def markdown(mode: str, spec: dict) -> str:
     url = colab_url(path)
     return f"""# {spec["title"]}
 
-Grokbot 専用。人間がセルをいじらない。**コードセルは1本。** 空 inbox は idle で終わってランタイムを手放す。
+Grokbot 専用。人間がセルをいじらない。**コードセルは1本。** 空 inbox は idle で終わる。ランタイムは切らない。
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({url})
 

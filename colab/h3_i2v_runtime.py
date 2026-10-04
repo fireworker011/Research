@@ -635,8 +635,8 @@ def generate_r2v(
 
 
 def maybe_unassign() -> None:
-    if os.environ.get("H3_KEEP_RUNTIME") == "1":
-        print("keep runtime")
+    if os.environ.get("H3_UNASSIGN") != "1":
+        print("ランタイムは切っていません。使い終わったら、ランタイムメニューから切断してください。")
         return
     try:
         from google.colab import runtime
