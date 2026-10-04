@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
@@ -18,7 +19,7 @@ from h3_episode_packs import (  # noqa: E402
     ui_default,
 )
 
-BRANCH = "cursor/h3-hospital-ward-34e4"
+BRANCH = "cursor/hospital-anal-dildo-face-d736"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
@@ -27,7 +28,7 @@ HELPERS = list(EPISODE_HELPERS)
 
 
 def colab_url(path: str) -> str:
-    return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
+    return f"https://colab.research.google.com/github/{REPO}/blob/{quote(BRANCH, safe='')}/{path}"
 
 
 CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（迷ったらそのまま）
@@ -279,7 +280,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/hospital-anal-dildo-face-d736`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
 

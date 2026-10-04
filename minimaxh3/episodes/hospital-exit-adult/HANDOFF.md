@@ -9,9 +9,10 @@
 ## 正本（ここだけを編集する）
 
 - リポジトリ: `fireworker011/Research`
-- ブランチ: `cursor/h3-hospital-ward-34e4`
-- PR: https://github.com/fireworker011/Research/pull/147
-- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-hospital-ward-34e4/minimax_h3_episode_bot.ipynb
+- ブランチ: `cursor/hospital-anal-dildo-face-d736`
+- PR: https://github.com/fireworker011/Research/pull/164
+- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor%2Fhospital-anal-dildo-face-d736/minimax_h3_episode_bot.ipynb
+- ノートの `BRANCH` 初期値はこのブランチ。スラッシュ入りの URL は `%2F` にする。開いたままの Colab は古い欄を保持するので、このノートを開き直す
 - 台本: `minimaxh3/episodes/hospital-exit-adult/episode.json`
 - エンジン: `colab/h3_episode.py` を直したら、同じ内容を `minimaxh3/h3_episode.py` にコピーする。片方だけ直さない
 - Colab 入口: `colab/h3_episode_colab_main.py` と `minimaxh3/h3_episode_colab_main.py` も同様に揃える
