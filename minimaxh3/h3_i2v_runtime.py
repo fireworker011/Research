@@ -129,9 +129,33 @@ def fetch_weight(url: str, dest: Path, min_bytes: int = 1_000_000) -> None:
     tmp.replace(dest)
 
 
+COMFY_REPO = "https://github.com/Comfy-Org/ComfyUI.git"
+
+
+def comfy_checkout_ok(comfy_dir: Path) -> bool:
+    return (comfy_dir / "main.py").is_file()
+
+
+def discard_broken_comfy(comfy_dir: Path) -> bool:
+    """A failed clone leaves the folder without main.py. The next clone cannot reuse it."""
+    if comfy_checkout_ok(comfy_dir) or not comfy_dir.exists():
+        return False
+    shutil.rmtree(comfy_dir)
+    return True
+
+
+def clone_comfy(comfy_dir: Path, run=sh) -> None:
+    if comfy_checkout_ok(comfy_dir):
+        return
+    if discard_broken_comfy(comfy_dir):
+        print("ComfyUI のフォルダが壊れていたので消して取り直す", comfy_dir)
+    result = run(["git", "clone", "--depth", "1", COMFY_REPO, str(comfy_dir)])
+    if result.returncode != 0 or not comfy_checkout_ok(comfy_dir):
+        raise SystemExit("ComfyUI の取得に失敗した。ランタイムを再起動して、このセルをもう一度実行する。")
+
+
 def ensure_comfy(comfy_dir: Path, drive_root: Path, drive_models: Path, *, need_r2v: bool = False) -> None:
-    if not (comfy_dir / "main.py").is_file():
-        sh(["git", "clone", "--depth", "1", "https://github.com/Comfy-Org/ComfyUI.git", str(comfy_dir)])
+    clone_comfy(comfy_dir)
     req = comfy_dir / "requirements.txt"
     if req.is_file():
         sh([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
