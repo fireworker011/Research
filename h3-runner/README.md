@@ -74,21 +74,9 @@ Drive のアカウントは毎回選ぶ。ノートの Drive セルに、その�
 
 既定の FL2VA が置くのは text_encoder + transformer + vae + audio_vae + tokenizer/processor で、プレビューの合計は **144.1GB**。`transformer_ref` は `--task ref2va` のときだけ足す。T2VA と Ref2VA を両方置いた合計はこれまでどおり **210.3GB**。`FL2VA/` と `Ref2VA/`（各 144.1GB の Comfy チェックポイント）は落とさない。
 
-### A. CPU ランタイム（GPU なし）
+ページの先頭に手順がある。CPU で 1-1 から 1-4（Drive、プログラム、道具、重み）。そのあとランタイムを G4 に変え、2-1 と 2-2（Drive をもう一度、動画を焼く）。一番下の比較は本編ではない。
 
-1. ランタイムのタイプを **CPU** にする。
-2. 「A. Drive」セル。
-3. 「A. リポジトリ」セル。ブランチは `cursor/h3-sfw-colab-6dc5`。
-4. 「A. パッケージ」セル。`huggingface_hub` だけ。
-5. 「A. 重み準備」セル（ノートの index 9）。ベースのシャードに続けて、LoRA を `h3-weights/loras/` に置く。既にあるファイルは飛ばす。
-   - Hugging Face: Turbo の ComfyUI bf16、Repair の `Motion_Repair_V2.safetensors`、Combat の `H3_Combat_V2.safetensors`。`HF_TOKEN` はライセンスで 401 のときだけ。
-
-### B. G4（RTX PRO 6000）
-
-1. ランタイムのタイプを **G4 GPU** にする。
-2. 「B. 準備」セル。Drive、`torchao==0.18.0`、リポジトリ。
-3. 「B. 生成」セル。FL2VA 6秒+9秒、steps 9、video shift 6、Turbo 強さ 1.0。`orbis01_fl2va_6s.mp4` が Drive にあればその本はスキップする。
-4. 質の比較は **「B. 比較テスト」** の1セル。6秒、768×1344、seed 0、同じ 6秒プロンプトと `sakura-ref.jpg`。B（Turbo）のあと、Combat のファイルがあれば C と D。D' は B + Repair 0.6 で、Combat が無くても回す。保存先は `マイドライブ/h3-runner/output/test_*.mp4`。A は既存の `orbis01_6s.mp4`。各段（読み込み、テキストエンコード、ノイズ除去、VAE）の秒数を表にする。1本が落ちても次へ進む。Colab の GPU 実行はこのリポジトリ側ではしない。
+重みは Hugging Face。Turbo の ComfyUI bf16、Repair の `Motion_Repair_V2.safetensors`、Combat の `H3_Combat_V2.safetensors`。`HF_TOKEN` はライセンスで 401 のときだけ、セルには書かない。
 
 ## コマンド
 
