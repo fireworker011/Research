@@ -1849,6 +1849,13 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "grey wall" in kiss_stand["action"].lower()
     assert "moves the hips forward once" in kiss_stand["action"].lower()
     assert "center of the frame" in kiss_stand["camera"].lower()
+    assert "both eyes look toward the camera" in kiss_stand["action"].lower()
+    assert "rim stretches tight" in kiss_stand["action"].lower()
+    wall_close = next(b for b in stand["beats"] if b["id"] == "03-kiss-close")
+    assert "drips toward the floor" in wall_close["action"].lower()
+    assert "finishes as a small closed ring" in wall_close["action"].lower()
+    assert "siderear" not in extra_keys(wall_close)
+    assert "jacko" not in extra_keys(wall_close)
     fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
     for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
         beat = next(b for b in fours["beats"] if b["id"] == bid)
@@ -2612,7 +2619,7 @@ def test_hospital_full_form_stays_under_beat_cap():
         scenes_override="miki=invite_ride,rei=invite_ride,kana=invite_ride,shino=invite_ride",
     )
     assert validate_episode(fullest, root=HOSPITAL_DIR) == []
-    assert len(fullest["beats"]) == 54
+    assert len(fullest["beats"]) == 55
     assert len(fullest["beats"]) <= MAX_BEATS
 
 
@@ -6436,8 +6443,10 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         behind = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-behind")
         anal = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-anal")
         assert set_b.get("connect") == "cut"
-        assert extra_lora_entries(set_b)[0] == ("jacko", 0.8)
-        assert extra_lora_entries(behind)[0] == ("jacko", 0.8)
+        assert "jacko" not in extra_keys(set_b)
+        assert "jacko" not in extra_keys(behind)
+        assert ("mystic", 0.5) in extra_lora_entries(set_b)
+        assert ("penis", 0.45) in extra_lora_entries(set_b)
         assert extra_lora_entries(anal)[0] == ("jacko", 0.7)
         assert "doggy" not in extra_keys(set_b) and "doggy" not in extra_keys(anal)
         for beat in (set_b, behind):
@@ -6458,7 +6467,12 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         cum = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-cum")
         assert extra_lora_entries(cum)[0] == ("jacko", 0.65)
         assert "あ、いく" in cum["action"]
-        assert "wide ring" in next(b for b in jo["beats"] if b["id"] == f"{base}-jo-gape")["action"].lower()
+        gape = next(b for b in jo["beats"] if b["id"] == f"{base}-jo-gape")
+        assert "wide ring" in gape["action"].lower()
+        assert "drips toward the floor" in gape["action"].lower()
+        assert "jacko" not in extra_keys(gape)
+        assert ("anuspussy", 0.4) in extra_lora_entries(gape)
+        assert gape.get("steps") == 8 and gape.get("turbo") is False
     gin = prepare_episode(raw, gin_override="灰色・後ろアナル")
     gin_ids = [b["id"] for b in gin["beats"] if str(b["id"]).startswith("04-gin")]
     assert gin_ids[:6] == [
