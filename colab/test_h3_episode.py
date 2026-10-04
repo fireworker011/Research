@@ -40,6 +40,8 @@ from h3_episode import (  # noqa: E402
     PLANTED_CLAUSE,
     PLANTED_PACE_CLAUSE,
     LOWER_TO_FLOOR_CLAUSE,
+    SIDE_LIE_JOIN_CLAUSE,
+    SIDE_LIE_SETTLE_CLAUSE,
     PEE_STILL_CLAUSE,
     NELSON_PLANTED_CLAUSE,
     GAMEPLAY_PACE_CLAUSE,
@@ -6029,13 +6031,22 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     lie = next(b for b in ride["beats"] if b["id"] == "04-tsuno-lie")
     assert "front from the doorway" not in lie["camera"].lower()
     assert "lowers her hip onto the mattress" in lie["action"].lower()
-    assert "outside along aya's thigh" in lie["action"].lower()
+    assert "glans of the erect ashen-gray 24cm meets aya's hairless pussy" in lie["action"].lower()
+    assert "shaft stays outside" in lie["action"].lower()
+    assert "short shift toward the left" in lie["action"].lower()
+    beckon = next(b for b in ride["beats"] if b["id"] == "04-tsuno-beckon")
+    assert "far long edge nearest the window" in beckon["action"].lower()
+    beckon_prompt = build_beat_prompt(ride, beckon)
+    lie_prompt = build_beat_prompt(ride, lie)
+    assert SIDE_LIE_SETTLE_CLAUSE in beckon_prompt
+    assert PLANTED_PACE_CLAUSE not in beckon_prompt
+    assert SIDE_LIE_JOIN_CLAUSE in lie_prompt
+    assert PLANTED_PACE_CLAUSE not in lie_prompt
     spit = next(b for b in ride["beats"] if b["id"] == "04-tsuno-spit")
     assert spit.get("connect") == "cut"
     assert extra_lora_entries(spit)[:2] == [("kiss", 0.5), ("cumouf", 0.5)]
     assert "front from the doorway" in spit["camera"].lower()
     assert "rises from the squat" in spit["action"].lower()
-    beckon = next(b for b in ride["beats"] if b["id"] == "04-tsuno-beckon")
     assert beckon.get("connect") == "chain"
     assert "profile side-on" in beckon["camera"].lower()
     assert "right half of the mattress" in beckon["action"].lower()
@@ -6047,7 +6058,8 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert sidekiss.get("connect") == "chain"
     assert "front from the doorway" not in sidekiss["camera"].lower()
     assert "chin turns back" in sidekiss["action"].lower()
-    assert "shaft outside" in sidekiss["action"].lower() or "outside along" in sidekiss["action"].lower()
+    assert "shaft stays outside" in sidekiss["action"].lower()
+    assert "glans stays against the hairless pussy" in sidekiss["action"].lower()
     jacko_order = [b["id"] for b in jacko_bed["beats"] if str(b["id"]).startswith("04-tsuno")]
     assert "04-tsuno-spit" not in jacko_order
     assert jacko_order[jacko_order.index("04-tsuno-wait") + 1] == "04-tsuno-jo"

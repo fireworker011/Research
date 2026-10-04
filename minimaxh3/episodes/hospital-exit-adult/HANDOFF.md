@@ -137,11 +137,11 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。blowjob 0.8 + mystic 0.5 + penis 0.45。トリガーは `bl0w_j0b`。横挿入と寝室アナルの両方。STANDS は書かない
 - wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
 - spit cut: あやがしゃがみから両足で立つ。角はマットレスの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない
-- beckon chain: 角はベッドの右半分のマットレスの上で横になる。縁のそばには置かない。頭は画面の左、足は右。胸は窓。空いた手がベッドへ手招き。あやは手前の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
-- lie cut: あやは手前（カメラ側）、角は奥（窓側）。頭は二人とも画面の左、足は右。背中は角の胸に密着。膝をマットレスに上げ、腰を下ろして角の前で同じ向きに横になる。上の膝は窓へ上がる。下の脚はマットレス。角の近い腕はあやの首の下。もう一方の手は上がった腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない。参照は Drive `1QLLFwFEMCtXvnghJaXiRp6DadqzdaluM`
-- sidekiss chain: 胸は窓のまま、顎だけ肩越しに戻して口が付く。上の膝は窓へ上がったまま。角の手はその腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
-- ride 10秒 cut: 横のまま。上の膝は窓。下の脚はマットレス。角の近い手がその腿を持つ。角の腰がマットレスに沿って一度前へ。太ももの線に沿って一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。口は上がった腿の横で近い。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
-- peak chain: 同じ膝と手のまま。あやは窓向きのまま、腰は角の腹へ押し戻したまま。角の腰はマットレスに沿って前後。戻るときは竿の一部が腿の横に出て、亀頭はマンコの中。前へは根元まで。腿の上に竿を置いて休まない。そのあと密着のまま中。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
+- beckon chain: 角は窓側の奥の長辺、ベッドの右半分で横向き。背中は窓、胸は手前。頭は画面の左、足は右。両足はマットレス。手前の半分は空く。空いた手がベッドへ手招き。あやは手前の床に立ったまま。カメラはベッド横の `PROFILE`。全身。植え付けの「足は動かない」はこの拍では外す
+- lie cut: あやは手前（カメラ側）で、角より少し画面の左。同じ向きに横になる。脇はマットレス。背中は角の胸。亀頭はマンコに当たる。竿は外。太ももに沿わせて置かない。膝は両方とも柔らかく曲がる。両足はマットレスの右。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
+- sidekiss chain: 同じ寝位置のまま。胸は手前。顎だけ肩越しに戻して口が付く。亀頭はマンコに当たったまま。竿は外。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
+- ride 10秒 cut: 横のまま。亀頭はすでにマンコに当たっている。角の腰がマットレスに沿って一度前へ。一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
+- peak chain: 同じ寝位置。あやは手前を向いたまま、腰は角の腹へ押し戻したまま。角の腰はマットレスに沿って前後。戻るときは竿の一部が腿の横に出て、亀頭はマンコの中。前へは根元まで。腿の上に竿を置いて休まない。そのあと密着のまま中。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
@@ -394,7 +394,7 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 角の口は、角の手が竿を離してマットレスに残る。あやの口だけが竿に付く。blowjob 0.8 はそのまま。
 
-角の横は、角の頭が画面 LEFT、足が RIGHT、全身がマットレス。あやも頭が LEFT。キスのあいだ竿は外。次の ride で入れる。
+角の横は、角が窓側の奥の長辺で横向き。背中は窓、胸は手前。頭は LEFT、足は RIGHT。あやは手前で同じ向き、角より少し画面の左。脇はマットレス。背中は角の胸。亀頭はマンコに当たる。キスのあいだ竿は外。次の ride で入れる。
 
 立ちバックと四つん這いは肛門。anuspussy 0.40。カメラは横。あやは LEFT 向き。竿役は RIGHT で同じ方向。しのの竿は 35cm。抱擁の生成文、曲げ膝の跨ぎ、誘う最後の look、容姿の竿句も 35cm。lock と同じ。
 

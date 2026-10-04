@@ -529,6 +529,19 @@ LOWER_TO_FLOOR_CLAUSE = (
     "The body lowers from the opening pose onto the floor in one continuous move. "
     "Both feet stay on the floor. The pair stays on this same floor spot."
 )
+# Side-lie on the sickroom bed. Planted pace freezes the pair on the opening spot.
+SIDE_LIE_SETTLE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "Tsuno rolls from the opening pose onto her side on the far long edge of the mattress in one continuous move. "
+    "Both of Tsuno's feet end on the mattress. Aya stays standing on the near side of the bed. "
+    "The pair stays in this same sickroom."
+)
+SIDE_LIE_JOIN_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "Aya lowers from standing onto her side on the near half of the mattress in one continuous move. "
+    "Both of Aya's feet end on the mattress. Tsuno stays on the far long edge. "
+    "The pair stays in this same sickroom."
+)
 # A chest carry is not a planted stand and not a held-leg lift. "Feet planted" draws the feet down.
 CARRY_LIFT_RE = re.compile(r"LIFTS Aya against", re.I)
 CARRY_LIFT_PACE_CLAUSE = (
@@ -5675,6 +5688,13 @@ def build_beat_prompt(
         bid_now = str(beat.get("id") or "")
         if "lowers her chest and cheek" in action_txt.lower():
             desc.append(LOWER_TO_FLOOR_CLAUSE)
+        elif (
+            "far long edge nearest the window" in action_txt.lower()
+            and "lowers her hip onto the mattress" in action_txt.lower()
+        ):
+            desc.append(SIDE_LIE_JOIN_CLAUSE)
+        elif bid_now == "04-tsuno-beckon" and "far long edge nearest the window" in action_txt.lower():
+            desc.append(SIDE_LIE_SETTLE_CLAUSE)
         elif bid_now == "04-gin-jupo":
             desc.append(GIN_ORAL_PACE_CLAUSE)
         elif bid_now == "04-gin-mouth":
