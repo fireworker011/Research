@@ -119,6 +119,7 @@ def test_camera_lock_is_added_once_to_an_existing_prompt():
     assert "CAMERA LOCK" in first
     assert "do not orbit" in first.lower()
     assert "horizontally centered" in first
+    assert "Position, scale, and distance come only from <Video 1>" in first
     second = finalize_prompt(first, ["a.jpg"], ["b.mp4"], 10)
     assert second.count("CAMERA LOCK") == 1
     assert "CAMERA LOCK" in camera_lock_text()

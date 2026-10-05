@@ -23,6 +23,8 @@ try:
 except ImportError:
     _PillowImage = None
 
+from h3_r2v_core import frames as h3_frames
+
 SCHEMA = "h3-i2v-job/v1"
 DRIVE_ROOT_DEFAULT = "/content/drive/MyDrive/minimax-h3-comfyui"
 JOB_DIRS = ("inbox", "queued", "running", "done", "failed", "input", "output", "models")
@@ -454,12 +456,13 @@ def stage_picture1(folder: Path, src: Path, job: dict[str, Any], input_dir: Path
     return name
 
 
-def resample_motion_24(src: Path, dst: Path) -> bool:
-    """H3 reads reference frames as 24 fps. A 30 fps clip sampled as 24 fps jitters."""
+def resample_motion_24(src: Path, dst: Path, frame_count: int) -> bool:
+    """Match H3's 24 fps grid. A shorter clip is cropped and the body slips."""
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
         return False
     dst.parent.mkdir(parents=True, exist_ok=True)
+    count = max(5, int(frame_count))
     result = subprocess.run(
         [
             ffmpeg,
@@ -468,7 +471,10 @@ def resample_motion_24(src: Path, dst: Path) -> bool:
             str(src),
             "-an",
             "-vf",
-            "fps=24,scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2",
+            "fps=24,scale=720:1280:force_original_aspect_ratio=decrease,"
+            "pad=720:1280:(ow-iw)/2:(oh-ih)/2,tpad=stop_mode=clone:stop_duration=8",
+            "-frames:v",
+            str(count),
             "-r",
             "24",
             "-c:v",
@@ -490,7 +496,8 @@ def stage_motion(folder: Path, src: Path, job: dict[str, Any], input_dir: Path) 
     input_dir.mkdir(parents=True, exist_ok=True)
     src = Path(src)
     work = folder / ".motion-24.mp4"
-    if resample_motion_24(src, work):
+    frame_count = h3_frames(float(job.get("duration_s") or 10))
+    if resample_motion_24(src, work, frame_count):
         data = work.read_bytes()
         work.unlink(missing_ok=True)
     else:
