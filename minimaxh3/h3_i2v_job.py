@@ -564,12 +564,43 @@ def adopt_orphan_prompts(root: Path | str, *, slug: str = "t2v") -> list[Path]:
     return made
 
 
+def _inbox_media(inbox: Path, suffixes: set[str]) -> list[Path]:
+    return [
+        p
+        for p in sorted(inbox.iterdir())
+        if p.is_file() and p.suffix.lower() in suffixes and not p.name.startswith(".")
+    ]
+
+
+def _pack_loose_r2v(inbox: Path, still: Path, vid: Path, slug: str) -> Path:
+    jid = new_job_id(slug)
+    folder = inbox / jid
+    folder.mkdir(parents=True, exist_ok=False)
+    (folder / "source.jpg").write_bytes(still.read_bytes())
+    (folder / "motion.mp4").write_bytes(vid.read_bytes())
+    still.unlink()
+    vid.unlink()
+    job = default_job(
+        id=jid,
+        mode="r2v",
+        source_image="source.jpg",
+        source_video="motion.mp4",
+        created_by="inbox-drop",
+    )
+    save_job(folder, job)
+    return folder
+
+
 def adopt_orphan_r2v_folders(root: Path | str, *, slug: str = "r2v") -> list[Path]:
-    """Inbox folder with still + mp4 and no job.json becomes an R2V job."""
+    """Inbox folder, or loose still+video files, become an R2V job."""
     root = Path(root)
     inbox = root / "inbox"
     inbox.mkdir(parents=True, exist_ok=True)
     made: list[Path] = []
+    loose_stills = _inbox_media(inbox, IMAGE_SUFFIXES)
+    loose_vids = _inbox_media(inbox, VIDEO_SUFFIXES)
+    if loose_stills and loose_vids:
+        made.append(_pack_loose_r2v(inbox, loose_stills[0], loose_vids[0], slug))
     for folder in sorted(inbox.iterdir()):
         if not folder.is_dir() or job_path(folder).is_file():
             continue

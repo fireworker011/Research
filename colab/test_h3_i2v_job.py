@@ -20,6 +20,7 @@ from h3_i2v_job import (
     identity_still_bytes,
     resample_motion_24,
     vertical_r2v_canvas,
+    adopt_orphan_r2v_folders,
     ensure_drive_tree,
     forbidden_hits,
     load_job,
@@ -254,6 +255,20 @@ def test_square_still_is_not_cropped() -> None:
     image.save(buf, format="PNG")
     raw = buf.getvalue()
     assert identity_still_bytes(raw) == raw
+
+
+def test_loose_inbox_files_become_one_r2v_job(tmp_path: Path) -> None:
+    root = ensure_drive_tree(tmp_path / "drive")
+    inbox = root / "inbox"
+    (inbox / "source.jpg.JPG").write_bytes(b"img")
+    (inbox / "motion.mp4.mov").write_bytes(b"vid")
+    made = adopt_orphan_r2v_folders(root)
+    assert len(made) == 1
+    assert (made[0] / "source.jpg").read_bytes() == b"img"
+    assert (made[0] / "motion.mp4").read_bytes() == b"vid"
+    assert load_job(made[0])["mode"] == "r2v"
+    assert not (inbox / "source.jpg.JPG").exists()
+    assert not (inbox / "motion.mp4.mov").exists()
 
 
 def test_stage_motion_keeps_bytes_when_resample_fails(tmp_path: Path) -> None:
