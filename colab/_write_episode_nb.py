@@ -49,6 +49,12 @@ __WEATHER_HELP__
 WEATHER = __WEATHER_DEFAULT__  #@param __WEATHER_CHOICES__
 __DIRT_HELP__
 DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
+__LOOK_HELP__
+AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+__ENEMY_KIND_HELP__
+ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
+__ENEMY_LOOK_HELP__
+ENEMY_LOOK_MENU = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
 #@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
 SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
@@ -128,6 +134,9 @@ os.environ["H3_EPISODE_PLACE"] = PLACE
 os.environ["H3_EPISODE_TIME"] = TIME_OF_DAY
 os.environ["H3_EPISODE_WEATHER"] = WEATHER
 os.environ["H3_EPISODE_DIRT"] = DIRT
+os.environ["H3_EPISODE_AYA_LOOK"] = AYA_LOOK
+os.environ["H3_EPISODE_ENEMY_KIND"] = ENEMY_KIND
+os.environ["H3_EPISODE_ENEMY_LOOK_MENU"] = ENEMY_LOOK_MENU
 _seed = str(SEED or "").strip()
 if _seed:
     os.environ["H3_EPISODE_SEED"] = _seed
@@ -144,14 +153,15 @@ os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
 os.environ["H3_EPISODE_DOG"] = DOG
 os.environ["H3_EPISODE_SPECIES"] = SPECIES
-os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
-os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
-os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+_aya_free = AYA_LOOK == "その他"
+os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
-os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
-os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
+os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
-os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip()
+os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip() if ENEMY_LOOK_MENU == "その他" else ""
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -337,6 +347,13 @@ def make_nb() -> dict:
         .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
         .replace("__DIRT_DEFAULT__", json.dumps(ui_default("dirt"), ensure_ascii=False))
         .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
+        .replace("__LOOK_HELP__", form_markdown("look", "あやの見た目 — その他のときだけ下の自由記入"))
+        .replace("__LOOK_DEFAULT__", json.dumps(ui_default("look"), ensure_ascii=False))
+        .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
+        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(ui_default("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — 人間のとき各国の顔。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))

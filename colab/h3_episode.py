@@ -146,10 +146,13 @@ from h3_episode_packs import (
     TIME_MODES,
     TOILET_ENV_BLOCK,
     WEATHER_MODES,
+    LOOK_MODES,
     canonical_camera,
     canonical_camera_distance,
     canonical_dirt,
     canonical_dog,
+    canonical_enemy_kind,
+    canonical_look,
     canonical_place,
     canonical_time,
     canonical_weather,
@@ -4172,6 +4175,98 @@ def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
             beat["action"] = (action.rstrip() + " " + line).strip()
 
 
+_ENEMY_LOOK_IDS = ("miki", "rei", "kana", "shino", "gin", "tsuno")
+_HUMAN_SKIN_SWAPS = (
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 24cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 24cm shaft"),
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 20cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 20cm shaft"),
+    ("very pale gray-white skin that stays pale gray-white from face to hips to groin to the 35cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 35cm shaft"),
+    ("ashen gray skin that stays ashen gray", "natural skin that stays one tone"),
+    ("the same vivid purple as the hips and torso not pale-tan flesh", "the same tone as the hips"),
+    ("the same vivid purple as the hips not pale-tan flesh", "the same tone as the hips"),
+    ("open red lacerations and torn gashes across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft",
+     "intact skin across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft"),
+    ("the LEFT half of the face including the left eye and left cheek is obviously festering and rotting, wet peeling burned skin with raw red flesh showing, and the LEFT half of the body including the left breast, left arm and left hip is the same obvious wet rotting raw red flesh",
+     "both halves of the face and body stay even"),
+    ("hollow empty dark eye sockets with no eyeballs, visible fangs", "clear adult eyes, a soft mouth"),
+    ("hollow empty dark eye sockets with no eyeballs", "clear adult eyes"),
+    ("sunken hollow dark eye sockets", "clear adult eyes"),
+    ("vacant wide-open tired eyes", "clear adult eyes"),
+    ("vacant wide staring monster eyes", "clear adult eyes"),
+    ("lips pulled back so the gums show", "soft lips"),
+    ("patches of skin peeling off the cheeks, shoulders and thighs with red muscle fiber showing in the peeled patches",
+     "even skin on the cheeks, shoulders and thighs"),
+    ("red muscle fiber showing in the peeled patches", "even skin"),
+    ("wet peeling rotting patches", "smooth skin"),
+    ("long clawed fingers", "slim hands"),
+    ("A still-beautiful adult woman's face whose LEFT half is cracked and decaying: deep dry fissures across the left cheek and left brow, the right half still pretty",
+     "A still-beautiful adult woman's face, both halves even and pretty"),
+    ("thick extra-viscous dark-brown filthy sludge covering her from hair to the 24cm shaft to her feet",
+     "clean skin from hair to the 24cm shaft to her feet"),
+)
+
+
+def _wire_look_choices(render: dict[str, Any]) -> None:
+    """今のまま ignores free text. その他 keeps it. A named look fills hair and face."""
+    app = dict(render.get("appearance") or {})
+    if render.get("aya_look"):
+        aya_look = canonical_look(str(render.get("aya_look") or "")) or "keep"
+        aya = dict(app.get("aya") or {})
+        if aya_look == "keep":
+            for key in ("hair", "color", "face", "clothes", "sweat"):
+                aya.pop(key, None)
+        elif aya_look != "other":
+            spec = LOOK_MODES[aya_look]
+            if spec.get("hair"):
+                aya["hair"] = spec["hair"]
+            if spec.get("face"):
+                aya["face"] = spec["face"]
+            aya.pop("color", None)
+        if aya:
+            app["aya"] = aya
+        else:
+            app.pop("aya", None)
+    if render.get("enemy_look"):
+        enemy_look = canonical_look(str(render.get("enemy_look") or "")) or "keep"
+        if enemy_look == "keep":
+            for cid in _ENEMY_LOOK_IDS:
+                app.pop(cid, None)
+        elif enemy_look != "other":
+            spec = LOOK_MODES[enemy_look]
+            for cid in _ENEMY_LOOK_IDS:
+                row = dict(app.get(cid) or {})
+                if spec.get("hair"):
+                    row["hair"] = spec["hair"]
+                if cid != "tsuno" and spec.get("face"):
+                    row["face"] = spec["face"]
+                if row:
+                    app[cid] = row
+    if app:
+        render["appearance"] = app
+    elif "appearance" in render:
+        render.pop("appearance", None)
+
+
+def _swap_human_skin(value: Any) -> Any:
+    if isinstance(value, str):
+        out = value
+        for old, new in _HUMAN_SKIN_SWAPS:
+            out = out.replace(old, new)
+        return out
+    if isinstance(value, list):
+        return [_swap_human_skin(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _swap_human_skin(item) for key, item in value.items()}
+    return value
+
+
+def apply_human_skin(ep: dict[str, Any]) -> dict[str, Any]:
+    """Drop infection marks after the act is chosen. Shaft length, height, horns, and the single eye stay."""
+    return _swap_human_skin(ep)
+
+
 def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     """Rewrite look clauses for set fields. No set field leaves every string as authored."""
     specs = (ep.get("render") or {}).get("appearance") or {}
@@ -4368,6 +4463,9 @@ def prepare_episode(
     dirt_override: str | None = None,
     camera_distance_override: str | None = None,
     seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4453,6 +4551,21 @@ def prepare_episode(
             render["seed"] = int(str(seed_override).strip())
         except ValueError as exc:
             raise EpisodeError(f"seed must be an integer, got {seed_override}") from exc
+    if aya_look_override not in (None, ""):
+        aya_look = canonical_look(aya_look_override)
+        if not aya_look:
+            raise EpisodeError(f"unknown look {aya_look_override}")
+        render["aya_look"] = aya_look
+    if enemy_kind_override not in (None, ""):
+        enemy_kind = canonical_enemy_kind(enemy_kind_override)
+        if not enemy_kind:
+            raise EpisodeError(f"unknown enemy kind {enemy_kind_override}")
+        render["enemy_kind"] = enemy_kind
+    if enemy_look_override not in (None, ""):
+        enemy_look = canonical_look(enemy_look_override)
+        if not enemy_look:
+            raise EpisodeError(f"unknown enemy look {enemy_look_override}")
+        render["enemy_look"] = enemy_look
     appearance = parse_appearance(appearance_override)
     if appearance:
         render["appearance"] = appearance
@@ -4467,6 +4580,7 @@ def prepare_episode(
             aya["dirt"] = surface_dirt
             app["aya"] = aya
             render["appearance"] = app
+    _wire_look_choices(render)
     _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
@@ -4502,7 +4616,10 @@ def prepare_episode(
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
     out = apply_look_triggers(keep_chain_cast(out))
-    return apply_appearance(out)
+    out = apply_appearance(out)
+    if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
+        out = apply_human_skin(out)
+    return out
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -7606,6 +7723,9 @@ def run_episode(
     dirt_override: str | None = None,
     camera_distance_override: str | None = None,
     seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7649,6 +7769,9 @@ def run_episode(
         dirt_override=dirt_override,
         camera_distance_override=camera_distance_override,
         seed_override=seed_override,
+        aya_look_override=aya_look_override,
+        enemy_kind_override=enemy_kind_override,
+        enemy_look_override=enemy_look_override,
     )
     print(
         describe_run(

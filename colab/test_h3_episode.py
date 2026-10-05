@@ -6681,4 +6681,28 @@ def test_hospital_place_swaps_nouns_after_the_act_is_chosen():
     )
     with pytest.raises(EpisodeError):
         prepare_episode(raw, seed_override="abc")
+    zombie = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="壁立ちバック",
+        enemy_kind_override="ゾンビ（迷ったらこれ）",
+        aya_look_override="今のまま（迷ったらこれ）",
+        enemy_look_override="今のまま（迷ったらこれ）",
+    )
+    assert build_beat_prompt(plain, beat) == build_beat_prompt(
+        zombie, next(b for b in zombie["beats"] if b["id"] == "03-kiss-in")
+    )
+    human = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="壁立ちバック",
+        enemy_kind_override="人間",
+        enemy_look_override="韓国",
+    )
+    human_prompt = build_beat_prompt(human, next(b for b in human["beats"] if b["id"] == "03-kiss-in"))
+    assert "vivid purple" not in human_prompt
+    assert "hollow empty" not in human_prompt
+    assert "24cm" in human_prompt
+    assert "travels into the anus" in human_prompt.lower()
+    assert "monolid" in human_prompt
 

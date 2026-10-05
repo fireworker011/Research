@@ -2210,6 +2210,134 @@ def dirt_phrase_for(place_key: str, dirt_key: str) -> str:
     return str((DIRT_MODES.get(dirt) or {}).get("phrase") or "")
 
 
+LOOK_MODES: dict[str, dict[str, Any]] = {
+    "keep": {
+        "label_ja": "今のまま",
+        "choice_ja": "今のまま（迷ったらこれ）",
+        "when_ja": "台本の見た目。自由記入は使わない",
+        "form": True,
+        "recommend": True,
+        "hair": "",
+        "face": "",
+    },
+    "jp": {
+        "label_ja": "日本",
+        "choice_ja": "日本",
+        "when_ja": "黒髪のストレート、やわらかい面長",
+        "form": True,
+        "hair": "long straight black hair past the shoulders, blunt bangs across the forehead",
+        "face": "soft oval face, dark brown eyes, thin eyebrows, soft pink lips, fair skin",
+    },
+    "kr": {
+        "label_ja": "韓国",
+        "choice_ja": "韓国",
+        "when_ja": "黒髪のロング、小さい顔",
+        "form": True,
+        "hair": "long straight glossy black hair past the shoulders",
+        "face": "small oval face, dark monolid eyes, straight nose, soft pink lips, fair skin",
+    },
+    "cn": {
+        "label_ja": "中国",
+        "choice_ja": "中国",
+        "when_ja": "黒いまとめ髪、切れ長",
+        "form": True,
+        "hair": "long black hair gathered in a low twist",
+        "face": "oval face, dark almond eyes, defined brows, soft lips, fair skin",
+    },
+    "sea": {
+        "label_ja": "東南アジア",
+        "choice_ja": "東南アジア",
+        "when_ja": "暗いウェーブ、丸みのある顔",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "round soft face, dark brown eyes, full lips, warm tan skin",
+    },
+    "south_asia": {
+        "label_ja": "南アジア",
+        "choice_ja": "南アジア",
+        "when_ja": "暗いロング、大きな目",
+        "form": True,
+        "hair": "long thick dark hair past the shoulders",
+        "face": "oval face, large dark eyes, defined brows, full lips, warm brown skin",
+    },
+    "mideast": {
+        "label_ja": "中東",
+        "choice_ja": "中東",
+        "when_ja": "暗いウェーブ、高い鼻",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "oval face, dark eyes, a high nose, full lips, olive skin",
+    },
+    "north_eu": {
+        "label_ja": "北欧",
+        "choice_ja": "北欧",
+        "when_ja": "金髪、色の薄い目",
+        "form": True,
+        "hair": "long straight blonde hair past the shoulders",
+        "face": "oval face, light blue eyes, pale brows, soft lips, fair skin",
+    },
+    "south_eu": {
+        "label_ja": "南欧",
+        "choice_ja": "南欧",
+        "when_ja": "茶色のウェーブ、オリーブの肌",
+        "form": True,
+        "hair": "long wavy brown hair past the shoulders",
+        "face": "oval face, dark brown eyes, defined brows, full lips, olive skin",
+    },
+    "africa": {
+        "label_ja": "アフリカ",
+        "choice_ja": "アフリカ",
+        "when_ja": "黒いカール、深い肌",
+        "form": True,
+        "hair": "long dark curly hair past the shoulders",
+        "face": "oval face, dark brown eyes, full lips, deep brown skin",
+    },
+    "latin": {
+        "label_ja": "ラテンアメリカ",
+        "choice_ja": "ラテンアメリカ",
+        "when_ja": "暗いウェーブ、暖かい肌",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "oval face, dark brown eyes, full lips, warm tan skin",
+    },
+    "other": {
+        "label_ja": "その他",
+        "choice_ja": "その他",
+        "when_ja": "このときだけ自由記入を使う",
+        "form": True,
+        "hair": "",
+        "face": "",
+    },
+}
+
+ENEMY_KIND_MODES: dict[str, dict[str, Any]] = {
+    "zombie": {
+        "label_ja": "ゾンビ",
+        "choice_ja": "ゾンビ（迷ったらこれ）",
+        "when_ja": "今の感染姿。紫、傷、空洞の目",
+        "form": True,
+        "recommend": True,
+    },
+    "human": {
+        "label_ja": "人間",
+        "choice_ja": "人間",
+        "when_ja": "腐りと紫と空洞の目を外す。竿の長さ、しのの長身、角の角と一つの目は残す",
+        "form": True,
+    },
+}
+
+LOOK_ALIASES = _label_aliases(LOOK_MODES, {"今のあや": "keep", "今の敵": "keep"})
+ENEMY_KIND_ALIASES = _label_aliases(ENEMY_KIND_MODES, {})
+
+
+def canonical_look(name: str) -> str:
+    return _canon(LOOK_MODES, LOOK_ALIASES, name)
+
+
+def canonical_enemy_kind(name: str) -> str:
+    return _canon(ENEMY_KIND_MODES, ENEMY_KIND_ALIASES, name)
+
+
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
@@ -2227,6 +2355,10 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return DIRT_MODES
     if kind == "camera_distance":
         return CAMERA_DISTANCE_MODES
+    if kind == "look":
+        return LOOK_MODES
+    if kind == "enemy_kind":
+        return ENEMY_KIND_MODES
     if kind == "preset":
         return PRESET_CANON
     if kind == "combat":
