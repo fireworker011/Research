@@ -139,8 +139,21 @@ from h3_episode_packs import (
     TOILET_OVERLAY_KEYS,
     TSUNO_MODES,
     TSUNO_OVERLAY_KEYS,
+    CAMERA_DISTANCE_MODES,
+    DIRT_MODES,
+    HOSPITAL_ENV_HEAD,
+    PLACE_MODES,
+    TIME_MODES,
+    TOILET_ENV_BLOCK,
+    WEATHER_MODES,
     canonical_camera,
+    canonical_camera_distance,
+    canonical_dirt,
     canonical_dog,
+    canonical_place,
+    canonical_time,
+    canonical_weather,
+    dirt_phrase_for,
     canonical_combat,
     canonical_connect,
     canonical_end_connect,
@@ -4349,6 +4362,12 @@ def prepare_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4404,9 +4423,50 @@ def prepare_episode(
         render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
     if rei_pose_override not in (None, ""):
         render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
+    if place_override not in (None, ""):
+        place_key = canonical_place(place_override)
+        if not place_key:
+            raise EpisodeError(f"unknown place {place_override}")
+        render["place"] = place_key
+    if time_override not in (None, ""):
+        time_key = canonical_time(time_override)
+        if not time_key:
+            raise EpisodeError(f"unknown time {time_override}")
+        render["time"] = time_key
+    if weather_override not in (None, ""):
+        weather_key = canonical_weather(weather_override)
+        if not weather_key:
+            raise EpisodeError(f"unknown weather {weather_override}")
+        render["weather"] = weather_key
+    if dirt_override not in (None, ""):
+        dirt_key = canonical_dirt(dirt_override)
+        if not dirt_key:
+            raise EpisodeError(f"unknown dirt {dirt_override}")
+        render["dirt"] = dirt_key
+    if camera_distance_override not in (None, ""):
+        distance_key = canonical_camera_distance(camera_distance_override)
+        if not distance_key:
+            raise EpisodeError(f"unknown camera distance {camera_distance_override}")
+        render["camera_distance"] = distance_key
+    if seed_override not in (None, ""):
+        try:
+            render["seed"] = int(str(seed_override).strip())
+        except ValueError as exc:
+            raise EpisodeError(f"seed must be an integer, got {seed_override}") from exc
     appearance = parse_appearance(appearance_override)
     if appearance:
         render["appearance"] = appearance
+    surface_dirt = dirt_phrase_for(
+        canonical_place(str(render.get("place") or "")) or "hospital",
+        canonical_dirt(str(render.get("dirt") or "")) or "place",
+    )
+    if surface_dirt:
+        app = dict(render.get("appearance") or {})
+        aya = dict(app.get("aya") or {})
+        if not str(aya.get("dirt") or "").strip():
+            aya["dirt"] = surface_dirt
+            app["aya"] = aya
+            render["appearance"] = app
     _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
@@ -4570,6 +4630,113 @@ def _strip_exit_doorway(text: str) -> str:
     return out
 
 
+def _camera_distance_skips(beat: dict[str, Any]) -> bool:
+    """Oral and facial beats keep their authored face distance."""
+    bid = str(beat.get("id") or "")
+    if bid.endswith("-facial") or bid.endswith("-oral") or bid.endswith("-mouth"):
+        return True
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    return bool(keys & {"blowjob", "cumfacial"})
+
+
+def _distance_lock(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    distance = canonical_camera_distance(str((ep.get("render") or {}).get("camera_distance") or "")) or "side"
+    if distance == "side" or _camera_distance_skips(beat):
+        return ""
+    return str((CAMERA_DISTANCE_MODES.get(distance) or {}).get("lock") or "").strip().rstrip(".")
+
+
+def _place_swaps(spec: dict[str, Any]) -> list[tuple[str, str]]:
+    wall = str(spec["wall"])
+    floor = str(spec["floor"])
+    room = str(spec["room"])
+    bed = str(spec["bed"])
+    edge = str(spec["edge"])
+    path = str(spec["path"])
+    junction = str(spec["junction"])
+    light = str(spec["light"])
+    ambience = str(spec["ambience"])
+    fixture = str(spec["fixture"])
+    return [
+        ("far long edge nearest the window", edge),
+        ("far long edge of the mattress", edge),
+        ("cracked stained grey linoleum", floor),
+        ("crumbling peeling beige walls", wall),
+        ("flickering broken fluorescent tubes", light),
+        ("flickering broken fluorescent tube", light),
+        ("filthy porcelain western toilet", fixture),
+        ("stained white porcelain toilet", fixture),
+        ("porcelain western toilet", fixture),
+        ("western toilet bowl", fixture),
+        ("the porcelain bowl", fixture),
+        ("squat pan", fixture),
+        ("stained mattress", bed),
+        ("iron bed", bed),
+        ("the mattress", bed),
+        ("cracked linoleum", floor),
+        ("grey linoleum", floor),
+        ("filthy western stall", room),
+        ("this same stall", room),
+        ("toilet stall", room),
+        ("the filthy stall", room),
+        ("grey wall", wall),
+        ("T-junction", junction),
+        ("crumbling old hospital corridor", path),
+        ("old hospital corridor", path),
+        ("hospital corridor", path),
+        ("the corridor continues", f"the {path} continues"),
+        ("the corridor", f"the {path}"),
+        ("corridor", path),
+        ("sickroom", room),
+        ("fluorescent buzz", ambience),
+        ("hospital fluorescent light", light),
+        ("linoleum", floor),
+        ("mattress", bed),
+        ("fluorescent", light),
+    ]
+
+
+def apply_prompt_surface(ep: dict[str, Any], text: str) -> str:
+    """Swap place nouns after the act clauses are chosen. Hospital night with no weather is unchanged."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return text
+    render = ep.get("render") or {}
+    place = canonical_place(str(render.get("place") or "")) or "hospital"
+    time_key = canonical_time(str(render.get("time") or "")) or "night"
+    weather = canonical_weather(str(render.get("weather") or "")) or "off"
+    if place == "hospital" and time_key == "night" and weather == "off":
+        return text
+    spec = PLACE_MODES[place]
+    out = text
+    if place != "hospital":
+        if HOSPITAL_ENV_HEAD in out:
+            out = out.replace(HOSPITAL_ENV_HEAD, str(spec["env"]))
+        if TOILET_ENV_BLOCK in out:
+            out = out.replace(TOILET_ENV_BLOCK, str(spec["priv"]))
+        for old, new in _place_swaps(spec):
+            out = out.replace(old, new)
+    bits: list[str] = []
+    time_spec = TIME_MODES[time_key]
+    if place == "hospital" and time_key == "night":
+        pass
+    elif time_key == "night":
+        away = str(time_spec.get("away") or "")
+        if away:
+            bits.append(away)
+    else:
+        sentence = str(time_spec.get("sentence") or "")
+        if sentence:
+            bits.append(sentence)
+    weather_sentence = str((WEATHER_MODES.get(weather) or {}).get("sentence") or "")
+    if weather_sentence:
+        bits.append(weather_sentence)
+    if bits:
+        needle = "\n\nintegrated_multimodal_description:\n"
+        if needle in out:
+            out = out.replace(needle, " " + " ".join(bits) + needle, 1)
+    return out
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -4591,6 +4758,9 @@ def camera_line(
     spec = CAMERA_PACKS[key]
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
         if str(beat.get("id") or "") in GIN_STILL_IDS or _nongin_rib_ride(beat):
             # "Nobody walks" and "not a step" get drawn as a walk. Rib seats name their own hold.
             lock = lock.replace("A hip thrust is in place, not a step. ", "")
@@ -4599,6 +4769,9 @@ def camera_line(
             lock = lock.replace("No track, no pan, no scroll. ", "")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
     # The exit doorway on a mid-episode walk reads as the mission end, so the next scene cannot continue.
     if not planted and not _is_final_footage_beat(ep, beat):
         lock = _strip_exit_doorway(lock)
@@ -5870,7 +6043,7 @@ def build_beat_prompt(
         text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
         if str(beat.get("id") or "").startswith("03-kiss"):
             text = text.replace("22cm", "24cm")
-    return text
+    return apply_prompt_surface(ep, text)
 
 
 def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None, still_as: str = "first") -> list[str]:
@@ -7427,6 +7600,12 @@ def run_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7464,6 +7643,12 @@ def run_episode(
         rei_pose_override=rei_pose_override,
         appearance_override=appearance_override,
         checkpoint_override=checkpoint_override,
+        place_override=place_override,
+        time_override=time_override,
+        weather_override=weather_override,
+        dirt_override=dirt_override,
+        camera_distance_override=camera_distance_override,
+        seed_override=seed_override,
     )
     print(
         describe_run(

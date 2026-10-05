@@ -39,6 +39,18 @@ __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
+__DISTANCE_HELP__
+CAMERA_DISTANCE = __DISTANCE_DEFAULT__  #@param __DISTANCE_CHOICES__
+__PLACE_HELP__
+PLACE = __PLACE_DEFAULT__  #@param __PLACE_CHOICES__
+__TIME_HELP__
+TIME_OF_DAY = __TIME_DEFAULT__  #@param __TIME_CHOICES__
+__WEATHER_HELP__
+WEATHER = __WEATHER_DEFAULT__  #@param __WEATHER_CHOICES__
+__DIRT_HELP__
+DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
+#@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
+SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
@@ -111,6 +123,14 @@ os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
+os.environ["H3_EPISODE_CAMERA_DISTANCE"] = CAMERA_DISTANCE
+os.environ["H3_EPISODE_PLACE"] = PLACE
+os.environ["H3_EPISODE_TIME"] = TIME_OF_DAY
+os.environ["H3_EPISODE_WEATHER"] = WEATHER
+os.environ["H3_EPISODE_DIRT"] = DIRT
+_seed = str(SEED or "").strip()
+if _seed:
+    os.environ["H3_EPISODE_SEED"] = _seed
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
@@ -302,6 +322,21 @@ def make_nb() -> dict:
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
+        .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
+        .replace("__DISTANCE_DEFAULT__", json.dumps(ui_default("camera_distance"), ensure_ascii=False))
+        .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
+        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・個室・寝床・出口だけ替わる"))
+        .replace("__PLACE_DEFAULT__", json.dumps(ui_default("place"), ensure_ascii=False))
+        .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
+        .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))
+        .replace("__TIME_DEFAULT__", json.dumps(ui_default("time"), ensure_ascii=False))
+        .replace("__TIME_CHOICES__", json.dumps(ui_choices("time"), ensure_ascii=False))
+        .replace("__WEATHER_HELP__", form_markdown("weather", "天候 — 床の濡れと光だけ"))
+        .replace("__WEATHER_DEFAULT__", json.dumps(ui_default("weather"), ensure_ascii=False))
+        .replace("__WEATHER_CHOICES__", json.dumps(ui_choices("weather"), ensure_ascii=False))
+        .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
+        .replace("__DIRT_DEFAULT__", json.dumps(ui_default("dirt"), ensure_ascii=False))
+        .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))

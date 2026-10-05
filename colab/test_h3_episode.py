@@ -6617,3 +6617,68 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         "04-tsuno-jo-walk",
     ]
 
+
+def test_hospital_place_swaps_nouns_after_the_act_is_chosen():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    plain = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
+    named = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="壁立ちバック",
+        place_override="病棟（迷ったらこれ）",
+        time_override="夜（迷ったらこれ）",
+        weather_override="天候なし（迷ったらこれ）",
+        dirt_override="場所に合わせる（迷ったらこれ）",
+        camera_distance_override="横固定（迷ったらこれ）",
+        seed_override="42",
+    )
+    beat = next(b for b in plain["beats"] if b["id"] == "03-kiss-in")
+    assert build_beat_prompt(plain, beat) == build_beat_prompt(
+        named, next(b for b in named["beats"] if b["id"] == "03-kiss-in")
+    )
+    assert named["render"]["seed"] == 42
+    forest = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="壁立ちバック",
+        toilet_override="小便",
+        place_override="森林",
+    )
+    entered = next(b for b in forest["beats"] if b["id"] == "03-kiss-in")
+    prompt = build_beat_prompt(forest, entered)
+    assert "linoleum" not in prompt and "grey wall" not in prompt
+    assert "packed earth" in prompt
+    assert "travels into the anus" in prompt.lower()
+    assert "turns from the opening pose" in build_beat_prompt(
+        forest, next(b for b in forest["beats"] if b["id"] == "03-kiss")
+    )
+    assert "hollow empty" in prompt
+    assert "fine dry sand" in prompt
+    toilet = next(b for b in forest["beats"] if b["id"] == "04-toilet")
+    toilet_prompt = build_beat_prompt(forest, toilet)
+    assert "porcelain" not in toilet_prompt
+    assert "yellow" in toilet_prompt.lower()
+    rain = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い", weather_override="雨")
+    rain_prompt = build_beat_prompt(rain, next(b for b in rain["beats"] if b["id"] == "03-kiss"))
+    assert "The ground is wet." in rain_prompt
+    assert "chest and cheek" in rain_prompt.lower()
+    low = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="四つん這い",
+        camera_distance_override="結合の低い見上げ",
+    )
+    assert "Low camera between the calves" in build_beat_prompt(
+        low, next(b for b in low["beats"] if b["id"] == "03-kiss")
+    )
+    oral = prepare_episode(
+        raw,
+        tsuno_override="角・病室で横になって挿入",
+        camera_distance_override="結合の低い見上げ",
+    )
+    assert "Low camera between the calves" not in build_beat_prompt(
+        oral, next(b for b in oral["beats"] if b["id"] == "04-tsuno-oral")
+    )
+    with pytest.raises(EpisodeError):
+        prepare_episode(raw, seed_override="abc")
+
