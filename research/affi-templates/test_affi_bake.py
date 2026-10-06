@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import sys
 from pathlib import Path
@@ -12,6 +13,7 @@ sys.path.insert(0, str(ROOT.parents[2]))
 
 import affi_bake as bake
 import affi_genre_templates as genre
+import affi_reference as ref
 
 
 def _ids(job: dict) -> list[str]:
@@ -24,19 +26,23 @@ def test_genre_handles_match_the_table() -> None:
 
 def test_account_menu_names_one_account() -> None:
     assert [handle for _label, handle in bake.ACCOUNT_CHOICES] == list(bake.GENRE_HANDLES.values())
-    handle, mode = bake.resolve_account("美容スキンケア（the.care.logic）", "ダンス")
+    handle, mode = bake.resolve_account("美容：材料のキャラ（the.care.logic）", "ダンス")
     assert handle == "the.care.logic"
     assert mode is None
     text = bake.describe_account(handle, mode)
     assert text.startswith("再現するのはこの1件です。")
+    assert f"話: {bake.STORIES['the.care.logic']}" in text
     assert "ジャンル: 美容スキンケア" in text
     assert "アカウント: the.care.logic" in text
+    assert "選ぶ欄: 材料のキャラ、場所、口調" in text
+    assert "使わない見た目" not in text
     assert "ドッグフードだけ" in text
     assert "nuts0629" not in text
 
-    handle, mode = bake.resolve_account("ドッグフード（nuts0629）", "会話")
+    handle, mode = bake.resolve_account("ドッグフード：犬（nuts0629）", "会話")
     assert (handle, mode) == ("nuts0629", "talk")
     talk = bake.describe_account(handle, mode)
+    assert f"話: {bake.STORIES['nuts0629']}" in talk
     assert "ジャンル: ドッグフード" in talk
     assert "型: 会話" in talk
     assert "足りない秒は足さない" in talk
@@ -167,3 +173,125 @@ def test_h3_acceptance_matches_the_runner_when_it_is_installed() -> None:
 
     for seconds in (5, 8, 10, 13.5, 14, 15):
         assert bake._accepts(seconds) is bool(diffusers_accepts(frames_for_seconds(seconds)))
+
+
+def _cell_source(cell: dict) -> str:
+    return "".join(cell["source"])
+
+
+def test_story_form_defaults_match_the_story() -> None:
+    known = set(ref.catalog()["defaults"])
+    seen: set[str] = set()
+    for sections in bake.STORY_FORMS.values():
+        for _title, fields in sections:
+            for label, key, default in fields:
+                assert label.isidentifier()
+                assert key in known
+                assert default in bake._options_for(key)
+                seen.add(ref._field_id(key))
+    assert seen == set(ref.catalog()["fields"])
+
+    cats = bake.look_from_form(
+        {
+            label: default
+            for _title, fields in bake.STORY_FORMS["junjun_ranran"]
+            for label, _key, default in fields
+        }
+    )
+    block = ref.look_block("junjun_ranran", cats)
+    assert "マンチカン" in block["ja"]
+    assert "スコティッシュフォールド" in block["ja"]
+    assert "柴" not in block["ja"]
+    drama = {
+        label: default
+        for _title, fields in bake.STORY_FORMS["yako.shiawasekon"]
+        for label, _key, default in fields
+    }
+    yako = ref.look_block("yako.shiawasekon", bake.look_from_form(drama))
+    assert "カフェ" in yako["ja"]
+    assert "30代" in yako["ja"]
+    custom = bake.look_from_form({"犬の衣装": "緑のバンダナ"})
+    assert custom["animal_outfit"] == "その他（直接入力）"
+    assert custom["animal_outfit_text"] == "緑のバンダナ"
+    assert "緑のバンダナ" in ref.look_block("nuts0629", custom)["ja"]
+    try:
+        bake.look_from_form({"無い欄": "犬"})
+    except KeyError as exc:
+        assert "無い欄" in str(exc)
+    else:
+        raise AssertionError("unknown form label was accepted")
+    try:
+        bake.look_from_form({"犬の衣装": "その他（直接入力）"})
+    except ValueError as exc:
+        assert "犬の衣装" in str(exc)
+    else:
+        raise AssertionError("empty other-text was accepted")
+
+
+def test_form_status_and_story_check_stay_on_one_account() -> None:
+    assert bake.form_status(None, "nuts0629").startswith("先に")
+    assert bake.form_status("nuts0629", "nuts0629") == ""
+    skipped = bake.form_status("the.care.logic", "nuts0629")
+    assert "美容：材料のキャラ" in skipped
+    assert "この欄は使いません" in skipped
+
+    cats = bake.story_check("junjun_ranran")
+    assert "F2" in cats
+    assert "F1" not in cats
+    assert "F3" not in cats
+    assert "最初のセリフ" in cats
+    assert "冒頭の文字の表紙" not in cats
+    assert "字幕:" not in cats
+    beauty = bake.story_check("the.care.logic")
+    assert "制作可否テストは無い" in beauty
+    assert "冒頭の文字の表紙" in beauty
+    assert "F1" not in beauty
+    dog = bake.story_check("nuts0629", "dance")
+    assert "F3" in dog
+    assert "これは焼くジョブではない。" in dog
+    assert "日本語の口パク" not in dog
+
+
+def test_reference_notebook_is_one_japanese_form_per_story() -> None:
+    disk = json.loads((ROOT / "reference_check.ipynb").read_text(encoding="utf-8"))
+    built = bake.reference_notebook()
+    disk_src = [_cell_source(cell) for cell in disk["cells"]]
+    built_src = [_cell_source(cell) for cell in built["cells"]]
+    assert disk_src == built_src
+    blob = "\n".join(disk_src)
+    assert "animal_species" not in blob
+    assert "THEME" not in blob
+    for sentence in bake.STORIES.values():
+        assert sentence in blob
+    for label, _handle in bake.ACCOUNT_CHOICES:
+        assert label in blob
+    assert blob.count("look_from_form") == 4
+    assert "静止画" in blob
+    code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
+    assert len(code) == 8
+    for src in code:
+        ast.parse(src)
+
+    forms = [src for src in code if "look_from_form" in src]
+    ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
+    for src in forms:
+        exec(src, ns)
+    look = ns["look"]
+    assert look["animal_species"] == "猫"
+    assert look["animal_breed"] == "マンチカン"
+    assert look["animal2_species"] == "猫"
+    assert look["animal2_breed"] == "スコティッシュフォールド"
+    assert look["animal2_coat"] == "白の短毛"
+    assert "mascot_subject" not in look
+
+    beauty_ns: dict = {"HANDLE": "the.care.logic", "MODE": None}
+    for src in forms:
+        exec(src, beauty_ns)
+    assert beauty_ns["look"]["mascot_subject"] == "茶葉"
+    assert "animal_species" not in beauty_ns["look"]
+
+    picker = next(src for src in code if "resolve_account" in src)
+    picked: dict = {}
+    exec(picker, picked)
+    assert picked["HANDLE"] == "nuts0629"
+    assert picked["MODE"] == "interview"

@@ -237,14 +237,6 @@ def normalize_look(look: Mapping[str, Any] | None) -> dict[str, Any]:
     return {"choices": choices, "custom": custom, "ref_image": ref_image}
 
 
-def used_look_names(handle: str) -> tuple[str, ...]:
-    """Japanese names of the look fields this account actually uses."""
-    parts = _PARTS.get(handle)
-    if not parts:
-        raise KeyError(handle)
-    return tuple(_NAME[part] for part in parts)
-
-
 def look_block(handle: str, look: Mapping[str, Any] | None = None) -> dict[str, str]:
     cat = catalog()
     spec = normalize_look(look)

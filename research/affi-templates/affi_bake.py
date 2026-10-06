@@ -60,13 +60,25 @@ GENRE_HANDLES = {
     "婚活": "yako.shiawasekon",
 }
 
-# Colab のドロップダウンに出す文。ハンドルだけではどれか分からない。
+# Colab のドロップダウンに出す文。話が先、ハンドルは後ろ。
 ACCOUNT_CHOICES = (
-    ("美容スキンケア（the.care.logic）", "the.care.logic"),
-    ("ドッグフード（nuts0629）", "nuts0629"),
-    ("見守りカメラ（junjun_ranran）", "junjun_ranran"),
-    ("婚活（yako.shiawasekon）", "yako.shiawasekon"),
+    ("美容：材料のキャラ（the.care.logic）", "the.care.logic"),
+    ("ドッグフード：犬（nuts0629）", "nuts0629"),
+    ("見守り：猫2匹の言い合い（junjun_ranran）", "junjun_ranran"),
+    ("婚活：男女の会話（yako.shiawasekon）", "yako.shiawasekon"),
 )
+# 型の文。新しい台詞は足さない。秒数はテンプレのまま。
+STORIES = {
+    "the.care.logic": "材料のキャラが1体で悩み、対処して、笑顔で終わる。30秒を10秒ずつ3つ。",
+    "nuts0629": "同じ犬。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。",
+    "junjun_ranran": "猫が2匹で言い合い、最後に人が少し出る。45秒。見守りカメラの映像ではない。",
+    "yako.shiawasekon": "成人の男女が会話して、最後に関係が変わる。60秒。",
+}
+FEASIBILITY_FOR = {
+    "nuts0629": "F3",
+    "junjun_ranran": "F2",
+    "yako.shiawasekon": "F1",
+}
 DOG_PATTERNS = (
     ("インタビュー（既定）", "interview"),
     ("咀嚼", "asmr"),
@@ -74,7 +86,6 @@ DOG_PATTERNS = (
     ("会話", "talk"),
 )
 _MODE_JA = {mode: label.split("（")[0] for label, mode in DOG_PATTERNS}
-_ALL_LOOKS = ("キャラ", "動物", "動物2", "人物", "人物2", "場所", "口調")
 
 
 def resolve_account(label: str, dog_pattern: str = "インタビュー（既定）") -> tuple[str, str | None]:
@@ -99,18 +110,17 @@ def describe_account(handle: str, mode: str | None = None) -> str:
     view = _mode_view(item, mode)
     beats = _expand_beats(view["timeline"], int(view["repeat"]))
     cut_sum = round(sum(float(beat["end_s"]) - float(beat["start_s"]) for beat in beats), 3)
-    used = ref.used_look_names(handle)
-    unused = [name for name in _ALL_LOOKS if name not in used]
     pattern = _MODE_JA.get(view["mode"] or "", "切り替えはない")
+    sections = "、".join(title for title, _fields in STORY_FORMS[handle])
     lines = [
         "再現するのはこの1件です。",
+        f"話: {STORIES[handle]}",
         f"ジャンル: {item['genre']}",
         f"アカウント: {handle}",
         f"型: {pattern}",
         f"秒: {_num(float(view['duration_s']))}",
         f"画面: {view['canvas']}",
-        f"使う見た目: {'、'.join(used)}",
-        f"使わない見た目: {'、'.join(unused)}",
+        f"選ぶ欄: {sections}",
     ]
     if abs(cut_sum - float(view["duration_s"])) > 0.051:
         lines.append(
@@ -459,6 +469,527 @@ def write_job(job: dict[str, Any], folder: str | Path) -> Path:
         encoding="utf-8",
     )
     return path
+
+
+def _place(room: str, style: str, palette: str, light: str) -> tuple[tuple[str, str, str], ...]:
+    return (
+        ("部屋", "place_room", room),
+        ("雰囲気", "place_style", style),
+        ("色味", "place_palette", palette),
+        ("光", "place_light", light),
+    )
+
+
+def _person(
+    prefix: str,
+    key_prefix: str,
+    gender: str,
+    age: str,
+    hair: str,
+    color: str,
+    clothes: str,
+    build: str,
+    makeup: str,
+) -> tuple[tuple[str, str, str], ...]:
+    return (
+        (f"{prefix}の性別", f"{key_prefix}gender", gender),
+        (f"{prefix}の年代", f"{key_prefix}age", age),
+        (f"{prefix}の髪型", f"{key_prefix}hair", hair),
+        (f"{prefix}の髪色", f"{key_prefix}hair_color", color),
+        (f"{prefix}の服", f"{key_prefix}clothes", clothes),
+        (f"{prefix}の体", f"{key_prefix}build", build),
+        (f"{prefix}の表情", f"{key_prefix}makeup", makeup),
+    )
+
+
+def _animal(
+    prefix: str,
+    breed_label: str,
+    key_prefix: str,
+    species: str,
+    breed: str,
+    coat: str,
+    build: str,
+    outfit: str,
+) -> tuple[tuple[str, str, str], ...]:
+    return (
+        (f"{prefix}の種類", f"{key_prefix}species", species),
+        (breed_label, f"{key_prefix}breed", breed),
+        (f"{prefix}の毛", f"{key_prefix}coat", coat),
+        (f"{prefix}の体", f"{key_prefix}build", build),
+        (f"{prefix}の衣装", f"{key_prefix}outfit", outfit),
+    )
+
+
+# (見出し, ((欄の名前, lookのキー, 初期値), ...))
+# 初期値は元アカウントの見た目ではない。その話に置いたときの仮。
+STORY_FORMS: dict[str, tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...]] = {
+    "the.care.logic": (
+        (
+            "材料のキャラ",
+            (
+                ("材料", "mascot_subject", "茶葉"),
+                ("作り", "mascot_style", "粘土"),
+                ("キャラの色", "mascot_color", "生成り"),
+            ),
+        ),
+        ("場所", _place("リビング", "北欧", "白と木", "昼の自然光")),
+        ("口調", (("口調", "speech", "標準語"),)),
+    ),
+    "nuts0629": (
+        (
+            "犬（会話の2匹もこの見た目）",
+            _animal("犬", "犬種", "animal_", "犬", "柴", "黒の短毛", "小柄", "無地の首輪"),
+        ),
+        ("場所", _place("リビング", "北欧", "白と木", "昼の自然光")),
+        ("口調", (("口調", "speech", "標準語"),)),
+    ),
+    "junjun_ranran": (
+        (
+            "1匹目の猫",
+            _animal("一匹目", "一匹目の猫種", "animal_", "猫", "マンチカン", "グレー一色", "普通", "何も着けない"),
+        ),
+        (
+            "2匹目の猫",
+            _animal(
+                "二匹目",
+                "二匹目の猫種",
+                "animal2_",
+                "猫",
+                "スコティッシュフォールド",
+                "白の短毛",
+                "小柄",
+                "何も着けない",
+            ),
+        ),
+        ("最後に少し出る人", _person("人", "person_", "女性", "40代", "ショート", "黒", "無地のニット", "普通", "ほぼ無し")),
+        ("場所", _place("リビング", "北欧", "白と木", "昼の自然光")),
+        ("口調（2匹共通）", (("口調", "speech", "標準語"),)),
+    ),
+    "yako.shiawasekon": (
+        ("女性", _person("女性", "person_", "女性", "30代", "ショート", "黒", "無地のニット", "普通", "ほぼ無し")),
+        ("男性", _person("男性", "person2_", "男性", "30代", "ショート", "黒", "シャツ", "普通", "ほぼ無し")),
+        ("場所", _place("カフェ", "モダン", "生成り", "暖かい室内灯")),
+        ("口調", (("口調", "speech", "標準語"),)),
+    ),
+}
+
+
+def _form_keys() -> dict[str, str]:
+    found: dict[str, str] = {}
+    for sections in STORY_FORMS.values():
+        for _title, fields in sections:
+            for label, key, _default in fields:
+                previous = found.get(label)
+                if previous is not None and previous != key:
+                    raise RuntimeError(f"見た目の欄が衝突: {label}")
+                found[label] = key
+    return found
+
+
+FORM_KEYS = _form_keys()
+
+_FORM_TITLE = {
+    "the.care.logic": "美容：材料のキャラの見た目",
+    "nuts0629": "ドッグフード：犬の見た目",
+    "junjun_ranran": "見守り：猫2匹の見た目",
+    "yako.shiawasekon": "婚活：男女の見た目",
+}
+_FORM_NOTE = {
+    "the.care.logic": "迷ったら初期値のまま。この話を選んだときだけ使います。",
+    "nuts0629": "人の顔はここでは選びません。迷ったら初期値のまま。この話を選んだときだけ使います。",
+    "junjun_ranran": "迷ったら初期値のまま（猫が2匹）。この話を選んだときだけ使います。",
+    "yako.shiawasekon": "初期値は成人の2人です。元のアカウントの人ではありません。この話を選んだときだけ使います。",
+}
+
+
+def look_from_form(fields: Mapping[str, str]) -> dict[str, str]:
+    """Map one story's Japanese form labels onto look keys.
+
+    A value that is not in the dropdown is the free-text choice for that field.
+    """
+    unknown = [label for label in fields if label not in FORM_KEYS]
+    if unknown:
+        raise KeyError("見た目の欄が無い: " + "、".join(unknown))
+    out: dict[str, str] = {}
+    for label, value in fields.items():
+        key = FORM_KEYS[label]
+        text = str(value).strip()
+        options = _options_for(key)
+        other = str(ref.catalog()["other_label"])
+        if text in options and text != other:
+            out[key] = text
+            continue
+        if not text or text == other:
+            raise ValueError(f"{label} は一覧から選ぶか、一覧に無い短い文をその欄に書く")
+        out[key] = other
+        out[f"{key}_text"] = text
+    return out
+
+
+def form_status(selected: str | None, expected: str) -> str:
+    """Empty when this form belongs to the selected story."""
+    if not selected:
+        return "先に上の「再現する話」を実行してください。"
+    if selected == expected:
+        return ""
+    label = next(text for text, handle in ACCOUNT_CHOICES if handle == selected)
+    return f"今の話は「{label}」です。{STORIES[selected]} この欄は使いません。"
+
+
+def story_check(handle: str, mode: str | None = None) -> str:
+    """The selected story's feasibility ask and hypotheses. No other account."""
+    lines = [describe_account(handle, mode), "---"]
+    fid = FEASIBILITY_FOR.get(handle)
+    if fid is None:
+        lines.append("この話の制作可否テストは無い。仮説の数字は投稿したあとに入る。")
+    else:
+        item = next(row for row in ref.feasibility() if row["id"] == fid)
+        lines.append(f"この話で先に確かめること: {item['id']} {item['title']}")
+        lines.append(str(item["ask"]))
+        lines.append("これは焼くジョブではない。")
+    lines.append("---")
+    lines.append("この話の仮説")
+    verdicts = {row["id"]: row for row in ref.judge()}
+    found = False
+    for spec in ref.hypotheses():
+        if spec["handle"] != handle:
+            continue
+        found = True
+        row = verdicts[spec["id"]]
+        lines.append(f"{spec['id']} {spec['title']}（{spec['a_label']} / {spec['b_label']}）: {row['verdict']}")
+        lines.append(row["detail"])
+    if not found:
+        lines.append("仮説は無い。")
+    return "\n".join(lines)
+
+
+def _options_for(key: str) -> list[str]:
+    field_id = ref._field_id(key)
+    return [str(opt["label"]) for opt in ref.catalog()["fields"][field_id]["options"]]
+
+
+def _py(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False)
+
+
+def _param_list(options: Sequence[str]) -> str:
+    return "[" + ", ".join(_py(opt) for opt in options) + "]"
+
+
+def story_form_cell(handle: str) -> str:
+    """One Colab form. The label is the Japanese variable name. Code sets look only for this handle."""
+    lines = [
+        f"#@title {_FORM_TITLE[handle]} {{ display-mode: \"form\" }}",
+        f"#@markdown {STORIES[handle]}{_FORM_NOTE[handle]}",
+        "#@markdown 一覧に無い見た目は、その欄に短い文を直接書く。人物は成人のみ。実在の人や元のアカウントに似せる文は書けません。",
+        "",
+    ]
+    pairs: list[str] = []
+    for title, fields in STORY_FORMS[handle]:
+        lines.append(f"#@markdown {title}")
+        for label, key, default in fields:
+            options = _options_for(key)
+            if default not in options:
+                raise ValueError(f"初期値が選択肢に無い: {label} / {default}")
+            if not label.isidentifier():
+                raise ValueError(f"欄の名前が変数にできない: {label}")
+            lines.append(f"{label} = {_py(default)} #@param {_param_list(options)} {{allow-input: true}}")
+            pairs.append(label)
+        lines.append("")
+    lines.append("import affi_bake")
+    lines.append("")
+    lines.append(f'note = affi_bake.form_status(globals().get("HANDLE"), {_py(handle)})')
+    lines.append("if note:")
+    lines.append("    print(note)")
+    lines.append("else:")
+    lines.append("    look = affi_bake.look_from_form({")
+    for label in pairs:
+        lines.append(f"        {_py(label)}: {label},")
+    lines.append("    })")
+    lines.append('    print("この話の見た目を使います。")')
+    lines.append("    print(affi_bake.STORIES[HANDLE])")
+    return "\n".join(lines) + "\n"
+
+
+def account_picker_cell() -> str:
+    labels = [text for text, _handle in ACCOUNT_CHOICES]
+    patterns = [text for text, _mode in DOG_PATTERNS]
+    return "\n".join(
+        [
+            '#@title 再現する話（4つのうち1つ） { display-mode: "form" }',
+            "#@markdown 迷ったらこのまま実行して、下に出る説明を読む。見た目は、選んだ話のセルだけが使われます。",
+            f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
+            "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの3つの話ではこの欄は無視する。",
+            f"ドッグフードの型 = {_py(patterns[0])} #@param {_param_list(patterns)}",
+            "",
+            "import affi_bake",
+            "",
+            "HANDLE, MODE = affi_bake.resolve_account(話, ドッグフードの型)",
+            "print(affi_bake.describe_account(HANDLE, MODE))",
+            "",
+        ]
+    )
+
+
+def bake_form_cell() -> str:
+    return "\n".join(
+        [
+            '#@title この話のジョブを書く（動画は焼かない） { display-mode: "form" }',
+            "#@markdown 上で選んだ1件だけ書きます。動画は焼きません。投稿しません。",
+            "#@markdown テーマが「テーマは入力」のままだと、ジョブは止まります。",
+            "#@markdown せりふがあるカットは、上から1行ずつ台詞を書く。ダンスと咀嚼は空でよい。",
+            "#@markdown 静止画は、最初のコマに使う画像ファイルの場所です。ここだけです。",
+            'テーマ = "テーマは入力" #@param {type:"raw"}',
+            '台詞 = "" #@param {type:"raw"}',
+            '静止画 = "" #@param {type:"raw"}',
+            "",
+            "import affi_bake",
+            "import affi_reference as ref",
+            "from pathlib import Path",
+            "",
+            'if "HANDLE" not in globals():',
+            '    print("先に上の「再現する話」を実行してください。")',
+            'elif "look" not in globals():',
+            '    print("先に、選んだ話の見た目のセルを実行してください。")',
+            "else:",
+            "    picked = dict(look)",
+            '    picked["ref_image"] = 静止画.strip()',
+            "    print(affi_bake.describe_account(HANDLE, MODE))",
+            '    print("---")',
+            "    try:",
+            '        print(ref.look_block(HANDLE, picked)["ja"])',
+            '        lines = [line.strip() for line in 台詞.splitlines() if line.strip()]',
+            "        job = affi_bake.bake_reference(",
+            "            HANDLE,",
+            "            mode=MODE,",
+            "            theme=テーマ,",
+            "            lines=lines,",
+            "            look=picked,",
+            "            image=静止画.strip() or None,",
+            "        )",
+            "    except ValueError as exc:",
+            '        print("止まった:", exc)',
+            "    else:",
+            '        out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
+            '        folder = HANDLE if not MODE else HANDLE + "-" + MODE',
+            "        path = affi_bake.write_job(job, out / folder)",
+            '        print(job["status"], "型の秒", job["duration_s"], "カット", len(job["cuts"]), "生成", len(job["clips"]))',
+            '        for reason in job["blocked"]:',
+            '            print("-", reason)',
+            "        print(path)",
+            '        print("mp4 は焼いていない。投稿していない。")',
+            "",
+        ]
+    )
+
+
+def _intro() -> str:
+    picks = {
+        "the.care.logic": "選ぶのは材料・場所・口調。",
+        "nuts0629": "選ぶのは犬・場所・口調。型を選ぶのはこの話だけ。",
+        "junjun_ranran": "選ぶのは猫2匹・人・場所・口調。",
+        "yako.shiawasekon": "選ぶのは女性・男性・場所・口調。",
+    }
+    blocks = ["# どの話にするか", ""]
+    blocks.append("動画は焼きません。投稿もしません。最後のセルは、選んだ1件のジョブを書くだけです。")
+    blocks.append("")
+    blocks.append("迷ったら、見た目は初期値のまま実行してください。初期値はその話用の仮の見た目で、元のアカウントの顔ではありません。")
+    blocks.append("")
+    blocks.append("## 4つの話")
+    blocks.append("")
+    for index, (label, handle) in enumerate(ACCOUNT_CHOICES, start=1):
+        blocks.append(f"{index}. **{label.split('（')[0]}**（{handle}）")
+        blocks.append(f"   {STORIES[handle]}{picks[handle]}")
+        blocks.append("")
+    blocks.extend(
+        [
+            "## 押す順番",
+            "",
+            "1. **再現する話** で上の1つを選ぶ。ドッグフードだけ、インタビュー・咀嚼・ダンス・会話を選ぶ",
+            "2. 見出しが今の話と一致する見た目のセルだけを変える。ほかの3つは実行しても「この欄は使いません」と出る",
+            "3. **この話の確認** で、入る見た目と、この話の仮説だけを見る",
+            "4. 最後のセルで **テーマ** **台詞** **静止画** を入れてジョブを書く",
+            "",
+            "一覧に無い見た目は、その欄に短い文を直接書く。人物は成人のみ。実在の人や、元のアカウントの人・動物に似せる文は、そこで止まります。",
+            "",
+            "秒数・カット・字幕は型のままです。",
+            "",
+        ]
+    )
+    return "\n".join(blocks)
+
+
+def _loader_cell() -> str:
+    return "\n".join(
+        [
+            "from pathlib import Path",
+            "import sys",
+            "import urllib.request",
+            "",
+            'BRANCH = "cursor/affi-template-bake-44d6"',
+            'REPO = "fireworker011/Research"',
+            'RAW = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/research/affi-templates"',
+            'LOCAL = Path("research/affi-templates")',
+            'if not (LOCAL / "affi_reference.py").is_file():',
+            "    here = Path.cwd()",
+            "    for candidate in [here, *here.parents]:",
+            '        if (candidate / "research/affi-templates/affi_reference.py").is_file():',
+            '            LOCAL = candidate / "research/affi-templates"',
+            "            break",
+            'if not (LOCAL / "affi_reference.py").is_file():',
+            '    LOCAL = Path("/content/affi-templates") if Path("/content").is_dir() else Path(".affi-templates-download")',
+            "    files = [",
+            '        "affi_reference.py",',
+            '        "reference-accounts/hypotheses.yaml",',
+            '        "reference-accounts/results.csv",',
+            '        "reference-accounts/looks.yaml",',
+            '        "reference-accounts/templates/the.care.logic.yaml",',
+            '        "reference-accounts/templates/nuts0629.yaml",',
+            '        "reference-accounts/templates/junjun_ranran.yaml",',
+            '        "reference-accounts/templates/yako.shiawasekon.yaml",',
+            '        "affi_bake.py",',
+            "    ]",
+            "    for rel in files:",
+            "        dest = LOCAL / rel",
+            "        dest.parent.mkdir(parents=True, exist_ok=True)",
+            "        urllib.request.urlretrieve(f\"{RAW}/{rel}\", dest)",
+            '        print("取りました", rel)',
+            "sys.path.insert(0, str(LOCAL))",
+            "import affi_reference as ref",
+            "ref.ROOT = LOCAL",
+            'ref.TEMPLATES = LOCAL / "reference-accounts" / "templates"',
+            'ref.HYPOTHESES = LOCAL / "reference-accounts" / "hypotheses.yaml"',
+            'ref.RESULTS = LOCAL / "reference-accounts" / "results.csv"',
+            'ref.LOOKS = LOCAL / "reference-accounts" / "looks.yaml"',
+            'print("読みました", LOCAL)',
+            "",
+        ]
+    )
+
+
+def _check_cell() -> str:
+    return "\n".join(
+        [
+            "import affi_bake",
+            "import affi_reference as ref",
+            "",
+            'if "HANDLE" not in globals():',
+            '    print("先に上の「再現する話」を実行してください。")',
+            "else:",
+            '    print(affi_bake.story_check(HANDLE, globals().get("MODE")))',
+            '    if "look" not in globals():',
+            '        print("見た目はまだです。選んだ話の見た目のセルを実行してください。")',
+            "    else:",
+            '        print("---")',
+            '        print("プロンプトに入る見た目")',
+            "        try:",
+            '            print(ref.look_block(HANDLE, look)["ja"])',
+            "        except ValueError as exc:",
+            '            print("止まった:", exc)',
+            "",
+        ]
+    )
+
+
+def _nb_lines(source: str) -> list[str]:
+    if not source.endswith("\n"):
+        source += "\n"
+    return [line + "\n" for line in source.split("\n")[:-1]]
+
+
+def _nb_cell(kind: str, source: str, cell_id: str, *, form: bool = False) -> dict[str, Any]:
+    meta: dict[str, Any] = {"id": cell_id}
+    if form:
+        meta["cellView"] = "form"
+    cell: dict[str, Any] = {"cell_type": kind, "metadata": meta, "source": _nb_lines(source)}
+    if kind == "code":
+        cell["execution_count"] = None
+        cell["outputs"] = []
+    return cell
+
+
+def reference_notebook() -> dict[str, Any]:
+    """The reference Colab. One Japanese form per story."""
+    cells = [
+        _nb_cell("markdown", _intro(), "intro"),
+        _nb_cell("code", _loader_cell(), "load"),
+        _nb_cell("code", account_picker_cell(), "pick", form=True),
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# 見た目は、選んだ話のセルだけ",
+                    "",
+                    "下に4つのセルがあります。見出しが今の話と一致するセルだけを変えます。迷ったら初期値のまま、そのセルを実行してください。",
+                    "",
+                    "ほかの3つを実行しても、見た目は入りません。「この欄は使いません」と出ます。",
+                    "",
+                    "画像はここでは選びません。最後の「静止画」だけです。",
+                    "",
+                ]
+            ),
+            "look-note",
+        ),
+    ]
+    ids = {
+        "the.care.logic": "look-care",
+        "nuts0629": "look-dog",
+        "junjun_ranran": "look-cats",
+        "yako.shiawasekon": "look-drama",
+    }
+    for _label, handle in ACCOUNT_CHOICES:
+        cells.append(_nb_cell("code", story_form_cell(handle), ids[handle], form=True))
+    cells.append(
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# この話の確認",
+                    "",
+                    "選んだ1件の見た目と、その話の仮説だけを出します。ほかの話のテストは出しません。ここでは動画を焼きません。",
+                    "",
+                ]
+            ),
+            "check-note",
+        )
+    )
+    cells.append(_nb_cell("code", _check_cell(), "check"))
+    cells.append(
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# 投稿したあとの数字",
+                    "",
+                    "ジョブを書くだけなら、ここは飛ばして最後のセルへ。",
+                    "",
+                    "`research/affi-templates/reference-accounts/results.csv` に1行足す。空欄は0にしない。未入力のままにする。",
+                    "",
+                    "- `hypothesis_id` … H1-1 のような番号",
+                    "- `variant` … A か B",
+                    "- `views` … 72時間後の再生",
+                    "- `two_sec_hold_pct` … 2秒視聴のパーセント",
+                    "- `diagnosis_signups` … 婚活の診断申込。無い仮説は空欄",
+                    "",
+                    "本数が足りないと「本数不足」。基準を超えると A か B が出る。A/Bで変えるのは仮説の1項目だけ。見た目は両版で同じにする。",
+                    "",
+                ]
+            ),
+            "numbers",
+        )
+    )
+    cells.append(_nb_cell("code", bake_form_cell(), "bake", form=True))
+    return {
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "language_info": {"name": "python"},
+            "colab": {"name": "affi-reference-check", "provenance": []},
+        },
+        "cells": cells,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
