@@ -66,14 +66,28 @@ DRIVE_FREE_GIB = 2
 WEIGHTS_CACHE_GIB = 70
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 PHOTOREAL_NAME_MARKS = ("photoreal", "realperson", "real-person", "実写")
-INPUT_SOURCE_DEFAULT = "Drive input"
-INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, "アップロード")
-REF_SOURCE_DEFAULT = "なし（元画像の顔）"
-REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, "Drive から", "アップロード")
+# ③のフォームは A と B で分ける。A が編集する絵。B は顔の別カット（無くてよい）。
+INPUT_SOURCE_DEFAULT = "Driveのinputフォルダ（既定）"
+INPUT_SOURCE_UPLOAD = "この画面でファイルを選ぶ（PC）"
+INPUT_SOURCE_OPTIONS = (INPUT_SOURCE_DEFAULT, INPUT_SOURCE_UPLOAD)
+INPUT_SOURCE_ALIASES = {
+    "Drive input": INPUT_SOURCE_DEFAULT,
+    "アップロード": INPUT_SOURCE_UPLOAD,
+}
+REF_SOURCE_DEFAULT = "使わない（元画像の顔のまま）"
+REF_SOURCE_DRIVE = "Driveのinputから別の1枚"
+REF_SOURCE_UPLOAD = "この画面で別の1枚を選ぶ（PC）"
+REF_SOURCE_OPTIONS = (REF_SOURCE_DEFAULT, REF_SOURCE_DRIVE, REF_SOURCE_UPLOAD)
+REF_SOURCE_ALIASES = {
+    "なし（元画像の顔）": REF_SOURCE_DEFAULT,
+    "Drive から": REF_SOURCE_DRIVE,
+    "アップロード": REF_SOURCE_UPLOAD,
+}
 UPLOAD_PHONE_HINT = (
     "スマホの Colab ではファイル選択が使えない。"
-    "入力は Drive input。JPG は Drive の qwen-image-edit-nsfw/input に置く。"
-    "1枚だけなら 入力ファイル名 にファイル名を入れる。"
+    "A 元画像は「Driveのinputフォルダ」。JPG は Drive の qwen-image-edit-nsfw/input。"
+    "1枚だけなら 元画像のファイル名。"
+    "B 参照は既定の「使わない」。別カットだけ 参照のファイル名。A と B に同じファイルは入れない。"
 )
 # Colab ships Pillow 11.3 with a matching _imaging .so. Do not -U to 12:
 # 12.0 is missing _Ink; 12.3 .py on an 11.3 .so raises ImportError.
@@ -986,6 +1000,25 @@ def ref_source_form_options() -> list[str]:
     return list(REF_SOURCE_OPTIONS)
 
 
+def normalize_input_source(label: str) -> str:
+    name = (label or "").strip()
+    return INPUT_SOURCE_ALIASES.get(name, name)
+
+
+def normalize_ref_source(label: str) -> str:
+    name = (label or "").strip()
+    return REF_SOURCE_ALIASES.get(name, name)
+
+
+def same_image_slot(source_name: str, ref_name: str) -> bool:
+    """True when A and B name the same file. Empty B is not a clash."""
+    left = Path((source_name or "").strip()).name.lower()
+    right = Path((ref_name or "").strip()).name.lower()
+    if not left or not right:
+        return False
+    return left == right or Path(left).stem == Path(right).stem
+
+
 def drive_space_lines() -> list[str]:
     return [
         "これは i2i（元画像を編集）。t2i ではない。",
@@ -994,7 +1027,7 @@ def drive_space_lines() -> list[str]:
         f"Drive の空きは {DRIVE_FREE_GIB}GB あれば足りる。H3 の参照土台 21GB は不要。",
         f"重みは Colab ディスク（HuggingFace キャッシュ 約{WEIGHTS_CACHE_GIB}GB）。Drive には載せない。",
         "GPU は A100 / H100。L4 は offload。T4 は不可。",
-        "スマホは Drive input。アップロード（ファイル選択）は PC だけ。",
+        "A 元画像は Drive の input。B 参照は既定で使わない。ファイル選択は PC だけ。",
     ]
 
 

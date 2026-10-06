@@ -45,7 +45,7 @@ H3 動画ノートとは **別**。同時に動かさない。このノートは
 
 H3 動画は [こちら]({H3_COLAB})。
 
-**これは i2i**（元画像＝Picture 1 を編集）。文章だけから描かない。任意で **顔・画風の参照**（Picture 2）。
+**これは i2i。** ③のフォームは上下で分かれる。**A 元画像**が編集する絵（必須）。**B 参照画像**は顔の別カット（無くてよい。既定は使わない）。B を使わないまま A に1枚入れれば、その顔をそのまま使う。A と B に同じファイルは入れない。
 
 Drive の空きは **2GB** あれば足りる。置くのは `input/` と `output/` の JPG だけ。重みは Colab ディスク約70GB（2511 + AIO）。H3 の参照土台 21GB は不要。②の **追加LoRA** はオフのまま（Space と同じ。NSFW は AIO 焼き込み）。オンにすると jt65 の `Qwen4Play` などを載せる（顔が別の人になりやすい）。
 
@@ -55,7 +55,7 @@ Drive の空きは **2GB** あれば足りる。置くのは `input/` と `outpu
 2. ①と②を実行（③は画像を置いてから）
 3. ① Drive 許可。起点 JPG は `qwen-image-edit-nsfw/input`
 4. ② 初回は AIO 28GB のダウンロード（待つ）。Drive には載せない。Pillow は Colab の **11.3** のまま（12 に上げると `_imaging` が食い違う）。`torchao>=0.16` を入れる（Space の 0.11 は今の git+diffusers で `FqnToConfig` が無く落ちる）
-5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。入力は **Drive input**（スマホはこれ。アップロード＝ファイル選択は PC だけ）。1枚だけなら **入力ファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば参照画像。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。Picture 1 の見た目をコピー。行為でも写真や漫画にしない。CFG1 では manga / line work を書くと漫画になるので入力のままには書かない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**服を外す**と**フタナリ勃起**はクイックと別のチェック（必須ではない。アナル／脱糞でも効く。オフなら服残し／竿なし）。クイック既定「なし（服・体は下のチェック）」は行為を足さないだけ。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
+5. ③ クイックプロンプトと **画風**と **竿役**。**解剖Fixerは既定オフ**（アナル／脱糞の穴試験。オンは Genatomy epoch-7 を 0.25。オフとオンで `edit-*-fixoff.jpg` / `edit-*-fixon.jpg`。顔が崩れたらオフ。②の追加LoRAとは別。試験はランダムシードをオフ）。**A 元画像**は Drive の input（スマホはこれ。ファイル選択は PC の「この画面で選ぶ」だけ）。1枚だけなら **元画像のファイル名**。**B 参照**は既定「使わない」。別カットだけ **参照のファイル名**。キャンバス既定は **auto（入力のアスペクト）**。A100 は GPU 常駐。プロンプトrewriteは **オフのまま**（オンにすると VL が顔を捨てる）。顔は Picture 1 の上半分を Picture 2 に自動。別カットがあれば B 参照。プロンプトは **短い編集指示**。長い IDENTITY LOCK 文は顔を捨てて別の人を描く。**顔と画風の固定は必須。** 画風は変換しない（既定は入力のまま。Picture 1 の見た目をコピー。行為でも写真や漫画にしない。CFG1 では manga / line work を書くと漫画になるので入力のままには書かない）。変えてよいのは服・姿勢・場所・行為。アナルは **肛門だけ**（前の穴に入れるな。結合は尻側の穴）。バック／立ちバック／正常位／騎乗位／座位。小便は **放尿（立ち）／放尿（しゃがみ）／ご褒美小便**（黄色い水は亀頭先の尿道口。マンコや肛門から出さない。白・精液禁止）。脱糞は **脱糞（しゃがみ）／脱糞（後背）**（尻から見た肛門から今出す土色の固形の棒。前の穴から出さない。ゼリー禁止）。**服を外す**と**フタナリ勃起**はクイックと別のチェック（必須ではない。アナル／脱糞でも効く。オフなら服残し／竿なし）。クイック既定「なし（服・体は下のチェック）」は行為を足さないだけ。**フタナリ勃起**は入力の人の体（玉なし・マンコあり・竿20cm）。**竿役**はセックス／ご褒美小便の挿入・放尿する側。既定は **ふたなり（玉なし・男禁止）**。男は選んだときだけ。服抜き・一人放尿・脱糞では竿役は使わない。保存は Drive の `qwen-image-edit-nsfw/output`（Git に JPG を入れない）
 
 実写の他人は入れるな。成人 21+。
 """
@@ -261,13 +261,15 @@ CELL2 = (
     .replace("__DIFFUSERS_SPEC__", DIFFUSERS_COLAB_SPEC)
 )
 
-CELL3 = r'''#@title ③ クイックプロンプト（i2i・参照画像）
+CELL3 = r'''#@title ③ 編集（A 元画像 / B 参照）
 print("=" * 60)
 print(" ③ 編集（i2i）")
+print(" A = 編集する元画像（必須）")
+print(" B = 顔の別カット（無くてよい。既定は使わない）")
 print("=" * 60)
 
 from google.colab import files
-from IPython.display import display
+from IPython.display import Markdown, display
 from pathlib import Path
 from PIL import Image
 import os, random, sys, torch, urllib.request
@@ -302,12 +304,19 @@ from qwen_image_edit_nsfw import (
     face_lock_image,
     genatomy_stack,
     infer_kwargs,
+    INPUT_SOURCE_UPLOAD,
+    REF_SOURCE_DEFAULT,
+    REF_SOURCE_DRIVE,
+    REF_SOURCE_UPLOAD,
     input_source_form_options,
     list_input_images,
     lock_identity_prompt,
     lora_stack,
+    normalize_input_source,
+    normalize_ref_source,
     pipe_images,
     ref_source_form_options,
+    same_image_slot,
     refuse_photoreal,
     resize_rgb,
     resolve_input_paths,
@@ -332,14 +341,23 @@ OUT = Path(env["DRIVE_ROOT"]) / "output"
 IN.mkdir(parents=True, exist_ok=True)
 OUT.mkdir(parents=True, exist_ok=True)
 
+#@markdown ---
+#@markdown ### A. 元画像（編集する絵・必須）
+#@markdown **ここが直す絵。** 服・姿勢・場所・行為はこの絵から変わる。下の B には入れない。
+#@markdown Drive 既定: `qwen-image-edit-nsfw/input` の JPG。ファイル名が空ならフォルダの画像を全部。1枚だけならファイル名（例 `aya.jpg`）。
+元画像の取り方 = "Driveのinputフォルダ（既定）"  #@param [__INPUT_OPTS__]
+元画像のファイル名 = ""  #@param {type:"string"}
+#@markdown ---
+#@markdown ### B. 参照画像（顔の別カット・無くてよい）
+#@markdown **既定は使わない。** 元画像の顔をそのままロックする。A とは別の欄。
+#@markdown 別カットで顔を固定したいときだけ、**元画像とは違う1枚**をここへ。同じファイルは入れない。
+参照の取り方 = "使わない（元画像の顔のまま）"  #@param [__REF_OPTS__]
+参照のファイル名 = ""  #@param {type:"string"}
+#@markdown ---
+#@markdown ### 編集の中身
 クイックプロンプト = __DEFAULT_PRESET__  #@param [__QUICK_OPTS__]
 画風 = "入力のまま"  #@param [__STYLE_OPTS__]
-入力 = "Drive input"  #@param [__INPUT_OPTS__]
-入力ファイル名 = ""  #@param {type:"string"}
-参照画像 = "なし（元画像の顔）"  #@param [__REF_OPTS__]
-参照ファイル名 = ""  #@param {type:"string"}
 サイズ = "auto（入力）"  #@param [__CANVAS_OPTS__]
-PCから選ぶ = False  #@param {type:"boolean"}
 PROMPT = ""  #@param {type:"string"}
 #@markdown クイックは行為だけ。服とふたなりは下のチェック（必須ではない。アナル／脱糞でも効く）。
 #@markdown **服を外す** … 全裸。オフなら服は残る。クイックと別。必須ではない。
@@ -363,10 +381,17 @@ if 画風 not in style_form_options():
     raise SystemExit(f"unknown style: {画風}")
 if 竿役 not in giver_form_options():
     raise SystemExit(f"unknown 竿役: {竿役}")
-if 入力 not in input_source_form_options():
-    raise SystemExit(f"unknown input: {入力}")
-if 参照画像 not in ref_source_form_options():
-    raise SystemExit(f"unknown ref: {参照画像}")
+元の取り方 = normalize_input_source(元画像の取り方)
+参照とり = normalize_ref_source(参照の取り方)
+if 元の取り方 not in input_source_form_options():
+    raise SystemExit(f"unknown 元画像: {元画像の取り方}")
+if 参照とり not in ref_source_form_options():
+    raise SystemExit(f"unknown 参照: {参照の取り方}")
+if 参照とり != REF_SOURCE_DEFAULT and same_image_slot(元画像のファイル名, 参照のファイル名):
+    raise SystemExit(
+        "A と B が同じファイルです。編集する絵は A、顔の別カットは B。"
+        "同じ絵を顔ロックに使うなら B は「使わない」。"
+    )
 if サイズ not in canvas_form_options():
     raise SystemExit(f"unknown canvas: {サイズ}")
 print("i2i", True)
@@ -376,77 +401,90 @@ print("服を外す", 服を外す, "（必須ではない。アナル／脱糞�
 print("フタナリ勃起", フタナリ勃起, "（必須ではない。入力の人。竿役は相手）")
 print("giver", 竿役)
 print("解剖Fixer", 解剖Fixer)
-print("input", 入力)
-print("file", 入力ファイル名 or "(Drive の全部)")
-print("ref", 参照画像)
+print("A 元画像", 元の取り方, 元画像のファイル名 or "(フォルダの画像)")
+print("B 参照", 参照とり, 参照のファイル名 or "(使わない)")
 print("canvas", サイズ)
 print("rewrite", プロンプトrewrite)
-print("Drive input", IN)
+print("Drive の input フォルダ", IN)
 print(UPLOAD_PHONE_HINT)
 kept_all, _ = list_input_images(IN)
-print("あるファイル", [p.name for p in kept_all] or "なし")
+print("フォルダにあるファイル", [p.name for p in kept_all] or "なし")
+print("A のファイル名に書く → 編集する絵。B のファイル名に書く → 顔の別カット（使うときだけ）")
 
-ref_img = None
-ref_skip = ""
-if 参照画像 == "Drive から":
-    ref_skip = 参照ファイル名.strip()
-    if not ref_skip:
-        raise SystemExit("参照ファイル名を入れてください（Drive input の中）")
-    ref_path = IN / ref_skip
-    if not ref_path.is_file():
-        raise SystemExit(f"参照が無い: {ref_path}")
-    refuse_photoreal(ref_path)
-    ref_img = Image.open(ref_path)
-    print("REF Drive", ref_path.name, ref_img.size)
-elif 参照画像 == "アップロード":
-    if not PCから選ぶ:
-        raise SystemExit("スマホは参照画像＝Drive から＋参照ファイル名。PCから選ぶは PC だけ。")
-    print("顔・画風の参照（Picture 2）を1枚")
-    uploaded_ref = {}
+def _pick_files(slot, hint):
+    print("=" * 60)
+    print(slot)
+    print(hint)
+    print("スマホならここで止め、A/B を Drive に戻してください。")
+    print("=" * 60)
     try:
-        uploaded_ref = files.upload()
+        picked = files.upload()
     except KeyboardInterrupt:
-        uploaded_ref = {}
-    if not uploaded_ref:
-        raise SystemExit("参照画像がありません。スマホは参照画像＝Drive から。")
-    fname, blob = next(iter(uploaded_ref.items()))
-    refuse_photoreal(Path(fname))
-    raw = Path("/tmp") / f"ref-{Path(fname).name}"
-    raw.write_bytes(blob)
-    ref_img = Image.open(raw)
-    print("REF upload", fname, ref_img.size)
+        picked = {}
+    except Exception as exc:
+        raise SystemExit(UPLOAD_PHONE_HINT) from exc
+    return picked or {}
 
 jobs = []
-if 入力 == "アップロード" and PCから選ぶ:
-    print("PC のファイル選択")
-    uploaded = {}
-    try:
-        uploaded = files.upload()
-    except KeyboardInterrupt:
-        uploaded = {}
-    if uploaded:
-        for fname, blob in uploaded.items():
-            refuse_photoreal(Path(fname))
-            raw = Path("/tmp") / fname
-            raw.write_bytes(blob)
-            jobs.append((fname, Image.open(raw)))
-    else:
-        print("upload なし → Drive input")
+if 元の取り方 == INPUT_SOURCE_UPLOAD:
+    uploaded = _pick_files(
+        "A. 元画像を選ぶ（編集する絵）",
+        "直す絵を1枚。顔の参照ではない。参照は次の B。",
+    )
+    if not uploaded:
+        raise SystemExit("元画像が選ばれていません。" + UPLOAD_PHONE_HINT)
+    for fname, blob in uploaded.items():
+        refuse_photoreal(Path(fname))
+        raw = Path("/tmp") / fname
+        raw.write_bytes(blob)
+        jobs.append((fname, Image.open(raw)))
+        print("A 元画像", fname)
 if not jobs:
     kept, skipped = resolve_input_paths(
         IN,
-        want_name=入力ファイル名,
-        skip_name=ref_skip,
+        want_name=元画像のファイル名,
+        skip_name=参照のファイル名.strip() if 参照とり == REF_SOURCE_DRIVE else "",
     )
     for path in skipped:
         print("skip photoreal", path.name)
     if not kept:
         raise SystemExit(
-            "Drive input に画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置く。"
+            "A 元画像が無い。JPG/PNG を qwen-image-edit-nsfw/input に置く。"
             + UPLOAD_PHONE_HINT
         )
     for path in kept:
         jobs.append((path.name, Image.open(path)))
+        print("A 元画像", path.name)
+
+ref_img = None
+if 参照とり == REF_SOURCE_DRIVE:
+    ref_skip = 参照のファイル名.strip()
+    if not ref_skip:
+        raise SystemExit(
+            "B 参照のファイル名を入れてください。Drive input の中の、元画像とは別の1枚。"
+            "使わないなら B は「使わない」。"
+        )
+    ref_path = IN / ref_skip
+    if not ref_path.is_file():
+        raise SystemExit(f"B 参照が無い: {ref_path}")
+    refuse_photoreal(ref_path)
+    ref_img = Image.open(ref_path)
+    print("B 参照", ref_path.name, ref_img.size)
+elif 参照とり == REF_SOURCE_UPLOAD:
+    uploaded_ref = _pick_files(
+        "B. 参照画像を選ぶ（顔の別カット）",
+        "元画像とは別の1枚。この絵は編集しない。顔だけ使う。",
+    )
+    if not uploaded_ref:
+        raise SystemExit("参照画像がありません。使わないなら B は「使わない」。" + UPLOAD_PHONE_HINT)
+    fname, blob = next(iter(uploaded_ref.items()))
+    refuse_photoreal(Path(fname))
+    raw = Path("/tmp") / f"ref-{Path(fname).name}"
+    raw.write_bytes(blob)
+    ref_img = Image.open(raw)
+    print("B 参照", fname, ref_img.size)
+else:
+    print("B 参照は使いません。A の顔のまま。")
 
 stack = lora_stack(服を外す, フタナリ勃起, preset=クイックプロンプト, extra=PROMPT)
 loaded = globals().get("QWEN_EDIT_LORAS") or set()
@@ -498,8 +536,11 @@ print("offload", offload)
 print("vae_area", clamp_edit_vae_area(pipe, DEFAULT_WIDTH, DEFAULT_HEIGHT))
 ref_canvas = snapped_rgb(ref_img) if ref_img is not None else None
 if ref_canvas is not None:
-    print("REF canvas", ref_canvas.size)
+    print("B 参照（顔だけ。この絵は編集しない）", ref_canvas.size)
+    display(Markdown("**B. 参照画像（顔だけ。この絵は編集しない）**"))
     display(ref_canvas)
+else:
+    print("B 参照なし。A の顔をロック")
 
 used = vram_used_gib(torch)
 print("VRAM used GiB", round(used, 1))
@@ -546,7 +587,8 @@ for fname, src in jobs:
         width=w,
         size_auto=False,
     )
-    print("IN", fname, src.size, "→", canvas.size, "pictures", len(images), "Picture 2", face_how, images[1].size, "canvas", w, h)
+    print("A 元画像", fname, src.size, "→", canvas.size, "pictures", len(images), "Picture 2", face_how, images[1].size, "canvas", w, h)
+    display(Markdown("**A. 元画像（これを編集する）**"))
     display(canvas)
     try:
         if names and hasattr(pipe, "set_adapters"):

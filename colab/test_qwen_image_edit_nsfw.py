@@ -117,6 +117,9 @@ from qwen_image_edit_nsfw import (
     has_leftover_man,
     infer_kwargs,
     inject_aio_state,
+    normalize_input_source,
+    normalize_ref_source,
+    same_image_slot,
     is_cuda_oom,
     input_source_form_options,
     is_anal_preset,
@@ -1282,8 +1285,18 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert "Drive には載せない" in blob
     assert "A100" in blob
     assert "Phr00t" in blob
-    assert input_source_form_options()[0] == "Drive input"
-    assert REF_SOURCE_DEFAULT in ref_source_form_options()
+    assert input_source_form_options()[0] == "Driveのinputフォルダ（既定）"
+    assert input_source_form_options()[1] == "この画面でファイルを選ぶ（PC）"
+    assert normalize_input_source("Drive input") == input_source_form_options()[0]
+    assert normalize_input_source("アップロード") == input_source_form_options()[1]
+    assert ref_source_form_options()[0] == REF_SOURCE_DEFAULT
+    assert REF_SOURCE_DEFAULT.startswith("使わない")
+    assert normalize_ref_source("なし（元画像の顔）") == REF_SOURCE_DEFAULT
+    assert normalize_ref_source("Drive から") == "Driveのinputから別の1枚"
+    assert same_image_slot("aya.jpg", "aya.jpg")
+    assert same_image_slot("aya.jpg", "Aya.JPG")
+    assert not same_image_slot("aya.jpg", "")
+    assert not same_image_slot("aya.jpg", "face.jpg")
     single = compose_edit_prompt("")
     assert "do not swap" in single.lower()
     assert "not text-to-image" not in single
@@ -1326,7 +1339,8 @@ def test_i2i_ref_and_drive_inputs(tmp_path):
     assert pipe_images(canvas) == [canvas]
     assert pipe_images(canvas, locked) == [canvas, locked]
     assert "スマホ" in UPLOAD_PHONE_HINT
-    assert "Drive input" in UPLOAD_PHONE_HINT
+    assert "元画像のファイル名" in UPLOAD_PHONE_HINT
+    assert "A と B" in UPLOAD_PHONE_HINT
     one, _ = resolve_input_paths(tmp_path, want_name="01-stairs.png", skip_name="face-lock.png")
     assert one == [ok]
     by_stem, _ = resolve_input_paths(tmp_path, want_name="01-stairs")
@@ -1363,8 +1377,11 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "Qwen-Image-Edit-2511" in joined
     assert "disable_safety" in joined
     assert "files.upload" in joined
-    assert "Drive input" in joined
-    assert "参照画像" in joined
+    assert "元画像の取り方" in joined
+    assert "参照の取り方" in joined
+    assert "A. 元画像" in joined
+    assert "B. 参照画像" in joined
+    assert "PCから選ぶ" not in joined
     assert "Picture 2" in joined
     assert "has_ref=" in src
     assert "pipe_images" in src
@@ -1442,8 +1459,10 @@ def test_writer_notebook_is_separate_a100_nsfw():
         "Qwen4Play",
         "入力のまま",
         "顔と画風の固定は必須",
-        "Drive input",
-        "参照画像",
+        "Driveのinputフォルダ（既定）",
+        "使わない（元画像の顔のまま）",
+        "A. 元画像",
+        "B. 参照画像",
         "i2i",
     ):
         assert label in joined
@@ -1472,8 +1491,10 @@ def test_writer_notebook_is_separate_a100_nsfw():
     assert "clamp_edit_vae_area" in src
     assert "height=h" in src
     assert "width=w" in src
-    assert "入力ファイル名" in src
-    assert "PCから選ぶ" in src
+    assert "元画像のファイル名" in src
+    assert "参照のファイル名" in src
+    assert "PCから選ぶ" not in src
+    assert "same_image_slot" in src
     assert "KeyboardInterrupt" in src
     assert "UPLOAD_PHONE_HINT" in src
     assert "スマホ" in joined
