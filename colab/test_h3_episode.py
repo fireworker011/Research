@@ -393,7 +393,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_APPEAR" in src
     assert "H3_EPISODE_AYA_HAIR" in src
     assert 'AYA_SHAFT = "今のまま"' in src
-    assert 'ENEMY_LOOK = ""' in src
+    assert 'LOOK_MIKI = "今のまま（迷ったらこれ）"' in src
+    assert "LOOK_REI" in src and "LOOK_KANA" in src and "LOOK_SHINO" in src
+    assert "LOOK_GIN" in src and "LOOK_TSUNO" in src
+    assert 'FREE_MIKI = ""' in src and 'FREE_TSUNO = ""' in src
     assert "H3_EPISODE_SCENES" in src
     assert "SCENE_MIKI" in src and "SCENE_SHINO" in src
     assert "canonical_episode" in src
@@ -6697,12 +6700,16 @@ def test_hospital_place_swaps_nouns_after_the_act_is_chosen():
         story_override="誘う",
         invite_pose_override="壁立ちバック",
         enemy_kind_override="人間",
-        enemy_look_override="韓国",
+        enemy_looks_override={"miki": "韓国", "rei": "今のまま", "kana": "北欧", "shino": "日本"},
     )
     human_prompt = build_beat_prompt(human, next(b for b in human["beats"] if b["id"] == "03-kiss-in"))
     assert "vivid purple" not in human_prompt
     assert "hollow empty" not in human_prompt
     assert "24cm" in human_prompt
     assert "travels into the anus" in human_prompt.lower()
-    assert "monolid" in human_prompt
+    assert "monolid" in human["cast"]["miki"]["lock"]
+    assert "long brown permed hair" in human["cast"]["rei"]["lock"]
+    assert "monolid" not in human["cast"]["rei"]["lock"]
+    assert "light blue eyes" in human["cast"]["kana"]["lock"]
+    assert "long straight black hair" in human["cast"]["shino"]["lock"]
 

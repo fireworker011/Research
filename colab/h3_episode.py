@@ -4208,6 +4208,32 @@ _HUMAN_SKIN_SWAPS = (
 )
 
 
+def _parse_enemy_looks(raw: dict[str, str] | str) -> dict[str, str]:
+    """Per-enemy look menu. A string is miki=韓国,rei=今のまま."""
+    pairs: dict[str, str] = {}
+    if isinstance(raw, dict):
+        items = raw.items()
+    else:
+        items = []
+        for part in str(raw).replace("\n", ",").split(","):
+            if not part.strip():
+                continue
+            if "=" not in part:
+                raise EpisodeError(f"enemy look needs id=choice, got {part}")
+            cid, choice = part.split("=", 1)
+            items.append((cid, choice))
+    out: dict[str, str] = {}
+    for cid, choice in items:
+        name = str(cid or "").strip().lower()
+        if name not in _ENEMY_LOOK_IDS:
+            raise EpisodeError(f"unknown enemy look id {cid}")
+        key = canonical_look(str(choice or ""))
+        if not key:
+            raise EpisodeError(f"unknown look for {name}: {choice}")
+        out[name] = key
+    return out
+
+
 def _wire_look_choices(render: dict[str, Any]) -> None:
     """今のまま ignores free text. その他 keeps it. A named look fills hair and face."""
     app = dict(render.get("appearance") or {})
@@ -4228,14 +4254,21 @@ def _wire_look_choices(render: dict[str, Any]) -> None:
             app["aya"] = aya
         else:
             app.pop("aya", None)
-    if render.get("enemy_look"):
-        enemy_look = canonical_look(str(render.get("enemy_look") or "")) or "keep"
-        if enemy_look == "keep":
-            for cid in _ENEMY_LOOK_IDS:
+    per_enemy = render.get("enemy_looks") if isinstance(render.get("enemy_looks"), dict) else {}
+    if per_enemy or render.get("enemy_look"):
+        shared = canonical_look(str(render.get("enemy_look") or "")) if render.get("enemy_look") else ""
+        for cid in _ENEMY_LOOK_IDS:
+            raw_choice = per_enemy.get(cid, shared)
+            if raw_choice in ("", None):
+                continue
+            choice = canonical_look(str(raw_choice)) or "keep"
+            if choice == "keep":
                 app.pop(cid, None)
-        elif enemy_look != "other":
-            spec = LOOK_MODES[enemy_look]
-            for cid in _ENEMY_LOOK_IDS:
+            elif choice == "other":
+                if not app.get(cid):
+                    app.pop(cid, None)
+            else:
+                spec = LOOK_MODES[choice]
                 row = dict(app.get(cid) or {})
                 if spec.get("hair"):
                     row["hair"] = spec["hair"]
@@ -4466,6 +4499,7 @@ def prepare_episode(
     aya_look_override: str | None = None,
     enemy_kind_override: str | None = None,
     enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4566,6 +4600,8 @@ def prepare_episode(
         if not enemy_look:
             raise EpisodeError(f"unknown enemy look {enemy_look_override}")
         render["enemy_look"] = enemy_look
+    if enemy_looks_override not in (None, "", {}):
+        render["enemy_looks"] = _parse_enemy_looks(enemy_looks_override)
     appearance = parse_appearance(appearance_override)
     if appearance:
         render["appearance"] = appearance
@@ -7726,6 +7762,7 @@ def run_episode(
     aya_look_override: str | None = None,
     enemy_kind_override: str | None = None,
     enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7772,6 +7809,7 @@ def run_episode(
         aya_look_override=aya_look_override,
         enemy_kind_override=enemy_kind_override,
         enemy_look_override=enemy_look_override,
+        enemy_looks_override=enemy_looks_override,
     )
     print(
         describe_run(

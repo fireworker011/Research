@@ -54,7 +54,12 @@ AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
 __ENEMY_KIND_HELP__
 ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
 __ENEMY_LOOK_HELP__
-ENEMY_LOOK_MENU = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_MIKI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_REI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_KANA = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_SHINO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_GIN = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_TSUNO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
 #@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
 SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
@@ -90,9 +95,13 @@ AYA_DIRT = ""  #@param {type:"string"}
 AYA_SWEAT = ""  #@param {type:"string"}
 AYA_CLOTHES = ""  #@param {type:"string"}
 AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
-#@markdown **敵の容姿。空なら今のまま。1行に1人。** `miki; hair=a short blonde bob; clothes=a torn white shirt; shaft=今のまま`
-#@markdown id は miki / rei / kana / shino / gin / tsuno / dog / slime / anthro。key は hair color face dirt sweat clothes shaft。
-ENEMY_LOOK = ""  #@param {type:"string"}
+#@markdown **その他の自由記入。** その人の見た目が「その他」のときだけ使う。`hair=...; face=...`
+FREE_MIKI = ""  #@param {type:"string"}
+FREE_REI = ""  #@param {type:"string"}
+FREE_KANA = ""  #@param {type:"string"}
+FREE_SHINO = ""  #@param {type:"string"}
+FREE_GIN = ""  #@param {type:"string"}
+FREE_TSUNO = ""  #@param {type:"string"}
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
@@ -136,7 +145,17 @@ os.environ["H3_EPISODE_WEATHER"] = WEATHER
 os.environ["H3_EPISODE_DIRT"] = DIRT
 os.environ["H3_EPISODE_AYA_LOOK"] = AYA_LOOK
 os.environ["H3_EPISODE_ENEMY_KIND"] = ENEMY_KIND
-os.environ["H3_EPISODE_ENEMY_LOOK_MENU"] = ENEMY_LOOK_MENU
+os.environ["H3_EPISODE_ENEMY_LOOKS"] = ",".join(
+    f"{cid}={choice}"
+    for cid, choice in (
+        ("miki", LOOK_MIKI),
+        ("rei", LOOK_REI),
+        ("kana", LOOK_KANA),
+        ("shino", LOOK_SHINO),
+        ("gin", LOOK_GIN),
+        ("tsuno", LOOK_TSUNO),
+    )
+)
 _seed = str(SEED or "").strip()
 if _seed:
     os.environ["H3_EPISODE_SEED"] = _seed
@@ -161,7 +180,18 @@ os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
 os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
-os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip() if ENEMY_LOOK_MENU == "その他" else ""
+os.environ["H3_EPISODE_ENEMY_LOOK"] = "\n".join(
+    f"{cid}; {text}"
+    for cid, choice, text in (
+        ("miki", LOOK_MIKI, FREE_MIKI),
+        ("rei", LOOK_REI, FREE_REI),
+        ("kana", LOOK_KANA, FREE_KANA),
+        ("shino", LOOK_SHINO, FREE_SHINO),
+        ("gin", LOOK_GIN, FREE_GIN),
+        ("tsuno", LOOK_TSUNO, FREE_TSUNO),
+    )
+    if choice == "その他" and str(text or "").strip()
+)
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -353,7 +383,7 @@ def make_nb() -> dict:
         .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
         .replace("__ENEMY_KIND_DEFAULT__", json.dumps(ui_default("enemy_kind"), ensure_ascii=False))
         .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
-        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — 人間のとき各国の顔。その他のときだけ自由記入"))
+        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — みき、れい、かな、しの、ぎん、角で別々。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
