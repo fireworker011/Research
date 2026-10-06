@@ -88,6 +88,162 @@ DOG_PATTERNS = (
     ("会話", "talk"),
 )
 _MODE_JA = {mode: label.split("（")[0] for label, mode in DOG_PATTERNS}
+FILL_CHOICES = (
+    ("テンプレ", "template"),
+    ("オマージュ", "homage"),
+    ("元の型のまま", "source"),
+)
+# Short fills for the form. The source account's face, lines, and song titles stay out.
+_FILL_NOTE = "型の絵とカメラ。元の顔、元の台詞、曲名は入れない。"
+_FILLS: dict[tuple[str, str | None], dict[str, dict[str, Any]]] = {
+    ("the.care.logic", None): {
+        "template": {
+            "theme": "夕方の乾燥",
+            "subject_en": "Evening dryness. The character worries, handles the tea leaves, then smiles.",
+            "lines": ("乾燥が気になる", "茶葉をなでる", "おちついた"),
+        },
+        "homage": {
+            "theme": "1体の悩み",
+            "subject_en": "One character only. A close view of the worry, then the remedy, then a smile. No title card.",
+            "lines": ("これはいや", "こうする", "よくなった"),
+        },
+        "source": {
+            "theme": "悩み、対処、笑顔",
+            "subject_en": "A close view of one worried character, then the character handles the material, then the character smiles.",
+            "lines": ("困った", "手当てする", "笑った"),
+        },
+    },
+    ("nuts0629", "interview"): {
+        "template": {
+            "theme": "ごはんの時間",
+            "subject_en": "Mealtime. An adult asks the dog which food, and the dog answers.",
+            "lines": ("ごはんはどれ", "これにする"),
+        },
+        "homage": {
+            "theme": "同じ子の食いしん坊",
+            "subject_en": "The same dog wants food. The bag and the product name stay out of this moment.",
+            "lines": ("まだ", "うん"),
+        },
+        "source": {
+            "theme": "質問と返事",
+            "subject_en": "One continuous shot. An adult holds a microphone toward the dog, then the dog answers in close view.",
+            "lines": ("今日の気分は", "げんき"),
+        },
+    },
+    ("nuts0629", "asmr"): {
+        "template": {
+            "theme": "パンをかじる",
+            "subject_en": "A hand offers plain bread and the dog bites.",
+            "lines": (),
+        },
+        "homage": {
+            "theme": "同じ子がかじる",
+            "subject_en": "The same dog bites. The product bag stays out of frame.",
+            "lines": (),
+        },
+        "source": {
+            "theme": "手から食べ物",
+            "subject_en": "The food changes. A hand offers it and the dog bites.",
+            "lines": (),
+        },
+    },
+    ("nuts0629", "dance"): {
+        "template": {
+            "theme": "全身のダンス",
+            "subject_en": "The same dog dances with the whole body in a plain costume. No song title.",
+            "lines": (),
+        },
+        "homage": {
+            "theme": "同じ子のダンス",
+            "subject_en": "The same costumed dog dances in one shot. The song is not copied.",
+            "lines": (),
+        },
+        "source": {
+            "theme": "固定カメラのダンス",
+            "subject_en": "One continuous whole-body dance. The camera is fixed and the background is out of focus.",
+            "lines": (),
+        },
+    },
+    ("nuts0629", "talk"): {
+        "template": {
+            "theme": "短い掛け合い",
+            "subject_en": "Two of the same dog stand side by side and trade one short line.",
+            "lines": ("どっちが先",),
+        },
+        "homage": {
+            "theme": "同じ子が2匹",
+            "subject_en": "The same dog twice, almost still, with one short exchange. The product stays out.",
+            "lines": ("まだ食べる",),
+        },
+        "source": {
+            "theme": "並んだ2匹",
+            "subject_en": "Two of the same dog stand side by side and stay almost still.",
+            "lines": ("となりにいる",),
+        },
+    },
+    ("junjun_ranran", None): {
+        "template": {
+            "theme": "部屋の言い合い",
+            "subject_en": "Two cats argue in one room, then the mood ends on a smile.",
+            "lines": ("それはちがう", "そうですか", "まあいいか"),
+        },
+        "homage": {
+            "theme": "小さな不一致",
+            "subject_en": "A small mismatch between the two cats. The owner is not the center.",
+            "lines": ("またそれ", "すみません", "よし"),
+        },
+        "source": {
+            "theme": "寄りからオチ",
+            "subject_en": "A close view of a conflict, one spoken line per shot, ending on a smile.",
+            "lines": ("なんで", "だって", "笑った"),
+        },
+    },
+    ("yako.shiawasekon", None): {
+        "template": {
+            "theme": "カフェで会う",
+            "subject_en": "An adult woman and an adult man talk in a cafe.",
+            "lines": ("ここで会うね", "ずれてたね", "手をつなごう"),
+        },
+        "homage": {
+            "theme": "関係が変わる",
+            "subject_en": "The pair talks, and the relationship changes on the last line.",
+            "lines": ("元気", "最近どう", "一緒に帰ろう"),
+        },
+        "source": {
+            "theme": "会話だけ",
+            "subject_en": "Adults talking with no narration. The last gesture changes the relationship.",
+            "lines": ("今夜はここ", "わかった", "行こう"),
+        },
+    },
+}
+
+
+def resolve_fill(label: str) -> str:
+    """Map the content menu to template, homage, or source."""
+    fills = {text: fill for text, fill in FILL_CHOICES}
+    fills.update({fill: fill for _text, fill in FILL_CHOICES})
+    found = fills.get(label)
+    if found is None:
+        raise KeyError(f"中身が無い: {label}")
+    return found
+
+
+def pack_for(handle: str, mode: str | None, fill: str) -> dict[str, Any]:
+    key_mode = mode if handle == "nuts0629" else None
+    if handle == "nuts0629" and key_mode is None:
+        key_mode = "interview"
+    try:
+        pack = _FILLS[(handle, key_mode)][fill]
+    except KeyError as exc:
+        raise KeyError(f"中身が無い: {handle} {key_mode} {fill}") from exc
+    return {
+        "id": fill,
+        "label": next(text for text, key in FILL_CHOICES if key == fill),
+        "theme": pack["theme"],
+        "subject_en": pack["subject_en"],
+        "lines": tuple(pack["lines"]),
+        "note": _FILL_NOTE,
+    }
 
 
 def resolve_account(label: str, dog_pattern: str = "インタビュー（既定）") -> tuple[str, str | None]:
@@ -261,9 +417,16 @@ def bake_reference(
     lines: Sequence[str] | None = None,
     look: Mapping[str, Any] | None = None,
     image: str | None = None,
+    fill: str | None = None,
 ) -> dict[str, Any]:
     """One job. The template's timeline is the cut list. H3 only packs generation."""
     item = ref.template_for(handle)
+    chosen = pack_for(handle, mode, fill) if fill else None
+    if chosen and (theme or "").strip() in {"", PLACEHOLDER_THEME}:
+        theme = chosen["theme"]
+    if chosen and lines is None:
+        lines = list(chosen["lines"])
+    subject_en = chosen["subject_en"] if chosen else ""
     theme_text = (theme or "").strip() or PLACEHOLDER_THEME
     ref.reject_likeness(theme_text)
     for line in lines or []:
@@ -324,6 +487,7 @@ def bake_reference(
                     part_index=part_index,
                     part_count=len(pieces),
                     audio=view["audio"],
+                    subject_en=subject_en,
                 )
                 clip_id = f"{serial:02d}-" + "-".join(cut_ids)
                 end_s = round(cursor + trim_s, 3)
@@ -371,6 +535,10 @@ def bake_reference(
         "genre": item["genre"],
         "mode": view["mode"],
         "theme": theme_text,
+        "subject_en": subject_en,
+        "fill": None
+        if chosen is None
+        else {"id": chosen["id"], "label": chosen["label"], "note": chosen["note"]},
         "duration_s": duration_s,
         "canvas": view["canvas"],
         "aspect": aspect,
@@ -941,10 +1109,10 @@ def bake_form_cell() -> str:
         [
             '#@title この話のジョブを書く（動画は焼かない） { display-mode: "form" }',
             "#@markdown 上で選んだ1件だけ書きます。動画は焼きません。投稿しません。",
-            "#@markdown テーマが「テーマは入力」のままだと、ジョブは止まります。",
-            "#@markdown せりふがあるカットは、上から1行ずつ台詞を書く。ダンスと咀嚼は空でよい。",
+            "#@markdown 中身は3つです。テンプレ、オマージュ、元の型のまま。テーマと台詞は入っています。",
+            "#@markdown 元の顔、元の台詞、曲名は入っていません。台詞を自分で書くときだけ下の欄を使います。",
             "#@markdown 静止画は、最初のコマに使う画像ファイルの場所です。ここだけです。",
-            'テーマ = "テーマは入力" #@param {type:"raw"}',
+            f"中身 = {_py(FILL_CHOICES[0][0])} #@param {_param_list([text for text, _fill in FILL_CHOICES])}",
             '台詞 = "" #@param {type:"raw"}',
             '静止画 = "" #@param {type:"raw"}',
             "",
@@ -963,12 +1131,12 @@ def bake_form_cell() -> str:
             '    print("---")',
             "    try:",
             '        print(ref.look_block(HANDLE, picked)["ja"])',
-            '        lines = [line.strip() for line in 台詞.splitlines() if line.strip()]',
+            '        typed = [line.strip() for line in 台詞.splitlines() if line.strip()]',
             "        job = affi_bake.bake_reference(",
             "            HANDLE,",
             "            mode=MODE,",
-            "            theme=テーマ,",
-            "            lines=lines,",
+            "            fill=affi_bake.resolve_fill(中身),",
+            "            lines=typed or None,",
             "            look=picked,",
             "            image=静止画.strip() or None,",
             "        )",
@@ -978,6 +1146,11 @@ def bake_form_cell() -> str:
             '        out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
             '        folder = HANDLE if not MODE else HANDLE + "-" + MODE',
             "        path = affi_bake.write_job(job, out / folder)",
+            '        print(job["fill"]["label"], job["theme"])',
+            '        print(job["fill"]["note"])',
+            "        for cut in job[\"cuts\"]:",
+            "            if cut[\"needs_line\"]:",
+            "                print(cut[\"id\"], cut[\"line\"])",
             '        print(job["status"], "型の秒", job["duration_s"], "カット", len(job["cuts"]), "生成", len(job["clips"]))',
             '        for reason in job["blocked"]:',
             '            print("-", reason)',
@@ -1020,7 +1193,7 @@ def _intro() -> str:
             "1. **再現する話** で上の1つを選ぶ。ドッグフードだけ、インタビュー・咀嚼・ダンス・会話を選ぶ",
             "2. 見出しが今の話と一致する見た目のセルだけを変える。ほかの3つは実行しても「この欄は使いません」と出る",
             "3. **この話の確認** で、入る見た目と、この話の仮説だけを見る",
-            "4. 最後のセルで **テーマ** **台詞** **静止画** を入れてジョブを書く",
+            "4. 最後のセルで **中身**（テンプレ、オマージュ、元の型のまま）と **静止画** を入れる。テーマと台詞は入っている",
             "",
             "一覧に無い見た目は、その欄に短い文を直接書く。人物は成人のみ。実在の人や、元のアカウントの人・動物に似せる文は、そこで止まります。",
             "",

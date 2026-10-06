@@ -269,6 +269,7 @@ def clip_prompt(
     part_index: int,
     part_count: int,
     audio: Any,
+    subject_en: str = "",
 ) -> dict[str, Any]:
     """One FL2VA prompt. Dialogue is the only Japanese, and only on the first part."""
     if not shots:
@@ -292,8 +293,9 @@ def clip_prompt(
         if speak and shot.get("needs_line") and str(shot.get("line") or "").strip() not in {"", PLACEHOLDER_LINE}:
             speaker = SPEAKER.get((handle, beat_key(str(shot["id"]))))
             spoken.append({"id": str(shot["id"]), "speaker": speaker or "", "text": str(shot["line"]).strip()})
+        subject = f"Subject: {subject_en}. " if subject_en else ""
         body = (
-            f"{style}. On screen: {who}. Voices on screen: {voices}. "
+            f"{style}. {subject}On screen: {who}. Voices on screen: {voices}. "
             f"{picture_en} {camera_en} {clause} "
             f"The locked look stays the same: {_spoken_look(look_en)} "
             "Do not draw writing on the picture."

@@ -322,6 +322,9 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "template_coverage" in blob
     assert "手入力で I2V" in blob
     assert "この場で焼く" in blob
+    assert "テンプレ" in blob
+    assert "オマージュ" in blob
+    assert "元の型のまま" in blob
 
 
 def _outside_dialogue(prompt: str) -> str:
@@ -458,6 +461,50 @@ def test_custom_japanese_look_is_not_read_aloud() -> None:
     assert "緑のバンダナ" not in job["clips"][0]["prompt"]
     assert "Untranslated look notes stay on the still and are not spoken." in job["clips"][0]["prompt"]
     assert not _CJK.search(_outside_dialogue(job["clips"][0]["prompt"]))
+
+
+def test_fills_supply_the_theme_and_leave_out_the_source_lines(tmp_path: Path) -> None:
+    banned = ("飼い主に言いたいことはありますか", "感謝感謝", "本能寺", "すず丸")
+    seen: set[tuple[str, str | None, str]] = set()
+    for handle in bake.GENRE_HANDLES.values():
+        modes: list[str | None] = ["interview", "asmr", "dance", "talk"] if handle == "nuts0629" else [None]
+        for mode in modes:
+            themes = set()
+            for label, fill in bake.FILL_CHOICES:
+                job = bake.bake_reference(handle, mode=mode, fill=fill)
+                seen.add((handle, mode, fill))
+                themes.add(job["theme"])
+                assert job["fill"]["label"] == label
+                assert job["fill"]["note"] == bake._FILL_NOTE
+                assert "テーマは入力" not in job["blocked"]
+                assert job["theme"] not in "".join(clip["prompt"] for clip in job["clips"])
+                if job["clips"]:
+                    assert job["subject_en"] in job["clips"][0]["prompt"]
+                    assert not _CJK.search(job["subject_en"])
+                for cut in job["cuts"]:
+                    if cut["needs_line"]:
+                        assert cut["line"] != bake.PLACEHOLDER_LINE
+                        spoken = "".join(
+                            clip["prompt"]
+                            for clip in job["clips"]
+                            if cut["id"] in clip["cut_ids"] and clip["part_index"] == 0
+                        )
+                        if job["clips"]:
+                            assert f"<d>[Japanese] {cut['line']}</d>" in spoken
+                blob = json.dumps(job, ensure_ascii=False)
+                for word in banned:
+                    assert word not in blob
+            assert len(themes) == 3
+    assert len(seen) == (3 + 4) * 3
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    ready = bake.bake_reference("nuts0629", mode="dance", fill="source", image=str(still))
+    assert ready["status"] == "ready"
+    assert ready["blocked"] == []
+    talk = bake.bake_reference("nuts0629", mode="talk", fill="template")
+    assert talk["clips"] == []
+    assert any("足さない" in reason for reason in talk["blocked"])
+    assert all("台詞" not in reason for reason in talk["blocked"])
 
 
 def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -> None:
