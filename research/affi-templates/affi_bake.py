@@ -439,26 +439,46 @@ def annotate_table(
     return job
 
 
-def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str) -> str:
+def _argv(
+    *,
+    task: str,
+    prompt_file: Path,
+    duration_s: float,
+    aspect: str,
+    out_path: Path,
+    image: str,
+) -> list[str]:
     args = [
         "python3",
         "h3-runner/run_h3.py",
         "--task",
-        "fl2va",
+        task,
         "--prompt-file",
-        str(job_dir / "prompts" / str(clip["prompt_name"])),
+        str(prompt_file),
         "--duration",
-        _num(float(clip["request_s"])),
+        _num(float(duration_s)),
         "--aspect",
         aspect,
         "--seed",
         "0",
         "--out",
-        str(job_dir / "clips" / f"{clip['id']}.mp4"),
+        str(out_path),
     ]
     if image:
         args.extend(["--image", image])
     args.extend(affi_av.lora_cli())
+    return args
+
+
+def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str) -> str:
+    args = _argv(
+        task="fl2va",
+        prompt_file=job_dir / "prompts" / str(clip["prompt_name"]),
+        duration_s=float(clip["request_s"]),
+        aspect=aspect,
+        out_path=job_dir / "clips" / f"{clip['id']}.mp4",
+        image=image,
+    )
     return " ".join(shlex.quote(part) for part in args)
 
 
@@ -493,6 +513,93 @@ def write_job(job: dict[str, Any], folder: str | Path) -> Path:
         json.dumps(captions, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    return path
+
+
+def i2v_second_choices() -> list[str]:
+    """Durations the local H3 pipeline accepts, as Colab menu labels."""
+    labels = []
+    for seconds in (5, 6, 8, 10, 12, 14):
+        if _accepts(float(seconds)):
+            labels.append(str(seconds))
+    if not labels:
+        raise ValueError("I2V に使える秒が無い")
+    return labels
+
+
+def plan_i2v(
+    *,
+    image: str | None,
+    prompt: str,
+    duration_s: float | str = 10,
+    aspect: str = "9:16",
+) -> dict[str, Any]:
+    """One I2VA job from a hand-written prompt. Does not render and does not post."""
+    seconds = float(duration_s)
+    if aspect not in {"9:16", "16:9"}:
+        raise ValueError(f"画面が無い: {aspect}")
+    if not _accepts(seconds):
+        raise ValueError(f"H3 が受け取れない秒数: {seconds}")
+    image_text = (image or "").strip()
+    raw = str(prompt or "").strip()
+    blocked: list[str] = []
+    prepared = ""
+    if not raw:
+        blocked.append("プロンプトが空")
+    else:
+        ref.reject_likeness(raw)
+        prepared = affi_av.i2v_prompt(raw)
+    if not image_text or not Path(image_text).is_file():
+        blocked.append("静止画が無い。I2V は最初のコマに画像が要る")
+    width, height = (1080, 1920) if aspect == "9:16" else (1920, 1080)
+    return {
+        "schema": "affi-i2v-job/v1",
+        "source": "i2v",
+        "task": "i2va",
+        "prompt": prepared,
+        "duration_s": seconds,
+        "aspect": aspect,
+        "delivery_width": width,
+        "delivery_height": height,
+        "image": image_text,
+        "status": "blocked" if blocked else "ready",
+        "blocked": blocked,
+        "generates_video": False,
+        "posts": False,
+        "commands": [],
+        "argv": [],
+    }
+
+
+def write_i2v(job: dict[str, Any], folder: str | Path) -> Path:
+    """Write the hand prompt and the I2VA command. Do not run it."""
+    job_dir = Path(folder)
+    job_dir.mkdir(parents=True, exist_ok=True)
+    prompt_path = job_dir / "prompt.txt"
+    prompt_path.write_text(str(job.get("prompt") or ""), encoding="utf-8")
+    out_path = job_dir / "clip.mp4"
+    argv = _argv(
+        task="i2va",
+        prompt_file=prompt_path,
+        duration_s=float(job["duration_s"]),
+        aspect=str(job["aspect"]),
+        out_path=out_path,
+        image=str(job.get("image") or ""),
+    )
+    commands = [
+        "# I2V。プロンプトは手入力。mp4 は、この場で焼くに入れたときだけ焼く。投稿しない。",
+        f"# status={job['status']}",
+    ]
+    if job["blocked"]:
+        commands.extend(f"# {reason}" for reason in job["blocked"])
+    commands.append(" ".join(shlex.quote(part) for part in argv))
+    job["commands"] = commands
+    job["argv"] = argv
+    path = job_dir / "job.json"
+    saved = dict(job)
+    saved["argv"] = []
+    path.write_text(json.dumps(saved, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (job_dir / "commands.txt").write_text("\n".join(commands) + "\n", encoding="utf-8")
     return path
 
 
@@ -768,6 +875,67 @@ def account_picker_cell() -> str:
     )
 
 
+def i2v_form_cell() -> str:
+    seconds = i2v_second_choices()
+    default_second = "10" if "10" in seconds else seconds[0]
+    aspects = ["9:16", "16:9"]
+    return "\n".join(
+        [
+            '#@title 手入力で I2V（1枚から1本） { display-mode: "form" }',
+            "#@markdown 型のジョブとは別です。プロンプトはここに書いた文だけを使います。",
+            "#@markdown 静止画が最初のコマです。最後のコマは渡しません。",
+            "#@markdown せりふ以外の日本語は声に読まれることがあります。せりふは <d>[Japanese] 文</d> の中に書きます。",
+            "#@markdown 「この場で焼く」を入れたときだけ、このランタイムで1本焼きます。h3-runner と重みが要ります。投稿しません。",
+            f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
+            f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
+            '静止画 = "" #@param {type:"string"}',
+            'プロンプト = "" #@param {type:"raw"}',
+            "この場で焼く = False #@param {type:\"boolean\"}",
+            "",
+            "import subprocess",
+            "import affi_bake",
+            "from pathlib import Path",
+            "",
+            "try:",
+            "    job = affi_bake.plan_i2v(",
+            "        image=静止画.strip() or None,",
+            "        prompt=プロンプト,",
+            "        duration_s=秒,",
+            "        aspect=画面,",
+            "    )",
+            "except ValueError as exc:",
+            '    print("止まった:", exc)',
+            "else:",
+            '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
+            '    path = affi_bake.write_i2v(job, out / "i2v")',
+            '    print(job["status"], "秒", job["duration_s"], path)',
+            '    for reason in job["blocked"]:',
+            '        print("-", reason)',
+            "    print(job[\"commands\"][-1])",
+            "    ran = False",
+            "    if この場で焼く:",
+            '        if job["status"] != "ready":',
+            '            print("止まっているので焼かない。")',
+            "        else:",
+            "            root = None",
+            "            here = Path.cwd()",
+            "            for candidate in [here, *here.parents]:",
+            '                if (candidate / "h3-runner" / "run_h3.py").is_file():',
+            "                    root = candidate",
+            "                    break",
+            "            if root is None:",
+            '                print("h3-runner がこのランタイムに無い。コマンドは書いた。ここでは焼かない。")',
+            "            else:",
+            '                completed = subprocess.run(job["argv"], cwd=root)',
+            "                ran = completed.returncode == 0",
+            '                print("終了コード", completed.returncode)',
+            "    if not ran:",
+            '        print("mp4 は焼いていない。投稿していない。")',
+            "",
+        ]
+    )
+
+
 def bake_form_cell() -> str:
     return "\n".join(
         [
@@ -867,6 +1035,10 @@ def _intro() -> str:
             "5. BGM。型がピアノと書いてある話だけ。曲名はコピーしない。無い・不明・入力待ちは足さない",
             "",
             "LoRAは FL2VA の Turbo と、動作のつながり。mp4 は焼かない。",
+            "",
+            "## 手入力の I2V",
+            "",
+            "型のジョブのあと、最後のセルで静止画1枚と、自分で書いたプロンプトから1本分のコマンドを書けます。最後のコマは使いません。チェックを入れたときだけ、このランタイムで焼きます。",
             "",
         ]
     )
@@ -1034,6 +1206,23 @@ def reference_notebook() -> dict[str, Any]:
         )
     )
     cells.append(_nb_cell("code", bake_form_cell(), "bake", form=True))
+    cells.append(
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# 手入力で I2V",
+                    "",
+                    "型から書いたジョブとは別です。静止画1枚と、自分で書いたプロンプトで1本分のコマンドを書きます。",
+                    "",
+                    "チェックを入れたときだけ、このランタイムで mp4 を焼きます。入れなければコマンドを書くだけです。投稿はしません。",
+                    "",
+                ]
+            ),
+            "i2v-note",
+        )
+    )
+    cells.append(_nb_cell("code", i2v_form_cell(), "i2v", form=True))
     return {
         "nbformat": 4,
         "nbformat_minor": 5,

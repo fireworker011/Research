@@ -108,6 +108,8 @@ https://colab.research.google.com/github/fireworker011/Research/blob/cursor/affi
 
 LoRA は FL2VA の Turbo（強さ 1.0、steps 9）と Motion Repair V2（強さ 0.6）。Larry と Combat は使わない。int8 の経路では LoRA は外れる。
 
+参考ノートの最後のセルは、型とは別の I2V です。静止画1枚と、自分で書いたプロンプトから `--task i2va` のコマンドを書きます。最後のコマは渡しません。「この場で焼く」を入れたときだけ、そのランタイムで1本焼きます。h3-runner と重みが要ります。入れなければコマンドを書くだけで、mp4 は焼きません。
+
 ```bash
 python3 research/affi-templates/affi_bake.py genre \
   --genre ドッグフード --theme 夕方の散歩 --out /tmp/affi-bake/dog

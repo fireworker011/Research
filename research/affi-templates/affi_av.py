@@ -32,6 +32,10 @@ REPAIR_SCALE = 0.6
 TURBO_STEPS = 9
 TURBO_VIDEO_SHIFT = 6
 PLACEHOLDER_LINE = "台詞は入力"
+I2VA_HEADER = (
+    "For the target video, at 0.00 seconds into the target video, "
+    "<Picture 1> (from [Shot 1]) is fully referenced."
+)
 
 # English for the template's own picture and camera. Keyed by handle and beat id.
 MOTION_EN = {
@@ -323,6 +327,23 @@ def clip_prompt(
         ]
     )
     return {"prompt": prompt + "\n", "motion_ja": motion_ja, "spoken": spoken, "bgm_prompt": music, "bgm_summary": music_ja}
+
+
+def i2v_prompt(text: str) -> str:
+    """Keep a hand-written I2VA prompt. Add the first-frame line only when it is missing."""
+    body = str(text or "").strip()
+    if not body:
+        raise ValueError("プロンプトが空")
+    if body.startswith(I2VA_HEADER):
+        return body if body.endswith("\n") else body + "\n"
+    if "integrated_multimodal_description:" in body:
+        return I2VA_HEADER + "\n\n" + body + ("\n" if body.endswith("\n") else "\n")
+    return (
+        f"{I2VA_HEADER}\n\n"
+        f"integrated_multimodal_description: {body}\n\n"
+        "overall_soundscape: Ambient sound is not specified.\n\n"
+        "non_diegetic_music: N/A\n"
+    )
 
 
 def lora_dir() -> Path:

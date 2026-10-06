@@ -43,12 +43,19 @@ DEFAULT_STEPS = 50
 ORBIS_STEPS = 9
 # FL2VA Turbo 8-step v1.0 768p trains at video shift 6. The checkpoint default stays 12.
 DEFAULT_VIDEO_SHIFT = 6.0
-TASKS = ("t2va", "fl2va", "ref2va")
+TASKS = ("t2va", "fl2va", "i2va", "ref2va")
 
 # README.ja.md lists 4–15 seconds. The diffusers pipeline that the same README
 # names for local runs enforces 5–15 on the aligned frame count.
 README_MIN_DURATION_S = 4.0
 README_MAX_DURATION_S = 15.0
+
+
+def pipeline_workflow(task: str) -> str:
+    """Diffusers workflow. I2VA uses the FL2VA partition and one first frame."""
+    if task == "i2va":
+        return "fl2va"
+    return task
 
 
 def parse_aspect(aspect: str) -> tuple[float, float]:
@@ -167,12 +174,13 @@ def build_video_request(
 ) -> dict:
     """Official ``/v1/videos`` body.
 
-    Ref2VA uses one reference condition and no video. FL2VA uses one keyframe at
-    frame 0 (``scripts/readme/reproducible-768p-fl2va-request.sh``). The local
-    pipeline passes that still as ``image=``, not as a reference.
+    Ref2VA uses one reference condition and no video. FL2VA and I2VA use one
+    keyframe at frame 0 (``scripts/readme/reproducible-768p-fl2va-request.sh``).
+    The local pipeline passes that still as ``image=``, not as a reference.
+    I2VA does not take a last frame.
     """
     if task not in TASKS:
-        raise ValueError(f"task must be t2va, fl2va, or ref2va, got {task!r}")
+        raise ValueError(f"task must be t2va, fl2va, i2va, or ref2va, got {task!r}")
     text = (prompt or "").strip()
     if not text:
         raise ValueError("prompt is empty")
@@ -180,9 +188,9 @@ def build_video_request(
         if not image_uri:
             raise ValueError("ref2va needs one image uri")
         conditions = [{"type": "image", "uri": image_uri, "role": "reference"}]
-    elif task == "fl2va":
+    elif task in ("fl2va", "i2va"):
         if not image_uri:
-            raise ValueError("fl2va needs one image uri")
+            raise ValueError(f"{task} needs one image uri")
         conditions = [{"type": "image", "uri": image_uri, "role": "keyframe", "frame_index": 0}]
     else:
         if image_uri:

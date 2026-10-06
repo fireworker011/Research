@@ -35,9 +35,16 @@ from h3_runner.official import (  # noqa: E402
     build_video_request,
     diffusers_accepts,
     frames_for_seconds,
+    pipeline_workflow,
     resolve_canvas_size,
 )
-from h3_runner.planner import choose_short_edges, orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
+from h3_runner.planner import (  # noqa: E402
+    choose_short_edges,
+    orbis01_plan,
+    sequence_proxy,
+    single_plan,
+    within_fit_budget,
+)
 from h3_runner.weights import (  # noqa: E402
     LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
@@ -684,6 +691,61 @@ class FastCliTest(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertEqual(TURBO_REPO, "lightx2v/Minimax-h3-Turbo")
+
+    def test_i2va_is_one_first_frame_on_the_fl2va_partition(self) -> None:
+        self.assertEqual(pipeline_workflow("i2va"), "fl2va")
+        self.assertEqual(pipeline_workflow("fl2va"), "fl2va")
+        body = build_video_request(
+            task="i2va",
+            prompt="The dog turns its head.",
+            duration_s=10,
+            aspect_ratio="9:16",
+            short_edge=768,
+            seed=0,
+            steps=9,
+            image_uri="still.jpg",
+        )
+        self.assertEqual(body["task"], "i2va")
+        self.assertEqual(body["conditions"], [{"type": "image", "uri": "still.jpg", "role": "keyframe", "frame_index": 0}])
+        self.assertEqual(folders_for("i2va"), folders_for("fl2va"))
+        plan = single_plan(
+            task="i2va",
+            prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+            image_path=Path("/tmp/still.jpg"),
+            duration_s=10,
+            aspect="9:16",
+            seed=0,
+            steps=9,
+            out_path=Path("/tmp/h3-out/i2v.mp4"),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+        )
+        self.assertEqual(plan.jobs[0].task, "i2va")
+        self.assertIn("最後のコマは渡さない", plan.report())
+        self.assertIn("pipeline_workflow(task)", (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8"))
+        with self.assertRaises(ValueError):
+            single_plan(
+                task="i2va",
+                prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+                image_path=None,
+                duration_s=10,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/i2v.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+            )
 
     def test_notebook_has_the_fast_cells(self) -> None:
         notebook = json.loads((ROOT / "minimax_h3_still.ipynb").read_text(encoding="utf-8"))

@@ -107,9 +107,9 @@ def model_dir(cache_root: Path) -> Path:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="MiniMax H3 still or text to a 9:16 mp4")
     parser.add_argument("--preset", choices=["orbis01"], help="bundled Sakura FL2VA 6s+9s job")
-    parser.add_argument("--task", choices=["t2va", "fl2va", "ref2va"])
+    parser.add_argument("--task", choices=["t2va", "fl2va", "i2va", "ref2va"])
     parser.add_argument("--prompt-file", type=Path)
-    parser.add_argument("--image", type=Path, help="FL2VA first frame, or Ref2VA still. Omit for T2VA.")
+    parser.add_argument("--image", type=Path, help="I2VA or FL2VA first frame, or Ref2VA still. Omit for T2VA.")
     parser.add_argument("--duration", type=float, help=f"{README_MIN_DURATION_S:g} to {README_MAX_DURATION_S:g} seconds")
     parser.add_argument("--aspect", default="9:16")
     parser.add_argument("--short-edge", type=int, help="default 768, lowered when the 80GB budget says so")

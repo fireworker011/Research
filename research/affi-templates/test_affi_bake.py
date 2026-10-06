@@ -291,7 +291,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert blob.count("look_from_form") == 4
     assert "静止画" in blob
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
-    assert len(code) == 8
+    assert len(code) == 9
     for src in code:
         ast.parse(src)
 
@@ -320,6 +320,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert picked["MODE"] == "interview"
     assert "affi_av.py" in blob
     assert "template_coverage" in blob
+    assert "手入力で I2V" in blob
+    assert "この場で焼く" in blob
 
 
 def _outside_dialogue(prompt: str) -> str:
@@ -456,6 +458,48 @@ def test_custom_japanese_look_is_not_read_aloud() -> None:
     assert "緑のバンダナ" not in job["clips"][0]["prompt"]
     assert "Untranslated look notes stay on the still and are not spoken." in job["clips"][0]["prompt"]
     assert not _CJK.search(_outside_dialogue(job["clips"][0]["prompt"]))
+
+
+def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -> None:
+    wrapped = affi_av.i2v_prompt("The dog turns its head.")
+    assert wrapped.startswith(affi_av.I2VA_HEADER)
+    assert wrapped.count(affi_av.I2VA_HEADER) == 1
+    assert "The dog turns its head." in wrapped
+    assert "non_diegetic_music: N/A" in wrapped
+    full = affi_av.I2VA_HEADER + "\n\nintegrated_multimodal_description: already written.\n"
+    assert affi_av.i2v_prompt(full) == full if full.endswith("\n") else full + "\n"
+    assert affi_av.i2v_prompt(full).count(affi_av.I2VA_HEADER) == 1
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    job = bake.plan_i2v(image=str(still), prompt="The dog turns its head.", duration_s="10", aspect="9:16")
+    assert job["status"] == "ready"
+    assert job["task"] == "i2va"
+    assert job["generates_video"] is False
+    assert job["posts"] is False
+    path = bake.write_i2v(job, tmp_path / "i2v")
+    command = (tmp_path / "i2v" / "commands.txt").read_text(encoding="utf-8")
+    assert "--task i2va" in command
+    assert f"--image {still}" in command
+    assert "--steps 9" in command
+    assert f"{affi_av.TURBO_FILENAME}:1.0" in command
+    assert job["argv"][job["argv"].index("--task") + 1] == "i2va"
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved["generates_video"] is False
+    empty = bake.plan_i2v(image=str(still), prompt="  ", duration_s=10)
+    assert empty["status"] == "blocked"
+    assert any("プロンプト" in reason for reason in empty["blocked"])
+    try:
+        bake.plan_i2v(image=str(still), prompt="すず丸が振り向く", duration_s=10)
+    except ValueError as exc:
+        assert "すず丸" in str(exc)
+    else:
+        raise AssertionError("likeness was accepted")
+    try:
+        bake.plan_i2v(image=str(still), prompt="The dog turns its head.", duration_s=15)
+    except ValueError as exc:
+        assert "秒" in str(exc)
+    else:
+        raise AssertionError("15 seconds was accepted")
 
 
 def test_bite_mentions_the_mouth_and_does_not_invent_the_chew() -> None:

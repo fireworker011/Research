@@ -63,7 +63,12 @@ ROOT_FILES = ("modular_model_index.json", "model_index.json")
 EXTRA_DIRS = ("scheduler", "audio_scheduler")
 
 SHARED = ["text_encoder", "vae", "audio_vae", "tokenizer", "processor"]
-DENOISER = {"t2va": "transformer", "fl2va": "transformer", "ref2va": "transformer_ref"}
+DENOISER = {
+    "t2va": "transformer",
+    "fl2va": "transformer",
+    "i2va": "transformer",
+    "ref2va": "transformer_ref",
+}
 FORBIDDEN = ("FL2VA", "Ref2VA")
 
 

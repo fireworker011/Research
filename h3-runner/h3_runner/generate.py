@@ -29,7 +29,7 @@ from transformers import TorchAoConfig as TransformersTorchAoConfig
 
 from h3_runner.ffmpeg_join import clip_is_done, join_clips
 from h3_runner.loras import LoraSpec, reject_pruned_adaln
-from h3_runner.official import AUDIO_FLOW_SHIFT, FPS
+from h3_runner.official import AUDIO_FLOW_SHIFT, FPS, pipeline_workflow
 from h3_runner.planner import ClipJob, Plan
 from h3_runner.weights import require_present
 
@@ -68,7 +68,7 @@ def _release() -> None:
 def _denoiser(pipe: ModularPipeline, task: str):
     if task == "ref2va":
         return pipe.transformer_ref
-    if task in ("t2va", "fl2va"):
+    if task in ("t2va", "fl2va", "i2va"):
         return pipe.transformer
     raise ValueError(task)
 
@@ -112,7 +112,7 @@ def _load_bf16(
     manager = ComponentsManager()
     pipe = ModularPipeline.from_pretrained(
         str(model_dir),
-        workflow=task,
+        workflow=pipeline_workflow(task),
         components_manager=manager,
         local_files_only=True,
     )
@@ -171,7 +171,7 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
             transformer_ref=_quantized_transformer(model_dir, "transformer_ref"),
             text_encoder=text_encoder,
         )
-    elif task in ("t2va", "fl2va"):
+    elif task in ("t2va", "fl2va", "i2va"):
         pipe.update_components(
             transformer=_quantized_transformer(model_dir, "transformer"),
             text_encoder=text_encoder,
@@ -179,7 +179,7 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
     else:
         raise ValueError(task)
     pipe.load_components(
-        workflow=task,
+        workflow=pipeline_workflow(task),
         dtype=torch.bfloat16,
         pretrained_model_name_or_path=str(model_dir),
         local_files_only=True,
@@ -236,9 +236,9 @@ def _call_pipe(
         if job.image_path is None:
             raise ValueError("ref2va clip has no image")
         kwargs["references"] = [MiniMaxH3ImageReference.from_file(str(job.image_path))]
-    elif job.task == "fl2va":
+    elif job.task in ("fl2va", "i2va"):
         if job.image_path is None:
-            raise ValueError("fl2va clip has no image")
+            raise ValueError(f"{job.task} clip has no image")
         still = Image.open(job.image_path)
         try:
             frame = still.convert("RGB")

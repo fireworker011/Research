@@ -68,7 +68,7 @@ def _fit_proxy(task: str) -> float:
         return float(latent * spatial_tokens(REF2VA_FIT_HEIGHT, REF2VA_FIT_WIDTH))
     # FL2VA uses the transformer partition and stretches the still onto the canvas.
     # It does not encode a 2048-short-edge reference, so it shares the T2VA budget.
-    if task in ("t2va", "fl2va"):
+    if task in ("t2va", "fl2va", "i2va"):
         height, width = resolve_canvas_size(16, 9)
         latent = video_latent_num_frames(REF2VA_FIT_FRAMES)
         return float(latent * spatial_tokens(height, width) * T2VA_EXAMPLE_SLACK)
@@ -180,7 +180,7 @@ class ClipJob:
             short_edge=short_edge,
             seed=self.seed,
             steps=self.steps,
-            image_uri=image_uri if self.task in ("fl2va", "ref2va") else None,
+            image_uri=image_uri if self.task in ("fl2va", "i2va", "ref2va") else None,
             flow_shift=self.video_shift,
         )
 
@@ -509,7 +509,7 @@ def single_plan(
     loras: list[LoraSpec] | None = None,
 ) -> Plan:
     if task not in TASKS:
-        raise ValueError(f"task must be t2va, fl2va, or ref2va, got {task!r}")
+        raise ValueError(f"task must be t2va, fl2va, i2va, or ref2va, got {task!r}")
     if not README_MIN_DURATION_S <= duration_s <= README_MAX_DURATION_S:
         raise ValueError(f"duration は {README_MIN_DURATION_S:g}〜{README_MAX_DURATION_S:g}")
     notes = [f"モデル: {MODEL_ID}。"]
@@ -520,7 +520,7 @@ def single_plan(
     applied = _apply_loras(notes, mode, loras)
     raw = frames_for_seconds(duration_s)
     legal = diffusers_accepts(raw)
-    if task in ("ref2va", "fl2va") and image_path is None:
+    if task in ("ref2va", "fl2va", "i2va") and image_path is None:
         raise ValueError(f"{task} には --image が要る")
     if task == "t2va" and image_path is not None:
         raise ValueError("t2va に参照画像は渡さない")
@@ -590,6 +590,8 @@ def single_plan(
         notes.append(f"force: {frames} フレーム ({frames / FPS:.3f}秒) に縮める。")
     if task == "fl2va":
         notes.append("FL2VA の静止画は image= の最初のコマ。references には渡さない。")
+    if task == "i2va":
+        notes.append("I2VA の静止画は image= の最初のコマ。最後のコマは渡さない。プロンプトは手入力。")
     job = _clip(
         task=task,
         prompt_path=prompt_path,
