@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "minimaxh3"))
@@ -18,7 +19,7 @@ from h3_episode_packs import (  # noqa: E402
     ui_default,
 )
 
-BRANCH = "cursor/h3-hospital-ward-34e4"
+BRANCH = "cursor/hospital-anal-dildo-face-d736"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
@@ -27,7 +28,7 @@ HELPERS = list(EPISODE_HELPERS)
 
 
 def colab_url(path: str) -> str:
-    return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
+    return f"https://colab.research.google.com/github/{REPO}/blob/{quote(BRANCH, safe='')}/{path}"
 
 
 CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（迷ったらそのまま）
@@ -38,6 +39,29 @@ __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
+__DISTANCE_HELP__
+CAMERA_DISTANCE = __DISTANCE_DEFAULT__  #@param __DISTANCE_CHOICES__
+__PLACE_HELP__
+PLACE = __PLACE_DEFAULT__  #@param __PLACE_CHOICES__
+__TIME_HELP__
+TIME_OF_DAY = __TIME_DEFAULT__  #@param __TIME_CHOICES__
+__WEATHER_HELP__
+WEATHER = __WEATHER_DEFAULT__  #@param __WEATHER_CHOICES__
+__DIRT_HELP__
+DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
+__LOOK_HELP__
+AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+__ENEMY_KIND_HELP__
+ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
+__ENEMY_LOOK_HELP__
+LOOK_MIKI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_REI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_KANA = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_SHINO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_GIN = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_TSUNO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
+SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
@@ -71,9 +95,13 @@ AYA_DIRT = ""  #@param {type:"string"}
 AYA_SWEAT = ""  #@param {type:"string"}
 AYA_CLOTHES = ""  #@param {type:"string"}
 AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
-#@markdown **敵の容姿。空なら今のまま。1行に1人。** `miki; hair=a short blonde bob; clothes=a torn white shirt; shaft=今のまま`
-#@markdown id は miki / rei / kana / shino / gin / tsuno / dog / slime / anthro。key は hair color face dirt sweat clothes shaft。
-ENEMY_LOOK = ""  #@param {type:"string"}
+#@markdown **その他の自由記入。** その人の見た目が「その他」のときだけ使う。`hair=...; face=...`
+FREE_MIKI = ""  #@param {type:"string"}
+FREE_REI = ""  #@param {type:"string"}
+FREE_KANA = ""  #@param {type:"string"}
+FREE_SHINO = ""  #@param {type:"string"}
+FREE_GIN = ""  #@param {type:"string"}
+FREE_TSUNO = ""  #@param {type:"string"}
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
@@ -110,6 +138,27 @@ os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
+os.environ["H3_EPISODE_CAMERA_DISTANCE"] = CAMERA_DISTANCE
+os.environ["H3_EPISODE_PLACE"] = PLACE
+os.environ["H3_EPISODE_TIME"] = TIME_OF_DAY
+os.environ["H3_EPISODE_WEATHER"] = WEATHER
+os.environ["H3_EPISODE_DIRT"] = DIRT
+os.environ["H3_EPISODE_AYA_LOOK"] = AYA_LOOK
+os.environ["H3_EPISODE_ENEMY_KIND"] = ENEMY_KIND
+os.environ["H3_EPISODE_ENEMY_LOOKS"] = ",".join(
+    f"{cid}={choice}"
+    for cid, choice in (
+        ("miki", LOOK_MIKI),
+        ("rei", LOOK_REI),
+        ("kana", LOOK_KANA),
+        ("shino", LOOK_SHINO),
+        ("gin", LOOK_GIN),
+        ("tsuno", LOOK_TSUNO),
+    )
+)
+_seed = str(SEED or "").strip()
+if _seed:
+    os.environ["H3_EPISODE_SEED"] = _seed
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
@@ -123,14 +172,26 @@ os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
 os.environ["H3_EPISODE_DOG"] = DOG
 os.environ["H3_EPISODE_SPECIES"] = SPECIES
-os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
-os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
-os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+_aya_free = AYA_LOOK == "その他"
+os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
-os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
-os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
+os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip() if _aya_free else ""
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
-os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip()
+os.environ["H3_EPISODE_ENEMY_LOOK"] = "\n".join(
+    f"{cid}; {text}"
+    for cid, choice, text in (
+        ("miki", LOOK_MIKI, FREE_MIKI),
+        ("rei", LOOK_REI, FREE_REI),
+        ("kana", LOOK_KANA, FREE_KANA),
+        ("shino", LOOK_SHINO, FREE_SHINO),
+        ("gin", LOOK_GIN, FREE_GIN),
+        ("tsuno", LOOK_TSUNO, FREE_TSUNO),
+    )
+    if choice == "その他" and str(text or "").strip()
+)
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -279,7 +340,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/hospital-anal-dildo-face-d736`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
 
@@ -301,6 +362,28 @@ def make_nb() -> dict:
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
+        .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
+        .replace("__DISTANCE_DEFAULT__", json.dumps(ui_default("camera_distance"), ensure_ascii=False))
+        .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
+        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・個室・寝床・出口だけ替わる"))
+        .replace("__PLACE_DEFAULT__", json.dumps(ui_default("place"), ensure_ascii=False))
+        .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
+        .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))
+        .replace("__TIME_DEFAULT__", json.dumps(ui_default("time"), ensure_ascii=False))
+        .replace("__TIME_CHOICES__", json.dumps(ui_choices("time"), ensure_ascii=False))
+        .replace("__WEATHER_HELP__", form_markdown("weather", "天候 — 床の濡れと光だけ"))
+        .replace("__WEATHER_DEFAULT__", json.dumps(ui_default("weather"), ensure_ascii=False))
+        .replace("__WEATHER_CHOICES__", json.dumps(ui_choices("weather"), ensure_ascii=False))
+        .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
+        .replace("__DIRT_DEFAULT__", json.dumps(ui_default("dirt"), ensure_ascii=False))
+        .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
+        .replace("__LOOK_HELP__", form_markdown("look", "あやの見た目 — その他のときだけ下の自由記入"))
+        .replace("__LOOK_DEFAULT__", json.dumps(ui_default("look"), ensure_ascii=False))
+        .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
+        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(ui_default("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — みき、れい、かな、しの、ぎん、角で別々。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
