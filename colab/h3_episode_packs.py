@@ -471,6 +471,12 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "洋式汚物まみれ。座る→緑の細長いディルドを持つ→膣へ出し入れ→絶頂→抜く。触手はこの便器に出ない",
         "hint_ja": "汚れた白い洋式にカメラ向きで座り、脚を開く。右手で緑のディルドを膣へ出し入れ",
     },
+    "anal_finger": {
+        "label_ja": "アナル指",
+        "choice_ja": "トイレ・アナル指",
+        "when_ja": "洋式汚物まみれ。便器に前かがみ→右手の人差し指を肛門へ出し入れ→速く→歩く。触手はこの便器に出ない",
+        "hint_ja": "カメラに背を向けて前かがみ。左手はタンク、右手の人差し指を肛門へ。Self Anal Finger 1.0",
+    },
     "wash": {
         "label_ja": "和式排出",
         "choice_ja": "トイレ・和式排出",
@@ -490,6 +496,7 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
+    "anal_finger": "on_toilet_anal_finger",
     "wash": "on_toilet_wash",
     "wash_miki": "on_toilet_wash_miki",
 }
@@ -507,9 +514,10 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "onanii": "masturbate",
         "触手": "tentacle",
         "tentacles": "tentacle",
-        "アナル指": "finger",
-        "トイレ・アナル指": "finger",
-        "指": "finger",
+        "アナル指": "anal_finger",
+        "トイレ・アナル指": "anal_finger",
+        "anal finger": "anal_finger",
+        "指": "anal_finger",
         "finger": "finger",
         "和式": "wash",
         "和式排出": "wash",
@@ -1732,16 +1740,16 @@ def _surface(
     floor: str,
     room: str,
     bed: str,
-    edge: str,
     path: str,
     junction: str,
     light: str,
     ambience: str,
     fixture: str,
-    priv: str,
     *,
     recommend: bool = False,
 ) -> dict[str, Any]:
+    """Light words stay out of env, room, and bed. The time sentence owns the light."""
+    room_a = ("An " if room[:1].lower() in "aeiou" else "A ") + room if room else ""
     return {
         "label_ja": choice,
         "choice_ja": choice,
@@ -1754,255 +1762,198 @@ def _surface(
         "floor": floor,
         "room": room,
         "bed": bed,
-        "edge": edge,
+        "edge": f"far long edge of the {bed}" if bed else "",
         "path": path,
         "junction": junction,
         "light": light,
         "ambience": ambience,
         "fixture": fixture,
-        "priv": priv,
+        "priv": f"{room_a}. The floor is {floor}" if room else "",
+        "bedroom": f"{room_a}. One {bed} fills the middle of the {room}. A window on the FAR wall" if room else "",
     }
 
 
-# Place swaps nouns in the finished prompt. The hospital key skips that swap.
+# Outside the ward the environment section is rebuilt from these rows. The hospital key keeps the authored text.
 PLACE_MODES: dict[str, dict[str, Any]] = {
     "hospital": _surface(
         "病棟（迷ったらこれ）", "今の病棟。名詞は替えない", "hospital",
-        "", "grey wall", "linoleum", "stall", "mattress", "far long edge nearest the window",
-        "corridor", "T-junction", "fluorescent", "fluorescent buzz", "porcelain toilet", "",
+        "", "grey wall", "linoleum", "stall", "mattress",
+        "corridor", "T-junction", "fluorescent", "fluorescent buzz", "porcelain toilet",
         recommend=True,
     ),
     "forest": _surface(
         "森林", "木のあいだの道。床は土", "sand",
-        "A fictional forest path at adult height, trunks on both sides, packed earth underfoot, daylight between the trunks",
-        "tree trunk", "packed earth", "wooden hut", "mossy log", "far long edge of the mossy log",
-        "forest path", "fork in the path", "daylight between the trunks", "wind in the trees",
-        "low wooden basin",
-        "A small wooden hut among the trunks. Packed earth floor. One low wooden basin. Daylight through the slats",
+        "A fictional forest path at adult height, tall trunks on both sides, packed earth underfoot, ferns and roots along the edges",
+        "tree trunk", "packed earth", "small wooden hut", "low wooden cot",
+        "forest path", "fork in the path", "light through the trunks", "wind in the trees", "old wooden toilet",
     ),
     "village": _surface(
         "廃村", "空き家のあいだの土の道", "sand",
-        "A fictional abandoned village lane, empty wooden houses, packed earth, an open sky",
-        "wooden house wall", "packed earth", "empty house room", "wooden porch", "far edge of the wooden porch",
-        "village lane", "fork in the lane", "open daylight", "wind between the houses",
-        "low wooden basin",
-        "An empty wooden house. Packed earth floor. One low wooden basin. Daylight from the open door",
+        "A fictional abandoned village lane, empty wooden houses on both sides, packed earth underfoot, weeds along the walls",
+        "weathered wooden wall", "packed earth", "empty farmhouse room", "low wooden bed",
+        "village lane", "fork in the lane", "light over the roofs", "wind between the houses", "old wooden toilet",
     ),
     "ruins": _surface(
         "廃墟（外）", "崩れた外壁と瓦礫", "sand",
-        "A fictional ruined exterior, broken concrete walls, rubble underfoot, open sky",
-        "broken concrete wall", "rubble", "remaining room", "fallen slab", "far edge of the fallen slab",
-        "ruin path", "gap in the wall", "open daylight", "wind over the rubble",
-        "low concrete basin",
-        "A remaining concrete room. Rubble floor. One low concrete basin. Daylight from a hole in the wall",
+        "A fictional ruined building exterior, broken concrete walls, rubble and weeds underfoot, open sky above",
+        "broken concrete wall", "rubble", "remaining concrete room", "fallen concrete slab",
+        "ruin path", "gap in the wall", "open sky light", "wind over the rubble", "old concrete toilet",
     ),
     "city": _surface(
         "大都会", "空いた大通り。画面の大人は2人", "soot",
-        "A fictional empty city avenue, tall buildings, bare pavement, two adults only",
-        "building wall", "bare pavement", "basement room", "concrete bench", "far end of the concrete bench",
-        "empty avenue", "street corner", "city daylight", "distant traffic hum",
-        "low utility sink",
-        "A basement utility room. Bare concrete. One low utility sink. A single bulb",
+        "A fictional empty city avenue, tall glass and stone buildings on both sides, bare pavement, empty sidewalks, two adults only",
+        "building wall", "bare pavement", "empty shop interior", "leather sofa",
+        "empty avenue", "street corner", "street light", "distant traffic hum", "white toilet",
     ),
     "pool": _surface(
         "プール", "プールサイドと更衣室", "tide",
-        "A fictional outdoor pool deck, tile underfoot, still water beside the deck, bright sky",
-        "tile wall", "wet tile", "changing room", "deck chair", "far end of the deck chair",
-        "pool deck", "corner of the deck", "bright daylight", "water lap",
-        "low tile basin",
-        "A changing room. Wet tile floor. One low tile basin. Daylight from a high window",
+        "A fictional outdoor pool deck, pale tile underfoot, still blue water beside the deck, lounge chairs along the edge",
+        "tile wall", "wet tile", "changing room", "lounge chair",
+        "pool deck", "corner of the deck", "light on the water", "water lapping", "white toilet",
     ),
     "sea": _surface(
         "海", "砂浜と岩陰", "tide",
-        "A fictional beach, wet sand, rocks, the waterline beside the path",
-        "rock face", "wet sand", "rock alcove", "flat rock", "far edge of the flat rock",
-        "beach path", "gap in the rocks", "bright daylight", "surf",
-        "tide pool",
-        "A rock alcove. Wet sand. One tide pool. Daylight from the opening",
+        "A fictional beach, wet sand underfoot, dark rocks, the waterline beside the path",
+        "rock face", "wet sand", "beach hut", "beach mat",
+        "beach", "gap in the rocks", "light on the water", "surf", "small white toilet",
     ),
     "school": _surface(
         "学校", "空き校舎の廊下と階段", "hospital",
-        "A fictional empty adult school hallway, painted walls, a hard floor, stairs, high windows",
-        "painted wall", "hard floor", "changing room", "cot", "far edge of the cot",
-        "hallway", "stair landing", "daylight from high windows", "quiet hallway tone",
-        "low wash basin",
-        "A changing room. Hard floor. One low wash basin. Daylight from a high window",
+        "A fictional empty academy hallway for adults, painted walls, a hard polished floor, a stairwell, high windows",
+        "painted wall", "polished floor", "locker room", "padded bench",
+        "hallway", "stair landing", "window light", "quiet hallway tone", "white toilet",
     ),
     "office": _surface(
         "オフィス", "パーティションの通路と給湯室", "soot",
-        "A fictional office floor, partition walls, tile, a pantry, tall windows",
-        "glass wall", "office tile", "pantry", "office sofa", "far end of the office sofa",
-        "office aisle", "corner of the aisle", "office daylight", "air vent hum",
-        "low pantry sink",
-        "A pantry. Office tile. One low pantry sink. Daylight from the aisle",
+        "A fictional open office floor, glass partitions, carpet tile underfoot, empty desks, tall windows",
+        "glass wall", "carpet tile", "pantry", "office sofa",
+        "office aisle", "corner of the aisle", "window light", "air vent hum", "white toilet",
     ),
     "slum": _surface(
         "スラム", "狭い路地と物置", "soot",
-        "A fictional narrow alley, tin walls, packed earth, a shed",
-        "tin wall", "packed earth", "shed", "wooden pallet", "far edge of the wooden pallet",
-        "narrow alley", "bend in the alley", "alley daylight", "distant alley hum",
-        "low metal basin",
-        "A tin shed. Packed earth. One low metal basin. Daylight from the alley",
+        "A fictional narrow alley, patched tin walls, packed earth underfoot, hanging cables, sheds on both sides",
+        "tin wall", "packed earth", "tin shed", "wooden pallet",
+        "narrow alley", "bend in the alley", "light down the alley", "distant alley hum", "old tin toilet",
     ),
     "warehouse_town": _surface(
         "城下町・川越", "蔵が続く道。昼は店先、夜は裏路地", "hospital",
-        "A fictional warehouse street of plaster kura houses in a row, a wooden lane, shop fronts and a back alley",
-        "plaster kura wall", "wooden lane", "kura storeroom", "tatami room", "far edge of the tatami",
-        "warehouse lane", "bend into the back alley", "daylight on the shop fronts", "quiet lane tone",
-        "low wooden basin",
-        "A kura storeroom. Wooden floor. One low wooden basin. Dim light from the lane",
+        "A fictional street of plaster kura storehouses in a row, dark roof tiles, a stone-paved lane, wooden shop fronts and a narrow back alley",
+        "plaster kura wall", "stone-paved lane", "kura storeroom", "tatami bed",
+        "kura lane", "turn into the back alley", "lantern light", "quiet lane tone", "old wooden toilet",
     ),
     "castle": _surface(
         "城・犬山城", "門から天守までが1本の道", "hospital",
-        "A fictional small castle, one path from the gate to the keep, stone and wood",
-        "stone wall", "wooden floor", "guard alcove", "plank bed", "far edge of the plank bed",
-        "castle path", "gate passage", "daylight in the courtyard", "wind in the courtyard",
-        "low stone basin",
-        "A guard alcove. Wooden floor. One low stone basin. Daylight from the passage",
+        "A fictional small castle, one stone path from the gate up to the keep, high stone walls, heavy wooden gates",
+        "stone wall", "stone path", "guard room", "plank bed",
+        "castle path", "gate passage", "light in the courtyard", "wind in the courtyard", "old wooden toilet",
     ),
     "samurai": _surface(
         "武家屋敷・長町", "格子と用水。夜は暗い庭", "hospital",
-        "A fictional samurai house lane, lattice walls, a narrow water channel, a night garden",
-        "lattice wall", "packed earth", "store room", "tatami room", "far edge of the tatami",
-        "house lane", "corner by the water channel", "dim garden light", "water in the channel",
-        "low wooden basin",
-        "A store room. Wooden floor. One low wooden basin. Dim light from the garden",
+        "A fictional samurai residence lane, wooden lattice walls, earthen walls, a narrow water channel along the lane, a quiet garden",
+        "lattice wall", "packed earth", "storeroom", "tatami bed",
+        "residence lane", "corner by the water channel", "garden lantern light", "water in the channel", "old wooden toilet",
     ),
     "shrine": _surface(
         "神社・千本鳥居", "鳥居の続く参道。奥ほど暗い", "sand",
-        "A fictional shrine path of repeated torii gates, stone steps, darker toward the far end",
-        "torii post", "stone step", "shrine shed", "stone platform", "far edge of the stone platform",
-        "torii path", "landing on the steps", "dim light under the gates", "wind through the gates",
-        "low stone basin",
-        "A shrine shed. Stone floor. One low stone basin. Dim light from the path",
+        "A fictional shrine path of many vermilion torii gates in a row, stone steps, the gates closer together toward the far end",
+        "torii post", "stone step", "shrine shed", "stone platform",
+        "torii path", "landing on the steps", "light under the gates", "wind through the gates", "old wooden toilet",
     ),
     "temple": _surface(
         "寺院・建長寺", "庭が手前、本堂が奥", "sand",
-        "A fictional temple garden, raked gravel, white walls, a main hall at the far end",
-        "white wall", "raked gravel", "kitchen alcove", "veranda", "far edge of the veranda",
-        "garden path", "step up to the hall", "daylight in the garden", "wind in the garden",
-        "low stone basin",
-        "A kitchen alcove. Wooden floor. One low stone basin. Daylight from the garden",
+        "A fictional temple garden, raked gravel, white earthen walls, a wooden main hall at the far end",
+        "white wall", "raked gravel", "temple kitchen", "wooden veranda",
+        "garden path", "steps up to the hall", "light in the garden", "wind in the garden", "old wooden toilet",
     ),
     "bamboo": _surface(
         "竹林・報国寺", "見通しの悪い竹", "sand",
-        "A fictional bamboo grove, close stalks, packed earth, short sight lines",
-        "bamboo stalk", "packed earth", "small pavilion", "mossy floor", "far edge of the moss",
-        "bamboo path", "bend in the bamboo", "dim daylight through the stalks", "wind in the bamboo",
-        "low stone basin",
-        "A small pavilion. Packed earth. One low stone basin. Dim daylight through the stalks",
+        "A fictional bamboo grove, tall close stalks on both sides, packed earth underfoot, short sight lines",
+        "bamboo stalk", "packed earth", "small pavilion", "mossy stone bench",
+        "bamboo path", "bend in the bamboo", "light through the stalks", "wind in the bamboo", "old wooden toilet",
     ),
     "cemetery": _surface(
         "霊廟・奥之院", "杉と墓標の直線", "sand",
-        "A fictional cedar approach lined with stone markers, a straight path, a hall at the far end",
-        "cedar trunk", "packed earth", "covered shelter", "stone platform", "far edge of the stone platform",
-        "cedar path", "gap in the markers", "dim daylight under the cedars", "wind in the cedars",
-        "low stone basin",
-        "A covered shelter. Stone floor. One low stone basin. Dim daylight from the path",
+        "A fictional straight cedar approach lined with moss-covered stone markers, packed earth underfoot, a hall at the far end",
+        "cedar trunk", "packed earth", "covered shelter", "stone platform",
+        "cedar path", "gap in the markers", "light under the cedars", "wind in the cedars", "old wooden toilet",
     ),
     "onsen": _surface(
         "温泉街・有馬", "石段。湯気のたまる段", "steam",
-        "A fictional hot-spring stair street, stone steps, steam over one landing, wooden walls",
-        "wooden wall", "wet stone step", "changing hut", "rock ledge", "far edge of the rock ledge",
-        "stone stair", "steaming landing", "soft daylight through steam", "water over stone",
-        "hot-spring basin",
-        "A changing hut. Wet stone. One hot-spring basin. Steam and soft daylight",
+        "A fictional hot-spring stair street, worn stone steps, wooden inns on both sides, steam rising over one landing",
+        "wooden wall", "wet stone step", "changing hut", "wooden bath bench",
+        "stone stair street", "steaming landing", "light through the steam", "water over stone", "old wooden toilet",
     ),
     "port": _surface(
         "港町・尾道", "坂そのものが道", "tide",
-        "A fictional harbor slope of stone steps between houses, the water below",
-        "house wall", "stone step", "landing shed", "wooden bench", "far end of the wooden bench",
-        "harbor slope", "turn in the steps", "harbor daylight", "water below the slope",
-        "low stone basin",
-        "A landing shed. Stone floor. One low stone basin. Daylight from the slope",
+        "A fictional harbor slope, stone steps between old houses, the water below the slope",
+        "house wall", "stone step", "boat shed", "wooden bench",
+        "harbor slope", "turn in the steps", "harbor light", "water below the slope", "old wooden toilet",
     ),
     "canal": _surface(
         "運河・小樽", "倉庫と水面。夜は暗い岸", "tide",
-        "A fictional canal, stone warehouses, a paved quay, still water beside the path",
-        "warehouse wall", "stone quay", "warehouse room", "stone ledge", "far edge of the stone ledge",
-        "canal quay", "bridge mouth", "dim light on the quay", "water against stone",
-        "low stone basin",
-        "A warehouse room. Stone floor. One low stone basin. Dim light from the quay",
+        "A fictional canal street, old stone warehouses along a paved quay, still water beside the path, iron gas lamps",
+        "warehouse wall", "stone quay", "warehouse room", "stone ledge",
+        "canal quay", "mouth of the bridge", "gas lamp light", "water against stone", "old white toilet",
     ),
     "sea_cave": _surface(
         "海蝕洞・江の島", "入口が明るく、奥が狭い", "tide",
-        "A fictional sea cave, a bright mouth, a narrow darker passage, wet rock",
-        "wet rock wall", "wet sand", "inner hollow", "rock shelf", "far edge of the rock shelf",
-        "cave passage", "narrowing of the cave", "daylight from the cave mouth", "water drip",
-        "tide pool",
-        "An inner hollow. Wet sand. One tide pool. Dim light from the passage",
+        "A fictional sea cave, a bright mouth behind, a narrowing passage of wet rock ahead, sand underfoot",
+        "wet rock wall", "wet sand", "inner hollow", "flat rock shelf",
+        "cave passage", "narrowing of the cave", "light from the cave mouth", "water in the cave", "low stone toilet",
     ),
     "buddha_cave": _surface(
-        "宗教窟・鋸山", "磨崖と洞", "hospital",
-        "A fictional cliff cave, carved stone figures in the rock, a hollow passage",
-        "carved rock wall", "stone floor", "side hollow", "rock shelf", "far edge of the rock shelf",
-        "cliff passage", "mouth of a side hollow", "dim daylight from the cliff", "wind in the hollow",
-        "low stone basin",
-        "A side hollow. Stone floor. One low stone basin. Dim daylight from the passage",
+        "宗教窟・鋸山", "磨崖と洞", "sand",
+        "A fictional cliff cave, large figures carved into the rock face, a stone floor, a hollow passage",
+        "carved rock wall", "stone floor", "side hollow", "rock shelf",
+        "cliff passage", "mouth of a side hollow", "light from the cliff opening", "wind in the hollow", "low stone toilet",
     ),
     "limestone": _surface(
         "鍾乳洞・日原", "低い天井と水音", "tide",
-        "A fictional limestone cave, a low ceiling, wet stone, water sounds",
-        "wet limestone wall", "wet stone", "inner chamber", "rock shelf", "far edge of the rock shelf",
-        "cave passage", "low bend", "dim reflected light", "water drip",
-        "shallow pool",
-        "An inner chamber. Wet stone. One shallow pool. Dim reflected light",
+        "A fictional limestone cave, a low ceiling of hanging stone, wet stone underfoot, small pools",
+        "wet limestone wall", "wet stone", "inner chamber", "rock shelf",
+        "cave passage", "low bend", "reflected lamp light", "water in the cave", "low stone toilet",
     ),
     "mine": _surface(
         "坑道・佐渡", "枕木とレール。手元の光", "soot",
-        "A fictional mine tunnel, sleepers and a rail, rock walls, a headlamp pool of light",
-        "rock wall", "wooden sleepers", "side chamber", "ore cart", "far edge of the ore cart",
-        "mine tunnel", "junction of the rail", "headlamp light", "distant tunnel tone",
-        "low metal basin",
-        "A side chamber. Wooden sleepers. One low metal basin. Headlamp light",
+        "A fictional mine tunnel, wooden sleepers and one rail underfoot, rough rock walls, timber supports",
+        "rock wall", "wooden sleepers", "side chamber", "ore cart",
+        "mine tunnel", "rail junction", "headlamp light", "distant tunnel tone", "old metal toilet",
     ),
     "ice": _surface(
-        "氷穴・富岳", "冷気の岩穴", "hospital",
-        "A fictional ice cave, frost on the rock, cold air, pale light",
-        "frosted rock wall", "frosted stone", "ice alcove", "ice shelf", "far edge of the ice shelf",
-        "ice passage", "bend in the ice", "pale cold light", "cold air tone",
-        "low ice basin",
-        "An ice alcove. Frosted stone. One low ice basin. Pale cold light",
+        "氷穴・富岳", "冷気の岩穴", "sand",
+        "A fictional ice cave, frost on the rock, ice columns, cold air, a frozen floor",
+        "frosted rock wall", "frozen stone", "ice alcove", "ice shelf",
+        "ice passage", "bend in the ice", "pale light through the ice", "cold air tone", "low stone toilet",
     ),
     "volcano": _surface(
         "火山・大涌谷", "遊歩道。噴気の先が境界", "soot",
-        "A fictional volcanic walkway, warm rock, steam vents ahead as the boundary",
-        "rock wall", "warm rock", "shelter", "rock ledge", "far edge of the rock ledge",
-        "volcanic walkway", "end of the walkway", "hazy daylight", "steam vent hiss",
-        "low stone basin",
-        "A shelter. Warm rock floor. One low stone basin. Hazy daylight",
+        "A fictional volcanic walkway, warm gray rock, a low wooden boardwalk, steam vents ahead marking the boundary",
+        "rock wall", "warm rock", "shelter hut", "wooden bench",
+        "volcanic walkway", "end of the walkway", "hazy light", "steam vent hiss", "old metal toilet",
     ),
     "battleship": _surface(
         "廃都・軍艦島", "コンクリートと海", "soot",
-        "A fictional concrete island, broken blocks, the sea beside the path",
-        "concrete wall", "concrete", "remaining room", "concrete slab", "far edge of the concrete slab",
-        "concrete path", "gap between blocks", "sea daylight", "surf on concrete",
-        "low concrete basin",
-        "A remaining concrete room. Concrete floor. One low concrete basin. Sea daylight from a hole",
+        "A fictional island of concrete blocks, broken apartment walls, the sea beside the path",
+        "concrete wall", "concrete", "remaining concrete room", "concrete slab",
+        "concrete path", "gap between the blocks", "sea light", "surf on concrete", "old concrete toilet",
     ),
     "mine_town": _surface(
         "閉山集落・池島", "坑口と団地が残る", "soot",
-        "A fictional closed mining village, apartment blocks, a tunnel mouth, packed earth",
-        "concrete wall", "packed earth", "empty apartment", "apartment floor", "far edge of the apartment floor",
-        "village path", "tunnel mouth", "overcast daylight", "wind between the blocks",
-        "low metal basin",
-        "An empty apartment. Concrete floor. One low metal basin. Overcast daylight from a window",
+        "A fictional closed mining village, empty apartment blocks, a tunnel mouth, packed earth underfoot",
+        "concrete wall", "packed earth", "empty apartment", "low bed frame",
+        "village path", "tunnel mouth", "light between the blocks", "wind between the blocks", "old white toilet",
     ),
     "factory": _surface(
         "工場・京浜", "配管と高架の工業区", "soot",
-        "A fictional factory district at night-adjacent dusk, pipes, an overpass, concrete",
-        "steel wall", "concrete", "locker room", "work table", "far edge of the work table",
-        "factory lane", "gate", "industrial lamps", "machine hum",
-        "low metal basin",
-        "A locker room. Concrete floor. One low metal basin. An industrial lamp",
+        "A fictional factory district, steel pipes overhead, an elevated road, concrete underfoot",
+        "steel wall", "concrete", "locker room", "steel work table",
+        "factory lane", "factory gate", "industrial lamp light", "machine hum", "steel toilet",
     ),
     "overpass": _surface(
         "高架下・汐留", "柱の反復と車の光", "soot",
-        "A fictional underpass, repeated columns, pavement, streaks of car light",
-        "concrete column", "pavement", "utility room", "concrete ledge", "far edge of the concrete ledge",
-        "underpass", "gap between columns", "car light", "traffic overhead",
-        "low utility sink",
-        "A utility room. Pavement. One low utility sink. Car light from the underpass",
+        "A fictional underpass, repeated concrete columns, pavement underfoot, streaks of passing car light",
+        "concrete column", "pavement", "utility room", "concrete ledge",
+        "underpass", "gap between the columns", "car light", "traffic overhead", "steel toilet",
     ),
 }
 
@@ -2014,23 +1965,21 @@ TIME_MODES: dict[str, dict[str, Any]] = {
         "form": True,
         "recommend": True,
         "sentence": "",
-        "away": "The light stays low.",
+        "away": "It is night. Low cool light lights the place.",
     },
     "morning": {
         "label_ja": "朝",
         "choice_ja": "朝",
         "when_ja": "低い光。行為は変えない",
         "form": True,
-        "sentence": "Low morning sun lights the ground. The light stays soft.",
-        "away": "Low morning sun lights the ground. The light stays soft.",
+        "sentence": "Low morning sun lights the place. The light stays soft.",
     },
     "day": {
         "label_ja": "昼",
         "choice_ja": "昼",
         "when_ja": "高い光。行為は変えない",
         "form": True,
-        "sentence": "High daylight lights the ground. The ground stays brightly lit.",
-        "away": "High daylight lights the ground. The ground stays brightly lit.",
+        "sentence": "High daylight lights the place. Everything stays brightly lit.",
     },
 }
 
@@ -2081,6 +2030,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "form": True,
         "recommend": True,
         "phrase": "",
+        "noun": "",
     },
     "hospital": {
         "label_ja": "病院の汚れ",
@@ -2088,6 +2038,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "今の病院の汚れのまま",
         "form": True,
         "phrase": "",
+        "noun": "grimy brown dust",
     },
     "sand": {
         "label_ja": "砂",
@@ -2095,6 +2046,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "あやの病院の汚れを砂に替える。傷は残す",
         "form": True,
         "phrase": "fine dry sand clinging to the skin",
+        "noun": "fine dry sand",
     },
     "tide": {
         "label_ja": "潮",
@@ -2102,6 +2054,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "あやの病院の汚れを潮の膜に替える。傷は残す",
         "form": True,
         "phrase": "a seawater sheen and fine salt on the skin",
+        "noun": "a seawater sheen with fine salt",
     },
     "soot": {
         "label_ja": "煤",
@@ -2109,6 +2062,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "あやの病院の汚れを煤に替える。傷は残す",
         "form": True,
         "phrase": "black soot clinging to the skin",
+        "noun": "black soot",
     },
     "steam": {
         "label_ja": "湯気",
@@ -2116,6 +2070,7 @@ DIRT_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "あやの病院の汚れを湯の膜に替える。傷は残す",
         "form": True,
         "phrase": "a wet mineral sheen on the skin",
+        "noun": "a wet mineral sheen",
     },
 }
 
@@ -2440,6 +2395,30 @@ def form_readme(kind: str) -> str:
     return "\n".join(lines)
 
 
+def _describe_surface(render: dict[str, Any]) -> str:
+    """Place, time, weather, dirt, camera distance, enemy kind, looks, and seed."""
+    def pick(registry: dict[str, dict[str, Any]], canon, key: str, default: str) -> str:
+        found = canon(str(render.get(key) or "")) or default
+        return str((registry.get(found) or registry[default]).get("label_ja") or found)
+
+    looks = render.get("enemy_looks") if isinstance(render.get("enemy_looks"), dict) else {}
+    look_bits = " ".join(
+        f"{name}={(LOOK_MODES.get(str(looks.get(name) or 'keep')) or LOOK_MODES['keep'])['label_ja']}"
+        for name in ("miki", "rei", "kana", "shino", "gin", "tsuno")
+    )
+    return (
+        f"  場所      {pick(PLACE_MODES, canonical_place, 'place', 'hospital')}\n"
+        f"  時間      {pick(TIME_MODES, canonical_time, 'time', 'night')}\n"
+        f"  天候      {pick(WEATHER_MODES, canonical_weather, 'weather', 'off')}\n"
+        f"  汚れ      {pick(DIRT_MODES, canonical_dirt, 'dirt', 'place')}\n"
+        f"  距離      {pick(CAMERA_DISTANCE_MODES, canonical_camera_distance, 'camera_distance', 'side')}\n"
+        f"  敵        {pick(ENEMY_KIND_MODES, canonical_enemy_kind, 'enemy_kind', 'zombie')}\n"
+        f"  あや      {pick(LOOK_MODES, canonical_look, 'aya_look', 'keep')}\n"
+        f"  敵の顔    {look_bits}\n"
+        f"  シード    {render.get('seed') or 42}\n"
+    )
+
+
 def describe_run(
     *,
     connect: str = "",
@@ -2467,6 +2446,7 @@ def describe_run(
     rei_pose: str = "",
     ride_bent: str = "",
     ride_column: str = "",
+    surface: dict[str, Any] | None = None,
 ) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
@@ -2557,5 +2537,6 @@ def describe_run(
         f"  11 異種   {sp['choice_ja']}  — {sp['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
+        f"{_describe_surface(surface or {})}"
         "迷ったら既定のままで Run all。新しい相手の入りはカット。消滅はチェーンならフェード。8から11は病棟の追加オプション。スライムとケモノは同時に出ない。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )

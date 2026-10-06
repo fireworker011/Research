@@ -1449,7 +1449,8 @@ def test_hospital_exit_adult_accept_is_survival_complete():
     assert "tongues intertwine" in miki_walk["action"].lower()
     assert "miki steps out" in miki_walk["action"].lower()
     assert extra_lora_entries(miki_walk)[0] == ("kiss", 0.5)
-    assert canonical_toilet("トイレ・ディルド") == canonical_toilet("アナル指") == canonical_toilet("トイレ・アナル指") == "finger"
+    assert canonical_toilet("トイレ・ディルド") == "finger"
+    assert canonical_toilet("アナル指") == canonical_toilet("トイレ・アナル指") == "anal_finger"
     for mode in ("小便", "オナニー", "触手", "トイレ・ディルド", "和式"):
         solo = prepare_episode(raw, story_override="受け入れる", toilet_override=mode, appear_override={"miki": True, "rei": False, "kana": False, "shino": False})
         out = next(b for b in solo["beats"] if b["id"] == "04-toilet-out")
@@ -1966,7 +1967,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(stand)
     _assert_hospital_bans(nelson_inv)
     keys = ride["render"]["lora_prefetch"]
-    for key in ("blowjob", "mystic", "futatf", "mast", "cumfacial", "kiss"):
+    for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     assert extra_keys(ride_sit)[:3] == ["mystic", "penis", "synth"]
@@ -2189,7 +2190,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert "glans stays pressed" in kiss_i["action"].lower()
     assert "travels into" not in kiss_i["action"].lower()
     kiss_in = next(b for b in m_open["beats"] if b["id"] == "03-kiss-in")
-    assert extra_lora_entries(kiss_in) == [("mystic", 1.0)] or extra_keys(kiss_in) == ["mystic"]
+    assert extra_keys(kiss_in) == ["mystic", "penis"]
+    assert "torso stays upright" in kiss_in["action"].lower()
+    assert "the whole shaft is hidden inside the pussy" in kiss_in["action"].lower()
     assert "travels into the pussy" in kiss_in["action"].lower()
     seven = next(b for b in m_open["beats"] if b["id"] == "07-kana")
     assert "stroking the erect 20cm" in seven["action"].lower()
@@ -2207,9 +2210,13 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
-    assert extra_keys(facial) == ["cumfacial", "penis", "jpnmoans"]
-    assert facial.get("trigger") == "cmst\nPENISLORA\njpnMoans"
-    assert extra_lora_entries(facial)[0] == ("cumfacial", 0.8)
+    assert extra_keys(facial) == ["cumshot", "penis", "jpnmoans"]
+    assert facial.get("trigger") == "CUMSH0T\nPENISLORA\njpnMoans"
+    assert extra_lora_entries(facial)[0] == ("cumshot", 1.0)
+    assert facial.get("facial") is True
+    assert "holds kana's erect 20cm in her right hand" in facial["action"].lower()
+    assert "across aya's nose, eyes, and into aya's open mouth" in facial["action"].lower()
+    assert "smiles shyly and giggles" in facial["action"].lower()
     assert facial["trim"]["seconds"] == 10.0
     assert "slow" not in facial["action"].lower()
     assert "white goo" in facial["action"].lower()
@@ -2217,8 +2224,9 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     facial_prompt = build_beat_prompt(m_open, facial)
     kiss_prompt = build_beat_prompt(m_open, kissb)
     assert facial.get("connect") == "cut" and beat_source(facial) == "t2v"
-    assert "the camera holds this one frame" in facial["action"].lower()
-    assert "looks up toward the lens" in facial_prompt.lower()
+    assert "the camera moves in an arc around aya's face" in facial_prompt.lower()
+    assert "looks up" in facial_prompt.lower()
+    assert "both adults stay full body" not in facial_prompt.lower()
     assert "white rope" in facial_prompt.lower()
     assert "kana's whole face stays inside the frame" not in facial_prompt.lower()
     assert "both faces stay fully inside the frame" not in facial_prompt.lower()
@@ -2242,7 +2250,6 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert goo not in m_open["cast"]["aya"]["lock"].lower()
     assert "white rope" in facial["action"].lower()
     assert "white goo clinging to aya's face and breasts" in facial["action"].lower()
-    assert "semen" not in facial["action"].lower()
     assert "aya" not in (facial.get("cast_lock") or {})
     assert goo not in build_beat_prompt(m_open, facial).lower()
     assert goo not in build_beat_prompt(m_open, seven).lower()
@@ -6006,12 +6013,17 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
         "04-tsuno-beckon",
         "04-tsuno-lie",
         "04-tsuno-sidekiss",
+        "04-tsuno-aim",
         "04-tsuno-ride",
         "04-tsuno-peak",
         "04-tsuno-ride-kiss",
         "04-tsuno-walk",
     ]
     assert "04-tsuno-meet" not in ids
+    horn_aim = next(b for b in ride["beats"] if b["id"] == "04-tsuno-aim")
+    assert extra_lora_entries(horn_aim) == []
+    assert "lowers the glans onto aya's hairless pussy" in horn_aim["action"].lower()
+    assert beat_source(horn_aim) == "chain"
     oral = next(b for b in ride["beats"] if b["id"] == "04-tsuno-oral")
     assert extra_lora_entries(oral)[:3] == [("blowjob", 0.8), ("mystic", 0.5), ("penis", 0.45)]
     assert oral.get("trigger") == "bl0w_j0b"
@@ -6058,12 +6070,12 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "lips stay on the shaft" in jacko_oral["action"].lower()
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
-    assert extra_lora_entries(wait)[0] == ("cumfacial", 0.8)
-    assert "cmst" not in extra_keys(wait)
+    assert extra_lora_entries(wait)[0] == ("cumshot", 1.0)
     assert "penis" in extra_keys(wait)
-    assert wait.get("trigger", "").startswith("cmst")
-    assert "CUMSH0T" not in wait.get("trigger", "")
+    assert wait.get("trigger", "").startswith("CUMSH0T")
     assert "PENISLORA" in wait.get("trigger", "")
+    assert "aya holds the shaft in her right hand" in wait["action"].lower()
+    assert "smiles shyly and giggles" in wait["action"].lower()
     assert wait.get("connect") == "chain"
     assert beat_source(wait) == "chain"
     seat = next(b for b in ride["beats"] if b["id"] == "04-tsuno-ride")
@@ -6302,7 +6314,9 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in jupo["action"].lower()
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
-    assert extra_lora_entries(mouth) == [("cumfacial", 0.8), ("penis", 0.45), ("mystic", 0.5)]
+    assert extra_lora_entries(mouth) == [("cumshot", 1.0), ("penis", 0.45)]
+    assert mouth.get("facial") is True
+    assert "across gin's nose, eyes, and into gin's open mouth" in mouth["action"].lower()
     assert mouth.get("steps") == 8 and mouth.get("turbo") is False
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
     assert "onto gin's face and tongue" in mouth["action"].lower()
@@ -6713,3 +6727,87 @@ def test_hospital_place_swaps_nouns_after_the_act_is_chosen():
     assert "light blue eyes" in human["cast"]["kana"]["lock"]
     assert "long straight black hair" in human["cast"]["shino"]["lock"]
 
+
+
+def test_hospital_off_ward_human_and_insert_fixes():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    user = dict(
+        story_override="□誘う（淫欲・失敗）",
+        invite_pose_override="四つん這い股広げ（迷ったらこれ）",
+        toilet_override="トイレ・触手",
+        gin_override="灰色・騎乗・最初から膝曲げ",
+        tsuno_override="角・病室で横になって挿入",
+        scenes_override="miki=誘う・騎乗曲げ膝,rei=誘う・四つん這い,kana=誘う・立ちバック,shino=誘う・M字",
+        connect_override="前の最終フレームから続ける",
+    )
+    ward_words = re.compile(
+        r"hospital|linoleum|corridor|sickroom|fluorescent|crumbling|rusted|\bHVAC\b|derelict|T-junction|"
+        r"porcelain|beige|\btiles\b|Props in this shot|purple fluorescent|at night",
+        re.I,
+    )
+    zombie_words = re.compile(r"purple|lacerat|\bgash|hollow empty|shambl|eerie|ashen|gums exposed", re.I)
+    for place in ("大都会", "森林", "坑道・佐渡"):
+        ep = prepare_episode(raw, place_override=place, time_override="昼", enemy_kind_override="人間", **user)
+        assert validate_episode(ep, root=HOSPITAL_DIR) == []
+        gpu = [b for b in ep["beats"] if not is_ui_beat(b) and beat_renders(b)]
+        assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover"]
+        for b in gpu:
+            prompt = build_beat_prompt(ep, b, trigger=merge_trigger("", b))
+            assert not ward_words.search(prompt), (place, b["id"], ward_words.search(prompt).group(0))
+            assert not zombie_words.search(prompt), (place, b["id"], zombie_words.search(prompt).group(0))
+            env = prompt.split("environment:", 1)[1].split("integrated_multimodal_description:", 1)[0]
+            assert "High daylight lights the place" in env, b["id"]
+    zombie = prepare_episode(raw, **user)
+    assert "vivid purple" in build_beat_prompt(zombie, next(b for b in zombie["beats"] if b["id"] == "03-kiss-in" or b["id"] == "03-kiss"))
+    wait = next(b for b in zombie["beats"] if b["id"] == "03-kiss-wait")
+    assert "keeps exactly two legs" in build_beat_prompt(zombie, wait)
+
+    rei_press = next(b for b in zombie["beats"] if b["id"] == "06-doggy-press")
+    low = rei_press["action"].lower()
+    assert "rei's side faces the camera" in low
+    assert "between aya's open knees" in low
+    assert extra_lora_entries(rei_press) == []
+    rei_in = next(b for b in zombie["beats"] if b["id"] == "06-doggy-in")
+    assert "the whole shaft is hidden inside the anus" in rei_in["action"].lower()
+    kana_press = next(b for b in zombie["beats"] if b["id"] == "09-join-press")
+    assert "feet stand on that centerline between aya's feet" in kana_press["action"].lower()
+    assert "knees plant" not in kana_press["action"].lower()
+
+    shino_prep = next(b for b in zombie["beats"] if b["id"] == "12-exit")
+    assert "kneels upright" in shino_prep["action"].lower()
+    assert "already at the base" not in shino_prep["action"].lower()
+    assert "towers over" not in shino_prep["action"].lower()
+    assert extra_lora_entries(shino_prep) == []
+    shino_in = next(b for b in zombie["beats"] if b["id"] == "12-exit-in")
+    assert "penis" in extra_keys(shino_in)
+    assert "licks forward along aya's neck" not in shino_in["action"].lower()
+
+    order = [b["id"] for b in zombie["beats"]]
+    assert order.index("04-tsuno-sidekiss") + 1 == order.index("04-tsuno-aim")
+    assert order.index("04-tsuno-aim") + 1 == order.index("04-tsuno-ride")
+
+    kana = next(b for b in zombie["beats"] if b["id"] == "09-kana-facial")
+    kana_prompt = build_beat_prompt(zombie, kana, trigger=merge_trigger("", kana))
+    assert "the camera moves in an arc around aya's face" in kana_prompt.lower()
+    assert "all four feet" not in kana_prompt.lower()
+    gin_mouth = next(b for b in zombie["beats"] if b["id"] == "04-gin-mouth")
+    gin_prompt = build_beat_prompt(zombie, gin_mouth, trigger=merge_trigger("", gin_mouth))
+    assert gin_prompt.startswith("CUMSH0T")
+    assert "across gin's nose, eyes, and into gin's open mouth" in gin_prompt.lower()
+    assert "all four feet" not in gin_prompt.lower()
+
+    finger = prepare_episode(raw, toilet_override="トイレ・アナル指", connect_override="chain")
+    ids = [b["id"] for b in finger["beats"] if str(b["id"]).startswith("04-toilet")]
+    assert ids == ["04-toilet-in", "04-toilet-afin", "04-toilet-afast", "04-toilet-out"]
+    afin = next(b for b in finger["beats"] if b["id"] == "04-toilet-afin")
+    assert extra_lora_entries(afin)[0] == ("analfinger", 1.0)
+    assert LORA_FILES["analfinger"] == "af_h3_vids512_imgs1024_000011750.safetensors"
+    assert "3388162" in LORA_URLS["analfinger"]
+    afin_prompt = build_beat_prompt(finger, afin, trigger=merge_trigger("", afin))
+    assert afin_prompt.startswith("anal_finger")
+    assert "inserts her index finger into her anus" in afin_prompt
+    assert "all four feet" not in afin_prompt
+    assert beat_source(afin) == "chain"
+    tentacle = prepare_episode(raw, toilet_override="トイレ・触手")
+    tent = next(b for b in tentacle["beats"] if b["id"] == "04-toilet")
+    assert "tentacles are being inserted" in tent.get("trigger", "")
