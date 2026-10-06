@@ -237,6 +237,14 @@ def normalize_look(look: Mapping[str, Any] | None) -> dict[str, Any]:
     return {"choices": choices, "custom": custom, "ref_image": ref_image}
 
 
+def used_look_names(handle: str) -> tuple[str, ...]:
+    """Japanese names of the look fields this account actually uses."""
+    parts = _PARTS.get(handle)
+    if not parts:
+        raise KeyError(handle)
+    return tuple(_NAME[part] for part in parts)
+
+
 def look_block(handle: str, look: Mapping[str, Any] | None = None) -> dict[str, str]:
     cat = catalog()
     spec = normalize_look(look)
@@ -459,15 +467,15 @@ def feasibility_sheet(fid: str, look: Mapping[str, Any] | None = None) -> str:
     if fid == "F1":
         body = template_for("yako.shiawasekon")
         plan = sheet(body, "制作可否", ["こんにちは。今日はここまで。"], look=look)
-        title = "F1 日本語の口パク"
+        title = "F1 日本語の口パク（婚活・yako.shiawasekon。焼くジョブではない）"
     elif fid == "F2":
         body = template_for("junjun_ranran")
         plan = sheet(body, "同じ顔の確認", ["いち", "に"], look=look)
-        title = "F2 毎回同じ顔"
+        title = "F2 毎回同じ顔（見守りカメラ・junjun_ranran。焼くジョブではない）"
     elif fid == "F3":
         body = template_for("nuts0629")
         plan = sheet(body, "ダンスの可否", mode="dance", look=look)
-        title = "F3 ダンスの動き"
+        title = "F3 ダンスの動き（ドッグフード・nuts0629。焼くジョブではない）"
     else:
         raise KeyError(fid)
     return render_markdown(plan, title) + f"\n確かめること: {item['ask']}\n"

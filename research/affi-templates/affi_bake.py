@@ -60,6 +60,66 @@ GENRE_HANDLES = {
     "婚活": "yako.shiawasekon",
 }
 
+# Colab のドロップダウンに出す文。ハンドルだけではどれか分からない。
+ACCOUNT_CHOICES = (
+    ("美容スキンケア（the.care.logic）", "the.care.logic"),
+    ("ドッグフード（nuts0629）", "nuts0629"),
+    ("見守りカメラ（junjun_ranran）", "junjun_ranran"),
+    ("婚活（yako.shiawasekon）", "yako.shiawasekon"),
+)
+DOG_PATTERNS = (
+    ("インタビュー（既定）", "interview"),
+    ("咀嚼", "asmr"),
+    ("ダンス", "dance"),
+    ("会話", "talk"),
+)
+_MODE_JA = {mode: label.split("（")[0] for label, mode in DOG_PATTERNS}
+_ALL_LOOKS = ("キャラ", "動物", "動物2", "人物", "人物2", "場所", "口調")
+
+
+def resolve_account(label: str, dog_pattern: str = "インタビュー（既定）") -> tuple[str, str | None]:
+    """Map the Colab menu to one handle. Dog-food patterns apply only to nuts0629."""
+    handles = {text: handle for text, handle in ACCOUNT_CHOICES}
+    handles.update({handle: handle for _text, handle in ACCOUNT_CHOICES})
+    handle = handles.get(label)
+    if handle is None:
+        raise KeyError(f"アカウントが無い: {label}")
+    if handle != "nuts0629":
+        return handle, None
+    modes = {text: mode for text, mode in DOG_PATTERNS}
+    mode = modes.get(dog_pattern)
+    if mode is None:
+        raise KeyError(f"ドッグフードの型が無い: {dog_pattern}")
+    return handle, mode
+
+
+def describe_account(handle: str, mode: str | None = None) -> str:
+    """One account, in Japanese, before any other sheet."""
+    item = ref.template_for(handle)
+    view = _mode_view(item, mode)
+    beats = _expand_beats(view["timeline"], int(view["repeat"]))
+    cut_sum = round(sum(float(beat["end_s"]) - float(beat["start_s"]) for beat in beats), 3)
+    used = ref.used_look_names(handle)
+    unused = [name for name in _ALL_LOOKS if name not in used]
+    pattern = _MODE_JA.get(view["mode"] or "", "切り替えはない")
+    lines = [
+        "再現するのはこの1件です。",
+        f"ジャンル: {item['genre']}",
+        f"アカウント: {handle}",
+        f"型: {pattern}",
+        f"秒: {_num(float(view['duration_s']))}",
+        f"画面: {view['canvas']}",
+        f"使う見た目: {'、'.join(used)}",
+        f"使わない見た目: {'、'.join(unused)}",
+    ]
+    if abs(cut_sum - float(view["duration_s"])) > 0.051:
+        lines.append(
+            f"カットの合計は {_num(cut_sum)} 秒。型は {_num(float(view['duration_s']))} 秒。足りない秒は足さない。"
+        )
+    if handle != "nuts0629":
+        lines.append("型の切り替えはドッグフードだけ。このアカウントでは使わない。")
+    return "\n".join(lines)
+
 
 def _accepts(duration_s: float) -> bool:
     return bool(diffusers_accepts(frames_for_seconds(duration_s)))

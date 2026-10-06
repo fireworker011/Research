@@ -22,6 +22,26 @@ def test_genre_handles_match_the_table() -> None:
     assert bake.GENRE_HANDLES == genre.REFERENCE_HANDLES
 
 
+def test_account_menu_names_one_account() -> None:
+    assert [handle for _label, handle in bake.ACCOUNT_CHOICES] == list(bake.GENRE_HANDLES.values())
+    handle, mode = bake.resolve_account("美容スキンケア（the.care.logic）", "ダンス")
+    assert handle == "the.care.logic"
+    assert mode is None
+    text = bake.describe_account(handle, mode)
+    assert text.startswith("再現するのはこの1件です。")
+    assert "ジャンル: 美容スキンケア" in text
+    assert "アカウント: the.care.logic" in text
+    assert "ドッグフードだけ" in text
+    assert "nuts0629" not in text
+
+    handle, mode = bake.resolve_account("ドッグフード（nuts0629）", "会話")
+    assert (handle, mode) == ("nuts0629", "talk")
+    talk = bake.describe_account(handle, mode)
+    assert "ジャンル: ドッグフード" in talk
+    assert "型: 会話" in talk
+    assert "足りない秒は足さない" in talk
+
+
 def test_dance_is_one_ten_second_clip_and_needs_a_still(tmp_path: Path) -> None:
     job = bake.bake_reference("nuts0629", mode="dance", theme="夕方の散歩")
     assert job["duration_s"] == 10
