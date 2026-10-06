@@ -276,7 +276,7 @@ def test_form_status_and_story_check_stay_on_one_account() -> None:
 
 
 def test_reference_notebook_is_one_japanese_form_per_story() -> None:
-    disk = json.loads((ROOT / "reference_check.ipynb").read_text(encoding="utf-8"))
+    disk = json.loads((ROOT / "affi.ipynb").read_text(encoding="utf-8"))
     built = bake.reference_notebook()
     disk_src = [_cell_source(cell) for cell in disk["cells"]]
     built_src = [_cell_source(cell) for cell in built["cells"]]
@@ -291,7 +291,11 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert blob.count("look_from_form") == 4
     assert "静止画" in blob
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
-    assert len(code) == 9
+    assert len(code) == 7
+    assert "すべてのセルを実行" in blob
+    assert "押しません" in blob
+    assert "読み込み" in blob
+    assert "実行" in blob
     for src in code:
         ast.parse(src)
 
@@ -319,12 +323,18 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert picked["HANDLE"] == "nuts0629"
     assert picked["MODE"] == "interview"
     assert "affi_av.py" in blob
-    assert "template_coverage" in blob
+    assert "run_choice" in blob
     assert "手入力で I2V" in blob
     assert "この場で焼く" in blob
     assert "テンプレ" in blob
     assert "オマージュ" in blob
     assert "元の型のまま" in blob
+    for name in ("reference_check.ipynb", "affi_genre_templates.ipynb"):
+        moved = json.loads((ROOT / name).read_text(encoding="utf-8"))
+        moved_src = "\n".join(_cell_source(cell) for cell in moved["cells"])
+        assert moved_src == _cell_source(bake.moved_notebook()["cells"][0])
+        assert bake.NOTEBOOK_URL in moved_src
+        assert "affi.ipynb" in moved_src
 
 
 def _outside_dialogue(prompt: str) -> str:
@@ -547,6 +557,65 @@ def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -
         assert "秒" in str(exc)
     else:
         raise AssertionError("15 seconds was accepted")
+
+
+def test_one_choice_runs_the_table_or_one_job_or_i2v(tmp_path: Path) -> None:
+    table = bake.run_choice(
+        "表を見る",
+        data_dir=ROOT / "data" / "2026-10-03",
+        table_out=tmp_path / "templates",
+    )
+    assert "美容スキンケア" in table
+    assert "ジョブはここでは書きません" in table
+    assert "mp4" not in table
+    assert (tmp_path / "templates" / "compare.md").is_file()
+    missing = bake.run_choice("表を見る", data_dir=tmp_path / "missing")
+    assert "読み込み" in missing
+
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    job_text = bake.run_choice(
+        "話でジョブを書く",
+        handle="the.care.logic",
+        fill_label="テンプレ",
+        image=str(still),
+        out_dir=tmp_path / "jobs",
+    )
+    assert "夕方の乾燥" in job_text
+    assert "ready" in job_text
+    assert "見た目は初期値です" in job_text
+    assert "型に書いてある動作は全部入っている" in job_text
+    assert "mp4 は焼いていない" in job_text
+    other = bake.default_look("junjun_ranran")
+    ignored = bake.run_choice(
+        "話でジョブを書く",
+        handle="nuts0629",
+        mode="dance",
+        fill_label="元の型のまま",
+        look=other,
+        image=str(still),
+        out_dir=tmp_path / "jobs",
+    )
+    assert "見た目は初期値です" in ignored
+    assert "ready" in ignored
+    assert bake.look_is_for("nuts0629", bake.default_look("nuts0629"))
+    assert not bake.look_is_for("nuts0629", other)
+
+    typed = bake.run_choice(
+        "自分の文で1本",
+        image=str(still),
+        prompt="The dog turns its head.",
+        duration_s="10",
+        aspect="9:16",
+        out_dir=tmp_path / "jobs",
+    )
+    assert "手入力で I2V" in typed
+    assert "ready" in typed
+    assert "--task i2va" in typed
+    assert "mp4 は焼いていない" in typed
+    assert bake.next_step("表を見る").startswith("次は「実行」")
+    assert bake.next_step("話でジョブを書く").startswith("次は「実行」")
+    assert bake.next_step("自分の文で1本").startswith("次は「実行」")
 
 
 def test_bite_mentions_the_mouth_and_does_not_invent_the_chew() -> None:

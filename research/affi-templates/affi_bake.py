@@ -11,11 +11,13 @@ from __future__ import annotations
 import argparse
 import json
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import affi_av
+import affi_genre_templates as genre
 import affi_reference as ref
 
 _RUNNER = Path(__file__).resolve().parents[2] / "h3-runner"
@@ -92,6 +94,15 @@ FILL_CHOICES = (
     ("テンプレ", "template"),
     ("オマージュ", "homage"),
     ("元の型のまま", "source"),
+)
+TASK_CHOICES = (
+    ("表を見る", "table"),
+    ("話でジョブを書く", "job"),
+    ("自分の文で1本", "i2v"),
+)
+NOTEBOOK_URL = (
+    "https://colab.research.google.com/github/fireworker011/Research/"
+    "blob/cursor/affi-template-bake-44d6/research/affi-templates/affi.ipynb"
 )
 # Short fills for the form. The source account's face, lines, and song titles stay out.
 _FILL_NOTE = "型の絵とカメラ。元の顔、元の台詞、曲名は入れない。"
@@ -244,6 +255,244 @@ def pack_for(handle: str, mode: str | None, fill: str) -> dict[str, Any]:
         "lines": tuple(pack["lines"]),
         "note": _FILL_NOTE,
     }
+
+
+def resolve_task(label: str) -> str:
+    """Map the one menu to table, job, or i2v."""
+    tasks = {text: task for text, task in TASK_CHOICES}
+    tasks.update({task: task for _text, task in TASK_CHOICES})
+    found = tasks.get(label)
+    if found is None:
+        raise KeyError(f"やることが無い: {label}")
+    return found
+
+
+def look_is_for(handle: str, look: Mapping[str, Any] | None) -> bool:
+    """True when this look dict was built for this story."""
+    if not look:
+        return False
+    keys = set(look)
+    if handle == "the.care.logic":
+        return "mascot_subject" in keys
+    if handle == "nuts0629":
+        return "animal_species" in keys and "animal2_species" not in keys
+    if handle == "junjun_ranran":
+        return "animal2_species" in keys
+    if handle == "yako.shiawasekon":
+        return "person2_gender" in keys and "animal_species" not in keys
+    return False
+
+
+def next_step(task: str) -> str:
+    """The one cell to run after the choice form."""
+    kind = resolve_task(task)
+    if kind == "table":
+        return "次は「実行」だけ押してください。4ジャンルの表が出ます。ジョブは書きません。"
+    if kind == "job":
+        return (
+            "次は「実行」を押してください。"
+            "見た目を変えるときだけ、その前に、話の名前が同じ見た目のセルを1つ押してください。"
+            "変えないときは初期値です。"
+        )
+    if kind == "i2v":
+        return "次は「実行」を押してください。プロンプトと静止画は、上の欄に書いたものを使います。"
+    raise RuntimeError(f"やることが無い: {kind}")
+
+
+def _runner_root() -> Path | None:
+    here = Path.cwd()
+    for candidate in [here, *here.parents]:
+        if (candidate / "h3-runner" / "run_h3.py").is_file():
+            return candidate
+    return None
+
+
+def run_choice(
+    task: str,
+    *,
+    handle: str | None = None,
+    mode: str | None = None,
+    fill_label: str = "テンプレ",
+    lines_text: str = "",
+    image: str = "",
+    look: Mapping[str, Any] | None = None,
+    prompt: str = "",
+    duration_s: float | str = 10,
+    aspect: str = "9:16",
+    bake_here: bool = False,
+    data_dir: str | Path | None = None,
+    out_dir: str | Path | None = None,
+    table_out: str | Path | None = None,
+    strong_min: int = 10,
+    compare_min: int = 3,
+    thin_below: int = 10,
+    min_gap_pt: int = 10,
+) -> str:
+    """Run the one selected action. A job or an I2V command is written. mp4 is not rendered unless bake_here."""
+    kind = resolve_task(task)
+    if kind == "table":
+        return _run_table(
+            data_dir,
+            table_out,
+            strong_min=strong_min,
+            compare_min=compare_min,
+            thin_below=thin_below,
+            min_gap_pt=min_gap_pt,
+        )
+    if kind == "job":
+        return _run_job(handle, mode, fill_label, lines_text, image, look, out_dir)
+    if kind == "i2v":
+        return _run_i2v(image, prompt, duration_s, aspect, bake_here, out_dir)
+    raise RuntimeError(f"やることが無い: {kind}")
+
+
+def _run_table(
+    data_dir: str | Path | None,
+    table_out: str | Path | None,
+    *,
+    strong_min: int,
+    compare_min: int,
+    thin_below: int,
+    min_gap_pt: int,
+) -> str:
+    if data_dir is None or not Path(data_dir).is_dir():
+        return "表の調査データが無い。先に「読み込み」を実行してください。"
+    built = genre.load_snapshot(
+        Path(data_dir),
+        genre.Thresholds(
+            strong_min=strong_min,
+            compare_min=compare_min,
+            thin_below=thin_below,
+            min_gap_pt=min_gap_pt,
+        ),
+    )
+    if table_out is not None:
+        genre.write_outputs(built, Path(table_out))
+    parts = [
+        "## 表",
+        "",
+        "左がジャンル。冒頭は最初の3秒、主役は画面の中心。",
+        f"強い＝両方{strong_min}件以上。弱い＝件数が少ない。比較不能＝片方が{compare_min}件未満。",
+        "ドッグフードと見守りは、表の次の「オマージュ」を先に使う。",
+        "ジョブはここでは書きません。ジョブは「選ぶ」で「話でジョブを書く」です。",
+        "",
+        genre.render_compare(built),
+    ]
+    for item in built.genres:
+        parts.append(genre.render_genre(item))
+    parts.append("動画は作っていない。投稿していない。")
+    return "\n".join(parts)
+
+
+def _run_job(
+    handle: str | None,
+    mode: str | None,
+    fill_label: str,
+    lines_text: str,
+    image: str,
+    look: Mapping[str, Any] | None,
+    out_dir: str | Path | None,
+) -> str:
+    if not handle:
+        return "先に「選ぶ」を実行してください。"
+    if look_is_for(handle, look):
+        picked = dict(look or {})
+        look_note = "この話の見た目を使います。"
+    else:
+        picked = default_look(handle)
+        look_note = "見た目は初期値です。変えるときは、話の名前が同じ見た目のセルを先に実行してから、もう一度「実行」してください。"
+    picked["ref_image"] = image.strip()
+    typed = [line.strip() for line in lines_text.splitlines() if line.strip()]
+    try:
+        shown = ref.look_block(handle, picked)["ja"]
+        job = bake_reference(
+            handle,
+            mode=mode,
+            fill=resolve_fill(fill_label),
+            lines=typed or None,
+            look=picked,
+            image=image.strip() or None,
+        )
+    except ValueError as exc:
+        return f"止まった: {exc}"
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    folder = handle if not mode else f"{handle}-{mode}"
+    path = write_job(job, root / folder)
+    lines = [
+        describe_account(handle, mode),
+        "---",
+        shown,
+        look_note,
+        f"{job['fill']['label']} {job['theme']}",
+        job["fill"]["note"],
+    ]
+    for cut in job["cuts"]:
+        if cut["needs_line"]:
+            lines.append(f"{cut['id']} {cut['line']}")
+    lines.append(
+        f"{job['status']} 型の秒 {job['duration_s']} カット {len(job['cuts'])} 生成 {len(job['clips'])}"
+    )
+    lines.extend(f"- {reason}" for reason in job["blocked"])
+    lines.append(str(path))
+    perf = job["performance"]
+    lines.append(perf["motion"]["template_coverage"])
+    lines.append(perf["motion"]["source_video"])
+    lines.append(perf["lipsync"]["summary"])
+    lines.append(perf["captions"]["summary"])
+    lines.append(perf["bgm"]["summary"])
+    lines.append("LoRA " + " / ".join(f"{row['file']} {row['scale']}" for row in perf["lora"]))
+    lines.append("mp4 は焼いていない。投稿していない。")
+    lines.append("---")
+    lines.append(story_check(handle, mode))
+    return "\n".join(lines)
+
+
+def _run_i2v(
+    image: str,
+    prompt: str,
+    duration_s: float | str,
+    aspect: str,
+    bake_here: bool,
+    out_dir: str | Path | None,
+) -> str:
+    try:
+        job = plan_i2v(
+            image=image.strip() or None,
+            prompt=prompt,
+            duration_s=duration_s,
+            aspect=aspect,
+        )
+    except ValueError as exc:
+        return f"止まった: {exc}"
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    path = write_i2v(job, root / "i2v")
+    lines = [
+        "手入力で I2V",
+        f"{job['status']} 秒 {job['duration_s']} {path}",
+    ]
+    lines.extend(f"- {reason}" for reason in job["blocked"])
+    lines.append(job["commands"][-1])
+    ran = False
+    if bake_here:
+        if job["status"] != "ready":
+            lines.append("止まっているので焼かない。")
+        else:
+            found = _runner_root()
+            if found is None:
+                lines.append("h3-runner がこのランタイムに無い。コマンドは書いた。ここでは焼かない。")
+            else:
+                completed = subprocess.run(job["argv"], cwd=found)
+                ran = completed.returncode == 0
+                lines.append(f"終了コード {completed.returncode}")
+    if not ran:
+        lines.append("mp4 は焼いていない。投稿していない。")
+    return "\n".join(lines)
+
+
+def _bake_root() -> Path:
+    if Path("/content").is_dir():
+        return Path("/content/affi-bake")
+    return Path("affi-bake")
 
 
 def resolve_account(label: str, dog_pattern: str = "インタビュー（既定）") -> tuple[str, str | None]:
@@ -941,7 +1190,7 @@ def look_from_form(fields: Mapping[str, str]) -> dict[str, str]:
 def form_status(selected: str | None, expected: str) -> str:
     """Empty when this form belongs to the selected story."""
     if not selected:
-        return "先に上の「再現する話」を実行してください。"
+        return "先に上の「選ぶ」を実行してください。"
     if selected == expected:
         return ""
     label = next(text for text, handle in ACCOUNT_CHOICES if handle == selected)
@@ -1010,159 +1259,109 @@ def story_form_cell(handle: str) -> str:
         lines.append("")
     lines.append("import affi_bake")
     lines.append("")
-    lines.append(f'note = affi_bake.form_status(globals().get("HANDLE"), {_py(handle)})')
-    lines.append("if note:")
-    lines.append("    print(note)")
+    lines.append('task = globals().get("何をする", "話でジョブを書く")')
+    lines.append('if task != "話でジョブを書く":')
+    lines.append('    print("今は見た目を使いません。「選ぶ」が「話でジョブを書く」のときだけ、このセルを実行します。")')
     lines.append("else:")
-    lines.append("    look = affi_bake.look_from_form({")
+    lines.append(f'    note = affi_bake.form_status(globals().get("HANDLE"), {_py(handle)})')
+    lines.append("    if note:")
+    lines.append("        print(note)")
+    lines.append("    else:")
+    lines.append("        look = affi_bake.look_from_form({")
     for label in pairs:
-        lines.append(f"        {_py(label)}: {label},")
-    lines.append("    })")
-    lines.append('    print("この話の見た目を使います。")')
-    lines.append("    print(affi_bake.STORIES[HANDLE])")
+        lines.append(f"            {_py(label)}: {label},")
+    lines.append("        })")
+    lines.append('        print("この話の見た目を使います。")')
+    lines.append("        print(affi_bake.STORIES[HANDLE])")
     return "\n".join(lines) + "\n"
 
 
-def account_picker_cell() -> str:
+def choice_cell() -> str:
+    """The one form. Story, fill, still, and the hand-written I2V fields live here."""
     labels = [text for text, _handle in ACCOUNT_CHOICES]
     patterns = [text for text, _mode in DOG_PATTERNS]
-    return "\n".join(
-        [
-            '#@title 再現する話（4つのうち1つ） { display-mode: "form" }',
-            "#@markdown 迷ったらこのまま実行して、下に出る説明を読む。見た目は、選んだ話のセルだけが使われます。",
-            f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
-            "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの3つの話ではこの欄は無視する。",
-            f"ドッグフードの型 = {_py(patterns[0])} #@param {_param_list(patterns)}",
-            "",
-            "import affi_bake",
-            "",
-            "HANDLE, MODE = affi_bake.resolve_account(話, ドッグフードの型)",
-            "print(affi_bake.describe_account(HANDLE, MODE))",
-            "",
-        ]
-    )
-
-
-def i2v_form_cell() -> str:
+    tasks = [text for text, _task in TASK_CHOICES]
+    fills = [text for text, _fill in FILL_CHOICES]
     seconds = i2v_second_choices()
     default_second = "10" if "10" in seconds else seconds[0]
     aspects = ["9:16", "16:9"]
     return "\n".join(
         [
-            '#@title 手入力で I2V（1枚から1本） { display-mode: "form" }',
-            "#@markdown 型のジョブとは別です。プロンプトはここに書いた文だけを使います。",
-            "#@markdown 静止画が最初のコマです。最後のコマは渡しません。",
-            "#@markdown せりふ以外の日本語は声に読まれることがあります。せりふは <d>[Japanese] 文</d> の中に書きます。",
-            "#@markdown 「この場で焼く」を入れたときだけ、このランタイムで1本焼きます。h3-runner と重みが要ります。投稿しません。",
+            '#@title 選ぶ { display-mode: "form" }',
+            "#@markdown やりたいことを1つ選んで、このセルを実行する。上の「すべてのセルを実行」は押さない。",
+            f"何をする = {_py(tasks[1])} #@param {_param_list(tasks)}",
+            "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文では無視する。",
+            f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
+            "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの話では無視する。",
+            f"ドッグフードの型 = {_py(patterns[0])} #@param {_param_list(patterns)}",
+            "#@markdown 中身。テンプレは用意した短い場面。オマージュは同じ絵の順で、別の短い台詞。元の型のままは型の絵とカメラ。元の顔、元の台詞、曲名は入らない。",
+            f"中身 = {_py(fills[0])} #@param {_param_list(fills)}",
+            "#@markdown 台詞を置き換えるときだけ書く。空なら、中身の台詞を使う。1行が1カット。",
+            '台詞 = "" #@param {type:"raw"}',
+            "#@markdown 静止画は画像ファイルの場所。話でジョブを書くときと、自分の文で1本のときに使う。",
+            '静止画 = "" #@param {type:"string"}',
+            "#@markdown 自分の文で1本（手入力で I2V）のときだけ、下を使う。",
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
-            '静止画 = "" #@param {type:"string"}',
             'プロンプト = "" #@param {type:"raw"}',
-            "この場で焼く = False #@param {type:\"boolean\"}",
+            'この場で焼く = False #@param {type:"boolean"}',
             "",
-            "import subprocess",
             "import affi_bake",
-            "from pathlib import Path",
             "",
-            "try:",
-            "    job = affi_bake.plan_i2v(",
-            "        image=静止画.strip() or None,",
-            "        prompt=プロンプト,",
-            "        duration_s=秒,",
-            "        aspect=画面,",
-            "    )",
-            "except ValueError as exc:",
-            '    print("止まった:", exc)',
-            "else:",
-            '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
-            '    path = affi_bake.write_i2v(job, out / "i2v")',
-            '    print(job["status"], "秒", job["duration_s"], path)',
-            '    for reason in job["blocked"]:',
-            '        print("-", reason)',
-            "    print(job[\"commands\"][-1])",
-            "    ran = False",
-            "    if この場で焼く:",
-            '        if job["status"] != "ready":',
-            '            print("止まっているので焼かない。")',
-            "        else:",
-            "            root = None",
-            "            here = Path.cwd()",
-            "            for candidate in [here, *here.parents]:",
-            '                if (candidate / "h3-runner" / "run_h3.py").is_file():',
-            "                    root = candidate",
-            "                    break",
-            "            if root is None:",
-            '                print("h3-runner がこのランタイムに無い。コマンドは書いた。ここでは焼かない。")',
-            "            else:",
-            '                completed = subprocess.run(job["argv"], cwd=root)',
-            "                ran = completed.returncode == 0",
-            '                print("終了コード", completed.returncode)',
-            "    if not ran:",
-            '        print("mp4 は焼いていない。投稿していない。")',
+            "HANDLE, MODE = affi_bake.resolve_account(話, ドッグフードの型)",
+            "print(affi_bake.next_step(何をする))",
+            'if 何をする == "話でジョブを書く":',
+            "    print(affi_bake.describe_account(HANDLE, MODE))",
             "",
         ]
     )
 
 
-def bake_form_cell() -> str:
+def run_cell() -> str:
+    """One run cell. The choice above decides table, one job, or a hand-written I2V command."""
     return "\n".join(
         [
-            '#@title この話のジョブを書く（動画は焼かない） { display-mode: "form" }',
-            "#@markdown 上で選んだ1件だけ書きます。動画は焼きません。投稿しません。",
-            "#@markdown 中身は3つです。テンプレ、オマージュ、元の型のまま。テーマと台詞は入っています。",
-            "#@markdown 元の顔、元の台詞、曲名は入っていません。台詞を自分で書くときだけ下の欄を使います。",
-            "#@markdown 静止画は、最初のコマに使う画像ファイルの場所です。ここだけです。",
-            f"中身 = {_py(FILL_CHOICES[0][0])} #@param {_param_list([text for text, _fill in FILL_CHOICES])}",
-            '台詞 = "" #@param {type:"raw"}',
-            '静止画 = "" #@param {type:"raw"}',
+            '#@title 実行 { display-mode: "form" }',
+            "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力で I2V のコマンド。",
+            "#@markdown 自分の文で「この場で焼く」を入れたときだけ、このランタイムで1本焼く。投稿しない。",
             "",
             "import affi_bake",
-            "import affi_reference as ref",
             "from pathlib import Path",
             "",
-            'if "HANDLE" not in globals():',
-            '    print("先に上の「再現する話」を実行してください。")',
-            'elif "look" not in globals():',
-            '    print("先に、選んだ話の見た目のセルを実行してください。")',
+            "try:",
+            "    from IPython.display import Markdown, display",
+            "except ImportError:",
+            "    Markdown = None",
+            "    display = None",
+            "",
+            'if "何をする" not in globals():',
+            '    print("先に上の「選ぶ」を実行してください。")',
             "else:",
-            "    picked = dict(look)",
-            '    picked["ref_image"] = 静止画.strip()',
-            "    print(affi_bake.describe_account(HANDLE, MODE))",
-            '    print("---")',
-            "    try:",
-            '        print(ref.look_block(HANDLE, picked)["ja"])',
-            '        typed = [line.strip() for line in 台詞.splitlines() if line.strip()]',
-            "        job = affi_bake.bake_reference(",
-            "            HANDLE,",
-            "            mode=MODE,",
-            "            fill=affi_bake.resolve_fill(中身),",
-            "            lines=typed or None,",
-            "            look=picked,",
-            "            image=静止画.strip() or None,",
-            "        )",
-            "    except ValueError as exc:",
-            '        print("止まった:", exc)',
+            '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
+            "    text = affi_bake.run_choice(",
+            "        何をする,",
+            '        handle=globals().get("HANDLE"),',
+            '        mode=globals().get("MODE"),',
+            '        fill_label=globals().get("中身", "テンプレ"),',
+            '        lines_text=globals().get("台詞", ""),',
+            '        image=globals().get("静止画", ""),',
+            '        look=globals().get("look"),',
+            '        prompt=globals().get("プロンプト", ""),',
+            '        duration_s=globals().get("秒", "10"),',
+            '        aspect=globals().get("画面", "9:16"),',
+            '        bake_here=bool(globals().get("この場で焼く", False)),',
+            '        data_dir=globals().get("DATA_DIR"),',
+            "        out_dir=out,",
+            '        table_out=globals().get("TABLE_OUT"),',
+            '        strong_min=int(globals().get("STRONG_MIN", 10)),',
+            '        compare_min=int(globals().get("COMPARE_MIN", 3)),',
+            '        thin_below=int(globals().get("THIN_BELOW", 10)),',
+            '        min_gap_pt=int(globals().get("MIN_GAP_PT", 10)),',
+            "    )",
+            '    if 何をする == "表を見る" and display is not None and Markdown is not None:',
+            "        display(Markdown(text))",
             "    else:",
-            '        out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
-            '        folder = HANDLE if not MODE else HANDLE + "-" + MODE',
-            "        path = affi_bake.write_job(job, out / folder)",
-            '        print(job["fill"]["label"], job["theme"])',
-            '        print(job["fill"]["note"])',
-            "        for cut in job[\"cuts\"]:",
-            "            if cut[\"needs_line\"]:",
-            "                print(cut[\"id\"], cut[\"line\"])",
-            '        print(job["status"], "型の秒", job["duration_s"], "カット", len(job["cuts"]), "生成", len(job["clips"]))',
-            '        for reason in job["blocked"]:',
-            '            print("-", reason)',
-            "        print(path)",
-            '        perf = job["performance"]',
-            '        print(perf["motion"]["template_coverage"])',
-            '        print(perf["motion"]["source_video"])',
-            '        print(perf["lipsync"]["summary"])',
-            '        print(perf["captions"]["summary"])',
-            '        print(perf["bgm"]["summary"])',
-            '        print("LoRA", " / ".join(f"{row[\'file\']} {row[\'scale\']}" for row in perf["lora"]))',
-            '        print("mp4 は焼いていない。投稿していない。")',
+            "        print(text)",
             "",
         ]
     )
@@ -1170,48 +1369,64 @@ def bake_form_cell() -> str:
 
 def _intro() -> str:
     picks = {
-        "the.care.logic": "選ぶのは材料・場所・口調。",
-        "nuts0629": "選ぶのは犬・場所・口調。型を選ぶのはこの話だけ。",
-        "junjun_ranran": "選ぶのは猫2匹・人・場所・口調。",
-        "yako.shiawasekon": "選ぶのは女性・男性・場所・口調。",
+        "the.care.logic": "見た目を変えるときは材料・場所・口調。",
+        "nuts0629": "見た目を変えるときは犬・場所・口調。型を選ぶのはこの話だけ。",
+        "junjun_ranran": "見た目を変えるときは猫2匹・人・場所・口調。",
+        "yako.shiawasekon": "見た目を変えるときは女性・男性・場所・口調。",
     }
-    blocks = ["# どの話にするか", ""]
-    blocks.append("動画は焼きません。投稿もしません。最後のセルは、選んだ1件のジョブを書くだけです。")
-    blocks.append("")
-    blocks.append("迷ったら、見た目は初期値のまま実行してください。初期値はその話用の仮の見た目で、元のアカウントの顔ではありません。")
-    blocks.append("")
-    blocks.append("## 4つの話")
-    blocks.append("")
+    blocks = [
+        "# このノートだけ",
+        "",
+        "開くのはこのページだけです。ほかのノートは開かない。",
+        "",
+        "動画は焼きません。投稿しません。",
+        "",
+        "## 押す順番",
+        "",
+        "1. **読み込み**",
+        "2. **選ぶ** で、やりたいことを1つ選んで実行",
+        "3. **実行**",
+        "",
+        "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
+        "",
+        "上のメニューの「すべてのセルを実行」は押しません。",
+        "",
+        "## 選び方",
+        "",
+        "**表を見る**",
+        "",
+        "美容、ドッグフード、見守りカメラ、婚活の作り方の表が出ます。ジョブは書きません。",
+        "",
+        "**話でジョブを書く**",
+        "",
+        "話を1つ選びます。ドッグフードだけ、インタビュー・咀嚼・ダンス・会話も選びます。",
+        "",
+        "中身を1つ選びます。テーマは書きません。台詞は入っています。",
+        "",
+        "- **テンプレ** … 用意してある短い場面と台詞",
+        "- **オマージュ** … 同じ絵とカメラの順で、別の短い台詞",
+        "- **元の型のまま** … 型の絵とカメラの順。短い新しい台詞。元の顔、元の台詞、曲名は入りません",
+        "",
+        "静止画に、画像ファイルの場所を書きます。台詞を変えたいときだけ、台詞の欄に1行ずつ書きます。",
+        "",
+        "**自分の文で1本（手入力で I2V）**",
+        "",
+        "静止画とプロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。「この場で焼く」を入れたときだけ、このランタイムで1本焼きます。重みが要ります。入れなければコマンドを書くだけです。",
+        "",
+        "## 4つの話",
+        "",
+    ]
     for index, (label, handle) in enumerate(ACCOUNT_CHOICES, start=1):
         blocks.append(f"{index}. **{label.split('（')[0]}**（{handle}）")
         blocks.append(f"   {STORIES[handle]}{picks[handle]}")
         blocks.append("")
     blocks.extend(
         [
-            "## 押す順番",
-            "",
-            "1. **再現する話** で上の1つを選ぶ。ドッグフードだけ、インタビュー・咀嚼・ダンス・会話を選ぶ",
-            "2. 見出しが今の話と一致する見た目のセルだけを変える。ほかの3つは実行しても「この欄は使いません」と出る",
-            "3. **この話の確認** で、入る見た目と、この話の仮説だけを見る",
-            "4. 最後のセルで **中身**（テンプレ、オマージュ、元の型のまま）と **静止画** を入れる。テーマと台詞は入っている",
-            "",
             "一覧に無い見た目は、その欄に短い文を直接書く。人物は成人のみ。実在の人や、元のアカウントの人・動物に似せる文は、そこで止まります。",
             "",
             "秒数・カット・字幕は型のままです。",
             "",
-            "## ジョブに入るもの",
-            "",
-            "1. 動作。型の絵とカメラを、H3の英文プロンプトにする。型に書いてある動作は全部入れる。元動画との一致率は測っていない",
-            "2. 声。型に書いてある声。せりふの日本語は、渡した文だけ",
-            "3. 口。その1文だけを口が言う。同じ文は繰り返さない",
-            "4. 字幕。声と同じ文。型が字幕を焼かない話では焼かない",
-            "5. BGM。型がピアノと書いてある話だけ。曲名はコピーしない。無い・不明・入力待ちは足さない",
-            "",
-            "LoRAは FL2VA の Turbo と、動作のつながり。mp4 は焼かない。",
-            "",
-            "## 手入力の I2V",
-            "",
-            "型のジョブのあと、最後のセルで静止画1枚と、自分で書いたプロンプトから1本分のコマンドを書けます。最後のコマは使いません。チェックを入れたときだけ、このランタイムで焼きます。",
+            "Checkpoint は MiniMax-H3。LoRA は FL2VA の Turbo と、動作のつながり。同じものを、話のジョブと手入力の I2V で使います。",
             "",
         ]
     )
@@ -1219,8 +1434,26 @@ def _intro() -> str:
 
 
 def _loader_cell() -> str:
+    files = [
+        "affi_genre_templates.py",
+        "affi_reference.py",
+        "affi_av.py",
+        "affi_bake.py",
+        "reference-accounts/hypotheses.yaml",
+        "reference-accounts/results.csv",
+        "reference-accounts/looks.yaml",
+        "reference-accounts/templates/the.care.logic.yaml",
+        "reference-accounts/templates/nuts0629.yaml",
+        "reference-accounts/templates/junjun_ranran.yaml",
+        "reference-accounts/templates/yako.shiawasekon.yaml",
+    ]
+    listed = "\n".join(f'        "{rel}",' for rel in files)
     return "\n".join(
         [
+            '#@title 読み込み { display-mode: "form" }',
+            "#@markdown 最初にこのセルを実行する。調査日は 2026-10-03。初めてなら変えない。",
+            'DATE = "2026-10-03"  #@param {type:"string"}',
+            "",
             "from pathlib import Path",
             "import sys",
             "import urllib.request",
@@ -1228,32 +1461,32 @@ def _loader_cell() -> str:
             'BRANCH = "cursor/affi-template-bake-44d6"',
             'REPO = "fireworker011/Research"',
             'RAW = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/research/affi-templates"',
+            "STRONG_MIN = 10",
+            "COMPARE_MIN = 3",
+            "THIN_BELOW = 10",
+            "MIN_GAP_PT = 10",
             'LOCAL = Path("research/affi-templates")',
-            'if not (LOCAL / "affi_reference.py").is_file():',
+            'if not (LOCAL / "affi_bake.py").is_file():',
             "    here = Path.cwd()",
             "    for candidate in [here, *here.parents]:",
-            '        if (candidate / "research/affi-templates/affi_reference.py").is_file():',
+            '        if (candidate / "research/affi-templates/affi_bake.py").is_file():',
             '            LOCAL = candidate / "research/affi-templates"',
             "            break",
-            'if not (LOCAL / "affi_reference.py").is_file():',
+            'if not (LOCAL / "affi_bake.py").is_file():',
             '    LOCAL = Path("/content/affi-templates") if Path("/content").is_dir() else Path(".affi-templates-download")',
             "    files = [",
-            '        "affi_reference.py",',
-            '        "reference-accounts/hypotheses.yaml",',
-            '        "reference-accounts/results.csv",',
-            '        "reference-accounts/looks.yaml",',
-            '        "reference-accounts/templates/the.care.logic.yaml",',
-            '        "reference-accounts/templates/nuts0629.yaml",',
-            '        "reference-accounts/templates/junjun_ranran.yaml",',
-            '        "reference-accounts/templates/yako.shiawasekon.yaml",',
-            '        "affi_av.py",',
-            '        "affi_bake.py",',
+            listed,
+            '        f"data/{DATE}/accounts.csv",',
             "    ]",
             "    for rel in files:",
             "        dest = LOCAL / rel",
             "        dest.parent.mkdir(parents=True, exist_ok=True)",
             "        urllib.request.urlretrieve(f\"{RAW}/{rel}\", dest)",
             '        print("取りました", rel)',
+            "    try:",
+            '        urllib.request.urlretrieve(f"{RAW}/data/{DATE}/videos.csv", LOCAL / "data" / DATE / "videos.csv")',
+            "    except Exception:",
+            '        print("動画一覧は無し。アカウント一覧だけで計算する。")',
             "sys.path.insert(0, str(LOCAL))",
             "import affi_reference as ref",
             "ref.ROOT = LOCAL",
@@ -1261,31 +1494,10 @@ def _loader_cell() -> str:
             'ref.HYPOTHESES = LOCAL / "reference-accounts" / "hypotheses.yaml"',
             'ref.RESULTS = LOCAL / "reference-accounts" / "results.csv"',
             'ref.LOOKS = LOCAL / "reference-accounts" / "looks.yaml"',
+            'DATA_DIR = LOCAL / "data" / DATE',
+            'TABLE_OUT = LOCAL / "templates"',
             'print("読みました", LOCAL)',
-            "",
-        ]
-    )
-
-
-def _check_cell() -> str:
-    return "\n".join(
-        [
-            "import affi_bake",
-            "import affi_reference as ref",
-            "",
-            'if "HANDLE" not in globals():',
-            '    print("先に上の「再現する話」を実行してください。")',
-            "else:",
-            '    print(affi_bake.story_check(HANDLE, globals().get("MODE")))',
-            '    if "look" not in globals():',
-            '        print("見た目はまだです。選んだ話の見た目のセルを実行してください。")',
-            "    else:",
-            '        print("---")',
-            '        print("プロンプトに入る見た目")',
-            "        try:",
-            '            print(ref.look_block(HANDLE, look)["ja"])',
-            "        except ValueError as exc:",
-            '            print("止まった:", exc)',
+            'print("次は「選ぶ」を実行してください。")',
             "",
         ]
     )
@@ -1309,22 +1521,22 @@ def _nb_cell(kind: str, source: str, cell_id: str, *, form: bool = False) -> dic
 
 
 def reference_notebook() -> dict[str, Any]:
-    """The reference Colab. One Japanese form per story."""
+    """The one Colab. A table, one story job, or a hand-written I2V command."""
     cells = [
         _nb_cell("markdown", _intro(), "intro"),
-        _nb_cell("code", _loader_cell(), "load"),
-        _nb_cell("code", account_picker_cell(), "pick", form=True),
+        _nb_cell("code", _loader_cell(), "load", form=True),
+        _nb_cell("code", choice_cell(), "pick", form=True),
         _nb_cell(
             "markdown",
             "\n".join(
                 [
-                    "# 見た目は、選んだ話のセルだけ",
+                    "# 見た目を変えるときだけ",
                     "",
-                    "下に4つのセルがあります。見出しが今の話と一致するセルだけを変えます。迷ったら初期値のまま、そのセルを実行してください。",
+                    "「選ぶ」が **話でジョブを書く** のときだけ使います。見出しが今の話と同じセルを1つ実行します。",
                     "",
-                    "ほかの3つを実行しても、見た目は入りません。「この欄は使いません」と出ます。",
+                    "迷ったら、この4つは実行しません。初期値を使います。初期値は元のアカウントの顔ではありません。",
                     "",
-                    "画像はここでは選びません。最後の「静止画」だけです。",
+                    "ほかの話のセルを実行しても、見た目は入りません。",
                     "",
                 ]
             ),
@@ -1344,16 +1556,20 @@ def reference_notebook() -> dict[str, Any]:
             "markdown",
             "\n".join(
                 [
-                    "# この話の確認",
+                    "# 実行",
                     "",
-                    "選んだ1件の見た目と、その話の仮説だけを出します。ほかの話のテストは出しません。ここでは動画を焼きません。",
+                    "「選ぶ」のあと、このセルだけ実行します。",
+                    "",
+                    "- 表を見る … 4ジャンルの表。ジョブは書きません",
+                    "- 話でジョブを書く … 選んだ1件のジョブ。静止画が無いと止まります",
+                    "- 自分の文で1本 … 手入力で I2V のコマンド。この場で焼く、を入れたときだけ mp4 を焼きます",
                     "",
                 ]
             ),
-            "check-note",
+            "run-note",
         )
     )
-    cells.append(_nb_cell("code", _check_cell(), "check"))
+    cells.append(_nb_cell("code", run_cell(), "run", form=True))
     cells.append(
         _nb_cell(
             "markdown",
@@ -1361,7 +1577,7 @@ def reference_notebook() -> dict[str, Any]:
                 [
                     "# 投稿したあとの数字",
                     "",
-                    "ジョブを書くだけなら、ここは飛ばして最後のセルへ。",
+                    "今は飛ばします。",
                     "",
                     "`research/affi-templates/reference-accounts/results.csv` に1行足す。空欄は0にしない。未入力のままにする。",
                     "",
@@ -1378,34 +1594,41 @@ def reference_notebook() -> dict[str, Any]:
             "numbers",
         )
     )
-    cells.append(_nb_cell("code", bake_form_cell(), "bake", form=True))
-    cells.append(
-        _nb_cell(
-            "markdown",
-            "\n".join(
-                [
-                    "# 手入力で I2V",
-                    "",
-                    "型から書いたジョブとは別です。静止画1枚と、自分で書いたプロンプトで1本分のコマンドを書きます。",
-                    "",
-                    "チェックを入れたときだけ、このランタイムで mp4 を焼きます。入れなければコマンドを書くだけです。投稿はしません。",
-                    "",
-                ]
-            ),
-            "i2v-note",
-        )
-    )
-    cells.append(_nb_cell("code", i2v_form_cell(), "i2v", form=True))
     return {
         "nbformat": 4,
         "nbformat_minor": 5,
         "metadata": {
             "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
             "language_info": {"name": "python"},
-            "colab": {"name": "affi-reference-check", "provenance": []},
+            "colab": {"name": "affi", "provenance": []},
         },
         "cells": cells,
     }
+
+
+def moved_notebook() -> dict[str, Any]:
+    """Old Colab paths. They only point at the one notebook."""
+    text = "\n".join(
+        [
+            "# このノートは移しました",
+            "",
+            "開くのは次の1ページだけです。",
+            "",
+            NOTEBOOK_URL,
+            "",
+        ]
+    )
+    return {
+        "nbformat": 4,
+        "nbformat_minor": 5,
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "language_info": {"name": "python"},
+            "colab": {"name": "affi-moved", "provenance": []},
+        },
+        "cells": [_nb_cell("markdown", text, "moved")],
+    }
+
 
 
 def main(argv: list[str] | None = None) -> int:

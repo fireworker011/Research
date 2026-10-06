@@ -189,7 +189,7 @@ def test_thin_below_can_switch_a_genre_back_to_comparison() -> None:
 
 
 def test_notebook_reads_local_files_or_raw_url() -> None:
-    notebook = json.loads((ROOT / "affi_genre_templates.ipynb").read_text(encoding="utf-8"))
+    notebook = json.loads((ROOT / "affi.ipynb").read_text(encoding="utf-8"))
     source = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"])
     assert "raw.githubusercontent.com" in source
     assert "accounts.csv" in source

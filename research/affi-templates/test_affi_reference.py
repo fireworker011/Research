@@ -191,7 +191,7 @@ def test_choices_and_notebook_form() -> None:
         assert len(presets) >= (2 if fid == "person_gender" else 4)
         for opt in presets:
             assert opt["ja"] and opt["en"]
-    notebook = json.loads((ROOT / "reference_check.ipynb").read_text(encoding="utf-8"))
+    notebook = json.loads((ROOT / "affi.ipynb").read_text(encoding="utf-8"))
     source = "\n".join("".join(cell["source"]) for cell in notebook["cells"])
     assert "reference-accounts/looks.yaml" in source
     assert "その他（直接入力）" in source
