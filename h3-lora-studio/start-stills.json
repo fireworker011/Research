@@ -1,0 +1,90 @@
+{
+  "rev": "h3-20260914-anal-18",
+  "branch": "cursor/h3-anal-stories-f112",
+  "source_agent": "bc-01a0a99c-da36-7a90-b440-3908bc155b07",
+  "artifact_base": "https://cursor.com/agents/bc-01a0a99c-da36-7a90-b440-3908bc155b07/artifacts",
+  "note": "JPGs are Cloud Agent artifacts only. Never commit them. Photoreal strangers stay unedited.",
+  "editor": {
+    "primary": "Mk1227/Qwen-Image-Edit-NSFW",
+    "clones": [
+      "ayooo123/Qwen-Image-Edit-NSFWpyyy",
+      "Cengizl/Qwen-Image-Edit-NSFW",
+      "metaloz/Qwen-Image-Edit-NSFWoz"
+    ],
+    "api": "/infer",
+    "portrait": [576, 1024],
+    "landscape": [1024, 576],
+    "steps": 4,
+    "guidance": 1.0,
+    "rewrite_prompt": false,
+    "zerogpu_budget": 80,
+    "jpeg_quality": 92
+  },
+  "frames": [
+    {
+      "id": "01",
+      "name": "stairs-harbor",
+      "mode": "undress_futa",
+      "clothes": "sage green sundress",
+      "keep": "long straight black hair hanging loose over both shoulders, bangs, same smile, stone stairs, ocean",
+      "out": "01-stairs-harbor-futa.jpg",
+      "shipped_from": "metaloz v3 on original clothed still",
+      "caveat": "shaft still not fully erect on the shipped v3"
+    },
+    {
+      "id": "02",
+      "name": "sand-walk",
+      "mode": "undress_futa",
+      "clothes": "sage green sundress",
+      "keep": "long straight dark hair hanging down with bangs, same smile, walking pose, bare feet, sand harbor",
+      "out": "02-sand-walk-futa.jpg",
+      "shipped_from": "Mk1227 v2 crotch pass"
+    },
+    {
+      "id": "03",
+      "name": "blue-stairs",
+      "mode": "undress_futa",
+      "clothes": "light blue sundress",
+      "keep": "high ponytail blowing in the wind, face looking down, stone stairs, harbor sky",
+      "out": "03-blue-stairs-futa.jpg",
+      "shipped_from": "Mk1227 v2 crotch pass"
+    },
+    {
+      "id": "04",
+      "name": "stairs-pair",
+      "mode": "copy",
+      "out": "04-stairs-pair.jpg",
+      "note": "already nude pair. User asked only clothed frames."
+    },
+    {
+      "id": "05",
+      "name": "wall-kiss",
+      "mode": "copy",
+      "out": "05-wall-kiss.jpg",
+      "note": "already nude wall kiss. User asked only clothed frames."
+    },
+    {
+      "id": "06",
+      "name": "cobble-walk",
+      "mode": "copy",
+      "out": "06-cobble-walk.jpg",
+      "note": "already nude landscape 1792x1008. User asked only clothed frames."
+    },
+    {
+      "id": "07",
+      "name": "tatami",
+      "mode": "undress_futa",
+      "clothes": "cream camisole and long skirt",
+      "keep": "long straight dark hair hanging down with bangs, same smile, tatami, shoji, bonsai, bare feet",
+      "out": "07-tatami-futa.jpg",
+      "shipped_from": "Cengizl v2 crotch pass"
+    },
+    {
+      "id": "08",
+      "name": "indoor-shirt-tie",
+      "mode": "skip_photoreal",
+      "photoreal": true,
+      "note": "photoreal indoor white shirt and necktie. Do not undress a real stranger."
+    }
+  ]
+}
