@@ -1451,8 +1451,8 @@ def _loader_cell() -> str:
     return "\n".join(
         [
             '#@title 読み込み { display-mode: "form" }',
-            "#@markdown 最初にこのセルを実行する。調査日は 2026-10-03。初めてなら変えない。",
-            'DATE = "2026-10-03"  #@param {type:"string"}',
+            "#@markdown 最初にこのセルを実行する。調査日は 2026-10-07。初めてなら変えない。",
+            'DATE = "2026-10-07"  #@param {type:"string"}',
             "",
             "from pathlib import Path",
             "import sys",

@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 import affi_genre_templates as agt
 
-DATA = ROOT / "data" / "2026-10-03"
+DATA = ROOT / "data" / "2026-10-07"
 COLUMNS = [
     "platform",
     "genre",
@@ -104,11 +104,12 @@ def test_reference_accounts_are_excluded_from_counts() -> None:
 
 def test_snapshot_matches_the_report_counts() -> None:
     built = agt.load_snapshot(DATA)
-    assert built.n_accounts == 266
+    assert built.n_accounts == 277
     assert built.n_reference == 4
+    assert built.n_videos == 1195
     by_genre = {item.genre: item for item in built.genres}
     beauty = by_genre["美容スキンケア"]
-    assert (beauty.n_growing, beauty.n_struggling) == (139, 30)
+    assert (beauty.n_growing, beauty.n_struggling) == (140, 30)
     assert beauty.account_confidence == "強い"
     assert beauty.basis == "比較"
     demo = next(gap for gap in beauty.gaps if gap.label == "商品の見せ方" and gap.value == "使用・実演")
@@ -117,14 +118,14 @@ def test_snapshot_matches_the_report_counts() -> None:
     assert demo.gap_pt == -65
     face = beauty.choice("face_shown")
     assert face.choice == "あり"
-    assert face.growing is not None and (face.growing.m, face.growing.n) == (54, 60)
+    assert face.growing is not None and (face.growing.m, face.growing.n) == (55, 61)
     subject = beauty.choice("main_subject")
-    assert subject.growing is not None and (subject.growing.m, subject.growing.n) == (55, 103)
+    assert subject.growing is not None and (subject.growing.m, subject.growing.n) == (57, 105)
     audio = next(gap for gap in beauty.gaps if gap.label == "音" and gap.value == "オリジナル")
-    assert (audio.growing.m, audio.growing.n) == (19, 68)
+    assert (audio.growing.m, audio.growing.n) == (19, 67)
     assert (audio.struggling.m, audio.struggling.n) == (9, 16)
     long = next(gap for gap in beauty.gaps if gap.label == "尺" and gap.value == "61秒以上")
-    assert (long.growing.m, long.growing.n) == (21, 65)
+    assert (long.growing.m, long.growing.n) == (20, 66)
     assert (long.struggling.m, long.struggling.n) == (2, 17)
 
     wedding = by_genre["婚活"]
@@ -136,19 +137,19 @@ def test_snapshot_matches_the_report_counts() -> None:
     assert wedding.choice("template_fixed").choice == "あり"
 
     camera = by_genre["見守りカメラ"]
-    assert (camera.n_growing, camera.n_struggling) == (10, 3)
+    assert (camera.n_growing, camera.n_struggling) == (15, 3)
     assert camera.basis == "伸びてる群の傾向"
     assert camera.account_confidence == "弱い"
     assert camera.choice("main_subject").choice == "動物"
 
     food = by_genre["ドッグフード"]
-    assert (food.n_growing, food.n_struggling) == (16, 2)
+    assert (food.n_growing, food.n_struggling) == (21, 2)
     assert food.account_confidence == "比較不能"
     assert food.basis == "伸びてる群の傾向"
-    assert food.choice("opening_type").choice == "A商品名紹介"
+    assert food.choice("opening_type").choice == "その他"
     assert food.choice("opening_type").growing is not None
-    assert (food.choice("opening_type").growing.m, food.choice("opening_type").growing.n) == (8, 15)
-    assert food.choice("main_subject").choice == "手元"
+    assert (food.choice("opening_type").growing.m, food.choice("opening_type").growing.n) == (10, 20)
+    assert food.choice("main_subject").choice == "動物"
     assert food.choice("duration_band").choice == "31〜60秒"
     assert food.gaps == []
     food_homage = agt.homage_for("ドッグフード")
@@ -205,6 +206,6 @@ def test_write_outputs_round_trip(tmp_path: Path) -> None:
     payload = json.loads((tmp_path / "美容スキンケア.json").read_text(encoding="utf-8"))
     assert payload["schema"] == agt.SCHEMA
     assert payload["script_brief"]["first_3_seconds"]["opening_type"]
-    assert payload["n_growing"] == 139
+    assert payload["n_growing"] == 140
     assert "ユーザー参考" not in payload["script_brief"]["first_3_seconds"]["instruction"]
     assert any(path.name == "all.json" for path in written)

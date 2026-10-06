@@ -562,7 +562,7 @@ def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -
 def test_one_choice_runs_the_table_or_one_job_or_i2v(tmp_path: Path) -> None:
     table = bake.run_choice(
         "表を見る",
-        data_dir=ROOT / "data" / "2026-10-03",
+        data_dir=ROOT / "data" / "2026-10-07",
         table_out=tmp_path / "templates",
     )
     assert "美容スキンケア" in table

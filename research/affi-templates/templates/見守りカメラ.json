@@ -1,10 +1,10 @@
 {
   "schema": "affi-genre-template/v1",
-  "data_date": "2026-10-03",
+  "data_date": "2026-10-07",
   "genre": "見守りカメラ",
   "basis": "伸びてる群の傾向",
   "account_confidence": "弱い",
-  "n_growing": 10,
+  "n_growing": 15,
   "n_struggling": 3,
   "thresholds": {
     "strong_min": 10,
@@ -15,7 +15,7 @@
   "caution": "冒頭・顔出し・音・商品の見せ方の多くは説明文からの推定。動画は未視聴。不明は分母に入れていない。参考アカウントは集計に入れていない。",
   "feature_source": {
     "推定（説明文）": 12,
-    "確認済": 1
+    "確認済": 6
   },
   "script_brief": {
     "first_3_seconds": {
@@ -24,9 +24,9 @@
       "confidence": "弱い",
       "growing": {
         "value": "その他",
-        "m": 9,
-        "n": 10,
-        "pct": 90
+        "m": 10,
+        "n": 15,
+        "pct": 67
       },
       "struggling": {
         "value": "その他",
@@ -35,6 +35,14 @@
         "pct": 100
       },
       "examples": [
+        {
+          "handle": "もふもふ事件簿",
+          "opening_type": "C後から見つける",
+          "platform": "YouTube",
+          "median_views": "222340",
+          "evidence": "テロップ「ホームカメラに残った最後の挨拶」",
+          "first_frame_text": "「ホームカメラに残った最後の挨拶」（白黒カメラ映像＋犬キャラのイラスト）"
+        },
         {
           "handle": "mugi.mugi21",
           "opening_type": "その他",
@@ -50,14 +58,6 @@
           "median_views": "120381",
           "evidence": "【永久保存版】",
           "first_frame_text": "キャプション短文「【永久保存版】」等。画面文字は不明"
-        },
-        {
-          "handle": "にゃんぱんちpunch",
-          "opening_type": "その他",
-          "platform": "YouTube",
-          "median_views": "26500",
-          "evidence": "船員に志願した猫の乗船方法",
-          "first_frame_text": "（タイトル）船員に志願した猫の乗船方法ｗ"
         }
       ],
       "homage": {
@@ -89,8 +89,8 @@
       "main_subject": "動物",
       "face_shown": "なし"
     },
-    "duration_band": "同数（31〜60秒・61秒以上）",
-    "duration_median_sec": 40.0,
+    "duration_band": "同数（16〜30秒・61秒以上）",
+    "duration_median_sec": 34.5,
     "audio": "ナレ"
   },
   "production": {
@@ -108,7 +108,7 @@
       "growing": {
         "value": "手元",
         "m": 0,
-        "n": 10,
+        "n": 15,
         "pct": 0
       },
       "struggling": {
@@ -177,13 +177,13 @@
     {
       "field": "主役",
       "value": "動物",
-      "gap_pt": 57,
+      "gap_pt": 60,
       "confidence": "弱い",
       "growing": {
         "value": "動物",
-        "m": 9,
-        "n": 10,
-        "pct": 90
+        "m": 14,
+        "n": 15,
+        "pct": 93
       },
       "struggling": {
         "value": "動物",
@@ -205,6 +205,24 @@
       },
       "struggling": {
         "value": "30日10本以上",
+        "m": 0,
+        "n": 3,
+        "pct": 0
+      }
+    },
+    {
+      "field": "冒頭タイプ",
+      "value": "C後から見つける",
+      "gap_pt": 20,
+      "confidence": "弱い",
+      "growing": {
+        "value": "C後から見つける",
+        "m": 3,
+        "n": 15,
+        "pct": 20
+      },
+      "struggling": {
+        "value": "C後から見つける",
         "m": 0,
         "n": 3,
         "pct": 0
@@ -245,42 +263,6 @@
         "n": 3,
         "pct": 0
       }
-    },
-    {
-      "field": "主役",
-      "value": "商品",
-      "gap_pt": 10,
-      "confidence": "弱い",
-      "growing": {
-        "value": "商品",
-        "m": 1,
-        "n": 10,
-        "pct": 10
-      },
-      "struggling": {
-        "value": "商品",
-        "m": 0,
-        "n": 3,
-        "pct": 0
-      }
-    },
-    {
-      "field": "冒頭タイプ",
-      "value": "A商品名紹介",
-      "gap_pt": 10,
-      "confidence": "弱い",
-      "growing": {
-        "value": "A商品名紹介",
-        "m": 1,
-        "n": 10,
-        "pct": 10
-      },
-      "struggling": {
-        "value": "A商品名紹介",
-        "m": 0,
-        "n": 3,
-        "pct": 0
-      }
     }
   ],
   "platforms": [
@@ -298,14 +280,14 @@
     },
     {
       "platform": "YouTube",
-      "n_growing": 8,
+      "n_growing": 13,
       "n_struggling": 0,
       "changes": [
         {
           "field": "尺",
-          "genre": "同数（31〜60秒・61秒以上）",
-          "platform": "31〜60秒",
-          "growing": "8件中3件（38%）",
+          "genre": "同数（16〜30秒・61秒以上）",
+          "platform": "16〜30秒",
+          "growing": "13件中4件（31%）",
           "confidence": "比較不能"
         }
       ]
@@ -327,13 +309,13 @@
         "field": "冒頭タイプ",
         "reference": "その他",
         "template": "その他",
-        "growing": "10件中9件（90%）"
+        "growing": "15件中10件（67%）"
       },
       {
         "field": "主役",
         "reference": "動物",
         "template": "動物",
-        "growing": "10件中9件（90%）"
+        "growing": "15件中14件（93%）"
       },
       {
         "field": "PR表記",
@@ -353,13 +335,13 @@
         "field": "顔出し",
         "reference": "あり",
         "template": "なし",
-        "growing": "6件中0件（0%）"
+        "growing": "11件中0件（0%）"
       },
       {
         "field": "尺",
         "reference": "31〜60秒",
-        "template": "同数（31〜60秒・61秒以上）",
-        "growing": "9件中3件（33%）"
+        "template": "同数（16〜30秒・61秒以上）",
+        "growing": "14件中3件（21%）"
       },
       {
         "field": "音",
@@ -387,13 +369,13 @@
       "choice": "その他",
       "reason": "伸びてる群の最頻値",
       "confidence": "弱い",
-      "growing_n": 10,
+      "growing_n": 15,
       "struggling_n": 3,
       "growing": {
         "value": "その他",
-        "m": 9,
-        "n": 10,
-        "pct": 90
+        "m": 10,
+        "n": 15,
+        "pct": 67
       },
       "struggling": {
         "value": "その他",
@@ -407,12 +389,12 @@
       "choice": "なし",
       "reason": "伸びてる群の最頻値",
       "confidence": "比較不能",
-      "growing_n": 6,
+      "growing_n": 11,
       "struggling_n": 0,
       "growing": {
         "value": "なし",
-        "m": 6,
-        "n": 6,
+        "m": 11,
+        "n": 11,
         "pct": 100
       },
       "struggling": {
@@ -427,13 +409,13 @@
       "choice": "動物",
       "reason": "伸びてる群の最頻値",
       "confidence": "弱い",
-      "growing_n": 10,
+      "growing_n": 15,
       "struggling_n": 3,
       "growing": {
         "value": "動物",
-        "m": 9,
-        "n": 10,
-        "pct": 90
+        "m": 14,
+        "n": 15,
+        "pct": 93
       },
       "struggling": {
         "value": "動物",
@@ -447,7 +429,7 @@
       "choice": null,
       "reason": "伸びてる群で同数",
       "confidence": "比較不能",
-      "growing_n": 9,
+      "growing_n": 14,
       "struggling_n": 2,
       "growing": null,
       "struggling": null

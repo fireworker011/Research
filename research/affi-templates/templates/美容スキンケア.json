@@ -1,10 +1,10 @@
 {
   "schema": "affi-genre-template/v1",
-  "data_date": "2026-10-03",
+  "data_date": "2026-10-07",
   "genre": "美容スキンケア",
   "basis": "比較",
   "account_confidence": "強い",
-  "n_growing": 139,
+  "n_growing": 140,
   "n_struggling": 30,
   "thresholds": {
     "strong_min": 10,
@@ -14,8 +14,8 @@
   },
   "caution": "冒頭・顔出し・音・商品の見せ方の多くは説明文からの推定。動画は未視聴。不明は分母に入れていない。参考アカウントは集計に入れていない。",
   "feature_source": {
-    "推定（説明文）": 157,
-    "確認済": 12
+    "推定（説明文）": 156,
+    "確認済": 14
   },
   "script_brief": {
     "first_3_seconds": {
@@ -25,8 +25,8 @@
       "growing": {
         "value": "その他",
         "m": 73,
-        "n": 132,
-        "pct": 55
+        "n": 134,
+        "pct": 54
       },
       "struggling": {
         "value": "その他",
@@ -73,7 +73,7 @@
       "face_shown": "あり"
     },
     "duration_band": "31〜60秒",
-    "duration_median_sec": 46.5,
+    "duration_median_sec": 46.75,
     "audio": "ナレ"
   },
   "production": {
@@ -109,7 +109,7 @@
       "growing": {
         "value": "なし",
         "m": 6,
-        "n": 60,
+        "n": 61,
         "pct": 10
       },
       "struggling": {
@@ -127,7 +127,7 @@
       "growing": {
         "value": "手元",
         "m": 6,
-        "n": 103,
+        "n": 105,
         "pct": 6
       },
       "struggling": {
@@ -145,7 +145,7 @@
       "growing": {
         "value": "オリジナル",
         "m": 19,
-        "n": 68,
+        "n": 67,
         "pct": 28
       },
       "struggling": {
@@ -162,8 +162,8 @@
       "confidence": "強い",
       "growing": {
         "value": "B買う前の悩み・不一致",
-        "m": 33,
-        "n": 132,
+        "m": 34,
+        "n": 134,
         "pct": 25
       },
       "struggling": {
@@ -192,24 +192,6 @@
       }
     },
     {
-      "field": "尺",
-      "value": "31〜60秒",
-      "gap_pt": -12,
-      "confidence": "強い",
-      "growing": {
-        "value": "31〜60秒",
-        "m": 23,
-        "n": 65,
-        "pct": 35
-      },
-      "struggling": {
-        "value": "31〜60秒",
-        "m": 8,
-        "n": 17,
-        "pct": 47
-      }
-    },
-    {
       "field": "冒頭タイプ",
       "value": "A商品名紹介",
       "gap_pt": -11,
@@ -217,7 +199,7 @@
       "growing": {
         "value": "A商品名紹介",
         "m": 25,
-        "n": 132,
+        "n": 134,
         "pct": 19
       },
       "struggling": {
@@ -254,8 +236,8 @@
       "confidence": "弱い",
       "growing": {
         "value": "あり",
-        "m": 54,
-        "n": 60,
+        "m": 55,
+        "n": 61,
         "pct": 90
       },
       "struggling": {
@@ -268,13 +250,13 @@
     {
       "field": "主役",
       "value": "人",
-      "gap_pt": 33,
+      "gap_pt": 34,
       "confidence": "強い",
       "growing": {
         "value": "人",
-        "m": 55,
-        "n": 103,
-        "pct": 53
+        "m": 57,
+        "n": 105,
+        "pct": 54
       },
       "struggling": {
         "value": "人",
@@ -304,13 +286,13 @@
     {
       "field": "冒頭タイプ",
       "value": "その他",
-      "gap_pt": 25,
+      "gap_pt": 24,
       "confidence": "強い",
       "growing": {
         "value": "その他",
         "m": 73,
-        "n": 132,
-        "pct": 55
+        "n": 134,
+        "pct": 54
       },
       "struggling": {
         "value": "その他",
@@ -322,13 +304,13 @@
     {
       "field": "尺",
       "value": "61秒以上",
-      "gap_pt": 20,
+      "gap_pt": 18,
       "confidence": "強い",
       "growing": {
         "value": "61秒以上",
-        "m": 21,
-        "n": 65,
-        "pct": 32
+        "m": 20,
+        "n": 66,
+        "pct": 30
       },
       "struggling": {
         "value": "61秒以上",
@@ -363,7 +345,7 @@
       "growing": {
         "value": "BGM",
         "m": 12,
-        "n": 68,
+        "n": 67,
         "pct": 18
       },
       "struggling": {
@@ -376,13 +358,13 @@
     {
       "field": "音",
       "value": "ナレ",
-      "gap_pt": 16,
+      "gap_pt": 15,
       "confidence": "強い",
       "growing": {
         "value": "ナレ",
-        "m": 32,
-        "n": 68,
-        "pct": 47
+        "m": 31,
+        "n": 67,
+        "pct": 46
       },
       "struggling": {
         "value": "ナレ",
@@ -484,21 +466,14 @@
     },
     {
       "platform": "YouTube",
-      "n_growing": 34,
+      "n_growing": 35,
       "n_struggling": 6,
       "changes": [
         {
           "field": "冒頭タイプ",
           "genre": "その他",
-          "platform": "同数（B買う前の悩み・不一致・その他）",
-          "growing": "伸びてる判定 28件",
-          "confidence": "弱い"
-        },
-        {
-          "field": "尺",
-          "genre": "31〜60秒",
-          "platform": "同数（16〜30秒・61秒以上）",
-          "growing": "伸びてる判定 34件",
+          "platform": "B買う前の悩み・不一致",
+          "growing": "30件中12件（40%）",
           "confidence": "弱い"
         },
         {
@@ -527,7 +502,7 @@
         "field": "冒頭タイプ",
         "reference": "その他",
         "template": "その他",
-        "growing": "132件中73件（55%）"
+        "growing": "134件中73件（54%）"
       },
       {
         "field": "ハッシュタグ数",
@@ -539,7 +514,7 @@
         "field": "PR表記",
         "reference": "なし",
         "template": "なし",
-        "growing": "122件中83件（68%）"
+        "growing": "122件中82件（67%）"
       },
       {
         "field": "テンプレ固定",
@@ -553,25 +528,25 @@
         "field": "顔出し",
         "reference": "なし",
         "template": "あり",
-        "growing": "60件中6件（10%）"
+        "growing": "61件中6件（10%）"
       },
       {
         "field": "主役",
         "reference": "キャラ",
         "template": "人",
-        "growing": "103件中2件（2%）"
+        "growing": "105件中2件（2%）"
       },
       {
         "field": "尺",
         "reference": "16〜30秒",
         "template": "31〜60秒",
-        "growing": "65件中14件（22%）"
+        "growing": "66件中14件（21%）"
       },
       {
         "field": "音",
         "reference": "オリジナル",
         "template": "ナレ",
-        "growing": "68件中19件（28%）"
+        "growing": "67件中19件（28%）"
       },
       {
         "field": "投稿頻度",
@@ -587,13 +562,13 @@
       "choice": "その他",
       "reason": "伸びてる群の最頻値",
       "confidence": "強い",
-      "growing_n": 132,
+      "growing_n": 134,
       "struggling_n": 30,
       "growing": {
         "value": "その他",
         "m": 73,
-        "n": 132,
-        "pct": 55
+        "n": 134,
+        "pct": 54
       },
       "struggling": {
         "value": "その他",
@@ -607,12 +582,12 @@
       "choice": "あり",
       "reason": "伸びてる群の最頻値",
       "confidence": "弱い",
-      "growing_n": 60,
+      "growing_n": 61,
       "struggling_n": 6,
       "growing": {
         "value": "あり",
-        "m": 54,
-        "n": 60,
+        "m": 55,
+        "n": 61,
         "pct": 90
       },
       "struggling": {
@@ -627,13 +602,13 @@
       "choice": "人",
       "reason": "伸びてる群の最頻値",
       "confidence": "強い",
-      "growing_n": 103,
+      "growing_n": 105,
       "struggling_n": 25,
       "growing": {
         "value": "人",
-        "m": 55,
-        "n": 103,
-        "pct": 53
+        "m": 57,
+        "n": 105,
+        "pct": 54
       },
       "struggling": {
         "value": "人",
@@ -647,13 +622,13 @@
       "choice": "31〜60秒",
       "reason": "伸びてる群の最頻値",
       "confidence": "強い",
-      "growing_n": 65,
+      "growing_n": 66,
       "struggling_n": 17,
       "growing": {
         "value": "31〜60秒",
-        "m": 23,
-        "n": 65,
-        "pct": 35
+        "m": 25,
+        "n": 66,
+        "pct": 38
       },
       "struggling": {
         "value": "31〜60秒",
@@ -667,13 +642,13 @@
       "choice": "ナレ",
       "reason": "伸びてる群の最頻値",
       "confidence": "強い",
-      "growing_n": 68,
+      "growing_n": 67,
       "struggling_n": 16,
       "growing": {
         "value": "ナレ",
-        "m": 32,
-        "n": 68,
-        "pct": 47
+        "m": 31,
+        "n": 67,
+        "pct": 46
       },
       "struggling": {
         "value": "ナレ",
@@ -711,9 +686,9 @@
       "struggling_n": 22,
       "growing": {
         "value": "なし",
-        "m": 83,
+        "m": 82,
         "n": 122,
-        "pct": 68
+        "pct": 67
       },
       "struggling": {
         "value": "なし",
