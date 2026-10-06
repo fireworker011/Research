@@ -86,6 +86,15 @@ _NAME = {
     "mascot": "キャラ",
     "speech": "口調",
 }
+_NAME_EN = {
+    "animal": "animal",
+    "animal2": "second animal",
+    "person": "person",
+    "person2": "second person",
+    "place": "place",
+    "mascot": "character",
+    "speech": "speech",
+}
 
 REQUIRED = (
     "schema",
@@ -258,7 +267,7 @@ def look_block(handle: str, look: Mapping[str, Any] | None = None) -> dict[str, 
             bits_ja.append(ja)
             bits_en.append(en)
         ja_parts.append(f"{_NAME[part]}: " + "、".join(bits_ja))
-        en_parts.append(f"{_NAME[part]}: " + ", ".join(bits_en))
+        en_parts.append(f"{_NAME_EN[part]}: " + ", ".join(bits_en))
     ref = spec["ref_image"] or "なし"
     ja = "。".join(ja_parts) + f"。参照画像: {ref}。人物は成人のみ。実在の人物や元アカウントには似せない。"
     en = ". ".join(en_parts) + f". reference image: {spec['ref_image'] or 'none'}. Adults only. Do not resemble a real person or the source account."

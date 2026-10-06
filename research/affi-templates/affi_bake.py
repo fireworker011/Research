@@ -1,6 +1,7 @@
 """Write an H3 bake job from a genre table or a reference cut sheet.
 
-Seconds, cuts, and subtitles stay on the template. This module does not
+Seconds, cuts, and subtitles stay on the template. Motion, voice, mouth,
+captions, and music come from that same template. This module does not
 render an mp4 and does not post. Spoken lines that are still the placeholder
 stay missing. They are not filled in here.
 """
@@ -14,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+import affi_av
 import affi_reference as ref
 
 _RUNNER = Path(__file__).resolve().parents[2] / "h3-runner"
@@ -251,11 +253,6 @@ def _subtitle_text(style: str, line: str, needs_line: bool) -> str:
     return style
 
 
-def _prompt(beats: Sequence[Mapping[str, Any]], theme: str, lines: Sequence[str], locked: str) -> str:
-    parts = [ref._imagine(beat, theme, line, locked) for beat, line in zip(beats, lines)]
-    return "\n".join(parts)
-
-
 def bake_reference(
     handle: str,
     *,
@@ -272,7 +269,7 @@ def bake_reference(
     for line in lines or []:
         ref.reject_likeness(line)
     view = _mode_view(item, mode)
-    locked = ref.look_block(handle, look)
+    locked = ref.look_block(handle, default_look(handle) if look is None else look)
     beats = _expand_beats(view["timeline"], int(view["repeat"]))
     spoken = [str(line).strip() for line in (lines or [])]
     style = ref._subtitle_line(item, view["subtitle"])
@@ -313,12 +310,21 @@ def bake_reference(
         serial = 1
         for group, group_duration in groups:
             cursor = float(group[0]["start_s"])
-            prompt = _prompt(group, theme_text, [cut["line"] for cut in group], locked["line"])
             cut_ids = [cut["id"] for cut in group]
-            for trim_s in split_trim(group_duration):
+            pieces = split_trim(group_duration)
+            for part_index, trim_s in enumerate(pieces):
                 request_s = _request_seconds(trim_s)
                 if not _accepts(request_s):
                     raise ValueError(f"H3 が受け取れない秒数: {request_s}")
+                built = affi_av.clip_prompt(
+                    handle=handle,
+                    shots=group,
+                    look_en=locked["en"],
+                    request_s=request_s,
+                    part_index=part_index,
+                    part_count=len(pieces),
+                    audio=view["audio"],
+                )
                 clip_id = f"{serial:02d}-" + "-".join(cut_ids)
                 end_s = round(cursor + trim_s, 3)
                 clips.append(
@@ -328,13 +334,25 @@ def bake_reference(
                         "trim_s": trim_s,
                         "request_s": request_s,
                         "prompt_name": f"{clip_id}.txt",
-                        "prompt": prompt,
+                        "prompt": built["prompt"],
+                        "motion_ja": built["motion_ja"],
+                        "spoken": built["spoken"],
+                        "part_index": part_index,
+                        "part_count": len(pieces),
                         "start_s": round(cursor, 3),
                         "end_s": end_s,
                     }
                 )
                 cursor = end_s
                 serial += 1
+    performance = affi_av.performance(
+        handle,
+        list(item.get("characters") or []),
+        cuts,
+        clips,
+        view["audio"],
+        burn=style != "字幕なし",
+    )
     if theme_text == PLACEHOLDER_THEME:
         blocked.append("テーマは入力のまま")
     for cut in cuts:
@@ -361,6 +379,7 @@ def bake_reference(
         "look": {"ja": locked["ja"], "en": locked["en"], "ref_image": locked["ref_image"]},
         "cuts": cuts,
         "clips": clips,
+        "performance": performance,
         "join": {
             "delivery": "delivery.mp4",
             "width": delivery_w,
@@ -439,6 +458,7 @@ def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str) ->
     ]
     if image:
         args.extend(["--image", image])
+    args.extend(affi_av.lora_cli())
     return " ".join(shlex.quote(part) for part in args)
 
 
@@ -466,6 +486,11 @@ def write_job(job: dict[str, Any], folder: str | Path) -> Path:
     ]
     (job_dir / "subtitles.json").write_text(
         json.dumps(subtitles, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    captions = (job.get("performance") or {}).get("captions", {}).get("rows", [])
+    (job_dir / "captions.json").write_text(
+        json.dumps(captions, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     return path
@@ -601,6 +626,17 @@ _FORM_NOTE = {
     "junjun_ranran": "迷ったら初期値のまま（猫が2匹）。この話を選んだときだけ使います。",
     "yako.shiawasekon": "初期値は成人の2人です。元のアカウントの人ではありません。この話を選んだときだけ使います。",
 }
+
+
+def default_look(handle: str) -> dict[str, str]:
+    """The story form's initial values. Used when a job does not pass a look."""
+    return look_from_form(
+        {
+            label: default
+            for _title, fields in STORY_FORMS[handle]
+            for label, _key, default in fields
+        }
+    )
 
 
 def look_from_form(fields: Mapping[str, str]) -> dict[str, str]:
@@ -778,6 +814,13 @@ def bake_form_cell() -> str:
             '        for reason in job["blocked"]:',
             '            print("-", reason)',
             "        print(path)",
+            '        perf = job["performance"]',
+            '        print(perf["motion"]["template_coverage"])',
+            '        print(perf["motion"]["source_video"])',
+            '        print(perf["lipsync"]["summary"])',
+            '        print(perf["captions"]["summary"])',
+            '        print(perf["bgm"]["summary"])',
+            '        print("LoRA", " / ".join(f"{row[\'file\']} {row[\'scale\']}" for row in perf["lora"]))',
             '        print("mp4 は焼いていない。投稿していない。")',
             "",
         ]
@@ -815,6 +858,16 @@ def _intro() -> str:
             "",
             "秒数・カット・字幕は型のままです。",
             "",
+            "## ジョブに入るもの",
+            "",
+            "1. 動作。型の絵とカメラを、H3の英文プロンプトにする。型に書いてある動作は全部入れる。元動画との一致率は測っていない",
+            "2. 声。型に書いてある声。せりふの日本語は、渡した文だけ",
+            "3. 口。その1文だけを口が言う。同じ文は繰り返さない",
+            "4. 字幕。声と同じ文。型が字幕を焼かない話では焼かない",
+            "5. BGM。型がピアノと書いてある話だけ。曲名はコピーしない。無い・不明・入力待ちは足さない",
+            "",
+            "LoRAは FL2VA の Turbo と、動作のつながり。mp4 は焼かない。",
+            "",
         ]
     )
     return "\n".join(blocks)
@@ -848,6 +901,7 @@ def _loader_cell() -> str:
             '        "reference-accounts/templates/nuts0629.yaml",',
             '        "reference-accounts/templates/junjun_ranran.yaml",',
             '        "reference-accounts/templates/yako.shiawasekon.yaml",',
+            '        "affi_av.py",',
             '        "affi_bake.py",',
             "    ]",
             "    for rel in files:",

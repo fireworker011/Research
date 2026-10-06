@@ -195,6 +195,7 @@ def test_notebook_reads_local_files_or_raw_url() -> None:
     assert "accounts.csv" in source
     assert "research/affi-templates" in source
     assert "affi_genre_templates" in source
+    assert "affi_av.py" in source
 
 
 def test_write_outputs_round_trip(tmp_path: Path) -> None:
