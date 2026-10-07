@@ -307,6 +307,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "読み込み" in blob
     assert "実行" in blob
     assert "#@title 焼く" in blob
+    assert "command_for_drive" in blob
+    assert "マイドライブの affi-bake" in blob
     assert "最初の1本だけ" in blob
     assert "重みが無いとき落とす" in blob
     assert "この場で焼く" not in blob
@@ -736,3 +738,19 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
         (cache / "loras" / name).write_bytes(b"x")
     assert bake.missing_weight_files(cache) == []
     assert bake.commands_file("表を見る", out_dir=tmp_path) is None
+
+
+def test_a_finished_clip_is_stored_on_drive() -> None:
+    command = (
+        "python3 h3-runner/run_h3.py --task t2va "
+        "--out /content/affi-bake/junjun_ranran/clips/01-hook.mp4 --seed 0"
+    )
+    rewritten = bake.command_for_drive(command)
+    assert "--out /content/drive/MyDrive/affi-bake/junjun_ranran/clips/01-hook.mp4" in rewritten
+    assert "--out /content/affi-bake/" not in rewritten
+    typed = bake.command_for_drive(
+        "python3 h3-runner/run_h3.py --task t2va --prompt-file /content/affi-bake/i2v/prompt.txt "
+        "--out /content/affi-bake/i2v/clip.mp4"
+    )
+    assert "--prompt-file /content/affi-bake/i2v/prompt.txt" in typed
+    assert "--out /content/drive/MyDrive/affi-bake/i2v/clip.mp4" in typed

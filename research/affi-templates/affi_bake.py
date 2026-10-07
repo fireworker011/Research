@@ -327,6 +327,32 @@ def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
     return lines, f"{len(lines)} 本焼きます。"
 
 
+DRIVE_BAKE = Path("/content/drive/MyDrive/affi-bake")
+
+
+def drive_clip_path(out_path: str) -> Path:
+    """Where a finished mp4 stays after the Colab runtime is cut."""
+    path = Path(out_path)
+    parts = path.parts
+    if "affi-bake" in parts:
+        tail = parts[parts.index("affi-bake") + 1 :]
+        if tail:
+            return DRIVE_BAKE.joinpath(*tail)
+    return DRIVE_BAKE / path.name
+
+
+def command_for_drive(command: str) -> str:
+    """Point --out at My Drive. The prompt file stays where 「実行」 wrote it."""
+    parts = shlex.split(command)
+    if "--out" not in parts:
+        return command
+    index = parts.index("--out") + 1
+    if index >= len(parts):
+        return command
+    parts[index] = str(drive_clip_path(parts[index]))
+    return " ".join(shlex.quote(part) for part in parts)
+
+
 def commands_file(
     task: str,
     *,
@@ -1589,6 +1615,11 @@ else:
 
                                 prepare_fast_loras(cache / "loras")
                         for line in lines:
+                            if on_colab:
+                                line = affi_bake.command_for_drive(line)
+                                argv = shlex.split(line)
+                                if "--out" in argv:
+                                    Path(argv[argv.index("--out") + 1]).parent.mkdir(parents=True, exist_ok=True)
                             print(line)
                             completed = subprocess.run(shlex.split(line), cwd=root)
                             print(f"終了コード {completed.returncode}")
@@ -1598,7 +1629,7 @@ else:
                             if "--out" in argv:
                                 print("書いた", argv[argv.index("--out") + 1])
                         if lines:
-                            print("投稿していない。")
+                            print("マイドライブの affi-bake に残しています。投稿していない。")
 """
 
 
@@ -1623,7 +1654,7 @@ def _intro() -> str:
         "1. **読み込み**",
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
-        "4. **焼く**（ready のあと。焼くにチェックを入れて押す。最初は1本だけ）",
+        "4. **焼く**（ready のあと。焼くにチェックを入れて押す。最初は1本だけ。mp4 はマイドライブの affi-bake に残る）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
@@ -1821,7 +1852,10 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
                     "",
-                    "重みはマイドライブの `h3-weights` です。アカウントは fireworker06@gmail.com。",
+                    "焼いた mp4 はマイドライブの `affi-bake` に残ります。ランタイムを切っても残ります。",
+                    "アカウントは fireworker06@gmail.com。",
+                    "",
+                    "重みはマイドライブの `h3-weights` です。",
                     "無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。",
                     "",
                     "投稿しません。",
