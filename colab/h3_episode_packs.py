@@ -2276,7 +2276,7 @@ ENEMY_KIND_MODES: dict[str, dict[str, Any]] = {
     "human": {
         "label_ja": "人間",
         "choice_ja": "人間",
-        "when_ja": "腐りと紫と空洞の目を外す。竿の長さ、しのの長身、角の角と一つの目は残す",
+        "when_ja": "腐りと紫と空洞の目、傷、爬虫の舌、垂れた舌、4本指を外す。竿の長さ、しのの長身、角の角と一つの目は残す",
         "form": True,
     },
 }

@@ -6745,7 +6745,12 @@ def test_hospital_off_ward_human_and_insert_fixes():
         r"porcelain|beige|\btiles\b|Props in this shot|purple fluorescent|at night",
         re.I,
     )
-    zombie_words = re.compile(r"purple|lacerat|\bgash|hollow empty|shambl|eerie|ashen|gums exposed", re.I)
+    zombie_words = re.compile(
+        r"purple|lacerat|\bgash|hollow empty|shambl|eerie|ashen|gums exposed|"
+        r"forked|reptile|scratch mark|red tear|four long fingers|monster eye|gray tongue|"
+        r"dusky-gray|pale gray-white|sharp claw|vacant eye|no fifth finger|hands past mid-thigh",
+        re.I,
+    )
     for place in ("大都会", "森林", "坑道・佐渡"):
         ep = prepare_episode(raw, place_override=place, time_override="昼", enemy_kind_override="人間", **user)
         assert validate_episode(ep, root=HOSPITAL_DIR) == []
@@ -6757,7 +6762,23 @@ def test_hospital_off_ward_human_and_insert_fixes():
             assert not zombie_words.search(prompt), (place, b["id"], zombie_words.search(prompt).group(0))
             env = prompt.split("environment:", 1)[1].split("integrated_multimodal_description:", 1)[0]
             assert "High daylight lights the place" in env, b["id"]
+    human_ward = prepare_episode(raw, enemy_kind_override="人間", **user)
+    assert "extremely tall" in human_ward["cast"]["shino"]["lock"]
+    assert "35cm" in human_ward["cast"]["shino"]["lock"]
+    assert "two arms of ordinary length" in human_ward["cast"]["shino"]["lock"]
+    assert "a human tongue" in human_ward["cast"]["shino"]["lock"]
+    assert "Two small dark horns" in human_ward["cast"]["tsuno"]["lock"]
+    assert "one large single eye" in human_ward["cast"]["tsuno"]["lock"]
+    assert "five fingers" in human_ward["cast"]["tsuno"]["lock"]
+    assert "24cm" in human_ward["cast"]["rei"]["lock"]
+    assert "20cm" in human_ward["cast"]["kana"]["lock"]
+    assert "intact skin on the hips" in human_ward["cast"]["kana"]["lock"]
+    assert "a human tongue" in human_ward["cast"]["gin"]["lock"]
+    assert "no penis" in human_ward["cast"]["gin"]["lock"]
+    assert "clear adult eyes" in human_ward["cast"]["rei"]["lock"]
     zombie = prepare_episode(raw, **user)
+    assert "forked reptile tongue" in zombie["cast"]["shino"]["lock"]
+    assert "exactly four long fingers" in zombie["cast"]["tsuno"]["lock"]
     assert "vivid purple" in build_beat_prompt(zombie, next(b for b in zombie["beats"] if b["id"] == "03-kiss-in" or b["id"] == "03-kiss"))
     wait = next(b for b in zombie["beats"] if b["id"] == "03-kiss-wait")
     assert "keeps exactly two legs" in build_beat_prompt(zombie, wait)
