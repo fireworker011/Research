@@ -1523,6 +1523,7 @@ else:
                     from google.colab import drive, userdata
 
                     drive.mount("/content/drive")
+                    print("今マウントしたアカウントのマイドライブに保存します。")
                     root = Path("/content/Research")
                     branch = "cursor/affi-template-bake-44d6"
                     repo = "https://github.com/fireworker011/Research.git"
@@ -1852,8 +1853,8 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
                     "",
-                    "焼いた mp4 はマイドライブの `affi-bake` に残ります。ランタイムを切っても残ります。",
-                    "アカウントは fireworker06@gmail.com。",
+                    "焼いた mp4 は、そのときログインしてマウントしたアカウントのマイドライブ `affi-bake` に残ります。",
+                    "ランタイムを切っても残ります。",
                     "",
                     "重みはマイドライブの `h3-weights` です。",
                     "無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。",

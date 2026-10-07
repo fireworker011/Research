@@ -308,7 +308,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "実行" in blob
     assert "#@title 焼く" in blob
     assert "command_for_drive" in blob
-    assert "マイドライブの affi-bake" in blob
+    assert "マウントしたアカウントのマイドライブ" in blob
+    assert "fireworker06" not in blob
     assert "最初の1本だけ" in blob
     assert "重みが無いとき落とす" in blob
     assert "この場で焼く" not in blob
