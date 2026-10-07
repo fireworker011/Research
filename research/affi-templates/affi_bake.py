@@ -287,16 +287,91 @@ def next_step(task: str) -> str:
     """The one cell to run after the choice form."""
     kind = resolve_task(task)
     if kind == "table":
-        return "次は「実行」だけ押してください。4ジャンルの表が出ます。ジョブは書きません。"
+        return "次は「実行」だけ押してください。4ジャンルの表が出ます。動画にはなりません。"
     if kind == "job":
         return (
             "次は「実行」を押してください。"
             "見た目を変えるときだけ、その前に、話の名前が同じ見た目のセルを1つ押してください。"
             "変えないときは初期値です。"
+            "ready と出たら、一番下の「焼く」です。"
         )
     if kind == "i2v":
-        return "次は「実行」を押してください。プロンプトと静止画は、上の欄に書いたものを使います。"
+        return "次は「実行」を押してください。ready と出たら、一番下の「焼く」です。"
     raise RuntimeError(f"やることが無い: {kind}")
+
+
+def _comment_is_header(body: str) -> bool:
+    return body.startswith("status=") or body.startswith("mp4 ") or body.startswith("I2V")
+
+
+def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
+    """Commands from a written job. A message means do not start them."""
+    if not path.is_file():
+        return [], "先に「実行」を押してください。"
+    text = path.read_text(encoding="utf-8")
+    if "status=blocked" in text:
+        reasons = [
+            line[2:].strip()
+            for line in text.splitlines()
+            if line.startswith("# ") and not _comment_is_header(line[2:].strip())
+        ]
+        detail = "\n".join(f"- {reason}" for reason in reasons if reason)
+        return [], "止まっているので焼かない。\n" + detail
+    lines = [line.strip() for line in text.splitlines() if line.strip() and not line.strip().startswith("#")]
+    if not lines:
+        return [], "焼くコマンドが無い。"
+    if first_only:
+        rest = len(lines) - 1
+        note = "最初の1本だけ焼きます。" if rest == 0 else f"最初の1本だけ焼きます。残りは {rest} 本です。"
+        return lines[:1], note
+    return lines, f"{len(lines)} 本焼きます。"
+
+
+def commands_file(
+    task: str,
+    *,
+    handle: str | None = None,
+    mode: str | None = None,
+    out_dir: str | Path | None = None,
+) -> Path | None:
+    """Path of commands.txt for the choice that 「実行」 just wrote."""
+    kind = resolve_task(task)
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    if kind == "table":
+        return None
+    if kind == "i2v":
+        return root / "i2v" / "commands.txt"
+    if kind == "job":
+        if not handle:
+            return None
+        folder = handle if not mode else f"{handle}-{mode}"
+        return root / folder / "commands.txt"
+    raise RuntimeError(f"やることが無い: {kind}")
+
+
+def missing_weight_files(cache: str | Path) -> list[str]:
+    """Model marker and the two LoRA files. Empty means the bake can start."""
+    root = Path(cache)
+    missing = []
+    marker = root / "MiniMax-H3" / "modular_model_index.json"
+    if not marker.is_file():
+        missing.append(str(marker))
+    loras = root / "loras"
+    for filename in (affi_av.TURBO_FILENAME, affi_av.REPAIR_FILENAME):
+        path = loras / filename
+        if not path.is_file():
+            missing.append(str(path))
+    return missing
+
+
+def prepare_command(command: str, cache: str | Path) -> str:
+    """The same argv, plus a weight download that exits before generation."""
+    parts = shlex.split(command)
+    if "--prepare-weights" not in parts:
+        parts.append("--prepare-weights")
+    if "--cache-dir" not in parts:
+        parts.extend(["--cache-dir", str(cache)])
+    return " ".join(shlex.quote(part) for part in parts)
 
 
 def _runner_root() -> Path | None:
@@ -1004,7 +1079,7 @@ def write_i2v(job: dict[str, Any], folder: str | Path) -> Path:
         image=str(job.get("image") or ""),
     )
     commands = [
-        "# I2V。プロンプトは手入力。mp4 は、この場で焼くに入れたときだけ焼く。投稿しない。",
+        "# I2V。プロンプトは手入力。mp4 は下の「焼く」で焼く。投稿しない。",
         f"# status={job['status']}",
     ]
     if job["blocked"]:
@@ -1304,7 +1379,6 @@ def choice_cell() -> str:
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
             'プロンプト = "" #@param {type:"raw"}',
-            'この場で焼く = False #@param {type:"boolean"}',
             "",
             "import affi_bake",
             "",
@@ -1323,7 +1397,7 @@ def run_cell() -> str:
         [
             '#@title 実行 { display-mode: "form" }',
             "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力で I2V のコマンド。",
-            "#@markdown 自分の文で「この場で焼く」を入れたときだけ、このランタイムで1本焼く。投稿しない。",
+            "#@markdown このセルは焼かない。ready と出たら、一番下の「焼く」を押す。投稿しない。",
             "",
             "import affi_bake",
             "from pathlib import Path",
@@ -1349,7 +1423,7 @@ def run_cell() -> str:
             '        prompt=globals().get("プロンプト", ""),',
             '        duration_s=globals().get("秒", "10"),',
             '        aspect=globals().get("画面", "9:16"),',
-            '        bake_here=bool(globals().get("この場で焼く", False)),',
+            "        bake_here=False,",
             '        data_dir=globals().get("DATA_DIR"),',
             "        out_dir=out,",
             '        table_out=globals().get("TABLE_OUT"),',
@@ -1367,6 +1441,157 @@ def run_cell() -> str:
     )
 
 
+def bake_cell() -> str:
+    """One bake switch. Off by default, so Run all does not start a GPU job."""
+    return """#@title 焼く { display-mode: "form" }
+#@markdown ready のあと、焼くにチェックを入れてこのセルを押す。別のノートは開かない。投稿しない。
+#@markdown 最初の1本だけがオンのときは1クリップ。口と声を見てからオフにして続き。
+#@markdown 重みが無いとき落とすは、マイドライブに MiniMax-H3 が無いときだけ。プレビューは 144.1GB。オフなら落とさない。
+焼く = False #@param {type:"boolean"}
+最初の1本だけ = True #@param {type:"boolean"}
+重みが無いとき落とす = False #@param {type:"boolean"}
+
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import affi_bake
+
+if not 焼く:
+    print("焼くにチェックを入れて、このセルをもう一度押してください。今は焼きません。")
+else:
+    task = globals().get("何をする")
+    if not task:
+        print("先に「選ぶ」と「実行」を押してください。")
+    elif affi_bake.resolve_task(task) == "table":
+        print("表は動画になりません。話か自分の文を選んで、「実行」のあと、もう一度ここを押してください。")
+    else:
+        try:
+            import torch
+        except ImportError:
+            torch = None
+        if torch is None or not torch.cuda.is_available():
+            print("GPU がオフです。ランタイムを GPU にして、読み込みからやり直してください。途中で切り替えると、ここまでのファイルが消えます。")
+        else:
+            props = torch.cuda.get_device_properties(0)
+            vram = props.total_memory / 1024 ** 3
+            print(f"GPU: {props.name}  VRAM: {vram:.1f} GB")
+            if vram < 24:
+                print("VRAM が 24GB 未満です。G4 に変えて、読み込みからやり直してください。")
+            else:
+                on_colab = Path("/content").is_dir()
+                if on_colab:
+                    from google.colab import drive, userdata
+
+                    drive.mount("/content/drive")
+                    root = Path("/content/Research")
+                    branch = "cursor/affi-template-bake-44d6"
+                    repo = "https://github.com/fireworker011/Research.git"
+                    script = root / "h3-runner" / "run_h3.py"
+                    if not script.is_file():
+                        if root.exists():
+                            raise SystemExit(f"{root} があるが {script} が無い。このフォルダを消してやり直す。")
+                        subprocess.check_call(["git", "clone", "--depth", "1", "--branch", branch, repo, str(root)])
+                    else:
+                        subprocess.check_call(["git", "-C", str(root), "fetch", "--depth", "1", "origin", branch])
+                        subprocess.check_call(["git", "-C", str(root), "checkout", branch])
+                        subprocess.check_call(["git", "-C", str(root), "pull", "--ff-only", "origin", branch])
+                    sys.path.insert(0, str(root / "h3-runner"))
+                    sys.path.insert(0, str(root / "research" / "affi-templates"))
+                    import importlib
+
+                    importlib.reload(affi_bake)
+                else:
+                    userdata = None
+                    found = affi_bake._runner_root()
+                    if found is None:
+                        raise SystemExit("h3-runner が無い。Colab の GPU でこのセルを押してください。")
+                    root = found
+                cache = Path("/content/drive/MyDrive/h3-weights") if on_colab else Path("hf-cache")
+                os.environ["H3_HF_CACHE"] = str(cache)
+                if shutil.which("ffmpeg") is None:
+                    subprocess.check_call(["apt-get", "update", "-qq"])
+                    subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])
+                need = False
+                try:
+                    import av
+                    import diffusers
+                    import imageio
+                    import soundfile
+                    from torchao.quantization import FqnToConfig
+                except Exception:
+                    need = True
+                if need:
+                    pkgs = [
+                        "git+https://github.com/huggingface/diffusers.git@5ff8e59ff9fe81c6e2df4fb4c6ea0d97a5df5ab2",
+                        "transformers>=4.45.0",
+                        "accelerate>=0.34.0",
+                        "safetensors>=0.4.3",
+                        "huggingface_hub>=0.25.0",
+                        "av>=11.0.0",
+                        "imageio>=2.34.0",
+                        "imageio-ffmpeg>=0.5.0",
+                        "soundfile>=0.12.0",
+                    ]
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "--upgrade-strategy", "only-if-needed", *pkgs])
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "torchao==0.18.0"])
+                    from torchao.quantization import FqnToConfig
+                print("パッケージは揃っています", "ffmpeg", shutil.which("ffmpeg"))
+                missing = affi_bake.missing_weight_files(cache)
+                if missing and not 重みが無いとき落とす:
+                    print("重みが無いので焼きません。落とすときは「重みが無いとき落とす」を入れて、もう一度押してください。")
+                    for item in missing:
+                        print(item)
+                else:
+                    path = affi_bake.commands_file(
+                        task,
+                        handle=globals().get("HANDLE"),
+                        mode=globals().get("MODE"),
+                        out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
+                    )
+                    if path is None:
+                        print("先に「選ぶ」を押してください。")
+                    else:
+                        lines, note = affi_bake.commands_to_run(path, first_only=bool(最初の1本だけ))
+                        print(note)
+                        if lines and missing:
+                            token = ""
+                            if userdata is not None:
+                                try:
+                                    token = userdata.get("HF_TOKEN") or ""
+                                except Exception:
+                                    token = ""
+                            if token:
+                                os.environ["HF_TOKEN"] = token
+                                os.environ["HUGGING_FACE_HUB_TOKEN"] = token
+                                print("HF_TOKEN を読みました（値は表示しません）")
+                            prep = affi_bake.prepare_command(lines[0], cache)
+                            completed = subprocess.run(shlex.split(prep), cwd=root)
+                            print(f"重みの終了コード {completed.returncode}")
+                            if completed.returncode != 0:
+                                lines = []
+                            else:
+                                sys.path.insert(0, str(root / "h3-runner"))
+                                from h3_runner.loras import prepare_fast_loras
+
+                                prepare_fast_loras(cache / "loras")
+                        for line in lines:
+                            print(line)
+                            completed = subprocess.run(shlex.split(line), cwd=root)
+                            print(f"終了コード {completed.returncode}")
+                            if completed.returncode != 0:
+                                break
+                            argv = shlex.split(line)
+                            if "--out" in argv:
+                                print("書いた", argv[argv.index("--out") + 1])
+                        if lines:
+                            print("投稿していない。")
+"""
+
+
 def _intro() -> str:
     picks = {
         "the.care.logic": "見た目を変えるときは材料・場所・口調。",
@@ -1379,17 +1604,20 @@ def _intro() -> str:
         "",
         "開くのはこのページだけです。ほかのノートは開かない。",
         "",
-        "動画は焼きません。投稿しません。",
+        "表は動画になりません。動画は一番下の **焼く** です。投稿しません。",
         "",
         "## 押す順番",
+        "",
+        "ランタイムは最初から **GPU** にします。途中で変えない。変えると、ここまでのファイルが消えます。",
         "",
         "1. **読み込み**",
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
+        "4. **焼く**（ready のあと。焼くにチェックを入れて押す。最初は1本だけ）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
-        "上のメニューの「すべてのセルを実行」は押しません。",
+        "上のメニューの「すべてのセルを実行」は押しません。焼くはオフのままなので、全部実行しても動画は始まりません。",
         "",
         "## 選び方",
         "",
@@ -1411,7 +1639,7 @@ def _intro() -> str:
         "",
         "**自分の文で1本（手入力で I2V）**",
         "",
-        "静止画とプロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。「この場で焼く」を入れたときだけ、このランタイムで1本焼きます。重みが要ります。入れなければコマンドを書くだけです。",
+        "静止画とプロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。「実行」が ready と出たら、一番下の「焼く」です。",
         "",
         "## 4つの話",
         "",
@@ -1560,9 +1788,9 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "「選ぶ」のあと、このセルだけ実行します。",
                     "",
-                    "- 表を見る … 4ジャンルの表。ジョブは書きません",
+                    "- 表を見る … 4ジャンルの表。ジョブは書きません。動画にもなりません",
                     "- 話でジョブを書く … 選んだ1件のジョブ。静止画が無いと止まります",
-                    "- 自分の文で1本 … 手入力で I2V のコマンド。この場で焼く、を入れたときだけ mp4 を焼きます",
+                    "- 自分の文で1本 … 手入力で I2V のコマンドを書きます。ここでは焼きません",
                     "",
                 ]
             ),
@@ -1570,6 +1798,30 @@ def reference_notebook() -> dict[str, Any]:
         )
     )
     cells.append(_nb_cell("code", run_cell(), "run", form=True))
+    cells.append(
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# 焼く",
+                    "",
+                    "別のノートは開かない。最初にランタイムを GPU にする。途中で変えない。",
+                    "",
+                    "上の「実行」が ready になってから、焼くにチェックを入れてこのセルを押す。",
+                    "",
+                    "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
+                    "",
+                    "重みはマイドライブの `h3-weights` です。アカウントは fireworker06@gmail.com。",
+                    "無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。",
+                    "",
+                    "投稿しません。",
+                    "",
+                ]
+            ),
+            "bake-note",
+        )
+    )
+    cells.append(_nb_cell("code", bake_cell(), "bake", form=True))
     cells.append(
         _nb_cell(
             "markdown",

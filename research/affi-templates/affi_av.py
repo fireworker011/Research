@@ -349,6 +349,9 @@ def i2v_prompt(text: str) -> str:
 
 
 def lora_dir() -> Path:
+    # Colab writes the job before Drive is mounted. Keep the Drive path anyway.
+    if Path("/content").is_dir():
+        return Path("/content/drive/MyDrive/h3-weights/loras")
     drive = Path("/content/drive/MyDrive/h3-weights")
     if drive.is_dir():
         return drive / "loras"

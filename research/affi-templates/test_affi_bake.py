@@ -291,13 +291,25 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert blob.count("look_from_form") == 4
     assert "静止画" in blob
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
-    assert len(code) == 7
+    assert len(code) == 8
     assert "すべてのセルを実行" in blob
     assert "押しません" in blob
     assert "読み込み" in blob
     assert "実行" in blob
+    assert "#@title 焼く" in blob
+    assert "最初の1本だけ" in blob
+    assert "重みが無いとき落とす" in blob
+    assert "この場で焼く" not in blob
+    assert "orbis01" not in blob
     for src in code:
         ast.parse(src)
+    bake_src = next(src for src in code if "#@title 焼く" in src)
+    assert bake_src.index("if not 焼く") < bake_src.index("google.colab")
+    quiet: dict = {}
+    exec(bake_src, quiet)
+    assert quiet["焼く"] is False
+    assert quiet["最初の1本だけ"] is True
+    assert quiet["重みが無いとき落とす"] is False
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
@@ -325,7 +337,6 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "affi_av.py" in blob
     assert "run_choice" in blob
     assert "手入力で I2V" in blob
-    assert "この場で焼く" in blob
     assert "テンプレ" in blob
     assert "オマージュ" in blob
     assert "元の型のまま" in blob
@@ -623,3 +634,78 @@ def test_bite_mentions_the_mouth_and_does_not_invent_the_chew() -> None:
     assert "Mouth movement is visible. The template does not say whether chewing is audible." in job["clips"][0]["prompt"]
     assert "<d>" not in job["clips"][0]["prompt"]
     assert job["performance"]["bgm"]["summary"] == "音源名は型が不明。元の音はコピーしない。"
+
+
+def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: Path) -> None:
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    bake.run_choice(
+        "話でジョブを書く",
+        handle="the.care.logic",
+        fill_label="テンプレ",
+        image=str(still),
+        out_dir=tmp_path,
+    )
+    path = bake.commands_file("話でジョブを書く", handle="the.care.logic", out_dir=tmp_path)
+    assert path is not None and path.is_file()
+    one, note = bake.commands_to_run(path, first_only=True)
+    assert len(one) == 1
+    assert "run_h3.py" in one[0]
+    assert "--task" in one[0]
+    assert "fl2va" in one[0]
+    assert "残りは" in note
+    every, all_note = bake.commands_to_run(path, first_only=False)
+    assert len(every) > 1
+    assert all_note == f"{len(every)} 本焼きます。"
+
+    bake.run_choice(
+        "話でジョブを書く",
+        handle="nuts0629",
+        mode="talk",
+        fill_label="テンプレ",
+        out_dir=tmp_path,
+    )
+    blocked = bake.commands_file("話でジョブを書く", handle="nuts0629", mode="talk", out_dir=tmp_path)
+    assert blocked is not None
+    empty, message = bake.commands_to_run(blocked, first_only=True)
+    assert empty == []
+    assert "止まっているので焼かない" in message
+    assert "足さない" in message
+
+    missing, missing_note = bake.commands_to_run(tmp_path / "nope.txt", first_only=True)
+    assert missing == []
+    assert "実行" in missing_note
+
+    bake.run_choice(
+        "自分の文で1本",
+        image=str(still),
+        prompt="The dog turns its head.",
+        duration_s="10",
+        out_dir=tmp_path,
+    )
+    typed = bake.commands_file("自分の文で1本", out_dir=tmp_path)
+    assert typed is not None
+    i2v_lines, i2v_note = bake.commands_to_run(typed, first_only=True)
+    assert len(i2v_lines) == 1
+    assert "i2va" in i2v_lines[0]
+    assert "最初の1本だけ焼きます。" in i2v_note
+    cache = tmp_path / "h3-weights"
+    prepared = bake.prepare_command(i2v_lines[0], cache)
+    assert "--prepare-weights" in prepared
+    assert f"--cache-dir {cache}" in prepared
+    again = bake.prepare_command(prepared, cache)
+    assert again.split().count("--prepare-weights") == 1
+    assert again.split().count("--cache-dir") == 1
+
+    absent = bake.missing_weight_files(cache)
+    assert any(item.endswith("modular_model_index.json") for item in absent)
+    assert any(item.endswith(affi_av.TURBO_FILENAME) for item in absent)
+    assert any(item.endswith(affi_av.REPAIR_FILENAME) for item in absent)
+    marker = cache / "MiniMax-H3" / "modular_model_index.json"
+    marker.parent.mkdir(parents=True)
+    marker.write_text("{}", encoding="utf-8")
+    for name in (affi_av.TURBO_FILENAME, affi_av.REPAIR_FILENAME):
+        (cache / "loras" / name).parent.mkdir(parents=True, exist_ok=True)
+        (cache / "loras" / name).write_bytes(b"x")
+    assert bake.missing_weight_files(cache) == []
+    assert bake.commands_file("表を見る", out_dir=tmp_path) is None
