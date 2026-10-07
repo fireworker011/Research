@@ -1,10 +1,11 @@
 """Cut a source video down to the seconds one Ref2VA request can see.
 
-``MiniMaxH3VideoReference.from_file`` keeps the soundtrack. The ref2va setup
-then truncates those frames to the generated length, from the start of the
-file. A long source has to be cut first, or a later range never reaches the
-model. The cut is re-encoded so the first frame is the requested time, and
-it is written off the Colab Drive mount.
+``MiniMaxH3VideoReference.from_file`` keeps the soundtrack with the frames.
+The ref2va setup then truncates those frames to the generated length, from
+the start of the file. A long source has to be cut first, or a later range
+never reaches the model. The cut is re-encoded so the first frame is the
+requested time. Audio stays PCM in a ``.mov`` so an AAC prime does not move
+the sound off the mouth. The file is written off the Colab Drive mount.
 """
 
 from __future__ import annotations
@@ -33,14 +34,14 @@ def slice_argv(src: Path, start_s: float, end_s: float, dest: Path) -> list[str]
         "-pix_fmt",
         "yuv420p",
         "-c:a",
-        "aac",
+        "pcm_s16le",
         str(dest),
     ]
 
 
 def slice_dest(src: Path, start_s: float, end_s: float) -> Path:
     root = Path("/content/h3-ref") if Path("/content").is_dir() else Path(tempfile.gettempdir()) / "h3-ref"
-    name = f"{src.stem}-{float(start_s):.3f}-{float(end_s):.3f}.mp4"
+    name = f"{src.stem}-{float(start_s):.3f}-{float(end_s):.3f}.mov"
     return root / name
 
 

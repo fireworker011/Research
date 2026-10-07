@@ -17,6 +17,7 @@ import affi_av
 import affi_bake as bake
 import affi_genre_templates as genre
 import affi_reference as ref
+import affi_speech
 
 _CJK = re.compile(r"[ぁ-んァ-ン一-龥]")
 _DIALOGUE = re.compile(r"<d>\[Japanese\] .*?</d>")
@@ -356,6 +357,9 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "元の型のまま" in blob
     assert "元動画を再現" in blob
     assert "transformer_ref" in blob
+    assert "affi_speech.py" in blob
+    assert "faster-whisper" in blob
+    assert "台詞の文字はプロンプトに写しません" not in blob
     for name in ("reference_check.ipynb", "affi_genre_templates.ipynb"):
         moved = json.loads((ROOT / name).read_text(encoding="utf-8"))
         moved_src = "\n".join(_cell_source(cell) for cell in moved["cells"])
@@ -783,6 +787,9 @@ def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) 
         assert bake._accepts(clip["request_s"])
         covered += span
         assert "<d>" not in clip["prompt"]
+        assert "Mouths do not form words." not in clip["prompt"]
+        assert "shapes the words heard in the soundtrack of <Video 1>" in clip["prompt"]
+        assert "lip-synced" not in clip["prompt"].casefold()
         assert "source-secret" not in clip["prompt"]
         assert "<Picture 1>" not in clip["prompt"]
         for header in (
@@ -798,6 +805,9 @@ def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) 
         assert "<Video 1>" in clip["prompt"]
         assert "fully_preserved" in clip["prompt"]
     assert abs(covered - 45) < 0.02
+    assert job["speech"] == []
+    assert job["speech_known"] is False
+    assert "文は足さない" in job["speech_note"]
     path = bake.write_reproduce(job, tmp_path / "repro")
     commands = (path.parent / "commands.txt").read_text(encoding="utf-8")
     assert "status=ready" in commands
@@ -861,3 +871,113 @@ def test_repro_weights_are_transformer_ref_and_not_the_fl2v_stack(tmp_path: Path
     assert any(item.endswith("transformer_ref") for item in missing)
     assert all(affi_av.TURBO_FILENAME not in item for item in missing)
     assert all(affi_av.REPAIR_FILENAME not in item for item in missing)
+
+
+def test_measured_lines_reach_only_the_slice_that_hears_them(tmp_path: Path) -> None:
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"not-a-real-video")
+    speech = [
+        {"start_s": 1.0, "end_s": 2.0, "text": "こんにちは"},
+        {"start_s": 9.0, "end_s": 10.0, "text": "またね"},
+    ]
+    job = bake.plan_reproduce(video=str(source), duration_s=16, speech=speech)
+    assert job["status"] == "ready"
+    assert len(job["clips"]) == 2
+    first, second = job["clips"]
+    assert "<d>[Japanese] こんにちは.</d>" in first["prompt"]
+    assert "またね" not in first["prompt"]
+    assert "<d>[Japanese] またね.</d>" in second["prompt"]
+    assert "こんにちは" not in second["prompt"]
+    for clip in job["clips"]:
+        prompt = clip["prompt"]
+        assert "lip-synced" not in prompt.casefold()
+        assert "The mouth forms that one line and no other words." in prompt
+        assert "When a line ends, the mouth closes until the next line." in prompt
+        assert "(S1)" in prompt
+        assert "(S2)" not in prompt
+        assert "[Shot 2]" not in prompt
+        assert "At 00:01.000 into this shot" in prompt
+        assert not _CJK.search(_outside_dialogue(prompt))
+    assert job["speech_known"] is True
+    path = bake.write_reproduce(job, tmp_path / "spoken")
+    captions = json.loads((path.parent / "captions.json").read_text(encoding="utf-8"))
+    assert [row["text"] for row in captions] == ["こんにちは.", "またね."]
+    assert [(row["start_s"], row["end_s"]) for row in captions] == [(1.0, 2.0), (9.0, 10.0)]
+    assert all(row["burn"] is False for row in captions)
+    assert "口はその文だけを作る" in job["speech_note"]
+
+
+def test_a_line_at_the_first_frame_has_no_cut_stamp(tmp_path: Path) -> None:
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"x")
+    job = bake.plan_reproduce(
+        video=str(source),
+        duration_s=8,
+        speech=[{"start_s": 0.0, "end_s": 1.0, "text": "はい"}],
+    )
+    prompt = job["clips"][0]["prompt"]
+    assert "From the start of this shot" in prompt
+    assert "<d>[Japanese] はい.</d>" in prompt
+    assert "At 00:00.000" not in prompt
+    assert "[Shot 2]" not in prompt
+
+
+def test_measured_silence_does_not_form_words(tmp_path: Path) -> None:
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"x")
+    job = bake.plan_reproduce(video=str(source), duration_s=8, speech=[])
+    prompt = job["clips"][0]["prompt"]
+    assert job["speech_known"] is True
+    assert job["speech"] == []
+    assert "<d>" not in prompt
+    assert "Mouths do not form words." in prompt
+    assert "発話は無い" in job["speech_note"]
+
+
+def test_a_banned_line_never_enters_the_prompt(tmp_path: Path) -> None:
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"x")
+    job = bake.plan_reproduce(
+        video=str(source),
+        duration_s=8,
+        speech=[{"start_s": 1.0, "end_s": 2.0, "text": "すず丸"}],
+    )
+    prompt = job["clips"][0]["prompt"]
+    assert "すず丸" not in prompt
+    assert "すず丸" not in json.dumps(job["speech"], ensure_ascii=False)
+    assert "<d>" not in prompt
+    assert "Mouths do not form words." in prompt
+    assert "実在や未成年の指定はせりふから外した。" in job["speech_note"]
+
+
+def test_a_speech_sidecar_is_the_mouth_line(tmp_path: Path) -> None:
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"x")
+    affi_speech.speech_sidecar(source).write_text(
+        json.dumps([{"start_s": 1.0, "end_s": 2.0, "text": "こんにちは"}], ensure_ascii=False),
+        encoding="utf-8",
+    )
+    job = bake.plan_reproduce(video=str(source), duration_s=8)
+    prompt = job["clips"][0]["prompt"]
+    assert "<d>[Japanese] こんにちは.</d>" in prompt
+    assert "speech.json" in job["speech_note"]
+    assert job["speech_known"] is True
+    shown = bake._run_repro(str(source), "", "9:16", tmp_path / "shown", duration_s=8)
+    assert "口はその文だけを作る" in shown
+    assert "すず丸" not in shown
+
+
+def test_speech_times_stay_inside_their_slice() -> None:
+    assert affi_speech.finish_sentence("こんにちは") == "こんにちは."
+    assert affi_speech.finish_sentence("え？") == "え?"
+    assert affi_speech.finish_sentence("〜やあ") == "やあ."
+    assert affi_speech.dialogue_tag("hello") == "<d>[English] hello.</d>"
+    lines = [
+        {"start_s": 0.0, "end_s": 1.0, "text": "前"},
+        {"start_s": 7.5, "end_s": 8.5, "text": "またぐ"},
+        {"start_s": 20.0, "end_s": 21.0, "text": "あと"},
+    ]
+    inside = affi_speech.lines_in_span(lines, 8.0, 16.0)
+    assert [row["text"] for row in inside] == ["またぐ."]
+    assert inside[0]["start_s"] == 0.0
+    assert [row["text"] for row in affi_speech.lines_in_span(lines, 0.0, 8.0)] == ["前.", "またぐ."]

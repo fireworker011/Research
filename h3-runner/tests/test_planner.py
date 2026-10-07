@@ -46,7 +46,7 @@ from h3_runner.planner import (  # noqa: E402
     single_plan,
     within_fit_budget,
 )
-from h3_runner.slice_media import slice_argv  # noqa: E402
+from h3_runner.slice_media import slice_argv, slice_dest  # noqa: E402
 from h3_runner.weights import (  # noqa: E402
     LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
@@ -889,8 +889,13 @@ class SourceVideoTest(unittest.TestCase):
         argv = slice_argv(Path("/tmp/source.mp4"), 8, 16, Path("/tmp/h3-ref/slice.mp4"))
         self.assertLess(argv.index("-i"), argv.index("-ss"))
         self.assertNotIn("copy", argv)
+        self.assertNotIn("aac", argv)
+        self.assertEqual(argv[argv.index("-c:a") + 1], "pcm_s16le")
         self.assertEqual(argv[argv.index("-ss") + 1], "8.000")
         self.assertEqual(argv[argv.index("-to") + 1], "16.000")
+        dest = slice_dest(Path("/tmp/source.mp4"), 8, 16)
+        self.assertEqual(dest.name, "source-8.000-16.000.mov")
+        self.assertEqual(dest.suffix, ".mov")
 
 
 if __name__ == "__main__":

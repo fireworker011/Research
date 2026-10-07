@@ -21,6 +21,7 @@ from typing import Any, Mapping, Sequence
 import affi_av
 import affi_genre_templates as genre
 import affi_reference as ref
+import affi_speech
 
 _RUNNER = Path(__file__).resolve().parents[2] / "h3-runner"
 if (_RUNNER / "h3_runner").is_dir():
@@ -651,9 +652,15 @@ def _run_repro(
     image: str,
     aspect: str,
     out_dir: str | Path | None,
+    duration_s: float | None = None,
 ) -> str:
     try:
-        job = plan_reproduce(video=video, image=image.strip() or None, aspect=aspect)
+        job = plan_reproduce(
+            video=video,
+            image=image.strip() or None,
+            aspect=aspect,
+            duration_s=duration_s,
+        )
     except ValueError as exc:
         return f"止まった: {exc}"
     root = Path(out_dir) if out_dir is not None else _bake_root()
@@ -663,9 +670,13 @@ def _run_repro(
         f"秒 {job.get('duration_s', '')} 範囲 {len(job['clips'])} {job['status']}",
         "参照動画がカメラ、カット、声、曲を持つ。",
         "FL2VA の Turbo は載せない。",
-        "カット時刻はプロンプトに書いていない。時刻は元動画が持つ。",
-        "元動画の一致率は測っていない。",
+        "カットの切り替え時刻はプロンプトに書いていない。切り替えは元動画が持つ。",
+        "読めたせりふは口がその文だけを作る。読めなければ文は足さない。話者は1人として並べる。",
     ]
+    speech_note = str(job.get("speech_note") or "").strip()
+    if speech_note:
+        lines.append(speech_note)
+    lines.append("元動画の一致率は測っていない。")
     lines.extend(f"- {reason}" for reason in job["blocked"])
     if job["commands"]:
         lines.append(job["commands"][-1])
@@ -1234,8 +1245,101 @@ def source_spans(duration_s: float) -> list[tuple[float, float]]:
     return spans
 
 
-def reproduce_prompt(*, has_image: bool) -> str:
-    """Six Ref2VA sections. Dialogue stays in the file. Cut times are not guessed here."""
+_DROPPED_SPEECH = "実在や未成年の指定はせりふから外した。"
+
+
+def _kept_speech(raw: list) -> tuple[list[dict], bool]:
+    """Finished lines that can be spoken. A banned line is dropped and not rewritten."""
+    kept: list[dict] = []
+    dropped = False
+    for row in raw:
+        if not isinstance(row, dict):
+            continue
+        text = affi_speech.finish_sentence(str(row.get("text") or ""))
+        if not text:
+            continue
+        try:
+            ref.reject_likeness(text)
+        except ValueError:
+            dropped = True
+            continue
+        try:
+            start_s = float(row["start_s"])
+            end_s = float(row["end_s"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if end_s <= start_s:
+            continue
+        kept.append({"start_s": start_s, "end_s": end_s, "text": text})
+    kept.sort(key=lambda item: (item["start_s"], item["end_s"]))
+    return kept, dropped
+
+
+def _load_repro_speech(
+    path_text: str,
+    speech: list | None,
+    *,
+    readable: bool,
+) -> tuple[list[dict], str, bool]:
+    """Absolute lines, a note, and whether the words were actually read.
+
+    ``speech`` is a measured read, including an empty list for silence.
+    A missing read does not invent a line.
+    """
+    if speech is not None:
+        raw = list(speech)
+        known = True
+        note = "発話は無い。口は言葉を作らない。" if not raw else "せりふは渡された。口はその文だけを作る。"
+    elif readable and path_text and Path(path_text).is_file():
+        raw, note, known = affi_speech.read_source_speech(Path(path_text))
+    else:
+        return [], "", False
+    kept, dropped = _kept_speech(raw)
+    if dropped and not kept:
+        note = f"{_DROPPED_SPEECH} 残ったせりふは無い。口は言葉を作らない。"
+    elif dropped:
+        note = f"{note} {_DROPPED_SPEECH}".strip()
+    return kept, note, known
+
+
+def _mouth_sentences(lines: list[dict], speech_known: bool) -> str:
+    """Mouth text for one slice. Words stay inside ``<d>``. No camera cut is invented."""
+    spoken: list[str] = []
+    for line in lines:
+        tag = affi_speech.dialogue_tag(str(line.get("text") or ""))
+        if not tag:
+            continue
+        start = float(line["start_s"])
+        if start < 0.05:
+            when = "From the start of this shot"
+        else:
+            when = f"At {affi_speech.stamp(start)} into this shot"
+        spoken.append(
+            f"{when}, one on-screen mouth (S1) says: {tag} "
+            "The mouth forms that one line and no other words."
+        )
+    if spoken:
+        return (
+            "One on-screen mouth (S1) speaks, in the order heard. "
+            "The camera does not cut because a line starts. "
+            + " ".join(spoken)
+            + " When a line ends, the mouth closes until the next line."
+        )
+    if speech_known:
+        return "No one speaks. Mouths do not form words."
+    return (
+        "The on-screen mouth shapes the words heard in the soundtrack of <Video 1> "
+        "and closes when that soundtrack has no speech."
+    )
+
+
+def reproduce_prompt(
+    *,
+    has_image: bool,
+    lines: list[dict] | None = None,
+    speech_known: bool = False,
+) -> str:
+    """Six Ref2VA sections. Cut times stay in the file. Spoken words are the ones already read."""
     if has_image:
         subjects = (
             "<Picture 1> is the identity still. Appearance follows this still.\n"
@@ -1271,7 +1375,7 @@ def reproduce_prompt(*, has_image: bool) -> str:
         "[Shot 1] Framing, subject placement, lighting, and action match <Video 1>. "
         "When <Video 1> cuts, the target video cuts at that same moment to the same framing. "
         "Speech stays in the language heard in <Video 1> and is not rewritten. "
-        "Mouth movement follows the soundtrack of <Video 1>."
+        f"{_mouth_sentences(list(lines or []), speech_known)}"
     )
     sound = "The ambience and physical sounds are the soundtrack of <Video 1>, kept as heard."
     music = (
@@ -1327,11 +1431,14 @@ def plan_reproduce(
     image: str | None = None,
     aspect: str = "9:16",
     duration_s: float | None = None,
+    speech: list | None = None,
 ) -> dict[str, Any]:
     """One Ref2VA job per legal slice of the source file. Does not render.
 
     ``duration_s`` is only for a caller that already measured the file.
     When it is omitted, the seconds come from ffprobe.
+    ``speech`` is a measured read in absolute source time. An empty list means
+    silence. When it is omitted, the words come from the file or its sidecar.
     """
     if aspect not in {"9:16", "16:9"}:
         raise ValueError(f"画面が無い: {aspect}")
@@ -1363,12 +1470,19 @@ def plan_reproduce(
                 blocked.append(str(exc))
     if blocked:
         spans = []
-    prompt = reproduce_prompt(has_image=bool(image_text) and not blocked)
-    ref.reject_likeness(prompt)
+    speech_lines, speech_note, speech_known = _load_repro_speech(
+        path_text,
+        speech,
+        readable=not blocked,
+    )
+    has_image = bool(image_text) and not blocked
     width, height = (1920, 1080) if aspect == "16:9" else (1080, 1920)
     clips = []
     for index, (start_s, end_s) in enumerate(spans, start=1):
         trim_s = round(end_s - start_s, 3)
+        slice_lines = affi_speech.lines_in_span(speech_lines, start_s, end_s)
+        prompt = reproduce_prompt(has_image=has_image, lines=slice_lines, speech_known=speech_known)
+        ref.reject_likeness(prompt)
         clips.append(
             {
                 "id": f"{index:02d}",
@@ -1392,6 +1506,9 @@ def plan_reproduce(
         "delivery_height": height,
         "steps": DEFAULT_STEPS,
         "video_shift": VIDEO_FLOW_SHIFT,
+        "speech": speech_lines,
+        "speech_note": speech_note,
+        "speech_known": speech_known,
         "clips": clips,
         "status": "blocked" if blocked else "ready",
         "blocked": blocked,
@@ -1516,6 +1633,19 @@ def write_reproduce(job: dict[str, Any], folder: str | Path) -> Path:
     path = job_dir / "job.json"
     path.write_text(json.dumps(job, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (job_dir / "commands.txt").write_text("\n".join(commands) + "\n", encoding="utf-8")
+    captions = [
+        {
+            "start_s": float(line["start_s"]),
+            "end_s": float(line["end_s"]),
+            "text": str(line["text"]),
+            "burn": False,
+        }
+        for line in job.get("speech") or []
+    ]
+    (job_dir / "captions.json").write_text(
+        json.dumps(captions, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     if job["status"] == "ready" and job["clips"]:
         parts = [
             (job_dir / "clips" / f"{clip['id']}.mp4", float(clip["trim_s"]))
@@ -1815,7 +1945,7 @@ def choice_cell() -> str:
             '台詞 = "" #@param {type:"raw"}',
             "#@markdown 静止画は空でよい。話と自分の文では、空なら文章から焼く。ファイルを書くと、その画像が最初のコマになる。元動画を再現では、空のままが元の見た目。ファイルを書くと、見た目だけその画像になる。",
             '静止画 = "" #@param {type:"string"}',
-            "#@markdown 元動画を再現するときだけ、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。FL2VA の Turbo は載せない。",
+            "#@markdown 元動画を再現するときだけ、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。",
             '元動画 = "" #@param {type:"string"}',
             "#@markdown 自分の文で1本のときだけ、下を使う。静止画が空なら T2V。ファイルがあれば I2V。",
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
@@ -1843,6 +1973,7 @@ def run_cell() -> str:
             "",
             "import shutil",
             "import subprocess",
+            "import sys",
             "import affi_bake",
             "from pathlib import Path",
             "",
@@ -1856,9 +1987,17 @@ def run_cell() -> str:
             '    print("先に上の「選ぶ」を実行してください。")',
             "else:",
             '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
-            '    if 何をする == "元動画を再現" and shutil.which("ffprobe") is None and Path("/content").is_dir():',
-            '        subprocess.check_call(["apt-get", "update", "-qq"])',
-            '        subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])',
+            '    if 何をする == "元動画を再現" and Path("/content").is_dir():',
+            '        if shutil.which("ffprobe") is None:',
+            '            subprocess.check_call(["apt-get", "update", "-qq"])',
+            '            subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])',
+            "        try:",
+            "            import faster_whisper",
+            "        except ImportError:",
+            "            try:",
+            '                subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "faster-whisper"])',
+            "            except Exception as exc:",
+            '                print("せりふの読み取りは入れられなかった。口は参照の音声に合わせる。", exc)',
             "    text = affi_bake.run_choice(",
             "        何をする,",
             '        handle=globals().get("HANDLE"),',
@@ -2130,7 +2269,8 @@ def _intro() -> str:
         "",
         "元の mp4 の場所を「元動画」に書きます。Ref2VA がそのファイルを参照にします。カメラ、カット、声、曲はファイルが持ちます。H3 は 5〜15 秒なので、長い動画は範囲に分かれます。",
         "FL2VA の Turbo は載せません。重みは transformer_ref です。静止画は空のままが、元の見た目です。",
-        "カット時刻と台詞の文字はプロンプトに写しません。時刻と台詞は元動画が持ちます。一致率は測っていません。",
+        "カットの切り替え時刻はプロンプトに写しません。切り替えは元動画が持ちます。",
+        "音声から読めたせりふだけを、口がその文だけ作ります。読めないときは口が参照の音声に合わせ、文は足しません。話者の切り分けはしません。一致率は測っていません。",
         "",
         "## 4つの話",
         "",
@@ -2158,6 +2298,7 @@ def _loader_cell() -> str:
         "affi_genre_templates.py",
         "affi_reference.py",
         "affi_av.py",
+        "affi_speech.py",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -2283,7 +2424,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 表を見る … 4ジャンルの表。ジョブは書きません。動画にもなりません",
                     "- 話でジョブを書く … 選んだ1件のジョブ。静止画が空なら T2V。ファイルがあればその画像が最初のコマ",
                     "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
-                    "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。5〜15 秒の範囲に分ける。FL2VA の Turbo は載せない。ここでは焼きません",
+                    "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。5〜15 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
                     "",
                 ]
             ),
