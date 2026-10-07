@@ -301,7 +301,7 @@ def next_step(task: str) -> str:
 
 
 def _comment_is_header(body: str) -> bool:
-    return body.startswith("status=") or body.startswith("mp4 ") or body.startswith("I2V")
+    return body.startswith(("status=", "mp4 ", "I2V", "T2V"))
 
 
 def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
@@ -505,7 +505,7 @@ def _run_job(
         if cut["needs_line"]:
             lines.append(f"{cut['id']} {cut['line']}")
     lines.append(
-        f"{job['status']} 型の秒 {job['duration_s']} カット {len(job['cuts'])} 生成 {len(job['clips'])}"
+        f"{job['status']} {job['task']} 型の秒 {job['duration_s']} カット {len(job['cuts'])} 生成 {len(job['clips'])}"
     )
     lines.extend(f"- {reason}" for reason in job["blocked"])
     lines.append(str(path))
@@ -542,7 +542,7 @@ def _run_i2v(
     root = Path(out_dir) if out_dir is not None else _bake_root()
     path = write_i2v(job, root / "i2v")
     lines = [
-        "手入力で I2V",
+        "手入力で T2V" if job["task"] == "t2va" else "手入力で I2V",
         f"{job['status']} 秒 {job['duration_s']} {path}",
     ]
     lines.extend(f"- {reason}" for reason in job["blocked"])
@@ -788,6 +788,9 @@ def bake_reference(
             f"カットの合計 { _num(cut_sum) } 秒と型の { _num(duration_s) } 秒が違う。足りない秒は足さない。"
         )
     aspect, delivery_w, delivery_h = _aspect(view["canvas"])
+    image_text = (image or "").strip()
+    still_missing = bool(image_text) and not Path(image_text).is_file()
+    task = "fl2va" if image_text else "t2va"
     clips: list[dict[str, Any]] = []
     if not any(reason.startswith("カットの合計") for reason in blocked):
         if _one_take(view["cuts"], duration_s, cut_sum):
@@ -812,6 +815,7 @@ def bake_reference(
                     part_count=len(pieces),
                     audio=view["audio"],
                     subject_en=subject_en,
+                    frames=task == "fl2va",
                 )
                 clip_id = f"{serial:02d}-" + "-".join(cut_ids)
                 end_s = round(cursor + trim_s, 3)
@@ -846,15 +850,15 @@ def bake_reference(
     for cut in cuts:
         if cut["needs_line"] and cut["line"] == PLACEHOLDER_LINE:
             blocked.append(f"{cut['id']} の台詞は入力のまま")
-    image_text = (image or "").strip()
-    if not image_text or not Path(image_text).is_file():
-        blocked.append("静止画が無い。FL2VA は最初のコマに画像が要る")
+    if still_missing:
+        blocked.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
     trim_sum = round(sum(clip["trim_s"] for clip in clips), 3)
     if clips and abs(trim_sum - duration_s) > 0.051:
         raise ValueError(f"書き出し {trim_sum} 秒が型の {duration_s} 秒と違う")
     return {
         "schema": SCHEMA,
         "source": "reference",
+        "task": task,
         "handle": handle,
         "genre": item["genre"],
         "mode": view["mode"],
@@ -962,14 +966,14 @@ def _argv(
     return args
 
 
-def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str) -> str:
+def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str, task: str) -> str:
     args = _argv(
-        task="fl2va",
+        task=task,
         prompt_file=job_dir / "prompts" / str(clip["prompt_name"]),
         duration_s=float(clip["request_s"]),
         aspect=aspect,
         out_path=job_dir / "clips" / f"{clip['id']}.mp4",
-        image=image,
+        image="" if task == "t2va" else image,
     )
     return " ".join(shlex.quote(part) for part in args)
 
@@ -987,7 +991,10 @@ def write_job(job: dict[str, Any], folder: str | Path) -> Path:
     ]
     if job["blocked"]:
         commands.extend(f"# {reason}" for reason in job["blocked"])
-    commands.extend(_command(job_dir, clip, str(job.get("image") or ""), str(job["aspect"])) for clip in job["clips"])
+    task = str(job.get("task") or "fl2va")
+    commands.extend(
+        _command(job_dir, clip, str(job.get("image") or ""), str(job["aspect"]), task) for clip in job["clips"]
+    )
     job["commands"] = commands
     path = job_dir / "job.json"
     path.write_text(json.dumps(job, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -1026,7 +1033,7 @@ def plan_i2v(
     duration_s: float | str = 10,
     aspect: str = "9:16",
 ) -> dict[str, Any]:
-    """One I2VA job from a hand-written prompt. Does not render and does not post."""
+    """One hand-written clip. Empty image is T2VA. A file is I2VA. Does not render."""
     seconds = float(duration_s)
     if aspect not in {"9:16", "16:9"}:
         raise ValueError(f"画面が無い: {aspect}")
@@ -1034,20 +1041,21 @@ def plan_i2v(
         raise ValueError(f"H3 が受け取れない秒数: {seconds}")
     image_text = (image or "").strip()
     raw = str(prompt or "").strip()
+    task = "t2va" if not image_text else "i2va"
     blocked: list[str] = []
     prepared = ""
     if not raw:
         blocked.append("プロンプトが空")
     else:
         ref.reject_likeness(raw)
-        prepared = affi_av.i2v_prompt(raw)
-    if not image_text or not Path(image_text).is_file():
-        blocked.append("静止画が無い。I2V は最初のコマに画像が要る")
+        prepared = affi_av.t2v_prompt(raw) if task == "t2va" else affi_av.i2v_prompt(raw)
+    if image_text and not Path(image_text).is_file():
+        blocked.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
     width, height = (1080, 1920) if aspect == "9:16" else (1920, 1080)
     return {
         "schema": "affi-i2v-job/v1",
         "source": "i2v",
-        "task": "i2va",
+        "task": task,
         "prompt": prepared,
         "duration_s": seconds,
         "aspect": aspect,
@@ -1064,22 +1072,24 @@ def plan_i2v(
 
 
 def write_i2v(job: dict[str, Any], folder: str | Path) -> Path:
-    """Write the hand prompt and the I2VA command. Do not run it."""
+    """Write the hand prompt and the T2VA or I2VA command. Do not run it."""
     job_dir = Path(folder)
     job_dir.mkdir(parents=True, exist_ok=True)
     prompt_path = job_dir / "prompt.txt"
     prompt_path.write_text(str(job.get("prompt") or ""), encoding="utf-8")
     out_path = job_dir / "clip.mp4"
+    task = str(job.get("task") or "i2va")
     argv = _argv(
-        task="i2va",
+        task=task,
         prompt_file=prompt_path,
         duration_s=float(job["duration_s"]),
         aspect=str(job["aspect"]),
         out_path=out_path,
-        image=str(job.get("image") or ""),
+        image="" if task == "t2va" else str(job.get("image") or ""),
     )
+    label = "T2V" if task == "t2va" else "I2V"
     commands = [
-        "# I2V。プロンプトは手入力。mp4 は下の「焼く」で焼く。投稿しない。",
+        f"# {label}。プロンプトは手入力。mp4 は下の「焼く」で焼く。投稿しない。",
         f"# status={job['status']}",
     ]
     if job["blocked"]:
@@ -1373,9 +1383,9 @@ def choice_cell() -> str:
             f"中身 = {_py(fills[0])} #@param {_param_list(fills)}",
             "#@markdown 台詞を置き換えるときだけ書く。空なら、中身の台詞を使う。1行が1カット。",
             '台詞 = "" #@param {type:"raw"}',
-            "#@markdown 静止画は画像ファイルの場所。話でジョブを書くときと、自分の文で1本のときに使う。",
+            "#@markdown 静止画は空でよい。空なら文章から焼く。ファイルを書くと、その画像が最初のコマになる。",
             '静止画 = "" #@param {type:"string"}',
-            "#@markdown 自分の文で1本（手入力で I2V）のときだけ、下を使う。",
+            "#@markdown 自分の文で1本のときだけ、下を使う。静止画が空なら T2V。ファイルがあれば I2V。",
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
             'プロンプト = "" #@param {type:"raw"}',
@@ -1396,7 +1406,7 @@ def run_cell() -> str:
     return "\n".join(
         [
             '#@title 実行 { display-mode: "form" }',
-            "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力で I2V のコマンド。",
+            "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力のコマンド。静止画が空なら T2V。",
             "#@markdown このセルは焼かない。ready と出たら、一番下の「焼く」を押す。投稿しない。",
             "",
             "import affi_bake",
@@ -1635,11 +1645,11 @@ def _intro() -> str:
         "- **オマージュ** … 同じ絵とカメラの順で、別の短い台詞",
         "- **元の型のまま** … 型の絵とカメラの順。短い新しい台詞。元の顔、元の台詞、曲名は入りません",
         "",
-        "静止画に、画像ファイルの場所を書きます。台詞を変えたいときだけ、台詞の欄に1行ずつ書きます。",
+        "静止画は空でよいです。空なら文章から焼きます。ファイルを書くと、その画像が最初のコマになります。台詞を変えたいときだけ、台詞の欄に1行ずつ書きます。",
         "",
-        "**自分の文で1本（手入力で I2V）**",
+        "**自分の文で1本**",
         "",
-        "静止画とプロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。「実行」が ready と出たら、一番下の「焼く」です。",
+        "プロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。静止画が空なら T2V、ファイルがあれば手入力で I2V です。「実行」が ready と出たら、一番下の「焼く」です。",
         "",
         "## 4つの話",
         "",
@@ -1789,8 +1799,8 @@ def reference_notebook() -> dict[str, Any]:
                     "「選ぶ」のあと、このセルだけ実行します。",
                     "",
                     "- 表を見る … 4ジャンルの表。ジョブは書きません。動画にもなりません",
-                    "- 話でジョブを書く … 選んだ1件のジョブ。静止画が無いと止まります",
-                    "- 自分の文で1本 … 手入力で I2V のコマンドを書きます。ここでは焼きません",
+                    "- 話でジョブを書く … 選んだ1件のジョブ。静止画が空なら T2V。ファイルがあればその画像が最初のコマ",
+                    "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
                     "",
                 ]
             ),

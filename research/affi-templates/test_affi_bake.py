@@ -53,17 +53,27 @@ def test_account_menu_names_one_account() -> None:
     assert "足りない秒は足さない" in talk
 
 
-def test_dance_is_one_ten_second_clip_and_needs_a_still(tmp_path: Path) -> None:
+def test_dance_is_one_ten_second_clip_and_text_bakes_without_a_still(tmp_path: Path) -> None:
     job = bake.bake_reference("nuts0629", mode="dance", theme="夕方の散歩")
     assert job["duration_s"] == 10
     assert job["aspect"] == "9:16"
     assert job["canvas"] == "720x1280"
     assert [cut["duration_s"] for cut in job["cuts"]] == [10]
     assert [(clip["trim_s"], clip["request_s"]) for clip in job["clips"]] == [(10, 10)]
-    assert job["status"] == "blocked"
-    assert any("静止画" in reason for reason in job["blocked"])
+    assert job["status"] == "ready"
+    assert job["task"] == "t2va"
+    assert job["blocked"] == []
+    assert "Picture 1" not in job["clips"][0]["prompt"]
+    assert job["clips"][0]["prompt"].startswith("integrated_multimodal_description:")
     assert job["generates_video"] is False
     assert job["posts"] is False
+    text_path = bake.write_job(job, tmp_path / "text")
+    text_command = json.loads(text_path.read_text(encoding="utf-8"))["commands"][2]
+    assert "--task t2va" in text_command
+    assert "--image" not in text_command
+    missing = bake.bake_reference("nuts0629", mode="dance", theme="夕方の散歩", image=str(tmp_path / "missing.jpg"))
+    assert missing["status"] == "blocked"
+    assert any("静止画" in reason for reason in missing["blocked"])
     still = tmp_path / "still.jpg"
     still.write_bytes(b"jpeg")
     ready = bake.bake_reference("nuts0629", mode="dance", theme="夕方の散歩", image=str(still))
@@ -542,6 +552,12 @@ def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -
     job = bake.plan_i2v(image=str(still), prompt="The dog turns its head.", duration_s="10", aspect="9:16")
     assert job["status"] == "ready"
     assert job["task"] == "i2va"
+    plain = bake.plan_i2v(image="", prompt="The dog turns its head.", duration_s="10", aspect="9:16")
+    assert plain["status"] == "ready"
+    assert plain["task"] == "t2va"
+    assert plain["prompt"].startswith("integrated_multimodal_description:")
+    assert "Picture" not in plain["prompt"]
+    assert "<Picture" not in plain["prompt"]
     assert job["generates_video"] is False
     assert job["posts"] is False
     path = bake.write_i2v(job, tmp_path / "i2v")
@@ -689,6 +705,17 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
     assert len(i2v_lines) == 1
     assert "i2va" in i2v_lines[0]
     assert "最初の1本だけ焼きます。" in i2v_note
+    text_job = bake.plan_i2v(image="", prompt="The dog turns its head.", duration_s="10")
+    bake.write_i2v(text_job, tmp_path / "text-clip")
+    text_lines, _text_note = bake.commands_to_run(tmp_path / "text-clip" / "commands.txt", first_only=True)
+    assert "--task t2va" in text_lines[0]
+    assert "--image" not in text_lines[0]
+    blank = bake.plan_i2v(image="", prompt="  ", duration_s=10)
+    bake.write_i2v(blank, tmp_path / "blank")
+    none, blank_note = bake.commands_to_run(tmp_path / "blank" / "commands.txt", first_only=True)
+    assert none == []
+    assert "プロンプトが空" in blank_note
+    assert "T2V。プロンプトは手入力" not in blank_note
     cache = tmp_path / "h3-weights"
     prepared = bake.prepare_command(i2v_lines[0], cache)
     assert "--prepare-weights" in prepared

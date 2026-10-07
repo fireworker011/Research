@@ -270,8 +270,9 @@ def clip_prompt(
     part_count: int,
     audio: Any,
     subject_en: str = "",
+    frames: bool = True,
 ) -> dict[str, Any]:
-    """One FL2VA prompt. Dialogue is the only Japanese, and only on the first part."""
+    """One H3 prompt. frames keeps the FL2VA picture lines. Without them, this is T2VA."""
     if not shots:
         raise ValueError("ショットが無い")
     origin = float(shots[0]["start_s"])
@@ -316,19 +317,43 @@ def clip_prompt(
             )
     end = f"{float(request_s):.2f}"
     last_shot = len(shots)
-    prompt = "\n\n".join(
+    sections = []
+    if frames:
+        sections.append(
+            "How the reference pictures align with the target video — "
+            "Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; "
+            f"Picture 2 (from Shot {last_shot}) aligns with the {end}-second mark of the target video."
+        )
+    sections.extend(
         [
-            (
-                "How the reference pictures align with the target video — "
-                "Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; "
-                f"Picture 2 (from Shot {last_shot}) aligns with the {end}-second mark of the target video."
-            ),
             "integrated_multimodal_description: " + " ".join(shot_text) + part,
             "overall_soundscape: " + _soundscape(handle, shots),
             "non_diegetic_music: " + music,
         ]
     )
+    prompt = "\n\n".join(sections)
     return {"prompt": prompt + "\n", "motion_ja": motion_ja, "spoken": spoken, "bgm_prompt": music, "bgm_summary": music_ja}
+
+
+def t2v_prompt(text: str) -> str:
+    """A text-only prompt. Picture-alignment lines are left out."""
+    body = str(text or "").strip()
+    if not body:
+        raise ValueError("プロンプトが空")
+    kept = [
+        line
+        for line in body.splitlines()
+        if not line.strip().startswith("For the target video")
+        and not line.strip().startswith("How the reference pictures align")
+    ]
+    body = "\n".join(kept).strip()
+    if "integrated_multimodal_description:" in body:
+        return body if body.endswith("\n") else body + "\n"
+    return (
+        f"integrated_multimodal_description: {body}\n\n"
+        "overall_soundscape: Ambient sound is not specified.\n\n"
+        "non_diegetic_music: N/A\n"
+    )
 
 
 def i2v_prompt(text: str) -> str:
