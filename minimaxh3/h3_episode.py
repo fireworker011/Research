@@ -117,6 +117,7 @@ from h3_r2v_core import is_oom_error
 from h3_episode_packs import (
     CAMERA_PACKS,
     COMBAT_MODES,
+    MOSAIC_MODES,
     CONNECT_MODES,
     DEFAULT_CAMERA_PACK,
     DEFAULT_CONNECT,
@@ -161,6 +162,7 @@ from h3_episode_packs import (
     canonical_weather,
     dirt_phrase_for,
     canonical_combat,
+    canonical_mosaic,
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
@@ -333,6 +335,10 @@ LORA_FILES = {
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
     # Do not add this key to a ward beat extra. The long boilerplate stays on the job.
     "anime2real": "Anime2Realsim__H3.safetensors",
+    # Mosaic restoration. Civitai 2990026 version 3390424 fileId 3279789.
+    # The published name is lora.safetensors. Save under this name so it does not collide.
+    # No trigger word. The form stacks this only when mosaic is restore.
+    "mosaic": "mosaic_restoration_h3_v1.safetensors",
 }
 LORA_URLS = {
     "combat": "https://huggingface.co/JOKER141/MiniMax-H3-Combat-Base-V2/resolve/main/H3_Combat_V2.safetensors",
@@ -366,6 +372,7 @@ LORA_URLS = {
     "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
+    "mosaic": "https://civitai.com/api/download/models/3390424?fileId=3279789",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.
@@ -401,6 +408,8 @@ LORA_STRENGTHS = {
     "analfinger": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
+    # The card published no strength. 1.0 matches the other helpers whose cards used 1.0.
+    "mosaic": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
@@ -1246,6 +1255,17 @@ def detect_ram_gb() -> float:
 def is_high_mem(*, vram_gb: float = 0.0, ram_gb: float = 0.0) -> bool:
     """Colab High-RAM (~80GB system) or an 80GB-class GPU."""
     return float(vram_gb) >= HIGH_MEM_VRAM_GIB or float(ram_gb) >= HIGH_MEM_RAM_GIB
+
+
+def episode_mosaic(ep: dict[str, Any], override: str | None = None) -> str:
+    """keep / restore. Empty leaves the picture as authored and stacks no restoration LoRA."""
+    raw = str(override if override not in (None, "") else (ep.get("render") or {}).get("mosaic") or "").strip()
+    if not raw:
+        return ""
+    name = canonical_mosaic(raw)
+    if name not in MOSAIC_MODES:
+        raise EpisodeError(f"render.mosaic must be one of {list(MOSAIC_MODES)}")
+    return name
 
 
 def episode_combat(ep: dict[str, Any], override: str | None = None) -> str:
@@ -2219,6 +2239,45 @@ def _merge_route_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[
 
 def _merge_combat_overlay(beat: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     return _merge_route_overlay(beat, overlay)
+
+
+def apply_mosaic_loras(ep: dict[str, Any], *, mosaic: str | None = None) -> dict[str, Any]:
+    """Stack mosaic restoration on beats that are drawn. keep and empty leave extras alone.
+
+    The LoRA has no trigger, so the prompt text stays the authored sentence.
+    """
+    out = copy.deepcopy(ep)
+    render = dict(out.get("render") or {})
+    if mosaic not in (None, ""):
+        key = canonical_mosaic(mosaic)
+        if key not in MOSAIC_MODES:
+            raise EpisodeError(f"unknown mosaic {mosaic}")
+        render["mosaic"] = key
+        out["render"] = render
+    if episode_mosaic(out) != "restore":
+        return out
+    beats: list[Any] = []
+    for beat in out.get("beats") or []:
+        if not isinstance(beat, dict) or not beat_renders(beat):
+            beats.append(beat)
+            continue
+        body = dict(beat)
+        raw = body.get("extra_loras")
+        items = list(raw) if isinstance(raw, list) else []
+        already = False
+        for item in items:
+            if isinstance(item, str) and item == "mosaic":
+                already = True
+                break
+            if isinstance(item, (list, tuple)) and item and str(item[0]) == "mosaic":
+                already = True
+                break
+        if not already:
+            items.append("mosaic")
+            body["extra_loras"] = items
+        beats.append(body)
+    out["beats"] = beats
+    return out
 
 
 def apply_combat_route(ep: dict[str, Any], *, combat: str | None = None) -> dict[str, Any]:
@@ -4692,6 +4751,7 @@ def prepare_episode(
     camera_pack_override: str | None = None,
     preset_override: str | None = None,
     combat_override: str | None = None,
+    mosaic_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
     ride_bent_override: str | None = None,
@@ -4744,6 +4804,11 @@ def prepare_episode(
         render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
+    if mosaic_override not in (None, ""):
+        mosaic_key = canonical_mosaic(mosaic_override)
+        if mosaic_key not in MOSAIC_MODES:
+            raise EpisodeError(f"unknown mosaic {mosaic_override}")
+        render["mosaic"] = mosaic_key
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
     if checkpoint_override not in (None, ""):
@@ -4878,6 +4943,7 @@ def prepare_episode(
     out = apply_appearance(out)
     if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
         out = apply_human_skin(out)
+    out = apply_mosaic_loras(out)
     return out
 
 
@@ -5729,6 +5795,11 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         combat_key = canonical_combat(combat)
         if combat_key not in COMBAT_MODES:
             errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
+    mosaic = str(render.get("mosaic") or "").strip()
+    if mosaic:
+        mosaic_key = canonical_mosaic(mosaic)
+        if mosaic_key not in MOSAIC_MODES:
+            errs.append(f"render.mosaic must be one of {list(MOSAIC_MODES)}")
     story = str(render.get("story") or "").strip()
     if story:
         story_key = canonical_story(story)
@@ -8067,6 +8138,7 @@ def run_episode(
     connect_override: str | None = None,
     end_connect_override: str | None = None,
     combat_override: str | None = None,
+    mosaic_override: str | None = None,
     story_override: str | None = None,
     invite_pose_override: str | None = None,
     ride_bent_override: str | None = None,
@@ -8114,6 +8186,7 @@ def run_episode(
         camera_pack_override=camera_pack_override,
         preset_override=preset_override,
         combat_override=combat_override,
+        mosaic_override=mosaic_override,
         story_override=story_override,
         invite_pose_override=invite_pose_override,
         ride_bent_override=ride_bent_override,
@@ -8153,6 +8226,7 @@ def run_episode(
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
+            mosaic=episode_mosaic(ep),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
             ride_bent=str((ep.get("render") or {}).get("ride_bent") or ""),
@@ -8484,6 +8558,7 @@ def _usage() -> str:
         "  --camera side2d|action3d（迷ったら side2d）\n"
         "  --connect t2v|chain|landing（迷ったら t2v=カット。chain=1本目T2V・2本目以降は前の最終フレームからI2V。landing=用意した最終フレームへ着く）\n"
         "  --combat off|on（迷ったら off。on はハイメモリ専用）\n"
+        "  --mosaic keep|restore（迷ったら keep。restore は描くカットにモザイク復元LoRA）\n"
         "  --story accept|invite|evade|fight_win|fight_lose（病棟の構成。迷ったら accept）\n"
         "  --invite-pose all_fours|m_open|ride（病棟の誘うポーズ。迷ったら all_fours）\n"
         "  --toilet off|pee|masturbate|tentacle（病棟の道中トイレ。迷ったら off）\n"
@@ -8525,6 +8600,7 @@ def main(argv: list[str] | None = None) -> int:
     camera = None
     connect = None
     combat = None
+    mosaic = None
     story = None
     invite_pose = None
     toilet = None
@@ -8555,6 +8631,8 @@ def main(argv: list[str] | None = None) -> int:
         connect = opts[opts.index("--connect") + 1]
     if "--combat" in opts:
         combat = opts[opts.index("--combat") + 1]
+    if "--mosaic" in opts:
+        mosaic = opts[opts.index("--mosaic") + 1]
     if "--story" in opts:
         story = opts[opts.index("--story") + 1]
     if "--invite-pose" in opts:
@@ -8599,6 +8677,7 @@ def main(argv: list[str] | None = None) -> int:
         camera_pack_override=camera,
         preset_override=preset,
         combat_override=combat,
+        mosaic_override=mosaic,
         story_override=story,
         invite_pose_override=invite_pose,
         toilet_override=toilet,
