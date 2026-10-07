@@ -28,7 +28,7 @@ Env:
   H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
   H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
-  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _DIRT / _SWEAT / _CLOTHES / _SHAFT
+  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _BUST / _BUTT / _BUILD / _HEIGHT / _DIRT / _SWEAT / _CLOTHES / _SHAFT
                      Japanese dropdown labels. 今のまま keeps the authored clause. English phrases still pass through.
   H3_EPISODE_ENEMY_LOOK  one enemy per line: miki; hair=...; color=...; face=...; dirt=...; sweat=...; clothes=...; shaft=今のまま
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
@@ -122,6 +122,10 @@ def main() -> int:
                     "hair": os.environ.get("H3_EPISODE_AYA_HAIR") or "",
                     "color": os.environ.get("H3_EPISODE_AYA_COLOR") or "",
                     "face": os.environ.get("H3_EPISODE_AYA_FACE") or "",
+                    "bust": os.environ.get("H3_EPISODE_AYA_BUST") or "",
+                    "butt": os.environ.get("H3_EPISODE_AYA_BUTT") or "",
+                    "build": os.environ.get("H3_EPISODE_AYA_BUILD") or "",
+                    "height": os.environ.get("H3_EPISODE_AYA_HEIGHT") or "",
                     "dirt": os.environ.get("H3_EPISODE_AYA_DIRT") or "",
                     "sweat": os.environ.get("H3_EPISODE_AYA_SWEAT") or "",
                     "clothes": os.environ.get("H3_EPISODE_AYA_CLOTHES") or "",

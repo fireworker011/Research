@@ -58,6 +58,14 @@ __AYA_COLOR_HELP__
 AYA_HAIR_COLOR = __AYA_COLOR_DEFAULT__  #@param __AYA_COLOR_CHOICES__
 __AYA_FACE_HELP__
 AYA_FACE = __AYA_FACE_DEFAULT__  #@param __AYA_FACE_CHOICES__
+__AYA_BUST_HELP__
+AYA_BUST = __AYA_BUST_DEFAULT__  #@param __AYA_BUST_CHOICES__
+__AYA_BUTT_HELP__
+AYA_BUTT = __AYA_BUTT_DEFAULT__  #@param __AYA_BUTT_CHOICES__
+__AYA_BUILD_HELP__
+AYA_BUILD = __AYA_BUILD_DEFAULT__  #@param __AYA_BUILD_CHOICES__
+__AYA_HEIGHT_HELP__
+AYA_HEIGHT = __AYA_HEIGHT_DEFAULT__  #@param __AYA_HEIGHT_CHOICES__
 __AYA_DIRT_HELP__
 AYA_DIRT = __AYA_DIRT_DEFAULT__  #@param __AYA_DIRT_CHOICES__
 __AYA_SWEAT_HELP__
@@ -181,6 +189,10 @@ os.environ["H3_EPISODE_SPECIES"] = SPECIES
 os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
 os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
 os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+os.environ["H3_EPISODE_AYA_BUST"] = str(AYA_BUST or "").strip()
+os.environ["H3_EPISODE_AYA_BUTT"] = str(AYA_BUTT or "").strip()
+os.environ["H3_EPISODE_AYA_BUILD"] = str(AYA_BUILD or "").strip()
+os.environ["H3_EPISODE_AYA_HEIGHT"] = str(AYA_HEIGHT or "").strip()
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
 os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
 os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
@@ -392,6 +404,18 @@ def make_nb() -> dict:
         .replace("__AYA_FACE_HELP__", form_markdown("aya_face", "あやの顔"))
         .replace("__AYA_FACE_DEFAULT__", json.dumps(ui_default("aya_face"), ensure_ascii=False))
         .replace("__AYA_FACE_CHOICES__", json.dumps(ui_choices("aya_face"), ensure_ascii=False))
+        .replace("__AYA_BUST_HELP__", form_markdown("aya_bust", "あやのバスト"))
+        .replace("__AYA_BUST_DEFAULT__", json.dumps(ui_default("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUST_CHOICES__", json.dumps(ui_choices("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUTT_HELP__", form_markdown("aya_butt", "あやのお尻"))
+        .replace("__AYA_BUTT_DEFAULT__", json.dumps(ui_default("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUTT_CHOICES__", json.dumps(ui_choices("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUILD_HELP__", form_markdown("aya_build", "あやの身体の細さ"))
+        .replace("__AYA_BUILD_DEFAULT__", json.dumps(ui_default("aya_build"), ensure_ascii=False))
+        .replace("__AYA_BUILD_CHOICES__", json.dumps(ui_choices("aya_build"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_HELP__", form_markdown("aya_height", "あやの身長 — しのの長身は変えない"))
+        .replace("__AYA_HEIGHT_DEFAULT__", json.dumps(ui_default("aya_height"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_CHOICES__", json.dumps(ui_choices("aya_height"), ensure_ascii=False))
         .replace("__AYA_DIRT_HELP__", form_markdown("aya_dirt", "あやの汚れの種類 — 今のままは上の場所の汚れ"))
         .replace("__AYA_DIRT_DEFAULT__", json.dumps(ui_default("aya_dirt"), ensure_ascii=False))
         .replace("__AYA_DIRT_CHOICES__", json.dumps(ui_choices("aya_dirt"), ensure_ascii=False))

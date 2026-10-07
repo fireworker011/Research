@@ -2358,6 +2358,54 @@ AYA_CLOTHES_MODES: dict[str, dict[str, Any]] = {
     "hoodie": {"label_ja": "パーカー", "choice_ja": "パーカー", "when_ja": "開いたパーカー", "form": True, "phrase": "an open hoodie"},
     "slip": {"label_ja": "ネグリジェ", "choice_ja": "ネグリジェ", "when_ja": "薄いネグリジェ", "form": True, "phrase": "a sheer slip"},
 }
+AYA_BUST_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の C カップ", "form": True, "recommend": True, "phrase": ""},
+    "a": {"label_ja": "Aカップ", "choice_ja": "Aカップ", "when_ja": "小さい A カップ", "form": True, "phrase": "small A-cup breasts"},
+    "b": {"label_ja": "Bカップ", "choice_ja": "Bカップ", "when_ja": "控えめな B カップ", "form": True, "phrase": "modest B-cup breasts"},
+    "c": {"label_ja": "Cカップ", "choice_ja": "Cカップ", "when_ja": "今と同じ C カップ", "form": True, "phrase": "medium C-cup breasts"},
+    "d": {"label_ja": "Dカップ", "choice_ja": "Dカップ", "when_ja": "ふくらみのある D カップ", "form": True, "phrase": "full D-cup breasts"},
+    "e": {"label_ja": "Eカップ", "choice_ja": "Eカップ", "when_ja": "大きい E カップ", "form": True, "phrase": "large E-cup breasts"},
+    "f": {"label_ja": "Fカップ", "choice_ja": "Fカップ", "when_ja": "とても大きい F カップ", "form": True, "phrase": "very large F-cup breasts"},
+    "small": {"label_ja": "小さめ", "choice_ja": "小さめ", "when_ja": "小さい胸", "form": True, "phrase": "small breasts"},
+    "large": {"label_ja": "大きめ", "choice_ja": "大きめ", "when_ja": "大きい胸", "form": True, "phrase": "large full breasts"},
+    "flat": {"label_ja": "平坦", "choice_ja": "平坦", "when_ja": "ほとんど起伏のない胸", "form": True, "phrase": "a flat chest"},
+}
+AYA_BUTT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "お尻の大きさは書かない", "form": True, "recommend": True, "phrase": ""},
+    "small": {"label_ja": "小さめ", "choice_ja": "小さめ", "when_ja": "小さいお尻", "form": True, "phrase": "small buttocks"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "平均的なお尻", "form": True, "phrase": "average buttocks"},
+    "round": {"label_ja": "丸い", "choice_ja": "丸い", "when_ja": "丸いお尻", "form": True, "phrase": "round buttocks"},
+    "large": {"label_ja": "大きめ", "choice_ja": "大きめ", "when_ja": "大きいお尻", "form": True, "phrase": "large buttocks"},
+    "peach": {"label_ja": "桃", "choice_ja": "桃", "when_ja": "桃のようなお尻", "form": True, "phrase": "a peach-shaped butt"},
+    "firm": {"label_ja": "張り", "choice_ja": "張り", "when_ja": "張ったお尻", "form": True, "phrase": "firm high buttocks"},
+    "low": {"label_ja": "垂れ", "choice_ja": "垂れ", "when_ja": "やわらかく下がったお尻", "form": True, "phrase": "soft low buttocks"},
+    "wide": {"label_ja": "広い", "choice_ja": "広い", "when_ja": "広い腰と大きいお尻", "form": True, "phrase": "wide hips and large buttocks"},
+    "narrow": {"label_ja": "細い", "choice_ja": "細い", "when_ja": "細い腰と小さいお尻", "form": True, "phrase": "narrow hips and small buttocks"},
+}
+AYA_BUILD_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の細い体と細い腕", "form": True, "recommend": True, "phrase": "", "limbs": ""},
+    "thinnest": {"label_ja": "極細", "choice_ja": "極細", "when_ja": "とても細い体", "form": True, "phrase": "a very slim adult body", "limbs": "a very narrow waist and thin arms"},
+    "slim": {"label_ja": "細い", "choice_ja": "細い", "when_ja": "細い体", "form": True, "phrase": "a slim adult body", "limbs": "a narrow waist and thin arms"},
+    "delicate": {"label_ja": "華奢", "choice_ja": "華奢", "when_ja": "華奢な体", "form": True, "phrase": "a delicate slim adult body", "limbs": "a very narrow waist and slender arms"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "平均的な体", "form": True, "phrase": "an average adult body", "limbs": "a medium waist and ordinary arms"},
+    "plump": {"label_ja": "むっちり", "choice_ja": "むっちり", "when_ja": "やわらかくむっちりした体", "form": True, "phrase": "a soft plump adult body", "limbs": "a soft waist and soft arms"},
+    "chubby": {"label_ja": "ぽっちゃり", "choice_ja": "ぽっちゃり", "when_ja": "ふっくらした体", "form": True, "phrase": "a chubby adult body", "limbs": "a full waist and soft arms"},
+    "sturdy": {"label_ja": "がっしり", "choice_ja": "がっしり", "when_ja": "がっしりした体", "form": True, "phrase": "a sturdy adult body", "limbs": "a solid waist and firm arms"},
+    "muscle": {"label_ja": "筋肉", "choice_ja": "筋肉", "when_ja": "引き締まった筋肉の体", "form": True, "phrase": "a lean muscular adult body", "limbs": "a firm waist and toned arms"},
+    "broad": {"label_ja": "骨太", "choice_ja": "骨太", "when_ja": "骨太で広い体", "form": True, "phrase": "a broad adult body", "limbs": "a wide waist and sturdy arms"},
+}
+AYA_HEIGHT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "身長は書かない。しのの長身は別", "form": True, "recommend": True, "phrase": ""},
+    "short": {"label_ja": "低め", "choice_ja": "低め", "when_ja": "成人で低め", "form": True, "phrase": "a short full-grown adult height"},
+    "bit_short": {"label_ja": "やや低め", "choice_ja": "やや低め", "when_ja": "成人でやや低め", "form": True, "phrase": "a slightly short full-grown adult height"},
+    "petite": {"label_ja": "小柄", "choice_ja": "小柄", "when_ja": "成人で小柄", "form": True, "phrase": "a petite full-grown adult height"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "成人で平均的な身長", "form": True, "phrase": "an average full-grown adult height"},
+    "bit_tall": {"label_ja": "やや高め", "choice_ja": "やや高め", "when_ja": "成人でやや高め", "form": True, "phrase": "a slightly tall full-grown adult height"},
+    "tall": {"label_ja": "高め", "choice_ja": "高め", "when_ja": "成人で高め", "form": True, "phrase": "a tall full-grown adult height"},
+    "very_tall": {"label_ja": "長身", "choice_ja": "長身", "when_ja": "成人で長身。巨人にはしない", "form": True, "phrase": "a very tall full-grown adult height, still one human scale"},
+    "legs": {"label_ja": "長脚", "choice_ja": "長脚", "when_ja": "成人で脚が長い", "form": True, "phrase": "a long-legged full-grown adult height"},
+    "model": {"label_ja": "モデル", "choice_ja": "モデル", "when_ja": "成人で脚が長く高め", "form": True, "phrase": "a tall long-legged full-grown adult height"},
+}
 AYA_SHAFT_MODES: dict[str, dict[str, Any]] = {
     "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "竿は足さない", "form": True, "recommend": True, "shaft": ""},
     "off": {"label_ja": "なし", "choice_ja": "なし", "when_ja": "竿を書かない", "form": True, "shaft": "off"},
@@ -2377,6 +2425,10 @@ AYA_PART_MODES: dict[str, dict[str, dict[str, Any]]] = {
     "dirt": AYA_DIRT_MODES,
     "sweat": AYA_SWEAT_MODES,
     "clothes": AYA_CLOTHES_MODES,
+    "bust": AYA_BUST_MODES,
+    "butt": AYA_BUTT_MODES,
+    "build": AYA_BUILD_MODES,
+    "height": AYA_HEIGHT_MODES,
     "shaft": AYA_SHAFT_MODES,
 }
 AYA_PART_ALIASES: dict[str, dict[str, str]] = {
@@ -2396,6 +2448,14 @@ def canonical_look(name: str) -> str:
 
 def canonical_enemy_kind(name: str) -> str:
     return _canon(ENEMY_KIND_MODES, ENEMY_KIND_ALIASES, name)
+
+
+def build_limbs_for(phrase: str) -> str:
+    """Waist and arms that belong to a body-slimness menu phrase. Blank leaves the authored arms."""
+    for spec in AYA_BUILD_MODES.values():
+        if spec.get("phrase") == phrase:
+            return str(spec.get("limbs") or "")
+    return ""
 
 
 def resolve_aya_part(kind: str, value: str) -> str:
@@ -2443,6 +2503,14 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return AYA_SWEAT_MODES
     if kind == "aya_clothes":
         return AYA_CLOTHES_MODES
+    if kind == "aya_bust":
+        return AYA_BUST_MODES
+    if kind == "aya_butt":
+        return AYA_BUTT_MODES
+    if kind == "aya_build":
+        return AYA_BUILD_MODES
+    if kind == "aya_height":
+        return AYA_HEIGHT_MODES
     if kind == "aya_shaft":
         return AYA_SHAFT_MODES
     if kind == "enemy_kind":

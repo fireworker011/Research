@@ -148,6 +148,7 @@ from h3_episode_packs import (
     WEATHER_MODES,
     AYA_SWEAT_PHRASES,
     LOOK_MODES,
+    build_limbs_for,
     resolve_aya_part,
     canonical_camera,
     canonical_camera_distance,
@@ -3867,7 +3868,7 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
 
 
 # Blank appearance fields keep the authored look. A set field replaces that person's clause.
-_APPEARANCE_KEYS = ("hair", "color", "face", "dirt", "sweat", "clothes", "shaft")
+_APPEARANCE_KEYS = ("hair", "color", "face", "bust", "butt", "build", "height", "dirt", "sweat", "clothes", "shaft")
 _SHAFT_KEEP = frozenset({"", "今のまま", "default"})
 _SHAFT_ON_WORDS = frozenset({"あり", "on"})
 _SHAFT_OFF_WORDS = frozenset({"なし", "off"})
@@ -3894,6 +3895,11 @@ _APPEARANCE: dict[str, dict[str, Any]] = {
             "damp dirty bangs stuck to her forehead",
         ),
         "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "bust": "C-cup breasts",
+        "build": "slender thin body",
+        "limbs": "narrow waist, thin arms",
+        "butt": "",
+        "height": "",
         "shaft": None,
     },
     "miki": {
@@ -4525,6 +4531,20 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                 _replace_phrase(out, cid, face, fields["face"])
             else:
                 _append_look(out, cid, fields["face"])
+        for key in ("bust", "butt", "build", "height"):
+            if not fields.get(key):
+                continue
+            old = str(spec.get(key) or "")
+            new = str(fields[key])
+            if old:
+                _replace_phrase(out, cid, old, new)
+            else:
+                _append_look(out, cid, new)
+            if key == "build":
+                limbs = build_limbs_for(new)
+                old_limbs = str(spec.get("limbs") or "")
+                if limbs and old_limbs:
+                    _replace_phrase(out, cid, old_limbs, limbs)
         if fields.get("sweat"):
             sweat_phrases = spec.get("sweat") or ()
             replacement = str(fields["sweat"])

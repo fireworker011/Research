@@ -395,11 +395,15 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'AYA_HAIR = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_HAIR_COLOR = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_FACE = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_BUST = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_BUTT = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_BUILD = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_HEIGHT = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_DIRT = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_SWEAT = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_CLOTHES = "今のまま（迷ったらこれ）"' in src
     assert 'AYA_SHAFT = "今のまま（迷ったらこれ）"' in src
-    for _name in ("AYA_HAIR", "AYA_HAIR_COLOR", "AYA_FACE", "AYA_DIRT", "AYA_SWEAT", "AYA_CLOTHES", "AYA_SHAFT"):
+    for _name in ("AYA_HAIR", "AYA_HAIR_COLOR", "AYA_FACE", "AYA_BUST", "AYA_BUTT", "AYA_BUILD", "AYA_HEIGHT", "AYA_DIRT", "AYA_SWEAT", "AYA_CLOTHES", "AYA_SHAFT"):
         _line = next(line for line in src.splitlines() if line.startswith(f"{_name} = "))
         assert '{type:"string"}' not in _line
     assert "ボブ" in src and "銀髪" in src and "丸顔" in src and "細め" in src
@@ -6557,7 +6561,19 @@ def test_appearance_blank_matches_authored_and_custom_stays_on_one_person():
 
 
 def test_aya_appearance_dropdowns_keep_authored_and_a_choice_wins():
-    kinds = ("aya_hair", "aya_color", "aya_face", "aya_dirt", "aya_sweat", "aya_clothes", "aya_shaft")
+    kinds = (
+        "aya_hair",
+        "aya_color",
+        "aya_face",
+        "aya_bust",
+        "aya_butt",
+        "aya_build",
+        "aya_height",
+        "aya_dirt",
+        "aya_sweat",
+        "aya_clothes",
+        "aya_shaft",
+    )
     for kind in kinds:
         choices = ui_choices(kind)
         assert 8 <= len(choices) <= 10
@@ -6575,6 +6591,10 @@ def test_aya_appearance_dropdowns_keep_authored_and_a_choice_wins():
                 "hair": "今のまま（迷ったらこれ）",
                 "color": "今のまま（迷ったらこれ）",
                 "face": "今のまま（迷ったらこれ）",
+                "bust": "今のまま（迷ったらこれ）",
+                "butt": "今のまま（迷ったらこれ）",
+                "build": "今のまま（迷ったらこれ）",
+                "height": "今のまま（迷ったらこれ）",
                 "dirt": "今のまま（迷ったらこれ）",
                 "sweat": "今のまま（迷ったらこれ）",
                 "clothes": "今のまま（迷ったらこれ）",
@@ -6617,6 +6637,28 @@ def test_aya_appearance_dropdowns_keep_authored_and_a_choice_wins():
     assert "dry skin" in dry["cast"]["aya"]["lock"]
     assert "visible sweat beads and thick" not in dry["cast"]["aya"]["lock"]
     assert "grimy brown hospital dirt clinging to the whole body" in dry["cast"]["aya"]["lock"]
+
+    body = prepare_episode(
+        raw,
+        appearance_override={"aya": {"bust": "大きめ", "butt": "大きめ", "build": "むっちり", "height": "低め"}},
+    )
+    body_lock = body["cast"]["aya"]["lock"]
+    assert "large full breasts" in body_lock
+    assert "C-cup" not in body_lock
+    assert "a soft plump adult body" in body_lock
+    assert "a soft waist and soft arms" in body_lock
+    assert "slender thin body" not in body_lock
+    assert "narrow waist, thin arms" not in body_lock
+    assert "large buttocks" in body_lock
+    assert "a short full-grown adult height" in body_lock
+    assert "extremely tall" in body["cast"]["shino"]["lock"]
+    assert "large buttocks" not in body["cast"]["shino"]["lock"]
+    assert "nobody is giant" in body["world"]["lock"]
+    cover = next(b for b in body["beats"] if b["id"] == "01-cover")
+    cover_prompt = build_beat_prompt(body, cover)
+    assert "large full breasts" in cover_prompt
+    assert "a short full-grown adult height" in cover_prompt
+    assert validate_episode(body, root=HOSPITAL_DIR) == []
 
 
 def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
