@@ -6844,6 +6844,45 @@ def test_hospital_place_swaps_nouns_after_the_act_is_chosen():
 
 
 
+def test_fantasy_places_replace_the_ward_and_the_default_stays():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    plain = prepare_episode(raw, story_override="受け入れる")
+    held = prepare_episode(raw, story_override="受け入れる", place_override="病棟（迷ったらこれ）")
+    cover = next(b for b in plain["beats"] if b["id"] == "01-cover")
+    assert build_beat_prompt(plain, cover) == build_beat_prompt(
+        held, next(b for b in held["beats"] if b["id"] == "01-cover")
+    )
+    places = {
+        "雄大な草原": "soft grass",
+        "丘": "grassy slope",
+        "砂漠": "dry sand",
+        "大塩湖": "white salt crust",
+        "湖": "lake shore",
+        "山道": "stone track",
+        "鬱蒼とした湿原": "wet peat",
+        "下水道": "wet brick",
+        "宇宙ステーション": "metal deck",
+        "大空の上の空中庭園": "above the clouds",
+        "天空のガラス橋": "clear glass",
+    }
+    ward_words = re.compile(
+        r"hospital|linoleum|corridor|sickroom|fluorescent|crumbling|rusted|\bHVAC\b|derelict|T-junction|"
+        r"porcelain|beige|\btiles\b|Props in this shot|purple fluorescent|at night",
+        re.I,
+    )
+    choices = ui_choices("place")
+    assert choices[0] == "病棟（迷ったらこれ）"
+    for label, token in places.items():
+        assert label in choices
+        ep = prepare_episode(raw, story_override="受け入れる", place_override=label, time_override="昼")
+        assert validate_episode(ep, root=HOSPITAL_DIR) == []
+        beat = next(b for b in ep["beats"] if b["id"] == "01-cover")
+        prompt = build_beat_prompt(ep, beat)
+        assert token in prompt, label
+        assert not ward_words.search(prompt), (label, ward_words.search(prompt).group(0) if ward_words.search(prompt) else "")
+        assert "turns" in prompt or "Aya" in prompt
+
+
 def test_hospital_off_ward_human_and_insert_fixes():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     user = dict(

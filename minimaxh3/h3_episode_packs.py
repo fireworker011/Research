@@ -1955,6 +1955,72 @@ PLACE_MODES: dict[str, dict[str, Any]] = {
         "concrete column", "pavement", "utility room", "concrete ledge",
         "underpass", "gap between the columns", "car light", "traffic overhead", "steel toilet",
     ),
+    "grassland": _surface(
+        "雄大な草原", "広い空と、地平まで続く草", "sand",
+        "A fictional vast grassland, tall grass on both sides, a soft grass track underfoot, low hills on the far horizon, a wide open sky",
+        "grass bank", "soft grass", "grass shelter", "grass mat",
+        "grass track", "fork in the grass", "open sky light", "wind over the grass", "old wooden toilet",
+    ),
+    "hill": _surface(
+        "丘", "なだらかな丘の斜面", "sand",
+        "A fictional open hill, a grassy slope underfoot, low ridges on both sides, a wide sky",
+        "grassy ridge", "grassy slope", "hill shelter", "grass mat",
+        "hill path", "fork on the slope", "open sky light", "wind on the hill", "old wooden toilet",
+    ),
+    "desert": _surface(
+        "砂漠", "砂丘と乾いた空", "sand",
+        "A fictional vast desert, dunes on both sides, dry sand underfoot, a wide empty sky",
+        "sand dune", "dry sand", "canvas shelter", "sand mat",
+        "dune path", "gap between the dunes", "harsh sky light", "wind over the dunes", "old canvas toilet",
+    ),
+    "salt_lake": _surface(
+        "大塩湖", "白い塩の岸と浅い水面", "tide",
+        "A fictional great salt lake shore, white salt crust underfoot, shallow brine beside the path, a flat horizon",
+        "salt ridge", "white salt crust", "salt shelter", "salt ledge",
+        "salt shore", "bend in the shore", "bright sky light", "wind over the brine", "old wooden toilet",
+    ),
+    "lake": _surface(
+        "湖", "静かな湖の岸", "tide",
+        "A fictional lake shore, still water beside the path, wet stone underfoot, trees set back from the water",
+        "reed bank", "wet stone", "lake hut", "wooden bench",
+        "lake shore", "bend in the shore", "light on the water", "water lapping", "old wooden toilet",
+    ),
+    "mountain": _surface(
+        "山道", "片側が崖の山道", "sand",
+        "A fictional mountain path, a cliff on one side, a stone track underfoot, the slope dropping away on the other side",
+        "cliff face", "stone track", "mountain hut", "wooden bench",
+        "mountain path", "switchback", "light on the slope", "wind on the slope", "old wooden toilet",
+    ),
+    "marsh": _surface(
+        "鬱蒼とした湿原", "背の高い葦と湿った土", "tide",
+        "A fictional dense marsh, tall reeds on both sides, wet peat underfoot, still water in the gaps",
+        "reed wall", "wet peat", "reed hut", "wooden platform",
+        "marsh path", "gap in the reeds", "dim light through the reeds", "wind in the reeds", "old wooden toilet",
+    ),
+    "sewer": _surface(
+        "下水道", "煉瓦の水路と狭い歩廊", "soot",
+        "A fictional brick sewer, a wet brick walkway, arched brick on both sides, a channel of water beside the walk",
+        "brick wall", "wet brick", "side chamber", "brick ledge",
+        "sewer walk", "pipe junction", "lamp light", "water in the channel", "iron toilet",
+    ),
+    "station": _surface(
+        "宇宙ステーション", "金属の通路。窓の外は星", "soot",
+        "A fictional orbital station hall, a metal deck underfoot, curved bulkheads on both sides, stars beyond a long window",
+        "metal bulkhead", "metal deck", "station cabin", "bunk",
+        "station hall", "hall junction", "panel light", "vent hum", "steel toilet",
+    ),
+    "sky_garden": _surface(
+        "大空の上の空中庭園", "雲の上の庭", "sand",
+        "A fictional hanging garden above the clouds, mossy stone underfoot, flowering trees on both sides, open sky around the terrace",
+        "flowering hedge", "mossy stone", "garden pavilion", "stone bench",
+        "garden walk", "turn in the garden", "open sky light", "wind over the clouds", "stone toilet",
+    ),
+    "sky_bridge": _surface(
+        "天空のガラス橋", "空に架かったガラスの橋", "sand",
+        "A fictional glass bridge hung in the open sky, clear glass underfoot, open air on both sides, clouds far below",
+        "glass rail", "clear glass", "bridge alcove", "glass bench",
+        "glass span", "meeting of the spans", "sky light", "wind over the bridge", "small white toilet",
+    ),
 }
 
 TIME_MODES: dict[str, dict[str, Any]] = {
