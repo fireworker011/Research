@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import gc
 import json
+import shutil
 import time
 from pathlib import Path
 
@@ -31,7 +32,7 @@ from h3_runner.ffmpeg_join import clip_is_done, join_clips
 from h3_runner.loras import LoraSpec, reject_pruned_adaln
 from h3_runner.official import AUDIO_FLOW_SHIFT, FPS, pipeline_workflow
 from h3_runner.planner import ClipJob, Plan
-from h3_runner.weights import require_present
+from h3_runner.weights import failure_text, local_encode_path, require_present
 
 _TRANSFORMER_SKIP = [
     "proj_in",
@@ -126,11 +127,15 @@ def _load_bf16(
     manager.enable_auto_cpu_offload(device="cuda", memory_reserve_margin="12GB")
     _apply_shifts(pipe, video_shift)
     # _flash_3_hub is the Hopper kernel in the official docs (compute capability 9).
-    # A100 is 8. Blackwell (RTX PRO 6000) is 10, so leave its default attention.
+    # Blackwell (RTX PRO 6000 is 12, B200 is 10) has no kernel for that hub build.
     major, _minor = torch.cuda.get_device_capability()
     denoiser = _denoiser(pipe, task)
-    if major == 9 and hasattr(denoiser, "set_attention_backend"):
-        denoiser.set_attention_backend("_flash_3_hub")
+    if hasattr(denoiser, "set_attention_backend"):
+        if major == 9:
+            denoiser.set_attention_backend("_flash_3_hub")
+        elif major >= 10:
+            denoiser.set_attention_backend("native")
+            print(f"attention native (compute capability {major})", flush=True)
     return pipe, manager
 
 
@@ -196,6 +201,28 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
     return pipe, None
 
 
+def _align_rope_device(pipe: ModularPipeline, task: str) -> None:
+    """Put the RoPE buffer on the same device as ``position_ids``.
+
+    Pinned diffusers ``5ff8e59`` only casts the ids to float32. ``inv_freq`` is a
+    non-persistent buffer, so CPU offload can leave it on CPU while the ids are
+    on CUDA. That raises on the first denoiser step, after ``request.json``.
+    """
+    rope = getattr(_denoiser(pipe, task), "rope", None)
+    if rope is None or getattr(rope, "_device_aligned", False):
+        return
+    original = rope.forward
+
+    def forward(position_ids: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        inv = rope._buffers.get("inv_freq")
+        if inv is not None and inv.device != position_ids.device:
+            rope._buffers["inv_freq"] = inv.to(device=position_ids.device)
+        return original(position_ids)
+
+    rope.forward = forward
+    rope._device_aligned = True
+
+
 def load_pipeline(
     task: str,
     offload: str,
@@ -205,13 +232,14 @@ def load_pipeline(
 ) -> ModularPipeline:
     if offload == "bf16":
         pipe, _manager = _load_bf16(task, model_dir, loras, video_shift)
-        return pipe
-    if offload == "int8":
+    elif offload == "int8":
         if loras:
             print("int8 経路では LoRA を無効にする。", flush=True)
         pipe, _manager = _load_int8(task, model_dir, video_shift)
-        return pipe
-    raise ValueError(offload)
+    else:
+        raise ValueError(offload)
+    _align_rope_device(pipe, task)
+    return pipe
 
 
 def _call_pipe(
@@ -284,6 +312,24 @@ def _attach_stage_timers(pipe: ModularPipeline, task: str) -> dict[str, float]:
     return totals
 
 
+def _note_failure(out_path: Path, stage: str, exc: BaseException) -> None:
+    text = failure_text(stage, exc)
+    print(text, flush=True)
+    note = out_path.with_suffix(".error.txt")
+    try:
+        note.parent.mkdir(parents=True, exist_ok=True)
+        note.write_text(text + "\n", encoding="utf-8")
+        print("理由を書いた", note, flush=True)
+    except OSError as write_exc:
+        print("理由のファイルは書けなかった", write_exc, flush=True)
+
+
+def _clear_failure(out_path: Path) -> None:
+    note = out_path.with_suffix(".error.txt")
+    if note.is_file():
+        note.unlink()
+
+
 def generate_clip(
     job: ClipJob,
     *,
@@ -316,15 +362,42 @@ def generate_clip(
                 "offload": offload,
             }
             request_path = job.out_path.with_suffix(".request.json")
+            request_path.parent.mkdir(parents=True, exist_ok=True)
             request_path.write_text(json.dumps(request, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            results = _call_pipe(pipe, job, height=height, width=width)
-            encode_video(
-                results["videos"][0],
-                fps=FPS,
-                output_path=str(job.out_path),
-                audio=results["audio"][0],
-                audio_sample_rate=results["sampling_rate"],
-            )
+            encode_path = local_encode_path(job.out_path)
+            try:
+                print("推論開始", flush=True)
+                results = _call_pipe(pipe, job, height=height, width=width)
+            except Exception as exc:
+                if _is_oom(exc):
+                    raise
+                _note_failure(job.out_path, "推論", exc)
+                raise
+            print(f"mp4 を書く {encode_path}", flush=True)
+            try:
+                encode_path.parent.mkdir(parents=True, exist_ok=True)
+                encode_video(
+                    results["videos"][0],
+                    fps=FPS,
+                    output_path=str(encode_path),
+                    audio=results["audio"][0],
+                    audio_sample_rate=results["sampling_rate"],
+                )
+                if encode_path != job.out_path:
+                    job.out_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(encode_path, job.out_path)
+                    print(f"コピーした {job.out_path} bytes {job.out_path.stat().st_size}", flush=True)
+            except Exception as exc:
+                if _is_oom(exc):
+                    raise
+                _note_failure(job.out_path, "mp4", exc)
+                if encode_path.is_file() and encode_path != job.out_path:
+                    print(
+                        f"ローカルには残っている {encode_path} {encode_path.stat().st_size} bytes",
+                        flush=True,
+                    )
+                raise
+            _clear_failure(job.out_path)
             print(
                 f"TIMING load={load_s:.3f} text={totals['text']:.3f} "
                 f"denoise={totals['denoise']:.3f} vae={totals['vae']:.3f}",

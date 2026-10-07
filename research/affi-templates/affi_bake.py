@@ -1643,6 +1643,11 @@ else:
                             print(f"終了コード {code}")
                             if code != 0:
                                 print("失敗。mp4 は出来ていません。")
+                                argv = shlex.split(line)
+                                if "--out" in argv:
+                                    err = Path(argv[argv.index("--out") + 1]).with_suffix(".error.txt")
+                                    if err.is_file():
+                                        print(err.read_text(encoding="utf-8"))
                                 break
                             argv = shlex.split(line)
                             if "--out" not in argv:
@@ -1890,8 +1895,10 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
                     "",
-                    "焼いた mp4 は、Colab の中に書いてから、そのときマウントしたアカウントのマイドライブ `affi-bake` にコピーします。",
+                    "焼いた mp4 は、Colab のディスクに書いてから、そのときマウントしたアカウントのマイドライブ `affi-bake` にコピーします。",
+                    "マイドライブへ直接 mp4 を開くと、小さな json だけ残って終了コード 1 になります。",
                     "json と同じフォルダの `clips` に mp4 が入ります。json だけなら動画はまだ出ていません。",
+                    "失敗したときは、その場に理由が出て、`clips` に `.error.txt` が残ります。`request.json` は動画ではありません。",
                     "ランタイムを切っても、コピーした mp4 は残ります。",
                     "",
                     "重みはマイドライブの `h3-weights` です。",

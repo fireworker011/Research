@@ -54,6 +54,9 @@ from h3_runner.weights import (  # noqa: E402
     folders_for_tasks,
     prepare_all,
     select_repo_files,
+    failure_text,
+    is_colab_drive,
+    local_encode_path,
     shard_is_current,
     snapshot_kwargs_for,
     stored_bytes,
@@ -439,6 +442,30 @@ class WeightsTest(unittest.TestCase):
         self.assertLess(load.index("enable_auto_cpu_offload"), load.index("_apply_shifts("))
         self.assertIn("set_shift", text)
         self.assertIn("int8 経路では LoRA を無効にする", text)
+        self.assertIn('set_attention_backend("native")', text)
+        self.assertIn("_align_rope_device", text)
+        self.assertIn("local_encode_path", text)
+        self.assertIn(".error.txt", text)
+        self.assertLess(text.index("推論開始"), text.index("encode_video("))
+
+
+class EncodePathTest(unittest.TestCase):
+    def test_a_drive_mp4_is_muxed_on_the_vm_disk(self) -> None:
+        src = Path("/content/drive/MyDrive/affi-bake/junjun_ranran/clips/01-hook.mp4")
+        dest = local_encode_path(src)
+        self.assertTrue(is_colab_drive(src))
+        self.assertFalse(is_colab_drive(dest))
+        self.assertEqual(dest.parts[-4:], ("affi-bake", "junjun_ranran", "clips", "01-hook.mp4"))
+
+    def test_a_local_mp4_path_stays(self) -> None:
+        src = Path("/content/affi-bake/junjun_ranran/clips/01-hook.mp4")
+        self.assertEqual(local_encode_path(src), src)
+
+    def test_failure_text_names_the_stage(self) -> None:
+        text = failure_text("推論", RuntimeError("device mismatch"))
+        self.assertIn("推論で止めた", text)
+        self.assertIn("RuntimeError", text)
+        self.assertIn("device mismatch", text)
 
 
 class SecretScanTest(unittest.TestCase):

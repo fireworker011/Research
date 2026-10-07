@@ -164,6 +164,32 @@ def is_colab_drive(path: Path) -> bool:
     return Path(path).parts[:3] == ("/", "content", "drive")
 
 
+def local_encode_path(out_path: Path) -> Path:
+    """Where PyAV should mux the mp4.
+
+    ``av.open`` seeks while it writes the moov atom. The Colab Drive mount
+    accepts a small JSON write and fails that mux, which leaves
+    ``*.request.json`` and no mp4. Encode on the VM disk, then copy.
+    """
+    out_path = Path(out_path)
+    if not is_colab_drive(out_path):
+        return out_path
+    root = Path("/content/h3-mp4") if Path("/content").is_dir() else Path(tempfile.gettempdir()) / "h3-mp4"
+    parts = out_path.parts
+    if "MyDrive" in parts:
+        tail = parts[parts.index("MyDrive") + 1 :]
+    else:
+        tail = parts[3:]
+    if not tail:
+        tail = (out_path.name,)
+    return root.joinpath(*tail)
+
+
+def failure_text(stage: str, exc: BaseException) -> str:
+    """One line for the cell and for ``*.error.txt``. ``request.json`` is not this."""
+    return f"{stage}で止めた。{type(exc).__name__}: {exc}"
+
+
 def staging_dir() -> Path:
     """Local scratch for one shard. Colab uses ``/content/tmp_hf``."""
     if Path("/content").is_dir():
