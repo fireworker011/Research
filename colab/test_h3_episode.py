@@ -392,7 +392,17 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_SPECIES" in src
     assert "H3_EPISODE_APPEAR" in src
     assert "H3_EPISODE_AYA_HAIR" in src
-    assert 'AYA_SHAFT = "今のまま"' in src
+    assert 'AYA_HAIR = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_HAIR_COLOR = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_FACE = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_DIRT = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_SWEAT = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_CLOTHES = "今のまま（迷ったらこれ）"' in src
+    assert 'AYA_SHAFT = "今のまま（迷ったらこれ）"' in src
+    for _name in ("AYA_HAIR", "AYA_HAIR_COLOR", "AYA_FACE", "AYA_DIRT", "AYA_SWEAT", "AYA_CLOTHES", "AYA_SHAFT"):
+        _line = next(line for line in src.splitlines() if line.startswith(f"{_name} = "))
+        assert '{type:"string"}' not in _line
+    assert "ボブ" in src and "銀髪" in src and "丸顔" in src and "細め" in src
     assert 'LOOK_MIKI = "今のまま（迷ったらこれ）"' in src
     assert "LOOK_REI" in src and "LOOK_KANA" in src and "LOOK_SHINO" in src
     assert "LOOK_GIN" in src and "LOOK_TSUNO" in src
@@ -6544,6 +6554,69 @@ def test_appearance_blank_matches_authored_and_custom_stays_on_one_person():
         prepare_episode(raw, appearance_override={"aya": {"hair": "ピンクのボブ"}})
     with pytest.raises(EpisodeError):
         prepare_episode(raw, appearance_override={"enemies": "nobody; hair=a bob"})
+
+
+def test_aya_appearance_dropdowns_keep_authored_and_a_choice_wins():
+    kinds = ("aya_hair", "aya_color", "aya_face", "aya_dirt", "aya_sweat", "aya_clothes", "aya_shaft")
+    for kind in kinds:
+        choices = ui_choices(kind)
+        assert 8 <= len(choices) <= 10
+        assert len(choices) == len(set(choices))
+        assert ui_default(kind) == "今のまま（迷ったらこれ）"
+        assert choices[0] == "今のまま（迷ったらこれ）"
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    plain = prepare_episode(raw, story_override="受け入れる")
+    keep = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        aya_look_override="今のまま（迷ったらこれ）",
+        appearance_override={
+            "aya": {
+                "hair": "今のまま（迷ったらこれ）",
+                "color": "今のまま（迷ったらこれ）",
+                "face": "今のまま（迷ったらこれ）",
+                "dirt": "今のまま（迷ったらこれ）",
+                "sweat": "今のまま（迷ったらこれ）",
+                "clothes": "今のまま（迷ったらこれ）",
+                "shaft": "今のまま（迷ったらこれ）",
+            }
+        },
+    )
+    assert keep["cast"]["aya"]["lock"] == plain["cast"]["aya"]["lock"]
+
+    picked = prepare_episode(
+        raw,
+        appearance_override={"aya": {"hair": "ボブ", "color": "銀髪", "face": "丸顔"}},
+    )
+    lock = picked["cast"]["aya"]["lock"]
+    assert "a short silver hair bob at the jaw" in lock
+    assert "a round face, large dark brown eyes, soft brows, full lips" in lock
+    assert "blunt bangs" not in lock
+    assert "small dark mole" not in lock
+    assert "long straight dark hair past the shoulders" in picked["cast"]["shino"]["lock"]
+
+    country = prepare_episode(raw, aya_look_override="北欧")
+    assert "long straight blonde hair past the shoulders" in country["cast"]["aya"]["lock"]
+    assert "light blue eyes" in country["cast"]["aya"]["lock"]
+    win = prepare_episode(
+        raw,
+        aya_look_override="北欧",
+        appearance_override={"aya": {"hair": "ボブ", "color": "銀髪"}},
+    )
+    assert "a short silver hair bob at the jaw" in win["cast"]["aya"]["lock"]
+    assert "blonde" not in win["cast"]["aya"]["lock"]
+    assert "light blue eyes" in win["cast"]["aya"]["lock"]
+
+    slim = prepare_episode(raw, appearance_override={"aya": {"shaft": "細め"}})
+    assert "slim girth" in slim["cast"]["aya"]["lock"]
+    assert "erect 24cm" in slim["cast"]["aya"]["lock"]
+    assert slim["cast"]["aya"]["lock"].count("erect 24cm") == 1
+    standard = prepare_episode(raw, appearance_override={"aya": {"shaft": "あり（標準）"}})
+    assert "straight heavy pale-tan shaft" in standard["cast"]["aya"]["lock"]
+    dry = prepare_episode(raw, appearance_override={"aya": {"sweat": "乾いた肌"}})
+    assert "dry skin" in dry["cast"]["aya"]["lock"]
+    assert "visible sweat beads and thick" not in dry["cast"]["aya"]["lock"]
+    assert "grimy brown hospital dirt clinging to the whole body" in dry["cast"]["aya"]["lock"]
 
 
 def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():

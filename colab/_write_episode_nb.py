@@ -51,6 +51,21 @@ __DIRT_HELP__
 DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
 __LOOK_HELP__
 AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **あやの容姿。各欄の初期値は今のまま。国の見た目より、ここで選んだ欄が優先。**
+__AYA_HAIR_HELP__
+AYA_HAIR = __AYA_HAIR_DEFAULT__  #@param __AYA_HAIR_CHOICES__
+__AYA_COLOR_HELP__
+AYA_HAIR_COLOR = __AYA_COLOR_DEFAULT__  #@param __AYA_COLOR_CHOICES__
+__AYA_FACE_HELP__
+AYA_FACE = __AYA_FACE_DEFAULT__  #@param __AYA_FACE_CHOICES__
+__AYA_DIRT_HELP__
+AYA_DIRT = __AYA_DIRT_DEFAULT__  #@param __AYA_DIRT_CHOICES__
+__AYA_SWEAT_HELP__
+AYA_SWEAT = __AYA_SWEAT_DEFAULT__  #@param __AYA_SWEAT_CHOICES__
+__AYA_CLOTHES_HELP__
+AYA_CLOTHES = __AYA_CLOTHES_DEFAULT__  #@param __AYA_CLOTHES_CHOICES__
+__AYA_SHAFT_HELP__
+AYA_SHAFT = __AYA_SHAFT_DEFAULT__  #@param __AYA_SHAFT_CHOICES__
 __ENEMY_KIND_HELP__
 ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
 __ENEMY_LOOK_HELP__
@@ -86,15 +101,6 @@ __DOG_HELP__
 DOG = __DOG_DEFAULT__  #@param __DOG_CHOICES__
 __SPECIES_HELP__
 SPECIES = __SPECIES_DEFAULT__  #@param __SPECIES_CHOICES__
-#@markdown ---
-#@markdown **あやの容姿。空なら今のまま。英語。髪型を書くと髪色は使わない。竿は今のまま / あり / なし。**
-AYA_HAIR = ""  #@param {type:"string"}
-AYA_HAIR_COLOR = ""  #@param {type:"string"}
-AYA_FACE = ""  #@param {type:"string"}
-AYA_DIRT = ""  #@param {type:"string"}
-AYA_SWEAT = ""  #@param {type:"string"}
-AYA_CLOTHES = ""  #@param {type:"string"}
-AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
 #@markdown **その他の自由記入。** その人の見た目が「その他」のときだけ使う。`hair=...; face=...`
 FREE_MIKI = ""  #@param {type:"string"}
 FREE_REI = ""  #@param {type:"string"}
@@ -172,13 +178,12 @@ os.environ["H3_EPISODE_GIN"] = GIN
 os.environ["H3_EPISODE_TSUNO"] = TSUNO
 os.environ["H3_EPISODE_DOG"] = DOG
 os.environ["H3_EPISODE_SPECIES"] = SPECIES
-_aya_free = AYA_LOOK == "その他"
-os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip() if _aya_free else ""
-os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip() if _aya_free else ""
-os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
+os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
+os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
-os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip() if _aya_free else ""
-os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip() if _aya_free else ""
+os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
+os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
 os.environ["H3_EPISODE_ENEMY_LOOK"] = "\n".join(
     f"{cid}; {text}"
@@ -377,7 +382,28 @@ def make_nb() -> dict:
         .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
         .replace("__DIRT_DEFAULT__", json.dumps(ui_default("dirt"), ensure_ascii=False))
         .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
-        .replace("__LOOK_HELP__", form_markdown("look", "あやの見た目 — その他のときだけ下の自由記入"))
+        .replace("__LOOK_HELP__", form_markdown("look", "あやの国の見た目 — 今のままは下の各欄。国を選ぶと髪と顔。各欄を選ぶとその欄が優先"))
+        .replace("__AYA_HAIR_HELP__", form_markdown("aya_hair", "あやの髪型"))
+        .replace("__AYA_HAIR_DEFAULT__", json.dumps(ui_default("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_HAIR_CHOICES__", json.dumps(ui_choices("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_COLOR_HELP__", form_markdown("aya_color", "あやの髪色"))
+        .replace("__AYA_COLOR_DEFAULT__", json.dumps(ui_default("aya_color"), ensure_ascii=False))
+        .replace("__AYA_COLOR_CHOICES__", json.dumps(ui_choices("aya_color"), ensure_ascii=False))
+        .replace("__AYA_FACE_HELP__", form_markdown("aya_face", "あやの顔"))
+        .replace("__AYA_FACE_DEFAULT__", json.dumps(ui_default("aya_face"), ensure_ascii=False))
+        .replace("__AYA_FACE_CHOICES__", json.dumps(ui_choices("aya_face"), ensure_ascii=False))
+        .replace("__AYA_DIRT_HELP__", form_markdown("aya_dirt", "あやの汚れの種類 — 今のままは上の場所の汚れ"))
+        .replace("__AYA_DIRT_DEFAULT__", json.dumps(ui_default("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_DIRT_CHOICES__", json.dumps(ui_choices("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_HELP__", form_markdown("aya_sweat", "あやの汗"))
+        .replace("__AYA_SWEAT_DEFAULT__", json.dumps(ui_default("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_CHOICES__", json.dumps(ui_choices("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_HELP__", form_markdown("aya_clothes", "あやの服"))
+        .replace("__AYA_CLOTHES_DEFAULT__", json.dumps(ui_default("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_CHOICES__", json.dumps(ui_choices("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_HELP__", form_markdown("aya_shaft", "あやの竿 — 長さは 24cm のまま"))
+        .replace("__AYA_SHAFT_DEFAULT__", json.dumps(ui_default("aya_shaft"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_CHOICES__", json.dumps(ui_choices("aya_shaft"), ensure_ascii=False))
         .replace("__LOOK_DEFAULT__", json.dumps(ui_default("look"), ensure_ascii=False))
         .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
         .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))

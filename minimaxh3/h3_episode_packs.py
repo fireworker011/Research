@@ -2284,6 +2284,111 @@ ENEMY_KIND_MODES: dict[str, dict[str, Any]] = {
 LOOK_ALIASES = _label_aliases(LOOK_MODES, {"今のあや": "keep", "今の敵": "keep"})
 ENEMY_KIND_ALIASES = _label_aliases(ENEMY_KIND_MODES, {})
 
+# Aya detail menus. keep leaves the authored clause. Every hair phrase contains "dark hair" so a color can repaint it.
+# Shaft styles stay 24cm. The episode's grown length does not change.
+AYA_HAIR_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "台本のロングストレート", "form": True, "recommend": True, "phrase": ""},
+    "long": {"label_ja": "ロングストレート", "choice_ja": "ロングストレート前髪", "when_ja": "肩より下のストレートと前髪", "form": True, "phrase": "long straight dark hair past the shoulders, blunt bangs across the forehead"},
+    "bob": {"label_ja": "ボブ", "choice_ja": "ボブ", "when_ja": "顎の長さのボブ", "form": True, "phrase": "a short dark hair bob at the jaw"},
+    "pony": {"label_ja": "ポニーテール", "choice_ja": "ポニーテール", "when_ja": "高い位置で一つに結ぶ", "form": True, "phrase": "dark hair pulled into a high ponytail"},
+    "twin": {"label_ja": "ツインテール", "choice_ja": "ツインテール", "when_ja": "低い位置で二つに結ぶ", "form": True, "phrase": "dark hair in two low pigtails"},
+    "bun": {"label_ja": "お団子", "choice_ja": "お団子", "when_ja": "後頭部で一つにまとめる", "form": True, "phrase": "dark hair gathered into a bun"},
+    "wave": {"label_ja": "ウェーブ", "choice_ja": "ウェーブロング", "when_ja": "肩より下のゆるいウェーブ", "form": True, "phrase": "long wavy dark hair past the shoulders"},
+    "short": {"label_ja": "ショート", "choice_ja": "ショート", "when_ja": "耳にかかる短い髪", "form": True, "phrase": "a short dark hair pixie cut"},
+    "braid": {"label_ja": "三つ編み", "choice_ja": "三つ編み", "when_ja": "片方の肩に一本の三つ編み", "form": True, "phrase": "dark hair in one loose braid over the shoulder"},
+    "hime": {"label_ja": "姫カット", "choice_ja": "姫カット", "when_ja": "前髪と顔の横の毛", "form": True, "phrase": "long straight dark hair past the shoulders, blunt bangs and sidelocks"},
+}
+AYA_COLOR_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "髪型の中の色を残す", "form": True, "recommend": True, "phrase": ""},
+    "black": {"label_ja": "黒髪", "choice_ja": "黒髪", "when_ja": "髪を黒にする", "form": True, "phrase": "black hair"},
+    "brown": {"label_ja": "茶髪", "choice_ja": "茶髪", "when_ja": "髪を茶色にする", "form": True, "phrase": "brown hair"},
+    "blonde": {"label_ja": "金髪", "choice_ja": "金髪", "when_ja": "髪を金色にする", "form": True, "phrase": "blonde hair"},
+    "silver": {"label_ja": "銀髪", "choice_ja": "銀髪", "when_ja": "髪を銀色にする", "form": True, "phrase": "silver hair"},
+    "red": {"label_ja": "赤髪", "choice_ja": "赤髪", "when_ja": "髪を赤にする", "form": True, "phrase": "red hair"},
+    "blue": {"label_ja": "青髪", "choice_ja": "青髪", "when_ja": "髪を青にする", "form": True, "phrase": "blue hair"},
+    "pink": {"label_ja": "ピンク", "choice_ja": "ピンク", "when_ja": "髪をピンクにする", "form": True, "phrase": "pink hair"},
+    "white": {"label_ja": "白髪", "choice_ja": "白髪", "when_ja": "髪を白にする", "form": True, "phrase": "white hair"},
+    "green": {"label_ja": "緑髪", "choice_ja": "緑髪", "when_ja": "髪を緑にする", "form": True, "phrase": "green hair"},
+}
+AYA_FACE_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "ほくろのある今の顔", "form": True, "recommend": True, "phrase": ""},
+    "mole": {"label_ja": "ほくろ", "choice_ja": "ほくろ", "when_ja": "左頬のほくろ、やわらかい面長", "form": True, "phrase": "a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips"},
+    "round": {"label_ja": "丸顔", "choice_ja": "丸顔", "when_ja": "丸い顔と大きな目", "form": True, "phrase": "a round face, large dark brown eyes, soft brows, full lips"},
+    "narrow": {"label_ja": "面長", "choice_ja": "面長", "when_ja": "細い顔と切れ長の目", "form": True, "phrase": "a long narrow face, narrow dark eyes, thin eyebrows, a straight nose, soft lips"},
+    "freckle": {"label_ja": "そばかす", "choice_ja": "そばかす", "when_ja": "鼻の上の薄いそばかす", "form": True, "phrase": "an oval face, light freckles across the nose, dark brown eyes, soft lips"},
+    "droop": {"label_ja": "垂れ目", "choice_ja": "垂れ目", "when_ja": "下がった目", "form": True, "phrase": "an oval face, drooping dark eyes, soft brows, a small smile"},
+    "sharp": {"label_ja": "つり目", "choice_ja": "つり目", "when_ja": "上がった目", "form": True, "phrase": "an oval face, sharp upturned dark eyes, thin arched brows, soft lips"},
+    "full": {"label_ja": "厚い唇", "choice_ja": "厚い唇", "when_ja": "厚い唇とやわらかい輪郭", "form": True, "phrase": "an oval face, dark brown eyes, full lips, a soft jaw"},
+    "cat": {"label_ja": "猫目", "choice_ja": "猫目", "when_ja": "細い猫目", "form": True, "phrase": "an oval face, narrow catlike dark eyes, thin eyebrows, a small nose"},
+    "young": {"label_ja": "童顔", "choice_ja": "童顔", "when_ja": "丸い大人の顔", "form": True, "phrase": "a round youthful adult face, large dark eyes, soft cheeks, soft lips"},
+}
+AYA_DIRT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "場所の汚れ欄に任せる", "form": True, "recommend": True, "phrase": ""},
+    "sand": {"label_ja": "砂", "choice_ja": "砂", "when_ja": "肌に乾いた砂", "form": True, "phrase": "fine dry sand clinging to the skin"},
+    "mud": {"label_ja": "泥", "choice_ja": "泥", "when_ja": "肌に湿った泥", "form": True, "phrase": "wet brown mud clinging to the skin"},
+    "soot": {"label_ja": "煤", "choice_ja": "煤", "when_ja": "肌に黒い煤", "form": True, "phrase": "black soot clinging to the skin"},
+    "salt": {"label_ja": "潮", "choice_ja": "潮", "when_ja": "肌に薄い塩の膜", "form": True, "phrase": "a thin salt film on the skin"},
+    "dust": {"label_ja": "埃", "choice_ja": "埃", "when_ja": "肌に白い埃", "form": True, "phrase": "pale dust clinging to the skin"},
+    "oil": {"label_ja": "油", "choice_ja": "油", "when_ja": "肌に薄い油膜", "form": True, "phrase": "a thin oil sheen on the skin"},
+    "clean": {"label_ja": "清潔", "choice_ja": "清潔", "when_ja": "汚れを乾いた肌にする", "form": True, "phrase": "clean dry skin"},
+    "ash": {"label_ja": "灰", "choice_ja": "灰", "when_ja": "肌に灰色の灰", "form": True, "phrase": "grey ash clinging to the skin"},
+    "pollen": {"label_ja": "花粉", "choice_ja": "花粉", "when_ja": "肌に細かい黄色い粉", "form": True, "phrase": "fine yellow dust clinging to the skin"},
+}
+AYA_SWEAT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の汗と汚れの文", "form": True, "recommend": True, "phrase": ""},
+    "beads": {"label_ja": "玉の汗", "choice_ja": "玉の汗", "when_ja": "肌の上の汗の粒", "form": True, "phrase": "visible sweat beads on the skin"},
+    "soaked": {"label_ja": "びっしょり", "choice_ja": "びっしょり", "when_ja": "汗で濡れた肌", "form": True, "phrase": "skin soaked with sweat"},
+    "light": {"label_ja": "薄い汗", "choice_ja": "薄い汗", "when_ja": "薄い汗の光", "form": True, "phrase": "a light sweat sheen on the skin"},
+    "dry": {"label_ja": "乾いた肌", "choice_ja": "乾いた肌", "when_ja": "汗を乾いた肌にする", "form": True, "phrase": "dry skin"},
+    "steam": {"label_ja": "湯気", "choice_ja": "湯気", "when_ja": "湯気で湿った肌", "form": True, "phrase": "damp skin in steam"},
+    "rain": {"label_ja": "雨濡れ", "choice_ja": "雨濡れ", "when_ja": "雨で濡れた肌", "form": True, "phrase": "skin wet from rain"},
+    "gloss": {"label_ja": "テカリ", "choice_ja": "テカリ", "when_ja": "胸と顔のテカリ", "form": True, "phrase": "a glossy sweat sheen on the chest and face"},
+    "face": {"label_ja": "顔の汗", "choice_ja": "顔の汗", "when_ja": "顔だけの汗", "form": True, "phrase": "sweat beads on the face"},
+    "chest": {"label_ja": "胸の汗", "choice_ja": "胸の汗", "when_ja": "胸だけの汗", "form": True, "phrase": "sweat beads on the chest"},
+}
+AYA_CLOTHES_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の全裸", "form": True, "recommend": True, "phrase": ""},
+    "shirt": {"label_ja": "白シャツ", "choice_ja": "白シャツ", "when_ja": "開いた白いシャツ", "form": True, "phrase": "an open white shirt"},
+    "nurse": {"label_ja": "ナース", "choice_ja": "ナース", "when_ja": "短い白いナース服", "form": True, "phrase": "a short open white nurse dress"},
+    "sailor": {"label_ja": "セーラー", "choice_ja": "セーラー", "when_ja": "セーラー襟の上だけ", "form": True, "phrase": "a sailor collar top"},
+    "dressshirt": {"label_ja": "ワイシャツ", "choice_ja": "ワイシャツ", "when_ja": "開いたワイシャツ", "form": True, "phrase": "an open dress shirt"},
+    "tank": {"label_ja": "タンクトップ", "choice_ja": "タンクトップ", "when_ja": "タンクトップ", "form": True, "phrase": "a tank top"},
+    "bikini": {"label_ja": "ビキニ", "choice_ja": "ビキニ", "when_ja": "ビキニ", "form": True, "phrase": "a bikini"},
+    "apron": {"label_ja": "エプロン", "choice_ja": "エプロン", "when_ja": "腰のエプロン", "form": True, "phrase": "a waist apron"},
+    "hoodie": {"label_ja": "パーカー", "choice_ja": "パーカー", "when_ja": "開いたパーカー", "form": True, "phrase": "an open hoodie"},
+    "slip": {"label_ja": "ネグリジェ", "choice_ja": "ネグリジェ", "when_ja": "薄いネグリジェ", "form": True, "phrase": "a sheer slip"},
+}
+AYA_SHAFT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "竿は足さない", "form": True, "recommend": True, "shaft": ""},
+    "off": {"label_ja": "なし", "choice_ja": "なし", "when_ja": "竿を書かない", "form": True, "shaft": "off"},
+    "on": {"label_ja": "あり", "choice_ja": "あり（標準）", "when_ja": "24cm のまっすぐな竿", "form": True, "shaft": "on"},
+    "slim": {"label_ja": "細め", "choice_ja": "細め", "when_ja": "24cm の細い竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, slim girth, straight pale-tan shaft, hairless female pussy at the base of the shaft"},
+    "thick": {"label_ja": "太め", "choice_ja": "太め", "when_ja": "24cm の太い竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, extra thick girth, straight pale-tan shaft, hairless female pussy at the base of the shaft"},
+    "tan": {"label_ja": "色が濃い", "choice_ja": "色が濃い", "when_ja": "24cm の濃い色の竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight tan shaft, hairless female pussy at the base of the shaft"},
+    "pale": {"label_ja": "色が薄い", "choice_ja": "色が薄い", "when_ja": "24cm の薄い色の竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale shaft, hairless female pussy at the base of the shaft"},
+    "up": {"label_ja": "上向き", "choice_ja": "上向き", "when_ja": "24cm で上を向く竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale-tan shaft pointing up, hairless female pussy at the base of the shaft"},
+    "curve": {"label_ja": "反り", "choice_ja": "反り", "when_ja": "24cm で上に反った竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, a pale-tan shaft curved upward, hairless female pussy at the base of the shaft"},
+    "vein": {"label_ja": "血管", "choice_ja": "血管", "when_ja": "24cm で血管の見える竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale-tan shaft, veins along the shaft, hairless female pussy at the base of the shaft"},
+}
+AYA_PART_MODES: dict[str, dict[str, dict[str, Any]]] = {
+    "hair": AYA_HAIR_MODES,
+    "color": AYA_COLOR_MODES,
+    "face": AYA_FACE_MODES,
+    "dirt": AYA_DIRT_MODES,
+    "sweat": AYA_SWEAT_MODES,
+    "clothes": AYA_CLOTHES_MODES,
+    "shaft": AYA_SHAFT_MODES,
+}
+AYA_PART_ALIASES: dict[str, dict[str, str]] = {
+    kind: _label_aliases(modes, {"今のまま": "keep", "今のまま（迷ったらこれ）": "keep"})
+    for kind, modes in AYA_PART_MODES.items()
+}
+AYA_PART_ALIASES["shaft"]["あり"] = "on"
+AYA_PART_ALIASES["shaft"]["なし"] = "off"
+AYA_SWEAT_PHRASES = frozenset(
+    str(spec["phrase"]) for spec in AYA_SWEAT_MODES.values() if spec.get("phrase")
+)
+
 
 def canonical_look(name: str) -> str:
     return _canon(LOOK_MODES, LOOK_ALIASES, name)
@@ -2291,6 +2396,20 @@ def canonical_look(name: str) -> str:
 
 def canonical_enemy_kind(name: str) -> str:
     return _canon(ENEMY_KIND_MODES, ENEMY_KIND_ALIASES, name)
+
+
+def resolve_aya_part(kind: str, value: str) -> str:
+    """Map an Aya dropdown label onto its English phrase. Unknown text passes through. keep is blank."""
+    raw = str(value or "").strip()
+    modes = AYA_PART_MODES.get(kind) or {}
+    aliases = AYA_PART_ALIASES.get(kind) or {}
+    key = aliases.get(raw) or (raw if raw in modes else "")
+    if not key:
+        return raw
+    spec = modes[key]
+    if kind == "shaft":
+        return str(spec.get("shaft") or "")
+    return str(spec.get("phrase") or "")
 
 
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
@@ -2312,6 +2431,20 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return CAMERA_DISTANCE_MODES
     if kind == "look":
         return LOOK_MODES
+    if kind == "aya_hair":
+        return AYA_HAIR_MODES
+    if kind == "aya_color":
+        return AYA_COLOR_MODES
+    if kind == "aya_face":
+        return AYA_FACE_MODES
+    if kind == "aya_dirt":
+        return AYA_DIRT_MODES
+    if kind == "aya_sweat":
+        return AYA_SWEAT_MODES
+    if kind == "aya_clothes":
+        return AYA_CLOTHES_MODES
+    if kind == "aya_shaft":
+        return AYA_SHAFT_MODES
     if kind == "enemy_kind":
         return ENEMY_KIND_MODES
     if kind == "preset":

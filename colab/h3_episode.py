@@ -146,7 +146,9 @@ from h3_episode_packs import (
     TIME_MODES,
     TOILET_ENV_BLOCK,
     WEATHER_MODES,
+    AYA_SWEAT_PHRASES,
     LOOK_MODES,
+    resolve_aya_part,
     canonical_camera,
     canonical_camera_distance,
     canonical_dirt,
@@ -4002,13 +4004,16 @@ def _appearance_text(value: Any, where: str) -> str:
 
 
 def _shaft_mode(value: Any) -> str:
-    raw = str(value or "").strip().lower()
-    if raw in _SHAFT_KEEP:
+    mapped = resolve_aya_part("shaft", str(value or ""))
+    raw = mapped.strip().lower()
+    if raw in _SHAFT_KEEP or mapped == "":
         return ""
-    if raw in _SHAFT_ON_WORDS:
+    if raw in _SHAFT_ON_WORDS or mapped == "on":
         return "on"
-    if raw in _SHAFT_OFF_WORDS:
+    if raw in _SHAFT_OFF_WORDS or mapped == "off":
         return "off"
+    if mapped.startswith("clear futanari, erect 24cm"):
+        return mapped
     raise EpisodeError("appearance shaft must be 今のまま, あり, or なし")
 
 
@@ -4075,7 +4080,10 @@ def parse_appearance(raw: str | dict[str, Any] | None) -> dict[str, dict[str, st
             if mode:
                 aya["shaft"] = mode
         else:
-            cleaned = _appearance_text(aya_raw.get(key) if isinstance(aya_raw, dict) else "", f"aya.{key}")
+            cleaned = _appearance_text(
+                resolve_aya_part(key, aya_raw.get(key) if isinstance(aya_raw, dict) else ""),
+                f"aya.{key}",
+            )
             if cleaned:
                 aya[key] = cleaned
     if aya:
@@ -4109,6 +4117,22 @@ def _paint_color(token: str, color: str) -> str:
     if last.lower() in color.lower():
         return color
     return f"{color} {last}"
+
+
+_HAIR_COLOR_RE = re.compile(
+    r"(?:glossy\s+|messy\s+)?"
+    r"(?:gray-white|dark|black|brown|blonde|silver|red|blue|pink|white|green)"
+    r"(?=\s+(?:wavy\s+|curly\s+)?hair\b)"
+)
+
+
+def _recolor_hair(phrase: str, color: str) -> str:
+    """Paint a chosen color onto the first hair-color word. A phrase with no color word stays as written."""
+    painted = _paint_color("dark hair", color)
+    color_word = painted[: -len(" hair")] if painted.endswith(" hair") else painted
+    if _HAIR_COLOR_RE.search(phrase):
+        return _HAIR_COLOR_RE.sub(color_word, phrase, count=1)
+    return phrase
 
 
 def _phrase_unique(old: str, owner: str) -> bool:
@@ -4407,21 +4431,17 @@ def _parse_enemy_looks(raw: dict[str, str] | str) -> dict[str, str]:
 
 
 def _wire_look_choices(render: dict[str, Any]) -> None:
-    """今のまま ignores free text. その他 keeps it. A named look fills hair and face."""
+    """A country look fills hair and face only when those dropdowns are 今のまま. A set dropdown wins."""
     app = dict(render.get("appearance") or {})
     if render.get("aya_look"):
         aya_look = canonical_look(str(render.get("aya_look") or "")) or "keep"
         aya = dict(app.get("aya") or {})
-        if aya_look == "keep":
-            for key in ("hair", "color", "face", "clothes", "sweat"):
-                aya.pop(key, None)
-        elif aya_look != "other":
+        if aya_look not in ("keep", "other"):
             spec = LOOK_MODES[aya_look]
-            if spec.get("hair"):
+            if not aya.get("hair") and spec.get("hair"):
                 aya["hair"] = spec["hair"]
-            if spec.get("face"):
+            if not aya.get("face") and spec.get("face"):
                 aya["face"] = spec["face"]
-            aya.pop("color", None)
         if aya:
             app["aya"] = aya
         else:
@@ -4486,10 +4506,13 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
         spec = _APPEARANCE[cid]
         hair = str(spec.get("hair") or "")
         if fields.get("hair"):
+            hair_new = str(fields["hair"])
+            if fields.get("color"):
+                hair_new = _recolor_hair(hair_new, str(fields["color"]))
             if hair:
-                _replace_phrase(out, cid, hair, fields["hair"])
+                _replace_phrase(out, cid, hair, hair_new)
             else:
-                _append_look(out, cid, fields["hair"])
+                _append_look(out, cid, hair_new)
         elif fields.get("color"):
             if not hair or not spec.get("color"):
                 _append_look(out, cid, f"hair color {fields['color']}")
@@ -4504,16 +4527,23 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                 _append_look(out, cid, fields["face"])
         if fields.get("sweat"):
             sweat_phrases = spec.get("sweat") or ()
+            replacement = str(fields["sweat"])
+            whole = replacement in AYA_SWEAT_PHRASES
             if sweat_phrases:
                 for phrase in sweat_phrases:
-                    if phrase.startswith("visible sweat beads and thick"):
-                        _replace_phrase(out, cid, phrase, f"{fields['sweat']} and thick extra-viscous sticky grimy brown hospital dirt")
+                    if whole and phrase.startswith("visible sweat beads and thick"):
+                        # The dirt clause continues in the same sentence. Swap only the sweat lead-in.
+                        _replace_phrase(out, cid, "visible sweat beads and ", f"{replacement}, ")
+                    elif whole:
+                        _replace_phrase(out, cid, phrase, replacement)
+                    elif phrase.startswith("visible sweat beads and thick"):
+                        _replace_phrase(out, cid, phrase, f"{replacement} and thick extra-viscous sticky grimy brown hospital dirt")
                     elif phrase.startswith("damp dirty bangs"):
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
                     else:
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
             else:
-                _append_look(out, cid, fields["sweat"])
+                _append_look(out, cid, replacement)
         if fields.get("dirt"):
             for phrase in spec.get("dirt") or ():
                 _replace_phrase(out, cid, phrase, fields["dirt"])
@@ -4548,34 +4578,35 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         "Both wear the clothes written in the look",
                     )
         shaft = fields.get("shaft") or ""
-        if shaft == "on":
+        grown = _AYA_SHAFT if shaft == "on" else shaft if shaft not in ("", "off") else ""
+        if grown:
             if cid == "aya":
                 _replace_phrase(
                     out,
                     "aya",
                     "female body, tired determined expression",
-                    f"female body, {_AYA_SHAFT}, tired determined expression",
+                    f"female body, {grown}, tired determined expression",
                 )
                 row = (out.get("cast") or {}).get("aya") or {}
-                if isinstance(row.get("lock"), str) and _AYA_SHAFT not in row["lock"] and "female body" in row["lock"]:
-                    row["lock"] = row["lock"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                if isinstance(row.get("lock"), str) and grown not in row["lock"] and "female body" in row["lock"]:
+                    row["lock"] = row["lock"].replace("female body", f"female body, {grown}", 1)
                 for beat in out.get("beats") or []:
                     if not isinstance(beat, dict):
                         continue
                     action = str(beat.get("action") or "")
                     # Walks that remove the grown shaft stay removed. The look must not put it back.
                     if "No penis" in action or "The grown shaft is gone" in action:
-                        beat["action"] = action.replace(f", {_AYA_SHAFT}", "")
+                        beat["action"] = action.replace(f", {grown}", "")
                         locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
                         base = str(locks.get("aya") or (out.get("cast") or {}).get("aya", {}).get("lock") or "")
-                        if _AYA_SHAFT in base:
+                        if grown in base:
                             locks = dict(locks)
-                            locks["aya"] = base.replace(f", {_AYA_SHAFT}", "")
+                            locks["aya"] = base.replace(f", {grown}", "")
                             beat["cast_lock"] = locks
                         continue
                     locks = beat.get("cast_lock")
-                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and _AYA_SHAFT not in locks["aya"] and "female body" in locks["aya"]:
-                        locks["aya"] = locks["aya"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and grown not in locks["aya"] and "female body" in locks["aya"]:
+                        locks["aya"] = locks["aya"].replace("female body", f"female body, {grown}", 1)
                     for field in ("action", "camera"):
                         value = beat.get(field)
                         if not isinstance(value, str) or "female body" not in value:
@@ -4583,15 +4614,15 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         parts = re.split(r"(?<=\.)\s+", value)
                         built: list[str] = []
                         for part in parts:
-                            if "Aya" in part and "Gin" not in part and "female body" in part and _AYA_SHAFT not in part:
-                                built.append(part.replace("female body", f"female body, {_AYA_SHAFT}", 1))
+                            if "Aya" in part and "Gin" not in part and "female body" in part and grown not in part:
+                                built.append(part.replace("female body", f"female body, {grown}", 1))
                             else:
                                 built.append(part)
                         beat[field] = " ".join(built)
             elif spec.get("shaft") == "no penis, never futanari":
-                _replace_phrase(out, cid, "no penis, never futanari", _AYA_SHAFT)
+                _replace_phrase(out, cid, "no penis, never futanari", grown)
             elif not spec.get("shaft"):
-                _append_look(out, cid, _AYA_SHAFT)
+                _append_look(out, cid, grown)
         elif shaft == "off":
             clause = spec.get("shaft")
             if clause and clause != "no penis, never futanari":
