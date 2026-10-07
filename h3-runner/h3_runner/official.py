@@ -171,13 +171,19 @@ def build_video_request(
     steps: int = DEFAULT_STEPS,
     image_uri: str | None = None,
     flow_shift: float = VIDEO_FLOW_SHIFT,
+    video_uri: str | None = None,
+    audio_uri: str | None = None,
+    video_start_s: float | None = None,
+    video_end_s: float | None = None,
 ) -> dict:
     """Official ``/v1/videos`` body.
 
-    Ref2VA uses one reference condition and no video. FL2VA and I2VA use one
-    keyframe at frame 0 (``scripts/readme/reproducible-768p-fl2va-request.sh``).
-    The local pipeline passes that still as ``image=``, not as a reference.
-    I2VA does not take a last frame.
+    Ref2VA takes reference conditions. A still is ``role=reference``. A source
+    video is the camera, the cuts, and, when the file has a soundtrack, the
+    speech and music. FL2VA and I2VA use one keyframe at frame 0
+    (``scripts/readme/reproducible-768p-fl2va-request.sh``). The local pipeline
+    passes that still as ``image=``, not as a reference. I2VA does not take a
+    last frame.
     """
     if task not in TASKS:
         raise ValueError(f"task must be t2va, fl2va, i2va, or ref2va, got {task!r}")
@@ -185,15 +191,28 @@ def build_video_request(
     if not text:
         raise ValueError("prompt is empty")
     if task == "ref2va":
-        if not image_uri:
-            raise ValueError("ref2va needs one image uri")
-        conditions = [{"type": "image", "uri": image_uri, "role": "reference"}]
+        conditions = []
+        if image_uri:
+            conditions.append({"type": "image", "uri": image_uri, "role": "reference"})
+        if video_uri:
+            video = {"type": "video", "uri": video_uri, "role": "reference"}
+            if video_start_s is not None:
+                video["start_s"] = float(video_start_s)
+            if video_end_s is not None:
+                video["end_s"] = float(video_end_s)
+            conditions.append(video)
+        if audio_uri:
+            conditions.append({"type": "audio", "uri": audio_uri, "role": "reference"})
+        if not conditions:
+            raise ValueError("ref2va needs one image or one video")
     elif task in ("fl2va", "i2va"):
+        if video_uri or audio_uri:
+            raise ValueError(f"{task} takes no reference video")
         if not image_uri:
             raise ValueError(f"{task} needs one image uri")
         conditions = [{"type": "image", "uri": image_uri, "role": "keyframe", "frame_index": 0}]
     else:
-        if image_uri:
+        if image_uri or video_uri or audio_uri:
             raise ValueError("t2va takes no reference image")
         conditions = []
     if not README_MIN_DURATION_S <= float(duration_s) <= README_MAX_DURATION_S:

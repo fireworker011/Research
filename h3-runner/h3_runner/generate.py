@@ -21,7 +21,11 @@ from pathlib import Path
 import torch
 from diffusers import ComponentsManager, MiniMaxH3Transformer3DModel, ModularPipeline, TorchAoConfig
 from diffusers.hooks import apply_group_offloading
-from diffusers.modular_pipelines.minimax_h3 import MiniMaxH3ImageReference
+from diffusers.modular_pipelines.minimax_h3 import (
+    MiniMaxH3AudioReference,
+    MiniMaxH3ImageReference,
+    MiniMaxH3VideoReference,
+)
 from diffusers.utils.export_utils import encode_video
 from PIL import Image
 from torchao.quantization import Int8WeightOnlyConfig
@@ -32,6 +36,7 @@ from h3_runner.ffmpeg_join import clip_is_done, join_clips
 from h3_runner.loras import LoraSpec, reject_pruned_adaln
 from h3_runner.official import AUDIO_FLOW_SHIFT, FPS, pipeline_workflow
 from h3_runner.planner import ClipJob, Plan
+from h3_runner.slice_media import ensure_reference_slice
 from h3_runner.weights import failure_text, local_encode_path, require_present
 
 _TRANSFORMER_SKIP = [
@@ -261,9 +266,18 @@ def _call_pipe(
         "output": ["videos", "audio", "sampling_rate"],
     }
     if job.task == "ref2va":
-        if job.image_path is None:
-            raise ValueError("ref2va clip has no image")
-        kwargs["references"] = [MiniMaxH3ImageReference.from_file(str(job.image_path))]
+        references = []
+        if job.image_path is not None:
+            references.append(MiniMaxH3ImageReference.from_file(str(job.image_path)))
+        if job.video_path is not None:
+            media = ensure_reference_slice(job.video_path, job.video_start_s, job.video_end_s)
+            print(f"参照動画 {media}", flush=True)
+            references.append(MiniMaxH3VideoReference.from_file(str(media)))
+        if job.audio_path is not None:
+            references.append(MiniMaxH3AudioReference.from_file(str(job.audio_path)))
+        if not references:
+            raise ValueError("ref2va clip has no reference")
+        kwargs["references"] = references
     elif job.task in ("fl2va", "i2va"):
         if job.image_path is None:
             raise ValueError(f"{job.task} clip has no image")

@@ -30,14 +30,20 @@ try:
     from h3_runner.official import (
         MAX_DURATION_S,
         MIN_DURATION_S,
+        VIDEO_FLOW_SHIFT,
+        DEFAULT_STEPS,
         diffusers_accepts,
         frames_for_seconds,
     )
+    from h3_runner.weights import missing_folders
 except ImportError:
     # The reference Colab downloads this folder without h3-runner.
     # These match h3_runner/official.py: fps 24, 17*n+5, aligned duration in [5, 15].
     MIN_DURATION_S = 5.0
     MAX_DURATION_S = 15.0
+    VIDEO_FLOW_SHIFT = 12.0
+    DEFAULT_STEPS = 50
+    missing_folders = None
 
     def frames_for_seconds(duration_s: float) -> int:
         return int(round(float(duration_s) * 24))
@@ -101,6 +107,7 @@ TASK_CHOICES = (
     ("表を見る", "table"),
     ("話でジョブを書く", "job"),
     ("自分の文で1本", "i2v"),
+    ("元動画を再現", "repro"),
 )
 NOTEBOOK_URL = (
     "https://colab.research.google.com/github/fireworker011/Research/"
@@ -260,7 +267,7 @@ def pack_for(handle: str, mode: str | None, fill: str) -> dict[str, Any]:
 
 
 def resolve_task(label: str) -> str:
-    """Map the one menu to table, job, or i2v."""
+    """Map the one menu to table, job, i2v, or repro."""
     tasks = {text: task for text, task in TASK_CHOICES}
     tasks.update({task: task for _text, task in TASK_CHOICES})
     found = tasks.get(label)
@@ -299,11 +306,18 @@ def next_step(task: str) -> str:
         )
     if kind == "i2v":
         return "次は「実行」を押してください。ready と出たら、一番下の「焼く」です。"
+    if kind == "repro":
+        return (
+            "次は「実行」を押してください。"
+            "ready と出たら、一番下の「焼く」です。"
+            "元動画は 5〜15 秒の範囲に分かれます。"
+            "最初の1本だけがオンのときは、その最初の範囲だけです。"
+        )
     raise RuntimeError(f"やることが無い: {kind}")
 
 
 def _comment_is_header(body: str) -> bool:
-    return body.startswith(("status=", "mp4 ", "I2V", "T2V"))
+    return body.startswith(("status=", "mp4 ", "I2V", "T2V", "Ref2VA"))
 
 
 def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
@@ -387,6 +401,8 @@ def commands_file(
         return None
     if kind == "i2v":
         return root / "i2v" / "commands.txt"
+    if kind == "repro":
+        return root / "repro" / "commands.txt"
     if kind == "job":
         if not handle:
             return None
@@ -395,9 +411,26 @@ def commands_file(
     raise RuntimeError(f"やることが無い: {kind}")
 
 
-def missing_weight_files(cache: str | Path) -> list[str]:
-    """Model marker and the two LoRA files. Empty means the bake can start."""
+def missing_weight_files(cache: str | Path, task: str = "") -> list[str]:
+    """Files the bake needs before it starts. A source-video job uses transformer_ref and no FL2V LoRA."""
     root = Path(cache)
+    kind = ""
+    if task:
+        try:
+            kind = resolve_task(task)
+        except KeyError:
+            kind = ""
+    if kind == "repro":
+        local = root / "MiniMax-H3"
+        if missing_folders is not None:
+            return [str(local / name) for name in missing_folders(local, ["ref2va"])]
+        missing = []
+        marker = local / "modular_model_index.json"
+        if not marker.is_file():
+            missing.append(str(marker))
+        if not (local / "transformer_ref").is_dir():
+            missing.append(str(local / "transformer_ref"))
+        return missing
     missing = []
     marker = root / "MiniMax-H3" / "modular_model_index.json"
     if not marker.is_file():
@@ -438,6 +471,7 @@ def run_choice(
     image: str = "",
     look: Mapping[str, Any] | None = None,
     prompt: str = "",
+    video: str = "",
     duration_s: float | str = 10,
     aspect: str = "9:16",
     bake_here: bool = False,
@@ -464,6 +498,8 @@ def run_choice(
         return _run_job(handle, mode, fill_label, lines_text, image, look, out_dir)
     if kind == "i2v":
         return _run_i2v(image, prompt, duration_s, aspect, bake_here, out_dir)
+    if kind == "repro":
+        return _run_repro(video, image, aspect, out_dir)
     raise RuntimeError(f"やることが無い: {kind}")
 
 
@@ -607,6 +643,34 @@ def _run_i2v(
                 lines.append(f"終了コード {completed.returncode}")
     if not ran:
         lines.append("mp4 は焼いていない。投稿していない。")
+    return "\n".join(lines)
+
+
+def _run_repro(
+    video: str,
+    image: str,
+    aspect: str,
+    out_dir: str | Path | None,
+) -> str:
+    try:
+        job = plan_reproduce(video=video, image=image.strip() or None, aspect=aspect)
+    except ValueError as exc:
+        return f"止まった: {exc}"
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    path = write_reproduce(job, root / "repro")
+    lines = [
+        "元動画を Ref2VA で再現するジョブです。",
+        f"秒 {job.get('duration_s', '')} 範囲 {len(job['clips'])} {job['status']}",
+        "参照動画がカメラ、カット、声、曲を持つ。",
+        "FL2VA の Turbo は載せない。",
+        "カット時刻はプロンプトに書いていない。時刻は元動画が持つ。",
+        "元動画の一致率は測っていない。",
+    ]
+    lines.extend(f"- {reason}" for reason in job["blocked"])
+    if job["commands"]:
+        lines.append(job["commands"][-1])
+    lines.append(str(path))
+    lines.append("mp4 は焼いていない。投稿していない。")
     return "\n".join(lines)
 
 
@@ -1151,6 +1215,326 @@ def write_i2v(job: dict[str, Any], folder: str | Path) -> Path:
     return path
 
 
+def source_spans(duration_s: float) -> list[tuple[float, float]]:
+    """Ranges that cover ``duration_s`` and that H3 can generate. A file under 5 seconds does not split."""
+    if float(duration_s) < MIN_DURATION_S:
+        raise ValueError("元動画が5秒未満。H3 は5秒から。")
+    parts = split_trim(duration_s)
+    spans: list[tuple[float, float]] = []
+    cursor_ms = 0
+    total_ms = int(round(float(duration_s) * 1000))
+    for part in parts:
+        part_ms = int(round(float(part) * 1000))
+        end_ms = min(total_ms, cursor_ms + part_ms)
+        spans.append((cursor_ms / 1000, end_ms / 1000))
+        cursor_ms = end_ms
+    if spans and cursor_ms != total_ms:
+        start, _end = spans[-1]
+        spans[-1] = (start, total_ms / 1000)
+    return spans
+
+
+def reproduce_prompt(*, has_image: bool) -> str:
+    """Six Ref2VA sections. Dialogue stays in the file. Cut times are not guessed here."""
+    if has_image:
+        subjects = (
+            "<Picture 1> is the identity still. Appearance follows this still.\n"
+            "<Video 1> is the source slice. Camera, cuts, timing, action, speech, and music follow this slice."
+        )
+        summary = (
+            "[reference generation + video editing + audio reuse] "
+            "The target video keeps the appearance of <Picture 1> and plays <Video 1> as the source slice plays, soundtrack included."
+        )
+        retention = (
+            "<Picture 1> (appearance): fully_preserved - the visible identity follows the still.\n"
+            "<Video 1> (camera, cuts, timing, speech, and music): fully_preserved - "
+            "the slice's camera, cuts, speech, and music stay as heard and seen in the file."
+        )
+        opening = "The visible identity follows <Picture 1>. The motion follows <Video 1>.\n"
+    else:
+        subjects = (
+            "<Video 1> is the source slice, from its first frame through its last frame. "
+            "It supplies the camera, the cuts, the timing, the visible action, and the soundtrack."
+        )
+        summary = (
+            "[video editing + audio reuse] "
+            "The target video is <Video 1> played as the source slice plays, including its soundtrack."
+        )
+        retention = (
+            "<Video 1> (camera, cuts, timing, speech, and music): fully_preserved - "
+            "the slice is kept as it plays, including every cut inside the file and the soundtrack heard in the file."
+        )
+        opening = ""
+    detail = (
+        f"{opening}"
+        "The target video follows <Video 1> from its first frame to its last frame.\n"
+        "[Shot 1] Framing, subject placement, lighting, and action match <Video 1>. "
+        "When <Video 1> cuts, the target video cuts at that same moment to the same framing. "
+        "Speech stays in the language heard in <Video 1> and is not rewritten. "
+        "Mouth movement follows the soundtrack of <Video 1>."
+    )
+    sound = "The ambience and physical sounds are the soundtrack of <Video 1>, kept as heard."
+    music = (
+        "Audience-only music is the soundtrack of <Video 1>, kept as heard, "
+        "including its instruments, tempo, and level."
+    )
+    return (
+        f"subject_definitions:\n{subjects}\n\n"
+        f"summary:\n{summary}\n\n"
+        f"retention_analysis:\n{retention}\n\n"
+        f"detailed_description:\n{detail}\n\n"
+        f"overall_soundscape:\n{sound}\n\n"
+        f"non_diegetic_music:\n{music}\n"
+    )
+
+
+def probe_duration_s(path: Path) -> float:
+    """Seconds from ffprobe. A missing reading is an error, not a guessed length."""
+    ffprobe = shutil.which("ffprobe")
+    if not ffprobe:
+        raise RuntimeError("ffprobe が無い")
+    try:
+        text = subprocess.check_output(
+            [
+                ffprobe,
+                "-v",
+                "error",
+                "-show_entries",
+                "format=duration",
+                "-of",
+                "default=nw=1:nk=1",
+                str(path),
+            ],
+            text=True,
+            stderr=subprocess.STDOUT,
+            timeout=60,
+        )
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stdout or "").strip() or "ffprobe が失敗した"
+        raise RuntimeError(detail) from exc
+    try:
+        seconds = float(text.strip())
+    except ValueError as exc:
+        raise RuntimeError(f"秒数が読めない: {text!r}") from exc
+    if seconds <= 0:
+        raise RuntimeError(f"秒数が 0: {seconds}")
+    return seconds
+
+
+def plan_reproduce(
+    *,
+    video: str,
+    image: str | None = None,
+    aspect: str = "9:16",
+    duration_s: float | None = None,
+) -> dict[str, Any]:
+    """One Ref2VA job per legal slice of the source file. Does not render.
+
+    ``duration_s`` is only for a caller that already measured the file.
+    When it is omitted, the seconds come from ffprobe.
+    """
+    if aspect not in {"9:16", "16:9"}:
+        raise ValueError(f"画面が無い: {aspect}")
+    path_text = (video or "").strip()
+    image_text = (image or "").strip()
+    blocked: list[str] = []
+    measured: float | None = None
+    if not path_text:
+        blocked.append("元動画の場所が空")
+    elif not Path(path_text).is_file():
+        blocked.append("元動画のファイルが無い。場所を直す。")
+    elif duration_s is None:
+        try:
+            measured = probe_duration_s(Path(path_text))
+        except (OSError, subprocess.SubprocessError, RuntimeError, ValueError) as exc:
+            blocked.append(f"秒数が測れない。{exc}")
+    else:
+        measured = float(duration_s)
+    if image_text and not Path(image_text).is_file():
+        blocked.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
+    spans: list[tuple[float, float]] = []
+    if measured is not None and not any(reason.startswith("秒数が測れない") for reason in blocked):
+        if measured < MIN_DURATION_S:
+            blocked.append("元動画が5秒未満。H3 は5秒から。")
+        else:
+            try:
+                spans = source_spans(measured)
+            except ValueError as exc:
+                blocked.append(str(exc))
+    if blocked:
+        spans = []
+    prompt = reproduce_prompt(has_image=bool(image_text) and not blocked)
+    ref.reject_likeness(prompt)
+    width, height = (1920, 1080) if aspect == "16:9" else (1080, 1920)
+    clips = []
+    for index, (start_s, end_s) in enumerate(spans, start=1):
+        trim_s = round(end_s - start_s, 3)
+        clips.append(
+            {
+                "id": f"{index:02d}",
+                "prompt_name": f"{index:02d}.txt",
+                "prompt": prompt,
+                "start_s": start_s,
+                "end_s": end_s,
+                "trim_s": trim_s,
+                "request_s": _request_seconds(trim_s),
+            }
+        )
+    return {
+        "schema": "affi-repro-job/v1",
+        "source": "repro",
+        "task": "ref2va",
+        "video": path_text,
+        "image": image_text,
+        "duration_s": measured,
+        "aspect": aspect,
+        "delivery_width": width,
+        "delivery_height": height,
+        "steps": DEFAULT_STEPS,
+        "video_shift": VIDEO_FLOW_SHIFT,
+        "clips": clips,
+        "status": "blocked" if blocked else "ready",
+        "blocked": blocked,
+        "generates_video": False,
+        "posts": False,
+        "commands": [],
+        "note": "参照動画がカメラ、カット、声、曲を持つ。FL2VA の LoRA は載せない。元動画の一致率は測っていない。",
+    }
+
+
+def _repro_argv(job_dir: Path, clip: Mapping[str, Any], job: Mapping[str, Any]) -> list[str]:
+    args = [
+        "python3",
+        "h3-runner/run_h3.py",
+        "--task",
+        "ref2va",
+        "--prompt-file",
+        str(job_dir / "prompts" / str(clip["prompt_name"])),
+        "--video",
+        str(job["video"]),
+        "--video-start",
+        _num(float(clip["start_s"])),
+        "--video-end",
+        _num(float(clip["end_s"])),
+        "--duration",
+        _num(float(clip["request_s"])),
+        "--aspect",
+        str(job["aspect"]),
+        "--seed",
+        "0",
+        "--steps",
+        str(int(job["steps"])),
+        "--video-shift",
+        _num(float(job["video_shift"])),
+        "--out",
+        str(job_dir / "clips" / f"{clip['id']}.mp4"),
+    ]
+    image = str(job.get("image") or "")
+    if image:
+        args.extend(["--image", image])
+    return args
+
+
+def delivery_join_argv(
+    parts: list[tuple[Path, float]],
+    out_path: Path,
+    *,
+    width: int,
+    height: int,
+) -> list[str]:
+    """Trim each slice back to the source range and concatenate. Same shape as h3_runner.ffmpeg_join."""
+    if not parts:
+        raise ValueError("concat needs at least one clip")
+    inputs: list[str] = []
+    filters: list[str] = []
+    for index, (path, seconds) in enumerate(parts):
+        if seconds <= 0:
+            raise ValueError(f"trim seconds must be positive, got {seconds}")
+        inputs.extend(["-i", str(path)])
+        filters.append(
+            f"[{index}:v]trim=duration={seconds:.3f},setpts=PTS-STARTPTS,"
+            f"scale={width}:{height}:flags=lanczos,setsar=1[v{index}]"
+        )
+        filters.append(f"[{index}:a]atrim=duration={seconds:.3f},asetpts=PTS-STARTPTS[a{index}]")
+    count = len(parts)
+    paired = "".join(f"[v{index}][a{index}]" for index in range(count))
+    filters.append(f"{paired}concat=n={count}:v=1:a=1[v][a]")
+    return [
+        "ffmpeg",
+        "-y",
+        *inputs,
+        "-filter_complex",
+        ";".join(filters),
+        "-map",
+        "[v]",
+        "-map",
+        "[a]",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-r",
+        "24",
+        "-c:a",
+        "aac",
+        "-ar",
+        "32000",
+        "-ac",
+        "2",
+        str(out_path),
+    ]
+
+
+def join_line(job_dir: Path) -> str | None:
+    """The ffmpeg line written beside a source-video job. None when there is nothing to join."""
+    path = Path(job_dir) / "join.txt"
+    if not path.is_file():
+        return None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        body = line.strip()
+        if body and not body.startswith("#"):
+            return body
+    return None
+
+
+def write_reproduce(job: dict[str, Any], folder: str | Path) -> Path:
+    """Write prompts and Ref2VA commands. Do not run them and do not attach FL2V LoRA."""
+    job_dir = Path(folder)
+    prompt_dir = job_dir / "prompts"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    for clip in job["clips"]:
+        (prompt_dir / str(clip["prompt_name"])).write_text(str(clip["prompt"]), encoding="utf-8")
+    commands = [
+        "# Ref2VA。元動画の範囲を参照にする。FL2VA の LoRA は載せない。mp4 は下の「焼く」で焼く。投稿しない。",
+        f"# status={job['status']}",
+    ]
+    if job["blocked"]:
+        commands.extend(f"# {reason}" for reason in job["blocked"])
+    argv_rows = [_repro_argv(job_dir, clip, job) for clip in job["clips"]]
+    commands.extend(" ".join(shlex.quote(part) for part in argv) for argv in argv_rows)
+    job["commands"] = commands
+    path = job_dir / "job.json"
+    path.write_text(json.dumps(job, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (job_dir / "commands.txt").write_text("\n".join(commands) + "\n", encoding="utf-8")
+    if job["status"] == "ready" and job["clips"]:
+        parts = [
+            (job_dir / "clips" / f"{clip['id']}.mp4", float(clip["trim_s"]))
+            for clip in job["clips"]
+        ]
+        join_argv = delivery_join_argv(
+            parts,
+            job_dir / "source.mp4",
+            width=int(job["delivery_width"]),
+            height=int(job["delivery_height"]),
+        )
+        join_text = " ".join(shlex.quote(part) for part in join_argv)
+        (job_dir / "join.txt").write_text(
+            "# 全部の mp4 ができたあと。最初の1本だけのときは実行しない。\n" + join_text + "\n",
+            encoding="utf-8",
+        )
+    return path
+
+
 def _place(room: str, style: str, palette: str, light: str) -> tuple[tuple[str, str, str], ...]:
     return (
         ("部屋", "place_room", room),
@@ -1421,7 +1805,7 @@ def choice_cell() -> str:
             '#@title 選ぶ { display-mode: "form" }',
             "#@markdown やりたいことを1つ選んで、このセルを実行する。上の「すべてのセルを実行」は押さない。",
             f"何をする = {_py(tasks[1])} #@param {_param_list(tasks)}",
-            "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文では無視する。",
+            "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文、元動画を再現では無視する。",
             f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
             "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの話では無視する。",
             f"ドッグフードの型 = {_py(patterns[0])} #@param {_param_list(patterns)}",
@@ -1429,8 +1813,10 @@ def choice_cell() -> str:
             f"中身 = {_py(fills[0])} #@param {_param_list(fills)}",
             "#@markdown 台詞を置き換えるときだけ書く。空なら、中身の台詞を使う。1行が1カット。",
             '台詞 = "" #@param {type:"raw"}',
-            "#@markdown 静止画は空でよい。空なら文章から焼く。ファイルを書くと、その画像が最初のコマになる。",
+            "#@markdown 静止画は空でよい。話と自分の文では、空なら文章から焼く。ファイルを書くと、その画像が最初のコマになる。元動画を再現では、空のままが元の見た目。ファイルを書くと、見た目だけその画像になる。",
             '静止画 = "" #@param {type:"string"}',
+            "#@markdown 元動画を再現するときだけ、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。FL2VA の Turbo は載せない。",
+            '元動画 = "" #@param {type:"string"}',
             "#@markdown 自分の文で1本のときだけ、下を使う。静止画が空なら T2V。ファイルがあれば I2V。",
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
@@ -1452,9 +1838,11 @@ def run_cell() -> str:
     return "\n".join(
         [
             '#@title 実行 { display-mode: "form" }',
-            "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力のコマンド。静止画が空なら T2V。",
+            "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力。元動画なら Ref2VA の範囲。静止画が空なら、話と自分の文は T2V。",
             "#@markdown このセルは焼かない。ready と出たら、一番下の「焼く」を押す。投稿しない。",
             "",
+            "import shutil",
+            "import subprocess",
             "import affi_bake",
             "from pathlib import Path",
             "",
@@ -1468,6 +1856,9 @@ def run_cell() -> str:
             '    print("先に上の「選ぶ」を実行してください。")',
             "else:",
             '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
+            '    if 何をする == "元動画を再現" and shutil.which("ffprobe") is None and Path("/content").is_dir():',
+            '        subprocess.check_call(["apt-get", "update", "-qq"])',
+            '        subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])',
             "    text = affi_bake.run_choice(",
             "        何をする,",
             '        handle=globals().get("HANDLE"),',
@@ -1477,6 +1868,7 @@ def run_cell() -> str:
             '        image=globals().get("静止画", ""),',
             '        look=globals().get("look"),',
             '        prompt=globals().get("プロンプト", ""),',
+            '        video=globals().get("元動画", ""),',
             '        duration_s=globals().get("秒", "10"),',
             '        aspect=globals().get("画面", "9:16"),',
             "        bake_here=False,",
@@ -1597,7 +1989,7 @@ else:
                     subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "torchao==0.18.0"])
                     from torchao.quantization import FqnToConfig
                 print("パッケージは揃っています", "ffmpeg", shutil.which("ffmpeg"))
-                missing = affi_bake.missing_weight_files(cache)
+                missing = affi_bake.missing_weight_files(cache, task)
                 if missing and not 重みが無いとき落とす:
                     print("重みが無いので焼きません。落とすときは「重みが無いとき落とす」を入れて、もう一度押してください。")
                     for item in missing:
@@ -1633,10 +2025,12 @@ else:
                                 lines = []
                             else:
                                 sys.path.insert(0, str(root / "h3-runner"))
-                                from h3_runner.loras import prepare_fast_loras
+                                if affi_bake.resolve_task(task) != "repro":
+                                    from h3_runner.loras import prepare_fast_loras
 
-                                prepare_fast_loras(cache / "loras")
+                                    prepare_fast_loras(cache / "loras")
                         made = False
+                        finished = True
                         for line in lines:
                             print(line)
                             code = affi_bake.run_logged(shlex.split(line), root)
@@ -1646,8 +2040,9 @@ else:
                                 argv = shlex.split(line)
                                 if "--out" in argv:
                                     err = Path(argv[argv.index("--out") + 1]).with_suffix(".error.txt")
-                                    if err.is_file():
-                                        print(err.read_text(encoding="utf-8"))
+                                if err.is_file():
+                                    print(err.read_text(encoding="utf-8"))
+                                finished = False
                                 break
                             argv = shlex.split(line)
                             if "--out" not in argv:
@@ -1671,6 +2066,12 @@ else:
                                     print("マイドライブにコピーした", saved)
                                     for item in saved.rglob("*.mp4"):
                                         print("mp4", item, item.stat().st_size, "bytes")
+                        if made and finished and not 最初の1本だけ:
+                            join = affi_bake.join_line(path.parent)
+                            if join:
+                                print(join)
+                                code = affi_bake.run_logged(shlex.split(join), root)
+                                print(f"つなぎの終了コード {code}")
                         if made:
                             print("投稿していない。")
 """
@@ -1725,6 +2126,12 @@ def _intro() -> str:
         "",
         "プロンプトを自分で書きます。秒と画面も「選ぶ」で選びます。静止画が空なら T2V、ファイルがあれば手入力で I2V です。「実行」が ready と出たら、一番下の「焼く」です。",
         "",
+        "**元動画を再現**",
+        "",
+        "元の mp4 の場所を「元動画」に書きます。Ref2VA がそのファイルを参照にします。カメラ、カット、声、曲はファイルが持ちます。H3 は 5〜15 秒なので、長い動画は範囲に分かれます。",
+        "FL2VA の Turbo は載せません。重みは transformer_ref です。静止画は空のままが、元の見た目です。",
+        "カット時刻と台詞の文字はプロンプトに写しません。時刻と台詞は元動画が持ちます。一致率は測っていません。",
+        "",
         "## 4つの話",
         "",
     ]
@@ -1738,7 +2145,8 @@ def _intro() -> str:
             "",
             "秒数・カット・字幕は型のままです。",
             "",
-            "Checkpoint は MiniMax-H3。LoRA は FL2VA の Turbo と、動作のつながり。同じものを、話のジョブと手入力の I2V で使います。",
+            "Checkpoint は MiniMax-H3。話のジョブと手入力は、FL2VA の Turbo と、動作のつながりを使います。",
+            "元動画の再現は Ref2VA です。同じ Turbo は載せません。",
             "",
         ]
     )
@@ -1875,6 +2283,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 表を見る … 4ジャンルの表。ジョブは書きません。動画にもなりません",
                     "- 話でジョブを書く … 選んだ1件のジョブ。静止画が空なら T2V。ファイルがあればその画像が最初のコマ",
                     "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
+                    "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。5〜15 秒の範囲に分ける。FL2VA の Turbo は載せない。ここでは焼きません",
                     "",
                 ]
             ),
@@ -1902,7 +2311,9 @@ def reference_notebook() -> dict[str, Any]:
                     "ランタイムを切っても、コピーした mp4 は残ります。",
                     "",
                     "重みはマイドライブの `h3-weights` です。",
-                    "無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。",
+                    "無いときだけ「重みが無いとき落とす」を入れます。話と手入力のプレビューは 144.1GB です。オフなら落としません。",
+                    "元動画の再現は `transformer_ref` を使います。FL2VA/ と Ref2VA/ の単一ファイルは落としません。",
+                    "範囲が2つ以上で、最初の1本だけをオフにしたとき、焼き終わった mp4 をつなぎます。",
                     "",
                     "投稿しません。",
                     "",

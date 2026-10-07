@@ -19,6 +19,7 @@ from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done
 from h3_runner.loras import (  # noqa: E402
     CIVITAI_COMBAT_VERSION,
     COMBAT_FILENAME,
+    LoraSpec,
     REPAIR_FILENAME,
     REPAIR_REPO,
     TURBO_FILENAME,
@@ -45,6 +46,7 @@ from h3_runner.planner import (  # noqa: E402
     single_plan,
     within_fit_budget,
 )
+from h3_runner.slice_media import slice_argv  # noqa: E402
 from h3_runner.weights import (  # noqa: E402
     LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
@@ -446,6 +448,8 @@ class WeightsTest(unittest.TestCase):
         self.assertIn("_align_rope_device", text)
         self.assertIn("local_encode_path", text)
         self.assertIn(".error.txt", text)
+        self.assertIn("MiniMaxH3VideoReference.from_file", text)
+        self.assertIn("ensure_reference_slice", text)
         self.assertLess(text.index("推論開始"), text.index("encode_video("))
 
 
@@ -796,6 +800,97 @@ class FastCliTest(unittest.TestCase):
         self.assertIn("1344", test)
         self.assertIn('"--steps", "9"', test)
         self.assertIn("orbis01_6s.mp4", test)
+
+
+class SourceVideoTest(unittest.TestCase):
+    def test_ref2va_accepts_a_video_without_a_still(self) -> None:
+        plan = single_plan(
+            task="ref2va",
+            prompt_path=ROOT / "prompts" / "orbis01_ref2va_9s.txt",
+            image_path=None,
+            duration_s=8,
+            aspect="9:16",
+            seed=0,
+            steps=50,
+            out_path=Path("/tmp/h3-out/source.mp4"),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+            video_shift=12,
+            video_path=Path("/tmp/source.mp4"),
+            video_start_s=0,
+            video_end_s=8,
+        )
+        job = plan.jobs[0]
+        self.assertEqual(job.task, "ref2va")
+        self.assertEqual(job.video_path, Path("/tmp/source.mp4"))
+        self.assertEqual(job.video_start_s, 0)
+        self.assertEqual(job.video_end_s, 8)
+        self.assertEqual(plan.loras, [])
+        self.assertIn("FL2VA の LoRA は載せない", plan.report())
+        body = job.request_json(job.short_edges[0], None)
+        self.assertEqual(body["conditions"][0]["type"], "video")
+        self.assertEqual(body["conditions"][0]["start_s"], 0)
+        self.assertEqual(body["conditions"][0]["end_s"], 8)
+        self.assertEqual(body["flow_shift"], 12)
+
+    def test_fl2v_lora_is_refused_on_ref2va(self) -> None:
+        loras = [LoraSpec(path=Path(TURBO_FILENAME), scale=1.0, name="turbo")]
+        with self.assertRaises(ValueError) as raised:
+            single_plan(
+                task="ref2va",
+                prompt_path=ROOT / "prompts" / "orbis01_ref2va_9s.txt",
+                image_path=Path("/tmp/still.jpg"),
+                duration_s=8,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/source.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+                loras=loras,
+                video_path=Path("/tmp/source.mp4"),
+            )
+        self.assertIn("FL2VA の LoRA は ref2va に載せない", str(raised.exception))
+        self.assertIn(TURBO_FILENAME, str(raised.exception))
+
+    def test_a_source_video_is_not_dropped_onto_fl2va(self) -> None:
+        with self.assertRaises(ValueError) as raised:
+            single_plan(
+                task="fl2va",
+                prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+                image_path=Path("/tmp/still.jpg"),
+                duration_s=6,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/drop.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+                video_path=Path("/tmp/source.mp4"),
+            )
+        self.assertIn("ref2va を使う", str(raised.exception))
+
+    def test_slice_seeks_after_the_input(self) -> None:
+        argv = slice_argv(Path("/tmp/source.mp4"), 8, 16, Path("/tmp/h3-ref/slice.mp4"))
+        self.assertLess(argv.index("-i"), argv.index("-ss"))
+        self.assertNotIn("copy", argv)
+        self.assertEqual(argv[argv.index("-ss") + 1], "8.000")
+        self.assertEqual(argv[argv.index("-to") + 1], "16.000")
 
 
 if __name__ == "__main__":

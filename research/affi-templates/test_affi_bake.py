@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import json
 import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -353,6 +354,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "テンプレ" in blob
     assert "オマージュ" in blob
     assert "元の型のまま" in blob
+    assert "元動画を再現" in blob
+    assert "transformer_ref" in blob
     for name in ("reference_check.ipynb", "affi_genre_templates.ipynb"):
         moved = json.loads((ROOT / name).read_text(encoding="utf-8"))
         moved_src = "\n".join(_cell_source(cell) for cell in moved["cells"])
@@ -646,6 +649,7 @@ def test_one_choice_runs_the_table_or_one_job_or_i2v(tmp_path: Path) -> None:
     assert bake.next_step("表を見る").startswith("次は「実行」")
     assert bake.next_step("話でジョブを書く").startswith("次は「実行」")
     assert bake.next_step("自分の文で1本").startswith("次は「実行」")
+    assert "元動画" in bake.next_step("元動画を再現")
 
 
 def test_bite_mentions_the_mouth_and_does_not_invent_the_chew() -> None:
@@ -761,3 +765,99 @@ def test_a_finished_clip_is_copied_onto_drive(tmp_path: Path) -> None:
     assert (saved / "job.json").read_text(encoding="utf-8") == "{}\n"
     assert (saved / "clips" / "01-hook.mp4").read_bytes() == b"mp4-bytes"
     assert saved == tmp_path / "drive" / "junjun_ranran"
+
+
+def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) -> None:
+    source = tmp_path / "source-secret.mp4"
+    source.write_bytes(b"not-a-real-video")
+    job = bake.plan_reproduce(video=str(source), duration_s=45, aspect="9:16")
+    assert job["status"] == "ready"
+    assert job["task"] == "ref2va"
+    assert job["duration_s"] == 45
+    assert job["video_shift"] == 12
+    assert job["steps"] == 50
+    covered = 0.0
+    for clip in job["clips"]:
+        span = clip["end_s"] - clip["start_s"]
+        assert 5 <= span <= 15
+        assert bake._accepts(clip["request_s"])
+        covered += span
+        assert "<d>" not in clip["prompt"]
+        assert "source-secret" not in clip["prompt"]
+        assert "<Picture 1>" not in clip["prompt"]
+        for header in (
+            "subject_definitions:",
+            "summary:",
+            "retention_analysis:",
+            "detailed_description:",
+            "overall_soundscape:",
+            "non_diegetic_music:",
+        ):
+            assert header in clip["prompt"]
+        assert clip["prompt"].index("subject_definitions:") < clip["prompt"].index("non_diegetic_music:")
+        assert "<Video 1>" in clip["prompt"]
+        assert "fully_preserved" in clip["prompt"]
+    assert abs(covered - 45) < 0.02
+    path = bake.write_reproduce(job, tmp_path / "repro")
+    commands = (path.parent / "commands.txt").read_text(encoding="utf-8")
+    assert "status=ready" in commands
+    assert "--task ref2va" in commands
+    assert "--lora" not in commands
+    assert affi_av.TURBO_FILENAME not in commands
+    assert "ffmpeg" not in commands
+    assert "--video-shift 12" in commands
+    assert "--steps 50" in commands
+    assert "--image" not in commands
+    lines, note = bake.commands_to_run(path.parent / "commands.txt", first_only=True)
+    assert len(lines) == 1
+    assert "--video" in lines[0]
+    assert "--video-start" in lines[0]
+    assert "最初の1本だけ" in note
+    join = bake.join_line(path.parent)
+    assert join is not None
+    assert join.startswith("ffmpeg ")
+    from h3_runner.ffmpeg_join import join_command
+
+    parts = [(path.parent / "clips" / f"{clip['id']}.mp4", float(clip["trim_s"])) for clip in job["clips"]]
+    assert shlex.split(join) == join_command(parts, path.parent / "source.mp4", width=1080, height=1920)
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    with_still = bake.plan_reproduce(video=str(source), image=str(still), duration_s=8)
+    assert with_still["status"] == "ready"
+    assert len(with_still["clips"]) == 1
+    assert "<Picture 1>" in with_still["clips"][0]["prompt"]
+    wrote = bake.write_reproduce(with_still, tmp_path / "with-still")
+    still_cmd = (wrote.parent / "commands.txt").read_text(encoding="utf-8")
+    assert "--image" in still_cmd
+    shown = bake.run_choice("元動画を再現", video=str(source), out_dir=tmp_path / "probed")
+    assert "秒数が測れない" in shown
+    assert "ready" not in shown
+    assert "元動画の一致率は測っていない" in shown
+    assert bake.commands_file("元動画を再現", out_dir=tmp_path / "probed") == tmp_path / "probed" / "repro" / "commands.txt"
+
+
+def test_a_missing_source_video_does_not_invent_a_length(tmp_path: Path) -> None:
+    missing = bake.plan_reproduce(video=str(tmp_path / "gone.mp4"))
+    assert missing["status"] == "blocked"
+    assert missing["clips"] == []
+    assert missing["duration_s"] is None
+    assert any("ファイルが無い" in reason for reason in missing["blocked"])
+    short = tmp_path / "short.mp4"
+    short.write_bytes(b"x")
+    under = bake.plan_reproduce(video=str(short), duration_s=4)
+    assert under["status"] == "blocked"
+    assert under["clips"] == []
+    assert any("5秒未満" in reason for reason in under["blocked"])
+    bake.write_reproduce(under, tmp_path / "short-job")
+    none, note = bake.commands_to_run(tmp_path / "short-job" / "commands.txt", first_only=False)
+    assert none == []
+    assert "5秒未満" in note
+    assert "Ref2VA" not in note
+
+
+def test_repro_weights_are_transformer_ref_and_not_the_fl2v_stack(tmp_path: Path) -> None:
+    cache = tmp_path / "h3-weights"
+    missing = bake.missing_weight_files(cache, "元動画を再現")
+    assert any(item.endswith("transformer_ref") for item in missing)
+    assert all(affi_av.TURBO_FILENAME not in item for item in missing)
+    assert all(affi_av.REPAIR_FILENAME not in item for item in missing)
