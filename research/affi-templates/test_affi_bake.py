@@ -307,7 +307,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "読み込み" in blob
     assert "実行" in blob
     assert "#@title 焼く" in blob
-    assert "command_for_drive" in blob
+    assert "publish_job_dir" in blob
     assert "マウントしたアカウントのマイドライブ" in blob
     assert "fireworker06" not in blob
     assert "最初の1本だけ" in blob
@@ -741,17 +741,14 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
     assert bake.commands_file("表を見る", out_dir=tmp_path) is None
 
 
-def test_a_finished_clip_is_stored_on_drive() -> None:
-    command = (
-        "python3 h3-runner/run_h3.py --task t2va "
-        "--out /content/affi-bake/junjun_ranran/clips/01-hook.mp4 --seed 0"
-    )
-    rewritten = bake.command_for_drive(command)
-    assert "--out /content/drive/MyDrive/affi-bake/junjun_ranran/clips/01-hook.mp4" in rewritten
-    assert "--out /content/affi-bake/" not in rewritten
-    typed = bake.command_for_drive(
-        "python3 h3-runner/run_h3.py --task t2va --prompt-file /content/affi-bake/i2v/prompt.txt "
-        "--out /content/affi-bake/i2v/clip.mp4"
-    )
-    assert "--prompt-file /content/affi-bake/i2v/prompt.txt" in typed
-    assert "--out /content/drive/MyDrive/affi-bake/i2v/clip.mp4" in typed
+def test_a_finished_clip_is_copied_onto_drive(tmp_path: Path) -> None:
+    job = tmp_path / "affi-bake" / "junjun_ranran"
+    clip = job / "clips" / "01-hook.mp4"
+    clip.parent.mkdir(parents=True)
+    clip.write_bytes(b"mp4-bytes")
+    (job / "job.json").write_text("{}\n", encoding="utf-8")
+    (job / "clips" / "01-hook.request.json").write_text("{}\n", encoding="utf-8")
+    saved = bake.publish_job_dir(job, drive_root=tmp_path / "drive")
+    assert (saved / "job.json").read_text(encoding="utf-8") == "{}\n"
+    assert (saved / "clips" / "01-hook.mp4").read_bytes() == b"mp4-bytes"
+    assert saved == tmp_path / "drive" / "junjun_ranran"

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import shlex
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -330,27 +331,27 @@ def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
 DRIVE_BAKE = Path("/content/drive/MyDrive/affi-bake")
 
 
-def drive_clip_path(out_path: str) -> Path:
-    """Where a finished mp4 stays after the Colab runtime is cut."""
-    path = Path(out_path)
-    parts = path.parts
+def publish_job_dir(local_dir: Path, *, drive_root: Path | None = None) -> Path:
+    """Copy a finished job, including mp4 files, onto the mounted Drive."""
+    local_dir = Path(local_dir)
+    root = Path(drive_root) if drive_root is not None else DRIVE_BAKE
+    parts = local_dir.parts
     if "affi-bake" in parts:
         tail = parts[parts.index("affi-bake") + 1 :]
-        if tail:
-            return DRIVE_BAKE.joinpath(*tail)
-    return DRIVE_BAKE / path.name
-
-
-def command_for_drive(command: str) -> str:
-    """Point --out at My Drive. The prompt file stays where 「実行」 wrote it."""
-    parts = shlex.split(command)
-    if "--out" not in parts:
-        return command
-    index = parts.index("--out") + 1
-    if index >= len(parts):
-        return command
-    parts[index] = str(drive_clip_path(parts[index]))
-    return " ".join(shlex.quote(part) for part in parts)
+        dest = root.joinpath(*tail) if tail else root / local_dir.name
+    else:
+        dest = root / local_dir.name
+    copied = False
+    for path in local_dir.rglob("*"):
+        if not path.is_file():
+            continue
+        target = dest / path.relative_to(local_dir)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+        copied = True
+    if not copied:
+        dest.mkdir(parents=True, exist_ok=True)
+    return dest
 
 
 def commands_file(
@@ -1616,21 +1617,34 @@ else:
 
                                 prepare_fast_loras(cache / "loras")
                         for line in lines:
-                            if on_colab:
-                                line = affi_bake.command_for_drive(line)
-                                argv = shlex.split(line)
-                                if "--out" in argv:
-                                    Path(argv[argv.index("--out") + 1]).parent.mkdir(parents=True, exist_ok=True)
                             print(line)
                             completed = subprocess.run(shlex.split(line), cwd=root)
                             print(f"終了コード {completed.returncode}")
                             if completed.returncode != 0:
                                 break
                             argv = shlex.split(line)
-                            if "--out" in argv:
-                                print("書いた", argv[argv.index("--out") + 1])
+                            if "--out" not in argv:
+                                continue
+                            local_out = Path(argv[argv.index("--out") + 1])
+                            if not local_out.is_file():
+                                request = local_out.with_suffix(".request.json")
+                                if request.is_file():
+                                    print("mp4 は出ていない。あるのは", request)
+                                else:
+                                    print("mp4 は出ていない。", local_out)
+                                continue
+                            print("書いた", local_out, local_out.stat().st_size, "bytes")
+                            if on_colab:
+                                try:
+                                    saved = affi_bake.publish_job_dir(path.parent)
+                                except Exception as exc:
+                                    print("マイドライブへのコピーに失敗した", exc)
+                                else:
+                                    print("マイドライブにコピーした", saved)
+                                    for item in saved.rglob("*.mp4"):
+                                        print("mp4", item, item.stat().st_size, "bytes")
                         if lines:
-                            print("マイドライブの affi-bake に残しています。投稿していない。")
+                            print("投稿していない。")
 """
 
 
@@ -1853,8 +1867,9 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
                     "",
-                    "焼いた mp4 は、そのときログインしてマウントしたアカウントのマイドライブ `affi-bake` に残ります。",
-                    "ランタイムを切っても残ります。",
+                    "焼いた mp4 は、Colab の中に書いてから、そのときマウントしたアカウントのマイドライブ `affi-bake` にコピーします。",
+                    "json と同じフォルダの `clips` に mp4 が入ります。json だけなら動画はまだ出ていません。",
+                    "ランタイムを切っても、コピーした mp4 は残ります。",
                     "",
                     "重みはマイドライブの `h3-weights` です。",
                     "無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。",
