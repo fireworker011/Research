@@ -741,6 +741,15 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
     assert bake.commands_file("表を見る", out_dir=tmp_path) is None
 
 
+def test_run_logged_shows_the_child_text(capsys, tmp_path: Path) -> None:
+    code = bake.run_logged(
+        [sys.executable, "-c", "import sys; print('visible-line'); sys.exit(1)"],
+        tmp_path,
+    )
+    assert code == 1
+    assert "visible-line" in capsys.readouterr().out
+
+
 def test_a_finished_clip_is_copied_onto_drive(tmp_path: Path) -> None:
     job = tmp_path / "affi-bake" / "junjun_ranran"
     clip = job / "clips" / "01-hook.mp4"

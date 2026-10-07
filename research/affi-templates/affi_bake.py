@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -329,6 +330,24 @@ def commands_to_run(path: Path, *, first_only: bool) -> tuple[list[str], str]:
 
 
 DRIVE_BAKE = Path("/content/drive/MyDrive/affi-bake")
+
+
+def run_logged(argv: list[str], cwd: Path) -> int:
+    """Run a command and print its output. Colab hides a child process's own output."""
+    proc = subprocess.Popen(
+        argv,
+        cwd=str(cwd),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+        env={**os.environ, "PYTHONUNBUFFERED": "1"},
+    )
+    if proc.stdout is None:
+        return proc.wait()
+    for line in proc.stdout:
+        print(line, end="", flush=True)
+    return proc.wait()
 
 
 def publish_job_dir(local_dir: Path, *, drive_root: Path | None = None) -> Path:
@@ -1607,20 +1626,23 @@ else:
                                 os.environ["HUGGING_FACE_HUB_TOKEN"] = token
                                 print("HF_TOKEN を読みました（値は表示しません）")
                             prep = affi_bake.prepare_command(lines[0], cache)
-                            completed = subprocess.run(shlex.split(prep), cwd=root)
-                            print(f"重みの終了コード {completed.returncode}")
-                            if completed.returncode != 0:
+                            code = affi_bake.run_logged(shlex.split(prep), root)
+                            print(f"重みの終了コード {code}")
+                            if code != 0:
+                                print("失敗。重みは揃っていません。mp4 は出来ていません。")
                                 lines = []
                             else:
                                 sys.path.insert(0, str(root / "h3-runner"))
                                 from h3_runner.loras import prepare_fast_loras
 
                                 prepare_fast_loras(cache / "loras")
+                        made = False
                         for line in lines:
                             print(line)
-                            completed = subprocess.run(shlex.split(line), cwd=root)
-                            print(f"終了コード {completed.returncode}")
-                            if completed.returncode != 0:
+                            code = affi_bake.run_logged(shlex.split(line), root)
+                            print(f"終了コード {code}")
+                            if code != 0:
+                                print("失敗。mp4 は出来ていません。")
                                 break
                             argv = shlex.split(line)
                             if "--out" not in argv:
@@ -1634,6 +1656,7 @@ else:
                                     print("mp4 は出ていない。", local_out)
                                 continue
                             print("書いた", local_out, local_out.stat().st_size, "bytes")
+                            made = True
                             if on_colab:
                                 try:
                                     saved = affi_bake.publish_job_dir(path.parent)
@@ -1643,7 +1666,7 @@ else:
                                     print("マイドライブにコピーした", saved)
                                     for item in saved.rglob("*.mp4"):
                                         print("mp4", item, item.stat().st_size, "bytes")
-                        if lines:
+                        if made:
                             print("投稿していない。")
 """
 
