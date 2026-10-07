@@ -6774,7 +6774,22 @@ def test_hospital_off_ward_human_and_insert_fixes():
     assert "20cm" in human_ward["cast"]["kana"]["lock"]
     assert "intact skin on the hips" in human_ward["cast"]["kana"]["lock"]
     assert "a human tongue" in human_ward["cast"]["gin"]["lock"]
+    assert "hanging out past the chin" not in human_ward["cast"]["gin"]["lock"]
     assert "no penis" in human_ward["cast"]["gin"]["lock"]
+    lick_beat = next(b for b in human_ward["beats"] if b["id"] == "04-gin-lick")
+    lick = build_beat_prompt(human_ward, lick_beat, trigger=merge_trigger("", lick_beat))
+    assert "a human tongue hanging out" in lick
+    assert "tongue hanging out" in lick
+    assert "GROWS OUT of the open mouth" in lick
+    assert "DOWN and FORWARD" in lick
+    assert "presses on the clitoris" in lick
+    assert "gray tongue" not in lick.lower()
+    cunny_beat = next(b for b in human_ward["beats"] if b["id"] == "04-gin-cunny")
+    cunny = build_beat_prompt(human_ward, cunny_beat, trigger=merge_trigger("", cunny_beat))
+    assert "the long tongue still pressed on the clitoris" in cunny
+    assert "KEEPS licking the clitoris" in cunny
+    assert "GROWS into a clear erect 24cm" in cunny
+    assert "licks the new shaft once" in cunny
     assert "clear adult eyes" in human_ward["cast"]["rei"]["lock"]
     zombie = prepare_episode(raw, **user)
     assert "forked reptile tongue" in zombie["cast"]["shino"]["lock"]
