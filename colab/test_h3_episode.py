@@ -7003,3 +7003,76 @@ def test_hospital_off_ward_human_and_insert_fixes():
     tentacle = prepare_episode(raw, toilet_override="トイレ・触手")
     tent = next(b for b in tentacle["beats"] if b["id"] == "04-toilet")
     assert "tentacles are being inserted" in tent.get("trigger", "")
+
+
+def test_hospital_review_motion_matches_the_mountain_notes():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    setup = next(b for b in fours["beats"] if b["id"] == "09-join")
+    press = next(b for b in fours["beats"] if b["id"] == "09-join-press")
+    entered = next(b for b in fours["beats"] if b["id"] == "09-join-in")
+    closed = next(b for b in fours["beats"] if b["id"] == "09-join-close")
+    assert extra_lora_entries(setup) == []
+    assert "siderear" not in extra_keys(setup)
+    assert extra_lora_entries(entered)[0] == ("siderear", 0.8)
+    assert "forward and back in short presses" in entered["action"].lower()
+    assert "hold still joined at the base" not in entered["action"].lower()
+    assert "the whole shaft is hidden inside the anus" in entered["action"].lower()
+    assert "true profile" in press["action"].lower()
+    assert "side of both chests" in press["action"].lower()
+    assert "anus faces the camera" not in press["action"].lower()
+    assert "pelvises freeze" in closed["action"].lower()
+    assert "shaft stays outside" in closed["action"].lower()
+    assert "thrust" not in extra_keys(closed)
+    wall = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
+    wall_in = next(b for b in wall["beats"] if b["id"] == "03-kiss-in")
+    assert "hold still joined at the base" in wall_in["action"].lower()
+
+    finger = prepare_episode(raw, toilet_override="トイレ・アナル指")
+    afast = next(b for b in finger["beats"] if b["id"] == "04-toilet-afast")
+    out = next(b for b in finger["beats"] if b["id"] == "04-toilet-out")
+    assert "wide open ring" in afast["action"].lower()
+    assert "thick brown feces" in afast["action"].lower()
+    assert "analfinger" not in extra_keys(afast)
+    assert "licks that fingertip clean" in out["action"].lower()
+    assert "walks right" in out["action"].lower()
+    assert out["trim"]["seconds"] == 10.0
+
+    jo = prepare_episode(raw, story_override="誘う", invite_pose_override="後ろアナル")
+    jo_set = next(b for b in jo["beats"] if b["id"] == "09-join-jo-set")
+    assert "pulls back" in jo_set["action"].lower()
+    assert "ninety degrees toward the left" in jo_set["action"].lower()
+    assert "holds the pose" in jo_set["action"].lower()
+    assert "buried" not in jo_set["action"].lower().split("last frame:", 1)[1]
+    gin = prepare_episode(raw, gin_override="灰色・後ろアナル")
+    gin_set = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-set")
+    assert "gin bends" in gin_set["action"].lower()
+    assert "ninety degrees toward the left" in gin_set["action"].lower()
+    lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
+    lick_prompt = build_beat_prompt(gin, lick)
+    assert "one continuous take" in lick_prompt.lower()
+    spit = next(b for b in gin["beats"] if b["id"] == "04-gin-spitkiss")
+    assert "left foot stays inside the frame" in spit["action"].lower()
+    assert "aya's left foot" in spit["camera"].lower()
+
+    spot = next(b for b in fours["beats"] if b["id"] == "10-shino-spot")
+    assert "already stooping" in spot["action"].lower()
+    assert "point left" in spot["action"].lower()
+    assert "walks in from the right" not in spot["action"].lower()
+
+    mountain = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="四つん這い股広げ",
+        place_override="山道",
+    )
+    facial = next(b for b in mountain["beats"] if b["id"] == "09-kana-facial")
+    facial_prompt = build_beat_prompt(mountain, facial)
+    assert "the same door stays behind aya" not in facial_prompt.lower()
+    assert "looks up" in facial_prompt.lower()
+    assert "one continuous take" in facial_prompt.lower()
+    kiss = next(b for b in mountain["beats"] if b["id"] == "09-kana-kiss")
+    assert "one continuous take" in kiss["action"].lower()
+    assert validate_episode(fours, root=HOSPITAL_DIR) == []
+    assert validate_episode(finger, root=HOSPITAL_DIR) == []
+    assert validate_episode(jo, root=HOSPITAL_DIR) == []

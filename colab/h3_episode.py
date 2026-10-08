@@ -578,6 +578,17 @@ HIPS_BACK_ONCE_CLAUSE = (
     "The hands stay where they are. The feet stay on the floor. "
     "The pair stays on this same floor spot. The camera holds."
 )
+JO_SET_CLAUSE = (
+    "Playback stays at real-time third-person game speed. "
+    "The body starts in profile facing right, turns ninety degrees toward the left, "
+    "opens the legs a little, then folds into the pose and holds it. "
+    "Both feet stay on the floor. The pair stays on this same floor spot. The camera holds."
+)
+GIN_LICK_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "One continuous take. Aya sits and Gin crouches inside this same shot. "
+    "The place stays the opening place. The camera stays with them."
+)
 WALL_SET_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "Aya turns from the opening pose to the grey wall in one continuous move and settles into the pose there. "
@@ -728,6 +739,14 @@ FACIAL_LENS_HOLD = (
     "Aya looks up toward the lens. Aya's face stays in the same place, fully inside the frame, from the hair to the chin. "
     "The erect shaft stays at the lower edge aimed at that face. "
     "The frame holds Aya's face and the shaft. The adults stay the same size."
+)
+# Off the ward, a door sentence pulls the opening place into a new room and the picture smears.
+FACIAL_LENS_HOLD_OPEN = (
+    "The camera holds this one frame from the first frame to the last. "
+    "The place and the rendering stay the same as the opening frame. "
+    "Aya looks up toward the lens. Aya's face stays in the same place, fully inside the frame, from the hair to the chin. "
+    "The erect shaft stays at the lower edge aimed at that face. "
+    "The frame holds Aya's face and the shaft. The adults stay the same size. The picture stays sharp."
 )
 # Non-gin kisses keep both faces inside without a face-filling frame.
 FACE_PAIR_HOLD = (
@@ -3706,7 +3725,7 @@ def _delayed_gap_camera(name: str) -> str:
 _SPOT_POSE = {
     "rei": "Rei WALKS IN from the RIGHT edge and STOPS ahead toward the RIGHT in an imposing waiting stance, facing Aya, full body including feet.",
     "kana": "Kana ENTERS from the RIGHT edge already STROKING the erect 20cm, erect penis up, and STOPS mid-corridor facing Aya, full body including feet. Extra-viscous WHITE goo covers Kana from hair to the 20cm shaft to her feet AND the cracked linoleum around her.",
-    "shino": "Shino is already stooping at the lit doorway at the RIGHT edge, head ducked under the tubes, full body including feet, the shaft at the front of the groin.",
+    "shino": "Shino is already stooping a short step behind Aya, chest and face pointing LEFT, the same heading as Aya, full body including feet, the shaft at the front of the groin.",
     "gin": "Gin ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
     "tsuno": "Tsuno ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, stiff knees, each step landing late, full body including both feet.",
 }
@@ -3753,17 +3772,19 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             elif added == ["shino"]:
                 action = (
                     "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, "
-                    "a short step in front of the lit doorway. "
-                    "Shino is already stooping at the lit doorway at the RIGHT edge, head ducked under the tubes, full body including feet. "
-                    "The erect 35cm stays at the front of the groin, pointing FORWARD. The buttocks stay bare. "
+                    "facing LEFT, full body including both feet. "
+                    "Shino is already stooping a short step behind Aya, head ducked under the tubes, full body including feet. "
+                    "Shino's chest, face, and knees point LEFT, the same heading as Aya. "
+                    "Shino's side faces the camera. Shino's back points toward the doorway. The doorway stays behind Shino. "
+                    "The erect 35cm stays at the front of the groin, pointing FORWARD along that LEFT heading. The buttocks stay bare. "
                     "Aya stays on this same linoleum spot, a short step in front of Shino. Mouths stay apart. "
-                    "Last frame: Shino still stooping at the doorway, Aya still a short step in front, both full body including feet. "
+                    "Last frame: both facing LEFT, Shino still stooping behind Aya, the doorway behind Shino, both full body including feet. "
                     "Motion starts at frame one. Brisk real-time."
                 )
                 camera = (
                     "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    "Shino is already stooping at the lit doorway at the RIGHT edge, head under the tubes. "
-                    "Aya stays a short step in front of Shino. The doorway stays behind Shino."
+                    "Aya faces LEFT. Shino is already stooping behind Aya, chest and face pointing LEFT, the same heading as Aya. "
+                    "Shino's side faces the camera. The doorway stays behind Shino."
                 )
                 sfx = "Quiet corridor, fluorescent buzz, HVAC"
                 spot_loco = "planted"
@@ -4684,6 +4705,118 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+_FOURS_HOLD = "HOLD still joined at the BASE until the last frame."
+_FOURS_PISTON = (
+    "After the shaft reaches the BASE, the hips move FORWARD and BACK in short presses for the rest of the take. "
+    "Each forward press meets the buttocks. The glans stays inside the anus. The shaft stays buried to the root."
+)
+_TRUE_PROFILE = (
+    " Both torsos stay true profile. The shaft adult's chest, hips, and knees face the same heading as Aya's chest. "
+    "The camera sees the side of both chests. Spines stay parallel."
+)
+_SAME_TAKE = (
+    " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
+    "The camera moves inside this shot. The picture stays sharp."
+)
+_LEFT_FOOT = (
+    " Aya's left foot stays inside the frame, toes visible, beside the right foot. "
+    "Both of Aya's feet stay inside the frame."
+)
+_JO_BEND_RE = re.compile(
+    r"(Aya|Gin) BENDS her knees\. Her face and chest LOWER onto the linoleum\. "
+    r"Her hips RISE\. Both legs open wide to the LEFT and RIGHT\. "
+    r"Both soles stay on the linoleum\. The cleft faces UP\."
+)
+_JO_LAST_RE = re.compile(
+    r"Last frame: (Aya|Gin)'s face and chest on the linoleum, hips high, both legs open wide, "
+    r"each thigh joined at its hip, heels on the linoleum, the cleft up\."
+)
+
+
+def _jo_bend_turn(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name} starts in true profile facing RIGHT. "
+        f"{name} BENDS her knees and turns her body ninety degrees toward the LEFT until her chest faces the lens. "
+        f"She opens both legs a little. "
+        f"Then her head lowers onto the floor, her back arches, and both legs open into a wide V. "
+        f"Her head stays on the floor nearest the lens. Her eyes stay on the lens. "
+        f"Both arms rest on the floor beside the head. The hips stay high. "
+        f"Both soles stay on the floor, one out to the LEFT and one out to the RIGHT. "
+        f"The cleft and the hairless pussy face the lens. "
+        f"She holds this pose. The camera sits at the head, the far side from a view behind the hips."
+    )
+
+
+def _jo_last_pose(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"Last frame: {name} holds the pose, head on the floor nearest the lens, eyes on the lens, "
+        f"back arched, both legs in a wide V, both soles on the floor, "
+        f"the cleft and the hairless pussy facing the lens."
+    )
+
+
+def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
+    """Pose notes from the mountain-path renders. The pose-entry beat stays free of the act LoRA.
+
+    The insertion beat keeps siderear and, once the shaft is seated, the hips keep short presses.
+    After the shaft leaves, the pelvis freezes. Fours bodies stay true profile, same heading.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    ward = surface_is_ward(ep)
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        bid = str(beat.get("id") or "")
+        action = str(beat.get("action") or "")
+        if not action:
+            continue
+        if (
+            "between the open thighs" in action
+            and "MOVES the hips FORWARD once" in action
+            and "FORWARD and BACK" not in action
+            and _FOURS_HOLD in action
+        ):
+            action = action.replace(_FOURS_HOLD, _FOURS_PISTON)
+        if "side faces the camera" in action and "between the open thighs" in action:
+            action = action.replace(
+                "The anus faces the camera at the top of the cleft.",
+                "The cleft is seen from that same true side.",
+            )
+            if "true profile" not in action.lower():
+                action += _TRUE_PROFILE
+        low = action.lower()
+        if "moves the hips back once" in low and "hips stay back" in low and "pelvises freeze" not in low:
+            action = action.rstrip(".") + (
+                ". After the glans clears the rim, both pelvises freeze on that back mark. "
+                "The hips stay back until the last frame."
+            )
+        if bid.endswith("-jo-set"):
+            action = _JO_BEND_RE.sub(_jo_bend_turn, action)
+            action = _JO_LAST_RE.sub(_jo_last_pose, action)
+        if bid in ("04-gin-lick", "09-kana-kiss", "09-kana-facial") and "one continuous take" not in low:
+            action = action.rstrip(".") + "." + _SAME_TAKE
+        if bid == "09-kana-facial" and not ward:
+            action = action.replace("The same door stays behind Aya. ", "")
+            action = action.replace("The same door stays behind Aya", "")
+            camera = str(beat.get("camera") or "")
+            camera = camera.replace("The same door stays behind Aya. ", "")
+            camera = camera.replace("The same door stays behind Aya", "")
+            beat["camera"] = camera
+        if bid == "04-gin-spitkiss" and "left foot stays inside" not in low:
+            action = action.rstrip(".") + "." + _LEFT_FOOT
+            beat["camera"] = (
+                "PROFILE side-on. Wide full-body. Aya stays on her back. "
+                "Aya's left foot and Aya's right foot both stay inside the frame, toes visible. "
+                "Both heads and all four feet stay inside the frame. "
+                "Both mouths stay readable. Floor runs LEFT to RIGHT."
+            )
+        beat["action"] = re.sub(r" {2,}", " ", action).strip()
+    return ep
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -4878,6 +5011,7 @@ def prepare_episode(
     out = apply_appearance(out)
     if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
         out = apply_human_skin(out)
+    out = apply_review_motion(out)
     return out
 
 
@@ -6270,7 +6404,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     if not gin and bid == "01-cover" and _KISS_FRAME_RE.search(blob):
         holds.append(OPENING_KISS_HOLD)
     elif not gin and bid == "09-kana-facial":
-        holds.append(FACIAL_LENS_HOLD)
+        holds.append(FACIAL_LENS_HOLD if surface_is_ward(ep) else FACIAL_LENS_HOLD_OPEN)
     elif not gin and bid != "04-tsuno-kiss" and _KISS_FRAME_RE.search(blob) and "blowjob" not in keys:
         holds.append(FACE_PAIR_HOLD)
         if re.search(r"travels into|before the shaft enters", blob, re.I):
@@ -6380,6 +6514,10 @@ def build_beat_prompt(
         bid_now = str(beat.get("id") or "")
         if "lowers her chest and cheek" in action_txt.lower():
             desc.append(LOWER_TO_FLOOR_CLAUSE)
+        elif "turns her body ninety degrees" in action_txt.lower():
+            desc.append(JO_SET_CLAUSE)
+        elif bid_now == "04-gin-lick" and "falls onto" in action_txt.lower():
+            desc.append(GIN_LICK_PACE_CLAUSE)
         elif "turns to the grey wall in one continuous move" in action_txt.lower():
             desc.append(WALL_SET_CLAUSE)
         elif "moves the hips back once" in action_txt.lower() and "hips stay back" in action_txt.lower():
