@@ -885,17 +885,44 @@ class SourceVideoTest(unittest.TestCase):
             )
         self.assertIn("ref2va を使う", str(raised.exception))
 
-    def test_slice_seeks_after_the_input(self) -> None:
-        argv = slice_argv(Path("/tmp/source.mp4"), 8, 16, Path("/tmp/h3-ref/slice.mp4"))
-        self.assertLess(argv.index("-i"), argv.index("-ss"))
+    def test_slice_is_the_exact_range_on_the_24_fps_clock(self) -> None:
+        argv = slice_argv(Path("/tmp/source.mp4"), 8, 16, Path("/tmp/h3-ref/slice.mov"))
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("[0:v]trim=start=8.000:end=16.000,setpts=PTS-STARTPTS,fps=24", graph)
+        self.assertIn("[0:a]atrim=start=8.000:end=16.000,asetpts=PTS-STARTPTS", graph)
+        self.assertNotIn("tpad", graph)
         self.assertNotIn("copy", argv)
         self.assertNotIn("aac", argv)
         self.assertEqual(argv[argv.index("-c:a") + 1], "pcm_s16le")
-        self.assertEqual(argv[argv.index("-ss") + 1], "8.000")
-        self.assertEqual(argv[argv.index("-to") + 1], "16.000")
+        self.assertEqual(argv[argv.index("-t") + 1], "8.000")
         dest = slice_dest(Path("/tmp/source.mp4"), 8, 16)
         self.assertEqual(dest.name, "source-8.000-16.000.mov")
-        self.assertEqual(dest.suffix, ".mov")
+
+    def test_a_longer_generation_holds_the_last_frame_in_silence(self) -> None:
+        argv = slice_argv(Path("/tmp/source.mp4"), 8, 13, Path("/tmp/h3-ref/slice.mov"), pad_s=0.167)
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("tpad=stop_mode=clone:stop_duration=0.167", graph)
+        self.assertIn("apad=pad_dur=0.167", graph)
+        self.assertEqual(argv[argv.index("-t") + 1], "5.167")
+        self.assertEqual(slice_dest(Path("/tmp/source.mp4"), 8, 13, 0.167).name, "source-8.000-13.000-p0.167.mov")
+        mute = slice_argv(Path("/tmp/mute.mp4"), 0, 5, Path("/tmp/h3-ref/m.mov"), has_audio=False)
+        self.assertIn("anullsrc=r=48000:cl=stereo", mute)
+        self.assertIn("[1:a]atrim=duration=5.000", mute[mute.index("-filter_complex") + 1])
+
+    def test_generation_pads_the_reference_to_its_own_length(self) -> None:
+        text = (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8")
+        self.assertIn("pad_to_s=job.aligned_s", text)
+
+    def test_the_join_can_keep_pcm_for_the_master(self) -> None:
+        parts = [(Path("/tmp/a.mp4"), 5.0), (Path("/tmp/b.mp4"), 6.0)]
+        pcm = join_command(parts, Path("/tmp/master.mov"), audio="pcm")
+        self.assertEqual(pcm[pcm.index("-c:a") + 1], "pcm_s16le")
+        self.assertNotIn("-ar", pcm)
+        aac = join_command(parts, Path("/tmp/out.mp4"))
+        self.assertEqual(aac[aac.index("-c:a") + 1], "aac")
+        self.assertEqual(aac[aac.index("-ar") + 1], "32000")
+        with self.assertRaises(ValueError):
+            join_command(parts, Path("/tmp/x.mp4"), audio="mp3")
 
 
 if __name__ == "__main__":

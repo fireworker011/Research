@@ -270,7 +270,12 @@ def _call_pipe(
         if job.image_path is not None:
             references.append(MiniMaxH3ImageReference.from_file(str(job.image_path)))
         if job.video_path is not None:
-            media = ensure_reference_slice(job.video_path, job.video_start_s, job.video_end_s)
+            media = ensure_reference_slice(
+                job.video_path,
+                job.video_start_s,
+                job.video_end_s,
+                pad_to_s=job.aligned_s,
+            )
             print(f"参照動画 {media}", flush=True)
             references.append(MiniMaxH3VideoReference.from_file(str(media)))
         if job.audio_path is not None:
