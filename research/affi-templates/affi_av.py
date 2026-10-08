@@ -271,13 +271,19 @@ def clip_prompt(
     audio: Any,
     subject_en: str = "",
     frames: bool = True,
+    music: str | None = None,
 ) -> dict[str, Any]:
-    """One H3 prompt. frames keeps the FL2VA picture lines. Without them, this is T2VA."""
+    """One H3 prompt. frames keeps the FL2VA picture lines. Without them, this is T2VA.
+
+    ``music`` replaces the template's music line, for an own file mixed after the join.
+    """
     if not shots:
         raise ValueError("ショットが無い")
     origin = float(shots[0]["start_s"])
     style = _style(look_en)
-    music, music_ja = _bgm(audio)
+    music_line, music_ja = _bgm(audio)
+    if music is not None:
+        music_line = music
     motion_ja = [
         {"id": str(shot["id"]), "picture": shot.get("picture"), "camera": shot.get("camera")}
         for shot in shots
@@ -328,11 +334,17 @@ def clip_prompt(
         [
             "integrated_multimodal_description: " + " ".join(shot_text) + part,
             "overall_soundscape: " + _soundscape(handle, shots),
-            "non_diegetic_music: " + music,
+            "non_diegetic_music: " + music_line,
         ]
     )
     prompt = "\n\n".join(sections)
-    return {"prompt": prompt + "\n", "motion_ja": motion_ja, "spoken": spoken, "bgm_prompt": music, "bgm_summary": music_ja}
+    return {
+        "prompt": prompt + "\n",
+        "motion_ja": motion_ja,
+        "spoken": spoken,
+        "bgm_prompt": music_line,
+        "bgm_summary": music_ja,
+    }
 
 
 def t2v_prompt(text: str) -> str:

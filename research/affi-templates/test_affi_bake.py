@@ -128,12 +128,16 @@ def test_asmr_repeats_four_cuts_of_eight_seconds() -> None:
     assert sum(clip["trim_s"] for clip in job["clips"]) == 32
 
 
-def test_talk_does_not_invent_the_missing_seconds() -> None:
-    job = bake.bake_reference("nuts0629", mode="talk", theme="夕方の散歩")
-    assert job["clips"] == []
-    assert any("足さない" in reason for reason in job["blocked"])
+def test_talk_makes_only_the_written_seconds() -> None:
+    job = bake.bake_reference("nuts0629", mode="talk", theme="夕方の散歩", lines=["どっちが先"])
+    assert job["template_duration_s"] == 37
+    assert job["duration_s"] == 19
     assert job["cuts"][0]["end_s"] == 19
-    assert job["performance"]["motion"]["template_coverage"].startswith("クリップは空")
+    assert sum(clip["trim_s"] for clip in job["clips"]) == 19
+    assert all(bake._accepts(clip["request_s"]) for clip in job["clips"])
+    assert job["status"] == "ready"
+    assert any("19–37 秒は区間が無いので作らない" in note for note in job["notes"])
+    assert job["performance"]["motion"]["template_coverage"] == "型に書いてある動作は全部入っている"
     assert job["performance"]["bgm"]["summary"] == "BGMはあると型にある。楽器は不明なので曲は足さない。"
 
 
@@ -360,6 +364,16 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "affi_speech.py" in blob
     assert "faster-whisper" in blob
     assert "台詞の文字はプロンプトに写しません" not in blob
+    loader = next(src for src in code if "#@title 読み込み" in src)
+    for name in ("affi_media.py", "affi_speech.py", "affi_speaker.py", "affi_finish.py", "affi_match.py"):
+        assert loader.index(f'"{name}",') < loader.index('"affi_bake.py",')
+    assert picked["範囲の切り方"] == bake.SPLIT_CHOICES[0][0]
+    assert picked["題字"] == "" and picked["ロゴ"] == "" and picked["曲"] == ""
+    assert "speaker_install_argv" in blob
+    assert "skip_done=True" in bake_src
+    assert "measure_repro_clip" in bake_src
+    assert "all_clips_made" in bake_src
+    assert "not 最初の1本だけ" not in bake_src
     for name in ("reference_check.ipynb", "affi_genre_templates.ipynb"):
         moved = json.loads((ROOT / name).read_text(encoding="utf-8"))
         moved_src = "\n".join(_cell_source(cell) for cell in moved["cells"])
@@ -543,9 +557,10 @@ def test_fills_supply_the_theme_and_leave_out_the_source_lines(tmp_path: Path) -
     assert ready["status"] == "ready"
     assert ready["blocked"] == []
     talk = bake.bake_reference("nuts0629", mode="talk", fill="template")
-    assert talk["clips"] == []
-    assert any("足さない" in reason for reason in talk["blocked"])
-    assert all("台詞" not in reason for reason in talk["blocked"])
+    assert talk["status"] == "ready"
+    assert talk["duration_s"] == 19
+    assert talk["clips"]
+    assert any("足さない" in note for note in talk["notes"])
 
 
 def test_manual_i2v_keeps_the_typed_prompt_and_does_not_render(tmp_path: Path) -> None:
@@ -690,6 +705,7 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
         handle="nuts0629",
         mode="talk",
         fill_label="テンプレ",
+        image=str(tmp_path / "gone.jpg"),
         out_dir=tmp_path,
     )
     blocked = bake.commands_file("話でジョブを書く", handle="nuts0629", mode="talk", out_dir=tmp_path)
@@ -697,7 +713,7 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
     empty, message = bake.commands_to_run(blocked, first_only=True)
     assert empty == []
     assert "止まっているので焼かない" in message
-    assert "足さない" in message
+    assert "静止画" in message
 
     missing, missing_note = bake.commands_to_run(tmp_path / "nope.txt", first_only=True)
     assert missing == []
@@ -808,6 +824,10 @@ def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) 
     assert job["speech"] == []
     assert job["speech_known"] is False
     assert "文は足さない" in job["speech_note"]
+    assert job["cuts"] is None
+    assert any("カットは測っていない" in note for note in job["notes"])
+    assert all("When <Video 1> cuts, the target video cuts at that same moment" in clip["prompt"] for clip in job["clips"])
+    assert job["short_edge"] == 512
     path = bake.write_reproduce(job, tmp_path / "repro")
     commands = (path.parent / "commands.txt").read_text(encoding="utf-8")
     assert "status=ready" in commands
@@ -829,7 +849,15 @@ def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) 
     from h3_runner.ffmpeg_join import join_command
 
     parts = [(path.parent / "clips" / f"{clip['id']}.mp4", float(clip["trim_s"])) for clip in job["clips"]]
-    assert shlex.split(join) == join_command(parts, path.parent / "source.mp4", width=1080, height=1920)
+    assert shlex.split(join) == join_command(parts, path.parent / "source.mov", width=1080, height=1920, audio="pcm")
+    finish = bake.finish_lines(path.parent)
+    assert len(finish) == 2
+    last = shlex.split(finish[1])
+    assert last[last.index("-i") + 1] == str(path.parent / "source.mov")
+    assert last[-1] == str(path.parent / "source.mp4")
+    assert last[last.index("-c:v") + 1] == "copy"
+    assert last[last.index("-c:a") + 1] == "aac"
+    assert not (path.parent / "captions.ass").exists()
     still = tmp_path / "still.jpg"
     still.write_bytes(b"jpeg")
     with_still = bake.plan_reproduce(video=str(source), image=str(still), duration_s=8)
@@ -842,7 +870,7 @@ def test_a_source_video_becomes_ref2va_slices_without_fl2v_lora(tmp_path: Path) 
     shown = bake.run_choice("元動画を再現", video=str(source), out_dir=tmp_path / "probed")
     assert "秒数が測れない" in shown
     assert "ready" not in shown
-    assert "元動画の一致率は測っていない" in shown
+    assert "一致率は、焼いたあとに範囲ごとに測る" in shown
     assert bake.commands_file("元動画を再現", out_dir=tmp_path / "probed") == tmp_path / "probed" / "repro" / "commands.txt"
 
 
@@ -852,17 +880,24 @@ def test_a_missing_source_video_does_not_invent_a_length(tmp_path: Path) -> None
     assert missing["clips"] == []
     assert missing["duration_s"] is None
     assert any("ファイルが無い" in reason for reason in missing["blocked"])
+
+
+def test_a_file_under_five_seconds_is_held_to_five_and_cut_back(tmp_path: Path) -> None:
     short = tmp_path / "short.mp4"
     short.write_bytes(b"x")
     under = bake.plan_reproduce(video=str(short), duration_s=4)
-    assert under["status"] == "blocked"
-    assert under["clips"] == []
-    assert any("5秒未満" in reason for reason in under["blocked"])
-    bake.write_reproduce(under, tmp_path / "short-job")
-    none, note = bake.commands_to_run(tmp_path / "short-job" / "commands.txt", first_only=False)
-    assert none == []
-    assert "5秒未満" in note
-    assert "Ref2VA" not in note
+    assert under["status"] == "ready"
+    assert len(under["clips"]) == 1
+    clip = under["clips"][0]
+    assert (clip["start_s"], clip["end_s"], clip["trim_s"], clip["request_s"]) == (0.0, 4.0, 4.0, 5.0)
+    assert clip["pad_s"] == round(124 / 24 - 4.0, 3)
+    assert "From 00:04.000, <Video 1> holds its last frame in silence." in clip["prompt"]
+    assert any("5秒まで止め絵と無音で生成し、元の秒に戻す" in note for note in under["notes"])
+    path = bake.write_reproduce(under, tmp_path / "short-job")
+    lines, _note = bake.commands_to_run(path.parent / "commands.txt", first_only=True)
+    assert "--duration 5" in lines[0]
+    assert "--video-end 4" in lines[0]
+    assert "trim=duration=4.000" in bake.join_line(path.parent)
 
 
 def test_repro_weights_are_transformer_ref_and_not_the_fl2v_stack(tmp_path: Path) -> None:
@@ -873,111 +908,3 @@ def test_repro_weights_are_transformer_ref_and_not_the_fl2v_stack(tmp_path: Path
     assert all(affi_av.REPAIR_FILENAME not in item for item in missing)
 
 
-def test_measured_lines_reach_only_the_slice_that_hears_them(tmp_path: Path) -> None:
-    source = tmp_path / "source.mp4"
-    source.write_bytes(b"not-a-real-video")
-    speech = [
-        {"start_s": 1.0, "end_s": 2.0, "text": "こんにちは"},
-        {"start_s": 9.0, "end_s": 10.0, "text": "またね"},
-    ]
-    job = bake.plan_reproduce(video=str(source), duration_s=16, speech=speech)
-    assert job["status"] == "ready"
-    assert len(job["clips"]) == 2
-    first, second = job["clips"]
-    assert "<d>[Japanese] こんにちは.</d>" in first["prompt"]
-    assert "またね" not in first["prompt"]
-    assert "<d>[Japanese] またね.</d>" in second["prompt"]
-    assert "こんにちは" not in second["prompt"]
-    for clip in job["clips"]:
-        prompt = clip["prompt"]
-        assert "lip-synced" not in prompt.casefold()
-        assert "The mouth forms that one line and no other words." in prompt
-        assert "When a line ends, the mouth closes until the next line." in prompt
-        assert "(S1)" in prompt
-        assert "(S2)" not in prompt
-        assert "[Shot 2]" not in prompt
-        assert "At 00:01.000 into this shot" in prompt
-        assert not _CJK.search(_outside_dialogue(prompt))
-    assert job["speech_known"] is True
-    path = bake.write_reproduce(job, tmp_path / "spoken")
-    captions = json.loads((path.parent / "captions.json").read_text(encoding="utf-8"))
-    assert [row["text"] for row in captions] == ["こんにちは.", "またね."]
-    assert [(row["start_s"], row["end_s"]) for row in captions] == [(1.0, 2.0), (9.0, 10.0)]
-    assert all(row["burn"] is False for row in captions)
-    assert "口はその文だけを作る" in job["speech_note"]
-
-
-def test_a_line_at_the_first_frame_has_no_cut_stamp(tmp_path: Path) -> None:
-    source = tmp_path / "source.mp4"
-    source.write_bytes(b"x")
-    job = bake.plan_reproduce(
-        video=str(source),
-        duration_s=8,
-        speech=[{"start_s": 0.0, "end_s": 1.0, "text": "はい"}],
-    )
-    prompt = job["clips"][0]["prompt"]
-    assert "From the start of this shot" in prompt
-    assert "<d>[Japanese] はい.</d>" in prompt
-    assert "At 00:00.000" not in prompt
-    assert "[Shot 2]" not in prompt
-
-
-def test_measured_silence_does_not_form_words(tmp_path: Path) -> None:
-    source = tmp_path / "source.mp4"
-    source.write_bytes(b"x")
-    job = bake.plan_reproduce(video=str(source), duration_s=8, speech=[])
-    prompt = job["clips"][0]["prompt"]
-    assert job["speech_known"] is True
-    assert job["speech"] == []
-    assert "<d>" not in prompt
-    assert "Mouths do not form words." in prompt
-    assert "発話は無い" in job["speech_note"]
-
-
-def test_a_banned_line_never_enters_the_prompt(tmp_path: Path) -> None:
-    source = tmp_path / "source.mp4"
-    source.write_bytes(b"x")
-    job = bake.plan_reproduce(
-        video=str(source),
-        duration_s=8,
-        speech=[{"start_s": 1.0, "end_s": 2.0, "text": "すず丸"}],
-    )
-    prompt = job["clips"][0]["prompt"]
-    assert "すず丸" not in prompt
-    assert "すず丸" not in json.dumps(job["speech"], ensure_ascii=False)
-    assert "<d>" not in prompt
-    assert "Mouths do not form words." in prompt
-    assert "実在や未成年の指定はせりふから外した。" in job["speech_note"]
-
-
-def test_a_speech_sidecar_is_the_mouth_line(tmp_path: Path) -> None:
-    source = tmp_path / "source.mp4"
-    source.write_bytes(b"x")
-    affi_speech.speech_sidecar(source).write_text(
-        json.dumps([{"start_s": 1.0, "end_s": 2.0, "text": "こんにちは"}], ensure_ascii=False),
-        encoding="utf-8",
-    )
-    job = bake.plan_reproduce(video=str(source), duration_s=8)
-    prompt = job["clips"][0]["prompt"]
-    assert "<d>[Japanese] こんにちは.</d>" in prompt
-    assert "speech.json" in job["speech_note"]
-    assert job["speech_known"] is True
-    shown = bake._run_repro(str(source), "", "9:16", tmp_path / "shown", duration_s=8)
-    assert "口はその文だけを作る" in shown
-    assert "すず丸" not in shown
-
-
-def test_speech_times_stay_inside_their_slice() -> None:
-    assert affi_speech.finish_sentence("こんにちは") == "こんにちは."
-    assert affi_speech.finish_sentence("え？") == "え?"
-    assert affi_speech.finish_sentence("〜やあ") == "やあ."
-    assert affi_speech.dialogue_tag("hello") == "<d>[English] hello.</d>"
-    lines = [
-        {"start_s": 0.0, "end_s": 1.0, "text": "前"},
-        {"start_s": 7.5, "end_s": 8.5, "text": "またぐ"},
-        {"start_s": 20.0, "end_s": 21.0, "text": "あと"},
-    ]
-    inside = affi_speech.lines_in_span(lines, 8.0, 16.0)
-    assert [row["text"] for row in inside] == ["またぐ."]
-    assert inside[0]["start_s"] == 0.0
-    assert [row["text"] for row in affi_speech.lines_in_span(lines, 0.0, 8.0)] == ["前.", "またぐ."]
