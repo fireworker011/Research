@@ -32,6 +32,8 @@ SILENCE_MIN_S = 0.2
 SPEAKER_SITE = Path("/content/affi-speaker")
 SPEAKER_MODEL = "pyannote/speaker-diarization-3.1"
 SPEAKER_SEGMENTATION = "pyannote/segmentation-3.0"
+# PyTorch wrapper of WeSpeaker VoxCeleb ResNet34_LM. The official .onnx file is a different model.
+SPEAKER_EMBEDDING = "pyannote/wespeaker-voxceleb-resnet34-LM"
 # The model card still calls use_auth_token. huggingface_hub 1.0 dropped it.
 SPEAKER_HUB = "0.36.0"
 SPEAKER_AUDIO = "3.3.2"
@@ -398,6 +400,7 @@ def speaker_gate_lines() -> list[str]:
     """What the token account must accept before this pipeline can download."""
     return [
         f"話者は {SPEAKER_MODEL}。このページは config.yaml だけで、重みは別のモデルにある。",
+        f"埋め込みは WeSpeaker の VoxCeleb ResNet34_LM。読むのは {SPEAKER_EMBEDDING}。公式の .onnx は使わない。",
         "利用条件は、次の2つにこのトークンのアカウントで同意する。",
         f"https://huggingface.co/{SPEAKER_MODEL}",
         f"https://huggingface.co/{SPEAKER_SEGMENTATION}",

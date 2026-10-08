@@ -209,9 +209,11 @@ def test_speaker_install_keeps_the_hub_that_accepts_the_model_card(tmp_path: Pat
     assert "huggingface_hub==0.36.0" in argv
     assert affi_media.SPEAKER_MODEL == "pyannote/speaker-diarization-3.1"
     assert affi_media.SPEAKER_SEGMENTATION == "pyannote/segmentation-3.0"
+    assert affi_media.SPEAKER_EMBEDDING == "pyannote/wespeaker-voxceleb-resnet34-LM"
     lines = affi_media.speaker_gate_lines()
     assert any(affi_media.SPEAKER_MODEL in line for line in lines)
     assert any(affi_media.SPEAKER_SEGMENTATION in line for line in lines)
+    assert any("ResNet34_LM" in line and ".onnx" in line for line in lines)
     assert affi_media.speaker_site_ready(site) is False
     (site / "pyannote" / "audio").mkdir(parents=True)
     assert affi_media.speaker_site_ready(site) is False
