@@ -11,7 +11,7 @@ Env:
   H3_EPISODE_CONNECT  t2v | chain | landing（日本語: カット / 前の最終フレームから続ける / 用意した最終フレームへ着く。カットとチェーンの1本目は T2V）
   H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
-  H3_EPISODE_MOSAIC   keep | restore（日本語: モザイクあり / モザイクなし。なしは描くカットに復元LoRA。迷ったらあり）
+  H3_EPISODE_MOSAIC   keep | restore（日本語: モザイクなし / モザイクあり。ありは描くカットに復元LoRA。迷ったらなし）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
   H3_EPISODE_INVITE_POSE  all_fours | m_open | ride | stand | nelson（日本語: 四つん這い股広げ / M字開脚仰向け / 対面M字騎乗 / 壁立ちバック / フルネルソンアナル。病棟の誘う）
   H3_EPISODE_TOILET   off | pee | masturbate | tentacle | finger（日本語: 行かない / 小便 / オナニー / 触手 / ディルド。病棟の道中）

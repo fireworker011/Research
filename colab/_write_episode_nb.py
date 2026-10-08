@@ -443,7 +443,7 @@ def make_nb() -> dict:
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
         .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
-        .replace("__MOSAIC_HELP__", form_markdown("mosaic", "モザイク — ありは今のまま。なしは復元LoRA"))
+        .replace("__MOSAIC_HELP__", form_markdown("mosaic", "モザイク — なしは今のまま。ありは復元LoRA"))
         .replace("__MOSAIC_DEFAULT__", json.dumps(ui_default("mosaic"), ensure_ascii=False))
         .replace("__MOSAIC_CHOICES__", json.dumps(ui_choices("mosaic"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))

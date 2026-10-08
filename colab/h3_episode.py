@@ -335,9 +335,9 @@ LORA_FILES = {
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
     # Do not add this key to a ward beat extra. The long boilerplate stays on the job.
     "anime2real": "Anime2Realsim__H3.safetensors",
-    # Mosaic restoration. Civitai 2990026 version 3390424 fileId 3279789.
-    # The published name is lora.safetensors. Save under this name so it does not collide.
-    # No trigger word. The form stacks this only when mosaic is restore.
+    # Mosaic restoration. Civitai 2990026 version 3390424 fileId 3280455.
+    # Published name is DecensoreH3_000002500.safetensors. Save under this name so it does not collide.
+    # No trigger word. The form stacks this only when mosaic is restore (モザイクあり).
     "mosaic": "mosaic_restoration_h3_v1.safetensors",
 }
 LORA_URLS = {
@@ -372,7 +372,7 @@ LORA_URLS = {
     "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
-    "mosaic": "https://civitai.com/api/download/models/3390424?fileId=3279789",
+    "mosaic": "https://civitai.com/api/download/models/3390424?fileId=3280455",
 }
 # Studio oral act is 0.8 (catalog default 0.85). Combat/mystic stay 1.0.
 # Kiss author recommends 0.5. Cumshot author says below 1.0 loses the ropes.

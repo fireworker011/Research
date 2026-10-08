@@ -253,17 +253,18 @@ COMBAT_ALIASES: dict[str, str] = _label_aliases(
 
 # Mosaic restoration (Civitai 2990026, version 3390424). keep stacks nothing.
 # restore stacks the LoRA on beats that are drawn. The card has no trigger word.
+# The form calls the stacked side モザイクあり. The quiet side is モザイクなし.
 MOSAIC_MODES: dict[str, dict[str, Any]] = {
     "keep": {
-        "label_ja": "あり",
-        "choice_ja": "モザイクあり（今のまま・迷ったらこれ）",
+        "label_ja": "なし",
+        "choice_ja": "モザイクなし（今のまま・迷ったらこれ）",
         "when_ja": "復元LoRAは積まない。今の絵のまま",
-        "hint_ja": "迷ったらこれ。モザイクはそのまま。",
+        "hint_ja": "迷ったらこれ。",
         "recommend": True,
     },
     "restore": {
-        "label_ja": "なし",
-        "choice_ja": "モザイクなし（復元LoRA）",
+        "label_ja": "あり",
+        "choice_ja": "モザイクあり（復元LoRA）",
         "when_ja": "描くカットにモザイク復元LoRAを積む。トリガー語は無い",
         "hint_ja": "Civitai 2990026 version 3390424。カードに強度は無いので 1.0。",
     },
@@ -272,11 +273,11 @@ MOSAIC_MODES: dict[str, dict[str, Any]] = {
 MOSAIC_ALIASES: dict[str, str] = _label_aliases(
     MOSAIC_MODES,
     {
-        "モザイクあり": "keep",
-        "present": "keep",
-        "モザイクなし": "restore",
+        "モザイクなし": "keep",
+        "モザイクあり（今のまま・迷ったらこれ）": "keep",
+        "モザイクあり": "restore",
+        "モザイクなし（復元LoRA）": "restore",
         "restoration": "restore",
-        "mosaic-off": "restore",
     },
 )
 

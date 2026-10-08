@@ -376,8 +376,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "用意した最終フレームへ着く" in src
     assert 'COMBAT = "格闘LoRAオフ（迷ったらこれ）"' in src
     assert "格闘LoRAオン（ハイメモリ専用）" in src
-    assert 'MOSAIC = "モザイクあり（今のまま・迷ったらこれ）"' in src
-    assert "モザイクなし（復元LoRA）" in src
+    assert 'MOSAIC = "モザイクなし（今のまま・迷ったらこれ）"' in src
+    assert "モザイクあり（復元LoRA）" in src
     assert "H3_EPISODE_MOSAIC" in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
@@ -7007,22 +7007,22 @@ def test_hospital_off_ward_human_and_insert_fixes():
 
 
 def test_mosaic_restore_is_optional_and_the_default_stacks_nothing():
-    assert ui_default("mosaic") == "モザイクあり（今のまま・迷ったらこれ）"
+    assert ui_default("mosaic") == "モザイクなし（今のまま・迷ったらこれ）"
     assert ui_choices("mosaic") == [
-        "モザイクあり（今のまま・迷ったらこれ）",
-        "モザイクなし（復元LoRA）",
+        "モザイクなし（今のまま・迷ったらこれ）",
+        "モザイクあり（復元LoRA）",
     ]
     assert LORA_FILES["mosaic"] == "mosaic_restoration_h3_v1.safetensors"
     assert LORA_FILES["mosaic"] != "lora.safetensors"
     assert "api/download/models/3390424" in LORA_URLS["mosaic"]
-    assert "fileId=3279789" in LORA_URLS["mosaic"]
+    assert "fileId=3280455" in LORA_URLS["mosaic"]
     assert LORA_STRENGTHS["mosaic"] == 1.0
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     plain = prepare_episode(raw, story_override="受け入れる")
     held = prepare_episode(
         raw,
         story_override="受け入れる",
-        mosaic_override="モザイクあり（今のまま・迷ったらこれ）",
+        mosaic_override="モザイクなし（今のまま・迷ったらこれ）",
     )
     assert (held.get("render") or {}).get("mosaic") == "keep"
     assert "mosaic" not in (plain.get("render") or {})
@@ -7035,7 +7035,7 @@ def test_mosaic_restore_is_optional_and_the_default_stacks_nothing():
     restored = prepare_episode(
         raw,
         story_override="受け入れる",
-        mosaic_override="モザイクなし（復元LoRA）",
+        mosaic_override="モザイクあり（復元LoRA）",
     )
     assert restored["render"]["mosaic"] == "restore"
     assert validate_episode(restored, root=HOSPITAL_DIR) == []
@@ -7056,8 +7056,8 @@ def test_mosaic_restore_is_optional_and_the_default_stacks_nothing():
         None,
     )
     assert (LORA_FILES["mosaic"], 1.0) in stacked["stack"]
-    shown = describe_run(mosaic="モザイクなし（復元LoRA）")
-    assert "モザイクなし（復元LoRA）" in shown
-    assert "モザイクあり（今のまま・迷ったらこれ）" in describe_run()
+    shown = describe_run(mosaic="モザイクあり（復元LoRA）")
+    assert "モザイクあり（復元LoRA）" in shown
+    assert "モザイクなし（今のまま・迷ったらこれ）" in describe_run()
     with pytest.raises(EpisodeError):
         prepare_episode(raw, mosaic_override="not-a-mosaic")
