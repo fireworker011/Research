@@ -363,7 +363,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'EPISODE = "霞東フロア あさ（迷ったらこれ）"' in src
     assert "病棟出口" in src
     assert "番台ショート（25秒）" in src
-    assert 'BRANCH = "cursor/hospital-anal-dildo-face-d736"' in src
+    assert 'BRANCH = "cursor/human-cast-anatomy-d736"' in src
     assert 'CivitaiのAPIキー = ""' in src
     assert 'os.environ["CIVITAI_API_TOKEN"] = _civitai' in src
     assert "619ea878c0bf2491f6cedd625329c5b3" not in src
@@ -441,7 +441,7 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "619ea878c0bf2491f6cedd625329c5b3" not in md
     assert "CivitaiのAPIキー" in md
-    assert "cursor/hospital-anal-dildo-face-d736" in md
+    assert "cursor/human-cast-anatomy-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
