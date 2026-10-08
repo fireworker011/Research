@@ -222,7 +222,7 @@ def test_speaker_install_keeps_the_hub_that_accepts_the_model_card(tmp_path: Pat
     assert affi_media.speaker_site_ready(site) is True
     text = Path(affi_media.__file__).with_name("affi_speaker.py").read_text(encoding="utf-8")
     assert "use_auth_token" in text
-    assert "pyannote/segmentation-3.0" in text
+    assert "同意したアカウントの Read トークンを欄に貼る。" in text
 
 
 def test_speaker_turns_number_speakers_in_the_order_heard(tmp_path: Path) -> None:

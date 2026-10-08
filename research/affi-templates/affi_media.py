@@ -397,13 +397,10 @@ def music_tags(path: Path, spans: Sequence[tuple[float, float]]) -> tuple[list[l
 
 
 def speaker_gate_lines() -> list[str]:
-    """What the token account must accept before this pipeline can download."""
+    """Models this pipeline loads. Agreement is already done on the token account."""
     return [
-        f"話者は {SPEAKER_MODEL}。このページは config.yaml だけで、重みは別のモデルにある。",
+        f"話者は {SPEAKER_MODEL}。切り分けは {SPEAKER_SEGMENTATION}。",
         f"埋め込みは WeSpeaker の VoxCeleb ResNet34_LM。読むのは {SPEAKER_EMBEDDING}。公式の .onnx は使わない。",
-        "利用条件は、次の2つにこのトークンのアカウントで同意する。",
-        f"https://huggingface.co/{SPEAKER_MODEL}",
-        f"https://huggingface.co/{SPEAKER_SEGMENTATION}",
     ]
 
 

@@ -375,6 +375,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert 'HF_TOKEN = "" #@param {type:"string"}' in run_src
     assert "https://huggingface.co/settings/tokens" in run_src
     assert "このセルの HF_TOKEN 欄が空なので話者は分けない。" in run_src
+    assert "同意済みなら、そのトークンを欄に貼るだけでよい。" in run_src
+    assert "speaker_gate_lines" not in run_src
     assert 'globals().get("HF_TOKEN")' in bake_src
     assert "skip_done=True" in bake_src
     assert "measure_repro_clip" in bake_src

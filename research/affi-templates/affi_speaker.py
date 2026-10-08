@@ -20,11 +20,7 @@ def main(argv: list[str]) -> int:
         return 2
     wav, out, model = Path(argv[1]), Path(argv[2]), argv[3]
     token = os.environ.get("HF_TOKEN") or None
-    gate = (
-        "利用条件に同意する: "
-        "https://huggingface.co/pyannote/speaker-diarization-3.1 "
-        "と https://huggingface.co/pyannote/segmentation-3.0"
-    )
+    gate = "このトークンのアカウントでは読めない。同意したアカウントの Read トークンを欄に貼る。"
     try:
         pipeline = Pipeline.from_pretrained(model, use_auth_token=token)
     except Exception as exc:
