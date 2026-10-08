@@ -7044,10 +7044,28 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "shaft stays outside" in closed["action"].lower()
     assert "thrust" not in extra_keys(closed)
     wall = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
+    wall_press = next(b for b in wall["beats"] if b["id"] == "03-kiss-press")
+    wall_low = wall_press["action"].lower()
+    assert "on the balls of both feet, heels lifted, feet apart" in wall_low
+    assert "the anus faces the camera" in wall_low
+    assert "between the calves" in wall_low
+    assert "turns the torso a little toward the right" in wall_low
+    assert "feet and soles turn with the torso and point the same way as aya's feet and soles" in wall_low
+    assert "low view between the calves" in wall_press["camera"].lower()
+    assert "aya faces left toward the grey wall" in wall_press["camera"].lower()
+    assert "turns a little toward the right" in wall_press["camera"].lower()
+    assert "both chests face left" not in wall_press["camera"].lower()
     wall_in = next(b for b in wall["beats"] if b["id"] == "03-kiss-in")
     assert "hold still joined at the base" in wall_in["action"].lower()
-    assert "turns the torso a little" not in wall_in["action"].lower()
-    assert "spine stays parallel" in wall_in["action"].lower()
+    assert "stays a little toward the right from left true profile" in wall_in["action"].lower()
+    assert "on the balls of both feet" in wall_in["action"].lower()
+    assert "the anus faces the camera" in wall_in["action"].lower()
+    wall_close = next(b for b in wall["beats"] if b["id"] == "03-kiss-close")
+    assert "stays a little toward the right" in wall_close["camera"].lower()
+    assert "spines stay parallel" not in wall_close["camera"].lower()
+    wall_set = next(b for b in wall["beats"] if b["id"] == "03-kiss")
+    assert "turns the torso a little" not in wall_set["action"].lower()
+    assert "stays to the side of the hips" in wall_set["action"].lower()
 
     finger = prepare_episode(raw, toilet_override="トイレ・アナル指")
     afast = next(b for b in finger["beats"] if b["id"] == "04-toilet-afast")

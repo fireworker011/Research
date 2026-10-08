@@ -4722,6 +4722,10 @@ _SHAFT_CAM_RE = re.compile(
     r"chest and knees facing LEFT, the same direction as Aya"
     r"(?:, one hand on her hip\. Both face LEFT|\. \1's side faces the camera)\."
 )
+_WALL_CAM_RE = re.compile(
+    r"The shaft person's hips (move onto|stay on) the same centerline directly behind Aya's buttocks\. "
+    r"Both chests face LEFT\. Both sides face the camera\. The spines stay parallel\."
+)
 _SAME_TAKE = (
     " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
     "The camera moves inside this shot. The picture stays sharp."
@@ -4806,11 +4810,30 @@ def _shaft_cam_yaw(match: re.Match[str]) -> str:
     )
 
 
+def _shaft_wall_cam_yaw(match: re.Match[str]) -> str:
+    verb = match.group(1)
+    if verb == "move onto":
+        pose = (
+            "The shaft person starts in left true profile and turns a little toward the RIGHT, "
+            "the same body angle as Aya."
+        )
+    else:
+        pose = (
+            "The shaft person stays a little toward the RIGHT from left true profile, "
+            "the same body angle as Aya."
+        )
+    return (
+        f"The shaft person's hips {verb} the same centerline directly behind Aya's buttocks. "
+        f"{pose} "
+        "The shaft person's feet and soles point the same way as Aya's feet and soles."
+    )
+
+
 def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
     """Pose notes from the mountain-path renders. The pose-entry beat stays free of the act LoRA.
 
     The insertion beat keeps siderear and, once the shaft is seated, the hips keep short presses.
-    After the shaft leaves, the pelvis freezes. On all fours, Aya's pose stays.
+    After the shaft leaves, the pelvis freezes. On all fours and on the wall stand, Aya's pose stays.
     The shaft adult starts in left true profile and turns a little toward the right,
     so the feet and soles match Aya.
     """
@@ -4831,10 +4854,16 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
             and _FOURS_HOLD in action
         ):
             action = action.replace(_FOURS_HOLD, _FOURS_PISTON)
-        if "side faces the camera" in action and "between the open thighs" in action:
+        camera = str(beat.get("camera") or "")
+        thighs = "between the open thighs" in action
+        calves = "between the calves" in action or "between the calves" in camera
+        if "side faces the camera" in action and (thighs or calves):
             action = _SHAFT_HEADING_RE.sub(_shaft_yaw_from_profile, action)
-            camera = str(beat.get("camera") or "")
-            beat["camera"] = _SHAFT_CAM_RE.sub(_shaft_cam_yaw, camera)
+        if thighs and "side faces the camera" in action:
+            camera = _SHAFT_CAM_RE.sub(_shaft_cam_yaw, camera)
+        if calves:
+            camera = _WALL_CAM_RE.sub(_shaft_wall_cam_yaw, camera)
+        beat["camera"] = camera
         low = action.lower()
         if "moves the hips back once" in low and "hips stay back" in low and "pelvises freeze" not in low:
             action = action.rstrip(".") + (
