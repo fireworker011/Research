@@ -129,6 +129,8 @@ SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
 #@markdown **開始シーン** — 空なら最初から。beat id（例 `04-toilet`）を書くと、そのカットから先を今のドロップダウンどおりに作り直す。前のカットは残す。この設定の並びに無い id は止まる。
 START = ""  #@param {type:"string"}
 FRESH = False  #@param {type:"boolean"}
+#@markdown **終わったあと** — 動画ができたあとのランタイム。迷ったらそのまま。チェックポイントだけの取得では切らない。
+RUNTIME_AFTER = "そのまま（迷ったらこれ）"  #@param ["そのまま（迷ったらこれ）", "切る"]
 #@markdown メモリ不足でそのカットが失敗したときだけ VRAM を下ろし、同じ尺をもう一度描く。それでも足りなければ短い尺に落とす。成功したカットの前には下ろさない。
 BRANCH = "__BRANCH__"  #@param {type:"string"}
 #@markdown **CivitaiのAPIキー** — 必要な LoRA を Drive に取るときだけ貼る。空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。
@@ -216,7 +218,12 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
     f"{name}={choice}"
     for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
 )
-os.environ["H3_KEEP_RUNTIME"] = "1"
+if RUNTIME_AFTER == "切る":
+    os.environ.pop("H3_KEEP_RUNTIME", None)
+    os.environ["H3_UNASSIGN_RUNTIME"] = "1"
+else:
+    os.environ["H3_KEEP_RUNTIME"] = "1"
+    os.environ.pop("H3_UNASSIGN_RUNTIME", None)
 os.environ["H3_EPISODE_START"] = str(START or "").strip()
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
@@ -270,6 +277,7 @@ slug = canonical_episode(EPISODE) or EPISODE
 os.environ["H3_EPISODE"] = slug
 Path(DRIVE_ROOT, "episodes", slug).mkdir(parents=True, exist_ok=True)
 from h3_episode_colab_main import main
+from h3_i2v_runtime import maybe_unassign
 
 rc = main()
 print("episode exit", rc)
@@ -277,6 +285,9 @@ if rc:
     raise SystemExit(rc)
 if os.environ.get("H3_WEIGHTS_ONLY") == "1":
     print("取得だけ終わりました。ランタイムを A100 にして、もう一度 Run all すると動画を描きます。")
+elif os.environ.get("H3_UNASSIGN_RUNTIME") == "1":
+    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムを切ります。赤い例外は出ません。")
+    maybe_unassign()
 else:
     print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
 '''
@@ -287,7 +298,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 **コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
-HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わってもランタイムは切らない。
+HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったあとが「そのまま」ならランタイムは切らない。「切る」なら動画ができたあと切る。チェックポイントだけの取得では切らない。
 
 ## 話 + 上から 11 つ + 病棟の追加（迷ったらそのまま）
 
@@ -359,7 +370,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
 - 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/human-cast-anatomy-d736`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
-- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
+- 成功時は `episode exit 0` のあと「成功。」と出る。終わったあとが「そのまま（迷ったらこれ）」ならランタイムはそのまま。「切る」ならそのとき切る。チェックポイントだけの取得では切らない。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """

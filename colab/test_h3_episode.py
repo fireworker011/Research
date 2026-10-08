@@ -470,8 +470,14 @@ def test_notebook_is_one_cell_and_isolated():
     assert "if rc:" in src
     assert 'raise SystemExit(rc)' in src
     assert src.index("if rc:") < src.index("raise SystemExit(rc)")
+    assert 'RUNTIME_AFTER = "そのまま（迷ったらこれ）"' in src
+    assert '["そのまま（迷ったらこれ）", "切る"]' in src
     assert 'os.environ["H3_KEEP_RUNTIME"] = "1"' in src
+    assert 'os.environ["H3_UNASSIGN_RUNTIME"] = "1"' in src
     assert "ランタイムはそのまま" in src
+    assert "ランタイムを切ります" in src
+    assert "maybe_unassign()" in src
+    assert src.index('if os.environ.get("H3_WEIGHTS_ONLY") == "1"') < src.index("maybe_unassign()")
     main_src = (ROOT / "colab" / "h3_episode_colab_main.py").read_text(encoding="utf-8")
     assert "maybe_unassign" not in main_src
     assert "runtime.unassign" not in main_src
@@ -7018,15 +7024,30 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "forward and back in short presses" in entered["action"].lower()
     assert "hold still joined at the base" not in entered["action"].lower()
     assert "the whole shaft is hidden inside the anus" in entered["action"].lower()
-    assert "true profile" in press["action"].lower()
-    assert "side of both chests" in press["action"].lower()
-    assert "anus faces the camera" not in press["action"].lower()
+    press_low = press["action"].lower()
+    assert "both knees stay planted, open wide to the left and right" in press_low
+    assert "heels out" in press_low
+    assert "the anus faces the camera at the top of the cleft" in press_low
+    assert "starts in left true profile" in press_low
+    assert "turns the torso a little toward the right" in press_low
+    assert "feet and soles turn with the torso and point the same way as aya's feet and soles" in press_low
+    assert "both torsos stay true profile" not in press_low
+    assert "spine stays parallel" not in press_low
+    assert "turns a little toward the right" in press["camera"].lower()
+    assert "feet and soles point the same way as aya" in press["camera"].lower()
+    assert "stays a little toward the right from left true profile" in entered["action"].lower()
+    assert "the anus faces the camera at the top of the cleft" in entered["action"].lower()
+    peak = next(b for b in fours["beats"] if b["id"] == "09-join-peak")
+    assert "the partner stays a little toward the right" in peak["camera"].lower()
+    assert ". partner " not in peak["camera"].lower()
     assert "pelvises freeze" in closed["action"].lower()
     assert "shaft stays outside" in closed["action"].lower()
     assert "thrust" not in extra_keys(closed)
     wall = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
     wall_in = next(b for b in wall["beats"] if b["id"] == "03-kiss-in")
     assert "hold still joined at the base" in wall_in["action"].lower()
+    assert "turns the torso a little" not in wall_in["action"].lower()
+    assert "spine stays parallel" in wall_in["action"].lower()
 
     finger = prepare_episode(raw, toilet_override="トイレ・アナル指")
     afast = next(b for b in finger["beats"] if b["id"] == "04-toilet-afast")

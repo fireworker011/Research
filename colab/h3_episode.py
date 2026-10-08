@@ -4710,9 +4710,17 @@ _FOURS_PISTON = (
     "After the shaft reaches the BASE, the hips move FORWARD and BACK in short presses for the rest of the take. "
     "Each forward press meets the buttocks. The glans stays inside the anus. The shaft stays buried to the root."
 )
-_TRUE_PROFILE = (
-    " Both torsos stay true profile. The shaft adult's chest, hips, and knees face the same heading as Aya's chest. "
-    "The camera sees the side of both chests. Spines stay parallel."
+_SHAFT_HEADING_RE = re.compile(
+    r"([A-Za-z]+)'s chest, hips, and knees (?:turn to )?face LEFT, the same direction Aya's chest faces\. "
+    r"\1's side faces the camera, the same as Aya's side\. "
+    r"\1's breasts point LEFT toward Aya's head\. "
+    r"\1's face looks down at Aya's back\. "
+    r"\1's spine stays parallel to Aya's spine\."
+)
+_SHAFT_CAM_RE = re.compile(
+    r"([A-Za-z]+)'s hips (move onto|stay on) the same centerline directly behind Aya's buttocks, "
+    r"chest and knees facing LEFT, the same direction as Aya"
+    r"(?:, one hand on her hip\. Both face LEFT|\. \1's side faces the camera)\."
 )
 _SAME_TAKE = (
     " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
@@ -4757,11 +4765,54 @@ def _jo_last_pose(match: re.Match[str]) -> str:
     )
 
 
+def _shaft_yaw_from_profile(match: re.Match[str]) -> str:
+    """Aya stays. The shaft adult leaves left true profile by a small yaw to the right."""
+    name = match.group(1)
+    if "turn to" in match.group(0):
+        return (
+            f"{name} starts in left true profile. {name}'s side faces the camera. "
+            f"{name} turns the torso a little toward the RIGHT from that left true profile "
+            f"until the body angle matches Aya. "
+            f"{name}'s feet and soles turn with the torso and point the same way as Aya's feet and soles. "
+            f"{name}'s face looks down at Aya's back."
+        )
+    return (
+        f"{name} stays a little toward the RIGHT from left true profile, the same body angle as Aya. "
+        f"{name}'s side faces the camera. "
+        f"{name}'s feet and soles point the same way as Aya's feet and soles. "
+        f"{name}'s face looks down at Aya's back."
+    )
+
+
+def _shaft_cam_yaw(match: re.Match[str]) -> str:
+    raw, verb = match.group(1), match.group(2)
+    # Peak cameras say "The partner's hips". The leading "The " stays outside this match.
+    name = "The partner" if raw.lower() == "partner" else raw
+    if verb == "move onto":
+        pose = (
+            f"{name} starts in left true profile and turns a little toward the RIGHT, "
+            f"the same body angle as Aya."
+        )
+    else:
+        pose = (
+            f"{name} stays a little toward the RIGHT from left true profile, "
+            f"the same body angle as Aya."
+        )
+    hand = " One hand stays on her hip." if "one hand" in match.group(0) else ""
+    return (
+        f"{raw}'s hips {verb} the same centerline directly behind Aya's buttocks. "
+        f"{pose} "
+        f"{name}'s feet and soles point the same way as Aya's feet and soles.{hand}"
+    )
+
+
 def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
     """Pose notes from the mountain-path renders. The pose-entry beat stays free of the act LoRA.
 
     The insertion beat keeps siderear and, once the shaft is seated, the hips keep short presses.
-    After the shaft leaves, the pelvis freezes. Fours bodies stay true profile, same heading.
+    After the shaft leaves, the pelvis freezes. On all fours, Aya's pose stays.
+    The shaft adult starts in left true profile and turns a little toward the right,
+    so the feet and soles match Aya.
     """
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return ep
@@ -4781,12 +4832,9 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
         ):
             action = action.replace(_FOURS_HOLD, _FOURS_PISTON)
         if "side faces the camera" in action and "between the open thighs" in action:
-            action = action.replace(
-                "The anus faces the camera at the top of the cleft.",
-                "The cleft is seen from that same true side.",
-            )
-            if "true profile" not in action.lower():
-                action += _TRUE_PROFILE
+            action = _SHAFT_HEADING_RE.sub(_shaft_yaw_from_profile, action)
+            camera = str(beat.get("camera") or "")
+            beat["camera"] = _SHAFT_CAM_RE.sub(_shaft_cam_yaw, camera)
         low = action.lower()
         if "moves the hips back once" in low and "hips stay back" in low and "pelvises freeze" not in low:
             action = action.rstrip(".") + (
