@@ -327,7 +327,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     quiet: dict = {}
     exec(bake_src, quiet)
     assert quiet["焼く"] is False
-    assert quiet["最初の1本だけ"] is True
+    assert quiet["最初の1本だけ"] is False
+    assert "残っている範囲を続けて焼いて" in bake_src
     assert quiet["重みが無いとき落とす"] is False
 
     forms = [src for src in code if "look_from_form" in src]
@@ -699,6 +700,23 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
     every, all_note = bake.commands_to_run(path, first_only=False)
     assert len(every) > 1
     assert all_note == f"{len(every)} 本焼きます。"
+    first_out = bake._out_of(every[0])
+    assert first_out is not None
+    first_out.parent.mkdir(parents=True, exist_ok=True)
+    first_out.write_bytes(b"mp4")
+    bake.mark_done(every[0])
+    rest, rest_note = bake.commands_to_run(path, first_only=False, skip_done=True)
+    assert rest == every[1:]
+    assert "飛ばします" in rest_note
+    assert f"{len(rest)} 本焼きます。" in rest_note
+    for line in every[1:]:
+        out = bake._out_of(line)
+        assert out is not None
+        out.write_bytes(b"mp4")
+        bake.mark_done(line)
+    none, done_note = bake.commands_to_run(path, first_only=False, skip_done=True)
+    assert none == []
+    assert "このあとつなぐ" in done_note
 
     bake.run_choice(
         "話でジョブを書く",

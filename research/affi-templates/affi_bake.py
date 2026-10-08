@@ -358,6 +358,7 @@ def next_step(task: str) -> str:
             "次は「実行」を押してください。"
             "ready と出たら、一番下の「焼く」です。"
             "元動画は、無音とカットの位置で 5〜14.4 秒の範囲に分かれます。"
+            "焼くは、残りの範囲を続けて焼いて、そろったら1本につなぎます。"
             "最初の1本だけがオンのときは、その最初の範囲だけです。"
         )
     raise RuntimeError(f"やることが無い: {kind}")
@@ -392,7 +393,7 @@ def commands_to_run(path: Path, *, first_only: bool, skip_done: bool = False) ->
         done = len(lines) - len(pending)
         lines = pending
         if not lines:
-            return [], f"{done} 本とも同じ内容で焼いてある。焼き直さない。"
+            return [], f"{done} 本とも同じ内容で焼いてある。焼き直さない。そろっていれば、このあとつなぐ。"
     skipped = f"焼いてある {done} 本は飛ばします。" if done else ""
     if first_only:
         rest = len(lines) - 1
@@ -2541,11 +2542,12 @@ def bake_cell() -> str:
     """One bake switch. Off by default, so Run all does not start a GPU job."""
     return """#@title 焼く { display-mode: "form" }
 #@markdown ready のあと、焼くにチェックを入れてこのセルを押す。別のノートは開かない。投稿しない。
-#@markdown 最初の1本だけがオンのときは1クリップ。口と声を見てからオフにして続き。同じ内容で焼いた範囲は焼き直さない。
+#@markdown チェックを入れると、残っている範囲を続けて焼いて、全部そろったら1本につなぐ。1本だけ見たいときは「最初の1本だけ」をオン。
+#@markdown 同じ内容で焼いた範囲は焼き直さない。ランタイムが切れても、マイドライブに同じ内容があれば戻して続きから焼く。
 #@markdown 全部の範囲がそろったら、音は PCM のままつなぎ、mp4 を最後に1回だけ作る。元動画の再現は、範囲ごとに音のずれ、カット、せりふを測って出す。
 #@markdown 重みが無いとき落とすは、マイドライブに MiniMax-H3 が無いときだけ。プレビューは 144.1GB。オフなら落とさない。
 焼く = False #@param {type:"boolean"}
-最初の1本だけ = True #@param {type:"boolean"}
+最初の1本だけ = False #@param {type:"boolean"}
 重みが無いとき落とす = False #@param {type:"boolean"}
 
 import os
@@ -2743,8 +2745,10 @@ else:
                                 else:
                                     for item in sorted(saved.glob("*.mp4")):
                                         print("つないだ mp4", item, item.stat().st_size, "bytes")
+                        elif bool(最初の1本だけ) and made:
+                            print("最初の1本だけ焼いた。全部つなぐときは、最初の1本だけをオフにして、もう一度押す。")
                         elif made:
-                            print("全部の範囲がそろったら、ここでつなぐ。最初の1本だけをオフにして、もう一度押す。")
+                            print("途中で止まった。焼いてある範囲は飛ばして、もう一度押すと続きから焼く。")
                         if made:
                             print("投稿していない。")
 """
@@ -2771,7 +2775,7 @@ def _intro() -> str:
         "1. **読み込み**",
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
-        "4. **焼く**（ready のあと。焼くにチェックを入れて押す。最初は1本だけ。mp4 はマイドライブの affi-bake に残る）",
+        "4. **焼く**（ready のあと。焼くにチェックを入れて押す。残りの範囲を続けて焼いて、そろったら1本につなぐ。mp4 はマイドライブの affi-bake に残る）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
@@ -2986,7 +2990,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "上の「実行」が ready になってから、焼くにチェックを入れてこのセルを押す。",
                     "",
-                    "最初の1本だけがオンのときは1クリップです。口と声を見てから、オフにして続きを焼きます。",
+                    "残っている範囲を続けて焼きます。全部そろったら、その場で1本につなぎます。1本だけ見たいときは「最初の1本だけ」をオンにします。",
                     "",
                     "焼いた mp4 は、Colab のディスクに書いてから、そのときマウントしたアカウントのマイドライブ `affi-bake` にコピーします。",
                     "マイドライブへ直接 mp4 を開くと、小さな json だけ残って終了コード 1 になります。",
