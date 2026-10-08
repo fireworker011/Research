@@ -89,8 +89,6 @@ __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
-__MOSAIC_HELP__
-MOSAIC = __MOSAIC_DEFAULT__  #@param __MOSAIC_CHOICES__
 __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 __POSE_HELP__
@@ -178,7 +176,6 @@ if _seed:
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
-os.environ["H3_EPISODE_MOSAIC"] = MOSAIC
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_RIDE_BENT"] = RIDE_BENT
@@ -443,9 +440,6 @@ def make_nb() -> dict:
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
         .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
-        .replace("__MOSAIC_HELP__", form_markdown("mosaic", "モザイク — なしは今のまま。ありは復元LoRA"))
-        .replace("__MOSAIC_DEFAULT__", json.dumps(ui_default("mosaic"), ensure_ascii=False))
-        .replace("__MOSAIC_CHOICES__", json.dumps(ui_choices("mosaic"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
         .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))

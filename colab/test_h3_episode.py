@@ -376,9 +376,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "用意した最終フレームへ着く" in src
     assert 'COMBAT = "格闘LoRAオフ（迷ったらこれ）"' in src
     assert "格闘LoRAオン（ハイメモリ専用）" in src
-    assert 'MOSAIC = "モザイクなし（今のまま・迷ったらこれ）"' in src
-    assert "モザイクあり（復元LoRA）" in src
-    assert "H3_EPISODE_MOSAIC" in src
+    assert "MOSAIC" not in src
+    assert "H3_EPISODE_MOSAIC" not in src
     assert "H3_EPISODE_CAMERA" in src
     assert "H3_EPISODE_CONNECT" in src
     assert 'os.environ["H3_EPISODE_END_CONNECT"] = "follow"' in src
@@ -7004,60 +7003,3 @@ def test_hospital_off_ward_human_and_insert_fixes():
     tentacle = prepare_episode(raw, toilet_override="トイレ・触手")
     tent = next(b for b in tentacle["beats"] if b["id"] == "04-toilet")
     assert "tentacles are being inserted" in tent.get("trigger", "")
-
-
-def test_mosaic_restore_is_optional_and_the_default_stacks_nothing():
-    assert ui_default("mosaic") == "モザイクなし（今のまま・迷ったらこれ）"
-    assert ui_choices("mosaic") == [
-        "モザイクなし（今のまま・迷ったらこれ）",
-        "モザイクあり（復元LoRA）",
-    ]
-    assert LORA_FILES["mosaic"] == "mosaic_restoration_h3_v1.safetensors"
-    assert LORA_FILES["mosaic"] != "lora.safetensors"
-    assert "api/download/models/3390424" in LORA_URLS["mosaic"]
-    assert "fileId=3280455" in LORA_URLS["mosaic"]
-    assert LORA_STRENGTHS["mosaic"] == 1.0
-    raw = load_episode(HOSPITAL_DIR / "episode.json")
-    plain = prepare_episode(raw, story_override="受け入れる")
-    held = prepare_episode(
-        raw,
-        story_override="受け入れる",
-        mosaic_override="モザイクなし（今のまま・迷ったらこれ）",
-    )
-    assert (held.get("render") or {}).get("mosaic") == "keep"
-    assert "mosaic" not in (plain.get("render") or {})
-    for left, right in zip(plain["beats"], held["beats"], strict=True):
-        assert left.get("id") == right.get("id")
-        assert left.get("action") == right.get("action")
-        assert extra_lora_entries(left) == extra_lora_entries(right)
-        if beat_renders(left):
-            assert build_beat_prompt(plain, left) == build_beat_prompt(held, right)
-    restored = prepare_episode(
-        raw,
-        story_override="受け入れる",
-        mosaic_override="モザイクあり（復元LoRA）",
-    )
-    assert restored["render"]["mosaic"] == "restore"
-    assert validate_episode(restored, root=HOSPITAL_DIR) == []
-    drawn = 0
-    for beat in restored["beats"]:
-        same = next(b for b in plain["beats"] if b["id"] == beat["id"])
-        assert beat.get("action") == same.get("action")
-        if beat_renders(beat):
-            drawn += 1
-            assert extra_lora_entries(beat)[-1] == ("mosaic", 1.0)
-            assert build_beat_prompt(restored, beat) == build_beat_prompt(plain, same)
-        else:
-            assert "mosaic" not in extra_keys(beat)
-    assert drawn > 0
-    stacked = apply_extra_loras(
-        {"stack": [("base.safetensors", 1.0)], "notes": []},
-        {"extra_loras": ["mosaic"]},
-        None,
-    )
-    assert (LORA_FILES["mosaic"], 1.0) in stacked["stack"]
-    shown = describe_run(mosaic="モザイクあり（復元LoRA）")
-    assert "モザイクあり（復元LoRA）" in shown
-    assert "モザイクなし（今のまま・迷ったらこれ）" in describe_run()
-    with pytest.raises(EpisodeError):
-        prepare_episode(raw, mosaic_override="not-a-mosaic")

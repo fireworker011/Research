@@ -251,36 +251,6 @@ COMBAT_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
-# Mosaic restoration (Civitai 2990026, version 3390424). keep stacks nothing.
-# restore stacks the LoRA on beats that are drawn. The card has no trigger word.
-# The form calls the stacked side モザイクあり. The quiet side is モザイクなし.
-MOSAIC_MODES: dict[str, dict[str, Any]] = {
-    "keep": {
-        "label_ja": "なし",
-        "choice_ja": "モザイクなし（今のまま・迷ったらこれ）",
-        "when_ja": "復元LoRAは積まない。今の絵のまま",
-        "hint_ja": "迷ったらこれ。",
-        "recommend": True,
-    },
-    "restore": {
-        "label_ja": "あり",
-        "choice_ja": "モザイクあり（復元LoRA）",
-        "when_ja": "描くカットにモザイク復元LoRAを積む。トリガー語は無い",
-        "hint_ja": "Civitai 2990026 version 3390424。カードに強度は無いので 1.0。",
-    },
-}
-
-MOSAIC_ALIASES: dict[str, str] = _label_aliases(
-    MOSAIC_MODES,
-    {
-        "モザイクなし": "keep",
-        "モザイクあり（今のまま・迷ったらこれ）": "keep",
-        "モザイクあり": "restore",
-        "モザイクなし（復元LoRA）": "restore",
-        "restoration": "restore",
-    },
-)
-
 # Hospital-exit story pack. Body JSON is ○受け入れる. Other futures are on_* overlays.
 # Kasumi has no on_* keys; this dropdown is ignored there.
 STORY_MODES: dict[str, dict[str, Any]] = {
@@ -1418,15 +1388,6 @@ def canonical_combat(name: str) -> str:
     if raw in COMBAT_MODES:
         return raw
     return COMBAT_ALIASES.get(raw, raw)
-
-
-def canonical_mosaic(name: str) -> str:
-    raw = str(name or "").strip()
-    if not raw:
-        return ""
-    if raw in MOSAIC_MODES:
-        return raw
-    return MOSAIC_ALIASES.get(raw, raw)
 
 
 def canonical_story(name: str) -> str:
@@ -2624,8 +2585,6 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return PRESET_CANON
     if kind == "combat":
         return COMBAT_MODES
-    if kind == "mosaic":
-        return MOSAIC_MODES
     if kind == "story":
         return STORY_MODES
     if kind == "invite_pose":
@@ -2734,7 +2693,6 @@ def describe_run(
     camera: str = "",
     preset: str = "",
     combat: str = "",
-    mosaic: str = "",
     story: str = "",
     invite_pose: str = "",
     toilet: str = "",
@@ -2763,7 +2721,6 @@ def describe_run(
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
     f_key = canonical_combat(combat) or "off"
-    m_key = canonical_mosaic(mosaic) or "keep"
     s_key = canonical_story(story) or "accept"
     pose_key = canonical_invite_pose(invite_pose) or "all_fours"
     t_key = canonical_toilet(toilet) or "off"
@@ -2777,7 +2734,6 @@ def describe_run(
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
-    m = MOSAIC_MODES.get(m_key) or MOSAIC_MODES["keep"]
     s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
     pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
@@ -2820,7 +2776,6 @@ def describe_run(
             f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
             f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
             f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
-            f"  モザイク  {m['choice_ja']}  — {m['when_ja']}\n"
             f"  5 合間    {rm['choice_ja']}  — {rm['when_ja']}\n"
             f"  6 トイレ  {rt['choice_ja']}  — {rt['when_ja']}\n"
             f"  7 敵1     {rb['choice_ja']}  — {rb['when_ja']}\n"
@@ -2838,7 +2793,6 @@ def describe_run(
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
-        f"  モザイク  {m['choice_ja']}  — {m['when_ja']}\n"
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
         f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
         f"  騎乗曲げ  {RIDE_PERSON_JA.get(ride_bent, ride_bent or 'なし')}\n"
