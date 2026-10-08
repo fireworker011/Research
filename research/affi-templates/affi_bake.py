@@ -2459,6 +2459,11 @@ def run_cell() -> str:
             '#@title 実行 { display-mode: "form" }',
             "#@markdown 「選ぶ」のあと、このセルを実行する。表なら表。話ならジョブ。自分の文なら手入力。元動画なら Ref2VA の範囲。静止画が空なら、話と自分の文は T2V。",
             "#@markdown このセルは焼かない。ready と出たら、一番下の「焼く」を押す。投稿しない。",
+            "#@markdown 話者を分けるときだけ、下の欄にトークンを貼る。貼ったままこのノートを保存しない。",
+            "#@markdown 作り方。https://huggingface.co/settings/tokens を開き、Read のトークンを作る。そのアカウントで、次の2ページの利用条件に同意する。",
+            "#@markdown https://huggingface.co/pyannote/speaker-diarization-3.1",
+            "#@markdown https://huggingface.co/pyannote/segmentation-3.0",
+            'HF_TOKEN = "" #@param {type:"string"}',
             "",
             "import os",
             "import shutil",
@@ -2488,11 +2493,13 @@ def run_cell() -> str:
             '                subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "faster-whisper"])',
             "            except Exception as exc:",
             '                print("せりふの読み取りは入れられなかった。口は参照の音声に合わせる。", exc)',
-            "        try:",
-            "            from google.colab import userdata",
-            '            token = userdata.get("HF_TOKEN") or ""',
-            "        except Exception:",
-            '            token = ""',
+            '        token = str(HF_TOKEN or "").strip()',
+            "        if not token:",
+            "            try:",
+            "                from google.colab import userdata",
+            '                token = str(userdata.get("HF_TOKEN") or "").strip()',
+            "            except Exception:",
+            '                token = ""',
             "        if token:",
             '            os.environ["HF_TOKEN"] = token',
             '            print("HF_TOKEN を読みました（値は表示しません）")',
@@ -2505,7 +2512,7 @@ def run_cell() -> str:
             "                except Exception as exc:",
             '                    print("pyannote は入れられなかった。話者は1人として並べる。", exc)',
             "        else:",
-            '            print("HF_TOKEN が無いので話者は分けない。")',
+            '            print("このセルの HF_TOKEN 欄が空なので話者は分けない。")',
             "    text = affi_bake.run_choice(",
             "        何をする,",
             '        handle=globals().get("HANDLE"),',
@@ -2664,10 +2671,10 @@ else:
                         lines, note = affi_bake.commands_to_run(path, first_only=bool(最初の1本だけ), skip_done=True)
                         print(note)
                         if lines and missing:
-                            token = ""
-                            if userdata is not None:
+                            token = str(globals().get("HF_TOKEN") or "").strip()
+                            if not token and userdata is not None:
                                 try:
-                                    token = userdata.get("HF_TOKEN") or ""
+                                    token = str(userdata.get("HF_TOKEN") or "").strip()
                                 except Exception:
                                     token = ""
                             if token:
@@ -2813,7 +2820,7 @@ def _intro() -> str:
         "H3 は1本 5〜14.4 秒なので、長い動画は範囲に分かれます。範囲の境は、カットと無音の位置に置き、せりふの途中では切りません。画質優先は短く切って画角を上げます。",
         "参照の範囲は 24 コマ、音は PCM にそろえます。生成が範囲より長い分は、止め絵と無音にしてあとで切ります。5 秒未満の動画も、この形で 5 秒にしてから元の秒に戻します。",
         "測ったカットだけを、その時刻でプロンプトに書きます。音声から語の時刻まで読めたせりふを、聞こえるショットに入れます。聞き取りにくい語は [unclear] です。読めないときは口が参照の音声に合わせ、文は足しません。",
-        "HF_TOKEN があり、pyannote/speaker-diarization-3.1 と pyannote/segmentation-3.0 の利用条件に同意していれば、話者を S1、S2 と分けます。埋め込みは WeSpeaker の VoxCeleb ResNet34_LM（PyTorch）です。公式の .onnx は使いません。入らなければ1人として並べます。楽器が判定できたときだけ、曲の行に楽器名を足します。",
+        "話者を分けるときは、「実行」セルの HF_TOKEN 欄にトークンを貼ります。作り方は、その欄の上に書いてあります。pyannote/speaker-diarization-3.1 と pyannote/segmentation-3.0 の利用条件に、そのアカウントで同意します。埋め込みは WeSpeaker の VoxCeleb ResNet34_LM（PyTorch）です。欄が空なら1人として並べます。楽器が判定できたときだけ、曲の行に楽器名を足します。",
         "FL2VA の Turbo は載せません。重みは transformer_ref です。静止画は空のままが、元の見た目です。",
         "焼いたあと、範囲ごとに音のずれ、カット、せりふの文字を元動画と比べて出します。口の動きそのものは測りません。",
         "",
