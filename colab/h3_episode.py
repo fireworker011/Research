@@ -6497,6 +6497,124 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     return holds
 
 
+_I2V_MARK = "This I2V clip starts on the opening frame."
+_I2V_STYLE = (
+    "The camera distance stays the opening distance from the first frame to the last. "
+    "The adults stay the same size. "
+    "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+)
+
+
+def _hospital_i2v_camera(beat: dict[str, Any], cam: str) -> str:
+    """Chain camera for the October 8 notes. The authored camera stays on T2V."""
+    bid = str(beat.get("id") or "")
+    if bid == "09-kana-facial":
+        return _I2V_STYLE
+    if bid == "09-kana-kiss":
+        return (
+            _I2V_STYLE
+            + " The embrace and the kiss stay inside that same frame."
+        )
+    if bid == "04-gin-lick":
+        return (
+            "The camera stays at the opening distance. "
+            "Aya sits and Gin crouches in one continuous move inside this same picture. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid.endswith("-jo-set"):
+        return (
+            "The camera stays at the opening wide distance. "
+            "Both adults stay full body, both heads and all four feet inside the frame. "
+            "The body turns inside that frame. The camera sits at the head."
+        )
+    return cam
+
+
+def _hospital_i2v_action(action_line: str, beat: dict[str, Any]) -> str:
+    """Prompt text only. The beat's stored action stays the current prompt."""
+    bid = str(beat.get("id") or "")
+    if bid not in ("09-kana-facial", "09-kana-kiss", "04-gin-lick"):
+        return action_line
+    out = action_line.replace(
+        "The camera moves inside this shot. ",
+        "The camera distance stays the opening distance. ",
+    )
+    if bid == "09-kana-facial":
+        out = out.replace("The same door stays behind Aya. ", "")
+        out = out.replace("The same door stays behind Aya", "")
+    return re.sub(r" {2,}", " ", out).strip()
+
+
+def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
+    """Opening-frame motion for chain. Empty when this beat has no I2V note."""
+    bid = str(beat.get("id") or "")
+    low = str(beat.get("action") or "").lower()
+    lines = [_I2V_MARK]
+    if bid == "09-kana-facial":
+        lines.append(
+            "The kneel, the aim, and the ejaculation stay inside the opening frame."
+        )
+    elif bid == "09-kana-kiss":
+        lines.append("The embrace and the kiss stay inside the opening frame.")
+    if bid.endswith("-in") and "forward and back in short presses" in low:
+        lines.append(
+            "The opening frame shows the glans at the anus. "
+            "The shaft then travels in until the base meets the buttocks. "
+            "After the shaft reaches the base, the hips move forward and back in short presses until the last frame. "
+            "Each forward press meets the buttocks. The glans stays inside the anus."
+        )
+    if bid.endswith("-press") and ("between the open thighs" in low or "between the calves" in low):
+        lines.append(
+            "Aya's pose stays the pose in the opening frame. "
+            "The shaft adult's torso turns a little toward the right from the left side "
+            "until the body angle matches Aya. "
+            "The shaft adult's feet and soles point the same way as Aya's feet and soles. "
+            "The shaft adult's face looks down at Aya's back."
+        )
+    if "moves the hips back once" in low and "hips stay back" in low:
+        lines.append(
+            "Once the glans clears the rim, both pelvises stay on that back mark. "
+            "The hips stay back until the last frame. The shaft stays outside."
+        )
+    if bid == "04-toilet-afast":
+        lines.append(
+            "She climaxes, then the right index finger slides out of the anus. "
+            "The anus stays a wide open ring. Thick brown feces clings to the fingertip. "
+            "The place and the rendering stay the opening frame."
+        )
+    if bid == "04-toilet-out" and "licks that fingertip" in low:
+        lines.append(
+            "The fingertip with thick brown feces goes into the open mouth. "
+            "She licks that fingertip clean. Then she straightens and walks for the rest of the clip."
+        )
+    if bid == "04-gin-lick":
+        lines.append(
+            "Aya sits and Gin crouches inside this same picture. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid == "04-gin-spitkiss":
+        lines.append(
+            "The camera moves back until Aya's left foot and Aya's right foot are inside the frame, toes visible. "
+            "Both of Aya's feet stay inside the frame. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid.endswith("-jo-set"):
+        lines.append(
+            "The opening frame is the standing side view, with the receiver facing RIGHT. "
+            "The body turns ninety degrees toward the LEFT in one continuous move. "
+            "The legs open a little, then the head lowers onto the floor and the pose holds until the last frame. "
+            "The camera sits at the head."
+        )
+    if bid.endswith("-spot") and "shino" in bid:
+        lines.append(
+            "Shino's chest, face, and knees point the same way as Aya. "
+            "Shino's side faces the camera. The doorway stays behind Shino."
+        )
+    if len(lines) == 1:
+        return []
+    return lines
+
+
 def build_beat_prompt(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -6694,6 +6812,8 @@ def build_beat_prompt(
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
             face_pair=_hospital_face_pair(beat),
         )
+        if source == "chain":
+            cam = _hospital_i2v_camera(beat, cam or "")
     if cam and str(beat.get("id") or "") == "04-dog-spot":
         cam = _strip_dog_spot_entry(cam)
     if cam:
@@ -6703,7 +6823,12 @@ def build_beat_prompt(
     action_line = str(beat.get("action") or "").strip().rstrip(".")
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
+    if source == "chain" and str(ep.get("slug") or "") == "hospital-exit-adult":
+        action_line = _hospital_i2v_action(action_line, beat)
     desc.append(action_line + ".")
+    if source == "chain" and str(ep.get("slug") or "") == "hospital-exit-adult":
+        for i2v_line in _hospital_i2v_lines(beat):
+            desc.append(i2v_line)
     if _aya_new_pleasure_seat(ep, beat):
         desc.append(AYA_NEW_PLEASURE_FACE)
     hold = _look_hold(ep, beat)

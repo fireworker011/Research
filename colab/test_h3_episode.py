@@ -6986,7 +6986,9 @@ def test_hospital_off_ward_human_and_insert_fixes():
 
     kana = next(b for b in zombie["beats"] if b["id"] == "09-kana-facial")
     kana_prompt = build_beat_prompt(zombie, kana, trigger=merge_trigger("", kana))
-    assert "the camera moves in an arc around aya's face" in kana_prompt.lower()
+    assert beat_source(kana) == "chain"
+    assert "the camera distance stays the opening distance" in kana_prompt.lower()
+    assert "the camera moves in an arc around aya's face" not in kana_prompt.lower()
     assert "all four feet" not in kana_prompt.lower()
     gin_mouth = next(b for b in zombie["beats"] if b["id"] == "04-gin-mouth")
     gin_prompt = build_beat_prompt(zombie, gin_mouth, trigger=merge_trigger("", gin_mouth))
@@ -7115,3 +7117,124 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert validate_episode(fours, root=HOSPITAL_DIR) == []
     assert validate_episode(finger, root=HOSPITAL_DIR) == []
     assert validate_episode(jo, root=HOSPITAL_DIR) == []
+
+
+def test_hospital_i2v_prompts_follow_the_october_frames():
+    """Chain prompts add the October 8 notes. T2V keeps the current text."""
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    mark = "this i2v clip starts on the opening frame"
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    press = next(b for b in fours["beats"] if b["id"] == "09-join-press")
+    t2v_press = build_beat_prompt(fours, press)
+    assert mark not in t2v_press.lower()
+    assert "the camera moves in an arc around aya's face" in build_beat_prompt(
+        fours, next(b for b in fours["beats"] if b["id"] == "09-kana-facial")
+    ).lower()
+
+    chained = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="四つん這い股広げ",
+        connect_override="chain",
+    )
+    press_c = next(b for b in chained["beats"] if b["id"] == "09-join-press")
+    assert beat_source(press_c) == "chain"
+    press_p = build_beat_prompt(chained, press_c)
+    assert mark in press_p.lower()
+    assert "aya's pose stays the pose in the opening frame" in press_p.lower()
+    assert "feet and soles point the same way as aya's feet and soles" in press_p.lower()
+    assert "both knees stay planted, open wide to the left and right" in press_p.lower()
+    entered = next(b for b in chained["beats"] if b["id"] == "09-join-in")
+    entered_p = build_beat_prompt(chained, entered)
+    assert "the opening frame shows the glans at the anus" in entered_p.lower()
+    assert "forward and back in short presses" in entered_p.lower()
+    assert "the glans stays inside the anus" in entered_p.lower()
+    closed = next(b for b in chained["beats"] if b["id"] == "09-join-close")
+    closed_p = build_beat_prompt(chained, closed)
+    assert "once the glans clears the rim, both pelvises stay on that back mark" in closed_p.lower()
+    assert "the hips stay back until the last frame" in closed_p.lower()
+    setup = next(b for b in chained["beats"] if b["id"] == "09-join")
+    assert mark not in build_beat_prompt(chained, setup).lower()
+
+    wall = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="壁立ちバック",
+        connect_override="chain",
+    )
+    wall_press = build_beat_prompt(wall, next(b for b in wall["beats"] if b["id"] == "03-kiss-press"))
+    assert "on the balls of both feet" in wall_press.lower()
+    assert "aya's pose stays the pose in the opening frame" in wall_press.lower()
+    wall_in = build_beat_prompt(wall, next(b for b in wall["beats"] if b["id"] == "03-kiss-in"))
+    assert "the opening frame shows the glans at the anus" not in wall_in.lower()
+    assert "hold still joined at the base" in wall_in.lower()
+
+    finger = prepare_episode(raw, toilet_override="トイレ・アナル指")
+    afast = next(b for b in finger["beats"] if b["id"] == "04-toilet-afast")
+    out = next(b for b in finger["beats"] if b["id"] == "04-toilet-out")
+    assert beat_source(afast) == "chain" and beat_source(out) == "chain"
+    afast_p = build_beat_prompt(finger, afast)
+    out_p = build_beat_prompt(finger, out)
+    assert "the anus stays a wide open ring" in afast_p.lower()
+    assert "thick brown feces clings to the fingertip" in afast_p.lower()
+    assert "licks that fingertip clean" in out_p.lower()
+    assert "walks for the rest of the clip" in out_p.lower()
+    assert out["trim"]["seconds"] == 10.0
+
+    gin = prepare_episode(raw, gin_override="灰色・後ろアナル", connect_override="chain")
+    lick = next(b for b in gin["beats"] if b["id"] == "04-gin-lick")
+    lick_p = build_beat_prompt(gin, lick)
+    assert mark in lick_p.lower()
+    assert "the rendering stay the opening frame" in lick_p.lower()
+    assert "the camera moves inside this shot" not in lick_p.lower()
+    spit = next(b for b in gin["beats"] if b["id"] == "04-gin-spitkiss")
+    spit_p = build_beat_prompt(gin, spit)
+    assert "aya's left foot and aya's right foot are inside the frame" in spit_p.lower()
+    jo_set = next(b for b in gin["beats"] if b["id"] == "04-gin-jo-set")
+    jo_p = build_beat_prompt(gin, jo_set)
+    assert "standing side view, with the receiver facing right" in jo_p.lower()
+    assert "ninety degrees toward the left" in jo_p.lower()
+    assert "the camera stays at the opening wide distance" in jo_p.lower()
+    assert "the shot opens close" not in jo_p.lower()
+    jo_t2v = prepare_episode(raw, gin_override="灰色・後ろアナル")
+    jo_t2v_p = build_beat_prompt(jo_t2v, next(b for b in jo_t2v["beats"] if b["id"] == "04-gin-jo-set"))
+    assert mark not in jo_t2v_p.lower()
+    assert "the shot opens close" in jo_t2v_p.lower()
+
+    mountain = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="四つん這い股広げ",
+        place_override="山道",
+        connect_override="chain",
+    )
+    facial = next(b for b in mountain["beats"] if b["id"] == "09-kana-facial")
+    facial_p = build_beat_prompt(mountain, facial)
+    assert beat_source(facial) == "chain"
+    assert mark in facial_p.lower()
+    assert "the camera distance stays the opening distance" in facial_p.lower()
+    assert "the camera moves in an arc" not in facial_p.lower()
+    assert "close on aya's face" not in facial_p.lower()
+    assert "the same door stays behind aya" not in facial_p.lower()
+    assert "looks up" in facial_p.lower()
+    kiss = next(b for b in mountain["beats"] if b["id"] == "09-kana-kiss")
+    kiss_p = build_beat_prompt(mountain, kiss)
+    assert "the embrace and the kiss stay inside the opening frame" in kiss_p.lower()
+    assert "the camera distance stays the opening distance" in kiss_p.lower()
+    kiss_t2v = build_beat_prompt(
+        fours, next(b for b in fours["beats"] if b["id"] == "09-kana-kiss")
+    )
+    assert mark not in kiss_t2v.lower()
+
+    spot = next(b for b in fours["beats"] if b["id"] == "10-shino-spot")
+    assert beat_source(spot) == "chain"
+    spot_p = build_beat_prompt(fours, spot)
+    assert "point the same way as aya" in spot_p.lower()
+    assert "the doorway stays behind shino" in spot_p.lower()
+    shino_t2v = prepare_episode(
+        raw, story_override="誘う", invite_pose_override="四つん這い股広げ", connect_override="t2v"
+    )
+    spot_t = next(b for b in shino_t2v["beats"] if b["id"] == "10-shino-spot")
+    assert beat_source(spot_t) == "t2v"
+    assert mark not in build_beat_prompt(shino_t2v, spot_t).lower()
+    assert "point left" in spot_t["action"].lower()
