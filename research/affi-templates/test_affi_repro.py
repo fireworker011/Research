@@ -200,6 +200,29 @@ def test_a_line_read_without_words_leaves_only_the_window_on_the_other_side() ->
     assert (before[1]["start_s"], before[1]["end_s"]) == (7.5, 8.0)
 
 
+def test_speaker_install_keeps_the_hub_that_accepts_the_model_card(tmp_path: Path) -> None:
+    site = tmp_path / "affi-speaker"
+    argv = affi_media.speaker_install_argv(site)
+    assert "--target" in argv and str(site) in argv
+    assert "--upgrade" in argv
+    assert "pyannote.audio==3.3.2" in argv
+    assert "huggingface_hub==0.36.0" in argv
+    assert affi_media.SPEAKER_MODEL == "pyannote/speaker-diarization-3.1"
+    assert affi_media.SPEAKER_SEGMENTATION == "pyannote/segmentation-3.0"
+    lines = affi_media.speaker_gate_lines()
+    assert any(affi_media.SPEAKER_MODEL in line for line in lines)
+    assert any(affi_media.SPEAKER_SEGMENTATION in line for line in lines)
+    assert affi_media.speaker_site_ready(site) is False
+    (site / "pyannote" / "audio").mkdir(parents=True)
+    assert affi_media.speaker_site_ready(site) is False
+    (site / "pyannote_audio-3.3.2.dist-info").mkdir()
+    (site / "huggingface_hub-0.36.0.dist-info").mkdir()
+    assert affi_media.speaker_site_ready(site) is True
+    text = Path(affi_media.__file__).with_name("affi_speaker.py").read_text(encoding="utf-8")
+    assert "use_auth_token" in text
+    assert "pyannote/segmentation-3.0" in text
+
+
 def test_speaker_turns_number_speakers_in_the_order_heard(tmp_path: Path) -> None:
     job = bake.plan_reproduce(
         video=str(_fake(tmp_path)),

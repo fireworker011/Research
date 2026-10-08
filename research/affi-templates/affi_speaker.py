@@ -20,9 +20,19 @@ def main(argv: list[str]) -> int:
         return 2
     wav, out, model = Path(argv[1]), Path(argv[2]), argv[3]
     token = os.environ.get("HF_TOKEN") or None
-    pipeline = Pipeline.from_pretrained(model, use_auth_token=token)
+    gate = (
+        "利用条件に同意する: "
+        "https://huggingface.co/pyannote/speaker-diarization-3.1 "
+        "と https://huggingface.co/pyannote/segmentation-3.0"
+    )
+    try:
+        pipeline = Pipeline.from_pretrained(model, use_auth_token=token)
+    except Exception as exc:
+        print(type(exc).__name__, file=sys.stderr)
+        print(gate, file=sys.stderr)
+        return 1
     if pipeline is None:
-        print(f"{model} を読めない。Hugging Face で利用条件に同意したか確認する。", file=sys.stderr)
+        print(gate, file=sys.stderr)
         return 1
     result = pipeline(str(wav))
     turns = [

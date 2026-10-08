@@ -31,6 +31,10 @@ SILENCE_DB = -35.0
 SILENCE_MIN_S = 0.2
 SPEAKER_SITE = Path("/content/affi-speaker")
 SPEAKER_MODEL = "pyannote/speaker-diarization-3.1"
+SPEAKER_SEGMENTATION = "pyannote/segmentation-3.0"
+# The model card still calls use_auth_token. huggingface_hub 1.0 dropped it.
+SPEAKER_HUB = "0.36.0"
+SPEAKER_AUDIO = "3.3.2"
 TAGGER_MODEL = "MIT/ast-finetuned-audioset-10-10-0.4593"
 TAGGER_MIN_SCORE = 0.3
 TAGGER_RATE = 16000
@@ -390,25 +394,45 @@ def music_tags(path: Path, spans: Sequence[tuple[float, float]]) -> tuple[list[l
     return found, "楽器は AudioSet の判定器で調べた。"
 
 
+def speaker_gate_lines() -> list[str]:
+    """What the token account must accept before this pipeline can download."""
+    return [
+        f"話者は {SPEAKER_MODEL}。このページは config.yaml だけで、重みは別のモデルにある。",
+        "利用条件は、次の2つにこのトークンのアカウントで同意する。",
+        f"https://huggingface.co/{SPEAKER_MODEL}",
+        f"https://huggingface.co/{SPEAKER_SEGMENTATION}",
+    ]
+
+
 def speaker_site_ready(site: Path = SPEAKER_SITE) -> bool:
-    return (site / "pyannote" / "audio").is_dir()
+    """True when this folder has the pyannote and hub pins that can load the pipeline."""
+    return (
+        (site / "pyannote" / "audio").is_dir()
+        and (site / f"pyannote_audio-{SPEAKER_AUDIO}.dist-info").is_dir()
+        and (site / f"huggingface_hub-{SPEAKER_HUB}.dist-info").is_dir()
+    )
 
 
 def speaker_install_argv(site: Path = SPEAKER_SITE) -> list[str]:
-    """pyannote and a CPU torch in their own folder. The H3 torch is not touched."""
+    """pyannote and a CPU torch in their own folder. The H3 torch is not touched.
+
+    huggingface_hub stays on 0.36 because the 3.1 pipeline still passes ``use_auth_token``.
+    """
     return [
         sys.executable,
         "-m",
         "pip",
         "install",
         "-q",
+        "--upgrade",
         "--target",
         str(site),
         "--extra-index-url",
         "https://download.pytorch.org/whl/cpu",
         "torch==2.5.1+cpu",
         "torchaudio==2.5.1+cpu",
-        "pyannote.audio==3.3.2",
+        f"pyannote.audio=={SPEAKER_AUDIO}",
+        f"huggingface_hub=={SPEAKER_HUB}",
         "numpy<2",
     ]
 
