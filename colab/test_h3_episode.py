@@ -3346,7 +3346,8 @@ def test_hospital_gin_tsuno_optional_events():
     assert "already stopped" in meet["action"].lower()
     tsuno_spot = next(b for b in stand["beats"] if b["id"] == "04-tsuno-meet-spot")
     assert tsuno_spot.get("connect") == "cut"
-    assert "sickroom" in tsuno_spot["action"].lower()
+    assert "on this mattress" in tsuno_spot["action"].lower()
+    assert "sickroom" not in tsuno_spot["action"].lower()
     assert "mattress edge" in tsuno_spot["action"].lower()
     assert "strokes the erect ashen-gray 24cm" in tsuno_spot["action"].lower()
     assert "corridor" not in tsuno_spot["action"].lower()
@@ -6180,7 +6181,8 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert beat_source(walk) == "chain"
     assert "pulls out of aya's pussy" in walk["action"].lower()
     spot = next(b for b in ride["beats"] if b["id"] == "04-tsuno-meet-spot")
-    assert "sickroom" in spot["action"].lower()
+    assert "on this mattress" in spot["action"].lower()
+    assert "sickroom" not in spot["action"].lower()
     assert "corridor" not in spot["action"].lower()
     assert "zombie" not in spot["action"].lower()
     for bid in ("04-tsuno-oral", "04-tsuno-wait", "04-tsuno-ride", "04-tsuno-peak", "04-tsuno-ride-kiss"):
@@ -6212,7 +6214,7 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "shaft stays outside" in lie["action"].lower()
     assert "short shift toward the left" in lie["action"].lower()
     beckon = next(b for b in ride["beats"] if b["id"] == "04-tsuno-beckon")
-    assert "far long edge nearest the window" in beckon["action"].lower()
+    assert "far long edge of the mattress" in beckon["action"].lower()
     beckon_prompt = build_beat_prompt(ride, beckon)
     lie_prompt = build_beat_prompt(ride, lie)
     assert SIDE_LIE_SETTLE_CLAUSE in beckon_prompt
@@ -6222,7 +6224,7 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     spit = next(b for b in ride["beats"] if b["id"] == "04-tsuno-spit")
     assert spit.get("connect") == "cut"
     assert extra_lora_entries(spit)[:2] == [("kiss", 0.5), ("cumouf", 0.5)]
-    assert "front from the doorway" in spit["camera"].lower()
+    assert "front from the foot of the mattress" in spit["camera"].lower()
     assert "rises from the squat" in spit["action"].lower()
     assert beckon.get("connect") == "chain"
     assert "profile side-on" in beckon["camera"].lower()
@@ -6392,7 +6394,10 @@ def test_tsuno_private_room_keeps_only_the_ground():
     assert "lowers her hip onto the packed earth" in lie_prompt
     assert "on their sides" in lie_prompt
     assert "low wooden cot" not in lie_prompt
-    assert "small wooden hut" in lie_prompt
+    assert "the surface is packed earth" in lie_prompt
+    assert "small wooden hut" not in lie_prompt
+    assert "window" not in lie_prompt
+    assert "sickroom" not in lie_prompt
 
     pee = prepare_episode(raw, toilet_override="pee", place_override="森林", time_override="昼")
     bowl = next(b for b in pee["beats"] if b["id"] == "04-toilet")

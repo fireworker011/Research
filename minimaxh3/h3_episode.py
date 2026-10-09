@@ -600,7 +600,7 @@ SIDE_LIE_SETTLE_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
     "Tsuno rolls from the opening pose onto her side on the far long edge of the mattress in one continuous move. "
     "Both of Tsuno's feet end on the mattress. Aya stays standing on the near side of the bed. "
-    "The pair stays in this same sickroom."
+    "The pair stays on this same mattress."
 )
 SIDE_LIE_JOIN_CLAUSE = (
     "Playback stays at real-time third-person game speed. "
@@ -609,7 +609,7 @@ SIDE_LIE_JOIN_CLAUSE = (
     "The hairless pussy lands directly in front of the glans. "
     "The glans stays pressed on the hairless pussy. The shaft stays outside, in the gap between the thighs. "
     "Tsuno stays on her side on the far long edge, chest against Aya's back. "
-    "The pair stays in this same sickroom."
+    "The pair stays on this same mattress."
 )
 # A chest carry is not a planted stand and not a held-leg lift. "Feet planted" draws the feet down.
 CARRY_LIFT_RE = re.compile(r"LIFTS Aya against", re.I)
@@ -5723,11 +5723,8 @@ def _surface_env(spec: dict[str, Any], original: str) -> str:
             and not any(w in s.lower() for w in _SURFACE_ROOM_WORDS)
         ]
         base = str(spec["priv"])
-    elif "sickroom" in low:
-        kept = []
-        base = str(spec["bedroom"])
-    elif any(w in low for w in ("mattress", "iron bed", "single bed")):
-        # Tsuno's private room stops here. Only the place's own ground remains.
+    elif "sickroom" in low or any(w in low for w in ("mattress", "iron bed", "single bed")):
+        # Tsuno's room stops here. Only the place's own ground remains.
         kept = []
         base = str(spec["rest"])
     else:
@@ -7163,11 +7160,11 @@ def build_beat_prompt(
         elif TOILET_SIT_RE.search(action_txt):
             desc.append(TOILET_SIT_CLAUSE)
         elif (
-            "far long edge nearest the window" in action_txt.lower()
+            "far long edge of the mattress" in action_txt.lower()
             and "lowers her hip onto the mattress" in action_txt.lower()
         ):
             desc.append(SIDE_LIE_JOIN_CLAUSE)
-        elif bid_now == "04-tsuno-beckon" and "far long edge nearest the window" in action_txt.lower():
+        elif bid_now == "04-tsuno-beckon" and "far long edge of the mattress" in action_txt.lower():
             desc.append(SIDE_LIE_SETTLE_CLAUSE)
         elif bid_now == "04-gin-jupo":
             desc.append(GIN_ORAL_PACE_CLAUSE)
