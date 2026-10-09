@@ -6443,7 +6443,8 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "anuspussy" not in extra_keys(walk)
     assert "profile side view" in seat["camera"].lower()
     assert "center of the frame" in seat["camera"].lower()
-    assert "profile side view" in peak["camera"].lower()
+    assert "low rear view" in peak["camera"].lower()
+    assert "points straight down" in peak["camera"].lower()
     assert "side-rear" not in seat["camera"].lower()
     assert "side-rear" not in peak["camera"].lower()
     assert "doggy" not in seat["action"].lower()
@@ -6962,8 +6963,10 @@ def test_hospital_off_ward_human_and_insert_fixes():
 
     rei_press = next(b for b in zombie["beats"] if b["id"] == "06-doggy-press")
     low = rei_press["action"].lower()
-    assert "rei's side faces the camera" in low
-    assert "between aya's open knees" in low
+    assert "kneels over aya" in low
+    assert "outside aya's hips" in low
+    assert "points straight down" in low
+    assert "between aya's open knees" not in low
     assert extra_lora_entries(rei_press) == []
     rei_in = next(b for b in zombie["beats"] if b["id"] == "06-doggy-in")
     assert "the whole shaft is hidden inside the anus" in rei_in["action"].lower()
@@ -7030,17 +7033,24 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "both knees stay planted, open wide to the left and right" in press_low
     assert "heels out" in press_low
     assert "the anus faces the camera at the top of the cleft" in press_low
-    assert "starts in left true profile" in press_low
-    assert "turns the torso a little toward the right" in press_low
-    assert "feet and soles turn with the torso and point the same way as aya's feet and soles" in press_low
+    assert "kneels over aya" in press_low
+    assert "outside aya's hips" in press_low
+    assert "directly above aya's raised buttocks" in press_low
+    assert "points straight down" in press_low
+    assert "glans stays pressed on that closed ring" in press_low
+    assert "the shaft stays outside" in press_low
+    assert "starts in left true profile" not in press_low
     assert "both torsos stay true profile" not in press_low
     assert "spine stays parallel" not in press_low
-    assert "turns a little toward the right" in press["camera"].lower()
-    assert "feet and soles point the same way as aya" in press["camera"].lower()
-    assert "stays a little toward the right from left true profile" in entered["action"].lower()
+    assert "low rear view" in press["camera"].lower()
+    assert "points straight down" in press["camera"].lower()
+    assert "turns a little toward the right" not in press["camera"].lower()
+    assert "stays kneeling over aya" in entered["action"].lower()
+    assert "travels into the anus straight down" in entered["action"].lower()
     assert "the anus faces the camera at the top of the cleft" in entered["action"].lower()
     peak = next(b for b in fours["beats"] if b["id"] == "09-join-peak")
-    assert "the partner stays a little toward the right" in peak["camera"].lower()
+    assert "the partner stays kneeling over aya" in peak["camera"].lower()
+    assert "points straight down" in peak["camera"].lower()
     assert ". partner " not in peak["camera"].lower()
     assert "pelvises freeze" in closed["action"].lower()
     assert "shaft stays outside" in closed["action"].lower()
@@ -7142,13 +7152,18 @@ def test_hospital_i2v_prompts_follow_the_october_frames():
     press_p = build_beat_prompt(chained, press_c)
     assert mark in press_p.lower()
     assert "aya's pose stays the pose in the opening frame" in press_p.lower()
-    assert "feet and soles point the same way as aya's feet and soles" in press_p.lower()
+    assert "kneels over aya" in press_p.lower()
+    assert "points straight down" in press_p.lower()
+    assert "the shaft stays outside" in press_p.lower()
+    assert "feet and soles point the same way as aya's feet and soles" not in press_p.lower()
     assert "both knees stay planted, open wide to the left and right" in press_p.lower()
     entered = next(b for b in chained["beats"] if b["id"] == "09-join-in")
     entered_p = build_beat_prompt(chained, entered)
     assert "the root meets the buttocks" in entered_p.lower()
     assert "the whole shaft is hidden inside the anus" in entered_p.lower()
     assert "both of aya's knees stay on the ground" in entered_p.lower()
+    assert "stays kneeling over aya" in entered_p.lower()
+    assert "outside aya's hips" in entered_p.lower()
     assert "forward and back in short presses" in entered_p.lower()
     assert "the glans stays inside the anus" in entered_p.lower()
     peak = next(b for b in chained["beats"] if b["id"] == "09-join-peak")
@@ -7156,6 +7171,8 @@ def test_hospital_i2v_prompts_follow_the_october_frames():
     assert "the root stays flush with the buttocks" in peak_p.lower()
     assert "the whole shaft stays hidden inside the anus" in peak_p.lower()
     assert "both of aya's knees stay on the ground" in peak_p.lower()
+    assert "stays kneeling over aya" in peak_p.lower()
+    assert "pointed straight down" in peak_p.lower()
     closed = next(b for b in chained["beats"] if b["id"] == "09-join-close")
     closed_p = build_beat_prompt(chained, closed)
     assert "once the glans clears the rim, both pelvises stay on that back mark" in closed_p.lower()

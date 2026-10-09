@@ -4708,8 +4708,40 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
 _FOURS_HOLD = "HOLD still joined at the BASE until the last frame."
 _FOURS_PISTON = (
     "After the shaft reaches the BASE, the hips move FORWARD and BACK in short presses for the rest of the take. "
-    "Each forward press meets the buttocks. The glans stays inside the anus. The shaft stays buried to the root."
+    "Each forward press drives the pelvis DOWN onto the buttocks. The root stays flush with the buttocks. "
+    "The glans stays inside the anus. The shaft stays buried to the root. "
+    "The shaft adult stays kneeling over Aya."
 )
+_FOURS_MOUNT_PRESS_RE = re.compile(
+    r"([A-Za-z]+) steps onto the same centerline directly behind Aya's buttocks\. "
+    r"\1's chest, hips, and knees turn to face LEFT, the same direction Aya's chest faces\. "
+    r"\1's side faces the camera, the same as Aya's side\. "
+    r"\1's breasts point LEFT toward Aya's head\. "
+    r"\1's face looks down at Aya's back\. "
+    r"\1's spine stays parallel to Aya's spine\. "
+    r"Both of \1's knees plant between Aya's open knees, close behind the buttocks, so \1's groin sits at the height of the anus\. "
+    r"The shaft runs straight from \1's groin to the anus along that shared line\."
+)
+_FOURS_MOUNT_STAY_RE = re.compile(
+    r"([A-Za-z]+) already stands on the same centerline directly behind Aya's buttocks\. "
+    r"\1's chest, hips, and knees face LEFT, the same direction Aya's chest faces\. "
+    r"\1's side faces the camera, the same as Aya's side\. "
+    r"\1's breasts point LEFT toward Aya's head\. "
+    r"\1's face looks down at Aya's back\. "
+    r"\1's spine stays parallel to Aya's spine\. "
+    r"Both of \1's knees stay between Aya's open knees, close behind the buttocks\. "
+    r"The shaft runs straight from \1's groin to the anus along that shared line\."
+)
+_FOURS_TRAVEL_RE = re.compile(
+    r"The shaft TRAVELS INTO the anus along the center line between the open thighs in one continuous press "
+    r"until the hips meet the buttocks and the shaft reaches the BASE\. "
+    r"The whole shaft is hidden inside the anus\. "
+    r"([A-Za-z]+)'s lower belly presses flat on Aya's buttocks\."
+)
+_FOURS_WITHDRAW_RE = re.compile(
+    r"([A-Za-z]+) MOVES the hips BACK once along the shared centerline until the shaft leaves the anus\."
+)
+_FOURS_FEET_RE = re.compile(r"([A-Za-z]+)'s two feet stay on the floor\.")
 _SHAFT_HEADING_RE = re.compile(
     r"([A-Za-z]+)'s chest, hips, and knees (?:turn to )?face LEFT, the same direction Aya's chest faces\. "
     r"\1's side faces the camera, the same as Aya's side\. "
@@ -4788,26 +4820,130 @@ def _shaft_yaw_from_profile(match: re.Match[str]) -> str:
     )
 
 
-def _shaft_cam_yaw(match: re.Match[str]) -> str:
-    raw, verb = match.group(1), match.group(2)
-    # Peak cameras say "The partner's hips". The leading "The " stays outside this match.
-    name = "The partner" if raw.lower() == "partner" else raw
+def _fours_mount_press(match: re.Match[str]) -> str:
+    """Shaft adult straddles above the buttocks. The shaft points down onto the closed anus."""
+    name = match.group(1)
+    return (
+        f"{name} kneels over Aya. "
+        f"Both of {name}'s knees plant outside Aya's hips, one knee to the LEFT and one knee to the RIGHT. "
+        f"{name}'s pelvis sits directly above Aya's raised buttocks. "
+        f"{name}'s chest faces down toward Aya's back. "
+        f"{name}'s face looks down at the cleft. "
+        f"The erect shaft points straight DOWN from {name}'s groin onto the closed anus."
+    )
+
+
+def _fours_mount_stay(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name} stays kneeling over Aya. "
+        f"Both of {name}'s knees stay outside Aya's hips, one knee to the LEFT and one knee to the RIGHT. "
+        f"{name}'s pelvis stays directly above Aya's raised buttocks. "
+        f"{name}'s chest faces down toward Aya's back. "
+        f"{name}'s face looks down at the cleft. "
+        f"The erect shaft points straight DOWN from {name}'s groin onto the anus."
+    )
+
+
+def _fours_travel_down(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        "The shaft TRAVELS INTO the anus straight DOWN in one continuous press "
+        "until the root meets the buttocks and the shaft reaches the BASE. "
+        "The whole shaft is hidden inside the anus. "
+        f"{name}'s groin stays flush on Aya's buttocks. {name} stays kneeling over Aya."
+    )
+
+
+def _fours_withdraw_up(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name} MOVES the hips BACK once. "
+        "The pelvis rises and the shaft slides UP out of the anus along the downward line "
+        "until the shaft leaves the anus."
+    )
+
+
+def _fours_knees_on_floor(match: re.Match[str]) -> str:
+    name = match.group(1)
+    if name == "Aya":
+        return match.group(0)
+    return f"{name}'s two knees stay on the floor outside Aya's hips."
+
+
+def _apply_fours_mount(action: str) -> str:
+    """All-fours shaft adult mounts from above. Wall-stand text never reaches this."""
+    action = _FOURS_MOUNT_PRESS_RE.sub(_fours_mount_press, action)
+    action = _FOURS_MOUNT_STAY_RE.sub(_fours_mount_stay, action)
+    action = _FOURS_TRAVEL_RE.sub(_fours_travel_down, action)
+    action = _FOURS_WITHDRAW_RE.sub(_fours_withdraw_up, action)
+    action = _FOURS_FEET_RE.sub(_fours_knees_on_floor, action)
+    action = action.replace(
+        "Each forward press meets Aya's buttocks.",
+        "Each forward press drives the pelvis DOWN onto the buttocks. The root stays flush with the buttocks.",
+    )
+    action = action.replace(
+        "The shaft line stays visible between the open thighs.",
+        "The groin stays flush on the buttocks.",
+    )
+    action = action.replace(
+        "The shaft stays one line from the groin into the anus.",
+        "The shaft stays one straight line DOWN from the groin into the anus.",
+    )
+    action = action.replace(
+        "The partner's two feet stay on the floor.",
+        "The partner's two knees stay on the floor, one to the LEFT of Aya's hips and one to the RIGHT.",
+    )
+    action = action.replace(
+        "the shaft line visible between the open thighs",
+        "the shaft pointing straight DOWN onto the closed anus",
+    )
+    action = action.replace(
+        "the shaft line still visible between the thighs",
+        "the groin flush on the buttocks",
+    )
+    return action
+
+
+def _shaft_cam_mount(match: re.Match[str]) -> str:
+    token, verb = match.group(1), match.group(2)
+    # Peak cameras keep a leading "The " outside this match, so the first word stays "partner".
+    name = "The partner" if token.lower() == "partner" else token
+    lead = token if token.lower() == "partner" else name
     if verb == "move onto":
         pose = (
-            f"{name} starts in left true profile and turns a little toward the RIGHT, "
-            f"the same body angle as Aya."
+            f"{lead} kneels over Aya. Both knees move outside Aya's hips, "
+            f"one knee to the LEFT and one knee to the RIGHT. "
+            f"{name}'s pelvis moves to sit directly above the raised buttocks."
         )
     else:
         pose = (
-            f"{name} stays a little toward the RIGHT from left true profile, "
-            f"the same body angle as Aya."
+            f"{lead} stays kneeling over Aya. Both knees stay outside Aya's hips, "
+            f"one knee to the LEFT and one knee to the RIGHT. "
+            f"{name}'s pelvis stays directly above the raised buttocks."
         )
     hand = " One hand stays on her hip." if "one hand" in match.group(0) else ""
     return (
-        f"{raw}'s hips {verb} the same centerline directly behind Aya's buttocks. "
         f"{pose} "
-        f"{name}'s feet and soles point the same way as Aya's feet and soles.{hand}"
+        f"The shaft points straight DOWN from the groin onto the anus.{hand}"
     )
+
+
+def _apply_fours_mount_camera(camera: str) -> str:
+    new, count = _SHAFT_CAM_RE.subn(_shaft_cam_mount, camera)
+    if not count:
+        return camera
+    new = new.replace(
+        "PROFILE side view. Aya faces LEFT, chest and cheek on the tiles, both palms on the tiles. ",
+        "Low rear view. Aya's chest and cheek stay down. The raised buttocks face the lens. "
+        "Both of Aya's knees stay open to the LEFT and RIGHT. ",
+        1,
+    )
+    new = new.replace(
+        "The shaft line stays visible between the open thighs for the whole take. ",
+        "The groin stays flush on the buttocks. The shaft points straight DOWN into the anus. ",
+    )
+    return new
 
 
 def _shaft_wall_cam_yaw(match: re.Match[str]) -> str:
@@ -4834,7 +4970,9 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
 
     The insertion beat keeps siderear and, once the shaft is seated, the hips keep short presses.
     After the shaft leaves, the pelvis freezes. On all fours and on the wall stand, Aya's pose stays.
-    The shaft adult starts in left true profile and turns a little toward the right,
+    On all fours the shaft adult kneels over Aya from the prep beat through the withdrawal.
+    Both knees sit outside her hips, the pelvis sits above the buttocks, and the shaft points down.
+    On the wall stand the shaft adult starts in left true profile and turns a little toward the right,
     so the feet and soles match Aya.
     """
     if str(ep.get("slug") or "") != "hospital-exit-adult":
@@ -4857,10 +4995,11 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
         camera = str(beat.get("camera") or "")
         thighs = "between the open thighs" in action
         calves = "between the calves" in action or "between the calves" in camera
-        if "side faces the camera" in action and (thighs or calves):
+        if thighs and not calves:
+            action = _apply_fours_mount(action)
+            camera = _apply_fours_mount_camera(camera)
+        elif "side faces the camera" in action and calves:
             action = _SHAFT_HEADING_RE.sub(_shaft_yaw_from_profile, action)
-        if thighs and "side faces the camera" in action:
-            camera = _SHAFT_CAM_RE.sub(_shaft_cam_yaw, camera)
         if calves:
             camera = _WALL_CAM_RE.sub(_shaft_wall_cam_yaw, camera)
         beat["camera"] = camera
@@ -6566,7 +6705,11 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         if "between the open thighs" in low or "knees stay planted" in low:
             lines.append(
                 "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
-                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+                "The shaft adult stays kneeling over Aya. "
+                "Both knees stay outside Aya's hips, one to the LEFT and one to the RIGHT. "
+                "The pelvis stays directly above the buttocks. "
+                "The shaft stays pointed straight DOWN into the anus. "
+                "Both stay on this same ground spot."
             )
     elif bid.endswith("-in") and "hold still joined at the base" in low and "inside the anus" in low:
         lines.append(
@@ -6588,14 +6731,38 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         if "knees stay planted" in low or "between the open thighs" in low:
             lines.append(
                 "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
-                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+                "The shaft adult stays kneeling over Aya. "
+                "Both knees stay outside Aya's hips, one to the LEFT and one to the RIGHT. "
+                "The pelvis stays directly above the buttocks. "
+                "The shaft stays pointed straight DOWN into the anus. "
+                "Both stay on this same ground spot."
             )
         elif "heels lifted" in low or "between the calves" in low:
             lines.append(
                 "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
                 "The shaft adult stays standing behind Aya."
             )
-    if bid.endswith("-press") and ("between the open thighs" in low or "between the calves" in low):
+    fours_prep = (
+        "between the open thighs" in low
+        and "kneels over" in low
+        and "glans stays pressed" in low
+        and "the shaft stays outside" in low
+        and "moves the hips back once" not in low
+    )
+    if fours_prep:
+        lines.append(
+            "Aya's pose stays the pose in the opening frame. "
+            "The shaft adult kneels over Aya. "
+            "Both knees plant outside Aya's hips, one to the LEFT and one to the RIGHT. "
+            "The pelvis sits directly above the raised buttocks. "
+            "The shaft points straight DOWN from the groin onto the closed anus. "
+            "The shaft adult's face looks down at the cleft."
+        )
+        lines.append(
+            "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+            "The glans stays pressed on the closed anus. The shaft stays outside."
+        )
+    elif bid.endswith("-press") and "between the calves" in low:
         lines.append(
             "Aya's pose stays the pose in the opening frame. "
             "The shaft adult's torso turns a little toward the right from the left side "
@@ -6603,21 +6770,21 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
             "The shaft adult's feet and soles point the same way as Aya's feet and soles. "
             "The shaft adult's face looks down at Aya's back."
         )
-        if "between the open thighs" in low:
-            lines.append(
-                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
-                "The glans stays pressed on the closed anus. The shaft stays outside."
-            )
-        elif "between the calves" in low:
-            lines.append(
-                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
-                "The glans stays pressed on the closed anus. The shaft stays outside."
-            )
+        lines.append(
+            "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+            "The glans stays pressed on the closed anus. The shaft stays outside."
+        )
     if "moves the hips back once" in low and "hips stay back" in low:
         lines.append(
             "Once the glans clears the rim, both pelvises stay on that back mark. "
             "The hips stay back until the last frame. The shaft stays outside."
         )
+        if "between the open thighs" in low:
+            lines.append(
+                "The shaft adult stays kneeling over Aya. "
+                "Both knees stay outside Aya's hips, one to the LEFT and one to the RIGHT. "
+                "The pelvis rises and the shaft slides UP out of the anus."
+            )
     if bid == "04-toilet-afast":
         lines.append(
             "She climaxes, then the right index finger slides out of the anus. "
