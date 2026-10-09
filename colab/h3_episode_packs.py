@@ -2081,6 +2081,36 @@ PLACE_MODES: dict[str, dict[str, Any]] = {
         "grass edge", "short grass", "cape shelter", "grass mat",
         "cape path", "end of the cape", "bright sky light", "wind off the sea", "old wooden toilet",
     ),
+    "sludge_flat": _surface(
+        "汚泥の干潟", "厚い汚泥と開いた空", "hospital",
+        "A fictional open mudflat, thick sludge underfoot, festering mud on both sides, a wide sky",
+        "sludge bank", "thick sludge", "sludge hut", "sludge mat",
+        "sludge flat", "bend in the flat", "pale sky light", "wind over the sludge", "old wooden toilet",
+    ),
+    "landfill": _surface(
+        "ゴミの埋立地", "廃棄物の山と開いた空", "hospital",
+        "A fictional open landfill, packed waste underfoot, heaps of waste on both sides, a wide sky",
+        "waste heap", "packed waste", "waste hut", "waste mat",
+        "waste track", "gap between the heaps", "pale sky light", "wind over the waste", "old wooden toilet",
+    ),
+    "rot_bog": _surface(
+        "腐れ沼", "腐った水と軟らかい腐泥", "hospital",
+        "A fictional open bog, soft rot underfoot, rotten water on both sides, a low sky",
+        "rot bank", "soft rot", "rot hut", "rot mat",
+        "bog path", "bend in the bog", "pale sky light", "slow water in the bog", "old wooden toilet",
+    ),
+    "ditch_bank": _surface(
+        "ドブの土手", "汚水の土手と開いた空", "hospital",
+        "A fictional open ditch bank, stained earth underfoot, foul water beside the path, a wide sky",
+        "stained bank", "stained earth", "ditch hut", "earth mat",
+        "ditch bank", "bend in the bank", "pale sky light", "foul water moving", "old wooden toilet",
+    ),
+    "fester_shore": _surface(
+        "爛れた浜", "爛れた泡と汚れた砂", "hospital",
+        "A fictional open shore, stained sand underfoot, festering foam along the water, a wide sky",
+        "stained dune", "stained sand", "shore hut", "sand mat",
+        "shore path", "bend in the shore", "pale sky light", "foul surf", "old wooden toilet",
+    ),
 }
 
 TIME_MODES: dict[str, dict[str, Any]] = {

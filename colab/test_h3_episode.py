@@ -6887,6 +6887,11 @@ def test_fantasy_places_replace_the_ward_and_the_default_stays():
         "滝壺": "falling water",
         "花畑": "soft petals",
         "風の岬": "short grass",
+        "汚泥の干潟": "thick sludge",
+        "ゴミの埋立地": "heaps of waste",
+        "腐れ沼": "rotten water",
+        "ドブの土手": "foul water",
+        "爛れた浜": "festering foam",
     }
     ward_words = re.compile(
         r"hospital|linoleum|corridor|sickroom|fluorescent|crumbling|rusted|\bHVAC\b|derelict|T-junction|"
