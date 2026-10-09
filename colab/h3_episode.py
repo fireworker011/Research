@@ -6558,11 +6558,43 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         lines.append("The embrace and the kiss stay inside the opening frame.")
     if bid.endswith("-in") and "forward and back in short presses" in low:
         lines.append(
-            "The opening frame shows the glans at the anus. "
-            "The shaft then travels in until the base meets the buttocks. "
+            "The shaft travels inward until the root meets the buttocks. "
+            "The whole shaft is hidden inside the anus. The groin stays flush with the buttocks. "
             "After the shaft reaches the base, the hips move forward and back in short presses until the last frame. "
-            "Each forward press meets the buttocks. The glans stays inside the anus."
+            "Each forward press keeps the root flush with the buttocks. The glans stays inside the anus."
         )
+        if "between the open thighs" in low or "knees stay planted" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+            )
+    elif bid.endswith("-in") and "hold still joined at the base" in low and "inside the anus" in low:
+        lines.append(
+            "The whole shaft is hidden inside the anus. The groin stays flush with the buttocks. "
+            "The root stays flush with the buttocks until the last frame. The glans stays inside the anus."
+        )
+        if "between the calves" in low or "heels lifted" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The shaft adult stays standing behind Aya."
+            )
+    if bid.endswith("-peak") and ("inside the anus" in low or "in the anus" in low) and "forward and back" in low:
+        lines.append(
+            "The root stays flush with the buttocks. The whole shaft stays hidden inside the anus. "
+            "The hips move forward and back in short presses. "
+            "Each forward press keeps the root flush with the buttocks. The glans stays inside the anus. "
+            "White goo overflows from the join."
+        )
+        if "knees stay planted" in low or "between the open thighs" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+            )
+        elif "heels lifted" in low or "between the calves" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The shaft adult stays standing behind Aya."
+            )
     if bid.endswith("-press") and ("between the open thighs" in low or "between the calves" in low):
         lines.append(
             "Aya's pose stays the pose in the opening frame. "
@@ -6571,6 +6603,16 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
             "The shaft adult's feet and soles point the same way as Aya's feet and soles. "
             "The shaft adult's face looks down at Aya's back."
         )
+        if "between the open thighs" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The glans stays pressed on the closed anus. The shaft stays outside."
+            )
+        elif "between the calves" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The glans stays pressed on the closed anus. The shaft stays outside."
+            )
     if "moves the hips back once" in low and "hips stay back" in low:
         lines.append(
             "Once the glans clears the rim, both pelvises stay on that back mark. "
@@ -6597,6 +6639,11 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
             "The camera moves back until Aya's left foot and Aya's right foot are inside the frame, toes visible. "
             "Both of Aya's feet stay inside the frame. "
             "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid.endswith("-jo-anal") and "inside the anus" in low:
+        lines.append(
+            "The whole shaft is hidden inside the anus. The root stays flush with the buttocks. "
+            "The glans stays inside the anus. The head stays on the floor. The hips stay high."
         )
     if bid.endswith("-jo-set"):
         lines.append(
