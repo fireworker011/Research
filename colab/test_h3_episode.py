@@ -1922,7 +1922,9 @@ def test_hospital_invite_pose_and_toilet_and_skip():
         cam = beat["camera"].lower()
         assert "chest and cheek stay down" in act, bid
         assert "between the open thighs" in act, bid
-        assert "profile side view" in cam, bid
+        assert "low rear view" in cam, bid
+        assert "kneel over aya" in act, bid
+        assert "to the side of the hips" not in act, bid
         assert "side-rear" not in cam, bid
         assert "turns the same way" not in act, bid
         assert extra_lora_entries(beat) == []
@@ -3558,7 +3560,8 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
             assert "aya's face and the partner's face stay in frame" in nine_prompt.lower()
         elif pose == "四つん這い股広げ":
             assert "chest and cheek stay down" in kiss["action"].lower(), pose
-            assert "profile side view" in kiss["camera"].lower(), pose
+            assert "low rear view" in kiss["camera"].lower(), pose
+            assert "kneel over" in kiss["action"].lower(), pose
             assert "between the open thighs" in six["action"].lower(), pose
             assert "erect 20cm" in nine["action"].lower(), pose
             assert six.get("connect") == "t2v", pose
@@ -6441,10 +6444,11 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "right hand" in press["action"].lower()
     assert "siderear" not in extra_keys(walk)
     assert "anuspussy" not in extra_keys(walk)
-    assert "profile side view" in seat["camera"].lower()
+    assert "low rear view" in seat["camera"].lower()
+    assert "kneel over" in seat["action"].lower()
     assert "center of the frame" in seat["camera"].lower()
     assert "low rear view" in peak["camera"].lower()
-    assert "points straight down" in peak["camera"].lower()
+    assert "the whole shaft stays hidden inside the anus" in peak["camera"].lower()
     assert "side-rear" not in seat["camera"].lower()
     assert "side-rear" not in peak["camera"].lower()
     assert "doggy" not in seat["action"].lower()
@@ -7047,11 +7051,21 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "turns a little toward the right" not in press["camera"].lower()
     assert "stays kneeling over aya" in entered["action"].lower()
     assert "travels into the anus straight down" in entered["action"].lower()
+    assert "the pelvis drives straight down" in entered["action"].lower()
+    assert "points straight down from" not in entered["action"].lower()
     assert "the anus faces the camera at the top of the cleft" in entered["action"].lower()
+    assert "kneel over aya" in setup["action"].lower()
+    assert "to the side of the hips" not in setup["action"].lower()
+    assert "the shaft stays outside" in setup["action"].lower()
+    assert "low rear view" in setup["camera"].lower()
     peak = next(b for b in fours["beats"] if b["id"] == "09-join-peak")
     assert "the partner stays kneeling over aya" in peak["camera"].lower()
-    assert "points straight down" in peak["camera"].lower()
+    assert "the whole shaft stays hidden inside the anus" in peak["camera"].lower()
+    assert "onto the anus" not in peak["camera"].lower()
+    assert "the whole shaft stays hidden inside the anus" in peak["action"].lower()
     assert ". partner " not in peak["camera"].lower()
+    assert "slides up" in closed["camera"].lower()
+    assert "points straight down from" not in closed["action"].lower()
     assert "pelvises freeze" in closed["action"].lower()
     assert "shaft stays outside" in closed["action"].lower()
     assert "thrust" not in extra_keys(closed)

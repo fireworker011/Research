@@ -4742,6 +4742,27 @@ _FOURS_WITHDRAW_RE = re.compile(
     r"([A-Za-z]+) MOVES the hips BACK once along the shared centerline until the shaft leaves the anus\."
 )
 _FOURS_FEET_RE = re.compile(r"([A-Za-z]+)'s two feet stay on the floor\.")
+_FOURS_HAND_BASE_RE = re.compile(
+    r"([A-Za-z]+)'s right hand holds the base of the erect .+? on the shaft\."
+)
+_FOURS_SETUP_SIDE_RE = re.compile(
+    r"([A-Za-z]+) stays(?: in the frame)? to the side of the hips(?:, the shaft stays outside)?\."
+)
+_FOURS_SETUP_CAM = (
+    "PROFILE side view. The clip opens on the previous pose. "
+    "Aya lowers until her chest and cheek are on the floor and she faces LEFT. "
+    "The partner stands on the RIGHT behind her by the last frame. "
+    "The closed anus stays at the center of the frame between the open thighs. "
+    "Both adults full body including both feet."
+)
+_FOURS_SETUP_CAM_MOUNT = (
+    "Low rear view. The clip opens on the previous pose. "
+    "Aya lowers until her chest and cheek are on the floor. The raised buttocks face the lens. "
+    "The partner moves to kneel over Aya, one knee to the LEFT of her hips and one knee to the RIGHT. "
+    "The pelvis sits directly above the buttocks. "
+    "The shaft points straight DOWN toward the closed anus and stays outside. "
+    "The closed anus stays large at the center of the frame between the open thighs."
+)
 _SHAFT_HEADING_RE = re.compile(
     r"([A-Za-z]+)'s chest, hips, and knees (?:turn to )?face LEFT, the same direction Aya's chest faces\. "
     r"\1's side faces the camera, the same as Aya's side\. "
@@ -4834,14 +4855,14 @@ def _fours_mount_press(match: re.Match[str]) -> str:
 
 
 def _fours_mount_stay(match: re.Match[str]) -> str:
+    """Body stays mounted. The shaft sentence stays with the beat: hidden, or sliding up."""
     name = match.group(1)
     return (
         f"{name} stays kneeling over Aya. "
         f"Both of {name}'s knees stay outside Aya's hips, one knee to the LEFT and one knee to the RIGHT. "
         f"{name}'s pelvis stays directly above Aya's raised buttocks. "
         f"{name}'s chest faces down toward Aya's back. "
-        f"{name}'s face looks down at the cleft. "
-        f"The erect shaft points straight DOWN from {name}'s groin onto the anus."
+        f"{name}'s face looks down at the cleft."
     )
 
 
@@ -4851,7 +4872,8 @@ def _fours_travel_down(match: re.Match[str]) -> str:
         "The shaft TRAVELS INTO the anus straight DOWN in one continuous press "
         "until the root meets the buttocks and the shaft reaches the BASE. "
         "The whole shaft is hidden inside the anus. "
-        f"{name}'s groin stays flush on Aya's buttocks. {name} stays kneeling over Aya."
+        f"{name}'s groin stays flush on Aya's buttocks. "
+        f"{name}'s right hand leaves the shaft. {name} stays kneeling over Aya."
     )
 
 
@@ -4861,6 +4883,39 @@ def _fours_withdraw_up(match: re.Match[str]) -> str:
         f"{name} MOVES the hips BACK once. "
         "The pelvis rises and the shaft slides UP out of the anus along the downward line "
         "until the shaft leaves the anus."
+    )
+
+
+def _fours_setup_mount(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name} moves to kneel over Aya. "
+        f"Both of {name}'s knees plant outside Aya's hips, one knee to the LEFT and one knee to the RIGHT. "
+        f"{name}'s pelvis sits directly above Aya's raised buttocks. "
+        f"{name}'s chest faces down toward Aya's back. "
+        f"The erect shaft points straight DOWN toward the closed anus. The shaft stays outside."
+    )
+
+
+def _apply_fours_setup(action: str, camera: str) -> tuple[str, str]:
+    """The lowering beat ends in the mount, so the next clip does not open on a side kneel."""
+    new, count = _FOURS_SETUP_SIDE_RE.subn(_fours_setup_mount, action)
+    if not count:
+        return action, camera
+    new = new.replace(
+        "the partner to the side of the hips, the shaft outside",
+        "the partner kneeling over Aya, pelvis above the buttocks, "
+        "the shaft pointing straight DOWN toward the closed anus, the shaft outside",
+    )
+    if _FOURS_SETUP_CAM in camera:
+        camera = camera.replace(_FOURS_SETUP_CAM, _FOURS_SETUP_CAM_MOUNT)
+    return new, camera
+
+
+def _fours_hand_leaves(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name}'s right hand aims the shaft straight DOWN onto the closed anus."
     )
 
 
@@ -4878,6 +4933,7 @@ def _apply_fours_mount(action: str) -> str:
     action = _FOURS_TRAVEL_RE.sub(_fours_travel_down, action)
     action = _FOURS_WITHDRAW_RE.sub(_fours_withdraw_up, action)
     action = _FOURS_FEET_RE.sub(_fours_knees_on_floor, action)
+    action = _FOURS_HAND_BASE_RE.sub(_fours_hand_leaves, action)
     action = action.replace(
         "Each forward press meets Aya's buttocks.",
         "Each forward press drives the pelvis DOWN onto the buttocks. The root stays flush with the buttocks.",
@@ -4888,8 +4944,21 @@ def _apply_fours_mount(action: str) -> str:
     )
     action = action.replace(
         "The shaft stays one line from the groin into the anus.",
-        "The shaft stays one straight line DOWN from the groin into the anus.",
+        "The root stays flush with the buttocks. The whole shaft stays hidden inside the anus.",
     )
+    action = action.replace(
+        "MOVES the hips FORWARD once.",
+        "MOVES the hips FORWARD once. The pelvis drives straight DOWN.",
+    )
+    if (
+        "the whole shaft is hidden inside the anus" in action.lower()
+        or "buried to the root" in action.lower()
+        or "moves the hips back once" in action.lower()
+    ):
+        action = action.replace(
+            "Both holes stay visible between the open thighs.",
+            "The join stays at the center between the open thighs.",
+        )
     action = action.replace(
         "The partner's two feet stay on the floor.",
         "The partner's two knees stay on the floor, one to the LEFT of Aya's hips and one to the RIGHT.",
@@ -4923,10 +4992,11 @@ def _shaft_cam_mount(match: re.Match[str]) -> str:
             f"{name}'s pelvis stays directly above the raised buttocks."
         )
     hand = " One hand stays on her hip." if "one hand" in match.group(0) else ""
-    return (
-        f"{pose} "
-        f"The shaft points straight DOWN from the groin onto the anus.{hand}"
-    )
+    if verb == "move onto":
+        shaft = " The shaft points straight DOWN from the groin onto the closed anus. The shaft stays outside."
+    else:
+        shaft = ""
+    return f"{pose}{shaft}{hand}"
 
 
 def _apply_fours_mount_camera(camera: str) -> str:
@@ -4941,7 +5011,17 @@ def _apply_fours_mount_camera(camera: str) -> str:
     )
     new = new.replace(
         "The shaft line stays visible between the open thighs for the whole take. ",
-        "The groin stays flush on the buttocks. The shaft points straight DOWN into the anus. ",
+        "The groin stays flush on the buttocks. The whole shaft stays hidden inside the anus. ",
+    )
+    new = new.replace(
+        "The shaft leaves and stays outside.",
+        "The pelvis rises. The shaft slides UP out of the anus and stays outside.",
+    )
+    new = new.replace("stay at the center of the frame.", "stay large at the center of the frame.")
+    new = new.replace("stays at the center of the frame.", "stays large at the center of the frame.")
+    new = new.replace(
+        "Both adults full body including both feet.",
+        "The buttocks fill the center of the frame.",
     )
     return new
 
@@ -4996,6 +5076,7 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
         thighs = "between the open thighs" in action
         calves = "between the calves" in action or "between the calves" in camera
         if thighs and not calves:
+            action, camera = _apply_fours_setup(action, camera)
             action = _apply_fours_mount(action)
             camera = _apply_fours_mount_camera(camera)
         elif "side faces the camera" in action and calves:
