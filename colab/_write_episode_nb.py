@@ -393,7 +393,7 @@ def make_nb() -> dict:
         .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
         .replace("__DISTANCE_DEFAULT__", json.dumps(ui_default("camera_distance"), ensure_ascii=False))
         .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
-        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・個室・寝床・出口だけ替わる"))
+        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面"))
         .replace("__PLACE_DEFAULT__", json.dumps(ui_default("place"), ensure_ascii=False))
         .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
         .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))

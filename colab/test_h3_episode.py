@@ -6272,6 +6272,87 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert len(wash["beats"]) <= MAX_BEATS
 
 
+def test_tsuno_private_room_keeps_only_the_ground():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    wash = prepare_episode(raw, tsuno_override="角・個室")
+    bed_ids = (
+        "04-tsuno-stall",
+        "04-tsuno-set",
+        "04-tsuno-anal",
+        "04-tsuno-cum",
+        "04-tsuno-gape",
+        "04-tsuno-rise",
+        "04-tsuno-stall-kiss",
+    )
+    for bid in bed_ids:
+        beat = next(b for b in wash["beats"] if b["id"] == bid)
+        blob = " ".join(str(beat.get(k) or "") for k in ("place", "environment", "action", "camera", "sfx")).lower()
+        assert "mattress" in blob, bid
+        assert "iron single bed" in blob, bid
+        assert "stall" not in blob, bid
+        assert "hood" not in blob, bid
+        assert "plant mouth" not in blob, bid
+        assert "platform" not in blob, bid
+        assert "tiles" not in blob, bid
+    sett = next(b for b in wash["beats"] if b["id"] == "04-tsuno-set")
+    assert "lowers aya onto the mattress" in sett["action"].lower()
+    assert "palms plant on the mattress" in sett["action"].lower()
+    assert "unjoined" in sett["action"].lower()
+    anal = next(b for b in wash["beats"] if b["id"] == "04-tsuno-anal")
+    assert "travels into the anus" in anal["action"].lower()
+    assert "hold still joined at the base" in anal["action"].lower()
+    assert "feet do not travel" not in anal["action"].lower()
+    gape = next(b for b in wash["beats"] if b["id"] == "04-tsuno-gape")
+    assert "moves the hips back once" in gape["action"].lower()
+    assert "wide ring" in gape["action"].lower()
+    kiss = next(b for b in wash["beats"] if b["id"] == "04-tsuno-stall-kiss")
+    assert kiss["camera"].startswith("PROFILE")
+    ward = build_beat_prompt(wash, anal)
+    assert "stained grey mattress" in ward.lower()
+    assert "the surface is packed earth" not in ward.lower()
+    assert "stay on this same mattress" in ward.lower()
+    assert "this same stall" not in ward.lower()
+
+    forest = prepare_episode(raw, tsuno_override="角・個室", place_override="森林", time_override="昼")
+    fanal = next(b for b in forest["beats"] if b["id"] == "04-tsuno-anal")
+    prompt = build_beat_prompt(forest, fanal).lower()
+    assert "the surface is packed earth" in prompt
+    assert "travels into the anus" in prompt
+    assert "hold still joined at the base" in prompt
+    assert "small wooden hut" not in prompt
+    assert "low wooden cot" not in prompt
+    assert "window" not in prompt
+    assert "stall" not in prompt
+    assert "mattress" not in prompt
+    assert "sofa" not in prompt and "bench" not in prompt and "cot" not in prompt
+    ward_words = re.compile(
+        r"hospital|linoleum|corridor|sickroom|fluorescent|crumbling|rusted|\bHVAC\b|derelict|"
+        r"porcelain|beige|\btiles\b|at night",
+        re.I,
+    )
+    assert not ward_words.search(prompt)
+
+    hall = prepare_episode(raw, tsuno_override="角・個室", place_override="紅絨毯の広間", time_override="昼")
+    hprompt = build_beat_prompt(hall, next(b for b in hall["beats"] if b["id"] == "04-tsuno-anal")).lower()
+    assert "the surface is crimson carpet" in hprompt
+    assert "velvet" not in hprompt and "divan" not in hprompt
+    assert "draped salon" not in hprompt
+
+    ride = prepare_episode(raw, tsuno_override="角・病室で横になって挿入", place_override="森林", time_override="昼")
+    lie = next(b for b in ride["beats"] if b["id"] == "04-tsuno-lie")
+    lie_prompt = build_beat_prompt(ride, lie).lower()
+    assert "lowers her hip onto the packed earth" in lie_prompt
+    assert "on their sides" in lie_prompt
+    assert "low wooden cot" not in lie_prompt
+    assert "small wooden hut" in lie_prompt
+
+    pee = prepare_episode(raw, toilet_override="pee", place_override="森林", time_override="昼")
+    bowl = next(b for b in pee["beats"] if b["id"] == "04-toilet")
+    bowl_prompt = build_beat_prompt(pee, bowl).lower()
+    assert "small wooden hut" in bowl_prompt
+    assert "the surface is packed earth" not in bowl_prompt
+
+
 def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     miki = prepare_episode(

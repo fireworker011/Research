@@ -626,6 +626,21 @@ TOILET_STALL_CLAUSE = (
     "The adults stay inside this same stall. The camera holds. "
     "Normal adult human height."
 )
+# Tsuno's private room is the bed only. The same negated step clause would walk them.
+WASH_BED_IDS = frozenset({
+    "04-tsuno-stall",
+    "04-tsuno-set",
+    "04-tsuno-anal",
+    "04-tsuno-cum",
+    "04-tsuno-gape",
+    "04-tsuno-rise",
+    "04-tsuno-stall-kiss",
+})
+WASH_BED_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "The adults stay on this same mattress. The camera holds. "
+    "Normal adult human height."
+)
 # Corridor-to-seat entry. The planted clauses forbid the walk into the stall.
 TOILET_SIT_RE = re.compile(r"turns into the filthy western stall and SITS", re.I)
 TOILET_SIT_CLAUSE = (
@@ -3688,6 +3703,9 @@ def scrub_planted_action(action: str) -> str:
         out = re.sub(r"\bWALKING\b", "holding still", out)
     if TOILET_STALL_RE.search(out):
         return re.sub(r" {2,}", " ", out).strip()
+    # The bed hold already names the surface. "Feet do not travel" gets drawn as a step.
+    if "on this same mattress" in out.lower() and "on their sides" not in out.lower():
+        return re.sub(r" {2,}", " ", out).strip()
     if "same linoleum spot" not in out.lower() and "same floor spot" not in out.lower():
         if NELSON_HOLD_RE.search(out):
             out = out.rstrip(".") + ". The pair stays on this same floor spot."
@@ -5483,6 +5501,9 @@ def _place_swaps(spec: dict[str, Any]) -> list[tuple[str, str]]:
         ("stained mattress", bed),
         ("iron single bed", bed),
         ("iron bed", bed),
+        ("the bed frame", f"the {bed}"),
+        ("bed frame", bed),
+        ("the bed", f"the {bed}"),
         ("the mattress", f"the {bed}"),
         ("cracked linoleum", floor),
         ("grey linoleum", floor),
@@ -5585,9 +5606,13 @@ def _surface_env(spec: dict[str, Any], original: str) -> str:
             and not any(w in s.lower() for w in _SURFACE_ROOM_WORDS)
         ]
         base = str(spec["priv"])
-    elif any(w in low for w in ("sickroom", "mattress", "iron bed", "single bed")):
+    elif "sickroom" in low:
         kept = []
         base = str(spec["bedroom"])
+    elif any(w in low for w in ("mattress", "iron bed", "single bed")):
+        # Tsuno's private room stops here. Only the place's own ground remains.
+        kept = []
+        base = str(spec["rest"])
     else:
         kept = []
         base = str(spec["env"])
@@ -7014,6 +7039,8 @@ def build_beat_prompt(
             desc.append(HIPS_BACK_ONCE_CLAUSE)
         elif "moves the hips up once" in action_txt.lower() and "hips stay up" in action_txt.lower():
             desc.append(HIPS_UP_ONCE_CLAUSE)
+        elif bid_now in WASH_BED_IDS:
+            desc.append(WASH_BED_CLAUSE)
         elif TOILET_SIT_RE.search(action_txt):
             desc.append(TOILET_SIT_CLAUSE)
         elif (
