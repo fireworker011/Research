@@ -31,8 +31,10 @@
 1. **先に** `affiliate-engine/data/conversions.csv`
 2. **そのあと** `affiliate-engine/data/video_cash_log.csv`（履歴行は残してある。円の合計には使うな）
 3. このファイルに書いていない閲覧数・売上は **ファイルに無い**
+4. 運用ナレッジ（目標は変えない）: `docs/grok-bots/HQ_GROK_OPS_KNOWLEDGE.md`
 
-朝レビューも同じ。`video_cash_log.csv` のクリックを、この期限の実測円にしない。
+朝レビューも同じ。`video_cash_log.csv` のクリックを、この期限の実測円にしない。  
+`HQ_GROK_OPS_KNOWLEDGE.md` は改善の切り方だけ。期限・¥1,000,000・実測円 0 は上の表が正。上書きするな。
 
 ## 決定済み（ピボット）
 
@@ -70,3 +72,9 @@ Furbo 購入10% / ペット癒しでは、この期限に届かない。根拠�
 - `source` は `A8` / `AdSense` / `other`
 - ASP 管理画面で見た値だけ。空なら空のまま
 - 例示の金額・仮の CV を書くな
+
+## 運用ナレッジ（目標は変えない）
+
+指令塔「月100万稼ぐまで帰れま10」が改善活動に使うファイル: [HQ_GROK_OPS_KNOWLEDGE.md](HQ_GROK_OPS_KNOWLEDGE.md)。
+
+期限・目標円・実測円・ピボットは **本ファイルが正**。ナレッジ側で書き換えない。
