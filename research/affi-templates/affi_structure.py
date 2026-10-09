@@ -311,9 +311,10 @@ def render_markdown(pack: Mapping[str, Any]) -> str:
     out.extend(["", "## ショット", ""])
     for shot in pack["shots"]:
         who = "、".join(ROLE_JA[role] for role in shot["on_screen"]) or "なし"
+        note = f" {shot['note']}" if shot.get("note") else ""
         out.append(
             f"- {shot['id']} {_num(shot['start_s'])}–{_num(shot['end_s'])}秒。"
-            f"{shot['picture']} カメラ: {shot['camera']} 画面: {who}。"
+            f"{shot['picture']} カメラ: {shot['camera']} 画面: {who}。{note}"
         )
     out.extend(
         [
