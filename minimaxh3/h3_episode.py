@@ -4864,6 +4864,10 @@ _SAME_TAKE = (
     " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
     "The camera moves inside this shot. The picture stays sharp."
 )
+_GLANS_REMNANT = (
+    " A small remnant of thick WHITE semen stays at the urethral opening on the tip of the glans."
+)
+_FACIAL_CUM_IDS = frozenset({"04-gin-mouth", "09-kana-facial", "04-tsuno-wait"})
 _LEFT_FOOT = (
     " Aya's left foot stays inside the frame, toes visible, beside the right foot. "
     "Both of Aya's feet stay inside the frame."
@@ -4963,6 +4967,22 @@ def _shaft_wall_cam_yaw(match: re.Match[str]) -> str:
     )
 
 
+def _glans_remnant_due(bid: str, action: str) -> bool:
+    """After ejaculation, a remnant stays at the urethral opening once the shaft is outside."""
+    low = action.lower()
+    if "urethral opening" in low:
+        return False
+    if bid in _FACIAL_CUM_IDS:
+        return "ejaculat" in low or "semen" in low
+    left = "moves the hips back once" in low or "moves the hips up once" in low
+    outside = (
+        "shaft stays outside" in low
+        or "outside the anus" in low
+        or "the glans clears the rim" in low
+    )
+    return left and outside and ("semen" in low or "white goo" in low)
+
+
 def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
     """Pose notes from the mountain-path renders. The pose-entry beat stays free of the act LoRA.
 
@@ -4970,6 +4990,7 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
     After the shaft leaves, the pelvis freezes. On all fours and on the wall stand, Aya's pose stays.
     The shaft adult starts in left true profile and turns a little toward the right,
     so the feet and soles match Aya.
+    After ejaculation, a small remnant of thick WHITE semen stays at the urethral opening.
     """
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return ep
@@ -5025,6 +5046,8 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
                 "Both heads and all four feet stay inside the frame. "
                 "Both mouths stay readable. Floor runs LEFT to RIGHT."
             )
+        if _glans_remnant_due(bid, action):
+            action = action.rstrip(".") + "." + _GLANS_REMNANT
         beat["action"] = re.sub(r" {2,}", " ", action).strip()
     return ep
 
@@ -6645,15 +6668,12 @@ _I2V_STYLE = (
 
 
 def _hospital_i2v_camera(beat: dict[str, Any], cam: str) -> str:
-    """Chain camera for the October 8 notes. The authored camera stays on T2V."""
+    """Chain camera for the October 8 notes. The authored camera stays on T2V.
+
+    Kana's facial and the front embrace keep the authored camera on chain too,
+    so the hug continues from the previous frame.
+    """
     bid = str(beat.get("id") or "")
-    if bid == "09-kana-facial":
-        return _I2V_STYLE
-    if bid == "09-kana-kiss":
-        return (
-            _I2V_STYLE
-            + " The embrace and the kiss stay inside that same frame."
-        )
     if bid == "04-gin-lick":
         return (
             "The camera stays at the opening distance. "
@@ -6673,15 +6693,12 @@ def _hospital_i2v_camera(beat: dict[str, Any], cam: str) -> str:
 def _hospital_i2v_action(action_line: str, beat: dict[str, Any]) -> str:
     """Prompt text only. The beat's stored action stays the current prompt."""
     bid = str(beat.get("id") or "")
-    if bid not in ("09-kana-facial", "09-kana-kiss", "04-gin-lick"):
+    if bid != "04-gin-lick":
         return action_line
     out = action_line.replace(
         "The camera moves inside this shot. ",
         "The camera distance stays the opening distance. ",
     )
-    if bid == "09-kana-facial":
-        out = out.replace("The same door stays behind Aya. ", "")
-        out = out.replace("The same door stays behind Aya", "")
     return re.sub(r" {2,}", " ", out).strip()
 
 
@@ -6690,12 +6707,6 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
     bid = str(beat.get("id") or "")
     low = str(beat.get("action") or "").lower()
     lines = [_I2V_MARK]
-    if bid == "09-kana-facial":
-        lines.append(
-            "The kneel, the aim, and the ejaculation stay inside the opening frame."
-        )
-    elif bid == "09-kana-kiss":
-        lines.append("The embrace and the kiss stay inside the opening frame.")
     if bid.endswith("-in") and "forward and back in short presses" in low:
         lines.append(
             "The shaft travels inward until the root meets the buttocks. "
@@ -6762,6 +6773,7 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         lines.append(
             "She climaxes, then the right index finger slides out of the anus. "
             "The anus stays a wide open ring. Thick brown feces clings to the fingertip. "
+            "A small smear of thick brown feces clings to the skin around that open ring. "
             "The place and the rendering stay the opening frame."
         )
     if bid == "04-toilet-out" and "licks that fingertip" in low:

@@ -1850,16 +1850,17 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     assert "tentacle" in four["action"].lower()
     assert "travels into" in four["action"].lower()
     _assert_insertion_direction(four["action"], four_prompt)
-    assert "left nipple" in four["action"].lower()
-    assert "right nipple" in four["action"].lower()
+    assert "travels into the anus" in four["action"].lower()
     assert "open mouth" in four["action"].lower()
     assert "hairless pussy" in four["action"].lower()
+    assert "both feet off the floor" in four["action"].lower()
+    assert "eyes stay half closed" in four["action"].lower()
     assert "corpse" not in four_prompt.lower()
     assert four["trim"]["seconds"] == 10.0
     assert beat_clip_seconds(toilet, four) == 10.0
-    assert "already sits" in four["action"].lower()
+    assert "already hangs" in four["action"].lower()
     assert "keep thrusting" not in four["action"].lower()
-    assert "hold still joined at those four places" in four["action"].lower()
+    assert "hold still joined at the anus and the hairless pussy" in four["action"].lower()
     assert "does not stand" not in four["action"].lower()
     pee = prepare_episode(raw, story_override="accept", toilet_override="pee")
     assert next(b for b in pee["beats"] if b["id"] == "04-toilet")["action"].lower().find("yellow water") >= 0
@@ -2407,7 +2408,7 @@ def test_hospital_toilet_and_routes_stay_consistent():
     for mode, must in (
         ("pee", ("yellow water", "keeps streaming", "already seated")),
         ("masturbate", ("rubbing", "keeps going", "already seated")),
-        ("tentacle", ("tentacle", "travels into", "left nipple", "right nipple", "open mouth", "hairless pussy", "hold still joined")),
+        ("tentacle", ("tentacle", "travels into", "anus", "open mouth", "hairless pussy", "hold still joined", "both feet off the floor")),
     ):
         ep = prepare_episode(raw, story_override="受け入れる", toilet_override=mode)
         four = next(b for b in ep["beats"] if b["id"] == "04-toilet")
@@ -2419,7 +2420,8 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert n in low, (mode, n)
         if mode == "tentacle":
             assert "keep thrusting" not in low
-            assert "already sits" in low
+            assert "already hangs" in low
+            assert "both feet off the floor" in low
         else:
             assert "stays seated" in low and "first frame to the last frame" in low
         assert "rock down" not in low
@@ -2428,17 +2430,22 @@ def test_hospital_toilet_and_routes_stay_consistent():
         assert "steps out" not in low and "walk" not in low
         enter = next(b for b in ep["beats"] if b["id"] == "04-toilet-in")
         leave = next(b for b in ep["beats"] if b["id"] == "04-toilet-out")
-        assert "sits down" in enter["action"].lower()
+        if mode == "tentacle":
+            assert "both feet leave the floor" in enter["action"].lower()
+            assert "catch" in enter["action"].lower()
+        else:
+            assert "sits down" in enter["action"].lower()
         assert "stands" in leave["action"].lower()
         assert "walks right" in leave["action"].lower()
         if mode != "tentacle":
             assert "tentacle" not in leave["action"].lower()
         if mode == "tentacle":
             fill = next(b for b in ep["beats"] if b["id"] == "04-toilet-fill")
-            assert "both wrists and both ankles" in fill["action"].lower()
-            assert "vine" in fill["action"].lower()
+            assert "tentacle" in fill["action"].lower()
+            assert "both feet off the floor" in fill["action"].lower()
+            assert "vine" not in fill["action"].lower()
             assert "vine" not in next(b for b in prepare_episode(raw, story_override="受け入れる", toilet_override="pee")["beats"] if b["id"] == "04-toilet")["action"].lower()
-            assert "left nipple" in low and "right nipple" in low
+            assert "travels into the anus" in low and "hairless pussy" in low
             assert "keep thrusting" not in low and "keep thrusting" not in fill["action"].lower()
             assert "exactly three" not in low and "exactly three" not in fill["action"].lower()
             assert "under the toilet seat" not in low
@@ -2468,7 +2475,8 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "facing the camera" in enter["action"].lower()
         elif mode == "tentacle":
             assert "facing the camera" in low
-            assert "left nipple" in low and "open mouth" in low
+            assert "travels into the anus" in low and "open mouth" in low
+            assert "penetrates her ass" in four.get("trigger", "")
             assert "profile" not in four["camera"].lower()
             assert "facing the camera" in enter["action"].lower()
         else:
@@ -5040,7 +5048,7 @@ def test_hospital_start_scene_uses_the_colab_route(tmp_path):
         saved["beats"][beat["id"]] = {"sig": beat_content_sig(beat)}
     toilet_at = render_start_index(on["beats"], "04-toilet", raw, saved)
     assert on["beats"][toilet_at]["id"] == "04-toilet"
-    assert "left nipple" in on["beats"][toilet_at]["action"]
+    assert "travels into the anus" in on["beats"][toilet_at]["action"].lower()
     cunny_at = render_start_index(on["beats"], "04-gin-cunny", raw, saved)
     assert on["beats"][cunny_at]["id"] == "04-gin-cunny"
     assert "clitoris GROWS" in on["beats"][cunny_at]["action"]
@@ -6563,6 +6571,8 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "lowers one of" not in miki_peak["action"].lower()
     assert "slides off the glans" in mouth["action"].lower()
     assert "urethral slit" in mouth["action"].lower()
+    assert "urethral opening" in mouth["action"].lower()
+    assert "small remnant of thick white semen" in mouth["action"].lower()
     mouth_prompt = build_beat_prompt(gin, mouth, trigger=merge_trigger("", mouth))
     assert "onto gin's face and tongue" in mouth_prompt.lower()
     assert "onto aya's face" not in mouth_prompt.lower()
@@ -7223,9 +7233,14 @@ def test_hospital_off_ward_human_and_insert_fixes():
     kana = next(b for b in zombie["beats"] if b["id"] == "09-kana-facial")
     kana_prompt = build_beat_prompt(zombie, kana, trigger=merge_trigger("", kana))
     assert beat_source(kana) == "chain"
-    assert "the camera distance stays the opening distance" in kana_prompt.lower()
-    assert "the camera moves in an arc around aya's face" not in kana_prompt.lower()
+    assert "the camera moves in an arc around aya's face" in kana_prompt.lower()
+    assert "this shot continues the previous one without a cut" in kana_prompt.lower()
     assert "all four feet" not in kana_prompt.lower()
+    kana_kiss = next(b for b in zombie["beats"] if b["id"] == "09-kana-kiss")
+    kana_kiss_prompt = build_beat_prompt(zombie, kana_kiss, trigger=merge_trigger("", kana_kiss))
+    assert beat_source(kana_kiss) == "chain"
+    assert "wrap both arms around each other" in kana_kiss_prompt.lower()
+    assert "this shot continues the previous one without a cut" in kana_kiss_prompt.lower()
     gin_mouth = next(b for b in zombie["beats"] if b["id"] == "04-gin-mouth")
     gin_prompt = build_beat_prompt(zombie, gin_mouth, trigger=merge_trigger("", gin_mouth))
     assert gin_prompt.startswith("CUMSH0T")
@@ -7297,6 +7312,8 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "kneels over" not in closed["action"].lower()
     assert "pelvises freeze" in closed["action"].lower()
     assert "shaft stays outside" in closed["action"].lower()
+    assert "urethral opening" in closed["action"].lower()
+    assert "urethral opening" not in press["action"].lower()
     assert "thrust" not in extra_keys(closed)
     wall = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
     wall_press = next(b for b in wall["beats"] if b["id"] == "03-kiss-press")
@@ -7316,6 +7333,7 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     assert "on the balls of both feet" in wall_in["action"].lower()
     assert "the anus faces the camera" in wall_in["action"].lower()
     wall_close = next(b for b in wall["beats"] if b["id"] == "03-kiss-close")
+    assert "urethral opening" in wall_close["action"].lower()
     assert "stays a little toward the right" in wall_close["camera"].lower()
     assert "spines stay parallel" not in wall_close["camera"].lower()
     wall_set = next(b for b in wall["beats"] if b["id"] == "03-kiss")
@@ -7327,6 +7345,8 @@ def test_hospital_review_motion_matches_the_mountain_notes():
     out = next(b for b in finger["beats"] if b["id"] == "04-toilet-out")
     assert "wide open ring" in afast["action"].lower()
     assert "thick brown feces" in afast["action"].lower()
+    assert "around that open ring" in afast["action"].lower()
+    assert "index finger" in afast["action"].lower()
     assert "analfinger" not in extra_keys(afast)
     assert "licks that fingertip clean" in out["action"].lower()
     assert "walks right" in out["action"].lower()
@@ -7452,6 +7472,7 @@ def test_hospital_i2v_prompts_follow_the_october_frames():
     out_p = build_beat_prompt(finger, out)
     assert "the anus stays a wide open ring" in afast_p.lower()
     assert "thick brown feces clings to the fingertip" in afast_p.lower()
+    assert "around that open ring" in afast_p.lower()
     assert "licks that fingertip clean" in out_p.lower()
     assert "walks for the rest of the clip" in out_p.lower()
     assert out["trim"]["seconds"] == 10.0
@@ -7490,16 +7511,19 @@ def test_hospital_i2v_prompts_follow_the_october_frames():
     facial = next(b for b in mountain["beats"] if b["id"] == "09-kana-facial")
     facial_p = build_beat_prompt(mountain, facial)
     assert beat_source(facial) == "chain"
-    assert mark in facial_p.lower()
-    assert "the camera distance stays the opening distance" in facial_p.lower()
-    assert "the camera moves in an arc" not in facial_p.lower()
-    assert "close on aya's face" not in facial_p.lower()
+    assert "the camera moves in an arc around aya's face" in facial_p.lower()
+    assert "close on aya's face" in facial_p.lower()
+    assert "this shot continues the previous one without a cut" in facial_p.lower()
     assert "the same door stays behind aya" not in facial_p.lower()
     assert "looks up" in facial_p.lower()
+    assert "urethral opening" in facial["action"].lower()
     kiss = next(b for b in mountain["beats"] if b["id"] == "09-kana-kiss")
     kiss_p = build_beat_prompt(mountain, kiss)
-    assert "the embrace and the kiss stay inside the opening frame" in kiss_p.lower()
-    assert "the camera distance stays the opening distance" in kiss_p.lower()
+    assert beat_source(kiss) == "chain"
+    assert "wrap both arms around each other" in kiss_p.lower()
+    assert "french kiss" in kiss_p.lower()
+    assert "this shot continues the previous one without a cut" in kiss_p.lower()
+    assert "profile side-on" in kiss_p.lower()
     kiss_t2v = build_beat_prompt(
         fours, next(b for b in fours["beats"] if b["id"] == "09-kana-kiss")
     )
