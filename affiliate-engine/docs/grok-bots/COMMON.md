@@ -9,7 +9,7 @@
 - 期限の円・クリックは `docs/grok-bots/HQ_100MAN.md` と `data/conversions.csv`（20:00 JST は conversions.csv が先、次に `data/video_cash_log.csv`）
 - 動画判定の数字は `affiliate-engine/data/video_cash_log.csv` と `output/video/TODAY.md` にある分だけ。転記で埋めない
 - Imagine は文字なし・ロゴなし・9:16
-- 台本・説明文に URL を書かない。CTA は「詳しくはプロフィールのリンク（PR）」1回
+- 台本・説明文に URL を書かない。CTA は「詳しくはプロフィールのリンク（PR）」1回（ただし美容・婚活・ペットは 2026-10-09 から動画の中に字幕・CTAを入れない。各 agents の「2026-10-09 改訂」節に従う）
 - 広告明示 `#PR`
 - 紹介は「調べた / まとめた / 観察」まで
 

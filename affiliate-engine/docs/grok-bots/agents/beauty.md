@@ -22,6 +22,30 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
 
+## 2026-10-09 改訂（ナオミチ承認。この節が最優先。下と食い違ったらこの節に従え）
+
+本編（動画の中）:
+- 字幕・テロップ・画面の文字は入れない。読み上げ用の字幕も作らない
+- CTAは入れない。「詳しくはプロフィールのリンク（PR）」を画面にも声にも出さない
+- 説明文の末尾の #PR は今までどおり。URLは書かない
+- 声を入れるときは編集で足す（字幕は付けない）
+
+Imagine の作り方:
+- 1回の生成は1ショットだけ（2〜5秒）。「Shot 2」「hard cut」を1つのプロンプトに書かない。つなぐのは編集
+- 1ショットに動きは1つ。カメラの動きも1つ（固定／ゆっくり寄る／ゆっくり引く のどれか）
+- キャラは参照画像で固定する（最大7枚）。最初にキャラ設定画を作り、毎回その画像から始める
+- カメラ・光・質感を毎回書く。「not cinematic」は書かない
+- 画面に文字・字幕・ロゴを生成させない
+- 同じプロンプトを全クリップに使い回さない。最後のクリップをループして尺を埋めない。ショットごとに開始の状態と動きを変える
+- 下の IMAGINE_THROW は場面の材料。そのまま投げず、この節のルールで1ショットずつ書き直してから投げる
+- 生成前にセルフチェック。全部「はい」になるまで投げない:
+  1ショットだけか／動きは1つか／カメラは1つか／参照画像から始めているか／カメラ・光・質感が書いてあるか／画風はジャンルどおりか／文字・字幕・ロゴの禁止が入っているか／前のショットと同じプロンプトではないか
+
+美容だけのルール:
+- 画風は3Dキャラ（Pixar-style 3D animation）。photorealistic と混ぜない
+- 主役は成分・道具のキャラ1体。人は出さない
+- 型は 悩み→対処→笑顔。肌のビフォーアフター・商品パッケージ・効く／治るを思わせる絵は出さない
+
 ## 毎朝の順番（上から。途中で終われ）
 
 量産するな。1日1本が上限。2本目以降は今日やるな。
@@ -42,7 +66,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
 - URL を本文・説明・コメントに書くな
-- CTA は「詳しくはプロフィールのリンク（PR）」1回だけ
+- 動画の中にCTAを入れない（「詳しくはプロフィールのリンク（PR）」を画面にも声にも出さない）
 - 説明文の末尾に #PR
 - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
 - 数字を発明するな
@@ -67,20 +91,13 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - 1080×1920、30fps、9:16
 - 左右余白 8%（文字は中央 920px 幅に収める）
 
-### テロップ位置
-- 領域: 画面下三分の一（lower_third）
-- 基準: 下から 280px、水平中央
-- 1行 16字、同時 2行まで
-- フォント: Noto Sans CJK Bold 44px、色 #FFFFFF、縁 #000000 4px
-- 行間 20px
-- 0–0.5秒は文字なし
-- CTA「詳しくはプロフィールのリンク（PR）」は最後の 2秒だけ、同じ位置
+### 字幕
+- 本編に字幕・テロップ・画面の文字は入れない（2026-10-09）
 
 ### ナレーション
-- テロップ／読み上げと同一。アドリブ禁止
+- 声は編集で足す。字幕は付けない
 - 無音ヘッドのあと本文開始。アドリブ禁止
-- 画面の2行と同時にその2行を読む。次の2行に進むのは 2.4秒後
-- CTAも声に出す
+- CTAは声に出さない
 
 ### 編集テンポ
 - BGM: なし
@@ -88,8 +105,8 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
 - プッシュイン: 通しで最大5%。急なズーム禁止
 - フェードイン: なし（0秒から映像） / アウト: 末尾0.3秒まで可
-- 素材のつなぎ: Imagineは1クリップ5秒。必要本数=ceil(完成尺/5)。同じIMAGINE_THROWを繰り返し、順番に繋ぐ。足りなければ最後のクリップをループ。台本より映像を長くし、黒で埋めない
-- Imagine 1本は 5秒。必要本数は各レシピのテロップ表を見ろ
+- 素材のつなぎ: Imagineは1回1ショット（2〜5秒）。ショットごとに別のプロンプト（開始の状態と動きを変える）。同じプロンプトの使い回し・最後のクリップのループはしない。黒で埋めない
+- Imagine 1本は 2〜5秒。必要本数は各レシピの完成尺から決めろ
 
 ## 投稿チェック（投稿したと言われたらこれだけ）
 
@@ -102,7 +119,7 @@ KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。
 |---|---|
 | レシピid | 人間が言ったid |
 | 公開された | はい / いいえ / 不明 |
-| 末尾CTA（詳しくはプロフィールのリンク（PR）） | あり / なし / 不明 |
+| 本編のCTA・字幕 | ないこと。あったら失敗 |
 | 説明にURL | ないこと。あったら失敗 |
 | 説明に#PR | あり / なし / 不明 |
 | 固定コメントのURL | ないこと。あったら失敗 |
@@ -115,7 +132,7 @@ KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。
 投稿チェック: 済み
 id: <id>
 公開: はい
-CTA: あり
+本編CTA・字幕: なし
 説明URL: ない
 #PR: あり
 固定URL: ない
@@ -132,10 +149,10 @@ CTA: あり
 条件を満たさないなら、この節は読むな。レシピを順に全部作るな。
 
 1. 台帳の next_id の1本だけ選ぶ
-2. レシピのテロップ表の秒に従え
-3. IMAGINE_THROW を、クリップ本数だけ Grok Imagine に投げる（各5秒・9:16・文字なし）
-4. クリップを編集仕様どおり繋ぎ、テロップを載せる
-5. ナレーションはテロップ／読み上げと同一
+2. レシピの秒（完成尺）に従え。テロップ表の文字は画面に出さない
+3. IMAGINE_THROW を材料に、1ショットずつ別のプロンプトを書く（各2〜5秒・9:16・文字なし・参照画像でキャラ固定）。セルフチェックが全部「はい」になってから Grok Imagine に投げる
+4. クリップを編集仕様どおり繋ぐ。字幕は載せない
+5. 声を入れるなら編集で足す。下の「声の台本」を読む（画面には出さない。CTAは読まない）
 6. `output` に保存。mp4 を Git にコミットするな
 7. 「未投稿の完成1本あり / 失敗」だけ返す。投稿してよいとは言うな
 
@@ -156,13 +173,11 @@ node src/genre-video-gen.js --genre 美容 --id <id> --write
 秒:
 - 0-3 工程を削る／全部やらなくていい
 - 3-18 残す最小。個人差があると書く
-- 18-末 効く・治る・消えるは言わない。CTA1回
+- 18-末 効く・治る・消えるは言わない
 
 台本骨格:
 ```
 [最小限]。感じ方には個人差があります。[効く等]とは言いません。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 Imagine: One object on a shelf. No skin close-up, no before/after bodies.
@@ -174,7 +189,7 @@ from: manager
 run: ready
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: beauty_min_care_01
@@ -189,20 +204,19 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 4 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
 | 0.5–4.7 | 本文 | 疲れた夜、工程を落とす＋保湿の2 / つまで削る人がいます。感じ方には |
 | 4.7–8.9 | 本文 | 個人差があります。効く／消える、 / とは言いません。続け方の組み立て |
 | 8.9–13.1 | 本文 | だけプロフィールにまとめています / 。 |
-| 13.1–15.1 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15.1秒 / Imagineクリップ: 4本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Pixar-style 3D animation, glossy, soft subsurface glow. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no humans.
 
 Pale beige bathroom shelf, one unbranded bottle silhouette, no skin close-ups.
 
@@ -211,11 +225,9 @@ One object on a shelf. No skin close-up, no before/after bodies.
 A bathroom shelf at night, one unlabelled pump bottle and a towel, warm dim light. No face, no before-after, no logos.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 疲れた夜、工程を落とす＋保湿の2つまで削る人がいます。感じ方には個人差があります。効く／消える、とは言いません。続け方の組み立てだけプロフィールにまとめています。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）

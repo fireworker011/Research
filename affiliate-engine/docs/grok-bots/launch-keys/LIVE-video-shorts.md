@@ -11,7 +11,7 @@ post: false
 ## メタ
 - id: pet-shorts-next3
 - source: affiliate-engine/docs/youtube-next-3.md
-- cta: 詳しくはプロフィールのリンク（PR）
+- cta: なし（2026-10-09 から動画の中に字幕・CTAを入れない）
 - post: false
 
 ## やれ

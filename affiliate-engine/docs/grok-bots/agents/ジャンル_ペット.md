@@ -22,6 +22,31 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。
 
+## 2026-10-09 改訂（ナオミチ承認。この節が最優先。下と食い違ったらこの節に従え）
+
+本編（動画の中）:
+- 字幕・テロップ・画面の文字は入れない。読み上げ用の字幕も作らない
+- CTAは入れない。「詳しくはプロフィールのリンク（PR）」を画面にも声にも出さない
+- 説明文の末尾の #PR は今までどおり。URLは書かない
+- 声を入れるときは編集で足す（字幕は付けない）
+
+Imagine の作り方:
+- 1回の生成は1ショットだけ（2〜5秒）。「Shot 2」「hard cut」を1つのプロンプトに書かない。つなぐのは編集
+- 1ショットに動きは1つ。カメラの動きも1つ（固定／ゆっくり寄る／ゆっくり引く のどれか）
+- キャラは参照画像で固定する（最大7枚）。最初にキャラ設定画を作り、毎回その画像から始める
+- カメラ・光・質感を毎回書く。「not cinematic」は書かない
+- 画面に文字・字幕・ロゴを生成させない
+- 同じプロンプトを全クリップに使い回さない。最後のクリップをループして尺を埋めない。ショットごとに開始の状態と動きを変える
+- 下の IMAGINE_THROW は場面の材料。そのまま投げず、この節のルールで1ショットずつ書き直してから投げる
+- 生成前にセルフチェック。全部「はい」になるまで投げない:
+  1ショットだけか／動きは1つか／カメラは1つか／参照画像から始めているか／カメラ・光・質感が書いてあるか／画風はジャンルどおりか／文字・字幕・ロゴの禁止が入っているか／前のショットと同じプロンプトではないか
+
+ペットだけのルール:
+- 猫だけ。犬・人は出さない。下のレシピで犬が出る行・犬のレシピは使わない
+- 同じ猫2匹を参照画像で毎回固定する。回ごとに柄を変えない
+- 心の声も字幕にしない。入れるなら編集で声として足す
+- 画風は実写。カメラは猫の目線の高さか、見守りカメラ風の高い角のどちらか。1本の中で混ぜない
+
 ## 毎朝の順番（上から。途中で終われ）
 
 量産するな。1日1本が上限。2本目以降は今日やるな。
@@ -42,7 +67,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
 - URL を本文・説明・コメントに書くな
-- CTA は「詳しくはプロフィールのリンク（PR）」1回だけ
+- 動画の中にCTAを入れない（「詳しくはプロフィールのリンク（PR）」を画面にも声にも出さない）
 - 説明文の末尾に #PR
 - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
 - 数字を発明するな
@@ -67,20 +92,13 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - 1080×1920、30fps、9:16
 - 左右余白 8%（文字は中央 920px 幅に収める）
 
-### テロップ位置
-- 領域: 画面下三分の一（lower_third）
-- 基準: 下から 280px、水平中央
-- 1行 16字、同時 2行まで
-- フォント: Noto Sans CJK Bold 44px、色 #FFFFFF、縁 #000000 4px
-- 行間 20px
-- 0–0.5秒は文字なし
-- CTA「詳しくはプロフィールのリンク（PR）」は最後の 2秒だけ、同じ位置
+### 字幕
+- 本編に字幕・テロップ・画面の文字は入れない（2026-10-09）
 
 ### ナレーション
-- テロップ／読み上げと同一。アドリブ禁止
+- 声は編集で足す。字幕は付けない
 - 無音ヘッドのあと本文開始。アドリブ禁止
-- 画面の2行と同時にその2行を読む。次の2行に進むのは 2.4秒後
-- CTAも声に出す
+- CTAは声に出さない
 
 ### 編集テンポ
 - BGM: なし
@@ -88,8 +106,8 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
 - プッシュイン: 通しで最大5%。急なズーム禁止
 - フェードイン: なし（0秒から映像） / アウト: 末尾0.3秒まで可
-- 素材のつなぎ: Imagineは1クリップ5秒。必要本数=ceil(完成尺/5)。同じIMAGINE_THROWを繰り返し、順番に繋ぐ。足りなければ最後のクリップをループ。台本より映像を長くし、黒で埋めない
-- Imagine 1本は 5秒。必要本数は各レシピのテロップ表を見ろ
+- 素材のつなぎ: Imagineは1回1ショット（2〜5秒）。ショットごとに別のプロンプト（開始の状態と動きを変える）。同じプロンプトの使い回し・最後のクリップのループはしない。黒で埋めない
+- Imagine 1本は 2〜5秒。必要本数は各レシピの完成尺から決めろ
 
 ## 投稿チェック（投稿したと言われたらこれだけ）
 
@@ -102,7 +120,7 @@ KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。
 |---|---|
 | レシピid | 人間が言ったid |
 | 公開された | はい / いいえ / 不明 |
-| 末尾CTA（詳しくはプロフィールのリンク（PR）） | あり / なし / 不明 |
+| 本編のCTA・字幕 | ないこと。あったら失敗 |
 | 説明にURL | ないこと。あったら失敗 |
 | 説明に#PR | あり / なし / 不明 |
 | 固定コメントのURL | ないこと。あったら失敗 |
@@ -115,7 +133,7 @@ KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。
 投稿チェック: 済み
 id: <id>
 公開: はい
-CTA: あり
+本編CTA・字幕: なし
 説明URL: ない
 #PR: あり
 固定URL: ない
@@ -132,10 +150,10 @@ CTA: あり
 条件を満たさないなら、この節は読むな。レシピを順に全部作るな。
 
 1. 台帳の next_id の1本だけ選ぶ
-2. レシピのテロップ表の秒に従え
-3. IMAGINE_THROW を、クリップ本数だけ Grok Imagine に投げる（各5秒・9:16・文字なし）
-4. クリップを編集仕様どおり繋ぎ、テロップを載せる
-5. ナレーションはテロップ／読み上げと同一
+2. レシピの秒（完成尺）に従え。テロップ表の文字は画面に出さない
+3. IMAGINE_THROW を材料に、1ショットずつ別のプロンプトを書く（各2〜5秒・9:16・文字なし・参照画像でキャラ固定）。セルフチェックが全部「はい」になってから Grok Imagine に投げる
+4. クリップを編集仕様どおり繋ぐ。字幕は載せない
+5. 声を入れるなら編集で足す。下の「声の台本」を読む（画面には出さない。CTAは読まない）
 6. `output` に保存。mp4 を Git にコミットするな
 7. 「未投稿の完成1本あり / 失敗」だけ返す。投稿してよいとは言うな
 
@@ -158,13 +176,11 @@ node src/genre-video-gen.js --genre ペット --id <id> --write
 - 0.0-0.5 映像だけ。文字なし。動きが1つ（瞬き、耳、袋音への反応）
 - 0.5-3 問い1文。誰向けかは映像で分かる。挨拶なし
 - 3-18 観察1つ。体験の購入談は置かない
-- 18-末 二択かどっち派。CTA1回
+- 18-末 二択かどっち派
 
 台本骨格:
 ```
 [観察の一文]。[なぜ気になるか]。あなたの場合はどっちですか？
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 Imagine: First half-second is the subject moving, not a landscape. No text. No logos. No human faces.
@@ -175,7 +191,7 @@ Imagine: First half-second is the subject moving, not a landscape. No text. No l
 秒:
 - 0-3 うちの子／あるある、の導入1文。ロゴ・自己紹介なし
 - 3-22 箇条書き3つ。各1行。商品名なし
-- 22-末 どれ？／何？ で閉じる。CTA1回
+- 22-末 どれ？／何？ で閉じる
 
 台本骨格:
 ```
@@ -186,8 +202,6 @@ Imagine: First half-second is the subject moving, not a landscape. No text. No l
 ・[点3]
 
 [問い]？
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 Imagine: Quiet indoor, one subject, no product labels. Motion is small.
@@ -198,13 +212,11 @@ Imagine: Quiet indoor, one subject, no product labels. Motion is small.
 秒:
 - 0-3 見る点はN、と宣言。使った体験は書かない
 - 3-22 点を2〜3。急がせるな
-- 22-末 整理はプロフィール。CTA1回
+- 22-末 整理はプロフィール
 
 台本骨格:
 ```
 [対象]を調べると、見る点は[点]。使った体験は書きません。観点だけプロフィールに置いてあります。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 Imagine: Notebook, unlabeled papers, no readable brand. No fake review face.
@@ -216,7 +228,7 @@ from: manager
 run: production
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_20260801_02
@@ -231,7 +243,7 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 3 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
@@ -239,13 +251,12 @@ post: false
 | 3.6–6.7 | 本文 | ますよね。呼ばれて来る犬と、都合 / よく現れる猫。この違いって性格な |
 | 6.7–9.8 | 本文 | のか、それとも生き物としての本能 / なのか気になります。あなたの子は |
 | 9.8–13.0 | 本文 | どっち派ですか？ |
-| 13.0–15.0 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15秒 / Imagineクリップ: 3本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -254,11 +265,9 @@ First half-second is the subject moving, not a landscape. No text. No logos. No 
 A calico cat on a sunlit wooden floor ignores a distant voice, then ears snap toward a rustling paper bag just out of frame. One slow blink. Tail tip moves once. A dog's paws enter at the edge in the last second.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 猫って、名前を呼んでも無視するくせに、袋のガサガサ音には即反応しますよね。呼ばれて来る犬と、都合よく現れる猫。この違いって性格なのか、それとも生き物としての本能なのか気になります。あなたの子はどっち派ですか？
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
@@ -276,7 +285,7 @@ from: manager
 run: production
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_20260729_01
@@ -291,7 +300,7 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 3 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
@@ -300,13 +309,12 @@ post: false
 | 5.5–8.0 | 本文 | ・来客時だけ人見知りが激しくなる / ・特定の音（袋の音・冷蔵庫の音） |
 | 8.0–10.5 | 本文 | に異常に反応する / あなたの子の『地味に謎な行動』は |
 | 10.5–13.0 | 本文 | 何ですか？ |
-| 13.0–15.0 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15秒 / Imagineクリップ: 3本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -315,7 +323,7 @@ Quiet indoor, one subject, no product labels. Motion is small.
 A small dog sits still near a food bowl, then a cat startles at a fridge-door sound. Soft afternoon light. No people. No products.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。
 
@@ -324,8 +332,6 @@ A small dog sits still near a food bowl, then a cat startles at a fridge-door so
 ・特定の音（袋の音・冷蔵庫の音）に異常に反応する
 
 あなたの子の『地味に謎な行動』は何ですか？
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
@@ -349,7 +355,7 @@ from: manager
 run: production
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_20260713_02
@@ -364,7 +370,7 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 3 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
@@ -373,13 +379,12 @@ post: false
 | 5.5–8.0 | 本文 | ・来客時だけ妙にお利口になる / ・寝る場所を毎晩少しずつ変える |
 | 8.0–10.5 | 本文 | 『あるある』と思ったもの、コメン / トで教えてください。意外な共通点 |
 | 10.5–13.0 | 本文 | が見つかるかもしれません。 |
-| 13.0–15.0 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15秒 / Imagineクリップ: 3本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -388,7 +393,7 @@ Quiet indoor, one subject, no product labels. Motion is small.
 A cat walks into a late-afternoon living room, sits, looks at the camera, looks away, then settles on a slightly different spot on the same blanket. Slow 5 percent push-in.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 うちの子だけかな…と思ったこと、ありませんか？
 
@@ -397,8 +402,6 @@ A cat walks into a late-afternoon living room, sits, looks at the camera, looks 
 ・寝る場所を毎晩少しずつ変える
 
 『あるある』と思ったもの、コメントで教えてください。意外な共通点が見つかるかもしれません。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
@@ -423,7 +426,7 @@ from: manager
 run: parked
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_furbo_observe_01
@@ -438,20 +441,19 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 4 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
 | 0.5–4.7 | 本文 | 留守番中の様子が気になる、という / 話はよく見ます。見守りカメラを調 |
 | 4.7–8.9 | 本文 | べると、見る／通知する／双方向、 / の差が出てきます。うちの子に要る |
 | 8.9–13.1 | 本文 | かは生活リズム次第。比べ方のメモ / はプロフィールに置いてあります。 |
-| 13.1–15.1 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15.1秒 / Imagineクリップ: 4本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -460,11 +462,9 @@ Notebook, unlabeled papers, no readable brand. No fake review face.
 An empty Japanese living room, a dog bed in a sun patch, a dog walks in and looks toward a shelf, then lies down. No screens, no gadgets shown as brands.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 留守番中の様子が気になる、という話はよく見ます。見守りカメラを調べると、見る／通知する／双方向、の差が出てきます。うちの子に要るかは生活リズム次第。比べ方のメモはプロフィールに置いてあります。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
@@ -482,7 +482,7 @@ from: manager
 run: parked
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_insure_observe_01
@@ -497,20 +497,19 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 4 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
 | 0.5–4.7 | 本文 | ペット保険、資料だけ取り寄せて比 / 較してる人が多いらしいです。見る |
 | 4.7–8.9 | 本文 | 点は免責・通院・年齢条件。加入を / 急がせる話は扱いません。整理の仕 |
 | 8.9–13.1 | 本文 | 方だけプロフィールにまとめていま / す。 |
-| 13.1–15.1 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15.1秒 / Imagineクリップ: 4本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -519,11 +518,9 @@ Notebook, unlabeled papers, no readable brand. No fake review face.
 A notebook and pen on a wooden table, a dog sleeping in the background, soft light. No logos, no documents with readable text.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 ペット保険、資料だけ取り寄せて比較してる人が多いらしいです。見る点は免責・通院・年齢条件。加入を急がせる話は扱いません。整理の仕方だけプロフィールにまとめています。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
@@ -541,7 +538,7 @@ from: manager
 run: parked
 post: false
 
-条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ、改訂節のルールで1ショットずつ書き直して Grok Imagine に投げろ。新しいネタは足すな。投稿するな。
 
 ## メタ
 - id: pet_food_observe_01
@@ -556,20 +553,19 @@ post: false
 - duration: レシピの完成尺（下のテロップ表）
 - imagine_clips: 4 × 5秒
 
-## テロップ表（この秒で出せ）
+## テロップ表（秒の目安。文字は画面に出さない）
 | 秒 | 役割 | 画面の文字 |
 |---|---|---|
 | 0.0–0.5 | 文字なし・映像のみ | （なし） |
 | 0.5–4.7 | 本文 | フード選び、成分表の最初の3行だ / け見る、という整理の仕方がありま |
 | 4.7–8.9 | 本文 | す。合わないサインは病院。おすす / めを断定しません。調べた観点はプ |
 | 8.9–13.1 | 本文 | ロフィールへ。 |
-| 13.1–15.1 | CTA | 詳しくはプロフィールのリンク（PR） |
 
 完成尺: 15.1秒 / Imagineクリップ: 4本（各5秒を接続）
 
 ## IMAGINE_THROW
 ```
-Vertical 9:16, 1080x1920, photorealistic, natural window light, no text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI, no human faces, 5 seconds, not cinematic, not commercial.
+Photorealistic, natural home video look, shallow depth of field. Vertical 9:16, 1080x1920. One continuous 5-second shot, no cuts. Camera: one of locked-off / very slow push-in / very slow pull-back. Lighting and texture: always written. Cats only. No humans, no dogs. No text, no captions, no subtitles, no watermark, no logos, no brand names, no product packaging, no UI.
 
 Japanese indoor home, pets only, healing, quiet.
 
@@ -578,11 +574,9 @@ Notebook, unlabeled papers, no readable brand. No fake review face.
 A ceramic bowl on a kitchen floor, a cat approaching slowly, no bag labels readable. Quiet home.
 ```
 
-## テロップ／読み上げ
+## 声の台本（字幕にしない）
 ```
 フード選び、成分表の最初の3行だけ見る、という整理の仕方があります。合わないサインは病院。おすすめを断定しません。調べた観点はプロフィールへ。
-
-詳しくはプロフィールのリンク（PR）
 ```
 
 ## YouTube説明文（URLなし）
