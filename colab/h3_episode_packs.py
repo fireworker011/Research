@@ -2740,6 +2740,58 @@ def ui_default(kind: str) -> str:
     return ui_choices(kind)[0]
 
 
+# Opening values of the Colab form. ui_default stays the 迷ったらこれ row.
+# Run all without touching the dropdowns uses these. An already-open cell keeps the old values.
+FORM_INITIAL: dict[str, str] = {
+    "episode": "病棟出口",
+    "connect": "前の最終フレームから続ける",
+    "preset": "スピード（最速）",
+    "story": "□誘う（淫欲・失敗）",
+    "toilet": "トイレ・触手",
+    "gin": "灰色・騎乗・最初から膝曲げ",
+    "tsuno": "角・病室で横になって挿入",
+    "place": "汚泥の干潟",
+    "time": "昼",
+    "weather": "晴れ",
+    "enemy_kind": "人間",
+    "look_miki": "中東",
+    "look_rei": "韓国",
+    "look_kana": "日本",
+    "look_shino": "南アジア",
+    "look_gin": "北欧",
+    "look_tsuno": "東南アジア",
+    "scene_miki": "□誘う・四つん這い股広げ",
+    "scene_rei": "□誘う・後ろアナル",
+    "scene_kana": "□誘う・壁立ちバック",
+    "scene_shino": "□誘う・M字開脚仰向け",
+}
+
+_FORM_PARENT = {
+    "look_miki": "look",
+    "look_rei": "look",
+    "look_kana": "look",
+    "look_shino": "look",
+    "look_gin": "look",
+    "look_tsuno": "look",
+    "scene_miki": "scene",
+    "scene_rei": "scene",
+    "scene_kana": "scene",
+    "scene_shino": "scene",
+}
+
+
+def form_initial(kind: str) -> str:
+    """Widget value when the notebook opens. 迷ったらこれ stays on ui_default."""
+    if kind in FORM_INITIAL:
+        value = FORM_INITIAL[kind]
+        parent = _FORM_PARENT.get(kind, kind)
+        choices = ui_choices(parent)
+        if value not in choices:
+            raise KeyError(f"form initial {kind}={value!r} is not a {parent} choice")
+        return value
+    return ui_default(kind)
+
+
 def form_markdown(kind: str, heading: str) -> str:
     """Colab #@markdown bullets: each option plus when to pick it."""
     lines = [f"#@markdown **{heading}**"]

@@ -13,10 +13,10 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 from h3_episode import EPISODE_HELPERS  # noqa: E402
 from h3_episode_packs import (  # noqa: E402
     RIDE_FOOT_CHOICES,
+    form_initial,
     form_markdown,
     form_readme,
     ui_choices,
-    ui_default,
 )
 
 BRANCH = "cursor/human-cast-anatomy-d736"
@@ -77,12 +77,12 @@ AYA_SHAFT = __AYA_SHAFT_DEFAULT__  #@param __AYA_SHAFT_CHOICES__
 __ENEMY_KIND_HELP__
 ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
 __ENEMY_LOOK_HELP__
-LOOK_MIKI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
-LOOK_REI = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
-LOOK_KANA = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
-LOOK_SHINO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
-LOOK_GIN = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
-LOOK_TSUNO = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_MIKI = __LOOK_MIKI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_REI = __LOOK_REI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_KANA = __LOOK_KANA_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_SHINO = __LOOK_SHINO_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_GIN = __LOOK_GIN_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_TSUNO = __LOOK_TSUNO_DEFAULT__  #@param __LOOK_CHOICES__
 #@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
 SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
@@ -122,10 +122,10 @@ APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
 APPEAR_SHINO = True  #@param {type:"boolean"}
 #@markdown **シーンごと（病棟）。誘うは誘い方も含む。戦い構成と霞東は無視。**
-SCENE_MIKI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_MIKI = __SCENE_MIKI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_REI = __SCENE_REI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_KANA = __SCENE_KANA_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_SHINO = __SCENE_SHINO_DEFAULT__  #@param __SCENE_CHOICES__
 #@markdown **開始シーン** — 空なら最初から。beat id（例 `04-toilet`）を書くと、そのカットから先を今のドロップダウンどおりに作り直す。前のカットは残す。この設定の並びに無い id は止まる。
 START = ""  #@param {type:"string"}
 FRESH = False  #@param {type:"boolean"}
@@ -296,7 +296,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 
-**コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
+**コードセルは1本。開いた欄のまま Run all。** 開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入、汚泥の干潟、昼、晴れ、人間。顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。迷ったらこれの印は、台本をそのまま出す行に残す。開いたままのセルは古い欄を保持する。 Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わったあとが「そのまま」ならランタイムは切らない。「切る」なら動画ができたあと切る。チェックポイントだけの取得では切らない。
 
@@ -334,11 +334,11 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("toilet")}
 
-**8. 灰色の長い舌** — 病棟の追加オプション。出ないが既定。霞東は無視
+**8. 灰色の長い舌** — 病棟の追加オプション。開いたときは最初から膝曲げ。迷ったら出ない。霞東は無視
 
 {form_readme("gin")}
 
-**9. 角の頭** — 病棟の追加オプション。出ないが既定。騎乗と個室は新しい話。霞東は無視
+**9. 角の頭** — 病棟の追加オプション。開いたときは横になって挿入。迷ったら出ない。霞東は無視
 
 {form_readme("tsuno")}
 
@@ -382,101 +382,110 @@ def make_nb() -> dict:
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
-        .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
+        .replace("__EPISODE_DEFAULT__", json.dumps(form_initial("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
         .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。新しい相手の入りはカット。消滅はチェーンならフェード"))
-        .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
+        .replace("__CONNECT_DEFAULT__", json.dumps(form_initial("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
-        .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
+        .replace("__CAMERA_DEFAULT__", json.dumps(form_initial("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
         .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
-        .replace("__DISTANCE_DEFAULT__", json.dumps(ui_default("camera_distance"), ensure_ascii=False))
+        .replace("__DISTANCE_DEFAULT__", json.dumps(form_initial("camera_distance"), ensure_ascii=False))
         .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
         .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面"))
-        .replace("__PLACE_DEFAULT__", json.dumps(ui_default("place"), ensure_ascii=False))
+        .replace("__PLACE_DEFAULT__", json.dumps(form_initial("place"), ensure_ascii=False))
         .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
         .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))
-        .replace("__TIME_DEFAULT__", json.dumps(ui_default("time"), ensure_ascii=False))
+        .replace("__TIME_DEFAULT__", json.dumps(form_initial("time"), ensure_ascii=False))
         .replace("__TIME_CHOICES__", json.dumps(ui_choices("time"), ensure_ascii=False))
         .replace("__WEATHER_HELP__", form_markdown("weather", "天候 — 床の濡れと光だけ"))
-        .replace("__WEATHER_DEFAULT__", json.dumps(ui_default("weather"), ensure_ascii=False))
+        .replace("__WEATHER_DEFAULT__", json.dumps(form_initial("weather"), ensure_ascii=False))
         .replace("__WEATHER_CHOICES__", json.dumps(ui_choices("weather"), ensure_ascii=False))
         .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
-        .replace("__DIRT_DEFAULT__", json.dumps(ui_default("dirt"), ensure_ascii=False))
+        .replace("__DIRT_DEFAULT__", json.dumps(form_initial("dirt"), ensure_ascii=False))
         .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
         .replace("__LOOK_HELP__", form_markdown("look", "あやの国の見た目 — 今のままは下の各欄。国を選ぶと髪と顔。各欄を選ぶとその欄が優先"))
         .replace("__AYA_HAIR_HELP__", form_markdown("aya_hair", "あやの髪型"))
-        .replace("__AYA_HAIR_DEFAULT__", json.dumps(ui_default("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_HAIR_DEFAULT__", json.dumps(form_initial("aya_hair"), ensure_ascii=False))
         .replace("__AYA_HAIR_CHOICES__", json.dumps(ui_choices("aya_hair"), ensure_ascii=False))
         .replace("__AYA_COLOR_HELP__", form_markdown("aya_color", "あやの髪色"))
-        .replace("__AYA_COLOR_DEFAULT__", json.dumps(ui_default("aya_color"), ensure_ascii=False))
+        .replace("__AYA_COLOR_DEFAULT__", json.dumps(form_initial("aya_color"), ensure_ascii=False))
         .replace("__AYA_COLOR_CHOICES__", json.dumps(ui_choices("aya_color"), ensure_ascii=False))
         .replace("__AYA_FACE_HELP__", form_markdown("aya_face", "あやの顔"))
-        .replace("__AYA_FACE_DEFAULT__", json.dumps(ui_default("aya_face"), ensure_ascii=False))
+        .replace("__AYA_FACE_DEFAULT__", json.dumps(form_initial("aya_face"), ensure_ascii=False))
         .replace("__AYA_FACE_CHOICES__", json.dumps(ui_choices("aya_face"), ensure_ascii=False))
         .replace("__AYA_BUST_HELP__", form_markdown("aya_bust", "あやのバスト"))
-        .replace("__AYA_BUST_DEFAULT__", json.dumps(ui_default("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUST_DEFAULT__", json.dumps(form_initial("aya_bust"), ensure_ascii=False))
         .replace("__AYA_BUST_CHOICES__", json.dumps(ui_choices("aya_bust"), ensure_ascii=False))
         .replace("__AYA_BUTT_HELP__", form_markdown("aya_butt", "あやのお尻"))
-        .replace("__AYA_BUTT_DEFAULT__", json.dumps(ui_default("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUTT_DEFAULT__", json.dumps(form_initial("aya_butt"), ensure_ascii=False))
         .replace("__AYA_BUTT_CHOICES__", json.dumps(ui_choices("aya_butt"), ensure_ascii=False))
         .replace("__AYA_BUILD_HELP__", form_markdown("aya_build", "あやの身体の細さ"))
-        .replace("__AYA_BUILD_DEFAULT__", json.dumps(ui_default("aya_build"), ensure_ascii=False))
+        .replace("__AYA_BUILD_DEFAULT__", json.dumps(form_initial("aya_build"), ensure_ascii=False))
         .replace("__AYA_BUILD_CHOICES__", json.dumps(ui_choices("aya_build"), ensure_ascii=False))
         .replace("__AYA_HEIGHT_HELP__", form_markdown("aya_height", "あやの身長 — しのの長身は変えない"))
-        .replace("__AYA_HEIGHT_DEFAULT__", json.dumps(ui_default("aya_height"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_DEFAULT__", json.dumps(form_initial("aya_height"), ensure_ascii=False))
         .replace("__AYA_HEIGHT_CHOICES__", json.dumps(ui_choices("aya_height"), ensure_ascii=False))
         .replace("__AYA_DIRT_HELP__", form_markdown("aya_dirt", "あやの汚れの種類 — 今のままは上の場所の汚れ"))
-        .replace("__AYA_DIRT_DEFAULT__", json.dumps(ui_default("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_DIRT_DEFAULT__", json.dumps(form_initial("aya_dirt"), ensure_ascii=False))
         .replace("__AYA_DIRT_CHOICES__", json.dumps(ui_choices("aya_dirt"), ensure_ascii=False))
         .replace("__AYA_SWEAT_HELP__", form_markdown("aya_sweat", "あやの汗"))
-        .replace("__AYA_SWEAT_DEFAULT__", json.dumps(ui_default("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_DEFAULT__", json.dumps(form_initial("aya_sweat"), ensure_ascii=False))
         .replace("__AYA_SWEAT_CHOICES__", json.dumps(ui_choices("aya_sweat"), ensure_ascii=False))
         .replace("__AYA_CLOTHES_HELP__", form_markdown("aya_clothes", "あやの服"))
-        .replace("__AYA_CLOTHES_DEFAULT__", json.dumps(ui_default("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_DEFAULT__", json.dumps(form_initial("aya_clothes"), ensure_ascii=False))
         .replace("__AYA_CLOTHES_CHOICES__", json.dumps(ui_choices("aya_clothes"), ensure_ascii=False))
         .replace("__AYA_SHAFT_HELP__", form_markdown("aya_shaft", "あやの竿 — 長さは 24cm のまま"))
-        .replace("__AYA_SHAFT_DEFAULT__", json.dumps(ui_default("aya_shaft"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_DEFAULT__", json.dumps(form_initial("aya_shaft"), ensure_ascii=False))
         .replace("__AYA_SHAFT_CHOICES__", json.dumps(ui_choices("aya_shaft"), ensure_ascii=False))
-        .replace("__LOOK_DEFAULT__", json.dumps(ui_default("look"), ensure_ascii=False))
+        .replace("__LOOK_DEFAULT__", json.dumps(form_initial("look"), ensure_ascii=False))
+        .replace("__LOOK_MIKI_DEFAULT__", json.dumps(form_initial("look_miki"), ensure_ascii=False))
+        .replace("__LOOK_REI_DEFAULT__", json.dumps(form_initial("look_rei"), ensure_ascii=False))
+        .replace("__LOOK_KANA_DEFAULT__", json.dumps(form_initial("look_kana"), ensure_ascii=False))
+        .replace("__LOOK_SHINO_DEFAULT__", json.dumps(form_initial("look_shino"), ensure_ascii=False))
+        .replace("__LOOK_GIN_DEFAULT__", json.dumps(form_initial("look_gin"), ensure_ascii=False))
+        .replace("__LOOK_TSUNO_DEFAULT__", json.dumps(form_initial("look_tsuno"), ensure_ascii=False))
         .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
         .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
-        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(ui_default("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(form_initial("enemy_kind"), ensure_ascii=False))
         .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
         .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — みき、れい、かな、しの、ぎん、角で別々。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
-        .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
+        .replace("__PRESET_DEFAULT__", json.dumps(form_initial("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
-        .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
+        .replace("__COMBAT_DEFAULT__", json.dumps(form_initial("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
-        .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
+        .replace("__STORY_DEFAULT__", json.dumps(form_initial("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))
         .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘うポーズ — 病棟の□誘うだけ"))
-        .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
+        .replace("__POSE_DEFAULT__", json.dumps(form_initial("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
         .replace("__RIDE_CHOICES__", json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False))
         .replace("__CHECKPOINT_HELP__", form_markdown("checkpoint", "チェックポイント — 10Eros Max か DaSiWa"))
-        .replace("__CHECKPOINT_DEFAULT__", json.dumps(ui_default("checkpoint"), ensure_ascii=False))
+        .replace("__CHECKPOINT_DEFAULT__", json.dumps(form_initial("checkpoint"), ensure_ascii=False))
         .replace("__CHECKPOINT_CHOICES__", json.dumps(ui_choices("checkpoint"), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 洋式汚物、和式汚物、有機物植物の三択。触手は有機物だけ"))
-        .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
+        .replace("__TOILET_DEFAULT__", json.dumps(form_initial("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
-        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))
-        .replace("__GIN_DEFAULT__", json.dumps(ui_default("gin"), ensure_ascii=False))
+        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。開いたときは最初から膝曲げ。迷ったら出ない"))
+        .replace("__GIN_DEFAULT__", json.dumps(form_initial("gin"), ensure_ascii=False))
         .replace("__GIN_CHOICES__", json.dumps(ui_choices("gin"), ensure_ascii=False))
-        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。出ないが既定"))
-        .replace("__TSUNO_DEFAULT__", json.dumps(ui_default("tsuno"), ensure_ascii=False))
+        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。開いたときは横になって挿入。迷ったら出ない"))
+        .replace("__TSUNO_DEFAULT__", json.dumps(form_initial("tsuno"), ensure_ascii=False))
         .replace("__TSUNO_CHOICES__", json.dumps(ui_choices("tsuno"), ensure_ascii=False))
         .replace("__DOG_HELP__", form_markdown("dog", "10. 犬 — 病棟の追加。出ないが既定。灰色はオフにしない"))
-        .replace("__DOG_DEFAULT__", json.dumps(ui_default("dog"), ensure_ascii=False))
+        .replace("__DOG_DEFAULT__", json.dumps(form_initial("dog"), ensure_ascii=False))
         .replace("__DOG_CHOICES__", json.dumps(ui_choices("dog"), ensure_ascii=False))
         .replace("__SPECIES_HELP__", form_markdown("species", "11. 異種 — 病棟の追加。スライムとケモノは同時に出ない"))
-        .replace("__SPECIES_DEFAULT__", json.dumps(ui_default("species"), ensure_ascii=False))
+        .replace("__SPECIES_DEFAULT__", json.dumps(form_initial("species"), ensure_ascii=False))
         .replace("__SPECIES_CHOICES__", json.dumps(ui_choices("species"), ensure_ascii=False))
-        .replace("__SCENE_DEFAULT__", json.dumps(ui_default("scene"), ensure_ascii=False))
+        .replace("__SCENE_MIKI_DEFAULT__", json.dumps(form_initial("scene_miki"), ensure_ascii=False))
+        .replace("__SCENE_REI_DEFAULT__", json.dumps(form_initial("scene_rei"), ensure_ascii=False))
+        .replace("__SCENE_KANA_DEFAULT__", json.dumps(form_initial("scene_kana"), ensure_ascii=False))
+        .replace("__SCENE_SHINO_DEFAULT__", json.dumps(form_initial("scene_shino"), ensure_ascii=False))
         .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
     )
     return {
