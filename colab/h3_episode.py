@@ -1930,6 +1930,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
     Hospital connect:t2v and connect:cut yield to chain and landing, so 前の最終フレームから続ける makes those shots I2V. off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
+    Rei's meeting hug (06-doggy-spot) stays a cut on chain and landing. The walk before it stays I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
     The horn seat kiss authored connect:chain stays I2V even when the dropdown is a cut.
@@ -1964,6 +1965,11 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
             gpu_seen += 1
             continue
         if _connect_lock_holds(out, beat, name):
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+            gpu_seen += 1
+            continue
+        if name in ("chain", "landing") and _rei_front_hug_i2v_cut(beat):
             beat["source"] = "t2v"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -2045,6 +2051,10 @@ def is_end_connect_beat(beat: dict[str, Any]) -> bool:
 
 def _wire_runtime_connect(beat: dict[str, Any], *, chain: bool) -> None:
     if beat.get("reuse") or is_ui_beat(beat):
+        return
+    if _rei_front_hug_i2v_cut(beat):
+        beat["source"] = "t2v"
+        beat.pop("still_as", None)
         return
     beat["source"] = "chain" if chain else "t2v"
     beat.pop("still_as", None)
@@ -2318,12 +2328,23 @@ def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
     return out
 
 
+def _rei_front_hug_i2v_cut(beat: dict[str, Any]) -> bool:
+    """Rei's meeting stays its own shot when the dropdown is I2V.
+
+    The walk before it keeps the previous frame. A chain would morph that walk into the hug.
+    """
+    return str(beat.get("id") or "") == "06-doggy-spot" and str(beat.get("encounter") or "") == "rei"
+
+
 def _rei_front_hug_beat(body: dict[str, Any]) -> dict[str, Any]:
-    """Rei's meeting. A front hug and a french kiss, then the act branch."""
+    """Rei's meeting. A front hug and a french kiss, then the act branch.
+
+    connect:cut so an I2V dropdown does not continue the walk into this shot.
+    """
     return {
         "id": "06-doggy-spot",
-        "source": "chain",
-        "connect": "chain",
+        "source": "t2v",
+        "connect": "cut",
         "trim": {"start": 0, "seconds": 8.0},
         "cast": ["aya", "rei"],
         "encounter": "rei",

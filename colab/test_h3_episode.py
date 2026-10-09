@@ -3499,6 +3499,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     """Chain/landing follow the dropdown over authored connect:t2v and connect:cut on the ward.
 
     First shot stays T2V. Every later GPU beat, including -spot newcomers and authored cuts, is I2V.
+    Rei's meeting hug stays a cut on that I2V pass. The walk before it stays I2V.
     Cut stays T2V except non-gin rib ride seats and peaks authored connect:chain.
     """
     raw = load_episode(HOSPITAL_DIR / "episode.json")
@@ -3518,6 +3519,29 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
     peek = next(b for b in accept["beats"] if b["id"] == "04-peek")
     assert beat_source(peek_spot) == "chain"
     assert beat_source(peek) == "chain"
+    rei_meet = next(b for b in accept["beats"] if b["id"] == "06-doggy-spot")
+    assert rei_meet.get("connect") == "cut"
+    assert beat_source(rei_meet) == "t2v"
+    assert beat_source(six) == "chain"
+    meet_prompt = build_beat_prompt(accept, rei_meet)
+    peek_prompt = build_beat_prompt(accept, peek)
+    act_prompt = build_beat_prompt(accept, six)
+    assert "walks right" in peek_prompt.lower()
+    assert "without a cut" in peek_prompt.lower()
+    assert "hugs aya at once" in meet_prompt.lower()
+    assert "without a cut" not in meet_prompt.lower()
+    assert "<picture 1>" not in meet_prompt.lower()
+    assert "without a cut" in act_prompt.lower()
+    landed = prepare_episode(raw, story_override="受け入れる", connect_override="landing")
+    assert beat_source(next(b for b in landed["beats"] if b["id"] == "06-doggy-spot")) == "t2v"
+    followed = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        connect_override="chain",
+        end_connect_override="chain",
+        toilet_override="pee",
+    )
+    assert beat_source(next(b for b in followed["beats"] if b["id"] == "06-doggy-spot")) == "t2v"
     kana_spot = next(b for b in accept["beats"] if b["id"] == "07-kana-spot")
     kana = next(b for b in accept["beats"] if b["id"] == "07-kana")
     assert beat_source(kana_spot) == "chain"
@@ -3601,7 +3625,7 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
         connect_override="chain",
     )
     gpu = [b for b in measured["beats"] if not is_ui_beat(b) and beat_renders(b)]
-    assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover"]
+    assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover", "06-doggy-spot"]
     cunny_chain = next(b for b in gin["beats"] if b["id"] == "04-gin-cunny")
     assert beat_source(cunny_chain) == "chain"
     assert cunny_chain.get("connect") == "chain"
@@ -3648,7 +3672,11 @@ def test_hospital_chain_dropdown_overrides_t2v_locks():
                 continue
             cast = {str(c) for c in (beat.get("cast") or [])}
             added = cast - prev
-            if beat_source(beat) == "t2v" and not first:
+            if (
+                beat_source(beat) == "t2v"
+                and not first
+                and str(beat.get("connect") or "") != "cut"
+            ):
                 raise AssertionError(f"chain left T2V {beat['id']} connect={beat.get('connect')} {kw}")
             spot = str(beat.get("id") or "").endswith("-spot")
             if beat_source(beat) == "chain" and (first or (added and not spot)):
@@ -3829,8 +3857,8 @@ def test_hospital_clip_failures_are_rewritten():
     six_spot = next(b for b in invite["beats"] if b["id"] == "06-doggy-spot")
     six = next(b for b in invite["beats"] if b["id"] == "06-doggy")
     six_peak = next(b for b in invite["beats"] if b["id"] == "06-doggy-peak")
-    assert six_spot.get("connect") == "chain"
-    assert beat_source(six_spot) == "chain"
+    assert six_spot.get("connect") == "cut"
+    assert beat_source(six_spot) == "t2v"
     assert "hugs aya at once" in six_spot["action"].lower()
     assert "french kiss" in six_spot["action"].lower()
     assert "saliva string stretches between the parting lips" in six_spot["action"].lower()
@@ -7046,7 +7074,7 @@ def test_hospital_off_ward_human_and_insert_fixes():
         ep = prepare_episode(raw, place_override=place, time_override="昼", enemy_kind_override="人間", **user)
         assert validate_episode(ep, root=HOSPITAL_DIR) == []
         gpu = [b for b in ep["beats"] if not is_ui_beat(b) and beat_renders(b)]
-        assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover"]
+        assert [b["id"] for b in gpu if beat_source(b) == "t2v"] == ["01-cover", "06-doggy-spot"]
         for b in gpu:
             prompt = build_beat_prompt(ep, b, trigger=merge_trigger("", b))
             assert not ward_words.search(prompt), (place, b["id"], ward_words.search(prompt).group(0))
