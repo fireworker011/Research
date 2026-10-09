@@ -245,7 +245,8 @@ def test_scene_loras_follow_the_prepared_act():
     assert "anal sex" in wan_beat_prompt(anal, next(b for b in anal["beats"] if b["id"] == "04-tsuno-in")).lower()
 
     stand = _prepare("accept_stand", "カット")
-    assert "anal" not in _slots(stand, "04-tsuno-in")
+    assert "anal" in _slots(stand, "04-tsuno-in")
+    assert "anal" not in _slots(stand, "04-tsuno-hold")
 
     nelson = _prepare("nelson", "カット")
     nelson_in = _slots(nelson, "04-tsuno-in")

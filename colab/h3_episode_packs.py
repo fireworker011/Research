@@ -337,7 +337,7 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "all_fours": {
         "label_ja": "四つん這い",
         "choice_ja": "四つん這い股広げ（迷ったらこれ）",
-        "when_ja": "四つん這いで誘う。挿入根元→パコ中出し→歩きの3本",
+        "when_ja": "四つん這いで誘う。挿入前→挿入根元→パコ中出し→輪が狭まる→歩きの5本",
         "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる。終わりはあや一人歩き",
         "recommend": True,
     },
@@ -362,8 +362,8 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "stand": {
         "label_ja": "立ちバック",
         "choice_ja": "壁立ちバック",
-        "when_ja": "壁に両手。横から肛門へ一度入れて根元、短い抽送で中。歩きまで",
-        "hint_ja": "あやが壁に手。横から結合部。肛門。終わりはあや一人歩き",
+        "when_ja": "壁に右腕、左手で尻を開いて振り返る。先を当てる→肛門へ根元→パコ中出し→抜いて輪が狭まる→歩きの5本",
+        "hint_ja": "あやが壁に右腕。左手で尻を開く。肛門が画面中央。終わりはあや一人歩き",
     },
     "nelson": {
         "label_ja": "フルネルソン",
@@ -466,10 +466,16 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "hint_ja": "植物の洋式に座って触手。洋式汚物と和式汚物には触手を出さない",
     },
     "finger": {
+        "label_ja": "ディルド",
+        "choice_ja": "トイレ・ディルド",
+        "when_ja": "洋式汚物まみれ。座る→緑の細長いディルドを持つ→膣へ出し入れ→絶頂→抜く。触手はこの便器に出ない",
+        "hint_ja": "汚れた白い洋式にカメラ向きで座り、脚を開く。右手で緑のディルドを膣へ出し入れ",
+    },
+    "anal_finger": {
         "label_ja": "アナル指",
         "choice_ja": "トイレ・アナル指",
-        "when_ja": "洋式汚物まみれ。便座の横の極太ディルド。触手はこの便器に出ない",
-        "hint_ja": "汚れた白い洋式。便座の横のディルドを右手で肛門へ",
+        "when_ja": "洋式汚物まみれ。便器に前かがみ→右手の人差し指を肛門へ出し入れ→速く→歩く。触手はこの便器に出ない",
+        "hint_ja": "カメラに背を向けて前かがみ。左手はタンク、右手の人差し指を肛門へ。Self Anal Finger 1.0",
     },
     "wash": {
         "label_ja": "和式排出",
@@ -490,6 +496,7 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
+    "anal_finger": "on_toilet_anal_finger",
     "wash": "on_toilet_wash",
     "wash_miki": "on_toilet_wash_miki",
 }
@@ -507,8 +514,10 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "onanii": "masturbate",
         "触手": "tentacle",
         "tentacles": "tentacle",
-        "アナル指": "finger",
-        "指": "finger",
+        "アナル指": "anal_finger",
+        "トイレ・アナル指": "anal_finger",
+        "anal finger": "anal_finger",
+        "指": "anal_finger",
         "finger": "finger",
         "和式": "wash",
         "和式排出": "wash",
@@ -644,8 +653,8 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
     "wash_carry": {
         "label_ja": "個室",
         "choice_ja": "角・個室",
-        "when_ja": "新話。通路で抱えて個室のアナル。終わりはあや一人。トイレ枠は消さない",
-        "hint_ja": "お姫様抱っこから個室。04-toilet はコピーしない",
+        "when_ja": "新話。個室は使わない。寝床の上でアナル。寝床は場所の地面。終わりはあや一人。トイレ枠は消さない",
+        "hint_ja": "お姫様抱っこから寝床。個室へ行かない。04-toilet はコピーしない",
     },
 }
 
@@ -1722,6 +1731,911 @@ def parse_appear(raw: str | dict[str, Any] | None) -> dict[str, bool]:
     return out
 
 
+def _surface(
+    choice: str,
+    when: str,
+    dirt: str,
+    env: str,
+    wall: str,
+    floor: str,
+    room: str,
+    bed: str,
+    path: str,
+    junction: str,
+    light: str,
+    ambience: str,
+    fixture: str,
+    *,
+    recommend: bool = False,
+) -> dict[str, Any]:
+    """Light words stay out of env, room, and bed. The time sentence owns the light."""
+    # Off the ward the rest surface is the ground of that place.
+    # A cot, sofa, bench, bunk, or cart restages the act.
+    rest = bed if recommend else floor
+    room_a = ("An " if room[:1].lower() in "aeiou" else "A ") + room if room else ""
+    if recommend:
+        bedroom = f"{room_a}. One {rest} fills the middle of the {room}. A window on the FAR wall" if room else ""
+    else:
+        bedroom = f"{room_a}. The surface in the middle is {rest}. A window on the FAR wall" if room else ""
+    return {
+        "label_ja": choice,
+        "choice_ja": choice,
+        "when_ja": when,
+        "form": True,
+        "recommend": recommend,
+        "dirt": dirt,
+        "env": env,
+        "wall": wall,
+        "floor": floor,
+        "room": room,
+        "bed": rest,
+        "edge": f"far long edge of the {rest}" if rest else "",
+        "path": path,
+        "junction": junction,
+        "light": light,
+        "ambience": ambience,
+        "fixture": fixture,
+        "priv": f"{room_a}. The floor is {floor}" if room else "",
+        "bedroom": bedroom,
+        "rest": f"The surface is {rest}." if rest else "",
+    }
+
+
+# Outside the ward the environment section is rebuilt from these rows. The hospital key keeps the authored text.
+PLACE_MODES: dict[str, dict[str, Any]] = {
+    "hospital": _surface(
+        "病棟（迷ったらこれ）", "今の病棟。名詞は替えない", "hospital",
+        "", "grey wall", "linoleum", "stall", "mattress",
+        "corridor", "T-junction", "fluorescent", "fluorescent buzz", "porcelain toilet",
+        recommend=True,
+    ),
+    "forest": _surface(
+        "森林", "木のあいだの道。床は土", "sand",
+        "A fictional forest path at adult height, tall trunks on both sides, packed earth underfoot, ferns and roots along the edges",
+        "tree trunk", "packed earth", "small wooden hut", "packed earth",
+        "forest path", "fork in the path", "light through the trunks", "wind in the trees", "old wooden toilet",
+    ),
+    "village": _surface(
+        "廃村", "空き家のあいだの土の道", "sand",
+        "A fictional abandoned village lane, empty wooden houses on both sides, packed earth underfoot, weeds along the walls",
+        "weathered wooden wall", "packed earth", "empty farmhouse room", "packed earth",
+        "village lane", "fork in the lane", "light over the roofs", "wind between the houses", "old wooden toilet",
+    ),
+    "ruins": _surface(
+        "廃墟（外）", "崩れた外壁と瓦礫", "sand",
+        "A fictional ruined building exterior, broken concrete walls, rubble and weeds underfoot, open sky above",
+        "broken concrete wall", "rubble", "remaining concrete room", "rubble",
+        "ruin path", "gap in the wall", "open sky light", "wind over the rubble", "old concrete toilet",
+    ),
+    "city": _surface(
+        "大都会", "空いた大通り。画面の大人は2人", "soot",
+        "A fictional empty city avenue, tall glass and stone buildings on both sides, bare pavement, empty sidewalks, two adults only",
+        "building wall", "bare pavement", "empty shop interior", "bare pavement",
+        "empty avenue", "street corner", "street light", "distant traffic hum", "white toilet",
+    ),
+    "pool": _surface(
+        "プール", "プールサイドと更衣室", "tide",
+        "A fictional outdoor pool deck, pale tile underfoot, still blue water beside the deck, lounge chairs along the edge",
+        "tile wall", "wet tile", "changing room", "wet tile",
+        "pool deck", "corner of the deck", "light on the water", "water lapping", "white toilet",
+    ),
+    "sea": _surface(
+        "海", "砂浜と岩陰", "tide",
+        "A fictional beach, wet sand underfoot, dark rocks, the waterline beside the path",
+        "rock face", "wet sand", "beach hut", "wet sand",
+        "beach", "gap in the rocks", "light on the water", "surf", "small white toilet",
+    ),
+    "school": _surface(
+        "学校", "空き校舎の廊下と階段", "hospital",
+        "A fictional empty academy hallway for adults, painted walls, a hard polished floor, a stairwell, high windows",
+        "painted wall", "polished floor", "locker room", "polished floor",
+        "hallway", "stair landing", "window light", "quiet hallway tone", "white toilet",
+    ),
+    "office": _surface(
+        "オフィス", "パーティションの通路と給湯室", "soot",
+        "A fictional open office floor, glass partitions, carpet tile underfoot, empty desks, tall windows",
+        "glass wall", "carpet tile", "pantry", "carpet tile",
+        "office aisle", "corner of the aisle", "window light", "air vent hum", "white toilet",
+    ),
+    "slum": _surface(
+        "スラム", "狭い路地と物置", "soot",
+        "A fictional narrow alley, patched tin walls, packed earth underfoot, hanging cables, sheds on both sides",
+        "tin wall", "packed earth", "tin shed", "packed earth",
+        "narrow alley", "bend in the alley", "light down the alley", "distant alley hum", "old tin toilet",
+    ),
+    "warehouse_town": _surface(
+        "城下町・川越", "蔵が続く道。昼は店先、夜は裏路地", "hospital",
+        "A fictional street of plaster kura storehouses in a row, dark roof tiles, a stone-paved lane, wooden shop fronts and a narrow back alley",
+        "plaster kura wall", "stone-paved lane", "kura storeroom", "stone-paved lane",
+        "kura lane", "turn into the back alley", "lantern light", "quiet lane tone", "old wooden toilet",
+    ),
+    "castle": _surface(
+        "城・犬山城", "門から天守までが1本の道", "hospital",
+        "A fictional small castle, one stone path from the gate up to the keep, high stone walls, heavy wooden gates",
+        "stone wall", "stone path", "guard room", "stone path",
+        "castle path", "gate passage", "light in the courtyard", "wind in the courtyard", "old wooden toilet",
+    ),
+    "samurai": _surface(
+        "武家屋敷・長町", "格子と用水。夜は暗い庭", "hospital",
+        "A fictional samurai residence lane, wooden lattice walls, earthen walls, a narrow water channel along the lane, a quiet garden",
+        "lattice wall", "packed earth", "storeroom", "packed earth",
+        "residence lane", "corner by the water channel", "garden lantern light", "water in the channel", "old wooden toilet",
+    ),
+    "shrine": _surface(
+        "神社・千本鳥居", "鳥居の続く参道。奥ほど暗い", "sand",
+        "A fictional shrine path of many vermilion torii gates in a row, stone steps, the gates closer together toward the far end",
+        "torii post", "stone step", "shrine shed", "stone step",
+        "torii path", "landing on the steps", "light under the gates", "wind through the gates", "old wooden toilet",
+    ),
+    "temple": _surface(
+        "寺院・建長寺", "庭が手前、本堂が奥", "sand",
+        "A fictional temple garden, raked gravel, white earthen walls, a wooden main hall at the far end",
+        "white wall", "raked gravel", "temple kitchen", "raked gravel",
+        "garden path", "steps up to the hall", "light in the garden", "wind in the garden", "old wooden toilet",
+    ),
+    "bamboo": _surface(
+        "竹林・報国寺", "見通しの悪い竹", "sand",
+        "A fictional bamboo grove, tall close stalks on both sides, packed earth underfoot, short sight lines",
+        "bamboo stalk", "packed earth", "small pavilion", "packed earth",
+        "bamboo path", "bend in the bamboo", "light through the stalks", "wind in the bamboo", "old wooden toilet",
+    ),
+    "cemetery": _surface(
+        "霊廟・奥之院", "杉と墓標の直線", "sand",
+        "A fictional straight cedar approach lined with moss-covered stone markers, packed earth underfoot, a hall at the far end",
+        "cedar trunk", "packed earth", "covered shelter", "packed earth",
+        "cedar path", "gap in the markers", "light under the cedars", "wind in the cedars", "old wooden toilet",
+    ),
+    "onsen": _surface(
+        "温泉街・有馬", "石段。湯気のたまる段", "steam",
+        "A fictional hot-spring stair street, worn stone steps, wooden inns on both sides, steam rising over one landing",
+        "wooden wall", "wet stone step", "changing hut", "wet stone step",
+        "stone stair street", "steaming landing", "light through the steam", "water over stone", "old wooden toilet",
+    ),
+    "port": _surface(
+        "港町・尾道", "坂そのものが道", "tide",
+        "A fictional harbor slope, stone steps between old houses, the water below the slope",
+        "house wall", "stone step", "boat shed", "stone step",
+        "harbor slope", "turn in the steps", "harbor light", "water below the slope", "old wooden toilet",
+    ),
+    "canal": _surface(
+        "運河・小樽", "倉庫と水面。夜は暗い岸", "tide",
+        "A fictional canal street, old stone warehouses along a paved quay, still water beside the path, iron gas lamps",
+        "warehouse wall", "stone quay", "warehouse room", "stone quay",
+        "canal quay", "mouth of the bridge", "gas lamp light", "water against stone", "old white toilet",
+    ),
+    "sea_cave": _surface(
+        "海蝕洞・江の島", "入口が明るく、奥が狭い", "tide",
+        "A fictional sea cave, a bright mouth behind, a narrowing passage of wet rock ahead, sand underfoot",
+        "wet rock wall", "wet sand", "inner hollow", "wet sand",
+        "cave passage", "narrowing of the cave", "light from the cave mouth", "water in the cave", "low stone toilet",
+    ),
+    "buddha_cave": _surface(
+        "宗教窟・鋸山", "磨崖と洞", "sand",
+        "A fictional cliff cave, large figures carved into the rock face, a stone floor, a hollow passage",
+        "carved rock wall", "stone floor", "side hollow", "stone floor",
+        "cliff passage", "mouth of a side hollow", "light from the cliff opening", "wind in the hollow", "low stone toilet",
+    ),
+    "limestone": _surface(
+        "鍾乳洞・日原", "低い天井と水音", "tide",
+        "A fictional limestone cave, a low ceiling of hanging stone, wet stone underfoot, small pools",
+        "wet limestone wall", "wet stone", "inner chamber", "wet stone",
+        "cave passage", "low bend", "reflected lamp light", "water in the cave", "low stone toilet",
+    ),
+    "mine": _surface(
+        "坑道・佐渡", "枕木とレール。手元の光", "soot",
+        "A fictional mine tunnel, wooden sleepers and one rail underfoot, rough rock walls, timber supports",
+        "rock wall", "wooden sleepers", "side chamber", "wooden sleepers",
+        "mine tunnel", "rail junction", "headlamp light", "distant tunnel tone", "old metal toilet",
+    ),
+    "ice": _surface(
+        "氷穴・富岳", "冷気の岩穴", "sand",
+        "A fictional ice cave, frost on the rock, ice columns, cold air, a frozen floor",
+        "frosted rock wall", "frozen stone", "ice alcove", "frozen stone",
+        "ice passage", "bend in the ice", "pale light through the ice", "cold air tone", "low stone toilet",
+    ),
+    "volcano": _surface(
+        "火山・大涌谷", "遊歩道。噴気の先が境界", "soot",
+        "A fictional volcanic walkway, warm gray rock, a low wooden boardwalk, steam vents ahead marking the boundary",
+        "rock wall", "warm rock", "shelter hut", "warm rock",
+        "volcanic walkway", "end of the walkway", "hazy light", "steam vent hiss", "old metal toilet",
+    ),
+    "battleship": _surface(
+        "廃都・軍艦島", "コンクリートと海", "soot",
+        "A fictional island of concrete blocks, broken apartment walls, the sea beside the path",
+        "concrete wall", "concrete", "remaining concrete room", "concrete",
+        "concrete path", "gap between the blocks", "sea light", "surf on concrete", "old concrete toilet",
+    ),
+    "mine_town": _surface(
+        "閉山集落・池島", "坑口と団地が残る", "soot",
+        "A fictional closed mining village, empty apartment blocks, a tunnel mouth, packed earth underfoot",
+        "concrete wall", "packed earth", "empty apartment", "packed earth",
+        "village path", "tunnel mouth", "light between the blocks", "wind between the blocks", "old white toilet",
+    ),
+    "factory": _surface(
+        "工場・京浜", "配管と高架の工業区", "soot",
+        "A fictional factory district, steel pipes overhead, an elevated road, concrete underfoot",
+        "steel wall", "concrete", "locker room", "concrete",
+        "factory lane", "factory gate", "industrial lamp light", "machine hum", "steel toilet",
+    ),
+    "overpass": _surface(
+        "高架下・汐留", "柱の反復と車の光", "soot",
+        "A fictional underpass, repeated concrete columns, pavement underfoot, streaks of passing car light",
+        "concrete column", "pavement", "utility room", "pavement",
+        "underpass", "gap between the columns", "car light", "traffic overhead", "steel toilet",
+    ),
+    "grassland": _surface(
+        "雄大な草原", "広い空と、地平まで続く草", "sand",
+        "A fictional vast grassland, tall grass on both sides, a soft grass track underfoot, low hills on the far horizon, a wide open sky",
+        "grass bank", "soft grass", "grass shelter", "soft grass",
+        "grass track", "fork in the grass", "open sky light", "wind over the grass", "old wooden toilet",
+    ),
+    "hill": _surface(
+        "丘", "なだらかな丘の斜面", "sand",
+        "A fictional open hill, a grassy slope underfoot, low ridges on both sides, a wide sky",
+        "grassy ridge", "grassy slope", "hill shelter", "grassy slope",
+        "hill path", "fork on the slope", "open sky light", "wind on the hill", "old wooden toilet",
+    ),
+    "desert": _surface(
+        "砂漠", "砂丘と乾いた空", "sand",
+        "A fictional vast desert, dunes on both sides, dry sand underfoot, a wide empty sky",
+        "sand dune", "dry sand", "canvas shelter", "dry sand",
+        "dune path", "gap between the dunes", "harsh sky light", "wind over the dunes", "old canvas toilet",
+    ),
+    "salt_lake": _surface(
+        "大塩湖", "白い塩の岸と浅い水面", "tide",
+        "A fictional great salt lake shore, white salt crust underfoot, shallow brine beside the path, a flat horizon",
+        "salt ridge", "white salt crust", "salt shelter", "white salt crust",
+        "salt shore", "bend in the shore", "bright sky light", "wind over the brine", "old wooden toilet",
+    ),
+    "lake": _surface(
+        "湖", "静かな湖の岸", "tide",
+        "A fictional lake shore, still water beside the path, wet stone underfoot, trees set back from the water",
+        "reed bank", "wet stone", "lake hut", "wet stone",
+        "lake shore", "bend in the shore", "light on the water", "water lapping", "old wooden toilet",
+    ),
+    "mountain": _surface(
+        "山道", "片側が崖の山道", "sand",
+        "A fictional mountain path, a cliff on one side, a stone track underfoot, the slope dropping away on the other side",
+        "cliff face", "stone track", "mountain hut", "stone track",
+        "mountain path", "switchback", "light on the slope", "wind on the slope", "old wooden toilet",
+    ),
+    "marsh": _surface(
+        "鬱蒼とした湿原", "背の高い葦と湿った土", "tide",
+        "A fictional dense marsh, tall reeds on both sides, wet peat underfoot, still water in the gaps",
+        "reed wall", "wet peat", "reed hut", "wet peat",
+        "marsh path", "gap in the reeds", "dim light through the reeds", "wind in the reeds", "old wooden toilet",
+    ),
+    "sewer": _surface(
+        "下水道", "煉瓦の水路と狭い歩廊", "soot",
+        "A fictional brick sewer, a wet brick walkway, arched brick on both sides, a channel of water beside the walk",
+        "brick wall", "wet brick", "side chamber", "wet brick",
+        "sewer walk", "pipe junction", "lamp light", "water in the channel", "iron toilet",
+    ),
+    "station": _surface(
+        "宇宙ステーション", "金属の通路。窓の外は星", "soot",
+        "A fictional orbital station hall, a metal deck underfoot, curved bulkheads on both sides, stars beyond a long window",
+        "metal bulkhead", "metal deck", "station cabin", "metal deck",
+        "station hall", "hall junction", "panel light", "vent hum", "steel toilet",
+    ),
+    "sky_garden": _surface(
+        "大空の上の空中庭園", "雲の上の庭", "sand",
+        "A fictional hanging garden above the clouds, mossy stone underfoot, flowering trees on both sides, open sky around the terrace",
+        "flowering hedge", "mossy stone", "garden pavilion", "mossy stone",
+        "garden walk", "turn in the garden", "open sky light", "wind over the clouds", "stone toilet",
+    ),
+    "sky_bridge": _surface(
+        "天空のガラス橋", "空に架かったガラスの橋", "sand",
+        "A fictional glass bridge hung in the open sky, clear glass underfoot, open air on both sides, clouds far below",
+        "glass rail", "clear glass", "bridge alcove", "clear glass",
+        "glass span", "meeting of the spans", "sky light", "wind over the bridge", "small white toilet",
+    ),
+    "crimson_hall": _surface(
+        "紅絨毯の広間", "赤い絨毯と重い幕", "soot",
+        "A fictional salon, a crimson carpet underfoot, heavy drapes on both sides, gilt frames along the walls",
+        "draped wall", "crimson carpet", "draped salon", "crimson carpet",
+        "carpeted hall", "turn in the hall", "low warm lamp light", "soft room tone", "small gilt toilet",
+    ),
+    "neon_alley": _surface(
+        "ネオン横丁", "狭い路地と看板の光", "soot",
+        "A fictional narrow alley, wet pavement underfoot, close walls on both sides, blank signs overhead",
+        "close wall", "wet pavement", "back room", "wet pavement",
+        "narrow alley", "bend in the alley", "pink and blue sign light", "distant street tone", "steel toilet",
+    ),
+    "mirror_room": _surface(
+        "鏡の閨", "床まで届く鏡", "steam",
+        "A fictional mirror room, mirrors on the walls and above, a silk sheet underfoot, a wide cushion in the middle",
+        "mirror wall", "silk sheet", "mirror room", "silk sheet",
+        "mirror passage", "turn between the mirrors", "warm lamp light", "quiet room tone", "small white toilet",
+    ),
+    "gilded_bath": _surface(
+        "黄金の浴場", "湯気と金の石", "steam",
+        "A fictional gilded bath, warm wet stone underfoot, still water beside the walk, gold stone on both sides",
+        "gold stone wall", "warm wet stone", "bath chamber", "warm wet stone",
+        "bath walk", "turn in the bath", "warm lamp light", "water in the bath", "stone toilet",
+    ),
+    "leather_room": _surface(
+        "革の個室", "黒い革と低い天井", "soot",
+        "A fictional private room, black leather underfoot, padded walls on both sides, a low leather seat in the middle",
+        "padded wall", "black leather", "private room", "black leather",
+        "padded hall", "turn in the hall", "low warm lamp light", "quiet room tone", "small black toilet",
+    ),
+    "white_beach": _surface(
+        "白い砂浜", "白い砂と潮風", "tide",
+        "A fictional white sand beach, clean sand underfoot, open sea on one side, a bright sky",
+        "dune bank", "clean sand", "beach hut", "clean sand",
+        "beach path", "bend in the beach", "bright sky light", "surf and wind", "old wooden toilet",
+    ),
+    "bamboo_walk": _surface(
+        "青竹の道", "青い竹と風", "sand",
+        "A fictional bamboo walk, green bamboo on both sides, smooth earth underfoot, a bright sky through the leaves",
+        "bamboo wall", "smooth earth", "bamboo hut", "smooth earth",
+        "bamboo walk", "bend in the bamboo", "green daylight", "wind in the bamboo", "old wooden toilet",
+    ),
+    "waterfall": _surface(
+        "滝壺", "落ちる水と水しぶき", "tide",
+        "A fictional waterfall basin, wet rock underfoot, falling water ahead, mist over the pool",
+        "wet rock wall", "wet rock", "rock shelter", "wet rock",
+        "rock path", "turn by the pool", "bright mist light", "falling water", "low stone toilet",
+    ),
+    "flower_field": _surface(
+        "花畑", "色のついた花と風", "sand",
+        "A fictional flower field, soft petals and grass underfoot, blooms on both sides, a wide open sky",
+        "flower bank", "soft petals", "flower shelter", "soft petals",
+        "flower path", "gap in the blooms", "open sky light", "wind over the flowers", "old wooden toilet",
+    ),
+    "windy_cape": _surface(
+        "風の岬", "海風と見晴らし", "tide",
+        "A fictional windy cape, short grass underfoot, open sea on both sides, a high bright sky",
+        "grass edge", "short grass", "cape shelter", "short grass",
+        "cape path", "end of the cape", "bright sky light", "wind off the sea", "old wooden toilet",
+    ),
+    "sludge_flat": _surface(
+        "汚泥の干潟", "厚い汚泥と開いた空", "hospital",
+        "A fictional open mudflat, thick sludge underfoot, festering mud on both sides, a wide sky",
+        "sludge bank", "thick sludge", "sludge hut", "thick sludge",
+        "sludge flat", "bend in the flat", "pale sky light", "wind over the sludge", "old wooden toilet",
+    ),
+    "landfill": _surface(
+        "ゴミの埋立地", "廃棄物の山と開いた空", "hospital",
+        "A fictional open landfill, packed waste underfoot, heaps of waste on both sides, a wide sky",
+        "waste heap", "packed waste", "waste hut", "packed waste",
+        "waste track", "gap between the heaps", "pale sky light", "wind over the waste", "old wooden toilet",
+    ),
+    "rot_bog": _surface(
+        "腐れ沼", "腐った水と軟らかい腐泥", "hospital",
+        "A fictional open bog, soft rot underfoot, rotten water on both sides, a low sky",
+        "rot bank", "soft rot", "rot hut", "soft rot",
+        "bog path", "bend in the bog", "pale sky light", "slow water in the bog", "old wooden toilet",
+    ),
+    "ditch_bank": _surface(
+        "ドブの土手", "汚水の土手と開いた空", "hospital",
+        "A fictional open ditch bank, stained earth underfoot, foul water beside the path, a wide sky",
+        "stained bank", "stained earth", "ditch hut", "stained earth",
+        "ditch bank", "bend in the bank", "pale sky light", "foul water moving", "old wooden toilet",
+    ),
+    "fester_shore": _surface(
+        "爛れた浜", "爛れた泡と汚れた砂", "hospital",
+        "A fictional open shore, stained sand underfoot, festering foam along the water, a wide sky",
+        "stained dune", "stained sand", "shore hut", "stained sand",
+        "shore path", "bend in the shore", "pale sky light", "foul surf", "old wooden toilet",
+    ),
+}
+
+TIME_MODES: dict[str, dict[str, Any]] = {
+    "night": {
+        "label_ja": "夜",
+        "choice_ja": "夜（迷ったらこれ）",
+        "when_ja": "今の病棟の夜。文は足さない",
+        "form": True,
+        "recommend": True,
+        "sentence": "",
+        "away": "It is night. Low cool light lights the place.",
+    },
+    "morning": {
+        "label_ja": "朝",
+        "choice_ja": "朝",
+        "when_ja": "低い光。行為は変えない",
+        "form": True,
+        "sentence": "Low morning sun lights the place. The light stays soft.",
+    },
+    "day": {
+        "label_ja": "昼",
+        "choice_ja": "昼",
+        "when_ja": "高い光。行為は変えない",
+        "form": True,
+        "sentence": "High daylight lights the place. Everything stays brightly lit.",
+    },
+}
+
+WEATHER_MODES: dict[str, dict[str, Any]] = {
+    "off": {
+        "label_ja": "指定なし",
+        "choice_ja": "天候なし（迷ったらこれ）",
+        "when_ja": "天候の文は足さない",
+        "form": True,
+        "recommend": True,
+        "sentence": "",
+    },
+    "clear": {
+        "label_ja": "晴れ",
+        "choice_ja": "晴れ",
+        "when_ja": "乾いた床と澄んだ光",
+        "form": True,
+        "sentence": "The ground stays dry. The light stays clear.",
+    },
+    "rain": {
+        "label_ja": "雨",
+        "choice_ja": "雨",
+        "when_ja": "濡れた床と暗い光",
+        "form": True,
+        "sentence": "The ground is wet. The light stays dim.",
+    },
+    "fog": {
+        "label_ja": "霧",
+        "choice_ja": "霧",
+        "when_ja": "近い床と薄い光",
+        "form": True,
+        "sentence": "The ground nearby stays visible. The light stays pale and thick.",
+    },
+    "snow": {
+        "label_ja": "雪",
+        "choice_ja": "雪",
+        "when_ja": "白い床と冷たい光",
+        "form": True,
+        "sentence": "A white layer covers the ground. The light stays cold and bright.",
+    },
+}
+
+DIRT_MODES: dict[str, dict[str, Any]] = {
+    "place": {
+        "label_ja": "場所に合わせる",
+        "choice_ja": "場所に合わせる（迷ったらこれ）",
+        "when_ja": "病棟なら今の汚れ。別の場所ならその場所の汚れ",
+        "form": True,
+        "recommend": True,
+        "phrase": "",
+        "noun": "",
+    },
+    "hospital": {
+        "label_ja": "病院の汚れ",
+        "choice_ja": "病院の汚れ",
+        "when_ja": "今の病院の汚れのまま",
+        "form": True,
+        "phrase": "",
+        "noun": "grimy brown dust",
+    },
+    "sand": {
+        "label_ja": "砂",
+        "choice_ja": "砂",
+        "when_ja": "あやの病院の汚れを砂に替える。傷は残す",
+        "form": True,
+        "phrase": "fine dry sand clinging to the skin",
+        "noun": "fine dry sand",
+    },
+    "tide": {
+        "label_ja": "潮",
+        "choice_ja": "潮",
+        "when_ja": "あやの病院の汚れを潮の膜に替える。傷は残す",
+        "form": True,
+        "phrase": "a seawater sheen and fine salt on the skin",
+        "noun": "a seawater sheen with fine salt",
+    },
+    "soot": {
+        "label_ja": "煤",
+        "choice_ja": "煤",
+        "when_ja": "あやの病院の汚れを煤に替える。傷は残す",
+        "form": True,
+        "phrase": "black soot clinging to the skin",
+        "noun": "black soot",
+    },
+    "steam": {
+        "label_ja": "湯気",
+        "choice_ja": "湯気",
+        "when_ja": "あやの病院の汚れを湯の膜に替える。傷は残す",
+        "form": True,
+        "phrase": "a wet mineral sheen on the skin",
+        "noun": "a wet mineral sheen",
+    },
+}
+
+CAMERA_DISTANCE_MODES: dict[str, dict[str, Any]] = {
+    "side": {
+        "label_ja": "横固定",
+        "choice_ja": "横固定（迷ったらこれ）",
+        "when_ja": "今の真横・全身の固定文",
+        "form": True,
+        "recommend": True,
+        "lock": "",
+    },
+    "low": {
+        "label_ja": "低い見上げ",
+        "choice_ja": "結合の低い見上げ",
+        "when_ja": "結合が中央。口と顔射は今の距離",
+        "form": True,
+        "lock": (
+            "Low camera between the calves, looking slightly up. The join stays at the center of the frame. "
+            "Adults stay on this same floor spot at normal adult human height, same scale as a standing adult woman. "
+            "The feet stay on this floor mark. The camera HOLDS. "
+            "Both adults stay in frame from the shoulders to the feet"
+        ),
+    },
+    "wide": {
+        "label_ja": "全身の引き",
+        "choice_ja": "全身の引き",
+        "when_ja": "頭から両足まで。口と顔射は今の距離",
+        "form": True,
+        "lock": (
+            "Pulled-back camera. Both adults stay full body including both heads and all four feet. "
+            "Adults stay on this same floor spot at normal adult human height, same scale as a standing adult woman. "
+            "The feet stay on this floor mark. The camera HOLDS"
+        ),
+    },
+}
+
+PLACE_ALIASES = _label_aliases(PLACE_MODES, {})
+TIME_ALIASES = _label_aliases(TIME_MODES, {"朝方": "morning"})
+WEATHER_ALIASES = _label_aliases(WEATHER_MODES, {})
+DIRT_ALIASES = _label_aliases(DIRT_MODES, {})
+CAMERA_DISTANCE_ALIASES = _label_aliases(CAMERA_DISTANCE_MODES, {"引き": "wide", "低め": "low"})
+
+HOSPITAL_ENV_HEAD = (
+    "Fictional derelict old hospital at night, worn down by a fictional pandemic: "
+    "crumbling peeling beige walls, cracked stained grey linoleum, rusted rails, "
+    "rubber doors hanging loose, flickering broken fluorescent tubes, water stains, a dark far end"
+)
+TOILET_ENV_BLOCK = (
+    "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. "
+    "One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt "
+    "and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube."
+)
+
+
+def _canon(registry: dict[str, dict[str, Any]], aliases: dict[str, str], name: str) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in registry:
+        return raw
+    return aliases.get(raw, "")
+
+
+def canonical_place(name: str) -> str:
+    return _canon(PLACE_MODES, PLACE_ALIASES, name)
+
+
+def canonical_time(name: str) -> str:
+    return _canon(TIME_MODES, TIME_ALIASES, name)
+
+
+def canonical_weather(name: str) -> str:
+    return _canon(WEATHER_MODES, WEATHER_ALIASES, name)
+
+
+def canonical_dirt(name: str) -> str:
+    return _canon(DIRT_MODES, DIRT_ALIASES, name)
+
+
+def canonical_camera_distance(name: str) -> str:
+    return _canon(CAMERA_DISTANCE_MODES, CAMERA_DISTANCE_ALIASES, name)
+
+
+def dirt_phrase_for(place_key: str, dirt_key: str) -> str:
+    """English dirt clause. Empty leaves the authored hospital dirt."""
+    dirt = dirt_key or "place"
+    if dirt == "place":
+        if not place_key or place_key == "hospital":
+            return ""
+        dirt = str(PLACE_MODES.get(place_key, {}).get("dirt") or "hospital")
+    return str((DIRT_MODES.get(dirt) or {}).get("phrase") or "")
+
+
+LOOK_MODES: dict[str, dict[str, Any]] = {
+    "keep": {
+        "label_ja": "今のまま",
+        "choice_ja": "今のまま（迷ったらこれ）",
+        "when_ja": "台本の見た目。自由記入は使わない",
+        "form": True,
+        "recommend": True,
+        "hair": "",
+        "face": "",
+    },
+    "jp": {
+        "label_ja": "日本",
+        "choice_ja": "日本",
+        "when_ja": "黒髪のストレート、やわらかい面長",
+        "form": True,
+        "hair": "long straight black hair past the shoulders, blunt bangs across the forehead",
+        "face": "soft oval face, dark brown eyes, thin eyebrows, soft pink lips, fair skin",
+    },
+    "kr": {
+        "label_ja": "韓国",
+        "choice_ja": "韓国",
+        "when_ja": "黒髪のロング、小さい顔",
+        "form": True,
+        "hair": "long straight glossy black hair past the shoulders",
+        "face": "small oval face, dark monolid eyes, straight nose, soft pink lips, fair skin",
+    },
+    "cn": {
+        "label_ja": "中国",
+        "choice_ja": "中国",
+        "when_ja": "黒いまとめ髪、切れ長",
+        "form": True,
+        "hair": "long black hair gathered in a low twist",
+        "face": "oval face, dark almond eyes, defined brows, soft lips, fair skin",
+    },
+    "sea": {
+        "label_ja": "東南アジア",
+        "choice_ja": "東南アジア",
+        "when_ja": "暗いウェーブ、丸みのある顔",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "round soft face, dark brown eyes, full lips, warm tan skin",
+    },
+    "south_asia": {
+        "label_ja": "南アジア",
+        "choice_ja": "南アジア",
+        "when_ja": "暗いロング、大きな目",
+        "form": True,
+        "hair": "long thick dark hair past the shoulders",
+        "face": "oval face, large dark eyes, defined brows, full lips, warm brown skin",
+    },
+    "mideast": {
+        "label_ja": "中東",
+        "choice_ja": "中東",
+        "when_ja": "暗いウェーブ、高い鼻",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "oval face, dark eyes, a high nose, full lips, olive skin",
+    },
+    "north_eu": {
+        "label_ja": "北欧",
+        "choice_ja": "北欧",
+        "when_ja": "金髪、色の薄い目",
+        "form": True,
+        "hair": "long straight blonde hair past the shoulders",
+        "face": "oval face, light blue eyes, pale brows, soft lips, fair skin",
+    },
+    "south_eu": {
+        "label_ja": "南欧",
+        "choice_ja": "南欧",
+        "when_ja": "茶色のウェーブ、オリーブの肌",
+        "form": True,
+        "hair": "long wavy brown hair past the shoulders",
+        "face": "oval face, dark brown eyes, defined brows, full lips, olive skin",
+    },
+    "africa": {
+        "label_ja": "アフリカ",
+        "choice_ja": "アフリカ",
+        "when_ja": "黒いカール、深い肌",
+        "form": True,
+        "hair": "long dark curly hair past the shoulders",
+        "face": "oval face, dark brown eyes, full lips, deep brown skin",
+    },
+    "latin": {
+        "label_ja": "ラテンアメリカ",
+        "choice_ja": "ラテンアメリカ",
+        "when_ja": "暗いウェーブ、暖かい肌",
+        "form": True,
+        "hair": "long dark wavy hair past the shoulders",
+        "face": "oval face, dark brown eyes, full lips, warm tan skin",
+    },
+    "other": {
+        "label_ja": "その他",
+        "choice_ja": "その他",
+        "when_ja": "このときだけ自由記入を使う",
+        "form": True,
+        "hair": "",
+        "face": "",
+    },
+}
+
+ENEMY_KIND_MODES: dict[str, dict[str, Any]] = {
+    "zombie": {
+        "label_ja": "ゾンビ",
+        "choice_ja": "ゾンビ（迷ったらこれ）",
+        "when_ja": "今の感染姿。紫、傷、空洞の目",
+        "form": True,
+        "recommend": True,
+    },
+    "human": {
+        "label_ja": "人間",
+        "choice_ja": "人間",
+        "when_ja": "腐りと紫と空洞の目、傷、爬虫の舌、垂れた舌、4本指を外す。竿の長さ、しのの長身、角の角と一つの目は残す",
+        "form": True,
+    },
+}
+
+LOOK_ALIASES = _label_aliases(LOOK_MODES, {"今のあや": "keep", "今の敵": "keep"})
+ENEMY_KIND_ALIASES = _label_aliases(ENEMY_KIND_MODES, {})
+
+# Aya detail menus. keep leaves the authored clause. Every hair phrase contains "dark hair" so a color can repaint it.
+# Shaft styles stay 24cm. The episode's grown length does not change.
+AYA_HAIR_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "台本のロングストレート", "form": True, "recommend": True, "phrase": ""},
+    "long": {"label_ja": "ロングストレート", "choice_ja": "ロングストレート前髪", "when_ja": "肩より下のストレートと前髪", "form": True, "phrase": "long straight dark hair past the shoulders, blunt bangs across the forehead"},
+    "bob": {"label_ja": "ボブ", "choice_ja": "ボブ", "when_ja": "顎の長さのボブ", "form": True, "phrase": "a short dark hair bob at the jaw"},
+    "pony": {"label_ja": "ポニーテール", "choice_ja": "ポニーテール", "when_ja": "高い位置で一つに結ぶ", "form": True, "phrase": "dark hair pulled into a high ponytail"},
+    "twin": {"label_ja": "ツインテール", "choice_ja": "ツインテール", "when_ja": "低い位置で二つに結ぶ", "form": True, "phrase": "dark hair in two low pigtails"},
+    "bun": {"label_ja": "お団子", "choice_ja": "お団子", "when_ja": "後頭部で一つにまとめる", "form": True, "phrase": "dark hair gathered into a bun"},
+    "wave": {"label_ja": "ウェーブ", "choice_ja": "ウェーブロング", "when_ja": "肩より下のゆるいウェーブ", "form": True, "phrase": "long wavy dark hair past the shoulders"},
+    "short": {"label_ja": "ショート", "choice_ja": "ショート", "when_ja": "耳にかかる短い髪", "form": True, "phrase": "a short dark hair pixie cut"},
+    "braid": {"label_ja": "三つ編み", "choice_ja": "三つ編み", "when_ja": "片方の肩に一本の三つ編み", "form": True, "phrase": "dark hair in one loose braid over the shoulder"},
+    "hime": {"label_ja": "姫カット", "choice_ja": "姫カット", "when_ja": "前髪と顔の横の毛", "form": True, "phrase": "long straight dark hair past the shoulders, blunt bangs and sidelocks"},
+}
+AYA_COLOR_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "髪型の中の色を残す", "form": True, "recommend": True, "phrase": ""},
+    "black": {"label_ja": "黒髪", "choice_ja": "黒髪", "when_ja": "髪を黒にする", "form": True, "phrase": "black hair"},
+    "brown": {"label_ja": "茶髪", "choice_ja": "茶髪", "when_ja": "髪を茶色にする", "form": True, "phrase": "brown hair"},
+    "blonde": {"label_ja": "金髪", "choice_ja": "金髪", "when_ja": "髪を金色にする", "form": True, "phrase": "blonde hair"},
+    "silver": {"label_ja": "銀髪", "choice_ja": "銀髪", "when_ja": "髪を銀色にする", "form": True, "phrase": "silver hair"},
+    "red": {"label_ja": "赤髪", "choice_ja": "赤髪", "when_ja": "髪を赤にする", "form": True, "phrase": "red hair"},
+    "blue": {"label_ja": "青髪", "choice_ja": "青髪", "when_ja": "髪を青にする", "form": True, "phrase": "blue hair"},
+    "pink": {"label_ja": "ピンク", "choice_ja": "ピンク", "when_ja": "髪をピンクにする", "form": True, "phrase": "pink hair"},
+    "white": {"label_ja": "白髪", "choice_ja": "白髪", "when_ja": "髪を白にする", "form": True, "phrase": "white hair"},
+    "green": {"label_ja": "緑髪", "choice_ja": "緑髪", "when_ja": "髪を緑にする", "form": True, "phrase": "green hair"},
+}
+AYA_FACE_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "ほくろのある今の顔", "form": True, "recommend": True, "phrase": ""},
+    "mole": {"label_ja": "ほくろ", "choice_ja": "ほくろ", "when_ja": "左頬のほくろ、やわらかい面長", "form": True, "phrase": "a small dark mole on the left cheek, soft oval face, dark brown eyes, thin eyebrows, soft pink lips"},
+    "round": {"label_ja": "丸顔", "choice_ja": "丸顔", "when_ja": "丸い顔と大きな目", "form": True, "phrase": "a round face, large dark brown eyes, soft brows, full lips"},
+    "narrow": {"label_ja": "面長", "choice_ja": "面長", "when_ja": "細い顔と切れ長の目", "form": True, "phrase": "a long narrow face, narrow dark eyes, thin eyebrows, a straight nose, soft lips"},
+    "freckle": {"label_ja": "そばかす", "choice_ja": "そばかす", "when_ja": "鼻の上の薄いそばかす", "form": True, "phrase": "an oval face, light freckles across the nose, dark brown eyes, soft lips"},
+    "droop": {"label_ja": "垂れ目", "choice_ja": "垂れ目", "when_ja": "下がった目", "form": True, "phrase": "an oval face, drooping dark eyes, soft brows, a small smile"},
+    "sharp": {"label_ja": "つり目", "choice_ja": "つり目", "when_ja": "上がった目", "form": True, "phrase": "an oval face, sharp upturned dark eyes, thin arched brows, soft lips"},
+    "full": {"label_ja": "厚い唇", "choice_ja": "厚い唇", "when_ja": "厚い唇とやわらかい輪郭", "form": True, "phrase": "an oval face, dark brown eyes, full lips, a soft jaw"},
+    "cat": {"label_ja": "猫目", "choice_ja": "猫目", "when_ja": "細い猫目", "form": True, "phrase": "an oval face, narrow catlike dark eyes, thin eyebrows, a small nose"},
+    "young": {"label_ja": "童顔", "choice_ja": "童顔", "when_ja": "丸い大人の顔", "form": True, "phrase": "a round youthful adult face, large dark eyes, soft cheeks, soft lips"},
+}
+AYA_DIRT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "場所の汚れ欄に任せる", "form": True, "recommend": True, "phrase": ""},
+    "sand": {"label_ja": "砂", "choice_ja": "砂", "when_ja": "肌に乾いた砂", "form": True, "phrase": "fine dry sand clinging to the skin"},
+    "mud": {"label_ja": "泥", "choice_ja": "泥", "when_ja": "肌に湿った泥", "form": True, "phrase": "wet brown mud clinging to the skin"},
+    "soot": {"label_ja": "煤", "choice_ja": "煤", "when_ja": "肌に黒い煤", "form": True, "phrase": "black soot clinging to the skin"},
+    "salt": {"label_ja": "潮", "choice_ja": "潮", "when_ja": "肌に薄い塩の膜", "form": True, "phrase": "a thin salt film on the skin"},
+    "dust": {"label_ja": "埃", "choice_ja": "埃", "when_ja": "肌に白い埃", "form": True, "phrase": "pale dust clinging to the skin"},
+    "oil": {"label_ja": "油", "choice_ja": "油", "when_ja": "肌に薄い油膜", "form": True, "phrase": "a thin oil sheen on the skin"},
+    "clean": {"label_ja": "清潔", "choice_ja": "清潔", "when_ja": "汚れを乾いた肌にする", "form": True, "phrase": "clean dry skin"},
+    "ash": {"label_ja": "灰", "choice_ja": "灰", "when_ja": "肌に灰色の灰", "form": True, "phrase": "grey ash clinging to the skin"},
+    "pollen": {"label_ja": "花粉", "choice_ja": "花粉", "when_ja": "肌に細かい黄色い粉", "form": True, "phrase": "fine yellow dust clinging to the skin"},
+}
+AYA_SWEAT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の汗と汚れの文", "form": True, "recommend": True, "phrase": ""},
+    "beads": {"label_ja": "玉の汗", "choice_ja": "玉の汗", "when_ja": "肌の上の汗の粒", "form": True, "phrase": "visible sweat beads on the skin"},
+    "soaked": {"label_ja": "びっしょり", "choice_ja": "びっしょり", "when_ja": "汗で濡れた肌", "form": True, "phrase": "skin soaked with sweat"},
+    "light": {"label_ja": "薄い汗", "choice_ja": "薄い汗", "when_ja": "薄い汗の光", "form": True, "phrase": "a light sweat sheen on the skin"},
+    "dry": {"label_ja": "乾いた肌", "choice_ja": "乾いた肌", "when_ja": "汗を乾いた肌にする", "form": True, "phrase": "dry skin"},
+    "steam": {"label_ja": "湯気", "choice_ja": "湯気", "when_ja": "湯気で湿った肌", "form": True, "phrase": "damp skin in steam"},
+    "rain": {"label_ja": "雨濡れ", "choice_ja": "雨濡れ", "when_ja": "雨で濡れた肌", "form": True, "phrase": "skin wet from rain"},
+    "gloss": {"label_ja": "テカリ", "choice_ja": "テカリ", "when_ja": "胸と顔のテカリ", "form": True, "phrase": "a glossy sweat sheen on the chest and face"},
+    "face": {"label_ja": "顔の汗", "choice_ja": "顔の汗", "when_ja": "顔だけの汗", "form": True, "phrase": "sweat beads on the face"},
+    "chest": {"label_ja": "胸の汗", "choice_ja": "胸の汗", "when_ja": "胸だけの汗", "form": True, "phrase": "sweat beads on the chest"},
+}
+AYA_CLOTHES_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の全裸", "form": True, "recommend": True, "phrase": ""},
+    "shirt": {"label_ja": "白シャツ", "choice_ja": "白シャツ", "when_ja": "開いた白いシャツ", "form": True, "phrase": "an open white shirt"},
+    "nurse": {"label_ja": "ナース", "choice_ja": "ナース", "when_ja": "短い白いナース服", "form": True, "phrase": "a short open white nurse dress"},
+    "sailor": {"label_ja": "セーラー", "choice_ja": "セーラー", "when_ja": "セーラー襟の上だけ", "form": True, "phrase": "a sailor collar top"},
+    "dressshirt": {"label_ja": "ワイシャツ", "choice_ja": "ワイシャツ", "when_ja": "開いたワイシャツ", "form": True, "phrase": "an open dress shirt"},
+    "tank": {"label_ja": "タンクトップ", "choice_ja": "タンクトップ", "when_ja": "タンクトップ", "form": True, "phrase": "a tank top"},
+    "bikini": {"label_ja": "ビキニ", "choice_ja": "ビキニ", "when_ja": "ビキニ", "form": True, "phrase": "a bikini"},
+    "apron": {"label_ja": "エプロン", "choice_ja": "エプロン", "when_ja": "腰のエプロン", "form": True, "phrase": "a waist apron"},
+    "hoodie": {"label_ja": "パーカー", "choice_ja": "パーカー", "when_ja": "開いたパーカー", "form": True, "phrase": "an open hoodie"},
+    "slip": {"label_ja": "ネグリジェ", "choice_ja": "ネグリジェ", "when_ja": "薄いネグリジェ", "form": True, "phrase": "a sheer slip"},
+}
+AYA_BUST_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の C カップ", "form": True, "recommend": True, "phrase": ""},
+    "a": {"label_ja": "Aカップ", "choice_ja": "Aカップ", "when_ja": "小さい A カップ", "form": True, "phrase": "small A-cup breasts"},
+    "b": {"label_ja": "Bカップ", "choice_ja": "Bカップ", "when_ja": "控えめな B カップ", "form": True, "phrase": "modest B-cup breasts"},
+    "c": {"label_ja": "Cカップ", "choice_ja": "Cカップ", "when_ja": "今と同じ C カップ", "form": True, "phrase": "medium C-cup breasts"},
+    "d": {"label_ja": "Dカップ", "choice_ja": "Dカップ", "when_ja": "ふくらみのある D カップ", "form": True, "phrase": "full D-cup breasts"},
+    "e": {"label_ja": "Eカップ", "choice_ja": "Eカップ", "when_ja": "大きい E カップ", "form": True, "phrase": "large E-cup breasts"},
+    "f": {"label_ja": "Fカップ", "choice_ja": "Fカップ", "when_ja": "とても大きい F カップ", "form": True, "phrase": "very large F-cup breasts"},
+    "small": {"label_ja": "小さめ", "choice_ja": "小さめ", "when_ja": "小さい胸", "form": True, "phrase": "small breasts"},
+    "large": {"label_ja": "大きめ", "choice_ja": "大きめ", "when_ja": "大きい胸", "form": True, "phrase": "large full breasts"},
+    "flat": {"label_ja": "平坦", "choice_ja": "平坦", "when_ja": "ほとんど起伏のない胸", "form": True, "phrase": "a flat chest"},
+}
+AYA_BUTT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "お尻の大きさは書かない", "form": True, "recommend": True, "phrase": ""},
+    "small": {"label_ja": "小さめ", "choice_ja": "小さめ", "when_ja": "小さいお尻", "form": True, "phrase": "small buttocks"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "平均的なお尻", "form": True, "phrase": "average buttocks"},
+    "round": {"label_ja": "丸い", "choice_ja": "丸い", "when_ja": "丸いお尻", "form": True, "phrase": "round buttocks"},
+    "large": {"label_ja": "大きめ", "choice_ja": "大きめ", "when_ja": "大きいお尻", "form": True, "phrase": "large buttocks"},
+    "peach": {"label_ja": "桃", "choice_ja": "桃", "when_ja": "桃のようなお尻", "form": True, "phrase": "a peach-shaped butt"},
+    "firm": {"label_ja": "張り", "choice_ja": "張り", "when_ja": "張ったお尻", "form": True, "phrase": "firm high buttocks"},
+    "low": {"label_ja": "垂れ", "choice_ja": "垂れ", "when_ja": "やわらかく下がったお尻", "form": True, "phrase": "soft low buttocks"},
+    "wide": {"label_ja": "広い", "choice_ja": "広い", "when_ja": "広い腰と大きいお尻", "form": True, "phrase": "wide hips and large buttocks"},
+    "narrow": {"label_ja": "細い", "choice_ja": "細い", "when_ja": "細い腰と小さいお尻", "form": True, "phrase": "narrow hips and small buttocks"},
+}
+AYA_BUILD_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "今の細い体と細い腕", "form": True, "recommend": True, "phrase": "", "limbs": ""},
+    "thinnest": {"label_ja": "極細", "choice_ja": "極細", "when_ja": "とても細い体", "form": True, "phrase": "a very slim adult body", "limbs": "a very narrow waist and thin arms"},
+    "slim": {"label_ja": "細い", "choice_ja": "細い", "when_ja": "細い体", "form": True, "phrase": "a slim adult body", "limbs": "a narrow waist and thin arms"},
+    "delicate": {"label_ja": "華奢", "choice_ja": "華奢", "when_ja": "華奢な体", "form": True, "phrase": "a delicate slim adult body", "limbs": "a very narrow waist and slender arms"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "平均的な体", "form": True, "phrase": "an average adult body", "limbs": "a medium waist and ordinary arms"},
+    "plump": {"label_ja": "むっちり", "choice_ja": "むっちり", "when_ja": "やわらかくむっちりした体", "form": True, "phrase": "a soft plump adult body", "limbs": "a soft waist and soft arms"},
+    "chubby": {"label_ja": "ぽっちゃり", "choice_ja": "ぽっちゃり", "when_ja": "ふっくらした体", "form": True, "phrase": "a chubby adult body", "limbs": "a full waist and soft arms"},
+    "sturdy": {"label_ja": "がっしり", "choice_ja": "がっしり", "when_ja": "がっしりした体", "form": True, "phrase": "a sturdy adult body", "limbs": "a solid waist and firm arms"},
+    "muscle": {"label_ja": "筋肉", "choice_ja": "筋肉", "when_ja": "引き締まった筋肉の体", "form": True, "phrase": "a lean muscular adult body", "limbs": "a firm waist and toned arms"},
+    "broad": {"label_ja": "骨太", "choice_ja": "骨太", "when_ja": "骨太で広い体", "form": True, "phrase": "a broad adult body", "limbs": "a wide waist and sturdy arms"},
+}
+AYA_HEIGHT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "身長は書かない。しのの長身は別", "form": True, "recommend": True, "phrase": ""},
+    "short": {"label_ja": "低め", "choice_ja": "低め", "when_ja": "成人で低め", "form": True, "phrase": "a short full-grown adult height"},
+    "bit_short": {"label_ja": "やや低め", "choice_ja": "やや低め", "when_ja": "成人でやや低め", "form": True, "phrase": "a slightly short full-grown adult height"},
+    "petite": {"label_ja": "小柄", "choice_ja": "小柄", "when_ja": "成人で小柄", "form": True, "phrase": "a petite full-grown adult height"},
+    "average": {"label_ja": "普通", "choice_ja": "普通", "when_ja": "成人で平均的な身長", "form": True, "phrase": "an average full-grown adult height"},
+    "bit_tall": {"label_ja": "やや高め", "choice_ja": "やや高め", "when_ja": "成人でやや高め", "form": True, "phrase": "a slightly tall full-grown adult height"},
+    "tall": {"label_ja": "高め", "choice_ja": "高め", "when_ja": "成人で高め", "form": True, "phrase": "a tall full-grown adult height"},
+    "very_tall": {"label_ja": "長身", "choice_ja": "長身", "when_ja": "成人で長身。巨人にはしない", "form": True, "phrase": "a very tall full-grown adult height, still one human scale"},
+    "legs": {"label_ja": "長脚", "choice_ja": "長脚", "when_ja": "成人で脚が長い", "form": True, "phrase": "a long-legged full-grown adult height"},
+    "model": {"label_ja": "モデル", "choice_ja": "モデル", "when_ja": "成人で脚が長く高め", "form": True, "phrase": "a tall long-legged full-grown adult height"},
+}
+AYA_SHAFT_MODES: dict[str, dict[str, Any]] = {
+    "keep": {"label_ja": "今のまま", "choice_ja": "今のまま（迷ったらこれ）", "when_ja": "竿は足さない", "form": True, "recommend": True, "shaft": ""},
+    "off": {"label_ja": "なし", "choice_ja": "なし", "when_ja": "竿を書かない", "form": True, "shaft": "off"},
+    "on": {"label_ja": "あり", "choice_ja": "あり（標準）", "when_ja": "24cm のまっすぐな竿", "form": True, "shaft": "on"},
+    "slim": {"label_ja": "細め", "choice_ja": "細め", "when_ja": "24cm の細い竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, slim girth, straight pale-tan shaft, hairless female pussy at the base of the shaft"},
+    "thick": {"label_ja": "太め", "choice_ja": "太め", "when_ja": "24cm の太い竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, extra thick girth, straight pale-tan shaft, hairless female pussy at the base of the shaft"},
+    "tan": {"label_ja": "色が濃い", "choice_ja": "色が濃い", "when_ja": "24cm の濃い色の竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight tan shaft, hairless female pussy at the base of the shaft"},
+    "pale": {"label_ja": "色が薄い", "choice_ja": "色が薄い", "when_ja": "24cm の薄い色の竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale shaft, hairless female pussy at the base of the shaft"},
+    "up": {"label_ja": "上向き", "choice_ja": "上向き", "when_ja": "24cm で上を向く竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale-tan shaft pointing up, hairless female pussy at the base of the shaft"},
+    "curve": {"label_ja": "反り", "choice_ja": "反り", "when_ja": "24cm で上に反った竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, a pale-tan shaft curved upward, hairless female pussy at the base of the shaft"},
+    "vein": {"label_ja": "血管", "choice_ja": "血管", "when_ja": "24cm で血管の見える竿", "form": True, "shaft": "clear futanari, erect 24cm human penis, thick human girth, straight pale-tan shaft, veins along the shaft, hairless female pussy at the base of the shaft"},
+}
+AYA_PART_MODES: dict[str, dict[str, dict[str, Any]]] = {
+    "hair": AYA_HAIR_MODES,
+    "color": AYA_COLOR_MODES,
+    "face": AYA_FACE_MODES,
+    "dirt": AYA_DIRT_MODES,
+    "sweat": AYA_SWEAT_MODES,
+    "clothes": AYA_CLOTHES_MODES,
+    "bust": AYA_BUST_MODES,
+    "butt": AYA_BUTT_MODES,
+    "build": AYA_BUILD_MODES,
+    "height": AYA_HEIGHT_MODES,
+    "shaft": AYA_SHAFT_MODES,
+}
+AYA_PART_ALIASES: dict[str, dict[str, str]] = {
+    kind: _label_aliases(modes, {"今のまま": "keep", "今のまま（迷ったらこれ）": "keep"})
+    for kind, modes in AYA_PART_MODES.items()
+}
+AYA_PART_ALIASES["shaft"]["あり"] = "on"
+AYA_PART_ALIASES["shaft"]["なし"] = "off"
+AYA_SWEAT_PHRASES = frozenset(
+    str(spec["phrase"]) for spec in AYA_SWEAT_MODES.values() if spec.get("phrase")
+)
+
+
+def canonical_look(name: str) -> str:
+    return _canon(LOOK_MODES, LOOK_ALIASES, name)
+
+
+def canonical_enemy_kind(name: str) -> str:
+    return _canon(ENEMY_KIND_MODES, ENEMY_KIND_ALIASES, name)
+
+
+def build_limbs_for(phrase: str) -> str:
+    """Waist and arms that belong to a body-slimness menu phrase. Blank leaves the authored arms."""
+    for spec in AYA_BUILD_MODES.values():
+        if spec.get("phrase") == phrase:
+            return str(spec.get("limbs") or "")
+    return ""
+
+
+def resolve_aya_part(kind: str, value: str) -> str:
+    """Map an Aya dropdown label onto its English phrase. Unknown text passes through. keep is blank."""
+    raw = str(value or "").strip()
+    modes = AYA_PART_MODES.get(kind) or {}
+    aliases = AYA_PART_ALIASES.get(kind) or {}
+    key = aliases.get(raw) or (raw if raw in modes else "")
+    if not key:
+        return raw
+    spec = modes[key]
+    if kind == "shaft":
+        return str(spec.get("shaft") or "")
+    return str(spec.get("phrase") or "")
+
+
 def _registry(kind: str) -> dict[str, dict[str, Any]]:
     if kind == "connect":
         return CONNECT_MODES
@@ -1729,6 +2643,42 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return END_CONNECT_MODES
     if kind == "camera":
         return CAMERA_PACKS
+    if kind == "place":
+        return PLACE_MODES
+    if kind == "time":
+        return TIME_MODES
+    if kind == "weather":
+        return WEATHER_MODES
+    if kind == "dirt":
+        return DIRT_MODES
+    if kind == "camera_distance":
+        return CAMERA_DISTANCE_MODES
+    if kind == "look":
+        return LOOK_MODES
+    if kind == "aya_hair":
+        return AYA_HAIR_MODES
+    if kind == "aya_color":
+        return AYA_COLOR_MODES
+    if kind == "aya_face":
+        return AYA_FACE_MODES
+    if kind == "aya_dirt":
+        return AYA_DIRT_MODES
+    if kind == "aya_sweat":
+        return AYA_SWEAT_MODES
+    if kind == "aya_clothes":
+        return AYA_CLOTHES_MODES
+    if kind == "aya_bust":
+        return AYA_BUST_MODES
+    if kind == "aya_butt":
+        return AYA_BUTT_MODES
+    if kind == "aya_build":
+        return AYA_BUILD_MODES
+    if kind == "aya_height":
+        return AYA_HEIGHT_MODES
+    if kind == "aya_shaft":
+        return AYA_SHAFT_MODES
+    if kind == "enemy_kind":
+        return ENEMY_KIND_MODES
     if kind == "preset":
         return PRESET_CANON
     if kind == "combat":
@@ -1790,6 +2740,58 @@ def ui_default(kind: str) -> str:
     return ui_choices(kind)[0]
 
 
+# Opening values of the Colab form. ui_default stays the 迷ったらこれ row.
+# Run all without touching the dropdowns uses these. An already-open cell keeps the old values.
+FORM_INITIAL: dict[str, str] = {
+    "episode": "病棟出口",
+    "connect": "前の最終フレームから続ける",
+    "preset": "スピード（最速）",
+    "story": "□誘う（淫欲・失敗）",
+    "toilet": "トイレ・触手",
+    "gin": "灰色・騎乗・最初から膝曲げ",
+    "tsuno": "角・病室で横になって挿入",
+    "place": "汚泥の干潟",
+    "time": "昼",
+    "weather": "晴れ",
+    "enemy_kind": "人間",
+    "look_miki": "中東",
+    "look_rei": "韓国",
+    "look_kana": "日本",
+    "look_shino": "南アジア",
+    "look_gin": "北欧",
+    "look_tsuno": "東南アジア",
+    "scene_miki": "□誘う・四つん這い股広げ",
+    "scene_rei": "□誘う・後ろアナル",
+    "scene_kana": "□誘う・壁立ちバック",
+    "scene_shino": "□誘う・M字開脚仰向け",
+}
+
+_FORM_PARENT = {
+    "look_miki": "look",
+    "look_rei": "look",
+    "look_kana": "look",
+    "look_shino": "look",
+    "look_gin": "look",
+    "look_tsuno": "look",
+    "scene_miki": "scene",
+    "scene_rei": "scene",
+    "scene_kana": "scene",
+    "scene_shino": "scene",
+}
+
+
+def form_initial(kind: str) -> str:
+    """Widget value when the notebook opens. 迷ったらこれ stays on ui_default."""
+    if kind in FORM_INITIAL:
+        value = FORM_INITIAL[kind]
+        parent = _FORM_PARENT.get(kind, kind)
+        choices = ui_choices(parent)
+        if value not in choices:
+            raise KeyError(f"form initial {kind}={value!r} is not a {parent} choice")
+        return value
+    return ui_default(kind)
+
+
 def form_markdown(kind: str, heading: str) -> str:
     """Colab #@markdown bullets: each option plus when to pick it."""
     lines = [f"#@markdown **{heading}**"]
@@ -1808,6 +2810,30 @@ def form_readme(kind: str) -> str:
         when = spec.get("when_ja") or spec.get("hint_ja")
         lines.append(f"- **{choice}** … {when}")
     return "\n".join(lines)
+
+
+def _describe_surface(render: dict[str, Any]) -> str:
+    """Place, time, weather, dirt, camera distance, enemy kind, looks, and seed."""
+    def pick(registry: dict[str, dict[str, Any]], canon, key: str, default: str) -> str:
+        found = canon(str(render.get(key) or "")) or default
+        return str((registry.get(found) or registry[default]).get("label_ja") or found)
+
+    looks = render.get("enemy_looks") if isinstance(render.get("enemy_looks"), dict) else {}
+    look_bits = " ".join(
+        f"{name}={(LOOK_MODES.get(str(looks.get(name) or 'keep')) or LOOK_MODES['keep'])['label_ja']}"
+        for name in ("miki", "rei", "kana", "shino", "gin", "tsuno")
+    )
+    return (
+        f"  場所      {pick(PLACE_MODES, canonical_place, 'place', 'hospital')}\n"
+        f"  時間      {pick(TIME_MODES, canonical_time, 'time', 'night')}\n"
+        f"  天候      {pick(WEATHER_MODES, canonical_weather, 'weather', 'off')}\n"
+        f"  汚れ      {pick(DIRT_MODES, canonical_dirt, 'dirt', 'place')}\n"
+        f"  距離      {pick(CAMERA_DISTANCE_MODES, canonical_camera_distance, 'camera_distance', 'side')}\n"
+        f"  敵        {pick(ENEMY_KIND_MODES, canonical_enemy_kind, 'enemy_kind', 'zombie')}\n"
+        f"  あや      {pick(LOOK_MODES, canonical_look, 'aya_look', 'keep')}\n"
+        f"  敵の顔    {look_bits}\n"
+        f"  シード    {render.get('seed') or 42}\n"
+    )
 
 
 def describe_run(
@@ -1837,6 +2863,7 @@ def describe_run(
     rei_pose: str = "",
     ride_bent: str = "",
     ride_column: str = "",
+    surface: dict[str, Any] | None = None,
 ) -> str:
     """One short Japanese block at run start: what was chosen and when to pick something else."""
     c_key = canonical_connect(connect) or DEFAULT_CONNECT
@@ -1927,5 +2954,6 @@ def describe_run(
         f"  11 異種   {sp['choice_ja']}  — {sp['when_ja']}\n"
         f"  登場      {appear_ja}\n"
         f"  シーン    {scenes_ja}\n"
+        f"{_describe_surface(surface or {})}"
         "迷ったら既定のままで Run all。新しい相手の入りはカット。消滅はチェーンならフェード。8から11は病棟の追加オプション。スライムとケモノは同時に出ない。シーンごとは病棟だけ。戦い構成のときはシーンごとは無視。"
     )
