@@ -6877,6 +6877,16 @@ def test_fantasy_places_replace_the_ward_and_the_default_stays():
         "宇宙ステーション": "metal deck",
         "大空の上の空中庭園": "above the clouds",
         "天空のガラス橋": "clear glass",
+        "紅絨毯の広間": "crimson carpet",
+        "ネオン横丁": "wet pavement",
+        "鏡の閨": "silk sheet",
+        "黄金の浴場": "warm wet stone",
+        "革の個室": "black leather",
+        "白い砂浜": "clean sand",
+        "青竹の道": "green bamboo",
+        "滝壺": "falling water",
+        "花畑": "soft petals",
+        "風の岬": "short grass",
     }
     ward_words = re.compile(
         r"hospital|linoleum|corridor|sickroom|fluorescent|crumbling|rusted|\bHVAC\b|derelict|T-junction|"

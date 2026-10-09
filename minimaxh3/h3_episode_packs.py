@@ -2021,6 +2021,66 @@ PLACE_MODES: dict[str, dict[str, Any]] = {
         "glass rail", "clear glass", "bridge alcove", "glass bench",
         "glass span", "meeting of the spans", "sky light", "wind over the bridge", "small white toilet",
     ),
+    "crimson_hall": _surface(
+        "紅絨毯の広間", "赤い絨毯と重い幕", "soot",
+        "A fictional salon, a crimson carpet underfoot, heavy drapes on both sides, gilt frames along the walls",
+        "draped wall", "crimson carpet", "draped salon", "velvet divan",
+        "carpeted hall", "turn in the hall", "low warm lamp light", "soft room tone", "small gilt toilet",
+    ),
+    "neon_alley": _surface(
+        "ネオン横丁", "狭い路地と看板の光", "soot",
+        "A fictional narrow alley, wet pavement underfoot, close walls on both sides, blank signs overhead",
+        "close wall", "wet pavement", "back room", "low couch",
+        "narrow alley", "bend in the alley", "pink and blue sign light", "distant street tone", "steel toilet",
+    ),
+    "mirror_room": _surface(
+        "鏡の閨", "床まで届く鏡", "steam",
+        "A fictional mirror room, mirrors on the walls and above, a silk sheet underfoot, a wide cushion in the middle",
+        "mirror wall", "silk sheet", "mirror room", "wide cushion",
+        "mirror passage", "turn between the mirrors", "warm lamp light", "quiet room tone", "small white toilet",
+    ),
+    "gilded_bath": _surface(
+        "黄金の浴場", "湯気と金の石", "steam",
+        "A fictional gilded bath, warm wet stone underfoot, still water beside the walk, gold stone on both sides",
+        "gold stone wall", "warm wet stone", "bath chamber", "stone bench",
+        "bath walk", "turn in the bath", "warm lamp light", "water in the bath", "stone toilet",
+    ),
+    "leather_room": _surface(
+        "革の個室", "黒い革と低い天井", "soot",
+        "A fictional private room, black leather underfoot, padded walls on both sides, a low leather seat in the middle",
+        "padded wall", "black leather", "private room", "leather seat",
+        "padded hall", "turn in the hall", "low warm lamp light", "quiet room tone", "small black toilet",
+    ),
+    "white_beach": _surface(
+        "白い砂浜", "白い砂と潮風", "tide",
+        "A fictional white sand beach, clean sand underfoot, open sea on one side, a bright sky",
+        "dune bank", "clean sand", "beach hut", "sand mat",
+        "beach path", "bend in the beach", "bright sky light", "surf and wind", "old wooden toilet",
+    ),
+    "bamboo_walk": _surface(
+        "青竹の道", "青い竹と風", "sand",
+        "A fictional bamboo walk, green bamboo on both sides, smooth earth underfoot, a bright sky through the leaves",
+        "bamboo wall", "smooth earth", "bamboo hut", "bamboo mat",
+        "bamboo walk", "bend in the bamboo", "green daylight", "wind in the bamboo", "old wooden toilet",
+    ),
+    "waterfall": _surface(
+        "滝壺", "落ちる水と水しぶき", "tide",
+        "A fictional waterfall basin, wet rock underfoot, falling water ahead, mist over the pool",
+        "wet rock wall", "wet rock", "rock shelter", "flat rock",
+        "rock path", "turn by the pool", "bright mist light", "falling water", "low stone toilet",
+    ),
+    "flower_field": _surface(
+        "花畑", "色のついた花と風", "sand",
+        "A fictional flower field, soft petals and grass underfoot, blooms on both sides, a wide open sky",
+        "flower bank", "soft petals", "flower shelter", "grass mat",
+        "flower path", "gap in the blooms", "open sky light", "wind over the flowers", "old wooden toilet",
+    ),
+    "windy_cape": _surface(
+        "風の岬", "海風と見晴らし", "tide",
+        "A fictional windy cape, short grass underfoot, open sea on both sides, a high bright sky",
+        "grass edge", "short grass", "cape shelter", "grass mat",
+        "cape path", "end of the cape", "bright sky light", "wind off the sea", "old wooden toilet",
+    ),
 }
 
 TIME_MODES: dict[str, dict[str, Any]] = {
