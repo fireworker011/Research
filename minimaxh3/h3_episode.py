@@ -586,7 +586,9 @@ JO_SET_CLAUSE = (
 )
 GIN_LICK_PACE_CLAUSE = (
     "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
-    "One continuous take. Aya sits and Gin crouches inside this same shot. "
+    "One continuous take. Gin hugs Aya from behind, they turn face to face for the kiss, "
+    "then Aya returns to the sitting pose. "
+    "The camera distance stays the opening wide full-body distance. "
     "The place stays the opening place. The camera stays with them."
 )
 WALL_SET_CLAUSE = (
@@ -2316,6 +2318,44 @@ def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
     return out
 
 
+def _rei_front_hug_beat(body: dict[str, Any]) -> dict[str, Any]:
+    """Rei's meeting. A front hug and a french kiss, then the act branch."""
+    return {
+        "id": "06-doggy-spot",
+        "source": "chain",
+        "connect": "chain",
+        "trim": {"start": 0, "seconds": 8.0},
+        "cast": ["aya", "rei"],
+        "encounter": "rei",
+        "place": body.get("place") or "",
+        "camera": (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. "
+            "The camera sits at this wide full-body distance. "
+            "Both adults full body including both feet. Both faces stay in frame. "
+            "Rei comes in from the front and the mouths meet."
+        ),
+        "action": (
+            "They start already on this same linoleum spot. Aya stands facing RIGHT, fully nude. "
+            "Rei comes straight in from the front and HUGS Aya at once. "
+            "Both of Rei's arms WRAP tight around Aya's back and SQUEEZE. "
+            "Chests, bellies, and hips PRESS FLUSH. "
+            "Both faces stay a bright open smile. "
+            "Mouths meet in a deep wet french kiss. Tongues intertwine and lick around each other's lips. "
+            "Then the mouths part. A saliva string stretches between the parting lips. "
+            "Last frame: they stand face to face, lips apart, a saliva string between the mouths, both smiling, "
+            "both full body including both feet. "
+            "Brisk real-time. Consensual adult game beat"
+        ),
+        "voices": [{"who": "aya", "line": "んっ"}],
+        "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+        "music": body.get("music") or "Bass holds",
+        "hud": dict(body.get("hud") or {}),
+        "loco": "planted",
+        "extra_loras": [["kiss", 0.5]],
+        "trigger": "",
+    }
+
+
 def apply_story_route(
     ep: dict[str, Any],
     *,
@@ -2352,6 +2392,8 @@ def apply_story_route(
         chosen = beat.get(overlay_field) if overlay_field else None
         body = _pop_overlay_keys(beat, STORY_ROUTE_KEYS)
         body.pop(COMBAT_ROUTE_KEY, None)
+        if str(body.get("id") or "") == "06-doggy" and str(body.get("encounter") or "") == "rei":
+            beats.append(_rei_front_hug_beat(body))
         beats.extend(_expand_overlay(body, chosen))
     out["beats"] = beats
     render = dict(out.get("render") or {})
@@ -2464,6 +2506,7 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
         )
     wall = (
         f"They start already face to face on this same linoleum spot, mouths just parted. "
+        "A saliva string stretches between the parting lips. "
         f"{name} PUSHES Aya until Aya's back is against the peeling wall. Aya smiles. "
         "One of Aya's legs lifts and the knee opens outward. The other foot stays planted on the linoleum. "
         f"{shaft} stays in front of the hips. Both faces stay in frame. Full body including feet. "
@@ -3790,18 +3833,18 @@ def insert_presence_beats(ep: dict[str, Any]) -> dict[str, Any]:
             elif added == ["shino"]:
                 action = (
                     "Aya is already in the corridor, fully nude, thick extra-viscous sticky grimy brown hospital dirt clinging to her whole body, "
-                    "facing LEFT, full body including both feet. "
-                    "Shino is already stooping a short step behind Aya, head ducked under the tubes, full body including feet. "
-                    "Shino's chest, face, and knees point LEFT, the same heading as Aya. "
-                    "Shino's side faces the camera. Shino's back points toward the doorway. The doorway stays behind Shino. "
-                    "The erect 35cm stays at the front of the groin, pointing FORWARD along that LEFT heading. The buttocks stay bare. "
+                    "facing Shino, full body including both feet. "
+                    "Shino is already stooping at the lit doorway, facing Aya, head ducked under the tubes, full body including feet. "
+                    "Aya's face turns toward Shino. Shino's face turns toward Aya. Their eyes meet. "
+                    "Shino's side faces the camera. The doorway stays behind Shino. "
+                    "The erect 35cm stays at the front of the groin, pointing FORWARD toward Aya. The buttocks stay bare. "
                     "Aya stays on this same linoleum spot, a short step in front of Shino. Mouths stay apart. "
-                    "Last frame: both facing LEFT, Shino still stooping behind Aya, the doorway behind Shino, both full body including feet. "
+                    "Last frame: they face each other, eyes meeting, Shino still stooping, the doorway behind Shino, both full body including feet. "
                     "Motion starts at frame one. Brisk real-time."
                 )
                 camera = (
                     "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including feet. "
-                    "Aya faces LEFT. Shino is already stooping behind Aya, chest and face pointing LEFT, the same heading as Aya. "
+                    "Aya faces Shino. Shino is already stooping at the doorway, facing Aya. Their eyes meet. "
                     "Shino's side faces the camera. The doorway stays behind Shino."
                 )
                 sfx = "Quiet corridor, fluorescent buzz, HVAC"
@@ -4797,6 +4840,58 @@ _WALL_CAM_RE = re.compile(
     r"The shaft person's hips (move onto|stay on) the same centerline directly behind Aya's buttocks\. "
     r"Both chests face LEFT\. Both sides face the camera\. The spines stay parallel\."
 )
+_SALIVA_PART = "A saliva string stretches between the parting lips."
+
+
+def _kiss_parting_string(action: str) -> str:
+    """When a french kiss ends, a saliva string stretches between the parting lips."""
+    low = action.lower()
+    if any(
+        token in low
+        for token in ("saliva string", "drool strand", "wet strand", "string hangs", "string between")
+    ):
+        return action
+    kiss = bool(re.search(r"french kiss|tongues intertwine|mouths meet|mouths join", low))
+    parted = any(
+        token in low
+        for token in ("mouths part", "mouths leave", "mouth leaves", "mouths just parted")
+    )
+    leaves = "steps out of the frame" in low or "fades completely" in low
+    if not kiss and not parted:
+        return action
+    if not parted and not leaves and " pushes " not in low:
+        return action
+    swaps = (
+        ("Then the mouths slowly part.", f"Then the mouths slowly part. {_SALIVA_PART}"),
+        ("Then the mouths part.", f"Then the mouths part. {_SALIVA_PART}"),
+        ("mouths just parted.", f"mouths just parted. {_SALIVA_PART}"),
+        (". Mouths part.", f". Mouths part. {_SALIVA_PART}"),
+        ("Mouths leave.", f"Mouths leave. {_SALIVA_PART}"),
+        (
+            "Then Aya's mouth leaves Gin's mouth.",
+            f"Then Aya's mouth leaves Gin's mouth. {_SALIVA_PART}",
+        ),
+    )
+    for old, new in swaps:
+        if old in action:
+            return action.replace(old, new, 1)
+    if kiss:
+        step = re.search(r"Then [A-Z][a-z]+ steps out of the frame", action)
+        if step:
+            return action[: step.start()] + _SALIVA_PART + " " + action[step.start() :]
+        fade = re.search(r"Then [A-Z][a-z]+ FADES COMPLETELY OUT OF FRAME", action)
+        if fade and re.search(
+            r"french kiss|tongues intertwine|mouths joined",
+            action[max(0, fade.start() - 500) : fade.start()],
+            re.I,
+        ):
+            return action[: fade.start()] + _SALIVA_PART + " " + action[fade.start() :]
+        push = re.search(r"Then [A-Z][a-z]+ PUSHES", action)
+        if push and "french kiss" in action[max(0, push.start() - 220) : push.start()].lower():
+            return action[: push.start()] + _SALIVA_PART + " " + action[push.start() :]
+    return action
+
+
 _SAME_TAKE = (
     " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
     "The camera moves inside this shot. The picture stays sharp."
@@ -5083,6 +5178,7 @@ def apply_review_motion(ep: dict[str, Any]) -> dict[str, Any]:
         action = str(beat.get("action") or "")
         if not action:
             continue
+        action = _kiss_parting_string(action)
         if (
             "between the open thighs" in action
             and "MOVES the hips FORWARD once" in action
@@ -6731,7 +6827,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
         holds.append(FACE_PAIR_HOLD)
         if re.search(r"travels into|before the shaft enters", blob, re.I):
             holds.append(BEFORE_ACT_FULLBODY)
-    elif gin and _KISS_FRAME_RE.search(blob):
+    elif gin and bid != "04-gin-lick" and _KISS_FRAME_RE.search(blob):
         holds.append(KISS_FRAME_HOLD)
     cast = [str(c) for c in (beat.get("cast") or [])]
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
@@ -6763,7 +6859,8 @@ def _hospital_i2v_camera(beat: dict[str, Any], cam: str) -> str:
     if bid == "04-gin-lick":
         return (
             "The camera stays at the opening distance. "
-            "Aya sits and Gin crouches in one continuous move inside this same picture. "
+            "Gin hugs Aya from behind, they turn face to face for the kiss, "
+            "then Aya returns to the sitting pose, all inside this same picture. "
             "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
         )
     if bid.endswith("-jo-set"):
@@ -6904,7 +7001,8 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         )
     if bid == "04-gin-lick":
         lines.append(
-            "Aya sits and Gin crouches inside this same picture. "
+            "The hug, the kiss, and Aya's return to the sitting pose stay inside this same picture. "
+            "The camera distance stays the opening distance. "
             "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
         )
     if bid == "04-gin-spitkiss":
@@ -6927,8 +7025,8 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
         )
     if bid.endswith("-spot") and "shino" in bid:
         lines.append(
-            "Shino's chest, face, and knees point the same way as Aya. "
-            "Shino's side faces the camera. The doorway stays behind Shino."
+            "Aya and Shino face each other. Their eyes meet. "
+            "Shino stays stooping. Shino's side faces the camera. The doorway stays behind Shino."
         )
     if len(lines) == 1:
         return []
