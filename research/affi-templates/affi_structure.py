@@ -348,6 +348,86 @@ def render_markdown(pack: Mapping[str, Any]) -> str:
     return "\n".join(out)
 
 
+_LINE_KEY = re.compile(r"^(c\d+)\s*[:：]?\s*(.*)$")
+
+
+def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
+    """One spoken line per caption. A blank row stays empty. Evidence is not read."""
+    known = list(ids)
+    raw = str(text or "").splitlines()
+    filled = [line.strip() for line in raw if line.strip()]
+    if not filled:
+        return {}
+    keyed = [_LINE_KEY.match(line) for line in filled]
+    if any(match and match.group(1) in known for match in keyed):
+        if not all(match and match.group(1) in known for match in keyed):
+            raise ValueError("セリフは c01 の形か、上から順かのどちらか")
+        out: dict[str, str] = {}
+        for match in keyed:
+            assert match is not None
+            spoken = match.group(2).strip()
+            if spoken:
+                out[match.group(1)] = spoken
+        return out
+    if len(raw) > len(known):
+        raise ValueError(f"セリフが {len(known)} 件より多い")
+    out = {}
+    for index, line in enumerate(raw):
+        spoken = line.strip()
+        if spoken:
+            out[known[index]] = spoken
+    return out
+
+
+def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str:
+    """English picture for one range. Spoken lines and the source cast stay out."""
+    slots = pack["slots"]
+    animals = slots["animals"]
+
+    def named(value: str) -> str:
+        text = str(value or "").strip()
+        if not text or text == SLOT:
+            return "not named"
+        return text
+
+    lines = [
+        "Vertical 9:16. The picture follows the shots below. No title card.",
+        f"Place: {named(slots['place'])}.",
+        (
+            f"Guest: {named(animals['guest'])}. "
+            f"Retort: {named(animals['retort'])}. "
+            f"Polite: {named(animals['polite'])}. "
+            f"Person: {named(slots['person'])}."
+        ),
+        "Adults only. Do not resemble a real person or the source account.",
+        "No one speaks. Mouths do not form words. No writing. No music. No logo.",
+        "",
+    ]
+    origin = float(start_s)
+    stop = float(end_s)
+    for shot in pack["shots"]:
+        begin = float(shot["start_s"])
+        end = float(shot["end_s"])
+        if end <= origin + 1e-6 or begin >= stop - 1e-6:
+            continue
+        left = max(begin, origin) - origin
+        right = min(end, stop) - origin
+        who = ", ".join(ROLE_JA[role] for role in shot["on_screen"]) or "none"
+        lines.append(
+            f"[Shot] {_num(left)} to {_num(right)}. {shot['camera']} {shot['picture']} On screen: {who}."
+        )
+    text = "\n".join(lines) + "\n"
+    for row in pack["captions"]:
+        source = str(row["source_line"])
+        if len(source) >= 4 and source in text:
+            raise ValueError(f"元のセリフがプロンプトに入った: {row['id']}")
+    for shot in pack["shots"]:
+        seen = str(shot.get("source_seen") or "")
+        if seen and seen in text:
+            raise ValueError(f"元の画面がプロンプトに入った: {shot['id']}")
+    return text
+
+
 def prepare(path: Path | None = None) -> dict[str, Any]:
     """Load the pack. Slots stay empty. Nothing is rendered."""
     pack = load(path)

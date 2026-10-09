@@ -9,6 +9,8 @@ import shlex
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT.parents[2]))
@@ -307,7 +309,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert blob.count("look_from_form") == 4
     assert "静止画" in blob
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
-    assert len(code) == 9
+    assert len(code) == 10
     assert "すべてのセルを実行" in blob
     assert "押しません" in blob
     assert "読み込み" in blob
@@ -340,6 +342,14 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     exec(post_src, posted)
     assert posted["仕上げ"] is False
     assert posted["口のコマンド"] == ""
+    sheet_src = next(src for src in code if "#@title この1本" in src)
+    assert "構成のまま1本" in blob
+    assert "おい、そこのデブ" not in sheet_src
+    sheet_ns: dict = {}
+    exec(sheet_src, sheet_ns)
+    assert sheet_ns["人"] == "入力"
+    assert sheet_ns["客の動物"] == "入力"
+    assert sheet_ns["セリフ"] == ""
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
@@ -376,7 +386,16 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "faster-whisper" in blob
     assert "台詞の文字はプロンプトに写しません" not in blob
     loader = next(src for src in code if "#@title 読み込み" in src)
-    for name in ("affi_media.py", "affi_speech.py", "affi_speaker.py", "affi_finish.py", "affi_match.py", "affi_post.py"):
+    for name in (
+        "affi_media.py",
+        "affi_speech.py",
+        "affi_speaker.py",
+        "affi_finish.py",
+        "affi_match.py",
+        "affi_post.py",
+        "affi_structure.py",
+        "reference-accounts/source/repro/junjun_825k.yaml",
+    ):
         assert loader.index(f'"{name}",') < loader.index('"affi_bake.py",')
     assert picked["範囲の切り方"] == bake.SPLIT_CHOICES[0][0]
     assert picked["題字"] == "" and picked["ロゴ"] == "" and picked["曲"] == ""
@@ -941,5 +960,74 @@ def test_repro_weights_are_transformer_ref_and_not_the_fl2v_stack(tmp_path: Path
     assert any(item.endswith("transformer_ref") for item in missing)
     assert all(affi_av.TURBO_FILENAME not in item for item in missing)
     assert all(affi_av.REPAIR_FILENAME not in item for item in missing)
+
+
+def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: Path) -> None:
+    import affi_structure as structure
+
+    empty = bake.run_choice("構成のまま1本", out_dir=tmp_path / "empty")
+    assert "status=blocked" in empty
+    assert "焼かない" in empty
+    stopped, note = bake.commands_to_run(tmp_path / "empty" / "sheet" / "commands.txt", first_only=False)
+    assert stopped == []
+    assert "人は入力のまま" in note
+    prompts = list((tmp_path / "empty" / "sheet" / "prompts").glob("*.txt"))
+    assert prompts
+    blob = "\n".join(path.read_text(encoding="utf-8") for path in prompts)
+    assert "おい、そこのデブ" not in blob
+    assert "<d>" not in blob
+
+    pack = structure.load()
+    lines = "\n".join(f"文{index}" for index, _row in enumerate(pack["captions"], start=1))
+    music = tmp_path / "bed.wav"
+    music.write_bytes(b"wav")
+    shown = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="大人の人",
+        sheet_animals={"guest": "小さい鳥", "retort": "太い動物", "polite": "細い動物"},
+        sheet_place="別の部屋",
+        sheet_lines=lines,
+        bgm=str(music),
+        out_dir=tmp_path / "ready",
+    )
+    assert "status=ready" in shown
+    assert "mp4 は焼いていない" in shown
+    folder = tmp_path / "ready" / "sheet"
+    job = json.loads((folder / "job.json").read_text(encoding="utf-8"))
+    assert job["task"] == "t2va"
+    assert job["captions_on_join"] is False
+    assert job["bgm_on_join"] is False
+    assert job["bgm_file"] == str(music)
+    assert job["posts"] is False
+    covered = 0.0
+    previous = 0.0
+    for clip in job["clips"]:
+        assert clip["start_s"] == pytest.approx(previous, abs=0.001)
+        previous = clip["end_s"]
+        covered += clip["trim_s"]
+        assert bake._accepts(clip["request_s"])
+        assert "文1" not in clip["prompt"]
+        assert "おい、そこのデブ" not in clip["prompt"]
+        assert "小さい鳥" in clip["prompt"]
+        assert "lip-synced" not in clip["prompt"].casefold()
+        assert "<d>" not in clip["prompt"]
+    assert covered == pytest.approx(71.552, abs=0.02)
+    assert previous == pytest.approx(71.552, abs=0.02)
+    captions = json.loads((folder / "captions.json").read_text(encoding="utf-8"))
+    assert len(captions) == 33
+    assert all(row["burn"] is True for row in captions)
+    assert captions[0]["text"] == "文1"
+    assert "おい、そこのデブ" not in json.dumps(captions, ensure_ascii=False)
+    join = (folder / "join.txt").read_text(encoding="utf-8")
+    assert "ass=" not in join
+    assert str(music) not in join
+    assert "story.mp4" in join
+    copied = bake.run_choice(
+        "構成のまま1本",
+        sheet_lines="おい、そこのデブ",
+        out_dir=tmp_path / "copy",
+    )
+    assert copied.startswith("止まった")
+    assert bake.commands_file("構成のまま1本", out_dir=tmp_path / "ready") == folder / "commands.txt"
 
 

@@ -47,6 +47,34 @@ def test_prompt_keeps_the_evidence_lines_out() -> None:
     assert structure.SHEET_PATH.read_text(encoding="utf-8") == sheet
 
 
+def test_parse_lines_keeps_blanks_empty() -> None:
+    ids = ["c01", "c02", "c03"]
+    assert structure.parse_lines("", ids) == {}
+    assert structure.parse_lines("文1\n\n文3", ids) == {"c01": "文1", "c03": "文3"}
+    assert structure.parse_lines("c02 文2\nc01 文1", ids) == {"c01": "文1", "c02": "文2"}
+    with pytest.raises(ValueError, match="どちらか"):
+        structure.parse_lines("c01 文1\n文2", ids)
+
+
+def test_picture_prompt_leaves_the_spoken_line_out() -> None:
+    pack = structure.load()
+    lines = {row["id"]: f"文{index}" for index, row in enumerate(pack["captions"], start=1)}
+    filled = structure.fill(
+        pack,
+        person="大人の人",
+        animals={"guest": "小さい鳥", "retort": "太い動物", "polite": "細い動物"},
+        place="別の部屋",
+        lines=lines,
+    )
+    text = structure.picture_prompt(filled, 0.0, 1.333)
+    assert "文1" not in text
+    assert "おい、そこのデブ" not in text
+    assert "小さい鳥" in text
+    assert "別の部屋" in text
+    assert "No one speaks." in text
+    assert filled["shots"][0]["source_seen"] not in text
+
+
 def test_fill_changes_only_the_four_slots() -> None:
     pack = structure.load()
     before = [(shot["id"], shot["start_s"], shot["end_s"], shot["camera"]) for shot in pack["shots"]]
