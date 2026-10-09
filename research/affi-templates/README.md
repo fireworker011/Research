@@ -97,6 +97,12 @@ python3 research/affi-templates/affi_genre_templates.py \
 
 設計書は `reference-accounts/source/`。機械が読む型は `reference-accounts/templates/`。元の台詞とキャラはコピーしない。仕様の「推定」「不明」はそのまま。
 
+動画 `7692378853490167046` のショット順は `reference-accounts/source/repro/junjun_825k.yaml`。尺 71.552 秒、カット 19。固定するのは順、カメラ、秒、役、字幕の形。欄は人、動物、セリフ、場所。証拠の文はプロンプトに入れない。45秒・3区切りの型はジャンルの要約のまま。
+
+```bash
+python3 research/affi-templates/affi_structure.py
+```
+
 制作シート:
 
 ```bash
