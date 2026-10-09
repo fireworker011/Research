@@ -307,7 +307,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert blob.count("look_from_form") == 4
     assert "静止画" in blob
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
-    assert len(code) == 8
+    assert len(code) == 9
     assert "すべてのセルを実行" in blob
     assert "押しません" in blob
     assert "読み込み" in blob
@@ -330,6 +330,16 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert quiet["最初の1本だけ"] is False
     assert "残っている範囲を続けて焼いて" in bake_src
     assert quiet["重みが無いとき落とす"] is False
+    post_src = next(src for src in code if "#@title 仕上げ" in src)
+    assert post_src.index("if not 仕上げ") < post_src.index("pip")
+    assert post_src.index("if not 仕上げ") < post_src.index("google.colab")
+    assert "edge-tts" in post_src and "opencv-python-headless" in post_src
+    assert 'out = job_dir / "post.mp4"' in post_src
+    assert "上書きしません" in blob
+    posted: dict = {}
+    exec(post_src, posted)
+    assert posted["仕上げ"] is False
+    assert posted["口のコマンド"] == ""
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
@@ -366,7 +376,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "faster-whisper" in blob
     assert "台詞の文字はプロンプトに写しません" not in blob
     loader = next(src for src in code if "#@title 読み込み" in src)
-    for name in ("affi_media.py", "affi_speech.py", "affi_speaker.py", "affi_finish.py", "affi_match.py"):
+    for name in ("affi_media.py", "affi_speech.py", "affi_speaker.py", "affi_finish.py", "affi_match.py", "affi_post.py"):
         assert loader.index(f'"{name}",') < loader.index('"affi_bake.py",')
     assert picked["範囲の切り方"] == bake.SPLIT_CHOICES[0][0]
     assert picked["題字"] == "" and picked["ロゴ"] == "" and picked["曲"] == ""

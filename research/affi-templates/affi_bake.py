@@ -2759,6 +2759,87 @@ else:
 """
 
 
+def post_cell() -> str:
+    """Voice, mouth, captions, and an own music file after the picture exists. Off by default."""
+    return """#@title 仕上げ { display-mode: "form" }
+#@markdown 絵ができたあと、仕上げにチェックを入れてこのセルを押す。H3 は呼ばない。投稿しない。
+#@markdown captions.json の空でないせりふだけを声にする。入力、台詞は入力、burn が false の行は読まない。
+#@markdown 顔が見つかった区間だけ口を開ける。顔が無い区間は絵のまま、声だけ載せる。
+#@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。口のコマンドが空なら、声の大きさで口を開ける。書くときは {video} {audio} {out}。
+仕上げ = False #@param {type:"boolean"}
+口のコマンド = "" #@param {type:"string"}
+
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+if not 仕上げ:
+    print("仕上げにチェックを入れて、このセルをもう一度押してください。今は声も字幕も足しません。")
+else:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "opencv-python-headless"])
+    try:
+        import affi_bake
+        import affi_finish
+        import affi_post
+    except ImportError:
+        print("先に「読み込み」を押してください。")
+    else:
+        task = globals().get("何をする")
+        on_colab = Path("/content").is_dir()
+        commands = None
+        if task:
+            commands = affi_bake.commands_file(
+                task,
+                handle=globals().get("HANDLE"),
+                mode=globals().get("MODE"),
+                out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
+            )
+        if commands is None or not Path(commands).is_file():
+            print("先に「選ぶ」と「実行」を押してください。")
+        else:
+            job_dir = Path(commands).parent
+            video = affi_post.picture_in(job_dir)
+            rows_path = job_dir / "captions.json"
+            if video is None:
+                print("つないだ動画が無い。焼くが終わってから、もう一度押してください。")
+            elif not rows_path.is_file():
+                print("せりふのファイルが無い。")
+            else:
+                rows = json.loads(rows_path.read_text(encoding="utf-8"))
+                bgm = str(globals().get("曲") or "").strip()
+                if not bgm and (job_dir / "job.json").is_file():
+                    bgm = str(json.loads((job_dir / "job.json").read_text(encoding="utf-8")).get("bgm_file") or "").strip()
+                if 口のコマンド.strip():
+                    os.environ["LIPSYNC_CMD"] = 口のコマンド.strip()
+                else:
+                    os.environ.pop("LIPSYNC_CMD", None)
+                if on_colab and not affi_finish.FONT_DIR.is_dir():
+                    subprocess.check_call(["apt-get", "update", "-qq"])
+                    subprocess.check_call(["apt-get", "install", "-y", "-qq", affi_finish.FONT_PACKAGE])
+                out = job_dir / "post.mp4"
+                result = affi_post.apply(video, out, rows=rows, bgm=bgm or None)
+                if result["status"] != "ready":
+                    for reason in result["blocked"]:
+                        print(reason)
+                else:
+                    print("書いた", result["out"])
+                    print(result["note"])
+                    if on_colab:
+                        from google.colab import drive
+
+                        drive.mount("/content/drive")
+                        try:
+                            saved = affi_bake.publish_job_dir(job_dir)
+                        except Exception as exc:
+                            print("マイドライブへのコピーに失敗した", exc)
+                        else:
+                            print("マイドライブにコピーした", saved)
+                    print("H3 は呼んでいない。投稿していない。")
+"""
+
+
 def _intro() -> str:
     picks = {
         "the.care.logic": "見た目を変えるときは材料・場所・口調。",
@@ -2781,10 +2862,11 @@ def _intro() -> str:
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
         "4. **焼く**（ready のあと。焼くにチェックを入れて押す。残りの範囲を続けて焼いて、そろったら1本につなぐ。mp4 はマイドライブの affi-bake に残る）",
+        "5. **仕上げ**（絵ができたあと。チェックを入れると、空でないせりふを声にして、顔があれば口を開け、字幕を焼き、自分の曲を重ねる。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
-        "上のメニューの「すべてのセルを実行」は押しません。焼くはオフのままなので、全部実行しても動画は始まりません。",
+        "上のメニューの「すべてのセルを実行」は押しません。焼くと仕上げはオフのままなので、全部実行しても動画も声も始まりません。",
         "",
         "## 選び方",
         "",
@@ -2851,6 +2933,7 @@ def _loader_cell() -> str:
         "affi_speaker.py",
         "affi_finish.py",
         "affi_match.py",
+        "affi_post.py",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -3013,12 +3096,37 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "投稿しません。",
                     "",
+                    "絵ができたあとの声、口、字幕、曲は、次の「仕上げ」です。",
+                    "",
                 ]
             ),
             "bake-note",
         )
     )
     cells.append(_nb_cell("code", bake_cell(), "bake", form=True))
+    cells.append(
+        _nb_cell(
+            "markdown",
+            "\n".join(
+                [
+                    "# 仕上げ",
+                    "",
+                    "絵ができたあとに押します。H3 は呼びません。投稿しません。",
+                    "",
+                    "チェックを入れると、`captions.json` の空でないせりふを声にします。`入力` と、burn が false の行は読みません。",
+                    "",
+                    "顔が見つかった区間だけ、声の大きさで口を開けます。顔が無い区間は絵のまま、声だけ載せます。",
+                    "",
+                    "字幕は白ゴシック、画面の下から約30%です。曲は「選ぶ」の曲か、ジョブに書いたファイルです。",
+                    "",
+                    "書いたファイルは `post.mp4` です。`story.mp4` と `source.mp4` は上書きしません。",
+                    "",
+                ]
+            ),
+            "post-note",
+        )
+    )
+    cells.append(_nb_cell("code", post_cell(), "post", form=True))
     cells.append(
         _nb_cell(
             "markdown",

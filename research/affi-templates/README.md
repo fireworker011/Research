@@ -103,6 +103,8 @@ python3 research/affi-templates/affi_genre_templates.py \
 python3 research/affi-templates/affi_structure.py
 ```
 
+絵ができたあと、声・口・字幕・曲は `affi_post.py` が足す。H3 は呼ばない。空でないせりふだけを edge-tts（ja-JP-KeitaNeural と ja-JP-NanamiNeural）で読む。`入力` と burn が false の行は読まない。顔の枠がある区間だけ、声の大きさで口を開ける。顔が無い区間は絵のまま、声だけ載せる。字幕は下から約30%。曲ファイルがあれば重ねる。ノートの「仕上げ」はオフが初期値で、書いたファイルは `post.mp4`。
+
 制作シート:
 
 ```bash
