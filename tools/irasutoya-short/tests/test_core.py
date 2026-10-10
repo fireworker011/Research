@@ -33,24 +33,34 @@ BRIEF = {
 class ScriptTests(unittest.TestCase):
     def test_shape(self) -> None:
         script = generate_script(BRIEF)
-        self.assertGreaterEqual(len(script["scenes"]), 12)
-        self.assertLessEqual(len(script["scenes"]), 14)
+        self.assertEqual(len(script["scenes"]), 6)
         roles = [s["role"] for s in script["scenes"]]
-        self.assertLess(roles.index("hook"), roles.index("punch"))
-        self.assertLess(roles.index("punch"), roles.index("close"))
+        self.assertEqual(roles, ["hook", "develop", "develop", "develop", "punch", "credit"])
         self.assertLessEqual(len(script["asset_ids"]), 10)
         hook = script["scenes"][0]
-        self.assertIn("\n", hook["telop"])
+        self.assertEqual(hook["text"], "お前の方が早いだろ")
+        self.assertEqual(hook["speaker"], "rival")
+        card = script["scenes"][2]
+        self.assertNotIn("お前の方が早いだろ", card["text"])
         punch = " ".join(s["text"] for s in script["scenes"] if s["role"] == "punch")
         self.assertIn("全体送信", punch)
-        close = script["scenes"][-2]
-        self.assertIn("あなたなら", close["text"])
+        spoken = "\n".join(s["text"] for s in script["scenes"])
+        self.assertNotIn("あなたなら", spoken)
+        self.assertEqual(script["closing"], "あなたならどうする？")
         self.assertEqual(script["scenes"][-1]["role"], "credit")
         self.assertIn("VOICEVOX:四国めたん", script["scenes"][-1]["telop"])
+        hints = [s["duration_hint"] for s in script["scenes"][:5]]
+        self.assertEqual(hints, [2.37, 5.53, 0.97, 5.53, 11.05])
 
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
         bad["punchline"] = ""
+        with self.assertRaises(ValueError):
+            generate_script(bad)
+
+    def test_three_bullets_required(self) -> None:
+        bad = dict(BRIEF)
+        bad["bullets"] = BRIEF["bullets"][:2]
         with self.assertRaises(ValueError):
             generate_script(bad)
 

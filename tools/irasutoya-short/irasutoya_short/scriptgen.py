@@ -1,4 +1,4 @@
-"""フック→展開→オチ→締め。記事の応用①。"""
+"""実測した短い回の秒数（フック→状況→一文→対立→オチ）で台本を作る。"""
 
 from __future__ import annotations
 
@@ -29,76 +29,52 @@ def _bullet(bullets: list[str], index: int, default: str) -> str:
     return default
 
 
+def _from(bullets: list[str], start: int) -> str:
+    parts = [_bullet(bullets, i, "") for i in range(start, len(bullets))]
+    parts = [part for part in parts if part]
+    if not parts:
+        raise ValueError("対立の箇条書きが空です。")
+    return "。".join(parts)
+
+
+# @junjun_ranran 7655625158299897108（25.45秒）のショット秒。research/script-kata 参照。
+BEAT_SECONDS = (2.37, 5.53, 0.97, 5.53, 11.05)
+
+
 def generate_script(brief: dict) -> dict:
-    """箇条書きとオチから 14 シーンの台本を作る。"""
+    """箇条書きとオチから、実測の5ビート＋クレジットの台本を作る。"""
     punchline = str(brief.get("punchline") or "").strip()
     if not punchline:
         raise ValueError("オチ（punchline）が空です。締めがフワッとするので必須です。")
     bullets = [str(b).strip() for b in brief.get("bullets") or [] if str(b).strip()]
-    if not bullets:
-        raise ValueError("ネタの箇条書き（bullets）が空です。")
+    if len(bullets) < 3:
+        raise ValueError("箇条書きは状況・一文カード・対立の3つが要ります。")
     series = str(brief.get("series_character") or "仕事押し付け君").strip()
-    hook = str(brief.get("hook") or brief.get("title") or f"{series}を撃退した話").strip()
-    closing = str(brief.get("closing") or "あなたならどうする？").strip()
-    punch_parts = _sentences(punchline)
-    punch_action = punch_parts[0]
-    punch_result = punch_parts[-1] if len(punch_parts) > 1 else punchline
-    blob = bullets + [punchline]
-    rival_line = _quote(blob, 0, "お前の方が早いだろ")
-    panic_line = _quote(blob, 1, "今送るから")
+    hook = str(brief.get("hook") or brief.get("title") or f"{series}の話").strip()
+    closing = str(brief.get("closing") or "").strip()
+    blob = bullets + [punchline, hook]
+    rival_line = _quote(blob, 0, hook)
 
     scenes = [
         _scene(
-            1, "hook", "narrator", hook, "office",
-            ["rival_smug", "hero_trouble"], "zoom", "none", 2.2, label=series,
+            1, "hook", "rival", rival_line, "office",
+            ["rival_smug"], "zoom", "none", BEAT_SECONDS[0], label=series,
         ),
         _scene(
-            2, "develop", "narrator", _bullet(bullets, 0, "金曜の17時、机に書類が置かれた"),
-            "office",             ["hero_trouble"], "none", "paper", 2.4, code_props=["papers"],
+            2, "develop", "narrator", _bullet(bullets, 0, bullets[0]),
+            "office", ["hero_trouble"], "none", "paper", BEAT_SECONDS[1], code_props=["papers"],
         ),
         _scene(
-            3, "develop", "rival", rival_line, "office",
-            ["rival_smug"], "none", "none", 2.2, label=series,
+            3, "develop", "narrator", _bullet(bullets, 1, bullets[1]),
+            "lines", [], "none", "whoosh", BEAT_SECONDS[2],
         ),
         _scene(
-            4, "develop", "narrator", _bullet(bullets, 1, "そう言い残して定時で帰っていった"),
-            "office", ["rival_smug"], "none", "whoosh", 2.2, label=series,
+            4, "develop", "hero", _from(bullets, 2),
+            "office", ["hero_angry"], "shake", "none", BEAT_SECONDS[3], emotion="angry",
         ),
         _scene(
-            5, "develop", "hero", "俺の仕事じゃねえだろ", "office",
-            ["hero_angry"], "shake", "none", 2.0, emotion="angry",
-        ),
-        _scene(
-            6, "develop", "narrator", _bullet(bullets, 2, "誰もいない夜、終電まで残った"),
-            "office_night", ["hero_tired"], "none", "none", 2.5,
-        ),
-        _scene(
-            7, "develop", "narrator", _bullet(bullets, 3, "月曜の朝、何事もなかった顔だった"),
-            "office",             ["rival_smug"], "none", "none", 2.2, label=series, props=["mug"],
-        ),
-        _scene(
-            8, "develop", "hero", "まだ気づいてないのか", "office",
-            ["hero_angry"], "lines", "none", 2.0, emotion="angry",
-        ),
-        _scene(
-            9, "punch", "narrator", punch_action, "chat",
-            ["hero_smile"], "zoom", "notify", 2.4,
-        ),
-        _scene(
-            10, "punch", "boss", "どういうことだ", "office",
-            ["boss_angry"], "shake", "shock", 2.0,
-        ),
-        _scene(
-            11, "punch", "rival", panic_line, "office",
-            ["rival_pale"], "none", "none", 2.2, label=series,
-        ),
-        _scene(
-            12, "punch", "narrator", punch_result, "office",
-            ["rival_bow"], "zoom", "coin", 2.4, label=series,
-        ),
-        _scene(
-            13, "close", "narrator", closing, "lines",
-            ["hero_smile"], "zoom", "none", 2.2,
+            5, "punch", "narrator", punchline, "office",
+            ["rival_bow"], "zoom", "coin", BEAT_SECONDS[4], label=series,
         ),
         _credit_scene(series),
     ]
@@ -165,7 +141,7 @@ def _credit_scene(series: str) -> dict:
         "VOICEVOX:剣崎雌雄",
     ]
     return {
-        "id": 14,
+        "id": 6,
         "role": "credit",
         "speaker": "narrator",
         "style_id": VOICES["narrator"]["style_id"],
@@ -210,17 +186,18 @@ def _validate(scenes: list[dict], punchline: str, closing: str) -> None:
     if not (MIN_SCENES <= len(scenes) <= MAX_SCENES):
         raise ValueError(f"シーン数は{MIN_SCENES}〜{MAX_SCENES}です。今は{len(scenes)}です。")
     roles = [s["role"] for s in scenes]
-    if "hook" not in roles or "punch" not in roles or "close" not in roles:
-        raise ValueError("フック、オチ、締めが揃っていません。")
-    if roles.index("hook") > roles.index("punch") or roles.index("punch") > roles.index("close"):
-        raise ValueError("並びはフック→展開→オチ→締めです。")
+    if "hook" not in roles or "punch" not in roles or roles[-1] != "credit":
+        raise ValueError("フック、オチ、末尾クレジットが揃っていません。")
+    if roles.index("hook") > roles.index("punch"):
+        raise ValueError("並びはフックのあとがオチです。")
     punch_text = " ".join(s["text"] + s["telop"] for s in scenes if s["role"] == "punch")
     token = _sentences(punchline)[0][:8]
     if token and token not in punch_text:
         raise ValueError("オチの文言がオチシーンに入っていません。")
-    close_text = " ".join(s["text"] + s["telop"] for s in scenes if s["role"] == "close")
-    if closing[:6] not in close_text:
-        raise ValueError("締めの一言が入っていません。")
+    if closing:
+        spoken_blob = "\n".join(s["text"] for s in scenes if s["role"] != "credit")
+        if closing in spoken_blob:
+            raise ValueError("締めの問いかけは読み上げに入れません。短い回の実測に、動画内CTAがありません。")
     assets = _asset_ids(scenes)
     if len(assets) > 20:
         raise ValueError("いらすとや素材が20点を超えます。背景はコードで描いてください。")

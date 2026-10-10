@@ -1,0 +1,142 @@
+{
+  "title": "奢らせ同僚に会計を置いて帰った話",
+  "series_character": "奢らせ同僚",
+  "punchline": "翌朝、頭を下げて全額を振り込んできた",
+  "closing": "",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "会計はお前が出して",
+      "telop": "会計はお前が出して",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "奢らせ同僚"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "飲み会の最後、10人分の伝票が俺の前に置かれた",
+      "telop": "飲み会の最後、10人分の\n伝票が俺の前に置かれた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "終電だ",
+      "telop": "終電だ",
+      "bg": "lines",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "一言残して店を出た",
+      "telop": "一言残して店を出た",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "翌朝、頭を下げて全額を振り込んできた",
+      "telop": "翌朝、頭を下げて全額を\n振り込んできた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "奢らせ同僚"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "奢らせ同僚"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "rival_bow"
+  ]
+}
