@@ -106,6 +106,21 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert "No one speaks." in text
     assert filled["shots"][0]["camera"]
     assert structure.load()["duration_s"] == 71.552
+    url = (
+        "https://github.com/fireworker011/Research/blob/"
+        "cursor/affi-template-bake-44d6/research/affi-templates/stories/pet_sheet.yaml"
+    )
+    assert structure.pack_file(url) == path
+    assert structure.pack_file("pet_sheet.yaml") == path
+    assert structure.pack_file("") is None
+    with pytest.raises(ValueError, match="構成ファイルが無い"):
+        structure.pack_file("stories/missing.yaml")
+    from_path = structure.read_lines("stories/pet_sheet_lines.txt")
+    assert from_path.startswith("c01")
+    assert structure.parse_lines(from_path, [row["id"] for row in pack["captions"]]) == spoken
+    assert structure.read_lines("c01 あっつ") == "c01 あっつ"
+    with pytest.raises(ValueError, match="セリフファイルが無い"):
+        structure.read_lines("stories/missing_lines.txt")
 
 
 def test_fill_changes_only_the_four_slots() -> None:

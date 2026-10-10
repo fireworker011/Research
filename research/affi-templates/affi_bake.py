@@ -520,6 +520,174 @@ def measure_repro_clip(job_dir: Path, out_path: Path) -> str:
 DRIVE_BAKE = Path("/content/drive/MyDrive/affi-bake")
 
 
+def gpu_stop_reason(
+    *,
+    cuda: bool,
+    torch_gb: float | None,
+    smi_gb: float | None,
+    name: str,
+    torch_missing: bool = False,
+) -> str | None:
+    """Japanese stop before a bake. None means the measured card can continue.
+
+    A near-zero torch reading is ignored. nvidia-smi at 24GB or more wins when
+    torch reports less, which is how an L4 (and a cold G4) used to look too small.
+    """
+    if torch_missing:
+        return "止まった: torch が無い。GPU のランタイムで、読み込みからやり直してください。"
+    chosen = torch_gb if torch_gb is not None and torch_gb >= 1.0 else None
+    if smi_gb is not None and smi_gb >= 24.0 and (chosen is None or chosen < 24.0):
+        chosen = smi_gb
+    elif chosen is None and smi_gb is not None and smi_gb >= 1.0:
+        chosen = smi_gb
+    label = name.strip() or "不明"
+    detail = f"GPU={label} torch={_vram_text(torch_gb)} nvidia-smi={_vram_text(smi_gb)}"
+    if not cuda and (smi_gb is None or smi_gb < 1.0):
+        return (
+            "止まった: GPU がオフです。ランタイムを GPU にして、読み込みからやり直してください。"
+            "途中で切り替えると、ここまでのファイルが消えます。"
+            f"（{detail}）"
+        )
+    if not cuda:
+        return (
+            f"止まった: torch がこの GPU を見ていない。{detail}。"
+            "G4 のままなら、この行をコピーして送ってください。"
+        )
+    if chosen is None or chosen < 24.0:
+        return (
+            f"止まった: VRAM が 24GB 未満です。{detail}。"
+            "G4（96GB）に変えて、読み込みからやり直してください。"
+            "L4 は 24GB でも torch が 22GB 前後と出すと、ここで止まります。"
+        )
+    return None
+
+
+def vram_override_gb(*, torch_gb: float | None, smi_gb: float | None) -> float | None:
+    """Pass nvidia-smi to H3 only when torch under-reports a 24GB-or-larger card."""
+    if smi_gb is not None and smi_gb >= 24.0 and (torch_gb is None or torch_gb < 24.0):
+        return float(smi_gb)
+    return None
+
+
+def _vram_text(value: float | None) -> str:
+    if value is None:
+        return "不明"
+    return f"{value:.1f}GB"
+
+
+def host_ram_gb() -> float | None:
+    """MemTotal in GiB. None when /proc/meminfo cannot be read."""
+    path = Path("/proc/meminfo")
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        if line.startswith("MemTotal:"):
+            parts = line.split()
+            if len(parts) >= 2:
+                return float(parts[1]) / 1024 / 1024
+    return None
+
+
+def host_ram_stop_reason(gb: float | None) -> str | None:
+    """The runner refuses offload below about 70GB. Say so before a 144GB download."""
+    if gb is None or gb >= 70.0:
+        return None
+    return (
+        f"止まった: ホストRAMが {gb:.0f}GB。H3 の offload は約 70GB 以上要る。"
+        "G4 は 176GB 前後。L4 の標準メモリでは焼かない。"
+        "ランタイムを G4 にして、読み込みからやり直してください。"
+    )
+
+
+def read_smi_vram() -> tuple[float | None, str]:
+    """nvidia-smi total memory in GiB, and the GPU name. Both empty when it cannot run."""
+    try:
+        memo = subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+        named = subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return None, ""
+    line = memo.strip().splitlines()
+    if not line or not line[0].strip():
+        return None, ""
+    name = named.strip().splitlines()
+    return float(line[0].split()[0]) / 1024, (name[0].strip() if name else "")
+
+
+def _git(argv: list[str], what: str) -> None:
+    try:
+        subprocess.run(["git", *argv], check=True, text=True, capture_output=True)
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or exc.stdout or "").strip().splitlines()
+        tail = detail[-1] if detail else f"終了コード {exc.returncode}"
+        raise ValueError(f"{what}に失敗した。{tail}") from exc
+    except OSError as exc:
+        raise ValueError(f"git が無い。{exc}") from exc
+
+
+def sync_repo(root: str | Path, branch: str, repo_url: str) -> None:
+    """Clone the bake branch, or move an existing checkout onto its tip.
+
+    ``pull --ff-only`` after ``fetch --depth 1`` fails once the branch moves,
+    because the new tip does not contain the previous shallow commit.
+    """
+    folder = Path(root)
+    script = folder / "h3-runner" / "run_h3.py"
+    if script.is_file():
+        _git(["-C", str(folder), "fetch", "--depth", "1", "origin", branch], "ブランチの取得")
+        _git(["-C", str(folder), "checkout", "--force", "FETCH_HEAD"], "ブランチの切り替え")
+    else:
+        if folder.exists():
+            raise ValueError(f"{folder} があるが h3-runner が無い。このフォルダを消して、焼くを押し直す。")
+        _git(
+            ["clone", "--depth", "1", "--branch", branch, repo_url, str(folder)],
+            "リポジトリの取得",
+        )
+    if not script.is_file():
+        raise ValueError(f"取ったあとも h3-runner が無い。ブランチ {branch} を確認する。")
+
+
+def run_step(argv: list[str], what: str) -> None:
+    """Run apt or pip. Failure is a Japanese ValueError, not an English traceback."""
+    try:
+        subprocess.check_call(argv)
+    except subprocess.CalledProcessError as exc:
+        raise ValueError(f"{what}に失敗した。終了コード {exc.returncode}。") from exc
+    except OSError as exc:
+        raise ValueError(f"{what}を起動できなかった。{exc}") from exc
+
+
+def exit_reason(code: int) -> str:
+    """One Japanese line for a bake command that did not write an mp4."""
+    if code in (137, -9):
+        return f"止まった: 終了コード {code}。メモリ不足でプロセスが止まった。mp4 は出来ていません。"
+    if code < 0:
+        return f"止まった: 終了コード {code}。プロセスが途中で殺された。mp4 は出来ていません。"
+    return (
+        f"止まった: 終了コード {code}。mp4 は出来ていません。"
+        "上の行と、あれば clips の .error.txt が理由です。"
+    )
+
+
+def with_vram(line: str, override_gb: float | None) -> list[str]:
+    """The written command. Add nvidia-smi's size only when torch under-reported."""
+    argv = shlex.split(line)
+    if override_gb is not None and "--vram-gb" not in argv:
+        argv.extend(["--vram-gb", f"{float(override_gb):.1f}"])
+    return argv
+
+
 def run_logged(argv: list[str], cwd: Path) -> int:
     """Run a command and print its output. Colab hides a child process's own output."""
     proc = subprocess.Popen(
@@ -1521,7 +1689,7 @@ def plan_sheet(
 ) -> dict[str, Any]:
     """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
     pack = structure.load(structure.pack_file(pack_path))
-    spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
+    spoken = structure.parse_lines(structure.read_lines(lines_text), [row["id"] for row in pack["captions"]])
     filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
     reasons = structure.blocked(filled)
     image_text = (image or "").strip()
@@ -2795,33 +2963,50 @@ else:
             import torch
         except ImportError:
             torch = None
-        if torch is None or not torch.cuda.is_available():
-            print("GPU がオフです。ランタイムを GPU にして、読み込みからやり直してください。途中で切り替えると、ここまでのファイルが消えます。")
-        else:
+        torch_gb = None
+        gpu_name = ""
+        cuda = torch is not None and torch.cuda.is_available()
+        if cuda:
             props = torch.cuda.get_device_properties(0)
-            vram = props.total_memory / 1024 ** 3
-            print(f"GPU: {props.name}  VRAM: {vram:.1f} GB")
-            if vram < 24:
-                print("VRAM が 24GB 未満です。G4 に変えて、読み込みからやり直してください。")
-            else:
+            gpu_name = str(props.name)
+            torch_gb = props.total_memory / 1024 ** 3
+        smi_gb, smi_name = affi_bake.read_smi_vram()
+        if not gpu_name:
+            gpu_name = smi_name
+        print(
+            "GPU:",
+            gpu_name or "不明",
+            "torch VRAM:",
+            affi_bake._vram_text(torch_gb),
+            "nvidia-smi:",
+            affi_bake._vram_text(smi_gb),
+        )
+        reason = affi_bake.gpu_stop_reason(
+            cuda=cuda,
+            torch_gb=torch_gb,
+            smi_gb=smi_gb,
+            name=gpu_name,
+            torch_missing=torch is None,
+        )
+        ram = None if reason else affi_bake.host_ram_stop_reason(affi_bake.host_ram_gb())
+        if reason or ram:
+            print(reason or ram)
+        else:
+            vram_override = affi_bake.vram_override_gb(torch_gb=torch_gb, smi_gb=smi_gb)
+            if vram_override is not None:
+                print(f"torch の VRAM を使わない。nvidia-smi の {vram_override:.1f} GB で焼く。")
+            try:
                 on_colab = Path("/content").is_dir()
                 if on_colab:
                     from google.colab import drive, userdata
 
-                    drive.mount("/content/drive")
+                    try:
+                        drive.mount("/content/drive")
+                    except Exception as exc:
+                        raise ValueError(f"マイドライブをマウントできなかった。{exc}") from exc
                     print("今マウントしたアカウントのマイドライブに保存します。")
                     root = Path("/content/Research")
-                    branch = "cursor/affi-template-bake-44d6"
-                    repo = "https://github.com/fireworker011/Research.git"
-                    script = root / "h3-runner" / "run_h3.py"
-                    if not script.is_file():
-                        if root.exists():
-                            raise SystemExit(f"{root} があるが {script} が無い。このフォルダを消してやり直す。")
-                        subprocess.check_call(["git", "clone", "--depth", "1", "--branch", branch, repo, str(root)])
-                    else:
-                        subprocess.check_call(["git", "-C", str(root), "fetch", "--depth", "1", "origin", branch])
-                        subprocess.check_call(["git", "-C", str(root), "checkout", branch])
-                        subprocess.check_call(["git", "-C", str(root), "pull", "--ff-only", "origin", branch])
+                    affi_bake.sync_repo(root, "cursor/affi-template-bake-44d6", "https://github.com/fireworker011/Research.git")
                     sys.path.insert(0, str(root / "h3-runner"))
                     sys.path.insert(0, str(root / "research" / "affi-templates"))
                     import importlib
@@ -2831,13 +3016,13 @@ else:
                     userdata = None
                     found = affi_bake._runner_root()
                     if found is None:
-                        raise SystemExit("h3-runner が無い。Colab の GPU でこのセルを押してください。")
+                        raise ValueError("h3-runner が無い。Colab の GPU でこのセルを押してください。")
                     root = found
                 cache = Path("/content/drive/MyDrive/h3-weights") if on_colab else Path("hf-cache")
                 os.environ["H3_HF_CACHE"] = str(cache)
                 if shutil.which("ffmpeg") is None:
-                    subprocess.check_call(["apt-get", "update", "-qq"])
-                    subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])
+                    affi_bake.run_step(["apt-get", "update", "-qq"], "ffmpeg の更新")
+                    affi_bake.run_step(["apt-get", "install", "-y", "-qq", "ffmpeg"], "ffmpeg のインストール")
                 need = False
                 try:
                     import av
@@ -2859,13 +3044,13 @@ else:
                         "imageio-ffmpeg>=0.5.0",
                         "soundfile>=0.12.0",
                     ]
-                    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "--upgrade-strategy", "only-if-needed", *pkgs])
-                    subprocess.check_call([sys.executable, "-m", "pip", "install", "-U", "torchao==0.18.0"])
+                    affi_bake.run_step([sys.executable, "-m", "pip", "install", "-q", "--upgrade-strategy", "only-if-needed", *pkgs], "パッケージのインストール")
+                    affi_bake.run_step([sys.executable, "-m", "pip", "install", "-U", "torchao==0.18.0"], "torchao のインストール")
                     from torchao.quantization import FqnToConfig
                 print("パッケージは揃っています", "ffmpeg", shutil.which("ffmpeg"))
                 missing = affi_bake.missing_weight_files(cache, task)
                 if missing and not 重みが無いとき落とす:
-                    print("重みが無いので焼きません。落とすときは「重みが無いとき落とす」を入れて、もう一度押してください。")
+                    print("止まった: 重みが無いので焼きません。mp4 は出来ていません。「重みが無いとき落とす」を入れて、もう一度押してください。プレビューは 144.1GB。")
                     for item in missing:
                         print(item)
                 else:
@@ -2884,6 +3069,8 @@ else:
                                 print("マイドライブから、同じ内容で焼いてある範囲を戻した", len(back), "本")
                         lines, note = affi_bake.commands_to_run(path, first_only=bool(最初の1本だけ), skip_done=True)
                         print(note)
+                        if lines:
+                            print("1本の範囲は数十分かかることがある。行が増えている間は待つ。止まったら、このセルの最後の「止まった:」の行をコピーする。")
                         if lines and missing:
                             token = str(globals().get("HF_TOKEN") or "").strip()
                             if not token and userdata is not None:
@@ -2896,10 +3083,10 @@ else:
                                 os.environ["HUGGING_FACE_HUB_TOKEN"] = token
                                 print("HF_TOKEN を読みました（値は表示しません）")
                             prep = affi_bake.prepare_command(lines[0], cache)
-                            code = affi_bake.run_logged(shlex.split(prep), root)
+                            code = affi_bake.run_logged(affi_bake.with_vram(prep, vram_override), root)
                             print(f"重みの終了コード {code}")
                             if code != 0:
-                                print("失敗。重みは揃っていません。mp4 は出来ていません。")
+                                print(f"止まった: 重みの終了コード {code}。重みは揃っていません。mp4 は出来ていません。上の行が理由です。")
                                 lines = []
                             else:
                                 sys.path.insert(0, str(root / "h3-runner"))
@@ -2912,11 +3099,11 @@ else:
                         finished = True
                         for line in lines:
                             print(line)
-                            code = affi_bake.run_logged(shlex.split(line), root)
+                            code = affi_bake.run_logged(affi_bake.with_vram(line, vram_override), root)
                             print(f"終了コード {code}")
                             local_out = affi_bake._out_of(line)
                             if code != 0:
-                                print("失敗。mp4 は出来ていません。")
+                                print(affi_bake.exit_reason(code))
                                 if local_out is not None:
                                     err = local_out.with_suffix(".error.txt")
                                     if err.is_file():
@@ -2950,14 +3137,15 @@ else:
                                     print("マイドライブにコピーした", saved)
                         if finished and affi_bake.all_clips_made(path.parent):
                             if on_colab and affi_bake.needs_caption_font(path.parent):
-                                subprocess.check_call(["apt-get", "update", "-qq"])
-                                subprocess.check_call(["apt-get", "install", "-y", "-qq", affi_bake.affi_finish.FONT_PACKAGE])
+                                affi_bake.run_step(["apt-get", "update", "-qq"], "フォントの更新")
+                                affi_bake.run_step(["apt-get", "install", "-y", "-qq", affi_bake.affi_finish.FONT_PACKAGE], "フォントのインストール")
                             joined = True
                             for join in affi_bake.finish_lines(path.parent):
                                 print(join)
                                 code = affi_bake.run_logged(shlex.split(join), root)
                                 print(f"つなぎの終了コード {code}")
                                 if code != 0:
+                                    print(affi_bake.exit_reason(code))
                                     joined = False
                                     break
                             if joined and on_colab:
@@ -2974,6 +3162,10 @@ else:
                             print("途中で止まった。焼いてある範囲は飛ばして、もう一度押すと続きから焼く。")
                         if made:
                             print("投稿していない。")
+            except ValueError as exc:
+                print("止まった:", exc)
+            except Exception as exc:
+                print(f"止まった: {type(exc).__name__}: {exc}")
 """
 
 
@@ -2986,7 +3178,7 @@ def sheet_form_cell() -> str:
     body = "\n".join(guide)
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本を選んだときだけ使う。人、動物、セリフ、場所だけ書く。
-#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml。セリフは stories/pet_sheet_lines.txt。
+#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml（URL でも可）。セリフは stories/pet_sheet_lines.txt のパスか、その中身。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
 構成 = "" #@param {{type:"string"}}
@@ -3006,7 +3198,7 @@ try:
         person=人,
         animals={{"guest": 客の動物, "retort": ツッコミの動物, "polite": 丁寧の動物}},
         place=場所,
-        lines=structure.parse_lines(セリフ, [row["id"] for row in pack["captions"]]),
+        lines=structure.parse_lines(structure.read_lines(セリフ), [row["id"] for row in pack["captions"]]),
     )
 except ValueError as exc:
     print("止まった:", exc)
@@ -3041,65 +3233,79 @@ from pathlib import Path
 if not 仕上げ:
     print("仕上げにチェックを入れて、このセルをもう一度押してください。今は声も字幕も足しません。")
 else:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "opencv-python-headless"])
     try:
-        import affi_bake
-        import affi_finish
-        import affi_post
-    except ImportError:
-        print("先に「読み込み」を押してください。")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "opencv-python-headless"])
+    except subprocess.CalledProcessError as exc:
+        print(f"止まった: 仕上げの準備に失敗した。終了コード {exc.returncode}。")
     else:
-        task = globals().get("何をする")
-        on_colab = Path("/content").is_dir()
-        commands = None
-        if task:
-            commands = affi_bake.commands_file(
-                task,
-                handle=globals().get("HANDLE"),
-                mode=globals().get("MODE"),
-                out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
-            )
-        if commands is None or not Path(commands).is_file():
-            print("先に「選ぶ」と「実行」を押してください。")
+        try:
+            import affi_bake
+            import affi_finish
+            import affi_post
+        except ImportError:
+            print("先に「読み込み」を押してください。")
         else:
-            job_dir = Path(commands).parent
-            video = affi_post.picture_in(job_dir)
-            rows_path = job_dir / "captions.json"
-            if video is None:
-                print("つないだ動画が無い。焼くが終わってから、もう一度押してください。")
-            elif not rows_path.is_file():
-                print("せりふのファイルが無い。")
+            task = globals().get("何をする")
+            on_colab = Path("/content").is_dir()
+            commands = None
+            if task:
+                commands = affi_bake.commands_file(
+                    task,
+                    handle=globals().get("HANDLE"),
+                    mode=globals().get("MODE"),
+                    out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
+                )
+            if commands is None or not Path(commands).is_file():
+                print("先に「選ぶ」と「実行」を押してください。")
             else:
-                rows = json.loads(rows_path.read_text(encoding="utf-8"))
-                bgm = str(globals().get("曲") or "").strip()
-                if not bgm and (job_dir / "job.json").is_file():
-                    bgm = str(json.loads((job_dir / "job.json").read_text(encoding="utf-8")).get("bgm_file") or "").strip()
-                if 口のコマンド.strip():
-                    os.environ["LIPSYNC_CMD"] = 口のコマンド.strip()
+                job_dir = Path(commands).parent
+                video = affi_post.picture_in(job_dir)
+                rows_path = job_dir / "captions.json"
+                if video is None:
+                    print("つないだ動画が無い。焼くが終わってから、もう一度押してください。")
+                elif not rows_path.is_file():
+                    print("せりふのファイルが無い。")
                 else:
-                    os.environ.pop("LIPSYNC_CMD", None)
-                if on_colab and not affi_finish.FONT_DIR.is_dir():
-                    subprocess.check_call(["apt-get", "update", "-qq"])
-                    subprocess.check_call(["apt-get", "install", "-y", "-qq", affi_finish.FONT_PACKAGE])
-                out = job_dir / "post.mp4"
-                result = affi_post.apply(video, out, rows=rows, bgm=bgm or None)
-                if result["status"] != "ready":
-                    for reason in result["blocked"]:
-                        print(reason)
-                else:
-                    print("書いた", result["out"])
-                    print(result["note"])
-                    if on_colab:
-                        from google.colab import drive
-
-                        drive.mount("/content/drive")
+                    rows = json.loads(rows_path.read_text(encoding="utf-8"))
+                    bgm = str(globals().get("曲") or "").strip()
+                    if not bgm and (job_dir / "job.json").is_file():
+                        bgm = str(json.loads((job_dir / "job.json").read_text(encoding="utf-8")).get("bgm_file") or "").strip()
+                    if 口のコマンド.strip():
+                        os.environ["LIPSYNC_CMD"] = 口のコマンド.strip()
+                    else:
+                        os.environ.pop("LIPSYNC_CMD", None)
+                    font_ok = True
+                    if on_colab and not affi_finish.FONT_DIR.is_dir():
                         try:
-                            saved = affi_bake.publish_job_dir(job_dir)
-                        except Exception as exc:
-                            print("マイドライブへのコピーに失敗した", exc)
+                            subprocess.check_call(["apt-get", "update", "-qq"])
+                            subprocess.check_call(["apt-get", "install", "-y", "-qq", affi_finish.FONT_PACKAGE])
+                        except subprocess.CalledProcessError as exc:
+                            print(f"止まった: フォントのインストールに失敗した。終了コード {exc.returncode}。")
+                            font_ok = False
+                    if font_ok:
+                        out = job_dir / "post.mp4"
+                        result = affi_post.apply(video, out, rows=rows, bgm=bgm or None)
+                        if result["status"] != "ready":
+                            for reason in result["blocked"]:
+                                print(reason)
                         else:
-                            print("マイドライブにコピーした", saved)
-                    print("H3 は呼んでいない。投稿していない。")
+                            print("書いた", result["out"])
+                            print(result["note"])
+                            if on_colab:
+                                from google.colab import drive
+
+                                try:
+                                    drive.mount("/content/drive")
+                                except Exception as exc:
+                                    print(f"止まった: マイドライブをマウントできなかった。{exc}")
+                                else:
+                                    try:
+                                        saved = affi_bake.publish_job_dir(job_dir)
+                                    except Exception as exc:
+                                        print("マイドライブへのコピーに失敗した", exc)
+                                    else:
+                                        print("マイドライブにコピーした", saved)
+                            print("H3 は呼んでいない。投稿していない。")
 """
 
 
@@ -3123,8 +3329,8 @@ def _intro() -> str:
         "",
         "1. **読み込み**",
         "2. **選ぶ** で「構成のまま1本」を実行",
-        "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` の中身",
-        "4. **実行**。ready なら **焼く**。絵のあと **仕上げ**（声、字幕、曲）。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
+        "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` のパスか、その中身",
+        "4. **実行**。ready なら **焼く**（チェックを入れる。マイドライブに MiniMax-H3 が無いときは「重みが無いとき落とす」も入れる。オフだと mp4 は出ない）。絵のあと **仕上げ**。止まったら、そのセルの最後の「止まった:」の行をコピーする。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
         "",
         "## 押す順番",
         "",
@@ -3336,7 +3542,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "空欄は入力のまま残ります。証拠の文は欄に出ません。ここに書いても、H3 のプロンプトには入れません。",
                     "",
-                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml` と、そのセリフファイルです。",
+                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml` と、セリフファイルのパスか中身です。",
                     "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",
