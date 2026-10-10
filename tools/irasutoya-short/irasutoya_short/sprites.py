@@ -70,6 +70,7 @@ class MouthAnchor(NamedTuple):
     width: int
     height: int
     face_width: int = 0
+    face_height: int = 0
 
 
 def _skin_mask(rgba: np.ndarray) -> np.ndarray:
@@ -220,57 +221,73 @@ def _dark_parts(lum: np.ndarray, alpha: np.ndarray, box: dict, y_limit: int) -> 
     return parts
 
 
-def _dip_anchor(rgba: np.ndarray, box: dict, y_limit: int) -> MouthAnchor | None:
-    """黒線がない口。中心の輝度が一段落ちて、また戻る行を口にする。"""
-    lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
-    alpha = rgba[:, :, 3] > 40
-    left, right = box["left"], box["right"]
-    top, bot = box["top"], min(box["bot"], y_limit)
-    face_w = max(1, right - left)
-    cx = (left + right) // 2
-    half = max(6, int(face_w * 0.14))
-    x0, x1 = max(0, cx - half), min(rgba.shape[1], cx + half)
-    y_start = top + int((bot - top) * 0.22)
-    meds: list[tuple[int, float]] = []
-    for y in range(y_start, bot - 4):
-        sl = lum[y, x0:x1]
-        sa = alpha[y, x0:x1]
-        if int(sa.sum()) < 8:
+def _single_mouths(parts: list[dict], face_w: int, center: float) -> list[dict]:
+    """左右一対の黒点（目・手）は口にしない。"""
+    paired: set[int] = set()
+    for i, left in enumerate(parts):
+        for j in range(i + 1, len(parts)):
+            right = parts[j]
+            same_row = abs(left["y"] - right["y"]) <= 14
+            apart = abs(left["x"] - right["x"]) >= face_w * 0.12
+            if same_row and apart:
+                paired.add(i)
+                paired.add(j)
+    singles = []
+    for index, part in enumerate(parts):
+        if index in paired:
             continue
-        meds.append((y, float(np.median(sl[sa]))))
-    if len(meds) < 12:
-        return None
-    values = np.array([value for _, value in meds], dtype=np.float32)
-    best_i = None
-    best_depth = 8.0
-    span = 6
-    for index in range(span, len(values) - span):
-        around = max(float(values[index - span : index].max()), float(values[index + 1 : index + span + 1].max()))
-        depth = around - float(values[index])
-        if depth > best_depth:
-            best_depth = depth
-            best_i = index
-    if best_i is None:
-        return None
-    y = meds[best_i][0]
-    width = max(12, int(face_w * 0.16))
-    return MouthAnchor(cx, y, width, 4, face_w)
+        if abs(part["x"] - center) > face_w * 0.14:
+            continue
+        singles.append(part)
+    return singles
+
+
+def _lower_face_anchor(skin: np.ndarray, box: dict) -> MouthAnchor:
+    """口の線が無い顔。いちばん広い行から、細る手前の下顔に置く。"""
+    left, right = box["left"], box["right"]
+    top, bot = box["top"], box["bot"]
+    widths = [int(skin[y, left : right + 1].sum()) for y in range(top, bot + 1)]
+    peak_i = int(np.argmax(widths[: max(1, int(len(widths) * 0.85))]))
+    peak = max(1, widths[peak_i])
+    jaw = bot
+    run = 0
+    for index in range(peak_i + 4, len(widths)):
+        if widths[index] < peak * 0.78:
+            run += 1
+            if run >= 3:
+                jaw = top + index - 2
+                break
+        else:
+            run = 0
+    span = max(4, jaw - (top + peak_i))
+    y = min(jaw - 4, top + peak_i + int(span * 0.62))
+    y = max(top + 4, min(bot - 2, y))
+    xs = np.where(skin[y, left : right + 1])[0]
+    x = int(left + float(xs.mean())) if len(xs) else (left + right) // 2
+    face_w = max(1, right - left)
+    face_h = max(1, jaw - top)
+    width = max(14, int(min(face_w, widths[peak_i]) * 0.16))
+    return MouthAnchor(x, y, width, 4, face_w, face_h)
 
 
 def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
-    """顔の中で、鼻より下にある暗い口の線を返す。襟や顎の輪郭は幅が広すぎるので捨てる。"""
+    """顔の中央、鼻より下の口を返す。左右に並ぶ目や手は使わない。"""
     box = _face_box(rgba)
     if box is None:
         return None
-    chin = _chin_y(_skin_mask(rgba), box)
+    skin = _skin_mask(rgba)
+    chin = _chin_y(skin, box)
     lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
     alpha = rgba[:, :, 3] > 40
-    parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
     face_w = max(1, box["right"] - box["left"])
-    if parts:
-        mouth = max(parts, key=lambda part: (part["bottom"], part["width"]))
-        return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"], face_w)
-    return _dip_anchor(rgba, box, chin)
+    face_h = max(1, box["bot"] - box["top"])
+    center = (box["left"] + box["right"]) / 2
+    parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
+    singles = _single_mouths(parts, face_w, center)
+    if singles:
+        mouth = max(singles, key=lambda part: (part["bottom"], part["width"]))
+        return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"], face_w, face_h)
+    return _lower_face_anchor(skin, box)
 
 
 def skin_color(rgba: np.ndarray, mx: int, my: int, mouth_w: int) -> np.ndarray:
@@ -307,12 +324,16 @@ def _fill_ellipse(img: np.ndarray, cx: float, cy: float, rx: float, ry: float, c
 
 
 def _talk_width(anchor: MouthAnchor) -> float:
-    """閉じた線が細い顔でも、顔幅に対して読める口にする。"""
+    """閉じた線が細い顔でも、頭の高さに収まる口にする。"""
     stroke = max(8.0, float(anchor.width))
-    face = float(anchor.face_width or 0)
-    if face < 24:
+    face_w = float(anchor.face_width or 0)
+    face_h = float(anchor.face_height or 0)
+    if face_w < 24:
         return stroke
-    return max(stroke, face * 0.26)
+    talk = max(stroke, face_w * 0.22)
+    if face_h > 24:
+        talk = min(talk, face_h * 0.24)
+    return talk
 
 
 def draw_mouth(rgba: np.ndarray, anchor: MouthAnchor, openness: float, skin: np.ndarray) -> np.ndarray:

@@ -169,6 +169,23 @@ class MouthTests(unittest.TestCase):
         self.assertGreater(anchor.x, 70)
         self.assertLess(anchor.x, 110)
 
+    def test_side_pair_is_not_the_mouth(self) -> None:
+        img = np.zeros((220, 180, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:220, :180]
+        head = ((yy - 80) ** 2) / 58**2 + ((xx - 90) ** 2) / 50**2 <= 1
+        img[head, 0] = 230
+        img[head, 1] = 190
+        img[head, 2] = 160
+        img[head, 3] = 255
+        img[120:132, 40:58] = (30, 20, 20, 255)
+        img[120:132, 122:140] = (30, 20, 20, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        self.assertGreater(anchor.x, 70)
+        self.assertLess(anchor.x, 110)
+        self.assertLess(anchor.y, 120)
+
     def test_open_mouth_drops_below_the_lip(self) -> None:
         img = np.zeros((220, 160, 4), dtype=np.uint8)
         img[:, :, 0] = 230
