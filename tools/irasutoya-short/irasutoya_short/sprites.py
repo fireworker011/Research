@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from collections import deque
 from pathlib import Path
+from typing import NamedTuple
 
 import numpy as np
 from PIL import Image
@@ -62,80 +64,226 @@ def _flood_from_border(near: np.ndarray) -> np.ndarray:
     return bg
 
 
-def _row_median(alpha: np.ndarray, lum: np.ndarray, y: int, x0: int, x1: int) -> float:
-    sl = alpha[y, x0:x1]
-    if int(sl.sum()) < 3:
-        return 255.0
-    return float(np.median(lum[y, x0:x1][sl]))
+class MouthAnchor(NamedTuple):
+    x: int
+    y: int
+    width: int
+    height: int
 
 
-def _span_width(alpha_row: np.ndarray, cx: int) -> int:
-    if cx < 0 or cx >= len(alpha_row) or not alpha_row[cx]:
-        xs = np.where(alpha_row)[0]
-        if len(xs) == 0:
-            return 40
-        cx = int(xs[np.argmin(np.abs(xs - cx))])
-    left = cx
-    while left > 0 and alpha_row[left - 1]:
-        left -= 1
-    right = cx
-    while right < len(alpha_row) - 1 and alpha_row[right + 1]:
-        right += 1
-    return max(16, right - left + 1)
+def _skin_mask(rgba: np.ndarray) -> np.ndarray:
+    alpha = rgba[:, :, 3] > 40
+    red = rgba[:, :, 0].astype(np.int16)
+    green = rgba[:, :, 1].astype(np.int16)
+    blue = rgba[:, :, 2].astype(np.int16)
+    lum = (red + green + blue) / 3
+    peach = (red > 150) & (green > 90) & (blue > 60) & (red > blue + 15) & (lum < 245) & (lum > 120)
+    return alpha & peach
 
 
-def mouth_anchor(rgba: np.ndarray) -> tuple[int, int, int]:
-    """肌の帯の直後にある暗い線を口にする。いらすとやは目が左右に分かれて中心は肌のまま。"""
+def _blobs(mask: np.ndarray, step: int = 2, min_pts: int = 60) -> list[dict]:
+    small = mask[::step, ::step]
+    height, width = small.shape
+    seen = np.zeros_like(small)
+    found: list[dict] = []
+    for y in range(height):
+        for x in np.where(small[y] & ~seen[y])[0]:
+            if seen[y, x]:
+                continue
+            queue: deque[tuple[int, int]] = deque([(y, int(x))])
+            seen[y, x] = True
+            count = 0
+            top = bot = y
+            left = right = int(x)
+            while queue:
+                cy, cx = queue.popleft()
+                count += 1
+                top, bot = min(top, cy), max(bot, cy)
+                left, right = min(left, cx), max(right, cx)
+                for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                    if 0 <= ny < height and 0 <= nx < width and small[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        queue.append((ny, nx))
+            if count < min_pts:
+                continue
+            found.append(
+                {
+                    "area": count,
+                    "top": top * step,
+                    "bot": bot * step,
+                    "left": left * step,
+                    "right": right * step,
+                }
+            )
+    return found
+
+
+def _face_box(rgba: np.ndarray) -> dict | None:
+    skin = _skin_mask(rgba)
     alpha = rgba[:, :, 3] > 40
     ys, xs = np.where(alpha)
     if len(xs) == 0:
-        h, w = rgba.shape[:2]
-        return w // 2, int(h * 0.35), max(16, w // 5)
-    top, bot = int(ys.min()), int(ys.max())
-    ycut = top + max(8, int((bot - top) * 0.32))
-    cols = np.where(alpha[top:ycut].any(axis=0))[0]
-    if len(cols) == 0:
-        cols = xs
-    left, right = int(cols.min()), int(cols.max())
-    cx = (left + right) // 2
-    lum = rgba[:, :, :3].astype(np.int16).mean(axis=2)
-    x0, x1 = max(0, cx - 10), min(rgba.shape[1], cx + 10)
-    meds = np.array([_row_median(alpha, lum, y, x0, x1) for y in range(top, bot + 1)], dtype=np.float32)
-    hair_at = next((i for i, value in enumerate(meds) if value < 70), 0)
-    skin = meds > 165
-    skin_end = None
-    index = hair_at
-    while index < len(skin):
-        if not skin[index]:
-            index += 1
+        return None
+    fig_top, fig_bot = int(ys.min()), int(ys.max())
+    fig_h = max(1, fig_bot - fig_top)
+    candidates = []
+    for blob in _blobs(skin):
+        box_h = blob["bot"] - blob["top"]
+        box_w = blob["right"] - blob["left"]
+        if box_h < 50 or box_w < 40:
             continue
-        end = index
-        while end < len(skin) and skin[end]:
-            end += 1
-        if end - index >= 20:
-            skin_end = top + end
-            break
-        index = end
-    if skin_end is None:
-        my = top + int((bot - top) * 0.28)
-    else:
-        window = meds[skin_end - top : skin_end - top + 20]
-        my = skin_end + (int(np.argmin(window)) if len(window) else 0)
-    my = int(np.clip(my, top + 2, bot - 2))
-    face_y = max(top, my - 18)
-    head_w = _span_width(alpha[face_y], cx)
-    return cx, my, head_w
+        if blob["top"] > fig_top + fig_h * 0.72:
+            continue
+        candidates.append(blob)
+    if not candidates:
+        return None
+    highest = min(blob["top"] for blob in candidates)
+    near = [blob for blob in candidates if blob["top"] <= highest + 40]
+    return max(near, key=lambda blob: blob["area"])
 
 
-def skin_color(rgba: np.ndarray, mx: int, my: int, head_w: int) -> np.ndarray:
-    r = max(4, head_w // 16)
-    y0, y1 = max(0, my - r), min(rgba.shape[0], my + r)
-    x0, x1 = max(0, mx - r * 2), min(rgba.shape[1], mx + r * 2)
+def _chin_y(skin: np.ndarray, box: dict) -> int:
+    """肌の幅が細る行。首・襟・手元はこの下に落ちる。"""
+    left, right = box["left"], box["right"]
+    top, bot = box["top"], box["bot"]
+    widths = np.array([int(skin[y, left : right + 1].sum()) for y in range(top, bot + 1)], dtype=np.int32)
+    if len(widths) < 12:
+        return bot
+    peak_i = int(np.argmax(widths[: max(1, int(len(widths) * 0.8))]))
+    peak = int(widths[peak_i])
+    run = 0
+    for index in range(peak_i + 6, len(widths)):
+        if widths[index] < peak * 0.42:
+            run += 1
+            if run >= 4:
+                return top + index - 3
+        else:
+            run = 0
+    return bot
+
+
+def _dark_parts(lum: np.ndarray, alpha: np.ndarray, box: dict, y_limit: int) -> list[dict]:
+    top, bot = box["top"], min(box["bot"], y_limit)
+    left, right = box["left"], box["right"]
+    face_w = max(1, right - left)
+    face_h = max(1, box["bot"] - top)
+    cx = (left + right) // 2
+    band = max(8, int(face_w * 0.24))
+    x0, x1 = max(0, cx - band), min(lum.shape[1], cx + band)
+    y0 = top + int(face_h * 0.30)
+    y1 = bot
+    region = alpha[y0:y1, x0:x1] & (lum[y0:y1, x0:x1] < 125)
+    if not region.any():
+        return []
+    height, width = region.shape
+    seen = np.zeros_like(region)
+    parts: list[dict] = []
+    ys, xs = np.where(region)
+    for y, x in zip(ys.tolist(), xs.tolist()):
+        if seen[y, x]:
+            continue
+        queue: deque[tuple[int, int]] = deque([(y, x)])
+        seen[y, x] = True
+        pts_y = [y]
+        pts_x = [x]
+        while queue:
+            cy, cx = queue.pop()
+            for ny, nx in ((cy - 1, cx), (cy + 1, cx), (cy, cx - 1), (cy, cx + 1)):
+                if 0 <= ny < height and 0 <= nx < width and region[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    queue.append((ny, nx))
+                    pts_y.append(ny)
+                    pts_x.append(nx)
+        if len(pts_y) < 8:
+            continue
+        py = np.asarray(pts_y)
+        px = np.asarray(pts_x)
+        part_w = int(px.max() - px.min() + 1)
+        part_h = int(py.max() - py.min() + 1)
+        if part_w < max(6, int(face_w * 0.05)) or part_w > int(face_w * 0.34):
+            continue
+        if part_h > int(face_h * 0.36):
+            continue
+        mid_x = x0 + float(px.mean())
+        if abs(mid_x - ((left + right) / 2)) > face_w * 0.18:
+            continue
+        parts.append(
+            {
+                "x": int(round(mid_x)),
+                "y": int(round(y0 + float(py.mean()))),
+                "width": part_w,
+                "height": max(2, part_h),
+                "bottom": y0 + int(py.max()),
+            }
+        )
+    return parts
+
+
+def _dip_anchor(rgba: np.ndarray, box: dict, y_limit: int) -> MouthAnchor | None:
+    """黒線がない口。中心の輝度が一段落ちて、また戻る行を口にする。"""
+    lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
+    alpha = rgba[:, :, 3] > 40
+    left, right = box["left"], box["right"]
+    top, bot = box["top"], min(box["bot"], y_limit)
+    face_w = max(1, right - left)
+    cx = (left + right) // 2
+    half = max(6, int(face_w * 0.14))
+    x0, x1 = max(0, cx - half), min(rgba.shape[1], cx + half)
+    y_start = top + int((bot - top) * 0.22)
+    meds: list[tuple[int, float]] = []
+    for y in range(y_start, bot - 4):
+        sl = lum[y, x0:x1]
+        sa = alpha[y, x0:x1]
+        if int(sa.sum()) < 8:
+            continue
+        meds.append((y, float(np.median(sl[sa]))))
+    if len(meds) < 12:
+        return None
+    values = np.array([value for _, value in meds], dtype=np.float32)
+    best_i = None
+    best_depth = 8.0
+    span = 6
+    for index in range(span, len(values) - span):
+        around = max(float(values[index - span : index].max()), float(values[index + 1 : index + span + 1].max()))
+        depth = around - float(values[index])
+        if depth > best_depth:
+            best_depth = depth
+            best_i = index
+    if best_i is None:
+        return None
+    y = meds[best_i][0]
+    width = max(12, int(face_w * 0.16))
+    return MouthAnchor(cx, y, width, 4)
+
+
+def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
+    """顔の中で、鼻より下にある暗い口の線を返す。襟や顎の輪郭は幅が広すぎるので捨てる。"""
+    box = _face_box(rgba)
+    if box is None:
+        return None
+    chin = _chin_y(_skin_mask(rgba), box)
+    lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
+    alpha = rgba[:, :, 3] > 40
+    parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
+    if parts:
+        mouth = max(parts, key=lambda part: (part["bottom"], part["width"]))
+        return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"])
+    return _dip_anchor(rgba, box, chin)
+
+
+def skin_color(rgba: np.ndarray, mx: int, my: int, mouth_w: int) -> np.ndarray:
+    gap = max(4, mouth_w // 5)
+    band = max(6, mouth_w // 6)
+    y1 = max(0, my - gap)
+    y0 = max(0, y1 - band)
+    x0, x1 = max(0, mx - mouth_w // 2), min(rgba.shape[1], mx + mouth_w // 2)
     patch = rgba[y0:y1, x0:x1]
+    if patch.size == 0:
+        return np.array([255, 214, 196], dtype=np.uint8)
     rgb = patch[:, :, :3]
     alpha = patch[:, :, 3] > 200
     lum = rgb.mean(axis=2)
-    ok = alpha & (lum > 150) & (lum < 242)
+    ok = alpha & (lum > 140) & (lum < 242)
     if int(ok.sum()) < 8:
         return np.array([255, 214, 196], dtype=np.uint8)
     return np.median(rgb[ok], axis=0).astype(np.uint8)
@@ -156,29 +304,33 @@ def _fill_ellipse(img: np.ndarray, cx: float, cy: float, rx: float, ry: float, c
     region[mask] = color
 
 
-def draw_mouth(rgba: np.ndarray, mx: int, my: int, head_w: int, openness: float, skin: np.ndarray) -> np.ndarray:
+def draw_mouth(rgba: np.ndarray, anchor: MouthAnchor, openness: float, skin: np.ndarray) -> np.ndarray:
     out = rgba.copy()
     skin_px = (int(skin[0]), int(skin[1]), int(skin[2]), 255)
-    cover_rx = max(4, int(head_w * 0.075))
-    cover_ry = max(3, int(head_w * 0.05))
+    mx, my = anchor.x, anchor.y
+    cover_rx = max(4.0, anchor.width * 0.55)
+    cover_ry = max(3.0, anchor.height * 0.55, anchor.width * 0.16)
     _fill_ellipse(out, mx, my, cover_rx, cover_ry, skin_px)
     open_amt = float(np.clip(openness, 0.0, 1.0))
     if open_amt < 0.08:
-        _fill_ellipse(out, mx, my + 1, cover_rx * 0.72, max(1.2, head_w * 0.01), (90, 45, 45, 255))
+        _fill_ellipse(out, mx, my, cover_rx * 0.72, max(1.4, anchor.width * 0.035), (90, 45, 45, 255))
         return out
-    rx = head_w * (0.04 + 0.055 * open_amt)
-    ry = head_w * (0.015 + 0.075 * open_amt)
-    _fill_ellipse(out, mx, my + ry * 0.15, rx, ry, (50, 12, 18, 255))
+    rx = anchor.width * (0.42 + 0.08 * open_amt)
+    ry = max(2.0, anchor.width * (0.05 + 0.32 * open_amt))
+    ry = min(ry, max(cover_ry, anchor.width * 0.42))
+    _fill_ellipse(out, mx, my, rx, ry, (50, 12, 18, 255))
     if open_amt > 0.38:
-        _fill_ellipse(out, mx, my - ry * 0.15, rx * 0.72, max(1.5, ry * 0.32), (250, 248, 242, 255))
+        _fill_ellipse(out, mx, my - ry * 0.22, rx * 0.62, max(1.5, ry * 0.28), (250, 248, 242, 255))
     return out
 
 
-def mouth_levels(rgba: np.ndarray, levels: int = 7) -> tuple[list[np.ndarray], tuple[int, int, int]]:
-    mx, my, head_w = mouth_anchor(rgba)
-    skin = skin_color(rgba, mx, my, head_w)
-    frames = [draw_mouth(rgba, mx, my, head_w, i / (levels - 1), skin) for i in range(levels)]
-    return frames, (mx, my, head_w)
+def mouth_levels(rgba: np.ndarray, levels: int = 7) -> tuple[list[np.ndarray], MouthAnchor | None]:
+    anchor = mouth_anchor(rgba)
+    if anchor is None:
+        return [rgba.copy() for _ in range(levels)], None
+    skin = skin_color(rgba, anchor.x, anchor.y, anchor.width)
+    frames = [draw_mouth(rgba, anchor, i / (levels - 1), skin) for i in range(levels)]
+    return frames, anchor
 
 
 def scale_rgba(arr: np.ndarray, height: int) -> np.ndarray:

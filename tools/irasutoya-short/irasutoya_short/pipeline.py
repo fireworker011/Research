@@ -171,8 +171,11 @@ def _debug_mouths(accepted: list[dict], dest: Path) -> None:
         if item["kind"] != "person":
             continue
         rgba = load_rgba(item["path"])
-        mx, my, _head = mouth_anchor(rgba)
-        Image.fromarray(mark_mouth(rgba, mx, my), "RGBA").save(dest / f"{item['id']}.png")
+        anchor = mouth_anchor(rgba)
+        if anchor is None:
+            Image.fromarray(rgba, "RGBA").save(dest / f"{item['id']}.png")
+            continue
+        Image.fromarray(mark_mouth(rgba, anchor.x, anchor.y), "RGBA").save(dest / f"{item['id']}.png")
 
 
 def _persist(project: dict, path: Path) -> None:

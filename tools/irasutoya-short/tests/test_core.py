@@ -12,6 +12,7 @@ from irasutoya_short.qa import body_count, title_rejection
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import generate_script
 from irasutoya_short.sfx import make_sfx
+from irasutoya_short.sprites import mouth_anchor
 from irasutoya_short.textutil import wrap_telop
 
 
@@ -77,6 +78,31 @@ class QaTests(unittest.TestCase):
         arm[8:90, 50:90] = 255
         arm[40:90, 8:30] = 255
         self.assertEqual(body_count(arm), 1)
+
+
+class MouthTests(unittest.TestCase):
+    def test_anchor_hits_mouth_not_collar(self) -> None:
+        img = np.zeros((280, 180, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:280, :180]
+        head = ((yy - 90) ** 2) / 70**2 + ((xx - 90) ** 2) / 58**2 <= 1
+        neck = (yy > 150) & (yy < 210) & (xx > 70) & (xx < 110)
+        skin = head | neck
+        img[skin, 0] = 230
+        img[skin, 1] = 190
+        img[skin, 2] = 160
+        img[skin, 3] = 255
+        img[70:82, 62:78] = (20, 20, 20, 255)
+        img[70:82, 102:118] = (20, 20, 20, 255)
+        img[108:114, 84:96] = (30, 20, 20, 255)
+        img[132:140, 74:106] = (40, 20, 20, 255)
+        img[188:206, 40:140] = (30, 30, 30, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        self.assertGreater(anchor.y, 125)
+        self.assertLess(anchor.y, 148)
+        self.assertGreater(anchor.x, 70)
+        self.assertLess(anchor.x, 110)
 
 
 class AudioTests(unittest.TestCase):
