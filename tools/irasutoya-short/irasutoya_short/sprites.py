@@ -242,6 +242,47 @@ def _single_mouths(parts: list[dict], face_w: int, center: float) -> list[dict]:
     return singles
 
 
+def _pair_rows(parts: list[dict], face_w: int) -> list[tuple[dict, dict]]:
+    rows: list[tuple[dict, dict]] = []
+    used: set[int] = set()
+    for i, left in enumerate(parts):
+        if i in used:
+            continue
+        for j in range(i + 1, len(parts)):
+            if j in used:
+                continue
+            right = parts[j]
+            same_row = abs(left["y"] - right["y"]) <= 14
+            apart = abs(left["x"] - right["x"]) >= max(12, face_w * 0.12)
+            if same_row and apart:
+                rows.append((left, right))
+                used.add(i)
+                used.add(j)
+                break
+    rows.sort(key=lambda pair: pair[0]["y"] + pair[1]["y"])
+    return rows
+
+
+def _mouth_below_eyes(parts: list[dict], box: dict) -> MouthAnchor | None:
+    """目の下、次の左右の点（手）より上に口を置く。"""
+    face_w = max(1, box["right"] - box["left"])
+    rows = _pair_rows(parts, face_w)
+    if not rows:
+        return None
+    left, right = rows[0]
+    eye_y = (left["y"] + right["y"]) / 2
+    eye_x = (left["x"] + right["x"]) / 2
+    eye_gap = abs(left["x"] - right["x"])
+    below = eye_y + eye_gap * 0.75
+    if len(rows) > 1:
+        below = (rows[1][0]["y"] + rows[1][1]["y"]) / 2
+    gap_y = max(8.0, below - eye_y)
+    y = int(eye_y + min(gap_y * 0.38, max(6.0, gap_y - 16)))
+    width = max(18, int(eye_gap * 0.58))
+    face_h = max(1, box["bot"] - box["top"])
+    return MouthAnchor(int(round(eye_x)), y, width, max(4, int(gap_y * 0.2)), face_w, face_h)
+
+
 def _lower_face_anchor(skin: np.ndarray, box: dict) -> MouthAnchor:
     """口の線が無い顔。いちばん広い行から、細る手前の下顔に置く。"""
     left, right = box["left"], box["right"]
@@ -287,6 +328,9 @@ def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     if singles:
         mouth = max(singles, key=lambda part: (part["bottom"], part["width"]))
         return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"], face_w, face_h)
+    below = _mouth_below_eyes(parts, box)
+    if below is not None:
+        return below
     return _lower_face_anchor(skin, box)
 
 

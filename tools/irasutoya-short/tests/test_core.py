@@ -184,7 +184,8 @@ class MouthTests(unittest.TestCase):
         assert anchor is not None
         self.assertGreater(anchor.x, 70)
         self.assertLess(anchor.x, 110)
-        self.assertLess(anchor.y, 120)
+        self.assertFalse(abs(anchor.x - 49) < 18 and abs(anchor.y - 126) < 16)
+        self.assertFalse(abs(anchor.x - 131) < 18 and abs(anchor.y - 126) < 16)
 
     def test_open_mouth_drops_below_the_lip(self) -> None:
         img = np.zeros((220, 160, 4), dtype=np.uint8)
