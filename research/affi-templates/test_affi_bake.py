@@ -1029,5 +1029,29 @@ def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: 
     )
     assert copied.startswith("止まった")
     assert bake.commands_file("構成のまま1本", out_dir=tmp_path / "ready") == folder / "commands.txt"
+    lines_text = (ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8")
+    pets = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        sheet_animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="真夏の庭。空の水入れと小さなビニールプール",
+        sheet_lines=lines_text,
+        sheet_pack="stories/pet_sheet.yaml",
+        out_dir=tmp_path / "pets",
+    )
+    assert "status=ready" in pets
+    assert "51.572秒" in pets
+    assert "ショット17" in pets
+    pet_job = json.loads((tmp_path / "pets" / "sheet" / "job.json").read_text(encoding="utf-8"))
+    assert pet_job["posts"] is False
+    assert pet_job["captions_on_join"] is False
+    blob = "\n".join(clip["prompt"] for clip in pet_job["clips"])
+    assert "あっつ" not in blob
+    assert "からっぽやん" not in blob
+    assert "吸水力" not in blob
+    assert "イメージです" not in blob
+    assert "口が開閉" in blob
+    assert "グレーのマンチカン" in blob
+    assert "<d>" not in blob
 
 
