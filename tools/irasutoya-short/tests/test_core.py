@@ -73,6 +73,10 @@ class QaTests(unittest.TestCase):
         two[10:70, 5:30] = 255
         two[10:70, 90:115] = 255
         self.assertEqual(body_count(two), 2)
+        arm = np.zeros((100, 140), dtype=np.uint8)
+        arm[8:90, 50:90] = 255
+        arm[40:90, 8:30] = 255
+        self.assertEqual(body_count(arm), 1)
 
 
 class AudioTests(unittest.TestCase):

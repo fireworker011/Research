@@ -7,13 +7,22 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-MOUTH_Y_RATIO = 0.72
-
-
 def load_rgba(path: str | Path) -> np.ndarray:
     with Image.open(path) as im:
         arr = np.array(im.convert("RGBA"))
-    return _key_edge_white(arr)
+    return _crop_opaque(_key_edge_white(arr))
+
+
+def _crop_opaque(arr: np.ndarray) -> np.ndarray:
+    ys, xs = np.where(arr[:, :, 3] > 10)
+    if len(xs) == 0:
+        return arr
+    pad = 2
+    y0 = max(0, int(ys.min()) - pad)
+    y1 = min(arr.shape[0], int(ys.max()) + pad + 1)
+    x0 = max(0, int(xs.min()) - pad)
+    x1 = min(arr.shape[1], int(xs.max()) + pad + 1)
+    return arr[y0:y1, x0:x1]
 
 
 def _key_edge_white(arr: np.ndarray) -> np.ndarray:
@@ -53,34 +62,69 @@ def _flood_from_border(near: np.ndarray) -> np.ndarray:
     return bg
 
 
+def _row_median(alpha: np.ndarray, lum: np.ndarray, y: int, x0: int, x1: int) -> float:
+    sl = alpha[y, x0:x1]
+    if int(sl.sum()) < 3:
+        return 255.0
+    return float(np.median(lum[y, x0:x1][sl]))
+
+
+def _span_width(alpha_row: np.ndarray, cx: int) -> int:
+    if cx < 0 or cx >= len(alpha_row) or not alpha_row[cx]:
+        xs = np.where(alpha_row)[0]
+        if len(xs) == 0:
+            return 40
+        cx = int(xs[np.argmin(np.abs(xs - cx))])
+    left = cx
+    while left > 0 and alpha_row[left - 1]:
+        left -= 1
+    right = cx
+    while right < len(alpha_row) - 1 and alpha_row[right + 1]:
+        right += 1
+    return max(16, right - left + 1)
+
+
 def mouth_anchor(rgba: np.ndarray) -> tuple[int, int, int]:
-    alpha = rgba[:, :, 3] > 20
+    """肌の帯の直後にある暗い線を口にする。いらすとやは目が左右に分かれて中心は肌のまま。"""
+    alpha = rgba[:, :, 3] > 40
     ys, xs = np.where(alpha)
     if len(xs) == 0:
         h, w = rgba.shape[:2]
-        return w // 2, int(h * 0.35), w // 5
+        return w // 2, int(h * 0.35), max(16, w // 5)
     top, bot = int(ys.min()), int(ys.max())
-    left, right = int(xs.min()), int(xs.max())
-    height = bot - top + 1
-    widths = np.zeros(height, dtype=np.int32)
-    for i, y in enumerate(range(top, bot + 1)):
-        cols = np.where(alpha[y, left : right + 1])[0]
-        if len(cols):
-            widths[i] = int(cols.max() - cols.min() + 1)
-    zone = widths[: max(3, int(len(widths) * 0.55))]
-    peak_i = int(np.argmax(zone))
-    neck_i = min(len(widths) - 1, peak_i + max(4, int(len(widths) * 0.2)))
-    for i in range(peak_i + 1, len(widths)):
-        if widths[i] < widths[peak_i] * 0.72:
-            neck_i = i
+    ycut = top + max(8, int((bot - top) * 0.32))
+    cols = np.where(alpha[top:ycut].any(axis=0))[0]
+    if len(cols) == 0:
+        cols = xs
+    left, right = int(cols.min()), int(cols.max())
+    cx = (left + right) // 2
+    lum = rgba[:, :, :3].astype(np.int16).mean(axis=2)
+    x0, x1 = max(0, cx - 10), min(rgba.shape[1], cx + 10)
+    meds = np.array([_row_median(alpha, lum, y, x0, x1) for y in range(top, bot + 1)], dtype=np.float32)
+    hair_at = next((i for i, value in enumerate(meds) if value < 70), 0)
+    skin = meds > 165
+    skin_end = None
+    index = hair_at
+    while index < len(skin):
+        if not skin[index]:
+            index += 1
+            continue
+        end = index
+        while end < len(skin) and skin[end]:
+            end += 1
+        if end - index >= 20:
+            skin_end = top + end
             break
-    head_h = max(8, neck_i)
-    my = int(top + MOUTH_Y_RATIO * head_h)
-    my = min(bot - 2, max(top + 2, my))
-    cols = np.where(alpha[my])[0]
-    mx = int((cols.min() + cols.max()) / 2) if len(cols) else (left + right) // 2
-    head_w = max(16, int(widths[peak_i]))
-    return mx, my, head_w
+        index = end
+    if skin_end is None:
+        my = top + int((bot - top) * 0.28)
+    else:
+        window = meds[skin_end - top : skin_end - top + 20]
+        my = skin_end + (int(np.argmin(window)) if len(window) else 0)
+    my = int(np.clip(my, top + 2, bot - 2))
+    face_y = max(top, my - 18)
+    head_w = _span_width(alpha[face_y], cx)
+    return cx, my, head_w
 
 
 def skin_color(rgba: np.ndarray, mx: int, my: int, head_w: int) -> np.ndarray:

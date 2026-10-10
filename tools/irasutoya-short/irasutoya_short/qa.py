@@ -10,6 +10,8 @@ from collections import deque
 import numpy as np
 from PIL import Image
 
+from irasutoya_short.sprites import load_rgba
+
 # 記事が挙げている事故: 文字が焼き込まれた絵、正月飾り、2人組。
 REJECT_TOKENS = (
     "二人",
@@ -47,6 +49,7 @@ REJECT_TOKENS = (
     "タイトル",
     "過労死",
     "死亡",
+    "白衣",
 )
 
 
@@ -94,8 +97,23 @@ def _boxes(mask: np.ndarray) -> list[tuple[int, int, int, int, int]]:
     return boxes
 
 
+def _side_by_side(a: tuple[int, int, int, int, int], b: tuple[int, int, int, int, int]) -> bool:
+    ay0, ay1 = a[1], a[3]
+    by0, by1 = b[1], b[3]
+    y_overlap = max(0, min(ay1, by1) - max(ay0, by0))
+    min_h = max(1, min(ay1 - ay0, by1 - by0))
+    ax0, ax1 = a[0], a[2]
+    bx0, bx1 = b[0], b[2]
+    x_overlap = max(0, min(ax1, bx1) - max(ax0, bx0))
+    min_w = max(1, min(ax1 - ax0, bx1 - bx0))
+    return y_overlap / min_h > 0.5 and x_overlap / min_w < 0.15
+
+
 def body_count(alpha: np.ndarray) -> int:
-    """左右に並んだ人を2人とみなす。上下に分かれた白抜きは数えない。"""
+    """頭の高さが揃って左右に並んでいるときだけ2人とする。
+
+    白シャツが透過して腕だけ分かれる絵は、腕のてっぺんが頭より低いので数えない。
+    """
     if alpha.size == 0:
         return 0
     opaque = alpha > 20
@@ -104,29 +122,17 @@ def body_count(alpha: np.ndarray) -> int:
     step = max(1, int(max(alpha.shape) // 160))
     small = opaque[::step, ::step]
     total = int(small.sum())
-    boxes = [b for b in _boxes(small) if b[4] > total * 0.12]
-    for i, a in enumerate(boxes):
-        for b in boxes[i + 1 :]:
-            ay0, ay1 = a[1], a[3]
-            by0, by1 = b[1], b[3]
-            y_overlap = max(0, min(ay1, by1) - max(ay0, by0))
-            min_h = max(1, min(ay1 - ay0, by1 - by0))
-            ax0, ax1 = a[0], a[2]
-            bx0, bx1 = b[0], b[2]
-            x_overlap = max(0, min(ax1, bx1) - max(ax0, bx0))
-            min_w = max(1, min(ax1 - ax0, bx1 - bx0))
-            if y_overlap / min_h > 0.45 and x_overlap / min_w < 0.2:
-                return 2
-    col = small.sum(axis=0).astype(np.float32)
-    if col.sum() < 10:
-        return 1
-    span = col.shape[0]
-    mid = col[int(span * 0.42) : int(span * 0.58)].sum()
-    left = col[: int(span * 0.4)].sum()
-    right = col[int(span * 0.6) :].sum()
-    if left > col.sum() * 0.22 and right > col.sum() * 0.22 and mid < col.sum() * 0.08:
-        return 2
-    return 1
+    boxes = [b for b in _boxes(small) if b[4] > total * 0.18]
+    if len(boxes) >= 2:
+        figure_top = min(b[1] for b in boxes)
+        figure_bot = max(b[3] for b in boxes)
+        head_line = figure_top + max(2, int((figure_bot - figure_top) * 0.12))
+        heads = [b for b in boxes if b[1] <= head_line]
+        for i, a in enumerate(heads):
+            for b in heads[i + 1 :]:
+                if _side_by_side(a, b):
+                    return 2
+    return 1 if opaque.any() else 0
 
 
 def _ocr_text(path: str) -> str:
@@ -167,11 +173,8 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
     if rgba.shape[0] < 40 or rgba.shape[1] < 40:
         return "画像が小さすぎる"
     if kind == "person":
-        rgb = rgba[:, :, :3]
-        white = (rgb[:, :, 0] > 242) & (rgb[:, :, 1] > 242) & (rgb[:, :, 2] > 242)
-        mask = rgba[:, :, 3].copy()
-        mask[white] = 0
-        if body_count(mask) >= 2:
+        keyed = load_rgba(path)
+        if body_count(keyed[:, :, 3]) >= 2:
             return "2人以上に見える"
     ocr = _ocr_text(path)
     if ocr:

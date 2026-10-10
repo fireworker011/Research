@@ -277,7 +277,8 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
                 scene, book, bgs[scene["bg"]], lines, telops[scene_i],
                 openness, settings["mouth_gain"], layout, local_t,
             )
-            if preview_dir is not None and scene_frame == min(8, max(0, scene_len // 3)):
+            peak = int(np.argmax(env)) if len(env) else 0
+            if preview_dir is not None and scene_frame == peak:
                 Image.fromarray(frame, "RGB").save(preview_dir / f"scene_{scene['id']:02d}.png")
             frames.append(frame)
             scene_frame += 1
