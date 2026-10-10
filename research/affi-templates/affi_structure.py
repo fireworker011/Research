@@ -44,6 +44,8 @@ _LOCKED_BANNED = (
     "junjun",
 )
 _NORM = re.compile(r"[\s、。！？!?・,.\-「」『』]")
+_PACK_TAIL = re.compile(r"(stories/[^/?#\s]+\.ya?ml)")
+_LINES_TAIL = re.compile(r"(stories/[^/?#\s]+\.txt)")
 
 
 def _num(value: float) -> str:
@@ -55,18 +57,55 @@ def _norm(text: str) -> str:
     return _NORM.sub("", str(text or ""))
 
 
-def pack_file(raw: str | Path | None = None) -> Path | None:
-    """Empty stays the locked sheet. A written path is another pack of the same schema."""
-    text = "" if raw is None else str(raw).strip()
-    if not text:
-        return None
+def _existing(text: str) -> Path | None:
+    """A file at the written path, under this folder, or by its name in stories/."""
     chosen = Path(text)
     if chosen.is_file():
         return chosen
     alt = ROOT / text
     if alt.is_file():
         return alt
+    name = Path(text.split("?")[0].split("#")[0]).name
+    if name:
+        story = ROOT / "stories" / name
+        if story.is_file():
+            return story
+    return None
+
+
+def pack_file(raw: str | Path | None = None) -> Path | None:
+    """Empty stays the locked sheet. A written path is another pack of the same schema.
+
+    A GitHub URL is accepted when it contains ``stories/<name>.yaml``.
+    """
+    text = "" if raw is None else str(raw).strip()
+    if not text:
+        return None
+    for candidate in [*_PACK_TAIL.findall(text), text]:
+        found = _existing(candidate)
+        if found is not None and found.suffix in {".yaml", ".yml"}:
+            return found
     raise ValueError(f"構成ファイルが無い: {text}")
+
+
+def read_lines(raw: str) -> str:
+    """Caption text. A single path to a .txt file is read. Several lines stay as typed."""
+    text = "" if raw is None else str(raw)
+    stripped = text.strip()
+    if not stripped:
+        return ""
+    if "\n" in text or "\r" in text:
+        return text
+    tails = _LINES_TAIL.findall(stripped)
+    if not tails and not stripped.endswith(".txt"):
+        return text
+    for candidate in [*tails, stripped]:
+        found = _existing(candidate)
+        if found is not None and found.suffix == ".txt":
+            return found.read_text(encoding="utf-8")
+    raise ValueError(
+        f"セリフファイルが無い: {stripped}。stories/pet_sheet_lines.txt の中身を貼るか、そのパスを書く。"
+    )
 
 
 def load(path: Path | None = None) -> dict[str, Any]:

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import re
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -20,6 +22,8 @@ import affi_bake as bake
 import affi_genre_templates as genre
 import affi_reference as ref
 import affi_speech
+from h3_runner.loras import parse_lora_args
+from h3_runner.planner import single_plan
 
 _CJK = re.compile(r"[ぁ-んァ-ン一-龥]")
 _DIALOGUE = re.compile(r"<d>\[Japanese\] .*?</d>")
@@ -1053,5 +1057,109 @@ def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: 
     assert "口が開閉" in blob
     assert "グレーのマンチカン" in blob
     assert "<d>" not in blob
+    url = (
+        "https://github.com/fireworker011/Research/blob/"
+        "cursor/affi-template-bake-44d6/research/affi-templates/stories/pet_sheet.yaml"
+    )
+    by_path = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        sheet_animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="真夏の庭。空の水入れと小さなビニールプール",
+        sheet_lines="stories/pet_sheet_lines.txt",
+        sheet_pack=url,
+        out_dir=tmp_path / "pets-path",
+    )
+    assert "status=ready" in by_path
+    assert "51.572秒" in by_path
+    assert "焼かない" not in by_path
+    commands = tmp_path / "pets-path" / "sheet" / "commands.txt"
+    pending, note = bake.commands_to_run(commands, first_only=False)
+    assert pending
+    assert "焼きます" in note
+    assert all("--task t2va" in line for line in pending)
+    for line in pending:
+        argv = shlex.split(line)
+        loras = [argv[index + 1] for index, part in enumerate(argv) if part == "--lora"]
+        plan = single_plan(
+            task="t2va",
+            prompt_path=Path(argv[argv.index("--prompt-file") + 1]),
+            image_path=None,
+            duration_s=float(argv[argv.index("--duration") + 1]),
+            aspect="9:16",
+            seed=0,
+            steps=int(argv[argv.index("--steps") + 1]),
+            out_path=Path(argv[argv.index("--out") + 1]),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95.6,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+            loras=parse_lora_args(loras),
+        )
+        assert plan.blocked is None
+    empty_pet = bake.run_choice(
+        "構成のまま1本",
+        sheet_pack="stories/pet_sheet.yaml",
+        out_dir=tmp_path / "pets-empty",
+    )
+    assert "status=blocked" in empty_pet
+    assert "客の動物は入力のまま" in empty_pet
+    stopped, blocked_note = bake.commands_to_run(
+        tmp_path / "pets-empty" / "sheet" / "commands.txt",
+        first_only=False,
+    )
+    assert stopped == []
+    assert "止まっているので焼かない" in blocked_note
+
+
+def test_gpu_and_ram_stops_are_japanese() -> None:
+    assert bake.gpu_stop_reason(cuda=True, torch_gb=0.0, smi_gb=95.6, name="NVIDIA RTX PRO 6000") is None
+    assert bake.gpu_stop_reason(cuda=True, torch_gb=22.1, smi_gb=24.0, name="NVIDIA L4") is None
+    assert bake.vram_override_gb(torch_gb=22.1, smi_gb=24.0) == 24.0
+    assert bake.vram_override_gb(torch_gb=95.0, smi_gb=95.6) is None
+    small = bake.gpu_stop_reason(cuda=True, torch_gb=22.1, smi_gb=22.5, name="NVIDIA L4")
+    assert small is not None and small.startswith("止まった:")
+    assert "22.1GB" in small and "22.5GB" in small
+    assert bake.host_ram_stop_reason(53.0) is not None
+    assert "70GB" in bake.host_ram_stop_reason(53.0)
+    assert bake.host_ram_stop_reason(176.9) is None
+    assert "メモリ不足" in bake.exit_reason(137)
+    argv = bake.with_vram("python3 h3-runner/run_h3.py --out clip.mp4", 95.6)
+    assert argv[-2:] == ["--vram-gb", "95.6"]
+    smi_gb, smi_name = bake.read_smi_vram()
+    assert smi_gb is None or smi_gb > 0
+    assert isinstance(smi_name, str)
+
+
+def _git(argv: list[str]) -> None:
+    subprocess.check_call(
+        ["git", "-c", "user.email=t@example.com", "-c", "user.name=t", *argv],
+        env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.com", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.com"},
+    )
+
+
+def test_sync_repo_moves_a_shallow_checkout(tmp_path: Path) -> None:
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    _git(["init", "-b", "cursor/affi-template-bake-44d6", str(origin)])
+    runner = origin / "h3-runner"
+    runner.mkdir()
+    script = runner / "run_h3.py"
+    script.write_text("print(1)\n", encoding="utf-8")
+    _git(["-C", str(origin), "add", "."])
+    _git(["-C", str(origin), "commit", "-m", "one"])
+    dest = tmp_path / "Research"
+    bake.sync_repo(dest, "cursor/affi-template-bake-44d6", str(origin))
+    assert (dest / "h3-runner" / "run_h3.py").read_text(encoding="utf-8") == "print(1)\n"
+    script.write_text("print(2)\n", encoding="utf-8")
+    _git(["-C", str(origin), "add", "."])
+    _git(["-C", str(origin), "commit", "-m", "two"])
+    bake.sync_repo(dest, "cursor/affi-template-bake-44d6", str(origin))
+    assert (dest / "h3-runner" / "run_h3.py").read_text(encoding="utf-8") == "print(2)\n"
+    with pytest.raises(ValueError, match="リポジトリの取得に失敗した"):
+        bake.sync_repo(tmp_path / "missing", "no-such-branch", str(origin))
 
 
