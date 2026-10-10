@@ -1,0 +1,146 @@
+"""The shot sheet copies structure and leaves person, animal, line, and place empty."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+
+import affi_structure as structure
+
+
+def test_sheet_locks_twenty_shots_and_leaves_slots_empty() -> None:
+    pack = structure.load()
+    prep = structure.prepare()
+    assert prep["shots"] == 20
+    assert prep["captions"] == 33
+    assert prep["duration_s"] == 71.552
+    assert len(pack["cuts_s"]) == 19
+    assert prep["generates_video"] is False
+    assert prep["posts"] is False
+    assert pack["narration"].startswith("独立した語りは無い")
+    assert all(row["line"] == "入力" for row in structure.captions_of(pack))
+    assert all(row["line"] == "入力" for row in structure.narration_of(pack))
+    assert "人は入力のまま" in prep["blocked"]
+    assert "場所は入力のまま" in prep["blocked"]
+    assert sum(1 for reason in prep["blocked"] if reason.endswith("セリフは入力のまま")) == 33
+
+
+def test_prompt_keeps_the_evidence_lines_out() -> None:
+    pack = structure.load()
+    text = structure.prompt_text(pack)
+    for row in pack["captions"]:
+        source = row["source_line"]
+        if len(source) >= 4:
+            assert source not in text
+    for shot in pack["shots"]:
+        assert shot["source_seen"] not in text
+    assert "おい、そこのデブ" not in text
+    assert "入力" in text
+    sheet = structure.render_markdown(pack)
+    assert "おい、そこのデブ" in sheet
+    assert "証拠:" in sheet
+    assert structure.SHEET_PATH.read_text(encoding="utf-8") == sheet
+
+
+def test_parse_lines_keeps_blanks_empty() -> None:
+    ids = ["c01", "c02", "c03"]
+    assert structure.parse_lines("", ids) == {}
+    assert structure.parse_lines("文1\n\n文3", ids) == {"c01": "文1", "c03": "文3"}
+    assert structure.parse_lines("c02 文2\nc01 文1", ids) == {"c01": "文1", "c02": "文2"}
+    with pytest.raises(ValueError, match="どちらか"):
+        structure.parse_lines("c01 文1\n文2", ids)
+
+
+def test_picture_prompt_leaves_the_spoken_line_out() -> None:
+    pack = structure.load()
+    lines = {row["id"]: f"文{index}" for index, row in enumerate(pack["captions"], start=1)}
+    filled = structure.fill(
+        pack,
+        person="大人の人",
+        animals={"guest": "小さい鳥", "retort": "太い動物", "polite": "細い動物"},
+        place="別の部屋",
+        lines=lines,
+    )
+    text = structure.picture_prompt(filled, 0.0, 1.333)
+    assert "文1" not in text
+    assert "おい、そこのデブ" not in text
+    assert "小さい鳥" in text
+    assert "別の部屋" in text
+    assert "No one speaks." in text
+    assert filled["shots"][0]["source_seen"] not in text
+
+
+def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
+    locked = structure.load()
+    path = ROOT / "stories" / "pet_sheet.yaml"
+    pack = structure.load(path)
+    assert locked["source_id"] == "7692378853490167046"
+    assert pack["source_id"] == "pet-sheet-summer-yard"
+    assert len(locked["shots"]) == 20
+    assert pack["duration_s"] == 51.572
+    lines_text = (ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8")
+    spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
+    assert len(spoken) == 11
+    filled = structure.fill(
+        pack,
+        person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="真夏の庭。空の水入れと小さなビニールプール",
+        lines=spoken,
+    )
+    assert structure.blocked(filled) == []
+    text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
+    for line in spoken.values():
+        assert line not in text
+    assert "口が開閉" in text
+    assert "砂漠" not in text
+    assert "オアシス" not in text
+    assert "ナプキン" not in text
+    assert "イメージです" not in text
+    assert "<d>" not in text
+    assert "No one speaks." in text
+    assert filled["shots"][0]["camera"]
+    assert structure.load()["duration_s"] == 71.552
+    url = (
+        "https://github.com/fireworker011/Research/blob/"
+        "cursor/affi-template-bake-44d6/research/affi-templates/stories/pet_sheet.yaml"
+    )
+    assert structure.pack_file(url) == path
+    assert structure.pack_file("pet_sheet.yaml") == path
+    assert structure.pack_file("") is None
+    with pytest.raises(ValueError, match="構成ファイルが無い"):
+        structure.pack_file("stories/missing.yaml")
+    from_path = structure.read_lines("stories/pet_sheet_lines.txt")
+    assert from_path.startswith("c01")
+    assert structure.parse_lines(from_path, [row["id"] for row in pack["captions"]]) == spoken
+    assert structure.read_lines("c01 あっつ") == "c01 あっつ"
+    with pytest.raises(ValueError, match="セリフファイルが無い"):
+        structure.read_lines("stories/missing_lines.txt")
+
+
+def test_fill_changes_only_the_four_slots() -> None:
+    pack = structure.load()
+    before = [(shot["id"], shot["start_s"], shot["end_s"], shot["camera"]) for shot in pack["shots"]]
+    lines = {row["id"]: f"文{index}" for index, row in enumerate(pack["captions"], start=1)}
+    filled = structure.fill(
+        pack,
+        person="大人の人",
+        animals={"guest": "小さい鳥", "retort": "太い動物", "polite": "細い動物"},
+        place="別の部屋",
+        lines=lines,
+    )
+    after = [(shot["id"], shot["start_s"], shot["end_s"], shot["camera"]) for shot in filled["shots"]]
+    assert after == before
+    assert structure.blocked(filled) == []
+    text = structure.prompt_text(filled)
+    assert "文1" in text
+    assert "別の部屋" in text
+    assert "太い動物" in text
+    assert "おい、そこのデブ" not in text
+    with pytest.raises(ValueError, match="元のセリフは入れない"):
+        structure.fill(pack, lines={"c01": "おい、そこのデブ"})

@@ -1,0 +1,399 @@
+{
+  "schema": "affi-genre-template/v1",
+  "data_date": "2026-10-07",
+  "genre": "ドッグフード",
+  "basis": "伸びてる群の傾向",
+  "account_confidence": "比較不能",
+  "n_growing": 21,
+  "n_struggling": 2,
+  "thresholds": {
+    "strong_min": 10,
+    "compare_min": 3,
+    "thin_below": 10,
+    "min_gap_pt": 10
+  },
+  "caution": "冒頭・顔出し・音・商品の見せ方の多くは説明文からの推定。動画は未視聴。不明は分母に入れていない。参考アカウントは集計に入れていない。",
+  "feature_source": {
+    "推定（説明文）": 18,
+    "確認済": 5
+  },
+  "script_brief": {
+    "first_3_seconds": {
+      "opening_type": "その他",
+      "instruction": "最初の3秒は「その他」で入る。具体文は人間が書く。examples は参考で、コピーしない。",
+      "confidence": "比較不能",
+      "growing": {
+        "value": "その他",
+        "m": 10,
+        "n": 20,
+        "pct": 50
+      },
+      "struggling": {
+        "value": "その他",
+        "m": 0,
+        "n": 2,
+        "pct": 0
+      },
+      "examples": [
+        {
+          "handle": "samoyed_rintaro.kanon",
+          "opening_type": "その他",
+          "platform": "TikTok",
+          "median_views": "729050",
+          "evidence": "キャプション「冬瓜のそぼろ煮つくったら爆食してくれました！」「巨大パスタでミートソース煮つくったら爆食してくれました！」（推定）",
+          "first_frame_text": "なし（stickersOnItem空）。キャプションは「冬瓜のそぼろ煮つくったら爆食してくれました！」型"
+        },
+        {
+          "handle": "umi_tabe",
+          "opening_type": "その他",
+          "platform": "TikTok",
+          "median_views": "296100",
+          "evidence": "キャプションは状況短文",
+          "first_frame_text": "見た3本のstickersOnItemは空。キャプションは状況短文"
+        },
+        {
+          "handle": "pecoチャンネルさん",
+          "opening_type": "C後から見つける",
+          "platform": "YouTube",
+          "median_views": "254042.5",
+          "evidence": "テロップ「起きたら大好きなご飯があって…」",
+          "first_frame_text": "「起きたら大好きなご飯があって…」（TikTokの透かし @rantarotok）"
+        }
+      ],
+      "homage": {
+        "handle": "cat-yu-chan",
+        "platform": "YouTube",
+        "channel_title": "すず丸と暮らしてます",
+        "url": "https://www.youtube.com/@cat-yu-chan/shorts",
+        "in_count": false,
+        "measured": false,
+        "borrow": [
+          "同じ子を最初から出す",
+          "最初の一言は小さな不一致",
+          "商品は後",
+          "同じ子でシリーズにする"
+        ],
+        "do_not_copy": [
+          "映像",
+          "すず丸本人",
+          "タイトルの文"
+        ],
+        "fit": "集計の既定は商品名から入る・主役は手元。作るときは、その既定よりこの型を先に使う。",
+        "first_3_seconds": "同じ子のふつうの食いしん坊。ごはん、袋、商品名は後ろ。"
+      }
+    },
+    "middle_pattern": [
+      "データ不足"
+    ],
+    "on_screen": {
+      "main_subject": "動物",
+      "face_shown": "なし"
+    },
+    "duration_band": "31〜60秒",
+    "duration_median_sec": 46.5,
+    "audio": "オリジナル"
+  },
+  "production": {
+    "hashtag_band": "4個以上",
+    "pr_label": "なし",
+    "post_frequency": "30日4〜9本",
+    "template_fixed": "あり"
+  },
+  "avoid": [],
+  "favor": [],
+  "platforms": [
+    {
+      "platform": "TikTok",
+      "n_growing": 9,
+      "n_struggling": 0,
+      "changes": [
+        {
+          "field": "尺",
+          "genre": "31〜60秒",
+          "platform": "61秒以上",
+          "growing": "9件中5件（56%）",
+          "confidence": "比較不能"
+        }
+      ]
+    },
+    {
+      "platform": "Instagram",
+      "n_growing": 4,
+      "n_struggling": 2,
+      "changes": [
+        {
+          "field": "冒頭タイプ",
+          "genre": "その他",
+          "platform": "A商品名紹介",
+          "growing": "4件中3件（75%）",
+          "confidence": "比較不能"
+        },
+        {
+          "field": "主役",
+          "genre": "動物",
+          "platform": "手元",
+          "growing": "4件中4件（100%）",
+          "confidence": "比較不能"
+        }
+      ]
+    },
+    {
+      "platform": "YouTube",
+      "n_growing": 8,
+      "n_struggling": 0,
+      "changes": []
+    }
+  ],
+  "reference": {
+    "handle": "nuts0629",
+    "present": true,
+    "platform": "TikTok",
+    "bucket": "参考（区分外・投稿停止）",
+    "followers": 3695.0,
+    "median_views": 1660.0,
+    "product_tokens": [
+      "なし/未確認"
+    ],
+    "feature_source": "推定（説明文）",
+    "same": [
+      {
+        "field": "冒頭タイプ",
+        "reference": "その他",
+        "template": "その他",
+        "growing": "20件中10件（50%）"
+      },
+      {
+        "field": "顔出し",
+        "reference": "なし",
+        "template": "なし",
+        "growing": "5件中5件（100%）"
+      },
+      {
+        "field": "主役",
+        "reference": "動物",
+        "template": "動物",
+        "growing": "21件中12件（57%）"
+      },
+      {
+        "field": "ハッシュタグ数",
+        "reference": "4個以上",
+        "template": "4個以上",
+        "growing": "12件中8件（67%）"
+      },
+      {
+        "field": "PR表記",
+        "reference": "なし",
+        "template": "なし",
+        "growing": "13件中12件（92%）"
+      },
+      {
+        "field": "テンプレ固定",
+        "reference": "あり",
+        "template": "あり",
+        "growing": "11件中11件（100%）"
+      }
+    ],
+    "different": [
+      {
+        "field": "尺",
+        "reference": "16〜30秒",
+        "template": "31〜60秒",
+        "growing": "17件中2件（12%）"
+      },
+      {
+        "field": "音",
+        "reference": "不明",
+        "template": "オリジナル",
+        "growing": "判定可能0件"
+      },
+      {
+        "field": "投稿頻度",
+        "reference": "30日3本以下（見えた範囲）",
+        "template": "30日4〜9本",
+        "growing": "14件中3件（21%）"
+      }
+    ]
+  },
+  "fields": {
+    "opening_type": {
+      "label": "冒頭タイプ",
+      "choice": "その他",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 20,
+      "struggling_n": 2,
+      "growing": {
+        "value": "その他",
+        "m": 10,
+        "n": 20,
+        "pct": 50
+      },
+      "struggling": {
+        "value": "その他",
+        "m": 0,
+        "n": 2,
+        "pct": 0
+      }
+    },
+    "face_shown": {
+      "label": "顔出し",
+      "choice": "なし",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 5,
+      "struggling_n": 0,
+      "growing": {
+        "value": "なし",
+        "m": 5,
+        "n": 5,
+        "pct": 100
+      },
+      "struggling": {
+        "value": "なし",
+        "m": 0,
+        "n": 0,
+        "pct": null
+      }
+    },
+    "main_subject": {
+      "label": "主役",
+      "choice": "動物",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 21,
+      "struggling_n": 2,
+      "growing": {
+        "value": "動物",
+        "m": 12,
+        "n": 21,
+        "pct": 57
+      },
+      "struggling": {
+        "value": "動物",
+        "m": 0,
+        "n": 2,
+        "pct": 0
+      }
+    },
+    "duration_band": {
+      "label": "尺",
+      "choice": "31〜60秒",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 17,
+      "struggling_n": 0,
+      "growing": {
+        "value": "31〜60秒",
+        "m": 7,
+        "n": 17,
+        "pct": 41
+      },
+      "struggling": {
+        "value": "31〜60秒",
+        "m": 0,
+        "n": 0,
+        "pct": null
+      }
+    },
+    "audio": {
+      "label": "音",
+      "choice": "オリジナル",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 10,
+      "struggling_n": 0,
+      "growing": {
+        "value": "オリジナル",
+        "m": 4,
+        "n": 10,
+        "pct": 40
+      },
+      "struggling": {
+        "value": "オリジナル",
+        "m": 0,
+        "n": 0,
+        "pct": null
+      }
+    },
+    "hashtag_band": {
+      "label": "ハッシュタグ数",
+      "choice": "4個以上",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 12,
+      "struggling_n": 2,
+      "growing": {
+        "value": "4個以上",
+        "m": 8,
+        "n": 12,
+        "pct": 67
+      },
+      "struggling": {
+        "value": "4個以上",
+        "m": 1,
+        "n": 2,
+        "pct": 50
+      }
+    },
+    "pr_label": {
+      "label": "PR表記",
+      "choice": "なし",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 13,
+      "struggling_n": 2,
+      "growing": {
+        "value": "なし",
+        "m": 12,
+        "n": 13,
+        "pct": 92
+      },
+      "struggling": {
+        "value": "なし",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    },
+    "post_band": {
+      "label": "投稿頻度",
+      "choice": "30日4〜9本",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 14,
+      "struggling_n": 2,
+      "growing": {
+        "value": "30日4〜9本",
+        "m": 8,
+        "n": 14,
+        "pct": 57
+      },
+      "struggling": {
+        "value": "30日4〜9本",
+        "m": 1,
+        "n": 2,
+        "pct": 50
+      }
+    },
+    "template_fixed": {
+      "label": "テンプレ固定",
+      "choice": "あり",
+      "reason": "伸びてる群の最頻値",
+      "confidence": "比較不能",
+      "growing_n": 11,
+      "struggling_n": 2,
+      "growing": {
+        "value": "あり",
+        "m": 11,
+        "n": 11,
+        "pct": 100
+      },
+      "struggling": {
+        "value": "あり",
+        "m": 2,
+        "n": 2,
+        "pct": 100
+      }
+    }
+  }
+}

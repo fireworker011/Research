@@ -1,0 +1,204 @@
+schema: affi-look-choices/v1
+note: 既定値は元アカウントの見た目ではない。人物は成人のみ。実在の人物や元アカウントの顔・動物に似せる文は受け付けない。
+other_label: その他（直接入力）
+defaults:
+  animal_species: dog
+  animal_breed: shiba
+  animal_coat: black_short
+  animal_build: small
+  animal_outfit: plain_collar
+  animal2_species: cat
+  animal2_breed: munchkin
+  animal2_coat: grey
+  animal2_build: medium
+  animal2_outfit: none
+  person_gender: woman
+  person_age: forties
+  person_hair: short
+  person_hair_color: black
+  person_clothes: knit
+  person_build: average
+  person_makeup: none
+  person2_gender: man
+  person2_age: fifties
+  person2_hair: short
+  person2_hair_color: grey
+  person2_clothes: shirt
+  person2_build: sturdy
+  person2_makeup: none
+  place_room: living
+  place_style: nordic
+  place_palette: wood_white
+  place_light: day
+  mascot_subject: tea
+  mascot_style: clay
+  mascot_color: ecru
+  speech: standard
+fields:
+  animal_species:
+    label: 動物の種類
+    options:
+      - {id: dog, label: 犬, ja: 犬, en: a dog}
+      - {id: cat, label: 猫, ja: 猫, en: a cat}
+      - {id: rabbit, label: うさぎ, ja: うさぎ, en: a rabbit}
+      - {id: hamster, label: ハムスター, ja: ハムスター, en: a hamster}
+      - {id: bird, label: 鳥, ja: 小鳥, en: a small bird}
+      - {id: other, label: その他（直接入力）}
+  animal_breed:
+    label: 犬種・猫種
+    options:
+      - {id: shiba, label: 柴, ja: 柴犬, en: a Shiba Inu}
+      - {id: poodle, label: プードル, ja: トイプードル, en: a toy poodle}
+      - {id: beagle, label: ビーグル, ja: ビーグル, en: a beagle}
+      - {id: munchkin, label: マンチカン, ja: マンチカン, en: a Munchkin cat}
+      - {id: scottish, label: スコティッシュフォールド, ja: スコティッシュフォールド, en: a Scottish Fold cat}
+      - {id: other, label: その他（直接入力）}
+  animal_coat:
+    label: 毛の色・柄
+    options:
+      - {id: black_short, label: 黒の短毛, ja: 黒の短毛, en: short black fur}
+      - {id: white_short, label: 白の短毛, ja: 白の短毛, en: short white fur}
+      - {id: brown_patch, label: 茶色のぶち, ja: 茶色のぶち, en: brown patches}
+      - {id: grey, label: グレー一色, ja: グレー一色の短毛, en: solid short grey fur}
+      - {id: cream_short, label: クリームの短毛, ja: クリームの短毛, en: short cream fur}
+      - {id: other, label: その他（直接入力）}
+  animal_build:
+    label: 体格
+    options:
+      - {id: small, label: 小柄, ja: 小柄, en: small build}
+      - {id: medium, label: 普通, ja: 普通の体格, en: average build}
+      - {id: sturdy, label: がっしり, ja: がっしりした体, en: sturdy build}
+      - {id: long_leg, label: 脚が長め, ja: 脚が長め, en: long legs}
+      - {id: other, label: その他（直接入力）}
+  animal_outfit:
+    label: 衣装・首輪
+    options:
+      - {id: plain_collar, label: 無地の首輪, ja: 無地の赤い首輪だけ, en: only a plain red collar}
+      - {id: knit, label: ニット, ja: 無地のグレーのニット, en: a plain grey knit sweater}
+      - {id: none, label: 何も着けない, ja: 衣装も首輪もなし, en: no clothes and no collar}
+      - {id: bandana, label: バンダナ, ja: 無地の紺のバンダナ, en: a plain navy bandana}
+      - {id: other, label: その他（直接入力）}
+  person_gender:
+    label: 人物の性別
+    options:
+      - {id: woman, label: 女性, ja: 女性, en: a woman}
+      - {id: man, label: 男性, ja: 男性, en: a man}
+      - {id: other, label: その他（直接入力）}
+  person_age:
+    label: 年代の見た目
+    options:
+      - {id: twenties, label: 20代, ja: 20代の成人, en: an adult in their twenties}
+      - {id: thirties, label: 30代, ja: 30代の成人, en: an adult in their thirties}
+      - {id: forties, label: 40代, ja: 40代の成人, en: an adult in their forties}
+      - {id: fifties, label: 50代, ja: 50代の成人, en: an adult in their fifties}
+      - {id: sixties, label: 60代, ja: 60代の成人, en: an adult in their sixties}
+      - {id: other, label: その他（直接入力）}
+  person_hair:
+    label: 髪型
+    options:
+      - {id: short, label: ショート, ja: 短い髪, en: short hair}
+      - {id: bob, label: ボブ, ja: ボブ, en: a bob haircut}
+      - {id: long, label: ロング, ja: 長い髪, en: long hair}
+      - {id: tied, label: 結び, ja: 髪をひとつに結んでいる, en: hair tied back}
+      - {id: other, label: その他（直接入力）}
+  person_hair_color:
+    label: 髪色
+    options:
+      - {id: black, label: 黒, ja: 黒い髪, en: black hair}
+      - {id: dark_brown, label: 暗めの茶, ja: 暗めの茶色の髪, en: dark brown hair}
+      - {id: light_brown, label: 明るめの茶, ja: 明るめの茶色の髪, en: light brown hair}
+      - {id: grey, label: グレー, ja: グレーの髪, en: grey hair}
+      - {id: other, label: その他（直接入力）}
+  person_clothes:
+    label: 服装
+    options:
+      - {id: knit, label: 無地のニット, ja: 無地のグレーのニット, en: a plain grey knit top}
+      - {id: shirt, label: シャツ, ja: 白いシャツ, en: a white shirt}
+      - {id: jacket, label: ジャケット, ja: 紺のジャケット, en: a navy jacket}
+      - {id: dress, label: ワンピース, ja: 無地のワンピース, en: a plain dress}
+      - {id: other, label: その他（直接入力）}
+  person_build:
+    label: 体型
+    options:
+      - {id: slim, label: 細身, ja: 細身, en: a slim build}
+      - {id: average, label: 普通, ja: 普通の体型, en: an average build}
+      - {id: sturdy, label: がっしり, ja: がっしりした体型, en: a sturdy build}
+      - {id: tall, label: 背が高め, ja: 背が高め, en: a tall build}
+      - {id: other, label: その他（直接入力）}
+  person_makeup:
+    label: メイク・表情
+    options:
+      - {id: none, label: ほぼ無し, ja: メイクはほぼ無し。表情は落ち着いている, en: almost no makeup and a calm expression}
+      - {id: natural, label: ナチュラル, ja: 薄いナチュラルメイク。やわらかい表情, en: light natural makeup and a soft expression}
+      - {id: brows, label: はっきりした眉, ja: 眉がはっきりしている。真顔が多い, en: defined eyebrows and a mostly neutral face}
+      - {id: smile, label: やわらかい笑顔, ja: メイクは薄く、やわらかい笑顔が多い, en: light makeup and a frequent soft smile}
+      - {id: other, label: その他（直接入力）}
+  place_room:
+    label: 部屋・場所
+    options:
+      - {id: living, label: リビング, ja: リビング, en: a living room}
+      - {id: kitchen, label: キッチン, ja: キッチン, en: a kitchen}
+      - {id: bedroom, label: 寝室, ja: 寝室, en: a bedroom}
+      - {id: entrance, label: 玄関, ja: 玄関, en: an entryway}
+      - {id: cafe, label: カフェ, ja: カフェ, en: a cafe}
+      - {id: outside, label: 屋外, ja: 住宅街の屋外, en: a residential street outdoors}
+      - {id: other, label: その他（直接入力）}
+  place_style:
+    label: 内装
+    options:
+      - {id: nordic, label: 北欧, ja: 北欧の内装, en: Nordic interior}
+      - {id: washitsu, label: 和室, ja: 和室, en: a Japanese-style room}
+      - {id: modern, label: モダン, ja: モダンな内装, en: a modern interior}
+      - {id: natural, label: ナチュラル, ja: ナチュラルな内装, en: a natural interior}
+      - {id: korean, label: 韓国風, ja: 韓国風の内装, en: a Korean-style interior}
+      - {id: lived_in, label: 生活感あり, ja: 生活感のある部屋, en: a lived-in room}
+      - {id: other, label: その他（直接入力）}
+  place_palette:
+    label: 色調
+    options:
+      - {id: wood_white, label: 白と木, ja: 白と明るい木の色, en: white and light wood}
+      - {id: grey, label: グレー, ja: グレー中心, en: mostly grey}
+      - {id: ecru, label: 生成り, ja: 生成り, en: ecru tones}
+      - {id: green, label: 緑がかった, ja: 緑がかった色, en: a greenish palette}
+      - {id: other, label: その他（直接入力）}
+  place_light:
+    label: 時間帯・照明
+    options:
+      - {id: day, label: 昼の自然光, ja: 昼の自然光, en: natural daylight}
+      - {id: morning, label: 朝, ja: 朝の光, en: morning light}
+      - {id: evening, label: 夕方, ja: 夕方の光, en: early evening light}
+      - {id: warm_indoor, label: 暖かい室内灯, ja: 暖かい室内灯, en: warm indoor lamps}
+      - {id: other, label: その他（直接入力）}
+  mascot_subject:
+    label: 擬人化するもの
+    options:
+      - {id: tea, label: 茶葉, ja: 茶葉を擬人化したキャラ, en: a character that is anthropomorphic tea leaves}
+      - {id: soap, label: 石けん, ja: 石けんを擬人化したキャラ, en: a character that is anthropomorphic soap}
+      - {id: towel, label: タオル, ja: タオルを擬人化したキャラ, en: a character that is an anthropomorphic towel}
+      - {id: mug, label: マグカップ, ja: マグカップを擬人化したキャラ, en: a character that is an anthropomorphic mug}
+      - {id: other, label: その他（直接入力）}
+  mascot_style:
+    label: 絵のタッチ
+    options:
+      - {id: clay, label: 粘土, ja: 粘土アニメのような手触り, en: a clay-animation look}
+      - {id: paper, label: 折り紙, ja: 折り紙のような面, en: a folded-paper look}
+      - {id: watercolor, label: 水彩, ja: 水彩のような色のにじみ, en: a watercolor look}
+      - {id: simple3d, label: シンプルな3D, ja: 単純な形の3D, en: simple geometric 3D}
+      - {id: other, label: その他（直接入力）}
+  mascot_color:
+    label: キャラの色
+    options:
+      - {id: ecru, label: 生成り, ja: 生成り色, en: ecru}
+      - {id: mint, label: ミント, ja: ミント色, en: mint green}
+      - {id: navy, label: 紺, ja: 紺色, en: navy}
+      - {id: ochre, label: 黄土, ja: 黄土色, en: ochre}
+      - {id: other, label: その他（直接入力）}
+  speech:
+    label: 口調
+    options:
+      - {id: standard, label: 標準語, ja: 標準語, en: standard Japanese}
+      - {id: kansai, label: 関西弁, ja: 関西弁, en: Kansai dialect}
+      - {id: polite, label: 丁寧語, ja: 丁寧語, en: polite Japanese}
+      - {id: short, label: 短いタメ口, ja: 短いタメ口, en: short casual speech}
+      - {id: whisper, label: ひそひそ, ja: ひそひそした話し方, en: a hushed speaking style}
+      - {id: other, label: その他（直接入力）}

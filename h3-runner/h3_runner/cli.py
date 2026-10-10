@@ -1,4 +1,8 @@
-"""One entry for T2VA (no image), FL2VA (still as the first frame), and Ref2VA (one still, no reference video)."""
+"""One entry for T2VA, FL2VA, I2VA, and Ref2VA.
+
+Ref2VA takes ``--video`` for the source slice (camera, cuts, soundtrack) and
+an optional ``--image`` still. FL2VA and I2VA take the still as the first frame.
+"""
 
 from __future__ import annotations
 
@@ -107,9 +111,13 @@ def model_dir(cache_root: Path) -> Path:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="MiniMax H3 still or text to a 9:16 mp4")
     parser.add_argument("--preset", choices=["orbis01"], help="bundled Sakura FL2VA 6s+9s job")
-    parser.add_argument("--task", choices=["t2va", "fl2va", "ref2va"])
+    parser.add_argument("--task", choices=["t2va", "fl2va", "i2va", "ref2va"])
     parser.add_argument("--prompt-file", type=Path)
-    parser.add_argument("--image", type=Path, help="FL2VA first frame, or Ref2VA still. Omit for T2VA.")
+    parser.add_argument("--image", type=Path, help="I2VA or FL2VA first frame, or an optional Ref2VA still. Omit for T2VA.")
+    parser.add_argument("--video", type=Path, help="Ref2VA source video. Camera, cuts, speech, and music.")
+    parser.add_argument("--audio", type=Path, help="Extra Ref2VA audio. Omit when the source video already has its soundtrack.")
+    parser.add_argument("--video-start", type=float, help="Start seconds inside --video. Pair with --video-end.")
+    parser.add_argument("--video-end", type=float, help="End seconds inside --video.")
     parser.add_argument("--duration", type=float, help=f"{README_MIN_DURATION_S:g} to {README_MAX_DURATION_S:g} seconds")
     parser.add_argument("--aspect", default="9:16")
     parser.add_argument("--short-edge", type=int, help="default 768, lowered when the 80GB budget says so")
@@ -187,6 +195,8 @@ def build_from_args(args: argparse.Namespace):
     loras = parse_lora_args(args.lora)
     steps = args.steps
     if args.preset == "orbis01":
+        if args.video or args.audio or args.video_start is not None or args.video_end is not None:
+            raise SystemExit("orbis01 は参照動画を使わない。--task ref2va --video を使う。")
         if steps is None:
             steps = ORBIS_STEPS
         out_dir = args.out_dir or args.out or Path(os.environ.get("H3_OUT_DIR", "output"))
@@ -230,6 +240,10 @@ def build_from_args(args: argparse.Namespace):
         split_image=args.split_image,
         video_shift=args.video_shift,
         loras=loras,
+        video_path=args.video,
+        audio_path=args.audio,
+        video_start_s=args.video_start,
+        video_end_s=args.video_end,
     )
 
 
