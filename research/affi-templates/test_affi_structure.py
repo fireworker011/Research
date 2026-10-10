@@ -75,6 +75,39 @@ def test_picture_prompt_leaves_the_spoken_line_out() -> None:
     assert filled["shots"][0]["source_seen"] not in text
 
 
+def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
+    locked = structure.load()
+    path = ROOT / "stories" / "pet_sheet.yaml"
+    pack = structure.load(path)
+    assert locked["source_id"] == "7692378853490167046"
+    assert pack["source_id"] == "pet-sheet-summer-yard"
+    assert len(locked["shots"]) == 20
+    assert pack["duration_s"] == 51.572
+    lines_text = (ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8")
+    spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
+    assert len(spoken) == 11
+    filled = structure.fill(
+        pack,
+        person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="真夏の庭。空の水入れと小さなビニールプール",
+        lines=spoken,
+    )
+    assert structure.blocked(filled) == []
+    text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
+    for line in spoken.values():
+        assert line not in text
+    assert "口が開閉" in text
+    assert "砂漠" not in text
+    assert "オアシス" not in text
+    assert "ナプキン" not in text
+    assert "イメージです" not in text
+    assert "<d>" not in text
+    assert "No one speaks." in text
+    assert filled["shots"][0]["camera"]
+    assert structure.load()["duration_s"] == 71.552
+
+
 def test_fill_changes_only_the_four_slots() -> None:
     pack = structure.load()
     before = [(shot["id"], shot["start_s"], shot["end_s"], shot["camera"]) for shot in pack["shots"]]

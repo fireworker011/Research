@@ -1,0 +1,253 @@
+schema: affi-repro-structure/v1
+source_id: pet-sheet-summer-yard
+pattern: junjun_ranran
+duration_s: 51.572
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 4.192
+  - 7.304
+  - 9.576
+  - 13.528
+  - 15.8
+  - 18.3
+  - 20.8
+  - 23.072
+  - 26.592
+  - 29.592
+  - 31.864
+  - 36.664
+  - 39.176
+  - 42.6
+  - 46.072
+  - 48.572
+silences_s: []
+measure:
+  cuts: せりふの秒は edge-tts の長さに 0.4 秒を足した。動作のカットは絵の長さ。
+  silences: この入力では測っていない。
+  captions: せりふは stories/pet_sheet_lines.txt。絵のプロンプトには入れない。
+  music: 曲は仕上げ。H3 には作らせない。
+  caption_y: 仕様の「下から約30%」を使う。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: この話には出さない。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: 短い相槌。話の中心にしない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: その場のせりふ。差し替えた文を出す。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 敷きパッドが水面の水を吸い尽くす
+  - 底の地面がひび割れる
+  - 2匹が逃げる
+  - 商品の絵。文字は絵に焼かない
+shots:
+  - id: s01
+    start_s: 0.0
+    end_s: 4.192
+    place_part: yard
+    on_screen: [retort, polite]
+    camera: 低い位置から寄る。
+    picture: ツッコミが空の水入れの横にいる。口が開閉する。丁寧は後ろで口を閉じている。庭。昼。
+  - id: s02
+    start_s: 4.192
+    end_s: 7.304
+    place_part: yard
+    on_screen: [polite, retort]
+    camera: 肩越しに少し寄る。
+    picture: 丁寧が手前で口を開閉する。ツッコミの口は閉じている。
+  - id: s03
+    start_s: 7.304
+    end_s: 9.576
+    place_part: yard
+    on_screen: [retort, polite]
+    camera: 寄り。家の方へ少し傾く。
+    picture: ツッコミが家の方を見て口を開閉する。人の顔は出さない。丁寧の口は閉じている。
+  - id: s04
+    start_s: 9.576
+    end_s: 13.528
+    place_part: yard
+    on_screen: [polite, retort]
+    camera: 丁寧の視線に合わせて横へ振る。
+    picture: 丁寧が口を開閉しながら、庭の端のビニールプールを見る。ツッコミの口は閉じている。
+  - id: s05
+    start_s: 13.528
+    end_s: 15.8
+    place_part: yard
+    on_screen: [retort, polite]
+    camera: 2匹へ少し寄る。
+    picture: ツッコミが口を開閉する。丁寧の口は閉じている。2匹が並んでいる。
+  - id: s06
+    start_s: 15.8
+    end_s: 18.3
+    place_part: yard
+    on_screen: [retort, polite]
+    camera: 低い位置から追う。
+    picture: 2匹が芝生をプールへ走る。口は閉じている。
+  - id: s07
+    start_s: 18.3
+    end_s: 20.8
+    place_part: pool
+    on_screen: [retort, polite]
+    camera: 横から寄る。
+    picture: ツッコミが前足でプールの水面を叩く。口は閉じている。丁寧は横で口を閉じている。
+  - id: s08
+    start_s: 20.8
+    end_s: 23.072
+    place_part: pool
+    on_screen: [retort, polite]
+    camera: 顔へ少し寄る。
+    picture: ツッコミがプールの縁で口を開閉する。丁寧の口は閉じている。
+  - id: s09
+    start_s: 23.072
+    end_s: 26.592
+    place_part: pool
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が水面を見て口を開閉する。ツッコミの口は閉じている。
+  - id: s10
+    start_s: 26.592
+    end_s: 29.592
+    place_part: yard
+    on_screen: [polite, retort]
+    camera: 横から追う。
+    picture: 丁寧が白い敷きパッドをくわえて歩く。口はパッドをくわえたまま喋らない。ツッコミの口は閉じている。文字もロゴも無い。
+  - id: s11
+    start_s: 29.592
+    end_s: 31.864
+    place_part: yard
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが口を開閉する。丁寧はパッドをくわえたまま、口は喋らない。
+  - id: s12
+    start_s: 31.864
+    end_s: 36.664
+    place_part: pool
+    on_screen: [polite, retort]
+    camera: 上から水面へ見下ろす。
+    picture: パッドが水面に落ち、水が渦を巻いてプールから無くなり、底の地面がひび割れる。2匹の口は閉じている。文字は無い。
+  - id: s13
+    start_s: 36.664
+    end_s: 39.176
+    place_part: pool
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミがひび割れた底を見て口を開閉する。丁寧の口は閉じている。
+  - id: s14
+    start_s: 39.176
+    end_s: 42.6
+    place_part: pool
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧がパッドを見て口を開閉する。ツッコミの口は閉じている。
+  - id: s15
+    start_s: 42.6
+    end_s: 46.072
+    place_part: door
+    on_screen: [owner, retort, polite]
+    camera: 庭から戸口の顔へ寄る。
+    picture: 人が戸口に立って口を開閉する。ゆるい部屋着。髪はひとつ結び。成人。2匹は端で口を閉じている。
+  - id: s16
+    start_s: 46.072
+    end_s: 48.572
+    place_part: yard
+    on_screen: [retort, polite, owner]
+    camera: 引きながら少し下がる。
+    picture: 2匹が庭を走る。口は閉じている。人は戸口に小さくいる。
+  - id: s17
+    start_s: 48.572
+    end_s: 51.572
+    place_part: product
+    on_screen: []
+    camera: パッドへ寄る。
+    picture: 白い敷きパッドだけが平らにある。文字は無い。ロゴは無い。口は無い。
+    note: 字幕の「イメージです」はせりふではない。絵には出さない。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    seen_s: [0.2]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    seen_s: [4.392]
+    line: 入力
+  - id: c03
+    shot: s03
+    role: retort
+    source_line: e-03
+    seen_s: [7.504]
+    line: 入力
+  - id: c04
+    shot: s04
+    role: polite
+    source_line: e-04
+    seen_s: [9.776]
+    line: 入力
+  - id: c05
+    shot: s05
+    role: retort
+    source_line: e-05
+    seen_s: [13.728]
+    line: 入力
+  - id: c06
+    shot: s08
+    role: retort
+    source_line: e-06
+    seen_s: [21.0]
+    line: 入力
+  - id: c07
+    shot: s09
+    role: polite
+    source_line: e-07
+    seen_s: [23.272]
+    line: 入力
+  - id: c08
+    shot: s11
+    role: retort
+    source_line: e-08
+    seen_s: [29.792]
+    line: 入力
+  - id: c09
+    shot: s13
+    role: retort
+    source_line: e-09
+    seen_s: [36.864]
+    line: 入力
+  - id: c10
+    shot: s14
+    role: polite
+    source_line: e-10
+    seen_s: [39.376]
+    line: 入力
+  - id: c11
+    shot: s15
+    role: owner
+    source_line: e-11
+    seen_s: [42.8]
+    line: 入力

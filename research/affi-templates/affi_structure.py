@@ -55,6 +55,20 @@ def _norm(text: str) -> str:
     return _NORM.sub("", str(text or ""))
 
 
+def pack_file(raw: str | Path | None = None) -> Path | None:
+    """Empty stays the locked sheet. A written path is another pack of the same schema."""
+    text = "" if raw is None else str(raw).strip()
+    if not text:
+        return None
+    chosen = Path(text)
+    if chosen.is_file():
+        return chosen
+    alt = ROOT / text
+    if alt.is_file():
+        return alt
+    raise ValueError(f"構成ファイルが無い: {text}")
+
+
 def load(path: Path | None = None) -> dict[str, Any]:
     """Read the pack and check that the shots, cuts, and slots still match."""
     data = yaml.safe_load((path or PACK_PATH).read_text(encoding="utf-8"))

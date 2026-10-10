@@ -666,6 +666,7 @@ def run_choice(
     sheet_animals: Mapping[str, str] | None = None,
     sheet_place: str = "",
     sheet_lines: str = "",
+    sheet_pack: str = "",
 ) -> str:
     """Run the one selected action. A job or an I2V command is written. mp4 is not rendered unless bake_here."""
     kind = resolve_task(task)
@@ -704,6 +705,7 @@ def run_choice(
             image,
             bgm,
             out_dir,
+            sheet_pack,
         )
     raise RuntimeError(f"やることが無い: {kind}")
 
@@ -1515,9 +1517,10 @@ def plan_sheet(
     lines_text: str = "",
     image: str | None = None,
     bgm: str = "",
+    pack_path: str = "",
 ) -> dict[str, Any]:
-    """One 71.552s job. H3 gets the picture only. Voice, mouth, captions, and music wait for 仕上げ."""
-    pack = structure.load()
+    """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
+    pack = structure.load(structure.pack_file(pack_path))
     spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
     filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
     reasons = structure.blocked(filled)
@@ -1633,6 +1636,7 @@ def _run_sheet(
     image: str,
     bgm: str,
     out_dir: str | Path | None,
+    pack_path: str = "",
 ) -> str:
     try:
         job = plan_sheet(
@@ -1642,13 +1646,15 @@ def _run_sheet(
             lines_text=lines_text,
             image=image,
             bgm=bgm,
+            pack_path=pack_path,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
     root = Path(out_dir) if out_dir is not None else _bake_root()
     path = write_job(job, root / "sheet")
+    spoken = job["performance"]["captions"]["rows"]
     lines = [
-        "構成のまま1本。71.552秒。ショット20。セリフ33。",
+        f"構成のまま1本。{_num(float(job['duration_s']))}秒。ショット{len(job['cuts'])}。セリフ{len(spoken)}。",
         "H3 は絵だけ。声、口、字幕、曲は「仕上げ」。",
         f"status={job['status']}",
         f"書いた {path.parent}",
@@ -2744,6 +2750,7 @@ def run_cell() -> str:
             '        sheet_animals={"guest": globals().get("客の動物", ""), "retort": globals().get("ツッコミの動物", ""), "polite": globals().get("丁寧の動物", "")},',
             '        sheet_place=globals().get("場所", ""),',
             '        sheet_lines=globals().get("セリフ", ""),',
+            '        sheet_pack=globals().get("構成", ""),',
             "    )",
             '    if 何をする == "表を見る" and display is not None and Markdown is not None:',
             "        display(Markdown(text))",
@@ -2979,8 +2986,10 @@ def sheet_form_cell() -> str:
     body = "\n".join(guide)
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本を選んだときだけ使う。人、動物、セリフ、場所だけ書く。
+#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml。セリフは stories/pet_sheet_lines.txt。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
+構成 = "" #@param {{type:"string"}}
 人 = "入力" #@param {{type:"string"}}
 客の動物 = "入力" #@param {{type:"string"}}
 ツッコミの動物 = "入力" #@param {{type:"string"}}
@@ -2991,12 +3000,13 @@ def sheet_form_cell() -> str:
 import affi_structure as structure
 
 try:
+    pack = structure.load(structure.pack_file(構成))
     filled = structure.fill(
-        structure.load(),
+        pack,
         person=人,
         animals={{"guest": 客の動物, "retort": ツッコミの動物, "polite": 丁寧の動物}},
         place=場所,
-        lines=structure.parse_lines(セリフ, [row["id"] for row in structure.load()["captions"]]),
+        lines=structure.parse_lines(セリフ, [row["id"] for row in pack["captions"]]),
     )
 except ValueError as exc:
     print("止まった:", exc)
@@ -3107,7 +3117,14 @@ def _intro() -> str:
         "",
         "表は動画になりません。動画は一番下の **焼く** です。投稿しません。",
         "",
-        "**構成のまま1本** が、71.552秒の完全な手順です。選ぶでそれを選び、この1本で人、動物、セリフ、場所を書く。実行。焼く。仕上げ。H3 は絵だけ。声、口、字幕、曲は仕上げ。欄が入力のままなら焼かない。",
+        "**構成のまま1本** が、71.552秒の完全な手順です。選ぶでそれを選び、この1本で人、動物、セリフ、場所を書く。実行。焼く。仕上げ。H3 は絵だけ。声、口、字幕、曲は仕上げ。欄が入力のままなら焼かない。構成欄が空なら、この71.552秒のままです。",
+        "",
+        "**ペットシーツ1本** は、同じ構成のまま1本の入力です。新しい焼き方はありません。",
+        "",
+        "1. **読み込み**",
+        "2. **選ぶ** で「構成のまま1本」を実行",
+        "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` の中身",
+        "4. **実行**。ready なら **焼く**。絵のあと **仕上げ**（声、字幕、曲）。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
         "",
         "## 押す順番",
         "",
@@ -3191,6 +3208,8 @@ def _loader_cell() -> str:
         "affi_post.py",
         "affi_structure.py",
         "reference-accounts/source/repro/junjun_825k.yaml",
+        "stories/pet_sheet.yaml",
+        "stories/pet_sheet_lines.txt",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -3317,6 +3336,8 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "空欄は入力のまま残ります。証拠の文は欄に出ません。ここに書いても、H3 のプロンプトには入れません。",
                     "",
+                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml` と、そのセリフファイルです。",
+                    "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",
                 ]
@@ -3338,7 +3359,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 話でジョブを書く … 選んだ1件のジョブ。静止画が空なら T2V。ファイルがあればその画像が最初のコマ",
                     "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
                     "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。カットと無音の位置で 5〜14.4 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
-                    "- 構成のまま1本 … 71.552秒のショット順のまま。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
+                    "- 構成のまま1本 … 構成欄が空なら 71.552秒。ファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
                     "",
                 ]
             ),
