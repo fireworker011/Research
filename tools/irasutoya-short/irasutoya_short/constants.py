@@ -8,8 +8,8 @@ MAX_ASSETS = 20
 CHUNK_SECONDS = 6.0
 MIN_DURATION = 25.0
 MAX_DURATION = 40.0
-MIN_SCENES = 12
-MAX_SCENES = 14
+MIN_SCENES = 6
+MAX_SCENES = 8
 
 FONT_CANDIDATES = (
     "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
