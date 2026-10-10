@@ -13,7 +13,7 @@ from irasutoya_short.qa import body_count, title_rejection
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import auto_scripts, check_draft, generate_script, grok_complete
 from irasutoya_short.sfx import make_sfx
-from irasutoya_short.sprites import mouth_anchor
+from irasutoya_short.sprites import MouthAnchor, draw_mouth, mouth_anchor, skin_color
 from irasutoya_short.textutil import wrap_telop
 
 
@@ -168,6 +168,29 @@ class MouthTests(unittest.TestCase):
         self.assertLess(anchor.y, 148)
         self.assertGreater(anchor.x, 70)
         self.assertLess(anchor.x, 110)
+
+    def test_open_mouth_drops_below_the_lip(self) -> None:
+        img = np.zeros((220, 160, 4), dtype=np.uint8)
+        img[:, :, 0] = 230
+        img[:, :, 1] = 190
+        img[:, :, 2] = 160
+        img[:, :, 3] = 255
+        anchor = MouthAnchor(80, 120, 28, 6, face_width=120)
+        skin = skin_color(img, anchor.x, anchor.y, anchor.width)
+        shut = draw_mouth(img, anchor, 0.0, skin)
+        opened = draw_mouth(img, anchor, 1.0, skin)
+
+        def dark_rows(frame: np.ndarray) -> np.ndarray:
+            lum = frame[:, :, :3].mean(axis=2)
+            return np.where((frame[:, :, 3] > 200) & (lum < 90))[0]
+
+        shut_rows = dark_rows(shut)
+        open_rows = dark_rows(opened)
+        self.assertGreater(len(open_rows), len(shut_rows))
+        self.assertGreater(int(open_rows.max()), anchor.y + 8)
+        above = int((open_rows < anchor.y).sum())
+        below = int((open_rows > anchor.y).sum())
+        self.assertGreater(below, above)
 
 
 class AudioTests(unittest.TestCase):

@@ -21,17 +21,19 @@ def mouth_envelope(samples: np.ndarray, nframes: int, sr: int = SAMPLE_RATE, fps
             continue
         seg = audio[a:b]
         env[i] = float(np.sqrt(np.mean(seg * seg) + 1e-12))
-    peak = float(np.percentile(env, 95)) if env.size else 0.0
+    peak = float(np.percentile(env, 90)) if env.size else 0.0
     if peak < 1e-5:
         return env
     env = np.clip(env / peak, 0.0, 1.0)
-    env[env < 0.08] = 0.0
+    env[env < 0.06] = 0.0
+    # 普通の母音が、ピークだけ大きくて途中は細い、にならないように持ち上げる。
+    env = np.power(env, 0.65)
     smooth = np.zeros_like(env)
     level = 0.0
-    for i, value in enumerate(env):
-        if value >= level:
-            level = value
+    for index, value in enumerate(env):
+        if value > level:
+            level = level * 0.30 + float(value) * 0.70
         else:
-            level = level * 0.62 + value * 0.38
-        smooth[i] = level
+            level = level * 0.76 + float(value) * 0.24
+        smooth[index] = level
     return smooth

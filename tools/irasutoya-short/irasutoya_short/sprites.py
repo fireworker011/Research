@@ -69,6 +69,7 @@ class MouthAnchor(NamedTuple):
     y: int
     width: int
     height: int
+    face_width: int = 0
 
 
 def _skin_mask(rgba: np.ndarray) -> np.ndarray:
@@ -253,7 +254,7 @@ def _dip_anchor(rgba: np.ndarray, box: dict, y_limit: int) -> MouthAnchor | None
         return None
     y = meds[best_i][0]
     width = max(12, int(face_w * 0.16))
-    return MouthAnchor(cx, y, width, 4)
+    return MouthAnchor(cx, y, width, 4, face_w)
 
 
 def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
@@ -265,9 +266,10 @@ def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
     alpha = rgba[:, :, 3] > 40
     parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
+    face_w = max(1, box["right"] - box["left"])
     if parts:
         mouth = max(parts, key=lambda part: (part["bottom"], part["width"]))
-        return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"])
+        return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"], face_w)
     return _dip_anchor(rgba, box, chin)
 
 
@@ -304,27 +306,48 @@ def _fill_ellipse(img: np.ndarray, cx: float, cy: float, rx: float, ry: float, c
     region[mask] = color
 
 
+def _talk_width(anchor: MouthAnchor) -> float:
+    """閉じた線が細い顔でも、顔幅に対して読める口にする。"""
+    stroke = max(8.0, float(anchor.width))
+    face = float(anchor.face_width or 0)
+    if face < 24:
+        return stroke
+    return max(stroke, face * 0.26)
+
+
 def draw_mouth(rgba: np.ndarray, anchor: MouthAnchor, openness: float, skin: np.ndarray) -> np.ndarray:
+    """元の口の線を肌で隠し、あごが下へ開く口を描く。"""
     out = rgba.copy()
     skin_px = (int(skin[0]), int(skin[1]), int(skin[2]), 255)
-    mx, my = anchor.x, anchor.y
-    cover_rx = max(4.0, anchor.width * 0.55)
-    cover_ry = max(3.0, anchor.height * 0.55, anchor.width * 0.16)
-    _fill_ellipse(out, mx, my, cover_rx, cover_ry, skin_px)
+    mx, my = float(anchor.x), float(anchor.y)
+    talk_w = _talk_width(anchor)
     open_amt = float(np.clip(openness, 0.0, 1.0))
-    if open_amt < 0.08:
-        _fill_ellipse(out, mx, my, cover_rx * 0.72, max(1.4, anchor.width * 0.035), (90, 45, 45, 255))
+    cover_rx = max(talk_w * 0.58, float(anchor.width) * 0.75)
+    cover_ry = max(talk_w * 0.20, float(anchor.height) * 0.85, 4.0)
+    _fill_ellipse(out, mx, my, cover_rx, cover_ry, skin_px)
+    if open_amt < 0.10:
+        _fill_ellipse(out, mx, my, talk_w * 0.42, max(1.8, talk_w * 0.045), (110, 52, 52, 255))
         return out
-    rx = anchor.width * (0.42 + 0.08 * open_amt)
-    ry = max(2.0, anchor.width * (0.05 + 0.32 * open_amt))
-    ry = min(ry, max(cover_ry, anchor.width * 0.42))
-    _fill_ellipse(out, mx, my, rx, ry, (50, 12, 18, 255))
-    if open_amt > 0.38:
-        _fill_ellipse(out, mx, my - ry * 0.22, rx * 0.62, max(1.5, ry * 0.28), (250, 248, 242, 255))
+    rx = talk_w * (0.40 + 0.12 * open_amt)
+    ry = talk_w * (0.08 + 0.26 * open_amt)
+    # 上端は元の口の近くに置き、開きは下へ伸ばす。
+    cy = my + ry * 0.55
+    lip = (
+        int(skin[0] * 0.72),
+        int(min(255, skin[1] * 0.48)),
+        int(min(255, skin[2] * 0.45)),
+        255,
+    )
+    _fill_ellipse(out, mx, cy, rx * 1.14, ry * 1.22, lip)
+    _fill_ellipse(out, mx, cy, rx, ry, (58, 14, 20, 255))
+    if open_amt > 0.34:
+        _fill_ellipse(out, mx, cy - ry * 0.48, rx * 0.62, max(1.6, ry * 0.24), (250, 248, 242, 255))
+    if open_amt > 0.68:
+        _fill_ellipse(out, mx, cy + ry * 0.28, rx * 0.48, max(1.6, ry * 0.22), (186, 78, 84, 255))
     return out
 
 
-def mouth_levels(rgba: np.ndarray, levels: int = 7) -> tuple[list[np.ndarray], MouthAnchor | None]:
+def mouth_levels(rgba: np.ndarray, levels: int = 12) -> tuple[list[np.ndarray], MouthAnchor | None]:
     anchor = mouth_anchor(rgba)
     if anchor is None:
         return [rgba.copy() for _ in range(levels)], None
