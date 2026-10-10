@@ -71,6 +71,17 @@ PYTHONPATH=. python -m irasutoya_short doctor
 
 青山龍星は使わない。個人事業や法人だと、クレジットがあっても事前許可が要るため。
 
+## 台本だけ
+
+種の1行から、いらすとや用と H3 用の JSON を書く。動画は作らない。投稿しない。秒は実測の型のまま。`XAI_API_KEY` が要る。値は表示しない。
+
+```bash
+cd tools/irasutoya-short
+PYTHONPATH=. python -m irasutoya_short script "会計を押し付けられた" --out work/script
+```
+
+`work/script/irasutoya.json` と `work/script/h3.json` が出る。参考アカウントの名前、元動画のせりふ、URL、動画内の誘導は入れない。
+
 ## 作る
 
 ```bash

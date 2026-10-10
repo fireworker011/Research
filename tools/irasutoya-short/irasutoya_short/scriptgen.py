@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import os
 import re
+import urllib.error
+import urllib.request
 
 from irasutoya_short.catalog import ASSET_CATALOG, VOICES
 from irasutoya_short.constants import MAX_SCENES, MIN_SCENES
@@ -206,3 +210,194 @@ def _validate(scenes: list[dict], punchline: str, closing: str) -> None:
             continue
         if "\n" not in scene["telop"] and len(scene["telop"]) > 14:
             raise ValueError(f"シーン{scene['id']}のテロップに改行がありません。")
+
+
+# Grokbot の1本は10秒。care の 10.03 / 9.53 / 8.63 をこの枠に載せたもの。新しい秒は作らない。
+H3_SECONDS = (10, 10, 10)
+MODEL = "grok-4.7"
+API_URL = "https://api.x.ai/v1/chat/completions"
+MOUTH = "口は閉じたまま、話していない。"
+_DRAFT_KEYS = (
+    "series_character",
+    "hook",
+    "rival_line",
+    "situation",
+    "card",
+    "counter",
+    "punchline",
+    "worry",
+    "action",
+    "result",
+    "worry_picture",
+    "action_picture",
+    "result_picture",
+)
+_BANNED = (
+    "http://",
+    "https://",
+    "#pr",
+    "あなたなら",
+    "詳しくは",
+    "プロフィールのリンク",
+    "概要欄",
+    "junjun",
+    "yako.shiawasekon",
+    "nuts0629",
+    "the.care.logic",
+    "私に手足をくれる人が見つかったの",
+    "手術は、無事に成功した",
+    "おい、そこのデブ",
+)
+DRAFT_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {key: {"type": "string"} for key in _DRAFT_KEYS},
+    "required": list(_DRAFT_KEYS),
+}
+_SYSTEM = (
+    "種から日本語の短い台本の欄だけを返す。"
+    "秒、再生数、ショット数は書かない。"
+    "参考アカウントの名前、元動画のせりふ、URL、#PR、概要欄、プロフィール誘導、"
+    "「あなたならどうする」は書かない。医療の効能は書かない。"
+    "rival_line は相手の一言。situation は状況。card は黒地の一文。"
+    "counter は主人公の対抗。punchline はオチで、解説で締めない。"
+    "worry と action と result はそれぞれ2文まで。"
+    "絵の欄にせりふの鍵括弧は入れない。人物は架空の役割名だけ。"
+)
+
+
+def check_draft(draft: dict) -> None:
+    """モデルの欄を、実測の型に合うか見る。秒はここには無い。"""
+    if not isinstance(draft, dict):
+        raise ValueError("台本の欄が揃っていません。")
+    missing = [key for key in _DRAFT_KEYS if not str(draft.get(key) or "").strip()]
+    if missing:
+        raise ValueError("空の欄があります。" + "、".join(missing))
+    blob = "\n".join(str(draft[key]) for key in _DRAFT_KEYS)
+    lowered = blob.lower()
+    for banned in _BANNED:
+        if banned.lower() in lowered:
+            raise ValueError("参考の文、誘導、URLは台本に入れません。")
+    for key in ("rival_line", "card"):
+        if re.search(r"[。！？]", str(draft[key])):
+            raise ValueError(f"{key}は1文にします。")
+    for key in ("worry_picture", "action_picture", "result_picture"):
+        if "「" in str(draft[key]) or "」" in str(draft[key]):
+            raise ValueError("絵の欄にせりふは入れません。")
+    for key in ("worry", "action", "result"):
+        count = len(_sentences(str(draft[key])))
+        if count < 1 or count > 2:
+            raise ValueError(f"{key}は2文までです。今は{count}文です。")
+
+
+def brief_from_draft(draft: dict) -> dict:
+    """既存の generate_script が読む箇条書きにする。最初の「」がフック。"""
+    check_draft(draft)
+    situation = str(draft["situation"]).strip()
+    rival = str(draft["rival_line"]).strip()
+    return {
+        "hook": str(draft["hook"]).strip(),
+        "series_character": str(draft["series_character"]).strip(),
+        "bullets": [
+            f"{situation}「{rival}」",
+            str(draft["card"]).strip(),
+            str(draft["counter"]).strip(),
+        ],
+        "punchline": str(draft["punchline"]).strip(),
+        "closing": "",
+    }
+
+
+def _picture(text: str) -> str:
+    body = str(text).strip().rstrip("。")
+    return f"{body}。{MOUTH}正面、上半身。"
+
+
+def h3_from_draft(draft: dict) -> dict:
+    """3シーン×10秒。テロップは空。口は閉じたまま。動画は作らない。"""
+    check_draft(draft)
+    narrations = [str(draft[key]).strip() for key in ("worry", "action", "result")]
+    pictures = [str(draft[key]).strip() for key in ("worry_picture", "action_picture", "result_picture")]
+    scenes = []
+    source = []
+    for index, (narration, picture) in enumerate(zip(narrations, pictures), start=1):
+        name = f"scene_0{index}.mp4"
+        scenes.append({"video": name, "narration": narration, "telop_text": ""})
+        source.append(
+            {
+                "video": name,
+                "duration": H3_SECONDS[index - 1],
+                "image_prompt": _picture(picture),
+                "motion_prompt": "口を閉じたまま、話さない。カメラは固定。",
+            }
+        )
+    return {
+        "project_id": "script-auto",
+        "genre": "スカッと",
+        "title": str(draft["hook"]).strip(),
+        "description": "\n".join(narrations) + "\n",
+        "tags": [],
+        "bgm": "",
+        "telop": False,
+        "final_filename": "script-auto.mp4",
+        "character": "人物は全シーンで同じ。口は閉じたまま。",
+        "note": "H3は10秒が3つ。テロップは空。アフィURLは無し。このJSONでは動画を作らない。",
+        "source_scenes": source,
+        "scenes": scenes,
+    }
+
+
+def auto_scripts(seed: str, complete) -> dict:
+    """種から、いらすとや台本とH3台本を返す。complete が欄を埋める。"""
+    if not str(seed).strip():
+        raise ValueError("種が空です。")
+    draft = complete(str(seed).strip())
+    brief = brief_from_draft(draft)
+    return {"irasutoya": generate_script(brief), "h3": h3_from_draft(draft)}
+
+
+def _draft_from_response(payload: dict) -> dict:
+    try:
+        content = payload["choices"][0]["message"]["content"]
+        draft = json.loads(content)
+    except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError("台本のJSONを読めませんでした。") from exc
+    if not isinstance(draft, dict):
+        raise ValueError("台本のJSONがオブジェクトではありません。")
+    return draft
+
+
+def _post_json(body: dict, api_key: str) -> dict:
+    data = json.dumps(body).encode("utf-8")
+    request = urllib.request.Request(
+        API_URL,
+        data=data,
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")[:300].replace(api_key, "")
+        raise ValueError(f"台本の生成が失敗しました。HTTP {exc.code}。{detail}") from None
+
+
+def grok_complete(seed: str, *, api_key: str | None = None, post=None) -> dict:
+    """XAI_API_KEY で欄を埋める。キーの値は表示しない。"""
+    key = api_key if api_key is not None else os.environ.get("XAI_API_KEY", "")
+    if not str(key).strip():
+        raise ValueError("XAI_API_KEY がありません。")
+    body = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": _SYSTEM},
+            {"role": "user", "content": seed},
+        ],
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": "script_draft", "strict": True, "schema": DRAFT_SCHEMA},
+        },
+    }
+    payload = post(body, key) if post is not None else _post_json(body, key)
+    return _draft_from_response(payload)

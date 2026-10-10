@@ -6,6 +6,7 @@
 - いらすとやスカッと用の穴埋め: [irasutoya-sukatto.md](irasutoya-sukatto.md)
 - H3用の穴埋め: [h3-daily.md](h3-daily.md)
 - この型で書いた台本: [scripts/irasutoya-ogori.json](scripts/irasutoya-ogori.json) と [scripts/h3-ogori.json](scripts/h3-ogori.json)
+- 種から同じ型の JSON を書く: `tools/irasutoya-short` の `python -m irasutoya_short script "種" --out フォルダ`。動画は作らない。投稿しない。
 
 既存4アカウントの数字は、ブランチ `cursor/affi-template-bake-44d6` の `research/affi-templates/reference-accounts/2026-10-09-visual-kata.md`（2026-10-09 の再生数）と `shots_*.csv`、仕様書 `source/spec_*.md`（2026-10-04。再生数はこちらの方が小さい）から転記した。再生数は kata の表を使う。
 
