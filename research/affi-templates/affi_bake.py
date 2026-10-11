@@ -116,6 +116,7 @@ TASK_CHOICES = (
     ("自分の文で1本", "i2v"),
     ("元動画を再現", "repro"),
     ("構成のまま1本", "sheet"),
+    ("mp4の構成で差し替える", "homage"),
 )
 SPLIT_CHOICES = (
     ("画質優先（短く切る）", "quality"),
@@ -290,7 +291,7 @@ def pack_for(handle: str, mode: str | None, fill: str) -> dict[str, Any]:
 
 
 def resolve_task(label: str) -> str:
-    """Map the one menu to table, job, i2v, repro, or sheet."""
+    """Map the one menu to table, job, i2v, repro, sheet, or homage."""
     tasks = {text: task for text, task in TASK_CHOICES}
     tasks.update({task: task for _text, task in TASK_CHOICES})
     found = tasks.get(label)
@@ -370,6 +371,14 @@ def next_step(task: str) -> str:
             "空の欄は入力のままなので焼きません。"
             "ready のあと「焼く」。H3 は絵だけです。"
             "絵ができたあと「仕上げ」で、声、口、字幕、曲を足します。"
+        )
+    if kind == "homage":
+        return (
+            "次は「この1本」で人、動物、セリフ、場所を書いて、そのセルを押し、それから「実行」です。"
+            "元動画のカットと、読めたせりふの秒は動かしません。"
+            "新しいせりふがその秒に入らないときは、焼く前に止まります。"
+            "ready のあと「焼く」。H3 は絵と口の開閉だけです。"
+            "絵ができたあと「仕上げ」で、声、字幕、曲を、測った口の秒に合わせます。"
         )
     raise RuntimeError(f"やることが無い: {kind}")
 
@@ -747,6 +756,8 @@ def commands_file(
         return root / "repro" / "commands.txt"
     if kind == "sheet":
         return root / "sheet" / "commands.txt"
+    if kind == "homage":
+        return root / "homage" / "commands.txt"
     if kind == "job":
         if not handle:
             return None
@@ -835,6 +846,7 @@ def run_choice(
     sheet_place: str = "",
     sheet_lines: str = "",
     sheet_pack: str = "",
+    sheet_images: Mapping[str, str] | None = None,
 ) -> str:
     """Run the one selected action. A job or an I2V command is written. mp4 is not rendered unless bake_here."""
     kind = resolve_task(task)
@@ -874,6 +886,17 @@ def run_choice(
             bgm,
             out_dir,
             sheet_pack,
+        )
+    if kind == "homage":
+        return _run_homage(
+            video,
+            sheet_person,
+            sheet_animals,
+            sheet_place,
+            sheet_lines,
+            sheet_images,
+            bgm,
+            out_dir,
         )
     raise RuntimeError(f"やることが無い: {kind}")
 
@@ -1539,14 +1562,24 @@ def _argv(
     return args
 
 
+def _clip_task_image(clip: Mapping[str, Any], image: str, task: str) -> tuple[str, str]:
+    """A clip image wins. Jobs that never set one keep the single job image."""
+    if "task" in clip or "image" in clip:
+        use_image = str(clip["image"]) if "image" in clip else image
+        use_task = str(clip["task"]) if clip.get("task") else ("fl2va" if use_image else "t2va")
+        return use_task, use_image
+    return task, image
+
+
 def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str, task: str) -> str:
+    use_task, use_image = _clip_task_image(clip, image, task)
     args = _argv(
-        task=task,
+        task=use_task,
         prompt_file=job_dir / "prompts" / str(clip["prompt_name"]),
         duration_s=float(clip["request_s"]),
         aspect=aspect,
         out_path=job_dir / "clips" / f"{clip['id']}.mp4",
-        image="" if task == "t2va" else image,
+        image="" if use_task == "t2va" else use_image,
     )
     return " ".join(shlex.quote(part) for part in args)
 
@@ -1657,14 +1690,24 @@ def _write_finish(
     )
 
 
-def _shot_groups(shots: Sequence[Mapping[str, Any]]) -> list[list[Mapping[str, Any]]]:
-    """Consecutive shots. Each group is one H3 request, or one shot that must be split."""
+def _shot_groups(
+    shots: Sequence[Mapping[str, Any]],
+    still_of: Any = None,
+) -> list[list[Mapping[str, Any]]]:
+    """Consecutive shots. Each group is one H3 request, or one shot that must be split.
+
+    ``still_of`` splits a group when the next shot needs a different still.
+    H3 takes one ``--image`` per request.
+    """
     groups: list[list[Mapping[str, Any]]] = []
     index = 0
     total = len(shots)
     while index < total:
         best = index
+        anchor = None if still_of is None else still_of(shots[index])
         for end in range(index, total):
+            if still_of is not None and still_of(shots[end]) != anchor:
+                break
             span = round(float(shots[end]["end_s"]) - float(shots[index]["start_s"]), 3)
             if span > MAX_DURATION_S:
                 break
@@ -1677,37 +1720,65 @@ def _shot_groups(shots: Sequence[Mapping[str, Any]]) -> list[list[Mapping[str, A
     return groups
 
 
-def plan_sheet(
+_ONE_STILL = "この範囲は話者の静止画だけ。同時にいる役の顔は固定できない。H3 の --image は1枚。"
+
+
+def _still_for(
+    shot: Mapping[str, Any],
+    captions: Sequence[Mapping[str, Any]],
+    stills: Mapping[str, str],
+) -> str:
+    """The speaking role's still. The first speaker who has a file wins."""
+    for row in captions:
+        if row["shot"] != shot["id"]:
+            continue
+        path = str(stills.get(str(row["role"])) or "").strip()
+        if path:
+            return path
+    return ""
+
+
+def _caption_window(row: Mapping[str, Any], cue: Mapping[str, Any] | None) -> tuple[float, float, bool]:
+    """Homage lines keep the measured speech seconds. Other sheets keep the cue."""
+    fit = row.get("fit_s")
+    if fit and len(fit) == 2 and float(fit[1]) > float(fit[0]):
+        return float(fit[0]), float(fit[1]), True
+    if cue is None:
+        start = float(row["seen_s"][0])
+        return start, start + 0.4, False
+    return float(cue["start_s"]), float(cue["end_s"]), True
+
+
+def _job_from_pack(
+    filled: Mapping[str, Any],
+    reasons: list[str],
+    image_text: str,
+    bgm_text: str,
     *,
-    person: str = "",
-    animals: Mapping[str, str] | None = None,
-    place: str = "",
-    lines_text: str = "",
-    image: str | None = None,
-    bgm: str = "",
-    pack_path: str = "",
+    stills: Mapping[str, str] | None = None,
+    extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
-    pack = structure.load(structure.pack_file(pack_path))
-    spoken = structure.parse_lines(structure.read_lines(lines_text), [row["id"] for row in pack["captions"]])
-    filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
-    reasons = structure.blocked(filled)
-    image_text = (image or "").strip()
-    bgm_text = str(bgm or "").strip()
-    if image_text and not Path(image_text).is_file():
-        reasons.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
-    if bgm_text and not Path(bgm_text).is_file():
-        reasons.append("曲のファイルが無い。場所を直すか、欄を空にする。")
-    task = "fl2va" if image_text else "t2va"
+    """Picture clips for one filled sheet. H3 does not get the spoken line."""
+    use_stills = stills is not None
+    still_map = dict(stills or {})
+
+    def shot_alone(shot: Mapping[str, Any]) -> str:
+        """Homage keeps each measured cut as its own join. A shared still does not merge shots."""
+        return str(shot["id"])
+
+    notes: list[str] = []
+    if use_stills and any(len(shot.get("on_screen") or []) > 1 for shot in filled["shots"]):
+        notes.append(_ONE_STILL)
     clips: list[dict[str, Any]] = []
     serial = 1
-    for group in _shot_groups(filled["shots"]):
+    for group in _shot_groups(filled["shots"], shot_alone if use_stills else None):
         cursor = float(group[0]["start_s"])
         span = round(float(group[-1]["end_s"]) - cursor, 3)
         pieces = split_trim(span)
         first = str(group[0]["id"])
         last = str(group[-1]["id"])
         span_name = first if first == last else f"{first}-{last}"
+        still = _still_for(group[0], filled["captions"], still_map) if use_stills else ""
         for part_index, trim_s in enumerate(pieces):
             request_s = _request_seconds(trim_s)
             if not _accepts(request_s):
@@ -1719,20 +1790,22 @@ def plan_sheet(
             prompt = structure.picture_prompt(filled, cursor, end_s)
             if request_s > trim_s + 0.05:
                 prompt += f"After {_num(trim_s)} seconds the same frame holds. The mouth stays still.\n"
-            clips.append(
-                {
-                    "id": clip_id,
-                    "cut_ids": [str(shot["id"]) for shot in group],
-                    "trim_s": trim_s,
-                    "request_s": request_s,
-                    "prompt_name": f"{clip_id}.txt",
-                    "prompt": prompt,
-                    "part_index": part_index,
-                    "part_count": len(pieces),
-                    "start_s": round(cursor, 3),
-                    "end_s": end_s,
-                }
-            )
+            clip = {
+                "id": clip_id,
+                "cut_ids": [str(shot["id"]) for shot in group],
+                "trim_s": trim_s,
+                "request_s": request_s,
+                "prompt_name": f"{clip_id}.txt",
+                "prompt": prompt,
+                "part_index": part_index,
+                "part_count": len(pieces),
+                "start_s": round(cursor, 3),
+                "end_s": end_s,
+            }
+            if use_stills:
+                clip["image"] = still
+                clip["task"] = "fl2va" if still else "t2va"
+            clips.append(clip)
             cursor = end_s
             serial += 1
     cues = affi_post.cues_from_structure(filled)
@@ -1740,26 +1813,19 @@ def plan_sheet(
     captions = []
     for row in filled["captions"]:
         cue = by_cue.get(row["id"])
-        if cue is None:
-            captions.append(
-                {
-                    "id": row["id"],
-                    "role": row["role"],
-                    "start_s": float(row["seen_s"][0]),
-                    "end_s": float(row["seen_s"][0]) + 0.4,
-                    "text": str(row["line"]),
-                    "burn": False,
-                }
-            )
-            continue
+        voice = affi_post.voice_for(str(row["role"]), filled.get("voices"))
+        start_s, end_s, burn = _caption_window(row, cue)
+        if cue is None and not row.get("fit_s"):
+            burn = False
         captions.append(
             {
                 "id": row["id"],
                 "role": row["role"],
-                "start_s": cue["start_s"],
-                "end_s": cue["end_s"],
-                "text": cue["text"],
-                "burn": True,
+                "voice": (cue or {}).get("voice") or voice,
+                "start_s": start_s,
+                "end_s": end_s,
+                "text": str(row["line"]),
+                "burn": burn and str(row["line"]) not in affi_post.SKIP_LINES,
             }
         )
     cuts = [
@@ -1774,7 +1840,11 @@ def plan_sheet(
     covered = round(sum(float(clip["trim_s"]) for clip in clips), 3)
     if abs(covered - float(filled["duration_s"])) > 0.02:
         reasons.append(f"範囲の合計 {_num(covered)} 秒が尺 {_num(filled['duration_s'])} 秒と違う")
-    return {
+    if use_stills:
+        task = "fl2va" if any(str(clip.get("image") or "") for clip in clips) else "t2va"
+    else:
+        task = "fl2va" if image_text else "t2va"
+    job: dict[str, Any] = {
         "status": "blocked" if reasons else "ready",
         "blocked": reasons,
         "task": task,
@@ -1794,6 +1864,35 @@ def plan_sheet(
         "source_id": filled["source_id"],
         "posts": False,
     }
+    if notes:
+        job["notes"] = notes
+    if extra:
+        job.update(extra)
+    return job
+
+
+def plan_sheet(
+    *,
+    person: str = "",
+    animals: Mapping[str, str] | None = None,
+    place: str = "",
+    lines_text: str = "",
+    image: str | None = None,
+    bgm: str = "",
+    pack_path: str = "",
+) -> dict[str, Any]:
+    """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
+    pack = structure.load(structure.pack_file(pack_path))
+    spoken = structure.parse_lines(structure.stock_lines(pack_path, lines_text), [row["id"] for row in pack["captions"]])
+    filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
+    reasons = structure.blocked(filled)
+    image_text = (image or "").strip()
+    bgm_text = str(bgm or "").strip()
+    if image_text and not Path(image_text).is_file():
+        reasons.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
+    if bgm_text and not Path(bgm_text).is_file():
+        reasons.append("曲のファイルが無い。場所を直すか、欄を空にする。")
+    return _job_from_pack(filled, reasons, image_text, bgm_text)
 
 
 def _run_sheet(
@@ -1834,6 +1933,202 @@ def _run_sheet(
         lines.append("空の欄があるので焼かない。")
     lines.append("mp4 は焼いていない。投稿していない。")
     return "\n".join(lines)
+
+
+def _speech_rows(
+    path: Path | None,
+    speech: Sequence[Mapping[str, Any]] | None,
+    turns: Sequence[tuple[float, float, str]] | None,
+    *,
+    readable: bool,
+) -> list[dict[str, Any]]:
+    """Speech times and speakers. The spoken words are dropped before the sheet is built."""
+    if speech is not None:
+        rows = [dict(row) for row in speech]
+        known = True
+    elif readable and path is not None:
+        rows, _note, known = affi_speech.read_source_speech(path)
+        rows = [dict(row) for row in rows]
+        if not known:
+            raise ValueError("せりふが読めない。文は足さない。")
+    else:
+        raise ValueError("せりふが読めない。文は足さない。")
+    if not known:
+        raise ValueError("せりふが読めない。文は足さない。")
+    chosen = turns
+    if chosen is None and speech is None and readable and path is not None:
+        chosen, _turn_note = affi_media.diarize(path)
+    if rows:
+        affi_speech.assign_speakers(rows, chosen)
+    clean = []
+    for row in rows:
+        clean.append(
+            {
+                "start_s": float(row["start_s"]),
+                "end_s": float(row["end_s"]),
+                "speaker": str(row.get("speaker") or ""),
+            }
+        )
+    return clean
+
+
+def plan_homage(
+    *,
+    video: str = "",
+    person: str = "",
+    animals: Mapping[str, str] | None = None,
+    place: str = "",
+    lines_text: str = "",
+    role_images: Mapping[str, str] | None = None,
+    bgm: str = "",
+    probe: Any = None,
+    cuts: Sequence[float] | None = None,
+    speech: Sequence[Mapping[str, Any]] | None = None,
+    turns: Sequence[tuple[float, float, str]] | None = None,
+    duration_s: float | None = None,
+) -> dict[str, Any]:
+    """Replace person, lines, and place. Cut times stay on the source.
+
+    Unmeasured camera movement and unmeasured cast are not written into the shot.
+    A new line that does not fit the measured speech seconds stops the job.
+    Each clip takes the speaking role's still. H3 still has one ``--image``.
+    """
+    path_text = (video or "").strip()
+    source = Path(path_text) if path_text else None
+    need_file = duration_s is None or cuts is None or speech is None
+    if need_file and (source is None or not source.is_file()):
+        raise ValueError("元動画のファイルが無い。場所を直す。")
+    measured = float(duration_s) if duration_s is not None else None
+    if measured is None and source is not None:
+        try:
+            measured = probe_duration_s(source)
+        except (OSError, subprocess.SubprocessError, RuntimeError, ValueError) as exc:
+            raise ValueError(f"秒数が測れない。{exc}") from exc
+    if cuts is None and source is not None:
+        cuts = affi_media.detect_cuts(source)
+    rows = _speech_rows(source, speech, turns, readable=source is not None and source.is_file())
+    pack = structure.homage_pack(duration_s=float(measured), cuts=cuts, lines=rows)
+    spoken = structure.parse_lines(structure.read_lines(lines_text), [row["id"] for row in pack["captions"]])
+    filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
+    reasons = structure.blocked(filled)
+    reasons.extend(structure.line_fit_reasons(filled, probe if probe is not None else _voice_probe(filled)))
+    bgm_text = str(bgm or "").strip()
+    if bgm_text and not Path(bgm_text).is_file():
+        reasons.append("曲のファイルが無い。場所を直すか、欄を空にする。")
+    stills: dict[str, str] = {}
+    for role, raw in dict(role_images or {}).items():
+        text = str(raw or "").strip()
+        if not text:
+            continue
+        if not Path(text).is_file():
+            reasons.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
+            continue
+        stills[str(role)] = text
+    job = _job_from_pack(
+        filled,
+        reasons,
+        "",
+        bgm_text,
+        stills=stills,
+        extra={
+            "video": path_text,
+            "source_cuts": [float(item) for item in filled["cuts_s"]],
+            "source_turns": [
+                {"start_s": float(row["fit_s"][0]), "end_s": float(row["fit_s"][1]), "role": row["role"]}
+                for row in filled["captions"]
+            ],
+        },
+    )
+    return job
+
+
+def _voice_probe(pack: Mapping[str, Any]) -> Any:
+    voices = pack.get("voices")
+
+    def probe(text: str, role: str) -> float | None:
+        return affi_post.speak_seconds(text, role, voices)
+
+    return probe
+
+
+def _run_homage(
+    video: str,
+    person: str,
+    animals: Mapping[str, str] | None,
+    place: str,
+    lines_text: str,
+    role_images: Mapping[str, str] | None,
+    bgm: str,
+    out_dir: str | Path | None,
+) -> str:
+    try:
+        job = plan_homage(
+            video=video,
+            person=person,
+            animals=animals,
+            place=place,
+            lines_text=lines_text,
+            role_images=role_images,
+            bgm=bgm,
+        )
+    except ValueError as exc:
+        return f"止まった: {exc}"
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    path = write_job(job, root / "homage")
+    spoken = [row for row in job["performance"]["captions"]["rows"] if row.get("burn")]
+    lines = [
+        f"mp4の構成で差し替える。{_num(float(job['duration_s']))}秒。ショット{len(job['cuts'])}。セリフ{len(spoken)}。",
+        "カットは動かさない。新しいせりふがその秒に入らないときは、焼く前に止まる。",
+        "H3 は絵と口の開閉だけ。声、字幕、曲は「仕上げ」。",
+        "一致はカット、ショット順、誰がいつ話すか。全体の割合は出さない。元のせりふとは比べない。",
+        f"status={job['status']}",
+        f"書いた {path.parent}",
+    ]
+    lines.extend(job.get("notes") or [])
+    lines.extend(job["blocked"])
+    if job["status"] == "ready":
+        lines.append(f"範囲 {len(job['clips'])} 本。次は「焼く」。絵のあと「仕上げ」。")
+    else:
+        lines.append("焼かない。")
+    lines.append("mp4 は焼いていない。投稿していない。")
+    return "\n".join(lines)
+
+
+def measure_homage_clip(job_dir: Path, out_path: Path) -> str:
+    """Cuts, shot order, and who speaks when. The picture's faces are not read."""
+    job = json.loads((Path(job_dir) / "job.json").read_text(encoding="utf-8"))
+    clip_id = Path(out_path).stem
+    clip = next((row for row in job.get("clips") or [] if row["id"] == clip_id), None)
+    if clip is None:
+        return f"{clip_id}: ジョブに無い範囲"
+    start = float(clip["start_s"])
+    end = float(clip["end_s"])
+    found = affi_media.detect_cuts(Path(out_path))
+    source_cuts = job.get("source_cuts")
+    edge = 1 / 24
+    wanted = None
+    if source_cuts is not None:
+        wanted = [round(float(cut) - start, 3) for cut in source_cuts if start + edge < float(cut) < end - edge]
+    baked = None
+    if found is not None:
+        baked = [cut for cut in found if cut < (end - start) - edge]
+    source_turns = _roles_in(job.get("source_turns") or [], start, end)
+    planned = _roles_in(job.get("performance", {}).get("captions", {}).get("rows") or [], start, end)
+    report = affi_match.structure_report(wanted, baked, source_turns, planned)
+    affi_match.write_report(Path(out_path).with_suffix(".structure.json"), report)
+    return f"{clip_id}: {affi_match.structure_text(report)}"
+
+
+def _roles_in(rows: Sequence[Mapping[str, Any]], start: float, end: float) -> list[dict[str, Any]]:
+    local = []
+    for row in rows:
+        left = max(float(row["start_s"]), start)
+        right = min(float(row["end_s"]), end)
+        role = str(row.get("role") or row.get("speaker") or "")
+        if not role or right - left <= 0:
+            continue
+        local.append({"start_s": round(left - start, 3), "end_s": round(right - start, 3), "role": role})
+    return local
 
 
 def i2v_second_choices() -> list[str]:
@@ -2798,7 +3093,7 @@ def choice_cell() -> str:
             '#@title 選ぶ { display-mode: "form" }',
             "#@markdown やりたいことを1つ選んで、このセルを実行する。上の「すべてのセルを実行」は押さない。",
             f"何をする = {_py(tasks[1])} #@param {_param_list(tasks)}",
-            "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文、元動画を再現、構成のまま1本では無視する。",
+            "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文、元動画を再現、構成のまま1本、mp4の構成で差し替える、では無視する。",
             f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
             "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの話では無視する。",
             f"ドッグフードの型 = {_py(patterns[0])} #@param {_param_list(patterns)}",
@@ -2808,7 +3103,8 @@ def choice_cell() -> str:
             '台詞 = "" #@param {type:"raw"}',
             "#@markdown 静止画は空でよい。話と自分の文では、空なら文章から焼く。ファイルを書くと、その画像が最初のコマになる。元動画を再現では、空のままが元の見た目。ファイルを書くと、見た目だけその画像になる。",
             '静止画 = "" #@param {type:"string"}',
-            "#@markdown 元動画を再現するときだけ、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。",
+            "#@markdown 元動画を再現するときは、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。",
+            "#@markdown mp4の構成で差し替えるときも、同じ欄に mp4 を書く。使うのはカットと、せりふの秒と話者だけ。絵、顔、場所、せりふの文は使わない。",
             '元動画 = "" #@param {type:"string"}',
             "#@markdown 元動画の範囲の切り方。画質優先は短く切って画角を上げる。本数は増える。本数を減らすは長く切る。画角は下がる。",
             f"範囲の切り方 = {_py(SPLIT_CHOICES[0][0])} #@param {_param_list([text for text, _key in SPLIT_CHOICES])}",
@@ -2861,7 +3157,7 @@ def run_cell() -> str:
             '    print("先に上の「選ぶ」を実行してください。")',
             "else:",
             '    out = Path("/content/affi-bake") if Path("/content").is_dir() else Path("affi-bake")',
-            '    if 何をする == "元動画を再現" and Path("/content").is_dir():',
+            '    if 何をする in {"元動画を再現", "mp4の構成で差し替える"} and Path("/content").is_dir():',
             '        if shutil.which("ffprobe") is None:',
             '            subprocess.check_call(["apt-get", "update", "-qq"])',
             '            subprocess.check_call(["apt-get", "install", "-y", "-qq", "ffmpeg"])',
@@ -2919,6 +3215,12 @@ def run_cell() -> str:
             '        sheet_place=globals().get("場所", ""),',
             '        sheet_lines=globals().get("セリフ", ""),',
             '        sheet_pack=globals().get("構成", ""),',
+            "        sheet_images={",
+            '            "guest": globals().get("客の静止画", ""),',
+            '            "retort": globals().get("ツッコミの静止画", ""),',
+            '            "polite": globals().get("丁寧の静止画", ""),',
+            '            "owner": globals().get("人の静止画", ""),',
+            "        },",
             "    )",
             '    if 何をする == "表を見る" and display is not None and Markdown is not None:',
             "        display(Markdown(text))",
@@ -3095,6 +3397,7 @@ else:
 
                                     prepare_fast_loras(cache / "loras")
                         repro = affi_bake.resolve_task(task) == "repro"
+                        homage = affi_bake.resolve_task(task) == "homage"
                         made = False
                         finished = True
                         for line in lines:
@@ -3128,6 +3431,11 @@ else:
                                     print(affi_bake.measure_repro_clip(path.parent, local_out))
                                 except Exception as exc:
                                     print("一致は測れなかった", exc)
+                            if homage:
+                                try:
+                                    print(affi_bake.measure_homage_clip(path.parent, local_out))
+                                except Exception as exc:
+                                    print("構成の一致は測れなかった", exc)
                             if on_colab:
                                 try:
                                     saved = affi_bake.publish_job_dir(path.parent)
@@ -3176,18 +3484,25 @@ def sheet_form_cell() -> str:
     for row in pack["captions"]:
         guide.append(f"#@markdown {row['id']} {structure.ROLE_JA[row['role']]}")
     body = "\n".join(guide)
+    menu = _param_list(["71.552秒", *[row["name"] for row in structure.story_index()]])
     return f"""#@title この1本 {{ display-mode: "form" }}
-#@markdown 「選ぶ」で構成のまま1本を選んだときだけ使う。人、動物、セリフ、場所だけ書く。
-#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml（URL でも可）。セリフは stories/pet_sheet_lines.txt のパスか、その中身。
+#@markdown 「選ぶ」で構成のまま1本、または mp4の構成で差し替える、を選んだとき使う。人、動物、セリフ、場所だけ書く。
+#@markdown 構成は stories/INDEX.md の名前。71.552秒は固定のシート。パスも書ける。行を足してノートを作り直すと、この欄に増える。mp4の構成で差し替えるときは、構成欄は使わない。
+#@markdown セリフが空で、構成が台本の名前なら、その _lines.txt を読む。書いたセリフが優先。mp4の構成では、空のセリフは読まない。
+#@markdown 静止画は役ごと。空ならその役は文章から焼く。H3 の画像は1枚なので、話している役の画像だけをその範囲に使う。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
-構成 = "" #@param {{type:"string"}}
+構成 = "71.552秒" #@param {menu} {{allow-input: true}}
 人 = "入力" #@param {{type:"string"}}
 客の動物 = "入力" #@param {{type:"string"}}
 ツッコミの動物 = "入力" #@param {{type:"string"}}
 丁寧の動物 = "入力" #@param {{type:"string"}}
 場所 = "入力" #@param {{type:"string"}}
 セリフ = "" #@param {{type:"raw"}}
+客の静止画 = "" #@param {{type:"string"}}
+ツッコミの静止画 = "" #@param {{type:"string"}}
+丁寧の静止画 = "" #@param {{type:"string"}}
+人の静止画 = "" #@param {{type:"string"}}
 
 import affi_structure as structure
 
@@ -3198,7 +3513,7 @@ try:
         person=人,
         animals={{"guest": 客の動物, "retort": ツッコミの動物, "polite": 丁寧の動物}},
         place=場所,
-        lines=structure.parse_lines(structure.read_lines(セリフ), [row["id"] for row in pack["captions"]]),
+        lines=structure.parse_lines(structure.stock_lines(構成, セリフ), [row["id"] for row in pack["captions"]]),
     )
 except ValueError as exc:
     print("止まった:", exc)
@@ -3215,17 +3530,16 @@ else:
 
 
 def post_cell() -> str:
-    """Voice, mouth, captions, and an own music file after the picture exists. Off by default."""
+    """Voice fitted to the baked mouth, captions, and an own music file. Off by default."""
     return """#@title 仕上げ { display-mode: "form" }
 #@markdown 絵ができたあと、仕上げにチェックを入れてこのセルを押す。H3 は呼ばない。投稿しない。
+#@markdown 焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測る。声はその秒に合わせる。絵の口は変えない。
 #@markdown captions.json の空でないせりふだけを声にする。入力、台詞は入力、burn が false の行は読まない。
-#@markdown 顔が見つかった区間だけ口を開ける。顔が無い区間は絵のまま、声だけ載せる。
-#@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。口のコマンドが空なら、声の大きさで口を開ける。書くときは {video} {audio} {out}。
+#@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。
 仕上げ = False #@param {type:"boolean"}
-口のコマンド = "" #@param {type:"string"}
 
 import json
-import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -3234,7 +3548,10 @@ if not 仕上げ:
     print("仕上げにチェックを入れて、このセルをもう一度押してください。今は声も字幕も足しません。")
 else:
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "opencv-python-headless"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "gTTS"])
+        if shutil.which("espeak-ng") is None:
+            subprocess.check_call(["apt-get", "update", "-qq"])
+            subprocess.check_call(["apt-get", "install", "-y", "-qq", "espeak-ng", "espeak-ng-data"])
     except subprocess.CalledProcessError as exc:
         print(f"止まった: 仕上げの準備に失敗した。終了コード {exc.returncode}。")
     else:
@@ -3270,10 +3587,6 @@ else:
                     bgm = str(globals().get("曲") or "").strip()
                     if not bgm and (job_dir / "job.json").is_file():
                         bgm = str(json.loads((job_dir / "job.json").read_text(encoding="utf-8")).get("bgm_file") or "").strip()
-                    if 口のコマンド.strip():
-                        os.environ["LIPSYNC_CMD"] = 口のコマンド.strip()
-                    else:
-                        os.environ.pop("LIPSYNC_CMD", None)
                     font_ok = True
                     if on_colab and not affi_finish.FONT_DIR.is_dir():
                         try:
@@ -3332,6 +3645,13 @@ def _intro() -> str:
         "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` のパスか、その中身",
         "4. **実行**。ready なら **焼く**（チェックを入れる。マイドライブに MiniMax-H3 が無いときは「重みが無いとき落とす」も入れる。オフだと mp4 は出ない）。絵のあと **仕上げ**。止まったら、そのセルの最後の「止まった:」の行をコピーする。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
         "",
+        "**ふみふみ1本** も、同じ構成のまま1本の入力です。新しい焼き方はありません。",
+        "",
+        "1. **読み込み**",
+        "2. **選ぶ** で「構成のまま1本」を実行",
+        "3. **この1本** で、構成に `stories/paw_stamp.yaml`。人は「出さない」。客の動物は「短い足の茶色い犬」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「昼のリビング。ソファの薄い毛布。床におやつ皿」。セリフは `stories/paw_stamp_lines.txt` のパスか、その中身。ピチカート系の曲ファイルがあれば「選ぶ」の曲欄。無ければ空",
+        "4. **実行**。ready なら **焼く**。絵のあと **仕上げ**。H3 は絵だけ。話している役だけ口が開閉する。せりふの文字はプロンプトに入らない",
+        "",
         "## 押す順番",
         "",
         "ランタイムは最初から **GPU** にします。途中で変えない。変えると、ここまでのファイルが消えます。",
@@ -3340,7 +3660,7 @@ def _intro() -> str:
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
         "4. **焼く**（ready のあと。焼くにチェックを入れて押す。残りの範囲を続けて焼いて、そろったら1本につなぐ。mp4 はマイドライブの affi-bake に残る）",
-        "5. **仕上げ**（絵ができたあと。チェックを入れると、空でないせりふを声にして、顔があれば口を開け、字幕を焼き、自分の曲を重ねる。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
+        "5. **仕上げ**（絵ができたあと。チェックを入れると、焼いた口の開閉を測り、その秒に声を合わせ、字幕を焼き、自分の曲を重ねる。絵の口は変えない。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
@@ -3380,6 +3700,16 @@ def _intro() -> str:
         "FL2VA の Turbo は載せません。重みは transformer_ref です。静止画は空のままが、元の見た目です。",
         "焼いたあと、範囲ごとに音のずれ、カット、せりふの文字を元動画と比べて出します。口の動きそのものは測りません。",
         "",
+        "**mp4の構成で差し替える**",
+        "",
+        "元の mp4 を「元動画」に書きます。測るのはカットの秒、せりふの秒、話者だけです。カメラの動きと、話者以外に誰がいるかは測っていないので書きません。",
+        "人、動物、セリフ、場所だけを「この1本」で置き換えます。元の場所と元の顔はショットの文に残りません。元のせりふの文は入れません。",
+        "カットの秒は動かしません。新しいせりふがその秒に入らないときは、焼く前に止まります。",
+        "役ごとの静止画を書くと、その役が話す範囲の最初のコマに使います。H3 の画像は1枚なので、同時にいるほかの顔は固定できません。",
+        "H3 は口の開閉の絵だけです。声、字幕、曲は「仕上げ」で、焼いた口の秒に合わせます。",
+        "焼いたあとに比べるのは、カットの秒、ショットの順、誰がいつ話すかです。全体の割合は出しません。元のせりふとは比べません。",
+        "このメニューは、読み込みが取る `cursor/affi-template-bake-44d6` にこのコードが入ってから Colab で動きます。",
+        "",
         "## 4つの話",
         "",
     ]
@@ -3416,6 +3746,9 @@ def _loader_cell() -> str:
         "reference-accounts/source/repro/junjun_825k.yaml",
         "stories/pet_sheet.yaml",
         "stories/pet_sheet_lines.txt",
+        "stories/paw_stamp.yaml",
+        "stories/paw_stamp_lines.txt",
+        "stories/INDEX.md",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -3434,6 +3767,7 @@ def _loader_cell() -> str:
             "",
             "from pathlib import Path",
             "import sys",
+            "import urllib.error",
             "import urllib.request",
             "",
             'BRANCH = "cursor/affi-template-bake-44d6"',
@@ -3459,12 +3793,42 @@ def _loader_cell() -> str:
             "    for rel in files:",
             "        dest = LOCAL / rel",
             "        dest.parent.mkdir(parents=True, exist_ok=True)",
-            "        urllib.request.urlretrieve(f\"{RAW}/{rel}\", dest)",
+            "        try:",
+            "            urllib.request.urlretrieve(f\"{RAW}/{rel}\", dest)",
+            "        except urllib.error.HTTPError as exc:",
+            '            print(f"止まった: {rel} が取れない（{exc.code}）。")',
+            "            if rel.endswith('.py'):",
+            "                break",
+            "            continue",
+            "        except Exception as exc:",
+            '            print(f"止まった: {rel} が取れない（{type(exc).__name__}）。")',
+            "            if rel.endswith('.py'):",
+            "                break",
+            "            continue",
             '        print("取りました", rel)',
             "    try:",
             '        urllib.request.urlretrieve(f"{RAW}/data/{DATE}/videos.csv", LOCAL / "data" / DATE / "videos.csv")',
             "    except Exception:",
             '        print("動画一覧は無し。アカウント一覧だけで計算する。")',
+            '    index_path = LOCAL / "stories" / "INDEX.md"',
+            "    if index_path.is_file():",
+            '        for line in index_path.read_text(encoding="utf-8").splitlines():',
+            '            if not line.startswith("|"):',
+            "                continue",
+            '            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]',
+            '            name = cells[0] if cells else ""',
+            '            if not name or name == "名前" or set(name) <= set("-: "):',
+            "                continue",
+            '            for rel in (f"stories/{name}.yaml", f"stories/{name}_lines.txt"):',
+            "                dest = LOCAL / rel",
+            "                if dest.is_file():",
+            "                    continue",
+            "                dest.parent.mkdir(parents=True, exist_ok=True)",
+            "                try:",
+            '                    urllib.request.urlretrieve(f"{RAW}/{rel}", dest)',
+            '                    print("取りました", rel)',
+            "                except Exception:",
+            '                    print("取り込めなかった", rel)',
             "sys.path.insert(0, str(LOCAL))",
             "import affi_reference as ref",
             "ref.ROOT = LOCAL",
@@ -3536,13 +3900,15 @@ def reference_notebook() -> dict[str, Any]:
                 [
                     "# この1本",
                     "",
-                    "「選ぶ」が **構成のまま1本** のときだけ使います。",
+                    "「選ぶ」が **構成のまま1本** または **mp4の構成で差し替える** のとき使います。",
                     "",
-                    "ショット順、秒、カメラ、誰が話すかは固定です。書くのは人、動物、セリフ、場所だけです。",
+                    "構成のまま1本では、ショット順、秒、カメラ、誰が話すかはシートのままです。書くのは人、動物、セリフ、場所だけです。",
+                    "",
+                    "mp4の構成で差し替えるときは、元動画のカットとせりふの秒がシートになります。カメラの動きは測っていません。書くのは人、動物、セリフ、場所と、役ごとの静止画です。",
                     "",
                     "空欄は入力のまま残ります。証拠の文は欄に出ません。ここに書いても、H3 のプロンプトには入れません。",
                     "",
-                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml` と、セリフファイルのパスか中身です。",
+                    "構成欄は `stories/INDEX.md` の名前です。71.552秒は固定のシートです。セリフが空なら、その台本の `_lines.txt` を読みます。書いたセリフが優先です。",
                     "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",
@@ -3566,6 +3932,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
                     "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。カットと無音の位置で 5〜14.4 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
                     "- 構成のまま1本 … 構成欄が空なら 71.552秒。ファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
+                    "- mp4の構成で差し替える … 元動画のカットとせりふの秒を動かさない。人、動物、セリフ、場所だけ替える。せりふがその秒に入らなければ焼く前に止まる。H3 は口の開閉の絵だけ。声、字幕、曲は「仕上げ」。一致はカット、ショット順、誰がいつ話すか。全体の割合は出さない",
                     "",
                 ]
             ),
@@ -3599,6 +3966,7 @@ def reference_notebook() -> dict[str, Any]:
                     "同じ内容で焼いた範囲は焼き直しません。ランタイムが切れても、マイドライブに同じ内容の範囲があれば戻します。",
                     "字幕を焼く話は、日本語のフォント（fonts-noto-cjk）を入れてから焼きます。",
                     "元動画の再現は、範囲ごとに `clips/<番号>.match.json` に、音のずれ、カット、せりふの文字の違いを書きます。口の動きそのものは測りません。",
+                    "mp4の構成で差し替えるは、範囲ごとに `clips/<番号>.structure.json` に、カット、ショット順、誰がいつ話すかを書きます。全体の割合は出しません。元のせりふとは比べません。",
                     "",
                     "投稿しません。",
                     "",
@@ -3621,7 +3989,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "チェックを入れると、`captions.json` の空でないせりふを声にします。`入力` と、burn が false の行は読みません。",
                     "",
-                    "顔が見つかった区間だけ、声の大きさで口を開けます。顔が無い区間は絵のまま、声だけ載せます。",
+                    "焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測ります。声はその秒に合わせます。絵の口は変えません。",
                     "",
                     "字幕は白ゴシック、画面の下から約30%です。曲は「選ぶ」の曲か、ジョブに書いたファイルです。",
                     "",

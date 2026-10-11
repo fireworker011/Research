@@ -192,6 +192,83 @@ def summary_text(clip_id: str, report: Mapping[str, Any]) -> str:
     return " ".join(parts)
 
 
+def _turns(rows: Sequence[Mapping[str, Any]] | None) -> list[tuple[float, float, str]]:
+    out: list[tuple[float, float, str]] = []
+    for row in rows or []:
+        role = str(row.get("role") or row.get("speaker") or "")
+        start = float(row["start_s"])
+        end = float(row["end_s"])
+        if role and end > start:
+            out.append((start, end, role))
+    out.sort()
+    return out
+
+
+def _shot_order(source: Sequence[float], baked: Sequence[float], tolerance_s: float) -> str:
+    left = sorted(float(value) for value in source)
+    right = sorted(float(value) for value in baked)
+    if len(left) != len(right):
+        return "違う"
+    if all(abs(a - b) <= tolerance_s for a, b in zip(left, right)):
+        return "同じ"
+    return "違う"
+
+
+def _same_role(source: Sequence[Mapping[str, Any]], baked: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    """How many source turns overlap a baked turn of the same role. Not a rate."""
+    left = _turns(source)
+    right = _turns(baked)
+    same = 0
+    for start, end, role in left:
+        overlap: dict[str, float] = {}
+        for other_start, other_end, other in right:
+            shared = min(end, other_end) - max(start, other_start)
+            if shared > 0:
+                overlap[other] = overlap.get(other, 0.0) + shared
+        if overlap and max(overlap, key=overlap.get) == role:
+            same += 1
+    return {"source": len(left), "same_role": same}
+
+
+def structure_report(
+    source_cuts: Sequence[float] | None,
+    baked_cuts: Sequence[float] | None,
+    source_speakers: Sequence[Mapping[str, Any]],
+    baked_speakers: Sequence[Mapping[str, Any]],
+    *,
+    tolerance_s: float = CUT_TOLERANCE_S,
+) -> dict[str, Any]:
+    """Cuts, shot order, and who speaks when. No overall score and no line text."""
+    if source_cuts is None or baked_cuts is None:
+        cuts = None
+        order = "測れない"
+    else:
+        cuts = match_cuts(source_cuts, baked_cuts, tolerance_s=tolerance_s)
+        order = _shot_order(source_cuts, baked_cuts, tolerance_s)
+    return {
+        "cuts": cuts,
+        "shot_order": order,
+        "speakers": _same_role(source_speakers, baked_speakers),
+    }
+
+
+def structure_text(report: Mapping[str, Any]) -> str:
+    cuts = report.get("cuts")
+    if cuts is None:
+        cut_text = "カットは測れない"
+    else:
+        cut_text = f"カット 元 {cuts['source']} 本のうち {cuts['matched']} 本が2コマ以内"
+    speakers = report.get("speakers") or {}
+    return " ".join(
+        [
+            cut_text,
+            f"ショット順は{report.get('shot_order')}",
+            f"話者は {speakers.get('source', 0)} 区間のうち {speakers.get('same_role', 0)} 区間が同じ役",
+            "焼いた絵の顔は測っていない。元のせりふとは比べない。全体の割合は出さない。",
+        ]
+    )
+
+
 def write_report(path: Path, report: Mapping[str, Any]) -> Path:
     path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path

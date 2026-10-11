@@ -339,13 +339,16 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     post_src = next(src for src in code if "#@title 仕上げ" in src)
     assert post_src.index("if not 仕上げ") < post_src.index("pip")
     assert post_src.index("if not 仕上げ") < post_src.index("google.colab")
-    assert "edge-tts" in post_src and "opencv-python-headless" in post_src
+    assert "edge-tts" in post_src and "gTTS" in post_src and "espeak-ng" in post_src
+    assert "opencv-python-headless" not in post_src
+    assert "口のコマンド" not in post_src
+    assert "声の大きさ" not in blob
     assert 'out = job_dir / "post.mp4"' in post_src
     assert "上書きしません" in blob
+    assert "絵の口は変えない" in post_src
     posted: dict = {}
     exec(post_src, posted)
     assert posted["仕上げ"] is False
-    assert posted["口のコマンド"] == ""
     sheet_src = next(src for src in code if "#@title この1本" in src)
     assert "構成のまま1本" in blob
     assert "おい、そこのデブ" not in sheet_src
@@ -354,6 +357,11 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert sheet_ns["人"] == "入力"
     assert sheet_ns["客の動物"] == "入力"
     assert sheet_ns["セリフ"] == ""
+    assert sheet_ns["構成"] == "71.552秒"
+    assert sheet_ns["客の静止画"] == ""
+    assert sheet_ns["人の静止画"] == ""
+    assert "pet_sheet" in sheet_src and "paw_stamp" in sheet_src
+    assert "mp4の構成で差し替える" in blob
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
@@ -401,6 +409,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
         "reference-accounts/source/repro/junjun_825k.yaml",
     ):
         assert loader.index(f'"{name}",') < loader.index('"affi_bake.py",')
+    assert "が取れない" in loader
     assert picked["範囲の切り方"] == bake.SPLIT_CHOICES[0][0]
     assert picked["題字"] == "" and picked["ロゴ"] == "" and picked["曲"] == ""
     assert "speaker_install_argv" in blob
@@ -1161,5 +1170,206 @@ def test_sync_repo_moves_a_shallow_checkout(tmp_path: Path) -> None:
     assert (dest / "h3-runner" / "run_h3.py").read_text(encoding="utf-8") == "print(2)\n"
     with pytest.raises(ValueError, match="リポジトリの取得に失敗した"):
         bake.sync_repo(tmp_path / "missing", "no-such-branch", str(origin))
+
+
+def test_paw_stamp_reaches_commands_before_bake(tmp_path: Path) -> None:
+    lines_text = (ROOT / "stories" / "paw_stamp_lines.txt").read_text(encoding="utf-8")
+    shown = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="出さない",
+        sheet_animals={"guest": "短い足の茶色い犬", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="昼のリビング。ソファの薄い毛布。床におやつ皿",
+        sheet_lines="stories/paw_stamp_lines.txt",
+        sheet_pack="stories/paw_stamp.yaml",
+        out_dir=tmp_path / "paws",
+    )
+    assert "status=ready" in shown
+    assert "50.556秒" in shown
+    assert "ショット14" in shown
+    assert "セリフ10" in shown
+    assert "焼かない" not in shown
+    job = json.loads((tmp_path / "paws" / "sheet" / "job.json").read_text(encoding="utf-8"))
+    assert job["task"] == "t2va"
+    assert job["posts"] is False
+    assert job["captions_on_join"] is False
+    assert job["duration_s"] == 50.556
+    captions = json.loads((tmp_path / "paws" / "sheet" / "captions.json").read_text(encoding="utf-8"))
+    spoken_voices = {row["role"]: row["voice"] for row in captions if row["burn"]}
+    assert spoken_voices["guest"] == "espeak:ja"
+    assert spoken_voices["retort"] == "ja-JP-KeitaNeural"
+    assert spoken_voices["polite"] == "ja-JP-NanamiNeural"
+    assert len(set(spoken_voices.values())) == len(spoken_voices)
+    from_name = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="出さない",
+        sheet_animals={"guest": "短い足の茶色い犬", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="昼のリビング。ソファの薄い毛布。床におやつ皿",
+        sheet_lines="",
+        sheet_pack="paw_stamp",
+        out_dir=tmp_path / "paws-name",
+    )
+    assert "status=ready" in from_name
+    blob = "\n".join(clip["prompt"] for clip in job["clips"])
+    for line in lines_text.splitlines():
+        spoken = line.split(" ", 1)[1]
+        assert spoken not in blob
+    assert "口が開閉" in blob
+    assert "名刺" not in blob
+    assert "お尻" not in blob
+    assert "<d>" not in blob
+    pending, note = bake.commands_to_run(tmp_path / "paws" / "sheet" / "commands.txt", first_only=False)
+    assert pending
+    assert "焼きます" in note
+    assert all("--task t2va" in line for line in pending)
+    covered = 0.0
+    for line in pending:
+        argv = shlex.split(line)
+        loras = [argv[index + 1] for index, part in enumerate(argv) if part == "--lora"]
+        plan = single_plan(
+            task="t2va",
+            prompt_path=Path(argv[argv.index("--prompt-file") + 1]),
+            image_path=None,
+            duration_s=float(argv[argv.index("--duration") + 1]),
+            aspect="9:16",
+            seed=0,
+            steps=int(argv[argv.index("--steps") + 1]),
+            out_path=Path(argv[argv.index("--out") + 1]),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95.6,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+            loras=parse_lora_args(loras),
+        )
+        assert plan.blocked is None
+        covered += float(argv[argv.index("--duration") + 1])
+    assert covered >= 45
+
+
+_HOMAGE_ANIMALS = {"guest": "短い足の茶色い犬", "retort": "灰色の短い獣", "polite": "出さない"}
+
+
+def test_homage_stops_before_bake_when_the_line_does_not_fit(tmp_path: Path) -> None:
+    speech = [
+        {"start_s": 0.2, "end_s": 1.0, "speaker": "A", "text": "砂漠のオアシスでナプキン"},
+        {"start_s": 3.0, "end_s": 4.2, "speaker": "B", "text": "元の顔"},
+    ]
+    common = dict(
+        video="",
+        person="成人の人",
+        animals=_HOMAGE_ANIMALS,
+        place="昼の台所",
+        lines_text="ひとつ\nふたつ",
+        duration_s=6,
+        cuts=[2.5],
+        speech=speech,
+        turns=[],
+    )
+    blocked = bake.plan_homage(**common, probe=lambda _text, _role: 5)
+    assert blocked["status"] == "blocked"
+    assert any("カットは動かさない" in reason for reason in blocked["blocked"])
+    assert blocked["duration_s"] == 6
+    assert blocked["cuts"][0]["end_s"] == 2.5
+    assert blocked["cuts"][-1]["end_s"] == 6
+    blob = "\n".join(clip["prompt"] for clip in blocked["clips"])
+    assert "砂漠" not in blob and "オアシス" not in blob and "ナプキン" not in blob
+    assert "ひとつ" not in blob and "元の顔" not in blob
+    assert "昼の台所" in blob
+    ready = bake.plan_homage(**common, probe=lambda _text, _role: 0.5)
+    assert ready["status"] == "ready"
+    assert ready["source_cuts"] == [2.5]
+    first = ready["performance"]["captions"]["rows"][0]
+    assert first["start_s"] == 0.2 and first["end_s"] == 1.0 and first["burn"] is True
+    assert ready["clips"][0]["image"] == ""
+    assert ready["clips"][0]["task"] == "t2va"
+    written = bake.write_job(ready, tmp_path / "homage").parent / "commands.txt"
+    assert "--task t2va" in written.read_text(encoding="utf-8")
+    assert "--image" not in written.read_text(encoding="utf-8")
+
+
+def test_homage_uses_one_still_per_speaker(tmp_path: Path) -> None:
+    guest = tmp_path / "guest.jpg"
+    retort = tmp_path / "retort.jpg"
+    guest.write_bytes(b"a")
+    retort.write_bytes(b"b")
+    job = bake.plan_homage(
+        video="",
+        person="出さない",
+        animals=_HOMAGE_ANIMALS,
+        place="昼の台所",
+        lines_text="ひとつ\nふたつ",
+        duration_s=6,
+        cuts=[2.5],
+        speech=[
+            {"start_s": 0.2, "end_s": 1.0, "speaker": "A"},
+            {"start_s": 3.0, "end_s": 4.2, "speaker": "B"},
+        ],
+        turns=[],
+        probe=lambda _text, _role: 0.4,
+        role_images={"guest": str(guest), "retort": str(retort)},
+    )
+    assert job["status"] == "ready"
+    assert [clip["image"] for clip in job["clips"]] == [str(guest), str(retort)]
+    assert [clip["task"] for clip in job["clips"]] == ["fl2va", "fl2va"]
+    commands = (bake.write_job(job, tmp_path / "stills").parent / "commands.txt").read_text(encoding="utf-8")
+    assert f"--image {guest}" in commands and f"--image {retort}" in commands
+    assert commands.index(str(guest)) < commands.index(str(retort))
+    both = bake.plan_homage(
+        video="",
+        person="出さない",
+        animals=_HOMAGE_ANIMALS,
+        place="昼の台所",
+        lines_text="ひとつ\nふたつ",
+        duration_s=6,
+        cuts=[],
+        speech=[
+            {"start_s": 0.2, "end_s": 1.0, "speaker": "A"},
+            {"start_s": 1.2, "end_s": 2.0, "speaker": "B"},
+        ],
+        turns=[],
+        probe=lambda _text, _role: 0.4,
+        role_images={"guest": str(guest), "retort": str(retort)},
+    )
+    assert bake._ONE_STILL in both["notes"]
+    assert len(both["clips"]) == 1
+    assert both["clips"][0]["image"] == str(guest)
+    shared = (bake.write_job(both, tmp_path / "both").parent / "commands.txt").read_text(encoding="utf-8")
+    assert str(guest) in shared and str(retort) not in shared
+
+
+def test_homage_choice_stops_without_the_file_and_keeps_fl2va_weights(tmp_path: Path) -> None:
+    shown = bake.run_choice("mp4の構成で差し替える", video=str(tmp_path / "missing.mp4"), out_dir=tmp_path / "gone")
+    assert shown.startswith("止まった:")
+    assert "元動画のファイルが無い" in shown
+    step = bake.next_step("mp4の構成で差し替える")
+    assert "動かしません" in step and "焼く前に止まります" in step
+    assert bake.commands_file("homage", out_dir=tmp_path) == tmp_path / "homage" / "commands.txt"
+    missing = bake.missing_weight_files(tmp_path / "cache", "mp4の構成で差し替える")
+    assert missing
+    assert all("transformer_ref" not in item for item in missing)
+    job = bake.plan_homage(
+        video="",
+        person="出さない",
+        animals=_HOMAGE_ANIMALS,
+        place="昼の台所",
+        lines_text="ひとつ",
+        duration_s=6,
+        cuts=[],
+        speech=[{"start_s": 0.2, "end_s": 1.0, "speaker": "A"}],
+        turns=[],
+        probe=lambda _text, _role: 0.4,
+    )
+    folder = tmp_path / "measured"
+    bake.write_job(job, folder)
+    clip_id = job["clips"][0]["id"]
+    fake = folder / "clips" / f"{clip_id}.mp4"
+    fake.parent.mkdir(parents=True, exist_ok=True)
+    fake.write_bytes(b"not a video")
+    text = bake.measure_homage_clip(folder, fake)
+    assert "全体の割合は出さない" in text
+    saved = json.loads(fake.with_suffix(".structure.json").read_text(encoding="utf-8"))
+    assert "percent" not in saved and "cer" not in saved
 
 

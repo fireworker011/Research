@@ -20,6 +20,8 @@ import affi_reference as ref
 ROOT = Path(__file__).resolve().parent
 PACK_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.yaml"
 SHEET_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.md"
+INDEX_PATH = ROOT / "stories" / "INDEX.md"
+LOCKED_SHEET = "71.552秒"
 
 SLOT = "入力"
 ROLES = ("guest", "retort", "polite", "owner", "indoor_pair")
@@ -73,19 +75,65 @@ def _existing(text: str) -> Path | None:
     return None
 
 
-def pack_file(raw: str | Path | None = None) -> Path | None:
-    """Empty stays the locked sheet. A written path is another pack of the same schema.
+def story_index() -> list[dict[str, str]]:
+    """Rows of stories/INDEX.md. The Colab 構成 menu is these names."""
+    if not INDEX_PATH.is_file():
+        return []
+    rows: list[dict[str, str]] = []
+    for line in INDEX_PATH.read_text(encoding="utf-8").splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 6:
+            continue
+        name = cells[0]
+        if not name or name == "名前" or set(name) <= set("-: "):
+            continue
+        rows.append(
+            {
+                "name": name,
+                "summary": cells[1],
+                "duration": cells[2],
+                "cast": cells[3],
+                "pattern": cells[4],
+                "baked": cells[5],
+            }
+        )
+    return rows
 
-    A GitHub URL is accepted when it contains ``stories/<name>.yaml``.
+
+def pack_file(raw: str | Path | None = None) -> Path | None:
+    """Empty or the locked label stays the 71.552s sheet. A name in the index is that story.
+
+    A written path, or a GitHub URL that contains ``stories/<name>.yaml``, is that file.
     """
     text = "" if raw is None else str(raw).strip()
-    if not text:
+    if text in {"", LOCKED_SHEET}:
         return None
     for candidate in [*_PACK_TAIL.findall(text), text]:
         found = _existing(candidate)
         if found is not None and found.suffix in {".yaml", ".yml"}:
             return found
+    names = {row["name"] for row in story_index()}
+    if text in names:
+        found = ROOT / "stories" / f"{text}.yaml"
+        if found.is_file():
+            return found
     raise ValueError(f"構成ファイルが無い: {text}")
+
+
+def stock_lines(pack_raw: str | Path | None, lines_text: str) -> str:
+    """Typed lines win. An empty field loads ``<story>_lines.txt`` only when a stock pack is chosen."""
+    typed = read_lines(lines_text)
+    if typed.strip():
+        return typed
+    path = pack_file(pack_raw)
+    if path is None:
+        return ""
+    side = path.with_name(path.stem + "_lines.txt")
+    if side.is_file():
+        return side.read_text(encoding="utf-8")
+    return ""
 
 
 def read_lines(raw: str) -> str:
@@ -170,7 +218,33 @@ def load(path: Path | None = None) -> dict[str, Any]:
     animals = slots.get("animals") or {}
     if any(animals.get(key) != SLOT for key in ANIMAL_SLOTS):
         raise ValueError("動物が入力ではない")
+    check_voices(data)
     return data
+
+
+def check_voices(data: Mapping[str, Any]) -> None:
+    """Optional ``voices`` map. Absent keeps the shared defaults. Present voices are one each."""
+    voices = data.get("voices")
+    if voices is None:
+        return
+    if not isinstance(voices, dict):
+        raise ValueError("声の対応がオブジェクトではない")
+    unknown = [str(role) for role in voices if role not in ROLES]
+    if unknown:
+        raise ValueError("声の役が無い: " + ", ".join(unknown))
+    spoken = {row["role"] for row in data.get("captions") or []}
+    missing = sorted(spoken - set(voices))
+    if missing:
+        raise ValueError("話している役の声が無い: " + ", ".join(missing))
+    heard: dict[str, str] = {}
+    for role, voice in voices.items():
+        text = str(voice or "").strip()
+        if not text:
+            raise ValueError(f"声が空: {role}")
+        other = heard.get(text)
+        if other is not None:
+            raise ValueError(f"同じ声が2役に当たっている: {other} と {role}")
+        heard[text] = str(role)
 
 
 def captions_of(pack: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -267,6 +341,47 @@ def blocked(pack: Mapping[str, Any]) -> list[str]:
     for row in pack["captions"]:
         if row.get("line") == SLOT:
             reasons.append(f"{row['id']} のセリフは入力のまま")
+    return reasons
+
+
+def line_fit_reasons(pack: Mapping[str, Any], probe: Any) -> list[str]:
+    """Stop before bake when a new line is longer than the measured speech window.
+
+    Only packs with ``line_must_fit`` are checked. Other sheets keep their own
+    cut times. ``probe(text, role)`` returns seconds, or None when it cannot
+    measure. A failure is a stop, not a guessed length. Cuts are not moved.
+    """
+    if not pack.get("line_must_fit"):
+        return []
+    reasons = []
+    by_shot = {shot["id"]: shot for shot in pack["shots"]}
+    for row in pack["captions"]:
+        text = str(row.get("line") or "").strip()
+        if not text or text == SLOT:
+            continue
+        window = row.get("fit_s")
+        if window and len(window) == 2:
+            span = round(float(window[1]) - float(window[0]), 3)
+        else:
+            shot = by_shot[row["shot"]]
+            span = round(float(shot["end_s"]) - float(shot["start_s"]), 3)
+        if span <= 0:
+            reasons.append(f"{row['id']} の秒が測れない")
+            continue
+        try:
+            heard = probe(text, str(row["role"]))
+        except Exception:
+            heard = None
+        if heard is None:
+            reasons.append(f"{row['id']} の秒が測れない")
+            continue
+        try:
+            spoken = round(float(heard), 3)
+        except (TypeError, ValueError):
+            reasons.append(f"{row['id']} の秒が測れない")
+            continue
+        if spoken > span + 0.05:
+            reasons.append(f"{row['id']} は {_num(spoken)} 秒。ショットは {_num(span)} 秒。カットは動かさない。")
     return reasons
 
 
@@ -402,6 +517,146 @@ def render_markdown(pack: Mapping[str, Any]) -> str:
 
 
 _LINE_KEY = re.compile(r"^(c\d+)\s*[:：]?\s*(.*)$")
+
+
+def _shot_edges(duration_s: float, cuts: Sequence[float] | None) -> list[float]:
+    """Interior cuts become shot boundaries. None means the cuts were not measured."""
+    if cuts is None:
+        raise ValueError("カットが測れない")
+    duration = round(float(duration_s), 3)
+    if duration <= 0:
+        raise ValueError("尺が測れない")
+    points = [0.0]
+    for raw in cuts:
+        cut = round(float(raw), 3)
+        if cut <= 0 or cut >= duration:
+            continue
+        if cut - points[-1] < 0.001:
+            continue
+        points.append(cut)
+    if duration - points[-1] < 0.001:
+        raise ValueError("カットが測れない")
+    points.append(duration)
+    return points
+
+
+def _host_shot(shots: Sequence[Mapping[str, Any]], start: float, end: float) -> Mapping[str, Any]:
+    """The shot that holds the most of this speech. Ties stay with the earlier shot."""
+    best: Mapping[str, Any] | None = None
+    best_span = 0.0
+    for shot in shots:
+        shared = min(end, float(shot["end_s"])) - max(start, float(shot["start_s"]))
+        if shared > best_span:
+            best_span = shared
+            best = shot
+    if best is None:
+        raise ValueError("せりふの秒が尺の外")
+    return best
+
+
+def homage_pack(
+    *,
+    duration_s: float,
+    cuts: Sequence[float] | None,
+    lines: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """A sheet from measured cuts and speech times. Spoken words are not stored.
+
+    On screen is only the speaker whose time was measured. Camera movement is
+    not measured, so it is not described. The picture names no source place
+    and no source face. More than five speakers stops, instead of inventing a role.
+    """
+    edges = _shot_edges(duration_s, cuts)
+    usable: list[dict[str, Any]] = []
+    for row in lines or []:
+        start = round(max(0.0, float(row["start_s"])), 3)
+        end = round(min(edges[-1], float(row["end_s"])), 3)
+        if end - start < 0.05:
+            continue
+        usable.append({"start_s": start, "end_s": end, "speaker": str(row.get("speaker") or "")})
+    if not usable:
+        raise ValueError("せりふが読めない。文は足さない。")
+    speakers: list[str] = []
+    for row in usable:
+        if row["speaker"] not in speakers:
+            speakers.append(row["speaker"])
+    if len(speakers) > len(ROLES):
+        raise ValueError("話者が5役より多い。足の役は作らない。")
+    role_of = {speaker: ROLES[index] for index, speaker in enumerate(speakers)}
+    shots: list[dict[str, Any]] = []
+    for index in range(len(edges) - 1):
+        shots.append(
+            {
+                "id": f"s{index + 1:02d}",
+                "start_s": edges[index],
+                "end_s": edges[index + 1],
+                "on_screen": [],
+                "camera": "カメラの動きは測っていない。",
+                "picture": "誰も口を開かない。背景は場所の欄。文字は無い。曲は無い。",
+            }
+        )
+    captions: list[dict[str, Any]] = []
+    for index, row in enumerate(usable, start=1):
+        shot = _host_shot(shots, row["start_s"], row["end_s"])
+        role = role_of[row["speaker"]]
+        if role not in shot["on_screen"]:
+            shot["on_screen"].append(role)
+        shot["picture"] = "話している役だけ口が開閉する。ほかの口は閉じている。背景は場所の欄。文字は無い。曲は無い。"
+        left = max(row["start_s"], float(shot["start_s"]))
+        right = min(row["end_s"], float(shot["end_s"]))
+        seen = round((left + right) / 2, 3)
+        captions.append(
+            {
+                "id": f"c{index:02d}",
+                "shot": shot["id"],
+                "role": role,
+                "seen_s": [seen],
+                "source_line": f"e-{index:02d}",
+                "line": SLOT,
+                "function": "",
+                "fit_s": [row["start_s"], row["end_s"]],
+            }
+        )
+    interior = edges[1:-1]
+    return {
+        "schema": "affi-repro-structure/v1",
+        "source_id": "homage",
+        "pattern": "homage",
+        "duration_s": edges[-1],
+        "canvas": "1080x1920",
+        "fps": "測っていない",
+        "file_in_repo": False,
+        "line_must_fit": True,
+        "cuts_s": interior,
+        "silences_s": [],
+        "measure": {
+            "cuts": f"カットは mp4 の画面の切り替わり。{len(interior)} か所。",
+            "silences": "この入力では測っていない。",
+            "captions": "せりふの秒と話者だけを測った。元の文は入れない。",
+            "music": "曲は仕上げ。H3 には作らせない。",
+            "caption_y": "仕様の「下から約30%」を使う。",
+        },
+        "change_only": ["person", "animals", "lines", "place"],
+        "slots": {
+            "person": SLOT,
+            "animals": {"guest": SLOT, "retort": SLOT, "polite": SLOT},
+            "place": SLOT,
+        },
+        "narration": "独立した語りは無い。声はせりふ。",
+        "registers": {role: "測った話者。口調は測っていない。" for role in ROLES},
+        "subtitle": {
+            "font": "白ゴシック",
+            "edge": "細い影",
+            "lines": 1,
+            "box": False,
+            "place": "中央やや下",
+            "content": "差し替えた文を出す。元の文は出さない。",
+        },
+        "watermark": {"places": "上と中段", "text": "自分のアカウント名"},
+        "punch": ["オチの形は測っていない。"],
+        "shots": shots,
+        "captions": captions,
+    }
 
 
 def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
