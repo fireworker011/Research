@@ -10,7 +10,7 @@ from collections import deque
 import numpy as np
 from PIL import Image
 
-from irasutoya_short.sprites import load_rgba
+from irasutoya_short.sprites import load_rgba, mouth_problem
 
 # 記事が挙げている事故: 文字が焼き込まれた絵、正月飾り、2人組。
 REJECT_TOKENS = (
@@ -50,6 +50,9 @@ REJECT_TOKENS = (
     "過労死",
     "死亡",
     "白衣",
+    "土下座",
+    "お辞儀",
+    "謝罪をする",
 )
 
 
@@ -163,6 +166,17 @@ def _ocr_text(path: str) -> str:
     return " ".join(words)
 
 
+def bow_pose(alpha: np.ndarray) -> bool:
+    """横長のシルエットはお辞儀や土下座。口が見えないので話者にしない。"""
+    opaque = alpha > 20
+    ys, xs = np.where(opaque)
+    if xs.size < 30:
+        return False
+    width = int(xs.max() - xs.min() + 1)
+    height = int(ys.max() - ys.min() + 1)
+    return width > height
+
+
 def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> str | None:
     """不採用理由を返す。採用なら None。"""
     reason = title_rejection(title, alt, gender)
@@ -174,8 +188,13 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
         return "画像が小さすぎる"
     if kind == "person":
         keyed = load_rgba(path)
+        if bow_pose(keyed[:, :, 3]):
+            return "お辞儀や土下座で口が見えない"
         if body_count(keyed[:, :, 3]) >= 2:
             return "2人以上に見える"
+        reason = mouth_problem(keyed)
+        if reason:
+            return reason
     ocr = _ocr_text(path)
     if ocr:
         for token in REJECT_TOKENS:

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from irasutoya_short.pipeline import make, revise
+from irasutoya_short.scriptgen import auto_scripts, grok_complete
 from irasutoya_short.tts import runtime_ready
 
 
@@ -40,9 +41,23 @@ def main() -> None:
 
     sub.add_parser("doctor", help="VOICEVOX があるか確認する")
 
+    script_p = sub.add_parser("script", help="種から台本JSONを2枚書く。動画は作らない")
+    script_p.add_argument("seed")
+    script_p.add_argument("--out", type=Path, required=True)
+
     args = parser.parse_args()
     if args.cmd == "doctor":
         print("voicevox:", "ok" if runtime_ready() else "missing")
+        return
+    if args.cmd == "script":
+        scripts = auto_scripts(args.seed, grok_complete)
+        args.out.mkdir(parents=True, exist_ok=True)
+        irasu = args.out / "irasutoya.json"
+        h3 = args.out / "h3.json"
+        irasu.write_text(json.dumps(scripts["irasutoya"], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        h3.write_text(json.dumps(scripts["h3"], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(irasu)
+        print(h3)
         return
     if args.cmd == "make":
         summary = make(args.brief, args.work, args.out, _shots(args.screenshots), bgm=not args.no_bgm)

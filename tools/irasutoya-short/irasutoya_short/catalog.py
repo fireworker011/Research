@@ -46,11 +46,11 @@ ASSET_CATALOG: dict[str, dict] = {
         "needles": ["青ざ", "焦", "男性"],
         "gender": "男性",
     },
-    "rival_bow": {
+    "rival_shock": {
         "kind": "person",
         "who": "rival",
-        "queries": ["謝る男性 お辞儀", "土下座する男性"],
-        "needles": ["謝", "辞儀", "土下座", "男性"],
+        "queries": ["スーツを着た男性 ショックを受ける顔", "ショックを受ける顔 男性 スーツ"],
+        "needles": ["ショック", "スーツ", "男性"],
         "gender": "男性",
     },
     "boss_angry": {

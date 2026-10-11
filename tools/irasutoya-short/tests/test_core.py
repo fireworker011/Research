@@ -2,17 +2,21 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 
 import numpy as np
 
 from irasutoya_short.audio import mix_tracks
+from irasutoya_short.backgrounds import render_bg
+from irasutoya_short.layout import default_layout
 from irasutoya_short.lipsync import mouth_envelope
-from irasutoya_short.qa import body_count, title_rejection
+from irasutoya_short.qa import body_count, bow_pose, title_rejection
+from irasutoya_short.render import SpriteBook, compose_frame, render_telop
 from irasutoya_short.revise import apply_note
-from irasutoya_short.scriptgen import generate_script
+from irasutoya_short.scriptgen import auto_scripts, check_draft, generate_script, grok_complete
 from irasutoya_short.sfx import make_sfx
-from irasutoya_short.sprites import mouth_anchor
+from irasutoya_short.sprites import MouthAnchor, draw_mouth, mouth_anchor, mouth_problem, skin_color
 from irasutoya_short.textutil import wrap_telop
 
 
@@ -33,24 +37,39 @@ BRIEF = {
 class ScriptTests(unittest.TestCase):
     def test_shape(self) -> None:
         script = generate_script(BRIEF)
-        self.assertGreaterEqual(len(script["scenes"]), 12)
-        self.assertLessEqual(len(script["scenes"]), 14)
+        self.assertEqual(len(script["scenes"]), 6)
         roles = [s["role"] for s in script["scenes"]]
-        self.assertLess(roles.index("hook"), roles.index("punch"))
-        self.assertLess(roles.index("punch"), roles.index("close"))
+        self.assertEqual(roles, ["hook", "develop", "develop", "develop", "punch", "credit"])
         self.assertLessEqual(len(script["asset_ids"]), 10)
         hook = script["scenes"][0]
-        self.assertIn("\n", hook["telop"])
+        self.assertEqual(hook["text"], "お前の方が早いだろ")
+        self.assertEqual(hook["speaker"], "rival")
+        card = script["scenes"][2]
+        self.assertNotIn("お前の方が早いだろ", card["text"])
+        self.assertEqual(card["bg"], "card")
+        self.assertEqual(card["characters"], [])
         punch = " ".join(s["text"] for s in script["scenes"] if s["role"] == "punch")
         self.assertIn("全体送信", punch)
-        close = script["scenes"][-2]
-        self.assertIn("あなたなら", close["text"])
+        spoken = "\n".join(s["text"] for s in script["scenes"])
+        self.assertNotIn("あなたなら", spoken)
+        self.assertEqual(script["closing"], "あなたならどうする？")
         self.assertEqual(script["scenes"][-1]["role"], "credit")
         self.assertIn("VOICEVOX:四国めたん", script["scenes"][-1]["telop"])
+        hints = [s["duration_hint"] for s in script["scenes"][:5]]
+        self.assertEqual(hints, [2.37, 5.53, 0.97, 5.53, 11.05])
+        punch_scene = next(s for s in script["scenes"] if s["role"] == "punch")
+        self.assertEqual([c["id"] for c in punch_scene["characters"]], ["rival_shock"])
+        self.assertNotIn("rival_bow", script["asset_ids"])
 
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
         bad["punchline"] = ""
+        with self.assertRaises(ValueError):
+            generate_script(bad)
+
+    def test_three_bullets_required(self) -> None:
+        bad = dict(BRIEF)
+        bad["bullets"] = BRIEF["bullets"][:2]
         with self.assertRaises(ValueError):
             generate_script(bad)
 
@@ -60,11 +79,76 @@ class ScriptTests(unittest.TestCase):
         self.assertLessEqual(max(len(line) for line in telop.split("\n")), 12)
 
 
+DRAFT = {
+    "series_character": "奢らせ同僚",
+    "hook": "奢らせ同僚に会計を置いて帰った話",
+    "rival_line": "会計はお前が出して",
+    "situation": "飲み会の最後、10人分の伝票が俺の前に置かれた",
+    "card": "終電だ",
+    "counter": "一言残して店を出た",
+    "punchline": "翌朝、頭を下げて全額を振り込んできた",
+    "worry": "飲み会の最後に、10人分の伝票が置かれた。会計はお前が出して、だって。",
+    "action": "終電だった。一言残して、店を出た。",
+    "result": "翌朝、頭を下げて、全額を振り込んできた。",
+    "worry_picture": "居酒屋の個室。会社員が伝票の束を見て困っている",
+    "action_picture": "夜の駅の改札。同じ会社員が振り返らずに歩いている",
+    "result_picture": "翌朝のオフィス。別の会社員が頭を下げている",
+}
+
+
+class AutoScriptTests(unittest.TestCase):
+    def test_seed_fills_both_shapes(self) -> None:
+        scripts = auto_scripts("会計を押し付けられた", lambda _seed: dict(DRAFT))
+        irasu = scripts["irasutoya"]
+        self.assertEqual(irasu["scenes"][0]["text"], "会計はお前が出して")
+        self.assertEqual([s["duration_hint"] for s in irasu["scenes"][:5]], [2.37, 5.53, 0.97, 5.53, 11.05])
+        self.assertEqual(irasu["closing"], "")
+        spoken = "\n".join(s["text"] for s in irasu["scenes"])
+        self.assertNotIn("あなたなら", spoken)
+        h3 = scripts["h3"]
+        self.assertEqual([s["duration"] for s in h3["source_scenes"]], [10, 10, 10])
+        self.assertTrue(all(s["telop_text"] == "" for s in h3["scenes"]))
+        self.assertIn("口は閉じたまま", h3["source_scenes"][0]["image_prompt"])
+        self.assertNotIn("http", json.dumps(scripts, ensure_ascii=False))
+
+    def test_rejects_url_and_long_narration(self) -> None:
+        bad = dict(DRAFT)
+        bad["punchline"] = "詳しくは https://example.com"
+        with self.assertRaises(ValueError):
+            check_draft(bad)
+        long = dict(DRAFT)
+        long["worry"] = "一文。二文。三文。"
+        with self.assertRaises(ValueError):
+            check_draft(long)
+
+    def test_missing_key_does_not_call(self) -> None:
+        called = {"n": 0}
+
+        def post(_body, _key):
+            called["n"] += 1
+            return {}
+
+        with self.assertRaises(ValueError):
+            grok_complete("種", api_key="", post=post)
+        self.assertEqual(called["n"], 0)
+
+
 class QaTests(unittest.TestCase):
     def test_title_filters(self) -> None:
         self.assertIsNotNone(title_rejection("正月の鏡餅", "", ""))
         self.assertIsNotNone(title_rejection("話す二人", "男女", "男性"))
         self.assertIsNone(title_rejection("困るサラリーマン", "男性", "男性"))
+        self.assertIsNotNone(title_rejection("土下座する男性", "", "男性"))
+        self.assertIsNotNone(title_rejection("お辞儀をする人", "", "男性"))
+        self.assertIsNotNone(title_rejection("謝罪をする人のイラスト（男性）", "", "男性"))
+
+    def test_bow_pose_is_wider_than_tall(self) -> None:
+        tall = np.zeros((80, 40), dtype=np.uint8)
+        tall[5:75, 10:30] = 255
+        self.assertFalse(bow_pose(tall))
+        wide = np.zeros((40, 120), dtype=np.uint8)
+        wide[8:32, 5:115] = 255
+        self.assertTrue(bow_pose(wide))
 
     def test_two_bodies(self) -> None:
         one = np.zeros((80, 80), dtype=np.uint8)
@@ -103,6 +187,105 @@ class MouthTests(unittest.TestCase):
         self.assertLess(anchor.y, 148)
         self.assertGreater(anchor.x, 70)
         self.assertLess(anchor.x, 110)
+
+    def test_side_pair_is_not_the_mouth(self) -> None:
+        img = np.zeros((220, 180, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:220, :180]
+        head = ((yy - 80) ** 2) / 58**2 + ((xx - 90) ** 2) / 50**2 <= 1
+        img[head, 0] = 230
+        img[head, 1] = 190
+        img[head, 2] = 160
+        img[head, 3] = 255
+        img[120:132, 40:58] = (30, 20, 20, 255)
+        img[120:132, 122:140] = (30, 20, 20, 255)
+        self.assertIsNone(mouth_anchor(img))
+        self.assertEqual(mouth_problem(img), "口の線が見えない")
+
+    def test_neck_shadow_is_not_the_mouth(self) -> None:
+        img = np.zeros((280, 180, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:280, :180]
+        head = ((yy - 90) ** 2) / 70**2 + ((xx - 90) ** 2) / 58**2 <= 1
+        neck = (yy > 155) & (yy < 230) & (xx > 68) & (xx < 112)
+        skin = head | neck
+        img[skin, 0] = 230
+        img[skin, 1] = 190
+        img[skin, 2] = 160
+        img[skin, 3] = 255
+        img[70:82, 62:78] = (20, 20, 20, 255)
+        img[70:82, 102:118] = (20, 20, 20, 255)
+        img[128:138, 74:106] = (40, 20, 20, 255)
+        img[188:200, 96:130] = (30, 20, 20, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        self.assertGreater(anchor.y, 120)
+        self.assertLess(anchor.y, 155)
+        self.assertGreater(anchor.x, 70)
+        self.assertLess(anchor.x, 115)
+        self.assertIsNone(mouth_problem(img))
+
+
+class FrameTests(unittest.TestCase):
+    def test_card_is_black_text_only(self) -> None:
+        bg = render_bg("card", 180, 320)
+        self.assertEqual(int(bg.max()), 0)
+        telop = render_telop("終電だ", "develop", 180, 320, 1.0, 0.46, plain=True)
+        scene = {
+            "effect": "none",
+            "bg": "card",
+            "characters": [],
+            "code_props": [],
+            "props": [],
+            "duration": 1.0,
+        }
+        frame = compose_frame(
+            scene, SpriteBook({}), bg, np.zeros((320, 180, 4), dtype=np.uint8),
+            telop, 0.0, 1.0, default_layout(), 0.5,
+        )
+        self.assertGreater(int((frame.mean(axis=2) > 180).sum()), 20)
+        self.assertLess(float(frame.mean()), 40)
+        blue_window = (frame[:, :, 2] > 180) & (frame[:, :, 0] < 80)
+        self.assertFalse(bool(blue_window.any()))
+
+    def test_open_mouth_drops_below_the_lip(self) -> None:
+        img = np.zeros((220, 160, 4), dtype=np.uint8)
+        img[:, :, 0] = 230
+        img[:, :, 1] = 190
+        img[:, :, 2] = 160
+        img[:, :, 3] = 255
+        anchor = MouthAnchor(80, 120, 28, 6, face_width=120)
+        skin = skin_color(img, anchor.x, anchor.y, anchor.width)
+        shut = draw_mouth(img, anchor, 0.0, skin)
+        opened = draw_mouth(img, anchor, 1.0, skin)
+
+        def dark_rows(frame: np.ndarray) -> np.ndarray:
+            lum = frame[:, :, :3].mean(axis=2)
+            return np.where((frame[:, :, 3] > 200) & (lum < 90))[0]
+
+        shut_rows = dark_rows(shut)
+        open_rows = dark_rows(opened)
+        self.assertGreater(len(open_rows), len(shut_rows))
+        self.assertGreater(int(open_rows.max()), anchor.y + 8)
+        above = int((open_rows < anchor.y).sum())
+        below = int((open_rows > anchor.y).sum())
+        self.assertGreater(below, above)
+
+    def test_closed_mouth_erases_the_painted_line(self) -> None:
+        img = np.zeros((220, 180, 4), dtype=np.uint8)
+        img[:, :, 0] = 230
+        img[:, :, 1] = 190
+        img[:, :, 2] = 160
+        img[:, :, 3] = 255
+        img[118:156, 48:132] = (190, 40, 76, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        skin = skin_color(img, anchor.x, anchor.y, anchor.width)
+        shut = draw_mouth(img, anchor, 0.0, skin)
+        red = shut[:, :, 0].astype(np.int16)
+        green = shut[:, :, 1].astype(np.int16)
+        leftover = (shut[:, :, 3] > 40) & (red > green + 40) & (red > 120) & (green < 90)
+        self.assertLess(int(leftover.sum()), 8)
 
 
 class AudioTests(unittest.TestCase):
