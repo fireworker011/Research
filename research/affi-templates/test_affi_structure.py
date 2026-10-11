@@ -288,6 +288,63 @@ def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) ->
         structure.homage_pack(duration_s=8, cuts=[], lines=many)
 
 
+def test_reference_paths_bind_to_the_role_and_stay_off_locked_sheets() -> None:
+    picture = (
+        "2匹が背中を向けて座り、頭を向かい合わせる。"
+        "客が口に細い棒をくわえる。"
+        "客が前足を一本口の棒へ上げて下ろす。"
+        "客が前足を一本、胸の前で上げたまま。"
+        "客が後ろ脚で立ち、前足二本で縦の棒を胸の前で握る。"
+        "客が前足二本で縦の棒を頭の横へ上げる。"
+        "客が前足で縦の棒を頭の上に横たえる。"
+        "人が片手を頭の上へ上げる。"
+        "まぶたをきつく閉じ、歯が見える。"
+        "人が両膝を床につけ、両手を床の平たい物に置く。"
+        "客が床を離れて前へ飛ぶ。"
+        "縦の棒が床へ落ちる。"
+        "犬は後ろの体はぼける。"
+    )
+    lines = structure._body_lines(picture, "", False)
+    assert lines == [
+        "The two animals' bodies stay seated with the backs toward the lens, and the heads turn toward each other.",
+        "The guest's mouth keeps hold of a thin stick. That jaw does not travel and does not shape words.",
+        "The guest's forepaw rises to the thin stick at the mouth and then lowers. The stick leaves that mouth.",
+        "The guest's forepaw stays raised in front of the chest.",
+        "The guest's weight moves onto the hind legs and the torso rises until the body is standing, and both forepaws close around a vertical stick held in front of the chest.",
+        "The guest's forepaws raise the vertical stick until it is beside the head.",
+        "The guest's forepaw lays the stick across the top of the head.",
+        "The person's hand rises onto the top of the head.",
+        "The person's eyelids squeeze shut and the jaw drops until the teeth show. That jaw does not shape words.",
+        "The person's knees stay on the floor and both hands stay on the flat object on the floor.",
+        "The guest's body leaves the floor and travels forward through the air.",
+        "The stick drops to the floor and stays there.",
+        "The dog's body stays behind and out of focus.",
+    ]
+    grip = structure._body_lines("客が前足二本で縦の棒を胸の前で握る。", "", False)
+    assert grip == ["The guest's forepaws close around a vertical stick held in front of the chest."]
+    stood = structure._body_lines("ツッコミ役が後ろ脚で立ち、あとで座る。", "", False)
+    assert stood == [
+        "The retort's weight moves onto the hind legs and the torso rises, then the hind legs fold and the body sits."
+    ]
+    fresh = [
+        "thin stick",
+        "vertical stick",
+        "eyelids squeeze",
+        "through the air",
+        "out of focus",
+        "toward each other",
+    ]
+    for path in (
+        ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.yaml",
+        ROOT / "stories" / "pet_sheet.yaml",
+        ROOT / "stories" / "paw_stamp.yaml",
+    ):
+        pack = structure.load(path)
+        text = structure.picture_prompt(pack, 0.0, float(pack["duration_s"]))
+        for word in fresh:
+            assert word not in text
+
+
 def test_line_fit_stops_only_when_the_sheet_asks() -> None:
     pack = structure.homage_pack(duration_s=6, cuts=[2.5], lines=[{"start_s": 0.2, "end_s": 1.0, "speaker": "A"}])
     filled = structure.fill(pack, lines={"c01": "長い一文"})

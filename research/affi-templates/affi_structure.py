@@ -737,14 +737,21 @@ _MOUTH_CLOSED_THAT = "That mouth stays closed. The jaw does not travel."
 _MOUTH_OPEN = "The mouth stays open. The jaw does not travel."
 _MOUTH_UP = "The mouth points upward and stays open. The jaw does not travel."
 _MOUTH_PAD = "The mouth keeps hold of the pad. The jaw does not travel and does not shape words."
+_MOUTH_STICK = "The mouth keeps hold of a thin stick. The jaw does not travel and does not shape words."
 _EVERY_MOUTH = "Every mouth stays closed. Those jaws do not travel."
 _OTHER_MOUTHS = "The other mouths stay closed. Those jaws do not travel."
 _STAND_THEN_SIT = "The weight moves onto the hind legs and the torso rises, then the hind legs fold and the body sits."
 _STAND = "The weight moves onto the hind legs and the torso rises until the body is standing."
+_STAND_GRIP = (
+    "The weight moves onto the hind legs and the torso rises until the body is standing, "
+    "and both forepaws close around a vertical stick held in front of the chest."
+)
 _SIT = "The body stays seated."
 _STEP_BACK = "The bodies step backward."
 _MOVE_IN = "The body moves in through the opening."
-_BINDABLE = frozenset({_JAW_OPENS, _MOUTH_CLOSED, _MOUTH_CLOSED_THAT, _MOUTH_OPEN, _MOUTH_UP, _MOUTH_PAD})
+_BINDABLE = frozenset(
+    {_JAW_OPENS, _MOUTH_CLOSED, _MOUTH_CLOSED_THAT, _MOUTH_OPEN, _MOUTH_UP, _MOUTH_PAD, _MOUTH_STICK}
+)
 _PLURAL_ROLES = frozenset({"two animals"})
 _ROLE_MARK = (
     ("ツッコミ役", "retort"),
@@ -764,6 +771,7 @@ _BODY_MOTION = (
     ("口が開閉する", _JAW_OPENS),
     ("口を開閉する", _JAW_OPENS),
     ("口はパッドをくわえたまま喋らない", _MOUTH_PAD),
+    ("口に細い棒をくわえる", _MOUTH_STICK),
     ("ほかの口は閉じている", _OTHER_MOUTHS),
     ("誰も口を開かない", _EVERY_MOUTH),
     ("全員の口は閉じている", _EVERY_MOUTH),
@@ -777,8 +785,22 @@ _BODY_MOTION = (
     ("口は無い", "No mouth is in the frame."),
     ("前足は止まったまま", "That forepaw stays still and does not travel."),
     ("前足はしまったまま", "The forepaws stay folded under the chest and do not travel."),
+    ("後ろ脚で立ち、前足二本で縦の棒を胸の前で握る", _STAND_GRIP),
     ("後ろ脚で立ち、あとで座る", _STAND_THEN_SIT),
     ("後ろ脚で立つ", _STAND),
+    ("後ろ脚で立ち", _STAND),
+    ("背中を向けて座り、頭を向かい合わせる", "The bodies stay seated with the backs toward the lens, and the heads turn toward each other."),
+    ("前足を一本口の棒へ上げて下ろす", "One forepaw rises to the thin stick at the mouth and then lowers. The stick leaves the mouth."),
+    ("前足を一本、胸の前で上げたまま", "One forepaw stays raised in front of the chest."),
+    ("前足二本で縦の棒を頭の横へ上げる", "Both forepaws raise the vertical stick until it is beside the head."),
+    ("前足二本で縦の棒を胸の前で握る", "Both forepaws close around a vertical stick held in front of the chest."),
+    ("前足で縦の棒を頭の上に横たえる", "One forepaw lays the stick across the top of the head."),
+    ("片手を頭の上へ上げる", "One hand rises onto the top of the head."),
+    ("まぶたをきつく閉じ、歯が見える", "The eyelids squeeze shut and the jaw drops until the teeth show. The jaw does not shape words."),
+    ("両膝を床につけ、両手を床の平たい物に置く", "Both knees stay on the floor and both hands stay on the flat object on the floor."),
+    ("床を離れて前へ飛ぶ", "The body leaves the floor and travels forward through the air."),
+    ("縦の棒が床へ落ちる", "The stick drops to the floor and stays there."),
+    ("後ろの体はぼける", "The body stays behind and out of focus."),
     ("立ち上がる", _STAND),
     ("前足でプールの水面を叩く", "The forepaw lifts, strikes the water, and returns."),
     ("前足を体の下にしまう", "The forepaws fold back under the chest."),
@@ -964,6 +986,10 @@ def _bind_mouth(english: str, who: Sequence[str]) -> str:
         if plural:
             return f"{name} mouths keep hold of the pad. Those jaws do not travel and do not shape words."
         return f"{name} mouth keeps hold of the pad. That jaw does not travel and does not shape words."
+    if english == _MOUTH_STICK:
+        if plural:
+            return f"{name} mouths keep hold of a thin stick. Those jaws do not travel and do not shape words."
+        return f"{name} mouth keeps hold of a thin stick. That jaw does not travel and does not shape words."
     if plural:
         return f"{name} mouths stay closed. Those jaws do not travel."
     return f"{name} mouth stays closed. That jaw does not travel."
@@ -979,6 +1005,62 @@ _NAMED = {
         "{name} weight moves onto the hind legs and the torsos rise, then the hind legs fold and the bodies sit.",
     ),
     _STAND: _noun("weight moves onto the hind legs and the torso rises until the body is standing.", "weight moves onto the hind legs and the torsos rise until the bodies are standing.", ""),
+    _STAND_GRIP: (
+        "{name} weight moves onto the hind legs and the torso rises until the body is standing, and both forepaws close around a vertical stick held in front of the chest.",
+        "{name} weight moves onto the hind legs and the torsos rise until the bodies are standing, and both forepaws close around a vertical stick held in front of the chest.",
+    ),
+    "The bodies stay seated with the backs toward the lens, and the heads turn toward each other.": (
+        "{name} body stays seated with the back toward the lens, and the head turns toward the other head.",
+        "{name} bodies stay seated with the backs toward the lens, and the heads turn toward each other.",
+    ),
+    "One forepaw rises to the thin stick at the mouth and then lowers. The stick leaves the mouth.": (
+        "{name} forepaw rises to the thin stick at the mouth and then lowers. The stick leaves that mouth.",
+        "{name} forepaws rise to the thin stick at the mouth and then lower. The stick leaves those mouths.",
+    ),
+    "One forepaw stays raised in front of the chest.": _noun(
+        "forepaw stays raised in front of the chest.",
+        "forepaws stay raised in front of the chest.",
+        "",
+    ),
+    "Both forepaws raise the vertical stick until it is beside the head.": _noun(
+        "forepaws raise the vertical stick until it is beside the head.",
+        "forepaws raise the vertical stick until it is beside the head.",
+        "",
+    ),
+    "Both forepaws close around a vertical stick held in front of the chest.": _noun(
+        "forepaws close around a vertical stick held in front of the chest.",
+        "forepaws close around a vertical stick held in front of the chest.",
+        "",
+    ),
+    "One forepaw lays the stick across the top of the head.": _noun(
+        "forepaw lays the stick across the top of the head.",
+        "forepaws lay the stick across the top of the head.",
+        "",
+    ),
+    "One hand rises onto the top of the head.": _noun(
+        "hand rises onto the top of the head.",
+        "hands rise onto the top of the head.",
+        "",
+    ),
+    "The eyelids squeeze shut and the jaw drops until the teeth show. The jaw does not shape words.": (
+        "{name} eyelids squeeze shut and the jaw drops until the teeth show. That jaw does not shape words.",
+        "{name} eyelids squeeze shut and the jaws drop until the teeth show. Those jaws do not shape words.",
+    ),
+    "Both knees stay on the floor and both hands stay on the flat object on the floor.": _noun(
+        "knees stay on the floor and both hands stay on the flat object on the floor.",
+        "knees stay on the floor and both hands stay on the flat object on the floor.",
+        "",
+    ),
+    "The body leaves the floor and travels forward through the air.": _noun(
+        "body leaves the floor and travels forward through the air.",
+        "bodies leave the floor and travel forward through the air.",
+        "",
+    ),
+    "The body stays behind and out of focus.": _noun(
+        "body stays behind and out of focus.",
+        "bodies stay behind and out of focus.",
+        "",
+    ),
     _SIT: _noun("body stays seated.", "bodies stay seated.", ""),
     _STEP_BACK: _noun("body steps backward.", "bodies step backward.", ""),
     _MOVE_IN: _noun("body moves in through the opening.", "bodies move in through the opening.", ""),
