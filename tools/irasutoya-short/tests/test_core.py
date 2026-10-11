@@ -7,8 +7,10 @@ import unittest
 import numpy as np
 
 from irasutoya_short.audio import mix_tracks
+from irasutoya_short.bubbles import render_bubble
 from irasutoya_short.lipsync import mouth_envelope
 from irasutoya_short.qa import body_count, title_rejection
+from irasutoya_short.render import mouth_should_move
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import generate_script
 from irasutoya_short.sfx import make_sfx
@@ -26,6 +28,19 @@ BRIEF = {
         "月曜の朝、何事もなかった顔だった",
     ],
     "punchline": "作業ログと請求書を社内チャットに全体送信した。その場で送金して全員の前で頭を下げた",
+    "closing": "あなたならどうする？",
+}
+
+CAPTION_BRIEF = {
+    "format": "caption",
+    "hook": "会議の5分前なのに、メモはまだ下書きのままだ",
+    "bullets": [
+        "同じ文を3回書き直して、まだ一度も送っていない",
+        "「もうちょっと整えてから送る」",
+        "隣の席は殴り書きの1通で、先に返事をもらっていた",
+        "何が違ったのか、その場では分からなかった",
+    ],
+    "punchline": "遅れた原因は、文章の粗さではなかった。「整えるほど、送れなくなっていた」",
     "closing": "あなたならどうする？",
 }
 
@@ -47,6 +62,33 @@ class ScriptTests(unittest.TestCase):
         self.assertIn("あなたなら", close["text"])
         self.assertEqual(script["scenes"][-1]["role"], "credit")
         self.assertIn("VOICEVOX:四国めたん", script["scenes"][-1]["telop"])
+        self.assertNotIn("bubble", script["scenes"][0])
+
+    def test_caption_format_keeps_sukatto_path(self) -> None:
+        script = generate_script(CAPTION_BRIEF)
+        self.assertEqual(script["format"], "caption")
+        self.assertGreaterEqual(len(script["scenes"]), 8)
+        self.assertLessEqual(len(script["scenes"]), 12)
+        roles = [s["role"] for s in script["scenes"]]
+        self.assertLess(roles.index("hook"), roles.index("punch"))
+        self.assertLess(roles.index("punch"), roles.index("close"))
+        kinds = [s["bubble"]["kind"] for s in script["scenes"] if s["role"] != "credit"]
+        self.assertIn("caption", kinds)
+        self.assertIn("speech", kinds)
+        speakers = {s["speaker"] for s in script["scenes"] if s.get("bubble", {}).get("kind") == "speech"}
+        self.assertEqual(speakers, {"hero"})
+        narr = [s for s in script["scenes"] if s.get("bubble", {}).get("kind") == "caption"]
+        self.assertTrue(all(s["speaker"] == "narrator" for s in narr))
+        sides = [s["bubble"]["side"] for s in script["scenes"] if "bubble" in s]
+        self.assertEqual(sides[0], "right")
+        self.assertEqual(sides[1], "left")
+        self.assertNotIn("VOICEVOX:剣崎雌雄", script["credits"])
+        self.assertIn("VOICEVOX:四国めたん", script["credits"])
+        self.assertIn("VOICEVOX:白上虎太郎", script["credits"])
+        self.assertLessEqual(len(script["asset_ids"]), 20)
+        plain = generate_script(BRIEF)
+        self.assertNotIn("format", plain)
+        self.assertEqual(len(plain["scenes"]), 14)
 
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
@@ -124,6 +166,40 @@ class AudioTests(unittest.TestCase):
         mixed = mix_tracks(voice, sfx, 0.22, None, 0.0)
         self.assertGreater(float(np.max(np.abs(mixed[: len(sfx)]))), float(np.max(np.abs(voice[: len(sfx)]))))
         self.assertLess(float(np.max(np.abs(mixed))), 1.05)
+
+
+class BubbleTests(unittest.TestCase):
+    def test_caption_sits_on_the_edge_without_a_tail(self) -> None:
+        right = render_bubble("会議の前なのに\nメモは下書き", "caption", "right", 1920, 1080, 1.0)
+        self.assertEqual(int(right[:, :700, 3].max()), 0)
+        self.assertGreater(int(right[:, 1400:, 3].max()), 200)
+        left = render_bubble("会議の前なのに\nメモは下書き", "caption", "left", 1920, 1080, 1.0)
+        self.assertEqual(int(left[:, 1200:, 3].max()), 0)
+        self.assertGreater(int(left[:, :500, 3].max()), 200)
+
+    def test_speech_has_a_narrow_tail(self) -> None:
+        img = render_bubble("整えてから送る", "speech", "right", 1920, 1080, 1.0)
+        alpha = img[:, :, 3]
+        ys = np.where(alpha > 200)[0]
+        self.assertGreater(len(ys), 0)
+        top, bot = int(ys.min()), int(ys.max())
+        mid = int((alpha[top + (bot - top) // 3] > 200).sum())
+        tip = int((alpha[bot - 2] > 200).sum())
+        self.assertGreater(mid, tip + 8)
+        xs = np.where(alpha > 200)[1]
+        tip_x = float(np.median(xs[ys > bot - 3]))
+        body = xs[ys < bot - 36]
+        center = (float(body.min()) + float(body.max())) / 2
+        self.assertLess(abs(tip_x - center), 36)
+
+    def test_narration_does_not_move_the_mouth(self) -> None:
+        caption = {"speaker": "narrator", "bubble": {"kind": "caption", "side": "right"}}
+        self.assertFalse(mouth_should_move(caption, "hero", 0))
+        speech = {"speaker": "hero", "bubble": {"kind": "speech", "side": "left"}}
+        self.assertTrue(mouth_should_move(speech, "hero", 0))
+        self.assertFalse(mouth_should_move(speech, "rival", 1))
+        sukatto = {"speaker": "narrator"}
+        self.assertTrue(mouth_should_move(sukatto, "hero", 0))
 
 
 class ReviseTests(unittest.TestCase):

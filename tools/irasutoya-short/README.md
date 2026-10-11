@@ -91,6 +91,18 @@ PYTHONPATH=. python -m irasutoya_short make examples/oshitsuke.json \
 
 `work/` に台本 `project.json`、採用と不採用の素材、プレビュー PNG、`REPORT.json` が残る。いらすとやの画像はリポジトリに入れない。
 
+## 吹き出し型（横長）
+
+`format` を `caption` にすると、縦ショートとは別の型になる。16:9、地の文は端の縦書き四角枠（しっぽなし）、`「」` は話者の声としっぽ付き吹き出し。ナレーションは四国めたん、会話は白上虎太郎。地の文では口を動かさない。ゆっくり寄るズームを入れる。既存のスカッと（`format` 無し）は 9:16 の下テロップのまま。
+
+箇条書きは地の文を3本。会話は `「」` で1つ以上。オチにも地の文か `「」` を入れる。
+
+```bash
+PYTHONPATH=. python -m irasutoya_short make examples/shitagaki.json \
+  --work work/shitagaki \
+  --out work/shitagaki/out.mp4
+```
+
 ## 口語で直す
 
 専門用語は要らない。作業フォルダを渡して、気になったことだけ言う。

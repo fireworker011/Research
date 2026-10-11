@@ -10,7 +10,16 @@ import numpy as np
 from PIL import Image
 
 from irasutoya_short.audio import fit_length, mix_tracks, read_wav, write_wav
-from irasutoya_short.constants import FPS, MAX_DURATION, MIN_DURATION, SAMPLE_RATE
+from irasutoya_short.constants import (
+    CAPTION_HEIGHT,
+    CAPTION_WIDTH,
+    FPS,
+    HEIGHT,
+    MAX_DURATION,
+    MIN_DURATION,
+    SAMPLE_RATE,
+    WIDTH,
+)
 from irasutoya_short.irasutoya import collect_assets
 from irasutoya_short.layout import analyze_screenshots, default_layout
 from irasutoya_short.lipsync import mouth_envelope
@@ -71,6 +80,10 @@ def make(brief_path: Path, work_dir: Path, out_path: Path, screenshots: list[Pat
         "settings": default_settings(),
         "terms": TERMS,
     }
+    fmt = "caption" if str(brief.get("format") or "").strip() == "caption" else "sukatto"
+    project["format"] = fmt
+    project["width"] = CAPTION_WIDTH if fmt == "caption" else WIDTH
+    project["height"] = CAPTION_HEIGHT if fmt == "caption" else HEIGHT
     project["settings"]["bgm"] = bgm
     speaker = Speaker()
     _synthesize(project, speaker, work_dir / "audio")
@@ -201,6 +214,9 @@ def _public(project: dict) -> dict:
         "settings": project.get("settings"),
         "terms": project.get("terms"),
         "notes": project.get("notes", []),
+        "format": project.get("format", "sukatto"),
+        "width": project.get("width", WIDTH),
+        "height": project.get("height", HEIGHT),
     }
 
 
@@ -221,6 +237,7 @@ def _summary(project: dict, out_path: Path) -> dict:
         "credits": project["credits"],
         "terms": TERMS,
         "within_25_40": MIN_DURATION <= duration <= MAX_DURATION,
+        "format": project.get("format", "sukatto"),
     }
 
 
